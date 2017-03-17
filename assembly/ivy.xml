@@ -19,7 +19,9 @@
   <dependencies defaultconf="default->default">
     <!-- Kettle module dependencies-->
     <dependency org="${ivy.artifact.group}" name="kettle-core"          rev="${project.revision}" changing="true" force="true"/>
-    <dependency org="${ivy.artifact.group}" name="kettle-engine"        rev="${project.revision}" changing="true" force="true"/>
+    <dependency org="${ivy.artifact.group}" name="kettle-engine"        rev="${project.revision}" changing="true" force="true">
+      <exclude org="pentaho" module="pentaho-database-model"/>
+    </dependency>
     <dependency org="${ivy.artifact.group}" name="kettle-dbdialog"      rev="${project.revision}" changing="true" force="true">
       <exclude name="jaxen" module="jaxen"/>
       <exclude name="dom4j" module="dom4j"/>
@@ -121,7 +123,8 @@
       <artifact name="pdi-pur-plugin" type="zip"/>
     </dependency>
 
-
+    <dependency org="pentaho" name="pentaho-database-model"  rev="${dependency.pentaho-database-model.revision}" transitive="false"/>
+    <dependency org="pentaho" name="pentaho-registry"  rev="${dependency.pentaho-registry.revision}" transitive="false"/>
     <dependency org="pentaho" name="pentaho-platform-repository"  rev="${dependency.pentaho-platform.revision}" transitive="false"/>
     <dependency org="pentaho" name="pentaho-platform-extensions"  rev="${dependency.pentaho-platform.revision}" transitive="false"/>
     <dependency org="org.slf4j" name="slf4j-api" rev="1.7.22"/>
@@ -155,6 +158,7 @@
     <dependency org="${dependency.reporting-engine.group}" name="classic-extensions-mondrian" rev="${dependency.pentaho-reporting.revision}" transitive="true" changing="true"/>
     <dependency org="${dependency.reporting-engine.group}" name="classic-extensions-olap4j" rev="${dependency.pentaho-reporting.revision}" transitive="true" changing="true"/>
     <dependency org="${dependency.reporting-engine.group}" name="classic-extensions-pmd" rev="${dependency.pentaho-reporting.revision}" transitive="true" changing="true">
+      <exclude org="pentaho" module="pentaho-registry"/>
       <exclude org="org.apache.axis2" module="axis2-kernel" />
       <exclude org="org.apache.axis2" module="axis2-adb" />
       <exclude org="org.scannotation" module="scannotation" />
