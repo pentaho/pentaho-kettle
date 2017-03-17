@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -82,8 +82,10 @@ public class NullIf extends BaseStep implements StepInterface {
         }
         data.nullValueMeta[i] = data.outputRowMeta.getValueMeta( data.keynr[i] );
         // convert from input string entered by the user
+        ValueMetaString vms = new ValueMetaString();
+        vms.setConversionMask( data.nullValueMeta[i].getConversionMask() );
         data.nullValue[i] =
-          data.nullValueMeta[i].convertData( new ValueMetaString(), meta.getFields()[i].getFieldValue() );
+          data.nullValueMeta[i].convertData( vms, meta.getFields()[i].getFieldValue() );
       }
     }
 
