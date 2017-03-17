@@ -31,6 +31,8 @@ import org.pentaho.di.engine.api.reporting.Status;
  * Created by nbaker on 1/17/17.
  */
 public class StatusEvent<S extends LogicalModelElement> extends BaseEvent<S, Status> {
+  private static final long serialVersionUID = 5019758572364906951L;
+
   public StatusEvent( S source, Status status ) {
     super( source, status );
   }

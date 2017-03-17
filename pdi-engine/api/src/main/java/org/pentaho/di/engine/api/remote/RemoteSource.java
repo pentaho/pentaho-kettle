@@ -24,7 +24,6 @@
 
 package org.pentaho.di.engine.api.remote;
 
-import org.pentaho.di.engine.api.events.PDIEvent;
 import org.pentaho.di.engine.api.model.LogicalModelElement;
 
 import java.io.Serializable;
@@ -39,6 +38,7 @@ import java.io.Serializable;
  * Created by hudak on 2/10/17.
  */
 public final class RemoteSource implements LogicalModelElement, Serializable {
+  private static final long serialVersionUID = -8344589338390125137L;
   private final String id;
 
   public RemoteSource( String id ) {

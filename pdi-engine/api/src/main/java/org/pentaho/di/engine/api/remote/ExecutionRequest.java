@@ -37,6 +37,7 @@ import java.util.Set;
  * Created by hudak on 1/25/17.
  */
 public final class ExecutionRequest implements Serializable {
+  private static final long serialVersionUID = -7835121168360407191L;
   private final Map<String, Object> parameters;
   private final Transformation transformation;
   private final Map<String, Set<Class<? extends Serializable>>> reportingTopics;

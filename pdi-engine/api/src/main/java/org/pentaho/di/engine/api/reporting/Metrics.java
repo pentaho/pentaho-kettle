@@ -24,14 +24,13 @@
 
 package org.pentaho.di.engine.api.reporting;
 
-import org.pentaho.di.engine.api.events.PDIEvent;
-
 import java.io.Serializable;
 
 /**
  * Created by hudak on 1/5/17.
  */
 public class Metrics implements Serializable {
+  private static final long serialVersionUID = -5354823227842967351L;
   private final long in, out, dropped, inFlight;
 
   public static Metrics empty() {

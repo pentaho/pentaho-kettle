@@ -26,6 +26,8 @@ package org.pentaho.di.engine.api;
 
 public class RowException extends Exception {
 
+  private static final long serialVersionUID = -7989905162629837994L;
+
   public RowException( String msg ) {
     super( msg );
   }

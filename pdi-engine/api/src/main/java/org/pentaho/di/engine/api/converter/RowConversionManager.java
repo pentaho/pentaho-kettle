@@ -32,6 +32,7 @@ import java.util.Optional;
 
 public final class RowConversionManager implements Serializable {
 
+  private static final long serialVersionUID = 4901109916386185410L;
   List<RowConverter> converters;
 
   public RowConversionManager( List<RowConverter> converters ) {
