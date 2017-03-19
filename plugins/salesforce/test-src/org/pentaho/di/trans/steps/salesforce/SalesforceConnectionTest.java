@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -34,6 +34,8 @@ import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.Random;
 
+import com.sforce.soap.partner.sobject.SObject;
+import com.sforce.ws.wsdl.Constants;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -51,6 +53,8 @@ import com.sforce.soap.partner.PartnerConnection;
 import com.sforce.ws.ConnectionException;
 import com.sforce.ws.ConnectorConfig;
 import com.sforce.ws.bind.XmlObject;
+
+import javax.xml.namespace.QName;
 
 public class SalesforceConnectionTest {
 
@@ -307,5 +311,30 @@ public class SalesforceConnectionTest {
     conn.createBinding( config );
     PartnerConnection binding2 = conn.getBinding();
     assertSame( binding1, binding2 );
+  }
+
+  @Test //PDI-15973
+  public void testGetRecordValue() throws Exception {  //PDI-15973
+    SalesforceConnection conn = mock( SalesforceConnection.class, Mockito.CALLS_REAL_METHODS );
+    SObject sObject = new SObject();
+    sObject.setName( new QName( Constants.PARTNER_SOBJECT_NS, "sObject" ) );
+
+    SObject testObject = createObject( "field", "value" );
+    sObject.addField( "field", testObject );
+    assertEquals( "Get value of simple record", "value", conn.getRecordValue( sObject, "field" ) );
+
+    SObject parentObject = createObject( "parentField", null );
+    sObject.addField( "parentField", parentObject );
+    SObject childObject = createObject( "subField", "subValue" );
+    parentObject.addField( "subField", childObject );
+
+    assertEquals( "Get value of record with hierarchy", "subValue", conn.getRecordValue( sObject, "parentField.subField" ) );
+  }
+
+  private SObject createObject( String fieldName, String value ) {
+    SObject result = new SObject();
+    result.setName( new QName( Constants.PARTNER_SOBJECT_NS, fieldName ) );
+    result.setValue( value );
+    return result;
   }
 }

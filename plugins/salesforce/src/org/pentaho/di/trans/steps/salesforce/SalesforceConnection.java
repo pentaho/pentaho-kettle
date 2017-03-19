@@ -601,14 +601,9 @@ public class SalesforceConnection {
           if ( index == lastIndex ) {
             return element;
           } else {
-            Object object = element.getValue();
-            if ( object != null ) {
-              currentSObject = (SObject) object;
-              // Found the next level, keep going
-              break;
-            } else {
-              return null;
-            }
+            currentSObject = (SObject) element;
+            // Found the next level, keep going
+            break;
           }
         }
       }
