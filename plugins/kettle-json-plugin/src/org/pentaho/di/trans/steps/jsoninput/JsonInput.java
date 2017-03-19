@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -85,7 +85,6 @@ public class JsonInput extends BaseFileInputStep<JsonInputMeta, JsonInputData> i
     // Take care of variable substitution
     for ( int i = 0; i < data.nrInputFields; i++ ) {
       JsonInputField field = meta.getInputFields()[ i ];
-      field.setPath( environmentSubstitute( field.getPath() ) );
       if ( field.isRepeated() ) {
         data.repeatedFields.set( i );
       }
@@ -207,6 +206,15 @@ public class JsonInput extends BaseFileInputStep<JsonInputMeta, JsonInputData> i
     data.readerRowSet = new QueueRowSet();
     data.readerRowSet.setDone();
     this.rowOutputConverter = new RowOutputConverter( getLogChannel() );
+
+    // provide reader input fields with real path [PDI-15942]
+    JsonInputField[] inputFields = new JsonInputField[data.nrInputFields];
+    for ( int i = 0; i < data.nrInputFields; i++ ) {
+      JsonInputField field = meta.getInputFields()[ i ].clone();
+      field.setPath( environmentSubstitute( field.getPath() ) );
+      inputFields[i] = field;
+    }
+    data.reader.setFields( inputFields );
   }
 
   private void addFileToResultFilesname( FileObject file ) {
