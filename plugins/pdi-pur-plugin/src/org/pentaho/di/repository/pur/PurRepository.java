@@ -289,6 +289,12 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
             (IUnifiedRepository) Proxy
                 .newProxyInstance( r.getClass().getClassLoader(), new Class<?>[] { IUnifiedRepository.class },
                     new UnifiedRepositoryInvocationHandler<IUnifiedRepository>( r ) );
+        if ( this.securityProvider != null ) {
+          this.securityProvider = (RepositorySecurityProvider)
+              Proxy.newProxyInstance( this.securityProvider.getClass().getClassLoader(),
+                  new Class<?>[] {  RepositorySecurityProvider.class },
+                  new UnifiedRepositoryInvocationHandler<RepositorySecurityProvider>( this.securityProvider ) );
+        }
       } catch ( Throwable th ) {
         if ( log.isError() ) {
           log.logError( "Failed to setup repository connection", th );

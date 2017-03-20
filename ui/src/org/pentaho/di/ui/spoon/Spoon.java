@@ -9304,6 +9304,8 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
         SpoonPluginManager.getInstance().notifyLifecycleListeners( SpoonLifeCycleEvent.SHUTDOWN );
         super.handleShellCloseEvent();
       }
+    } catch ( KettleRepositoryLostException e ) {
+      handleRepositoryLost( e );
     } catch ( Exception e ) {
       LogChannel.GENERAL.logError( "Error closing Spoon", e );
     }
