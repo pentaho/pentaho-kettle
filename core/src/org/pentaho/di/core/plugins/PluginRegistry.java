@@ -39,6 +39,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.Callable;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import org.pentaho.di.core.Const;
@@ -71,6 +72,7 @@ public class PluginRegistry {
   private static final List<PluginTypeInterface> pluginTypes = new ArrayList<PluginTypeInterface>();
   private static final List<PluginRegistryExtension> extensions = new ArrayList<PluginRegistryExtension>();
   public static final LogChannelInterface log = new LogChannel( "PluginRegistry", true );
+  public static final String SUPPLEMENTALS_SUFFIX = "-supplementals";
 
   private final Map<Class<? extends PluginTypeInterface>, List<PluginInterface>> pluginMap;
 
@@ -85,6 +87,8 @@ public class PluginRegistry {
 
   private final Map<Class<? extends PluginTypeInterface>, List<PluginTypeListener>> listeners =
       new HashMap<Class<? extends PluginTypeInterface>, List<PluginTypeListener>>();
+
+  private Map<String, SupplementalPlugin> supplementalPluginMap = new HashMap<>();
 
   private final ReentrantReadWriteLock lock;
 
@@ -421,6 +425,35 @@ public class PluginRegistry {
     }
   }
 
+
+  /**
+   * Add a Class Mapping + factory for a plugin. This allows extra classes to be added to existing plugins.
+   *
+   * @param pluginType Type of plugin
+   * @param tClass     Class to factory
+   * @param id         ID of the plugin to extend
+   * @param callable   Factory Callable
+   * @param <T>        Type of the object factoried
+   * @throws KettlePluginException
+   */
+  public <T> void addClassFactory( Class<? extends PluginTypeInterface> pluginType, Class<T> tClass, String id,
+                                   Callable<T> callable ) throws KettlePluginException {
+
+    String key = createSupplemantalKey( pluginType.getName(), id );
+    SupplementalPlugin supplementalPlugin =
+      supplementalPluginMap.getOrDefault( key, new SupplementalPlugin( pluginType, key ) );
+    supplementalPlugin.addFactory( tClass, callable );
+    if ( !supplementalPluginMap.containsKey( key ) ) {
+      // first time in. register SupplementalPlugin
+      registerPlugin( pluginType, supplementalPlugin );
+      supplementalPluginMap.put( key, supplementalPlugin );
+    }
+  }
+
+  private String createSupplemantalKey( String pluginName, String id ) {
+    return pluginName + "-" + id + SUPPLEMENTALS_SUFFIX;
+  }
+
   /**
    * Load and instantiate the plugin class specified
    *
@@ -441,6 +474,17 @@ public class PluginRegistry {
     } else {
       String className = plugin.getClassMap().get( pluginClass );
       if ( className == null ) {
+        // Look for supplemental plugin supplying extra classes
+        for ( String id : plugin.getIds() ) {
+          try {
+            T aClass = loadClass( plugin.getPluginType(), createSupplemantalKey( plugin.getPluginType().getName(), id ), pluginClass );
+            if( aClass != null ) {
+              return aClass;
+            }
+          } catch ( KettlePluginException exception ) {
+            // ignore. we'll fall through to the other exception if this loop doesn't produce a return
+          }
+        }
         throw new KettlePluginClassMapException( BaseMessages.getString(
             PKG, "PluginRegistry.RuntimeError.NoValidClassRequested.PLUGINREGISTRY002", pluginClass.getName() ) );
       }
