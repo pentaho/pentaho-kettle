@@ -2,24 +2,21 @@
 <project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <modelVersion>4.0.0</modelVersion>
+  
   <parent>
-    <groupId>org.pentaho</groupId>
-    <artifactId>pentaho-ce-jar-parent-pom</artifactId>
-    <version>1.2.1</version>
+    <groupId>pentaho-kettle</groupId>
+    <artifactId>plugins</artifactId>
+    <version>7.1-SNAPSHOT</version>
   </parent>
+  
   <artifactId>meta-inject-plugin</artifactId>
   <version>7.1-SNAPSHOT</version>
   <packaging>bundle</packaging>
+  
   <name>meta-inject-plugin</name>
   <description>Metadata Injection as an OSGi Plugin</description>
   <url>http://www.pentaho.com</url>
-  <licenses>
-    <license>
-      <name>Pentaho Proprietary License</name>
-      <url>http://www.pentaho.com</url>
-      <distribution>repo</distribution>
-    </license>
-  </licenses>
+  
   <properties>
     <servlet-api.version>2.3</servlet-api.version>
     <dependency.pentaho-kettle.version>7.1-SNAPSHOT</dependency.pentaho-kettle.version>
@@ -28,6 +25,50 @@
     <swt.version>4.6</swt.version>
     <jface.version>3.3.0-I20070606-0010</jface.version>
   </properties>
+  
+  <build>
+  
+    <plugins>
+    
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>cobertura-maven-plugin</artifactId>
+        <version>2.6</version>
+        <configuration>
+          <formats>
+            <format>html</format>
+            <format>xml</format>
+          </formats>
+          <check>
+            <branchRate>80</branchRate>
+            <lineRate>90</lineRate>
+            <haltOnFailure>false</haltOnFailure>
+            <totalBranchRate>80</totalBranchRate>
+            <totalLineRate>90</totalLineRate>
+            <packageLineRate>90</packageLineRate>
+            <packageBranchRate>80</packageBranchRate>
+          </check>
+        </configuration>
+      </plugin>
+            
+      <plugin>
+        <groupId>org.apache.felix</groupId>
+        <artifactId>maven-bundle-plugin</artifactId>
+        <version>2.3.7</version>
+        <extensions>true</extensions>
+        <configuration>
+          <instructions>
+            <Import-Package>org.pentaho.di.osgi, !org.junit, !org.mockito, !org.mockito.*, org.eclipse.swt*;resolution:=optional, *</Import-Package>
+            <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
+            <Bundle-Version>${project.version}</Bundle-Version>
+          </instructions>
+        </configuration>
+      </plugin>
+      
+    </plugins>
+    
+  </build>
+  
   <dependencies>
     <dependency>
       <groupId>pentaho-kettle</groupId>
@@ -135,49 +176,5 @@
       </exclusions>
     </dependency>
   </dependencies>
-  <build>
-    <finalName>${project.artifactId}-${project.version}</finalName>
-    <plugins>
-      <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>cobertura-maven-plugin</artifactId>
-        <version>2.6</version>
-        <configuration>
-          <formats>
-            <format>html</format>
-            <format>xml</format>
-          </formats>
-          <check>
-            <branchRate>80</branchRate>
-            <lineRate>90</lineRate>
-            <haltOnFailure>false</haltOnFailure>
-            <totalBranchRate>80</totalBranchRate>
-            <totalLineRate>90</totalLineRate>
-            <packageLineRate>90</packageLineRate>
-            <packageBranchRate>80</packageBranchRate>
-          </check>
-        </configuration>
-      </plugin>
-      <plugin>
-        <artifactId>maven-compiler-plugin</artifactId>
-        <configuration>
-          <source>1.7</source>
-          <target>1.7</target>
-        </configuration>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.felix</groupId>
-        <artifactId>maven-bundle-plugin</artifactId>
-        <version>2.3.7</version>
-        <extensions>true</extensions>
-        <configuration>
-          <instructions>
-            <Import-Package>org.pentaho.di.osgi, !org.junit, !org.mockito, !org.mockito.*, org.eclipse.swt*;resolution:=optional, *</Import-Package>
-            <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
-            <Bundle-Version>${project.version}</Bundle-Version>
-          </instructions>
-        </configuration>
-      </plugin>
-    </plugins>
-  </build>
+
 </project>

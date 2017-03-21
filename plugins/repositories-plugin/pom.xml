@@ -2,20 +2,25 @@
 <project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <modelVersion>4.0.0</modelVersion>
+  
   <parent>
-    <groupId>org.pentaho</groupId>
-    <artifactId>pentaho-ce-jar-parent-pom</artifactId>
-    <version>2.0.4</version>
+    <groupId>pentaho-kettle</groupId>
+    <artifactId>plugins</artifactId>
+    <version>7.1-SNAPSHOT</version>
   </parent>
+  
   <artifactId>repositories-plugin-modules</artifactId>
   <version>7.1-SNAPSHOT</version>
   <packaging>pom</packaging>
+  
   <name>Repositories Plugin: ${project.artifactId}</name>
   <description>Repositories Plugin</description>
+  
   <modules>
     <module>repositories-plugin-core</module>
     <module>assembly</module>
   </modules>
+  
   <properties>
     <dependency.karaf.version>3.0.3</dependency.karaf.version>
     <dependency.angular.version>1.5.6</dependency.angular.version>
@@ -25,6 +30,7 @@
     <dependency.angular-animate.version>${dependency.angular.version}</dependency.angular-animate.version>
     <dependency.angular-translate.version>2.12.1</dependency.angular-translate.version>
   </properties>
+  
   <build>
     <pluginManagement>
       <plugins>
@@ -40,4 +46,5 @@
       </plugins>
     </pluginManagement>
   </build>
+  
 </project>
