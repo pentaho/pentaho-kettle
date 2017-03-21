@@ -2,17 +2,21 @@
 <project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <modelVersion>4.0.0</modelVersion>
+  
   <parent>
     <groupId>org.pentaho</groupId>
     <artifactId>repositories-plugin-modules</artifactId>
     <version>7.1-SNAPSHOT</version>
   </parent>
+  
   <artifactId>repositories-plugin-core</artifactId>
   <version>7.1-SNAPSHOT</version>
   <packaging>bundle</packaging>
+  
   <name>Pentaho Community Edition Project: ${project.artifactId}</name>
   <description>a Pentaho open source project</description>
   <url>http://www.pentaho.com</url>
+  
   <properties>
     <dependency.pentaho-kettle.version>${project.version}</dependency.pentaho-kettle.version>
     <dependency.karaf.version>3.0.3</dependency.karaf.version>
@@ -32,6 +36,76 @@
     <dependency.eclipse.version>3.6.0</dependency.eclipse.version>
     <dependency.commons-vfs2.version>2.1-20150824</dependency.commons-vfs2.version>
   </properties>
+  
+  <build>
+  
+    <resources>
+      <resource>
+        <directory>src/main/resources</directory>
+        <filtering>false</filtering>
+        <includes>
+          <include>**/*</include>
+        </includes>
+        <excludes>
+          <exclude>META-INF/**/*</exclude>
+          <exclude>OSGI-INF/**/*</exclude>
+          <exclude>web/*.html</exclude>
+        </excludes>
+      </resource>
+
+      <resource>
+        <directory>src/main/resources</directory>
+        <filtering>true</filtering>
+        <includes>
+          <include>META-INF/**/*</include>
+          <include>OSGI-INF/**/*</include>
+          <include>web/*.html</include>
+        </includes>
+      </resource>
+    </resources>
+
+
+    <plugins>
+    
+      <plugin>
+        <artifactId>maven-remote-resources-plugin</artifactId>
+        <version>1.5</version>
+        <executions>
+          <execution>
+            <goals>
+              <goal>bundle</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <includes>
+            <include>**/*</include>
+          </includes>
+        </configuration>
+      </plugin>
+      
+      <plugin>
+        <groupId>org.apache.felix</groupId>
+        <artifactId>maven-bundle-plugin</artifactId>
+        <version>2.4.0</version>
+        <extensions>true</extensions>
+        <configuration>
+          <instructions>
+            <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
+            <Bundle-Version>${project.version}</Bundle-Version>
+            <Export-Package>org.pentaho.di.ui.repo,
+              org.pentaho.di.ui.repo.endpoints,
+              org.pentaho.di.ui.repo.model
+            </Export-Package>
+            <Import-Package>org.json.simple; version="[1.1.0,1.1.1)", *</Import-Package>
+          </instructions>
+        </configuration>
+      </plugin>
+      
+    </plugins>
+    
+  </build>
+  
   <dependencies>
 
     <!-- ######################### COMPILE ######################### -->
@@ -248,67 +322,5 @@
     </dependency>
 
   </dependencies>
-  <build>
-    <resources>
-      <resource>
-        <directory>src/main/resources</directory>
-        <filtering>false</filtering>
-        <includes>
-          <include>**/*</include>
-        </includes>
-        <excludes>
-          <exclude>META-INF/**/*</exclude>
-          <exclude>OSGI-INF/**/*</exclude>
-          <exclude>web/*.html</exclude>
-        </excludes>
-      </resource>
 
-      <resource>
-        <directory>src/main/resources</directory>
-        <filtering>true</filtering>
-        <includes>
-          <include>META-INF/**/*</include>
-          <include>OSGI-INF/**/*</include>
-          <include>web/*.html</include>
-        </includes>
-      </resource>
-    </resources>
-
-    <finalName>${project.artifactId}</finalName>
-    <plugins>
-      <plugin>
-        <artifactId>maven-remote-resources-plugin</artifactId>
-        <version>1.5</version>
-        <executions>
-          <execution>
-            <goals>
-              <goal>bundle</goal>
-            </goals>
-          </execution>
-        </executions>
-        <configuration>
-          <includes>
-            <include>**/*</include>
-          </includes>
-        </configuration>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.felix</groupId>
-        <artifactId>maven-bundle-plugin</artifactId>
-        <version>2.4.0</version>
-        <extensions>true</extensions>
-        <configuration>
-          <instructions>
-            <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
-            <Bundle-Version>${project.version}</Bundle-Version>
-            <Export-Package>org.pentaho.di.ui.repo,
-              org.pentaho.di.ui.repo.endpoints,
-              org.pentaho.di.ui.repo.model
-            </Export-Package>
-            <Import-Package>org.json.simple; version="[1.1.0,1.1.1)", *</Import-Package>
-          </instructions>
-        </configuration>
-      </plugin>
-    </plugins>
-  </build>
 </project>
