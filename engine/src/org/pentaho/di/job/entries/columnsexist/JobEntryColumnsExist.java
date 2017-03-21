@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -240,7 +240,7 @@ public class JobEntryColumnsExist extends JobEntryBase implements Cloneable, Job
       return result;
     }
     if ( connection != null ) {
-      Database db = new Database( this, connection );
+      Database db = getNewDatabaseFromMeta();
       db.shareVariablesWith( this );
       try {
         String realSchemaname = environmentSubstitute( schemaname );
@@ -294,10 +294,16 @@ public class JobEntryColumnsExist extends JobEntryBase implements Cloneable, Job
 
     result.setEntryNr( nrnotexistcolums );
     result.setNrLinesWritten( nrexistcolums );
-    if ( nrnotexistcolums == 0 ) {
+    // result is true only if all columns found (PDI-15801)
+    if (  nrexistcolums == arguments.length ) {
+      result.setNrErrors( 0 );
       result.setResult( true );
     }
     return result;
+  }
+
+  Database getNewDatabaseFromMeta() {
+    return new Database( this, connection );
   }
 
   public DatabaseMeta[] getUsedDatabaseConnections() {
