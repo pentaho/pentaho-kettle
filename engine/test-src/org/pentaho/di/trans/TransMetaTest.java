@@ -45,6 +45,7 @@ import org.pentaho.di.trans.step.StepIOMeta;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaChangeListenerInterface;
 import org.pentaho.di.trans.step.StepMetaInterface;
+import org.pentaho.di.trans.steps.dummytrans.DummyTransMeta;
 import org.pentaho.di.trans.steps.datagrid.DataGridMeta;
 import org.pentaho.di.trans.steps.userdefinedjavaclass.StepDefinition;
 import org.pentaho.di.trans.steps.userdefinedjavaclass.UserDefinedJavaClassDef;
@@ -234,6 +235,40 @@ public class TransMetaTest {
     TransMeta transMeta = new TransMeta( "1", "2" );
     assertFalse( transMeta.equals( "somethingelse" ) );
     assertTrue( transMeta.equals( new TransMeta( "1", "2" ) ) );
+  }
+  
+  @Test
+  public void testStepFieldsCache() throws Exception {
+    DataGridMeta dgm1 = new DataGridMeta();
+    dgm1.setFieldName( new String[]{ "id", "colA" } );
+    dgm1.allocate( 2 );
+    dgm1.setFieldType( new String[]{
+      ValueMetaFactory.getValueMetaName( ValueMetaInterface.TYPE_INTEGER ),
+      ValueMetaFactory.getValueMetaName( ValueMetaInterface.TYPE_STRING ) } );
+    List<List<String>> dgm1Data = new ArrayList<>();
+    dgm1Data.add( Arrays.asList( new String[]{ "1", "A" } ) );
+    dgm1Data.add( Arrays.asList( new String[]{ "2", "B" } ) );
+    dgm1.setDataLines( dgm1Data );
+    
+    DataGridMeta dgm2 = new DataGridMeta();
+    dgm2.allocate( 1 );
+    dgm2.setFieldName( new String[]{ "moreData" } );
+    dgm2.setFieldType( new String[]{
+      ValueMetaFactory.getValueMetaName( ValueMetaInterface.TYPE_STRING ) } );
+    List<List<String>> dgm2Data = new ArrayList<>();
+    dgm2Data.add( Arrays.asList( new String[]{ "Some Informational Data" } ) );
+    dgm2.setDataLines( dgm2Data );
+    
+    DummyTransMeta du = new DummyTransMeta();
+    
+    StepMeta dg1 = new StepMeta( "input1", dgm1 );
+    StepMeta dg2 = new StepMeta( "input2", dgm2 );
+
+    StepMetaInterface smi = mock( StepMetaInterface.class );
+    StepMeta mockStep = mockStepMeta("PDI-15991");
+    when( mockStep.getStepMetaInterface() ).thenReturn( smi );
+	  
+    verify(smi, times(1)).getFields(any(), "PDI-15991", any(), any(), same( transMeta ), any(), any());
   }
 
   @Test
