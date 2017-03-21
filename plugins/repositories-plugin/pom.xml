@@ -9,6 +9,7 @@
     <version>7.1-SNAPSHOT</version>
   </parent>
   
+  <groupId>org.pentaho</groupId>
   <artifactId>repositories-plugin-modules</artifactId>
   <version>7.1-SNAPSHOT</version>
   <packaging>pom</packaging>

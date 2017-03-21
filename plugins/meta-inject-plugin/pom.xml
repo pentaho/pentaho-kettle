@@ -9,6 +9,7 @@
     <version>7.1-SNAPSHOT</version>
   </parent>
   
+  <groupId>org.pentaho</groupId>
   <artifactId>meta-inject-plugin</artifactId>
   <version>7.1-SNAPSHOT</version>
   <packaging>bundle</packaging>
