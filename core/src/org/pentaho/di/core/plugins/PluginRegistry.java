@@ -42,7 +42,10 @@ import java.util.Set;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettlePluginClassMapException;
+import org.pentaho.di.core.extension.ExtensionPointInterface;
+import org.pentaho.di.core.extension.ExtensionPointMap;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.exception.KettlePluginException;
 import org.pentaho.di.core.logging.KettleLogStore;
@@ -1076,5 +1079,26 @@ public class PluginRegistry {
       lock.readLock().unlock();
     }
     return result;
+  }
+
+  /**
+   * Call the extension point(s) corresponding to the given id
+   *
+   * This iteration was isolated here to protect against ConcurrentModificationException using PluginRegistry's lock
+   *
+   * @param log     log channel to pass to extension point call
+   * @param id      the id of the extension point interface
+   * @param object  object to pass to extension point call
+   */
+  public void callExtensionPoint( final LogChannelInterface log, final String id, final Object object )
+    throws KettleException {
+    lock.writeLock().lock();
+    try {
+      for ( ExtensionPointInterface extensionPoint : ExtensionPointMap.getInstance().get( id ).values() ) {
+        extensionPoint.callExtensionPoint( log, object );
+      }
+    } finally {
+      lock.writeLock().unlock();
+    }
   }
 }

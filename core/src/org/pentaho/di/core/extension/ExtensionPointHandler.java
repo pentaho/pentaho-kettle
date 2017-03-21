@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -24,6 +24,7 @@ package org.pentaho.di.core.extension;
 
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.LogChannelInterface;
+import org.pentaho.di.core.plugins.PluginRegistry;
 
 public class ExtensionPointHandler {
 
@@ -42,8 +43,6 @@ public class ExtensionPointHandler {
    */
   public static void callExtensionPoint( final LogChannelInterface log, final String id, final Object object )
     throws KettleException {
-    for ( ExtensionPointInterface extensionPoint : ExtensionPointMap.getInstance().get( id ).values() ) {
-      extensionPoint.callExtensionPoint( log, object );
-    }
+    PluginRegistry.getInstance().callExtensionPoint( log, id, object );
   }
 }
