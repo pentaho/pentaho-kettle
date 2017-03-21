@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -35,11 +35,14 @@ import org.apache.commons.vfs2.AllFileSelector;
 import org.apache.commons.vfs2.FileObject;
 import org.apache.commons.vfs2.FileSelectInfo;
 import org.apache.commons.vfs2.FileType;
+import org.apache.commons.vfs2.provider.sftp.SftpFileObject;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.vfs.KettleVFS;
+import org.pentaho.di.core.vfs.SftpFileObjectWithWindowsSupport;
+import org.pentaho.di.core.vfs.SftpFileSystemWindowsProvider;
 
 public class FileInputList {
   private List<FileObject> files = new ArrayList<FileObject>();
@@ -188,8 +191,7 @@ public class FileInputList {
           // Find all file names that match the wildcard in this directory
           //
           if ( processFolder ) {
-            if ( directoryFileObject != null && directoryFileObject.getType() == FileType.FOLDER ) // it's a directory
-            {
+            if ( directoryFileObject != null && directoryFileObject.getType() == FileType.FOLDER ) { // it's a directory
               FileObject[] fileObjects = directoryFileObject.findFiles( new AllFileSelector() {
                 @Override
                 public boolean traverseDescendents( FileSelectInfo info ) {
@@ -226,8 +228,13 @@ public class FileInputList {
               } );
               if ( fileObjects != null ) {
                 for ( int j = 0; j < fileObjects.length; j++ ) {
-                  if ( fileObjects[j].exists() ) {
-                    fileInputList.addFile( fileObjects[j] );
+                  FileObject fileObject = fileObjects[j];
+                  if ( fileObject instanceof SftpFileObject ) {
+                    fileObject = new SftpFileObjectWithWindowsSupport( (SftpFileObject) fileObject,
+                            SftpFileSystemWindowsProvider.getSftpFileSystemWindows( (SftpFileObject) fileObject ) );
+                  }
+                  if ( fileObject.exists() ) {
+                    fileInputList.addFile( fileObject );
                   }
                 }
               }
@@ -316,9 +323,7 @@ public class FileInputList {
         // Find all folder names in this directory
         //
         directoryFileObject = KettleVFS.getFileObject( onefile, space );
-        if ( directoryFileObject != null && directoryFileObject.getType() == FileType.FOLDER ) // it's a directory
-        {
-
+        if ( directoryFileObject != null && directoryFileObject.getType() == FileType.FOLDER ) { // it's a directory
           FileObject[] fileObjects = directoryFileObject.findFiles( new AllFileSelector() {
             @Override
             public boolean traverseDescendents( FileSelectInfo info ) {
