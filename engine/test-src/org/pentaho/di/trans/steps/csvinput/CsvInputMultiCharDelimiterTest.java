@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2016-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2016-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -33,7 +33,7 @@ import org.pentaho.di.trans.steps.textfileinput.TextFileInputField;
 
 import java.io.File;
 
-import static org.junit.Assert.*;
+import org.junit.Assert;
 
 public class CsvInputMultiCharDelimiterTest extends CsvInputUnitTestBase {
 
@@ -100,12 +100,12 @@ public class CsvInputMultiCharDelimiterTest extends CsvInputUnitTestBase {
     }
 
     Object[] row = output.getRowImmediate();
-    assertNotNull( row );
-    assertEquals( "value1", row[ 0 ] );
-    assertEquals( "value2", row[ 1 ] );
-    assertEquals( "value3", row[ 2 ] );
+    Assert.assertNotNull( row );
+    Assert.assertEquals( "value1", row[ 0 ] );
+    Assert.assertEquals( "value2", row[ 1 ] );
+    Assert.assertEquals( "value3", row[ 2 ] );
 
-    assertNull( output.getRowImmediate() );
+    Assert.assertNull( output.getRowImmediate() );
   }
 
   private CsvInputMeta createMeta( File file, TextFileInputField[] fields ) {
