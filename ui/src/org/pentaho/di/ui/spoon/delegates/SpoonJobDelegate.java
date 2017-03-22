@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -966,16 +966,17 @@ public class SpoonJobDelegate extends SpoonDelegate {
     } else {
       TabMapEntry tabEntry = spoon.delegates.tabs.findTabMapEntry( jobMeta );
 
-      int idx = spoon.tabfolder.indexOf( tabEntry.getTabItem() );
+      if ( tabEntry != null ) {
+        int idx = spoon.tabfolder.indexOf( tabEntry.getTabItem() );
 
-      // keep the focus on the graph
-      spoon.tabfolder.setSelected( idx );
+        // keep the focus on the graph
+        spoon.tabfolder.setSelected( idx );
 
-      // keep the focus on the graph
-      spoon.tabfolder.setSelected( idx );
-
-      spoon.setUndoMenu( jobMeta );
-      spoon.enableMenus();
+        // keep the focus on the graph
+        spoon.tabfolder.setSelected( idx );
+        spoon.setUndoMenu( jobMeta );
+        spoon.enableMenus();
+      }
     }
   }
 

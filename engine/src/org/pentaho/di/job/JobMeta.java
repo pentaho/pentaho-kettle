@@ -309,46 +309,91 @@ public class JobMeta extends AbstractMeta
   }
 
   /**
-   * Compares two transformation on name, filename
+   * Compares two job on name, filename, repository directory, etc.
+   * The comparison algorithm is as follows:<br/>
+   * <ol>
+   * <li>The first job's filename is checked first; if it has none, the job comes from a
+   * repository. If the second job does not come from a repository, -1 is returned.</li>
+   * <li>If the jobs are both from a repository, the jobs' names are compared. If the first
+   * job has no name and the second one does, a -1 is returned.
+   * If the opposite is true, a 1 is returned.</li>
+   * <li>If they both have names they are compared as strings. If the result is non-zero it is returned. Otherwise the
+   * repository directories are compared using the same technique of checking empty values and then performing a string
+   * comparison, returning any non-zero result.</li>
+   * <li>If the names and directories are equal, the object revision strings are compared using the same technique of
+   * checking empty values and then performing a string comparison, this time ultimately returning the result of the
+   * string compare.</li>
+   * <li>If the first job does not come from a repository and the second one does, a 1 is returned. Otherwise
+   * the job names and filenames are subsequently compared using the same technique of checking empty values
+   * and then performing a string comparison, ultimately returning the result of the filename string comparison.
+   * </ol>
+   *
+   * @param t1
+   *          the first job to compare
+   * @param t2
+   *          the second job to compare
+   * @return 0 if the two jobs are equal, 1 or -1 depending on the values (see description above)
+   *
    */
   public int compare( JobMeta j1, JobMeta j2 ) {
-    if ( Utils.isEmpty( j1.getName() ) && !Utils.isEmpty( j2.getName() ) ) {
-      return -1;
-    }
-    if ( !Utils.isEmpty( j1.getName() ) && Utils.isEmpty( j2.getName() ) ) {
-      return 1;
-    }
-    if ( Utils.isEmpty( j1.getName() ) && Utils.isEmpty( j2.getName() ) || j1.getName().equals( j2.getName() ) ) {
-      if ( Utils.isEmpty( j1.getFilename() ) && !Utils.isEmpty( j2.getFilename() ) ) {
+    // If we don't have a filename, the jobs comes from a repository
+    //
+    if ( Utils.isEmpty( j1.getFilename() ) ) {
+
+      if ( !Utils.isEmpty( j2.getFilename() ) ) {
         return -1;
       }
-      if ( !Utils.isEmpty( j1.getFilename() ) && Utils.isEmpty( j2.getFilename() ) ) {
+
+      // First compare names...
+      if ( Utils.isEmpty( j1.getName() ) && !Utils.isEmpty( j2.getName() ) ) {
+        return -1;
+      }
+      if ( !Utils.isEmpty( j1.getName() ) && Utils.isEmpty( j2.getName() ) ) {
         return 1;
       }
-      if ( Utils.isEmpty( j1.getFilename() ) && Utils.isEmpty( j2.getFilename() ) ) {
+      int cmpName = j1.getName().compareTo( j2.getName() );
+      if ( cmpName != 0 ) {
+        return cmpName;
+      }
+
+      // Same name, compare Repository directory...
+      int cmpDirectory = j1.getRepositoryDirectory().getPath().compareTo( j2.getRepositoryDirectory().getPath() );
+      if ( cmpDirectory != 0 ) {
+        return cmpDirectory;
+      }
+
+      // Same name, same directory, compare versions
+      if ( j1.getObjectRevision() != null && j2.getObjectRevision() == null ) {
+        return 1;
+      }
+      if ( j1.getObjectRevision() == null && j2.getObjectRevision() != null ) {
+        return -1;
+      }
+      if ( j1.getObjectRevision() == null && j2.getObjectRevision() == null ) {
         return 0;
       }
-      return j1.getFilename().compareTo( j2.getFilename() );
-    }
+      return j1.getObjectRevision().getName().compareTo( j2.getObjectRevision().getName() );
 
-    // Compare by name : repositories etc.
-    //
-    if ( j1.getObjectRevision() != null && j2.getObjectRevision() == null ) {
-      return 1;
-    }
-    if ( j1.getObjectRevision() == null && j2.getObjectRevision() != null ) {
-      return -1;
-    }
-    int cmp;
-    if ( j1.getObjectRevision() == null && j2.getObjectRevision() == null ) {
-      cmp = 0;
     } else {
-      cmp = j1.getObjectRevision().getName().compareTo( j2.getObjectRevision().getName() );
-    }
-    if ( cmp == 0 ) {
-      return j1.getName().compareTo( j2.getName() );
-    } else {
-      return cmp;
+      if ( Utils.isEmpty( j2.getFilename() ) ) {
+        return 1;
+      }
+
+      // First compare names
+      //
+      if ( Utils.isEmpty( j1.getName() ) && !Utils.isEmpty( j2.getName() ) ) {
+        return -1;
+      }
+      if ( !Utils.isEmpty( j1.getName() ) && Utils.isEmpty( j2.getName() ) ) {
+        return 1;
+      }
+      int cmpName = j1.getName().compareTo( j2.getName() );
+      if ( cmpName != 0 ) {
+        return cmpName;
+      }
+
+      // Same name, compare filenames...
+      return j1.getFilename().compareTo( j2.getFilename() );
     }
   }
 
