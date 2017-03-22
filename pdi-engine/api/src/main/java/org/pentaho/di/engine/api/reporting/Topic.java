@@ -33,6 +33,7 @@ import java.util.Objects;
  * Created by hudak on 1/25/17.
  */
 public class Topic implements Serializable {
+  private static final long serialVersionUID = 3421934238701207191L;
   private final LogicalModelElement source;
   private final Class<? extends Serializable> eventType;
 

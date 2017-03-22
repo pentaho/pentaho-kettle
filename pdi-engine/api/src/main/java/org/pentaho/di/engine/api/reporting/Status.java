@@ -36,6 +36,7 @@ public enum Status implements Serializable {
   FAILED( true ),
   FINISHED( true );
 
+  private static final long serialVersionUID = -938695168387846889L;
   final boolean finalState;
 
   Status( Boolean finalState ) {

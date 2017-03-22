@@ -30,6 +30,7 @@ import org.pentaho.di.engine.api.model.LogicalModelElement;
 import java.io.Serializable;
 
 public abstract class BaseEvent<S extends LogicalModelElement, D extends Serializable>  implements PDIEvent<S, D> {
+  private static final long serialVersionUID = 1976966402442852547L;
   private final S source;
   private final D data;
 
