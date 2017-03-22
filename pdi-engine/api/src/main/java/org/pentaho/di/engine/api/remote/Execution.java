@@ -58,6 +58,13 @@ public interface Execution<T extends Serializable> extends Serializable, AutoClo
   void update( T event );
 
   /**
+   * Communicate a failure.
+   *
+   * @param throwable
+   */
+  void closeExceptionally( Throwable throwable );
+
+  /**
    * Open a stream for nosy clients to get live feedback.
    * <p>
    * Create a serialized stream of events sent to this execution via {@link #update(T)}

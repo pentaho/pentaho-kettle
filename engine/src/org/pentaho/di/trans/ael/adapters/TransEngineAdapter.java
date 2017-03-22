@@ -25,6 +25,7 @@
 package org.pentaho.di.trans.ael.adapters;
 
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.engine.api.Engine;
 import org.pentaho.di.engine.api.ExecutionContext;
 import org.pentaho.di.engine.api.ExecutionResult;
@@ -111,14 +112,15 @@ public class TransEngineAdapter extends Trans {
         }
 
         @Override public void onError( Throwable t ) {
-
+          getLogChannel().logError( "Error Executing Transformation", t );
           setFinished( true );
-          t.printStackTrace();
+          // emit error on all steps
+          getSteps().stream().map( stepMetaDataCombi -> stepMetaDataCombi.step ).forEach( step-> { step.setStopped( true ); step.setRunning( false ); } );
           getTransListeners().forEach( l -> {
             try {
               l.transFinished( TransEngineAdapter.this );
             } catch ( KettleException e ) {
-              e.printStackTrace();
+              getLogChannel().logError( "Error notifying trans listener", e );
             }
           } );
         }
@@ -130,7 +132,7 @@ public class TransEngineAdapter extends Trans {
             try {
               l.transFinished( TransEngineAdapter.this );
             } catch ( KettleException e ) {
-              e.printStackTrace();
+              getLogChannel().logError( "Error notifying trans listener", e );
             }
           } );
         }
