@@ -110,10 +110,12 @@ import org.pentaho.di.core.logging.SimpleLoggingObject;
 import org.pentaho.di.core.plugins.EnginePluginType;
 import org.pentaho.di.core.plugins.PluginInterface;
 import org.pentaho.di.core.plugins.PluginRegistry;
+import org.pentaho.di.core.plugins.RowConversionManagerPluginType;
 import org.pentaho.di.core.plugins.StepPluginType;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.engine.api.Engine;
+import org.pentaho.di.engine.api.converter.RowConversionManager;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.Job;
 import org.pentaho.di.job.JobMeta;
@@ -5006,7 +5008,8 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
       .map( plugin -> (Engine) loadPlugin( plugin ) )
       .map( engine -> {
         log.logBasic( "Using execution engine " + engine.getClass().getCanonicalName() );
-        return (Trans) new TransEngineAdapter( engine, transMeta );
+        RowConversionManager conversionManager = loadConversionManager();
+        return (Trans) new TransEngineAdapter( engine, conversionManager, transMeta );
       } )
       .orElseGet( () -> {
         log.logBasic( "Using legacy execution engine" );
@@ -5025,6 +5028,13 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
       .filter( id -> id.equals( ( transMeta.getVariable( "engine" ) ) ) )
       .findAny()
       .isPresent();
+  }
+
+  private RowConversionManager loadConversionManager() {
+    return PluginRegistry.getInstance().getPlugins( RowConversionManagerPluginType.class ).stream()
+      .findFirst()
+      .map( pluginInterface -> (RowConversionManager) loadPlugin( pluginInterface ) )
+      .orElse( null );
   }
 
   private Trans createLegacyTrans() {

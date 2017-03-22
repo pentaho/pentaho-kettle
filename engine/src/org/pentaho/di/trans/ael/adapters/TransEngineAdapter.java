@@ -29,6 +29,7 @@ import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.engine.api.Engine;
 import org.pentaho.di.engine.api.ExecutionContext;
 import org.pentaho.di.engine.api.ExecutionResult;
+import org.pentaho.di.engine.api.converter.RowConversionManager;
 import org.pentaho.di.engine.api.events.PDIEvent;
 import org.pentaho.di.engine.api.model.Operation;
 import org.pentaho.di.engine.api.model.Transformation;
@@ -59,14 +60,15 @@ public class TransEngineAdapter extends Trans {
   public static final String ANONYMOUS_PRINCIPAL = "anonymous";
   private final Transformation transformation;
   private final ExecutionContext executionContext;
-  private CompletableFuture<ExecutionResult>
-    executionResultFuture;
+  private CompletableFuture<ExecutionResult> executionResultFuture;
+  private RowConversionManager conversionManager;
 
-  public TransEngineAdapter( Engine engine, TransMeta transMeta ) {
+  public TransEngineAdapter( Engine engine, RowConversionManager conversionManager, TransMeta transMeta ) {
     transformation = TransMetaConverter.convert( transMeta );
     executionContext = engine.prepare( transformation );
     executionContext.setActingPrincipal( getActingPrincipal( transMeta ) );
     this.transMeta = transMeta;
+    this.conversionManager = conversionManager;
   }
 
   @Override public void killAll() {
@@ -146,7 +148,7 @@ public class TransEngineAdapter extends Trans {
           StepMetaDataCombi combi = new StepMetaDataCombi();
           combi.stepMeta = StepMeta.fromXml( (String) op.getConfig().get( TransMetaConverter.STEP_META_CONF_KEY ) );
           combi.data = new StepDataInterfaceEngineAdapter( op, executionContext );
-          combi.step = new StepInterfaceEngineAdapter( op, executionContext, combi.stepMeta, transMeta,
+          combi.step = new StepInterfaceEngineAdapter( op, executionContext, conversionManager, combi.stepMeta, transMeta,
             combi.data, this );
           combi.meta = combi.stepMeta.getStepMetaInterface();
           combi.stepname = combi.stepMeta.getName();
