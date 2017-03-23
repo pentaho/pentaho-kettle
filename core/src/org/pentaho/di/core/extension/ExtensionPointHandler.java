@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -42,8 +42,6 @@ public class ExtensionPointHandler {
    */
   public static void callExtensionPoint( final LogChannelInterface log, final String id, final Object object )
     throws KettleException {
-    for ( ExtensionPointInterface extensionPoint : ExtensionPointMap.getInstance().get( id ).values() ) {
-      extensionPoint.callExtensionPoint( log, object );
-    }
+    ExtensionPointMap.getInstance().callExtensionPoint( log, id, object );
   }
 }
