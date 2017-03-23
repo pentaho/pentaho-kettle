@@ -25,14 +25,22 @@
   
 
   <import file="build-res/subfloor-pkg.xml" />
+  
+  <!-- Add missing lib cleanup -->
+  <target name="clean-jars" depends="subfloor.clean-jars">
+    <delete dir="${swtlib.dir}"/>
+    <!-- subfloor should clean this one up, but does not -->
+    <delete dir="${devlib.dir}"/>
+    <delete file="package-pom.xml"/>
+  </target>
 	
-  <target name="dist" depends="init,resolve,resolve-swtlibs,resolve-launcher,resolve-plugins,resolve-dataservice-jdbc,resolve-pentaho-system,package" description="Builds and packages the application"/>
+  <target name="dist" depends="init,resolve,resolve-swtlibs,resolve-launcher,resolve-plugins,resolve-dataservice-jdbc,resolve-adaptive-execution,resolve-pentaho-system,package" description="Builds and packages the application"/>
   	
   <target name="assemble-full" depends="init,resolve-all,assemble-plugins,assemble,assemble-dataservice-jdbc" description="Builds the application" />
 	
   <target name="assemble-no-plugins" depends="init,resolve-all,assemble" description="Builds the application" />
 
-  <target name="resolve-all" depends="init,resolve,resolve-swtlibs,resolve-launcher,resolve-plugins,resolve-dataservice-jdbc,resolve-pentaho-system"/>
+  <target name="resolve-all" depends="init,resolve,resolve-swtlibs,resolve-launcher,resolve-plugins,resolve-dataservice-jdbc,resolve-pentaho-system,resolve-adaptive-execution"/>
 
   <property name="system.dir" value="${stage.dir}/${package.root.dir}/system" />
 
@@ -61,7 +69,7 @@
      <ivy:retrieve conf="oss-licenses" pattern="${bin.dir}/[module].[ext]" />
   </target>
 	
-  <target name="assemble" depends="resolve-swtlibs,resolve-oss-licenses,create-sampledb-from-sql,subfloor-pkg.assemble"
+  <target name="assemble" depends="resolve-swtlibs,assemble-adaptive-execution,resolve-oss-licenses,create-sampledb-from-sql,subfloor-pkg.assemble"
           description="copy jar files to distribution directory">
     <echo>Construct the distribution package...</echo>
     <!-- make JavaApplicationStub executable for OSX -->
@@ -120,12 +128,19 @@
   </target>
 
   <target name="assemble-dataservice-jdbc" depends="install-antcontrib,resolve-dataservice-jdbc" >
-
     <copy todir="${stage.dir}/${package.root.dir}/Data Service JDBC Driver">
       <fileset dir="${dataservice-jdbc.dir}" />
     </copy>
     <delete dir="${dataservice-jdbc.dir}"/>
   </target>
+  
+  <target name="assemble-adaptive-execution" depends="install-antcontrib,resolve-adaptive-execution"  description="Copy AEL binaries to AEL root path.">
+    <copy todir="${stage.dir}/${ael.dir}">
+      <fileset dir="${ael.dir}" />
+    </copy>
+    <delete dir="${ael.dir}"/>
+  </target>
+
 	
 	<!--=======================================================================
 	      publish-local
@@ -210,6 +225,11 @@
   <target name="resolve-dataservice-jdbc" depends="install-ivy">
     <ivy:resolve file="${ivyfile}" conf="dataservice-jdbc" />
     <ivy:retrieve conf="dataservice-jdbc" pattern="${dataservice-jdbc.dir}/[module]-[revision](-[classifier]).[ext]" sync="true" />
+  </target>
+
+  <target name="resolve-adaptive-execution" depends="install-ivy">
+    <ivy:resolve file="${ivyfile}" conf="adaptive-execution" />
+        <ivy:retrieve conf="adaptive-execution" pattern="${ael.dir}/[module].[ext]" sync="true" />
   </target>
   
   <target name="copy-swtlibs">

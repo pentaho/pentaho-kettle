@@ -9,6 +9,7 @@
     <conf name="plugins"/>
     <conf name="launcher" />
     <conf name="dataservice-jdbc" />
+    <conf name="adaptive-execution" />
     <conf name="pentaho-system" />
   </configurations>
 
@@ -33,13 +34,27 @@
     </dependency>
     <dependency org="${ivy.artifact.group}" name="kettle5-log4j-plugin" rev="${project.revision}" changing="true" force="true" transitive="false"/>
 
-    <dependency org="pentaho" name="pdi-osgi-bridge-core" rev="${dependency.pdi-osgi-bridge.revision}" changing="true" />
+    <dependency org="pentaho" name="pdi-osgi-bridge-core" rev="${dependency.pdi-osgi-bridge.revision}" changing="true" />    
+    <!-- Begin osgi-bridge-core transitives. -->
+    <!-- Added explicitly to overcome some maven->ivy resolve version errors. Should not be here after mavenizaiton. -->
+    <dependency org="pentaho" name="pentaho-service-coordinator" rev="${dependency.pdi-osgi-bridge.revision}" changing="true" />
+    <dependency org="pentaho" name="pentaho-osgi-utils-api" rev="${dependency.pdi-osgi-bridge.revision}" changing="true" />
+    <dependency org="org.apache.aries" name="org.apache.aries.util" rev="${aries.util.version}" changing="true" transitive="false"/>
+    <dependency org="org.ops4j.pax.exam" name="pax-exam-extender-service" rev="${exam.version}" changing="true" transitive="false"/>
+    <dependency org="org.ops4j.pax.exam" name="pax-exam-cdi" rev="${exam.version}" changing="true" transitive="false"/>
+    <dependency org="org.ops4j.pax.tinybundles" name="tinybundles" rev="${tinybundles.version}" changing="true" transitive="false"/>
+    <!-- End osgi-bridge-core transitives. -->
 
     <!-- Data Service JDBC Driver -->
     <dependency org="pentaho" name="pdi-dataservice-driver-bundle" rev="${project.revision}" changing="true" conf="dataservice-jdbc->default" transitive="false">
       <artifact name="pdi-dataservice-driver-bundle" type="zip"/>
     </dependency>
-
+    
+    <!-- Adaptive Execution Packages -->
+    <dependency org="org.pentaho.adaptive" name="pdi-daemon-assembly" rev="${ael.revision}" changing="true" transitive="false" conf="adaptive-execution->default">
+      <artifact name="pdi-daemon-assembly" type="zip"/>
+    </dependency>
+        
     <!-- Kettle plugin dependencies-->
     <dependency org="${ivy.artifact.group}" name="kettle-version-checker" rev="${project.revision}" changing="true" conf="plugins->default">
       <artifact name="kettle-version-checker" type="zip"/>
@@ -100,7 +115,7 @@
     </dependency>
     <dependency org="pentaho" name="pentaho-karaf-assembly" rev="${project.revision}" changing="true" conf="pentaho-system->default" m:classifier="client">
       <artifact name="pentaho-karaf-assembly" type="zip" m:classifier="client"/>
-    </dependency>
+    </dependency>        
 
     <!-- Pentaho dependencies (non-Kettle), launcher, shim, etc. -->
     <dependency org="pentaho"               name="pentaho-application-launcher"  rev="${dependency.launcher.revision}" conf="launcher->default"/>
