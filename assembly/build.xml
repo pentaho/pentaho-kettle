@@ -229,9 +229,6 @@
 
   <target name="resolve-adaptive-execution" depends="install-ivy">
     <ivy:resolve file="${ivyfile}" conf="adaptive-execution" />
-    <!--
-    <ivy:retrieve conf="adaptive-execution" pattern="${ael.dir}/[module]-[revision](-[classifier]).[ext]" sync="true" />
-    -->
         <ivy:retrieve conf="adaptive-execution" pattern="${ael.dir}/[module].[ext]" sync="true" />
   </target>
   
