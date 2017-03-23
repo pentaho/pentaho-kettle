@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -43,6 +43,7 @@ import org.pentaho.di.repository.RepositoryDirectoryInterface;
 import org.pentaho.di.repository.RepositoryObject;
 import org.pentaho.di.repository.RepositoryObjectType;
 import org.pentaho.di.repository.StringObjectId;
+import org.pentaho.di.repository.kdr.delegates.KettleDatabaseRepositoryDatabaseDelegate;
 import org.pentaho.di.repository.kdr.delegates.KettleDatabaseRepositoryJobDelegate;
 import org.pentaho.di.repository.kdr.delegates.KettleDatabaseRepositoryTransDelegate;
 
@@ -144,6 +145,24 @@ public class KettleDatabaseRepository_GetObjectInformation_Test {
     assertIsDeletedNotSet_ForExistingObject( transDelegate, null, RepositoryObjectType.TRANSFORMATION );
   }
 
+  @Test
+  public void getObjectInformation_GetDatabaseInformation() throws Exception {
+    KettleDatabaseRepositoryDatabaseDelegate databaseDelegate =
+        spy( new KettleDatabaseRepositoryDatabaseDelegate( repository ) );
+    repository.databaseDelegate = databaseDelegate;
+    RowMeta meta = createMetaForDatabase();
+    Object[] values = new Object[ meta.size() ];
+    values[ Arrays.asList( meta.getFieldNames() ).indexOf( KettleDatabaseRepositoryBase.FIELD_DATABASE_NAME ) ] = EXISTING_ID;
+    doReturn( new RowMetaAndData( meta, values ) )
+      .when( databaseDelegate )
+      .getDatabase( new StringObjectId( EXISTING_ID ) );
+    RepositoryObject actual = repository.getObjectInformation( new StringObjectId( EXISTING_ID ), RepositoryObjectType.DATABASE );
+
+    assertEquals( new StringObjectId( EXISTING_ID ), actual.getObjectId() );
+    assertEquals( EXISTING_ID, actual.getName() );
+    assertEquals( RepositoryObjectType.DATABASE, actual.getObjectType() );
+  }
+
   private void assertIsDeletedNotSet_ForExistingObject( KettleDatabaseRepositoryTransDelegate transDelegate,
                                                         KettleDatabaseRepositoryJobDelegate jobDelegate,
                                                         RepositoryObjectType objectType )
@@ -175,6 +194,12 @@ public class KettleDatabaseRepository_GetObjectInformation_Test {
     fields.put( KettleDatabaseRepositoryBase.FIELD_TRANSFORMATION_MODIFIED_USER, ValueMetaInterface.TYPE_STRING );
     fields.put( KettleDatabaseRepositoryBase.FIELD_TRANSFORMATION_MODIFIED_DATE, ValueMetaInterface.TYPE_DATE );
     fields.put( KettleDatabaseRepositoryBase.FIELD_TRANSFORMATION_ID_DIRECTORY, ValueMetaInterface.TYPE_INTEGER );
+    return createMeta( fields );
+  }
+
+  private static RowMeta createMetaForDatabase() throws Exception {
+    LinkedHashMap<String, Integer> fields = new LinkedHashMap<String, Integer>();
+    fields.put( KettleDatabaseRepositoryBase.FIELD_DATABASE_NAME, ValueMetaInterface.TYPE_STRING );
     return createMeta( fields );
   }
 
