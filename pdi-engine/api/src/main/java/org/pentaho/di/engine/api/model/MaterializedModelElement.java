@@ -33,6 +33,7 @@ import java.util.List;
 /**
  * Created by nbaker on 1/18/17.
  */
+@Deprecated
 public interface MaterializedModelElement extends ModelElement {
 
   <D extends Serializable> List<Publisher<? extends PDIEvent>> getPublisher( Class<D> type );

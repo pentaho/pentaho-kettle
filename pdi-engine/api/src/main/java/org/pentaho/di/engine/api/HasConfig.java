@@ -37,6 +37,10 @@ public interface HasConfig extends Serializable {
 
   void setConfig( String key, Serializable value );
 
+  default void setConfig( Map<String, Serializable> config ) {
+    config.forEach( this::setConfig );
+  }
+
   default Optional<? extends Serializable> getConfig( String key ) {
     return Optional.ofNullable( getConfig().get( key ) );
   }
