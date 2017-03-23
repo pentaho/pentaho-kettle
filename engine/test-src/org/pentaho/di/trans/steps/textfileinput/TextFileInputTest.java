@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -29,6 +29,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
+import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.io.IOUtils;
@@ -37,9 +38,13 @@ import org.junit.Test;
 import org.mockito.Mockito;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.exception.KettleFileException;
+import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.fileinput.FileInputList;
+import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.playlist.FilePlayListAll;
 import org.pentaho.di.core.row.RowMeta;
+import org.pentaho.di.core.row.RowMetaInterface;
+import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.trans.TransTestingUtil;
@@ -259,4 +264,37 @@ public class TextFileInputTest {
   private static TextFileInputField field( String name ) {
     return new TextFileInputField( name, -1, -1 );
   }
+
+  /**
+   * PDI-14390 Text file input throws NPE if skipping error rows and passing through incoming fieds
+   *
+   * @throws Exception
+   */
+  @Test
+  public void convertLineToRowTest() throws Exception {
+    LogChannelInterface log = Mockito.mock( LogChannelInterface.class );
+    TextFileLine textFileLine = Mockito.mock( TextFileLine.class );
+    textFileLine.line = "testData1;testData2;testData3";
+    InputFileMetaInterface info = Mockito.mock( InputFileMetaInterface.class );
+    TextFileInputField[] textFileInputFields = { new TextFileInputField(), new TextFileInputField(), new TextFileInputField() };
+    Mockito.doReturn( textFileInputFields ).when( info ).getInputFields();
+    Mockito.doReturn( "CSV" ).when( info ).getFileType();
+    Mockito.doReturn( "/" ).when( info ).getEscapeCharacter();
+    Mockito.doReturn( true ).when( info ).isErrorIgnored();
+    Mockito.doReturn( true ).when( info ).isErrorLineSkipped();
+
+    RowMetaInterface outputRowMeta = Mockito.mock( RowMetaInterface.class );
+    Mockito.doReturn( 15 ).when( outputRowMeta ).size();
+
+    ValueMetaInterface valueMetaWithError = Mockito.mock( ValueMetaInterface.class );
+    Mockito.doThrow( new KettleValueException( "Error converting" ) ).when( valueMetaWithError ).convertDataFromString( Mockito.anyString(),
+            Mockito.any( ValueMetaInterface.class ),  Mockito.anyString(), Mockito.anyString(), Mockito.anyInt() );
+    Mockito.doReturn( valueMetaWithError ).when( outputRowMeta ).getValueMeta( Mockito.anyInt() );
+
+    //it should run without NPE
+    TextFileInput.convertLineToRow( log, textFileLine, info, new  Object[3], 1, outputRowMeta,
+            Mockito.mock( RowMetaInterface.class ), null, 1L, ";", null, "/", Mockito.mock( FileErrorHandler.class ),
+            false, false, false, false, false, false, false, false, null, null, false,  new Date(), null, null, null, 1L );
+  }
+
 }
