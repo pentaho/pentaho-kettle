@@ -327,8 +327,11 @@ public class SalesforceConnectionTest {
     sObject.addField( "parentField", parentObject );
     SObject childObject = createObject( "subField", "subValue" );
     parentObject.addField( "subField", childObject );
-
     assertEquals( "Get value of record with hierarchy", "subValue", conn.getRecordValue( sObject, "parentField.subField" ) );
+
+    XmlObject nullObject = new XmlObject( new QName( "nullField" ) );
+    sObject.addField( "nullField", nullObject );
+    assertEquals( "Get null value when relational query id is null", null, conn.getRecordValue( sObject, "nullField.childField" ) );
   }
 
   private SObject createObject( String fieldName, String value ) {
