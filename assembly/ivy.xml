@@ -246,5 +246,6 @@
     <dependency org="javax.ws.rs" name="jsr311-api" rev="1.1.1" transitive="false"/>
 
     <exclude org="javax.servlet"/>
+    <exclude org="org.osgi" module="org.osgi.core"/>    
   </dependencies>
 </ivy-module>
