@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,7 +22,6 @@
 
 package org.pentaho.di.job;
 
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.pentaho.di.core.NotePadMeta;
@@ -35,6 +34,7 @@ import org.pentaho.di.core.listeners.ContentChangedListener;
 import org.pentaho.di.job.entries.empty.JobEntryEmpty;
 import org.pentaho.di.job.entries.trans.JobEntryTrans;
 import org.pentaho.di.job.entry.JobEntryCopy;
+import org.pentaho.di.repository.ObjectRevision;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectoryInterface;
 import org.pentaho.di.resource.ResourceDefinition;
@@ -45,84 +45,97 @@ import java.net.URISyntaxException;
 import java.util.HashMap;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import static org.mockito.Matchers.same;
 import static org.mockito.Mockito.*;
 
 public class JobMetaTest {
-  private JobMeta jm;
-  private JobEntryEmpty je1;
-  private JobEntryEmpty je2;
-  private JobEntryEmpty je4;
+
+  private static final String JOB_META_NAME = "jobName";
+
+  private JobMeta jobMeta;
+  private RepositoryDirectoryInterface directoryJob;
+  private ContentChangedListener listener;
+  private ObjectRevision objectRevision;
 
   @Before
   public void setUp() {
-    jm = new JobMeta();
-
-    je1 = new JobEntryEmpty();
-    je1.setName( "je1" );
-    JobEntryCopy copy1 = new JobEntryCopy( je1 );
-
-    je2 = new JobEntryEmpty();
-    je2.setName( "je2" );
-    JobEntryCopy copy2 = new JobEntryCopy( je2 );
-    JobHopMeta hop = new JobHopMeta( copy1, copy2 );
-    jm.addJobHop( hop );
-
-    JobEntryEmpty je3 = new JobEntryEmpty();
-    je3.setName( "je3" );
-    copy2 = new JobEntryCopy( je3 );
-    hop = new JobHopMeta( copy1, copy2 );
-    jm.addJobHop( hop );
-
-    je4 = new JobEntryEmpty();
-    je4.setName( "je4" );
-    copy1 = new JobEntryCopy( je3 );
-    copy2 = new JobEntryCopy( je4 );
-    hop = new JobHopMeta( copy1, copy2 );
-    jm.addJobHop( hop );
-
+    jobMeta = new JobMeta();
+    // prepare
+    directoryJob = mock( RepositoryDirectoryInterface.class );
+    when( directoryJob.getPath() ).thenReturn( "directoryPath" );
+    listener = mock( ContentChangedListener.class );
+    objectRevision = mock( ObjectRevision.class );
+    when( objectRevision.getName() ).thenReturn( "revisionName" );
+    jobMeta.addContentChangedListener( listener );
+    jobMeta.setRepositoryDirectory( directoryJob );
+    jobMeta.setName( JOB_META_NAME );
+    jobMeta.setObjectRevision( objectRevision );
   }
 
   @Test
   public void testPathExist() throws KettleXMLException, IOException, URISyntaxException {
-    Assert.assertTrue( jm.isPathExist( je1, je4 ) );
+    assertTrue( testPath( "je1-je4" ) );
   }
 
   @Test
   public void testPathNotExist() throws KettleXMLException, IOException, URISyntaxException {
-    Assert.assertFalse( jm.isPathExist( je2, je4 ) );
+    assertFalse( testPath( "je2-je4" ) );
+  }
+
+  private boolean testPath( String branch ) {
+    JobEntryEmpty je1 = new JobEntryEmpty();
+    je1.setName( "je1" );
+
+    JobEntryEmpty je2 = new JobEntryEmpty();
+    je2.setName( "je2" );
+
+    JobHopMeta hop = new JobHopMeta( new JobEntryCopy( je1 ), new JobEntryCopy( je2 ) );
+    jobMeta.addJobHop( hop );
+
+    JobEntryEmpty je3 = new JobEntryEmpty();
+    je3.setName( "je3" );
+    hop = new JobHopMeta( new JobEntryCopy( je1 ), new JobEntryCopy( je3 ) );
+    jobMeta.addJobHop( hop );
+
+    JobEntryEmpty je4 = new JobEntryEmpty();
+    je4.setName( "je4" );
+    hop = new JobHopMeta( new JobEntryCopy( je3 ), new JobEntryCopy( je4 ) );
+    jobMeta.addJobHop( hop );
+
+    if ( branch.equals( "je1-je4" ) ) {
+      return jobMeta.isPathExist( je1, je4 );
+    } else if ( branch.equals( "je2-je4" ) ) {
+      return jobMeta.isPathExist( je2, je4 );
+    } else {
+      return false;
+    }
   }
 
   @Test
   public void testContentChangeListener() throws Exception {
-    ContentChangedListener listener = mock( ContentChangedListener.class );
-    jm.addContentChangedListener( listener );
+    jobMeta.setChanged();
+    jobMeta.setChanged( true );
 
-    jm.setChanged();
-    jm.setChanged( true );
+    verify( listener, times( 2 ) ).contentChanged( same( jobMeta ) );
 
-    verify( listener, times( 2 ) ).contentChanged( same( jm ) );
+    jobMeta.clearChanged();
+    jobMeta.setChanged( false );
 
-    jm.clearChanged();
-    jm.setChanged( false );
+    verify( listener, times( 2 ) ).contentSafe( same( jobMeta ) );
 
-    verify( listener, times( 2 ) ).contentSafe( same( jm ) );
-
-    jm.removeContentChangedListener( listener );
-    jm.setChanged();
-    jm.setChanged( true );
+    jobMeta.removeContentChangedListener( listener );
+    jobMeta.setChanged();
+    jobMeta.setChanged( true );
 
     verifyNoMoreInteractions( listener );
   }
 
   @Test
   public void testLookupRepositoryReferences() throws Exception {
-    JobMeta jobMetaMock = mock( JobMeta.class );
-    doCallRealMethod().when( jobMetaMock ).lookupRepositoryReferences( any( Repository.class ) );
-    doCallRealMethod().when( jobMetaMock ).addJobEntry( anyInt(), any( JobEntryCopy.class ) );
-    doCallRealMethod().when( jobMetaMock ).clear();
-
-    jobMetaMock.clear();
+    jobMeta.clear();
 
     JobEntryTrans jobEntryMock = mock( JobEntryTrans.class );
     when( jobEntryMock.hasRepositoryReferences() ).thenReturn( true );
@@ -134,60 +147,50 @@ public class JobMetaTest {
 
     JobEntryCopy jobEntryCopy1 = mock( JobEntryCopy.class );
     when( jobEntryCopy1.getEntry() ).thenReturn( jobEntryMock );
-    jobMetaMock.addJobEntry( 0, jobEntryCopy1 );
+    jobMeta.addJobEntry( 0, jobEntryCopy1 );
 
     JobEntryCopy jobEntryCopy2 = mock( JobEntryCopy.class );
     when( jobEntryCopy2.getEntry() ).thenReturn( brokenJobEntryMock );
-    jobMetaMock.addJobEntry( 1, jobEntryCopy2 );
+    jobMeta.addJobEntry( 1, jobEntryCopy2 );
 
     JobEntryCopy jobEntryCopy3 = mock( JobEntryCopy.class );
     when( jobEntryCopy3.getEntry() ).thenReturn( jobEntryMock );
-    jobMetaMock.addJobEntry( 2, jobEntryCopy3 );
+    jobMeta.addJobEntry( 2, jobEntryCopy3 );
 
-    Repository repo = mock( Repository.class );
     try {
-      jobMetaMock.lookupRepositoryReferences( repo );
-      Assert.fail( "no exception for broken entry" );
+      jobMeta.lookupRepositoryReferences( mock( Repository.class ) );
+      fail( "no exception for broken entry" );
     } catch ( LookupReferencesException e ) {
       // ok
     }
-
     verify( jobEntryMock, times( 2 ) ).lookupRepositoryReferences( any( Repository.class ) );
   }
 
   /**
-   * Given job meta object.
-   * <br/>
-   * When the job is called to export resources,
-   * then the existing current directory should be used as a context to locate resources.
+   * Given job meta object. <br/>
+   * When the job is called to export resources, then the existing current directory should be used as a context to
+   * locate resources.
    */
   @Test
   public void shouldUseExistingRepositoryDirectoryWhenExporting() throws KettleException {
-    // prepare
-    final JobMeta clone = spy( new JobMeta() );
-    RepositoryDirectoryInterface directory = mock( RepositoryDirectoryInterface.class );
-    when( directory.getPath() ).thenReturn( "directoryPath" );
-
-    JobMeta jobMeta = new JobMeta(  ) {
+    final JobMeta jobMetaSpy = spy( jobMeta );
+    JobMeta jobMeta = new JobMeta() {
       @Override
       public Object realClone( boolean doClear ) {
-        return clone;
+        return jobMetaSpy;
       }
     };
-    jobMeta.setRepositoryDirectory( directory );
-    jobMeta.setName( "jobName" );
-
-    // run
+    jobMeta.setRepositoryDirectory( directoryJob );
+    jobMeta.setName( JOB_META_NAME );
     jobMeta.exportResources( null, new HashMap<String, ResourceDefinition>( 4 ), mock( ResourceNamingInterface.class ),
-      null, null );
+        null, null );
 
     // assert
-    verify( clone ).setRepositoryDirectory( directory );
+    verify( jobMetaSpy ).setRepositoryDirectory( directoryJob );
   }
 
   @Test
   public void shouldUseCoordinatesOfItsStepsAndNotesWhenCalculatingMinimumPoint() {
-    JobMeta jobMeta = new JobMeta();
     Point jobEntryPoint = new Point( 500, 500 );
     Point notePadMetaPoint = new Point( 400, 400 );
     JobEntryCopy jobEntryCopy = mock( JobEntryCopy.class );
@@ -211,5 +214,82 @@ public class JobMetaTest {
     Point stepPoint = jobMeta.getMinimum();
     assertEquals( notePadMetaPoint.x - JobMeta.BORDER_INDENT, stepPoint.x );
     assertEquals( notePadMetaPoint.y - JobMeta.BORDER_INDENT, stepPoint.y );
+  }
+
+  @Test
+  public void testEquals_oneNameNull() {
+    assertFalse( testEquals( null, null, null, null ) );
+  }
+
+  @Test
+  public void testEquals_secondNameNull() {
+    jobMeta.setName( null );
+    assertFalse( testEquals( JOB_META_NAME, null, null, null ) );
+  }
+
+  @Test
+  public void testEquals_sameNameOtherDir() {
+    RepositoryDirectoryInterface otherDirectory = mock( RepositoryDirectoryInterface.class );
+    when( otherDirectory.getPath() ).thenReturn( "otherDirectoryPath" );
+    assertFalse( testEquals( JOB_META_NAME, otherDirectory, null, null ) );
+  }
+
+  @Test
+  public void testEquals_sameNameSameDirNullRev() {
+    assertFalse( testEquals( JOB_META_NAME, directoryJob, null, null ) );
+  }
+
+  @Test
+  public void testEquals_sameNameSameDirDiffRev() {
+    ObjectRevision otherRevision = mock( ObjectRevision.class );
+    when( otherRevision.getName() ).thenReturn( "otherRevision" );
+    assertFalse( testEquals( JOB_META_NAME, directoryJob, otherRevision, null ) );
+  }
+
+  @Test
+  public void testEquals_sameNameSameDirSameRev() {
+    assertTrue( testEquals( JOB_META_NAME, directoryJob, objectRevision, null ) );
+  }
+
+  @Test
+  public void testEquals_sameNameSameDirSameRevFilename() {
+    assertFalse( testEquals( JOB_META_NAME, directoryJob, objectRevision, "Filename" ) );
+  }
+
+  @Test
+  public void testEquals_sameFilename() {
+    String newFilename = "Filename";
+    jobMeta.setFilename( newFilename );
+    assertFalse( testEquals( null, null, null, newFilename ) );
+  }
+
+  @Test
+  public void testEquals_difFilenameSameName() {
+    jobMeta.setFilename( "Filename" );
+    assertFalse( testEquals( JOB_META_NAME, null, null, "OtherFileName" ) );
+  }
+
+  @Test
+  public void testEquals_sameFilenameSameName() {
+    String newFilename = "Filename";
+    jobMeta.setFilename( newFilename );
+    assertTrue( testEquals( JOB_META_NAME, null, null, newFilename ) );
+  }
+
+  @Test
+  public void testEquals_sameFilenameDifName() {
+    String newFilename = "Filename";
+    jobMeta.setFilename( newFilename );
+    assertFalse( testEquals( "OtherName", null, null, newFilename ) );
+  }
+
+  private boolean testEquals( String name, RepositoryDirectoryInterface repDirectory, ObjectRevision revision,
+      String filename ) {
+    JobMeta jobMeta2 = new JobMeta();
+    jobMeta2.setName( name );
+    jobMeta2.setRepositoryDirectory( repDirectory );
+    jobMeta2.setObjectRevision( revision );
+    jobMeta2.setFilename( filename );
+    return jobMeta.equals( jobMeta2 );
   }
 }
