@@ -23,6 +23,7 @@
 package org.pentaho.di.trans.steps.sort;
 
 import java.io.File;
+import java.io.Serializable;
 import java.text.Collator;
 import java.util.ArrayList;
 import java.util.List;
@@ -59,7 +60,8 @@ import org.w3c.dom.Node;
  * Created on 02-jun-2003
  */
 @InjectionSupported( localizationPrefix = "SortRows.Injection.", groups = { "FIELDS" } )
-public class SortRowsMeta extends BaseStepMeta implements StepMetaInterface {
+public class SortRowsMeta extends BaseStepMeta implements StepMetaInterface, Serializable {
+  private static final long serialVersionUID = -9075883720765645655L;
   private static Class<?> PKG = SortRowsMeta.class; // for i18n purposes, needed by Translator2!!
 
   /** order by which fields? */
@@ -380,6 +382,11 @@ public class SortRowsMeta extends BaseStepMeta implements StepMetaInterface {
   public void getFields( RowMetaInterface inputRowMeta, String name, RowMetaInterface[] info, StepMeta nextStep,
     VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
     // Set the sorted properties: ascending/descending
+    assignSortingCriteria( inputRowMeta );
+  }
+
+  @SuppressWarnings( "WeakerAccess" )
+  public void assignSortingCriteria( RowMetaInterface inputRowMeta ) {
     for ( int i = 0; i < fieldName.length; i++ ) {
       int idx = inputRowMeta.indexOfValue( fieldName[i] );
       if ( idx >= 0 ) {
