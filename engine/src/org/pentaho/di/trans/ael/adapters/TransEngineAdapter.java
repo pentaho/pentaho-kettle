@@ -25,13 +25,14 @@
 package org.pentaho.di.trans.ael.adapters;
 
 import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.engine.api.Engine;
 import org.pentaho.di.engine.api.ExecutionContext;
 import org.pentaho.di.engine.api.ExecutionResult;
 import org.pentaho.di.engine.api.events.PDIEvent;
 import org.pentaho.di.engine.api.model.Operation;
 import org.pentaho.di.engine.api.model.Transformation;
+import org.pentaho.di.engine.api.reporting.LogEntry;
+import org.pentaho.di.engine.api.reporting.LogLevel;
 import org.pentaho.di.engine.model.ActingPrincipal;
 import org.pentaho.di.engine.api.reporting.Status;
 import org.pentaho.di.trans.RowProducer;
@@ -45,6 +46,7 @@ import org.reactivestreams.Subscription;
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
@@ -62,11 +64,26 @@ public class TransEngineAdapter extends Trans {
   private CompletableFuture<ExecutionResult>
     executionResultFuture;
 
+
+  public static final Map<org.pentaho.di.core.logging.LogLevel, LogLevel> LEVEL_MAP = new HashMap<>();
+  static{
+    LEVEL_MAP.put( org.pentaho.di.core.logging.LogLevel.BASIC, LogLevel.BASIC );
+    LEVEL_MAP.put( org.pentaho.di.core.logging.LogLevel.DEBUG, LogLevel.DEBUG );
+    LEVEL_MAP.put( org.pentaho.di.core.logging.LogLevel.DETAILED, LogLevel.DETAILED );
+    LEVEL_MAP.put( org.pentaho.di.core.logging.LogLevel.ERROR, LogLevel.ERROR );
+    LEVEL_MAP.put( org.pentaho.di.core.logging.LogLevel.MINIMAL, LogLevel.MINIMAL );
+    LEVEL_MAP.put( org.pentaho.di.core.logging.LogLevel.ROWLEVEL, LogLevel.TRACE );
+  }
+
   public TransEngineAdapter( Engine engine, TransMeta transMeta ) {
     transformation = TransMetaConverter.convert( transMeta );
     executionContext = engine.prepare( transformation );
     executionContext.setActingPrincipal( getActingPrincipal( transMeta ) );
     this.transMeta = transMeta;
+  }
+
+  @Override public void setLogLevel( org.pentaho.di.core.logging.LogLevel logLogLevel ) {
+    executionContext.setLoggingLogLevel( LEVEL_MAP.getOrDefault( logLogLevel, LogLevel.MINIMAL ) );
   }
 
   @Override public void killAll() {
@@ -76,6 +93,40 @@ public class TransEngineAdapter extends Trans {
   @Override public void prepareExecution( String[] arguments ) throws KettleException {
     setSteps( new ArrayList<>( opsToSteps() ) );
     wireStatusToTransListeners();
+    executionContext.subscribe( transformation, LogEntry.class, new Subscriber<PDIEvent<Transformation, LogEntry>>() {
+      @Override public void onSubscribe( Subscription subscription ) {
+        subscription.request( Long.MAX_VALUE );
+      }
+
+      @Override public void onNext( PDIEvent<Transformation, LogEntry> event ) {
+        LogEntry data = event.getData();
+        LogLevel logLogLevel = data.getLogLogLevel();
+        switch( logLogLevel ) {
+          case ERROR:
+            getLogChannel().logError( data.getMessage() );
+            break;
+          case MINIMAL:
+            getLogChannel().logMinimal( data.getMessage() );
+            break;
+          case BASIC:
+            getLogChannel().logBasic( data.getMessage() );
+            break;
+          case DETAILED:
+            getLogChannel().logDetailed( data.getMessage() );
+            break;
+          case DEBUG:
+            getLogChannel().logDebug( data.getMessage() );
+            break;
+          case TRACE:
+            getLogChannel().logRowlevel( data.getMessage() );
+            break;
+        }
+      }
+
+      @Override public void onError( Throwable throwable ) {}
+
+      @Override public void onComplete() {}
+    } );
     setReadyToStart( true );
   }
 
