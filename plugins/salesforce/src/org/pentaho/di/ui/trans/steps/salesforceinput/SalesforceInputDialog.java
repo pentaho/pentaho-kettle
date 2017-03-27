@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,8 +22,8 @@
 
 package org.pentaho.di.ui.trans.steps.salesforceinput;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CCombo;
@@ -1385,7 +1385,7 @@ public class SalesforceInputDialog extends SalesforceStepDialog {
         // We are connected, so let's query
         XmlObject[] fields = connection.getElements();
         int nrFields = fields.length;
-        List<String> fieldNames = new ArrayList<String>();
+        Set<String> fieldNames = new HashSet<>();
         for ( int i = 0; i < nrFields; i++ ) {
           addFields( "", fieldNames, fields[i] );
         }
@@ -1426,18 +1426,25 @@ public class SalesforceInputDialog extends SalesforceStepDialog {
     }
   }
 
-  private void addFields( String prefix, List<String> fieldNames, XmlObject field ) {
-    String fieldname = prefix + field.getName();
-
-    Object value = field.getValue();
-    if ( value != null && value instanceof SObject ) {
-      SObject sobject = (SObject) value;
+  void addFields( String prefix, Set<String> fieldNames, XmlObject field ) {
+    //Salesforce SOAP Api sends IDs always in the response, even if we don't request it in SOQL query and
+    //the id's value is null in this case. So, do not add this Id to the fields list
+    if ( isNullIdField( field ) ) {
+      return;
+    }
+    String fieldname = prefix + field.getName().getLocalPart();
+    if ( field instanceof SObject ) {
+      SObject sobject = (SObject) field;
       for ( XmlObject element : SalesforceConnection.getChildren( sobject ) ) {
         addFields( fieldname + ".", fieldNames, element );
       }
     } else {
       addField( fieldname, fieldNames, (String) field.getValue() );
     }
+  }
+
+  private boolean isNullIdField( XmlObject field ) {
+    return field.getName().getLocalPart().equalsIgnoreCase( "ID" ) && field.getValue() == null;
   }
 
   private void addField( Field field ) {
@@ -1450,13 +1457,16 @@ public class SalesforceInputDialog extends SalesforceStepDialog {
       fieldPrecision = Integer.toString( field.getPrecision() );
     }
 
-    addField(
+    addFieldToTable(
       field.getLabel(), field.getName(), field.isIdLookup(), field.getType().toString(), fieldLength,
       fieldPrecision );
   }
 
-  private void addField( String fieldName, List<String> fieldNames, String firstValue ) {
-    fieldNames.add( fieldName );
+  private void addField( String fieldName, Set<String> fieldNames, String firstValue ) {
+    //no duplicates allowed
+    if ( !fieldNames.add( fieldName ) ) {
+      return;
+    }
 
     // Try to guess field type
     // I know it's not clean (see up)
@@ -1481,11 +1491,11 @@ public class SalesforceInputDialog extends SalesforceStepDialog {
         fieldType = "string";
       }
     }
-    addField( fieldName, fieldName, false, fieldType, fieldLength, fieldPrecision );
+    addFieldToTable( fieldName, fieldName, false, fieldType, fieldLength, fieldPrecision );
   }
 
-  private void addField( String fieldLabel, String fieldName, boolean fieldIdIsLookup, String fieldType,
-    String fieldLength, String fieldPrecision ) {
+  void addFieldToTable( String fieldLabel, String fieldName, boolean fieldIdIsLookup, String fieldType,
+                        String fieldLength, String fieldPrecision ) {
     TableItem item = new TableItem( wFields.table, SWT.NONE );
     item.setText( 1, fieldLabel );
     item.setText( 2, fieldName );
