@@ -80,6 +80,12 @@
       <version>1.10</version>
     </dependency>
 
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-api</artifactId>
+      <version>1.7.3</version>
+    </dependency>
+
 
     <dependency>
       <groupId>org.hamcrest</groupId>
