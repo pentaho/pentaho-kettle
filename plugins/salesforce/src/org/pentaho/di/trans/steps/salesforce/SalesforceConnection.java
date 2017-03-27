@@ -601,8 +601,10 @@ public class SalesforceConnection {
           if ( index == lastIndex ) {
             return element;
           } else {
-            currentSObject = (SObject) element;
-            // Found the next level, keep going
+            if ( element instanceof  SObject ) {
+              // Found the next level, keep going
+              currentSObject = (SObject) element;
+            }
             break;
           }
         }
