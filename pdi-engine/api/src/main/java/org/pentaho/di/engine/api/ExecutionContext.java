@@ -26,8 +26,6 @@ package org.pentaho.di.engine.api;
 
 import org.pentaho.di.engine.api.converter.RowConversionManager;
 import org.pentaho.di.engine.api.model.Transformation;
-import org.pentaho.di.engine.api.reporting.LogEntry;
-import org.pentaho.di.engine.api.reporting.LogLevel;
 import org.pentaho.di.engine.api.reporting.SubscriptionManager;
 
 import java.io.Serializable;
@@ -41,15 +39,13 @@ import java.util.concurrent.CompletableFuture;
 public interface ExecutionContext extends SubscriptionManager, Serializable {
   Map<String, Object> getParameters();
 
+  /**
+   * Implementors should return new instance of the ExecutionContext using
+   * @param parameters
+   */
+  ExecutionContext withParameters( Map<String, Object> parameters );
+
   Map<String, Object> getEnvironment();
-
-  void setParameters( Map<String, Object> parameters );
-
-  void setEnvironment( Map<String, Object> environment );
-
-  void setParameter( String key, Object value );
-
-  void setEnvironment( String key, Object value );
 
   Transformation getTransformation();
 
@@ -60,8 +56,4 @@ public interface ExecutionContext extends SubscriptionManager, Serializable {
   Principal getActingPrincipal();
 
   void setActingPrincipal( Principal actingPrincipal );
-
-  void setLoggingLogLevel( LogLevel logLevel );
-
-  LogLevel getLoggingLogLevel();
 }

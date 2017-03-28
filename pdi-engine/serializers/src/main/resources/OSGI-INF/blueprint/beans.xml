@@ -45,9 +45,4 @@
    <bean class="org.pentaho.pdi.engine.serializers.DataEventSerializer"/>
  </service>
 
-
- <service interface="org.pentaho.osgi.objecttunnel.TunnelSerializer">
-   <bean class="org.pentaho.pdi.engine.serializers.LogEventSerializer"/>
- </service>
-
 </blueprint>
