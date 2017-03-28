@@ -1118,4 +1118,8 @@ public class PluginRegistry {
     }
     return result;
   }
+
+  public ReentrantReadWriteLock getLock() {
+    return lock;
+  }
 }

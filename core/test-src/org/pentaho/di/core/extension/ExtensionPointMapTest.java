@@ -1,7 +1,7 @@
 /*
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  * **************************************************************************
  *
@@ -67,10 +67,10 @@ public class ExtensionPointMapTest {
   @Test
   public void addExtensionPointTest() throws KettlePluginException {
     ExtensionPointMap.getInstance().addExtensionPoint( pluginInterface );
-    assertEquals( ExtensionPointMap.getInstance().get( TEST_NAME ).get( "testID" ), extensionPoint );
+    assertEquals( ExtensionPointMap.getInstance().getMap().get( TEST_NAME ).get( "testID" ).get(), extensionPoint );
 
     // Verify cached instance
-    assertEquals( ExtensionPointMap.getInstance().get( TEST_NAME ).get( "testID" ), extensionPoint );
+    assertEquals( ExtensionPointMap.getInstance().getMap().get( TEST_NAME ).get( "testID" ).get(), extensionPoint );
     verify( pluginInterface, times( 1 ) ).loadClass( any( Class.class ) );
   }
 }
