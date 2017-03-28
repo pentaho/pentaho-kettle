@@ -116,10 +116,12 @@ import org.pentaho.platform.repository2.unified.webservices.jaxws.IUnifiedReposi
  * @author Matt
  * @author mlowery
  */
+@SuppressWarnings( "deprecation" )
 @RepositoryPlugin( id = "PentahoEnterpriseRepository", name = "RepositoryType.Name.EnterpriseRepository",
     description = "RepositoryType.Description.EnterpriseRepository",
     metaClass = "org.pentaho.di.repository.pur.PurRepositoryMeta", i18nPackageName = "org.pentaho.di.repository.pur" )
-public class PurRepository extends AbstractRepository implements Repository, ReconnectableRepository, RepositoryExtended, java.io.Serializable {
+public class PurRepository extends AbstractRepository implements Repository, ReconnectableRepository,
+    RepositoryExtended, java.io.Serializable {
 
   private static final long serialVersionUID = 7460109109707189479L; /* EESOURCE: UPDATE SERIALVERUID */
 
@@ -574,18 +576,24 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
       boolean includeAcls )
     throws KettleException {
 
+    // First check for possibility of speedy algorithm
+    if ( filter == null && "/".equals( path ) && includeEmptyFolder ) {
+      return initRepositoryDirectoryTree( loadRepositoryFileTreeFolders( "/", -1, includeAcls, showHidden ) );
+    }
     //load count levels from root to destination path to load folder tree
     int fromRootToDest = StringUtils.countMatches( path, "/" );
     //create new root directory "/"
     RepositoryDirectory dir = new RepositoryDirectory();
     //fetch folder tree from root "/" to destination path for populate folder
-    RepositoryFileTree rootDirTree = loadRepositoryFileTree( "/", "*", fromRootToDest, showHidden, includeAcls, FILES_TYPE_FILTER.FOLDERS );
+    RepositoryFileTree rootDirTree =
+        loadRepositoryFileTree( "/", "*", fromRootToDest, showHidden, includeAcls, FILES_TYPE_FILTER.FOLDERS );
     //populate directory by folder tree
     fillRepositoryDirectoryFromTree( dir, rootDirTree );
 
     RepositoryDirectoryInterface destinationDir = dir.findDirectory( path );
     //search for goal path and filter
-    RepositoryFileTree repoTree = loadRepositoryFileTree( path, filter, depth, showHidden, includeAcls, FILES_TYPE_FILTER.FILES_FOLDERS );
+    RepositoryFileTree repoTree =
+        loadRepositoryFileTree( path, filter, depth, showHidden, includeAcls, FILES_TYPE_FILTER.FILES_FOLDERS );
     //populate the directory with founded files and subdirectories with files
     fillRepositoryDirectoryFromTree( destinationDir, repoTree );
 
@@ -3048,5 +3056,16 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
       return false;
     }
     return false;
+  }
+
+  private RepositoryFileTree loadRepositoryFileTreeFolders( String path, int depth, boolean includeAcls, boolean showHidden ) {
+    RepositoryRequest repoRequest = new RepositoryRequest();
+    repoRequest.setDepth( depth );
+    repoRequest.setIncludeAcls( includeAcls );
+    repoRequest.setChildNodeFilter( "*" );
+    repoRequest.setTypes( FILES_TYPE_FILTER.FOLDERS );
+    repoRequest.setPath( path );
+    repoRequest.setShowHidden( showHidden );
+    return pur.getTree( repoRequest );
   }
 }
