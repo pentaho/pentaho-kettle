@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -24,8 +24,8 @@ package org.pentaho.di.core.extension;
 import com.google.common.base.Supplier;
 import com.google.common.base.Suppliers;
 import com.google.common.collect.HashBasedTable;
-import com.google.common.collect.Maps;
 import com.google.common.collect.Table;
+import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.plugins.PluginInterface;
@@ -34,6 +34,7 @@ import org.pentaho.di.core.plugins.PluginTypeListener;
 
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 /**
  * This class maintains a map of ExtensionPointInterface object to its name.
@@ -45,6 +46,8 @@ public class ExtensionPointMap {
 
   private final PluginRegistry registry;
   private Table<String, String, Supplier<ExtensionPointInterface>> extensionPointPluginMap;
+
+  private ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
 
   private ExtensionPointMap( PluginRegistry pluginRegistry ) {
     this.registry = pluginRegistry;
@@ -75,6 +78,30 @@ public class ExtensionPointMap {
     }
   }
 
+  private void unlockForWrite( boolean wasWriteLockedByCurrentThread ) {
+    if ( !wasWriteLockedByCurrentThread ) {
+      lock.writeLock().unlock();
+    }
+    registry.getLock().writeLock().unlock();
+  }
+
+  private boolean lockForWrite() {
+    boolean wasWriteLockedByCurrentThread = false;
+    while ( true ) {
+      if ( lock.isWriteLockedByCurrentThread() ) {
+        lock.writeLock().unlock();
+        wasWriteLockedByCurrentThread = true;
+      }
+      if ( registry.getLock().writeLock().tryLock() ) {
+        if ( lock.writeLock().tryLock() ) {
+          return wasWriteLockedByCurrentThread;
+        } else {
+          registry.getLock().writeLock().unlock();
+        }
+      }
+    }
+  }
+
   public static ExtensionPointMap getInstance() {
     return INSTANCE;
   }
@@ -84,8 +111,13 @@ public class ExtensionPointMap {
    * 
    * @return
    */
-  public Map<String, Map<String, Supplier<ExtensionPointInterface>>> getMap() {
-    return extensionPointPluginMap.rowMap();
+  Map<String, Map<String, Supplier<ExtensionPointInterface>>> getMap() {
+    lock.readLock().lock();
+    try {
+      return extensionPointPluginMap.rowMap();
+    } finally {
+      lock.readLock().unlock();
+    }
   }
 
   /**
@@ -93,9 +125,14 @@ public class ExtensionPointMap {
    * 
    * @param extensionPointPlugin
    */
-  public void addExtensionPoint( PluginInterface extensionPointPlugin ) {
-    for ( String id : extensionPointPlugin.getIds() ) {
-      extensionPointPluginMap.put( extensionPointPlugin.getName(), id, createLazyLoader( extensionPointPlugin ) );
+  void addExtensionPoint( PluginInterface extensionPointPlugin ) {
+    boolean wasWriteLockedByCurrentThread = lockForWrite();
+    try {
+      for ( String id : extensionPointPlugin.getIds() ) {
+        extensionPointPluginMap.put( extensionPointPlugin.getName(), id, createLazyLoader( extensionPointPlugin ) );
+      }
+    } finally {
+      unlockForWrite( wasWriteLockedByCurrentThread );
     }
   }
 
@@ -104,37 +141,50 @@ public class ExtensionPointMap {
    * 
    * @param extensionPointPlugin
    */
-  public void removeExtensionPoint( PluginInterface extensionPointPlugin ) {
-    for ( String id : extensionPointPlugin.getIds() ) {
-      extensionPointPluginMap.remove( extensionPointPlugin.getName(), id );
+  void removeExtensionPoint( PluginInterface extensionPointPlugin ) {
+    boolean wasWriteLockedByCurrentThread = lockForWrite();
+    try {
+      for ( String id : extensionPointPlugin.getIds() ) {
+        extensionPointPluginMap.remove( extensionPointPlugin.getName(), id );
+      }
+    } finally {
+      unlockForWrite( wasWriteLockedByCurrentThread );
     }
-  }
-
-  /**
-   * Retrieves the
-   * 
-   * @param id
-   * @return
-   */
-  public Map<String, ExtensionPointInterface> get( String id ) {
-    return Maps.transformValues( extensionPointPluginMap.row( id ),
-      Suppliers.<ExtensionPointInterface>supplierFunction() );
   }
 
   /**
    * Reinitialize the extension point plugins map
    */
   public void reInitialize() {
-    extensionPointPluginMap = HashBasedTable.create();
-    final PluginRegistry registry = PluginRegistry.getInstance();
-    List<PluginInterface> extensionPointPlugins = registry.getPlugins( ExtensionPointPluginType.class );
-    for ( PluginInterface extensionPointPlugin : extensionPointPlugins ) {
-      addExtensionPoint( extensionPointPlugin );
+    boolean wasWriteLockedByCurrentThread = lockForWrite();
+    try {
+      extensionPointPluginMap = HashBasedTable.create();
+      final PluginRegistry registry = PluginRegistry.getInstance();
+      List<PluginInterface> extensionPointPlugins = registry.getPlugins( ExtensionPointPluginType.class );
+      for ( PluginInterface extensionPointPlugin : extensionPointPlugins ) {
+        addExtensionPoint( extensionPointPlugin );
+      }
+    } finally {
+      unlockForWrite( wasWriteLockedByCurrentThread );
     }
   }
 
   Supplier<ExtensionPointInterface> createLazyLoader( PluginInterface extensionPointPlugin ) {
     return Suppliers.memoize( new ExtensionPointLoader( extensionPointPlugin ) );
+  }
+
+  void callExtensionPoint( LogChannelInterface log, String id, Object object ) throws KettleException {
+    boolean wasWriteLockedByCurrentThread = lockForWrite();
+    try {
+      Map<String, Supplier<ExtensionPointInterface>> value = extensionPointPluginMap.rowMap().get( id );
+      if ( value != null ) {
+        for ( Supplier<ExtensionPointInterface> extensionPoint : value.values() ) {
+          extensionPoint.get().callExtensionPoint( log, object );
+        }
+      }
+    } finally {
+      unlockForWrite( wasWriteLockedByCurrentThread );
+    }
   }
 
   private class ExtensionPointLoader implements Supplier<ExtensionPointInterface> {
