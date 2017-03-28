@@ -4132,6 +4132,7 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
               RepositoryOperation.EXECUTE_TRANSFORMATION );
         } catch ( KettleRepositoryLostException krle ) {
           log.logError( krle.getLocalizedMessage() );
+          spoon.handleRepositoryLost( krle );
         }
 
         // Start/Run button...

@@ -3297,9 +3297,12 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
 
   public boolean tabClose( TabItem item, boolean force ) {
     try {
-      return delegates.tabs.tabClose( item, force );
-    } catch ( KettleRepositoryLostException e ) {
-      handleRepositoryLost( e );
+      try {
+        return delegates.tabs.tabClose( item, force );
+      } catch ( KettleRepositoryLostException e ) {
+        handleRepositoryLost( e );
+        return delegates.tabs.tabClose( item, force );
+      }
     } catch ( Exception e ) {
       new ErrorDialog( shell, "Error", "Unexpected error closing tab!", e );
     }
@@ -5168,7 +5171,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
         }
       }
 
-      if ( answer && !Utils.isEmpty( meta.getName() ) ) {
+      if ( answer && !Utils.isEmpty( meta.getName() ) && rep != null ) {
 
         int response = SWT.YES;
 
@@ -6347,18 +6350,23 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
 
     DatabasesCollector collector = new DatabasesCollector( meta, rep );
     try {
-      collector.collectDatabases();
+      try {
+        collector.collectDatabases();
+      } catch ( KettleException e ) {
+        if ( e.getCause() instanceof KettleRepositoryLostException ) {
+          handleRepositoryLost( (KettleRepositoryLostException) e.getCause() );
+          collector = new DatabasesCollector( meta, null );
+          collector.collectDatabases();
+        } else {
+          throw e;
+        }
+      }
     } catch ( KettleException e ) {
-      if ( e.getCause() instanceof KettleRepositoryLostException ) {
-        handleRepositoryLost( (KettleRepositoryLostException) e.getCause() );
-      } else {
-        new ErrorDialog( shell,
+      new ErrorDialog( shell,
           BaseMessages.getString( PKG, "Spoon.ErrorDialog.Title" ),
           BaseMessages.getString( PKG, "Spoon.ErrorDialog.ErrorFetchingFromRepo.DbConnections" ),
           e
         );
-      }
-      return;
     }
 
     for ( String dbName : collector.getDatabaseNames() ) {
@@ -6374,21 +6382,19 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     }
   }
 
-  private void handleRepositoryLost( KettleRepositoryLostException e ) {
-    if ( closeRepositoryLost( e ) ) {
-      setRepository( null );
-      SpoonPluginManager.getInstance().notifyLifecycleListeners( SpoonLifeCycleEvent.REPOSITORY_DISCONNECTED );
-      setShellText();
-      enableMenus();
-    }
+  public void handleRepositoryLost( KettleRepositoryLostException e ) {
+    setRepository( null );
+    warnRepositoryLost( e );
+    SpoonPluginManager.getInstance().notifyLifecycleListeners( SpoonLifeCycleEvent.REPOSITORY_DISCONNECTED );
+    setShellText();
+    enableMenus();
   }
 
-  private boolean closeRepositoryLost( KettleRepositoryLostException e ) {
-    MessageBox box = new MessageBox( shell, SWT.OK | SWT.CANCEL );
+  private void warnRepositoryLost( KettleRepositoryLostException e ) {
+    MessageBox box = new MessageBox( shell, SWT.OK | SWT.ICON_WARNING );
     box.setText( BaseMessages.getString( PKG, "System.Warning" ) );
     box.setMessage( e.getPrefaceMessage() );
-    int result = box.open();
-    return result == SWT.OK;
+    box.open();
   }
 
   private void refreshStepsSubtree( TreeItem tiRootName, TransMeta meta, GUIResource guiResource ) {
@@ -6825,7 +6831,11 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
       filename = meta.getFilename();
       name = meta.getName();
       version = meta.getObjectRevision() == null ? null : meta.getObjectRevision().getName();
-      versioningEnabled = isVersionEnabled( rep, meta );
+      try {
+        versioningEnabled = isVersionEnabled( rep, meta );
+      } catch ( KettleRepositoryLostException krle ) {
+        handleRepositoryLost( krle );
+      }
     }
 
     String text = "";
