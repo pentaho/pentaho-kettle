@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -367,11 +367,7 @@ public final class Wsdl implements java.io.Serializable {
   private Definition parse( URI wsdlURI, String username, String password ) throws WSDLException, KettleException,
     AuthenticationException {
     WSDLReader wsdlReader = getReader();
-    try {
-      return wsdlReader.readWSDL( wsdlURI.toString() );
-    } catch ( WSDLException we ) {
-      return readWsdl( wsdlReader, wsdlURI.toString(), username, password );
-    }
+    return readWsdl( wsdlReader, wsdlURI.toString(), username, password );
   }
 
   private Definition readWsdl( WSDLReader wsdlReader, String uri, String username, String password ) throws WSDLException, KettleException, AuthenticationException {
