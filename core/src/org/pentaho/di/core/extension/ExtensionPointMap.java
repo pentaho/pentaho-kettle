@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -90,7 +90,10 @@ public class ExtensionPointMap {
 
   /**
    * Add the extension point plugin to the map
-   * 
+   *
+   * Warning: Do not call this method directly through ExtensionPointMap, it may lead to concurrency problems. Call
+   * PluginRegistry.getInstance().registerPlugin() instead.
+   *
    * @param extensionPointPlugin
    */
   public void addExtensionPoint( PluginInterface extensionPointPlugin ) {
@@ -101,6 +104,9 @@ public class ExtensionPointMap {
 
   /**
    * Remove the extension point plugin from the map
+   *
+   * Warning: Do not call this method directly through ExtensionPointMap, it may lead to concurrency problems. Call
+   * PluginRegistry.getInstance().registerPlugin() instead.
    * 
    * @param extensionPointPlugin
    */
