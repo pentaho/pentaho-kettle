@@ -818,16 +818,6 @@ public class SpoonTransformationDelegate extends SpoonDelegate {
         //
         return;
       }
-    } else {
-      if ( transMeta.findFirstUsedClusterSchema() != null ) {
-        executionConfiguration.setExecutingLocally( false );
-        executionConfiguration.setExecutingRemotely( false );
-        executionConfiguration.setExecutingClustered( true );
-      } else {
-        executionConfiguration.setExecutingLocally( true );
-        executionConfiguration.setExecutingRemotely( false );
-        executionConfiguration.setExecutingClustered( false );
-      }
     }
 
     Object[] data = spoon.variables.getData();
@@ -862,6 +852,9 @@ public class SpoonTransformationDelegate extends SpoonDelegate {
       ExtensionPointHandler.callExtensionPoint( log, KettleExtensionPoint.SpoonTransMetaExecutionStart.id, transMeta );
       ExtensionPointHandler.callExtensionPoint( log, KettleExtensionPoint.SpoonTransExecutionConfiguration.id,
           executionConfiguration );
+      ExtensionPointHandler.callExtensionPoint( log, KettleExtensionPoint.SpoonTransBeforeStart.id, new Object[] {
+        executionConfiguration, transMeta, transMeta
+      } );
 
       // Verify if there is at least one step specified to debug or preview...
       //

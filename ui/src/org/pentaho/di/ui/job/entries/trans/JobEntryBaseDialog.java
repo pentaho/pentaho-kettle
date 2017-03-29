@@ -97,6 +97,8 @@ public abstract class JobEntryBaseDialog extends JobEntryDialog {
 
   protected Composite typeComposite;
 
+  protected Composite wOptions;
+
   protected Group gEnvironmentType;
 
   protected Label wlName;
@@ -175,6 +177,8 @@ public abstract class JobEntryBaseDialog extends JobEntryDialog {
   protected Display display;
 
   protected Text wByReference;
+
+  protected FormData fdgExecution;
 
   protected ObjectId referenceObjectId;
   protected ObjectLocationSpecificationMethod specificationMethod;
@@ -262,7 +266,7 @@ public abstract class JobEntryBaseDialog extends JobEntryDialog {
     CTabItem wOptionsTab = new CTabItem( wTabFolder, SWT.NONE );
     wOptionsTab.setText( BaseMessages.getString( PKG, "JobTrans.Options.Group.Label" ) );
 
-    Composite wOptions = new Composite( wTabFolder, SWT.SHADOW_NONE );
+    wOptions = new Composite( wTabFolder, SWT.SHADOW_NONE );
     props.setLook( wOptions );
 
     FormLayout specLayout = new FormLayout();
@@ -388,7 +392,7 @@ public abstract class JobEntryBaseDialog extends JobEntryDialog {
     gExecutionLayout.marginHeight = 15;
     gExecution.setLayout( gExecutionLayout );
 
-    FormData fdgExecution = new FormData();
+    fdgExecution = new FormData();
     fdgExecution.top = new FormAttachment( gEnvironmentType, 10 );
     fdgExecution.left = new FormAttachment( 0, 0 );
     fdgExecution.right = new FormAttachment( 100, 0 );

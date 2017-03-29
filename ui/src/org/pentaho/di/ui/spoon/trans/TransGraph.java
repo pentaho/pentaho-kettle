@@ -4999,7 +4999,12 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
    * if an alternate execution engine has been selected
    * 2)  A legacy {@link Trans} otherwise.
    */
-  private Trans createTrans() {
+  private Trans createTrans() throws KettleException {
+    if ( Utils.isEmpty( transMeta.getVariable( "engine" ) ) ) {
+      log.logBasic( "Using legacy execution engine" );
+      return createLegacyTrans();
+    }
+
     return PluginRegistry.getInstance().getPlugins( EnginePluginType.class ).stream()
       .filter( useThisEngine() )
       .findFirst()
@@ -5008,10 +5013,7 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
         log.logBasic( "Using execution engine " + engine.getClass().getCanonicalName() );
         return (Trans) new TransEngineAdapter( engine, transMeta );
       } )
-      .orElseGet( () -> {
-        log.logBasic( "Using legacy execution engine" );
-        return createLegacyTrans();
-      } );
+      .orElseThrow( () -> new KettleException( "Unable to find engine [" + transMeta.getVariable( "engine" ) + "]" ) );
   }
 
   /**

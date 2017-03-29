@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,14 +22,8 @@
 
 package org.pentaho.di.ui.trans.dialog;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CCombo;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
@@ -38,9 +32,12 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TableItem;
-import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.extension.ExtensionPointHandler;
+import org.pentaho.di.core.extension.KettleExtensionPoint;
 import org.pentaho.di.core.logging.LogLevel;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.TransExecutionConfiguration;
 import org.pentaho.di.trans.TransMeta;
@@ -49,15 +46,14 @@ import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.spoon.Spoon;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 public class TransExecutionConfigurationDialog extends ConfigurationDialog {
   private static Class<?> PKG = TransExecutionConfigurationDialog.class; // for i18n purposes, needed by Translator2!!
 
-  private Button wExecCluster;
-  private FormData fdExecCluster;
-  private FormData fdExecClusterComposite;
-  private Composite clusteredOptionsComposite;
-  private Composite execClusterComposite;
-  private Button showDialogRunCheckbox;
+  private CCombo wRunConfiguration;
 
   public TransExecutionConfigurationDialog( Shell parent, TransExecutionConfiguration configuration,
     TransMeta transMeta ) {
@@ -65,63 +61,7 @@ public class TransExecutionConfigurationDialog extends ConfigurationDialog {
   }
 
   protected void serverOptionsComposite( Class<?> PKG, String prefix ) {
-    wlRemoteHost = new Label( serverOptionsComposite, SWT.NONE );
-    props.setLook( wlRemoteHost );
-    wlRemoteHost.setText( BaseMessages.getString( PKG, prefix + ".RemoteHost.Label" ) );
-    wlRemoteHost.setToolTipText( BaseMessages.getString( PKG, prefix + ".RemoteHost.Tooltip" ) );
-    FormData fdlRemoteHost = new FormData();
-    fdlRemoteHost.top = new FormAttachment( 0, 10 );
-    fdlRemoteHost.left = new FormAttachment( environmentSeparator, 5 );
-    wlRemoteHost.setLayoutData( fdlRemoteHost );
 
-    wRemoteHost = new CCombo( serverOptionsComposite, SWT.BORDER );
-    wRemoteHost.setToolTipText( BaseMessages.getString( PKG, prefix + ".RemoteHost.Tooltip" ) );
-    props.setLook( wRemoteHost );
-    FormData fdRemoteHost = new FormData();
-    fdRemoteHost.left = new FormAttachment( wlRemoteHost, 0, SWT.LEFT );
-    fdRemoteHost.width = 170;
-    fdRemoteHost.top = new FormAttachment( wlRemoteHost, 8 );
-    wRemoteHost.setLayoutData( fdRemoteHost );
-    for ( int i = 0; i < abstractMeta.getSlaveServers().size(); i++ ) {
-      SlaveServer slaveServer = abstractMeta.getSlaveServers().get( i );
-      wRemoteHost.add( slaveServer.toString() );
-    }
-
-    wPassExport = new Button( serverOptionsComposite, SWT.CHECK );
-    wPassExport.setText( BaseMessages.getString( PKG, prefix + ".PassExport.Label" ) );
-    wPassExport.setToolTipText( BaseMessages.getString( PKG, prefix + ".PassExport.Tooltip" ) );
-    props.setLook( wPassExport );
-    FormData fdPassExport = new FormData();
-    fdPassExport.left = new FormAttachment( wRemoteHost, 0, SWT.LEFT );
-    fdPassExport.top = new FormAttachment( wRemoteHost, 8 );
-    wPassExport.setLayoutData( fdPassExport );
-  }
-
-  protected void clusteredOptionsComposite() {
-
-    Label clusterDescriptionLabel = new Label( clusteredOptionsComposite, SWT.NONE );
-    props.setLook( clusterDescriptionLabel );
-    clusterDescriptionLabel.setText( BaseMessages.getString( PKG,
-        "TransExecutionConfigurationDialog.ClusterDescription.Label" ) );
-    FormData fd_clusterDescriptionLabel = new FormData();
-    fd_clusterDescriptionLabel.top = new FormAttachment( 0, 12 );
-    if ( Const.isOSX() ) {
-      fd_clusterDescriptionLabel.top = new FormAttachment( 0, 10 );
-    }
-    fd_clusterDescriptionLabel.left = new FormAttachment( environmentSeparator, 5 );
-    clusterDescriptionLabel.setLayoutData( fd_clusterDescriptionLabel );
-
-    showDialogRunCheckbox = new Button( clusteredOptionsComposite, SWT.CHECK );
-    props.setLook( showDialogRunCheckbox );
-    FormData fd_resroucesCheckBox = new FormData();
-    fd_resroucesCheckBox.top = new FormAttachment( clusterDescriptionLabel, 10 );
-    if ( Const.isOSX() ) {
-      fd_resroucesCheckBox.top = new FormAttachment( clusterDescriptionLabel, 8 );
-    }
-    fd_resroucesCheckBox.left = new FormAttachment( clusterDescriptionLabel, 0, SWT.LEFT );
-    showDialogRunCheckbox.setLayoutData( fd_resroucesCheckBox );
-    showDialogRunCheckbox.setText( BaseMessages.getString( PKG,
-        "TransExecutionConfigurationDialog.ShowTransformations.Label" ) );
   }
 
   protected void optionsSectionControls() {
@@ -177,63 +117,38 @@ public class TransExecutionConfigurationDialog extends ConfigurationDialog {
   public boolean open() {
 
     mainLayout( PKG, "TransExecutionConfigurationDialog", GUIResource.getInstance().getImageTransGraph() );
-    environmentTypeSectionLayout( PKG, "TransExecutionConfigurationDialog" );
 
-    TransMeta transMeta = (TransMeta) abstractMeta;
+    Composite cRunConfiguration = new Composite( shell, SWT.NONE );
+    cRunConfiguration.setLayout( new FormLayout() );
+    props.setLook( cRunConfiguration );
+    FormData fdLocal = new FormData();
+    fdLocal.top = new FormAttachment( 0, 15 );
+    fdLocal.right = new FormAttachment( 100, -15 );
+    fdLocal.left = new FormAttachment( 0, 15 );
 
-    // Check for cluster environment to enable/disable button
-    if ( transMeta.getClusterSchemas() == null || transMeta.getClusterSchemas().size() == 0 ) {
-      execClusterComposite = new Composite( gLocal, SWT.NONE );
-      execClusterComposite.setLayout( new FormLayout() );
-      execClusterComposite.setToolTipText( BaseMessages.getString( PKG,
-          "TransExecutionConfigurationDialog.ExecCluster.DisabledTooltip" ) );
-      props.setLook( execClusterComposite );
-      fdExecClusterComposite = new FormData();
-      fdExecClusterComposite.left = new FormAttachment( wExecLocal, 0, SWT.LEFT );
-      if ( abstractMeta.getSlaveServers() == null || abstractMeta.getSlaveServers().size() == 0 ) {
-        fdExecClusterComposite.top = new FormAttachment( composite, 7 );
-      } else {
-        fdExecClusterComposite.top = new FormAttachment( wExecRemote, 7 );
-      }
-      execClusterComposite.setLayoutData( fdExecClusterComposite );
+    cRunConfiguration.setBackground( shell.getBackground() ); // the default looks ugly
+    cRunConfiguration.setLayoutData( fdLocal );
 
-      wExecCluster = new Button( execClusterComposite, SWT.RADIO );
-      wExecCluster.setText( BaseMessages.getString( PKG, "TransExecutionConfigurationDialog.ExecCluster.Label" ) );
-      props.setLook( wExecCluster );
-      wExecCluster.setEnabled( false );
-      fdExecCluster = new FormData();
-      fdExecCluster.top = new FormAttachment( 0 );
-      wExecCluster.setLayoutData( fdExecCluster );
-    } else {
-      wExecCluster = new Button( gLocal, SWT.RADIO );
-      wExecCluster.setText( BaseMessages.getString( PKG, "TransExecutionConfigurationDialog.ExecCluster.Label" ) );
-      wExecCluster.setToolTipText( BaseMessages
-          .getString( PKG, "TransExecutionConfigurationDialog.ExecCluster.Tooltip" ) );
-      props.setLook( wExecCluster );
-      fdExecCluster = new FormData();
-      fdExecCluster.left = new FormAttachment( 0, 10 );
-      if ( abstractMeta.getSlaveServers() == null || abstractMeta.getSlaveServers().size() == 0 ) {
-        fdExecCluster.top = new FormAttachment( composite, 7 );
-      } else {
-        fdExecCluster.top = new FormAttachment( wExecRemote, 7 );
-      }
-      wExecCluster.setLayoutData( fdExecCluster );
-      wExecCluster.addSelectionListener( new SelectionAdapter() {
-        public void widgetSelected( SelectionEvent e ) {
-          stackedLayout.topControl = clusteredOptionsComposite;
-          stackedLayoutComposite.layout();
-        }
-      } );
-    }
+    Label wlRunConfiguration = new Label( cRunConfiguration, SWT.LEFT );
+    props.setLook( wlRunConfiguration );
+    wlRunConfiguration.setText( "Run configuration:" );
+    FormData fdlRunConfiguration = new FormData();
+    fdlRunConfiguration.top = new FormAttachment( 0 );
+    fdlRunConfiguration.left = new FormAttachment( 0 );
+    wlRunConfiguration.setLayoutData( fdlRunConfiguration );
 
-    clusteredOptionsComposite = new Composite( stackedLayoutComposite, SWT.NONE );
-    clusteredOptionsComposite.setLayout( new FormLayout() );
-    props.setLook( clusteredOptionsComposite );
-
-    clusteredOptionsComposite();
+    wRunConfiguration = new CCombo( cRunConfiguration, SWT.BORDER );
+    props.setLook( wRunConfiguration );
+    FormData fdRunConfiguration = new FormData();
+    fdRunConfiguration.width = 200;
+    fdRunConfiguration.top = new FormAttachment( wlRunConfiguration, 5 );
+    fdRunConfiguration.left = new FormAttachment( 0 );
+    wRunConfiguration.setLayoutData( fdRunConfiguration );
 
     optionsSectionLayout( PKG, "TransExecutionConfigurationDialog" );
     parametersSectionLayout( PKG, "TransExecutionConfigurationDialog" );
+
+    fdDetails.top = new FormAttachment( cRunConfiguration, 15 );
 
     String docUrl =
         Const.getDocUrl( BaseMessages.getString( Spoon.class, "Spoon.TransExecutionConfigurationDialog.Help" ) );
@@ -268,26 +183,25 @@ public class TransExecutionConfigurationDialog extends ConfigurationDialog {
   }
 
   public void getData() {
-
-    wExecLocal.setSelection( configuration.isExecutingLocally() );
-    if ( configuration.isExecutingLocally() ) {
-      stackedLayout.topControl = localOptionsComposite;
-    }
-    wExecRemote.setSelection( configuration.isExecutingRemotely() );
-    if ( configuration.isExecutingRemotely() ) {
-      stackedLayout.topControl = serverOptionsComposite;
-    }
-    wExecCluster.setSelection( getConfiguration().isExecutingClustered() );
-    if ( getConfiguration().isExecutingClustered() ) {
-      stackedLayout.topControl = clusteredOptionsComposite;
-    }
-
     wSafeMode.setSelection( configuration.isSafeModeEnabled() );
     wClearLog.setSelection( configuration.isClearingLog() );
-    wRemoteHost.setText( configuration.getRemoteServer() == null ? "" : configuration.getRemoteServer().toString() );
-    wPassExport.setSelection( configuration.isPassingExport() );
     wGatherMetrics.setSelection( configuration.isGatheringMetrics() );
-    showDialogRunCheckbox.setSelection( getConfiguration().isClusterShowingTransformation() );
+
+    List<String> runConfigurations = new ArrayList<>();
+    try {
+      ExtensionPointHandler
+        .callExtensionPoint( Spoon.getInstance().getLog(), KettleExtensionPoint.SpoonRunConfiguration.id,
+          runConfigurations );
+    } catch ( KettleException e ) {
+      // Ignore errors
+    }
+
+    wRunConfiguration.setItems( runConfigurations.toArray( new String[ 0 ] ) );
+    if ( Utils.isEmpty( getConfiguration().getRunConfiguration() ) ) {
+      wRunConfiguration.select( 0 );
+    } else {
+      wRunConfiguration.setText( getConfiguration().getRunConfiguration() );
+    }
 
     wLogLevel.select( configuration.getLogLevel().getLevel() );
     getParamsData();
@@ -297,28 +211,7 @@ public class TransExecutionConfigurationDialog extends ConfigurationDialog {
   public void getInfo() {
     try {
       configuration.setReplayDate( null ); // removed from new execution dialog.
-      configuration.setExecutingLocally( wExecLocal.getSelection() );
-      configuration.setExecutingRemotely( wExecRemote.getSelection() );
-      getConfiguration().setExecutingClustered( wExecCluster.getSelection() );
-
-      // Local data
-      // --> preview handled in debug transformation meta dialog
-
-      // Remote data
-      if ( wExecRemote.getSelection() ) {
-        String serverName = wRemoteHost.getText();
-        configuration.setRemoteServer( abstractMeta.findSlaveServer( serverName ) );
-        configuration.setPassingExport( wPassExport.getSelection() );
-      }
-      if ( wExecCluster.getSelection() ) {
-        getConfiguration().setClusterShowingTransformation( showDialogRunCheckbox.getSelection() );
-      }
-
-      // Clustering data
-      getConfiguration().setClusterPosting( wExecCluster.getSelection() ? true : false );
-      getConfiguration().setClusterPreparing( wExecCluster.getSelection() ? true : false );
-      getConfiguration().setClusterStarting( wExecCluster.getSelection() ? true : false );
-      getConfiguration().setClusterShowingTransformation( wExecCluster.getSelection() ? true : false );
+      getConfiguration().setRunConfiguration( wRunConfiguration.getText() );
 
       configuration.setSafeModeEnabled( wSafeMode.getSelection() );
       configuration.setClearingLog( wClearLog.getSelection() );

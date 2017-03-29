@@ -26,6 +26,7 @@
   <modules>
     <module>api</module>
     <module>serializers</module>
+    <module>configuration</module>
   </modules>
 
 </project>

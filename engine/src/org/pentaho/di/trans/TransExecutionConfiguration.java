@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -93,6 +93,9 @@ public class TransExecutionConfiguration implements ExecutionConfiguration {
   private String logFileName;
   private boolean createParentFolder;
   private Long passedBatchId;
+
+  private String runConfiguration;
+  private boolean logRemoteExecutionLocally;
 
   public TransExecutionConfiguration() {
     executingLocally = true;
@@ -523,6 +526,7 @@ public class TransExecutionConfiguration implements ExecutionConfiguration {
     if ( passedBatchId != null ) {
       xml.append( "    " ).append( XMLHandler.addTagValue( "passedBatchId", passedBatchId ) );
     }
+    xml.append( "    " ).append( XMLHandler.addTagValue( "run_configuration", runConfiguration ) );
 
     // The source rows...
     //
@@ -622,6 +626,7 @@ public class TransExecutionConfiguration implements ExecutionConfiguration {
     if ( !StringUtils.isEmpty( sPassedBatchId ) ) {
       passedBatchId = Long.parseLong( sPassedBatchId );
     }
+    runConfiguration = XMLHandler.getTagValue( trecNode, "run_configuration" );
 
     Node resultNode = XMLHandler.getSubNode( trecNode, Result.XML_TAG );
     if ( resultNode != null ) {
@@ -837,4 +842,19 @@ public class TransExecutionConfiguration implements ExecutionConfiguration {
     this.passedBatchId = passedBatchId;
   }
 
+  public String getRunConfiguration() {
+    return runConfiguration;
+  }
+
+  public void setRunConfiguration( String runConfiguration ) {
+    this.runConfiguration = runConfiguration;
+  }
+
+  public boolean isLogRemoteExecutionLocally() {
+    return logRemoteExecutionLocally;
+  }
+
+  public void setLogRemoteExecutionLocally( boolean logRemoteExecutionLocally ) {
+    this.logRemoteExecutionLocally = logRemoteExecutionLocally;
+  }
 }
