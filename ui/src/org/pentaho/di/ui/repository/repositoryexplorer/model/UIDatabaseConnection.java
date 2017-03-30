@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -68,7 +68,7 @@ public class UIDatabaseConnection extends XulEventSourceAdapter {
   }
 
   public String getDateModified() {
-    if ( repoElementMeta == null ) {
+    if ( repoElementMeta == null || ( repoElementMeta.getModifiedDate() == null ) ) {
       return null;
     }
     SimpleDateFormat sdf = new SimpleDateFormat( "d MMM yyyy HH:mm:ss z" );
