@@ -17,6 +17,7 @@
   <modules>
     <module>repositories-plugin</module>
     <module>meta-inject-plugin</module>
+    <module>pdi-engine-configuration</module>
   </modules>
   
 </project>
