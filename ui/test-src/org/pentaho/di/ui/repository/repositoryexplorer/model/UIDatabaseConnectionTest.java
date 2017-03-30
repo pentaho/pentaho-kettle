@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -70,5 +70,18 @@ public class UIDatabaseConnectionTest {
 
     uiconn.setRepositoryElementMetaInterface( repoMeta );
     assertEquals( sdf.format( new Date( timestamp ) ), uiconn.getDateModified() );
+  }
+
+  @Test
+  public void testModifiedDateIsNull() {
+    final Long timestamp = 100000L;
+    SimpleDateFormat sdf = new SimpleDateFormat( "d MMM yyyy HH:mm:ss z" );
+
+    UIDatabaseConnection uiconn = new UIDatabaseConnection();
+    RepositoryElementMetaInterface repoMeta = mock( RepositoryElementMetaInterface.class );
+    when( repoMeta.getModifiedDate() ).thenReturn( null );
+
+    uiconn.setRepositoryElementMetaInterface( repoMeta );
+    assertEquals( null, uiconn.getDateModified() );
   }
 }
