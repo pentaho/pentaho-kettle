@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -61,7 +61,8 @@ public enum KettleExtensionPoint {
       "Spoon initiates the execution of a trans (TransMeta)" ),
     SpoonTransExecutionConfiguration( "SpoonTransExecutionConfiguration",
       "Right before Spoon configuration of transformation to be executed takes place" ),
-
+    SpoonTransBeforeStart( "SpoonTransBeforeStart", "Right before the transformation is started" ),
+    SpoonRunConfiguration( "SpoonRunConfiguration", "Send the run configuration" ),
     JobStart( "JobStart", "A job starts" ),
     JobHeartbeat( "JobHeartbeat", "A signal sent at regular intervals to indicate that the job is still active" ),
     JobFinish( "JobFinish", "A job finishes" ),

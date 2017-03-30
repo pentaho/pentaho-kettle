@@ -23,6 +23,7 @@
 package org.pentaho.di.ui.job.entries.trans;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.ShellAdapter;
@@ -41,6 +42,8 @@ import org.eclipse.swt.widgets.TableItem;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.ObjectLocationSpecificationMethod;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.extension.ExtensionPointHandler;
+import org.pentaho.di.core.extension.KettleExtensionPoint;
 import org.pentaho.di.core.logging.LogLevel;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.vfs.KettleVFS;
@@ -65,6 +68,8 @@ import org.pentaho.di.ui.trans.step.BaseStepDialog;
 import org.pentaho.di.ui.util.SwtSvgImageUtil;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * This dialog allows you to edit the transformation job entry (JobEntryTrans)
@@ -76,6 +81,7 @@ public class JobEntryTransDialog extends JobEntryBaseDialog implements JobEntryD
   private static Class<?> PKG = JobEntryTrans.class; // for i18n purposes, needed by Translator2!!
 
   protected JobEntryTrans jobEntry;
+  protected CCombo wRunConfiguration;
 
   private static final String[] FILE_FILTERLOGNAMES = new String[] {
     BaseMessages.getString( PKG, "JobTrans.Fileformat.TXT" ),
@@ -132,60 +138,6 @@ public class JobEntryTransDialog extends JobEntryBaseDialog implements JobEntryD
     wlDescription.setText( BaseMessages.getString( PKG, "JobTrans.Local.Label" ) );
     wPassParams.setText( BaseMessages.getString( PKG, "JobTrans.PassAllParameters.Label" ) );
 
-    wCluster = new Button( typeComposite, SWT.RADIO );
-    props.setLook( wCluster );
-    wCluster.setText( BaseMessages.getString( PKG, "JobTrans.Clustered.Option.Label" ) );
-    FormData fdbClustered = new FormData();
-    fdbClustered.left = new FormAttachment( 0, 0 );
-    fdbClustered.top = new FormAttachment( wbServer, 10 );
-    wCluster.setLayoutData( fdbClustered );
-    wCluster.addSelectionListener( new SelectionAdapter() {
-      public void widgetSelected( SelectionEvent e ) {
-        setRadioButtons();
-      }
-    } );
-
-    // Start Server Section
-    wWaitingToFinish = new Button( wServer, SWT.CHECK );
-    props.setLook( wWaitingToFinish );
-    wWaitingToFinish.setText( BaseMessages.getString( PKG, "JobTrans.WaitToFinish.Label" ) );
-    FormData fdWait = new FormData();
-    fdWait.top = new FormAttachment( wSlaveServer, 10 );
-    fdWait.left = new FormAttachment( 0, 0 );
-    wWaitingToFinish.setLayoutData( fdWait );
-
-    wFollowingAbortRemotely = new Button( wServer, SWT.CHECK );
-    props.setLook( wFollowingAbortRemotely );
-    wFollowingAbortRemotely.setText( BaseMessages.getString( PKG, "JobTrans.AbortRemote.Label" ) );
-    FormData fdFollow = new FormData();
-    fdFollow.top = new FormAttachment( wWaitingToFinish, 10 );
-    fdFollow.left = new FormAttachment( 0, 0 );
-    wFollowingAbortRemotely.setLayoutData( fdFollow );
-    // End Server Section
-
-    // Start Clustered Section
-    wClustered = new Composite( gEnvironmentType, SWT.NONE );
-    props.setLook( wClustered );
-    wClustered.setVisible( false );
-    FormLayout flwClustered = new FormLayout();
-    flwClustered.marginWidth = 0;
-    flwClustered.marginHeight = 0;
-    wClustered.setLayout( flwClustered );
-
-    FormData fdwClustered = new FormData();
-    fdwClustered.left = new FormAttachment( vSpacer, 30 );
-    fdwClustered.top = new FormAttachment( 0, 0 );
-    wClustered.setLayoutData( fdwClustered );
-
-    Label wlClusteredDescription = new Label( wClustered, SWT.LEFT );
-    props.setLook( wlClusteredDescription );
-    wlClusteredDescription.setText( BaseMessages.getString( PKG, "JobTrans.Clustered.Label" ) );
-    wlClusteredDescription.setVisible( true );
-    FormData fdlClusteredDescription = new FormData();
-    fdlClusteredDescription.top = new FormAttachment( 0, 0 );
-    fdlClusteredDescription.left = new FormAttachment( 0, 0 );
-    wlClusteredDescription.setLayoutData( fdlClusteredDescription );
-
     wClearRows = new Button( gExecution, SWT.CHECK );
     props.setLook( wClearRows );
     wClearRows.setText( BaseMessages.getString( PKG, "JobTrans.ClearResultList.Label" ) );
@@ -202,14 +154,52 @@ public class JobEntryTransDialog extends JobEntryBaseDialog implements JobEntryD
     fdbClearFiles.top = new FormAttachment( wClearRows, 10 );
     wClearFiles.setLayoutData( fdbClearFiles );
 
-    wLogRemoteWork = new Button( wClustered, SWT.CHECK );
-    props.setLook( wLogRemoteWork );
-    wLogRemoteWork.setText( BaseMessages.getString( PKG, "JobTrans.LogRemoteWork.Label" ) );
-    FormData fdLogRemote = new FormData();
-    fdLogRemote.top = new FormAttachment( wlClusteredDescription, 10 );
-    fdLogRemote.left = new FormAttachment( 0, 0 );
-    wLogRemoteWork.setLayoutData( fdLogRemote );
-    // End Clustered Section
+    wWaitingToFinish = new Button( gExecution, SWT.CHECK );
+    props.setLook( wWaitingToFinish );
+    wWaitingToFinish.setText( BaseMessages.getString( PKG, "JobTrans.WaitToFinish.Label" ) );
+    FormData fdWait = new FormData();
+    fdWait.top = new FormAttachment( wClearFiles, 10 );
+    fdWait.left = new FormAttachment( 0, 0 );
+    wWaitingToFinish.setLayoutData( fdWait );
+
+    wFollowingAbortRemotely = new Button( gExecution, SWT.CHECK );
+    props.setLook( wFollowingAbortRemotely );
+    wFollowingAbortRemotely.setText( BaseMessages.getString( PKG, "JobTrans.AbortRemote.Label" ) );
+    FormData fdFollow = new FormData();
+    fdFollow.top = new FormAttachment( wWaitingToFinish, 10 );
+    fdFollow.left = new FormAttachment( 0, 0 );
+    wFollowingAbortRemotely.setLayoutData( fdFollow );
+
+    gEnvironmentType.setVisible( false );
+
+    Composite cRunConfiguration = new Composite( wOptions, SWT.NONE );
+    cRunConfiguration.setLayout( new FormLayout() );
+    props.setLook( cRunConfiguration );
+    FormData fdLocal = new FormData();
+    fdLocal.top = new FormAttachment( 0 );
+    fdLocal.right = new FormAttachment( 100 );
+    fdLocal.left = new FormAttachment( 0 );
+
+    cRunConfiguration.setBackground( shell.getBackground() ); // the default looks ugly
+    cRunConfiguration.setLayoutData( fdLocal );
+
+    Label wlRunConfiguration = new Label( cRunConfiguration, SWT.LEFT );
+    props.setLook( wlRunConfiguration );
+    wlRunConfiguration.setText( "Run configuration:" );
+    FormData fdlRunConfiguration = new FormData();
+    fdlRunConfiguration.top = new FormAttachment( 0 );
+    fdlRunConfiguration.left = new FormAttachment( 0 );
+    wlRunConfiguration.setLayoutData( fdlRunConfiguration );
+
+    wRunConfiguration = new CCombo( cRunConfiguration, SWT.BORDER );
+    props.setLook( wRunConfiguration );
+    FormData fdRunConfiguration = new FormData();
+    fdRunConfiguration.width = 200;
+    fdRunConfiguration.top = new FormAttachment( wlRunConfiguration, 5 );
+    fdRunConfiguration.left = new FormAttachment( 0 );
+    wRunConfiguration.setLayoutData( fdRunConfiguration );
+
+    fdgExecution.top = new FormAttachment( cRunConfiguration, 10 );
 
     wbGetParams.addSelectionListener( new SelectionAdapter() {
       @Override
@@ -443,17 +433,6 @@ public class JobEntryTransDialog extends JobEntryBaseDialog implements JobEntryD
     wAddTime.setSelection( jobEntry.addTime );
     wClearRows.setSelection( jobEntry.clearResultRows );
     wClearFiles.setSelection( jobEntry.clearResultFiles );
-    if ( jobEntry.isClustering() ) {
-      wCluster.setSelection( true );
-    } else if ( jobEntry.getRemoteSlaveServerName() != null && !Utils.isEmpty( jobEntry.getRemoteSlaveServerName() ) ) {
-      wbServer.setSelection( true );
-    } else {
-      wbLocal.setSelection( true );
-    }
-    wLogRemoteWork.setSelection( jobEntry.isLoggingRemoteWork() );
-    if ( jobEntry.getRemoteSlaveServerName() != null ) {
-      wSlaveServer.setText( jobEntry.getRemoteSlaveServerName() );
-    }
     wWaitingToFinish.setSelection( jobEntry.isWaitingToFinish() );
     wFollowingAbortRemotely.setSelection( jobEntry.isFollowingAbortRemotely() );
     wAppendLogfile.setSelection( jobEntry.setAppendLogfile );
@@ -464,6 +443,24 @@ public class JobEntryTransDialog extends JobEntryBaseDialog implements JobEntryD
     if ( jobEntry.logFileLevel != null ) {
       wLoglevel.select( jobEntry.logFileLevel.getLevel() );
     }
+
+    List<String> runConfigurations = new ArrayList<>();
+    try {
+      ExtensionPointHandler
+        .callExtensionPoint( Spoon.getInstance().getLog(), KettleExtensionPoint.SpoonRunConfiguration.id,
+          runConfigurations );
+    } catch ( KettleException e ) {
+      // Ignore errors
+    }
+
+    wRunConfiguration.setItems( runConfigurations.toArray( new String[ 0 ] ) );
+    wRunConfiguration.select( 0 );
+    if ( Utils.isEmpty( jobEntry.getRunConfiguration() ) ) {
+      wRunConfiguration.select( 0 );
+    } else {
+      wRunConfiguration.setText( jobEntry.getRunConfiguration() );
+    }
+
   }
 
   private void getByReferenceData( ObjectId transObjectId ) {
@@ -485,17 +482,6 @@ public class JobEntryTransDialog extends JobEntryBaseDialog implements JobEntryD
 
     jobEntry = null;
     dispose();
-  }
-
-  protected void setRadioButtons() {
-    super.setRadioButtons();
-    wClustered.setVisible( wCluster.getSelection() );
-  }
-
-  protected void setActive() {
-    super.setActive();
-    wClustered.setVisible( wCluster.getSelection() );
-    wLocal.setVisible( !wCluster.getSelection() && !wbServer.getSelection() );
   }
 
   private void getInfo( JobEntryTrans jet ) throws KettleException {
@@ -613,11 +599,8 @@ public class JobEntryTransDialog extends JobEntryBaseDialog implements JobEntryD
     jet.addTime = wAddTime.getSelection();
     jet.clearResultRows = wClearRows.getSelection();
     jet.clearResultFiles = wClearFiles.getSelection();
-    jet.setClustering( wCluster.getSelection() );
-    jet.setLoggingRemoteWork( wLogRemoteWork.getSelection() );
     jet.createParentFolder = wCreateParentFolder.getSelection();
-
-    jet.setRemoteSlaveServerName( wSlaveServer.getText() );
+    jet.setRunConfiguration( wRunConfiguration.getText() );
     jet.setAppendLogfile = wAppendLogfile.getSelection();
     jet.setWaitingToFinish( wWaitingToFinish.getSelection() );
     jet.setFollowingAbortRemotely( wFollowingAbortRemotely.getSelection() );
