@@ -143,15 +143,14 @@ public class PluginRegistry {
         //
         classLoaderGroupsMap.remove( plugin.getClassLoaderGroup() );
       }
-
+    } finally {
+      lock.writeLock().unlock();
       List<PluginTypeListener> listeners = this.listeners.get( pluginType );
       if ( listeners != null ) {
         for ( PluginTypeListener listener : listeners ) {
           listener.pluginRemoved( plugin );
         }
       }
-    } finally {
-      lock.writeLock().unlock();
       synchronized ( this ) {
         notifyAll();
       }
@@ -169,12 +168,9 @@ public class PluginRegistry {
 
   public void registerPlugin( Class<? extends PluginTypeInterface> pluginType, PluginInterface plugin )
       throws KettlePluginException {
-
+    boolean changed = false; // Is this an add or an update?
     lock.writeLock().lock();
     try {
-
-      boolean changed = false; // Is this an add or an update?
-
       if ( plugin.getIds()[0] == null ) {
         throw new KettlePluginException( "Not a valid id specified in plugin :" + plugin );
       }
@@ -241,6 +237,8 @@ public class PluginRegistry {
           }
         }
       }
+    } finally {
+      lock.writeLock().unlock();
       List<PluginTypeListener> listeners = this.listeners.get( pluginType );
       if ( listeners != null ) {
         for ( PluginTypeListener listener : listeners ) {
@@ -252,8 +250,6 @@ public class PluginRegistry {
           }
         }
       }
-    } finally {
-      lock.writeLock().unlock();
       synchronized ( this ) {
         notifyAll();
       }

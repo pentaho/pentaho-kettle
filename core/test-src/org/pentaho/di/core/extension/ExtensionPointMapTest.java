@@ -1,7 +1,7 @@
 /*
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  * **************************************************************************
  *
@@ -52,13 +52,13 @@ public class ExtensionPointMapTest {
   @Test
   public void constructorTest() throws Exception {
     PluginRegistry.getInstance().registerPlugin( ExtensionPointPluginType.class, pluginInterface );
-    assertEquals( 1, ExtensionPointMap.getInstance().getMap().size() );
+    assertEquals( 1, ExtensionPointMap.getInstance().getNumberOfRows() );
 
     PluginRegistry.getInstance().registerPlugin( ExtensionPointPluginType.class, pluginInterface );
-    assertEquals( 1, ExtensionPointMap.getInstance().getMap().size() );
+    assertEquals( 1, ExtensionPointMap.getInstance().getNumberOfRows() );
 
     PluginRegistry.getInstance().removePlugin( ExtensionPointPluginType.class, pluginInterface );
-    assertEquals( 0, ExtensionPointMap.getInstance().getMap().size() );
+    assertEquals( 0, ExtensionPointMap.getInstance().getNumberOfRows() );
 
     // Verify lazy loading
     verify( pluginInterface, never() ).loadClass( any( Class.class ) );
@@ -67,10 +67,10 @@ public class ExtensionPointMapTest {
   @Test
   public void addExtensionPointTest() throws KettlePluginException {
     ExtensionPointMap.getInstance().addExtensionPoint( pluginInterface );
-    assertEquals( ExtensionPointMap.getInstance().get( TEST_NAME ).get( "testID" ), extensionPoint );
+    assertEquals( ExtensionPointMap.getInstance().getTableValue( TEST_NAME, "testID" ), extensionPoint );
 
     // Verify cached instance
-    assertEquals( ExtensionPointMap.getInstance().get( TEST_NAME ).get( "testID" ), extensionPoint );
+    assertEquals( ExtensionPointMap.getInstance().getTableValue( TEST_NAME, "testID" ), extensionPoint );
     verify( pluginInterface, times( 1 ) ).loadClass( any( Class.class ) );
   }
 }
