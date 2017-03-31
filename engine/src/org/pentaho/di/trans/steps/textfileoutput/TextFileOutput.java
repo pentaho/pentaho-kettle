@@ -96,10 +96,11 @@ public class TextFileOutput extends BaseStep implements StepInterface {
     boolean bEndedLineWrote = false;
     boolean fileExist;
     Object[] r = getRow(); // This also waits for a row to be finished.
-
+    if ( r != null ) {
+      data.outputRowMeta = getInputRowMeta().clone();
+    }
     if ( r != null && first ) {
       first = false;
-      data.outputRowMeta = getInputRowMeta().clone();
       meta.getFields( data.outputRowMeta, getStepname(), null, null, this, repository, metaStore );
 
       // if file name in field is enabled then set field name and open file
@@ -348,11 +349,11 @@ public class TextFileOutput extends BaseStep implements StepInterface {
       }
     } else {
       byte[] text;
-      if ( Utils.isEmpty( v.getStringEncoding() ) ) {
+      if ( Utils.isEmpty( meta.getEncoding() ) ) {
         text = string.getBytes();
       } else {
         try {
-          text = string.getBytes( v.getStringEncoding() );
+          text = string.getBytes( meta.getEncoding() );
         } catch ( UnsupportedEncodingException e ) {
           throw new KettleValueException( "Unable to convert String to Binary with specified string encoding ["
               + v.getStringEncoding() + "]", e );
