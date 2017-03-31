@@ -22,10 +22,13 @@
 
 package org.pentaho.di.trans.steps.textfileoutput;
 
+import java.io.BufferedOutputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -52,6 +55,7 @@ import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaBase;
 import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.trans.Trans;
@@ -480,7 +484,7 @@ public class TextFileOutputTest {
    * @throws KettleException
    */
   @Test
-  public void testProcessRule_2() throws KettleException {
+  public void testProcessRule_2() throws Exception {
 
     TextFileField tfFieldMock = Mockito.mock( TextFileField.class );
     TextFileField[] textFileFields = { tfFieldMock };
@@ -527,7 +531,7 @@ public class TextFileOutputTest {
 
     textFileOutputSpy.processRow( stepMockHelper.processRowsStepMetaInterface, stepMockHelper.initStepDataInterface );
     Mockito.verify( textFileOutputSpy, Mockito.times( 1 ) ).writeHeader(  );
-
+    Files.deleteIfExists( new File( TEXT_FILE_OUTPUT_PREFIX + TEXT_FILE_OUTPUT_EXTENSION ).toPath() );
   }
 
 
@@ -585,6 +589,44 @@ public class TextFileOutputTest {
 
     textFileOutputSpy.processRow( stepMockHelper.processRowsStepMetaInterface, stepMockHelper.initStepDataInterface );
     Mockito.verify( textFileOutputSpy, Mockito.times( 1 ) ).writeHeader(  );
+  }
+
+  /**
+   * Test for PDI-13987
+   * @throws Exception
+   */
+  @Test
+  public void testFastDumpDisableStreamEncodeTest() throws Exception {
+
+    textFileOutput =
+            new TextFileOutputTestHandler( stepMockHelper.stepMeta, stepMockHelper.stepDataInterface, 0, stepMockHelper.transMeta,
+                    stepMockHelper.trans );
+    textFileOutput.meta = stepMockHelper.processRowsStepMetaInterface;
+
+    String testString = "ÖÜä";
+    String inputEncode = "UTF-8";
+    String outputEncode = "Windows-1252";
+    Object[] rows = {testString.getBytes( inputEncode )};
+
+    ValueMetaBase valueMetaInterface = new ValueMetaBase( "test", ValueMetaInterface.TYPE_STRING );
+    valueMetaInterface.setStringEncoding( inputEncode );
+    valueMetaInterface.setStorageType( ValueMetaInterface.STORAGE_TYPE_BINARY_STRING );
+    valueMetaInterface.setStorageMetadata( new ValueMetaString() );
+
+    TextFileOutputData data = new TextFileOutputData();
+    data.binarySeparator = " ".getBytes();
+    data.binaryEnclosure = "\"".getBytes();
+    data.binaryNewline = "\n".getBytes();
+    textFileOutput.data = data;
+
+    RowMeta rowMeta = new RowMeta();
+    rowMeta.addValueMeta( valueMetaInterface );
+
+    Mockito.doReturn( outputEncode ).when( stepMockHelper.processRowsStepMetaInterface ).getEncoding();
+    textFileOutput.data.writer = Mockito.mock( BufferedOutputStream.class );
+
+    textFileOutput.writeRowToFile( rowMeta, rows );
+    Mockito.verify( textFileOutput.data.writer, Mockito.times( 1 ) ).write( testString.getBytes( outputEncode ) );
   }
 
 }
