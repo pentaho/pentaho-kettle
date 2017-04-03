@@ -123,6 +123,6 @@ public class CsvInputDoubleLineEndTest extends CsvInputUnitTestBase {
   }
 
   private TextFileInputField[] getInputFileFields() {
-    return createInputFileFields( "Field1", "Field2" );
+    return createInputFileFields( "Header1", "Header2" );
   }
 }
