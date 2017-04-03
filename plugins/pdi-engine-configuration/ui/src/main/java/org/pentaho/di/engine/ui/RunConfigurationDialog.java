@@ -154,7 +154,14 @@ public class RunConfigurationDialog extends Dialog {
     fdName.top = new FormAttachment( wlName, 5 );
     fdName.right = new FormAttachment( 100, 0 );
     wName.setLayoutData( fdName );
-    wName.addModifyListener( modifyEvent -> runConfiguration.setName( wName.getText() ) );
+    wName.addModifyListener( modifyEvent -> {
+      runConfiguration.setName( wName.getText() );
+      if ( Utils.isEmpty( runConfiguration.getName() ) ) {
+        wOK.setEnabled( false );
+      } else {
+        wOK.setEnabled( true );
+      }
+    } );
 
     wlDescription = new Label( wSettings, SWT.RIGHT );
     wlDescription.setText( BaseMessages.getString( PKG, "RunConfigurationDialog.Label.Description" ) );
@@ -186,7 +193,10 @@ public class RunConfigurationDialog extends Dialog {
     wEngine.setItems( executionConfigurationManager.getTypes() );
     wEngine.addSelectionListener( new SelectionAdapter() {
       @Override public void widgetSelected( SelectionEvent selectionEvent ) {
-        updateOptions( wEngine.getItem( wEngine.getSelectionIndex() ) );
+        String engine = wEngine.getText();
+        if ( !engine.equals( runConfiguration.getType() ) ) {
+          updateOptions( engine );
+        }
       }
     } );
     wEngine.select( 0 );
@@ -458,6 +468,7 @@ public class RunConfigurationDialog extends Dialog {
 
     wcSlaveServer.addSelectionListener( new SelectionAdapter() {
       @Override public void widgetSelected( SelectionEvent selectionEvent ) {
+        checkOKEnabled( defaultRunConfiguration, wcSlaveServer );
         if ( wcSlaveServer.getText().equals( CLUSTERED ) ) {
           defaultRunConfiguration.setClustered( true );
           defaultRunConfiguration.setLocal( false );
@@ -479,6 +490,7 @@ public class RunConfigurationDialog extends Dialog {
 
     wbLocal.addSelectionListener( new SelectionAdapter() {
       @Override public void widgetSelected( SelectionEvent selectionEvent ) {
+        checkOKEnabled( defaultRunConfiguration, wcSlaveServer );
         wcLocal.setVisible( wbLocal.getSelection() );
         wcRemote.setVisible( wbRemote.getSelection() );
         defaultRunConfiguration.setLocal( wbLocal.getSelection() );
@@ -489,9 +501,15 @@ public class RunConfigurationDialog extends Dialog {
 
     wbRemote.addSelectionListener( new SelectionAdapter() {
       @Override public void widgetSelected( SelectionEvent selectionEvent ) {
+        checkOKEnabled( defaultRunConfiguration, wcSlaveServer );
         wcLocal.setVisible( wbLocal.getSelection() );
         wcRemote.setVisible( wbRemote.getSelection() );
         defaultRunConfiguration.setLocal( false );
+        if ( Utils.isEmpty( wcSlaveServer.getText() ) ) {
+          wOK.setEnabled( false );
+        } else {
+          wOK.setEnabled( true );
+        }
         if ( !wcSlaveServer.getText().equals( CLUSTERED ) ) {
           defaultRunConfiguration.setRemote( true );
         } else {
@@ -499,6 +517,15 @@ public class RunConfigurationDialog extends Dialog {
         }
       }
     } );
+  }
+
+  private void checkOKEnabled( DefaultRunConfiguration defaultRunConfiguration, CCombo wcSlaveServer ) {
+    if ( ( defaultRunConfiguration.isRemote() && Utils.isEmpty( wcSlaveServer.getText() ) ) || Utils
+      .isEmpty( wName.getText() ) ) {
+      wOK.setEnabled( false );
+    } else {
+      wOK.setEnabled( true );
+    }
   }
 
   private void showDynamic() {
@@ -528,6 +555,11 @@ public class RunConfigurationDialog extends Dialog {
         invokeSetter( runConfiguration, field.getName(), optionText.getText() );
 
         optionText.addModifyListener( modifyEvent -> {
+          if ( Utils.isEmpty( optionText.getText() ) ) {
+            wOK.setEnabled( false );
+          } else {
+            wOK.setEnabled( true );
+          }
           invokeSetter( runConfiguration, field.getName(), optionText.getText() );
         } );
 
