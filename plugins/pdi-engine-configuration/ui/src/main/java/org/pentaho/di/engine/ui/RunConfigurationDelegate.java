@@ -25,7 +25,6 @@
 package org.pentaho.di.engine.ui;
 
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.widgets.MessageBox;
 import org.pentaho.di.engine.configuration.api.RunConfiguration;
 import org.pentaho.di.engine.configuration.api.RunConfigurationService;
 import org.pentaho.di.engine.configuration.impl.pentaho.DefaultRunConfiguration;
@@ -64,13 +63,8 @@ public class RunConfigurationDelegate {
   }
 
   public void delete( RunConfiguration runConfiguration ) {
-    MessageBox messageBox = new MessageBox( spoonSupplier.get().getShell(), SWT.ICON_WARNING
-      | SWT.NO | SWT.YES );
-    messageBox
-      .setMessage( BaseMessages.getString( PKG, "RunConfigurationPopupMenuExtension.DeleteDialog.Message" ) );
-    messageBox.setText( BaseMessages.getString( PKG, "RunConfigurationPopupMenuExtension.DeleteDialog.Title" ) );
-
-    int response = messageBox.open();
+    RunConfigurationDeleteDialog deleteDialog = new RunConfigurationDeleteDialog( spoonSupplier.get().getShell() );
+    int response = deleteDialog.open();
     if ( response == SWT.YES ) {
       configurationManager.delete( runConfiguration.getName() );
       spoonSupplier.get().refreshTree();
