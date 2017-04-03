@@ -1924,8 +1924,8 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
     }
 
     // Also set the meta data on the first occurrence.
-    //
-    if ( inputRowMeta == null ) {
+    // or if prevSteps.length > 1 inputRowMeta can be changed
+    if ( inputRowMeta == null || prevSteps.length > 1 ) {
       inputRowMeta = inputRowSet.getRowMeta();
     }
 
