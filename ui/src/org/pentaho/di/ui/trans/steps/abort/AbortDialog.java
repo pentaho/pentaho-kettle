@@ -140,7 +140,7 @@ public class AbortDialog extends BaseStepDialog implements StepDialogInterface {
     props.setLook( wlRowThreshold );
     fdlRowThreshold = new FormData();
     fdlRowThreshold.left = new FormAttachment( 0, 0 );
-    fdlRowThreshold.top = new FormAttachment( spacer, 15 );
+    fdlRowThreshold.top = new FormAttachment( spacer, 20 );
     wlRowThreshold.setLayoutData( fdlRowThreshold );
     wRowThreshold = new TextVar( transMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
     wRowThreshold.setText( "" );
