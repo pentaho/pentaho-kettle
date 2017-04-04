@@ -33,7 +33,7 @@ import java.util.Optional;
  * Created by hudak on 1/17/17.
  */
 public interface HasConfig extends Serializable {
-  <T extends Serializable> Map<String, T> getConfig();
+  Map<String, Serializable> getConfig();
 
   void setConfig( String key, Serializable value );
 
