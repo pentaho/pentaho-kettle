@@ -62,7 +62,7 @@ public interface Execution<T extends Serializable> extends Serializable, AutoClo
    *
    * @param throwable
    */
-  void closeExceptionally( Throwable throwable );
+  void closeExceptionally( ExecutionException throwable );
 
   /**
    * Open a stream for nosy clients to get live feedback.
