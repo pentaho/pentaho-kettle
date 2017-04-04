@@ -468,7 +468,6 @@ public class RunConfigurationDialog extends Dialog {
 
     wcSlaveServer.addSelectionListener( new SelectionAdapter() {
       @Override public void widgetSelected( SelectionEvent selectionEvent ) {
-        checkOKEnabled( defaultRunConfiguration, wcSlaveServer );
         if ( wcSlaveServer.getText().equals( CLUSTERED ) ) {
           defaultRunConfiguration.setClustered( true );
           defaultRunConfiguration.setLocal( false );
@@ -485,17 +484,18 @@ public class RunConfigurationDialog extends Dialog {
           wbShowTransformations.setVisible( false );
           wbSendResources.setVisible( true );
         }
+        checkOKEnabled( defaultRunConfiguration, wcSlaveServer );
       }
     } );
 
     wbLocal.addSelectionListener( new SelectionAdapter() {
       @Override public void widgetSelected( SelectionEvent selectionEvent ) {
-        checkOKEnabled( defaultRunConfiguration, wcSlaveServer );
         wcLocal.setVisible( wbLocal.getSelection() );
         wcRemote.setVisible( wbRemote.getSelection() );
         defaultRunConfiguration.setLocal( wbLocal.getSelection() );
         defaultRunConfiguration.setRemote( false );
         defaultRunConfiguration.setClustered( false );
+        checkOKEnabled( defaultRunConfiguration, wcSlaveServer );
       }
     } );
 
@@ -515,6 +515,7 @@ public class RunConfigurationDialog extends Dialog {
         } else {
           defaultRunConfiguration.setClustered( true );
         }
+        checkOKEnabled( defaultRunConfiguration, wcSlaveServer );
       }
     } );
   }

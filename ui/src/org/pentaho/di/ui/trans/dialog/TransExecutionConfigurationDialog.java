@@ -197,6 +197,9 @@ public class TransExecutionConfigurationDialog extends ConfigurationDialog {
     }
 
     wRunConfiguration.setItems( runConfigurations.toArray( new String[ 0 ] ) );
+    if ( !runConfigurations.contains( getConfiguration().getRunConfiguration() ) ) {
+      getConfiguration().setRunConfiguration( null );
+    }
     if ( Utils.isEmpty( getConfiguration().getRunConfiguration() ) ) {
       wRunConfiguration.select( 0 );
     } else {
