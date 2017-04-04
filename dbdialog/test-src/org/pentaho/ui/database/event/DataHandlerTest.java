@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -349,6 +349,9 @@ public class DataHandlerTest {
     PluginInterface pluginInterface = mock( PluginInterface.class );
     when( pluginInterface.getName() ).thenReturn( "Oracle" );
     doReturn( DatabaseInterface.class ).when( pluginInterface ).getMainType();
+    when( pluginInterface.getIds() ).thenReturn( new String[] { "oracle" } );
+    doReturn( DatabasePluginType.class ).when( pluginInterface ).getPluginType();
+
     listener.pluginAdded( pluginInterface );
     // The test can't load the plugin, so databaseTypeAdded never gets called. Perhaps register a mock plugin
     verify( listener, never() ).databaseTypeAdded( eq( "Oracle" ), any( DatabaseInterface.class ) );
