@@ -256,7 +256,7 @@ public abstract class ConfigurationDialog extends Dialog {
     fd_tabFolder.right = new FormAttachment( 100, -15 );
     fd_tabFolder.left = new FormAttachment( 0, 15 );
     fd_tabFolder.top = new FormAttachment( gDetails, 15 );
-    fd_tabFolder.bottom = new FormAttachment( gDetails, 410 );
+    fd_tabFolder.bottom = new FormAttachment( gDetails, 370 );
     tabFolder.setLayoutData( fd_tabFolder );
 
     // Parameters

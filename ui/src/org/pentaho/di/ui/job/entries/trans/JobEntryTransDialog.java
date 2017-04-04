@@ -454,7 +454,9 @@ public class JobEntryTransDialog extends JobEntryBaseDialog implements JobEntryD
     }
 
     wRunConfiguration.setItems( runConfigurations.toArray( new String[ 0 ] ) );
-    wRunConfiguration.select( 0 );
+    if ( !runConfigurations.contains( jobEntry.getRunConfiguration() ) ) {
+      jobEntry.setRunConfiguration( null );
+    }
     if ( Utils.isEmpty( jobEntry.getRunConfiguration() ) ) {
       wRunConfiguration.select( 0 );
     } else {
