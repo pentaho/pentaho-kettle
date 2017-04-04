@@ -58,7 +58,7 @@ import org.w3c.dom.Node;
 @Step( id = "XMLInputStream", image = "xml_input_stream.svg",
     i18nPackageName = "org.pentaho.di.trans.steps.xmlinputstream", name = "XMLInputStream.name",
     description = "XMLInputStream.description", categoryDescription = "XMLInputStream.category",
-    documentationUrl = "http://wiki.pentaho.com/display/EAI/XML+Input+Stream+%28StAX%29" )
+    documentationUrl = "0L0/0Y0/0K0/XML_Input_Stream_(StAX)" )
 public class XMLInputStreamMeta extends BaseStepMeta implements StepMetaInterface {
   private static final int DEFAULT_STRING_LEN_FILENAME = 256; // default length for XML path
   private static final int DEFAULT_STRING_LEN_PATH = 1024; // default length for XML path
