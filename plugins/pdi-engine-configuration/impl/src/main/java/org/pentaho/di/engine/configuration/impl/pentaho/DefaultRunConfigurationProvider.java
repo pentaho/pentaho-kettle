@@ -24,6 +24,7 @@
 
 package org.pentaho.di.engine.configuration.impl.pentaho;
 
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.engine.configuration.api.RunConfiguration;
 import org.pentaho.di.engine.configuration.api.RunConfigurationExecutor;
 import org.pentaho.di.engine.configuration.api.RunConfigurationProvider;
@@ -77,7 +78,7 @@ public class DefaultRunConfigurationProvider extends MetaStoreRunConfigurationFa
   }
 
   @Override public RunConfiguration load( String name ) {
-    if ( name.equals( DEFAULT_CONFIG_NAME ) ) {
+    if ( Utils.isEmpty( name ) || name.equals( DEFAULT_CONFIG_NAME ) ) {
       return defaultRunConfiguration;
     }
     return super.load( name );
