@@ -38,7 +38,7 @@ import java.util.concurrent.CompletableFuture;
 /**
  * Created by nbaker on 5/31/16.
  */
-public interface ExecutionContext extends SubscriptionManager, Serializable {
+public interface ExecutionContext extends SubscriptionManager {
   Map<String, Object> getParameters();
 
   Map<String, Object> getEnvironment();
