@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2014 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -41,15 +41,16 @@ public class SqlScriptParser {
     SQL, LINE_COMMENT, BLOCK_COMMENT, STRING
   };
 
-  private static final String ORACLE = "ORACLE";
+  private static final SqlScriptParser INSTANCE = new SqlScriptParser();
 
-  private boolean usingBackslashAsEscapeCharForQuotation;
+  public static SqlScriptParser getInstance() {
+    return INSTANCE;
+  }
+
   /**
    * Private constructor to enforce static access
-   * @param databaseProductName a name of this database product
    */
-  public SqlScriptParser( String databaseProductName ) {
-    this.usingBackslashAsEscapeCharForQuotation = !ORACLE.equalsIgnoreCase( databaseProductName );
+  private SqlScriptParser() {
   }
 
   /**
@@ -121,21 +122,10 @@ public class SqlScriptParser {
              * Pass the hard-coded backslash through, and skip over the real backslash on the next loop
              */
             i++;
-          } else if ( ch == '\\' && nextCh == currentStringChar && usingBackslashAsEscapeCharForQuotation ) {
+          } else if ( ch == '\\' && nextCh == currentStringChar ) {
             /*
              * The user is hard-coding a quote character into the string.
              * Pass the hard-coded quote character through, and skip over the quote on next loop
-             */
-
-            /*
-             * usingBackslashAsEscapeCharForQuotation
-             * PDI-16224.
-             *
-             * ANSI standards specify that using the backslash character (\) to escape single (' ') or double (" ")
-             * quotation marks is invalid. For example, the following attempt to find a quotation mark does not conform to ANSI standards:
-             * where col1 = '\'';"
-             * In any way a construction '\'|| is correct for Oracle but for others DBs (ex. MySQl) isn't correct.
-             *
              */
             i++;
           } else if ( ch == currentStringChar ) {
@@ -215,23 +205,11 @@ public class SqlScriptParser {
           }
           break;
         case STRING:
-          if ( ch == '\\' && nextCh == currentStringChar && usingBackslashAsEscapeCharForQuotation ) {
+          if ( ch == '\\' && nextCh == currentStringChar ) {
             /*
              * The user is hard-coding a quote character into the string.
              * Pass the hard-coded quote character through, and skip over the quote on next loop
              */
-
-            /*
-             * usingBackslashAsEscapeCharForQuotation
-             * PDI-16224.
-             *
-             * ANSI standards specify that using the backslash character (\) to escape single (' ') or double (" ")
-             * quotation marks is invalid. For example, the following attempt to find a quotation mark does not conform to ANSI standards:
-             * where col1 = '\'';"
-             * In any way a construction '\'|| is correct for Oracle but for others DBs (ex. MySQl) isn't correct.
-             *
-             */
-
             result.append( ch );
             result.append( nextCh );
             ch = 0;
