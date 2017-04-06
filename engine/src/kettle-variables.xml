@@ -444,5 +444,11 @@
     <default-value>false</default-value>
   </kettle-variable>
 
+  <kettle-variable>
+    <description>Set this variable to false to preserve global log variables defined in transformation / job Properties -> Log panel. Changing it to true will clear it when export transformation / job.</description>
+    <variable>KETTLE_GLOBAL_LOG_VARIABLES_CLEAR_ON_EXPORT</variable>
+    <default-value>false</default-value>
+  </kettle-variable>
+
 </kettle-variables>
 
