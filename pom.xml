@@ -1,0 +1,56 @@
+<?xml version="1.0"?>
+<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
+         xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>org.pentaho</groupId>
+    <artifactId>pentaho-ce-jar-parent-pom</artifactId>
+    <version>8.0-SNAPSHOT</version>
+  </parent>
+
+  <groupId>pentaho-kettle</groupId>
+  <artifactId>pentaho-kettle-parent-pom</artifactId>
+  <version>8.0-SNAPSHOT</version>
+  <packaging>pom</packaging>
+  
+  <name>Pentaho Kettle Parent POM</name>
+  <description>Container pom for pentaho-kettle</description>
+  <url>http://www.pentaho.com</url>
+
+  <scm>
+    <developerConnection>scm:git:git@github.com:pentaho/pentaho-kettle.git</developerConnection>
+    <tag>HEAD</tag>
+  </scm>  
+
+  <modules>
+    <module>core</module>
+    <!--module>engine</module-->
+    <!--module>dbdialog</module-->
+    <!--module>ui</module-->
+  </modules>
+  
+  <!--properties>
+    <timestamp>${maven.build.timestamp}</timestamp>
+    <maven.build.timestamp.format>yyyy-MM-dd HH:mm</maven.build.timestamp.format>
+  </properties-->
+
+  <!--build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jar-plugin</artifactId>
+        <configuration>
+          <archive>
+            <manifestEntries>
+              <Compile-Timestamp>${timestamp}</Compile-Timestamp>
+              <Compile-User>${user.name}</Compile-User>
+            </manifestEntries>
+          </archive>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build-->
+
+</project>
