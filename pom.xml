@@ -14,7 +14,7 @@
   <artifactId>pentaho-kettle-parent-pom</artifactId>
   <version>8.0-SNAPSHOT</version>
   <packaging>pom</packaging>
-  
+
   <name>Pentaho Kettle Parent POM</name>
   <description>Container pom for pentaho-kettle</description>
   <url>http://www.pentaho.com</url>
@@ -22,7 +22,7 @@
   <scm>
     <developerConnection>scm:git:git@github.com:pentaho/pentaho-kettle.git</developerConnection>
     <tag>HEAD</tag>
-  </scm>  
+  </scm>
 
   <modules>
     <module>pdi-engine</module>
@@ -31,7 +31,7 @@
     <module>dbdialog</module>
     <!-- module>ui</module -->
   </modules>
-  
+
   <!--properties>
     <timestamp>${maven.build.timestamp}</timestamp>
     <maven.build.timestamp.format>yyyy-MM-dd HH:mm</maven.build.timestamp.format>
