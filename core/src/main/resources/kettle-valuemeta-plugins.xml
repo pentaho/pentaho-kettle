@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<valuemeta-plugins>
+  <valuemeta-plugin id="0"> 
+    <description>None</description> 
+    <classname>org.pentaho.di.core.row.value.ValueMetaNone</classname> 
+  </valuemeta-plugin>
+
+  <valuemeta-plugin id="1"> 
+    <description>Number</description> 
+    <classname>org.pentaho.di.core.row.value.ValueMetaNumber</classname> 
+  </valuemeta-plugin>
+
+  <valuemeta-plugin id="2"> 
+    <description>String</description> 
+    <classname>org.pentaho.di.core.row.value.ValueMetaString</classname> 
+  </valuemeta-plugin>
+
+  <valuemeta-plugin id="3"> 
+    <description>Date</description> 
+    <classname>org.pentaho.di.core.row.value.ValueMetaDate</classname> 
+  </valuemeta-plugin>
+  
+  <valuemeta-plugin id="4"> 
+    <description>Boolean</description> 
+    <classname>org.pentaho.di.core.row.value.ValueMetaBoolean</classname> 
+  </valuemeta-plugin>
+  
+  <valuemeta-plugin id="5"> 
+    <description>Integer</description> 
+    <classname>org.pentaho.di.core.row.value.ValueMetaInteger</classname> 
+  </valuemeta-plugin>
+
+  <valuemeta-plugin id="6"> 
+    <description>BigNumber</description> 
+    <classname>org.pentaho.di.core.row.value.ValueMetaBigNumber</classname> 
+  </valuemeta-plugin>
+
+  <valuemeta-plugin id="7"> 
+    <description>Serializable</description> 
+    <classname>org.pentaho.di.core.row.value.ValueMetaSerializable</classname> 
+  </valuemeta-plugin>
+
+  <valuemeta-plugin id="8"> 
+    <description>Binary</description> 
+    <classname>org.pentaho.di.core.row.value.ValueMetaBinary</classname> 
+  </valuemeta-plugin>
+
+  <valuemeta-plugin id="9"> 
+    <description>Timestamp</description> 
+    <classname>org.pentaho.di.core.row.value.ValueMetaTimestamp</classname> 
+  </valuemeta-plugin>
+  
+  <valuemeta-plugin id="10"> 
+    <description>Internet Address</description> 
+    <classname>org.pentaho.di.core.row.value.ValueMetaInternetAddress</classname> 
+  </valuemeta-plugin>
+  
+</valuemeta-plugins>
