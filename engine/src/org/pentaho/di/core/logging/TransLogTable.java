@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -511,9 +511,12 @@ public class TransLogTable extends BaseLogTable implements Cloneable, LogTableIn
 
   @Override
   public void setAllGlobalParametersToNull()  {
-    super.setAllGlobalParametersToNull();
+    boolean clearGlobalVariables = Boolean.valueOf( System.getProperties().getProperty( Const.KETTLE_GLOBAL_LOG_VARIABLES_CLEAR_ON_EXPORT, "false" ) );
+    if ( clearGlobalVariables ) {
+      super.setAllGlobalParametersToNull();
 
-    logInterval = isGlobalParameter( logInterval ) ? null : logInterval;
-    logSizeLimit = isGlobalParameter( logSizeLimit ) ? null : logSizeLimit;
+      logInterval = isGlobalParameter( logInterval ) ? null : logInterval;
+      logSizeLimit = isGlobalParameter( logSizeLimit ) ? null : logSizeLimit;
+    }
   }
 }
