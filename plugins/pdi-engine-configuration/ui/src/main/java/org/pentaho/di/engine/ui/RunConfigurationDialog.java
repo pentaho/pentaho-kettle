@@ -220,6 +220,7 @@ public class RunConfigurationDialog extends Dialog {
     fdOptions.top = new FormAttachment( wEngine, 15 );
     fdOptions.right = new FormAttachment( 100 );
     fdOptions.left = new FormAttachment( 0 );
+    fdOptions.height = 120;
     gOptions.setLayoutData( fdOptions );
 
     wCancel = new Button( shell, SWT.PUSH );
@@ -298,6 +299,7 @@ public class RunConfigurationDialog extends Dialog {
     } else {
       showDynamic();
     }
+    gOptions.layout();
     shell.pack();
 
     wEngine.setText( StringUtils.capitalize( runConfiguration.getType() ) );
@@ -506,6 +508,9 @@ public class RunConfigurationDialog extends Dialog {
         wcRemote.setVisible( wbRemote.getSelection() );
         defaultRunConfiguration.setLocal( false );
         if ( Utils.isEmpty( wcSlaveServer.getText() ) ) {
+          if ( meta instanceof TransMeta && !Utils.isEmpty( ( (TransMeta) meta ).getClusterSchemas() ) ) {
+            wcSlaveServer.setText( CLUSTERED );
+          }
           wOK.setEnabled( false );
         } else {
           wOK.setEnabled( true );
