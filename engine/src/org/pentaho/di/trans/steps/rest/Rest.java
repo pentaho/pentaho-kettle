@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -40,6 +40,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.UriBuilder;
 
+import com.sun.jersey.api.uri.UriComponent;
 import org.apache.commons.httpclient.auth.AuthScope;
 import org.json.simple.JSONObject;
 import org.pentaho.di.core.Const;
@@ -81,6 +82,13 @@ public class Rest extends BaseStep implements StepInterface {
 
   public Rest( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta, Trans trans ) {
     super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
+  }
+
+  /* for unit test*/
+  MultivaluedMapImpl createMultivalueMap( String paramName, String paramValue ) {
+    MultivaluedMapImpl queryParams = new MultivaluedMapImpl();
+    queryParams.add( paramName, UriComponent.encode( paramValue, UriComponent.Type.QUERY_PARAM ) );
+    return queryParams;
   }
 
   private Object[] callRest( Object[] rowData ) throws KettleException {
@@ -133,13 +141,12 @@ public class Rest extends BaseStep implements StepInterface {
       if ( data.useParams ) {
         // Add query parameters
         for ( int i = 0; i < data.nrParams; i++ ) {
-          MultivaluedMapImpl queryParams = new MultivaluedMapImpl();
           String value = data.inputRowMeta.getString( rowData, data.indexOfParamFields[i] );
-          queryParams.add( data.paramNames[i], value );
           if ( isDebug() ) {
             logDebug( BaseMessages.getString( PKG, "Rest.Log.queryParameterValue", data.paramNames[i], value ) );
           }
-          webResource = webResource.queryParams( queryParams );
+          webResource = webResource.queryParams(
+            createMultivalueMap( data.paramNames[i], value ) );
         }
       }
 
