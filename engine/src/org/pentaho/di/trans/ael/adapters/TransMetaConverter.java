@@ -26,6 +26,7 @@ package org.pentaho.di.trans.ael.adapters;
 
 import com.google.common.base.Throwables;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.engine.api.model.Operation;
 import org.pentaho.di.engine.api.model.Transformation;
 import org.pentaho.di.trans.TransHopMeta;
@@ -38,12 +39,13 @@ import java.util.stream.IntStream;
 public class TransMetaConverter {
 
   public static final String TRANS_META_CONF_KEY = "TransMeta";
+  public static final String TRANS_META_NAME_CONF_KEY = "TransMetaName";
   public static final String STEP_META_CONF_KEY = "StepMeta";
 
 
   public static Transformation convert( TransMeta transMeta ) {
     final org.pentaho.di.engine.model.Transformation transformation =
-      new org.pentaho.di.engine.model.Transformation( transMeta.getName() );
+      new org.pentaho.di.engine.model.Transformation( createTransformationId( transMeta ) );
     try {
       transMeta.getSteps().forEach( createOperation( transformation ) );
       IntStream.iterate( 0, i -> i + 1 )
@@ -52,10 +54,20 @@ public class TransMetaConverter {
         .forEach( createHop( transformation ) );
 
       transformation.setConfig( TRANS_META_CONF_KEY, transMeta.getXML() );
+      transformation.setConfig( TRANS_META_NAME_CONF_KEY, transMeta.getName() );
     } catch ( KettleException e ) {
       Throwables.propagate( e );
     }
     return transformation;
+  }
+
+  private static String createTransformationId( TransMeta transMeta ) {
+    String filename = transMeta.getFilename();
+    if ( !Utils.isEmpty( filename ) ) {
+      return filename;
+    }
+
+    return transMeta.getPathAndName();
   }
 
   private static Consumer<StepMeta> createOperation( org.pentaho.di.engine.model.Transformation transformation ) {

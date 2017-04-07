@@ -57,10 +57,10 @@ public class TransMetaConverterTest {
   @Test
   public void simpleConvert() {
     TransMeta meta = new TransMeta();
-    meta.setName( "transName" );
+    meta.setFilename( "fileName" );
     meta.addStep( new StepMeta( "stepName", stepMetaInterface ) );
     Transformation trans = TransMetaConverter.convert( meta );
-    assertThat( trans.getId(), is( meta.getName() ) );
+    assertThat( trans.getId(), is( meta.getFilename() ) );
     assertThat( trans.getOperations().size(), is( 1 ) );
     assertThat( trans.getOperations().get( 0 ).getId(), is( "stepName" ) );
   }
@@ -68,18 +68,26 @@ public class TransMetaConverterTest {
   @Test
   public void transWithHops() {
     TransMeta meta = new TransMeta();
-    meta.setName( "transName" );
+    meta.setFilename( "fileName" );
     StepMeta from = new StepMeta( "step1",  stepMetaInterface );
     meta.addStep( from );
     StepMeta to = new StepMeta( "step2",  stepMetaInterface );
     meta.addStep( to );
     meta.addTransHop( new TransHopMeta( from, to ) );
     Transformation trans = TransMetaConverter.convert( meta );
-    assertThat( trans.getId(), is( meta.getName() ) );
+    assertThat( trans.getId(), is( meta.getFilename() ) );
     assertThat( trans.getOperations().size(), is( 2 ) );
     assertThat( trans.getHops().size(), is( 1 ) );
     assertThat( trans.getHops().get( 0 ).getFrom().getId(), is( from.getName() ) );
     assertThat( trans.getHops().get( 0 ).getTo().getId(), is( to.getName() ) );
+  }
+
+  @Test
+  public void transIdFromRepo() throws Exception {
+    TransMeta meta = new TransMeta();
+    meta.setName( "transName" );
+    Transformation trans = TransMetaConverter.convert( meta );
+    assertThat( trans.getId(), is( "/transName" ) );
   }
 
 }
