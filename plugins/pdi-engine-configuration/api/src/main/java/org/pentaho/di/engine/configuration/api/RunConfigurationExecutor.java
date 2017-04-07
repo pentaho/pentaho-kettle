@@ -25,6 +25,7 @@
 package org.pentaho.di.engine.configuration.api;
 
 import org.pentaho.di.base.AbstractMeta;
+import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.trans.TransExecutionConfiguration;
 import org.pentaho.di.trans.TransMeta;
@@ -34,5 +35,5 @@ import org.pentaho.di.trans.TransMeta;
  */
 public interface RunConfigurationExecutor {
   void execute( RunConfiguration runConfiguration, TransExecutionConfiguration configuration, AbstractMeta meta,
-                VariableSpace variableSpace );
+                VariableSpace variableSpace ) throws KettleException;
 }

@@ -31,6 +31,8 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.pentaho.di.base.AbstractMeta;
 import org.pentaho.di.cluster.SlaveServer;
+import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.trans.TransExecutionConfiguration;
 
@@ -60,7 +62,7 @@ public class DefaultRunConfigurationExecutorTest {
   }
 
   @Test
-  public void testExecuteLocal() {
+  public void testExecuteLocal() throws Exception {
     DefaultRunConfiguration defaultRunConfiguration = new DefaultRunConfiguration();
     defaultRunConfiguration.setName( "Default Configuration" );
     defaultRunConfiguration.setLocal( true );
@@ -72,9 +74,9 @@ public class DefaultRunConfigurationExecutorTest {
 
     assertTrue( transExecutionConfiguration.isExecutingLocally() );
   }
-
+  
   @Test
-  public void testExecuteRemote() {
+  public void testExecuteRemote() throws Exception {
     DefaultRunConfiguration defaultRunConfiguration = new DefaultRunConfiguration();
     defaultRunConfiguration.setName( "Default Configuration" );
     defaultRunConfiguration.setLocal( false );
@@ -93,7 +95,7 @@ public class DefaultRunConfigurationExecutorTest {
   }
 
   @Test
-  public void testExecuteClustered() {
+  public void testExecuteClustered() throws Exception {
     DefaultRunConfiguration defaultRunConfiguration = new DefaultRunConfiguration();
     defaultRunConfiguration.setName( "Default Configuration" );
     defaultRunConfiguration.setLocal( false );
@@ -108,6 +110,26 @@ public class DefaultRunConfigurationExecutorTest {
     assertTrue( transExecutionConfiguration.isExecutingClustered() );
     assertFalse( transExecutionConfiguration.isExecutingRemotely() );
     assertFalse( transExecutionConfiguration.isExecutingLocally() );
+  }
+
+  @Test
+  public void testExecuteRemoteNotFound() throws Exception {
+    DefaultRunConfiguration defaultRunConfiguration = new DefaultRunConfiguration();
+    defaultRunConfiguration.setName( "Default Configuration" );
+    defaultRunConfiguration.setLocal( false );
+    defaultRunConfiguration.setRemote( true );
+    defaultRunConfiguration.setServer( "Test Server" );
+
+    TransExecutionConfiguration transExecutionConfiguration = new TransExecutionConfiguration();
+    doReturn( slaveServer ).when( abstractMeta ).findSlaveServer( null );
+
+    try {
+      defaultRunConfigurationExecutor
+        .execute( defaultRunConfiguration, transExecutionConfiguration, abstractMeta, variableSpace );
+      fail();
+    } catch ( KettleException e ) {
+      // expected
+    }
   }
 
 }

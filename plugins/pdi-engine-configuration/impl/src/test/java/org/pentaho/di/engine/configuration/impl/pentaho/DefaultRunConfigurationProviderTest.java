@@ -26,20 +26,32 @@ package org.pentaho.di.engine.configuration.impl.pentaho;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.runners.MockitoJUnitRunner;
 import org.pentaho.di.engine.configuration.api.RunConfiguration;
+import org.pentaho.osgi.metastore.locator.api.MetastoreLocator;
 
 import static org.junit.Assert.assertEquals;
 
 /**
  * Created by bmorrise on 4/4/17.
  */
+@RunWith( MockitoJUnitRunner.class )
 public class DefaultRunConfigurationProviderTest {
 
   private DefaultRunConfigurationProvider defaultRunConfigurationProvider;
 
+  @Mock
+  private MetastoreLocator metastoreLocator;
+
+  @Mock
+  private DefaultRunConfigurationExecutor defaultRunConfigurationExecutor;
+
   @Before
   public void setup() {
-    defaultRunConfigurationProvider = new DefaultRunConfigurationProvider( null );
+    defaultRunConfigurationProvider =
+      new DefaultRunConfigurationProvider( metastoreLocator, defaultRunConfigurationExecutor );
   }
 
   @Test

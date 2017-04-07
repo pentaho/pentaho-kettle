@@ -26,9 +26,13 @@ package org.pentaho.di.engine.configuration.impl.pentaho;
 
 import org.pentaho.di.base.AbstractMeta;
 import org.pentaho.di.cluster.SlaveServer;
+import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.logging.LogChannel;
+import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.engine.configuration.api.RunConfiguration;
 import org.pentaho.di.engine.configuration.api.RunConfigurationExecutor;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.TransExecutionConfiguration;
 import org.pentaho.di.trans.TransMeta;
 
@@ -37,14 +41,27 @@ import org.pentaho.di.trans.TransMeta;
  */
 public class DefaultRunConfigurationExecutor implements RunConfigurationExecutor {
 
-  @Override public void execute( RunConfiguration runConfiguration, TransExecutionConfiguration configuration,
-                                 AbstractMeta meta, VariableSpace variableSpace ) {
+  private static Class<?> PKG = DefaultRunConfigurationExecutor.class;
+
+  @Override
+  public void execute( RunConfiguration runConfiguration, TransExecutionConfiguration configuration, AbstractMeta meta,
+                       VariableSpace variableSpace ) throws KettleException {
     DefaultRunConfiguration defaultRunConfiguration = (DefaultRunConfiguration) runConfiguration;
     configuration.setExecutingLocally( defaultRunConfiguration.isLocal() );
     configuration.setExecutingRemotely( defaultRunConfiguration.isRemote() );
     configuration.setExecutingClustered( defaultRunConfiguration.isClustered() );
     if ( defaultRunConfiguration.isRemote() ) {
-      configuration.setRemoteServer( meta.findSlaveServer( defaultRunConfiguration.getServer() ) );
+      SlaveServer slaveServer = meta.findSlaveServer( defaultRunConfiguration.getServer() );
+      configuration.setRemoteServer( slaveServer );
+      if ( slaveServer == null ) {
+        String filename = "";
+        if ( variableSpace instanceof TransMeta ) {
+          filename = ( (TransMeta) variableSpace ).getFilename();
+        }
+        throw new KettleException( BaseMessages
+          .getString( PKG, "DefaultRunConfigurationExecutor.RemoteNotFound.Error", filename,
+            runConfiguration.getName(), "{0}", defaultRunConfiguration.getServer() ) );
+      }
     }
     if ( defaultRunConfiguration.isClustered() ) {
       configuration.setPassingExport( defaultRunConfiguration.isSendResources() );
