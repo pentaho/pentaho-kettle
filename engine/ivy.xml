@@ -7,6 +7,7 @@
         <conf name="runtime" />
         <conf name="test" extends="runtime" visibility="private" />
         <conf name="source" />
+        <conf name="provided" extends="runtime" visibility="private" />
   </configurations>
 
   <publications>
@@ -104,8 +105,8 @@
 	<dependency org="com.googlecode.log4jdbc" name="log4jdbc" rev="1.2" transitive="false" conf="default->default"/>
     <dependency org="javax.servlet" name="javax.servlet-api" rev="3.0.1" transitive="false" />
 
-    <!-- OLAP4J is bringing in an older version of beanutils-core than is needed -->
-    <dependency org="commons-beanutils"   name="commons-beanutils-core" rev="1.8.0"         transitive="false"/>
+    <!-- analogue of "provided" scope for maven artifacts -->
+    <dependency org="commons-beanutils"   name="commons-beanutils" rev="1.9.3" conf="provided->default" transitive="false"/>
 
     <!--  for testing -->
     <dependency org="com.h2database"      name="h2"            rev="1.2.131" conf="test->default" transitive="false"/>
