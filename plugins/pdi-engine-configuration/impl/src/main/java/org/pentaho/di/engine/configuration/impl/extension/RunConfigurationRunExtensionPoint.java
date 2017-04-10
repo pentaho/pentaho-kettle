@@ -33,6 +33,7 @@ import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.engine.configuration.api.RunConfiguration;
 import org.pentaho.di.engine.configuration.api.RunConfigurationExecutor;
 import org.pentaho.di.engine.configuration.impl.RunConfigurationManager;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.TransExecutionConfiguration;
 import org.pentaho.di.trans.TransMeta;
 
@@ -42,6 +43,8 @@ import org.pentaho.di.trans.TransMeta;
 @ExtensionPoint( id = "RunConfigurationRunExtensionPoint", extensionPointId = "SpoonTransBeforeStart",
   description = "" )
 public class RunConfigurationRunExtensionPoint implements ExtensionPointInterface {
+
+  private static Class<?> PKG = RunConfigurationRunExtensionPoint.class;
 
   private RunConfigurationManager runConfigurationManager;
 
@@ -64,6 +67,14 @@ public class RunConfigurationRunExtensionPoint implements ExtensionPointInterfac
       if ( runConfigurationExecutor != null ) {
         runConfigurationExecutor.execute( runConfiguration, transExecutionConfiguration, meta, variableSpace );
       }
+    } else {
+      String name = "";
+      if ( variableSpace instanceof TransMeta ) {
+        name = ( (TransMeta) variableSpace ).getFilename();
+      }
+      throw new KettleException( BaseMessages
+        .getString( PKG, "RunConfigurationRunExtensionPoint.ConfigNotFound.Error", name,
+          transExecutionConfiguration.getRunConfiguration(), "{0}" ) );
     }
   }
 }

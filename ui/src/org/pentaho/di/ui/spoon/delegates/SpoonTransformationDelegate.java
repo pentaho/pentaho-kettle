@@ -852,9 +852,15 @@ public class SpoonTransformationDelegate extends SpoonDelegate {
       ExtensionPointHandler.callExtensionPoint( log, KettleExtensionPoint.SpoonTransMetaExecutionStart.id, transMeta );
       ExtensionPointHandler.callExtensionPoint( log, KettleExtensionPoint.SpoonTransExecutionConfiguration.id,
           executionConfiguration );
-      ExtensionPointHandler.callExtensionPoint( log, KettleExtensionPoint.SpoonTransBeforeStart.id, new Object[] {
-        executionConfiguration, transMeta, transMeta
-      } );
+
+      try {
+        ExtensionPointHandler.callExtensionPoint( log, KettleExtensionPoint.SpoonTransBeforeStart.id, new Object[] {
+          executionConfiguration, transMeta, transMeta
+        } );
+      } catch ( KettleException e ) {
+        log.logError( e.getMessage(), transMeta.getFilename() );
+        return;
+      }
 
       // Verify if there is at least one step specified to debug or preview...
       //

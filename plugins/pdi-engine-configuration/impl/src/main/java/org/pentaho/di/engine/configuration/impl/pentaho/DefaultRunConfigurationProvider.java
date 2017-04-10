@@ -47,14 +47,18 @@ public class DefaultRunConfigurationProvider extends MetaStoreRunConfigurationFa
 
   private static DefaultRunConfiguration defaultRunConfiguration = new DefaultRunConfiguration();
 
+  private DefaultRunConfigurationExecutor defaultRunConfigurationExecutor;
+
   static {
     defaultRunConfiguration.setName( DEFAULT_CONFIG_NAME );
     defaultRunConfiguration.setReadOnly( true );
     defaultRunConfiguration.setLocal( true );
   }
 
-  public DefaultRunConfigurationProvider( MetastoreLocator metastoreLocator ) {
+  public DefaultRunConfigurationProvider( MetastoreLocator metastoreLocator,
+                                          DefaultRunConfigurationExecutor defaultRunConfigurationExecutor ) {
     super( metastoreLocator );
+    this.defaultRunConfigurationExecutor = defaultRunConfigurationExecutor;
   }
 
   @Override public RunConfiguration getConfiguration() {
@@ -92,6 +96,6 @@ public class DefaultRunConfigurationProvider extends MetaStoreRunConfigurationFa
   }
 
   @Override public RunConfigurationExecutor getExecutor() {
-    return new DefaultRunConfigurationExecutor();
+    return defaultRunConfigurationExecutor;
   }
 }

@@ -885,9 +885,16 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
         TransExecutionConfiguration executionConfiguration = new TransExecutionConfiguration();
         if ( !Utils.isEmpty( runConfiguration ) ) {
           executionConfiguration.setRunConfiguration( runConfiguration );
-          ExtensionPointHandler.callExtensionPoint( log, KettleExtensionPoint.SpoonTransBeforeStart.id, new Object[] {
-            executionConfiguration, parentJob.getJobMeta(), transMeta
-          } );
+          try {
+            ExtensionPointHandler.callExtensionPoint( log, KettleExtensionPoint.SpoonTransBeforeStart.id, new Object[] {
+              executionConfiguration, parentJob.getJobMeta(), transMeta
+            } );
+          } catch ( KettleException e ) {
+            log.logError( e.getMessage(), getName() );
+            result.setNrErrors( 1 );
+            result.setResult( false );
+            return result;
+          }
           clustering = executionConfiguration.isExecutingClustered();
           remoteSlaveServer = executionConfiguration.getRemoteServer();
         } else {

@@ -27,6 +27,9 @@ package org.pentaho.di.engine.configuration.impl;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.runners.MockitoJUnitRunner;
 import org.pentaho.di.engine.configuration.api.RunConfiguration;
 import org.pentaho.di.engine.configuration.api.RunConfigurationProvider;
 import org.pentaho.di.engine.configuration.impl.pentaho.DefaultRunConfiguration;
@@ -47,11 +50,15 @@ import static org.junit.Assert.*;
 /**
  * Created by bmorrise on 3/15/17.
  */
+@RunWith( MockitoJUnitRunner.class )
 public class RunConfigurationManagerTest {
 
   private static String XML_METASTORE = "src/test/resources/metastore_test";
 
   private RunConfigurationManager executionConfigurationManager;
+
+  @Mock
+  private DefaultRunConfigurationExecutor defaultRunConfigurationExecutor;
 
   @Before
   public void setup() throws Exception {
@@ -60,7 +67,7 @@ public class RunConfigurationManagerTest {
     MetastoreLocator metastoreLocator = () -> xmlMetaStore;
 
     DefaultRunConfigurationProvider defaultRunConfigurationProvider =
-      new DefaultRunConfigurationProvider( metastoreLocator );
+      new DefaultRunConfigurationProvider( metastoreLocator, defaultRunConfigurationExecutor );
 
     SparkRunConfigurationExecutor sparkRunConfigurationExecutor = new SparkRunConfigurationExecutor( null );
     SparkRunConfigurationProvider sparkRunConfigurationProvider =
