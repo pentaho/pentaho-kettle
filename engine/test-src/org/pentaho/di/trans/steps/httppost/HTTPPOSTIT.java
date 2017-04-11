@@ -37,11 +37,13 @@ import java.net.InetSocketAddress;
 import java.net.URLDecoder;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import com.google.common.io.ByteStreams;
 import org.apache.commons.httpclient.Header;
 import org.apache.commons.httpclient.HostConfiguration;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.methods.PostMethod;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -63,6 +65,8 @@ import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.steps.mock.StepMockHelper;
 
+import com.google.common.io.ByteStreams;
+import com.sun.net.httpserver.Headers;
 import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
 
@@ -77,7 +81,7 @@ public class HTTPPOSTIT {
     boolean  override;
 
     public HTTPPOSTHandler( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta,
-                            Trans trans, boolean override ) {
+                      Trans trans, boolean override ) {
       super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
       this.override = override;
     }
@@ -98,7 +102,7 @@ public class HTTPPOSTIT {
      * to each rowset!
      *
      * @param row
-     *          The row to put to the destination rowset(s).
+     *        The row to put to the destination rowset(s).
      * @throws org.pentaho.di.core.exception.KettleStepException
      *
      */
@@ -162,7 +166,7 @@ public class HTTPPOSTIT {
   public void setUp() throws Exception {
     stepMockHelper =
       new StepMockHelper<HTTPPOSTMeta, HTTPPOSTData>( "HTTPPOST CLIENT TEST",
-        HTTPPOSTMeta.class, HTTPPOSTData.class );
+      HTTPPOSTMeta.class, HTTPPOSTData.class );
     when( stepMockHelper.logChannelInterfaceFactory.create( any(), any( LoggingObjectInterface.class ) ) ).thenReturn(
       stepMockHelper.logChannelInterface );
     when( stepMockHelper.trans.isRunning() ).thenReturn( true );
@@ -234,6 +238,39 @@ public class HTTPPOSTIT {
   }
 
   @Test
+  public void testDuplicateNamesInHeader() throws Exception {
+    startHttpServer( getDuplicateHeadersHandler() );
+    HTTPPOSTData data = new HTTPPOSTData();
+    RowMeta meta = new RowMeta();
+    meta.addValueMeta( new ValueMetaString( "headerFieldName" ) );
+    HTTPPOST HTTPPOST = new HTTPPOSTHandler(
+      stepMockHelper.stepMeta, data, 0, stepMockHelper.transMeta, stepMockHelper.trans, false );
+    RowMetaInterface inputRowMeta = mock( RowMetaInterface.class );
+    HTTPPOST.setInputRowMeta( inputRowMeta );
+    when( inputRowMeta.clone() ).thenReturn( inputRowMeta );
+    when( stepMockHelper.processRowsStepMetaInterface.getUrl() ).thenReturn( HTTP_LOCALHOST_9998 );
+    when( stepMockHelper.processRowsStepMetaInterface.getQueryField() ).thenReturn( new String[] {} );
+    when( stepMockHelper.processRowsStepMetaInterface.getArgumentField() ).thenReturn( new String[] {} );
+    when( stepMockHelper.processRowsStepMetaInterface.getEncoding() ).thenReturn( "UTF-8" );
+    when( stepMockHelper.processRowsStepMetaInterface.getResponseHeaderFieldName() ).thenReturn(
+      "ResponseHeaderFieldName" );
+    HTTPPOST.init( stepMockHelper.processRowsStepMetaInterface, data );
+    Assert.assertTrue( HTTPPOST.processRow( stepMockHelper.processRowsStepMetaInterface, data ) );
+    Object[] out = ( (HTTPPOSTHandler) HTTPPOST ).getOutputRow();
+    Assert.assertTrue( out.length == 1 );
+    JSONParser parser = new JSONParser();
+    JSONObject json = (JSONObject) parser.parse( (String) out[0] );
+    Object userAgent = json.get( "User-agent" );
+    Assert.assertTrue( "HTTPTool/1.0".equals( userAgent ) );
+    Object cookies = json.get( "Set-cookie" );
+    Assert.assertTrue( cookies instanceof JSONArray );
+    for ( int i = 0; i < 3; i++ ) {
+      String cookie = ( (String) ( (JSONArray) cookies ).get( i ) );
+      Assert.assertTrue( cookie.startsWith( "cookie" + i ) );
+    }
+  }
+
+  @Test
   public void testUTF8() throws Exception {
     testServerReturnsCorrectlyEncodedParams( "test string \uD842\uDFB7 øó 測試", "UTF-8" );
   }
@@ -273,6 +310,7 @@ public class HTTPPOSTIT {
     Assert.assertTrue( testStatus.get(), "Test failed" );
   }
 
+
   private void startHttpServer( HttpHandler httpHandler ) throws IOException {
     httpServer = HttpServer.create( new InetSocketAddress( HTTPPOSTIT.host, HTTPPOSTIT.port ), 10 );
     httpServer.createContext( "/", httpHandler );
@@ -282,6 +320,18 @@ public class HTTPPOSTIT {
   private HttpHandler get204AnswerHandler() {
     return httpExchange -> {
       httpExchange.sendResponseHeaders( 204, 0 );
+      httpExchange.close();
+    };
+  }
+
+  private HttpHandler getDuplicateHeadersHandler() {
+    return httpExchange -> {
+      Headers headers = httpExchange.getResponseHeaders();
+      headers.add( "User-agent", "HTTPTool/1.0" );
+      headers.add( "Set-cookie", "cookie0=value0; Max-Age=3600" );
+      headers.add( "Set-cookie", "cookie1=value1; HttpOnly" );
+      headers.add( "Set-cookie", "cookie2=value2; Secure" );
+      httpExchange.sendResponseHeaders( 200, 0 );
       httpExchange.close();
     };
   }

@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -36,6 +36,9 @@ import org.apache.commons.httpclient.Header;
 import org.apache.commons.httpclient.HostConfiguration;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpMethod;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -57,7 +60,7 @@ import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.steps.mock.StepMockHelper;
 
-import com.sun.net.httpserver.HttpExchange;
+import com.sun.net.httpserver.Headers;
 import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
 
@@ -164,7 +167,6 @@ public class HTTPIT {
         stepMockHelper.logChannelInterface );
     when( stepMockHelper.trans.isRunning() ).thenReturn( true );
     verify( stepMockHelper.trans, never() ).stopAll();
-    startHttp204Answer();
   }
 
   @After
@@ -176,6 +178,7 @@ public class HTTPIT {
 
   @Test
   public void test204Answer() throws Exception {
+    startHttpServer( get204AnswerHandler() );
     HTTPData data = new HTTPData();
     int[] index = { 0, 1 };
     RowMeta meta = new RowMeta();
@@ -200,6 +203,7 @@ public class HTTPIT {
 
   @Test
   public void testResponseHeader() throws Exception {
+    startHttpServer( get204AnswerHandler() );
     HTTPData data = new HTTPData();
     int[] index = { 0, 1, 3 };
     RowMeta meta = new RowMeta();
@@ -231,17 +235,65 @@ public class HTTPIT {
 
   }
 
-  private void startHttp204Answer() throws IOException {
+
+  @Test
+  public void testDuplicateNamesInHeader() throws Exception {
+    startHttpServer( getDuplicateHeadersHandler() );
+    HTTPData data = new HTTPData();
+    RowMeta meta = new RowMeta();
+    meta.addValueMeta( new ValueMetaString( "headerFieldName" ) );
+    HTTP http =
+      new HTTPHandler( stepMockHelper.stepMeta, data, 0, stepMockHelper.transMeta, stepMockHelper.trans, false );
+    RowMetaInterface inputRowMeta = mock( RowMetaInterface.class );
+    http.setInputRowMeta( inputRowMeta );
+    when( inputRowMeta.clone() ).thenReturn( inputRowMeta );
+    when( stepMockHelper.processRowsStepMetaInterface.getUrl() ).thenReturn( HTTP_LOCALHOST_9998 );
+    when( stepMockHelper.processRowsStepMetaInterface.getHeaderField() ).thenReturn( new String[] {} );
+    when( stepMockHelper.processRowsStepMetaInterface.getArgumentField() ).thenReturn( new String[] {} );
+    when( stepMockHelper.processRowsStepMetaInterface.getEncoding() ).thenReturn( "UTF8" );
+    when( stepMockHelper.processRowsStepMetaInterface.getResponseHeaderFieldName() ).thenReturn(
+      "ResponseHeaderFieldName" );
+    http.init( stepMockHelper.processRowsStepMetaInterface, data );
+    Assert.assertTrue( http.processRow( stepMockHelper.processRowsStepMetaInterface, data ) );
+    Object[] out = ( (HTTPHandler) http ).getOutputRow();
+    Assert.assertTrue( out.length == 1 );
+    JSONParser parser = new JSONParser();
+    JSONObject json = (JSONObject) parser.parse( (String) out[0] );
+    Object userAgent = json.get( "User-agent" );
+    Assert.assertTrue( "HTTPTool/1.0".equals( userAgent ) );
+    Object cookies = json.get( "Set-cookie" );
+    Assert.assertTrue( cookies instanceof JSONArray );
+    for ( int i = 0; i < 3; i++ ) {
+      String cookie = ( (String) ( (JSONArray) cookies ).get( i ) );
+      Assert.assertTrue( cookie.startsWith( "cookie" + i ) );
+    }
+  }
+
+  private void startHttpServer( HttpHandler httpHandler ) throws IOException {
     httpServer = HttpServer.create( new InetSocketAddress( HTTPIT.host, HTTPIT.port ), 10 );
-    httpServer.createContext( "/", new HttpHandler() {
-      @Override
-      public void handle( HttpExchange httpExchange ) throws IOException {
-        httpExchange.sendResponseHeaders( 204, 0 );
-        httpExchange.close();
-      }
-    } );
+    httpServer.createContext( "/", httpHandler );
     httpServer.start();
   }
+
+  private HttpHandler get204AnswerHandler() {
+    return httpExchange -> {
+      httpExchange.sendResponseHeaders( 204, 0 );
+      httpExchange.close();
+    };
+  }
+
+  private HttpHandler getDuplicateHeadersHandler() {
+    return httpExchange -> {
+      Headers headers = httpExchange.getResponseHeaders();
+      headers.add( "User-agent", "HTTPTool/1.0" );
+      headers.add( "Set-cookie", "cookie0=value0; Max-Age=3600" );
+      headers.add( "Set-cookie", "cookie1=value1; HttpOnly" );
+      headers.add( "Set-cookie", "cookie2=value2; Secure" );
+      httpExchange.sendResponseHeaders( 200, 0 );
+      httpExchange.close();
+    };
+  }
+
 
   // LoadSave Test is a unit test of the meta, not an integration test. Moved to new class.
   // MB 5/2016
