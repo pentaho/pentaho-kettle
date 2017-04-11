@@ -223,6 +223,7 @@ public class HTTP extends BaseStep implements StepInterface {
         }
         if ( !Utils.isEmpty( meta.getResponseTimeFieldName() ) ) {
           newRow = RowDataUtil.addValueData( newRow, returnFieldsOffset, new Long( responseTime ) );
+          returnFieldsOffset++;
         }
         if ( !Utils.isEmpty( meta.getResponseHeaderFieldName() ) ) {
           newRow = RowDataUtil.addValueData( newRow, returnFieldsOffset, headerString.toString() );

@@ -201,13 +201,14 @@ public class HTTPIT {
   @Test
   public void testResponseHeader() throws Exception {
     HTTPData data = new HTTPData();
-    int[] index = { 0, 1, 2 };
+    int[] index = { 0, 1, 3 };
     RowMeta meta = new RowMeta();
     meta.addValueMeta( new ValueMetaString( "fieldName" ) );
     meta.addValueMeta( new ValueMetaInteger( "codeFieldName" ) );
+    meta.addValueMeta( new ValueMetaInteger( "responseTimeFieldName" ) );
     meta.addValueMeta( new ValueMetaString( "headerFieldName" ) );
     Object[] expectedRow =
-      new Object[] { "", 402L, "{\"host\":\"localhost\"}" };
+      new Object[] { "", 402L, 0L, "{\"host\":\"localhost\"}" };
     HTTP http =
       new HTTPHandler( stepMockHelper.stepMeta, data, 0, stepMockHelper.transMeta, stepMockHelper.trans, true );
     RowMetaInterface inputRowMeta = mock( RowMetaInterface.class );
@@ -219,6 +220,8 @@ public class HTTPIT {
     when( stepMockHelper.processRowsStepMetaInterface.getResultCodeFieldName() ).thenReturn( "ResultCodeFieldName" );
     when( stepMockHelper.processRowsStepMetaInterface.getFieldName() ).thenReturn( "ResultFieldName" );
     when( stepMockHelper.processRowsStepMetaInterface.getEncoding() ).thenReturn( "UTF8" );
+    when( stepMockHelper.processRowsStepMetaInterface.getResponseTimeFieldName() ).thenReturn(
+      "ResponseTimeFieldName" );
     when( stepMockHelper.processRowsStepMetaInterface.getResponseHeaderFieldName() ).thenReturn(
       "ResponseHeaderFieldName" );
     http.init( stepMockHelper.processRowsStepMetaInterface, data );

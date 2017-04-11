@@ -204,13 +204,14 @@ public class HTTPPOSTIT {
   public void testResponseHeader() throws Exception {
     startHttpServer( get204AnswerHandler() );
     HTTPPOSTData data = new HTTPPOSTData();
-    int[] index = { 0, 1, 2 };
+    int[] index = { 0, 1, 3 };
     RowMeta meta = new RowMeta();
     meta.addValueMeta( new ValueMetaString( "fieldName" ) );
     meta.addValueMeta( new ValueMetaInteger( "codeFieldName" ) );
+    meta.addValueMeta( new ValueMetaInteger( "responseTimeFieldName" ) );
     meta.addValueMeta( new ValueMetaString( "headerFieldName" ) );
     Object[] expectedRow =
-      new Object[] { "", 402L, "{\"host\":\"localhost\"}" };
+      new Object[] { "", 402L, 0L, "{\"host\":\"localhost\"}" };
     HTTPPOST HTTPPOST = new HTTPPOSTHandler(
       stepMockHelper.stepMeta, data, 0, stepMockHelper.transMeta, stepMockHelper.trans, true );
     RowMetaInterface inputRowMeta = mock( RowMetaInterface.class );
@@ -222,6 +223,8 @@ public class HTTPPOSTIT {
     when( stepMockHelper.processRowsStepMetaInterface.getResultCodeFieldName() ).thenReturn( "ResultCodeFieldName" );
     when( stepMockHelper.processRowsStepMetaInterface.getFieldName() ).thenReturn( "ResultFieldName" );
     when( stepMockHelper.processRowsStepMetaInterface.getEncoding() ).thenReturn( "UTF-8" );
+    when( stepMockHelper.processRowsStepMetaInterface.getResponseTimeFieldName() ).thenReturn(
+      "ResponseTimeFieldName" );
     when( stepMockHelper.processRowsStepMetaInterface.getResponseHeaderFieldName() ).thenReturn(
       "ResponseHeaderFieldName" );
     HTTPPOST.init( stepMockHelper.processRowsStepMetaInterface, data );

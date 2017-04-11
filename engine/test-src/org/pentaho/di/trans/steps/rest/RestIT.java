@@ -196,13 +196,14 @@ public class RestIT {
   public void testResponseHeader() throws Exception {
     try {
       RestData data = new RestData();
-      int[] index = { 0, 1, 2 };
+      int[] index = { 0, 1, 3 };
       RowMeta meta = new RowMeta();
       meta.addValueMeta( new ValueMetaString( "fieldName" ) );
       meta.addValueMeta( new ValueMetaInteger( "codeFieldName" ) );
+      meta.addValueMeta( new ValueMetaInteger( "responseTimeFieldName" ) );
       meta.addValueMeta( new ValueMetaString( "headerFieldName" ) );
       Object[] expectedRow =
-        new Object[] { "", 204L, "{\"host\":\"localhost\"}" };
+        new Object[] { "", 204L, 0L, "{\"host\":\"localhost\"}" };
       Rest rest =
         new RestHandler( stepMockHelper.stepMeta, data, 0, stepMockHelper.transMeta, stepMockHelper.trans, true );
       RowMetaInterface inputRowMeta = mock( RowMetaInterface.class );
@@ -211,6 +212,8 @@ public class RestIT {
       when( stepMockHelper.processRowsStepMetaInterface.getUrl() ).thenReturn(
         HTTP_LOCALHOST_9998 + "restTest/restNoContentAnswer" );
       when( stepMockHelper.processRowsStepMetaInterface.getMethod() ).thenReturn( RestMeta.HTTP_METHOD_GET );
+      when( stepMockHelper.processRowsStepMetaInterface.getResponseTimeFieldName() ).thenReturn(
+        "ResponseTimeFieldName" );
       when( stepMockHelper.processRowsStepMetaInterface.getResponseHeaderFieldName() ).thenReturn(
         "ResponseHeaderFieldName" );
       rest.init( stepMockHelper.processRowsStepMetaInterface, data );
