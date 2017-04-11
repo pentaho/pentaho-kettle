@@ -1,5 +1,5 @@
 /*!
- * Copyright 2010 - 2015 Pentaho Corporation.  All rights reserved.
+ * Copyright 2010 - 2017 Pentaho Corporation.  All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -307,7 +307,7 @@ public class UserRoleDelegate implements java.io.Serializable {
     if ( existing != null ) {
       String name = role.getName();
       for ( ProxyPentahoRole pentahoRole : existing ) {
-        if ( name.equals( pentahoRole.getName() ) ) {
+        if ( name.equalsIgnoreCase( pentahoRole.getName() ) ) {
           return true;
         }
       }
