@@ -749,6 +749,11 @@ public class Const {
   public static final String KETTLE_COMPATIBILITY_IMPORT_PATH_ADDITION_ON_VARIABLES = "KETTLE_COMPATIBILITY_IMPORT_PATH_ADDITION_ON_VARIABLES";
 
   /**
+   * System wide flag to ignore logging table. See BACKLOG-15706 for details.
+   */
+  public static final String KETTLE_COMPATIBILITY_IGNORE_TABLE_LOGGING = "KETTLE_COMPATIBILITY_IGNORE_TABLE_LOGGING";
+
+  /**
    * System wide flag to set or not append and header options dependency on Text file output step. See PDI-5252 for
    * details.
    */
