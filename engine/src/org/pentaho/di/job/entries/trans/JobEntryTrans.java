@@ -884,6 +884,7 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
         SlaveServer remoteSlaveServer = null;
         TransExecutionConfiguration executionConfiguration = new TransExecutionConfiguration();
         if ( !Utils.isEmpty( runConfiguration ) ) {
+          runConfiguration = environmentSubstitute( runConfiguration );
           executionConfiguration.setRunConfiguration( runConfiguration );
           try {
             ExtensionPointHandler.callExtensionPoint( log, KettleExtensionPoint.SpoonTransBeforeStart.id, new Object[] {
