@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -116,6 +116,9 @@ public class PentahoReportingOutputMeta extends BaseStepMeta implements StepMeta
   @InjectionDeep
   private Param[] params;
 
+  @Injection( name = "CREATE_PARENT_FOLDER" )
+  private Boolean createParentfolder;
+
   public PentahoReportingOutputMeta() {
     super(); // allocate BaseStepMeta
     parameterFieldMap = new HashMap<String, String>();
@@ -135,6 +138,7 @@ public class PentahoReportingOutputMeta extends BaseStepMeta implements StepMeta
     try {
       inputFileField = XMLHandler.getTagValue( stepnode, "input_file_field" );
       outputFileField = XMLHandler.getTagValue( stepnode, "output_file_field" );
+      createParentfolder = "Y".equals( XMLHandler.getTagValue( stepnode, "create_parent_folder" ) );
       parameterFieldMap = new HashMap<String, String>();
       Node parsNode = XMLHandler.getSubNode( stepnode, XML_TAG_PARAMETERS );
       List<Node> nodes = XMLHandler.getNodes( parsNode, XML_TAG_PARAMETER );
@@ -156,6 +160,7 @@ public class PentahoReportingOutputMeta extends BaseStepMeta implements StepMeta
 
   public void setDefault() {
     outputProcessorType = ProcessorType.PDF;
+    createParentfolder = false;
   }
 
   public String getXML() {
@@ -163,7 +168,7 @@ public class PentahoReportingOutputMeta extends BaseStepMeta implements StepMeta
 
     retval.append( "  " + XMLHandler.addTagValue( "input_file_field", inputFileField ) );
     retval.append( "  " + XMLHandler.addTagValue( "output_file_field", outputFileField ) );
-
+    retval.append( "  " + XMLHandler.addTagValue( "create_parent_folder", createParentfolder ) );
     retval.append( "  " + XMLHandler.openTag( XML_TAG_PARAMETERS ) );
     List<String> parameters = new ArrayList<String>();
     parameters.addAll( parameterFieldMap.keySet() );
@@ -186,7 +191,7 @@ public class PentahoReportingOutputMeta extends BaseStepMeta implements StepMeta
     try {
       inputFileField = rep.getStepAttributeString( idStep, "file_input_field" );
       outputFileField = rep.getStepAttributeString( idStep, "file_output_field" );
-
+      createParentfolder = rep.getStepAttributeBoolean( idStep, "create_parent_folder" );
       parameterFieldMap = new HashMap<String, String>();
       int nrParameters = rep.countNrStepAttributes( idStep, "parameter_name" );
       for ( int i = 0; i < nrParameters; i++ ) {
@@ -209,7 +214,7 @@ public class PentahoReportingOutputMeta extends BaseStepMeta implements StepMeta
     try {
       rep.saveStepAttribute( idTransformation, idStep, "file_input_field", inputFileField );
       rep.saveStepAttribute( idTransformation, idStep, "file_output_field", outputFileField );
-
+      rep.saveStepAttribute( idTransformation, idStep, "create_parent_folder", createParentfolder );
       List<String> pars = new ArrayList<String>( parameterFieldMap.keySet() );
       Collections.sort( pars );
       for ( int i = 0; i < pars.size(); i++ ) {
@@ -256,6 +261,20 @@ public class PentahoReportingOutputMeta extends BaseStepMeta implements StepMeta
 
   public StepDataInterface getStepData() {
     return new PentahoReportingOutputData();
+  }
+
+  /**
+  * @return the createParentfolder
+   */
+  public Boolean getCreateParentfolder() {
+    return createParentfolder;
+  }
+  /**
+   * @param createParentfolder
+   *          the createParentfolder to set
+   */
+  public void setCreateParentfolder( Boolean createParentfolder ) {
+    this.createParentfolder = createParentfolder;
   }
 
   /**

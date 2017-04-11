@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -26,10 +26,12 @@ import java.math.BigDecimal;
 import java.util.Date;
 
 import org.eclipse.swt.SWT;
+
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
-import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.ShellAdapter;
 import org.eclipse.swt.events.ShellEvent;
 import org.eclipse.swt.graphics.Cursor;
@@ -86,6 +88,9 @@ public class PentahoReportingOutputDialog extends BaseStepDialog implements Step
 
   private TableView wFields;
 
+  private Label wlParentFolder;
+  private Button wParentFolder;
+
   public PentahoReportingOutputDialog( Shell parent, Object in, TransMeta transMeta, String sname ) {
     super( parent, (BaseStepMeta) in, transMeta, sname );
     input = (PentahoReportingOutputMeta) in;
@@ -109,6 +114,12 @@ public class PentahoReportingOutputDialog extends BaseStepDialog implements Step
     ModifyListener lsMod = new ModifyListener() {
       @Override
       public void modifyText( ModifyEvent e ) {
+        input.setChanged();
+      }
+    };
+    SelectionListener selMod = new SelectionAdapter( ) {
+      @Override
+      public void widgetSelected( SelectionEvent e ) {
         input.setChanged();
       }
     };
@@ -170,7 +181,7 @@ public class PentahoReportingOutputDialog extends BaseStepDialog implements Step
 
     wInput.setItems( fieldNames );
 
-    // input file line (report definition)
+    // output file line
     wlOutput = new Label( shell, SWT.RIGHT );
     wlOutput.setText( BaseMessages.getString( PKG, "PentahoReportingOutputDialog.OutputFilename.Label" ) );
     props.setLook( wlOutput );
@@ -189,6 +200,24 @@ public class PentahoReportingOutputDialog extends BaseStepDialog implements Step
     wOutput.setLayoutData( fdOutput );
     wOutput.setItems( fieldNames );
 
+    //ParentFolder
+    wlParentFolder = new Label( shell, SWT.RIGHT );
+    wlParentFolder.setText( BaseMessages.getString( PKG, "PentahoReportingOutputDialog.ParentFolder.Label" ) );
+    props.setLook( wlParentFolder );
+    FormData fdlParentFolder = new FormData();
+    fdlParentFolder.left = new FormAttachment( 10, 10 );
+    fdlParentFolder.top = new FormAttachment( wlOutput, margin + 15 );
+    fdlParentFolder.right = new FormAttachment( middle, -margin );
+    wlParentFolder.setLayoutData( fdlParentFolder );
+    wParentFolder = new Button( shell, SWT.CHECK );
+    props.setLook( wParentFolder );
+    wParentFolder.addSelectionListener( selMod );
+    FormData fdParentFolder = new FormData();
+    fdParentFolder.left = new FormAttachment( middle, 10 );
+    fdParentFolder.top = new FormAttachment( wlOutput, margin + 15 );
+    fdParentFolder.right = new FormAttachment( 100, 10 );
+    wParentFolder.setLayoutData( fdParentFolder );
+    wParentFolder.setSelection( input.getCreateParentfolder() );
     // Fields
     ColumnInfo[] colinf =
       new ColumnInfo[] {
@@ -203,8 +232,8 @@ public class PentahoReportingOutputDialog extends BaseStepDialog implements Step
       new TableView( transMeta, shell, SWT.FULL_SELECTION | SWT.MULTI | SWT.BORDER, colinf, 1, lsMod, props );
 
     FormData fdFields = new FormData();
-    fdFields.top = new FormAttachment( wOutput, margin * 2 );
-    fdFields.bottom = new FormAttachment( wOutput, 250 );
+    fdFields.top = new FormAttachment( wParentFolder, margin * 2 );
+    fdFields.bottom = new FormAttachment( wParentFolder, 250 );
     fdFields.left = new FormAttachment( 0, 0 );
     fdFields.right = new FormAttachment( 100, 0 );
     wFields.setLayoutData( fdFields );
@@ -273,6 +302,7 @@ public class PentahoReportingOutputDialog extends BaseStepDialog implements Step
     wStepname.addSelectionListener( lsDef );
     wInput.addSelectionListener( lsDef );
     wOutput.addSelectionListener( lsDef );
+    wParentFolder.addSelectionListener( lsDef );
 
     // Detect X or ALT-F4 or something that kills this window...
     shell.addShellListener( new ShellAdapter() {
@@ -318,6 +348,8 @@ public class PentahoReportingOutputDialog extends BaseStepDialog implements Step
 
     wStepname.selectAll();
     wStepname.setFocus();
+
+    wParentFolder.setSelection( input.getCreateParentfolder() );
   }
 
   private void cancel() {
@@ -343,7 +375,7 @@ public class PentahoReportingOutputDialog extends BaseStepDialog implements Step
     input.setInputFileField( wInput.getText() );
     input.setOutputFileField( wOutput.getText() );
     input.setOutputProcessorType( ProcessorType.values()[wProcessor.getSelectionIndex()] );
-
+    input.setCreateParentfolder( wParentFolder.getSelection() );
     dispose();
   }
 
