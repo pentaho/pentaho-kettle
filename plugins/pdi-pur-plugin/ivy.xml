@@ -28,7 +28,7 @@
     <dependency org="pentaho" name="pentaho-platform-api" rev="${dependency.bi-platform.revision}"
       changing="true" transitive="false" conf="compile->default"/>
     <dependency org="pentaho" name="pentaho-platform-repository" rev="${dependency.bi-platform.revision}"
-      changing="true" transitive="false" />
+      changing="true" transitive="false" conf="compile->default"/>
     <dependency org="pentaho" name="pentaho-platform-extensions" rev="${dependency.bi-platform.revision}"
       changing="true" transitive="false" conf="compile->default"/>
     <dependency org="pentaho" name="pentaho-xul-core" rev="${dependency.pentaho-xul.revision}"
