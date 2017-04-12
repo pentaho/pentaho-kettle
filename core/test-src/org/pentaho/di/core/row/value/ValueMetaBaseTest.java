@@ -390,6 +390,24 @@ public class ValueMetaBaseTest {
     valueMetaBase.convertDataFromString( inputValueEmptyString, valueMetaInterface, nullIf, ifNull, trim_type );
   }
 
+  @Test( expected = KettleValueException.class )
+  public void testGetBigDecimalThrowsKettleValueException() throws KettleValueException {
+    ValueMetaBase valueMeta = new ValueMetaBigNumber();
+    valueMeta.getBigNumber( "1234567890" );
+  }
+
+  @Test( expected = KettleValueException.class )
+  public void testGetIntegerThrowsKettleValueException() throws KettleValueException {
+    ValueMetaBase valueMeta = new ValueMetaInteger();
+    valueMeta.getInteger( "1234567890" );
+  }
+
+  @Test( expected = KettleValueException.class )
+  public void testGetNumberThrowsKettleValueException() throws KettleValueException {
+    ValueMetaBase valueMeta = new ValueMetaNumber();
+    valueMeta.getNumber( "1234567890" );
+  }
+
   @Test
   public void testIsNumeric() {
     int[] numTypes = { ValueMetaInterface.TYPE_INTEGER, ValueMetaInterface.TYPE_NUMBER, ValueMetaInterface.TYPE_BIGNUMBER };
