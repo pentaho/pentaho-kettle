@@ -23,7 +23,6 @@
 package org.pentaho.di.ui.job.entries.trans;
 
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.ShellAdapter;
@@ -61,6 +60,7 @@ import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.ui.core.ConstUI;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.gui.WindowProperty;
+import org.pentaho.di.ui.core.widget.ComboVar;
 import org.pentaho.di.ui.job.dialog.JobDialog;
 import org.pentaho.di.ui.repository.dialog.SelectObjectDialog;
 import org.pentaho.di.ui.spoon.Spoon;
@@ -81,7 +81,7 @@ public class JobEntryTransDialog extends JobEntryBaseDialog implements JobEntryD
   private static Class<?> PKG = JobEntryTrans.class; // for i18n purposes, needed by Translator2!!
 
   protected JobEntryTrans jobEntry;
-  protected CCombo wRunConfiguration;
+  protected ComboVar wRunConfiguration;
 
   private static final String[] FILE_FILTERLOGNAMES = new String[] {
     BaseMessages.getString( PKG, "JobTrans.Fileformat.TXT" ),
@@ -191,7 +191,7 @@ public class JobEntryTransDialog extends JobEntryBaseDialog implements JobEntryD
     fdlRunConfiguration.left = new FormAttachment( 0 );
     wlRunConfiguration.setLayoutData( fdlRunConfiguration );
 
-    wRunConfiguration = new CCombo( cRunConfiguration, SWT.BORDER );
+    wRunConfiguration = new ComboVar( jobMeta, cRunConfiguration, SWT.BORDER );
     props.setLook( wRunConfiguration );
     FormData fdRunConfiguration = new FormData();
     fdRunConfiguration.width = 200;
@@ -454,9 +454,6 @@ public class JobEntryTransDialog extends JobEntryBaseDialog implements JobEntryD
     }
 
     wRunConfiguration.setItems( runConfigurations.toArray( new String[ 0 ] ) );
-    if ( !runConfigurations.contains( jobEntry.getRunConfiguration() ) ) {
-      jobEntry.setRunConfiguration( null );
-    }
     if ( Utils.isEmpty( jobEntry.getRunConfiguration() ) ) {
       wRunConfiguration.select( 0 );
     } else {

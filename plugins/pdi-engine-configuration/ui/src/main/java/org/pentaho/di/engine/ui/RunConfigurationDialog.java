@@ -220,7 +220,7 @@ public class RunConfigurationDialog extends Dialog {
     fdOptions.top = new FormAttachment( wEngine, 15 );
     fdOptions.right = new FormAttachment( 100 );
     fdOptions.left = new FormAttachment( 0 );
-    fdOptions.height = 120;
+    fdOptions.height = 140;
     gOptions.setLayoutData( fdOptions );
 
     wCancel = new Button( shell, SWT.PUSH );
@@ -459,12 +459,6 @@ public class RunConfigurationDialog extends Dialog {
       wcSlaveServer.setText( defaultRunConfiguration.getServer() );
     }
 
-    if ( defaultRunConfiguration.isClustered() ) {
-      wcSlaveServer.setText( CLUSTERED );
-      wbSendResources.setVisible( false );
-      wbShowTransformations.setVisible( true );
-    }
-
     wcLocal.setVisible( defaultRunConfiguration.isLocal() );
     wcRemote.setVisible( defaultRunConfiguration.isRemote() || defaultRunConfiguration.isClustered() );
 
@@ -503,26 +497,39 @@ public class RunConfigurationDialog extends Dialog {
 
     wbRemote.addSelectionListener( new SelectionAdapter() {
       @Override public void widgetSelected( SelectionEvent selectionEvent ) {
-        checkOKEnabled( defaultRunConfiguration, wcSlaveServer );
         wcLocal.setVisible( wbLocal.getSelection() );
         wcRemote.setVisible( wbRemote.getSelection() );
         defaultRunConfiguration.setLocal( false );
         if ( Utils.isEmpty( wcSlaveServer.getText() ) ) {
           if ( meta instanceof TransMeta && !Utils.isEmpty( ( (TransMeta) meta ).getClusterSchemas() ) ) {
             wcSlaveServer.setText( CLUSTERED );
+          } else if ( meta.getSlaveServers().size() > 0 ) {
+            wcSlaveServer.setText( meta.getSlaveServers().get( 0 ).getName() );
           }
-          wOK.setEnabled( false );
-        } else {
-          wOK.setEnabled( true );
         }
         if ( !wcSlaveServer.getText().equals( CLUSTERED ) ) {
           defaultRunConfiguration.setRemote( true );
+          defaultRunConfiguration.setClustered( false );
+          wbSendResources.setVisible( true );
+          wbShowTransformations.setVisible( false );
+          wbLogRemoteExecutionLocally.setVisible( false );
         } else {
           defaultRunConfiguration.setClustered( true );
+          defaultRunConfiguration.setRemote( false );
+          wbSendResources.setVisible( false );
+          wbShowTransformations.setVisible( true );
+          wbLogRemoteExecutionLocally.setVisible( true );
         }
         checkOKEnabled( defaultRunConfiguration, wcSlaveServer );
       }
     } );
+
+    if ( defaultRunConfiguration.isClustered() ) {
+      wcSlaveServer.setText( CLUSTERED );
+      wbSendResources.setVisible( false );
+      wbShowTransformations.setVisible( true );
+      wbLogRemoteExecutionLocally.setVisible( true );
+    }
   }
 
   private void checkOKEnabled( DefaultRunConfiguration defaultRunConfiguration, CCombo wcSlaveServer ) {
