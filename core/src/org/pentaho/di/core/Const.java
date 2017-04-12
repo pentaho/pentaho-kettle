@@ -3,7 +3,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -747,6 +747,11 @@ public class Const {
    * System wide flag to use the root path prefix for a directory reference. See PDI-6779 for details.
    */
   public static final String KETTLE_COMPATIBILITY_IMPORT_PATH_ADDITION_ON_VARIABLES = "KETTLE_COMPATIBILITY_IMPORT_PATH_ADDITION_ON_VARIABLES";
+
+  /**
+   * System wide flag to ignore logging table. See BACKLOG-15706 for details.
+   */
+  public static final String KETTLE_COMPATIBILITY_IGNORE_TABLE_LOGGING = "KETTLE_COMPATIBILITY_IGNORE_TABLE_LOGGING";
 
   /**
    * System wide flag to set or not append and header options dependency on Text file output step. See PDI-5252 for
