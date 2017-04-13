@@ -251,10 +251,11 @@ public class Rest extends BaseStep implements StepInterface {
       // add response time to output
       if ( !Utils.isEmpty( data.resultResponseFieldName ) ) {
         newRow = RowDataUtil.addValueData( newRow, returnFieldsOffset, new Long( responseTime ) );
+        returnFieldsOffset++;
       }
       // add response header to output
       if ( !Utils.isEmpty( data.resultHeaderFieldName ) ) {
-        newRow = RowDataUtil.addValueData( newRow, returnFieldsOffset, headerString.toString() );
+        newRow = RowDataUtil.addValueData( newRow, returnFieldsOffset, headerString );
       }
     } catch ( Exception e ) {
       throw new KettleException( BaseMessages.getString( PKG, "Rest.Error.CanNotReadURL", data.realUrl ), e );
