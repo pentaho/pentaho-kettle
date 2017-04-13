@@ -26,6 +26,7 @@ package org.pentaho.di.trans.ael.adapters;
 
 import java.util.List;
 import java.util.stream.Collectors;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -41,6 +42,7 @@ import org.pentaho.di.trans.steps.dummytrans.DummyTransMeta;
 
 import static org.hamcrest.CoreMatchers.hasItems;
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.startsWith;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.when;
 
@@ -71,9 +73,9 @@ public class TransMetaConverterTest {
   public void transWithHops() {
     TransMeta meta = new TransMeta();
     meta.setFilename( "fileName" );
-    StepMeta from = new StepMeta( "step1",  stepMetaInterface );
+    StepMeta from = new StepMeta( "step1", stepMetaInterface );
     meta.addStep( from );
-    StepMeta to = new StepMeta( "step2",  stepMetaInterface );
+    StepMeta to = new StepMeta( "step2", stepMetaInterface );
     meta.addStep( to );
     meta.addTransHop( new TransHopMeta( from, to ) );
     Transformation trans = TransMetaConverter.convert( meta );
@@ -90,6 +92,28 @@ public class TransMetaConverterTest {
     meta.setName( "transName" );
     Transformation trans = TransMetaConverter.convert( meta );
     assertThat( trans.getId(), is( "/transName" ) );
+  }
+
+
+  @Test
+  public void transConfigItems() throws Exception {
+    TransMeta meta = new TransMeta();
+    meta.setName( "foo" );
+    Transformation trans = TransMetaConverter.convert( meta );
+    assertThat( trans.getConfig().get( TransMetaConverter.TRANS_META_NAME_CONF_KEY ),
+      is( "foo" ) );
+    assertThat( (String) trans.getConfig().get( TransMetaConverter.TRANS_META_CONF_KEY ),
+       startsWith( "<transformation>" ) );
+  }
+
+  @Test
+  public void transConfigItemsNoNameSpecified() throws Exception {
+    TransMeta meta = new TransMeta();
+    Transformation trans = TransMetaConverter.convert( meta );
+    assertThat( trans.getConfig().get( TransMetaConverter.TRANS_META_NAME_CONF_KEY ),
+      is( TransMetaConverter.TRANS_DEFAULT_NAME ) );
+    assertThat( (String) trans.getConfig().get( TransMetaConverter.TRANS_META_CONF_KEY ),
+      startsWith( "<transformation>" ) );
   }
 
   @Test
@@ -115,8 +139,8 @@ public class TransMetaConverterTest {
     Transformation transformation = TransMetaConverter.convert( trans );
 
     List<String>
-        steps =
-        transformation.getOperations().stream().map( op -> op.getId() ).collect( Collectors.toList() );
+      steps =
+      transformation.getOperations().stream().map( op -> op.getId() ).collect( Collectors.toList() );
     assertThat( "Only 3 ops should exist", steps.size(), is( 3 ) );
     assertThat( steps, hasItems( "StartStep", "WithEnabledHop" ) );
 

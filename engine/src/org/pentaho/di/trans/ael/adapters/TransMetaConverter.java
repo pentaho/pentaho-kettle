@@ -26,6 +26,7 @@ package org.pentaho.di.trans.ael.adapters;
 
 import com.google.common.base.Throwables;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -43,6 +44,7 @@ public class TransMetaConverter {
   public static final String TRANS_META_CONF_KEY = "TransMeta";
   public static final String TRANS_META_NAME_CONF_KEY = "TransMetaName";
   public static final String STEP_META_CONF_KEY = "StepMeta";
+  public static final String TRANS_DEFAULT_NAME = "No Name";
 
 
   public static Transformation convert( TransMeta transMeta ) {
@@ -61,7 +63,8 @@ public class TransMetaConverter {
       findHops( copyTransMeta, hop -> true ).forEach( createHop( transformation ) );
 
       transformation.setConfig( TRANS_META_CONF_KEY, copyTransMeta.getXML() );
-      transformation.setConfig( TRANS_META_NAME_CONF_KEY, copyTransMeta.getName() );
+      transformation.setConfig( TRANS_META_NAME_CONF_KEY,
+        Optional.ofNullable( transMeta.getName() ).orElse( TRANS_DEFAULT_NAME ) );
     } catch ( KettleException e ) {
       Throwables.propagate( e );
     }
