@@ -747,6 +747,11 @@ public class SpoonTransformationDelegate extends SpoonDelegate {
       executionConfiguration = spoon.getTransExecutionConfiguration();
     }
 
+    // Set defaults so the run configuration can set it up correctly
+    executionConfiguration.setExecutingLocally( true );
+    executionConfiguration.setExecutingRemotely( false );
+    executionConfiguration.setExecutingClustered( false );
+
     // Set repository and safe mode information in both the exec config and the metadata
     transMeta.setRepository( spoon.rep );
     transMeta.setMetaStore( spoon.metaStore );
