@@ -47,6 +47,8 @@ public class SparkRunConfigurationExecutor implements RunConfigurationExecutor {
   public static String ZOOKEEPER_CAPABILITY_ID = "aries-rsa-discovery-zookeeper";
   public static String PENTAHO_SERVER_CAPABILITY_ID = "pentaho-server";
   public static String CONFIG_KEY = "org.apache.aries.rsa.discovery.zookeeper";
+  public static String JAAS_CAPABILITY_ID = "pentaho-kerberos-jaas";
+  public static String AEL_SECURITY_CAPABILITY_ID = "ael-security";
   public static String DEFAULT_HOST = "127.0.0.1";
   public static String DEFAULT_PORT = "2181";
 
@@ -68,6 +70,16 @@ public class SparkRunConfigurationExecutor implements RunConfigurationExecutor {
    */
   @Override public void execute( RunConfiguration runConfiguration, TransExecutionConfiguration configuration,
                                  AbstractMeta meta, VariableSpace variableSpace ) {
+
+    // Check to see if the ael-security feature is installed. If it is, then install the jaas capability if it is
+    // not already installed
+    ICapability securityCapability = capabilityManager.getCapabilityById( AEL_SECURITY_CAPABILITY_ID );
+    ICapability jaasCapability = capabilityManager.getCapabilityById( JAAS_CAPABILITY_ID  );
+    if ( securityCapability != null && securityCapability.isInstalled() ) {
+      if ( jaasCapability != null && !jaasCapability.isInstalled() ) {
+        jaasCapability.install();
+      }
+    }
 
     // Check to see if the aries-rsa-discovery-zookeeper feature is installed and install if not
     ICapability capability = capabilityManager.getCapabilityById( ZOOKEEPER_CAPABILITY_ID );

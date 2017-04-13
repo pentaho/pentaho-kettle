@@ -31,6 +31,9 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.osgi.service.cm.Configuration;
 import org.osgi.service.cm.ConfigurationAdmin;
+import org.pentaho.capabilities.api.ICapability;
+import org.pentaho.capabilities.api.ICapabilityProvider;
+import org.pentaho.capabilities.impl.DefaultCapabilityManager;
 import org.pentaho.di.base.AbstractMeta;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.trans.TransExecutionConfiguration;
@@ -56,6 +59,9 @@ public class SparkRunConfigurationExecutorTest {
   @Mock
   private VariableSpace variableSpace;
 
+  private DefaultCapabilityManager capabilityManager;
+  private ICapabilityProvider capabilityProvider;
+
   @Before
   public void setup() throws Exception {
     Configuration configuration = mock( Configuration.class );
@@ -66,6 +72,11 @@ public class SparkRunConfigurationExecutorTest {
     doReturn( properties ).when( configuration ).getProperties();
 
     sparkRunConfigurationExecutor = new SparkRunConfigurationExecutor( configurationAdmin );
+    capabilityProvider = mock( ICapabilityProvider.class );
+
+    capabilityManager =  DefaultCapabilityManager.getInstance();
+    capabilityManager.registerCapabilityProvider( capabilityProvider );
+
   }
 
   @Test
@@ -101,4 +112,49 @@ public class SparkRunConfigurationExecutorTest {
     verify( properties ).put( "zookeeper.port", SparkRunConfigurationExecutor.DEFAULT_PORT );
   }
 
+  @Test
+  public void testExecuteWithAelSecurityInstalled() {
+    ICapability aelSecurityCapability = mock( ICapability.class );
+    setCapability( aelSecurityCapability, SparkRunConfigurationExecutor.AEL_SECURITY_CAPABILITY_ID, true );
+
+    ICapability jaasCapability = mock( ICapability.class );
+    setCapability( jaasCapability, SparkRunConfigurationExecutor.JAAS_CAPABILITY_ID, false );
+
+    SparkRunConfiguration sparkRunConfiguration = new SparkRunConfiguration();
+    sparkRunConfiguration.setName( "Spark Configuration" );
+
+    TransExecutionConfiguration transExecutionConfiguration = new TransExecutionConfiguration();
+
+    sparkRunConfigurationExecutor
+      .execute( sparkRunConfiguration, transExecutionConfiguration, abstractMeta, variableSpace );
+
+    verify( jaasCapability ).isInstalled();
+    verify( jaasCapability ).install();
+
+  }
+
+  @Test
+  public void testExecuteWithNoAelSecurityInstalled() {
+    ICapability aelSecurityCapability = mock( ICapability.class );
+    setCapability( aelSecurityCapability, SparkRunConfigurationExecutor.AEL_SECURITY_CAPABILITY_ID, false );
+
+    ICapability jaasCapability = mock( ICapability.class );
+    setCapability( jaasCapability, SparkRunConfigurationExecutor.JAAS_CAPABILITY_ID, false );
+
+    SparkRunConfiguration sparkRunConfiguration = new SparkRunConfiguration();
+    sparkRunConfiguration.setName( "Spark Configuration" );
+
+    TransExecutionConfiguration transExecutionConfiguration = new TransExecutionConfiguration();
+
+    sparkRunConfigurationExecutor
+      .execute( sparkRunConfiguration, transExecutionConfiguration, abstractMeta, variableSpace );
+
+    verify( jaasCapability, never() ).isInstalled();
+
+  }
+
+  private void setCapability( ICapability capability, String capabilityId, Object isInstalled ) {
+    doReturn( capability ).when( capabilityProvider ).getCapabilityById( capabilityId );
+    doReturn( isInstalled ).when( capability ).isInstalled();
+  }
 }
