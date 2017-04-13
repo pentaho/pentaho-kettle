@@ -24,11 +24,12 @@
 
 package org.pentaho.di.trans.ael.adapters;
 
-
+import java.util.List;
+import java.util.stream.Collectors;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
+import org.mockito.Spy;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.engine.api.model.Transformation;
@@ -36,7 +37,9 @@ import org.pentaho.di.trans.TransHopMeta;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
+import org.pentaho.di.trans.steps.dummytrans.DummyTransMeta;
 
+import static org.hamcrest.CoreMatchers.hasItems;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.when;
@@ -44,13 +47,12 @@ import static org.mockito.Mockito.when;
 @RunWith ( MockitoJUnitRunner.class )
 public class TransMetaConverterTest {
 
-  @Mock StepMetaInterface stepMetaInterface;
+  @Spy StepMetaInterface stepMetaInterface = new DummyTransMeta();
 
   final String XML = "<xml></xml>";
 
   @Before
   public void before() throws KettleException {
-
     when( stepMetaInterface.getXML() ).thenReturn( XML );
   }
 
@@ -90,4 +92,36 @@ public class TransMetaConverterTest {
     assertThat( trans.getId(), is( "/transName" ) );
   }
 
+  @Test
+  public void testDisabledHops() {
+    TransMeta trans = new TransMeta();
+    StepMeta startStep = new StepMeta( "StartStep", stepMetaInterface );
+    trans.addStep( startStep );
+    StepMeta withEnabledHop = new StepMeta( "WithEnabledHop", stepMetaInterface );
+    trans.addStep( withEnabledHop );
+    StepMeta withDisabledHop = new StepMeta( "WithDisabledHop", stepMetaInterface );
+    trans.addStep( withDisabledHop );
+    StepMeta shouldStay = new StepMeta( "ShouldStay", stepMetaInterface );
+    trans.addStep( shouldStay );
+    StepMeta shouldNotStay = new StepMeta( "ShouldNotStay", stepMetaInterface );
+    trans.addStep( shouldNotStay );
+
+    trans.addTransHop( new TransHopMeta( startStep, withEnabledHop ) );
+    trans.addTransHop( new TransHopMeta( startStep, withDisabledHop, false ) );
+    trans.addTransHop( new TransHopMeta( withEnabledHop, shouldStay ) );
+    trans.addTransHop( new TransHopMeta( withDisabledHop, shouldStay ) );
+    trans.addTransHop( new TransHopMeta( withDisabledHop, shouldNotStay ) );
+
+    Transformation transformation = TransMetaConverter.convert( trans );
+
+    List<String>
+        steps =
+        transformation.getOperations().stream().map( op -> op.getId() ).collect( Collectors.toList() );
+    assertThat( "Only 3 ops should exist", steps.size(), is( 3 ) );
+    assertThat( steps, hasItems( "StartStep", "WithEnabledHop" ) );
+
+    List<String> hops = transformation.getHops().stream().map( hop -> hop.getId() ).collect( Collectors.toList() );
+    assertThat( "Only 2 hops should exist", hops.size(), is( 2 ) );
+    assertThat( hops, hasItems( "StartStep -> WithEnabledHop", "WithEnabledHop -> ShouldStay" ) );
+  }
 }
