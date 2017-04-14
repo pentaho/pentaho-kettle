@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -155,5 +155,17 @@ public class ValueBooleanTest extends TestCase {
     ValueBoolean cloneVs2 = (ValueBoolean) vs2.clone();
     assertTrue( cloneVs2.getBoolean() == vs2.getBoolean() );
     assertFalse( cloneVs2 == vs2 );
+  }
+
+  public void testSetBigNumber() {
+    ValueBoolean vs1 = new ValueBoolean( true );
+    vs1.setBigNumber( new BigDecimal( "1.7976E308" ) );
+    assertTrue( vs1.getBoolean() );
+    vs1.setBigNumber( new BigDecimal( "234" ) );
+    assertTrue( vs1.getBoolean() );
+    vs1.setBigNumber( new BigDecimal( "-234" ) );
+    assertTrue( vs1.getBoolean() );
+    vs1.setBigNumber( new BigDecimal( "0" ) );
+    assertFalse( vs1.getBoolean() );
   }
 }
