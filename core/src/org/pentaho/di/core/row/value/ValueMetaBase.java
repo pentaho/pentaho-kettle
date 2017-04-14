@@ -1709,7 +1709,11 @@ public class ValueMetaBase implements ValueMetaInterface {
               string = convertIntegerToCompatibleString( (Long) object );
               break;
             case STORAGE_TYPE_BINARY_STRING:
-              string = convertIntegerToCompatibleString( (Long) convertBinaryStringToNativeType( (byte[]) object ) );
+              try {
+                string = convertIntegerToCompatibleString( (Long) convertBinaryStringToNativeType( (byte[]) object ) );
+              } catch ( ClassCastException e ) {
+                string = convertIntegerToCompatibleString( (Long) object );
+              }
               break;
             case STORAGE_TYPE_INDEXED:
               string =

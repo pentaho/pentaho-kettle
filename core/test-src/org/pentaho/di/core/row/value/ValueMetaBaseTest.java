@@ -703,6 +703,15 @@ public class ValueMetaBaseTest {
   }
 
   @Test
+  public void testGetCompatibleString() throws KettleValueException {
+    ValueMetaInteger valueMetaInteger = new ValueMetaInteger( "INTEGER" );
+    valueMetaInteger.setType( 5 ); // Integer
+    valueMetaInteger.setStorageType( 1 ); // STORAGE_TYPE_BINARY_STRING
+
+    assertEquals( "2", valueMetaInteger.getCompatibleString( new Long( 2 ) ) ); //BACKLOG-15750
+  }
+
+  @Test
   public void testReadDataInet() throws Exception {
     InetAddress localhost = InetAddress.getByName( "127.0.0.1" );
     byte[] address = localhost.getAddress();
