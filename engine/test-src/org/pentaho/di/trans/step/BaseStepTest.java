@@ -22,6 +22,7 @@
 
 package org.pentaho.di.trans.step;
 
+import static org.hamcrest.CoreMatchers.containsString;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
 import static org.junit.Assert.*;
@@ -46,11 +47,13 @@ import org.mockito.invocation.InvocationOnMock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.mockito.stubbing.Answer;
 import org.pentaho.di.core.BlockingRowSet;
+import org.pentaho.di.core.QueueRowSet;
 import org.pentaho.di.core.ResultFile;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.RowSet;
 import org.pentaho.di.core.SingleRowRowSet;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.fileinput.NonAccessibleFileObject;
 import org.pentaho.di.core.logging.LogChannelInterface;
@@ -88,8 +91,8 @@ public class BaseStepTest {
   /**
    * This test checks that data from one non-partitioned step copies to 2 partitioned steps right.
    *
-   * @see {@link <a href="http://jira.pentaho.com/browse/PDI-12211">http://jira.pentaho.com/browse/PDI-12211<a>}
    * @throws KettleException
+   * @see {@link <a href="http://jira.pentaho.com/browse/PDI-12211">http://jira.pentaho.com/browse/PDI-12211<a>}
    */
   @Test
   public void testBaseStepPutRowLocalSpecialPartitioning() throws KettleException {
@@ -100,14 +103,14 @@ public class BaseStepTest {
     BasePartitioner partitioner = mock( BasePartitioner.class );
 
     when( mockHelper.logChannelInterfaceFactory.create( any(), any( LoggingObjectInterface.class ) ) ).thenAnswer(
-        new Answer<LogChannelInterface>() {
+      new Answer<LogChannelInterface>() {
 
-          @Override
-          public LogChannelInterface answer( InvocationOnMock invocation ) throws Throwable {
-            ( (BaseStep) invocation.getArguments()[0] ).getLogLevel();
-            return mockHelper.logChannelInterface;
-          }
-        } );
+        @Override
+        public LogChannelInterface answer( InvocationOnMock invocation ) throws Throwable {
+          ( (BaseStep) invocation.getArguments()[ 0 ] ).getLogLevel();
+          return mockHelper.logChannelInterface;
+        }
+      } );
     when( mockHelper.trans.isRunning() ).thenReturn( true );
     when( mockHelper.transMeta.findNextSteps( any( StepMeta.class ) ) ).thenReturn( stepMetas );
     when( mockHelper.stepMeta.getStepPartitioningMeta() ).thenReturn( stepPartitioningMeta );
@@ -133,44 +136,45 @@ public class BaseStepTest {
     when( stepPartitioningMeta.getPartition( rowMeta0, objects0 ) ).thenReturn( 0 );
     when( stepPartitioningMeta.getPartition( rowMeta1, objects1 ) ).thenReturn( 1 );
 
-    BlockingRowSet[] rowSet = { new BlockingRowSet( 2 ), new BlockingRowSet( 2 ), new BlockingRowSet( 2 ), new BlockingRowSet( 2 ) };
+    BlockingRowSet[] rowSet =
+      { new BlockingRowSet( 2 ), new BlockingRowSet( 2 ), new BlockingRowSet( 2 ), new BlockingRowSet( 2 ) };
     List<RowSet> outputRowSets = new ArrayList<RowSet>();
     outputRowSets.addAll( Arrays.asList( rowSet ) );
 
     BaseStep baseStep =
-        new BaseStep( mockHelper.stepMeta, mockHelper.stepDataInterface, 0, mockHelper.transMeta, mockHelper.trans );
+      new BaseStep( mockHelper.stepMeta, mockHelper.stepDataInterface, 0, mockHelper.transMeta, mockHelper.trans );
     baseStep.setStopped( false );
     baseStep.setRepartitioning( StepPartitioningMeta.PARTITIONING_METHOD_SPECIAL );
     baseStep.setOutputRowSets( outputRowSets );
     baseStep.putRow( rowMeta0, objects0 );
     baseStep.putRow( rowMeta1, objects1 );
 
-    assertEquals( object0, baseStep.getOutputRowSets().get( 0 ).getRow()[0] );
-    assertEquals( object1, baseStep.getOutputRowSets().get( 1 ).getRow()[0] );
-    assertEquals( object0, baseStep.getOutputRowSets().get( 2 ).getRow()[0] );
-    assertEquals( object1, baseStep.getOutputRowSets().get( 3 ).getRow()[0] );
+    assertEquals( object0, baseStep.getOutputRowSets().get( 0 ).getRow()[ 0 ] );
+    assertEquals( object1, baseStep.getOutputRowSets().get( 1 ).getRow()[ 0 ] );
+    assertEquals( object0, baseStep.getOutputRowSets().get( 2 ).getRow()[ 0 ] );
+    assertEquals( object1, baseStep.getOutputRowSets().get( 3 ).getRow()[ 0 ] );
   }
 
   @Test
   public void testBaseStepGetLogLevelWontThrowNPEWithNullLog() {
     when( mockHelper.logChannelInterfaceFactory.create( any(), any( LoggingObjectInterface.class ) ) ).thenAnswer(
-        new Answer<LogChannelInterface>() {
+      new Answer<LogChannelInterface>() {
 
-          @Override
-          public LogChannelInterface answer( InvocationOnMock invocation ) throws Throwable {
-            ( (BaseStep) invocation.getArguments()[0] ).getLogLevel();
-            return mockHelper.logChannelInterface;
-          }
-        } );
+        @Override
+        public LogChannelInterface answer( InvocationOnMock invocation ) throws Throwable {
+          ( (BaseStep) invocation.getArguments()[ 0 ] ).getLogLevel();
+          return mockHelper.logChannelInterface;
+        }
+      } );
     new BaseStep( mockHelper.stepMeta, mockHelper.stepDataInterface, 0, mockHelper.transMeta, mockHelper.trans )
-        .getLogLevel();
+      .getLogLevel();
   }
 
   @Test
   public void testStepListenersConcurrentModification() throws InterruptedException {
     // Create a base step
     final BaseStep baseStep =
-        new BaseStep( mockHelper.stepMeta, mockHelper.stepDataInterface, 0, mockHelper.transMeta, mockHelper.trans );
+      new BaseStep( mockHelper.stepMeta, mockHelper.stepDataInterface, 0, mockHelper.transMeta, mockHelper.trans );
 
     // Create thread to dynamically add listeners
     final AtomicBoolean done = new AtomicBoolean( false );
@@ -326,7 +330,7 @@ public class BaseStepTest {
   @Test
   public void testCleanup() throws IOException {
     BaseStep baseStep =
-        new BaseStep( mockHelper.stepMeta, mockHelper.stepDataInterface, 0, mockHelper.transMeta, mockHelper.trans );
+      new BaseStep( mockHelper.stepMeta, mockHelper.stepDataInterface, 0, mockHelper.transMeta, mockHelper.trans );
     ServerSocket serverSocketMock = mock( ServerSocket.class );
     doReturn( 0 ).when( serverSocketMock ).getLocalPort();
     baseStep.setServerSockets( Collections.singletonList( serverSocketMock ) );
@@ -341,8 +345,8 @@ public class BaseStepTest {
   @Test
   public void testCleanupWithInexistentRemoteSteps() throws IOException {
     BaseStep baseStep =
-        spy( new BaseStep( mockHelper.stepMeta, mockHelper.stepDataInterface, 0, mockHelper.transMeta,
-            mockHelper.trans ) );
+      spy( new BaseStep( mockHelper.stepMeta, mockHelper.stepDataInterface, 0, mockHelper.transMeta,
+        mockHelper.trans ) );
     ServerSocket serverSocketMock = mock( ServerSocket.class );
     doReturn( 0 ).when( serverSocketMock ).getLocalPort();
     baseStep.setServerSockets( Collections.singletonList( serverSocketMock ) );
@@ -397,5 +401,49 @@ public class BaseStepTest {
       rowMetaInterface, objects, 3l, "desc",
       "field1,field2", "errorCode" );
   }
+
+  @Test
+  public void putGetFromPutToDefaultRowHandlerMethods() throws KettleException {
+    BaseStep baseStep =
+      new BaseStep( mockHelper.stepMeta, mockHelper.stepDataInterface,
+        0, mockHelper.transMeta, mockHelper.trans );
+
+    baseStep.setRowHandler( rowHandlerWithDefaultMethods() );
+
+    RowMetaInterface rowMetaInterface = mock( RowMetaInterface.class );
+    Object[] objects = new Object[] { "foo", "bar" };
+
+    try {
+      baseStep.putRowTo( rowMetaInterface, objects, new QueueRowSet() );
+      fail( "Expected default exception for putRowTo" );
+    } catch ( UnsupportedOperationException uoe ) {
+      assertThat( uoe.getMessage(), containsString( this.getClass().getName() ) );
+    }
+    try {
+      baseStep.getRowFrom( new QueueRowSet() );
+      fail( "Expected default exception for getRowFrom" );
+    } catch ( UnsupportedOperationException uoe ) {
+      assertThat( uoe.getMessage(), containsString( this.getClass().getName() ) );
+    }
+  }
+
+
+  private RowHandler rowHandlerWithDefaultMethods() {
+    return new RowHandler() {
+      @Override public Object[] getRow() throws KettleException {
+        return new Object[ 0 ];
+      }
+
+      @Override public void putRow( RowMetaInterface rowMeta, Object[] row ) throws KettleStepException {
+
+      }
+
+      @Override public void putError( RowMetaInterface rowMeta, Object[] row, long nrErrors, String errorDescriptions,
+                                      String fieldNames, String errorCodes ) throws KettleStepException {
+
+      }
+    };
+  }
+
 
 }
