@@ -56,6 +56,7 @@ import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryObject;
 import org.pentaho.di.repository.RepositoryObjectType;
+import org.pentaho.di.trans.TransExecutionConfiguration;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.ui.core.ConstUI;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
@@ -604,6 +605,20 @@ public class JobEntryTransDialog extends JobEntryBaseDialog implements JobEntryD
     jet.setWaitingToFinish( wWaitingToFinish.getSelection() );
     jet.setFollowingAbortRemotely( wFollowingAbortRemotely.getSelection() );
 
+    TransExecutionConfiguration executionConfiguration = new TransExecutionConfiguration();
+    executionConfiguration.setRunConfiguration( jet.getRunConfiguration() );
+    try {
+      ExtensionPointHandler.callExtensionPoint( jobEntry.getLogChannel(), KettleExtensionPoint.SpoonTransBeforeStart.id,
+        new Object[] { executionConfiguration, jobMeta, jobMeta } );
+    } catch ( KettleException e ) {
+      // Ignore errors
+    }
+
+    jet.setClustering( executionConfiguration.isExecutingClustered() );
+    if ( executionConfiguration.getRemoteServer() != null ) {
+      jet.setRemoteSlaveServerName( executionConfiguration.getRemoteServer().getName() );
+    }
+    jet.setLoggingRemoteWork( executionConfiguration.isLogRemoteExecutionLocally() );
   }
 
   protected void ok() {

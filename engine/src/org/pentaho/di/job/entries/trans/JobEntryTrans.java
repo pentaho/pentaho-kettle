@@ -881,6 +881,7 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
           }
         }
 
+        boolean doFallback = true;
         SlaveServer remoteSlaveServer = null;
         TransExecutionConfiguration executionConfiguration = new TransExecutionConfiguration();
         if ( !Utils.isEmpty( runConfiguration ) ) {
@@ -890,15 +891,15 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
             ExtensionPointHandler.callExtensionPoint( log, KettleExtensionPoint.SpoonTransBeforeStart.id, new Object[] {
               executionConfiguration, parentJob.getJobMeta(), transMeta
             } );
+            clustering = executionConfiguration.isExecutingClustered();
+            remoteSlaveServer = executionConfiguration.getRemoteServer();
+            doFallback = false;
           } catch ( KettleException e ) {
             log.logError( e.getMessage(), getName() );
-            result.setNrErrors( 1 );
-            result.setResult( false );
-            return result;
           }
-          clustering = executionConfiguration.isExecutingClustered();
-          remoteSlaveServer = executionConfiguration.getRemoteServer();
-        } else {
+        }
+
+        if ( doFallback ) {
           // Figure out the remote slave server...
           //
           if ( !Utils.isEmpty( remoteSlaveServerName ) ) {
@@ -910,6 +911,7 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
             }
           }
         }
+
 
         // Execute this transformation across a cluster of servers
         //
