@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -89,7 +89,7 @@ public class LdapProtocolFactory {
    */
   public LdapProtocol createLdapProtocol( VariableSpace variableSpace, LdapMeta meta,
     Collection<String> binaryAttributes ) throws KettleException {
-    String connectionType = meta.getProtocol();
+    String connectionType = variableSpace.environmentSubstitute( meta.getProtocol() );
 
     synchronized ( protocols ) {
       for ( Class<? extends LdapProtocol> protocol : protocols ) {
