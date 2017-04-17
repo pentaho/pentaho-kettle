@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -63,6 +63,10 @@ public class PentahoReportingOutputMetaTest extends BaseMetadataInjectionTest<Pe
         return meta.getOutputProcessorType();
       }
     }, PentahoReportingOutputMeta.ProcessorType.class );
-
+    check( "CREATE_PARENT_FOLDER", new BooleanGetter() {
+      public boolean get() {
+        return meta.getCreateParentfolder();
+      }
+    } );
   }
 }
