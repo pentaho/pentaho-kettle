@@ -2157,9 +2157,9 @@ public class ValueMetaBase implements ValueMetaInterface {
               throw new KettleValueException( toString() + " : Unknown storage type " + storageType + " specified." );
           }
         case TYPE_BINARY:
-          throw new KettleValueException( toString() + " : I don't know how to convert binary values to integers." );
+          throw new KettleValueException( toString() + " : I don't know how to convert binary values to BigDecimals." );
         case TYPE_SERIALIZABLE:
-          throw new KettleValueException( toString() + " : I don't know how to convert serializable values to integers." );
+          throw new KettleValueException( toString() + " : I don't know how to convert serializable values to BigDecimals." );
         default:
           throw new KettleValueException( toString() + " : Unknown type " + type + " specified." );
       }
