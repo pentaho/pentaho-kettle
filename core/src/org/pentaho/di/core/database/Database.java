@@ -273,7 +273,7 @@ public class Database implements VariableSpace, LoggingObjectInterface {
   @Override
   public boolean equals( Object obj ) {
     Database other = (Database) obj;
-    return other.databaseMeta.equals( other.databaseMeta );
+    return this.databaseMeta.equals( other.databaseMeta );
   }
 
   /**
