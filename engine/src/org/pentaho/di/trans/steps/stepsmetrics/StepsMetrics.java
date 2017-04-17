@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -101,7 +101,7 @@ public class StepsMetrics extends BaseStep implements StepInterface {
           // We can not metrics from the target steps
           for ( int j = 0; j < targetSteps.length; j++ ) {
             if ( stepnames[i].equals( targetSteps[j] ) ) {
-              throw new KettleException( "You can not get metrics for the target step [" + targetSteps[i] + "]!" );
+              throw new KettleException( "You can not get metrics for the target step [" + targetSteps[j] + "]!" );
             }
           }
         }
