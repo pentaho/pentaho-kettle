@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -210,6 +210,13 @@ public class DatabaseTest {
   }
 
   @Test
+  public void testEquals() throws Exception {
+    Database db1 = setupDatabase();
+    Database db2 = setupDatabase2();
+    assertFalse( db1.equals( db2 ) );
+  }
+
+  @Test
   public void testBatchCommit() throws Exception {
     String tableName = "CommitTest";
     Database db = setupDatabase();
@@ -331,6 +338,30 @@ public class DatabaseTest {
     return database;
   }
 
+  public Database setupDatabase2() throws Exception {
+
+    // Create a new transformation...
+    TransMeta transMeta = new TransMeta();
+    transMeta.setName( "transname"  );
+    // Add the database connections
+    DatabaseMeta databaseMeta = new DatabaseMeta(
+        "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
+            + "<connection>"
+            + "<name>db2</name>"
+            + "<server>10.12.4.1</server>"
+            + "<type>H2</type>"
+            + "<access>Native</access>"
+            + "<database>mem:db2</database>"
+            + "<port></port>"
+            + "<username>sa</username>"
+            + "<password></password>"
+            + "</connection>" );
+    transMeta.addDatabase( databaseMeta );
+
+    Database database = new Database( transMeta, databaseMeta );
+
+    return database;
+  }
 
   private void fillDbInBatch( String tableName, Database db, int insertSize ) throws SQLException,
     KettleDatabaseException {

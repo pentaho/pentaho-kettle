@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -125,7 +125,7 @@ public class XMLInputSaxFieldRetriever extends DefaultHandler {
 
   private boolean comparePaths( int count ) {
     for ( int i = 0; i <= count; i++ ) {
-      if ( !pathToRootElement.get( i ).equals( pathToRootElement.get( i ) ) ) {
+      if ( !_pathToRootElement.get( i ).equals( pathToRootElement.get( i ) ) ) {
         return false;
       }
     }
