@@ -1056,6 +1056,12 @@ public class Const {
   public static final String KETTLE_SPLIT_FIELDS_REMOVE_ENCLOSURE = "KETTLE_SPLIT_FIELDS_REMOVE_ENCLOSURE";
 
   /**
+   * Set this variable to false to preserve global log variables defined in transformation / job Properties -> Log panel.
+   * Changing it to true will clear all global log variables when export transformation / job
+   */
+  public static final String KETTLE_GLOBAL_LOG_VARIABLES_CLEAR_ON_EXPORT = "KETTLE_GLOBAL_LOG_VARIABLES_CLEAR_ON_EXPORT";
+
+  /**
    * Compatibility settings for {@link org.pentaho.di.core.row.ValueDataUtil#hourOfDay(ValueMetaInterface, Object)}.
    *
    * Switches off the fix for calculation of timezone decomposition.

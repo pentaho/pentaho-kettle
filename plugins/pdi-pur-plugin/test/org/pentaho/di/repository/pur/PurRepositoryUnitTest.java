@@ -1,5 +1,5 @@
 /*!
- * Copyright 2010 - 2016 Pentaho Corporation.  All rights reserved.
+ * Copyright 2010 - 2017 Pentaho Corporation.  All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -268,20 +268,57 @@ public class PurRepositoryUnitTest extends RepositoryTestLazySupport {
 
   @Test
   public void onlyGlobalVariablesOfLogTablesSetToNull() {
+    try {
+      System.setProperty( Const.KETTLE_GLOBAL_LOG_VARIABLES_CLEAR_ON_EXPORT, "true" );
+
+      PurRepositoryExporter purRepoExporter = new PurRepositoryExporter( mock( PurRepository.class ) );
+      String hardcodedString = "hardcoded";
+      String globalParam = "${" + Const.KETTLE_TRANS_LOG_TABLE + "}";
+
+      StepLogTable stepLogTable = StepLogTable.getDefault( mockedVariableSpace, mockedHasDbInterface );
+      stepLogTable.setConnectionName( hardcodedString );
+      stepLogTable.setSchemaName( hardcodedString );
+      stepLogTable.setTimeoutInDays( hardcodedString );
+      stepLogTable.setTableName( globalParam );
+
+      JobEntryLogTable jobEntryLogTable = JobEntryLogTable.getDefault( mockedVariableSpace, mockedHasDbInterface );
+      jobEntryLogTable.setConnectionName( hardcodedString );
+      jobEntryLogTable.setSchemaName( hardcodedString );
+      jobEntryLogTable.setTimeoutInDays( hardcodedString );
+      jobEntryLogTable.setTableName( globalParam );
+
+      List<LogTableInterface> logTables = new ArrayList<>();
+      logTables.add( jobEntryLogTable );
+      logTables.add( stepLogTable );
+
+      purRepoExporter.setGlobalVariablesOfLogTablesNull( logTables );
+
+      for ( LogTableInterface logTable : logTables ) {
+        assertEquals( logTable.getConnectionName(), hardcodedString );
+        assertEquals( logTable.getSchemaName(), hardcodedString );
+        assertEquals( logTable.getTimeoutInDays(), hardcodedString );
+        assertEquals( logTable.getTableName(), null );
+      }
+    } finally {
+      System.setProperty( Const.KETTLE_GLOBAL_LOG_VARIABLES_CLEAR_ON_EXPORT, "false" );
+    }
+  }
+
+  @Test
+  public void globalVariablesOfLogTablesNotSetToNull() {
     PurRepositoryExporter purRepoExporter = new PurRepositoryExporter( mock( PurRepository.class ) );
-    String hardcodedString = "hardcoded";
     String globalParam = "${" + Const.KETTLE_TRANS_LOG_TABLE + "}";
 
     StepLogTable stepLogTable = StepLogTable.getDefault( mockedVariableSpace, mockedHasDbInterface );
-    stepLogTable.setConnectionName( hardcodedString );
-    stepLogTable.setSchemaName( hardcodedString );
-    stepLogTable.setTimeoutInDays( hardcodedString );
+    stepLogTable.setConnectionName( globalParam );
+    stepLogTable.setSchemaName( globalParam );
+    stepLogTable.setTimeoutInDays( globalParam );
     stepLogTable.setTableName( globalParam );
 
     JobEntryLogTable jobEntryLogTable = JobEntryLogTable.getDefault( mockedVariableSpace, mockedHasDbInterface );
-    jobEntryLogTable.setConnectionName( hardcodedString );
-    jobEntryLogTable.setSchemaName( hardcodedString );
-    jobEntryLogTable.setTimeoutInDays( hardcodedString );
+    jobEntryLogTable.setConnectionName( globalParam );
+    jobEntryLogTable.setSchemaName( globalParam );
+    jobEntryLogTable.setTimeoutInDays( globalParam );
     jobEntryLogTable.setTableName( globalParam );
 
     List<LogTableInterface> logTables = new ArrayList<>();
@@ -291,10 +328,10 @@ public class PurRepositoryUnitTest extends RepositoryTestLazySupport {
     purRepoExporter.setGlobalVariablesOfLogTablesNull( logTables );
 
     for ( LogTableInterface logTable : logTables ) {
-      assertEquals( logTable.getConnectionName(), hardcodedString );
-      assertEquals( logTable.getSchemaName(), hardcodedString );
-      assertEquals( logTable.getTimeoutInDays(), hardcodedString );
-      assertEquals( logTable.getTableName(), null );
+      assertEquals( logTable.getConnectionName(), globalParam );
+      assertEquals( logTable.getSchemaName(), globalParam );
+      assertEquals( logTable.getTimeoutInDays(), globalParam );
+      assertEquals( logTable.getTableName(), globalParam );
     }
   }
 

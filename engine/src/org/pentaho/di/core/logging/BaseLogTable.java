@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -530,10 +530,13 @@ public abstract class BaseLogTable {
   }
 
   public void setAllGlobalParametersToNull() {
-    schemaName = isGlobalParameter( schemaName ) ? null : schemaName;
-    connectionName = isGlobalParameter( connectionName ) ? null : connectionName;
-    tableName = isGlobalParameter( tableName ) ? null : tableName;
-    timeoutInDays = isGlobalParameter( timeoutInDays ) ? null : timeoutInDays;
+    boolean clearGlobalVariables = Boolean.valueOf( System.getProperties().getProperty( Const.KETTLE_GLOBAL_LOG_VARIABLES_CLEAR_ON_EXPORT, "false" ) );
+    if ( clearGlobalVariables ) {
+      schemaName = isGlobalParameter( schemaName ) ? null : schemaName;
+      connectionName = isGlobalParameter( connectionName ) ? null : connectionName;
+      tableName = isGlobalParameter( tableName ) ? null : tableName;
+      timeoutInDays = isGlobalParameter( timeoutInDays ) ? null : timeoutInDays;
+    }
   }
 
   protected boolean isGlobalParameter( String parameter ) {
