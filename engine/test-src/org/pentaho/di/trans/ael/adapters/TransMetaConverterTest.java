@@ -24,14 +24,14 @@
 
 package org.pentaho.di.trans.ael.adapters;
 
-import java.util.List;
-import java.util.stream.Collectors;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Spy;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.engine.api.model.Hop;
+import org.pentaho.di.engine.api.model.Operation;
 import org.pentaho.di.engine.api.model.Transformation;
 import org.pentaho.di.trans.TransHopMeta;
 import org.pentaho.di.trans.TransMeta;
@@ -39,9 +39,11 @@ import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.di.trans.steps.dummytrans.DummyTransMeta;
 
-import static org.hamcrest.CoreMatchers.hasItems;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.startsWith;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
+import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.when;
 
@@ -83,6 +85,11 @@ public class TransMetaConverterTest {
     assertThat( trans.getHops().size(), is( 1 ) );
     assertThat( trans.getHops().get( 0 ).getFrom().getId(), is( from.getName() ) );
     assertThat( trans.getHops().get( 0 ).getTo().getId(), is( to.getName() ) );
+
+    assertThat(
+      trans.getHops().stream().map( Hop::getType ).collect( Collectors.toList() ),
+      everyItem( is( Hop.TYPE_NORMAL ) )
+    );
   }
 
   @Test
@@ -184,5 +191,39 @@ public class TransMetaConverterTest {
     assertThat( "Only 1 hop should exist", hops.size(), is( 1 ) );
     assertThat( hops, hasItems( "InputToStay -> InputReceiver" ) );
 
+  }
+
+  @Test
+  public void errorHops() throws Exception {
+    TransMeta meta = new TransMeta();
+    meta.setFilename( "fileName" );
+    StepMeta from = new StepMeta( "step1", stepMetaInterface );
+    meta.addStep( from );
+    StepMeta to = new StepMeta( "step2", stepMetaInterface );
+    meta.addStep( to );
+    meta.addTransHop( new TransHopMeta( from, to ) );
+    StepMeta error = new StepMeta( "errorHandler", stepMetaInterface );
+    meta.addStep( error );
+    TransHopMeta errorHop = new TransHopMeta( from, error );
+    errorHop.setErrorHop( true );
+    meta.addTransHop( errorHop );
+    Transformation trans = TransMetaConverter.convert( meta );
+    Map<String, List<Hop>> hops = trans.getHops().stream().collect( Collectors.groupingBy( Hop::getType ) );
+
+    List<Hop> normalHops = hops.get( Hop.TYPE_NORMAL );
+    assertThat( normalHops.size(), is( 1 ) );
+    assertThat( normalHops.get( 0 ).getTo().getId(), is( "step2" ) );
+
+    List<Hop> errorHops = hops.get( Hop.TYPE_ERROR );
+    assertThat( errorHops.size(), is( 1 ) );
+    assertThat( errorHops.get( 0 ).getTo().getId(), is( "errorHandler" ) );
+
+    assertThat(
+      hops.values().stream()
+        .flatMap( List::stream )
+        .map( Hop::getFrom ).map( Operation::getId )
+        .collect( Collectors.toList() ),
+      everyItem( equalTo( "step1" ) )
+    );
   }
 }

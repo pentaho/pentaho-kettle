@@ -33,6 +33,7 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.util.Utils;
+import org.pentaho.di.engine.api.model.Hop;
 import org.pentaho.di.engine.api.model.Operation;
 import org.pentaho.di.engine.api.model.Transformation;
 import org.pentaho.di.trans.TransHopMeta;
@@ -88,8 +89,9 @@ public class TransMetaConverter {
   private static Consumer<TransHopMeta> createHop( org.pentaho.di.engine.model.Transformation transformation ) {
     return hop -> {
       try {
-        transformation.createHop(
-          getOp( transformation, hop.getFromStep() ), getOp( transformation, hop.getToStep() ) );
+        Operation from = getOp( transformation, hop.getFromStep() );
+        Operation to = getOp( transformation, hop.getToStep() );
+        transformation.createHop( from, to, hop.isErrorHop() ? Hop.TYPE_ERROR : Hop.TYPE_NORMAL );
       } catch ( KettleException e ) {
         Throwables.propagate( e );
       }
