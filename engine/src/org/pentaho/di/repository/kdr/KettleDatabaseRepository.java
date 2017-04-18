@@ -257,18 +257,9 @@ public class KettleDatabaseRepository extends KettleDatabaseRepositoryBase {
           // Don't show an error anymore, just go ahead and propose to create the repository!
         }
 
-        String pwd = "admin";
-        if ( pwd != null ) {
-          try {
-            // authenticate as admin before upgrade
-            // disconnect before connecting, we connected above already
-            //
-            disconnect();
-            connect( "admin", pwd, true );
-          } catch ( KettleException e ) {
-            log.logError( BaseMessages.getString( KettleDatabaseRepository.class,
-                "KettleDatabaseRepository.ERROR_CONNECT_TO_REPOSITORY" ), e );
-          }
+        if ( upgrade ) {
+          // authenticate as admin before upgrade
+          reconnectAsAdminForUpgrade();
         }
 
         createRepositorySchema( null, upgrade, new ArrayList<String>(), false );
@@ -277,6 +268,20 @@ public class KettleDatabaseRepository extends KettleDatabaseRepositoryBase {
       } catch ( KettleException ke ) {
         log.logError( "An error has occurred creating a repository" );
       }
+    }
+  }
+
+  /**
+   * Reconnect to the repository as "admin" to perform upgrade.
+   */
+  void reconnectAsAdminForUpgrade() {
+    try {
+      // disconnect before connecting, we connected above already
+      disconnect();
+      connect( "admin", "admin", true );
+    } catch ( KettleException e ) {
+      log.logError( BaseMessages.getString( KettleDatabaseRepository.class,
+          "KettleDatabaseRepository.ERROR_CONNECT_TO_REPOSITORY" ), e );
     }
   }
 
