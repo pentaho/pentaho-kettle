@@ -79,6 +79,7 @@
       <groupId>pentaho</groupId>
       <artifactId>pentaho-capability-manager</artifactId>
       <version>${dependency.pentaho-kettle.version}</version>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.pentaho</groupId>
