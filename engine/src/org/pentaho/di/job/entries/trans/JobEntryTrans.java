@@ -1648,7 +1648,7 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
   private Trans createTrans( TransMeta transMeta ) throws KettleException {
     if ( Utils.isEmpty( transMeta.getVariable( "engine" ) ) ) {
       log.logBasic( "Using legacy execution engine" );
-      return createLegacyTrans( transMeta );
+      return new Trans( transMeta );
     }
 
     return PluginRegistry.getInstance().getPlugins( EnginePluginType.class ).stream()
@@ -1673,16 +1673,6 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
       .filter( id -> id.equals( ( transMeta.getVariable( "engine" ) ) ) )
       .findAny()
       .isPresent();
-  }
-
-  private Trans createLegacyTrans( TransMeta transMeta ) {
-    try {
-      return new Trans( transMeta, rep, transMeta.getName(),
-        transMeta.getRepositoryDirectory().getPath(),
-        transMeta.getFilename() );
-    } catch ( KettleException e ) {
-      throw new RuntimeException( e );
-    }
   }
 
   private Object loadPlugin( PluginInterface plugin ) {
