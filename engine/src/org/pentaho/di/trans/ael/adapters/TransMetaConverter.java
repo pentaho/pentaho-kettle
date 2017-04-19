@@ -51,13 +51,7 @@ public class TransMetaConverter {
     final org.pentaho.di.engine.model.Transformation transformation =
       new org.pentaho.di.engine.model.Transformation( createTransformationId( transMeta ) );
     try {
-      TransMeta copyTransMeta = (TransMeta) transMeta.clone();
-
-      List<TransHopMeta> disabledHops = findHops( copyTransMeta, hop -> !hop.isEnabled() );
-      List<StepMeta> disabledSteps = disabledHops.stream().map( hop -> hop.getToStep() ).collect( Collectors.toList() );
-      disabledHops.forEach( copyTransMeta::removeTransHop );
-
-      removeUnreachableSteps( copyTransMeta, disabledSteps );
+      TransMeta copyTransMeta = cleanupDisabledHops( transMeta );
 
       copyTransMeta.getSteps().forEach( createOperation( transformation ) );
       findHops( copyTransMeta, hop -> true ).forEach( createHop( transformation ) );
@@ -110,26 +104,84 @@ public class TransMetaConverter {
       .orElseThrow( () -> new KettleException( "Could not find operation: " + step.getName() ) );
   }
 
-  private static void removeUnreachableSteps( TransMeta trans, List<StepMeta> steps ) {
-    for ( StepMeta step : steps ) {
-      List<TransHopMeta> inHops = findHops( trans, hop -> hop.getToStep().equals( step ) );
-      List<TransHopMeta>
-          disabledInHops =
-          inHops.stream().filter( hop -> !hop.isEnabled() ).collect( Collectors.toList() );
+  /**
+   * Removes disabled hops, unreachable steps and unused inputs. Doesn't change input transMeta object, operates
+   * on it's clone.
+   *
+   * @param transMeta transMeta to process
+   * @return processed clone of input transMeta
+   */
+  private static TransMeta cleanupDisabledHops( TransMeta transMeta ) {
+    TransMeta copyTransMeta = (TransMeta) transMeta.clone();
 
-      if ( inHops.size() == disabledInHops.size() ) {
-        List<StepMeta> nextSteps = trans.findNextSteps( step );
-        findHops( trans, hop -> hop.getToStep().equals( step ) || hop.getFromStep().equals( step ) )
-            .forEach( trans::removeTransHop );
-        trans.getSteps().remove( step );
+    removeUnusedInputs( copyTransMeta );
 
-        removeUnreachableSteps( trans, nextSteps );
+    removeInactivePaths( copyTransMeta, null );
+
+    return copyTransMeta;
+  }
+
+  /**
+   * Removes steps which cannot be reached using enabled hops. Steps removed along with every input and
+   * output hops they have. Downstream steps processed recursively in the same way. Should be invoked with null second arg.
+   *
+   * @param trans trans object to process
+   * @param steps
+   */
+  private static void removeInactivePaths( TransMeta trans, List<StepMeta> steps ) {
+    if ( steps == null ) {
+      List<TransHopMeta> disabledHops = findHops( trans, hop -> !hop.isEnabled() );
+
+      List<StepMeta> disabledSteps = disabledHops.stream()
+          .map( hop -> hop.getToStep() ).collect( Collectors.toList() );
+
+      removeInactivePaths( trans, disabledSteps );
+    } else {
+      for ( StepMeta step : steps ) {
+        List<TransHopMeta> enabledInHops = findHops( trans, hop -> hop.getToStep().equals( step )
+            && hop.isEnabled() );
+        List<TransHopMeta> disabledInHops = findHops( trans, hop -> hop.getToStep().equals( step )
+            && !hop.isEnabled() );
+
+        if ( enabledInHops.size() == 0 ) {
+          List<StepMeta> nextSteps = trans.findNextSteps( step );
+          findHops( trans, hop -> hop.getToStep().equals( step ) || hop.getFromStep().equals( step ) )
+              .forEach( trans::removeTransHop );
+          trans.getSteps().remove( step );
+
+          removeInactivePaths( trans, nextSteps );
+        } else {
+          disabledInHops.forEach( trans::removeTransHop );
+        }
       }
+    }
+  }
+
+  /**
+   * Removes input steps having only disabled output hops so they will not be executed.
+   * @param transMeta transMeta to process
+   */
+  private static void removeUnusedInputs( TransMeta transMeta ) {
+    List<StepMeta> unusedInputs = findHops( transMeta, hop -> !hop.isEnabled() ).stream()
+        .map( hop -> hop.getFromStep() )
+        .filter( step -> isUnusedInput( transMeta, step ) )
+        .collect( Collectors.toList() );
+    for ( StepMeta unusedInput : unusedInputs ) {
+      transMeta.findAllTransHopFrom( unusedInput ).forEach( transMeta::removeTransHop );
+      transMeta.getSteps().remove( unusedInput );
     }
   }
 
   private static List<TransHopMeta> findHops( TransMeta trans, Predicate<TransHopMeta> condition ) {
     return IntStream.range( 0, trans.nrTransHops() ).mapToObj( trans::getTransHop ).filter( condition ).collect(
         Collectors.toList() );
+  }
+
+  private static boolean isUnusedInput( TransMeta trans, StepMeta step ) {
+    int nrEnabledOutHops = findHops( trans, hop -> hop.getFromStep().equals( step ) && hop.isEnabled() ).size();
+    int nrDisabledOutHops = findHops( trans, hop -> hop.getFromStep().equals( step ) && !hop.isEnabled() ).size();
+    int nrInputHops = findHops( trans, hop -> hop.getToStep().equals( step ) ).size();
+
+    return ( nrEnabledOutHops == 0 && nrDisabledOutHops > 0 && nrInputHops == 0 );
   }
 }

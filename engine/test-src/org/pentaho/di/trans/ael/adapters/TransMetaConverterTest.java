@@ -26,7 +26,6 @@ package org.pentaho.di.trans.ael.adapters;
 
 import java.util.List;
 import java.util.stream.Collectors;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -119,8 +118,8 @@ public class TransMetaConverterTest {
   @Test
   public void testDisabledHops() {
     TransMeta trans = new TransMeta();
-    StepMeta startStep = new StepMeta( "StartStep", stepMetaInterface );
-    trans.addStep( startStep );
+    StepMeta start = new StepMeta( "Start", stepMetaInterface );
+    trans.addStep( start );
     StepMeta withEnabledHop = new StepMeta( "WithEnabledHop", stepMetaInterface );
     trans.addStep( withEnabledHop );
     StepMeta withDisabledHop = new StepMeta( "WithDisabledHop", stepMetaInterface );
@@ -129,23 +128,61 @@ public class TransMetaConverterTest {
     trans.addStep( shouldStay );
     StepMeta shouldNotStay = new StepMeta( "ShouldNotStay", stepMetaInterface );
     trans.addStep( shouldNotStay );
+    StepMeta withEnabledAndDisabledHops = new StepMeta( "WithEnabledAndDisabledHops", stepMetaInterface );
+    trans.addStep( withEnabledAndDisabledHops );
+    StepMeta afterEnabledDisabled = new StepMeta( "AfterEnabledDisabled", stepMetaInterface );
+    trans.addStep( afterEnabledDisabled );
 
-    trans.addTransHop( new TransHopMeta( startStep, withEnabledHop ) );
-    trans.addTransHop( new TransHopMeta( startStep, withDisabledHop, false ) );
+    trans.addTransHop( new TransHopMeta( start, withEnabledHop ) );
+    trans.addTransHop( new TransHopMeta( start, withDisabledHop, false ) );
     trans.addTransHop( new TransHopMeta( withEnabledHop, shouldStay ) );
     trans.addTransHop( new TransHopMeta( withDisabledHop, shouldStay ) );
     trans.addTransHop( new TransHopMeta( withDisabledHop, shouldNotStay ) );
+    trans.addTransHop( new TransHopMeta( start, withEnabledAndDisabledHops ) );
+    trans.addTransHop( new TransHopMeta( withEnabledHop, withEnabledAndDisabledHops, false ) );
+    trans.addTransHop( new TransHopMeta( withEnabledAndDisabledHops, afterEnabledDisabled ) );
 
     Transformation transformation = TransMetaConverter.convert( trans );
 
     List<String>
       steps =
       transformation.getOperations().stream().map( op -> op.getId() ).collect( Collectors.toList() );
-    assertThat( "Only 3 ops should exist", steps.size(), is( 3 ) );
-    assertThat( steps, hasItems( "StartStep", "WithEnabledHop" ) );
+    assertThat( "Only 5 ops should exist", steps.size(), is( 5 ) );
+    assertThat( steps, hasItems( "Start", "WithEnabledHop", "ShouldStay", "WithEnabledAndDisabledHops",
+        "AfterEnabledDisabled" ) );
 
     List<String> hops = transformation.getHops().stream().map( hop -> hop.getId() ).collect( Collectors.toList() );
-    assertThat( "Only 2 hops should exist", hops.size(), is( 2 ) );
-    assertThat( hops, hasItems( "StartStep -> WithEnabledHop", "WithEnabledHop -> ShouldStay" ) );
+    assertThat( "Only 4 hops should exist", hops.size(), is( 4 ) );
+    assertThat( hops, hasItems( "Start -> WithEnabledHop", "WithEnabledHop -> ShouldStay",
+        "Start -> WithEnabledAndDisabledHops", "WithEnabledAndDisabledHops -> AfterEnabledDisabled" ) );
+  }
+
+  @Test
+  public void testRemovingDisabledInputSteps() {
+    TransMeta trans = new TransMeta();
+    StepMeta inputToBeRemoved = new StepMeta( "InputToBeRemoved", stepMetaInterface );
+    trans.addStep( inputToBeRemoved );
+    StepMeta inputToStay = new StepMeta( "InputToStay", stepMetaInterface );
+    trans.addStep( inputToStay );
+    StepMeta inputReceiver = new StepMeta( "InputReceiver", stepMetaInterface );
+    trans.addStep( inputReceiver );
+
+    TransHopMeta hop1 = new TransHopMeta( inputToBeRemoved, inputReceiver, false );
+    TransHopMeta hop2 = new TransHopMeta( inputToStay, inputReceiver );
+    trans.addTransHop( hop1 );
+    trans.addTransHop( hop2 );
+
+    Transformation transformation = TransMetaConverter.convert( trans );
+
+    List<String>
+        steps =
+        transformation.getOperations().stream().map( op -> op.getId() ).collect( Collectors.toList() );
+    assertThat( "Only 2 ops should exist", steps.size(), is( 2 ) );
+    assertThat( steps, hasItems( "InputToStay", "InputReceiver" ) );
+
+    List<String> hops = transformation.getHops().stream().map( hop -> hop.getId() ).collect( Collectors.toList() );
+    assertThat( "Only 1 hop should exist", hops.size(), is( 1 ) );
+    assertThat( hops, hasItems( "InputToStay -> InputReceiver" ) );
+
   }
 }
