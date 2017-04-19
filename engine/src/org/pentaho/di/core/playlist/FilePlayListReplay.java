@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -99,7 +99,7 @@ public class FilePlayListReplay implements FilePlayList {
 
       FileObject errorFile =
         AbstractFileErrorHandler.getReplayFilename(
-          errorDirectory, file.getName().getURI(), replayDate, errorExtension,
+          errorDirectory, file.getName().getBaseName(), replayDate, errorExtension,
           AbstractFileErrorHandler.NO_PARTS );
       if ( errorFile.exists() ) {
         currentErrorFile = new FilePlayListReplayErrorFile( errorFile, file );
