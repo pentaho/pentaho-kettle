@@ -18,6 +18,7 @@
     <module>repositories-plugin</module>
     <module>meta-inject-plugin</module>
     <module>pdi-engine-configuration</module>
+    <module>aggregate-rows</module>
   </modules>
   
 </project>
