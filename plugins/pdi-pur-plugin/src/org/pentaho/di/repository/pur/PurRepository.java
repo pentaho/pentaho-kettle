@@ -2265,7 +2265,7 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
       ExtensionPointHandler.callExtensionPoint( log, KettleExtensionPoint.JobMetaLoaded.id, jobMeta );
       return jobMeta;
     } catch ( Exception e ) {
-      throw new KettleException( "Unable to load transformation from path [" + absPath + "]", e );
+      throw new KettleException( "Unable to load job from path [" + absPath + "]", e );
     }
   }
 
