@@ -479,7 +479,7 @@
       <schema_name/>
     </partitioning>
     <filename>&#x24;&#x7b;Internal.Transformation.Filename.Directory&#x7d;&#x2f;files&#x2f;Textfile input - fixed length sample data.txt</filename>
-    <line_width>64</line_width>
+    <line_width>63</line_width>
     <header>Y</header>
     <buffer_size>50000</buffer_size>
     <lazy_conversion>N</lazy_conversion>
@@ -605,7 +605,7 @@
         <currency/>
         <decimal/>
         <group/>
-        <width>38</width>
+        <width>37</width>
         <length>-1</length>
         <precision>-1</precision>
       </field>
