@@ -21,7 +21,7 @@ confidentiality and non-disclosure agreements or other agreements with Pentaho,
 explicitly covering such access.
 ============================================================================-->
 <ivy-module version="2.0" xmlns:m="http://ant.apache.org/ivy/maven">
-  <info organisation="pentaho" module="${ivy.artifact.id}" revision="${project.revision}"/>
+  <info organisation="${ivy.artifact.group}" module="${ivy.artifact.id}" revision="${project.revision}"/>
 
   <configurations>
     <conf name="default"/>
