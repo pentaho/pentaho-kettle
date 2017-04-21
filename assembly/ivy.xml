@@ -126,6 +126,9 @@
     <dependency org="org.springframework.security" name="spring-security-core" rev="${dependency.spring.security.revision}" />
     <dependency org="org.glassfish.metro" name="webservices-api" rev="2.1" transitive="false"/>
     <dependency org="org.glassfish.metro" name="webservices-rt" rev="2.1" transitive="false"/>
+		
+    <!-- pdi-pur-plugin dependency -->
+    <dependency org="pentaho" name="pentaho-platform-repository"  rev="${dependency.pentaho-platform.revision}" transitive="false"/>
 
     <!-- pentaho-metaverse -->
     <dependency org="pentaho" name="pentaho-metaverse-api" rev="${project.revision}" changing="true" transitive="false"/>
