@@ -1,39 +1,26 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.pentaho</groupId>
     <artifactId>aggregate-rows</artifactId>
-    <version>7.1-SNAPSHOT</version>
+    <version>8.0-SNAPSHOT</version>
   </parent>
   <groupId>org.pentaho</groupId>
   <artifactId>aggregate-rows-core</artifactId>
-  <version>7.1-SNAPSHOT</version>
-  <packaging>jar</packaging>
+  <version>8.0-SNAPSHOT</version>
   <name>${project.artifactId}</name>
   <description>Aggregate Rows Plugin</description>
-  
   <properties>
-    <dependency.pentaho-kettle.version>${project.version}</dependency.pentaho-kettle.version>
     <dependency.javax.servlet-api.version>3.0.1</dependency.javax.servlet-api.version>
+    <dependency.pentaho-kettle.version>8.0-SNAPSHOT</dependency.pentaho-kettle.version>
     <build.revision>${project.version}</build.revision>
-    <build.description>${project.description}</build.description>
     <timestamp>${maven.build.timestamp}</timestamp>
-    <maven.build.timestamp.format>yyyy/MM/dd hh:mm</maven.build.timestamp.format>    
-  </properties>  
-  
-  <build>
-    <resources>
-      <resource>
-        <directory>src/main/resources</directory>
-        <filtering>true</filtering>
-      </resource>
-    </resources>
-  </build>
-  
+    <build.description>${project.description}</build.description>
+    <maven.build.timestamp.format>yyyy/MM/dd hh:mm</maven.build.timestamp.format>
+  </properties>
   <dependencies>
-  <!-- ######################### COMPILE ######################### -->
     <dependency>
       <groupId>pentaho-kettle</groupId>
       <artifactId>kettle-engine</artifactId>
@@ -59,8 +46,6 @@
       <artifactId>jface</artifactId>
       <version>3.3.0-I20070606-0010</version>
     </dependency>
-    
-    <!-- ######################### TEST ######################### -->
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
@@ -83,5 +68,12 @@
       <scope>provided</scope>
     </dependency>
   </dependencies>
- 
+  <build>
+    <resources>
+      <resource>
+        <filtering>true</filtering>
+        <directory>src/main/resources</directory>
+      </resource>
+    </resources>
+  </build>
 </project>
