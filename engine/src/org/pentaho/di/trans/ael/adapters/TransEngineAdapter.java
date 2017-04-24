@@ -25,6 +25,7 @@
 package org.pentaho.di.trans.ael.adapters;
 
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.engine.api.Engine;
 import org.pentaho.di.engine.api.ExecutionContext;
 import org.pentaho.di.engine.api.ExecutionResult;
@@ -38,6 +39,7 @@ import org.pentaho.di.engine.api.reporting.Status;
 import org.pentaho.di.trans.RowProducer;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
+import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaDataCombi;
 import org.reactivestreams.Subscriber;
@@ -66,7 +68,8 @@ public class TransEngineAdapter extends Trans {
 
 
   public static final Map<org.pentaho.di.core.logging.LogLevel, LogLevel> LEVEL_MAP = new HashMap<>();
-  static{
+
+  static {
     LEVEL_MAP.put( org.pentaho.di.core.logging.LogLevel.BASIC, LogLevel.BASIC );
     LEVEL_MAP.put( org.pentaho.di.core.logging.LogLevel.DEBUG, LogLevel.DEBUG );
     LEVEL_MAP.put( org.pentaho.di.core.logging.LogLevel.DETAILED, LogLevel.DETAILED );
@@ -93,6 +96,9 @@ public class TransEngineAdapter extends Trans {
   @Override public void prepareExecution( String[] arguments ) throws KettleException {
     setSteps( new ArrayList<>( opsToSteps() ) );
     wireStatusToTransListeners();
+
+    subscribeToOpLogging();
+
     executionContext.subscribe( transformation, LogEntry.class, new Subscriber<PDIEvent<Transformation, LogEntry>>() {
       @Override public void onSubscribe( Subscription subscription ) {
         subscription.request( Long.MAX_VALUE );
@@ -100,34 +106,56 @@ public class TransEngineAdapter extends Trans {
 
       @Override public void onNext( PDIEvent<Transformation, LogEntry> event ) {
         LogEntry data = event.getData();
-        LogLevel logLogLevel = data.getLogLogLevel();
-        switch( logLogLevel ) {
-          case ERROR:
-            getLogChannel().logError( data.getMessage() );
-            break;
-          case MINIMAL:
-            getLogChannel().logMinimal( data.getMessage() );
-            break;
-          case BASIC:
-            getLogChannel().logBasic( data.getMessage() );
-            break;
-          case DETAILED:
-            getLogChannel().logDetailed( data.getMessage() );
-            break;
-          case DEBUG:
-            getLogChannel().logDebug( data.getMessage() );
-            break;
-          case TRACE:
-            getLogChannel().logRowlevel( data.getMessage() );
-            break;
-        }
+        logToChannel( getLogChannel(), data );
+
       }
 
-      @Override public void onError( Throwable throwable ) {}
+      @Override public void onError( Throwable throwable ) {
+      }
 
-      @Override public void onComplete() {}
+      @Override public void onComplete() {
+      }
     } );
     setReadyToStart( true );
+  }
+
+  private void logToChannel( LogChannelInterface logChannel, LogEntry data ) {
+    LogLevel logLogLevel = data.getLogLogLevel();
+    switch ( logLogLevel ) {
+      case ERROR:
+        logChannel.logError( data.getMessage() );
+        break;
+      case MINIMAL:
+        logChannel.logMinimal( data.getMessage() );
+        break;
+      case BASIC:
+        logChannel.logBasic( data.getMessage() );
+        break;
+      case DETAILED:
+        logChannel.logDetailed( data.getMessage() );
+        break;
+      case DEBUG:
+        logChannel.logDebug( data.getMessage() );
+        break;
+      case TRACE:
+        logChannel.logRowlevel( data.getMessage() );
+        break;
+    }
+  }
+
+  private void subscribeToOpLogging() {
+    transformation.getOperations().forEach( operation -> {
+      executionContext.subscribe( operation, LogEntry.class, logEntry -> {
+        StepInterface stepInterface = findStepInterface( operation.getId(), 0 );
+        if ( stepInterface != null ) {
+          LogChannelInterface logChannel = stepInterface.getLogChannel();
+          logToChannel( logChannel, logEntry );
+        } else {
+          // Could not find step, log at transformation level instead
+          logToChannel( getLogChannel(), logEntry );
+        }
+      } );
+    } );
   }
 
   private void wireStatusToTransListeners() {
@@ -166,7 +194,9 @@ public class TransEngineAdapter extends Trans {
           getLogChannel().logError( "Error Executing Transformation", t );
           setFinished( true );
           // emit error on all steps
-          getSteps().stream().map( stepMetaDataCombi -> stepMetaDataCombi.step ).forEach( step-> { step.setStopped( true ); step.setRunning( false ); } );
+          getSteps().stream().map( stepMetaDataCombi -> stepMetaDataCombi.step ).forEach( step -> {
+            step.setStopped( true ); step.setRunning( false );
+          } );
           getTransListeners().forEach( l -> {
             try {
               l.transFinished( TransEngineAdapter.this );
