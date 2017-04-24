@@ -96,10 +96,11 @@ public class TextFileOutput extends BaseStep implements StepInterface {
     boolean bEndedLineWrote = false;
     boolean fileExist;
     Object[] r = getRow(); // This also waits for a row to be finished.
-    if ( r != null ) {
+    if ( r != null && meta.getOutputFields().length == 0 ) {
       data.outputRowMeta = getInputRowMeta().clone();
     }
     if ( r != null && first ) {
+      data.outputRowMeta = getInputRowMeta().clone();
       first = false;
       meta.getFields( data.outputRowMeta, getStepname(), null, null, this, repository, metaStore );
 
