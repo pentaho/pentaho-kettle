@@ -39,7 +39,6 @@ import org.apache.commons.vfs2.FileSystemManager;
 import org.apache.commons.vfs2.FileSystemOptions;
 import org.apache.commons.vfs2.cache.WeakRefFilesCache;
 import org.apache.commons.vfs2.impl.DefaultFileSystemManager;
-import org.apache.commons.vfs2.impl.StandardFileSystemManager;
 import org.apache.commons.vfs2.provider.local.LocalFile;
 import org.apache.commons.vfs2.provider.sftp.SftpFileObject;
 import org.pentaho.di.core.Const;
@@ -67,7 +66,7 @@ public class KettleVFS {
   }
 
   private KettleVFS() {
-    fsm = new StandardFileSystemManager();
+    fsm = new ConcurrentFileSystemManager();
     try {
       fsm.setFilesCache( new WeakRefFilesCache() );
       fsm.init();
