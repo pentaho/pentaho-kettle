@@ -38,6 +38,7 @@ import org.pentaho.di.engine.configuration.impl.pentaho.DefaultRunConfigurationP
 import org.pentaho.di.engine.configuration.impl.spark.SparkRunConfiguration;
 import org.pentaho.di.engine.configuration.impl.spark.SparkRunConfigurationExecutor;
 import org.pentaho.di.engine.configuration.impl.spark.SparkRunConfigurationProvider;
+import org.pentaho.metastore.stores.memory.MemoryMetaStore;
 import org.pentaho.metastore.stores.xml.XmlMetaStore;
 import org.pentaho.osgi.metastore.locator.api.MetastoreLocator;
 
@@ -53,8 +54,6 @@ import static org.junit.Assert.*;
 @RunWith( MockitoJUnitRunner.class )
 public class RunConfigurationManagerTest {
 
-  private static String XML_METASTORE = "src/test/resources/metastore_test";
-
   private RunConfigurationManager executionConfigurationManager;
 
   @Mock
@@ -63,8 +62,8 @@ public class RunConfigurationManagerTest {
   @Before
   public void setup() throws Exception {
 
-    XmlMetaStore xmlMetaStore = new XmlMetaStore( XML_METASTORE );
-    MetastoreLocator metastoreLocator = () -> xmlMetaStore;
+    MemoryMetaStore memoryMetaStore = new MemoryMetaStore();
+    MetastoreLocator metastoreLocator = () -> memoryMetaStore;
 
     DefaultRunConfigurationProvider defaultRunConfigurationProvider =
       new DefaultRunConfigurationProvider( metastoreLocator, defaultRunConfigurationExecutor );
@@ -172,4 +171,60 @@ public class RunConfigurationManagerTest {
     assertNotNull( defaultRunConfigurationExecutor );
   }
 
+  @Test
+  public void testOrdering() {
+    MemoryMetaStore memoryMetaStore = new MemoryMetaStore();
+    MetastoreLocator metastoreLocator = () -> memoryMetaStore;
+
+    DefaultRunConfigurationProvider defaultRunConfigurationProvider =
+      new DefaultRunConfigurationProvider( metastoreLocator, defaultRunConfigurationExecutor );
+
+    SparkRunConfigurationExecutor sparkRunConfigurationExecutor = new SparkRunConfigurationExecutor( null );
+    SparkRunConfigurationProvider sparkRunConfigurationProvider =
+      new SparkRunConfigurationProvider( metastoreLocator, sparkRunConfigurationExecutor );
+
+    List<RunConfigurationProvider> runConfigurationProviders = new ArrayList<>();
+    runConfigurationProviders.add( sparkRunConfigurationProvider );
+
+    executionConfigurationManager = new RunConfigurationManager( runConfigurationProviders );
+    executionConfigurationManager.setDefaultRunConfigurationProvider( defaultRunConfigurationProvider );
+
+    DefaultRunConfiguration defaultRunConfiguration1 = new DefaultRunConfiguration();
+    defaultRunConfiguration1.setName( "z" );
+    executionConfigurationManager.save( defaultRunConfiguration1 );
+
+    DefaultRunConfiguration defaultRunConfiguration2 = new DefaultRunConfiguration();
+    defaultRunConfiguration2.setName( "f" );
+    executionConfigurationManager.save( defaultRunConfiguration2 );
+
+    DefaultRunConfiguration defaultRunConfiguration3 = new DefaultRunConfiguration();
+    defaultRunConfiguration3.setName( "x" );
+    executionConfigurationManager.save( defaultRunConfiguration3 );
+
+    SparkRunConfiguration sparkRunConfiguration = new SparkRunConfiguration();
+    sparkRunConfiguration.setName( "d" );
+    executionConfigurationManager.save( sparkRunConfiguration );
+
+    DefaultRunConfiguration defaultRunConfiguration5 = new DefaultRunConfiguration();
+    defaultRunConfiguration5.setName( "a" );
+    executionConfigurationManager.save( defaultRunConfiguration5 );
+
+    List<RunConfiguration> runConfigurations = executionConfigurationManager.load();
+
+    assertEquals( runConfigurations.get( 0 ).getName(), DefaultRunConfigurationProvider.DEFAULT_CONFIG_NAME );
+    assertEquals( runConfigurations.get( 1 ).getName(), "a" );
+    assertEquals( runConfigurations.get( 2 ).getName(), "d" );
+    assertEquals( runConfigurations.get( 3 ).getName(), "f" );
+    assertEquals( runConfigurations.get( 4 ).getName(), "x" );
+    assertEquals( runConfigurations.get( 5 ).getName(), "z" );
+
+    List<String> names = executionConfigurationManager.getNames();
+
+    assertEquals( names.get( 0 ), DefaultRunConfigurationProvider.DEFAULT_CONFIG_NAME );
+    assertEquals( names.get( 1 ), "a" );
+    assertEquals( names.get( 2 ), "d" );
+    assertEquals( names.get( 3 ), "f" );
+    assertEquals( names.get( 4 ), "x" );
+    assertEquals( names.get( 5 ), "z" );
+  }
 }
