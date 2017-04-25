@@ -31,6 +31,7 @@ public interface RunConfiguration {
   String getType();
   String getName();
   String getDescription();
+  int getPriority();
   boolean isReadOnly();
 
   void setName( String name );
