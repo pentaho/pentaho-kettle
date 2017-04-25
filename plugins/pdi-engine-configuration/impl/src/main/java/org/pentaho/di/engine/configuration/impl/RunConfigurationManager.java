@@ -30,6 +30,7 @@ import org.pentaho.di.engine.configuration.api.RunConfigurationProvider;
 import org.pentaho.di.engine.configuration.api.RunConfigurationService;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -49,6 +50,12 @@ public class RunConfigurationManager implements RunConfigurationService {
     for ( RunConfigurationProvider runConfigurationProvider : getRunConfigurationProviders() ) {
       runConfigurations.addAll( runConfigurationProvider.load() );
     }
+    Collections.sort( runConfigurations, ( o1, o2 ) -> {
+      if ( o2.getPriority() > 0 ) {
+        return 1;
+      }
+      return o1.getName().compareToIgnoreCase( o2.getName() );
+    } );
     return runConfigurations;
   }
 
@@ -91,6 +98,7 @@ public class RunConfigurationManager implements RunConfigurationService {
     for ( RunConfigurationProvider runConfigurationProvider : getRunConfigurationProviders() ) {
       names.addAll( runConfigurationProvider.getNames() );
     }
+    Collections.sort( names, String::compareToIgnoreCase );
     return names;
   }
 
