@@ -123,7 +123,7 @@ public class StepInterfaceEngineAdapter extends BaseStep {
           RowListener rowListener = rowListeners.get( i );
           rowListener.rowWrittenEvent(
             executionContext.getConversionManager().convert( row, RowMetaInterface.class ),
-            row.getObjects().orElseGet( () -> new Object[ 0 ] ) );
+            row.getObjects() );
         }
       }
     } catch ( KettleStepException e ) {
