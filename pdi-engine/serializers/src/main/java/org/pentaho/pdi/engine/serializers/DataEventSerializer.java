@@ -84,14 +84,14 @@ public class DataEventSerializer extends BaseSerializer<DataEvent> {
           jsonGenerator.writeEndArray();
 
           jsonGenerator.writeArrayFieldStart( "objects" );
-          for ( Object obj : row.getObjects().get() ) {
+          for ( Object obj : row.getObjects() ) {
             jsonGenerator.writeStartObject();
-            if( obj == null ) {
+            if ( obj == null ) {
               jsonGenerator.writeStringField( "type", "Null" );
               jsonGenerator.writeEndObject();
               continue;
             }
-            switch( obj.getClass().getSimpleName() ) {
+            switch ( obj.getClass().getSimpleName() ) {
               case "String":
                 jsonGenerator.writeStringField( "type", "String" );
                 jsonGenerator.writeStringField( "obj", obj.toString() );
@@ -172,7 +172,7 @@ public class DataEventSerializer extends BaseSerializer<DataEvent> {
 
             Object object = null;
             String objType = t.asText();
-            switch( objType ) {
+            switch ( objType ) {
               case "Null":
                 types.add( Void.class );
                 break;
