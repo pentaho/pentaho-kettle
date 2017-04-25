@@ -53,6 +53,7 @@ public class DefaultRunConfigurationProvider extends MetaStoreRunConfigurationFa
     defaultRunConfiguration.setName( DEFAULT_CONFIG_NAME );
     defaultRunConfiguration.setReadOnly( true );
     defaultRunConfiguration.setLocal( true );
+    defaultRunConfiguration.setPriority( 1 );
   }
 
   public DefaultRunConfigurationProvider( MetastoreLocator metastoreLocator,
