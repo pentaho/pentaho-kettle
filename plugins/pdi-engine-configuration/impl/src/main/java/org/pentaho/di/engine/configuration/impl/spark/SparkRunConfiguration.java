@@ -80,4 +80,8 @@ public class SparkRunConfiguration implements RunConfiguration {
   @Override public boolean isReadOnly() {
     return false;
   }
+
+  @Override public int getPriority() {
+    return 0;
+  }
 }
