@@ -280,6 +280,8 @@ public class PurRepositoryConnector implements IRepositoryConnector {
 
   @Override
   public synchronized void disconnect() {
+    SpoonPerspectiveManager perspectiveManager = SpoonPerspectiveManager.getInstance();
+    perspectiveManager.hidePerspective( "schedulerPerspective" );
     if ( serviceManager != null ) {
       serviceManager.close();
     }
