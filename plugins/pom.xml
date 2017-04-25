@@ -21,6 +21,7 @@
     <module>get-previous-row-field</module>	
     <module>aggregate-rows</module>
     <module>elasticsearch-bulk-insert</module>
+    <module>googleanalytics</module>
     <module>gp-bulk-loader</module>
     <module>kettle-hl7-plugin</module>
     <module>kettle-drools5-plugin</module>
