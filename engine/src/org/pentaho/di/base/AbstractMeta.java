@@ -484,6 +484,15 @@ public abstract class AbstractMeta implements ChangedFlagInterface, UndoInterfac
   }
 
   /**
+   * Removes all the name changed listeners
+   */
+  public void clearNameChangedListeners() {
+    if ( nameChangedListeners != null ) {
+      nameChangedListeners.clear();
+    }
+  }
+
+  /**
    * Fire name changed listeners.
    *
    * @param oldName the old name
