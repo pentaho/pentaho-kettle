@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -113,7 +113,9 @@ public class XBase {
         switch ( datatype[i] ) {
           case DBFField.FIELD_TYPE_M: // Memo
             debug = "memo field";
-            System.out.println( "Field #" + i + " is a memo-field! (" + field.getName() + ")" );
+            if ( ( log != null ) && log.isDebug() ) {
+              log.logDebug( "Field #" + i + " is a memo-field! (" + field.getName() + ")" );
+            }
           case DBFField.FIELD_TYPE_C: // Character
             // case DBFField.FIELD_TYPE_P: // Picture
             debug = "character field";
@@ -138,7 +140,9 @@ public class XBase {
             value.setLength( -1, -1 );
             break;
           default:
-            System.out.println( "Unknown Datatype" + datatype[i] );
+            if ( ( log != null) && ( log.isDebug() ) ) {
+              log.logDebug( "Unknown Datatype" + datatype[i] );
+            }
         }
 
         if ( value != null ) {
