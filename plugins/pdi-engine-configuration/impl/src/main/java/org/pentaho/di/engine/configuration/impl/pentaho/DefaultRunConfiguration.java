@@ -25,12 +25,8 @@
 package org.pentaho.di.engine.configuration.impl.pentaho;
 
 import org.pentaho.di.engine.configuration.api.RunConfiguration;
-import org.pentaho.di.engine.configuration.api.RunOption;
 import org.pentaho.metastore.persist.MetaStoreAttribute;
 import org.pentaho.metastore.persist.MetaStoreElementType;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by bmorrise on 3/15/17.
