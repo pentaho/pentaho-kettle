@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -23,10 +23,11 @@
 package org.pentaho.di.trans.steps.normaliser;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Set;
 
-import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.row.RowDataUtil;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
@@ -65,6 +66,9 @@ public class Normaliser extends BaseStep implements StepInterface {
       return false;
     }
 
+    List<Integer> normFieldList;
+    int i, e;
+
     if ( first ) { // INITIALISE
 
       first = false;
@@ -72,74 +76,103 @@ public class Normaliser extends BaseStep implements StepInterface {
       data.inputRowMeta = getInputRowMeta();
       data.outputRowMeta = data.inputRowMeta.clone();
       meta.getFields( data.outputRowMeta, getStepname(), null, null, this, repository, metaStore );
+      int normFieldsLength = meta.getNormaliserFields().length;
+      data.typeToFieldIndex = new HashMap<>();
+      String typeValue;
+      int dataFieldNr;
 
       // Get a unique list of occurrences...
       //
-      data.type_occ = new ArrayList<String>();
+      data.type_occ = new ArrayList<>();
       data.maxlen = 0;
-      for ( int i = 0; i < meta.getFieldValue().length; i++ ) {
-        if ( !data.type_occ.contains( meta.getFieldValue()[i] ) ) {
-          data.type_occ.add( meta.getFieldValue()[i] );
-        }
-        if ( meta.getFieldValue()[i].length() > data.maxlen ) {
-          data.maxlen = meta.getFieldValue()[i].length();
-        }
-      }
 
-      // Which fields are not impacted? We can just copy these, leave them alone.
-      //
-      data.copy_fieldnrs = new ArrayList<Integer>();
-
-      for ( int i = 0; i < data.inputRowMeta.size(); i++ ) {
-        ValueMetaInterface v = data.inputRowMeta.getValueMeta( i );
-        if ( Const.indexOfString( v.getName(), meta.getFieldName() ) < 0 ) {
-          data.copy_fieldnrs.add( Integer.valueOf( i ) );
+      for ( i = 0; i < normFieldsLength; i++ ) {
+        typeValue = meta.getNormaliserFields()[i].getValue();
+        if ( !data.type_occ.contains( typeValue ) ) {
+          data.type_occ.add( typeValue );
         }
-      }
+        if ( typeValue.length() > data.maxlen ) {
+          data.maxlen = typeValue.length();
+        }
 
-      // Cache lookup indexes of fields
-      //
-      data.fieldnrs = new int[meta.getFieldName().length];
-      for ( int i = 0; i < meta.getFieldName().length; i++ ) {
-        data.fieldnrs[i] = data.inputRowMeta.indexOfValue( meta.getFieldName()[i] );
-        if ( data.fieldnrs[i] < 0 ) {
-          logError( BaseMessages.getString( PKG, "Normaliser.Log.CouldNotFindFieldInRow", meta.getFieldName()[i] ) );
+        // This next section creates a map of arraylist objects. The key is the Type in the Normaliser
+        // and the ArrayList is the list of indexes on the row of all fields that get normalized under that Type.
+        // This eliminates the inner loop that iterated over all the fields finding the fields associated with the Type.
+        // On a test data set with 2500 fields and about 36000 input rows (outputting over 22m rows), the time went from
+        // 12min to about 1min 35sec.
+        dataFieldNr = data.inputRowMeta.indexOfValue( meta.getNormaliserFields()[i].getName() );
+        if ( dataFieldNr < 0 ) {
+          logError( BaseMessages.getString( PKG, "Normaliser.Log.CouldNotFindFieldInRow", meta.getNormaliserFields()[i].getName() ) );
           setErrors( 1 );
           stopAll();
           return false;
         }
+        normFieldList = data.typeToFieldIndex.get( typeValue );
+        if ( normFieldList == null ) {
+          normFieldList = new ArrayList<>();
+          data.typeToFieldIndex.put( typeValue, normFieldList );
+        }
+        normFieldList.add( dataFieldNr );
+
       }
+
+      // Which fields are not impacted? We can just copy these, leave them alone.
+      //
+      data.copy_fieldnrs = new ArrayList<>();
+
+      Set<String> normaliserFields = meta.getFieldNames();
+      int irmSize = data.inputRowMeta.size();
+
+      for ( i = 0; i < irmSize; i++ ) {
+        ValueMetaInterface v = data.inputRowMeta.getValueMeta( Integer.valueOf( i ) );
+        // Backwards compatibility - old loop called Const.indexofstring which uses equalsIgnoreCase
+        if ( !normaliserFields.contains( v.getName().toLowerCase() ) ) {
+          data.copy_fieldnrs.add( Integer.valueOf( i ) );
+        }
+      }
+
     }
+
+    // Modest performance improvement over millions of rows - don't recalculate on each loop iteration something that doesn't change
+    int typeOccSize = data.type_occ.size();
+    int copyFldNrsSz = data.copy_fieldnrs.size();
+    int rowMetaSz = data.outputRowMeta.size();
+
+    // Modest performance improvement (large memory improvement) - re-use temporary objects instead of re-creating them - better for GC over time
+    String typeValue;
+    Object[] outputRowData;
+    int outputIndex, nr, normFieldListSz;
+    Object value;
 
     // Now do the normalization
     // Loop over the unique occurrences of the different types.
     //
-    for ( int e = 0; e < data.type_occ.size(); e++ ) {
-      String typevalue = data.type_occ.get( e );
+    for ( e = 0; e < typeOccSize; e++ ) {
+      typeValue = data.type_occ.get( e );
 
       // Create an output row per type
       //
-      Object[] outputRowData = RowDataUtil.allocateRowData( data.outputRowMeta.size() );
-      int outputIndex = 0;
+      outputRowData = new Object[rowMetaSz];
+      outputIndex = 0;
 
       // Copy the input row data, excluding the fields that are normalized...
       //
-      for ( int i = 0; i < data.copy_fieldnrs.size(); i++ ) {
-        int nr = data.copy_fieldnrs.get( i );
+      for ( i = 0; i < copyFldNrsSz; i++ ) {
+        nr = data.copy_fieldnrs.get( i );
         outputRowData[outputIndex++] = r[nr];
       }
 
       // Add the typefield_value
       //
-      outputRowData[outputIndex++] = typevalue;
+      outputRowData[outputIndex++] = typeValue;
 
       // Then add the normalized fields...
       //
-      for ( int i = 0; i < data.fieldnrs.length; i++ ) {
-        Object value = r[data.fieldnrs[i]];
-        if ( meta.getFieldValue()[i].equalsIgnoreCase( typevalue ) ) {
-          outputRowData[outputIndex++] = value;
-        }
+      normFieldList = data.typeToFieldIndex.get( typeValue );
+      normFieldListSz = normFieldList.size();
+      for ( i = 0; i < normFieldListSz; i++ ) {
+        value = r[normFieldList.get( i )];
+        outputRowData[outputIndex++] = value;
       }
 
       // The row is constructed, now give it to the next step(s)...

@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -117,12 +117,7 @@ public class NormaliserMetaInjection implements StepMetaInjectionInterface {
     //
     //CHECKSTYLE:Indentation:OFF
     meta.allocate( normaliserFields.size() );
-    for ( int i = 0; i < normaliserFields.size(); i++ ) {
-      meta.getFieldName()[i] = normaliserFields.get( i ).getName();
-      meta.getFieldValue()[i] = normaliserFields.get( i ).getValue();
-      meta.getFieldNorm()[i] = normaliserFields.get( i ).getNorm();
-    }
-
+    meta.setNormaliserFields( (NormaliserMeta.NormaliserField[]) normaliserFields.toArray() );
   }
 
   public List<StepInjectionMetaEntry> extractStepMetadataEntries() throws KettleException {
