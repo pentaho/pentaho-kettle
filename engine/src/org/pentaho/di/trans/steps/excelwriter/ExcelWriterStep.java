@@ -45,6 +45,7 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.util.CellReference;
+import org.apache.poi.xssf.streaming.SXSSFSheet;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -234,6 +235,11 @@ public class ExcelWriterStep extends BaseStep implements StepInterface {
 
       // handle auto size for columns
       if ( meta.isAutoSizeColums() ) {
+
+        // track all columns for autosizing if using streaming worksheet
+        if (  data.sheet instanceof SXSSFSheet ) {
+          ( (SXSSFSheet) data.sheet ).trackAllColumnsForAutoSizing();
+        }
 
         if ( meta.getOutputFields() == null || meta.getOutputFields().length == 0 ) {
           for ( int i = 0; i < data.inputRowMeta.size(); i++ ) {
