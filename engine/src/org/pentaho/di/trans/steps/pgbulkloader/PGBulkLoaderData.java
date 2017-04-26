@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -25,8 +25,8 @@ package org.pentaho.di.trans.steps.pgbulkloader;
 import java.io.OutputStream;
 
 import org.pentaho.di.core.database.Database;
+import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
-import org.pentaho.di.core.row.value.ValueMetaDate;
 import org.pentaho.di.core.util.StreamLogger;
 import org.pentaho.di.trans.step.BaseStepData;
 import org.pentaho.di.trans.step.StepDataInterface;
@@ -70,10 +70,12 @@ public class PGBulkLoaderData extends BaseStepData implements StepDataInterface 
 
     db = null;
 
-    dateMeta = new ValueMetaDate( "date" );
-    dateMeta.setConversionMask( "yyyy/MM/dd" );
+    // Let's use ISO 8601 format. This in unambiguous with PostgreSQL
+    dateMeta = new ValueMeta( "date", ValueMetaInterface.TYPE_DATE );
+    dateMeta.setConversionMask( "yyyy-MM-dd" );
 
-    dateTimeMeta = new ValueMetaDate( "date" );
-    dateTimeMeta.setConversionMask( "yyyy/MM/dd HH:mm:ss" );
+    dateTimeMeta = new ValueMeta( "date", ValueMetaInterface.TYPE_DATE );
+    // Let's keep milliseconds. Didn't find a way to keep microseconds (max resolution with PG)
+    dateTimeMeta.setConversionMask( "yyyy-MM-dd HH:mm:ss.SSS" );
   }
 }
