@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -23,7 +23,9 @@
 package org.pentaho.di.trans.steps.normaliser;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
@@ -118,10 +120,14 @@ public class NormaliserMeta extends BaseStepMeta implements StepMetaInterface {
     this.normaliserFields = normaliserFields;
   }
 
-  public String[] getFieldNames() {
-    String[] fieldNames = new String[normaliserFields.length];
+  public Set<String> getFieldNames() {
+    Set<String> fieldNames = new HashSet<>( );
+    String s;
     for ( int i = 0; i < normaliserFields.length; i++ ) {
-      fieldNames[i] = normaliserFields[i].getName();
+      s = normaliserFields[i].getName();
+      if ( s != null ) {
+        fieldNames.add( s.toLowerCase() );
+      }
     }
     return fieldNames;
   }
@@ -196,8 +202,8 @@ public class NormaliserMeta extends BaseStepMeta implements StepMetaInterface {
 
     // Get a unique list of the occurrences of the type
     //
-    List<String> norm_occ = new ArrayList<String>();
-    List<String> field_occ = new ArrayList<String>();
+    List<String> norm_occ = new ArrayList<>();
+    List<String> field_occ = new ArrayList<>();
     int maxlen = 0;
     for ( int i = 0; i < normaliserFields.length; i++ ) {
       if ( !norm_occ.contains( normaliserFields[i].getNorm() ) ) {
