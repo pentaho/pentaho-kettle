@@ -4025,16 +4025,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
                         new RepositoryExplorer( shell, rep, cb, Variables.getADefaultVariableSpace(),
                             sharedObjectSyncUtil );
                   } catch ( final KettleRepositoryLostException krle ) {
-                    shell.getDisplay().asyncExec( new Runnable() {
-                      @Override
-                      public void run() {
-                        new ErrorDialog(
-                            getShell(),
-                            BaseMessages.getString( PKG, "Spoon.Error" ),
-                            krle.getPrefaceMessage(),
-                            krle );
-                      }
-                    } );
+                    handleRepositoryLost( krle );
                     closeRepository();
                     return;
                   } finally {
@@ -4197,7 +4188,9 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
       if ( shouldDisconnect ) {
         loadSessionInformation( null, false );
 
-        rep.disconnect();
+        if ( rep != null ) {
+          rep.disconnect();
+        }
         if ( metaStore.getMetaStoreList().size() > 1 ) {
           try {
             metaStore.getMetaStoreList().remove( 0 );
