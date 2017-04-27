@@ -140,7 +140,7 @@ public class XBase {
             value.setLength( -1, -1 );
             break;
           default:
-            if ( ( log != null) && ( log.isDebug() ) ) {
+            if ( ( log != null ) && ( log.isDebug() ) ) {
               log.logDebug( "Unknown Datatype" + datatype[i] );
             }
         }
