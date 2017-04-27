@@ -27,8 +27,18 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.pentaho.di.core.Result;
+import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.logging.KettleLogStore;
+import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.job.Job;
+
+
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+import java.util.ArrayList;
+
+
+
 
 public class JobEntryCopyFilesTest {
   private JobEntryCopyFiles entry;
@@ -72,9 +82,11 @@ public class JobEntryCopyFilesTest {
     Result result = entry.execute( new Result(), 0 );
 
     Mockito.verify( entry ).processFileFolder( Mockito.anyString(), Mockito.anyString(),
-        Mockito.anyString(), Mockito.any( Job.class ), Mockito.any( Result.class ) );
+      Mockito.anyString(), Mockito.any( Job.class ), Mockito.any( Result.class ) );
+    Mockito.verify( entry, Mockito.atLeast( 1 ) ).preprocessfilefilder( Mockito.any( String[].class ) );
     Assert.assertFalse( result.getResult() );
     Assert.assertEquals( 1, result.getNrErrors() );
+
   }
 
   @Test
@@ -92,5 +104,34 @@ public class JobEntryCopyFilesTest {
         Mockito.anyString(), Mockito.any( Job.class ), Mockito.any( Result.class ) );
     Assert.assertFalse( result.getResult() );
     Assert.assertEquals( 3, result.getNrErrors() );
+  }
+
+  @Test
+  public void saveLoad() throws Exception {
+    String[] srcPath = new String[] { "EMPTY_SOURCE_URL-0-" };
+    String[] destPath = new String[] { "EMPTY_DEST_URL-0-" };
+
+    entry.source_filefolder = srcPath;
+    entry.destination_filefolder = destPath;
+    entry.wildcard = new String[] { EMPTY };
+
+    String xml = "<entry>" + entry.getXML() + "</entry>";
+    Assert.assertTrue( xml.contains( srcPath[0] ) );
+    Assert.assertTrue( xml.contains( destPath[0] ) );
+    JobEntryCopyFiles loadedentry = new JobEntryCopyFiles();
+    InputStream is = new ByteArrayInputStream( xml.getBytes() );
+    loadedentry.loadXML( XMLHandler.getSubNode(
+      XMLHandler.loadXMLFile( is,
+        null,
+        false,
+        false ),
+      "entry" ),
+      new ArrayList<DatabaseMeta>(),
+      null,
+      null,
+      null );
+    Assert.assertTrue( loadedentry.destination_filefolder[0].equals( destPath[0] ) );
+    Assert.assertTrue( loadedentry.source_filefolder[0].equals( srcPath[0] ) );
+
   }
 }
