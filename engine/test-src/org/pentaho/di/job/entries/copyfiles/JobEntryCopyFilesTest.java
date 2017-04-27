@@ -74,6 +74,7 @@ public class JobEntryCopyFilesTest {
 
     verify( entry ).processFileFolder( anyString(), anyString(),
         anyString(), any( Job.class ), any( Result.class ) );
+    verify( entry, atLeast( 1 ) ).preprocessfilefilder( any( String[].class ) );
     assertFalse( result.getResult() );
     assertEquals( 1, result.getNrErrors() );
   }
