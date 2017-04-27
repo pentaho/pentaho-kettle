@@ -21,6 +21,7 @@
     <module>get-previous-row-field</module>	
     <module>aggregate-rows</module>
     <module>elasticsearch-bulk-insert</module>
+    <module>gp-bulk-loader</module>
   </modules>
   
 </project>
