@@ -996,7 +996,7 @@ public class ValueMetaBase implements ValueMetaInterface {
     }
 
     try {
-      DecimalFormat format = getDecimalFormat( false, TYPE_NUMBER );
+      DecimalFormat format = getDecimalFormat( false );
       Number number;
       if ( lenientStringToNumber ) {
         number = format.parse( string );
@@ -1073,10 +1073,6 @@ public class ValueMetaBase implements ValueMetaInterface {
 
   @Override
   public synchronized DecimalFormat getDecimalFormat( boolean useBigDecimal ) {
-    return getDecimalFormat( useBigDecimal, getType() );
-  }
-
-  private synchronized DecimalFormat getDecimalFormat( boolean useBigDecimal, int valueMetaType ) {
     // If we have an Integer that is represented as a String
     // In that case we can set the format of the original Integer on the String
     // value metadata in the form of a conversion metadata object.
@@ -1108,7 +1104,7 @@ public class ValueMetaBase implements ValueMetaInterface {
       }
       decimalFormat.setDecimalFormatSymbols( decimalFormatSymbols );
 
-      String decimalPattern = getMask( valueMetaType );
+      String decimalPattern = getMask( getType() );
       if ( !Utils.isEmpty( decimalPattern ) ) {
         decimalFormat.applyPattern( decimalPattern );
       }
@@ -1310,7 +1306,7 @@ public class ValueMetaBase implements ValueMetaInterface {
     try {
       Number number;
       if ( lenientStringToNumber ) {
-        number = new Long( getDecimalFormat( false, TYPE_INTEGER ).parse( string ).longValue() );
+        number = new Long( getDecimalFormat( false ).parse( string ).longValue() );
       } else {
         ParsePosition parsePosition = new ParsePosition( 0 );
         number = getDecimalFormat( false ).parse( string, parsePosition );
@@ -1350,7 +1346,7 @@ public class ValueMetaBase implements ValueMetaInterface {
     }
 
     try {
-      DecimalFormat format = getDecimalFormat( bigNumberFormatting, TYPE_BIGNUMBER );
+      DecimalFormat format = getDecimalFormat( bigNumberFormatting );
       Number number;
       if ( lenientStringToNumber ) {
         number = format.parse( string );
