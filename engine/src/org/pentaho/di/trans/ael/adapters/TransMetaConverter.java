@@ -116,7 +116,7 @@ public class TransMetaConverter {
   private static TransMeta cleanupDisabledHops( TransMeta transMeta ) {
     TransMeta copyTransMeta = (TransMeta) transMeta.clone();
 
-    removeUnusedInputs( copyTransMeta );
+    removeDisabledInputs( copyTransMeta );
 
     removeInactivePaths( copyTransMeta, null );
 
@@ -163,14 +163,17 @@ public class TransMetaConverter {
    * Removes input steps having only disabled output hops so they will not be executed.
    * @param transMeta transMeta to process
    */
-  private static void removeUnusedInputs( TransMeta transMeta ) {
+  private static void removeDisabledInputs( TransMeta transMeta ) {
     List<StepMeta> unusedInputs = findHops( transMeta, hop -> !hop.isEnabled() ).stream()
         .map( hop -> hop.getFromStep() )
         .filter( step -> isUnusedInput( transMeta, step ) )
         .collect( Collectors.toList() );
     for ( StepMeta unusedInput : unusedInputs ) {
-      transMeta.findAllTransHopFrom( unusedInput ).forEach( transMeta::removeTransHop );
+      List<TransHopMeta> outHops = transMeta.findAllTransHopFrom( unusedInput );
+      List<StepMeta> subsequentSteps = outHops.stream().map( hop -> hop.getToStep() ).collect( Collectors.toList() );
+      outHops.forEach( transMeta::removeTransHop );
       transMeta.getSteps().remove( unusedInput );
+      removeInactivePaths( transMeta, subsequentSteps );
     }
   }
 

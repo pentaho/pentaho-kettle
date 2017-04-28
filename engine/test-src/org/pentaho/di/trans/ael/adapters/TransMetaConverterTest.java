@@ -171,13 +171,17 @@ public class TransMetaConverterTest {
     trans.addStep( inputToBeRemoved );
     StepMeta inputToStay = new StepMeta( "InputToStay", stepMetaInterface );
     trans.addStep( inputToStay );
-    StepMeta inputReceiver = new StepMeta( "InputReceiver", stepMetaInterface );
-    trans.addStep( inputReceiver );
+    StepMeta inputReceiver1 = new StepMeta( "InputReceiver1", stepMetaInterface );
+    trans.addStep( inputReceiver1 );
+    StepMeta inputReceiver2 = new StepMeta( "InputReceiver2", stepMetaInterface );
+    trans.addStep( inputReceiver2 );
 
-    TransHopMeta hop1 = new TransHopMeta( inputToBeRemoved, inputReceiver, false );
-    TransHopMeta hop2 = new TransHopMeta( inputToStay, inputReceiver );
+    TransHopMeta hop1 = new TransHopMeta( inputToBeRemoved, inputReceiver1, false );
+    TransHopMeta hop2 = new TransHopMeta( inputToStay, inputReceiver1 );
+    TransHopMeta hop3 = new TransHopMeta( inputToBeRemoved, inputReceiver2, false );
     trans.addTransHop( hop1 );
     trans.addTransHop( hop2 );
+    trans.addTransHop( hop3 );
 
     Transformation transformation = TransMetaConverter.convert( trans );
 
@@ -185,11 +189,11 @@ public class TransMetaConverterTest {
         steps =
         transformation.getOperations().stream().map( op -> op.getId() ).collect( Collectors.toList() );
     assertThat( "Only 2 ops should exist", steps.size(), is( 2 ) );
-    assertThat( steps, hasItems( "InputToStay", "InputReceiver" ) );
+    assertThat( steps, hasItems( "InputToStay", "InputReceiver1" ) );
 
     List<String> hops = transformation.getHops().stream().map( hop -> hop.getId() ).collect( Collectors.toList() );
     assertThat( "Only 1 hop should exist", hops.size(), is( 1 ) );
-    assertThat( hops, hasItems( "InputToStay -> InputReceiver" ) );
+    assertThat( hops, hasItems( "InputToStay -> InputReceiver1" ) );
 
   }
 
