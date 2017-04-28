@@ -24,14 +24,10 @@
 
 package org.pentaho.pdi.engine.serializers;
 
-import org.pentaho.di.engine.api.RowException;
 import org.pentaho.di.engine.api.model.Row;
 
-import java.math.BigDecimal;
 import java.util.Collections;
-import java.util.Date;
 import java.util.List;
-import java.util.Optional;
 
 /**
  * We don't have access to a generic Row from the API. As such we're owning an implementation for deserialized rows.
@@ -54,92 +50,12 @@ public class DeserializedRow implements Row {
     this.objects = objects;
   }
 
-  @Override public int size() {
-    return objects.size();
-  }
-
   @Override public List<String> getColumnNames() {
     return Collections.unmodifiableList( names );
   }
 
-  @Override public List<Class> getColumnTypes() {
-    return Collections.unmodifiableList( types );
-  }
-
-  @Override public Optional<String> getString( int index ) throws RowException {
-    return Optional.of( (String) objects.get( index ) );
-  }
-
-  @Override public Optional<Long> getLong( int index ) throws RowException {
-    return Optional.of( (Long) objects.get( index ) );
-  }
-
-  @Override public Optional<Double> getNumber( int index ) throws RowException {
-    return Optional.of( (Double) objects.get( index ) );
-  }
-
-  @Override public Optional<Date> getDate( int index ) throws RowException {
-    return Optional.of( (Date) objects.get( index ) );
-  }
-
-  @Override public Optional<BigDecimal> getBigNumber( int index ) throws RowException {
-    return Optional.of( (BigDecimal) objects.get( index ) );
-  }
-
-  @Override public Optional<Boolean> getBoolean( int index ) throws RowException {
-    return Optional.of( (Boolean) objects.get( index ) );
-  }
-
-  @Override public Optional<byte[]> getBinary( int index ) throws RowException {
-    return Optional.of( (byte[]) objects.get( index ) );
-  }
-
-  @Override public Optional<Object> getObject( int index ) throws RowException {
-    return Optional.of( objects.get( index ) );
-  }
-
-  @Override public Optional<String> getString( String name ) throws RowException {
-    return getString( names.indexOf( name ) );
-  }
-
-  @Override public Optional<Long> getLong( String name ) throws RowException {
-    return getLong( names.indexOf( name ) );
-  }
-
-  @Override public Optional<Double> getNumber( String name ) throws RowException {
-    return getNumber( names.indexOf( name ) );
-  }
-
-  @Override public Optional<Date> getDate( String name ) throws RowException {
-    return getDate( names.indexOf( name ) );
-  }
-
-  @Override public Optional<BigDecimal> getBigNumber( String name ) throws RowException {
-    return getBigNumber( names.indexOf( name ) );
-  }
-
-  @Override public Optional<Boolean> getBoolean( String name ) throws RowException {
-    return getBoolean( names.indexOf( name ) );
-  }
-
-  @Override public Optional<byte[]> getBinary( String name ) throws RowException {
-    return getBinary( names.indexOf( name ) );
-  }
-
-  @Override public Optional<Object> getObject( String name ) throws RowException {
-    return getObject( names.indexOf( name ) );
-  }
-
-  @Override public Optional<Object[]> getObjects() {
-    return Optional.of( Collections.unmodifiableList( objects ).toArray() );
-  }
-
-  @Override public Optional<Integer> getInteger( int index ) throws RowException {
-    return Optional.of( (Integer) objects.get( index ) );
-  }
-
-  @Override public Optional<Integer> getInteger( String name ) throws RowException {
-    return getInteger( names.indexOf( name ) );
+  @Override public Object[] getObjects() {
+    return Collections.unmodifiableList( objects ).toArray();
   }
 
   @Override public boolean equals( Object o ) {
