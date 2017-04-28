@@ -4909,6 +4909,7 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
             MessageDialog.QUESTION, new String[] { BaseMessages.getString( PKG, "System.Button.Yes" ),
             BaseMessages.getString( PKG, "System.Button.No" ) }, 0, BaseMessages.getString( PKG,
             "TransLog.Dialog.Option.AutoSaveTransformation" ), spoon.props.getAutoSave() );
+        MessageDialogWithToggle.setDefaultImage( GUIResource.getInstance().getImageSpoon() );
         int answer = md.open();
         if ( ( answer & 0xFF ) == 0 ) {
           spoon.saveToFile( transMeta );
