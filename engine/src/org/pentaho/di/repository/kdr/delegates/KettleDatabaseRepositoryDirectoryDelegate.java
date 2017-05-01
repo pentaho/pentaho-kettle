@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -51,7 +51,7 @@ public class KettleDatabaseRepositoryDirectoryDelegate extends KettleDatabaseRep
   }
 
   public RepositoryDirectoryInterface loadPathToRoot( ObjectId id_directory ) throws KettleException {
-    List<RepositoryDirectory> path = new ArrayList<RepositoryDirectory>();
+    List<RepositoryDirectory> path = new ArrayList<>();
 
     ObjectId directoryId = id_directory;
 
@@ -66,7 +66,7 @@ public class KettleDatabaseRepositoryDirectoryDelegate extends KettleDatabaseRep
       directory.setObjectId( directoryId );
       path.add( directory );
 
-      System.out.println( "+ dir '" + directory.getName() + "'" );
+      // System.out.println( "+ dir '" + directory.getName() + "'" );
 
       directoryId = new LongObjectId( parentId );
       directoryRow = getDirectory( directoryId );

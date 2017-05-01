@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -62,6 +62,7 @@ public class TableAgileMart extends TableOutput implements TableManager {
   public boolean init( StepMetaInterface smi, StepDataInterface sdi ) {
     boolean result = super.init( smi, sdi );
     rowsWritten = 0;
+    util.setLog( log );
     return result;
   }
 
@@ -203,8 +204,8 @@ public class TableAgileMart extends TableOutput implements TableManager {
       }
       return status == 0;
     } catch ( KettleDatabaseException e ) {
-      logError( "Could not drop table: " + table, e );
       message = "Could not drop table: " + table;
+      logError( message, e );
     }
     return false;
   }
@@ -234,8 +235,8 @@ public class TableAgileMart extends TableOutput implements TableManager {
       util.updateMetadata( meta, -1 );
       return true;
     } catch ( KettleDatabaseException e ) {
-      logError( "Could not truncate table: " + meta.getTableName(), e );
       message = "Could not truncate table: " + meta.getTableName();
+      logError( message, e );
     }
     return false;
   }

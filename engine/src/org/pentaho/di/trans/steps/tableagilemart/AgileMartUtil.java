@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -28,6 +28,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import org.pentaho.di.core.ProvidesDatabaseConnectionInformation;
+import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.metadata.registry.Entity;
 import org.pentaho.metadata.registry.IMetadataRegistry;
 import org.pentaho.metadata.registry.OrderedFileRegistry;
@@ -35,6 +36,12 @@ import org.pentaho.metadata.registry.RegistryFactory;
 import org.pentaho.metadata.registry.util.RegistryUtil;
 
 public class AgileMartUtil {
+
+  private LogChannelInterface log;
+
+  protected void setLog( LogChannelInterface value ) {
+    this.log = value;
+  }
 
   public void updateMetadata( ProvidesDatabaseConnectionInformation dpci, long rowCount ) {
     // try to update the metadata registry
@@ -64,9 +71,9 @@ public class AgileMartUtil {
         databaseName.toLowerCase(), ( schemaName == null ) ? null : schemaName.toLowerCase(), tableName
           .toLowerCase(), false );
     if ( entity != null ) {
-      System.out.println( "Util.updateMetadata writing "
-        + util.generateTableId( dpci.getDatabaseMeta().getName(), dpci.getSchemaName(), dpci.getTableName() )
-        + " rowCount=" + rowCount );
+      if ( ( log != null ) && log.isDebug() ) {
+        log.logDebug( "Util.updateMetadata writing " + util.generateTableId( dpci.getDatabaseMeta().getName(), dpci.getSchemaName(), dpci.getTableName() ) + " rowCount=" + rowCount );
+      }
       if ( rowCount == -1 ) {
         // the table has been emptied
         util.setAttribute( entity, "rowcount", 0 );
@@ -79,9 +86,9 @@ public class AgileMartUtil {
       util.setAttribute( entity, "lastupdate", fmt.format( now ) );
       util.setAttribute( entity, "lastupdatetick", now.getTime() );
     } else {
-      System.out.println( "Util.updateMetadata failed writing "
-        + util.generateTableId( dpci.getDatabaseMeta().getName(), dpci.getSchemaName(), dpci.getTableName() ) );
-
+      if ( ( log != null ) && log.isDebug() ) {
+        log.logDebug( "Util.updateMetadata failed writing " + util.generateTableId( dpci.getDatabaseMeta().getName(), dpci.getSchemaName(), dpci.getTableName() ) );
+      }
     }
     try {
       registry.commit();
