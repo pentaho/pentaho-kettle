@@ -18,7 +18,7 @@
     <build.revision>${project.version}</build.revision>
     <timestamp>${maven.build.timestamp}</timestamp>
     <build.description>${project.description}</build.description>
-    <maven.build.timestamp.format>yyyy/MM/dd hh:mm</maven.build.timestamp.format>
+    <maven.build.timestamp.format>yyyy/MM/dd hh\:mm</maven.build.timestamp.format>
   </properties>
   <dependencies>
     <dependency>
