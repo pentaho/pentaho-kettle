@@ -33,14 +33,6 @@
         <valuetype>String</valuetype>
         <parentid></parentid>
     </attribute>
-    <attribute id="PSQLPATH">
-        <xmlcode>PsqlPath</xmlcode>
-        <repcode>PsqlPath</repcode>
-        <description>PGBulkLoaderDialog.PsqlPath.Label</description>
-        <tooltip/>
-        <valuetype>String</valuetype>
-        <parentid></parentid>
-    </attribute>
     <attribute id="DBNAMEOVERRIDE">
         <xmlcode>dbname_override</xmlcode>
         <repcode>dbname_override</repcode>
