@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -170,19 +170,32 @@ public class RepositoryDialog extends ThinDialog {
         databaseDialog.open();
         DatabaseMeta databaseMeta = databaseDialog.getDatabaseMeta();
         if ( databaseMeta != null ) {
-          controller.addDatabase( databaseMeta );
+          if ( !controller.isDatabaseWithNameExist( databaseMeta, true ) ) {
+            controller.addDatabase( databaseMeta );
+            return true;
+          } else {
+            DatabaseDialog.showDatabaseExistsDialog( shell, databaseMeta );
+          }
         }
-        return true;
+        return false;
       }
     };
 
     new BrowserFunction( browser, "editDatabaseConnection" ) {
       @Override public Object function( Object[] objects ) {
         DatabaseMeta databaseMeta = controller.getDatabase( (String) objects[ 0 ] );
+        String originalName = databaseMeta.getName();
         DatabaseDialog databaseDialog = new DatabaseDialog( shell, databaseMeta );
         databaseDialog.open();
-        controller.save();
-        return databaseMeta.getName();
+        if ( !controller.isDatabaseWithNameExist( databaseMeta, false ) ) {
+          controller.save();
+          return databaseMeta.getName();
+        } else {
+          DatabaseDialog.showDatabaseExistsDialog( shell, databaseMeta );
+          databaseMeta.setName( originalName );
+          databaseMeta.setDisplayName( originalName );
+          return originalName;
+        }
       }
     };
 
