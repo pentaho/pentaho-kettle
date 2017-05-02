@@ -133,7 +133,7 @@ public class Rest extends BaseStep implements StepInterface {
           if ( isDebug() ) {
             logDebug( BaseMessages.getString( PKG, "Rest.Log.matrixParameterValue", data.matrixParamNames[i], value ) );
           }
-          builder = builder.matrixParam( data.matrixParamNames[i], value );
+          builder = builder.matrixParam( data.matrixParamNames[i], UriComponent.encode( value, UriComponent.Type.QUERY_PARAM ) );
         }
         webResource = client.resource( builder.build() );
       }
