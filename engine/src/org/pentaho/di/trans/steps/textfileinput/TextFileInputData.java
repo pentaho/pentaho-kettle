@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -44,6 +44,7 @@ import org.pentaho.di.trans.step.errorhandling.FileErrorHandler;
  * @since 22-jan-2005
  * @deprecated replaced by implementation in the ...steps.fileinput.text package
  */
+@Deprecated
 public class TextFileInputData extends BaseStepData implements StepDataInterface {
 
   public List<TextFileLine> lineBuffer;

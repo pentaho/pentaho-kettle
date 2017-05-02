@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -29,6 +29,7 @@ import org.pentaho.di.core.util.Utils;
 /**
  * @deprecated replaced by implementation in the ...steps.fileinput.text package
  */
+@Deprecated
 public enum EncodingType {
   SINGLE( 1, 0, '\r', '\n' ), DOUBLE_BIG_ENDIAN( 2, 0xFEFF, 0x000d, 0x000a ), DOUBLE_LITTLE_ENDIAN(
     2, 0xFFFE, 0x0d00, 0x0a00 );

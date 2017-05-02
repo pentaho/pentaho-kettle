@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -158,17 +158,17 @@ public class AccessInput extends BaseStep implements StepInterface {
       int rowIndex = data.totalpreviousfields + meta.getInputFields().length;
 
       // See if we need to add the filename to the row...
-      if ( meta.includeFilename() && !Utils.isEmpty( meta.getFilenameField() ) ) {
+      if ( meta.isIncludeFilename() && !Utils.isEmpty( meta.getFilenameField() ) ) {
         r[rowIndex++] = AccessInputMeta.getFilename( data.file );
       }
 
       // See if we need to add the table name to the row...
-      if ( meta.includeTablename() && !Utils.isEmpty( data.t.getName() ) ) {
+      if ( meta.isIncludeTablename() && !Utils.isEmpty( data.t.getName() ) ) {
         r[rowIndex++] = data.t.getName();
       }
 
       // See if we need to add the row number to the row...
-      if ( meta.includeRowNumber() && !Utils.isEmpty( meta.getRowNumberField() ) ) {
+      if ( meta.isIncludeRowNumber() && !Utils.isEmpty( meta.getRowNumberField() ) ) {
         r[rowIndex++] = new Long( data.rownr );
       }
       // Possibly add short filename...
@@ -322,7 +322,7 @@ public class AccessInput extends BaseStep implements StepInterface {
         data.size = new Long( data.file.getContent().getSize() );
       }
 
-      if ( meta.resetRowNumber() ) {
+      if ( meta.isResetRowNumber() ) {
         data.rownr = 0;
       }
 

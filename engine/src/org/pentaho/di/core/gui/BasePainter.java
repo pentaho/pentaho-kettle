@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -35,7 +35,7 @@ import org.pentaho.di.trans.step.errorhandling.StreamIcon;
 
 import java.util.List;
 
-public abstract class BasePainter<Hop extends BaseHopMeta, Part extends BaseMeta> {
+public abstract class BasePainter<Hop extends BaseHopMeta<?>, Part extends BaseMeta> {
 
   public final double theta = Math.toRadians( 11 ); // arrowhead sharpness
 
