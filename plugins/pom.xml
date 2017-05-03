@@ -24,6 +24,8 @@
     <module>gp-bulk-loader</module>
     <module>kettle-hl7-plugin</module>
     <module>kettle-drools5-plugin</module>
+   <module>kettle-dummy-plugin</module>
+
   </modules>
   
 </project>
