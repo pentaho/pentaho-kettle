@@ -74,7 +74,7 @@
     <dependency org="${ivy.artifact.group}" name="kettle-gpload-plugin" rev="${project.revision}" changing="true" conf="plugins->default">
         <artifact name="kettle-gpload-plugin" type="zip"/>
     </dependency>
-    <dependency org="${ivy.artifact.group}" name="kettle-hl7-plugin" rev="${project.revision}" changing="true" conf="plugins->default">
+    <dependency org="org.pentaho.kettle.plugins" name="kettle-hl7-plugin" rev="${project.revision}" changing="true" conf="plugins->default">
         <artifact name="kettle-hl7-plugin" type="zip"/>
     </dependency>
     <dependency org="${ivy.artifact.group}" name="kettle-openerp-plugin" rev="${project.revision}" changing="true" conf="plugins->default">
