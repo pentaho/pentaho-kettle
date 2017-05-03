@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -54,6 +54,7 @@ import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDialogInterface;
 import org.pentaho.di.ui.core.dialog.EnterSelectionDialog;
+import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 
@@ -88,6 +89,7 @@ public class ShapeFileReaderDialog extends BaseStepDialog implements StepDialogI
 
 		shell = new Shell(parent, SWT.DIALOG_TRIM | SWT.RESIZE | SWT.MAX | SWT.MIN);
 		props.setLook(shell);
+		shell.setImage( GUIResource.getInstance().getImageSpoon() );
 
 		ModifyListener lsMod = new ModifyListener() 
 		{
