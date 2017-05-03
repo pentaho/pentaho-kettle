@@ -1,0 +1,56 @@
+<!-- ------------------------- User error component here ------------------------- -->
+<error class="hidden"></error>
+
+<!-- ------------------------- set class to open or save ------------------------- -->
+<div class="dialogWrapper" ng-class="vm.wrapperClass">
+  <div class="header">
+    <div class="headerTop">
+      <div class="headerTitle headerText">
+        {{::vm.headerTitle}}
+      </div>
+      <div class="headerSearch">
+        <div class="headerSearchLeft"></div>
+        <input type="text" class="searchBox" placeholder="{{::vm.searchPlaceholder}} {{::vm.selectedFolder}}"/>
+        <div class="headerSearchRight"></div>
+      </div>
+    </div>
+    <div class="headerBottom">
+      <div class="breadcrumbSection blueText">
+        <!-- ------------------------- Use breadcrumb component here ------------------------- -->
+      </div>
+      <div class="addDelete">
+        <div class="addFolder"></div>
+        <div class="deleteFolder"></div>
+      </div>
+    </div>
+  </div>
+  <div class="middle">
+    <div class="directoryTreeArea">
+      <!-- ------------------------- Use folder component here ------------------------- -->
+    </div>
+
+    <div class="fileArea fileList">
+      <!-- ------------------------- MSG TO USER FOR NO SEARCH RESULTS/RECENTS ------------------------- -->
+      <div class="fileAreaMessageView" style="display:none;">
+        You haven't opened anything recently.
+      </div>
+
+      <!-- ------------------------- FILES/SEARCH LIST or RECENT FILE CARDS  ------------------------- -->
+      <div class="fileAreaResultsView">
+        <!-- ------------------------- Use files OR card component here ------------------------- -->
+      </div>
+    </div>
+  </div>
+  <div class="bottom">
+    <div class="fileNameEntry">
+      <div class="fileNameEntryLabel">
+        <label for="fileNameEntryTextBox">{{::vm.saveFileNameLabel}}</label>
+      </div>
+      <input id="fileNameEntryTextBox" type="text" class="fileNameEntryTextBox"/>
+    </div>
+    <div class="buttons">
+      <button class="secondary">{{::vm.cancelButton}}</button>
+      <button class="primary">{{::vm.confirmButton}}</button>
+    </div>
+  </div>
+</div>
