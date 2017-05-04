@@ -23,6 +23,7 @@
     <module>elasticsearch-bulk-insert</module>
     <module>gp-bulk-loader</module>
     <module>kettle-hl7-plugin</module>
+    <module>kettle-drools5-plugin</module>
   </modules>
   
 </project>
