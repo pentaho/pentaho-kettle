@@ -614,6 +614,13 @@ public class JobEntryTransDialog extends JobEntryBaseDialog implements JobEntryD
       // Ignore errors
     }
 
+    try {
+      ExtensionPointHandler.callExtensionPoint( jobEntry.getLogChannel(), KettleExtensionPoint.JobEntryTransSave.id,
+        new Object[] { jobMeta, jet.getRunConfiguration() } );
+    } catch ( KettleException e ) {
+      // Ignore errors
+    }
+
     jet.setClustering( executionConfiguration.isExecutingClustered() );
     if ( executionConfiguration.getRemoteServer() != null ) {
       jet.setRemoteSlaveServerName( executionConfiguration.getRemoteServer().getName() );
