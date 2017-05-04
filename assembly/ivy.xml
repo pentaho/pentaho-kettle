@@ -101,7 +101,7 @@
     <dependency org="org.pentaho.kettle.plugins" name="gp-bulk-loader-plugin" rev="${project.revision}" changing="true" conf="plugins->default" transitive="false">
         <artifact name="gp-bulk-loader-plugin" type="zip"/>
     </dependency>
-    <dependency org="org.pentaho" name="elasticsearch-bulk-insert-plugin" rev="${project.revision}" changing="true" conf="plugins->default" transitive="false">
+    <dependency org="org.pentaho.kettle.plugins" name="elasticsearch-bulk-insert-plugin" rev="${project.revision}" changing="true" conf="plugins->default" transitive="false">
         <artifact name="elasticsearch-bulk-insert-plugin" type="zip"/>
     </dependency>
     <dependency org="${ivy.artifact.group}" name="kettle-xml-plugin" rev="${project.revision}" changing="true" conf="plugins->default">

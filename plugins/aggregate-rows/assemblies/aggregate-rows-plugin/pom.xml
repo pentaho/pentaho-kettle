@@ -3,7 +3,7 @@
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <modelVersion>4.0.0</modelVersion>
   <parent>
-    <groupId>org.pentaho</groupId>
+    <groupId>org.pentaho.kettle.plugins</groupId>
     <artifactId>aggregate-rows-assemblies</artifactId>
     <version>8.0-SNAPSHOT</version>
   </parent>
@@ -12,15 +12,12 @@
   <packaging>pom</packaging>
   <name>Aggregate Rows</name>
   <description>Aggregate Rows</description>
-  <scm>
-    <developerConnection>scm:git:git@github.com:pentaho/pentaho-kettle.git</developerConnection>
-  </scm>
   <properties>
     <project.revision>8.0-SNAPSHOT</project.revision>
   </properties>
   <dependencies>
     <dependency>
-      <groupId>org.pentaho</groupId>
+      <groupId>org.pentaho.kettle.plugins</groupId>
       <artifactId>aggregate-rows-core</artifactId>
       <version>${project.revision}</version>
       <scope>runtime</scope>
