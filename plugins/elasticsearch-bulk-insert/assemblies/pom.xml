@@ -3,11 +3,10 @@
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <modelVersion>4.0.0</modelVersion>
   <parent>
-    <groupId>org.pentaho</groupId>
+    <groupId>org.pentaho.kettle.plugins</groupId>
     <artifactId>elasticsearch-bulk-insert</artifactId>
     <version>8.0-SNAPSHOT</version>
   </parent>
-  <groupId>org.pentaho</groupId>
   <artifactId>elasticsearch-bulk-insert-assemblies</artifactId>
   <version>8.0-SNAPSHOT</version>
   <packaging>pom</packaging>

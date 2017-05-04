@@ -12,9 +12,6 @@
   <packaging>pom</packaging>
   <name>GP Bulk Loader</name>
   <description>GP Bulk Loader</description>
-  <scm>
-    <developerConnection>scm:git:git@github.com:pentaho/pentaho-kettle.git</developerConnection>
-  </scm>
   <properties>
     <project.revision>8.0-SNAPSHOT</project.revision>
   </properties>
