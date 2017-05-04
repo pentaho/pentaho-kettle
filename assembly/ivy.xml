@@ -68,7 +68,7 @@
     <dependency org="${ivy.artifact.group}" name="kettle-shapefilereader-plugin" rev="${project.revision}" changing="true" conf="plugins->default">
       <artifact name="kettle-shapefilereader-plugin" type="zip"/>
     </dependency>
-    <dependency org="${ivy.artifact.group}" name="kettle-drools5-plugin" rev="${project.revision}" changing="true" conf="plugins->default">
+    <dependency org="org.pentaho.kettle.plugins" name="kettle-drools5-plugin" rev="${project.revision}" changing="true" conf="plugins->default" transitive="false">
       <artifact name="kettle-drools5-plugin" type="zip"/>
     </dependency>
     <dependency org="${ivy.artifact.group}" name="kettle-gpload-plugin" rev="${project.revision}" changing="true" conf="plugins->default">
