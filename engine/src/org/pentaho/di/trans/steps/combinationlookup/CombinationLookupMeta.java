@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -24,6 +24,7 @@ package org.pentaho.di.trans.steps.combinationlookup;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
@@ -1096,6 +1097,12 @@ public class CombinationLookupMeta extends BaseStepMeta implements StepMetaInter
     // getKeyLookup()
 
     return true;
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash( getCommitSize(), getCacheSize(), getTechKeyCreation(), replaceFields(), useHash(),
+        getPreloadCache(), getSequenceFrom(), getSchemaName(), getTableName(), getHashField(), getTechnicalKeyField() );
   }
 
   /**

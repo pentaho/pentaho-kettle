@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -103,6 +103,11 @@ public class StepPartitioningMeta implements XMLInterface, Cloneable {
       return false;
     }
     return partitionSchemaName.equalsIgnoreCase( meta.partitionSchemaName );
+  }
+
+  @Override
+  public int hashCode() {
+    return partitionSchemaName == null ? 0 : partitionSchemaName.toLowerCase().hashCode();
   }
 
   @Override

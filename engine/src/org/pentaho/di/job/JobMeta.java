@@ -336,65 +336,7 @@ public class JobMeta extends AbstractMeta
    *
    */
   public int compare( JobMeta j1, JobMeta j2 ) {
-    // If we don't have a filename, the jobs comes from a repository
-    //
-    if ( Utils.isEmpty( j1.getFilename() ) ) {
-
-      if ( !Utils.isEmpty( j2.getFilename() ) ) {
-        return -1;
-      }
-
-      // First compare names...
-      if ( Utils.isEmpty( j1.getName() ) && !Utils.isEmpty( j2.getName() ) ) {
-        return -1;
-      }
-      if ( !Utils.isEmpty( j1.getName() ) && Utils.isEmpty( j2.getName() ) ) {
-        return 1;
-      }
-      int cmpName = j1.getName().compareTo( j2.getName() );
-      if ( cmpName != 0 ) {
-        return cmpName;
-      }
-
-      // Same name, compare Repository directory...
-      int cmpDirectory = j1.getRepositoryDirectory().getPath().compareTo( j2.getRepositoryDirectory().getPath() );
-      if ( cmpDirectory != 0 ) {
-        return cmpDirectory;
-      }
-
-      // Same name, same directory, compare versions
-      if ( j1.getObjectRevision() != null && j2.getObjectRevision() == null ) {
-        return 1;
-      }
-      if ( j1.getObjectRevision() == null && j2.getObjectRevision() != null ) {
-        return -1;
-      }
-      if ( j1.getObjectRevision() == null && j2.getObjectRevision() == null ) {
-        return 0;
-      }
-      return j1.getObjectRevision().getName().compareTo( j2.getObjectRevision().getName() );
-
-    } else {
-      if ( Utils.isEmpty( j2.getFilename() ) ) {
-        return 1;
-      }
-
-      // First compare names
-      //
-      if ( Utils.isEmpty( j1.getName() ) && !Utils.isEmpty( j2.getName() ) ) {
-        return -1;
-      }
-      if ( !Utils.isEmpty( j1.getName() ) && Utils.isEmpty( j2.getName() ) ) {
-        return 1;
-      }
-      int cmpName = j1.getName().compareTo( j2.getName() );
-      if ( cmpName != 0 ) {
-        return cmpName;
-      }
-
-      // Same name, compare filenames...
-      return j1.getFilename().compareTo( j2.getFilename() );
-    }
+    return super.compare( j1, j2 );
   }
 
   /**

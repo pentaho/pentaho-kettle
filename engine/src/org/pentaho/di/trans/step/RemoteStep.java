@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -242,6 +242,11 @@ public class RemoteStep implements Cloneable, XMLInterface, Comparable<RemoteSte
   @Override
   public boolean equals( Object obj ) {
     return toString().equalsIgnoreCase( obj.toString() );
+  }
+
+  @Override
+  public int hashCode() {
+    return toString().hashCode();
   }
 
   public int compareTo( RemoteStep remoteStep ) {

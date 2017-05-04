@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -64,6 +64,11 @@ public class ExcelWriterStepField implements Cloneable {
     ExcelWriterStepField field = (ExcelWriterStepField) obj;
 
     return name.equals( field.getName() );
+  }
+
+  @Override
+  public int hashCode() {
+    return name.hashCode();
   }
 
   @Deprecated

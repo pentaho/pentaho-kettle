@@ -22,6 +22,8 @@
 
 package org.pentaho.di.trans.steps.formula;
 
+import java.util.Objects;
+
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.value.ValueMetaFactory;
@@ -75,6 +77,11 @@ public class FormulaMetaFunction implements Cloneable {
     }
 
     return false;
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash( fieldName, formula, valueType, valueLength, valuePrecision, replaceField );
   }
 
   @Override

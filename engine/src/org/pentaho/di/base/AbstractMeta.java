@@ -83,6 +83,7 @@ import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 public abstract class AbstractMeta implements ChangedFlagInterface, UndoInterface, HasDatabasesInterface, VariableSpace,
@@ -1910,7 +1911,75 @@ public abstract class AbstractMeta implements ChangedFlagInterface, UndoInterfac
    * @throws MetaStoreException
    *           in case there is an error.
    */
+  @Deprecated
   public void saveMetaStoreObjects( Repository repository, IMetaStore metaStore ) throws MetaStoreException {
 
+  }
+
+  protected int compare( AbstractMeta meta1, AbstractMeta meta2 ) {
+    // If we don't have a filename, it comes from a repository
+    if ( Utils.isEmpty( meta1.getFilename() ) ) {
+
+      if ( !Utils.isEmpty( meta2.getFilename() ) ) {
+        return -1;
+      }
+
+      // First compare names...
+      if ( Utils.isEmpty( meta1.getName() ) && !Utils.isEmpty( meta2.getName() ) ) {
+        return -1;
+      }
+      if ( !Utils.isEmpty( meta1.getName() ) && Utils.isEmpty( meta2.getName() ) ) {
+        return 1;
+      }
+      int cmpName = meta1.getName().compareTo( meta2.getName() );
+      if ( cmpName != 0 ) {
+        return cmpName;
+      }
+
+      // Same name, compare Repository directory...
+      int cmpDirectory = meta1.getRepositoryDirectory().getPath().compareTo( meta2.getRepositoryDirectory().getPath() );
+      if ( cmpDirectory != 0 ) {
+        return cmpDirectory;
+      }
+
+      // Same name, same directory, compare versions
+      if ( meta1.getObjectRevision() != null && meta2.getObjectRevision() == null ) {
+        return 1;
+      }
+      if ( meta1.getObjectRevision() == null && meta2.getObjectRevision() != null ) {
+        return -1;
+      }
+      if ( meta1.getObjectRevision() == null && meta2.getObjectRevision() == null ) {
+        return 0;
+      }
+      return meta1.getObjectRevision().getName().compareTo( meta2.getObjectRevision().getName() );
+
+    } else {
+      if ( Utils.isEmpty( meta2.getFilename() ) ) {
+        return 1;
+      }
+
+      // First compare names
+      //
+      if ( Utils.isEmpty( meta1.getName() ) && !Utils.isEmpty( meta2.getName() ) ) {
+        return -1;
+      }
+      if ( !Utils.isEmpty( meta1.getName() ) && Utils.isEmpty( meta2.getName() ) ) {
+        return 1;
+      }
+      int cmpName = meta1.getName().compareTo( meta2.getName() );
+      if ( cmpName != 0 ) {
+        return cmpName;
+      }
+
+      // Same name, compare filenames...
+      return meta1.getFilename().compareTo( meta2.getFilename() );
+    }
+  }
+
+  @Override
+  public int hashCode() {
+    boolean inRepo = Utils.isEmpty( getFilename() );
+    return Objects.hash( name, inRepo, inRepo ? filename : getRepositoryDirectory().getPath() );
   }
 }

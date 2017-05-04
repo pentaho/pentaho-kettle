@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -21,6 +21,8 @@
  ******************************************************************************/
 
 package org.pentaho.di.trans.steps.janino;
+
+import java.util.Objects;
 
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
@@ -67,6 +69,11 @@ public class JaninoMetaFunction implements Cloneable {
     }
 
     return false;
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash( fieldName, formula, valueType, valueLength, valuePrecision, replaceField );
   }
 
   public Object clone() {
