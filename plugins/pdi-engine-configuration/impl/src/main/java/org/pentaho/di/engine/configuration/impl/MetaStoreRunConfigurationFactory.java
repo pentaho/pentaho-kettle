@@ -32,7 +32,6 @@ import org.pentaho.metastore.api.exceptions.MetaStoreException;
 import org.pentaho.metastore.persist.MetaStoreFactory;
 import org.pentaho.osgi.metastore.locator.api.MetastoreLocator;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -72,6 +71,18 @@ public abstract class MetaStoreRunConfigurationFactory implements RunConfigurati
     return true;
   }
 
+  public void deleteAll() {
+    try {
+      List<String> elementNames = getMetaStoreFactory().getElementNames();
+      for ( String name : elementNames ) {
+        getMetaStoreFactory().deleteElement( name );
+      }
+    } catch ( MetaStoreException me ) {
+      // Ignore
+    }
+
+  }
+
   public List<RunConfiguration> load() {
     try {
       return getMetaStoreFactory().getElements();
@@ -105,5 +116,9 @@ public abstract class MetaStoreRunConfigurationFactory implements RunConfigurati
     } catch ( MetaStoreException me ) {
       return Collections.emptyList();
     }
+  }
+
+  public void setMetastoreLocator( MetastoreLocator metastoreLocator ) {
+    this.metastoreLocator = metastoreLocator;
   }
 }
