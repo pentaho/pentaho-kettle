@@ -3,12 +3,11 @@
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <modelVersion>4.0.0</modelVersion>
   <parent>
-    <groupId>pentaho-kettle</groupId>
+    <groupId>org.pentaho.kettle.plugins</groupId>
     <artifactId>plugins</artifactId>
     <version>8.0-SNAPSHOT</version>
   </parent>
-  <groupId>org.pentaho.kettle.plugins</groupId>
-  <artifactId>pdi-google-analytics-plugin-ce</artifactId>
+  <artifactId>pdi-google-analytics</artifactId>
   <version>8.0-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>${project.artifactId}</name>
