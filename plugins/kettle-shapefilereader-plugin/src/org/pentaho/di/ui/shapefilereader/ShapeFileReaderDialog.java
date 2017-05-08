@@ -36,6 +36,7 @@ import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.ShellAdapter;
 import org.eclipse.swt.events.ShellEvent;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
@@ -53,7 +54,8 @@ import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDialogInterface;
 import org.pentaho.di.ui.core.dialog.EnterSelectionDialog;
-import org.pentaho.di.ui.core.gui.GUIResource;
+import org.pentaho.di.ui.core.ConstUI;
+import org.pentaho.di.ui.util.SwtSvgImageUtil;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 public class ShapeFileReaderDialog extends BaseStepDialog implements StepDialogInterface {
@@ -83,7 +85,7 @@ public class ShapeFileReaderDialog extends BaseStepDialog implements StepDialogI
 
     shell = new Shell( parent, SWT.DIALOG_TRIM | SWT.RESIZE | SWT.MAX | SWT.MIN );
     props.setLook( shell );
-    shell.setImage( GUIResource.getInstance().getImageSpoon() );
+    shell.setImage( getImage() );
 
     ModifyListener lsMod = new ModifyListener() {
       public void modifyText( ModifyEvent e ) {
@@ -97,7 +99,7 @@ public class ShapeFileReaderDialog extends BaseStepDialog implements StepDialogI
     formLayout.marginHeight = Const.FORM_MARGIN;
 
     shell.setLayout( formLayout );
-    shell.setText( "XBase input" );
+    shell.setText( "ESRI Shapefile Reader" );
 
     int middle = props.getMiddlePct();
     int margin = Const.MARGIN;
@@ -377,5 +379,11 @@ public class ShapeFileReaderDialog extends BaseStepDialog implements StepDialogI
     input.setDbfFilename( wDbf.getText() );
 
     dispose();
+  }
+
+  private Image getImage() {
+    return SwtSvgImageUtil
+      .getImage( shell.getDisplay(), getClass().getClassLoader(), "ESRI.svg", ConstUI.ICON_SIZE,
+        ConstUI.ICON_SIZE );
   }
 }
