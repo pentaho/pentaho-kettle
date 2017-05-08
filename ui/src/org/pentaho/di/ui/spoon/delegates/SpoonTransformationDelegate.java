@@ -133,10 +133,11 @@ public class SpoonTransformationDelegate extends SpoonDelegate {
     // Look for the transformation, not the key (name might have changed)
     //
     int index = transformationMap.indexOf( transMeta );
-    if ( index >= 0 ) {
+    while ( index >= 0 ) {
       transformationMap.remove( index );
+      index = transformationMap.indexOf( transMeta );
     }
-
+    
     spoon.refreshTree();
     spoon.enableMenus();
   }
