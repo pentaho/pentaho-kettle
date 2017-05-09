@@ -31,6 +31,9 @@
     <delete dir="${swtlib.dir}"/>
     <!-- subfloor should clean this one up, but does not -->
     <delete dir="${devlib.dir}"/>
+    <delete dir="${ael.dir}"/>
+    <delete dir="${dataservice-jdbc.dir}"/>
+    <delete dir="${plugins.dir}"/>
     <delete file="package-pom.xml"/>
   </target>
 	
@@ -74,6 +77,10 @@
     <echo>Construct the distribution package...</echo>
     <!-- make JavaApplicationStub executable for OSX -->
     <chmod file="${approot.stage.dir}/Data Integration.app/Contents/MacOS/JavaApplicationStub" perm="ugo+rx"/>
+    <!-- Set perms for AEL bin files -->
+    <chmod perm="a+x" dir="${stage.dir}/${package.root.dir}/${ael.dir}/bin" includes="**/*" />
+    <chmod perm="a+x" file="${stage.dir}/${package.root.dir}/${ael.dir}/pdi-daemon"/>
+    <chmod perm="a+x" file="${stage.dir}/${package.root.dir}/${ael.dir}/setenv"/>
   	<!-- insert version info into the canned info.plist -->
   	<replace file = "${approot.stage.dir}/Data Integration.app/Contents/Info.plist" token="@KETTLE_VERSION_STRING@" value="${dependency.kettle.revision}" />
   	<!-- Remove the SWT JAR used for compilation -->
@@ -135,13 +142,13 @@
   </target>
   
   <target name="assemble-adaptive-execution" depends="install-antcontrib,resolve-adaptive-execution"  description="Copy AEL binaries to AEL root path.">
-    <unzip src="${ael.dir}/pdi-daemon-assembly.zip" dest="${stage.dir}/${ael.dir}" />
-    <delete file="${ael.dir}/pdi-daemon-assembly.zip"/>
-    <move todir="${stage.dir}/${ael.dir}">
-      <fileset dir="${stage.dir}/${ael.dir}/pdi-daemon-assembly-${ael.revision}" >      
+    <unzip src="${ael.dir}/pdi-daemon-assembly.zip" dest="${ael.dir}" />
+    <move todir="${stage.dir}/${package.root.dir}/${ael.dir}">
+      <fileset dir="${ael.dir}/pdi-daemon-assembly-${ael.revision}" >      
         <include name="**/*"/>
       </fileset>      
-    </move>        
+    </move>   
+    <delete dir="${ael.dir}/pdi-daemon-assembly-${ael.revision}"/>
   </target>
 
 	
