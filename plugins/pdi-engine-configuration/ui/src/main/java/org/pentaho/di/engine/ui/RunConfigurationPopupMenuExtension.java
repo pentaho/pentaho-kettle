@@ -54,6 +54,8 @@ public class RunConfigurationPopupMenuExtension implements ExtensionPointInterfa
   private Supplier<Spoon> spoonSupplier = Spoon::getInstance;
   private RunConfiguration runConfiguration;
   private RunConfigurationDelegate runConfigurationDelegate;
+  private Menu rootMenu;
+  private Menu itemMenu;
 
   public RunConfigurationPopupMenuExtension( RunConfigurationDelegate runConfigurationDelegate ) {
     this.runConfigurationDelegate = runConfigurationDelegate;
@@ -69,15 +71,13 @@ public class RunConfigurationPopupMenuExtension implements ExtensionPointInterfa
     Object selection = object.getSelection();
 
     if ( selection == RunConfiguration.class ) {
-      popupMenu = new Menu( selectionTree );
-      createRootPopupMenu( popupMenu );
+      popupMenu = createRootPopupMenu( selectionTree );
     } else if ( selection instanceof RunConfiguration ) {
       runConfiguration = (RunConfiguration) selection;
       if ( runConfiguration.isReadOnly() ) {
         return;
       }
-      popupMenu = new Menu( selectionTree );
-      createItemPopupMenu( popupMenu );
+      popupMenu = createItemPopupMenu( selectionTree );
     }
 
     if ( popupMenu != null ) {
@@ -87,42 +87,41 @@ public class RunConfigurationPopupMenuExtension implements ExtensionPointInterfa
     }
   }
 
-  private void createNewMenuItem( Menu parent ) {
-    createPopupMenu( parent, BaseMessages.getString( PKG, "RunConfigurationPopupMenuExtension.MenuItem.New" ) );
+  private Menu createRootPopupMenu( Tree tree ) {
+    if ( rootMenu == null ) {
+      rootMenu = new Menu( tree );
+      MenuItem menuItem = new MenuItem( rootMenu, SWT.NONE );
+      menuItem.setText( BaseMessages.getString( PKG, "RunConfigurationPopupMenuExtension.MenuItem.New" ) );
+      menuItem.addSelectionListener( new SelectionAdapter() {
+        @Override
+        public void widgetSelected( SelectionEvent selectionEvent ) {
+          runConfigurationDelegate.create();
+        }
+      } );
+    }
+    return rootMenu;
   }
 
-  private void createRootPopupMenu( Menu parent ) {
-    createNewMenuItem( parent );
-  }
+  private Menu createItemPopupMenu( Tree tree ) {
+    if ( itemMenu == null ) {
+      itemMenu = new Menu( tree );
+      MenuItem editMenuItem = new MenuItem( itemMenu, SWT.NONE );
+      editMenuItem.setText( BaseMessages.getString( PKG, "RunConfigurationPopupMenuExtension.MenuItem.Edit" ) );
+      editMenuItem.addSelectionListener( new SelectionAdapter() {
+        @Override public void widgetSelected( SelectionEvent selectionEvent ) {
+          runConfigurationDelegate.edit( runConfiguration );
+        }
+      } );
 
-  private void createItemPopupMenu( Menu parent ) {
-    MenuItem editMenuItem = new MenuItem( parent, SWT.NONE );
-    editMenuItem.setText( BaseMessages.getString( PKG, "RunConfigurationPopupMenuExtension.MenuItem.Edit" ) );
-    editMenuItem.addSelectionListener( new SelectionAdapter() {
-      @Override public void widgetSelected( SelectionEvent selectionEvent ) {
-        runConfigurationDelegate.edit( runConfiguration );
-      }
-    } );
-
-    MenuItem deleteMenuItem = new MenuItem( parent, SWT.NONE );
-    deleteMenuItem.setText( BaseMessages.getString( PKG, "RunConfigurationPopupMenuExtension.MenuItem.Delete" ) );
-    deleteMenuItem.addSelectionListener( new SelectionAdapter() {
-      @Override public void widgetSelected( SelectionEvent selectionEvent ) {
-        runConfigurationDelegate.delete( runConfiguration );
-      }
-    } );
-  }
-
-  private MenuItem createPopupMenu( Menu parent, final String label ) {
-    MenuItem menuItem = new MenuItem( parent, SWT.NONE );
-    menuItem.setText( label );
-    menuItem.addSelectionListener( new SelectionAdapter() {
-      @Override
-      public void widgetSelected( SelectionEvent selectionEvent ) {
-        runConfigurationDelegate.create();
-      }
-    } );
-    return menuItem;
+      MenuItem deleteMenuItem = new MenuItem( itemMenu, SWT.NONE );
+      deleteMenuItem.setText( BaseMessages.getString( PKG, "RunConfigurationPopupMenuExtension.MenuItem.Delete" ) );
+      deleteMenuItem.addSelectionListener( new SelectionAdapter() {
+        @Override public void widgetSelected( SelectionEvent selectionEvent ) {
+          runConfigurationDelegate.delete( runConfiguration );
+        }
+      } );
+    }
+    return itemMenu;
   }
 }
 
