@@ -86,6 +86,7 @@ public enum KettleExtensionPoint {
     JobGraphJobEntrySetMenu( "JobGraphJobEntrySetMenu", "Manipulate the menu on right click on a job entry" ),
     JobDialogShowRetrieveLogTableFields( "JobDialogShowRetrieveLogTableFields",
       "Show or retrieve the contents of the fields of a log channel on the log channel composite" ),
+    JobEntryTransSave( "JobEntryTransSave", "Job entry trans is saved" ),
 
     JobMetaLoaded( "JobMetaLoaded", "Job metadata was loaded" ),
     SpoonJobMetaExecutionStart( "SpoonJobMetaExecutionStart", "Spoon initiates the execution of a job (JobMeta)" ),

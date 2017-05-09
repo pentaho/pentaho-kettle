@@ -885,6 +885,7 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
         SlaveServer remoteSlaveServer = null;
         TransExecutionConfiguration executionConfiguration = new TransExecutionConfiguration();
         if ( !Utils.isEmpty( runConfiguration ) ) {
+          log.logBasic( BaseMessages.getString( PKG, "JobTrans.RunConfig.Message" ), runConfiguration );
           runConfiguration = environmentSubstitute( runConfiguration );
           executionConfiguration.setRunConfiguration( runConfiguration );
           try {
