@@ -700,6 +700,7 @@ public class TransMeta extends AbstractMeta
     dependencies = new ArrayList<>();
     partitionSchemas = new ArrayList<>();
     clusterSchemas = new ArrayList<>();
+    namedParams = new NamedParamsDefault();
     stepChangeListeners = new ArrayList<>();
 
     slaveStepCopyPartitionDistribution = new SlaveStepCopyPartitionDistribution();
