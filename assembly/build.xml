@@ -135,10 +135,13 @@
   </target>
   
   <target name="assemble-adaptive-execution" depends="install-antcontrib,resolve-adaptive-execution"  description="Copy AEL binaries to AEL root path.">
-    <copy todir="${stage.dir}/${ael.dir}">
-      <fileset dir="${ael.dir}" />
-    </copy>
-    <delete dir="${ael.dir}"/>
+    <unzip src="${ael.dir}/pdi-daemon-assembly.zip" dest="${stage.dir}/${ael.dir}" />
+    <delete file="${ael.dir}/pdi-daemon-assembly.zip"/>
+    <move todir="${stage.dir}/${ael.dir}">
+      <fileset dir="${stage.dir}/${ael.dir}/pdi-daemon-assembly-${ael.revision}" >      
+        <include name="**/*"/>
+      </fileset>      
+    </move>        
   </target>
 
 	
