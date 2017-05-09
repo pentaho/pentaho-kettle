@@ -26,6 +26,7 @@ package org.pentaho.di.trans.ael.adapters;
 
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.LogChannelInterface;
+import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.engine.api.Engine;
 import org.pentaho.di.engine.api.ExecutionContext;
 import org.pentaho.di.engine.api.ExecutionResult;
@@ -47,6 +48,7 @@ import org.reactivestreams.Subscription;
 
 import java.security.Principal;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -54,6 +56,8 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+
+import static java.util.stream.Collectors.toMap;
 
 /**
  * Created by nbaker on 1/24/17.
@@ -94,6 +98,14 @@ public class TransEngineAdapter extends Trans {
   }
 
   @Override public void prepareExecution( String[] arguments ) throws KettleException {
+    activateParameters();
+    transMeta.activateParameters();
+
+    Map<String, Object> env = Arrays.stream( transMeta.listVariables() )
+      .collect( toMap( Function.identity(), transMeta::getVariable ) );
+
+    executionContext.setEnvironment( env );
+
     setSteps( new ArrayList<>( opsToSteps() ) );
     wireStatusToTransListeners();
 
@@ -222,7 +234,7 @@ public class TransEngineAdapter extends Trans {
 
   private Collection<StepMetaDataCombi> opsToSteps() {
     Map<Operation, StepMetaDataCombi> operationToCombi = transformation.getOperations().stream()
-      .collect( Collectors.toMap( Function.identity(),
+      .collect( toMap( Function.identity(),
         op -> {
           StepMetaDataCombi combi = new StepMetaDataCombi();
           combi.stepMeta = StepMeta.fromXml( (String) op.getConfig().get( TransMetaConverter.STEP_META_CONF_KEY ) );
