@@ -195,9 +195,15 @@ public class Encr {
     if ( Const.trim( option ).substring( 1 ).equalsIgnoreCase( "kettle" ) ) {
       // Kettle password obfuscation
       //
-      String obfuscated = Encr.encryptPasswordIfNotUsingVariables( password );
-      System.out.println( obfuscated );
-      System.exit( 0 );
+      try {
+        String obfuscated = Encr.encryptPasswordIfNotUsingVariables( password );
+        System.out.println( obfuscated );
+        System.exit( 0 );
+      } catch ( Exception ex ) {
+        System.err.println( "Error encrypting password" );
+        ex.printStackTrace();
+        System.exit( 2 );
+      }
 
     } else if ( Const.trim( option ).substring( 1 ).equalsIgnoreCase( "carte" ) ) {
       // Jetty password obfuscation
