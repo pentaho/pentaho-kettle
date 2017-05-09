@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -85,6 +85,38 @@ public class TabSetTest {
 
     firstItem.dispose();
     assertEquals( "should select second", secondItem, tabSet.getSelected() );
+  }
+
+  /**
+   * PDI-16196 index out of bounds after closing tabs with the same name
+   */
+  @Test
+  public void testDuplicateNameCloseTab() {
+    final CTabFolder cTabFolder = mock( CTabFolder.class );
+    final TabSet tabSet = createTabSet( cTabFolder );
+
+    final CTabItem cTabItem1 = mock( CTabItem.class );
+    TabItem firstItem = createItem( tabSet, "equalName", "equals", cTabItem1 );
+    final CTabItem cTabItem2 = mock( CTabItem.class );
+    TabItem secondItem = createItem( tabSet, "equalName", "equals", cTabItem2 );
+    final CTabItem cTabItem3 = mock( CTabItem.class );
+    TabItem thirdItem = createItem( tabSet, "different", "different", cTabItem3 );
+
+    assertEquals( 0, tabSet.indexOf( firstItem ) );
+    assertEquals( 1, tabSet.indexOf( secondItem ) );
+
+    wireDisposalSelection( cTabFolder, tabSet, cTabItem1, cTabItem3 );
+    wireDisposalSelection( cTabFolder, tabSet, cTabItem2, cTabItem3 );
+    firstItem.dispose();
+    secondItem.dispose();
+
+    tabSet.setSelected( firstItem );
+    assertEquals( -1, tabSet.getSelectedIndex() );
+
+    Event evt = new Event();
+    evt.item = cTabItem1;
+    evt.widget = cTabFolder;
+    tabSet.widgetSelected( new SelectionEvent( evt ) );
   }
 
   @Test

@@ -101,9 +101,9 @@ public class SpoonTransformationDelegate extends SpoonDelegate {
    * @return true if the transformation was added, false if it couldn't be added (already loaded)
    **/
   public boolean addTransformation( TransMeta transMeta ) {
-    int index = transformationMap.indexOf( transMeta );
+    int index = getTransformationList().indexOf( transMeta );
     if ( index < 0 ) {
-      transformationMap.add( transMeta );
+      getTransformationList().add( transMeta );
       return true;
     } else {
       /*
@@ -123,23 +123,27 @@ public class SpoonTransformationDelegate extends SpoonDelegate {
   public synchronized void closeTransformation( TransMeta transMeta ) {
     // Close the associated tabs...
     //
-    TabMapEntry entry = spoon.delegates.tabs.findTabMapEntry( transMeta );
+    TabMapEntry entry = getSpoon().delegates.tabs.findTabMapEntry( transMeta );
     if ( entry != null ) {
-      spoon.delegates.tabs.removeTab( entry );
+      getSpoon().delegates.tabs.removeTab( entry );
     }
 
     // Also remove it from the item from the transformationMap
     // Otherwise it keeps showing up in the objects tree
     // Look for the transformation, not the key (name might have changed)
     //
-    int index = transformationMap.indexOf( transMeta );
+    int index = getTransformationList().indexOf( transMeta );
     while ( index >= 0 ) {
-      transformationMap.remove( index );
-      index = transformationMap.indexOf( transMeta );
+      getTransformationList().remove( index );
+      index = getTransformationList().indexOf( transMeta );
     }
-    
-    spoon.refreshTree();
-    spoon.enableMenus();
+
+    getSpoon().refreshTree();
+    getSpoon().enableMenus();
+  }
+
+  public Spoon getSpoon() {
+    return this.spoon;
   }
 
   public void addTransGraph( TransMeta transMeta ) {
