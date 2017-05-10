@@ -25,6 +25,7 @@
 package org.pentaho.di.engine.configuration.impl.extension;
 
 import org.pentaho.di.base.AbstractMeta;
+import org.pentaho.di.core.attributes.metastore.EmbeddedMetaStore;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.extension.ExtensionPoint;
 import org.pentaho.di.core.extension.ExtensionPointInterface;
@@ -32,6 +33,7 @@ import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.engine.configuration.api.RunConfiguration;
 import org.pentaho.di.engine.configuration.api.RunConfigurationExecutor;
+import org.pentaho.di.engine.configuration.impl.EmbeddedRunConfigurationManager;
 import org.pentaho.di.engine.configuration.impl.RunConfigurationManager;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.TransExecutionConfiguration;
@@ -56,9 +58,16 @@ public class RunConfigurationRunExtensionPoint implements ExtensionPointInterfac
     TransExecutionConfiguration transExecutionConfiguration = (TransExecutionConfiguration) ( (Object[]) o )[ 0 ];
     AbstractMeta meta = (AbstractMeta) ( (Object[]) o )[ 1 ];
     VariableSpace variableSpace = (VariableSpace) ( (Object[]) o )[ 2 ];
+    EmbeddedMetaStore embeddedMetaStore = meta.getEmbeddedMetaStore();
 
     RunConfiguration runConfiguration =
       runConfigurationManager.load( transExecutionConfiguration.getRunConfiguration() );
+
+    if ( runConfiguration == null ) {
+      RunConfigurationManager embeddedRunConfigurationManager =
+        EmbeddedRunConfigurationManager.build( embeddedMetaStore );
+      runConfiguration = embeddedRunConfigurationManager.load( transExecutionConfiguration.getRunConfiguration() );
+    }
 
     if ( runConfiguration != null ) {
       RunConfigurationExecutor runConfigurationExecutor =
