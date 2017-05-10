@@ -86,6 +86,12 @@ public class RunConfigurationManager implements RunConfigurationService {
     return false;
   }
 
+  @Override public void deleteAll() {
+    for ( RunConfigurationProvider runConfigurationProvider : getRunConfigurationProviders() ) {
+      runConfigurationProvider.deleteAll();
+    }
+  }
+
   public String[] getTypes() {
     List<String> types = new ArrayList<>();
     for ( RunConfigurationProvider runConfigurationProvider : getRunConfigurationProviders() ) {
@@ -133,7 +139,7 @@ public class RunConfigurationManager implements RunConfigurationService {
     return null;
   }
 
-  private List<RunConfigurationProvider> getRunConfigurationProviders() {
+  public List<RunConfigurationProvider> getRunConfigurationProviders() {
     List<RunConfigurationProvider> runConfigurationProviders = new ArrayList<>();
     if ( defaultRunConfigurationProvider != null ) {
       runConfigurationProviders.add( defaultRunConfigurationProvider );
