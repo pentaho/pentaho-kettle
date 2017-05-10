@@ -34,7 +34,7 @@
     </dependency>
     <dependency org="${ivy.artifact.group}" name="kettle5-log4j-plugin" rev="${project.revision}" changing="true" force="true" transitive="false"/>
 
-    <dependency org="pentaho" name="pdi-osgi-bridge-core" rev="${dependency.pdi-osgi-bridge.revision}" changing="true" />    
+    <dependency org="pentaho" name="pdi-osgi-bridge-core" rev="${dependency.pdi-osgi-bridge.revision}" changing="true" />
     <!-- Begin osgi-bridge-core transitives. -->
     <!-- Added explicitly to overcome some maven->ivy resolve version errors. Should not be here after mavenizaiton. -->
     <dependency org="pentaho" name="pentaho-service-coordinator" rev="${dependency.pdi-osgi-bridge.revision}" changing="true" />
@@ -49,12 +49,24 @@
     <dependency org="pentaho" name="pdi-dataservice-driver-bundle" rev="${project.revision}" changing="true" conf="dataservice-jdbc->default" transitive="false">
       <artifact name="pdi-dataservice-driver-bundle" type="zip"/>
     </dependency>
-    
+
     <!-- Adaptive Execution Packages -->
     <dependency org="org.pentaho.adaptive" name="pdi-daemon-assembly" rev="${ael.revision}" changing="true" transitive="false" conf="adaptive-execution->default">
       <artifact name="pdi-daemon-assembly" type="zip"/>
     </dependency>
-        
+
+    <dependency org="org.pentaho.adaptive" name="pdi-spark-driver" rev="${project.revision}" >
+      <exclude org="org.glassfish.jersey.core" />
+      <exclude org="org.glassfish.jersey.media" />
+      <exclude org="org.glassfish.jersey.containers" />
+    </dependency>
+
+    <dependency org="org.pentaho.adaptive" name="pdi-engine-spark" rev="${project.revision}">
+      <exclude org="org.glassfish.jersey.core" />
+      <exclude org="org.glassfish.jersey.media" />
+      <exclude org="org.glassfish.jersey.containers" />
+    </dependency>
+
     <!-- Kettle plugin dependencies-->
     <dependency org="${ivy.artifact.group}" name="kettle-version-checker" rev="${project.revision}" changing="true" conf="plugins->default">
       <artifact name="kettle-version-checker" type="zip"/>
@@ -115,7 +127,7 @@
     </dependency>
     <dependency org="pentaho" name="pentaho-karaf-assembly" rev="${project.revision}" changing="true" conf="pentaho-system->default" m:classifier="client">
       <artifact name="pentaho-karaf-assembly" type="zip" m:classifier="client"/>
-    </dependency>        
+    </dependency>
 
     <!-- Pentaho dependencies (non-Kettle), launcher, shim, etc. -->
     <dependency org="pentaho"               name="pentaho-application-launcher"  rev="${dependency.launcher.revision}" conf="launcher->default"/>
@@ -246,6 +258,6 @@
     <dependency org="javax.ws.rs" name="jsr311-api" rev="1.1.1" transitive="false"/>
 
     <exclude org="javax.servlet"/>
-    <exclude org="org.osgi" module="org.osgi.core"/>    
+    <exclude org="org.osgi" module="org.osgi.core"/>
   </dependencies>
 </ivy-module>
