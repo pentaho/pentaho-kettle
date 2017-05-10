@@ -184,7 +184,6 @@
 	     ========================================================================-->	 
 
   <target name="package-zip">
-  <echo>!!!!!!!! package-zip !!!!!!!</echo>
     <zip destfile="${dist.dir}/${package.basename}.zip" >
       <zipfileset dir="${stage.dir}" filemode="755">
         <include name="**/*.sh" />
@@ -203,7 +202,6 @@
         <exclude name="${package.root.dir}/${ael.dir}/setenv"/>      
       </zipfileset>
     </zip>
-
   </target>
 	 
   
