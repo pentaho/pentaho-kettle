@@ -55,6 +55,18 @@
       <artifact name="pdi-daemon-assembly" type="zip"/>
     </dependency>
 
+    <dependency org="org.pentaho.adaptive" name="pdi-spark-driver" rev="${project.revision}" >
+      <exclude org="org.glassfish.jersey.core" />
+      <exclude org="org.glassfish.jersey.media" />
+      <exclude org="org.glassfish.jersey.containers" />
+    </dependency>
+
+    <dependency org="org.pentaho.adaptive" name="pdi-engine-spark" rev="${project.revision}">
+      <exclude org="org.glassfish.jersey.core" />
+      <exclude org="org.glassfish.jersey.media" />
+      <exclude org="org.glassfish.jersey.containers" />
+    </dependency>
+
     <!-- Kettle plugin dependencies-->
     <dependency org="${ivy.artifact.group}" name="kettle-version-checker" rev="${project.revision}" changing="true" conf="plugins->default">
       <artifact name="kettle-version-checker" type="zip"/>
