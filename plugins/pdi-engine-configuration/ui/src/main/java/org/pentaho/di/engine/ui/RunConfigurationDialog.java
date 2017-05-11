@@ -45,6 +45,7 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
+import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.base.AbstractMeta;
@@ -628,11 +629,26 @@ public class RunConfigurationDialog extends Dialog {
   }
 
   private void ok() {
-    save();
-    shell.dispose();
+    if ( validated() ) {
+      save();
+      shell.dispose();
+    }
   }
 
   private void save() {
     savedRunConfiguration = runConfiguration;
   }
+
+  private boolean validated() {
+    if ( StringUtils.containsAny( wName.getText(), "%\"\\/:[]*|\t\r\n" ) ) {
+      MessageBox messageBox = new MessageBox( shell, SWT.ERROR );
+      messageBox.setMessage( BaseMessages.getString( PKG, "RunConfiguration.InvalidChars.Message" ) );
+      messageBox.setText( BaseMessages.getString( PKG, "RunConfiguration.InvalidChars.Title" ) );
+      messageBox.open();
+      return false;
+    }
+
+    return true;
+  }
+
 }
