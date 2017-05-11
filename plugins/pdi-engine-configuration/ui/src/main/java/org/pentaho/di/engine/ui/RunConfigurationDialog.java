@@ -522,6 +522,9 @@ public class RunConfigurationDialog extends Dialog {
           wbLogRemoteExecutionLocally.setVisible( true );
         }
         checkOKEnabled( defaultRunConfiguration, wcSlaveServer );
+        if ( !Utils.isEmpty( wcSlaveServer.getText() ) ) {
+          defaultRunConfiguration.setServer( wcSlaveServer.getText() );
+        }
       }
     } );
 
