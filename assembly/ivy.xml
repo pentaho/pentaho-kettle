@@ -59,6 +59,9 @@
 
     <dependency org="org.pentaho.adaptive" name="pdi-engine-spark" rev="${project.revision}" transitive="false"/>
 
+    <dependency org="io.reactivex.rxjava2" name="rxjava" rev="2.0.4"/>
+
+
     <!-- Kettle plugin dependencies-->
     <dependency org="${ivy.artifact.group}" name="kettle-version-checker" rev="${project.revision}" changing="true" conf="plugins->default">
       <artifact name="kettle-version-checker" type="zip"/>
