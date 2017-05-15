@@ -100,6 +100,7 @@ public class TransEngineAdapter extends Trans {
   @Override public void prepareExecution( String[] arguments ) throws KettleException {
     activateParameters();
     transMeta.activateParameters();
+    transMeta.setInternalKettleVariables();
 
     Map<String, Object> env = Arrays.stream( transMeta.listVariables() )
       .collect( toMap( Function.identity(), transMeta::getVariable ) );
