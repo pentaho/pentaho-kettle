@@ -69,7 +69,7 @@
     <dependency org="org.pentaho.kettle.plugins" name="kettle-dummy-plugin" rev="${project.revision}" changing="true" conf="plugins->default" transitive="false">
       <artifact name="kettle-dummy-plugin" type="zip"/>
     </dependency>
-    <dependency org="${ivy.artifact.group}" name="kettle-s3csvinput-plugin" rev="${project.revision}" changing="true" conf="plugins->default">
+    <dependency org="org.pentaho.kettle.plugins" name="kettle-s3csvinput-plugin" rev="${project.revision}" changing="true" conf="plugins->default"  transitive="false">
       <artifact name="kettle-s3csvinput-plugin" type="zip"/>
     </dependency>
     <dependency org="${ivy.artifact.group}" name="kettle-shapefilereader-plugin" rev="${project.revision}" changing="true" conf="plugins->default">
