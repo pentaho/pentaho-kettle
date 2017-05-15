@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -45,8 +45,9 @@ public class LogChannelFileWriter {
 
   private AtomicBoolean active;
   private KettleException exception;
-  private int lastBufferLineNr;
   protected OutputStream logFileOutputStream;
+
+  private LogChannelFileWriterBuffer buffer;
 
   /**
    * Create a new log channel file writer
@@ -70,13 +71,15 @@ public class LogChannelFileWriter {
     this.pollingInterval = pollingInterval;
 
     active = new AtomicBoolean( false );
-    lastBufferLineNr = KettleLogStore.getLastBufferLineNr();
 
     try {
       logFileOutputStream = KettleVFS.getOutputStream( logFile, appending );
     } catch ( IOException e ) {
       throw new KettleException( "There was an error while trying to open file '" + logFile + "' for writing", e );
     }
+
+    this.buffer = new LogChannelFileWriterBuffer( this.logChannelId );
+    LoggingRegistry.getInstance().registerLogChannelFileWriterBuffer( this.buffer );
   }
 
   /**
@@ -135,10 +138,8 @@ public class LogChannelFileWriter {
 
   public synchronized void flush() {
     try {
-      int last = KettleLogStore.getLastBufferLineNr();
-      StringBuffer buffer = KettleLogStore.getAppender().getBuffer( logChannelId, false, lastBufferLineNr, last );
+      StringBuffer buffer = this.buffer.getBuffer();
       logFileOutputStream.write( buffer.toString().getBytes() );
-      lastBufferLineNr = last;
       logFileOutputStream.flush();
     } catch ( Exception e ) {
       exception = new KettleException( "There was an error logging to file '" + logFile + "'", e );
