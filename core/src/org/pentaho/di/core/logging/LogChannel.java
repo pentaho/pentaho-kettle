@@ -121,6 +121,12 @@ public class LogChannel implements LogChannelInterface {
     if ( channelLogLevel.getLevel() >= logLevel.getLevel() ) {
       KettleLoggingEvent loggingEvent = new KettleLoggingEvent( logMessage, System.currentTimeMillis(), logLevel );
       KettleLogStore.getAppender().addLogggingEvent( loggingEvent );
+
+      // add to buffer
+      LogChannelFileWriter fileWriter = LoggingRegistry.getInstance().getLogChannelFileWriter(logChannelId);
+      if (fileWriter != null) {
+        fileWriter.addEvent(loggingEvent);
+      }
     }
   }
 
