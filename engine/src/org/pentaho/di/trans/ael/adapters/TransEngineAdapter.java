@@ -26,7 +26,6 @@ package org.pentaho.di.trans.ael.adapters;
 
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.LogChannelInterface;
-import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.engine.api.Engine;
 import org.pentaho.di.engine.api.ExecutionContext;
 import org.pentaho.di.engine.api.ExecutionResult;
@@ -55,7 +54,6 @@ import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toMap;
 
@@ -100,6 +98,7 @@ public class TransEngineAdapter extends Trans {
   @Override public void prepareExecution( String[] arguments ) throws KettleException {
     activateParameters();
     transMeta.activateParameters();
+    transMeta.setInternalKettleVariables();
 
     Map<String, Object> env = Arrays.stream( transMeta.listVariables() )
       .collect( toMap( Function.identity(), transMeta::getVariable ) );
@@ -207,7 +206,8 @@ public class TransEngineAdapter extends Trans {
           setFinished( true );
           // emit error on all steps
           getSteps().stream().map( stepMetaDataCombi -> stepMetaDataCombi.step ).forEach( step -> {
-            step.setStopped( true ); step.setRunning( false );
+            step.setStopped( true );
+            step.setRunning( false );
           } );
           getTransListeners().forEach( l -> {
             try {
