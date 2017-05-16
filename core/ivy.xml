@@ -48,6 +48,7 @@
     <dependency org="junit"               name="junit"               rev="4.11"             transitive="false" conf="test->default"/>
     <dependency org="org.powermock"       name="powermock-module-junit4" rev="1.6.6"        conf="test->default"/>
     <dependency org="org.powermock"       name="powermock-api-mockito" rev="1.6.6"          conf="test->default"/>
+    <dependency org="org.codehaus.woodstox" name="woodstox-core-asl"   rev="4.4.1"          conf="test->default"/>
 
     <dependency org="org.apache.xmlgraphics" name="batik-bridge" rev="${dependency.batik.revision}" transitive="false"/>
     <dependency org="org.apache.xmlgraphics" name="batik-css" rev="${dependency.batik.revision}" transitive="false"/>

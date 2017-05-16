@@ -58,8 +58,8 @@
     <dependency org="org.slf4j" name="slf4j-api" rev="1.7.7" />
     <dependency org="org.slf4j" name="slf4j-log4j12" rev="1.7.7" />
 
-    <dependency org="org.glassfish.metro" name="webservices-api" rev="2.1" transitive="false"/>
-    <dependency org="org.glassfish.metro" name="webservices-rt" rev="2.1" transitive="false" />
+    <dependency org="org.glassfish.metro" name="webservices-api" rev="${dependency.org.glassfish.metro.revision}" transitive="false"/>
+    <dependency org="org.glassfish.metro" name="webservices-rt" rev="${dependency.org.glassfish.metro.revision}" transitive="false" />
 
     <dependency org="javax.servlet"           name="servlet-api"          rev="2.5"  transitive="false" conf="compile->default"/>
 
