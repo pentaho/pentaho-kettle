@@ -24,9 +24,13 @@ package org.pentaho.di.core.logging;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.apache.commons.vfs2.FileObject;
+import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.vfs.KettleVFS;
 
@@ -45,8 +49,10 @@ public class LogChannelFileWriter {
 
   private AtomicBoolean active;
   private KettleException exception;
-  private int lastBufferLineNr;
   protected OutputStream logFileOutputStream;
+
+  private KettleLogLayout layout;
+  private final List<KettleLoggingEvent> buffer = Collections.synchronizedList( new LinkedList<KettleLoggingEvent>() );
 
   /**
    * Create a new log channel file writer
@@ -68,15 +74,17 @@ public class LogChannelFileWriter {
     this.logFile = logFile;
     this.appending = appending;
     this.pollingInterval = pollingInterval;
+    this.layout = new KettleLogLayout( true );
 
     active = new AtomicBoolean( false );
-    lastBufferLineNr = KettleLogStore.getLastBufferLineNr();
 
     try {
       logFileOutputStream = KettleVFS.getOutputStream( logFile, appending );
     } catch ( IOException e ) {
       throw new KettleException( "There was an error while trying to open file '" + logFile + "' for writing", e );
     }
+
+    LoggingRegistry.getInstance().registerLogChannelFileWriter(this);
   }
 
   /**
@@ -135,14 +143,32 @@ public class LogChannelFileWriter {
 
   public synchronized void flush() {
     try {
-      int last = KettleLogStore.getLastBufferLineNr();
-      StringBuffer buffer = KettleLogStore.getAppender().getBuffer( logChannelId, false, lastBufferLineNr, last );
+      StringBuffer buffer = getBuffer();
       logFileOutputStream.write( buffer.toString().getBytes() );
-      lastBufferLineNr = last;
       logFileOutputStream.flush();
     } catch ( Exception e ) {
       exception = new KettleException( "There was an error logging to file '" + logFile + "'", e );
     }
+  }
+
+  public void addEvent(KettleLoggingEvent event) {
+    synchronized (buffer) {
+      buffer.add(event);
+    }
+  }
+
+  public StringBuffer getBuffer() {
+    StringBuffer stringBuffer = new StringBuffer( 1000 );
+
+    synchronized (buffer) {
+      for (KettleLoggingEvent event : buffer) {
+        stringBuffer.append( layout.format( event ) ).append( Const.CR );
+      }
+
+      buffer.clear();
+    }
+
+    return stringBuffer;
   }
 
   public void stopLogging() {
