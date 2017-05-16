@@ -11,11 +11,11 @@
     <conf name="dataservice-jdbc" />
     <conf name="pentaho-system" />
   </configurations>
-  
+
   <publications>
     <artifact name="${ivy.artifact.id}" type="zip"/>
   </publications>
-  
+
   <dependencies defaultconf="default->default">
     <!-- Kettle module dependencies-->
     <dependency org="${ivy.artifact.group}" name="kettle-core"          rev="${project.revision}" changing="true" force="true"/>
@@ -24,7 +24,7 @@
     <dependency org="${ivy.artifact.group}" name="kettle-ui-swt"        rev="${project.revision}" changing="true" force="true">
       <exclude name="swt-linux-x86_64"/>
     </dependency>
-    
+
     <dependency org="pentaho" name="pdi-osgi-bridge-core" rev="${dependency.pdi-osgi-bridge.revision}" changing="true" />
 
     <!-- Data Service JDBC Driver -->
@@ -90,7 +90,7 @@
     <dependency org="pentaho" name="pentaho-karaf-assembly" rev="${project.revision}" changing="true" conf="pentaho-system->default" m:classifier="client">
       <artifact name="pentaho-karaf-assembly" type="zip" m:classifier="client"/>
     </dependency>
-    
+
     <!-- Pentaho dependencies (non-Kettle), launcher, shim, etc. -->
     <dependency org="pentaho"               name="pentaho-application-launcher"  rev="${dependency.launcher.revision}" conf="launcher->default"/>
     <dependency org="pentaho"               name="pentaho-hadoop-hive-jdbc-shim" rev="${dependency.pentaho-hadoop-hive-jdbc-shim.revision}"/>
@@ -126,7 +126,9 @@
     <dependency org="org.springframework.security" name="spring-security-core" rev="${dependency.spring.security.revision}" />
     <dependency org="org.glassfish.metro" name="webservices-api" rev="2.1" transitive="false"/>
     <dependency org="org.glassfish.metro" name="webservices-rt" rev="2.1" transitive="false"/>
-		
+    <dependency org="org.glassfish.metro" name="webservices-api" rev="${dependency.org.glassfish.metro.revision}" transitive="false"/>
+    <dependency org="org.glassfish.metro" name="webservices-rt" rev="${dependency.org.glassfish.metro.revision}" transitive="false"/>
+
     <!-- pdi-pur-plugin dependency -->
     <dependency org="pentaho" name="pentaho-platform-repository"  rev="${dependency.pentaho-platform.revision}" transitive="false"/>
 
@@ -152,24 +154,24 @@
     <dependency org="${dependency.reporting-engine.group}" name="pentaho-reporting-engine-legacy-charts" rev="${dependency.pentaho-reporting.revision}" transitive="true" changing="true"/>
     <dependency org="${dependency.reporting-engine.group}" name="pentaho-reporting-engine-legacy-functions" rev="${dependency.pentaho-reporting.revision}" transitive="true" changing="true"/>
     <dependency org="${dependency.reporting-engine.group}" name="pentaho-reporting-engine-wizard-core"  rev="${dependency.pentaho-reporting.revision}" changing="true" transitive="true"/>
-    
+
     <!--  OSS Licenses file -->
     <dependency org="pentaho" name="oss-licenses" rev="${dependency.oss-licenses.revision}" conf="oss-licenses->default">
       <artifact name="oss-licenses" type="zip" />
     </dependency>
-     
+
     <!-- The OS-specific libraries are bundled together, unzip them all for assembly -->
     <dependency org="org.eclipse"          name="swtlibs"               rev="4.3.2" conf="swtlibs->default" transitive="false">
       <artifact name="swtlibs" type="zip"/>
     </dependency>
-      
+
 	    <!-- Karaf Dependencies -->
     <dependency org="org.apache.karaf" name="org.apache.karaf.main" rev="3.0.3"  transitive="false"/>
     <dependency org="org.apache.karaf" name="org.apache.karaf.util" rev="3.0.3"  transitive="false"/>
     <dependency org="org.apache.karaf.jaas" name="org.apache.karaf.jaas.boot" rev="2.4.2"  transitive="false"/>
     <dependency org="org.apache.felix" name="org.apache.felix.main" rev="4.2.1"  transitive="false"/>
 
-	
+
     <!-- Third-party JDBC dependencies -->
     <dependency org="org.apache.derby"     name="derby"                 rev="10.2.1.6"      transitive="false"/>
     <dependency org="org.apache.derby"     name="derbyclient"           rev="10.2.1.6"      transitive="false"/>
@@ -177,7 +179,7 @@
     <dependency org="org.hsqldb"           name="hsqldb"                rev="2.3.2"         transitive="false"/>
     <dependency org="infobright"           name="infobright-core"       rev="3.4"           transitive="false"/>
     <dependency org="org.firebirdsql.jdbc" name="jaybird"               rev="2.1.6"         transitive="false"/>
-    <dependency org="net.sf.jt400"         name="jt400"                 rev="6.1"           transitive="false"/>  
+    <dependency org="net.sf.jt400"         name="jt400"                 rev="6.1"           transitive="false"/>
     <dependency org="jtds"                 name="jtds"                  rev="1.2.5"         transitive="false"/>
     <dependency org="luciddb"              name="LucidDbClient-minimal" rev="0.9.4"         transitive="false"/>
     <dependency org="monetdb"              name="monetdb-jdbc"          rev="2.1"           transitive="false"/>
@@ -207,5 +209,6 @@
     <exclude    org="org.apache.axis" module="axis-saaj"/>
 
     <exclude org="javax.servlet"   module="servlet-api"/>
+	<exclude org="org.codehaus.woodstox" module="wstx-asl" />
   </dependencies>
 </ivy-module>

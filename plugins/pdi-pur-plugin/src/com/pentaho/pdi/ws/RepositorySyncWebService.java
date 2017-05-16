@@ -1,5 +1,5 @@
 /*!
- * Copyright 2010 - 2015 Pentaho Corporation.  All rights reserved.
+ * Copyright 2010 - 2017 Pentaho Corporation.  All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@
 package com.pentaho.pdi.ws;
 
 import java.io.Serializable;
+import java.io.StringBufferInputStream;
 
 import javax.jws.WebService;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -33,7 +34,6 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
 import com.pentaho.di.messages.Messages;
-import com.sun.xml.bind.StringInputStream;
 
 @WebService( endpointInterface = "com.pentaho.pdi.ws.IRepositorySyncWebService", serviceName = "repositorySync",
     portName = "repositorySyncPort", targetNamespace = "http://www.pentaho.org/ws/1.0" )
@@ -82,7 +82,7 @@ public class RepositorySyncWebService implements IRepositorySyncWebService, Seri
       Element node;
       try {
         node =
-            DocumentBuilderFactory.newInstance().newDocumentBuilder().parse( new StringInputStream( xml ) )
+            DocumentBuilderFactory.newInstance().newDocumentBuilder().parse( new StringBufferInputStream( xml ) )
                 .getDocumentElement();
       } catch ( Exception e ) {
         node = null;
@@ -144,7 +144,7 @@ public class RepositorySyncWebService implements IRepositorySyncWebService, Seri
     Element node;
     try {
       node =
-          DocumentBuilderFactory.newInstance().newDocumentBuilder().parse( new StringInputStream( xml ) )
+          DocumentBuilderFactory.newInstance().newDocumentBuilder().parse( new StringBufferInputStream( xml ) )
               .getDocumentElement();
     } catch ( Exception e ) {
       node = null;
