@@ -80,9 +80,9 @@ public class JobEntryCheckDbConnectionsTest {
     Assert.assertTrue( result.getResult() );
   }
 
-  @Test( timeout = 160000 )
+  @Test( timeout = 5000 )
   public void testWaitingtime() {
-    int waitTimes = 2;
+    int waitTimes = 3;
     Job mockedJob = Mockito.mock( Job.class );
     Mockito.when( mockedJob.isStopped() ).thenReturn( false );
 
@@ -92,12 +92,12 @@ public class JobEntryCheckDbConnectionsTest {
 
     DatabaseMeta db = new DatabaseMeta( "InMemory H2", "H2", null, null, H2_DATABASE, "-1", null, null );
     meta.setConnections( new DatabaseMeta[]{ db } );
-    meta.setWaittimes( new int[]{ JobEntryCheckDbConnections.UNIT_TIME_MINUTE } );
+    meta.setWaittimes( new int[]{ JobEntryCheckDbConnections.UNIT_TIME_SECOND } );
     meta.setWaitfors( new String[]{ String.valueOf( waitTimes ) } );
 
     Result result = meta.execute( new Result(), 0 );
 
-    Assert.assertTrue( meta.getNow() - meta.getTimeStart() >= waitTimes * 60000 );
+    Assert.assertTrue( meta.getNow() - meta.getTimeStart() >= waitTimes * 1000 );
     Assert.assertTrue( result.getResult() );
   }
 }
