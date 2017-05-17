@@ -27,6 +27,7 @@
     <module>kettle-drools5-plugin</module>
    <module>kettle-dummy-plugin</module>
     <module>kettle-s3csvinput-plugin</module>
+    <module>kettle-sap-plugin</module>
   </modules>
   
 </project>
