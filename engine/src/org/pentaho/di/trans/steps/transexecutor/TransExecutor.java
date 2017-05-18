@@ -435,7 +435,7 @@ public class TransExecutor extends BaseStep implements StepInterface {
 
   @VisibleForTesting
   TransMeta loadExecutorTransMeta() throws KettleException {
-    return TransExecutorMeta.loadTransMeta( meta, meta.getRepository(), meta.getMetaStore(), this );
+    return TransExecutorMeta.loadMappingMeta( meta, meta.getRepository(), meta.getMetaStore(), this );
   }
 
   public void dispose( StepMetaInterface smi, StepDataInterface sdi ) {
