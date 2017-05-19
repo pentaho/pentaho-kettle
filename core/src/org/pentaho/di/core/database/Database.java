@@ -1512,7 +1512,7 @@ public class Database implements VariableSpace, LoggingObjectInterface {
     // double-dash or a multiline comment appears
     // in a single-quoted string, it will be treated as a string instead of
     // comments.
-    String sql = SqlScriptParser.getInstance().removeComments( rawsql ).trim();
+    String sql = getSqlScriptParser().removeComments( rawsql ).trim();
     try {
       boolean resultSet;
       int count;
@@ -1595,13 +1595,14 @@ public class Database implements VariableSpace, LoggingObjectInterface {
   public Result execStatements( String script, RowMetaInterface params, Object[] data ) throws KettleDatabaseException {
     Result result = new Result();
 
-    List<String> statements = SqlScriptParser.getInstance().split( script );
+    SqlScriptParser sqlScriptParser = getSqlScriptParser();
+    List<String> statements = sqlScriptParser.split( script );
     int nrstats = 0;
 
     if ( statements != null ) {
       for ( String stat : statements ) {
         // Deleting all the single-line and multi-line comments from the string
-        stat = SqlScriptParser.getInstance().removeComments( stat );
+        stat = sqlScriptParser.removeComments( stat );
 
         if ( !Const.onlySpaces( stat ) ) {
           String sql = Const.trim( stat );
@@ -4711,5 +4712,14 @@ public class Database implements VariableSpace, LoggingObjectInterface {
     if ( log != null ) {
       log.setForcingSeparateLogging( forcingSeparateLogging );
     }
+  }
+
+  private SqlScriptParser getSqlScriptParser() {
+    DatabaseInterface databaseInterface = databaseMeta.getDatabaseInterface();
+    if ( databaseInterface instanceof DatabaseInterfaceExtended ) {
+      return ( (DatabaseInterfaceExtended) databaseInterface ).createSqlScriptParser();
+    }
+    // fallback
+    return new SqlScriptParser( false );
   }
 }
