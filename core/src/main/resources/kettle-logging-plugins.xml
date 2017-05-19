@@ -1,0 +1,10 @@
+<logging-plugins>
+
+  <!--
+  
+    Nothing by default, not even log4j...
+   
+  	<logging-plugin> </logging-plugin>
+  
+   -->
+</logging-plugins>
