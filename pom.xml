@@ -27,9 +27,9 @@
   <modules>
     <module>pdi-engine</module>
     <module>core</module>
-    <!--module>engine</module-->
-    <!--module>dbdialog</module-->
-    <!--module>ui</module-->
+    <!-- module>engine</module -->
+    <module>dbdialog</module>
+    <!-- module>ui</module -->
   </modules>
   
   <!--properties>
