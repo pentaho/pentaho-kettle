@@ -3,7 +3,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -99,6 +99,7 @@ import org.pentaho.di.partition.PartitionSchema;
 import org.pentaho.di.repository.HasRepositoryInterface;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectory;
+import org.pentaho.di.repository.RepositoryDirectoryInterface;
 import org.pentaho.di.repository.RepositoryElementInterface;
 import org.pentaho.di.repository.RepositoryObjectType;
 import org.pentaho.di.resource.ResourceDefinition;
@@ -5821,7 +5822,11 @@ public class TransMeta extends AbstractMeta
 
         // All objects get re-located to the root folder
         //
-        transMeta.setRepositoryDirectory( new RepositoryDirectory() );
+        RepositoryDirectoryInterface rdi = new RepositoryDirectory();
+        if ( space instanceof TransMeta ) {
+          rdi = ( (TransMeta) space ).directory;
+        }
+        transMeta.setRepositoryDirectory( rdi );
 
         // Set a number of parameters for all the data files referenced so far...
         //
