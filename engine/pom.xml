@@ -16,6 +16,12 @@
   </parent>
 
   <properties>
+    <maven-surefire-plugin.reuseForks>true</maven-surefire-plugin.reuseForks>   <!-- default setting is reuseForks = true -->
+    <maven-surefire-plugin.forkCount>1</maven-surefire-plugin.forkCount>        <!-- default setting is forkCount = 1 -->
+    <maven-failsafe-plugin.reuseForks>true</maven-failsafe-plugin.reuseForks>   <!-- default setting is reuseForks = true -->
+    <maven-failsafe-plugin.forkCount>1</maven-failsafe-plugin.forkCount>        <!-- default setting is forkCount = 1 -->
+
+
     <!-- user project version directly for project module dependencies? -->
     <dependency.kettle.revision>${project.version}</dependency.kettle.revision>
 
