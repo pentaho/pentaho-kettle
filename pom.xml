@@ -25,6 +25,7 @@
   </scm>  
 
   <modules>
+    <module>pdi-engine</module>
     <module>core</module>
     <!--module>engine</module-->
     <!--module>dbdialog</module-->
