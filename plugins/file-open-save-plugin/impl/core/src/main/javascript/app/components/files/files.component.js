@@ -25,27 +25,62 @@
  * This provides the component for the Files list on search or files view.
  **/
 define([
+  "../../services/data.service",
   "text!./files.html",
   "css!./files.css"
-], function(filesTemplate) {
+], function(dataService, filesTemplate) {
   "use strict";
 
   var options = {
     bindings: {
+      folder: '<',
+      search: '<',
+      onClick: '&',
+      onSelect: '&'
     },
     template: filesTemplate,
     controllerAs: "vm",
     controller: filesController
   };
 
-  function filesController() {
+  filesController.$inject = ["$timeout", dataService.name, "$scope"];
+
+  function filesController($timeout, dt, $scope) {
     var vm = this;
     vm.$onInit = onInit;
+    vm.$onChanges = onChanges;
+    vm.selectFile = selectFile;
+    vm.commitFile = commitFile;
+    vm.rename = rename;
 
     function onInit() {
       vm.nameHeader = "Name";
       vm.typeHeader = "Type";
       vm.lastSaveHeader = "Last saved";
+    }
+
+    function onChanges(changes) {
+      if (changes.folder) {
+        vm.selectedFile = null;
+      }
+    }
+
+    function commitFile(file) {
+      if (file.editing !== true) {
+        vm.onClick({file:file});
+      }
+    }
+
+    function selectFile(file) {
+      vm.selectedFile = file;
+      vm.onSelect({selectedFile:file});
+    }
+
+    function rename() {
+      var path = vm.selectedFile.type === "File folder" ? vm.selectedFile.parent : vm.selectedFile.path;
+      dt.rename(vm.selectedFile.objectId.id, vm.selectedFile.name, path, vm.selectedFile.type).then(function(response) {
+        vm.selectedFile.objectId = response.data;
+      });
     }
   }
 

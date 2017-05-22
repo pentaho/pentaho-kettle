@@ -37,6 +37,10 @@
     <angular-i18n.version>1.5.6</angular-i18n.version>
     <swt.version>4.6</swt.version>
     <requirejs.version>2.2.0</requirejs.version>
+    <dependency.javax.servlet-api.version>3.0.1</dependency.javax.servlet-api.version>
+    <dependency.jackson.version>1.9.2</dependency.jackson.version>
+    <dependency.fasterxml.jackson.version>2.5.4</dependency.fasterxml.jackson.version>
+    <dependency.javax.ws.rs-api.version>2.0</dependency.javax.ws.rs-api.version>
   </properties>
   <dependencyManagement>
     <dependencies>
@@ -45,29 +49,35 @@
         <artifactId>kettle-core</artifactId>
         <version>${dependency.pentaho-kettle.version}</version>
         <scope>provided</scope>
-        <exclusions>
-          <exclusion>
-            <artifactId>*</artifactId>
-            <groupId>*</groupId>
-          </exclusion>
-        </exclusions>
+        <!--<exclusions>-->
+          <!--<exclusion>-->
+            <!--<artifactId>*</artifactId>-->
+            <!--<groupId>*</groupId>-->
+          <!--</exclusion>-->
+        <!--</exclusions>-->
       </dependency>
       <dependency>
         <groupId>pentaho-kettle</groupId>
         <artifactId>kettle-ui-swt</artifactId>
         <version>${dependency.kettle.ui.swt.revision}</version>
         <scope>provided</scope>
-        <exclusions>
-          <exclusion>
-            <artifactId>*</artifactId>
-            <groupId>*</groupId>
-          </exclusion>
-        </exclusions>
       </dependency>
       <dependency>
         <groupId>pentaho-kettle</groupId>
         <artifactId>kettle-engine</artifactId>
         <version>${dependency.pentaho-kettle.version}</version>
+        <scope>provided</scope>
+        <!--<exclusions>-->
+          <!--<exclusion>-->
+            <!--<artifactId>*</artifactId>-->
+            <!--<groupId>*</groupId>-->
+          <!--</exclusion>-->
+        <!--</exclusions>-->
+      </dependency>
+      <dependency>
+        <groupId>pentaho</groupId>
+        <artifactId>pentaho-platform-extensions</artifactId>
+        <version>${project.version}</version>
         <scope>provided</scope>
         <exclusions>
           <exclusion>
@@ -99,6 +109,73 @@
             <groupId>*</groupId>
           </exclusion>
         </exclusions>
+      </dependency>
+      <dependency>
+        <groupId>com.fasterxml.jackson.core</groupId>
+        <artifactId>jackson-core</artifactId>
+        <version>${dependency.fasterxml.jackson.version}</version>
+        <exclusions>
+          <exclusion>
+            <artifactId>*</artifactId>
+            <groupId>*</groupId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+      <dependency>
+        <groupId>com.fasterxml.jackson.core</groupId>
+        <artifactId>jackson-annotations</artifactId>
+        <version>${dependency.fasterxml.jackson.version}</version>
+        <exclusions>
+          <exclusion>
+            <artifactId>*</artifactId>
+            <groupId>*</groupId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+      <dependency>
+        <groupId>com.fasterxml.jackson.jaxrs</groupId>
+        <artifactId>jackson-jaxrs-json-provider</artifactId>
+        <version>${dependency.fasterxml.jackson.version}</version>
+        <exclusions>
+          <exclusion>
+            <artifactId>*</artifactId>
+            <groupId>*</groupId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+      <dependency>
+        <groupId>com.fasterxml.jackson.core</groupId>
+        <artifactId>jackson-databind</artifactId>
+        <version>${dependency.fasterxml.jackson.version}</version>
+        <exclusions>
+          <exclusion>
+            <artifactId>*</artifactId>
+            <groupId>*</groupId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+      <dependency>
+        <groupId>com.fasterxml.jackson.jaxrs</groupId>
+        <artifactId>jackson-jaxrs-base</artifactId>
+        <version>${dependency.fasterxml.jackson.version}</version>
+        <exclusions>
+          <exclusion>
+            <artifactId>*</artifactId>
+            <groupId>*</groupId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+      <dependency>
+        <groupId>javax.ws.rs</groupId>
+        <artifactId>javax.ws.rs-api</artifactId>
+        <version>${dependency.javax.ws.rs-api.version}</version>
+        <scope>provided</scope>
+      </dependency>
+      <dependency>
+        <groupId>javax.servlet</groupId>
+        <artifactId>javax.servlet-api</artifactId>
+        <version>${dependency.javax.servlet-api.version}</version>
+        <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>org.eclipse.swt</groupId>

@@ -33,6 +33,9 @@ define([
 
   var options = {
     bindings: {
+      path: '<',
+      includeRoot: '<',
+      onSelect: '&'
     },
     template: breadcrumbTemplate,
     controllerAs: "vm",
@@ -42,8 +45,48 @@ define([
   function breadcrumbController() {
     var vm = this;
     vm.$onInit = onInit;
+    vm.$onChanges = onChanges;
+    vm.select = select;
+    vm.parts = [];
+    vm.extras = [];
 
     function onInit() {
+    }
+
+    function onChanges(onChanges) {
+      if (onChanges.path) {
+        var path = onChanges.path.currentValue;
+        if (path) {
+          updatePath(path);
+        }
+      }
+    }
+
+    function updatePath(path) {
+      if (path) {
+        var parts = path.split("/");
+        var set = [];
+        if (vm.includeRoot && path !== "Recents") {
+          set.push({path:"/", part:"/"});
+        }
+        for (var i = 0; i < parts.length; i++) {
+          if (parts[i] !== "") {
+            set.push({path:parts.slice(0, i+1).join("/"), part:parts[i]});
+          }
+        }
+        if (set.length > 3) {
+          vm.parts = set.splice(set.length-3, set.length);
+          vm.extras = set;
+        } else {
+          vm.parts = set;
+          vm.extras = [];
+        }
+      }
+    }
+
+    function select(path) {
+      vm.showExtras = false;
+      vm.onSelect({selectedPath:path});
     }
   }
 

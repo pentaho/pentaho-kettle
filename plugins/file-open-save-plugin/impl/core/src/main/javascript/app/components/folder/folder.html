@@ -7,10 +7,18 @@
     5. empty:    Folder is empty--no chevron shown
     6. selected: User selected this folder
 -->
-<div class="folder recents empty">
+<div class="folder recents empty" ng-class="{selected: vm.showRecents}" ng-click="vm.onSelect({folder:'recents'})"
+    ng-style="{'width': 'calc(100% + ' + (vm.maxDepth * 27) + 'px)'}">
   <div class="folderArrowWrapper">
     <div class="folderArrow"></div>
   </div>
   <div class="folderImage"></div>
   <div class="folderName">Recents</div>
+</div>
+<div class="folder" ng-click="vm.selectFolder(folder)" ng-dblclick="vm.selectAndOpenFolder(folder)" ng-class="{selected: folder==vm.selectedFolder, empty : folder.hasChildren == false, opened : folder.open == true, home : folder.path == '/home', public : folder.path == '/public'}" ng-repeat="folder in vm.folders" ng-style="{paddingLeft:folder.depth*27, 'width': folder.width}" ng-show="folder.visible">
+  <div class="folderArrowWrapper" ng-click="vm.openFolder(folder); $event.stopPropagation();">
+    <div class="folderArrow"></div>
+  </div>
+  <div class="folderImage"></div>
+  <div class="folderName">{{folder.name}}</div>
 </div>

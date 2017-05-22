@@ -52,7 +52,8 @@ file-open-save-app input[type="text"] {
   height: 34px;
 }
 
-file-open-save-app input[type="text"]:focus {
+file-open-save-app input[type="text"]:focus,
+file-open-save-app .headerSearch.focused {
   border: 1px solid #005DA6;
 }
 
@@ -96,7 +97,8 @@ file-open-save-app .headerSearchLeft {
   float: left;
 }
 
-file-open-save-app .headerSearchLeft:hover {
+file-open-save-app .headerSearchLeft:hover,
+file-open-save-app .headerSearchLeft.blueState {
   background: url("./images/search_blue.png") no-repeat left 7px center;
 }
 
@@ -142,7 +144,7 @@ file-open-save-app .save .addDelete {
 
 file-open-save-app .addFolder {
   background: url("./images/add_folder.svg") no-repeat left center;
-  height: 18px;
+  height: 19px;
   width: 23px;
   cursor: pointer;
 }
@@ -244,16 +246,27 @@ file-open-save-app button.primary:enabled {
   color: #FFF;
 }
 
+file-open-save-app button.primary:enabled:hover {
+  border: 1px solid #0F2B5B;
+  background-color: #0F2B5B;
+}
+
 file-open-save-app button.primary:disabled {
   border: 1px solid #E4E4E4;
   background-color: #E4E4E4;
-  color: #888;
+  color: #999;
 }
 
 file-open-save-app button.secondary {
   border: 1px solid #005DA6;
   background-color: #FFF;
   color: #005DA6;
+}
+
+file-open-save-app button.secondary:hover {
+  border: 1px solid #0F2B5B;
+  background-color: #FFF;
+  color: #0F2B5B;
 }
 
 file-open-save-app .buttons button {
@@ -269,9 +282,9 @@ file-open-save-app .open .fileNameEntry {
   display: none;
 }
 
-file-open-save-app .fileArea .fileAreaMessageView {
+file-open-save-app .fileAreaMessageView {
   position: absolute;
   top: 50%;
   left: 50%;
-  transform: translate(-50%, -50%);
+  transform: translate(-50%, -100%);
 }
