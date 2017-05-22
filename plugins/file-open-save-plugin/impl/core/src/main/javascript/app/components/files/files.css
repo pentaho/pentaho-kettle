@@ -1,0 +1,181 @@
+/*!
+ * PENTAHO CORPORATION PROPRIETARY AND CONFIDENTIAL
+ *
+ * Copyright 2017 Pentaho Corporation (Pentaho). All rights reserved.
+ *
+ * NOTICE: All information including source code contained herein is, and
+ * remains the sole property of Pentaho and its licensors. The intellectual
+ * and technical concepts contained herein are proprietary and confidential
+ * to, and are trade secrets of Pentaho and may be covered by U.S. and foreign
+ * patents, or patents in process, and are protected by trade secret and
+ * copyright laws. The receipt or possession of this source code and/or related
+ * information does not convey or imply any rights to reproduce, disclose or
+ * distribute its contents, or to manufacture, use, or sell anything that it
+ * may describe, in whole or in part. Any reproduction, modification, distribution,
+ * or public display of this information without the express written authorization
+ * from Pentaho is strictly prohibited and in violation of applicable laws and
+ * international treaties. Access to the source code contained herein is strictly
+ * prohibited to anyone except those individuals and entities who have executed
+ * confidentiality and non-disclosure agreements or other agreements with Pentaho,
+ * explicitly covering such access.
+ */
+
+/* FILES */
+files table {
+  width: 100%;
+  height: 100%;
+  border: none;
+  table-layout: fixed;
+  border-collapse: collapse;
+  border-spacing: 0;
+}
+
+files thead, tbody {
+  width: 100%;
+}
+
+files .fileTable tbody {
+  overflow: auto;
+  height: 262px;
+}
+
+files .open .fileTable tbody {
+  height: 338px;
+}
+
+files .fileTable tbody tr {
+  cursor: pointer;
+}
+
+files .fileTable th:first-child,
+files .fileTable td:first-child {
+  width: 50%;
+}
+
+files .fileTable th,
+files .fileTable td {
+  text-align: left;
+  line-height: 18px;
+  padding: 6px 10px;
+  white-space: nowrap;
+  width: 25%;
+}
+
+files .fileTable th {
+  border-bottom: 1px solid #CCC;
+  border-left: 1px solid #CCC;
+  background: #FAFAFA;
+  font-weight: normal;
+}
+
+files .fileTable th:first-child {
+  border-left: 0 none;
+}
+
+files .fileTable tr.selected td,
+files .fileTable tr.selected:hover td {
+  background-color: #005DA6;
+  color: #FFFFFF;
+}
+
+files .fileTable tr:hover td {
+  background-color: #E6EFF6;
+}
+
+files .fileTable tbody td div {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+files .fileTable tr .fileName {
+  padding-left: 10px;
+}
+
+files .fileTable tr .fileTypeIcon {
+  height: 16px;
+  width: 16px;
+  float: left;
+}
+
+files .fileTable tr .fileTypeIcon.file-trans {
+  background: url("../../images/trans_small.svg") no-repeat left center;
+}
+
+files .fileTable tr .fileTypeIcon.file-job {
+  background: url("../../images/job_small.svg") no-repeat left center;
+}
+
+files .fileTable tr .fileTypeIcon.file-folder {
+  background: url("../../images/folder.svg") no-repeat left center;
+}
+
+files .fileTable tr.selected .fileTypeIcon {
+  background-position: right center;
+}
+
+files .fileTable .nameHeader {
+  float: left;
+}
+
+files .fileTable .fileLocation {
+  display: none;
+}
+
+files .fileTable.searchTable .fileLocation {
+  display: block;
+}
+
+files .fileTable.searchTable tbody tr {
+  line-height: 60px;
+  height: 60px;
+}
+
+files .fileTable.searchTable .fileName {
+  margin-bottom: 10px;
+}
+
+files .fileTable.searchTable .fileType span,
+files .fileTable.searchTable .fileLastSaved span {
+  vertical-align: top;
+}
+
+files .fileTable.searchTable .fileType,
+files .fileTable.searchTable .fileLastSaved {
+  height: 44px;
+}
+
+files .fileTable tr .fileLocation {
+  color: #999;
+  padding-left: 26px;
+}
+
+files .fileTable tr.selected .fileLocation {
+  color: #FFF;
+}
+
+files .sortWrapper:hover .sort {
+  visibility: visible;
+}
+
+files .sortWrapper {
+  cursor: pointer;
+  float: right;
+}
+
+files .sortWrapper .sort {
+  background: url("../../images/sort_none.svg") right center/10px 10px no-repeat;
+  height: 17px;
+  width: 10px;
+  visibility: hidden;
+}
+
+files .sortWrapper .sort.sortUp {
+  background-image: url("../../images/sort_up.svg");
+  visibility: visible;
+}
+
+files .sortWrapper .sort.sortDown {
+  background-image: url("../../images/sort_down.svg");
+  visibility: visible;
+}

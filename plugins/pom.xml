@@ -15,6 +15,7 @@
   <packaging>pom</packaging>
   
   <modules>
+    <module>file-open-save-plugin</module>
     <module>repositories-plugin</module>
     <module>meta-inject-plugin</module>
     <module>pdi-engine-configuration</module>

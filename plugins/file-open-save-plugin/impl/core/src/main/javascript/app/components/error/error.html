@@ -1,0 +1,17 @@
+<div class="error">
+  <div class="errorHeader headerText">
+    {{::vm.title}}
+  </div>
+  <div class="errorMiddle">
+    <div class="errorMiddleTop">
+      {{::vm.topMessageBefore}}{{vm.topMessageMiddle}}{{::vm.topMessageAfter}}
+    </div>
+    <div class="errorMiddleBottom">
+      {{::vm.bottomMessage}}
+    </div>
+  </div>
+  <div class="errorBottom">
+    <button class="secondary button2">{{::vm.cancelButton}}</button>
+    <button class="primary button1">{{::vm.confirmButton}}</button>
+  </div>
+</div>

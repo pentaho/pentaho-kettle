@@ -1,0 +1,89 @@
+<!--
+  Classes for table tag
+     1. fileTable:   STATIC...always present
+     2. searchTable: For search results only
+-->
+<table class="fileTable searchTable">
+  <thead>
+  <tr>
+    <th>
+      <div class="nameHeader">{{::vm.nameHeader}}</div>
+      <div class="sortWrapper">
+        <div class="sort"></div>
+      </div>
+    </th>
+    <th>
+      <div>{{::vm.typeHeader}}</div>
+    </th>
+    <th>
+      <div>{{::vm.lastSaveHeader}}</div>
+    </th>
+  </tr>
+  </thead>
+  <tbody>
+  <!-- tr's are repeatable -->
+  <tr class="selected">
+    <td>
+      <div class="fileTypeIcon file-trans"></div>
+      <div class="fileName">
+        calls_conversion
+      </div>
+      <div class="fileLocation" title="full path--use title-on-truncate">
+        Home/Folder/transformations/monthly_calls/conversion/calls/conversion/calls
+      </div>
+    </td>
+    <td>
+      <div class="fileType">
+        <span>Transformation</span>
+      </div>
+    </td>
+    <td>
+      <div class="fileLastSaved">
+        <span>12/28/16 3:50 PM</span>
+      </div>
+    </td>
+  </tr>
+  <tr>
+    <td>
+      <div class="fileTypeIcon file-job"></div>
+      <div class="fileName">
+        calls_conversion_june
+      </div>
+      <div class="fileLocation" title="full path--use title-on-truncate">
+        Home/Folder/transformations/monthly_calls/conversion/calls/conversion/calls
+      </div>
+    </td>
+    <td>
+      <div class="fileType">
+        <span>Transformation</span>
+      </div>
+    </td>
+    <td>
+      <div class="fileLastSaved">
+        <span>12/28/16 3:50 PM</span>
+      </div>
+    </td>
+  </tr>
+  <tr>
+    <td>
+      <div class="fileTypeIcon file-folder"></div>
+      <div class="fileName">
+        calls_conversion
+      </div>
+      <div class="fileLocation" title="full path--use title-on-truncate">
+        Home/Folder/transformations/monthly_calls/conversion/calls/conversion/calls
+      </div>
+    </td>
+    <td>
+      <div class="fileType">
+        <span>Transformation</span>
+      </div>
+    </td>
+    <td>
+      <div class="fileLastSaved">
+        <span>12/28/16 3:50 PM</span>
+      </div>
+    </td>
+  </tr>
+  </tbody>
+</table>
