@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,6 +22,7 @@
 
 package org.pentaho.di.ui.repo;
 
+import com.google.common.annotations.VisibleForTesting;
 import org.apache.commons.lang.ClassUtils;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -464,4 +465,16 @@ public class RepositoryConnectController {
     return properties;
   }
 
+  @VisibleForTesting
+  boolean isDatabaseWithNameExist( DatabaseMeta databaseMeta, boolean isNew ) {
+    for ( int i = 0; i < repositoriesMeta.nrDatabases(); i++ ) {
+      final DatabaseMeta iterDatabase = repositoriesMeta.getDatabase( i );
+      if ( iterDatabase.getName().trim().equalsIgnoreCase( databaseMeta.getName().trim() ) ) {
+        if ( isNew || databaseMeta != iterDatabase ) { // do not check the same instance
+          return true;
+        }
+      }
+    }
+    return false;
+  }
 }
