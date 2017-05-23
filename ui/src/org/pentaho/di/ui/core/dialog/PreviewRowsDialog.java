@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -367,6 +367,10 @@ public class PreviewRowsDialog {
 
   protected int getDataForRow( TableItem item, Object[] row ) {
     int nrErrors = 0;
+
+    if ( row == null ) { //no row to process
+      return nrErrors;
+    }
 
     // Display the correct line item...
     //
