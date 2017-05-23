@@ -548,8 +548,11 @@ public class Validator extends BaseStep implements StepInterface {
     if ( super.init( smi, sdi ) ) {
       // initialize steps by names
       List<StepMeta> steps = new ArrayList<>();
-      for ( StepMetaDataCombi s : getTrans().getSteps() ) {
+      List<StepMetaDataCombi> transSteps = getTrans().getSteps();
+      if( transSteps != null ){
+        for ( StepMetaDataCombi s : transSteps ) {
         steps.add( s.stepMeta );
+        }
       }
       meta.searchInfoAndTargetSteps( steps );
 
