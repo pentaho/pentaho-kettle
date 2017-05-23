@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,9 +22,11 @@
 
 package org.pentaho.di.trans.steps.cubeinput;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
-public class CubeInputContentParsing extends BaseCubeInputParsingTest {
+@Ignore( "Ignored, not running with ant build. Investigate." )
+public class CubeInputContentParsingTest extends BaseCubeInputParsingTest {
 
   @Test
   public void test() throws Exception {
