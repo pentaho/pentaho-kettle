@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -257,7 +257,7 @@ public class MergeRows extends BaseStep implements StepInterface {
    * @throws KettleRowException
    *           in case there is a compatibility error.
    */
-  protected void checkInputLayoutValid( RowMetaInterface referenceRowMeta, RowMetaInterface compareRowMeta ) throws KettleRowException {
+  static void checkInputLayoutValid( RowMetaInterface referenceRowMeta, RowMetaInterface compareRowMeta ) throws KettleRowException {
     if ( referenceRowMeta != null && compareRowMeta != null ) {
       BaseStep.safeModeChecking( referenceRowMeta, compareRowMeta );
     }
