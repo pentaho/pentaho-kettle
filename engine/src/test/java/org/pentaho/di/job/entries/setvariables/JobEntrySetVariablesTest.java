@@ -65,7 +65,7 @@ public class JobEntrySetVariablesTest {
   @Test
   public void testASCIIText() throws Exception {
     // properties file with native2ascii
-    entry.setFilename( "test-src/org/pentaho/di/job/entries/setvariables/ASCIIText.properties" );
+    entry.setFilename( "src/test/resources/org/pentaho/di/job/entries/setvariables/ASCIIText.properties" );
     entry.setVariableName( new String[] {} ); // For absence of null check in execute method
     entry.setReplaceVars( true );
     Result result = entry.execute( new Result(), 0 );
@@ -78,7 +78,7 @@ public class JobEntrySetVariablesTest {
   @Test
   public void testUTF8Text() throws Exception {
     // properties files without native2ascii
-    entry.setFilename( "test-src/org/pentaho/di/job/entries/setvariables/UTF8Text.properties" );
+    entry.setFilename( "src/test/resources/org/pentaho/di/job/entries/setvariables/UTF8Text.properties" );
     entry.setVariableName( new String[] {} ); // For absence of null check in execute method
     entry.setReplaceVars( true );
     Result result = entry.execute( new Result(), 0 );
