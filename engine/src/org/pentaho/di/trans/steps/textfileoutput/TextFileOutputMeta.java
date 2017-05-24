@@ -1313,4 +1313,12 @@ public class TextFileOutputMeta extends BaseStepMeta implements StepMetaInterfac
     throws KettleException {
     rep.saveStepAttribute( id_transformation, id_step, "file_name", fileName );
   }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public boolean passDataToServletOutput() {
+    return servletOutput;
+  }
 }
