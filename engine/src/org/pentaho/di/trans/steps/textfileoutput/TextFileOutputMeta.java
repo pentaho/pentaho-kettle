@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -1299,5 +1299,13 @@ public class TextFileOutputMeta extends BaseStepMeta implements StepMetaInterfac
   protected void saveSourceRep( Repository rep, ObjectId id_transformation, ObjectId id_step, String value )
     throws KettleException {
     rep.saveStepAttribute( id_transformation, id_step, "file_name", fileName );
+  }
+
+ /**
+   * {@inheritDoc}
+   */
+  @Override
+  public boolean passDataToServletOutput() {
+    return servletOutput;
   }
 }
