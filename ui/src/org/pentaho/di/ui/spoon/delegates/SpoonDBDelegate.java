@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -475,26 +475,30 @@ public class SpoonDBDelegate extends SpoonDelegate {
     if ( !Const.isEmpty( con_name ) ) {
       databaseMeta = getDatabaseDialog().getDatabaseMeta();
 
-      databaseMeta.verifyAndModifyDatabaseName( hasDatabasesInterface.getDatabases(), null );
-      hasDatabasesInterface.addDatabase( databaseMeta );
-      spoon.addUndoNew( (UndoInterface) hasDatabasesInterface, new DatabaseMeta[] { (DatabaseMeta) databaseMeta
-        .clone() }, new int[] { hasDatabasesInterface.indexOfDatabase( databaseMeta ) } );
-      if ( spoon.rep != null ) {
-        try {
-          if ( !spoon.rep.getSecurityProvider().isReadOnly() ) {
-            spoon.rep.save( databaseMeta, Const.VERSION_COMMENT_INITIAL_VERSION, null );
-          } else {
-            throw new KettleException( BaseMessages.getString(
-              PKG, "Spoon.Dialog.Exception.ReadOnlyRepositoryUser" ) );
+      if ( !DialogUtils.objectWithTheSameNameExists( databaseMeta,
+              hasDatabasesInterface.getDatabases() ) ) {
+        hasDatabasesInterface.addDatabase( databaseMeta );
+        spoon.addUndoNew( (UndoInterface) hasDatabasesInterface, new DatabaseMeta[]{(DatabaseMeta) databaseMeta
+                .clone()}, new int[]{hasDatabasesInterface.indexOfDatabase( databaseMeta )} );
+        if ( spoon.rep != null ) {
+          try {
+            if ( !spoon.rep.getSecurityProvider().isReadOnly() ) {
+              // spoon.rep.getDatabaseID(  )
+              spoon.rep.save( databaseMeta, Const.VERSION_COMMENT_INITIAL_VERSION, null );
+            } else {
+              throw new KettleException( BaseMessages.getString(
+                      PKG, "Spoon.Dialog.Exception.ReadOnlyRepositoryUser" ) );
+            }
+          } catch ( KettleException e ) {
+            new ErrorDialog( spoon.getShell(),
+                    BaseMessages.getString( PKG, "Spoon.Dialog.ErrorSavingConnection.Title" ),
+                    BaseMessages.getString( PKG, "Spoon.Dialog.ErrorSavingConnection.Message", databaseMeta.getName() ), e );
           }
-        } catch ( KettleException e ) {
-          new ErrorDialog( spoon.getShell(),
-            BaseMessages.getString( PKG, "Spoon.Dialog.ErrorSavingConnection.Title" ),
-            BaseMessages.getString( PKG, "Spoon.Dialog.ErrorSavingConnection.Message", databaseMeta.getName() ), e );
         }
+        spoon.refreshTree();
+      } else {
+        DatabaseDialog.showDatabaseExistsDialog( spoon.getShell(), databaseMeta );
       }
-      spoon.refreshTree();
     }
   }
-
 }
