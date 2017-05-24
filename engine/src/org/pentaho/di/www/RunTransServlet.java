@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -31,6 +31,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.google.common.annotations.VisibleForTesting;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.KettleLogStore;
@@ -46,6 +47,9 @@ import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransConfiguration;
 import org.pentaho.di.trans.TransExecutionConfiguration;
 import org.pentaho.di.trans.TransMeta;
+import org.pentaho.di.trans.step.StepMetaDataCombi;
+import org.pentaho.di.trans.step.StepMetaInterface;
+import org.pentaho.di.trans.step.StepMetaInterfaceExtended;
 
 public class RunTransServlet extends BaseHttpServlet implements CartePluginInterface {
 
@@ -246,15 +250,12 @@ public class RunTransServlet extends BaseHttpServlet implements CartePluginInter
       String message = "Transformation '" + trans.getName() + "' was added to the list with id " + carteObjectId;
       logBasic( message );
 
-      //
       try {
         // Execute the transformation...
         //
         trans.execute( null );
 
-        WebResult webResult = new WebResult( WebResult.STRING_OK, "Transformation started", carteObjectId );
-        out.println( webResult.getXML() );
-        out.flush();
+        finishProcessing( trans, out );
 
       } catch ( Exception executionException ) {
         String logging = KettleLogStore.getAppender().getBuffer( trans.getLogChannelId(), false ).toString();
@@ -296,6 +297,37 @@ public class RunTransServlet extends BaseHttpServlet implements CartePluginInter
         return transMeta;
       }
     }
+  }
+
+  /**
+   If the transformation has at least one step in a transformation,
+   which writes it's data straight to a servlet output
+   we should wait transformation's termination.
+   Otherwise the servlet's response lifecycle may come to an end and
+   the response will be closed by container while
+   the transformation will be still trying writing data into it.
+   */
+  @VisibleForTesting
+  void finishProcessing( Trans trans, PrintWriter out ) {
+    if ( isServletOutput( trans ) ) {
+      trans.waitUntilFinished();
+    } else {
+      WebResult webResult = new WebResult( WebResult.STRING_OK, "Transformation started", trans.getContainerObjectId() );
+      out.println( webResult.getXML() );
+      out.flush();
+    }
+  }
+
+  private boolean isServletOutput( Trans trans ) {
+    for ( StepMetaDataCombi metaDataCombi : trans.getSteps() ) {
+      StepMetaInterface stepMeta = metaDataCombi.meta;
+      if ( stepMeta instanceof StepMetaInterfaceExtended ) {
+        if ( ( (StepMetaInterfaceExtended) stepMeta ).passDataToServletOutput() ) {
+          return true;
+        }
+      }
+    }
+    return false;
   }
 
   public String toString() {

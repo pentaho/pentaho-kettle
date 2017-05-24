@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -56,7 +56,7 @@ import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepInjectionMetaEntry;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
-import org.pentaho.di.trans.step.StepMetaInterface;
+import org.pentaho.di.trans.step.StepMetaInterfaceExtended;
 import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Node;
 
@@ -65,7 +65,7 @@ import org.w3c.dom.Node;
  *
  */
 @InjectionSupported( localizationPrefix = "TextFileOutput.Injection.", groups = { "OUTPUT_FIELDS" } )
-public class TextFileOutputMeta extends BaseStepMeta implements StepMetaInterface {
+public class TextFileOutputMeta extends BaseStepMeta implements StepMetaInterfaceExtended {
   private static Class<?> PKG = TextFileOutputMeta.class; // for i18n purposes, needed by Translator2!!
 
   protected static final int FILE_COMPRESSION_TYPE_NONE = 0;
@@ -1299,5 +1299,13 @@ public class TextFileOutputMeta extends BaseStepMeta implements StepMetaInterfac
   protected void saveSourceRep( Repository rep, ObjectId id_transformation, ObjectId id_step, String value )
     throws KettleException {
     rep.saveStepAttribute( id_transformation, id_step, "file_name", fileName );
+  }
+
+ /**
+   * {@inheritDoc}
+   */
+  @Override
+  public boolean passDataToServletOutput() {
+    return servletOutput;
   }
 }
