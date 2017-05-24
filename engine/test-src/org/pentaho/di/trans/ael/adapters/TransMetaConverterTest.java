@@ -24,6 +24,9 @@
 
 package org.pentaho.di.trans.ael.adapters;
 
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -39,11 +42,11 @@ import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.di.trans.steps.dummytrans.DummyTransMeta;
 
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-
-import static org.hamcrest.CoreMatchers.*;
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.everyItem;
+import static org.hamcrest.CoreMatchers.hasItems;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.startsWith;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.when;
 
@@ -194,7 +197,31 @@ public class TransMetaConverterTest {
     List<String> hops = transformation.getHops().stream().map( hop -> hop.getId() ).collect( Collectors.toList() );
     assertThat( "Only 1 hop should exist", hops.size(), is( 1 ) );
     assertThat( hops, hasItems( "InputToStay -> InputReceiver1" ) );
+  }
 
+  @Test
+  public void testMultipleDisabledHops() {
+    TransMeta trans = new TransMeta();
+    StepMeta input = new StepMeta( "Input", stepMetaInterface );
+    trans.addStep( input );
+    StepMeta step1 = new StepMeta( "Step1", stepMetaInterface );
+    trans.addStep( step1 );
+    StepMeta step2 = new StepMeta( "Step2", stepMetaInterface );
+    trans.addStep( step2 );
+    StepMeta step3 = new StepMeta( "Step3", stepMetaInterface );
+    trans.addStep( step3 );
+
+    TransHopMeta hop1 = new TransHopMeta( input, step1, false );
+    TransHopMeta hop2 = new TransHopMeta( step1, step2, false );
+    TransHopMeta hop3 = new TransHopMeta( step2, step3, false );
+    trans.addTransHop( hop1 );
+    trans.addTransHop( hop2 );
+    trans.addTransHop( hop3 );
+
+    Transformation transformation = TransMetaConverter.convert( trans );
+    assertThat( "Trans has steps though all of them should be removed", transformation.getOperations().size(),
+        is( 0 ) );
+    assertThat( "Trans has hops though all of them should be removed", transformation.getHops().size(), is( 0 ) );
   }
 
   @Test
