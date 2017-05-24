@@ -114,7 +114,7 @@
     <dependency org="${ivy.artifact.group}" name="kettle-xml-plugin" rev="${project.revision}" changing="true" conf="plugins->default">
         <artifact name="kettle-xml-plugin" type="zip"/>
     </dependency>
-    <dependency org="${ivy.artifact.group}" name="kettle-json-plugin" rev="${project.revision}" changing="true" conf="plugins->default">
+    <dependency org="org.pentaho.kettle.plugins" name="kettle-json-plugin" rev="${project.revision}" changing="true" conf="plugins->default">
         <artifact name="kettle-json-plugin" type="zip"/>
     </dependency>
     <dependency org="org.pentaho.kettle.plugins" name="kettle-sap-plugin" rev="${project.revision}" changing="true" conf="plugins->default" transitive="false">

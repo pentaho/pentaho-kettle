@@ -26,7 +26,8 @@
     <module>gp-bulk-loader</module>
     <module>kettle-hl7-plugin</module>
     <module>kettle-drools5-plugin</module>
-   <module>kettle-dummy-plugin</module>
+    <module>kettle-dummy-plugin</module>
+    <module>kettle-json-plugin</module>
     <module>kettle-s3csvinput-plugin</module>
     <module>kettle-sap-plugin</module>
     <module>kettle-shapefilereader-plugin</module>
