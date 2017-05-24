@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -29,6 +29,7 @@ import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.doCallRealMethod;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 
 import java.util.HashMap;
@@ -36,9 +37,12 @@ import java.util.Map;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.util.StringUtil;
+import org.pentaho.di.core.variables.Variables;
 
 /**
  *
@@ -57,6 +61,7 @@ public class DatabaseMeta_AppendExtraParamsTest {
 
   private DatabaseMeta meta;
   private DatabaseInterface mssqlServerDatabaseMeta;
+  private Variables variables;
 
   private final String CONN_URL_NO_EXTRA_OPTIONS = "jdbc:sqlserver://127.0.0.1:1433";
 
@@ -64,7 +69,13 @@ public class DatabaseMeta_AppendExtraParamsTest {
   public void setUp() throws KettleDatabaseException {
     meta = mock( DatabaseMeta.class );
     mssqlServerDatabaseMeta = new MSSQLServerDatabaseMeta();
+    variables = new Variables();
     mssqlServerDatabaseMeta.setPluginId( CONN_TYPE_MSSQL );
+    doAnswer( new Answer() {
+      @Override public Object answer( InvocationOnMock invocation ) throws Throwable {
+        return variables.environmentSubstitute( (String) invocation.getArguments()[0] );
+      }
+    } ).when( meta ).environmentSubstitute( anyString() );
     doReturn( mssqlServerDatabaseMeta ).when( meta ).getDatabaseInterface();
 
     doCallRealMethod().when( meta ).appendExtraOptions( anyString(), anyMapOf( String.class, String.class ) );
