@@ -33,16 +33,34 @@ import org.junit.Before;
 import org.junit.Test;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.logging.TransLogTable;
+import org.pentaho.di.trans.TransMeta;
+import org.pentaho.di.ui.spoon.Spoon;
+
+import java.util.ArrayList;
+import java.util.List;
+
 
 public class SpoonTransformationDelegateTest {
 
   private SpoonTransformationDelegate delegate;
+  private Spoon spoon;
 
   private TransLogTable transLogTable;
+  private TransMeta transMeta;
+  private List<TransMeta> transformationMap;
 
   @Before
   public void before() {
+    transformationMap = new ArrayList<TransMeta>();
+
+    transMeta = mock( TransMeta.class );
     delegate = mock( SpoonTransformationDelegate.class );
+    spoon = mock( Spoon.class );
+    spoon.delegates = mock( SpoonDelegates.class );
+    spoon.delegates.tabs = mock( SpoonTabsDelegate.class );
+
+    doReturn( transformationMap ).when( delegate ).getTransformationList();
+    doReturn( spoon ).when( delegate ).getSpoon();
     doCallRealMethod().when( delegate ).isLogTableDefined( any() );
     transLogTable = mock( TransLogTable.class );
   }
@@ -64,4 +82,13 @@ public class SpoonTransformationDelegateTest {
     assertFalse( delegate.isLogTableDefined( transLogTable ) );
   }
 
+  @Test
+  public void testAddAndCloseTransformation() {
+    doCallRealMethod().when( delegate ).closeTransformation( any() );
+    doCallRealMethod().when( delegate ).addTransformation( any() );
+    assertTrue( delegate.addTransformation( transMeta ) );
+    assertFalse( delegate.addTransformation( transMeta ) );
+    delegate.closeTransformation( transMeta );
+    assertTrue( delegate.addTransformation( transMeta ) );
+  }
 }
