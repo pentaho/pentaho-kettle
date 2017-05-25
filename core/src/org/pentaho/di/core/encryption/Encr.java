@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -72,7 +72,7 @@ public class Encr {
 
   /**
    * Old Kettle 1.x code which built a signature to validate a license key against.
-   * 
+   *
    * @param mac
    * @param username
    * @param company
@@ -194,9 +194,15 @@ public class Encr {
     if ( Const.trim( option ).substring( 1 ).equalsIgnoreCase( "kettle" ) ) {
       // Kettle password obfuscation
       //
-      String obfuscated = Encr.encryptPasswordIfNotUsingVariables( password );
-      System.out.println( obfuscated );
-      System.exit( 0 );
+      try {
+        String obfuscated = Encr.encryptPasswordIfNotUsingVariables( password );
+        System.out.println( obfuscated );
+        System.exit( 0 );
+      } catch ( Exception ex ) {
+        System.err.println( "Error encrypting password" );
+        ex.printStackTrace();
+        System.exit( 2 );
+      }
 
     } else if ( Const.trim( option ).substring( 1 ).equalsIgnoreCase( "carte" ) ) {
       // Jetty password obfuscation
