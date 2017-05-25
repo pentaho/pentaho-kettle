@@ -74,7 +74,7 @@ public class KitchenIT {
   @Test
   public void testFileJobsExecution() throws Exception {
     String file = this.getClass().getResource( "Job.kjb" ).getFile();
-    String[] args = new String[] { "/file:" + file.substring( 1 ) };
+    String[] args = new String[] { "/file:" + file };
     oldOut = System.out;
     oldErr = System.err;
     System.setOut( new PrintStream( outContent ) );
