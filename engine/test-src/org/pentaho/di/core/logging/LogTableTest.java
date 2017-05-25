@@ -1,5 +1,5 @@
 /*!
-* Copyright 2010 - 2015 Pentaho Corporation.  All rights reserved.
+* Copyright 2010 - 2017 Pentaho Corporation.  All rights reserved.
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -23,8 +23,8 @@ import org.pentaho.di.core.Const;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.trans.HasDatabasesInterface;
 
-import static junit.framework.Assert.assertEquals;
-import static org.mockito.Mockito.mock;
+import junit.framework.Assert;
+import org.mockito.Mockito;
 
 public class LogTableTest {
   private static String PARAM_START_SYMBOL = "${";
@@ -38,8 +38,9 @@ public class LogTableTest {
   @Before
   public void init() {
     System.setProperty( Const.KETTLE_STEP_LOG_DB, "KETTLE_STEP_LOG_DB_VALUE" );
-    mockedVariableSpace = mock( VariableSpace.class );
-    mockedHasDbInterface = mock( HasDatabasesInterface.class );
+    System.setProperty( Const.KETTLE_GLOBAL_LOG_VARIABLES_CLEAR_ON_EXPORT, "true" );
+    mockedVariableSpace = Mockito.mock( VariableSpace.class );
+    mockedHasDbInterface = Mockito.mock( HasDatabasesInterface.class );
   }
   @Test
   public void hardcodedFieldsNotChanged() {
@@ -56,7 +57,11 @@ public class LogTableTest {
     tableFieldsChangedCorrectlyAfterNullingGlobalParams( GLOBAL_PARAM, null );
   }
 
-
+  @Test
+  public void globalParamsFieldsAreNotNulled() {
+    System.setProperty( Const.KETTLE_GLOBAL_LOG_VARIABLES_CLEAR_ON_EXPORT, "false" );
+    tableFieldsChangedCorrectlyAfterNullingGlobalParams( GLOBAL_PARAM, GLOBAL_PARAM );
+  }
 
   public void tableFieldsChangedCorrectlyAfterNullingGlobalParams( String valueForAllFields,
                                                                    String expectedAfterNullingGlobalParams ) {
@@ -64,19 +69,19 @@ public class LogTableTest {
     PerformanceLogTable performanceLogTable = getPerformanceLogTableWithAllEqFields( valueForAllFields );
     performanceLogTable.setAllGlobalParametersToNull();
     commonTableFieldsValueChecker( performanceLogTable, expectedAfterNullingGlobalParams );
-    assertEquals( performanceLogTable.getLogInterval(), expectedAfterNullingGlobalParams );
+    Assert.assertEquals( performanceLogTable.getLogInterval(), expectedAfterNullingGlobalParams );
 
     JobLogTable jobLogTable = getJobLogTableWithAllEqFields( valueForAllFields );
     jobLogTable.setAllGlobalParametersToNull();
     commonTableFieldsValueChecker( jobLogTable, expectedAfterNullingGlobalParams );
-    assertEquals( jobLogTable.getLogInterval(), expectedAfterNullingGlobalParams );
-    assertEquals( jobLogTable.getLogSizeLimit(), expectedAfterNullingGlobalParams );
+    Assert.assertEquals( jobLogTable.getLogInterval(), expectedAfterNullingGlobalParams );
+    Assert.assertEquals( jobLogTable.getLogSizeLimit(), expectedAfterNullingGlobalParams );
 
     TransLogTable transLogTable = getTransLogTableWithAllEqFields( valueForAllFields );
     transLogTable.setAllGlobalParametersToNull();
     commonTableFieldsValueChecker( transLogTable, expectedAfterNullingGlobalParams );
-    assertEquals( transLogTable.getLogInterval(), expectedAfterNullingGlobalParams );
-    assertEquals( transLogTable.getLogSizeLimit(), expectedAfterNullingGlobalParams );
+    Assert.assertEquals( transLogTable.getLogInterval(), expectedAfterNullingGlobalParams );
+    Assert.assertEquals( transLogTable.getLogSizeLimit(), expectedAfterNullingGlobalParams );
   }
 
   private PerformanceLogTable getPerformanceLogTableWithAllEqFields( String fieldsValue ) {
@@ -114,9 +119,9 @@ public class LogTableTest {
   }
 
   private void commonTableFieldsValueChecker( BaseLogTable logTable, String expectedForAllFields ) {
-    assertEquals( logTable.getTableName(), expectedForAllFields );
-    assertEquals( logTable.getConnectionName(), expectedForAllFields );
-    assertEquals( logTable.getSchemaName(), expectedForAllFields );
-    assertEquals( logTable.getTimeoutInDays(), expectedForAllFields );
+    Assert.assertEquals( logTable.getTableName(), expectedForAllFields );
+    Assert.assertEquals( logTable.getConnectionName(), expectedForAllFields );
+    Assert.assertEquals( logTable.getSchemaName(), expectedForAllFields );
+    Assert.assertEquals( logTable.getTimeoutInDays(), expectedForAllFields );
   }
 }
