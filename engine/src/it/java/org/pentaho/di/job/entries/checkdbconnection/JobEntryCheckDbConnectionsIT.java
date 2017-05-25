@@ -37,7 +37,7 @@ import org.pentaho.di.core.util.Assert;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.job.Job;
 
-public class JobEntryCheckDbConnectionsTest {
+public class JobEntryCheckDbConnectionsIT {
 
   private static final String H2_DATABASE = "myDb";
 
