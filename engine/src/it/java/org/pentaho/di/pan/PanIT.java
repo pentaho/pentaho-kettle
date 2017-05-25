@@ -77,7 +77,7 @@ public class PanIT {
   @Test
   public void testFileTransExecution() throws Exception {
     String file = this.getClass().getResource( "Pan.ktr" ).getFile();
-    String[] args = new String[] { "/file:" + file.substring( 1 ) };
+    String[] args = new String[] { "/file:" + file };
     oldOut = System.out;
     oldErr = System.err;
     System.setOut( new PrintStream( outContent ) );
