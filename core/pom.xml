@@ -3,16 +3,20 @@
          xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <modelVersion>4.0.0</modelVersion>
-  <parent>
-    <groupId>pentaho-kettle</groupId>
-    <artifactId>pentaho-kettle-parent-pom</artifactId>
-    <version>8.0-SNAPSHOT</version>
-  </parent>
+
   <groupId>pentaho-kettle</groupId>
   <artifactId>kettle-core</artifactId>
   <version>8.0-SNAPSHOT</version>
   <packaging>jar</packaging>
-  
+
+  <name>Pentaho Data Integration Core</name>
+
+  <parent>
+    <groupId>org.pentaho</groupId>
+    <artifactId>pdi-parent</artifactId>
+    <version>8.0-SNAPSHOT</version>
+  </parent>
+
   <scm>
     <developerConnection>scm:git:git@github.com:pentaho/pentaho-kettle.git</developerConnection>
     <tag>HEAD</tag>
