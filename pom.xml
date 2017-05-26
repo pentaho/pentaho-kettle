@@ -4,20 +4,20 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <modelVersion>4.0.0</modelVersion>
 
+  <groupId>org.pentaho</groupId>
+  <artifactId>pdi-parent</artifactId>
+  <version>8.0-SNAPSHOT</version>
+  <packaging>pom</packaging>
+
+  <name>Pentaho Data Integration</name>
+  <description>Container pom for Pentaho Data Integration modules</description>
+  <url>http://www.pentaho.com</url>
+
   <parent>
     <groupId>org.pentaho</groupId>
     <artifactId>pentaho-ce-jar-parent-pom</artifactId>
     <version>8.0-SNAPSHOT</version>
   </parent>
-
-  <groupId>pentaho-kettle</groupId>
-  <artifactId>pentaho-kettle-parent-pom</artifactId>
-  <version>8.0-SNAPSHOT</version>
-  <packaging>pom</packaging>
-
-  <name>Pentaho Kettle Parent POM</name>
-  <description>Container pom for pentaho-kettle</description>
-  <url>http://www.pentaho.com</url>
 
   <scm>
     <developerConnection>scm:git:git@github.com:pentaho/pentaho-kettle.git</developerConnection>
@@ -27,9 +27,9 @@
   <modules>
     <module>pdi-engine</module>
     <module>core</module>
-    <!-- module>engine</module -->
+    <module>engine</module>
     <module>dbdialog</module>
-    <!-- module>ui</module -->
+    <!--module>ui</module-->
   </modules>
 
   <!--properties>
@@ -37,21 +37,20 @@
     <maven.build.timestamp.format>yyyy-MM-dd HH:mm</maven.build.timestamp.format>
   </properties-->
 
-  <!--build>
+  <build>
     <plugins>
       <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-jar-plugin</artifactId>
         <configuration>
           <archive>
             <manifestEntries>
-              <Compile-Timestamp>${timestamp}</Compile-Timestamp>
-              <Compile-User>${user.name}</Compile-User>
+              <!--<Compile-Timestamp>${timestamp}</Compile-Timestamp>-->
+              <!--<Compile-User>${user.name}</Compile-User>-->
+              <Implementation-ProductID>${project.artifactId}</Implementation-ProductID>
             </manifestEntries>
           </archive>
         </configuration>
       </plugin>
     </plugins>
-  </build-->
-
+  </build>
 </project>
