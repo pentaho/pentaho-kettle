@@ -9,21 +9,20 @@
   <version>8.0-SNAPSHOT</version>
   <packaging>jar</packaging>
 
+  <name>Pentaho Data Integration Engine</name>
+
   <parent>
     <groupId>org.pentaho</groupId>
-    <artifactId>pentaho-ce-jar-parent-pom</artifactId>
+    <artifactId>pdi-parent</artifactId>
     <version>8.0-SNAPSHOT</version>
   </parent>
 
   <properties>
-    <maven-surefire-plugin.reuseForks>true</maven-surefire-plugin.reuseForks>   <!-- default setting is reuseForks = true -->
-    <maven-surefire-plugin.forkCount>1</maven-surefire-plugin.forkCount>        <!-- default setting is forkCount = 1 -->
-    <maven-failsafe-plugin.reuseForks>true</maven-failsafe-plugin.reuseForks>   <!-- default setting is reuseForks = true -->
-    <maven-failsafe-plugin.forkCount>1</maven-failsafe-plugin.forkCount>        <!-- default setting is forkCount = 1 -->
-
-
-    <!-- user project version directly for project module dependencies? -->
-    <dependency.kettle.revision>${project.version}</dependency.kettle.revision>
+    <!-- Test running configuration -->
+    <maven-surefire-plugin.reuseForks>false</maven-surefire-plugin.reuseForks>
+    <maven-surefire-plugin.forkCount>0.5C</maven-surefire-plugin.forkCount>
+    <maven-failsafe-plugin.reuseForks>false</maven-failsafe-plugin.reuseForks>
+    <maven-failsafe-plugin.forkCount>0.5C</maven-failsafe-plugin.forkCount>
 
     <!-- Pentaho dependencies -->
     <pentaho-reporting.version>${project.version}</pentaho-reporting.version>
@@ -1014,25 +1013,18 @@
     </dependency>
   </dependencies>
 
- <!-- <build>
+  <build>
     <plugins>
-      &lt;!&ndash; TODO Revisit testing plugin &ndash;&gt;
       <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-surefire-plugin</artifactId>
+        <artifactId>maven-jar-plugin</artifactId>
         <executions>
           <execution>
-            <id>default-test</id>
-            <goals><goal>test</goal></goals>
-            <configuration>
-              <parallel>classes</parallel>
-              <threadCount>10</threadCount>
-              <reuseForks>false</reuseForks>
-            </configuration>
+            <goals>
+              <goal>test-jar</goal>
+            </goals>
           </execution>
         </executions>
       </plugin>
     </plugins>
-  </build>-->
-
+  </build>
 </project>
