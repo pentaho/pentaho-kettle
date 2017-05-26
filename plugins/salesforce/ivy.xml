@@ -31,6 +31,8 @@
 
     <dependency org="junit"          name="junit"              rev="4.7"   conf="test->default"/>
     <dependency org="org.mockito"    name="mockito-all"        rev="1.9.5" conf="test->default" transitive="false" />
-	<dependency org="pentaho-kettle" name="kettle-engine-test" rev="${dependency.kettle.revision}" changing="true" transitive="false" conf="test->default"/>
+	  <dependency org="pentaho-kettle" name="kettle-engine" rev="${dependency.kettle.revision}" changing="true" transitive="false" conf="test->default">
+	    <artifact name="kettle-engine" ext="jar" m:classifier="tests"/>
+    </dependency>
   </dependencies>
 </ivy-module>
