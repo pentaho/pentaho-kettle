@@ -24,13 +24,11 @@ package org.pentaho.di.core.util;
 
 import static org.junit.Assert.*;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
+import org.junit.AfterClass;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 /**
@@ -41,10 +39,22 @@ import org.junit.Test;
 public class StringEvaluatorTest {
 
   private StringEvaluator evaluator;
+  private static Locale defaultLocale;
+
+  @BeforeClass
+  public static void setUpClass() {
+    defaultLocale = Locale.getDefault();
+  }
 
   @Before
   public void setUp() {
     evaluator = new StringEvaluator();
+    Locale.setDefault(Locale.US);
+  }
+
+  @AfterClass
+  public static void tearDown(){
+    Locale.setDefault(defaultLocale);
   }
 
   /////////////////////////////////////
