@@ -20,7 +20,9 @@
     </dependency>
 	
     <!-- Common (Unit, Integration) test dependencies -->
-    <dependency org="${ivy.artifact.group}"    name="kettle-engine-test"   rev="${project.revision}" changing="true" transitive="false" conf="test->default"/>
+    <dependency org="${ivy.artifact.group}"    name="kettle-engine"   rev="${project.revision}" changing="true" transitive="false" conf="test->default">
+      <artifact name="kettle-engine" ext="jar" m:classifier="tests"/>
+    </dependency>
     <dependency org="junit"                    name="junit"                rev="4.7"    transitive="false" conf="test->default"/>
     <dependency org="org.mockito"              name="mockito-all"          rev="1.9.5"  transitive="false" conf="test->default"/>
     <dependency org="org.eclipse.jetty"        name="test-jetty-servlet" rev="8.1.15.v20140411" transitive="false" conf="test->default"/>
