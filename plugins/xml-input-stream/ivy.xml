@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ivy-module version="2.0" xmlns:m="http://ant.apache.org/ivy/maven">
-  <info organisation="pentaho-kettle" module="${ivy.artifact.id}" revision="${dependency.kettle.revision}" status="integration" publication="20130425215250"/>
+  <info organisation="${ivy.artifact.group}" module="${ivy.artifact.id}" revision="${dependency.kettle.revision}" status="integration" publication="20130425215250"/>
 
   <configurations>
     <conf name="default"/>
@@ -21,13 +21,18 @@
     <dependency org="pentaho-kettle" name="kettle-engine" rev="${dependency.kettle.revision}" transitive="true" changing="true"/>
     <dependency org="pentaho-kettle" name="kettle-core" rev="${dependency.kettle.revision}" transitive="true" changing="true"/>
     <dependency org="pentaho-kettle" name="kettle-ui-swt" rev="${dependency.kettle.revision}" transitive="false" changing="true"/>
-      
+
+    <dependency org="org.apache.commons" name="commons-vfs2" rev="2.1-20150824" transitive="false"/>
     <!-- SWT it required to compile any version of any architecture will work -->
     <dependency org="org.eclipse.swt" name="org.eclipse.swt.gtk.linux.x86_64" rev="4.6" transitive="false"/>
     <dependency org="org.eclipse" name="jface" rev="3.3.0-I20070606-0010" transitive="false"/>
     
     <!-- test dependencies -->
-    <dependency org="junit" name="junit" rev="4.4" conf="test->default"/>
-    
+    <dependency org="junit"          name="junit"              rev="4.4"                                                             conf="test->default"/>
+    <dependency org="org.mockito"    name="mockito-all"        rev="1.9.5"                                         transitive="false" conf="test->default"/>
+    <dependency org="pentaho-kettle" name="kettle-engine" rev="${dependency.kettle.revision}" changing="true" transitive="false" conf="test->default">
+      <artifact name="kettle-engine" ext="jar" m:classifier="tests"/>
+    </dependency>
+
   </dependencies>
 </ivy-module>
