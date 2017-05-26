@@ -41,6 +41,8 @@
     <!-- Testing dependencies -->
     <dependency org="junit"                 name="junit"               rev="4.7"   conf="test->default"  transitive="false"/>
     <dependency org="org.mockito"           name="mockito-all"         rev="1.9.5" conf="test->default"  transitive="false"/>
-    <dependency org="${ivy.artifact.group}" name="kettle-engine-test"  rev="${dependency.kettle.revision}" conf="test->default" transitive="false" changing="true"/>
+    <dependency org="${ivy.artifact.group}" name="kettle-engine"  rev="${dependency.kettle.revision}" conf="test->default" transitive="false" changing="true">
+      <artifact name="kettle-engine" ext="jar" m:classifier="tests"/>
+    </dependency>
   </dependencies>
 </ivy-module>
