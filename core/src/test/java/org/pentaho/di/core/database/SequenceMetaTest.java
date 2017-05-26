@@ -29,7 +29,7 @@ import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 import org.pentaho.di.core.util.Utils;
 
-public class SequenceMetaTests {
+public class SequenceMetaTest {
 
   @Test
   public void testSupport() {
@@ -189,7 +189,7 @@ public class SequenceMetaTests {
     assertEquals( "SELECT current_value FROM sys.sequences WHERE name = 'sequence_name'",
       databaseInterface.getSQLCurrentSequenceValue( sequenceName ) );
     assertEquals( "SELECT name FROM sys.sequences", databaseInterface.getSQLListOfSequences() );
-    assertEquals( "SELECT * FROM sys.sequences WHERE name = 'sequence_name'",
+    assertEquals( "SELECT 1 FROM sys.sequences WHERE name = 'sequence_name'",
       databaseInterface.getSQLSequenceExists( sequenceName ) );
 
     databaseInterface = new MSSQLServerNativeDatabaseMeta();
@@ -198,7 +198,7 @@ public class SequenceMetaTests {
     assertEquals( "SELECT current_value FROM sys.sequences WHERE name = 'sequence_name'",
       databaseInterface.getSQLCurrentSequenceValue( sequenceName ) );
     assertEquals( "SELECT name FROM sys.sequences", databaseInterface.getSQLListOfSequences() );
-    assertEquals( "SELECT * FROM sys.sequences WHERE name = 'sequence_name'",
+    assertEquals( "SELECT 1 FROM sys.sequences WHERE name = 'sequence_name'",
       databaseInterface.getSQLSequenceExists( sequenceName ) );
 
     databaseInterface = new NetezzaDatabaseMeta();
