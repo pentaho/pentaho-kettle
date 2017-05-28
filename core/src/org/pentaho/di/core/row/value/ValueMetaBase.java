@@ -1160,7 +1160,7 @@ public class ValueMetaBase implements ValueMetaInterface {
 
   /**
    * Converts a byte[] stored in a binary string storage type into a String;
-   * 
+   *
    * @param binary
    *          the binary string
    * @return the String in the correct encoding.
@@ -1201,7 +1201,7 @@ public class ValueMetaBase implements ValueMetaInterface {
 
   /**
    * Converts the specified data object to the normal storage type.
-   * 
+   *
    * @param object
    *          the data object to convert
    * @return the data in a normal storage type
@@ -1229,7 +1229,7 @@ public class ValueMetaBase implements ValueMetaInterface {
 
   /**
    * Converts the specified data object to the binary string storage type.
-   * 
+   *
    * @param object
    *          the data object to convert
    * @return the data in a binary string storage type
@@ -1259,7 +1259,7 @@ public class ValueMetaBase implements ValueMetaInterface {
    * Convert the binary data to the actual data type.<br>
    * - byte[] --> Long (Integer) - byte[] --> Double (Number) - byte[] --> BigDecimal (BigNumber) - byte[] --> Date
    * (Date) - byte[] --> Boolean (Boolean) - byte[] --> byte[] (Binary)
-   * 
+   *
    * @param binary
    * @return
    * @throws KettleValueException
@@ -1318,7 +1318,7 @@ public class ValueMetaBase implements ValueMetaInterface {
    * Clones the data. Normally, we don't have to do anything here, but just for arguments and safety, we do a little
    * extra work in case of binary blobs and Date objects. We should write a programmers manual later on to specify in
    * all clarity that "we always overwrite/replace values in the Object[] data rows, we never modify them" .
-   * 
+   *
    * @return a cloned data object if needed
    */
   @Override
@@ -1788,82 +1788,87 @@ public class ValueMetaBase implements ValueMetaInterface {
 
   @Override
   public BigDecimal getBigNumber( Object object ) throws KettleValueException {
-    if ( object == null ) {
-      return null;
-    }
-    switch ( type ) {
-      case TYPE_BIGNUMBER:
-        switch ( storageType ) {
-          case STORAGE_TYPE_NORMAL:
-            return (BigDecimal) object;
-          case STORAGE_TYPE_BINARY_STRING:
-            return (BigDecimal) convertBinaryStringToNativeType( (byte[]) object );
-          case STORAGE_TYPE_INDEXED:
-            return (BigDecimal) index[( (Integer) object ).intValue()];
-          default:
-            throw new KettleValueException( toString() + " : Unknown storage type " + storageType + " specified." );
-        }
-      case TYPE_STRING:
-        switch ( storageType ) {
-          case STORAGE_TYPE_NORMAL:
-            return convertStringToBigNumber( (String) object );
-          case STORAGE_TYPE_BINARY_STRING:
-            return convertStringToBigNumber( (String) convertBinaryStringToNativeType( (byte[]) object ) );
-          case STORAGE_TYPE_INDEXED:
-            return convertStringToBigNumber( (String) index[( (Integer) object ).intValue()] );
-          default:
-            throw new KettleValueException( toString() + " : Unknown storage type " + storageType + " specified." );
-        }
-      case TYPE_INTEGER:
-        switch ( storageType ) {
-          case STORAGE_TYPE_NORMAL:
-            return BigDecimal.valueOf( ( (Long) object ).longValue() );
-          case STORAGE_TYPE_BINARY_STRING:
-            return BigDecimal.valueOf( ( (Long) convertBinaryStringToNativeType( (byte[]) object ) ).longValue() );
-          case STORAGE_TYPE_INDEXED:
-            return BigDecimal.valueOf( ( (Long) index[( (Integer) object ).intValue()] ).longValue() );
-          default:
-            throw new KettleValueException( toString() + " : Unknown storage type " + storageType + " specified." );
-        }
-      case TYPE_NUMBER:
-        switch ( storageType ) {
-          case STORAGE_TYPE_NORMAL:
-            return BigDecimal.valueOf( ( (Double) object ).doubleValue() );
-          case STORAGE_TYPE_BINARY_STRING:
-            return BigDecimal.valueOf( ( (Double) convertBinaryStringToNativeType( (byte[]) object ) ).doubleValue() );
-          case STORAGE_TYPE_INDEXED:
-            return BigDecimal.valueOf( ( (Double) index[( (Integer) object ).intValue()] ).doubleValue() );
-          default:
-            throw new KettleValueException( toString() + " : Unknown storage type " + storageType + " specified." );
-        }
-      case TYPE_DATE:
-        switch ( storageType ) {
-          case STORAGE_TYPE_NORMAL:
-            return convertDateToBigNumber( (Date) object );
-          case STORAGE_TYPE_BINARY_STRING:
-            return convertDateToBigNumber( (Date) convertBinaryStringToNativeType( (byte[]) object ) );
-          case STORAGE_TYPE_INDEXED:
-            return convertDateToBigNumber( (Date) index[( (Integer) object ).intValue()] );
-          default:
-            throw new KettleValueException( toString() + " : Unknown storage type " + storageType + " specified." );
-        }
-      case TYPE_BOOLEAN:
-        switch ( storageType ) {
-          case STORAGE_TYPE_NORMAL:
-            return convertBooleanToBigNumber( (Boolean) object );
-          case STORAGE_TYPE_BINARY_STRING:
-            return convertBooleanToBigNumber( (Boolean) convertBinaryStringToNativeType( (byte[]) object ) );
-          case STORAGE_TYPE_INDEXED:
-            return convertBooleanToBigNumber( (Boolean) index[( (Integer) object ).intValue()] );
-          default:
-            throw new KettleValueException( toString() + " : Unknown storage type " + storageType + " specified." );
-        }
-      case TYPE_BINARY:
-        throw new KettleValueException( toString() + " : I don't know how to convert binary values to integers." );
-      case TYPE_SERIALIZABLE:
-        throw new KettleValueException( toString() + " : I don't know how to convert serializable values to integers." );
-      default:
-        throw new KettleValueException( toString() + " : Unknown type " + type + " specified." );
+    try {
+      if ( isNull( object ) ) {
+        return null;
+      }
+      switch ( type ) {
+        case TYPE_BIGNUMBER:
+          switch ( storageType ) {
+            case STORAGE_TYPE_NORMAL:
+              return (BigDecimal) object;
+            case STORAGE_TYPE_BINARY_STRING:
+              return (BigDecimal) convertBinaryStringToNativeType( (byte[]) object );
+            case STORAGE_TYPE_INDEXED:
+              return (BigDecimal) index[( (Integer) object ).intValue()];
+            default:
+              throw new KettleValueException( toString() + " : Unknown storage type " + storageType + " specified." );
+          }
+        case TYPE_STRING:
+          switch ( storageType ) {
+            case STORAGE_TYPE_NORMAL:
+              return convertStringToBigNumber( (String) object );
+            case STORAGE_TYPE_BINARY_STRING:
+              return convertStringToBigNumber( (String) convertBinaryStringToNativeType( (byte[]) object ) );
+            case STORAGE_TYPE_INDEXED:
+              return convertStringToBigNumber( (String) index[( (Integer) object ).intValue()] );
+            default:
+              throw new KettleValueException( toString() + " : Unknown storage type " + storageType + " specified." );
+          }
+        case TYPE_INTEGER:
+          switch ( storageType ) {
+            case STORAGE_TYPE_NORMAL:
+              return BigDecimal.valueOf( ( (Long) object ).longValue() );
+            case STORAGE_TYPE_BINARY_STRING:
+              return BigDecimal.valueOf( ( (Long) convertBinaryStringToNativeType( (byte[]) object ) ).longValue() );
+            case STORAGE_TYPE_INDEXED:
+              return BigDecimal.valueOf( ( (Long) index[( (Integer) object ).intValue()] ).longValue() );
+            default:
+              throw new KettleValueException( toString() + " : Unknown storage type " + storageType + " specified." );
+          }
+        case TYPE_NUMBER:
+          switch ( storageType ) {
+            case STORAGE_TYPE_NORMAL:
+              return BigDecimal.valueOf( ( (Double) object ).doubleValue() );
+            case STORAGE_TYPE_BINARY_STRING:
+              return BigDecimal.valueOf( ( (Double) convertBinaryStringToNativeType( (byte[]) object ) ).doubleValue() );
+            case STORAGE_TYPE_INDEXED:
+              return BigDecimal.valueOf( ( (Double) index[( (Integer) object ).intValue()] ).doubleValue() );
+            default:
+              throw new KettleValueException( toString() + " : Unknown storage type " + storageType + " specified." );
+          }
+        case TYPE_DATE:
+          switch ( storageType ) {
+            case STORAGE_TYPE_NORMAL:
+              return convertDateToBigNumber( (Date) object );
+            case STORAGE_TYPE_BINARY_STRING:
+              return convertDateToBigNumber( (Date) convertBinaryStringToNativeType( (byte[]) object ) );
+            case STORAGE_TYPE_INDEXED:
+              return convertDateToBigNumber( (Date) index[( (Integer) object ).intValue()] );
+            default:
+              throw new KettleValueException( toString() + " : Unknown storage type " + storageType + " specified." );
+          }
+        case TYPE_BOOLEAN:
+          switch ( storageType ) {
+            case STORAGE_TYPE_NORMAL:
+              return convertBooleanToBigNumber( (Boolean) object );
+            case STORAGE_TYPE_BINARY_STRING:
+              return convertBooleanToBigNumber( (Boolean) convertBinaryStringToNativeType( (byte[]) object ) );
+            case STORAGE_TYPE_INDEXED:
+              return convertBooleanToBigNumber( (Boolean) index[( (Integer) object ).intValue()] );
+            default:
+              throw new KettleValueException( toString() + " : Unknown storage type " + storageType + " specified." );
+          }
+        case TYPE_BINARY:
+          throw new KettleValueException( toString() + " : I don't know how to convert binary values to BigDecimals." );
+        case TYPE_SERIALIZABLE:
+          throw new KettleValueException( toString() + " : I don't know how to convert serializable values to BigDecimals." );
+        default:
+          throw new KettleValueException( toString() + " : Unknown type " + type + " specified." );
+      }
+    } catch ( Exception e ) {
+      throw new KettleValueException( "Unexpected conversion error while converting value [" + toString()
+          + "] to a BigNumber", e );
     }
   }
 
@@ -2191,7 +2196,7 @@ public class ValueMetaBase implements ValueMetaInterface {
 
   /**
    * Checks whether or not the value is a String.
-   * 
+   *
    * @return true if the value is a String.
    */
   @Override
@@ -2201,7 +2206,7 @@ public class ValueMetaBase implements ValueMetaInterface {
 
   /**
    * Checks whether or not this value is a Date
-   * 
+   *
    * @return true if the value is a Date
    */
   @Override
@@ -2211,7 +2216,7 @@ public class ValueMetaBase implements ValueMetaInterface {
 
   /**
    * Checks whether or not the value is a Big Number
-   * 
+   *
    * @return true is this value is a big number
    */
   @Override
@@ -2221,7 +2226,7 @@ public class ValueMetaBase implements ValueMetaInterface {
 
   /**
    * Checks whether or not the value is a Number
-   * 
+   *
    * @return true is this value is a number
    */
   @Override
@@ -2231,7 +2236,7 @@ public class ValueMetaBase implements ValueMetaInterface {
 
   /**
    * Checks whether or not this value is a boolean
-   * 
+   *
    * @return true if this value has type boolean.
    */
   @Override
@@ -2241,7 +2246,7 @@ public class ValueMetaBase implements ValueMetaInterface {
 
   /**
    * Checks whether or not this value is of type Serializable
-   * 
+   *
    * @return true if this value has type Serializable
    */
   @Override
@@ -2251,7 +2256,7 @@ public class ValueMetaBase implements ValueMetaInterface {
 
   /**
    * Checks whether or not this value is of type Binary
-   * 
+   *
    * @return true if this value has type Binary
    */
   @Override
@@ -2261,7 +2266,7 @@ public class ValueMetaBase implements ValueMetaInterface {
 
   /**
    * Checks whether or not this value is an Integer
-   * 
+   *
    * @return true if this value is an integer
    */
   @Override
@@ -2271,7 +2276,7 @@ public class ValueMetaBase implements ValueMetaInterface {
 
   /**
    * Checks whether or not this Value is Numeric A Value is numeric if it is either of type Number or Integer
-   * 
+   *
    * @return true if the value is either of type Number or Integer
    */
   @Override
@@ -2281,7 +2286,7 @@ public class ValueMetaBase implements ValueMetaInterface {
 
   /**
    * Checks whether or not the specified type is either Integer or Number
-   * 
+   *
    * @param t
    *          the type to check
    * @return true if the type is Integer or Number
@@ -2296,7 +2301,7 @@ public class ValueMetaBase implements ValueMetaInterface {
 
   /**
    * Return the type of a value in a textual form: "String", "Number", "Integer", "Boolean", "Date", ...
-   * 
+   *
    * @return A String describing the type of value.
    */
   @Override
@@ -2306,7 +2311,7 @@ public class ValueMetaBase implements ValueMetaInterface {
 
   /**
    * Return the storage type of a value in a textual form: "normal", "binary-string", "indexes"
-   * 
+   *
    * @return A String describing the storage type of the value metadata
    */
   public String getStorageTypeDesc() {
@@ -2320,7 +2325,7 @@ public class ValueMetaBase implements ValueMetaInterface {
 
   /**
    * a String text representation of this Value, optionally padded to the specified length
-   * 
+   *
    * @return a String text representation of this Value, optionally padded to the specified length
    */
   @Override
@@ -2721,7 +2726,7 @@ public class ValueMetaBase implements ValueMetaInterface {
 
   /**
    * Create a new Value meta object.
-   * 
+   *
    * @param inputStream
    * @throws KettleFileException
    * @throws KettleEOFException
@@ -2744,7 +2749,7 @@ public class ValueMetaBase implements ValueMetaInterface {
   /**
    * Load the attributes of this particular value meta object from the input stream. Loading the type is not handled
    * here, this should be read from the stream previously!
-   * 
+   *
    * @param inputStream
    *          the input stream to read from
    * @throws KettleFileException
@@ -3142,7 +3147,7 @@ public class ValueMetaBase implements ValueMetaInterface {
   /**
    * Convert a data XML node to an Object that corresponds to the metadata. This is basically String to Object
    * conversion that is being done.
-   * 
+   *
    * @param node
    *          the node to retrieve the data value from
    * @return the converted data value
@@ -3211,7 +3216,7 @@ public class ValueMetaBase implements ValueMetaInterface {
 
   /**
    * get an array of String describing the possible types a Value can have.
-   * 
+   *
    * @return an array of String describing the possible types a Value can have.
    */
   public static final String[] getTypes() {
@@ -3226,7 +3231,7 @@ public class ValueMetaBase implements ValueMetaInterface {
 
   /**
    * Get an array of String describing the possible types a Value can have.
-   * 
+   *
    * @return an array of String describing the possible types a Value can have.
    */
   public static final String[] getAllTypes() {
@@ -3241,7 +3246,7 @@ public class ValueMetaBase implements ValueMetaInterface {
 
   /**
    * TODO: change Desc to Code all over the place. Make sure we can localise this stuff later on.
-   * 
+   *
    * @param type
    *          the type
    * @return the description (code) of the type
@@ -3255,7 +3260,7 @@ public class ValueMetaBase implements ValueMetaInterface {
 
   /**
    * Convert the String description of a type to an integer type.
-   * 
+   *
    * @param desc
    *          The description of the type to convert
    * @return The integer type of the given String. (ValueMetaInterface.TYPE_...)
@@ -3266,14 +3271,14 @@ public class ValueMetaBase implements ValueMetaInterface {
 
     /*
      * for (int i = 1; i < typeCodes.length; i++) { if (typeCodes[i].equalsIgnoreCase(desc)) { return i; } }
-     * 
+     *
      * return TYPE_NONE;
      */
   }
 
   /**
    * Convert the String description of a storage type to an integer type.
-   * 
+   *
    * @param desc
    *          The description of the storage type to convert
    * @return The integer storage type of the given String. (ValueMetaInterface.STORAGE_TYPE_...) or -1 if the storage
@@ -3298,7 +3303,7 @@ public class ValueMetaBase implements ValueMetaInterface {
 
   /**
    * Determine if an object is null. This is the case if data==null or if it's an empty string.
-   * 
+   *
    * @param data
    *          the object to test
    * @return true if the object is considered null.
@@ -3347,14 +3352,14 @@ public class ValueMetaBase implements ValueMetaInterface {
 
   /*
    * Compare 2 binary strings, one byte at a time.<br> This algorithm is very fast but most likely wrong as well.<br>
-   * 
+   *
    * @param one The first binary string to compare with
-   * 
+   *
    * @param two the second binary string to compare to
-   * 
+   *
    * @return -1 if <i>one</i> is smaller than <i>two</i>, 0 is both byte arrays are identical and 1 if <i>one</i> is
    * larger than <i>two</i> protected int compareBinaryStrings(byte[] one, byte[] two) {
-   * 
+   *
    * for (int i=0;i<one.length;i++) { if (i>=two.length) return 1; // larger if (one[i]>two[i]) return 1; // larger if
    * (one[i]<two[i]) return -1; // smaller } if (one.length>two.length) return 1; // larger if (one.length>two.length)
    * return -11; // smaller return 0; }
@@ -3362,7 +3367,7 @@ public class ValueMetaBase implements ValueMetaInterface {
 
   /**
    * Compare 2 values of the same data type
-   * 
+   *
    * @param data1
    *          the first value
    * @param data2
@@ -3462,7 +3467,7 @@ public class ValueMetaBase implements ValueMetaInterface {
 
   /**
    * Compare 2 values of the same data type
-   * 
+   *
    * @param data1
    *          the first value
    * @param meta2
@@ -3528,7 +3533,7 @@ public class ValueMetaBase implements ValueMetaInterface {
 
   /**
    * Convert the specified data to the data type specified in this object.
-   * 
+   *
    * @param meta2
    *          the metadata of the object to be converted
    * @param data2
@@ -3563,7 +3568,7 @@ public class ValueMetaBase implements ValueMetaInterface {
   /**
    * Convert the specified data to the data type specified in this object. For String conversion, be compatible with
    * version 2.5.2.
-   * 
+   *
    * @param meta2
    *          the metadata of the object to be converted
    * @param data2
@@ -3597,7 +3602,7 @@ public class ValueMetaBase implements ValueMetaInterface {
 
   /**
    * Convert an object to the data type specified in the conversion metadata
-   * 
+   *
    * @param data
    *          The data
    * @return The data converted to the storage data type
@@ -3642,7 +3647,7 @@ public class ValueMetaBase implements ValueMetaInterface {
 
   /**
    * Convert the specified string to the data type specified in this object.
-   * 
+   *
    * @param pol
    *          the string to be converted
    * @param convertMeta
@@ -3784,7 +3789,7 @@ public class ValueMetaBase implements ValueMetaInterface {
 
   /**
    * Calculate the hashcode of the specified data object
-   * 
+   *
    * @param object
    *          the data value to calculate a hashcode for
    * @return the calculated hashcode
@@ -3851,7 +3856,7 @@ public class ValueMetaBase implements ValueMetaInterface {
 
   /**
    * Create an old-style value for backward compatibility reasons
-   * 
+   *
    * @param data
    *          the data to store in the value
    * @return a newly created Value object
@@ -3898,7 +3903,7 @@ public class ValueMetaBase implements ValueMetaInterface {
 
   /**
    * Extracts the primitive data from an old style Value object
-   * 
+   *
    * @param value
    *          the old style Value object
    * @return the value's data, NOT the meta data.
@@ -4130,7 +4135,7 @@ public class ValueMetaBase implements ValueMetaInterface {
 
   /*
    * Original JDBC RecordSetMetaData
-   * 
+   *
    * @see java.sql.ResultSetMetaData#isAutoIncrement()
    */
   @Override
@@ -4140,7 +4145,7 @@ public class ValueMetaBase implements ValueMetaInterface {
 
   /*
    * Original JDBC RecordSetMetaData
-   * 
+   *
    * @see java.sql.ResultSetMetaData#setAutoIncrement(boolean)
    */
   @Override
@@ -4150,7 +4155,7 @@ public class ValueMetaBase implements ValueMetaInterface {
 
   /*
    * Original JDBC RecordSetMetaData
-   * 
+   *
    * @see java.sql.ResultSetMetaData#getColumnType()
    */
   @Override
@@ -4160,7 +4165,7 @@ public class ValueMetaBase implements ValueMetaInterface {
 
   /*
    * Original JDBC RecordSetMetaData
-   * 
+   *
    * @see java.sql.ResultSetMetaData#setColumnType(int)
    */
   @Override
@@ -4170,7 +4175,7 @@ public class ValueMetaBase implements ValueMetaInterface {
 
   /*
    * Original JDBC RecordSetMetaData
-   * 
+   *
    * @see java.sql.ResultSetMetaData#getColumnTypeName()
    */
   @Override
@@ -4180,7 +4185,7 @@ public class ValueMetaBase implements ValueMetaInterface {
 
   /*
    * Original JDBC RecordSetMetaData
-   * 
+   *
    * @see java.sql.ResultSetMetaData#setColumnTypeName(java.lang.String)
    */
   @Override
@@ -4191,7 +4196,7 @@ public class ValueMetaBase implements ValueMetaInterface {
 
   /*
    * Original JDBC RecordSetMetaData
-   * 
+   *
    * @see java.sql.ResultSetMetaData#isNullable()
    */
   @Override
@@ -4201,7 +4206,7 @@ public class ValueMetaBase implements ValueMetaInterface {
 
   /*
    * Original JDBC RecordSetMetaData
-   * 
+   *
    * @see java.sql.ResultSetMetaData#setNullable(int)
    */
   @Override
@@ -4212,7 +4217,7 @@ public class ValueMetaBase implements ValueMetaInterface {
 
   /*
    * Original JDBC RecordSetMetaData
-   * 
+   *
    * @see java.sql.ResultSetMetaData#getPrecision()
    */
   @Override
@@ -4222,7 +4227,7 @@ public class ValueMetaBase implements ValueMetaInterface {
 
   /*
    * Original JDBC RecordSetMetaData
-   * 
+   *
    * @see java.sql.ResultSetMetaData#setPrecision(int)
    */
   @Override
@@ -4232,7 +4237,7 @@ public class ValueMetaBase implements ValueMetaInterface {
 
   /*
    * Original JDBC RecordSetMetaData
-   * 
+   *
    * @see java.sql.ResultSetMetaData#getScale()
    */
   @Override
@@ -4242,7 +4247,7 @@ public class ValueMetaBase implements ValueMetaInterface {
 
   /*
    * Original JDBC RecordSetMetaData
-   * 
+   *
    * @see java.sql.ResultSetMetaData#setScale(int)
    */
   @Override
@@ -4253,7 +4258,7 @@ public class ValueMetaBase implements ValueMetaInterface {
 
   /*
    * Original JDBC RecordSetMetaData
-   * 
+   *
    * @see java.sql.ResultSetMetaData#isSigned()
    */
   @Override
@@ -4263,7 +4268,7 @@ public class ValueMetaBase implements ValueMetaInterface {
 
   /*
    * Original JDBC RecordSetMetaData
-   * 
+   *
    * @see java.sql.ResultSetMetaData#setOriginalSigned(boolean)
    */
   @Override
@@ -4635,7 +4640,7 @@ public class ValueMetaBase implements ValueMetaInterface {
 
   /**
    * Get a value from a result set column based on the current value metadata
-   * 
+   *
    * @param databaseInterface
    *          the database metadata to use
    * @param resultSet
