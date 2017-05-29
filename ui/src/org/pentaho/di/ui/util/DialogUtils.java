@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -24,6 +24,7 @@ package org.pentaho.di.ui.util;
 
 import java.util.Collection;
 
+import org.apache.commons.lang.StringUtils;
 import org.pentaho.di.repository.RepositoryDirectoryInterface;
 import org.pentaho.di.repository.RepositoryElementMetaInterface;
 import org.pentaho.di.shared.SharedObjectInterface;
@@ -53,9 +54,22 @@ public class DialogUtils {
 
   public static boolean objectWithTheSameNameExists( SharedObjectInterface object,
       Collection<? extends SharedObjectInterface> scope ) {
+    return objectWithTheSameNameExists( object, scope, false );
+  }
+
+  public static boolean objectWithTheSameNameExists( SharedObjectInterface object,
+                                                     Collection<? extends SharedObjectInterface> scope,
+                                                     boolean trimSpaces ) {
+    String objectName = object.getName();
+    if ( trimSpaces ) {
+      objectName = StringUtils.trim( objectName );
+    }
     for ( SharedObjectInterface element : scope ) {
       String elementName = element.getName();
-      if ( elementName != null && elementName.equalsIgnoreCase( object.getName() ) && object != element ) {
+      if ( trimSpaces ) {
+        elementName = StringUtils.trim( elementName );
+      }
+      if ( elementName != null && elementName.equalsIgnoreCase( objectName ) && object != element ) {
         return true;
       }
     }
