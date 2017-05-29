@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,17 +22,13 @@
 
 package org.pentaho.di.ui.util;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-import static org.pentaho.di.ui.util.DialogUtils.getPathOf;
-import static org.pentaho.di.ui.util.DialogUtils.objectWithTheSameNameExists;
+import org.junit.Assert;
+import org.mockito.Mockito;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 
 import org.junit.Test;
 import org.pentaho.di.repository.RepositoryDirectoryInterface;
@@ -46,31 +42,31 @@ public class DialogUtilsTest {
 
   @Test
   public void nullObject() {
-    assertNull( getPathOf( null ) );
+    Assert.assertNull( DialogUtils.getPathOf( null ) );
   }
 
   @Test
   public void deletedObject() {
-    RepositoryElementMetaInterface object = mock( RepositoryElementMetaInterface.class );
-    when( object.isDeleted() ).thenReturn( true );
-    assertNull( getPathOf( object ) );
+    RepositoryElementMetaInterface object = Mockito.mock( RepositoryElementMetaInterface.class );
+    Mockito.when( object.isDeleted() ).thenReturn( true );
+    Assert.assertNull( DialogUtils.getPathOf( object ) );
   }
 
   @Test
   public void nullDirectory() {
-    RepositoryElementMetaInterface object = mock( RepositoryElementMetaInterface.class );
-    when( object.getRepositoryDirectory() ).thenReturn( null );
-    assertNull( getPathOf( object ) );
+    RepositoryElementMetaInterface object = Mockito.mock( RepositoryElementMetaInterface.class );
+    Mockito.when( object.getRepositoryDirectory() ).thenReturn( null );
+    Assert.assertNull( DialogUtils.getPathOf( object ) );
   }
 
   @Test
   public void nullDirectoryPath() {
-    RepositoryElementMetaInterface object = mock( RepositoryElementMetaInterface.class );
+    RepositoryElementMetaInterface object = Mockito.mock( RepositoryElementMetaInterface.class );
 
-    RepositoryDirectoryInterface directory = mock( RepositoryDirectoryInterface.class );
-    when( object.getRepositoryDirectory() ).thenReturn( directory );
+    RepositoryDirectoryInterface directory = Mockito.mock( RepositoryDirectoryInterface.class );
+    Mockito.when( object.getRepositoryDirectory() ).thenReturn( directory );
 
-    assertNull( getPathOf( object ) );
+    Assert.assertNull( DialogUtils.getPathOf( object ) );
   }
 
   @Test
@@ -84,45 +80,78 @@ public class DialogUtilsTest {
   }
 
   private void testPathAndName( String path, String name, String expected ) {
-    RepositoryElementMetaInterface object = mock( RepositoryElementMetaInterface.class );
+    RepositoryElementMetaInterface object = Mockito.mock( RepositoryElementMetaInterface.class );
 
-    RepositoryDirectoryInterface directory = mock( RepositoryDirectoryInterface.class );
-    when( directory.getPath() ).thenReturn( path );
-    when( object.getRepositoryDirectory() ).thenReturn( directory );
+    RepositoryDirectoryInterface directory = Mockito.mock( RepositoryDirectoryInterface.class );
+    Mockito.when( directory.getPath() ).thenReturn( path );
+    Mockito.when( object.getRepositoryDirectory() ).thenReturn( directory );
 
-    when( object.getName() ).thenReturn( name );
+    Mockito.when( object.getName() ).thenReturn( name );
 
-    assertEquals( expected, getPathOf( object ) );
+    Assert.assertEquals( expected, DialogUtils.getPathOf( object ) );
   }
 
   @Test
   public void objectWithTheSameNameExists_true_if_exists() {
-    SharedObjectInterface sharedObject = mock( SharedObjectInterface.class );
-    when( sharedObject.getName() ).thenReturn( "TEST_OBJECT" );
+    SharedObjectInterface sharedObject = Mockito.mock( SharedObjectInterface.class );
+    Mockito.when( sharedObject.getName() ).thenReturn( "TEST_OBJECT" );
 
-    assertTrue( objectWithTheSameNameExists( sharedObject, createTestScope( "TEST_OBJECT" ) ) );
+    Assert.assertTrue( DialogUtils.objectWithTheSameNameExists( sharedObject, createTestScope( "TEST_OBJECT" ) ) );
   }
 
   @Test
   public void objectWithTheSameNameExists_false_if_not_exist() {
-    SharedObjectInterface sharedObject = mock( SharedObjectInterface.class );
-    when( sharedObject.getName() ).thenReturn( "NEW_TEST_OBJECT" );
+    SharedObjectInterface sharedObject = Mockito.mock( SharedObjectInterface.class );
+    Mockito.when( sharedObject.getName() ).thenReturn( "NEW_TEST_OBJECT" );
 
-    assertFalse( objectWithTheSameNameExists( sharedObject, createTestScope( "TEST_OBJECT" ) ) );
+    Assert.assertFalse( DialogUtils.objectWithTheSameNameExists( sharedObject, createTestScope( "TEST_OBJECT" ) ) );
   }
 
   @Test
   public void objectWithTheSameNameExists_false_if_same_object() {
-    SharedObjectInterface sharedObject = mock( SharedObjectInterface.class );
-    when( sharedObject.getName() ).thenReturn( "TEST_OBJECT" );
+    SharedObjectInterface sharedObject = Mockito.mock( SharedObjectInterface.class );
+    Mockito.when( sharedObject.getName() ).thenReturn( "TEST_OBJECT" );
 
-    assertFalse( objectWithTheSameNameExists( sharedObject, Collections.singleton( sharedObject ) ) );
+    Assert.assertFalse( DialogUtils.objectWithTheSameNameExists( sharedObject, Collections.singleton( sharedObject ) ) );
   }
 
-  private static Collection<SharedObjectInterface> createTestScope( String objectName ) {
-    SharedObjectInterface sharedObject = mock( SharedObjectInterface.class );
-    when( sharedObject.getName() ).thenReturn( objectName );
-    return Collections.singleton( sharedObject );
+  @Test
+  public void objectWithTheSameNameExistsTrimSpaces() {
+    Collection<SharedObjectInterface> testScope = createTestScope( "test", "test1", "test2" );
+    SharedObjectInterface sharedObject = createSharedObject( " test      " );
+
+    Assert.assertTrue( DialogUtils.objectWithTheSameNameExists( sharedObject, testScope, true ) );
+  }
+
+  @Test
+  public void objectWithTheSameNameExistsUpperLower() {
+    Collection<SharedObjectInterface> testScope = createTestScope( "test", "test1", "test2" );
+    SharedObjectInterface sharedObject = createSharedObject( " Test" );
+
+    Assert.assertFalse( DialogUtils.objectWithTheSameNameExists( sharedObject, testScope ) );
+  }
+
+  @Test
+  public void objectWithTheSameNameExists() {
+    Collection<SharedObjectInterface> testScope = createTestScope( "test", "test1", "test2" );
+    SharedObjectInterface sharedObject = createSharedObject( " test      " );
+
+    Assert.assertFalse( DialogUtils.objectWithTheSameNameExists( sharedObject, testScope ) );
+  }
+
+  private static Collection<SharedObjectInterface> createTestScope( String... names ) {
+    List<SharedObjectInterface> scope = new ArrayList<>();
+    for ( String name : names ) {
+      scope.add( createSharedObject( name ) );
+    }
+
+    return scope;
+  }
+
+  private static SharedObjectInterface createSharedObject( String name ) {
+    SharedObjectInterface sharedObject = Mockito.mock( SharedObjectInterface.class );
+    Mockito.when( sharedObject.getName() ).thenReturn( name );
+    return sharedObject;
   }
 
 }
