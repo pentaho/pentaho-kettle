@@ -24,6 +24,7 @@ package org.pentaho.di.ui.spoon.delegates;
 
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.MessageBox;
 import org.pentaho.di.core.Const;
@@ -90,8 +91,10 @@ public class SpoonDBDelegate extends SpoonDelegate {
     if ( !Const.isEmpty( newname ) ) { // null: CANCEL
 
       databaseMeta = getDatabaseDialog().getDatabaseMeta();
-      if ( !newname.equals( originalName ) && DialogUtils.objectWithTheSameNameExists( databaseMeta,
-          hasDatabasesInterface.getDatabases() ) ) {
+      if ( !StringUtils.trim( newname ).equals( StringUtils.trim( originalName ) )
+           && DialogUtils.objectWithTheSameNameExists( databaseMeta,
+            hasDatabasesInterface.getDatabases(),
+              true ) ) {
         DatabaseDialog.showDatabaseExistsDialog( spoon.getShell(), databaseMeta );
         return;
       }
@@ -476,7 +479,8 @@ public class SpoonDBDelegate extends SpoonDelegate {
       databaseMeta = getDatabaseDialog().getDatabaseMeta();
 
       if ( !DialogUtils.objectWithTheSameNameExists( databaseMeta,
-              hasDatabasesInterface.getDatabases() ) ) {
+              hasDatabasesInterface.getDatabases(),
+              true ) ) {
         hasDatabasesInterface.addDatabase( databaseMeta );
         spoon.addUndoNew( (UndoInterface) hasDatabasesInterface, new DatabaseMeta[]{(DatabaseMeta) databaseMeta
                 .clone()}, new int[]{hasDatabasesInterface.indexOfDatabase( databaseMeta )} );
