@@ -164,7 +164,7 @@ public class NormaliserDialog extends BaseStepDialog implements StepDialogInterf
     setButtonPositions( new Button[] { wOK, wCancel, wGet }, margin, null );
 
     final int FieldsCols = 3;
-    final int FieldsRows = input.getFieldName().length;
+    final int FieldsRows = input.getNormaliserFields().length;
 
     colinf = new ColumnInfo[FieldsCols];
     colinf[0] =
@@ -285,16 +285,16 @@ public class NormaliserDialog extends BaseStepDialog implements StepDialogInterf
       wTypefield.setText( input.getTypeField() );
     }
 
-    for ( int i = 0; i < input.getFieldName().length; i++ ) {
+    for ( int i = 0; i < input.getNormaliserFields().length; i++ ) {
       TableItem item = wFields.table.getItem( i );
-      if ( input.getFieldName()[i] != null ) {
-        item.setText( 1, input.getFieldName()[i] );
+      if ( input.getNormaliserFields()[i].getName() != null ) {
+        item.setText( 1, input.getNormaliserFields()[i].getName() );
       }
-      if ( input.getFieldValue()[i] != null ) {
-        item.setText( 2, input.getFieldValue()[i] );
+      if ( input.getNormaliserFields()[i].getValue() != null ) {
+        item.setText( 2, input.getNormaliserFields()[i].getValue() );
       }
-      if ( input.getFieldNorm()[i] != null ) {
-        item.setText( 3, input.getFieldNorm()[i] );
+      if ( input.getNormaliserFields()[i].getNorm() != null ) {
+        item.setText( 3, input.getNormaliserFields()[i].getNorm() );
       }
     }
 
@@ -329,9 +329,9 @@ public class NormaliserDialog extends BaseStepDialog implements StepDialogInterf
     //CHECKSTYLE:Indentation:OFF
     for ( i = 0; i < nrfields; i++ ) {
       TableItem item = wFields.getNonEmpty( i );
-      input.getFieldName()[i] = item.getText( 1 );
-      input.getFieldValue()[i] = item.getText( 2 );
-      input.getFieldNorm()[i] = item.getText( 3 );
+      input.getNormaliserFields()[i].setName( item.getText( 1 ) );
+      input.getNormaliserFields()[i].setValue( item.getText( 2 ) );
+      input.getNormaliserFields()[i].setNorm( item.getText( 3 ) );
     }
 
     dispose();
