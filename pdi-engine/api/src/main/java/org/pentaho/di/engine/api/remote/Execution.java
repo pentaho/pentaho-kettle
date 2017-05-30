@@ -82,4 +82,6 @@ public interface Execution<T extends Serializable> extends Serializable, AutoClo
    * @return Serialized stream of events
    */
   InputStream eventStream() throws IOException;
+
+  void stop();
 }
