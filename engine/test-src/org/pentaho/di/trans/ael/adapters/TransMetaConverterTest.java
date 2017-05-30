@@ -32,7 +32,11 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Spy;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.exception.KettleMissingPluginsException;
+import org.pentaho.di.core.exception.KettleXMLException;
+import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.engine.api.model.Hop;
 import org.pentaho.di.engine.api.model.Operation;
 import org.pentaho.di.engine.api.model.Transformation;
@@ -40,7 +44,11 @@ import org.pentaho.di.trans.TransHopMeta;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
+import org.pentaho.di.trans.steps.csvinput.CsvInputMeta;
 import org.pentaho.di.trans.steps.dummytrans.DummyTransMeta;
+import org.pentaho.di.trans.steps.tableinput.TableInputMeta;
+import org.w3c.dom.Document;
+import org.w3c.dom.Node;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.everyItem;
@@ -256,5 +264,41 @@ public class TransMetaConverterTest {
         .collect( Collectors.toList() ),
       everyItem( equalTo( "step1" ) )
     );
+  }
+
+  @Test
+  public void lazyConversionTurnedOff() throws KettleException {
+    KettleEnvironment.init();
+
+    TransMeta transMeta = new TransMeta();
+
+    CsvInputMeta csvInputMeta = new CsvInputMeta();
+    csvInputMeta.setLazyConversionActive( true );
+    StepMeta csvInput = new StepMeta( "Csv", csvInputMeta );
+    transMeta.addStep( csvInput );
+
+    TableInputMeta tableInputMeta = new TableInputMeta();
+    tableInputMeta.setLazyConversionActive( true );
+    StepMeta tableInput = new StepMeta( "Table", tableInputMeta );
+    transMeta.addStep( tableInput );
+
+    Transformation trans = TransMetaConverter.convert( transMeta );
+
+    TransMeta cloneMeta;
+
+    String transMetaXml = (String) trans.getConfig().get( TransMetaConverter.TRANS_META_CONF_KEY );
+    Document doc;
+    try {
+      doc = XMLHandler.loadXMLString( transMetaXml );
+      Node stepNode = XMLHandler.getSubNode( doc, "transformation" );
+      cloneMeta = new TransMeta( stepNode, null );
+    } catch ( KettleXMLException | KettleMissingPluginsException e ) {
+      throw new RuntimeException( e );
+    }
+
+    assertThat( ( (CsvInputMeta) cloneMeta.findStep( "Csv" ).getStepMetaInterface() ).isLazyConversionActive(),
+        is( false ) );
+    assertThat( ( (TableInputMeta) cloneMeta.findStep( "Table" ).getStepMetaInterface() ).isLazyConversionActive(),
+        is( false ) );
   }
 }
