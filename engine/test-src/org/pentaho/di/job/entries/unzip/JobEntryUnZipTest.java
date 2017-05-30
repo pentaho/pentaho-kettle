@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -21,11 +21,16 @@
  ******************************************************************************/
 package org.pentaho.di.job.entries.unzip;
 
+import java.lang.reflect.Method;
 import java.util.Arrays;
 
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.vfs2.FileName;
+import org.apache.commons.vfs2.FileObject;
+import org.junit.Test;
+import org.mockito.Mockito;
 import org.pentaho.di.job.entry.loadSave.JobEntryLoadSaveTestSupport;
 
 public class JobEntryUnZipTest extends JobEntryLoadSaveTestSupport<JobEntryUnZip> {
@@ -105,6 +110,28 @@ public class JobEntryUnZipTest extends JobEntryLoadSaveTestSupport<JobEntryUnZip
         "success_condition", "setSuccessCondition",
         "create_move_to_directory", "setCreateMoveToDirectory",
         "setOriginalModificationDate", "setOriginalModificationDate" );
+  }
+
+
+  @Test
+  public void unzipPostProcessingTest() throws Exception {
+
+    JobEntryUnZip jobEntryUnZip = new JobEntryUnZip();
+
+    Method unzipPostprocessingMethod = jobEntryUnZip.getClass().getDeclaredMethod( "doUnzipPostProcessing", FileObject.class, FileObject.class, String.class );
+    unzipPostprocessingMethod.setAccessible( true );
+    FileObject sourceFileObject = Mockito.mock( FileObject.class );
+    Mockito.doReturn( Mockito.mock( FileName.class ) ).when( sourceFileObject ).getName();
+
+    //delete
+    jobEntryUnZip.afterunzip = 1;
+    unzipPostprocessingMethod.invoke( jobEntryUnZip, sourceFileObject, Mockito.mock( FileObject.class ), "" );
+    Mockito.verify( sourceFileObject, Mockito.times( 1 ) ).delete();
+
+    //move
+    jobEntryUnZip.afterunzip = 2;
+    unzipPostprocessingMethod.invoke( jobEntryUnZip, sourceFileObject, Mockito.mock( FileObject.class ), "" );
+    Mockito.verify( sourceFileObject, Mockito.times( 1 ) ).moveTo( Mockito.anyObject() );
   }
 
 }
