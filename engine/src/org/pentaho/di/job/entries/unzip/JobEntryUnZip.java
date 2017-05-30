@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,11 +22,9 @@
 
 package org.pentaho.di.job.entries.unzip;
 
-import static org.pentaho.di.job.entry.validator.AbstractFileValidator.putVariableSpace;
-import static org.pentaho.di.job.entry.validator.AndValidator.putValidators;
-import static org.pentaho.di.job.entry.validator.JobEntryValidatorUtils.andValidator;
-import static org.pentaho.di.job.entry.validator.JobEntryValidatorUtils.fileDoesNotExistValidator;
-import static org.pentaho.di.job.entry.validator.JobEntryValidatorUtils.notBlankValidator;
+import org.pentaho.di.job.entry.validator.AbstractFileValidator;
+import org.pentaho.di.job.entry.validator.AndValidator;
+import org.pentaho.di.job.entry.validator.JobEntryValidatorUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -414,8 +412,7 @@ public class JobEntryUnZip extends JobEntryBase implements Cloneable, JobEntryIn
       }
 
       if ( isfromprevious ) {
-        if ( rows != null ) // Copy the input row to the (command line) arguments
-        {
+        if ( rows != null ) { // Copy the input row to the (command line) argument
           for ( int iteration = 0; iteration < rows.size() && !parentJob.isStopped(); iteration++ ) {
             if ( successConditionBroken ) {
               if ( !successConditionBrokenExit ) {
@@ -514,7 +511,7 @@ public class JobEntryUnZip extends JobEntryBase implements Cloneable, JobEntryIn
       if ( fileObject.getType().equals( FileType.FILE ) ) {
         // We have to unzip one zip file
         if ( !unzipFile(
-          fileObject, realTargetdirectory, realWildcard, realWildcardExclude, result, parentJob, fileObject,
+          fileObject, realTargetdirectory, realWildcard, realWildcardExclude, result, parentJob,
           movetodir, realMovetodirectory ) ) {
           updateErrors();
         } else {
@@ -552,7 +549,7 @@ public class JobEntryUnZip extends JobEntryBase implements Cloneable, JobEntryIn
             if ( unzip ) {
               if ( !unzipFile(
                 children[i], realTargetdirectory, realWildcard, realWildcardExclude, result, parentJob,
-                fileObject, movetodir, realMovetodirectory ) ) {
+                movetodir, realMovetodirectory ) ) {
                 updateErrors();
               } else {
                 updateSuccess();
@@ -576,8 +573,7 @@ public class JobEntryUnZip extends JobEntryBase implements Cloneable, JobEntryIn
   }
 
   private boolean unzipFile( FileObject sourceFileObject, String realTargetdirectory, String realWildcard,
-    String realWildcardExclude, Result result, Job parentJob, FileObject fileObject, FileObject movetodir,
-    String realMovetodirectory ) {
+    String realWildcardExclude, Result result, Job parentJob, FileObject movetodir, String realMovetodirectory ) {
     boolean retval = false;
     String unzipToFolder = realTargetdirectory;
     try {
@@ -791,46 +787,9 @@ public class JobEntryUnZip extends JobEntryBase implements Cloneable, JobEntryIn
       // System.gc();
 
       // Unzip done...
-      if ( afterunzip == 1 ) {
-        // delete zip file
-        boolean deleted = fileObject.delete();
-        if ( !deleted ) {
-          updateErrors();
-          logError( BaseMessages.getString( PKG, "JobUnZip.Cant_Delete_File.Label", sourceFileObject.toString() ) );
-        }
-        // File deleted
-        if ( log.isDebug() ) {
-          logDebug( BaseMessages.getString( PKG, "JobUnZip.File_Deleted.Label", sourceFileObject.toString() ) );
-        }
-      } else if ( afterunzip == 2 ) {
-        FileObject destFile = null;
-        // Move File
-        try {
-          String destinationFilename = movetodir + Const.FILE_SEPARATOR + fileObject.getName().getBaseName();
-          destFile = KettleVFS.getFileObject( destinationFilename, this );
-
-          fileObject.moveTo( destFile );
-
-          // File moved
-          if ( log.isDetailed() ) {
-            logDetailed( BaseMessages.getString(
-              PKG, "JobUnZip.Log.FileMovedTo", sourceFileObject.toString(), realMovetodirectory ) );
-          }
-        } catch ( Exception e ) {
-          updateErrors();
-          logError( BaseMessages.getString(
-            PKG, "JobUnZip.Cant_Move_File.Label", sourceFileObject.toString(), realMovetodirectory, e
-              .getMessage() ) );
-        } finally {
-          if ( destFile != null ) {
-            try {
-              destFile.close();
-            } catch ( IOException ex ) { /* Ignore */
-            }
-          }
-        }
+      if ( afterunzip > 0 ) {
+        doUnzipPostProcessing( sourceFileObject, movetodir, realMovetodirectory );
       }
-
       retval = true;
     } catch ( Exception e ) {
       updateErrors();
@@ -839,6 +798,51 @@ public class JobEntryUnZip extends JobEntryBase implements Cloneable, JobEntryIn
     }
 
     return retval;
+  }
+
+  /**
+   * Moving or deleting source file.
+   */
+  private void doUnzipPostProcessing( FileObject sourceFileObject, FileObject movetodir, String realMovetodirectory ) throws FileSystemException {
+    if ( afterunzip == 1 ) {
+      // delete zip file
+      boolean deleted = sourceFileObject.delete();
+      if ( !deleted ) {
+        updateErrors();
+        logError( BaseMessages.getString( PKG, "JobUnZip.Cant_Delete_File.Label", sourceFileObject.toString() ) );
+      }
+      // File deleted
+      if ( log.isDebug() ) {
+        logDebug( BaseMessages.getString( PKG, "JobUnZip.File_Deleted.Label", sourceFileObject.toString() ) );
+      }
+    } else if ( afterunzip == 2 ) {
+      FileObject destFile = null;
+      // Move File
+      try {
+        String destinationFilename = movetodir + Const.FILE_SEPARATOR + sourceFileObject.getName().getBaseName();
+        destFile = KettleVFS.getFileObject( destinationFilename, this );
+
+        sourceFileObject.moveTo( destFile );
+
+        // File moved
+        if ( log.isDetailed() ) {
+          logDetailed( BaseMessages.getString(
+            PKG, "JobUnZip.Log.FileMovedTo", sourceFileObject.toString(), realMovetodirectory ) );
+        }
+      } catch ( Exception e ) {
+        updateErrors();
+        logError( BaseMessages.getString(
+          PKG, "JobUnZip.Cant_Move_File.Label", sourceFileObject.toString(), realMovetodirectory, e
+            .getMessage() ) );
+      } finally {
+        if ( destFile != null ) {
+          try {
+            destFile.close();
+          } catch ( IOException ex ) { /* Ignore */
+          }
+        }
+      }
+    }
   }
 
   private void addFilenameToResultFilenames( Result result, Job parentJob, String newfile ) throws Exception {
@@ -1287,18 +1291,19 @@ public class JobEntryUnZip extends JobEntryBase implements Cloneable, JobEntryIn
   public void check( List<CheckResultInterface> remarks, JobMeta jobMeta, VariableSpace space,
     Repository repository, IMetaStore metaStore ) {
     ValidatorContext ctx1 = new ValidatorContext();
-    putVariableSpace( ctx1, getVariables() );
-    putValidators( ctx1, notBlankValidator(), fileDoesNotExistValidator() );
+    AbstractFileValidator.putVariableSpace( ctx1, getVariables() );
+    AndValidator.putValidators( ctx1, JobEntryValidatorUtils.notBlankValidator(), JobEntryValidatorUtils.fileDoesNotExistValidator() );
 
-    andValidator().validate( this, "zipFilename", remarks, ctx1 );
+    JobEntryValidatorUtils.andValidator().validate( this, "zipFilename", remarks, ctx1 );
 
     if ( 2 == afterunzip ) {
       // setting says to move
-      andValidator().validate( this, "moveToDirectory", remarks, putValidators( notBlankValidator() ) );
+      JobEntryValidatorUtils.andValidator().validate( this, "moveToDirectory", remarks,
+        AndValidator.putValidators( JobEntryValidatorUtils.notBlankValidator() ) );
     }
 
-    andValidator().validate( this, "sourceDirectory", remarks, putValidators( notBlankValidator() ) );
-
+    JobEntryValidatorUtils.andValidator().validate( this, "sourceDirectory", remarks,
+      AndValidator.putValidators( JobEntryValidatorUtils.notBlankValidator() ) );
   }
 
 }
