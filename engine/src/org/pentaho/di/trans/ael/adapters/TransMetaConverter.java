@@ -146,7 +146,8 @@ public class TransMetaConverter {
             && !hop.isEnabled() );
 
         if ( enabledInHops.size() == 0 ) {
-          List<StepMeta> nextSteps = trans.findNextSteps( step );
+          List<StepMeta> nextSteps = findHops( trans, hop -> hop.getFromStep().equals( step ) ).stream().map(
+              TransHopMeta::getToStep ).collect( Collectors.toList() );
           findHops( trans, hop -> hop.getToStep().equals( step ) || hop.getFromStep().equals( step ) )
               .forEach( trans::removeTransHop );
           trans.getSteps().remove( step );
