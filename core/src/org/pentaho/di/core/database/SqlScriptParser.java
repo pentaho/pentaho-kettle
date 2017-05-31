@@ -41,15 +41,12 @@ public class SqlScriptParser {
     SQL, LINE_COMMENT, BLOCK_COMMENT, STRING
   };
 
-  private static final String ORACLE = "ORACLE";
-
   private boolean usingBackslashAsEscapeCharForQuotation;
   /**
-   * Private constructor to enforce static access
-   * @param databaseProductName a name of this database product
+   * @param usingBackslashAsEscapeCharForQuotation use backslash as escape char for quotation (\')
    */
-  public SqlScriptParser( String databaseProductName ) {
-    this.usingBackslashAsEscapeCharForQuotation = !ORACLE.equalsIgnoreCase( databaseProductName );
+  public SqlScriptParser( boolean usingBackslashAsEscapeCharForQuotation ) {
+    this.usingBackslashAsEscapeCharForQuotation = usingBackslashAsEscapeCharForQuotation;
   }
 
   /**

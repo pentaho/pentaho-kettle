@@ -1178,4 +1178,12 @@ public interface DatabaseInterface extends Cloneable {
     // Default implementation does nothing
   }
 
+  /**
+   * Create SqlScriptParser for current database dialect
+   * @return instance of SqlScriptParser for current database dialect
+   */
+  default SqlScriptParser createSqlScriptParser() {
+    return new SqlScriptParser( true );
+  }
+
 }
