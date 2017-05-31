@@ -31,7 +31,7 @@
                  <exclude>org.pentaho.kettle.plugins:elasticsearch-bulk-insert-core:jar</exclude>
                  <exclude>pentaho-kettle:kettle-core:jar</exclude>
                  <exclude>pentaho-kettle:kettle-engine:jar</exclude>
-                 <exclude>pentaho-kettle:kettle-engine-test:jar</exclude>
+                 <exclude>pentaho-kettle:kettle-engine:jar:tests</exclude>
                  <exclude>pentaho-kettle:kettle-ui-swt:jar</exclude>
                  <exclude>pentaho-kettle:kettle-dbdialog:jar</exclude>
                  <exclude>com.googlecode.log4jdbc:log4jdbc:jar</exclude>
