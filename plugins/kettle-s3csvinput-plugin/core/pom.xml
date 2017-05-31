@@ -40,7 +40,8 @@
     </dependency>
     <dependency>
       <groupId>pentaho-kettle</groupId>
-      <artifactId>kettle-engine-test</artifactId>
+      <artifactId>kettle-engine</artifactId>
+      <classifier>tests</classifier>
     </dependency>
     <dependency>
       <groupId>net.java.dev.jets3t</groupId>
