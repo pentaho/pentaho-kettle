@@ -26,7 +26,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.Hashtable;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 import java.util.ResourceBundle;
 
@@ -82,6 +84,7 @@ public class PropsUI extends Props {
 
   protected List<LastUsedFile> lastUsedFiles;
   protected List<LastUsedFile> openTabFiles;
+  protected Map<String, List<LastUsedFile>> lastUsedRepoFiles;
 
   protected String overriddenFileName;
 
@@ -184,6 +187,7 @@ public class PropsUI extends Props {
 
     loadScreens();
     loadLastUsedFiles();
+    loadLastUsedRepoFiles();
     loadOpenTabFiles();
 
     PluginRegistry registry = PluginRegistry.getInstance();
@@ -217,6 +221,7 @@ public class PropsUI extends Props {
     RGB col;
 
     lastUsedFiles = new ArrayList<LastUsedFile>();
+    lastUsedRepoFiles = new LinkedHashMap<>();
     openTabFiles = new ArrayList<LastUsedFile>();
     screens = new Hashtable<String, WindowProperty>();
 
@@ -332,6 +337,7 @@ public class PropsUI extends Props {
   public void saveProps() {
     storeScreens();
     setLastFiles();
+    setLastUsedRepoFiles();
     setOpenTabFiles();
 
     super.saveProps();
@@ -348,6 +354,22 @@ public class PropsUI extends Props {
       properties.setProperty( "lastdir" + ( i + 1 ), Const.NVL( lastUsedFile.getDirectory(), "" ) );
       properties.setProperty( "lasttype" + ( i + 1 ), lastUsedFile.isSourceRepository() ? YES : NO );
       properties.setProperty( "lastrepo" + ( i + 1 ), Const.NVL( lastUsedFile.getRepositoryName(), "" ) );
+    }
+  }
+
+  public void setLastUsedRepoFiles() {
+    properties.setProperty( "lastrepofiles", "" + lastUsedRepoFiles.size() );
+    int i = 0;
+    for ( String repoName : lastUsedRepoFiles.keySet() ) {
+      for ( LastUsedFile lastUsedFile : lastUsedRepoFiles.get( repoName ) ) {
+        properties.setProperty( "repofiletype" + ( i + 1 ), Const.NVL( lastUsedFile.getFileType(),
+          LastUsedFile.FILE_TYPE_TRANSFORMATION ) );
+        properties.setProperty( "repolastfile" + ( i + 1 ), Const.NVL( lastUsedFile.getFilename(), "" ) );
+        properties.setProperty( "repolastdir" + ( i + 1 ), Const.NVL( lastUsedFile.getDirectory(), "" ) );
+        properties.setProperty( "repolasttype" + ( i + 1 ), lastUsedFile.isSourceRepository() ? YES : NO );
+        properties.setProperty( "repolastrepo" + ( i + 1 ), Const.NVL( lastUsedFile.getRepositoryName(), "" ) );
+        i++;
+      }
     }
   }
 
@@ -398,6 +420,27 @@ public class PropsUI extends Props {
     while ( lastUsedFiles.size() > Const.MAX_FILE_HIST ) {
       lastUsedFiles.remove( lastUsedFiles.size() - 1 );
     }
+
+    addLastRepoFile( lastUsedFile );
+  }
+
+  private void addLastRepoFile( LastUsedFile lastUsedFile ) {
+    String repositoryName = lastUsedFile.getRepositoryName();
+    if ( !Utils.isEmpty( repositoryName ) ) {
+      List<LastUsedFile> lastUsedFiles = lastUsedRepoFiles.getOrDefault( repositoryName, new ArrayList<>() );
+      int idx = lastUsedFiles.indexOf( lastUsedFile );
+      if ( idx >= 0 ) {
+        lastUsedFiles.remove( idx );
+      }
+
+      lastUsedFiles.add( 0, lastUsedFile );
+      lastUsedRepoFiles.put( repositoryName, lastUsedFiles );
+
+      // If we have more than Const.MAX_FILE_HIST, top it off
+      while ( lastUsedFiles.size() > 12 ) {
+        lastUsedFiles.remove( lastUsedRepoFiles.get( repositoryName ).size() - 1 );
+      }
+    }
   }
 
   /**
@@ -438,6 +481,25 @@ public class PropsUI extends Props {
     }
   }
 
+  public void loadLastUsedRepoFiles() {
+    lastUsedRepoFiles = new LinkedHashMap<>();
+    int nr = Const.toInt( properties.getProperty( "lastrepofiles" ), 0 );
+    for ( int i = 0; i < nr; i++ ) {
+      String fileType = properties.getProperty( "repofiletype" + ( i + 1 ), LastUsedFile.FILE_TYPE_TRANSFORMATION );
+      String filename = properties.getProperty( "repolastfile" + ( i + 1 ), "" );
+      String directory = properties.getProperty( "repolastdir" + ( i + 1 ), "" );
+      boolean sourceRepository = YES.equalsIgnoreCase( properties.getProperty( "repolasttype" + ( i + 1 ), NO ) );
+      String repositoryName = properties.getProperty( "repolastrepo" + ( i + 1 ) );
+      boolean isOpened = YES.equalsIgnoreCase( properties.getProperty( "repolastopened" + ( i + 1 ), NO ) );
+      int openItemTypes = Const.toInt( properties.getProperty( "repolastopentypes" + ( i + 1 ), "0" ), 0 );
+
+      List<LastUsedFile> lastUsedFiles = lastUsedRepoFiles.getOrDefault( repositoryName, new ArrayList<>() );
+      lastUsedFiles.add( new LastUsedFile( fileType, filename, directory, sourceRepository, repositoryName, isOpened,
+        openItemTypes ) );
+      lastUsedRepoFiles.put( repositoryName, lastUsedFiles );
+    }
+  }
+
   public void loadOpenTabFiles() {
     openTabFiles = new ArrayList<LastUsedFile>();
     int nr = Const.toInt( properties.getProperty( "tabfiles" ), 0 );
@@ -453,6 +515,10 @@ public class PropsUI extends Props {
       openTabFiles.add( new LastUsedFile( fileType, filename, directory, sourceRepository, repositoryName, isOpened,
           openItemTypes ) );
     }
+  }
+
+  public Map<String, List<LastUsedFile>> getLastUsedRepoFiles() {
+    return lastUsedRepoFiles;
   }
 
   public List<LastUsedFile> getLastUsedFiles() {

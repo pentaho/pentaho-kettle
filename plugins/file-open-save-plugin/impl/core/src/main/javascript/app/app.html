@@ -8,36 +8,43 @@
       <div class="headerTitle headerText">
         {{::vm.headerTitle}}
       </div>
-      <div class="headerSearch">
-        <div class="headerSearchLeft"></div>
-        <input type="text" class="searchBox" placeholder="{{::vm.searchPlaceholder}} {{::vm.selectedFolder}}"/>
-        <div class="headerSearchRight"></div>
+      <div class="headerSearch" ng-class="{'focused' : vm.isInSearch === true}">
+        <div class="headerSearchLeft" ng-class="{'blueState' : vm.searchString !== '' || vm.isInSearch === true }" ></div>
+        <input type="text" class="searchBox" placeholder="{{::vm.searchPlaceholder}} {{vm.selectedFolder}}"
+            ng-blur="vm.isInSearch = false"
+            ng-focus="vm.isInSearch = true"
+            ng-change="vm.doSearch()"
+            ng-model="vm.searchString"/>
+        <div class="headerSearchRight" ng-click="vm.searchString = ''"></div>
       </div>
     </div>
     <div class="headerBottom">
-      <div class="breadcrumbSection blueText">
-        <!-- ------------------------- Use breadcrumb component here ------------------------- -->
+      <div ng-show="vm.searchString" class="breadcrumbSection">
+        Search results in "{{vm.folder.name}}"
+      </div>
+      <div ng-hide="vm.searchString" class="breadcrumbSection blueText">
+        <breadcrumb path="vm.folder.path" include-root="vm.includeRoot" on-select="vm.selectFolderByPath(selectedPath)"></breadcrumb>
       </div>
       <div class="addDelete">
-        <div class="addFolder"></div>
-        <div class="deleteFolder"></div>
+        <div class="addFolder" ng-click="vm.addFolder()"></div>
+        <div class="deleteFolder" ng-click="vm.remove()"></div>
       </div>
     </div>
   </div>
   <div class="middle">
     <div class="directoryTreeArea">
       <!-- ------------------------- Use folder component here ------------------------- -->
+      <folder auto-expand="vm.autoExpand" folders="vm.folders" on-select="vm.selectFolder(selectedFolder)" show-recents="vm.showRecents" selected-folder="vm.folder"></folder>
     </div>
 
     <div class="fileArea fileList">
-      <!-- ------------------------- MSG TO USER FOR NO SEARCH RESULTS/RECENTS ------------------------- -->
-      <div class="fileAreaMessageView" style="display:none;">
-        You haven't opened anything recently.
-      </div>
 
       <!-- ------------------------- FILES/SEARCH LIST or RECENT FILE CARDS  ------------------------- -->
       <div class="fileAreaResultsView">
         <!-- ------------------------- Use files OR card component here ------------------------- -->
+        <div class="fileAreaMessageView" ng-show="vm.showRecents && vm.recentFiles.length === 0">{{::vm.noRecentsMsg}}</div>
+        <card ng-show="vm.showRecents && vm.recentFiles" recent-files="vm.recentFiles" on-click="vm.selectFile(file)"></card>
+        <files search="vm.searchString" ng-show="!vm.showRecents" folder="vm.folder" on-click="vm.selectFile(file)" on-select="vm.highlightFile(selectedFile)"></files>
       </div>
     </div>
   </div>
@@ -46,11 +53,12 @@
       <div class="fileNameEntryLabel">
         <label for="fileNameEntryTextBox">{{::vm.saveFileNameLabel}}</label>
       </div>
-      <input id="fileNameEntryTextBox" type="text" class="fileNameEntryTextBox"/>
+      <input id="fileNameEntryTextBox" type="text" class="fileNameEntryTextBox"
+      ng-model="vm.fileToSave"/>
     </div>
     <div class="buttons">
-      <button class="secondary">{{::vm.cancelButton}}</button>
-      <button class="primary">{{::vm.confirmButton}}</button>
+      <button class="secondary" ng-click="vm.cancel()">{{::vm.cancelButton}}</button>
+      <button class="primary" ng-click="vm.openOrSave()">{{::vm.confirmButton}}</button>
     </div>
   </div>
 </div>

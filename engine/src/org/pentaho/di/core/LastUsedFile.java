@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -25,6 +25,8 @@ package org.pentaho.di.core;
 import org.pentaho.di.repository.RepositoryDirectory;
 import org.pentaho.di.core.util.Utils;
 
+import java.util.Date;
+
 public class LastUsedFile {
   public static final String FILE_TYPE_TRANSFORMATION = "Trans";
   public static final String FILE_TYPE_JOB = "Job";
@@ -41,6 +43,7 @@ public class LastUsedFile {
   private String directory;
   private boolean sourceRepository;
   private String repositoryName;
+  private Date lastOpened;
 
   private boolean opened;
   private int openItemTypes;
@@ -64,6 +67,7 @@ public class LastUsedFile {
     this.repositoryName = repositoryName;
     this.opened = opened;
     this.openItemTypes = openItemTypes;
+    this.lastOpened = new Date();
   }
 
   public String toString() {
@@ -210,4 +214,11 @@ public class LastUsedFile {
     this.openItemTypes = openItemTypes;
   }
 
+  public Date getLastOpened() {
+    return lastOpened;
+  }
+
+  public void setLastOpened( Date lastOpened ) {
+    this.lastOpened = lastOpened;
+  }
 }

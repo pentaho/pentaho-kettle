@@ -30,6 +30,29 @@ breadcrumb .breadcrumbFolder {
   display: inline-block;
 }
 
+breadcrumb .breadcrumbFolder.extra {
+  position: relative;
+}
+
+breadcrumb .breadcrumbFolder.extra .breadcrumbExtra {
+  top: 20px;
+  left: -10px;
+  position: absolute;
+  background-color: #ffffff;
+  -moz-box-shadow:0px 0px 5px rgba(0, 0, 0, 0.247058823529412);
+  -webkit-box-shadow:0px 0px 5px rgba(0, 0, 0, 0.247058823529412);
+  box-shadow:0px 0px 5px rgba(0, 0, 0, 0.247058823529412);
+  padding: 5px 0px 5px 0px;
+}
+
+breadcrumb .breadcrumbFolder.extra .breadcrumbExtraItem {
+  padding: 5px 10px 5px 10px;
+}
+
+breadcrumb .breadcrumbFolder.extra .breadcrumbExtraItem:hover {
+  background-color: #E6EFF6;
+}
+
 breadcrumb .breadcrumbNext {
   background: url("../../images/chevron_right_tree.svg") no-repeat left center;
   width: 7px;

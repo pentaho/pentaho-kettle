@@ -12,4 +12,30 @@
     </bean>
   </service>
 
+  <bean id="repositoryBrowserController" scope="singleton"
+        class="org.pentaho.repo.controller.RepositoryBrowserController">
+  </bean>
+
+  <jaxrs:server address="/browser" id="browser-endpoint">
+    <jaxrs:serviceBeans>
+      <bean class="org.pentaho.repo.endpoint.RepositoryBrowserEndpoint">
+        <argument ref="repositoryBrowserController"/>
+      </bean>
+    </jaxrs:serviceBeans>
+
+    <jaxrs:extensionMappings>
+      <entry key="json" value="application/json"/>
+    </jaxrs:extensionMappings>
+
+    <jaxrs:providers>
+      <bean class="com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider"/>
+    </jaxrs:providers>
+
+  </jaxrs:server>
+
+  <bean id="RepositoryOpenExtensionPoint" scope="singleton"
+        class="org.pentaho.repo.extension.RepositoryOpenExtensionPoint">
+    <pen:di-plugin type="org.pentaho.di.core.extension.ExtensionPointPluginType"/>
+  </bean>
+
 </blueprint>

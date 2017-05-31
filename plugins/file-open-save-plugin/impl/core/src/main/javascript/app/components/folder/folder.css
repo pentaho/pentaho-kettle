@@ -25,6 +25,8 @@ folder .folder {
   line-height: 18px;
   padding: 5px 0;
   cursor: pointer;
+  white-space: nowrap;
+  width: 100%;
 }
 
 folder .folder:hover {
@@ -32,16 +34,16 @@ folder .folder:hover {
 }
 
 folder .folder.recents {
-  margin-top: 10px;
-  margin-bottom: 10px;
+  margin-top: 5px;
+  margin-bottom: 5px;
 }
 
 folder .folder.public {
-  margin-top: 10px;
+  margin-top: 5px;
 }
 
 folder .folder.opened {
-  margin-bottom: 5px;
+  /*margin-bottom: 5px;*/
 }
 
 folder .folder.selected {
@@ -116,6 +118,10 @@ folder .folder.selected .folderImage {
 }
 
 folder .folder .folderName {
+  -webkit-user-select: none; /* webkit (safari, chrome) browsers */
+  -moz-user-select: none; /* mozilla browsers */
+  -khtml-user-select: none; /* webkit (konqueror) browsers */
+  -ms-user-select: none; /* IE10+ */
   height: 20px;
   line-height: 20px;
   margin-left: 10px;

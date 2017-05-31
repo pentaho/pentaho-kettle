@@ -1559,7 +1559,11 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
                                                                 boolean includeDeleted ) throws KettleException {
     try {
 
-      RepositoryDirectoryInterface repDir = getRootDir().findDirectory( dirId );
+      //RepositoryDirectoryInterface repDir = getRootDir().findDirectory( dirId );
+      RepositoryFile dirFile = pur.getFile( dirId.getId() );
+      RepositoryDirectory repDir = new RepositoryDirectory();
+      repDir.setObjectId( dirId );
+      repDir.setName( dirFile.getName() );
 
       List<RepositoryElementMetaInterface> list = new ArrayList<RepositoryElementMetaInterface>();
       List<RepositoryFile> nonDeletedChildren = getAllFilesOfType( dirId, objectTypes );

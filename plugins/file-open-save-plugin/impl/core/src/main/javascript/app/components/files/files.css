@@ -59,6 +59,15 @@ files .fileTable td {
   padding: 6px 10px;
   white-space: nowrap;
   width: 25%;
+  -webkit-user-select: none; /* webkit (safari, chrome) browsers */
+  -moz-user-select: none; /* mozilla browsers */
+  -khtml-user-select: none; /* webkit (konqueror) browsers */
+  -ms-user-select: none; /* IE10+ */
+}
+
+files .fileTable td.editing {
+  padding-top: 0px;
+  padding-bottom: 0px;
 }
 
 files .fileTable th {
@@ -74,7 +83,7 @@ files .fileTable th:first-child {
 
 files .fileTable tr.selected td,
 files .fileTable tr.selected:hover td {
-  background-color: #005DA6;
+  background-color: #0F2B5B;
   color: #FFFFFF;
 }
 
@@ -88,6 +97,11 @@ files .fileTable tbody td div {
   white-space: nowrap;
 }
 
+files .fileTable tbody td input {
+  font-size: 14px;
+  width: 100%;
+}
+
 files .fileTable tr .fileName {
   padding-left: 10px;
 }
@@ -96,6 +110,10 @@ files .fileTable tr .fileTypeIcon {
   height: 16px;
   width: 16px;
   float: left;
+}
+
+files .fileTable td.editing .fileTypeIcon {
+  margin-top: 3px;
 }
 
 files .fileTable tr .fileTypeIcon.file-trans {

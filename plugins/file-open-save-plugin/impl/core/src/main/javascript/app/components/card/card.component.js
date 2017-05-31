@@ -33,6 +33,8 @@ define([
 
   var options = {
     bindings: {
+      recentFiles: '<',
+      onClick: '&'
     },
     template: cardTemplate,
     controllerAs: "vm",
@@ -41,9 +43,14 @@ define([
 
   function cardController() {
     var vm = this;
+    vm.selectFile = selectFile;
     vm.$onInit = onInit;
 
     function onInit() {
+    }
+
+    function selectFile(file) {
+      vm.selectedFile = file;
     }
   }
 
