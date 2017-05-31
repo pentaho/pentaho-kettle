@@ -1518,7 +1518,7 @@ public class Database implements VariableSpace, LoggingObjectInterface {
     // double-dash or a multiline comment appears
     // in a single-quoted string, it will be treated as a string instead of
     // comments.
-    String sql = new SqlScriptParser( getDatabaseProductName() ).removeComments( rawsql ).trim();
+    String sql = databaseMeta.getDatabaseInterface().createSqlScriptParser().removeComments( rawsql ).trim();
     try {
       boolean resultSet;
       int count;
@@ -1601,7 +1601,7 @@ public class Database implements VariableSpace, LoggingObjectInterface {
   public Result execStatements( String script, RowMetaInterface params, Object[] data ) throws KettleDatabaseException {
     Result result = new Result();
 
-    SqlScriptParser sqlScriptParser = new SqlScriptParser( getDatabaseProductName() );
+    SqlScriptParser sqlScriptParser = databaseMeta.getDatabaseInterface().createSqlScriptParser();
     List<String> statements = sqlScriptParser.split( script );
     int nrstats = 0;
 
@@ -1671,17 +1671,6 @@ public class Database implements VariableSpace, LoggingObjectInterface {
     }
 
     return result;
-  }
-
-  private String getDatabaseProductName() {
-    try {
-      return getConnection().getMetaData().getDatabaseProductName();
-    } catch ( SQLException e ) {
-      if ( log.isDebug() ) {
-        log.logDebug( "Error getting database product name. " + e.getMessage() );
-      }
-      return null;
-    }
   }
 
   public ResultSet openQuery( String sql ) throws KettleDatabaseException {
