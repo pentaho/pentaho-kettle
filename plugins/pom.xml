@@ -31,6 +31,7 @@
     <module>kettle-s3csvinput-plugin</module>
     <module>kettle-sap-plugin</module>
     <module>kettle-shapefilereader-plugin</module>
+    <module>kettle-gpload-plugin</module>
   </modules>
   
 </project>
