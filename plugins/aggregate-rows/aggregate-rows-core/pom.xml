@@ -57,7 +57,8 @@
     </dependency>
     <dependency>
       <groupId>pentaho-kettle</groupId>
-      <artifactId>kettle-engine-test</artifactId>
+      <artifactId>kettle-engine</artifactId>
+      <classifier>tests</classifier>
       <version>${dependency.pentaho-kettle.version}</version>
     </dependency>
     <dependency>
