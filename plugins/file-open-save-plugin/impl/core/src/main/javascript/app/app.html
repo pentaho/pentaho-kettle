@@ -15,7 +15,7 @@
             ng-focus="vm.isInSearch = true"
             ng-change="vm.doSearch()"
             ng-model="vm.searchString"/>
-        <div class="headerSearchRight" ng-click="vm.searchString = ''"></div>
+        <div ng-class="{'headerSearchRight' : vm.searchString !== '' }" ng-click="vm.resetSearch()"></div>
       </div>
     </div>
     <div class="headerBottom">
@@ -34,7 +34,7 @@
   <div class="middle">
     <div class="directoryTreeArea">
       <!-- ------------------------- Use folder component here ------------------------- -->
-      <folder auto-expand="vm.autoExpand" folders="vm.folders" on-select="vm.selectFolder(selectedFolder)" show-recents="vm.showRecents" selected-folder="vm.folder"></folder>
+      <folder auto-expand="vm.autoExpand" folders="vm.folders" on-select="vm.resetSearch();vm.selectFolder(selectedFolder)" show-recents="vm.showRecents" selected-folder="vm.folder"></folder>
     </div>
 
     <div class="fileArea fileList">
