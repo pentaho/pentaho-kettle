@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ProductInformation ExportTime="2011-01-01 05:13:51"
+	WorkspaceID="Test">
+	<AttributeGroupList>
+		<AttributeGroup ID="AttributeGroup.Text.A">
+			<Name>0815 textA</Name>
+		</AttributeGroup>
+		<AttributeGroup ID="AttributeGroup.Text.B">
+			<Name>0816 textB</Name>
+		</AttributeGroup>
+		<AttributeGroup ID="AttributeGroup.Text.Multi">
+			<Name>0915 text1</Name>
+			<Name>0916 text2</Name>
+			<Name>0917 text3</Name>
+		</AttributeGroup>
+	</AttributeGroupList>
+</ProductInformation>

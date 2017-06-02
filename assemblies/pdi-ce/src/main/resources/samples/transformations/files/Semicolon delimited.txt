@@ -1,0 +1,19 @@
+help_category_id;name;parent_category_id;url;flagfield
+2;Polygon properties;32;;identical
+4;Numeric Functions;36;;identical
+6;MBR;32;;identical
+8;Transactions;33;;identical
+10;Point properties;32;;changed
+12;LineString properties;32;;changed
+14;Miscellaneous Functions;36;;changed
+16;Functions and Modifiers for Use with GROUP BY;33;;changed
+18;Bit Functions;36;;changed
+20;Data Types;33;;identical
+22;Compound Statements;33;;identical
+24;GeometryCollection properties;1;;identical
+26;Data Manipulation;33;;identical
+28;Language Structure;33;;identical
+30;Date and Time Functions;36;;identical
+32;Geographic Features;33;;identical
+34;Geometry properties;32;;identical
+36;Functions;33;;identical

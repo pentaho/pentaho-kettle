@@ -1,0 +1,10 @@
+#!/bin/sh
+
+PROG_DIR=$(cd "$(dirname "$0")"; pwd)
+
+# PROG_DIR is in .app/Contents/MacOS
+
+BASE_DIR="$PROG_DIR"/../../../ 
+cd "$BASE_DIR"
+
+. "spoon.command" "$BASE_DIR" 
