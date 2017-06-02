@@ -1,0 +1,62 @@
+<?xml version="1.0" ?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+	<dict>
+		<key>CFBundleAllowMixedLocalizations</key>
+		<string>false</string>
+		<key>CFBundleDevelopmentRegion</key>
+		<string>English</string>
+		<key>CFBundleGetInfoString</key>
+		<string>Pentaho Data Integration ${project.version} (c) 2008 - 2017 Pentaho Corporation</string>
+		<key>CFBundleExecutable</key>
+		<string>JavaApplicationStub</string>
+		<key>CFBundleIconFile</key>
+		<string>pdi.icns</string>
+		<key>CFBundleInfoDictionaryVersion</key>
+		<string>6.0</string>
+		<key>CFBundleName</key>
+		<string>Data Integration</string>
+		<key>CFBundlePackageType</key>
+		<string>APPL</string>
+		<key>CFBundleShortVersionString</key>
+		<string>${project.version}</string>
+		<key>CFBundleSignature</key>
+		<string>PTHO</string>
+		<key>CFBundleVersion</key>
+		<string>${project.version}</string>
+		<key>CFBundleDocumentTypes</key>
+		<array>
+			<dict>
+				<key>CFBundleTypeIconFile</key>
+				<string>pdi.icns</string>
+				<key>CFBundleTypeRole</key>
+				<string>Editor</string>
+				<key>CFBundleTypeName</key>
+				<string>Pentaho Data Integration Transformation</string>
+				<key>LSHandlerRank</key>
+				<string>Default</string>
+				<key>CFBundleTypeExtensions</key>
+				<array>
+					<string>ktr</string>
+				</array>
+			</dict>
+			<dict>
+				<key>CFBundleTypeIconFile</key>
+				<string>pdi.icns</string>
+				<key>CFBundleTypeRole</key>
+				<string>Editor</string>
+				<key>CFBundleTypeName</key>
+				<string>Pentaho Data Integration Job</string>
+				<key>LSHandlerRank</key>
+				<string>Default</string>
+				<key>CFBundleTypeExtensions</key>
+				<array>
+					<string>kjb</string>
+				</array>
+			</dict>
+		</array>
+
+                <key>NSHighResolutionCapable</key>
+                <true/>
+	</dict>
+</plist>
