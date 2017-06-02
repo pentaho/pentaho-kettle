@@ -73,6 +73,12 @@
       <groupId>pentaho</groupId>
       <artifactId>pentaho-xul-swt</artifactId>
       <version>${pentaho-xul-swt.version}</version>
+      <exclusions>
+        <exclusion>
+          <groupId>org.eclipse.swt</groupId>
+          <artifactId>org.eclipse.swt.gtk.linux.x86_64</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>pentaho</groupId>
@@ -91,12 +97,13 @@
       </exclusions>
     </dependency>
 
+
     <!-- Third-party dependencies -->
     <dependency>
       <groupId>org.eclipse.swt</groupId>
       <artifactId>org.eclipse.swt.gtk.linux.x86_64</artifactId>
       <version>${org.eclipse.swt.gtk.linux.x86_64.version}</version>
-      <!--<scope>provided</scope>-->
+      <scope>provided</scope>
       <exclusions>
         <exclusion>
           <groupId>*</groupId>
@@ -199,34 +206,4 @@
       </exclusions>
     </dependency>
   </dependencies>
-
-  <build>
-    <plugins>
-      <!-- Copies Shared Resource from assembly project -->
-      <!-- TODO: review this after going over assembly -->
-      <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>build-helper-maven-plugin</artifactId>
-        <executions>
-          <execution>
-            <id>add-laf-properties</id>
-            <goals>
-              <goal>add-resource</goal>
-            </goals>
-            <configuration>
-              <resources>
-                <resource>
-                  <directory>../assembly/package-res/ui</directory>
-                  <targetPath>ui</targetPath>
-                  <includes>
-                    <include>laf.properties</include>
-                  </includes>
-                </resource>
-              </resources>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-    </plugins>
-  </build>
 </project>

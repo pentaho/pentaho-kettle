@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE log4j:configuration SYSTEM "log4j.dtd">
+
+<!-- ===================================================================== -->
+<!--                                                                       -->
+<!--  Log4j Configuration                                                  -->
+<!--                                                                       -->
+<!-- ===================================================================== -->
+
+<!--
+   | For more configuration information and examples see the Jakarta Log4j
+   | owebsite: http://jakarta.apache.org/log4j
+ -->
+
+<log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/" debug="false">
+
+   <!-- ================================= -->
+   <!-- Preserve messages in a local file -->
+   <!-- ================================= -->
+
+   <!-- A time/date based rolling appender -->
+   <appender name="PENTAHOFILE" class="org.apache.log4j.DailyRollingFileAppender">
+
+      <param name="File" value="logs/pdi.log"/>
+      <param name="Append" value="false"/>
+
+      <!-- Rollover at midnight each day -->
+      <param name="DatePattern" value="'.'yyyy-MM-dd"/>
+
+      <!-- Rollover at the top of each hour
+      <param name="DatePattern" value="'.'yyyy-MM-dd-HH"/>
+      -->
+
+      <layout class="org.apache.log4j.PatternLayout">
+         <!-- The default pattern: Date Priority [Category] Message\n -->
+         <param name="ConversionPattern" value="%d %-5p [%c] %m%n"/>
+
+         <!-- The full pattern: Date MS Priority [Category] (Thread:NDC) Message\n
+         <param name="ConversionPattern" value="%d %-5r %-5p [%c] (%t:%x) %m%n"/>
+          -->
+      </layout>
+   </appender>
+
+   <!-- ================== -->
+   <!-- Log4JDBC Appenders -->
+   <!-- ================== -->
+   <!--
+   <appender name="sql-appender" class="org.apache.log4j.FileAppender">
+      <param name="File" value="logs/log4jdbc-sql.log"/>
+      <param name="Append" value="false"/>
+      <layout class="org.apache.log4j.PatternLayout">
+        <param name="ConversionPattern" value="%d{yyyy-MM-dd HH:mm:ss.SSS} &lt;%t&gt; %m%n%n"/>
+      </layout>
+   </appender>
+
+   <appender name="sql-timing-appender" class="org.apache.log4j.FileAppender">
+      <param name="File" value="logs/log4jdbc-sqltiming.log"/>
+      <param name="Append" value="false"/>
+      <layout class="org.apache.log4j.PatternLayout">
+        <param name="ConversionPattern" value="%d{yyyy-MM-dd HH:mm:ss.SSS} %m%n%n"/>
+      </layout>
+   </appender>
+
+   <appender name="jdbc-appender" class="org.apache.log4j.FileAppender">
+      <param name="File" value="logs/log4jdbc-jdbc.log"/>
+      <param name="Append" value="false"/>
+      <layout class="org.apache.log4j.PatternLayout">
+        <param name="ConversionPattern" value="%d{yyyy-MM-dd HH:mm:ss.SSS} %m%n"/>
+      </layout>
+   </appender>
+
+   <appender name="connection-appender" class="org.apache.log4j.FileAppender">
+      <param name="File" value="logs/log4jdbc-connection.log"/>
+      <param name="Append" value="false"/>
+      <layout class="org.apache.log4j.PatternLayout">
+        <param name="ConversionPattern" value="%d{yyyy-MM-dd HH:mm:ss.SSS} %m%n"/>
+      </layout>
+   </appender>
+   -->
+   <!-- ============================== -->
+   <!-- Append messages to the console -->
+   <!-- ============================== -->
+
+   <appender name="PENTAHOCONSOLE" class="org.apache.log4j.ConsoleAppender">
+      <param name="Target" value="System.out"/>
+      <param name="Threshold" value="INFO"/>
+
+      <layout class="org.apache.log4j.PatternLayout">
+         <!-- The default pattern: Date Priority [Category] Message\n -->
+         <param name="ConversionPattern" value="%d{ABSOLUTE} %-5p [%c{1}] %m%n"/>
+      </layout>
+   </appender>
+
+   <!-- ================ -->
+   <!-- Limit categories -->
+   <!-- ================ -->
+
+   <!--<category name="org.pentaho">-->
+     <!--<priority value="ERROR"/>-->
+   <!--</category>-->
+
+	<category name="org.pentaho.platform.osgi">
+		<priority value="INFO" />
+	</category>
+	
+  <category name="org.pentaho.platform.engine.core.system.status">
+    <priority value="INFO"/>
+  </category>
+
+   <!-- ======================= -->
+   <!-- Setup the Root category -->
+   <!-- ======================= -->
+
+   <root>
+      <priority value="ERROR" />
+      <appender-ref ref="PENTAHOCONSOLE"/>
+      <!--<appender-ref ref="PENTAHOFILE"/>-->
+   </root>
+
+   <!-- ================ -->
+   <!-- Log4JDBC Loggers -->
+   <!-- ================ -->
+   <!--
+   <logger name="jdbc.sqlonly" additivity="false">
+    <level value="info"/>
+    <appender-ref ref="sql-appender"/>
+   </logger>
+
+   <logger name="jdbc.sqltiming" additivity="false">
+      <level value="info"/>
+      <appender-ref ref="sql-timing-appender"/>
+   </logger>
+
+   <logger name="jdbc.audit" additivity="false">
+      <level value="info"/>
+      <appender-ref ref="jdbc-appender"/>
+   </logger>
+
+   <logger name="jdbc.resultset" additivity="false">
+      <level value="info"/>
+      <appender-ref ref="jdbc-appender"/>
+   </logger>
+  
+   <logger name="jdbc.connection" additivity="false">
+      <level value="info"/>
+      <appender-ref ref="connection-appender"/>
+   </logger>
+   -->
+</log4j:configuration>
