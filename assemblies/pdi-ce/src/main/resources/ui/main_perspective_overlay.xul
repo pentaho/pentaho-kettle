@@ -1,0 +1,47 @@
+<?xml version="1.0"?>
+<overlay id="label-test" title="Flow Test"
+	xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+	xmlns:HTML="http://www.w3.org/Profiles/XHTML-transitional" 
+    xmlns:pen="http://www.pentaho.org/2008/xul" >
+    
+<!-- main_perspective_overlay 
+	<menu id="trans" visible="true"/>
+    <menu id="job" visible="true"/> 
+-->
+
+        <menu id="file-new" visible="true"/>
+        <menuitem id="file-open" visible="true"/>
+        <menuitem id="file-open-from-vfs" visible="true"/>
+        <menu id="file-open-recent" visible="true"/>
+        <menuitem id="file-close" visible="true"/>
+        <menuitem id="file-close-all" visible="true"/>
+        <menuseparator id="file-separator-1" visible="true"/>
+        <menuitem id="file-save" visible="true"/>
+        <menuitem id="file-save-as" visible="true"/>
+        <menuitem id="file-save-as-vfs" visible="true"/>
+        <menuseparator id="file-separator-2" visible="true"/>
+        <menuitem id="file-print" visible="true"/>
+        <menuseparator id="file-separator-3" visible="true"/>
+        <menuitem id="file-import-from-xml" visible="true"/>
+        <menu id="file-export" visible="true"/>
+
+
+    <menu id="wizard" visible="true"/>
+    
+		<menuitem id="view-zoom-in" visible="true"/>
+		<menuitem id="view-zoom-out" visible="true"/>
+		<menuitem id="view-zoom-100pct" visible="true"/>
+		<menuitem id="view-perspective-seperator" visible="true"/>
+		<menuitem id="view-results" visible="true"/>
+
+    <menupopup id="view-perspectives-popup" visible="true"/>
+    
+        <menuitem id="help-welcome" visible="true"/>
+        <menuseparator id="help-separator-1" visible="true"/>
+        <menuitem id="help-plugins" visible="true"/>
+        <menuitem id="help-about" visible="true"/>
+    
+    <!--   
+    <menu id="file-export" disabled="true"/>
+    -->
+</overlay>

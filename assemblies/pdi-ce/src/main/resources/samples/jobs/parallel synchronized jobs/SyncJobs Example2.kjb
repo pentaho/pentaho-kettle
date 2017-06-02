@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<job>
+  <name>SyncJobs Example2</name>
+    <description/>
+    <extended_description/>
+    <job_version/>
+    <job_status>0</job_status>
+  <directory>&#47;</directory>
+  <created_user>-</created_user>
+  <created_date>2007&#47;09&#47;06 08:47:57.426</created_date>
+  <modified_user>-</modified_user>
+  <modified_date>2007&#47;09&#47;06 08:47:57.426</modified_date>
+  <logconnection/>
+  <logtable/>
+   <use_batchid>Y</use_batchid>
+   <pass_batchid>N</pass_batchid>
+   <use_logfield>Y</use_logfield>
+   <shared_objects_file/>
+  <entries>
+    <entry>
+      <name>Start</name>
+      <description/>
+      <type>SPECIAL</type>
+      <start>Y</start>
+      <dummy>N</dummy>
+      <repeat>N</repeat>
+      <schedulerType>0</schedulerType>
+      <interval>60</interval>
+      <hour>12</hour>
+      <minutes>0</minutes>
+      <weekDay>1</weekDay>
+      <DayOfMonth>1</DayOfMonth>
+      <parallel>N</parallel>
+      <draw>Y</draw>
+      <nr>0</nr>
+      <xloc>44</xloc>
+      <yloc>106</yloc>
+      </entry>
+    <entry>
+      <name>Dummy Wait for 10 seconds</name>
+      <description/>
+      <type>DELAY</type>
+      <maximumTimeout>10</maximumTimeout>
+      <scaletime>0</scaletime>
+      <parallel>N</parallel>
+      <draw>Y</draw>
+      <nr>0</nr>
+      <xloc>238</xloc>
+      <yloc>106</yloc>
+      </entry>
+    <entry>
+      <name>Create file  &quot;Job2Ready.tmp&quot;</name>
+      <description/>
+      <type>CREATE_FILE</type>
+      <filename>${Internal.Job.Filename.Directory}&#47;Job2Ready.tmp</filename>
+      <fail_if_file_exists>N</fail_if_file_exists>
+      <parallel>N</parallel>
+      <draw>Y</draw>
+      <nr>0</nr>
+      <xloc>481</xloc>
+      <yloc>106</yloc>
+      </entry>
+  </entries>
+  <hops>
+    <hop>
+      <from>Start</from>
+      <to>Dummy Wait for 10 seconds</to>
+      <from_nr>0</from_nr>
+      <to_nr>0</to_nr>
+      <enabled>Y</enabled>
+      <evaluation>Y</evaluation>
+      <unconditional>Y</unconditional>
+    </hop>
+    <hop>
+      <from>Dummy Wait for 10 seconds</from>
+      <to>Create file  &quot;Job2Ready.tmp&quot;</to>
+      <from_nr>0</from_nr>
+      <to_nr>0</to_nr>
+      <enabled>Y</enabled>
+      <evaluation>Y</evaluation>
+      <unconditional>N</unconditional>
+    </hop>
+  </hops>
+  <notepads>
+    <notepad>
+      <note>This Job will create a file when it is ready (in the example after 10 seconds).</note>
+      <xloc>22</xloc>
+      <yloc>28</yloc>
+      <width>401</width>
+      <heigth>25</heigth>
+    </notepad>
+    <notepad>
+      <note>You can run other Jobs or Transformations here.</note>
+      <xloc>127</xloc>
+      <yloc>166</yloc>
+      <width>264</width>
+      <heigth>25</heigth>
+    </notepad>
+    <notepad>
+      <note>Signal finished.</note>
+      <xloc>454</xloc>
+      <yloc>166</yloc>
+      <width>90</width>
+      <heigth>25</heigth>
+    </notepad>
+  </notepads>
+</job>
