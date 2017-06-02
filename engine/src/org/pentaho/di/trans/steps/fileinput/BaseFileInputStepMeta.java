@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -37,6 +37,7 @@ import org.pentaho.di.resource.ResourceReference;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepMeta;
+import org.pentaho.di.trans.step.StepMetaInterface;
 
 /**
  * Base meta for file-based input steps.
@@ -44,7 +45,7 @@ import org.pentaho.di.trans.step.StepMeta;
  * @author Alexander Buloichik
  */
 public abstract class BaseFileInputStepMeta<A extends BaseFileInputStepMeta.AdditionalOutputFields, I extends BaseFileInputStepMeta.InputFiles<? extends BaseFileInputField>>
-    extends BaseStepMeta {
+    extends BaseStepMeta implements StepMetaInterface {
   private static Class<?> PKG = BaseFileInputStepMeta.class; // for i18n purposes, needed by Translator2!!
 
   public static final String[] RequiredFilesCode = new String[] { "N", "Y" };
