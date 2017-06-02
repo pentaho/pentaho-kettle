@@ -1,0 +1,18 @@
+<Level1>
+ <Level2>
+   <Props>
+    <ObjectID>AAAAA</ObjectID>
+    <SAPIDENT>31-8200</SAPIDENT>
+    <Quantity>1</Quantity>
+    <Merkmalname>TX_B</Merkmalname>
+    <Merkmalswert> 600</Merkmalswert>
+   </Props>
+   <Props>
+    <ObjectID>AAAAA</ObjectID>
+    <SAPIDENT>31-8200</SAPIDENT>
+    <Quantity>3</Quantity>
+    <Merkmalname>TX_B</Merkmalname>
+    <Merkmalswert> 900</Merkmalswert>
+   </Props>
+ </Level2>
+</Level1>

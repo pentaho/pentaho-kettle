@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ProductTest ExportTime="2011-01-01 22:56:40" WorkspaceID="Test" id="1" parent="0">A: test 1
+  <AnalyzerResult>
+    <AnalyzerLists>
+      <AnalyzerList name="items.added">
+        <AnalyzerElement ItemID="product?id=123456" ProductID="123456"/>
+        <AnalyzerElement ItemID="product?id=789" ProductID="789"/>
+      </AnalyzerList>
+      <AnalyzerList name="items.referencing.deleted">
+        <AnalyzerElement ItemID="product?id=111111" ProductID="111111"/>
+        <AnalyzerElement ItemID="product?id=222222" ProductID="222222"/>
+      </AnalyzerList>
+    </AnalyzerLists>
+</AnalyzerResult>
+B: test 2
+<![CDATA[<hello>Hello World test for CDATA!</hello>]]>
+</ProductTest>

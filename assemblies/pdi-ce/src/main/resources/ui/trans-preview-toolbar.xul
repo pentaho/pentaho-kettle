@@ -1,0 +1,25 @@
+<window xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul" align="stretch">
+
+  <toolbar id="nav-toolbar" mode="icons">
+  
+    <toolbaritem>
+	  <radiogroup>
+        <radio id="preview-first" label="${TransPreview.FirstRows.Label}" command="transpreview.first()" selected="true"/>
+      </radiogroup>
+    </toolbaritem>
+
+    <toolbaritem>
+	  <radiogroup>
+        <radio id="preview-last" label="${TransPreview.LastRows.Label}" command="transpreview.last()" />
+      </radiogroup>
+    </toolbaritem>
+
+    <toolbaritem>
+	  <radiogroup>
+        <radio id="preview-off" label="${TransPreview.Off.Label}" command="transpreview.off()"/>
+      </radiogroup>
+    </toolbaritem>
+   
+  </toolbar>
+
+</window>
