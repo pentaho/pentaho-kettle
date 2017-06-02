@@ -1,0 +1,1 @@
+Place any images to override defaults in this folder.
