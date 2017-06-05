@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<job>
+  <name>shell for every row</name>
+    <description/>
+    <extended_description/>
+    <job_version/>
+  <directory>&#47;</directory>
+  <created_user>-</created_user>
+  <created_date>2007&#47;09&#47;06 09:25:34.335</created_date>
+  <modified_user>-</modified_user>
+  <modified_date>2007&#47;09&#47;06 09:25:34.335</modified_date>
+  <logconnection/>
+  <logtable/>
+   <use_batchid>Y</use_batchid>
+   <pass_batchid>N</pass_batchid>
+   <use_logfield>Y</use_logfield>
+   <shared_objects_file/>
+  <entries>
+    <entry>
+      <name>Start</name>
+      <description/>
+      <type>SPECIAL</type>
+      <start>Y</start>
+      <dummy>N</dummy>
+      <repeat>N</repeat>
+      <schedulerType>0</schedulerType>
+      <interval>60</interval>
+      <hour>12</hour>
+      <minutes>0</minutes>
+      <weekDay>1</weekDay>
+      <DayOfMonth>1</DayOfMonth>
+      <parallel>N</parallel>
+      <draw>Y</draw>
+      <nr>0</nr>
+      <xloc>60</xloc>
+      <yloc>124</yloc>
+      </entry>
+    <entry>
+      <name>shell for every row - testdata</name>
+      <description/>
+      <type>TRANS</type>
+      <filename>${Internal.Job.Filename.Directory}&#47;shell for every row - testdata.ktr</filename>
+      <transname/>
+      <directory>&#47;</directory>
+      <arg_from_previous>N</arg_from_previous>
+      <exec_per_row>N</exec_per_row>
+      <clear_rows>Y</clear_rows>
+      <clear_files>Y</clear_files>
+      <set_logfile>N</set_logfile>
+      <logfile/>
+      <logext/>
+      <add_date>N</add_date>
+      <add_time>N</add_time>
+      <loglevel>Error</loglevel>
+      <cluster>N</cluster>
+      <parallel>N</parallel>
+      <draw>Y</draw>
+      <nr>0</nr>
+      <xloc>217</xloc>
+      <yloc>122</yloc>
+      </entry>
+    <entry>
+      <name>shelltest.cmd</name>
+      <description/>
+      <type>SHELL</type>
+      <filename>${Internal.Job.Filename.Directory}&#47;shelltest.cmd</filename>
+      <arg_from_previous>Y</arg_from_previous>
+      <exec_per_row>Y</exec_per_row>
+      <set_logfile>N</set_logfile>
+      <logfile/>
+      <logext/>
+      <add_date>N</add_date>
+      <add_time>N</add_time>
+      <loglevel>Error</loglevel>
+      <parallel>N</parallel>
+      <draw>Y</draw>
+      <nr>0</nr>
+      <xloc>389</xloc>
+      <yloc>121</yloc>
+      </entry>
+  </entries>
+  <hops>
+    <hop>
+      <from>Start</from>
+      <to>shell for every row - testdata</to>
+      <from_nr>0</from_nr>
+      <to_nr>0</to_nr>
+      <enabled>Y</enabled>
+      <evaluation>Y</evaluation>
+      <unconditional>Y</unconditional>
+    </hop>
+    <hop>
+      <from>shell for every row - testdata</from>
+      <to>shelltest.cmd</to>
+      <from_nr>0</from_nr>
+      <to_nr>0</to_nr>
+      <enabled>Y</enabled>
+      <evaluation>Y</evaluation>
+      <unconditional>N</unconditional>
+    </hop>
+  </hops>
+  <notepads>
+    <notepad>
+      <note>Example: Run a shell for every row</note>
+      <xloc>63</xloc>
+      <yloc>43</yloc>
+      <width>189</width>
+      <heigth>25</heigth>
+    </notepad>
+    <notepad>
+      <note>See in the log the entried with (stdout).</note>
+      <xloc>344</xloc>
+      <yloc>190</yloc>
+      <width>215</width>
+      <heigth>25</heigth>
+    </notepad>
+  </notepads>
+</job>

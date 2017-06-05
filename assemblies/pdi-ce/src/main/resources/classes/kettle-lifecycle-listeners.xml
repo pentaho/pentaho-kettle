@@ -1,0 +1,11 @@
+<listeners>
+    
+    <listener id="PdiOsgiBridge">
+        <description>PDI-OSGI-Bridge Listener</description>
+        <tooltip/>
+        <classname>org.pentaho.di.osgi.KettleLifeCycleAdapter</classname>
+        <meta-classname/>
+        <version-browser-classname/>
+    </listener>
+    
+</listeners>

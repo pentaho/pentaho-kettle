@@ -44,13 +44,13 @@
     <xml-apis-ext.version>1.3.04</xml-apis-ext.version>
     <spring.framework.version>4.3.2.RELEASE</spring.framework.version>
     <commons-beanutils.version>1.9.3</commons-beanutils.version>
-    <commons-codec.version>1.5</commons-codec.version>
+    <commons-codec.version>1.9</commons-codec.version>
     <commons-collections.version>3.2.2</commons-collections.version>
-    <commons-logging.version>1.1.1</commons-logging.version>
+    <commons-logging.version>1.1.3</commons-logging.version>
     <commons-lang.version>2.6</commons-lang.version>
     <commons-httpclient.version>3.1</commons-httpclient.version>
     <commons-vfs2.version>2.1-20150824</commons-vfs2.version>
-    <commons-io.version>1.4</commons-io.version>
+    <commons-io.version>2.2</commons-io.version>
     <commons-dbcp.version>1.4</commons-dbcp.version>
     <commons-pool.version>1.5.7</commons-pool.version>
     <guava.version>17.0</guava.version>
@@ -451,8 +451,8 @@
       <version>${com.wcohen.secondstring.version}</version>
       <exclusions>
         <exclusion>
-          <groupId>*</groupId>
-          <artifactId>*</artifactId>
+          <groupId>log4j</groupId>
+          <artifactId>log4j</artifactId>
         </exclusion>
       </exclusions>
     </dependency>

@@ -48,6 +48,12 @@
       <groupId>pentaho</groupId>
       <artifactId>pentaho-xul-swt</artifactId>
       <version>${pentaho-xul.version}</version>
+      <exclusions>
+        <exclusion>
+          <groupId>org.eclipse.swt</groupId>
+          <artifactId>org.eclipse.swt.gtk.linux.x86_64</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>pentaho</groupId>
@@ -60,6 +66,7 @@
       <groupId>org.eclipse.swt</groupId>
       <artifactId>org.eclipse.swt.gtk.linux.x86_64</artifactId>
       <version>${org.eclipse.swt.version}</version>
+      <scope>provided</scope>
       <exclusions>
         <exclusion>
           <groupId>*</groupId>

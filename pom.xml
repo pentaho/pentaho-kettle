@@ -30,12 +30,12 @@
     <module>engine</module>
     <module>dbdialog</module>
     <module>ui</module>
+    <module>assemblies</module>
   </modules>
 
-  <!--properties>
-    <timestamp>${maven.build.timestamp}</timestamp>
-    <maven.build.timestamp.format>yyyy-MM-dd HH:mm</maven.build.timestamp.format>
-  </properties-->
+  <properties>
+    <maven.build.timestamp.format>yyyy-MM-dd hh.mm.ss</maven.build.timestamp.format>
+  </properties>
 
   <build>
     <plugins>
@@ -44,8 +44,8 @@
         <configuration>
           <archive>
             <manifestEntries>
-              <!--<Compile-Timestamp>${timestamp}</Compile-Timestamp>-->
-              <!--<Compile-User>${user.name}</Compile-User>-->
+              <Compile-Timestamp>${maven.build.timestamp}</Compile-Timestamp>
+              <Compile-User>${user.name}</Compile-User>
               <Implementation-ProductID>${project.artifactId}</Implementation-ProductID>
             </manifestEntries>
           </archive>
