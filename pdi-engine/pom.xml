@@ -20,7 +20,6 @@
   </modules>
 
   <properties>
-    <mockito.version>1.9.5</mockito.version>
     <hamcrest.version>2.0.0.0</hamcrest.version>
     <guava.dependency.version>17.0</guava.dependency.version>
     <maven-bundle-plugin.version>3.2.0</maven-bundle-plugin.version>
