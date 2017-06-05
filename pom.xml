@@ -26,10 +26,32 @@
 
   <properties>
     <maven.build.timestamp.format>yyyy-MM-dd hh.mm.ss</maven.build.timestamp.format>
+
+    <mockito-all.version>1.9.5</mockito-all.version>
   </properties>
+
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>org.mockito</groupId>
+        <artifactId>mockito-all</artifactId>
+        <version>${mockito-all.version}</version>
+        <scope>test</scope>
+        <exclusions>
+          <exclusion>
+            <groupId>*</groupId>
+            <artifactId>*</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
 
   <build>
     <plugins>
+      <plugin>
+        <artifactId>maven-compiler-plugin</artifactId>
+      </plugin>
       <plugin>
         <artifactId>maven-jar-plugin</artifactId>
         <configuration>
@@ -44,9 +66,9 @@
       </plugin>
     </plugins>
   </build>
-  
+
   <profiles>
-  
+
     <profile>
       <id>base</id>
       <activation>
@@ -62,7 +84,7 @@
         <module>ui</module>
       </modules>
     </profile>
-    
+
     <profile>
       <id>assemblies</id>
       <activation>
@@ -74,7 +96,7 @@
         <module>assemblies</module>
       </modules>
     </profile>
-    
+
   </profiles>
-  
+
 </project>

@@ -41,7 +41,7 @@ import org.pentaho.di.trans.steps.csvinput.CsvInput1Test;
 import org.pentaho.di.trans.steps.csvinput.CsvInput2Test;
 import org.pentaho.di.trans.steps.detectlastrow.DetectLastRowStepTest;
 import org.pentaho.di.trans.steps.filterrows.FilterRowsTest;
-import org.pentaho.di.trans.steps.getxmldata.GetXMLDataTest;
+//import org.pentaho.di.trans.steps.getxmldata.GetXMLDataTest;
 import org.pentaho.di.trans.steps.gpload.GPLoadTest;
 import org.pentaho.di.trans.steps.injector.InjectorTest;
 import org.pentaho.di.trans.steps.nullif.NullIfTest;
@@ -97,7 +97,7 @@ public class AllRegressionTests {
     suite.addTestSuite( CombinationLookupTest.class );
     suite.addTestSuite( JavaScriptStringTest.class );
     suite.addTestSuite( JavaScriptSpecialTest.class );
-    suite.addTestSuite( GetXMLDataTest.class );
+//    suite.addTestSuite( GetXMLDataTest.class );
     suite.addTestSuite( CsvInput1Test.class );
     suite.addTestSuite( CsvInput2Test.class );
     suite.addTestSuite( WebServiceTest.class );
