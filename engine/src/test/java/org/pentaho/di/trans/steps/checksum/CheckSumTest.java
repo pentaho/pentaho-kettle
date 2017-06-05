@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -25,6 +25,8 @@ package org.pentaho.di.trans.steps.checksum;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
+import java.lang.reflect.Field;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -52,7 +54,11 @@ import org.pentaho.di.trans.steps.dummytrans.DummyTransMeta;
 public class CheckSumTest {
 
   @BeforeClass
-  public static void setUpBeforeClass() throws KettleException {
+  public static void setUpBeforeClass() throws KettleException, NoSuchFieldException, IllegalAccessException {
+    System.setProperty( "file.encoding", "UTF-8" );
+    Field charset = Charset.class.getDeclaredField( "defaultCharset" );
+    charset.setAccessible( true );
+    charset.set( null, null );
     KettleEnvironment.init();
   }
 
