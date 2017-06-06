@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -74,7 +74,7 @@ public class SalesforceInput extends SalesforceStep {
       data.convertRowMeta = data.outputRowMeta.cloneToType( ValueMetaInterface.TYPE_STRING );
 
       // Let's query Salesforce
-      data.connection.query( meta.isSpecifyQuery() );
+      runQueryInPluginClassLoader();
 
       data.limitReached = true;
       data.recordcount = data.connection.getQueryResultSize();
@@ -131,6 +131,22 @@ public class SalesforceInput extends SalesforceStep {
       }
     }
     return true;
+  }
+
+  /**
+   * Class loader for current thread have to be the same with plugin (the same current class)
+   *
+   * @throws KettleException
+   */
+  private void runQueryInPluginClassLoader() throws KettleException {
+    ClassLoader orig = Thread.currentThread().getContextClassLoader();
+    ClassLoader loader = getClass().getClassLoader();
+    Thread.currentThread().setContextClassLoader( loader );
+    try {
+      data.connection.query( meta.isSpecifyQuery() );
+    } finally {
+      Thread.currentThread().setContextClassLoader( orig );
+    }
   }
 
   private Object[] getOneRow() throws KettleException {
