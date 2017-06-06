@@ -912,6 +912,7 @@
       <groupId>javax.servlet</groupId>
       <artifactId>javax.servlet-api</artifactId>
       <version>${javax.servlet-api.version}</version>
+      <scope>provided</scope>
       <exclusions>
         <exclusion>
           <groupId>*</groupId>
