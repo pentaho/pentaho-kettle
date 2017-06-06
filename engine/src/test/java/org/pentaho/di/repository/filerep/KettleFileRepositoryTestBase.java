@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,12 +22,14 @@
 
 package org.pentaho.di.repository.filerep;
 
+import org.apache.commons.io.FileUtils;
 import org.junit.After;
 import org.junit.Before;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.repository.RepositoryDirectoryInterface;
 
+import java.nio.file.Paths;
 import java.util.UUID;
 
 import static org.junit.Assert.assertNotNull;
@@ -68,6 +70,12 @@ public abstract class KettleFileRepositoryTestBase {
 
   @After
   public void tearDown() throws Exception {
-    KettleVFS.getFileObject( virtualFolder ).deleteAll();
+    try {
+      KettleVFS.getFileObject( virtualFolder ).deleteAll();
+      // remove residual files
+      FileUtils.deleteDirectory( Paths.get( virtualFolder ).getParent().getParent().toFile() );
+    } catch ( Exception ignored ) {
+      //
+    }
   }
 }
