@@ -33,6 +33,7 @@
     <module>kettle-shapefilereader-plugin</module>
     <module>kettle-gpload-plugin</module>
     <module>kettle-openerp-plugin</module>
+    <module>kettle-palo-plugin</module>
   </modules>
   
 </project>
