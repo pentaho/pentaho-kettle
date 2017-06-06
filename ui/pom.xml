@@ -36,7 +36,6 @@
     <jfreechart.version>1.0.13</jfreechart.version>
     <js.version>1.7R3</js.version>
     <junit.version>4.7</junit.version>
-    <mockito-all.version>1.9.5</mockito-all.version>
   </properties>
 
 
@@ -182,14 +181,6 @@
     <dependency>
       <groupId>org.mockito</groupId>
       <artifactId>mockito-all</artifactId>
-      <version>${mockito-all.version}</version>
-      <scope>test</scope>
-      <exclusions>
-        <exclusion>
-          <groupId>*</groupId>
-          <artifactId>*</artifactId>
-        </exclusion>
-      </exclusions>
     </dependency>
     <dependency>
       <groupId>pentaho-kettle</groupId>
