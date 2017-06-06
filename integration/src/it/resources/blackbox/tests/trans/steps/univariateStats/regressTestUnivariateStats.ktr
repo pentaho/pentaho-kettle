@@ -61,7 +61,7 @@
            <method>none</method>
            <schema_name/>
            </partitioning>
-    <filename>testfiles&#47;blackbox&#47;tests&#47;trans&#47;steps&#47;reservoirSampling&#47;regressTestReservoir.input.csv</filename>
+    <filename>src&#47;it&#47;resources&#47;blackbox&#47;tests&#47;trans&#47;steps&#47;reservoirSampling&#47;regressTestReservoir.input.csv</filename>
     <filename_field/>
     <rownum_field/>
     <include_filename>N</include_filename>
@@ -160,7 +160,7 @@
     <fileNameInField>N</fileNameInField>
     <fileNameField/>
     <file>
-      <name>testfiles&#47;blackbox&#47;tests&#47;trans&#47;steps&#47;univariateStats&#47;regressTestUnivariateStats.actual</name>
+      <name>target&#47;blackbox&#47;tests&#47;trans&#47;steps&#47;univariateStats&#47;regressTestUnivariateStats.actual</name>
       <is_command>N</is_command>
       <do_not_open_new_file_init>N</do_not_open_new_file_init>
       <extention>txt</extention>

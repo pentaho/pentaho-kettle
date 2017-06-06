@@ -363,7 +363,7 @@
     <fileNameInField>N</fileNameInField>
     <fileNameField/>
     <file>
-      <name>testfiles&#47;blackbox&#47;tests&#47;trans&#47;steps&#47;mailvalidator&#47;MailValidation_verify-caps.actual</name>
+      <name>target&#47;blackbox&#47;tests&#47;trans&#47;steps&#47;mailvalidator&#47;MailValidation_verify-caps.actual</name>
       <is_command>N</is_command>
       <do_not_open_new_file_init>N</do_not_open_new_file_init>
       <extention>txt</extention>
