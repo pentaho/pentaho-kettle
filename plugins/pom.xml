@@ -32,6 +32,7 @@
     <module>kettle-sap-plugin</module>
     <module>kettle-shapefilereader-plugin</module>
     <module>kettle-gpload-plugin</module>
+    <module>kettle-openerp-plugin</module>
   </modules>
   
 </project>
