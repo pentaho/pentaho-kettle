@@ -68,7 +68,6 @@
   </build>
 
   <profiles>
-
     <profile>
       <id>base</id>
       <activation>
@@ -84,7 +83,6 @@
         <module>ui</module>
       </modules>
     </profile>
-
     <profile>
       <id>assemblies</id>
       <activation>
@@ -96,7 +94,16 @@
         <module>assemblies</module>
       </modules>
     </profile>
-
+    <profile>
+      <id>integration-tests</id>
+      <activation>
+        <property>
+          <name>runITs</name>
+        </property>
+      </activation>
+      <modules>
+        <module>integration</module>
+      </modules>
+    </profile>
   </profiles>
-
 </project>
