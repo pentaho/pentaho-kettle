@@ -40,7 +40,7 @@ import java.util.Collections;
  */
 public class FtpsServer {
 
-  public static final String SERVER_BASE_DIR = "testfiles/org/pentaho/di/job/entries/ftpsget";
+  public static final String SERVER_BASE_DIR = "src/it/resources/org/pentaho/di/job/entries/ftpsget";
   public static final String SERVER_KEYSTORE = SERVER_BASE_DIR + "/ftpserver.jks";
   public static final String SERVER_USERS = SERVER_BASE_DIR + "/users.properties";
   public static final String USER_HOME_DIR = SERVER_BASE_DIR + "/dir";

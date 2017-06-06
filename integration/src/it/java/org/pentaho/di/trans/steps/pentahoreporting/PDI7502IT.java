@@ -59,7 +59,7 @@ public class PDI7502IT {
   public static void setUpBeforeClass() throws Exception {
     ClassicEngineBoot.getInstance().start();
     KettleEnvironment.init( false );
-    reportFile = new File( "testfiles/org/pentaho/di/trans/steps/pentahoreporting/pdi-7502.prpt" );
+    reportFile = new File( "src/it/resources/org/pentaho/di/trans/steps/pentahoreporting/pdi-7502.prpt" );
     assertTrue( reportFile.exists() );
   }
 
