@@ -76,7 +76,7 @@
       <exclusions>
         <exclusion>
           <groupId>org.eclipse.swt</groupId>
-          <artifactId>org.eclipse.swt.gtk.linux.x86_64</artifactId>
+          <artifactId>*</artifactId>
         </exclusion>
       </exclusions>
     </dependency>
@@ -103,7 +103,6 @@
       <groupId>org.eclipse.swt</groupId>
       <artifactId>org.eclipse.swt.gtk.linux.x86_64</artifactId>
       <version>${org.eclipse.swt.gtk.linux.x86_64.version}</version>
-      <scope>provided</scope>
       <exclusions>
         <exclusion>
           <groupId>*</groupId>
