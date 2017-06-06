@@ -24,15 +24,6 @@
     <tag>HEAD</tag>
   </scm>
 
-  <modules>
-    <module>pdi-engine</module>
-    <module>core</module>
-    <module>engine</module>
-    <module>dbdialog</module>
-    <module>ui</module>
-    <module>assemblies</module>
-  </modules>
-
   <properties>
     <maven.build.timestamp.format>yyyy-MM-dd hh.mm.ss</maven.build.timestamp.format>
   </properties>
@@ -53,4 +44,37 @@
       </plugin>
     </plugins>
   </build>
+  
+  <profiles>
+  
+    <profile>
+      <id>base</id>
+      <activation>
+        <property>
+          <name>!skipDefault</name>
+        </property>
+      </activation>
+      <modules>
+        <module>pdi-engine</module>
+        <module>core</module>
+        <module>engine</module>
+        <module>dbdialog</module>
+        <module>ui</module>
+      </modules>
+    </profile>
+    
+    <profile>
+      <id>assemblies</id>
+      <activation>
+        <property>
+          <name>!skipDefault</name>
+        </property>
+      </activation>
+      <modules>
+        <module>assemblies</module>
+      </modules>
+    </profile>
+    
+  </profiles>
+  
 </project>
