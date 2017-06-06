@@ -106,7 +106,7 @@
     <fileNameField/>
     <create_parent_folder>Y</create_parent_folder>
     <file>
-      <name>testfiles&#x2f;blackbox&#x2f;tests&#x2f;trans&#x2f;steps&#x2f;xbaseinput&#x2f;XBaseInput.actual</name>
+      <name>target&#x2f;blackbox&#x2f;tests&#x2f;trans&#x2f;steps&#x2f;xbaseinput&#x2f;XBaseInput.actual</name>
       <is_command>N</is_command>
       <servlet_output>N</servlet_output>
       <do_not_open_new_file_init>N</do_not_open_new_file_init>
