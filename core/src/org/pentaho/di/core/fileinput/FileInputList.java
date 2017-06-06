@@ -54,7 +54,7 @@ public class FileInputList {
 
   public enum FileTypeFilter {
     FILES_AND_FOLDERS( "all_files", FileType.FILE, FileType.FOLDER ), ONLY_FILES( "only_files", FileType.FILE ),
-      ONLY_FOLDERS( "only_folders", FileType.FOLDER );
+    ONLY_FOLDERS( "only_folders", FileType.FOLDER );
 
     private String name;
     private final Collection<FileType> allowedFileTypes;
@@ -105,49 +105,53 @@ public class FileInputList {
   }
 
   private static boolean[] includeSubdirsFalse( int iLength ) {
-    boolean[] includeSubdirs = new boolean[iLength];
+    boolean[] includeSubdirs = new boolean[ iLength ];
     for ( int i = 0; i < iLength; i++ ) {
-      includeSubdirs[i] = false;
+      includeSubdirs[ i ] = false;
     }
     return includeSubdirs;
   }
 
   public static String[] createFilePathList( VariableSpace space, String[] fileName, String[] fileMask,
-    String[] excludeFileMask, String[] fileRequired ) {
+                                             String[] excludeFileMask, String[] fileRequired ) {
     boolean[] includeSubdirs = includeSubdirsFalse( fileName.length );
     return createFilePathList( space, fileName, fileMask, excludeFileMask, fileRequired, includeSubdirs, null );
   }
 
   public static String[] createFilePathList( VariableSpace space, String[] fileName, String[] fileMask,
-    String[] excludeFileMask, String[] fileRequired, boolean[] includeSubdirs ) {
+                                             String[] excludeFileMask, String[] fileRequired,
+                                             boolean[] includeSubdirs ) {
     return createFilePathList( space, fileName, fileMask, excludeFileMask, fileRequired, includeSubdirs, null );
   }
 
   public static String[] createFilePathList( VariableSpace space, String[] fileName, String[] fileMask,
-    String[] excludeFileMask, String[] fileRequired, boolean[] includeSubdirs, FileTypeFilter[] filters ) {
+                                             String[] excludeFileMask, String[] fileRequired, boolean[] includeSubdirs,
+                                             FileTypeFilter[] filters ) {
     List<FileObject> fileList =
       createFileList( space, fileName, fileMask, excludeFileMask, fileRequired, includeSubdirs, filters )
         .getFiles();
-    String[] filePaths = new String[fileList.size()];
+    String[] filePaths = new String[ fileList.size() ];
     for ( int i = 0; i < filePaths.length; i++ ) {
-      filePaths[i] = fileList.get( i ).getName().getURI();
+      filePaths[ i ] = fileList.get( i ).getName().getURI();
     }
     return filePaths;
   }
 
   public static FileInputList createFileList( VariableSpace space, String[] fileName, String[] fileMask,
-    String[] excludeFileMask, String[] fileRequired ) {
+                                              String[] excludeFileMask, String[] fileRequired ) {
     boolean[] includeSubdirs = includeSubdirsFalse( fileName.length );
     return createFileList( space, fileName, fileMask, excludeFileMask, fileRequired, includeSubdirs, null );
   }
 
   public static FileInputList createFileList( VariableSpace space, String[] fileName, String[] fileMask,
-    String[] excludeFileMask, String[] fileRequired, boolean[] includeSubdirs ) {
+                                              String[] excludeFileMask, String[] fileRequired,
+                                              boolean[] includeSubdirs ) {
     return createFileList( space, fileName, fileMask, excludeFileMask, fileRequired, includeSubdirs, null );
   }
 
   public static FileInputList createFileList( VariableSpace space, String[] fileName, String[] fileMask,
-    String[] excludeFileMask, String[] fileRequired, boolean[] includeSubdirs, FileTypeFilter[] fileTypeFilters ) {
+                                              String[] excludeFileMask, String[] fileRequired, boolean[] includeSubdirs,
+                                              FileTypeFilter[] fileTypeFilters ) {
     FileInputList fileInputList = new FileInputList();
 
     // Replace possible environment variables...
@@ -156,14 +160,14 @@ public class FileInputList {
     final String[] realExcludeMask = space.environmentSubstitute( excludeFileMask );
 
     for ( int i = 0; i < realfile.length; i++ ) {
-      final String onefile = realfile[i];
-      final String onemask = realmask[i];
-      final String excludeonemask = realExcludeMask[i];
-      final boolean onerequired = YES.equalsIgnoreCase( fileRequired[i] );
-      final boolean subdirs = includeSubdirs[i];
+      final String onefile = realfile[ i ];
+      final String onemask = realmask[ i ];
+      final String excludeonemask = realExcludeMask[ i ];
+      final boolean onerequired = YES.equalsIgnoreCase( fileRequired[ i ] );
+      final boolean subdirs = includeSubdirs[ i ];
       final FileTypeFilter filter =
-        ( ( fileTypeFilters == null || fileTypeFilters[i] == null )
-          ? FileTypeFilter.ONLY_FILES : fileTypeFilters[i] );
+        ( ( fileTypeFilters == null || fileTypeFilters[ i ] == null )
+          ? FileTypeFilter.ONLY_FILES : fileTypeFilters[ i ] );
 
       if ( Utils.isEmpty( onefile ) ) {
         continue;
@@ -229,10 +233,10 @@ public class FileInputList {
               } );
               if ( fileObjects != null ) {
                 for ( int j = 0; j < fileObjects.length; j++ ) {
-                  FileObject fileObject = fileObjects[j];
+                  FileObject fileObject = fileObjects[ j ];
                   if ( fileObject instanceof SftpFileObject ) {
                     fileObject = new SftpFileObjectWithWindowsSupport( (SftpFileObject) fileObject,
-                            SftpFileSystemWindowsProvider.getSftpFileSystemWindows( (SftpFileObject) fileObject ) );
+                      SftpFileSystemWindowsProvider.getSftpFileSystemWindows( (SftpFileObject) fileObject ) );
                   }
                   if ( fileObject.exists() ) {
                     fileInputList.addFile( fileObject );
@@ -251,7 +255,7 @@ public class FileInputList {
               FileObject[] children = directoryFileObject.getChildren();
               for ( int j = 0; j < children.length; j++ ) {
                 // See if the wildcard (regexp) matches...
-                String name = children[j].getName().getBaseName();
+                String name = children[ j ].getName().getBaseName();
                 boolean matches = true;
                 if ( !Utils.isEmpty( onemask ) ) {
                   matches = Pattern.matches( onemask, name );
@@ -261,7 +265,7 @@ public class FileInputList {
                   excludematches = Pattern.matches( excludeonemask, name );
                 }
                 if ( matches && !excludematches ) {
-                  fileInputList.addFile( children[j] );
+                  fileInputList.addFile( children[ j ] );
                 }
 
               }
@@ -310,8 +314,8 @@ public class FileInputList {
     final String[] realfolder = space.environmentSubstitute( folderName );
 
     for ( int i = 0; i < realfolder.length; i++ ) {
-      final String onefile = realfolder[i];
-      final boolean onerequired = YES.equalsIgnoreCase( folderRequired[i] );
+      final String onefile = realfolder[ i ];
+      final boolean onerequired = YES.equalsIgnoreCase( folderRequired[ i ] );
       final boolean subdirs = true;
       final FileTypeFilter filter = FileTypeFilter.ONLY_FOLDERS;
 
@@ -352,8 +356,8 @@ public class FileInputList {
           } );
           if ( fileObjects != null ) {
             for ( int j = 0; j < fileObjects.length; j++ ) {
-              if ( fileObjects[j].exists() ) {
-                fileInputList.addFile( fileObjects[j] );
+              if ( fileObjects[ j ].exists() ) {
+                fileInputList.addFile( fileObjects[ j ] );
               }
             }
           }
@@ -392,9 +396,17 @@ public class FileInputList {
   }
 
   public String[] getFileStrings() {
-    String[] fileStrings = new String[files.size()];
+    String[] fileStrings = new String[ files.size() ];
     for ( int i = 0; i < fileStrings.length; i++ ) {
-      fileStrings[i] = KettleVFS.getFilename( files.get( i ) );
+      fileStrings[ i ] = KettleVFS.getFilename( files.get( i ) );
+    }
+    return fileStrings;
+  }
+
+  public String[] getUrlStrings() {
+    String[] fileStrings = new String[ files.size() ];
+    for ( int i = 0; i < fileStrings.length; i++ ) {
+      fileStrings[ i ] = files.get( i ).getPublicURIString();
     }
     return fileStrings;
   }
@@ -444,15 +456,15 @@ public class FileInputList {
   }
 
   public static FileInputList createFileList( VariableSpace space, String[] fileName, String[] fileMask,
-    String[] fileRequired, boolean[] includeSubdirs ) {
+                                              String[] fileRequired, boolean[] includeSubdirs ) {
     return createFileList(
-      space, fileName, fileMask, new String[fileName.length], fileRequired, includeSubdirs, null );
+      space, fileName, fileMask, new String[ fileName.length ], fileRequired, includeSubdirs, null );
   }
 
   public static String[] createFilePathList( VariableSpace space, String[] fileName, String[] fileMask,
-    String[] fileRequired ) {
+                                             String[] fileRequired ) {
     boolean[] includeSubdirs = includeSubdirsFalse( fileName.length );
     return createFilePathList(
-      space, fileName, fileMask, new String[fileName.length], fileRequired, includeSubdirs, null );
+      space, fileName, fileMask, new String[ fileName.length ], fileRequired, includeSubdirs, null );
   }
 }
