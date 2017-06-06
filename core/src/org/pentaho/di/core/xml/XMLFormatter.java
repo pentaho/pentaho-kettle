@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2016-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -112,8 +112,6 @@ public class XMLFormatter {
           case XMLStreamConstants.CDATA:
             if ( !whitespacesOnly( str ) ) {
               wr.writeCharacters( str.toString() );
-            } else if ( wasSomething ) {
-              wr.writeCharacters( "\n" + prefix );
             }
             str.setLength( 0 );
             wr.writeCData( rd.getText() );
