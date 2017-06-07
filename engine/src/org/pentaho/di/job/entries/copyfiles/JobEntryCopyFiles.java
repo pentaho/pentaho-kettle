@@ -1144,7 +1144,7 @@ public class JobEntryCopyFiles extends JobEntryBase implements Cloneable, JobEnt
     return true;
   }
 
-  public String loadURL( String url, String ncName, IMetaStore metastore, Map mappings ) {
+  public String loadURL( String url, String ncName, IMetaStore metastore, Map<String, String> mappings ) {
     if ( !Utils.isEmpty( ncName ) && !Utils.isEmpty( url ) ) {
       mappings.put( url, ncName );
     }

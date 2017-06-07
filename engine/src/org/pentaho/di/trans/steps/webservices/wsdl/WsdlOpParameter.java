@@ -1,8 +1,9 @@
 /*! ******************************************************************************
  *
+
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -21,6 +22,8 @@
  ******************************************************************************/
 
 package org.pentaho.di.trans.steps.webservices.wsdl;
+
+import java.util.Objects;
 
 import javax.xml.namespace.QName;
 
@@ -362,5 +365,10 @@ public final class WsdlOpParameter extends WsdlOpReturnType implements java.io.S
       return _name.equals( ( (WsdlOpParameter) o ).getName() );
     }
     return false;
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hashCode( _name );
   }
 }

@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -131,7 +131,7 @@ public class BeanInjectionInfo {
   public String getDescription( String name ) {
     String description = BaseMessages.getString( clazz, clazzAnnotation.localizationPrefix() + name );
     if ( description != null && description.startsWith( "!" ) && description.endsWith( "!" ) ) {
-      Class baseClass = clazz.getSuperclass();
+      Class<?> baseClass = clazz.getSuperclass();
       while ( baseClass != null ) {
         InjectionSupported baseAnnotation = (InjectionSupported) baseClass.getAnnotation( InjectionSupported.class );
         if ( baseAnnotation != null ) {

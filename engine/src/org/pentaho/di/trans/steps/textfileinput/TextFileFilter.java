@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -25,6 +25,7 @@ package org.pentaho.di.trans.steps.textfileinput;
 /**
  * @deprecated replaced by implementation in the ...steps.fileinput.text package
  */
+@Deprecated
 public class TextFileFilter implements Cloneable {
   /** The position of the occurrence of the filter string to check at */
   private int filterPosition;

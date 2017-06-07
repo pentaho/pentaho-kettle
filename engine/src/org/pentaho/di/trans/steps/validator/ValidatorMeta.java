@@ -1,8 +1,9 @@
 /*! ******************************************************************************
  *
+
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -24,6 +25,7 @@ package org.pentaho.di.trans.steps.validator;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
@@ -123,6 +125,11 @@ public class ValidatorMeta extends BaseStepMeta implements StepMetaInterface {
     }
 
     return false;
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash( validatingAll, concatenatingErrors, concatenationSeparator, validations );
   }
 
   public Object clone() {

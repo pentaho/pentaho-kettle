@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -23,6 +23,7 @@
 package org.pentaho.di.trans.steps.reservoirsampling;
 
 import java.util.List;
+import java.util.Objects;
 
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
@@ -137,6 +138,11 @@ public class ReservoirSamplingMeta extends BaseStepMeta implements StepMetaInter
     }
 
     return false;
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash( m_sampleSize, m_randomSeed );
   }
 
   /**

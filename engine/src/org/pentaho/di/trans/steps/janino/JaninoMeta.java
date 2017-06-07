@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -49,7 +49,9 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Node;
 
+import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Contains the meta-data for the Formula step: calculates ad-hoc formula's Powered by Pentaho's "libformula"
@@ -103,10 +105,14 @@ public class JaninoMeta extends BaseStepMeta implements StepMetaInterface {
   public boolean equals( Object obj ) {
     if ( obj != null && ( obj.getClass().equals( this.getClass() ) ) ) {
       JaninoMeta m = (JaninoMeta) obj;
-      return ( getXML() == m.getXML() );
+      return Objects.equals( getXML(), m.getXML() );
     }
-
     return false;
+  }
+
+  @Override
+  public int hashCode() {
+    return Arrays.hashCode( formula );
   }
 
   public Object clone() {

@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -32,6 +32,7 @@ import org.pentaho.di.core.exception.KettleException;
  * @author matt
  * @deprecated Use annotation-based injection instead
  */
+@Deprecated
 public interface StepMetaInjectionInterface {
   /**
    * @return A list of step injection metadata entries. In case the data type of the entry is NONE (0) you will get at

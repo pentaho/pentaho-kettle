@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -23,6 +23,7 @@
 package org.pentaho.di.trans.steps.javafilter;
 
 import java.util.List;
+import java.util.Objects;
 
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
@@ -107,6 +108,11 @@ public class JavaFilterMeta extends BaseStepMeta implements StepMetaInterface {
     }
 
     return false;
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash( getStepIOMeta().getTargetStreams(), condition );
   }
 
   public Object clone() {
