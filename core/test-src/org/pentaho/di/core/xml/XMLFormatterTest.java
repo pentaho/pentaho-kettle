@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2016-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -41,6 +41,44 @@ public class XMLFormatterTest {
 
     String result = XMLFormatter.format( inXml );
     assertEquals( expectedXml, result );
+  }
+
+  @Test
+  public void testcdata() throws Exception {
+    String input =
+      "    <annotations>"
+        + "  <annotation>"
+        + "    <name>c44cc4ed-9647-44f2-b1d9-0523c01f0c94</name>\n"
+        + "    <field>HiddenField</field>\n"
+        + "    <type>CREATE_ATTRIBUTE</type>\n"
+        + "     <properties>"
+        + "        <property>"
+        + "           <name>hidden</name>\n"
+        + "           <value><![CDATA[true]]></value>"
+        + "        </property>"
+        + "    </properties>      "
+        + "   </annotation>"
+        + "  <sharedDimension>N</sharedDimension>\n"
+        + "  <description/>\n"
+        + "</annotations>";
+    String result = XMLFormatter.format( input );
+    String expected =
+      "<annotations>\n"
+        + "  <annotation>\n"
+        + "    <name>c44cc4ed-9647-44f2-b1d9-0523c01f0c94</name>\n"
+        + "    <field>HiddenField</field>\n"
+        + "    <type>CREATE_ATTRIBUTE</type>\n"
+        + "    <properties>\n"
+        + "      <property>\n"
+        + "        <name>hidden</name>\n"
+        + "        <value><![CDATA[true]]></value>\n"
+        + "      </property>\n"
+        + "    </properties>\n"
+        + "  </annotation>\n"
+        + "  <sharedDimension>N</sharedDimension>\n"
+        + "  <description/>\n"
+        + "</annotations>\n";
+    assertEquals( expected, result );
   }
 
   @Test
