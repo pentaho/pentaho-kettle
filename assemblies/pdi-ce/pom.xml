@@ -891,7 +891,7 @@
                   <type>zip</type>
                 </artifactItem>
                 <artifactItem>
-                  <groupId>pentaho-kettle</groupId>
+                  <groupId>org.pentaho.kettle.plugins</groupId>
                   <artifactId>kettle-gpload-plugin</artifactId>
                   <version>${kettle-gpload-plugin.version}</version>
                   <type>zip</type>
