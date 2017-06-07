@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -179,7 +179,6 @@ public class TextFileInputReader implements IBaseFileInputReader {
      */
     TextFileLine textLine = data.lineBuffer.get( 0 );
     step.incrementLinesInput();
-    lineNumberInFile++;
 
     data.lineBuffer.remove( 0 );
 
@@ -425,7 +424,7 @@ public class TextFileInputReader implements IBaseFileInputReader {
         boolean isFilterLastLine = false;
         boolean filterOK = checkFilterRow( line, isFilterLastLine );
         if ( filterOK ) {
-          data.lineBuffer.add( new TextFileLine( line, lineNumberInFile, data.file ) ); // Store it in the
+          data.lineBuffer.add( new TextFileLine( line, lineNumberInFile++, data.file ) ); // Store it in the
           // line buffer...
         } else {
           return false;
@@ -433,7 +432,7 @@ public class TextFileInputReader implements IBaseFileInputReader {
       } else { // don't checkFilterRow
 
         if ( !meta.content.noEmptyLines || line.length() != 0 ) {
-          data.lineBuffer.add( new TextFileLine( line, lineNumberInFile, data.file ) ); // Store it in the line
+          data.lineBuffer.add( new TextFileLine( line, lineNumberInFile++, data.file ) ); // Store it in the line
                                                                                         // buffer...
         }
       }

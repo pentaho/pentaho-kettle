@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -32,6 +32,7 @@ import java.util.List;
 import org.apache.commons.io.IOUtils;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.mockito.Mockito;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.exception.KettleFileException;
 import org.pentaho.di.core.fileinput.FileInputList;
@@ -41,14 +42,14 @@ import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.trans.TransTestingUtil;
+import org.pentaho.di.trans.step.errorhandling.AbstractFileErrorHandler;
 import org.pentaho.di.trans.step.errorhandling.FileErrorHandler;
 import org.pentaho.di.trans.steps.StepMockUtil;
 import org.pentaho.di.trans.steps.fileinput.BaseFileInputField;
 import org.pentaho.di.utils.TestUtils;
 
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.mock;
-import static org.pentaho.di.trans.TransTestingUtil.assertResult;
+import org.junit.Assert;
+
 
 public class TextFileInputTest {
 
@@ -68,7 +69,7 @@ public class TextFileInputTest {
     String output =
         TextFileInputUtils.getLine( null, getInputStreamReader( input ), TextFileInputMeta.FILE_FORMAT_DOS,
             new StringBuilder( 1000 ) );
-    assertEquals( expected, output );
+    Assert.assertEquals( expected, output );
   }
 
   @Test
@@ -78,7 +79,7 @@ public class TextFileInputTest {
     String output =
         TextFileInputUtils.getLine( null, getInputStreamReader( input ), TextFileInputMeta.FILE_FORMAT_UNIX,
             new StringBuilder( 1000 ) );
-    assertEquals( expected, output );
+    Assert.assertEquals( expected, output );
   }
 
   @Test
@@ -88,7 +89,7 @@ public class TextFileInputTest {
     String output =
         TextFileInputUtils.getLine( null, getInputStreamReader( input ), TextFileInputMeta.FILE_FORMAT_UNIX,
             new StringBuilder( 1000 ) );
-    assertEquals( expected, output );
+    Assert.assertEquals( expected, output );
   }
 
   @Test
@@ -98,7 +99,7 @@ public class TextFileInputTest {
     String output =
         TextFileInputUtils.getLine( null, getInputStreamReader( input ), TextFileInputMeta.FILE_FORMAT_MIXED,
             new StringBuilder( 1000 ) );
-    assertEquals( expected, output );
+    Assert.assertEquals( expected, output );
   }
 
   @Test( timeout = 100 )
@@ -108,11 +109,11 @@ public class TextFileInputTest {
     String inputOSX = "col1\tcol2\tcol3\rdata1\tdata2\tdata3\r";
     String expected = "col1\tcol2\tcol3";
 
-    assertEquals( expected, TextFileInputUtils.getLine( null, getInputStreamReader( inputDOS ),
+    Assert.assertEquals( expected, TextFileInputUtils.getLine( null, getInputStreamReader( inputDOS ),
         TextFileInputMeta.FILE_FORMAT_UNIX, new StringBuilder( 1000 ) ) );
-    assertEquals( expected, TextFileInputUtils.getLine( null, getInputStreamReader( inputUnix ),
+    Assert.assertEquals( expected, TextFileInputUtils.getLine( null, getInputStreamReader( inputUnix ),
         TextFileInputMeta.FILE_FORMAT_UNIX, new StringBuilder( 1000 ) ) );
-    assertEquals( expected, TextFileInputUtils.getLine( null, getInputStreamReader( inputOSX ),
+    Assert.assertEquals( expected, TextFileInputUtils.getLine( null, getInputStreamReader( inputOSX ),
         TextFileInputMeta.FILE_FORMAT_UNIX, new StringBuilder( 1000 ) ) );
   }
 
@@ -132,8 +133,8 @@ public class TextFileInputTest {
 
     TextFileInput input = StepMockUtil.getStep( TextFileInput.class, TextFileInputMeta.class, "test" );
     List<Object[]> output = TransTestingUtil.execute( input, meta, data, 2, false );
-    assertResult( new Object[] { "r1c1", "r1c2" }, output.get( 0 ) );
-    assertResult( new Object[] { "r2c1", "r2c2" }, output.get( 1 ) );
+    TransTestingUtil.assertResult( new Object[] { "r1c1", "r1c2" }, output.get( 0 ) );
+    TransTestingUtil.assertResult( new Object[] { "r2c1", "r2c2" }, output.get( 1 ) );
 
     deleteVfsFile( virtualFile );
   }
@@ -150,8 +151,8 @@ public class TextFileInputTest {
 
     TextFileInput input = StepMockUtil.getStep( TextFileInput.class, TextFileInputMeta.class, "test" );
     List<Object[]> output = TransTestingUtil.execute( input, meta, data, 2, false );
-    assertResult( new Object[] { "1", "1", "1" }, output.get( 0 ) );
-    assertResult( new Object[] { "2", "1", "2" }, output.get( 1 ) );
+    TransTestingUtil.assertResult( new Object[] { "1", "1", "1" }, output.get( 0 ) );
+    TransTestingUtil.assertResult( new Object[] { "2", "1", "2" }, output.get( 1 ) );
 
     deleteVfsFile( virtualFile );
   }
@@ -168,7 +169,7 @@ public class TextFileInputTest {
 
     TextFileInput input = StepMockUtil.getStep( TextFileInput.class, TextFileInputMeta.class, "test" );
     List<Object[]> output = TransTestingUtil.execute( input, meta, data, 1, false );
-    assertResult( new Object[] { "-" }, output.get( 0 ) );
+    TransTestingUtil.assertResult( new Object[] { "-" }, output.get( 0 ) );
 
     deleteVfsFile( virtualFile );
   }
@@ -189,7 +190,30 @@ public class TextFileInputTest {
 
     deleteVfsFile( virtualFile );
   }
+  @Test
+  public void testErrorHandlerLineNumber() throws Exception {
+    final String content = new StringBuilder()
+      .append( "123" ).append( '\n' ).append( "333\n" )
+      .append( "345" ).append( '\n' ).append( "773\n" )
+      .append( "aaa" ).append( '\n' ).append( "444" )
+      .toString();
+    final String virtualFile = createVirtualFile( "pdi-2607.txt", content );
 
+    TextFileInputMeta meta = createMetaObject( field( "col1" ) );
+
+    meta.inputFiles.inputFields[0].setType( 1 );
+    meta.content.lineWrapped = false;
+    meta.content.nrWraps = 1;
+    meta.errorHandling.errorIgnored = true;
+    TextFileInputData data = createDataObject( virtualFile, ";", "col1" );
+    data.dataErrorLineHandler = Mockito.mock( FileErrorHandler.class );
+    TextFileInput input = StepMockUtil.getStep( TextFileInput.class, TextFileInputMeta.class, "test" );
+
+    List<Object[]> output = TransTestingUtil.execute( input, meta, data, 4, false );
+
+    Mockito.verify( data.dataErrorLineHandler ).handleLineError( 4, AbstractFileErrorHandler.NO_PARTS );
+    deleteVfsFile( virtualFile );
+  }
   private TextFileInputMeta createMetaObject( BaseFileInputField... fields ) {
     TextFileInputMeta meta = new TextFileInputMeta();
     meta.content.fileCompression = "None";
@@ -219,13 +243,12 @@ public class TextFileInputTest {
       }
     }
 
-    data.dataErrorLineHandler = mock( FileErrorHandler.class );
+    data.dataErrorLineHandler = Mockito.mock( FileErrorHandler.class );
     data.fileFormatType = TextFileInputMeta.FILE_FORMAT_UNIX;
     data.filterProcessor = new TextFileFilterProcessor( new TextFileFilter[ 0 ], new Variables() );
     data.filePlayList = new FilePlayListAll();
     return data;
   }
-
   private static String createVirtualFile( String filename, String... rows ) throws Exception {
     String virtualFile = TestUtils.createRamFile( filename );
 
