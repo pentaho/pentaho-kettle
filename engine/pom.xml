@@ -76,7 +76,6 @@
     <olap4j-xmla.version>1.2.0</olap4j-xmla.version>
     <wsdl4j.version>1.6.2</wsdl4j.version>
     <wsdl4j-qname.version>1.6.1</wsdl4j-qname.version>
-    <wstx-asl.version>3.2.4</wstx-asl.version>
     <xercesImpl.version>2.9.1</xercesImpl.version>
     <ehcache-core.version>2.5.1</ehcache-core.version>
     <jackson-core-asl.version>1.9.2</jackson-core-asl.version>
@@ -638,17 +637,6 @@
       <groupId>wsdl4j</groupId>
       <artifactId>wsdl4j-qname</artifactId>
       <version>${wsdl4j-qname.version}</version>
-      <exclusions>
-        <exclusion>
-          <groupId>*</groupId>
-          <artifactId>*</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-    <dependency>
-      <groupId>woodstox</groupId>
-      <artifactId>wstx-asl</artifactId>
-      <version>${wstx-asl.version}</version>
       <exclusions>
         <exclusion>
           <groupId>*</groupId>
