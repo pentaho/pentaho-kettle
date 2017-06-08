@@ -169,6 +169,7 @@
       <exclude name="javax.mail" module="mail"/>
       <exclude org="org.apache.axis2" module="axis2-kernel" />
       <exclude org="org.scannotation" module="scannotation" />
+      <exclude org="org.codehaus.woodstox" module="wstx-asl" />
     </dependency>
     <dependency org="${dependency.reporting-engine.group}" name="classic-extensions-drill-down" rev="${dependency.pentaho-reporting.revision}" changing="true"/>
     <dependency org="${dependency.reporting-engine.group}" name="classic-extensions-kettle" rev="${dependency.pentaho-reporting.revision}" changing="true">
