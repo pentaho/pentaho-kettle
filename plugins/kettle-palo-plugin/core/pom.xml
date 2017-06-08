@@ -39,7 +39,7 @@
         </dependency>
         <dependency>
             <groupId>pentaho-kettle</groupId>
-            <artifactId>kettle-engine-test</artifactId>
+            <artifactId>kettle-engine</artifactId>
         </dependency>
         <dependency>
             <groupId>pentaho-kettle</groupId>

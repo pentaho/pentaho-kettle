@@ -103,17 +103,21 @@
             </dependency>
             <!-- test dependencies -->
             <dependency>
+                <groupId>pentaho-kettle</groupId>
+                <artifactId>kettle-engine</artifactId>
+                <version>${kettle.version}</version>
+                <classifier>tests</classifier>
+                <scope>test</scope>
+            </dependency>
+
+            <dependency>
                 <groupId>junit</groupId>
                 <artifactId>junit</artifactId>
                 <version>${junit.version}</version>
                 <scope>test</scope>
             </dependency>
-            <dependency>
-                <groupId>pentaho-kettle</groupId>
-                <artifactId>kettle-engine-test</artifactId>
-                <version>${kettle.version}</version>
-                <scope>test</scope>
-            </dependency>
+
+
         </dependencies>
     </dependencyManagement>
 </project>
