@@ -71,6 +71,7 @@
     <simple-jndi.version>1.0.0</simple-jndi.version>
     <powermock-module-junit4.version>1.6.6</powermock-module-junit4.version>
     <powermock-api-mockito.version>1.6.6</powermock-api-mockito.version>
+    <woodstox-core-asl.version>4.4.1</woodstox-core-asl.version>
   </properties>
 
   <dependencies>
@@ -548,6 +549,12 @@
       <groupId>org.springframework</groupId>
       <artifactId>spring-test</artifactId>
       <version>${spring.framework.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.codehaus.woodstox</groupId>
+      <artifactId>woodstox-core-asl</artifactId>
+      <version>${woodstox-core-asl.version}</version>
       <scope>test</scope>
     </dependency>
   </dependencies>
