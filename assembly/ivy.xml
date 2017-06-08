@@ -87,7 +87,7 @@
     <dependency org="org.pentaho.kettle.plugins" name="kettle-openerp-plugin" rev="${project.revision}" changing="true" conf="plugins->default" transitive="false">
         <artifact name="kettle-openerp-plugin" type="zip"/>
     </dependency>
-    <dependency org="${ivy.artifact.group}" name="kettle-palo-plugin" rev="${project.revision}" changing="true" conf="plugins->default">
+    <dependency org="org.pentaho.kettle.plugins" name="kettle-palo-plugin" rev="${project.revision}" changing="true" conf="plugins->default" transitive="false">
         <artifact name="kettle-palo-plugin" type="zip"/>
     </dependency>
     <dependency org="${ivy.artifact.group}" name="kettle5-log4j-plugin" rev="${project.revision}" changing="true" conf="plugins->default">
