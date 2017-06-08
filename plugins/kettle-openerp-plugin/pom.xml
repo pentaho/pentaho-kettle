@@ -188,8 +188,9 @@
             </dependency>
             <dependency>
                 <groupId>pentaho-kettle</groupId>
-                <artifactId>kettle-engine-test</artifactId>
+                <artifactId>kettle-engine</artifactId>
                 <version>${kettle.version}</version>
+                <classifier>tests</classifier>
             </dependency>
         </dependencies>
     </dependencyManagement>
