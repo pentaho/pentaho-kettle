@@ -9,10 +9,10 @@
   <version>8.0-SNAPSHOT</version>
   <packaging>jar</packaging>
 
-  <name>Pentaho Data Integration Engine</name>
+  <name>PDI Engine</name>
 
   <parent>
-    <groupId>org.pentaho</groupId>
+    <groupId>org.pentaho.di</groupId>
     <artifactId>pdi-parent</artifactId>
     <version>8.0-SNAPSHOT</version>
   </parent>
@@ -28,7 +28,6 @@
     <pentaho-reporting.version>${project.version}</pentaho-reporting.version>
     <pentaho-registry.version>${project.version}</pentaho-registry.version>
     <pentaho-connections.version>${project.version}</pentaho-connections.version>
-    <metastore.version>${project.version}</metastore.version>
     <mondrian.version>3.15-SNAPSHOT</mondrian.version>
 
     <!-- Third-party dependencies -->
@@ -40,7 +39,6 @@
     <feed4j.version>1.0</feed4j.version>
     <ftp4che.version>0.7.1</ftp4che.version>
     <georss-rome.version>0.9.8</georss-rome.version>
-    <guava.version>17.0</guava.version>
     <infobright-core.version>3.4</infobright-core.version>
     <ini4j.version>0.5.1</ini4j.version>
     <janino.version>2.5.16</janino.version>
@@ -59,8 +57,6 @@
     <poi.version>3.15</poi.version>
     <poi-ooxml.version>3.15</poi-ooxml.version>
     <commons-collections4.version>4.1</commons-collections4.version>
-    <commons-codec.version>1.9</commons-codec.version>
-    <commons-logging.version>1.1.3</commons-logging.version>
     <xmlbeans.version>2.6.0</xmlbeans.version>
     <postgresql.version>9.3-1102-jdbc4</postgresql.version>
     <rome.version>1.0</rome.version>
@@ -86,7 +82,6 @@
     <hibernate-commons-annotations.version>3.2.0.Final</hibernate-commons-annotations.version>
     <hibernate-ehcache.version>3.6.9.Final</hibernate-ehcache.version>
     <cglib-nodep.version>2.2</cglib-nodep.version>
-    <encoder.version>1.2</encoder.version>
     <nekohtml.version>1.9.15</nekohtml.version>
     <js.version>1.7R3</js.version>
     <mail.version>1.4.7</mail.version>
@@ -101,14 +96,7 @@
     <jetty-webapp.version>8.1.15.v20140411</jetty-webapp.version>
     <log4jdbc.version>1.2</log4jdbc.version>
     <javax.servlet-api.version>3.0.1</javax.servlet-api.version>
-    <commons-beanutils.version>1.9.3</commons-beanutils.version>
-    <h2.version>1.2.131</h2.version>
     <oro.version>2.0.8</oro.version>
-    <jaxen.version>1.1.1</jaxen.version>
-    <metastore.version>8.0-SNAPSHOT</metastore.version>
-    <powermock-module-junit4.version>1.6.6</powermock-module-junit4.version>
-    <powermock-api-mockito.version>1.6.6</powermock-api-mockito.version>
-    <junit.version>4.7</junit.version>
   </properties>
 
   <dependencies>
@@ -133,7 +121,6 @@
     <dependency>
       <groupId>pentaho</groupId>
       <artifactId>metastore</artifactId>
-      <version>${metastore.version}</version>
       <exclusions>
         <exclusion>
           <groupId>*</groupId>
@@ -160,6 +147,31 @@
     </dependency>
 
     <!-- Third-party dependencies -->
+    <dependency>
+      <groupId>commons-codec</groupId>
+      <artifactId>commons-codec</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>commons-beanutils</groupId>
+      <artifactId>commons-beanutils</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>commons-logging</groupId>
+      <artifactId>commons-logging</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.google.guava</groupId>
+      <artifactId>guava</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.owasp.encoder</groupId>
+      <artifactId>encoder</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>rhino</groupId>
+      <artifactId>js</artifactId>
+    </dependency>
+
     <dependency>
       <groupId>org.antlr</groupId>
       <artifactId>antlr-complete</artifactId>
@@ -241,17 +253,6 @@
       <groupId>georss-rome</groupId>
       <artifactId>georss-rome</artifactId>
       <version>${georss-rome.version}</version>
-      <exclusions>
-        <exclusion>
-          <groupId>*</groupId>
-          <artifactId>*</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-    <dependency>
-      <groupId>com.google.guava</groupId>
-      <artifactId>guava</artifactId>
-      <version>${guava.version}</version>
       <exclusions>
         <exclusion>
           <groupId>*</groupId>
@@ -450,28 +451,6 @@
       <groupId>org.apache.commons</groupId>
       <artifactId>commons-collections4</artifactId>
       <version>${commons-collections4.version}</version>
-      <exclusions>
-        <exclusion>
-          <groupId>*</groupId>
-          <artifactId>*</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-    <dependency>
-      <groupId>commons-codec</groupId>
-      <artifactId>commons-codec</artifactId>
-      <version>${commons-codec.version}</version>
-      <exclusions>
-        <exclusion>
-          <groupId>*</groupId>
-          <artifactId>*</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-    <dependency>
-      <groupId>commons-logging</groupId>
-      <artifactId>commons-logging</artifactId>
-      <version>${commons-logging.version}</version>
       <exclusions>
         <exclusion>
           <groupId>*</groupId>
@@ -755,31 +734,9 @@
       </exclusions>
     </dependency>
     <dependency>
-      <groupId>org.owasp.encoder</groupId>
-      <artifactId>encoder</artifactId>
-      <version>${encoder.version}</version>
-      <exclusions>
-        <exclusion>
-          <groupId>*</groupId>
-          <artifactId>*</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-    <dependency>
       <groupId>net.sourceforge.nekohtml</groupId>
       <artifactId>nekohtml</artifactId>
       <version>${nekohtml.version}</version>
-      <exclusions>
-        <exclusion>
-          <groupId>*</groupId>
-          <artifactId>*</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-    <dependency>
-      <groupId>rhino</groupId>
-      <artifactId>js</artifactId>
-      <version>${js.version}</version>
       <exclusions>
         <exclusion>
           <groupId>*</groupId>
@@ -908,31 +865,27 @@
         </exclusion>
       </exclusions>
     </dependency>
-    <dependency>
-      <groupId>commons-beanutils</groupId>
-      <artifactId>commons-beanutils</artifactId>
-      <version>${commons-beanutils.version}</version>
-      <scope>provided</scope>
-      <exclusions>
-        <exclusion>
-          <groupId>*</groupId>
-          <artifactId>*</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
 
     <!-- Test dependencies -->
     <dependency>
       <groupId>com.h2database</groupId>
       <artifactId>h2</artifactId>
-      <version>${h2.version}</version>
       <scope>test</scope>
-      <exclusions>
-        <exclusion>
-          <groupId>*</groupId>
-          <artifactId>*</artifactId>
-        </exclusion>
-      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>jaxen</groupId>
+      <artifactId>jaxen</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.powermock</groupId>
+      <artifactId>powermock-module-junit4</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.powermock</groupId>
+      <artifactId>powermock-api-mockito</artifactId>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>oro</groupId>
@@ -947,46 +900,10 @@
       </exclusions>
     </dependency>
     <dependency>
-      <groupId>jaxen</groupId>
-      <artifactId>jaxen</artifactId>
-      <version>${jaxen.version}</version>
-      <scope>test</scope>
-      <exclusions>
-        <exclusion>
-          <groupId>*</groupId>
-          <artifactId>*</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-    <dependency>
       <groupId>pentaho</groupId>
       <artifactId>metastore</artifactId>
       <version>${metastore.version}</version>
       <classifier>tests</classifier>
-      <scope>test</scope>
-      <exclusions>
-        <exclusion>
-          <groupId>*</groupId>
-          <artifactId>*</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-    <dependency>
-      <groupId>org.powermock</groupId>
-      <artifactId>powermock-module-junit4</artifactId>
-      <version>${powermock-module-junit4.version}</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.powermock</groupId>
-      <artifactId>powermock-api-mockito</artifactId>
-      <version>${powermock-api-mockito.version}</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <version>${junit.version}</version>
       <scope>test</scope>
       <exclusions>
         <exclusion>

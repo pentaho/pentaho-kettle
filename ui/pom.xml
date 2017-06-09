@@ -8,10 +8,10 @@
   <packaging>jar</packaging>
   <version>8.0-SNAPSHOT</version>
 
-  <name>Pentaho Data Integration UI</name>
+  <name>PDI User Interface</name>
 
   <parent>
-    <groupId>org.pentaho</groupId>
+    <groupId>org.pentaho.di</groupId>
     <artifactId>pdi-parent</artifactId>
     <version>8.0-SNAPSHOT</version>
   </parent>
@@ -23,19 +23,13 @@
 
     <!-- Pentaho dependencies -->
     <pentaho-vfs-browser.version>${project.version}</pentaho-vfs-browser.version>
-    <pentaho-xul-core.version>${project.version}</pentaho-xul-core.version>
-    <pentaho-xul-swt.version>${project.version}</pentaho-xul-swt.version>
-    <pentaho-xul-swing.version>${project.version}</pentaho-xul-swing.version>
     <pentaho-capability-manager.version>${project.version}</pentaho-capability-manager.version>
 
     <!-- Third-party dependencies -->
-    <org.eclipse.swt.gtk.linux.x86_64.version>4.6</org.eclipse.swt.gtk.linux.x86_64.version>
     <common.version>3.3.0-v20070426</common.version>
     <jface.version>3.3.0-I20070606-0010</jface.version>
     <commands.version>3.3.0-I20070605-0010</commands.version>
     <jfreechart.version>1.0.13</jfreechart.version>
-    <js.version>1.7R3</js.version>
-    <junit.version>4.7</junit.version>
   </properties>
 
 
@@ -66,23 +60,14 @@
     <dependency>
       <groupId>pentaho</groupId>
       <artifactId>pentaho-xul-core</artifactId>
-      <version>${pentaho-xul-core.version}</version>
     </dependency>
     <dependency>
       <groupId>pentaho</groupId>
       <artifactId>pentaho-xul-swt</artifactId>
-      <version>${pentaho-xul-swt.version}</version>
-      <exclusions>
-        <exclusion>
-          <groupId>org.eclipse.swt</groupId>
-          <artifactId>*</artifactId>
-        </exclusion>
-      </exclusions>
     </dependency>
     <dependency>
       <groupId>pentaho</groupId>
       <artifactId>pentaho-xul-swing</artifactId>
-      <version>${pentaho-xul-swing.version}</version>
     </dependency>
     <dependency>
       <groupId>pentaho</groupId>
@@ -101,13 +86,6 @@
     <dependency>
       <groupId>org.eclipse.swt</groupId>
       <artifactId>org.eclipse.swt.gtk.linux.x86_64</artifactId>
-      <version>${org.eclipse.swt.gtk.linux.x86_64.version}</version>
-      <exclusions>
-        <exclusion>
-          <groupId>*</groupId>
-          <artifactId>*</artifactId>
-        </exclusion>
-      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.eclipse.equinox</groupId>
@@ -156,32 +134,9 @@
     <dependency>
       <groupId>rhino</groupId>
       <artifactId>js</artifactId>
-      <version>${js.version}</version>
-      <exclusions>
-        <exclusion>
-          <groupId>*</groupId>
-          <artifactId>*</artifactId>
-        </exclusion>
-      </exclusions>
     </dependency>
 
     <!-- Test dependencies -->
-    <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <version>${junit.version}</version>
-      <scope>test</scope>
-      <exclusions>
-        <exclusion>
-          <groupId>*</groupId>
-          <artifactId>*</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-    <dependency>
-      <groupId>org.mockito</groupId>
-      <artifactId>mockito-all</artifactId>
-    </dependency>
     <dependency>
       <groupId>pentaho-kettle</groupId>
       <artifactId>kettle-engine</artifactId>
@@ -194,6 +149,11 @@
           <artifactId>*</artifactId>
         </exclusion>
       </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.mockito</groupId>
+      <artifactId>mockito-all</artifactId>
+      <scope>test</scope>
     </dependency>
   </dependencies>
 </project>

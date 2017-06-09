@@ -3,13 +3,15 @@
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <modelVersion>4.0.0</modelVersion>
 
-  <groupId>org.pentaho</groupId>
-  <artifactId>pdi-engine</artifactId>
+  <groupId>org.pentaho.di</groupId>
+  <artifactId>pdi-engine-ext</artifactId>
   <version>8.0-SNAPSHOT</version>
   <packaging>pom</packaging>
 
+  <name>PDI Engine Extensions</name>
+
   <parent>
-    <groupId>org.pentaho</groupId>
+    <groupId>org.pentaho.di</groupId>
     <artifactId>pdi-parent</artifactId>
     <version>8.0-SNAPSHOT</version>
   </parent>
@@ -18,10 +20,4 @@
     <module>api</module>
     <module>serializers</module>
   </modules>
-
-  <properties>
-    <hamcrest.version>2.0.0.0</hamcrest.version>
-    <guava.dependency.version>17.0</guava.dependency.version>
-    <maven-bundle-plugin.version>3.2.0</maven-bundle-plugin.version>
-  </properties>
 </project>
