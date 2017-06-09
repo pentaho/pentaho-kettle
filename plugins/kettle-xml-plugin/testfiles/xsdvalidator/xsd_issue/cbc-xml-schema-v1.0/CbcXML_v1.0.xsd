@@ -1,0 +1,563 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSpy v2012 rel. 2 sp1 (x64) (http://www.altova.com) by Sebastien Michon (OECD) -->
+<xsd:schema xmlns:cbc="urn:oecd:ties:cbc:v1" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:stf="urn:oecd:ties:stf:v4" xmlns:iso="urn:oecd:ties:isocbctypes:v1" targetNamespace="urn:oecd:ties:cbc:v1" elementFormDefault="qualified" attributeFormDefault="unqualified" version="1.0">
+	<xsd:import namespace="urn:oecd:ties:isocbctypes:v1" schemaLocation="isocbctypes_v1.0.xsd"/>
+	<xsd:import namespace="urn:oecd:ties:stf:v4" schemaLocation="oecdtypes_v4.1.xsd"/>
+	<!--+++++++++++++++++++++++  Reusable Simple types ++++++++++++++++++++++++++++++++++++++ -->
+	<!-- Message type definitions -->
+	<xsd:simpleType name="MessageType_EnumType">
+		<xsd:annotation>
+			<xsd:documentation xml:lang="en">Message type defines the type of reporting </xsd:documentation>
+		</xsd:annotation>
+		<xsd:restriction base="xsd:string">
+			<xsd:enumeration value="CBC"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<!--  -->
+	<!-- MessageTypeIndic - 4 -->
+	<xsd:simpleType name="CbcMessageTypeIndic_EnumType">
+		<xsd:annotation>
+			<xsd:documentation xml:lang="en">The MessageTypeIndic defines the type of message sent</xsd:documentation>
+		</xsd:annotation>
+		<xsd:restriction base="xsd:string">
+			<xsd:enumeration value="CBC401">
+				<xsd:annotation>
+					<xsd:documentation>The message contains new information</xsd:documentation>
+				</xsd:annotation>
+			</xsd:enumeration>
+			<xsd:enumeration value="CBC402">
+				<xsd:annotation>
+					<xsd:documentation>The message contains corrections for previously sent information</xsd:documentation>
+				</xsd:annotation>
+			</xsd:enumeration>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<!--  -->
+	<!-- CBC Main business activities Type - 5 -->
+	<xsd:simpleType name="CbcBizActivityType_EnumType">
+		<xsd:annotation>
+			<xsd:documentation xml:lang="en">Main business activities
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:restriction base="xsd:string">
+			<xsd:enumeration value="CBC501">
+				<xsd:annotation>
+					<xsd:documentation>Research and Development</xsd:documentation>
+				</xsd:annotation>
+			</xsd:enumeration>
+			<xsd:enumeration value="CBC502">
+				<xsd:annotation>
+					<xsd:documentation>Holding or Managing intellectual property</xsd:documentation>
+				</xsd:annotation>
+			</xsd:enumeration>
+			<xsd:enumeration value="CBC503">
+				<xsd:annotation>
+					<xsd:documentation>Purchasing or Procurement</xsd:documentation>
+				</xsd:annotation>
+			</xsd:enumeration>
+			<xsd:enumeration value="CBC504">
+				<xsd:annotation>
+					<xsd:documentation>Manufacturing or Production</xsd:documentation>
+				</xsd:annotation>
+			</xsd:enumeration>
+			<xsd:enumeration value="CBC505">
+				<xsd:annotation>
+					<xsd:documentation>Sales, Marketing or Distribution</xsd:documentation>
+				</xsd:annotation>
+			</xsd:enumeration>
+			<xsd:enumeration value="CBC506">
+				<xsd:annotation>
+					<xsd:documentation>Administrative, Management or Support Services</xsd:documentation>
+				</xsd:annotation>
+			</xsd:enumeration>
+			<xsd:enumeration value="CBC507">
+				<xsd:annotation>
+					<xsd:documentation>Provision of Services to unrelated parties</xsd:documentation>
+				</xsd:annotation>
+			</xsd:enumeration>
+			<xsd:enumeration value="CBC508">
+				<xsd:annotation>
+					<xsd:documentation>Internal Group Finance</xsd:documentation>
+				</xsd:annotation>
+			</xsd:enumeration>
+			<xsd:enumeration value="CBC509">
+				<xsd:annotation>
+					<xsd:documentation>Regulated Financial Services</xsd:documentation>
+				</xsd:annotation>
+			</xsd:enumeration>
+			<xsd:enumeration value="CBC510">
+				<xsd:annotation>
+					<xsd:documentation>Insurance</xsd:documentation>
+				</xsd:annotation>
+			</xsd:enumeration>
+			<xsd:enumeration value="CBC511">
+				<xsd:annotation>
+					<xsd:documentation>Holding shares or other equity instruments</xsd:documentation>
+				</xsd:annotation>
+			</xsd:enumeration>
+			<xsd:enumeration value="CBC512">
+				<xsd:annotation>
+					<xsd:documentation>Dormant</xsd:documentation>
+				</xsd:annotation>
+			</xsd:enumeration>
+			<xsd:enumeration value="CBC513">
+				<xsd:annotation>
+					<xsd:documentation>Other</xsd:documentation>
+				</xsd:annotation>
+			</xsd:enumeration>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<!--  -->
+	<!-- List of Summary elements, for reference in AdditionalInfo - 6 -->
+	<xsd:simpleType name="CbcSummaryListElementsType_EnumType">
+		<xsd:annotation>
+			<xsd:documentation xml:lang="en">List of Summary elements
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:restriction base="xsd:string">
+			<xsd:enumeration value="CBC601">
+				<xsd:annotation>
+					<xsd:documentation>Revenues - Unrelated</xsd:documentation>
+				</xsd:annotation>
+			</xsd:enumeration>
+			<xsd:enumeration value="CBC602">
+				<xsd:annotation>
+					<xsd:documentation>Revenues - Related</xsd:documentation>
+				</xsd:annotation>
+			</xsd:enumeration>
+			<xsd:enumeration value="CBC603">
+				<xsd:annotation>
+					<xsd:documentation>Revenues - Total</xsd:documentation>
+				</xsd:annotation>
+			</xsd:enumeration>
+			<xsd:enumeration value="CBC604">
+				<xsd:annotation>
+					<xsd:documentation>Profit or Loss</xsd:documentation>
+				</xsd:annotation>
+			</xsd:enumeration>
+			<xsd:enumeration value="CBC605">
+				<xsd:annotation>
+					<xsd:documentation>Tax Paid</xsd:documentation>
+				</xsd:annotation>
+			</xsd:enumeration>
+			<xsd:enumeration value="CBC606">
+				<xsd:annotation>
+					<xsd:documentation>Tax Accrued</xsd:documentation>
+				</xsd:annotation>
+			</xsd:enumeration>
+			<xsd:enumeration value="CBC607">
+				<xsd:annotation>
+					<xsd:documentation>Capital</xsd:documentation>
+				</xsd:annotation>
+			</xsd:enumeration>
+			<xsd:enumeration value="CBC608">
+				<xsd:annotation>
+					<xsd:documentation>Earnings</xsd:documentation>
+				</xsd:annotation>
+			</xsd:enumeration>
+			<xsd:enumeration value="CBC609">
+				<xsd:annotation>
+					<xsd:documentation>Number of Employees</xsd:documentation>
+				</xsd:annotation>
+			</xsd:enumeration>
+			<xsd:enumeration value="CBC610">
+				<xsd:annotation>
+					<xsd:documentation>Assets</xsd:documentation>
+				</xsd:annotation>
+			</xsd:enumeration>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<!--  -->
+	<!-- ReportingRole - 7 -->
+	<xsd:simpleType name="CbcReportingRole_EnumType">
+		<xsd:annotation>
+			<xsd:documentation xml:lang="en">Reporting role</xsd:documentation>
+		</xsd:annotation>
+		<xsd:restriction base="xsd:string">
+			<xsd:enumeration value="CBC701">
+				<xsd:annotation>
+					<xsd:documentation>Ultimate Parent Entity</xsd:documentation>
+				</xsd:annotation>
+			</xsd:enumeration>
+			<xsd:enumeration value="CBC702">
+				<xsd:annotation>
+					<xsd:documentation>Surrogate Parent Entity</xsd:documentation>
+				</xsd:annotation>
+			</xsd:enumeration>
+			<xsd:enumeration value="CBC703">
+				<xsd:annotation>
+					<xsd:documentation>Local Filing</xsd:documentation>
+				</xsd:annotation>
+			</xsd:enumeration>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<!--  -->
+	<!-- String with minimum length 1 - data type for TIN_Type -->
+	<xsd:simpleType name="String1MinLength_Type">
+		<xsd:annotation>
+			<xsd:documentation xml:lang="en">Introduce a min length</xsd:documentation>
+		</xsd:annotation>
+		<xsd:restriction base="xsd:string">
+			<xsd:minLength value="1"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<!-- -->
+	<!-- String with maximum length of 4000 to avoid too long text values -->
+	<xsd:simpleType name="StringMaxLengthForLongText_Type">
+		<xsd:annotation>
+			<xsd:documentation xml:lang="en">String with maximum length of 4000</xsd:documentation>
+		</xsd:annotation>
+		<xsd:restriction base="xsd:string">
+			<xsd:maxLength value="4000"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<!-- -->
+	<!--++++++++++++++++++ Reusable Complex types +++++++++++++++++++++++++++++++++++++ -->
+	<!-- -->
+	<!-- Address Fix -->
+	<xsd:complexType name="AddressFix_Type">
+		<xsd:annotation>
+			<xsd:documentation xml:lang="en">
+			Structure of the address for a party broken down into its logical parts, recommended for easy matching. The 'City' element is the only required subelement. All of the subelements are simple text - data type 'string'.
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element name="Street" type="xsd:string" minOccurs="0"/>
+			<xsd:element name="BuildingIdentifier" type="xsd:string" minOccurs="0"/>
+			<xsd:element name="SuiteIdentifier" type="xsd:string" minOccurs="0"/>
+			<xsd:element name="FloorIdentifier" type="xsd:string" minOccurs="0"/>
+			<xsd:element name="DistrictName" type="xsd:string" minOccurs="0"/>
+			<xsd:element name="POB" type="xsd:string" minOccurs="0"/>
+			<xsd:element name="PostCode" type="xsd:string" minOccurs="0"/>
+			<xsd:element name="City" type="xsd:string"/>
+			<xsd:element name="CountrySubentity" type="xsd:string" minOccurs="0"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	<!--  -->
+	<!--  The Address of a Party, given in fixed or free Form, possibly in both Forms -->
+	<xsd:complexType name="Address_Type">
+		<xsd:annotation>
+			<xsd:documentation xml:lang="en">
+			The user has the option to enter the data about the address of a party either as one long field or to spread the data over up to eight  elements or even to use both formats. If the user chooses the option to enter the data required in separate elements, the container element for this will be 'AddressFix'. If the user chooses the option to enter the data required in a less structured way in 'AddressFree' all available address details shall be presented as one string of bytes, blank or "/" (slash) or carriage return- line feed used as a delimiter between parts of the address. PLEASE NOTE that the address country code is outside  both of these elements. The use of the fixed form is recommended as a rule to allow easy matching. However, the use of the free form is recommended if the sending state cannot reliably identify and distinguish the different parts of the address. The user may want to use both formats e.g. if besides separating the logical parts of the address he also wants to indicate a suitable breakdown into print-lines by delimiters in the free text form. In this case 'AddressFix' has to precede 'AddressFree'.
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element name="CountryCode" type="iso:CountryCode_Type"/>
+			<xsd:choice>
+				<xsd:element name="AddressFree" type="xsd:string"/>
+				<xsd:sequence>
+					<xsd:element name="AddressFix" type="cbc:AddressFix_Type"/>
+					<xsd:element name="AddressFree" type="xsd:string" minOccurs="0"/>
+				</xsd:sequence>
+			</xsd:choice>
+		</xsd:sequence>
+		<xsd:attribute name="legalAddressType" type="stf:OECDLegalAddressType_EnumType" use="optional"/>
+	</xsd:complexType>
+	<!--  -->
+	<!-- General Type for Monetary Amounts -->
+	<xsd:complexType name="MonAmnt_Type">
+		<xsd:annotation>
+			<xsd:documentation xml:lang="en">
+This data type is to be used whenever monetary amounts are to be communicated. Such amounts shall be given
+including two fractional digits of the main currency unit. The code for the currency in which the value is expressed has to be
+taken from the ISO codelist 4217 and added in attribute currCode.
+</xsd:documentation>
+		</xsd:annotation>
+		<xsd:simpleContent>
+			<xsd:extension base="xsd:integer">
+				<xsd:attribute name="currCode" type="iso:currCode_Type" use="required"/>
+			</xsd:extension>
+		</xsd:simpleContent>
+	</xsd:complexType>
+	<!--  -->
+	<!-- Organisation name -->
+	<xsd:complexType name="NameOrganisation_Type">
+		<xsd:annotation>
+			<xsd:documentation xml:lang="en">Name of organisation</xsd:documentation>
+		</xsd:annotation>
+		<xsd:simpleContent>
+			<xsd:extension base="xsd:string"/>
+		</xsd:simpleContent>
+	</xsd:complexType>
+	<!-- -->
+	<!-- TIN -->
+	<xsd:complexType name="TIN_Type">
+		<xsd:annotation>
+			<xsd:documentation xml:lang="en">This is the identification number/identification code for the party in question. As the identifier may be not strictly numeric, it is just defined as a string of characters. Attribute 'issuedBy' is required to designate the issuer of the identifier. </xsd:documentation>
+		</xsd:annotation>
+		<xsd:simpleContent>
+			<xsd:extension base="cbc:String1MinLength_Type">
+				<xsd:attribute name="issuedBy" type="iso:CountryCode_Type" use="optional">
+					<xsd:annotation>
+						<xsd:documentation xml:lang="en">Country code of issuing country, indicating country of Residence (to taxes and other)</xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
+			</xsd:extension>
+		</xsd:simpleContent>
+	</xsd:complexType>
+	<!-- -->
+	<!-- Message specification: Data identifying and describing the message as a whole -->
+	<xsd:complexType name="MessageSpec_Type">
+		<xsd:annotation>
+			<xsd:documentation xml:lang="en">Information in the message header identifies the Tax Administration that is sending the message.  It specifies when the message was created, what period (normally a year) the report is for, and the nature of the report (original, corrected, supplemental, etc).</xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element name="SendingEntityIN" type="xsd:string" minOccurs="0"/>
+			<xsd:element name="TransmittingCountry" type="iso:CountryCode_Type"/>
+			<xsd:element name="ReceivingCountry" type="iso:CountryCode_Type" maxOccurs="unbounded"/>
+			<xsd:element name="MessageType" type="cbc:MessageType_EnumType"/>
+			<xsd:element name="Language" type="iso:LanguageCode_Type" minOccurs="0"/>
+			<xsd:element name="Warning" type="cbc:StringMaxLengthForLongText_Type" minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation xml:lang="en">Free text expressing the restrictions for use of the information this
+message contains and the legal framework under which it is given</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="Contact" type="xsd:string" minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation xml:lang="en">All necessary contact information about persons responsible for and
+involved in the processing of the data transmitted in this message, both legally and technically. Free text as this is not
+intended for automatic processing. </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="MessageRefId" type="xsd:string">
+				<xsd:annotation>
+					<xsd:documentation xml:lang="en">Sender's unique identifier for this message</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="MessageTypeIndic" type="cbc:CbcMessageTypeIndic_EnumType" minOccurs="0"/>
+			<xsd:element name="CorrMessageRefId" type="xsd:string" minOccurs="0" maxOccurs="unbounded">
+				<xsd:annotation>
+					<xsd:documentation xml:lang="en">Sender's unique identifier that has to be corrected.  Must point to 1 or more previous message</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="ReportingPeriod" type="xsd:date">
+				<xsd:annotation>
+					<xsd:documentation xml:lang="en">The reporting year for which information is transmitted in documents of
+the current message.</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="Timestamp" type="xsd:dateTime"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	<!-- -->
+	<!-- Constituent Entity Type -->
+	<xsd:complexType name="ConstituentEntity_Type">
+		<xsd:sequence>
+			<xsd:element name="ConstEntity" type="cbc:OrganisationParty_Type"/>
+			<xsd:element name="IncorpCountryCode" type="iso:CountryCode_Type" minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation>Tax Jurisdiction of organisation or incorporation if different from Tax Jurisdiction of Residence</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="BizActivities" type="cbc:CbcBizActivityType_EnumType" maxOccurs="unbounded">
+				<xsd:annotation>
+					<xsd:documentation>Main business activity(ies) </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="OtherEntityInfo" type="cbc:StringMaxLengthForLongText_Type" minOccurs="0"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	<!-- -->
+	<!-- Correctable CBC Report -->
+	<xsd:complexType name="CorrectableCbcReport_Type">
+		<xsd:sequence>
+			<xsd:element name="DocSpec" type="stf:DocSpec_Type"/>
+			<xsd:element name="ResCountryCode" type="iso:CountryCode_Type">
+				<xsd:annotation>
+					<xsd:documentation>Tax jurisdiction to which Summary and Const. Entities relates</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="Summary">
+				<xsd:annotation>
+					<xsd:documentation>Overview of allocation of income, taxes and business activities by tax jurisdiction</xsd:documentation>
+				</xsd:annotation>
+				<xsd:complexType>
+					<xsd:sequence>
+						<xsd:element name="Revenues">
+							<xsd:complexType>
+								<xsd:sequence>
+									<xsd:element name="Unrelated" type="cbc:MonAmnt_Type">
+										<xsd:annotation>
+											<xsd:documentation>Unrelated Party</xsd:documentation>
+										</xsd:annotation>
+									</xsd:element>
+									<xsd:element name="Related" type="cbc:MonAmnt_Type">
+										<xsd:annotation>
+											<xsd:documentation>Related Party </xsd:documentation>
+										</xsd:annotation>
+									</xsd:element>
+									<xsd:element name="Total" type="cbc:MonAmnt_Type"/>
+								</xsd:sequence>
+							</xsd:complexType>
+						</xsd:element>
+						<xsd:element name="ProfitOrLoss" type="cbc:MonAmnt_Type">
+							<xsd:annotation>
+								<xsd:documentation>Profit (Loss) Before Income Tax 
+</xsd:documentation>
+							</xsd:annotation>
+						</xsd:element>
+						<xsd:element name="TaxPaid" type="cbc:MonAmnt_Type">
+							<xsd:annotation>
+								<xsd:documentation>Income Tax Paid (on cash basis) </xsd:documentation>
+							</xsd:annotation>
+						</xsd:element>
+						<xsd:element name="TaxAccrued" type="cbc:MonAmnt_Type">
+							<xsd:annotation>
+								<xsd:documentation>Income Tax Accrued -
+Current Year </xsd:documentation>
+							</xsd:annotation>
+						</xsd:element>
+						<xsd:element name="Capital" type="cbc:MonAmnt_Type">
+							<xsd:annotation>
+								<xsd:documentation>Stated capital</xsd:documentation>
+							</xsd:annotation>
+						</xsd:element>
+						<xsd:element name="Earnings" type="cbc:MonAmnt_Type">
+							<xsd:annotation>
+								<xsd:documentation>Accumulated earnings 
+</xsd:documentation>
+							</xsd:annotation>
+						</xsd:element>
+						<xsd:element name="NbEmployees" type="xsd:integer">
+							<xsd:annotation>
+								<xsd:documentation>Number of Employees</xsd:documentation>
+							</xsd:annotation>
+						</xsd:element>
+						<xsd:element name="Assets" type="cbc:MonAmnt_Type">
+							<xsd:annotation>
+								<xsd:documentation>Tangible Assets 
+other than Cash and Cash
+Equivalents</xsd:documentation>
+							</xsd:annotation>
+						</xsd:element>
+					</xsd:sequence>
+				</xsd:complexType>
+			</xsd:element>
+			<xsd:element name="ConstEntities" type="cbc:ConstituentEntity_Type" maxOccurs="unbounded">
+				<xsd:annotation>
+					<xsd:documentation>List of all the Constituent Entities of the MNE group included in each aggregation per tax jurisdiction</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+		</xsd:sequence>
+	</xsd:complexType>
+	<!--  -->
+	<!-- Organisation Identification Number -->
+	<xsd:complexType name="OrganisationIN_Type">
+		<xsd:annotation>
+			<xsd:documentation xml:lang="en">This is the identification number/identification code for the Entity in question. As the identifier may be not strictly numeric, it is just defined as a string of characters. Attribute 'issuedBy' is required to designate the issuer of the identifier.  Attribute 'INType' defines the type of identification number. </xsd:documentation>
+		</xsd:annotation>
+		<xsd:simpleContent>
+			<xsd:extension base="cbc:String1MinLength_Type">
+				<xsd:attribute name="issuedBy" type="iso:CountryCode_Type" use="optional">
+					<xsd:annotation>
+						<xsd:documentation xml:lang="en">Country code of issuing country, indicating country of Residence (to taxes and other)</xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
+				<xsd:attribute name="INType" type="xsd:string" use="optional">
+					<xsd:annotation>
+						<xsd:documentation xml:lang="en">Identification Number Type</xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
+			</xsd:extension>
+		</xsd:simpleContent>
+	</xsd:complexType>
+	<!-- -->
+	<!-- Collection of all Data describing an organisationy  as party-->
+	<xsd:complexType name="OrganisationParty_Type">
+		<xsd:annotation>
+			<xsd:documentation xml:lang="en">
+This container brings together all data about an organisation as a party. Name and address are required components and each can
+be present more than once to enable as complete a description as possible. Whenever possible one or more identifiers (TIN
+etc) should be added as well as a residence country code. Additional data that describes and identifies the party can be
+given . The code for the legal type according to the OECD codelist must be added. The structures of
+all of the subelements are defined elsewhere in this schema.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element name="ResCountryCode" type="iso:CountryCode_Type" maxOccurs="unbounded"/>
+			<xsd:element name="TIN" type="cbc:TIN_Type">
+				<xsd:annotation>
+					<xsd:documentation>Tax Identification Number</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="IN" type="cbc:OrganisationIN_Type" minOccurs="0" maxOccurs="unbounded">
+				<xsd:annotation>
+					<xsd:documentation xml:lang="en">Entity Identification Number</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="Name" type="cbc:NameOrganisation_Type" maxOccurs="unbounded"/>
+			<xsd:element name="Address" type="cbc:Address_Type" minOccurs="0" maxOccurs="unbounded"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	<!-- -->
+	<!-- Reporting Entity -->
+	<xsd:complexType name="ReportingEntity_Type">
+		<xsd:sequence>
+			<xsd:element name="Entity" type="cbc:OrganisationParty_Type"/>
+			<xsd:element name="ReportingRole" type="cbc:CbcReportingRole_EnumType"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	<!-- -->
+	<!-- Correctable Reporting Entity -->
+	<xsd:complexType name="CorrectableReportingEntity_Type">
+		<xsd:complexContent>
+			<xsd:extension base="cbc:ReportingEntity_Type">
+				<xsd:sequence>
+					<xsd:element name="DocSpec" type="stf:DocSpec_Type"/>
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+	<!-- -->
+	<!--  -->
+	<!-- Additional Info -->
+	<xsd:complexType name="CorrectableAdditionalInfo_Type">
+		<xsd:sequence>
+			<xsd:element name="DocSpec" type="stf:DocSpec_Type"/>
+			<xsd:element name="OtherInfo" type="cbc:StringMaxLengthForLongText_Type">
+				<xsd:annotation>
+					<xsd:documentation>Please include any further brief information or explanation you consider necessary or that would facilitate the understanding of the compulsory information provided in the country-by-country report. </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="ResCountryCode" type="iso:CountryCode_Type" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="SummaryRef" type="cbc:CbcSummaryListElementsType_EnumType" minOccurs="0" maxOccurs="unbounded"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	<!--  -->
+	<!--  -->
+	<!-- CBC Body Type - CBC Reporting  -->
+	<xsd:complexType name="CbcBody_Type">
+		<xsd:sequence>
+			<xsd:element name="ReportingEntity" type="cbc:CorrectableReportingEntity_Type" minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation xml:lang="en">Reporting Entity of the group</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="CbcReports" type="cbc:CorrectableCbcReport_Type" minOccurs="0" maxOccurs="unbounded">
+				<xsd:annotation>
+					<xsd:documentation>CBC Reports by tax jurisdiction</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="AdditionalInfo" type="cbc:CorrectableAdditionalInfo_Type" minOccurs="0" maxOccurs="unbounded"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	<!--  -->
+	<!--+++++++++++++++++++++++++++++++++++++++++++++++++++++++++ Schema  element ++++++++++++++++++++++++++++++++++++++++++++ -->
+	<!-- CBC OECD File Message structure  -->
+	<!-- -->
+	<!-- CBC Message structure  -->
+	<xsd:element name="CBC_OECD">
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element name="MessageSpec" type="cbc:MessageSpec_Type"/>
+				<xsd:element name="CbcBody" type="cbc:CbcBody_Type" maxOccurs="unbounded"/>
+			</xsd:sequence>
+			<xsd:attribute name="version" type="xsd:string">
+				<xsd:annotation>
+					<xsd:documentation xml:lang="en">CBC Version </xsd:documentation>
+				</xsd:annotation>
+			</xsd:attribute>
+		</xsd:complexType>
+	</xsd:element>
+	<!-- -->
+</xsd:schema>
