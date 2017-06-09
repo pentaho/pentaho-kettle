@@ -36,5 +36,6 @@
     <module>kettle-gpload-plugin</module>
     <module>kettle-openerp-plugin</module>
     <module>kettle-palo-plugin</module>
+    <module>kettle5-log4j-plugin</module>
   </modules>
 </project>
