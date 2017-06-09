@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSpy v2005 sp1 U (http://www.xmlspy.com) by Sebastien Michon (OECD) -->
+<xsd:schema xmlns:stf="urn:oecd:ties:stf:v4" xmlns:xsd="http://www.w3.org/2001/XMLSchema" targetNamespace="urn:oecd:ties:stf:v4" elementFormDefault="qualified" attributeFormDefault="unqualified" version="4.0">
+	<!--+++++++++++++++++++++++  Reusable Simple types ++++++++++++++++++++++++++++++++++++++ -->
+	<!-- Document type indicators types -->
+	<xsd:simpleType name="OECDDocTypeIndic_EnumType">
+		<xsd:annotation>
+			<xsd:documentation xml:lang="en">This element specifies the type of data being submitted.</xsd:documentation>
+		</xsd:annotation>
+		<xsd:restriction base="xsd:string">
+			<xsd:enumeration value="OECD0">
+				<xsd:annotation>
+					<xsd:documentation>Resent Data</xsd:documentation>
+				</xsd:annotation>
+			</xsd:enumeration>
+			<xsd:enumeration value="OECD1">
+				<xsd:annotation>
+					<xsd:documentation>New Data</xsd:documentation>
+				</xsd:annotation>
+			</xsd:enumeration>
+			<xsd:enumeration value="OECD2">
+				<xsd:annotation>
+					<xsd:documentation>Corrected Data</xsd:documentation>
+				</xsd:annotation>
+			</xsd:enumeration>
+			<xsd:enumeration value="OECD3">
+				<xsd:annotation>
+					<xsd:documentation>Deletion of Data</xsd:documentation>
+				</xsd:annotation>
+			</xsd:enumeration>
+			<xsd:enumeration value="OECD10">
+				<xsd:annotation>
+					<xsd:documentation>Resent Test Data</xsd:documentation>
+				</xsd:annotation>
+			</xsd:enumeration>
+			<xsd:enumeration value="OECD11">
+				<xsd:annotation>
+					<xsd:documentation>New Test Data</xsd:documentation>
+				</xsd:annotation>
+			</xsd:enumeration>
+			<xsd:enumeration value="OECD12">
+				<xsd:annotation>
+					<xsd:documentation>Corrected Test Data</xsd:documentation>
+				</xsd:annotation>
+			</xsd:enumeration>
+			<xsd:enumeration value="OECD13">
+				<xsd:annotation>
+					<xsd:documentation>Deletion of Test Data</xsd:documentation>
+				</xsd:annotation>
+			</xsd:enumeration>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<!-- -->
+	<!-- Kind of Name -->
+	<xsd:simpleType name="OECDNameType_EnumType">
+		<xsd:annotation>
+			<xsd:documentation xml:lang="en">
+				It is possible for stf documents to contain several names for the same party. This is a qualifier to indicate the type of a particular name. Such types include nicknames ('nick'), names under which a party does business ('dba' a short name for the entity, or a name that is used for public acquaintance instead of the official business name) etc.
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:restriction base="xsd:string">
+			<xsd:enumeration value="OECD201">
+				<xsd:annotation>
+					<xsd:documentation>SMFAliasOrOther</xsd:documentation>
+				</xsd:annotation>
+			</xsd:enumeration>
+			<xsd:enumeration value="OECD202">
+				<xsd:annotation>
+					<xsd:documentation>indiv (individual)</xsd:documentation>
+				</xsd:annotation>
+			</xsd:enumeration>
+			<xsd:enumeration value="OECD203">
+				<xsd:annotation>
+					<xsd:documentation>alias (alias)</xsd:documentation>
+				</xsd:annotation>
+			</xsd:enumeration>
+			<xsd:enumeration value="OECD204">
+				<xsd:annotation>
+					<xsd:documentation>nick (nickname)</xsd:documentation>
+				</xsd:annotation>
+			</xsd:enumeration>
+			<xsd:enumeration value="OECD205">
+				<xsd:annotation>
+					<xsd:documentation>aka (also known as)</xsd:documentation>
+				</xsd:annotation>
+			</xsd:enumeration>
+			<xsd:enumeration value="OECD206">
+				<xsd:annotation>
+					<xsd:documentation>dba (doing business as)</xsd:documentation>
+				</xsd:annotation>
+			</xsd:enumeration>
+			<xsd:enumeration value="OECD207">
+				<xsd:annotation>
+					<xsd:documentation>legal (legal name)</xsd:documentation>
+				</xsd:annotation>
+			</xsd:enumeration>
+			<xsd:enumeration value="OECD208">
+				<xsd:annotation>
+					<xsd:documentation>atbirth (name at birth)</xsd:documentation>
+				</xsd:annotation>
+			</xsd:enumeration>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<!-- -->
+	<!-- Type of the address considered from a legal point of view -->
+	<xsd:simpleType name="OECDLegalAddressType_EnumType">
+		<xsd:annotation>
+			<xsd:documentation xml:lang="en">This is a datatype for an attribute to an address. It serves to indicate the legal character of that address (residential, business etc.)</xsd:documentation>
+		</xsd:annotation>
+		<xsd:restriction base="xsd:token">
+			<xsd:enumeration value="OECD301">
+				<xsd:annotation>
+					<xsd:documentation>residentialOrBusiness</xsd:documentation>
+				</xsd:annotation>
+			</xsd:enumeration>
+			<xsd:enumeration value="OECD302">
+				<xsd:annotation>
+					<xsd:documentation>residential</xsd:documentation>
+				</xsd:annotation>
+			</xsd:enumeration>
+			<xsd:enumeration value="OECD303">
+				<xsd:annotation>
+					<xsd:documentation>business</xsd:documentation>
+				</xsd:annotation>
+			</xsd:enumeration>
+			<xsd:enumeration value="OECD304">
+				<xsd:annotation>
+					<xsd:documentation>registeredOffice</xsd:documentation>
+				</xsd:annotation>
+			</xsd:enumeration>
+			<xsd:enumeration value="OECD305">
+				<xsd:annotation>
+					<xsd:documentation>unspecified</xsd:documentation>
+				</xsd:annotation>
+			</xsd:enumeration>
+		</xsd:restriction>
+	</xsd:simpleType>
+	<!-- -->
+	<!--++++++++++++++++++ Reusable Complex types +++++++++++++++++++++++++++++++++++++ -->
+	<!-- -->
+	<!-- Document specification: Data identifying and describing the document -->
+	<xsd:complexType name="DocSpec_Type">
+		<xsd:annotation>
+			<xsd:documentation xml:lang="en">Document specification: Data identifying and describing the document, where
+'document' here means the part of a message that is to transmit the data about a single block of CBC information. </xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element name="DocTypeIndic" type="stf:OECDDocTypeIndic_EnumType"/>
+			<xsd:element name="DocRefId" type="xsd:string">
+				<xsd:annotation>
+					<xsd:documentation xml:lang="en">Sender's unique identifier of this document </xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="CorrMessageRefId" type="xsd:string" minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation xml:lang="en">Reference id of the message of the document referred to if this is a correction</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+			<xsd:element name="CorrDocRefId" type="xsd:string" minOccurs="0">
+				<xsd:annotation>
+					<xsd:documentation xml:lang="en">Reference id of the document referred to if this is correction</xsd:documentation>
+				</xsd:annotation>
+			</xsd:element>
+		</xsd:sequence>
+	</xsd:complexType>
+	<!-- -->
+</xsd:schema>
