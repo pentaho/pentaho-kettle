@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,6 +22,7 @@
 
 package org.pentaho.di.trans.steps.xsdvalidator;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.StringReader;
 
@@ -210,7 +211,11 @@ public class XsdValidator extends BaseStep implements StepInterface {
         // create the schema
         Schema SchematXSD = null;
         if ( xsdfile instanceof AbstractFileObject ) {
-          SchematXSD = factoryXSDValidator.newSchema( new StreamSource( xsdfile.getContent().getInputStream() ) );
+          if ( xsdfile.getName().getURI().contains( "ram:///" ) ) {
+            SchematXSD = factoryXSDValidator.newSchema( new StreamSource( xsdfile.getContent().getInputStream() ) );
+          } else {
+            SchematXSD = factoryXSDValidator.newSchema( new File( KettleVFS.getFilename( xsdfile ) ) );
+          }
         } else {
           // we should not get here as anything entered in that does not look like
           // a url should be made a FileObject.
