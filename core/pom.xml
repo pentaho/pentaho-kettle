@@ -9,51 +9,30 @@
   <version>8.0-SNAPSHOT</version>
   <packaging>jar</packaging>
 
-  <name>Pentaho Data Integration Core</name>
+  <name>PDI Core</name>
 
   <parent>
-    <groupId>org.pentaho</groupId>
+    <groupId>org.pentaho.di</groupId>
     <artifactId>pdi-parent</artifactId>
     <version>8.0-SNAPSHOT</version>
   </parent>
-
-  <scm>
-    <developerConnection>scm:git:git@github.com:pentaho/pentaho-kettle.git</developerConnection>
-    <tag>HEAD</tag>
-  </scm>
-  
-  <licenses>
-    <license>
-      <name>GNU Lesser General Public License, Version 2.1</name>
-      <url>https://www.gnu.org/licenses/old-licenses/gpl-2.0.txt</url>
-      <distribution>repo</distribution>
-      <comments></comments>
-    </license>
-  </licenses>    
 
   <properties>
     <!-- Test running configuration -->
     <maven-surefire-plugin.reuseForks>false</maven-surefire-plugin.reuseForks>
     <maven-surefire-plugin.forkCount>0.5C</maven-surefire-plugin.forkCount>
 
-    <!-- Pentaho dependencies -->
-    <metastore.version>${project.version}</metastore.version>
-
     <!-- Third-party dependencies -->
     <batik.version>1.8</batik.version>
     <xml-apis-ext.version>1.3.04</xml-apis-ext.version>
     <spring.framework.version>4.3.2.RELEASE</spring.framework.version>
-    <commons-beanutils.version>1.9.3</commons-beanutils.version>
-    <commons-codec.version>1.9</commons-codec.version>
     <commons-collections.version>3.2.2</commons-collections.version>
-    <commons-logging.version>1.1.3</commons-logging.version>
     <commons-lang.version>2.6</commons-lang.version>
     <commons-httpclient.version>3.1</commons-httpclient.version>
     <commons-vfs2.version>2.1-20150824</commons-vfs2.version>
     <commons-io.version>2.2</commons-io.version>
     <commons-dbcp.version>1.4</commons-dbcp.version>
     <commons-pool.version>1.5.7</commons-pool.version>
-    <guava.version>17.0</guava.version>
     <commons-compress.version>1.4.1</commons-compress.version>
     <dom4j.version>1.6.1</dom4j.version>
     <jetty-util.version>8.1.15.v20140411</jetty-util.version>
@@ -62,15 +41,10 @@
     <ognl.version>2.6.9</ognl.version>
     <scannotation.version>1.0.2</scannotation.version>
     <com.wcohen.secondstring.version>0.1</com.wcohen.secondstring.version>
-    <encoder.version>1.2</encoder.version>
     <javassist.version>3.20.0-GA</javassist.version>
     <jcifs.version>1.3.3</jcifs.version>
     <org.apache.karaf.main.version>3.0.3</org.apache.karaf.main.version>
-    <java-hamcrest.version>2.0.0.0</java-hamcrest.version>
-    <junit.version>4.11</junit.version>
     <simple-jndi.version>1.0.0</simple-jndi.version>
-    <powermock-module-junit4.version>1.6.6</powermock-module-junit4.version>
-    <powermock-api-mockito.version>1.6.6</powermock-api-mockito.version>
     <woodstox-core-asl.version>4.4.1</woodstox-core-asl.version>
   </properties>
 
@@ -79,10 +53,29 @@
     <dependency>
       <groupId>pentaho</groupId>
       <artifactId>metastore</artifactId>
-      <version>${metastore.version}</version>
     </dependency>
 
     <!-- Third-party dependencies -->
+    <dependency>
+      <groupId>commons-beanutils</groupId>
+      <artifactId>commons-beanutils</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>commons-codec</groupId>
+      <artifactId>commons-codec</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>commons-logging</groupId>
+      <artifactId>commons-logging</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.google.guava</groupId>
+      <artifactId>guava</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.owasp.encoder</groupId>
+      <artifactId>encoder</artifactId>
+    </dependency>
     <dependency>
       <groupId>org.apache.xmlgraphics</groupId>
       <artifactId>batik-bridge</artifactId>
@@ -249,42 +242,9 @@
       </exclusions>
     </dependency>
     <dependency>
-      <groupId>commons-beanutils</groupId>
-      <artifactId>commons-beanutils</artifactId>
-      <version>${commons-beanutils.version}</version>
-      <exclusions>
-        <exclusion>
-          <groupId>*</groupId>
-          <artifactId>*</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-    <dependency>
-      <groupId>commons-codec</groupId>
-      <artifactId>commons-codec</artifactId>
-      <version>${commons-codec.version}</version>
-      <exclusions>
-        <exclusion>
-          <groupId>*</groupId>
-          <artifactId>*</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-    <dependency>
       <groupId>commons-collections</groupId>
       <artifactId>commons-collections</artifactId>
       <version>${commons-collections.version}</version>
-      <exclusions>
-        <exclusion>
-          <groupId>*</groupId>
-          <artifactId>*</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-    <dependency>
-      <groupId>commons-logging</groupId>
-      <artifactId>commons-logging</artifactId>
-      <version>${commons-logging.version}</version>
       <exclusions>
         <exclusion>
           <groupId>*</groupId>
@@ -351,17 +311,6 @@
       <groupId>commons-pool</groupId>
       <artifactId>commons-pool</artifactId>
       <version>${commons-pool.version}</version>
-      <exclusions>
-        <exclusion>
-          <groupId>*</groupId>
-          <artifactId>*</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-    <dependency>
-      <groupId>com.google.guava</groupId>
-      <artifactId>guava</artifactId>
-      <version>${guava.version}</version>
       <exclusions>
         <exclusion>
           <groupId>*</groupId>
@@ -458,17 +407,6 @@
       </exclusions>
     </dependency>
     <dependency>
-      <groupId>org.owasp.encoder</groupId>
-      <artifactId>encoder</artifactId>
-      <version>${encoder.version}</version>
-      <exclusions>
-        <exclusion>
-          <groupId>*</groupId>
-          <artifactId>*</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-    <dependency>
       <groupId>org.javassist</groupId>
       <artifactId>javassist</artifactId>
       <version>${javassist.version}</version>
@@ -506,43 +444,22 @@
     <dependency>
       <groupId>org.hamcrest</groupId>
       <artifactId>java-hamcrest</artifactId>
-      <version>${java-hamcrest.version}</version>
-      <exclusions>
-        <exclusion>
-          <groupId>*</groupId>
-          <artifactId>*</artifactId>
-        </exclusion>
-      </exclusions>
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <version>${junit.version}</version>
-      <exclusions>
-        <exclusion>
-          <groupId>*</groupId>
-          <artifactId>*</artifactId>
-        </exclusion>
-      </exclusions>
+      <groupId>org.powermock</groupId>
+      <artifactId>powermock-module-junit4</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.powermock</groupId>
+      <artifactId>powermock-api-mockito</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>pentaho</groupId>
       <artifactId>simple-jndi</artifactId>
       <version>${simple-jndi.version}</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.powermock</groupId>
-      <artifactId>powermock-module-junit4</artifactId>
-      <version>${powermock-module-junit4.version}</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.powermock</groupId>
-      <artifactId>powermock-api-mockito</artifactId>
-      <version>${powermock-api-mockito.version}</version>
       <scope>test</scope>
     </dependency>
     <dependency>

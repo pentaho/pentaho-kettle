@@ -2,36 +2,41 @@
 <project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <modelVersion>4.0.0</modelVersion>
-  <parent>
-    <groupId>org.pentaho</groupId>
-    <artifactId>pdi-engine</artifactId>
-    <version>8.0-SNAPSHOT</version>
-  </parent>
+
+  <groupId>org.pentaho</groupId>
   <artifactId>pdi-engine-api</artifactId>
   <version>8.0-SNAPSHOT</version>
   <packaging>bundle</packaging>
+
+  <name>PDI Engine API</name>
+
+  <parent>
+    <groupId>org.pentaho.di</groupId>
+    <artifactId>pdi-engine-ext</artifactId>
+    <version>8.0-SNAPSHOT</version>
+  </parent>
+
   <properties>
-    <guava.dependency.version>17.0</guava.dependency.version>
-    <maven-bundle-plugin.version>3.2.0</maven-bundle-plugin.version>
+    <reactive-streams.version>1.0.0</reactive-streams.version>
   </properties>
+
   <dependencies>
-    <dependency>
-      <groupId>org.reactivestreams</groupId>
-      <artifactId>reactive-streams</artifactId>
-      <version>1.0.0</version>
-    </dependency>
     <dependency>
       <groupId>com.google.guava</groupId>
       <artifactId>guava</artifactId>
-      <version>${guava.dependency.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.reactivestreams</groupId>
+      <artifactId>reactive-streams</artifactId>
+      <version>${reactive-streams.version}</version>
     </dependency>
   </dependencies>
+
   <build>
     <plugins>
       <plugin>
         <groupId>org.apache.felix</groupId>
         <artifactId>maven-bundle-plugin</artifactId>
-        <version>${maven-bundle-plugin.version}</version>
         <extensions>true</extensions>
         <configuration>
           <instructions>
