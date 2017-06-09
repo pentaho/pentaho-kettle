@@ -788,7 +788,7 @@
             <configuration>
               <artifactItems>
                 <artifactItem>
-                  <groupId>pentaho-kettle</groupId>
+                  <groupId>org.pentaho.di.plugins</groupId>
                   <artifactId>kettle-version-checker</artifactId>
                   <version>${kettle-version-checker.version}</version>
                   <type>zip</type>

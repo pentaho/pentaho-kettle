@@ -37,5 +37,6 @@
     <module>kettle-openerp-plugin</module>
     <module>kettle-palo-plugin</module>
     <module>kettle5-log4j-plugin</module>
+    <module>kettle-version-checker</module>
   </modules>
 </project>
