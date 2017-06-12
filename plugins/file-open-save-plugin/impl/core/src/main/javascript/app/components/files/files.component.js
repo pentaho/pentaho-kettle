@@ -63,6 +63,7 @@ define([
       vm.hasResults = false;
       vm.noResults = "No results";//i18n.get("file-open-save-plugin.app.middle.no-results.message");
       _setSort(0, false, null);
+      vm.numResults = 0;
     }
 
     function onChanges(changes) {
@@ -84,15 +85,17 @@ define([
     }
 
     function getFiles(elements) {
-        var files = [];
-        vm.hasResults = false;
-        if(vm.search.length > 0) {
-            resolveChildren(elements, files);
-        } else {
-            files = elements;
-            vm.hasResults = true;
-        }
-        return files;
+      vm.numResults = 0;
+      var files = [];
+      vm.hasResults = false;
+      if(vm.search.length > 0) {
+        resolveChildren(elements, files);
+      } else {
+        files = elements;
+        vm.numResults = (files ? files.length : 0);
+        vm.hasResults = true;
+      }
+      return files;
     }
 
     function resolveChildren(elements, files) {
@@ -100,6 +103,7 @@ define([
         for (var i = 0; i < elements.length; i++) {
           files.push(elements[i]);
           if(elements[i].inResult) {
+            vm.numResults++;
             vm.hasResults = true;
           }
           if(elements[i].children.length > 0) {
