@@ -256,6 +256,17 @@
       </modules>
     </profile>
     <profile>
+      <id>plugins</id>
+      <activation>
+        <property>
+          <name>!skipDefault</name>
+        </property>
+      </activation>
+      <modules>
+        <module>plugins</module>
+      </modules>
+    </profile>
+    <profile>
       <id>assemblies</id>
       <activation>
         <property>

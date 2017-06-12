@@ -2,18 +2,20 @@
 <project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <modelVersion>4.0.0</modelVersion>
-  
-  <parent>
-    <groupId>org.pentaho</groupId>
-    <artifactId>pentaho-ce-jar-parent-pom</artifactId>
-    <version>8.0-SNAPSHOT</version>
-  </parent>
-  
-  <groupId>org.pentaho.kettle.plugins</groupId>
-  <artifactId>plugins</artifactId>
+
+  <groupId>org.pentaho.di.plugins</groupId>
+  <artifactId>pdi-plugins</artifactId>
   <version>8.0-SNAPSHOT</version>
   <packaging>pom</packaging>
-  
+
+  <name>PDI plugins</name>
+
+  <parent>
+    <groupId>org.pentaho.di</groupId>
+    <artifactId>pdi-parent</artifactId>
+    <version>8.0-SNAPSHOT</version>
+  </parent>
+
   <modules>
     <module>file-open-save-plugin</module>
     <module>repositories-plugin</module>
@@ -35,5 +37,4 @@
     <module>kettle-openerp-plugin</module>
     <module>kettle-palo-plugin</module>
   </modules>
-  
 </project>
