@@ -1838,11 +1838,19 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     }
   }
 
-  public void lastFileSelect( String id ) {
+  public void lastRepoFileSelect( String repo, String id ) {
+    int idx = Integer.parseInt( id );
+    List<LastUsedFile> lastUsedFiles = props.getLastUsedRepoFiles().getOrDefault( repo, Collections.emptyList() );
+    lastFileSelect( lastUsedFiles.get( idx ) );
+  }
 
+  public void lastFileSelect( String id ) {
     int idx = Integer.parseInt( id );
     List<LastUsedFile> lastUsedFiles = props.getLastUsedFiles();
-    final LastUsedFile lastUsedFile = lastUsedFiles.get( idx );
+    lastFileSelect( lastUsedFiles.get( idx ) );
+  }
+
+  public void lastFileSelect( final LastUsedFile lastUsedFile ) {
 
     // If the file comes from a repository and it's not the same as
     // the one we're connected to, ask for a username/password!
@@ -4276,7 +4284,6 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
           openFile( filename, importfile );
         }
       } else {
-        // Uncomment when repository save/open is complete
 //        try {
 //          ExtensionPointHandler.callExtensionPoint( log, KettleExtensionPoint.SpoonOpenRepository.id, null );
 //        } catch ( KettleException ke ) {

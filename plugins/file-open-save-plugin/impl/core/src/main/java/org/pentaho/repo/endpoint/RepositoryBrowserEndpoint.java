@@ -15,12 +15,8 @@
 
 package org.pentaho.repo.endpoint;
 
-import org.pentaho.di.core.LastUsedFile;
-import org.pentaho.di.ui.core.PropsUI;
-import org.pentaho.di.ui.spoon.Spoon;
 import org.pentaho.repo.controller.RepositoryBrowserController;
 import org.pentaho.repo.model.RepositoryDirectory;
-import org.pentaho.repo.model.RepositoryFile;
 
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -31,8 +27,6 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -75,6 +69,14 @@ public class RepositoryBrowserEndpoint {
   }
 
   @GET
+  @Path( "/loadRecent/{repo}/{id}" )
+  public Response loadRecent( @PathParam( "repo" ) String repo, @PathParam( "id" ) String id ) {
+    repositoryBrowserController.openRecentFile( repo, id );
+
+    return Response.ok().build();
+  }
+
+  @GET
   @Path( "/saveFile" )
   public Response saveFile( @QueryParam( "path" ) String path, @QueryParam( "name" ) String name ) {
     if ( repositoryBrowserController.saveFile( path, name ) ) {
@@ -113,23 +115,6 @@ public class RepositoryBrowserEndpoint {
   @Path( "/recentFiles" )
   @Produces( { MediaType.APPLICATION_JSON } )
   public Response recentFiles() {
-    PropsUI props = PropsUI.getInstance();
-
-    List<RepositoryFile> repositoryFiles = new ArrayList<>();
-    List<LastUsedFile> lastUsedFiles = props.getLastUsedRepoFiles().getOrDefault( Spoon.getInstance().rep.getName(),
-      Collections.emptyList() );
-    for ( LastUsedFile lastUsedFile : lastUsedFiles ) {
-      if ( lastUsedFile.getRepositoryName() != null && lastUsedFile.getRepositoryName()
-        .equals( Spoon.getInstance().rep.getName() ) ) {
-        RepositoryFile repositoryFile = new RepositoryFile();
-        repositoryFile.setType( lastUsedFile.isTransformation() ? "transformation" : "job" );
-        repositoryFile.setName( lastUsedFile.getFilename() );
-        repositoryFile.setPath( lastUsedFile.getDirectory() );
-        repositoryFile.setDate( lastUsedFile.getLastOpened() );
-        repositoryFiles.add( repositoryFile );
-      }
-    }
-
-    return Response.ok( repositoryFiles ).build();
+    return Response.ok( repositoryBrowserController.getRecentFiles() ).build();
   }
 }
