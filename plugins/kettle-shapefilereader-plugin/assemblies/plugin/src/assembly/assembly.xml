@@ -24,7 +24,7 @@
   <dependencySets>
     <dependencySet>
       <includes>
-        <include>org.pentaho.kettle.plugins:kettle-shapefilereader-plugin-core:jar</include>
+        <include>org.pentaho.di.plugins:kettle-shapefilereader-plugin-core:jar</include>
       </includes>
     </dependencySet>
   </dependencySets>

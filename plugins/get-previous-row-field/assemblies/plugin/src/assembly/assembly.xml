@@ -27,7 +27,7 @@
   <dependencySets>
     <dependencySet>
       <includes>
-        <include>org.pentaho.kettle.plugins:get-previous-row-field-core:jar</include>
+        <include>org.pentaho.di.plugins:get-previous-row-field-core:jar</include>
       </includes>
     </dependencySet>
   </dependencySets>

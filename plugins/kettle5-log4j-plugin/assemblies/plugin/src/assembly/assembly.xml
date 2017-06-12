@@ -6,23 +6,36 @@
     <format>zip</format>
   </formats>
 
-  <baseDirectory>kettle-drools5-plugin</baseDirectory>
+  <baseDirectory>kettle5-log4j-plugin</baseDirectory>
 
-  <files>
-    <file>
-      <source>${resources.directory}/version.xml</source>
+  <fileSets>
+    <fileSet>
+      <directory>${resources.directory}</directory>
       <outputDirectory>.</outputDirectory>
       <filtered>true</filtered>
-    </file>
-  </files>
+    </fileSet>
+  </fileSets>
 
   <dependencySets>
     <dependencySet>
       <outputDirectory>.</outputDirectory>
       <includes>
-        <include>org.pentaho.di.plugins:kettle-drools5-core:jar</include>
+        <include>org.pentaho.di.plugins:kettle-log4j-core:jar</include>
       </includes>
       <useProjectArtifact>false</useProjectArtifact>
+    </dependencySet>
+    <dependencySet>
+      <outputDirectory>.</outputDirectory>
+      <includes>
+        <include>org.pentaho.di.plugins:kettle-log4j-core:jar</include>
+      </includes>
+      <useProjectArtifact>false</useProjectArtifact>
+      <unpack>true</unpack>
+      <unpackOptions>
+        <includes>
+          <include>log4j.xml</include>
+        </includes>
+      </unpackOptions>
     </dependencySet>
 
     <dependencySet>
@@ -31,7 +44,7 @@
       <unpack>false</unpack>
       <scope>runtime</scope>
       <excludes>
-        <exclude>*:kettle-drools5-core:*</exclude>
+        <exclude>*:kettle-log4j-core:*</exclude>
       </excludes>
     </dependencySet>
   </dependencySets>
