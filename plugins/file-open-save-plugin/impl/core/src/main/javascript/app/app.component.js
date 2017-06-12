@@ -48,6 +48,7 @@ define([
     vm.selectFile = selectFile;
     vm.selectFolderByPath = selectFolderByPath;
     vm.doSearch = doSearch;
+    vm.resetSearch = resetSearch;
     vm.addFolder = addFolder;
     vm.openOrSave = openOrSave;
     vm.cancel = cancel;
@@ -68,7 +69,6 @@ define([
       vm.cancelButton = "Cancel";//i18n.get("file-open-save-plugin.app.cancel.button");
       vm.saveFileNameLabel = "File name";//i18n.get("file-open-save-plugin.app.save.file-name.label");
       vm.noRecentsMsg = "You haven't opened anything recently";//i18n.get("file-open-save-plugin.app.middle.no-recents.message");
-      vm.noResults = "No results";//i18n.get("file-open-save-plugin.app.middle.no-results.message");
       vm.isInSearch = false;
       vm.showRecents = true;
       vm.folder = {name: "Recents", path: "Recents"};
@@ -156,10 +156,20 @@ define([
       }
     }
 
+    function resetSearch() {
+      vm.searchString = '';
+      vm.doSearch();
+    }
+
     function filter(elements, value) {
-      for (var i = 0; i < elements.length; i++) {
-        var name = elements[i].name.toLowerCase();
-        elements[i].inResult = name.indexOf(value.toLowerCase()) !== -1;
+      if (elements) {
+        for (var i = 0; i < elements.length; i++) {
+          var name = elements[i].name.toLowerCase();
+          elements[i].inResult = name.indexOf(value.toLowerCase()) !== -1;
+          if(elements[i].children.length > 0) {
+            filter(elements[i].children, value);
+          }
+        }
       }
     }
 

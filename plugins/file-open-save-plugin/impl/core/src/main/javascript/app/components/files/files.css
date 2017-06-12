@@ -153,9 +153,8 @@ files .fileTable.searchTable .fileName {
   margin-bottom: 10px;
 }
 
-files .fileTable.searchTable .fileType span,
-files .fileTable.searchTable .fileLastSaved span {
-  vertical-align: top;
+files .fileType::first-letter {
+  text-transform: capitalize;
 }
 
 files .fileTable.searchTable .fileType,
@@ -196,4 +195,11 @@ files .sortWrapper .sort.sortUp {
 files .sortWrapper .sort.sortDown {
   background-image: url("../../images/sort_down.svg");
   visibility: visible;
+}
+
+files .fileAreaMessageView {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -100%);
 }

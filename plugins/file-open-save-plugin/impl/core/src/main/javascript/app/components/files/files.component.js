@@ -52,11 +52,14 @@ define([
     vm.selectFile = selectFile;
     vm.commitFile = commitFile;
     vm.rename = rename;
+    vm.getFiles = getFiles;
 
     function onInit() {
       vm.nameHeader = "Name";
       vm.typeHeader = "Type";
       vm.lastSaveHeader = "Last saved";
+      vm.hasResults = false;
+      vm.noResults = "No results";//i18n.get("file-open-save-plugin.app.middle.no-results.message");
     }
 
     function onChanges(changes) {
@@ -74,6 +77,32 @@ define([
     function selectFile(file) {
       vm.selectedFile = file;
       vm.onSelect({selectedFile:file});
+    }
+
+    function getFiles(elements) {
+        var files = [];
+        vm.hasResults = false;
+        if(vm.search.length > 0) {
+            resolveChildren(elements, files);
+        } else {
+            files = elements;
+            vm.hasResults = true;
+        }
+        return files;
+    }
+
+    function resolveChildren(elements, files) {
+      if (elements) {
+        for (var i = 0; i < elements.length; i++) {
+          files.push(elements[i]);
+          if(elements[i].inResult) {
+            vm.hasResults = true;
+          }
+          if(elements[i].children.length > 0) {
+            resolveChildren(elements[i].children, files);
+          }
+        }
+      }
     }
 
     function rename() {

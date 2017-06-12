@@ -3,7 +3,7 @@
      1. fileTable:   STATIC...always present
      2. searchTable: For search results only
 -->
-<table class="fileTable" ng-class="{searchTable: vm.search}">
+<table class="fileTable" ng-class="{searchTable: vm.search}" ng-show="vm.hasResults">
   <thead>
   <tr>
     <th>
@@ -21,7 +21,7 @@
   </tr>
   </thead>
   <tbody>
-  <tr ng-repeat="file in vm.folder.children" ng-click="vm.selectFile(file)" ng-dblclick="vm.commitFile(file); $event.stopPropagation();" ng-class="{selected: vm.selectedFile==file}" ng-hide="file.inResult==false">
+  <tr ng-repeat="file in vm.getFiles(vm.folder.children)" ng-click="vm.selectFile(file)" ng-dblclick="vm.commitFile(file); $event.stopPropagation();" ng-class="{selected: vm.selectedFile==file}" ng-hide="file.inResult==false">
     <td>
       <div class="fileTypeIcon" ng-class="{'file-trans':file.type=='transformation', 'file-job':file.type=='job', 'file-folder':file.type=='File folder'}"></div>
       <div class="fileName" rename on-rename="vm.rename()" selected="vm.selectedFile" ng-model="file">{{file.name}}</div>
@@ -29,7 +29,7 @@
     </td>
     <td>
       <div class="fileType">
-        <span>{{file.type}}</span>
+        {{file.type}}
       </div>
     </td>
     <td>
@@ -39,3 +39,4 @@
     </td>
   </tr>
 </table>
+<div class="fileAreaMessageView" ng-show="!vm.hasResults && vm.search.length > 0">{{::vm.noResults}}</div>
