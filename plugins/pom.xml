@@ -15,28 +15,51 @@
     <artifactId>pdi-parent</artifactId>
     <version>8.0-SNAPSHOT</version>
   </parent>
-
-  <modules>
-    <module>file-open-save-plugin</module>
-    <module>repositories-plugin</module>
-    <module>meta-inject-plugin</module>
-    <module>pdi-engine-configuration</module>
-    <module>get-previous-row-field</module>	
-    <module>aggregate-rows</module>
-    <module>elasticsearch-bulk-insert</module>
-    <module>googleanalytics</module>
-    <module>gp-bulk-loader</module>
-    <module>kettle-hl7-plugin</module>
-    <module>kettle-drools5-plugin</module>
-    <module>kettle-dummy-plugin</module>
-    <module>kettle-json-plugin</module>
-    <module>kettle-s3csvinput-plugin</module>
-    <module>kettle-sap-plugin</module>
-    <module>kettle-shapefilereader-plugin</module>
-    <module>kettle-gpload-plugin</module>
-    <module>kettle-openerp-plugin</module>
-    <module>kettle-palo-plugin</module>
-    <module>kettle5-log4j-plugin</module>
-    <module>kettle-version-checker</module>
-  </modules>
+  
+  <profiles>
+  
+    <profile>
+      <id>lowdeps</id>
+      <activation>
+        <property>
+          <name>!skipDefault</name>
+        </property>
+      </activation>
+      <modules>
+        <module>kettle5-log4j-plugin</module>
+      </modules>
+    </profile>
+  
+    <profile>
+      <id>highdeps</id>
+      <activation>
+        <property>
+          <name>!skipDefault</name>
+        </property>
+      </activation>
+      <modules>
+        <module>file-open-save-plugin</module>
+        <module>repositories-plugin</module>
+        <module>meta-inject-plugin</module>
+        <module>pdi-engine-configuration</module>
+        <module>get-previous-row-field</module> 
+        <module>aggregate-rows</module>
+        <module>elasticsearch-bulk-insert</module>
+        <module>googleanalytics</module>
+        <module>gp-bulk-loader</module>
+        <module>kettle-hl7-plugin</module>
+        <module>kettle-drools5-plugin</module>
+        <module>kettle-dummy-plugin</module>
+        <module>kettle-json-plugin</module>
+        <module>kettle-s3csvinput-plugin</module>
+        <module>kettle-sap-plugin</module>
+        <module>kettle-shapefilereader-plugin</module>
+        <module>kettle-gpload-plugin</module>
+        <module>kettle-openerp-plugin</module>
+        <module>kettle-palo-plugin</module>
+        <module>kettle-version-checker</module>
+      </modules>
+    </profile>
+    
+  </profiles>
 </project>
