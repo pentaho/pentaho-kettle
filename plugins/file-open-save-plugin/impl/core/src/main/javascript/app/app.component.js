@@ -28,8 +28,9 @@
 define([
   "./services/data.service",
   "text!./app.html",
+  'pentaho/i18n-osgi!file-open-save.messages',
   "css!./app.css"
-], function(dataService, template) {
+], function(dataService, template, i18n) {
   "use strict";
 
   var options = {
@@ -62,13 +63,13 @@ define([
 
     function onInit() {
       vm.wrapperClass = "save";
-      vm.headerTitle = "Save";//i18n.get("file-open-save-plugin.app.header.save.title");
-      vm.searchPlaceholder = "Search";//i18n.get("file-open-save-plugin.app.header.search.placeholder");
-      vm.selectedFolder = "Recents";//i18n.get("file-open-save-plugin.app.header.save.title");
-      vm.confirmButton = "Open";//i18n.get("file-open-save-plugin.app.save.button");
-      vm.cancelButton = "Cancel";//i18n.get("file-open-save-plugin.app.cancel.button");
-      vm.saveFileNameLabel = "File name";//i18n.get("file-open-save-plugin.app.save.file-name.label");
-      vm.noRecentsMsg = "You haven't opened anything recently";//i18n.get("file-open-save-plugin.app.middle.no-recents.message");
+      vm.headerTitle = i18n.get("file-open-save-plugin.app.header.save.title");
+      vm.searchPlaceholder = i18n.get("file-open-save-plugin.app.header.search.placeholder");
+      vm.selectedFolder = i18n.get("file-open-save-plugin.app.header.save.title");
+      vm.confirmButton = i18n.get("file-open-save-plugin.app.save.button");
+      vm.cancelButton = i18n.get("file-open-save-plugin.app.cancel.button");
+      vm.saveFileNameLabel = i18n.get("file-open-save-plugin.app.save.file-name.label");
+      vm.noRecentsMsg = i18n.get("file-open-save-plugin.app.middle.no-recents.message");
       vm.isInSearch = false;
       vm.showRecents = true;
       vm.folder = {name: "Recents", path: "Recents"};
@@ -108,13 +109,13 @@ define([
     function setState(state) {
       if (state === "open") {
         vm.wrapperClass = "open";
-        vm.headerTitle = "Open";//i18n.get("file-open-save-plugin.app.header.save.title");
-        vm.confirmButton = "Open";//i18n.get("file-open-save-plugin.app.save.button");
+        vm.headerTitle = i18n.get("file-open-save-plugin.app.header.open.title");
+        vm.confirmButton = i18n.get("file-open-save-plugin.app.open.button");
       }
       if (state === "save") {
         vm.wrapperClass = "save";
-        vm.headerTitle = "Save";//i18n.get("file-open-save-plugin.app.header.save.title");
-        vm.confirmButton = "Save";//i18n.get("file-open-save-plugin.app.save.button");
+        vm.headerTitle = i18n.get("file-open-save-plugin.app.header.save.title");
+        vm.confirmButton = i18n.get("file-open-save-plugin.app.save.button");
       }
     }
 
@@ -143,7 +144,11 @@ define([
       if (file.type === "File folder") {
         selectFolder(file);
       } else {
-        dt.openFile(file.objectId.id, file.type);
+        if (file.repository) {
+          dt.openRecent(file.repository, file.objectId.id);
+        } else {
+          dt.openFile(file.objectId.id, file.type);
+        }
         close();
       }
     }
@@ -228,21 +233,23 @@ define([
     }
 
     function addFolder() {
-      dt.create(vm.folder.path, getFolderName()).then(function(response) {
-        vm.folder.hasChildren = true;
-        var folder = response.data;
-        folder.visible = vm.folder.open;
-        folder.depth = vm.folder.depth+1;
-        folder.autoEdit = true;
-        folder.type = "File folder";
-        vm.folder.children.splice(0, 0, folder);
-        for (var i = 0; i < vm.folders.length; i++) {
-          if (vm.folders[i].path === folder.parent) {
-            vm.folders.splice(i+1, 0, angular.copy(folder));
-            break;
+      if (vm.selectedFolder !== "Recents") {
+        dt.create(vm.folder.path, getFolderName()).then(function(response) {
+          vm.folder.hasChildren = true;
+          var folder = response.data;
+          folder.visible = vm.folder.open;
+          folder.depth = vm.folder.depth+1;
+          folder.autoEdit = true;
+          folder.type = "File folder";
+          vm.folder.children.splice(0, 0, folder);
+          for (var i = 0; i < vm.folders.length; i++) {
+            if (vm.folders[i].path === folder.parent) {
+              vm.folders.splice(i+1, 0, angular.copy(folder));
+              break;
+            }
           }
-        }
-      });
+        });
+      }
     }
 
     function getFolderName() {

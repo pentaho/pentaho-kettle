@@ -48,6 +48,7 @@ define(
           getDirectoryTree: getDirectoryTree,
           getFiles: getFiles,
           getRecentFiles: getRecentFiles,
+          openRecent: openRecent,
           openFile: openFile,
           rename: rename,
           create: create,
@@ -80,6 +81,10 @@ define(
 
         function remove(id, type) {
           return _httpDelete([baseUrl, "remove", encodeURIComponent(id), type].join("/"));
+        }
+
+        function openRecent( repo, id ) {
+          return _httpGet([baseUrl, "loadRecent", repo, id].join("/"));
         }
 
         /**

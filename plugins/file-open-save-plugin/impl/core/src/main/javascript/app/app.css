@@ -41,7 +41,7 @@ file-open-save-app input[type="text"] {
   border-radius: 4px;
   -moz-border-radius: 4px;
   -webkit-border-radius: 4px;
-  color: #333;
+  color: #212121;
   padding: 0 10px;
   outline: none;
   -webkit-box-sizing: border-box;
@@ -76,6 +76,7 @@ file-open-save-app .headerTitle {
   line-height: 34px;
   border: none;
   float: left;
+  color: #333;
 }
 
 file-open-save-app .headerSearch {

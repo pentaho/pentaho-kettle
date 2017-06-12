@@ -34,6 +34,7 @@ public abstract class RepositoryObject {
   private String extension;
   private Date date;
   protected String type;
+  private String repository;
 
   private List<RepositoryObject> children = new ArrayList<>();
 
@@ -110,4 +111,12 @@ public abstract class RepositoryObject {
   }
 
   public abstract String getType();
+
+  public String getRepository() {
+    return repository;
+  }
+
+  public void setRepository( String repository ) {
+    this.repository = repository;
+  }
 }

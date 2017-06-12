@@ -16,6 +16,7 @@
 package org.pentaho.repo.controller;
 
 import org.pentaho.di.core.EngineMetaInterface;
+import org.pentaho.di.core.LastUsedFile;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.repository.ObjectId;
@@ -25,6 +26,7 @@ import org.pentaho.di.repository.RepositoryElementMetaInterface;
 import org.pentaho.di.repository.RepositoryExtended;
 import org.pentaho.di.repository.RepositoryObjectInterface;
 import org.pentaho.di.repository.RepositoryObjectType;
+import org.pentaho.di.ui.core.PropsUI;
 import org.pentaho.di.ui.spoon.Spoon;
 import org.pentaho.repo.model.RepositoryDirectory;
 import org.pentaho.repo.model.RepositoryFile;
@@ -185,7 +187,40 @@ public class RepositoryBrowserController {
     }
   }
 
-  private void createRepositoryDirectory( RepositoryDirectoryInterface repositoryDirectoryInterface, List<RepositoryDirectory> repositoryDirectories, int depth, RepositoryDirectory parent ) {
+  public List<RepositoryFile> getRecentFiles() {
+    PropsUI props = PropsUI.getInstance();
+
+    List<RepositoryFile> repositoryFiles = new ArrayList<>();
+    List<LastUsedFile> lastUsedFiles = props.getLastUsedRepoFiles().getOrDefault( Spoon.getInstance().rep.getName(),
+      Collections.emptyList() );
+    for ( int i = 0; i < lastUsedFiles.size(); i++ ) {
+      LastUsedFile lastUsedFile = lastUsedFiles.get( i );
+      if ( lastUsedFile.getRepositoryName() != null && lastUsedFile.getRepositoryName()
+        .equals( Spoon.getInstance().rep.getName() ) ) {
+        RepositoryFile repositoryFile = new RepositoryFile();
+        final String index = String.valueOf( i );
+        repositoryFile.setObjectId( () -> index );
+        repositoryFile.setType( lastUsedFile.isTransformation() ? "transformation" : "job" );
+        repositoryFile.setName( lastUsedFile.getFilename() );
+        repositoryFile.setPath( lastUsedFile.getDirectory() );
+        repositoryFile.setDate( lastUsedFile.getLastOpened() );
+        repositoryFile.setRepository( lastUsedFile.getRepositoryName() );
+        repositoryFiles.add( repositoryFile );
+      }
+    }
+
+    return repositoryFiles;
+  }
+
+  public void openRecentFile( String repo, String id ) {
+    getSpoon().getDisplay().asyncExec( () -> {
+      getSpoon().lastRepoFileSelect( repo, id );
+    } );
+  }
+
+  private void createRepositoryDirectory( RepositoryDirectoryInterface repositoryDirectoryInterface,
+                                          List<RepositoryDirectory> repositoryDirectories, int depth,
+                                          RepositoryDirectory parent ) {
     RepositoryDirectory repositoryDirectory = new RepositoryDirectory();
     repositoryDirectory.setName( repositoryDirectoryInterface.getName() );
     repositoryDirectory.setPath( repositoryDirectoryInterface.getPath() );
@@ -199,7 +234,7 @@ public class RepositoryBrowserController {
     if ( !Utils.isEmpty( repositoryDirectoryInterface.getChildren() ) ) {
       repositoryDirectory.setHasChildren( true );
       for ( RepositoryDirectoryInterface child : repositoryDirectoryInterface.getChildren() ) {
-        createRepositoryDirectory( child, repositoryDirectories, depth+1, repositoryDirectory );
+        createRepositoryDirectory( child, repositoryDirectories, depth + 1, repositoryDirectory );
       }
     }
     List<RepositoryElementMetaInterface> repositoryElementMetaInterfaces = new ArrayList<>();
