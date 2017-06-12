@@ -842,7 +842,7 @@
                   <type>zip</type>
                 </artifactItem>
                 <artifactItem>
-                  <groupId>pentaho-kettle</groupId>
+                  <groupId>org.pentaho.di.plugins</groupId>
                   <artifactId>kettle5-log4j-plugin</artifactId>
                   <version>${kettle5-log4j-plugin.version}</version>
                   <type>zip</type>
