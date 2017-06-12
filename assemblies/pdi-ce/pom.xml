@@ -794,49 +794,49 @@
                   <type>zip</type>
                 </artifactItem>
                 <artifactItem>
-                  <groupId>org.pentaho.kettle.plugins</groupId>
+                  <groupId>org.pentaho.di.plugins</groupId>
                   <artifactId>kettle-dummy-plugin</artifactId>
                   <version>${kettle-dummy-plugin.version}</version>
                   <type>zip</type>
                 </artifactItem>
                 <artifactItem>
-                  <groupId>org.pentaho.kettle.plugins</groupId>
+                  <groupId>org.pentaho.di.plugins</groupId>
                   <artifactId>kettle-s3csvinput-plugin</artifactId>
                   <version>${kettle-s3csvinput-plugin.version}</version>
                   <type>zip</type>
                 </artifactItem>
                 <artifactItem>
-                  <groupId>org.pentaho.kettle.plugins</groupId>
+                  <groupId>org.pentaho.di.plugins</groupId>
                   <artifactId>kettle-shapefilereader-plugin</artifactId>
                   <version>${kettle-shapefilereader-plugin.version}</version>
                   <type>zip</type>
                 </artifactItem>
                 <artifactItem>
-                  <groupId>org.pentaho.kettle.plugins</groupId>
+                  <groupId>org.pentaho.di.plugins</groupId>
                   <artifactId>kettle-drools5-plugin</artifactId>
                   <version>${kettle-drools5-plugin.version}</version>
                   <type>zip</type>
                 </artifactItem>
                 <artifactItem>
-                  <groupId>org.pentaho.kettle.plugins</groupId>
+                  <groupId>org.pentaho.di.plugins</groupId>
                   <artifactId>kettle-gpload-plugin</artifactId>
                   <version>${kettle-gpload-plugin.version}</version>
                   <type>zip</type>
                 </artifactItem>
                 <artifactItem>
-                  <groupId>org.pentaho.kettle.plugins</groupId>
+                  <groupId>org.pentaho.di.plugins</groupId>
                   <artifactId>kettle-hl7-plugin</artifactId>
                   <version>${kettle-hl7-plugin.version}</version>
                   <type>zip</type>
                 </artifactItem>
                 <artifactItem>
-                  <groupId>org.pentaho.kettle.plugins</groupId>
+                  <groupId>org.pentaho.di.plugins</groupId>
                   <artifactId>kettle-openerp-plugin</artifactId>
                   <version>${kettle-openerp-plugin.version}</version>
                   <type>zip</type>
                 </artifactItem>
                 <artifactItem>
-                  <groupId>org.pentaho.kettle.plugins</groupId>
+                  <groupId>org.pentaho.di.plugins</groupId>
                   <artifactId>kettle-palo-plugin</artifactId>
                   <version>${kettle-palo-plugin.version}</version>
                   <type>zip</type>
@@ -848,7 +848,7 @@
                   <type>zip</type>
                 </artifactItem>
                 <artifactItem>
-                  <groupId>org.pentaho.kettle.plugins</groupId>
+                  <groupId>org.pentaho.di.plugins</groupId>
                   <artifactId>pdi-google-analytics-plugin</artifactId>
                   <version>${pdi-google-analytics-plugin.version}</version>
                   <type>zip</type>
@@ -872,13 +872,13 @@
                   <type>zip</type>
                 </artifactItem>
                 <artifactItem>
-                  <groupId>org.pentaho.kettle.plugins</groupId>
+                  <groupId>org.pentaho.di.plugins</groupId>
                   <artifactId>gp-bulk-loader-plugin</artifactId>
                   <version>${gp-bulk-loader-plugin.version}</version>
                   <type>zip</type>
                 </artifactItem>
                 <artifactItem>
-                  <groupId>org.pentaho.kettle.plugins</groupId>
+                  <groupId>org.pentaho.di.plugins</groupId>
                   <artifactId>elasticsearch-bulk-insert-plugin</artifactId>
                   <version>${elasticsearch-bulk-insert-plugin.version}</version>
                   <type>zip</type>
@@ -890,13 +890,13 @@
                   <type>zip</type>
                 </artifactItem>
                 <artifactItem>
-                  <groupId>org.pentaho.kettle.plugins</groupId>
+                  <groupId>org.pentaho.di.plugins</groupId>
                   <artifactId>kettle-json-plugin</artifactId>
                   <version>${kettle-json-plugin.version}</version>
                   <type>zip</type>
                 </artifactItem>
                 <artifactItem>
-                  <groupId>org.pentaho.kettle.plugins</groupId>
+                  <groupId>org.pentaho.di.plugins</groupId>
                   <artifactId>kettle-sap-plugin</artifactId>
                   <version>${kettle-sap-plugin.version}</version>
                   <type>zip</type>
