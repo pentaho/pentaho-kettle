@@ -46,6 +46,7 @@ define([
   filesController.$inject = ["$timeout", dataService.name, "$scope"];
 
   function filesController($timeout, dt, $scope) {
+    var _sortField = "name";
     var vm = this;
     vm.$onInit = onInit;
     vm.$onChanges = onChanges;
@@ -53,6 +54,7 @@ define([
     vm.commitFile = commitFile;
     vm.rename = rename;
     vm.getFiles = getFiles;
+    vm.sortFiles = sortFiles;
 
     function onInit() {
       vm.nameHeader = "Name";
@@ -60,11 +62,13 @@ define([
       vm.lastSaveHeader = "Last saved";
       vm.hasResults = false;
       vm.noResults = "No results";//i18n.get("file-open-save-plugin.app.middle.no-results.message");
+      _setSort(0, false, null);
     }
 
     function onChanges(changes) {
       if (changes.folder) {
         vm.selectedFile = null;
+        _setSort(0, false, null);
       }
     }
 
@@ -110,6 +114,28 @@ define([
       dt.rename(vm.selectedFile.objectId.id, vm.selectedFile.name, path, vm.selectedFile.type).then(function(response) {
         vm.selectedFile.objectId = response.data;
       });
+    }
+
+    function sortFiles () {
+      switch (vm.sortState) {
+        case 0://original
+          _setSort(1, false, _sortField);
+          break;
+        case 1://Ascend
+          _setSort(2, true, _sortField);
+          break;
+        case 2://Descend
+          _setSort(0, false, null);
+          break;
+        default:
+          break;
+      }
+    }
+
+    function _setSort(state, reverse, field) {
+      vm.sortState = state;
+      vm.sortReverse = reverse;
+      vm.sortField = field;
     }
   }
 
