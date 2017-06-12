@@ -17,7 +17,7 @@
         <dependencySet>
 	        <outputDirectory>elasticsearch-bulk-insert-plugin</outputDirectory>
 	        <includes>
-	            <include>org.pentaho.kettle.plugins:elasticsearch-bulk-insert-core:jar</include>
+	            <include>org.pentaho.di.plugins:elasticsearch-bulk-insert-core:jar</include>
 	        </includes>
 	    </dependencySet>
         <dependencySet>

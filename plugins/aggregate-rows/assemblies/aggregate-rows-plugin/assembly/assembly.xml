@@ -18,7 +18,7 @@
 	    <dependencySet>
 	      <outputDirectory>aggregate-rows-plugin</outputDirectory>
 	      <includes>
-	        <include>org.pentaho.kettle.plugins:aggregate-rows-core:jar</include>
+	        <include>org.pentaho.di.plugins:aggregate-rows-core:jar</include>
 	      </includes>
 	    </dependencySet>
     </dependencySets>
