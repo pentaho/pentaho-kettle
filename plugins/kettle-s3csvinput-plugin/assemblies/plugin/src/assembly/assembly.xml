@@ -16,7 +16,7 @@
   <dependencySets>
     <dependencySet>
       <includes>
-        <include>org.pentaho.kettle.plugins:kettle-s3csvinput-plugin-core:jar</include>
+        <include>org.pentaho.di.plugins:kettle-s3csvinput-plugin-core:jar</include>
       </includes>
     </dependencySet>
     <dependencySet>
