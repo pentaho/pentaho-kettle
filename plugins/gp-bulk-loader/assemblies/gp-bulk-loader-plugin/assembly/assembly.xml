@@ -17,7 +17,7 @@
 	    <dependencySet>
 	      <outputDirectory>gp-bulk-loader-plugin</outputDirectory>
 	      <includes>
-	        <include>org.pentaho.kettle.plugins:gp-bulk-loader-core:jar</include>
+	        <include>org.pentaho.di.plugins:gp-bulk-loader-core:jar</include>
 	      </includes>
 	    </dependencySet>
     </dependencySets>

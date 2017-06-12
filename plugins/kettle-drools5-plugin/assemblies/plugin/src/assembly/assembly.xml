@@ -20,7 +20,7 @@
     <dependencySet>
       <outputDirectory>.</outputDirectory>
       <includes>
-        <include>org.pentaho.kettle.plugins:kettle-drools5-core:jar</include>
+        <include>org.pentaho.di.plugins:kettle-drools5-core:jar</include>
       </includes>
       <useProjectArtifact>false</useProjectArtifact>
     </dependencySet>

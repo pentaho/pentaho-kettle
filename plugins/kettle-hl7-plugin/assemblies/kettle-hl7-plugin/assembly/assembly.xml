@@ -18,7 +18,7 @@
 	      <outputDirectory>kettle-hl7-plugin</outputDirectory>
 	      <scope>provided</scope>
 	      <includes>
-	        <include>org.pentaho.kettle.plugins:kettle-hl7-plugin-core:jar</include>
+	        <include>org.pentaho.di.plugins:kettle-hl7-plugin-core:jar</include>
 	      </includes>
 	    </dependencySet>
         <dependencySet>
