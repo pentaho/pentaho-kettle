@@ -106,7 +106,8 @@ public class RepositoryBrowserController {
 
   public RepositoryDirectory create( String parent, String name ) {
     try {
-      RepositoryDirectoryInterface repositoryDirectoryInterface = getRepository().createRepositoryDirectory( getRepository().findDirectory( parent ), name );
+      RepositoryDirectoryInterface repositoryDirectoryInterface =
+        getRepository().createRepositoryDirectory( getRepository().findDirectory( parent ), name );
       RepositoryDirectory repositoryDirectory = new RepositoryDirectory();
       repositoryDirectory.setName( repositoryDirectoryInterface.getName() );
       repositoryDirectory.setPath( repositoryDirectoryInterface.getPath() );
@@ -151,9 +152,11 @@ public class RepositoryBrowserController {
           repositoryDirectoryInterface = getRepository().loadRepositoryDirectoryTree();
         }
         List<RepositoryDirectory> repositoryDirectories = new LinkedList<>();
-        int depth = getRepository().getName().equals( "Pentaho" ) ? -1 : 0;
+        boolean isPentahoRepository =
+          getRepository().getRepositoryMeta().getId().equals( "PentahoEnterpriseRepository" );
+        int depth = isPentahoRepository ? -1 : 0;
         createRepositoryDirectory( repositoryDirectoryInterface, repositoryDirectories, depth, null );
-        if ( getRepository().getName().equals( "Pentaho" ) ) {
+        if ( isPentahoRepository ) {
           repositoryDirectories.remove( 0 );
         }
         return repositoryDirectories;
