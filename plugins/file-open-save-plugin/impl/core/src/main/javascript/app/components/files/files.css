@@ -28,32 +28,55 @@ files table {
   table-layout: fixed;
   border-collapse: collapse;
   border-spacing: 0;
+  margin: 0;
 }
 
-files thead, tbody {
+files .headerWrapper {
+  width: 100%;
+  overflow: hidden;
+  padding: 0;
+  margin: 0;
+  border: 0;
+  height: 31px;
+}
+
+files .bodyWrapper {
+  width: 100%;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 0;
+  margin: 0;
+  border: 0;
+  height: 100%;
+  max-height: 261px;
+}
+
+.open files .bodyWrapper {
+  max-height: 337px;
+}
+
+files .headerWrapper table {
+  background-color: #FAFAFA;
+  text-align: left;
+  line-height: 29px;
+}
+
+files thead,
+files tbody {
   width: 100%;
 }
 
-files .fileTable tbody {
-  overflow: auto;
-  height: 262px;
-}
-
-files .open .fileTable tbody {
-  height: 338px;
-}
-
-files .fileTable tbody tr {
+files tbody tr {
   cursor: pointer;
 }
 
-files .fileTable th:first-child,
-files .fileTable td:first-child {
+files th:first-child,
+files td:first-child {
   width: 50%;
 }
 
-files .fileTable th,
-files .fileTable td {
+files th,
+files td {
   text-align: left;
   line-height: 18px;
   padding: 6px 10px;
@@ -65,91 +88,113 @@ files .fileTable td {
   -ms-user-select: none; /* IE10+ */
 }
 
-files .fileTable td.editing {
-  padding-top: 0px;
-  padding-bottom: 0px;
+files td {
+  border-left: 1px solid transparent;
 }
 
-files .fileTable th {
+files td.editing {
+  padding-top: 0;
+  padding-bottom: 0;
+}
+
+files th {
   border-bottom: 1px solid #CCC;
   border-left: 1px solid #CCC;
   background: #FAFAFA;
   font-weight: normal;
 }
 
-files .fileTable th:first-child {
+files th:first-child {
   border-left: 0 none;
 }
 
-files .fileTable tr.selected td,
-files .fileTable tr.selected:hover td {
+files tbody tr.selected td,
+files tbody tr.selected:hover td {
   background-color: #0F2B5B;
   color: #FFFFFF;
 }
 
-files .fileTable tr:hover td {
+files tbody tr:hover td {
   background-color: #E6EFF6;
 }
 
-files .fileTable tbody td div {
+.save files .scrollTableSave td,
+.open files .scrollTableOpen td {
+  padding-left: 19px;
+}
+
+.save files .scrollTableSave td:first-child,
+.open files .scrollTableOpen td:first-child {
+  padding-left: 10px;
+}
+
+.save files .scrollTableSave td:last-child {
+  padding-left: 22px;
+}
+
+.open files .scrollTableOpen td:last-child {
+  padding-left: 23px;
+}
+
+files tbody td div {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
-files .fileTable tbody td input {
+files tbody td input {
   font-size: 14px;
   width: 100%;
 }
 
-files .fileTable tr .fileName {
+files tr .fileName {
   padding-left: 10px;
 }
 
-files .fileTable tr .fileTypeIcon {
+files tr .fileTypeIcon {
   height: 16px;
   width: 16px;
   float: left;
 }
 
-files .fileTable td.editing .fileTypeIcon {
+files td.editing .fileTypeIcon {
   margin-top: 3px;
 }
 
-files .fileTable tr .fileTypeIcon.file-trans {
+files tr .fileTypeIcon.file-trans {
   background: url("../../images/trans_small.svg") no-repeat left center;
 }
 
-files .fileTable tr .fileTypeIcon.file-job {
+files tr .fileTypeIcon.file-job {
   background: url("../../images/job_small.svg") no-repeat left center;
 }
 
-files .fileTable tr .fileTypeIcon.file-folder {
+files tr .fileTypeIcon.file-folder {
   background: url("../../images/folder.svg") no-repeat left center;
 }
 
-files .fileTable tr.selected .fileTypeIcon {
+files tr.selected .fileTypeIcon {
   background-position: right center;
 }
 
-files .fileTable .nameHeader {
+files .nameHeader {
   float: left;
 }
 
-files .fileTable .fileLocation {
+files .fileLocation {
   display: none;
 }
 
-files .fileTable.searchTable .fileLocation {
+files .searchTable .fileLocation {
   display: block;
 }
 
-files .fileTable.searchTable tbody tr {
+files .searchTable tr {
   line-height: 60px;
   height: 60px;
 }
 
-files .fileTable.searchTable .fileName {
+files .searchTable .fileName {
   margin-bottom: 10px;
 }
 
@@ -157,17 +202,17 @@ files .fileType::first-letter {
   text-transform: capitalize;
 }
 
-files .fileTable.searchTable .fileType,
-files .fileTable.searchTable .fileLastSaved {
+files .searchTable .fileType,
+files .searchTable .fileLastSaved {
   height: 44px;
 }
 
-files .fileTable tr .fileLocation {
+files tr .fileLocation {
   color: #999;
   padding-left: 26px;
 }
 
-files .fileTable tr.selected .fileLocation {
+files tr.selected .fileLocation {
   color: #FFF;
 }
 
