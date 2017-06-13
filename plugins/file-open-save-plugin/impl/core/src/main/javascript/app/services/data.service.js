@@ -55,72 +55,89 @@ define(
           remove: remove
         };
 
+        /**
+         * Gets the directory tree for the currently connected repository
+         *
+         * @returns {Promise} - a promise resolved once data is returned
+         */
         function getDirectoryTree() {
           return _httpGet([baseUrl, "loadDirectoryTree"].join("/"));
         }
 
+        /**
+         * Load files for a specific directory
+         *
+         * @param {String} id - The object id for a directory
+         * @returns {Promise} - a promise resolved once data is returned
+         */
         function getFiles(id) {
           return _httpGet([baseUrl, "loadFiles", encodeURIComponent(id)].join("/"));
         }
 
+        /**
+         * Load a file
+         *
+         * @param {String} id - The object id for a file
+         * @param {String} type - The file type (job/transformation)
+         * @returns {Promise} - a promise resolved once data is returned
+         */
         function openFile(id, type) {
           return _httpGet([baseUrl, "loadFile", encodeURIComponent(id), type].join("/"));
         }
 
+        /**
+         * Returns the recent files for the connected repository
+         *
+         * @returns {Promise} - a promise resolved once data is returned
+         */
         function getRecentFiles() {
           return _httpGet([baseUrl, "recentFiles"].join("/"));
         }
 
+        /**
+         * Renames a repository object
+         *
+         * @param {String} id - The repository object id
+         * @param {String} name - The new name
+         * @param {String} path - The new path
+         * @param {String} type - The object type
+         * @returns {Promise} - a promise resolved once data is returned
+         */
         function rename(id, name, path, type) {
           return _httpPost([baseUrl, "rename", encodeURIComponent(id), encodeURIComponent(path), name, type].join("/"));
         }
 
+        /**
+         * Create a new folder
+         *
+         * @param {String} parent - The parent folder
+         * @param {String} name - The new folder name
+         * @returns {Promise} - a promise resolved once data is returned
+         */
         function create(parent, name) {
           return _httpPost([baseUrl, "create", encodeURIComponent(parent), name].join("/"), null);
         }
 
+        /**
+         * Remove a repository object
+         *
+         * @param {String} id - The repository object id
+         * @param {String} type - The object type
+         * @returns {Promise} - a promise resolved once data is returned
+         */
         function remove(id, type) {
           return _httpDelete([baseUrl, "remove", encodeURIComponent(id), type].join("/"));
         }
 
+        /**
+         * Open a recent file
+         *
+         * @param {String} repo - The name of the repository
+         * @param {String} id - The repository object id
+         * @returns {Promise} - a promise resolved once data is returned
+         */
         function openRecent( repo, id ) {
           return _httpGet([baseUrl, "loadRecent", repo, id].join("/"));
-        }
-
-        /**
-         * Asks the server to execute a query.
-         *
-         * @param {String} uid - The unique identifier of the datasource
-         * @param {String} mode - The mode with which to create the query
-         * @param {Object} data - The data (fields) to create the query
-         * @return {Promise} - a promise to be resolved as soon as we get confirmation from the server.
-         */
-        function executeQuery(uid, mode, data) {
-          return _httpPost([baseUrl, uid, mode, "execute-query"].join("/"), data);
-        }
-
-        /**
-         * Fetches data from a query.
-         *
-         * @param {String} uid - The unique identifier of the datasource
-         * @param {String} mode - The mode of the query
-         * @param {String} quid - The unique identifier of the query
-         * @return {Promise} - a promise to be resolved when the data reaches the client.
-         */
-        function getData(uid, mode, quid) {
-          return _httpGet([baseUrl, uid, mode, "queries", quid].join("/"));
-        }
-
-        /**
-         * Deletes a query from the server.
-         *
-         * @param {String} uid - The unique identifier of the datasource
-         * @param {String} mode - The mode of the query
-         * @param {String} quid - The unique identifier of the query
-         * @return {Promise} - a promise to be resolved as soon as we get confirmation from the server.
-         */
-        function deleteQuery(uid, mode, quid) {
-          return _httpDelete([baseUrl, uid, mode, "queries", quid].join("/"));
         }
 
         /**
