@@ -105,8 +105,13 @@ folder .folder.recents .folderImage {
   background: url("../../images/recents.svg") no-repeat left center;
 }
 
+folder .folder.home .folderName, folder .folder.public .folderName {
+  text-transform: capitalize;
+}
+
 folder .folder.home .folderImage {
   background: url("../../images/home.svg") no-repeat left center;
+
 }
 
 folder .folder.public .folderImage {
