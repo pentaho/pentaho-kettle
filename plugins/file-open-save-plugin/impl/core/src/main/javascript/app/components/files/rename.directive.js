@@ -46,9 +46,8 @@ define([
                 $timeout(function () {
                   canEdit = true;
                 }, 200);
+                canEdit = false;
                 return;
-              } else {
-                canEdit = true;
               }
 
               if (canEdit) {
