@@ -56,10 +56,14 @@ define([
     vm.highlightFile = highlightFile;
     vm.remove = remove;
     vm.setState = setState;
+    vm.confirmError = confirmError;
+    vm.cancelError = cancelError;
 
     vm.selectedFolder = "";
     vm.fileToSave = "";
     vm.searchString = "";
+    vm.showError = false;
+    vm.errorType = 0;
 
     function onInit() {
       vm.wrapperClass = "save";
@@ -180,6 +184,7 @@ define([
 
     function highlightFile(file) {
       vm.file = file;
+      vm.fileToSave = file.name;
     }
 
     function openOrSave() {
@@ -192,7 +197,9 @@ define([
           } else {
             save();
           }
-          close();
+          if(!vm.showError) {
+            close();
+          }
         }
       }
     }
@@ -202,10 +209,25 @@ define([
     }
 
     function save() {
+      if (vm.fileToSave === vm.file.name) {
+        //show Error
+        vm.showError = true;
+        vm.errorType = 1;
+      }
     }
 
     function cancel() {
       close();
+    }
+
+    function confirmError() {
+      //TODO: handle error
+      cancelError();
+    }
+
+    function cancelError() {
+      vm.errorType = 0;
+      vm.showError = false;
     }
 
     function remove() {

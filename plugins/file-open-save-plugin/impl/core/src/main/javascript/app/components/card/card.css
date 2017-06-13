@@ -47,6 +47,10 @@ card .card {
   user-select: none; /* Fallback */
 }
 
+card .card:last-child {
+  margin-bottom: 20px;
+}
+
 card .card:hover {
   background-color: #E6EFF6;
   border: 1px solid #E6EFF6;

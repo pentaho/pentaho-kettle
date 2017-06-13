@@ -1,7 +1,4 @@
-<!-- ------------------------- User error component here ------------------------- -->
-<error class="hidden"></error>
-
-<!-- ------------------------- set class to open or save ------------------------- -->
+<error ng-show="vm.showError" error-type="vm.errorType" error-file="vm.file" error-folder="vm.folder" on-error-confirm="vm.confirmError()" on-error-cancel="vm.cancelError()"></error>
 <div class="dialogWrapper" ng-class="vm.wrapperClass">
   <div class="header">
     <div class="headerTop">
@@ -18,6 +15,7 @@
         <div ng-class="{'headerSearchRight' : vm.searchString !== '' }" ng-click="vm.resetSearch()"></div>
       </div>
     </div>
+
     <div class="headerBottom">
       <div ng-show="vm.searchString" class="breadcrumbSection">
         Search results in "{{vm.folder.name}}"
@@ -31,23 +29,21 @@
       </div>
     </div>
   </div>
+
   <div class="middle">
     <div class="directoryTreeArea">
-      <!-- ------------------------- Use folder component here ------------------------- -->
       <folder auto-expand="vm.autoExpand" folders="vm.folders" on-select="vm.resetSearch();vm.selectFolder(selectedFolder)" show-recents="vm.showRecents" selected-folder="vm.folder"></folder>
     </div>
 
-    <div class="fileArea fileList">
-
-      <!-- ------------------------- FILES/SEARCH LIST or RECENT FILE CARDS  ------------------------- -->
+    <div class="fileArea" ng-class="{overflow : vm.showRecents}">
       <div class="fileAreaResultsView">
-        <!-- ------------------------- Use files OR card component here ------------------------- -->
         <div class="fileAreaMessageView" ng-show="vm.showRecents && vm.recentFiles.length === 0">{{::vm.noRecentsMsg}}</div>
-        <card ng-show="vm.showRecents && vm.recentFiles" recent-files="vm.recentFiles" on-click="vm.selectFile(file)"></card>
+        <card ng-show="vm.showRecents && vm.recentFiles.length > 0" recent-files="vm.recentFiles" on-click="vm.selectFile(file)" on-select="vm.highlightFile(selectedFile)"></card>
         <files search="vm.searchString" ng-show="!vm.showRecents" folder="vm.folder" on-click="vm.selectFile(file)" on-select="vm.highlightFile(selectedFile)"></files>
       </div>
     </div>
   </div>
+
   <div class="bottom">
     <div class="fileNameEntry">
       <div class="fileNameEntryLabel">
