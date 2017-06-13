@@ -29,9 +29,17 @@ error .error {
   padding: 30px;
   height: auto;
   width: 423px;
-  border: 1px solid black;
+  border: 1px solid #CCC;
+  -webkit-box-shadow: none;
+  -moz-box-shadow: none;
+  box-shadow: none;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
   overflow: hidden;
   line-height: 20px;
+  background-color: #FFF;
+  z-index: 10000;
 }
 
 error .errorHeader {
@@ -52,4 +60,15 @@ error .errorMiddleTop {
 error .errorBottom button {
   float: right;
   margin-left: 10px;
+}
+
+error .errorBackdrop {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  opacity: 0.5;
+  background-color: #000;
+  z-index: 1000;
 }

@@ -31,10 +31,6 @@ file-open-save-app .blueText {
   color: #005DA6;
 }
 
-file-open-save-app .hidden {
-  display: none;
-}
-
 /* INPUTS/BUTTONS */
 file-open-save-app input[type="text"] {
   border: 1px solid #CCC;
@@ -190,12 +186,12 @@ file-open-save-app .directoryTreeArea {
 file-open-save-app .fileArea {
   height: 100%;
   width: auto;
-  overflow: auto;
+  overflow: hidden;
   position: relative;
 }
 
-file-open-save-app .fileArea.fileList {
-  overflow: hidden;
+file-open-save-app .fileArea.overflow {
+  overflow: auto;
 }
 
 file-open-save-app .bottom {

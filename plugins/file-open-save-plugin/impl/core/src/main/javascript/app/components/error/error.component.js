@@ -31,12 +31,18 @@
  */
 define([
   "text!./error.html",
+  "pentaho/i18n-osgi!file-open-save.messages",
   "css!./error.css"
-], function(errorTemplate) {
+], function(errorTemplate, i18n) {
   "use strict";
 
   var options = {
     bindings: {
+      errorType: '<',
+      errorFile: '<',
+      errorFolder: '<',
+      onErrorConfirm: '&',
+      onErrorCancel: '&'
     },
     template: errorTemplate,
     controllerAs: "vm",
@@ -46,15 +52,88 @@ define([
   function errorController() {
     var vm = this;
     vm.$onInit = onInit;
+    vm.$onChanges = onChanges;
+    vm.errorCancel = errorCancel;
+    vm.errorConfirm = errorConfirm;
 
     function onInit() {
-      vm.title = "Title";
-      vm.topMessageBefore = "Confirm delete of ";
-      vm.topMessageMiddle = "transformation 1 ";
-      vm.topMessageAfter = "file?";
-      vm.bottomMessage = "Do you want to delete it?";
-      vm.confirmButton = "Yes, delete";
-      vm.cancelButton = "Cancel";
+    }
+
+    function onChanges() {
+      if(vm.errorType !== 0) {
+        _setMessages();
+      }
+    }
+
+    function errorCancel() {
+      vm.onErrorCancel();
+    }
+
+    function errorConfirm() {
+      vm.onErrorConfirm();
+    }
+
+    function _setMessages() {
+      switch (vm.errorType) {
+        case 1://Overwrite
+          _setMessage(i18n.get("file-open-save-plugin.error.overwrite.title"),
+            vm.errorFile.type === "job" ? i18n.get("file-open-save-plugin.error.overwrite.job.top-before.message") :
+                                          i18n.get("file-open-save-plugin.error.overwrite.trans.top-before.message"),
+            " " + vm.errorFile.name + " ",
+            i18n.get("file-open-save-plugin.error.overwrite.top-after.message"),
+            i18n.get("file-open-save-plugin.error.overwrite.bottom.message"),
+            i18n.get("file-open-save-plugin.error.overwrite.accept.button"),
+            i18n.get("file-open-save-plugin.error.overwrite.cancel.button"));
+          break;
+        case 2://Folder Exists
+          _setMessage(i18n.get("file-open-save-plugin.error.folder-exists.title"),
+            i18n.get("file-open-save-plugin.error.folder-exists.top.message"),
+            " ",
+            vm.errorFolder.name + ".",
+            i18n.get("file-open-save-plugin.error.folder-exists.bottom.message"),
+            "",
+            i18n.get("file-open-save-plugin.error.folder-exists.close.button"));
+          break;
+        case 3://Unable to Save
+          _setMessage(i18n.get("file-open-save-plugin.error.unable-to-save.title"),
+            i18n.get("file-open-save-plugin.error.unable-to-save.message"),
+            "", "", "", "",
+            i18n.get("file-open-save-plugin.error.unable-to-save.close.button"));
+          break;
+        case 4://Unable to create folder
+          _setMessage(i18n.get("file-open-save-plugin.error.unable-to-create-folder.title"),
+            i18n.get("file-open-save-plugin.error.unable-to-create-folder.message"),
+            "", "", "", "",
+            i18n.get("file-open-save-plugin.error.unable-to-create-folder.close.button"));
+          break;
+        case 5://Delete file
+          _setMessage(i18n.get("file-open-save-plugin.error.delete-file.title"),
+            i18n.get("file-open-save-plugin.error.delete-file.message") + " ",
+            vm.errorFile.name,
+            "?", "",
+            i18n.get("file-open-save-plugin.error.delete-file.accept.button"),
+            i18n.get("file-open-save-plugin.error.delete-file.no.button"));
+          break;
+        case 6://Delete folder
+          _setMessage(i18n.get("file-open-save-plugin.error.delete-folder.title"),
+            i18n.get("file-open-save-plugin.error.delete-folder.before.message") + " ",
+            vm.errorFolder.name + " ", i18n.get("file-open-save-plugin.error.delete-folder.after.message"),
+            "",
+            i18n.get("file-open-save-plugin.error.delete-folder.accept.button"),
+            i18n.get("file-open-save-plugin.error.delete-folder.no.button"));
+          break;
+        default:
+          _setMessage("", "", "", "", "", "", "");
+          break;
+      }
+    }
+
+    function _setMessage(title, topBefore, topMiddle, topAfter, bottom, confirm, cancel) {
+      vm.errorTitle = title;
+      vm.errorMessageTop = topBefore + topMiddle + topAfter;
+      vm.errorMessageBottom = bottom;
+      vm.errorConfirmButton = confirm;
+      vm.errorCancelButton = cancel;
     }
   }
 
