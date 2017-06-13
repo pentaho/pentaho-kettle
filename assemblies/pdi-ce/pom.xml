@@ -866,7 +866,7 @@
                   <type>zip</type>
                 </artifactItem>
                 <artifactItem>
-                  <groupId>pentaho-kettle</groupId>
+                  <groupId>org.pentaho.di.plugins</groupId>
                   <artifactId>lucid-db-streaming-loader-plugin</artifactId>
                   <version>${lucid-db-streaming-loader-plugin.version}</version>
                   <type>zip</type>
