@@ -35,6 +35,8 @@ import org.pentaho.di.engine.api.model.Rows;
  */
 public class DataEvent<S extends LogicalModelElement> extends BaseEvent<S, Rows> {
 
+  private static final long serialVersionUID = 106147921259300759L;
+
   public DataEvent( S source, Rows rows ) {
     super( source, rows );
   }

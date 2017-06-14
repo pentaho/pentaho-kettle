@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -196,7 +196,11 @@ public class CarteSingleton {
                   if ( diffInMinutes >= objectTimeout ) {
                     // Let's remove this from the job map...
                     //
+                    String id = jobMap.getJob( entry ).getLogChannelId();
+                    LoggingRegistry.getInstance().removeLogChannelFileWriterBuffer( id );
+
                     jobMap.removeJob( entry );
+
                     log.logMinimal( "Cleaned up job "
                       + entry.getName() + " with id " + entry.getId() + " from " + job.getLogDate() );
                   }

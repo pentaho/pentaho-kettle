@@ -25,17 +25,21 @@
 package org.pentaho.di.trans.ael.adapters;
 
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.engine.api.Engine;
 import org.pentaho.di.engine.api.ExecutionContext;
 import org.pentaho.di.engine.api.ExecutionResult;
 import org.pentaho.di.engine.api.events.PDIEvent;
 import org.pentaho.di.engine.api.model.Operation;
 import org.pentaho.di.engine.api.model.Transformation;
+import org.pentaho.di.engine.api.reporting.LogEntry;
+import org.pentaho.di.engine.api.reporting.LogLevel;
 import org.pentaho.di.engine.model.ActingPrincipal;
 import org.pentaho.di.engine.api.reporting.Status;
 import org.pentaho.di.trans.RowProducer;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
+import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaDataCombi;
 import org.reactivestreams.Subscriber;
@@ -43,12 +47,15 @@ import org.reactivestreams.Subscription;
 
 import java.security.Principal;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.function.Function;
-import java.util.stream.Collectors;
+
+import static java.util.stream.Collectors.toMap;
 
 /**
  * Created by nbaker on 1/24/17.
@@ -61,6 +68,18 @@ public class TransEngineAdapter extends Trans {
   private CompletableFuture<ExecutionResult>
     executionResultFuture;
 
+
+  public static final Map<org.pentaho.di.core.logging.LogLevel, LogLevel> LEVEL_MAP = new HashMap<>();
+
+  static {
+    LEVEL_MAP.put( org.pentaho.di.core.logging.LogLevel.BASIC, LogLevel.BASIC );
+    LEVEL_MAP.put( org.pentaho.di.core.logging.LogLevel.DEBUG, LogLevel.DEBUG );
+    LEVEL_MAP.put( org.pentaho.di.core.logging.LogLevel.DETAILED, LogLevel.DETAILED );
+    LEVEL_MAP.put( org.pentaho.di.core.logging.LogLevel.ERROR, LogLevel.ERROR );
+    LEVEL_MAP.put( org.pentaho.di.core.logging.LogLevel.MINIMAL, LogLevel.MINIMAL );
+    LEVEL_MAP.put( org.pentaho.di.core.logging.LogLevel.ROWLEVEL, LogLevel.TRACE );
+  }
+
   public TransEngineAdapter( Engine engine, TransMeta transMeta ) {
     transformation = TransMetaConverter.convert( transMeta );
     executionContext = engine.prepare( transformation );
@@ -68,14 +87,90 @@ public class TransEngineAdapter extends Trans {
     this.transMeta = transMeta;
   }
 
+  @Override public void setLogLevel( org.pentaho.di.core.logging.LogLevel logLogLevel ) {
+    executionContext.setLoggingLogLevel( LEVEL_MAP.getOrDefault( logLogLevel, LogLevel.MINIMAL ) );
+  }
+
   @Override public void killAll() {
     throw new UnsupportedOperationException( "Not yet implemented" );
   }
 
+  @Override public void stopAll() {
+    executionContext.stopTransformation();
+  }
+
   @Override public void prepareExecution( String[] arguments ) throws KettleException {
+    activateParameters();
+    transMeta.activateParameters();
+    transMeta.setInternalKettleVariables();
+
+    Map<String, Object> env = Arrays.stream( transMeta.listVariables() )
+      .collect( toMap( Function.identity(), transMeta::getVariable ) );
+
+    executionContext.setEnvironment( env );
+
     setSteps( new ArrayList<>( opsToSteps() ) );
     wireStatusToTransListeners();
+
+    subscribeToOpLogging();
+
+    executionContext.subscribe( transformation, LogEntry.class, new Subscriber<PDIEvent<Transformation, LogEntry>>() {
+      @Override public void onSubscribe( Subscription subscription ) {
+        subscription.request( Long.MAX_VALUE );
+      }
+
+      @Override public void onNext( PDIEvent<Transformation, LogEntry> event ) {
+        LogEntry data = event.getData();
+        logToChannel( getLogChannel(), data );
+
+      }
+
+      @Override public void onError( Throwable throwable ) {
+      }
+
+      @Override public void onComplete() {
+      }
+    } );
     setReadyToStart( true );
+  }
+
+  private void logToChannel( LogChannelInterface logChannel, LogEntry data ) {
+    LogLevel logLogLevel = data.getLogLogLevel();
+    switch ( logLogLevel ) {
+      case ERROR:
+        logChannel.logError( data.getMessage() );
+        break;
+      case MINIMAL:
+        logChannel.logMinimal( data.getMessage() );
+        break;
+      case BASIC:
+        logChannel.logBasic( data.getMessage() );
+        break;
+      case DETAILED:
+        logChannel.logDetailed( data.getMessage() );
+        break;
+      case DEBUG:
+        logChannel.logDebug( data.getMessage() );
+        break;
+      case TRACE:
+        logChannel.logRowlevel( data.getMessage() );
+        break;
+    }
+  }
+
+  private void subscribeToOpLogging() {
+    transformation.getOperations().forEach( operation -> {
+      executionContext.subscribe( operation, LogEntry.class, logEntry -> {
+        StepInterface stepInterface = findStepInterface( operation.getId(), 0 );
+        if ( stepInterface != null ) {
+          LogChannelInterface logChannel = stepInterface.getLogChannel();
+          logToChannel( logChannel, logEntry );
+        } else {
+          // Could not find step, log at transformation level instead
+          logToChannel( getLogChannel(), logEntry );
+        }
+      } );
+    } );
   }
 
   private void wireStatusToTransListeners() {
@@ -111,14 +206,18 @@ public class TransEngineAdapter extends Trans {
         }
 
         @Override public void onError( Throwable t ) {
-
+          getLogChannel().logError( "Error Executing Transformation", t );
           setFinished( true );
-          t.printStackTrace();
+          // emit error on all steps
+          getSteps().stream().map( stepMetaDataCombi -> stepMetaDataCombi.step ).forEach( step -> {
+            step.setStopped( true );
+            step.setRunning( false );
+          } );
           getTransListeners().forEach( l -> {
             try {
               l.transFinished( TransEngineAdapter.this );
             } catch ( KettleException e ) {
-              e.printStackTrace();
+              getLogChannel().logError( "Error notifying trans listener", e );
             }
           } );
         }
@@ -130,7 +229,7 @@ public class TransEngineAdapter extends Trans {
             try {
               l.transFinished( TransEngineAdapter.this );
             } catch ( KettleException e ) {
-              e.printStackTrace();
+              getLogChannel().logError( "Error notifying trans listener", e );
             }
           } );
         }
@@ -139,7 +238,7 @@ public class TransEngineAdapter extends Trans {
 
   private Collection<StepMetaDataCombi> opsToSteps() {
     Map<Operation, StepMetaDataCombi> operationToCombi = transformation.getOperations().stream()
-      .collect( Collectors.toMap( Function.identity(),
+      .collect( toMap( Function.identity(),
         op -> {
           StepMetaDataCombi combi = new StepMetaDataCombi();
           combi.stepMeta = StepMeta.fromXml( (String) op.getConfig().get( TransMetaConverter.STEP_META_CONF_KEY ) );

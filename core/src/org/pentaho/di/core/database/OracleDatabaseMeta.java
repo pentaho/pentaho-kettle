@@ -661,4 +661,9 @@ public class OracleDatabaseMeta extends BaseDatabaseMeta implements DatabaseInte
     return "BEGIN EXECUTE IMMEDIATE 'DROP TABLE " + tableName
       + "'; EXCEPTION WHEN OTHERS THEN IF SQLCODE != -942 THEN RAISE; END IF; END;";
   }
+
+  @Override
+  public SqlScriptParser createSqlScriptParser() {
+    return new SqlScriptParser( false );
+  }
 }

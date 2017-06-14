@@ -26,16 +26,19 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicBoolean;
+
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.pentaho.di.core.RowMetaAndData;
+import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettlePluginException;
 import org.pentaho.di.core.plugins.DatabasePluginType;
 import org.pentaho.di.core.row.RowMeta;
@@ -84,7 +87,8 @@ public class DatabaseMetaTest {
   }
 
   @Test
-  public void testGetDatabaseInterfacesMapWontReturnNullIfCalledSimultaneouslyWithClear() throws InterruptedException, ExecutionException {
+  public void testGetDatabaseInterfacesMapWontReturnNullIfCalledSimultaneouslyWithClear()
+    throws InterruptedException, ExecutionException {
     final AtomicBoolean done = new AtomicBoolean( false );
     ExecutorService executorService = Executors.newCachedThreadPool();
     executorService.submit( new Runnable() {
@@ -272,21 +276,22 @@ public class DatabaseMetaTest {
 
   @Test
   public void databases_WithSameDbConnTypes_AreTheSame() {
-    DatabaseInterface mssqlServerDatabaseMeta =  new MSSQLServerDatabaseMeta();
+    DatabaseInterface mssqlServerDatabaseMeta = new MSSQLServerDatabaseMeta();
     mssqlServerDatabaseMeta.setPluginId( "MSSQL" );
     assertTrue( databaseMeta.databaseForBothDbInterfacesIsTheSame( mssqlServerDatabaseMeta, mssqlServerDatabaseMeta ) );
   }
 
   @Test
   public void databases_WithSameDbConnTypes_AreNotSame_IfPluginIdIsNull() {
-    DatabaseInterface mssqlServerDatabaseMeta =  new MSSQLServerDatabaseMeta();
+    DatabaseInterface mssqlServerDatabaseMeta = new MSSQLServerDatabaseMeta();
     mssqlServerDatabaseMeta.setPluginId( null );
-    assertFalse( databaseMeta.databaseForBothDbInterfacesIsTheSame( mssqlServerDatabaseMeta, mssqlServerDatabaseMeta ) );
+    assertFalse(
+      databaseMeta.databaseForBothDbInterfacesIsTheSame( mssqlServerDatabaseMeta, mssqlServerDatabaseMeta ) );
   }
 
   @Test
   public void databases_WithDifferentDbConnTypes_AreDifferent_IfNonOfThemIsSubsetOfAnother() {
-    DatabaseInterface mssqlServerDatabaseMeta =  new MSSQLServerDatabaseMeta();
+    DatabaseInterface mssqlServerDatabaseMeta = new MSSQLServerDatabaseMeta();
     mssqlServerDatabaseMeta.setPluginId( "MSSQL" );
     DatabaseInterface oracleDatabaseMeta = new OracleDatabaseMeta();
     oracleDatabaseMeta.setPluginId( "ORACLE" );
@@ -296,9 +301,9 @@ public class DatabaseMetaTest {
 
   @Test
   public void databases_WithDifferentDbConnTypes_AreTheSame_IfOneConnTypeIsSubsetOfAnother_2LevelHierarchy() {
-    DatabaseInterface mssqlServerDatabaseMeta =  new MSSQLServerDatabaseMeta();
+    DatabaseInterface mssqlServerDatabaseMeta = new MSSQLServerDatabaseMeta();
     mssqlServerDatabaseMeta.setPluginId( "MSSQL" );
-    DatabaseInterface mssqlServerNativeDatabaseMeta =  new MSSQLServerNativeDatabaseMeta();
+    DatabaseInterface mssqlServerNativeDatabaseMeta = new MSSQLServerNativeDatabaseMeta();
     mssqlServerNativeDatabaseMeta.setPluginId( "MSSQLNATIVE" );
 
     assertTrue( databaseMeta.databaseForBothDbInterfacesIsTheSame( mssqlServerDatabaseMeta,
@@ -319,7 +324,8 @@ public class DatabaseMetaTest {
     DatabaseInterface mssqlServerNativeDatabaseMetaChild = new MSSQLServerNativeDatabaseMetaChild();
 
     assertTrue(
-      databaseMeta.databaseForBothDbInterfacesIsTheSame( mssqlServerDatabaseMeta, mssqlServerNativeDatabaseMetaChild ) );
+      databaseMeta
+        .databaseForBothDbInterfacesIsTheSame( mssqlServerDatabaseMeta, mssqlServerNativeDatabaseMetaChild ) );
   }
 
   @Test
@@ -337,9 +343,9 @@ public class DatabaseMetaTest {
   @Test
   public void setSQLServerInstanceTest() {
     DatabaseMeta dbmeta = new DatabaseMeta();
-    DatabaseInterface mssqlServerDatabaseMeta =  new MSSQLServerDatabaseMeta();
+    DatabaseInterface mssqlServerDatabaseMeta = new MSSQLServerDatabaseMeta();
     mssqlServerDatabaseMeta.setPluginId( "MSSQL" );
-    DatabaseInterface mssqlServerNativeDatabaseMeta =  new MSSQLServerNativeDatabaseMeta();
+    DatabaseInterface mssqlServerNativeDatabaseMeta = new MSSQLServerNativeDatabaseMeta();
     mssqlServerNativeDatabaseMeta.setPluginId( "MSSQLNATIVE" );
     dbmeta.setDatabaseInterface( mssqlServerDatabaseMeta );
     dbmeta.setSQLServerInstance( "" );
@@ -378,6 +384,17 @@ public class DatabaseMetaTest {
     if ( !options.keySet().contains( "INFOBRIGHT.characterEncoding" ) ) {
       fail();
     }
+  }
+
+  @Test
+  public void testAttributesVariable() throws KettleDatabaseException {
+    DatabaseMeta dbmeta = new DatabaseMeta( "", "Infobright", "JDBC", null, "stub:stub", null, null, null );
+    dbmeta.setVariable( "someVar", "someValue" );
+    dbmeta.setAttributes( new Properties(  ) );
+    Properties props = dbmeta.getAttributes();
+    props.setProperty( "EXTRA_OPTION_Infobright.additional_param", "${someVar}" );
+    dbmeta.getURL();
+    assertTrue( dbmeta.getURL().contains( "someValue" ) );
   }
 
 }

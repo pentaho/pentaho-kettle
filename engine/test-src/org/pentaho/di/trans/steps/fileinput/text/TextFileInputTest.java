@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -35,6 +35,7 @@ import java.util.List;
 import org.apache.commons.io.IOUtils;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.mockito.Mockito;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.exception.KettleFileException;
 import org.pentaho.di.core.fileinput.FileInputList;
@@ -44,6 +45,7 @@ import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.trans.TransTestingUtil;
+import org.pentaho.di.trans.step.errorhandling.AbstractFileErrorHandler;
 import org.pentaho.di.trans.step.errorhandling.FileErrorHandler;
 import org.pentaho.di.trans.steps.StepMockUtil;
 import org.pentaho.di.trans.steps.fileinput.BaseFileInputField;
@@ -188,7 +190,30 @@ public class TextFileInputTest {
 
     deleteVfsFile( virtualFile );
   }
+  @Test
+  public void testErrorHandlerLineNumber() throws Exception {
+    final String content = new StringBuilder()
+      .append( "123" ).append( '\n' ).append( "333\n" )
+      .append( "345" ).append( '\n' ).append( "773\n" )
+      .append( "aaa" ).append( '\n' ).append( "444" )
+      .toString();
+    final String virtualFile = createVirtualFile( "pdi-2607.txt", content );
 
+    TextFileInputMeta meta = createMetaObject( field( "col1" ) );
+
+    meta.inputFiles.inputFields[0].setType( 1 );
+    meta.content.lineWrapped = false;
+    meta.content.nrWraps = 1;
+    meta.errorHandling.errorIgnored = true;
+    TextFileInputData data = createDataObject( virtualFile, ";", "col1" );
+    data.dataErrorLineHandler = Mockito.mock( FileErrorHandler.class );
+    TextFileInput input = StepMockUtil.getStep( TextFileInput.class, TextFileInputMeta.class, "test" );
+
+    List<Object[]> output = TransTestingUtil.execute( input, meta, data, 4, false );
+
+    Mockito.verify( data.dataErrorLineHandler ).handleLineError( 4, AbstractFileErrorHandler.NO_PARTS );
+    deleteVfsFile( virtualFile );
+  }
   private TextFileInputMeta createMetaObject( BaseFileInputField... fields ) {
     TextFileInputMeta meta = new TextFileInputMeta();
     meta.content.fileCompression = "None";
@@ -224,7 +249,6 @@ public class TextFileInputTest {
     data.filePlayList = new FilePlayListAll();
     return data;
   }
-
   private static String createVirtualFile( String filename, String... rows ) throws Exception {
     String virtualFile = TestUtils.createRamFile( filename );
 

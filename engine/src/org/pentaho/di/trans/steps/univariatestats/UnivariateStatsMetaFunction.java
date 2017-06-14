@@ -1,8 +1,9 @@
 /*! ******************************************************************************
  *
- * Pentaho Data Integration
+ 
+* Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -21,6 +22,8 @@
  ******************************************************************************/
 
 package org.pentaho.di.trans.steps.univariatestats;
+
+import java.util.Objects;
 
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.xml.XMLHandler;
@@ -183,6 +186,12 @@ public class UnivariateStatsMetaFunction implements Cloneable {
     }
 
     return false;
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash( m_sourceFieldName, m_n, m_mean, m_stdDev, m_min, m_max, m_median, m_arbitraryPercentile,
+        m_interpolatePercentile );
   }
 
   /**

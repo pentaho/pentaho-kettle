@@ -28,7 +28,7 @@
     <dependency org="pentaho" name="pentaho-platform-api" rev="${dependency.bi-platform.revision}"
       changing="true" transitive="false" conf="compile->default"/>
     <dependency org="pentaho" name="pentaho-platform-repository" rev="${dependency.bi-platform.revision}"
-      changing="true" transitive="false" />
+      changing="true" transitive="false" conf="compile->default"/>
     <dependency org="org.yaml" name="snakeyaml" rev="1.7" conf="default->default" transitive="false"/>
     <dependency org="pentaho" name="pentaho-platform-extensions" rev="${dependency.bi-platform.revision}"
       changing="true" transitive="false" conf="compile->default"/>
@@ -55,11 +55,11 @@
     <dependency org="commons-logging" name="commons-logging" rev="1.1" transitive="false" />
     <dependency org="commons-io" name="commons-io" rev="2.1" conf="default->default;test->default" />
 
-    <dependency org="org.slf4j" name="slf4j-api" rev="1.6.1" />
-    <dependency org="org.slf4j" name="slf4j-log4j12" rev="1.6.1" />
+    <dependency org="org.slf4j" name="slf4j-api" rev="1.7.7" />
+    <dependency org="org.slf4j" name="slf4j-log4j12" rev="1.7.7" />
 
-    <dependency org="org.glassfish.metro" name="webservices-api" rev="2.1" transitive="false"/>
-    <dependency org="org.glassfish.metro" name="webservices-rt" rev="2.1" transitive="false" />
+    <dependency org="org.glassfish.metro" name="webservices-api" rev="${dependency.org.glassfish.metro.revision}" transitive="false"/>
+    <dependency org="org.glassfish.metro" name="webservices-rt" rev="${dependency.org.glassfish.metro.revision}" transitive="false" />
 
     <dependency org="javax.servlet"           name="servlet-api"          rev="2.5"  transitive="false" conf="compile->default"/>
 
@@ -72,7 +72,7 @@
     <dependency org="commons-httpclient" name="commons-httpclient" rev="3.0.1" conf="test->default" />
     <dependency org="ognl" name="ognl" rev="2.6.9" conf="test->default" />
 
-    <dependency org="com.google.gwt" name="gwt-servlet"  rev="2.0.3"/>
+    <dependency org="com.google.gwt" name="gwt-servlet"  rev="2.5.1"/>
 
       <!--Spring Framework--> 
     <dependency org="org.springframework" name="spring-test" rev="${dependency.spring.framework.revision}" conf="test->default" />
@@ -104,7 +104,7 @@
     <dependency org="org.apache.jackrabbit" name="jackrabbit-data" rev="2.10.0" transitive="false" conf="test->default">
         <artifact name="jackrabbit-data" type="jar"/>
     </dependency>
-    <dependency org="org.slf4j" name="slf4j-log4j12" rev="1.6.4" conf="test->default" />
+    <dependency org="org.slf4j" name="slf4j-log4j12" rev="1.7.7" conf="test->default" />
     <dependency org="org.javassist" name="javassist" rev="3.20.0-GA" conf="test->default" transitive="false" />
     <dependency org="org.scannotation" name="scannotation" rev="1.0.2" conf="test->default" transitive="false"/>
     <dependency org="javax.jcr" name="jcr" rev="2.0" conf="test->default"/>

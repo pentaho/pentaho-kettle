@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -566,8 +566,7 @@ public class TransPerfDelegate extends SpoonDelegate {
     renderer.setSeriesOutlineStroke( 1, new BasicStroke( 2.5f ) );
     renderer.setSeriesShape( 0, new Ellipse2D.Double( -3.0, -3.0, 6.0, 6.0 ) );
 
-    BufferedImage bufferedImage =
-      chart.createBufferedImage( bounds.width, bounds.height, BufferedImage.TYPE_INT_RGB, null );
+    BufferedImage bufferedImage = chart.createBufferedImage( bounds.width, bounds.height );
     ImageData imageData = ImageUtil.convertToSWT( bufferedImage );
 
     // dispose previous image...

@@ -3,7 +3,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -246,7 +246,7 @@ public class JobGraph extends AbstractGraph implements XulEventHandler, Redrawab
 
   protected int shadowsize;
 
-  protected Map<String, XulMenupopup> menuMap = new HashMap<String, XulMenupopup>();
+  protected Map<String, XulMenupopup> menuMap = new HashMap<>();
 
   protected int currentMouseX = 0;
 
@@ -313,9 +313,9 @@ public class JobGraph extends AbstractGraph implements XulEventHandler, Redrawab
     spoon.selectionFilter.setText( "" );
 
     this.props = PropsUI.getInstance();
-    this.areaOwners = new ArrayList<AreaOwner>();
-    this.mouseOverEntries = new ArrayList<JobEntryCopy>();
-    this.delayTimers = new HashMap<JobEntryCopy, DelayTimer>();
+    this.areaOwners = new ArrayList<>();
+    this.mouseOverEntries = new ArrayList<>();
+    this.delayTimers = new HashMap<>();
 
     jobLogDelegate = new JobLogDelegate( spoon, this );
     jobHistoryDelegate = new JobHistoryDelegate( spoon, this );
@@ -1060,14 +1060,14 @@ public class JobGraph extends AbstractGraph implements XulEventHandler, Redrawab
     if ( selectedEntry != null && !selectedEntry.isSelected() ) {
       jobMeta.unselectAll();
       selectedEntry.setSelected( true );
-      selectedEntries = new ArrayList<JobEntryCopy>();
+      selectedEntries = new ArrayList<>();
       selectedEntries.add( selectedEntry );
       previous_step_locations = new Point[] { selectedEntry.getLocation() };
       redraw();
     } else if ( selectedNote != null && !selectedNote.isSelected() ) {
       jobMeta.unselectAll();
       selectedNote.setSelected( true );
-      selectedNotes = new ArrayList<NotePadMeta>();
+      selectedNotes = new ArrayList<>();
       selectedNotes.add( selectedNote );
       previous_note_locations = new Point[] { selectedNote.getLocation() };
       redraw();
@@ -2052,12 +2052,15 @@ public class JobGraph extends AbstractGraph implements XulEventHandler, Redrawab
 
   public void newNote() {
     String title = BaseMessages.getString( PKG, "JobGraph.Dialog.EditNote.Title" );
-    String message = BaseMessages.getString( PKG, "JobGraph.Dialog.EditNote.Message" );
-    EnterTextDialog dd = new EnterTextDialog( shell, title, message, "" );
-    String n = dd.open();
+    NotePadDialog dd = new NotePadDialog( jobMeta, shell, title );
+    NotePadMeta n = dd.open();
     if ( n != null ) {
       NotePadMeta npi =
-        new NotePadMeta( n, lastclick.x, lastclick.y, ConstUI.NOTE_MIN_SIZE, ConstUI.NOTE_MIN_SIZE );
+          new NotePadMeta( n.getNote(), lastclick.x, lastclick.y, ConstUI.NOTE_MIN_SIZE, ConstUI.NOTE_MIN_SIZE, n
+            .getFontName(), n.getFontSize(), n.isFontBold(), n.isFontItalic(), n.getFontColorRed(), n
+            .getFontColorGreen(), n.getFontColorBlue(), n.getBackGroundColorRed(), n.getBackGroundColorGreen(), n
+            .getBackGroundColorBlue(), n.getBorderColorRed(), n.getBorderColorGreen(), n.getBorderColorBlue(), n
+            .isDrawShadow() );
       jobMeta.addNote( npi );
       spoon.addUndoNew( jobMeta, new NotePadMeta[] { npi }, new int[] { jobMeta.indexOfNote( npi ) } );
       redraw();
@@ -2391,7 +2394,7 @@ public class JobGraph extends AbstractGraph implements XulEventHandler, Redrawab
             if ( result.getResultFiles().size() > 10 ) {
               tip.append( " (10 files of " ).append( result.getResultFiles().size() ).append( " shown" );
             }
-            List<ResultFile> files = new ArrayList<ResultFile>( result.getResultFiles().values() );
+            List<ResultFile> files = new ArrayList<>( result.getResultFiles().values() );
             for ( int i = 0; i < files.size(); i++ ) {
               ResultFile file = files.get( i );
               tip.append( "  - " ).append( file.toString() ).append( Const.CR );
@@ -2857,7 +2860,7 @@ public class JobGraph extends AbstractGraph implements XulEventHandler, Redrawab
       jobPainter.setJobEntryResults( new ArrayList<JobEntryResult>() );
     }
 
-    List<JobEntryCopy> activeJobEntries = new ArrayList<JobEntryCopy>();
+    List<JobEntryCopy> activeJobEntries = new ArrayList<>();
     if ( job != null ) {
       if ( job.getActiveJobEntryJobs().size() > 0 ) {
         activeJobEntries.addAll( job.getActiveJobEntryJobs().keySet() );
@@ -3617,6 +3620,7 @@ public class JobGraph extends AbstractGraph implements XulEventHandler, Redrawab
               RepositoryOperation.EXECUTE_JOB  );
         } catch ( KettleRepositoryLostException krle ) {
           log.logError( krle.getLocalizedMessage() );
+          spoon.handleRepositoryLost( krle );
         }
 
         // Start/Run button...

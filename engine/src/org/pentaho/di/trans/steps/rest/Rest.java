@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -40,6 +40,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.UriBuilder;
 
+import com.sun.jersey.api.uri.UriComponent;
 import org.apache.commons.httpclient.auth.AuthScope;
 import org.json.simple.JSONObject;
 import org.pentaho.di.core.Const;
@@ -81,6 +82,13 @@ public class Rest extends BaseStep implements StepInterface {
 
   public Rest( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta, Trans trans ) {
     super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
+  }
+
+  /* for unit test*/
+  MultivaluedMapImpl createMultivalueMap( String paramName, String paramValue ) {
+    MultivaluedMapImpl queryParams = new MultivaluedMapImpl();
+    queryParams.add( paramName, UriComponent.encode( paramValue, UriComponent.Type.QUERY_PARAM ) );
+    return queryParams;
   }
 
   private Object[] callRest( Object[] rowData ) throws KettleException {
@@ -125,7 +133,7 @@ public class Rest extends BaseStep implements StepInterface {
           if ( isDebug() ) {
             logDebug( BaseMessages.getString( PKG, "Rest.Log.matrixParameterValue", data.matrixParamNames[i], value ) );
           }
-          builder = builder.matrixParam( data.matrixParamNames[i], value );
+          builder = builder.matrixParam( data.matrixParamNames[i], UriComponent.encode( value, UriComponent.Type.QUERY_PARAM ) );
         }
         webResource = client.resource( builder.build() );
       }
@@ -133,13 +141,12 @@ public class Rest extends BaseStep implements StepInterface {
       if ( data.useParams ) {
         // Add query parameters
         for ( int i = 0; i < data.nrParams; i++ ) {
-          MultivaluedMapImpl queryParams = new MultivaluedMapImpl();
           String value = data.inputRowMeta.getString( rowData, data.indexOfParamFields[i] );
-          queryParams.add( data.paramNames[i], value );
           if ( isDebug() ) {
             logDebug( BaseMessages.getString( PKG, "Rest.Log.queryParameterValue", data.paramNames[i], value ) );
           }
-          webResource = webResource.queryParams( queryParams );
+          webResource = webResource.queryParams(
+            createMultivalueMap( data.paramNames[i], value ) );
         }
       }
 
@@ -244,10 +251,11 @@ public class Rest extends BaseStep implements StepInterface {
       // add response time to output
       if ( !Utils.isEmpty( data.resultResponseFieldName ) ) {
         newRow = RowDataUtil.addValueData( newRow, returnFieldsOffset, new Long( responseTime ) );
+        returnFieldsOffset++;
       }
       // add response header to output
       if ( !Utils.isEmpty( data.resultHeaderFieldName ) ) {
-        newRow = RowDataUtil.addValueData( newRow, returnFieldsOffset, headerString.toString() );
+        newRow = RowDataUtil.addValueData( newRow, returnFieldsOffset, headerString );
       }
     } catch ( Exception e ) {
       throw new KettleException( BaseMessages.getString( PKG, "Rest.Error.CanNotReadURL", data.realUrl ), e );

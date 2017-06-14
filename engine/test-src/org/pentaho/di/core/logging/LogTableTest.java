@@ -1,5 +1,5 @@
 /*!
-* Copyright 2010 - 2016 Pentaho Corporation.  All rights reserved.
+* Copyright 2010 - 2017 Pentaho Corporation.  All rights reserved.
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -38,6 +38,7 @@ public class LogTableTest {
   @Before
   public void init() {
     System.setProperty( Const.KETTLE_STEP_LOG_DB, "KETTLE_STEP_LOG_DB_VALUE" );
+    System.setProperty( Const.KETTLE_GLOBAL_LOG_VARIABLES_CLEAR_ON_EXPORT, "true" );
     mockedVariableSpace = mock( VariableSpace.class );
     mockedHasDbInterface = mock( HasDatabasesInterface.class );
   }
@@ -56,7 +57,11 @@ public class LogTableTest {
     tableFieldsChangedCorrectlyAfterNullingGlobalParams( GLOBAL_PARAM, null );
   }
 
-
+  @Test
+  public void globalParamsFieldsAreNotNulled() {
+    System.setProperty( Const.KETTLE_GLOBAL_LOG_VARIABLES_CLEAR_ON_EXPORT, "false" );
+    tableFieldsChangedCorrectlyAfterNullingGlobalParams( GLOBAL_PARAM, GLOBAL_PARAM );
+  }
 
   public void tableFieldsChangedCorrectlyAfterNullingGlobalParams( String valueForAllFields,
                                                                    String expectedAfterNullingGlobalParams ) {

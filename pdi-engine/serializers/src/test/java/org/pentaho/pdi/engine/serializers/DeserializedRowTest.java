@@ -73,24 +73,14 @@ public class DeserializedRowTest {
     Row row = new DeserializedRow( names, classes, objects );
 
 
-    assertEquals( new Integer( 100 ), (Integer) row.getInteger( 0 ).get() );
-    assertEquals( new Integer( 100 ), (Integer) row.getInteger( "some int" ).get() );
+    assertEquals( new Integer( 100 ), row.getObjects()[ 0 ] );
 
-    assertEquals( 100.50, (double) row.getNumber( 1 ).get(), 0.001D );
-    assertEquals( 100.50, (double) row.getNumber( "some Double" ).get(), 0.001D );
-    assertEquals( bigDecimal, row.getBigNumber( 2 ).get() );
-    assertEquals( bigDecimal, row.getBigNumber( "some Decimal" ).get() );
+    assertEquals( 100.50, (double) row.getObjects()[ 1 ], 0.001D );
+    assertEquals( bigDecimal, row.getObjects()[ 2 ] );
 
-    assertTrue( row.getBoolean( 3 ).get() );
-    assertTrue( row.getBoolean( "some Boolean" ).get() );
-
-    assertEquals( date, row.getDate( 4 ).get() );
-    assertEquals( date, row.getDate( "some Date" ).get() );
-
-    assertEquals( "A String", row.getString( 5 ).get() );
-    assertEquals( "A String", row.getString( "some String" ).get() );
-
-    assertEquals( uri, row.getObject( 6 ).get() );
-    assertEquals( uri, row.getObject( "some Serializable" ).get() );
+    assertTrue( (Boolean) row.getObjects()[ 3 ] );
+    assertEquals( date, row.getObjects()[ 4 ] );
+    assertEquals( "A String", row.getObjects()[ 5 ] );
+    assertEquals( uri, row.getObjects()[ 6 ] );
   }
 }

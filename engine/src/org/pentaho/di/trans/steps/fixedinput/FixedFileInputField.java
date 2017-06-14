@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -28,6 +28,7 @@ import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Objects;
 
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.row.ValueMetaInterface;
@@ -95,6 +96,11 @@ public class FixedFileInputField implements Cloneable, XMLInterface {
   @Override
   public boolean equals( Object obj ) {
     return name.equalsIgnoreCase( ( (FixedFileInputField) obj ).name );
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hashCode( name );
   }
 
   public String getXML() {

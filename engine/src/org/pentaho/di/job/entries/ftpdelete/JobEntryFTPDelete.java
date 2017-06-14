@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -650,7 +650,7 @@ public class JobEntryFTPDelete extends JobEntryBase implements Cloneable, JobEnt
     NrErrors = 0;
     NrfilesDeleted = 0;
     successConditionBroken = false;
-    HashSet<String> list_previous_files = new HashSet<String>();
+    HashSet<String> list_previous_files = new HashSet<>();
 
     // Here let's put some controls before stating the job
 
@@ -852,7 +852,7 @@ public class JobEntryFTPDelete extends JobEntryBase implements Cloneable, JobEnt
               ftpclient.delete( filelist[i] );
             }
             if ( protocol.equals( PROTOCOL_FTPS ) ) {
-              System.out.println( "---------------" + filelist[i] );
+              // System.out.println( "---------------" + filelist[i] );
               ftpsclient.deleteFile( filelist[i] );
             } else if ( protocol.equals( PROTOCOL_SFTP ) ) {
               sftpclient.delete( filelist[i] );

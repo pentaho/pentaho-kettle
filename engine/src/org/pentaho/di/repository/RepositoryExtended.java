@@ -39,6 +39,7 @@ public interface RepositoryExtended extends Repository {
    * @return
    * @throws KettleException
    */
+  @Deprecated
   RepositoryDirectoryInterface loadRepositoryDirectoryTree( boolean eager ) throws KettleException;
 
   /**

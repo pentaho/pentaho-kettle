@@ -32,6 +32,8 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.commons.httpclient.Credentials;
 import org.apache.commons.httpclient.Header;
@@ -249,7 +251,18 @@ public class HTTPPOST extends BaseStep implements StepInterface {
               }
               JSONObject json = new JSONObject();
               for ( Header header : headers ) {
-                json.put( header.getName(), header.getValue() );
+                Object previousValue = json.get( header.getName() );
+                if ( previousValue == null ) {
+                  json.put( header.getName(), header.getValue() );
+                } else if ( previousValue instanceof List ) {
+                  List<String> list = (List<String>) previousValue;
+                  list.add( header.getValue() );
+                } else {
+                  ArrayList<String> list = new ArrayList<String>();
+                  list.add( (String) previousValue );
+                  list.add( (String) header.getValue() );
+                  json.put( header.getName(), list );
+                }
               }
               headerString = json.toJSONString();
 
@@ -290,9 +303,10 @@ public class HTTPPOST extends BaseStep implements StepInterface {
         }
         if ( !Utils.isEmpty( meta.getResponseTimeFieldName() ) ) {
           newRow = RowDataUtil.addValueData( newRow, returnFieldsOffset, new Long( responseTime ) );
+          returnFieldsOffset++;
         }
         if ( !Utils.isEmpty( meta.getResponseHeaderFieldName() ) ) {
-          newRow = RowDataUtil.addValueData( newRow, returnFieldsOffset, headerString.toString() );
+          newRow = RowDataUtil.addValueData( newRow, returnFieldsOffset, headerString );
         }
       } finally {
         if ( inputStreamReader != null ) {

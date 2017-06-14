@@ -36,6 +36,8 @@ public interface Hop extends LogicalModelElement, Serializable {
 
   String TYPE_NORMAL = "NORMAL";
 
+  String TYPE_ERROR = "ERROR";
+
   Operation getFrom();
 
   Operation getTo();

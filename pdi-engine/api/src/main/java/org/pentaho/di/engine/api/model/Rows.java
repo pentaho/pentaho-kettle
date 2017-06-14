@@ -37,6 +37,7 @@ import java.util.ListIterator;
  */
 public class Rows implements List<Row>, Serializable {
 
+  private static final long serialVersionUID = -2797398159525774206L;
   public enum TYPE { IN, OUT, ERROR }
 
   public enum STATE { ACTIVE, COMPLETE }

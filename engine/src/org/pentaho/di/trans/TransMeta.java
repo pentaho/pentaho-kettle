@@ -497,69 +497,7 @@ public class TransMeta extends AbstractMeta
    */
   @Override
   public int compare( TransMeta t1, TransMeta t2 ) {
-    // If we don't have a filename, the transformation comes from a repository
-    //
-    if ( Utils.isEmpty( t1.getFilename() ) ) {
-
-      if ( !Utils.isEmpty( t2.getFilename() ) ) {
-        return -1;
-      }
-
-      // First compare names...
-      //
-      if ( Utils.isEmpty( t1.getName() ) && !Utils.isEmpty( t2.getName() ) ) {
-        return -1;
-      }
-      if ( !Utils.isEmpty( t1.getName() ) && Utils.isEmpty( t2.getName() ) ) {
-        return 1;
-      }
-      int cmpName = t1.getName().compareTo( t2.getName() );
-      if ( cmpName != 0 ) {
-        return cmpName;
-      }
-
-      // Same name, compare Repository directory...
-      //
-      int cmpDirectory = t1.getRepositoryDirectory().getPath().compareTo( t2.getRepositoryDirectory().getPath() );
-      if ( cmpDirectory != 0 ) {
-        return cmpDirectory;
-      }
-
-      // Same name, same directory, compare versions
-      //
-      if ( t1.getObjectRevision() != null && t2.getObjectRevision() == null ) {
-        return 1;
-      }
-      if ( t1.getObjectRevision() == null && t2.getObjectRevision() != null ) {
-        return -1;
-      }
-      if ( t1.getObjectRevision() == null && t2.getObjectRevision() == null ) {
-        return 0;
-      }
-      return t1.getObjectRevision().getName().compareTo( t2.getObjectRevision().getName() );
-
-    } else {
-      if ( Utils.isEmpty( t2.getFilename() ) ) {
-        return 1;
-      }
-
-      // First compare names
-      //
-      if ( Utils.isEmpty( t1.getName() ) && !Utils.isEmpty( t2.getName() ) ) {
-        return -1;
-      }
-      if ( !Utils.isEmpty( t1.getName() ) && Utils.isEmpty( t2.getName() ) ) {
-        return 1;
-      }
-      int cmpName = t1.getName().compareTo( t2.getName() );
-      if ( cmpName != 0 ) {
-        return cmpName;
-      }
-
-      // Same name, compare filenames...
-      //
-      return t1.getFilename().compareTo( t2.getFilename() );
-    }
+    return super.compare( t1, t2 );
   }
 
   /**
@@ -700,6 +638,7 @@ public class TransMeta extends AbstractMeta
     dependencies = new ArrayList<>();
     partitionSchemas = new ArrayList<>();
     clusterSchemas = new ArrayList<>();
+    namedParams = new NamedParamsDefault();
     stepChangeListeners = new ArrayList<>();
 
     slaveStepCopyPartitionDistribution = new SlaveStepCopyPartitionDistribution();
@@ -1768,7 +1707,7 @@ public class TransMeta extends AbstractMeta
     for ( int i = 0; i < stepMeta.length; i++ ) {
       RowMetaInterface flds = getStepFields( stepMeta[i] );
       if ( flds != null ) {
-        fields.mergeRowMeta( flds );
+        fields.mergeRowMeta( flds, stepMeta[i].getName() );
       }
     }
     return fields;

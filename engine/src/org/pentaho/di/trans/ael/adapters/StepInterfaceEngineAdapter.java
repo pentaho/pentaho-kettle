@@ -39,6 +39,8 @@ import org.pentaho.di.trans.step.RowListener;
 import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepMeta;
 
+import java.util.Collections;
+
 import static org.pentaho.di.engine.api.model.Rows.TYPE.OUT;
 
 /**
@@ -56,6 +58,8 @@ public class StepInterfaceEngineAdapter extends BaseStep {
     super( stepMeta, dataInterface, 0, transMeta, trans );
     operation = op;
     this.executionContext = executionContext;
+    setInputRowSets( Collections.emptyList() );
+    setOutputRowSets( Collections.emptyList() );
     init();
   }
 
@@ -119,7 +123,7 @@ public class StepInterfaceEngineAdapter extends BaseStep {
           RowListener rowListener = rowListeners.get( i );
           rowListener.rowWrittenEvent(
             executionContext.getConversionManager().convert( row, RowMetaInterface.class ),
-            row.getObjects().orElseGet( () -> new Object[ 0 ] ) );
+            row.getObjects() );
         }
       }
     } catch ( KettleStepException e ) {

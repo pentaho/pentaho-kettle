@@ -93,7 +93,7 @@ public class Mapping extends BaseStep implements StepInterface {
           // Before we start, let's see if there are loose ends to tie up...
           //
           if ( !getInputRowSets().isEmpty() ) {
-            for ( RowSet rowSet : new ArrayList<RowSet>( getInputRowSets() ) ) {
+            for ( RowSet rowSet : new ArrayList<>( getInputRowSets() ) ) {
               // Pass this rowset down to a mapping input step in the
               // sub-transformation...
               //
@@ -148,7 +148,7 @@ public class Mapping extends BaseStep implements StepInterface {
           // Do the same thing for output row sets
           //
           if ( !getOutputRowSets().isEmpty() ) {
-            for ( RowSet rowSet : new ArrayList<RowSet>( getOutputRowSets() ) ) {
+            for ( RowSet rowSet : new ArrayList<>( getOutputRowSets() ) ) {
               // Pass this rowset down to a mapping input step in the
               // sub-transformation...
               //
@@ -244,9 +244,11 @@ public class Mapping extends BaseStep implements StepInterface {
           // row = getRow();
           // }
 
-          System.out.println( "# of input buffers: " + mappingInputs[0].getInputRowSets().size() );
-          if ( mappingInputs[0].getInputRowSets().size() > 0 ) {
-            System.out.println( "Input buffer 0 size: " + mappingInputs[0].getInputRowSets().get( 0 ).size() );
+          if ( ( log != null ) && log.isDebug() ) {
+            log.logDebug( "# of input buffers: " + mappingInputs[0].getInputRowSets().size() );
+            if ( mappingInputs[0].getInputRowSets().size() > 0 ) {
+              log.logDebug( "Input buffer 0 size: " + mappingInputs[0].getInputRowSets().get( 0 ).size() );
+            }
           }
 
           // Now execute one batch...Basic logging
@@ -284,8 +286,8 @@ public class Mapping extends BaseStep implements StepInterface {
       return;
     }
 
-    Map<String, String> parameters = new HashMap<String, String>();
-    Set<String> subTransParameters = new HashSet<String>( Arrays.asList( transMeta.listParameters() ) );
+    Map<String, String> parameters = new HashMap<>();
+    Set<String> subTransParameters = new HashSet<>( Arrays.asList( transMeta.listParameters() ) );
 
     if ( mappingParameters.isInheritingAllVariables() ) {
       // This will include parameters
@@ -523,7 +525,7 @@ public class Mapping extends BaseStep implements StepInterface {
       // The origin is the mapping output step
       // The target is all the next steps after this mapping step.
       //
-      result = new ArrayList<StepInterface>();
+      result = new ArrayList<>();
       for ( StepMeta nextStep : nextSteps ) {
         // need to take into the account different copies of the step
         List<StepInterface> copies = getTrans().findStepInterfaces( nextStep.getName() );

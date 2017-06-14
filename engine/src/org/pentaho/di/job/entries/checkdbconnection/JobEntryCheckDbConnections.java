@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -78,6 +78,9 @@ public class JobEntryCheckDbConnections extends JobEntryBase implements Cloneabl
   private String[] waitfors;
   private int[] waittimes;
 
+  private long timeStart;
+  private long now;
+
   public JobEntryCheckDbConnections( String n ) {
     super( n, "" );
     connections = null;
@@ -116,6 +119,14 @@ public class JobEntryCheckDbConnections extends JobEntryBase implements Cloneabl
 
   public void setWaittimes( int[] waittimes ) {
     this.waittimes = waittimes;
+  }
+
+  public long getTimeStart() {
+    return timeStart;
+  }
+
+  public long getNow() {
+    return now;
   }
 
   private static String getWaitTimeCode( int i ) {
@@ -310,14 +321,14 @@ public class JobEntryCheckDbConnections extends JobEntryBase implements Cloneabl
             }
 
             // starttime (in seconds ,Minutes or Hours)
-            long timeStart = System.currentTimeMillis() / Multiple;
+            timeStart = System.currentTimeMillis();
 
             boolean continueLoop = true;
             while ( continueLoop && !parentJob.isStopped() ) {
               // Update Time value
-              long now = System.currentTimeMillis() / Multiple;
+              now = System.currentTimeMillis();
               // Let's check the limit time
-              if ( ( now >= ( timeStart + iMaximumTimeout ) ) ) {
+              if ( ( now >= ( timeStart + iMaximumTimeout * Multiple ) ) ) {
                 // We have reached the time limit
                 if ( isDetailed() ) {
                   logDetailed( BaseMessages.getString(

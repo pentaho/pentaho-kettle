@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -70,14 +70,13 @@ public class PGBulkLoaderMetaTest {
     KettleEnvironment.init();
     PluginRegistry.init( true );
     List<String> attributes =
-        Arrays.asList( "schemaName", "tableName", "PsqlPath", "loadAction", "dbNameOverride", "delimiter",
+        Arrays.asList( "schemaName", "tableName", "loadAction", "dbNameOverride", "delimiter",
             "enclosure", "stopOnError", "fieldTable", "fieldStream", "dateMask", "databaseMeta" );
 
     Map<String, String> getterMap = new HashMap<String, String>() {
       {
         put( "schemaName", "getSchemaName" );
         put( "tableName", "getTableName" );
-        put( "PsqlPath", "getPsqlPath" );
         put( "loadAction", "getLoadAction" );
         put( "dbNameOverride", "getDbNameOverride" );
         put( "delimiter", "getDelimiter" );
@@ -93,7 +92,6 @@ public class PGBulkLoaderMetaTest {
       {
         put( "schemaName", "setSchemaName" );
         put( "tableName", "setTableName" );
-        put( "PsqlPath", "setPsqlPath" );
         put( "loadAction", "setLoadAction" );
         put( "dbNameOverride", "setDbNameOverride" );
         put( "delimiter", "setDelimiter" );
@@ -160,7 +158,7 @@ public class PGBulkLoaderMetaTest {
       List<StepInjectionMetaEntry> entries =
         loader.getStepMeta().getStepMetaInterface().getStepMetaInjectionInterface().getStepInjectionMetadataEntries();
 
-      String masterKeys = "SCHEMA TABLE LOADACTION STOPONERROR DELIMITER ENCLOSURE PSQLPATH DBNAMEOVERRIDE MAPPINGS ";
+      String masterKeys = "SCHEMA TABLE LOADACTION STOPONERROR DELIMITER ENCLOSURE DBNAMEOVERRIDE MAPPINGS ";
 
       for ( StepInjectionMetaEntry entry : entries ) {
         String key = entry.getKey();
@@ -254,7 +252,6 @@ public class PGBulkLoaderMetaTest {
       assertEquals( "Delimiter not properly injected... ", "new_DELIMITER", lm.getDelimiter() );
       assertEquals( "Enclosure not properly injected... ", "new_ENCLOSURE", lm.getEnclosure() );
       assertEquals( "Load action not properly injected... ", "new_LOADACTION", lm.getLoadAction() );
-      assertEquals( "PSQL path not properly injected... ", "new_PSQLPATH", lm.getPsqlpath() );
       assertEquals( "Stop on error not properly injected... ", Boolean.TRUE, lm.isStopOnError() );
 
       assertEquals( "Field name not properly injected... ", "new_FIELDNAME", lm.getFieldTable()[0] );

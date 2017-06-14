@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -297,8 +297,11 @@ public class PerformanceLogTable extends BaseLogTable implements Cloneable, LogT
 
   @Override
   public void setAllGlobalParametersToNull()  {
-    super.setAllGlobalParametersToNull();
+    boolean clearGlobalVariables = Boolean.valueOf( System.getProperties().getProperty( Const.KETTLE_GLOBAL_LOG_VARIABLES_CLEAR_ON_EXPORT, "false" ) );
+    if ( clearGlobalVariables ) {
+      super.setAllGlobalParametersToNull();
 
-    logInterval = isGlobalParameter( logInterval ) ? null : logInterval;
+      logInterval = isGlobalParameter( logInterval ) ? null : logInterval;
+    }
   }
 }

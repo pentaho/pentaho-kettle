@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -46,7 +46,6 @@ import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
-import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.MessageBox;
@@ -98,11 +97,6 @@ public class PGBulkLoaderDialog extends BaseStepDialog implements StepDialogInte
   private Button wbTable;
   private TextVar wTable;
   private FormData fdlTable, fdbTable, fdTable;
-
-  private Label wlPsqlPath;
-  private Button wbPsqlPath;
-  private TextVar wPsqlPath;
-  private FormData fdlPsqlPath, fdbPsqlPath, fdPsqlPath;
 
   private Label wlLoadAction;
   private CCombo wLoadAction;
@@ -258,32 +252,6 @@ public class PGBulkLoaderDialog extends BaseStepDialog implements StepDialogInte
     fdTable.right = new FormAttachment( wbTable, -margin );
     wTable.setLayoutData( fdTable );
 
-    // PsqlPath line...
-    wlPsqlPath = new Label( shell, SWT.RIGHT );
-    wlPsqlPath.setText( BaseMessages.getString( PKG, "PGBulkLoaderDialog.PsqlPath.Label" ) );
-    props.setLook( wlPsqlPath );
-    fdlPsqlPath = new FormData();
-    fdlPsqlPath.left = new FormAttachment( 0, 0 );
-    fdlPsqlPath.right = new FormAttachment( middle, -margin );
-    fdlPsqlPath.top = new FormAttachment( wTable, margin );
-    wlPsqlPath.setLayoutData( fdlPsqlPath );
-
-    wbPsqlPath = new Button( shell, SWT.PUSH | SWT.CENTER );
-    props.setLook( wbPsqlPath );
-    wbPsqlPath.setText( BaseMessages.getString( PKG, "PGBulkLoaderDialog.Browse.Button" ) );
-    fdbPsqlPath = new FormData();
-    fdbPsqlPath.right = new FormAttachment( 100, 0 );
-    fdbPsqlPath.top = new FormAttachment( wTable, margin );
-    wbPsqlPath.setLayoutData( fdbPsqlPath );
-    wPsqlPath = new TextVar( transMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
-    props.setLook( wPsqlPath );
-    wPsqlPath.addModifyListener( lsMod );
-    fdPsqlPath = new FormData();
-    fdPsqlPath.left = new FormAttachment( middle, 0 );
-    fdPsqlPath.top = new FormAttachment( wTable, margin );
-    fdPsqlPath.right = new FormAttachment( wbPsqlPath, -margin );
-    wPsqlPath.setLayoutData( fdPsqlPath );
-
     // Load Action line
     wlLoadAction = new Label( shell, SWT.RIGHT );
     wlLoadAction.setText( BaseMessages.getString( PKG, "PGBulkLoaderDialog.LoadAction.Label" ) );
@@ -291,7 +259,7 @@ public class PGBulkLoaderDialog extends BaseStepDialog implements StepDialogInte
     fdlLoadAction = new FormData();
     fdlLoadAction.left = new FormAttachment( 0, 0 );
     fdlLoadAction.right = new FormAttachment( middle, -margin );
-    fdlLoadAction.top = new FormAttachment( wPsqlPath, margin );
+    fdlLoadAction.top = new FormAttachment( wTable, margin );
     wlLoadAction.setLayoutData( fdlLoadAction );
     wLoadAction = new CCombo( shell, SWT.SINGLE | SWT.READ_ONLY | SWT.BORDER );
     wLoadAction.add( BaseMessages.getString( PKG, "PGBulkLoaderDialog.InsertLoadAction.Label" ) );
@@ -303,13 +271,13 @@ public class PGBulkLoaderDialog extends BaseStepDialog implements StepDialogInte
     props.setLook( wLoadAction );
     fdLoadAction = new FormData();
     fdLoadAction.left = new FormAttachment( middle, 0 );
-    fdLoadAction.top = new FormAttachment( wPsqlPath, margin );
+    fdLoadAction.top = new FormAttachment( wTable, margin );
     fdLoadAction.right = new FormAttachment( 100, 0 );
     wLoadAction.setLayoutData( fdLoadAction );
 
     fdLoadAction = new FormData();
     fdLoadAction.left = new FormAttachment( middle, 0 );
-    fdLoadAction.top = new FormAttachment( wPsqlPath, margin );
+    fdLoadAction.top = new FormAttachment( wTable, margin );
     fdLoadAction.right = new FormAttachment( 100, 0 );
     wLoadAction.setLayoutData( fdLoadAction );
 
@@ -486,20 +454,6 @@ public class PGBulkLoaderDialog extends BaseStepDialog implements StepDialogInte
     };
     new Thread( runnable ).start();
 
-    wbPsqlPath.addSelectionListener( new SelectionAdapter() {
-      public void widgetSelected( SelectionEvent e ) {
-        FileDialog dialog = new FileDialog( shell, SWT.OPEN );
-        dialog.setFilterExtensions( new String[] { "*" } );
-        if ( wPsqlPath.getText() != null ) {
-          dialog.setFileName( wPsqlPath.getText() );
-        }
-        dialog.setFilterNames( ALL_FILETYPES );
-        if ( dialog.open() != null ) {
-          wPsqlPath.setText( dialog.getFilterPath() + Const.FILE_SEPARATOR + dialog.getFileName() );
-        }
-      }
-    } );
-
     // Add listeners
     lsOK = new Listener() {
       public void handleEvent( Event e ) {
@@ -614,9 +568,6 @@ public class PGBulkLoaderDialog extends BaseStepDialog implements StepDialogInte
     }
     if ( input.getTableName() != null ) {
       wTable.setText( input.getTableName() );
-    }
-    if ( input.getPsqlpath() != null ) {
-      wPsqlPath.setText( input.getPsqlpath() );
     }
     if ( input.getDelimiter() != null ) {
       wDelimiter.setText( input.getDelimiter() );
@@ -815,7 +766,6 @@ public class PGBulkLoaderDialog extends BaseStepDialog implements StepDialogInte
     inf.setSchemaName( wSchema.getText() );
     inf.setTableName( wTable.getText() );
     inf.setDatabaseMeta( transMeta.findDatabase( wConnection.getText() ) );
-    inf.setPsqlpath( wPsqlPath.getText() );
     inf.setDelimiter( wDelimiter.getText() );
     inf.setEnclosure( wEnclosure.getText() );
     inf.setStopOnError( wStopOnError.getSelection() );

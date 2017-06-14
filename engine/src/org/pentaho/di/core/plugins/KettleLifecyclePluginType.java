@@ -74,7 +74,7 @@ public class KettleLifecyclePluginType extends BasePluginType implements PluginT
         inputStream = getClass().getResourceAsStream( "/" + xmlFile );
       }
       if ( inputStream == null ) {
-        throw new KettlePluginException( "Unable to find native repository type definition file: " + xmlFile );
+        return;
       }
       Document document = XMLHandler.loadXMLFile( inputStream, null, true, false );
 

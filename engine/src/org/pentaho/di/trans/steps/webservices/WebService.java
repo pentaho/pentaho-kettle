@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -53,9 +53,11 @@ import javax.xml.transform.stream.StreamResult;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.httpclient.Credentials;
+import org.apache.commons.httpclient.Header;
 import org.apache.commons.httpclient.HostConfiguration;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpException;
+import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.httpclient.URI;
 import org.apache.commons.httpclient.URIException;
 import org.apache.commons.httpclient.UsernamePasswordCredentials;
@@ -93,7 +95,6 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 
-import com.ctc.wstx.exc.WstxParsingException;
 
 public class WebService extends BaseStep implements StepInterface {
   private static Class<?> PKG = WebServiceMeta.class; // for i18n purposes, needed by Translator2!!
@@ -365,26 +366,25 @@ public class WebService extends BaseStep implements StepInterface {
         logDetailed( xml );
       }
 
-      try {
-        vHttpMethod = getHttpMethod( cachedURLService );
-      } catch ( URIException e ) {
-        throw new KettleStepException( BaseMessages.getString( PKG, "WebServices.ERROR0002.InvalidURI",
-            cachedURLService ), e );
-      } catch ( UnsupportedEncodingException e ) {
-        throw new KettleStepException( BaseMessages.getString( PKG, "WebServices.ERROR0003.UnsupportedEncoding",
-            cachedURLService ), e );
-      }
+      vHttpMethod = newHttpMethod( cachedURLService );
+
       RequestEntity requestEntity = new ByteArrayRequestEntity( xml.toString().getBytes( "UTF-8" ), "UTF-8" );
       vHttpMethod.setRequestEntity( requestEntity );
       // long currentRequestTime = Const.nanoTime();
       int responseCode = cachedHttpClient.executeMethod( cachedHostConfiguration, vHttpMethod );
-      if ( responseCode == 200 ) {
+      if ( responseCode == HttpStatus.SC_MOVED_PERMANENTLY ) {
+        String newLocation = getLocationFrom( vHttpMethod );
+        vHttpMethod = newHttpMethod( newLocation );
+        vHttpMethod.setRequestEntity( requestEntity );
+        responseCode = cachedHttpClient.executeMethod( cachedHostConfiguration, vHttpMethod );
+      }
+      if ( responseCode == HttpStatus.SC_OK ) {
         processRows( vHttpMethod.getResponseBodyAsStream(), rowData, rowMeta, cachedWsdl.getWsdlTypes()
             .isElementFormQualified( cachedWsdl.getTargetNamespace() ), vHttpMethod.getResponseCharSet() );
-      } else if ( responseCode == 401 ) {
+      } else if ( responseCode == HttpStatus.SC_UNAUTHORIZED ) {
         throw new KettleStepException( BaseMessages.getString( PKG, "WebServices.ERROR0011.Authentication",
             cachedURLService ) );
-      } else if ( responseCode == 404 ) {
+      } else if ( responseCode == HttpStatus.SC_NOT_FOUND ) {
         throw new KettleStepException( BaseMessages.getString( PKG,
                 "WebServices.ERROR0012.NotFound", cachedURLService ) );
       } else {
@@ -436,7 +436,24 @@ public class WebService extends BaseStep implements StepInterface {
 
   }
 
-  private PostMethod getHttpMethod( String vURLService ) throws URIException, UnsupportedEncodingException {
+  static String getLocationFrom( PostMethod method ) {
+    Header locationHeader = method.getResponseHeader( "Location" );
+    return locationHeader.getValue();
+  }
+
+  PostMethod newHttpMethod( String urlService ) throws KettleStepException {
+    try {
+      return getHttpMethod( urlService );
+    } catch ( URIException e ) {
+      throw new KettleStepException( BaseMessages.getString( PKG, "WebServices.ERROR0002.InvalidURI",
+          cachedURLService ), e );
+    } catch ( UnsupportedEncodingException e ) {
+      throw new KettleStepException( BaseMessages.getString( PKG, "WebServices.ERROR0003.UnsupportedEncoding",
+          cachedURLService ), e );
+    }
+  }
+
+  PostMethod getHttpMethod( String vURLService ) throws URIException, UnsupportedEncodingException {
     PostMethod vHttpMethod = new PostMethod( vURLService );
     URI uri = new URI( vURLService, false );
     vHttpMethod.setURI( uri );
@@ -854,7 +871,7 @@ public class WebService extends BaseStep implements StepInterface {
 
                       outputRowData[outputIndex++] = getValue( vReader.getElementText(), field );
                       putRow( data.outputRowMeta, outputRowData );
-                    } catch ( WstxParsingException e ) {
+                    } catch ( XMLStreamException e ) {
                       throw new KettleStepException( "Unable to get value for field ["
                         + field.getName()
                         + "].  Verify that this is not a complex data type by looking at the response XML.", e );

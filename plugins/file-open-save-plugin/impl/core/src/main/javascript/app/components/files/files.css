@@ -1,0 +1,250 @@
+/*!
+ * PENTAHO CORPORATION PROPRIETARY AND CONFIDENTIAL
+ *
+ * Copyright 2017 Pentaho Corporation (Pentaho). All rights reserved.
+ *
+ * NOTICE: All information including source code contained herein is, and
+ * remains the sole property of Pentaho and its licensors. The intellectual
+ * and technical concepts contained herein are proprietary and confidential
+ * to, and are trade secrets of Pentaho and may be covered by U.S. and foreign
+ * patents, or patents in process, and are protected by trade secret and
+ * copyright laws. The receipt or possession of this source code and/or related
+ * information does not convey or imply any rights to reproduce, disclose or
+ * distribute its contents, or to manufacture, use, or sell anything that it
+ * may describe, in whole or in part. Any reproduction, modification, distribution,
+ * or public display of this information without the express written authorization
+ * from Pentaho is strictly prohibited and in violation of applicable laws and
+ * international treaties. Access to the source code contained herein is strictly
+ * prohibited to anyone except those individuals and entities who have executed
+ * confidentiality and non-disclosure agreements or other agreements with Pentaho,
+ * explicitly covering such access.
+ */
+
+/* FILES */
+files table {
+  width: 100%;
+  height: 100%;
+  border: none;
+  table-layout: fixed;
+  border-collapse: collapse;
+  border-spacing: 0;
+  margin: 0;
+}
+
+files .headerWrapper {
+  width: 100%;
+  overflow: hidden;
+  padding: 0;
+  margin: 0;
+  border: 0;
+  height: 31px;
+}
+
+files .bodyWrapper {
+  width: 100%;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 0;
+  margin: 0;
+  border: 0;
+  height: 100%;
+  max-height: 261px;
+}
+
+.open files .bodyWrapper {
+  max-height: 337px;
+}
+
+files .headerWrapper table {
+  background-color: #FAFAFA;
+  text-align: left;
+  line-height: 29px;
+}
+
+files thead,
+files tbody {
+  width: 100%;
+}
+
+files tbody tr {
+  cursor: pointer;
+}
+
+files th:first-child,
+files td:first-child {
+  width: 50%;
+}
+
+files th,
+files td {
+  text-align: left;
+  line-height: 18px;
+  padding: 6px 10px;
+  white-space: nowrap;
+  width: 25%;
+  -webkit-user-select: none; /* webkit (safari, chrome) browsers */
+  -moz-user-select: none; /* mozilla browsers */
+  -khtml-user-select: none; /* webkit (konqueror) browsers */
+  -ms-user-select: none; /* IE10+ */
+}
+
+files td {
+  border-left: 1px solid transparent;
+}
+
+files td.editing {
+  padding-top: 0;
+  padding-bottom: 0;
+}
+
+files th {
+  border-bottom: 1px solid #CCC;
+  border-left: 1px solid #CCC;
+  background: #FAFAFA;
+  font-weight: normal;
+}
+
+files th:first-child {
+  border-left: 0 none;
+}
+
+files tbody tr.selected td,
+files tbody tr.selected:hover td {
+  background-color: #0F2B5B;
+  color: #FFFFFF;
+}
+
+files tbody tr:hover td {
+  background-color: #E6EFF6;
+}
+
+.save files .scrollTableSave td,
+.open files .scrollTableOpen td {
+  padding-left: 19px;
+}
+
+.save files .scrollTableSave td:first-child,
+.open files .scrollTableOpen td:first-child {
+  padding-left: 10px;
+}
+
+.save files .scrollTableSave td:last-child {
+  padding-left: 22px;
+}
+
+.open files .scrollTableOpen td:last-child {
+  padding-left: 23px;
+}
+
+files tbody td div {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+files tbody td input {
+  font-size: 14px;
+  width: 100%;
+}
+
+files tr .fileName {
+  padding-left: 10px;
+}
+
+files tr .fileTypeIcon {
+  height: 16px;
+  width: 16px;
+  float: left;
+}
+
+files td.editing .fileTypeIcon {
+  margin-top: 3px;
+}
+
+files tr .fileTypeIcon.file-trans {
+  background: url("../../images/trans_small.svg") no-repeat left center;
+}
+
+files tr .fileTypeIcon.file-job {
+  background: url("../../images/job_small.svg") no-repeat left center;
+}
+
+files tr .fileTypeIcon.file-folder {
+  background: url("../../images/folder.svg") no-repeat left center;
+}
+
+files tr.selected .fileTypeIcon {
+  background-position: right center;
+}
+
+files .nameHeader {
+  float: left;
+}
+
+files .fileLocation {
+  display: none;
+}
+
+files .searchTable .fileLocation {
+  display: block;
+}
+
+files .searchTable tr {
+  line-height: 60px;
+  height: 60px;
+}
+
+files .searchTable .fileName {
+  margin-bottom: 10px;
+}
+
+files .fileType::first-letter {
+  text-transform: capitalize;
+}
+
+files .searchTable .fileType,
+files .searchTable .fileLastSaved {
+  height: 44px;
+}
+
+files tr .fileLocation {
+  color: #999;
+  padding-left: 26px;
+}
+
+files tr.selected .fileLocation {
+  color: #FFF;
+}
+
+files .sortWrapper:hover .sort {
+  visibility: visible;
+}
+
+files .sortWrapper {
+  cursor: pointer;
+  float: right;
+}
+
+files .sortWrapper .sort {
+  background: url("../../images/sort_none.svg") right center/10px 10px no-repeat;
+  height: 17px;
+  width: 10px;
+  visibility: hidden;
+}
+
+files .sortWrapper .sort.sortUp {
+  background-image: url("../../images/sort_up.svg");
+  visibility: visible;
+}
+
+files .sortWrapper .sort.sortDown {
+  background-image: url("../../images/sort_down.svg");
+  visibility: visible;
+}
+
+files .fileAreaMessageView {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -100%);
+}

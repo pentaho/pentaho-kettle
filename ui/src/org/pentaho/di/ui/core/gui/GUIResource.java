@@ -1175,7 +1175,7 @@ public class GUIResource {
     //
 
     // "ui/images/wizard.png"
-    imageWizard = loadAsResource( display, BasePropertyHandler.getProperty( "Wizard_image" ), 0 );
+    imageWizard = loadAsResource( display, BasePropertyHandler.getProperty( "spoon_icon" ), 0 );
 
     imageBanner =
       ImageUtil.makeImageTransparent( display, loadAsResource( display, BasePropertyHandler

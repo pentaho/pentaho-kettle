@@ -390,6 +390,24 @@ public class ValueMetaBaseTest {
     valueMetaBase.convertDataFromString( inputValueEmptyString, valueMetaInterface, nullIf, ifNull, trim_type );
   }
 
+  @Test( expected = KettleValueException.class )
+  public void testGetBigDecimalThrowsKettleValueException() throws KettleValueException {
+    ValueMetaBase valueMeta = new ValueMetaBigNumber();
+    valueMeta.getBigNumber( "1234567890" );
+  }
+
+  @Test( expected = KettleValueException.class )
+  public void testGetIntegerThrowsKettleValueException() throws KettleValueException {
+    ValueMetaBase valueMeta = new ValueMetaInteger();
+    valueMeta.getInteger( "1234567890" );
+  }
+
+  @Test( expected = KettleValueException.class )
+  public void testGetNumberThrowsKettleValueException() throws KettleValueException {
+    ValueMetaBase valueMeta = new ValueMetaNumber();
+    valueMeta.getNumber( "1234567890" );
+  }
+
   @Test
   public void testIsNumeric() {
     int[] numTypes = { ValueMetaInterface.TYPE_INTEGER, ValueMetaInterface.TYPE_NUMBER, ValueMetaInterface.TYPE_BIGNUMBER };
@@ -700,6 +718,15 @@ public class ValueMetaBaseTest {
     Object defaultBoolean = "true";
     boolean convertedBoolean = (boolean) base.convertDataUsingConversionMetaData( defaultBoolean );
     assertEquals( true, convertedBoolean );
+  }
+
+  @Test
+  public void testGetCompatibleString() throws KettleValueException {
+    ValueMetaInteger valueMetaInteger = new ValueMetaInteger( "INTEGER" );
+    valueMetaInteger.setType( 5 ); // Integer
+    valueMetaInteger.setStorageType( 1 ); // STORAGE_TYPE_BINARY_STRING
+
+    assertEquals( "2", valueMetaInteger.getCompatibleString( new Long( 2 ) ) ); //BACKLOG-15750
   }
 
   @Test

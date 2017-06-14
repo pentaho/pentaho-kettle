@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -33,6 +33,7 @@ import org.pentaho.di.repository.RepositoryOperation;
 import org.pentaho.di.repository.RepositorySecurityProvider;
 import org.pentaho.di.ui.core.dialog.EnterStringDialog;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
+import org.pentaho.di.ui.spoon.Spoon;
 
 public class RepositorySecurityUI {
 
@@ -64,22 +65,23 @@ public class RepositorySecurityUI {
     }
 
     try {
-      if ( repository == null ) {
-        return false; // always OK if there is no repository.
+      if ( repository != null ) {
+        repository.getSecurityProvider().validateAction( operations );
       }
-      repository.getSecurityProvider().validateAction( operations );
+      // always ok if there is no repository
+      return false;
+    } catch ( KettleRepositoryLostException krle ) {
+      Spoon.getInstance().handleRepositoryLost( krle );
     } catch ( KettleException e ) {
       KettleRepositoryLostException krle = KettleRepositoryLostException.lookupStackStrace( e );
       if ( krle != null ) {
-        throw krle;
-      }
-      if ( displayError == true ) {
+        Spoon.getInstance().handleRepositoryLost( krle );
+      } else if ( displayError == true ) {
         new ErrorDialog( shell, "Security error",
             "There was a security error performing operations:" + Const.CR + operationsDesc, e );
       }
-      return true;
     }
-    return false;
+    return true;
   }
 
   /**

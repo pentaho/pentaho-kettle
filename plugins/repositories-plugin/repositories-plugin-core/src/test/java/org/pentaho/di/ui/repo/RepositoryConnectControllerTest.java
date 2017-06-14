@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -51,10 +51,15 @@ import java.util.List;
 import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
-import static org.mockito.Mockito.*;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 
 /**
  * Created by bmorrise on 5/3/16.
@@ -333,6 +338,33 @@ public class RepositoryConnectControllerTest {
     assertNotEquals( edited , controller.getConnectedRepository() );
   }
 
+  @Test
+  public void testIsDatabaseWithNameExist() throws Exception {
+    final DatabaseMeta databaseMeta1 = new DatabaseMeta();
+    databaseMeta1.setName( "TestDB1" );
+    controller.addDatabase( databaseMeta1 );
+    final DatabaseMeta databaseMeta2 = new DatabaseMeta();
+    databaseMeta2.setName( "TestDB2" );
+    controller.addDatabase( databaseMeta2 );
+
+    when( repositoriesMeta.nrDatabases() ).thenReturn( 2 );
+    when( repositoriesMeta.getDatabase( 0 ) ).thenReturn( databaseMeta1 );
+    when( repositoriesMeta.getDatabase( 1 ) ).thenReturn( databaseMeta2 );
+
+
+    //existing databases
+    assertFalse( controller.isDatabaseWithNameExist( databaseMeta1, false ) );
+    databaseMeta2.setName( "TestDB1" );
+    assertTrue( controller.isDatabaseWithNameExist( databaseMeta2, false ) );
+
+    //new databases
+    final DatabaseMeta databaseMeta3 = new DatabaseMeta();
+    databaseMeta3.setName( "TestDB3" );
+    assertFalse( controller.isDatabaseWithNameExist( databaseMeta3, true ) );
+    databaseMeta3.setName( "TestDB1" );
+    assertTrue( controller.isDatabaseWithNameExist( databaseMeta3, true ) );
+  }
+
   private static class TestRepositoryMeta extends BaseRepositoryMeta implements RepositoryMeta {
 
     private String innerStuff;
@@ -364,5 +396,4 @@ public class RepositoryConnectControllerTest {
     public void populate( Map<String, Object> properties, RepositoriesMeta repositoriesMeta ) {
     }
   }
-
 }

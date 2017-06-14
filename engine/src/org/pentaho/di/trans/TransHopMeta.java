@@ -23,6 +23,7 @@
 package org.pentaho.di.trans;
 
 import java.util.List;
+import java.util.Objects;
 
 import org.pentaho.di.base.BaseHopMeta;
 import org.pentaho.di.core.Const;
@@ -111,6 +112,10 @@ public class TransHopMeta extends BaseHopMeta<StepMeta> implements Comparable<Tr
       return false;
     }
     return this.from.equals( other.getFromStep() ) && this.to.equals( other.getToStep() );
+  }
+
+  public int hashCode() {
+    return Objects.hash( to, from );
   }
 
   /**

@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -77,6 +77,27 @@ public class JobEntryCheckDbConnectionsTest {
     meta.setWaittimes( new int[]{ JobEntryCheckDbConnections.UNIT_TIME_MILLI_SECOND } );
     meta.setWaitfors( new String[]{ String.valueOf( waitMilliseconds ) } );
     Result result = meta.execute( new Result(), 0 );
+    Assert.assertTrue( result.getResult() );
+  }
+
+  @Test( timeout = 5000 )
+  public void testWaitingtime() {
+    int waitTimes = 3;
+    Job mockedJob = Mockito.mock( Job.class );
+    Mockito.when( mockedJob.isStopped() ).thenReturn( false );
+
+    JobEntryCheckDbConnections meta = new JobEntryCheckDbConnections();
+    meta.setParentJob( mockedJob );
+    meta.setLogLevel( LogLevel.DETAILED );
+
+    DatabaseMeta db = new DatabaseMeta( "InMemory H2", "H2", null, null, H2_DATABASE, "-1", null, null );
+    meta.setConnections( new DatabaseMeta[]{ db } );
+    meta.setWaittimes( new int[]{ JobEntryCheckDbConnections.UNIT_TIME_SECOND } );
+    meta.setWaitfors( new String[]{ String.valueOf( waitTimes ) } );
+
+    Result result = meta.execute( new Result(), 0 );
+
+    Assert.assertTrue( meta.getNow() - meta.getTimeStart() >= waitTimes * 1000 );
     Assert.assertTrue( result.getResult() );
   }
 }

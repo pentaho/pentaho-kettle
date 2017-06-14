@@ -31,6 +31,7 @@ import java.security.Principal;
  * Created by jchilton on 3/15/2017.
  */
 public class ActingPrincipal implements Principal, Serializable {
+  private static final long serialVersionUID = -8326458100440326949L;
   private String name;
 
   public ActingPrincipal( String name ) {

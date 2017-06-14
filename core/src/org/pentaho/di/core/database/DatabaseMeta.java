@@ -1039,7 +1039,7 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
 
     retval.append( "    <attributes>" ).append( Const.CR );
 
-    List<String> list = new ArrayList<String>();
+    List<String> list = new ArrayList<>();
     Set<Object> keySet = getAttributes().keySet();
     for ( Object object : keySet ) {
       list.add( (String) object );
@@ -1162,7 +1162,7 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
           urlBuilder.append( optionSeparator );
         }
 
-        urlBuilder.append( parameter ).append( valueSeparator ).append( value );
+        urlBuilder.append( environmentSubstitute( parameter ) ).append( valueSeparator ).append( environmentSubstitute( value ) );
         first = false;
       }
     }
@@ -1382,7 +1382,7 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
   }
 
   public static final DatabaseInterface[] getDatabaseInterfaces() {
-    List<DatabaseInterface> list = new ArrayList<DatabaseInterface>( getDatabaseInterfacesMap().values() );
+    List<DatabaseInterface> list = new ArrayList<>( getDatabaseInterfacesMap().values() );
     return list.toArray( new DatabaseInterface[list.size()] );
   }
 
@@ -1402,7 +1402,7 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
         PluginRegistry registry = PluginRegistry.getInstance();
 
         List<PluginInterface> plugins = registry.getPlugins( DatabasePluginType.class );
-        HashMap<String, DatabaseInterface> tmpAllDatabaseInterfaces = new HashMap<String, DatabaseInterface>();
+        HashMap<String, DatabaseInterface> tmpAllDatabaseInterfaces = new HashMap<>();
         for ( PluginInterface plugin : plugins ) {
           try {
             DatabaseInterface databaseInterface = (DatabaseInterface) registry.loadClass( plugin );
@@ -1410,8 +1410,7 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
             databaseInterface.setPluginName( plugin.getName() );
             tmpAllDatabaseInterfaces.put( plugin.getIds()[ 0 ], databaseInterface );
           } catch ( KettlePluginException cnfe ) {
-            System.out.println( "Could not create connection entry for "
-              + plugin.getName() + ".  " + cnfe.getCause().getClass().getName() );
+            // System.out.println( "Could not create connection entry for " + plugin.getName() + ".  " + cnfe.getCause().getClass().getName() );
             log.logError( "Could not create connection entry for "
               + plugin.getName() + ".  " + cnfe.getCause().getClass().getName() );
             if ( log.isDebug() ) {
@@ -1562,7 +1561,7 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
    * @return an array of remarks Strings
    */
   public String[] checkParameters() {
-    ArrayList<String> remarks = new ArrayList<String>();
+    ArrayList<String> remarks = new ArrayList<>();
 
     if ( getDatabaseInterface() == null ) {
       remarks.add( BaseMessages.getString( PKG, "DatabaseMeta.BadInterface" ) );
@@ -2006,7 +2005,7 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
    *
    */
   public List<RowMetaAndData> getFeatureSummary() {
-    List<RowMetaAndData> list = new ArrayList<RowMetaAndData>();
+    List<RowMetaAndData> list = new ArrayList<>();
     RowMetaAndData r = null;
     final String par = "Parameter";
     final String val = "Value";

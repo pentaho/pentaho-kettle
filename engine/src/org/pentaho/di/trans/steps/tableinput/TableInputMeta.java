@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -460,9 +460,9 @@ public class TableInputMeta extends BaseStepMeta implements StepMetaInterface {
     RowMetaInterface prev, String[] input, String[] output, RowMetaInterface info, Repository repository,
     IMetaStore metaStore ) throws KettleStepException {
 
-    if ( stepMeta.getName().equalsIgnoreCase( "cdc_cust" ) ) {
-      System.out.println( "HERE!" );
-    }
+    // if ( stepMeta.getName().equalsIgnoreCase( "cdc_cust" ) ) {
+    //   System.out.println( "HERE!" );
+    // }
 
     // Find the lookupfields...
     RowMetaInterface out = new RowMeta();

@@ -1,5 +1,5 @@
 /*!
- * Copyright 2010 - 2016 Pentaho Corporation.  All rights reserved.
+ * Copyright 2010 - 2017 Pentaho Corporation.  All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,8 +23,7 @@ import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.StepMeta;
-import org.pentaho.di.trans.step.StepMetaInterface;
-import org.pentaho.di.ui.spoon.Spoon;
+import org.pentaho.di.ui.spoon.SpoonLifecycleListener;
 
 /**
  * Created by bmorrise on 7/26/16.
@@ -35,7 +34,8 @@ import org.pentaho.di.ui.spoon.Spoon;
   extensionPointId = "OpenMapping" )
 public class OpenMappingExtension implements ExtensionPointInterface {
 
-  private static Class<?> PKG = Spoon.class;
+  //spoon class without import of swt libraries, big-data pmr run doesn't have ui library and shouldn't
+  private static Class<?> PKG = SpoonLifecycleListener.class;
 
   @Override public void callExtensionPoint( LogChannelInterface log, Object object ) throws KettleException {
     StepMeta stepMeta = (StepMeta) ( (Object[]) object )[ 0 ];

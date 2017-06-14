@@ -101,9 +101,9 @@ public class SpoonTransformationDelegate extends SpoonDelegate {
    * @return true if the transformation was added, false if it couldn't be added (already loaded)
    **/
   public boolean addTransformation( TransMeta transMeta ) {
-    int index = transformationMap.indexOf( transMeta );
+    int index = getTransformationList().indexOf( transMeta );
     if ( index < 0 ) {
-      transformationMap.add( transMeta );
+      getTransformationList().add( transMeta );
       return true;
     } else {
       /*
@@ -123,22 +123,27 @@ public class SpoonTransformationDelegate extends SpoonDelegate {
   public synchronized void closeTransformation( TransMeta transMeta ) {
     // Close the associated tabs...
     //
-    TabMapEntry entry = spoon.delegates.tabs.findTabMapEntry( transMeta );
+    TabMapEntry entry = getSpoon().delegates.tabs.findTabMapEntry( transMeta );
     if ( entry != null ) {
-      spoon.delegates.tabs.removeTab( entry );
+      getSpoon().delegates.tabs.removeTab( entry );
     }
 
     // Also remove it from the item from the transformationMap
     // Otherwise it keeps showing up in the objects tree
     // Look for the transformation, not the key (name might have changed)
     //
-    int index = transformationMap.indexOf( transMeta );
-    if ( index >= 0 ) {
-      transformationMap.remove( index );
+    int index = getTransformationList().indexOf( transMeta );
+    while ( index >= 0 ) {
+      getTransformationList().remove( index );
+      index = getTransformationList().indexOf( transMeta );
     }
 
-    spoon.refreshTree();
-    spoon.enableMenus();
+    getSpoon().refreshTree();
+    getSpoon().enableMenus();
+  }
+
+  public Spoon getSpoon() {
+    return this.spoon;
   }
 
   public void addTransGraph( TransMeta transMeta ) {
@@ -747,6 +752,11 @@ public class SpoonTransformationDelegate extends SpoonDelegate {
       executionConfiguration = spoon.getTransExecutionConfiguration();
     }
 
+    // Set defaults so the run configuration can set it up correctly
+    executionConfiguration.setExecutingLocally( true );
+    executionConfiguration.setExecutingRemotely( false );
+    executionConfiguration.setExecutingClustered( false );
+
     // Set repository and safe mode information in both the exec config and the metadata
     transMeta.setRepository( spoon.rep );
     transMeta.setMetaStore( spoon.metaStore );
@@ -818,16 +828,6 @@ public class SpoonTransformationDelegate extends SpoonDelegate {
         //
         return;
       }
-    } else {
-      if ( transMeta.findFirstUsedClusterSchema() != null ) {
-        executionConfiguration.setExecutingLocally( false );
-        executionConfiguration.setExecutingRemotely( false );
-        executionConfiguration.setExecutingClustered( true );
-      } else {
-        executionConfiguration.setExecutingLocally( true );
-        executionConfiguration.setExecutingRemotely( false );
-        executionConfiguration.setExecutingClustered( false );
-      }
     }
 
     Object[] data = spoon.variables.getData();
@@ -862,6 +862,15 @@ public class SpoonTransformationDelegate extends SpoonDelegate {
       ExtensionPointHandler.callExtensionPoint( log, KettleExtensionPoint.SpoonTransMetaExecutionStart.id, transMeta );
       ExtensionPointHandler.callExtensionPoint( log, KettleExtensionPoint.SpoonTransExecutionConfiguration.id,
           executionConfiguration );
+
+      try {
+        ExtensionPointHandler.callExtensionPoint( log, KettleExtensionPoint.SpoonTransBeforeStart.id, new Object[] {
+          executionConfiguration, transMeta, transMeta
+        } );
+      } catch ( KettleException e ) {
+        log.logError( e.getMessage(), transMeta.getFilename() );
+        return;
+      }
 
       // Verify if there is at least one step specified to debug or preview...
       //

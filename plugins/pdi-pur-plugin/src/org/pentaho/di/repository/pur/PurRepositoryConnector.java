@@ -1,5 +1,5 @@
 /*!
- * Copyright 2010 - 2016 Pentaho Corporation.  All rights reserved.
+ * Copyright 2010 - 2017 Pentaho Corporation.  All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -105,29 +105,32 @@ public class PurRepositoryConnector implements IRepositoryConnector {
       result.setUser( user1 );
 
       // We need to have the application context and the session available in order for us to skip authentication
-      if ( PentahoSystem.getApplicationContext() != null && PentahoSessionHolder.getSession() != null ) {
+      if ( PentahoSystem.getApplicationContext() != null && PentahoSessionHolder.getSession() != null
+          && PentahoSessionHolder.getSession().isAuthenticated() ) {
         if ( inProcess() ) {
           // connect to the IUnifiedRepository through PentahoSystem
           // this assumes we're running in a BI Platform
-          if ( log.isDebug() ) {
-            log.logDebug( "begin connectInProcess()" );
-          }
-          String name = PentahoSessionHolder.getSession().getName();
-          user1 = new EEUserInfo();
-          user1.setLogin( name );
-          user1.setName( name );
-          user1.setPassword( decryptedPassword );
           result.setUnifiedRepository( PentahoSystem.get( IUnifiedRepository.class ) );
-          result.setUser( user1 );
-          result.setSuccess( true );
+          if ( result.getUnifiedRepository() != null ) {
+            if ( log.isDebug() ) {
+              log.logDebug( "begin connectInProcess()" );
+            }
+            String name = PentahoSessionHolder.getSession().getName();
+            user1 = new EEUserInfo();
+            user1.setLogin( name );
+            user1.setName( name );
+            user1.setPassword( decryptedPassword );
+            result.setUser( user1 );
+            result.setSuccess( true );
 
-          if ( log.isDebug() ) {
-            log.logDebug( "connected in process as '" + name + "' pur repository = " + result.getUnifiedRepository() );
+            if ( log.isDebug() ) {
+              log.logDebug( "connected in process as '" + name + "' pur repository = " + result.getUnifiedRepository() );
+            }
+
+            // for now, there is no need to support the security manager
+            // what about security provider?
+            return result;
           }
-
-          // for now, there is no need to support the security manager
-          // what about security provider?
-          return result;
         }
       }
 

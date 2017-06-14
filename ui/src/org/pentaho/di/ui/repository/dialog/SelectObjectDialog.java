@@ -308,7 +308,9 @@ public class SelectObjectDialog extends Dialog {
 
     wTree.addSelectionListener( new SelectionAdapter() {
       public void widgetSelected( SelectionEvent e ) {
-        wOK.setEnabled( !Boolean.TRUE.equals( wTree.getSelection()[ 0 ].getData( "isFolder" ) ) );
+        if ( wTree.getSelection().length > 0 ) {
+          wOK.setEnabled( !Boolean.TRUE.equals( wTree.getSelection()[ 0 ].getData( "isFolder" ) ) );
+        }
       }
     } );
 

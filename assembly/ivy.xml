@@ -9,6 +9,7 @@
     <conf name="plugins"/>
     <conf name="launcher" />
     <conf name="dataservice-jdbc" />
+    <conf name="adaptive-execution" />
     <conf name="pentaho-system" />
   </configurations>
 
@@ -19,7 +20,9 @@
   <dependencies defaultconf="default->default">
     <!-- Kettle module dependencies-->
     <dependency org="${ivy.artifact.group}" name="kettle-core"          rev="${project.revision}" changing="true" force="true"/>
-    <dependency org="${ivy.artifact.group}" name="kettle-engine"        rev="${project.revision}" changing="true" force="true"/>
+    <dependency org="${ivy.artifact.group}" name="kettle-engine"        rev="${project.revision}" changing="true" force="true">
+      <exclude org="pentaho" module="pentaho-database-model"/>
+    </dependency>
     <dependency org="${ivy.artifact.group}" name="kettle-dbdialog"      rev="${project.revision}" changing="true" force="true">
       <exclude name="jaxen" module="jaxen"/>
       <exclude name="dom4j" module="dom4j"/>
@@ -32,45 +35,66 @@
     <dependency org="${ivy.artifact.group}" name="kettle5-log4j-plugin" rev="${project.revision}" changing="true" force="true" transitive="false"/>
 
     <dependency org="pentaho" name="pdi-osgi-bridge-core" rev="${dependency.pdi-osgi-bridge.revision}" changing="true" />
+    <!-- Begin osgi-bridge-core transitives. -->
+    <!-- Added explicitly to overcome some maven->ivy resolve version errors. Should not be here after mavenizaiton. -->
+    <dependency org="pentaho" name="pentaho-service-coordinator" rev="${dependency.pdi-osgi-bridge.revision}" changing="true" />
+    <dependency org="pentaho" name="pentaho-osgi-utils-api" rev="${dependency.pdi-osgi-bridge.revision}" changing="true" />
+    <dependency org="org.apache.aries" name="org.apache.aries.util" rev="${aries.util.version}" changing="true" transitive="false"/>
+    <dependency org="org.ops4j.pax.exam" name="pax-exam-extender-service" rev="${exam.version}" changing="true" transitive="false"/>
+    <dependency org="org.ops4j.pax.exam" name="pax-exam-cdi" rev="${exam.version}" changing="true" transitive="false"/>
+    <dependency org="org.ops4j.pax.tinybundles" name="tinybundles" rev="${tinybundles.version}" changing="true" transitive="false"/>
+    <!-- End osgi-bridge-core transitives. -->
 
     <!-- Data Service JDBC Driver -->
     <dependency org="pentaho" name="pdi-dataservice-driver-bundle" rev="${project.revision}" changing="true" conf="dataservice-jdbc->default" transitive="false">
       <artifact name="pdi-dataservice-driver-bundle" type="zip"/>
     </dependency>
 
+    <!-- Adaptive Execution Packages -->
+    <dependency org="org.pentaho.adaptive" name="pdi-daemon-assembly" rev="${ael.revision}" changing="true" transitive="false" conf="adaptive-execution->default">
+      <artifact name="pdi-daemon-assembly" type="zip"/>
+    </dependency>
+
+    <dependency org="org.pentaho.adaptive" name="pdi-spark-driver" rev="${project.revision}"  transitive="false"/>
+
+    <dependency org="org.pentaho.adaptive" name="pdi-engine-spark" rev="${project.revision}" transitive="false"/>
+
+    <dependency org="io.reactivex.rxjava2" name="rxjava" rev="2.0.4"/>
+
+
     <!-- Kettle plugin dependencies-->
     <dependency org="${ivy.artifact.group}" name="kettle-version-checker" rev="${project.revision}" changing="true" conf="plugins->default">
       <artifact name="kettle-version-checker" type="zip"/>
     </dependency>
-    <dependency org="${ivy.artifact.group}" name="kettle-dummy-plugin" rev="${project.revision}" changing="true" conf="plugins->default">
+    <dependency org="org.pentaho.kettle.plugins" name="kettle-dummy-plugin" rev="${project.revision}" changing="true" conf="plugins->default" transitive="false">
       <artifact name="kettle-dummy-plugin" type="zip"/>
     </dependency>
-    <dependency org="${ivy.artifact.group}" name="kettle-s3csvinput-plugin" rev="${project.revision}" changing="true" conf="plugins->default">
+    <dependency org="org.pentaho.kettle.plugins" name="kettle-s3csvinput-plugin" rev="${project.revision}" changing="true" conf="plugins->default"  transitive="false">
       <artifact name="kettle-s3csvinput-plugin" type="zip"/>
     </dependency>
-    <dependency org="${ivy.artifact.group}" name="kettle-shapefilereader-plugin" rev="${project.revision}" changing="true" conf="plugins->default">
+    <dependency org="org.pentaho.kettle.plugins" name="kettle-shapefilereader-plugin" rev="${project.revision}" changing="true" conf="plugins->default" transitive="false">
       <artifact name="kettle-shapefilereader-plugin" type="zip"/>
     </dependency>
-    <dependency org="${ivy.artifact.group}" name="kettle-drools5-plugin" rev="${project.revision}" changing="true" conf="plugins->default">
+    <dependency org="org.pentaho.kettle.plugins" name="kettle-drools5-plugin" rev="${project.revision}" changing="true" conf="plugins->default" transitive="false">
       <artifact name="kettle-drools5-plugin" type="zip"/>
     </dependency>
-    <dependency org="${ivy.artifact.group}" name="kettle-gpload-plugin" rev="${project.revision}" changing="true" conf="plugins->default">
+    <dependency org="org.pentaho.kettle.plugins" name="kettle-gpload-plugin" rev="${project.revision}" changing="true" conf="plugins->default" transitive="false">
         <artifact name="kettle-gpload-plugin" type="zip"/>
     </dependency>
-    <dependency org="${ivy.artifact.group}" name="kettle-hl7-plugin" rev="${project.revision}" changing="true" conf="plugins->default">
+    <dependency org="org.pentaho.kettle.plugins" name="kettle-hl7-plugin" rev="${project.revision}" changing="true" conf="plugins->default">
         <artifact name="kettle-hl7-plugin" type="zip"/>
     </dependency>
-    <dependency org="${ivy.artifact.group}" name="kettle-openerp-plugin" rev="${project.revision}" changing="true" conf="plugins->default">
+    <dependency org="org.pentaho.kettle.plugins" name="kettle-openerp-plugin" rev="${project.revision}" changing="true" conf="plugins->default" transitive="false">
         <artifact name="kettle-openerp-plugin" type="zip"/>
     </dependency>
-    <dependency org="${ivy.artifact.group}" name="kettle-palo-plugin" rev="${project.revision}" changing="true" conf="plugins->default">
+    <dependency org="org.pentaho.kettle.plugins" name="kettle-palo-plugin" rev="${project.revision}" changing="true" conf="plugins->default" transitive="false">
         <artifact name="kettle-palo-plugin" type="zip"/>
     </dependency>
     <dependency org="${ivy.artifact.group}" name="kettle5-log4j-plugin" rev="${project.revision}" changing="true" conf="plugins->default">
         <artifact name="kettle5-log4j-plugin" type="zip"/>
     </dependency>
-    <dependency org="${ivy.artifact.group}" name="pdi-google-analytics-plugin-ce" rev="${project.revision}" changing="true" conf="plugins->default">
-        <artifact name="pdi-google-analytics-plugin-ce" type="zip"/>
+    <dependency org="org.pentaho.kettle.plugins" name="pdi-google-analytics-plugin" rev="${project.revision}" changing="true" conf="plugins->default">
+        <artifact name="pdi-google-analytics-plugin" type="zip"/>
     </dependency>
     <dependency org="${ivy.artifact.group}" name="pdi-salesforce-plugin" rev="${project.revision}" changing="true" conf="plugins->default">
         <artifact name="pdi-salesforce-plugin" type="zip"/>
@@ -81,19 +105,19 @@
     <dependency org="${ivy.artifact.group}" name="lucid-db-streaming-loader-plugin" rev="${project.revision}" changing="true" conf="plugins->default">
         <artifact name="lucid-db-streaming-loader-plugin" type="zip"/>
     </dependency>
-    <dependency org="${ivy.artifact.group}" name="gp-bulk-loader-plugin" rev="${project.revision}" changing="true" conf="plugins->default">
+    <dependency org="org.pentaho.kettle.plugins" name="gp-bulk-loader-plugin" rev="${project.revision}" changing="true" conf="plugins->default" transitive="false">
         <artifact name="gp-bulk-loader-plugin" type="zip"/>
     </dependency>
-    <dependency org="${ivy.artifact.group}" name="elasticsearch-bulk-insert-plugin" rev="${project.revision}" changing="true" conf="plugins->default">
+    <dependency org="org.pentaho.kettle.plugins" name="elasticsearch-bulk-insert-plugin" rev="${project.revision}" changing="true" conf="plugins->default" transitive="false">
         <artifact name="elasticsearch-bulk-insert-plugin" type="zip"/>
     </dependency>
     <dependency org="${ivy.artifact.group}" name="kettle-xml-plugin" rev="${project.revision}" changing="true" conf="plugins->default">
         <artifact name="kettle-xml-plugin" type="zip"/>
     </dependency>
-    <dependency org="${ivy.artifact.group}" name="kettle-json-plugin" rev="${project.revision}" changing="true" conf="plugins->default">
+    <dependency org="org.pentaho.kettle.plugins" name="kettle-json-plugin" rev="${project.revision}" changing="true" conf="plugins->default">
         <artifact name="kettle-json-plugin" type="zip"/>
     </dependency>
-    <dependency org="${ivy.artifact.group}" name="kettle-sap-plugin" rev="${project.revision}" changing="true" conf="plugins->default">
+    <dependency org="org.pentaho.kettle.plugins" name="kettle-sap-plugin" rev="${project.revision}" changing="true" conf="plugins->default" transitive="false">
         <artifact name="kettle-sap-plugin" type="zip"/>
     </dependency>
     <dependency org="pentaho" name="pentaho-karaf-assembly" rev="${project.revision}" changing="true" conf="pentaho-system->default" m:classifier="client">
@@ -121,17 +145,18 @@
       <artifact name="pdi-pur-plugin" type="zip"/>
     </dependency>
 
-
+    <dependency org="pentaho" name="pentaho-database-model"  rev="${dependency.pentaho-database-model.revision}" transitive="false"/>
+    <dependency org="pentaho" name="pentaho-registry"  rev="${dependency.pentaho-registry.revision}" transitive="false"/>
     <dependency org="pentaho" name="pentaho-platform-repository"  rev="${dependency.pentaho-platform.revision}" transitive="false"/>
     <dependency org="pentaho" name="pentaho-platform-extensions"  rev="${dependency.pentaho-platform.revision}" transitive="false"/>
-    <dependency org="org.slf4j" name="slf4j-api" rev="1.7.22"/>
-    <dependency org="org.slf4j" name="slf4j-log4j12" rev="1.7.22"/>
+    <dependency org="org.slf4j" name="slf4j-api" rev="1.7.7"/>
+    <dependency org="org.slf4j" name="slf4j-log4j12" rev="1.7.7"/>
     <dependency org="org.springframework" name="spring-aop"     rev="${dependency.spring.framework.revision}" />
     <dependency org="org.springframework" name="spring-beans"   rev="${dependency.spring.framework.revision}" />
     <dependency org="org.springframework" name="spring-context" rev="${dependency.spring.framework.revision}" />
     <dependency org="org.springframework.security" name="spring-security-core" rev="${dependency.spring.security.revision}" />
-    <dependency org="org.glassfish.metro" name="webservices-api" rev="2.1" transitive="false"/>
-    <dependency org="org.glassfish.metro" name="webservices-rt" rev="2.1" transitive="false"/>
+    <dependency org="org.glassfish.metro" name="webservices-api" rev="${dependency.org.glassfish.metro.revision}" transitive="false"/>
+    <dependency org="org.glassfish.metro" name="webservices-rt" rev="${dependency.org.glassfish.metro.revision}" transitive="false"/>
 
     <!-- pentaho-metaverse -->
     <dependency org="pentaho" name="pentaho-metaverse-api" rev="${project.revision}" changing="true" transitive="false"/>
@@ -144,6 +169,7 @@
       <exclude name="javax.mail" module="mail"/>
       <exclude org="org.apache.axis2" module="axis2-kernel" />
       <exclude org="org.scannotation" module="scannotation" />
+      <exclude org="org.codehaus.woodstox" module="wstx-asl" />
     </dependency>
     <dependency org="${dependency.reporting-engine.group}" name="classic-extensions-drill-down" rev="${dependency.pentaho-reporting.revision}" changing="true"/>
     <dependency org="${dependency.reporting-engine.group}" name="classic-extensions-kettle" rev="${dependency.pentaho-reporting.revision}" changing="true">
@@ -155,6 +181,7 @@
     <dependency org="${dependency.reporting-engine.group}" name="classic-extensions-mondrian" rev="${dependency.pentaho-reporting.revision}" transitive="true" changing="true"/>
     <dependency org="${dependency.reporting-engine.group}" name="classic-extensions-olap4j" rev="${dependency.pentaho-reporting.revision}" transitive="true" changing="true"/>
     <dependency org="${dependency.reporting-engine.group}" name="classic-extensions-pmd" rev="${dependency.pentaho-reporting.revision}" transitive="true" changing="true">
+      <exclude org="pentaho" module="pentaho-registry"/>
       <exclude org="org.apache.axis2" module="axis2-kernel" />
       <exclude org="org.apache.axis2" module="axis2-adb" />
       <exclude org="org.scannotation" module="scannotation" />
@@ -227,5 +254,6 @@
     <dependency org="javax.ws.rs" name="jsr311-api" rev="1.1.1" transitive="false"/>
 
     <exclude org="javax.servlet"/>
+    <exclude org="org.osgi" module="org.osgi.core"/>
   </dependencies>
 </ivy-module>

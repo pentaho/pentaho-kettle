@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -96,7 +96,7 @@ public abstract class ConfigurationDialog extends Dialog {
   private Button wOK;
   private Button wCancel;
   private FormData fdLocal;
-  private FormData fdDetails;
+  protected FormData fdDetails;
   private FormData fd_tabFolder;
   private FormData fdExecLocal;
   private FormData fdExecRemote;
@@ -256,7 +256,7 @@ public abstract class ConfigurationDialog extends Dialog {
     fd_tabFolder.right = new FormAttachment( 100, -15 );
     fd_tabFolder.left = new FormAttachment( 0, 15 );
     fd_tabFolder.top = new FormAttachment( gDetails, 15 );
-    fd_tabFolder.bottom = new FormAttachment( gDetails, 410 );
+    fd_tabFolder.bottom = new FormAttachment( gDetails, 370 );
     tabFolder.setLayoutData( fd_tabFolder );
 
     // Parameters
@@ -435,8 +435,6 @@ public abstract class ConfigurationDialog extends Dialog {
 
     gLocal = new Group( shell, SWT.SHADOW_ETCHED_IN );
     gLocal.setText( BaseMessages.getString( PKG, prefix + ".LocalGroup.Label" ) );
-    FormLayout fl = new FormLayout();
-    fl.marginHeight = 25;
     gLocal.setLayout( new FormLayout() );
     props.setLook( gLocal );
     fdLocal = new FormData();

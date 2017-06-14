@@ -25,6 +25,8 @@
 package org.pentaho.di.engine.api.remote;
 
 import org.pentaho.di.engine.api.model.Transformation;
+import org.pentaho.di.engine.api.reporting.LogEntry;
+import org.pentaho.di.engine.api.reporting.LogLevel;
 
 import java.io.Serializable;
 import java.security.Principal;
@@ -37,23 +39,35 @@ import java.util.Set;
  * Created by hudak on 1/25/17.
  */
 public final class ExecutionRequest implements Serializable {
+  private static final long serialVersionUID = -7835121168360407191L;
   private final Map<String, Object> parameters;
+  private final Map<String, Object> environment;
   private final Transformation transformation;
   private final Map<String, Set<Class<? extends Serializable>>> reportingTopics;
 
 
   private final Principal actingPrincipal;
+  private LogLevel loggingLogLevel;
 
-  public ExecutionRequest( Map<String, Object> parameters, Transformation transformation,
-                           Map<String, Set<Class<? extends Serializable>>> reportingTopics, Principal actingPrincipal ) {
+  public ExecutionRequest( Map<String, Object> parameters, Map<String, Object> environment,
+                           Transformation transformation,
+                           Map<String, Set<Class<? extends Serializable>>> reportingTopics,
+                           LogLevel loggingLogLevel,
+                           Principal actingPrincipal ) {
     this.parameters = parameters;
+    this.environment = environment;
     this.transformation = transformation;
     this.reportingTopics = reportingTopics;
+    this.loggingLogLevel = loggingLogLevel;
     this.actingPrincipal = actingPrincipal;
   }
 
   public Map<String, Object> getParameters() {
     return parameters;
+  }
+
+  public Map<String, Object> getEnvironment() {
+    return environment;
   }
 
   public Transformation getTransformation() {
@@ -68,4 +82,7 @@ public final class ExecutionRequest implements Serializable {
     return actingPrincipal;
   }
 
+  public LogLevel getLoggingLogLevel() {
+    return loggingLogLevel;
+  }
 }

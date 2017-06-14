@@ -433,7 +433,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 
     transListeners = Collections.synchronizedList( new ArrayList<TransListener>() );
     transStoppedListeners = Collections.synchronizedList( new ArrayList<TransStoppedListener>() );
-    delegationListeners = new ArrayList<DelegationListener>();
+    delegationListeners = new ArrayList<>();
 
     // Get a valid transactionId in case we run database transactional.
     transactionId = calculateTransactionId();
@@ -445,13 +445,13 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
     lastWrittenStepPerformanceSequenceNr = 0;
 
     activeSubtransformations = new ConcurrentHashMap<>();
-    activeSubjobs = new HashMap<String, Job>();
+    activeSubjobs = new HashMap<>();
 
-    resultRows = new ArrayList<RowMetaAndData>();
-    resultFiles = new ArrayList<ResultFile>();
-    counters = new Hashtable<String, Counter>();
+    resultRows = new ArrayList<>();
+    resultFiles = new ArrayList<>();
+    counters = new Hashtable<>();
 
-    extensionDataMap = new HashMap<String, Object>();
+    extensionDataMap = new HashMap<>();
   }
 
   /**
@@ -712,8 +712,8 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 
     // Keep track of all the row sets and allocated steps
     //
-    steps = new ArrayList<StepMetaDataCombi>();
-    rowsets = new ArrayList<RowSet>();
+    steps = new ArrayList<>();
+    rowsets = new ArrayList<>();
 
     List<StepMeta> hopsteps = transMeta.getTransHopSteps( false );
 
@@ -1266,7 +1266,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 
     if ( transMeta.isCapturingStepPerformanceSnapShots() ) {
       stepPerformanceSnapshotSeqNr = new AtomicInteger( 0 );
-      stepPerformanceSnapShots = new ConcurrentHashMap<String, List<StepPerformanceSnapShot>>();
+      stepPerformanceSnapShots = new ConcurrentHashMap<>();
 
       // Calculate the maximum number of snapshots to be kept in memory
       //
@@ -1296,7 +1296,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
     setPaused( false );
     setStopped( false );
 
-    transFinishedBlockingQueue = new ArrayBlockingQueue<Object>( 10 );
+    transFinishedBlockingQueue = new ArrayBlockingQueue<>( 10 );
 
     TransListener transListener = new TransAdapter() {
       @Override
@@ -1479,7 +1479,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
         return;
       }
       // prevent Exception from one listener to block others execution
-      List<KettleException> badGuys = new ArrayList<KettleException>( transListeners.size() );
+      List<KettleException> badGuys = new ArrayList<>( transListeners.size() );
       for ( TransListener transListener : transListeners ) {
         try {
           transListener.transFinished( this );
@@ -1540,7 +1540,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
         List<StepPerformanceSnapShot> snapShotList = stepPerformanceSnapShots.get( step.toString() );
         StepPerformanceSnapShot previous;
         if ( snapShotList == null ) {
-          snapShotList = new ArrayList<StepPerformanceSnapShot>();
+          snapShotList = new ArrayList<>();
           stepPerformanceSnapShots.put( step.toString(), snapShotList );
           previous = null;
         } else {
@@ -1684,7 +1684,10 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
   /**
    * Attempts to stops all running steps and subtransformations. If all steps have finished, the transformation is
    * marked as Finished.
+   *
+   * @deprecated Deprecated as of 8.0. Seems unused; will be to remove in 8.1 (ccaspanello)
    */
+  @Deprecated
   public void killAll() {
     if ( steps == null ) {
       return;
@@ -2494,23 +2497,23 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
     //
     List<MetricsDuration> metricsList =
         MetricsUtil.getDuration( log.getLogChannelId(), Metrics.METRIC_PLUGIN_REGISTRY_REGISTER_EXTENSIONS_START );
-    if ( !metricsList.isEmpty() ) {
-      System.out.println( metricsList.get( 0 ) );
+    if ( ( log != null ) && ( log.isDebug() ) && !metricsList.isEmpty() ) {
+      log.logDebug( metricsList.get( 0 ).toString() );
     }
 
     metricsList =
         MetricsUtil.getDuration( log.getLogChannelId(), Metrics.METRIC_PLUGIN_REGISTRY_PLUGIN_REGISTRATION_START );
-    if ( !metricsList.isEmpty() ) {
-      System.out.println( metricsList.get( 0 ) );
+    if ( ( log != null ) && ( log.isDebug() ) && !metricsList.isEmpty() ) {
+      log.logDebug( metricsList.get( 0 ).toString() );
     }
 
     long total = 0;
     metricsList =
         MetricsUtil.getDuration( log.getLogChannelId(), Metrics.METRIC_PLUGIN_REGISTRY_PLUGIN_TYPE_REGISTRATION_START );
-    if ( metricsList != null ) {
+    if ( ( log != null ) && ( log.isDebug() ) && metricsList != null && !metricsList.isEmpty() ) {
       for ( MetricsDuration duration : metricsList ) {
         total += duration.getDuration();
-        System.out.println( "   - " + duration.toString() + "  Total=" + total );
+        log.logDebug( "   - " + duration.toString() + "  Total=" + total );
       }
     }
 
@@ -2799,7 +2802,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
     //
     DatabaseConnectionMap map = DatabaseConnectionMap.getInstance();
     synchronized ( map ) {
-      List<Database> databaseList = new ArrayList<Database>( map.getMap().values() );
+      List<Database> databaseList = new ArrayList<>( map.getMap().values() );
       for ( Database database : databaseList ) {
         if ( database.getConnectionGroup().equals( getTransactionId() ) ) {
           try {
@@ -2903,7 +2906,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
    * @return the list of base steps for the specified step
    */
   public List<StepInterface> findBaseSteps( String stepname ) {
-    List<StepInterface> baseSteps = new ArrayList<StepInterface>();
+    List<StepInterface> baseSteps = new ArrayList<>();
 
     if ( steps == null ) {
       return baseSteps;
@@ -2955,7 +2958,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
       return null;
     }
 
-    List<StepInterface> list = new ArrayList<StepInterface>();
+    List<StepInterface> list = new ArrayList<>();
 
     for ( int i = 0; i < steps.size(); i++ ) {
       StepMetaDataCombi sid = steps.get( i );
@@ -3139,7 +3142,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
       return null;
     }
 
-    List<MappingInput> list = new ArrayList<MappingInput>();
+    List<MappingInput> list = new ArrayList<>();
 
     // Look in threads and find the MappingInput step thread...
     for ( int i = 0; i < steps.size(); i++ ) {
@@ -3158,7 +3161,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
    * @return an array of MappingOutputs
    */
   public MappingOutput[] findMappingOutput() {
-    List<MappingOutput> list = new ArrayList<MappingOutput>();
+    List<MappingOutput> list = new ArrayList<>();
 
     if ( steps != null ) {
       // Look in threads and find the MappingInput step thread...
@@ -4184,7 +4187,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
     try {
       // Inject certain internal variables to make it more intuitive.
       //
-      Map<String, String> vars = new HashMap<String, String>();
+      Map<String, String> vars = new HashMap<>();
 
       for ( String var : Const.INTERNAL_TRANS_VARIABLES ) {
         vars.put( var, transMeta.getVariable( var ) );
@@ -5160,7 +5163,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
    * @return the logging hierarchy
    */
   public List<LoggingHierarchy> getLoggingHierarchy() {
-    List<LoggingHierarchy> hierarchy = new ArrayList<LoggingHierarchy>();
+    List<LoggingHierarchy> hierarchy = new ArrayList<>();
     List<String> childIds = LoggingRegistry.getInstance().getLogChannelChildren( getLogChannelId() );
     for ( String childId : childIds ) {
       LoggingObjectInterface loggingObject = LoggingRegistry.getInstance().getLoggingObject( childId );

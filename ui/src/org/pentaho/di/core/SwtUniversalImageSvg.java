@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -30,6 +30,8 @@ import org.apache.batik.bridge.BridgeContext;
 import org.apache.batik.bridge.DocumentLoader;
 import org.apache.batik.bridge.GVTBuilder;
 import org.apache.batik.bridge.UserAgentAdapter;
+import org.apache.batik.ext.awt.image.codec.png.PNGRegistryEntry;
+import org.apache.batik.ext.awt.image.spi.ImageTagRegistry;
 import org.apache.batik.gvt.GraphicsNode;
 import org.eclipse.swt.graphics.Device;
 import org.eclipse.swt.graphics.Image;
@@ -38,6 +40,12 @@ import org.pentaho.di.core.svg.SvgImage;
 public class SwtUniversalImageSvg extends SwtUniversalImage {
   private final GraphicsNode svgGraphicsNode;
   private final Dimension2D svgGraphicsSize;
+
+  static {
+    // workaround due to known issue in batik 1.8 - https://issues.apache.org/jira/browse/BATIK-1125
+    ImageTagRegistry registry = ImageTagRegistry.getRegistry();
+    registry.register( new PNGRegistryEntry() );
+  }
 
   public SwtUniversalImageSvg( SvgImage svg ) {
     // get GraphicsNode and size from svg document

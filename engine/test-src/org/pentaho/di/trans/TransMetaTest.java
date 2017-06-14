@@ -380,6 +380,14 @@ public class TransMetaTest {
     assertTrue( transMeta.isAnySelectedStepUsedInTransHops() );
   }
 
+  @Test
+  public void testCloneWithParam() throws Exception {
+    TransMeta transMeta = new TransMeta( "transFile", "myTrans" );
+    transMeta.addParameterDefinition( "key", "defValue", "description" );
+    Object clone = transMeta.realClone( true );
+    assertNotNull( clone );
+  }
+
   private static StepMeta mockStepMeta( String name ) {
     StepMeta meta = mock( StepMeta.class );
     when( meta.getName() ).thenReturn( name );

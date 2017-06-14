@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -47,7 +47,7 @@ public class PentahoReportingOutputMetaLoadSaveTest {
     KettleEnvironment.init();
     PluginRegistry.init( true );
     List<String> attributes =
-        Arrays.asList( "inputFileField", "outputFileField", "parameterFieldMap", "outputProcessorType" );
+        Arrays.asList( "inputFileField", "outputFileField", "parameterFieldMap", "outputProcessorType", "createParentfolder" );
 
     Map<String, String> getterMap = new HashMap<String, String>();
     Map<String, String> setterMap = new HashMap<String, String>();

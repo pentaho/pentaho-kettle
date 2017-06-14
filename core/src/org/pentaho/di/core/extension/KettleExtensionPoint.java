@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -61,7 +61,8 @@ public enum KettleExtensionPoint {
       "Spoon initiates the execution of a trans (TransMeta)" ),
     SpoonTransExecutionConfiguration( "SpoonTransExecutionConfiguration",
       "Right before Spoon configuration of transformation to be executed takes place" ),
-
+    SpoonTransBeforeStart( "SpoonTransBeforeStart", "Right before the transformation is started" ),
+    SpoonRunConfiguration( "SpoonRunConfiguration", "Send the run configuration" ),
     JobStart( "JobStart", "A job starts" ),
     JobHeartbeat( "JobHeartbeat", "A signal sent at regular intervals to indicate that the job is still active" ),
     JobFinish( "JobFinish", "A job finishes" ),
@@ -85,6 +86,7 @@ public enum KettleExtensionPoint {
     JobGraphJobEntrySetMenu( "JobGraphJobEntrySetMenu", "Manipulate the menu on right click on a job entry" ),
     JobDialogShowRetrieveLogTableFields( "JobDialogShowRetrieveLogTableFields",
       "Show or retrieve the contents of the fields of a log channel on the log channel composite" ),
+    JobEntryTransSave( "JobEntryTransSave", "Job entry trans is saved" ),
 
     JobMetaLoaded( "JobMetaLoaded", "Job metadata was loaded" ),
     SpoonJobMetaExecutionStart( "SpoonJobMetaExecutionStart", "Spoon initiates the execution of a job (JobMeta)" ),
@@ -111,6 +113,7 @@ public enum KettleExtensionPoint {
     SpoonViewTreeExtension( "SpoonViewTreeExtension", "View tree spoon extension" ),
     SpoonPopupMenuExtension( "SpoonPopupMenuExtension", "Pop up menu extension for the view tree" ),
     SpoonTreeDelegateExtension( "SpoonTreeDelegateExtension", "During the SpoonTreeDelegate execution" ),
+    SpoonOpenRepository( "SpoonOpenRepository", "Open the repository browser" ),
 
     RepositoryImporterPatchTransStep( "RepositoryImporterPatchTransStep", "Patch the step in a transformation during repository import" ),
     RepositoryExporterPatchTransStep( "RepositoryExporterPatchTransStep", "Patch the step in a transformation during repository export" ),

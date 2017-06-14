@@ -3744,6 +3744,10 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
     sashForm.setWeights( new int[] { 60, 40, } );
   }
 
+  /**
+   * @deprecated Deprecated as of 8.0. Seems unused; will be to remove in 8.1 (ccaspanello)
+   */
+  @Deprecated
   public void checkErrors() {
     if ( trans != null ) {
       if ( !trans.isFinished() ) {
@@ -4132,6 +4136,7 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
               RepositoryOperation.EXECUTE_TRANSFORMATION );
         } catch ( KettleRepositoryLostException krle ) {
           log.logError( krle.getLocalizedMessage() );
+          spoon.handleRepositoryLost( krle );
         }
 
         // Start/Run button...
@@ -4908,6 +4913,7 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
             MessageDialog.QUESTION, new String[] { BaseMessages.getString( PKG, "System.Button.Yes" ),
             BaseMessages.getString( PKG, "System.Button.No" ) }, 0, BaseMessages.getString( PKG,
             "TransLog.Dialog.Option.AutoSaveTransformation" ), spoon.props.getAutoSave() );
+        MessageDialogWithToggle.setDefaultImage( GUIResource.getInstance().getImageSpoon() );
         int answer = md.open();
         if ( ( answer & 0xFF ) == 0 ) {
           spoon.saveToFile( transMeta );
@@ -4999,7 +5005,12 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
    * if an alternate execution engine has been selected
    * 2)  A legacy {@link Trans} otherwise.
    */
-  private Trans createTrans() {
+  private Trans createTrans() throws KettleException {
+    if ( Utils.isEmpty( transMeta.getVariable( "engine" ) ) ) {
+      log.logBasic( "Using legacy execution engine" );
+      return createLegacyTrans();
+    }
+
     return PluginRegistry.getInstance().getPlugins( EnginePluginType.class ).stream()
       .filter( useThisEngine() )
       .findFirst()
@@ -5008,10 +5019,7 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
         log.logBasic( "Using execution engine " + engine.getClass().getCanonicalName() );
         return (Trans) new TransEngineAdapter( engine, transMeta );
       } )
-      .orElseGet( () -> {
-        log.logBasic( "Using legacy execution engine" );
-        return createLegacyTrans();
-      } );
+      .orElseThrow( () -> new KettleException( "Unable to find engine [" + transMeta.getVariable( "engine" ) + "]" ) );
   }
 
   /**

@@ -1,0 +1,287 @@
+/*!
+ * PENTAHO CORPORATION PROPRIETARY AND CONFIDENTIAL
+ *
+ * Copyright 2017 Pentaho Corporation (Pentaho). All rights reserved.
+ *
+ * NOTICE: All information including source code contained herein is, and
+ * remains the sole property of Pentaho and its licensors. The intellectual
+ * and technical concepts contained herein are proprietary and confidential
+ * to, and are trade secrets of Pentaho and may be covered by U.S. and foreign
+ * patents, or patents in process, and are protected by trade secret and
+ * copyright laws. The receipt or possession of this source code and/or related
+ * information does not convey or imply any rights to reproduce, disclose or
+ * distribute its contents, or to manufacture, use, or sell anything that it
+ * may describe, in whole or in part. Any reproduction, modification, distribution,
+ * or public display of this information without the express written authorization
+ * from Pentaho is strictly prohibited and in violation of applicable laws and
+ * international treaties. Access to the source code contained herein is strictly
+ * prohibited to anyone except those individuals and entities who have executed
+ * confidentiality and non-disclosure agreements or other agreements with Pentaho,
+ * explicitly covering such access.
+ */
+
+/* FONTS/TEXT */
+file-open-save-app .headerText {
+  font-size: 24px;
+  line-height: 24px;
+  font-family: OpenSansLight;
+}
+
+file-open-save-app .blueText {
+  color: #005DA6;
+}
+
+/* INPUTS/BUTTONS */
+file-open-save-app input[type="text"] {
+  border: 1px solid #CCC;
+  border-radius: 4px;
+  -moz-border-radius: 4px;
+  -webkit-border-radius: 4px;
+  color: #212121;
+  padding: 0 10px;
+  outline: none;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+  font-size: 14px;
+  line-height: 17px;
+  height: 34px;
+}
+
+file-open-save-app input[type="text"]:focus,
+file-open-save-app .headerSearch.focused {
+  border: 1px solid #005DA6;
+}
+
+file-open-save-app .dialogWrapper {
+  overflow: hidden;
+}
+
+file-open-save-app .header {
+  padding: 30px 30px 0;
+}
+
+file-open-save-app .headerTop {
+  height: 34px;
+  width: 100%;
+  margin-bottom: 20px;
+}
+
+file-open-save-app .headerTitle {
+  height: 34px;
+  line-height: 34px;
+  border: none;
+  float: left;
+  color: #333;
+}
+
+file-open-save-app .headerSearch {
+  width: 270px;
+  height: 34px;
+  float: right;
+  border: 1px solid #CCC;
+  border-radius: 4px;
+  -moz-border-radius: 4px;
+  -webkit-border-radius: 4px;
+}
+
+file-open-save-app .headerSearchLeft {
+  background: url("./images/search_gray.png") no-repeat left 8px center;
+  width: 30px;
+  height: 100%;
+  border: none;
+  cursor: pointer;
+  float: left;
+}
+
+file-open-save-app .headerSearchLeft:hover,
+file-open-save-app .headerSearchLeft.blueState {
+  background: url("./images/search_blue.png") no-repeat left 7px center;
+}
+
+file-open-save-app .headerSearchRight {
+  background: url("./images/clear_gray.png") no-repeat center center;
+  width: 30px;
+  height: 100%;
+  border: none;
+  cursor: pointer;
+  float: left;
+}
+
+file-open-save-app .headerSearchRight:hover {
+  background: url("./images/clear_blue.png") no-repeat center center;
+}
+
+file-open-save-app input.searchBox,
+file-open-save-app input.searchBox:focus {
+  width: calc(270px - 60px);
+  border: none;
+  padding: 0;
+  float: left;
+}
+
+file-open-save-app .headerBottom {
+  height: 18px;
+  padding-bottom: 20px;
+}
+
+file-open-save-app .breadcrumbSection{
+  line-height: 18px;
+  float: left;
+}
+
+file-open-save-app .addDelete {
+  display: none;
+  float: right;
+}
+
+file-open-save-app .save .addDelete {
+  display: inline-flex;
+}
+
+file-open-save-app .addFolder {
+  background: url("./images/add_folder.svg") no-repeat left center;
+  height: 19px;
+  width: 23px;
+  cursor: pointer;
+}
+
+file-open-save-app .deleteFolder {
+  background: url("./images/delete_folder_file.svg") no-repeat left center;
+  height: 18px;
+  width: 14px;
+  cursor: pointer;
+}
+
+file-open-save-app .addFolder:hover,
+file-open-save-app .deleteFolder:hover {
+  background-position: right center;
+}
+
+file-open-save-app .addDelete .deleteFolder {
+  margin-left: 15px;
+}
+
+file-open-save-app .middle {
+  height: 292px;
+  width: 100%;
+  border-top: 1px solid #CCC;
+  border-bottom: 1px solid #CCC;
+}
+
+file-open-save-app .open .middle {
+  height: 368px;
+}
+
+file-open-save-app .directoryTreeArea {
+  height: 100%;
+  max-width: 300px;
+  min-width: 230px;
+  width: 32.25%;
+  border-right: 1px solid #CCC;
+  overflow: auto;
+  float: left;
+}
+
+file-open-save-app .fileArea {
+  height: 100%;
+  width: auto;
+  overflow: hidden;
+  position: relative;
+}
+
+file-open-save-app .fileArea.overflow {
+  overflow: auto;
+}
+
+file-open-save-app .bottom {
+  padding: 20px 30px 30px;
+}
+
+file-open-save-app .open .bottom {
+  padding-top: 30px;
+}
+
+file-open-save-app .fileNameEntry {
+  width: 100%;
+  margin-bottom: 30px;
+}
+
+file-open-save-app .fileNameEntryLabel {
+  margin-bottom: 5px;
+}
+
+file-open-save-app .fileNameEntryTextBox {
+  width: 100%;
+}
+
+/* BUTTONS */
+file-open-save-app button {
+  filter: none;
+  font-size: 14px;
+  line-height: 16px;
+  color: #FFF;
+  padding: 9px 20px;
+  border-radius: 4px;
+  -moz-border-radius: 4px;
+  -webkit-border-radius: 4px;
+  -webkit-box-shadow: none;
+  -moz-box-shadow: none;
+  box-shadow: none;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+  white-space: nowrap;
+  cursor: pointer;
+  margin: 0;
+  outline: 0 none;
+}
+
+file-open-save-app button.primary:enabled {
+  border: 1px solid #005DA6;
+  background-color: #005DA6;
+  color: #FFF;
+}
+
+file-open-save-app button.primary:enabled:hover {
+  border: 1px solid #0F2B5B;
+  background-color: #0F2B5B;
+}
+
+file-open-save-app button.primary:disabled {
+  border: 1px solid #E4E4E4;
+  background-color: #E4E4E4;
+  color: #999;
+}
+
+file-open-save-app button.secondary {
+  border: 1px solid #005DA6;
+  background-color: #FFF;
+  color: #005DA6;
+}
+
+file-open-save-app button.secondary:hover {
+  border: 1px solid #0F2B5B;
+  background-color: #FFF;
+  color: #0F2B5B;
+}
+
+file-open-save-app .buttons button {
+  margin-left: 10px;
+  float: right;
+}
+
+file-open-save-app .buttons {
+  float: right;
+}
+
+file-open-save-app .open .fileNameEntry {
+  display: none;
+}
+
+file-open-save-app .fileAreaMessageView {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -100%);
+}

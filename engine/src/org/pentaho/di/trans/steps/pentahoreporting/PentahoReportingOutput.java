@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -116,8 +116,7 @@ public class PentahoReportingOutput extends BaseStep implements StepInterface {
 
     String sourceFilename = getInputRowMeta().getString( r, data.inputFieldIndex );
     String targetFilename = getInputRowMeta().getString( r, data.outputFieldIndex );
-
-    processReport( r, sourceFilename, targetFilename, meta.getOutputProcessorType() );
+    processReport( r, sourceFilename, targetFilename, meta.getOutputProcessorType(), meta.getCreateParentfolder() );
 
     // in case we want the input data to go to more steps.
     //
@@ -162,7 +161,7 @@ public class PentahoReportingOutput extends BaseStep implements StepInterface {
   }
 
   private void processReport( Object[] r, String sourceFilename, String targetFilename,
-    ProcessorType outputProcessorType ) throws KettleException {
+    ProcessorType outputProcessorType, Boolean createParentFolder ) throws KettleException {
     try {
 
       // Load the master report from the PRPT
@@ -236,29 +235,41 @@ public class PentahoReportingOutput extends BaseStep implements StepInterface {
         case PDF:
           property = "org.pentaho.reporting.engine.classic.core.modules.gui.pdf.TargetFileName";
           modifiableConfiguration.setConfigProperty( property, targetFilename );
+          property = "org.pentaho.reporting.engine.classic.core.modules.gui.pdf.CreateParentFolder";
+          modifiableConfiguration.setConfigProperty( property, createParentFolder.toString() );
           exportTask = new PdfExportTask( report, null, context );
           break;
         case CSV:
           property = "org.pentaho.reporting.engine.classic.core.modules.gui.csv.FileName";
           modifiableConfiguration.setConfigProperty( property, targetFilename );
+          property = "org.pentaho.reporting.engine.classic.core.modules.gui.csv.CreateParentFolder";
+          modifiableConfiguration.setConfigProperty( property, createParentFolder.toString() );
           exportTask = new CSVTableExportTask( report, null, context );
           break;
         case Excel:
           property = "org.pentaho.reporting.engine.classic.core.modules.gui.xls.FileName";
           modifiableConfiguration.setConfigProperty( property, targetFilename );
+          property = "org.pentaho.reporting.engine.classic.core.modules.gui.xls.CreateParentFolder";
+          modifiableConfiguration.setConfigProperty( property, createParentFolder.toString() );
           exportTask = new ExcelExportTask( report, null, context );
           break;
         case Excel_2007:
           property = "org.pentaho.reporting.engine.classic.core.modules.gui.xls.FileName";
           modifiableConfiguration.setConfigProperty( property, targetFilename );
+          property = "org.pentaho.reporting.engine.classic.core.modules.gui.xls.CreateParentFolder";
+          modifiableConfiguration.setConfigProperty( property, createParentFolder.toString() );
           exportTask = new XSSFExcelExportTask( report, null, context );
           break;
         case StreamingHTML:
           property = "org.pentaho.reporting.engine.classic.core.modules.gui.html.stream.TargetFileName";
           modifiableConfiguration.setConfigProperty( property, targetFilename );
+          property = "org.pentaho.reporting.engine.classic.core.modules.gui.html.stream.CreateParentFolder";
+          modifiableConfiguration.setConfigProperty( property, createParentFolder.toString() );
           exportTask = new HtmlStreamExportTask( report, null, context );
           break;
         case PagedHTML:
+          property = "org.pentaho.reporting.engine.classic.core.modules.gui.html.paged.CreateParentFolder";
+          modifiableConfiguration.setConfigProperty( property, createParentFolder.toString() );
           HtmlReportUtil.createDirectoryHTML( report, targetFilename );
           exportTask = null;
           break;
@@ -266,6 +277,8 @@ public class PentahoReportingOutput extends BaseStep implements StepInterface {
         case RTF:
           property = "org.pentaho.reporting.engine.classic.core.modules.gui.rtf.FileName";
           modifiableConfiguration.setConfigProperty( property, targetFilename );
+          property = "org.pentaho.reporting.engine.classic.core.modules.gui.rtf.CreateParentFolder";
+          modifiableConfiguration.setConfigProperty( property, createParentFolder.toString() );
           exportTask = new RTFExportTask( report, null, context );
           break;
         default:

@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -29,6 +29,7 @@ import org.pentaho.di.core.util.Utils;
 import org.pentaho.metastore.api.IMetaStore;
 import org.pentaho.metastore.api.exceptions.MetaStoreException;
 import org.pentaho.metastore.stores.xml.XmlMetaStore;
+import org.pentaho.metastore.stores.xml.XmlUtil;
 
 public class MetaStoreConst {
 
@@ -43,6 +44,7 @@ public class MetaStoreConst {
   public static final String DB_ATTR_ID_SERVERNAME = "server_name";
   public static final String DB_ATTR_ID_DATA_TABLESPACE = "data_tablespace";
   public static final String DB_ATTR_ID_INDEX_TABLESPACE = "index_tablespace";
+  public static boolean disableMetaStore; // Used for testing only
 
   // Extra information for 3rd party tools, not used by Kettle
   //
@@ -56,16 +58,30 @@ public class MetaStoreConst {
   }
 
   public static IMetaStore openLocalPentahoMetaStore() throws MetaStoreException {
+    return MetaStoreConst.openLocalPentahoMetaStore( true );
+  }
+
+  public static IMetaStore openLocalPentahoMetaStore( boolean allowCreate ) throws MetaStoreException {
+    if ( disableMetaStore ) {
+      return null;
+    }
     String rootFolder = System.getProperty( Const.PENTAHO_METASTORE_FOLDER );
     if ( Utils.isEmpty( rootFolder ) ) {
       rootFolder = getDefaultPentahoMetaStoreLocation();
     }
     File rootFolderFile = new File( rootFolder );
+    File metaFolder = new File( rootFolder + File.separator + XmlUtil.META_FOLDER_NAME );
+    if ( !allowCreate && !metaFolder.exists() ) {
+      return null;
+    }
     if ( !rootFolderFile.exists() ) {
       rootFolderFile.mkdirs();
     }
+
     XmlMetaStore metaStore = new XmlMetaStore( rootFolder );
-    metaStore.setName( Const.PENTAHO_METASTORE_NAME );
+    if ( allowCreate ) {
+      metaStore.setName( Const.PENTAHO_METASTORE_NAME );
+    }
     return metaStore;
   }
 }

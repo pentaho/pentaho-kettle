@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ ******************************************************************************
+  ~
+  ~  Pentaho Data Integration
+  ~
+  ~  Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
+  ~
+  ~  *******************************************************************************
+  ~  Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+  ~  this file except in compliance with the License. You may obtain a copy of the
+  ~  License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~  Unless required by applicable law or agreed to in writing, software
+  ~  distributed under the License is distributed on an "AS IS" BASIS,
+  ~  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~  See the License for the specific language governing permissions and
+  ~  limitations under the License.
+  ~
+  ~ ******************************************************************************
+  ~
+  -->
+
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xmlns:pen="http://www.pentaho.com/xml/schemas/pentaho-blueprint"
+           xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0 http://www.osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd"
+           default-timeout="20000" default-activation="eager">
+
+  <reference id="metastoreLocator"
+             interface="org.pentaho.osgi.metastore.locator.api.MetastoreLocator"
+             availability="optional"/>
+
+  <bean id="runConfigurationManager" scope="singleton"
+        class="org.pentaho.di.engine.configuration.impl.RunConfigurationManager">
+    <argument ref="runConfigurationProviders"/>
+    <property name="defaultRunConfigurationProvider" ref="defaultRunConfigurationProvider"/>
+  </bean>
+
+  <bean id="defaultRunConfigurationProvider" scope="singleton"
+        class="org.pentaho.di.engine.configuration.impl.pentaho.DefaultRunConfigurationProvider">
+    <argument ref="metastoreLocator"/>
+    <argument ref="defaultRunConfigurationExecutor"/>
+  </bean>
+
+  <bean id="runConfigurationRunExtensionPoint" scope="singleton"
+        class="org.pentaho.di.engine.configuration.impl.extension.RunConfigurationRunExtensionPoint">
+    <argument ref="runConfigurationManager"/>
+    <pen:di-plugin type="org.pentaho.di.core.extension.ExtensionPointPluginType"/>
+  </bean>
+
+  <bean id="runConfigurationExtensionPoint" scope="singleton"
+        class="org.pentaho.di.engine.configuration.impl.extension.RunConfigurationExtensionPoint">
+    <argument ref="runConfigurationManager"/>
+    <pen:di-plugin type="org.pentaho.di.core.extension.ExtensionPointPluginType"/>
+  </bean>
+
+  <bean id="runConfigurationImportExtensionPoint" scope="singleton"
+        class="org.pentaho.di.engine.configuration.impl.extension.RunConfigurationImportExtensionPoint">
+    <argument ref="runConfigurationManager"/>
+    <pen:di-plugin type="org.pentaho.di.core.extension.ExtensionPointPluginType"/>
+  </bean>
+
+  <bean id="runConfigurationSaveExtensionPoint" scope="singleton"
+        class="org.pentaho.di.engine.configuration.impl.extension.RunConfigurationSaveExtensionPoint">
+    <argument ref="runConfigurationManager"/>
+    <pen:di-plugin type="org.pentaho.di.core.extension.ExtensionPointPluginType"/>
+  </bean>
+
+  <bean id="sparkRunConfigurationProvider" scope="singleton"
+        class="org.pentaho.di.engine.configuration.impl.spark.SparkRunConfigurationProvider">
+    <argument ref="metastoreLocator"/>
+    <argument ref="sparkRunConfigurationExecutor"/>
+  </bean>
+
+  <service ref="runConfigurationManager" interface="org.pentaho.di.engine.configuration.api.RunConfigurationService"/>
+
+  <reference id="configAdmin" interface="org.osgi.service.cm.ConfigurationAdmin" availability="optional"/>
+
+  <service ref="sparkRunConfigurationProvider"
+           interface="org.pentaho.di.engine.configuration.api.RunConfigurationProvider"/>
+
+  <reference-list id="runConfigurationProviders"
+                  interface="org.pentaho.di.engine.configuration.api.RunConfigurationProvider" availability="optional"/>
+
+  <bean id="sparkRunConfigurationExecutor" scope="singleton"
+        class="org.pentaho.di.engine.configuration.impl.spark.SparkRunConfigurationExecutor">
+    <argument ref="configAdmin"/>
+  </bean>
+
+  <bean id="defaultRunConfigurationExecutor" scope="singleton"
+        class="org.pentaho.di.engine.configuration.impl.pentaho.DefaultRunConfigurationExecutor">
+  </bean>
+
+</blueprint>

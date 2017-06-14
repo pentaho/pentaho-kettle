@@ -1,5 +1,5 @@
 /*!
- * Copyright 2010 - 2015 Pentaho Corporation.  All rights reserved.
+ * Copyright 2010 - 2017 Pentaho Corporation.  All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,7 +33,6 @@ import org.pentaho.platform.security.userroledao.ws.ProxyPentahoRole;
 import org.pentaho.platform.security.userroledao.ws.ProxyPentahoUser;
 import org.pentaho.platform.security.userroledao.ws.UserRoleSecurityInfo;
 
-import static org.junit.Assert.*;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -119,7 +118,7 @@ public class UserRoleDelegateTest {
     verify( roleWebService ).createRole( any( ProxyPentahoRole.class ) );
   }
 
-  @Test
+  @Test( expected = KettleException.class )
   public void createRole_CreatesSuccessfully_WhenNameDiffersInCase() throws Exception {
     final String name = "role";
     final String upperCased = name.toUpperCase();

@@ -24,13 +24,21 @@ package org.pentaho.di.job.entries.trans;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Predicate;
 
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.exception.KettlePluginException;
+import org.pentaho.di.core.extension.ExtensionPointHandler;
+import org.pentaho.di.core.extension.KettleExtensionPoint;
+import org.pentaho.di.core.plugins.EnginePluginType;
+import org.pentaho.di.core.plugins.PluginInterface;
+import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.ObjectLocationSpecificationMethod;
 import org.pentaho.di.core.Result;
@@ -50,6 +58,7 @@ import org.pentaho.di.core.util.FileUtil;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
+import org.pentaho.di.engine.api.Engine;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.DelegationListener;
 import org.pentaho.di.job.Job;
@@ -74,6 +83,7 @@ import org.pentaho.di.resource.ResourceReference;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransExecutionConfiguration;
 import org.pentaho.di.trans.TransMeta;
+import org.pentaho.di.trans.ael.adapters.TransEngineAdapter;
 import org.pentaho.di.trans.cluster.TransSplitter;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.www.SlaveServerTransStatus;
@@ -142,6 +152,8 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
   private boolean passingAllParameters = true;
 
   private boolean loggingRemoteWork;
+
+  private String runConfiguration;
 
   private Trans trans;
 
@@ -299,6 +311,7 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
     retval.append( "      " ).append( XMLHandler.addTagValue( "follow_abort_remote", followingAbortRemotely ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "create_parent_folder", createParentFolder ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "logging_remote_work", loggingRemoteWork ) );
+    retval.append( "      " ).append( XMLHandler.addTagValue( "run_configuration", runConfiguration ) );
 
     if ( arguments != null ) {
       for ( int i = 0; i < arguments.length; i++ ) {
@@ -384,6 +397,7 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
       clustering = "Y".equalsIgnoreCase( XMLHandler.getTagValue( entrynode, "cluster" ) );
       createParentFolder = "Y".equalsIgnoreCase( XMLHandler.getTagValue( entrynode, "create_parent_folder" ) );
       loggingRemoteWork = "Y".equalsIgnoreCase( XMLHandler.getTagValue( entrynode, "logging_remote_work" ) );
+      runConfiguration = XMLHandler.getTagValue( entrynode, "run_configuration" );
 
       remoteSlaveServerName = XMLHandler.getTagValue( entrynode, "slave_server_name" );
 
@@ -466,6 +480,7 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
       waitingToFinish = rep.getJobEntryAttributeBoolean( id_jobentry, "wait_until_finished", true );
       followingAbortRemotely = rep.getJobEntryAttributeBoolean( id_jobentry, "follow_abort_remote" );
       loggingRemoteWork = rep.getJobEntryAttributeBoolean( id_jobentry, "logging_remote_work" );
+      runConfiguration = rep.getJobEntryAttributeString( id_jobentry, "run_configuration" );
 
       // How many arguments?
       int argnr = rep.countNrJobEntryAttributes( id_jobentry, "argument" );
@@ -526,6 +541,7 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
       rep.saveJobEntryAttribute( id_job, getObjectId(), "follow_abort_remote", followingAbortRemotely );
       rep.saveJobEntryAttribute( id_job, getObjectId(), "create_parent_folder", createParentFolder );
       rep.saveJobEntryAttribute( id_job, getObjectId(), "logging_remote_work", loggingRemoteWork );
+      rep.saveJobEntryAttribute( id_job, getObjectId(), "run_configuration", runConfiguration );
 
       // Save the arguments...
       if ( arguments != null ) {
@@ -627,18 +643,6 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
         result.setNrErrors( 1 );
         result.setResult( false );
         return result;
-      }
-    }
-
-    // Figure out the remote slave server...
-    //
-    SlaveServer remoteSlaveServer = null;
-    if ( !Utils.isEmpty( remoteSlaveServerName ) ) {
-      String realRemoteSlaveServerName = environmentSubstitute( remoteSlaveServerName );
-      remoteSlaveServer = parentJob.getJobMeta().findSlaveServer( realRemoteSlaveServerName );
-      if ( remoteSlaveServer == null ) {
-        throw new KettleException( BaseMessages.getString(
-          PKG, "JobTrans.Exception.UnableToFindRemoteSlaveServer", realRemoteSlaveServerName ) );
       }
     }
 
@@ -877,10 +881,50 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
           }
         }
 
+        boolean doFallback = true;
+        SlaveServer remoteSlaveServer = null;
+        TransExecutionConfiguration executionConfiguration = new TransExecutionConfiguration();
+        if ( !Utils.isEmpty( runConfiguration ) ) {
+          log.logBasic( BaseMessages.getString( PKG, "JobTrans.RunConfig.Message" ), runConfiguration );
+          runConfiguration = environmentSubstitute( runConfiguration );
+          executionConfiguration.setRunConfiguration( runConfiguration );
+          try {
+            ExtensionPointHandler.callExtensionPoint( log, KettleExtensionPoint.SpoonTransBeforeStart.id, new Object[] {
+              executionConfiguration, parentJob.getJobMeta(), transMeta
+            } );
+            clustering = executionConfiguration.isExecutingClustered();
+            remoteSlaveServer = executionConfiguration.getRemoteServer();
+            doFallback = false;
+          } catch ( KettleException e ) {
+            if ( remoteSlaveServer == null ) {
+              log.logBasic( e.getMessage(), getName() );
+              result.setNrErrors( 1 );
+              result.setResult( false );
+              return result;
+            } else {
+              log.logBasic( BaseMessages.getString( PKG, "JobTrans.Exception.RunConfigNotFound" ), runConfiguration,
+                getName(), transMeta.getFilename() );
+            }
+          }
+        }
+
+        if ( doFallback ) {
+          // Figure out the remote slave server...
+          //
+          if ( !Utils.isEmpty( remoteSlaveServerName ) ) {
+            String realRemoteSlaveServerName = environmentSubstitute( remoteSlaveServerName );
+            remoteSlaveServer = parentJob.getJobMeta().findSlaveServer( realRemoteSlaveServerName );
+            if ( remoteSlaveServer == null ) {
+              throw new KettleException( BaseMessages.getString(
+                PKG, "JobTrans.Exception.UnableToFindRemoteSlaveServer", realRemoteSlaveServerName ) );
+            }
+          }
+        }
+
+
         // Execute this transformation across a cluster of servers
         //
         if ( clustering ) {
-          TransExecutionConfiguration executionConfiguration = new TransExecutionConfiguration();
           executionConfiguration.setClusterPosting( true );
           executionConfiguration.setClusterPreparing( true );
           executionConfiguration.setClusterStarting( true );
@@ -944,8 +988,8 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
           result.clear();
 
           if ( transSplitter != null ) {
-            Result clusterResult =
-              Trans.getClusteredTransformationResult( log, transSplitter, parentJob, loggingRemoteWork );
+            Result clusterResult = Trans.getClusteredTransformationResult( log, transSplitter, parentJob,
+              executionConfiguration.isLogRemoteExecutionLocally() );
             result.add( clusterResult );
           }
 
@@ -961,18 +1005,17 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
 
           // Remote execution...
           //
-          TransExecutionConfiguration transExecutionConfiguration = new TransExecutionConfiguration();
-          transExecutionConfiguration.setPreviousResult( previousResult.clone() );
-          transExecutionConfiguration.setArgumentStrings( args );
-          transExecutionConfiguration.setVariables( this );
-          transExecutionConfiguration.setRemoteServer( remoteSlaveServer );
-          transExecutionConfiguration.setLogLevel( transLogLevel );
-          transExecutionConfiguration.setRepository( rep );
-          transExecutionConfiguration.setLogFileName( realLogFilename );
-          transExecutionConfiguration.setSetAppendLogfile( setAppendLogfile );
-          transExecutionConfiguration.setSetLogfile( setLogfile );
+          executionConfiguration.setPreviousResult( previousResult.clone() );
+          executionConfiguration.setArgumentStrings( args );
+          executionConfiguration.setVariables( this );
+          executionConfiguration.setRemoteServer( remoteSlaveServer );
+          executionConfiguration.setLogLevel( transLogLevel );
+          executionConfiguration.setRepository( rep );
+          executionConfiguration.setLogFileName( realLogFilename );
+          executionConfiguration.setSetAppendLogfile( setAppendLogfile );
+          executionConfiguration.setSetLogfile( setLogfile );
 
-          Map<String, String> params = transExecutionConfiguration.getParams();
+          Map<String, String> params = executionConfiguration.getParams();
           for ( String param : transMeta.listParameters() ) {
             String value =
               Const.NVL( transMeta.getParameterValue( param ), Const.NVL(
@@ -981,13 +1024,13 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
           }
 
           if ( parentJob.getJobMeta().isBatchIdPassed() ) {
-            transExecutionConfiguration.setPassedBatchId( parentJob.getPassedBatchId() );
+            executionConfiguration.setPassedBatchId( parentJob.getPassedBatchId() );
           }
 
           // Send the XML over to the slave server
           // Also start the transformation over there...
           //
-          String carteObjectId = Trans.sendToSlaveServer( transMeta, transExecutionConfiguration, rep, metaStore );
+          String carteObjectId = Trans.sendToSlaveServer( transMeta, executionConfiguration, rep, metaStore );
 
           // Now start the monitoring...
           //
@@ -1055,7 +1098,9 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
 
           // Create the transformation from meta-data
           //
-          trans = new Trans( transMeta, this );
+          //trans = new Trans( transMeta, this );
+          trans = createTrans( transMeta );
+          trans.setParent( this );
 
           // Pass the socket repository as early as possible...
           //
@@ -1511,6 +1556,14 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
     this.passingAllParameters = passingAllParameters;
   }
 
+  public String getRunConfiguration() {
+    return runConfiguration;
+  }
+
+  public void setRunConfiguration( String runConfiguration ) {
+    this.runConfiguration = runConfiguration;
+  }
+
   public Trans getTrans() {
     return trans;
   }
@@ -1593,6 +1646,50 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
   @Override
   public Object loadReferencedObject( int index, Repository rep, IMetaStore metaStore, VariableSpace space ) throws KettleException {
     return getTransMeta( rep, metaStore, space );
+  }
+
+  /**
+   * Creates the appropriate trans.  Either
+   * 1)  A {@link TransEngineAdapter} wrapping an {@link Engine}
+   * if an alternate execution engine has been selected
+   * 2)  A legacy {@link Trans} otherwise.
+   */
+  private Trans createTrans( TransMeta transMeta ) throws KettleException {
+    if ( Utils.isEmpty( transMeta.getVariable( "engine" ) ) ) {
+      log.logBasic( "Using legacy execution engine" );
+      return new Trans( transMeta );
+    }
+
+    return PluginRegistry.getInstance().getPlugins( EnginePluginType.class ).stream()
+      .filter( useThisEngine( transMeta ) )
+      .findFirst()
+      .map( plugin -> (Engine) loadPlugin( plugin ) )
+      .map( engine -> {
+        log.logBasic( "Using execution engine " + engine.getClass().getCanonicalName() );
+        return (Trans) new TransEngineAdapter( engine, transMeta );
+      } )
+      .orElseThrow( () -> new KettleException( "Unable to find engine [" + transMeta.getVariable( "engine" ) + "]" ) );
+  }
+
+  /**
+   * Uses a trans variable called "engine" to determine which engine to use.
+   * Will be replaced when UI engine selection is available.
+   *
+   * @return
+   */
+  private Predicate<PluginInterface> useThisEngine( TransMeta transMeta ) {
+    return plugin -> Arrays.stream( plugin.getIds() )
+      .filter( id -> id.equals( ( transMeta.getVariable( "engine" ) ) ) )
+      .findAny()
+      .isPresent();
+  }
+
+  private Object loadPlugin( PluginInterface plugin ) {
+    try {
+      return PluginRegistry.getInstance().loadClass( plugin );
+    } catch ( KettlePluginException e ) {
+      throw new RuntimeException( e );
+    }
   }
 
 }

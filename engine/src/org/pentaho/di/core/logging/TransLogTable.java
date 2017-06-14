@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -34,8 +34,8 @@ import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaBase;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
@@ -476,7 +476,7 @@ public class TransLogTable extends BaseLogTable implements Cloneable, LogTableIn
       RowMetaInterface batchIndex = new RowMeta();
       LogTableField keyField = getKeyField();
 
-      ValueMetaInterface keyMeta = new ValueMeta( keyField.getFieldName(), keyField.getDataType() );
+      ValueMetaInterface keyMeta = new ValueMetaBase( keyField.getFieldName(), keyField.getDataType() );
       keyMeta.setLength( keyField.getLength() );
       batchIndex.addValueMeta( keyMeta );
 
@@ -488,19 +488,19 @@ public class TransLogTable extends BaseLogTable implements Cloneable, LogTableIn
     RowMetaInterface lookupIndex = new RowMeta();
     LogTableField errorsField = findField( ID.ERRORS );
     if ( errorsField != null ) {
-      ValueMetaInterface valueMeta = new ValueMeta( errorsField.getFieldName(), errorsField.getDataType() );
+      ValueMetaInterface valueMeta = new ValueMetaBase( errorsField.getFieldName(), errorsField.getDataType() );
       valueMeta.setLength( errorsField.getLength() );
       lookupIndex.addValueMeta( valueMeta );
     }
     LogTableField statusField = findField( ID.STATUS );
     if ( statusField != null ) {
-      ValueMetaInterface valueMeta = new ValueMeta( statusField.getFieldName(), statusField.getDataType() );
+      ValueMetaInterface valueMeta = new ValueMetaBase( statusField.getFieldName(), statusField.getDataType() );
       valueMeta.setLength( statusField.getLength() );
       lookupIndex.addValueMeta( valueMeta );
     }
     LogTableField transNameField = findField( ID.TRANSNAME );
     if ( transNameField != null ) {
-      ValueMetaInterface valueMeta = new ValueMeta( transNameField.getFieldName(), transNameField.getDataType() );
+      ValueMetaInterface valueMeta = new ValueMetaBase( transNameField.getFieldName(), transNameField.getDataType() );
       valueMeta.setLength( transNameField.getLength() );
       lookupIndex.addValueMeta( valueMeta );
     }
@@ -512,9 +512,12 @@ public class TransLogTable extends BaseLogTable implements Cloneable, LogTableIn
 
   @Override
   public void setAllGlobalParametersToNull()  {
-    super.setAllGlobalParametersToNull();
+    boolean clearGlobalVariables = Boolean.valueOf( System.getProperties().getProperty( Const.KETTLE_GLOBAL_LOG_VARIABLES_CLEAR_ON_EXPORT, "false" ) );
+    if ( clearGlobalVariables ) {
+      super.setAllGlobalParametersToNull();
 
-    logInterval = isGlobalParameter( logInterval ) ? null : logInterval;
-    logSizeLimit = isGlobalParameter( logSizeLimit ) ? null : logSizeLimit;
+      logInterval = isGlobalParameter( logInterval ) ? null : logInterval;
+      logSizeLimit = isGlobalParameter( logSizeLimit ) ? null : logSizeLimit;
+    }
   }
 }

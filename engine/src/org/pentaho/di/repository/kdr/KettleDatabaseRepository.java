@@ -39,6 +39,7 @@ import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.Condition;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.util.Utils;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.core.NotePadMeta;
 import org.pentaho.di.core.ProgressMonitorListener;
 import org.pentaho.di.core.RowMetaAndData;
@@ -137,8 +138,8 @@ public class KettleDatabaseRepository extends KettleDatabaseRepositoryBase {
    */
   public void init( RepositoryMeta repositoryMeta ) {
     this.repositoryMeta = (KettleDatabaseRepositoryMeta) repositoryMeta;
-    this.serviceList = new ArrayList<Class<? extends IRepositoryService>>();
-    this.serviceMap = new HashMap<Class<? extends IRepositoryService>, IRepositoryService>();
+    this.serviceList = new ArrayList<>();
+    this.serviceMap = new HashMap<>();
     this.log = new LogChannel( this );
     init();
   }
@@ -256,17 +257,9 @@ public class KettleDatabaseRepository extends KettleDatabaseRepositoryBase {
           // Don't show an error anymore, just go ahead and propose to create the repository!
         }
 
-        String pwd = "admin";
-        if ( pwd != null ) {
-          try {
-            // authenticate as admin before upgrade
-            // disconnect before connecting, we connected above already
-            //
-            disconnect();
-            connect( "admin", pwd, true );
-          } catch ( KettleException e ) {
-            log.logError( "Invalid user credentials" );
-          }
+        if ( upgrade ) {
+          // authenticate as admin before upgrade
+          reconnectAsAdminForUpgrade();
         }
 
         createRepositorySchema( null, upgrade, new ArrayList<String>(), false );
@@ -275,6 +268,20 @@ public class KettleDatabaseRepository extends KettleDatabaseRepositoryBase {
       } catch ( KettleException ke ) {
         log.logError( "An error has occurred creating a repository" );
       }
+    }
+  }
+
+  /**
+   * Reconnect to the repository as "admin" to perform upgrade.
+   */
+  void reconnectAsAdminForUpgrade() {
+    try {
+      // disconnect before connecting, we connected above already
+      disconnect();
+      connect( "admin", "admin", true );
+    } catch ( KettleException e ) {
+      log.logError( BaseMessages.getString( KettleDatabaseRepository.class,
+          "KettleDatabaseRepository.ERROR_CONNECT_TO_REPOSITORY" ), e );
     }
   }
 
@@ -892,8 +899,8 @@ public class KettleDatabaseRepository extends KettleDatabaseRepositoryBase {
       getRepositoryObjects(
         quoteTable( KettleDatabaseRepository.TABLE_R_TRANSFORMATION ), RepositoryObjectType.TRANSFORMATION,
         id_directory );
-    if ( objects.size() > 0 ) {
-      System.out.println( objects.get( 0 ).getRepositoryDirectory().getPath() );
+    if ( ( log != null ) && log.isDebug() && objects.size() > 0 ) {
+      log.logDebug( objects.get( 0 ).getRepositoryDirectory().getPath() );
     }
     return objects;
   }
@@ -1601,7 +1608,7 @@ public class KettleDatabaseRepository extends KettleDatabaseRepositoryBase {
    * @throws KettleException
    */
   public List<DatabaseMeta> getDatabases() throws KettleException {
-    List<DatabaseMeta> list = new ArrayList<DatabaseMeta>();
+    List<DatabaseMeta> list = new ArrayList<>();
     ObjectId[] databaseIDs = getDatabaseIDs( false );
     for ( int i = 0; i < databaseIDs.length; i++ ) {
       DatabaseMeta databaseMeta = loadDatabaseMeta( databaseIDs[i], null ); // reads
@@ -1618,7 +1625,7 @@ public class KettleDatabaseRepository extends KettleDatabaseRepositoryBase {
    * @throws KettleException
    */
   public List<SlaveServer> getSlaveServers() throws KettleException {
-    List<SlaveServer> list = new ArrayList<SlaveServer>();
+    List<SlaveServer> list = new ArrayList<>();
     ObjectId[] slaveIDs = getSlaveIDs( false );
     for ( int i = 0; i < slaveIDs.length; i++ ) {
       SlaveServer slaveServer = loadSlaveServer( slaveIDs[i], null ); // Load last
@@ -1643,7 +1650,7 @@ public class KettleDatabaseRepository extends KettleDatabaseRepositoryBase {
    * @throws KettleException
    */
   public List<DatabaseMeta> readDatabases() throws KettleException {
-    List<DatabaseMeta> databases = new ArrayList<DatabaseMeta>();
+    List<DatabaseMeta> databases = new ArrayList<>();
     ObjectId[] ids = getDatabaseIDs( false );
     for ( int i = 0; i < ids.length; i++ ) {
       DatabaseMeta databaseMeta = loadDatabaseMeta( ids[i], null ); // reads last
@@ -1961,7 +1968,7 @@ public class KettleDatabaseRepository extends KettleDatabaseRepositoryBase {
   public List<RepositoryElementMetaInterface> getJobAndTransformationObjects( ObjectId id_directory,
     boolean includeDeleted ) throws KettleException {
     // TODO not the most efficient impl; also, no sorting is done
-    List<RepositoryElementMetaInterface> objs = new ArrayList<RepositoryElementMetaInterface>();
+    List<RepositoryElementMetaInterface> objs = new ArrayList<>();
     objs.addAll( getJobObjects( id_directory, includeDeleted ) );
     objs.addAll( getTransformationObjects( id_directory, includeDeleted ) );
     return objs;

@@ -471,10 +471,10 @@
         <type>Number</type>
         <format/>
         <currency/>
-        <decimal/>
+        <decimal>,</decimal>
         <group/>
         <nullif>2345,67</nullif>
-        <length>7</length>
+        <length>6</length>
         <precision>2</precision>
         <set_empty_string>N</set_empty_string>
       </field>

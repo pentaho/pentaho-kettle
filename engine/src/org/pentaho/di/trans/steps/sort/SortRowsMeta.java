@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -23,6 +23,7 @@
 package org.pentaho.di.trans.steps.sort;
 
 import java.io.File;
+import java.io.Serializable;
 import java.text.Collator;
 import java.util.ArrayList;
 import java.util.List;
@@ -59,7 +60,8 @@ import org.w3c.dom.Node;
  * Created on 02-jun-2003
  */
 @InjectionSupported( localizationPrefix = "SortRows.Injection.", groups = { "FIELDS" } )
-public class SortRowsMeta extends BaseStepMeta implements StepMetaInterface {
+public class SortRowsMeta extends BaseStepMeta implements StepMetaInterface, Serializable {
+  private static final long serialVersionUID = -9075883720765645655L;
   private static Class<?> PKG = SortRowsMeta.class; // for i18n purposes, needed by Translator2!!
 
   /** order by which fields? */
@@ -74,11 +76,11 @@ public class SortRowsMeta extends BaseStepMeta implements StepMetaInterface {
   @Injection( name = "IGNORE_CASE", group = "FIELDS" )
   private boolean[] caseSensitive;
 
-    /** false : collator disabeld, true=collator enabled */
+  /** false : collator disabeld, true=collator enabled */
   @Injection( name = "COLLATOR_ENABLED", group = "FIELDS" )
   private boolean[] collatorEnabled;
 
-  //collator strength, 0,1,2,3
+  // collator strength, 0,1,2,3
   @Injection( name = "COLLATOR_STRENGTH", group = "FIELDS" )
   private int[] collatorStrength;
 
@@ -239,8 +241,8 @@ public class SortRowsMeta extends BaseStepMeta implements StepMetaInterface {
         String coll = Const.NVL( XMLHandler.getTagValue( fnode, "collator_enabled" ), "N" );
         caseSensitive[i] = Utils.isEmpty( sens ) || "Y".equalsIgnoreCase( sens );
         collatorEnabled[i] = "Y".equalsIgnoreCase( coll );
-        collatorStrength[i] = Integer.parseInt(
-          Const.NVL( XMLHandler.getTagValue( fnode, "collator_strength" ), defaultStrength ) );
+        collatorStrength[i] =
+            Integer.parseInt( Const.NVL( XMLHandler.getTagValue( fnode, "collator_strength" ), defaultStrength ) );
         String presorted = XMLHandler.getTagValue( fnode, "presorted" );
         preSortedField[i] = "Y".equalsIgnoreCase( presorted );
       }
@@ -301,7 +303,8 @@ public class SortRowsMeta extends BaseStepMeta implements StepMetaInterface {
   }
 
   @Override
-  public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases ) throws KettleException {
+  public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases )
+    throws KettleException {
     try {
       directory = rep.getStepAttributeString( id_step, "directory" );
       prefix = rep.getStepAttributeString( id_step, "prefix" );
@@ -324,8 +327,9 @@ public class SortRowsMeta extends BaseStepMeta implements StepMetaInterface {
         ascending[i] = rep.getStepAttributeBoolean( id_step, i, "field_ascending" );
         caseSensitive[i] = rep.getStepAttributeBoolean( id_step, i, "field_case_sensitive", true );
         collatorEnabled[i] = rep.getStepAttributeBoolean( id_step, i, "field_collator_enabled", false );
-        collatorStrength[i] = Integer.parseInt(
-            Const.NVL( rep.getStepAttributeString( id_step, i, "field_collator_strength" ), defaultStrength ) );
+        collatorStrength[i] =
+            Integer.parseInt( Const.NVL( rep.getStepAttributeString( id_step, i, "field_collator_strength" ),
+                defaultStrength ) );
         preSortedField[i] = rep.getStepAttributeBoolean( id_step, i, "field_presorted", false );
       }
     } catch ( Exception e ) {
@@ -353,7 +357,8 @@ public class SortRowsMeta extends BaseStepMeta implements StepMetaInterface {
   }
 
   @Override
-  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step ) throws KettleException {
+  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step )
+    throws KettleException {
     try {
       rep.saveStepAttribute( id_transformation, id_step, "directory", directory );
       rep.saveStepAttribute( id_transformation, id_step, "prefix", prefix );
@@ -378,16 +383,31 @@ public class SortRowsMeta extends BaseStepMeta implements StepMetaInterface {
 
   @Override
   public void getFields( RowMetaInterface inputRowMeta, String name, RowMetaInterface[] info, StepMeta nextStep,
-    VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
+      VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
     // Set the sorted properties: ascending/descending
+    assignSortingCriteria( inputRowMeta );
+  }
+
+  @SuppressWarnings( "WeakerAccess" )
+  public void assignSortingCriteria( RowMetaInterface inputRowMeta ) {
     for ( int i = 0; i < fieldName.length; i++ ) {
       int idx = inputRowMeta.indexOfValue( fieldName[i] );
       if ( idx >= 0 ) {
         ValueMetaInterface valueMeta = inputRowMeta.getValueMeta( idx );
-        valueMeta.setSortedDescending( !ascending[i] );
-        valueMeta.setCaseInsensitive( !caseSensitive[i] );
-        valueMeta.setCollatorDisabled( !collatorEnabled[i] );
-        valueMeta.setCollatorStrength( collatorStrength[i] );
+        // On all these valueMetas, check to see if the value actually exists before we try to
+        // set them.
+        if ( ascending.length > i ) {
+          valueMeta.setSortedDescending( !ascending[i] );
+        }
+        if ( caseSensitive.length > i ) {
+          valueMeta.setCaseInsensitive( !caseSensitive[i] );
+        }
+        if ( collatorEnabled.length > i ) {
+          valueMeta.setCollatorDisabled( !collatorEnabled[i] );
+        }
+        if ( collatorStrength.length > i ) {
+          valueMeta.setCollatorStrength( collatorStrength[i] );
+        }
         // Also see if lazy conversion is active on these key fields.
         // If so we want to automatically convert them to the normal storage type.
         // This will improve performance, see also: PDI-346
@@ -396,19 +416,18 @@ public class SortRowsMeta extends BaseStepMeta implements StepMetaInterface {
         valueMeta.setStorageMetadata( null );
       }
     }
-
   }
 
   @Override
-  public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta,
-    RowMetaInterface prev, String[] input, String[] output, RowMetaInterface info, VariableSpace space,
-    Repository repository, IMetaStore metaStore ) {
+  public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev,
+      String[] input, String[] output, RowMetaInterface info, VariableSpace space, Repository repository,
+      IMetaStore metaStore ) {
     CheckResult cr;
 
     if ( prev != null && prev.size() > 0 ) {
       cr =
-        new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
-          PKG, "SortRowsMeta.CheckResult.FieldsReceived", "" + prev.size() ), stepMeta );
+          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString( PKG,
+              "SortRowsMeta.CheckResult.FieldsReceived", "" + prev.size() ), stepMeta );
       remarks.add( cr );
 
       String error_message = "";
@@ -430,13 +449,13 @@ public class SortRowsMeta extends BaseStepMeta implements StepMetaInterface {
       } else {
         if ( fieldName.length > 0 ) {
           cr =
-            new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
-              PKG, "SortRowsMeta.CheckResult.AllSortKeysFound" ), stepMeta );
+              new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString( PKG,
+                  "SortRowsMeta.CheckResult.AllSortKeysFound" ), stepMeta );
           remarks.add( cr );
         } else {
           cr =
-            new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(
-              PKG, "SortRowsMeta.CheckResult.NoSortKeysEntered" ), stepMeta );
+              new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
+                  "SortRowsMeta.CheckResult.NoSortKeysEntered" ), stepMeta );
           remarks.add( cr );
         }
       }
@@ -448,45 +467,45 @@ public class SortRowsMeta extends BaseStepMeta implements StepMetaInterface {
       if ( f.exists() ) {
         if ( f.isDirectory() ) {
           cr =
-            new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
-              PKG, "SortRowsMeta.CheckResult.DirectoryExists", realDirectory ), stepMeta );
+              new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString( PKG,
+                  "SortRowsMeta.CheckResult.DirectoryExists", realDirectory ), stepMeta );
           remarks.add( cr );
         } else {
           cr =
-            new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(
-              PKG, "SortRowsMeta.CheckResult.ExistsButNoDirectory", realDirectory ), stepMeta );
+              new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
+                  "SortRowsMeta.CheckResult.ExistsButNoDirectory", realDirectory ), stepMeta );
           remarks.add( cr );
         }
       } else {
         cr =
-          new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(
-            PKG, "SortRowsMeta.CheckResult.DirectoryNotExists", realDirectory ), stepMeta );
+            new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
+                "SortRowsMeta.CheckResult.DirectoryNotExists", realDirectory ), stepMeta );
         remarks.add( cr );
       }
     } else {
       cr =
-        new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(
-          PKG, "SortRowsMeta.CheckResult.NoFields" ), stepMeta );
+          new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
+              "SortRowsMeta.CheckResult.NoFields" ), stepMeta );
       remarks.add( cr );
     }
 
     // See if we have input streams leading to this step!
     if ( input.length > 0 ) {
       cr =
-        new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
-          PKG, "SortRowsMeta.CheckResult.ExpectedInputOk" ), stepMeta );
+          new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString( PKG,
+              "SortRowsMeta.CheckResult.ExpectedInputOk" ), stepMeta );
       remarks.add( cr );
     } else {
       cr =
-        new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(
-          PKG, "SortRowsMeta.CheckResult.ExpectedInputError" ), stepMeta );
+          new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString( PKG,
+              "SortRowsMeta.CheckResult.ExpectedInputError" ), stepMeta );
       remarks.add( cr );
     }
   }
 
   @Override
-  public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr,
-    TransMeta transMeta, Trans trans ) {
+  public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr, TransMeta transMeta,
+      Trans trans ) {
     return new SortRows( stepMeta, stepDataInterface, cnr, transMeta, trans );
   }
 

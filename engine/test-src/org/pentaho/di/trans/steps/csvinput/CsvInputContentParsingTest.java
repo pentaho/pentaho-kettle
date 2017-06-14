@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -31,7 +31,8 @@ public class CsvInputContentParsingTest extends BaseCsvParsingTest {
   public void testDefaultOptions() throws Exception {
     init( "default.csv" );
 
-    setFields( new TextFileInputField(), new TextFileInputField(), new TextFileInputField() );
+    setFields( new TextFileInputField( "Field 1", -1, -1 ), new TextFileInputField( "Field 2", -1, -1 ),
+        new TextFileInputField( "Field 3", -1, -1 ) );
 
     process();
 
@@ -43,7 +44,8 @@ public class CsvInputContentParsingTest extends BaseCsvParsingTest {
     meta.setDelimiter( ";" );
     init( "semicolon.csv" );
 
-    setFields( new TextFileInputField(), new TextFileInputField(), new TextFileInputField() );
+    setFields( new TextFileInputField( "Field 1", -1, -1 ), new TextFileInputField( "Field 2", -1, -1 ),
+        new TextFileInputField( "Field 3", -1, -1 ) );
 
     process();
 
@@ -56,7 +58,8 @@ public class CsvInputContentParsingTest extends BaseCsvParsingTest {
     meta.setDelimiter( "|||" );
     init( "multi_delim.csv" );
 
-    setFields( new TextFileInputField(), new TextFileInputField(), new TextFileInputField() );
+    setFields( new TextFileInputField( "Field 1", -1, -1 ), new TextFileInputField( "Field 2", -1, -1 ),
+        new TextFileInputField( "Field 3", -1, -1 ) );
 
     process();
 
