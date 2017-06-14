@@ -854,7 +854,7 @@
                   <type>zip</type>
                 </artifactItem>
                 <artifactItem>
-                  <groupId>pentaho-kettle</groupId>
+                  <groupId>org.pentaho.di.plugins</groupId>
                   <artifactId>pdi-salesforce-plugin</artifactId>
                   <version>${pdi-salesforce-plugin.version}</version>
                   <type>zip</type>
