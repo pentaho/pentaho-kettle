@@ -19,7 +19,7 @@
  *
  * The Data Service, a collection of endpoints used by the application
  *
- * @module extension-plugins/explorer/services/data.service
+ * @module services/data.service
  * @property {String} name The name of the module.
  */
 define(
@@ -58,7 +58,7 @@ define(
         /**
          * Gets the directory tree for the currently connected repository
          *
-         * @returns {Promise} - a promise resolved once data is returned
+         * @return {Promise} - a promise resolved once data is returned
          */
         function getDirectoryTree() {
           return _httpGet([baseUrl, "loadDirectoryTree"].join("/"));
@@ -68,7 +68,7 @@ define(
          * Load files for a specific directory
          *
          * @param {String} id - The object id for a directory
-         * @returns {Promise} - a promise resolved once data is returned
+         * @return {Promise} - a promise resolved once data is returned
          */
         function getFiles(id) {
           return _httpGet([baseUrl, "loadFiles", encodeURIComponent(id)].join("/"));
@@ -79,7 +79,7 @@ define(
          *
          * @param {String} id - The object id for a file
          * @param {String} type - The file type (job/transformation)
-         * @returns {Promise} - a promise resolved once data is returned
+         * @return {Promise} - a promise resolved once data is returned
          */
         function openFile(id, type) {
           return _httpGet([baseUrl, "loadFile", encodeURIComponent(id), type].join("/"));
@@ -88,7 +88,7 @@ define(
         /**
          * Returns the recent files for the connected repository
          *
-         * @returns {Promise} - a promise resolved once data is returned
+         * @return {Promise} - a promise resolved once data is returned
          */
         function getRecentFiles() {
           return _httpGet([baseUrl, "recentFiles"].join("/"));
@@ -101,7 +101,7 @@ define(
          * @param {String} name - The new name
          * @param {String} path - The new path
          * @param {String} type - The object type
-         * @returns {Promise} - a promise resolved once data is returned
+         * @return {Promise} - a promise resolved once data is returned
          */
         function rename(id, name, path, type) {
           return _httpPost([baseUrl, "rename", encodeURIComponent(id), encodeURIComponent(path), name, type].join("/"));
@@ -112,7 +112,7 @@ define(
          *
          * @param {String} parent - The parent folder
          * @param {String} name - The new folder name
-         * @returns {Promise} - a promise resolved once data is returned
+         * @return {Promise} - a promise resolved once data is returned
          */
         function create(parent, name) {
           return _httpPost([baseUrl, "create", encodeURIComponent(parent), name].join("/"), null);
@@ -123,7 +123,7 @@ define(
          *
          * @param {String} id - The repository object id
          * @param {String} type - The object type
-         * @returns {Promise} - a promise resolved once data is returned
+         * @return {Promise} - a promise resolved once data is returned
          */
         function remove(id, type) {
           return _httpDelete([baseUrl, "remove", encodeURIComponent(id), type].join("/"));
@@ -134,9 +134,9 @@ define(
          *
          * @param {String} repo - The name of the repository
          * @param {String} id - The repository object id
-         * @returns {Promise} - a promise resolved once data is returned
+         * @return {Promise} - a promise resolved once data is returned
          */
-        function openRecent( repo, id ) {
+        function openRecent(repo, id) {
           return _httpGet([baseUrl, "loadRecent", repo, id].join("/"));
         }
 
@@ -191,7 +191,7 @@ define(
               Accept: "application/json"
             }
           };
-          if (data != null) {
+          if (data !== null) {
             options.data = data;
           }
           return $http(options);

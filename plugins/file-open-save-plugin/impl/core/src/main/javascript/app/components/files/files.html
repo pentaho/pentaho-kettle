@@ -10,7 +10,8 @@
       <th>
         <div class="nameHeader">{{::vm.nameHeader}}</div>
         <div class="sortWrapper">
-          <div class="sort" ng-click="vm.sortFiles()" ng-class="{sortUp: vm.sortState === 1, sortDown: vm.sortState === 2}"></div>
+          <div class="sort" ng-click="vm.sortFiles()"
+               ng-class="{sortUp: vm.sortState === 1, sortDown: vm.sortState === 2}"></div>
         </div>
       </th>
       <th>
@@ -23,15 +24,27 @@
     </thead>
   </table>
 </div>
+
 <div class="bodyWrapper">
   <table ng-class="{searchTable: vm.search,
                     scrollTableSave: (!vm.search && vm.folder.children.length > 8) || (vm.search && vm.numResults > 4),
                     scrollTableOpen: (!vm.search && vm.folder.children.length > 11) || (vm.search && vm.numResults > 5)}">
     <tbody>
-    <tr ng-repeat="file in vm.getFiles(vm.folder.children) | orderBy:vm.sortField:vm.sortReverse" ng-click="vm.selectFile(file)" ng-dblclick="vm.commitFile(file); $event.stopPropagation();" ng-class="{selected: vm.selectedFile==file}" ng-hide="file.inResult==false">
+    <tr ng-repeat="file in vm.getFiles(vm.folder.children) | orderBy: vm.sortField: vm.sortReverse"
+        ng-click="vm.selectFile(file)"
+        ng-dblclick="vm.commitFile(file); $event.stopPropagation();"
+        ng-class="{selected: vm.selectedFile===file}"
+        ng-hide="file.inResult===false">
       <td>
-        <div class="fileTypeIcon" ng-class="{'file-trans':file.type=='transformation', 'file-job':file.type=='job', 'file-folder':file.type=='File folder'}"></div>
-        <div class="fileName" rename on-rename="vm.rename()" selected="vm.selectedFile" ng-model="file">{{file.name}}</div>
+        <div class="fileTypeIcon"
+             ng-class="{'file-trans': file.type==='transformation',
+                        'file-job': file.type==='job',
+                        'file-folder': file.type==='File folder'}"></div>
+        <div class="fileName"
+             rename
+             on-rename="vm.rename()"
+             selected="vm.selectedFile"
+             ng-model="file">{{file.name}}</div>
         <div class="fileLocation" title="full path--use title-on-truncate">{{file.path}}</div>
       </td>
       <td>
@@ -41,10 +54,11 @@
       </td>
       <td>
         <div class="fileLastSaved">
-          <span>{{file.date | date:'MM-dd-yy hh:mm a'}}</span>
+          <span>{{file.date | date: 'MM-dd-yy hh:mm a'}}</span>
         </div>
       </td>
     </tr>
   </table>
 </div>
+
 <div class="fileAreaMessageView" ng-show="!vm.hasResults && vm.search.length > 0">{{::vm.noResults}}</div>

@@ -21,16 +21,20 @@
  */
 
 /**
- * The File Open and Save Main component.
+ * The File Open and Save Main App component.
  *
  * This provides the main component for supporting the file open and save functionality.
+ * @module app.component
+ * @property {String} name The name of the Angular component.
+ * @property {Object} options The JSON object containing the configurations for this component.
  **/
 define([
   "./services/data.service",
   "text!./app.html",
-  'pentaho/i18n-osgi!file-open-save.messages',
+  "pentaho/i18n-osgi!file-open-save.messages",
+  "angular",
   "css!./app.css"
-], function(dataService, template, i18n) {
+], function(dataService, template, i18n, angular) {
   "use strict";
 
   var options = {
@@ -42,6 +46,14 @@ define([
 
   appController.$inject = [dataService.name, "$location"];
 
+  /**
+   * The App Controller.
+   *
+   * This provides the controller for the app component.
+   *
+   * @param {Object} dt - Angular service that contains helper functions for the app component controller
+   * @param {Function} $location - Angular service used for parsing the URL in browser address bar
+   */
   function appController(dt, $location) {
     var vm = this;
     vm.$onInit = onInit;
@@ -65,6 +77,11 @@ define([
     vm.showError = false;
     vm.errorType = 0;
 
+    /**
+     * The $onInit hook of components lifecycle which is called on each controller
+     * after all the controllers on an element have been constructed and had their
+     * bindings initialized. We use this hook to put initialization code for our controller.
+     */
     function onInit() {
       vm.wrapperClass = "save";
       vm.headerTitle = i18n.get("file-open-save-plugin.app.header.save.title");
@@ -80,10 +97,16 @@ define([
       vm.file = null;
       vm.includeRoot = false;
       vm.autoExpand = false;
-      dt.getDirectoryTree().then(populateTree);
-      dt.getRecentFiles().then(populateRecentFiles);
+      dt.getDirectoryTree().then(_populateTree);
+      dt.getRecentFiles().then(_populateRecentFiles);
 
-      function populateTree(response) {
+      /**
+       * Sets the folder directory tree
+       *
+       * @param {Object} response - $http response from call to the data service
+       * @private
+       */
+      function _populateTree(response) {
         vm.folders = response.data;
         for (var i = 0; i < vm.folders.length; i++) {
           if (vm.folders[i].depth === 0) {
@@ -100,7 +123,13 @@ define([
         }
       }
 
-      function populateRecentFiles(response) {
+      /**
+       * Sets the recents folders
+       *
+       * @param {Object} response - $http response from call to the data service
+       * @private
+       */
+      function _populateRecentFiles(response) {
         vm.recentFiles = response.data;
       }
 
@@ -110,6 +139,11 @@ define([
       }
     }
 
+    /**
+     * Sets the wrapper class, title, and open/save button according to open or save option
+     *
+     * @param {String} state - "open" or "save" state
+     */
     function setState(state) {
       if (state === "open") {
         vm.wrapperClass = "open";
@@ -123,6 +157,11 @@ define([
       }
     }
 
+    /**
+     * Sets variables showRecents, folder, and selectedFolder according to the contents of parameter
+     *
+     * @param {Object} folder - folder object
+     */
     function selectFolder(folder) {
       vm.file = null;
       if (folder) {
@@ -131,11 +170,16 @@ define([
         vm.selectedFolder = folder.name;
       } else {
         vm.showRecents = true;
-        vm.selectedFolder = "Recents";
         vm.folder = {name: "Recents", path: "Recents"};
+        vm.selectedFolder = "Recents";
       }
     }
 
+    /**
+     * Selects a folder according to the path parameter
+     *
+     * @param {String} path - path to file
+     */
     function selectFolderByPath(path) {
       for (var i = 0; i < vm.folders.length; i++) {
         if (vm.folders[i].path === path) {
@@ -144,6 +188,12 @@ define([
       }
     }
 
+    /**
+     * Calls function to open folder if type of file is a folder. Else it opens either
+     * the recent file or other file and closes the browser.
+     *
+     * @param {Object} file - file object
+     */
     function selectFile(file) {
       if (file.type === "File folder") {
         selectFolder(file);
@@ -157,79 +207,124 @@ define([
       }
     }
 
+    /**
+     * Calls a filter for either recent files or files/folders in current folder
+     */
     function doSearch() {
       if (vm.showRecents === true) {
-        filter(vm.recentFiles, vm.searchString);
+        _filter(vm.recentFiles, vm.searchString);
       } else {
-        filter(vm.folder.children, vm.searchString);
+        _filter(vm.folder.children, vm.searchString);
       }
     }
 
+    /**
+     * Resets the search string and runs search against that string (which returns normal dir structure).
+     */
     function resetSearch() {
       vm.searchString = '';
       vm.doSearch();
     }
 
-    function filter(elements, value) {
+    /**
+     * Recursively searches for the value in elements and any of its children
+     *
+     * @param {Object} elements - Object with files and folders
+     * @param {String} value - String used to search within elements
+     * @private
+     */
+    function _filter(elements, value) {
       if (elements) {
         for (var i = 0; i < elements.length; i++) {
           var name = elements[i].name.toLowerCase();
           elements[i].inResult = name.indexOf(value.toLowerCase()) !== -1;
-          if(elements[i].children.length > 0) {
-            filter(elements[i].children, value);
+          if (elements[i].children.length > 0) {
+            _filter(elements[i].children, value);
           }
         }
       }
     }
 
+    /**
+     * Sets the selected file to the file parameter to highlight it in UI.
+     * Also, sets the file to save text according to the selected file.
+     *
+     * @param {Object} file - file object
+     */
     function highlightFile(file) {
       vm.file = file;
       vm.fileToSave = file.name;
     }
 
+    /**
+     * Called if user clicks "Open" or "Save" in UI. OR if user double clicks a folder or file.
+     * If file type is a folder, calls function to select that folder.
+     * If file type is file, calls either open or save function and closes browser if there is no error.
+     */
     function openOrSave() {
       if (vm.file) {
         if (vm.file.type === "File folder") {
           selectFolder(vm.file);
         } else {
           if (vm.wrapperClass === "open") {
-            open();
+            _open();
           } else {
-            save();
+            _save();
           }
-          if(!vm.showError) {
+          if (!vm.showError) {
             close();
           }
         }
       }
     }
 
-    function open() {
+    /**
+     * Calls data service to open file
+     * @private
+     */
+    function _open() {
       dt.openFile(vm.file.objectId.id, vm.file.type);
     }
 
-    function save() {
+    /**
+     * Calls data service to save file if there is no error
+     * @private
+     */
+    function _save() {
       if (vm.fileToSave === vm.file.name) {
-        //show Error
+        // show Error
         vm.showError = true;
         vm.errorType = 1;
       }
     }
 
+    /**
+     * Called if user clicks cancel in either open or save to close the browser
+     */
     function cancel() {
       close();
     }
 
+    /**
+     * Called if user clicks the confirmation button on an error dialog to handle the
+     * error and cancel it
+     */
     function confirmError() {
-      //TODO: handle error
+      // handle error
       cancelError();
     }
 
+    /**
+     * Resets the error variables as if no error is present
+     */
     function cancelError() {
       vm.errorType = 0;
       vm.showError = false;
     }
 
+    /**
+     * Called if user selects to delete the selected folder or file.
+     */
     function remove() {
       if (vm.file !== null) {
         dt.remove(vm.file.path, vm.file.type).then(function() {
@@ -244,8 +339,8 @@ define([
             }
           }
           var hasChildFolders = false;
-          for ( var i = 0; i < vm.folder.children.length; i++ ) {
-            if (vm.folder.children[i].type === "File folder") {
+          for (var j = 0; j < vm.folder.children.length; j++) {
+            if (vm.folder.children[j].type === "File folder") {
               hasChildFolders = true;
             }
           }
@@ -254,19 +349,22 @@ define([
       }
     }
 
+    /**
+     * Called if user selects to add a folder or file while Recents is not selected.
+     */
     function addFolder() {
       if (vm.selectedFolder !== "Recents") {
-        dt.create(vm.folder.path, getFolderName()).then(function(response) {
+        dt.create(vm.folder.path, _getFolderName()).then(function(response) {
           vm.folder.hasChildren = true;
           var folder = response.data;
           folder.visible = vm.folder.open;
-          folder.depth = vm.folder.depth+1;
+          folder.depth = vm.folder.depth + 1;
           folder.autoEdit = true;
           folder.type = "File folder";
           vm.folder.children.splice(0, 0, folder);
           for (var i = 0; i < vm.folders.length; i++) {
             if (vm.folders[i].path === folder.parent) {
-              vm.folders.splice(i+1, 0, angular.copy(folder));
+              vm.folders.splice(i + 1, 0, angular.copy(folder));
               break;
             }
           }
@@ -274,7 +372,14 @@ define([
       }
     }
 
-    function getFolderName() {
+    /**
+     * Sets the default folder name to "New Folder" plus an incrementing integer
+     * each time there is a folder called "New Folder <i+1>"
+     *
+     * @return {string} - Name of the folder
+     * @private
+     */
+    function _getFolderName() {
       var name = "New Folder";
       var index = 0;
       var check = name;
