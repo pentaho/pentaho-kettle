@@ -61,6 +61,7 @@ public class OracleDatabaseMetaTest {
     nativeMeta.setAccessType( DatabaseMeta.TYPE_ACCESS_NATIVE );
     odbcMeta.setAccessType( DatabaseMeta.TYPE_ACCESS_ODBC );
     ociMeta.setAccessType( DatabaseMeta.TYPE_ACCESS_OCI );
+    //nativeMeta.setSupportsTimestampDataType( true );
     KettleClientEnvironment.init();
   }
 
@@ -137,7 +138,7 @@ public class OracleDatabaseMetaTest {
     assertFalse( nativeMeta.supportsErrorHandlingOnBatchUpdates() );
     assertTrue( nativeMeta.supportsRepository() );
     assertEquals( 2000, nativeMeta.getMaxVARCHARLength() );
-    assertTrue( nativeMeta.supportsTimestampDataType() );
+    assertFalse( nativeMeta.supportsTimestampDataType() );
     assertEquals( 32, nativeMeta.getMaxColumnsInIndex() );
   }
 
@@ -160,7 +161,7 @@ public class OracleDatabaseMetaTest {
 
     assertEquals( "SELECT FOO.currval FROM DUAL", nativeMeta.getSQLCurrentSequenceValue( "FOO" ) );
     assertEquals( "SELECT FOO.nextval FROM dual", nativeMeta.getSQLNextSequenceValue( "FOO" ) );
-    assertEquals( "ALTER TABLE FOO ADD ( FOO TIMESTAMP ) ",
+    assertEquals( "ALTER TABLE FOO ADD ( FOO DATE ) ",
         nativeMeta.getAddColumnStatement( "FOO", new ValueMetaTimestamp( "FOO" ), "", false, "", false ) );
     assertEquals( "ALTER TABLE FOO ADD ( FOO DATE ) ", nativeMeta.getAddColumnStatement( "FOO", new ValueMetaDate( "FOO" ), "",
         false, "", false ) );
@@ -230,7 +231,7 @@ public class OracleDatabaseMetaTest {
   public void testGetFieldDefinition() throws Exception {
     assertEquals( "FOO DATE",
         nativeMeta.getFieldDefinition( new ValueMetaDate( "FOO" ), "", "", false, true, false ) );
-    assertEquals( "TIMESTAMP",
+    assertEquals( "DATE",
         nativeMeta.getFieldDefinition( new ValueMetaTimestamp( "FOO" ), "", "", false, false, false ) );
 
     assertEquals( "CHAR(1)",
@@ -304,5 +305,13 @@ public class OracleDatabaseMetaTest {
 
   }
 
+  @Test
+  public void testSupportsTimestampDataTypeIsTrue() throws Exception {
+    nativeMeta.setSupportsTimestampDataType( true );
+    assertEquals( "TIMESTAMP",
+      nativeMeta.getFieldDefinition( new ValueMetaTimestamp( "FOO" ), "", "", false, false, false ) );
+    assertEquals( "ALTER TABLE FOO ADD ( FOO TIMESTAMP ) ",
+      nativeMeta.getAddColumnStatement( "FOO", new ValueMetaTimestamp( "FOO" ), "", false, "", false ) );
+  }
 
 }
