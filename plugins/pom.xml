@@ -59,6 +59,7 @@
         <module>kettle-palo-plugin</module>
         <module>kettle-version-checker</module>
         <module>lucid-db-streaming-loader</module>
+        <module>salesforce</module>
       </modules>
     </profile>
     
