@@ -291,11 +291,6 @@ public class OracleDatabaseMeta extends BaseDatabaseMeta implements DatabaseInte
     return "ALTER TABLE " + tablename + " DROP ( " + v.getName() + " ) " + Const.CR;
   }
 
-  @Override
-  public boolean supportsTimestampDataType() {
-    return true;
-  }
-
   /**
    * Generates the SQL statement to modify a column in the specified table
    *
