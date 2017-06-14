@@ -23,7 +23,10 @@
 /**
  * The File Open and Save Breadcrumb component.
  *
- * This provides the component for the Breadcrumbs for the Recents option.
+ * This provides the component for the breadcrumb functionality.
+ * @module components/breadcrumb/breadcrumb.component
+ * @property {String} name The name of the Angular component.
+ * @property {Object} options The JSON object containing the configurations for this component.
  **/
 define([
   "text!./breadcrumb.html",
@@ -42,6 +45,11 @@ define([
     controller: breadcrumbController
   };
 
+  /**
+   * The Breadcrumb Controller.
+   *
+   * This provides the controller for the breadcrumb component.
+   */
   function breadcrumbController() {
     var vm = this;
     vm.$onInit = onInit;
@@ -50,32 +58,49 @@ define([
     vm.parts = [];
     vm.extras = [];
 
+    /**
+     * The $onInit hook of components lifecycle which is called on each controller
+     * after all the controllers on an element have been constructed and had their
+     * bindings initialized. We use this hook to put initialization code for our controller.
+     */
     function onInit() {
     }
 
-    function onChanges(onChanges) {
-      if (onChanges.path) {
-        var path = onChanges.path.currentValue;
+    /**
+     * Called whenever one-way bindings are updated.
+     *
+     * @param {Object} changes - hash whose keys are the names of the bound properties
+     * that have changed, and the values are an object of the form
+     */
+    function onChanges(changes) {
+      if (changes.path) {
+        var path = changes.path.currentValue;
         if (path) {
-          updatePath(path);
+          _updatePath(path);
         }
       }
     }
 
-    function updatePath(path) {
+    /**
+     * Updates the breadcrumb path to display
+     *
+     * @param {String} path - current value of the directory path.
+     * @private
+     */
+    function _updatePath(path) {
       if (path) {
         var parts = path.split("/");
         var set = [];
         if (vm.includeRoot && path !== "Recents") {
-          set.push({path:"/", part:"/"});
+          set.push({path: "/", part: "/"});
         }
         for (var i = 0; i < parts.length; i++) {
           if (parts[i] !== "") {
-            set.push({path:parts.slice(0, i+1).join("/"), part:parts[i]});
+            set.push({path: parts.slice(0, i + 1).join("/"), part: parts[i]});
           }
         }
         if (set.length > 3) {
-          vm.parts = set.splice(set.length-3, set.length);
+          vm.parts = set.splice(set.length - 3, set.length);
           vm.extras = set;
         } else {
           vm.parts = set;
@@ -84,9 +109,14 @@ define([
       }
     }
 
+    /**
+     * Calls two-way binding to parent component (app) to go to the selected breadcrumb file path.
+     *
+     * @param {String} path - The breadcrumb path to go to.
+     */
     function select(path) {
       vm.showExtras = false;
-      vm.onSelect({selectedPath:path});
+      vm.onSelect({selectedPath: path});
     }
   }
 

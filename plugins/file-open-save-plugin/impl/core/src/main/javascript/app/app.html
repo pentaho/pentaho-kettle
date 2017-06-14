@@ -1,18 +1,24 @@
-<error ng-show="vm.showError" error-type="vm.errorType" error-file="vm.file" error-folder="vm.folder" on-error-confirm="vm.confirmError()" on-error-cancel="vm.cancelError()"></error>
+<error ng-show="vm.showError"
+       error-type="vm.errorType"
+       error-file="vm.file"
+       error-folder="vm.folder"
+       on-error-confirm="vm.confirmError()"
+       on-error-cancel="vm.cancelError()"></error>
 <div class="dialogWrapper" ng-class="vm.wrapperClass">
   <div class="header">
     <div class="headerTop">
       <div class="headerTitle headerText">
         {{::vm.headerTitle}}
       </div>
-      <div class="headerSearch" ng-class="{'focused' : vm.isInSearch === true}">
-        <div class="headerSearchLeft" ng-class="{'blueState' : vm.searchString !== '' || vm.isInSearch === true }" ></div>
-        <input type="text" class="searchBox" placeholder="{{::vm.searchPlaceholder}} {{vm.selectedFolder}}"
-            ng-blur="vm.isInSearch = false"
-            ng-focus="vm.isInSearch = true"
-            ng-change="vm.doSearch()"
-            ng-model="vm.searchString"/>
-        <div ng-class="{'headerSearchRight' : vm.searchString !== '' }" ng-click="vm.resetSearch()"></div>
+      <div class="headerSearch" ng-class="{'focused': vm.isInSearch === true}">
+        <div class="headerSearchLeft" ng-class="{'blueState': vm.searchString !== '' || vm.isInSearch === true }" ></div>
+        <input type="text" class="searchBox"
+               placeholder="{{::vm.searchPlaceholder}} {{vm.selectedFolder}}"
+               ng-blur="vm.isInSearch = false"
+               ng-focus="vm.isInSearch = true"
+               ng-change="vm.doSearch()"
+               ng-model="vm.searchString"/>
+        <div ng-class="{'headerSearchRight': vm.searchString !== '' }" ng-click="vm.resetSearch()"></div>
       </div>
     </div>
 
@@ -21,7 +27,9 @@
         Search results in "{{vm.folder.name}}"
       </div>
       <div ng-hide="vm.searchString" class="breadcrumbSection blueText">
-        <breadcrumb path="vm.folder.path" include-root="vm.includeRoot" on-select="vm.selectFolderByPath(selectedPath)"></breadcrumb>
+        <breadcrumb path="vm.folder.path"
+                    include-root="vm.includeRoot"
+                    on-select="vm.selectFolderByPath(selectedPath)"></breadcrumb>
       </div>
       <div class="addDelete">
         <div class="addFolder" ng-click="vm.addFolder()"></div>
@@ -32,14 +40,25 @@
 
   <div class="middle">
     <div class="directoryTreeArea">
-      <folder auto-expand="vm.autoExpand" folders="vm.folders" on-select="vm.resetSearch();vm.selectFolder(selectedFolder)" show-recents="vm.showRecents" selected-folder="vm.folder"></folder>
+      <folder auto-expand="vm.autoExpand"
+              folders="vm.folders"
+              on-select="vm.resetSearch(); vm.selectFolder(selectedFolder);"
+              show-recents="vm.showRecents"
+              selected-folder="vm.folder"></folder>
     </div>
 
-    <div class="fileArea" ng-class="{overflow : vm.showRecents}">
+    <div class="fileArea" ng-class="{overflow: vm.showRecents}">
       <div class="fileAreaResultsView">
         <div class="fileAreaMessageView" ng-show="vm.showRecents && vm.recentFiles.length === 0">{{::vm.noRecentsMsg}}</div>
-        <card ng-show="vm.showRecents && vm.recentFiles.length > 0" recent-files="vm.recentFiles" on-click="vm.selectFile(file)" on-select="vm.highlightFile(selectedFile)"></card>
-        <files search="vm.searchString" ng-show="!vm.showRecents" folder="vm.folder" on-click="vm.selectFile(file)" on-select="vm.highlightFile(selectedFile)"></files>
+        <card ng-show="vm.showRecents && vm.recentFiles.length > 0"
+              recent-files="vm.recentFiles"
+              on-click="vm.selectFile(file)"
+              on-select="vm.highlightFile(selectedFile)"></card>
+        <files search="vm.searchString"
+               ng-show="!vm.showRecents"
+               folder="vm.folder"
+               on-click="vm.selectFile(file)"
+               on-select="vm.highlightFile(selectedFile)"></files>
       </div>
     </div>
   </div>

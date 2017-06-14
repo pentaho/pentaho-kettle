@@ -24,7 +24,10 @@
  * The File Open and Save Card component.
  *
  * This provides the component for the Cards for the Recents option.
- **/
+ * @module components/card/card.component
+ * @property {String} name The name of the Angular component.
+ * @property {Object} options The JSON object containing the configurations for this component.
+ */
 define([
   "text!./card.html",
   "css!./card.css"
@@ -42,17 +45,32 @@ define([
     controller: cardController
   };
 
+  /**
+   * The Card Controller.
+   *
+   * This provides the controller for the card component.
+   */
   function cardController() {
     var vm = this;
     vm.selectFile = selectFile;
     vm.$onInit = onInit;
 
+    /**
+     * The $onInit hook of components lifecycle which is called on each controller
+     * after all the controllers on an element have been constructed and had their
+     * bindings initialized. We use this hook to put initialization code for our controller.
+     */
     function onInit() {
     }
 
+    /**
+     * Sets the selected file and passes it to the app component
+     *
+     * @param {Object} file - A file object that the user clicked
+     */
     function selectFile(file) {
       vm.selectedFile = file;
-      vm.onSelect({selectedFile:file});
+      vm.onSelect({selectedFile: file});
     }
   }
 

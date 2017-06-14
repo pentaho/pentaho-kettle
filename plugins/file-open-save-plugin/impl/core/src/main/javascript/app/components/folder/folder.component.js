@@ -24,12 +24,15 @@
  * The File Open and Save Folder component.
  *
  * This provides the component for the Folders in the directory tree.
+ * @module components/folder/folder.component
+ * @property {String} name The name of the Angular component.
+ * @property {Object} options The JSON object containing the configurations for this component.
+
  **/
 define([
-  "../../services/data.service",
   "text!./folder.html",
   "css!./folder.css"
-], function (dataService, folderTemplate) {
+], function(folderTemplate) {
   "use strict";
 
   var options = {
@@ -46,59 +49,75 @@ define([
     controller: folderController
   };
 
-  folderController.$inject = [dataService.name];
-
-  function folderController(dt) {
+  /**
+   * The Folder Controller.
+   *
+   * This provides the controller for the folder component.
+   */
+  function folderController() {
     var vm = this;
     vm.$onInit = onInit;
     vm.maxDepth = 0;
     vm.$onChanges = onChanges;
-    vm.selectFolder = selectFolder;
     vm.openFolder = openFolder;
+    vm.selectFolder = selectFolder;
     vm.selectAndOpenFolder = selectAndOpenFolder;
 
+    /**
+     * The $onInit hook of components lifecycle which is called on each controller
+     * after all the controllers on an element have been constructed and had their
+     * bindings initialized. We use this hook to put initialization code for our controller.
+     */
     function onInit() {
     }
 
+    /**
+     * Called whenever one-way bindings are updated.
+     *
+     * @param {Object} changes - hash whose keys are the names of the bound properties
+     * that have changed, and the values are an object of the form
+     */
     function onChanges(changes) {
       if (changes.selectedFolder) {
         var selectedFolder = changes.selectedFolder.currentValue;
         if (selectedFolder && selectedFolder.path) {
           if (selectedFolder.path !== "Recents") {
-            selectFolderByPath(selectedFolder.path);
+            _selectFolderByPath(selectedFolder.path);
           }
         }
       }
     }
 
-    function isChild(folder, child) {
-      return child.path.indexOf(folder.path) === 0;
-    }
-
-    function selectAndOpenFolder(folder) {
-      selectFolder(folder);
-      openFolder(folder);
-    }
-
+    /**
+     * Opens the folder to display and children folders in directory tree.
+     * Also, sets maxDepth variable of open folders.
+     *
+     * @param {Object} folder - folder object
+     */
     function openFolder(folder) {
       vm.maxDepth = 0;
       if (folder.hasChildren) {
         folder.open = folder.open !== true;
       }
       for (var i = 0; i < vm.folders.length; i++) {
-        if (folder.open === true && vm.folders[i].depth === folder.depth + 1 && isChild(folder, vm.folders[i])) {
+        if (folder.open === true && vm.folders[i].depth === folder.depth + 1 && _isChild(folder, vm.folders[i])) {
           vm.folders[i].visible = true;
-        } else if (folder.open === false && vm.folders[i].depth > folder.depth && isChild(folder, vm.folders[i])) {
+        } else if (folder.open === false && vm.folders[i].depth > folder.depth && _isChild(folder, vm.folders[i])) {
           vm.folders[i].visible = false;
           vm.folders[i].open = false;
         }
         if (vm.folders[i].open) {
-          vm.maxDepth = Math.max(vm.maxDepth,vm.folders[i].depth + 1);
+          vm.maxDepth = Math.max(vm.maxDepth, vm.folders[i].depth + 1);
         }
       }
       _setWidth();
     }
 
+    /**
+     * Selects folder
+     *
+     * @param {Object} folder - folder object
+     */
     function selectFolder(folder) {
       if (folder === "recents") {
         vm.showRecents = true;
@@ -119,29 +138,68 @@ define([
       vm.onSelect({selectedFolder: folder});
     }
 
-    function selectFolderByPath(path) {
+    /**
+     * Call functions above to select and open folder
+     *
+     * @param {Object} folder - folder object
+     */
+    function selectAndOpenFolder(folder) {
+      selectFolder(folder);
+      openFolder(folder);
+    }
+
+    /**
+     * Determines if child is a child of folder
+     *
+     * @param {Object} folder - folder object
+     * @param {Object} child - child object
+     * @return {boolean} - true if child, false otherwise
+     * @private
+     */
+    function _isChild(folder, child) {
+      return child.path.indexOf(folder.path) === 0;
+    }
+
+    /**
+     * Selects a folder by path
+     * @param {String} path - Path to folder
+     * @private
+     */
+    function _selectFolderByPath(path) {
       for (var i = 0; i < vm.folders.length; i++) {
         if (vm.folders[i].path === path) {
           selectFolder(vm.folders[i]);
           if (vm.autoExpand) {
-            openParentFolder(vm.folders[i].parent);
+            _openParentFolder(vm.folders[i].parent);
             vm.autoExpand = false;
           }
         }
       }
     }
 
-    function openParentFolder(path) {
+    /**
+     * Opens parent folder of path
+     *
+     * @param {String} path - Path to a folder
+     * @private
+     */
+    function _openParentFolder(path) {
       if (path) {
         for (var i = 0; i < vm.folders.length; i++) {
           if (path.indexOf(vm.folders[i].path) === 0) {
-            openParentFolders(vm.folders[i]);
+            _openParentFolders(vm.folders[i]);
           }
         }
       }
     }
 
-    function openParentFolders(folder) {
+    /**
+     * Opens parent folders of folder
+     *
+     * @param {String} folder - Path to a folder
+     * @private
+     */
+    function _openParentFolders(folder) {
       if (folder.hasChildren) {
         folder.open = true;
       }
@@ -152,6 +210,10 @@ define([
       }
     }
 
+    /**
+     * Sets the css width of each folder according to the maxDepth of all open folders in the dir tree.
+     * @private
+     */
     function _setWidth() {
       for (var i = 0; i < vm.folders.length; i++) {
         if (vm.folders[i].depth <= vm.maxDepth) {
