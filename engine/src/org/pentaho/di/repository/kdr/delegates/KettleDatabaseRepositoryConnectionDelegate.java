@@ -1831,6 +1831,7 @@ public class KettleDatabaseRepositoryConnectionDelegate extends KettleDatabaseRe
       if ( resultSet != null ) {
         database.closeQuery( resultSet );
       }
+      closeReadTransaction();
     }
   }
 
