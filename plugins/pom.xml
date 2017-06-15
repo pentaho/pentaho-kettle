@@ -62,6 +62,7 @@
         <module>salesforce</module>
         <module>pdi-pur-plugin</module>
         <module>ms-access-bulk-loader</module>
+        <module>pdi-xml-plugin</module>
       </modules>
     </profile>
     
