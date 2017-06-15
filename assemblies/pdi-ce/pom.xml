@@ -96,7 +96,7 @@
     <lucid-db-streaming-loader-plugin.version>${project.version}</lucid-db-streaming-loader-plugin.version>
     <gp-bulk-loader-plugin.version>${project.version}</gp-bulk-loader-plugin.version>
     <elasticsearch-bulk-insert-plugin.version>${project.version}</elasticsearch-bulk-insert-plugin.version>
-    <kettle-xml-plugin.version>${project.version}</kettle-xml-plugin.version>
+    <pdi-xml-plugin.version>${project.version}</pdi-xml-plugin.version>
     <kettle-json-plugin.version>${project.version}</kettle-json-plugin.version>
     <kettle-sap-plugin.version>${project.version}</kettle-sap-plugin.version>
     <pentaho-big-data-plugin.version>${project.version}</pentaho-big-data-plugin.version>
@@ -868,9 +868,9 @@
                   <type>zip</type>
                 </artifactItem>
                 <artifactItem>
-                  <groupId>pentaho-kettle</groupId>
-                  <artifactId>kettle-xml-plugin</artifactId>
-                  <version>${kettle-xml-plugin.version}</version>
+                  <groupId>org.pentaho.di.plugins</groupId>
+                  <artifactId>pdi-xml-plugin</artifactId>
+                  <version>${pdi-xml-plugin.version}</version>
                   <type>zip</type>
                 </artifactItem>
                 <artifactItem>
