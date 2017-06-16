@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2016-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -119,7 +119,7 @@ public class TextFileInputDialogTest {
 
     TextFileInputMeta meta = new TextFileInputMeta();
     meta.content.lineWrapped = false;
-    meta.inputFiles.inputFields = new BaseFileInputField[]{
+    meta.inputFields = new BaseFileInputField[]{
       new BaseFileInputField( "col1", -1, -1 ),
       new BaseFileInputField( "col2", -1, -1 )
     };
