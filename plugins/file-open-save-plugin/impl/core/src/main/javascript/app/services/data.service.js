@@ -48,6 +48,8 @@ define(
           getDirectoryTree: getDirectoryTree,
           getFiles: getFiles,
           getRecentFiles: getRecentFiles,
+          getRecentSearches: getRecentSearches,
+          storeRecentSearch: storeRecentSearch,
           openRecent: openRecent,
           openFile: openFile,
           rename: rename,
@@ -92,6 +94,25 @@ define(
          */
         function getRecentFiles() {
           return _httpGet([baseUrl, "recentFiles"].join("/"));
+        }
+
+        /**
+         * Returns the 5 recent searches performed
+         *
+         * @return {Promise} - a promise resolved once data is returned
+         */
+        function getRecentSearches() {
+          return _httpGet([baseUrl, "recentSearches"].join("/"));
+        }
+
+        /**
+         * Stores the most recent search performed
+         *
+         * @param {String} recentSearch - The most recent search to be stored
+         * @return {Promise} - a promise resolved once data is returned
+         */
+        function storeRecentSearch(recentSearch) {
+          return _httpGet([baseUrl, "storeRecentSearch", encodeURIComponent(recentSearch)].join("/"));
         }
 
         /**

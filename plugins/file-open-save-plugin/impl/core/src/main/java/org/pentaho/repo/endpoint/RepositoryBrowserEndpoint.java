@@ -117,4 +117,16 @@ public class RepositoryBrowserEndpoint {
   public Response recentFiles() {
     return Response.ok( repositoryBrowserController.getRecentFiles() ).build();
   }
+
+  @GET
+  @Path( "/recentSearches" )
+  @Produces( { MediaType.APPLICATION_JSON } )
+  public Response recentSearches() { return Response.ok( repositoryBrowserController.getRecentSearches() ).build(); }
+
+  @GET
+  @Path( "/storeRecentSearch/{recentSearch}" )
+  @Produces( { MediaType.APPLICATION_JSON } )
+  public Response storeRecentSearch( @PathParam( "recentSearch" ) String recentSearch ) {
+    return Response.ok( repositoryBrowserController.storeRecentSearch( recentSearch ) ).build();
+  }
 }
