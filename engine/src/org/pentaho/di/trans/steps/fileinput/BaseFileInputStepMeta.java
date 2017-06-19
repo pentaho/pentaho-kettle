@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -37,15 +37,14 @@ import org.pentaho.di.resource.ResourceReference;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepMeta;
-import org.pentaho.di.trans.step.StepMetaInterface;
 
 /**
  * Base meta for file-based input steps.
  *
  * @author Alexander Buloichik
  */
-public abstract class BaseFileInputStepMeta<A extends BaseFileInputStepMeta.AdditionalOutputFields, I extends BaseFileInputStepMeta.InputFiles, F extends BaseFileInputField>
-    extends BaseStepMeta implements StepMetaInterface {
+public abstract class BaseFileInputStepMeta<A extends BaseFileInputStepMeta.AdditionalOutputFields, I extends BaseFileInputStepMeta.InputFiles<? extends BaseFileInputField>>
+    extends BaseStepMeta {
   private static Class<?> PKG = BaseFileInputStepMeta.class; // for i18n purposes, needed by Translator2!!
 
   public static final String[] RequiredFilesCode = new String[] { "N", "Y" };
@@ -60,11 +59,6 @@ public abstract class BaseFileInputStepMeta<A extends BaseFileInputStepMeta.Addi
 
   @InjectionDeep
   public I inputFiles;
-
-  /** The fields to import... */
-  @InjectionDeep
-  public F[] inputFields;
-
   @InjectionDeep
   public ErrorHandling errorHandling = new ErrorHandling();
   @InjectionDeep
@@ -73,7 +67,7 @@ public abstract class BaseFileInputStepMeta<A extends BaseFileInputStepMeta.Addi
   /**
    * Input files settings.
    */
-  public static class InputFiles implements Cloneable {
+  public static class InputFiles<F extends BaseFileInputField> implements Cloneable {
 
     /** Array of filenames */
     @Injection( name = "FILENAME", group = "FILENAME_LINES" )
@@ -110,6 +104,10 @@ public abstract class BaseFileInputStepMeta<A extends BaseFileInputStepMeta.Addi
     /** The field in which the filename is placed */
     @Injection( name = "ACCEPT_FILE_FIELD" )
     public String acceptingField;
+
+    /** The fields to import... */
+    @InjectionDeep
+    public F[] inputFields;
 
     /** The add filenames to result filenames flag */
     @Injection( name = "ADD_FILES_TO_RESULT" )

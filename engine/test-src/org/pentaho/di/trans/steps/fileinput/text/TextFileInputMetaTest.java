@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -60,7 +60,7 @@ public class TextFileInputMetaTest {
 
   @Test
   public void whenExportingResourcesWeGetFileObjectsOnlyFromFilesWithNotNullAndNotEmptyFileNames() throws Exception {
-    inputMeta.inputFiles = new BaseFileInputStepMeta.InputFiles();
+    inputMeta.inputFiles = new BaseFileInputStepMeta.InputFiles<>();
     inputMeta.inputFiles.fileName = new String[] { FILE_NAME_NULL, FILE_NAME_EMPTY, FILE_NAME_VALID_PATH };
     inputMeta.inputFiles.fileMask =
       new String[] { StringUtil.EMPTY_STRING, StringUtil.EMPTY_STRING, StringUtil.EMPTY_STRING };

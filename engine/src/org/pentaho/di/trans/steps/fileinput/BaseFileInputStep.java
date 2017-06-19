@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -244,8 +244,8 @@ public abstract class BaseFileInputStep<M extends BaseFileInputStepMeta, D exten
         data.dataErrorLineHandler );
 
     // Count the number of repeat fields...
-    for ( int i = 0; i < meta.inputFields.length; i++ ) {
-      if ( meta.inputFields[i].isRepeated() ) {
+    for ( int i = 0; i < meta.inputFiles.inputFields.length; i++ ) {
+      if ( meta.inputFiles.inputFields[i].isRepeated() ) {
         data.nr_repeats++;
       }
     }
