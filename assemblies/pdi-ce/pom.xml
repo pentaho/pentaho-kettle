@@ -932,7 +932,7 @@
                   <type>zip</type>
                 </artifactItem>
                 <artifactItem>
-                  <groupId>pentaho-kettle</groupId>
+                  <groupId>org.pentaho.di.plugins</groupId>
                   <artifactId>pdi-pur-plugin</artifactId>
                   <version>${pdi-pur-plugin.version}</version>
                   <type>zip</type>
