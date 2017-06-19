@@ -60,6 +60,7 @@
         <module>kettle-version-checker</module>
         <module>lucid-db-streaming-loader</module>
         <module>salesforce</module>
+        <module>pdi-pur-plugin</module>
       </modules>
     </profile>
     
