@@ -859,6 +859,7 @@ public class XMLOutputMeta extends BaseStepMeta implements StepMetaInterface {
   /**
    * {@inheritDoc}
    */
+  @Override
   public boolean passDataToServletOutput() {
     return servletOutput;
   }

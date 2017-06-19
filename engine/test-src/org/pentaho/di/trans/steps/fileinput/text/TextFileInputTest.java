@@ -201,7 +201,7 @@ public class TextFileInputTest {
 
     TextFileInputMeta meta = createMetaObject( field( "col1" ) );
 
-    meta.inputFields[0].setType( 1 );
+    meta.inputFiles.inputFields[0].setType( 1 );
     meta.content.lineWrapped = false;
     meta.content.nrWraps = 1;
     meta.errorHandling.errorIgnored = true;
@@ -223,7 +223,7 @@ public class TextFileInputTest {
     meta.content.footer = false;
     meta.content.nrFooterLines = -1;
 
-    meta.inputFields = fields;
+    meta.inputFiles.inputFields = fields;
     return meta;
   }
 

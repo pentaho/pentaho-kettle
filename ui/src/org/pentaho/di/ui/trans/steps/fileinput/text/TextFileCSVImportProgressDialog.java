@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -152,7 +152,7 @@ public class TextFileCSVImportProgressDialog {
 
     DecimalFormatSymbols dfs = new DecimalFormatSymbols();
 
-    int nrfields = meta.inputFields.length;
+    int nrfields = meta.inputFiles.inputFields.length;
 
     RowMetaInterface outputRowMeta = new RowMeta();
     meta.getFields( outputRowMeta, null, null, null, transMeta, null, null );
@@ -192,7 +192,7 @@ public class TextFileCSVImportProgressDialog {
     int[][] numberLength = new int[nrfields][Const.getNumberFormats().length]; // remember the length?
 
     for ( int i = 0; i < nrfields; i++ ) {
-      BaseFileInputField field = meta.inputFields[i];
+      BaseFileInputField field = meta.inputFiles.inputFields[i];
 
       if ( log.isDebug() ) {
         debug = "init field #" + i;
@@ -200,8 +200,8 @@ public class TextFileCSVImportProgressDialog {
 
       if ( replaceMeta ) { // Clear previous info...
 
-        field.setName( meta.inputFields[i].getName() );
-        field.setType( meta.inputFields[i].getType() );
+        field.setName( meta.inputFiles.inputFields[i].getName() );
+        field.setType( meta.inputFiles.inputFields[i].getType() );
         field.setFormat( "" );
         field.setLength( -1 );
         field.setPrecision( -1 );
@@ -240,7 +240,7 @@ public class TextFileCSVImportProgressDialog {
 
     TextFileInputMeta strinfo = (TextFileInputMeta) meta.clone();
     for ( int i = 0; i < nrfields; i++ ) {
-      strinfo.inputFields[i].setType( ValueMetaInterface.TYPE_STRING );
+      strinfo.inputFiles.inputFields[i].setType( ValueMetaInterface.TYPE_STRING );
     }
 
     // Sample <samples> rows...
@@ -346,7 +346,7 @@ public class TextFileCSVImportProgressDialog {
     message.append( BaseMessages.getString( PKG, "TextFileCSVImportProgressDialog.Info.HorizontalLine" ) );
 
     for ( int i = 0; i < nrfields; i++ ) {
-      BaseFileInputField field = meta.inputFields[i];
+      BaseFileInputField field = meta.inputFiles.inputFields[i];
       StringEvaluator evaluator = evaluators.get( i );
       List<StringEvaluationResult> evaluationResults = evaluator.getStringEvaluationResults();
 
