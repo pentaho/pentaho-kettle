@@ -25,12 +25,12 @@
 <features xmlns="http://karaf.apache.org/xmlns/features/v1.0.0">
 
   <feature name="pdi-engine-configuration" version="1.0">
-    <bundle>mvn:org.pentaho.di.plugins/pdi-engine-configuration-impl/${dependency.pentaho-kettle.version}</bundle>
+    <bundle>mvn:org.pentaho.di.plugins/pdi-engine-configuration-impl/${kettle.version}</bundle>
   </feature>
 
   <feature name="pdi-engine-configuration-ui" version="1.0">
     <feature>pdi-engine-configuration</feature>
-    <bundle>mvn:org.pentaho.di.plugins/pdi-engine-configuration-ui/${dependency.pentaho-kettle.version}</bundle>
+    <bundle>mvn:org.pentaho.di.plugins/pdi-engine-configuration-ui/${kettle.version}</bundle>
   </feature>
 
 </features>
