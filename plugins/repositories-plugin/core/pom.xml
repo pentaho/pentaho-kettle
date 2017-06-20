@@ -2,41 +2,43 @@
 <project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <modelVersion>4.0.0</modelVersion>
-  <parent>
-    <groupId>org.pentaho.di.plugins</groupId>
-    <artifactId>repositories-plugin-modules</artifactId>
-    <version>8.0-SNAPSHOT</version>
-  </parent>
+
   <artifactId>repositories-plugin-core</artifactId>
   <version>8.0-SNAPSHOT</version>
   <packaging>bundle</packaging>
-  <name>Pentaho Community Edition Project: ${project.artifactId}</name>
-  <description>a Pentaho open source project</description>
-  <url>http://www.pentaho.com</url>
+
+  <parent>
+    <groupId>org.pentaho.di.plugins</groupId>
+    <artifactId>repositories-plugin-parent</artifactId>
+    <version>8.0-SNAPSHOT</version>
+  </parent>
+
   <properties>
-    <dependency.javax.ws.rs-api.version>2.0</dependency.javax.ws.rs-api.version>
-    <dependency.guava.version>17.0</dependency.guava.version>
-    <dependency.xercesImpl.version>2.9.1</dependency.xercesImpl.version>
-    <dependency.pentaho-kettle.version>8.0-SNAPSHOT</dependency.pentaho-kettle.version>
-    <dependency.jackson-mapper-asl.version>1.9.2</dependency.jackson-mapper-asl.version>
-    <dependency.mockito-all.version>1.9.5</dependency.mockito-all.version>
-    <dependency.karaf.version>3.0.3</dependency.karaf.version>
-    <dependency.osgi.version>4.3.1</dependency.osgi.version>
-    <dependency.fasterxml.jackson.version>2.5.4</dependency.fasterxml.jackson.version>
-    <dependency.json-simple.version>1.1</dependency.json-simple.version>
-    <dependency.angular-translate.version>2.12.1</dependency.angular-translate.version>
-    <dependency.javax.servlet-api.version>3.0.1</dependency.javax.servlet-api.version>
-    <dependency.jackson.version>1.9.2</dependency.jackson.version>
-    <dependency.commons-vfs2.version>2.1-20150824</dependency.commons-vfs2.version>
-    <dependency.eclipse.version>3.6.0</dependency.eclipse.version>
-    <dependency.pax-web-spi.version>3.1.4</dependency.pax-web-spi.version>
-    <dependency.junit.version>4.11</dependency.junit.version>
+    <pentaho-kettle.version>8.0-SNAPSHOT</pentaho-kettle.version>
+
+    <javax.ws.rs-api.version>2.0</javax.ws.rs-api.version>
+    <guava.version>17.0</guava.version>
+    <xercesImpl.version>2.9.1</xercesImpl.version>
+    <jackson-mapper-asl.version>1.9.2</jackson-mapper-asl.version>
+    <mockito-all.version>1.9.5</mockito-all.version>
+    <karaf.version>3.0.3</karaf.version>
+    <osgi.version>4.3.1</osgi.version>
+    <fasterxml.jackson.version>2.5.4</fasterxml.jackson.version>
+    <json-simple.version>1.1</json-simple.version>
+    <angular-translate.version>2.12.1</angular-translate.version>
+    <javax.servlet-api.version>3.0.1</javax.servlet-api.version>
+    <jackson.version>1.9.2</jackson.version>
+    <commons-vfs2.version>2.1-20150824</commons-vfs2.version>
+    <eclipse.version>3.6.0</eclipse.version>
+    <pax-web-spi.version>3.1.4</pax-web-spi.version>
+    <junit.version>4.11</junit.version>
   </properties>
+
   <dependencies>
     <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>
       <artifactId>jackson-core</artifactId>
-      <version>${dependency.fasterxml.jackson.version}</version>
+      <version>${fasterxml.jackson.version}</version>
       <exclusions>
         <exclusion>
           <artifactId>*</artifactId>
@@ -47,7 +49,7 @@
     <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>
       <artifactId>jackson-annotations</artifactId>
-      <version>${dependency.fasterxml.jackson.version}</version>
+      <version>${fasterxml.jackson.version}</version>
       <exclusions>
         <exclusion>
           <artifactId>*</artifactId>
@@ -58,7 +60,7 @@
     <dependency>
       <groupId>com.fasterxml.jackson.jaxrs</groupId>
       <artifactId>jackson-jaxrs-json-provider</artifactId>
-      <version>${dependency.fasterxml.jackson.version}</version>
+      <version>${fasterxml.jackson.version}</version>
       <exclusions>
         <exclusion>
           <artifactId>*</artifactId>
@@ -69,7 +71,7 @@
     <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>
       <artifactId>jackson-databind</artifactId>
-      <version>${dependency.fasterxml.jackson.version}</version>
+      <version>${fasterxml.jackson.version}</version>
       <exclusions>
         <exclusion>
           <artifactId>*</artifactId>
@@ -80,7 +82,7 @@
     <dependency>
       <groupId>com.fasterxml.jackson.jaxrs</groupId>
       <artifactId>jackson-jaxrs-base</artifactId>
-      <version>${dependency.fasterxml.jackson.version}</version>
+      <version>${fasterxml.jackson.version}</version>
       <exclusions>
         <exclusion>
           <artifactId>*</artifactId>
@@ -91,103 +93,103 @@
     <dependency>
       <groupId>org.webjars</groupId>
       <artifactId>jquery</artifactId>
-      <version>${dependency.jquery.version}</version>
+      <version>${jquery.version}</version>
       <scope>runtime</scope>
     </dependency>
     <dependency>
       <groupId>org.webjars.bower</groupId>
       <artifactId>angular</artifactId>
-      <version>${dependency.angular.version}</version>
+      <version>${angular.version}</version>
       <scope>runtime</scope>
     </dependency>
     <dependency>
       <groupId>org.webjars.bower</groupId>
       <artifactId>angular-route</artifactId>
-      <version>${dependency.angular-route.version}</version>
+      <version>${angular-route.version}</version>
       <scope>runtime</scope>
     </dependency>
     <dependency>
       <groupId>org.webjars.bower</groupId>
       <artifactId>angular-sanitize</artifactId>
-      <version>${dependency.angular-sanitize.version}</version>
+      <version>${angular-sanitize.version}</version>
       <scope>runtime</scope>
     </dependency>
     <dependency>
       <groupId>org.webjars.bower</groupId>
       <artifactId>angular-translate</artifactId>
-      <version>${dependency.angular-translate.version}</version>
+      <version>${angular-translate.version}</version>
       <scope>runtime</scope>
     </dependency>
     <dependency>
       <groupId>org.webjars.bower</groupId>
       <artifactId>angular-animate</artifactId>
-      <version>${dependency.angular-animate.version}</version>
+      <version>${angular-animate.version}</version>
       <scope>runtime</scope>
     </dependency>
     <dependency>
       <groupId>pentaho-kettle</groupId>
       <artifactId>kettle-engine</artifactId>
-      <version>${dependency.pentaho-kettle.version}</version>
+      <version>${pentaho-kettle.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>pentaho-kettle</groupId>
       <artifactId>kettle-core</artifactId>
-      <version>${dependency.pentaho-kettle.version}</version>
+      <version>${pentaho-kettle.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>pentaho-kettle</groupId>
       <artifactId>kettle-ui-swt</artifactId>
-      <version>${dependency.pentaho-kettle.version}</version>
+      <version>${pentaho-kettle.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>pentaho</groupId>
       <artifactId>metastore</artifactId>
-      <version>${dependency.pentaho-kettle.version}</version>
+      <version>${pentaho-kettle.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>javax.ws.rs</groupId>
       <artifactId>javax.ws.rs-api</artifactId>
-      <version>${dependency.javax.ws.rs-api.version}</version>
+      <version>${javax.ws.rs-api.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>javax.servlet</groupId>
       <artifactId>javax.servlet-api</artifactId>
-      <version>${dependency.javax.servlet-api.version}</version>
+      <version>${javax.servlet-api.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.osgi</groupId>
       <artifactId>org.osgi.core</artifactId>
-      <version>${dependency.osgi.version}</version>
+      <version>${osgi.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.osgi</groupId>
       <artifactId>org.osgi.compendium</artifactId>
-      <version>${dependency.osgi.version}</version>
+      <version>${osgi.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.ops4j.pax.web</groupId>
       <artifactId>pax-web-spi</artifactId>
-      <version>${dependency.pax-web-spi.version}</version>
+      <version>${pax-web-spi.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.apache.karaf.kar</groupId>
       <artifactId>org.apache.karaf.kar.core</artifactId>
-      <version>${dependency.karaf.version}</version>
+      <version>${karaf.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>com.googlecode.json-simple</groupId>
       <artifactId>json-simple</artifactId>
-      <version>${dependency.json-simple.version}</version>
+      <version>${json-simple.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
@@ -205,40 +207,41 @@
     <dependency>
       <groupId>org.mockito</groupId>
       <artifactId>mockito-all</artifactId>
-      <version>${dependency.mockito-all.version}</version>
+      <version>${mockito-all.version}</version>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
-      <version>${dependency.junit.version}</version>
+      <version>${junit.version}</version>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.apache.commons</groupId>
       <artifactId>commons-vfs2</artifactId>
-      <version>${dependency.commons-vfs2.version}</version>
+      <version>${commons-vfs2.version}</version>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>pentaho</groupId>
       <artifactId>pentaho-vfs-browser</artifactId>
-      <version>${dependency.pentaho-kettle.version}</version>
+      <version>${pentaho-kettle.version}</version>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>xerces</groupId>
       <artifactId>xercesImpl</artifactId>
-      <version>${dependency.xercesImpl.version}</version>
+      <version>${xercesImpl.version}</version>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.eclipse.core</groupId>
       <artifactId>org.eclipse.core.commands</artifactId>
-      <version>${dependency.eclipse.version}</version>
+      <version>${eclipse.version}</version>
       <scope>test</scope>
     </dependency>
   </dependencies>
+
   <build>
     <resources>
       <resource>
@@ -283,7 +286,6 @@
       <plugin>
         <groupId>org.apache.felix</groupId>
         <artifactId>maven-bundle-plugin</artifactId>
-        <version>2.4.0</version>
         <extensions>true</extensions>
         <configuration>
           <instructions>
