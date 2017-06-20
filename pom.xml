@@ -29,7 +29,7 @@
 
     <!-- Pentaho dependencies -->
     <pentaho-xul.version>${project.version}</pentaho-xul.version>
-    <metastore.version>${project.version}</metastore.version>
+    <pentaho-metastore.version>${project.version}</pentaho-metastore.version>
 
     <!-- Third-party dependencies -->
     <org.eclipse.swt.version>4.6</org.eclipse.swt.version>
@@ -75,7 +75,7 @@
       <dependency>
         <groupId>pentaho</groupId>
         <artifactId>metastore</artifactId>
-        <version>${metastore.version}</version>
+        <version>${pentaho-metastore.version}</version>
       </dependency>
 
       <!-- Third-party dependencies -->
