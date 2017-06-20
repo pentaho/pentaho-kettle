@@ -902,7 +902,7 @@
     <dependency>
       <groupId>pentaho</groupId>
       <artifactId>metastore</artifactId>
-      <version>${metastore.version}</version>
+      <version>${pentaho-metastore.version}</version>
       <classifier>tests</classifier>
       <scope>test</scope>
       <exclusions>
