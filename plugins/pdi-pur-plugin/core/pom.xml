@@ -21,20 +21,13 @@
     <maven-failsafe-plugin.forkCount>0.5C</maven-failsafe-plugin.forkCount>
 
     <!-- Kettle dependencies -->
-    <kettle-core.version>8.0-SNAPSHOT</kettle-core.version>
-    <kettle-engine.version>8.0-SNAPSHOT</kettle-engine.version>
-    <kettle-ui-swt.version>8.0-SNAPSHOT</kettle-ui-swt.version>
+    <kettle.version>${project.version}</kettle.version>
 
     <!-- Pentaho dependenceis -->
-    <pentaho-platform-core.version>8.0-SNAPSHOT</pentaho-platform-core.version>
-    <pentaho-platform-api.version>8.0-SNAPSHOT</pentaho-platform-api.version>
-    <pentaho-platform-repository.version>8.0-SNAPSHOT</pentaho-platform-repository.version>
-    <pentaho-platform-extensions.version>8.0-SNAPSHOT</pentaho-platform-extensions.version>
-    <pentaho-xul-core.version>8.0-SNAPSHOT</pentaho-xul-core.version>
-    <pentaho-xul-swt.version>8.0-SNAPSHOT</pentaho-xul-swt.version>
+    <pentaho-platform.version>${project.version}</pentaho-platform.version>
+    <json.version>${project.version}</json.version>
 
     <!-- Third party dependencies -->
-    <json.version>8.0-SNAPSHOT</json.version>
     <slf4j-api.version>1.7.7</slf4j-api.version>
     <slf4j-log4j12.version>1.7.7</slf4j-log4j12.version>
     <webservices-api.version>2.3.1</webservices-api.version>
@@ -55,8 +48,6 @@
     <spring-test.version>3.2.14.RELEASE</spring-test.version>
     <se-jcr.version>0.9</se-jcr.version>
     <jcr.version>2.0</jcr.version>
-    <pentaho-platform-repository.version>8.0-SNAPSHOT</pentaho-platform-repository.version>
-    <pentaho-platform-core.version>8.0-SNAPSHOT</pentaho-platform-core.version>
     <jackrabbit-core.version>2.10.0</jackrabbit-core.version>
 
     <!-- Wadl2Java Settings -->
@@ -70,19 +61,19 @@
     <dependency>
       <groupId>pentaho-kettle</groupId>
       <artifactId>kettle-core</artifactId>
-      <version>${kettle-core.version}</version>
+      <version>${kettle.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>pentaho-kettle</groupId>
       <artifactId>kettle-engine</artifactId>
-      <version>${kettle-engine.version}</version>
+      <version>${kettle.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>pentaho-kettle</groupId>
       <artifactId>kettle-ui-swt</artifactId>
-      <version>${kettle-ui-swt.version}</version>
+      <version>${kettle.version}</version>
       <scope>provided</scope>
     </dependency>
 
@@ -111,13 +102,13 @@
     <dependency>
       <groupId>pentaho</groupId>
       <artifactId>pentaho-platform-core</artifactId>
-      <version>${pentaho-platform-core.version}</version>
+      <version>${pentaho-platform.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>pentaho</groupId>
       <artifactId>pentaho-platform-api</artifactId>
-      <version>${pentaho-platform-api.version}</version>
+      <version>${pentaho-platform.version}</version>
       <scope>provided</scope>
       <exclusions>
         <exclusion>
@@ -129,7 +120,7 @@
     <dependency>
       <groupId>pentaho</groupId>
       <artifactId>pentaho-platform-repository</artifactId>
-      <version>${pentaho-platform-repository.version}</version>
+      <version>${pentaho-platform.version}</version>
       <scope>provided</scope>
       <exclusions>
         <exclusion>
@@ -141,7 +132,7 @@
     <dependency>
       <groupId>pentaho</groupId>
       <artifactId>pentaho-platform-extensions</artifactId>
-      <version>${pentaho-platform-extensions.version}</version>
+      <version>${pentaho-platform.version}</version>
       <scope>provided</scope>
       <exclusions>
         <exclusion>
@@ -306,7 +297,7 @@
     <dependency>
       <groupId>pentaho</groupId>
       <artifactId>pentaho-platform-repository</artifactId>
-      <version>${pentaho-platform-repository.version}</version>
+      <version>${pentaho-platform.version}</version>
       <classifier>tests</classifier>
       <scope>test</scope>
       <exclusions>
@@ -319,7 +310,7 @@
     <dependency>
       <groupId>pentaho</groupId>
       <artifactId>pentaho-platform-core</artifactId>
-      <version>${pentaho-platform-core.version}</version>
+      <version>${pentaho-platform.version}</version>
       <classifier>tests</classifier>
       <scope>test</scope>
       <exclusions>
