@@ -844,7 +844,7 @@
                   <type>zip</type>
                 </artifactItem>
                 <artifactItem>
-                  <groupId>pentaho-kettle</groupId>
+                  <groupId>org.pentaho.di.plugins</groupId>
                   <artifactId>ms-access-bulk-loader-plugin</artifactId>
                   <version>${ms-access-bulk-loader-plugin.version}</version>
                   <type>zip</type>
