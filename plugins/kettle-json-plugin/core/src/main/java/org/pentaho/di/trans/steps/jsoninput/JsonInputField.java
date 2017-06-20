@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -118,6 +118,7 @@ public class JsonInputField extends BaseFileInputField implements Cloneable {
     v.setDecimalSymbol( getDecimalSymbol() );
     v.setGroupingSymbol( getGroupSymbol() );
     v.setCurrencySymbol( getCurrencySymbol() );
+    v.setTrimType( getTrimType() );
     return v;
   }
 
