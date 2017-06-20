@@ -2,36 +2,39 @@
 <project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <modelVersion>4.0.0</modelVersion>
+
+  <artifactId>repositories-plugin-parent</artifactId>
+  <version>8.0-SNAPSHOT</version>
+  <packaging>pom</packaging>
+
   <parent>
     <groupId>org.pentaho.di.plugins</groupId>
     <artifactId>pdi-plugins</artifactId>
     <version>8.0-SNAPSHOT</version>
   </parent>
-  <artifactId>repositories-plugin-modules</artifactId>
-  <version>8.0-SNAPSHOT</version>
-  <packaging>pom</packaging>
-  <name>Repositories Plugin: ${project.artifactId}</name>
-  <description>Repositories Plugin</description>
-  <modules>
-    <module>repositories-plugin-core</module>
-    <module>assembly</module>
-  </modules>
+
   <properties>
-    <dependency.angular-route.version>${dependency.angular.version}</dependency.angular-route.version>
-    <dependency.angular-translate.version>2.12.1</dependency.angular-translate.version>
-    <dependency.karaf.version>3.0.3</dependency.karaf.version>
-    <dependency.angular-sanitize.version>${dependency.angular.version}</dependency.angular-sanitize.version>
-    <dependency.jquery.version>2.2.1</dependency.jquery.version>
-    <dependency.angular.version>1.5.6</dependency.angular.version>
-    <dependency.angular-animate.version>${dependency.angular.version}</dependency.angular-animate.version>
+    <angular.version>1.5.6</angular.version>
+    <angular-route.version>${angular.version}</angular-route.version>
+    <angular-sanitize.version>${angular.version}</angular-sanitize.version>
+    <angular-animate.version>${angular.version}</angular-animate.version>
+    <angular-translate.version>2.12.1</angular-translate.version>
+    <jquery.version>2.2.1</jquery.version>
+    <karaf-maven-plugin.version>3.0.3</karaf-maven-plugin.version>
   </properties>
+
+  <modules>
+    <module>core</module>
+    <module>assemblies</module>
+  </modules>
+
   <build>
     <pluginManagement>
       <plugins>
         <plugin>
           <groupId>org.apache.karaf.tooling</groupId>
           <artifactId>karaf-maven-plugin</artifactId>
-          <version>${dependency.karaf.version}</version>
+          <version>${karaf-maven-plugin.version}</version>
           <extensions>true</extensions>
           <configuration>
             <aggregateFeatures>true</aggregateFeatures>
