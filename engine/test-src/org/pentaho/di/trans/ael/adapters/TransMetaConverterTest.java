@@ -31,7 +31,9 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Spy;
+import org.mockito.invocation.InvocationOnMock;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.stubbing.Answer;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleMissingPluginsException;
@@ -56,6 +58,11 @@ import static org.hamcrest.CoreMatchers.hasItems;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.startsWith;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @RunWith ( MockitoJUnitRunner.class )
@@ -300,5 +307,37 @@ public class TransMetaConverterTest {
         is( false ) );
     assertThat( ( (TableInputMeta) cloneMeta.findStep( "Table" ).getStepMetaInterface() ).isLazyConversionActive(),
         is( false ) );
+  }
+
+  @Test
+  public void testClonesTransMeta() throws KettleException {
+    class ResultCaptor implements Answer<Object> {
+      private Object result;
+
+      public Object getResult() {
+        return result;
+      }
+
+      @Override public java.lang.Object answer( InvocationOnMock invocationOnMock ) throws Throwable {
+        result = invocationOnMock.callRealMethod();
+        return result;
+      }
+    }
+
+    TransMeta originalTransMeta = spy( new TransMeta() );
+
+    ResultCaptor cloneTransMetaCaptor = new ResultCaptor();
+    doAnswer( cloneTransMetaCaptor ).when( originalTransMeta ).realClone( eq( false ) );
+
+    originalTransMeta.setName( "TransName" );
+
+    TransMetaConverter.convert( originalTransMeta );
+
+    TransMeta cloneTransMeta = (TransMeta) cloneTransMetaCaptor.getResult();
+
+    verify( originalTransMeta ).realClone( eq( false ) );
+    assertThat( cloneTransMeta.getName(), is( originalTransMeta.getName() ) );
+    verify( originalTransMeta, never() ).getXML();
+    verify( cloneTransMeta ).getXML();
   }
 }

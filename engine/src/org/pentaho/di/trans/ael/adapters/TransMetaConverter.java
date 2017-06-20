@@ -54,7 +54,9 @@ public class TransMetaConverter {
     final org.pentaho.di.engine.model.Transformation transformation =
       new org.pentaho.di.engine.model.Transformation( createTransformationId( transMeta ) );
     try {
-      TransMeta copyTransMeta = cleanupDisabledHops( transMeta );
+      TransMeta copyTransMeta = (TransMeta) transMeta.realClone( false );
+
+      cleanupDisabledHops( copyTransMeta );
 
       // Turn off lazy conversion for AEL for now
       disableLazyConversion( copyTransMeta );
@@ -119,20 +121,14 @@ public class TransMetaConverter {
   }
 
   /**
-   * Removes disabled hops, unreachable steps and unused inputs. Doesn't change input transMeta object, operates
-   * on it's clone.
+   * Removes disabled hops, unreachable steps and unused inputs.
    *
    * @param transMeta transMeta to process
    * @return processed clone of input transMeta
    */
-  private static TransMeta cleanupDisabledHops( TransMeta transMeta ) {
-    TransMeta copyTransMeta = (TransMeta) transMeta.clone();
-
-    removeDisabledInputs( copyTransMeta );
-
-    removeInactivePaths( copyTransMeta, null );
-
-    return copyTransMeta;
+  private static void cleanupDisabledHops( TransMeta transMeta ) {
+    removeDisabledInputs( transMeta );
+    removeInactivePaths( transMeta, null );
   }
 
   /**
