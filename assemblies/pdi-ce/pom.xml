@@ -18,7 +18,7 @@
 
   <properties>
     <assembly.dir>${project.build.directory}/assembly</assembly.dir>
-    <assembly.launcher.jar>pentaho-application-launcher-${pentaho-application-launcher.version}.jar</assembly.launcher.jar>
+    <assembly.launcher.jar>pentaho-application-launcher-${pentaho-launcher.version}.jar</assembly.launcher.jar>
 
     <pdi-dataservice-driver-bundle.version>${project.version}</pdi-dataservice-driver-bundle.version>
     <pdi-daemon-assembly.version>${project.version}</pdi-daemon-assembly.version>
@@ -27,29 +27,13 @@
     <rxjava.version>2.0.4</rxjava.version>
 
     <pentaho-karaf-assembly.version>${project.version}</pentaho-karaf-assembly.version>
-    <pdi-osgi-bridge-core.version>${project.version}</pdi-osgi-bridge-core.version>
-    <pentaho-application-launcher.version>${project.version}</pentaho-application-launcher.version>
+    <pdi-osgi-bridge.version>${project.version}</pdi-osgi-bridge.version>
+    <pentaho-launcher.version>${project.version}</pentaho-launcher.version>
     <pentaho-database-model.version>${project.version}</pentaho-database-model.version>
     <pentaho-registry.version>${project.version}</pentaho-registry.version>
-    <pentaho-platform-repository.version>${project.version}</pentaho-platform-repository.version>
-    <pentaho-platform-extensions.version>${project.version}</pentaho-platform-extensions.version>
-    <pentaho-metaverse-api.version>${project.version}</pentaho-metaverse-api.version>
-    <pentaho-platform-api.version>${project.version}</pentaho-platform-api.version>
-    <pentaho-platform-core.version>${project.version}</pentaho-platform-core.version>
-    <classic-extensions.version>${project.version}</classic-extensions.version>
-    <classic-extensions-drill-down.version>${project.version}</classic-extensions-drill-down.version>
-    <classic-extensions-kettle.version>${project.version}</classic-extensions-kettle.version>
-    <classic-extensions-mondrian.version>${project.version}</classic-extensions-mondrian.version>
-    <classic-extensions-olap4j.version>${project.version}</classic-extensions-olap4j.version>
-    <classic-extensions-pmd.version>${project.version}</classic-extensions-pmd.version>
-    <classic-extensions-reportdesigner-parser.version>${project.version}</classic-extensions-reportdesigner-parser.version>
-    <classic-extensions-sampledata.version>${project.version}</classic-extensions-sampledata.version>
-    <classic-extensions-scripting.version>${project.version}</classic-extensions-scripting.version>
-    <classic-extensions-toc.version>${project.version}</classic-extensions-toc.version>
-    <classic-extensions-xpath.version>${project.version}</classic-extensions-xpath.version>
-    <legacy-charts.version>${project.version}</legacy-charts.version>
-    <legacy-functions.version>${project.version}</legacy-functions.version>
-    <wizard-core.version>${project.version}</wizard-core.version>
+    <pentaho-metaverse.version>${project.version}</pentaho-metaverse.version>
+    <pentaho-platform.version>${project.version}</pentaho-platform.version>
+    <reporting-engine.version>${project.version}</reporting-engine.version>
     <oss-licenses.version>${project.version}</oss-licenses.version>
 
     <!-- swt -->
@@ -202,7 +186,7 @@
     <dependency>
       <groupId>pentaho</groupId>
       <artifactId>pdi-osgi-bridge-core</artifactId>
-      <version>${pdi-osgi-bridge-core.version}</version>
+      <version>${pdi-osgi-bridge.version}</version>
     </dependency>
     <dependency>
       <groupId>pentaho</groupId>
@@ -229,7 +213,7 @@
     <dependency>
       <groupId>pentaho</groupId>
       <artifactId>pentaho-platform-repository</artifactId>
-      <version>${pentaho-platform-repository.version}</version>
+      <version>${pentaho-platform.version}</version>
       <exclusions>
         <exclusion>
           <groupId>*</groupId>
@@ -240,7 +224,7 @@
     <dependency>
       <groupId>pentaho</groupId>
       <artifactId>pentaho-platform-extensions</artifactId>
-      <version>${pentaho-platform-extensions.version}</version>
+      <version>${pentaho-platform.version}</version>
       <exclusions>
         <exclusion>
           <groupId>*</groupId>
@@ -251,7 +235,7 @@
     <dependency>
       <groupId>pentaho</groupId>
       <artifactId>pentaho-metaverse-api</artifactId>
-      <version>${pentaho-metaverse-api.version}</version>
+      <version>${pentaho-metaverse.version}</version>
       <exclusions>
         <exclusion>
           <groupId>*</groupId>
@@ -262,7 +246,7 @@
     <dependency>
       <groupId>pentaho</groupId>
       <artifactId>pentaho-platform-api</artifactId>
-      <version>${pentaho-platform-api.version}</version>
+      <version>${pentaho-platform.version}</version>
       <exclusions>
         <exclusion>
           <groupId>*</groupId>
@@ -273,7 +257,7 @@
     <dependency>
       <groupId>pentaho</groupId>
       <artifactId>pentaho-platform-core</artifactId>
-      <version>${pentaho-platform-core.version}</version>
+      <version>${pentaho-platform.version}</version>
       <exclusions>
         <exclusion>
           <groupId>*</groupId>
@@ -286,72 +270,72 @@
     <dependency>
       <groupId>org.pentaho.reporting.engine</groupId>
       <artifactId>classic-extensions</artifactId>
-      <version>${classic-extensions.version}</version>
+      <version>${reporting-engine.version}</version>
     </dependency>
     <dependency>
       <groupId>org.pentaho.reporting.engine</groupId>
       <artifactId>classic-extensions-drill-down</artifactId>
-      <version>${classic-extensions-drill-down.version}</version>
+      <version>${reporting-engine.version}</version>
     </dependency>
     <dependency>
       <groupId>org.pentaho.reporting.engine</groupId>
       <artifactId>classic-extensions-kettle</artifactId>
-      <version>${classic-extensions-kettle.version}</version>
+      <version>${reporting-engine.version}</version>
     </dependency>
     <dependency>
       <groupId>org.pentaho.reporting.engine</groupId>
       <artifactId>classic-extensions-mondrian</artifactId>
-      <version>${classic-extensions-mondrian.version}</version>
+      <version>${reporting-engine.version}</version>
     </dependency>
     <dependency>
       <groupId>org.pentaho.reporting.engine</groupId>
       <artifactId>classic-extensions-olap4j</artifactId>
-      <version>${classic-extensions-olap4j.version}</version>
+      <version>${reporting-engine.version}</version>
     </dependency>
     <dependency>
       <groupId>org.pentaho.reporting.engine</groupId>
       <artifactId>classic-extensions-pmd</artifactId>
-      <version>${classic-extensions-pmd.version}</version>
+      <version>${reporting-engine.version}</version>
     </dependency>
     <dependency>
       <groupId>org.pentaho.reporting.engine</groupId>
       <artifactId>classic-extensions-reportdesigner-parser</artifactId>
-      <version>${classic-extensions-reportdesigner-parser.version}</version>
+      <version>${reporting-engine.version}</version>
     </dependency>
     <dependency>
       <groupId>org.pentaho.reporting.engine</groupId>
       <artifactId>classic-extensions-sampledata</artifactId>
-      <version>${classic-extensions-sampledata.version}</version>
+      <version>${reporting-engine.version}</version>
     </dependency>
     <dependency>
       <groupId>org.pentaho.reporting.engine</groupId>
       <artifactId>classic-extensions-scripting</artifactId>
-      <version>${classic-extensions-scripting.version}</version>
+      <version>${reporting-engine.version}</version>
     </dependency>
     <dependency>
       <groupId>org.pentaho.reporting.engine</groupId>
       <artifactId>classic-extensions-toc</artifactId>
-      <version>${classic-extensions-toc.version}</version>
+      <version>${reporting-engine.version}</version>
     </dependency>
     <dependency>
       <groupId>org.pentaho.reporting.engine</groupId>
       <artifactId>classic-extensions-xpath</artifactId>
-      <version>${classic-extensions-xpath.version}</version>
+      <version>${reporting-engine.version}</version>
     </dependency>
     <dependency>
       <groupId>org.pentaho.reporting.engine</groupId>
       <artifactId>legacy-charts</artifactId>
-      <version>${legacy-charts.version}</version>
+      <version>${reporting-engine.version}</version>
     </dependency>
     <dependency>
       <groupId>org.pentaho.reporting.engine</groupId>
       <artifactId>legacy-functions</artifactId>
-      <version>${legacy-functions.version}</version>
+      <version>${reporting-engine.version}</version>
     </dependency>
     <dependency>
       <groupId>org.pentaho.reporting.engine</groupId>
       <artifactId>wizard-core</artifactId>
-      <version>${wizard-core.version}</version>
+      <version>${reporting-engine.version}</version>
     </dependency>
 
     <!-- Karaf Dependencies -->
@@ -1044,7 +1028,7 @@
                 <artifactItem>
                   <groupId>pentaho</groupId>
                   <artifactId>pentaho-application-launcher</artifactId>
-                  <version>${pentaho-application-launcher.version}</version>
+                  <version>${pentaho-launcher.version}</version>
                 </artifactItem>
               </artifactItems>
               <outputDirectory>${assembly.dir}/launcher</outputDirectory>
