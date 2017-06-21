@@ -69,7 +69,6 @@
     <dependency org="commons-logging" name="commons-logging" rev="1.1" conf="test->default" />
     <dependency org="commons-digester" name="commons-digester" rev="1.8" conf="test->default" />
     <dependency org="commons-lang" name="commons-lang" rev="2.4" conf="test->default" />
-    <dependency org="commons-httpclient" name="commons-httpclient" rev="3.0.1" conf="test->default" />
     <dependency org="ognl" name="ognl" rev="2.6.9" conf="test->default" />
 
     <dependency org="com.google.gwt" name="gwt-servlet"  rev="2.5.1"/>

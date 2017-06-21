@@ -22,25 +22,13 @@
 
 package org.pentaho.di.trans.steps.httppost;
 
-import static org.junit.Assert.assertEquals;
-import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
-
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.InputStream;
-import java.net.InetSocketAddress;
-import java.net.URLDecoder;
-import java.util.concurrent.atomic.AtomicBoolean;
-
-import org.apache.commons.httpclient.Header;
-import org.apache.commons.httpclient.HostConfiguration;
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.methods.PostMethod;
+import com.google.common.io.ByteStreams;
+import com.sun.net.httpserver.Headers;
+import com.sun.net.httpserver.HttpHandler;
+import com.sun.net.httpserver.HttpServer;
+import org.apache.http.Header;
+import org.apache.http.HttpResponse;
+import org.apache.http.message.BasicHeader;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -65,10 +53,16 @@ import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.steps.mock.StepMockHelper;
 
-import com.google.common.io.ByteStreams;
-import com.sun.net.httpserver.Headers;
-import com.sun.net.httpserver.HttpHandler;
-import com.sun.net.httpserver.HttpServer;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.InetSocketAddress;
+import java.net.URLDecoder;
+import java.util.concurrent.atomic.AtomicBoolean;
+
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.*;
 
 /**
  * User: Dzmitry Stsiapanau Date: 12/2/13 Time: 4:35 PM
@@ -78,10 +72,10 @@ public class HTTPPOSTIT {
 
     Object[] row = new Object[] { "anyData" };
     Object[] outputRow;
-    boolean  override;
+    boolean override;
 
     public HTTPPOSTHandler( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta,
-                      Trans trans, boolean override ) {
+                            Trans trans, boolean override ) {
       super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
       this.override = override;
     }
@@ -101,10 +95,8 @@ public class HTTPPOSTIT {
      * (synchronized) If distribute is true, a row is copied only once to the output rowsets, otherwise copies are sent
      * to each rowset!
      *
-     * @param row
-     *        The row to put to the destination rowset(s).
+     * @param row The row to put to the destination rowset(s).
      * @throws org.pentaho.di.core.exception.KettleStepException
-     *
      */
     @Override
     public void putRow( RowMetaInterface rowMeta, Object[] row ) throws KettleStepException {
@@ -115,36 +107,33 @@ public class HTTPPOSTIT {
       return outputRow;
     }
 
-
     @Override
-    protected int requestStatusCode( PostMethod post, HostConfiguration hostConfiguration, HttpClient httpPostClient )
-      throws IOException {
+    protected int requestStatusCode( HttpResponse httpResponse ) {
       if ( override ) {
         return 402;
       } else {
-        return super.requestStatusCode( post, hostConfiguration, httpPostClient );
+        return super.requestStatusCode( httpResponse );
       }
-
     }
 
     @Override
-    protected InputStreamReader openStream( String encoding, PostMethod post ) throws Exception {
+    protected InputStreamReader openStream( String encoding, HttpResponse httpResponse ) throws Exception {
       if ( override ) {
         InputStreamReader mockInputStreamReader = Mockito.mock( InputStreamReader.class );
         when( mockInputStreamReader.read() ).thenReturn( -1 );
         return mockInputStreamReader;
       } else {
-        return super.openStream( encoding, post );
+        return super.openStream( encoding, httpResponse );
       }
     }
 
     @Override
-    protected Header[] searchForHeaders( PostMethod post ) {
-      Header[] headers = { new Header( "host", host ) };
+    protected Header[] searchForHeaders( HttpResponse response ) {
+      Header[] headers = { new BasicHeader( "host", host ) };
       if ( override ) {
         return headers;
       } else {
-        return super.searchForHeaders( post );
+        return super.searchForHeaders( response );
       }
     }
   }
@@ -166,7 +155,7 @@ public class HTTPPOSTIT {
   public void setUp() throws Exception {
     stepMockHelper =
       new StepMockHelper<HTTPPOSTMeta, HTTPPOSTData>( "HTTPPOST CLIENT TEST",
-      HTTPPOSTMeta.class, HTTPPOSTData.class );
+        HTTPPOSTMeta.class, HTTPPOSTData.class );
     when( stepMockHelper.logChannelInterfaceFactory.create( any(), any( LoggingObjectInterface.class ) ) ).thenReturn(
       stepMockHelper.logChannelInterface );
     when( stepMockHelper.trans.isRunning() ).thenReturn( true );
@@ -259,7 +248,7 @@ public class HTTPPOSTIT {
     Object[] out = ( (HTTPPOSTHandler) HTTPPOST ).getOutputRow();
     Assert.assertTrue( out.length == 1 );
     JSONParser parser = new JSONParser();
-    JSONObject json = (JSONObject) parser.parse( (String) out[0] );
+    JSONObject json = (JSONObject) parser.parse( (String) out[ 0 ] );
     Object userAgent = json.get( "User-agent" );
     Assert.assertTrue( "HTTPTool/1.0".equals( userAgent ) );
     Object cookies = json.get( "Set-cookie" );
@@ -300,8 +289,10 @@ public class HTTPPOSTIT {
     when( inputRowMeta.getString( httpPost.row, 0 ) ).thenReturn( testString );
     when( stepMockHelper.processRowsStepMetaInterface.getUrl() ).thenReturn( HTTP_LOCALHOST_9998 );
     when( stepMockHelper.processRowsStepMetaInterface.getQueryField() ).thenReturn( new String[] {} );
-    when( stepMockHelper.processRowsStepMetaInterface.getArgumentField() ).thenReturn( new String[] { "testBodyField" } );
-    when( stepMockHelper.processRowsStepMetaInterface.getArgumentParameter() ).thenReturn( new String[] { "testBodyParam" } );
+    when( stepMockHelper.processRowsStepMetaInterface.getArgumentField() )
+      .thenReturn( new String[] { "testBodyField" } );
+    when( stepMockHelper.processRowsStepMetaInterface.getArgumentParameter() )
+      .thenReturn( new String[] { "testBodyParam" } );
     when( stepMockHelper.processRowsStepMetaInterface.getArgumentHeader() ).thenReturn( new boolean[] { false } );
     when( stepMockHelper.processRowsStepMetaInterface.getFieldName() ).thenReturn( "ResultFieldName" );
     when( stepMockHelper.processRowsStepMetaInterface.getEncoding() ).thenReturn( testCharset );
@@ -336,7 +327,8 @@ public class HTTPPOSTIT {
     };
   }
 
-  private HttpHandler getEncodingCheckingHandler( String expectedResultString, String expectedEncoding, AtomicBoolean testStatus ) {
+  private HttpHandler getEncodingCheckingHandler( String expectedResultString, String expectedEncoding,
+                                                  AtomicBoolean testStatus ) {
     return httpExchange -> {
       try {
         checkEncoding( expectedResultString, expectedEncoding, httpExchange.getRequestBody() );
