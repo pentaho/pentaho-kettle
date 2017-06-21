@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -382,6 +382,7 @@ public class JobEntrySFTP extends JobEntryBase implements Cloneable, JobEntryInt
   /**
    * @deprecated use {@link #setCreateTargetFolder(boolean)} instead
    */
+  @Deprecated
   public void setcreateTargetFolder( boolean createtargetfolder ) {
     this.createtargetfolder = createtargetfolder;
   }

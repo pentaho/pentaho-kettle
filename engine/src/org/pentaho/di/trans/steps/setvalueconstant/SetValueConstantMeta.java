@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -141,6 +141,7 @@ public class SetValueConstantMeta extends BaseStepMeta implements StepMetaInterf
    * @deprecated use {@link #isEmptyString()} instead
    * @return the setEmptyString
    */
+  @Deprecated
   public boolean[] isSetEmptyString() {
     return isEmptyString();
   }

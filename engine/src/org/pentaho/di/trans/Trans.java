@@ -1684,7 +1684,10 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
   /**
    * Attempts to stops all running steps and subtransformations. If all steps have finished, the transformation is
    * marked as Finished.
+   *
+   * @deprecated Deprecated as of 8.0. Seems unused; will be to remove in 8.1 (ccaspanello)
    */
+  @Deprecated
   public void killAll() {
     if ( steps == null ) {
       return;

@@ -41,6 +41,14 @@ card .card {
   padding: 20px;
   outline: 0 none;
   float: left;
+  -webkit-user-select: none; /* webkit (safari, chrome) browsers */
+  -moz-user-select: none; /* mozilla browsers */
+  -ms-user-select: none; /* IE10+ */
+  user-select: none; /* Fallback */
+}
+
+card .card:last-child {
+  margin-bottom: 20px;
 }
 
 card .card:hover {
@@ -51,8 +59,8 @@ card .card:hover {
 card .card.selected,
 card .card.selected .cardDate {
   color: #FFF;
-  background-color: #005DA6;
-  border: 1px solid #005DA6;
+  background-color: #0F2B5B;
+  border: 1px solid #0F2B5B;
 }
 
 card .cardMiddle {

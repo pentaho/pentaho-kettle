@@ -124,8 +124,11 @@ public class TextFileOutputMeta extends BaseStepMeta implements StepMetaInterfac
   @Injection( name = "FOOTER" )
   private boolean footerEnabled;
 
-  /** The file format: DOS or Unix */
-  @Injection( name = "FORMAT" )
+  /**
+   * The file format: DOS or Unix
+   * It could be injected using the key "FORMAT"
+   * see the setter {@link TextFileOutputMeta#setFileFormat(java.lang.String)}.
+   */
   private String fileFormat;
 
   /** The file compression: None, Zip or Gzip */
@@ -362,8 +365,10 @@ public class TextFileOutputMeta extends BaseStepMeta implements StepMetaInterfac
    * @param fileFormat
    *          The fileFormat to set.
    */
+  @Injection( name = "FORMAT" )
   public void setFileFormat( String fileFormat ) {
     this.fileFormat = fileFormat;
+    this.newline = getNewLine( fileFormat );
   }
 
   /**

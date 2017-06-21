@@ -21,6 +21,13 @@
  */
 
 /* FILES */
+files .filesWrapper {
+  width: 100%;
+  min-width: 630px;
+  overflow-y: hidden;
+  overflow-x: auto;
+}
+
 files table {
   width: 100%;
   height: 100%;
@@ -28,129 +35,180 @@ files table {
   table-layout: fixed;
   border-collapse: collapse;
   border-spacing: 0;
+  margin: 0;
 }
 
-files thead, tbody {
+files .headerWrapper {
+  width: 100%;
+  overflow: hidden;
+  padding: 0;
+  margin: 0;
+  border: 0;
+  height: 31px;
+}
+
+files .bodyWrapper {
+  width: 100%;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 0;
+  margin: 0;
+  border: 0;
+  height: 100%;
+  max-height: 261px;
+}
+
+.open files .bodyWrapper {
+  max-height: 337px;
+}
+
+files .headerWrapper table {
+  background-color: #FAFAFA;
+  text-align: left;
+  line-height: 29px;
+}
+
+files thead,
+files tbody {
   width: 100%;
 }
 
-files .fileTable tbody {
-  overflow: auto;
-  height: 262px;
-}
-
-files .open .fileTable tbody {
-  height: 338px;
-}
-
-files .fileTable tbody tr {
+files tbody tr {
   cursor: pointer;
 }
 
-files .fileTable th:first-child,
-files .fileTable td:first-child {
-  width: 50%;
+files .typeCell {
+  width: 105px;
 }
 
-files .fileTable th,
-files .fileTable td {
+files .dateCell {
+  width: 125px;
+}
+
+.save files .scrollTableSave th.dateCell,
+.open files .scrollTableOpen th.dateCell {
+  width: 142px;
+}
+
+files th,
+files td {
   text-align: left;
   line-height: 18px;
   padding: 6px 10px;
   white-space: nowrap;
-  width: 25%;
+  user-select: none;
+  -webkit-user-select: none; /* webkit (safari, chrome) browsers */
+  -moz-user-select: none; /* mozilla browsers */
+  -ms-user-select: none; /* IE10+ */
 }
 
-files .fileTable th {
+files td {
+  border-left: 1px solid transparent;
+}
+
+files td.editing {
+  padding-top: 0;
+  padding-bottom: 0;
+}
+
+files th {
   border-bottom: 1px solid #CCC;
   border-left: 1px solid #CCC;
   background: #FAFAFA;
   font-weight: normal;
 }
 
-files .fileTable th:first-child {
+files th:first-child {
   border-left: 0 none;
 }
 
-files .fileTable tr.selected td,
-files .fileTable tr.selected:hover td {
-  background-color: #005DA6;
+files tbody tr.selected td,
+files tbody tr.selected:hover td {
+  background-color: #0F2B5B;
   color: #FFFFFF;
 }
 
-files .fileTable tr:hover td {
+files tbody tr:hover td {
   background-color: #E6EFF6;
 }
 
-files .fileTable tbody td div {
+files tbody td div {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
-files .fileTable tr .fileName {
+files tbody td input {
+  font-size: 14px;
+  width: 100%;
+}
+
+files tr .fileName {
   padding-left: 10px;
 }
 
-files .fileTable tr .fileTypeIcon {
+files tr .fileTypeIcon {
   height: 16px;
   width: 16px;
   float: left;
 }
 
-files .fileTable tr .fileTypeIcon.file-trans {
+files td.editing .fileTypeIcon {
+  margin-top: 3px;
+}
+
+files tr .fileTypeIcon.file-trans {
   background: url("../../images/trans_small.svg") no-repeat left center;
 }
 
-files .fileTable tr .fileTypeIcon.file-job {
+files tr .fileTypeIcon.file-job {
   background: url("../../images/job_small.svg") no-repeat left center;
 }
 
-files .fileTable tr .fileTypeIcon.file-folder {
+files tr .fileTypeIcon.file-folder {
   background: url("../../images/folder.svg") no-repeat left center;
 }
 
-files .fileTable tr.selected .fileTypeIcon {
+files tr.selected .fileTypeIcon {
   background-position: right center;
 }
 
-files .fileTable .nameHeader {
+files .headerLabel {
   float: left;
 }
 
-files .fileTable .fileLocation {
+files .fileLocation {
   display: none;
 }
 
-files .fileTable.searchTable .fileLocation {
+files .searchTable .fileLocation {
   display: block;
 }
 
-files .fileTable.searchTable tbody tr {
+files .searchTable tr {
   line-height: 60px;
   height: 60px;
 }
 
-files .fileTable.searchTable .fileName {
+files .searchTable .fileName {
   margin-bottom: 10px;
 }
 
-files .fileTable.searchTable .fileType span,
-files .fileTable.searchTable .fileLastSaved span {
-  vertical-align: top;
+files .fileType::first-letter {
+  text-transform: capitalize;
 }
 
-files .fileTable.searchTable .fileType,
-files .fileTable.searchTable .fileLastSaved {
+files .searchTable .fileType,
+files .searchTable .fileLastSaved {
   height: 44px;
 }
 
-files .fileTable tr .fileLocation {
+files tr .fileLocation {
   color: #999;
   padding-left: 26px;
 }
 
-files .fileTable tr.selected .fileLocation {
+files tr.selected .fileLocation {
   color: #FFF;
 }
 
@@ -178,4 +236,11 @@ files .sortWrapper .sort.sortUp {
 files .sortWrapper .sort.sortDown {
   background-image: url("../../images/sort_down.svg");
   visibility: visible;
+}
+
+files .fileAreaMessageView {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -100%);
 }

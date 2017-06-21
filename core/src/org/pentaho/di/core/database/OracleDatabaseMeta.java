@@ -291,11 +291,6 @@ public class OracleDatabaseMeta extends BaseDatabaseMeta implements DatabaseInte
     return "ALTER TABLE " + tablename + " DROP ( " + v.getName() + " ) " + Const.CR;
   }
 
-  @Override
-  public boolean supportsTimestampDataType() {
-    return true;
-  }
-
   /**
    * Generates the SQL statement to modify a column in the specified table
    *
@@ -660,5 +655,10 @@ public class OracleDatabaseMeta extends BaseDatabaseMeta implements DatabaseInte
   public String getDropTableIfExistsStatement( String tableName ) {
     return "BEGIN EXECUTE IMMEDIATE 'DROP TABLE " + tableName
       + "'; EXCEPTION WHEN OTHERS THEN IF SQLCODE != -942 THEN RAISE; END IF; END;";
+  }
+
+  @Override
+  public SqlScriptParser createSqlScriptParser() {
+    return new SqlScriptParser( false );
   }
 }

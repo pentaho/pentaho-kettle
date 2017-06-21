@@ -78,16 +78,16 @@
     <dependency org="org.pentaho.kettle.plugins" name="kettle-drools5-plugin" rev="${project.revision}" changing="true" conf="plugins->default" transitive="false">
       <artifact name="kettle-drools5-plugin" type="zip"/>
     </dependency>
-    <dependency org="${ivy.artifact.group}" name="kettle-gpload-plugin" rev="${project.revision}" changing="true" conf="plugins->default">
+    <dependency org="org.pentaho.kettle.plugins" name="kettle-gpload-plugin" rev="${project.revision}" changing="true" conf="plugins->default" transitive="false">
         <artifact name="kettle-gpload-plugin" type="zip"/>
     </dependency>
     <dependency org="org.pentaho.kettle.plugins" name="kettle-hl7-plugin" rev="${project.revision}" changing="true" conf="plugins->default">
         <artifact name="kettle-hl7-plugin" type="zip"/>
     </dependency>
-    <dependency org="${ivy.artifact.group}" name="kettle-openerp-plugin" rev="${project.revision}" changing="true" conf="plugins->default">
+    <dependency org="org.pentaho.kettle.plugins" name="kettle-openerp-plugin" rev="${project.revision}" changing="true" conf="plugins->default" transitive="false">
         <artifact name="kettle-openerp-plugin" type="zip"/>
     </dependency>
-    <dependency org="${ivy.artifact.group}" name="kettle-palo-plugin" rev="${project.revision}" changing="true" conf="plugins->default">
+    <dependency org="org.pentaho.kettle.plugins" name="kettle-palo-plugin" rev="${project.revision}" changing="true" conf="plugins->default" transitive="false">
         <artifact name="kettle-palo-plugin" type="zip"/>
     </dependency>
     <dependency org="${ivy.artifact.group}" name="kettle5-log4j-plugin" rev="${project.revision}" changing="true" conf="plugins->default">
@@ -114,7 +114,7 @@
     <dependency org="${ivy.artifact.group}" name="kettle-xml-plugin" rev="${project.revision}" changing="true" conf="plugins->default">
         <artifact name="kettle-xml-plugin" type="zip"/>
     </dependency>
-    <dependency org="${ivy.artifact.group}" name="kettle-json-plugin" rev="${project.revision}" changing="true" conf="plugins->default">
+    <dependency org="org.pentaho.kettle.plugins" name="kettle-json-plugin" rev="${project.revision}" changing="true" conf="plugins->default">
         <artifact name="kettle-json-plugin" type="zip"/>
     </dependency>
     <dependency org="org.pentaho.kettle.plugins" name="kettle-sap-plugin" rev="${project.revision}" changing="true" conf="plugins->default" transitive="false">
@@ -169,6 +169,7 @@
       <exclude name="javax.mail" module="mail"/>
       <exclude org="org.apache.axis2" module="axis2-kernel" />
       <exclude org="org.scannotation" module="scannotation" />
+      <exclude org="org.codehaus.woodstox" module="wstx-asl" />
     </dependency>
     <dependency org="${dependency.reporting-engine.group}" name="classic-extensions-drill-down" rev="${dependency.pentaho-reporting.revision}" changing="true"/>
     <dependency org="${dependency.reporting-engine.group}" name="classic-extensions-kettle" rev="${dependency.pentaho-reporting.revision}" changing="true">

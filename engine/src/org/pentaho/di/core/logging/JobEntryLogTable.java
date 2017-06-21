@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -33,8 +33,8 @@ import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.gui.JobTracker;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaBase;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
@@ -302,7 +302,7 @@ public class JobEntryLogTable extends BaseLogTable implements Cloneable, LogTabl
     if ( keyField.isEnabled() ) {
       RowMetaInterface batchIndex = new RowMeta();
 
-      ValueMetaInterface keyMeta = new ValueMeta( keyField.getFieldName(), keyField.getDataType() );
+      ValueMetaInterface keyMeta = new ValueMetaBase( keyField.getFieldName(), keyField.getDataType() );
       keyMeta.setLength( keyField.getLength() );
       batchIndex.addValueMeta( keyMeta );
 

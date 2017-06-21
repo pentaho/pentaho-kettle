@@ -26,8 +26,14 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.pentaho.di.core.Result;
+import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.logging.KettleLogStore;
+import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.job.Job;
+
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+import java.util.ArrayList;
 
 import static org.mockito.Mockito.*;
 
@@ -74,6 +80,7 @@ public class JobEntryCopyFilesTest {
 
     verify( entry ).processFileFolder( anyString(), anyString(),
         anyString(), any( Job.class ), any( Result.class ) );
+    verify( entry, atLeast( 1 ) ).preprocessfilefilder( any( String[].class ) );
     assertFalse( result.getResult() );
     assertEquals( 1, result.getNrErrors() );
   }
@@ -93,5 +100,34 @@ public class JobEntryCopyFilesTest {
         anyString(), any( Job.class ), any( Result.class ) );
     assertFalse( result.getResult() );
     assertEquals( 3, result.getNrErrors() );
+  }
+
+  @Test
+  public void saveLoad() throws Exception {
+    String[] srcPath = new String[] { "EMPTY_SOURCE_URL-0-" };
+    String[] destPath = new String[] { "EMPTY_DEST_URL-0-" };
+
+    entry.source_filefolder = srcPath;
+    entry.destination_filefolder = destPath;
+    entry.wildcard = new String[] { EMPTY };
+
+    String xml = "<entry>" + entry.getXML() + "</entry>";
+    assertTrue( xml.contains( srcPath[0] ) );
+    assertTrue( xml.contains( destPath[0] ) );
+    JobEntryCopyFiles loadedentry = new JobEntryCopyFiles();
+    InputStream is = new ByteArrayInputStream( xml.getBytes() );
+    loadedentry.loadXML( XMLHandler.getSubNode(
+      XMLHandler.loadXMLFile( is,
+        null,
+        false,
+        false ),
+      "entry" ),
+      new ArrayList<DatabaseMeta>(),
+      null,
+      null,
+      null );
+    assertTrue( loadedentry.destination_filefolder[0].equals( destPath[0] ) );
+    assertTrue( loadedentry.source_filefolder[0].equals( srcPath[0] ) );
+
   }
 }

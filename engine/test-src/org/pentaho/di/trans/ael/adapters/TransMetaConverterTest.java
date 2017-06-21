@@ -24,12 +24,21 @@
 
 package org.pentaho.di.trans.ael.adapters;
 
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Spy;
+import org.mockito.invocation.InvocationOnMock;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.stubbing.Answer;
+import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.exception.KettleMissingPluginsException;
+import org.pentaho.di.core.exception.KettleXMLException;
+import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.engine.api.model.Hop;
 import org.pentaho.di.engine.api.model.Operation;
 import org.pentaho.di.engine.api.model.Transformation;
@@ -37,14 +46,23 @@ import org.pentaho.di.trans.TransHopMeta;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
+import org.pentaho.di.trans.steps.csvinput.CsvInputMeta;
 import org.pentaho.di.trans.steps.dummytrans.DummyTransMeta;
+import org.pentaho.di.trans.steps.tableinput.TableInputMeta;
+import org.w3c.dom.Document;
+import org.w3c.dom.Node;
 
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-
-import static org.hamcrest.CoreMatchers.*;
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.everyItem;
+import static org.hamcrest.CoreMatchers.hasItems;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.startsWith;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @RunWith ( MockitoJUnitRunner.class )
@@ -194,7 +212,31 @@ public class TransMetaConverterTest {
     List<String> hops = transformation.getHops().stream().map( hop -> hop.getId() ).collect( Collectors.toList() );
     assertThat( "Only 1 hop should exist", hops.size(), is( 1 ) );
     assertThat( hops, hasItems( "InputToStay -> InputReceiver1" ) );
+  }
 
+  @Test
+  public void testMultipleDisabledHops() {
+    TransMeta trans = new TransMeta();
+    StepMeta input = new StepMeta( "Input", stepMetaInterface );
+    trans.addStep( input );
+    StepMeta step1 = new StepMeta( "Step1", stepMetaInterface );
+    trans.addStep( step1 );
+    StepMeta step2 = new StepMeta( "Step2", stepMetaInterface );
+    trans.addStep( step2 );
+    StepMeta step3 = new StepMeta( "Step3", stepMetaInterface );
+    trans.addStep( step3 );
+
+    TransHopMeta hop1 = new TransHopMeta( input, step1, false );
+    TransHopMeta hop2 = new TransHopMeta( step1, step2, false );
+    TransHopMeta hop3 = new TransHopMeta( step2, step3, false );
+    trans.addTransHop( hop1 );
+    trans.addTransHop( hop2 );
+    trans.addTransHop( hop3 );
+
+    Transformation transformation = TransMetaConverter.convert( trans );
+    assertThat( "Trans has steps though all of them should be removed", transformation.getOperations().size(),
+        is( 0 ) );
+    assertThat( "Trans has hops though all of them should be removed", transformation.getHops().size(), is( 0 ) );
   }
 
   @Test
@@ -229,5 +271,73 @@ public class TransMetaConverterTest {
         .collect( Collectors.toList() ),
       everyItem( equalTo( "step1" ) )
     );
+  }
+
+  @Test
+  public void lazyConversionTurnedOff() throws KettleException {
+    KettleEnvironment.init();
+
+    TransMeta transMeta = new TransMeta();
+
+    CsvInputMeta csvInputMeta = new CsvInputMeta();
+    csvInputMeta.setLazyConversionActive( true );
+    StepMeta csvInput = new StepMeta( "Csv", csvInputMeta );
+    transMeta.addStep( csvInput );
+
+    TableInputMeta tableInputMeta = new TableInputMeta();
+    tableInputMeta.setLazyConversionActive( true );
+    StepMeta tableInput = new StepMeta( "Table", tableInputMeta );
+    transMeta.addStep( tableInput );
+
+    Transformation trans = TransMetaConverter.convert( transMeta );
+
+    TransMeta cloneMeta;
+
+    String transMetaXml = (String) trans.getConfig().get( TransMetaConverter.TRANS_META_CONF_KEY );
+    Document doc;
+    try {
+      doc = XMLHandler.loadXMLString( transMetaXml );
+      Node stepNode = XMLHandler.getSubNode( doc, "transformation" );
+      cloneMeta = new TransMeta( stepNode, null );
+    } catch ( KettleXMLException | KettleMissingPluginsException e ) {
+      throw new RuntimeException( e );
+    }
+
+    assertThat( ( (CsvInputMeta) cloneMeta.findStep( "Csv" ).getStepMetaInterface() ).isLazyConversionActive(),
+        is( false ) );
+    assertThat( ( (TableInputMeta) cloneMeta.findStep( "Table" ).getStepMetaInterface() ).isLazyConversionActive(),
+        is( false ) );
+  }
+
+  @Test
+  public void testClonesTransMeta() throws KettleException {
+    class ResultCaptor implements Answer<Object> {
+      private Object result;
+
+      public Object getResult() {
+        return result;
+      }
+
+      @Override public java.lang.Object answer( InvocationOnMock invocationOnMock ) throws Throwable {
+        result = invocationOnMock.callRealMethod();
+        return result;
+      }
+    }
+
+    TransMeta originalTransMeta = spy( new TransMeta() );
+
+    ResultCaptor cloneTransMetaCaptor = new ResultCaptor();
+    doAnswer( cloneTransMetaCaptor ).when( originalTransMeta ).realClone( eq( false ) );
+
+    originalTransMeta.setName( "TransName" );
+
+    TransMetaConverter.convert( originalTransMeta );
+
+    TransMeta cloneTransMeta = (TransMeta) cloneTransMetaCaptor.getResult();
+
+    verify( originalTransMeta ).realClone( eq( false ) );
+    assertThat( cloneTransMeta.getName(), is( originalTransMeta.getName() ) );
+    verify( originalTransMeta, never() ).getXML();
+    verify( cloneTransMeta ).getXML();
   }
 }

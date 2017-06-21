@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -21,6 +21,8 @@
  ******************************************************************************/
 
 package org.pentaho.di.trans.steps.numberrange;
+
+import java.util.Objects;
 
 /**
  * Contains one rule for a number range
@@ -85,5 +87,10 @@ public class NumberRangeRule {
       return getLowerBound() == target.getLowerBound()
         && getUpperBound() == target.getUpperBound() && getValue().equals( target.getValue() );
     }
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash( lowerBound, upperBound, value );
   }
 }

@@ -3744,6 +3744,10 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
     sashForm.setWeights( new int[] { 60, 40, } );
   }
 
+  /**
+   * @deprecated Deprecated as of 8.0. Seems unused; will be to remove in 8.1 (ccaspanello)
+   */
+  @Deprecated
   public void checkErrors() {
     if ( trans != null ) {
       if ( !trans.isFinished() ) {

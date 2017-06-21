@@ -2,12 +2,21 @@
   Classes for main div
      1. cardTrans:  Transformation
      2. cardJob:    Job
+     3. selected:   User selected this card
 -->
-<div class="card cardTrans" title="trans1&#013;Home/Stuff/Folder/transformation 1">
+<div class="card"
+     ng-repeat="file in vm.recentFiles"
+     ng-hide="file.inResult===false"
+     ng-click="vm.selectFile(file)"
+     ng-dblclick="vm.onClick({file: file})"
+     title="{{file.name}}&#013;{{file.path}}"
+     ng-class="{cardTrans: file.type==='transformation',
+                cardJob: file.type==='job',
+                selected: vm.selectedFile === file}">
   <div class="cardMiddle">
     <div class="cardTitleAndDate">
-      <div class="cardTitle">trans 341</div>
-      <div class="cardDate">12/28/16 3:50 PM</div>
+      <div class="cardTitle">{{file.name}}</div>
+      <div class="cardDate">{{file.date | date: 'MM/dd/yy hh:mm a'}}</div>
     </div>
     <div class="cardTypeIcon"></div>
   </div>

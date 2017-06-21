@@ -1838,11 +1838,19 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     }
   }
 
-  public void lastFileSelect( String id ) {
+  public void lastRepoFileSelect( String repo, String id ) {
+    int idx = Integer.parseInt( id );
+    List<LastUsedFile> lastUsedFiles = props.getLastUsedRepoFiles().getOrDefault( repo, Collections.emptyList() );
+    lastFileSelect( lastUsedFiles.get( idx ) );
+  }
 
+  public void lastFileSelect( String id ) {
     int idx = Integer.parseInt( id );
     List<LastUsedFile> lastUsedFiles = props.getLastUsedFiles();
-    final LastUsedFile lastUsedFile = lastUsedFiles.get( idx );
+    lastFileSelect( lastUsedFiles.get( idx ) );
+  }
+
+  public void lastFileSelect( final LastUsedFile lastUsedFile ) {
 
     // If the file comes from a repository and it's not the same as
     // the one we're connected to, ask for a username/password!
@@ -4065,7 +4073,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     }
   }
 
-  private void loadObjectFromRepository(
+  public void loadObjectFromRepository(
       ObjectId objectId, RepositoryObjectType objectType, String revision ) throws Exception {
     // Try to open the selected transformation.
     if ( objectType.equals( RepositoryObjectType.TRANSFORMATION ) ) {
@@ -4276,6 +4284,11 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
           openFile( filename, importfile );
         }
       } else {
+//        try {
+//          ExtensionPointHandler.callExtensionPoint( log, KettleExtensionPoint.SpoonOpenRepository.id, null );
+//        } catch ( KettleException ke ) {
+//          // Ignore
+//        }
         SelectObjectDialog sod = new SelectObjectDialog( shell, rep );
         if ( sod.open() != null ) {
           RepositoryObjectType type = sod.getObjectType();
@@ -5118,6 +5131,10 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
   }
 
   public boolean saveToRepository( EngineMetaInterface meta, boolean ask_name ) throws KettleException {
+    return saveToRepository( meta, ask_name, true );
+  }
+
+  public boolean saveToRepository( EngineMetaInterface meta, boolean ask_name, boolean showProperties ) throws KettleException {
 
     // Verify repository security first...
     //
@@ -5156,11 +5173,13 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
           mb.open();
         }
         ask = false;
-        if ( meta instanceof TransMeta ) {
-          answer = TransGraph.editProperties( (TransMeta) meta, this, rep, false );
-        }
-        if ( meta instanceof JobMeta ) {
-          answer = JobGraph.editProperties( (JobMeta) meta, this, rep, false );
+        if ( showProperties ) {
+          if ( meta instanceof TransMeta ) {
+            answer = TransGraph.editProperties( (TransMeta) meta, this, rep, false );
+          }
+          if ( meta instanceof JobMeta ) {
+            answer = JobGraph.editProperties( (JobMeta) meta, this, rep, false );
+          }
         }
       }
 

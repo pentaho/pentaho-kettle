@@ -95,6 +95,10 @@ public class TransEngineAdapter extends Trans {
     throw new UnsupportedOperationException( "Not yet implemented" );
   }
 
+  @Override public void stopAll() {
+    executionContext.stopTransformation();
+  }
+
   @Override public void prepareExecution( String[] arguments ) throws KettleException {
     activateParameters();
     transMeta.activateParameters();

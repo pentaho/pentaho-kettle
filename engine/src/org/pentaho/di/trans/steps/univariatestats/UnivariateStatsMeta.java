@@ -1,8 +1,9 @@
 /*! ******************************************************************************
  *
+
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -23,6 +24,7 @@
 package org.pentaho.di.trans.steps.univariatestats;
 
 import java.text.NumberFormat;
+import java.util.Arrays;
 import java.util.List;
 
 import org.pentaho.di.core.CheckResult;
@@ -160,6 +162,11 @@ public class UnivariateStatsMeta extends BaseStepMeta implements StepMetaInterfa
     }
 
     return false;
+  }
+
+  @Override
+  public int hashCode() {
+    return Arrays.hashCode( m_stats );
   }
 
   /**

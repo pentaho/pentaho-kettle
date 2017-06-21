@@ -64,4 +64,6 @@ public interface ExecutionContext extends SubscriptionManager {
   void setLoggingLogLevel( LogLevel logLevel );
 
   LogLevel getLoggingLogLevel();
+
+  void stopTransformation();
 }

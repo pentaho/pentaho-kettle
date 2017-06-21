@@ -28,11 +28,13 @@ import org.pentaho.di.job.entry.validator.AndValidator;
 import org.pentaho.di.job.entry.validator.JobEntryValidatorUtils;
 
 import java.io.IOException;
-import java.util.HashMap;
+
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
+import java.util.ArrayList;
 import java.util.Map;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -42,7 +44,6 @@ import org.apache.commons.vfs2.FileSelectInfo;
 import org.apache.commons.vfs2.FileSelector;
 import org.apache.commons.vfs2.FileSystemException;
 import org.apache.commons.vfs2.FileType;
-import org.apache.commons.vfs2.provider.url.UrlFileNameParser;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
@@ -88,6 +89,9 @@ public class JobEntryCopyFiles extends JobEntryBase implements Cloneable, JobEnt
 
   public static final String STATIC_SOURCE_FILE = "STATIC-SOURCE-FILE-";
   public static final String STATIC_DEST_FILE = "STATIC-DEST-FILE-";
+
+  public static final String DEST_URL = "EMPTY_DEST_URL-";
+  public static final String SOURCE_URL = "EMPTY_SOURCE_URL-";
 
   public boolean copy_empty_folders;
   public boolean arg_from_previous;
@@ -311,6 +315,15 @@ public class JobEntryCopyFiles extends JobEntryBase implements Cloneable, JobEnt
     }
   }
 
+  String[] preprocessfilefilder( String[] folders ) {
+    List<String> nfolders = new ArrayList<String>();
+    for ( int i = 0; i < folders.length; i++  ) {
+      nfolders.add( folders[i].replace( JobEntryCopyFiles.SOURCE_URL + i + "-", "" )
+        .replace( JobEntryCopyFiles.DEST_URL + i + "-", "" ) );
+    }
+    return nfolders.toArray( new String[ nfolders.size() ] );
+  }
+
   public Result execute( Result previousResult, int nr ) throws KettleException {
     Result result = previousResult;
 
@@ -327,8 +340,8 @@ public class JobEntryCopyFiles extends JobEntryBase implements Cloneable, JobEnt
 
     try {
       // Get source and destination files, also wildcard
-      String[] vsourcefilefolder = source_filefolder;
-      String[] vdestinationfilefolder = destination_filefolder;
+      String[] vsourcefilefolder = preprocessfilefilder( source_filefolder );
+      String[] vdestinationfilefolder = preprocessfilefilder( destination_filefolder );
       String[] vwildcard = wildcard;
 
       result.setResult( false );
@@ -721,7 +734,6 @@ public class JobEntryCopyFiles extends JobEntryBase implements Cloneable, JobEnt
     /**********************************************************
      *
      * @param selectedfile
-     * @param sourceWildcard
      * @return True if the selectedfile matches the wildcard
      **********************************************************/
     private boolean GetFileWildcard( String selectedfile ) {
@@ -1132,7 +1144,7 @@ public class JobEntryCopyFiles extends JobEntryBase implements Cloneable, JobEnt
     return true;
   }
 
-  public String loadURL( String url, String ncName, IMetaStore metastore, Map mappings ) {
+  public String loadURL( String url, String ncName, IMetaStore metastore, Map<String, String> mappings ) {
     if ( !Utils.isEmpty( ncName ) && !Utils.isEmpty( url ) ) {
       mappings.put( url, ncName );
     }
@@ -1151,8 +1163,7 @@ public class JobEntryCopyFiles extends JobEntryBase implements Cloneable, JobEnt
     String path = null;
     try {
       String noVariablesURL = incomingURL.replaceAll( "[${}]", "/" );
-      UrlFileNameParser parser = new UrlFileNameParser();
-      FileName fileName = parser.parseUri( null, null, noVariablesURL );
+      FileName fileName = KettleVFS.getInstance().getFileSystemManager().resolveURI( noVariablesURL );
       String root = fileName.getRootURI();
       path = incomingURL.substring( root.length() - 1 );
     } catch ( FileSystemException e ) {

@@ -450,5 +450,17 @@
     <default-value>false</default-value>
   </kettle-variable>
 
+  <kettle-variable>
+    <description>A variable in ms to configure timeout inner http client data refinery plugin.</description>
+    <variable>KETTLE_DATA_REFINERY_HTTP_CLIENT_TIMEOUT</variable>
+    <default-value>2000</default-value>
+  </kettle-variable>
+
+  <kettle-variable>
+    <description>Set this variable to true to use a gateway for connecting to a Hadoop cluster.</description>
+    <variable>KETTLE_HADOOP_CLUSTER_GATEWAY_CONNECTION</variable>
+    <default-value>false</default-value>
+  </kettle-variable>
+
 </kettle-variables>
 

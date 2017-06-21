@@ -39,6 +39,8 @@ import org.pentaho.di.engine.api.model.Transformation;
 import org.pentaho.di.trans.TransHopMeta;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.StepMeta;
+import org.pentaho.di.trans.steps.csvinput.CsvInputMeta;
+import org.pentaho.di.trans.steps.tableinput.TableInputMeta;
 
 public class TransMetaConverter {
 
@@ -52,7 +54,12 @@ public class TransMetaConverter {
     final org.pentaho.di.engine.model.Transformation transformation =
       new org.pentaho.di.engine.model.Transformation( createTransformationId( transMeta ) );
     try {
-      TransMeta copyTransMeta = cleanupDisabledHops( transMeta );
+      TransMeta copyTransMeta = (TransMeta) transMeta.realClone( false );
+
+      cleanupDisabledHops( copyTransMeta );
+
+      // Turn off lazy conversion for AEL for now
+      disableLazyConversion( copyTransMeta );
 
       copyTransMeta.getSteps().forEach( createOperation( transformation ) );
       findHops( copyTransMeta, hop -> true ).forEach( createHop( transformation ) );
@@ -64,6 +71,13 @@ public class TransMetaConverter {
       Throwables.propagate( e );
     }
     return transformation;
+  }
+
+  private static void disableLazyConversion( TransMeta transMeta ) {
+    transMeta.getSteps().stream().filter( step -> "CsvInput".equals( step.getStepID() ) )
+        .forEach( step -> ( (CsvInputMeta) step.getStepMetaInterface() ).setLazyConversionActive( false ) );
+    transMeta.getSteps().stream().filter( step -> "TableInput".equals( step.getStepID() ) )
+        .forEach( step -> ( (TableInputMeta) step.getStepMetaInterface() ).setLazyConversionActive( false ) );
   }
 
   private static String createTransformationId( TransMeta transMeta ) {
@@ -107,20 +121,14 @@ public class TransMetaConverter {
   }
 
   /**
-   * Removes disabled hops, unreachable steps and unused inputs. Doesn't change input transMeta object, operates
-   * on it's clone.
+   * Removes disabled hops, unreachable steps and unused inputs.
    *
    * @param transMeta transMeta to process
    * @return processed clone of input transMeta
    */
-  private static TransMeta cleanupDisabledHops( TransMeta transMeta ) {
-    TransMeta copyTransMeta = (TransMeta) transMeta.clone();
-
-    removeDisabledInputs( copyTransMeta );
-
-    removeInactivePaths( copyTransMeta, null );
-
-    return copyTransMeta;
+  private static void cleanupDisabledHops( TransMeta transMeta ) {
+    removeDisabledInputs( transMeta );
+    removeInactivePaths( transMeta, null );
   }
 
   /**
@@ -146,7 +154,8 @@ public class TransMetaConverter {
             && !hop.isEnabled() );
 
         if ( enabledInHops.size() == 0 ) {
-          List<StepMeta> nextSteps = trans.findNextSteps( step );
+          List<StepMeta> nextSteps = findHops( trans, hop -> hop.getFromStep().equals( step ) ).stream().map(
+              TransHopMeta::getToStep ).collect( Collectors.toList() );
           findHops( trans, hop -> hop.getToStep().equals( step ) || hop.getFromStep().equals( step ) )
               .forEach( trans::removeTransHop );
           trans.getSteps().remove( step );
