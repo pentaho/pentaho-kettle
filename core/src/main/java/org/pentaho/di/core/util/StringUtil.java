@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -79,7 +79,7 @@ public class StringUtil {
 
     "user.name", "user.home", "user.dir", "user.country", "user.language", "user.timezone",
 
-    "org.apache.commons.logging.Log", "org.apache.commons.logging.simplelog.log.org.apache.commons.httpclient",
+    "org.apache.commons.logging.Log", "org.apache.commons.logging.simplelog.log.org.apache.http",
     "org.apache.commons.logging.simplelog.showdatetime", "org.eclipse.swt.browser.XULRunnerInitialized",
     "org.eclipse.swt.browser.XULRunnerPath",
 
