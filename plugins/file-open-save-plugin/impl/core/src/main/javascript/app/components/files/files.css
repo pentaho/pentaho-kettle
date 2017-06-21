@@ -21,6 +21,13 @@
  */
 
 /* FILES */
+files .filesWrapper {
+  width: 100%;
+  min-width: 630px;
+  overflow-y: hidden;
+  overflow-x: auto;
+}
+
 files table {
   width: 100%;
   height: 100%;
@@ -70,9 +77,17 @@ files tbody tr {
   cursor: pointer;
 }
 
-files th:first-child,
-files td:first-child {
-  width: 50%;
+files .typeCell {
+  width: 105px;
+}
+
+files .dateCell {
+  width: 125px;
+}
+
+.save files .scrollTableSave th.dateCell,
+.open files .scrollTableOpen th.dateCell {
+  width: 142px;
 }
 
 files th,
@@ -81,10 +96,9 @@ files td {
   line-height: 18px;
   padding: 6px 10px;
   white-space: nowrap;
-  width: 25%;
+  user-select: none;
   -webkit-user-select: none; /* webkit (safari, chrome) browsers */
   -moz-user-select: none; /* mozilla browsers */
-  -khtml-user-select: none; /* webkit (konqueror) browsers */
   -ms-user-select: none; /* IE10+ */
 }
 
@@ -116,24 +130,6 @@ files tbody tr.selected:hover td {
 
 files tbody tr:hover td {
   background-color: #E6EFF6;
-}
-
-.save files .scrollTableSave td,
-.open files .scrollTableOpen td {
-  padding-left: 19px;
-}
-
-.save files .scrollTableSave td:first-child,
-.open files .scrollTableOpen td:first-child {
-  padding-left: 10px;
-}
-
-.save files .scrollTableSave td:last-child {
-  padding-left: 22px;
-}
-
-.open files .scrollTableOpen td:last-child {
-  padding-left: 23px;
 }
 
 files tbody td div {
@@ -177,7 +173,7 @@ files tr.selected .fileTypeIcon {
   background-position: right center;
 }
 
-files .nameHeader {
+files .headerLabel {
   float: left;
 }
 

@@ -23,6 +23,10 @@
 /* BREADCRUMB */
 breadcrumb .breadcrumbItem {
   float: left;
+  user-select: none;
+  -webkit-user-select: none; /* webkit (safari, chrome) browsers */
+  -moz-user-select: none; /* mozilla browsers */
+  -ms-user-select: none; /* IE10+ */
 }
 
 breadcrumb .breadcrumbFolder {
@@ -42,11 +46,16 @@ breadcrumb .breadcrumbFolder.extra .breadcrumbExtra {
   -moz-box-shadow: 0 0 5px rgba(0, 0, 0, 0.247058823529412);
   -webkit-box-shadow: 0 0 5px rgba(0, 0, 0, 0.247058823529412);
   box-shadow: 0 0 5px rgba(0, 0, 0, 0.247058823529412);
-  padding: 5px 0 5px 0;
+  padding: 5px 0;
+  max-width: 300px;
+  z-index: 100;
 }
 
 breadcrumb .breadcrumbFolder.extra .breadcrumbExtraItem {
   padding: 5px 10px 5px 10px;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
 }
 
 breadcrumb .breadcrumbFolder.extra .breadcrumbExtraItem:hover {
@@ -65,4 +74,9 @@ breadcrumb .breadcrumbNext {
 
 breadcrumb .breadcrumbNext.last {
   visibility: hidden;
+}
+
+breadcrumb .breadcrumbFolder.last {
+  color: #212121;
+  cursor: default;
 }

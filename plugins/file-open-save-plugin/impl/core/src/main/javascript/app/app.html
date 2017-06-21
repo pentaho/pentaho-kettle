@@ -48,7 +48,6 @@
     </div>
 
     <div class="fileArea" ng-class="{overflow: vm.showRecents}">
-      <div class="fileAreaResultsView">
         <div class="fileAreaMessageView" ng-show="vm.showRecents && vm.recentFiles.length === 0">{{::vm.noRecentsMsg}}</div>
         <card ng-show="vm.showRecents && vm.recentFiles.length > 0"
               recent-files="vm.recentFiles"
@@ -59,7 +58,6 @@
                folder="vm.folder"
                on-click="vm.selectFile(file)"
                on-select="vm.highlightFile(selectedFile)"></files>
-      </div>
     </div>
   </div>
 

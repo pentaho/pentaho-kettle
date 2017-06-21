@@ -56,10 +56,12 @@ define([
    * @param {Object} dt - Angular service that contains helper functions for the files component controller
    */
   function filesController(dt) {
-    var _sortField = "name";
     var vm = this;
     vm.$onInit = onInit;
     vm.$onChanges = onChanges;
+    vm._name = "name";
+    vm._type = "type";
+    vm._date = "date";
     vm.selectFile = selectFile;
     vm.commitFile = commitFile;
     vm.rename = rename;
@@ -174,14 +176,17 @@ define([
      * 1. Original (no sorting)
      * 2. Ascending sort
      * 3. Descending sort
+     *
+     * @param {String} field - The field to sort (name, type, or date).
      */
-    function sortFiles() {
+    function sortFiles(field) {
+      vm.sortState = vm.sortField === field ? vm.sortState : 0;
       switch (vm.sortState) {
         case 0:// original
-          _setSort(1, false, _sortField);
+          _setSort(1, false, field);
           break;
         case 1:// Ascend
-          _setSort(2, true, _sortField);
+          _setSort(2, true, field);
           break;
         case 2:// Descend
           _setSort(0, false, null);
