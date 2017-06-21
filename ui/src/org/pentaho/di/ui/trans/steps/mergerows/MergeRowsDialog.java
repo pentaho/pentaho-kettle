@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -24,6 +24,8 @@ package org.pentaho.di.ui.trans.steps.mergerows;
 
 import java.util.List;
 
+import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.jface.dialogs.MessageDialogWithToggle;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.events.ModifyEvent;
@@ -55,12 +57,14 @@ import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.errorhandling.StreamInterface;
 import org.pentaho.di.trans.steps.mergerows.MergeRowsMeta;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
+import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.core.widget.ColumnInfo;
 import org.pentaho.di.ui.core.widget.TableView;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 public class MergeRowsDialog extends BaseStepDialog implements StepDialogInterface {
   private static Class<?> PKG = MergeRowsMeta.class; // for i18n purposes, needed by Translator2!!
+  public static final String STRING_SORT_WARNING_PARAMETER = "MergeRowsSortWarning";
 
   private Label wlReference;
   private CCombo wReference;
@@ -402,6 +406,24 @@ public class MergeRowsDialog extends BaseStepDialog implements StepDialogInterfa
     }
 
     stepname = wStepname.getText(); // return value
+
+    // PDI-13509 Fix
+    if ( nrKeys > 0 && "Y".equalsIgnoreCase( props.getCustomParameter( STRING_SORT_WARNING_PARAMETER, "Y" ) ) ) {
+      MessageDialogWithToggle md =
+        new MessageDialogWithToggle( shell,
+          BaseMessages.getString( PKG, "MergeRowsDialog.MergeRowsWarningDialog.DialogTitle" ), null,
+          BaseMessages.getString( PKG, "MergeRowsDialog.MergeRowsWarningDialog.DialogMessage", Const.CR ) + Const.CR,
+          MessageDialog.WARNING,
+          new String[] { BaseMessages.getString( PKG, "MergeRowsDialog.MergeRowsWarningDialog.Option1" ) },
+          0,
+          BaseMessages.getString( PKG, "MergeRowsDialog.MergeRowsWarningDialog.Option2" ), "N".equalsIgnoreCase(
+            props.getCustomParameter( STRING_SORT_WARNING_PARAMETER, "Y" ) ) );
+      MessageDialogWithToggle.setDefaultImage( GUIResource.getInstance().getImageSpoon() );
+      md.open();
+      props.setCustomParameter( STRING_SORT_WARNING_PARAMETER, md.getToggleState() ? "N" : "Y" );
+      props.saveProps();
+    }
+
 
     dispose();
   }
