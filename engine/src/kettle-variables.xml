@@ -456,5 +456,11 @@
     <default-value>2000</default-value>
   </kettle-variable>
 
+  <kettle-variable>
+    <description>Set this variable to true to use a gateway for connecting to a Hadoop cluster.</description>
+    <variable>KETTLE_HADOOP_CLUSTER_GATEWAY_CONNECTION</variable>
+    <default-value>false</default-value>
+  </kettle-variable>
+
 </kettle-variables>
 
