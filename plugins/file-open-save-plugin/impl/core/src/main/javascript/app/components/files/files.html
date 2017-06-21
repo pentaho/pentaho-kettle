@@ -1,64 +1,71 @@
-<!--
-  Classes for table tag
-     1. fileTable:   STATIC...always present
-     2. searchTable: For search results only
--->
-<div class="headerWrapper">
-  <table ng-show="vm.hasResults">
-    <thead>
-    <tr>
-      <th>
-        <div class="nameHeader">{{::vm.nameHeader}}</div>
-        <div class="sortWrapper">
-          <div class="sort" ng-click="vm.sortFiles()"
-               ng-class="{sortUp: vm.sortState === 1, sortDown: vm.sortState === 2}"></div>
-        </div>
-      </th>
-      <th>
-        <div>{{::vm.typeHeader}}</div>
-      </th>
-      <th>
-        <div>{{::vm.lastSaveHeader}}</div>
-      </th>
-    </tr>
-    </thead>
-  </table>
-</div>
+<div class="filesWrapper"
+     ng-class="{scrollTableSave: (!vm.search && vm.folder.children.length > 8) || (vm.search && vm.numResults > 4),
+                scrollTableOpen: (!vm.search && vm.folder.children.length > 11) || (vm.search && vm.numResults > 5)}">
+  <div class="headerWrapper">
+    <table ng-show="vm.hasResults">
+      <thead>
+      <tr>
+        <th class="nameCell">
+          <div class="headerLabel">{{::vm.nameHeader}}</div>
+          <div class="sortWrapper">
+            <div class="sort" ng-click="vm.sortFiles(vm._name)"
+                 ng-class="{sortUp: vm.sortState === 1 && vm.sortField === vm._name,
+                            sortDown: vm.sortState === 2 && vm.sortField === vm._name}"></div>
+          </div>
+        </th>
+        <th class="typeCell">
+          <div class="headerLabel">{{::vm.typeHeader}}</div>
+          <div class="sortWrapper">
+            <div class="sort" ng-click="vm.sortFiles(vm._type)"
+                 ng-class="{sortUp: vm.sortState === 1 && vm.sortField === vm._type,
+                            sortDown: vm.sortState === 2 && vm.sortField === vm._type}"></div>
+          </div>
+        </th>
+        <th class="dateCell">
+          <div class="headerLabel">{{::vm.lastSaveHeader}}</div>
+          <div class="sortWrapper">
+            <div class="sort" ng-click="vm.sortFiles(vm._date)"
+                 ng-class="{sortUp: vm.sortState === 1 && vm.sortField === vm._date,
+                            sortDown: vm.sortState === 2 && vm.sortField === vm._date}"></div>
+          </div>
+        </th>
+      </tr>
+      </thead>
+    </table>
+  </div>
 
-<div class="bodyWrapper">
-  <table ng-class="{searchTable: vm.search,
-                    scrollTableSave: (!vm.search && vm.folder.children.length > 8) || (vm.search && vm.numResults > 4),
-                    scrollTableOpen: (!vm.search && vm.folder.children.length > 11) || (vm.search && vm.numResults > 5)}">
-    <tbody>
-    <tr ng-repeat="file in vm.getFiles(vm.folder.children) | orderBy: vm.sortField: vm.sortReverse"
-        ng-click="vm.selectFile(file)"
-        ng-dblclick="vm.commitFile(file); $event.stopPropagation();"
-        ng-class="{selected: vm.selectedFile===file}"
-        ng-hide="file.inResult===false">
-      <td>
-        <div class="fileTypeIcon"
-             ng-class="{'file-trans': file.type==='transformation',
-                        'file-job': file.type==='job',
-                        'file-folder': file.type==='File folder'}"></div>
-        <div class="fileName"
-             rename
-             on-rename="vm.rename()"
-             selected="vm.selectedFile"
-             ng-model="file">{{file.name}}</div>
-        <div class="fileLocation" title="full path--use title-on-truncate">{{file.path}}</div>
-      </td>
-      <td>
-        <div class="fileType">
-          {{file.type}}
-        </div>
-      </td>
-      <td>
-        <div class="fileLastSaved">
-          <span>{{file.date | date: 'MM-dd-yy hh:mm a'}}</span>
-        </div>
-      </td>
-    </tr>
-  </table>
+  <div class="bodyWrapper">
+    <table ng-class="{searchTable: vm.search, hasVertScroll: vm.getFileAreaWidth()}">
+      <tbody>
+      <tr ng-repeat="file in vm.getFiles(vm.folder.children) | orderBy: vm.sortField: vm.sortReverse"
+          ng-click="vm.selectFile(file)"
+          ng-dblclick="vm.commitFile(file); $event.stopPropagation();"
+          ng-class="{selected: vm.selectedFile===file}"
+          ng-hide="file.inResult===false"
+          title="{{file.name}}&#013;{{file.path}}">
+        <td class="nameCell">
+          <div class="fileTypeIcon"
+               ng-class="{'file-trans': file.type==='transformation',
+                          'file-job': file.type==='job',
+                          'file-folder': file.type==='File folder'}"></div>
+          <div class="fileName"
+               rename
+               on-rename="vm.rename()"
+               selected="vm.selectedFile"
+               ng-model="file">{{file.name}}</div>
+          <div class="fileLocation">{{file.path}}</div>
+        </td>
+        <td class="typeCell">
+          <div class="fileType">{{file.type}}</div>
+        </td>
+        <td class="dateCell">
+          <div class="fileLastSaved">
+            <span>{{file.date | date: 'MM-dd-yy hh:mm a'}}</span>
+          </div>
+        </td>
+      </tr>
+    </table>
+  </div>
 </div>
 
 <div class="fileAreaMessageView" ng-show="!vm.hasResults && vm.search.length > 0">{{::vm.noResults}}</div>

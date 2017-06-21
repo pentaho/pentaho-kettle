@@ -186,12 +186,14 @@ file-open-save-app .directoryTreeArea {
 file-open-save-app .fileArea {
   height: 100%;
   width: auto;
-  overflow: hidden;
+  overflow-x: auto;
+  overflow-y: hidden;
   position: relative;
 }
 
 file-open-save-app .fileArea.overflow {
-  overflow: auto;
+  overflow-y: auto;
+  overflow-x: hidden;
 }
 
 file-open-save-app .bottom {
