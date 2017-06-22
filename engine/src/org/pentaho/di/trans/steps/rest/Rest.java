@@ -41,7 +41,7 @@ import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.UriBuilder;
 
 import com.sun.jersey.api.uri.UriComponent;
-import org.apache.commons.httpclient.auth.AuthScope;
+import org.apache.http.auth.AuthScope;
 import org.json.simple.JSONObject;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.util.Utils;
