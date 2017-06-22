@@ -24,6 +24,10 @@
 
 package org.pentaho.di.engine.configuration.impl;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -39,14 +43,12 @@ import org.pentaho.di.engine.configuration.impl.spark.SparkRunConfiguration;
 import org.pentaho.di.engine.configuration.impl.spark.SparkRunConfigurationExecutor;
 import org.pentaho.di.engine.configuration.impl.spark.SparkRunConfigurationProvider;
 import org.pentaho.metastore.stores.memory.MemoryMetaStore;
-import org.pentaho.metastore.stores.xml.XmlMetaStore;
 import org.pentaho.osgi.metastore.locator.api.MetastoreLocator;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Created by bmorrise on 3/15/17.
@@ -63,7 +65,7 @@ public class RunConfigurationManagerTest {
   public void setup() throws Exception {
 
     MemoryMetaStore memoryMetaStore = new MemoryMetaStore();
-    MetastoreLocator metastoreLocator = () -> memoryMetaStore;
+    MetastoreLocator metastoreLocator = ( String s ) -> memoryMetaStore;
 
     DefaultRunConfigurationProvider defaultRunConfigurationProvider =
       new DefaultRunConfigurationProvider( metastoreLocator, defaultRunConfigurationExecutor );
@@ -174,7 +176,7 @@ public class RunConfigurationManagerTest {
   @Test
   public void testOrdering() {
     MemoryMetaStore memoryMetaStore = new MemoryMetaStore();
-    MetastoreLocator metastoreLocator = () -> memoryMetaStore;
+    MetastoreLocator metastoreLocator = ( String s ) -> memoryMetaStore;
 
     DefaultRunConfigurationProvider defaultRunConfigurationProvider =
       new DefaultRunConfigurationProvider( metastoreLocator, defaultRunConfigurationExecutor );
