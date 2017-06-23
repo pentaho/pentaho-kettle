@@ -24,9 +24,6 @@
 
 package org.pentaho.di.engine.configuration.impl;
 
-import java.util.Collections;
-import java.util.List;
-
 import org.pentaho.di.engine.configuration.api.RunConfiguration;
 import org.pentaho.di.engine.configuration.api.RunConfigurationFactory;
 import org.pentaho.di.metastore.MetaStoreConst;
@@ -34,6 +31,9 @@ import org.pentaho.metastore.api.IMetaStore;
 import org.pentaho.metastore.api.exceptions.MetaStoreException;
 import org.pentaho.metastore.persist.MetaStoreFactory;
 import org.pentaho.osgi.metastore.locator.api.MetastoreLocator;
+
+import java.util.Collections;
+import java.util.List;
 
 import static org.pentaho.metastore.util.PentahoDefaults.NAMESPACE;
 
@@ -55,16 +55,12 @@ public abstract class MetaStoreRunConfigurationFactory implements RunConfigurati
 
   protected <T extends RunConfiguration> MetaStoreFactory<T> getMetastoreFactory( Class<T> clazz )
     throws MetaStoreException {
-    IMetaStore metaStore = metastoreLocator.getMetastore( MetastoreLocator.REPOSITORY_PROVIDER_KEY );
-    if ( metaStore == null ) {
-      metaStore = metastoreLocator.getMetastore( MetastoreLocator.LOCAL_PROVIDER_KEY );
-    }
+    IMetaStore metaStore = metastoreLocator.getMetastore();
     return getMetastoreFactory( clazz, metaStore != null ? metaStore : MetaStoreConst.openLocalPentahoMetaStore() );
   }
 
   protected abstract <T extends RunConfiguration> MetaStoreFactory<T> getMetaStoreFactory() throws MetaStoreException;
 
-  @Override
   public boolean delete( String name ) {
     try {
       getMetaStoreFactory().deleteElement( name );
@@ -75,7 +71,6 @@ public abstract class MetaStoreRunConfigurationFactory implements RunConfigurati
     return true;
   }
 
-  @Override
   public void deleteAll() {
     try {
       List<String> elementNames = getMetaStoreFactory().getElementNames();
@@ -88,7 +83,6 @@ public abstract class MetaStoreRunConfigurationFactory implements RunConfigurati
 
   }
 
-  @Override
   public List<RunConfiguration> load() {
     try {
       return getMetaStoreFactory().getElements();
@@ -98,7 +92,6 @@ public abstract class MetaStoreRunConfigurationFactory implements RunConfigurati
   }
 
 
-  @Override
   public RunConfiguration load( String name ) {
     try {
       return getMetaStoreFactory().loadElement( name );
@@ -107,7 +100,6 @@ public abstract class MetaStoreRunConfigurationFactory implements RunConfigurati
     }
   }
 
-  @Override
   public boolean save( RunConfiguration runConfiguration ) {
     try {
       getMetaStoreFactory().saveElement( runConfiguration );
@@ -118,7 +110,6 @@ public abstract class MetaStoreRunConfigurationFactory implements RunConfigurati
     return true;
   }
 
-  @Override
   public List<String> getNames() {
     try {
       return getMetaStoreFactory().getElementNames();
