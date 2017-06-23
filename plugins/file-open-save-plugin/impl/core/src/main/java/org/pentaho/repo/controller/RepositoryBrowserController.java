@@ -15,8 +15,13 @@
 
 package org.pentaho.repo.controller;
 
+import org.apache.commons.collections.CollectionUtils;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
 import org.pentaho.di.core.EngineMetaInterface;
 import org.pentaho.di.core.LastUsedFile;
+import org.pentaho.di.core.Props;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.repository.ObjectId;
@@ -31,10 +36,7 @@ import org.pentaho.di.ui.spoon.Spoon;
 import org.pentaho.repo.model.RepositoryDirectory;
 import org.pentaho.repo.model.RepositoryFile;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 import java.util.function.Supplier;
 
 /**
@@ -273,4 +275,39 @@ public class RepositoryBrowserController {
     return getSpoon().rep;
   }
 
+  public LinkedList<String> getRecentSearches() {
+    LinkedList<String> recentSearches = new LinkedList<String>();
+    try {
+      PropsUI props = PropsUI.getInstance();
+      String jsonValue = props.getRecentSearches();
+      JSONParser jsonParser = new JSONParser();
+      JSONObject jsonObject = (JSONObject) jsonParser.parse( jsonValue );
+      JSONArray jsonArray = (JSONArray) jsonObject.get( Props.STRING_RECENT_SEARCHES );
+      CollectionUtils.addAll( recentSearches, jsonArray.toArray() );
+    } catch ( Exception e ) {
+      // Log error in console
+    }
+    return recentSearches;
+  }
+
+  public LinkedList<String> storeRecentSearch( String recentSearch ) {
+
+    LinkedList<String> recentSearches = getRecentSearches();
+    if( recentSearch == null || recentSearches.contains( recentSearch ) ) {
+      return recentSearches;
+    }
+    recentSearches.push( recentSearch );
+    if( recentSearches.size() > 5 ) {
+      recentSearches.pollLast();
+    }
+
+    JSONArray jsonArray = new JSONArray();
+    CollectionUtils.addAll( jsonArray, recentSearches.toArray() );
+    JSONObject jsonObject = new JSONObject();
+    jsonObject.put( Props.STRING_RECENT_SEARCHES, jsonArray );
+    PropsUI props = PropsUI.getInstance();
+    props.setRecentSearches( jsonObject.toJSONString() );
+
+    return recentSearches;
+  }
 }

@@ -92,6 +92,18 @@
       <groupId>org.webjars.bower</groupId>
       <artifactId>require-css</artifactId>
     </dependency>
+    <dependency>
+      <groupId>org.webjars.bower</groupId>
+      <artifactId>bootstrap</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.webjars.bower</groupId>
+      <artifactId>angular-ui-bootstrap-bower</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.googlecode.json-simple</groupId>
+      <artifactId>json-simple</artifactId>
+    </dependency>
   </dependencies>
   <build>
     <resources>

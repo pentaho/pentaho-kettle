@@ -33,7 +33,8 @@ define([
   "text!./app.html",
   "pentaho/i18n-osgi!file-open-save.messages",
   "angular",
-  "css!./app.css"
+  "css!./app.css",
+  "css!bootstrap/dist/css/bootstrap.css"
 ], function(dataService, template, i18n, angular) {
   "use strict";
 
@@ -70,7 +71,7 @@ define([
     vm.setState = setState;
     vm.confirmError = confirmError;
     vm.cancelError = cancelError;
-
+    vm.storeRecentSearch = storeRecentSearch;
     vm.selectedFolder = "";
     vm.fileToSave = "";
     vm.searchString = "";
@@ -99,6 +100,7 @@ define([
       vm.autoExpand = false;
       dt.getDirectoryTree().then(_populateTree);
       dt.getRecentFiles().then(_populateRecentFiles);
+      dt.getRecentSearches().then(_populateRecentSearches);
 
       /**
        * Sets the folder directory tree
@@ -320,6 +322,23 @@ define([
     function cancelError() {
       vm.errorType = 0;
       vm.showError = false;
+    }
+
+    /**
+     * Stores the most recent search
+     */
+    function storeRecentSearch() {
+      vm.isInSearch = false;
+      if(vm.searchString !== "") {
+        dt.storeRecentSearch(vm.searchString).then(_populateRecentSearches);
+      }
+    }
+
+    /**
+     * Populates the most recent searches
+     */
+    function _populateRecentSearches(response) {
+      vm.recentSearches = response.data;
     }
 
     /**

@@ -1219,4 +1219,11 @@ public class PropsUI extends Props {
     properties.setProperty( STRING_INDICATE_SLOW_TRANS_STEPS, indicate ? YES : NO );
   }
 
+  public void setRecentSearches( String recentSearches ) {
+    properties.setProperty( STRING_RECENT_SEARCHES, recentSearches );
+  }
+
+  public String getRecentSearches() {
+    return properties.getProperty( STRING_RECENT_SEARCHES );
+  }
 }

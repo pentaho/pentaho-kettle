@@ -14,6 +14,8 @@
     <bundle>pentaho-webjars:mvn:org.webjars.bower/angular-i18n/${angular-i18n.version}</bundle>
     <bundle>pentaho-webjars:mvn:org.webjars.bower/require-css/${require-css.version}</bundle>
     <bundle>pentaho-webjars:mvn:org.webjars.bower/requirejs-text/${requirejs-text.version}</bundle>
+    <bundle>pentaho-webjars:mvn:org.webjars.bower/bootstrap/${bootstrap.version}</bundle>
+    <bundle>pentaho-webjars:mvn:org.webjars.bower/angular-ui-bootstrap-bower/${angular-ui-bootstrap-bower.version}</bundle>
     <!-- END -->
   </feature>
 

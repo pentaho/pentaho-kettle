@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -145,6 +145,7 @@ public class Props implements Cloneable {
   private static final String STRING_LINES_IN_HISTORY_FETCH_SIZE = "LinesInHistoryFetchSize";
   public static final String STRING_DISABLE_INITIAL_EXECUTION_HISTORY = "DisableInitialExecutionHistory";
   private static final String STRING_MAX_LOG_LINE_TIMEOUT_MINUTES = "MaxLogLineTimeOutMinutes";
+  public static final String STRING_RECENT_SEARCHES = "RecentSearches";
 
   protected LogChannelInterface log;
   protected Properties properties;
