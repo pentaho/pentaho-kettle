@@ -14,30 +14,39 @@
   <description>Metadata Injection as an OSGi Plugin</description>
   <url>http://www.pentaho.com</url>
   <properties>
+    <kettle.version>8.0-SNAPSHOT</kettle.version>
     <servlet-api.version>2.3</servlet-api.version>
     <mockito.version>1.9.5</mockito.version>
-    <dependency.pentaho-kettle.version>8.0-SNAPSHOT</dependency.pentaho-kettle.version>
     <guava.version>17.0</guava.version>
     <jface.version>3.3.0-I20070606-0010</jface.version>
     <swt.version>4.6</swt.version>
+    <json-simple.version>1.1</json-simple.version>
+    <java-hamcrest.version>2.0.0.0</java-hamcrest.version>
+    <jackson-mapper-asl.version>1.9.2</jackson-mapper-asl.version>
+    <jsr305.version>2.0.3</jsr305.version>
+    <xercesImpl.version>2.9.1</xercesImpl.version>
+    <commons-io.version>2.4</commons-io.version>
+    <batik-js.version>1.8</batik-js.version>
+    <cobertura-maven-plugin.version>2.6</cobertura-maven-plugin.version>
+    <maven-bundle-plugin.version>2.3.7</maven-bundle-plugin.version>
   </properties>
   <dependencies>
     <dependency>
       <groupId>pentaho-kettle</groupId>
       <artifactId>kettle-core</artifactId>
-      <version>${dependency.pentaho-kettle.version}</version>
+      <version>${kettle.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>pentaho-kettle</groupId>
       <artifactId>kettle-engine</artifactId>
-      <version>${dependency.pentaho-kettle.version}</version>
+      <version>${kettle.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>pentaho-kettle</groupId>
       <artifactId>kettle-ui-swt</artifactId>
-      <version>${dependency.pentaho-kettle.version}</version>
+      <version>${kettle.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
@@ -67,14 +76,14 @@
     <dependency>
       <groupId>pentaho-kettle</groupId>
       <artifactId>kettle-engine</artifactId>
-      <version>${dependency.pentaho-kettle.version}</version>
+      <version>${project.version}</version>
       <classifier>tests</classifier>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>com.googlecode.json-simple</groupId>
       <artifactId>json-simple</artifactId>
-      <version>1.1</version>
+      <version>${json-simple.version}</version>
       <scope>test</scope>
     </dependency>
     <dependency>
@@ -86,7 +95,7 @@
     <dependency>
       <groupId>org.hamcrest</groupId>
       <artifactId>java-hamcrest</artifactId>
-      <version>2.0.0.0</version>
+      <version>${java-hamcrest.version}</version>
       <scope>test</scope>
     </dependency>
     <dependency>
@@ -98,29 +107,29 @@
     <dependency>
       <groupId>org.codehaus.jackson</groupId>
       <artifactId>jackson-mapper-asl</artifactId>
-      <version>1.9.2</version>
+      <version>${jackson-mapper-asl.version}</version>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>com.google.code.findbugs</groupId>
       <artifactId>jsr305</artifactId>
-      <version>2.0.3</version>
+      <version>${jsr305.version}</version>
     </dependency>
     <dependency>
       <groupId>xerces</groupId>
       <artifactId>xercesImpl</artifactId>
-      <version>2.9.1</version>
+      <version>${xercesImpl.version}</version>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>commons-io</groupId>
       <artifactId>commons-io</artifactId>
-      <version>2.4</version>
+      <version>${commons-io.version}</version>
     </dependency>
     <dependency>
       <groupId>org.apache.xmlgraphics</groupId>
       <artifactId>batik-js</artifactId>
-      <version>1.8</version>
+      <version>${batik-js.version}</version>
       <exclusions>
         <exclusion>
           <artifactId>batik-js</artifactId>
@@ -132,29 +141,9 @@
   <build>
     <plugins>
       <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>cobertura-maven-plugin</artifactId>
-        <version>2.6</version>
-        <configuration>
-          <formats>
-            <format>html</format>
-            <format>xml</format>
-          </formats>
-          <check>
-            <branchRate>80</branchRate>
-            <lineRate>90</lineRate>
-            <haltOnFailure>false</haltOnFailure>
-            <totalBranchRate>80</totalBranchRate>
-            <totalLineRate>90</totalLineRate>
-            <packageLineRate>90</packageLineRate>
-            <packageBranchRate>80</packageBranchRate>
-          </check>
-        </configuration>
-      </plugin>
-      <plugin>
         <groupId>org.apache.felix</groupId>
         <artifactId>maven-bundle-plugin</artifactId>
-        <version>2.3.7</version>
+        <!--version>${maven-bundle-plugin.version}</version-->
         <extensions>true</extensions>
         <configuration>
           <instructions>
