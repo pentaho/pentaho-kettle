@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -1018,25 +1018,21 @@ public class KettleDatabaseRepositoryConnectionDelegate extends KettleDatabaseRe
   private synchronized LongObjectId getNextTableID( String tablename, String idfield ) throws KettleException {
     LongObjectId retval = null;
 
-    try {
-      RowMetaAndData r = database.getOneRow( "SELECT MAX(" + idfield + ") FROM " + tablename );
-      if ( r != null ) {
-        Long id = r.getInteger( 0 );
+    RowMetaAndData r = database.getOneRow( "SELECT MAX(" + idfield + ") FROM " + tablename );
+    if ( r != null ) {
+      Long id = r.getInteger( 0 );
 
-        if ( id == null ) {
-          if ( log.isDebug() ) {
-            log.logDebug( "no max(" + idfield + ") found in table " + tablename );
-          }
-          retval = new LongObjectId( 1 );
-        } else {
-          if ( log.isDebug() ) {
-            log.logDebug( "max(" + idfield + ") found in table " + tablename + " --> " + idfield + " number: " + id );
-          }
-          retval = new LongObjectId( id.longValue() + 1L );
+      if ( id == null ) {
+        if ( log.isDebug() ) {
+          log.logDebug( "no max(" + idfield + ") found in table " + tablename );
         }
+        retval = new LongObjectId( 1 );
+      } else {
+        if ( log.isDebug() ) {
+          log.logDebug( "max(" + idfield + ") found in table " + tablename + " --> " + idfield + " number: " + id );
+        }
+        retval = new LongObjectId( id.longValue() + 1L );
       }
-    } finally {
-      closeReadTransaction();
     }
     return retval;
   }
@@ -1557,36 +1553,33 @@ public class KettleDatabaseRepositoryConnectionDelegate extends KettleDatabaseRe
   }
 
   public ObjectId[] getIDs( String sql, ObjectId... objectId ) throws KettleException {
-    try {
-      // Get the prepared statement
-      //
-      PreparedStatement ps = getPreparedStatement( sql );
+    // Get the prepared statement
+    //
+    PreparedStatement ps = getPreparedStatement( sql );
 
-      // Assemble the parameters (if any)
-      //
-      RowMetaInterface parameterMeta = new RowMeta();
-      Object[] parameterData = new Object[objectId.length];
-      for ( int i = 0; i < objectId.length; i++ ) {
-        parameterMeta.addValueMeta( new ValueMeta( "id" + ( i + 1 ), ValueMetaInterface.TYPE_INTEGER ) );
-        parameterData[i] = ( (LongObjectId) objectId[i] ).longValue();
-      }
-
-      ResultSet resultSet = database.openQuery( ps, parameterMeta, parameterData );
-      List<Object[]> rows = database.getRows( resultSet, 0, null );
-      if ( Const.isEmpty( rows ) ) {
-        return new ObjectId[0];
-      }
-
-      RowMetaInterface rowMeta = database.getReturnRowMeta();
-      ObjectId[] ids = new ObjectId[rows.size()];
-      for ( int i = 0; i < ids.length; i++ ) {
-        Object[] row = rows.get( i );
-        ids[i] = new LongObjectId( rowMeta.getInteger( row, 0 ) );
-      }
-      return ids;
-    } finally {
-      closeReadTransaction();
+    // Assemble the parameters (if any)
+    //
+    RowMetaInterface parameterMeta = new RowMeta();
+    Object[] parameterData = new Object[objectId.length];
+    for ( int i = 0; i < objectId.length; i++ ) {
+      parameterMeta.addValueMeta( new ValueMeta( "id" + ( i + 1 ), ValueMetaInterface.TYPE_INTEGER ) );
+      parameterData[i] = ( (LongObjectId) objectId[i] ).longValue();
     }
+
+    ResultSet resultSet = database.openQuery( ps, parameterMeta, parameterData );
+    List<Object[]> rows = database.getRows( resultSet, 0, null );
+    if ( Const.isEmpty( rows ) ) {
+      return new ObjectId[0];
+    }
+
+    RowMetaInterface rowMeta = database.getReturnRowMeta();
+    ObjectId[] ids = new ObjectId[rows.size()];
+    for ( int i = 0; i < ids.length; i++ ) {
+      Object[] row = rows.get( i );
+      ids[i] = new LongObjectId( rowMeta.getInteger( row, 0 ) );
+    }
+
+    return ids;
   }
 
   public String[] getStrings( String sql, ObjectId... objectId ) throws KettleException {
@@ -1681,16 +1674,13 @@ public class KettleDatabaseRepositoryConnectionDelegate extends KettleDatabaseRe
     String value ) throws KettleException {
     RowMetaAndData par = new RowMetaAndData();
     par.addValue( new ValueMeta( "value", ValueMetaInterface.TYPE_STRING ), value );
-    try {
-      RowMetaAndData result =
-        getOneRow(
-          "SELECT " + idfield + " FROM " + tablename + " WHERE " + lookupfield + " = ?", par.getRowMeta(), par
-            .getData() );
-      if ( result != null && result.getRowMeta() != null && result.getData() != null && result.isNumeric( 0 ) ) {
-        return new LongObjectId( result.getInteger( 0, 0 ) );
-      }
-    } finally {
-      closeReadTransaction();
+    RowMetaAndData result =
+      getOneRow(
+        "SELECT " + idfield + " FROM " + tablename + " WHERE " + lookupfield + " = ?", par.getRowMeta(), par
+          .getData() );
+
+    if ( result != null && result.getRowMeta() != null && result.getData() != null && result.isNumeric( 0 ) ) {
+      return new LongObjectId( result.getInteger( 0, 0 ) );
     }
     return null;
   }
