@@ -289,19 +289,19 @@ public class TextFileInputMetaNewInjectionTest extends BaseMetadataInjectionTest
     /////////////////////////////
     check( "FIELD_NAME", new StringGetter() {
       public String get() {
-        return meta.inputFiles.inputFields[0].getName();
+        return meta.inputFields[0].getName();
       }
     } );
 
     check( "FIELD_POSITION", new IntGetter() {
       public int get() {
-        return meta.inputFiles.inputFields[0].getPosition();
+        return meta.inputFields[0].getPosition();
       }
     } );
 
     check( "FIELD_LENGTH", new IntGetter() {
       public int get() {
-        return meta.inputFiles.inputFields[0].getLength();
+        return meta.inputFields[0].getLength();
       }
     } );
 
@@ -314,62 +314,62 @@ public class TextFileInputMetaNewInjectionTest extends BaseMetadataInjectionTest
 
     check( "FIELD_IGNORE", new BooleanGetter() {
       public boolean get() {
-        return meta.inputFiles.inputFields[0].isIgnored();
+        return meta.inputFields[0].isIgnored();
       }
     } );
 
     check( "FIELD_FORMAT", new StringGetter() {
       public String get() {
-        return meta.inputFiles.inputFields[0].getFormat();
+        return meta.inputFields[0].getFormat();
       }
     } );
 
     ValueMetaInterface mftt = new ValueMetaString( "f" );
     injector.setProperty( meta, "FIELD_TRIM_TYPE", setValue( mftt, "left" ), "f" );
-    assertEquals( 1, meta.inputFiles.inputFields[0].getTrimType() );
+    assertEquals( 1, meta.inputFields[0].getTrimType() );
     injector.setProperty( meta, "FIELD_TRIM_TYPE", setValue( mftt, "right" ), "f" );
-    assertEquals( 2, meta.inputFiles.inputFields[0].getTrimType() );
+    assertEquals( 2, meta.inputFields[0].getTrimType() );
     skipPropertyTest( "FIELD_TRIM_TYPE" );
 
     check( "FIELD_PRECISION", new IntGetter() {
       public int get() {
-        return meta.inputFiles.inputFields[0].getPrecision();
+        return meta.inputFields[0].getPrecision();
       }
     } );
 
     check( "FIELD_CURRENCY", new StringGetter() {
       public String get() {
-        return meta.inputFiles.inputFields[0].getCurrencySymbol();
+        return meta.inputFields[0].getCurrencySymbol();
       }
     } );
 
     check( "FIELD_DECIMAL", new StringGetter() {
       public String get() {
-        return meta.inputFiles.inputFields[0].getDecimalSymbol();
+        return meta.inputFields[0].getDecimalSymbol();
       }
     } );
 
     check( "FIELD_GROUP", new StringGetter() {
       public String get() {
-        return meta.inputFiles.inputFields[0].getGroupSymbol();
+        return meta.inputFields[0].getGroupSymbol();
       }
     } );
 
     check( "FIELD_REPEAT", new BooleanGetter() {
       public boolean get() {
-        return meta.inputFiles.inputFields[0].isRepeated();
+        return meta.inputFields[0].isRepeated();
       }
     } );
 
     check( "FIELD_NULL_STRING", new StringGetter() {
       public String get() {
-        return meta.inputFiles.inputFields[0].getNullString();
+        return meta.inputFields[0].getNullString();
       }
     } );
 
     check( "FIELD_IF_NULL", new StringGetter() {
       public String get() {
-        return meta.inputFiles.inputFields[0].getIfNullValue();
+        return meta.inputFields[0].getIfNullValue();
       }
     } );
 

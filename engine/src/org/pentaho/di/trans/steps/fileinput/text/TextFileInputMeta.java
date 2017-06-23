@@ -73,7 +73,7 @@ import com.google.common.annotations.VisibleForTesting;
 
 @InjectionSupported( localizationPrefix = "TextFileInput.Injection.", groups = { "FILENAME_LINES", "FIELDS", "FILTERS" } )
 public class TextFileInputMeta extends
-    BaseFileInputStepMeta<BaseFileInputStepMeta.AdditionalOutputFields, BaseFileInputStepMeta.InputFiles<BaseFileInputField>>
+    BaseFileInputStepMeta<BaseFileInputStepMeta.AdditionalOutputFields, BaseFileInputStepMeta.InputFiles, BaseFileInputField>
     implements StepMetaInterface {
   private static Class<?> PKG = TextFileInputMeta.class; // for i18n purposes, needed by Translator2!! TODO: check i18n
                                                          // for base
@@ -231,8 +231,8 @@ public class TextFileInputMeta extends
 
   public TextFileInputMeta() {
     additionalOutputFields = new BaseFileInputStepMeta.AdditionalOutputFields();
-    inputFiles = new BaseFileInputStepMeta.InputFiles<>();
-    inputFiles.inputFields = new BaseFileInputField[0];
+    inputFiles = new BaseFileInputStepMeta.InputFiles();
+    inputFields = new BaseFileInputField[0];
   }
 
   /**
@@ -384,7 +384,7 @@ public class TextFileInputMeta extends
         field.setTrimType( ValueMetaString.getTrimTypeByCode( XMLHandler.getTagValue( fnode, "trim_type" ) ) );
         field.setRepeated( YES.equalsIgnoreCase( XMLHandler.getTagValue( fnode, "repeat" ) ) );
 
-        inputFiles.inputFields[i] = field;
+        inputFields[i] = field;
       }
 
       // Is there a limit on the number of rows we process?
@@ -436,7 +436,7 @@ public class TextFileInputMeta extends
     TextFileInputMeta retval = (TextFileInputMeta) super.clone();
 
     int nrfiles = inputFiles.fileName.length;
-    int nrfields = inputFiles.inputFields.length;
+    int nrfields = inputFields.length;
     int nrfilters = filter.length;
 
     retval.allocate( nrfiles, nrfields, nrfilters );
@@ -448,7 +448,7 @@ public class TextFileInputMeta extends
     System.arraycopy( inputFiles.includeSubFolders, 0, retval.inputFiles.includeSubFolders, 0, nrfiles );
 
     for ( int i = 0; i < nrfields; i++ ) {
-      retval.inputFiles.inputFields[i] = (BaseFileInputField) inputFiles.inputFields[i].clone();
+      retval.inputFields[i] = (BaseFileInputField) inputFields[i].clone();
     }
 
     for ( int i = 0; i < nrfilters; i++ ) {
@@ -461,7 +461,7 @@ public class TextFileInputMeta extends
   public void allocate( int nrfiles, int nrfields, int nrfilters ) {
     allocateFiles( nrfiles );
 
-    inputFiles.inputFields = new BaseFileInputField[nrfields];
+    inputFields = new BaseFileInputField[nrfields];
     filter = new TextFileFilter[nrfilters];
   }
 
@@ -534,7 +534,7 @@ public class TextFileInputMeta extends
     }
 
     for ( int i = 0; i < nrfields; i++ ) {
-      inputFiles.inputFields[i] = new BaseFileInputField( "field" + ( i + 1 ), 1, -1 );
+      inputFields[i] = new BaseFileInputField( "field" + ( i + 1 ), 1, -1 );
     }
 
     content.dateFormatLocale = Locale.getDefault();
@@ -560,8 +560,8 @@ public class TextFileInputMeta extends
       }
     }
 
-    for ( int i = 0; i < inputFiles.inputFields.length; i++ ) {
-      BaseFileInputField field = inputFiles.inputFields[i];
+    for ( int i = 0; i < inputFields.length; i++ ) {
+      BaseFileInputField field = inputFields[i];
 
       int type = field.getType();
       if ( type == ValueMetaInterface.TYPE_NONE ) {
@@ -756,8 +756,8 @@ public class TextFileInputMeta extends
     retval.append( "    </filters>" ).append( Const.CR );
 
     retval.append( "    <fields>" ).append( Const.CR );
-    for ( int i = 0; i < inputFiles.inputFields.length; i++ ) {
-      BaseFileInputField field = inputFiles.inputFields[i];
+    for ( int i = 0; i < inputFields.length; i++ ) {
+      BaseFileInputField field = inputFields[i];
 
       retval.append( "      <field>" ).append( Const.CR );
       retval.append( "        " ).append( XMLHandler.addTagValue( "name", field.getName() ) );
@@ -940,7 +940,7 @@ public class TextFileInputMeta extends
         field.setTrimType( ValueMetaString.getTrimTypeByCode( rep.getStepAttributeString( id_step, i, "field_trim_type" ) ) );
         field.setRepeated( rep.getStepAttributeBoolean( id_step, i, "field_repeat" ) );
 
-        inputFiles.inputFields[i] = field;
+        inputFields[i] = field;
       }
 
       errorHandling.errorIgnored = rep.getStepAttributeBoolean( id_step, "error_ignored" );
@@ -1040,8 +1040,8 @@ public class TextFileInputMeta extends
         rep.saveStepAttribute( id_transformation, id_step, i, "filter_is_positive", filter[i].isFilterPositive() );
       }
 
-      for ( int i = 0; i < inputFiles.inputFields.length; i++ ) {
-        BaseFileInputField field = inputFiles.inputFields[i];
+      for ( int i = 0; i < inputFields.length; i++ ) {
+        BaseFileInputField field = inputFields[i];
 
         rep.saveStepAttribute( id_transformation, id_step, i, "field_name", field.getName() );
         rep.saveStepAttribute( id_transformation, id_step, i, "field_type", field.getTypeDesc() );
