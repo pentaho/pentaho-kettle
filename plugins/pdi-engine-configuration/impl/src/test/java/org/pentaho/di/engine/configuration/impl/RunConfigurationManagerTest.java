@@ -24,10 +24,6 @@
 
 package org.pentaho.di.engine.configuration.impl;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -42,14 +38,15 @@ import org.pentaho.di.engine.configuration.impl.pentaho.DefaultRunConfigurationP
 import org.pentaho.di.engine.configuration.impl.spark.SparkRunConfiguration;
 import org.pentaho.di.engine.configuration.impl.spark.SparkRunConfigurationExecutor;
 import org.pentaho.di.engine.configuration.impl.spark.SparkRunConfigurationProvider;
-import org.pentaho.metastore.api.IMetaStore;
 import org.pentaho.metastore.stores.memory.MemoryMetaStore;
+import org.pentaho.metastore.stores.xml.XmlMetaStore;
 import org.pentaho.osgi.metastore.locator.api.MetastoreLocator;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+import static org.junit.Assert.*;
 
 /**
  * Created by bmorrise on 3/15/17.
@@ -66,7 +63,7 @@ public class RunConfigurationManagerTest {
   public void setup() throws Exception {
 
     MemoryMetaStore memoryMetaStore = new MemoryMetaStore();
-    MetastoreLocator metastoreLocator = createMetastoreLocator( memoryMetaStore );
+    MetastoreLocator metastoreLocator = () -> memoryMetaStore;
 
     DefaultRunConfigurationProvider defaultRunConfigurationProvider =
       new DefaultRunConfigurationProvider( metastoreLocator, defaultRunConfigurationExecutor );
@@ -177,7 +174,7 @@ public class RunConfigurationManagerTest {
   @Test
   public void testOrdering() {
     MemoryMetaStore memoryMetaStore = new MemoryMetaStore();
-    MetastoreLocator metastoreLocator = createMetastoreLocator( memoryMetaStore );
+    MetastoreLocator metastoreLocator = () -> memoryMetaStore;
 
     DefaultRunConfigurationProvider defaultRunConfigurationProvider =
       new DefaultRunConfigurationProvider( metastoreLocator, defaultRunConfigurationExecutor );
@@ -229,20 +226,5 @@ public class RunConfigurationManagerTest {
     assertEquals( names.get( 3 ), "f" );
     assertEquals( names.get( 4 ), "x" );
     assertEquals( names.get( 5 ), "z" );
-  }
-
-  private static MetastoreLocator createMetastoreLocator( IMetaStore memoryMetaStore ) {
-    return new MetastoreLocator() {
-
-      @Override
-      public IMetaStore getMetastore( String providerKey ) {
-        return memoryMetaStore;
-      }
-
-      @Override
-      public IMetaStore getMetastore() {
-        return memoryMetaStore;
-      }
-    };
   }
 }

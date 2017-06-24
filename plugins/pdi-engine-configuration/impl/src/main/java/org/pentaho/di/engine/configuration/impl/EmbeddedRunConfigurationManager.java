@@ -24,15 +24,13 @@
 
 package org.pentaho.di.engine.configuration.impl;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.pentaho.di.core.attributes.metastore.EmbeddedMetaStore;
 import org.pentaho.di.engine.configuration.api.RunConfigurationProvider;
 import org.pentaho.di.engine.configuration.impl.pentaho.DefaultRunConfigurationProvider;
 import org.pentaho.di.engine.configuration.impl.spark.SparkRunConfigurationProvider;
-import org.pentaho.metastore.api.IMetaStore;
-import org.pentaho.osgi.metastore.locator.api.MetastoreLocator;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by bmorrise on 5/4/17.
@@ -40,9 +38,9 @@ import org.pentaho.osgi.metastore.locator.api.MetastoreLocator;
 public class EmbeddedRunConfigurationManager {
   public static RunConfigurationManager build( EmbeddedMetaStore embeddedMetaStore ) {
     DefaultRunConfigurationProvider defaultRunConfigurationProvider =
-      new DefaultRunConfigurationProvider( createMetastoreLocator( embeddedMetaStore ), null );
+      new DefaultRunConfigurationProvider( () -> embeddedMetaStore, null );
     SparkRunConfigurationProvider sparkRunConfigurationProvider =
-      new SparkRunConfigurationProvider( createMetastoreLocator( embeddedMetaStore ), null );
+      new SparkRunConfigurationProvider( () -> embeddedMetaStore, null );
 
     List<RunConfigurationProvider> runConfigurationProviders = new ArrayList<>();
     runConfigurationProviders.add( defaultRunConfigurationProvider );
@@ -50,20 +48,4 @@ public class EmbeddedRunConfigurationManager {
 
     return new RunConfigurationManager( runConfigurationProviders );
   }
-
-  private static MetastoreLocator createMetastoreLocator( IMetaStore embeddedMetaStore ) {
-    return new MetastoreLocator() {
-
-      @Override
-      public IMetaStore getMetastore( String providerKey ) {
-        return embeddedMetaStore;
-      }
-
-      @Override
-      public IMetaStore getMetastore() {
-        return embeddedMetaStore;
-      }
-    };
-  }
-
 }
