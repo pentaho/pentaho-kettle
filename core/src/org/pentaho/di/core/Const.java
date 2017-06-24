@@ -1079,6 +1079,9 @@ public class Const {
   // See PDI-15781 for details
   public static final String KETTLE_COMPATIBILITY_SEND_RESULT_XML_WITH_FULL_STATUS = "KETTLE_COMPATIBILITY_SEND_RESULT_XML_WITH_FULL_STATUS";
 
+  // See PDI-16388 for details
+  public static final String KETTLE_COMPATIBILITY_SELECT_VALUES_TYPE_CHANGE_USES_TYPE_DEFAULTS = "KETTLE_COMPATIBILITY_SELECT_VALUES_TYPE_CHANGE_USES_TYPE_DEFAULTS";
+
   /**
    * The XML file that contains the list of native import rules
    */
@@ -2170,7 +2173,7 @@ public class Const {
    * @return The indexes of strings in an array of strings. Only existing indexes are returned (no -1)
    */
   public static int[] indexsOfFoundStrings( String[] lookup, String[] array ) {
-    List<Integer> indexesList = new ArrayList<Integer>();
+    List<Integer> indexesList = new ArrayList<>();
     for ( int i = 0; i < lookup.length; i++ ) {
       int idx = indexOfString( lookup[i], array );
       if ( idx >= 0 ) {
@@ -2241,7 +2244,7 @@ public class Const {
      * 0123456 Example a;b;c;d --> new String[] { a, b, c, d }
      */
     // System.out.println("splitString ["+path+"] using ["+separator+"]");
-    List<String> list = new ArrayList<String>();
+    List<String> list = new ArrayList<>();
 
     if ( string == null || string.length() == 0 ) {
       return new String[] {};
@@ -2306,7 +2309,7 @@ public class Const {
      * 0123456 Example a;b;c;d --> new String[] { a, b, c, d }
      */
     // System.out.println("splitString ["+path+"] using ["+separator+"]");
-    List<String> list = new ArrayList<String>();
+    List<String> list = new ArrayList<>();
 
     if ( string == null || string.length() == 0 ) {
       return new String[] {};
@@ -2473,7 +2476,7 @@ public class Const {
     if ( delimiterSplit != null && delimiterSplit.length > 0 ) {
 
       // We'll have at least one result so create the result list object
-      splitList = new ArrayList<String>();
+      splitList = new ArrayList<>();
 
       // Proceed through the partial splits, concatenating if the splits are within the enclosure
       for ( String currentSplit : delimiterSplit ) {
@@ -2561,7 +2564,7 @@ public class Const {
     }
 
     String[] sorted = sortStrings( strings );
-    List<String> result = new ArrayList<String>();
+    List<String> result = new ArrayList<>();
     String previous = "";
     for ( int i = 0; i < sorted.length; i++ ) {
       if ( !sorted[i].equalsIgnoreCase( previous ) ) {
