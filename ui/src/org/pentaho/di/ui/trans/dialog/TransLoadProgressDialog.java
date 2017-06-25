@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -125,7 +125,7 @@ public class TransLoadProgressDialog {
 
     try {
       ProgressMonitorDialog pmd = new ProgressMonitorDialog( shell );
-      pmd.run( false, false, op );
+      pmd.run( true, false, op );
     } catch ( InvocationTargetException e ) {
       KettleRepositoryLostException krle = KettleRepositoryLostException.lookupStackStrace( e );
       if ( krle != null ) {
