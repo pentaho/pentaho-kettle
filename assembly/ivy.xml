@@ -155,8 +155,8 @@
     <dependency org="org.springframework" name="spring-beans"   rev="${dependency.spring.framework.revision}" />
     <dependency org="org.springframework" name="spring-context" rev="${dependency.spring.framework.revision}" />
     <dependency org="org.springframework.security" name="spring-security-core" rev="${dependency.spring.security.revision}" />
-    <dependency org="org.glassfish.metro" name="webservices-api" rev="2.1" transitive="false"/>
-    <dependency org="org.glassfish.metro" name="webservices-rt" rev="2.1" transitive="false"/>
+    <dependency org="org.glassfish.metro" name="webservices-api" rev="${dependency.org.glassfish.metro.revision}" transitive="false"/>
+    <dependency org="org.glassfish.metro" name="webservices-rt" rev="${dependency.org.glassfish.metro.revision}" transitive="false"/>
 
     <!-- pentaho-metaverse -->
     <dependency org="pentaho" name="pentaho-metaverse-api" rev="${project.revision}" changing="true" transitive="false"/>
@@ -169,6 +169,7 @@
       <exclude name="javax.mail" module="mail"/>
       <exclude org="org.apache.axis2" module="axis2-kernel" />
       <exclude org="org.scannotation" module="scannotation" />
+      <exclude org="org.codehaus.woodstox" module="wstx-asl" />
     </dependency>
     <dependency org="${dependency.reporting-engine.group}" name="classic-extensions-drill-down" rev="${dependency.pentaho-reporting.revision}" changing="true"/>
     <dependency org="${dependency.reporting-engine.group}" name="classic-extensions-kettle" rev="${dependency.pentaho-reporting.revision}" changing="true">
