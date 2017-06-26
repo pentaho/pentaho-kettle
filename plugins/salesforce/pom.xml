@@ -3,13 +3,17 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
+
   <parent>
     <artifactId>pdi-plugins</artifactId>
     <groupId>org.pentaho.di.plugins</groupId>
     <version>8.0-SNAPSHOT</version>
   </parent>
+
+  <artifactId>salesforce</artifactId>
   <packaging>pom</packaging>
-  <artifactId>pdi-salesforce</artifactId>
+
+  <name>PDI Salesforce Plugin</name>
 
   <licenses>
     <license>
@@ -24,5 +28,4 @@
     <module>assemblies</module>
     <module>core</module>
   </modules>
-
 </project>
