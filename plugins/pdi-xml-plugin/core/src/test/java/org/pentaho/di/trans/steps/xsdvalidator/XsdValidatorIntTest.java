@@ -52,7 +52,8 @@ import org.pentaho.di.trans.TransTestFactory;
 public class XsdValidatorIntTest {
 
   private static final String RAMDIR = "ram://" + XsdValidatorIntTest.class.getSimpleName();
-  private static final String TEST_FILES_DIR = "testfiles/xsdvalidator/";
+  private static final String TEST_FILES_DIR = "src/test/resources/xsdvalidator/";
+
   private static FileObject schemaRamFile = null;
   private static FileObject dataRamFile = null;
 
