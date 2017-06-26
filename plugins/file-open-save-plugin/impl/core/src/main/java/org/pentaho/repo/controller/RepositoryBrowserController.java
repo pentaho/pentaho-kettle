@@ -21,7 +21,6 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.pentaho.di.core.EngineMetaInterface;
 import org.pentaho.di.core.LastUsedFile;
-import org.pentaho.di.core.Props;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.repository.ObjectId;
@@ -36,7 +35,10 @@ import org.pentaho.di.ui.spoon.Spoon;
 import org.pentaho.repo.model.RepositoryDirectory;
 import org.pentaho.repo.model.RepositoryFile;
 
-import java.util.*;
+import java.util.List;
+import java.util.LinkedList;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.function.Supplier;
 
 /**
@@ -68,7 +70,7 @@ public class RepositoryBrowserController {
   public String getActiveFileName() {
     try {
       return getSpoon().getActiveMeta().getName();
-    } catch( Exception e ) {
+    } catch ( Exception e ) {
       return "";
     }
   }
@@ -131,7 +133,7 @@ public class RepositoryBrowserController {
 
   public boolean saveFile( String path, String name ) {
     boolean result = checkSecurity();
-    if( result ) {
+    if ( result ) {
       try {
         RepositoryDirectoryInterface repositoryDirectoryInterface = getRepository().findDirectory( path );
         getSpoon().getDisplay().asyncExec( () -> {
@@ -294,10 +296,17 @@ public class RepositoryBrowserController {
     try {
       PropsUI props = PropsUI.getInstance();
       String jsonValue = props.getRecentSearches();
-      JSONParser jsonParser = new JSONParser();
-      JSONObject jsonObject = (JSONObject) jsonParser.parse( jsonValue );
-      JSONArray jsonArray = (JSONArray) jsonObject.get( Props.STRING_RECENT_SEARCHES );
-      CollectionUtils.addAll( recentSearches, jsonArray.toArray() );
+      if ( jsonValue != null ) {
+        JSONParser jsonParser = new JSONParser();
+        JSONObject jsonObject = (JSONObject) jsonParser.parse( jsonValue );
+
+        String login = "file_repository_no_login";
+        if ( Spoon.getInstance().rep.getUserInfo() != null ) {
+          login = Spoon.getInstance().rep.getUserInfo().getLogin();
+        }
+        JSONArray jsonArray = (JSONArray) jsonObject.get( login );
+        CollectionUtils.addAll( recentSearches, jsonArray.toArray() );
+      }
     } catch ( Exception e ) {
       // Log error in console
     }
@@ -305,22 +314,34 @@ public class RepositoryBrowserController {
   }
 
   public LinkedList<String> storeRecentSearch( String recentSearch ) {
-
     LinkedList<String> recentSearches = getRecentSearches();
-    if( recentSearch == null || recentSearches.contains( recentSearch ) ) {
-      return recentSearches;
-    }
-    recentSearches.push( recentSearch );
-    if( recentSearches.size() > 5 ) {
-      recentSearches.pollLast();
-    }
+    try {
+      if ( recentSearch == null || recentSearches.contains( recentSearch ) ) {
+        return recentSearches;
+      }
+      recentSearches.push( recentSearch );
+      if ( recentSearches.size() > 5 ) {
+        recentSearches.pollLast();
+      }
 
-    JSONArray jsonArray = new JSONArray();
-    CollectionUtils.addAll( jsonArray, recentSearches.toArray() );
-    JSONObject jsonObject = new JSONObject();
-    jsonObject.put( Props.STRING_RECENT_SEARCHES, jsonArray );
-    PropsUI props = PropsUI.getInstance();
-    props.setRecentSearches( jsonObject.toJSONString() );
+      JSONArray jsonArray = new JSONArray();
+      CollectionUtils.addAll( jsonArray, recentSearches.toArray() );
+
+      PropsUI props = PropsUI.getInstance();
+      String jsonValue = props.getRecentSearches();
+      JSONParser jsonParser = new JSONParser();
+      JSONObject jsonObject = jsonValue != null ? (JSONObject) jsonParser.parse( jsonValue ) : new JSONObject();
+
+      String login = "file_repository_no_login";
+      if ( Spoon.getInstance().rep.getUserInfo() != null ) {
+        login = Spoon.getInstance().rep.getUserInfo().getLogin();
+      }
+
+      jsonObject.put( login, jsonArray );
+      props.setRecentSearches( jsonObject.toJSONString() );
+    } catch ( Exception e ) {
+      // Log error in console
+    }
 
     return recentSearches;
   }

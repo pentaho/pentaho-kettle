@@ -189,6 +189,7 @@ public class PropsUI extends Props {
     loadLastUsedFiles();
     loadLastUsedRepoFiles();
     loadOpenTabFiles();
+    resetRecentSearches();
 
     PluginRegistry registry = PluginRegistry.getInstance();
     List<PluginInterface> plugins = registry.getPlugins( LifecyclePluginType.class );
@@ -1217,6 +1218,12 @@ public class PropsUI extends Props {
 
   public void setIndicateSlowTransStepsEnabled( boolean indicate ) {
     properties.setProperty( STRING_INDICATE_SLOW_TRANS_STEPS, indicate ? YES : NO );
+  }
+
+  private void resetRecentSearches() {
+    if( properties.contains( STRING_RECENT_SEARCHES ) ) {
+      properties.remove( STRING_RECENT_SEARCHES );
+    }
   }
 
   public void setRecentSearches( String recentSearches ) {

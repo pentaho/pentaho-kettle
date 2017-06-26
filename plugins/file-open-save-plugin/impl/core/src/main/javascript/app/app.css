@@ -90,11 +90,10 @@ file-open-save-app .headerSearchLeft {
   width: 30px;
   height: 100%;
   border: none;
-  cursor: pointer;
+  cursor: text;
   float: left;
 }
 
-file-open-save-app .headerSearchLeft:hover,
 file-open-save-app .headerSearchLeft.blueState {
   background: url("./images/search_blue.png") no-repeat left 7px center;
 }
@@ -121,11 +120,39 @@ file-open-save-app input.searchBox:focus {
   float: left;
 }
 
+/*HIDES THE X ON THE SEARCHBOX ON IE11*/
 file-open-save-app input.searchBox::-ms-clear {
   display: none;
   width:0;
   height:0;
 }
+/*HIDES THE X ON THE SEARCHBOX ON IE11*/
+
+/*CHANGES THE COLOR OF THE PLACEHOLDER ON DIFFERENT BROWSERS*/
+file-open-save-app input.searchBox::-webkit-input-placeholder {
+  color: #999999;
+}
+
+file-open-save-app input.searchBox:-ms-input-placeholder {
+  color: #999999;
+}
+
+file-open-save-app input.searchBox::-moz-placeholder {
+  color: #999999;
+}
+
+file-open-save-app input.searchBox:focus::-webkit-input-placeholder {
+  color: #CCCCCC;
+}
+
+file-open-save-app input.searchBox:focus:-ms-input-placeholder {
+  color: #CCCCCC;
+}
+
+file-open-save-app input.searchBox:focus::-moz-placeholder {
+  color: #CCCCCC;
+}
+/*CHANGES THE COLOR OF THE PLACEHOLDER ON DIFFERENT BROWSERS*/
 
 file-open-save-app .headerBottom {
   height: 18px;
@@ -295,31 +322,25 @@ file-open-save-app .fileAreaMessageView {
   transform: translate(-50%, -100%);
 }
 
-/* TYPEAHEAD POPUP STYLING */
-.custom-popup-wrapper {
+.searchBoxExtra {
   position: absolute;
-  top: 100%;
-  left: 0;
-  z-index: 1000;
-  display: none;
-  background-color: white;
-  border: inherit;
+  background-color: #ffffff;
+  -moz-box-shadow: 0 0 5px rgba(0, 0, 0, 0.247058823529412);
+  -webkit-box-shadow: 0 0 5px rgba(0, 0, 0, 0.247058823529412);
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.247058823529412);
+  padding: 5px 0;
+  max-width: 300px;
+  min-width: 268px;
+  z-index: 100;
 }
 
-.custom-popup-wrapper > .message {
-  padding: 10px 20px;
-  border-bottom: 1px solid #ddd;
-  color: #868686;
+.searchBoxExtraItem {
+  padding: 5px 10px 5px 10px;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
 }
 
-.custom-popup-wrapper > .dropdown-menu {
-  position: static;
-  float: none;
-  display: block;
-  min-width: 160px;
-  background-color: transparent;
-  border: none;
-  border-radius: 0;
-  box-shadow: none;
+.searchBoxExtraItem:hover {
+  background-color: #E6EFF6;
 }
-/* TYPEAHEAD POPUP STYLING */

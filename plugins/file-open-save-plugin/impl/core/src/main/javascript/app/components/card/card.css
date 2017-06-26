@@ -102,3 +102,10 @@ card .cardTitle {
 card .cardDate {
   color: #999
 }
+
+card .cardAreaMessageView {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -100%);
+}
