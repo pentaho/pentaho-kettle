@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -27,8 +27,7 @@ import static org.mockito.Mockito.when;
 
 import java.util.HashMap;
 
-import junit.framework.Assert;
-
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -55,6 +54,7 @@ public class MemoryGroupByAggregationNullsTest {
   Aggregate aggregate;
   private ValueMetaInterface vmi;
   private RowMetaInterface rmi;
+  private MemoryGroupByMeta meta;
 
   @BeforeClass
   public static void setUpBeforeClass() throws Exception {
@@ -70,7 +70,7 @@ public class MemoryGroupByAggregationNullsTest {
   public void setUp() throws Exception {
     data = new MemoryGroupByData();
     data.subjectnrs = new int[] { 0 };
-    MemoryGroupByMeta meta = new MemoryGroupByMeta();
+    meta = new MemoryGroupByMeta();
     meta.setAggregateType( new int[] { 5 } );
     meta.setAggregateField( new String[] { "x" } );
     vmi = new ValueMetaInteger();
@@ -170,4 +170,29 @@ public class MemoryGroupByAggregationNullsTest {
     Aggregate result = data.map.get( getHashEntry() );
     Assert.assertEquals( "Returns non-null value", bytes, result.agg[0] );
   }
+
+  // PDI-16150
+  @Test
+  public void addToAggregateBinaryData() throws Exception {
+    MemoryGroupByMeta memoryGroupByMeta = Mockito.spy( meta );
+    memoryGroupByMeta.setAggregateType( new int[] { MemoryGroupByMeta.TYPE_GROUP_COUNT_DISTINCT } );
+    when( mockHelper.stepMeta.getStepMetaInterface() ).thenReturn( memoryGroupByMeta );
+    vmi.setStorageType( ValueMetaInterface.STORAGE_TYPE_NORMAL );
+    vmi.setStorageMetadata( new ValueMetaString() );
+    aggregate.counts = new long[] { 0L };
+    Mockito.doReturn( new String[] { "test" } ).when( memoryGroupByMeta ).getSubjectField();
+    aggregate.agg = new Object[] { new byte[0] };
+    step = new MemoryGroupBy( mockHelper.stepMeta, data, 0, mockHelper.transMeta, mockHelper.trans );
+
+    String binaryData0 = "11011";
+    String binaryData1 = "01011";
+    step.addToAggregate( new Object[] { binaryData0.getBytes() } );
+    step.addToAggregate( new Object[] { binaryData1.getBytes() } );
+
+    Object[] distinctObjs = data.map.get( getHashEntry() ).distinctObjs[0].toArray();
+
+    Assert.assertEquals( binaryData0, distinctObjs[1] );
+    Assert.assertEquals( binaryData1, distinctObjs[0] );
+  }
+
 }

@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -311,6 +311,12 @@ public class MemoryGroupBy extends BaseStep implements StepInterface {
           }
           if ( !subjMeta.isNull( subj ) ) {
             Object obj = subjMeta.convertToNormalStorageType( subj );
+            // byte [] is not Comparable and can not be added to TreeSet.
+            // For our case it can be binary array. It was typed as String.
+            // So it can be processing (comparing and displaying) correctly as String
+            if ( obj instanceof byte [] ) {
+              obj = new String( (byte []) obj );
+            }
             if ( !aggregate.distinctObjs[i].contains( obj ) ) {
               aggregate.distinctObjs[i].add( obj );
             }
