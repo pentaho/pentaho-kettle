@@ -1,7 +1,0 @@
-target/
-override.properties
-.classpath
-.project
-*.iml
-.idea/
-derby.log

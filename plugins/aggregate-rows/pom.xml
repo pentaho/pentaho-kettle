@@ -7,14 +7,16 @@
     <artifactId>pdi-plugins</artifactId>
     <version>8.0-SNAPSHOT</version>
   </parent>
+
   <artifactId>aggregate-rows</artifactId>
   <version>8.0-SNAPSHOT</version>
   <packaging>pom</packaging>
-  <name>Aggregate Rows Parent POM</name>
+
+  <name>PDI Aggregate Rows Plugin</name>
   <description>Container pom for aggregate-rows-core</description>
-  <url>http://www.pentaho.com</url>
+
   <modules>
-    <module>aggregate-rows-core</module>
+    <module>core</module>
     <module>assemblies</module>
   </modules>
 </project>
