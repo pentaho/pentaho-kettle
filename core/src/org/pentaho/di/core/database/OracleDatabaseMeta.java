@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -36,7 +36,7 @@ import org.pentaho.di.core.variables.VariableSpace;
  * @since 11-mrt-2005
  */
 
-public class OracleDatabaseMeta extends BaseDatabaseMeta implements DatabaseInterface {
+public class OracleDatabaseMeta extends BaseDatabaseMeta implements DatabaseInterfaceExtended {
   @Override
   public int[] getAccessTypeList() {
     return new int[] {
@@ -639,4 +639,8 @@ public class OracleDatabaseMeta extends BaseDatabaseMeta implements DatabaseInte
     return 2000;
   }
 
+  @Override
+  public SqlScriptParser createSqlScriptParser() {
+    return new SqlScriptParser( false );
+  }
 }
