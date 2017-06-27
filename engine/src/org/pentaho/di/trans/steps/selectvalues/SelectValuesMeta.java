@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -351,7 +351,7 @@ public class SelectValuesMeta extends BaseStepMeta implements StepMetaInterface 
         // Sort the fields
         // Add them after the specified fields...
         //
-        List<String> extra = new ArrayList<String>();
+        List<String> extra = new ArrayList<>();
         for ( int i = 0; i < inputRowMeta.size(); i++ ) {
           String fieldName = inputRowMeta.getValueMeta( i ).getName();
           if ( Const.indexOfString( fieldName, getSelectName() ) < 0 ) {
@@ -383,7 +383,13 @@ public class SelectValuesMeta extends BaseStepMeta implements StepMetaInterface 
     }
   }
 
+  // Not called anywhere else in Pentaho. It's important to call the method below passing in the VariableSpace
+  @Deprecated
   public void getMetadataFields( RowMetaInterface inputRowMeta, String name ) throws KettlePluginException {
+    getMetadataFields( inputRowMeta, name, null );
+  }
+
+  public void getMetadataFields( RowMetaInterface inputRowMeta, String name, VariableSpace space ) throws KettlePluginException {
     if ( meta != null && meta.length > 0 ) {
       // METADATA mode: change the meta-data of the values mentioned...
 
@@ -391,6 +397,11 @@ public class SelectValuesMeta extends BaseStepMeta implements StepMetaInterface 
         SelectMetadataChange metaChange = meta[i];
 
         int idx = inputRowMeta.indexOfValue( metaChange.getName() );
+        boolean metaTypeChangeUsesNewTypeDefaults = false; // Normal behavior as of 5.x or so
+        if ( space != null ) {
+          metaTypeChangeUsesNewTypeDefaults = ValueMetaBase.convertStringToBoolean(
+              space.getVariable( Const.KETTLE_COMPATIBILITY_SELECT_VALUES_TYPE_CHANGE_USES_TYPE_DEFAULTS, "N" ) );
+        }
         if ( idx >= 0 ) { // We found the value
 
           // This is the value we need to change:
@@ -403,7 +414,12 @@ public class SelectValuesMeta extends BaseStepMeta implements StepMetaInterface 
           }
           // Change the type?
           if ( metaChange.getType() != ValueMetaInterface.TYPE_NONE && v.getType() != metaChange.getType() ) {
-            v = ValueMetaFactory.cloneValueMeta( v, metaChange.getType() );
+            // Fix for PDI-16388 - clone copies over the conversion mask instead of using the default for the new type
+            if ( !metaTypeChangeUsesNewTypeDefaults ) {
+              v = ValueMetaFactory.cloneValueMeta( v, metaChange.getType() );
+            } else {
+              v = ValueMetaFactory.createValueMeta( v.getName(), metaChange.getType() );
+            }
 
             // This is now a copy, replace it in the row!
             //
@@ -848,7 +864,7 @@ public class SelectValuesMeta extends BaseStepMeta implements StepMetaInterface 
    * @return The list of field name lineage objects
    */
   public List<FieldnameLineage> getFieldnameLineage() {
-    List<FieldnameLineage> lineages = new ArrayList<FieldnameLineage>();
+    List<FieldnameLineage> lineages = new ArrayList<>();
 
     // Select values...
     //
