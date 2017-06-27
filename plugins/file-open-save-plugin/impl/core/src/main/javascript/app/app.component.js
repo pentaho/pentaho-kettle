@@ -63,7 +63,8 @@ define([
     vm.doSearch = doSearch;
     vm.resetSearch = resetSearch;
     vm.addFolder = addFolder;
-    vm.openOrSave = openOrSave;
+    vm.openClicked = openClicked;
+    vm.saveClicked = saveClicked;
     vm.cancel = cancel;
     vm.highlightFile = highlightFile;
     vm.remove = remove;
@@ -86,11 +87,11 @@ define([
       vm.wrapperClass = "save";
       vm.headerTitle = i18n.get("file-open-save-plugin.app.header.save.title");
       vm.searchPlaceholder = i18n.get("file-open-save-plugin.app.header.search.placeholder");
-      vm.selectedFolder = i18n.get("file-open-save-plugin.app.header.save.title");
-      vm.confirmButton = i18n.get("file-open-save-plugin.app.save.button");
-      vm.cancelButton = i18n.get("file-open-save-plugin.app.cancel.button");
       vm.saveFileNameLabel = i18n.get("file-open-save-plugin.app.save.file-name.label");
       vm.noRecentsMsg = i18n.get("file-open-save-plugin.app.middle.no-recents.message");
+      vm.openButton = i18n.get("file-open-save-plugin.app.open.button");
+      vm.cancelButton = i18n.get("file-open-save-plugin.app.cancel.button");
+      vm.saveButton = i18n.get("file-open-save-plugin.app.save.button");
       vm.isInSearch = false;
       vm.showRecents = true;
       vm.folder = {name: "Recents", path: "Recents"};
@@ -137,6 +138,7 @@ define([
       if (state) {
         vm.setState(state);
       }
+      _setFileToSaveName();
     }
 
     /**
@@ -148,12 +150,24 @@ define([
       if (state === "open") {
         vm.wrapperClass = "open";
         vm.headerTitle = i18n.get("file-open-save-plugin.app.header.open.title");
-        vm.confirmButton = i18n.get("file-open-save-plugin.app.open.button");
       }
       if (state === "save") {
         vm.wrapperClass = "save";
         vm.headerTitle = i18n.get("file-open-save-plugin.app.header.save.title");
-        vm.confirmButton = i18n.get("file-open-save-plugin.app.save.button");
+      }
+    }
+
+    /**
+     * Gets the active file name from Spoon to set vm.fileToSave
+     * @private
+     */
+    function _setFileToSaveName() {
+      if (vm.wrapperClass === "save") {
+        dt.getActiveFileName().then(function(response) {
+          vm.fileToSave = response.data.fileName;
+        }, function() {
+          vm.fileToSave = "";
+        });
       }
     }
 
@@ -203,7 +217,7 @@ define([
         } else {
           dt.openFile(file.objectId.id, file.type);
         }
-        close();
+        _closeBrowser();
       }
     }
 
@@ -257,25 +271,21 @@ define([
     }
 
     /**
-     * Called if user clicks "Open" or "Save" in UI. OR if user double clicks a folder or file.
-     * If file type is a folder, calls function to select that folder.
-     * If file type is file, calls either open or save function and closes browser if there is no error.
+     * Called when user clicks "Open"
      */
-    function openOrSave() {
-      if (vm.file) {
-        if (vm.file.type === "File folder") {
-          selectFolder(vm.file);
-        } else {
-          if (vm.wrapperClass === "open") {
-            _open();
-          } else {
-            _save();
-          }
-          if (!vm.showError) {
-            close();
-          }
-        }
+    function openClicked() {
+      if (vm.file && vm.file.type === "File folder") {
+        selectFolder(vm.file);
+      } else {
+        _open();
       }
+    }
+
+    /**
+     * Called when user clicks "Save"
+     */
+    function saveClicked() {
+      _save(false);
     }
 
     /**
@@ -288,13 +298,20 @@ define([
 
     /**
      * Calls data service to save file if there is no error
+     * @param {boolean} override - Override file?
      * @private
      */
-    function _save() {
-      if (vm.fileToSave === vm.file.name) {
-        // show Error
-        vm.showError = true;
-        vm.errorType = 1;
+    function _save(override) {
+      if (!_isDuplicate() || override) {
+        dt.saveFile(vm.folder.path, vm.fileToSave).then(function(response) {
+          if (response.status === 200) {
+            _closeBrowser();
+          } else {
+            _triggerError(3);
+          }
+        });
+      } else {
+        _triggerError(1);
       }
     }
 
@@ -302,7 +319,27 @@ define([
      * Called if user clicks cancel in either open or save to close the browser
      */
     function cancel() {
-      close();
+      _closeBrowser();
+    }
+
+    /**
+     * Called to close the browser if there is no current error
+     * @private
+     */
+    function _closeBrowser() {
+      if (!vm.showError) {
+        close();
+      }
+    }
+
+    /**
+     * Sets the error type and boolean to show the error dialog.
+     * @param {Integer} type - the type of error (0-6)
+     * @private
+     */
+    function _triggerError(type) {
+      vm.errorType = type;
+      vm.showError = true;
     }
 
     /**
@@ -310,7 +347,25 @@ define([
      * error and cancel it
      */
     function confirmError() {
-      // handle error
+      switch (vm.errorType) {
+        case 1: // File exists...override
+          _save(true);
+          break;
+        case 2: // Folder exists...no action needed
+          break;
+        case 3: // Unable to save...no action needed
+          break;
+        case 4: // Unable to create folder...no action needed
+          break;
+        case 5: // Delete File
+          // Handle force delete file
+          break;
+        case 6: // Delete Folder
+          // Handle force delete folder
+          break;
+        default:
+          break;
+      }
       cancelError();
     }
 
@@ -400,6 +455,23 @@ define([
         }
       }
       return check;
+    }
+
+    /**
+     * Checks to see if the user has entered a file to save the same as a file already in current directory
+     * @return {boolean} - true if duplicate, false otherwise
+     * @private
+     */
+    function _isDuplicate() {
+      if (vm.folder && vm.folder.children) {
+        for (var i = 0; i < vm.folder.children.length; i++) {
+          if (vm.fileToSave === vm.folder.children[i].name) {
+            vm.file = vm.folder.children[i];
+            return true;
+          }
+        }
+      }
+      return false;
     }
   }
 

@@ -4285,7 +4285,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
         }
       } else {
 //        try {
-//          ExtensionPointHandler.callExtensionPoint( log, KettleExtensionPoint.SpoonOpenRepository.id, null );
+//          ExtensionPointHandler.callExtensionPoint( log, KettleExtensionPoint.SpoonOpenSaveRepository.id, "open" );
 //        } catch ( KettleException ke ) {
 //          // Ignore
 //        }
@@ -5131,11 +5131,40 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
   }
 
   public boolean saveToRepository( EngineMetaInterface meta, boolean ask_name ) throws KettleException {
-    return saveToRepository( meta, ask_name, true );
+    if ( log.isDetailed() ) {
+      // "Save to repository..."
+      //
+      log.logDetailed( BaseMessages.getString( PKG, "Spoon.Log.SaveToRepository" ) );
+    }
+    if ( rep != null ) {
+
+      // If the repository directory is root then get the default save directory
+      if ( meta.getRepositoryDirectory() == null || meta.getRepositoryDirectory().isRoot() ) {
+        meta.setRepositoryDirectory( rep.getDefaultSaveDirectory( meta ) );
+      }
+
+      if ( ask_name ) {
+        try {
+          ExtensionPointHandler.callExtensionPoint( LogChannel.GENERAL, KettleExtensionPoint.SpoonOpenSaveRepository.id, "save" );
+        } catch ( KettleException ke ) {
+          //Ignore
+        }
+      } else {
+        saveToRepositoryConfirmed( meta );
+      }
+
+    } else {
+      MessageBox mb = new MessageBox( shell, SWT.OK | SWT.ICON_ERROR );
+      // "There is no repository connection available."
+      mb.setMessage( BaseMessages.getString( PKG, "Spoon.Dialog.NoRepositoryConnection.Message" ) );
+      // "No repository available."
+      mb.setText( BaseMessages.getString( PKG, "Spoon.Dialog.NoRepositoryConnection.Title" ) );
+      mb.open();
+    }
+    return false;
   }
 
-  public boolean saveToRepository( EngineMetaInterface meta, boolean ask_name, boolean showProperties ) throws KettleException {
-
+  public boolean saveToRepositoryCheckSecurity( EngineMetaInterface meta ) {
     // Verify repository security first...
     //
     if ( meta.getFileType().equals( LastUsedFile.FILE_TYPE_TRANSFORMATION ) ) {
@@ -5148,182 +5177,121 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
         return false;
       }
     }
+    return true;
+  }
 
-    if ( log.isDetailed() ) {
-      // "Save to repository..."
-      //
-      log.logDetailed( BaseMessages.getString( PKG, "Spoon.Log.SaveToRepository" ) );
-    }
-    if ( rep != null ) {
-      boolean answer = true;
-      boolean ask = ask_name;
+  public boolean saveToRepositoryConfirmed( EngineMetaInterface meta ) throws KettleException {
+    if ( !Utils.isEmpty( meta.getName() ) && rep != null ) {
 
-      // If the repository directory is root then get the default save directory
-      if ( meta.getRepositoryDirectory() == null || meta.getRepositoryDirectory().isRoot() ) {
-        meta.setRepositoryDirectory( rep.getDefaultSaveDirectory( meta ) );
+      ObjectId existingId = null;
+      if ( meta instanceof TransMeta ) {
+        existingId = rep.getTransformationID( meta.getName(), meta.getRepositoryDirectory() );
       }
-      while ( answer && ( ask || Utils.isEmpty( meta.getName() ) ) ) {
-        if ( !ask ) {
-          MessageBox mb = new MessageBox( shell, SWT.OK | SWT.ICON_WARNING );
-
-          // "Please give this transformation a name before saving it in the database."
-          mb.setMessage( BaseMessages.getString( PKG, "Spoon.Dialog.PromptTransformationName.Message" ) );
-          // "Transformation has no name."
-          mb.setText( BaseMessages.getString( PKG, "Spoon.Dialog.PromptTransformationName.Title" ) );
-          mb.open();
-        }
-        ask = false;
-        if ( showProperties ) {
-          if ( meta instanceof TransMeta ) {
-            answer = TransGraph.editProperties( (TransMeta) meta, this, rep, false );
-          }
-          if ( meta instanceof JobMeta ) {
-            answer = JobGraph.editProperties( (JobMeta) meta, this, rep, false );
-          }
-        }
+      if ( meta instanceof JobMeta ) {
+        existingId = rep.getJobId( meta.getName(), meta.getRepositoryDirectory() );
       }
 
-      if ( answer && !Utils.isEmpty( meta.getName() ) && rep != null ) {
+      boolean saved = false;
 
-        int response = SWT.YES;
-
-        ObjectId existingId = null;
-        if ( meta instanceof TransMeta ) {
-          existingId = rep.getTransformationID( meta.getName(), meta.getRepositoryDirectory() );
-        }
-        if ( meta instanceof JobMeta ) {
-          existingId = rep.getJobId( meta.getName(), meta.getRepositoryDirectory() );
-        }
-
-        // If there is no object id (import from XML) and there is an existing object.
-        //
-        // or...
-        //
-        // If the transformation/job has an object id and it's different from the one in the repository.
-        //
-        if ( ( meta.getObjectId() == null && existingId != null )
-          || existingId != null && !meta.getObjectId().equals( existingId ) ) {
-          // In case we support revisions, we can simply overwrite
-          // without a problem so we simply don't ask.
-          // However, if we import from a file we should ask.
-          //
-          if ( !rep.getRepositoryMeta().getRepositoryCapabilities().supportsRevisions()
-            || meta.getObjectId() == null ) {
-            MessageBox mb = new MessageBox( shell, SWT.YES | SWT.NO | SWT.ICON_QUESTION );
-
-            // There already is a transformation called ... in the repository.
-            // Do you want to overwrite the transformation?
-            //
-            mb.setMessage( BaseMessages.getString( PKG, "Spoon.Dialog.PromptOverwriteTransformation.Message", meta
-              .getName(), Const.CR ) );
-            mb.setText( BaseMessages.getString( PKG, "Spoon.Dialog.PromptOverwriteTransformation.Title" ) );
-            response = mb.open();
-          }
-        }
-
-        boolean saved = false;
-        if ( response == SWT.YES ) {
-
-          if ( meta.getObjectId() == null ) {
-            meta.setObjectId( existingId );
-          }
-
-          try {
-            shell.setCursor( cursor_hourglass );
-
-            // Keep info on who & when this transformation was
-            // created and or modified...
-            if ( meta.getCreatedDate() == null ) {
-              meta.setCreatedDate( new Date() );
-              if ( capabilities.supportsUsers() ) {
-                meta.setCreatedUser( rep.getUserInfo().getLogin() );
-              }
-            }
-
-            // Keep info on who & when this transformation was
-            // changed...
-            meta.setModifiedDate( new Date() );
-            if ( capabilities.supportsUsers() ) {
-              meta.setModifiedUser( rep.getUserInfo().getLogin() );
-            }
-
-            boolean versioningEnabled = true;
-            boolean versionCommentsEnabled = true;
-            String fullPath = getJobTransfFullPath( meta );
-            RepositorySecurityProvider repositorySecurityProvider =
-                rep != null && rep.getSecurityProvider() != null ? rep.getSecurityProvider() : null;
-            if ( repositorySecurityProvider != null && fullPath != null ) {
-              versioningEnabled = repositorySecurityProvider.isVersioningEnabled( fullPath );
-              versionCommentsEnabled = repositorySecurityProvider.allowsVersionComments( fullPath );
-            }
-
-            // Finally before saving, ask for a version comment (if
-            // applicable)
-            //
-            String versionComment = null;
-            boolean versionOk;
-            if ( !versioningEnabled || !versionCommentsEnabled ) {
-              versionOk = true;
-              versionComment = "";
-            } else {
-              versionOk = false;
-            }
-            while ( !versionOk ) {
-              versionComment = RepositorySecurityUI.getVersionComment( shell, rep, meta.getName(), fullPath, false );
-
-              // if the version comment is null, the user hit cancel, exit.
-              if ( rep != null && rep.getSecurityProvider() != null
-                  && rep.getSecurityProvider().allowsVersionComments( fullPath ) && versionComment == null ) {
-                return false;
-              }
-
-              if ( Utils.isEmpty( versionComment ) && rep.getSecurityProvider().isVersioningEnabled( fullPath )
-                  && rep.getSecurityProvider().isVersionCommentMandatory() ) {
-                if ( !RepositorySecurityUI.showVersionCommentMandatoryDialog( shell ) ) {
-                  return false; // no, I don't want to enter a
-                  // version comment and yes,
-                  // it's mandatory.
-                }
-              } else {
-                versionOk = true;
-              }
-            }
-
-            if ( versionOk ) {
-              SaveProgressDialog spd = new SaveProgressDialog( shell, rep, meta, versionComment );
-              if ( spd.open() ) {
-                saved = true;
-                if ( !props.getSaveConfirmation() ) {
-                  MessageDialogWithToggle md =
-                    new MessageDialogWithToggle(
-                      shell, BaseMessages.getString( PKG, "Spoon.Message.Warning.SaveOK" ), null, BaseMessages
-                        .getString( PKG, "Spoon.Message.Warning.TransformationWasStored" ),
-                      MessageDialog.QUESTION, new String[] {
-                        BaseMessages.getString( PKG, "Spoon.Message.Warning.OK" ) },
-                      0,
-                      BaseMessages.getString( PKG, "Spoon.Message.Warning.NotShowThisMessage" ),
-                      props.getSaveConfirmation() );
-                  MessageDialogWithToggle.setDefaultImage( GUIResource.getInstance().getImageSpoon() );
-                  md.open();
-                  props.setSaveConfirmation( md.getToggleState() );
-                }
-
-                // Handle last opened files...
-                props.addLastFile(
-                  meta.getFileType(), meta.getName(), meta.getRepositoryDirectory().getPath(), true,
-                  getRepositoryName() );
-                saveSettings();
-                addMenuLast();
-
-                setShellText();
-              }
-            }
-          } finally {
-            shell.setCursor( null );
-          }
-        }
-        return saved;
+      if ( meta.getObjectId() == null ) {
+        meta.setObjectId( existingId );
       }
+
+      try {
+        shell.setCursor( cursor_hourglass );
+
+        // Keep info on who & when this transformation was
+        // created and or modified...
+        if ( meta.getCreatedDate() == null ) {
+          meta.setCreatedDate( new Date() );
+          if ( capabilities.supportsUsers() ) {
+            meta.setCreatedUser( rep.getUserInfo().getLogin() );
+          }
+        }
+
+        // Keep info on who & when this transformation was
+        // changed...
+        meta.setModifiedDate( new Date() );
+        if ( capabilities.supportsUsers() ) {
+          meta.setModifiedUser( rep.getUserInfo().getLogin() );
+        }
+
+        boolean versioningEnabled = true;
+        boolean versionCommentsEnabled = true;
+        String fullPath = getJobTransfFullPath( meta );
+        RepositorySecurityProvider repositorySecurityProvider =
+          rep != null && rep.getSecurityProvider() != null ? rep.getSecurityProvider() : null;
+        if ( repositorySecurityProvider != null && fullPath != null ) {
+          versioningEnabled = repositorySecurityProvider.isVersioningEnabled( fullPath );
+          versionCommentsEnabled = repositorySecurityProvider.allowsVersionComments( fullPath );
+        }
+
+        // Finally before saving, ask for a version comment (if
+        // applicable)
+        //
+        String versionComment = null;
+        boolean versionOk;
+        if ( !versioningEnabled || !versionCommentsEnabled ) {
+          versionOk = true;
+          versionComment = "";
+        } else {
+          versionOk = false;
+        }
+        while ( !versionOk ) {
+          versionComment = RepositorySecurityUI.getVersionComment( shell, rep, meta.getName(), fullPath, false );
+
+          // if the version comment is null, the user hit cancel, exit.
+          if ( rep != null && rep.getSecurityProvider() != null
+            && rep.getSecurityProvider().allowsVersionComments( fullPath ) && versionComment == null ) {
+            return false;
+          }
+
+          if ( Utils.isEmpty( versionComment ) && rep.getSecurityProvider().isVersioningEnabled( fullPath )
+            && rep.getSecurityProvider().isVersionCommentMandatory() ) {
+            if ( !RepositorySecurityUI.showVersionCommentMandatoryDialog( shell ) ) {
+              return false; // no, I don't want to enter a
+              // version comment and yes,
+              // it's mandatory.
+            }
+          } else {
+            versionOk = true;
+          }
+        }
+
+        if ( versionOk ) {
+          SaveProgressDialog spd = new SaveProgressDialog( shell, rep, meta, versionComment );
+          if ( spd.open() ) {
+            saved = true;
+            if ( !props.getSaveConfirmation() ) {
+              MessageDialogWithToggle md =
+                new MessageDialogWithToggle(
+                  shell, BaseMessages.getString( PKG, "Spoon.Message.Warning.SaveOK" ), null, BaseMessages
+                  .getString( PKG, "Spoon.Message.Warning.TransformationWasStored" ),
+                  MessageDialog.QUESTION, new String[] {
+                  BaseMessages.getString( PKG, "Spoon.Message.Warning.OK" ) },
+                  0,
+                  BaseMessages.getString( PKG, "Spoon.Message.Warning.NotShowThisMessage" ),
+                  props.getSaveConfirmation() );
+              MessageDialogWithToggle.setDefaultImage( GUIResource.getInstance().getImageSpoon() );
+              md.open();
+              props.setSaveConfirmation( md.getToggleState() );
+            }
+
+            // Handle last opened files...
+            props.addLastFile(
+              meta.getFileType(), meta.getName(), meta.getRepositoryDirectory().getPath(), true,
+              getRepositoryName() );
+            saveSettings();
+            addMenuLast();
+
+            setShellText();
+          }
+        }
+      } finally {
+        shell.setCursor( null );
+      }
+
+      return saved;
     } else {
       MessageBox mb = new MessageBox( shell, SWT.OK | SWT.ICON_ERROR );
       // "There is no repository connection available."

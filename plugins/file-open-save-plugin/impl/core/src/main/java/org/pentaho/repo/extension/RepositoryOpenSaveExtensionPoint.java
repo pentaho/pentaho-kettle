@@ -34,11 +34,11 @@ import java.util.function.Supplier;
  */
 
 @ExtensionPoint(
-  id = "RepositoryOpenExtensionPoint",
-  extensionPointId = "SpoonOpenRepository",
+  id = "RepositoryOpenSaveExtensionPoint",
+  extensionPointId = "SpoonOpenSaveRepository",
   description = "Open the repository browser"
 )
-public class RepositoryOpenExtensionPoint implements ExtensionPointInterface {
+public class RepositoryOpenSaveExtensionPoint implements ExtensionPointInterface {
 
   private Supplier<Spoon> spoonSupplier = Spoon::getInstance;
   private Supplier<PropsUI> propsUISupplier = PropsUI::getInstance;
@@ -54,9 +54,10 @@ public class RepositoryOpenExtensionPoint implements ExtensionPointInterface {
     }
 
     RepositoryOpenSaveDialog repositoryOpenSaveDialog =
-      new RepositoryOpenSaveDialog( spoonSupplier.get().getShell(), 930, 600 );
+      new RepositoryOpenSaveDialog( spoonSupplier.get().getShell(), 950, 615 );
     repositoryOpenSaveDialog
-      .open( lastUsedFile != null ? lastUsedFile.getDirectory() : null, RepositoryOpenSaveDialog.STATE_OPEN );
+      .open( lastUsedFile != null ? lastUsedFile.getDirectory() : null,
+        RepositoryOpenSaveDialog.STATE_SAVE.equals( o ) ? RepositoryOpenSaveDialog.STATE_SAVE : RepositoryOpenSaveDialog.STATE_OPEN );
   }
 
   private Repository getRepository() {
