@@ -46,6 +46,7 @@
     <dependency org="org.hamcrest"        name="java-hamcrest"       rev="2.0.0.0"          transitive="false" conf="test->default"/>
     <dependency org="junit"               name="junit"               rev="4.11"             transitive="false" conf="test->default"/>
     <dependency org="org.mockito"         name="mockito-all"         rev="1.9.5"            transitive="false" conf="test->default"/>
+    <dependency org="org.codehaus.woodstox" name="woodstox-core-asl"   rev="4.4.1"          conf="test->default"/>
 
     <dependency org="org.apache.xmlgraphics" name="batik-bridge" rev="${dependency.batik.revision}" transitive="false"/>
     <dependency org="org.apache.xmlgraphics" name="batik-css" rev="${dependency.batik.revision}" transitive="false"/>

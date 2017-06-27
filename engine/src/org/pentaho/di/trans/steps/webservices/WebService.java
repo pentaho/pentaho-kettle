@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -90,8 +90,6 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
-
-import com.ctc.wstx.exc.WstxParsingException;
 
 public class WebService extends BaseStep implements StepInterface {
   private static Class<?> PKG = WebServiceMeta.class; // for i18n purposes, needed by Translator2!!
@@ -852,7 +850,7 @@ public class WebService extends BaseStep implements StepInterface {
 
                       outputRowData[outputIndex++] = getValue( vReader.getElementText(), field );
                       putRow( data.outputRowMeta, outputRowData );
-                    } catch ( WstxParsingException e ) {
+                    } catch ( XMLStreamException  e ) {
                       throw new KettleStepException( "Unable to get value for field ["
                         + field.getName()
                         + "].  Verify that this is not a complex data type by looking at the response XML.", e );
