@@ -27,6 +27,8 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -69,6 +71,13 @@ public class RepositoryBrowserEndpoint {
   }
 
   @GET
+  @Path( "/getActiveFileName" )
+  public Response getActiveFileName() {
+    String name = repositoryBrowserController.getActiveFileName();
+    return Response.ok( Collections.singletonMap( "fileName", name ) ).build();
+  }
+
+  @GET
   @Path( "/loadRecent/{repo}/{id}" )
   public Response loadRecent( @PathParam( "repo" ) String repo, @PathParam( "id" ) String id ) {
     repositoryBrowserController.openRecentFile( repo, id );
@@ -77,8 +86,8 @@ public class RepositoryBrowserEndpoint {
   }
 
   @GET
-  @Path( "/saveFile" )
-  public Response saveFile( @QueryParam( "path" ) String path, @QueryParam( "name" ) String name ) {
+  @Path( "/saveFile/{path}/{name}" )
+  public Response saveFile( @PathParam( "path" ) String path, @PathParam( "name" ) String name ) {
     if ( repositoryBrowserController.saveFile( path, name ) ) {
       return Response.ok().build();
     }

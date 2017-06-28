@@ -65,6 +65,14 @@ public class RepositoryBrowserController {
     return true;
   }
 
+  public String getActiveFileName() {
+    try {
+      return getSpoon().getActiveMeta().getName();
+    } catch( Exception e ) {
+      return "";
+    }
+  }
+
   public ObjectId rename( String id, String path, String newName, String type ) {
     try {
       RepositoryDirectoryInterface repositoryDirectoryInterface = getRepository().findDirectory( path );
@@ -122,25 +130,31 @@ public class RepositoryBrowserController {
   }
 
   public boolean saveFile( String path, String name ) {
-
-    try {
-      RepositoryDirectoryInterface repositoryDirectoryInterface = getRepository().findDirectory( path );
-      getSpoon().getDisplay().asyncExec( () -> {
-        try {
-          EngineMetaInterface meta = getSpoon().getActiveMeta();
-          meta.setRepositoryDirectory( repositoryDirectoryInterface );
-          meta.setName( name );
-          getSpoon().saveToRepository( meta, false, false );
-          getSpoon().delegates.tabs.renameTabs();
-        } catch ( Exception e ) {
-          System.out.println( e );
-        }
-      } );
-    } catch ( Exception e ) {
-      return false;
+    boolean result = checkSecurity();
+    if( result ) {
+      try {
+        RepositoryDirectoryInterface repositoryDirectoryInterface = getRepository().findDirectory( path );
+        getSpoon().getDisplay().asyncExec( () -> {
+          try {
+            EngineMetaInterface meta = getSpoon().getActiveMeta();
+            meta.setRepositoryDirectory( repositoryDirectoryInterface );
+            meta.setName( name );
+            getSpoon().saveToRepositoryConfirmed( meta );
+            getSpoon().delegates.tabs.renameTabs();
+          } catch ( Exception e ) {
+            System.out.println( e );
+          }
+        } );
+      } catch ( Exception e ) {
+        return false;
+      }
     }
+    return result;
+  }
 
-    return true;
+  private boolean checkSecurity() {
+    EngineMetaInterface meta = getSpoon().getActiveMeta();
+    return getSpoon().saveToRepositoryCheckSecurity( meta );
   }
 
   public List<RepositoryDirectory> loadDirectoryTree() {

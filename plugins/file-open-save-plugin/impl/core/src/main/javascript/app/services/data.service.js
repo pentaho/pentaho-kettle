@@ -47,11 +47,13 @@ define(
         return {
           getDirectoryTree: getDirectoryTree,
           getFiles: getFiles,
+          getActiveFileName: getActiveFileName,
           getRecentFiles: getRecentFiles,
           getRecentSearches: getRecentSearches,
           storeRecentSearch: storeRecentSearch,
           openRecent: openRecent,
           openFile: openFile,
+          saveFile: saveFile,
           rename: rename,
           create: create,
           remove: remove
@@ -77,6 +79,14 @@ define(
         }
 
         /**
+         * Gets the Active File Name Opened in Spoon
+         * @return {Promise} - a promise resolved once data is returned
+         */
+        function getActiveFileName() {
+          return _httpGet([baseUrl, "getActiveFileName"].join("/"));
+        }
+
+        /**
          * Load a file
          *
          * @param {String} id - The object id for a file
@@ -85,6 +95,17 @@ define(
          */
         function openFile(id, type) {
           return _httpGet([baseUrl, "loadFile", encodeURIComponent(id), type].join("/"));
+        }
+
+        /**
+         * Save a file
+         *
+         * @param {String} path - The path to which to save file
+         * @param {String} name - The file name
+         * @return {Promise} - a promise resolved once data is returned
+         */
+        function saveFile(path, name) {
+          return _httpGet([baseUrl, "saveFile", encodeURIComponent(path), name].join("/"));
         }
 
         /**
