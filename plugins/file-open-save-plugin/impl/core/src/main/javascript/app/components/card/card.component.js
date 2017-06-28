@@ -53,6 +53,7 @@ define([
   function cardController() {
     var vm = this;
     vm.selectFile = selectFile;
+    vm.hasResults = hasResults;
     vm.$onInit = onInit;
 
     /**
@@ -61,6 +62,7 @@ define([
      * bindings initialized. We use this hook to put initialization code for our controller.
      */
     function onInit() {
+      vm.noResult = "No results";// i18n.get("file-open-save-plugin.app.middle.no-results.message");
     }
 
     /**
@@ -71,6 +73,22 @@ define([
     function selectFile(file) {
       vm.selectedFile = file;
       vm.onSelect({selectedFile: file});
+    }
+
+    function hasResults() {
+      var hasResults = false;
+      if( vm.recentFiles ) {
+        for (var i = 0; i < vm.recentFiles.length; i++) {
+          if (vm.recentFiles[i].inResult === false) {
+            hasResults = false;
+            break;
+          } else {
+            hasResults = true;
+            break;
+          }
+        }
+      }
+      return hasResults;
     }
   }
 

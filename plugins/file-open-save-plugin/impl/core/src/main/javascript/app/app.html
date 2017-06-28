@@ -1,21 +1,3 @@
-<!-- TYPEAHEAD POPUP STYLING -->
-<script type="text/ng-template" id="customPopupTemplate.html">
-  <div class="custom-popup-wrapper"
-       ng-style="{top: position().top + 'px', left: position().left - 31 + 'px'}"
-       style="display: block; width: 270px"
-       ng-show="isOpen() && !moveInProgress"
-       aria-hidden="{{!isOpen()}}">
-
-    <ul class="dropdown-menu" role="listbox">
-      <li class="uib-typeahead-match" ng-repeat="match in matches track by $index" ng-class="{active: isActive($index) }"
-          ng-mouseenter="selectActive($index)" ng-click="selectMatch($index)" role="option" id="{{::match.id}}">
-        <div uib-typeahead-match index="$index" match="match" query="query" template-url="templateUrl"></div>
-      </li>
-    </ul>
-  </div>
-</script>
-<!-- TYPEAHEAD POPUP STYLING -->
-
 <error ng-show="vm.showError"
        error-type="vm.errorType"
        error-file="vm.file"
@@ -28,18 +10,21 @@
       <div class="headerTitle headerText">
         {{::vm.headerTitle}}
       </div>
-      <div class="headerSearch" ng-class="{'focused': vm.isInSearch === true}">
+      <div id="headerSearchId" class="headerSearch" ng-class="{'focused': vm.isInSearch === true}">
         <div class="headerSearchLeft" ng-class="{'blueState': vm.searchString !== '' || vm.isInSearch === true }" ></div>
-        <input type="text" class="searchBox"
-               uib-typeahead="search for search in vm.recentSearches | filter:$viewValue | limitTo:5"
-               placeholder="{{::vm.searchPlaceholder}} {{vm.selectedFolder}}"
-               typeahead-on-select="vm.doSearch()"
-               ng-blur="vm.storeRecentSearch()"
-               ng-focus="vm.isInSearch = true"
-               ng-change="vm.doSearch()"
-               ng-model="vm.searchString"
-               typeahead-popup-template-url="customPopupTemplate.html"
-               typeahead-min-length="0"/>
+          <input type="text" class="searchBox"
+                 placeholder="{{::vm.searchPlaceholder}} {{vm.selectedFolder}}"
+                 ng-blur="vm.storeRecentSearch()"
+                 ng-focus="vm.isInSearch = true"
+                 ng-change="vm.doSearch()"
+                 ng-model="vm.searchString"/>
+          <div class="searchBoxExtra" ng-show="vm.isInSearch"
+               ng-style="{top: vm.getOffsetTop() + 37 + 'px', left: vm.getOffsetLeft() + 2 + 'px'}">
+              <div class="searchBoxExtraItem"
+                   ng-mousedown="vm.searchString = search;vm.doSearch()"
+                   ng-repeat="search in vm.recentSearches"
+                   title="{{search}}">{{search}}</div>
+          </div>
         <div ng-class="{'headerSearchRight': vm.searchString !== '' }" ng-click="vm.resetSearch()"></div>
       </div>
     </div>

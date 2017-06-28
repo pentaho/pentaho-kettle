@@ -27,7 +27,6 @@
  **/
 define([
   "angular",
-  "angular-bootstrap",
   "./app.component",
   "./components/card/card.component",
   "./components/folder/folder.component",
@@ -37,7 +36,7 @@ define([
   "./components/files/rename.directive",
   "./components/breadcrumb/breadcrumb.directive",
   "./services/data.service"
-], function(angular, angularBootstrap, appComponent, cardComponent, folderComponent, errorComponent,
+], function(angular, appComponent, cardComponent, folderComponent, errorComponent,
             breadcrumbComponent, filesComponent, renameDirective, breadcrumbDirective, dataService) {
   "use strict";
 
@@ -56,7 +55,7 @@ define([
    * @private
    */
   function activate() {
-    angular.module(module.name, ["ui.bootstrap"])
+    angular.module(module.name, [])
         .component(appComponent.name, appComponent.options)
         .component(cardComponent.name, cardComponent.options)
         .component(folderComponent.name, folderComponent.options)

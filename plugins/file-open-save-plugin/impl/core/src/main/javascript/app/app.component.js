@@ -33,8 +33,7 @@ define([
   "text!./app.html",
   "pentaho/i18n-osgi!file-open-save.messages",
   "angular",
-  "css!./app.css",
-  "css!bootstrap/dist/css/bootstrap.css"
+  "css!./app.css"
 ], function(dataService, template, i18n, angular) {
   "use strict";
 
@@ -73,6 +72,8 @@ define([
     vm.confirmError = confirmError;
     vm.cancelError = cancelError;
     vm.storeRecentSearch = storeRecentSearch;
+    vm.getOffsetTop = getOffsetTop;
+    vm.getOffsetLeft = getOffsetLeft;
     vm.selectedFolder = "";
     vm.fileToSave = "";
     vm.searchString = "";
@@ -96,6 +97,7 @@ define([
       vm.isInSearch = false;
       vm.showRecents = true;
       vm.folder = {name: "Recents", path: "Recents"};
+      vm.selectedFolder = vm.folder.name;
       vm.file = null;
       vm.includeRoot = false;
       vm.autoExpand = false;
@@ -227,6 +229,7 @@ define([
      * Calls a filter for either recent files or files/folders in current folder
      */
     function doSearch() {
+      vm.isInSearch = false;
       if (vm.showRecents === true) {
         _filter(vm.recentFiles, vm.searchString);
       } else {
@@ -238,7 +241,7 @@ define([
      * Resets the search string and runs search against that string (which returns normal dir structure).
      */
     function resetSearch() {
-      vm.searchString = '';
+      vm.searchString = "";
       vm.doSearch();
     }
 
@@ -387,6 +390,14 @@ define([
       if(vm.searchString !== "") {
         dt.storeRecentSearch(vm.searchString).then(_populateRecentSearches);
       }
+    }
+
+    function getOffsetTop() {
+      return document.getElementById("headerSearchId").offsetTop;
+    }
+
+    function getOffsetLeft() {
+      return document.getElementById("headerSearchId").offsetLeft;
     }
 
     /**
