@@ -333,8 +333,8 @@ public class TextFileInputReader implements IBaseFileInputReader {
           data.previous_row = data.outputRowMeta.cloneRow( r );
         } else {
           // int repnr = 0;
-          for ( int i = 0; i < meta.inputFiles.inputFields.length; i++ ) {
-            if ( meta.inputFiles.inputFields[i].isRepeated() ) {
+          for ( int i = 0; i < meta.inputFields.length; i++ ) {
+            if ( meta.inputFields[i].isRepeated() ) {
               if ( r[i] == null ) {
                 // if it is empty: take the previous value!
 

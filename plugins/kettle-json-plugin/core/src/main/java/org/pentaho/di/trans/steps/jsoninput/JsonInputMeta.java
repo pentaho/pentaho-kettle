@@ -77,7 +77,7 @@ import org.w3c.dom.Node;
   "WARNING_FILES_EXTENTION", "ERROR_FILES_TARGET_DIR", "ERROR_FILES_EXTENTION", "LINE_NR_FILES_TARGET_DIR",
   "LINE_NR_FILES_EXTENTION", "FIELD_NULL_STRING", "FIELD_POSITION", "FIELD_IGNORE", "FIELD_IF_NULL" } )
 public class JsonInputMeta extends
-    BaseFileInputStepMeta<JsonInputMeta.AdditionalFileOutputFields, JsonInputMeta.InputFiles> implements
+    BaseFileInputStepMeta<JsonInputMeta.AdditionalFileOutputFields, JsonInputMeta.InputFiles, JsonInputField> implements
     StepMetaInterface {
   private static Class<?> PKG = JsonInputMeta.class; // for i18n purposes, needed by Translator2!!
 
@@ -116,14 +116,13 @@ public class JsonInputMeta extends
     return this.inputFiles;
   }
 
-  public static class InputFiles extends BaseFileInputStepMeta.InputFiles<JsonInputField> {
-    public void allocate( int nrFiles, int nrFields ) {
+  public static class InputFiles extends BaseFileInputStepMeta.InputFiles {
+    public void allocate( int nrFiles ) {
       fileName = new String[nrFiles];
       fileMask = new String[nrFiles];
       excludeFileMask = new String[nrFiles];
       fileRequired = new String[nrFiles];
       includeSubFolders = new String[nrFiles];
-      inputFields = new JsonInputField[nrFields];
       Arrays.fill( fileName, "" );
       Arrays.fill( fileMask, "" );
       Arrays.fill( excludeFileMask, "" );
@@ -133,10 +132,7 @@ public class JsonInputMeta extends
     @Override
     public InputFiles clone() {
       InputFiles clone = (InputFiles) super.clone();
-      clone.allocate( this.fileName.length, this.inputFields.length );
-      for ( int i = 0; i < inputFields.length; i++ ) {
-        clone.inputFields[i] = inputFields[i].clone();
-      }
+      clone.allocate( this.fileName.length );
       return clone;
     }
   }
@@ -239,7 +235,7 @@ public class JsonInputMeta extends
   public JsonInputMeta() {
     additionalOutputFields = new JsonInputMeta.AdditionalFileOutputFields();
     inputFiles = new JsonInputMeta.InputFiles();
-    inputFiles.inputFields = new JsonInputField[0];
+    inputFields = new JsonInputField[0];
   }
 
   /**
@@ -393,7 +389,7 @@ public class JsonInputMeta extends
    * @return Returns the input fields.
    */
   public JsonInputField[] getInputFields() {
-    return inputFiles.inputFields;
+    return inputFields;
   }
 
   /**
@@ -401,7 +397,7 @@ public class JsonInputMeta extends
    *          The input fields to set.
    */
   public void setInputFields( JsonInputField[] inputFields ) {
-    inputFiles.inputFields = inputFields;
+    this.inputFields = inputFields;
   }
 
   /**
@@ -590,6 +586,9 @@ public class JsonInputMeta extends
     clone.setFileName( getFileName() );
     clone.setFileMask( getFileMask() );
     clone.setExcludeFileMask( getExcludeFileMask() );
+    for ( int i = 0; i < inputFields.length; i++ ) {
+      clone.inputFields[i] = inputFields[i].clone();
+    }
     return clone;
   }
 
@@ -725,7 +724,8 @@ public class JsonInputMeta extends
 
   private void initArrayFields( int nrfiles, int nrfields ) {
     setInputFields( new JsonInputField[nrfields] );
-    inputFiles.allocate( nrfiles, nrfields );
+    inputFiles.allocate( nrfiles );
+    inputFields = new JsonInputField[nrfields];
   }
 
   @Override

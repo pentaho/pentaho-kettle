@@ -234,8 +234,8 @@ public class TextFileInputUtils {
         }
       } else {
         // Fixed file format: Simply get the strings at the required positions...
-        for ( int i = 0; i < inf.inputFiles.inputFields.length; i++ ) {
-          BaseFileInputField field = inf.inputFiles.inputFields[i];
+        for ( int i = 0; i < inf.inputFields.length; i++ ) {
+          BaseFileInputField field = inf.inputFields[i];
 
           int length = line.length();
 
@@ -349,7 +349,7 @@ public class TextFileInputUtils {
     Object[] r = RowDataUtil.allocateRowData( outputRowMeta.size() ); // over-allocate a bit in the row producing
                                                                       // steps...
 
-    int nrfields = info.inputFiles.inputFields.length;
+    int nrfields = info.inputFields.length;
     int fieldnr;
 
     Long errorCount = null;
@@ -373,7 +373,7 @@ public class TextFileInputUtils {
       String[] strings = convertLineToStrings( log, textFileLine.line, info, delimiter, enclosure, escapeCharacter );
       int shiftFields = ( passThruFields == null ? 0 : nrPassThruFields );
       for ( fieldnr = 0; fieldnr < nrfields; fieldnr++ ) {
-        BaseFileInputField f = info.inputFiles.inputFields[fieldnr];
+        BaseFileInputField f = info.inputFields[fieldnr];
         int valuenr = shiftFields + fieldnr;
         ValueMetaInterface valueMeta = outputRowMeta.getValueMeta( valuenr );
         ValueMetaInterface convertMeta = convertRowMeta.getValueMeta( valuenr );
@@ -449,7 +449,7 @@ public class TextFileInputUtils {
         // Support for trailing nullcols!
         // Should be OK at allocation time, but it doesn't hurt :-)
         if ( fieldnr < nrfields ) {
-          for ( int i = fieldnr; i < info.inputFiles.inputFields.length; i++ ) {
+          for ( int i = fieldnr; i < info.inputFields.length; i++ ) {
             r[shiftFields + i] = null;
           }
         }
@@ -538,7 +538,7 @@ public class TextFileInputUtils {
 
   public static final String[] convertLineToStrings( LogChannelInterface log, String line, TextFileInputMeta inf,
       String delimiter, String enclosure, String escapeCharacters ) throws KettleException {
-    String[] strings = new String[inf.inputFiles.inputFields.length];
+    String[] strings = new String[inf.inputFields.length];
     int fieldnr;
 
     String pol; // piece of line
@@ -742,8 +742,8 @@ public class TextFileInputUtils {
         // it will still use the old behavior. The *only* way to get the new behavior is if content.length = "Bytes" and
         // the encoding is specified.
         boolean charBased = ( inf.content.length == null || inf.content.length.equalsIgnoreCase( "Characters" ) || inf.getEncoding() == null ); // Default to classic behavior
-        for ( int i = 0; i < inf.inputFiles.inputFields.length; i++ ) {
-          BaseFileInputField field = inf.inputFiles.inputFields[i];
+        for ( int i = 0; i < inf.inputFields.length; i++ ) {
+          BaseFileInputField field = inf.inputFields[i];
 
           int length;
           int fPos = field.getPosition();
