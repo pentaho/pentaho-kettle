@@ -15,7 +15,7 @@
           <input type="text" class="searchBox"
                  placeholder="{{::vm.searchPlaceholder}} {{vm.selectedFolder}}"
                  ng-blur="vm.storeRecentSearch()"
-                 ng-focus="vm.isInSearch = true"
+                 ng-focus="vm.displayRecentSearches()"
                  ng-change="vm.doSearch()"
                  ng-model="vm.searchString"/>
           <div class="searchBoxExtra" ng-show="vm.isInSearch"
