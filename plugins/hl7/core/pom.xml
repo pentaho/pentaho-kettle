@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>org.pentaho.di.plugins</groupId>
+    <artifactId>hl7</artifactId>
+    <version>8.0-SNAPSHOT</version>
+  </parent>
+
+  <artifactId>kettle-hl7-plugin-core</artifactId>
+  <version>8.0-SNAPSHOT</version>
+
+  <name>PDI HL7 Plugin Core</name>
+
+  <properties>
+    <dependency.pentaho-kettle.version>8.0-SNAPSHOT</dependency.pentaho-kettle.version>
+    <build.revision>${project.version}</build.revision>
+    <timestamp>${maven.build.timestamp}</timestamp>
+    <build.description>${project.description}</build.description>
+    <maven.build.timestamp.format>yyyy/MM/dd hh\:mm</maven.build.timestamp.format>
+  </properties>
+
+  <dependencies>
+    <dependency>
+      <groupId>pentaho-kettle</groupId>
+      <artifactId>kettle-engine</artifactId>
+      <version>${dependency.pentaho-kettle.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>pentaho-kettle</groupId>
+      <artifactId>kettle-core</artifactId>
+      <version>${dependency.pentaho-kettle.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>pentaho-kettle</groupId>
+      <artifactId>kettle-ui-swt</artifactId>
+      <version>${dependency.pentaho-kettle.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>ca.uhn.hapi</groupId>
+      <artifactId>hapi-base</artifactId>
+      <version>1.1</version>
+    </dependency>
+    <dependency>
+      <groupId>ca.uhn.hapi</groupId>
+      <artifactId>hapi-examples</artifactId>
+      <version>1.1</version>
+    </dependency>
+    <dependency>
+      <groupId>ca.uhn.hapi</groupId>
+      <artifactId>hapi-structures-v21</artifactId>
+      <version>1.1</version>
+    </dependency>
+    <dependency>
+      <groupId>ca.uhn.hapi</groupId>
+      <artifactId>hapi-structures-v22</artifactId>
+      <version>1.1</version>
+    </dependency>
+    <dependency>
+      <groupId>ca.uhn.hapi</groupId>
+      <artifactId>hapi-structures-v23</artifactId>
+      <version>1.1</version>
+    </dependency>
+    <dependency>
+      <groupId>ca.uhn.hapi</groupId>
+      <artifactId>hapi-structures-v231</artifactId>
+      <version>1.1</version>
+    </dependency>
+    <dependency>
+      <groupId>ca.uhn.hapi</groupId>
+      <artifactId>hapi-structures-v24</artifactId>
+      <version>1.1</version>
+    </dependency>
+    <dependency>
+      <groupId>ca.uhn.hapi</groupId>
+      <artifactId>hapi-structures-v25</artifactId>
+      <version>1.1</version>
+    </dependency>
+    <dependency>
+      <groupId>ca.uhn.hapi</groupId>
+      <artifactId>hapi-structures-v251</artifactId>
+      <version>1.1</version>
+    </dependency>
+    <dependency>
+      <groupId>ca.uhn.hapi</groupId>
+      <artifactId>hapi-structures-v26</artifactId>
+      <version>1.1</version>
+    </dependency>
+    <dependency>
+      <groupId>org.eclipse.swt</groupId>
+      <artifactId>org.eclipse.swt.gtk.linux.x86_64</artifactId>
+      <version>4.6</version>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <resources>
+      <resource>
+        <filtering>true</filtering>
+        <directory>src/main/resources</directory>
+      </resource>
+    </resources>
+  </build>
+</project>

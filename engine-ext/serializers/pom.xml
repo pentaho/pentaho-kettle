@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>org.pentaho</groupId>
+  <artifactId>pdi-engine-serializers</artifactId>
+  <version>8.0-SNAPSHOT</version>
+  <packaging>bundle</packaging>
+
+  <name>PDI Engine Serializers</name>
+
+  <parent>
+    <groupId>org.pentaho.di</groupId>
+    <artifactId>pdi-engine-ext</artifactId>
+    <version>8.0-SNAPSHOT</version>
+  </parent>
+
+  <properties>
+    <jackson.version>2.5.4</jackson.version>
+    <pentaho-object-tunnel.version>${project.version}</pentaho-object-tunnel.version>
+    <slf4j-api.versions>1.7.7</slf4j-api.versions>
+  </properties>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.pentaho</groupId>
+      <artifactId>pdi-engine-api</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>pentaho</groupId>
+      <artifactId>pentaho-object-tunnel</artifactId>
+      <version>${pentaho-object-tunnel.version}</version>
+    </dependency>
+
+    <!-- Third-party dependencies -->
+    <dependency>
+      <groupId>commons-codec</groupId>
+      <artifactId>commons-codec</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-core</artifactId>
+      <version>${jackson.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-annotations</artifactId>
+      <version>${jackson.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-databind</artifactId>
+      <version>${jackson.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-api</artifactId>
+      <version>${slf4j-api.versions}</version>
+    </dependency>
+
+    <!-- Test dependencies -->
+    <dependency>
+      <groupId>org.hamcrest</groupId>
+      <artifactId>java-hamcrest</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.mockito</groupId>
+      <artifactId>mockito-all</artifactId>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.felix</groupId>
+        <artifactId>maven-bundle-plugin</artifactId>
+        <extensions>true</extensions>
+        <configuration>
+          <instructions>
+            <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
+          </instructions>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+</project>
