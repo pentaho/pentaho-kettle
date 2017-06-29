@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -250,47 +250,42 @@ public class JobEntryWriteToLog extends JobEntryBase implements Cloneable, JobEn
     }
   }
 
+  LogChannelInterface createLogChannel() {
+    LogWriterObject logWriterObject = new LogWriterObject( getRealLogSubject(), this, parentJob.getLogLevel() );
+    return logWriterObject.getLogChannel();
+  }
+
   /**
    * Output message to job log.
    */
   public boolean evaluate( Result result ) {
-    LogWriterObject logWriterObject = new LogWriterObject( getRealLogSubject(), this, parentJob.getLogLevel() );
-    LogChannelInterface logChannel = logWriterObject.getLogChannel();
+    LogChannelInterface logChannel = createLogChannel();
     String message = getRealLogMessage();
 
-    if ( Utils.isEmpty( message ) ) {
+    // Filter out empty messages and those that are not visible with the job's log level
+    if ( Utils.isEmpty( message ) || !getEntryLogLevel().isVisible( logChannel.getLogLevel() ) ) {
       return true;
     }
 
     try {
       switch ( getEntryLogLevel() ) {
         case ERROR:
-          if ( logChannel.isError() ) {
-            logChannel.logError( message + Const.CR );
-          }
+          logChannel.logError( message + Const.CR );
           break;
         case MINIMAL:
           logChannel.logMinimal( message + Const.CR );
           break;
         case BASIC:
-          if ( logChannel.isBasic() ) {
-            logChannel.logBasic( message + Const.CR );
-          }
+          logChannel.logBasic( message + Const.CR );
           break;
         case DETAILED:
-          if ( logChannel.isDetailed() ) {
-            logChannel.logDetailed( message + Const.CR );
-          }
+          logChannel.logDetailed( message + Const.CR );
           break;
         case DEBUG:
-          if ( logChannel.isDebug() ) {
-            logChannel.logDebug( message + Const.CR );
-          }
+          logChannel.logDebug( message + Const.CR );
           break;
         case ROWLEVEL:
-          if ( logChannel.isRowLevel() ) {
-            logChannel.logRowlevel( message + Const.CR );
-          }
+          logChannel.logRowlevel( message + Const.CR );
           break;
         default: // NOTHING
           break;
