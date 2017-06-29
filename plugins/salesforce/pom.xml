@@ -15,11 +15,6 @@
 
   <name>PDI Salesforce Plugin</name>
 
-  <properties>
-    <maven-surefire-plugin.reuseForks>false</maven-surefire-plugin.reuseForks>
-    <maven-surefire-plugin.forkCount>0.5C</maven-surefire-plugin.forkCount>
-  </properties>
-
   <licenses>
     <license>
       <name>Apache License, Version 2.0</name>
