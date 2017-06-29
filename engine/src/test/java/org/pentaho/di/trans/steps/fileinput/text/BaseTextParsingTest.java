@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2016-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -27,7 +27,7 @@ import org.junit.Ignore;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.variables.Variables;
-import org.pentaho.di.trans.steps.fileinput.BaseFileInputField;
+import org.pentaho.di.trans.steps.file.BaseFileField;
 import org.pentaho.di.trans.steps.fileinput.BaseParsingTest;
 
 /**
@@ -75,8 +75,8 @@ public abstract class BaseTextParsingTest extends BaseParsingTest<TextFileInputM
    * 
    * TODO: move to BaseParsingTest after CSV moving to BaseFileInput
    */
-  protected void setFields( BaseFileInputField... fields ) throws Exception {
-    meta.inputFiles.inputFields = fields;
+  protected void setFields( BaseFileField... fields ) throws Exception {
+    meta.inputFields = fields;
     meta.getFields( data.outputRowMeta, meta.getName(), null, null, new Variables(), null, null );
     data.convertRowMeta = data.outputRowMeta.cloneToType( ValueMetaInterface.TYPE_STRING );
   }

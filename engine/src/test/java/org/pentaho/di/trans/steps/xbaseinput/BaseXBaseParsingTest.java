@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -26,7 +26,7 @@ import org.apache.commons.vfs2.FileObject;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.pentaho.di.core.row.RowMeta;
-import org.pentaho.di.trans.steps.fileinput.BaseFileInputField;
+import org.pentaho.di.trans.steps.file.BaseFileField;
 import org.pentaho.di.trans.steps.fileinput.BaseParsingTest;
 
 /**
@@ -64,7 +64,7 @@ public class BaseXBaseParsingTest extends BaseParsingTest<XBaseInputMeta, XBaseI
    * For BaseFileInput fields.
    */
   @Override
-  protected void setFields( BaseFileInputField... fields ) throws Exception {
+  protected void setFields( BaseFileField... fields ) throws Exception {
     throw new RuntimeException( "Will be implemented after switch to the BaseFileInput" );
   }
 }

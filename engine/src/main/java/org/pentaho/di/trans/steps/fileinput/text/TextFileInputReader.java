@@ -35,8 +35,8 @@ import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.trans.step.BaseStep;
 import org.pentaho.di.trans.step.errorhandling.AbstractFileErrorHandler;
-import org.pentaho.di.trans.steps.fileinput.IBaseFileInputReader;
-import org.pentaho.di.trans.steps.fileinput.IBaseFileInputStepControl;
+import org.pentaho.di.trans.steps.file.IBaseFileInputReader;
+import org.pentaho.di.trans.steps.file.IBaseFileInputStepControl;
 
 /**
  * Reader for one text file.
@@ -333,8 +333,8 @@ public class TextFileInputReader implements IBaseFileInputReader {
           data.previous_row = data.outputRowMeta.cloneRow( r );
         } else {
           // int repnr = 0;
-          for ( int i = 0; i < meta.inputFiles.inputFields.length; i++ ) {
-            if ( meta.inputFiles.inputFields[i].isRepeated() ) {
+          for ( int i = 0; i < meta.inputFields.length; i++ ) {
+            if ( meta.inputFields[i].isRepeated() ) {
               if ( r[i] == null ) {
                 // if it is empty: take the previous value!
 

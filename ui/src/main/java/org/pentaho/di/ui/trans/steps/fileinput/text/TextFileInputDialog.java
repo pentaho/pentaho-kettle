@@ -70,7 +70,6 @@ import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.Props;
 import org.pentaho.di.core.compress.CompressionInputStream;
 import org.pentaho.di.core.compress.CompressionProvider;
@@ -82,6 +81,7 @@ import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.row.value.ValueMetaFactory;
 import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.core.util.EnvUtil;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
@@ -90,7 +90,7 @@ import org.pentaho.di.trans.TransPreviewFactory;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDialogInterface;
 import org.pentaho.di.trans.step.StepMeta;
-import org.pentaho.di.trans.steps.fileinput.BaseFileInputField;
+import org.pentaho.di.trans.steps.file.BaseFileField;
 import org.pentaho.di.trans.steps.fileinput.text.EncodingType;
 import org.pentaho.di.trans.steps.fileinput.text.TextFileFilter;
 import org.pentaho.di.trans.steps.fileinput.text.TextFileInputMeta;
@@ -741,7 +741,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
     getInfo( tfii, true );
     String[] files =
         FileInputList.createFilePathList( transMeta, tfii.inputFiles.fileName, tfii.inputFiles.fileMask,
-            tfii.inputFiles.excludeFileMask, tfii.inputFiles.fileRequired, tfii.includeSubFolderBoolean() );
+            tfii.inputFiles.excludeFileMask, tfii.inputFiles.fileRequired, tfii.inputFiles.includeSubFolderBoolean() );
 
     if ( files != null && files.length > 0 ) {
       EnterSelectionDialog esd = new EnterSelectionDialog( shell, files, "Files read", "Files read:" );
@@ -2084,7 +2084,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
     } );
     setButtonPositions( new Button[] { wGet, wMinWidth }, margin, null );
 
-    final int FieldsRows = input.inputFiles.inputFields.length;
+    final int FieldsRows = input.inputFields.length;
 
     ColumnInfo[] colinf =
         new ColumnInfo[] { new ColumnInfo( BaseMessages.getString( PKG, "TextFileInputDialog.NameColumn.Column" ),
@@ -2397,8 +2397,8 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
   }
 
   private void getFieldsData( TextFileInputMeta in, boolean insertAtTop ) {
-    for ( int i = 0; i < in.inputFiles.inputFields.length; i++ ) {
-      BaseFileInputField field = in.inputFiles.inputFields[i];
+    for ( int i = 0; i < in.inputFields.length; i++ ) {
+      BaseFileField field = in.inputFields[i];
 
       TableItem item;
 
@@ -2567,7 +2567,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
     meta.inputFiles_includeSubFolders( wFilenameList.getItems( 4 ) );
 
     for ( int i = 0; i < nrfields; i++ ) {
-      BaseFileInputField field = new BaseFileInputField();
+      BaseFileField field = new BaseFileField();
 
       TableItem item = wFields.getNonEmpty( i );
       field.setName( item.getText( 1 ) );
@@ -2585,7 +2585,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
       field.setRepeated( BaseMessages.getString( PKG, "System.Combo.Yes" ).equalsIgnoreCase( item.getText( 13 ) ) );
 
       // CHECKSTYLE:Indentation:OFF
-      meta.inputFiles.inputFields[i] = field;
+      meta.inputFields[i] = field;
     }
 
     for ( int i = 0; i < nrfilters; i++ ) {
@@ -2672,7 +2672,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 
     if ( textFileList.nrOfFiles() > 0 ) {
       int clearFields = meta.content.header ? SWT.YES : SWT.NO;
-      int nrInputFields = meta.inputFiles.inputFields.length;
+      int nrInputFields = meta.inputFields.length;
 
       if ( nrInputFields > 0 ) {
         MessageBox mb = new MessageBox( shell, SWT.YES | SWT.NO | SWT.CANCEL | SWT.ICON_QUESTION );
@@ -2757,7 +2757,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
               //
               if ( clearFields == SWT.NO ) {
                 getFieldsData( previousMeta, true );
-                wFields.table.setSelection( previousMeta.inputFiles.inputFields.length, wFields.table.getItemCount()
+                wFields.table.setSelection( previousMeta.inputFields.length, wFields.table.getItemCount()
                     - 1 );
               }
 
@@ -3024,7 +3024,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
           wFields.clearAll( false );
 
           for ( TextFileInputFieldInterface field1 : fields ) {
-            BaseFileInputField field = (BaseFileInputField) field1;
+            BaseFileField field = (BaseFileField) field1;
             if ( !field.isIgnored() && field.getLength() > 0 ) {
               TableItem item = new TableItem( wFields.table, SWT.NONE );
               item.setText( 1, field.getName() );
@@ -3087,19 +3087,19 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
     int prevEnd = 0;
     int dummynr = 1;
 
-    for ( int i = 0; i < info.inputFiles.inputFields.length; i++ ) {
-      BaseFileInputField f = info.inputFiles.inputFields[i];
+    for ( int i = 0; i < info.inputFields.length; i++ ) {
+      BaseFileField f = info.inputFields[i];
 
       // See if positions are skipped, if this is the case, add dummy fields...
       if ( f.getPosition() != prevEnd ) { // gap
 
-        BaseFileInputField field = new BaseFileInputField( "Dummy" + dummynr, prevEnd, f.getPosition() - prevEnd );
+        BaseFileField field = new BaseFileField( "Dummy" + dummynr, prevEnd, f.getPosition() - prevEnd );
         field.setIgnored( true ); // don't include in result by default.
         fields.add( field );
         dummynr++;
       }
 
-      BaseFileInputField field = new BaseFileInputField( f.getName(), f.getPosition(), f.getLength() );
+      BaseFileField field = new BaseFileField( f.getName(), f.getPosition(), f.getLength() );
       field.setType( f.getType() );
       field.setIgnored( false );
       field.setFormat( f.getFormat() );
@@ -3116,18 +3116,18 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
       prevEnd = field.getPosition() + field.getLength();
     }
 
-    if ( info.inputFiles.inputFields.length == 0 ) {
-      BaseFileInputField field = new BaseFileInputField( "Field1", 0, maxsize );
+    if ( info.inputFields.length == 0 ) {
+      BaseFileField field = new BaseFileField( "Field1", 0, maxsize );
       fields.add( field );
     } else {
       // Take the last field and see if it reached until the maximum...
-      BaseFileInputField f = info.inputFiles.inputFields[info.inputFiles.inputFields.length - 1];
+      BaseFileField f = info.inputFields[info.inputFields.length - 1];
 
       int pos = f.getPosition();
       int len = f.getLength();
       if ( pos + len < maxsize ) {
         // If not, add an extra trailing field!
-        BaseFileInputField field = new BaseFileInputField( "Dummy" + dummynr, pos + len, maxsize - pos - len );
+        BaseFileField field = new BaseFileField( "Dummy" + dummynr, pos + len, maxsize - pos - len );
         field.setIgnored( true ); // don't include in result by default.
         fields.add( field );
       }
@@ -3169,8 +3169,8 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
       }
     }
 
-    for ( int i = 0; i < input.inputFiles.inputFields.length; i++ ) {
-      input.inputFiles.inputFields[i].setTrimType( ValueMetaInterface.TRIM_TYPE_BOTH );
+    for ( int i = 0; i < input.inputFields.length; i++ ) {
+      input.inputFields[i].setTrimType( ValueMetaInterface.TRIM_TYPE_BOTH );
     }
 
     wFields.optWidth( true );

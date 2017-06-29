@@ -24,24 +24,24 @@ package org.pentaho.di.trans.steps.fileinput.text;
 
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
-import java.util.Arrays;
 
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleFileException;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.row.RowDataUtil;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.step.errorhandling.AbstractFileErrorHandler;
 import org.pentaho.di.trans.step.errorhandling.FileErrorHandler;
-import org.pentaho.di.trans.steps.fileinput.BaseFileInputField;
-import org.pentaho.di.trans.steps.fileinput.BaseFileInputStepMeta;
+import org.pentaho.di.trans.steps.file.BaseFileField;
+import org.pentaho.di.trans.steps.file.BaseFileInputAdditionalField;
 
 /**
  * Some common methods for text file parsing.
@@ -234,8 +234,8 @@ public class TextFileInputUtils {
         }
       } else {
         // Fixed file format: Simply get the strings at the required positions...
-        for ( int i = 0; i < inf.inputFiles.inputFields.length; i++ ) {
-          BaseFileInputField field = inf.inputFiles.inputFields[i];
+        for ( int i = 0; i < inf.inputFields.length; i++ ) {
+          BaseFileField field = inf.inputFields[i];
 
           int length = line.length();
 
@@ -339,7 +339,7 @@ public class TextFileInputUtils {
       TextFileInputMeta info, Object[] passThruFields, int nrPassThruFields, RowMetaInterface outputRowMeta,
       RowMetaInterface convertRowMeta, String fname, long rowNr, String delimiter, String enclosure,
       String escapeCharacter, FileErrorHandler errorHandler,
-      BaseFileInputStepMeta.AdditionalOutputFields additionalOutputFields, String shortFilename, String path,
+      BaseFileInputAdditionalField additionalOutputFields, String shortFilename, String path,
       boolean hidden, Date modificationDateTime, String uri, String rooturi, String extension, Long size )
         throws KettleException {
     if ( textFileLine == null || textFileLine.line == null ) {
@@ -349,7 +349,7 @@ public class TextFileInputUtils {
     Object[] r = RowDataUtil.allocateRowData( outputRowMeta.size() ); // over-allocate a bit in the row producing
                                                                       // steps...
 
-    int nrfields = info.inputFiles.inputFields.length;
+    int nrfields = info.inputFields.length;
     int fieldnr;
 
     Long errorCount = null;
@@ -373,7 +373,7 @@ public class TextFileInputUtils {
       String[] strings = convertLineToStrings( log, textFileLine.line, info, delimiter, enclosure, escapeCharacter );
       int shiftFields = ( passThruFields == null ? 0 : nrPassThruFields );
       for ( fieldnr = 0; fieldnr < nrfields; fieldnr++ ) {
-        BaseFileInputField f = info.inputFiles.inputFields[fieldnr];
+        BaseFileField f = info.inputFields[fieldnr];
         int valuenr = shiftFields + fieldnr;
         ValueMetaInterface valueMeta = outputRowMeta.getValueMeta( valuenr );
         ValueMetaInterface convertMeta = convertRowMeta.getValueMeta( valuenr );
@@ -449,7 +449,7 @@ public class TextFileInputUtils {
         // Support for trailing nullcols!
         // Should be OK at allocation time, but it doesn't hurt :-)
         if ( fieldnr < nrfields ) {
-          for ( int i = fieldnr; i < info.inputFiles.inputFields.length; i++ ) {
+          for ( int i = fieldnr; i < info.inputFields.length; i++ ) {
             r[shiftFields + i] = null;
           }
         }
@@ -538,7 +538,7 @@ public class TextFileInputUtils {
 
   public static final String[] convertLineToStrings( LogChannelInterface log, String line, TextFileInputMeta inf,
       String delimiter, String enclosure, String escapeCharacters ) throws KettleException {
-    String[] strings = new String[inf.inputFiles.inputFields.length];
+    String[] strings = new String[inf.inputFields.length];
     int fieldnr;
 
     String pol; // piece of line
@@ -742,8 +742,8 @@ public class TextFileInputUtils {
         // it will still use the old behavior. The *only* way to get the new behavior is if content.length = "Bytes" and
         // the encoding is specified.
         boolean charBased = ( inf.content.length == null || inf.content.length.equalsIgnoreCase( "Characters" ) || inf.getEncoding() == null ); // Default to classic behavior
-        for ( int i = 0; i < inf.inputFiles.inputFields.length; i++ ) {
-          BaseFileInputField field = inf.inputFiles.inputFields[i];
+        for ( int i = 0; i < inf.inputFields.length; i++ ) {
+          BaseFileField field = inf.inputFields[i];
 
           int length;
           int fPos = field.getPosition();

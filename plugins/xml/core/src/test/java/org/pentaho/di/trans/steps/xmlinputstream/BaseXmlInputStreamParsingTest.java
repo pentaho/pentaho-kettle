@@ -25,7 +25,7 @@ package org.pentaho.di.trans.steps.xmlinputstream;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.pentaho.di.core.row.RowMeta;
-import org.pentaho.di.trans.steps.fileinput.BaseFileInputField;
+import org.pentaho.di.trans.steps.file.BaseFileField;
 import org.pentaho.di.trans.steps.fileinput.BaseParsingTest;
 
 /**
@@ -61,7 +61,7 @@ public class BaseXmlInputStreamParsingTest extends
    * For BaseFileInput fields.
    */
   @Override
-  protected void setFields( BaseFileInputField... fields ) throws Exception {
+  protected void setFields( BaseFileField... fields ) throws Exception {
     throw new RuntimeException( "Not implemented" );
   }
 }

@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2016-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -36,7 +36,7 @@ import org.pentaho.di.core.exception.KettleFileException;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.trans.step.StepInterface;
-import org.pentaho.di.trans.steps.fileinput.BaseFileInputStepData;
+import org.pentaho.di.trans.steps.file.BaseFileInputStepData;
 import org.pentaho.di.trans.steps.jsoninput.JsonInput;
 import org.pentaho.di.trans.steps.jsoninput.JsonInputData;
 import org.pentaho.di.trans.steps.jsoninput.JsonInputMeta;
