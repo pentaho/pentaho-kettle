@@ -28,8 +28,6 @@
     <timestamp>${maven.build.timestamp}</timestamp>
     <build.description>${project.description}</build.description>
     <maven.build.timestamp.format>yyyy/MM/dd hh:mm</maven.build.timestamp.format>
-    <maven-surefire-plugin.reuseForks>false</maven-surefire-plugin.reuseForks>
-    <maven-surefire-plugin.forkCount>0.5C</maven-surefire-plugin.forkCount>
   </properties>
 
   <dependencies>
