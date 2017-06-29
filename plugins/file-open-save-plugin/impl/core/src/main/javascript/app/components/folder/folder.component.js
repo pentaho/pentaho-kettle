@@ -119,22 +119,8 @@ define([
      * @param {Object} folder - folder object
      */
     function selectFolder(folder) {
-      if (folder === "recents") {
-        vm.showRecents = true;
-        vm.selectedFolder = null;
-      } else {
-        vm.selectedFolder = folder;
-        vm.showRecents = false;
-        vm.folder = folder;
-        // if (vm.folder.loaded != true) {
-        //   vm.folder.loaded = true;
-        //   dt.getFiles(vm.folder.objectId.id).then(function(response){
-        //     for (var i = 0; i < response.data.length; i++) {
-        //       vm.folder.children.push(response.data[i]);
-        //     }
-        //   });
-        // }
-      }
+      vm.showRecents = folder === null;
+      vm.selectedFolder = folder;
       vm.onSelect({selectedFolder: folder});
     }
 

@@ -179,15 +179,17 @@ define([
      * @param {Object} folder - folder object
      */
     function selectFolder(folder) {
-      vm.file = null;
-      if (folder) {
-        vm.showRecents = false;
-        vm.folder = folder;
-        vm.selectedFolder = folder.name;
-      } else {
-        vm.showRecents = true;
-        vm.folder = {name: "Recents", path: "Recents"};
-        vm.selectedFolder = "Recents";
+      if (folder !== vm.folder) {
+        vm.file = null;
+        if (folder) {
+          vm.showRecents = false;
+          vm.folder = folder;
+          vm.selectedFolder = folder.name;
+        } else {
+          vm.showRecents = true;
+          vm.folder = {name: "Recents", path: "Recents"};
+          vm.selectedFolder = "Recents";
+        }
       }
     }
 
@@ -211,7 +213,7 @@ define([
      * @param {Object} file - file object
      */
     function selectFile(file) {
-      if (file.type === "File folder") {
+      if (file.type === "folder") {
         selectFolder(file);
       } else {
         if (file.repository) {
@@ -269,14 +271,14 @@ define([
      */
     function highlightFile(file) {
       vm.file = file;
-      vm.fileToSave = file.name;
+      vm.fileToSave = file.type === "folder" ? "" : file.name;
     }
 
     /**
      * Called when user clicks "Open"
      */
     function openClicked() {
-      if (vm.file && vm.file.type === "File folder") {
+      if (vm.file && vm.file.type === "folder") {
         selectFolder(vm.file);
       } else {
         _open();
@@ -384,13 +386,15 @@ define([
      */
     function storeRecentSearch() {
       vm.isInSearch = false;
-      if(vm.searchString !== "") {
+      if (vm.searchString !== "") {
         dt.storeRecentSearch(vm.searchString).then(_populateRecentSearches);
       }
     }
 
     /**
      * Populates the most recent searches
+     * @param {Object} response - Response object
+     * @private
      */
     function _populateRecentSearches(response) {
       vm.recentSearches = response.data;
@@ -404,7 +408,7 @@ define([
         dt.remove(vm.file.path, vm.file.type).then(function() {
           var index = vm.folder.children.indexOf(vm.file);
           vm.folder.children.splice(index, 1);
-          if (vm.file.type === "File folder") {
+          if (vm.file.type === "folder") {
             for (var i = 0; i < vm.folders.length; i++) {
               if (vm.folders[i].path === vm.file.path) {
                 vm.folders.splice(i, 1);
@@ -414,7 +418,7 @@ define([
           }
           var hasChildFolders = false;
           for (var j = 0; j < vm.folder.children.length; j++) {
-            if (vm.folder.children[j].type === "File folder") {
+            if (vm.folder.children[j].type === "folder") {
               hasChildFolders = true;
             }
           }
@@ -434,7 +438,7 @@ define([
           folder.visible = vm.folder.open;
           folder.depth = vm.folder.depth + 1;
           folder.autoEdit = true;
-          folder.type = "File folder";
+          folder.type = "folder";
           vm.folder.children.splice(0, 0, folder);
           for (var i = 0; i < vm.folders.length; i++) {
             if (vm.folders[i].path === folder.parent) {

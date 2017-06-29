@@ -37,6 +37,7 @@ define([
   var options = {
     bindings: {
       recentFiles: '<',
+      folder: '<',
       onClick: '&',
       onSelect: '&'
     },
@@ -54,6 +55,7 @@ define([
     var vm = this;
     vm.selectFile = selectFile;
     vm.$onInit = onInit;
+    vm.$onChanges = onChanges;
 
     /**
      * The $onInit hook of components lifecycle which is called on each controller
@@ -61,6 +63,18 @@ define([
      * bindings initialized. We use this hook to put initialization code for our controller.
      */
     function onInit() {
+    }
+
+    /**
+     * Called whenever one-way bindings are updated.
+     *
+     * @param {Object} changes - hash whose keys are the names of the bound properties
+     * that have changed, and the values are an object of the form
+     */
+    function onChanges(changes) {
+      if (changes.folder) {
+        vm.selectedFile = null;
+      }
     }
 
     /**

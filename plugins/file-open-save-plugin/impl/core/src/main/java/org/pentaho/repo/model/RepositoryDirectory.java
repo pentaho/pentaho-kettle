@@ -23,7 +23,7 @@ import java.util.List;
  */
 public class RepositoryDirectory extends RepositoryObject {
 
-  public static String DIRECTORY = "File folder";
+  public static String DIRECTORY = "folder";
 
   @Override public String getType() {
     return DIRECTORY;

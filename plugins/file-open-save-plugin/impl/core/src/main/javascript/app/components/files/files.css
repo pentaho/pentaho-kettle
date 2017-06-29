@@ -124,7 +124,7 @@ files th:first-child {
 
 files tbody tr.selected td,
 files tbody tr.selected:hover td {
-  background-color: #0F2B5B;
+  background-color: #005DA6;
   color: #FFFFFF;
 }
 
@@ -201,6 +201,10 @@ files .fileType::first-letter {
 files .searchTable .fileType,
 files .searchTable .fileLastSaved {
   height: 44px;
+}
+
+files .fileLastSaved {
+  color: #999;
 }
 
 files tr .fileLocation {
