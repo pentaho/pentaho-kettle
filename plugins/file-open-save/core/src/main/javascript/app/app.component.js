@@ -72,6 +72,7 @@ define([
     vm.confirmError = confirmError;
     vm.cancelError = cancelError;
     vm.storeRecentSearch = storeRecentSearch;
+    vm.displayRecentSearches = displayRecentSearches;
     vm.getOffsetTop = getOffsetTop;
     vm.getOffsetLeft = getOffsetLeft;
     vm.selectedFolder = "";
@@ -389,6 +390,12 @@ define([
       vm.isInSearch = false;
       if(vm.searchString !== "") {
         dt.storeRecentSearch(vm.searchString).then(_populateRecentSearches);
+      }
+    }
+
+    function displayRecentSearches() {
+      if(vm.recentSearches.length !== 0) {
+          vm.isInSearch = true
       }
     }
 
