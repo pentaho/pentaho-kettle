@@ -33,7 +33,7 @@
       <div ng-show="vm.searchString" class="breadcrumbSection">
         Search results in "{{vm.folder.name}}"
       </div>
-      <div ng-hide="vm.searchString" class="breadcrumbSection blueText">
+      <div ng-hide="vm.searchString" class="breadcrumbSection">
         <breadcrumb path="vm.folder.path"
                     include-root="vm.includeRoot"
                     on-select="vm.selectFolderByPath(selectedPath)"></breadcrumb>
@@ -51,13 +51,15 @@
               folders="vm.folders"
               on-select="vm.resetSearch(); vm.selectFolder(selectedFolder);"
               show-recents="vm.showRecents"
-              selected-folder="vm.folder"></folder>
+              selected-folder="vm.folder"
+              ng-class="{dark: vm.file !== null}"></folder>
     </div>
 
     <div class="fileArea" ng-class="{overflow: vm.showRecents}">
         <div class="fileAreaMessageView" ng-show="vm.showRecents && vm.recentFiles.length === 0">{{::vm.noRecentsMsg}}</div>
         <card ng-show="vm.showRecents && vm.recentFiles.length > 0"
               recent-files="vm.recentFiles"
+              folder="vm.folder"
               on-click="vm.selectFile(file)"
               on-select="vm.highlightFile(selectedFile)"></card>
         <files search="vm.searchString"

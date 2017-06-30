@@ -86,7 +86,7 @@ public class RepositoryBrowserController {
         case "transformation":
           objectId = getRepository().renameTransformation( () -> id, repositoryDirectoryInterface, newName );
           break;
-        case "File folder":
+        case "folder":
           objectId = getRepository().renameRepositoryDirectory( () -> id, repositoryDirectoryInterface, newName );
           break;
       }
@@ -105,7 +105,7 @@ public class RepositoryBrowserController {
         case "transformation":
           getRepository().deleteTransformation( () -> id );
           break;
-        case "File folder":
+        case "folder":
           RepositoryDirectoryInterface repositoryDirectoryInterface = getRepository().findDirectory( id );
           getRepository().deleteRepositoryDirectory( repositoryDirectoryInterface );
           break;

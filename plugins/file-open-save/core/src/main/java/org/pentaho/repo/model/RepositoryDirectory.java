@@ -15,15 +15,12 @@
 
 package org.pentaho.repo.model;
 
-import java.util.ArrayList;
-import java.util.List;
-
 /**
  * Created by bmorrise on 5/16/17.
  */
 public class RepositoryDirectory extends RepositoryObject {
 
-  public static String DIRECTORY = "File folder";
+  public static String DIRECTORY = "folder";
 
   @Override public String getType() {
     return DIRECTORY;

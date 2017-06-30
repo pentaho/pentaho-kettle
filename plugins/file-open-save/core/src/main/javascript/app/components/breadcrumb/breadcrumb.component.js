@@ -103,9 +103,11 @@ define([
         if (set.length > 3) {
           vm.parts = set.splice(set.length - 3, set.length);
           vm.extras = set;
+          vm.extras[0].part = vm.extras[0].part.charAt(0).toUpperCase() + vm.extras[0].part.slice(1);
         } else {
           vm.parts = set;
           vm.extras = [];
+          vm.parts[0].part = vm.parts[0].part.charAt(0).toUpperCase() + vm.parts[0].part.slice(1);
         }
       }
     }

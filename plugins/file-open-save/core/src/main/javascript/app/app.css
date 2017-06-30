@@ -27,10 +27,6 @@ file-open-save-app .headerText {
   font-family: OpenSansLight;
 }
 
-file-open-save-app .blueText {
-  color: #005DA6;
-}
-
 /* INPUTS/BUTTONS */
 file-open-save-app input[type="text"] {
   border: 1px solid #CCC;
