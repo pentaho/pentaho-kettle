@@ -851,9 +851,9 @@ public class SpoonJobDelegate extends SpoonDelegate {
    * @return true if the job was added
    */
   public boolean addJob( JobMeta jobMeta ) {
-    int index = jobMap.indexOf( jobMeta );
+    int index = getJobList().indexOf( jobMeta );
     if ( index < 0 ) {
-      jobMap.add( jobMeta );
+      getJobList().add( jobMeta );
       return true;
     } else {
       /*
@@ -874,21 +874,26 @@ public class SpoonJobDelegate extends SpoonDelegate {
   public void closeJob( JobMeta jobMeta ) {
     // Close the associated tabs...
     //
-    TabMapEntry entry = spoon.delegates.tabs.findTabMapEntry( jobMeta );
+    TabMapEntry entry = getSpoon().delegates.tabs.findTabMapEntry( jobMeta );
     if ( entry != null ) {
-      spoon.delegates.tabs.removeTab( entry );
+      getSpoon().delegates.tabs.removeTab( entry );
     }
 
     // Also remove it from the item from the jobMap
     // Otherwise it keeps showing up in the objects tree
     //
-    int index = jobMap.indexOf( jobMeta );
-    if ( index >= 0 ) {
-      jobMap.remove( index );
+    int index = getJobList().indexOf( jobMeta );
+    while ( index >= 0 ) {
+      getJobList().remove( index );
+      index = getJobList().indexOf( jobMeta );
     }
 
-    spoon.refreshTree();
-    spoon.enableMenus();
+    getSpoon().refreshTree();
+    getSpoon().enableMenus();
+  }
+
+  protected Spoon getSpoon() {
+    return this.spoon;
   }
 
   public void addJobGraph( JobMeta jobMeta ) {
