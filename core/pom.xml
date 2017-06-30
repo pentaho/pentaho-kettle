@@ -20,7 +20,6 @@
   <properties>
     <!-- Test running configuration -->
     <maven-surefire-plugin.reuseForks>false</maven-surefire-plugin.reuseForks>
-    <maven-surefire-plugin.forkCount>0.5C</maven-surefire-plugin.forkCount>
 
     <!-- Third-party dependencies -->
     <batik.version>1.8</batik.version>

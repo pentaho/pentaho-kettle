@@ -19,9 +19,7 @@
   <properties>
     <!-- Test running configuration -->
     <maven-surefire-plugin.reuseForks>false</maven-surefire-plugin.reuseForks>
-    <maven-surefire-plugin.forkCount>0.5C</maven-surefire-plugin.forkCount>
     <maven-failsafe-plugin.reuseForks>false</maven-failsafe-plugin.reuseForks>
-    <maven-failsafe-plugin.forkCount>0.5C</maven-failsafe-plugin.forkCount>
   </properties>
 
   <profiles>
