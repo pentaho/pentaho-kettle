@@ -506,6 +506,7 @@
       <groupId>net.sf.saxon</groupId>
       <artifactId>saxon</artifactId>
       <version>${saxon.version}</version>
+      <scope>provided</scope>
       <exclusions>
         <exclusion>
           <groupId>*</groupId>
@@ -517,6 +518,7 @@
       <groupId>net.sf.saxon</groupId>
       <artifactId>saxon-dom</artifactId>
       <version>${saxon-dom.version}</version>
+      <scope>provided</scope>
       <exclusions>
         <exclusion>
           <groupId>*</groupId>
