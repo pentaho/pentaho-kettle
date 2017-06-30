@@ -21,6 +21,10 @@
  */
 
 /* BREADCRUMB */
+breadcrumb {
+	color: #005DA6;
+}
+
 breadcrumb .breadcrumbItem {
   float: left;
   user-select: none;
@@ -43,12 +47,13 @@ breadcrumb .breadcrumbFolder.extra .breadcrumbExtra {
   left: -10px;
   position: absolute;
   background-color: #ffffff;
-  -moz-box-shadow: 0 0 5px rgba(0, 0, 0, 0.247058823529412);
-  -webkit-box-shadow: 0 0 5px rgba(0, 0, 0, 0.247058823529412);
-  box-shadow: 0 0 5px rgba(0, 0, 0, 0.247058823529412);
+  -moz-box-shadow: 0 0 4px 0 rgba(0, 0, 0, 0.4);
+  -webkit-box-shadow: 0 0 4px 0 rgba(0, 0, 0, 0.4);
+  box-shadow: 0 0 4px 0 rgba(0, 0, 0, 0.4);
   padding: 5px 0;
   max-width: 300px;
   z-index: 100;
+  border: 1px solid #F2F2F2;
 }
 
 breadcrumb .breadcrumbFolder.extra .breadcrumbExtraItem {

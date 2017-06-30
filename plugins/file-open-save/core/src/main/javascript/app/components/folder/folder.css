@@ -51,6 +51,10 @@ folder .folder.selected {
   color: #FFF;
 }
 
+folder.dark .folder.selected {
+	background-color: #0F2B5B;
+}
+
 folder .folder .folderArrowWrapper,
 folder .folder .folderArrow,
 folder .folder .folderImage,
@@ -125,7 +129,6 @@ folder .folder.selected .folderImage {
 folder .folder .folderName {
   -webkit-user-select: none; /* webkit (safari, chrome) browsers */
   -moz-user-select: none; /* mozilla browsers */
-  -khtml-user-select: none; /* webkit (konqueror) browsers */
   -ms-user-select: none; /* IE10+ */
   height: 20px;
   line-height: 20px;
