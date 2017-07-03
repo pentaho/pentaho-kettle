@@ -163,7 +163,7 @@ define([
      * Rename the selected file.
      */
     function rename() {
-      var path = vm.selectedFile.type === "File folder" ? vm.selectedFile.parent : vm.selectedFile.path;
+      var path = vm.selectedFile.type === "folder" ? vm.selectedFile.parent : vm.selectedFile.path;
       dt.rename(vm.selectedFile.objectId.id, vm.selectedFile.name, path, vm.selectedFile.type).then(function(response) {
         vm.selectedFile.objectId = response.data;
       });
