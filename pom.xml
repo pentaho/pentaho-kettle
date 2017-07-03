@@ -24,8 +24,32 @@
     <tag>HEAD</tag>
   </scm>
 
+  <licenses>
+    <license>
+      <name>Apache License, Version 2.0</name>
+      <url>https://www.apache.org/licenses/LICENSE-2.0.txt</url>
+      <distribution>repo</distribution>
+      <comments>A business-friendly OSS license</comments>
+    </license>
+    <license>
+      <name>GNU Lesser General Public License, Version 2.1</name>
+      <url>https://www.gnu.org/licenses/old-licenses/lgpl-2.1.txt</url>
+      <distribution>repo</distribution>
+      <comments></comments>
+    </license>
+    <license>
+      <name>GNU Lesser General Public License, Version 3.0</name>
+      <url>https://www.gnu.org/licenses/lgpl-3.0.txt</url>
+      <distribution>repo</distribution>
+      <comments></comments>
+    </license>
+  </licenses>
+
   <properties>
     <maven.build.timestamp.format>yyyy-MM-dd hh.mm.ss</maven.build.timestamp.format>
+
+    <!-- License Configuration -->
+    <license.licenseName>apache_v2</license.licenseName>
 
     <!-- Pentaho dependencies -->
     <pentaho-xul.version>${project.version}</pentaho-xul.version>

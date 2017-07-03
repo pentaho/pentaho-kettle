@@ -15,6 +15,20 @@
 
   <name>PDI HL7 Plugin</name>
 
+  <licenses>
+    <license>
+      <name>GNU Lesser General Public License, Version 2.1</name>
+      <url>https://www.gnu.org/licenses/old-licenses/lgpl-2.1.txt</url>
+      <distribution>repo</distribution>
+      <comments></comments>
+    </license>
+  </licenses>
+
+  <properties>
+    <!-- License Configuration -->
+    <license.licenseName>lgpl_v2_1</license.licenseName>
+  </properties>
+
   <modules>
     <module>core</module>
     <module>assemblies</module>
