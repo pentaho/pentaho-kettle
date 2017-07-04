@@ -44,6 +44,7 @@ import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.row.RowDataUtil;
 import org.pentaho.di.core.row.RowMeta;
+import org.pentaho.di.core.util.EnvUtil;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.i18n.BaseMessages;
@@ -578,7 +579,7 @@ public class XMLInputStream extends BaseStep implements StepInterface {
     if ( super.init( smi, sdi ) ) {
       data.staxInstance = XMLInputFactory.newInstance(); // could select the parser later on
       data.filenr = 0;
-      if ( getTransMeta().findNrPrevSteps( getStepMeta() ) == 0 && !meta.sourceFromInput ) {
+      if ( ( getTransMeta().findNrPrevSteps( getStepMeta() ) == 0 || ignoreReceivingInput() ) && !meta.sourceFromInput ) {
         String filename = environmentSubstitute( meta.getFilename() );
         if ( Utils.isEmpty( filename ) ) {
           logError( BaseMessages.getString( PKG, "XMLInputStream.MissingFilename.Message" ) );
@@ -614,6 +615,10 @@ public class XMLInputStream extends BaseStep implements StepInterface {
       return true;
     }
     return false;
+  }
+
+  private boolean ignoreReceivingInput() {
+    return Boolean.valueOf( EnvUtil.getSystemProperty( Const.KETTLE_IGNORE_RECEIVING_INPUT, "false" ) );
   }
 
   @Override

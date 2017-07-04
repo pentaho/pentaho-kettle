@@ -1062,6 +1062,11 @@ public class Const {
   public static final String KETTLE_GLOBAL_LOG_VARIABLES_CLEAR_ON_EXPORT = "KETTLE_GLOBAL_LOG_VARIABLES_CLEAR_ON_EXPORT";
 
   /**
+   * Set this variable to true to disable receiving file names from another step for XML Input Stream (StAX) step.
+   */
+  public static final String KETTLE_IGNORE_RECEIVING_INPUT = "KETTLE_IGNORE_RECEIVING_INPUT";
+
+  /**
    * Compatibility settings for {@link org.pentaho.di.core.row.ValueDataUtil#hourOfDay(ValueMetaInterface, Object)}.
    *
    * Switches off the fix for calculation of timezone decomposition.
