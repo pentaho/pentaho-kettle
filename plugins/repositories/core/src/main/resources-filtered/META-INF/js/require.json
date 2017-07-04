@@ -44,7 +44,7 @@
     "angular-animate_${angular-animate.version}": {
       "deps": [ "angular_${angular.version}" ]
     },
-    "angular-translate_$.angular-translate.version}": {
+    "angular-translate_${angular-translate.version}": {
       "deps": [ "angular_${angular.version}" ]
     },
     "angular-translate_${angular-translate.version}/angular-translate": {
