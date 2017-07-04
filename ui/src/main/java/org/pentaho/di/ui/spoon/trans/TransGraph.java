@@ -415,6 +415,7 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
     this.spoon = spoon;
     this.transMeta = transMeta;
     this.areaOwners = new ArrayList<>();
+
     this.log = spoon.getLog();
     spoon.selectionFilter.setText( "" );
 
@@ -4576,7 +4577,12 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
 
   @Override
   public HasLogChannelInterface getLogChannelProvider() {
-    return trans;
+    return new HasLogChannelInterface() {
+      @Override
+      public LogChannelInterface getLogChannel() {
+        return getTrans() != null ? getTrans().getLogChannel() : getTransMeta().getLogChannel();
+      }
+    };
   }
 
   public synchronized void setTrans( Trans trans ) {

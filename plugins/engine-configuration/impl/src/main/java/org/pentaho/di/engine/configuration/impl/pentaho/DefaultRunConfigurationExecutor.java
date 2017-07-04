@@ -27,8 +27,6 @@ package org.pentaho.di.engine.configuration.impl.pentaho;
 import org.pentaho.di.base.AbstractMeta;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.logging.LogChannel;
-import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.engine.configuration.api.RunConfiguration;
 import org.pentaho.di.engine.configuration.api.RunConfigurationExecutor;
