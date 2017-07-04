@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -27,7 +27,7 @@ import org.junit.Ignore;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.variables.Variables;
-import org.pentaho.di.trans.steps.fileinput.BaseFileInputField;
+import org.pentaho.di.trans.steps.file.BaseFileField;
 import org.pentaho.di.trans.steps.fileinput.BaseParsingTest;
 
 /**
@@ -71,7 +71,7 @@ public class BaseFixedParsingTest extends BaseParsingTest<FixedInputMeta, FixedI
    * For BaseFileInput fields.
    */
   @Override
-  protected void setFields( BaseFileInputField... fields ) throws Exception {
+  protected void setFields( BaseFileField... fields ) throws Exception {
     throw new RuntimeException( "Not implemented" );
   }
 

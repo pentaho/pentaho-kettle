@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -37,7 +37,6 @@ import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.swt.widgets.Shell;
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.fileinput.FileInputList;
 import org.pentaho.di.core.logging.LogChannel;
@@ -47,10 +46,11 @@ import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.util.StringEvaluationResult;
 import org.pentaho.di.core.util.StringEvaluator;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.TransMeta;
-import org.pentaho.di.trans.steps.fileinput.BaseFileInputField;
-import org.pentaho.di.trans.steps.fileinput.BaseFileInputStepMeta;
+import org.pentaho.di.trans.steps.file.BaseFileField;
+import org.pentaho.di.trans.steps.file.BaseFileInputAdditionalField;
 import org.pentaho.di.trans.steps.fileinput.text.EncodingType;
 import org.pentaho.di.trans.steps.fileinput.text.TextFileInputMeta;
 import org.pentaho.di.trans.steps.fileinput.text.TextFileInputUtils;
@@ -152,7 +152,7 @@ public class TextFileCSVImportProgressDialog {
 
     DecimalFormatSymbols dfs = new DecimalFormatSymbols();
 
-    int nrfields = meta.inputFiles.inputFields.length;
+    int nrfields = meta.inputFields.length;
 
     RowMetaInterface outputRowMeta = new RowMeta();
     meta.getFields( outputRowMeta, null, null, null, transMeta, null, null );
@@ -192,7 +192,7 @@ public class TextFileCSVImportProgressDialog {
     int[][] numberLength = new int[nrfields][Const.getNumberFormats().length]; // remember the length?
 
     for ( int i = 0; i < nrfields; i++ ) {
-      BaseFileInputField field = meta.inputFiles.inputFields[i];
+      BaseFileField field = meta.inputFields[i];
 
       if ( log.isDebug() ) {
         debug = "init field #" + i;
@@ -200,8 +200,8 @@ public class TextFileCSVImportProgressDialog {
 
       if ( replaceMeta ) { // Clear previous info...
 
-        field.setName( meta.inputFiles.inputFields[i].getName() );
-        field.setType( meta.inputFiles.inputFields[i].getType() );
+        field.setName( meta.inputFields[i].getName() );
+        field.setType( meta.inputFields[i].getType() );
         field.setFormat( "" );
         field.setLength( -1 );
         field.setPrecision( -1 );
@@ -240,7 +240,7 @@ public class TextFileCSVImportProgressDialog {
 
     TextFileInputMeta strinfo = (TextFileInputMeta) meta.clone();
     for ( int i = 0; i < nrfields; i++ ) {
-      strinfo.inputFiles.inputFields[i].setType( ValueMetaInterface.TYPE_STRING );
+      strinfo.inputFields[i].setType( ValueMetaInterface.TYPE_STRING );
     }
 
     // Sample <samples> rows...
@@ -300,8 +300,8 @@ public class TextFileCSVImportProgressDialog {
           TextFileInputUtils.convertLineToRow( log, new TextFileLine( line, fileLineNumber, null ), strinfo, null, 0,
               outputRowMeta, convertRowMeta, FileInputList.createFilePathList( transMeta, meta.inputFiles.fileName,
                   meta.inputFiles.fileMask, meta.inputFiles.excludeFileMask, meta.inputFiles.fileRequired, meta
-                      .includeSubFolderBoolean() )[0], rownumber, delimiter, enclosure, escapeCharacter, null,
-              new BaseFileInputStepMeta.AdditionalOutputFields(), null, null, false, null, null, null, null, null );
+                      .inputFiles.includeSubFolderBoolean() )[0], rownumber, delimiter, enclosure, escapeCharacter, null,
+              new BaseFileInputAdditionalField(), null, null, false, null, null, null, null, null );
 
       if ( r == null ) {
         errorFound = true;
@@ -346,7 +346,7 @@ public class TextFileCSVImportProgressDialog {
     message.append( BaseMessages.getString( PKG, "TextFileCSVImportProgressDialog.Info.HorizontalLine" ) );
 
     for ( int i = 0; i < nrfields; i++ ) {
-      BaseFileInputField field = meta.inputFiles.inputFields[i];
+      BaseFileField field = meta.inputFields[i];
       StringEvaluator evaluator = evaluators.get( i );
       List<StringEvaluationResult> evaluationResults = evaluator.getStringEvaluationResults();
 

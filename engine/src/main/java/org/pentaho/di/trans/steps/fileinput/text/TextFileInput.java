@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -33,8 +33,8 @@ import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
-import org.pentaho.di.trans.steps.fileinput.BaseFileInputStep;
-import org.pentaho.di.trans.steps.fileinput.IBaseFileInputReader;
+import org.pentaho.di.trans.steps.file.BaseFileInputStep;
+import org.pentaho.di.trans.steps.file.IBaseFileInputReader;
 
 /**
  * Read all sorts of text files, convert them to rows and writes these to one or more output streams.

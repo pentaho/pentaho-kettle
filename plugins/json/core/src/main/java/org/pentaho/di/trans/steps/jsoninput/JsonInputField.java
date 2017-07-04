@@ -31,7 +31,7 @@ import org.pentaho.di.core.row.value.ValueMetaBase;
 import org.pentaho.di.core.row.value.ValueMetaFactory;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
-import org.pentaho.di.trans.steps.fileinput.BaseFileInputField;
+import org.pentaho.di.trans.steps.file.BaseFileField;
 import org.w3c.dom.Node;
 
 /**
@@ -40,7 +40,7 @@ import org.w3c.dom.Node;
  * @author Samatar
  * @since 20-06-20010
  */
-public class JsonInputField extends BaseFileInputField implements Cloneable {
+public class JsonInputField extends BaseFileField implements Cloneable {
 
   @Deprecated
   public static final int TYPE_TRIM_NONE = ValueMetaInterface.TRIM_TYPE_NONE;

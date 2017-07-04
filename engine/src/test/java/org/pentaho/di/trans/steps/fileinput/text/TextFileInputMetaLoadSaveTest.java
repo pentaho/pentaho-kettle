@@ -22,13 +22,7 @@
 
 package org.pentaho.di.trans.steps.fileinput.text;
 
-import org.apache.commons.lang.builder.EqualsBuilder;
-import org.junit.Before;
-import org.junit.Test;
-import org.pentaho.di.trans.steps.fileinput.BaseFileInputField;
-import org.pentaho.di.trans.steps.loadsave.LoadSaveTester;
-import org.pentaho.di.trans.steps.loadsave.validator.ArrayLoadSaveValidator;
-import org.pentaho.di.trans.steps.loadsave.validator.FieldLoadSaveValidator;
+import static org.junit.Assert.assertTrue;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -38,7 +32,13 @@ import java.util.Map;
 import java.util.Random;
 import java.util.UUID;
 
-import static org.junit.Assert.assertTrue;
+import org.apache.commons.lang.builder.EqualsBuilder;
+import org.junit.Before;
+import org.junit.Test;
+import org.pentaho.di.trans.steps.file.BaseFileField;
+import org.pentaho.di.trans.steps.loadsave.LoadSaveTester;
+import org.pentaho.di.trans.steps.loadsave.validator.ArrayLoadSaveValidator;
+import org.pentaho.di.trans.steps.loadsave.validator.FieldLoadSaveValidator;
 
 /**
  * @author Andrey Khayrutdinov
@@ -91,7 +91,7 @@ public class TextFileInputMetaLoadSaveTest {
 
     Map<String, FieldLoadSaveValidator<?>> typeValidators = new HashMap<>(  );
     typeValidators.put( TextFileFilter[].class.getCanonicalName(), new ArrayLoadSaveValidator<>( new TextFileFilterValidator() ) );
-    typeValidators.put( BaseFileInputField[].class.getCanonicalName(), new ArrayLoadSaveValidator<>( new TextFileInputFieldValidator() ) );
+    typeValidators.put( BaseFileField[].class.getCanonicalName(), new ArrayLoadSaveValidator<>( new TextFileInputFieldValidator() ) );
 
     assertTrue( !commonAttributes.isEmpty() || !( xmlAttributes.isEmpty() || repoAttributes.isEmpty() ) );
 
@@ -105,18 +105,18 @@ public class TextFileInputMetaLoadSaveTest {
     tester.testSerialization();
   }
 
-  private static class TextFileInputFieldValidator implements FieldLoadSaveValidator<BaseFileInputField> {
-    @Override public BaseFileInputField getTestObject() {
-      return new BaseFileInputField( UUID.randomUUID().toString(), new Random().nextInt(), new Random().nextInt() );
+  private static class TextFileInputFieldValidator implements FieldLoadSaveValidator<BaseFileField> {
+    @Override public BaseFileField getTestObject() {
+      return new BaseFileField( UUID.randomUUID().toString(), new Random().nextInt(), new Random().nextInt() );
     }
 
     @Override
-    public boolean validateTestObject( BaseFileInputField testObject, Object actual ) {
-      if ( !( actual instanceof BaseFileInputField ) ) {
+    public boolean validateTestObject( BaseFileField testObject, Object actual ) {
+      if ( !( actual instanceof BaseFileField ) ) {
         return false;
       }
 
-      BaseFileInputField another = (BaseFileInputField) actual;
+      BaseFileField another = (BaseFileField) actual;
       return new EqualsBuilder()
         .append( testObject.getName(), another.getName() )
         .append( testObject.getLength(), another.getLength() )
