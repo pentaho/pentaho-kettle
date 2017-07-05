@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2016-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -50,6 +50,7 @@ import org.pentaho.di.trans.step.RowListener;
 import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
+import org.pentaho.di.trans.steps.file.BaseFileField;
 
 /**
  * Base class for all tests for BaseFileInput steps.
@@ -109,7 +110,7 @@ public abstract class BaseParsingTest<Meta extends StepMetaInterface, Data exten
   /**
    * Declare fields for test.
    */
-  protected abstract void setFields( BaseFileInputField... fields ) throws Exception;
+  protected abstract void setFields( BaseFileField... fields ) throws Exception;
 
   /**
    * Process all rows.

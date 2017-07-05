@@ -24,7 +24,7 @@ package org.pentaho.di.trans.steps.fileinput.text;
 
 import org.junit.Test;
 import org.pentaho.di.core.variables.Variables;
-import org.pentaho.di.trans.steps.fileinput.BaseFileInputField;
+import org.pentaho.di.trans.steps.file.BaseFileField;
 
 public class TextFileInputContentParsingTest extends BaseTextParsingTest {
 
@@ -33,7 +33,7 @@ public class TextFileInputContentParsingTest extends BaseTextParsingTest {
 
     initByFile( "default.csv" );
 
-    setFields( new BaseFileInputField(), new BaseFileInputField(), new BaseFileInputField() );
+    setFields( new BaseFileField(), new BaseFileField(), new BaseFileField() );
 
     process();
 
@@ -46,7 +46,7 @@ public class TextFileInputContentParsingTest extends BaseTextParsingTest {
     meta.content.separator = ",";
     initByFile( "separator.csv" );
 
-    setFields( new BaseFileInputField(), new BaseFileInputField(), new BaseFileInputField() );
+    setFields( new BaseFileField(), new BaseFileField(), new BaseFileField() );
 
     process();
 
@@ -59,7 +59,7 @@ public class TextFileInputContentParsingTest extends BaseTextParsingTest {
     meta.content.escapeCharacter = "\\";
     initByFile( "escape.csv" );
 
-    setFields( new BaseFileInputField(), new BaseFileInputField(), new BaseFileInputField() );
+    setFields( new BaseFileField(), new BaseFileField(), new BaseFileField() );
 
     process();
 
@@ -72,7 +72,7 @@ public class TextFileInputContentParsingTest extends BaseTextParsingTest {
     meta.content.header = false;
     initByFile( "default.csv" );
 
-    setFields( new BaseFileInputField(), new BaseFileInputField(), new BaseFileInputField() );
+    setFields( new BaseFileField(), new BaseFileField(), new BaseFileField() );
 
     process();
 
@@ -89,7 +89,7 @@ public class TextFileInputContentParsingTest extends BaseTextParsingTest {
     meta.content.fileCompression = "GZip";
     initByFile( "default.csv.gz" );
 
-    setFields( new BaseFileInputField(), new BaseFileInputField(), new BaseFileInputField() );
+    setFields( new BaseFileField(), new BaseFileField(), new BaseFileField() );
 
     process();
 
@@ -103,7 +103,7 @@ public class TextFileInputContentParsingTest extends BaseTextParsingTest {
     String url = "gz:" + this.getClass().getResource( inPrefix + "default.csv.gz" );
     initByURL( url );
 
-    setFields( new BaseFileInputField(), new BaseFileInputField(), new BaseFileInputField() );
+    setFields( new BaseFileField(), new BaseFileField(), new BaseFileField() );
 
     process();
 
@@ -117,7 +117,7 @@ public class TextFileInputContentParsingTest extends BaseTextParsingTest {
     String url = "bz2:" + this.getClass().getResource( inPrefix + "default.csv.bz2" );
     initByURL( url );
 
-    setFields( new BaseFileInputField(), new BaseFileInputField(), new BaseFileInputField() );
+    setFields( new BaseFileField(), new BaseFileField(), new BaseFileField() );
 
     process();
 
@@ -130,7 +130,7 @@ public class TextFileInputContentParsingTest extends BaseTextParsingTest {
     meta.content.fileType = "Fixed";
     initByFile( "fixed.csv" );
 
-    setFields( new BaseFileInputField( "f1", 0, 7 ), new BaseFileInputField( "f2", 8, 7 ), new BaseFileInputField( "f3",
+    setFields( new BaseFileField( "f1", 0, 7 ), new BaseFileField( "f2", 8, 7 ), new BaseFileField( "f3",
         16, 7 ) );
 
     process();
@@ -149,10 +149,10 @@ public class TextFileInputContentParsingTest extends BaseTextParsingTest {
     initByFile( "test-fixed-length-bytes.txt" );
 
     setFields(
-        new BaseFileInputField( "f1", 0, 5 ),
-        new BaseFileInputField( "f2", 5, 3 ),
-        new BaseFileInputField( "f3", 8, 1 ),
-        new BaseFileInputField( "f4", 9, 3 ) );
+        new BaseFileField( "f1", 0, 5 ),
+        new BaseFileField( "f2", 5, 3 ),
+        new BaseFileField( "f3", 8, 1 ),
+        new BaseFileField( "f4", 9, 3 ) );
 
     process();
 
@@ -169,10 +169,10 @@ public class TextFileInputContentParsingTest extends BaseTextParsingTest {
     initByFile( "test-fixed-length-characters.txt" );
 
     setFields(
-        new BaseFileInputField( "f1", 0, 3 ),
-        new BaseFileInputField( "f2", 3, 2 ),
-        new BaseFileInputField( "f3", 5, 2 ),
-        new BaseFileInputField( "f4", 7, 4 ) );
+        new BaseFileField( "f1", 0, 3 ),
+        new BaseFileField( "f2", 3, 2 ),
+        new BaseFileField( "f3", 5, 2 ),
+        new BaseFileField( "f4", 7, 4 ) );
 
     process();
     check( new Object[][] { { "ABC", "DE", "FG", "HIJK" }, { "LmN", "oP", "qR", "sTuV" } } );
@@ -187,7 +187,7 @@ public class TextFileInputContentParsingTest extends BaseTextParsingTest {
     meta.content.fileFormat = "mixed";
     initByFile( "filterempty-BACKLOG-5381.csv" );
 
-    setFields( new BaseFileInputField( "f", 0, 100 ) );
+    setFields( new BaseFileField( "f", 0, 100 ) );
 
     process();
 
@@ -205,7 +205,7 @@ public class TextFileInputContentParsingTest extends BaseTextParsingTest {
     data.filterProcessor =
         new TextFileFilterProcessor( new TextFileFilter[] { new TextFileFilter( 0, "${VAR_TEST}", false, false ) },
             vars );
-    setFields( new BaseFileInputField(), new BaseFileInputField(), new BaseFileInputField() );
+    setFields( new BaseFileField(), new BaseFileField(), new BaseFileField() );
 
     process();
 
@@ -219,7 +219,7 @@ public class TextFileInputContentParsingTest extends BaseTextParsingTest {
     meta.content.header = false;
     initByFile( "test-BOM-UTF-8.txt" );
 
-    setFields( new BaseFileInputField(), new BaseFileInputField() );
+    setFields( new BaseFileField(), new BaseFileField() );
 
     process();
 
@@ -233,7 +233,7 @@ public class TextFileInputContentParsingTest extends BaseTextParsingTest {
     meta.content.header = false;
     initByFile( "test-BOM-UTF-16BE.txt" );
 
-    setFields( new BaseFileInputField(), new BaseFileInputField() );
+    setFields( new BaseFileField(), new BaseFileField() );
 
     process();
 

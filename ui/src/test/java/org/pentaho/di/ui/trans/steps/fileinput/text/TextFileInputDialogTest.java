@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2016-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -54,11 +54,11 @@ import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.errorhandling.FileErrorHandler;
 import org.pentaho.di.trans.steps.StepMockUtil;
+import org.pentaho.di.trans.steps.file.BaseFileField;
 import org.pentaho.di.trans.steps.fileinput.text.TextFileFilter;
 import org.pentaho.di.trans.steps.fileinput.text.TextFileFilterProcessor;
 import org.pentaho.di.trans.steps.fileinput.text.TextFileInput;
 import org.pentaho.di.trans.steps.fileinput.text.TextFileInputData;
-import org.pentaho.di.trans.steps.fileinput.BaseFileInputField;
 import org.pentaho.di.trans.steps.fileinput.text.TextFileInputMeta;
 import org.pentaho.di.ui.core.PropsUI;
 import org.pentaho.di.ui.core.widget.TableView;
@@ -119,9 +119,9 @@ public class TextFileInputDialogTest {
 
     TextFileInputMeta meta = new TextFileInputMeta();
     meta.content.lineWrapped = false;
-    meta.inputFiles.inputFields = new BaseFileInputField[]{
-      new BaseFileInputField( "col1", -1, -1 ),
-      new BaseFileInputField( "col2", -1, -1 )
+    meta.inputFields = new BaseFileField[]{
+      new BaseFileField( "col1", -1, -1 ),
+      new BaseFileField( "col2", -1, -1 )
     };
     meta.content.fileCompression = "None";
     meta.content.fileType = "CSV";

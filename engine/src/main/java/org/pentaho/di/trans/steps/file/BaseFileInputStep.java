@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -20,7 +20,7 @@
  *
  ******************************************************************************/
 
-package org.pentaho.di.trans.steps.fileinput;
+package org.pentaho.di.trans.steps.file;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -60,7 +60,7 @@ import org.pentaho.di.trans.step.errorhandling.FileErrorHandlerMissingFiles;
  *
  * @author Alexander Buloichik
  */
-public abstract class BaseFileInputStep<M extends BaseFileInputStepMeta, D extends BaseFileInputStepData> extends
+public abstract class BaseFileInputStep<M extends BaseFileInputMeta<?, ?, ?>, D extends BaseFileInputStepData> extends
     BaseStep implements IBaseFileInputStepControl {
   private static Class<?> PKG = BaseFileInputStep.class; // for i18n purposes, needed by Translator2!! TODO: is
   // it right for
@@ -244,8 +244,8 @@ public abstract class BaseFileInputStep<M extends BaseFileInputStepMeta, D exten
         data.dataErrorLineHandler );
 
     // Count the number of repeat fields...
-    for ( int i = 0; i < meta.inputFiles.inputFields.length; i++ ) {
-      if ( meta.inputFiles.inputFields[i].isRepeated() ) {
+    for ( int i = 0; i < meta.inputFields.length; i++ ) {
+      if ( meta.inputFields[i].isRepeated() ) {
         data.nr_repeats++;
       }
     }

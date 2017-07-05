@@ -48,7 +48,7 @@ import org.pentaho.di.trans.TransTestingUtil;
 import org.pentaho.di.trans.step.errorhandling.AbstractFileErrorHandler;
 import org.pentaho.di.trans.step.errorhandling.FileErrorHandler;
 import org.pentaho.di.trans.steps.StepMockUtil;
-import org.pentaho.di.trans.steps.fileinput.BaseFileInputField;
+import org.pentaho.di.trans.steps.file.BaseFileField;
 import org.pentaho.di.utils.TestUtils;
 
 public class TextFileInputTest {
@@ -143,7 +143,7 @@ public class TextFileInputTest {
   public void readInputWithMissedValues() throws Exception {
     final String virtualFile = createVirtualFile( "pdi-14172.txt", "1,1,1\n", "2,,2\n" );
 
-    BaseFileInputField field2 = field( "col2" );
+    BaseFileField field2 = field( "col2" );
     field2.setRepeated( true );
 
     TextFileInputMeta meta = createMetaObject( field( "col1" ), field2, field( "col3" ) );
@@ -161,7 +161,7 @@ public class TextFileInputTest {
   public void readInputWithNonEmptyNullif() throws Exception {
     final String virtualFile = createVirtualFile( "pdi-14358.txt", "-,-\n" );
 
-    BaseFileInputField col2 = field( "col2" );
+    BaseFileField col2 = field( "col2" );
     col2.setNullString( "-" );
 
     TextFileInputMeta meta = createMetaObject( field( "col1" ), col2 );
@@ -178,7 +178,7 @@ public class TextFileInputTest {
   public void readInputWithDefaultValues() throws Exception {
     final String virtualFile = createVirtualFile( "pdi-14832.txt", "1,\n" );
 
-    BaseFileInputField col2 = field( "col2" );
+    BaseFileField col2 = field( "col2" );
     col2.setIfNullValue( "DEFAULT" );
 
     TextFileInputMeta meta = createMetaObject( field( "col1" ), col2 );
@@ -201,7 +201,7 @@ public class TextFileInputTest {
 
     TextFileInputMeta meta = createMetaObject( field( "col1" ) );
 
-    meta.inputFiles.inputFields[0].setType( 1 );
+    meta.inputFields[0].setType( 1 );
     meta.content.lineWrapped = false;
     meta.content.nrWraps = 1;
     meta.errorHandling.errorIgnored = true;
@@ -214,7 +214,7 @@ public class TextFileInputTest {
     Mockito.verify( data.dataErrorLineHandler ).handleLineError( 4, AbstractFileErrorHandler.NO_PARTS );
     deleteVfsFile( virtualFile );
   }
-  private TextFileInputMeta createMetaObject( BaseFileInputField... fields ) {
+  private TextFileInputMeta createMetaObject( BaseFileField... fields ) {
     TextFileInputMeta meta = new TextFileInputMeta();
     meta.content.fileCompression = "None";
     meta.content.fileType = "CSV";
@@ -223,7 +223,7 @@ public class TextFileInputTest {
     meta.content.footer = false;
     meta.content.nrFooterLines = -1;
 
-    meta.inputFiles.inputFields = fields;
+    meta.inputFields = fields;
     return meta;
   }
 
@@ -272,7 +272,7 @@ public class TextFileInputTest {
     TestUtils.getFileObject( path ).delete();
   }
 
-  private static BaseFileInputField field( String name ) {
-    return new BaseFileInputField( name, -1, -1 );
+  private static BaseFileField field( String name ) {
+    return new BaseFileField( name, -1, -1 );
   }
 }

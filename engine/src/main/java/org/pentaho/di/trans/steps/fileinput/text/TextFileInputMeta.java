@@ -32,7 +32,6 @@ import org.apache.commons.vfs2.FileObject;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleFileException;
@@ -50,6 +49,7 @@ import org.pentaho.di.core.row.value.ValueMetaFactory;
 import org.pentaho.di.core.row.value.ValueMetaInteger;
 import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.core.util.EnvUtil;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
@@ -64,16 +64,17 @@ import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
-import org.pentaho.di.trans.steps.fileinput.BaseFileInputField;
-import org.pentaho.di.trans.steps.fileinput.BaseFileInputStepMeta;
+import org.pentaho.di.trans.steps.file.BaseFileField;
+import org.pentaho.di.trans.steps.file.BaseFileInputAdditionalField;
+import org.pentaho.di.trans.steps.file.BaseFileInputFiles;
+import org.pentaho.di.trans.steps.file.BaseFileInputMeta;
 import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Node;
 
 import com.google.common.annotations.VisibleForTesting;
 
 @InjectionSupported( localizationPrefix = "TextFileInput.Injection.", groups = { "FILENAME_LINES", "FIELDS", "FILTERS" } )
-public class TextFileInputMeta extends
-    BaseFileInputStepMeta<BaseFileInputStepMeta.AdditionalOutputFields, BaseFileInputStepMeta.InputFiles<BaseFileInputField>>
+public class TextFileInputMeta extends BaseFileInputMeta<BaseFileInputAdditionalField, BaseFileInputFiles, BaseFileField>
     implements StepMetaInterface {
   private static Class<?> PKG = TextFileInputMeta.class; // for i18n purposes, needed by Translator2!! TODO: check i18n
                                                          // for base
@@ -230,9 +231,9 @@ public class TextFileInputMeta extends
   private StepMeta acceptingStep;
 
   public TextFileInputMeta() {
-    additionalOutputFields = new BaseFileInputStepMeta.AdditionalOutputFields();
-    inputFiles = new BaseFileInputStepMeta.InputFiles<>();
-    inputFiles.inputFields = new BaseFileInputField[0];
+    additionalOutputFields = new BaseFileInputAdditionalField();
+    inputFiles = new BaseFileInputFiles();
+    inputFields = new BaseFileField[0];
   }
 
   /**
@@ -368,7 +369,7 @@ public class TextFileInputMeta extends
 
       for ( int i = 0; i < nrfields; i++ ) {
         Node fnode = XMLHandler.getSubNodeByNr( fields, "field", i );
-        BaseFileInputField field = new BaseFileInputField();
+        BaseFileField field = new BaseFileField();
 
         field.setName( XMLHandler.getTagValue( fnode, "name" ) );
         field.setType( ValueMetaFactory.getIdForValueMeta( XMLHandler.getTagValue( fnode, "type" ) ) );
@@ -384,7 +385,7 @@ public class TextFileInputMeta extends
         field.setTrimType( ValueMetaString.getTrimTypeByCode( XMLHandler.getTagValue( fnode, "trim_type" ) ) );
         field.setRepeated( YES.equalsIgnoreCase( XMLHandler.getTagValue( fnode, "repeat" ) ) );
 
-        inputFiles.inputFields[i] = field;
+        inputFields[i] = field;
       }
 
       // Is there a limit on the number of rows we process?
@@ -436,7 +437,7 @@ public class TextFileInputMeta extends
     TextFileInputMeta retval = (TextFileInputMeta) super.clone();
 
     int nrfiles = inputFiles.fileName.length;
-    int nrfields = inputFiles.inputFields.length;
+    int nrfields = inputFields.length;
     int nrfilters = filter.length;
 
     retval.allocate( nrfiles, nrfields, nrfilters );
@@ -448,7 +449,7 @@ public class TextFileInputMeta extends
     System.arraycopy( inputFiles.includeSubFolders, 0, retval.inputFiles.includeSubFolders, 0, nrfiles );
 
     for ( int i = 0; i < nrfields; i++ ) {
-      retval.inputFiles.inputFields[i] = (BaseFileInputField) inputFiles.inputFields[i].clone();
+      retval.inputFields[i] = (BaseFileField) inputFields[i].clone();
     }
 
     for ( int i = 0; i < nrfilters; i++ ) {
@@ -461,7 +462,7 @@ public class TextFileInputMeta extends
   public void allocate( int nrfiles, int nrfields, int nrfilters ) {
     allocateFiles( nrfiles );
 
-    inputFiles.inputFields = new BaseFileInputField[nrfields];
+    inputFields = new BaseFileField[nrfields];
     filter = new TextFileFilter[nrfilters];
   }
 
@@ -534,7 +535,7 @@ public class TextFileInputMeta extends
     }
 
     for ( int i = 0; i < nrfields; i++ ) {
-      inputFiles.inputFields[i] = new BaseFileInputField( "field" + ( i + 1 ), 1, -1 );
+      inputFields[i] = new BaseFileField( "field" + ( i + 1 ), 1, -1 );
     }
 
     content.dateFormatLocale = Locale.getDefault();
@@ -560,8 +561,8 @@ public class TextFileInputMeta extends
       }
     }
 
-    for ( int i = 0; i < inputFiles.inputFields.length; i++ ) {
-      BaseFileInputField field = inputFiles.inputFields[i];
+    for ( int i = 0; i < inputFields.length; i++ ) {
+      BaseFileField field = inputFields[i];
 
       int type = field.getType();
       if ( type == ValueMetaInterface.TYPE_NONE ) {
@@ -756,8 +757,8 @@ public class TextFileInputMeta extends
     retval.append( "    </filters>" ).append( Const.CR );
 
     retval.append( "    <fields>" ).append( Const.CR );
-    for ( int i = 0; i < inputFiles.inputFields.length; i++ ) {
-      BaseFileInputField field = inputFiles.inputFields[i];
+    for ( int i = 0; i < inputFields.length; i++ ) {
+      BaseFileField field = inputFields[i];
 
       retval.append( "      <field>" ).append( Const.CR );
       retval.append( "        " ).append( XMLHandler.addTagValue( "name", field.getName() ) );
@@ -924,7 +925,7 @@ public class TextFileInputMeta extends
       }
 
       for ( int i = 0; i < nrfields; i++ ) {
-        BaseFileInputField field = new BaseFileInputField();
+        BaseFileField field = new BaseFileField();
 
         field.setName( rep.getStepAttributeString( id_step, i, "field_name" ) );
         field.setType( ValueMetaFactory.getIdForValueMeta( rep.getStepAttributeString( id_step, i, "field_type" ) ) );
@@ -940,7 +941,7 @@ public class TextFileInputMeta extends
         field.setTrimType( ValueMetaString.getTrimTypeByCode( rep.getStepAttributeString( id_step, i, "field_trim_type" ) ) );
         field.setRepeated( rep.getStepAttributeBoolean( id_step, i, "field_repeat" ) );
 
-        inputFiles.inputFields[i] = field;
+        inputFields[i] = field;
       }
 
       errorHandling.errorIgnored = rep.getStepAttributeBoolean( id_step, "error_ignored" );
@@ -1040,8 +1041,8 @@ public class TextFileInputMeta extends
         rep.saveStepAttribute( id_transformation, id_step, i, "filter_is_positive", filter[i].isFilterPositive() );
       }
 
-      for ( int i = 0; i < inputFiles.inputFields.length; i++ ) {
-        BaseFileInputField field = inputFiles.inputFields[i];
+      for ( int i = 0; i < inputFields.length; i++ ) {
+        BaseFileField field = inputFields[i];
 
         rep.saveStepAttribute( id_transformation, id_step, i, "field_name", field.getName() );
         rep.saveStepAttribute( id_transformation, id_step, i, "field_type", field.getTypeDesc() );
@@ -1349,13 +1350,13 @@ public class TextFileInputMeta extends
   public String[] getFilePaths( VariableSpace space ) {
     return FileInputList.createFilePathList(
         space, inputFiles.fileName, inputFiles.fileMask, inputFiles.excludeFileMask,
-        inputFiles.fileRequired, includeSubFolderBoolean() );
+        inputFiles.fileRequired, inputFiles.includeSubFolderBoolean() );
   }
 
   public FileInputList getTextFileList( VariableSpace space ) {
     return FileInputList.createFileList(
         space, inputFiles.fileName, inputFiles.fileMask, inputFiles.excludeFileMask,
-        inputFiles.fileRequired, includeSubFolderBoolean() );
+        inputFiles.fileRequired, inputFiles.includeSubFolderBoolean() );
   }
 
   /**
