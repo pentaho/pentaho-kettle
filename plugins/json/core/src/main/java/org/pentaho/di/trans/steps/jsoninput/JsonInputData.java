@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -29,7 +29,7 @@ import java.util.Iterator;
 import org.pentaho.di.core.RowSet;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.trans.step.StepDataInterface;
-import org.pentaho.di.trans.steps.fileinput.BaseFileInputStepData;
+import org.pentaho.di.trans.steps.file.BaseFileInputStepData;
 import org.pentaho.di.trans.steps.jsoninput.reader.IJsonReader;
 
 /**

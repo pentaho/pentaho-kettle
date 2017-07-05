@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -47,7 +47,7 @@ import org.pentaho.di.core.gui.TextFileInputFieldInterface;
 import org.pentaho.di.core.row.value.ValueMetaFactory;
 import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.i18n.BaseMessages;
-import org.pentaho.di.trans.steps.fileinput.BaseFileInputField;
+import org.pentaho.di.trans.steps.file.BaseFileField;
 import org.pentaho.di.trans.steps.fileinput.text.TextFileInputMeta;
 import org.pentaho.di.ui.core.PropsUI;
 
@@ -449,7 +449,7 @@ public class TextFileImportWizardPage2 extends WizardPage {
         int idx = wFields.getSelectionIndex();
         if ( idx >= 0 ) {
           int valtype = ValueMetaFactory.getIdForValueMeta( wFieldtype.getText() );
-          BaseFileInputField field = (BaseFileInputField) fields.get( idx );
+          BaseFileField field = (BaseFileField) fields.get( idx );
           field.setType( valtype );
         }
       }
@@ -459,7 +459,7 @@ public class TextFileImportWizardPage2 extends WizardPage {
       public void modifyText( ModifyEvent e ) {
         int idx = wFields.getSelectionIndex();
         if ( idx >= 0 ) {
-          BaseFileInputField field = (BaseFileInputField) fields.get( idx );
+          BaseFileField field = (BaseFileField) fields.get( idx );
           field.setName( wFieldname.getText() );
           wFields.setItem( idx, wFieldname.getText() );
         }
@@ -470,7 +470,7 @@ public class TextFileImportWizardPage2 extends WizardPage {
       public void modifyText( ModifyEvent e ) {
         int idx = wFields.getSelectionIndex();
         if ( idx >= 0 ) {
-          BaseFileInputField field = (BaseFileInputField) fields.get( idx );
+          BaseFileField field = (BaseFileField) fields.get( idx );
           field.setFormat( wFormat.getText() );
         }
       }
@@ -502,7 +502,7 @@ public class TextFileImportWizardPage2 extends WizardPage {
       public void widgetSelected( SelectionEvent e ) {
         int idx = wFields.getSelectionIndex();
         if ( idx >= 0 ) {
-          BaseFileInputField field = (BaseFileInputField) fields.get( idx );
+          BaseFileField field = (BaseFileField) fields.get( idx );
           field.flipIgnored();
         }
       }
@@ -512,7 +512,7 @@ public class TextFileImportWizardPage2 extends WizardPage {
       public void widgetSelected( SelectionEvent e ) {
         int idx = wFields.getSelectionIndex();
         if ( idx >= 0 ) {
-          BaseFileInputField field = (BaseFileInputField) fields.get( idx );
+          BaseFileField field = (BaseFileField) fields.get( idx );
           field.setSamples( wSamples.getItems() );
           field.guess();
           showInfo();
@@ -528,7 +528,7 @@ public class TextFileImportWizardPage2 extends WizardPage {
         int answer = mb.open();
         if ( answer == SWT.YES ) {
           for ( int i = 0; i < fields.size(); i++ ) {
-            BaseFileInputField field = (BaseFileInputField) fields.get( i );
+            BaseFileField field = (BaseFileField) fields.get( i );
             field.setSamples( getRowSamples( field.getPosition(), field.getLength() ) );
             field.guess();
 
@@ -550,7 +550,7 @@ public class TextFileImportWizardPage2 extends WizardPage {
       public void widgetSelected( SelectionEvent e ) {
         int idx = wFields.getSelectionIndex();
         if ( idx >= 0 ) {
-          BaseFileInputField field = (BaseFileInputField) fields.get( idx );
+          BaseFileField field = (BaseFileField) fields.get( idx );
           field.flipRepeated();
         }
       }
@@ -560,7 +560,7 @@ public class TextFileImportWizardPage2 extends WizardPage {
       public void modifyText( ModifyEvent e ) {
         int idx = wFields.getSelectionIndex();
         if ( idx >= 0 ) {
-          BaseFileInputField field = (BaseFileInputField) fields.get( idx );
+          BaseFileField field = (BaseFileField) fields.get( idx );
           field.setCurrencySymbol( wCurrency.getText() );
         }
       }
@@ -570,7 +570,7 @@ public class TextFileImportWizardPage2 extends WizardPage {
       public void modifyText( ModifyEvent e ) {
         int idx = wFields.getSelectionIndex();
         if ( idx >= 0 ) {
-          BaseFileInputField field = (BaseFileInputField) fields.get( idx );
+          BaseFileField field = (BaseFileField) fields.get( idx );
           field.setGroupSymbol( wGroup.getText() );
         }
       }
@@ -580,7 +580,7 @@ public class TextFileImportWizardPage2 extends WizardPage {
       public void modifyText( ModifyEvent e ) {
         int idx = wFields.getSelectionIndex();
         if ( idx >= 0 ) {
-          BaseFileInputField field = (BaseFileInputField) fields.get( idx );
+          BaseFileField field = (BaseFileField) fields.get( idx );
           field.setDecimalSymbol( wDecimal.getText() );
         }
       }
@@ -590,7 +590,7 @@ public class TextFileImportWizardPage2 extends WizardPage {
       public void modifyText( ModifyEvent e ) {
         int idx = wFields.getSelectionIndex();
         if ( idx >= 0 ) {
-          BaseFileInputField field = (BaseFileInputField) fields.get( idx );
+          BaseFileField field = (BaseFileField) fields.get( idx );
           field.setNullString( wNull.getText() );
         }
       }
@@ -601,7 +601,7 @@ public class TextFileImportWizardPage2 extends WizardPage {
         int idx = wFields.getSelectionIndex();
         if ( idx >= 0 ) {
           int trimType = ValueMetaString.getTrimTypeByDesc( wTrimtype.getText() );
-          BaseFileInputField field = (BaseFileInputField) fields.get( idx );
+          BaseFileField field = (BaseFileField) fields.get( idx );
           field.setTrimType( trimType );
         }
       }
@@ -623,7 +623,7 @@ public class TextFileImportWizardPage2 extends WizardPage {
   private void refreshFields() {
     wFields.removeAll();
     for ( int i = 0; i < fields.size(); i++ ) {
-      wFields.add( ( (BaseFileInputField) fields.get( i ) ).getName() );
+      wFields.add( ( (BaseFileField) fields.get( i ) ).getName() );
     }
   }
 
@@ -654,7 +654,7 @@ public class TextFileImportWizardPage2 extends WizardPage {
   private void showInfo() {
     int idx = wFields.getSelectionIndex();
     if ( idx >= 0 ) {
-      BaseFileInputField field = (BaseFileInputField) fields.get( idx );
+      BaseFileField field = (BaseFileField) fields.get( idx );
 
       String name = field.getName();
       int from = field.getPosition();

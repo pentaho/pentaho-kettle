@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -160,47 +160,47 @@ public class JsonInputMetaInjectionTest extends BaseMetadataInjectionTest<JsonIn
     } );
     check( "FIELD_NAME", new StringGetter() {
       public String get() {
-        return meta.inputFiles.inputFields[0].getName();
+        return meta.inputFields[0].getName();
       }
     } );
     check( "FIELD_PATH", new StringGetter() {
       public String get() {
-        return meta.inputFiles.inputFields[0].getPath();
+        return meta.inputFields[0].getPath();
       }
     } );
     check( "FIELD_LENGTH", new IntGetter() {
       public int get() {
-        return meta.inputFiles.inputFields[0].getLength();
+        return meta.inputFields[0].getLength();
       }
     } );
     check( "FIELD_FORMAT", new StringGetter() {
       public String get() {
-        return meta.inputFiles.inputFields[0].getFormat();
+        return meta.inputFields[0].getFormat();
       }
     } );
     check( "FIELD_PRECISION", new IntGetter() {
       public int get() {
-        return meta.inputFiles.inputFields[0].getPrecision();
+        return meta.inputFields[0].getPrecision();
       }
     } );
     check( "FIELD_CURRENCY", new StringGetter() {
       public String get() {
-        return meta.inputFiles.inputFields[0].getCurrencySymbol();
+        return meta.inputFields[0].getCurrencySymbol();
       }
     } );
     check( "FIELD_DECIMAL", new StringGetter() {
       public String get() {
-        return meta.inputFiles.inputFields[0].getDecimalSymbol();
+        return meta.inputFields[0].getDecimalSymbol();
       }
     } );
     check( "FIELD_GROUP", new StringGetter() {
       public String get() {
-        return meta.inputFiles.inputFields[0].getGroupSymbol();
+        return meta.inputFields[0].getGroupSymbol();
       }
     } );
     check( "FIELD_REPEAT", new BooleanGetter() {
       public boolean get() {
-        return meta.inputFiles.inputFields[0].isRepeated();
+        return meta.inputFields[0].isRepeated();
       }
     } );
     check( "SOURCE_FIELD_NAME", new StringGetter() {
@@ -221,9 +221,9 @@ public class JsonInputMetaInjectionTest extends BaseMetadataInjectionTest<JsonIn
 
     ValueMetaInterface mftt = new ValueMetaString( "f" );
     injector.setProperty( meta, "FIELD_TRIM_TYPE", setValue( mftt, "left" ), "f" );
-    assertEquals( 1, meta.inputFiles.inputFields[0].getTrimType() );
+    assertEquals( 1, meta.inputFields[0].getTrimType() );
     injector.setProperty( meta, "FIELD_TRIM_TYPE", setValue( mftt, "right" ), "f" );
-    assertEquals( 2, meta.inputFiles.inputFields[0].getTrimType() );
+    assertEquals( 2, meta.inputFields[0].getTrimType() );
     skipPropertyTest( "FIELD_TRIM_TYPE" );
 
     skipPropertyTest( "FIELD_TYPE" );
