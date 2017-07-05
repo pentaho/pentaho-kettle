@@ -133,7 +133,7 @@ define(
          * @return {Promise} - a promise resolved once data is returned
          */
         function storeRecentSearch(recentSearch) {
-          return _httpGet([baseUrl, "storeRecentSearch", encodeURIComponent(recentSearch)].join("/"));
+          return _httpGet([baseUrl, "storeRecentSearch", encodeURIComponent(recentSearch) + "?ts=" + new Date().getTime()].join("/"));
         }
 
         /**
