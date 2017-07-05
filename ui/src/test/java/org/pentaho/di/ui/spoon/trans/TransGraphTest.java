@@ -30,7 +30,7 @@ import static org.mockito.Mockito.doCallRealMethod;
 import java.util.Arrays;
 import java.util.List;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 
 import org.eclipse.swt.events.MouseEvent;
 import org.junit.Test;

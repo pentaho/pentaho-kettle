@@ -859,6 +859,9 @@ public class SpoonTransformationDelegate extends SpoonDelegate {
 
     if ( execConfigAnswer ) {
 
+      TransGraph activeTransGraph = spoon.getActiveTransGraph();
+      activeTransGraph.transLogDelegate.addTransLog();
+
       ExtensionPointHandler.callExtensionPoint( log, KettleExtensionPoint.SpoonTransMetaExecutionStart.id, transMeta );
       ExtensionPointHandler.callExtensionPoint( log, KettleExtensionPoint.SpoonTransExecutionConfiguration.id,
           executionConfiguration );
@@ -885,11 +888,6 @@ public class SpoonTransformationDelegate extends SpoonDelegate {
           }
         }
       }
-
-      // addTransLog(transMeta, executionConfiguration.isExecutingLocally());
-      // TransLog transLog = spoon.getActiveTransLog();
-      //
-      TransGraph activeTransGraph = spoon.getActiveTransGraph();
 
       // Is this a local execution?
       //

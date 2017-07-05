@@ -896,15 +896,10 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
             remoteSlaveServer = executionConfiguration.getRemoteServer();
             doFallback = false;
           } catch ( KettleException e ) {
-            if ( remoteSlaveServer == null ) {
-              log.logBasic( e.getMessage(), getName() );
-              result.setNrErrors( 1 );
-              result.setResult( false );
-              return result;
-            } else {
-              log.logBasic( BaseMessages.getString( PKG, "JobTrans.Exception.RunConfigNotFound" ), runConfiguration,
-                getName(), transMeta.getFilename() );
-            }
+            log.logError( e.getMessage(), getName() );
+            result.setNrErrors( 1 );
+            result.setResult( false );
+            return result;
           }
         }
 
