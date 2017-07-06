@@ -23,7 +23,8 @@
               <div class="searchBoxExtraItem"
                    ng-mousedown="vm.searchString = search;vm.doSearch()"
                    ng-repeat="search in vm.recentSearches"
-                   title="{{search}}">{{search}}</div>
+                   ng-mouseover="vm.setTooltip(this.$index, search)"
+                   id="search-item-index-{{this.$index}}">{{search}}</div>
           </div>
         <div ng-class="{'headerSearchRight': vm.searchString !== '' }" ng-click="vm.resetSearch()"></div>
       </div>
