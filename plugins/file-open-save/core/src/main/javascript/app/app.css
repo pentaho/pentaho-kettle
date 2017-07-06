@@ -110,7 +110,7 @@ file-open-save-app .headerSearchRight:hover {
 file-open-save-app input.searchBox,
 file-open-save-app input.searchBox:focus {
   width: calc(270px - 60px);
-  height: 32px;
+  height: 100%;
   border: none;
   padding: 0;
   float: left;

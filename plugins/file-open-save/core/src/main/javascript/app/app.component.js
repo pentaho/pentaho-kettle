@@ -73,6 +73,7 @@ define([
     vm.cancelError = cancelError;
     vm.storeRecentSearch = storeRecentSearch;
     vm.displayRecentSearches = displayRecentSearches;
+    vm.setTooltip = setTooltip;
     vm.getOffsetTop = getOffsetTop;
     vm.getOffsetLeft = getOffsetLeft;
     vm.selectedFolder = "";
@@ -399,6 +400,13 @@ define([
       if(vm.recentSearches.length !== 0) {
           vm.isInSearch = true
       }
+    }
+
+    function setTooltip(id, tooltip) {
+        var searchItem = document.getElementById("search-item-index-" + id);
+        if( searchItem.scrollWidth > 267 ) {
+            searchItem.title = tooltip;
+        }
     }
 
     function getOffsetTop() {
