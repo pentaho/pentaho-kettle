@@ -22,7 +22,7 @@
 
 /* CARDS */
 card .card {
-  background-color: #FFF;
+  background-color: #FDFDFD;
   border: 1px solid #E4E4E4;
   border-radius: 4px;
   -moz-border-radius: 4px;
@@ -97,6 +97,7 @@ card .cardTitle {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  line-height: 14px;
 }
 
 card .cardDate {
