@@ -34,7 +34,7 @@
     <org.eclipse.swt.version>4.6</org.eclipse.swt.version>
     <jface.version>3.3.0-I20070606-0010</jface.version>
     <junit.version>4.7</junit.version>
-    <jets3t.version>0.7.0</jets3t.version>
+    <jets3t.version>0.9.3</jets3t.version>
     <kettle.version>${project.version}</kettle.version>
   </properties>
 

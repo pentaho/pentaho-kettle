@@ -118,6 +118,9 @@ public class HttpClientManager {
     }
 
     public CloseableHttpClient build() {
+      HttpClientBuilder httpClientBuilder = HttpClientBuilder.create();
+      httpClientBuilder.setConnectionManager( manager );
+
       RequestConfig.Builder requestConfigBuilder = RequestConfig.custom();
       if ( socketTimeout > 0 ) {
         requestConfigBuilder.setSocketTimeout( socketTimeout );
@@ -128,10 +131,8 @@ public class HttpClientManager {
       if ( proxy != null ) {
         requestConfigBuilder.setProxy( proxy );
       }
-      requestConfigBuilder.build();
+      httpClientBuilder.setDefaultRequestConfig( requestConfigBuilder.build() );
 
-      HttpClientBuilder httpClientBuilder = HttpClientBuilder.create();
-      httpClientBuilder.setConnectionManager( manager );
       if ( provider != null ) {
         httpClientBuilder.setDefaultCredentialsProvider( provider );
       }

@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -93,8 +93,8 @@ public class S3CsvInputMetaTest {
     try {
       S3Service s3Service = s3CvsInput.getS3Service( new Variables() );
       assertNotNull( s3Service );
-      assertEquals( TEST_ACCESS_KEY, s3Service.getAWSCredentials().getAccessKey() );
-      assertEquals( TEST_AWS_SECRET_KEY, s3Service.getAWSCredentials().getSecretKey() );
+      assertEquals( TEST_ACCESS_KEY, s3Service.getProviderCredentials().getAccessKey() );
+      assertEquals( TEST_AWS_SECRET_KEY, s3Service.getProviderCredentials().getSecretKey() );
     } catch ( S3ServiceException e ) {
       fail( "No exception should be thrown. But it was:" + e.getLocalizedMessage() );
     }
@@ -109,8 +109,8 @@ public class S3CsvInputMetaTest {
     try {
       S3Service s3Service = s3CvsInput.getS3Service( new Variables() );
       assertNotNull( s3Service );
-      assertEquals( TEST_ACCESS_KEY, s3Service.getAWSCredentials().getAccessKey() );
-      assertEquals( TEST_AWS_SECRET_KEY, s3Service.getAWSCredentials().getSecretKey() );
+      assertEquals( TEST_ACCESS_KEY, s3Service.getProviderCredentials().getAccessKey() );
+      assertEquals( TEST_AWS_SECRET_KEY, s3Service.getProviderCredentials().getSecretKey() );
     } catch ( S3ServiceException e ) {
       fail( "No exception should be thrown. But it was:" + e.getLocalizedMessage() );
     }
