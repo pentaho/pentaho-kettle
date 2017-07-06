@@ -226,7 +226,7 @@ files .sortWrapper {
 }
 
 files .sortWrapper .sort {
-  background: url("../../images/sort_none.svg") right center/10px 10px no-repeat;
+  background: url("../../images/sort_none.svg") center no-repeat;
   height: 17px;
   width: 10px;
   visibility: hidden;
