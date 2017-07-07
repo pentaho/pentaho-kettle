@@ -123,7 +123,8 @@ files th:first-child {
 }
 
 files tbody tr.selected td,
-files tbody tr.selected:hover td {
+files tbody tr.selected:hover td,
+files tbody tr.selected .fileLastSaved {
   background-color: #005DA6;
   color: #FFFFFF;
 }
