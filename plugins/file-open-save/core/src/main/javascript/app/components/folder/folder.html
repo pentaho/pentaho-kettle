@@ -22,7 +22,7 @@
      ng-click="vm.selectFolder(folder)"
      ng-dblclick="vm.selectAndOpenFolder(folder)"
      ng-repeat="folder in vm.folders"
-     ng-style="{paddingLeft: folder.depth * 27, 'width': folder.width}"
+     ng-style="{paddingLeft: folder.indent, 'width': folder.width}"
      ng-show="folder.visible"
      ng-class="{selected: folder === vm.selectedFolder,
                 empty: folder.hasChildren === false,
