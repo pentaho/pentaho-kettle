@@ -285,6 +285,7 @@ file-open-save-app button.primary:disabled {
   border: 1px solid #E4E4E4;
   background-color: #E4E4E4;
   color: #999;
+  cursor: default;
 }
 
 file-open-save-app button.secondary {

@@ -97,11 +97,12 @@ card .cardTitle {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  line-height: 14px;
+  line-height: 17px;
 }
 
 card .cardDate {
-  color: #999
+  color: #999;
+  line-height: 17px;
 }
 
 card .cardAreaMessageView {
