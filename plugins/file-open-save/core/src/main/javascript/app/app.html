@@ -11,11 +11,11 @@
         {{::vm.headerTitle}}
       </div>
       <div id="headerSearchId" class="headerSearch" ng-class="{'focused': vm.isInSearch === true}">
-        <div class="headerSearchLeft" ng-class="{'blueState': vm.searchString !== '' || vm.isInSearch === true }" ></div>
+        <div class="headerSearchLeft" ng-class="{'blueState': vm.searchString !== '' || vm.isInSearch === true || searchBoxHasFocus === true }" ></div>
           <input type="text" class="searchBox"
                  placeholder="{{::vm.searchPlaceholder}} {{vm.selectedFolder}}"
-                 ng-blur="vm.storeRecentSearch()"
-                 ng-focus="vm.displayRecentSearches()"
+                 ng-blur="vm.storeRecentSearch();searchBoxHasFocus=false"
+                 ng-focus="vm.displayRecentSearches();searchBoxHasFocus=true"
                  ng-change="vm.doSearch()"
                  ng-model="vm.searchString"/>
           <div class="searchBoxExtra" ng-show="vm.isInSearch"
