@@ -205,6 +205,7 @@ define([
         if (vm.folders[i].depth <= vm.maxDepth) {
           var width = "calc(100% + " + ((vm.maxDepth - vm.folders[i].depth) * 27) + "px)";
           vm.folders[i].width = width;
+          vm.folders[i].indent = (vm.folders[i].depth * 27) + "px"
         }
       }
     }

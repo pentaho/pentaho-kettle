@@ -5,26 +5,26 @@
     <table ng-show="vm.hasResults">
       <thead>
       <tr>
-        <th class="nameCell">
+        <th class="nameCell" ng-click="vm.sortFiles(vm._name)">
           <div class="headerLabel">{{::vm.nameHeader}}</div>
           <div class="sortWrapper">
-            <div class="sort" ng-click="vm.sortFiles(vm._name)"
+            <div class="sort"
                  ng-class="{sortUp: vm.sortState === 1 && vm.sortField === vm._name,
                             sortDown: vm.sortState === 2 && vm.sortField === vm._name}"></div>
           </div>
         </th>
-        <th class="typeCell">
+        <th class="typeCell" ng-click="vm.sortFiles(vm._type)">
           <div class="headerLabel">{{::vm.typeHeader}}</div>
           <div class="sortWrapper">
-            <div class="sort" ng-click="vm.sortFiles(vm._type)"
+            <div class="sort"
                  ng-class="{sortUp: vm.sortState === 1 && vm.sortField === vm._type,
                             sortDown: vm.sortState === 2 && vm.sortField === vm._type}"></div>
           </div>
         </th>
-        <th class="dateCell">
+        <th class="dateCell" ng-click="vm.sortFiles(vm._date)">
           <div class="headerLabel">{{::vm.lastSaveHeader}}</div>
           <div class="sortWrapper">
-            <div class="sort" ng-click="vm.sortFiles(vm._date)"
+            <div class="sort"
                  ng-class="{sortUp: vm.sortState === 1 && vm.sortField === vm._date,
                             sortDown: vm.sortState === 2 && vm.sortField === vm._date}"></div>
           </div>
@@ -37,7 +37,7 @@
   <div class="bodyWrapper">
     <table ng-class="{searchTable: vm.search, hasVertScroll: vm.getFileAreaWidth()}">
       <tbody>
-      <tr ng-repeat="file in vm.getFiles(vm.folder.children) | orderBy: vm.sortField: vm.sortReverse"
+      <tr ng-repeat="file in vm.getFiles(vm.folder.children) | orderBy:file:vm.sortReverse:vm.compareFiles "
           ng-click="vm.selectFile(file)"
           ng-dblclick="vm.commitFile(file); $event.stopPropagation();"
           ng-class="{selected: vm.selectedFile === file}"

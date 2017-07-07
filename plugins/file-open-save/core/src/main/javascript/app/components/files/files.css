@@ -73,10 +73,6 @@ files tbody {
   width: 100%;
 }
 
-files tbody tr {
-  cursor: pointer;
-}
-
 files .typeCell {
   width: 105px;
 }
@@ -97,6 +93,7 @@ files td {
   padding: 6px 10px;
   white-space: nowrap;
   user-select: none;
+  cursor: pointer;
   -webkit-user-select: none; /* webkit (safari, chrome) browsers */
   -moz-user-select: none; /* mozilla browsers */
   -ms-user-select: none; /* IE10+ */
@@ -217,12 +214,11 @@ files tr.selected .fileLocation {
   color: #FFF;
 }
 
-files .sortWrapper:hover .sort {
+files th:hover .sort {
   visibility: visible;
 }
 
 files .sortWrapper {
-  cursor: pointer;
   float: right;
 }
 
