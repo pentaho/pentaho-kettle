@@ -22,32 +22,31 @@
 
 package org.pentaho.di.trans.steps.http;
 
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.UnknownHostException;
-import java.util.ArrayList;
-import java.util.List;
-
-
-import org.apache.commons.httpclient.Credentials;
-import org.apache.commons.httpclient.Header;
-import org.apache.commons.httpclient.HostConfiguration;
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.HttpMethod;
-import org.apache.commons.httpclient.NameValuePair;
-import org.apache.commons.httpclient.UsernamePasswordCredentials;
-import org.apache.commons.httpclient.auth.AuthScope;
-import org.apache.commons.httpclient.methods.GetMethod;
-import org.apache.commons.httpclient.util.URIUtil;
+import org.apache.commons.lang.StringUtils;
+import org.apache.http.Header;
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpHost;
+import org.apache.http.HttpResponse;
+import org.apache.http.NameValuePair;
+import org.apache.http.client.AuthCache;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.protocol.HttpClientContext;
+import org.apache.http.client.utils.URIBuilder;
+import org.apache.http.impl.auth.BasicScheme;
+import org.apache.http.impl.client.BasicAuthCache;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.util.EntityUtils;
 import org.json.simple.JSONObject;
-import org.pentaho.di.cluster.SlaveConnectionManager;
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.row.RowDataUtil;
 import org.pentaho.di.core.row.RowMetaInterface;
+import org.pentaho.di.core.util.HttpClientManager;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
@@ -56,6 +55,13 @@ import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
+
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URI;
+import java.net.UnknownHostException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Retrieves values from a database by calling database stored procedures or functions
@@ -76,14 +82,14 @@ public class HTTP extends BaseStep implements StepInterface {
   private Object[] execHttp( RowMetaInterface rowMeta, Object[] row ) throws KettleException {
     if ( first ) {
       first = false;
-      data.argnrs = new int[meta.getArgumentField().length];
+      data.argnrs = new int[ meta.getArgumentField().length ];
 
       for ( int i = 0; i < meta.getArgumentField().length; i++ ) {
-        data.argnrs[i] = rowMeta.indexOfValue( meta.getArgumentField()[i] );
-        if ( data.argnrs[i] < 0 ) {
-          logError( BaseMessages.getString( PKG, "HTTP.Log.ErrorFindingField" ) + meta.getArgumentField()[i] + "]" );
+        data.argnrs[ i ] = rowMeta.indexOfValue( meta.getArgumentField()[ i ] );
+        if ( data.argnrs[ i ] < 0 ) {
+          logError( BaseMessages.getString( PKG, "HTTP.Log.ErrorFindingField" ) + meta.getArgumentField()[ i ] + "]" );
           throw new KettleStepException( BaseMessages.getString( PKG, "HTTP.Exception.CouldnotFindField", meta
-              .getArgumentField()[i] ) );
+            .getArgumentField()[ i ] ) );
         }
       }
     }
@@ -92,138 +98,120 @@ public class HTTP extends BaseStep implements StepInterface {
   }
 
   private Object[] callHttpService( RowMetaInterface rowMeta, Object[] rowData ) throws KettleException {
-    String url = determineUrl( rowMeta, rowData );
+    HttpClientManager.HttpClientBuilderFacade clientBuilder = HttpClientManager.getInstance().createBuilder();
+
+    if ( data.realConnectionTimeout > -1 ) {
+      clientBuilder.setConnectionTimeout( data.realConnectionTimeout );
+    }
+    if ( data.realSocketTimeout > -1 ) {
+      clientBuilder.setSocketTimeout( data.realSocketTimeout );
+    }
+    if ( StringUtils.isNotBlank( data.realHttpLogin ) ) {
+      clientBuilder.setCredentials( data.realHttpLogin, data.realHttpPassword );
+    }
+    if ( StringUtils.isNotBlank( data.realProxyHost ) ) {
+      clientBuilder.setProxy( data.realProxyHost, data.realProxyPort );
+    }
+
+    CloseableHttpClient httpClient = clientBuilder.build();
+
+    // Prepare HTTP get
+    URI uri = null;
     try {
-      if ( isDetailed() ) {
-        logDetailed( BaseMessages.getString( PKG, "HTTP.Log.Connecting", url ) );
-      }
+      URIBuilder uriBuilder = constructUrlBuilder( rowMeta, rowData );
 
-      // Prepare HTTP get
-      //
-      HttpClient httpClient = SlaveConnectionManager.getInstance().createHttpClient();
-      HttpMethod method = new GetMethod( url );
-
-      // Set timeout
-      if ( data.realConnectionTimeout > -1 ) {
-        httpClient.getHttpConnectionManager().getParams().setConnectionTimeout( data.realConnectionTimeout );
-      }
-      if ( data.realSocketTimeout > -1 ) {
-        httpClient.getHttpConnectionManager().getParams().setSoTimeout( data.realSocketTimeout );
-      }
-
-      if ( !Utils.isEmpty( data.realHttpLogin ) ) {
-        httpClient.getParams().setAuthenticationPreemptive( true );
-        Credentials defaultcreds = new UsernamePasswordCredentials( data.realHttpLogin, data.realHttpPassword );
-        httpClient.getState().setCredentials( AuthScope.ANY, defaultcreds );
-      }
-
-      HostConfiguration hostConfiguration = new HostConfiguration();
-      if ( !Utils.isEmpty( data.realProxyHost ) ) {
-        hostConfiguration.setProxy( data.realProxyHost, data.realProxyPort );
-      }
+      uri = uriBuilder.build();
+      HttpGet method = new HttpGet( uri );
 
       // Add Custom HTTP headers
       if ( data.useHeaderParameters ) {
         for ( int i = 0; i < data.header_parameters_nrs.length; i++ ) {
-          method.addRequestHeader( data.headerParameters[i].getName(), data.inputRowMeta.getString( rowData,
-              data.header_parameters_nrs[i] ) );
+          method.addHeader( data.headerParameters[ i ].getName(), data.inputRowMeta.getString( rowData,
+            data.header_parameters_nrs[ i ] ) );
           if ( isDebug() ) {
             log.logDebug( BaseMessages.getString( PKG, "HTTPDialog.Log.HeaderValue",
-                data.headerParameters[i].getName(), data.inputRowMeta
-                    .getString( rowData, data.header_parameters_nrs[i] ) ) );
+              data.headerParameters[ i ].getName(), data.inputRowMeta
+                .getString( rowData, data.header_parameters_nrs[ i ] ) ) );
           }
         }
       }
 
-      InputStreamReader inputStreamReader = null;
       Object[] newRow = null;
       if ( rowData != null ) {
         newRow = rowData.clone();
       }
       // Execute request
-      //
+      CloseableHttpResponse httpResponse = null;
       try {
         // used for calculating the responseTime
         long startTime = System.currentTimeMillis();
 
-        int statusCode = requestStatusCode( method, hostConfiguration, httpClient );
+        // Preemptive authentication
+        if ( StringUtils.isNotBlank( data.realProxyHost ) ) {
+          HttpHost target = new HttpHost( data.realProxyHost, data.realProxyPort, "http" );
+          // Create AuthCache instance
+          AuthCache authCache = new BasicAuthCache();
+          // Generate BASIC scheme object and add it to the local
+          // auth cache
+          BasicScheme basicAuth = new BasicScheme();
+          authCache.put( target, basicAuth );
+          // Add AuthCache to the execution context
+          HttpClientContext localContext = HttpClientContext.create();
+          localContext.setAuthCache( authCache );
+          httpResponse = httpClient.execute( target, method, localContext );
+        } else {
+          httpResponse = httpClient.execute( method );
+        }
         // calculate the responseTime
         long responseTime = System.currentTimeMillis() - startTime;
         if ( log.isDetailed() ) {
-          log.logDetailed( BaseMessages.getString( PKG, "HTTP.Log.ResponseTime", responseTime, url ) );
+          log.logDetailed( BaseMessages.getString( PKG, "HTTP.Log.ResponseTime", responseTime, uri ) );
         }
-
-        String body = null;
-        String headerString = null;
+        int statusCode = requestStatusCode( httpResponse );
         // The status code
         if ( isDebug() ) {
           logDebug( BaseMessages.getString( PKG, "HTTP.Log.ResponseStatusCode", "" + statusCode ) );
         }
 
-        if ( statusCode != -1 ) {
-          if ( statusCode == 204 ) {
+        String body;
+        switch ( statusCode ) {
+          case HttpURLConnection.HTTP_UNAUTHORIZED:
+            throw new KettleStepException( BaseMessages
+              .getString( PKG, "HTTP.Exception.Authentication", data.realUrl ) );
+          case -1:
+            throw new KettleStepException( BaseMessages
+              .getString( PKG, "HTTP.Exception.IllegalStatusCode", data.realUrl ) );
+          case HttpURLConnection.HTTP_NO_CONTENT:
             body = "";
-          } else {
-            // if the response is not 401: HTTP Authentication required
-            if ( statusCode != 401 ) {
-              // guess encoding
-              //
-              Header[] headers = searchForHeaders( method );
-              String encoding = meta.getEncoding();
-
-              // Try to determine the encoding from the Content-Type value
-              //
-              if ( Utils.isEmpty( encoding ) ) {
-                String contentType = method.getResponseHeader( "Content-Type" ).getValue();
-                if ( contentType != null && contentType.contains( "charset" ) ) {
-                  encoding = contentType.replaceFirst( "^.*;\\s*charset\\s*=\\s*", "" ).replace( "\"", "" ).trim();
-                }
-              }
-
-              JSONObject json = new JSONObject();
-              for ( Header header : headers ) {
-                Object previousValue = json.get( header.getName() );
-                if ( previousValue == null ) {
-                  json.put( header.getName(), header.getValue() );
-                } else if ( previousValue instanceof List ) {
-                  List<String> list = (List<String>) previousValue;
-                  list.add( header.getValue() );
-                } else {
-                  ArrayList<String> list = new ArrayList<String>();
-                  list.add( (String) previousValue );
-                  list.add( (String) header.getValue() );
-                  json.put( header.getName(), list );
-                }
-              }
-              headerString = json.toJSONString();
-
-              if ( isDebug() ) {
-                log.logDebug( toString(), BaseMessages.getString( PKG, "HTTP.Log.ResponseHeaderEncoding", encoding ) );
-              }
-              // the response
-              inputStreamReader = openStream( encoding, method );
-
-              StringBuilder bodyBuffer = new StringBuilder();
-
-              int c;
-              while ( ( c = inputStreamReader.read() ) != -1 ) {
-                bodyBuffer.append( (char) c );
-              }
-
-              inputStreamReader.close();
-
-              body = bodyBuffer.toString();
-              if ( isDebug() ) {
-                logDebug( "Response body: " + body );
-              }
-
-            } else { // the status is a 401
-              throw new KettleStepException( BaseMessages
-                  .getString( PKG, "HTTP.Exception.Authentication", data.realUrl ) );
-
+            break;
+          default:
+            HttpEntity entity = httpResponse.getEntity();
+            if ( entity != null ) {
+              body = EntityUtils.toString( entity );
+            } else {
+              body = "";
             }
+            break;
+        }
+
+        Header[] headers = searchForHeaders( httpResponse );
+
+        JSONObject json = new JSONObject();
+        for ( Header header : headers ) {
+          Object previousValue = json.get( header.getName() );
+          if ( previousValue == null ) {
+            json.put( header.getName(), header.getValue() );
+          } else if ( previousValue instanceof List ) {
+            List<String> list = (List<String>) previousValue;
+            list.add( header.getValue() );
+          } else {
+            ArrayList<String> list = new ArrayList<String>();
+            list.add( (String) previousValue );
+            list.add( header.getValue() );
+            json.put( header.getName(), list );
           }
         }
+        String headerString = json.toJSONString();
 
         int returnFieldsOffset = rowMeta.size();
         if ( !Utils.isEmpty( meta.getFieldName() ) ) {
@@ -244,70 +232,66 @@ public class HTTP extends BaseStep implements StepInterface {
         }
 
       } finally {
-        if ( inputStreamReader != null ) {
-          inputStreamReader.close();
+        if ( httpResponse != null ) {
+          httpResponse.close();
         }
         // Release current connection to the connection pool once you are done
         method.releaseConnection();
-        if ( data.realcloseIdleConnectionsTime > -1 ) {
-          httpClient.getHttpConnectionManager().closeIdleConnections( data.realcloseIdleConnectionsTime );
-        }
       }
       return newRow;
     } catch ( UnknownHostException uhe ) {
       throw new KettleException( BaseMessages.getString( PKG, "HTTP.Error.UnknownHostException", uhe.getMessage() ) );
     } catch ( Exception e ) {
-      throw new KettleException( BaseMessages.getString( PKG, "HTTP.Log.UnableGetResult", url ), e );
+      throw new KettleException( BaseMessages.getString( PKG, "HTTP.Log.UnableGetResult", uri ), e );
     }
   }
 
-  private String determineUrl( RowMetaInterface outputRowMeta, Object[] row ) throws KettleValueException,
+  private URIBuilder constructUrlBuilder( RowMetaInterface outputRowMeta, Object[] row ) throws KettleValueException,
     KettleException {
+    URIBuilder uriBuilder;
     try {
+      String baseUrl = data.realUrl;
       if ( meta.isUrlInField() ) {
         // get dynamic url
-        data.realUrl = outputRowMeta.getString( row, data.indexOfUrlField );
+        baseUrl = outputRowMeta.getString( row, data.indexOfUrlField );
       }
-      StringBuilder url = new StringBuilder( data.realUrl ); // the base URL with variable substitution
+
+      if ( isDetailed() ) {
+        logDetailed( BaseMessages.getString( PKG, "HTTP.Log.Connecting", baseUrl ) );
+      }
+
+      uriBuilder = new URIBuilder( baseUrl ); // the base URL with variable substitution
+      List<NameValuePair> queryParams = uriBuilder.getQueryParams();
 
       for ( int i = 0; i < data.argnrs.length; i++ ) {
-        if ( i == 0 && url.indexOf( "?" ) < 0 ) {
-          url.append( '?' );
-        } else {
-          url.append( '&' );
-        }
-
-        url.append( URIUtil.encodeWithinQuery( meta.getArgumentParameter()[i] ) );
-        url.append( '=' );
-        String s = outputRowMeta.getString( row, data.argnrs[i] );
-        if ( s != null ) {
-          s = URIUtil.encodeWithinQuery( s );
-        }
-        url.append( s );
+        String key = meta.getArgumentParameter()[ i ];
+        String value = outputRowMeta.getString( row, data.argnrs[ i ] );
+        BasicNameValuePair basicNameValuePair = new BasicNameValuePair( key, value );
+        queryParams.add( basicNameValuePair );
       }
-
-      return url.toString();
+      if ( !queryParams.isEmpty() ) {
+        uriBuilder.setParameters( queryParams );
+      }
     } catch ( Exception e ) {
       throw new KettleException( BaseMessages.getString( PKG, "HTTP.Log.UnableCreateUrl" ), e );
     }
+    return uriBuilder;
   }
 
-  protected int requestStatusCode( HttpMethod method, HostConfiguration hostConfiguration, HttpClient httpClient ) throws IOException {
-    return httpClient.executeMethod( hostConfiguration, method );
+  protected int requestStatusCode( HttpResponse httpResponse ) {
+    return httpResponse.getStatusLine().getStatusCode();
   }
 
-  protected InputStreamReader openStream( String encoding, HttpMethod method ) throws Exception {
-
+  protected InputStreamReader openStream( String encoding, HttpResponse httpResponse ) throws Exception {
     if ( !Utils.isEmpty( encoding ) ) {
-      return new InputStreamReader( method.getResponseBodyAsStream(), encoding );
+      return new InputStreamReader( httpResponse.getEntity().getContent(), encoding );
     } else {
-      return new InputStreamReader( method.getResponseBodyAsStream() );
+      return new InputStreamReader( httpResponse.getEntity().getContent() );
     }
-
   }
 
-  protected Header[] searchForHeaders( HttpMethod method ) {
-    return method.getResponseHeaders();
+  protected Header[] searchForHeaders( CloseableHttpResponse response ) {
+    return response.getAllHeaders();
   }
 
   public boolean processRow( StepMetaInterface smi, StepDataInterface sdi ) throws KettleException {
@@ -339,7 +323,7 @@ public class HTTP extends BaseStep implements StepInterface {
             // The field is unreachable !
             logError( BaseMessages.getString( PKG, "HTTP.Log.ErrorFindingField", realUrlfieldName ) );
             throw new KettleException( BaseMessages.getString( PKG, "HTTP.Exception.ErrorFindingField",
-                realUrlfieldName ) );
+              realUrlfieldName ) );
           }
         }
       } else {
@@ -352,23 +336,24 @@ public class HTTP extends BaseStep implements StepInterface {
         data.useHeaderParameters = true;
       }
 
-      data.header_parameters_nrs = new int[nrHeaders];
-      data.headerParameters = new NameValuePair[nrHeaders];
+      data.header_parameters_nrs = new int[ nrHeaders ];
+      data.headerParameters = new NameValuePair[ nrHeaders ];
 
       // get the headers
       for ( int i = 0; i < nrHeaders; i++ ) {
-        int fieldIndex = data.inputRowMeta.indexOfValue( meta.getHeaderField()[i] );
+        int fieldIndex = data.inputRowMeta.indexOfValue( meta.getHeaderField()[ i ] );
         if ( fieldIndex < 0 ) {
           logError( BaseMessages.getString( PKG,
-                  "HTTP.Exception.ErrorFindingField" ) + meta.getHeaderField()[i] + "]" );
+            "HTTP.Exception.ErrorFindingField" ) + meta.getHeaderField()[ i ] + "]" );
           throw new KettleStepException( BaseMessages.getString( PKG, "HTTP.Exception.ErrorFindingField", meta
-              .getHeaderField()[i] ) );
+            .getHeaderField()[ i ] ) );
         }
 
-        data.header_parameters_nrs[i] = fieldIndex;
-        data.headerParameters[i] =
-            new NameValuePair( environmentSubstitute( meta.getHeaderParameter()[i] ), data.outputRowMeta.getString( r,
-                data.header_parameters_nrs[i] ) );
+        data.header_parameters_nrs[ i ] = fieldIndex;
+        data.headerParameters[ i ] =
+          new BasicNameValuePair( environmentSubstitute( meta.getHeaderParameter()[ i ] ),
+            data.outputRowMeta.getString( r,
+              data.header_parameters_nrs[ i ] ) );
       }
 
     } // end if first

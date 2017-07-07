@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,27 +22,24 @@
 
 package org.pentaho.di.core;
 
+import org.apache.http.HttpResponse;
+import org.apache.http.HttpStatus;
+import org.apache.http.auth.AuthenticationException;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.pentaho.di.core.util.HttpClientManager;
+import org.pentaho.di.core.util.Utils;
+
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.net.MalformedURLException;
-
-import org.apache.commons.httpclient.Credentials;
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.UsernamePasswordCredentials;
-import org.apache.commons.httpclient.auth.AuthScope;
-import org.apache.commons.httpclient.auth.AuthenticationException;
-import org.apache.commons.httpclient.methods.GetMethod;
-import org.pentaho.di.cluster.SlaveConnectionManager;
-import org.pentaho.di.core.util.Utils;
 
 /**
  * HTTP
- *
+ * <p>
  * This class contains HTTP protocol properties such as request headers. Response headers and other properties of the
  * HTTP protocol can be added to this class.
  *
  * @author sflatley
- *
  */
 public class HTTPProtocol {
 
@@ -61,38 +58,39 @@ public class HTTPProtocol {
 
   /**
    * Performs a get on urlAsString using username and password as credentials.
-   *
+   * <p>
    * If the status code returned not -1 and 401 then the contents are returned. If the status code is 401 an
    * AuthenticationException is thrown.
-   *
+   * <p>
    * All other values of status code are not dealt with but logic can be added as needed.
    *
    * @param urlAsString
    * @param username
    * @param password
-   * @param encoding
    * @return
-   * @throws MalformedURLException
+   * @throws AuthenticationException
    * @throws IOException
    */
-  public String get( String urlAsString, String username, String password ) throws MalformedURLException,
-    IOException, AuthenticationException {
+  public String get( String urlAsString, String username, String password )
+    throws IOException, AuthenticationException {
 
-    HttpClient httpClient = SlaveConnectionManager.getInstance().createHttpClient();
-    GetMethod getMethod = new GetMethod( urlAsString );
+    HttpClient httpClient;
+    HttpGet getMethod = new HttpGet( urlAsString );
     if ( !Utils.isEmpty( username ) ) {
-      httpClient.getParams().setAuthenticationPreemptive( true );
-      Credentials defaultcreds = new UsernamePasswordCredentials( username, password );
-      httpClient.getState().setCredentials( AuthScope.ANY, defaultcreds );
+      HttpClientManager.HttpClientBuilderFacade clientBuilder = HttpClientManager.getInstance().createBuilder();
+      clientBuilder.setCredentials( username, password );
+      httpClient = clientBuilder.build();
+    } else {
+      httpClient = HttpClientManager.getInstance().createDefaultClient();
     }
-    int statusCode = httpClient.executeMethod( getMethod );
+    HttpResponse httpResponse = httpClient.execute( getMethod );
+    int statusCode = httpResponse.getStatusLine().getStatusCode();
     StringBuilder bodyBuffer = new StringBuilder();
 
     if ( statusCode != -1 ) {
-      if ( statusCode != 401 ) {
-
+      if ( statusCode != HttpStatus.SC_UNAUTHORIZED ) {
         // the response
-        InputStreamReader inputStreamReader = new InputStreamReader( getMethod.getResponseBodyAsStream() );
+        InputStreamReader inputStreamReader = new InputStreamReader( httpResponse.getEntity().getContent() );
 
         int c;
         while ( ( c = inputStreamReader.read() ) != -1 ) {
