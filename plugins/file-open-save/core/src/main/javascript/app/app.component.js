@@ -72,6 +72,7 @@ define([
     vm.confirmError = confirmError;
     vm.cancelError = cancelError;
     vm.storeRecentSearch = storeRecentSearch;
+    vm.renameError = renameError;
     vm.displayRecentSearches = displayRecentSearches;
     vm.setTooltip = setTooltip;
     vm.getOffsetTop = getOffsetTop;
@@ -96,6 +97,10 @@ define([
       vm.openButton = i18n.get("file-open-save-plugin.app.open.button");
       vm.cancelButton = i18n.get("file-open-save-plugin.app.cancel.button");
       vm.saveButton = i18n.get("file-open-save-plugin.app.save.button");
+      vm.confirmButton = i18n.get("file-open-save-plugin.app.save.button");
+      vm.saveFileNameLabel = i18n.get("file-open-save-plugin.app.save.file-name.label");
+      vm.addFolderText = i18n.get("file-open-save-plugin.app.add-folder.button");
+      vm.removeText = i18n.get("file-open-save-plugin.app.delete.button");
       vm.isInSearch = false;
       vm.showRecents = true;
       vm.folder = {name: "Recents", path: "Recents"};
@@ -221,7 +226,7 @@ define([
         selectFolder(file);
       } else {
         if (file.repository) {
-          dt.openRecent(file.repository, file.objectId.id);
+          dt.openRecent(file.repository + ":" + (file.username ? file.username : ""), file.objectId.id);
         } else {
           dt.openFile(file.objectId.id, file.type);
         }
@@ -302,7 +307,12 @@ define([
      * @private
      */
     function _open() {
-      dt.openFile(vm.file.objectId.id, vm.file.type);
+      if (vm.file.repository) {
+        dt.openRecent(vm.file.repository + ":" + (vm.file.username ? vm.file.username : ""), vm.file.objectId.id);
+      } else {
+        dt.openFile(vm.file.objectId.id, vm.file.type);
+      }
+      _closeBrowser();
     }
 
     /**
@@ -387,6 +397,14 @@ define([
     }
 
     /**
+     * Shows an error if one occurs during rename
+     */
+    function renameError() {
+      vm.errorType = 4;
+      vm.showError = true;
+    }
+
+    /**
      * Stores the most recent search
      */
     function storeRecentSearch() {
@@ -449,6 +467,8 @@ define([
             }
           }
           vm.folder.hasChildren = hasChildFolders;
+        }, function(response) {
+          console.log(response);
         });
       }
     }

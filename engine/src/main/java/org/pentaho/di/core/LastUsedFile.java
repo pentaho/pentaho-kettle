@@ -44,6 +44,7 @@ public class LastUsedFile {
   private boolean sourceRepository;
   private String repositoryName;
   private Date lastOpened;
+  private String username;
 
   private boolean opened;
   private int openItemTypes;
@@ -60,14 +61,31 @@ public class LastUsedFile {
    */
   public LastUsedFile( String fileType, String filename, String directory, boolean sourceRepository,
     String repositoryName, boolean opened, int openItemTypes ) {
+    this( fileType, filename, directory, sourceRepository, repositoryName, null, opened, openItemTypes, null );
+  }
+
+  /**
+   * @param fileType
+   *          The type of file to use (FILE_TYPE_TRANSFORMATION, FILE_TYPE_JOB, ...)
+   * @param filename
+   * @param directory
+   * @param sourceRepository
+   * @param repositoryName
+   * @param username
+   * @param opened
+   * @param openItemTypes
+   */
+  public LastUsedFile( String fileType, String filename, String directory, boolean sourceRepository,
+    String repositoryName, String username, boolean opened, int openItemTypes, Date lastOpened ) {
     this.fileType = fileType;
     this.filename = filename;
     this.directory = directory;
     this.sourceRepository = sourceRepository;
     this.repositoryName = repositoryName;
+    this.username = username;
     this.opened = opened;
     this.openItemTypes = openItemTypes;
-    this.lastOpened = new Date();
+    this.lastOpened = lastOpened == null ? new Date() : lastOpened;
   }
 
   public String toString() {
@@ -220,5 +238,13 @@ public class LastUsedFile {
 
   public void setLastOpened( Date lastOpened ) {
     this.lastOpened = lastOpened;
+  }
+
+  public String getUsername() {
+    return username;
+  }
+
+  public void setUsername( String username ) {
+    this.username = username;
   }
 }

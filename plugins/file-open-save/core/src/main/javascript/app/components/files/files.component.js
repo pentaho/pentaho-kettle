@@ -39,7 +39,8 @@ define([
       folder: '<',
       search: '<',
       onClick: '&',
-      onSelect: '&'
+      onSelect: '&',
+      onError: '&'
     },
     template: filesTemplate,
     controllerAs: "vm",
@@ -102,8 +103,9 @@ define([
      * @param {Object} file - file object.
      */
     function commitFile(file) {
-      if (file.editing !== true) {
+      if (file.isEditing !== true) {
         vm.onClick({file: file});
+        file.isEditing = false;
       }
     }
 
@@ -162,10 +164,13 @@ define([
     /**
      * Rename the selected file.
      */
-    function rename() {
-      var path = vm.selectedFile.type === "folder" ? vm.selectedFile.parent : vm.selectedFile.path;
-      dt.rename(vm.selectedFile.objectId.id, vm.selectedFile.name, path, vm.selectedFile.type).then(function(response) {
-        vm.selectedFile.objectId = response.data;
+    function rename(file, previous) {
+      var path = file.type === "File folder" ? file.parent : file.path;
+      dt.rename(file.objectId.id, file.name, path, file.type).then(function(response) {
+        file.objectId = response.data;
+      }, function(response) {
+        file.name = previous;
+        vm.onError();
       });
     }
 

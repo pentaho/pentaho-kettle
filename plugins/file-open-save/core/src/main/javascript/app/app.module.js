@@ -33,11 +33,11 @@ define([
   "./components/error/error.component",
   "./components/breadcrumb/breadcrumb.component",
   "./components/files/files.component",
-  "./components/files/rename.directive",
+  "./components/files/edit.directive",
   "./components/breadcrumb/breadcrumb.directive",
   "./services/data.service"
 ], function(angular, appComponent, cardComponent, folderComponent, errorComponent,
-            breadcrumbComponent, filesComponent, renameDirective, breadcrumbDirective, dataService) {
+            breadcrumbComponent, filesComponent, editDirective, breadcrumbDirective, dataService) {
   "use strict";
 
   var module = {
@@ -62,7 +62,7 @@ define([
         .component(errorComponent.name, errorComponent.options)
         .component(breadcrumbComponent.name, breadcrumbComponent.options)
         .component(filesComponent.name, filesComponent.options)
-        .directive(renameDirective.name, renameDirective.options)
+        .directive(editDirective.name, editDirective.options)
         .directive(breadcrumbDirective.name, breadcrumbDirective.options)
         .service(dataService.name, dataService.factory);
   }

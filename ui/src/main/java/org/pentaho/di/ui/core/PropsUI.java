@@ -22,8 +22,11 @@
 
 package org.pentaho.di.ui.core;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.LinkedHashMap;
@@ -355,6 +358,7 @@ public class PropsUI extends Props {
       properties.setProperty( "lastdir" + ( i + 1 ), Const.NVL( lastUsedFile.getDirectory(), "" ) );
       properties.setProperty( "lasttype" + ( i + 1 ), lastUsedFile.isSourceRepository() ? YES : NO );
       properties.setProperty( "lastrepo" + ( i + 1 ), Const.NVL( lastUsedFile.getRepositoryName(), "" ) );
+      properties.setProperty( "lastuser" + ( i + 1 ), Const.NVL( lastUsedFile.getUsername(), "" ) );
     }
   }
 
@@ -369,6 +373,10 @@ public class PropsUI extends Props {
         properties.setProperty( "repolastdir" + ( i + 1 ), Const.NVL( lastUsedFile.getDirectory(), "" ) );
         properties.setProperty( "repolasttype" + ( i + 1 ), lastUsedFile.isSourceRepository() ? YES : NO );
         properties.setProperty( "repolastrepo" + ( i + 1 ), Const.NVL( lastUsedFile.getRepositoryName(), "" ) );
+        properties.setProperty( "repolastuser" + ( i + 1 ), Const.NVL( lastUsedFile.getUsername(), "" ) );
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat( "yyyy-MM-dd HH:mm:ss" );
+        properties.setProperty( "repolastdate" + ( i + 1 ),
+          Const.NVL( simpleDateFormat.format( lastUsedFile.getLastOpened() ), "" ) );
         i++;
       }
     }
@@ -405,10 +413,24 @@ public class PropsUI extends Props {
    *          The name of the repository the file was loaded from or save to.
    */
   public void addLastFile( String fileType, String filename, String directory, boolean sourceRepository,
-      String repositoryName ) {
+                           String repositoryName ) {
+    addLastFile( fileType, filename, directory, sourceRepository, repositoryName, "", null );
+  }
+
+  /**
+   * Add a last opened file to the top of the recently used list.
+   *
+   * @param fileType         the type of file to use @see LastUsedFile
+   * @param filename         The name of the file or transformation
+   * @param directory        The repository directory path, null in case lf is an XML file
+   * @param sourceRepository True if the file was loaded from repository, false if ld is an XML file.
+   * @param repositoryName   The name of the repository the file was loaded from or save to.
+   */
+  public void addLastFile( String fileType, String filename, String directory, boolean sourceRepository,
+                           String repositoryName, String username, Date lastOpened ) {
     LastUsedFile lastUsedFile =
-        new LastUsedFile( fileType, filename, directory, sourceRepository, repositoryName, false,
-            LastUsedFile.OPENED_ITEM_TYPE_MASK_GRAPH );
+      new LastUsedFile( fileType, filename, directory, sourceRepository, repositoryName, username, false,
+        LastUsedFile.OPENED_ITEM_TYPE_MASK_GRAPH, lastOpened );
 
     int idx = lastUsedFiles.indexOf( lastUsedFile );
     if ( idx >= 0 ) {
@@ -427,19 +449,21 @@ public class PropsUI extends Props {
 
   private void addLastRepoFile( LastUsedFile lastUsedFile ) {
     String repositoryName = lastUsedFile.getRepositoryName();
+    String username = lastUsedFile.getUsername() != null ? lastUsedFile.getUsername() : "";
     if ( !Utils.isEmpty( repositoryName ) ) {
-      List<LastUsedFile> lastUsedFiles = lastUsedRepoFiles.getOrDefault( repositoryName, new ArrayList<>() );
+      List<LastUsedFile> lastUsedFiles =
+        lastUsedRepoFiles.getOrDefault( repositoryName + ":" + username, new ArrayList<>() );
       int idx = lastUsedFiles.indexOf( lastUsedFile );
       if ( idx >= 0 ) {
         lastUsedFiles.remove( idx );
       }
 
       lastUsedFiles.add( 0, lastUsedFile );
-      lastUsedRepoFiles.put( repositoryName, lastUsedFiles );
+      lastUsedRepoFiles.put( repositoryName + ":" + username, lastUsedFiles );
 
       // If we have more than Const.MAX_FILE_HIST, top it off
       while ( lastUsedFiles.size() > 12 ) {
-        lastUsedFiles.remove( lastUsedRepoFiles.get( repositoryName ).size() - 1 );
+        lastUsedFiles.remove( lastUsedRepoFiles.get( repositoryName + ":" + username ).size() - 1 );
       }
     }
   }
@@ -477,7 +501,8 @@ public class PropsUI extends Props {
       boolean isOpened = YES.equalsIgnoreCase( properties.getProperty( "lastopened" + ( i + 1 ), NO ) );
       int openItemTypes = Const.toInt( properties.getProperty( "lastopentypes" + ( i + 1 ), "0" ), 0 );
 
-      lastUsedFiles.add( new LastUsedFile( fileType, filename, directory, sourceRepository, repositoryName, isOpened,
+      lastUsedFiles.add(
+        new LastUsedFile( fileType, filename, directory, sourceRepository, repositoryName, isOpened,
           openItemTypes ) );
     }
   }
@@ -491,13 +516,22 @@ public class PropsUI extends Props {
       String directory = properties.getProperty( "repolastdir" + ( i + 1 ), "" );
       boolean sourceRepository = YES.equalsIgnoreCase( properties.getProperty( "repolasttype" + ( i + 1 ), NO ) );
       String repositoryName = properties.getProperty( "repolastrepo" + ( i + 1 ) );
+      String username = properties.getProperty( "repolastuser" + ( i + 1 ) );
       boolean isOpened = YES.equalsIgnoreCase( properties.getProperty( "repolastopened" + ( i + 1 ), NO ) );
       int openItemTypes = Const.toInt( properties.getProperty( "repolastopentypes" + ( i + 1 ), "0" ), 0 );
+      Date lastOpened = null;
+      SimpleDateFormat simpleDateFormat = new SimpleDateFormat( "yyyy-MM-dd HH:mm:ss" );
+      try {
+        lastOpened = simpleDateFormat.parse( properties.getProperty( "repolastdate" + ( i + 1 ) ) );
+      } catch ( ParseException pe ) {
+        // Default of null is acceptable
+      }
 
       List<LastUsedFile> lastUsedFiles = lastUsedRepoFiles.getOrDefault( repositoryName, new ArrayList<>() );
-      lastUsedFiles.add( new LastUsedFile( fileType, filename, directory, sourceRepository, repositoryName, isOpened,
-        openItemTypes ) );
-      lastUsedRepoFiles.put( repositoryName, lastUsedFiles );
+      lastUsedFiles.add(
+        new LastUsedFile( fileType, filename, directory, sourceRepository, repositoryName, username, isOpened,
+          openItemTypes, lastOpened ) );
+      lastUsedRepoFiles.put( repositoryName + ":" + username, lastUsedFiles );
     }
   }
 

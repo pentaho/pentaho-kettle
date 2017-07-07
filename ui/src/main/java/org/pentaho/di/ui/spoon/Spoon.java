@@ -290,7 +290,6 @@ import org.pentaho.di.ui.repository.dialog.RepositoryExportProgressDialog;
 import org.pentaho.di.ui.repository.dialog.RepositoryImportProgressDialog;
 import org.pentaho.di.ui.repository.dialog.RepositoryRevisionBrowserDialogInterface;
 import org.pentaho.di.ui.repository.dialog.SelectDirectoryDialog;
-import org.pentaho.di.ui.repository.dialog.SelectObjectDialog;
 import org.pentaho.di.ui.repository.repositoryexplorer.RepositoryExplorer;
 import org.pentaho.di.ui.repository.repositoryexplorer.RepositoryExplorerCallback;
 import org.pentaho.di.ui.repository.repositoryexplorer.UISupportRegistery;
@@ -3338,6 +3337,14 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     return rep.getName();
   }
 
+  public String getUsername() {
+    if ( rep == null || rep.getUserInfo() == null ) {
+      return "";
+    }
+
+    return rep.getUserInfo().getLogin();
+  }
+
   public void pasteXML( TransMeta transMeta, String clipcontent, Point loc ) {
     if ( RepositorySecurityUI.verifyOperations( shell, rep,
         RepositoryOperation.MODIFY_TRANSFORMATION, RepositoryOperation.EXECUTE_TRANSFORMATION ) ) {
@@ -4088,7 +4095,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
                 .getRepositoryDirectory().getName() ) );
           }
           props.addLastFile( LastUsedFile.FILE_TYPE_TRANSFORMATION, transMeta.getName(), transMeta
-            .getRepositoryDirectory().getPath(), true, rep.getName() );
+            .getRepositoryDirectory().getPath(), true, rep.getName(), getUsername(), null );
           addMenuLast();
           addTransGraph( transMeta );
         }
@@ -4109,7 +4116,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
         jobMeta.clearChanged();
         if ( jobMeta != null ) {
           props.addLastFile( LastUsedFile.FILE_TYPE_JOB, jobMeta.getName(), jobMeta
-            .getRepositoryDirectory().getPath(), true, rep.getName() );
+            .getRepositoryDirectory().getPath(), true, rep.getName(), getUsername(), null );
           saveSettings();
           addMenuLast();
           addJobGraph( jobMeta );
@@ -4141,8 +4148,8 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
             log.logDetailed( BaseMessages.getString( PKG, "Spoon.Log.LoadToTransformation", objName, repDir
               .getName() ) );
           }
-          props
-            .addLastFile( LastUsedFile.FILE_TYPE_TRANSFORMATION, objName, repDir.getPath(), true, rep.getName() );
+          props.addLastFile( LastUsedFile.FILE_TYPE_TRANSFORMATION, objName, repDir.getPath(), true, rep.getName(),
+            getUsername(), null );
           addMenuLast();
           addTransGraph( transMeta );
         }
@@ -4167,7 +4174,8 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
         JobMeta jobMeta = progressDialog.open();
         jobMeta.clearChanged();
         if ( jobMeta != null ) {
-          props.addLastFile( LastUsedFile.FILE_TYPE_JOB, objName, repDir.getPath(), true, rep.getName() );
+          props.addLastFile( LastUsedFile.FILE_TYPE_JOB, objName, repDir.getPath(), true, rep.getName(), getUsername(),
+            null );
           saveSettings();
           addMenuLast();
           addJobGraph( jobMeta );
@@ -4284,69 +4292,10 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
           openFile( filename, importfile );
         }
       } else {
-//        try {
-//          ExtensionPointHandler.callExtensionPoint( log, KettleExtensionPoint.SpoonOpenSaveRepository.id, "open" );
-//        } catch ( KettleException ke ) {
-//          // Ignore
-//        }
-        SelectObjectDialog sod = new SelectObjectDialog( shell, rep );
-        if ( sod.open() != null ) {
-          RepositoryObjectType type = sod.getObjectType();
-          String name = sod.getObjectName();
-          RepositoryDirectoryInterface repDir = sod.getDirectory();
-
-          ObjectId objId = sod.getObjectId();
-          // Load a transformation
-          if ( RepositoryObjectType.TRANSFORMATION.equals( type ) ) {
-            TransLoadProgressDialog tlpd = null;
-            // prioritize loading file by id
-            if ( objId != null && !Utils.isEmpty( objId.getId() ) ) {
-              tlpd = new TransLoadProgressDialog( shell, rep, objId, null ); // Load by id
-            } else {
-              tlpd = new TransLoadProgressDialog( shell, rep, name, repDir, null ); // Load by name/path
-            }
-            // the
-            // last
-            // version
-            TransMeta transMeta = tlpd.open();
-            sharedObjectsFileMap.put( transMeta.getSharedObjects().getFilename(), transMeta.getSharedObjects() );
-            setTransMetaVariables( transMeta );
-
-            if ( transMeta != null ) {
-              if ( log.isDetailed() ) {
-                log.logDetailed( BaseMessages.getString( PKG, "Spoon.Log.LoadToTransformation", name, repDir
-                  .getName() ) );
-              }
-              props.addLastFile( LastUsedFile.FILE_TYPE_TRANSFORMATION, name, repDir.getPath(), true, rep.getName() );
-              addMenuLast();
-              transMeta.clearChanged();
-              // transMeta.setFilename(name); // Don't do it, it's a bad idea!
-              addTransGraph( transMeta );
-            }
-            refreshGraph();
-            refreshTree();
-          } else if ( RepositoryObjectType.JOB.equals( type ) ) {
-            // Load a job
-            JobLoadProgressDialog jlpd = null;
-            // prioritize loading file by id
-            if ( objId != null && !Utils.isEmpty( objId.getId() ) ) {
-              jlpd = new JobLoadProgressDialog( shell, rep, objId, null ); // Loads
-            } else {
-              jlpd = new JobLoadProgressDialog( shell, rep, name, repDir, null ); // Loads
-            }
-            // the last version
-            JobMeta jobMeta = jlpd.open();
-            sharedObjectsFileMap.put( jobMeta.getSharedObjects().getFilename(), jobMeta.getSharedObjects() );
-            setJobMetaVariables( jobMeta );
-            if ( jobMeta != null ) {
-              props.addLastFile( LastUsedFile.FILE_TYPE_JOB, name, repDir.getPath(), true, rep.getName() );
-              saveSettings();
-              addMenuLast();
-              addJobGraph( jobMeta );
-            }
-            refreshGraph();
-            refreshTree();
-          }
+        try {
+          ExtensionPointHandler.callExtensionPoint( log, KettleExtensionPoint.SpoonOpenSaveRepository.id, "open" );
+        } catch ( KettleException ke ) {
+         // Ignore
         }
       }
     } catch ( KettleRepositoryLostException krle ) {
@@ -5280,7 +5229,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
             // Handle last opened files...
             props.addLastFile(
               meta.getFileType(), meta.getName(), meta.getRepositoryDirectory().getPath(), true,
-              getRepositoryName() );
+              getRepositoryName(), getUsername(), null );
             saveSettings();
             addMenuLast();
 
@@ -8139,7 +8088,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
               if ( transMeta != null ) {
                 if ( trackIt ) {
                   props.addLastFile( LastUsedFile.FILE_TYPE_TRANSFORMATION, lastUsedFile.getFilename(), rdi
-                    .getPath(), true, rep.getName() );
+                    .getPath(), true, rep.getName(), getUsername(), null );
                 }
                 // transMeta.setFilename(lastUsedFile.getFilename());
                 transMeta.clearChanged();
@@ -8154,7 +8103,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
                 if ( trackIt ) {
                   props.addLastFile(
                     LastUsedFile.FILE_TYPE_JOB, lastUsedFile.getFilename(), rdi.getPath(), true, rep
-                      .getName() );
+                      .getName(), getUsername(), null );
                 }
                 jobMeta.clearChanged();
                 addJobGraph( jobMeta );

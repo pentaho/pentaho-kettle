@@ -57,22 +57,24 @@
     </div>
 
     <div class="fileArea" ng-class="{overflow: vm.showRecents}">
-        <div class="fileAreaMessageView" ng-show="vm.showRecents && vm.recentFiles.length === 0">{{::vm.noRecentsMsg}}</div>
-        <card ng-show="vm.showRecents && vm.recentFiles.length > 0"
-              recent-files="vm.recentFiles"
-              folder="vm.folder"
-              on-click="vm.selectFile(file)"
-              on-select="vm.highlightFile(selectedFile)"></card>
-        <files search="vm.searchString"
-               ng-show="!vm.showRecents"
-               folder="vm.folder"
-               on-click="vm.selectFile(file)"
-               on-select="vm.highlightFile(selectedFile)"></files>
+      <div class="fileAreaMessageView" ng-show="vm.showRecents && vm.recentFiles.length === 0">{{::vm.noRecentsMsg}}</div>
+      <card ng-show="vm.showRecents && vm.recentFiles.length > 0"
+            recent-files="vm.recentFiles"
+            folder="vm.folder"
+            on-click="vm.selectFile(file)"
+            on-select="vm.highlightFile(selectedFile)"
+            selected-file="vm.file"></card>
+      <files search="vm.searchString"
+             ng-show="!vm.showRecents"
+             folder="vm.folder"
+             on-click="vm.selectFile(file)"
+             on-select="vm.highlightFile(selectedFile)"
+             on-error="vm.renameError()"></files>
     </div>
   </div>
 
   <div class="bottom">
-    <div class="fileNameEntry">
+    <div class="fileNameEntry" ng-show="vm.wrapperClass === 'save'">
       <div class="fileNameEntryLabel">
         <label for="fileNameEntryTextBox">{{::vm.saveFileNameLabel}}</label>
       </div>
