@@ -97,6 +97,6 @@ __IntelliJ__
 1. Submit a pull request, referencing the relevant [Jira case](http://jira.pentaho.com/secure/Dashboard.jspa)
 2. Attach a Git patch file to the relevant [Jira case](http://jira.pentaho.com/secure/Dashboard.jspa)
 
-Use of the Pentaho checkstyle format (via `ant checkstyle` and reviewing the report) and developing working 
+Use of the Pentaho checkstyle format (via `mvn site` and reviewing the report) and developing working 
 Unit Tests helps to ensure that pull requests for bugs and improvements are processed quickly.
 
