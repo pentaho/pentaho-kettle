@@ -11,8 +11,8 @@
         {{::vm.headerTitle}}
       </div>
       <div id="headerSearchId" class="headerSearch" ng-class="{'focused': vm.isInSearch === true}">
-        <div class="headerSearchLeft" ng-class="{'blueState': vm.searchString !== '' || vm.isInSearch === true || searchBoxHasFocus === true }" ></div>
-          <input type="text" class="searchBox"
+        <div class="headerSearchLeft" ng-click="vm.focusSearchBox()" ng-class="{'blueState': vm.searchString !== '' || vm.isInSearch === true || searchBoxHasFocus === true }" ></div>
+          <input id="searchBoxId" type="text" class="searchBox"
                  placeholder="{{::vm.searchPlaceholder}} {{vm.selectedFolder}}"
                  ng-blur="vm.storeRecentSearch();searchBoxHasFocus=false"
                  ng-focus="vm.displayRecentSearches();searchBoxHasFocus=true"
@@ -26,7 +26,7 @@
                    ng-mouseover="vm.setTooltip(this.$index, search)"
                    id="search-item-index-{{this.$index}}">{{search}}</div>
           </div>
-        <div ng-class="{'headerSearchRight': vm.searchString !== '' }" ng-click="vm.resetSearch()"></div>
+        <div ng-class="vm.searchString !== '' ? 'headerSearchRight' : 'headerSearchRightInvisible'" ng-click="vm.resetSearch()"></div>
       </div>
     </div>
 

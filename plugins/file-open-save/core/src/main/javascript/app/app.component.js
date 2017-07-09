@@ -73,6 +73,7 @@ define([
     vm.cancelError = cancelError;
     vm.storeRecentSearch = storeRecentSearch;
     vm.displayRecentSearches = displayRecentSearches;
+    vm.focusSearchBox = focusSearchBox;
     vm.setTooltip = setTooltip;
     vm.getOffsetTop = getOffsetTop;
     vm.getOffsetLeft = getOffsetLeft;
@@ -245,8 +246,12 @@ define([
      * Resets the search string and runs search against that string (which returns normal dir structure).
      */
     function resetSearch() {
-      vm.searchString = "";
-      vm.doSearch();
+      if(vm.searchString !== '') {
+        vm.searchString = "";
+        vm.doSearch();
+      } else {
+        vm.focusSearchBox();
+      }
     }
 
     /**
@@ -400,6 +405,10 @@ define([
       if(vm.recentSearches.length !== 0) {
           vm.isInSearch = true
       }
+    }
+
+    function focusSearchBox() {
+      document.getElementById("searchBoxId").focus();
     }
 
     function setTooltip(id, tooltip) {

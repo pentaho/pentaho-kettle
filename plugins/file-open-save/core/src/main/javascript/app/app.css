@@ -103,6 +103,14 @@ file-open-save-app .headerSearchRight {
   float: left;
 }
 
+file-open-save-app .headerSearchRightInvisible {
+  width: 28px;
+  height: 100%;
+  border: none;
+  cursor: text;
+  float: left;
+}
+
 file-open-save-app .headerSearchRight:hover {
   background: url("./images/clear_blue.png") no-repeat center center;
 }
@@ -110,6 +118,7 @@ file-open-save-app .headerSearchRight:hover {
 file-open-save-app input.searchBox,
 file-open-save-app input.searchBox:focus {
   width: calc(270px - 60px);
+  /*width: 240px;*/
   height: 100%;
   border: none;
   padding: 0;
