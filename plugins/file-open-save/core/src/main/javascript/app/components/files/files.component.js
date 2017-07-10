@@ -29,9 +29,10 @@
  **/
 define([
   "../../services/data.service",
+  "../utils",
   "text!./files.html",
   "css!./files.css"
-], function(dataService, filesTemplate) {
+], function(dataService, utils, filesTemplate) {
   "use strict";
 
   var options = {
@@ -225,7 +226,8 @@ define([
       // field compare
       switch(vm.sortField) {
         case 'name':
-          return naturalCompare(obj1.name, obj2.name);
+          comp = utils.naturalCompare(obj1.name, obj2.name);
+          break;
         default:
           var val1 = obj1[vm.sortField], val2 = obj2[vm.sortField];
           comp = (val1 < val2) ? -1 : (val1 > val2) ? 1 : 0;
@@ -240,50 +242,6 @@ define([
     function foldersFirst(type1, type2) {
       if (type1 != type2) {
         return (type1 == 'folder')? -1 : (type2 == 'folder') ? 1 : 0;
-      }
-      return 0;
-    }
-
-    function strComp(str1, str2) {
-      return str1.localeCompare(str2);
-    }
-
-    /**
-     * String comparison with arithmetic comparison of numbers
-     **/
-    function naturalCompare(first, second) {
-      // any number ignoring preceding spaces
-      var recognizeNbr = /[\\s]*[-+]?(?:(?:\d[\d,]*)(?:[.][\d]+)?|([.][\d]+))/;
-      var idx1 = 0, idx2 = 0;
-      var sub1 = first, sub2 = second;
-      var match1, match2;
-      while( idx1 < sub1.length || idx2 < sub2.length ) {
-        sub1 = sub1.substring(idx1);
-        sub2 = sub2.substring(idx2);
-        // any numbers?
-        match1 = sub1.match(recognizeNbr);
-        match2 = sub2.match(recognizeNbr);
-        if ( match1 == null || match2 == null ) {
-          // treat as plain strings
-          return strComp(sub1, sub2);
-        }
-        // compare before match as string
-        var pre1 = sub1.substring(0, match1.index);
-        var pre2 = sub2.substring(0, match2.index);
-        var comp = strComp(pre1, pre2);
-        if ( comp != 0 ) {
-          return comp;
-        }
-        // compare numbers
-        var num1 = new Number( match1[0] );
-        var num2 = new Number( match2[0] );
-        comp = (num1 < num2) ? -1 : (num1 > num2) ? 1 : 0;
-        if(comp != 0) {
-          return comp;
-        }
-        // check after match
-        idx1 = match1.index + match1[0].length;
-        idx2 = match2.index + match2[0].length;
       }
       return 0;
     }
