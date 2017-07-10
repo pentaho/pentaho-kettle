@@ -8,6 +8,7 @@ define([
     return {
       retrict: 'AE',
       scope: {
+        onStart: '&',
         onComplete: '&',
         value: '=',
         auto: '='
@@ -45,6 +46,7 @@ define([
         };
 
         function edit() {
+          scope.onStart();
           willEdit = false;
           element.addClass('editing');
           inputElement.focus();

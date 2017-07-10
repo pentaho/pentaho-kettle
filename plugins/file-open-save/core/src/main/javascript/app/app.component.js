@@ -72,6 +72,7 @@ define([
     vm.confirmError = confirmError;
     vm.cancelError = cancelError;
     vm.storeRecentSearch = storeRecentSearch;
+    vm.updateDirectories = updateDirectories;
     vm.renameError = renameError;
     vm.displayRecentSearches = displayRecentSearches;
     vm.focusSearchBox = focusSearchBox;
@@ -189,6 +190,7 @@ define([
      * @param {Object} folder - folder object
      */
     function selectFolder(folder) {
+      vm.searchString = "";
       if (folder !== vm.folder) {
         vm.file = null;
         if (folder) {
@@ -382,10 +384,10 @@ define([
         case 4: // Unable to create folder...no action needed
           break;
         case 5: // Delete File
-          // Handle force delete file
+          commitRemove();
           break;
         case 6: // Delete Folder
-          // Handle force delete folder
+          commitRemove();
           break;
         default:
           break;
@@ -421,7 +423,7 @@ define([
 
     function displayRecentSearches() {
       if(vm.recentSearches.length !== 0) {
-          vm.isInSearch = true
+        vm.isInSearch = true
       }
     }
 
@@ -458,7 +460,21 @@ define([
      */
     function remove() {
       if (vm.file !== null) {
-        dt.remove(vm.file.path, vm.file.type).then(function() {
+        if (vm.file.type === "folder") {
+          vm.errorType = 6;
+        } else {
+          vm.errorType = 5;
+        }
+        vm.showError = true;
+      }
+    }
+
+    /**
+     * Calls the service for removing the file
+     */
+    function commitRemove() {
+      if (vm.file !== null) {
+        dt.remove(vm.file.type == "folder" ? vm.file.path : vm.file.objectId.id, vm.file.type).then(function() {
           var index = vm.folder.children.indexOf(vm.file);
           vm.folder.children.splice(index, 1);
           if (vm.file.type === "folder") {
@@ -476,6 +492,7 @@ define([
             }
           }
           vm.folder.hasChildren = hasChildFolders;
+          vm.file = null;
         }, function(response) {
           console.log(response);
         });
@@ -492,6 +509,7 @@ define([
           var folder = response.data;
           folder.visible = vm.folder.open;
           folder.depth = vm.folder.depth + 1;
+          folder.indent = (folder.depth * 27) + "px";
           folder.autoEdit = true;
           folder.type = "folder";
           vm.folder.children.splice(0, 0, folder);
@@ -502,6 +520,15 @@ define([
             }
           }
         });
+      }
+    }
+
+    function updateDirectories(oldPath, newPath, newName) {
+      for (var i = 0; i < vm.folders.length; i++) {
+        if (vm.folders[i].path === oldPath) {
+          vm.folders[i].name = newName;
+        }
+        vm.folders[i].path = vm.folders[i].path.replace(oldPath, newPath);
       }
     }
 

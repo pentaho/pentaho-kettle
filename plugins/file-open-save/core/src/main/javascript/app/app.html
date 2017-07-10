@@ -1,7 +1,7 @@
 <error ng-show="vm.showError"
        error-type="vm.errorType"
        error-file="vm.file"
-       error-folder="vm.folder"
+       error-folder="vm.file"
        on-error-confirm="vm.confirmError()"
        on-error-cancel="vm.cancelError()"></error>
 <div class="dialogWrapper" ng-class="vm.wrapperClass">
@@ -10,7 +10,7 @@
       <div class="headerTitle headerText">
         {{::vm.headerTitle}}
       </div>
-      <div id="headerSearchId" class="headerSearch" ng-class="{'focused': vm.isInSearch === true}">
+      <div id="headerSearchId" class="headerSearch" ng-class="{'focused': vm.isInSearch === true || searchBoxHasFocus === true }">
         <div class="headerSearchLeft" ng-click="vm.focusSearchBox()" ng-class="{'blueState': vm.searchString !== '' || vm.isInSearch === true || searchBoxHasFocus === true }" ></div>
           <input id="searchBoxId" type="text" class="searchBox"
                  placeholder="{{::vm.searchPlaceholder}} {{vm.selectedFolder}}"
@@ -40,8 +40,8 @@
                     on-select="vm.selectFolderByPath(selectedPath)"></breadcrumb>
       </div>
       <div class="addDelete">
-        <div class="addFolder" ng-click="vm.addFolder()"></div>
-        <div class="deleteFolder" ng-click="vm.remove()"></div>
+        <div class="addFolder" ng-click="vm.addFolder()" title="{{::vm.addFolderText}}"></div>
+        <div class="deleteFolder" ng-click="vm.remove()" title="{{::vm.removeText}}"></div>
       </div>
     </div>
   </div>
@@ -50,7 +50,7 @@
     <div class="directoryTreeArea">
       <folder auto-expand="vm.autoExpand"
               folders="vm.folders"
-              on-select="vm.resetSearch(); vm.selectFolder(selectedFolder);"
+              on-select="vm.selectFolder(selectedFolder);"
               show-recents="vm.showRecents"
               selected-folder="vm.folder"
               ng-class="{dark: vm.file !== null}"></folder>
@@ -69,7 +69,8 @@
              folder="vm.folder"
              on-click="vm.selectFile(file)"
              on-select="vm.highlightFile(selectedFile)"
-             on-error="vm.renameError()"></files>
+             on-error="vm.renameError()"
+             on-rename="vm.updateDirectories(oldPath, newPath, newName)"></files>
     </div>
   </div>
 
