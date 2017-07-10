@@ -145,6 +145,18 @@ files tr .fileName {
   padding-left: 10px;
 }
 
+files tr .fileName input {
+  display: none;
+}
+
+files tr .fileName .editing span {
+  display: none;
+}
+
+files tr .fileName .editing input {
+  display: block;
+}
+
 files tr .fileTypeIcon {
   height: 16px;
   width: 16px;

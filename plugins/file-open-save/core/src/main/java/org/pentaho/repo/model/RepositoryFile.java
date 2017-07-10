@@ -20,6 +20,8 @@ package org.pentaho.repo.model;
  */
 public class RepositoryFile extends RepositoryObject {
 
+  private String username;
+
   @Override public String getType() {
     return this.type;
   }
@@ -28,4 +30,11 @@ public class RepositoryFile extends RepositoryObject {
     this.type = type;
   }
 
+  public String getUsername() {
+    return username;
+  }
+
+  public void setUsername( String username ) {
+    this.username = username;
+  }
 }

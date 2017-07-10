@@ -48,11 +48,9 @@
                ng-class="{'file-trans': file.type === 'transformation',
                           'file-job': file.type === 'job',
                           'file-folder': file.type === 'folder'}"></div>
-          <div class="fileName"
-               rename
-               on-rename="vm.rename()"
-               selected="vm.selectedFile"
-               ng-model="file">{{file.name}}</div>
+          <div class="fileName">
+            <edit value="file.name" on-complete="vm.rename(file, name)" auto="file.autoEdit"></edit>
+          </div>
           <div class="fileLocation">{{file.path}}</div>
         </td>
         <td class="typeCell">

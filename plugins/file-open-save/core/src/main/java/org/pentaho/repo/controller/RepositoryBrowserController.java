@@ -22,7 +22,9 @@ import org.json.simple.parser.JSONParser;
 import org.pentaho.di.core.EngineMetaInterface;
 import org.pentaho.di.core.LastUsedFile;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.exception.KettleObjectExistsException;
 import org.pentaho.di.core.util.Utils;
+import org.pentaho.di.repository.IUser;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectoryInterface;
@@ -35,6 +37,8 @@ import org.pentaho.di.ui.spoon.Spoon;
 import org.pentaho.repo.model.RepositoryDirectory;
 import org.pentaho.repo.model.RepositoryFile;
 
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.LinkedList;
 import java.util.ArrayList;
@@ -81,9 +85,15 @@ public class RepositoryBrowserController {
       ObjectId objectId = null;
       switch ( type ) {
         case "job":
+          if ( getRepository().exists( newName, repositoryDirectoryInterface, RepositoryObjectType.JOB ) ) {
+            throw new KettleObjectExistsException();
+          }
           objectId = getRepository().renameJob( () -> id, repositoryDirectoryInterface, newName );
           break;
         case "transformation":
+          if ( getRepository().exists( newName, repositoryDirectoryInterface, RepositoryObjectType.TRANSFORMATION ) ) {
+            throw new KettleObjectExistsException();
+          }
           objectId = getRepository().renameTransformation( () -> id, repositoryDirectoryInterface, newName );
           break;
         case "folder":
@@ -212,10 +222,20 @@ public class RepositoryBrowserController {
     PropsUI props = PropsUI.getInstance();
 
     List<RepositoryFile> repositoryFiles = new ArrayList<>();
-    List<LastUsedFile> lastUsedFiles = props.getLastUsedRepoFiles().getOrDefault( Spoon.getInstance().rep.getName(),
-      Collections.emptyList() );
+    IUser userInfo = Spoon.getInstance().rep.getUserInfo();
+    String repoAndUser = Spoon.getInstance().rep.getName() + ":" + ( userInfo != null ? userInfo.getLogin() : "" );
+    List<LastUsedFile> lastUsedFiles =
+      props.getLastUsedRepoFiles().getOrDefault( repoAndUser, Collections.emptyList() );
+
+    Calendar calendar = Calendar.getInstance();
+    calendar.add( Calendar.DATE, -30 );
+    Date dateBefore = calendar.getTime();
+
     for ( int i = 0; i < lastUsedFiles.size(); i++ ) {
       LastUsedFile lastUsedFile = lastUsedFiles.get( i );
+      if ( lastUsedFile.getLastOpened().before( dateBefore ) ) {
+        continue;
+      }
       if ( lastUsedFile.getRepositoryName() != null && lastUsedFile.getRepositoryName()
         .equals( Spoon.getInstance().rep.getName() ) ) {
         RepositoryFile repositoryFile = new RepositoryFile();
@@ -226,6 +246,7 @@ public class RepositoryBrowserController {
         repositoryFile.setPath( lastUsedFile.getDirectory() );
         repositoryFile.setDate( lastUsedFile.getLastOpened() );
         repositoryFile.setRepository( lastUsedFile.getRepositoryName() );
+        repositoryFile.setUsername( lastUsedFile.getUsername() );
         repositoryFiles.add( repositoryFile );
       }
     }
@@ -269,6 +290,7 @@ public class RepositoryBrowserController {
     } else {
       repositoryElementMetaInterfaces = repositoryDirectoryInterface.getRepositoryObjects();
     }
+    Date latestDate = null;
     for ( RepositoryObjectInterface repositoryObject : repositoryElementMetaInterfaces ) {
       org.pentaho.di.repository.RepositoryObject ro = (org.pentaho.di.repository.RepositoryObject) repositoryObject;
       RepositoryFile repositoryFile = new RepositoryFile();
@@ -280,7 +302,11 @@ public class RepositoryBrowserController {
       repositoryFile.setObjectId( ro.getObjectId() );
       repositoryFile.setPath( ro.getRepositoryDirectory().getPath() );
       repositoryDirectory.addChild( repositoryFile );
+      if ( latestDate == null || ro.getModifiedDate().after( latestDate ) ) {
+        latestDate = ro.getModifiedDate();
+      }
     }
+    repositoryDirectory.setDate( latestDate );
   }
 
   private Spoon getSpoon() {

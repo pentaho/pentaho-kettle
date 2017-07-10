@@ -36,7 +36,7 @@ public class RepositoryOpenSaveDialog extends ThinDialog {
   private static final String DIALOG_TITLE = "Save";
   private static final Image LOGO = GUIResource.getInstance().getImageLogoSmall();
   private static final String OSGI_SERVICE_PORT = "OSGI_SERVICE_PORT";
-  private static final String CLIENT_PATH = "/file-open-save-impl-core/8.0-SNAPSHOT/index.html";
+  private static final String CLIENT_PATH = "/@PROJECT_ARTIFACT_ID@/@PROJECT_VERSION@/index.html";
   private static final int OPTIONS = SWT.APPLICATION_MODAL | SWT.DIALOG_TRIM;
 
   public RepositoryOpenSaveDialog( Shell shell, int width, int height ) {

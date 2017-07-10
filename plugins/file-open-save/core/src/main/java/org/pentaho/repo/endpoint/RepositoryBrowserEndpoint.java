@@ -15,6 +15,7 @@
 
 package org.pentaho.repo.endpoint;
 
+import org.pentaho.di.repository.ObjectId;
 import org.pentaho.repo.controller.RepositoryBrowserController;
 import org.pentaho.repo.model.RepositoryDirectory;
 
@@ -99,7 +100,13 @@ public class RepositoryBrowserEndpoint {
   @Path( "/rename/{id}/{path}/{name}/{type}" )
   public Response rename( @PathParam( "id" ) String id, @PathParam( "path" ) String path,
                           @PathParam( "name" ) String name, @PathParam( "type" ) String type ) {
-    return Response.ok( repositoryBrowserController.rename( id, path, name, type ) ).build();
+
+    ObjectId objectId = repositoryBrowserController.rename( id, path, name, type );
+    if ( objectId != null ) {
+      return Response.ok( objectId ).build();
+    }
+
+    return Response.notModified().build();
   }
 
   @POST
@@ -107,7 +114,11 @@ public class RepositoryBrowserEndpoint {
   @Produces( { MediaType.APPLICATION_JSON } )
   public Response rename( @PathParam( "parent" ) String parent, @PathParam( "name" ) String name ) {
     RepositoryDirectory repositoryDirectory = repositoryBrowserController.create( parent, name );
-    return Response.ok( repositoryDirectory ).build();
+    if ( repositoryDirectory != null ) {
+      return Response.ok( repositoryDirectory ).build();
+    }
+
+    return Response.status( Response.Status.UNAUTHORIZED ).build();
   }
 
   @DELETE
