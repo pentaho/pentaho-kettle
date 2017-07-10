@@ -40,7 +40,8 @@ define([
       search: '<',
       onClick: '&',
       onSelect: '&',
-      onError: '&'
+      onError: '&',
+      onRename: '&'
     },
     template: filesTemplate,
     controllerAs: "vm",
@@ -169,10 +170,23 @@ define([
       var path = file.type === "File folder" ? file.parent : file.path;
       dt.rename(file.objectId.id, file.name, path, file.type).then(function(response) {
         file.objectId = response.data;
+        var index = file.path.lastIndexOf("/");
+        var oldPath = file.path;
+        var newPath = file.path.substr(0, index) + "/" + file.name;
+        vm.onRename({oldPath:oldPath, newPath:newPath, newName:file.name});
+        updateDirectories(file, oldPath, newPath);
       }, function(response) {
         file.name = previous;
         vm.onError();
       });
+    }
+
+    function updateDirectories(folder, oldPath, newPath) {
+      folder.path = folder.path.replace( oldPath, newPath );
+      console.log(folder.path);
+      for (var i = 0;i < folder.children.length; i++) {
+        updateDirectories(folder.children[i], oldPath, newPath);
+      }
     }
 
     /**
