@@ -483,7 +483,7 @@ define([
      */
     function commitRemove() {
       if (vm.file !== null) {
-        dt.remove(vm.file.type == "folder" ? vm.file.path : vm.file.objectId.id, vm.file.type).then(function() {
+        dt.remove(vm.file.type === "folder" ? vm.file.path : vm.file.objectId.id, vm.file.type).then(function() {
           var index = vm.folder.children.indexOf(vm.file);
           vm.folder.children.splice(index, 1);
           if (vm.file.type === "folder") {
@@ -524,7 +524,8 @@ define([
           vm.folder.children.splice(0, 0, folder);
           for (var i = 0; i < vm.folders.length; i++) {
             if (vm.folders[i].path === folder.parent) {
-              vm.folders.splice(i + 1, 0, angular.copy(folder));
+              var copy = angular.copy(folder);
+              vm.folders.splice(i + 1, 0, copy);
               break;
             }
           }

@@ -250,6 +250,7 @@ file-open-save-app .fileNameEntry {
 }
 
 file-open-save-app .fileNameEntryLabel {
+  color: #666666;
   margin-bottom: 5px;
 }
 

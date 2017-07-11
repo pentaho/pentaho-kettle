@@ -170,8 +170,8 @@ define([
      * Rename the selected file.
      */
     function rename(file, previous) {
-      var path = file.type === "folder" ? file.parent : file.path;
-      dt.rename(file.objectId.id, file.name, path, file.type).then(function(response) {
+      var path = file.type === "folder" ? file.path : file.parent;
+      dt.rename(file.objectId.id, path, file.name, file.type).then(function(response) {
         file.objectId = response.data;
         var index = file.path.lastIndexOf("/");
         var oldPath = file.path;
@@ -231,8 +231,9 @@ define([
       vm.sortField = field;
     }
 
-    function onStart() {
+    function onStart(file) {
       vm.edit = true;
+      selectFile(file);
     }
 
     /**
