@@ -1067,7 +1067,7 @@ public class TableView extends Composite {
     MouseAdapter lsMouseT = new MouseAdapter() {
       @Override
       public void mouseDown( MouseEvent event ) {
-        if ( activeTableItem != null
+        if ( activeTableItem != null && !activeTableItem.isDisposed()
           && editor != null
           && editor.getEditor() != null
           && !editor.getEditor().isDisposed() ) {
