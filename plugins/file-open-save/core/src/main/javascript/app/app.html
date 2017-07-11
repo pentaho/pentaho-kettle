@@ -85,7 +85,7 @@
     <div class="buttons">
       <button class="secondary" ng-click="vm.cancel()">{{::vm.cancelButton}}</button>
       <button class="primary" ng-show="vm.wrapperClass === 'open'" ng-click="vm.openClicked()" ng-disabled="!vm.file">{{::vm.openButton}}</button>
-      <button class="primary" ng-show="vm.wrapperClass === 'save'" ng-click="vm.saveClicked()" ng-disabled="vm.fileToSave === ''">{{::vm.saveButton}}</button>
+      <button class="primary" ng-show="vm.wrapperClass === 'save'" ng-click="vm.saveClicked()" ng-disabled="vm.fileToSave === '' || vm.folder.path == 'Recents'">{{::vm.saveButton}}</button>
     </div>
   </div>
 </div>

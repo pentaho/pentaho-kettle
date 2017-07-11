@@ -46,12 +46,16 @@ define([
         };
 
         function edit() {
+          scope.auto = false;
           scope.onStart();
           willEdit = false;
-          element.addClass('editing');
-          inputElement.focus();
-          setTimeout(function() {
-            inputElement.select();
+          canEdit = true;
+          $timeout(function() {
+            element.addClass('editing');
+            $timeout(function() {
+              inputElement.focus();
+              inputElement.select();
+            });
           });
         }
 

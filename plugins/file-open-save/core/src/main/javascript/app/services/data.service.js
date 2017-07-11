@@ -145,7 +145,8 @@ define(
          * @param {String} type - The object type
          * @return {Promise} - a promise resolved once data is returned
          */
-        function rename(id, name, path, type) {
+        function rename(id, path, name, type)
+        {
           return _httpPost([baseUrl, "rename", encodeURIComponent(id), encodeURIComponent(path), name, type].join("/"));
         }
 
