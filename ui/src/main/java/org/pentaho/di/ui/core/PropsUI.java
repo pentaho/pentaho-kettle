@@ -522,7 +522,10 @@ public class PropsUI extends Props {
       Date lastOpened = null;
       SimpleDateFormat simpleDateFormat = new SimpleDateFormat( "yyyy-MM-dd HH:mm:ss" );
       try {
-        lastOpened = simpleDateFormat.parse( properties.getProperty( "repolastdate" + ( i + 1 ) ) );
+        String repoLastDate = properties.getProperty( "repolastdate" + ( i + 1 ) );
+        if ( repoLastDate != null ) {
+          lastOpened = simpleDateFormat.parse( repoLastDate );
+        }
       } catch ( ParseException pe ) {
         // Default of null is acceptable
       }
