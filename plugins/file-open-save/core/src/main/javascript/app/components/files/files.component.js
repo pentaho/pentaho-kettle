@@ -41,7 +41,8 @@ define([
       search: '<',
       onClick: '&',
       onSelect: '&',
-      onError: '&'
+      onError: '&',
+      onRename: '&'
     },
     template: filesTemplate,
     controllerAs: "vm",
@@ -70,6 +71,8 @@ define([
     vm.getFiles = getFiles;
     vm.sortFiles = sortFiles;
     vm.compareFiles = compareFiles;
+    vm.onStart = onStart;
+    vm.edit = false;
 
     /**
      * The $onInit hook of components lifecycle which is called on each controller
@@ -167,13 +170,28 @@ define([
      * Rename the selected file.
      */
     function rename(file, previous) {
-      var path = file.type === "File folder" ? file.parent : file.path;
+      var path = file.type === "folder" ? file.parent : file.path;
       dt.rename(file.objectId.id, file.name, path, file.type).then(function(response) {
         file.objectId = response.data;
+        var index = file.path.lastIndexOf("/");
+        var oldPath = file.path;
+        var newPath = file.path.substr(0, index) + "/" + file.name;
+        if (file.type === "folder") {
+          vm.onRename({oldPath:oldPath, newPath:newPath, newName:file.name});
+        }
+        updateDirectories(file, oldPath, newPath);
       }, function(response) {
         file.name = previous;
         vm.onError();
       });
+      vm.edit = false;
+    }
+
+    function updateDirectories(folder, oldPath, newPath) {
+      folder.path = folder.path.replace( oldPath, newPath );
+      for (var i = 0;i < folder.children.length; i++) {
+        updateDirectories(folder.children[i], oldPath, newPath);
+      }
     }
 
     /**
@@ -213,10 +231,17 @@ define([
       vm.sortField = field;
     }
 
+    function onStart() {
+      vm.edit = true;
+    }
+
     /**
      * Compare files according to sortField, keeping folders first
      **/
     function compareFiles(first, second) {
+      if (vm.edit == true) {
+        return;
+      }
       var obj1 = first.value, obj2 = second.value;
       // folders always first, even if reversed
       var comp = foldersFirst(obj1.type, obj2.type);

@@ -97,7 +97,15 @@ public class RepositoryBrowserController {
           objectId = getRepository().renameTransformation( () -> id, repositoryDirectoryInterface, newName );
           break;
         case "folder":
-          objectId = getRepository().renameRepositoryDirectory( () -> id, repositoryDirectoryInterface, newName );
+          RepositoryDirectoryInterface parent = getRepository().findDirectory( path ).getParent();
+          if ( parent == null ) {
+            parent = getRepository().findDirectory( path );
+          }
+          RepositoryDirectoryInterface child = parent.findChild( newName );
+          if ( child != null ) {
+            throw new KettleObjectExistsException();
+          }
+          objectId = getRepository().renameRepositoryDirectory( () -> id, null, newName );
           break;
       }
       return objectId;
