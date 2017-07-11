@@ -228,7 +228,7 @@ define(
         function _wrapHttp(method, url, data) {
           var options = {
             method: method,
-            url: url,
+            url: _cacheBust(url),
             headers: {
               Accept: "application/json"
             }
@@ -237,6 +237,16 @@ define(
             options.data = data;
           }
           return $http(options);
+        }
+
+        function _cacheBust(url) {
+          var value = Math.round(new Date().getTime() / 1000) + Math.random();
+          if (url.indexOf("?") != -1) {
+            url += "&v=" + value;
+          } else {
+            url += "?v=" + value;
+          }
+          return url;
         }
       }
     });
