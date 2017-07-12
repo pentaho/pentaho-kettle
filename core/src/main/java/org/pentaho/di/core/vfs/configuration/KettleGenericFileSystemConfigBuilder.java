@@ -133,8 +133,19 @@ public class KettleGenericFileSystemConfigBuilder extends FileSystemConfigBuilde
           + name + "] is not supported by the default configuration builder for scheme: " + scheme );
       } else {
         // An unexpected error has occurred loading in parameters
-        throw new IOException( e.getLocalizedMessage(), e );
+        String errorMessage = getUnderlyingErrorMessage( e );
+        throw new IOException( errorMessage, e );
       }
+    }
+  }
+
+  private static String getUnderlyingErrorMessage( Throwable e ) {
+    if ( e.getMessage() != null ) {
+      return e.getMessage();
+    } else if ( e.getCause() != null ) {
+      return getUnderlyingErrorMessage( e.getCause() );
+    } else {
+      return null;
     }
   }
 }

@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -33,6 +33,7 @@ import org.apache.commons.vfs2.provider.sftp.IdentityInfo;
 import org.apache.commons.vfs2.provider.sftp.SftpFileNameParser;
 import org.apache.commons.vfs2.provider.sftp.SftpFileSystem;
 import org.apache.commons.vfs2.provider.sftp.SftpFileSystemConfigBuilder;
+import org.pentaho.di.core.Const;
 import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.logging.LogChannelInterface;
 
@@ -125,7 +126,8 @@ public class KettleSftpFileSystemConfigBuilder extends KettleGenericFileSystemCo
           log.logDebug( "No host match found for: " + fullParameterName );
         }
       } catch ( IOException e ) {
-        log.logError( "Failed to set VFS parameter: [" + fullParameterName + "] " + value, e );
+        log.logMinimal( "Warning: Failed to set VFS parameter: [" + fullParameterName + "] " + value
+          + Const.CR + e.getMessage() );
       }
     }
   }
