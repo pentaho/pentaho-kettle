@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -47,7 +47,7 @@ import java.util.Map;
 
 public class DenormaliserMetaInjectionIT {
 
-  private static final String EXPECTED_VALUE = " 1";
+  private static final String EXPECTED_VALUE = "1";
 
   private TransMeta transMeta;
 
@@ -75,7 +75,7 @@ public class DenormaliserMetaInjectionIT {
   }
 
   @Test
-  public void testAddedFieldsAvalibleOutsideInjectedTransformation() throws Exception {
+  public void testAddedFieldsAvailableOutsideInjectedTransformation() throws Exception {
     runTransformation( trans );
     String actualValue = trans.getVariable( "X_FIELD_VALUE" );
     assertEquals( EXPECTED_VALUE, actualValue );
