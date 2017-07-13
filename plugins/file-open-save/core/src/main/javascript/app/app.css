@@ -42,6 +42,7 @@ file-open-save-app input[type="text"] {
   font-size: 14px;
   line-height: 17px;
   height: 34px;
+  font-family: OpenSansRegular;
 }
 
 file-open-save-app input[type="text"]:focus,
@@ -230,23 +231,30 @@ file-open-save-app .fileArea {
   position: relative;
 }
 
-file-open-save-app .fileArea.overflow {
+file-open-save-app .fileArea.recentsView {
   overflow-y: auto;
   overflow-x: hidden;
   padding-right: 20px;
 }
 
+file-open-save-app .fileArea.recentsView.scrolling {
+  padding-right: 0;
+}
+
 file-open-save-app .bottom {
   padding: 20px 30px 30px;
+  height: 119px;
 }
 
 file-open-save-app .open .bottom {
   padding-top: 30px;
+  height: 36px;
 }
 
 file-open-save-app .fileNameEntry {
   width: 100%;
   margin-bottom: 30px;
+  line-height: 14px;
 }
 
 file-open-save-app .fileNameEntryLabel {
@@ -315,19 +323,24 @@ file-open-save-app .buttons button {
   float: right;
 }
 
-file-open-save-app .buttons {
-  float: right;
-}
-
 file-open-save-app .open .fileNameEntry {
   display: none;
 }
 
 file-open-save-app .fileAreaMessageView {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -100%);
+  width: 100%;
+  text-align: center;
+  height: 292px;
+  line-height: 292px;
+}
+
+file-open-save-app .open .fileAreaMessageView {
+  height: 368px;
+  line-height: 368px;
+}
+
+file-open-save-app .recentsView .fileAreaMessageView {
+  width: calc(100% + 20px);
 }
 
 .searchBoxExtra {
