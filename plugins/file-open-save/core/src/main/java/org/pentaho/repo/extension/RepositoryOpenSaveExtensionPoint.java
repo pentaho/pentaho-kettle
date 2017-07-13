@@ -47,8 +47,10 @@ public class RepositoryOpenSaveExtensionPoint implements ExtensionPointInterface
 
     PropsUI propsUI = propsUISupplier.get();
     LastUsedFile lastUsedFile = null;
+    String username = getRepository().getUserInfo() != null ? getRepository().getUserInfo().getLogin() : "";
+    String repoAndUser = getRepository().getName() + ":" + username;
     List<LastUsedFile>
-      lastUsedFileList = propsUI.getLastUsedRepoFiles().getOrDefault( getRepository().getName(), Collections.emptyList() );
+      lastUsedFileList = propsUI.getLastUsedRepoFiles().getOrDefault( repoAndUser, Collections.emptyList() );
     if ( lastUsedFileList.size() > 0 ) {
       lastUsedFile = lastUsedFileList.get( 0 );
     }

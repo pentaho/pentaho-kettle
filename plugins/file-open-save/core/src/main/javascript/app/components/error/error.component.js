@@ -155,6 +155,15 @@ define([
             i18n.get("file-open-save-plugin.error.delete-folder.accept.button"),
             i18n.get("file-open-save-plugin.error.delete-folder.no.button"));
           break;
+        case 7:// File Exists
+          _setMessage(i18n.get("file-open-save-plugin.error.file-exists.title"),
+            i18n.get("file-open-save-plugin.error.file-exists.top.message"),
+            " ",
+            vm.errorFile.name + ".",
+            i18n.get("file-open-save-plugin.error.file-exists.bottom.message"),
+            "",
+            i18n.get("file-open-save-plugin.error.file-exists.close.button"));
+          break;
         default:
           _setMessage("", "", "", "", "", "", "");
           break;
