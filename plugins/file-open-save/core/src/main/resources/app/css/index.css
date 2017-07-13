@@ -3,4 +3,5 @@ body {
   font-family: OpenSansRegular;
   color: #212121;
   margin: 0;
+  overflow: hidden;
 }

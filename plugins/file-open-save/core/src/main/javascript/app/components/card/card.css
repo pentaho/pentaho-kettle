@@ -47,10 +47,6 @@ card .card {
   user-select: none; /* Fallback */
 }
 
-card .card:last-child {
-  margin-bottom: 20px;
-}
-
 card .card:hover {
   background-color: #E6EFF6;
   border: 1px solid #E6EFF6;
@@ -90,14 +86,15 @@ card .cardTitleAndDate {
   float: left;
   width: 200px;
   max-width: 200px;
+  margin-top: -1px;
 }
 
 card .cardTitle {
-  margin-bottom: 10px;
+  margin-bottom: 8px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  line-height: 17px;
+  line-height: 20px;
 }
 
 card .cardDate {
@@ -110,4 +107,10 @@ card .cardAreaMessageView {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -100%);
+}
+
+card .bottomSpacer {
+  height: 20px;
+  width: calc(100% + 20px);
+  float: left;
 }

@@ -62,6 +62,11 @@ files .bodyWrapper {
   max-height: 337px;
 }
 
+files .bodyWrapper .spacer {
+  height: 17px;
+  width: 100%;
+}
+
 files .headerWrapper table {
   background-color: #FAFAFA;
   text-align: left;
@@ -155,6 +160,9 @@ files tr .fileName .editing span {
 
 files tr .fileName .editing input {
   display: block;
+  border: 0 none;
+  outline: none;
+
 }
 
 files tr .fileTypeIcon {
