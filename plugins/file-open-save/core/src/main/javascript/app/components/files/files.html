@@ -35,7 +35,7 @@
   </div>
 
   <div class="bodyWrapper">
-    <table ng-class="{searchTable: vm.search, hasVertScroll: vm.getFileAreaWidth()}">
+    <table ng-class="{searchTable: vm.search}">
       <tbody>
       <tr ng-repeat="file in vm.getFiles(vm.folder.children) | orderBy:file:vm.sortReverse:vm.compareFiles "
           ng-click="vm.selectFile(file)"
@@ -67,6 +67,7 @@
         </td>
       </tr>
     </table>
+    <div class="spacer"></div>
   </div>
 </div>
 

@@ -56,7 +56,7 @@
               ng-class="{dark: vm.file !== null}"></folder>
     </div>
 
-    <div class="fileArea" ng-class="{overflow: vm.showRecents}">
+    <div class="fileArea" ng-class="{recentsView: vm.showRecents, scrolling: vm.recentsHasScrollBar}">
       <div class="fileAreaMessageView" ng-show="vm.showRecents && vm.recentFiles.length === 0">{{::vm.noRecentsMsg}}</div>
       <card ng-show="vm.showRecents && vm.recentFiles.length > 0"
             recent-files="vm.recentFiles"
