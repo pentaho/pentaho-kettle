@@ -208,7 +208,7 @@ define([
     function _updateDirectories(folder, oldPath, newPath) {
       folder.path = folder.path.replace( oldPath, newPath );
       for (var i = 0;i < folder.children.length; i++) {
-        updateDirectories(folder.children[i], oldPath, newPath);
+        _updateDirectories(folder.children[i], oldPath, newPath);
       }
     }
 

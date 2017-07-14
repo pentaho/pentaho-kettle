@@ -31,8 +31,9 @@
  **/
 define([
   "text!./folder.html",
+  "../utils",
   "css!./folder.css"
-], function(folderTemplate) {
+], function(folderTemplate, utils) {
   "use strict";
 
   var options = {
@@ -62,6 +63,7 @@ define([
     vm.openFolder = openFolder;
     vm.selectFolder = selectFolder;
     vm.selectAndOpenFolder = selectAndOpenFolder;
+    vm.compareFolders = compareFolders;
 
     /**
      * The $onInit hook of components lifecycle which is called on each controller
@@ -216,6 +218,23 @@ define([
           vm.folders[i].indent = (vm.folders[i].depth * 27) + "px";
         }
       }
+    }
+
+    function compareFolders(first, second) {
+      var folder1 = first.value, folder2 = second.value;
+      var path1 = folder1.path.split('/'), path2 = folder2.path.split('/');
+      var comp = 0;
+      var len = Math.min(path1.length, path2.length);
+      for(var i = 0; i < len; i++ ) {
+         comp = utils.naturalCompare(path1[i], path2[i]);
+         if ( comp != 0 ) {
+           return comp;
+         }
+      }
+      if (path1.length != path2.length) {
+        return path1.length - path2.length;
+      }
+      return first.index - second.index;
     }
 
   }
