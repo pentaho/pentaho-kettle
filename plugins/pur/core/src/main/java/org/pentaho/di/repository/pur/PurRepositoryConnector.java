@@ -235,6 +235,7 @@ public class PurRepositoryConnector implements IRepositoryConnector {
       }
 
       Boolean isAdmin = authorizationWebserviceFuture.get();
+      result.getUser().setAdmin( isAdmin );
 
       if ( log.isBasic() ) {
         log.logBasic( BaseMessages.getString( PKG, "PurRepositoryConnector.RegisterSecurityProvider.Start" ) );
