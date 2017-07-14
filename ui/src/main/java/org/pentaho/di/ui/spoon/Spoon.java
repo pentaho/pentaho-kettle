@@ -501,9 +501,9 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
   // "Redo : not available \tCTRL-Y"
   private static final String REDO_UNAVAILABLE = BaseMessages.getString( PKG, "Spoon.Menu.Redo.NotAvailable" );
 
-  private static boolean unsupportedBrowserEnvironment;
+  private static Boolean unsupportedBrowserEnvironment;
 
-  private static boolean webkitUnavailable;
+  private static Boolean webkitUnavailable;
 
   private static String availableBrowser;
 
@@ -9121,6 +9121,12 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
   }
 
   private void checkEnvironment() {
+    if ( EnvironmentUtils.getInstance().isBrowserEnvironmentCheckDisabled() ) {
+      webkitUnavailable = null;
+      unsupportedBrowserEnvironment = null;
+      availableBrowser = "";
+      return;
+    }
     webkitUnavailable = EnvironmentUtils.getInstance().isWebkitUnavailable();
     unsupportedBrowserEnvironment = EnvironmentUtils.getInstance().isUnsupportedBrowserEnvironment();
     availableBrowser = EnvironmentUtils.getInstance().getBrowserName();
@@ -9280,11 +9286,11 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     return sashform;
   }
 
-  public static boolean isUnsupportedBrowserEnvironment() {
+  public static Boolean isUnsupportedBrowserEnvironment() {
     return unsupportedBrowserEnvironment;
   }
 
-  public static boolean isWebkitUnavailable() {
+  public static Boolean isWebkitUnavailable() {
     return webkitUnavailable;
   }
 

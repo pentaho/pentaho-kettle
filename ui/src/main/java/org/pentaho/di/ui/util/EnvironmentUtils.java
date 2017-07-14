@@ -50,8 +50,6 @@ public class EnvironmentUtils {
   }
 
   /**
-   * isUnsupportedBrowserEnvironment
-   *
    * Checks the available browser to see if it is an unsupported one.
    *
    * @return 'true' if in a unSupported browser environment 'false' otherwise.
@@ -64,8 +62,8 @@ public class EnvironmentUtils {
     if ( userAgent == null ) {
       return true;
     }
-    return checkUserAgent( MSIE_PATTERN.matcher( userAgent ), getSupportedVersion("min.windows.browser.supported")  )
-      || checkUserAgent( SAFARI_PATTERN.matcher( userAgent ), getSupportedVersion("min.mac.browser.supported")  );
+    return checkUserAgent( MSIE_PATTERN.matcher( userAgent ), getSupportedVersion( "min.windows.browser.supported" )  )
+      || checkUserAgent( SAFARI_PATTERN.matcher( userAgent ), getSupportedVersion( "min.mac.browser.supported" )  );
   }
 
   private boolean checkUserAgent( Matcher matcher, int version ) {
@@ -73,8 +71,6 @@ public class EnvironmentUtils {
   }
 
   /**
-   * getUserAgent
-   *
    * Ask for user Agent of the available browser.
    *
    * @return a string that contains the user agent of the browser.
@@ -93,8 +89,6 @@ public class EnvironmentUtils {
   }
 
   /**
-   * isWebkitUnavailable
-   *
    * Checks the existence of the webkit library on ubuntu 16 or ubuntu 14 .
    *
    * @return 'true' if the webkit library is not present in ubuntu 16 or ubuntu 14 , 'false' otherwise.
@@ -104,14 +98,12 @@ public class EnvironmentUtils {
     String osName = getEnvironmentName();
     return  ( ( path == null || path.length() < 1 || !path.contains( "webkit" ) )
         &&
-        ( osName.contains( SUPPORTED_DISTRIBUTION_NAME + " " + getSupportedVersion("max.ubuntu.os.distribution.supported") )
+        ( osName.contains( SUPPORTED_DISTRIBUTION_NAME + " " + getSupportedVersion( "max.ubuntu.os.distribution.supported" ) )
             ||
-            osName.contains( SUPPORTED_DISTRIBUTION_NAME + " " + getSupportedVersion("min.ubuntu.os.distribution.supported") ) ) );
+            osName.contains( SUPPORTED_DISTRIBUTION_NAME + " " + getSupportedVersion( "min.ubuntu.os.distribution.supported" ) ) ) );
   }
 
   /**
-   * getWebkitPath
-   *
    * Ask for the path in the system for the webkit library.
    *
    * @return a string that contains the path or 'null' if not found.
@@ -121,8 +113,6 @@ public class EnvironmentUtils {
   }
 
   /**
-   * getOsName
-   *
    * Ask for the Operating system name.
    *
    * @return a string that contains the current Operating System.
@@ -140,8 +130,6 @@ public class EnvironmentUtils {
   }
 
   /**
-   * getSupportedVersion
-   *
    * Gets the supported version of the required Property.
    *
    * @param property a string with the required property.
@@ -152,8 +140,15 @@ public class EnvironmentUtils {
   }
 
   /**
-   * getLinuxDistribution
+   * Ask if the browsing environment checks are disabled.
    *
+   * @return 'true' if disabled 'false' otherwise.
+   */
+  public boolean isBrowserEnvironmentCheckDisabled() {
+    return PropsUI.getInstance().isBrowserEnvironmentCheckDisabled();
+  }
+
+  /**
    * Ask for the running linux distribution.
    *
    * @return a string that contains the distribution name or a empty string if it could not find the name.
@@ -184,8 +179,6 @@ public class EnvironmentUtils {
   }
 
   /**
-   * getBrowserName
-   *
    * Ask for the browser name.
    *
    * @return a String that contains the browser name.
