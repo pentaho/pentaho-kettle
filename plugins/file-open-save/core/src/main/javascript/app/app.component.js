@@ -81,6 +81,7 @@ define([
     vm.setTooltip = setTooltip;
     vm.getOffsetTop = getOffsetTop;
     vm.getOffsetLeft = getOffsetLeft;
+    vm.recentsHasScrollBar = recentsHasScrollBar;
     vm.selectedFolder = "";
     vm.fileToSave = "";
     vm.searchString = "";
@@ -178,6 +179,11 @@ define([
         vm.wrapperClass = "save";
         vm.headerTitle = i18n.get("file-open-save-plugin.app.header.save.title");
       }
+    }
+
+    function recentsHasScrollBar() {
+      var recentsView = document.getElementsByClassName("recentsView");
+      return recentsView.scrollHeight > recentsView.clientHeight;
     }
 
     /**
@@ -298,7 +304,7 @@ define([
      */
     function highlightFile(file) {
       vm.file = file;
-      vm.fileToSave = file.type === "folder" ? "" : file.name;
+      vm.fileToSave = file.type === "folder" ? vm.fileToSave : file.name;
     }
 
     /**
