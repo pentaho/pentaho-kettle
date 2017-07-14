@@ -109,6 +109,8 @@ public class PropsUI extends Props {
 
   private static final String LEGACY_PERSPECTIVE_MODE = "LegacyPerspectiveMode";
 
+  private static final String DISABLE_BROWSER_ENVIRONMENT_CHECK = "DisableBrowserEnvironmentCheck";
+
   private static List<GUIOption<Object>> editables;
 
   /**
@@ -1212,13 +1214,22 @@ public class PropsUI extends Props {
   }
 
   /**
-   * getSupportedVersion
+   * Gets the supported version of the requested software.
    *
    * @param property the key for the software version
    * @return an integer that represents the supported version for the software.
    */
   public int getSupportedVersion( String property ) {
     return Integer.parseInt( properties.getProperty( property ) );
+  }
+
+  /**
+   * Ask if the browsing environment checks are disabled.
+   *
+   * @return 'true' if disabled 'false' otherwise.
+   */
+  public boolean isBrowserEnvironmentCheckDisabled() {
+    return "Y".equalsIgnoreCase( properties.getProperty( DISABLE_BROWSER_ENVIRONMENT_CHECK, "N" ) );
   }
 
   public boolean isLegacyPerspectiveMode() {
