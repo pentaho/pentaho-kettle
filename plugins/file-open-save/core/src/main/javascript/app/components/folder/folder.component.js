@@ -106,11 +106,17 @@ define([
           vm.folders[i].visible = false;
           vm.folders[i].open = false;
         }
+      }
+      _setDepth();
+      _setWidth();
+    }
+
+    function _setDepth() {
+      for (var i = 0; i < vm.folders.length; i++) {
         if (vm.folders[i].open) {
           vm.maxDepth = Math.max(vm.maxDepth, vm.folders[i].depth + 1);
         }
       }
-      _setWidth();
     }
 
     /**
@@ -161,6 +167,8 @@ define([
           }
         }
       }
+      _setDepth();
+      _setWidth();
     }
 
     /**
@@ -205,7 +213,7 @@ define([
         if (vm.folders[i].depth <= vm.maxDepth) {
           var width = "calc(100% + " + ((vm.maxDepth - vm.folders[i].depth) * 27) + "px)";
           vm.folders[i].width = width;
-          vm.folders[i].indent = (vm.folders[i].depth * 27) + "px"
+          vm.folders[i].indent = (vm.folders[i].depth * 27) + "px";
         }
       }
     }

@@ -21,7 +21,7 @@
 <div class="folder"
      ng-click="vm.selectFolder(folder)"
      ng-dblclick="vm.selectAndOpenFolder(folder)"
-     ng-repeat="folder in vm.folders | orderBy:'order'"
+     ng-repeat="folder in vm.folders"
      ng-style="{paddingLeft: folder.indent, 'width': folder.width}"
      ng-show="folder.visible"
      ng-class="{selected: folder === vm.selectedFolder,

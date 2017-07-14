@@ -49,7 +49,11 @@
                           'file-job': file.type === 'job',
                           'file-folder': file.type === 'folder'}"></div>
           <div class="fileName">
-            <edit value="file.name" on-complete="vm.rename(file, name)" auto="file.autoEdit" on-start="vm.onStart(file)"></edit>
+            <edit value="file.name"
+                  on-error="vm.onError()"
+                  on-complete="vm.rename(file, current, previous, errorCallback)"
+                  auto="file.autoEdit"
+                  on-start="vm.onStart(file)"></edit>
           </div>
           <div class="fileLocation">{{file.path}}</div>
         </td>

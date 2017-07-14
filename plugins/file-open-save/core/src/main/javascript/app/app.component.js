@@ -75,6 +75,7 @@ define([
     vm.storeRecentSearch = storeRecentSearch;
     vm.updateDirectories = updateDirectories;
     vm.renameError = renameError;
+    vm.duplicateError = duplicateError;
     vm.displayRecentSearches = displayRecentSearches;
     vm.focusSearchBox = focusSearchBox;
     vm.setTooltip = setTooltip;
@@ -324,11 +325,14 @@ define([
      */
     function _open() {
       if (vm.file.repository) {
-        dt.openRecent(vm.file.repository + ":" + (vm.file.username ? vm.file.username : ""), vm.file.objectId.id);
+        dt.openRecent(vm.file.repository + ":" + (vm.file.username ? vm.file.username : ""), vm.file.objectId.id).then(function(response) {
+          _closeBrowser();
+        });
       } else {
-        dt.openFile(vm.file.objectId.id, vm.file.type);
+        dt.openFile(vm.file.objectId.id, vm.file.type).then(function(response) {
+          _closeBrowser();
+        });
       }
-      _closeBrowser();
     }
 
     /**
@@ -417,6 +421,15 @@ define([
      */
     function renameError() {
       vm.errorType = 4;
+      vm.showError = true;
+    }
+
+    function duplicateError(type) {
+      if (type === "folder") {
+        vm.errorType = 2;
+      } else {
+        vm.errorType = 7;
+      }
       vm.showError = true;
     }
 

@@ -69,6 +69,8 @@
              folder="vm.folder"
              on-click="vm.selectFile(file)"
              on-select="vm.highlightFile(selectedFile)"
+             on-file-duplicate="vm.duplicateError('file')"
+             on-folder-duplicate="vm.duplicateError('folder')"
              on-error="vm.renameError()"
              on-rename="vm.updateDirectories(oldPath, newPath, newName)"></files>
     </div>

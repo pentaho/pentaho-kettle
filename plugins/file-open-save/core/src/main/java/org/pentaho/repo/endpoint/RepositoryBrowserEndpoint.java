@@ -15,6 +15,8 @@
 
 package org.pentaho.repo.endpoint;
 
+import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.exception.KettleObjectExistsException;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.repo.controller.RepositoryBrowserController;
 import org.pentaho.repo.model.RepositoryDirectory;
@@ -101,9 +103,15 @@ public class RepositoryBrowserEndpoint {
   public Response rename( @PathParam( "id" ) String id, @PathParam( "path" ) String path,
                           @PathParam( "name" ) String name, @PathParam( "type" ) String type ) {
 
-    ObjectId objectId = repositoryBrowserController.rename( id, path, name, type );
-    if ( objectId != null ) {
-      return Response.ok( objectId ).build();
+    try {
+      ObjectId objectId = repositoryBrowserController.rename( id, path, name, type );
+      if ( objectId != null ) {
+        return Response.ok( objectId ).build();
+      }
+    } catch ( KettleObjectExistsException koee ) {
+      return Response.status( Response.Status.CONFLICT ).build();
+    } catch ( KettleException ke ) {
+      return Response.notModified().build();
     }
 
     return Response.notModified().build();

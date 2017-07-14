@@ -10,21 +10,20 @@ define([
       scope: {
         onStart: '&',
         onComplete: '&',
-        value: '=',
+        value: '<',
         auto: '='
       },
-      template: '<span ng-click="edit()" ng-bind="value"></span><input ng-model="value"/>',
+      template: '<span ng-click="edit()" ng-bind="updated"></span><input ng-model="updated"/>',
       link: function (scope, element, attr) {
         var inputElement = element.children()[1];
         var canEdit = false;
         var willEdit = false;
         var promise;
-        var previous;
+        scope.updated = scope.value;
         if (scope.auto) {
           edit();
         }
         scope.edit = function() {
-          previous = scope.value;
           if (willEdit) {
             $timeout.cancel(promise);
             willEdit = false;
@@ -73,14 +72,12 @@ define([
           if (!element.hasClass('editing')) {
             return;
           }
-          if (previous !== scope.value) {
-            scope.onComplete({'name' : previous});
+          if (scope.updated !== scope.value) {
+            scope.onComplete({current: scope.updated, previous: scope.value, errorCallback: function() {
+              scope.updated = scope.value;
+            }});
           }
           element.removeClass('editing');
-        }
-
-        if (scope.auto) {
-          scope.edit();
         }
       }
     }

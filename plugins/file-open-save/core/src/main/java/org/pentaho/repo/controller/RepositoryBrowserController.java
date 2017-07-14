@@ -79,39 +79,35 @@ public class RepositoryBrowserController {
     }
   }
 
-  public ObjectId rename( String id, String path, String newName, String type ) {
-    try {
-      RepositoryDirectoryInterface repositoryDirectoryInterface = getRepository().findDirectory( path );
-      ObjectId objectId = null;
-      switch ( type ) {
-        case "job":
-          if ( getRepository().exists( newName, repositoryDirectoryInterface, RepositoryObjectType.JOB ) ) {
-            throw new KettleObjectExistsException();
-          }
-          objectId = getRepository().renameJob( () -> id, repositoryDirectoryInterface, newName );
-          break;
-        case "transformation":
-          if ( getRepository().exists( newName, repositoryDirectoryInterface, RepositoryObjectType.TRANSFORMATION ) ) {
-            throw new KettleObjectExistsException();
-          }
-          objectId = getRepository().renameTransformation( () -> id, repositoryDirectoryInterface, newName );
-          break;
-        case "folder":
-          RepositoryDirectoryInterface parent = getRepository().findDirectory( path ).getParent();
-          if ( parent == null ) {
-            parent = getRepository().findDirectory( path );
-          }
-          RepositoryDirectoryInterface child = parent.findChild( newName );
-          if ( child != null ) {
-            throw new KettleObjectExistsException();
-          }
-          objectId = getRepository().renameRepositoryDirectory( () -> id, null, newName );
-          break;
-      }
-      return objectId;
-    } catch ( Exception e ) {
-      return null;
+  public ObjectId rename( String id, String path, String newName, String type ) throws KettleException {
+    RepositoryDirectoryInterface repositoryDirectoryInterface = getRepository().findDirectory( path );
+    ObjectId objectId = null;
+    switch ( type ) {
+      case "job":
+        if ( getRepository().exists( newName, repositoryDirectoryInterface, RepositoryObjectType.JOB ) ) {
+          throw new KettleObjectExistsException();
+        }
+        objectId = getRepository().renameJob( () -> id, repositoryDirectoryInterface, newName );
+        break;
+      case "transformation":
+        if ( getRepository().exists( newName, repositoryDirectoryInterface, RepositoryObjectType.TRANSFORMATION ) ) {
+          throw new KettleObjectExistsException();
+        }
+        objectId = getRepository().renameTransformation( () -> id, repositoryDirectoryInterface, newName );
+        break;
+      case "folder":
+        RepositoryDirectoryInterface parent = getRepository().findDirectory( path ).getParent();
+        if ( parent == null ) {
+          parent = getRepository().findDirectory( path );
+        }
+        RepositoryDirectoryInterface child = parent.findChild( newName );
+        if ( child != null ) {
+          throw new KettleObjectExistsException();
+        }
+        objectId = getRepository().renameRepositoryDirectory( () -> id, null, newName );
+        break;
     }
+    return objectId;
   }
 
   public boolean remove( String id, String type ) {
