@@ -1,5 +1,5 @@
 /*!
- * Copyright 2010 - 2015 Pentaho Corporation.  All rights reserved.
+ * Copyright 2010 - 2017 Pentaho Corporation.  All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -66,10 +66,10 @@ public class UIEESecurityUserTest implements java.io.Serializable {
     roles.add( devmgrRole );
     roles.add( isRole );
 
-    joeUser = new EEUserInfo( "joe", "password", "joe", "joe", true );
-    patUser = new EEUserInfo( "pat", "password", "pat", "pat", true );
-    suzyUser = new EEUserInfo( "suzy", "password", "suzy", "suzy", true );
-    tiffanyUser = new EEUserInfo( "tiffany", "password", "tiffany", "tiffany", true );
+    joeUser = new EEUserInfo( "joe", "password", "joe", "joe", true, null );
+    patUser = new EEUserInfo( "pat", "password", "pat", "pat", true, null );
+    suzyUser = new EEUserInfo( "suzy", "password", "suzy", "suzy", true, null );
+    tiffanyUser = new EEUserInfo( "tiffany", "password", "tiffany", "tiffany", true, null );
 
     joeUser.addRole( roles.get( 0 ) );
     joeUser.addRole( roles.get( 2 ) );

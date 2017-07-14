@@ -1,5 +1,5 @@
 /*!
- * Copyright 2010 - 2016 Pentaho Corporation.  All rights reserved.
+ * Copyright 2010 - 2017 Pentaho Corporation.  All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -81,7 +81,7 @@ public class RepositoryPerformanceApp extends RepositoryTestBase implements java
     repositoryMeta.setName( "JackRabbit" );
     repositoryMeta.setDescription( "JackRabbit test repository" );
     ( (PurRepositoryMeta) repositoryMeta ).setRepositoryLocation( new PurRepositoryLocation( repositoryLocation ) );
-    userInfo = new UserInfo( EXP_LOGIN, "password", EXP_USERNAME, "Apache Tomcat user", true );
+    userInfo = new UserInfo( EXP_LOGIN, "password", EXP_USERNAME, "Apache Tomcat user", true, null );
     repository = new PurRepository();
 
     repository.init( repositoryMeta );

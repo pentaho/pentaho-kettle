@@ -1,5 +1,5 @@
 /*!
- * Copyright 2010 - 2015 Pentaho Corporation.  All rights reserved.
+ * Copyright 2010 - 2017 Pentaho Corporation.  All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,6 +26,7 @@ public class EEUserInfo extends UserInfo implements IEEUser, java.io.Serializabl
   private static final long serialVersionUID = -5327929320581502511L; /* EESOURCE: UPDATE SERIALVERUID */
 
   private Set<IRole> roles;
+  private Boolean admin;
 
   public EEUserInfo() {
     super();
@@ -33,14 +34,16 @@ public class EEUserInfo extends UserInfo implements IEEUser, java.io.Serializabl
   }
 
   public EEUserInfo( String login, String password, String username, String description, boolean enabled,
-      Set<IRole> roles ) {
-    super( login, password, username, description, enabled );
+                     Boolean admin, Set<IRole> roles ) {
+    super( login, password, username, description, enabled, admin );
     this.roles = roles;
+    this.admin = admin;
   }
 
-  public EEUserInfo( String login, String password, String username, String description, boolean enabled ) {
-    super( login, password, username, description, enabled );
+  public EEUserInfo( String login, String password, String username, String description, boolean enabled, Boolean admin ) {
+    super( login, password, username, description, enabled, admin );
     this.roles = new HashSet<IRole>();
+    this.admin = admin;
   }
 
   public EEUserInfo( String login ) {
@@ -73,4 +76,12 @@ public class EEUserInfo extends UserInfo implements IEEUser, java.io.Serializabl
     return this.roles;
   }
 
+  public Boolean isAdmin() {
+    return admin;
+  }
+
+  @Override
+  public void setAdmin( Boolean admin ) {
+    this.admin = admin;
+  }
 }

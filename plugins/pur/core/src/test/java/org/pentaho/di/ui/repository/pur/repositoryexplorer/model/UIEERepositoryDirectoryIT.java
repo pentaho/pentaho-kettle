@@ -1,5 +1,5 @@
 /*!
- * Copyright 2010 - 2016 Pentaho Corporation.  All rights reserved.
+ * Copyright 2010 - 2017 Pentaho Corporation.  All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -211,7 +211,7 @@ public class UIEERepositoryDirectoryIT extends RepositoryTestBase implements App
     repositoryMeta = new PurRepositoryMeta();
     repositoryMeta.setName( "JackRabbit" );
     repositoryMeta.setDescription( "JackRabbit test repository" );
-    userInfo = new UserInfo( EXP_LOGIN, "password", EXP_USERNAME, "Apache Tomcat user", true );
+    userInfo = new UserInfo( EXP_LOGIN, "password", EXP_USERNAME, "Apache Tomcat user", true, null );
 
     repository = new PurRepository();
     repository.init( repositoryMeta );
