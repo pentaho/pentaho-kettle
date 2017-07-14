@@ -25,27 +25,36 @@
 package org.pentaho.di.trans.ael.adapters;
 
 import com.google.common.base.Throwables;
+
+import java.io.Serializable;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.exception.KettleMissingPluginsException;
+import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.engine.api.model.Hop;
 import org.pentaho.di.engine.api.model.Operation;
 import org.pentaho.di.engine.api.model.Transformation;
+import org.pentaho.di.resource.ResourceEntry;
 import org.pentaho.di.trans.TransHopMeta;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.steps.csvinput.CsvInputMeta;
 import org.pentaho.di.trans.steps.tableinput.TableInputMeta;
 
+import static java.util.stream.Collectors.toMap;
+
 public class TransMetaConverter {
 
   public static final String TRANS_META_CONF_KEY = "TransMeta";
   public static final String TRANS_META_NAME_CONF_KEY = "TransMetaName";
+  public static final String SUB_TRANSFORMATIONS_KEY = "SubTransformations";
   public static final String STEP_META_CONF_KEY = "StepMeta";
   public static final String TRANS_DEFAULT_NAME = "No Name";
 
@@ -67,6 +76,17 @@ public class TransMetaConverter {
       transformation.setConfig( TRANS_META_CONF_KEY, copyTransMeta.getXML() );
       transformation.setConfig( TRANS_META_NAME_CONF_KEY,
         Optional.ofNullable( transMeta.getName() ).orElse( TRANS_DEFAULT_NAME ) );
+      Map<String, Transformation> subTransformations = copyTransMeta.getResourceDependencies().stream()
+        .flatMap( resourceReference -> resourceReference.getEntries().stream() )
+        .filter( entry -> ResourceEntry.ResourceType.ACTIONFILE.equals( entry.getResourcetype() ) )
+        .collect( toMap( ResourceEntry::getResource, entry -> {
+          try {
+            return convert( new TransMeta( entry.getResource(), copyTransMeta.getParentVariableSpace() ) );
+          } catch ( KettleXMLException | KettleMissingPluginsException e ) {
+            throw new RuntimeException( e );
+          }
+        } ) );
+      transformation.setConfig( SUB_TRANSFORMATIONS_KEY, (Serializable) subTransformations );
     } catch ( KettleException e ) {
       Throwables.propagate( e );
     }
