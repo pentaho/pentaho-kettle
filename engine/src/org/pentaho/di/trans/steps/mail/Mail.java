@@ -44,6 +44,7 @@ import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
+import javax.mail.internet.MimeUtility;
 import javax.mail.util.ByteArrayDataSource;
 
 import org.apache.commons.vfs2.FileObject;
@@ -582,9 +583,10 @@ public class Mail extends BaseStep implements StepInterface {
     if ( !Const.isEmpty( email_address ) ) {
       // get sender name
       if ( !Const.isEmpty( senderName ) ) {
-        email_address = senderName + '<' + email_address + '>';
+    	  msg.setFrom(new InternetAddress(email_address, MimeUtility.encodeText(senderName, "UTF-8", "B")));
+      } else {
+    	  msg.setFrom(new InternetAddress(email_address));
       }
-      msg.setFrom( new InternetAddress( email_address ) );
     } else {
       throw new MessagingException( BaseMessages.getString( PKG, "Mail.Error.ReplyEmailNotFilled" ) );
     }
@@ -638,7 +640,7 @@ public class Mail extends BaseStep implements StepInterface {
     }
 
     if ( mailsubject != null ) {
-      msg.setSubject( mailsubject );
+      msg.setSubject( MimeUtility.encodeText(mailsubject, "UTF-8", "B"));
     }
 
     msg.setSentDate( new Date() );
