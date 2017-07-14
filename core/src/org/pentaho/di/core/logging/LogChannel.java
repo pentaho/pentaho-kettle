@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -120,12 +120,6 @@ public class LogChannel implements LogChannelInterface {
     if ( channelLogLevel.getLevel() >= logLevel.getLevel() ) {
       KettleLoggingEvent loggingEvent = new KettleLoggingEvent( logMessage, System.currentTimeMillis(), logLevel );
       KettleLogStore.getAppender().addLogggingEvent( loggingEvent );
-
-      // add to buffer
-      LogChannelFileWriterBuffer fileWriter = LoggingRegistry.getInstance().getLogChannelFileWriterBuffer( logChannelId );
-      if ( fileWriter != null ) {
-        fileWriter.addEvent( loggingEvent );
-      }
     }
   }
 
