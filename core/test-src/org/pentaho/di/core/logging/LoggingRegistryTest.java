@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -25,8 +25,6 @@ package org.pentaho.di.core.logging;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 
 public class LoggingRegistryTest {
   public static final String LOG_CHANEL_ID_PARENT = "parent-chanel-id";
@@ -50,41 +48,4 @@ public class LoggingRegistryTest {
     assertEquals( logChanelId, LOG_CHANEL_ID_CHILD );
   }
 
-  @Test
-  public void testRegisterFileWriter() {
-    String id = "1";
-
-    LoggingRegistry loggingRegistry = LoggingRegistry.getInstance();
-
-    LogChannelFileWriterBuffer buffer = new LogChannelFileWriterBuffer( id );
-    loggingRegistry.registerLogChannelFileWriterBuffer( buffer );
-
-    assertNotNull( loggingRegistry.getLogChannelFileWriterBuffer( id ) );
-  }
-
-  @Test
-  public void testFileWritersIds() {
-    String id = "1";
-
-    LoggingRegistry loggingRegistry = LoggingRegistry.getInstance();
-
-    LogChannelFileWriterBuffer buffer = new LogChannelFileWriterBuffer( id );
-    loggingRegistry.registerLogChannelFileWriterBuffer( buffer );
-
-    assertNotNull( loggingRegistry.getLogChannelFileWriterBufferIds() );
-  }
-
-  @Test
-  public void testRemoveFileWriter() {
-    String id = "1";
-
-    LoggingRegistry loggingRegistry = LoggingRegistry.getInstance();
-
-    LogChannelFileWriterBuffer buffer = new LogChannelFileWriterBuffer( id );
-    loggingRegistry.registerLogChannelFileWriterBuffer( buffer );
-
-    loggingRegistry.removeLogChannelFileWriterBuffer( id );
-
-    assertNull( loggingRegistry.getLogChannelFileWriterBuffer( id ) );
-  }
 }
