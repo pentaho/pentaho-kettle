@@ -151,6 +151,15 @@ public class GPLoadDataOutput {
         if ( Utils.isEmpty( delimiter ) ) {
           throw new KettleException( BaseMessages.getString( PKG, "GPload.Exception.DelimiterMissing" ) );
         }
+        if (delimiter.startsWith("\\u")) {
+          try {
+            int codepoint = Integer.parseInt(delimiter.substring(2), 16);
+            char[] ch = Character.toChars(codepoint);
+            delimiter = String.valueOf(ch);
+          } catch (Exception ex) {
+            throw new KettleException( BaseMessages.getString( PKG, "GPload.Exception.DelimiterInvalidUnicode" ), ex );
+          }
+        }
       }
 
       // Setup up the fields we need to take for each of the rows
