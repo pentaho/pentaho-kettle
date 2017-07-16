@@ -261,6 +261,7 @@ public abstract class BaseLogTable {
    *          the tableName to set
    */
   public void setTableName( String tableName ) {
+    if (tableName != null && tableName.isEmpty()) tableName = null;
     this.tableName = tableName;
   }
 
@@ -479,6 +480,7 @@ public abstract class BaseLogTable {
    *          the connectionName to set
    */
   public void setConnectionName( String connectionName ) {
+    if (connectionName != null && connectionName.isEmpty()) connectionName = null;
     this.connectionName = connectionName;
   }
 
