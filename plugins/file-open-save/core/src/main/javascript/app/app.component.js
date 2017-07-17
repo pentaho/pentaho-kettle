@@ -33,9 +33,8 @@ define([
   "text!./app.html",
   "pentaho/i18n-osgi!file-open-save.messages",
   "angular",
-  "components/utils",
   "css!./app.css"
-], function(dataService, template, i18n, angular, utils) {
+], function(dataService, template, i18n, angular) {
   "use strict";
 
   var options = {
@@ -125,17 +124,9 @@ define([
        */
       function _populateTree(response) {
         vm.folders = response.data;
-        var sortMap = {};
-        var ord = 0;
         for (var i = 0; i < vm.folders.length; i++) {
           if (vm.folders[i].depth === 0) {
             vm.folders[i].visible = true;
-            ord = sortRec(vm.folders[i], sortMap, ord);
-          }
-        }
-        for (var i = 0; i < vm.folders.length; i++ ) {
-          if (vm.folders[i].type == 'folder') {
-            vm.folders[i].order = sortMap[vm.folders[i].objectId.id];
           }
         }
         var path = $location.search().path;
@@ -606,19 +597,6 @@ define([
         }
       }
       return false;
-    }
-
-    function sortRec(folder, orderMap, idx) {
-      if (folder.type == 'folder') {
-        orderMap[folder.objectId.id] = idx++;
-        if (folder.children) {
-          folder.children.sort( function(f1, f2) { return utils.naturalCompare( f1.name, f2.name ) } );
-          for (var i=0; i< folder.children.length;i++) {
-            idx = sortRec(folder.children[i], orderMap, idx);
-          }
-        }
-      }
-      return idx;
     }
 
   }
