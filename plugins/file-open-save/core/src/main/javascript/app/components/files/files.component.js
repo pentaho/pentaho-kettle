@@ -171,18 +171,17 @@ define([
      * Rename the selected file.
      */
     function rename(file, current, previous, errorCallback) {
-      var path = file.type === "folder" ? file.path : file.parent;
-      dt.rename(file.objectId.id, path, current, file.type).then(function(response) {
+      dt.rename(file.objectId.id, file.path, current, file.type).then(function(response) {
         file.name = current;
         file.objectId = response.data;
-        var index = file.path.lastIndexOf("/");
-        var oldPath = file.path;
-        var newPath = file.path.substr(0, index) + "/" + current;
         if (file.type === "folder") {
+          var index = file.path.lastIndexOf("/");
+          var oldPath = file.path;
+          var newPath = file.path.substr(0, index) + "/" + current;
           vm.onRename({oldPath:oldPath, newPath:newPath, newName:current});
         }
-        _updateDirectories(file, oldPath, newPath);
       }, function(response) {
+        file.newName = current;
         errorCallback();
         if (response.status === 304) {
           vm.onError();
@@ -195,21 +194,6 @@ define([
           }
         }
       });
-    }
-
-    /**
-     * Update all child folder paths on parent rename
-     *
-     * @param folder
-     * @param oldPath
-     * @param newPath
-     * @private
-     */
-    function _updateDirectories(folder, oldPath, newPath) {
-      folder.path = folder.path.replace( oldPath, newPath );
-      for (var i = 0;i < folder.children.length; i++) {
-        _updateDirectories(folder.children[i], oldPath, newPath);
-      }
     }
 
     /**

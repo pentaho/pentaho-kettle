@@ -176,7 +176,7 @@ file-open-save-app .addDelete {
 }
 
 file-open-save-app .save .addDelete {
-  display: inline-flex;
+  display: inline;
 }
 
 file-open-save-app .addFolder {
@@ -198,7 +198,12 @@ file-open-save-app .deleteFolder:hover {
   background-position: right center;
 }
 
+file-open-save-app .addDelete .addFolder {
+  float: left;
+}
+
 file-open-save-app .addDelete .deleteFolder {
+  float: right;
   margin-left: 15px;
 }
 
