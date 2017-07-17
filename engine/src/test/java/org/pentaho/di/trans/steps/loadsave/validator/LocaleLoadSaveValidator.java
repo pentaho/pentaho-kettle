@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -25,6 +25,8 @@ package org.pentaho.di.trans.steps.loadsave.validator;
 import java.util.Locale;
 import java.util.Random;
 
+import org.pentaho.di.core.util.Utils;
+
 /**
  * @author Andrey Khayrutdinov
  */
@@ -33,7 +35,7 @@ public class LocaleLoadSaveValidator implements FieldLoadSaveValidator<Locale> {
     Locale[] availableLocales = Locale.getAvailableLocales();
 
     Locale random = availableLocales[ new Random().nextInt( availableLocales.length ) ];
-    if ( random.toString().matches( "(\\w)*#.*" ) ) {
+    if ( Utils.isEmpty( random.toString() ) || random.toString().matches( "(\\w)*#.*" ) ) {
       // locales with '#', like 'sr_rs_#latn', are not restored properly
       return Locale.US;
     } else {

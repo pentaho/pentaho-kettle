@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -170,7 +170,7 @@ public class LoadSaveTester<T extends StepMetaInterface> extends LoadSaveBase<T>
         }
         if ( !( (Boolean) validatorMethod.invoke( validator, originalValue, value ) ) ) {
           throw new KettleException( "Attribute " + attribute + " started with value "
-            + validatorMap.get( attribute ).getTestObject() + " ended with value " + value );
+            + originalValue + " ended with value " + value );
         }
       } catch ( Exception e ) {
         throw new RuntimeException( "Error validating " + attribute, e );
