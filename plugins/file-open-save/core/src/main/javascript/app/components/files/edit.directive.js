@@ -38,7 +38,7 @@ define([
             return;
           }
 
-          if (canEdit) {
+          if (canEdit || isSelected) {
             willEdit = true;
             promise = $timeout(edit, 200);
           }

@@ -235,12 +235,7 @@ define([
       if (file.type === "folder") {
         selectFolder(file);
       } else {
-        if (file.repository) {
-          dt.openRecent(file.repository + ":" + (file.username ? file.username : ""), file.objectId.id);
-        } else {
-          dt.openFile(file.objectId.id, file.type);
-        }
-        _closeBrowser();
+        _open(file);
       }
     }
 
@@ -305,7 +300,7 @@ define([
       if (vm.file && vm.file.type === "folder") {
         selectFolder(vm.file);
       } else {
-        _open();
+        _open(vm.file);
       }
     }
 
@@ -320,13 +315,13 @@ define([
      * Calls data service to open file
      * @private
      */
-    function _open() {
-      if (vm.file.repository) {
-        dt.openRecent(vm.file.repository + ":" + (vm.file.username ? vm.file.username : ""), vm.file.objectId.id).then(function(response) {
+    function _open(file) {
+      if (file.repository) {
+        dt.openRecent(file.repository + ":" + (file.username ? file.username : ""), file.objectId.id).then(function(response) {
           _closeBrowser();
         });
       } else {
-        dt.openFile(vm.file.objectId.id, vm.file.type).then(function(response) {
+        dt.openFile(file.objectId.id, file.type).then(function(response) {
           _closeBrowser();
         });
       }
@@ -548,7 +543,27 @@ define([
         if (vm.folders[i].path === oldPath) {
           vm.folders[i].name = newName;
         }
-        vm.folders[i].path = vm.folders[i].path.replace(oldPath, newPath);
+      }
+      for (var i = 0; i < vm.folders.length; i++) {
+        _updateDirectories(vm.folders[i], oldPath, newPath);
+      }
+    }
+
+    /**
+     * Update all child folder paths on parent rename
+     *
+     * @param folder
+     * @param oldPath
+     * @param newPath
+     * @private
+     */
+    function _updateDirectories(folder, oldPath, newPath) {
+      if (folder.path.indexOf(oldPath) !== -1) {
+        folder.path = folder.path.replace(oldPath, newPath);
+        folder.parent = folder.path.replace(oldPath, newPath);
+      }
+      for (var i = 0; i < folder.children.length; i++) {
+        _updateDirectories(folder.children[i], oldPath, newPath);
       }
     }
 
