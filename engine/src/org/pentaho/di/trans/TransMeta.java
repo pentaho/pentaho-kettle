@@ -3270,6 +3270,10 @@ public class TransMeta extends AbstractMeta
         for ( int i = 0; i < nrSlaveServers; i++ ) {
           Node slaveServerNode = XMLHandler.getSubNodeByNr( slaveServersNode, SlaveServer.XML_TAG, i );
           SlaveServer slaveServer = new SlaveServer( slaveServerNode );
+          if ( slaveServer.getName() == null ) {
+            log.logError( BaseMessages.getString( PKG, "TransMeta.Log.WarningWhileCreationSlaveServer", slaveServer.getName() ) );
+            continue;
+          }
           slaveServer.shareVariablesWith( this );
 
           // Check if the object exists and if it's a shared object.
