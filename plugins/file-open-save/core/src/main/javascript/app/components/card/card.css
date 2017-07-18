@@ -102,13 +102,6 @@ card .cardDate {
   line-height: 17px;
 }
 
-card .cardAreaMessageView {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -100%);
-}
-
 card .bottomSpacer {
   height: 20px;
   width: calc(100% + 20px);

@@ -98,7 +98,6 @@ define([
       vm.headerTitle = i18n.get("file-open-save-plugin.app.header.save.title");
       vm.searchPlaceholder = i18n.get("file-open-save-plugin.app.header.search.placeholder");
       vm.saveFileNameLabel = i18n.get("file-open-save-plugin.app.save.file-name.label");
-      vm.noRecentsMsg = i18n.get("file-open-save-plugin.app.middle.no-recents.message");
       vm.openButton = i18n.get("file-open-save-plugin.app.open.button");
       vm.cancelButton = i18n.get("file-open-save-plugin.app.cancel.button");
       vm.saveButton = i18n.get("file-open-save-plugin.app.save.button");
@@ -113,6 +112,7 @@ define([
       vm.file = null;
       vm.includeRoot = false;
       vm.autoExpand = false;
+      _resetFileAreaMessage();
       dt.getDirectoryTree().then(_populateTree);
       dt.getRecentFiles().then(_populateRecentFiles);
       dt.getRecentSearches().then(_populateRecentSearches);
@@ -197,7 +197,18 @@ define([
         }, function() {
           vm.fileToSave = "";
         });
+        _selectFileName();
       }
+    }
+
+    /**
+     * Selects the file name text
+     * @private
+     */
+    function _selectFileName() {
+      setTimeout(function() {
+        document.getElementById("fileNameEntryTextBox").select();
+      }, 10);
     }
 
     /**
@@ -207,6 +218,7 @@ define([
      */
     function selectFolder(folder) {
       vm.searchString = "";
+      _resetFileAreaMessage();
       if (folder !== vm.folder) {
         vm.file = null;
         if (folder) {
@@ -258,20 +270,23 @@ define([
      */
     function doSearch() {
       vm.isInSearch = false;
+      vm.showMessage = true;
       if (vm.showRecents === true) {
         _filter(vm.recentFiles, vm.searchString);
       } else {
         _filter(vm.folder.children, vm.searchString);
       }
+      _setFileAreaMessage();
     }
 
     /**
      * Resets the search string and runs search against that string (which returns normal dir structure).
      */
     function resetSearch() {
-      if(vm.searchString !== '') {
+      if(vm.searchString !== "") {
         vm.searchString = "";
         vm.doSearch();
+        _resetFileAreaMessage();
       } else {
         vm.focusSearchBox();
       }
@@ -288,12 +303,33 @@ define([
       if (elements) {
         for (var i = 0; i < elements.length; i++) {
           var name = elements[i].name.toLowerCase();
-          elements[i].inResult = name.indexOf(value.toLowerCase()) !== -1;
+          var inResult = name.indexOf(value.toLowerCase()) !== -1;
+          vm.showMessage = inResult ? false : vm.showMessage;
+          elements[i].inResult = inResult;
           if (elements[i].children.length > 0) {
             _filter(elements[i].children, value);
           }
         }
       }
+    }
+
+    /**
+     * Sets the message for the file area to No Results
+     * @private
+     */
+    function _setFileAreaMessage() {
+      if (vm.showMessage) {
+        vm.fileAreaMessage = i18n.get("file-open-save-plugin.app.middle.no-results.message");
+      }
+    }
+
+    /**
+     * Resets the showMessage and file area message to default values
+     * @private
+     */
+    function _resetFileAreaMessage() {
+      vm.showMessage = false;
+      vm.fileAreaMessage = i18n.get("file-open-save-plugin.app.middle.no-recents.message");
     }
 
     /**

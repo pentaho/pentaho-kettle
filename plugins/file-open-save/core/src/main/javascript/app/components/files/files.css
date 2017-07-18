@@ -258,10 +258,3 @@ files .sortWrapper .sort.sortDown {
   background-image: url("../../images/sort_down.svg");
   visibility: visible;
 }
-
-files .fileAreaMessageView {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -100%);
-}

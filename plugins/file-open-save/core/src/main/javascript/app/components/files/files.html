@@ -2,7 +2,7 @@
      ng-class="{scrollTableSave: (!vm.search && vm.folder.children.length > 8) || (vm.search && vm.numResults > 4),
                 scrollTableOpen: (!vm.search && vm.folder.children.length > 11) || (vm.search && vm.numResults > 5)}">
   <div class="headerWrapper">
-    <table ng-show="vm.hasResults">
+    <table>
       <thead>
       <tr>
         <th class="nameCell" ng-click="vm.sortFiles(vm._name)">
@@ -70,5 +70,3 @@
     <div class="spacer"></div>
   </div>
 </div>
-
-<div class="fileAreaMessageView" ng-show="!vm.hasResults && vm.search.length > 0">{{::vm.noResults}}</div>
