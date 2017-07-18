@@ -109,9 +109,8 @@ define([
      * @param {Object} file - file object.
      */
     function commitFile(file) {
-      if (file.isEditing !== true) {
+      if (file.editing !== true) {
         vm.onClick({file: file});
-        file.isEditing = false;
       }
     }
 
@@ -171,29 +170,45 @@ define([
      * Rename the selected file.
      */
     function rename(file, current, previous, errorCallback) {
-      dt.rename(file.objectId.id, file.path, current, file.type).then(function(response) {
-        file.name = current;
-        file.objectId = response.data;
-        if (file.type === "folder") {
+      if (file.new) {
+        file.new = false;
+        dt.create(file.parent, current).then(function(response) {
           var index = file.path.lastIndexOf("/");
           var oldPath = file.path;
           var newPath = file.path.substr(0, index) + "/" + current;
           vm.onRename({oldPath:oldPath, newPath:newPath, newName:current});
-        }
-      }, function(response) {
-        file.newName = current;
-        errorCallback();
-        if (response.status === 304) {
+          file.objectId = response.data.objectId;
+          file.parent = response.data.parent;
+          file.path = response.data.path;
+          file.name = current;
+        }, function() {
           vm.onError();
-        }
-        if (response.status === 409) {
+        });
+      } else {
+        dt.rename(file.objectId.id, file.path, current, file.type).then(function(response) {
+          file.name = current;
+          file.objectId = response.data;
           if (file.type === "folder") {
-            vm.onFolderDuplicate();
-          } else {
-            vm.onFileDuplicate();
+            var index = file.path.lastIndexOf("/");
+            var oldPath = file.path;
+            var newPath = file.path.substr(0, index) + "/" + current;
+            vm.onRename({oldPath:oldPath, newPath:newPath, newName:current});
           }
-        }
-      });
+        }, function(response) {
+          file.newName = current;
+          errorCallback();
+          if (response.status === 304) {
+            vm.onError();
+          }
+          if (response.status === 409) {
+            if (file.type === "folder") {
+              vm.onFolderDuplicate();
+            } else {
+              vm.onFileDuplicate();
+            }
+          }
+        });
+      }
     }
 
     /**

@@ -488,7 +488,7 @@ define([
      */
     function commitRemove() {
       if (vm.file !== null) {
-        dt.remove(vm.file.type === "folder" ? vm.file.path : vm.file.objectId.id, vm.file.type).then(function() {
+        dt.remove(vm.file.type === "folder" ? vm.file.path : vm.file.objectId.id, vm.file.type).then(function(response) {
           var index = vm.folder.children.indexOf(vm.file);
           vm.folder.children.splice(index, 1);
           if (vm.file.type === "folder") {
@@ -507,8 +507,13 @@ define([
           }
           vm.folder.hasChildren = hasChildFolders;
           vm.file = null;
-        }, function(response) {
-          console.log(response);
+        }, function() {
+          if (vm.file.type === "folder") {
+            vm.errorType = 8;
+          } else {
+            vm.errorType = 9;
+          }
+          vm.showError = true;
         });
       }
     }
@@ -518,23 +523,28 @@ define([
      */
     function addFolder() {
       if (vm.selectedFolder !== "Recents") {
-        dt.create(vm.folder.path, _getFolderName()).then(function(response) {
-          vm.folder.hasChildren = true;
-          var folder = response.data;
-          folder.visible = vm.folder.open;
-          folder.depth = vm.folder.depth + 1;
-          folder.indent = (folder.depth * 27) + "px";
-          folder.autoEdit = true;
-          folder.type = "folder";
-          vm.folder.children.splice(0, 0, folder);
-          for (var i = 0; i < vm.folders.length; i++) {
-            if (vm.folders[i].path === folder.parent) {
-              var copy = angular.copy(folder);
-              vm.folders.splice(i + 1, 0, copy);
-              break;
-            }
+        vm.folder.hasChildren = true;
+        var folder = {};
+        var name = _getFolderName();
+        folder.parent = vm.folder.path;
+        folder.path = vm.folder.path + (vm.folder.path.charAt(vm.folder.path.length-1) === "/" ? "" : "/") + name;
+        folder.name = name;
+        folder.visible = vm.folder.open;
+        folder.depth = vm.folder.depth + 1;
+        folder.indent = (folder.depth * 27) + "px";
+        folder.new = true;
+        folder.autoEdit = true;
+        folder.type = "folder";
+        folder.hasChildren = false;
+        folder.children = [];
+        vm.folder.children.splice(0, 0, folder);
+        for (var i = 0; i < vm.folders.length; i++) {
+          if (vm.folders[i].path === folder.parent) {
+            var copy = angular.copy(folder);
+            vm.folders.splice(i + 1, 0, copy);
+            break;
           }
-        });
+        }
       }
     }
 

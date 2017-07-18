@@ -30,6 +30,7 @@ import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectoryInterface;
 import org.pentaho.di.repository.RepositoryElementMetaInterface;
 import org.pentaho.di.repository.RepositoryExtended;
+import org.pentaho.di.repository.RepositoryObject;
 import org.pentaho.di.repository.RepositoryObjectInterface;
 import org.pentaho.di.repository.RepositoryObjectType;
 import org.pentaho.di.ui.core.PropsUI;
@@ -38,6 +39,7 @@ import org.pentaho.repo.model.RepositoryDirectory;
 import org.pentaho.repo.model.RepositoryFile;
 
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.LinkedList;
@@ -87,12 +89,14 @@ public class RepositoryBrowserController {
         if ( getRepository().exists( newName, repositoryDirectoryInterface, RepositoryObjectType.JOB ) ) {
           throw new KettleObjectExistsException();
         }
+        renameRecent( id, type, newName );
         objectId = getRepository().renameJob( () -> id, repositoryDirectoryInterface, newName );
         break;
       case "transformation":
         if ( getRepository().exists( newName, repositoryDirectoryInterface, RepositoryObjectType.TRANSFORMATION ) ) {
           throw new KettleObjectExistsException();
         }
+        renameRecent( id, type, newName );
         objectId = getRepository().renameTransformation( () -> id, repositoryDirectoryInterface, newName );
         break;
       case "folder":
@@ -104,7 +108,12 @@ public class RepositoryBrowserController {
         if ( child != null ) {
           throw new KettleObjectExistsException();
         }
-        objectId = getRepository().renameRepositoryDirectory( () -> id, null, newName );
+        if ( getRepository() instanceof RepositoryExtended ) {
+          objectId =
+            ( (RepositoryExtended) getRepository() ).renameRepositoryDirectory( () -> id, null, newName, true );
+        } else {
+          objectId = getRepository().renameRepositoryDirectory( () -> id, null, newName );
+        }
         break;
     }
     return objectId;
@@ -114,20 +123,76 @@ public class RepositoryBrowserController {
     try {
       switch ( type ) {
         case "job":
+          removeRecent( id, type );
           getRepository().deleteJob( () -> id );
           break;
         case "transformation":
+          removeRecent( id, type );
           getRepository().deleteTransformation( () -> id );
           break;
         case "folder":
           RepositoryDirectoryInterface repositoryDirectoryInterface = getRepository().findDirectory( id );
-          getRepository().deleteRepositoryDirectory( repositoryDirectoryInterface );
+          if ( getRepository() instanceof RepositoryExtended ) {
+            ( (RepositoryExtended) getRepository() ).deleteRepositoryDirectory( repositoryDirectoryInterface, true );
+          } else {
+            getRepository().deleteRepositoryDirectory( repositoryDirectoryInterface );
+          }
           break;
       }
       return true;
     } catch ( Exception e ) {
       return false;
     }
+  }
+
+  private boolean removeRecent( String id, String type ) {
+    RepositoryObject repositoryObject = null;
+    try {
+      repositoryObject = getRepository().getObjectInformation( () -> id,
+        ( type == "transformation" ? RepositoryObjectType.TRANSFORMATION : RepositoryObjectType.JOB ) );
+    } catch ( Exception e ) {
+      return false;
+    }
+
+    if ( repositoryObject != null ) {
+      Collection<List<LastUsedFile>> lastUsedRepoFiles = PropsUI.getInstance().getLastUsedRepoFiles().values();
+      for ( List<LastUsedFile> lastUsedFiles : lastUsedRepoFiles ) {
+        for ( LastUsedFile lastUsedFile : lastUsedFiles ) {
+          if ( lastUsedFile.getDirectory().equals( repositoryObject.getRepositoryDirectory().getPath() ) && lastUsedFile
+            .getFilename().equals( repositoryObject.getName() ) ) {
+            lastUsedFiles.remove( lastUsedFile );
+            return true;
+          }
+        }
+      }
+    }
+
+    return true;
+  }
+
+  private boolean renameRecent( String id, String type, String name ) {
+    RepositoryObject repositoryObject = null;
+    try {
+      repositoryObject = getRepository().getObjectInformation( () -> id,
+        ( type == "transformation" ? RepositoryObjectType.TRANSFORMATION : RepositoryObjectType.JOB ) );
+    } catch ( Exception e ) {
+      return false;
+    }
+
+    if ( repositoryObject != null ) {
+      Collection<List<LastUsedFile>> lastUsedRepoFiles = PropsUI.getInstance().getLastUsedRepoFiles().values();
+      for ( List<LastUsedFile> lastUsedFiles : lastUsedRepoFiles ) {
+        for ( LastUsedFile lastUsedFile : lastUsedFiles ) {
+          if ( lastUsedFile.getDirectory().equals( repositoryObject.getRepositoryDirectory().getPath() ) && lastUsedFile
+            .getFilename().equals( repositoryObject.getName() ) ) {
+            lastUsedFile.setFilename( name );
+            return true;
+          }
+        }
+      }
+    }
+
+    return true;
   }
 
   public RepositoryDirectory create( String parent, String name ) {
