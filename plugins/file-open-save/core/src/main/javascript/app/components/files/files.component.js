@@ -84,8 +84,6 @@ define([
       vm.nameHeader = "Name";
       vm.typeHeader = "Type";
       vm.lastSaveHeader = "Last saved";
-      vm.hasResults = false;
-      vm.noResults = "No results";// i18n.get("file-open-save-plugin.app.middle.no-results.message");
       _setSort(0, false, 'name');
       vm.numResults = 0;
     }
@@ -135,13 +133,11 @@ define([
     function getFiles(elements) {
       vm.numResults = 0;
       var files = [];
-      vm.hasResults = false;
       if (vm.search.length > 0) {
         resolveChildren(elements, files);
       } else {
         files = elements;
         vm.numResults = (files ? files.length : 0);
-        vm.hasResults = true;
       }
       return files;
     }
@@ -158,7 +154,6 @@ define([
           files.push(elements[i]);
           if (elements[i].inResult) {
             vm.numResults++;
-            vm.hasResults = true;
           }
           if (elements[i].children.length > 0) {
             resolveChildren(elements[i].children, files);

@@ -56,16 +56,19 @@
               ng-class="{dark: vm.file !== null}"></folder>
     </div>
 
-    <div class="fileArea" ng-class="{recentsView: vm.showRecents, scrolling: vm.recentsHasScrollBar}">
-      <div class="fileAreaMessageView" ng-show="vm.showRecents && vm.recentFiles.length === 0">{{::vm.noRecentsMsg}}</div>
-      <card ng-show="vm.showRecents && vm.recentFiles.length > 0"
+    <div class="fileArea"
+         ng-class="{recentsView: vm.showRecents && !vm.showMessage,
+                    scrolling: vm.recentsHasScrollBar,
+                    hasMessage: vm.showMessage}">
+      <div class="fileAreaMessageView" ng-show="vm.showRecents && vm.recentFiles.length === 0 || vm.showMessage">{{vm.fileAreaMessage}}</div>
+      <card ng-show="!vm.showMessage && vm.showRecents && vm.recentFiles.length > 0"
             recent-files="vm.recentFiles"
             folder="vm.folder"
             on-click="vm.selectFile(file)"
             on-select="vm.highlightFile(selectedFile)"
             selected-file="vm.file"></card>
       <files search="vm.searchString"
-             ng-show="!vm.showRecents"
+             ng-show="!vm.showMessage && !vm.showRecents"
              folder="vm.folder"
              on-click="vm.selectFile(file)"
              on-select="vm.highlightFile(selectedFile)"

@@ -250,6 +250,10 @@ file-open-save-app .fileArea.recentsView.scrolling {
   padding-right: 0;
 }
 
+file-open-save-app .fileArea.hasMessage {
+  overflow: hidden;
+}
+
 file-open-save-app .bottom {
   padding: 20px 30px 30px;
   height: 119px;
@@ -346,10 +350,6 @@ file-open-save-app .fileAreaMessageView {
 file-open-save-app .open .fileAreaMessageView {
   height: 368px;
   line-height: 368px;
-}
-
-file-open-save-app .recentsView .fileAreaMessageView {
-  width: calc(100% + 20px);
 }
 
 .searchBoxExtra {
