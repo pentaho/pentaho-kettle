@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -173,8 +173,7 @@ public class CheckSum extends BaseStep implements StepInterface {
 
     // Loop through fields
     for ( int i = 0; i < data.fieldnr; i++ ) {
-      String fieldvalue = getInputRowMeta().getString( r, data.fieldnrs[i] );
-      Buff.append( fieldvalue );
+      Buff.append( getInputRowMeta().getValueMeta( data.fieldnrs[i] ).getNativeDataType( r[i] ) );
     }
 
     // Updates the digest using the specified array of bytes
@@ -223,8 +222,7 @@ public class CheckSum extends BaseStep implements StepInterface {
 
     // Loop through fields
     for ( int i = 0; i < data.fieldnr; i++ ) {
-      String fieldvalue = getInputRowMeta().getString( r, data.fieldnrs[i] );
-      Buff.append( fieldvalue );
+      Buff.append( getInputRowMeta().getValueMeta( data.fieldnrs[i] ).getNativeDataType( r[i] ) );
     }
 
     if ( meta.getCheckSumType().equals( CheckSumMeta.TYPE_CRC32 ) ) {
