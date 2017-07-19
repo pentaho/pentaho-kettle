@@ -2,16 +2,19 @@ define([
   'angular'
 ], function (angular) {
 
-  edit.$inject = ['$compile', '$timeout'];
+  edit.$inject = ['$timeout'];
 
-  function edit($compile, $timeout) {
+  function edit($timeout) {
     return {
       retrict: 'AE',
       scope: {
         onStart: '&',
         onComplete: '&',
+        onCancel: '&',
+        new: '<',
         value: '<',
-        auto: '='
+        auto: '=',
+        editing: '='
       },
       template: '<span ng-click="edit()" ng-bind="updated"></span><input ng-model="updated"/>',
       link: function (scope, element, attr) {
@@ -30,7 +33,7 @@ define([
             return;
           }
           var isSelected = element.parent().parent().parent().hasClass( "selected" );
-          if ( !isSelected ) {
+          if (!isSelected) {
             $timeout(function() {
               canEdit = true;
             }, 200);
@@ -45,12 +48,14 @@ define([
         };
 
         function edit() {
+          scope.editing = true;
           scope.auto = false;
           scope.onStart();
           willEdit = false;
           canEdit = true;
           $timeout(function() {
             element.addClass('editing');
+            editing = true;
             $timeout(function() {
               inputElement.focus();
               inputElement.select();
@@ -58,21 +63,24 @@ define([
           });
         }
 
-        angular.element(inputElement).on('keydown', function(e) {
-          if (e.keyCode === 13 || e.keyCode === 27) {
+        angular.element(inputElement).on('keydown blur', function(e) {
+          if (e.keyCode === 13 || e.keyCode === 27 || e.type === "blur") {
+            if (e.keyCode === 27) {
+              scope.updated = "";
+            }
             finish();
           }
         });
 
-        angular.element(inputElement).on('blur', function() {
-          finish();
-        });
-
         function finish() {
+          scope.editing = false;
           if (!element.hasClass('editing')) {
             return;
           }
-          if (scope.updated !== scope.value) {
+          if (scope.updated === "") {
+            scope.updated = scope.value;
+          }
+          if (scope.new || scope.updated !== scope.value) {
             scope.onComplete({current: scope.updated, previous: scope.value, errorCallback: function() {
               scope.updated = scope.value;
             }});
@@ -85,6 +93,6 @@ define([
 
   return {
     name: "edit",
-    options: ['$compile', '$timeout', edit]
+    options: ['$timeout', edit]
   }
 });

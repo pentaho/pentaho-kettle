@@ -50,10 +50,12 @@
                           'file-folder': file.type === 'folder'}"></div>
           <div class="fileName">
             <edit value="file.name"
+                  editing="file.editing"
                   on-error="vm.onError()"
                   on-complete="vm.rename(file, current, previous, errorCallback)"
                   auto="file.autoEdit"
-                  on-start="vm.onStart(file)"></edit>
+                  on-start="vm.onStart(file)"
+                  new="file.new"></edit>
           </div>
           <div class="fileLocation">{{file.path}}</div>
         </td>
