@@ -44,7 +44,7 @@ define([
     controller: appController
   };
 
-  appController.$inject = [dataService.name, "$location"];
+  appController.$inject = [dataService.name, "$location", "$scope"];
 
   /**
    * The App Controller.
@@ -54,7 +54,7 @@ define([
    * @param {Object} dt - Angular service that contains helper functions for the app component controller
    * @param {Function} $location - Angular service used for parsing the URL in browser address bar
    */
-  function appController(dt, $location) {
+  function appController(dt, $location, $scope) {
     var vm = this;
     vm.$onInit = onInit;
     vm.selectFolder = selectFolder;
@@ -459,6 +459,7 @@ define([
         vm.errorType = 7;
       }
       vm.showError = true;
+      $scope.$apply();
     }
 
     /**
