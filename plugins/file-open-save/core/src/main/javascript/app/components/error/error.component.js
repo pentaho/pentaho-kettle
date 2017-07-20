@@ -122,7 +122,7 @@ define([
           _setMessage(i18n.get("file-open-save-plugin.error.folder-exists.title"),
             i18n.get("file-open-save-plugin.error.folder-exists.top.message"),
             " ",
-            vm.errorFolder.name + ".",
+            vm.errorFolder.newName + ".",
             i18n.get("file-open-save-plugin.error.folder-exists.bottom.message"),
             "",
             i18n.get("file-open-save-plugin.error.folder-exists.close.button"));

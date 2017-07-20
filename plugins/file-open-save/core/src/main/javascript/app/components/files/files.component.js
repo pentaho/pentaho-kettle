@@ -166,44 +166,106 @@ define([
      */
     function rename(file, current, previous, errorCallback) {
       if (file.new) {
-        file.new = false;
-        dt.create(file.parent, current).then(function(response) {
+        _createFolder(file, current, previous, errorCallback);
+      } else {
+        _renameFile(file, current, previous, errorCallback);
+      }
+    }
+
+    /**
+     * Create a new folder
+     *
+     * @param file
+     * @param current
+     * @param previous
+     * @param errorCallback
+     * @private
+     */
+    function _createFolder(file, current, previous, errorCallback) {
+      var newName = current;
+      if (_hasDuplicate(current, file.type)) {
+        file.newName = current;
+        errorCallback();
+        _doDuplicateError(file);
+        newName = previous;
+      }
+      file.new = false;
+      dt.create(file.parent, newName).then(function(response) {
+        var index = file.path.lastIndexOf("/");
+        var oldPath = file.path;
+        var newPath = file.path.substr(0, index) + "/" + newName;
+        vm.onRename({oldPath:oldPath, newPath:newPath, newName:newName});
+        file.objectId = response.data.objectId;
+        file.parent = response.data.parent;
+        file.path = response.data.path;
+        file.name = newName;
+      }, function() {
+        vm.onError();
+      });
+    }
+
+    /**
+     * Rename an existing file/folder
+     *
+     * @param file
+     * @param current
+     * @param previous
+     * @param errorCallback
+     * @private
+     */
+    function _renameFile(file, current, previous, errorCallback) {
+      if (_hasDuplicate(current, file.type)) {
+        file.newName = current;
+        errorCallback();
+        _doDuplicateError(file);
+        return;
+      }
+      dt.rename(file.objectId.id, file.path, current, file.type).then(function(response) {
+        file.name = current;
+        file.objectId = response.data;
+        if (file.type === "folder") {
           var index = file.path.lastIndexOf("/");
           var oldPath = file.path;
           var newPath = file.path.substr(0, index) + "/" + current;
           vm.onRename({oldPath:oldPath, newPath:newPath, newName:current});
-          file.objectId = response.data.objectId;
-          file.parent = response.data.parent;
-          file.path = response.data.path;
-          file.name = current;
-        }, function() {
+        }
+      }, function(response) {
+        file.newName = current;
+        errorCallback();
+        if (response.status === 304) {
           vm.onError();
-        });
+        }
+        if (response.status === 409) {
+          _doDuplicateError(file);
+        }
+      });
+    }
+
+    /**
+     * Show the error for a duplicate file/folder name
+     *
+     * @param file
+     * @private
+     */
+    function _doDuplicateError(file) {
+      if (file.type === "folder") {
+        vm.onFolderDuplicate();
       } else {
-        dt.rename(file.objectId.id, file.path, current, file.type).then(function(response) {
-          file.name = current;
-          file.objectId = response.data;
-          if (file.type === "folder") {
-            var index = file.path.lastIndexOf("/");
-            var oldPath = file.path;
-            var newPath = file.path.substr(0, index) + "/" + current;
-            vm.onRename({oldPath:oldPath, newPath:newPath, newName:current});
-          }
-        }, function(response) {
-          file.newName = current;
-          errorCallback();
-          if (response.status === 304) {
-            vm.onError();
-          }
-          if (response.status === 409) {
-            if (file.type === "folder") {
-              vm.onFolderDuplicate();
-            } else {
-              vm.onFileDuplicate();
-            }
-          }
-        });
+        vm.onFileDuplicate();
       }
+    }
+
+    /**
+     * Checks for a duplicate name
+     */
+    function _hasDuplicate(name, type) {
+      for (var i = 0; i < vm.folder.children.length; i++) {
+        var file = vm.folder.children[i];
+        if (file.name.toLowerCase() === name.toLowerCase() && file.type === type) {
+          return true;
+        }
+      }
+      return false;
     }
 
     /**
