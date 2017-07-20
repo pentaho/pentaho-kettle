@@ -169,10 +169,10 @@ public class Rest extends BaseStep implements StepInterface {
       }
 
       ClientResponse response = null;
-      String entityString = "";
+      String entityString = null;
       if ( data.useBody ) {
         // Set Http request entity
-        entityString = Const.NVL( data.inputRowMeta.getString( rowData, data.indexOfBodyField ), "" );
+        entityString = Const.NVL( data.inputRowMeta.getString( rowData, data.indexOfBodyField ), null );
         if ( isDebug() ) {
           logDebug( BaseMessages.getString( PKG, "Rest.Log.BodyValue", entityString ) );
         }
