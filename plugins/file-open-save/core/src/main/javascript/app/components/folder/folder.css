@@ -72,18 +72,18 @@ folder .folder .folderArrowWrapper {
 }
 
 folder .folder .folderArrow {
-  background: url("../../images/chevron_right_tree.svg") no-repeat left center;
+  background: url("../../img/chevron_right_tree.svg") no-repeat left center;
   height: 20px;
   width: 6px;
   float: right;
 }
 
 folder .folder.selected .folderArrow {
-  background: url("../../images/chevron_right_tree.svg") no-repeat right center;
+  background: url("../../img/chevron_right_tree.svg") no-repeat right center;
 }
 
 folder .folder.opened .folderArrow {
-  background: url("../../images/chevron_down_tree.svg") no-repeat left center;
+  background: url("../../img/chevron_down_tree.svg") no-repeat left center;
   height: 20px;
   width: 10px;
 }
@@ -96,9 +96,9 @@ folder .folder.empty .folderArrow {
   background: none;
 }
 
-/* FOLDER IMAGES states */
+/* FOLDER image states */
 folder .folder .folderImage {
-  background: url("../../images/folder.svg") no-repeat left center;
+  background: url("../../img/folder.svg") no-repeat left center;
   height: 20px;
   width: 16px;
   margin-left: 10px;
@@ -106,7 +106,7 @@ folder .folder .folderImage {
 }
 
 folder .folder.recents .folderImage {
-  background: url("../../images/recents.svg") no-repeat left center;
+  background: url("../../img/recents.svg") no-repeat left center;
 }
 
 folder .folder.home .folderName, folder .folder.public .folderName {
@@ -114,12 +114,12 @@ folder .folder.home .folderName, folder .folder.public .folderName {
 }
 
 folder .folder.home .folderImage {
-  background: url("../../images/home.svg") no-repeat left center;
+  background: url("../../img/home.svg") no-repeat left center;
 
 }
 
 folder .folder.public .folderImage {
-  background: url("../../images/public.svg") no-repeat left center;
+  background: url("../../img/public.svg") no-repeat left center;
 }
 
 folder .folder.selected .folderImage {
