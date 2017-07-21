@@ -26,7 +26,7 @@ folder .folder {
   padding: 5px 0;
   cursor: pointer;
   white-space: nowrap;
-  width: 100%;
+  width: auto;
 }
 
 folder .folder:hover {

@@ -10,7 +10,7 @@
 <div class="folder recents empty"
      ng-class="{selected: vm.showRecents}"
      ng-click="vm.selectFolder(null)"
-     ng-style="{'width': 'calc(100% + ' + (vm.maxDepth * 27) + 'px)'}">
+     ng-style="{width: vm.scrollWidth === 0 ? 'auto' : vm.scrollWidth + 'px'}">
   <div class="folderArrowWrapper">
     <div class="folderArrow"></div>
   </div>
@@ -22,7 +22,8 @@
      ng-click="vm.selectFolder(folder)"
      ng-dblclick="vm.selectAndOpenFolder(folder)"
      ng-repeat="folder in vm.folders | orderBy:folder:false:vm.compareFolders"
-     ng-style="{paddingLeft: folder.indent, 'width': folder.width}"
+     ng-style="{paddingLeft: folder.indent + 'px',
+                width: vm.scrollWidth === 0 ? 'auto' : (vm.scrollWidth - folder.indent) + 'px'}"
      ng-show="folder.visible"
      ng-class="{selected: folder === vm.selectedFolder,
                 empty: folder.hasChildren === false,
