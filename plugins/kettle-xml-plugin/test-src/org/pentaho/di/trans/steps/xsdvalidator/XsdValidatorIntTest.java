@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -78,9 +78,12 @@ public class XsdValidatorIntTest {
   @Test
   public void testVfsInputFiles() throws Exception {
     testVfsFileTypes( getDataRamFile().getURL().toString(), getSchemaRamFile().getURL().toString(), true );
-    testVfsFileTypes( getDataRamFile().getURL().toString(), getSchemaFileUrl(), true );
-    testVfsFileTypes( getDataFileUrl(), getSchemaRamFile().getURL().toString(), true );
-    testVfsFileTypes( getDataFileUrl(), getSchemaFileUrl(), true );
+    testVfsFileTypes( getDataRamFile().getURL().toString(), getSchemaFileUrl( TEST_FILES_DIR + "schema.xsd" ), true );
+    testVfsFileTypes( getDataFileUrl( TEST_FILES_DIR + "data.xml" ), getSchemaRamFile().getURL().toString(), true );
+    testVfsFileTypes( getDataFileUrl( TEST_FILES_DIR + "data.xml" ), getSchemaFileUrl( TEST_FILES_DIR + "schema.xsd" ), true );
+    testVfsFileTypes( getDataFileUrl( TEST_FILES_DIR + "xsd_issue/bad.xml" ),
+      getSchemaFileUrl( TEST_FILES_DIR + "xsd_issue/cbc-xml-schema-v1.0/CbcXML_v1.0.xsd" ), true );
+
   }
 
   private FileObject getSchemaRamFile() throws Exception {
@@ -100,7 +103,7 @@ public class XsdValidatorIntTest {
   }
 
   private String getFileUrl( String filename ) throws Exception {
-    File file = new File( TEST_FILES_DIR + filename );
+    File file = new File( filename );
     return file.toURI().toURL().toExternalForm();
   }
 
@@ -109,19 +112,19 @@ public class XsdValidatorIntTest {
     return new FileInputStream( file );
   }
 
-  private String getSchemaFileUrl() throws Exception {
-    return getFileUrl( "schema.xsd" );
+  private String getSchemaFileUrl( String filename ) throws Exception {
+    return getFileUrl( filename );
   }
 
-  private String getDataFileUrl() throws Exception {
-    return getFileUrl( "data.xml" );
+  private String getDataFileUrl( String filename ) throws Exception {
+    return getFileUrl( filename );
   }
 
   private FileObject loadRamFile( String filename ) throws Exception {
     String targetUrl = RAMDIR + "/" + filename;
-    try (InputStream source = getFileInputStream( filename )) {
+    try ( InputStream source = getFileInputStream( filename ) ) {
       FileObject fileObject = KettleVFS.getFileObject( targetUrl );
-      try (OutputStream targetStream = fileObject.getContent().getOutputStream()) {
+      try ( OutputStream targetStream = fileObject.getContent().getOutputStream() ) {
         IOUtils.copy( source, targetStream );
       }
       return fileObject;
@@ -147,6 +150,7 @@ public class XsdValidatorIntTest {
     meta.setXMLStream( "DataFile" );
     meta.setXSDSource( meta.SPECIFY_FIELDNAME );
     meta.setXSDDefinedField( "SchemaFile" );
+    meta.setAddValidationMessage( true );
     TransMeta transMeta = TransTestFactory.generateTestTransformation( null, meta, stepName );
 
     List<RowMetaAndData> result = null;
