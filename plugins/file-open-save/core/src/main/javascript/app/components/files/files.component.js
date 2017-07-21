@@ -51,7 +51,7 @@ define([
     controller: filesController
   };
 
-  filesController.$inject = [dataService.name];
+  filesController.$inject = [dataService.name, "$timeout"];
 
   /**
    * The Files Controller.
@@ -60,7 +60,7 @@ define([
    *
    * @param {Object} dt - Angular service that contains helper functions for the files component controller
    */
-  function filesController(dt) {
+  function filesController(dt, $timeout) {
     var vm = this;
     vm.$onInit = onInit;
     vm.$onChanges = onChanges;
@@ -96,8 +96,10 @@ define([
      */
     function onChanges(changes) {
       if (changes.folder) {
-        vm.selectedFile = null;
-        _setSort(0, false, 'name');
+        $timeout(function() {
+          vm.selectedFile = null;
+          _setSort(0, false, 'name');
+        }, 200);
       }
     }
 
@@ -118,8 +120,10 @@ define([
      * @param {Object} file - file object.
      */
     function selectFile(file) {
-      vm.selectedFile = file;
-      vm.onSelect({selectedFile: file});
+      if (vm.selectedFile !== file) {
+        vm.selectedFile = file;
+        vm.onSelect({selectedFile: file});
+      }
     }
 
     /**

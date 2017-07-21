@@ -81,6 +81,8 @@ define([
     vm.getOffsetTop = getOffsetTop;
     vm.getOffsetLeft = getOffsetLeft;
     vm.recentsHasScrollBar = recentsHasScrollBar;
+    vm.addDisabled = addDisabled;
+    vm.deleteDisabled = deleteDisabled;
     vm.selectedFolder = "";
     vm.fileToSave = "";
     vm.searchString = "";
@@ -476,6 +478,20 @@ define([
       if(vm.recentSearches.length !== 0) {
         vm.isInSearch = true
       }
+    }
+
+    function addDisabled() {
+      if (vm.folder && vm.folder.path === 'Recents') {
+        return true;
+      }
+      return false;
+    }
+
+    function deleteDisabled() {
+      if (vm.file === null || (vm.folder && vm.folder.path === 'Recents')) {
+        return true;
+      }
+      return false;
     }
 
     function focusSearchBox() {

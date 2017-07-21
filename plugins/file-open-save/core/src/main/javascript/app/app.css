@@ -179,22 +179,36 @@ file-open-save-app .addDelete {
   float: right;
 }
 
+file-open-save-app .addDelete button {
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
 file-open-save-app .save .addDelete {
   display: inline;
 }
 
 file-open-save-app .addFolder {
-  background: url("./img/add_folder.svg") no-repeat left center;
+  background: url("./img/add_folder.svg") no-repeat center center;
   height: 19px;
   width: 23px;
   cursor: pointer;
 }
 
 file-open-save-app .deleteFolder {
-  background: url("./img/delete_folder_file.svg") no-repeat left center;
+  background: url("./img/delete_folder_file.svg") no-repeat center center;
   height: 18px;
   width: 14px;
   cursor: pointer;
+}
+
+file-open-save-app .addFolder[disabled],
+file-open-save-app .deleteFolder[disabled],
+file-open-save-app .addFolder[disabled]:hover,
+file-open-save-app .deleteFolder[disabled]:hover
+{
+  background-position: left center;
 }
 
 file-open-save-app .addFolder:hover,

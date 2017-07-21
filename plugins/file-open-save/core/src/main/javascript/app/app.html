@@ -40,8 +40,8 @@
                     on-select="vm.selectFolderByPath(selectedPath)"></breadcrumb>
       </div>
       <div class="addDelete">
-        <div class="addFolder" ng-click="vm.addFolder()" title="{{::vm.addFolderText}}"></div>
-        <div class="deleteFolder" ng-click="vm.remove()" title="{{::vm.removeText}}"></div>
+        <button class="addFolder" ng-click="vm.addFolder()" title="{{::vm.addFolderText}}" ng-disabled="vm.addDisabled()"></button>
+        <button class="deleteFolder" ng-click="vm.remove()" title="{{::vm.removeText}}" ng-disabled="vm.deleteDisabled()"></button>
       </div>
     </div>
   </div>
