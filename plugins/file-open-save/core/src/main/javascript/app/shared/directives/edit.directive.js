@@ -77,6 +77,8 @@ define([
           if (!element.hasClass('editing')) {
             return;
           }
+          element.removeClass('editing');
+          inputElement.blur();
           if (scope.updated === "") {
             scope.updated = scope.value;
           }
@@ -85,7 +87,6 @@ define([
               scope.updated = scope.value;
             }});
           }
-          element.removeClass('editing');
         }
       }
     }
