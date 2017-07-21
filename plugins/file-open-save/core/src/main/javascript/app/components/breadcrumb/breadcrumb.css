@@ -69,7 +69,7 @@ breadcrumb .breadcrumbFolder.extra .breadcrumbExtraItem:hover {
 }
 
 breadcrumb .breadcrumbNext {
-  background: url("../../images/chevron_right_tree.svg") no-repeat left center;
+  background: url("../../img/chevron_right_tree.svg") no-repeat left center;
   width: 7px;
   height: 19px;
   margin-left: 10px;

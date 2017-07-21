@@ -176,15 +176,15 @@ files td.editing .fileTypeIcon {
 }
 
 files tr .fileTypeIcon.file-trans {
-  background: url("../../images/trans_small.svg") no-repeat left center;
+  background: url("../../img/trans_small.svg") no-repeat left center;
 }
 
 files tr .fileTypeIcon.file-job {
-  background: url("../../images/job_small.svg") no-repeat left center;
+  background: url("../../img/job_small.svg") no-repeat left center;
 }
 
 files tr .fileTypeIcon.file-folder {
-  background: url("../../images/folder.svg") no-repeat left center;
+  background: url("../../img/folder.svg") no-repeat left center;
 }
 
 files tr.selected .fileTypeIcon {
@@ -243,18 +243,18 @@ files .sortWrapper {
 }
 
 files .sortWrapper .sort {
-  background: url("../../images/sort_none.svg") center no-repeat;
+  background: url("../../img/sort_none.svg") center no-repeat;
   height: 17px;
   width: 10px;
   visibility: hidden;
 }
 
 files .sortWrapper .sort.sortUp {
-  background-image: url("../../images/sort_up.svg");
+  background-image: url("../../img/sort_up.svg");
   visibility: visible;
 }
 
 files .sortWrapper .sort.sortDown {
-  background-image: url("../../images/sort_down.svg");
+  background-image: url("../../img/sort_down.svg");
   visibility: visible;
 }

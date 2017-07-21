@@ -33,7 +33,7 @@ define([
   "./components/error/error.component",
   "./components/breadcrumb/breadcrumb.component",
   "./components/files/files.component",
-  "./components/files/edit.directive",
+  "./shared/directives/edit.directive",
   "./components/breadcrumb/breadcrumb.directive",
   "./services/data.service"
 ], function(angular, appComponent, cardComponent, folderComponent, errorComponent,

@@ -83,7 +83,7 @@ file-open-save-app .headerSearch {
 }
 
 file-open-save-app .headerSearchLeft {
-  background: url("./images/search_gray.png") no-repeat left 8px center;
+  background: url("./img/search_gray.png") no-repeat left 8px center;
   width: 30px;
   height: 100%;
   border: none;
@@ -92,11 +92,11 @@ file-open-save-app .headerSearchLeft {
 }
 
 file-open-save-app .headerSearchLeft.blueState {
-  background: url("./images/search_blue.png") no-repeat left 7px center;
+  background: url("./img/search_blue.png") no-repeat left 7px center;
 }
 
 file-open-save-app .headerSearchRight {
-  background: url("./images/clear_gray.png") no-repeat center center;
+  background: url("./img/clear_gray.png") no-repeat center center;
   width: 28px;
   height: 100%;
   border: none;
@@ -113,7 +113,7 @@ file-open-save-app .headerSearchRightInvisible {
 }
 
 file-open-save-app .headerSearchRight:hover {
-  background: url("./images/clear_blue.png") no-repeat center center;
+  background: url("./img/clear_blue.png") no-repeat center center;
 }
 
 file-open-save-app input.searchBox,
@@ -184,14 +184,14 @@ file-open-save-app .save .addDelete {
 }
 
 file-open-save-app .addFolder {
-  background: url("./images/add_folder.svg") no-repeat left center;
+  background: url("./img/add_folder.svg") no-repeat left center;
   height: 19px;
   width: 23px;
   cursor: pointer;
 }
 
 file-open-save-app .deleteFolder {
-  background: url("./images/delete_folder_file.svg") no-repeat left center;
+  background: url("./img/delete_folder_file.svg") no-repeat left center;
   height: 18px;
   width: 14px;
   cursor: pointer;
