@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -28,6 +28,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.pentaho.di.core.Const;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.repository.ObjectId;
@@ -47,37 +48,37 @@ public class JsonInputMetaTest {
   public static final String DATA = "data";
   public static final String NAME = "name";
 
-  private String TEST_XML = "    <include>Y</include>\n"
-    + "    <include_field>filename</include_field>\n"
-    + "    <rownum>N</rownum>\n"
-    + "    <addresultfile>N</addresultfile>\n"
-    + "    <readurl>Y</readurl>\n"
-    + "    <removeSourceField>Y</removeSourceField>\n"
-    + "    <IsIgnoreEmptyFile>N</IsIgnoreEmptyFile>\n"
-    + "    <doNotFailIfNoFile>N</doNotFailIfNoFile>\n"
-    + "    <ignoreMissingPath>N</ignoreMissingPath>\n"
-    + "    <rownum_field/>\n"
-    + "    <file>\n"
-    + "      <name>file.json</name>\n"
-    + "      <filemask/>\n"
-    + "      <exclude_filemask/>\n"
-    + "      <file_required>N</file_required>\n"
-    + "      <include_subfolders>N</include_subfolders>\n"
-    + "    </file>\n"
-    + "    <fields>\n"
-    + "null    </fields>\n"
-    + "    <limit>0</limit>\n"
-    + "    <IsInFields>N</IsInFields>\n"
-    + "    <IsAFile>N</IsAFile>\n"
-    + "    <valueField/>\n"
-    + "    <shortFileFieldName/>\n"
-    + "    <pathFieldName/>\n"
-    + "    <hiddenFieldName/>\n"
-    + "    <lastModificationTimeFieldName/>\n"
-    + "    <uriNameFieldName/>\n"
-    + "    <rootUriNameFieldName/>\n"
-    + "    <extensionFieldName/>\n"
-    + "    <sizeFieldName/>\n";
+  private String TEST_XML = "    <include>Y</include>" + Const.CR
+    + "    <include_field>filename</include_field>" + Const.CR
+    + "    <rownum>N</rownum>" + Const.CR
+    + "    <addresultfile>N</addresultfile>" + Const.CR
+    + "    <readurl>Y</readurl>" + Const.CR
+    + "    <removeSourceField>Y</removeSourceField>" + Const.CR
+    + "    <IsIgnoreEmptyFile>N</IsIgnoreEmptyFile>" + Const.CR
+    + "    <doNotFailIfNoFile>N</doNotFailIfNoFile>" + Const.CR
+    + "    <ignoreMissingPath>N</ignoreMissingPath>" + Const.CR
+    + "    <rownum_field/>" + Const.CR
+    + "    <file>" + Const.CR
+    + "      <name>file.json</name>" + Const.CR
+    + "      <filemask/>" + Const.CR
+    + "      <exclude_filemask/>" + Const.CR
+    + "      <file_required>N</file_required>" + Const.CR
+    + "      <include_subfolders>N</include_subfolders>" + Const.CR
+    + "    </file>" + Const.CR
+    + "    <fields>" + Const.CR
+    + "null    </fields>" + Const.CR
+    + "    <limit>0</limit>" + Const.CR
+    + "    <IsInFields>N</IsInFields>" + Const.CR
+    + "    <IsAFile>N</IsAFile>" + Const.CR
+    + "    <valueField/>" + Const.CR
+    + "    <shortFileFieldName/>" + Const.CR
+    + "    <pathFieldName/>" + Const.CR
+    + "    <hiddenFieldName/>" + Const.CR
+    + "    <lastModificationTimeFieldName/>" + Const.CR
+    + "    <uriNameFieldName/>" + Const.CR
+    + "    <rootUriNameFieldName/>" + Const.CR
+    + "    <extensionFieldName/>" + Const.CR
+    + "    <sizeFieldName/>" + Const.CR;
 
   JsonInputMeta jsonInputMeta;
 
