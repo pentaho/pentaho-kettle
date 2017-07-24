@@ -185,6 +185,10 @@ file-open-save-app .addDelete button {
   border: 0;
 }
 
+file-open-save-app .addDelete button:disabled {
+  cursor: default;
+}
+
 file-open-save-app .save .addDelete {
   display: inline;
 }
