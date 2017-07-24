@@ -109,6 +109,14 @@ import org.pentaho.di.ui.core.gui.GUIResource;
  * @since 27-05-2003
  */
 public class TableView extends Composite {
+
+  public interface TableViewModifyListener {
+    void moveRow( int position1, int position2 );
+    void insertRow( int rowIndex );
+    void cellFocusLost( int rowIndex );
+    void delete( int[] items );
+  }
+
   private static Class<?> PKG = TableView.class; // for i18n purposes, needed by Translator2!!
 
   private Composite parent;
@@ -182,6 +190,28 @@ public class TableView extends Composite {
   private boolean showingConversionErrorsInline;
   private boolean isTextButton = false;
   private boolean addIndexColumn = true;
+
+  private TableViewModifyListener tableViewModifyListener = new TableViewModifyListener() {
+    @Override
+    public void moveRow( int position1, int position2 ) {
+
+    }
+
+    @Override
+    public void insertRow( int rowIndex ) {
+
+    }
+
+    @Override
+    public void cellFocusLost( int rowIndex ) {
+
+    }
+
+    @Override
+    public void delete( int[] items ) {
+
+    }
+  };
 
   public TableView( VariableSpace space, Composite parent, int style, ColumnInfo[] columnInfo, int nrRows,
                     ModifyListener lsm, PropsUI pr ) {
@@ -579,6 +609,7 @@ public class TableView extends Composite {
         } else {
           worker.run();
         }
+        tableViewModifyListener.cellFocusLost( rownr );
       }
     };
     lsFocusCombo = new FocusAdapter() {
@@ -604,6 +635,7 @@ public class TableView extends Composite {
           }
         }
         combo.dispose();
+        tableViewModifyListener.cellFocusLost( rownr );
       }
     };
     lsModCombo = new ModifyListener() {
@@ -1536,18 +1568,7 @@ public class TableView extends Composite {
     }
     int rownr = table.indexOf( row );
 
-    TableItem item = new TableItem( table, SWT.NONE, rownr );
-    item.setText( 1, "" );
-
-    // Add undo information
-    TransAction ta = new TransAction();
-    String[] str = getItemText( item );
-    ta.setNew( new String[][]{ str }, new int[]{ rownr } );
-    addUndo( ta );
-
-    setRowNums();
-
-    edit( rownr, 1 );
+    insertRow( rownr );
   }
 
   private void insertRowAfter() {
@@ -1561,18 +1582,23 @@ public class TableView extends Composite {
     }
     int rownr = table.indexOf( row );
 
-    TableItem item = new TableItem( table, SWT.NONE, rownr + 1 );
+    insertRow( rownr + 1 );
+  }
+
+  private void insertRow( int ronr ) {
+    TableItem item = new TableItem( table, SWT.NONE, ronr );
     item.setText( 1, "" );
 
     // Add undo information
     TransAction ta = new TransAction();
     String[] str = getItemText( item );
-    ta.setNew( new String[][]{ str }, new int[]{ rownr + 1 } );
+    ta.setNew( new String[][]{ str }, new int[]{ronr} );
     addUndo( ta );
 
     setRowNums();
 
-    edit( rownr + 1, 1 );
+    edit( ronr, 1 );
+    tableViewModifyListener.insertRow( ronr );
   }
 
   public void clearAll() {
@@ -1672,6 +1698,7 @@ public class TableView extends Composite {
       rowfrom.setText( i + 1, strto[i] );
       rowto.setText( i + 1, strfrom[i] );
     }
+    tableViewModifyListener.moveRow( from, to );
 
     setModified();
   }
@@ -1905,7 +1932,7 @@ public class TableView extends Composite {
       table.setSelection( rowbefore );
       activeTableRow = rowbefore;
     }
-
+    tableViewModifyListener.delete( items );
     setRowNums();
 
     setModified();
@@ -2517,6 +2544,10 @@ public class TableView extends Composite {
   }
 
   private List<Integer> nonEmptyIndexes;
+
+  public List<Integer> getNonEmptyIndexes() {
+    return nonEmptyIndexes;
+  }
 
   /**
    * Count non-empty rows in the table... IMPORTANT: always call this method before calling getNonEmpty(int selnr): for
@@ -3170,6 +3201,10 @@ public class TableView extends Composite {
 
   public int getActiveTableColumn() {
     return activeTableColumn;
+  }
+
+  public void setTableViewModifyListener( TableViewModifyListener tableViewModifyListener ) {
+    this.tableViewModifyListener = tableViewModifyListener;
   }
 
 }
