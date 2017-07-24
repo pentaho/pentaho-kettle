@@ -324,10 +324,10 @@ define([
      **/
     function compareFiles(first, second) {
       var obj1 = first.value, obj2 = second.value;
-      // folders always first, even if reversed
+
       var comp = foldersFirst(obj1.type, obj2.type);
       if(comp != 0) {
-        return vm.sortReverse ? -comp : comp;
+        return comp;
       }
       // field compare
       switch(vm.sortField) {
@@ -337,7 +337,11 @@ define([
         default:
           var val1 = obj1[vm.sortField], val2 = obj2[vm.sortField];
           comp = (val1 < val2) ? -1 : (val1 > val2) ? 1 : 0;
+          if ( comp == 0 ) {
+            comp = utils.naturalCompare(obj1.name, obj2.name);
+          }
       }
+
       if ( comp != 0 ){
         return comp;
       }
