@@ -44,7 +44,7 @@ define([
     controller: appController
   };
 
-  appController.$inject = [dataService.name, "$location", "$scope"];
+  appController.$inject = [dataService.name, "$location", "$scope", "$timeout"];
 
   /**
    * The App Controller.
@@ -54,7 +54,7 @@ define([
    * @param {Object} dt - Angular service that contains helper functions for the app component controller
    * @param {Function} $location - Angular service used for parsing the URL in browser address bar
    */
-  function appController(dt, $location, $scope) {
+  function appController(dt, $location, $scope, $timeout) {
     var vm = this;
     vm.$onInit = onInit;
     vm.selectFolder = selectFolder;
@@ -83,11 +83,15 @@ define([
     vm.recentsHasScrollBar = recentsHasScrollBar;
     vm.addDisabled = addDisabled;
     vm.deleteDisabled = deleteDisabled;
+    vm.onKeyUp = onKeyUp;
+    vm.onEditStart = onEditStart;
+    vm.onEditComplete = onEditComplete;
     vm.selectedFolder = "";
     vm.fileToSave = "";
     vm.searchString = "";
     vm.showError = false;
     vm.errorType = 0;
+    vm.editing = false;
 
     /**
      * The $onInit hook of components lifecycle which is called on each controller
@@ -675,6 +679,36 @@ define([
         }
       }
       return false;
+    }
+
+    /**
+     * Gets the key up event from the app
+     *
+     * @param event
+     */
+    function onKeyUp(event) {
+      if (event.keyCode === 13) {
+        if (vm.wrapperClass === "open") {
+          if (vm.file !== null && !vm.editing) {
+            selectFile(vm.file);
+          }
+        } else {
+          if (!vm.editing) {
+            _save(false);
+          }
+        }
+        $scope.$apply();
+      }
+    }
+
+    function onEditStart() {
+      vm.editing = true;
+    }
+
+    function onEditComplete() {
+      $timeout(function() {
+        vm.editing = false;
+      }, 200);
     }
 
   }

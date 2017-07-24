@@ -44,7 +44,9 @@ define([
       onFileDuplicate: '&',
       onFolderDuplicate: '&',
       onError: '&',
-      onRename: '&'
+      onRename: '&',
+      onEditStart: '&',
+      onEditComplete: '&'
     },
     template: filesTemplate,
     controllerAs: "vm",
@@ -169,11 +171,14 @@ define([
      * Rename the selected file.
      */
     function rename(file, current, previous, errorCallback) {
-      if (file.new) {
-        _createFolder(file, current, previous, errorCallback);
-      } else {
-        _renameFile(file, current, previous, errorCallback);
+      if (current) {
+        if (file.new) {
+          _createFolder(file, current, previous, errorCallback);
+        } else {
+          _renameFile(file, current, previous, errorCallback);
+        }
       }
+      vm.onEditComplete();
     }
 
     /**
@@ -311,6 +316,7 @@ define([
 
     function onStart(file) {
       selectFile(file);
+      vm.onEditStart();
     }
 
     /**
