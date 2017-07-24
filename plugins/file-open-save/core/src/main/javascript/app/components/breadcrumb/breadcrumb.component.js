@@ -201,7 +201,7 @@ define([
       var context = canvas.getContext("2d");
       context.font = _font;
       var metrics = context.measureText(text);
-      return Math.ceil(metrics.width);
+      return (Math.ceil(metrics.width) + 1);
     }
   }
 

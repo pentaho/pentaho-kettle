@@ -74,6 +74,7 @@ define([
      */
     function onInit() {
       vm.scrollWidth = 0;
+      vm.clientWidth = document.getElementById("directoryTreeArea").clientWidth;
     }
 
     /**
@@ -207,7 +208,17 @@ define([
     function _setScrollWidth() {
       vm.scrollWidth = document.getElementById("directoryTreeArea").clientWidth;
       $timeout(function() {
-        vm.scrollWidth = document.getElementById("directoryTreeArea").scrollWidth;
+        var tmpClientWidth = document.getElementById("directoryTreeArea").clientWidth;
+        var tmpScrollWidth = document.getElementById("directoryTreeArea").scrollWidth;
+        if (vm.clientWidth === tmpClientWidth + 17) {// has scrollbar
+          if (tmpScrollWidth === vm.clientWidth) {
+            vm.scrollWidth = tmpClientWidth;
+          } else {
+            vm.scrollWidth = tmpScrollWidth;
+          }
+        } else {
+          vm.scrollWidth = tmpScrollWidth;
+        }
       }, 0);
     }
 
