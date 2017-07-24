@@ -4,7 +4,7 @@
        error-folder="vm.file"
        on-error-confirm="vm.confirmError()"
        on-error-cancel="vm.cancelError()"></error>
-<div class="dialogWrapper" ng-class="vm.wrapperClass">
+<div class="dialogWrapper" ng-class="vm.wrapperClass" key on-key-up="vm.onKeyUp(event)">
   <div class="header">
     <div class="headerTop">
       <div class="headerTitle headerText">
@@ -75,7 +75,9 @@
              on-file-duplicate="vm.duplicateError('file')"
              on-folder-duplicate="vm.duplicateError('folder')"
              on-error="vm.renameError()"
-             on-rename="vm.updateDirectories(oldPath, newPath, newName)"></files>
+             on-rename="vm.updateDirectories(oldPath, newPath, newName)"
+             on-edit-start="vm.onEditStart()"
+             on-edit-complete="vm.onEditComplete()"></files>
     </div>
   </div>
 
