@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -121,8 +121,8 @@ public class SelectValues extends BaseStep implements StepInterface {
         // Sort the fields
         // Add them after the specified fields...
         //
-        List<String> extra = new ArrayList<String>();
-        ArrayList<Integer> unspecifiedKeyNrs = new ArrayList<Integer>();
+        List<String> extra = new ArrayList<>();
+        ArrayList<Integer> unspecifiedKeyNrs = new ArrayList<>();
         for ( int i = 0; i < rowMeta.size(); i++ ) {
           String fieldName = rowMeta.getValueMeta( i ).getName();
           if ( Const.indexOfString( fieldName, meta.getSelectName() ) < 0 ) {
@@ -241,7 +241,7 @@ public class SelectValues extends BaseStep implements StepInterface {
    * <p/>
    *
    * @param row The row to manipulate
-   * @return true if everything went well, false if we need to stop because of an error!
+   * @return the altered RowData array
    * @throws KettleValueException
    */
   @VisibleForTesting
@@ -365,7 +365,7 @@ public class SelectValues extends BaseStep implements StepInterface {
       data.deselectRowMeta = data.selectRowMeta.clone();
       meta.getDeleteFields( data.deselectRowMeta );
       data.metadataRowMeta = data.deselectRowMeta.clone();
-      meta.getMetadataFields( data.metadataRowMeta, getStepname() );
+      meta.getMetadataFields( data.metadataRowMeta, getStepname(), this );
     }
 
     try {
