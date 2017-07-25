@@ -22,25 +22,34 @@
 package org.pentaho.di.www;
 
 
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.mockito.stubbing.Answer;
+import org.pentaho.di.core.database.Database;
+import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.exception.KettleStepException;
+import org.pentaho.di.core.logging.LoggingObjectInterface;
+import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.StepMetaDataCombi;
 import org.pentaho.di.trans.step.StepMetaInterface;
+import org.pentaho.di.trans.step.StepMetaInterfaceExtended;
+import org.pentaho.di.trans.steps.insertupdate.InsertUpdate;
+import org.pentaho.di.trans.steps.insertupdate.InsertUpdateData;
+import org.pentaho.di.trans.steps.insertupdate.InsertUpdateMeta;
+import org.pentaho.di.trans.steps.mock.StepMockHelper;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
-import org.mockito.Mockito;
-import org.junit.Assert;
-import org.pentaho.di.trans.step.StepMetaInterfaceExtended;
 
 
 @RunWith( MockitoJUnitRunner.class )
@@ -104,6 +113,32 @@ public class RunTransServletTest {
     } ).when( trans ).waitUntilFinished();
     runTransServlet.finishProcessing( trans, out );
     Assert.assertTrue( outData.toString().isEmpty() );
+  }
+
+  @Test
+  public void testErrorProcessRow() throws KettleException {
+    StepMockHelper<InsertUpdateMeta, InsertUpdateData> mockHelper =
+            new StepMockHelper<>( "insertUpdate", InsertUpdateMeta.class, InsertUpdateData.class );
+    Mockito.when( mockHelper.logChannelInterfaceFactory.create( Mockito.any(), Mockito.any( LoggingObjectInterface.class ) ) )
+            .thenReturn( mockHelper.logChannelInterface );
+    Mockito.when( mockHelper.stepMeta.getStepMetaInterface() ).thenReturn( new InsertUpdateMeta() );
+
+    InsertUpdate insertUpdateStep =
+            new InsertUpdate( mockHelper.stepMeta, mockHelper.stepDataInterface, 0, mockHelper.transMeta, mockHelper.trans );
+    insertUpdateStep = Mockito.spy( insertUpdateStep );
+
+    Mockito.doReturn( new Object[] {} ).when( insertUpdateStep ).getRow();
+    insertUpdateStep.first = false;
+    mockHelper.processRowsStepDataInterface.lookupParameterRowMeta = Mockito.mock( RowMetaInterface.class );
+    mockHelper.processRowsStepDataInterface.keynrs = new int[] {};
+    mockHelper.processRowsStepDataInterface.db = Mockito.mock( Database.class );
+    mockHelper.processRowsStepDataInterface.valuenrs = new int[] {};
+    Mockito.doThrow( new KettleStepException( "Test exception" ) ).when( insertUpdateStep ).
+            putRow( (RowMetaInterface) Mockito.any(), (Object[]) Mockito.any() );
+
+    boolean result =
+            insertUpdateStep.processRow( mockHelper.processRowsStepMetaInterface, mockHelper.processRowsStepDataInterface );
+    Assert.assertFalse( result );
   }
 
 }

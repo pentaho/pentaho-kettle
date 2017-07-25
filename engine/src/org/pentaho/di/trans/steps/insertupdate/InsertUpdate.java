@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -310,7 +310,11 @@ public class InsertUpdate extends BaseStep implements StepInterface {
         sendToErrorRow = true;
         errorMessage = e.toString();
       } else {
-        throw new KettleStepException( BaseMessages.getString( PKG, "InsertUpdate.Log.ErrorInStep" ), e );
+        logError( BaseMessages.getString( PKG, "InsertUpdate.Log.ErrorInStep" ), e );
+        setErrors( 1 );
+        stopAll();
+        setOutputDone(); // signal end to receiver(s)
+        return false;
       }
 
       if ( sendToErrorRow ) {
