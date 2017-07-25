@@ -84,14 +84,11 @@ define([
     vm.addDisabled = addDisabled;
     vm.deleteDisabled = deleteDisabled;
     vm.onKeyUp = onKeyUp;
-    vm.onEditStart = onEditStart;
-    vm.onEditComplete = onEditComplete;
     vm.selectedFolder = "";
     vm.fileToSave = "";
     vm.searchString = "";
     vm.showError = false;
     vm.errorType = 0;
-    vm.editing = false;
 
     /**
      * The $onInit hook of components lifecycle which is called on each controller
@@ -689,26 +686,14 @@ define([
     function onKeyUp(event) {
       if (event.keyCode === 13) {
         if (vm.wrapperClass === "open") {
-          if (vm.file !== null && !vm.editing) {
+          if (vm.file !== null) {
             selectFile(vm.file);
           }
         } else {
-          if (!vm.editing) {
-            _save(false);
-          }
+          _save(false);
         }
         $scope.$apply();
       }
-    }
-
-    function onEditStart() {
-      vm.editing = true;
-    }
-
-    function onEditComplete() {
-      $timeout(function() {
-        vm.editing = false;
-      }, 200);
     }
 
   }
