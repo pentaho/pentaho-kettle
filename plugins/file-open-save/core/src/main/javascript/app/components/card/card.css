@@ -41,10 +41,6 @@ card .card {
   padding: 20px;
   outline: 0 none;
   float: left;
-  -webkit-user-select: none; /* webkit (safari, chrome) browsers */
-  -moz-user-select: none; /* mozilla browsers */
-  -ms-user-select: none; /* IE10+ */
-  user-select: none; /* Fallback */
 }
 
 card .card:hover {
