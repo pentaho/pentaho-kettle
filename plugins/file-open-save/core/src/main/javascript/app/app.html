@@ -12,7 +12,9 @@
       </div>
       <div id="headerSearchId" class="headerSearch" ng-class="{'focused': vm.isInSearch === true || searchBoxHasFocus === true }">
         <div class="headerSearchLeft" ng-click="vm.focusSearchBox()" ng-class="{'blueState': vm.searchString !== '' || vm.isInSearch === true || searchBoxHasFocus === true }" ></div>
-        <input id="searchBoxId" type="text" class="searchBox" ng-class="{'home':vm.selectedFolder === 'home' && vm.folder.parent === '/','public':vm.selectedFolder === 'public' && vm.folder.parent === '/'}"
+        <input id="searchBoxId" type="text" class="searchBox"
+               ng-class="{caps: (vm.selectedFolder === 'home' && vm.folder.parent === '/' && vm.searchString === '') ||
+                                (vm.selectedFolder === 'public' && vm.folder.parent === '/' && vm.searchString === '')}"
                  placeholder="{{::vm.searchPlaceholder}} {{vm.selectedFolder}}"
                  ng-blur="vm.storeRecentSearch();searchBoxHasFocus=false"
                  ng-focus="vm.displayRecentSearches();searchBoxHasFocus=true"
@@ -32,7 +34,9 @@
 
     <div class="headerBottom">
       <div ng-show="vm.searchString" class="breadcrumbSection">
-        Search results in "{{vm.folder.name}}"
+        Search results in "{{((vm.selectedFolder === 'home' && vm.folder.parent === '/') ||
+                             (vm.selectedFolder === 'public' && vm.folder.parent === '/')) ?
+                             vm.capsFirstLetter(vm.folder.name) : vm.folder.name}}"
       </div>
       <div ng-hide="vm.searchString" class="breadcrumbSection">
         <breadcrumb path="vm.folder.path"

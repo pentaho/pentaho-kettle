@@ -84,6 +84,7 @@ define([
     vm.addDisabled = addDisabled;
     vm.deleteDisabled = deleteDisabled;
     vm.onKeyUp = onKeyUp;
+    vm.capsFirstLetter = capsFirstLetter;
     vm.selectedFolder = "";
     vm.fileToSave = "";
     vm.searchString = "";
@@ -696,6 +697,14 @@ define([
       }
     }
 
+    /**
+    * Returns input with first letter capitalized
+    * @param {string} input - input string
+    * @return {string} - returns input with first letter capitalized
+    */
+    function capsFirstLetter(input) {
+      return input.charAt(0).toUpperCase() + input.slice(1);
+    }
   }
 
   return {
