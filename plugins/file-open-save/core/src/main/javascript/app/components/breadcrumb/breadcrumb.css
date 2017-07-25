@@ -37,6 +37,9 @@ breadcrumb .breadcrumbFolder {
   cursor: pointer;
   display: inline-block;
   vertical-align: bottom;
+}
+
+breadcrumb .breadcrumbFolders .breadcrumbFolder {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
