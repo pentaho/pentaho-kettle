@@ -586,7 +586,7 @@ define([
         folder.name = name;
         folder.visible = vm.folder.open;
         folder.depth = vm.folder.depth + 1;
-        folder.indent = (folder.depth * 27) + "px";
+        folder.indent = folder.depth * 27;
         folder.new = true;
         folder.autoEdit = true;
         folder.type = "folder";
