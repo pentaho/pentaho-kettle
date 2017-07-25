@@ -404,3 +404,7 @@ file-open-save-app .open .fileAreaMessageView {
   user-select: none; /* Non-prefixed version, currently
                                   supported by Chrome and Opera */
 }
+
+input[placeholder] { text-overflow: ellipsis; }
+::-moz-placeholder { text-overflow: ellipsis; }
+input:-moz-placeholder { text-overflow: ellipsis; }

@@ -78,13 +78,14 @@ define([
           });
         }
 
-        angular.element(inputElement).on('keydown blur', function(e) {
+        angular.element(inputElement).on('keyup blur', function(e) {
           if (e.keyCode === 13 || e.keyCode === 27 || e.type === "blur") {
             if (e.keyCode === 27) {
               scope.updated = "";
             }
             finish();
           }
+          e.stopPropagation();
         });
 
         function finish() {
