@@ -86,6 +86,7 @@ define([
     vm.onKeyUp = onKeyUp;
     vm.onEditStart = onEditStart;
     vm.onEditComplete = onEditComplete;
+    vm.capsFirstLetter = capsFirstLetter;
     vm.selectedFolder = "";
     vm.fileToSave = "";
     vm.searchString = "";
@@ -711,6 +712,14 @@ define([
       }, 200);
     }
 
+    /**
+     * Returns input with first letter capitalized
+     * @param {string} input - input string
+     * @return {string} - returns input with first letter capitalized
+     */
+    function capsFirstLetter(input) {
+      return input.charAt(0).toUpperCase() + input.slice(1);
+    }
   }
 
   return {

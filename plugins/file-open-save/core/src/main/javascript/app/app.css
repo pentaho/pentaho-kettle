@@ -126,7 +126,7 @@ file-open-save-app input.searchBox:focus {
   float: left;
 }
 
-file-open-save-app input.searchBox.home, file-open-save-app input.searchBox.public {
+file-open-save-app .caps {
   text-transform: capitalize;
 }
 
