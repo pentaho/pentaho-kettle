@@ -192,7 +192,7 @@ define([
      */
     function _createFolder(file, current, previous, errorCallback) {
       var newName = current;
-      if (_hasDuplicate(current, file.type)) {
+      if (_hasDuplicate(current, file)) {
         file.newName = current;
         errorCallback();
         _doDuplicateError(file);
@@ -223,7 +223,7 @@ define([
      * @private
      */
     function _renameFile(file, current, previous, errorCallback) {
-      if (_hasDuplicate(current, file.type)) {
+      if (_hasDuplicate(current, file)) {
         file.newName = current;
         errorCallback();
         _doDuplicateError(file);
@@ -267,11 +267,13 @@ define([
     /**
      * Checks for a duplicate name
      */
-    function _hasDuplicate(name, type) {
+    function _hasDuplicate(name, file) {
       for (var i = 0; i < vm.folder.children.length; i++) {
-        var file = vm.folder.children[i];
-        if (file.name.toLowerCase() === name.toLowerCase() && file.type === type) {
-          return true;
+        var check = vm.folder.children[i];
+        if (check !== file) {
+          if (check.name.toLowerCase() === name.toLowerCase() && check.type === file.type) {
+            return true;
+          }
         }
       }
       return false;
