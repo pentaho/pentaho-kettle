@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -128,4 +128,18 @@ public interface IUser {
    *          The name of the user maps to the login id.
    */
   public void setName( String name );
+
+  /**
+   * Check if the user is admin or not
+   *
+   * @return admin
+   */
+  public Boolean isAdmin();
+
+  /**
+   * Make the user admin or not
+   * @param admin
+   */
+  public void setAdmin( Boolean admin );
+
 }

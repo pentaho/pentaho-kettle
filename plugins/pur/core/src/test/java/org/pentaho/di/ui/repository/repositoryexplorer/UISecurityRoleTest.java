@@ -1,5 +1,5 @@
 /*!
- * Copyright 2010 - 2015 Pentaho Corporation.  All rights reserved.
+ * Copyright 2010 - 2017 Pentaho Corporation.  All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -63,10 +63,10 @@ public class UISecurityRoleTest implements java.io.Serializable {
     roles.add( devmgrRole );
     roles.add( isRole );
 
-    joeUser = new UserInfo( "joe", "password", "joe", "joe", true );
-    patUser = new UserInfo( "pat", "password", "pat", "pat", true );
-    suzyUser = new UserInfo( "suzy", "password", "suzy", "suzy", true );
-    tiffanyUser = new UserInfo( "tiffany", "password", "tiffany", "tiffany", true );
+    joeUser = new UserInfo( "joe", "password", "joe", "joe", true, null );
+    patUser = new UserInfo( "pat", "password", "pat", "pat", true, null );
+    suzyUser = new UserInfo( "suzy", "password", "suzy", "suzy", true, null );
+    tiffanyUser = new UserInfo( "tiffany", "password", "tiffany", "tiffany", true, null );
 
     adminRole.addUser( joeUser );
     adminRole.addUser( patUser );

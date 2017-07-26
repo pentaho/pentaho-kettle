@@ -270,7 +270,7 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
                 .getString( PKG, "PurRepositoryMetastore.NamespaceCreateException.Message", PentahoDefaults.NAMESPACE ),
             e );
       }
-      this.user = new EEUserInfo( username, password, username, "test user", true );
+      this.user = new EEUserInfo( username, password, username, "test user", true, null );
       this.jobDelegate = new JobDelegate( this, pur );
       this.transDelegate = new TransDelegate( this, pur );
       this.unifiedRepositoryLockService = new UnifiedRepositoryLockService( pur );
