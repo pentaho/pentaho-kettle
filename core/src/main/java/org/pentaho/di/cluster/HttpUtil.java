@@ -23,6 +23,7 @@
 package org.pentaho.di.cluster;
 
 import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.codec.binary.Base64OutputStream;
 import org.apache.commons.httpclient.Credentials;
 import org.apache.commons.httpclient.Header;
 import org.apache.commons.httpclient.HttpClient;
@@ -285,11 +286,11 @@ public class HttpUtil {
 
   public static String encodeBase64ZippedString( String in ) throws IOException {
     Charset charset = Charset.forName( Const.XML_ENCODING );
-    ByteArrayOutputStream baos = new ByteArrayOutputStream();
-    GZIPOutputStream gzos = new GZIPOutputStream( baos );
-    gzos.write( in.getBytes( charset ) );
-    gzos.close();
-
-    return new String( Base64.encodeBase64( baos.toByteArray() ) );
+    ByteArrayOutputStream baos = new ByteArrayOutputStream( 1024 );
+    try ( Base64OutputStream base64OutputStream = new Base64OutputStream( baos );
+          GZIPOutputStream gzos = new GZIPOutputStream( base64OutputStream ) ) {
+      gzos.write( in.getBytes( charset ) );
+    }
+    return baos.toString();
   }
 }

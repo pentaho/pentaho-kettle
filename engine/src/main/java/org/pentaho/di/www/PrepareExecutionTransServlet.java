@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -39,6 +39,7 @@ import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransConfiguration;
 import org.pentaho.di.trans.TransExecutionConfiguration;
+import org.pentaho.di.www.cache.TransJobStatusCache;
 
 
 public class PrepareExecutionTransServlet extends BaseHttpServlet implements CartePluginInterface {
@@ -46,6 +47,7 @@ public class PrepareExecutionTransServlet extends BaseHttpServlet implements Car
 
   private static final long serialVersionUID = 3634806745372015720L;
   public static final String CONTEXT_PATH = "/kettle/prepareExec";
+  private TransJobStatusCache cache = TransJobStatusCache.getInstance();
 
   public PrepareExecutionTransServlet() {
   }
@@ -213,6 +215,7 @@ public class PrepareExecutionTransServlet extends BaseHttpServlet implements Car
         trans.setPreviousResult( executionConfiguration.getPreviousResult() );
 
         try {
+          cache.remove( id );
           trans.prepareExecution( null );
 
           if ( useXML ) {
