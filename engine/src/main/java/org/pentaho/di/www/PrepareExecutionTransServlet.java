@@ -39,6 +39,7 @@ import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransConfiguration;
 import org.pentaho.di.trans.TransExecutionConfiguration;
+import org.pentaho.di.www.cache.CarteStatusCache;
 
 
 public class PrepareExecutionTransServlet extends BaseHttpServlet implements CartePluginInterface {
@@ -46,6 +47,7 @@ public class PrepareExecutionTransServlet extends BaseHttpServlet implements Car
 
   private static final long serialVersionUID = 3634806745372015720L;
   public static final String CONTEXT_PATH = "/kettle/prepareExec";
+  private CarteStatusCache cache = CarteStatusCache.getInstance();
 
   public PrepareExecutionTransServlet() {
   }
@@ -214,6 +216,7 @@ public class PrepareExecutionTransServlet extends BaseHttpServlet implements Car
 
         try {
           trans.prepareExecution( null );
+          cache.remove( trans.getLogChannelId() );
 
           if ( useXML ) {
             out.println( WebResult.OK.getXML() );
