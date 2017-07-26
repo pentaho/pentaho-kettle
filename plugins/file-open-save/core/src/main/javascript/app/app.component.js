@@ -84,7 +84,6 @@ define([
     vm.addDisabled = addDisabled;
     vm.deleteDisabled = deleteDisabled;
     vm.onKeyUp = onKeyUp;
-    vm.capsFirstLetter = capsFirstLetter;
     vm.selectedFolder = "";
     vm.fileToSave = "";
     vm.searchString = "";
@@ -219,7 +218,7 @@ define([
         if (folder) {
           vm.showRecents = false;
           vm.folder = folder;
-          vm.selectedFolder = folder.name;
+          vm.selectedFolder = _needsCaps() ? _capsFirstLetter(folder.name) : folder.name;
         } else {
           vm.showRecents = true;
           vm.folder = {name: "Recents", path: "Recents"};
@@ -701,9 +700,19 @@ define([
     * Returns input with first letter capitalized
     * @param {string} input - input string
     * @return {string} - returns input with first letter capitalized
+    * @private
     */
-    function capsFirstLetter(input) {
+    function _capsFirstLetter(input) {
       return input.charAt(0).toUpperCase() + input.slice(1);
+    }
+
+    /**
+     * Checks if the selected folder equals home or public with parent of root dir
+     * @return {boolean} - true if selected folder equals home or public with parent of root dir, false otherwise
+     * @private
+     */
+    function _needsCaps() {
+      return ((vm.selectedFolder === 'home' || vm.selectedFolder === 'public') && vm.folder.parent === '/');
     }
   }
 

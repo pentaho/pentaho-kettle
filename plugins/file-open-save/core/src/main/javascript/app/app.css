@@ -126,10 +126,6 @@ file-open-save-app input.searchBox:focus {
   float: left;
 }
 
-file-open-save-app .caps {
-  text-transform: capitalize;
-}
-
 /*HIDES THE X ON THE SEARCHBOX ON IE11*/
 file-open-save-app input.searchBox::-ms-clear {
   display: none;
