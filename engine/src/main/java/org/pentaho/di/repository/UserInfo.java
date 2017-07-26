@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -40,6 +40,7 @@ public class UserInfo implements IUser {
   private String username; // Long name
   private String description; // Description
   private boolean enabled; // Enabled: yes or no
+  private Boolean admin; // Admin: yes or no
 
   /**
    * copy constructor
@@ -53,6 +54,7 @@ public class UserInfo implements IUser {
     this.username = copyFrom.getUsername();
     this.description = copyFrom.getDescription();
     this.enabled = copyFrom.isEnabled();
+    this.admin = copyFrom.isAdmin();
   }
 
   public UserInfo( String login, String password, String username, String description, boolean enabled ) {
@@ -74,6 +76,7 @@ public class UserInfo implements IUser {
     this.username = null;
     this.description = null;
     this.enabled = true;
+    this.admin = null;
   }
 
   public void setLogin( String login ) {
@@ -165,5 +168,15 @@ public class UserInfo implements IUser {
    */
   public void setName( String name ) {
     this.login = name;
+  }
+
+  @Override
+  public Boolean isAdmin() {
+    return admin;
+  }
+
+  @Override
+  public void setAdmin( Boolean admin ) {
+    this.admin = admin;
   }
 }
