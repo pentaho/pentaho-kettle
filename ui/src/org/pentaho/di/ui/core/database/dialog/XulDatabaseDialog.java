@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -81,6 +81,8 @@ public class XulDatabaseDialog {
 
   private static final String EXTENDED_WIDGET_CLASSNAME = "org.pentaho.di.ui.core.database.dialog.tags.ExtTextbox";
 
+  private static final String PMD_WIDGET_CLASSNAME = "org.pentaho.ui.xul.swt.tags.SwtTextbox";
+
   private static final String EXTENDED_WIDGET_ID = "VARIABLETEXTBOX";
 
   private DatabaseConnectionDialog databaseDialogInstance;
@@ -140,7 +142,11 @@ public class XulDatabaseDialog {
     XulDomContainer container = null;
     try {
       databaseDialogInstance = new DatabaseConnectionDialog();
-      databaseDialogInstance.registerClass( EXTENDED_WIDGET_ID, EXTENDED_WIDGET_CLASSNAME );
+      if ( ( (Shell) this.parentShell ).getText().contains( "Metadata Editor" ) ) {
+        databaseDialogInstance.registerClass( EXTENDED_WIDGET_ID, PMD_WIDGET_CLASSNAME );
+      } else {
+        databaseDialogInstance.registerClass( EXTENDED_WIDGET_ID, EXTENDED_WIDGET_CLASSNAME );
+      }
       /*
        * Attention: onload: loadConnectionData() is called here the first time, see below for second time
        */
