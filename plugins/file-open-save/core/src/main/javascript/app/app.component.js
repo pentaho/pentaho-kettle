@@ -78,8 +78,6 @@ define([
     vm.displayRecentSearches = displayRecentSearches;
     vm.focusSearchBox = focusSearchBox;
     vm.setTooltip = setTooltip;
-    vm.getOffsetTop = getOffsetTop;
-    vm.getOffsetLeft = getOffsetLeft;
     vm.recentsHasScrollBar = recentsHasScrollBar;
     vm.addDisabled = addDisabled;
     vm.deleteDisabled = deleteDisabled;
@@ -218,7 +216,8 @@ define([
         if (folder) {
           vm.showRecents = false;
           vm.folder = folder;
-          vm.selectedFolder = _needsCaps() ? _capsFirstLetter(folder.name) : folder.name;
+          vm.selectedFolder = ((vm.folder.name === 'home' || vm.folder.name === 'public') && vm.folder.parent === '/') ?
+            _capsFirstLetter(folder.name) : folder.name;
         } else {
           vm.showRecents = true;
           vm.folder = {name: "Recents", path: "Recents"};
@@ -475,9 +474,12 @@ define([
       }
     }
 
+    /**
+     * Determines if there are recent searches to show
+     */
     function displayRecentSearches() {
-      if(vm.recentSearches.length !== 0) {
-        vm.isInSearch = true
+      if (vm.recentSearches.length !== 0) {
+        vm.isInSearch = true;
       }
     }
 
@@ -504,14 +506,6 @@ define([
         if( searchItem.scrollWidth > 267 ) {
             searchItem.title = tooltip;
         }
-    }
-
-    function getOffsetTop() {
-      return document.getElementById("headerSearchId").offsetTop;
-    }
-
-    function getOffsetLeft() {
-      return document.getElementById("headerSearchId").offsetLeft;
     }
 
     /**
@@ -704,15 +698,6 @@ define([
     */
     function _capsFirstLetter(input) {
       return input.charAt(0).toUpperCase() + input.slice(1);
-    }
-
-    /**
-     * Checks if the selected folder equals home or public with parent of root dir
-     * @return {boolean} - true if selected folder equals home or public with parent of root dir, false otherwise
-     * @private
-     */
-    function _needsCaps() {
-      return ((vm.selectedFolder === 'home' || vm.selectedFolder === 'public') && vm.folder.parent === '/');
     }
   }
 

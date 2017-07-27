@@ -18,8 +18,7 @@
                ng-focus="vm.displayRecentSearches();searchBoxHasFocus=true"
                ng-change="vm.doSearch()"
                ng-model="vm.searchString"/>
-          <div class="searchBoxExtra" ng-show="vm.isInSearch"
-               ng-style="{top: vm.getOffsetTop() + 37 + 'px', left: vm.getOffsetLeft() + 2 + 'px'}">
+          <div class="searchBoxExtra" ng-show="vm.isInSearch">
               <div class="searchBoxExtraItem"
                    ng-mousedown="vm.searchString = search;vm.doSearch()"
                    ng-repeat="search in vm.recentSearches"
