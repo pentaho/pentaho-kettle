@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -119,7 +119,7 @@ public class UserDefinedJavaClassMeta extends BaseStepMeta implements StepMetaIn
   private Class<?> cookClass( UserDefinedJavaClassDef def ) throws CompileException, ParseException,
     ScanException, IOException, RuntimeException, KettleStepException {
 
-    if( Thread.currentThread().getContextClassLoader() == null ) {
+    if ( Thread.currentThread().getContextClassLoader() == null ) {
       Thread.currentThread().setContextClassLoader( this.getClass().getClassLoader() );
     }
 
@@ -154,7 +154,7 @@ public class UserDefinedJavaClassMeta extends BaseStepMeta implements StepMetaIn
           if ( def.isTransformClass() ) {
             cookedTransformClass = (Class<TransformClassBase>) cookedClass;
           }
-        } catch ( Exception e ) {
+        } catch ( Throwable e ) {
           CompileException exception = new CompileException( e.getMessage(), null );
           exception.setStackTrace( new StackTraceElement[] {} );
           cookErrors.add( exception );
