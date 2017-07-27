@@ -138,7 +138,7 @@ public class TableView extends Composite {
   private PropsUI props;
 
   private Control text;
-  private CCombo combo;
+  private Composite combo;
   private Button button;
 
   private TableItem activeTableItem;
@@ -624,7 +624,11 @@ public class TableView extends Composite {
 
         if ( colnr > 0 ) {
           try {
-            row.setText( colnr, combo.getText() );
+            if ( combo instanceof ComboVar ) {
+              row.setText( colnr, ( (ComboVar) combo ).getText() );
+            } else {
+              row.setText( colnr, ( (CCombo) combo ).getText() );
+            }
           } catch ( Exception exc ) {
             // Eat widget disposed error
           }
@@ -647,7 +651,11 @@ public class TableView extends Composite {
         }
         int colnr = activeTableColumn;
         int rownr = table.indexOf( row );
-        row.setText( colnr, combo.getText() );
+        if ( combo instanceof ComboVar ) {
+          row.setText( colnr, ( (ComboVar) combo ).getText() );
+        } else {
+          row.setText( colnr, ( (CCombo) combo ).getText() );
+        }
 
         String[] afterEdit = getItemText( row );
         checkChanged( new String[][]{ beforeEdit }, new String[][]{ afterEdit }, new int[]{ rownr } );
@@ -755,7 +763,11 @@ public class TableView extends Composite {
           clipboard = new Clipboard( getDisplay() );
           TextTransfer tran = TextTransfer.getInstance();
           String text = (String) clipboard.getContents( tran );
-          combo.setText( text );
+          if ( combo instanceof ComboVar ) {
+            ( (ComboVar) combo ).setText( text );
+          } else {
+            ( (CCombo) combo ).setText( text );
+          }
           return;
         }
 
@@ -1499,7 +1511,12 @@ public class TableView extends Composite {
   }
 
   private void applyComboChange( TableItem row, int rownr, int colnr ) {
-    String textData = combo.getText();
+    String textData;
+    if ( combo instanceof ComboVar ) {
+      textData = ( (ComboVar) combo ).getText();
+    } else {
+      textData = ( (CCombo) combo ).getText();
+    }
     row.setText( colnr, textData );
     combo.dispose();
 
@@ -2283,31 +2300,64 @@ public class TableView extends Composite {
       }
     }
 
-    combo = new CCombo( table, colinfo.isReadOnly() ? SWT.READ_ONLY : SWT.NONE );
-    props.setLook( combo, Props.WIDGET_STYLE_TABLE );
-    combo.addTraverseListener( lsTraverse );
-    combo.addModifyListener( lsModCombo );
-    combo.addFocusListener( lsFocusCombo );
-
     String[] opt = getComboValues( row, colinfo );
-
     if ( colinfo.getComboValuesSelectionListener() != null ) {
       opt = colinfo.getComboValuesSelectionListener().getComboValues( row, rownr, colnr );
     }
-    combo.setItems( opt );
-    combo.setVisibleItemCount( opt.length );
-    combo.setText( row.getText( colnr ) );
-    if ( lsMod != null ) {
-      combo.addModifyListener( lsMod );
+
+    final boolean useVariables = colinfo.isUsingVariables();
+    if ( useVariables ) {
+      GetCaretPositionInterface getCaretPositionInterface = new GetCaretPositionInterface() {
+        @Override
+        public int getCaretPosition() {
+          return 0;
+        }
+      };
+
+      // The text widget will be disposed when we get here
+      // So we need to write to the table row
+      //
+      InsertTextInterface insertTextInterface = new InsertTextInterface() {
+        @Override
+        public void insertText( String string, int position ) {
+          StringBuilder buffer = new StringBuilder( table.getItem( rownr ).getText( colnr ) );
+          buffer.insert( position, string );
+          table.getItem( rownr ).setText( colnr, buffer.toString() );
+          int newPosition = position + string.length();
+          edit( rownr, colnr );
+        }
+      };
+
+      combo = new ComboVar( variables, table, SWT.SINGLE | SWT.LEFT | SWT.BORDER, getCaretPositionInterface, insertTextInterface );
+      ( (ComboVar) combo ).addModifyListener( lsModCombo );
+      ( (ComboVar) combo ).setItems( opt );
+      ( (ComboVar) combo ).setText( row.getText( colnr ) );
+
+      if ( lsMod != null ) {
+        ( (ComboVar) combo ).addModifyListener( lsMod );
+      }
+      ( (ComboVar) combo ).addModifyListener( lsUndo );
+    } else {
+      combo = new CCombo( table, colinfo.isReadOnly() ? SWT.READ_ONLY : SWT.NONE );
+      ( (CCombo) combo ).addModifyListener( lsModCombo );
+      ( (CCombo) combo ).setItems( opt );
+      ( (CCombo) combo ).setVisibleItemCount( opt.length );
+      ( (CCombo) combo ).setText( row.getText( colnr ) );
+      if ( lsMod != null ) {
+        ( (CCombo) combo ).addModifyListener( lsMod );
+      }
+      ( (CCombo) combo ).addModifyListener( lsUndo );
+      if ( colinfo.getSelectionAdapter() != null ) {
+        ( (CCombo) combo ).addSelectionListener( columns[colnr - 1].getSelectionAdapter() );
+      }
     }
-    combo.addModifyListener( lsUndo );
+
+    props.setLook( combo, Props.WIDGET_STYLE_TABLE );
+    combo.addFocusListener( lsFocusCombo );
+    combo.addTraverseListener( lsTraverse );
     combo.setToolTipText( colinfo.getToolTip() == null ? "" : colinfo.getToolTip() );
     combo.setVisible( true );
     combo.addKeyListener( lsKeyCombo );
-
-    if ( colinfo.getSelectionAdapter() != null ) {
-      combo.addSelectionListener( columns[colnr - 1].getSelectionAdapter() );
-    }
 
     editor.horizontalAlignment = SWT.LEFT;
     editor.layout();
