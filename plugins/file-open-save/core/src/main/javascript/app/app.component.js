@@ -678,7 +678,7 @@ define([
      * @param event
      */
     function onKeyUp(event) {
-      if (event.keyCode === 13) {
+      if (event.keyCode === 13 && event.target.id !== "searchBoxId") {
         if (vm.wrapperClass === "open") {
           if (vm.file !== null) {
             selectFile(vm.file);
