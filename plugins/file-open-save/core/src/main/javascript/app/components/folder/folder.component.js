@@ -147,7 +147,12 @@ define([
      * @private
      */
     function _isChild(folder, child) {
-      return child.path.indexOf(folder.path) === 0;
+      var childPath = child.path;
+      var depthDiff = child.depth - folder.depth;
+      for (var i = 0; i < depthDiff; i++) {
+        childPath = childPath.slice(0, childPath.lastIndexOf("/"));
+      }
+      return childPath === folder.path;
     }
 
     /**
