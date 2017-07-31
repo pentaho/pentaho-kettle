@@ -217,7 +217,8 @@ files .searchTable .fileLastSaved {
   height: 44px;
 }
 
-files .fileLastSaved {
+files .fileLastSaved,
+files .fileType {
 	color: #999;
 }
 
