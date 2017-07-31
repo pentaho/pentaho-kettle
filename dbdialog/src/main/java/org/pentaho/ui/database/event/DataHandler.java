@@ -121,7 +121,7 @@ public class DataHandler extends AbstractXulEventHandler {
 
   protected DatabaseMeta databaseMeta = null;
 
-  private DatabaseMeta cache = new DatabaseMeta();
+  protected DatabaseMeta cache = new DatabaseMeta();
 
   private XulDeck dialogDeck;
 
@@ -519,6 +519,13 @@ public class DataHandler extends AbstractXulEventHandler {
   }
 
   public void pushCache() {
+    // Database type:
+    if ( connectionBox != null ) {
+      Object connection = connectionBox.getSelectedItem();
+      if ( connection != null ) {
+        cache.setDatabaseType( (String) connection );
+      }
+    }
     getConnectionSpecificInfo( cache );
   }
 
