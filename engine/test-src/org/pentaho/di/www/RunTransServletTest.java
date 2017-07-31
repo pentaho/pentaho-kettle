@@ -22,22 +22,37 @@
 package org.pentaho.di.www;
 
 
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.mockito.stubbing.Answer;
+import org.pentaho.di.core.logging.LogChannel;
+import org.pentaho.di.core.logging.LoggingObjectType;
+import org.pentaho.di.core.logging.SimpleLoggingObject;
+import org.pentaho.di.repository.ObjectId;
+import org.pentaho.di.repository.Repository;
+import org.pentaho.di.repository.RepositoryDirectoryInterface;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.StepMetaDataCombi;
 import org.pentaho.di.trans.step.StepMetaInterface;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.io.ByteArrayOutputStream;
 import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -111,4 +126,73 @@ public class RunTransServletTest {
   }
 
 
+  @Test
+  public void testRunTransServletCheckParameter() throws Exception {
+    HttpServletRequest request = Mockito.mock( HttpServletRequest.class );
+    HttpServletResponse response = Mockito.mock( HttpServletResponse.class );
+    Mockito.when( request.getParameter( "trans" ) ).thenReturn( "home/test.rtr" );
+
+    StringWriter out = new StringWriter();
+    PrintWriter printWriter = new PrintWriter( out );
+
+    Mockito.when( request.getContextPath() ).thenReturn( RunTransServlet.CONTEXT_PATH );
+    Mockito.when( response.getWriter() ).thenReturn( printWriter );
+
+    TransformationMap mockTransformationMap = Mockito.mock( TransformationMap.class );
+    SlaveServerConfig slaveServerConfig = Mockito.mock( SlaveServerConfig.class );
+    Mockito.when( mockTransformationMap.getSlaveServerConfig() ).thenReturn( slaveServerConfig );
+
+    Repository repository = Mockito.mock( Repository.class );
+    Mockito.when( slaveServerConfig.getRepository() ).thenReturn( repository );
+    RepositoryDirectoryInterface repositoryDirectoryInterface = Mockito.mock( RepositoryDirectoryInterface.class );
+    Mockito.when( repository.loadRepositoryDirectoryTree() ).thenReturn( repositoryDirectoryInterface );
+    Mockito.when( repositoryDirectoryInterface.findDirectory( Mockito.anyString() ) )
+      .thenReturn( repositoryDirectoryInterface );
+
+    TransMeta transMeta = Mockito.mock( TransMeta.class );
+    Mockito.when( repository.loadTransformation( (ObjectId) Mockito.any(), (String) Mockito.any() ) ).thenReturn(
+      transMeta );
+
+    final String testParameter = "testParameter";
+    Mockito.when( transMeta.listVariables() ).thenReturn( new String[] { testParameter } );
+    Mockito.when( transMeta.getVariable( Mockito.anyString() ) ).thenReturn( "default value" );
+
+    Mockito.when( transMeta.listParameters() ).thenReturn( new String[] { testParameter } );
+    Mockito.when( request.getParameterNames() ).thenReturn( new Enumeration() {
+      Set<String> set = new HashSet<>();
+      Iterator<String> iterator;
+      {
+        set.add( testParameter );
+        iterator = set.iterator();
+      }
+
+      @Override
+      public boolean hasMoreElements() {
+        return iterator.hasNext();
+      }
+
+      @Override
+      public Object nextElement() {
+        return iterator.next();
+      }
+    } );
+
+    String testValue = "testValue";
+    Mockito.when( request.getParameterValues( testParameter ) ).thenReturn( new String[] { testValue } );
+
+    RunTransServlet runTransServlet = Mockito.mock( RunTransServlet.class );
+    Mockito.doCallRealMethod().when( runTransServlet ).doGet( (HttpServletRequest) Mockito.anyObject(), (HttpServletResponse) Mockito.anyObject() );
+
+    Trans trans =
+      new Trans( transMeta, new SimpleLoggingObject( RunTransServlet.CONTEXT_PATH, LoggingObjectType.CARTE, null ) );
+    Mockito.when( runTransServlet.createTrans( (TransMeta) Mockito.any(), (SimpleLoggingObject) Mockito.any() ) ).thenReturn( trans );
+    Mockito.when( transMeta.getParameterValue( Mockito.eq( testParameter ) ) ).thenReturn( testValue );
+
+    runTransServlet.log = new LogChannel( "RunTransServlet" );
+    runTransServlet.transformationMap = mockTransformationMap;
+
+
+    runTransServlet.doGet( request, response );
+    Assert.assertEquals( testValue, trans.getParameterValue( testParameter ) );
+  }
 }
