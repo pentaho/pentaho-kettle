@@ -22,19 +22,11 @@
 
 package org.pentaho.di.trans.steps.getxmldata;
 
-import java.io.InputStream;
-import java.io.StringReader;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.zip.GZIPInputStream;
-
-import org.apache.http.Header;
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
 import org.apache.commons.vfs2.FileObject;
 import org.apache.commons.vfs2.FileSystemException;
+import org.apache.http.Header;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.dom4j.Element;
 import org.dom4j.ElementHandler;
@@ -45,8 +37,6 @@ import org.dom4j.XPath;
 import org.dom4j.io.SAXReader;
 import org.dom4j.tree.AbstractNode;
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.util.HttpClientManager;
-import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.ResultFile;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.fileinput.FileInputList;
@@ -55,6 +45,8 @@ import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.row.value.ValueMetaFactory;
+import org.pentaho.di.core.util.HttpClientManager;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLParserFactoryProducer;
 import org.pentaho.di.i18n.BaseMessages;
@@ -66,10 +58,17 @@ import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
 
+import java.io.InputStream;
+import java.io.StringReader;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.zip.GZIPInputStream;
+
 /**
  * Read XML files, parse them and convert them to rows and writes these to one or more output streams.
- * 
- * @author Samatar,Brahim
+ *
+ * @author Samatar, Brahim
  * @since 20-06-2007
  */
 public class GetXMLData extends BaseStep implements StepInterface {
@@ -80,7 +79,7 @@ public class GetXMLData extends BaseStep implements StepInterface {
   private Object[] prevRow = null; // A pre-allocated spot for the previous row
 
   public GetXMLData( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta,
-      Trans trans ) {
+                     Trans trans ) {
     super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
   }
 
@@ -166,20 +165,16 @@ public class GetXMLData extends BaseStep implements StepInterface {
         HttpClient client = HttpClientManager.getInstance().createDefaultClient();
         HttpGet method = new HttpGet( StringXML );
         method.addHeader( "Accept-Encoding", "gzip" );
-        HttpResponse response = client.execute( method );
-        Header contentEncoding = response.getFirstHeader( "Content-Encoding" );
-        HttpEntity responseEntity = response.getEntity();
-        if ( responseEntity != null ) {
-          if ( contentEncoding != null ) {
-            String acceptEncodingValue = contentEncoding.getValue();
-            if ( acceptEncodingValue.contains( "gzip" ) ) {
-              GZIPInputStream in = new GZIPInputStream( responseEntity.getContent() );
-
-              data.document = reader.read( in );
-            }
-          } else {
-            data.document = reader.read( responseEntity.getContent() );
+        HttpResponse httpResponse = client.execute( method );
+        Header contentEncoding = method.getFirstHeader( "Content-Encoding" );
+        if ( contentEncoding != null ) {
+          String acceptEncodingValue = contentEncoding.getValue();
+          if ( acceptEncodingValue.indexOf( "gzip" ) != -1 ) {
+            GZIPInputStream in = new GZIPInputStream( httpResponse.getEntity().getContent() );
+            data.document = reader.read( in );
           }
+        } else {
+          data.document = reader.read( httpResponse.getEntity().getContent() );
         }
       } else {
         // get encoding. By default UTF-8
@@ -212,7 +207,6 @@ public class GetXMLData extends BaseStep implements StepInterface {
   /**
    * Process chunk of data in streaming mode. Called only by the handler when pruning is true. Not allowed in
    * combination with meta.getIsInFields(), but could be redesigned later on.
-   * 
    */
   private void processStreaming( Element row ) throws KettleException {
     data.document = row.getDocument();
@@ -235,7 +229,7 @@ public class GetXMLData extends BaseStep implements StepInterface {
       Object[] r = getXMLRowPutRowWithErrorhandling();
       if ( !data.errorInRowButContinue ) { // do not put out the row but continue
         putRowOut( r ); // false when limit is reached, functionality is there but we can not stop reading the hole file
-                        // (slow but works)
+        // (slow but works)
       }
       data.nodesize = 0;
       data.nodenr = 0;
@@ -257,7 +251,7 @@ public class GetXMLData extends BaseStep implements StepInterface {
         continue; // do not put out the row but continue
       }
       cont = putRowOut( r ); // false when limit is reached, functionality is there but we can not stop reading the hole
-                             // file (slow but works)
+      // file (slow but works)
     }
     if ( log.isDebug() ) {
       logDebug( BaseMessages.getString( PKG, "GetXMLData.Log.StreamingMode.FreeMemory" ) );
@@ -299,7 +293,7 @@ public class GetXMLData extends BaseStep implements StepInterface {
 
   /**
    * Build an empty row based on the meta-data.
-   * 
+   *
    * @return empty row built
    */
   private Object[] buildEmptyRow() {
@@ -311,7 +305,7 @@ public class GetXMLData extends BaseStep implements StepInterface {
     if ( nonExistantFiles.size() != 0 ) {
       String message = FileInputList.getRequiredFilesDescription( nonExistantFiles );
       logError( BaseMessages.getString( PKG, "GetXMLData.Log.RequiredFilesTitle" ), BaseMessages.getString( PKG,
-          "GetXMLData.Log.RequiredFiles", message ) );
+        "GetXMLData.Log.RequiredFiles", message ) );
 
       throw new KettleException( BaseMessages.getString( PKG, "GetXMLData.Log.RequiredFilesMissing", message ) );
     }
@@ -320,10 +314,10 @@ public class GetXMLData extends BaseStep implements StepInterface {
     if ( nonAccessibleFiles.size() != 0 ) {
       String message = FileInputList.getRequiredFilesDescription( nonAccessibleFiles );
       logError( BaseMessages.getString( PKG, "GetXMLData.Log.RequiredFilesTitle" ), BaseMessages.getString( PKG,
-          "GetXMLData.Log.RequiredNotAccessibleFiles", message ) );
+        "GetXMLData.Log.RequiredNotAccessibleFiles", message ) );
 
       throw new KettleException( BaseMessages.getString( PKG, "GetXMLData.Log.RequiredNotAccessibleFilesMissing",
-          message ) );
+        message ) );
     }
   }
 
@@ -357,7 +351,7 @@ public class GetXMLData extends BaseStep implements StepInterface {
         data.convertRowMeta = new RowMeta();
         for ( ValueMetaInterface valueMeta : data.convertRowMeta.getValueMetaList() ) {
           data.convertRowMeta
-              .addValueMeta( ValueMetaFactory.cloneValueMeta( valueMeta, ValueMetaInterface.TYPE_STRING ) );
+            .addValueMeta( ValueMetaFactory.cloneValueMeta( valueMeta, ValueMetaInterface.TYPE_STRING ) );
         }
 
         // For String to <type> conversions, we allocate a conversion meta data row as well...
@@ -377,7 +371,7 @@ public class GetXMLData extends BaseStep implements StepInterface {
             // The field is unreachable !
             logError( BaseMessages.getString( PKG, "GetXMLData.Log.ErrorFindingField", meta.getXMLField() ) );
             throw new KettleException( BaseMessages.getString( PKG, "GetXMLData.Exception.CouldnotFindField", meta
-                .getXMLField() ) );
+              .getXMLField() ) );
           }
         }
       }
@@ -414,7 +408,7 @@ public class GetXMLData extends BaseStep implements StepInterface {
 
             if ( log.isDetailed() ) {
               logDetailed( BaseMessages.getString( PKG, "GetXMLData.Log.LoopFileOccurences", "" + data.nodesize, file
-                  .getName().getBaseName() ) );
+                .getName().getBaseName() ) );
             }
 
           } catch ( Exception e ) {
@@ -465,7 +459,7 @@ public class GetXMLData extends BaseStep implements StepInterface {
     if ( meta.addResultFile() ) {
       // Add this to the result file names...
       ResultFile resultFile =
-          new ResultFile( ResultFile.FILE_TYPE_GENERAL, file, getTransMeta().getName(), getStepname() );
+        new ResultFile( ResultFile.FILE_TYPE_GENERAL, file, getTransMeta().getName(), getStepname() );
       resultFile.setComment( BaseMessages.getString( PKG, "GetXMLData.Log.FileAddedResult" ) );
       addResultFile( resultFile );
     }
@@ -483,13 +477,13 @@ public class GetXMLData extends BaseStep implements StepInterface {
           }
         }
       }
-      int[] indexs = new int[fullPath.split( GetXMLDataMeta.N0DE_SEPARATOR ).length - 1];
+      int[] indexs = new int[ fullPath.split( GetXMLDataMeta.N0DE_SEPARATOR ).length - 1 ];
       java.util.Arrays.fill( indexs, -1 );
       int length = 0;
       for ( int i = 0; i < data.NSPath.size(); i++ ) {
         if ( data.NSPath.get( i ).length() > length && fullPath.startsWith( data.NSPath.get( i ) ) ) {
           java.util.Arrays.fill( indexs, data.NSPath.get( i ).split( GetXMLDataMeta.N0DE_SEPARATOR ).length - 2,
-              indexs.length, i );
+            indexs.length, i );
           length = data.NSPath.get( i ).length();
         }
       }
@@ -497,12 +491,12 @@ public class GetXMLData extends BaseStep implements StepInterface {
       StringBuilder newPath = new StringBuilder();
       String[] pathStrs = path.split( GetXMLDataMeta.N0DE_SEPARATOR );
       for ( int i = 0; i < pathStrs.length; i++ ) {
-        String tmp = pathStrs[i];
+        String tmp = pathStrs[ i ];
         if ( newPath.length() > 0 ) {
           newPath.append( GetXMLDataMeta.N0DE_SEPARATOR );
         }
         if ( tmp.length() > 0 && !tmp.contains( ":" ) && !tmp.contains( "." ) && !tmp.contains( GetXMLDataMeta.AT ) ) {
-          int index = indexs[i + indexs.length - pathStrs.length];
+          int index = indexs[ i + indexs.length - pathStrs.length ];
           if ( index >= 0 ) {
             newPath.append( "pre" ).append( index ).append( ":" ).append( tmp );
           } else {
@@ -615,12 +609,12 @@ public class GetXMLData extends BaseStep implements StepInterface {
         if ( log.isDetailed() ) {
           logDetailed( BaseMessages.getString( PKG, "GetXMLData.Log.FileOpened", data.file.toString() ) );
           logDetailed( BaseMessages.getString( PKG, "GetXMLData.Log.LoopFileOccurences", "" + data.nodesize, data.file
-              .getName().getBaseName() ) );
+            .getName().getBaseName() ) );
         }
       }
     } catch ( Exception e ) {
       logError( BaseMessages.getString( PKG, "GetXMLData.Log.UnableToOpenFile", "" + data.filenr, data.file.toString(),
-          e.toString() ) );
+        e.toString() ) );
       stopAll();
       setErrors( 1 );
       return false;
@@ -732,7 +726,7 @@ public class GetXMLData extends BaseStep implements StepInterface {
       // Read fields...
       for ( int i = 0; i < data.nrInputFields; i++ ) {
         // Get field
-        GetXMLDataField xmlDataField = meta.getInputFields()[i];
+        GetXMLDataField xmlDataField = meta.getInputFields()[ i ];
         // Get the Path to look for
         String XPathValue = xmlDataField.getXPath();
         XPathValue = environmentSubstitute( XPathValue );
@@ -815,12 +809,12 @@ public class GetXMLData extends BaseStep implements StepInterface {
         //
         ValueMetaInterface targetValueMeta = data.outputRowMeta.getValueMeta( data.totalpreviousfields + i );
         ValueMetaInterface sourceValueMeta = data.convertRowMeta.getValueMeta( data.totalpreviousfields + i );
-        outputRowData[data.totalpreviousfields + i] = targetValueMeta.convertData( sourceValueMeta, nodevalue );
+        outputRowData[ data.totalpreviousfields + i ] = targetValueMeta.convertData( sourceValueMeta, nodevalue );
 
         // Do we need to repeat this field if it is null?
-        if ( meta.getInputFields()[i].isRepeated() ) {
+        if ( meta.getInputFields()[ i ].isRepeated() ) {
           if ( data.previousRow != null && Utils.isEmpty( nodevalue ) ) {
-            outputRowData[data.totalpreviousfields + i] = data.previousRow[data.totalpreviousfields + i];
+            outputRowData[ data.totalpreviousfields + i ] = data.previousRow[ data.totalpreviousfields + i ];
           }
         }
       } // End of loop over fields...
@@ -829,43 +823,43 @@ public class GetXMLData extends BaseStep implements StepInterface {
 
       // See if we need to add the filename to the row...
       if ( meta.includeFilename() && !Utils.isEmpty( meta.getFilenameField() ) ) {
-        outputRowData[rowIndex++] = data.filename;
+        outputRowData[ rowIndex++ ] = data.filename;
       }
       // See if we need to add the row number to the row...
       if ( meta.includeRowNumber() && !Utils.isEmpty( meta.getRowNumberField() ) ) {
-        outputRowData[rowIndex++] = data.rownr;
+        outputRowData[ rowIndex++ ] = data.rownr;
       }
       // Possibly add short filename...
       if ( meta.getShortFileNameField() != null && meta.getShortFileNameField().length() > 0 ) {
-        outputRowData[rowIndex++] = data.shortFilename;
+        outputRowData[ rowIndex++ ] = data.shortFilename;
       }
       // Add Extension
       if ( meta.getExtensionField() != null && meta.getExtensionField().length() > 0 ) {
-        outputRowData[rowIndex++] = data.extension;
+        outputRowData[ rowIndex++ ] = data.extension;
       }
       // add path
       if ( meta.getPathField() != null && meta.getPathField().length() > 0 ) {
-        outputRowData[rowIndex++] = data.path;
+        outputRowData[ rowIndex++ ] = data.path;
       }
       // Add Size
       if ( meta.getSizeField() != null && meta.getSizeField().length() > 0 ) {
-        outputRowData[rowIndex++] = data.size;
+        outputRowData[ rowIndex++ ] = data.size;
       }
       // add Hidden
       if ( meta.isHiddenField() != null && meta.isHiddenField().length() > 0 ) {
-        outputRowData[rowIndex++] = Boolean.valueOf( data.path );
+        outputRowData[ rowIndex++ ] = Boolean.valueOf( data.path );
       }
       // Add modification date
       if ( meta.getLastModificationDateField() != null && meta.getLastModificationDateField().length() > 0 ) {
-        outputRowData[rowIndex++] = data.lastModificationDateTime;
+        outputRowData[ rowIndex++ ] = data.lastModificationDateTime;
       }
       // Add Uri
       if ( meta.getUriField() != null && meta.getUriField().length() > 0 ) {
-        outputRowData[rowIndex++] = data.uriName;
+        outputRowData[ rowIndex++ ] = data.uriName;
       }
       // Add RootUri
       if ( meta.getRootUriField() != null && meta.getRootUriField().length() > 0 ) {
-        outputRowData[rowIndex] = data.rootUriName;
+        outputRowData[ rowIndex ] = data.rootUriName;
       }
 
       RowMetaInterface irow = getInputRowMeta();
@@ -912,9 +906,9 @@ public class GetXMLData extends BaseStep implements StepInterface {
         Object Value = varName;
 
         for ( int k = 0; k < data.nrInputFields; k++ ) {
-          GetXMLDataField Tmp_xmlInputField = meta.getInputFields()[k];
+          GetXMLDataField Tmp_xmlInputField = meta.getInputFields()[ k ];
           if ( Tmp_xmlInputField.getName().equalsIgnoreCase( varName ) ) {
-            Value = "'" + outputRowData[data.totalpreviousfields + k] + "'";
+            Value = "'" + outputRowData[ data.totalpreviousfields + k ] + "'";
           }
         }
         buffer.append( rest.substring( 0, i ) );
