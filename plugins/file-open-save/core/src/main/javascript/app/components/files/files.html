@@ -41,7 +41,7 @@
           ng-click="vm.selectFile(file)"
           ng-dblclick="vm.commitFile(file); $event.stopPropagation();"
           ng-class="{selected: vm.selectedFile === file}"
-          ng-hide="file.inResult === false"
+          ng-hide="file.inResult === false && vm.search.length > 0"
           title="{{file.name}}&#013;{{file.path}}">
         <td class="nameCell">
           <div class="fileTypeIcon"
