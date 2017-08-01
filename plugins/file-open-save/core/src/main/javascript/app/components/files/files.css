@@ -122,7 +122,7 @@ files th:first-child {
 
 files tbody tr.selected td,
 files tbody tr.selected:hover td,
-files tbody tr.selected .fileLastSaved {
+files tbody tr.selected .fileModified {
   background-color: #005DA6;
   color: #FFFFFF;
 }
@@ -213,11 +213,11 @@ files .fileType::first-letter {
 }
 
 files .searchTable .fileType,
-files .searchTable .fileLastSaved {
+files .searchTable .fileModified {
   height: 44px;
 }
 
-files .fileLastSaved,
+files .fileModified,
 files .fileType {
 	color: #999;
 }
