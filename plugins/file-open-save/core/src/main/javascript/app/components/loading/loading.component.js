@@ -1,8 +1,7 @@
 define([
   'text!./loading.html',
-  'css!./loading.css',
+  'css!./loading.css'
 ], function(template) {
-
   'use strict';
 
   var options = {

@@ -31,8 +31,9 @@ define([
   "../../services/data.service",
   "../utils",
   "text!./files.html",
+  "pentaho/i18n-osgi!file-open-save.messages",
   "css!./files.css"
-], function(dataService, utils, filesTemplate) {
+], function(dataService, utils, filesTemplate, i18n) {
   "use strict";
 
   var options = {
@@ -83,9 +84,9 @@ define([
      * bindings initialized. We use this hook to put initialization code for our controller.
      */
     function onInit() {
-      vm.nameHeader = "Name";
-      vm.typeHeader = "Type";
-      vm.lastSaveHeader = "Modified";
+      vm.nameHeader = i18n.get("file-open-save-plugin.files.name.header");
+      vm.typeHeader = i18n.get("file-open-save-plugin.files.type.header");
+      vm.modifiedHeader = i18n.get("file-open-save-plugin.files.modified.header");
       _setSort(0, false, 'name');
       vm.numResults = 0;
     }
