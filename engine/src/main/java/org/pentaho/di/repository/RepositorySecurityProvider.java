@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -37,6 +37,24 @@ import org.pentaho.di.core.exception.KettleSecurityException;
  *
  */
 public interface RepositorySecurityProvider extends IRepositoryService {
+
+  String CREATE_CONTENT_ROLE = "org.pentaho.di.creator"; //$NON-NLS-1$
+
+  String READ_CONTENT_ROLE = "org.pentaho.di.reader"; //$NON-NLS-1$
+
+  String ADMINISTER_SECURITY_ROLE = "org.pentaho.di.securityAdministrator"; //$NON-NLS-1$
+
+  String CREATE_CONTENT_ACTION = "org.pentaho.repository.create"; //$NON-NLS-1$
+
+  String READ_CONTENT_ACTION = "org.pentaho.repository.read"; //$NON-NLS-1$
+
+  String EXECUTE_CONTENT_ACTION = "org.pentaho.repository.execute"; //$NON-NLS-1$
+
+  String SCHEDULE_CONTENT_ACTION = "org.pentaho.scheduler.manage";
+
+  String ADMINISTER_SECURITY_ACTION = "org.pentaho.security.administerSecurity"; //$NON-NLS-1$
+
+  String NAMESPACE = "org.pentaho"; //$NON-NLS-1$
 
   /**
    * @return the user information set on the security provider
