@@ -16,6 +16,7 @@
 package org.pentaho.repo.controller;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang.BooleanUtils;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -244,7 +245,8 @@ public class RepositoryBrowserController {
       try {
         if ( getRepository() instanceof RepositoryExtended ) {
           repositoryDirectoryInterface = ( (RepositoryExtended) getRepository() )
-            .loadRepositoryDirectoryTree( "/", "*.ktr|*.kjb", -1, true, true, true );
+            .loadRepositoryDirectoryTree( "/", "*.ktr|*.kjb", -1, BooleanUtils
+              .isTrue( getRepository().getUserInfo().isAdmin() ), true, true );
         } else {
           repositoryDirectoryInterface = getRepository().loadRepositoryDirectoryTree();
         }
