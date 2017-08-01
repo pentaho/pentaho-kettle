@@ -4,7 +4,8 @@
        error-folder="vm.file"
        on-error-confirm="vm.confirmError()"
        on-error-cancel="vm.cancelError()"></error>
-<div class="dialogWrapper noselect" ng-class="vm.wrapperClass" key on-key-up="vm.onKeyUp(event)">
+<loading ng-show="vm.loading" title="vm.loadingTitle" message="vm.loadingMessage"></loading>
+<div class="dialogWrapper noselect" ng-class="vm.wrapperClass" key on-key-up="vm.onKeyUp(event)" ng-hide="vm.loading">
   <div class="header">
     <div class="headerTop">
       <div class="headerTitle headerText">

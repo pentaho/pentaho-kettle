@@ -87,6 +87,7 @@ define([
     vm.searchString = "";
     vm.showError = false;
     vm.errorType = 0;
+    vm.loading = true;
 
     /**
      * The $onInit hook of components lifecycle which is called on each controller
@@ -105,6 +106,8 @@ define([
       vm.saveFileNameLabel = i18n.get("file-open-save-plugin.app.save.file-name.label");
       vm.addFolderText = i18n.get("file-open-save-plugin.app.add-folder.button");
       vm.removeText = i18n.get("file-open-save-plugin.app.delete.button");
+      vm.loadingTitle = i18n.get("file-open-save-plugin.loading.title");
+      vm.loadingMessage = i18n.get("file-open-save-plugin.loading.message");
       vm.isInSearch = false;
       vm.showRecents = true;
       vm.folder = {name: "Recents", path: "Recents"};
@@ -138,6 +141,7 @@ define([
         if (vm.folders[0].path === "/") {
           vm.includeRoot = true;
         }
+        vm.loading = false;
       }
 
       /**
