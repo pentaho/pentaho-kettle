@@ -2314,7 +2314,7 @@ public class TableView extends Composite {
         }
       };
 
-      // The text widget will be disposed when we get here
+      // Widget will be disposed when we get here
       // So we need to write to the table row
       //
       InsertTextInterface insertTextInterface = new InsertTextInterface() {
@@ -2323,50 +2323,63 @@ public class TableView extends Composite {
           StringBuilder buffer = new StringBuilder( table.getItem( rownr ).getText( colnr ) );
           buffer.insert( position, string );
           table.getItem( rownr ).setText( colnr, buffer.toString() );
-          int newPosition = position + string.length();
           edit( rownr, colnr );
         }
       };
 
       combo = new ComboVar( variables, table, SWT.SINGLE | SWT.LEFT | SWT.BORDER, getCaretPositionInterface, insertTextInterface );
-      ( (ComboVar) combo ).addModifyListener( lsModCombo );
-      ( (ComboVar) combo ).setItems( opt );
-      ( (ComboVar) combo ).setText( row.getText( colnr ) );
+      ComboVar widget = (ComboVar) combo;
+      props.setLook( widget, Props.WIDGET_STYLE_TABLE );
+      widget.addTraverseListener( lsTraverse );
+      widget.addModifyListener( lsModCombo );
+      widget.addFocusListener( lsFocusCombo );
+
+      widget.setItems( opt );
+      widget.setText( row.getText( colnr ) );
 
       if ( lsMod != null ) {
-        ( (ComboVar) combo ).addModifyListener( lsMod );
+        widget.addModifyListener( lsMod );
       }
-      ( (ComboVar) combo ).addModifyListener( lsUndo );
+      widget.addModifyListener( lsUndo );
+      widget.setToolTipText( colinfo.getToolTip() == null ? "" : colinfo.getToolTip() );
+      widget.setVisible( true );
+      widget.addKeyListener( lsKeyCombo );
+      editor.horizontalAlignment = SWT.LEFT;
+      editor.layout();
+
+      // Open the text editor in the correct column of the selected row.
+      editor.setEditor( widget, row, colnr );
+      widget.setFocus();
+      widget.layout();
     } else {
       combo = new CCombo( table, colinfo.isReadOnly() ? SWT.READ_ONLY : SWT.NONE );
-      ( (CCombo) combo ).addModifyListener( lsModCombo );
-      ( (CCombo) combo ).setItems( opt );
-      ( (CCombo) combo ).setVisibleItemCount( opt.length );
-      ( (CCombo) combo ).setText( row.getText( colnr ) );
+      CCombo widget = (CCombo) combo;
+      props.setLook( widget, Props.WIDGET_STYLE_TABLE );
+      widget.addTraverseListener( lsTraverse );
+      widget.addModifyListener( lsModCombo );
+      widget.addFocusListener( lsFocusCombo );
+
+      widget.setItems( opt );
+      widget.setVisibleItemCount( opt.length );
+      widget.setText( row.getText( colnr ) );
       if ( lsMod != null ) {
-        ( (CCombo) combo ).addModifyListener( lsMod );
+        widget.addModifyListener( lsMod );
       }
-      ( (CCombo) combo ).addModifyListener( lsUndo );
+      widget.addModifyListener( lsUndo );
+      widget.setToolTipText( colinfo.getToolTip() == null ? "" : colinfo.getToolTip() );
+      widget.setVisible( true );
+      widget.addKeyListener( lsKeyCombo );
       if ( colinfo.getSelectionAdapter() != null ) {
-        ( (CCombo) combo ).addSelectionListener( columns[colnr - 1].getSelectionAdapter() );
+        widget.addSelectionListener( columns[colnr - 1].getSelectionAdapter() );
       }
+      editor.horizontalAlignment = SWT.LEFT;
+      editor.layout();
+
+      // Open the text editor in the correct column of the selected row.
+      editor.setEditor( widget, row, colnr );
+      widget.setFocus();
+      widget.layout();
     }
-
-    props.setLook( combo, Props.WIDGET_STYLE_TABLE );
-    combo.addFocusListener( lsFocusCombo );
-    combo.addTraverseListener( lsTraverse );
-    combo.setToolTipText( colinfo.getToolTip() == null ? "" : colinfo.getToolTip() );
-    combo.setVisible( true );
-    combo.addKeyListener( lsKeyCombo );
-
-    editor.horizontalAlignment = SWT.LEFT;
-    editor.layout();
-
-    // Open the text editor in the correct column of the selected row.
-    editor.setEditor( combo, row, colnr );
-    combo.setFocus();
-
-    combo.layout();
   }
 
   private void editButton( TableItem row, int rownr, int colnr ) {
