@@ -25,7 +25,9 @@ import org.pentaho.di.ui.core.PropsUI;
 import org.pentaho.di.ui.spoon.Spoon;
 import org.pentaho.repo.dialog.RepositoryOpenSaveDialog;
 
+import java.util.Calendar;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.function.Supplier;
 
@@ -51,7 +53,12 @@ public class RepositoryOpenSaveExtensionPoint implements ExtensionPointInterface
     String repoAndUser = getRepository().getName() + ":" + username;
     List<LastUsedFile>
       lastUsedFileList = propsUI.getLastUsedRepoFiles().getOrDefault( repoAndUser, Collections.emptyList() );
-    if ( lastUsedFileList.size() > 0 ) {
+
+    Calendar calendar = Calendar.getInstance();
+    calendar.add( Calendar.DATE, -30 );
+    Date dateBefore = calendar.getTime();
+
+    if ( lastUsedFileList.size() > 0 && lastUsedFileList.get( 0 ).getLastOpened().after( dateBefore ) ) {
       lastUsedFile = lastUsedFileList.get( 0 );
     }
 
