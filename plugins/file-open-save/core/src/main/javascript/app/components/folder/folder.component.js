@@ -152,7 +152,7 @@ define([
       for (var i = 0; i < depthDiff; i++) {
         childPath = childPath.slice(0, childPath.lastIndexOf("/"));
       }
-      return childPath === folder.path;
+      return childPath === folder.path || childPath === "";
     }
 
     /**
