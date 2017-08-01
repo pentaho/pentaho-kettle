@@ -30,8 +30,9 @@
  **/
 define([
   "text!./breadcrumb.html",
+  "../utils",
   "css!./breadcrumb.css"
-], function(breadcrumbTemplate) {
+], function(breadcrumbTemplate, utils) {
   "use strict";
 
   var options = {
@@ -146,14 +147,14 @@ define([
       switch (vm.parts.length) {
         case 1:
           mw1 = mw0;
-          title1 = _getTextWidth(vm.parts[0].part) > mw1 ? vm.parts[0].part : "";
+          title1 = utils.getTextWidth(vm.parts[0].part, _font) > mw1 ? vm.parts[0].part : "";
           break;
         case 2:
           mw0 = extras ? 187 : 206;
           mw1 = mw0;
           mw2 = mw0;
-          f1Width = _getTextWidth(vm.parts[0].part);
-          f2Width = _getTextWidth(vm.parts[1].part);
+          f1Width = utils.getTextWidth(vm.parts[0].part, _font);
+          f2Width = utils.getTextWidth(vm.parts[1].part, _font);
           if (f1Width < mw0) {
             mw1 = f1Width;
             mw2 = mw0 + mw0 - mw1;
@@ -167,9 +168,9 @@ define([
           mw1 = mw0;
           mw2 = mw0;
           mw3 = mw0;
-          f1Width = _getTextWidth(vm.parts[0].part);
-          f2Width = _getTextWidth(vm.parts[1].part);
-          f3Width = _getTextWidth(vm.parts[2].part);
+          f1Width = utils.getTextWidth(vm.parts[0].part, _font);
+          f2Width = utils.getTextWidth(vm.parts[1].part, _font);
+          f3Width = utils.getTextWidth(vm.parts[2].part, _font);
           if (f1Width < mw0) {
             mw1 = f1Width;
             mw2 = mw0 + (mw0 - mw1) / 2;
@@ -188,20 +189,6 @@ define([
       }
       vm.maxWidths = [mw1, mw2, mw3];
       vm.titles = [title1, title2, title3];
-    }
-
-    /**
-     * Calculates the display width of the text parameter
-     * @param {Object} text - String object
-     * @return {number}
-     * @private
-     */
-    function _getTextWidth(text) {
-      var canvas = document.createElement("canvas");
-      var context = canvas.getContext("2d");
-      context.font = _font;
-      var metrics = context.measureText(text);
-      return (Math.ceil(metrics.width) + 1);
     }
   }
 
