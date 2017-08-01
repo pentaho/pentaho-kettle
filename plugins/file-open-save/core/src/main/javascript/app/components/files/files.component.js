@@ -85,7 +85,7 @@ define([
     function onInit() {
       vm.nameHeader = "Name";
       vm.typeHeader = "Type";
-      vm.lastSaveHeader = "Last saved";
+      vm.lastSaveHeader = "Modified";
       _setSort(0, false, 'name');
       vm.numResults = 0;
     }
