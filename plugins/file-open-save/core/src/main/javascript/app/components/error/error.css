@@ -51,13 +51,14 @@ error .errorHeader {
 
 error .errorMiddle {
   margin-bottom: 30px;
-  line-height: 16px;
+  line-height: 18px;
+  word-wrap: break-word;
 }
 
 error .errorMiddleTop {
   margin-bottom: 20px;
   overflow: hidden;
-  max-height: 32px;
+  max-height: 72px;
 }
 
 error .errorBottom button {
