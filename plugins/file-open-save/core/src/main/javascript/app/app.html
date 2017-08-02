@@ -14,7 +14,7 @@
       <div id="headerSearchId" class="headerSearch" ng-class="{'focused': vm.isInSearch === true || searchBoxHasFocus === true }">
         <div class="headerSearchLeft" ng-click="vm.focusSearchBox()" ng-class="{'blueState': vm.searchString !== '' || vm.isInSearch === true || searchBoxHasFocus === true }" ></div>
         <input id="searchBoxId" type="text" class="searchBox"
-               placeholder="{{::vm.searchPlaceholder}} {{vm.selectedFolder}}"
+               placeholder="{{vm.getPlaceholder()}}"
                ng-blur="vm.storeRecentSearch();searchBoxHasFocus=false"
                ng-focus="vm.displayRecentSearches();searchBoxHasFocus=true"
                ng-change="vm.doSearch()"

@@ -32,9 +32,10 @@ define([
   "./services/data.service",
   "text!./app.html",
   "pentaho/i18n-osgi!file-open-save.messages",
+  "./components/utils",
   "angular",
   "css!./app.css"
-], function(dataService, template, i18n, angular) {
+], function(dataService, template, i18n, utils, angular) {
   "use strict";
 
   var options = {
@@ -55,6 +56,7 @@ define([
    * @param {Function} $location - Angular service used for parsing the URL in browser address bar
    */
   function appController(dt, $location, $scope, $timeout) {
+    var _font = "14px OpenSansRegular";
     var vm = this;
     vm.$onInit = onInit;
     vm.selectFolder = selectFolder;
@@ -82,6 +84,7 @@ define([
     vm.addDisabled = addDisabled;
     vm.deleteDisabled = deleteDisabled;
     vm.onKeyUp = onKeyUp;
+    vm.getPlaceholder = getPlaceholder;
     vm.selectedFolder = "";
     vm.fileToSave = "";
     vm.searchString = "";
@@ -692,6 +695,22 @@ define([
         }
         $scope.$apply();
       }
+    }
+
+    function getPlaceholder() {
+      var isIE = navigator.userAgent.indexOf("Trident") !== -1 && Boolean(document.documentMode);
+      var retVal = vm.searchPlaceholder + " " + vm.selectedFolder;
+      if (isIE && utils.getTextWidth(retVal, _font) > 210) {
+        var tmp = "";
+        for (var i = 0; i < retVal.length; i++) {
+          tmp = retVal.slice(0, i);
+          if (utils.getTextWidth(tmp, _font) > 196) {
+            break;
+          }
+        }
+        retVal = tmp + "...";
+      }
+      return retVal;
     }
 
     /**
