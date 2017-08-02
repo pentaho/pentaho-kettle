@@ -20,7 +20,6 @@
 
     <javax.ws.rs-api.version>2.0</javax.ws.rs-api.version>
     <guava.version>17.0</guava.version>
-    <xercesImpl.version>2.9.1</xercesImpl.version>
     <jackson-mapper-asl.version>1.9.2</jackson-mapper-asl.version>
     <mockito-all.version>1.9.5</mockito-all.version>
     <karaf.version>3.0.3</karaf.version>
@@ -227,12 +226,6 @@
       <groupId>pentaho</groupId>
       <artifactId>pentaho-vfs-browser</artifactId>
       <version>${pentaho-kettle.version}</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>xerces</groupId>
-      <artifactId>xercesImpl</artifactId>
-      <version>${xercesImpl.version}</version>
       <scope>test</scope>
     </dependency>
     <dependency>
