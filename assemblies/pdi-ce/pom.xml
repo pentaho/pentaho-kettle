@@ -905,7 +905,7 @@
                   <type>zip</type>
                 </artifactItem>
                 <artifactItem>
-                  <groupId>pentaho</groupId>
+                  <groupId>org.pentaho.di.plugins</groupId>
                   <artifactId>pdi-teradata-tpt-plugin-package</artifactId>
                   <version>${pdi-teradata-tpt-plugin-package.version}</version>
                   <type>zip</type>
