@@ -122,7 +122,10 @@ public enum KettleExtensionPoint {
     OpenMapping( "OpenMapping", "Trigger when opening a mapping from TransGraph" ),
 
     AfterDeleteRepositoryObject( "AfterDeleteRepositoryObject",
-      "After an object has been deleted from the repository" );
+      "After an object has been deleted from the repository" ),
+
+    TransformationCreateNew( "TransformationCreateNew", "Create a New Empty Transformation in Spoon" );
+
 
   public String id;
 

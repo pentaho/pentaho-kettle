@@ -1016,6 +1016,9 @@ public class TextFileOutputMeta extends BaseStepMeta implements StepMetaInterfac
     retval.append( "    " + XMLHandler.addTagValue( "fileNameField", fileNameField ) );
     retval.append( "    " + XMLHandler.addTagValue( "create_parent_folder", createparentfolder ) );
     retval.append( "    <file>" ).append( Const.CR );
+    if ( parentStepMeta != null && parentStepMeta.getParentTransMeta() != null ) {
+      parentStepMeta.getParentTransMeta().getNamedClusterEmbedManager().registerUrl( fileName );
+    }
     saveSource( retval, fileName );
     retval.append( "      " ).append( XMLHandler.addTagValue( "is_command", fileAsCommand ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "servlet_output", servletOutput ) );

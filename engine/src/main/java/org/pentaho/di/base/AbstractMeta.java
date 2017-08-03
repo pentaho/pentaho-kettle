@@ -22,11 +22,14 @@
 
 package org.pentaho.di.base;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.ImmutableList;
 
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.AttributesInterface;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.osgi.api.MetastoreLocatorOsgi;
+import org.pentaho.di.core.osgi.api.NamedClusterServiceOsgi;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.EngineMetaInterface;
 import org.pentaho.di.core.NotePadMeta;
@@ -59,6 +62,7 @@ import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.core.undo.TransAction;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.variables.Variables;
+import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.metastore.DatabaseMetaStoreUtil;
 import org.pentaho.di.repository.HasRepositoryInterface;
 import org.pentaho.di.repository.ObjectId;
@@ -70,6 +74,7 @@ import org.pentaho.di.shared.SharedObjectInterface;
 import org.pentaho.di.shared.SharedObjects;
 import org.pentaho.di.trans.HasDatabasesInterface;
 import org.pentaho.di.trans.HasSlaveServersInterface;
+import org.pentaho.di.trans.steps.named.cluster.NamedClusterEmbedManager;
 import org.pentaho.metastore.api.IMetaStore;
 import org.pentaho.metastore.api.IMetaStoreElement;
 import org.pentaho.metastore.api.IMetaStoreElementType;
@@ -164,6 +169,15 @@ public abstract class AbstractMeta implements ChangedFlagInterface, UndoInterfac
   protected String createdUser, modifiedUser;
 
   protected Date createdDate, modifiedDate;
+
+  protected NamedClusterServiceOsgi namedClusterServiceOsgi;
+
+  protected MetastoreLocatorOsgi metastoreLocatorOsgi;
+
+  @VisibleForTesting
+  protected NamedClusterEmbedManager namedClusterEmbedManager;
+
+  protected String embeddedMetastoreProviderKey;
 
   /**
    * If this is null, we load from the default shared objects file : $KETTLE_HOME/.kettle/shared.xml
@@ -1982,4 +1996,41 @@ public abstract class AbstractMeta implements ChangedFlagInterface, UndoInterfac
     boolean inRepo = Utils.isEmpty( getFilename() );
     return Objects.hash( name, inRepo, inRepo ? filename : getRepositoryDirectory().getPath() );
   }
+
+  public NamedClusterServiceOsgi getNamedClusterServiceOsgi() {
+    return namedClusterServiceOsgi;
+  }
+
+  public void setNamedClusterServiceOsgi( NamedClusterServiceOsgi namedClusterServiceOsgi ) {
+    this.namedClusterServiceOsgi = namedClusterServiceOsgi;
+  }
+
+  public MetastoreLocatorOsgi getMetastoreLocatorOsgi() {
+    return metastoreLocatorOsgi;
+  }
+
+  public void setMetastoreLocatorOsgi( MetastoreLocatorOsgi metastoreLocatorOsgi ) {
+    this.metastoreLocatorOsgi = metastoreLocatorOsgi;
+  }
+
+  public NamedClusterEmbedManager getNamedClusterEmbedManager( ) {
+    return namedClusterEmbedManager;
+  }
+
+  public void disposeEmbeddedMetastoreProvider() {
+    KettleVFS.closeEmbeddedFileSystem( embeddedMetastoreProviderKey );
+    if ( embeddedMetastoreProviderKey != null ) {
+      //Dispose of embedded metastore for this run
+      getMetastoreLocatorOsgi().disposeMetastoreProvider( embeddedMetastoreProviderKey );
+    }
+  }
+
+  public String getEmbeddedMetastoreProviderKey() {
+    return embeddedMetastoreProviderKey;
+  }
+
+  public void setEmbeddedMetastoreProviderKey( String embeddedMetastoreProviderKey ) {
+    this.embeddedMetastoreProviderKey = embeddedMetastoreProviderKey;
+  }
+
 }
