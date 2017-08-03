@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -14,7 +14,7 @@
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * WITHOUT WARRANTIES OR CONDITIONS OF Mockito.any KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
@@ -22,6 +22,8 @@
 
 package org.pentaho.di.trans.steps.databaselookup;
 
+import org.hamcrest.CoreMatchers;
+import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.mockito.Matchers;
@@ -56,17 +58,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.concurrent.TimeUnit;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyInt;
-import static org.mockito.Matchers.anyBoolean;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.*;
 
 /**
  * @author Andrey Khayrutdinov
@@ -93,7 +84,7 @@ public class DatabaseLookupUTest {
     lookup.init( meta, data );
     lookup.processRow( meta, data );
 
-    verify( db ).getLookup( any( PreparedStatement.class ), anyBoolean(), eq( true ) );
+    Mockito.verify( db ).getLookup( Mockito.any( PreparedStatement.class ), Mockito.anyBoolean(), Mockito.eq( false ) );
   }
 
 
@@ -101,21 +92,21 @@ public class DatabaseLookupUTest {
     StepMockHelper<DatabaseLookupMeta, DatabaseLookupData> mockHelper =
       new StepMockHelper<DatabaseLookupMeta, DatabaseLookupData>( "test DatabaseLookup", DatabaseLookupMeta.class,
         DatabaseLookupData.class );
-    when( mockHelper.logChannelInterfaceFactory.create( any(), any( LoggingObjectInterface.class ) ) )
+    Mockito.when( mockHelper.logChannelInterfaceFactory.create( Mockito.any(), Mockito.any( LoggingObjectInterface.class ) ) )
       .thenReturn( mockHelper.logChannelInterface );
-    when( mockHelper.trans.isRunning() ).thenReturn( true );
+    Mockito.when( mockHelper.trans.isRunning() ).thenReturn( true );
 
     RowMeta inputRowMeta = new RowMeta();
-    RowSet rowSet = mock( RowSet.class );
-    when( rowSet.getRowWait( anyLong(), any( TimeUnit.class ) ) ).thenReturn( new Object[ 0 ] ).thenReturn( null );
-    when( rowSet.getRowMeta() ).thenReturn( inputRowMeta );
+    RowSet rowSet = Mockito.mock( RowSet.class );
+    Mockito.when( rowSet.getRowWait( Mockito.anyLong(), Mockito.any( TimeUnit.class ) ) ).thenReturn( new Object[ 0 ] ).thenReturn( null );
+    Mockito.when( rowSet.getRowMeta() ).thenReturn( inputRowMeta );
 
-    when( mockHelper.trans.findRowSet( anyString(), anyInt(), anyString(), anyInt() ) ).thenReturn( rowSet );
+    Mockito.when( mockHelper.trans.findRowSet( Mockito.anyString(), Mockito.anyInt(), Mockito.anyString(), Mockito.anyInt() ) ).thenReturn( rowSet );
 
-    when( mockHelper.transMeta.findNextSteps( Matchers.any( StepMeta.class ) ) )
-      .thenReturn( Collections.singletonList( mock( StepMeta.class ) ) );
-    when( mockHelper.transMeta.findPreviousSteps( any( StepMeta.class ), anyBoolean() ) )
-      .thenReturn( Collections.singletonList( mock( StepMeta.class ) ) );
+    Mockito.when( mockHelper.transMeta.findNextSteps( Matchers.any( StepMeta.class ) ) )
+      .thenReturn( Collections.singletonList( Mockito.mock( StepMeta.class ) ) );
+    Mockito.when( mockHelper.transMeta.findPreviousSteps( Mockito.any( StepMeta.class ), Mockito.anyBoolean() ) )
+      .thenReturn( Collections.singletonList( Mockito.mock( StepMeta.class ) ) );
 
     return mockHelper;
   }
@@ -143,8 +134,8 @@ public class DatabaseLookupUTest {
 
     meta.setReturnValueDefault( new String[] { "" } );
 
-    meta = spy( meta );
-    doAnswer( new Answer() {
+    meta = Mockito.spy( meta );
+    Mockito.doAnswer( new Answer() {
       @Override public Object answer( InvocationOnMock invocation ) throws Throwable {
         RowMetaInterface row = (RowMetaInterface) invocation.getArguments()[ 0 ];
         ValueMetaInterface v = new ValueMetaBinary( BINARY_FIELD );
@@ -152,13 +143,13 @@ public class DatabaseLookupUTest {
         return null;
       }
     } ).when( meta ).getFields(
-      any( RowMetaInterface.class ),
-      anyString(),
-      any( RowMetaInterface[].class ),
-      any( StepMeta.class ),
-      any( VariableSpace.class ),
-      any( Repository.class ),
-      any( IMetaStore.class ) );
+      Mockito.any( RowMetaInterface.class ),
+      Mockito.anyString(),
+      Mockito.any( RowMetaInterface[].class ),
+      Mockito.any( StepMeta.class ),
+      Mockito.any( VariableSpace.class ),
+      Mockito.any( Repository.class ),
+      Mockito.any( IMetaStore.class ) );
     return meta;
   }
 
@@ -169,20 +160,20 @@ public class DatabaseLookupUTest {
 
 
   private Database createVirtualDb( DatabaseMeta meta ) throws Exception {
-    ResultSet rs = mock( ResultSet.class );
-    when( rs.getMetaData() ).thenReturn( mock( ResultSetMetaData.class ) );
+    ResultSet rs = Mockito.mock( ResultSet.class );
+    Mockito.when( rs.getMetaData() ).thenReturn( Mockito.mock( ResultSetMetaData.class ) );
 
-    PreparedStatement ps = mock( PreparedStatement.class );
-    when( ps.executeQuery() ).thenReturn( rs );
+    PreparedStatement ps = Mockito.mock( PreparedStatement.class );
+    Mockito.when( ps.executeQuery() ).thenReturn( rs );
 
-    Connection connection = mock( Connection.class );
-    when( connection.prepareStatement( anyString() ) ).thenReturn( ps );
+    Connection connection = Mockito.mock( Connection.class );
+    Mockito.when( connection.prepareStatement( Mockito.anyString() ) ).thenReturn( ps );
 
-    Database db = new Database( mock( LoggingObjectInterface.class ), meta );
+    Database db = new Database( Mockito.mock( LoggingObjectInterface.class ), meta );
     db.setConnection( connection );
 
-    db = spy( db );
-    doNothing().when( db ).normalConnect( anyString() );
+    db = Mockito.spy( db );
+    Mockito.doNothing().when( db ).normalConnect( Mockito.anyString() );
 
     ValueMetaInterface binary = new ValueMetaString( BINARY_FIELD );
     binary.setStorageType( ValueMetaInterface.STORAGE_TYPE_BINARY_STRING );
@@ -193,7 +184,7 @@ public class DatabaseLookupUTest {
     metaByQuerying.addValueMeta( binary );
     metaByQuerying.addValueMeta( id );
 
-    doReturn( metaByQuerying ).when( db ).getTableFields( anyString() );
+    Mockito.doReturn( metaByQuerying ).when( db ).getTableFields( Mockito.anyString() );
 
     return db;
   }
@@ -205,10 +196,10 @@ public class DatabaseLookupUTest {
       new DatabaseLookup( mocks.stepMeta, mocks.stepDataInterface, 1, mocks.transMeta, mocks.trans );
     lookup = Mockito.spy( lookup );
 
-    doReturn( db ).when( lookup ).getDatabase( eq( dbMeta ) );
+    Mockito.doReturn( db ).when( lookup ).getDatabase( Mockito.eq( dbMeta ) );
     for ( RowSet rowSet : lookup.getOutputRowSets() ) {
-      if ( mockingDetails( rowSet ).isMock() ) {
-        when( rowSet.putRow( any( RowMetaInterface.class ), any( Object[].class ) ) ).thenReturn( true );
+      if ( Mockito.mockingDetails( rowSet ).isMock() ) {
+        Mockito.when( rowSet.putRow( Mockito.any( RowMetaInterface.class ), Mockito.any( Object[].class ) ) ).thenReturn( true );
       }
     }
 
@@ -220,7 +211,7 @@ public class DatabaseLookupUTest {
 
     StepMockHelper<DatabaseLookupMeta, DatabaseLookupData> mockHelper =
       new StepMockHelper<>( "Test", DatabaseLookupMeta.class, DatabaseLookupData.class );
-    when( mockHelper.logChannelInterfaceFactory.create( any(), any( LoggingObjectInterface.class ) ) )
+    Mockito.when( mockHelper.logChannelInterfaceFactory.create( Mockito.any(), Mockito.any( LoggingObjectInterface.class ) ) )
       .thenReturn( mockHelper.logChannelInterface );
 
     DatabaseLookup look =
@@ -252,30 +243,30 @@ public class DatabaseLookupUTest {
     lookData.conditions[ 0 ] = DatabaseLookupMeta.CONDITION_GE;
     Object[] dataFromCache = lookData.cache.getRowFromCache( lookupMeta, rowToCache );
 
-    assertArrayEquals( dataFromCache, add1 );
+    Assert.assertArrayEquals( dataFromCache, add1 );
   }
 
 
   @Test
   public void createsReadOnlyCache_WhenReadAll_AndNotAllEquals() throws Exception {
     DatabaseLookupData data = getCreatedData( false );
-    assertThat( data.cache, is( instanceOf( ReadAllCache.class ) ) );
+    Assert.assertThat( data.cache, CoreMatchers.is( CoreMatchers.instanceOf( ReadAllCache.class ) ) );
   }
 
   @Test
   public void createsReadDefaultCache_WhenReadAll_AndAllEquals() throws Exception {
     DatabaseLookupData data = getCreatedData( true );
-    assertThat( data.cache, is( instanceOf( DefaultCache.class ) ) );
+    Assert.assertThat( data.cache, CoreMatchers.is( CoreMatchers.instanceOf( DefaultCache.class ) ) );
   }
 
   private DatabaseLookupData getCreatedData( boolean allEquals ) throws Exception {
-    Database db = mock( Database.class );
-    when( db.getRows( anyString(), anyInt() ) )
+    Database db = Mockito.mock( Database.class );
+    Mockito.when( db.getRows( Mockito.anyString(), Mockito.anyInt() ) )
       .thenReturn( Collections.singletonList( new Object[] { 1L } ) );
 
     RowMeta returnRowMeta = new RowMeta();
     returnRowMeta.addValueMeta( new ValueMetaInteger() );
-    when( db.getReturnRowMeta() ).thenReturn( returnRowMeta );
+    Mockito.when( db.getReturnRowMeta() ).thenReturn( returnRowMeta );
 
     StepMockHelper<DatabaseLookupMeta, DatabaseLookupData> mockHelper = createMockHelper();
     DatabaseLookupMeta meta = createTestMeta();
@@ -303,7 +294,7 @@ public class DatabaseLookupUTest {
     DatabaseLookupMeta meta = new DatabaseLookupMeta();
     meta.setCached( true );
     meta.setLoadingAllDataInCache( true );
-    meta.setDatabaseMeta( mock( DatabaseMeta.class ) );
+    meta.setDatabaseMeta( Mockito.mock( DatabaseMeta.class ) );
     // it's ok here, we won't do actual work
     meta.allocate( 1, 0 );
     meta.setStreamKeyField1( new String[] { "Test" } );
@@ -314,8 +305,8 @@ public class DatabaseLookupUTest {
                                           StepMockHelper<DatabaseLookupMeta, DatabaseLookupData> mockHelper,
                                           DatabaseLookupMeta meta ) throws KettleException {
     DatabaseLookup step = spyLookup( mockHelper, db, meta.getDatabaseMeta() );
-    doNothing().when( step ).determineFieldsTypesQueryingDb();
-    doReturn( null ).when( step ).lookupValues( any( RowMetaInterface.class ), any( Object[].class ) );
+    Mockito.doNothing().when( step ).determineFieldsTypesQueryingDb();
+    Mockito.doReturn( null ).when( step ).lookupValues( Mockito.any( RowMetaInterface.class ), Mockito.any( Object[].class ) );
 
     RowMeta input = new RowMeta();
     input.addValueMeta( new ValueMetaInteger( "Test" ) );
@@ -326,14 +317,14 @@ public class DatabaseLookupUTest {
 
   @Test
   public void createsReadDefaultCache_AndUsesOnlyNeededFieldsFromMeta() throws Exception {
-    Database db = mock( Database.class );
-    when( db.getRows( anyString(), anyInt() ) )
+    Database db = Mockito.mock( Database.class );
+    Mockito.when( db.getRows( Mockito.anyString(), Mockito.anyInt() ) )
       .thenReturn( Arrays.asList( new Object[] { 1L }, new Object[] { 2L } ) );
 
     RowMeta returnRowMeta = new RowMeta();
     returnRowMeta.addValueMeta( new ValueMetaInteger() );
     returnRowMeta.addValueMeta( new ValueMetaInteger() );
-    when( db.getReturnRowMeta() ).thenReturn( returnRowMeta );
+    Mockito.when( db.getReturnRowMeta() ).thenReturn( returnRowMeta );
 
     StepMockHelper<DatabaseLookupMeta, DatabaseLookupData> mockHelper = createMockHelper();
     DatabaseLookupMeta meta = createTestMeta();
@@ -352,7 +343,7 @@ public class DatabaseLookupUTest {
     data.lookupMeta = new RowMeta();
     data.lookupMeta.addValueMeta( new ValueMetaInteger() );
 
-    assertNotNull( data.cache.getRowFromCache( data.lookupMeta, new Object[] { 1L } ) );
-    assertNotNull( data.cache.getRowFromCache( data.lookupMeta, new Object[] { 2L } ) );
+    Assert.assertNotNull( data.cache.getRowFromCache( data.lookupMeta, new Object[] { 1L } ) );
+    Assert.assertNotNull( data.cache.getRowFromCache( data.lookupMeta, new Object[] { 2L } ) );
   }
 }
