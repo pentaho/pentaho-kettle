@@ -282,14 +282,10 @@ public class TableView extends Composite {
 
     setLayout( controlLayout );
 
-    // setLayout(new GridLayout());
-
     // Create table, add columns & rows...
     table = new Table( this, style | SWT.MULTI );
     props.setLook( table, Props.WIDGET_STYLE_TABLE );
     table.setLinesVisible( true );
-    // table.setLayout(new FormLayout());
-    // table.setLayoutData(new GridData(GridData.FILL_BOTH));
 
     FormData fdTable = new FormData();
     fdTable.left = new FormAttachment( 0, 0 );
@@ -1478,6 +1474,7 @@ public class TableView extends Composite {
 
   private void applyTextChange( TableItem row, int rownr, int colnr ) {
     String textData = getTextWidgetValue( colnr );
+
     row.setText( colnr, textData );
     text.dispose();
     table.setFocus();
@@ -2232,7 +2229,11 @@ public class TableView extends Composite {
   }
 
   private void setColumnWidthBasedOnTextField( final int colnr, final boolean useVariables ) {
+    if ( !columns[colnr - 1].isAutoResize() ) {
+      return;
+    }
     String str = getTextWidgetValue( colnr );
+
     int strmax = TableView.dummyGC.textExtent( str, SWT.DRAW_TAB | SWT.DRAW_DELIMITER ).x + 20;
     int colmax = tablecolumn[colnr].getWidth();
     if ( strmax > colmax ) {
