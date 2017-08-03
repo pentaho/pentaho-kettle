@@ -38,11 +38,11 @@ define([
 
   var options = {
     bindings: {
-      errorType: '<',
-      errorFile: '<',
-      errorFolder: '<',
-      onErrorConfirm: '&',
-      onErrorCancel: '&'
+      errorFile: "<",
+      errorFolder: "<",
+      errorType: "<",
+      onErrorCancel: "&",
+      onErrorConfirm: "&"
     },
     template: errorTemplate,
     controllerAs: "vm",
