@@ -33,6 +33,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.eclipse.jface.fieldassist.ControlDecoration;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.SWTException;
 import org.eclipse.swt.custom.CCombo;
@@ -157,6 +158,7 @@ public class TableView extends Composite {
   private boolean sortable;
   private int lastRowCount;
   private boolean fieldChanged;
+  private boolean insertImage;
 
   private Menu mRow;
 
@@ -185,6 +187,7 @@ public class TableView extends Composite {
   protected int textWidgetCaretPosition;
 
   private VariableSpace variables;
+  private ControlDecoration controlDecoration;
 
   private boolean showingBlueNullValues;
   private boolean showingConversionErrorsInline;
@@ -220,11 +223,16 @@ public class TableView extends Composite {
 
   public TableView( VariableSpace space, Composite parent, int style, ColumnInfo[] columnInfo, int nrRows,
       boolean readOnly, ModifyListener lsm, PropsUI pr ) {
-    this( space, parent, style, columnInfo, nrRows, false, lsm, pr, true );
+    this( space, parent, style, columnInfo, nrRows, readOnly, lsm, pr, true );
   }
 
   public TableView( VariableSpace space, Composite parent, int style, ColumnInfo[] columnInfo, int nrRows,
       boolean readOnly, ModifyListener lsm, PropsUI pr, final boolean addIndexColumn ) {
+    this( space, parent, style, columnInfo, nrRows, readOnly, lsm, pr, addIndexColumn, false );
+  }
+
+  public TableView( VariableSpace space, Composite parent, int style, ColumnInfo[] columnInfo, int nrRows,
+      boolean readOnly, ModifyListener lsm, PropsUI pr, final boolean addIndexColumn, final boolean insertImage ) {
     super( parent, SWT.NO_BACKGROUND | SWT.NO_FOCUS | SWT.NO_MERGE_PAINTS | SWT.NO_RADIO_GROUP );
     this.parent = parent;
     this.columns = columnInfo;
@@ -234,6 +242,7 @@ public class TableView extends Composite {
     this.clipboard = null;
     this.variables = space;
     this.addIndexColumn = addIndexColumn;
+    this.insertImage = insertImage;
 
     sortfield = 0;
     sortfieldLast = -1;
@@ -286,6 +295,14 @@ public class TableView extends Composite {
 
     // Create table, add columns & rows...
     table = new Table( this, style | SWT.MULTI );
+
+    Image image = GUIResource.getInstance().getImageVariable();
+    if ( insertImage ) {
+      controlDecoration = new ControlDecoration( table, SWT.TOP | SWT.RIGHT );
+      controlDecoration.setImage( image );
+      controlDecoration.setDescriptionText( BaseMessages.getString( PKG, "TextVar.tooltip.InsertVariable" ) );
+    }
+
     props.setLook( table, Props.WIDGET_STYLE_TABLE );
     table.setLinesVisible( true );
     // table.setLayout(new FormLayout());
@@ -2324,10 +2341,11 @@ public class TableView extends Composite {
           buffer.insert( position, string );
           table.getItem( rownr ).setText( colnr, buffer.toString() );
           edit( rownr, colnr );
+          setModified();
         }
       };
 
-      combo = new ComboVar( variables, table, SWT.SINGLE | SWT.LEFT | SWT.BORDER, getCaretPositionInterface, insertTextInterface );
+      combo = new ComboVar( variables, table, SWT.SINGLE | SWT.LEFT | SWT.BORDER, null, getCaretPositionInterface, insertTextInterface, !insertImage );
       ComboVar widget = (ComboVar) combo;
       props.setLook( widget, Props.WIDGET_STYLE_TABLE );
       widget.addTraverseListener( lsTraverse );
