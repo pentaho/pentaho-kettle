@@ -243,6 +243,17 @@ public class RunConfigurationManagerTest {
       public IMetaStore getMetastore() {
         return memoryMetaStore;
       }
+
+      @Override public String setEmbeddedMetastore( IMetaStore metastore ) {
+        return null;
+      }
+
+      @Override public void disposeMetastoreProvider( String providerKey ) {
+      }
+
+      @Override public IMetaStore getExplicitMetastore( String providerKey ) {
+        return null;
+      }
     };
   }
 }

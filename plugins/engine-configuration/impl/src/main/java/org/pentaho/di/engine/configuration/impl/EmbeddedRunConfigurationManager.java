@@ -63,6 +63,17 @@ public class EmbeddedRunConfigurationManager {
       public IMetaStore getMetastore() {
         return embeddedMetaStore;
       }
+
+      @Override public String setEmbeddedMetastore( IMetaStore metastore ) {
+        return null;
+      }
+
+      @Override public void disposeMetastoreProvider( String providerKey ) {
+
+      }
+      @Override public IMetaStore getExplicitMetastore( String providerKey ) {
+        return null;
+      }
     };
   }
 
