@@ -10,7 +10,7 @@
   <modelVersion>4.0.0</modelVersion>
 
   <artifactId>pdi-autodoc-plugin-impl</artifactId>
-  <name>PDI Autodoc Step Plugin Impl</name>
+  <name>PDI AutoDoc Step Plugin Impl</name>
 
   <properties>
     <kettle.version>8.0-SNAPSHOT</kettle.version>
@@ -30,12 +30,24 @@
       <version>${kettle.version}</version>
       <scope>provided</scope>
     </dependency>
-
     <dependency>
-      <groupId>org.pentaho.reporting.engine</groupId>
-      <artifactId>classic-core</artifactId>
-      <version>${pentaho-reporting.version}</version>
+      <groupId>pentaho-kettle</groupId>
+      <artifactId>kettle-ui-swt</artifactId>
+      <version>${kettle.version}</version>
       <scope>provided</scope>
+    </dependency>
+
+    <!-- SWT it required to compile any version of any architecture will work -->
+    <dependency>
+      <groupId>org.eclipse.swt</groupId>
+      <artifactId>org.eclipse.swt.gtk.linux.x86_64</artifactId>
+      <scope>provided</scope>
+      <exclusions>
+        <exclusion>
+          <groupId>*</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
 
     <dependency>

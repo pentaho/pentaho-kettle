@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -226,10 +226,11 @@ public class KettleReportBuilder {
     // Optionally include an image of the transformation...
     //
     if ( options.isIncludingImage() ) {
-      String packName = KettleReportBuilder.class.getPackage().getName();
+      // for this to work the reporting engine must be able to see our classes, we do this by changing the thread
+      // classloader to be the plugin's classloader. see #render()
       String bshCode =
         "Object getValue() { "
-          + Const.CR + "  return new " + packName + ".TransJobDrawable(dataRow, "
+          + Const.CR + "  return new " + TransJobDrawable.class.getName() + "(dataRow, "
           + ( options.getOutputType() == OutputType.PDF ? "true" : "false" ) + ");" + Const.CR + "}";
       BSHExpression bshExpression = new BSHExpression();
       bshExpression.setExpression( bshCode );
@@ -291,24 +292,33 @@ public class KettleReportBuilder {
 
     createReport();
 
-    switch ( options.getOutputType() ) {
-      case PDF:
-        PdfReportUtil.createPDF( report, targetFilename );
-        break;
-      case DOC:
-        RTFReportUtil.createRTF( report, targetFilename );
-        break;
-      case XLS:
-        ExcelReportUtil.createXLS( report, targetFilename );
-        break;
-      case HTML:
-        HtmlReportUtil.createDirectoryHTML( report, targetFilename );
-        break;
-      case CSV:
-        CSVReportUtil.createCSV( report, targetFilename );
-        break;
-      default:
-        break;
+    ClassLoader originalClassloader = Thread.currentThread().getContextClassLoader();
+
+    try {
+      // we need to change the current classloader for the reporting to find our plugin classes
+      Thread.currentThread().setContextClassLoader( KettleReportBuilder.class.getClassLoader() );
+
+      switch ( options.getOutputType() ) {
+        case PDF:
+          PdfReportUtil.createPDF( report, targetFilename );
+          break;
+        case DOC:
+          RTFReportUtil.createRTF( report, targetFilename );
+          break;
+        case XLS:
+          ExcelReportUtil.createXLS( report, targetFilename );
+          break;
+        case HTML:
+          HtmlReportUtil.createDirectoryHTML( report, targetFilename );
+          break;
+        case CSV:
+          CSVReportUtil.createCSV( report, targetFilename );
+          break;
+        default:
+          break;
+      }
+    } finally {
+      Thread.currentThread().setContextClassLoader( originalClassloader );
     }
   }
 

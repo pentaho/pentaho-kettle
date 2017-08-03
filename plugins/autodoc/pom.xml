@@ -11,7 +11,7 @@
 
   <artifactId>autodoc</artifactId>
   <packaging>pom</packaging>
-  <name>PDI Autodoc Step Plugin</name>
+  <name>PDI AutoDoc Step Plugin</name>
   <modules>
     <module>impl</module>
     <module>assemblies</module>
