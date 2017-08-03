@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -55,6 +55,7 @@ public class ColumnInfo {
   private String button_text;
   private boolean hide_negative;
   private int width = -1;
+  private boolean autoResize = true;
 
   private ValueMetaInterface valueMeta;
 
@@ -403,5 +404,19 @@ public class ColumnInfo {
 
   public int getWidth() {
     return this.width;
+  }
+
+  /**
+   * @return if should be resized to accommodate contents
+   */
+  public boolean isAutoResize() {
+    return autoResize;
+  }
+
+  /**
+   * If should be resized to accommodate contents. Default is <code>true</code>.
+   */
+  public void setAutoResize( boolean resize ) {
+    this.autoResize = resize;
   }
 }
