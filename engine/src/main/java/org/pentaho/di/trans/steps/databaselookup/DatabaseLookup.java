@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -137,8 +137,7 @@ public class DatabaseLookup extends BaseStep implements StepInterface {
         }
 
         data.db.setValuesLookup( data.lookupMeta, lookupRow );
-        // PDI-8373
-        add = data.db.getLookup( meta.isFailingOnMultipleResults(), meta.getDatabaseMeta().isMySQLVariant() );
+        add = data.db.getLookup( meta.isFailingOnMultipleResults() );
         cache_now = true;
       }
     }
@@ -187,11 +186,7 @@ public class DatabaseLookup extends BaseStep implements StepInterface {
           ValueMetaInterface returned = data.db.getReturnRowMeta().getValueMeta( i );
           ValueMetaInterface expected = data.returnMeta.getValueMeta( i );
 
-          if ( returned != null && types[ i ] > 0
-            && ( types[ i ] != returned.getType()
-            ||
-              returned.getType() == ValueMetaInterface.TYPE_STRING
-                && returned.getStorageType() == ValueMetaInterface.STORAGE_TYPE_BINARY_STRING ) ) {
+          if ( returned != null && types[ i ] > 0 && types[ i ] != returned.getType() ) {
             // Set the type to the default return type
             add[ i ] = expected.convertData( returned, add[ i ] );
           }
