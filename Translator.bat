@@ -26,6 +26,9 @@ REM **************************************************
 REM ** Libraries used by Kettle:                    **
 REM **************************************************
 
+REM after build source, unzip "assemblies\target\*.zip/data-integration" into RUNDIR
+REM run from cmd like that: "translator.bat translator.xml" where "*.xml" is parameter %1% for XMLFILE
+
 set RUNDIR=%CD%\dist
 set XMLFILE=%CD%\%1%
 set SRCDIR=%CD%\%2%

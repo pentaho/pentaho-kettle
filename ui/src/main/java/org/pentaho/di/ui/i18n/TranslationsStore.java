@@ -52,9 +52,10 @@ public class TranslationsStore {
   private LogChannelInterface log;
 
   /**
+   * @param log
    * @param localeList
-   * @param messagesPackages
-   * @param map
+   * @param mainLocale
+   * @param sourcePackageOccurrences
    */
   public TranslationsStore( LogChannelInterface log, List<String> localeList, String mainLocale,
     Map<String, Map<String, List<KeyOccurrence>>> sourcePackageOccurrences ) {
@@ -125,7 +126,7 @@ public class TranslationsStore {
    *
    * @param locale
    *          the locale to hunt for
-   * @param sourceFolder
+   * @field sourceFolder
    *          the source folder to look in
    * @param messagesPackage
    *          the messages package to look in
@@ -228,6 +229,10 @@ public class TranslationsStore {
     List<MessagesStore> list = new ArrayList<MessagesStore>();
 
     LocaleStore localeStore = localeMap.get( searchLocale );
+
+    if (localeStore == null)
+      return list;
+
     for ( SourceStore sourceStore : localeStore.getSourceMap().values() ) {
       for ( MessagesStore messagesStore : sourceStore.getMessagesMap().values() ) {
         if ( messagesPackage == null || messagesStore.getMessagesPackage().equals( messagesPackage ) ) {
@@ -237,6 +242,37 @@ public class TranslationsStore {
     }
 
     return list;
+  }
+
+
+
+  /**
+   * @param searchLocale
+   *          the locale the filter on.
+   * @param messagesPackage
+   *          the messagesPackage to filter on. Specify null to get all message stores.
+   * @return the map of messages stores for each root for the main locale
+   */
+  public Map<String, List<MessagesStore>> getRootedMessagesStores(String searchLocale, String messagesPackage){
+    Map<String, List<MessagesStore>> map = new HashMap<>();
+
+    LocaleStore localeStore = localeMap.get( searchLocale );
+
+    if (localeStore == null)
+      return map;
+
+    for ( Map.Entry<String, SourceStore> sourceStore : localeStore.getSourceMap().entrySet() ) {
+      List<MessagesStore> list = new ArrayList<>();
+      for ( MessagesStore messagesStore : sourceStore.getValue().getMessagesMap().values() ) {
+        if ( messagesPackage == null || messagesStore.getMessagesPackage().equals( messagesPackage ) ) {
+          list.add( messagesStore );
+        }
+      }
+      if (list.size() > 0)
+        map.put(sourceStore.getKey(), list);
+    }
+
+    return map;
   }
 
   public MessagesStore findMainLocaleMessagesStore( String sourceFolder, String messagesPackage ) {

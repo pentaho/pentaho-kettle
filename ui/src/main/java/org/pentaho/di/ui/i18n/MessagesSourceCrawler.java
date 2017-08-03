@@ -212,6 +212,9 @@ public class MessagesSourceCrawler {
         }
       } );
 
+      if (javaFiles == null)
+        javaFiles = new FileObject[0];
+
       for ( FileObject javaFile : javaFiles ) {
 
         /**
@@ -372,16 +375,18 @@ public class MessagesSourceCrawler {
       if ( importPattern.matcher( line ).matches() ) {
         int beginIndex = line.indexOf( "import" ) + "import".length() + 1;
         int endIndex = line.indexOf( ";", beginIndex );
-        String expression = line.substring( beginIndex, endIndex );
-        // The last word is the Class imported...
-        // If it's * we ignore it.
-        //
-        int lastDotIndex = expression.lastIndexOf( '.' );
-        if ( lastDotIndex > 0 ) {
-          String packageName = expression.substring( 0, lastDotIndex );
-          String className = expression.substring( lastDotIndex + 1 );
-          if ( !"*".equals( className ) ) {
-            importedClasses.put( className, packageName );
+        if ( beginIndex >= 0 && endIndex >= 0 ) {
+          String expression = line.substring(beginIndex, endIndex);
+          // The last word is the Class imported...
+          // If it's * we ignore it.
+          //
+          int lastDotIndex = expression.lastIndexOf('.');
+          if (lastDotIndex > 0) {
+            String packageName = expression.substring(0, lastDotIndex);
+            String className = expression.substring(lastDotIndex + 1);
+            if (!"*".equals(className)) {
+              importedClasses.put(className, packageName);
+            }
           }
         }
       }
@@ -393,7 +398,9 @@ public class MessagesSourceCrawler {
       if ( importMessagesPattern.matcher( line ).matches() ) {
         int beginIndex = line.indexOf( "org.pentaho." );
         int endIndex = line.indexOf( ".Messages;" );
-        messagesPackage = line.substring( beginIndex, endIndex ); // if there is any specified, we take this one.
+        if ( beginIndex >= 0 && endIndex >= 0 ) {
+          messagesPackage = line.substring(beginIndex, endIndex); // if there is any specified, we take this one.
+        }
       }
 
       // Look for the value of the PKG value...
@@ -403,7 +410,9 @@ public class MessagesSourceCrawler {
       if ( stringPkgPattern.matcher( line ).matches() ) {
         int beginIndex = line.indexOf( '"' ) + 1;
         int endIndex = line.indexOf( '"', beginIndex );
-        messagesPackage = line.substring( beginIndex, endIndex );
+        if ( beginIndex >= 0 && endIndex >= 0 ) {
+          messagesPackage = line.substring(beginIndex, endIndex);
+        }
       }
 
       // Look for the value of the PKG value as a fully qualified class...
@@ -414,24 +423,25 @@ public class MessagesSourceCrawler {
 
         int fromIndex = line.indexOf( '=' ) + 1;
         int toIndex = line.indexOf( ".class", fromIndex );
-        String expression = Const.trim( line.substring( fromIndex, toIndex ) );
-        // System.out.println("expression : "+expression);
+        if ( fromIndex >= 0 && toIndex >= 0 ) {
+          String expression = Const.trim(line.substring(fromIndex, toIndex));
+          // System.out.println("expression : "+expression);
 
-        // If the expression doesn't contain any package, we'll look up the package in the imports. If not found there,
-        // it's a local package.
-        //
-        if ( expression.contains( "." ) ) {
-          int lastDotIndex = expression.lastIndexOf( '.' );
-          messagesPackage = expression.substring( 0, lastDotIndex );
-        } else {
-          String packageName = importedClasses.get( expression );
-          if ( packageName == null ) {
-            messagesPackage = classPackage; // Local package
+          // If the expression doesn't contain any package, we'll look up the package in the imports. If not found there,
+          // it's a local package.
+          //
+          if (expression.contains(".")) {
+            int lastDotIndex = expression.lastIndexOf('.');
+            messagesPackage = expression.substring(0, lastDotIndex);
           } else {
-            messagesPackage = packageName; // imported
+            String packageName = importedClasses.get(expression);
+            if (packageName == null) {
+              messagesPackage = classPackage; // Local package
+            } else {
+              messagesPackage = packageName; // imported
+            }
           }
         }
-
       }
 
       // Now look for occurrences of "Messages.getString(", "BaseMessages.getString(PKG", ...
@@ -564,7 +574,7 @@ public class MessagesSourceCrawler {
   /**
    * Get all the key occurrences for a certain messages package.
    *
-   * @param sourceFolder
+   * @field sourceFolder
    *          the source folder to reference
    * @param messagesPackage
    *          the package to hunt for

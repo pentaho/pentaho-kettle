@@ -27,6 +27,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.zip.ZipEntry;
@@ -273,6 +274,12 @@ public class Translator2 {
     filesToAvoid = new ArrayList<String>();
     xmlFolders = new ArrayList<SourceCrawlerXMLFolder>();
 
+    log.logBasic("sourceFolder [" + sourceFolder + ']');
+    sourceFolder = checkRootPath(sourceFolder, "\\");
+    sourceFolder = checkRootPath(sourceFolder, "/");
+
+    log.logBasic("sourceFolder without ends separator [" + sourceFolder + ']');
+
     FileObject file = KettleVFS.getFileObject( configFile );
     if ( file.exists() ) {
 
@@ -376,6 +383,17 @@ public class Translator2 {
     }
   }
 
+  private static String checkRootPath(String sourceFolder, String separator) {
+    if (sourceFolder.endsWith(separator)) {
+      int index = sourceFolder.lastIndexOf(separator);
+      if (index > 0)
+        return sourceFolder.substring(0, index);
+    }
+
+    return sourceFolder;
+  }
+
+
   public void open() {
     shell = new Shell( display );
     shell.setLayout( new FillLayout() );
@@ -453,7 +471,7 @@ public class Translator2 {
 
   public boolean quitFile() {
     java.util.List<MessagesStore> changedMessagesStores = store.getChangedMessagesStores();
-    if ( changedMessagesStores.size() > 0 ) {
+    if ( changedMessagesStores != null && changedMessagesStores.size() > 0 ) {
       MessageBox mb = new MessageBox( shell, SWT.YES | SWT.NO | SWT.ICON_WARNING );
       mb.setMessage( BaseMessages.getString( PKG, "i18nDialog.ChangedFilesWhenExit", changedMessagesStores.size()
         + "" ) );
@@ -798,7 +816,7 @@ public class Translator2 {
 
       StringBuilder msg = new StringBuilder();
       for ( MessagesStore messagesStore : changedMessagesStores ) {
-        String filename = messagesStore.getSaveFilename( messagesStore.getSourceFolder() );
+        String filename = messagesStore.calcFullPath( messagesStore.getSourceFolder() );
         messagesStore.setFilename( filename );
 
         msg.append( messagesStore.getFilename() );
@@ -838,57 +856,71 @@ public class Translator2 {
   }
 
   protected void saveFilesToZip() {
-    if ( saveFiles() ) {
-      java.util.List<MessagesStore> messagesStores = store.getMessagesStores( selectedLocale, null );
-      if ( messagesStores.size() > 0 ) {
+    if (!saveFiles()) return;
 
-        StringBuilder msg = new StringBuilder();
-        for ( MessagesStore messagesStore : messagesStores ) {
-          // Find the main locale variation for this messages store...
-          //
-          MessagesStore mainLocaleMessagesStore =
-            store.findMainLocaleMessagesStore( messagesStore.getSourceFolder(), messagesStore
-              .getMessagesPackage() );
-          String sourceDirectory = mainLocaleMessagesStore.getSourceDirectory( rootDirectories );
-          String filename = messagesStore.getSaveFilename( sourceDirectory );
-          messagesStore.setFilename( filename );
-          msg.append( filename ).append( Const.CR );
+    Map<String, java.util.List<MessagesStore>> messagesStores =
+            store.getRootedMessagesStores( selectedLocale, null );
+
+    if (messagesStores.size() <= 0) return;
+
+    StringBuilder msg = new StringBuilder();
+    Map<String, java.util.List<String>> filesMap = new HashMap<>();
+    for ( Map.Entry<String, java.util.List<MessagesStore>> pair : messagesStores.entrySet() ) {
+      java.util.List<String> files = new ArrayList<>(messagesStores.size());
+      java.util.List<String> rootDirs = Arrays.asList(pair.getKey());
+      log.logBasic("rootDir=" + pair.getKey());
+      for(MessagesStore messagesStore : pair.getValue()) {
+        String sourceDirectory = messagesStore.getSourceDirectory(rootDirs);
+
+        if (sourceDirectory == null){
+          log.logBasic("sourceDirectory is null for root [" + pair.getKey() + ']');
+          continue;
         }
 
-        // Ask for the target filename if we're still here...
+        String filename = messagesStore.calcFullPath(sourceDirectory);
 
-        FileDialog dialog = new FileDialog( shell, SWT.OPEN );
-        dialog.setFilterExtensions( new String[] { "*.zip", "*" } );
-        dialog.setFilterNames( new String[] {
-          BaseMessages.getString( PKG, "System.FileType.ZIPFiles" ),
-          BaseMessages.getString( PKG, "System.FileType.AllFiles" ) } );
-        if ( dialog.open() != null ) {
-          String zipFilename =
-            dialog.getFilterPath() + System.getProperty( "file.separator" ) + dialog.getFileName();
+        messagesStore.setFilename(filename);
+        msg.append(filename).append(Const.CR);
 
-          try {
-            ZipOutputStream out = new ZipOutputStream( new FileOutputStream( zipFilename ) );
-            byte[] buf = new byte[1024];
-            for ( MessagesStore messagesStore : messagesStores ) {
-              FileInputStream in = new FileInputStream( messagesStore.getFilename() );
-              out.putNextEntry( new ZipEntry( messagesStore.getFilename() ) );
-              int len;
-              while ( ( len = in.read( buf ) ) > 0 ) {
-                out.write( buf, 0, len );
-              }
-              out.closeEntry();
-              in.close();
-            }
-            out.close();
-          } catch ( Exception e ) {
-            new ErrorDialog(
-              shell, BaseMessages.getString( PKG, "i18n.UnexpectedError" ),
-              "There was an error saving the changed messages files:", e );
-          }
-
-        }
-
+        files.add(filename);
       }
+      if (files.size() > 0)
+        filesMap.put(pair.getKey(), files);
+    }
+    log.logBasic("files to save [" + msg.toString() + ']');
+
+    // Ask for the target filename if we're still here...
+
+    FileDialog dialog = new FileDialog( shell, SWT.OPEN );
+    dialog.setFilterExtensions( new String[] { "*.zip", "*" } );
+    dialog.setFilterNames( new String[] {
+            BaseMessages.getString( PKG, "System.FileType.ZIPFiles" ),
+            BaseMessages.getString( PKG, "System.FileType.AllFiles" ) } );
+    if ( dialog.open() != null ) {
+      String zipFilename =
+              dialog.getFilterPath() + System.getProperty( "file.separator" ) + dialog.getFileName();
+
+      try {
+        ZipOutputStream out = new ZipOutputStream( new FileOutputStream( zipFilename ) );
+        byte[] buf = new byte[1024];
+        for (Map.Entry<String, java.util.List<String>> pair : filesMap.entrySet())
+          for ( String fileName : pair.getValue() ) {
+            FileInputStream in = new FileInputStream( fileName );
+            out.putNextEntry( new ZipEntry( fileName.replace(pair.getKey(), "") ) );
+            int len;
+            while ( ( len = in.read( buf ) ) > 0 ) {
+              out.write( buf, 0, len );
+            }
+            out.closeEntry();
+            in.close();
+          }
+        out.close();
+      } catch ( Exception e ) {
+        new ErrorDialog(
+                shell, BaseMessages.getString( PKG, "i18n.UnexpectedError" ),
+                "There was an error saving the changed messages files:", e );
+      }
+
     }
   }
 

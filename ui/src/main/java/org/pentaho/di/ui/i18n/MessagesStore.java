@@ -165,7 +165,7 @@ public class MessagesStore extends ChangedFlag {
    * @return the filename that was found.
    */
   public String getLoadFilename( List<String> alternativeSourceFolders ) throws FileNotFoundException {
-    String path = calcFolderName( sourceFolder );
+    String path = calcFullPath( sourceFolder );
 
     // First try the source folder of the Java file
     //
@@ -176,7 +176,7 @@ public class MessagesStore extends ChangedFlag {
     // Then try the rest of the project source folders in order of occurrence ..
     //
     for ( String altSourceFolder : alternativeSourceFolders ) {
-      path = calcFolderName( altSourceFolder );
+      path = calcFullPath( altSourceFolder );
       if ( new File( path ).exists() ) {
         return path;
       }
@@ -186,30 +186,33 @@ public class MessagesStore extends ChangedFlag {
   }
 
   private String calcFolderName( String sourceFolderPath ) {
-    String localeUpperLower = locale.substring( 0, 3 ).toLowerCase() + locale.substring( 3 ).toUpperCase();
-    String filename = "messages_" + localeUpperLower + ".properties";
-    String path =
-      sourceFolderPath
-        + File.separator + messagesPackage.replace( '.', '/' ) + File.separator + "messages" + File.separator
-        + filename;
+    String packagePath = messagesPackage.replace( ".", File.separator );
+
+    String path = sourceFolderPath + File.separator + "main" + File.separator + "resources"
+            + File.separator + packagePath + File.separator + "messages";
     return path;
   }
 
   public String getSourceDirectory( List<String> directories ) {
-    String localeUpperLower = locale.substring( 0, 3 ).toLowerCase() + locale.substring( 3 ).toUpperCase();
-
-    String filename = "messages_" + localeUpperLower + ".properties";
-    String path = messagesPackage.replace( '.', '/' );
-
     for ( String directory : directories ) {
-      String attempt =
-        directory
-          + Const.FILE_SEPARATOR + path + Const.FILE_SEPARATOR + "messages" + Const.FILE_SEPARATOR + filename;
+      String attempt = calcFullPath(directory);
       if ( new File( attempt ).exists() ) {
         return directory;
       }
     }
     return null;
+  }
+
+  /**
+   * Find a suitable full path file to save this information in the specified locale and messages package. It needs a source
+   * directory to save the package in
+   *
+   * @param sourceFolderPath - root directory for requested package and file
+   *
+   * @return the full path with filename that was generated.
+   */
+  public String calcFullPath(String sourceFolderPath){
+    return calcFolderName(sourceFolderPath) + File.separator + getSaveFilename();
   }
 
   /**
@@ -220,14 +223,10 @@ public class MessagesStore extends ChangedFlag {
    *          the source directory to save the messages file in.
    * @return the filename that was generated.
    */
-  public String getSaveFilename( String directory ) {
-    String localeUpperLower = locale.substring( 0, 3 ).toLowerCase() + locale.substring( 3 ).toUpperCase();
+  public String getSaveFilename() {
+    String localeLowerUpper = locale.substring( 0, 3 ).toLowerCase() + locale.substring( 3 ).toUpperCase();
 
-    String filename = "messages_" + localeUpperLower + ".properties";
-    String path = messagesPackage.replace( '.', '/' );
-
-    return directory
-      + Const.FILE_SEPARATOR + path + Const.FILE_SEPARATOR + "messages" + Const.FILE_SEPARATOR + filename;
+    return "messages_" + localeLowerUpper + ".properties";
   }
 
   /**
