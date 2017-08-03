@@ -38,12 +38,12 @@ define([
 
   var options = {
     bindings: {
-      folders: '<',
-      onSelect: '&',
-      onOpen: '&',
-      showRecents: '<',
-      selectedFolder: '<',
-      autoExpand: '<'
+      autoExpand: "<",
+      folders: "<",
+      onOpen: "&",
+      onSelect: "&",
+      selectedFolder: "<",
+      showRecents: "<"
     },
     template: folderTemplate,
     controllerAs: "vm",
@@ -56,7 +56,7 @@ define([
    * The Folder Controller.
    *
    * This provides the controller for the folder component.
-   * @param {Object} $timeout - $timeout object
+   * @param {Function} $timeout - Angular wrapper for window.setTimeout.
    */
   function folderController($timeout) {
     var _font = "14px OpenSansRegular";
@@ -205,7 +205,7 @@ define([
     /**
      * Opens parent folders of folder
      *
-     * @param {String} folder - Path to a folder
+     * @param {Object} folder - Folder Object
      * @private
      */
     function _openParentFolders(folder) {
@@ -230,18 +230,26 @@ define([
       }, 0);
     }
 
+    /**
+     * Compare folders according to sortField
+     * @param {Object} first - Folder Object
+     * @param {Object} second - Folder Object
+     * @return {Number} -1 or 1 according to comparisons of first and second names
+     **/
     function compareFolders(first, second) {
-      var folder1 = first.value, folder2 = second.value;
-      var path1 = folder1.path.split('/'), path2 = folder2.path.split('/');
+      var folder1 = first.value;
+      var folder2 = second.value;
+      var path1 = folder1.path.split("/");
+      var path2 = folder2.path.split("/");
       var comp = 0;
       var len = Math.min(path1.length, path2.length);
-      for(var i = 0; i < len; i++ ) {
-         comp = utils.naturalCompare(path1[i], path2[i]);
-         if ( comp != 0 ) {
-           return comp;
-         }
+      for (var i = 0; i < len; i++) {
+        comp = utils.naturalCompare(path1[i], path2[i]);
+        if (comp !== 0) {
+          return comp;
+        }
       }
-      if (path1.length != path2.length) {
+      if (path1.length !== path2.length) {
         return path1.length - path2.length;
       }
       return first.index - second.index;

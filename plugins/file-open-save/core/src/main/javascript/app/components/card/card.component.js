@@ -36,10 +36,10 @@ define([
 
   var options = {
     bindings: {
-      recentFiles: '<',
-      folder: '<',
-      onClick: '&',
-      onSelect: '&'
+      folder: "<",
+      onClick: "&",
+      onSelect: "&",
+      recentFiles: "<"
     },
     template: cardTemplate,
     controllerAs: "vm",

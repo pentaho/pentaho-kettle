@@ -15,25 +15,29 @@
  */
 
 define([
-  'angular'
-], function (angular) {
+  "angular"
+], function(angular) {
+  edit.$inject = ["$timeout"];
 
-  edit.$inject = ['$timeout'];
-
+  /**
+   * @param {Function} $timeout - Angular wrapper for window.setTimeout.
+   * @return {{restrict: string, scope: {onStart: string, onComplete: string, onCancel: string,
+   *           new: string, value: string, auto: string, editing: string}, template: string, link: link}}
+   */
   function edit($timeout) {
     return {
-      retrict: 'AE',
+      restrict: "AE",
       scope: {
-        onStart: '&',
-        onComplete: '&',
-        onCancel: '&',
-        new: '<',
-        value: '<',
-        auto: '=',
-        editing: '='
+        onStart: "&",
+        onComplete: "&",
+        onCancel: "&",
+        new: "<",
+        value: "<",
+        auto: "=",
+        editing: "="
       },
       template: '<span ng-click="edit()" ng-bind="updated"></span><input ng-model="updated"/>',
-      link: function (scope, element, attr) {
+      link: function(scope, element, attr) {
         var inputElement = element.children()[1];
         var canEdit = false;
         var willEdit = false;
@@ -48,7 +52,7 @@ define([
             willEdit = false;
             return;
           }
-          var isSelected = element.parent().parent().parent().hasClass( "selected" );
+          var isSelected = element.parent().parent().parent().hasClass("selected");
           if (!isSelected) {
             $timeout(function() {
               canEdit = true;
@@ -63,6 +67,9 @@ define([
           }
         };
 
+        /**
+         * Edit
+         */
         function edit() {
           scope.editing = true;
           scope.auto = false;
@@ -70,7 +77,7 @@ define([
           willEdit = false;
           canEdit = true;
           $timeout(function() {
-            element.addClass('editing');
+            element.addClass("editing");
             $timeout(function() {
               inputElement.focus();
               inputElement.select();
@@ -78,7 +85,7 @@ define([
           });
         }
 
-        angular.element(inputElement).on('keyup blur', function(e) {
+        angular.element(inputElement).on("keyup blur", function(e) {
           if (e.keyCode === 13 || e.keyCode === 27 || e.type === "blur") {
             if (e.keyCode === 27) {
               scope.updated = "";
@@ -88,12 +95,15 @@ define([
           e.stopPropagation();
         });
 
+        /**
+         * Finish editing
+         */
         function finish() {
           scope.editing = false;
-          if (!element.hasClass('editing')) {
+          if (!element.hasClass("editing")) {
             return;
           }
-          element.removeClass('editing');
+          element.removeClass("editing");
           inputElement.blur();
           if (scope.updated === "") {
             scope.updated = scope.value;
@@ -108,11 +118,11 @@ define([
           scope.$apply();
         }
       }
-    }
+    };
   }
 
   return {
     name: "edit",
-    options: ['$timeout', edit]
-  }
+    options: ["$timeout", edit]
+  };
 });

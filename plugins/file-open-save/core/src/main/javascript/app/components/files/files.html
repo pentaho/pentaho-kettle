@@ -37,7 +37,7 @@
   <div class="bodyWrapper">
     <table ng-class="{searchTable: vm.search}">
       <tbody>
-      <tr ng-repeat="file in vm.getFiles(vm.folder.children) | orderBy:file:vm.sortReverse:vm.compareFiles "
+      <tr ng-repeat="file in vm.getFiles(vm.folder.children) | orderBy: file: vm.sortReverse: vm.compareFiles "
           ng-click="vm.selectFile(file)"
           ng-dblclick="vm.commitFile(file); $event.stopPropagation();"
           ng-class="{selected: vm.selectedFile === file}"
