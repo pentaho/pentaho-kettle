@@ -4198,7 +4198,11 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
 
   public void closeRepository() {
     if ( rep != null ) {
-
+      try {
+        promptForSave();
+      } catch ( KettleException e ) {
+        log.logError( "Error saving Job or Transformation", e );
+      }
       // Prompt and close all tabs as user disconnected from the repo
       boolean shouldDisconnect = Spoon.getInstance().closeAllJobsAndTransformations( true );
       if ( shouldDisconnect ) {
