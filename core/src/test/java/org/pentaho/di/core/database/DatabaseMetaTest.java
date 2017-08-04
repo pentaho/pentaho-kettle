@@ -34,6 +34,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -395,6 +396,18 @@ public class DatabaseMetaTest {
     props.setProperty( "EXTRA_OPTION_Infobright.additional_param", "${someVar}" );
     dbmeta.getURL();
     assertTrue( dbmeta.getURL().contains( "someValue" ) );
+  }
+
+  @Test
+  public void testfindDatabase() throws KettleDatabaseException {
+    List<DatabaseMeta> databases = new ArrayList<DatabaseMeta>();
+    databases.add( new DatabaseMeta( "  1", "Infobright", "JDBC", null, "stub:stub", null, null, null ) );
+    databases.add( new DatabaseMeta( "  1  ", "Infobright", "JDBC", null, "stub:stub", null, null, null ) );
+    databases.add( new DatabaseMeta( "1  ", "Infobright", "JDBC", null, "stub:stub", null, null, null ) );
+    Assert.assertNotNull( DatabaseMeta.findDatabase( databases, "1" ) );
+    Assert.assertNotNull( DatabaseMeta.findDatabase( databases, "1 " ) );
+    Assert.assertNotNull( DatabaseMeta.findDatabase( databases, " 1" ) );
+    Assert.assertNotNull( DatabaseMeta.findDatabase( databases, " 1 " ) );
   }
 
 }
