@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -31,11 +31,13 @@ import org.pentaho.di.core.logging.KettleLogStore;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.job.Job;
 import org.pentaho.di.job.JobMeta;
+import org.pentaho.di.www.cache.TransJobStatusCache;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
 import javax.servlet.ServletException;
+import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -45,9 +47,7 @@ import java.io.StringWriter;
 import static junit.framework.Assert.assertFalse;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.atLeastOnce;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 
 @RunWith( PowerMockRunner.class )
@@ -111,5 +111,45 @@ public class GetJobStatusServletTest {
 
     PowerMockito.verifyStatic( atLeastOnce() );
     Encode.forHtml( anyString() );
+  }
+
+  @Test
+  @PrepareForTest( { Job.class } )
+  public void testGetJobStatus() throws ServletException, IOException {
+    KettleLogStore.init();
+    TransJobStatusCache cacheMock = mock( TransJobStatusCache.class );
+    getJobStatusServlet.cache = cacheMock;
+    HttpServletRequest mockHttpServletRequest = mock( HttpServletRequest.class );
+    HttpServletResponse mockHttpServletResponse = mock( HttpServletResponse.class );
+    Job mockJob = PowerMockito.mock( Job.class );
+    JobMeta mockJobMeta = mock( JobMeta.class );
+    LogChannelInterface mockLogChannelInterface = mock( LogChannelInterface.class );
+    ServletOutputStream outMock = mock( ServletOutputStream.class );
+
+    String id = "123";
+    String logId = "logId";
+    String useXml = "Y";
+
+    when( mockHttpServletRequest.getContextPath() ).thenReturn( GetJobStatusServlet.CONTEXT_PATH );
+    when( mockHttpServletRequest.getParameter( "id" ) ).thenReturn( id );
+    when( mockHttpServletRequest.getParameter( "xml" ) ).thenReturn( useXml );
+    when( mockHttpServletResponse.getOutputStream() ).thenReturn( outMock );
+    when( mockJobMap.findJob( id ) ).thenReturn( mockJob );
+    PowerMockito.when( mockJob.getJobname() ).thenReturn( ServletTestUtils.BAD_STRING_TO_TEST );
+    PowerMockito.when( mockJob.getLogChannel() ).thenReturn( mockLogChannelInterface );
+    PowerMockito.when( mockJob.getJobMeta() ).thenReturn( mockJobMeta );
+    PowerMockito.when( mockJob.isFinished() ).thenReturn( true );
+    PowerMockito.when( mockJob.getLogChannelId() ).thenReturn( logId );
+    PowerMockito.when( mockJobMeta.getMaximum() ).thenReturn( new Point( 10, 10 ) );
+
+    getJobStatusServlet.doGet( mockHttpServletRequest, mockHttpServletResponse );
+
+    when( cacheMock.get( id, logId ) ).thenReturn( new byte[] { 0, 1, 2 } );
+    getJobStatusServlet.doGet( mockHttpServletRequest, mockHttpServletResponse );
+
+    verify( cacheMock, times( 2 ) ).get( id, logId );
+    verify( cacheMock, times( 1 ) ).put( eq( id ), anyString(), eq( logId ) );
+    verify( mockJob.getLogChannel(), times( 1 ) );
+
   }
 }

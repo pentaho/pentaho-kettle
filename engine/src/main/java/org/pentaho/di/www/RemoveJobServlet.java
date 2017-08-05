@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -36,6 +36,7 @@ import org.pentaho.di.core.logging.KettleLogStore;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.Job;
+import org.pentaho.di.www.cache.TransJobStatusCache;
 
 
 public class RemoveJobServlet extends BaseHttpServlet implements CartePluginInterface {
@@ -44,6 +45,7 @@ public class RemoveJobServlet extends BaseHttpServlet implements CartePluginInte
   private static final long serialVersionUID = -2051906998698124039L;
 
   public static final String CONTEXT_PATH = "/kettle/removeJob";
+  private TransJobStatusCache cache = TransJobStatusCache.getInstance();
 
   public RemoveJobServlet() {
   }
@@ -184,6 +186,7 @@ public class RemoveJobServlet extends BaseHttpServlet implements CartePluginInte
 
     if ( job != null ) {
 
+      cache.remove( id );
       KettleLogStore.discardLines( job.getLogChannelId(), true );
       getJobMap().removeJob( entry );
 

@@ -1,7 +1,7 @@
 /*
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  * **************************************************************************
  *
@@ -111,9 +111,11 @@ public class LoggingBufferTest {
     Assert.assertEquals( 0, buff.getNrLines() );
 
     // Load 20 records.  Only last 10 should be kept
+    LogMessage message = null;
     for ( int i = 1; i <= 20; i++ ) {
+      message = new LogMessage( "Test #" + i + Const.CR + "Hello World!", String.valueOf( i ), LogLevel.DETAILED );
       buff.addLogggingEvent(
-        new KettleLoggingEvent( "Test #" + i + Const.CR + "Hello World!", Long.valueOf( i ), LogLevel.DETAILED ) );
+        new KettleLoggingEvent( message, Long.valueOf( i ), LogLevel.DETAILED ) );
     }
     Assert.assertEquals( 10, buff.getNrLines() );
 
@@ -124,7 +126,7 @@ public class LoggingBufferTest {
     while ( it.hasNext() ) {
       BufferLine bl = it.next();
       Assert.assertNotNull( bl.getEvent() );
-      Assert.assertEquals( "Test #" + i + Const.CR + "Hello World!", bl.getEvent().getMessage() );
+      Assert.assertEquals( "Test #" + i + Const.CR + "Hello World!", ( (LogMessage) bl.getEvent().getMessage() ).getMessage() );
       Assert.assertEquals( Long.valueOf( i ).longValue(), bl.getEvent().getTimeStamp() );
       Assert.assertEquals( LogLevel.DETAILED, bl.getEvent().getLevel() );
       i++;
@@ -143,4 +145,19 @@ public class LoggingBufferTest {
       Assert.fail( "This should never be reached, as the LogBuffer is empty" );
     }
   }
+
+  @Test
+  public void testRemoveBufferLinesBefore() throws Exception {
+    LoggingBuffer loggingBuffer = new LoggingBuffer( 100 );
+    for ( int i = 0; i < 40; i++ ) {
+      KettleLoggingEvent event = new KettleLoggingEvent();
+      event.setMessage( new LogMessage( "test", LogLevel.BASIC ) );
+      event.setTimeStamp( i );
+      loggingBuffer.addLogggingEvent( event );
+    }
+    loggingBuffer.removeBufferLinesBefore( 20 );
+    Assert.assertEquals( 20, loggingBuffer.size() );
+    Assert.assertEquals(  0, loggingBuffer.getBufferLinesBefore( 20 ).size() );
+  }
+
 }
