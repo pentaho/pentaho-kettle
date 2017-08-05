@@ -122,7 +122,7 @@ define([
           _setMessage(i18n.get("file-open-save-plugin.error.folder-exists.title"),
             i18n.get("file-open-save-plugin.error.folder-exists.top.message"),
             " ",
-            vm.errorFolder.name + ".",
+            vm.errorFolder.newName + ".",
             i18n.get("file-open-save-plugin.error.folder-exists.bottom.message"),
             "",
             i18n.get("file-open-save-plugin.error.folder-exists.close.button"));
@@ -159,10 +159,22 @@ define([
           _setMessage(i18n.get("file-open-save-plugin.error.file-exists.title"),
             i18n.get("file-open-save-plugin.error.file-exists.top.message"),
             " ",
-            vm.errorFile.name + ".",
+            vm.errorFile.newName + ".",
             i18n.get("file-open-save-plugin.error.file-exists.bottom.message"),
             "",
             i18n.get("file-open-save-plugin.error.file-exists.close.button"));
+          break;
+        case 8:// Unable to delete folder
+          _setMessage(i18n.get("file-open-save-plugin.error.unable-to-delete-folder.title"),
+              i18n.get("file-open-save-plugin.error.unable-to-delete-folder.message"),
+              "", "", "", "",
+              i18n.get("file-open-save-plugin.error.unable-to-delete-folder.close.button"));
+          break;
+        case 9:// Unable to delete file
+          _setMessage(i18n.get("file-open-save-plugin.error.unable-to-delete-file.title"),
+              i18n.get("file-open-save-plugin.error.unable-to-delete-file.message"),
+              "", "", "", "",
+              i18n.get("file-open-save-plugin.error.unable-to-delete-file.close.button"));
           break;
         default:
           _setMessage("", "", "", "", "", "", "");

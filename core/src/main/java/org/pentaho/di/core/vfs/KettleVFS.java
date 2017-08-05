@@ -449,4 +449,11 @@ public class KettleVFS {
     return found;
   }
 
+  public static void closeEmbeddedFileSystem( String embeddedMetastoreKey ) {
+    if ( getInstance().getFileSystemManager() instanceof ConcurrentFileSystemManager ) {
+      ( (ConcurrentFileSystemManager) getInstance().getFileSystemManager() )
+        .closeEmbeddedFileSystem( embeddedMetastoreKey );
+    }
+  }
+
 }

@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -35,10 +35,15 @@ import static org.junit.Assert.*;
 
 import org.mockito.Mockito;
 import org.pentaho.di.core.KettleEnvironment;
+import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.exception.KettleStepException;
+import org.pentaho.di.core.logging.LoggingObjectInterface;
 import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.plugins.StepPluginType;
 import org.pentaho.di.core.row.RowMeta;
+import org.pentaho.di.core.row.RowMetaInterface;
+import org.pentaho.di.core.util.Assert;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.StepMeta;
@@ -49,6 +54,7 @@ import org.pentaho.di.trans.steps.loadsave.validator.DatabaseMetaLoadSaveValidat
 import org.pentaho.di.trans.steps.loadsave.validator.FieldLoadSaveValidator;
 import org.pentaho.di.trans.steps.loadsave.validator.PrimitiveBooleanArrayLoadSaveValidator;
 import org.pentaho.di.trans.steps.loadsave.validator.StringLoadSaveValidator;
+import org.pentaho.di.trans.steps.mock.StepMockHelper;
 
 public class InsertUpdateMetaTest {
   LoadSaveTester loadSaveTester;
@@ -188,6 +194,32 @@ public class InsertUpdateMetaTest {
   @Test
   public void testSerialization() throws KettleException {
     loadSaveTester.testSerialization();
+  }
+
+  @Test
+  public void testErrorProcessRow() throws KettleException {
+    StepMockHelper<InsertUpdateMeta, InsertUpdateData> mockHelper =
+      new StepMockHelper<>( "insertUpdate", InsertUpdateMeta.class, InsertUpdateData.class );
+    Mockito.when( mockHelper.logChannelInterfaceFactory.create( Mockito.any(), Mockito.any( LoggingObjectInterface.class ) ) )
+      .thenReturn(
+        mockHelper.logChannelInterface );
+    Mockito.when( mockHelper.stepMeta.getStepMetaInterface() ).thenReturn( new InsertUpdateMeta() );
+
+    InsertUpdate insertUpdateStep =
+      new InsertUpdate( mockHelper.stepMeta, mockHelper.stepDataInterface, 0, mockHelper.transMeta, mockHelper.trans );
+    insertUpdateStep = Mockito.spy( insertUpdateStep );
+
+    Mockito.doReturn( new Object[] {} ).when( insertUpdateStep ).getRow();
+    insertUpdateStep.first = false;
+    mockHelper.processRowsStepDataInterface.lookupParameterRowMeta = Mockito.mock( RowMetaInterface.class );
+    mockHelper.processRowsStepDataInterface.keynrs = new int[] {};
+    mockHelper.processRowsStepDataInterface.db = Mockito.mock( Database.class );
+    mockHelper.processRowsStepDataInterface.valuenrs = new int[] {};
+    Mockito.doThrow( new KettleStepException( "Test exception" ) ).when( insertUpdateStep ).putRow( Mockito.any(), Mockito.any() );
+
+    boolean result =
+      insertUpdateStep.processRow( mockHelper.processRowsStepMetaInterface, mockHelper.processRowsStepDataInterface );
+    Assert.assertFalse( result );
   }
 
 }

@@ -83,7 +83,7 @@ file-open-save-app .headerSearch {
 }
 
 file-open-save-app .headerSearchLeft {
-  background: url("./images/search_gray.png") no-repeat left 8px center;
+  background: url("./img/search_gray.png") no-repeat left 8px center;
   width: 30px;
   height: 100%;
   border: none;
@@ -92,11 +92,11 @@ file-open-save-app .headerSearchLeft {
 }
 
 file-open-save-app .headerSearchLeft.blueState {
-  background: url("./images/search_blue.png") no-repeat left 7px center;
+  background: url("./img/search_blue.png") no-repeat left 7px center;
 }
 
 file-open-save-app .headerSearchRight {
-  background: url("./images/clear_gray.png") no-repeat center center;
+  background: url("./img/clear_gray.png") no-repeat center center;
   width: 28px;
   height: 100%;
   border: none;
@@ -113,13 +113,12 @@ file-open-save-app .headerSearchRightInvisible {
 }
 
 file-open-save-app .headerSearchRight:hover {
-  background: url("./images/clear_blue.png") no-repeat center center;
+  background: url("./img/clear_blue.png") no-repeat center center;
 }
 
 file-open-save-app input.searchBox,
 file-open-save-app input.searchBox:focus {
   width: calc(270px - 60px);
-  /*width: 240px;*/
   height: 100%;
   border: none;
   padding: 0;
@@ -175,22 +174,41 @@ file-open-save-app .addDelete {
   float: right;
 }
 
+file-open-save-app .addDelete button {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+}
+
+file-open-save-app .addDelete button:disabled {
+  cursor: default;
+}
+
 file-open-save-app .save .addDelete {
-  display: inline-flex;
+  display: inline;
 }
 
 file-open-save-app .addFolder {
-  background: url("./images/add_folder.svg") no-repeat left center;
+  background: url("./img/add_folder.svg") no-repeat center center;
   height: 19px;
   width: 23px;
   cursor: pointer;
 }
 
 file-open-save-app .deleteFolder {
-  background: url("./images/delete_folder_file.svg") no-repeat left center;
+  background: url("./img/delete_folder_file.svg") no-repeat center center;
   height: 18px;
   width: 14px;
   cursor: pointer;
+}
+
+file-open-save-app .addFolder[disabled],
+file-open-save-app .deleteFolder[disabled],
+file-open-save-app .addFolder[disabled]:hover,
+file-open-save-app .deleteFolder[disabled]:hover
+{
+  background-position: left center;
 }
 
 file-open-save-app .addFolder:hover,
@@ -198,7 +216,12 @@ file-open-save-app .deleteFolder:hover {
   background-position: right center;
 }
 
+file-open-save-app .addDelete .addFolder {
+  float: left;
+}
+
 file-open-save-app .addDelete .deleteFolder {
+  float: right;
   margin-left: 15px;
 }
 
@@ -239,6 +262,10 @@ file-open-save-app .fileArea.recentsView {
 
 file-open-save-app .fileArea.recentsView.scrolling {
   padding-right: 0;
+}
+
+file-open-save-app .fileArea.hasMessage {
+  overflow: hidden;
 }
 
 file-open-save-app .bottom {
@@ -339,21 +366,20 @@ file-open-save-app .open .fileAreaMessageView {
   line-height: 368px;
 }
 
-file-open-save-app .recentsView .fileAreaMessageView {
-  width: calc(100% + 20px);
-}
-
 .searchBoxExtra {
   position: absolute;
   background-color: #ffffff;
   -moz-box-shadow: 0 0 4px 0 rgba(0, 0, 0, 0.4);
   -webkit-box-shadow: 0 0 4px 0 rgba(0, 0, 0, 0.4);
-  box-shadow: 0px 0px 4px 0px rgba(0, 0, 0, 0.4);
+  box-shadow: 0 0 4px 0 rgba(0, 0, 0, 0.4);
   padding: 5px 0;
   max-width: 267px;
   min-width: 267px;
   z-index: 100;
   border: 1px solid #f2f2f2;
+  top: 67px;
+  right: 31px;
+
 }
 
 .searchBoxExtraItem {
@@ -361,8 +387,23 @@ file-open-save-app .recentsView .fileAreaMessageView {
   text-overflow: ellipsis;
   overflow: hidden;
   white-space: nowrap;
+  cursor: pointer;
 }
 
 .searchBoxExtraItem:hover {
   background-color: #E6EFF6;
 }
+
+.noselect {
+  -webkit-touch-callout: none; /* iOS Safari */
+  -webkit-user-select: none; /* Safari */
+  -khtml-user-select: none; /* Konqueror HTML */
+  -moz-user-select: none; /* Firefox */
+  -ms-user-select: none; /* Internet Explorer/Edge */
+  user-select: none; /* Non-prefixed version, currently
+                                  supported by Chrome and Opera */
+}
+
+input[placeholder] { text-overflow: ellipsis; }
+::-moz-placeholder { text-overflow: ellipsis; }
+input:-moz-placeholder { text-overflow: ellipsis; }

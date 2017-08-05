@@ -80,6 +80,7 @@
     <enunciate-core-annotations.version>1.27</enunciate-core-annotations.version>
 
     <!-- plugins -->
+    <pdi-abort-plugin.version>${project.version}</pdi-abort-plugin.version>
     <kettle-version-checker.version>${project.version}</kettle-version-checker.version>
     <kettle-dummy-plugin.version>${project.version}</kettle-dummy-plugin.version>
     <kettle-s3csvinput-plugin.version>${project.version}</kettle-s3csvinput-plugin.version>
@@ -773,6 +774,12 @@
               <artifactItems>
                 <artifactItem>
                   <groupId>org.pentaho.di.plugins</groupId>
+                  <artifactId>pdi-abort-plugin</artifactId>
+                  <version>${pdi-abort-plugin.version}</version>
+                  <type>zip</type>
+                </artifactItem>
+                <artifactItem>
+                  <groupId>org.pentaho.di.plugins</groupId>
                   <artifactId>kettle-version-checker</artifactId>
                   <version>${kettle-version-checker.version}</version>
                   <type>zip</type>
@@ -898,7 +905,7 @@
                   <type>zip</type>
                 </artifactItem>
                 <artifactItem>
-                  <groupId>pentaho</groupId>
+                  <groupId>org.pentaho.di.plugins</groupId>
                   <artifactId>pdi-teradata-tpt-plugin-package</artifactId>
                   <version>${pdi-teradata-tpt-plugin-package.version}</version>
                   <type>zip</type>

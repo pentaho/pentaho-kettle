@@ -32,8 +32,10 @@ import org.apache.commons.vfs2.FileSystemOptions;
 import org.apache.commons.vfs2.NameScope;
 import org.apache.commons.vfs2.impl.StandardFileSystemManager;
 import org.apache.commons.vfs2.provider.FileProvider;
+import org.pentaho.di.core.osgi.api.VfsEmbeddedFileSystemCloser;
 
 import java.util.Collection;
+import java.util.Map;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 /**
@@ -167,6 +169,30 @@ public class ConcurrentFileSystemManager extends StandardFileSystemManager {
     lock.readLock().lock();
     try {
       super.freeUnusedResources();
+    } finally {
+      lock.readLock().unlock();
+    }
+  }
+
+  public void closeEmbeddedFileSystem( String embeddedMetastoreKey ) {
+    lock.readLock().lock();
+    Map<String, FileProvider> providers;
+    try {
+      // Close the file system
+      java.lang.reflect.Field field = null;
+      try {
+        field = this.getClass().getSuperclass().getSuperclass().getDeclaredField( "providers" );
+        field.setAccessible( true );
+      } catch ( NoSuchFieldException e ) {
+        e.printStackTrace();
+      }
+      providers = (Map<String, FileProvider>) field.get( this );
+      FileProvider provider = providers.get( "nc" );
+      if ( provider != null ) {
+        ( (VfsEmbeddedFileSystemCloser) provider ).closeFileSystem( embeddedMetastoreKey );
+      }
+    } catch ( IllegalAccessException e ) {
+      e.printStackTrace();
     } finally {
       lock.readLock().unlock();
     }

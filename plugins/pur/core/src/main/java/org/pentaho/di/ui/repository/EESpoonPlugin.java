@@ -1,5 +1,5 @@
 /*!
- * Copyright 2010 - 2016 Pentaho Corporation.  All rights reserved.
+ * Copyright 2010 - 2017 Pentaho Corporation.  All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -58,7 +58,6 @@ import org.pentaho.di.ui.spoon.ChangedWarningDialog;
 import org.pentaho.di.ui.spoon.Spoon;
 import org.pentaho.di.ui.spoon.SpoonLifecycleListener;
 import org.pentaho.di.ui.spoon.SpoonPerspective;
-import org.pentaho.di.ui.spoon.SpoonPerspectiveManager;
 import org.pentaho.di.ui.spoon.SpoonPlugin;
 import org.pentaho.di.ui.spoon.SpoonPluginCategories;
 import org.pentaho.di.ui.spoon.SpoonPluginInterface;
@@ -108,6 +107,7 @@ public class EESpoonPlugin implements SpoonPluginInterface, SpoonLifecycleListen
     return null;
   }
 
+  @Override
   public void onEvent( SpoonLifeCycleEvent evt ) {
     try {
       switch ( evt ) {
@@ -117,7 +117,7 @@ public class EESpoonPlugin implements SpoonPluginInterface, SpoonLifecycleListen
           doOnSecurityUpdate();
           break;
         case REPOSITORY_CONNECTED:
-          final Spoon spoon = Spoon.getInstance();
+          final Spoon spoon = getSpoonInstance();
           if ( spoon != null ) {
             // Check permissions to see so we can decide how to close tabs that should not be open
             // For example if user connects and does not have create content perms, then we should force
@@ -135,20 +135,19 @@ public class EESpoonPlugin implements SpoonPluginInterface, SpoonLifecycleListen
           doOnSecurityUpdate();
           break;
         case REPOSITORY_DISCONNECTED:
-          doOnSecurityCleanup();
+          updateMenuState( true, true );
           break;
         case STARTUP:
-          doOnStartup();
+          registerUISuppportForRepositoryExplorer();
           break;
         case SHUTDOWN:
-          doOnShutdown();
           break;
         default:
           break;
       }
     } catch ( KettleException e ) {
       try {
-        getMainSpoonContainer();
+        initMainSpoonContainer();
         XulMessageBox messageBox =
           (XulMessageBox) spoonXulContainer.getDocumentRoot().createElement( "messagebox" ); //$NON-NLS-1$
         messageBox.setTitle( BaseMessages.getString( PKG, "Dialog.Success" ) ); //$NON-NLS-1$
@@ -162,19 +161,12 @@ public class EESpoonPlugin implements SpoonPluginInterface, SpoonLifecycleListen
     }
   }
 
-  private void doOnStartup() {
-    registerUISuppportForRepositoryExplorer();
-  }
-
-  private void doOnShutdown() {
-  }
-
   /**
    * Override UI elements to reflect the users capabilities as described by their permission levels
    */
   private void doOnSecurityUpdate() throws KettleException {
-    getMainSpoonContainer();
-    Repository repository = Spoon.getInstance().getRepository();
+    initMainSpoonContainer();
+    Repository repository = getSpoonInstance().getRepository();
     // Repository User
     if ( repository != null && repository.hasService( IRoleSupportSecurityManager.class ) ) {
       UIObjectRegistry.getInstance().registerUIRepositoryUserClass( UIEERepositoryUser.class );
@@ -185,7 +177,6 @@ public class EESpoonPlugin implements SpoonPluginInterface, SpoonLifecycleListen
     if ( repository != null && repository.hasService( IAclService.class ) ) {
       UIObjectRegistry.getInstance().registerUIRepositoryDirectoryClass( UIEERepositoryDirectory.class );
       UIObjectRegistry.getInstance().registerUIDatabaseConnectionClass( UIEEDatabaseConnection.class );
-
     } else {
       UIObjectRegistry.getInstance().registerUIRepositoryDirectoryClass( UIObjectRegistry.DEFAULT_UIDIR_CLASS );
     }
@@ -205,33 +196,21 @@ public class EESpoonPlugin implements SpoonPluginInterface, SpoonLifecycleListen
     } else {
       UIObjectRegistry.getInstance().registerUIJobClass( UIObjectRegistry.DEFAULT_UIJOB_CLASS );
       UIObjectRegistry.getInstance().registerUITransformationClass( UIObjectRegistry.DEFAULT_UITRANS_CLASS );
-      SpoonDelegateRegistry.getInstance().registerSpoonJobDelegateClass(
-          SpoonDelegateRegistry.DEFAULT_SPOONJOBDELEGATE_CLASS );
-      SpoonDelegateRegistry.getInstance().registerSpoonTransDelegateClass(
-          SpoonDelegateRegistry.DEFAULT_SPOONTRANSDELEGATE_CLASS );
+      SpoonDelegateRegistry.getInstance().registerSpoonJobDelegateClass( SpoonDelegateRegistry.DEFAULT_SPOONJOBDELEGATE_CLASS );
+      SpoonDelegateRegistry.getInstance().registerSpoonTransDelegateClass( SpoonDelegateRegistry.DEFAULT_SPOONTRANSDELEGATE_CLASS );
     }
-  }
-
-  /**
-   * Called when repository is disconnected.
-   */
-  private void doOnSecurityCleanup() {
-    updateSchedulePerspective( false );
-    updateMenuState( true, true );
   }
 
   private void enablePermission( IAbsSecurityProvider securityProvider ) throws KettleException {
     boolean createPermitted = securityProvider.isAllowed( IAbsSecurityProvider.CREATE_CONTENT_ACTION );
     boolean executePermitted = securityProvider.isAllowed( IAbsSecurityProvider.EXECUTE_CONTENT_ACTION );
     boolean adminPermitted = securityProvider.isAllowed( IAbsSecurityProvider.ADMINISTER_SECURITY_ACTION );
-    boolean schedulePermitted = securityProvider.isAllowed( IAbsSecurityProvider.SCHEDULE_CONTENT_ACTION );
 
-    enablePermission( createPermitted, executePermitted, adminPermitted, schedulePermitted );
+    enablePermission( createPermitted, executePermitted, adminPermitted );
   }
 
-  private void enablePermission( boolean createPermitted, boolean executePermitted, boolean adminPermitted, boolean schedulePermitted ) {
+  private void enablePermission( boolean createPermitted, boolean executePermitted, boolean adminPermitted ) {
     updateMenuState( createPermitted, executePermitted );
-    updateSchedulePerspective( schedulePermitted );
     updateChangedWarningDialog( createPermitted );
   }
 
@@ -254,23 +233,21 @@ public class EESpoonPlugin implements SpoonPluginInterface, SpoonLifecycleListen
       // after the abs controller so the biz logic between the two hold.
 
       // Register the ABS Menu controller
-      Spoon.getInstance().addSpoonMenuController( new SpoonMenuABSController() );
+      getSpoonInstance().addSpoonMenuController( new SpoonMenuABSController() );
 
       // Register the SpoonMenuLockController to modify the main Spoon Menu structure
-      Spoon.getInstance().addSpoonMenuController( new SpoonMenuLockController() );
+      getSpoonInstance().addSpoonMenuController( new SpoonMenuLockController() );
 
     } else if ( category.equals( "trans-graph" ) || category.equals( "job-graph" ) ) { //$NON-NLS-1$ //$NON-NLS-2$
-      if ( ( Spoon.getInstance() != null ) && ( Spoon.getInstance().getRepository() != null )
-          && ( Spoon.getInstance().getRepository() instanceof PurRepository ) ) {
+      if ( ( getSpoonInstance() != null ) && ( getSpoonInstance().getRepository() != null )
+          && ( getSpoonInstance().getRepository() instanceof PurRepository ) ) {
         container.getDocumentRoot().addOverlay( "org/pentaho/di/ui/repository/pur/xul/spoon-lock-overlay.xul" ); //$NON-NLS-1$
         container.addEventHandler( new SpoonLockController() );
       }
-
       try {
-        Repository repository = Spoon.getInstance().getRepository();
+        Repository repository = getSpoonInstance().getRepository();
         if ( repository != null ) {
-          IAbsSecurityProvider securityProvider =
-              (IAbsSecurityProvider) repository.getService( IAbsSecurityProvider.class );
+          IAbsSecurityProvider securityProvider = (IAbsSecurityProvider) repository.getService( IAbsSecurityProvider.class );
           if ( securityProvider != null ) {
             enablePermission( securityProvider );
           }
@@ -280,7 +257,7 @@ public class EESpoonPlugin implements SpoonPluginInterface, SpoonLifecycleListen
       }
     } else if ( category.equals( "repository-explorer" ) ) { //$NON-NLS-1$
       try {
-        Repository repository = Spoon.getInstance().getRepository();
+        Repository repository = getSpoonInstance().getRepository();
         IAbsSecurityProvider securityProvider = null;
         if ( repository != null ) {
           securityProvider = (IAbsSecurityProvider) repository.getService( IAbsSecurityProvider.class );
@@ -289,8 +266,7 @@ public class EESpoonPlugin implements SpoonPluginInterface, SpoonLifecycleListen
           boolean createPermitted = securityProvider.isAllowed( IAbsSecurityProvider.CREATE_CONTENT_ACTION );
           boolean executePermitted = securityProvider.isAllowed( IAbsSecurityProvider.EXECUTE_CONTENT_ACTION );
           // Disable export if user can not create or execute content (prevents execution outside of this repo)
-          container.getDocumentRoot().getElementById( "folder-context-export" ).setDisabled(
-              !createPermitted || !executePermitted );
+          container.getDocumentRoot().getElementById( "folder-context-export" ).setDisabled( !createPermitted || !executePermitted );
         }
       } catch ( KettleException e ) {
         e.printStackTrace();
@@ -359,17 +335,6 @@ public class EESpoonPlugin implements SpoonPluginInterface, SpoonLifecycleListen
       if ( transCopyContextMenu != null ) {
         transCopyContextMenu.setDisabled( !exportAllowed );
       }
-    }
-  }
-
-  void updateSchedulePerspective( boolean schedulePermitted ) {
-    final String schedulePerspectiveId = "schedulerPerspective";
-    final SpoonPerspectiveManager perspectiveManager = getPerspectiveManager();
-
-    if ( schedulePermitted ) {
-      perspectiveManager.showPerspective( schedulePerspectiveId );
-    } else {
-      perspectiveManager.hidePerspective( schedulePerspectiveId );
     }
   }
 
@@ -474,7 +439,7 @@ public class EESpoonPlugin implements SpoonPluginInterface, SpoonLifecycleListen
   }
 
   private Document getDocumentRoot() {
-    getMainSpoonContainer();
+    initMainSpoonContainer();
     if ( spoonXulContainer != null ) {
       return spoonXulContainer.getDocumentRoot();
     } else {
@@ -483,18 +448,18 @@ public class EESpoonPlugin implements SpoonPluginInterface, SpoonLifecycleListen
 
   }
 
-  private void getMainSpoonContainer() {
-    if ( Spoon.getInstance() != null ) { // Make sure spoon has been initialized first
-      if ( spoonXulContainer == null && Spoon.getInstance().getMainSpoonContainer() != null ) {
-        spoonXulContainer = Spoon.getInstance().getMainSpoonContainer();
+  private void initMainSpoonContainer() {
+    if ( getSpoonInstance() != null ) { // Make sure spoon has been initialized first
+      if ( spoonXulContainer == null && getSpoonInstance().getMainSpoonContainer() != null ) {
+        spoonXulContainer = getSpoonInstance().getMainSpoonContainer();
       }
     }
   }
 
   /**
-   * For testing
+   *  It is for test goal only.
    */
-  SpoonPerspectiveManager getPerspectiveManager() {
-    return SpoonPerspectiveManager.getInstance();
+  Spoon getSpoonInstance() {
+    return Spoon.getInstance();
   }
 }

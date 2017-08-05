@@ -20,6 +20,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.browser.BrowserFunction;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Shell;
+import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.ui.core.dialog.ThinDialog;
 import org.pentaho.di.ui.core.gui.GUIResource;
@@ -38,6 +39,9 @@ public class RepositoryOpenSaveDialog extends ThinDialog {
   private static final String OSGI_SERVICE_PORT = "OSGI_SERVICE_PORT";
   private static final String CLIENT_PATH = "/@PROJECT_ARTIFACT_ID@/@PROJECT_VERSION@/index.html";
   private static final int OPTIONS = SWT.APPLICATION_MODAL | SWT.DIALOG_TRIM;
+  private static final String THIN_CLIENT_HOST = "THIN_CLIENT_HOST";
+  private static final String THIN_CLIENT_PORT = "THIN_CLIENT_PORT";
+  private static final String LOCALHOST = "localhost";
 
   public RepositoryOpenSaveDialog( Shell shell, int width, int height ) {
     super( shell, width, height );
@@ -77,6 +81,20 @@ public class RepositoryOpenSaveDialog extends ThinDialog {
   }
 
   private static String getRepoURL( String path ) {
-    return "http://localhost:" + getOsgiServicePort() + path;
+    String host;
+    Integer port;
+    try {
+      host = getKettleProperty( THIN_CLIENT_HOST );
+      port = Integer.valueOf( getKettleProperty( THIN_CLIENT_PORT ) );
+    } catch ( Exception e ) {
+      host = LOCALHOST;
+      port = getOsgiServicePort();
+    }
+    return "http://" + host + ":" + port + path;
+  }
+
+  private static String getKettleProperty( String propertyName ) throws KettleException {
+    // loaded in system properties at startup
+    return System.getProperty( propertyName );
   }
 }

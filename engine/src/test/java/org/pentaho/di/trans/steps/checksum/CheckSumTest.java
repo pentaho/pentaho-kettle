@@ -30,8 +30,10 @@ import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.pentaho.di.core.Const;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
@@ -40,6 +42,7 @@ import org.pentaho.di.core.plugins.StepPluginType;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaNumber;
 import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.trans.RowProducer;
 import org.pentaho.di.trans.Trans;
@@ -53,13 +56,25 @@ import org.pentaho.di.trans.steps.dummytrans.DummyTransMeta;
 
 public class CheckSumTest {
 
+  private static Object previousKettleDefaultNumberFormat;
+
   @BeforeClass
   public static void setUpBeforeClass() throws KettleException, NoSuchFieldException, IllegalAccessException {
     System.setProperty( "file.encoding", "UTF-8" );
+    previousKettleDefaultNumberFormat = System.getProperties().put( Const.KETTLE_DEFAULT_NUMBER_FORMAT, "0.0;-0.0" );
     Field charset = Charset.class.getDeclaredField( "defaultCharset" );
     charset.setAccessible( true );
     charset.set( null, null );
     KettleEnvironment.init();
+  }
+
+  @AfterClass
+  public static void tearDownAfterClass() {
+    if ( previousKettleDefaultNumberFormat == null ) {
+      System.getProperties().remove( Const.KETTLE_DEFAULT_NUMBER_FORMAT );
+    } else {
+      System.getProperties().put( Const.KETTLE_DEFAULT_NUMBER_FORMAT, previousKettleDefaultNumberFormat );
+    }
   }
 
   private Trans buildHexadecimalChecksumTrans( int checkSumType, boolean compatibilityMode ) throws Exception {
@@ -96,9 +111,8 @@ public class CheckSumTest {
     return new Trans( transMeta );
   }
 
-  private RowMeta createStringRowMeta() throws Exception {
+  private RowMeta createStringRowMeta( ValueMetaInterface meta ) throws Exception {
     RowMeta rowMeta = new RowMeta();
-    ValueMetaInterface meta = new ValueMetaString( "test" );
     rowMeta.addValueMeta( meta );
     return rowMeta;
   }
@@ -145,9 +159,11 @@ public class CheckSumTest {
    *          Use compatibility mode for CheckSum
    * @param input
    *          String to calculate checksum for
+   * @param meta
+   *          meta to be used
    * @return RowListener with results.
    */
-  private MockRowListener executeHexTest( int checkSumType, boolean compatibilityMode, String input ) throws Exception {
+  private MockRowListener executeHexTest( int checkSumType, boolean compatibilityMode, Object input, ValueMetaInterface meta ) throws Exception {
     Trans trans = buildHexadecimalChecksumTrans( checkSumType, compatibilityMode );
 
     trans.prepareExecution( null );
@@ -157,7 +173,7 @@ public class CheckSumTest {
     output.addRowListener( listener );
 
     RowProducer rp = trans.addRowProducer( "CheckSum", 0 );
-    RowMeta inputRowMeta = createStringRowMeta();
+    RowMeta inputRowMeta = createStringRowMeta( meta );
     ( (BaseStep) trans.getRunThread( "CheckSum", 0 ) ).setInputRowMeta( inputRowMeta );
 
     trans.startThreads();
@@ -173,44 +189,116 @@ public class CheckSumTest {
 
   @Test
   public void testHexOutput_md5() throws Exception {
-    MockRowListener results = executeHexTest( 2, false, "xyz" );
+    MockRowListener results = executeHexTest( 2, false, "xyz", new ValueMetaString( "test" ) );
     assertEquals( 1, results.getWritten().size() );
     assertEquals( "d16fb36f0911f878998c136191af705e", results.getWritten().get( 0 )[1] );
+
+    results = executeHexTest( 2, false, 10.8, new ValueMetaNumber( "test" ) );
+    assertEquals( 1, results.getWritten().size() );
+    assertEquals( "372df98e33ac1bf6b26d225361ba7eb5", results.getWritten().get( 0 )[1] );
+
+    results = executeHexTest( 2, false, 10.82, new ValueMetaNumber( "test" ) );
+    assertEquals( 1, results.getWritten().size() );
+    assertEquals( "68b142f87143c917f29d178aa1715957", results.getWritten().get( 0 )[1] );
   }
 
   @Test
   public void testHexOutput_md5_compatibilityMode() throws Exception {
-    MockRowListener results = executeHexTest( 2, true, "xyz" );
+    MockRowListener results = executeHexTest( 2, true, "xyz", new ValueMetaString( "test" ) );
     assertEquals( 1, results.getWritten().size() );
     assertEquals( "FD6FFD6F0911FD78FDFD1361FDFD705E", results.getWritten().get( 0 )[1] );
+
+    results = executeHexTest( 2, true, 10.8, new ValueMetaNumber( "test" ) );
+    assertEquals( 1, results.getWritten().size() );
+    assertEquals( "372DFDFD33FD1BFDFD6D225361FD7EFD", results.getWritten().get( 0 )[1] );
+
+    results = executeHexTest( 2, true, 10.82, new ValueMetaNumber( "test" ) );
+    assertEquals( 1, results.getWritten().size() );
+    assertEquals( "68FD42FD7143FD17FD17FDFD715957", results.getWritten().get( 0 )[1] );
   }
 
   @Test
   public void testHexOutput_sha1() throws Exception {
-    MockRowListener results = executeHexTest( 3, false, "xyz" );
+    MockRowListener results = executeHexTest( 3, false, "xyz", new ValueMetaString( "test" ) );
     assertEquals( 1, results.getWritten().size() );
     assertEquals( "66b27417d37e024c46526c2f6d358a754fc552f3", results.getWritten().get( 0 )[1] );
+
+    results = executeHexTest( 3, false, 10.8, new ValueMetaNumber( "test" ) );
+    assertEquals( 1, results.getWritten().size() );
+    assertEquals( "78aef53da0b8d7a80656c80aa35ad6d410b7f068", results.getWritten().get( 0 )[1] );
+
+    results = executeHexTest( 3, false, 10.82, new ValueMetaNumber( "test" ) );
+    assertEquals( 1, results.getWritten().size() );
+    assertEquals( "749f3d4c2db67c9f3186563a72ef5da9461f0496", results.getWritten().get( 0 )[1] );
   }
 
   @Test
   public void testHexOutput_sha1_compatibilityMode() throws Exception {
-    MockRowListener results = executeHexTest( 3, true, "xyz" );
+    MockRowListener results = executeHexTest( 3, true, "xyz", new ValueMetaString( "test" ) );
     assertEquals( 1, results.getWritten().size() );
     assertEquals( "66FD7417FD7E024C46526C2F6D35FD754FFD52FD", results.getWritten().get( 0 )[1] );
+
+    results = executeHexTest( 3, true, 10.8, new ValueMetaNumber( "test" ) );
+    assertEquals( 1, results.getWritten().size() );
+    assertEquals( "78FDFD3DFDFDE80656FD0AFD5AFDFD10FDFD68", results.getWritten().get( 0 )[1] );
+
+    results = executeHexTest( 3, true, 10.82, new ValueMetaNumber( "test" ) );
+    assertEquals( 1, results.getWritten().size() );
+    assertEquals( "74FD3D4C2DFD7CFD31FD563A72FD5DFD461F04FD", results.getWritten().get( 0 )[1] );
   }
 
   @Test
   public void testHexOutput_sha256() throws Exception {
-    MockRowListener results = executeHexTest( 4, false, "xyz" );
+    MockRowListener results = executeHexTest( 4, false, "xyz", new ValueMetaString( "test" ) );
     assertEquals( 1, results.getWritten().size() );
     assertEquals( "3608bca1e44ea6c4d268eb6db02260269892c0b42b86bbf1e77a6fa16c3c9282",
       results.getWritten().get( 0 )[1] );
+
+    results = executeHexTest( 4, false, 10.8, new ValueMetaNumber( "test" ) );
+    assertEquals( 1, results.getWritten().size() );
+    assertEquals( "b52b603f9ec86c382a8483cad4f788f2f927535a76ad1388caedcef5e3c3c813",
+            results.getWritten().get( 0 )[1] );
+
+    results = executeHexTest( 4, false, 10.82, new ValueMetaNumber( "test" ) );
+    assertEquals( 1, results.getWritten().size() );
+    assertEquals( "45cbb96ff9625490cd675a7a39fecad6c167c1ed9b8957f53224fcb3e4a1e4a1",
+            results.getWritten().get( 0 )[1] );
+  }
+
+  @Test
+  public void testHexOutput_adler32() throws Exception {
+    MockRowListener results = executeHexTest( 1, false, "xyz", new ValueMetaString( "test" ) );
+    assertEquals( 1, results.getWritten().size() );
+    assertEquals( Long.valueOf( "47645036" ), results.getWritten().get( 0 )[1] );
+
+    results = executeHexTest( 1, false, 10.8, new ValueMetaNumber( "test" ) );
+    assertEquals( 1, results.getWritten().size() );
+    assertEquals( Long.valueOf( "32243912" ), results.getWritten().get( 0 )[1] );
+
+    results = executeHexTest( 1, false, 10.82, new ValueMetaNumber( "test" ) );
+    assertEquals( 1, results.getWritten().size() );
+    assertEquals( Long.valueOf( "48627962" ), results.getWritten().get( 0 )[1] );
+  }
+
+  @Test
+  public void testHexOutput_crc32() throws Exception {
+    MockRowListener results = executeHexTest( 0, false, "xyz", new ValueMetaString( "test" ) );
+    assertEquals( 1, results.getWritten().size() );
+    assertEquals( Long.valueOf( "3951999591" ), results.getWritten().get( 0 )[1] );
+
+    results = executeHexTest( 0, false, 10.8, new ValueMetaNumber( "test" ) );
+    assertEquals( 1, results.getWritten().size() );
+    assertEquals( Long.valueOf( "1857885434" ), results.getWritten().get( 0 )[1] );
+
+    results = executeHexTest( 0, false, 10.82, new ValueMetaNumber( "test" ) );
+    assertEquals( 1, results.getWritten().size() );
+    assertEquals( Long.valueOf( "1205016603" ), results.getWritten().get( 0 )[1] );
   }
 
   @Test
   public void testHexOutput_sha256_compatibilityMode() throws Exception {
     try {
-      executeHexTest( 4, true, "xyz" );
+      executeHexTest( 4, true, "xyz", new ValueMetaString( "test" ) );
       fail();
     } catch ( KettleException e ) {
       // expected, SHA-256 is not supported for compatibility mode

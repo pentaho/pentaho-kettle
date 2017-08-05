@@ -97,6 +97,12 @@ public abstract class BaseFileInputStep<M extends BaseFileInputMeta<?, ?, ?>, D 
       return false;
     }
 
+    //Set Embedded NamedCluter MetatStore Provider Key so that it can be passed to VFS
+    if ( getTransMeta().getNamedClusterEmbedManager() != null ) {
+      getTransMeta().getNamedClusterEmbedManager()
+        .passEmbeddedMetastoreKey( this, getTransMeta().getEmbeddedMetastoreProviderKey() );
+    }
+
     initErrorHandling();
 
     meta.additionalOutputFields.normalize();

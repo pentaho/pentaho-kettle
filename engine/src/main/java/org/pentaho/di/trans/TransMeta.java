@@ -118,6 +118,7 @@ import org.pentaho.di.trans.step.errorhandling.StreamInterface;
 import org.pentaho.di.trans.steps.jobexecutor.JobExecutorMeta;
 import org.pentaho.di.trans.steps.mapping.MappingMeta;
 import org.pentaho.di.trans.steps.missing.MissingTrans;
+import org.pentaho.di.trans.steps.named.cluster.NamedClusterEmbedManager;
 import org.pentaho.di.trans.steps.singlethreader.SingleThreaderMeta;
 import org.pentaho.di.trans.steps.transexecutor.TransExecutorMeta;
 import org.pentaho.metastore.api.IMetaStore;
@@ -2320,6 +2321,10 @@ public class TransMeta extends AbstractMeta
    */
   public String getXML( boolean includeSteps, boolean includeDatabase, boolean includeSlaves, boolean includeClusters,
       boolean includePartitions ) throws KettleException {
+
+    //Clear the embedded named clusters.  We will be repopulating from steps that used named clusters
+    getNamedClusterEmbedManager().clear();
+
     Props props = null;
     if ( Props.isInitialized() ) {
       props = Props.getInstance();
@@ -3208,6 +3213,10 @@ public class TransMeta extends AbstractMeta
         for ( int i = 0; i < nrSlaveServers; i++ ) {
           Node slaveServerNode = XMLHandler.getSubNodeByNr( slaveServersNode, SlaveServer.XML_TAG, i );
           SlaveServer slaveServer = new SlaveServer( slaveServerNode );
+          if ( slaveServer.getName() == null ) {
+            log.logError( BaseMessages.getString( PKG, "TransMeta.Log.WarningWhileCreationSlaveServer", slaveServer.getName() ) );
+            continue;
+          }
           slaveServer.shareVariablesWith( this );
 
           // Check if the object exists and if it's a shared object.
@@ -6215,4 +6224,13 @@ public class TransMeta extends AbstractMeta
   public boolean hasMissingPlugins() {
     return missingTrans != null && !missingTrans.isEmpty();
   }
+
+  @Override
+  public NamedClusterEmbedManager getNamedClusterEmbedManager( ) {
+    if ( namedClusterEmbedManager == null ) {
+      namedClusterEmbedManager = new NamedClusterEmbedManager( this, getLogChannel() );
+    }
+    return namedClusterEmbedManager;
+  }
+
 }

@@ -27,15 +27,18 @@ breadcrumb {
 
 breadcrumb .breadcrumbItem {
   float: left;
-  user-select: none;
-  -webkit-user-select: none; /* webkit (safari, chrome) browsers */
-  -moz-user-select: none; /* mozilla browsers */
-  -ms-user-select: none; /* IE10+ */
 }
 
 breadcrumb .breadcrumbFolder {
   cursor: pointer;
   display: inline-block;
+  vertical-align: bottom;
+}
+
+breadcrumb .breadcrumbFolders .breadcrumbFolder {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 breadcrumb .breadcrumbFolder.extra {
@@ -69,7 +72,7 @@ breadcrumb .breadcrumbFolder.extra .breadcrumbExtraItem:hover {
 }
 
 breadcrumb .breadcrumbNext {
-  background: url("../../images/chevron_right_tree.svg") no-repeat left center;
+  background: url("../../img/chevron_right_tree.svg") no-repeat left center;
   width: 7px;
   height: 19px;
   margin-left: 10px;

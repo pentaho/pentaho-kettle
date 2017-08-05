@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -23,8 +23,10 @@
 package org.pentaho.di.ui.trans.steps.datagrid;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.custom.CTabItem;
@@ -46,6 +48,7 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
@@ -365,6 +368,102 @@ public class DataGridDialog extends BaseStepDialog implements StepDialogInterfac
     wData.setLayoutData( fdData );
 
     wTabFolder.layout( true, true );
+
+    wFields.nrNonEmpty();
+    wFields.setTableViewModifyListener( new TableView.TableViewModifyListener() {
+
+      private Integer getIdxByValue( List<Integer> list, Integer value ) {
+        for ( int i = 0; i < list.size(); i++ ) {
+          if ( list.get( i ).equals( value ) ) {
+            return i;
+          }
+        }
+        return null;
+      }
+
+      @Override
+      public void moveRow( int position1, int position2 ) {
+        //if one of rows is empty -- don't move data
+        if ( !wFields.getNonEmptyIndexes().contains( position1 )
+                || !wFields.getNonEmptyIndexes().contains( position2 ) ) {
+          wFields.nrNonEmpty();
+          return;
+        }
+
+        Integer fieldRealPosition1 =  getIdxByValue( wFields.getNonEmptyIndexes(), position1 );
+        Integer fieldRealPosition2 =  getIdxByValue( wFields.getNonEmptyIndexes(), position2 );
+        if ( fieldRealPosition1 == null || fieldRealPosition2 == null ) {
+          return; //can not happen (prevent warnings)
+        }
+        //data table have one technical column
+        int dataPosition1 = fieldRealPosition1 + 1;
+        int dataPosition2 = fieldRealPosition2 + 1;
+
+        for ( TableItem item : wData.table.getItems() ) {
+          String value1 = item.getText( dataPosition1 );
+          String value2 = item.getText( dataPosition2 );
+          item.setText( dataPosition2, value1 );
+          item.setText( dataPosition1, value2 );
+        }
+        wFields.nrNonEmpty();
+      }
+
+      @Override
+      public void insertRow( int rowIndex ) {
+        wFields.nrNonEmpty();
+      }
+
+      @Override
+      public void cellFocusLost( int rowIndex ) {
+        List<Integer> nonEmptyIndexesBeforeChanges = wFields.getNonEmptyIndexes();
+        wFields.nrNonEmpty();
+        List<Integer> nonEmptyIndexesAfterChanges = wFields.getNonEmptyIndexes();
+        if ( CollectionUtils.isEqualCollection( nonEmptyIndexesBeforeChanges, nonEmptyIndexesAfterChanges ) ) {
+          //count of fields rows didn't change
+          return;
+        }
+        Collection<Integer> disjunction = CollectionUtils.disjunction( nonEmptyIndexesBeforeChanges, nonEmptyIndexesAfterChanges );
+        Integer disjunctionIdx = (Integer) disjunction.toArray()[0];
+        if ( nonEmptyIndexesAfterChanges.contains( disjunctionIdx ) ) {
+          // new Field was added
+          Integer idxByValue = getIdxByValue( nonEmptyIndexesAfterChanges, disjunctionIdx );
+          if ( idxByValue == null ) {
+            return; //can not happen (preventing warnings)
+          }
+
+          idxByValue++; //data table have one technical column
+          TableColumn column = new TableColumn( wData.table, SWT.NONE, idxByValue );
+          column.pack();
+        } else {
+          // Field was deleted
+          Integer removeColumn = getIdxByValue( nonEmptyIndexesBeforeChanges, disjunctionIdx );
+          if ( removeColumn == null ) {
+            return; //can not happen (preventing warnings)
+          }
+          removeColumn++;  //data table have one technical column
+          wData.table.getColumn( removeColumn ).dispose();
+          wFields.nrNonEmpty();
+        }
+      }
+
+      @Override
+      public void delete( int[] items ) {
+        for ( int index : items ) {
+          if ( !wFields.getNonEmptyIndexes().contains( index ) ) {
+            continue;
+          }
+          Integer removeColumn = getIdxByValue( wFields.getNonEmptyIndexes(), index );
+          if ( removeColumn == null ) {
+            return; //can not happen (preventing warnings)
+          }
+          removeColumn++;  //data table have one technical column
+          wData.table.getColumn( removeColumn ).dispose();
+        }
+        wFields.nrNonEmpty();
+      }
+    } );
+
+    wFields.setContentListener( modifyEvent -> wFields.nrNonEmpty() );
   }
 
   /**

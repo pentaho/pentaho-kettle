@@ -32,10 +32,10 @@ define([
   "./services/data.service",
   "text!./app.html",
   "pentaho/i18n-osgi!file-open-save.messages",
+  "./components/utils",
   "angular",
-  "components/utils",
   "css!./app.css"
-], function(dataService, template, i18n, angular, utils) {
+], function(dataService, template, i18n, utils, angular) {
   "use strict";
 
   var options = {
@@ -45,7 +45,7 @@ define([
     controller: appController
   };
 
-  appController.$inject = [dataService.name, "$location"];
+  appController.$inject = [dataService.name, "$location", "$scope", "$timeout"];
 
   /**
    * The App Controller.
@@ -55,7 +55,8 @@ define([
    * @param {Object} dt - Angular service that contains helper functions for the app component controller
    * @param {Function} $location - Angular service used for parsing the URL in browser address bar
    */
-  function appController(dt, $location) {
+  function appController(dt, $location, $scope, $timeout) {
+    var _font = "14px OpenSansRegular";
     var vm = this;
     vm.$onInit = onInit;
     vm.selectFolder = selectFolder;
@@ -79,14 +80,17 @@ define([
     vm.displayRecentSearches = displayRecentSearches;
     vm.focusSearchBox = focusSearchBox;
     vm.setTooltip = setTooltip;
-    vm.getOffsetTop = getOffsetTop;
-    vm.getOffsetLeft = getOffsetLeft;
     vm.recentsHasScrollBar = recentsHasScrollBar;
+    vm.addDisabled = addDisabled;
+    vm.deleteDisabled = deleteDisabled;
+    vm.onKeyUp = onKeyUp;
+    vm.getPlaceholder = getPlaceholder;
     vm.selectedFolder = "";
     vm.fileToSave = "";
     vm.searchString = "";
     vm.showError = false;
     vm.errorType = 0;
+    vm.loading = true;
 
     /**
      * The $onInit hook of components lifecycle which is called on each controller
@@ -98,7 +102,6 @@ define([
       vm.headerTitle = i18n.get("file-open-save-plugin.app.header.save.title");
       vm.searchPlaceholder = i18n.get("file-open-save-plugin.app.header.search.placeholder");
       vm.saveFileNameLabel = i18n.get("file-open-save-plugin.app.save.file-name.label");
-      vm.noRecentsMsg = i18n.get("file-open-save-plugin.app.middle.no-recents.message");
       vm.openButton = i18n.get("file-open-save-plugin.app.open.button");
       vm.cancelButton = i18n.get("file-open-save-plugin.app.cancel.button");
       vm.saveButton = i18n.get("file-open-save-plugin.app.save.button");
@@ -106,6 +109,8 @@ define([
       vm.saveFileNameLabel = i18n.get("file-open-save-plugin.app.save.file-name.label");
       vm.addFolderText = i18n.get("file-open-save-plugin.app.add-folder.button");
       vm.removeText = i18n.get("file-open-save-plugin.app.delete.button");
+      vm.loadingTitle = i18n.get("file-open-save-plugin.loading.title");
+      vm.loadingMessage = i18n.get("file-open-save-plugin.loading.message");
       vm.isInSearch = false;
       vm.showRecents = true;
       vm.folder = {name: "Recents", path: "Recents"};
@@ -113,6 +118,7 @@ define([
       vm.file = null;
       vm.includeRoot = false;
       vm.autoExpand = false;
+      _resetFileAreaMessage();
       dt.getDirectoryTree().then(_populateTree);
       dt.getRecentFiles().then(_populateRecentFiles);
       dt.getRecentSearches().then(_populateRecentSearches);
@@ -125,17 +131,9 @@ define([
        */
       function _populateTree(response) {
         vm.folders = response.data;
-        var sortMap = {};
-        var ord = 0;
         for (var i = 0; i < vm.folders.length; i++) {
           if (vm.folders[i].depth === 0) {
             vm.folders[i].visible = true;
-            ord = sortRec(vm.folders[i], sortMap, ord);
-          }
-        }
-        for (var i = 0; i < vm.folders.length; i++ ) {
-          if (vm.folders[i].type == 'folder') {
-            vm.folders[i].order = sortMap[vm.folders[i].objectId.id];
           }
         }
         var path = $location.search().path;
@@ -146,6 +144,7 @@ define([
         if (vm.folders[0].path === "/") {
           vm.includeRoot = true;
         }
+        vm.loading = false;
       }
 
       /**
@@ -197,7 +196,18 @@ define([
         }, function() {
           vm.fileToSave = "";
         });
+        _selectFileName();
       }
+    }
+
+    /**
+     * Selects the file name text
+     * @private
+     */
+    function _selectFileName() {
+      setTimeout(function() {
+        document.getElementById("fileNameEntryTextBox").select();
+      }, 10);
     }
 
     /**
@@ -207,12 +217,14 @@ define([
      */
     function selectFolder(folder) {
       vm.searchString = "";
+      _resetFileAreaMessage();
       if (folder !== vm.folder) {
         vm.file = null;
         if (folder) {
           vm.showRecents = false;
           vm.folder = folder;
-          vm.selectedFolder = folder.name;
+          vm.selectedFolder = ((vm.folder.name === 'home' || vm.folder.name === 'public') && vm.folder.parent === '/') ?
+            _capsFirstLetter(folder.name) : folder.name;
         } else {
           vm.showRecents = true;
           vm.folder = {name: "Recents", path: "Recents"};
@@ -244,12 +256,7 @@ define([
       if (file.type === "folder") {
         selectFolder(file);
       } else {
-        if (file.repository) {
-          dt.openRecent(file.repository + ":" + (file.username ? file.username : ""), file.objectId.id);
-        } else {
-          dt.openFile(file.objectId.id, file.type);
-        }
-        _closeBrowser();
+        _open(file);
       }
     }
 
@@ -258,20 +265,23 @@ define([
      */
     function doSearch() {
       vm.isInSearch = false;
+      vm.showMessage = true;
       if (vm.showRecents === true) {
         _filter(vm.recentFiles, vm.searchString);
       } else {
         _filter(vm.folder.children, vm.searchString);
       }
+      _setFileAreaMessage();
     }
 
     /**
      * Resets the search string and runs search against that string (which returns normal dir structure).
      */
     function resetSearch() {
-      if(vm.searchString !== '') {
+      if(vm.searchString !== "") {
         vm.searchString = "";
         vm.doSearch();
+        _resetFileAreaMessage();
       } else {
         vm.focusSearchBox();
       }
@@ -288,12 +298,33 @@ define([
       if (elements) {
         for (var i = 0; i < elements.length; i++) {
           var name = elements[i].name.toLowerCase();
-          elements[i].inResult = name.indexOf(value.toLowerCase()) !== -1;
+          var inResult = name.indexOf(value.toLowerCase()) !== -1;
+          vm.showMessage = inResult ? false : vm.showMessage;
+          elements[i].inResult = inResult;
           if (elements[i].children.length > 0) {
             _filter(elements[i].children, value);
           }
         }
       }
+    }
+
+    /**
+     * Sets the message for the file area to No Results
+     * @private
+     */
+    function _setFileAreaMessage() {
+      if (vm.showMessage) {
+        vm.fileAreaMessage = i18n.get("file-open-save-plugin.app.middle.no-results.message");
+      }
+    }
+
+    /**
+     * Resets the showMessage and file area message to default values
+     * @private
+     */
+    function _resetFileAreaMessage() {
+      vm.showMessage = false;
+      vm.fileAreaMessage = i18n.get("file-open-save-plugin.app.middle.no-recents.message");
     }
 
     /**
@@ -314,7 +345,7 @@ define([
       if (vm.file && vm.file.type === "folder") {
         selectFolder(vm.file);
       } else {
-        _open();
+        _open(vm.file);
       }
     }
 
@@ -329,13 +360,13 @@ define([
      * Calls data service to open file
      * @private
      */
-    function _open() {
-      if (vm.file.repository) {
-        dt.openRecent(vm.file.repository + ":" + (vm.file.username ? vm.file.username : ""), vm.file.objectId.id).then(function(response) {
+    function _open(file) {
+      if (file.repository) {
+        dt.openRecent(file.repository + ":" + (file.username ? file.username : ""), file.objectId.id).then(function(response) {
           _closeBrowser();
         });
       } else {
-        dt.openFile(vm.file.objectId.id, vm.file.type).then(function(response) {
+        dt.openFile(file.objectId.id, file.type).then(function(response) {
           _closeBrowser();
         });
       }
@@ -437,6 +468,7 @@ define([
         vm.errorType = 7;
       }
       vm.showError = true;
+      $scope.$apply();
     }
 
     /**
@@ -449,10 +481,27 @@ define([
       }
     }
 
+    /**
+     * Determines if there are recent searches to show
+     */
     function displayRecentSearches() {
-      if(vm.recentSearches.length !== 0) {
-        vm.isInSearch = true
+      if (vm.recentSearches.length !== 0) {
+        vm.isInSearch = true;
       }
+    }
+
+    function addDisabled() {
+      if (vm.folder && vm.folder.path === 'Recents') {
+        return true;
+      }
+      return false;
+    }
+
+    function deleteDisabled() {
+      if (vm.file === null || (vm.folder && vm.folder.path === 'Recents')) {
+        return true;
+      }
+      return false;
     }
 
     function focusSearchBox() {
@@ -464,14 +513,6 @@ define([
         if( searchItem.scrollWidth > 267 ) {
             searchItem.title = tooltip;
         }
-    }
-
-    function getOffsetTop() {
-      return document.getElementById("headerSearchId").offsetTop;
-    }
-
-    function getOffsetLeft() {
-      return document.getElementById("headerSearchId").offsetLeft;
     }
 
     /**
@@ -502,7 +543,7 @@ define([
      */
     function commitRemove() {
       if (vm.file !== null) {
-        dt.remove(vm.file.type === "folder" ? vm.file.path : vm.file.objectId.id, vm.file.type).then(function() {
+        dt.remove(vm.file.type === "folder" ? vm.file.path : vm.file.objectId.id, vm.file.type).then(function(response) {
           var index = vm.folder.children.indexOf(vm.file);
           vm.folder.children.splice(index, 1);
           if (vm.file.type === "folder") {
@@ -521,8 +562,13 @@ define([
           }
           vm.folder.hasChildren = hasChildFolders;
           vm.file = null;
-        }, function(response) {
-          console.log(response);
+        }, function() {
+          if (vm.file.type === "folder") {
+            vm.errorType = 8;
+          } else {
+            vm.errorType = 9;
+          }
+          vm.showError = true;
         });
       }
     }
@@ -532,23 +578,28 @@ define([
      */
     function addFolder() {
       if (vm.selectedFolder !== "Recents") {
-        dt.create(vm.folder.path, _getFolderName()).then(function(response) {
-          vm.folder.hasChildren = true;
-          var folder = response.data;
-          folder.visible = vm.folder.open;
-          folder.depth = vm.folder.depth + 1;
-          folder.indent = (folder.depth * 27) + "px";
-          folder.autoEdit = true;
-          folder.type = "folder";
-          vm.folder.children.splice(0, 0, folder);
-          for (var i = 0; i < vm.folders.length; i++) {
-            if (vm.folders[i].path === folder.parent) {
-              var copy = angular.copy(folder);
-              vm.folders.splice(i + 1, 0, copy);
-              break;
-            }
+        vm.folder.hasChildren = true;
+        var folder = {};
+        var name = _getFolderName();
+        folder.parent = vm.folder.path;
+        folder.path = vm.folder.path + (vm.folder.path.charAt(vm.folder.path.length-1) === "/" ? "" : "/") + name;
+        folder.name = name;
+        folder.visible = vm.folder.open;
+        folder.depth = vm.folder.depth + 1;
+        folder.indent = folder.depth * 27;
+        folder.new = true;
+        folder.autoEdit = true;
+        folder.type = "folder";
+        folder.hasChildren = false;
+        folder.children = [];
+        vm.folder.children.splice(0, 0, folder);
+        for (var i = 0; i < vm.folders.length; i++) {
+          if (vm.folders[i].path === folder.parent) {
+            var copy = angular.copy(folder);
+            vm.folders.splice(i + 1, 0, copy);
+            break;
           }
-        });
+        }
       }
     }
 
@@ -557,7 +608,27 @@ define([
         if (vm.folders[i].path === oldPath) {
           vm.folders[i].name = newName;
         }
-        vm.folders[i].path = vm.folders[i].path.replace(oldPath, newPath);
+      }
+      for (var i = 0; i < vm.folders.length; i++) {
+        _updateDirectories(vm.folders[i], oldPath, newPath);
+      }
+    }
+
+    /**
+     * Update all child folder paths on parent rename
+     *
+     * @param folder
+     * @param oldPath
+     * @param newPath
+     * @private
+     */
+    function _updateDirectories(folder, oldPath, newPath) {
+      if (folder.path.indexOf(oldPath) !== -1) {
+        folder.path = folder.path.replace(oldPath, newPath);
+        folder.parent = folder.path.replace(oldPath, newPath);
+      }
+      for (var i = 0; i < folder.children.length; i++) {
+        _updateDirectories(folder.children[i], oldPath, newPath);
       }
     }
 
@@ -608,19 +679,49 @@ define([
       return false;
     }
 
-    function sortRec(folder, orderMap, idx) {
-      if (folder.type == 'folder') {
-        orderMap[folder.objectId.id] = idx++;
-        if (folder.children) {
-          folder.children.sort( function(f1, f2) { return utils.naturalCompare( f1.name, f2.name ) } );
-          for (var i=0; i< folder.children.length;i++) {
-            idx = sortRec(folder.children[i], orderMap, idx);
+    /**
+     * Gets the key up event from the app
+     *
+     * @param event
+     */
+    function onKeyUp(event) {
+      if (event.keyCode === 13 && event.target.id !== "searchBoxId") {
+        if (vm.wrapperClass === "open") {
+          if (vm.file !== null) {
+            selectFile(vm.file);
           }
+        } else {
+          _save(false);
         }
+        $scope.$apply();
       }
-      return idx;
     }
 
+    function getPlaceholder() {
+      var isIE = navigator.userAgent.indexOf("Trident") !== -1 && Boolean(document.documentMode);
+      var retVal = vm.searchPlaceholder + " " + vm.selectedFolder;
+      if (isIE && utils.getTextWidth(retVal, _font) > 210) {
+        var tmp = "";
+        for (var i = 0; i < retVal.length; i++) {
+          tmp = retVal.slice(0, i);
+          if (utils.getTextWidth(tmp, _font) > 196) {
+            break;
+          }
+        }
+        retVal = tmp + "...";
+      }
+      return retVal;
+    }
+
+    /**
+    * Returns input with first letter capitalized
+    * @param {string} input - input string
+    * @return {string} - returns input with first letter capitalized
+    * @private
+    */
+    function _capsFirstLetter(input) {
+      return input.charAt(0).toUpperCase() + input.slice(1);
+    }
   }
 
   return {

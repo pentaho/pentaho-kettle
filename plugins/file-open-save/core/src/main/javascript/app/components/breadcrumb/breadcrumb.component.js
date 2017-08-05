@@ -30,8 +30,9 @@
  **/
 define([
   "text!./breadcrumb.html",
+  "../utils",
   "css!./breadcrumb.css"
-], function(breadcrumbTemplate) {
+], function(breadcrumbTemplate, utils) {
   "use strict";
 
   var options = {
@@ -51,10 +52,13 @@ define([
    * This provides the controller for the breadcrumb component.
    */
   function breadcrumbController() {
+    var _font = "14px OpenSansRegular";
     var vm = this;
     vm.$onInit = onInit;
     vm.$onChanges = onChanges;
     vm.select = select;
+    vm.maxWidths = [440, 0, 0];
+    vm.titles = ["", "", ""];
     vm.parts = [];
     vm.extras = [];
 
@@ -78,6 +82,7 @@ define([
         var path = changes.path.currentValue;
         if (path) {
           _updatePath(path);
+          _updateMaxWidths();
         }
       }
     }
@@ -120,6 +125,70 @@ define([
     function select(path) {
       vm.showExtras = false;
       vm.onSelect({selectedPath: path});
+    }
+
+    /**
+     * Calculates and sets the max width for 1, 2, or all 3 breadcrumb items.
+     * Also, sets the tooltips if a breadcrumb is truncated.
+     * @private
+     */
+    function _updateMaxWidths() {
+      var extras = vm.extras.length > 0;
+      var f1Width = 0;
+      var f2Width = 0;
+      var f3Width = 0;
+      var mw0 = extras ? 402 : 440;
+      var mw1 = 0;
+      var mw2 = 0;
+      var mw3 = 0;
+      var title1 = "";
+      var title2 = "";
+      var title3 = "";
+      switch (vm.parts.length) {
+        case 1:
+          mw1 = mw0;
+          title1 = utils.getTextWidth(vm.parts[0].part, _font) > mw1 ? vm.parts[0].part : "";
+          break;
+        case 2:
+          mw0 = extras ? 187 : 206;
+          mw1 = mw0;
+          mw2 = mw0;
+          f1Width = utils.getTextWidth(vm.parts[0].part, _font);
+          f2Width = utils.getTextWidth(vm.parts[1].part, _font);
+          if (f1Width < mw0) {
+            mw1 = f1Width;
+            mw2 = mw0 + mw0 - mw1;
+            title1 = false;
+          }
+          title1 = f1Width > mw1 ? vm.parts[0].part : "";
+          title2 = f2Width > mw2 ? vm.parts[1].part : "";
+          break;
+        case 3:
+          mw0 = extras ? 116 : 128;
+          mw1 = mw0;
+          mw2 = mw0;
+          mw3 = mw0;
+          f1Width = utils.getTextWidth(vm.parts[0].part, _font);
+          f2Width = utils.getTextWidth(vm.parts[1].part, _font);
+          f3Width = utils.getTextWidth(vm.parts[2].part, _font);
+          if (f1Width < mw0) {
+            mw1 = f1Width;
+            mw2 = mw0 + (mw0 - mw1) / 2;
+            mw3 = mw2;
+          }
+          if (f2Width < mw2) {
+            mw2 = f2Width;
+            mw3 += (mw3 - mw2);
+          }
+          title1 = f1Width > mw1 ? vm.parts[0].part : "";
+          title2 = f2Width > mw2 ? vm.parts[1].part : "";
+          title3 = f3Width > mw3 ? vm.parts[2].part : "";
+          break;
+        default:
+          break;
+      }
+      vm.maxWidths = [mw1, mw2, mw3];
+      vm.titles = [title1, title2, title3];
     }
   }
 

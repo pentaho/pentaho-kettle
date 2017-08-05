@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -28,13 +28,14 @@ import org.junit.Test;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.pentaho.di.core.logging.LogChannel;
+import org.pentaho.di.core.util.AbstractStepMeta;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.StepDataInterface;
+import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.di.trans.steps.StepMockUtil;
-import org.pentaho.di.trans.steps.abort.AbortMeta;
 import org.pentaho.di.trans.steps.datagrid.DataGridMeta;
 import org.pentaho.di.trans.steps.mock.StepMockHelper;
 
@@ -44,7 +45,19 @@ public class MissingTransStepTest {
 
   @Test
   public void testInit() {
-    StepMetaInterface stepMetaInterface = new AbortMeta();
+    StepMetaInterface stepMetaInterface = new AbstractStepMeta() {
+
+      @Override
+      public void setDefault() { }
+
+      @Override
+      public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr,
+                                    TransMeta transMeta,
+                                    Trans trans ) {
+        return null;
+      }
+    };
+
     StepMeta stepMeta = new StepMeta();
 
     stepMeta.setName( "TestMetaStep" );

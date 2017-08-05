@@ -22,20 +22,19 @@
 
 package org.pentaho.di.trans.steps.webservices;
 
-import static org.junit.Assert.assertEquals;
-import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.when;
-
-import org.apache.commons.httpclient.Header;
-import org.apache.commons.httpclient.methods.PostMethod;
+import org.apache.http.Header;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.message.BasicHeader;
 import org.junit.Before;
 import org.junit.Test;
-import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.logging.LoggingObjectInterface;
 import org.pentaho.di.trans.steps.mock.StepMockHelper;
+
+import java.net.URISyntaxException;
+
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.*;
 
 public class WebServiceTest {
 
@@ -62,16 +61,16 @@ public class WebServiceTest {
             mockHelper.trans ) );
   }
 
-  @Test( expected = IllegalArgumentException.class )
-  public void newHttpMethodWithInvalidUrl() throws KettleStepException {
-    webServiceStep.newHttpMethod( NOT_VALID_URL );
+  @Test( expected = URISyntaxException.class )
+  public void newHttpMethodWithInvalidUrl() throws URISyntaxException {
+    webServiceStep.getHttpMethod( NOT_VALID_URL );
   }
 
   @Test
   public void getLocationFrom() {
-    PostMethod postMethod = mock( PostMethod.class );
-    Header locationHeader = new Header( LOCATION_HEADER, TEST_URL );
-    doReturn( locationHeader ).when( postMethod ).getResponseHeader( LOCATION_HEADER );
+    HttpPost postMethod = mock( HttpPost.class );
+    Header locationHeader = new BasicHeader( LOCATION_HEADER, TEST_URL );
+    doReturn( locationHeader ).when( postMethod ).getFirstHeader( LOCATION_HEADER );
 
     assertEquals( TEST_URL, WebService.getLocationFrom( postMethod ) );
   }

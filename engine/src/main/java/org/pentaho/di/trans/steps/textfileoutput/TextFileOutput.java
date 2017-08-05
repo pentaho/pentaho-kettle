@@ -782,6 +782,12 @@ public class TextFileOutput extends BaseStep implements StepInterface {
     meta = (TextFileOutputMeta) smi;
     data = (TextFileOutputData) sdi;
 
+    //Set Embedded NamedCluter MetatStore Provider Key so that it can be passed to VFS
+    if ( getTransMeta().getNamedClusterEmbedManager() != null ) {
+      getTransMeta().getNamedClusterEmbedManager()
+        .passEmbeddedMetastoreKey( getTransMeta(), getTransMeta().getEmbeddedMetastoreProviderKey() );
+    }
+
     if ( super.init( smi, sdi ) ) {
       data.splitnr = 0;
       // In case user want to create file at first row
@@ -991,7 +997,7 @@ public class TextFileOutput extends BaseStep implements StepInterface {
     FileObject parentfolder = null;
     try {
       // Get parent folder
-      parentfolder = getFileObject( filename ).getParent();
+      parentfolder = getFileObject( filename, getTransMeta() ).getParent();
       if ( parentfolder.exists() ) {
         if ( isDetailed() ) {
           logDetailed( BaseMessages.getString( PKG, "TextFileOutput.Log.ParentFolderExist",

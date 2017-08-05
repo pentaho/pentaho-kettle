@@ -39,6 +39,7 @@ import org.apache.commons.io.FileUtils;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.pentaho.di.core.KettleClientEnvironment;
@@ -46,6 +47,7 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.job.JobMeta;
+import org.pentaho.di.repository.IUser;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectory;
 import org.pentaho.di.repository.RepositoryDirectoryInterface;
@@ -165,6 +167,10 @@ public class GetRepositoryNamesTest {
             }
           }
         } );
+
+    IUser user = Mockito.mock( IUser.class );
+    Mockito.when( user.isAdmin() ).thenReturn( true );
+    Mockito.when( repoExtended.getUserInfo() ).thenReturn( user );
   }
 
   @AfterClass
@@ -243,6 +249,24 @@ public class GetRepositoryNamesTest {
   @Test
   public void testGetRepoList_excludeNameMask_Extended() throws KettleException {
     init( repoExtended, "/", true, ".*", "Trans1.*", All, 3 );
+  }
+
+  @Test
+  //PDI-16258
+  public void testShowHidden() throws KettleException {
+    IUser user = Mockito.mock( IUser.class );
+    Mockito.when( user.isAdmin() ).thenReturn( true );
+    Mockito.when( repoExtended.getUserInfo() ).thenReturn( user );
+    init( repoExtended, "/", false, ".*", "", All, 0 );
+    Mockito.verify( repoExtended, Mockito.never() )
+      .loadRepositoryDirectoryTree( Mockito.anyString(), Mockito.anyString(), Mockito.anyInt(), Mockito.eq( false ),
+        Mockito.anyBoolean(), anyBoolean() );
+
+    Mockito.when( user.isAdmin() ).thenReturn( false );
+    init( repoExtended, "/", false, ".*", "", All, 0 );
+    Mockito.verify( repoExtended )
+      .loadRepositoryDirectoryTree( Mockito.anyString(), Mockito.anyString(), Mockito.anyInt(), Mockito.eq( false ),
+        Mockito.anyBoolean(), Mockito.anyBoolean() );
   }
 
   private void init( Repository repository, String directoryName, boolean includeSubFolders, String nameMask, String exludeNameMask,

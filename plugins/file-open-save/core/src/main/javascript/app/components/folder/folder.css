@@ -26,7 +26,7 @@ folder .folder {
   padding: 5px 0;
   cursor: pointer;
   white-space: nowrap;
-  width: 100%;
+  width: auto;
 }
 
 folder .folder:hover {
@@ -72,18 +72,18 @@ folder .folder .folderArrowWrapper {
 }
 
 folder .folder .folderArrow {
-  background: url("../../images/chevron_right_tree.svg") no-repeat left center;
+  background: url("../../img/chevron_right_tree.svg") no-repeat left center;
   height: 20px;
   width: 6px;
   float: right;
 }
 
 folder .folder.selected .folderArrow {
-  background: url("../../images/chevron_right_tree.svg") no-repeat right center;
+  background: url("../../img/chevron_right_tree.svg") no-repeat right center;
 }
 
 folder .folder.opened .folderArrow {
-  background: url("../../images/chevron_down_tree.svg") no-repeat left center;
+  background: url("../../img/chevron_down_tree.svg") no-repeat left center;
   height: 20px;
   width: 10px;
 }
@@ -96,9 +96,9 @@ folder .folder.empty .folderArrow {
   background: none;
 }
 
-/* FOLDER IMAGES states */
+/* FOLDER image states */
 folder .folder .folderImage {
-  background: url("../../images/folder.svg") no-repeat left center;
+  background: url("../../img/folder.svg") no-repeat left center;
   height: 20px;
   width: 16px;
   margin-left: 10px;
@@ -106,7 +106,7 @@ folder .folder .folderImage {
 }
 
 folder .folder.recents .folderImage {
-  background: url("../../images/recents.svg") no-repeat left center;
+  background: url("../../img/recents.svg") no-repeat left center;
 }
 
 folder .folder.home .folderName, folder .folder.public .folderName {
@@ -114,12 +114,12 @@ folder .folder.home .folderName, folder .folder.public .folderName {
 }
 
 folder .folder.home .folderImage {
-  background: url("../../images/home.svg") no-repeat left center;
+  background: url("../../img/home.svg") no-repeat left center;
 
 }
 
 folder .folder.public .folderImage {
-  background: url("../../images/public.svg") no-repeat left center;
+  background: url("../../img/public.svg") no-repeat left center;
 }
 
 folder .folder.selected .folderImage {
@@ -127,9 +127,6 @@ folder .folder.selected .folderImage {
 }
 
 folder .folder .folderName {
-  -webkit-user-select: none; /* webkit (safari, chrome) browsers */
-  -moz-user-select: none; /* mozilla browsers */
-  -ms-user-select: none; /* IE10+ */
   height: 20px;
   line-height: 20px;
   margin-left: 10px;
