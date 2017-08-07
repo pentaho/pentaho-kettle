@@ -83,45 +83,54 @@ file-open-save-app .headerSearch {
 }
 
 file-open-save-app .headerSearchLeft {
-  background: url("./img/search_gray.png") no-repeat left 8px center;
-  width: 30px;
+  width: 16px;
   height: 100%;
   border: none;
   cursor: text;
   float: left;
+  margin-left: 8px;
 }
 
-file-open-save-app .headerSearchLeft.blueState {
-  background: url("./img/search_blue.png") no-repeat left 7px center;
+file-open-save-app .headerSearchLeftIcon {
+  background: url("./img/search_field.svg") no-repeat right center;
+  width: 30px;
+  height: 100%;
+}
+
+file-open-save-app .headerSearchLeft.blueState .headerSearchLeftIcon {
+  background-position: right 16px center;
 }
 
 file-open-save-app .headerSearchRight {
-  background: url("./img/clear_gray.png") no-repeat center center;
-  width: 28px;
-  height: 100%;
+  width: 12px;
+  height: 12px;
   border: none;
   cursor: pointer;
   float: left;
+  margin: 11px 10px 11px 8px;
 }
 
 file-open-save-app .headerSearchRightInvisible {
-  width: 28px;
-  height: 100%;
-  border: none;
   cursor: text;
-  float: left;
+  visibility: hidden;
 }
 
-file-open-save-app .headerSearchRight:hover {
-  background: url("./img/clear_blue.png") no-repeat center center;
+file-open-save-app .headerSearchRightIcon {
+  background: url("./img/clear_field.svg") no-repeat left center;
+  width: 12px;
+  height: 100%;
+}
+
+file-open-save-app .headerSearchRight:hover .headerSearchRightIcon {
+  background-position: right center;
 }
 
 file-open-save-app input.searchBox,
 file-open-save-app input.searchBox:focus {
-  width: calc(270px - 60px);
+  width: 216px;
   height: 100%;
   border: none;
-  padding: 0;
+  padding: 0 0 0 6px;
   float: left;
 }
 
@@ -164,7 +173,7 @@ file-open-save-app .headerBottom {
   padding-bottom: 20px;
 }
 
-file-open-save-app .breadcrumbSection{
+file-open-save-app .breadcrumbSection {
   line-height: 18px;
   float: left;
 }
