@@ -138,11 +138,6 @@ files tbody td div {
   white-space: nowrap;
 }
 
-files tbody td input {
-  font-size: 14px;
-  width: 98%;
-}
-
 files tr .fileName {
   padding-left: 10px;
 }
@@ -159,7 +154,11 @@ files tr .fileName .editing input {
   display: block;
   border: 0 none;
   outline: none;
-
+  font-family: OpenSansRegular;
+  font-size: 14px;
+  width: 98%;
+  padding: 0;
+  height: 18px;
 }
 
 files tr .fileTypeIcon {
