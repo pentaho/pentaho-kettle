@@ -43,6 +43,7 @@
         </property>
       </activation>
       <modules>
+        <module>core</module>
         <module>file-open-save</module>
         <module>repositories</module>
         <module>meta-inject</module>
@@ -68,7 +69,6 @@
         <module>pur</module>
         <module>ms-access-bulk-loader</module>
         <module>xml</module>
-        <module>abort</module>
       </modules>
     </profile>
     
