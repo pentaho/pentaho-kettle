@@ -109,8 +109,6 @@ define([
       vm.saveFileNameLabel = i18n.get("file-open-save-plugin.app.save.file-name.label");
       vm.addFolderText = i18n.get("file-open-save-plugin.app.add-folder.button");
       vm.removeText = i18n.get("file-open-save-plugin.app.delete.button");
-      vm.loadingTitle = i18n.get("file-open-save-plugin.loading.title");
-      vm.loadingMessage = i18n.get("file-open-save-plugin.loading.message");
       vm.isInSearch = false;
       vm.showRecents = true;
       vm.folder = {name: "Recents", path: "Recents"};
