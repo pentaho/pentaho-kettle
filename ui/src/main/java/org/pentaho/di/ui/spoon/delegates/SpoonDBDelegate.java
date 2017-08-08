@@ -94,15 +94,21 @@ public class SpoonDBDelegate extends SpoonDelegate {
     getDatabaseDialog().setDatabases( hasDatabasesInterface.getDatabases() );
     String newname = getDatabaseDialog().open();
     if ( !Utils.isEmpty( newname ) ) { // null: CANCEL
-      databaseMeta.setName( newname.trim() );
-      databaseMeta.setDisplayName( newname.trim() );
+      databaseMeta.setName( originalName );
+
       databaseMeta = getDatabaseDialog().getDatabaseMeta();
       if ( !newname.equals( originalName )
           && databaseMeta.findDatabase( hasDatabasesInterface.getDatabases(), newname ) != null ) {
+        databaseMeta.setName( newname.trim() );
         DatabaseDialog.showDatabaseExistsDialog( spoon.getShell(), databaseMeta );
         databaseMeta.setName( originalName );
         databaseMeta.setDisplayName( originalName );
         return;
+      }
+      databaseMeta.setName( newname.trim() );
+      saveConnection( databaseMeta, Const.VERSION_COMMENT_EDIT_VERSION );
+      if ( databaseMeta.isShared() ) {
+        sharedObjectSyncUtil.synchronizeConnections( databaseMeta, originalName );
       }
 
       saveConnection( databaseMeta, Const.VERSION_COMMENT_EDIT_VERSION );
