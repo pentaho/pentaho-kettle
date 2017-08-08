@@ -143,6 +143,7 @@ define([
           vm.includeRoot = true;
         }
         vm.loading = false;
+        _setFileToSaveName();
       }
 
       /**
@@ -159,7 +160,6 @@ define([
       if (state) {
         vm.setState(state);
       }
-      _setFileToSaveName();
     }
 
     /**
@@ -204,8 +204,10 @@ define([
      */
     function _selectFileName() {
       setTimeout(function() {
-        document.getElementById("fileNameEntryTextBox").select();
-      }, 10);
+        var elem = document.getElementById("fileNameEntryTextBox");
+        elem.select();
+        elem.setSelectionRange(0, elem.value.length);
+      }, 40);
     }
 
     /**
