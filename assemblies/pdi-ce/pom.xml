@@ -81,6 +81,7 @@
 
     <!-- plugins -->
     <pdi-abort-plugin.version>${project.version}</pdi-abort-plugin.version>
+    <pdi-autodoc-plugin.version>${project.version}</pdi-autodoc-plugin.version>
     <kettle-version-checker.version>${project.version}</kettle-version-checker.version>
     <kettle-dummy-plugin.version>${project.version}</kettle-dummy-plugin.version>
     <kettle-s3csvinput-plugin.version>${project.version}</kettle-s3csvinput-plugin.version>
@@ -776,6 +777,12 @@
                   <groupId>org.pentaho.di.plugins</groupId>
                   <artifactId>pdi-abort-plugin</artifactId>
                   <version>${pdi-abort-plugin.version}</version>
+                  <type>zip</type>
+                </artifactItem>
+                <artifactItem>
+                  <groupId>org.pentaho.di.plugins</groupId>
+                  <artifactId>pdi-autodoc-plugin</artifactId>
+                  <version>${pdi-autodoc-plugin.version}</version>
                   <type>zip</type>
                 </artifactItem>
                 <artifactItem>

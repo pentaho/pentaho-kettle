@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -26,6 +26,7 @@ import java.util.List;
 
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
+import org.pentaho.di.core.annotations.Step;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
@@ -56,6 +57,10 @@ import org.w3c.dom.Node;
  * @author matt
  * @version 4
  */
+@Step( id = "AutoDoc", image = "autodoc.svg", i18nPackageName = "org.pentaho.di.trans.steps.autodoc",
+  name = "AutoDoc.Name", description = "AutoDoc.Description",
+  documentationUrl = "http://wiki.pentaho.com/display/EAI/Automatic+Documentation+Output",
+  categoryDescription = "i18n:org.pentaho.di.trans.step:BaseStep.Category.Output" )
 public class AutoDocMeta extends BaseStepMeta implements StepMetaInterface, AutoDocOptionsInterface {
   private static Class<?> PKG = AutoDocMeta.class; // for i18n purposes, needed by Translator2!!
 
