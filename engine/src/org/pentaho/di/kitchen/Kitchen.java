@@ -22,7 +22,6 @@
 
 package org.pentaho.di.kitchen;
 
-import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.AbstractMap;
 import java.util.ArrayList;
@@ -36,6 +35,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.FileUtil;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.KettleClientEnvironment;
 import org.pentaho.di.core.KettleEnvironment;
@@ -387,7 +387,7 @@ public class Kitchen {
           // If the filename starts with scheme like zip:, then isAbsolute() will return false even though
           // the path following the zip is absolute path. Check for isAbsolute only if the fileName does not
           // start with scheme
-          if ( !KettleVFS.startsWithScheme( fileName ) && !new File( fileName ).isAbsolute() ) {
+          if ( !KettleVFS.startsWithScheme( fileName ) && !FileUtil.isFullyQualified( fileName ) ) {
             fileName = initialDir.toString() + fileName;
           }
 
