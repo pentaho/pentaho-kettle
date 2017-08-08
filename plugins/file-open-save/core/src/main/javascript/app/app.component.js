@@ -506,11 +506,15 @@ define([
       document.getElementById("searchBoxId").focus();
     }
 
+    /**
+     * Sets the tooltip of a recent search in the search dropdown if it is wider than its container
+     * @param {String} id - the suffix of an element id
+     * @param {String} tooltip - the tooltip to add if necessary
+     */
     function setTooltip(id, tooltip) {
-        var searchItem = document.getElementById("search-item-index-" + id);
-        if( searchItem.scrollWidth > 267 ) {
-            searchItem.title = tooltip;
-        }
+      if (utils.getTextWidth(tooltip, _font) - 1 > 247) {
+        document.getElementById("search-item-index-" + id).title = tooltip;
+      }
     }
 
     /**
