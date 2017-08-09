@@ -31,6 +31,8 @@ package org.pentaho.di.trans.steps.pgbulkloader;
 //
 
 import java.math.BigDecimal;
+import java.sql.Connection;
+import java.sql.Statement;
 
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.util.Utils;
@@ -80,9 +82,6 @@ public class PGBulkLoader extends BaseStep implements StepInterface {
    */
   public String getCopyCommand( ) throws KettleException {
     DatabaseMeta dm = meta.getDatabaseMeta();
-
-    String loadAction = environmentSubstitute( meta.getLoadAction() );
-
     StringBuilder contents = new StringBuilder( 500 );
 
     String tableName =
@@ -95,11 +94,6 @@ public class PGBulkLoader extends BaseStep implements StepInterface {
     // contents.append(Const.CR);
 
     // Create a Postgres / Greenplum COPY string for use with a psql client
-    if ( loadAction.equalsIgnoreCase( "truncate" ) ) {
-      contents.append( "TRUNCATE TABLE " );
-      contents.append( tableName + ";" );
-      contents.append( Const.CR );
-    }
     contents.append( "COPY " );
     // Table name
 
@@ -151,9 +145,33 @@ public class PGBulkLoader extends BaseStep implements StepInterface {
         data.db.connect( getPartitionID() );
       }
 
-      logBasic( "Launching command: " + copyCmd );
-      pgCopyOut = new PGCopyOutputStream( (PGConnection) data.db.getConnection(), copyCmd );
+      Connection connection = data.db.getConnection();
 
+      // Determine whether to do truncate before copy or not
+      String loadAction = environmentSubstitute( meta.getLoadAction() );
+
+      if ( loadAction.equalsIgnoreCase( "truncate" ) ) {
+        DatabaseMeta dm = meta.getDatabaseMeta();
+        String tableName =
+            dm.getQuotedSchemaTableCombination( environmentSubstitute( meta.getSchemaName() ),
+                environmentSubstitute( meta.getTableName() ) );
+        logBasic( "Launching command: " + "TRUNCATE " + tableName );
+
+        Statement statement = connection.createStatement();
+
+        try {
+          statement.executeUpdate( "TRUNCATE " + tableName );
+        } catch ( Exception ex ) {
+          throw new KettleException( "Error while truncating " + tableName, ex );
+        } finally {
+          statement.close();
+        }
+      }
+
+      logBasic( "Launching command: " + copyCmd );
+      pgCopyOut = new PGCopyOutputStream( ( PGConnection )connection, copyCmd );
+    } catch ( KettleException e ) {
+      throw e;
     } catch ( Exception ex ) {
       throw new KettleException( "Error while preparing the COPY " + copyCmd, ex );
     }
