@@ -219,7 +219,7 @@ files .searchTable .fileModified {
 
 files .fileModified,
 files .fileType {
-	color: #999;
+  color: #999;
 }
 
 files tr .fileLocation {

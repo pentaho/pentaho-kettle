@@ -74,7 +74,7 @@ define([
   /**
    * Bootstraps angular module to the DOM element on the page
    * @private
-   * @param {Object} element - The DOM element
+   * @param {DOMElement} element - The DOM element
    */
   function bootstrap(element) {
     angular.element(element).ready(function() {

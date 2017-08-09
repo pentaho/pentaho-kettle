@@ -37,9 +37,9 @@ define([
 
   var options = {
     bindings: {
-      path: '<',
-      includeRoot: '<',
-      onSelect: '&'
+      path: "<",
+      includeRoot: "<",
+      onSelect: "&"
     },
     template: breadcrumbTemplate,
     controllerAs: "vm",

@@ -18,13 +18,13 @@ define([
 ], function() {
     /**
      * @param {Object} $document - $document javascript object.
-     * @return {{restrict: string, scope: {onSet: string, onHideExtras: string}, link: link}}.
+     * @return {{restrict: string, scope: {onHideExtras: string}, link: link}}.
      */
   function breadcrumbExtrasDirective($document) {
     return {
-      restrict: 'A',
+      restrict: "A",
       scope: {
-        onHideExtras: '&'
+        onHideExtras: "&"
       },
       link: function(scope, element) {
         scope.showExtras = false;

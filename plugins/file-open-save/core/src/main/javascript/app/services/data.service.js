@@ -25,7 +25,7 @@
 define(
     [],
     function() {
-      'use strict';
+      "use strict";
 
       var factoryArray = ["$http", factory];
       var module = {
@@ -133,20 +133,20 @@ define(
          * @return {Promise} - a promise resolved once data is returned
          */
         function storeRecentSearch(recentSearch) {
-          return _httpGet([baseUrl, "storeRecentSearch", encodeURIComponent(recentSearch) + "?ts=" + new Date().getTime()].join("/"));
+          return _httpGet([baseUrl, "storeRecentSearch",
+            encodeURIComponent(recentSearch) + "?ts=" + new Date().getTime()].join("/"));
         }
 
         /**
          * Renames a repository object
          *
          * @param {String} id - The repository object id
-         * @param {String} name - The new name
-         * @param {String} path - The new path
+         * @param {String} path - The new name
+         * @param {String} name - The new path
          * @param {String} type - The object type
          * @return {Promise} - a promise resolved once data is returned
          */
-        function rename(id, path, name, type)
-        {
+        function rename(id, path, name, type) {
           return _httpPost([baseUrl, "rename", encodeURIComponent(id), encodeURIComponent(path), name, type].join("/"));
         }
 
@@ -240,9 +240,15 @@ define(
           return $http(options);
         }
 
+        /**
+         * Eliminates cache issues
+         * @param {String} url - url string
+         * @return {*} - url
+         * @private
+         */
         function _cacheBust(url) {
           var value = Math.round(new Date().getTime() / 1000) + Math.random();
-          if (url.indexOf("?") != -1) {
+          if (url.indexOf("?") !== -1) {
             url += "&v=" + value;
           } else {
             url += "?v=" + value;
