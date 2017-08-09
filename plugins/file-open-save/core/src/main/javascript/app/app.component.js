@@ -45,7 +45,7 @@ define([
     controller: appController
   };
 
-  appController.$inject = [dataService.name, "$location", "$scope", "$timeout"];
+  appController.$inject = [dataService.name, "$location", "$scope"];
 
   /**
    * The App Controller.
@@ -54,8 +54,9 @@ define([
    *
    * @param {Object} dt - Angular service that contains helper functions for the app component controller
    * @param {Function} $location - Angular service used for parsing the URL in browser address bar
+   * @param {Object} $scope - Application model
    */
-  function appController(dt, $location, $scope, $timeout) {
+  function appController(dt, $location, $scope) {
     var _font = "14px OpenSansRegular";
     var vm = this;
     vm.$onInit = onInit;
@@ -178,6 +179,10 @@ define([
       }
     }
 
+    /**
+     * Determines if the Recents view has a vertical scrollbar
+     * @return {boolean} - true if Recents view has a vertical scrollbar, false otherwise
+     */
     function recentsHasScrollBar() {
       var recentsView = document.getElementsByClassName("recentsView");
       return recentsView.scrollHeight > recentsView.clientHeight;
@@ -223,7 +228,7 @@ define([
         if (folder) {
           vm.showRecents = false;
           vm.folder = folder;
-          vm.selectedFolder = ((vm.folder.name === 'home' || vm.folder.name === 'public') && vm.folder.parent === '/') ?
+          vm.selectedFolder = ((vm.folder.name === "home" || vm.folder.name === "public") && vm.folder.parent === "/") ?
             _capsFirstLetter(folder.name) : folder.name;
         } else {
           vm.showRecents = true;
@@ -278,7 +283,7 @@ define([
      * Resets the search string and runs search against that string (which returns normal dir structure).
      */
     function resetSearch() {
-      if(vm.searchString !== "") {
+      if (vm.searchString !== "") {
         vm.searchString = "";
         vm.doSearch();
         _resetFileAreaMessage();
@@ -358,13 +363,15 @@ define([
 
     /**
      * Calls data service to open file
+     * @param {Object} file - File object
      * @private
      */
     function _open(file) {
       if (file.repository) {
-        dt.openRecent(file.repository + ":" + (file.username ? file.username : ""), file.objectId.id).then(function(response) {
-          _closeBrowser();
-        });
+        dt.openRecent(file.repository + ":" + (file.username ? file.username : ""),
+          file.objectId.id).then(function(response) {
+            _closeBrowser();
+          });
       } else {
         dt.openFile(file.objectId.id, file.type).then(function(response) {
           _closeBrowser();
@@ -461,6 +468,10 @@ define([
       vm.showError = true;
     }
 
+    /**
+     * Sets errorType and showError if there is a duplicate
+     * @param {string} type - string value
+     */
     function duplicateError(type) {
       if (type === "folder") {
         vm.errorType = 2;
@@ -490,20 +501,31 @@ define([
       }
     }
 
+    /**
+     * Determines if add button is to be disabled
+     * @return {boolean} - True if Recents is selected, false otherwise
+     */
     function addDisabled() {
-      if (vm.folder && vm.folder.path === 'Recents') {
+      if (vm.folder && vm.folder.path === "Recents") {
         return true;
       }
       return false;
     }
 
+    /**
+     * Determines if delete button is to be disabled
+     * @return {boolean} - True if a file is not selected or if Recents is selected, false otherwise
+     */
     function deleteDisabled() {
-      if (vm.file === null || (vm.folder && vm.folder.path === 'Recents')) {
+      if (vm.file === null || (vm.folder && vm.folder.path === "Recents")) {
         return true;
       }
       return false;
     }
 
+    /**
+     * Sets focus on the search box
+     */
     function focusSearchBox() {
       document.getElementById("searchBoxId").focus();
     }
@@ -547,33 +569,34 @@ define([
      */
     function commitRemove() {
       if (vm.file !== null) {
-        dt.remove(vm.file.type === "folder" ? vm.file.path : vm.file.objectId.id, vm.file.type).then(function(response) {
-          var index = vm.folder.children.indexOf(vm.file);
-          vm.folder.children.splice(index, 1);
-          if (vm.file.type === "folder") {
-            for (var i = 0; i < vm.folders.length; i++) {
-              if (vm.folders[i].path === vm.file.path) {
-                vm.folders.splice(i, 1);
-                break;
+        dt.remove(vm.file.type === "folder" ? vm.file.path : vm.file.objectId.id, vm.file.type)
+          .then(function(response) {
+            var index = vm.folder.children.indexOf(vm.file);
+            vm.folder.children.splice(index, 1);
+            if (vm.file.type === "folder") {
+              for (var i = 0; i < vm.folders.length; i++) {
+                if (vm.folders[i].path === vm.file.path) {
+                  vm.folders.splice(i, 1);
+                  break;
+                }
               }
             }
-          }
-          var hasChildFolders = false;
-          for (var j = 0; j < vm.folder.children.length; j++) {
-            if (vm.folder.children[j].type === "folder") {
-              hasChildFolders = true;
+            var hasChildFolders = false;
+            for (var j = 0; j < vm.folder.children.length; j++) {
+              if (vm.folder.children[j].type === "folder") {
+                hasChildFolders = true;
+              }
             }
-          }
-          vm.folder.hasChildren = hasChildFolders;
-          vm.file = null;
-        }, function() {
-          if (vm.file.type === "folder") {
-            vm.errorType = 8;
-          } else {
-            vm.errorType = 9;
-          }
-          vm.showError = true;
-        });
+            vm.folder.hasChildren = hasChildFolders;
+            vm.file = null;
+          }, function() {
+            if (vm.file.type === "folder") {
+              vm.errorType = 8;
+            } else {
+              vm.errorType = 9;
+            }
+            vm.showError = true;
+          });
       }
     }
 
@@ -586,7 +609,7 @@ define([
         var folder = {};
         var name = _getFolderName();
         folder.parent = vm.folder.path;
-        folder.path = vm.folder.path + (vm.folder.path.charAt(vm.folder.path.length-1) === "/" ? "" : "/") + name;
+        folder.path = vm.folder.path + (vm.folder.path.charAt(vm.folder.path.length - 1) === "/" ? "" : "/") + name;
         folder.name = name;
         folder.visible = vm.folder.open;
         folder.depth = vm.folder.depth + 1;
@@ -607,23 +630,29 @@ define([
       }
     }
 
+    /**
+     * Updates the directories with a new name for a file
+     * @param {string} oldPath - String path of old directory path
+     * @param {string} newPath - String path of new directory path
+     * @param {string} newName - New file name
+     */
     function updateDirectories(oldPath, newPath, newName) {
       for (var i = 0; i < vm.folders.length; i++) {
         if (vm.folders[i].path === oldPath) {
           vm.folders[i].name = newName;
         }
       }
-      for (var i = 0; i < vm.folders.length; i++) {
-        _updateDirectories(vm.folders[i], oldPath, newPath);
+      for (var j = 0; j < vm.folders.length; j++) {
+        _updateDirectories(vm.folders[j], oldPath, newPath);
       }
     }
 
     /**
      * Update all child folder paths on parent rename
      *
-     * @param folder
-     * @param oldPath
-     * @param newPath
+     * @param {Object} folder - Folder Object
+     * @param {String} oldPath - String path of old directory path
+     * @param {String} newPath - String path of new directory path
      * @private
      */
     function _updateDirectories(folder, oldPath, newPath) {
@@ -686,7 +715,7 @@ define([
     /**
      * Gets the key up event from the app
      *
-     * @param event
+     * @param {Object} event - Event Object
      */
     function onKeyUp(event) {
       if (event.keyCode === 13 && event.target.id !== "searchBoxId") {
@@ -701,6 +730,15 @@ define([
       }
     }
 
+    /**
+     * Determines if the browser is Internet Explorer.
+     * If it is, it truncates the placeholder for the search box if it's width is greater than the
+     * search box. It then adds ellipsis to the end of that string and returns that value.
+     * If it is not Internet Explorer, it just returns the search box placeholder and any
+     * truncation/ellipsis is handled using CSS. NOTE: this is a workaround for an IE bug
+     * that doesn't allow placeholders to be ellipsis unless the input is readonly.
+     * @return {string} - the Placeholder for the search box
+     */
     function getPlaceholder() {
       var isIE = navigator.userAgent.indexOf("Trident") !== -1 && Boolean(document.documentMode);
       var retVal = vm.searchPlaceholder + " " + vm.selectedFolder;

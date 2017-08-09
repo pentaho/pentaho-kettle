@@ -15,27 +15,29 @@
  */
 
 define([
-  'angular'
-], function (angular) {
+], function() {
+  key.$inject = ["$document"];
 
-  key.$inject = ['$document'];
-
+  /**
+   * @param {Object} $document - jQuery or jqLite wrapper for the browser's window.document object.
+   * @return {{restrict: string, scope: {onKeyUp: string}, link: link}} - Key Directive
+   */
   function key($document) {
     return {
-      retrict: 'AE',
+      restrict: "AE",
       scope: {
-        onKeyUp: '&'
+        onKeyUp: "&"
       },
-      link: function (scope, element, attr) {
-        $document.on('keyup', function(event) {
+      link: function(scope, element, attr) {
+        $document.on("keyup", function(event) {
           scope.onKeyUp({event: event});
-        })
+        });
       }
-    }
+    };
   }
 
   return {
     name: "key",
-    options: ['$document', key]
-  }
+    options: ["$document", key]
+  };
 });

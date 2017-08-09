@@ -215,8 +215,7 @@ file-open-save-app .deleteFolder {
 file-open-save-app .addFolder[disabled],
 file-open-save-app .deleteFolder[disabled],
 file-open-save-app .addFolder[disabled]:hover,
-file-open-save-app .deleteFolder[disabled]:hover
-{
+file-open-save-app .deleteFolder[disabled]:hover {
   background-position: left center;
 }
 
@@ -375,7 +374,7 @@ file-open-save-app .open .fileAreaMessageView {
   line-height: 368px;
 }
 
-.searchBoxExtra {
+file-open-save-app .searchBoxExtra {
   position: absolute;
   background-color: #ffffff;
   -moz-box-shadow: 0 0 4px 0 rgba(0, 0, 0, 0.4);
@@ -391,7 +390,7 @@ file-open-save-app .open .fileAreaMessageView {
 
 }
 
-.searchBoxExtraItem {
+file-open-save-app .searchBoxExtraItem {
   padding: 5px 10px 5px 10px;
   text-overflow: ellipsis;
   overflow: hidden;
@@ -399,20 +398,26 @@ file-open-save-app .open .fileAreaMessageView {
   cursor: pointer;
 }
 
-.searchBoxExtraItem:hover {
+file-open-save-app .searchBoxExtraItem:hover {
   background-color: #E6EFF6;
 }
 
-.noselect {
+file-open-save-app .noselect {
   -webkit-touch-callout: none; /* iOS Safari */
   -webkit-user-select: none; /* Safari */
-  -khtml-user-select: none; /* Konqueror HTML */
   -moz-user-select: none; /* Firefox */
   -ms-user-select: none; /* Internet Explorer/Edge */
-  user-select: none; /* Non-prefixed version, currently
-                                  supported by Chrome and Opera */
+  user-select: none; /* Non-prefixed version, currently supported by Chrome and Opera */
 }
 
-input[placeholder] { text-overflow: ellipsis; }
-::-moz-placeholder { text-overflow: ellipsis; }
-input:-moz-placeholder { text-overflow: ellipsis; }
+file-open-save-app input[placeholder] {
+  text-overflow: ellipsis;
+}
+
+file-open-save-app ::-moz-placeholder {
+  text-overflow: ellipsis;
+}
+
+file-open-save-app input:-moz-placeholder {
+  text-overflow: ellipsis;
+}

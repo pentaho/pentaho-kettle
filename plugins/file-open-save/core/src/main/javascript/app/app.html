@@ -11,22 +11,24 @@
       <div class="headerTitle headerText">
         {{::vm.headerTitle}}
       </div>
-      <div id="headerSearchId" class="headerSearch" ng-class="{'focused': vm.isInSearch === true || searchBoxHasFocus === true }">
-        <div class="headerSearchLeft" ng-click="vm.focusSearchBox()" ng-class="{'blueState': vm.searchString !== '' || vm.isInSearch === true || searchBoxHasFocus === true }" >
+      <div id="headerSearchId" class="headerSearch" ng-class="{focused: vm.isInSearch === true || searchBoxHasFocus === true }">
+        <div class="headerSearchLeft" ng-click="vm.focusSearchBox()" ng-class="{blueState: vm.searchString !== '' || vm.isInSearch === true || searchBoxHasFocus === true }" >
           <div class="headerSearchLeftIcon"></div>
         </div>
         <input id="searchBoxId" type="text" class="searchBox"
                placeholder="{{vm.getPlaceholder()}}"
-               ng-blur="vm.storeRecentSearch();searchBoxHasFocus=false"
-               ng-focus="vm.displayRecentSearches();searchBoxHasFocus=true"
+               ng-blur="vm.storeRecentSearch();searchBoxHasFocus = false"
+               ng-focus="vm.displayRecentSearches();searchBoxHasFocus = true"
                ng-change="vm.doSearch()"
                ng-model="vm.searchString"/>
           <div class="searchBoxExtra" ng-show="vm.isInSearch">
               <div class="searchBoxExtraItem"
-                   ng-mousedown="vm.searchString = search;vm.doSearch()"
+                   ng-mousedown="vm.searchString = search; vm.doSearch();"
                    ng-repeat="search in vm.recentSearches"
                    ng-mouseover="vm.setTooltip(this.$index, search)"
-                   id="search-item-index-{{this.$index}}">{{search}}</div>
+                   id="search-item-index-{{this.$index}}">
+                {{search}}
+              </div>
           </div>
         <div class="headerSearchRight"
              ng-class="{headerSearchRightInvisible: vm.searchString === ''}"
@@ -66,7 +68,9 @@
          ng-class="{recentsView: vm.showRecents && !vm.showMessage,
                     scrolling: vm.recentsHasScrollBar,
                     hasMessage: vm.showMessage}">
-      <div class="fileAreaMessageView" ng-show="vm.showRecents && vm.recentFiles.length === 0 || vm.showMessage">{{vm.fileAreaMessage}}</div>
+      <div class="fileAreaMessageView" ng-show="vm.showRecents && vm.recentFiles.length === 0 || vm.showMessage">
+        {{vm.fileAreaMessage}}
+      </div>
       <card ng-show="!vm.showMessage && vm.showRecents && vm.recentFiles.length > 0"
             recent-files="vm.recentFiles"
             folder="vm.folder"
@@ -90,15 +94,25 @@
   <div class="bottom">
     <div class="fileNameEntry" ng-show="vm.wrapperClass === 'save'">
       <div class="fileNameEntryLabel">
-        <label for="fileNameEntryTextBox">{{::vm.saveFileNameLabel}}</label>
+        <label for="fileNameEntryTextBox">
+          {{::vm.saveFileNameLabel}}
+        </label>
       </div>
-      <input id="fileNameEntryTextBox" type="text" class="fileNameEntryTextBox"
-      ng-model="vm.fileToSave"/>
+      <input id="fileNameEntryTextBox"
+             type="text"
+             class="fileNameEntryTextBox"
+             ng-model="vm.fileToSave"/>
     </div>
     <div class="buttons">
-      <button class="secondary" ng-click="vm.cancel()">{{::vm.cancelButton}}</button>
-      <button class="primary" ng-show="vm.wrapperClass === 'open'" ng-click="vm.openClicked()" ng-disabled="!vm.file">{{::vm.openButton}}</button>
-      <button class="primary" ng-show="vm.wrapperClass === 'save'" ng-click="vm.saveClicked()" ng-disabled="vm.fileToSave === '' || vm.folder.path == 'Recents'">{{::vm.saveButton}}</button>
+      <button class="secondary" ng-click="vm.cancel()">
+        {{::vm.cancelButton}}
+      </button>
+      <button class="primary" ng-show="vm.wrapperClass === 'open'" ng-click="vm.openClicked()" ng-disabled="!vm.file">
+        {{::vm.openButton}}
+      </button>
+      <button class="primary" ng-show="vm.wrapperClass === 'save'" ng-click="vm.saveClicked()" ng-disabled="vm.fileToSave === '' || vm.folder.path == 'Recents'">
+        {{::vm.saveButton}}
+      </button>
     </div>
   </div>
 </div>

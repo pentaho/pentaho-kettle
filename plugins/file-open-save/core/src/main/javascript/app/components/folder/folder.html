@@ -1,12 +1,3 @@
-<!--
-  Classes for main div--
-    1. recents:  Recents option--recents icon
-    2. home:     home folder--home icon
-    3. public:   public folder--public icon
-    4. opened:   Folder is opened--down chevron shown
-    5. empty:    Folder is empty--no chevron shown
-    6. selected: User selected this folder
--->
 <div class="folder recents empty"
      ng-class="{selected: vm.showRecents}"
      ng-click="vm.selectFolder(null)"
@@ -15,13 +6,15 @@
     <div class="folderArrow"></div>
   </div>
   <div class="folderImage"></div>
-  <div class="folderName">Recents</div>
+  <div class="folderName">
+    Recents
+  </div>
 </div>
 
 <div class="folder"
      ng-click="vm.selectFolder(folder)"
      ng-dblclick="vm.selectAndOpenFolder(folder)"
-     ng-repeat="folder in vm.folders | orderBy:folder:false:vm.compareFolders"
+     ng-repeat="folder in vm.folders | orderBy: folder : false : vm.compareFolders"
      ng-style="{paddingLeft: folder.indent + 'px',
                 width: vm.width === 0 ? 'auto' : vm.width - folder.indent + 'px'}"
      ng-show="folder.visible"
@@ -34,5 +27,7 @@
     <div class="folderArrow"></div>
   </div>
   <div class="folderImage"></div>
-  <div class="folderName">{{folder.name}}</div>
+  <div class="folderName">
+    {{folder.name}}
+  </div>
 </div>

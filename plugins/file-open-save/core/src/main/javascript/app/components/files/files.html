@@ -6,7 +6,9 @@
       <thead>
       <tr>
         <th class="nameCell" ng-click="vm.sortFiles(vm._name)">
-          <div class="headerLabel">{{::vm.nameHeader}}</div>
+          <div class="headerLabel">
+            {{::vm.nameHeader}}
+          </div>
           <div class="sortWrapper">
             <div class="sort"
                  ng-class="{sortUp: vm.sortState === 1 && vm.sortField === vm._name,
@@ -14,7 +16,9 @@
           </div>
         </th>
         <th class="typeCell" ng-click="vm.sortFiles(vm._type)">
-          <div class="headerLabel">{{::vm.typeHeader}}</div>
+          <div class="headerLabel">
+            {{::vm.typeHeader}}
+          </div>
           <div class="sortWrapper">
             <div class="sort"
                  ng-class="{sortUp: vm.sortState === 1 && vm.sortField === vm._type,
@@ -22,7 +26,9 @@
           </div>
         </th>
         <th class="dateCell" ng-click="vm.sortFiles(vm._date)">
-          <div class="headerLabel">{{::vm.modifiedHeader}}</div>
+          <div class="headerLabel">
+            {{::vm.modifiedHeader}}
+          </div>
           <div class="sortWrapper">
             <div class="sort"
                  ng-class="{sortUp: vm.sortState === 1 && vm.sortField === vm._date,
@@ -37,7 +43,7 @@
   <div class="bodyWrapper">
     <table ng-class="{searchTable: vm.search}">
       <tbody>
-      <tr ng-repeat="file in vm.getFiles(vm.folder.children) | orderBy:file:vm.sortReverse:vm.compareFiles "
+      <tr ng-repeat="file in vm.getFiles(vm.folder.children) | orderBy: file: vm.sortReverse: vm.compareFiles "
           ng-click="vm.selectFile(file)"
           ng-dblclick="vm.commitFile(file); $event.stopPropagation();"
           ng-class="{selected: vm.selectedFile === file}"
@@ -57,10 +63,14 @@
                   on-start="vm.onStart(file)"
                   new="file.new"></edit>
           </div>
-          <div class="fileLocation">{{file.path}}</div>
+          <div class="fileLocation">
+            {{file.path}}
+          </div>
         </td>
         <td class="typeCell">
-          <div class="fileType">{{file.type}}</div>
+          <div class="fileType">
+            {{file.type}}
+          </div>
         </td>
         <td class="dateCell">
           <div class="fileModified">

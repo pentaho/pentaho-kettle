@@ -42,10 +42,6 @@ folder .folder.public {
   margin-top: 5px;
 }
 
-folder .folder.opened {
-  /*margin-bottom: 5px;*/
-}
-
 folder .folder.selected {
   background-color: #005DA6;
   color: #FFF;
