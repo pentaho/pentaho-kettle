@@ -22,24 +22,6 @@
 
 package org.pentaho.di.cluster;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyMapOf;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.spy;
-
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URI;
-import java.util.ArrayList;
-import java.util.List;
-
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpStatus;
 import org.apache.http.StatusLine;
@@ -62,6 +44,24 @@ import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.util.EnvUtil;
 import org.pentaho.di.utils.TestUtils;
 import org.pentaho.di.www.GetPropertiesServlet;
+
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URI;
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyMapOf;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
 
 /**
  * Tests for SlaveServer class
@@ -100,6 +100,7 @@ public class SlaveServerTest {
 
     doReturn( closeableHttpResponseMock ).when( httpClient ).execute( any( HttpGet.class ) );
     doReturn( closeableHttpResponseMock ).when( httpClient ).execute( any( HttpPost.class ) );
+    doReturn( closeableHttpResponseMock ).when( httpClient ).execute( any( HttpPost.class ), any( HttpClientContext.class ) );
 
     slaveServer = spy( new SlaveServer() );
     doReturn( httpClient ).when( slaveServer ).getHttpClient();
@@ -119,6 +120,8 @@ public class SlaveServerTest {
 
   @Test( expected = KettleException.class )
   public void testSendXML() throws Exception {
+    slaveServer.setHostname( "hostNameStub" );
+    slaveServer.setUsername( "userNAmeStub" );
     HttpPost httpPostMock = mock( HttpPost.class );
     URI uriMock = new URI( "fake" );
     doReturn( uriMock ).when( httpPostMock ).getURI();

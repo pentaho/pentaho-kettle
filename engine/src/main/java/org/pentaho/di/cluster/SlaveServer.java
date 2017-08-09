@@ -134,6 +134,8 @@ public class SlaveServer extends ChangedFlag implements Cloneable, SharedObjectI
 
   public static final int KETTLE_CARTE_RETRY_BACKOFF_INCREMENTS = getBackoffIncrements();
 
+  private HttpClientContext authContext = HttpClientContext.create();
+
   private static int getNumberOfSlaveServerRetries() {
     try {
       return Integer.parseInt( Const.NVL( System.getProperty( "KETTLE_CARTE_RETRIES" ), "0" ) );
@@ -606,10 +608,11 @@ public class SlaveServer extends ChangedFlag implements Cloneable, SharedObjectI
 
   public String sendXML( String xml, String service ) throws Exception {
     HttpPost method = buildSendXMLMethod( xml.getBytes( Const.XML_ENCODING ), service );
+    addCredentials( authContext );
 
     // Execute request
     try {
-      HttpResponse httpResponse = getHttpClient().execute( method );
+      HttpResponse httpResponse = getHttpClient().execute( method, authContext );
       StatusLine statusLine = httpResponse.getStatusLine();
       int result = statusLine.getStatusCode();
 
@@ -735,46 +738,27 @@ public class SlaveServer extends ChangedFlag implements Cloneable, SharedObjectI
     }
   }
 
-  public void addProxy( HttpClientContext context ) {
-    String hostName;
-    String proxyHost;
-    String proxyPort;
-    String nonProxyHosts;
-
-    lock.readLock().lock();
-    try {
-      hostName = environmentSubstitute( this.hostname );
-      proxyHost = environmentSubstitute( this.proxyHostname );
-      proxyPort = environmentSubstitute( this.proxyPort );
-      nonProxyHosts = environmentSubstitute( this.nonProxyHosts );
-    } finally {
-      lock.readLock().unlock();
-    }
-
-    if ( !Utils.isEmpty( proxyHost ) && !Utils.isEmpty( proxyPort ) ) {
-      // skip applying proxy if non-proxy host matches
-      if ( !Utils.isEmpty( nonProxyHosts ) && !Utils.isEmpty( hostName ) && hostName.matches( nonProxyHosts ) ) {
-        return;
-      }
-      context.setTargetHost( new HttpHost( proxyHost, Integer.parseInt( proxyPort ) ) );
-    }
-  }
-
   public void addCredentials( HttpClientContext context ) {
     HttpHost target;
+    String userName;
+    String password;
+    String host;
+    int port;
     lock.readLock().lock();
     try {
-      String host = environmentSubstitute( hostname );
-      int port = Const.toInt( environmentSubstitute( this.port ), 80 );
-      target = new HttpHost( host, port, "http" );
-      CredentialsProvider provider = new BasicCredentialsProvider();
-      UsernamePasswordCredentials credentials = new UsernamePasswordCredentials( environmentSubstitute( username ), Encr
-        .decryptPasswordOptionallyEncrypted( environmentSubstitute( password ) ) );
-      provider.setCredentials( new AuthScope( host, port ), credentials );
-      context.setCredentialsProvider( provider );
+      host = environmentSubstitute( hostname );
+      port = Const.toInt( environmentSubstitute( this.port ), 80 );
+      userName = environmentSubstitute( username );
+      password = Encr.decryptPasswordOptionallyEncrypted( environmentSubstitute( this.password ) );
     } finally {
       lock.readLock().unlock();
     }
+    target = new HttpHost( host, port, "http" );
+    CredentialsProvider provider = new BasicCredentialsProvider();
+    UsernamePasswordCredentials credentials = new UsernamePasswordCredentials( userName, password );
+    provider.setCredentials( new AuthScope( host, port ), credentials );
+    context.setCredentialsProvider( provider );
+
     // Create AuthCache instance
     AuthCache authCache = new BasicAuthCache();
     // Generate BASIC scheme object and add it to the local
@@ -878,10 +862,9 @@ public class SlaveServer extends ChangedFlag implements Cloneable, SharedObjectI
   public String execService( String service, Map<String, String> headerValues ) throws Exception {
     // Prepare HTTP get
     HttpGet method = buildExecuteServiceMethod( service, headerValues );
-
     // Execute request
     try {
-      HttpResponse httpResponse = getHttpClient().execute( method );
+      HttpResponse httpResponse = getHttpClient().execute( method, authContext );
       StatusLine statusLine = httpResponse.getStatusLine();
       int statusCode = statusLine.getStatusCode();
 
@@ -919,12 +902,12 @@ public class SlaveServer extends ChangedFlag implements Cloneable, SharedObjectI
   // Method is defined as package-protected in order to be accessible by unit tests
   HttpClient getHttpClient() {
     SlaveConnectionManager connectionManager = SlaveConnectionManager.getInstance();
-    HttpClient client = connectionManager.createHttpClient();
-
     String userName;
     String password;
 
     String hostName;
+    int httpPort;
+
     String proxyHost;
     String proxyPort;
     String nonProxyHosts;
@@ -932,6 +915,7 @@ public class SlaveServer extends ChangedFlag implements Cloneable, SharedObjectI
     lock.readLock().lock();
     try {
       hostName = environmentSubstitute( this.hostname );
+      httpPort = Const.toInt( environmentSubstitute( this.port ), 80 );
       proxyHost = environmentSubstitute( this.proxyHostname );
       proxyPort = environmentSubstitute( this.proxyPort );
       nonProxyHosts = environmentSubstitute( this.nonProxyHosts );
@@ -941,18 +925,17 @@ public class SlaveServer extends ChangedFlag implements Cloneable, SharedObjectI
     } finally {
       lock.readLock().unlock();
     }
-
     if ( !Utils.isEmpty( proxyHost ) && !Utils.isEmpty( proxyPort ) ) {
       // skip applying proxy if non-proxy host matches
       if ( !Utils.isEmpty( nonProxyHosts ) && !Utils.isEmpty( hostName ) && hostName.matches( nonProxyHosts ) ) {
         return connectionManager.createHttpClient( userName, password );
       }
-      AuthScope authScope =
-        new AuthScope( environmentSubstitute( hostname ), Const.toInt( environmentSubstitute( port ), 80 ) );
+      AuthScope authScope = new AuthScope( hostName, httpPort );
       return connectionManager
         .createHttpClient( userName, password, hostName, Integer.parseInt( proxyPort ), authScope );
+    } else {
+      return connectionManager.createHttpClient();
     }
-    return client;
   }
 
   public SlaveServerStatus getStatus() throws Exception {
