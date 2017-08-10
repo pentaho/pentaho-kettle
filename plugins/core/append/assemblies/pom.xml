@@ -10,7 +10,9 @@
   <modelVersion>4.0.0</modelVersion>
 
   <artifactId>pdi-append-assemblies</artifactId>
+  <name>PDI Append Step Plugin Assemblies</name>
   <packaging>pom</packaging>
+
   <modules>
     <module>plugin</module>
   </modules>

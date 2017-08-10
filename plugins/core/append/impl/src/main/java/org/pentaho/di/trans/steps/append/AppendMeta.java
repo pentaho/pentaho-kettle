@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -26,6 +26,7 @@ import java.util.List;
 
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
+import org.pentaho.di.core.annotations.Step;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
@@ -59,6 +60,10 @@ import org.w3c.dom.Node;
  * @author Sven Boden
  * @since 3-june-2007
  */
+@Step( id = "Append", image = "APP.svg", i18nPackageName = "org.pentaho.di.trans.steps.append",
+  name = "Append.Name", description = "Append.Description",
+  documentationUrl = "http://wiki.pentaho.com/display/EAI/Append+streams",
+  categoryDescription = "i18n:org.pentaho.di.trans.step:BaseStep.Category.Flow" )
 @InjectionSupported( localizationPrefix = "AppendMeta.Injection." )
 public class AppendMeta extends BaseStepMeta implements StepMetaInterface {
   private static Class<?> PKG = Append.class; // for i18n purposes, needed by Translator2!!
