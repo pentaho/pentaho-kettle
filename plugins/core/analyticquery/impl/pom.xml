@@ -10,6 +10,7 @@
   <modelVersion>4.0.0</modelVersion>
 
   <artifactId>pdi-analyticquery-plugin-impl</artifactId>
+  <name>PDI AnalyticQuery Step Plugin Impl</name>
 
   <properties>
     <kettle.version>8.0-SNAPSHOT</kettle.version>
@@ -29,9 +30,28 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
+      <groupId>pentaho-kettle</groupId>
+      <artifactId>kettle-ui-swt</artifactId>
+      <version>${kettle.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
       <groupId>pentaho</groupId>
       <artifactId>metastore</artifactId>
       <scope>provided</scope>
+    </dependency>
+
+    <!-- SWT it required to compile any version of any architecture will work -->
+    <dependency>
+      <groupId>org.eclipse.swt</groupId>
+      <artifactId>org.eclipse.swt.gtk.linux.x86_64</artifactId>
+      <scope>provided</scope>
+      <exclusions>
+        <exclusion>
+          <groupId>*</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
 
     <dependency>
