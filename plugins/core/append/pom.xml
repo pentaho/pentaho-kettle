@@ -3,19 +3,19 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <parent>
-    <artifactId>pdi-plugins</artifactId>
+    <artifactId>pdi-core-plugins</artifactId>
     <groupId>org.pentaho.di.plugins</groupId>
     <version>8.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
 
-  <artifactId>pdi-core-plugins</artifactId>
-  <name>PDI Core Plugins</name>
+  <artifactId>append</artifactId>
   <packaging>pom</packaging>
-
+  <name>PDI Append Step Plugin</name>
   <modules>
-    <module>abort</module>
-    <module>append</module>
+    <module>impl</module>
+    <module>assemblies</module>
   </modules>
+
 
 </project>

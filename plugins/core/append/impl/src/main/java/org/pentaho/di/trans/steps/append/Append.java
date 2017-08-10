@@ -151,9 +151,9 @@ public class Append extends BaseStep implements StepInterface {
   /**
    * Checks whether 2 template rows are compatible for the mergestep.
    *
-   * @param referenceRow
+   * @param referenceRowMeta
    *          Reference row
-   * @param compareRow
+   * @param compareRowMeta
    *          Row to compare to
    *
    * @return true when templates are compatible.
