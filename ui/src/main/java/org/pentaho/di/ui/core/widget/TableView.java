@@ -150,6 +150,7 @@ public class TableView extends Composite {
   private FocusAdapter lsFocusText, lsFocusCombo;
   private ModifyListener lsModCombo;
   private TraverseListener lsTraverse;
+  private Listener lsFocusInTabItem;
 
   private int sortfield;
   private int sortfieldLast;
@@ -228,11 +229,11 @@ public class TableView extends Composite {
 
   public TableView( VariableSpace space, Composite parent, int style, ColumnInfo[] columnInfo, int nrRows,
       boolean readOnly, ModifyListener lsm, PropsUI pr, final boolean addIndexColumn ) {
-    this( space, parent, style, columnInfo, nrRows, readOnly, lsm, pr, addIndexColumn, false );
+    this( space, parent, style, columnInfo, nrRows, readOnly, lsm, pr, addIndexColumn, false, null );
   }
 
   public TableView( VariableSpace space, Composite parent, int style, ColumnInfo[] columnInfo, int nrRows,
-      boolean readOnly, ModifyListener lsm, PropsUI pr, final boolean addIndexColumn, final boolean insertImage ) {
+      boolean readOnly, ModifyListener lsm, PropsUI pr, final boolean addIndexColumn, final boolean insertImage, Listener lsnr ) {
     super( parent, SWT.NO_BACKGROUND | SWT.NO_FOCUS | SWT.NO_MERGE_PAINTS | SWT.NO_RADIO_GROUP );
     this.parent = parent;
     this.columns = columnInfo;
@@ -243,6 +244,7 @@ public class TableView extends Composite {
     this.variables = space;
     this.addIndexColumn = addIndexColumn;
     this.insertImage = insertImage;
+    this.lsFocusInTabItem = lsnr;
 
     sortfield = 0;
     sortfieldLast = -1;
@@ -2348,12 +2350,14 @@ public class TableView extends Composite {
 
       combo = new ComboVar( variables, table, SWT.SINGLE | SWT.LEFT | SWT.BORDER, null, getCaretPositionInterface, insertTextInterface, !insertImage );
       ComboVar widget = (ComboVar) combo;
+      if ( lsFocusInTabItem != null ) {
+        widget.getCComboWidget().addListener( SWT.FocusIn, lsFocusInTabItem );
+      }
       props.setLook( widget, Props.WIDGET_STYLE_TABLE );
       widget.addTraverseListener( lsTraverse );
       widget.addModifyListener( lsModCombo );
       widget.addFocusListener( lsFocusCombo );
 
-      widget.setItems( opt );
       widget.setText( row.getText( colnr ) );
 
       if ( lsMod != null ) {
