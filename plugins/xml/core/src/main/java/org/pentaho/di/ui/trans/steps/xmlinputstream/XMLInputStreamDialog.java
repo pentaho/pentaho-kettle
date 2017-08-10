@@ -49,6 +49,7 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
+import org.pentaho.di.core.util.EnvUtil;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
@@ -216,7 +217,7 @@ public class XMLInputStreamDialog extends BaseStepDialog implements StepDialogIn
     // for the filename field.
     //
     isReceivingInput = transMeta.findNrPrevSteps( stepMeta ) > 0;
-    if ( isReceivingInput ) {
+    if ( isReceivingInput && !ignoreReceivingInput() ) {
 
       RowMetaInterface previousFields;
       try {
@@ -1008,7 +1009,7 @@ public class XMLInputStreamDialog extends BaseStepDialog implements StepDialogIn
     };
 
     wStepname.addSelectionListener( lsDef );
-    if ( isReceivingInput ) {
+    if ( isReceivingInput && !ignoreReceivingInput() ) {
       wFilenameCombo.addSelectionListener( lsDef );
     } else {
       wFilename.addSelectionListener( lsDef );
@@ -1145,7 +1146,7 @@ public class XMLInputStreamDialog extends BaseStepDialog implements StepDialogIn
    */
   public void getData() {
     wStepname.setText( stepname );
-    if ( isReceivingInput ) {
+    if ( isReceivingInput && !ignoreReceivingInput() ) {
       RowMetaInterface previousFields = null;
       try {
         previousFields = transMeta.getPrevStepFields( stepMeta );
@@ -1235,7 +1236,7 @@ public class XMLInputStreamDialog extends BaseStepDialog implements StepDialogIn
 
   private void getInfo( XMLInputStreamMeta xmlInputMeta ) {
 
-    if ( isReceivingInput ) {
+    if ( isReceivingInput && !ignoreReceivingInput() ) {
       xmlInputMeta.setFilename( wFilenameCombo.getText() );
     } else {
       xmlInputMeta.setFilename( wFilename.getText() );
@@ -1291,6 +1292,10 @@ public class XMLInputStreamDialog extends BaseStepDialog implements StepDialogIn
     xmlInputMeta.setXmlDataValueField( wXmlDataValueField.getText() );
 
     xmlInputMeta.setChanged();
+  }
+
+  private boolean ignoreReceivingInput() {
+    return Boolean.valueOf( EnvUtil.getSystemProperty( Const.KETTLE_IGNORE_RECEIVING_INPUT, "false" ) );
   }
 
   // Preview the data

@@ -457,6 +457,12 @@
   </kettle-variable>
 
   <kettle-variable>
+    <description>Set this variable to true to disable receiving file names from another step for XML Input Stream (StAX) step.</description>
+    <variable>KETTLE_IGNORE_RECEIVING_INPUT</variable>
+    <default-value>false</default-value>
+  </kettle-variable>
+
+  <kettle-variable>
     <description>Set this variable to true to use a gateway for connecting to a Hadoop cluster.</description>
     <variable>KETTLE_HADOOP_CLUSTER_GATEWAY_CONNECTION</variable>
     <default-value>false</default-value>
