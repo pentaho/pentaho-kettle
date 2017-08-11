@@ -122,45 +122,45 @@ define([
       dt.getRecentFiles().then(_populateRecentFiles);
       dt.getRecentSearches().then(_populateRecentSearches);
 
-      /**
-       * Sets the folder directory tree
-       *
-       * @param {Object} response - $http response from call to the data service
-       * @private
-       */
-      function _populateTree(response) {
-        vm.folders = response.data;
-        for (var i = 0; i < vm.folders.length; i++) {
-          if (vm.folders[i].depth === 0) {
-            vm.folders[i].visible = true;
-          }
-        }
-        var path = $location.search().path;
-        if (path) {
-          selectFolderByPath(path);
-          vm.autoExpand = true;
-        }
-        if (vm.folders[0].path === "/") {
-          vm.includeRoot = true;
-        }
-        vm.loading = false;
-        _setFileToSaveName();
-      }
-
-      /**
-       * Sets the recents folders
-       *
-       * @param {Object} response - $http response from call to the data service
-       * @private
-       */
-      function _populateRecentFiles(response) {
-        vm.recentFiles = response.data;
-      }
-
       var state = $location.search().state;
       if (state) {
         vm.setState(state);
       }
+    }
+
+    /**
+     * Sets the folder directory tree
+     *
+     * @param {Object} response - $http response from call to the data service
+     * @private
+     */
+    function _populateTree(response) {
+      vm.folders = response.data;
+      for (var i = 0; i < vm.folders.length; i++) {
+        if (vm.folders[i].depth === 0) {
+          vm.folders[i].visible = true;
+        }
+      }
+      var path = $location.search().path;
+      if (path) {
+        selectFolderByPath(path);
+        vm.autoExpand = true;
+      }
+      if (vm.folders[0].path === "/") {
+        vm.includeRoot = true;
+      }
+      vm.loading = false;
+      _setFileToSaveName();
+    }
+
+    /**
+     * Sets the recents folders
+     *
+     * @param {Object} response - $http response from call to the data service
+     * @private
+     */
+    function _populateRecentFiles(response) {
+      vm.recentFiles = response.data;
     }
 
     /**
@@ -260,7 +260,7 @@ define([
     function selectFile(file) {
       if (file.type === "folder") {
         selectFolder(file);
-      } else {
+      } else if (vm.wrapperClass === "open") {
         _open(file);
       }
     }
@@ -589,6 +589,7 @@ define([
             }
             vm.folder.hasChildren = hasChildFolders;
             vm.file = null;
+            dt.getRecentFiles().then(_populateRecentFiles);
           }, function() {
             if (vm.file.type === "folder") {
               vm.errorType = 8;
