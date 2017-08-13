@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--===========================================================================
-# Copyright 2010 - 2016 Pentaho Corporation.  All rights reserved.
+# Copyright 2010 - 2017 Pentaho Corporation.  All rights reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -16,7 +16,8 @@
 ============================================================================-->
 <plugin id="PentahoEnterpriseRepository" name="pur-repository-plugin" description="Pentaho Repository" tooltip="Pentaho Repository"
   classname="org.pentaho.di.repository.pur.PurRepository" meta-classname="org.pentaho.di.repository.pur.PurRepositoryMeta"
-  dialog-classname="lib/org.pentaho.di.ui.repository.pur.PurRepositoryDialog" version-browser-classname="lib/org.pentaho.di.ui.repository.pur.PurRepositoryRevisionBrowserDialog">
+  dialog-classname="lib/org.pentaho.di.ui.repository.pur.PurRepositoryDialog" version-browser-classname="lib/org.pentaho.di.ui.repository.pur.PurRepositoryRevisionBrowserDialog"
+        loader="OVERRIDING">
 
   <localized_name>
     <name locale="en_US">Pentaho Repository</name>
