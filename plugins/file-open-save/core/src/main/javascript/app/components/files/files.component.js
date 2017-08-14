@@ -215,7 +215,7 @@ define([
         file.path = response.data.path;
         file.name = newName;
       }, function() {
-        _doError(4);
+        _doError(4, file);
       });
     }
 
@@ -262,8 +262,8 @@ define([
      * @param {number} errorType - the number corresponding to the appropriate error
      * @private
      */
-    function _doError(errorType) {
-      vm.onError({errorType: errorType});
+    function _doError(errorType, file) {
+      vm.onError({errorType: errorType, file: file});
     }
 
     /**
