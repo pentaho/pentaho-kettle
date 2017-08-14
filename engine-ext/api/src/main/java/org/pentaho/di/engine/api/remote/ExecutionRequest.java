@@ -25,7 +25,6 @@
 package org.pentaho.di.engine.api.remote;
 
 import org.pentaho.di.engine.api.model.Transformation;
-import org.pentaho.di.engine.api.reporting.LogEntry;
 import org.pentaho.di.engine.api.reporting.LogLevel;
 
 import java.io.Serializable;

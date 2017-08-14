@@ -33,7 +33,7 @@ public interface KettleLifecycleListener {
    *           to indicate the listener did not complete successfully. Severe {@link LifecycleException}s will stop the
    *           initialization of the KettleEnvironment.
    */
-  void onEnvironmentInit() throws LifecycleException;
+  void onEnvironmentInit() throws org.pentaho.di.core.lifecycle.LifecycleException;
 
   /**
    * Called when the VM that initialized KettleEnvironment terminates.
