@@ -22,6 +22,7 @@
 
   <properties>
     <dependency.pentaho-kettle.version>${project.version}</dependency.pentaho-kettle.version>
+    <dependency.common-ui.revision>${project.version}</dependency.common-ui.revision>
     <dependency.karaf.version>3.0.3</dependency.karaf.version>
     <dependency.osgi.version>4.3.1</dependency.osgi.version>
     <version.for.license>${project.version}</version.for.license>
@@ -192,31 +193,31 @@
         <groupId>org.webjars</groupId>
         <artifactId>requirejs</artifactId>
         <version>${requirejs.version}</version>
-        <scope>provided</scope>
+        <scope>runtime</scope>
       </dependency>
       <dependency>
         <groupId>org.webjars.bower</groupId>
         <artifactId>angular</artifactId>
         <version>${angular.version}</version>
-        <scope>provided</scope>
+        <scope>runtime</scope>
       </dependency>
       <dependency>
         <groupId>org.webjars.bower</groupId>
         <artifactId>angular-i18n</artifactId>
         <version>${angular-i18n.version}</version>
-        <scope>provided</scope>
+        <scope>runtime</scope>
       </dependency>
       <dependency>
         <groupId>org.webjars.bower</groupId>
         <artifactId>requirejs-text</artifactId>
         <version>${requirejs-text.version}</version>
-        <scope>provided</scope>
+        <scope>runtime</scope>
       </dependency>
       <dependency>
         <groupId>org.webjars.bower</groupId>
         <artifactId>require-css</artifactId>
         <version>${require-css.version}</version>
-        <scope>provided</scope>
+        <scope>runtime</scope>
       </dependency>
       <dependency>
         <groupId>com.googlecode.json-simple</groupId>
