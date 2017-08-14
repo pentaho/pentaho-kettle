@@ -25,6 +25,7 @@
 package org.pentaho.di.engine.api.events;
 
 import org.pentaho.di.engine.api.model.LogicalModelElement;
+import org.pentaho.di.engine.api.remote.Message;
 
 import java.io.Serializable;
 
@@ -36,7 +37,7 @@ import java.io.Serializable;
  * <p>
  * Created by nbaker on 6/9/16.
  */
-public interface PDIEvent<S extends LogicalModelElement, D extends Serializable> extends Serializable {
+public interface PDIEvent<S extends LogicalModelElement, D extends Serializable> extends Message {
   S getSource();
 
   D getData();

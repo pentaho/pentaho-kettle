@@ -26,11 +26,9 @@ package org.pentaho.di.engine.api;
 
 import org.pentaho.di.engine.api.converter.RowConversionManager;
 import org.pentaho.di.engine.api.model.Transformation;
-import org.pentaho.di.engine.api.reporting.LogEntry;
 import org.pentaho.di.engine.api.reporting.LogLevel;
 import org.pentaho.di.engine.api.reporting.SubscriptionManager;
 
-import java.io.Serializable;
 import java.security.Principal;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;

@@ -22,16 +22,20 @@
  * *****************************************************************************
  */
 
-package org.pentaho.di.engine.api;
-
-
-import org.pentaho.di.engine.api.model.Transformation;
+package org.pentaho.di.engine.api.remote;
 
 /**
- * An Engine is responsible for executing an Transformation.
+ * Created by ccaspanello on 8/2/17.
  */
-public interface Engine {
-  ExecutionContext prepare( Transformation trans );
+public class ExecutionFetchRequest implements Message {
 
-  String getId();
+  public final String requestId;
+
+  public ExecutionFetchRequest( String requestId ) {
+    this.requestId = requestId;
+  }
+
+  public String getRequestId() {
+    return requestId;
+  }
 }
