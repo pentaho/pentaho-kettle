@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,9 +22,7 @@
 
 package org.pentaho.di.core.encryption;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-
+import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.pentaho.di.core.KettleClientEnvironment;
@@ -32,7 +30,7 @@ import org.pentaho.di.core.exception.KettleValueException;
 
 /**
  * Test cases for encryption, to make sure that encrypted password remain the same between versions.
- * 
+ *
  * @author Matt Casters
  */
 public class KettleTwoWayPasswordEncoderTest {
@@ -44,7 +42,7 @@ public class KettleTwoWayPasswordEncoderTest {
 
   /**
    * Test password encryption.
-   * 
+   *
    * @throws KettleValueException
    */
   @Test
@@ -55,33 +53,33 @@ public class KettleTwoWayPasswordEncoderTest {
     String encryption;
 
     encryption = encoder.encode( null, false );
-    assertTrue( "".equals( encryption ) );
+    Assert.assertTrue( "".equals( encryption ) );
 
     encryption = encoder.encode( "", false );
-    assertTrue( "".equals( encryption ) );
+    Assert.assertTrue( "".equals( encryption ) );
 
     encryption = encoder.encode( "     ", false );
-    assertTrue( "2be98afc86aa7f2e4cb79ce309ed2ef9a".equals( encryption ) );
+    Assert.assertTrue( "2be98afc86aa7f2e4cb79ce309ed2ef9a".equals( encryption ) );
 
     encryption = encoder.encode( "Test of different encryptions!!@#$%", false );
-    assertTrue( "54657374206f6620646966666572656e742067d0fbddb11ad39b8ba50aef31fed1eb9f".equals( encryption ) );
+    Assert.assertTrue( "54657374206f6620646966666572656e742067d0fbddb11ad39b8ba50aef31fed1eb9f".equals( encryption ) );
 
     encryption = encoder.encode( "  Spaces left", false );
-    assertTrue( "2be98afe84af48285a81cbd30d297a9ce".equals( encryption ) );
+    Assert.assertTrue( "2be98afe84af48285a81cbd30d297a9ce".equals( encryption ) );
 
     encryption = encoder.encode( "Spaces right", false );
-    assertTrue( "2be98afc839d79387ae0aee62d795a7ce".equals( encryption ) );
+    Assert.assertTrue( "2be98afc839d79387ae0aee62d795a7ce".equals( encryption ) );
 
     encryption = encoder.encode( "     Spaces  ", false );
-    assertTrue( "2be98afe84a87d2c49809af73db81ef9a".equals( encryption ) );
+    Assert.assertTrue( "2be98afe84a87d2c49809af73db81ef9a".equals( encryption ) );
 
     encryption = encoder.encode( "1234567890", false );
-    assertTrue( "2be98afc86aa7c3d6f84dfb2689caf68a".equals( encryption ) );
+    Assert.assertTrue( "2be98afc86aa7c3d6f84dfb2689caf68a".equals( encryption ) );
   }
 
   /**
    * Test password decryption.
-   * 
+   *
    * @throws KettleValueException
    */
   @Test
@@ -93,42 +91,42 @@ public class KettleTwoWayPasswordEncoderTest {
 
     encryption = encoder.encode( null );
     decryption = encoder.decode( encryption );
-    assertTrue( "".equals( decryption ) );
+    Assert.assertTrue( "".equals( decryption ) );
 
     encryption = encoder.encode( "" );
     decryption = encoder.decode( encryption );
-    assertTrue( "".equals( decryption ) );
+    Assert.assertTrue( "".equals( decryption ) );
 
     encryption = encoder.encode( "     " );
     decryption = encoder.decode( encryption );
-    assertTrue( "     ".equals( decryption ) );
+    Assert.assertTrue( "     ".equals( decryption ) );
 
     encryption = encoder.encode( "Test of different encryptions!!@#$%" );
     decryption = encoder.decode( encryption );
-    assertTrue( "Test of different encryptions!!@#$%".equals( decryption ) );
+    Assert.assertTrue( "Test of different encryptions!!@#$%".equals( decryption ) );
 
     encryption = encoder.encode( "  Spaces left" );
     decryption = encoder.decode( encryption );
-    assertTrue( "  Spaces left".equals( decryption ) );
+    Assert.assertTrue( "  Spaces left".equals( decryption ) );
 
     encryption = encoder.encode( "Spaces right" );
     decryption = encoder.decode( encryption );
-    assertTrue( "Spaces right".equals( decryption ) );
+    Assert.assertTrue( "Spaces right".equals( decryption ) );
 
     encryption = encoder.encode( "     Spaces  " );
     decryption = encoder.decode( encryption );
-    assertTrue( "     Spaces  ".equals( decryption ) );
+    Assert.assertTrue( "     Spaces  ".equals( decryption ) );
 
     encryption = encoder.encode( "1234567890" );
     decryption = encoder.decode( encryption );
-    assertTrue( "1234567890".equals( decryption ) );
+    Assert.assertTrue( "1234567890".equals( decryption ) );
 
-    assertEquals( "", encoder.decode( null ) );
+    Assert.assertEquals( "", encoder.decode( null ) );
   }
 
   /**
    * Test password encryption (variable style).
-   * 
+   *
    * @throws KettleValueException
    */
   @Test
@@ -138,30 +136,30 @@ public class KettleTwoWayPasswordEncoderTest {
     String encryption;
 
     encryption = encoder.encode( null );
-    assertTrue( "Encrypted ".equals( encryption ) );
+    Assert.assertTrue( "Encrypted ".equals( encryption ) );
 
     encryption = encoder.encode( "" );
-    assertTrue( "Encrypted ".equals( encryption ) );
+    Assert.assertTrue( "Encrypted ".equals( encryption ) );
 
     encryption = encoder.encode( "String" );
-    assertTrue( "Encrypted 2be98afc86aa7f2e4cb799d64cc9ba1dd".equals( encryption ) );
+    Assert.assertTrue( "Encrypted 2be98afc86aa7f2e4cb799d64cc9ba1dd".equals( encryption ) );
 
     encryption = encoder.encode( " ${VAR} String" );
-    assertTrue( " ${VAR} String".equals( encryption ) );
+    Assert.assertTrue( " ${VAR} String".equals( encryption ) );
 
     encryption = encoder.encode( " %%VAR%% String" );
-    assertTrue( " %%VAR%% String".equals( encryption ) );
+    Assert.assertTrue( " %%VAR%% String".equals( encryption ) );
 
     encryption = encoder.encode( " %% VAR String" );
-    assertTrue( "Encrypted 2be988fed4f87a4a599599d64cc9ba1dd".equals( encryption ) );
+    Assert.assertTrue( "Encrypted 2be988fed4f87a4a599599d64cc9ba1dd".equals( encryption ) );
 
     encryption = encoder.encode( "${%%$$$$" );
-    assertTrue( "Encrypted 2be98afc86aa7f2e4ef02eb359ad6eb9e".equals( encryption ) );
+    Assert.assertTrue( "Encrypted 2be98afc86aa7f2e4ef02eb359ad6eb9e".equals( encryption ) );
   }
 
   /**
    * Test password decryption (variable style).
-   * 
+   *
    * @throws KettleValueException
    */
   @Test
@@ -173,30 +171,65 @@ public class KettleTwoWayPasswordEncoderTest {
 
     encryption = encoder.encode( null );
     decryption = encoder.decode( encryption );
-    assertTrue( "".equals( decryption ) );
+    Assert.assertTrue( "".equals( decryption ) );
 
     encryption = encoder.encode( "" );
     decryption = encoder.decode( encryption );
-    assertTrue( "".equals( decryption ) );
+    Assert.assertTrue( "".equals( decryption ) );
 
     encryption = encoder.encode( "String" );
     decryption = encoder.decode( encryption );
-    assertTrue( "String".equals( decryption ) );
+    Assert.assertTrue( "String".equals( decryption ) );
 
     encryption = encoder.encode( " ${VAR} String", false );
     decryption = encoder.decode( encryption );
-    assertTrue( " ${VAR} String".equals( decryption ) );
+    Assert.assertTrue( " ${VAR} String".equals( decryption ) );
 
     encryption = encoder.encode( " %%VAR%% String", false );
     decryption = encoder.decode( encryption );
-    assertTrue( " %%VAR%% String".equals( decryption ) );
+    Assert.assertTrue( " %%VAR%% String".equals( decryption ) );
 
     encryption = encoder.encode( " %% VAR String", false );
     decryption = encoder.decode( encryption );
-    assertTrue( " %% VAR String".equals( decryption ) );
+    Assert.assertTrue( " %% VAR String".equals( decryption ) );
 
     encryption = encoder.encode( "${%%$$$$", false );
     decryption = encoder.decode( encryption );
-    assertTrue( "${%%$$$$".equals( decryption ) );
+    Assert.assertTrue( "${%%$$$$".equals( decryption ) );
   }
+
+  @Test
+  public void testEncodeDifferentSeed() {
+
+    KettleTwoWayPasswordEncoder encoder = new KettleTwoWayPasswordEncoder( );
+    String encodeWithDefaultSeed = encoder.encode( "Wibble", false );
+    Assert.assertNotNull( encodeWithDefaultSeed );
+    String decodeWithDefaultSeed = encoder.decode( encodeWithDefaultSeed );
+    Assert.assertNotNull( decodeWithDefaultSeed );
+
+
+    TestKettleTwoWayPasswordEncoder encoder2 = new TestKettleTwoWayPasswordEncoder();
+
+    String encodeWithNondefaultSeed = encoder2.encode( "Wibble", false );
+    Assert.assertNotNull( encodeWithNondefaultSeed );
+    String decodeWithNondefaultSeed = encoder2.decode( encodeWithNondefaultSeed );
+    Assert.assertNotNull( decodeWithNondefaultSeed );
+
+    Assert.assertFalse( encodeWithDefaultSeed.equals( encodeWithNondefaultSeed ) ); // Make sure that if the seed changes, so does the the encoded value
+    Assert.assertEquals( decodeWithDefaultSeed, decodeWithNondefaultSeed ); // Make sure that the decode from either is correct.
+
+  }
+
+  private class TestKettleTwoWayPasswordEncoder extends KettleTwoWayPasswordEncoder {
+
+    public TestKettleTwoWayPasswordEncoder() {
+      super();
+    }
+
+    protected String getSeed() {
+      return "123456789012345435987";
+    }
+
+  }
+
 }
