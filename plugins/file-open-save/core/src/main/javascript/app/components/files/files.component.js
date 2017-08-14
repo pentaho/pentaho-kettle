@@ -43,8 +43,6 @@ define([
       search: "<",
       onClick: "&",
       onSelect: "&",
-      onFileDuplicate: "&",
-      onFolderDuplicate: "&",
       onError: "&",
       onRename: "&",
       onEditStart: "&",
@@ -203,7 +201,7 @@ define([
       if (_hasDuplicate(current, file)) {
         file.newName = current;
         errorCallback();
-        _doDuplicateError(file);
+        _doError(file.type === "folder" ? 2 : 7);
         newName = previous;
       }
       file.new = false;
@@ -217,7 +215,7 @@ define([
         file.path = response.data.path;
         file.name = newName;
       }, function() {
-        vm.onError();
+        _doError(4);
       });
     }
 
@@ -231,12 +229,6 @@ define([
      * @private
      */
     function _renameFile(file, current, previous, errorCallback) {
-      if (_hasDuplicate(current, file)) {
-        file.newName = current;
-        errorCallback();
-        _doDuplicateError(file);
-        return;
-      }
       dt.rename(file.objectId.id, file.path, current, file.type).then(function(response) {
         file.name = current;
         file.objectId = response.data;
@@ -249,27 +241,27 @@ define([
       }, function(response) {
         file.newName = current;
         errorCallback();
-        if (response.status === 304) {
-          vm.onError();
-        }
-        if (response.status === 409) {
-          _doDuplicateError(file);
+        if (response.status === 304 || response.status === 500) {
+          _doError(file.type === "folder" ? 10 : 11);
+        } else if (response.status === 409) {
+          if (_hasDuplicate(current, file)) {
+            _doError(file.type === "folder" ? 2 : 7);
+          } else {
+            _doError(file.type === "folder" ? 10 : 11);
+          }
+        } else {
+          _doError(file.type === "folder" ? 10 : 11);
         }
       });
     }
 
     /**
-     * Show the error for a duplicate file/folder name
-     *
-     * @param {Object} file - File Object
+     * Calls vm.onError using the parameter errorType
+     * @param {number} errorType - the number corresponding to the appropriate error
      * @private
      */
-    function _doDuplicateError(file) {
-      if (file.type === "folder") {
-        vm.onFolderDuplicate();
-      } else {
-        vm.onFileDuplicate();
-      }
+    function _doError(errorType) {
+      vm.onError({errorType: errorType});
     }
 
     /**
