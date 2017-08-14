@@ -77,7 +77,6 @@ define([
     vm.storeRecentSearch = storeRecentSearch;
     vm.updateDirectories = updateDirectories;
     vm.renameError = renameError;
-    vm.duplicateError = duplicateError;
     vm.displayRecentSearches = displayRecentSearches;
     vm.focusSearchBox = focusSearchBox;
     vm.setTooltip = setTooltip;
@@ -423,6 +422,7 @@ define([
     function _triggerError(type) {
       vm.errorType = type;
       vm.showError = true;
+      $scope.$apply();
     }
 
     /**
@@ -433,12 +433,6 @@ define([
       switch (vm.errorType) {
         case 1: // File exists...override
           _save(true);
-          break;
-        case 2: // Folder exists...no action needed
-          break;
-        case 3: // Unable to save...no action needed
-          break;
-        case 4: // Unable to create folder...no action needed
           break;
         case 5: // Delete File
           commitRemove();
@@ -462,24 +456,10 @@ define([
 
     /**
      * Shows an error if one occurs during rename
+     * @param {number} errorType - the number corresponding to the appropriate error
      */
-    function renameError() {
-      vm.errorType = 4;
-      vm.showError = true;
-    }
-
-    /**
-     * Sets errorType and showError if there is a duplicate
-     * @param {string} type - string value
-     */
-    function duplicateError(type) {
-      if (type === "folder") {
-        vm.errorType = 2;
-      } else {
-        vm.errorType = 7;
-      }
-      vm.showError = true;
-      $scope.$apply();
+    function renameError(errorType) {
+      _triggerError(errorType);
     }
 
     /**
@@ -556,11 +536,10 @@ define([
     function remove() {
       if (vm.file !== null) {
         if (vm.file.type === "folder") {
-          vm.errorType = 6;
+          _triggerError(6);
         } else {
-          vm.errorType = 5;
+          _triggerError(5);
         }
-        vm.showError = true;
       }
     }
 
@@ -592,11 +571,10 @@ define([
             dt.getRecentFiles().then(_populateRecentFiles);
           }, function() {
             if (vm.file.type === "folder") {
-              vm.errorType = 8;
+              _triggerError(8);
             } else {
-              vm.errorType = 9;
+              _triggerError(9);
             }
-            vm.showError = true;
           });
       }
     }

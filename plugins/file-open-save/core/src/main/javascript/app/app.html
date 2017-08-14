@@ -82,9 +82,7 @@
              folder="vm.folder"
              on-click="vm.selectFile(file)"
              on-select="vm.highlightFile(selectedFile)"
-             on-file-duplicate="vm.duplicateError('file')"
-             on-folder-duplicate="vm.duplicateError('folder')"
-             on-error="vm.renameError()"
+             on-error="vm.renameError(errorType)"
              on-rename="vm.updateDirectories(oldPath, newPath, newName)"
              on-edit-start="vm.onEditStart()"
              on-edit-complete="vm.onEditComplete()"></files>

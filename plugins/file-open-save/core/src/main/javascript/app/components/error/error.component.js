@@ -60,6 +60,7 @@ define([
     vm.$onChanges = onChanges;
     vm.errorCancel = errorCancel;
     vm.errorConfirm = errorConfirm;
+    vm.hideConfirmButton = hideConfirmButton;
 
     /**
      * The $onInit hook of components lifecycle which is called on each controller
@@ -95,6 +96,15 @@ define([
     }
 
     /**
+     * Check the errorType and returns true if it is 2, 3, 4, 7, 8, 9, 10, or 11. Returns false otherwise.
+     * @return {boolean} - true if the errorType is 2, 3, 4, 7, 8, 9, 10, or 11. Returns false otherwise.
+     */
+    function hideConfirmButton() {
+      return vm.errorType === 2 || vm.errorType === 3 || vm.errorType === 4 || vm.errorType === 7 ||
+        vm.errorType === 8 || vm.errorType === 9 || vm.errorType === 10 || vm.errorType === 11;
+    }
+
+    /**
      * Calls the setMessage function according to the errorType.
      * errorType:
      * 1. Overwrite
@@ -103,6 +113,11 @@ define([
      * 4. Unable to create folder
      * 5. Delete file confirmation
      * 6. Delete folder confirmation
+     * 7. File Exists
+     * 8. Unable to delete folder
+     * 9. Unable to delete file
+     * 10. Unable to rename folder
+     * 11. Unable to rename file
      *
      * @private
      */
@@ -175,6 +190,18 @@ define([
               i18n.get("file-open-save-plugin.error.unable-to-delete-file.message"),
               "", "", "", "",
               i18n.get("file-open-save-plugin.error.unable-to-delete-file.close.button"));
+          break;
+        case 10:// Unable to rename folder
+          _setMessage(i18n.get("file-open-save-plugin.error.unable-to-rename-folder.title"),
+            i18n.get("file-open-save-plugin.error.unable-to-rename-folder.message"),
+            "", "", "", "",
+            i18n.get("file-open-save-plugin.error.unable-to-rename-folder.close.button"));
+          break;
+        case 11:// Unable to rename file
+          _setMessage(i18n.get("file-open-save-plugin.error.unable-to-rename-file.title"),
+            i18n.get("file-open-save-plugin.error.unable-to-rename-file.message"),
+            "", "", "", "",
+            i18n.get("file-open-save-plugin.error.unable-to-rename-file.close.button"));
           break;
         default:
           _setMessage("", "", "", "", "", "", "");
