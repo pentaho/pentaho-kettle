@@ -81,6 +81,7 @@
 
     <!-- plugins -->
     <pdi-abort-plugin.version>${project.version}</pdi-abort-plugin.version>
+    <pdi-analyticquery-plugin.version>${project.version}</pdi-analyticquery-plugin.version>
     <pdi-autodoc-plugin.version>${project.version}</pdi-autodoc-plugin.version>
     <pdi-append-plugin.version>${project.version}</pdi-append-plugin.version>
     <kettle-version-checker.version>${project.version}</kettle-version-checker.version>
@@ -778,6 +779,12 @@
                   <groupId>org.pentaho.di.plugins</groupId>
                   <artifactId>pdi-abort-plugin</artifactId>
                   <version>${pdi-abort-plugin.version}</version>
+                  <type>zip</type>
+                </artifactItem>
+                <artifactItem>
+                  <groupId>org.pentaho.di.plugins</groupId>
+                  <artifactId>pdi-analyticquery-plugin</artifactId>
+                  <version>${pdi-analyticquery-plugin.version}</version>
                   <type>zip</type>
                 </artifactItem>
                 <artifactItem>

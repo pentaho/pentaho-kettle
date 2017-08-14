@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -27,6 +27,7 @@ import java.util.List;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.annotations.Step;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
@@ -56,6 +57,10 @@ import org.w3c.dom.Node;
  * @author ngoodman
  * @since 27-jan-2009
  */
+@Step( id = "AnalyticQuery", image = "AQI.svg", i18nPackageName = "org.pentaho.di.trans.steps.analyticquery",
+  name = "AnalyticQuery.Name", description = "AnalyticQuery.Description",
+  documentationUrl = "http://wiki.pentaho.com/display/EAI/Analytic+Query",
+  categoryDescription = "i18n:org.pentaho.di.trans.step:BaseStep.Category.Statistics" )
 @InjectionSupported( localizationPrefix = "AnalyticQuery.Injection." )
 public class AnalyticQueryMeta extends BaseStepMeta implements StepMetaInterface {
   private static Class<?> PKG = AnalyticQuery.class; // for i18n purposes, needed by Translator2!!
@@ -164,8 +169,8 @@ public class AnalyticQueryMeta extends BaseStepMeta implements StepMetaInterface
   }
 
   /**
-   * @param The
-   *          valueField to set.
+   * @param valueField
+   *          The valueField to set.
    */
   public void setValueField( int[] valueField ) {
     this.valueField = valueField;
