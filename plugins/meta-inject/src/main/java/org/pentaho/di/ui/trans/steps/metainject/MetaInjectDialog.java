@@ -944,7 +944,11 @@ public class MetaInjectDialog extends BaseStepDialog implements StepDialogInterf
       transItem.setExpanded( true );
       transItem.setText( injectTransMeta.getName() );
       List<StepMeta> injectSteps = new ArrayList<>();
-      for ( StepMeta stepMeta : injectTransMeta.getUsedSteps() ) {
+      List<StepMeta> usedSteps = injectTransMeta.getUsedSteps();
+      if ( usedSteps.isEmpty() && injectTransMeta.getSteps().size() == 1 ) {
+        usedSteps = injectTransMeta.getSteps();
+      }
+      for ( StepMeta stepMeta : usedSteps ) {
         StepMetaInterface meta = stepMeta.getStepMetaInterface();
         if ( meta.getStepMetaInjectionInterface() != null || BeanInjectionInfo
           .isInjectionSupported( meta.getClass() ) ) {
