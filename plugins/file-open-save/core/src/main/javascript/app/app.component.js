@@ -450,7 +450,19 @@ define([
     /**
      * Shows an error if one occurs during rename
      */
-    function renameError() {
+    function renameError(file) {
+      if (file) {
+        var index = vm.folder.children.indexOf(file);
+        vm.folder.children.splice(index, 1);
+        if (vm.file.type === "folder") {
+          for (var i = 0; i < vm.folders.length; i++) {
+            if (vm.folders[i].path === vm.file.path) {
+              vm.folders.splice(i, 1);
+              break;
+            }
+          }
+        }
+      }
       vm.errorType = 4;
       vm.showError = true;
     }

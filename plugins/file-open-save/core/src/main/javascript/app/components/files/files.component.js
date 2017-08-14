@@ -217,7 +217,7 @@ define([
         file.path = response.data.path;
         file.name = newName;
       }, function() {
-        vm.onError();
+        vm.onError({file: file});
       });
     }
 
