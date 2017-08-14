@@ -64,4 +64,20 @@ public class NamedFieldsMappingTest {
     assertEquals( 0, mapping.fieldMetaIndex( 1 ) );
   }
 
+  @Test
+  public void mappingWithNonUniqueColumnNames() {
+    NamedFieldsMapping mapping =
+        NamedFieldsMapping.mapping( new String[] { "Object", "Test", "Object" }, new String[] { "Object", "Test",
+          "Object" } );
+    assertEquals( 0, mapping.fieldMetaIndex( 0 ) );
+    assertEquals( 2, mapping.fieldMetaIndex( 2 ) );
+  }
+
+  @Test
+  public void fieldMetaIndexWithUnexistingField_nonUniqueColumnNames() {
+    NamedFieldsMapping mapping =
+        NamedFieldsMapping.mapping( new String[] { "Object", "Test", "Object" }, new String[] { "Object", "Test" } );
+    assertEquals( FieldsMapping.FIELD_DOES_NOT_EXIST, mapping.fieldMetaIndex( 2 ) );
+  }
+
 }
