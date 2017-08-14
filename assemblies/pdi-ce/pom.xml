@@ -109,6 +109,7 @@
     <pdi-platform-utils-plugin.version>${project.version}</pdi-platform-utils-plugin.version>
     <vertica-bulkloader-plugin.version>${project.version}</vertica-bulkloader-plugin.version>
     <pdi-pur-plugin.version>${project.version}</pdi-pur-plugin.version>
+    <dependency.hadoop-shims-api.revision>${project.version}</dependency.hadoop-shims-api.revision>
 
     <!-- build plugins -->
     <properties-maven-plugin.version>1.0.0</properties-maven-plugin.version>
@@ -122,6 +123,11 @@
       <groupId>pentaho-kettle</groupId>
       <artifactId>kettle-core</artifactId>
       <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.pentaho</groupId>
+      <artifactId>pentaho-hadoop-shims-api</artifactId>
+      <version>${dependency.hadoop-shims-api.revision}</version>
     </dependency>
     <dependency>
       <groupId>pentaho-kettle</groupId>
