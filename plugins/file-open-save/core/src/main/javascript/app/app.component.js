@@ -199,20 +199,7 @@ define([
         }, function() {
           vm.fileToSave = "";
         });
-        _selectFileName();
       }
-    }
-
-    /**
-     * Selects the file name text
-     * @private
-     */
-    function _selectFileName() {
-      setTimeout(function() {
-        var elem = document.getElementById("fileNameEntryTextBox");
-        elem.select();
-        elem.setSelectionRange(0, elem.value.length);
-      }, 40);
     }
 
     /**
