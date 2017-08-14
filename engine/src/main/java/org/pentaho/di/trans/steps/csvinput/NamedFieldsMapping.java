@@ -22,8 +22,12 @@
 
 package org.pentaho.di.trans.steps.csvinput;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+
+import org.apache.commons.collections4.MultiValuedMap;
+import org.apache.commons.collections4.multimap.ArrayListValuedHashMap;
 
 public class NamedFieldsMapping implements FieldsMapping {
 
@@ -45,13 +49,19 @@ public class NamedFieldsMapping implements FieldsMapping {
   }
 
   public static NamedFieldsMapping mapping( String[] actualFieldNames, String[] metaFieldNames ) {
-    Map<String, Integer> metaNameToIndex = new HashMap<>();
+    MultiValuedMap<String, Integer> metaNameToIndex = new ArrayListValuedHashMap<String, Integer>();
     for ( int j = 0; j < metaFieldNames.length; j++ ) {
       metaNameToIndex.put( metaFieldNames[j], Integer.valueOf( j ) );
     }
     Map<Integer, Integer> actualToMetaFieldMapping = new HashMap<>();
     for ( int i = 0; i < actualFieldNames.length; i++ ) {
-      actualToMetaFieldMapping.put( i, metaNameToIndex.get( actualFieldNames[i] ) );
+      Collection<Integer> columnIndexes = metaNameToIndex.get( actualFieldNames[i] );
+      if ( columnIndexes.isEmpty() ) {
+        continue;
+      }
+      Integer columnIndex = columnIndexes.iterator().next();
+      metaNameToIndex.removeMapping( actualFieldNames[i], columnIndex );
+      actualToMetaFieldMapping.put( i, columnIndex );
     }
     return new NamedFieldsMapping( actualToMetaFieldMapping );
   }
