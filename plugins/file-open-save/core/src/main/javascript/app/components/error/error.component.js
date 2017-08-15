@@ -96,12 +96,13 @@ define([
     }
 
     /**
-     * Check the errorType and returns true if it is 2, 3, 4, 7, 8, 9, 10, or 11. Returns false otherwise.
-     * @return {boolean} - true if the errorType is 2, 3, 4, 7, 8, 9, 10, or 11. Returns false otherwise.
+     * Check the errorType and returns true if it is 2, 3, 4, 7, 8, 9, 10, 11, or 12. Returns false otherwise.
+     * @return {boolean} - true if the errorType is 2, 3, 4, 7, 8, 9, 10, 11, or 12. Returns false otherwise.
      */
     function hideConfirmButton() {
       return vm.errorType === 2 || vm.errorType === 3 || vm.errorType === 4 || vm.errorType === 7 ||
-        vm.errorType === 8 || vm.errorType === 9 || vm.errorType === 10 || vm.errorType === 11;
+        vm.errorType === 8 || vm.errorType === 9 || vm.errorType === 10 || vm.errorType === 11 ||
+        vm.errorType === 12;
     }
 
     /**
@@ -118,6 +119,7 @@ define([
      * 9. Unable to delete file
      * 10. Unable to rename folder
      * 11. Unable to rename file
+     * 12. Unable to rename file b/c already opened in spoon
      *
      * @private
      */
@@ -202,6 +204,14 @@ define([
             i18n.get("file-open-save-plugin.error.unable-to-rename-file.message"),
             "", "", "", "",
             i18n.get("file-open-save-plugin.error.unable-to-rename-file.close.button"));
+          break;
+        case 12:// Unable to rename file b/c already opened in spoon
+          _setMessage(i18n.get("file-open-save-plugin.error.unable-to-rename-file-opened.title"),
+            i18n.get("file-open-save-plugin.error.unable-to-rename-file-opened.top.message"),
+            "", "",
+            i18n.get("file-open-save-plugin.error.unable-to-rename-file-opened.bottom.message"),
+            "",
+            i18n.get("file-open-save-plugin.error.unable-to-rename-file-opened.close.button"));
           break;
         default:
           _setMessage("", "", "", "", "", "", "");

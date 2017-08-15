@@ -23,8 +23,11 @@ import org.json.simple.parser.JSONParser;
 import org.pentaho.di.core.EngineMetaInterface;
 import org.pentaho.di.core.LastUsedFile;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.exception.KettleJobException;
 import org.pentaho.di.core.exception.KettleObjectExistsException;
+import org.pentaho.di.core.exception.KettleTransException;
 import org.pentaho.di.core.util.Utils;
+import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.repository.IUser;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.Repository;
@@ -34,6 +37,7 @@ import org.pentaho.di.repository.RepositoryExtended;
 import org.pentaho.di.repository.RepositoryObject;
 import org.pentaho.di.repository.RepositoryObjectInterface;
 import org.pentaho.di.repository.RepositoryObjectType;
+import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.ui.core.PropsUI;
 import org.pentaho.di.ui.spoon.Spoon;
 import org.pentaho.repo.model.RepositoryDirectory;
@@ -90,12 +94,18 @@ public class RepositoryBrowserController {
         if ( getRepository().exists( newName, repositoryDirectoryInterface, RepositoryObjectType.JOB ) ) {
           throw new KettleObjectExistsException();
         }
+        if ( isJobOpened( id ) ) {
+          throw new KettleJobException();
+        }
         renameRecent( id, type, newName );
         objectId = getRepository().renameJob( () -> id, repositoryDirectoryInterface, newName );
         break;
       case "transformation":
         if ( getRepository().exists( newName, repositoryDirectoryInterface, RepositoryObjectType.TRANSFORMATION ) ) {
           throw new KettleObjectExistsException();
+        }
+        if ( isTransOpened( id ) ) {
+          throw new KettleTransException();
         }
         renameRecent( id, type, newName );
         objectId = getRepository().renameTransformation( () -> id, repositoryDirectoryInterface, newName );
@@ -118,6 +128,26 @@ public class RepositoryBrowserController {
         break;
     }
     return objectId;
+  }
+
+  private boolean isTransOpened( String id ) {
+    List<TransMeta> openedTransFiles = getSpoon().delegates.trans.getTransformationList();
+    for ( TransMeta t : openedTransFiles ) {
+      if ( id.equals( t.getObjectId().getId() ) ) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  private boolean isJobOpened( String id ) {
+    List<JobMeta> openedJobFiles = getSpoon().delegates.jobs.getJobList();
+    for ( JobMeta j : openedJobFiles ) {
+      if ( id.equals( j.getObjectId().getId() ) ) {
+        return true;
+      }
+    }
+    return false;
   }
 
   public boolean remove( String id, String type ) {
