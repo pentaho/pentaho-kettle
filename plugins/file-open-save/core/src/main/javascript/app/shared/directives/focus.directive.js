@@ -16,28 +16,31 @@
 
 define([
   'angular'
-], function (angular) {
+], function(angular) {
+  focus.inject = ['$timeout'];
 
-  focus.inject = ['$timeout', '$document'];
-
-  function focus($timeout, $document) {
+  /**
+   * @param {Function} $timeout - Angular wrapper for window.setTimeout.
+   * @return {{restrict: string, scope: {model: string}, link: link}} - Focus directive
+   */
+  function focus($timeout) {
     return {
-      retrict: 'AE',
-      scope: {},
-      link: function (scope, element, attr) {
-        $document.ready(function() {
+      restrict: 'AE',
+      scope: {model: '=ngModel'},
+      link: function(scope, element, attrs) {
+        scope.$watch("model", function(value) {
           $timeout(function() {
             element[0].focus();
             element[0].select();
-            element[0].setSelectionRange(0, element.val().length);
-          }, 100);
+            element[0].setSelectionRange(0, value.length);
+          });
         });
       }
-    }
+    };
   }
 
   return {
     name: "focus",
-    options: ['$timeout', '$document', focus]
-  }
+    options: ['$timeout', focus]
+  };
 });
