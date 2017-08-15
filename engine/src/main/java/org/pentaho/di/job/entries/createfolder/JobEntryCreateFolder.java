@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -64,6 +64,7 @@ import org.w3c.dom.Node;
 public class JobEntryCreateFolder extends JobEntryBase implements Cloneable, JobEntryInterface {
   private String foldername;
   private boolean failOfFolderExists;
+  private JobMeta parentJobMeta;
 
   public JobEntryCreateFolder( String n ) {
     super( n, "" );
@@ -86,6 +87,9 @@ public class JobEntryCreateFolder extends JobEntryBase implements Cloneable, Job
     retval.append( super.getXML() );
     retval.append( "      " ).append( XMLHandler.addTagValue( "foldername", foldername ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "fail_of_folder_exists", failOfFolderExists ) );
+    if ( parentJobMeta != null ) {
+      parentJobMeta.getNamedClusterEmbedManager().registerUrl( foldername );
+    }
 
     return retval.toString();
   }
@@ -140,6 +144,12 @@ public class JobEntryCreateFolder extends JobEntryBase implements Cloneable, Job
     result.setResult( false );
 
     if ( foldername != null ) {
+      //Set Embedded NamedCluter MetatStore Provider Key so that it can be passed to VFS
+      if ( parentJobMeta.getNamedClusterEmbedManager() != null ) {
+        parentJobMeta.getNamedClusterEmbedManager()
+          .passEmbeddedMetastoreKey( this, parentJobMeta.getEmbeddedMetastoreProviderKey() );
+      }
+
       String realFoldername = getRealFoldername();
       FileObject folderObject = null;
       try {
@@ -220,5 +230,13 @@ public class JobEntryCreateFolder extends JobEntryBase implements Cloneable, Job
     AbstractFileValidator.putVariableSpace( ctx, getVariables() );
     AndValidator.putValidators( ctx, JobEntryValidatorUtils.notNullValidator(), JobEntryValidatorUtils.fileDoesNotExistValidator() );
     JobEntryValidatorUtils.andValidator().validate( this, "filename", remarks, ctx );
+  }
+
+  @Override public JobMeta getParentJobMeta() {
+    return parentJobMeta;
+  }
+
+  @Override public void setParentJobMeta( JobMeta parentJobMeta ) {
+    this.parentJobMeta = parentJobMeta;
   }
 }

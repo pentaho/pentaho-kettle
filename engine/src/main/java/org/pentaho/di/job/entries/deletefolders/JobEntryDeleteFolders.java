@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -78,6 +78,7 @@ public class JobEntryDeleteFolders extends JobEntryBase implements Cloneable, Jo
   public String SUCCESS_IF_NO_ERRORS = "success_if_no_errors";
 
   private String limit_folders;
+  private JobMeta parentJobMeta;
 
   int NrErrors = 0;
   int NrSuccess = 0;
@@ -126,6 +127,9 @@ public class JobEntryDeleteFolders extends JobEntryBase implements Cloneable, Jo
         retval.append( "        <field>" ).append( Const.CR );
         retval.append( "          " ).append( XMLHandler.addTagValue( "name", arguments[i] ) );
         retval.append( "        </field>" ).append( Const.CR );
+        if ( parentJobMeta != null ) {
+          parentJobMeta.getNamedClusterEmbedManager().registerUrl( arguments[i] );
+        }
       }
     }
     retval.append( "      </fields>" ).append( Const.CR );
@@ -208,6 +212,12 @@ public class JobEntryDeleteFolders extends JobEntryBase implements Cloneable, Jo
     successConditionBroken = false;
     successConditionBrokenExit = false;
     limitFolders = Const.toInt( environmentSubstitute( getLimitFolders() ), 10 );
+
+    //Set Embedded NamedCluter MetatStore Provider Key so that it can be passed to VFS
+    if ( parentJobMeta.getNamedClusterEmbedManager() != null ) {
+      parentJobMeta.getNamedClusterEmbedManager()
+        .passEmbeddedMetastoreKey( this, parentJobMeta.getEmbeddedMetastoreProviderKey() );
+    }
 
     if ( argFromPrevious ) {
       if ( log.isDetailed() ) {
@@ -434,4 +444,11 @@ public class JobEntryDeleteFolders extends JobEntryBase implements Cloneable, Jo
     return limit_folders;
   }
 
+  @Override public JobMeta getParentJobMeta() {
+    return parentJobMeta;
+  }
+
+  @Override public void setParentJobMeta( JobMeta parentJobMeta ) {
+    this.parentJobMeta = parentJobMeta;
+  }
 }

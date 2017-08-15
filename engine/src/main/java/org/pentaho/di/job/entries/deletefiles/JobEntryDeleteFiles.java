@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -84,6 +84,8 @@ public class JobEntryDeleteFiles extends JobEntryBase implements Cloneable, JobE
 
   private String[] filemasks;
 
+  private JobMeta parentJobMeta;
+
   public JobEntryDeleteFiles( String jobName ) {
     super( jobName, "" );
     argFromPrevious = false;
@@ -126,6 +128,10 @@ public class JobEntryDeleteFiles extends JobEntryBase implements Cloneable, JobE
         retval.append( "          " ).append( XMLHandler.addTagValue( "name", arguments[i] ) );
         retval.append( "          " ).append( XMLHandler.addTagValue( "filemask", filemasks[i] ) );
         retval.append( "        </field>" ).append( Const.CR );
+
+        if ( getParentJobMeta() != null ) {
+          getParentJobMeta().getNamedClusterEmbedManager().registerUrl( arguments[i] );
+        }
       }
     }
     retval.append( "      </fields>" ).append( Const.CR );
@@ -203,6 +209,12 @@ public class JobEntryDeleteFiles extends JobEntryBase implements Cloneable, JobE
     if ( argFromPrevious && log.isDetailed() ) {
       logDetailed( BaseMessages.getString( PKG, "JobEntryDeleteFiles.FoundPreviousRows", String
         .valueOf( ( resultRows != null ? resultRows.size() : 0 ) ) ) );
+    }
+
+    //Set Embedded NamedCluter MetatStore Provider Key so that it can be passed to VFS
+    if ( parentJobMeta.getNamedClusterEmbedManager() != null ) {
+      parentJobMeta.getNamedClusterEmbedManager()
+        .passEmbeddedMetastoreKey( this, parentJobMeta.getEmbeddedMetastoreProviderKey() );
     }
 
     Multimap<String, String> pathToMaskMap = populateDataForJobExecution( resultRows );
@@ -498,4 +510,11 @@ public class JobEntryDeleteFiles extends JobEntryBase implements Cloneable, JobE
     return includeSubfolders;
   }
 
+  @Override public JobMeta getParentJobMeta() {
+    return parentJobMeta;
+  }
+
+  @Override public void setParentJobMeta( JobMeta parentJobMeta ) {
+    this.parentJobMeta = parentJobMeta;
+  }
 }

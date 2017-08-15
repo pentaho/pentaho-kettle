@@ -3,7 +3,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -457,6 +457,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
         shutdownHeartbeat( heartbeat );
 
         ExtensionPointHandler.callExtensionPoint( log, KettleExtensionPoint.JobFinish.id, this );
+        jobMeta.disposeEmbeddedMetastoreProvider();
 
         fireJobFinishListeners();
       } catch ( KettleException e ) {
@@ -674,6 +675,12 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
     JobExecutionExtension extension = new JobExecutionExtension( this, prevResult, jobEntryCopy, true );
     ExtensionPointHandler.callExtensionPoint( log, KettleExtensionPoint.JobBeforeJobEntryExecution.id, extension );
 
+    jobMeta.disposeEmbeddedMetastoreProvider();
+    if ( jobMeta.getMetastoreLocatorOsgi() != null ) {
+      jobMeta.setEmbeddedMetastoreProviderKey(
+        jobMeta.getMetastoreLocatorOsgi().setEmbeddedMetastore( jobMeta.getEmbeddedMetaStore() ) );
+    }
+
     if ( extension.result != null ) {
       prevResult = extension.result;
     }
@@ -706,6 +713,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
         cloneJei.setMetaStore( rep.getMetaStore() );
       }
       cloneJei.setParentJob( this );
+      cloneJei.setParentJobMeta( this.getJobMeta() );
       final long start = System.currentTimeMillis();
 
       cloneJei.getLogChannel().logDetailed( "Starting job entry" );
