@@ -934,6 +934,11 @@ public class Const {
   public static final String KETTLE_PASSWORD_ENCODER_PLUGINS_FILE = "KETTLE_PASSWORD_ENCODER_PLUGINS_FILE";
 
   /**
+   * The name of the Kettle encryption seed environment variable for the KettleTwoWayPasswordEncoder class
+   */
+  public static final String KETTLE_TWO_WAY_PASSWORD_ENCODER_SEED = "KETTLE_TWO_WAY_PASSWORD_ENCODER_SEED";
+  
+  /**
    * The XML file that contains the list of native Kettle logging plugins
    */
   public static final String XML_FILE_KETTLE_LOGGING_PLUGINS = "kettle-logging-plugins.xml";
