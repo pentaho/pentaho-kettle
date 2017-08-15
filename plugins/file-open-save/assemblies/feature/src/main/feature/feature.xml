@@ -8,7 +8,6 @@
 
     <feature>pentaho-i18n</feature>
     <bundle>mvn:pentaho/pentaho-i18n-webservice-bundle/${dependency.pentaho-osgi-bundles.revision}</bundle>
-    <bundle dependency="false">pentaho-platform-plugin-mvn:pentaho/common-ui/${dependency.common-ui.revision}/zip</bundle>
 
     <!-- START client side dependencies -->
     <bundle>pentaho-webjars:mvn:org.webjars.bower/angular/${angular.version}</bundle>
