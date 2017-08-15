@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -70,6 +70,7 @@ public class JobEntryWaitForFile extends JobEntryBase implements Cloneable, JobE
   private boolean successOnTimeout;
   private boolean fileSizeCheck;
   private boolean addFilenameToResult;
+  private JobMeta parentJobMeta;
 
   private static String DEFAULT_MAXIMUM_TIMEOUT = "0"; // infinite timeout
   private static String DEFAULT_CHECK_CYCLE_TIME = "60"; // 1 minute
@@ -103,6 +104,9 @@ public class JobEntryWaitForFile extends JobEntryBase implements Cloneable, JobE
     retval.append( "      " ).append( XMLHandler.addTagValue( "success_on_timeout", successOnTimeout ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "file_size_check", fileSizeCheck ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "add_filename_result", addFilenameToResult ) );
+    if ( parentJobMeta != null ) {
+      parentJobMeta.getNamedClusterEmbedManager().registerUrl( filename );
+    }
     return retval.toString();
   }
 
@@ -173,6 +177,13 @@ public class JobEntryWaitForFile extends JobEntryBase implements Cloneable, JobE
     if ( filename != null ) {
       FileObject fileObject = null;
       String realFilename = getRealFilename();
+
+      //Set Embedded NamedCluter MetatStore Provider Key so that it can be passed to VFS
+      if ( parentJobMeta.getNamedClusterEmbedManager() != null ) {
+        parentJobMeta.getNamedClusterEmbedManager()
+          .passEmbeddedMetastoreKey( this, parentJobMeta.getEmbeddedMetastoreProviderKey() );
+      }
+
       try {
         fileObject = KettleVFS.getFileObject( realFilename, this );
 
@@ -401,6 +412,14 @@ public class JobEntryWaitForFile extends JobEntryBase implements Cloneable, JobE
         AndValidator.putValidators( JobEntryValidatorUtils.integerValidator() ) );
     JobEntryValidatorUtils.andValidator().validate( this, "checkCycleTime", remarks,
         AndValidator.putValidators( JobEntryValidatorUtils.integerValidator() ) );
+  }
+
+  @Override public JobMeta getParentJobMeta() {
+    return parentJobMeta;
+  }
+
+  @Override public void setParentJobMeta( JobMeta parentJobMeta ) {
+    this.parentJobMeta = parentJobMeta;
   }
 
 }

@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -724,5 +724,23 @@ public interface JobEntryInterface {
    * @throws KettleException
    */
   public Object loadReferencedObject( int index, Repository rep, IMetaStore metaStore, VariableSpace space ) throws KettleException;
+
+  /**
+   * At save and run time, the system will attempt to set the jobMeta so that it can be accessed by the jobEntries
+   * if necessary.  This default method will be applied to all JobEntries that do not need to be aware of the parent
+   * JobMeta
+   *
+   * @param jobMeta the JobMeta to which this JobEntryInterface belongs
+   */
+  default void setParentJobMeta( JobMeta jobMeta ) {
+  }
+
+  /**
+   * Return Gets the parent jobMeta.  This default method will throw an exception if a job entry attempts to call the
+   * getter when not implemented.
+   */
+  default JobMeta getParentJobMeta( ) {
+    throw new UnsupportedOperationException( "Attemped access of getJobMet not supported by JobEntryInterface implementation" );
+  }
 
 }

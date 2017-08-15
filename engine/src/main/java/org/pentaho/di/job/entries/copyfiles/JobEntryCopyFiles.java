@@ -107,6 +107,7 @@ public class JobEntryCopyFiles extends JobEntryBase implements Cloneable, JobEnt
   HashSet<String> list_files_remove = new HashSet<String>();
   HashSet<String> list_add_result = new HashSet<String>();
   int NbrFail = 0;
+  private JobMeta parentJobMeta;
 
   private Map<String, String> configurationMappings = new HashMap<String, String>();
 
@@ -162,11 +163,19 @@ public class JobEntryCopyFiles extends JobEntryBase implements Cloneable, JobEnt
       XMLHandler.addTagValue( "create_destination_folder", create_destination_folder ) );
 
     retval.append( "      <fields>" ).append( Const.CR );
+
+    // Get source and destination files, also wildcard
+    String[] vsourcefilefolder = preprocessfilefilder( source_filefolder );
+    String[] vdestinationfilefolder = preprocessfilefilder( destination_filefolder );
     if ( source_filefolder != null ) {
       for ( int i = 0; i < source_filefolder.length; i++ ) {
         retval.append( "        <field>" ).append( Const.CR );
         saveSource( retval, source_filefolder[i] );
         saveDestination( retval, destination_filefolder[i] );
+        if ( parentJobMeta != null ) {
+          parentJobMeta.getNamedClusterEmbedManager().registerUrl( vsourcefilefolder[i] );
+          parentJobMeta.getNamedClusterEmbedManager().registerUrl( vdestinationfilefolder[i] );
+        }
         retval.append( "          " ).append( XMLHandler.addTagValue( "wildcard", wildcard[i] ) );
         retval.append( "        </field>" ).append( Const.CR );
       }
@@ -336,6 +345,12 @@ public class JobEntryCopyFiles extends JobEntryBase implements Cloneable, JobEnt
 
     if ( isBasic() ) {
       logBasic( BaseMessages.getString( PKG, "JobCopyFiles.Log.Starting" ) );
+    }
+
+    //Set Embedded NamedCluter MetatStore Provider Key so that it can be passed to VFS
+    if ( parentJobMeta.getNamedClusterEmbedManager() != null ) {
+      parentJobMeta.getNamedClusterEmbedManager()
+        .passEmbeddedMetastoreKey( this, parentJobMeta.getEmbeddedMetastoreProviderKey() );
     }
 
     try {
@@ -1170,5 +1185,13 @@ public class JobEntryCopyFiles extends JobEntryBase implements Cloneable, JobEnt
       path = null;
     }
     return path;
+  }
+
+  @Override public JobMeta getParentJobMeta() {
+    return parentJobMeta;
+  }
+
+  @Override public void setParentJobMeta( JobMeta parentJobMeta ) {
+    this.parentJobMeta = parentJobMeta;
   }
 }
