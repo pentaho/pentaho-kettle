@@ -35,14 +35,15 @@ import java.util.List;
 import javax.xml.namespace.QName;
 import javax.xml.soap.SOAPException;
 
+import org.apache.commons.lang.StringUtils;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.encryption.Encr;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.KettleLogStore;
 import org.pentaho.di.core.logging.LogChannelInterface;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.steps.salesforceinput.SalesforceInputMeta;
 
@@ -280,6 +281,17 @@ public class SalesforceConnection {
     config.setPassword( getPassword() );
     config.setCompression( isUsingCompression() );
     config.setManualLogin( true );
+
+    String proxyUrl = System.getProperty( "http.proxyHost", null );
+    if ( StringUtils.isNotEmpty( proxyUrl ) ) {
+      int proxyPort = Integer.parseInt( System.getProperty( "http.proxyPort", "80" ) );
+      String proxyUser = System.getProperty( "http.proxyUser", null );
+      String proxyPassword = Encr.decryptPasswordOptionallyEncrypted(
+          System.getProperty( "http.proxyPassword", null ) );
+      config.setProxy( proxyUrl, proxyPort );
+      config.setProxyUsername( proxyUser );
+      config.setProxyPassword( proxyPassword );
+    }
 
     // Set timeout
     if ( getTimeOut() > 0 ) {
