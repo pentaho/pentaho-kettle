@@ -16,7 +16,9 @@
 package org.pentaho.repo.endpoint;
 
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.exception.KettleJobException;
 import org.pentaho.di.core.exception.KettleObjectExistsException;
+import org.pentaho.di.core.exception.KettleTransException;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.repo.controller.RepositoryBrowserController;
 import org.pentaho.repo.model.RepositoryDirectory;
@@ -109,6 +111,8 @@ public class RepositoryBrowserEndpoint {
       }
     } catch ( KettleObjectExistsException koee ) {
       return Response.status( Response.Status.CONFLICT ).build();
+    } catch ( KettleTransException | KettleJobException ktje ) {
+      return Response.status( Response.Status.NOT_ACCEPTABLE ).build();
     } catch ( KettleException ke ) {
       return Response.notModified().build();
     }
