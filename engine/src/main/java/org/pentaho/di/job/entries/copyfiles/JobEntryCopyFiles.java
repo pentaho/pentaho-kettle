@@ -326,9 +326,11 @@ public class JobEntryCopyFiles extends JobEntryBase implements Cloneable, JobEnt
 
   String[] preprocessfilefilder( String[] folders ) {
     List<String> nfolders = new ArrayList<String>();
-    for ( int i = 0; i < folders.length; i++  ) {
-      nfolders.add( folders[i].replace( JobEntryCopyFiles.SOURCE_URL + i + "-", "" )
-        .replace( JobEntryCopyFiles.DEST_URL + i + "-", "" ) );
+    if ( folders != null ) {
+      for ( int i = 0; i < folders.length; i++ ) {
+        nfolders.add( folders[ i ].replace( JobEntryCopyFiles.SOURCE_URL + i + "-", "" )
+          .replace( JobEntryCopyFiles.DEST_URL + i + "-", "" ) );
+      }
     }
     return nfolders.toArray( new String[ nfolders.size() ] );
   }
