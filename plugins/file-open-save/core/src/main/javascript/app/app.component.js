@@ -45,7 +45,7 @@ define([
     controller: appController
   };
 
-  appController.$inject = [dataService.name, "$location", "$scope"];
+  appController.$inject = [dataService.name, "$location", "$scope", "$timeout"];
 
   /**
    * The App Controller.
@@ -55,8 +55,9 @@ define([
    * @param {Object} dt - Angular service that contains helper functions for the app component controller
    * @param {Function} $location - Angular service used for parsing the URL in browser address bar
    * @param {Object} $scope - Application model
+   * @param {Object} $timeout - Angular wrapper around window.setTimeout
    */
-  function appController(dt, $location, $scope) {
+  function appController(dt, $location, $scope, $timeout) {
     var _font = "14px OpenSansRegular";
     var vm = this;
     vm.$onInit = onInit;
@@ -445,8 +446,22 @@ define([
      * Shows an error if one occurs during rename
      * @param {number} errorType - the number corresponding to the appropriate error
      */
-    function renameError(errorType) {
-      _triggerError(errorType);
+    function renameError(errorType, file) {
+      if (file) {
+        var index = vm.folder.children.indexOf(file);
+        vm.folder.children.splice(index, 1);
+        if (vm.file.type === "folder") {
+          for (var i = 0; i < vm.folders.length; i++) {
+            if (vm.folders[i].path === vm.file.path) {
+              vm.folders.splice(i, 1);
+              break;
+            }
+          }
+        }
+      }
+      $timeout(function() {
+        _triggerError(errorType);
+      });
     }
 
     /**
