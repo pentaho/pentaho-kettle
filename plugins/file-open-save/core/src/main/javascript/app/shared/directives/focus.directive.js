@@ -28,11 +28,14 @@ define([
       restrict: 'AE',
       scope: {model: '=ngModel'},
       link: function(scope, element, attrs) {
-        scope.$watch("model", function(value) {
+        var watch = scope.$watch("model", function(value) {
           $timeout(function() {
             element[0].focus();
             element[0].select();
             element[0].setSelectionRange(0, value.length);
+            $timeout(function() {
+              watch();
+            }, 500);
           });
         });
       }
