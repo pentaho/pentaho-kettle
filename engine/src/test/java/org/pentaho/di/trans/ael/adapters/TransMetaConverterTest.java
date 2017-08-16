@@ -24,20 +24,26 @@
 
 package org.pentaho.di.trans.ael.adapters;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Spy;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.mockito.stubbing.Answer;
+import org.pentaho.di.core.KettleClientEnvironment;
 import org.pentaho.di.core.KettleEnvironment;
+import org.pentaho.di.core.Props;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleMissingPluginsException;
 import org.pentaho.di.core.exception.KettleXMLException;
+import org.pentaho.di.core.plugins.PluginRegistry;
+import org.pentaho.di.core.plugins.StepPluginType;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.engine.api.model.Hop;
 import org.pentaho.di.engine.api.model.Operation;
@@ -58,6 +64,8 @@ import static org.hamcrest.CoreMatchers.hasItems;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.startsWith;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.never;
@@ -75,6 +83,18 @@ public class TransMetaConverterTest {
   @Before
   public void before() throws KettleException {
     when( stepMetaInterface.getXML() ).thenReturn( XML );
+  }
+
+  @BeforeClass
+  public static void init() throws Exception {
+    if ( !KettleClientEnvironment.isInitialized() ) {
+      KettleClientEnvironment.init();
+    }
+    PluginRegistry.addPluginType( StepPluginType.getInstance() );
+    PluginRegistry.init();
+    if ( !Props.isInitialized() ) {
+      Props.init( 0 );
+    }
   }
 
   @Test
@@ -307,6 +327,18 @@ public class TransMetaConverterTest {
         is( false ) );
     assertThat( ( (TableInputMeta) cloneMeta.findStep( "Table" ).getStepMetaInterface() ).isLazyConversionActive(),
         is( false ) );
+  }
+
+  @Test
+  public void testIncludesSubTransformations() throws Exception {
+    TransMeta parentTransMeta = new TransMeta( getClass().getResource( "trans-meta-converter-parent.ktr" ).getPath() );
+    Transformation transformation = TransMetaConverter.convert( parentTransMeta );
+
+    @SuppressWarnings( { "unchecked", "ConstantConditions" } )
+    HashMap<String, Transformation> config =
+      (HashMap<String, Transformation>) transformation.getConfig( TransMetaConverter.SUB_TRANSFORMATIONS_KEY ).get();
+    assertEquals( 1, config.size() );
+    assertNotNull( "file://" + config.get( getClass().getResource( "trans-meta-converter-sub.ktr" ).getPath() ) );
   }
 
   @Test
