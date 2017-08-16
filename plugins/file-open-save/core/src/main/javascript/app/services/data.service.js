@@ -141,13 +141,15 @@ define(
          * Renames a repository object
          *
          * @param {String} id - The repository object id
-         * @param {String} path - The new name
-         * @param {String} name - The new path
+         * @param {String} path - The file path
+         * @param {String} newName - The new name
          * @param {String} type - The object type
+         * @param {String} oldName - The old name
          * @return {Promise} - a promise resolved once data is returned
          */
-        function rename(id, path, name, type) {
-          return _httpPost([baseUrl, "rename", encodeURIComponent(id), encodeURIComponent(path), name, type].join("/"));
+        function rename(id, path, newName, type, oldName) {
+          return _httpPost([baseUrl, "rename", encodeURIComponent(id),
+            encodeURIComponent(path), newName, type, oldName].join("/"));
         }
 
         /**
@@ -165,11 +167,14 @@ define(
          * Remove a repository object
          *
          * @param {String} id - The repository object id
+         * @param {String} name - The file/folder name
+         * @param {String} path - The file/folder path
          * @param {String} type - The object type
          * @return {Promise} - a promise resolved once data is returned
          */
-        function remove(id, type) {
-          return _httpDelete([baseUrl, "remove", encodeURIComponent(id), type].join("/"));
+        function remove(id, name, path, type) {
+          return _httpDelete([baseUrl, "remove",
+            encodeURIComponent(id), name, encodeURIComponent(path), type].join("/"));
         }
 
         /**

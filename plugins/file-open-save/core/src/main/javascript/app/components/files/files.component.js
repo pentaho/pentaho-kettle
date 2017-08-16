@@ -229,7 +229,7 @@ define([
      * @private
      */
     function _renameFile(file, current, previous, errorCallback) {
-      dt.rename(file.objectId.id, file.path, current, file.type).then(function(response) {
+      dt.rename(file.objectId.id, file.path, current, file.type, file.name).then(function(response) {
         file.name = current;
         file.objectId = response.data;
         if (file.type === "folder") {

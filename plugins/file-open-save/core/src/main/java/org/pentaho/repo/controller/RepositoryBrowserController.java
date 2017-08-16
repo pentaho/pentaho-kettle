@@ -86,7 +86,7 @@ public class RepositoryBrowserController {
     }
   }
 
-  public ObjectId rename( String id, String path, String newName, String type ) throws KettleException {
+  public ObjectId rename( String id, String path, String newName, String type, String oldName ) throws KettleException {
     RepositoryDirectoryInterface repositoryDirectoryInterface = getRepository().findDirectory( path );
     ObjectId objectId = null;
     switch ( type ) {
@@ -94,7 +94,7 @@ public class RepositoryBrowserController {
         if ( getRepository().exists( newName, repositoryDirectoryInterface, RepositoryObjectType.JOB ) ) {
           throw new KettleObjectExistsException();
         }
-        if ( isJobOpened( id ) ) {
+        if ( isJobOpened( id, path, oldName ) ) {
           throw new KettleJobException();
         }
         renameRecent( id, type, newName );
@@ -104,7 +104,7 @@ public class RepositoryBrowserController {
         if ( getRepository().exists( newName, repositoryDirectoryInterface, RepositoryObjectType.TRANSFORMATION ) ) {
           throw new KettleObjectExistsException();
         }
-        if ( isTransOpened( id ) ) {
+        if ( isTransOpened( id, path, oldName ) ) {
           throw new KettleTransException();
         }
         renameRecent( id, type, newName );
@@ -130,39 +130,63 @@ public class RepositoryBrowserController {
     return objectId;
   }
 
-  private boolean isTransOpened( String id ) {
+  private boolean isTransOpened( String id, String path, String name ) {
     List<TransMeta> openedTransFiles = getSpoon().delegates.trans.getTransformationList();
     for ( TransMeta t : openedTransFiles ) {
-      if ( id.equals( t.getObjectId().getId() ) ) {
+      if ( t.getObjectId() != null && id.equals( t.getObjectId().getId() )
+        || ( path.equals( t.getRepositoryDirectory().getPath() ) && name.equals( t.getName() ) ) ) {
         return true;
       }
     }
     return false;
   }
 
-  private boolean isJobOpened( String id ) {
+  private boolean isJobOpened( String id, String path, String name ) {
     List<JobMeta> openedJobFiles = getSpoon().delegates.jobs.getJobList();
     for ( JobMeta j : openedJobFiles ) {
-      if ( id.equals( j.getObjectId().getId() ) ) {
+      if ( j.getObjectId() != null && id.equals( j.getObjectId().getId() )
+        || ( path.equals( j.getRepositoryDirectory().getPath() ) && name.equals( j.getName() ) ) ) {
         return true;
       }
     }
     return false;
   }
 
-  public boolean remove( String id, String type ) {
+  private void isFileOpenedInFolder( String path ) throws KettleException {
+    List<TransMeta> openedTransFiles = getSpoon().delegates.trans.getTransformationList();
+    for ( TransMeta t : openedTransFiles ) {
+      if ( path.equals( t.getRepositoryDirectory().getPath() ) ) {
+        throw new KettleTransException();
+      }
+    }
+    List<JobMeta> openedJobFiles = getSpoon().delegates.jobs.getJobList();
+    for ( JobMeta j : openedJobFiles ) {
+      if ( path.equals( j.getRepositoryDirectory().getPath() ) ) {
+        throw new KettleJobException();
+      }
+    }
+  }
+
+  public boolean remove( String id, String name, String path, String type ) throws KettleException {
     try {
       switch ( type ) {
         case "job":
+          if ( isJobOpened( id, path, name ) ) {
+            throw new KettleJobException();
+          }
           removeRecent( id, type );
           getRepository().deleteJob( () -> id );
           break;
         case "transformation":
+          if ( isTransOpened( id, path, name ) ) {
+            throw new KettleTransException();
+          }
           removeRecent( id, type );
           getRepository().deleteTransformation( () -> id );
           break;
         case "folder":
-          RepositoryDirectoryInterface repositoryDirectoryInterface = getRepository().findDirectory( id );
+          isFileOpenedInFolder( path );
+          RepositoryDirectoryInterface repositoryDirectoryInterface = getRepository().findDirectory( path );
           if ( getRepository() instanceof RepositoryExtended ) {
             ( (RepositoryExtended) getRepository() ).deleteRepositoryDirectory( repositoryDirectoryInterface, true );
           } else {
@@ -171,6 +195,8 @@ public class RepositoryBrowserController {
           break;
       }
       return true;
+    } catch ( KettleTransException | KettleJobException ke  ) {
+      throw ke;
     } catch ( Exception e ) {
       return false;
     }
