@@ -535,7 +535,7 @@ define([
      */
     function commitRemove() {
       if (vm.file !== null) {
-        dt.remove(vm.file.type === "folder" ? vm.file.path : vm.file.objectId.id, vm.file.type)
+        dt.remove(vm.file.objectId.id, vm.file.name, vm.file.path, vm.file.type)
           .then(function(response) {
             var index = vm.folder.children.indexOf(vm.file);
             vm.folder.children.splice(index, 1);
@@ -556,10 +556,16 @@ define([
             vm.folder.hasChildren = hasChildFolders;
             vm.file = null;
             dt.getRecentFiles().then(_populateRecentFiles);
-          }, function() {
+          }, function(response) {
             if (vm.file.type === "folder") {
+              if (response.status === 406) {// folder has open file
+                _triggerError(13);
+              }
               _triggerError(8);
             } else {
+              if (response.status === 406) {// file is open
+                _triggerError(14);
+              }
               _triggerError(9);
             }
           });
