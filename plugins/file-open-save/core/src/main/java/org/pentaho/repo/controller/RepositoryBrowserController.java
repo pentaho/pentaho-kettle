@@ -42,6 +42,7 @@ import org.pentaho.di.ui.core.PropsUI;
 import org.pentaho.di.ui.spoon.Spoon;
 import org.pentaho.repo.model.RepositoryDirectory;
 import org.pentaho.repo.model.RepositoryFile;
+import org.pentaho.repo.util.Util;
 
 import java.util.Calendar;
 import java.util.Collection;
@@ -296,12 +297,16 @@ public class RepositoryBrowserController {
   }
 
   public List<RepositoryDirectory> loadDirectoryTree() {
+    return loadDirectoryTree( "*.ktr|*.kjb" );
+  }
+
+  public List<RepositoryDirectory> loadDirectoryTree( String filter ) {
     if ( getRepository() != null ) {
       RepositoryDirectoryInterface repositoryDirectoryInterface;
       try {
         if ( getRepository() instanceof RepositoryExtended ) {
           repositoryDirectoryInterface = ( (RepositoryExtended) getRepository() )
-            .loadRepositoryDirectoryTree( "/", "*.ktr|*.kjb", -1, BooleanUtils
+            .loadRepositoryDirectoryTree( "/", filter, -1, BooleanUtils
               .isTrue( getRepository().getUserInfo().isAdmin() ), true, true );
         } else {
           repositoryDirectoryInterface = getRepository().loadRepositoryDirectoryTree();
@@ -310,7 +315,7 @@ public class RepositoryBrowserController {
         boolean isPentahoRepository =
           getRepository().getRepositoryMeta().getId().equals( "PentahoEnterpriseRepository" );
         int depth = isPentahoRepository ? -1 : 0;
-        createRepositoryDirectory( repositoryDirectoryInterface, repositoryDirectories, depth, null );
+        createRepositoryDirectory( repositoryDirectoryInterface, repositoryDirectories, depth, null, filter );
         if ( isPentahoRepository ) {
           repositoryDirectories.remove( 0 );
         }
@@ -389,7 +394,7 @@ public class RepositoryBrowserController {
 
   private void createRepositoryDirectory( RepositoryDirectoryInterface repositoryDirectoryInterface,
                                           List<RepositoryDirectory> repositoryDirectories, int depth,
-                                          RepositoryDirectory parent ) {
+                                          RepositoryDirectory parent, String filter ) {
     RepositoryDirectory repositoryDirectory = new RepositoryDirectory();
     repositoryDirectory.setName( repositoryDirectoryInterface.getName() );
     repositoryDirectory.setPath( repositoryDirectoryInterface.getPath() );
@@ -403,7 +408,7 @@ public class RepositoryBrowserController {
     if ( !Utils.isEmpty( repositoryDirectoryInterface.getChildren() ) ) {
       repositoryDirectory.setHasChildren( true );
       for ( RepositoryDirectoryInterface child : repositoryDirectoryInterface.getChildren() ) {
-        createRepositoryDirectory( child, repositoryDirectories, depth + 1, repositoryDirectory );
+        createRepositoryDirectory( child, repositoryDirectories, depth + 1, repositoryDirectory, filter );
       }
     }
     List<RepositoryElementMetaInterface> repositoryElementMetaInterfaces = new ArrayList<>();
@@ -420,15 +425,18 @@ public class RepositoryBrowserController {
     Date latestDate = null;
     for ( RepositoryObjectInterface repositoryObject : repositoryElementMetaInterfaces ) {
       org.pentaho.di.repository.RepositoryObject ro = (org.pentaho.di.repository.RepositoryObject) repositoryObject;
-      RepositoryFile repositoryFile = new RepositoryFile();
-      repositoryFile.setObjectId( repositoryObject.getObjectId() );
-      repositoryFile.setName( repositoryObject.getName() );
-      repositoryFile.setType( ro.getObjectType().getTypeDescription() );
-      repositoryFile.setExtension( ro.getObjectType().getExtension() );
-      repositoryFile.setDate( ro.getModifiedDate() );
-      repositoryFile.setObjectId( ro.getObjectId() );
-      repositoryFile.setPath( ro.getRepositoryDirectory().getPath() );
-      repositoryDirectory.addChild( repositoryFile );
+      String extension = ro.getObjectType().getExtension();
+      if ( !Util.isFiltered( extension, filter ) ) {
+        RepositoryFile repositoryFile = new RepositoryFile();
+        repositoryFile.setObjectId( repositoryObject.getObjectId() );
+        repositoryFile.setName( repositoryObject.getName() );
+        repositoryFile.setType( ro.getObjectType().getTypeDescription() );
+        repositoryFile.setExtension( extension );
+        repositoryFile.setDate( ro.getModifiedDate() );
+        repositoryFile.setObjectId( ro.getObjectId() );
+        repositoryFile.setPath( ro.getRepositoryDirectory().getPath() );
+        repositoryDirectory.addChild( repositoryFile );
+      }
       if ( latestDate == null || ro.getModifiedDate().after( latestDate ) ) {
         latestDate = ro.getModifiedDate();
       }

@@ -49,6 +49,7 @@ import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.ObjectLocationSpecificationMethod;
 import org.pentaho.di.core.Props;
+import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.logging.LogLevel;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.i18n.BaseMessages;
@@ -183,10 +184,13 @@ public abstract class JobEntryBaseDialog extends JobEntryDialog {
   protected ObjectId referenceObjectId;
   protected ObjectLocationSpecificationMethod specificationMethod;
 
+  protected LogChannel log;
+
   public JobEntryBaseDialog( Shell parent,
                                JobEntryInterface jobEntryInt,
                                Repository rep, JobMeta jobMeta ) {
     super( parent, jobEntryInt, rep, jobMeta );
+    log = new LogChannel( jobMeta );
   }
 
   protected void createElements() {
@@ -229,7 +233,6 @@ public abstract class JobEntryBaseDialog extends JobEntryDialog {
 
     Label spacer = new Label( shell, SWT.HORIZONTAL | SWT.SEPARATOR );
     FormData fdSpacer = new FormData();
-    fdSpacer.height = 1;
     fdSpacer.left = new FormAttachment( 0, 0 );
     fdSpacer.top = new FormAttachment( wName, 15 );
     fdSpacer.right = new FormAttachment( 100, 0 );
@@ -256,7 +259,7 @@ public abstract class JobEntryBaseDialog extends JobEntryDialog {
     wbBrowse.setText( BaseMessages.getString( PKG, "JobTrans.Browse.Label" ) );
     FormData fdBrowse = new FormData();
     fdBrowse.left = new FormAttachment( wPath, 5 );
-    fdBrowse.top = new FormAttachment( wlPath, 5 );
+    fdBrowse.top = new FormAttachment( wlPath, Const.isOSX() ? 0 : 5 );
     wbBrowse.setLayoutData( fdBrowse );
 
     CTabFolder wTabFolder = new CTabFolder( shell, SWT.BORDER );
@@ -470,7 +473,7 @@ public abstract class JobEntryBaseDialog extends JobEntryDialog {
     props.setLook( wbLogFilename );
     wbLogFilename.setText( BaseMessages.getString( PKG, "JobTrans.Browse.Label" ) );
     fdbLogFilename = new FormData();
-    fdbLogFilename.top = new FormAttachment( wlLogfile, 5 );
+    fdbLogFilename.top = new FormAttachment( wlLogfile, Const.isOSX() ? 0 : 5 );
     fdbLogFilename.left = new FormAttachment( wLogfile, 5 );
     wbLogFilename.setLayoutData( fdbLogFilename );
 
@@ -705,7 +708,6 @@ public abstract class JobEntryBaseDialog extends JobEntryDialog {
 
     Label hSpacer = new Label( shell, SWT.HORIZONTAL | SWT.SEPARATOR );
     FormData fdhSpacer = new FormData();
-    fdhSpacer.height = 1;
     fdhSpacer.left = new FormAttachment( 0, 0 );
     fdhSpacer.bottom = new FormAttachment( wCancel, -15 );
     fdhSpacer.right = new FormAttachment( 100, 0 );
@@ -772,14 +774,6 @@ public abstract class JobEntryBaseDialog extends JobEntryDialog {
         }
       }
     }
-  }
-
-  protected String getPath( String path ) {
-    String parentPath = this.jobMeta.getRepositoryDirectory().getPath();
-    if ( path.startsWith( parentPath ) ) {
-      path = path.replace( parentPath, "${" + Const.INTERNAL_VARIABLE_ENTRY_CURRENT_DIRECTORY + "}" );
-    }
-    return path;
   }
 
   protected void setRadioButtons() {

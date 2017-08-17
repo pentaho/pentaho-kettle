@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -24,6 +24,7 @@ package org.pentaho.di.ui.util;
 
 import java.util.Collection;
 
+import org.pentaho.di.core.Const;
 import org.pentaho.di.repository.RepositoryDirectoryInterface;
 import org.pentaho.di.repository.RepositoryElementMetaInterface;
 import org.pentaho.di.shared.SharedObjectInterface;
@@ -60,6 +61,13 @@ public class DialogUtils {
       }
     }
     return false;
+  }
+
+  public static String getPath( String parentPath, String path ) {
+    if ( !parentPath.equals( "/" ) && path.startsWith( parentPath ) ) {
+      path = path.replace( parentPath, "${" + Const.INTERNAL_VARIABLE_ENTRY_CURRENT_DIRECTORY + "}" );
+    }
+    return path;
   }
 
 }

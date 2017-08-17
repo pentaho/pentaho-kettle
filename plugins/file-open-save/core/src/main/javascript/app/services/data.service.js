@@ -64,8 +64,8 @@ define(
          *
          * @return {Promise} - a promise resolved once data is returned
          */
-        function getDirectoryTree() {
-          return _httpGet([baseUrl, "loadDirectoryTree"].join("/"));
+        function getDirectoryTree(filter) {
+          return _httpGet([baseUrl, "loadDirectoryTree", filter].join("/"));
         }
 
         /**
