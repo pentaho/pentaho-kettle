@@ -436,6 +436,7 @@ public class CsvInput extends BaseStep implements StepInterface {
       if ( !Utils.isEmpty( csvInputMeta.getEnclosure() ) ) {
         removeEnclosure( fieldNames, csvInputMeta.getEnclosure() );
       }
+      trimFieldNames( fieldNames );
       return fieldNames;
     } catch ( IOException e ) {
       throw new KettleFileException( BaseMessages.getString( PKG, "CsvInput.Exception.CreateFieldMappingError" ), e );
@@ -449,6 +450,12 @@ public class CsvInput extends BaseStep implements StepInterface {
       fieldNames[i] = fields[i].getName();
     }
     return fieldNames;
+  }
+
+  static void trimFieldNames( String[] strings ) {
+    for ( int i = 0; i < strings.length; i++ ) {
+      strings[i] = strings[i].trim();
+    }
   }
 
   static void removeEnclosure( String[] fields, String enclosure ) {
