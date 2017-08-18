@@ -25,17 +25,18 @@ define([
    */
   function focus($timeout) {
     return {
-      restrict: 'AE',
-      scope: {model: '=ngModel'},
+      restrict: 'A',
+      scope: {model: '<ngModel'},
       link: function(scope, element, attrs) {
         var watch = scope.$watch("model", function(value) {
+          if (value === "") {
+            return;
+          }
           $timeout(function() {
             element[0].focus();
             element[0].select();
             element[0].setSelectionRange(0, value.length);
-            $timeout(function() {
-              watch();
-            }, 500);
+            watch();
           });
         });
       }
