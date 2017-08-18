@@ -26,7 +26,7 @@
     <pentaho-reporting.version>${project.version}</pentaho-reporting.version>
     <pentaho-registry.version>${project.version}</pentaho-registry.version>
     <pentaho-connections.version>${project.version}</pentaho-connections.version>
-    <mondrian.version>3.15-SNAPSHOT</mondrian.version>
+    <mondrian.version>8.0-SNAPSHOT</mondrian.version>
 
     <!-- Third-party dependencies -->
     <antlr-complete.version>3.5.2</antlr-complete.version>
