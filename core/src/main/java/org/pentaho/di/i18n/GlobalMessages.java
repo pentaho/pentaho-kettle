@@ -57,12 +57,12 @@ public class GlobalMessages extends AbstractMessageHandler {
 
   public static final String[] localeCodes = {
     "en_US", "nl_NL", "zh_CN", "es_ES", "fr_FR", "de_DE", "pt_BR", "pt_PT", "es_AR", "no_NO", "it_IT", "ja_JP",
-    "ko_KR" };
+    "ko_KR", "ru_RU" };
 
   public static final String[] localeDescr = {
     "English (US)", "Nederlands", "Simplified Chinese", "Espa\u00F1ol (Spain)", "Fran\u00E7ais", "Deutsch",
     "Portuguese (Brazil)", "Portuguese (Portugal)", "Espa\u00F1ol (Argentina)", "Norwegian (Norway)",
-    "Italian (Italy)", "Japanese (Japan)", "Korean (Korea)", };
+    "Italian (Italy)", "Japanese (Japan)", "Korean (Korea)", "Russian", };
 
   protected static GlobalMessages GMinstance = null;
 
