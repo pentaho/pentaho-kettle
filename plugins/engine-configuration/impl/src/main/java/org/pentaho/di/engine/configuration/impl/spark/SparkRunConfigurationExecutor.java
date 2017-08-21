@@ -94,14 +94,33 @@ public class SparkRunConfigurationExecutor implements RunConfigurationExecutor {
       String[] parts = Const.NVL( sparkRunConfiguration.getUrl(), "" ).split( ":" );
       String host = parts[ 0 ];
       String port = parts.length > 1 ? parts[ 1 ] : DEFAULT_PORT;
+      boolean version2 = false;
+
+      //default for now is AEL Engine RSA
+      String version = variableSpace.getVariable( "KETTLE_AEL_PDI_DAEMON_VERSION", "1.0" );
+      if ( Const.toDouble( version, 1 ) >= 2 ) {
+        // Variables for Websocket spark engine version
+        variableSpace.setVariable( "engine.host", Const.NVL( host, DEFAULT_HOST ) );
+        variableSpace.setVariable( "engine.port", Const.NVL( port, DEFAULT_HOST ) );
+        version2 = true;
+      }
 
       try {
         // Set the configuration properties for zookeepr
         Configuration zookeeperConfiguration = configurationAdmin.getConfiguration( CONFIG_KEY );
         Dictionary<String, Object> properties = zookeeperConfiguration.getProperties();
         if ( properties != null ) {
-          properties.put( "zookeeper.host", Const.NVL( host, DEFAULT_HOST ) );
-          properties.put( "zookeeper.port", Const.NVL( port, DEFAULT_PORT ) );
+          if ( !version2 ) {
+            properties.put( "zookeeper.host", Const.NVL( host, DEFAULT_HOST ) );
+            properties.put( "zookeeper.port", Const.NVL( port, DEFAULT_PORT ) );
+            //just remove version2 variables values
+            variableSpace.setVariable( "engine.host", null );
+            variableSpace.setVariable( "engine.port", null );
+
+          } else {
+            properties.remove( "zookeeper.host" );
+            properties.remove( "zookeeper.port" );
+          }
           zookeeperConfiguration.update( properties );
         }
       } catch ( IOException ioe ) {

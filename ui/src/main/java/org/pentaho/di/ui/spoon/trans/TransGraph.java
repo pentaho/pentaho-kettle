@@ -113,6 +113,7 @@ import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.plugins.StepPluginType;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.util.Utils;
+import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.engine.api.Engine;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.Job;
@@ -130,6 +131,7 @@ import org.pentaho.di.trans.TransHopMeta;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.TransPainter;
 import org.pentaho.di.trans.ael.adapters.TransEngineAdapter;
+import org.pentaho.di.trans.ael.websocket.TransWebSocketEngineAdapter;
 import org.pentaho.di.trans.debug.BreakPointListener;
 import org.pentaho.di.trans.debug.StepDebugMeta;
 import org.pentaho.di.trans.debug.TransDebugMeta;
@@ -5017,15 +5019,28 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
       return createLegacyTrans();
     }
 
-    return PluginRegistry.getInstance().getPlugins( EnginePluginType.class ).stream()
-      .filter( useThisEngine() )
-      .findFirst()
-      .map( plugin -> (Engine) loadPlugin( plugin ) )
-      .map( engine -> {
-        log.logBasic( "Using execution engine " + engine.getClass().getCanonicalName() );
-        return (Trans) new TransEngineAdapter( engine, transMeta );
-      } )
-      .orElseThrow( () -> new KettleException( "Unable to find engine [" + transMeta.getVariable( "engine" ) + "]" ) );
+    Variables variables = new Variables();
+    variables.initializeVariablesFrom( null );
+    //default for now is AEL Engine RSA
+    String version = variables.getVariable( "KETTLE_AEL_PDI_DAEMON_VERSION", "1.0" );
+    if ( Const.toDouble( version, 1 ) >= 2 ) {
+      String host = transMeta.getVariable( "engine.host" );
+      String port = transMeta.getVariable( "engine.port" );
+      //TODO: we have
+      boolean ssl = false;
+      return new TransWebSocketEngineAdapter( transMeta, host, port, ssl );
+    } else {
+      return PluginRegistry.getInstance().getPlugins( EnginePluginType.class ).stream()
+        .filter( useThisEngine() )
+        .findFirst()
+        .map( plugin -> (Engine) loadPlugin( plugin ) )
+        .map( engine -> {
+          log.logBasic( "Using execution engine " + engine.getClass().getCanonicalName() );
+          return (Trans) new TransEngineAdapter( engine, transMeta );
+        } )
+        .orElseThrow(
+          () -> new KettleException( "Unable to find engine [" + transMeta.getVariable( "engine" ) + "]" ) );
+    }
   }
 
   /**
