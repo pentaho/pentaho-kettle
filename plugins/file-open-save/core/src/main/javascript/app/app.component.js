@@ -118,7 +118,7 @@ define([
       vm.includeRoot = false;
       vm.autoExpand = false;
       _resetFileAreaMessage();
-      dt.getDirectoryTree().then(_populateTree);
+      dt.getDirectoryTree($location.search().filter).then(_populateTree);
       dt.getRecentFiles().then(_populateRecentFiles);
       dt.getRecentSearches().then(_populateRecentSearches);
 
@@ -354,15 +354,18 @@ define([
      * @private
      */
     function _open(file) {
-      if (file.repository) {
-        dt.openRecent(file.repository + ":" + (file.username ? file.username : ""),
-          file.objectId.id).then(function(response) {
+      try {
+        select(file.objectId.id, file.name, file.path, file.type);
+      } catch (e) {
+        if (file.repository) {
+          dt.openRecent(file.repository + ":" + (file.username ? file.username : ""), file.objectId.id).then(function (response) {
             _closeBrowser();
           });
-      } else {
-        dt.openFile(file.objectId.id, file.type).then(function(response) {
-          _closeBrowser();
-        });
+        } else {
+          dt.openFile(file.objectId.id, file.type).then(function (response) {
+            _closeBrowser();
+          });
+        }
       }
     }
 
@@ -373,13 +376,17 @@ define([
      */
     function _save(override) {
       if (!_isDuplicate() || override) {
-        dt.saveFile(vm.folder.path, vm.fileToSave).then(function(response) {
-          if (response.status === 200) {
-            _closeBrowser();
-          } else {
-            _triggerError(3);
-          }
-        });
+        try {
+          select("", vm.fileToSave, vm.folder.path, "");
+        } catch (e) {
+          dt.saveFile(vm.folder.path, vm.fileToSave).then(function (response) {
+            if (response.status === 200) {
+              _closeBrowser();
+            } else {
+              _triggerError(3);
+            }
+          });
+        }
       } else {
         _triggerError(1);
       }
@@ -751,6 +758,7 @@ define([
     function _capsFirstLetter(input) {
       return input.charAt(0).toUpperCase() + input.slice(1);
     }
+
   }
 
   return {

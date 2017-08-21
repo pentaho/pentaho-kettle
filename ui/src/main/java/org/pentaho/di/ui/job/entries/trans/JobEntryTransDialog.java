@@ -63,9 +63,10 @@ import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.gui.WindowProperty;
 import org.pentaho.di.ui.core.widget.ComboVar;
 import org.pentaho.di.ui.job.dialog.JobDialog;
-import org.pentaho.di.ui.repository.dialog.SelectObjectDialog;
 import org.pentaho.di.ui.spoon.Spoon;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
+import org.pentaho.di.ui.util.DialogHelper;
+import org.pentaho.di.ui.util.DialogUtils;
 import org.pentaho.di.ui.util.SwtSvgImageUtil;
 
 import java.io.File;
@@ -276,15 +277,14 @@ public class JobEntryTransDialog extends JobEntryBaseDialog implements JobEntryD
 
   }
 
-  protected void selectTransformation() {
-    if ( rep != null ) {
-      SelectObjectDialog sod = new SelectObjectDialog( shell, rep, true, false );
-      String transname = sod.open();
-      if ( transname != null ) {
-        String path = getPath( sod.getDirectory().getPath() );
-        String fullPath = path + "/" + transname;
-        wPath.setText( fullPath );
-      }
+  private void selectTransformation() {
+    RepositoryObject repositoryObject = DialogHelper.selectRepositoryObject( "*.ktr", log );
+
+    if ( repositoryObject != null ) {
+      String path = DialogUtils
+        .getPath( jobMeta.getRepositoryDirectory().getPath(), repositoryObject.getRepositoryDirectory().getPath() );
+      String fullPath = ( path.equals( "/" ) ? "/" : path + "/" ) + repositoryObject.getName();
+      wPath.setText( fullPath );
     }
   }
 
@@ -466,7 +466,8 @@ public class JobEntryTransDialog extends JobEntryBaseDialog implements JobEntryD
   private void getByReferenceData( ObjectId transObjectId ) {
     try {
       RepositoryObject transInf = rep.getObjectInformation( transObjectId, RepositoryObjectType.TRANSFORMATION );
-      String path = getPath( transInf.getRepositoryDirectory().getPath() );
+      String path =
+        DialogUtils.getPath( jobMeta.getRepositoryDirectory().getPath(), transInf.getRepositoryDirectory().getPath() );
       String fullPath =
         Const.NVL( path, "" ) + "/" + Const.NVL( transInf.getName(), "" );
       wPath.setText( fullPath );

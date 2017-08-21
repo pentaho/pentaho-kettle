@@ -22,6 +22,8 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Shell;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.util.Utils;
+import org.pentaho.di.repository.ObjectId;
+import org.pentaho.di.repository.RepositoryDirectoryInterface;
 import org.pentaho.di.ui.core.dialog.ThinDialog;
 import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.platform.settings.ServerPort;
@@ -34,7 +36,6 @@ public class RepositoryOpenSaveDialog extends ThinDialog {
 
   public static final String STATE_SAVE = "save";
   public static final String STATE_OPEN = "open";
-  private static final String DIALOG_TITLE = "Save";
   private static final Image LOGO = GUIResource.getInstance().getImageLogoSmall();
   private static final String OSGI_SERVICE_PORT = "OSGI_SERVICE_PORT";
   private static final String CLIENT_PATH = "/@PROJECT_ARTIFACT_ID@/@PROJECT_VERSION@/index.html";
@@ -43,20 +44,41 @@ public class RepositoryOpenSaveDialog extends ThinDialog {
   private static final String THIN_CLIENT_PORT = "THIN_CLIENT_PORT";
   private static final String LOCALHOST = "localhost";
 
+  private String objectId;
+  private String objectName;
+  private String objectDirectory;
+  private String objectType;
+
   public RepositoryOpenSaveDialog( Shell shell, int width, int height ) {
     super( shell, width, height );
   }
 
-  public void open( String directory, String state ) {
+  public void open( String directory, String state, String filter ) {
     StringBuilder clientPath = new StringBuilder();
     clientPath.append( CLIENT_PATH );
     clientPath.append( !Utils.isEmpty( directory ) ? "#?path=" + directory : "#?" );
     clientPath.append( !Utils.isEmpty( directory ) ? "&" : "" );
     clientPath.append( !Utils.isEmpty( state ) ? "state=" + state : "" );
+    clientPath.append( !Utils.isEmpty( state ) ? "&" : "" );
+    clientPath.append( !Utils.isEmpty( filter ) ? "filter=" + filter : "" );
     super.createDialog( StringUtils.capitalize( state ), getRepoURL( clientPath.toString() ), OPTIONS, LOGO );
 
     new BrowserFunction( browser, "close" ) {
       @Override public Object function( Object[] arguments ) {
+        browser.dispose();
+        dialog.close();
+        dialog.dispose();
+        return true;
+      }
+    };
+
+    new BrowserFunction( browser, "select" ) {
+      @Override public Object function( Object[] arguments ) {
+        objectId = (String) arguments[ 0 ];
+        objectName = (String) arguments[ 1 ];
+        objectDirectory = (String) arguments[ 2 ];
+        objectType = (String) arguments[ 3 ];
+
         browser.dispose();
         dialog.close();
         dialog.dispose();
@@ -96,5 +118,37 @@ public class RepositoryOpenSaveDialog extends ThinDialog {
   private static String getKettleProperty( String propertyName ) throws KettleException {
     // loaded in system properties at startup
     return System.getProperty( propertyName );
+  }
+
+  public String getObjectId() {
+    return objectId;
+  }
+
+  public void setObjectId( String objectId ) {
+    this.objectId = objectId;
+  }
+
+  public String getObjectName() {
+    return objectName;
+  }
+
+  public void setObjectName( String transName ) {
+    this.objectName = objectName;
+  }
+
+  public String getObjectDirectory() {
+    return objectDirectory;
+  }
+
+  public void setObjectDirectory( String objectDirectory ) {
+    this.objectDirectory = objectDirectory;
+  }
+
+  public String getObjectType() {
+    return objectType;
+  }
+
+  public void setObjectType( String objectType ) {
+    this.objectType = objectType;
   }
 }
