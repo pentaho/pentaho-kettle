@@ -23,6 +23,8 @@
 package org.pentaho.di.trans.steps.xmlinputstream;
 
 import java.io.InputStream;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.XMLInputFactory;
@@ -52,6 +54,9 @@ public class XMLInputStreamData extends BaseStepData implements StepDataInterfac
   public long nrRowsToSkip;
   public long rowLimit;
   public String encoding;
+  public int previousFieldsNumber = 0;
+  public Map<String, Object[]> inputDataRows;
+  public Object[] currentInputRow;
 
   // runtime data
   public Long rowNumber;
