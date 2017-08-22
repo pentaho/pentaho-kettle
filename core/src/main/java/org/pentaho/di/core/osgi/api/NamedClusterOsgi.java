@@ -108,6 +108,10 @@ public interface NamedClusterOsgi extends VariableSpace {
 
   void setGatewayPassword( String gatewayPassword );
 
+  String getKafkaBootstrapServers();
+
+  void setKafkaBootstrapServers( String kafkaBootstrapServers );
+
   //NamedCluster clone();
 
   String toXmlForEmbed( String rootTag );

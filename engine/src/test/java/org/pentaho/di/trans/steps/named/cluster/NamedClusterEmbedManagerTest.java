@@ -29,6 +29,7 @@ import org.pentaho.di.core.osgi.api.NamedClusterOsgi;
 import org.pentaho.di.core.osgi.api.NamedClusterServiceOsgi;
 import org.pentaho.di.core.variables.Variables;
 import org.pentaho.metastore.api.IMetaStore;
+import org.pentaho.metastore.api.exceptions.MetaStoreException;
 import org.pentaho.metastore.persist.MetaStoreFactory;
 
 import java.util.Arrays;
@@ -130,10 +131,15 @@ public class NamedClusterEmbedManagerTest {
   }
 
   @Test
-  public void testPassEmbeddedMetastoreKey( ) {
+  public void testPassEmbeddedMetastoreKey() {
     Variables mockVariables = mock( Variables.class );
     namedClusterEmbedManager.passEmbeddedMetastoreKey( mockVariables, "key" );
     verify( mockVariables ).setVariable( anyString(), anyString() );
   }
 
+  @Test
+  public void testAddingClusterToMetaData() throws MetaStoreException {
+    namedClusterEmbedManager.addClusterToMeta( CLUSTER1_NAME );
+    verify( mockMetaStoreFactory ).saveElement( mockNamedCluster1 );
+  }
 }
