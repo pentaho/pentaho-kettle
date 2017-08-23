@@ -32,38 +32,40 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.engine.api.model.Operation;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
-import org.pentaho.di.trans.ael.websocket.event.MessageEventService;
-import org.pentaho.di.trans.ael.websocket.handler.MessageEventHandler;
-import org.pentaho.di.trans.ael.websocket.impl.DaemonMessageEvent;
 import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepMeta;
 
-import static org.hamcrest.CoreMatchers.any;
-import static org.mockito.Matchers.argThat;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
 
 @RunWith( MockitoJUnitRunner.class )
 public class StepInterfaceWebSocketEngineAdapterTest {
   @Mock private Operation op;
-  @Mock private MessageEventService messageEventService;
+  private MessageEventService messageEventService;
   @Mock private StepMeta stepMeta;
   @Mock private TransMeta transMeta;
   @Mock private StepDataInterface dataInterface;
   @Mock private Trans tran;
-  private StepInterfaceWebSocketEngineAdapter stepInterfaceWebSocketEngineAdapter;
 
   @Before
   public void before() throws KettleException {
     when( stepMeta.getName() ).thenReturn( "foo" );
-    stepInterfaceWebSocketEngineAdapter =
-      new StepInterfaceWebSocketEngineAdapter( op, messageEventService, stepMeta, transMeta, dataInterface, tran );
+    when( op.getId() ).thenReturn( "Operation ID" );
+
+    messageEventService = new MessageEventService();
   }
 
   @Test
   public void testHandlerCreation() throws KettleException {
-    verify( messageEventService, times( 3 ) )
-      .addHandler( argThat( any( DaemonMessageEvent.class ) ), argThat( any( MessageEventHandler.class ) ) );
+    new StepInterfaceWebSocketEngineAdapter( op, messageEventService, stepMeta, transMeta, dataInterface, tran );
+
+    assertTrue( messageEventService.hasHandlers( Util.getOperationRowEvent( op.getId() ) ) );
+    assertTrue( messageEventService.hasHandlers( Util.getOperationStatusEvent( op.getId() ) ) );
+    assertTrue( messageEventService.hasHandlers( Util.getMetricEvents( op.getId() ) ) );
+
+    assertTrue( messageEventService.getHandlersFor( Util.getOperationRowEvent( op.getId() ) ).size() == 1 );
+    assertTrue( messageEventService.getHandlersFor( Util.getOperationStatusEvent( op.getId() ) ).size() == 1 );
+    assertTrue( messageEventService.getHandlersFor( Util.getMetricEvents( op.getId() ) ).size() == 1 );
+
   }
 }

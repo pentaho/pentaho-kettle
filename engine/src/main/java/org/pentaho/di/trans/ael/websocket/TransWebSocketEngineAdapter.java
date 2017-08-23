@@ -32,6 +32,7 @@ import org.pentaho.di.engine.api.model.Operation;
 import org.pentaho.di.engine.api.model.Transformation;
 import org.pentaho.di.engine.api.remote.ExecutionRequest;
 import org.pentaho.di.engine.api.remote.Message;
+import org.pentaho.di.engine.api.remote.RemoteSource;
 import org.pentaho.di.engine.api.remote.StopMessage;
 import org.pentaho.di.engine.api.reporting.LogEntry;
 import org.pentaho.di.engine.api.reporting.LogLevel;
@@ -41,14 +42,9 @@ import org.pentaho.di.trans.RowProducer;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.ael.adapters.TransMetaConverter;
-import org.pentaho.di.trans.ael.websocket.event.MessageEvent;
-import org.pentaho.di.trans.ael.websocket.event.MessageEventService;
-import org.pentaho.di.trans.ael.websocket.event.MessageEventType;
 import org.pentaho.di.trans.ael.websocket.exception.HandlerRegistrationException;
 import org.pentaho.di.trans.ael.websocket.exception.MessageEventHandlerExecutionException;
 import org.pentaho.di.trans.ael.websocket.handler.MessageEventHandler;
-import org.pentaho.di.trans.ael.websocket.impl.DaemonMessageEvent;
-import org.pentaho.di.trans.ael.websocket.impl.MessageEventServiceImpl;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaDataCombi;
@@ -71,11 +67,21 @@ import static java.util.stream.Collectors.toMap;
 public class TransWebSocketEngineAdapter extends Trans {
 
   public static final String ANONYMOUS_PRINCIPAL = "anonymous";
+  public static final String OPERATION_LOG = "OPERATION_LOG_TRANS_WEBSOCK_";
+  public static final String TRANSFORMATION_LOG = "TRANSFORMATION_LOG_TRANS_WEBSOCK";
+  public static final String TRANSFORMATION_STATUS = "TRANSFORMATION_STATUS_TRANS_WEBSOCK";
+  public static final String TRANSFORMATION_ERROR = "TRANSFORMATION_ERROR_TRANS_WEBSOCK";
+  public static final String TRANSFORMATION_STOP = "TRANSFORMATION_STOP_TRANS_WEBSOCK";
+
   private final Transformation transformation;
   private ExecutionRequest executionRequest;
-  private final DaemonMessagesClientEndpoint daemonMessagesClientEndpoint;
+  private DaemonMessagesClientEndpoint daemonMessagesClientEndpoint = null;
   private final MessageEventService messageEventService;
   private LogLevel logLevel = null;
+
+  private final String host;
+  private final String port;
+  private final boolean ssl;
 
   private CompletableFuture<ExecutionResult>
     executionResultFuture;
@@ -95,8 +101,21 @@ public class TransWebSocketEngineAdapter extends Trans {
   public TransWebSocketEngineAdapter( TransMeta transMeta, String host, String port, boolean ssl ) {
     transformation = TransMetaConverter.convert( transMeta );
     this.transMeta = transMeta;
-    this.messageEventService = new MessageEventServiceImpl();
-    this.daemonMessagesClientEndpoint = new DaemonMessagesClientEndpoint( host, port, ssl, messageEventService );
+    this.messageEventService = new MessageEventService();
+    this.host = host;
+    this.port = port;
+    this.ssl = ssl;
+  }
+
+  private DaemonMessagesClientEndpoint getDaemonEndpoint() throws KettleException {
+    try {
+      if ( daemonMessagesClientEndpoint == null ) {
+        daemonMessagesClientEndpoint = new DaemonMessagesClientEndpoint( host, port, ssl, messageEventService );
+      }
+      return daemonMessagesClientEndpoint;
+    } catch ( KettleException e ) {
+      throw e;
+    }
   }
 
   @Override public void setLogLevel( org.pentaho.di.core.logging.LogLevel logLogLevel ) {
@@ -108,7 +127,11 @@ public class TransWebSocketEngineAdapter extends Trans {
   }
 
   @Override public void stopAll() {
-    daemonMessagesClientEndpoint.sendMessage( new StopMessage( "User Request" ) );
+    try {
+      getDaemonEndpoint().sendMessage( new StopMessage( "User Request" ) );
+    } catch ( KettleException e ) {
+      getLogChannel().logError( "Error finalizing the transformation", e );
+    }
   }
 
   @Override public void prepareExecution( String[] arguments ) throws KettleException {
@@ -158,11 +181,11 @@ public class TransWebSocketEngineAdapter extends Trans {
   private void subscribeToOpLogging() throws KettleException {
     transformation.getOperations().stream().forEach( operation -> {
       try {
-        messageEventService.addHandler( new DaemonMessageEvent( MessageEventType.OPERATION_LOG, operation.getId() ),
-          new MessageEventHandler<MessageEvent>() {
+        messageEventService.addHandler( Util.getOperationLogEvent( operation.getId() ),
+          new MessageEventHandler() {
             @Override
             public void execute( Message message ) throws MessageEventHandlerExecutionException {
-              PDIEvent<Operation, LogEntry> event = (PDIEvent<Operation, LogEntry>) message;
+              PDIEvent<RemoteSource, LogEntry> event = (PDIEvent<RemoteSource, LogEntry>) message;
               LogEntry logEntry = event.getData();
               StepInterface stepInterface = findStepInterface( operation.getId(), 0 );
               if ( stepInterface != null ) {
@@ -175,51 +198,39 @@ public class TransWebSocketEngineAdapter extends Trans {
             }
 
             @Override
-            public boolean isInterested( MessageEvent event ) {
-              return event.getType() == MessageEventType.OPERATION_LOG && operation.getId()
-                .equals( event.getObjectId() );
-            }
-
-            @Override
             public String getIdentifier() {
-              return MessageEventType.OPERATION_LOG + operation.getId();
+              return OPERATION_LOG + operation.getId();
             }
           } );
       } catch ( HandlerRegistrationException e ) {
-        //TODO: treat the exception
-        e.printStackTrace();
+        getLogChannel().logError( "Error registering message handlers", e );
       }
     } );
   }
 
   private void subscribeToTransLogging() throws KettleException {
-    messageEventService.addHandler( new DaemonMessageEvent( MessageEventType.TRANSFORMATION_LOG ),
-      new MessageEventHandler<MessageEvent>() {
+    messageEventService.addHandler( Util.getTransformationLogEvent(),
+      new MessageEventHandler() {
         @Override
         public void execute( Message message ) throws MessageEventHandlerExecutionException {
-          PDIEvent<Transformation, LogEntry> event = (PDIEvent<Transformation, LogEntry>) message;
+          PDIEvent<RemoteSource, LogEntry> event = (PDIEvent<RemoteSource, LogEntry>) message;
           LogEntry data = event.getData();
           logToChannel( getLogChannel(), data );
         }
 
         @Override
-        public boolean isInterested( MessageEvent event ) {
-          return event.getType() == MessageEventType.TRANSFORMATION_LOG && event.getObjectId() == null;
-        }
-
-        @Override
         public String getIdentifier() {
-          return MessageEventType.TRANSFORMATION_LOG.name();
+          return TRANSFORMATION_LOG;
         }
       } );
   }
 
   private void wireStatusToTransListeners() throws KettleException {
-    messageEventService.addHandler( new DaemonMessageEvent( MessageEventType.TRANSFORMATION_STATUS ),
-      new MessageEventHandler<MessageEvent>() {
+    messageEventService.addHandler( Util.getTransformationStatusEvent(),
+      new MessageEventHandler() {
         @Override
         public void execute( Message message ) throws MessageEventHandlerExecutionException {
-          PDIEvent<Transformation, Status> transStatusEvent = (PDIEvent<Transformation, Status>) message;
+          PDIEvent<RemoteSource, Status> transStatusEvent = (PDIEvent<RemoteSource, Status>) message;
           addStepPerformanceSnapShot();
           getTransListeners().forEach( l -> {
             try {
@@ -245,23 +256,18 @@ public class TransWebSocketEngineAdapter extends Trans {
         }
 
         @Override
-        public boolean isInterested( MessageEvent event ) {
-          return event.getType() == MessageEventType.TRANSFORMATION_STATUS && event.getObjectId() == null;
-        }
-
-        @Override
         public String getIdentifier() {
-          return MessageEventType.TRANSFORMATION_STATUS.name();
+          return TRANSFORMATION_STATUS;
         }
       } );
 
     messageEventService
-      .addHandler( new DaemonMessageEvent( MessageEventType.ERROR ), new MessageEventHandler<MessageEvent>() {
+      .addHandler( Util.getTransformationErrorEvent(), new MessageEventHandler() {
         @Override
         public void execute( Message message ) throws MessageEventHandlerExecutionException {
-          //Throwable throwable = null;
+          Throwable throwable = ( (PDIEvent<RemoteSource, LogEntry>) message ).getData().getThrowable();
 
-          //getLogChannel().logError( "Error Executing Transformation", throwable );
+          getLogChannel().logError( "Error Executing Transformation", throwable );
           setFinished( true );
           // emit error on all steps
           getSteps().stream().map( stepMetaDataCombi -> stepMetaDataCombi.step ).forEach( step -> {
@@ -278,18 +284,13 @@ public class TransWebSocketEngineAdapter extends Trans {
         }
 
         @Override
-        public boolean isInterested( MessageEvent event ) {
-          return event.getType() == MessageEventType.ERROR;
-        }
-
-        @Override
         public String getIdentifier() {
-          return MessageEventType.ERROR.name();
+          return TRANSFORMATION_ERROR;
         }
       } );
 
     messageEventService
-      .addHandler( new DaemonMessageEvent( MessageEventType.COMPLETE ), new MessageEventHandler<MessageEvent>() {
+      .addHandler( Util.getStopMessage(), new MessageEventHandler() {
         @Override
         public void execute( Message message ) throws MessageEventHandlerExecutionException {
           setFinished( true );
@@ -300,41 +301,16 @@ public class TransWebSocketEngineAdapter extends Trans {
               getLogChannel().logError( "Error notifying trans listener", e );
             }
           } );
-        }
-
-        @Override
-        public boolean isInterested( MessageEvent event ) {
-          return event.getType() == MessageEventType.COMPLETE;
-        }
-
-        @Override
-        public String getIdentifier() {
-          return MessageEventType.COMPLETE.name();
-        }
-      } );
-
-    messageEventService
-      .addHandler( new DaemonMessageEvent( MessageEventType.STOP ), new MessageEventHandler<MessageEvent>() {
-        @Override
-        public void execute( Message message ) throws MessageEventHandlerExecutionException {
-          setFinished( true );
-          getTransListeners().forEach( l -> {
-            try {
-              l.transFinished( TransWebSocketEngineAdapter.this );
-            } catch ( KettleException e ) {
-              getLogChannel().logError( "Error notifying trans listener", e );
-            }
-          } );
-        }
-
-        @Override
-        public boolean isInterested( MessageEvent event ) {
-          return event.getType() == MessageEventType.STOP;
+          try {
+            getDaemonEndpoint().close();
+          } catch ( KettleException e ) {
+            getLogChannel().logError( "Error finalizing", e );
+          }
         }
 
         @Override
         public String getIdentifier() {
-          return MessageEventType.STOP.name();
+          return TRANSFORMATION_STOP;
         }
       } );
 
@@ -362,7 +338,7 @@ public class TransWebSocketEngineAdapter extends Trans {
   }
 
   @Override public void startThreads() throws KettleException {
-    daemonMessagesClientEndpoint.sendMessage( executionRequest );
+    getDaemonEndpoint().sendMessage( executionRequest );
   }
 
   @Override public void waitUntilFinished() {

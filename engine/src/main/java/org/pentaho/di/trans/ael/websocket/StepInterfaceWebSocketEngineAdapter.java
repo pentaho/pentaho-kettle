@@ -30,16 +30,13 @@ import org.pentaho.di.engine.api.model.Operation;
 import org.pentaho.di.engine.api.model.Row;
 import org.pentaho.di.engine.api.model.Rows;
 import org.pentaho.di.engine.api.remote.Message;
+import org.pentaho.di.engine.api.remote.RemoteSource;
 import org.pentaho.di.engine.api.reporting.Metrics;
 import org.pentaho.di.engine.api.reporting.Status;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
-import org.pentaho.di.trans.ael.websocket.event.MessageEvent;
-import org.pentaho.di.trans.ael.websocket.event.MessageEventService;
-import org.pentaho.di.trans.ael.websocket.event.MessageEventType;
 import org.pentaho.di.trans.ael.websocket.exception.MessageEventHandlerExecutionException;
 import org.pentaho.di.trans.ael.websocket.handler.MessageEventHandler;
-import org.pentaho.di.trans.ael.websocket.impl.DaemonMessageEvent;
 import org.pentaho.di.trans.step.BaseStep;
 import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepMeta;
@@ -53,6 +50,10 @@ import static org.pentaho.di.engine.api.model.Rows.TYPE.OUT;
  * them to corresponding StepInterface updates.
  */
 public class StepInterfaceWebSocketEngineAdapter extends BaseStep {
+
+  private static final String ROWS_HANDLER_ID = "ROWS_STEP_INTERFACE_";
+  private static final String METRICS_HANDLER_ID = "METRICS_STEP_INTERFACE_";
+  private static final String OPERATION_STATUS_HANDLER_ID = "OPERATION_STATUS_STEP_INTERFACE_";
 
   private final Operation operation;
   private final MessageEventService messageEventService;
@@ -79,34 +80,29 @@ public class StepInterfaceWebSocketEngineAdapter extends BaseStep {
   }
 
   private void createHandlerToRows() throws KettleException {
-    messageEventService.addHandler( new DaemonMessageEvent( MessageEventType.ROWS, operation.getId() ),
-      new MessageEventHandler<MessageEvent>() {
+    messageEventService.addHandler( Util.getOperationRowEvent( operation.getId() ),
+      new MessageEventHandler() {
         @Override
         public void execute( Message message ) throws MessageEventHandlerExecutionException {
-          PDIEvent<Operation, Rows> data = (PDIEvent<Operation, Rows>) message;
+          PDIEvent<RemoteSource, Rows> data = (PDIEvent<RemoteSource, Rows>) message;
           if ( data.getData().getType().equals( OUT ) ) {
             data.getData().stream().forEach( r -> putRow( r ) );
           }
         }
 
         @Override
-        public boolean isInterested( MessageEvent event ) {
-          return event.getType() == MessageEventType.ROWS && operation.getId().equals( event.getObjectId() );
-        }
-
-        @Override
         public String getIdentifier() {
-          return MessageEventType.ROWS.name() + operation.getId();
+          return ROWS_HANDLER_ID + operation.getId();
         }
       } );
   }
 
   private void createHandlerToStatus() throws KettleException {
-    messageEventService.addHandler( new DaemonMessageEvent( MessageEventType.OPERATION_STATUS, operation.getId() ),
-      new MessageEventHandler<MessageEvent>() {
+    messageEventService.addHandler( Util.getOperationStatusEvent( operation.getId() ),
+      new MessageEventHandler() {
         @Override
         public void execute( Message message ) throws MessageEventHandlerExecutionException {
-          PDIEvent<Operation, Status> data = (PDIEvent<Operation, Status>) message;
+          PDIEvent<RemoteSource, Status> data = (PDIEvent<RemoteSource, Status>) message;
           switch ( data.getData() ) {
             case RUNNING:
               StepInterfaceWebSocketEngineAdapter.this.setRunning( true );
@@ -125,37 +121,26 @@ public class StepInterfaceWebSocketEngineAdapter extends BaseStep {
         }
 
         @Override
-        public boolean isInterested( MessageEvent event ) {
-          return event.getType() == MessageEventType.OPERATION_STATUS && operation.getId()
-            .equals( event.getObjectId() );
-        }
-
-        @Override
         public String getIdentifier() {
-          return MessageEventType.OPERATION_STATUS.name() + operation.getId();
+          return OPERATION_STATUS_HANDLER_ID + operation.getId();
         }
       } );
   }
 
   private void createHandlerToMetrics() throws KettleException {
-    messageEventService.addHandler( new DaemonMessageEvent( MessageEventType.METRICS, operation.getId() ),
-      new MessageEventHandler<MessageEvent>() {
+    messageEventService.addHandler( Util.getMetricEvents( operation.getId() ),
+      new MessageEventHandler() {
         @Override
         public void execute( Message message ) throws MessageEventHandlerExecutionException {
-          PDIEvent<Operation, Metrics> data = (PDIEvent<Operation, Metrics>) message;
+          PDIEvent<RemoteSource, Metrics> data = (PDIEvent<RemoteSource, Metrics>) message;
 
           StepInterfaceWebSocketEngineAdapter.this.setLinesRead( data.getData().getIn() );
           StepInterfaceWebSocketEngineAdapter.this.setLinesWritten( data.getData().getOut() );
         }
 
         @Override
-        public boolean isInterested( MessageEvent event ) {
-          return event.getType() == MessageEventType.METRICS && operation.getId().equals( event.getObjectId() );
-        }
-
-        @Override
         public String getIdentifier() {
-          return MessageEventType.METRICS.name() + operation.getId();
+          return METRICS_HANDLER_ID + operation.getId();
         }
       } );
   }

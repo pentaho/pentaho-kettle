@@ -24,8 +24,12 @@
 package org.pentaho.di.engine.api.remote;
 
 import org.junit.Test;
+import org.pentaho.di.engine.api.events.ErrorEvent;
 import org.pentaho.di.engine.api.events.MetricsEvent;
+import org.pentaho.di.engine.api.events.StatusEvent;
+import org.pentaho.di.engine.api.model.ModelType;
 import org.pentaho.di.engine.api.model.Operation;
+import org.pentaho.di.engine.api.reporting.Status;
 import org.pentaho.di.engine.model.Transformation;
 import org.pentaho.di.engine.api.reporting.LogEntry;
 import org.pentaho.di.engine.api.reporting.LogLevel;
@@ -33,6 +37,7 @@ import org.pentaho.di.engine.api.reporting.Metrics;
 
 import java.io.Serializable;
 import java.security.Principal;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -40,7 +45,9 @@ import java.util.Set;
 import java.util.UUID;
 
 import static org.hamcrest.CoreMatchers.equalTo;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Tests MessageEncoder & MessageDecoder classes
@@ -92,6 +99,74 @@ public class MessageEncoderDecoderTest {
     StopMessage oActual = (StopMessage) actual;
 
     assertThat( oExpected.getReasonPhrase(), equalTo( oActual.getReasonPhrase() ) );
+  }
+
+  @Test
+  public void testOperationRemoteSource() throws Exception {
+    RemoteSource step = new RemoteSource( ModelType.OPERATION, "step" );
+    Metrics metrics = new Metrics( 1, 2, 3, 4 );
+    Message metricEvent = new MetricsEvent<>( step, metrics );
+    String sMessage = encoder.encode( metricEvent );
+    Message decodeMessage = decoder.decode( sMessage );
+
+
+    assertTrue(
+      ( (RemoteSource) step ).getModelType() == ( (RemoteSource) ( (MetricsEvent) decodeMessage ).getSource() )
+        .getModelType() );
+    assertTrue(
+      ( (RemoteSource) step ).getId()
+        .equals( ( (RemoteSource) ( (MetricsEvent) decodeMessage ).getSource() ).getId() ) );
+  }
+
+  @Test
+  public void testTransformationRemoteSource() throws Exception {
+    RemoteSource step = new RemoteSource( ModelType.TRANSFORMATION );
+    Metrics metrics = new Metrics( 1, 2, 3, 4 );
+    Message statusEvent = new StatusEvent<>( step, Status.FAILED );
+    String sMessage = encoder.encode( statusEvent );
+    Message decodeMessage = decoder.decode( sMessage );
+
+
+    assertTrue(
+      ( (RemoteSource) step ).getModelType() == ( (RemoteSource) ( (StatusEvent) decodeMessage ).getSource() )
+        .getModelType() );
+    assertNull( ( (RemoteSource) ( (StatusEvent) decodeMessage ).getSource() ).getId() );
+  }
+
+  @Test
+  public void testRemoteSource() throws Exception {
+    RemoteSource remoteSource = new RemoteSource( "remoteId" );
+
+    assertNull( remoteSource.getModelType() );
+    assertTrue( "remoteId".equals( remoteSource.getId() ) );
+  }
+
+  @Test
+  public void testErrorEvent() throws Exception {
+    HashMap<String, String> hashMap = new HashMap<>();
+    hashMap.put( "key", "value" );
+    LogEntry logEntry = new LogEntry.LogEntryBuilder().withMessage( "log message" )
+      .withLogLevel( LogLevel.DEBUG )
+      .withTimestamp( new Date() )
+      .withExtras( hashMap )
+      .build();
+
+    ErrorEvent errorEvent = new ErrorEvent( new RemoteSource( ModelType.TRANSFORMATION ), logEntry );
+    String sMessage = encoder.encode( errorEvent );
+    Message decodeMessage = decoder.decode( sMessage );
+
+
+    assertTrue(
+      ( (RemoteSource) errorEvent.getSource() ).getModelType() == ( (RemoteSource) ( (ErrorEvent) decodeMessage )
+        .getSource() )
+        .getModelType() );
+
+    LogEntry decodeLogEntry = (LogEntry) ( (ErrorEvent) decodeMessage ).getData();
+
+    assertTrue( logEntry.getMessage().equals( decodeLogEntry.getMessage() ) );
+    assertTrue( logEntry.getLogLogLevel().equals( decodeLogEntry.getLogLogLevel() ) );
+    assertTrue( logEntry.getTimestamp().getTime() == decodeLogEntry.getTimestamp().getTime() );
+    assertTrue( logEntry.getExtras().hashCode() == decodeLogEntry.getExtras().hashCode() );
   }
 
   private MetricsEvent metricsEvent() {

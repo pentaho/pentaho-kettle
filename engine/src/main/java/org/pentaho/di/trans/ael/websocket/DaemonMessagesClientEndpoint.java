@@ -29,7 +29,6 @@ import org.pentaho.di.engine.api.remote.Message;
 import org.pentaho.di.engine.api.remote.MessageDecoder;
 import org.pentaho.di.engine.api.remote.MessageEncoder;
 import org.pentaho.di.engine.api.remote.StopMessage;
-import org.pentaho.di.trans.ael.websocket.event.MessageEventService;
 
 import javax.websocket.ClientEndpoint;
 import javax.websocket.ContainerProvider;
@@ -40,6 +39,7 @@ import javax.websocket.OnOpen;
 import javax.websocket.Session;
 import javax.websocket.WebSocketContainer;
 
+import java.io.IOException;
 import java.net.URI;
 
 /**
@@ -53,7 +53,7 @@ public class DaemonMessagesClientEndpoint {
   private Session userSession = null;
 
   public DaemonMessagesClientEndpoint( String host, String port, boolean ssl,
-                                       MessageEventService messageEventService ) {
+                                       MessageEventService messageEventService ) throws KettleException {
     try {
       String url = ( ssl ? PRFX_WS_SSL : PRFX_WS ) + host + ":" + port + "/execution";
       this.messageEventService = messageEventService;
@@ -61,7 +61,7 @@ public class DaemonMessagesClientEndpoint {
       WebSocketContainer container = ContainerProvider.getWebSocketContainer();
       container.connectToServer( this, new URI( url ) );
     } catch ( Exception e ) {
-      throw new RuntimeException( e );
+      throw new KettleException( e );
     }
   }
 
@@ -73,6 +73,8 @@ public class DaemonMessagesClientEndpoint {
   @OnOpen
   public void onOpen( Session userSession ) {
     this.userSession = userSession;
+    this.userSession.setMaxTextMessageBufferSize( 500000 );
+    this.userSession.setMaxBinaryMessageBufferSize( 500000 );
   }
 
   /**
@@ -101,19 +103,29 @@ public class DaemonMessagesClientEndpoint {
    *
    * @param request
    */
-  public void sendMessage( ExecutionRequest request ) {
+  public void sendMessage( ExecutionRequest request ) throws KettleException {
     try {
       this.userSession.getBasicRemote().sendObject( request );
     } catch ( Exception e ) {
-      e.printStackTrace();
+      throw new KettleException( e );
     }
   }
 
-  public void sendMessage( StopMessage stopMessage ) {
+  public void sendMessage( StopMessage stopMessage ) throws KettleException {
     try {
       this.userSession.getBasicRemote().sendObject( stopMessage );
     } catch ( Exception e ) {
-      e.printStackTrace();
+      throw new KettleException( e );
+    }
+  }
+
+  public void close() throws KettleException {
+    try {
+      if ( this.userSession != null && this.userSession.isOpen() ) {
+        this.userSession.close();
+      }
+    } catch ( IOException e ) {
+      throw new KettleException( e );
     }
   }
 }

@@ -28,13 +28,10 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.engine.api.events.PDIEvent;
 import org.pentaho.di.engine.api.model.Operation;
 import org.pentaho.di.engine.api.remote.Message;
+import org.pentaho.di.engine.api.remote.RemoteSource;
 import org.pentaho.di.engine.api.reporting.Status;
-import org.pentaho.di.trans.ael.websocket.event.MessageEventService;
-import org.pentaho.di.trans.ael.websocket.event.MessageEventType;
-import org.pentaho.di.trans.ael.websocket.event.MessageEvent;
 import org.pentaho.di.trans.ael.websocket.exception.MessageEventHandlerExecutionException;
 import org.pentaho.di.trans.ael.websocket.handler.MessageEventHandler;
-import org.pentaho.di.trans.ael.websocket.impl.DaemonMessageEvent;
 import org.pentaho.di.trans.step.BaseStepData;
 import org.pentaho.di.trans.step.StepDataInterface;
 
@@ -53,6 +50,7 @@ import static org.pentaho.di.trans.step.BaseStepData.StepExecutionStatus.STATUS_
  * Maps WebSocket AEL Status events to corresponding step state.
  */
 public class StepDataInterfaceWebSocketEngineAdapter implements StepDataInterface {
+  private static final String OPERATION_STATUS_HANDLER_ID = "OPERATION_STATUS_DATA_INTERFACE_";
 
   private AtomicReference<BaseStepData.StepExecutionStatus> stepExecutionStatus =
     new AtomicReference<>( STATUS_INIT );
@@ -60,11 +58,11 @@ public class StepDataInterfaceWebSocketEngineAdapter implements StepDataInterfac
   StepDataInterfaceWebSocketEngineAdapter( Operation op, MessageEventService messageEventService )
     throws KettleException {
     messageEventService
-      .addHandler( new DaemonMessageEvent( MessageEventType.OPERATION_STATUS, op.getId() ),
-        new MessageEventHandler<MessageEvent>() {
+      .addHandler( Util.getOperationStatusEvent( op.getId() ),
+        new MessageEventHandler() {
           @Override
           public void execute( Message message ) throws MessageEventHandlerExecutionException {
-            PDIEvent<Operation, Status> data = (PDIEvent<Operation, Status>) message;
+            PDIEvent<RemoteSource, Status> data = (PDIEvent<RemoteSource, Status>) message;
             switch ( data.getData() ) {
               case FINISHED:
                 stepExecutionStatus.set( STATUS_FINISHED );
@@ -83,13 +81,8 @@ public class StepDataInterfaceWebSocketEngineAdapter implements StepDataInterfac
           }
 
           @Override
-          public boolean isInterested( MessageEvent event ) {
-            return event.getType() == MessageEventType.OPERATION_STATUS && op.getId().equals( event.getObjectId() );
-          }
-
-          @Override
           public String getIdentifier() {
-            return MessageEventType.OPERATION_STATUS.name() + "DI" + op.getId();
+            return OPERATION_STATUS_HANDLER_ID + op.getId();
           }
         } );
   }
