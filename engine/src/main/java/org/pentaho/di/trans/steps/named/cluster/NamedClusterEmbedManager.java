@@ -131,7 +131,7 @@ public class NamedClusterEmbedManager {
    */
   public void clear() {
     NamedClusterServiceOsgi ncso = meta.getNamedClusterServiceOsgi();
-    if ( ncso != null && embeddedMetaStoreFactory != null) {  //Don't kill the embedded if we don't have the service to rebuild
+    if ( ncso != null && embeddedMetaStoreFactory != null ) {  //Don't kill the embedded if we don't have the service to rebuild
       addedAllClusters = false;
       addedAnyClusters = false;
       try {
