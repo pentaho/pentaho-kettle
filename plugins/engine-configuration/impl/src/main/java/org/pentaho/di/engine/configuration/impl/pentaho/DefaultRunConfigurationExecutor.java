@@ -30,6 +30,8 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.engine.configuration.api.RunConfiguration;
 import org.pentaho.di.engine.configuration.api.RunConfigurationExecutor;
+import org.pentaho.di.engine.configuration.impl.pentaho.scheduler.SchedulerRequest;
+import org.pentaho.di.engine.configuration.impl.pentaho.scheduler.SpoonUtil;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.TransExecutionConfiguration;
 import org.pentaho.di.trans.TransMeta;
@@ -68,6 +70,14 @@ public class DefaultRunConfigurationExecutor implements RunConfigurationExecutor
       configuration.setClusterPreparing( defaultRunConfiguration.isClustered() );
       configuration.setClusterStarting( defaultRunConfiguration.isClustered() );
       configuration.setLogRemoteExecutionLocally( defaultRunConfiguration.isLogRemoteExecutionLocally() );
+    }
+
+    if ( defaultRunConfiguration.isPentaho() && SpoonUtil.isConnected() ) {
+      SchedulerRequest.Builder builder = new SchedulerRequest.Builder();
+      builder.authentication( SpoonUtil.getUsername(), SpoonUtil.getPassword() );
+      SchedulerRequest schedulerRequest = builder.build();
+      schedulerRequest
+        .submit( SpoonUtil.getFullPath( meta ) );
     }
 
     variableSpace.setVariable( "engine", null );

@@ -24,16 +24,15 @@
 
 package org.pentaho.di.engine.configuration.api;
 
-/**
- * Created by bmorrise on 3/14/17.
- */
-public interface RunConfiguration {
-  String getType();
-  String getName();
-  String getDescription();
-  boolean isReadOnly();
+import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Group;
+import org.eclipse.swt.widgets.Text;
 
-  void setName( String name );
-  void setDescription( String description );
-  RunConfigurationUI getUI();
+/**
+ * Created by bmorrise on 8/22/17.
+ */
+public interface RunConfigurationDialog {
+  Text getName();
+  Button getOKButton();
+  Group getGroup();
 }

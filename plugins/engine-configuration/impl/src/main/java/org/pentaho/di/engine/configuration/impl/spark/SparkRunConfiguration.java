@@ -25,7 +25,7 @@
 package org.pentaho.di.engine.configuration.impl.spark;
 
 import org.pentaho.di.engine.configuration.api.RunConfiguration;
-import org.pentaho.di.engine.configuration.api.RunOption;
+import org.pentaho.di.engine.configuration.api.RunConfigurationUI;
 import org.pentaho.metastore.persist.MetaStoreAttribute;
 import org.pentaho.metastore.persist.MetaStoreElementType;
 
@@ -46,8 +46,7 @@ public class SparkRunConfiguration implements RunConfiguration {
   private String description;
 
   @MetaStoreAttribute
-  @RunOption( label = "Spark host URL:", value = "127.0.0.1:2181" )
-  private String url;
+  private String url = "127.0.0.1:2181";
 
   public String getName() {
     return name;
@@ -79,5 +78,9 @@ public class SparkRunConfiguration implements RunConfiguration {
 
   @Override public boolean isReadOnly() {
     return false;
+  }
+
+  @Override public RunConfigurationUI getUI() {
+    return new SparkRunConfigurationUI( this );
   }
 }

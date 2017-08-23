@@ -3,7 +3,7 @@
  *
  *  Pentaho Data Integration
  *
- *  Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
+ *  Copyright (C) 2017 by Pentaho : http://www.pentaho.com
  *
  *  *******************************************************************************
  *  Licensed under the Apache License, Version 2.0 (the "License"); you may not use
@@ -24,17 +24,9 @@
 
 package org.pentaho.di.engine.configuration.api;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
-
 /**
- * Created by bmorrise on 3/16/17.
+ * Created by bmorrise on 8/22/17.
  */
-@Retention( RetentionPolicy.RUNTIME )
-@Target( { ElementType.FIELD } )
-public @interface RunOption {
-  String label();
-  String value() default "";
+public interface RunConfigurationUI {
+  void attach( RunConfigurationDialog runConfigurationDialog );
 }
