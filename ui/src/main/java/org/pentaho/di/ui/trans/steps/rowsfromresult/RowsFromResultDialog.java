@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -88,7 +88,7 @@ public class RowsFromResultDialog extends BaseStepDialog implements StepDialogIn
     formLayout.marginHeight = Const.FORM_MARGIN;
 
     shell.setLayout( formLayout );
-    shell.setText( BaseMessages.getString( PKG, "RowsFromResultDialog.Shell.Title" ) );
+    shell.setText( getTitle() );
 
     int middle = props.getMiddlePct();
     int margin = Const.MARGIN;
@@ -199,6 +199,10 @@ public class RowsFromResultDialog extends BaseStepDialog implements StepDialogIn
       }
     }
     return stepname;
+  }
+
+  public String getTitle() {
+    return BaseMessages.getString( PKG, "RowsFromResultDialog.Shell.Title" );
   }
 
   /**
