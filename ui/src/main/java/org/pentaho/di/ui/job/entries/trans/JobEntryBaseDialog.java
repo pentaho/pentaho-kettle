@@ -45,7 +45,6 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
-import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.ObjectLocationSpecificationMethod;
 import org.pentaho.di.core.Props;
@@ -80,33 +79,13 @@ public abstract class JobEntryBaseDialog extends JobEntryDialog {
 
   protected Button wbBrowse;
 
-  protected Composite wLocal;
-
-  protected Composite wServer;
-
-  protected Composite wClustered;
-
-  protected Button wbLocal;
-
-  protected Button wbServer;
-
-  protected Label vSpacer;
-
-  protected Label wlDescription;
-
   protected Group gLogFile;
 
-  protected Composite typeComposite;
-
   protected Composite wOptions;
-
-  protected Group gEnvironmentType;
 
   protected Label wlName;
   protected Text wName;
   protected FormData fdlName, fdName;
-
-  protected TextVar wDirectory;
 
   protected Button wSetLogfile;
 
@@ -143,15 +122,9 @@ public abstract class JobEntryBaseDialog extends JobEntryDialog {
 
   protected Button wClearFiles;
 
-  protected Button wCluster;
-
-  protected Button wLogRemoteWork;
-
   protected TableView wFields;
 
   protected TableView wParameters;
-
-  protected ComboVar wSlaveServer;
 
   protected Button wWaitingToFinish;
 
@@ -185,6 +158,7 @@ public abstract class JobEntryBaseDialog extends JobEntryDialog {
   protected ObjectLocationSpecificationMethod specificationMethod;
 
   protected LogChannel log;
+  protected ComboVar wRunConfiguration;
 
   public JobEntryBaseDialog( Shell parent,
                                JobEntryInterface jobEntryInt,
@@ -277,116 +251,6 @@ public abstract class JobEntryBaseDialog extends JobEntryDialog {
     specLayout.marginHeight = 15;
     wOptions.setLayout( specLayout );
 
-    gEnvironmentType = new Group( wOptions, SWT.SHADOW_ETCHED_IN );
-    props.setLook( gEnvironmentType );
-    gEnvironmentType.setText( BaseMessages.getString( PKG, "JobTrans.EnvironmentType.Group.Label" ) );
-    FormLayout gEnvironmentTypeLayout = new FormLayout();
-    gEnvironmentTypeLayout.marginWidth = 15;
-    gEnvironmentTypeLayout.marginHeight = 15;
-    gEnvironmentType.setLayout( gEnvironmentTypeLayout );
-
-    typeComposite = new Composite( gEnvironmentType, SWT.NONE );
-    props.setLook( typeComposite );
-    FormLayout fdCompositeLayout = new FormLayout();
-    fdCompositeLayout.marginWidth = 0;
-    fdCompositeLayout.marginHeight = 0;
-    typeComposite.setLayout( fdCompositeLayout );
-
-    wbLocal = new Button( typeComposite, SWT.RADIO );
-    props.setLook( wbLocal );
-    wbLocal.setText( BaseMessages.getString( PKG, "JobTrans.Local.Option.Label" ) );
-    FormData fdbLocal = new FormData();
-    fdbLocal.left = new FormAttachment( 0, 0 );
-    fdbLocal.top = new FormAttachment( 0, 0 );
-    wbLocal.setLayoutData( fdbLocal );
-    wbLocal.addSelectionListener( new SelectionAdapter() {
-      public void widgetSelected( SelectionEvent e ) {
-        setRadioButtons();
-      }
-    } );
-
-    wbServer = new Button( typeComposite, SWT.RADIO );
-    props.setLook( wbServer );
-    wbServer.setText( BaseMessages.getString( PKG, "JobTrans.Server.Option.Label" ) );
-    FormData fdbServer = new FormData();
-    fdbServer.left = new FormAttachment( 0, 0 );
-    fdbServer.top = new FormAttachment( wbLocal, 10 );
-    wbServer.setLayoutData( fdbServer );
-    wbServer.addSelectionListener( new SelectionAdapter() {
-      public void widgetSelected( SelectionEvent e ) {
-        setRadioButtons();
-      }
-    } );
-
-    vSpacer = new Label( gEnvironmentType, SWT.VERTICAL | SWT.SEPARATOR );
-    FormData fdvSpacer = new FormData();
-    fdvSpacer.width = 1;
-    fdvSpacer.left = new FormAttachment( typeComposite, 30 );
-    fdvSpacer.top = new FormAttachment( 0, 0 );
-    fdvSpacer.bottom = new FormAttachment( 100, 0 );
-    vSpacer.setLayoutData( fdvSpacer );
-
-    // Start Local Section
-    wLocal = new Composite( gEnvironmentType, SWT.NONE );
-    props.setLook( wLocal );
-    wLocal.setVisible( false );
-    FormLayout flwLocal = new FormLayout();
-    flwLocal.marginWidth = 0;
-    flwLocal.marginHeight = 0;
-    wLocal.setLayout( flwLocal );
-
-    FormData fdwLocal = new FormData();
-    fdwLocal.left = new FormAttachment( vSpacer, 30 );
-    fdwLocal.top = new FormAttachment( 0, 0 );
-    wLocal.setLayoutData( fdwLocal );
-
-    wlDescription = new Label( wLocal, SWT.LEFT );
-    props.setLook( wlDescription );
-    FormData fdlDescription = new FormData();
-    fdlDescription.top = new FormAttachment( 0, 0 );
-    fdlDescription.left = new FormAttachment( 0, 0 );
-    wlDescription.setLayoutData( fdlDescription );
-    // End Local Section
-
-    // Start Server Section
-    wServer = new Composite( gEnvironmentType, SWT.NONE );
-    props.setLook( wServer );
-    wServer.setVisible( false );
-    FormLayout flwServer = new FormLayout();
-    flwServer.marginWidth = 0;
-    flwServer.marginHeight = 0;
-    wServer.setLayout( flwServer );
-
-    FormData fdwServer = new FormData();
-    fdwServer.left = new FormAttachment( vSpacer, 30 );
-    fdwServer.top = new FormAttachment( 0, 0 );
-    wServer.setLayoutData( fdwServer );
-
-    Label wlServer = new Label( wServer, SWT.LEFT );
-    props.setLook( wlServer );
-    wlServer.setText( BaseMessages.getString( PKG, "JobTrans.Server.Label" ) );
-    FormData fdlServer = new FormData();
-    fdlServer.left = new FormAttachment( 0, 0 );
-    fdlServer.top = new FormAttachment( 0, 0 );
-    wlServer.setLayoutData( fdlServer );
-
-    wSlaveServer = new ComboVar( jobMeta, wServer, SWT.SINGLE | SWT.BORDER );
-    wSlaveServer.setItems( SlaveServer.getSlaveServerNames( jobMeta.getSlaveServers() ) );
-    wSlaveServer.setToolTipText( BaseMessages.getString( PKG, "JobTrans.SlaveServer.ToolTip" ) );
-    props.setLook( wSlaveServer );
-    FormData fdwcServer = new FormData();
-    fdwcServer.width = 200;
-    fdwcServer.left = new FormAttachment( 0, 0 );
-    fdwcServer.top = new FormAttachment( wlServer, 5 );
-    wSlaveServer.setLayoutData( fdwcServer );
-    // End Server Section
-
-    FormData fdgEnvironmentType = new FormData();
-    fdgEnvironmentType.top = new FormAttachment( 0, 0 );
-    fdgEnvironmentType.left = new FormAttachment( 0, 0 );
-    fdgEnvironmentType.right = new FormAttachment( 100, 0 );
-    gEnvironmentType.setLayoutData( fdgEnvironmentType );
-
     gExecution = new Group( wOptions, SWT.SHADOW_ETCHED_IN );
     props.setLook( gExecution );
     gExecution.setText( BaseMessages.getString( PKG, "JobTrans.Execution.Group.Label" ) );
@@ -396,7 +260,7 @@ public abstract class JobEntryBaseDialog extends JobEntryDialog {
     gExecution.setLayout( gExecutionLayout );
 
     fdgExecution = new FormData();
-    fdgExecution.top = new FormAttachment( gEnvironmentType, 10 );
+    fdgExecution.top = new FormAttachment( 0, 10 );
     fdgExecution.left = new FormAttachment( 0, 0 );
     fdgExecution.right = new FormAttachment( 100, 0 );
     gExecution.setLayoutData( fdgExecution );
@@ -776,10 +640,10 @@ public abstract class JobEntryBaseDialog extends JobEntryDialog {
     }
   }
 
-  protected void setRadioButtons() {
-    wLocal.setVisible( wbLocal.getSelection() );
-    wServer.setVisible( wbServer.getSelection() );
-  }
+//  protected void setRadioButtons() {
+//    wLocal.setVisible( wbLocal.getSelection() );
+//    wServer.setVisible( wbServer.getSelection() );
+//  }
 
   protected void setActive() {
 
@@ -803,8 +667,6 @@ public abstract class JobEntryBaseDialog extends JobEntryDialog {
     wLoglevel.setEnabled( wSetLogfile.getSelection() );
 
     wAppendLogfile.setEnabled( wSetLogfile.getSelection() );
-
-    wServer.setVisible( wbServer.getSelection() );
   }
 
   protected abstract void ok();

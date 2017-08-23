@@ -34,10 +34,20 @@ import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.variables.VariableSpace;
+import org.pentaho.di.engine.configuration.impl.pentaho.scheduler.SpoonUtil;
+import org.pentaho.di.job.JobExecutionConfiguration;
+import org.pentaho.di.repository.Repository;
+import org.pentaho.di.repository.RepositoryDirectoryInterface;
+import org.pentaho.di.repository.UserInfo;
 import org.pentaho.di.trans.TransExecutionConfiguration;
+import org.pentaho.di.ui.spoon.Spoon;
+
+import java.util.function.Supplier;
 
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 /**
  * Created by bmorrise on 3/22/17.
@@ -51,18 +61,40 @@ public class DefaultRunConfigurationExecutorTest {
   private AbstractMeta abstractMeta;
 
   @Mock
-  private VariableSpace variableSpace;
+  private AbstractMeta variableSpace;
 
   @Mock
   private SlaveServer slaveServer;
 
+  @Mock
+  private Repository repository;
+
+  @Mock
+  private Spoon spoon;
+
+  @Mock
+  private UserInfo userInfo;
+
+  @Mock
+  private RepositoryDirectoryInterface repositoryDirectory;
+
   @Before
   public void setup() {
+    when( spoon.getRepository() ).thenReturn( repository );
+    when( repository.getUserInfo() ).thenReturn( userInfo );
+    when( userInfo.getName() ).thenReturn( "admin" );
+    when( userInfo.getUsername() ).thenReturn( "password" );
+    when( abstractMeta.getRepositoryDirectory() ).thenReturn( repositoryDirectory );
+    when( repositoryDirectory.getPath() ).thenReturn( "/admin" );
+    when( abstractMeta.getName() ).thenReturn( "file" );
+    when( abstractMeta.getDefaultExtension() ).thenReturn( "ktr" );
+
+    SpoonUtil.spoonSupplier = () -> spoon;
     defaultRunConfigurationExecutor = new DefaultRunConfigurationExecutor();
   }
 
   @Test
-  public void testExecuteLocal() throws Exception {
+  public void testExecuteLocalTrans() throws Exception {
     DefaultRunConfiguration defaultRunConfiguration = new DefaultRunConfiguration();
     defaultRunConfiguration.setName( "Default Configuration" );
     defaultRunConfiguration.setLocal( true );
@@ -76,7 +108,7 @@ public class DefaultRunConfigurationExecutorTest {
   }
   
   @Test
-  public void testExecuteRemote() throws Exception {
+  public void testExecuteRemoteTrans() throws Exception {
     DefaultRunConfiguration defaultRunConfiguration = new DefaultRunConfiguration();
     defaultRunConfiguration.setName( "Default Configuration" );
     defaultRunConfiguration.setLocal( false );
@@ -95,7 +127,24 @@ public class DefaultRunConfigurationExecutorTest {
   }
 
   @Test
-  public void testExecuteClustered() throws Exception {
+  public void testExecutePentahoTrans() throws Exception {
+    DefaultRunConfiguration defaultRunConfiguration = new DefaultRunConfiguration();
+    defaultRunConfiguration.setName( "Default Configuration" );
+    defaultRunConfiguration.setLocal( false );
+    defaultRunConfiguration.setPentaho( true );
+    defaultRunConfiguration.setRemote( false );
+
+    TransExecutionConfiguration transExecutionConfiguration = new TransExecutionConfiguration();
+
+    defaultRunConfigurationExecutor
+      .execute( defaultRunConfiguration, transExecutionConfiguration, abstractMeta, variableSpace );
+
+    assertFalse( transExecutionConfiguration.isExecutingLocally() );
+    assertFalse( transExecutionConfiguration.isExecutingRemotely() );
+  }
+
+  @Test
+  public void testExecuteClusteredTrans() throws Exception {
     DefaultRunConfiguration defaultRunConfiguration = new DefaultRunConfiguration();
     defaultRunConfiguration.setName( "Default Configuration" );
     defaultRunConfiguration.setLocal( false );
@@ -113,7 +162,7 @@ public class DefaultRunConfigurationExecutorTest {
   }
 
   @Test
-  public void testExecuteRemoteNotFound() throws Exception {
+  public void testExecuteRemoteNotFoundTrans() throws Exception {
     DefaultRunConfiguration defaultRunConfiguration = new DefaultRunConfiguration();
     defaultRunConfiguration.setName( "Default Configuration" );
     defaultRunConfiguration.setLocal( false );
@@ -132,4 +181,73 @@ public class DefaultRunConfigurationExecutorTest {
     }
   }
 
+  @Test
+  public void testExecuteLocalJob() throws Exception {
+    DefaultRunConfiguration defaultRunConfiguration = new DefaultRunConfiguration();
+    defaultRunConfiguration.setName( "Default Configuration" );
+    defaultRunConfiguration.setLocal( true );
+
+    JobExecutionConfiguration jobExecutionConfiguration = new JobExecutionConfiguration();
+
+    defaultRunConfigurationExecutor
+      .execute( defaultRunConfiguration, jobExecutionConfiguration, abstractMeta, variableSpace );
+
+    assertTrue( jobExecutionConfiguration.isExecutingLocally() );
+  }
+
+  @Test
+  public void testExecuteRemoteJob() throws Exception {
+    DefaultRunConfiguration defaultRunConfiguration = new DefaultRunConfiguration();
+    defaultRunConfiguration.setName( "Default Configuration" );
+    defaultRunConfiguration.setLocal( false );
+    defaultRunConfiguration.setRemote( true );
+    defaultRunConfiguration.setServer( "Test Server" );
+
+    JobExecutionConfiguration jobExecutionConfiguration = new JobExecutionConfiguration();
+    doReturn( slaveServer ).when( abstractMeta ).findSlaveServer( "Test Server" );
+
+    defaultRunConfigurationExecutor
+      .execute( defaultRunConfiguration, jobExecutionConfiguration, abstractMeta, variableSpace );
+
+    assertFalse( jobExecutionConfiguration.isExecutingLocally() );
+    assertTrue( jobExecutionConfiguration.isExecutingRemotely() );
+    assertEquals( jobExecutionConfiguration.getRemoteServer(), slaveServer );
+  }
+
+  @Test
+  public void testExecuteRemoteNotFoundJob() throws Exception {
+    DefaultRunConfiguration defaultRunConfiguration = new DefaultRunConfiguration();
+    defaultRunConfiguration.setName( "Default Configuration" );
+    defaultRunConfiguration.setLocal( false );
+    defaultRunConfiguration.setRemote( true );
+    defaultRunConfiguration.setServer( "Test Server" );
+
+    JobExecutionConfiguration jobExecutionConfiguration = new JobExecutionConfiguration();
+    doReturn( slaveServer ).when( abstractMeta ).findSlaveServer( null );
+
+    try {
+      defaultRunConfigurationExecutor
+        .execute( defaultRunConfiguration, jobExecutionConfiguration, abstractMeta, variableSpace );
+      fail();
+    } catch ( KettleException e ) {
+      // expected
+    }
+  }
+
+  @Test
+  public void testExecutePentahoJob() throws Exception {
+    DefaultRunConfiguration defaultRunConfiguration = new DefaultRunConfiguration();
+    defaultRunConfiguration.setName( "Default Configuration" );
+    defaultRunConfiguration.setLocal( false );
+    defaultRunConfiguration.setPentaho( true );
+    defaultRunConfiguration.setRemote( false );
+
+    JobExecutionConfiguration jobExecutionConfiguration = new JobExecutionConfiguration();
+
+    defaultRunConfigurationExecutor
+      .execute( defaultRunConfiguration, jobExecutionConfiguration, abstractMeta, variableSpace );
+
+    assertFalse( jobExecutionConfiguration.isExecutingLocally() );
+    assertFalse( jobExecutionConfiguration.isExecutingRemotely() );
+  }
 }

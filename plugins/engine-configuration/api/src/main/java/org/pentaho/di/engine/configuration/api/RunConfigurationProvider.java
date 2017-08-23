@@ -31,4 +31,5 @@ public interface RunConfigurationProvider extends RunConfigurationFactory {
   RunConfiguration getConfiguration();
   RunConfigurationExecutor getExecutor();
   String getType();
+  boolean isSupported( String type );
 }

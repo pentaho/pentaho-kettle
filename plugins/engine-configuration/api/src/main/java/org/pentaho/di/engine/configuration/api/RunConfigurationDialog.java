@@ -24,15 +24,15 @@
 
 package org.pentaho.di.engine.configuration.api;
 
-import org.pentaho.di.ExecutionConfiguration;
-import org.pentaho.di.base.AbstractMeta;
-import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.variables.VariableSpace;
+import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Group;
+import org.eclipse.swt.widgets.Text;
 
 /**
- * Created by bmorrise on 3/16/17.
+ * Created by bmorrise on 8/22/17.
  */
-public interface RunConfigurationExecutor {
-  void execute( RunConfiguration runConfiguration, ExecutionConfiguration configuration, AbstractMeta meta,
-                VariableSpace variableSpace ) throws KettleException;
+public interface RunConfigurationDialog {
+  Text getName();
+  Button getOKButton();
+  Group getGroup();
 }
