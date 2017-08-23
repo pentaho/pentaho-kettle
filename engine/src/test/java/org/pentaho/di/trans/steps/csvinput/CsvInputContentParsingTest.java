@@ -40,6 +40,18 @@ public class CsvInputContentParsingTest extends BaseCsvParsingTest {
   }
 
   @Test
+  public void testColumnNameWithSpaces() throws Exception {
+    init( "column_name_with_spaces.csv" );
+
+    setFields( new TextFileInputField( "Field 1", -1, -1 ), new TextFileInputField( "Field 2", -1, -1 ),
+        new TextFileInputField( "Field 3", -1, -1 ) );
+
+    process();
+
+    check( new Object[][] { { "first", "1", "1.1" }, { "second", "2", "2.2" }, { "third", "3", "3.3" } } );
+  }
+
+  @Test
   public void testSemicolonOptions() throws Exception {
     meta.setDelimiter( ";" );
     init( "semicolon.csv" );
