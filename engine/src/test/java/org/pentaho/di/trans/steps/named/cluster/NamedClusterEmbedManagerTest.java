@@ -28,6 +28,7 @@ import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.osgi.api.NamedClusterOsgi;
 import org.pentaho.di.core.osgi.api.NamedClusterServiceOsgi;
 import org.pentaho.di.core.variables.Variables;
+import org.pentaho.metastore.api.IMetaStore;
 import org.pentaho.metastore.persist.MetaStoreFactory;
 
 import java.util.Arrays;
@@ -57,12 +58,14 @@ public class NamedClusterEmbedManagerTest {
     mockMeta = mock( AbstractMeta.class );
     mockMetaStoreFactory = mock( MetaStoreFactory.class );
     NamedClusterEmbedManager.testMetaStoreFactory = mockMetaStoreFactory;
+    IMetaStore mockMetaStore = mock( IMetaStore.class );
     mockNamedCluster1 = mock( NamedClusterOsgi.class );
     mockNamedCluster2 = mock( NamedClusterOsgi.class );
     when( mockNamedCluster1.getName() ).thenReturn( CLUSTER1_NAME );
     when( mockNamedCluster2.getName() ).thenReturn( CLUSTER2_NAME );
     mockNamedClusterService = mock( NamedClusterServiceOsgi.class );
     when( mockMeta.getNamedClusterServiceOsgi() ).thenReturn( mockNamedClusterService );
+    when( mockMeta.getMetaStore() ).thenReturn( mockMetaStore );
     when ( mockNamedClusterService.getClusterTemplate() ).thenReturn( mock( NamedClusterOsgi.class ) );
     when( mockNamedClusterService.getNamedClusterByName( eq( CLUSTER1_NAME ), any() ) ).thenReturn( mockNamedCluster1 );
     when( mockNamedClusterService.getNamedClusterByName( eq( CLUSTER2_NAME ), any() ) ).thenReturn( mockNamedCluster2 );

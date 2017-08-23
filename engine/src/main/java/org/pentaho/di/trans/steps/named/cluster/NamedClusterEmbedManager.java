@@ -134,14 +134,18 @@ public class NamedClusterEmbedManager {
     if ( ncso != null ) {  //Don't kill the embedded if we don't have the service to rebuild
       addedAllClusters = false;
       addedAnyClusters = false;
-      try {
-        List<NamedClusterOsgi> list = embeddedMetaStoreFactory.getElements();
-        for ( NamedClusterOsgi nc : list ) {
-          namedClusterPool.put( nc.getName(), nc );
-          embeddedMetaStoreFactory.deleteElement( nc.getName() );
+      // The embeddedMetaStoreFactory may be null if creating a brand new job and attempting to run before it ever
+      // saved.
+      if ( embeddedMetaStoreFactory != null ) {
+        try {
+          List<NamedClusterOsgi> list = embeddedMetaStoreFactory.getElements();
+          for ( NamedClusterOsgi nc : list ) {
+            namedClusterPool.put( nc.getName(), nc );
+            embeddedMetaStoreFactory.deleteElement( nc.getName() );
+          }
+        } catch ( MetaStoreException e ) {
+          logMetaStoreException( e );
         }
-      } catch ( MetaStoreException e ) {
-        logMetaStoreException( e );
       }
     }
   }
@@ -176,7 +180,7 @@ public class NamedClusterEmbedManager {
 
   private void addAllClusters() {
     NamedClusterServiceOsgi ncso = meta.getNamedClusterServiceOsgi();
-    if ( ncso != null ) {
+    if ( ncso != null && meta.getMetaStore() != null ) {
       try {
         List<String> list = ncso.listNames( meta.getMetaStore() );
         for ( String name : list ) {
