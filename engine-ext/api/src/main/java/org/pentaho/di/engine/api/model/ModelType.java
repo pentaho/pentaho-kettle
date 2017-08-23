@@ -22,19 +22,11 @@
  * *****************************************************************************
  */
 
-package org.pentaho.di.trans.ael.websocket.event;
+package org.pentaho.di.engine.api.model;
 
-/**
- * Created by fcamara on 8/17/17.
- */
-public interface MessageEvent {
-  /**
-   * get the object identifier
-   */
-  String getObjectId();
-
-  /**
-   * Return the eventType
-   */
-  MessageEventType getType();
+public enum ModelType {
+  HOP,
+  OPERATION,
+  ROW,
+  TRANSFORMATION
 }

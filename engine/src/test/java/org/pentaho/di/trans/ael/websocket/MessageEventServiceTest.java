@@ -21,7 +21,7 @@
  *
  * *****************************************************************************
  */
-package org.pentaho.di.trans.ael.websocket.impl;
+package org.pentaho.di.trans.ael.websocket;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -30,11 +30,14 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.engine.api.events.LogEvent;
+import org.pentaho.di.engine.api.events.MetricsEvent;
+import org.pentaho.di.engine.api.events.StatusEvent;
+import org.pentaho.di.engine.api.model.ModelType;
+import org.pentaho.di.engine.api.remote.Message;
+import org.pentaho.di.engine.api.remote.RemoteSource;
+import org.pentaho.di.engine.api.remote.StopMessage;
 import org.pentaho.di.engine.api.reporting.LogEntry;
 import org.pentaho.di.engine.api.reporting.LogLevel;
-import org.pentaho.di.engine.model.Operation;
-import org.pentaho.di.trans.ael.websocket.event.MessageEvent;
-import org.pentaho.di.trans.ael.websocket.event.MessageEventType;
 import org.pentaho.di.trans.ael.websocket.exception.HandlerRegistrationException;
 import org.pentaho.di.trans.ael.websocket.exception.MessageEventFireEventException;
 import org.pentaho.di.trans.ael.websocket.handler.MessageEventHandler;
@@ -50,29 +53,27 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
 
 @RunWith( MockitoJUnitRunner.class )
-public class MessageEventServiceImplTest {
+public class MessageEventServiceTest {
 
-  @Mock private MessageEvent transformationMessageEvent;
-  @Mock private MessageEvent operationMessageEvent;
-  @Mock private MessageEvent otherOpMessageEvent;
-  @Mock private MessageEvent otherTransMessageEvent;
+  private LogEvent transformationMessageEvent;
+  private LogEvent operationMessageEvent;
+  private MetricsEvent otherOpMessageEvent;
+  private StatusEvent otherTransMessageEvent;
   @Mock private MessageEventHandler messageEventHandler;
   @Mock private MessageEventHandler messageEventHandler2;
   @Mock private LogEntry logEntry;
-  private MessageEventServiceImpl messageEventService;
+  private MessageEventService messageEventService;
 
   @Before
   public void before() {
-    messageEventService = new MessageEventServiceImpl();
+    messageEventService = new MessageEventService();
     doReturn( "Handler_ID" ).when( messageEventHandler ).getIdentifier();
     doReturn( "Handler_ID2" ).when( messageEventHandler2 ).getIdentifier();
 
-    doReturn( MessageEventType.TRANSFORMATION_LOG ).when( transformationMessageEvent ).getType();
-    doReturn( MessageEventType.OPERATION_LOG ).when( operationMessageEvent ).getType();
-    doReturn( "Operation_ID" ).when( operationMessageEvent ).getObjectId();
-    doReturn( MessageEventType.METRICS ).when( otherOpMessageEvent ).getType();
-    doReturn( "Metrics_ID" ).when( otherOpMessageEvent ).getObjectId();
-    doReturn( MessageEventType.TRANSFORMATION_STATUS ).when( otherOpMessageEvent ).getType();
+    transformationMessageEvent = Util.getTransformationLogEvent();
+    operationMessageEvent = Util.getOperationLogEvent( "Operation_ID" );
+    otherOpMessageEvent  = Util.getMetricEvents( "Metrics_ID" );
+    otherTransMessageEvent = Util.getTransformationStatusEvent();
 
     doReturn( "message" ).when( logEntry ).getMessage();
     doReturn( LogLevel.ERROR ).when( logEntry ).getLogLogLevel();
@@ -178,46 +179,41 @@ public class MessageEventServiceImplTest {
   @Test
   public void testOperationFireEvent() throws KettleException {
     addHandlers( operationMessageEvent, messageEventHandler, messageEventHandler2 );
-    doReturn( true ).when( messageEventHandler ).isInterested( any( MessageEvent.class ) );
-    doReturn( true ).when( messageEventHandler2 ).isInterested( any( MessageEvent.class ) );
 
-    LogEvent logEvent = new LogEvent<>( new Operation( "Operation_ID", null ), logEntry );
+    LogEvent logEvent = new LogEvent<>( new RemoteSource( ModelType.OPERATION, "Operation_ID" ), logEntry );
     messageEventService.fireEvent( logEvent );
     verify( messageEventHandler ).execute( logEvent );
     verify( messageEventHandler2 ).execute( logEvent );
-  }
-
-  @Test
-  public void testOperationFireEventNotInterested() throws KettleException {
-    addHandlers( operationMessageEvent, messageEventHandler, messageEventHandler2 );
-    doReturn( true ).when( messageEventHandler ).isInterested( any( MessageEvent.class ) );
-    doReturn( false ).when( messageEventHandler2 ).isInterested( any( MessageEvent.class ) );
-
-    LogEvent logEvent = new LogEvent<>( new Operation( "Operation_ID", null ), logEntry );
-    messageEventService.fireEvent( logEvent );
-    verify( messageEventHandler ).execute( logEvent );
-    verify( messageEventHandler2, never() ).execute( logEvent );
   }
 
   @Test( expected = MessageEventFireEventException.class )
   public void testOperationFireEventThrowException() throws KettleException {
     addHandlers( operationMessageEvent, messageEventHandler, messageEventHandler2 );
-    doThrow( new RuntimeException( "Test" ) ).when( messageEventHandler ).isInterested( any( MessageEvent.class ) );
-    doReturn( true ).when( messageEventHandler2 ).isInterested( any( MessageEvent.class ) );
+    doThrow( new RuntimeException( "Test" ) ).when( messageEventHandler ).execute( any( Message.class ) );
 
-    LogEvent logEvent = new LogEvent<>( new Operation( "Operation_ID", null ), logEntry );
+    LogEvent logEvent = new LogEvent<>( new RemoteSource( ModelType.OPERATION, "Operation_ID" ), logEntry );
     messageEventService.fireEvent( logEvent );
     verify( messageEventHandler, never() ).execute( logEvent );
     verify( messageEventHandler2 ).execute( logEvent );
   }
 
-  public void addHandlers( MessageEvent messageEvent, MessageEventHandler handler,
+  @Test
+  public void testStopMessageFireEvent() throws KettleException {
+    addHandlers( new StopMessage( "" ), messageEventHandler, messageEventHandler2 );
+
+    StopMessage msg = new StopMessage( "User request" );
+    messageEventService.fireEvent( msg );
+    verify( messageEventHandler ).execute( msg );
+    verify( messageEventHandler2 ).execute( msg );
+  }
+
+  public void addHandlers( Message messageEvent, MessageEventHandler handler,
                            MessageEventHandler handler2 ) throws KettleException {
     messageEventService.addHandler( messageEvent, handler );
     messageEventService.addHandler( messageEvent, handler2 );
   }
 
-  private void testAddDiffHandlersForSameEvent( MessageEvent messageEvent, MessageEventHandler handler,
+  private void testAddDiffHandlersForSameEvent( Message messageEvent, MessageEventHandler handler,
                                                 MessageEventHandler handler2 ) throws KettleException {
     messageEventService.addHandler( messageEvent, handler );
     messageEventService.addHandler( messageEvent, handler2 );

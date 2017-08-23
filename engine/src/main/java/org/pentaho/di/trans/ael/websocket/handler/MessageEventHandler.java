@@ -24,7 +24,6 @@
 package org.pentaho.di.trans.ael.websocket.handler;
 
 import org.pentaho.di.engine.api.remote.Message;
-import org.pentaho.di.trans.ael.websocket.event.MessageEvent;
 import org.pentaho.di.trans.ael.websocket.exception.MessageEventHandlerExecutionException;
 
 import java.io.Serializable;
@@ -32,17 +31,11 @@ import java.io.Serializable;
 /**
  * Created by fcamara on 8/17/17.
  */
-public interface MessageEventHandler<T extends MessageEvent> extends Serializable {
+public interface MessageEventHandler extends Serializable {
   /**
-   * Performs the action corresponding to the given DaemonMessageEvent
+   * Performs the action corresponding to the given Message
    */
   void execute( Message message ) throws MessageEventHandlerExecutionException;
-
-  /**
-   * Precise if the current Handler is interested by the given event. If so, it could run the execute(DaemonMessageEvent
-   * e) method.
-   */
-  boolean isInterested( T event );
 
   /**
    * Returns a unique identifier for each instance of the Handler
