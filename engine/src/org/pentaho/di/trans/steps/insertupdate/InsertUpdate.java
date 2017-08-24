@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -63,7 +63,7 @@ public class InsertUpdate extends BaseStep implements StepInterface {
     super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
   }
 
-  private synchronized void lookupValues( RowMetaInterface rowMeta, Object[] row ) throws KettleException {
+  protected synchronized void lookupValues( RowMetaInterface rowMeta, Object[] row ) throws KettleException {
     // OK, now do the lookup.
     // We need the lookupvalues for that.
     Object[] lookupRow = new Object[data.lookupParameterRowMeta.size()];

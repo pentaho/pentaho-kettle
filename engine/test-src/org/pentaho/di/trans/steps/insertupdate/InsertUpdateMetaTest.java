@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,23 +22,28 @@
 
 package org.pentaho.di.trans.steps.insertupdate;
 
+import java.sql.Connection;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import static org.junit.Assert.*;
 
 import org.mockito.Mockito;
 import org.pentaho.di.core.KettleEnvironment;
+import org.pentaho.di.core.database.Database;
+import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.logging.LoggingObjectInterface;
 import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.plugins.StepPluginType;
 import org.pentaho.di.core.row.RowMeta;
+import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.StepMeta;
@@ -49,6 +54,7 @@ import org.pentaho.di.trans.steps.loadsave.validator.DatabaseMetaLoadSaveValidat
 import org.pentaho.di.trans.steps.loadsave.validator.FieldLoadSaveValidator;
 import org.pentaho.di.trans.steps.loadsave.validator.PrimitiveBooleanArrayLoadSaveValidator;
 import org.pentaho.di.trans.steps.loadsave.validator.StringLoadSaveValidator;
+import org.pentaho.di.trans.steps.mock.StepMockHelper;
 
 public class InsertUpdateMetaTest {
   LoadSaveTester loadSaveTester;
@@ -88,13 +94,13 @@ public class InsertUpdateMetaTest {
   @Test
   public void testCommitCountFixed() {
     umi.setCommitSize( "100" );
-    assertTrue( umi.getCommitSize( upd ) == 100 );
+    Assert.assertTrue( umi.getCommitSize( upd ) == 100 );
   }
 
   @Test
   public void testCommitCountVar() {
     umi.setCommitSize( "${max.sz}" );
-    assertTrue( umi.getCommitSize( upd ) == 10 );
+    Assert.assertTrue( umi.getCommitSize( upd ) == 10 );
   }
 
   @Test
@@ -105,15 +111,15 @@ public class InsertUpdateMetaTest {
 
     InsertUpdateData tableOutputData = new InsertUpdateData();
     tableOutputData.insertRowMeta = Mockito.mock( RowMeta.class );
-    assertEquals( tableOutputData.insertRowMeta, insertUpdateMeta.getRowMeta( tableOutputData ) );
-    assertEquals( 3, insertUpdateMeta.getDatabaseFields().size() );
-    assertEquals( "f1", insertUpdateMeta.getDatabaseFields().get( 0 ) );
-    assertEquals( "f2", insertUpdateMeta.getDatabaseFields().get( 1 ) );
-    assertEquals( "f3", insertUpdateMeta.getDatabaseFields().get( 2 ) );
-    assertEquals( 3, insertUpdateMeta.getStreamFields().size() );
-    assertEquals( "s4", insertUpdateMeta.getStreamFields().get( 0 ) );
-    assertEquals( "s5", insertUpdateMeta.getStreamFields().get( 1 ) );
-    assertEquals( "s6", insertUpdateMeta.getStreamFields().get( 2 ) );
+    Assert.assertEquals( tableOutputData.insertRowMeta, insertUpdateMeta.getRowMeta( tableOutputData ) );
+    Assert.assertEquals( 3, insertUpdateMeta.getDatabaseFields().size() );
+    Assert.assertEquals( "f1", insertUpdateMeta.getDatabaseFields().get( 0 ) );
+    Assert.assertEquals( "f2", insertUpdateMeta.getDatabaseFields().get( 1 ) );
+    Assert.assertEquals( "f3", insertUpdateMeta.getDatabaseFields().get( 2 ) );
+    Assert.assertEquals( 3, insertUpdateMeta.getStreamFields().size() );
+    Assert.assertEquals( "s4", insertUpdateMeta.getStreamFields().get( 0 ) );
+    Assert.assertEquals( "s5", insertUpdateMeta.getStreamFields().get( 1 ) );
+    Assert.assertEquals( "s6", insertUpdateMeta.getStreamFields().get( 2 ) );
   }
 
   @Test
@@ -121,7 +127,7 @@ public class InsertUpdateMetaTest {
     umi.setCommitSize( "missed-var" );
     try {
       umi.getCommitSize( upd );
-      fail();
+      Assert.fail();
     } catch ( Exception ex ) {
     }
   }
@@ -190,4 +196,41 @@ public class InsertUpdateMetaTest {
     loadSaveTester.testSerialization();
   }
 
+  //PDI-16349
+  @Test
+  public void keyStream2ProcessRow() throws KettleException {
+    StepMockHelper<InsertUpdateMeta, InsertUpdateData> mockHelper =
+      new StepMockHelper<>( "insertUpdate", InsertUpdateMeta.class, InsertUpdateData.class );
+    Mockito.when(
+      mockHelper.logChannelInterfaceFactory.create( Mockito.any(), Mockito.any( LoggingObjectInterface.class ) ) )
+      .thenReturn( mockHelper.logChannelInterface );
+    Mockito.when( mockHelper.stepMeta.getStepMetaInterface() ).thenReturn( new InsertUpdateMeta() );
+
+    InsertUpdate insertUpdateStep =
+      new InsertUpdate( mockHelper.stepMeta, mockHelper.stepDataInterface, 0, mockHelper.transMeta, mockHelper.trans );
+    insertUpdateStep.setInputRowMeta( Mockito.mock( RowMetaInterface.class ) );
+    insertUpdateStep = Mockito.spy( insertUpdateStep );
+
+    InsertUpdateMeta insertUpdateMeta = new InsertUpdateMeta();
+    insertUpdateMeta.setKeyStream( new String[] { "test_field" } );
+    insertUpdateMeta.setKeyCondition( new String[] { "test_condition" } );
+    insertUpdateMeta.setKeyStream2( new String[] {} );
+    insertUpdateMeta.setUpdateLookup( new String[] {} );
+    insertUpdateMeta.setKeyLookup( new String[] {} );
+    insertUpdateMeta.setUpdateBypassed( true );
+    insertUpdateMeta.setDatabaseMeta( Mockito.mock( DatabaseMeta.class ) );
+    Database database = Mockito.mock( Database.class );
+    mockHelper.processRowsStepDataInterface.db = database;
+    Mockito.doReturn( Mockito.mock( Connection.class ) ).when( database ).getConnection();
+    Mockito.doNothing().when( insertUpdateStep ).lookupValues( Mockito.any(), Mockito.any() );
+    Mockito.doNothing().when( insertUpdateStep ).putRow( Mockito.any(), Mockito.any() );
+    Mockito.doReturn( new Object[] {} ).when( insertUpdateStep ).getRow();
+    insertUpdateStep.first = true;
+
+    insertUpdateMeta.afterInjectionSynchronization();
+    //run without a exception
+    insertUpdateStep.processRow( insertUpdateMeta, mockHelper.processRowsStepDataInterface );
+
+    Assert.assertEquals( insertUpdateMeta.getKeyStream().length, insertUpdateMeta.getKeyStream2().length );
+  }
 }

@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -33,6 +33,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.pentaho.di.core.KettleEnvironment;
@@ -105,5 +106,25 @@ public class StreamLookupMetaTest implements InitializerInterface<StepMetaInterf
     assertEquals( stepName, cloned.getStepIOMeta().getInfoStreams().get( 0 ).getStepname() );
     assertNotSame( meta.getStepIOMeta().getInfoStreams().get( 0 ),
       cloned.getStepIOMeta().getInfoStreams().get( 0 ) );
+  }
+
+  //PDI-16110
+  @Test
+  public void testGetXML() {
+    StreamLookupMeta streamLookupMeta = new StreamLookupMeta();
+    streamLookupMeta.setKeystream( new String[] { "testKeyStreamValue" } );
+    streamLookupMeta.setKeylookup( new String[] { "testKeyLookupValue" } );
+    streamLookupMeta.setValue( new String[] { "testValue" } );
+    streamLookupMeta.setValueName( new String[] {} );
+    streamLookupMeta.setValueDefault( new String[] {} );
+    streamLookupMeta.setValueDefaultType( new int[] {} );
+
+    //run without exception
+    streamLookupMeta.afterInjectionSynchronization();
+    streamLookupMeta.getXML();
+
+    Assert.assertEquals( streamLookupMeta.getKeystream().length, streamLookupMeta.getValueName().length );
+    Assert.assertEquals( streamLookupMeta.getKeystream().length, streamLookupMeta.getValueDefault().length );
+    Assert.assertEquals( streamLookupMeta.getKeystream().length, streamLookupMeta.getValueDefaultType().length );
   }
 }
