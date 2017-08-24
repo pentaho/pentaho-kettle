@@ -154,7 +154,7 @@ public class NamedClusterEmbedManager {
     return addedAnyClusters;
   }
 
-  private void addClusterToMeta( String clusterName ) {
+  public void addClusterToMeta( String clusterName ) {
     NamedClusterServiceOsgi ncso = meta.getNamedClusterServiceOsgi();
     if ( ncso != null ) {
       NamedClusterOsgi nc = ncso.getNamedClusterByName( clusterName, meta.getMetaStore() );
