@@ -5,10 +5,10 @@
   <parent>
     <groupId>org.pentaho</groupId>
     <artifactId>pdi-engine</artifactId>
-    <version>7.1.0.2-43</version>
+    <version>7.1.0.2-C220</version>
   </parent>
   <artifactId>pdi-engine-serializers</artifactId>
-  <version>7.1.0.2-43</version>
+  <version>7.1.0.2-C220</version>
   <packaging>bundle</packaging>
   <properties>
     <jackson.version>2.5.4</jackson.version>

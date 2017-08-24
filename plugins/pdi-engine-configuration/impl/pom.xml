@@ -5,14 +5,14 @@
   <parent>
     <groupId>org.pentaho</groupId>
     <artifactId>pdi-engine-configuration-parent</artifactId>
-    <version>7.1.0.2-43</version>
+    <version>7.1.0.2-C220</version>
   </parent>
   <artifactId>pdi-engine-configuration-impl</artifactId>
-  <version>7.1.0.2-43</version>
+  <version>7.1.0.2-C220</version>
   <packaging>bundle</packaging>
   <properties>
-    <dependency.apache-felix-main.version>4.2.1</dependency.apache-felix-main.version>
     <dependency.mockito.version>1.9.5</dependency.mockito.version>
+    <dependency.apache-felix-main.version>4.2.1</dependency.apache-felix-main.version>
     <dependecy.karaf.version>3.0.3</dependecy.karaf.version>
   </properties>
   <dependencies>

@@ -4,6 +4,6 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>pentaho-kettle</groupId>
   <artifactId>kettle-xml-plugin</artifactId>
-  <version>7.1.0.2-43</version>
+  <version>7.1.0.2-C220</version>
   <packaging>zip</packaging>
 </project>

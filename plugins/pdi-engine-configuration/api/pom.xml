@@ -5,10 +5,10 @@
   <parent>
     <groupId>org.pentaho</groupId>
     <artifactId>pdi-engine-configuration-parent</artifactId>
-    <version>7.1.0.2-43</version>
+    <version>7.1.0.2-C220</version>
   </parent>
   <artifactId>pdi-engine-configuration-api</artifactId>
-  <version>7.1.0.2-43</version>
+  <version>7.1.0.2-C220</version>
   <packaging>bundle</packaging>
   <dependencies>
     <dependency>

@@ -5,11 +5,11 @@
   <parent>
     <groupId>pentaho-kettle</groupId>
     <artifactId>plugins</artifactId>
-    <version>7.1.0.2-43</version>
+    <version>7.1.0.2-C220</version>
   </parent>
   <groupId>org.pentaho</groupId>
   <artifactId>pdi-engine-configuration-parent</artifactId>
-  <version>7.1.0.2-43</version>
+  <version>7.1.0.2-C220</version>
   <packaging>pom</packaging>
   <modules>
     <module>api</module>
@@ -18,6 +18,6 @@
     <module>features</module>
   </modules>
   <properties>
-    <dependency.pentaho-kettle.version>7.1.0.2-43</dependency.pentaho-kettle.version>
+    <dependency.pentaho-kettle.version>7.1.0.2-C220</dependency.pentaho-kettle.version>
   </properties>
 </project>
