@@ -651,6 +651,7 @@ public class MetaInjectDialog extends BaseStepDialog implements StepDialogInterf
                 BaseMessages.getString( PKG, "MetaInjectDialog.SourceFieldDialog.Label" ), constant, transMeta );
               if ( source != null && source.getStepname() != null && !Utils.isEmpty( source.getStepname() ) ) {
                 String key = buildStepFieldKey( source.getStepname(), source.getField() );
+                selectSourceField.setCurrentValue( key );
                 int index = Const.indexOfString( key, sourceFields );
                 if ( index >= 0 ) {
                   selectSourceField.setSelectedNrs( new int[] { index, } );

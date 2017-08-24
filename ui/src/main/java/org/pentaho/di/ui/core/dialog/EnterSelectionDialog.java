@@ -98,6 +98,7 @@ public class EnterSelectionDialog extends Dialog {
   private PropsUI props;
   private String constant;
   private VariableSpace variableSpace;
+  private String currentValue;
 
   private boolean viewOnly, modal;
   private int[] selectedNrs;
@@ -171,6 +172,10 @@ public class EnterSelectionDialog extends Dialog {
 
   public void setAvoidQuickSearch() {
     quickSearch = false;
+  }
+
+  public void setCurrentValue( String currentValue ) {
+    this.currentValue = currentValue;
   }
 
   public void clearModal() {
@@ -568,7 +573,7 @@ public class EnterSelectionDialog extends Dialog {
   }
 
   private void cancel() {
-    selection = null;
+    selection = currentValue;
     dispose();
   }
 
