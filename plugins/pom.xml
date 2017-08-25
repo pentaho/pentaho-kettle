@@ -69,7 +69,6 @@
         <module>pur</module>
         <module>ms-access-bulk-loader</module>
         <module>xml</module>
-        <module>autodoc</module>
       </modules>
     </profile>
     
