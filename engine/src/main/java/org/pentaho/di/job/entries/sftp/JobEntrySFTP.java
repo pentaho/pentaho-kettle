@@ -153,7 +153,9 @@ public class JobEntrySFTP extends JobEntryBase implements Cloneable, JobEntryInt
     retval.append( "      " ).append( XMLHandler.addTagValue( "proxyUsername", proxyUsername ) );
     retval.append( "      " ).append(
       XMLHandler.addTagValue( "proxyPassword", Encr.encryptPasswordIfNotUsingVariables( proxyPassword ) ) );
-
+    if ( parentJobMeta != null ) {
+      parentJobMeta.getNamedClusterEmbedManager().registerUrl( targetDirectory );
+    }
     return retval.toString();
   }
 
@@ -514,6 +516,12 @@ public class JobEntrySFTP extends JobEntryBase implements Cloneable, JobEntryInt
 
     result.setResult( false );
     long filesRetrieved = 0;
+
+    //Set Embedded NamedCluter MetatStore Provider Key so that it can be passed to VFS
+    if ( parentJobMeta.getNamedClusterEmbedManager() != null ) {
+      parentJobMeta.getNamedClusterEmbedManager()
+        .passEmbeddedMetastoreKey( this, parentJobMeta.getEmbeddedMetastoreProviderKey() );
+    }
 
     if ( log.isDetailed() ) {
       logDetailed( BaseMessages.getString( PKG, "JobSFTP.Log.StartJobEntry" ) );

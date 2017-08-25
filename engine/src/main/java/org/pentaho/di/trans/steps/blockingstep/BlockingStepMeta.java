@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -169,6 +169,7 @@ public class BlockingStepMeta extends BaseStepMeta implements StepMetaInterface 
     retval.append( "      " ).append( XMLHandler.addTagValue( "prefix", prefix ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "cache_size", cacheSize ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "compress", compressFiles ) );
+    parentStepMeta.getParentTransMeta().getNamedClusterEmbedManager().registerUrl( directory );
 
     return retval.toString();
   }

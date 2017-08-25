@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -293,6 +293,11 @@ public class GetFilesRowsCount extends BaseStep implements StepInterface {
     data = (GetFilesRowsCountData) sdi;
 
     if ( super.init( smi, sdi ) ) {
+      //Set Embedded NamedCluter MetatStore Provider Key so that it can be passed to VFS
+      if ( getTransMeta().getNamedClusterEmbedManager() != null ) {
+        getTransMeta().getNamedClusterEmbedManager()
+          .passEmbeddedMetastoreKey( this, getTransMeta().getEmbeddedMetastoreProviderKey() );
+      }
       if ( ( meta.getRowSeparatorFormat().equals( "CUSTOM" ) ) && ( Utils.isEmpty( meta.getRowSeparator() ) ) ) {
         logError( BaseMessages.getString( PKG, "GetFilesRowsCount.Error.NoSeparator.Title" ), BaseMessages
           .getString( PKG, "GetFilesRowsCount.Error.NoSeparator.Msg" ) );

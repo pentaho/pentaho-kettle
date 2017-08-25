@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -122,7 +122,10 @@ public class JobEntryFoldersCompare extends JobEntryBase implements Cloneable, J
     retval.append( "      " ).append( XMLHandler.addTagValue( "wildcard", wildcard ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "filename1", filename1 ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "filename2", filename2 ) );
-
+    if ( parentJobMeta != null ) {
+      parentJobMeta.getNamedClusterEmbedManager().registerUrl( filename1 );
+      parentJobMeta.getNamedClusterEmbedManager().registerUrl( filename2 );
+    }
     return retval.toString();
   }
 
@@ -287,6 +290,11 @@ public class JobEntryFoldersCompare extends JobEntryBase implements Cloneable, J
 
     try {
       if ( filename1 != null && filename2 != null ) {
+        //Set Embedded NamedCluter MetatStore Provider Key so that it can be passed to VFS
+        if ( parentJobMeta.getNamedClusterEmbedManager() != null ) {
+          parentJobMeta.getNamedClusterEmbedManager()
+            .passEmbeddedMetastoreKey( this, parentJobMeta.getEmbeddedMetastoreProviderKey() );
+        }
         // Get Folders/Files to compare
         folder1 = KettleVFS.getFileObject( realFilename1, this );
         folder2 = KettleVFS.getFileObject( realFilename2, this );

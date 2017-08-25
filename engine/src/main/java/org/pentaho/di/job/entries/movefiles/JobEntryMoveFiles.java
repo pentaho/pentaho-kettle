@@ -103,7 +103,6 @@ public class JobEntryMoveFiles extends JobEntryBase implements Cloneable, JobEnt
   private boolean SpecifyMoveFormat;
   public boolean create_move_to_folder;
   public boolean simulate;
-  private JobMeta parentJobMeta;
 
   int NrErrors = 0;
   int NrSuccess = 0;
@@ -1385,11 +1384,4 @@ public class JobEntryMoveFiles extends JobEntryBase implements Cloneable, JobEnt
     return true;
   }
 
-  @Override public JobMeta getParentJobMeta() {
-    return parentJobMeta;
-  }
-
-  @Override public void setParentJobMeta( JobMeta parentJobMeta ) {
-    this.parentJobMeta = parentJobMeta;
-  }
 }

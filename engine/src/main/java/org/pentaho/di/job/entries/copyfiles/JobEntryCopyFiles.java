@@ -107,7 +107,6 @@ public class JobEntryCopyFiles extends JobEntryBase implements Cloneable, JobEnt
   HashSet<String> list_files_remove = new HashSet<String>();
   HashSet<String> list_add_result = new HashSet<String>();
   int NbrFail = 0;
-  private JobMeta parentJobMeta;
 
   private Map<String, String> configurationMappings = new HashMap<String, String>();
 
@@ -1189,11 +1188,4 @@ public class JobEntryCopyFiles extends JobEntryBase implements Cloneable, JobEnt
     return path;
   }
 
-  @Override public JobMeta getParentJobMeta() {
-    return parentJobMeta;
-  }
-
-  @Override public void setParentJobMeta( JobMeta parentJobMeta ) {
-    this.parentJobMeta = parentJobMeta;
-  }
 }

@@ -277,7 +277,7 @@ public class SortRowsMeta extends BaseStepMeta implements StepMetaInterface, Ser
   @Override
   public String getXML() {
     StringBuilder retval = new StringBuilder( 256 );
-
+    parentStepMeta.getParentTransMeta().getNamedClusterEmbedManager().registerUrl( directory );
     retval.append( "      " ).append( XMLHandler.addTagValue( "directory", directory ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "prefix", prefix ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "sort_size", sortSize ) );

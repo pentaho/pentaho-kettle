@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -164,7 +164,11 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
     retval.append( "      " ).append( XMLHandler.addTagValue( "createMoveToDirectory", createMoveToDirectory ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "include_subfolders", includingSubFolders ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "stored_source_path_depth", storedSourcePathDepth ) );
-
+    if ( parentJobMeta != null ) {
+      parentJobMeta.getNamedClusterEmbedManager().registerUrl( sourceDirectory );
+      parentJobMeta.getNamedClusterEmbedManager().registerUrl( zipFilename );
+      parentJobMeta.getNamedClusterEmbedManager().registerUrl( movetoDirectory );
+    }
     return retval.toString();
   }
 
@@ -366,7 +370,7 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
           // Let's see if we deal with file or folder
           FileObject[] fileList;
 
-          FileObject sourceFileOrFolder = KettleVFS.getFileObject( localSourceFilename );
+          FileObject sourceFileOrFolder = KettleVFS.getFileObject( localSourceFilename, this );
           boolean isSourceDirectory = sourceFileOrFolder.getType().equals( FileType.FOLDER );
           final Pattern pattern;
           final Pattern patternExclude;
@@ -456,7 +460,7 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
 
             // Prepare Zip File
             buffer = new byte[18024];
-            dest = KettleVFS.getOutputStream( localrealZipfilename, false );
+            dest = KettleVFS.getOutputStream( localrealZipfilename, this, false );
             buff = new BufferedOutputStreamWithCloseDetection( dest );
             out = new ZipOutputStream( buff );
 
@@ -545,7 +549,7 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
                 targetFilename = localSourceFilename;
               }
 
-              FileObject file = KettleVFS.getFileObject( targetFilename );
+              FileObject file = KettleVFS.getFileObject( targetFilename, this );
               boolean isTargetDirectory = file.exists() && file.getType().equals( FileType.FOLDER );
 
               if ( getIt && !getItexclude && !isTargetDirectory && !fileSet.contains( targetFilename ) ) {
@@ -614,7 +618,7 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
                   // Delete, Move File
                   FileObject fileObjectd = zippedFiles[i];
                   if ( !isSourceDirectory ) {
-                    fileObjectd = KettleVFS.getFileObject( localSourceFilename );
+                    fileObjectd = KettleVFS.getFileObject( localSourceFilename, this );
                   }
 
                   // Here we can move, delete files
@@ -640,7 +644,7 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
                     try {
                       fileObjectm =
                         KettleVFS.getFileObject( realMovetodirectory
-                          + Const.FILE_SEPARATOR + fileObjectd.getName().getBaseName() );
+                          + Const.FILE_SEPARATOR + fileObjectd.getName().getBaseName(), this );
                       fileObjectd.moveTo( fileObjectm );
                     } catch ( IOException e ) {
                       logError( BaseMessages.getString( PKG, "JobZipFiles.Cant_Move_File1.Label" )
@@ -761,7 +765,7 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
       if ( depth == 0 ) {
         return filename;
       }
-      FileObject fileObject = KettleVFS.getFileObject( filename );
+      FileObject fileObject = KettleVFS.getFileObject( filename, this );
       FileObject folder = fileObject.getParent();
       String baseName = fileObject.getName().getBaseName();
       if ( depth == 1 ) {
@@ -783,7 +787,7 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
 
   private File getFile( final String filename ) {
     try {
-      String uri = KettleVFS.getFileObject( environmentSubstitute( filename ) ).getName().getPath();
+      String uri = KettleVFS.getFileObject( environmentSubstitute( filename ), this ).getName().getPath();
       return new File( uri );
     } catch ( KettleFileException ex ) {
       logError( "Error in Fetching URI for File: " + filename, ex );
@@ -812,6 +816,12 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
     String realWildcardExclude = null;
     String realTargetdirectory;
     String realMovetodirectory = environmentSubstitute( movetoDirectory );
+
+    //Set Embedded NamedCluter MetatStore Provider Key so that it can be passed to VFS
+    if ( parentJobMeta.getNamedClusterEmbedManager() != null ) {
+      parentJobMeta.getNamedClusterEmbedManager()
+        .passEmbeddedMetastoreKey( this, parentJobMeta.getEmbeddedMetastoreProviderKey() );
+    }
 
     // Sanity check
     boolean SanityControlOK = true;

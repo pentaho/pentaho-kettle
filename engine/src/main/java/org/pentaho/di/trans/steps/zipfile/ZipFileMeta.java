@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -223,7 +223,9 @@ public class ZipFileMeta extends BaseStepMeta implements StepMetaInterface {
     retval.append( "    " ).append( XMLHandler.addTagValue( "createparentfolder", createparentfolder ) );
     retval.append( "    " ).append( XMLHandler.addTagValue( "keepsourcefolder", keepsourcefolder ) );
     retval.append( "    " + XMLHandler.addTagValue( "movetofolderfield", movetofolderfield ) );
-
+    parentStepMeta.getParentTransMeta().getNamedClusterEmbedManager().registerUrl( sourcefilenamefield );
+    parentStepMeta.getParentTransMeta().getNamedClusterEmbedManager().registerUrl( targetfilenamefield );
+    parentStepMeta.getParentTransMeta().getNamedClusterEmbedManager().registerUrl( baseFolderField );
     return retval.toString();
   }
 
