@@ -212,7 +212,7 @@ public class RunTransServlet extends BaseHttpServlet implements CartePluginInter
 
       // Create the transformation and store in the list...
       //
-      final Trans trans = new Trans( transMeta, servletLoggingObject );
+      final Trans trans = createTrans( transMeta, servletLoggingObject );
 
       // Pass information
       //
@@ -230,7 +230,6 @@ public class RunTransServlet extends BaseHttpServlet implements CartePluginInter
       // Also copy the parameters over...
       //
       trans.copyParametersFrom( transMeta );
-      trans.clearParameters();
 
       /*
        * String[] parameterNames = job.listParameters(); for (int idx = 0; idx < parameterNames.length; idx++) { // Grab
@@ -265,6 +264,11 @@ public class RunTransServlet extends BaseHttpServlet implements CartePluginInter
       out.println( new WebResult( WebResult.STRING_ERROR, BaseMessages.getString(
         PKG, "RunTransServlet.Error.UnexpectedError", Const.CR + Const.getStackTracker( ex ) ) ) );
     }
+  }
+
+  //need for unit test
+  Trans createTrans( TransMeta transMeta, SimpleLoggingObject servletLoggingObject ) {
+    return new Trans( transMeta, servletLoggingObject );
   }
 
   private TransMeta loadTrans( Repository repository, String transformationName ) throws KettleException {
