@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -382,13 +382,13 @@ public class Condition implements Cloneable, XMLInterface {
         // Get fieldnrs left value
         //
         // Check out the fieldnrs if we don't have them...
-        if ( left_valuename != null && left_valuename.length() > 0 && left_fieldnr < -1 ) {
+        if ( left_valuename != null && left_valuename.length() > 0 ) {
           left_fieldnr = rowMeta.indexOfValue( left_valuename );
         }
 
         // Get fieldnrs right value
         //
-        if ( right_valuename != null && right_valuename.length() > 0 && right_fieldnr < -1 ) {
+        if ( right_valuename != null && right_valuename.length() > 0 ) {
           right_fieldnr = rowMeta.indexOfValue( right_valuename );
         }
 
