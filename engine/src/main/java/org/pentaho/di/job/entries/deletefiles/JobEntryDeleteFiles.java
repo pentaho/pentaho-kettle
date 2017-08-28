@@ -84,8 +84,6 @@ public class JobEntryDeleteFiles extends JobEntryBase implements Cloneable, JobE
 
   private String[] filemasks;
 
-  private JobMeta parentJobMeta;
-
   public JobEntryDeleteFiles( String jobName ) {
     super( jobName, "" );
     argFromPrevious = false;
@@ -510,11 +508,4 @@ public class JobEntryDeleteFiles extends JobEntryBase implements Cloneable, JobE
     return includeSubfolders;
   }
 
-  @Override public JobMeta getParentJobMeta() {
-    return parentJobMeta;
-  }
-
-  @Override public void setParentJobMeta( JobMeta parentJobMeta ) {
-    this.parentJobMeta = parentJobMeta;
-  }
 }

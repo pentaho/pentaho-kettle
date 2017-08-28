@@ -64,7 +64,6 @@ import org.w3c.dom.Node;
 public class JobEntryCreateFolder extends JobEntryBase implements Cloneable, JobEntryInterface {
   private String foldername;
   private boolean failOfFolderExists;
-  private JobMeta parentJobMeta;
 
   public JobEntryCreateFolder( String n ) {
     super( n, "" );
@@ -232,11 +231,4 @@ public class JobEntryCreateFolder extends JobEntryBase implements Cloneable, Job
     JobEntryValidatorUtils.andValidator().validate( this, "filename", remarks, ctx );
   }
 
-  @Override public JobMeta getParentJobMeta() {
-    return parentJobMeta;
-  }
-
-  @Override public void setParentJobMeta( JobMeta parentJobMeta ) {
-    this.parentJobMeta = parentJobMeta;
-  }
 }

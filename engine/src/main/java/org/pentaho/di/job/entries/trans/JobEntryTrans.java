@@ -282,9 +282,12 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
         // Ignore object reference problems. It simply means that the reference is no longer valid.
       }
     }
+
     retval.append( "      " ).append( XMLHandler.addTagValue( "filename", filename ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "transname", transname ) );
-
+    if ( parentJobMeta != null ) {
+      parentJobMeta.getNamedClusterEmbedManager().registerUrl( filename );
+    }
     if ( directory != null ) {
       retval.append( "      " ).append( XMLHandler.addTagValue( "directory", directory ) );
     } else if ( directoryPath != null ) {
@@ -611,6 +614,12 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
 
     LogLevel transLogLevel = parentJob.getLogLevel();
 
+    //Set Embedded NamedCluter MetatStore Provider Key so that it can be passed to VFS
+    if ( parentJobMeta.getNamedClusterEmbedManager() != null ) {
+      parentJobMeta.getNamedClusterEmbedManager()
+        .passEmbeddedMetastoreKey( this, parentJobMeta.getEmbeddedMetastoreProviderKey() );
+    }
+
     String realLogFilename = "";
     if ( setLogfile ) {
       transLogLevel = logFileLevel;
@@ -634,7 +643,7 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
       try {
         logChannelFileWriter =
           new LogChannelFileWriter(
-            this.getLogChannelId(), KettleVFS.getFileObject( realLogFilename ), setAppendLogfile );
+            this.getLogChannelId(), KettleVFS.getFileObject( realLogFilename, this ), setAppendLogfile );
         logChannelFileWriter.startLogging();
       } catch ( KettleException e ) {
         logError( BaseMessages.getString( PKG, "JobTrans.Error.UnableOpenAppender", realLogFilename, e.toString() ) );

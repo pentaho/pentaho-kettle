@@ -78,7 +78,6 @@ public class JobEntryDeleteFolders extends JobEntryBase implements Cloneable, Jo
   public String SUCCESS_IF_NO_ERRORS = "success_if_no_errors";
 
   private String limit_folders;
-  private JobMeta parentJobMeta;
 
   int NrErrors = 0;
   int NrSuccess = 0;
@@ -444,11 +443,4 @@ public class JobEntryDeleteFolders extends JobEntryBase implements Cloneable, Jo
     return limit_folders;
   }
 
-  @Override public JobMeta getParentJobMeta() {
-    return parentJobMeta;
-  }
-
-  @Override public void setParentJobMeta( JobMeta parentJobMeta ) {
-    this.parentJobMeta = parentJobMeta;
-  }
 }

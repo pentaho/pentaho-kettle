@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -99,7 +99,9 @@ public class JobEntryFolderIsEmpty extends JobEntryBase implements Cloneable, Jo
     retval.append( "      " ).append( XMLHandler.addTagValue( "include_subfolders", includeSubfolders ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "specify_wildcard", specifywildcard ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "wildcard", wildcard ) );
-
+    if ( parentJobMeta != null ) {
+      parentJobMeta.getNamedClusterEmbedManager().registerUrl( foldername );
+    }
     return retval.toString();
   }
 
@@ -200,6 +202,11 @@ public class JobEntryFolderIsEmpty extends JobEntryBase implements Cloneable, Jo
     }
 
     if ( foldername != null ) {
+      //Set Embedded NamedCluter MetatStore Provider Key so that it can be passed to VFS
+      if ( parentJobMeta.getNamedClusterEmbedManager() != null ) {
+        parentJobMeta.getNamedClusterEmbedManager()
+          .passEmbeddedMetastoreKey( this, parentJobMeta.getEmbeddedMetastoreProviderKey() );
+      }
       String realFoldername = getRealFoldername();
       FileObject folderObject = null;
       try {

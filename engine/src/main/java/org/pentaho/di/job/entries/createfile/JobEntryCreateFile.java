@@ -68,7 +68,6 @@ public class JobEntryCreateFile extends JobEntryBase implements Cloneable, JobEn
 
   private boolean failIfFileExists;
   private boolean addfilenameresult;
-  private JobMeta parentJobMeta;
 
   public JobEntryCreateFile( String n ) {
     super( n, "" );
@@ -271,11 +270,4 @@ public class JobEntryCreateFile extends JobEntryBase implements Cloneable, JobEn
     JobEntryValidatorUtils.andValidator().validate( this, "filename", remarks, ctx );
   }
 
-  @Override public JobMeta getParentJobMeta() {
-    return parentJobMeta;
-  }
-
-  @Override public void setParentJobMeta( JobMeta parentJobMeta ) {
-    this.parentJobMeta = parentJobMeta;
-  }
 }

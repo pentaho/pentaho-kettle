@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -499,6 +499,12 @@ public class PropertyInput extends BaseStep implements StepInterface {
     data = (PropertyInputData) sdi;
 
     if ( super.init( smi, sdi ) ) {
+      //Set Embedded NamedCluter MetatStore Provider Key so that it can be passed to VFS
+      if ( getTransMeta().getNamedClusterEmbedManager() != null ) {
+        getTransMeta().getNamedClusterEmbedManager()
+          .passEmbeddedMetastoreKey( this, getTransMeta().getEmbeddedMetastoreProviderKey() );
+      }
+
       String realEncoding = environmentSubstitute( meta.getEncoding() );
       if ( !Utils.isEmpty( realEncoding ) ) {
         data.realEncoding = realEncoding;

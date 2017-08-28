@@ -70,7 +70,6 @@ public class JobEntryWaitForFile extends JobEntryBase implements Cloneable, JobE
   private boolean successOnTimeout;
   private boolean fileSizeCheck;
   private boolean addFilenameToResult;
-  private JobMeta parentJobMeta;
 
   private static String DEFAULT_MAXIMUM_TIMEOUT = "0"; // infinite timeout
   private static String DEFAULT_CHECK_CYCLE_TIME = "60"; // 1 minute
@@ -412,14 +411,6 @@ public class JobEntryWaitForFile extends JobEntryBase implements Cloneable, JobE
         AndValidator.putValidators( JobEntryValidatorUtils.integerValidator() ) );
     JobEntryValidatorUtils.andValidator().validate( this, "checkCycleTime", remarks,
         AndValidator.putValidators( JobEntryValidatorUtils.integerValidator() ) );
-  }
-
-  @Override public JobMeta getParentJobMeta() {
-    return parentJobMeta;
-  }
-
-  @Override public void setParentJobMeta( JobMeta parentJobMeta ) {
-    this.parentJobMeta = parentJobMeta;
   }
 
 }

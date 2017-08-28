@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -37,8 +37,10 @@ import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.StringObjectId;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
+import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepMeta;
+import org.pentaho.di.trans.steps.named.cluster.NamedClusterEmbedManager;
 import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Node;
 
@@ -108,6 +110,12 @@ public class ZipFileMetaTest {
     Node stepnode = getTestNode();
     DatabaseMeta dbMeta = mock( DatabaseMeta.class );
     IMetaStore metaStore = mock( IMetaStore.class );
+    StepMeta mockParentStepMeta = mock( StepMeta.class );
+    zipFileMeta.setParentStepMeta( mockParentStepMeta );
+    TransMeta mockTransMeta = mock( TransMeta.class );
+    NamedClusterEmbedManager embedManager = mock( NamedClusterEmbedManager.class );
+    when( mockParentStepMeta.getParentTransMeta() ).thenReturn( mockTransMeta );
+    when( mockTransMeta.getNamedClusterEmbedManager() ).thenReturn( embedManager );
     zipFileMeta.loadXML( stepnode, Collections.singletonList( dbMeta ), metaStore );
     assertXmlOutputMeta( zipFileMeta );
   }

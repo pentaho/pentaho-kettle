@@ -69,7 +69,6 @@ public class JobEntryDeleteFile extends JobEntryBase implements Cloneable, JobEn
 
   private String filename;
   private boolean failIfFileNotExists;
-  private JobMeta parentJobMeta;
 
   public JobEntryDeleteFile( String n ) {
     super( n, "" );
@@ -247,11 +246,4 @@ public class JobEntryDeleteFile extends JobEntryBase implements Cloneable, JobEn
     System.out.printf( "Remarks: %s\n", remarks );
   }
 
-  @Override public JobMeta getParentJobMeta() {
-    return parentJobMeta;
-  }
-
-  @Override public void setParentJobMeta( JobMeta parentJobMeta ) {
-    this.parentJobMeta = parentJobMeta;
-  }
 }

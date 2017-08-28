@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -112,6 +112,9 @@ public class JobEntryAddResultFilenames extends JobEntryBase implements Cloneabl
         retval.append( "          " ).append( XMLHandler.addTagValue( "name", arguments[i] ) );
         retval.append( "          " ).append( XMLHandler.addTagValue( "filemask", filemasks[i] ) );
         retval.append( "        </field>" ).append( Const.CR );
+        if ( parentJobMeta != null ) {
+          parentJobMeta.getNamedClusterEmbedManager().registerUrl( arguments[ i ] );
+        }
       }
     }
     retval.append( "      </fields>" ).append( Const.CR );
@@ -267,8 +270,11 @@ public class JobEntryAddResultFilenames extends JobEntryBase implements Cloneabl
     String realwildcard = environmentSubstitute( wildcard );
 
     try {
+      if ( parentJobMeta.getNamedClusterEmbedManager() != null ) {
+        parentJobMeta.getNamedClusterEmbedManager()
+          .passEmbeddedMetastoreKey( this, parentJobMeta.getEmbeddedMetastoreProviderKey() );
+      }
       filefolder = KettleVFS.getFileObject( realFilefoldername, this );
-
       if ( filefolder.exists() ) {
         // the file or folder exists
 

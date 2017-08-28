@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -196,6 +196,9 @@ public class JobEntryEvalFilesMetrics extends JobEntryBase implements Cloneable,
         retval
           .append( "          " ).append( XMLHandler.addTagValue( "include_subFolders", sourceIncludeSubfolders[i] ) );
         retval.append( "        </field>" ).append( Const.CR );
+        if ( parentJobMeta != null ) {
+          parentJobMeta.getNamedClusterEmbedManager().registerUrl( sourceFileFolder[i] );
+        }
       }
     }
     retval.append( "      </fields>" ).append( Const.CR );
@@ -351,6 +354,12 @@ public class JobEntryEvalFilesMetrics extends JobEntryBase implements Cloneable,
 
     List<RowMetaAndData> rows = result.getRows();
     RowMetaAndData resultRow = null;
+
+    //Set Embedded NamedCluter MetatStore Provider Key so that it can be passed to VFS
+    if ( parentJobMeta.getNamedClusterEmbedManager() != null ) {
+      parentJobMeta.getNamedClusterEmbedManager()
+        .passEmbeddedMetastoreKey( this, parentJobMeta.getEmbeddedMetastoreProviderKey() );
+    }
 
     try {
       initMetrics();
@@ -728,7 +737,7 @@ public class JobEntryEvalFilesMetrics extends JobEntryBase implements Cloneable,
     final boolean include_subfolders = YES.equalsIgnoreCase( includeSubfolders );
 
     try {
-      sourcefilefolder = KettleVFS.getFileObject( realSourceFilefoldername );
+      sourcefilefolder = KettleVFS.getFileObject( realSourceFilefoldername, this );
 
       if ( sourcefilefolder.exists() ) {
         // File exists
