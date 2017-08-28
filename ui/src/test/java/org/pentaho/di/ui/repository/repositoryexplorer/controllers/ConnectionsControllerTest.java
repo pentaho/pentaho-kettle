@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -28,6 +28,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.ProgressMonitorListener;
+import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.repository.Repository;
@@ -53,6 +54,7 @@ public class ConnectionsControllerTest {
 
   private ConnectionsController controller;
   private DatabaseDialog databaseDialog;
+  private DatabaseMeta databaseMeta;
   private Repository repository;
   private XulTree connectionsTable;
 
@@ -68,6 +70,8 @@ public class ConnectionsControllerTest {
 
     databaseDialog = mock( DatabaseDialog.class );
     doReturn( databaseDialog ).when( controller ).getDatabaseDialog();
+    databaseMeta = mock( DatabaseMeta.class );
+    doReturn( databaseMeta ).when( databaseDialog ).getDatabaseMeta();
     doNothing().when( controller ).refreshConnectionList();
     doNothing().when( controller ).showAlreadyExistsMessage();
 
@@ -93,6 +97,7 @@ public class ConnectionsControllerTest {
 
   private void testCreateConnectionGetsWrongName( String wrongName ) throws Exception {
     when( databaseDialog.open() ).thenReturn( wrongName );
+    when( databaseMeta.getDatabaseName() ).thenReturn( wrongName );
     controller.createConnection();
     assertRepositoryWasNotAccessed();
   }
@@ -108,6 +113,7 @@ public class ConnectionsControllerTest {
     final String dbName = "name";
 
     when( databaseDialog.open() ).thenReturn( dbName );
+    when( databaseMeta.getDatabaseName() ).thenReturn( dbName );
     when( repository.getDatabaseID( dbName ) ).thenReturn( new StringObjectId( "existing" ) );
 
     controller.createConnection();
