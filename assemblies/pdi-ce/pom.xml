@@ -21,7 +21,7 @@
     <assembly.launcher.jar>pentaho-application-launcher-${pentaho-launcher.version}.jar</assembly.launcher.jar>
 
     <pdi-dataservice-driver-bundle.version>${project.version}</pdi-dataservice-driver-bundle.version>
-    <pdi-daemon-assembly.version>${project.version}</pdi-daemon-assembly.version>
+    <ael.version>${project.version}</ael.version>
     <pdi-spark-driver.version>${project.version}</pdi-spark-driver.version>
     <pdi-engine-spark.version>${project.version}</pdi-engine-spark.version>
     <rxjava.version>2.0.4</rxjava.version>
@@ -1059,7 +1059,13 @@
                 <artifactItem>
                   <groupId>org.pentaho.adaptive</groupId>
                   <artifactId>pdi-daemon-assembly</artifactId>
-                  <version>${pdi-daemon-assembly.version}</version>
+                  <version>${ael.version}</version>
+                  <type>zip</type>
+                </artifactItem>
+                <artifactItem>
+                  <groupId>org.pentaho.adaptive</groupId>
+                  <artifactId>pdi-websocket-daemon-assembly</artifactId>
+                  <version>${ael.version}</version>
                   <type>zip</type>
                 </artifactItem>
               </artifactItems>
@@ -1100,8 +1106,9 @@
               <target>
                 <echo message="Moving unpacked dependencies to the right place..."/>
                 <move file="${assembly.dir}/system/pentaho-karaf-assembly" tofile="${assembly.dir}/system/karaf"/>
+                <move file="${assembly.dir}/pdi-websocket-daemon" tofile="${assembly.dir}/adaptive-execution2"/>
                 <!-- TODO: remove the version from the pdi-daemon-assembly archive root dir -->
-                <move file="${assembly.dir}/pdi-daemon-assembly-${pdi-daemon-assembly.version}" tofile="${assembly.dir}/adaptive-execution"/>
+                <move file="${assembly.dir}/pdi-daemon-assembly-${ael.version}" tofile="${assembly.dir}/adaptive-execution"/>
               </target>
             </configuration>
           </execution>
