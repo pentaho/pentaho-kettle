@@ -72,6 +72,7 @@ public class DefaultRunConfigurationExecutor implements RunConfigurationExecutor
 
     variableSpace.setVariable( "engine", null );
     variableSpace.setVariable( "engine.remote", null );
+    variableSpace.setVariable( "engine.protocol", null );
     variableSpace.setVariable( "engine.host", null );
     variableSpace.setVariable( "engine.port", null );
   }
