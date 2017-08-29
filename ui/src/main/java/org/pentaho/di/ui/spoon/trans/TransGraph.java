@@ -5024,10 +5024,11 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
     //default for now is AEL Engine RSA
     String version = variables.getVariable( "KETTLE_AEL_PDI_DAEMON_VERSION", "1.0" );
     if ( Const.toDouble( version, 1 ) >= 2 ) {
+      String protocol = transMeta.getVariable( "engine.protocol" );
       String host = transMeta.getVariable( "engine.host" );
       String port = transMeta.getVariable( "engine.port" );
-      //TODO: we have
-      boolean ssl = false;
+      //default value for ssl for now false
+      boolean ssl = "https".equalsIgnoreCase( protocol ) || "wss".equalsIgnoreCase( protocol );
       return new TransWebSocketEngineAdapter( transMeta, host, port, ssl );
     } else {
       return PluginRegistry.getInstance().getPlugins( EnginePluginType.class ).stream()
