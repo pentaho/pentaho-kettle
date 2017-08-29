@@ -22,8 +22,6 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Shell;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.util.Utils;
-import org.pentaho.di.repository.ObjectId;
-import org.pentaho.di.repository.RepositoryDirectoryInterface;
 import org.pentaho.di.ui.core.dialog.ThinDialog;
 import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.platform.settings.ServerPort;
@@ -39,7 +37,7 @@ public class RepositoryOpenSaveDialog extends ThinDialog {
   private static final Image LOGO = GUIResource.getInstance().getImageLogoSmall();
   private static final String OSGI_SERVICE_PORT = "OSGI_SERVICE_PORT";
   private static final String CLIENT_PATH = "/@PROJECT_ARTIFACT_ID@/@PROJECT_VERSION@/index.html";
-  private static final int OPTIONS = SWT.APPLICATION_MODAL | SWT.DIALOG_TRIM | SWT.RESIZE;
+  private static final int OPTIONS = SWT.APPLICATION_MODAL | SWT.DIALOG_TRIM | SWT.RESIZE | SWT.MAX;
   private static final String THIN_CLIENT_HOST = "THIN_CLIENT_HOST";
   private static final String THIN_CLIENT_PORT = "THIN_CLIENT_PORT";
   private static final String LOCALHOST = "localhost";

@@ -47,7 +47,7 @@ import java.util.function.Supplier;
 public class RepositoryOpenSaveExtensionPoint implements ExtensionPointInterface {
 
   public static final String TRANSFORMATION = "transformation";
-  public static final int WIDTH = 937;
+  public static final int WIDTH = 947;
   public static final int HEIGHT = 616;
   public static final int DAYS = -30;
   private Supplier<Spoon> spoonSupplier = Spoon::getInstance;
