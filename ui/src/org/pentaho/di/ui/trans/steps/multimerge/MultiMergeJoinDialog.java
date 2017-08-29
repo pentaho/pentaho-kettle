@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -73,7 +73,7 @@ import org.pentaho.di.ui.trans.step.BaseStepDialog;
 public class MultiMergeJoinDialog extends BaseStepDialog implements StepDialogInterface {
   private static Class<?> PKG = MultiMergeJoinMeta.class; // for i18n purposes, needed by Translator2!!
 
-  public static final String STRING_SORT_WARNING_PARAMETER = "MergeJoinSortWarning";
+  public static final String STRING_SORT_WARNING_PARAMETER = "MultiMergeJoinSortWarning";
 
   private CCombo[] wInputStepArray;
   private CCombo joinTypeCombo;
