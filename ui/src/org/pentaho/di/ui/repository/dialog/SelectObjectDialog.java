@@ -22,6 +22,7 @@
 
 package org.pentaho.di.ui.repository.dialog;
 
+import org.apache.commons.lang.BooleanUtils;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
@@ -347,7 +348,7 @@ public class SelectObjectDialog extends Dialog {
 
       if ( rep instanceof RepositoryExtended ) {
         RepositoryExtended repositoryExtended = (RepositoryExtended) this.rep;
-        directoryTree = repositoryExtended.loadRepositoryDirectoryTree( "/", "*.kjb|*.ktr", -1, true, true, false );
+        directoryTree = repositoryExtended.loadRepositoryDirectoryTree( "/", "*.kjb|*.ktr", -1, BooleanUtils.isTrue( repositoryExtended.getUserInfo().isAdmin() ), true, false );
       } else {
         directoryTree = this.rep.loadRepositoryDirectoryTree();
       }
