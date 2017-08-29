@@ -58,7 +58,6 @@ define([
    * @param {Object} $timeout - Angular wrapper around window.setTimeout
    */
   function appController(dt, $location, $scope, $timeout) {
-    var _font = "14px OpenSansRegular";
     var vm = this;
     vm.$onInit = onInit;
     vm.selectFolder = selectFolder;
@@ -358,11 +357,12 @@ define([
         select(file.objectId.id, file.name, file.path, file.type);
       } catch (e) {
         if (file.repository) {
-          dt.openRecent(file.repository + ":" + (file.username ? file.username : ""), file.objectId.id).then(function (response) {
-            _closeBrowser();
-          });
+          dt.openRecent(file.repository + ":" + (file.username ? file.username : ""),
+            file.objectId.id).then(function (response) {
+              _closeBrowser();
+            });
         } else {
-          dt.openFile(file.objectId.id, file.type).then(function (response) {
+          dt.openFile(file.objectId.id, file.type).then(function(response) {
             _closeBrowser();
           });
         }
@@ -379,7 +379,7 @@ define([
         try {
           select("", vm.fileToSave, vm.folder.path, "");
         } catch (e) {
-          dt.saveFile(vm.folder.path, vm.fileToSave).then(function (response) {
+          dt.saveFile(vm.folder.path, vm.fileToSave).then(function(response) {
             if (response.status === 200) {
               _closeBrowser();
             } else {
@@ -525,7 +525,7 @@ define([
      * @param {String} tooltip - the tooltip to add if necessary
      */
     function setTooltip(id, tooltip) {
-      if (utils.getTextWidth(tooltip, _font) - 1 > 247) {
+      if (utils.getTextWidth(tooltip) - 1 > 247) {
         document.getElementById("search-item-index-" + id).title = tooltip;
       }
     }
@@ -736,11 +736,11 @@ define([
     function getPlaceholder() {
       var isIE = navigator.userAgent.indexOf("Trident") !== -1 && Boolean(document.documentMode);
       var retVal = vm.searchPlaceholder + " " + vm.selectedFolder;
-      if (isIE && utils.getTextWidth(retVal, _font) > 210) {
+      if (isIE && utils.getTextWidth(retVal) > 210) {
         var tmp = "";
         for (var i = 0; i < retVal.length; i++) {
           tmp = retVal.slice(0, i);
-          if (utils.getTextWidth(tmp, _font) > 196) {
+          if (utils.getTextWidth(tmp) > 196) {
             break;
           }
         }
@@ -758,7 +758,6 @@ define([
     function _capsFirstLetter(input) {
       return input.charAt(0).toUpperCase() + input.slice(1);
     }
-
   }
 
   return {

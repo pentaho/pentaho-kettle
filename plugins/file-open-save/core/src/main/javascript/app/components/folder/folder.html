@@ -1,7 +1,8 @@
+<div resize-folders></div>
 <div class="folder recents empty"
      ng-class="{selected: vm.showRecents}"
      ng-click="vm.selectFolder(null)"
-     ng-style="{width: vm.width === 0 ? 'auto' : vm.width + 'px'}">
+     ng-style="{width: vm.width + 'px'}">
   <div class="folderArrowWrapper">
     <div class="folderArrow"></div>
   </div>
@@ -10,13 +11,11 @@
     Recents
   </div>
 </div>
-
 <div class="folder"
      ng-click="vm.selectFolder(folder)"
      ng-dblclick="vm.selectAndOpenFolder(folder)"
      ng-repeat="folder in vm.folders | orderBy: folder : false : vm.compareFolders"
-     ng-style="{paddingLeft: folder.indent + 'px',
-                width: vm.width === 0 ? 'auto' : vm.width - folder.indent + 'px'}"
+     ng-style="{paddingLeft: folder.indent + 'px', width: vm.width - folder.indent + 'px'}"
      ng-show="folder.visible"
      ng-class="{selected: folder === vm.selectedFolder,
                 empty: folder.hasChildren === false,

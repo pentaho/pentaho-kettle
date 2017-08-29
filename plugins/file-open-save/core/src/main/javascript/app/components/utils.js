@@ -18,6 +18,7 @@ define(
     [],
     function() {
       "use strict";
+      var _font = "14px OpenSansRegular";
       return {
         naturalCompare: naturalCompare,
         getTextWidth: getTextWidth
@@ -83,13 +84,12 @@ define(
       /**
        * Calculates the display width of the text parameter
        * @param {Object} text - String object to measure
-       * @param {Object} font - String object for the font being used
        * @return {number} - width in pixels of text using font font
        */
-      function getTextWidth(text, font) {
+      function getTextWidth(text) {
         var canvas = document.createElement("canvas");
         var context = canvas.getContext("2d");
-        context.font = font;
+        context.font = _font;
         var metrics = context.measureText(text);
         return (Math.ceil(metrics.width) + 2);
       }

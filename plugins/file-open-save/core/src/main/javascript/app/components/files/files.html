@@ -1,6 +1,4 @@
-<div class="filesWrapper"
-     ng-class="{scrollTableSave: (!vm.search && vm.folder.children.length > 8) || (vm.search && vm.numResults > 4),
-                scrollTableOpen: (!vm.search && vm.folder.children.length > 11) || (vm.search && vm.numResults > 5)}">
+<div id="filesWrapper" class="filesWrapper" resize-files="vm.folder.path + vm.search">
   <div class="headerWrapper">
     <table>
       <thead>
@@ -40,7 +38,7 @@
     </table>
   </div>
 
-  <div class="bodyWrapper">
+  <div id="bodyWrapper" class="bodyWrapper">
     <table ng-class="{searchTable: vm.search}">
       <tbody>
       <tr ng-repeat="file in vm.getFiles(vm.folder.children) | orderBy: file: vm.sortReverse: vm.compareFiles "
