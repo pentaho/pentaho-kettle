@@ -82,10 +82,11 @@ breadcrumb .breadcrumbNext {
 }
 
 breadcrumb .breadcrumbNext.last {
-  visibility: hidden;
+  display: none;
 }
 
 breadcrumb .breadcrumbFolder.last {
   color: #212121;
   cursor: default;
+  margin-top: 1px;
 }

@@ -59,7 +59,6 @@ define([
    * @param {Function} $timeout - Angular wrapper for window.setTimeout.
    */
   function folderController($timeout) {
-    var _font = "14px OpenSansRegular";
     var _iconsWidth = 58;
     var _paddingLeft = 27;
     var vm = this;
@@ -117,7 +116,7 @@ define([
           vm.folders[i].open = false;
         }
         if (vm.folders[i].visible) {
-          vm.maxWidth = Math.max(vm.maxWidth, utils.getTextWidth(vm.folders[i].name, _font) +
+          vm.maxWidth = Math.max(vm.maxWidth, utils.getTextWidth(vm.folders[i].name) +
             (vm.folders[i].depth * _paddingLeft) + _iconsWidth);
         }
       }
@@ -179,7 +178,7 @@ define([
           }
         }
         if (vm.folders[i].visible) {
-          var width = utils.getTextWidth(vm.folders[i].name, _font);
+          var width = utils.getTextWidth(vm.folders[i].name);
           vm.maxWidth = Math.max(vm.maxWidth, width + (vm.folders[i].depth * _paddingLeft) + _iconsWidth);
         }
       }
@@ -215,6 +214,8 @@ define([
       for (var i = 0; i < vm.folders.length; i++) {
         if (vm.folders[i].parent === folder.path) {
           vm.folders[i].visible = true;
+          var width = utils.getTextWidth(vm.folders[i].name);
+          vm.maxWidth = Math.max(vm.maxWidth, width + (vm.folders[i].depth * _paddingLeft) + _iconsWidth);
         }
       }
     }

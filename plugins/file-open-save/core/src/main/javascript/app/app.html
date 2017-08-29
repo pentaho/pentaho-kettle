@@ -45,7 +45,8 @@
       <div ng-hide="vm.searchString" class="breadcrumbSection">
         <breadcrumb path="vm.folder.path"
                     include-root="vm.includeRoot"
-                    on-select="vm.selectFolderByPath(selectedPath)"></breadcrumb>
+                    on-select="vm.selectFolderByPath(selectedPath)"
+                    wrapper-class="vm.wrapperClass"></breadcrumb>
       </div>
       <div class="addDelete">
         <button class="addFolder" ng-click="vm.addFolder()" title="{{::vm.addFolderText}}" ng-disabled="vm.addDisabled()"></button>
@@ -54,7 +55,7 @@
     </div>
   </div>
 
-  <div class="middle">
+  <div id="middle" class="middle" resize-app="{{vm.wrapperClass}}">
     <div id="directoryTreeArea" class="directoryTreeArea noselect">
       <folder auto-expand="vm.autoExpand"
               folders="vm.folders"
@@ -80,6 +81,7 @@
       <files search="vm.searchString"
              ng-show="!vm.showMessage && !vm.showRecents"
              folder="vm.folder"
+             wrapper="vm.wrapperClass"
              on-click="vm.selectFile(file)"
              on-select="vm.highlightFile(selectedFile)"
              on-error="vm.renameError(errorType, file)"

@@ -39,7 +39,7 @@ public class RepositoryOpenSaveDialog extends ThinDialog {
   private static final Image LOGO = GUIResource.getInstance().getImageLogoSmall();
   private static final String OSGI_SERVICE_PORT = "OSGI_SERVICE_PORT";
   private static final String CLIENT_PATH = "/@PROJECT_ARTIFACT_ID@/@PROJECT_VERSION@/index.html";
-  private static final int OPTIONS = SWT.APPLICATION_MODAL | SWT.DIALOG_TRIM;
+  private static final int OPTIONS = SWT.APPLICATION_MODAL | SWT.DIALOG_TRIM | SWT.RESIZE;
   private static final String THIN_CLIENT_HOST = "THIN_CLIENT_HOST";
   private static final String THIN_CLIENT_PORT = "THIN_CLIENT_PORT";
   private static final String LOCALHOST = "localhost";
@@ -62,6 +62,7 @@ public class RepositoryOpenSaveDialog extends ThinDialog {
     clientPath.append( !Utils.isEmpty( state ) ? "&" : "" );
     clientPath.append( !Utils.isEmpty( filter ) ? "filter=" + filter : "" );
     super.createDialog( StringUtils.capitalize( state ), getRepoURL( clientPath.toString() ), OPTIONS, LOGO );
+    super.dialog.setMinimumSize( 545, 356 );
 
     new BrowserFunction( browser, "close" ) {
       @Override public Object function( Object[] arguments ) {
