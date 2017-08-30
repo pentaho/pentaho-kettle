@@ -29,9 +29,9 @@ define([
         var _filesHeaderHeight = 31;
         var _openSaveDiff = 73;
         var _openOtherHeight = 220;
-        var _saveOtherHeight = _openOtherHeight - _openSaveDiff;
+        var _saveOtherHeight = _openOtherHeight + _openSaveDiff;
         var _openOtherMaxHeight = 251;
-        var _saveOtherMaxHeight = _openOtherMaxHeight - _openSaveDiff;
+        var _saveOtherMaxHeight = _openOtherMaxHeight + _openSaveDiff;
         var _buffer = 17;
         var openOrSave = scope.vm.wrapperClass;
         var w = angular.element($window);
@@ -77,12 +77,13 @@ define([
 
         w.on("resize", function() {
           var innerHeight = w[0].innerHeight;
+          var _tmpBuffer = w[0].innerWidth < 930 ? _buffer : 0;
           var elem = angular.element(element[0].querySelector("#bodyWrapper"));
           setScrollTableClass();
           if (openOrSave === "open") {
-            elem.css("max-height", (innerHeight - _openOtherMaxHeight) + "px");
+            elem.css("max-height", (innerHeight - _openOtherMaxHeight - _tmpBuffer) + "px");
           } else if (openOrSave === "save") {
-            elem.css("max-height", (innerHeight - _saveOtherMaxHeight) + "px");
+            elem.css("max-height", (innerHeight - _saveOtherMaxHeight - _tmpBuffer) + "px");
           }
           scope.$apply();
         });

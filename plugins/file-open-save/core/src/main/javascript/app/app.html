@@ -77,7 +77,8 @@
             folder="vm.folder"
             on-click="vm.selectFile(file)"
             on-select="vm.highlightFile(selectedFile)"
-            selected-file="vm.file"></card>
+            selected-file="vm.file"
+            resize-cards="vm.showRecents"></card>
       <files search="vm.searchString"
              ng-show="!vm.showMessage && !vm.showRecents"
              folder="vm.folder"

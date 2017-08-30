@@ -80,7 +80,6 @@ card .card.selected .cardMiddle .cardTypeIcon {
 
 card .cardTitleAndDate {
   float: left;
-  width: 200px;
   max-width: 200px;
   margin-top: -1px;
 }
