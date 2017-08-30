@@ -76,7 +76,7 @@ public class NamedClusterEmbedManagerTest {
 
   @Test
   public void testRegisterUrlNc() throws Exception {
-    namedClusterEmbedManager.registerUrl( "nc://" + CLUSTER1_NAME + "/dir1/dir2" );
+    namedClusterEmbedManager.registerUrl( "hc://" + CLUSTER1_NAME + "/dir1/dir2" );
     verify( mockMetaStoreFactory ).saveElement( mockNamedCluster1 );
   }
 
@@ -108,7 +108,7 @@ public class NamedClusterEmbedManagerTest {
     when( mockNamedClusterService.listNames( mockMeta.getMetaStore() ) )
       .thenReturn( Arrays.asList( new String[] { CLUSTER1_NAME, CLUSTER2_NAME } ) );
 
-    namedClusterEmbedManager.registerUrl( "nc://${variable)/dir1/file" );
+    namedClusterEmbedManager.registerUrl( "hc://${variable)/dir1/file" );
     verify( mockMetaStoreFactory ).saveElement( mockNamedCluster1 );
     verify( mockMetaStoreFactory ).saveElement( mockNamedCluster2 );
   }
@@ -116,7 +116,7 @@ public class NamedClusterEmbedManagerTest {
   @Test
   public void testRegisterUrlAlreadyRegistered() throws Exception {
     when( mockMetaStoreFactory.loadElement( CLUSTER1_NAME ) ).thenReturn( mockNamedCluster1 );
-    namedClusterEmbedManager.registerUrl( "nc://" + CLUSTER1_NAME + "/dir1/dir2" );
+    namedClusterEmbedManager.registerUrl( "hc://" + CLUSTER1_NAME + "/dir1/dir2" );
     verify( mockMetaStoreFactory, times(0 ) ).saveElement( mockNamedCluster1 );
   }
 

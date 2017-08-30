@@ -117,7 +117,7 @@ public class NamedClusterEmbedManager {
     if ( m.find() ) {
       String protocol = m.group( PARSE_URL_SCHEME );
       String clusterName = m.group( PARSE_URL_AUTHORITY );
-      if ( "nc".equals( protocol ) ) {
+      if ( "hc".equals( protocol ) ) {
         if ( clusterName.startsWith( VARIABLE_START ) ) {
           addAllClusters();
         }
@@ -212,7 +212,7 @@ public class NamedClusterEmbedManager {
   public void passEmbeddedMetastoreKey( VariableSpace nameSpace, String embeddedMetastoreProviderKey ) {
     if ( nameSpace != null ) {
       if ( embeddedMetastoreProviderKey != null ) {
-        nameSpace.setVariable( "vfs.nc.embeddedMetastoreKey", embeddedMetastoreProviderKey );
+        nameSpace.setVariable( "vfs.hc.embeddedMetastoreKey", embeddedMetastoreProviderKey );
       }
     }
   }

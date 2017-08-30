@@ -72,7 +72,7 @@ public class ConcurrentFileSystemManagerTest {
   public void testNcCloseEmbeddedFileSystem() throws Exception {
     ConcurrentFileSystemManager concurrentFileSystemManager = new ConcurrentFileSystemManager();
     MockNamedClusterProvider mockFileProvider = mock( MockNamedClusterProvider.class );
-    concurrentFileSystemManager.addProvider( new String[] { "nc" }, mockFileProvider );
+    concurrentFileSystemManager.addProvider( new String[] { "hc" }, mockFileProvider );
     concurrentFileSystemManager.closeEmbeddedFileSystem( "key" );
     verify( mockFileProvider ).closeFileSystem( "key" );
   }
