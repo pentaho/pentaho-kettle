@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -236,7 +236,7 @@ public class CreateDatabaseWizardPage1 extends WizardPage {
       return false;
     }
     if ( name != null && DatabaseMeta.findDatabase( databases, name ) != null ) {
-      setErrorMessage( BaseMessages.getString( PKG, "CreateDatabaseWizardPage1.ErrorMessage.DBNameExists", name ) );
+      setErrorMessage( BaseMessages.getString( PKG, "CreateDatabaseWizardPage1.ErrorMessage.DBNameExists", name.trim() ) );
       return false;
     } else {
       getDatabaseInfo();
