@@ -187,7 +187,7 @@ public class ConcurrentFileSystemManager extends StandardFileSystemManager {
         e.printStackTrace();
       }
       providers = (Map<String, FileProvider>) field.get( this );
-      FileProvider provider = providers.get( "nc" );
+      FileProvider provider = providers.get( "hc" );
       if ( provider != null ) {
         ( (VfsEmbeddedFileSystemCloser) provider ).closeFileSystem( embeddedMetastoreKey );
       }
