@@ -22,8 +22,6 @@
 
 package org.pentaho.di.core.encryption;
 
-import java.math.BigInteger;
-
 import org.eclipse.jetty.util.security.Password;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.KettleClientEnvironment;
@@ -65,39 +63,6 @@ public class Encr {
     // Load encoder specific options...
     //
     encoder.init();
-  }
-
-  private static final int RADIX = 16;
-  private static final String SEED = "0933910847463829827159347601486730416058";
-
-  /**
-   * Old Kettle 1.x code which built a signature to validate a license key against.
-   *
-   * @param mac
-   * @param username
-   * @param company
-   * @param products
-   * @return
-   * @deprecated
-   */
-  @Deprecated
-  public String buildSignature( String mac, String username, String company, String products ) {
-    try {
-      BigInteger bi_mac = new BigInteger( mac.getBytes() );
-      BigInteger bi_username = new BigInteger( username.getBytes() );
-      BigInteger bi_company = new BigInteger( company.getBytes() );
-      BigInteger bi_products = new BigInteger( products.getBytes() );
-
-      BigInteger bi_r0 = new BigInteger( SEED );
-      BigInteger bi_r1 = bi_r0.xor( bi_mac );
-      BigInteger bi_r2 = bi_r1.xor( bi_username );
-      BigInteger bi_r3 = bi_r2.xor( bi_company );
-      BigInteger bi_r4 = bi_r3.xor( bi_products );
-
-      return bi_r4.toString( RADIX );
-    } catch ( Exception e ) {
-      return null;
-    }
   }
 
   /**
