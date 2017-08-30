@@ -563,9 +563,9 @@ define([
             vm.folder.children.splice(index, 1);
             if (vm.file.type === "folder") {
               for (var i = 0; i < vm.folders.length; i++) {
-                if (vm.folders[i].path === vm.file.path) {
+                if (vm.folders[i].path.indexOf(vm.file.path) === 0) {
                   vm.folders.splice(i, 1);
-                  break;
+                  i--;
                 }
               }
             }
@@ -650,12 +650,12 @@ define([
      * @private
      */
     function _updateDirectories(folder, oldPath, newPath) {
-      if (folder.path.indexOf(oldPath) !== -1) {
+      if (folder.path.indexOf(oldPath) === 0) {
         folder.path = folder.path.replace(oldPath, newPath);
-        folder.parent = folder.path.replace(oldPath, newPath);
-      }
-      for (var i = 0; i < folder.children.length; i++) {
-        _updateDirectories(folder.children[i], oldPath, newPath);
+        folder.parent = folder.parent.replace(oldPath, newPath);
+        for (var i = 0; i < folder.children.length; i++) {
+          _updateDirectories(folder.children[i], oldPath, newPath);
+        }
       }
     }
 
