@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -31,7 +31,6 @@ import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleXMLException;
-import org.pentaho.di.core.injection.AfterInjection;
 import org.pentaho.di.core.injection.Injection;
 import org.pentaho.di.core.injection.InjectionSupported;
 import org.pentaho.di.core.row.RowMetaInterface;
@@ -664,38 +663,5 @@ public class StreamLookupMeta extends BaseStepMeta implements StepMetaInterface 
    */
   public void setUsingIntegerPair( boolean usingIntegerPair ) {
     this.usingIntegerPair = usingIntegerPair;
-  }
-
-  /**
-   * If we use injection we can have different arrays lengths.
-   * We need synchronize them for consistency behavior with UI
-   */
-  @AfterInjection
-  public void afterInjectionSynchronization() {
-    if ( value == null || value.length == 0 ) {
-      return;
-    }
-    int nrFields = value.length;
-    //PDI-16110
-    if ( valueDefaultType.length < nrFields ) {
-      int[] newValueDefaultType = new int[ nrFields ];
-      System.arraycopy( valueDefaultType, 0, newValueDefaultType, 0, valueDefaultType.length );
-      for ( int i = valueDefaultType.length; i < newValueDefaultType.length; i++ ) {
-        newValueDefaultType[i] = -1; //set a undefined value (<0). It will be correct processed in a handleNullIf method
-      }
-      valueDefaultType = newValueDefaultType;
-    }
-    if ( valueName.length < nrFields ) {
-      String[] newValueName = new String[ nrFields ];
-      System.arraycopy( valueName, 0, newValueName, 0, valueName.length );
-      valueName = newValueName;
-    }
-
-    if ( valueDefault.length < nrFields ) {
-      String[] newValueDefault = new String[ nrFields ];
-      System.arraycopy( valueDefault, 0, newValueDefault, 0, valueDefault.length );
-      valueDefault = newValueDefault;
-    }
-
   }
 }

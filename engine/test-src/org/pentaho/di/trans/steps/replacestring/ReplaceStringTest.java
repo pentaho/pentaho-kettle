@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,9 +22,7 @@
 
 package org.pentaho.di.trans.steps.replacestring;
 
-import org.apache.commons.lang.StringUtils;
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.pentaho.di.core.logging.LoggingObjectInterface;
@@ -96,53 +94,5 @@ public class ReplaceStringTest {
 
     Object[] output = replaceString.getOneRow( inputRowMeta, row );
     assertArrayEquals( "Output varies", expectedRow, output );
-  }
-
-  //PDI-16472
-  @Test
-  public void testSynchronizeDifferentFieldsArraysLengths() throws Exception {
-
-    ReplaceStringData data = new ReplaceStringData();
-    ReplaceString replaceString =
-      new ReplaceString( stepMockHelper.stepMeta, data, 0, stepMockHelper.transMeta, stepMockHelper.trans );
-
-    ReplaceStringMeta meta = new ReplaceStringMeta();
-    replaceString.init( meta, data );
-
-    meta.setFieldInStream( new String[] { "input1", "input2" } );
-    meta.setFieldOutStream( new String[] { "out" } );
-    meta.setUseRegEx( new int[] { 1 } );
-    meta.setCaseSensitive( new int[] { 0 } );
-    meta.setWholeWord( new int[] { 1 } );
-    meta.setReplaceString( new String[] { "string" } );
-    meta.setReplaceByString( new String[] { "string" } );
-    meta.setEmptyString( new boolean[] { true } );
-    meta.setFieldReplaceByString( new String[] { "string" } );
-
-    meta.afterInjectionSynchronization();
-
-    Assert.assertEquals( meta.getFieldInStream().length, meta.getFieldOutStream().length );
-    Assert.assertEquals( StringUtils.EMPTY, meta.getFieldOutStream()[ 1 ] );
-
-    Assert.assertEquals( meta.getFieldInStream().length, meta.getUseRegEx().length );
-    Assert.assertEquals( 0, meta.getUseRegEx()[ 1 ] );
-
-    Assert.assertEquals( meta.getFieldInStream().length, meta.getCaseSensitive().length );
-    Assert.assertEquals( 0, meta.getCaseSensitive()[ 1 ] );
-
-    Assert.assertEquals( meta.getFieldInStream().length, meta.getWholeWord().length );
-    Assert.assertEquals( 0, meta.getWholeWord()[ 1 ] );
-
-    Assert.assertEquals( meta.getFieldInStream().length, meta.getReplaceString().length );
-    Assert.assertEquals( StringUtils.EMPTY, meta.getReplaceString()[ 1 ] );
-
-    Assert.assertEquals( meta.getFieldInStream().length, meta.getReplaceByString().length );
-    Assert.assertEquals( StringUtils.EMPTY, meta.getReplaceByString()[ 1 ] );
-
-    Assert.assertEquals( meta.getFieldInStream().length, meta.isSetEmptyString().length );
-    Assert.assertEquals( false, meta.isSetEmptyString()[ 1 ] );
-
-    Assert.assertEquals( meta.getFieldInStream().length, meta.getFieldReplaceByString().length );
-    Assert.assertEquals( StringUtils.EMPTY, meta.getFieldReplaceByString()[ 1 ] );
   }
 }
