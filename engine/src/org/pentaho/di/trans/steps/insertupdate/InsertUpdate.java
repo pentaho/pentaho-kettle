@@ -63,7 +63,7 @@ public class InsertUpdate extends BaseStep implements StepInterface {
     super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
   }
 
-  protected synchronized void lookupValues( RowMetaInterface rowMeta, Object[] row ) throws KettleException {
+  private synchronized void lookupValues( RowMetaInterface rowMeta, Object[] row ) throws KettleException {
     // OK, now do the lookup.
     // We need the lookupvalues for that.
     Object[] lookupRow = new Object[data.lookupParameterRowMeta.size()];

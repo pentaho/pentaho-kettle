@@ -24,14 +24,11 @@ package org.pentaho.di.core.injection.bean;
 
 import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
-import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.injection.AfterInjection;
 
 /**
  * Engine for get/set metadata injection properties from bean.
@@ -326,25 +323,5 @@ public class BeanInjector {
     }
 
     return index < existList.size() ? existList : null;
-  }
-
-  public void runPostInjectionProcessing( Object object ) {
-    Method[] methods = object.getClass().getDeclaredMethods();
-    for ( Method m : methods ) {
-      AfterInjection annotationAfterInjection = m.getAnnotation( AfterInjection.class );
-      if ( annotationAfterInjection == null ) {
-        // no after injection annotations
-        continue;
-      }
-      if ( m.isSynthetic() || Modifier.isStatic( m.getModifiers() ) ) {
-        // method is static
-        throw new RuntimeException( "Wrong modifier for annotated method " + m );
-      }
-      try {
-        m.invoke( object );
-      } catch ( Exception e ) {
-        throw new RuntimeException( "Can not invoke after injection method " + m, e );
-      }
-    }
   }
 }

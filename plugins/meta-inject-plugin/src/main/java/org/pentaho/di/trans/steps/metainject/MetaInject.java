@@ -266,7 +266,6 @@ public class MetaInject extends BaseStep implements StepInterface {
     // Collect all the metadata for this target step...
     //
     Map<TargetStepAttribute, SourceStepField> targetMap = meta.getTargetSourceMapping();
-    boolean wasInjection = false;
     for ( TargetStepAttribute target : targetMap.keySet() ) {
       SourceStepField source = targetMap.get( target );
 
@@ -294,7 +293,6 @@ public class MetaInject extends BaseStep implements StepInterface {
               if ( !skip ) {
                 // specified field exist - need to inject
                 injector.setProperty( targetStepMeta, target.getAttributeKey(), rows, source.getField() );
-                wasInjection = true;
               }
             } else {
               // target step doesn't have specified key - just report but don't fail like in 6.0 (BACKLOG-6753)
@@ -304,9 +302,6 @@ public class MetaInject extends BaseStep implements StepInterface {
           }
         }
       }
-    }
-    if ( wasInjection ) {
-      injector.runPostInjectionProcessing( targetStepMeta );
     }
   }
 
