@@ -26,7 +26,6 @@ package org.pentaho.di.trans.ael.websocket;
 
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.LogChannelInterface;
-import org.pentaho.di.engine.api.ExecutionResult;
 import org.pentaho.di.engine.api.events.PDIEvent;
 import org.pentaho.di.engine.api.model.Operation;
 import org.pentaho.di.engine.api.model.Transformation;
@@ -54,8 +53,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
+import java.util.concurrent.CountDownLatch;
 import java.util.function.Function;
 import java.util.Collection;
 
@@ -66,12 +64,12 @@ import static java.util.stream.Collectors.toMap;
  */
 public class TransWebSocketEngineAdapter extends Trans {
 
-  public static final String ANONYMOUS_PRINCIPAL = "anonymous";
-  public static final String OPERATION_LOG = "OPERATION_LOG_TRANS_WEBSOCK_";
-  public static final String TRANSFORMATION_LOG = "TRANSFORMATION_LOG_TRANS_WEBSOCK";
-  public static final String TRANSFORMATION_STATUS = "TRANSFORMATION_STATUS_TRANS_WEBSOCK";
-  public static final String TRANSFORMATION_ERROR = "TRANSFORMATION_ERROR_TRANS_WEBSOCK";
-  public static final String TRANSFORMATION_STOP = "TRANSFORMATION_STOP_TRANS_WEBSOCK";
+  private static final String ANONYMOUS_PRINCIPAL = "anonymous";
+  private static final String OPERATION_LOG = "OPERATION_LOG_TRANS_WEBSOCK_";
+  private static final String TRANSFORMATION_LOG = "TRANSFORMATION_LOG_TRANS_WEBSOCK";
+  private static final String TRANSFORMATION_STATUS = "TRANSFORMATION_STATUS_TRANS_WEBSOCK";
+  private static final String TRANSFORMATION_ERROR = "TRANSFORMATION_ERROR_TRANS_WEBSOCK";
+  private static final String TRANSFORMATION_STOP = "TRANSFORMATION_STOP_TRANS_WEBSOCK";
 
   private final Transformation transformation;
   private ExecutionRequest executionRequest;
@@ -83,11 +81,11 @@ public class TransWebSocketEngineAdapter extends Trans {
   private final String port;
   private final boolean ssl;
 
-  private CompletableFuture<ExecutionResult>
-    executionResultFuture;
+  //completion signal used to wait until Transformation is finished
+  private CountDownLatch transFinishedSignal = new CountDownLatch( 1 );
 
 
-  public static final Map<org.pentaho.di.core.logging.LogLevel, LogLevel> LEVEL_MAP = new HashMap<>();
+  private static final Map<org.pentaho.di.core.logging.LogLevel, LogLevel> LEVEL_MAP = new HashMap<>();
 
   static {
     LEVEL_MAP.put( org.pentaho.di.core.logging.LogLevel.BASIC, LogLevel.BASIC );
@@ -306,6 +304,8 @@ public class TransWebSocketEngineAdapter extends Trans {
           } catch ( KettleException e ) {
             getLogChannel().logError( "Error finalizing", e );
           }
+          // Signal for the the waitUntilFinished blocker...
+          transFinishedSignal.countDown();
         }
 
         @Override
@@ -343,11 +343,9 @@ public class TransWebSocketEngineAdapter extends Trans {
 
   @Override public void waitUntilFinished() {
     try {
-      ExecutionResult result = executionResultFuture.get();
+      transFinishedSignal.await();
     } catch ( InterruptedException e ) {
       throw new RuntimeException( "Waiting for transformation to be finished interrupted!", e );
-    } catch ( ExecutionException e ) {
-      throw new RuntimeException( "Error executing Transformation or waiting for it to stop", e );
     }
   }
 
