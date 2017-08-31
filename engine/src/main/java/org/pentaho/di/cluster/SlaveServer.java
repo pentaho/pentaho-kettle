@@ -22,26 +22,19 @@
 
 package org.pentaho.di.cluster;
 
+import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.HttpEntity;
-import org.apache.http.HttpHost;
 import org.apache.http.HttpResponse;
 import org.apache.http.StatusLine;
 import org.apache.http.auth.AuthScope;
-import org.apache.http.auth.UsernamePasswordCredentials;
-import org.apache.http.client.AuthCache;
-import org.apache.http.client.CredentialsProvider;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
-import org.apache.http.client.protocol.HttpClientContext;
+import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.entity.ByteArrayEntity;
 import org.apache.http.entity.InputStreamEntity;
-import org.apache.http.impl.auth.BasicScheme;
-import org.apache.http.impl.client.BasicAuthCache;
-import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.message.BasicHeader;
-import org.apache.http.util.EntityUtils;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.changed.ChangedFlag;
 import org.pentaho.di.core.encryption.Encr;
@@ -100,6 +93,7 @@ import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.net.InetAddress;
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -133,8 +127,6 @@ public class SlaveServer extends ChangedFlag implements Cloneable, SharedObjectI
   public static final int KETTLE_CARTE_RETRIES = getNumberOfSlaveServerRetries();
 
   public static final int KETTLE_CARTE_RETRY_BACKOFF_INCREMENTS = getBackoffIncrements();
-
-  private HttpClientContext authContext = HttpClientContext.create();
 
   private static int getNumberOfSlaveServerRetries() {
     try {
@@ -608,11 +600,11 @@ public class SlaveServer extends ChangedFlag implements Cloneable, SharedObjectI
 
   public String sendXML( String xml, String service ) throws Exception {
     HttpPost method = buildSendXMLMethod( xml.getBytes( Const.XML_ENCODING ), service );
-    addCredentials( authContext );
+    addCredentials( method );
 
     // Execute request
     try {
-      HttpResponse httpResponse = getHttpClient().execute( method, authContext );
+      HttpResponse httpResponse = getHttpClient().execute( method );
       StatusLine statusLine = httpResponse.getStatusLine();
       int result = statusLine.getStatusCode();
 
@@ -696,6 +688,7 @@ public class SlaveServer extends ChangedFlag implements Cloneable, SharedObjectI
       // Execute request
       //
       HttpPost method = buildSendExportMethod( type, load, is );
+      addCredentials( method );
       try {
         HttpResponse httpResponse = getHttpClient().execute( method );
         StatusLine statusLine = httpResponse.getStatusLine();
@@ -738,36 +731,18 @@ public class SlaveServer extends ChangedFlag implements Cloneable, SharedObjectI
     }
   }
 
-  public void addCredentials( HttpClientContext context ) {
-    HttpHost target;
-    String userName;
-    String password;
-    String host;
-    int port;
+  public void addCredentials( HttpRequestBase method ) {
+    String user;
+    String pass;
     lock.readLock().lock();
     try {
-      host = environmentSubstitute( hostname );
-      port = Const.toInt( environmentSubstitute( this.port ), 80 );
-      userName = environmentSubstitute( username );
-      password = Encr.decryptPasswordOptionallyEncrypted( environmentSubstitute( this.password ) );
+      user = environmentSubstitute( username );
+      pass = Encr.decryptPasswordOptionallyEncrypted( environmentSubstitute( this.password ) );
     } finally {
       lock.readLock().unlock();
     }
-    target = new HttpHost( host, port, "http" );
-    CredentialsProvider provider = new BasicCredentialsProvider();
-    UsernamePasswordCredentials credentials = new UsernamePasswordCredentials( userName, password );
-    provider.setCredentials( new AuthScope( host, port ), credentials );
-    context.setCredentialsProvider( provider );
-
-    // Create AuthCache instance
-    AuthCache authCache = new BasicAuthCache();
-    // Generate BASIC scheme object and add it to the local
-    // auth cache
-    BasicScheme basicAuth = new BasicScheme();
-    authCache.put( target, basicAuth );
-
-    // Add AuthCache to the execution context
-    context.setAuthCache( authCache );
+    byte[] credentials = Base64.encodeBase64( ( user + ":" + pass ).getBytes( StandardCharsets.UTF_8 ) );
+    method.setHeader(  "Authorization", "Basic " + new String( credentials, StandardCharsets.UTF_8 ) );
   }
 
   /**
@@ -862,9 +837,10 @@ public class SlaveServer extends ChangedFlag implements Cloneable, SharedObjectI
   public String execService( String service, Map<String, String> headerValues ) throws Exception {
     // Prepare HTTP get
     HttpGet method = buildExecuteServiceMethod( service, headerValues );
+    addCredentials( method );
     // Execute request
     try {
-      HttpResponse httpResponse = getHttpClient().execute( method, authContext );
+      HttpResponse httpResponse = getHttpClient().execute( method );
       StatusLine statusLine = httpResponse.getStatusLine();
       int statusCode = statusLine.getStatusCode();
 
@@ -874,7 +850,7 @@ public class SlaveServer extends ChangedFlag implements Cloneable, SharedObjectI
           BaseMessages.getString( PKG, "SlaveServer.DEBUG_ResponseStatus", Integer.toString( statusCode ) ) );
       }
 
-      String responseBody = EntityUtils.toString( httpResponse.getEntity() );
+      String responseBody = getResponseBodyAsString( httpResponse.getEntity().getContent() );
 
       if ( log.isDetailed() ) {
         log.logDetailed( BaseMessages.getString( PKG, "SlaveServer.DETAILED_FinishedReading", Integer

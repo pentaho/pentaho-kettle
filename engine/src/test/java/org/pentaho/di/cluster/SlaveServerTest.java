@@ -22,12 +22,11 @@
 
 package org.pentaho.di.cluster;
 
+import org.apache.commons.codec.binary.Base64;
+import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpStatus;
 import org.apache.http.StatusLine;
-import org.apache.http.auth.AuthScope;
-import org.apache.http.auth.Credentials;
-import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
@@ -49,6 +48,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -145,22 +145,28 @@ public class SlaveServerTest {
   }
 
   @Test
-  public void testAddCredentials() {
-    slaveServer.setUsername( "test_username" );
-    slaveServer.setPassword( "test_password" );
-    slaveServer.setHostname( "test_host" );
-    slaveServer.setPort( "8081" );
+  public void testAddCredentials() throws IOException, ClassNotFoundException {
+    String testUser = "test_username";
+    slaveServer.setUsername( testUser );
+    String testPassword = "test_password";
+    slaveServer.setPassword( testPassword );
 
-    HttpClientContext localContext = HttpClientContext.create();
-    slaveServer.addCredentials( localContext );
+    HttpGet httpGet = new HttpGet();
+    slaveServer.addCredentials( httpGet );
+    Header authorization = httpGet.getFirstHeader( "Authorization" );
+    assertNotNull( authorization );
 
-    AuthScope scope = new AuthScope( slaveServer.getHostname(), Const.toInt( slaveServer.getPort(), 80 ) );
-    Credentials credentials = localContext.getCredentialsProvider().getCredentials( scope );
-    assertNotNull( credentials );
-    assertTrue( credentials instanceof UsernamePasswordCredentials );
-    UsernamePasswordCredentials baseCredentials = (UsernamePasswordCredentials) credentials;
-    assertEquals( slaveServer.getUsername(), baseCredentials.getUserName() );
-    assertEquals( slaveServer.getPassword(), baseCredentials.getPassword() );
+    String decodedCredentials = authorization.getValue();
+    String[] parts = decodedCredentials.split( " " );
+    String userPasswordDecodedPair = parts[1];
+    byte[] toDecryptBytes = Base64.decodeBase64( userPasswordDecodedPair.getBytes() );
+    String encodedCredentials = new String( toDecryptBytes, StandardCharsets.UTF_8 );
+    String[] userPasswordPair = encodedCredentials.split( ":" );
+    String user = userPasswordPair[0];
+    String password = userPasswordPair[1];
+
+    assertEquals( testUser, user );
+    assertEquals( testPassword, password );
   }
 
   @Test
