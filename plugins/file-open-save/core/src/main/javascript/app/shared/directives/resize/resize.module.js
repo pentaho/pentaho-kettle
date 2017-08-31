@@ -30,8 +30,10 @@ define([
   "./resizeApp.directive",
   "./resizeBreadcrumb.directive",
   "./resizeFiles.directive",
-  "./resizeFolders.directive"
-], function(angular, resizeAppDirective, resizeBreadcrumbDirective, resizeFilesDirective, resizeFoldersDirective) {
+  "./resizeFolders.directive",
+  "./resizeCards.directive"
+], function(angular, resizeAppDirective, resizeBreadcrumbDirective, resizeFilesDirective,
+            resizeFoldersDirective, resizeCardsDirective) {
   "use strict";
 
   var module = {
@@ -52,6 +54,7 @@ define([
       .directive(resizeAppDirective.name, resizeAppDirective.options)
       .directive(resizeBreadcrumbDirective.name, resizeBreadcrumbDirective.options)
       .directive(resizeFilesDirective.name, resizeFilesDirective.options)
-      .directive(resizeFoldersDirective.name, resizeFoldersDirective.options);
+      .directive(resizeFoldersDirective.name, resizeFoldersDirective.options)
+      .directive(resizeCardsDirective.name, resizeCardsDirective.options);
   }
 });

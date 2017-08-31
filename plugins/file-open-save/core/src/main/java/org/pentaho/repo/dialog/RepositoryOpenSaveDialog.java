@@ -60,7 +60,7 @@ public class RepositoryOpenSaveDialog extends ThinDialog {
     clientPath.append( !Utils.isEmpty( state ) ? "&" : "" );
     clientPath.append( !Utils.isEmpty( filter ) ? "filter=" + filter : "" );
     super.createDialog( StringUtils.capitalize( state ), getRepoURL( clientPath.toString() ), OPTIONS, LOGO );
-    super.dialog.setMinimumSize( 545, 356 );
+    super.dialog.setMinimumSize( 545, 458 );
 
     new BrowserFunction( browser, "close" ) {
       @Override public Object function( Object[] arguments ) {
