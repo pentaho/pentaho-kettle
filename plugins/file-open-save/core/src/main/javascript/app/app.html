@@ -68,7 +68,7 @@
     <div class="fileArea"
          ng-class="{recentsView: vm.showRecents && !vm.showMessage,
                     scrolling: vm.recentsHasScrollBar,
-                    hasMessage: vm.showMessage}">
+                    hasMessage: vm.showRecents && vm.recentFiles.length === 0 || vm.showMessage}">
       <div class="fileAreaMessageView" ng-show="vm.showRecents && vm.recentFiles.length === 0 || vm.showMessage">
         {{vm.fileAreaMessage}}
       </div>
