@@ -365,13 +365,12 @@ file-open-save-app .open .fileNameEntry {
 file-open-save-app .fileAreaMessageView {
   width: 100%;
   text-align: center;
-  height: 292px;
-  line-height: 292px;
-}
-
-file-open-save-app .open .fileAreaMessageView {
-  height: 368px;
-  line-height: 368px;
+  height: 100%;
+  line-height: 100%;
+  transform: translate(0%, 50%) translateY(-7px);
+  -ms-transform: translate(0%, 50%) translateY(-7px);
+  -webkit-transform: translate(0%, 50%) translateY(-7px);
+  -moz-transform: translate(0%, 50%) translateY(-7px);
 }
 
 file-open-save-app .searchBoxExtra {

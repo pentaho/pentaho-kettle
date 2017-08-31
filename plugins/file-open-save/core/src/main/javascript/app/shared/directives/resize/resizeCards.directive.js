@@ -34,40 +34,15 @@ define([
         scope.$watch(attrs.resizeCards, function(newValue) {
           if (newValue) {
             $timeout(function() {
-              doResize();
+              resize();
             }, 10);
           }
         });
 
         w.on("resize", function() {
-          doResize();
+          resize();
           scope.$apply();
         });
-
-        /**
-         * Calls either resizeMessageArea or resize according to the state of the dialog
-         */
-        function doResize() {
-          if (scope.vm.showRecents && scope.vm.recentFiles.length === 0 || scope.vm.showMessage) {
-            resizeMessageArea();
-          } else {
-            resize();
-          }
-        }
-
-        /**
-         * Resizes the message area if a message is present to the user.
-         */
-        function resizeMessageArea() {
-          var msgArea = element[0].previousSibling.previousSibling;
-          var angMsgArea = angular.element(msgArea);
-          var height = recentsView.clientHeight;
-          if (height > 0) {
-            angMsgArea.css("height", height + "px");
-            angMsgArea.css("line-height", height + "px");
-          }
-          angular.element(recentsView).css("overflow-y", "hidden");
-        }
 
         /**
          * Handles resizing the Recents view.
@@ -77,7 +52,6 @@ define([
           var hasScrolling = recentsView.scrollHeight > recentsView.clientHeight;
           var cards = angular.element(element.children());
           var cardTitles = angular.element(document.getElementsByClassName("cardTitle"));
-          angular.element(recentsView).css("overflow-y", "auto");
           if (clientWidth < 321 && hasScrolling && cards) {
             cards.css("width", (clientWidth - 37) + "px");
             cardTitles.css("max-width", (clientWidth - 37 - 92) + "px");
