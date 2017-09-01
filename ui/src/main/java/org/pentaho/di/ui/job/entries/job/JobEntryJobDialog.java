@@ -30,24 +30,18 @@ import org.eclipse.swt.events.ShellEvent;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
-import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Button;
-import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.FileDialog;
-import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TableItem;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.ObjectLocationSpecificationMethod;
 import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.extension.ExtensionPointHandler;
-import org.pentaho.di.core.extension.KettleExtensionPoint;
 import org.pentaho.di.core.logging.LogLevel;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.i18n.BaseMessages;
-import org.pentaho.di.job.JobExecutionConfiguration;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entries.job.JobEntryJob;
 import org.pentaho.di.job.entry.JobEntryBase;
@@ -61,7 +55,6 @@ import org.pentaho.di.repository.RepositoryObjectType;
 import org.pentaho.di.ui.core.ConstUI;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.gui.WindowProperty;
-import org.pentaho.di.ui.core.widget.ComboVar;
 import org.pentaho.di.ui.job.dialog.JobDialog;
 import org.pentaho.di.ui.job.entries.trans.JobEntryBaseDialog;
 import org.pentaho.di.ui.spoon.Spoon;
@@ -71,8 +64,6 @@ import org.pentaho.di.ui.util.DialogUtils;
 import org.pentaho.di.ui.util.SwtSvgImageUtil;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * This dialog allows you to edit the job job entry (JobEntryJob)
@@ -141,20 +132,28 @@ public class JobEntryJobDialog extends JobEntryBaseDialog implements JobEntryDia
     shell.setText( BaseMessages.getString( PKG, "JobJob.Header" ) );
 
     wlPath.setText( BaseMessages.getString( PKG, "JobJob.JobStep.Job.Label" ) );
-    //wlDescription.setText( BaseMessages.getString( PKG, "JobJob.Local.Label" ) );
+    wlDescription.setText( BaseMessages.getString( PKG, "JobJob.Local.Label" ) );
     wPassParams.setText( BaseMessages.getString( PKG, "JobJob.PassAllParameters.Label" ) );
 
     // Start Server Section
-    wPassExport = new Button( gExecution, SWT.CHECK );
+    wWaitingToFinish = new Button( wServer, SWT.CHECK );
+    props.setLook( wWaitingToFinish );
+    wWaitingToFinish.setText( BaseMessages.getString( PKG, "JobJob.WaitToFinish.Label" ) );
+    FormData fdWait = new FormData();
+    fdWait.top = new FormAttachment( wSlaveServer, 10 );
+    fdWait.left = new FormAttachment( 0, 0 );
+    wWaitingToFinish.setLayoutData( fdWait );
+
+    wPassExport = new Button( wServer, SWT.CHECK );
     wPassExport.setText( BaseMessages.getString( PKG, "JobJob.PassExportToSlave.Label" ) );
     props.setLook( wPassExport );
     FormData fdPassExport = new FormData();
     fdPassExport.left = new FormAttachment( 0, 0 );
-    fdPassExport.top = new FormAttachment( wEveryRow, 10 );
+    fdPassExport.top = new FormAttachment( wWaitingToFinish, 10 );
     fdPassExport.right = new FormAttachment( 100, 0 );
     wPassExport.setLayoutData( fdPassExport );
 
-    wExpandRemote = new Button( gExecution, SWT.CHECK );
+    wExpandRemote = new Button( wServer, SWT.CHECK );
     wExpandRemote.setText( BaseMessages.getString( PKG, "JobEntryJobDialog.ExpandRemoteOnSlave.Label" ) );
     props.setLook( wExpandRemote );
     FormData fdExpandRemote = new FormData();
@@ -162,51 +161,14 @@ public class JobEntryJobDialog extends JobEntryBaseDialog implements JobEntryDia
     fdExpandRemote.left = new FormAttachment( 0, 0 );
     wExpandRemote.setLayoutData( fdExpandRemote );
 
-    wWaitingToFinish = new Button( gExecution, SWT.CHECK );
-    props.setLook( wWaitingToFinish );
-    wWaitingToFinish.setText( BaseMessages.getString( PKG, "JobJob.WaitToFinish.Label" ) );
-    FormData fdWait = new FormData();
-    fdWait.top = new FormAttachment( wExpandRemote, 10 );
-    fdWait.left = new FormAttachment( 0, 0 );
-    wWaitingToFinish.setLayoutData( fdWait );
-
-    wFollowingAbortRemotely = new Button( gExecution, SWT.CHECK );
+    wFollowingAbortRemotely = new Button( wServer, SWT.CHECK );
     props.setLook( wFollowingAbortRemotely );
     wFollowingAbortRemotely.setText( BaseMessages.getString( PKG, "JobJob.AbortRemote.Label" ) );
     FormData fdFollow = new FormData();
-    fdFollow.top = new FormAttachment( wWaitingToFinish, 10 );
+    fdFollow.top = new FormAttachment( wExpandRemote, 10 );
     fdFollow.left = new FormAttachment( 0, 0 );
     wFollowingAbortRemotely.setLayoutData( fdFollow );
     // End Server Section
-
-    Composite cRunConfiguration = new Composite( wOptions, SWT.NONE );
-    cRunConfiguration.setLayout( new FormLayout() );
-    props.setLook( cRunConfiguration );
-    FormData fdLocal = new FormData();
-    fdLocal.top = new FormAttachment( 0 );
-    fdLocal.right = new FormAttachment( 100 );
-    fdLocal.left = new FormAttachment( 0 );
-
-    cRunConfiguration.setBackground( shell.getBackground() ); // the default looks ugly
-    cRunConfiguration.setLayoutData( fdLocal );
-
-    Label wlRunConfiguration = new Label( cRunConfiguration, SWT.LEFT );
-    props.setLook( wlRunConfiguration );
-    wlRunConfiguration.setText( "Run configuration:" );
-    FormData fdlRunConfiguration = new FormData();
-    fdlRunConfiguration.top = new FormAttachment( 0 );
-    fdlRunConfiguration.left = new FormAttachment( 0 );
-    wlRunConfiguration.setLayoutData( fdlRunConfiguration );
-
-    wRunConfiguration = new ComboVar( jobMeta, cRunConfiguration, SWT.BORDER );
-    props.setLook( wRunConfiguration );
-    FormData fdRunConfiguration = new FormData();
-    fdRunConfiguration.width = 200;
-    fdRunConfiguration.top = new FormAttachment( wlRunConfiguration, 5 );
-    fdRunConfiguration.left = new FormAttachment( 0 );
-    wRunConfiguration.setLayoutData( fdRunConfiguration );
-
-    fdgExecution.top = new FormAttachment( cRunConfiguration, 10 );
 
     wbGetParams.addSelectionListener( new SelectionAdapter() {
       @Override
@@ -325,6 +287,7 @@ public class JobEntryJobDialog extends JobEntryBaseDialog implements JobEntryDia
           if ( KettleVFS.fileExists( prevName ) ) {
             wPath.setText( prevName );
             specificationMethod = ObjectLocationSpecificationMethod.FILENAME;
+            setRadioButtons();
             return;
           } else {
             // File specified doesn't exist. Ask if we should create the file...
@@ -342,6 +305,7 @@ public class JobEntryJobDialog extends JobEntryBaseDialog implements JobEntryDia
               newJobMeta.setFilename( jobMeta.environmentSubstitute( prevName ) );
               wPath.setText( prevName );
               specificationMethod = ObjectLocationSpecificationMethod.FILENAME;
+              setRadioButtons();
               spoon.saveFile();
               return;
             }
@@ -382,6 +346,7 @@ public class JobEntryJobDialog extends JobEntryBaseDialog implements JobEntryDia
 
   public void setActive() {
     super.setActive();
+    wLocal.setVisible( !wbServer.getSelection() );
   }
 
   public void getData() {
@@ -405,6 +370,7 @@ public class JobEntryJobDialog extends JobEntryBaseDialog implements JobEntryDia
       default:
         break;
     }
+    setRadioButtons();
 
     // Arguments
     if ( jobEntry.arguments != null ) {
@@ -446,6 +412,14 @@ public class JobEntryJobDialog extends JobEntryBaseDialog implements JobEntryDia
     }
     wAddDate.setSelection( jobEntry.addDate );
     wAddTime.setSelection( jobEntry.addTime );
+    if ( jobEntry.getRemoteSlaveServerName() != null && !Utils.isEmpty( jobEntry.getRemoteSlaveServerName() ) ) {
+      wbServer.setSelection( true );
+    } else {
+      wbLocal.setSelection( true );
+    }
+    if ( jobEntry.getRemoteSlaveServerName() != null ) {
+      wSlaveServer.setText( jobEntry.getRemoteSlaveServerName() );
+    }
     wPassExport.setSelection( jobEntry.isPassingExport() );
 
     if ( jobEntry.logFileLevel != null ) {
@@ -459,22 +433,6 @@ public class JobEntryJobDialog extends JobEntryBaseDialog implements JobEntryDia
     wWaitingToFinish.setSelection( jobEntry.isWaitingToFinish() );
     wFollowingAbortRemotely.setSelection( jobEntry.isFollowingAbortRemotely() );
     wExpandRemote.setSelection( jobEntry.isExpandingRemoteJob() );
-
-    List<String> runConfigurations = new ArrayList<>();
-    try {
-      ExtensionPointHandler
-        .callExtensionPoint( Spoon.getInstance().getLog(), KettleExtensionPoint.SpoonRunConfiguration.id,
-          new Object[] { runConfigurations, JobMeta.XML_TAG } );
-    } catch ( KettleException e ) {
-      // Ignore errors
-    }
-
-    wRunConfiguration.setItems( runConfigurations.toArray( new String[ 0 ] ) );
-    if ( Utils.isEmpty( jobEntry.getRunConfiguration() ) ) {
-      wRunConfiguration.select( 0 );
-    } else {
-      wRunConfiguration.setText( jobEntry.getRunConfiguration() );
-    }
 
     wName.selectAll();
     wName.setFocus();
@@ -603,32 +561,14 @@ public class JobEntryJobDialog extends JobEntryBaseDialog implements JobEntryDia
     jej.argFromPrevious = wPrevious.getSelection();
     jej.paramsFromPrevious = wPrevToParams.getSelection();
     jej.execPerRow = wEveryRow.getSelection();
+
+    jej.setRemoteSlaveServerName( wSlaveServer.getText() );
     jej.setPassingExport( wPassExport.getSelection() );
     jej.setAppendLogfile = wAppendLogfile.getSelection();
     jej.setWaitingToFinish( wWaitingToFinish.getSelection() );
     jej.createParentFolder = wCreateParentFolder.getSelection();
     jej.setFollowingAbortRemotely( wFollowingAbortRemotely.getSelection() );
     jej.setExpandingRemoteJob( wExpandRemote.getSelection() );
-
-    JobExecutionConfiguration executionConfiguration = new JobExecutionConfiguration();
-    executionConfiguration.setRunConfiguration( jej.getRunConfiguration() );
-    try {
-      ExtensionPointHandler.callExtensionPoint( jobEntry.getLogChannel(), KettleExtensionPoint.SpoonTransBeforeStart.id,
-        new Object[] { executionConfiguration, jobMeta, jobMeta } );
-    } catch ( KettleException e ) {
-      // Ignore errors
-    }
-
-    try {
-      ExtensionPointHandler.callExtensionPoint( jobEntry.getLogChannel(), KettleExtensionPoint.JobEntryTransSave.id,
-        new Object[] { jobMeta, jej.getRunConfiguration() } );
-    } catch ( KettleException e ) {
-      // Ignore errors
-    }
-
-    if ( executionConfiguration.getRemoteServer() != null ) {
-      jej.setRemoteSlaveServerName( executionConfiguration.getRemoteServer().getName() );
-    }
   }
 
   public void ok() {

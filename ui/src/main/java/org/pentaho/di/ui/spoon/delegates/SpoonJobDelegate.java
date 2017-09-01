@@ -22,6 +22,14 @@
 
 package org.pentaho.di.ui.spoon.delegates;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
@@ -30,6 +38,7 @@ import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.MessageBox;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.NotePadMeta;
 import org.pentaho.di.core.ObjectLocationSpecificationMethod;
 import org.pentaho.di.core.database.DatabaseMeta;
@@ -44,7 +53,6 @@ import org.pentaho.di.core.plugins.PluginInterface;
 import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.plugins.StepPluginType;
 import org.pentaho.di.core.undo.TransAction;
-import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.Job;
@@ -80,14 +88,6 @@ import org.pentaho.di.ui.spoon.wizards.RipDatabaseWizardPage3;
 import org.pentaho.xul.swt.tab.TabItem;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
-
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 public class SpoonJobDelegate extends SpoonDelegate {
   private static Class<?> PKG = Spoon.class; // for i18n purposes, needed by Translator2!!
@@ -1364,15 +1364,6 @@ public class SpoonJobDelegate extends SpoonDelegate {
       ExtensionPointHandler.callExtensionPoint( log, KettleExtensionPoint.SpoonJobExecutionConfiguration.id,
           executionConfiguration );
 
-      try {
-        ExtensionPointHandler.callExtensionPoint( log, KettleExtensionPoint.SpoonTransBeforeStart.id, new Object[] {
-          executionConfiguration, jobMeta, jobMeta
-        } );
-      } catch ( KettleException e ) {
-        log.logError( e.getMessage(), jobMeta.getFilename() );
-        return;
-      }
-
       // addJobLog(jobMeta);
       JobGraph jobGraph = spoon.getActiveJobGraph();
 
@@ -1418,15 +1409,6 @@ public class SpoonJobDelegate extends SpoonDelegate {
       ExtensionPointHandler.callExtensionPoint(
         log, KettleExtensionPoint.SpoonJobExecutionConfiguration.id, executionConfiguration );
 
-      try {
-        ExtensionPointHandler.callExtensionPoint( log, KettleExtensionPoint.SpoonTransBeforeStart.id, new Object[] {
-          executionConfiguration, jobMeta, jobMeta
-        } );
-      } catch ( KettleException e ) {
-        log.logError( e.getMessage(), jobMeta.getFilename() );
-        return;
-      }
-
       // addJobLog(jobMeta);
       JobGraph jobGraph = spoon.getActiveJobGraph();
 
@@ -1466,8 +1448,6 @@ public class SpoonJobDelegate extends SpoonDelegate {
           mb.setText( BaseMessages.getString( PKG, "Spoon.Dialog.NoRemoteServerSpecified.Title" ) );
           mb.open();
         }
-      } else {
-        log.logBasic( "Executing on the connected Pentaho Server" );
       }
     }
   }

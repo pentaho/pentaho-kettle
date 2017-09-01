@@ -36,12 +36,6 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>pentaho-kettle</groupId>
-      <artifactId>kettle-ui-swt</artifactId>
-      <version>${kettle.version}</version>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
       <groupId>pentaho</groupId>
       <artifactId>metastore</artifactId>
       <version>${kettle.version}</version>

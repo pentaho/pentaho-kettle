@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -108,8 +108,4 @@ public interface ExecutionConfiguration extends Cloneable {
   public boolean isSafeModeEnabled();
 
   public void setSafeModeEnabled( boolean usingSafeMode );
-
-  String getRunConfiguration();
-
-  void setRunConfiguration( String runConfiguration );
 }

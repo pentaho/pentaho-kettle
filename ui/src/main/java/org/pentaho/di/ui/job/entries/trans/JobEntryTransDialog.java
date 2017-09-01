@@ -83,6 +83,7 @@ public class JobEntryTransDialog extends JobEntryBaseDialog implements JobEntryD
   private static Class<?> PKG = JobEntryTrans.class; // for i18n purposes, needed by Translator2!!
 
   protected JobEntryTrans jobEntry;
+  protected ComboVar wRunConfiguration;
 
   private static final String[] FILE_FILTERLOGNAMES = new String[] {
     BaseMessages.getString( PKG, "JobTrans.Fileformat.TXT" ),
@@ -136,6 +137,7 @@ public class JobEntryTransDialog extends JobEntryBaseDialog implements JobEntryD
     shell.setText( BaseMessages.getString( PKG, "JobTrans.Header" ) );
 
     wlPath.setText( BaseMessages.getString( PKG, "JobTrans.JobStep.Transformation.Label" ) );
+    wlDescription.setText( BaseMessages.getString( PKG, "JobTrans.Local.Label" ) );
     wPassParams.setText( BaseMessages.getString( PKG, "JobTrans.PassAllParameters.Label" ) );
 
     wClearRows = new Button( gExecution, SWT.CHECK );
@@ -169,6 +171,8 @@ public class JobEntryTransDialog extends JobEntryBaseDialog implements JobEntryD
     fdFollow.top = new FormAttachment( wWaitingToFinish, 10 );
     fdFollow.left = new FormAttachment( 0, 0 );
     wFollowingAbortRemotely.setLayoutData( fdFollow );
+
+    gEnvironmentType.setVisible( false );
 
     Composite cRunConfiguration = new Composite( wOptions, SWT.NONE );
     cRunConfiguration.setLayout( new FormLayout() );
@@ -445,7 +449,7 @@ public class JobEntryTransDialog extends JobEntryBaseDialog implements JobEntryD
     try {
       ExtensionPointHandler
         .callExtensionPoint( Spoon.getInstance().getLog(), KettleExtensionPoint.SpoonRunConfiguration.id,
-          new Object[] { runConfigurations, TransMeta.XML_TAG } );
+          runConfigurations );
     } catch ( KettleException e ) {
       // Ignore errors
     }
@@ -457,8 +461,6 @@ public class JobEntryTransDialog extends JobEntryBaseDialog implements JobEntryD
       wRunConfiguration.setText( jobEntry.getRunConfiguration() );
     }
 
-    wName.selectAll();
-    wName.setFocus();
   }
 
   private void getByReferenceData( ObjectId transObjectId ) {

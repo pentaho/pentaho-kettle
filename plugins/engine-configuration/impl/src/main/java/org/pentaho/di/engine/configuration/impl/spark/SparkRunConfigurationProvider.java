@@ -28,14 +28,9 @@ import org.pentaho.di.engine.configuration.api.RunConfiguration;
 import org.pentaho.di.engine.configuration.api.RunConfigurationExecutor;
 import org.pentaho.di.engine.configuration.api.RunConfigurationProvider;
 import org.pentaho.di.engine.configuration.impl.MetaStoreRunConfigurationFactory;
-import org.pentaho.di.trans.TransMeta;
 import org.pentaho.metastore.api.exceptions.MetaStoreException;
 import org.pentaho.metastore.persist.MetaStoreFactory;
 import org.pentaho.osgi.metastore.locator.api.MetastoreLocator;
-
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
 
 /**
  * Created by bmorrise on 3/16/17.
@@ -45,7 +40,6 @@ public class SparkRunConfigurationProvider extends MetaStoreRunConfigurationFact
 
   public static String TYPE = "Spark";
   private SparkRunConfigurationExecutor sparkRunConfigurationExecutor;
-  private List<String> supported = Arrays.asList( TransMeta.XML_TAG );
 
   public SparkRunConfigurationProvider( MetastoreLocator metastoreLocator,
                                         SparkRunConfigurationExecutor sparkRunConfigurationExecutor ) {
@@ -68,13 +62,5 @@ public class SparkRunConfigurationProvider extends MetaStoreRunConfigurationFact
 
   @Override public RunConfigurationExecutor getExecutor() {
     return sparkRunConfigurationExecutor;
-  }
-
-  @Override public boolean isSupported( String type ) {
-    return supported.contains( type );
-  }
-
-  @Override public List<String> getNames( String type ) {
-    return isSupported( type ) ? getNames() : Collections.emptyList();
   }
 }

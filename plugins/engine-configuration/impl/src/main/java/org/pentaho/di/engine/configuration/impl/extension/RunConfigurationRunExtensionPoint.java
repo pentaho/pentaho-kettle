@@ -24,7 +24,6 @@
 
 package org.pentaho.di.engine.configuration.impl.extension;
 
-import org.pentaho.di.ExecutionConfiguration;
 import org.pentaho.di.base.AbstractMeta;
 import org.pentaho.di.core.attributes.metastore.EmbeddedMetaStore;
 import org.pentaho.di.core.exception.KettleException;
@@ -37,6 +36,7 @@ import org.pentaho.di.engine.configuration.api.RunConfigurationExecutor;
 import org.pentaho.di.engine.configuration.impl.EmbeddedRunConfigurationManager;
 import org.pentaho.di.engine.configuration.impl.RunConfigurationManager;
 import org.pentaho.di.i18n.BaseMessages;
+import org.pentaho.di.trans.TransExecutionConfiguration;
 import org.pentaho.di.trans.TransMeta;
 
 /**
@@ -55,18 +55,18 @@ public class RunConfigurationRunExtensionPoint implements ExtensionPointInterfac
   }
 
   @Override public void callExtensionPoint( LogChannelInterface logChannelInterface, Object o ) throws KettleException {
-    ExecutionConfiguration executionConfiguration = (ExecutionConfiguration) ( (Object[]) o )[ 0 ];
+    TransExecutionConfiguration transExecutionConfiguration = (TransExecutionConfiguration) ( (Object[]) o )[ 0 ];
     AbstractMeta meta = (AbstractMeta) ( (Object[]) o )[ 1 ];
     VariableSpace variableSpace = (VariableSpace) ( (Object[]) o )[ 2 ];
     EmbeddedMetaStore embeddedMetaStore = meta.getEmbeddedMetaStore();
 
     RunConfiguration runConfiguration =
-      runConfigurationManager.load( executionConfiguration.getRunConfiguration() );
+      runConfigurationManager.load( transExecutionConfiguration.getRunConfiguration() );
 
     if ( runConfiguration == null ) {
       RunConfigurationManager embeddedRunConfigurationManager =
         EmbeddedRunConfigurationManager.build( embeddedMetaStore );
-      runConfiguration = embeddedRunConfigurationManager.load( executionConfiguration.getRunConfiguration() );
+      runConfiguration = embeddedRunConfigurationManager.load( transExecutionConfiguration.getRunConfiguration() );
     }
 
     if ( runConfiguration != null ) {
@@ -74,7 +74,7 @@ public class RunConfigurationRunExtensionPoint implements ExtensionPointInterfac
         runConfigurationManager.getExecutor( runConfiguration.getType() );
 
       if ( runConfigurationExecutor != null ) {
-        runConfigurationExecutor.execute( runConfiguration, executionConfiguration, meta, variableSpace );
+        runConfigurationExecutor.execute( runConfiguration, transExecutionConfiguration, meta, variableSpace );
       }
     } else {
       String name = "";
@@ -83,7 +83,7 @@ public class RunConfigurationRunExtensionPoint implements ExtensionPointInterfac
       }
       throw new KettleException( BaseMessages
         .getString( PKG, "RunConfigurationRunExtensionPoint.ConfigNotFound.Error", name,
-          executionConfiguration.getRunConfiguration(), "{0}" ) );
+          transExecutionConfiguration.getRunConfiguration(), "{0}" ) );
     }
   }
 }

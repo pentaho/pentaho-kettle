@@ -24,15 +24,15 @@
 
 package org.pentaho.di.engine.configuration.impl;
 
+import java.util.Collections;
+import java.util.List;
+
 import org.pentaho.di.engine.configuration.api.RunConfiguration;
 import org.pentaho.di.engine.configuration.api.RunConfigurationFactory;
 import org.pentaho.metastore.api.IMetaStore;
 import org.pentaho.metastore.api.exceptions.MetaStoreException;
 import org.pentaho.metastore.persist.MetaStoreFactory;
 import org.pentaho.osgi.metastore.locator.api.MetastoreLocator;
-
-import java.util.Collections;
-import java.util.List;
 
 import static org.pentaho.metastore.util.PentahoDefaults.NAMESPACE;
 

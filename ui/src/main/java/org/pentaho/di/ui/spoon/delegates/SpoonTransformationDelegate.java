@@ -926,8 +926,6 @@ public class SpoonTransformationDelegate extends SpoonDelegate {
         } else {
           splitTrans( transMeta, executionConfiguration );
         }
-      } else {
-        log.logBasic( "Executing on the connected Pentaho Server" );
       }
     }
   }

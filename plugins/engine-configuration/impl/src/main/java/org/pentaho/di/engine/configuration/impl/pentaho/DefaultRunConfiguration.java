@@ -25,7 +25,6 @@
 package org.pentaho.di.engine.configuration.impl.pentaho;
 
 import org.pentaho.di.engine.configuration.api.RunConfiguration;
-import org.pentaho.di.engine.configuration.api.RunConfigurationUI;
 import org.pentaho.metastore.persist.MetaStoreAttribute;
 import org.pentaho.metastore.persist.MetaStoreElementType;
 
@@ -47,9 +46,6 @@ public class DefaultRunConfiguration implements RunConfiguration {
 
   @MetaStoreAttribute
   private boolean clustered = false;
-
-  @MetaStoreAttribute
-  private boolean pentaho = false;
 
   @MetaStoreAttribute
   private String server;
@@ -154,17 +150,5 @@ public class DefaultRunConfiguration implements RunConfiguration {
 
   public void setSendResources( boolean sendResources ) {
     this.sendResources = sendResources;
-  }
-
-  public boolean isPentaho() {
-    return pentaho;
-  }
-
-  public void setPentaho( boolean pentaho ) {
-    this.pentaho = pentaho;
-  }
-
-  @Override public RunConfigurationUI getUI() {
-    return new DefaultRunConfigurationUI( this );
   }
 }

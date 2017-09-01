@@ -70,6 +70,8 @@ public abstract class ConfigurationDialog extends Dialog {
   protected boolean retval;
   protected Shell shell;
   protected PropsUI props;
+  protected Button wExecLocal;
+  protected Button wExecRemote;
   protected Button wGatherMetrics;
   protected Label wlLogLevel;
   protected Group gDetails;
@@ -85,17 +87,20 @@ public abstract class ConfigurationDialog extends Dialog {
   protected StackLayout stackedLayout;
   protected int margin = Const.MARGIN;
   protected Group gLocal;
+  protected Composite stackedLayoutComposite;
   protected Composite composite;
-  protected Composite cRunConfiguration;
-  protected CCombo wRunConfiguration;
 
   private TableView wParams;
   private Display display;
   private Shell parent;
   private Button wOK;
   private Button wCancel;
+  private FormData fdLocal;
   protected FormData fdDetails;
   private FormData fd_tabFolder;
+  private FormData fdExecLocal;
+  private FormData fdExecRemote;
+  private FormData fdComposite;
   private CTabFolder tabFolder;
   private Button alwaysShowOption;
 
@@ -234,7 +239,7 @@ public abstract class ConfigurationDialog extends Dialog {
     // The layout
     gDetails.setLayout( new FormLayout() );
     fdDetails = new FormData();
-    fdDetails.top = new FormAttachment( cRunConfiguration, 15 );
+    fdDetails.top = new FormAttachment( gLocal, 15 );
     fdDetails.right = new FormAttachment( 100, -15 );
     fdDetails.left = new FormAttachment( 0, 15 );
     gDetails.setBackground( shell.getBackground() ); // the default looks ugly
@@ -426,34 +431,118 @@ public abstract class ConfigurationDialog extends Dialog {
     }
   }
 
-  protected void runConfigurationSectionLayout( Class<?> PKG, String prefix ) {
-    cRunConfiguration = new Composite( shell, SWT.NONE );
-    cRunConfiguration.setLayout( new FormLayout() );
-    props.setLook( cRunConfiguration );
-    FormData fdLocal = new FormData();
+  protected void environmentTypeSectionLayout( Class<?> PKG, String prefix ) {
+
+    gLocal = new Group( shell, SWT.SHADOW_ETCHED_IN );
+    gLocal.setText( BaseMessages.getString( PKG, prefix + ".LocalGroup.Label" ) );
+    gLocal.setLayout( new FormLayout() );
+    props.setLook( gLocal );
+    fdLocal = new FormData();
     fdLocal.top = new FormAttachment( 0, 15 );
     fdLocal.right = new FormAttachment( 100, -15 );
     fdLocal.left = new FormAttachment( 0, 15 );
 
-    cRunConfiguration.setBackground( shell.getBackground() ); // the default looks ugly
-    cRunConfiguration.setLayoutData( fdLocal );
+    gLocal.setBackground( shell.getBackground() ); // the default looks ugly
+    gLocal.setLayoutData( fdLocal );
 
-    Label wlRunConfiguration = new Label( cRunConfiguration, SWT.LEFT );
-    props.setLook( wlRunConfiguration );
-    wlRunConfiguration.setText( "Run configuration:" );
-    FormData fdlRunConfiguration = new FormData();
-    fdlRunConfiguration.top = new FormAttachment( 0 );
-    fdlRunConfiguration.left = new FormAttachment( 0 );
-    wlRunConfiguration.setLayoutData( fdlRunConfiguration );
+    wExecLocal = new Button( gLocal, SWT.RADIO );
+    wExecLocal.setText( BaseMessages.getString( PKG, prefix + ".ExecLocal.Label" ) );
+    wExecLocal.setToolTipText( BaseMessages.getString( PKG, prefix + ".ExecLocal.Tooltip" ) );
+    props.setLook( wExecLocal );
+    fdExecLocal = new FormData();
+    fdExecLocal.top = new FormAttachment( 0, 10 );
+    fdExecLocal.left = new FormAttachment( 0, 10 );
+    wExecLocal.setLayoutData( fdExecLocal );
+    wExecLocal.addSelectionListener( new SelectionAdapter() {
+      public void widgetSelected( SelectionEvent e ) {
+        stackedLayout.topControl = localOptionsComposite;
+        stackedLayoutComposite.layout();
+      }
+    } );
 
-    wRunConfiguration = new CCombo( cRunConfiguration, SWT.BORDER );
-    props.setLook( wRunConfiguration );
-    FormData fdRunConfiguration = new FormData();
-    fdRunConfiguration.width = 200;
-    fdRunConfiguration.top = new FormAttachment( wlRunConfiguration, 5 );
-    fdRunConfiguration.left = new FormAttachment( 0 );
-    wRunConfiguration.setLayoutData( fdRunConfiguration );
+    if ( abstractMeta.getSlaveServers() == null || abstractMeta.getSlaveServers().size() == 0 ) {
+      composite = new Composite( gLocal, SWT.NONE );
+      composite.setLayout( new FormLayout() );
+      props.setLook( composite );
+      composite.setToolTipText( BaseMessages.getString( PKG, prefix + ".ExecRemote.DisabledTooltip" ) );
+      fdComposite = new FormData();
+      fdComposite.left = new FormAttachment( 0, 10 );
+      fdComposite.top = new FormAttachment( wExecLocal, 7 );
+      composite.setLayoutData( fdComposite );
+
+      wExecRemote = new Button( composite, SWT.RADIO );
+      wExecRemote.setText( BaseMessages.getString( PKG, prefix + ".ExecRemote.Label" ) );
+      props.setLook( wExecRemote );
+      wExecRemote.setEnabled( false );
+      fdExecRemote = new FormData();
+      fdExecRemote.top = new FormAttachment( 0 );
+      wExecRemote.setLayoutData( fdExecRemote );
+    } else {
+      wExecRemote = new Button( gLocal, SWT.RADIO );
+      wExecRemote.setText( BaseMessages.getString( PKG, prefix + ".ExecRemote.Label" ) );
+      wExecRemote.setToolTipText( BaseMessages.getString( PKG, prefix + ".ExecRemote.Tooltip" ) );
+      props.setLook( wExecRemote );
+      fdExecRemote = new FormData();
+      fdExecRemote.left = new FormAttachment( 0, 10 );
+      fdExecRemote.top = new FormAttachment( wExecLocal, 7 );
+      wExecRemote.setLayoutData( fdExecRemote );
+      wExecRemote.addSelectionListener( new SelectionAdapter() {
+        public void widgetSelected( SelectionEvent e ) {
+          stackedLayout.topControl = serverOptionsComposite;
+          stackedLayoutComposite.layout();
+        }
+      } );
+    }
+
+    // separator
+    environmentSeparator = new Label( gLocal, SWT.SEPARATOR | SWT.VERTICAL );
+    FormData fd_environmentSeparator = new FormData();
+    fd_environmentSeparator.top = new FormAttachment( 0, 10 );
+    fd_environmentSeparator.left = new FormAttachment( wExecLocal, 50 );
+    fd_environmentSeparator.bottom = new FormAttachment( 100, -10 );
+    environmentSeparator.setLayoutData( fd_environmentSeparator );
+
+    // stacked layout composite
+    stackedLayoutComposite = new Composite( gLocal, SWT.NONE );
+    props.setLook( stackedLayoutComposite );
+    stackedLayout = new StackLayout();
+    stackedLayoutComposite.setLayout( stackedLayout );
+    FormData fd_stackedLayoutComposite = new FormData();
+    fd_stackedLayoutComposite.top = new FormAttachment( 0 );
+    fd_stackedLayoutComposite.left = new FormAttachment( environmentSeparator, 5 );
+    fd_stackedLayoutComposite.bottom = new FormAttachment( 100, -10 );
+    fd_stackedLayoutComposite.right = new FormAttachment( 100, -7 );
+    stackedLayoutComposite.setLayoutData( fd_stackedLayoutComposite );
+
+    localOptionsComposite = new Composite( stackedLayoutComposite, SWT.NONE );
+    localOptionsComposite.setLayout( new FormLayout() );
+    props.setLook( localOptionsComposite );
+
+    serverOptionsComposite = new Composite( stackedLayoutComposite, SWT.NONE );
+    serverOptionsComposite.setLayout( new FormLayout() );
+    props.setLook( serverOptionsComposite );
+
+    stackedLayout.topControl = localOptionsComposite;
+
+    localOptionsComposite( PKG, prefix );
+    serverOptionsComposite( PKG, prefix );
   }
+
+  protected void localOptionsComposite( Class<?> PKG, String prefix ) {
+
+    Label localDescriptionLabel = new Label( localOptionsComposite, SWT.NONE );
+    props.setLook( localDescriptionLabel );
+    localDescriptionLabel.setText( BaseMessages.getString( PKG, prefix + ".LocalHost.Label" ) );
+    FormData fd_localDescriptionLabel = new FormData();
+    fd_localDescriptionLabel.left = new FormAttachment( environmentSeparator, 5 );
+    fd_localDescriptionLabel.top = new FormAttachment( 0, 12 );
+    if ( Const.isOSX() ) {
+      fd_localDescriptionLabel.top = new FormAttachment( 0, 10 );
+    }
+    localDescriptionLabel.setLayoutData( fd_localDescriptionLabel );
+  }
+
+  protected abstract void serverOptionsComposite( Class<?> PKG, String prefix );
 
   protected abstract void optionsSectionControls();
 }

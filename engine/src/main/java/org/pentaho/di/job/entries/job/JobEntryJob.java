@@ -22,10 +22,19 @@
 
 package org.pentaho.di.job.entries.job;
 
+import java.io.OutputStream;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+
 import org.apache.commons.vfs2.FileObject;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.ObjectLocationSpecificationMethod;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.ResultFile;
@@ -35,15 +44,12 @@ import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
-import org.pentaho.di.core.extension.ExtensionPointHandler;
-import org.pentaho.di.core.extension.KettleExtensionPoint;
 import org.pentaho.di.core.logging.LogChannelFileWriter;
 import org.pentaho.di.core.logging.LogLevel;
 import org.pentaho.di.core.parameters.DuplicateParamException;
 import org.pentaho.di.core.parameters.NamedParams;
 import org.pentaho.di.core.parameters.NamedParamsDefault;
 import org.pentaho.di.core.util.CurrentDirectoryResolver;
-import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.core.vfs.KettleVFS;
@@ -73,14 +79,6 @@ import org.pentaho.di.resource.ResourceReference;
 import org.pentaho.di.www.SlaveServerJobStatus;
 import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Node;
-
-import java.io.OutputStream;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
 
 /**
  * Recursive definition of a Job. This step means that an entire Job has to be executed. It can be the same Job, but
@@ -127,8 +125,6 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
   public boolean passingAllParameters = true;
 
   private boolean passingExport;
-
-  private String runConfiguration;
 
   public static final LogLevel DEFAULT_LOG_LEVEL = LogLevel.NOTHING;
 
@@ -217,15 +213,6 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
   public void setPassingExport( boolean passingExport ) {
     this.passingExport = passingExport;
   }
-
-  public String getRunConfiguration() {
-    return runConfiguration;
-  }
-
-  public void setRunConfiguration( String runConfiguration ) {
-    this.runConfiguration = runConfiguration;
-  }
-
 
   public String getLogFilename() {
     String retval = "";
@@ -596,6 +583,17 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
       jobLogLevel = logFileLevel;
     }
 
+    // Figure out the remote slave server...
+    //
+    SlaveServer remoteSlaveServer = null;
+    if ( !Utils.isEmpty( remoteSlaveServerName ) ) {
+      String realRemoteSlaveServerName = environmentSubstitute( remoteSlaveServerName );
+      remoteSlaveServer = parentJob.getJobMeta().findSlaveServer( realRemoteSlaveServerName );
+      if ( remoteSlaveServer == null ) {
+        throw new KettleException( BaseMessages.getString(
+          PKG, "JobJob.Exception.UnableToFindRemoteSlaveServer", realRemoteSlaveServerName ) );
+      }
+    }
     try {
       // First load the job, outside of the loop...
       if ( parentJob.getJobMeta() != null ) {
@@ -816,40 +814,6 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
                   }
                 }
               }
-            }
-          }
-        }
-
-        boolean doFallback = true;
-        SlaveServer remoteSlaveServer = null;
-        JobExecutionConfiguration executionConfiguration = new JobExecutionConfiguration();
-        if ( !Utils.isEmpty( runConfiguration ) ) {
-          log.logBasic( BaseMessages.getString( PKG, "JobTrans.RunConfig.Message" ), runConfiguration );
-          runConfiguration = environmentSubstitute( runConfiguration );
-          executionConfiguration.setRunConfiguration( runConfiguration );
-          try {
-            ExtensionPointHandler.callExtensionPoint( log, KettleExtensionPoint.SpoonTransBeforeStart.id, new Object[] {
-              executionConfiguration, parentJob.getJobMeta(), jobMeta
-            } );
-            remoteSlaveServer = executionConfiguration.getRemoteServer();
-            doFallback = false;
-          } catch ( KettleException e ) {
-            log.logError( e.getMessage(), getName() );
-            result.setNrErrors( 1 );
-            result.setResult( false );
-            return result;
-          }
-        }
-
-        if ( doFallback ) {
-          // Figure out the remote slave server...
-          //
-          if ( !Utils.isEmpty( remoteSlaveServerName ) ) {
-            String realRemoteSlaveServerName = environmentSubstitute( remoteSlaveServerName );
-            remoteSlaveServer = parentJob.getJobMeta().findSlaveServer( realRemoteSlaveServerName );
-            if ( remoteSlaveServer == null ) {
-              throw new KettleException( BaseMessages.getString(
-                PKG, "JobTrans.Exception.UnableToFindRemoteSlaveServer", realRemoteSlaveServerName ) );
             }
           }
         }
