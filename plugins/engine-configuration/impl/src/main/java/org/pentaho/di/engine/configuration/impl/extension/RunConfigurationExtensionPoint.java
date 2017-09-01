@@ -30,6 +30,7 @@ import org.pentaho.di.core.extension.ExtensionPointInterface;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.engine.configuration.impl.RunConfigurationManager;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -47,7 +48,9 @@ public class RunConfigurationExtensionPoint implements ExtensionPointInterface {
 
   @SuppressWarnings( "unchecked" )
   @Override public void callExtensionPoint( LogChannelInterface logChannelInterface, Object o ) throws KettleException {
-    List<String> runConfigurations = (List) o;
-    runConfigurations.addAll( runConfigurationManager.getNames() );
+    List<String> runConfigurations = (ArrayList) ( (Object[]) o )[ 0 ];
+    String type = (String) ( (Object[]) o )[ 1 ];
+
+    runConfigurations.addAll( runConfigurationManager.getNames( type ) );
   }
 }

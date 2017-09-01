@@ -35,4 +35,5 @@ public interface RunConfiguration {
 
   void setName( String name );
   void setDescription( String description );
+  RunConfigurationUI getUI();
 }
