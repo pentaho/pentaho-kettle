@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,6 +22,10 @@
 
 package org.pentaho.di.ui.job.dialog;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.layout.FormAttachment;
@@ -30,13 +34,11 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TableItem;
+import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.extension.ExtensionPointHandler;
-import org.pentaho.di.core.extension.KettleExtensionPoint;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.logging.DefaultLogLevel;
 import org.pentaho.di.core.logging.LogLevel;
-import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.JobExecutionConfiguration;
 import org.pentaho.di.job.JobMeta;
@@ -45,10 +47,6 @@ import org.pentaho.di.ui.core.dialog.ConfigurationDialog;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.spoon.Spoon;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 
 public class JobExecutionConfigurationDialog extends ConfigurationDialog {
   private static Class<?> PKG = JobExecutionConfigurationDialog.class; // for i18n purposes, needed by Translator2!!
@@ -60,24 +58,56 @@ public class JobExecutionConfigurationDialog extends ConfigurationDialog {
     super( parent, configuration, jobMeta );
   }
 
-  protected void optionsSectionControls() {
+  protected void serverOptionsComposite( Class<?> PKG, String prefix ) {
+    wlRemoteHost = new Label( serverOptionsComposite, SWT.NONE );
+    props.setLook( wlRemoteHost );
+    wlRemoteHost.setText( BaseMessages.getString( PKG, prefix + ".RemoteHost.Label" ) );
+    wlRemoteHost.setToolTipText( BaseMessages.getString( PKG, prefix + ".RemoteHost.Tooltip" ) );
+    FormData fdlRemoteHost = new FormData();
+    fdlRemoteHost.top = new FormAttachment( 0, 10 );
+    fdlRemoteHost.left = new FormAttachment( environmentSeparator, 5 );
+    wlRemoteHost.setLayoutData( fdlRemoteHost );
 
-    wExpandRemote = new Button( gDetails, SWT.CHECK );
-    wExpandRemote.setText( BaseMessages.getString( PKG, "JobExecutionConfigurationDialog.ExpandRemote.Label" ) );
+    wRemoteHost = new CCombo( serverOptionsComposite, SWT.BORDER );
+    wRemoteHost.setToolTipText( BaseMessages.getString( PKG, prefix + ".RemoteHost.Tooltip" ) );
+    props.setLook( wRemoteHost );
+    FormData fdRemoteHost = new FormData();
+    fdRemoteHost.left = new FormAttachment( wlRemoteHost, 0, SWT.LEFT );
+    fdRemoteHost.width = 170;
+    fdRemoteHost.top = new FormAttachment( wlRemoteHost, 8 );
+    wRemoteHost.setLayoutData( fdRemoteHost );
+    for ( int i = 0; i < abstractMeta.getSlaveServers().size(); i++ ) {
+      SlaveServer slaveServer = abstractMeta.getSlaveServers().get( i );
+      wRemoteHost.add( slaveServer.toString() );
+    }
+
+    wPassExport = new Button( serverOptionsComposite, SWT.CHECK );
+    wPassExport.setText( BaseMessages.getString( PKG, prefix + ".PassExport.Label" ) );
+    wPassExport.setToolTipText( BaseMessages.getString( PKG, prefix + ".PassExport.Tooltip" ) );
+    props.setLook( wPassExport );
+    FormData fdPassExport = new FormData();
+    fdPassExport.left = new FormAttachment( wRemoteHost, 0, SWT.LEFT );
+    fdPassExport.top = new FormAttachment( wRemoteHost, 8 );
+    wPassExport.setLayoutData( fdPassExport );
+
+    wExpandRemote = new Button( serverOptionsComposite, SWT.CHECK );
+    wExpandRemote.setText( BaseMessages.getString( PKG, prefix + ".ExpandRemote.Label" ) );
     wExpandRemote
-      .setToolTipText( BaseMessages.getString( PKG, "JobExecutionConfigurationDialog.ExpandRemote.Tooltip" ) );
+        .setToolTipText( BaseMessages.getString( PKG, "JobExecutionConfigurationDialog.ExpandRemote.Tooltip" ) );
     props.setLook( wExpandRemote );
     FormData fd_expandCheckButton = new FormData();
-    fd_expandCheckButton.top = new FormAttachment( 0, 10 );
-    fd_expandCheckButton.left = new FormAttachment( 0, 10 );
+    fd_expandCheckButton.bottom = new FormAttachment( wPassExport, 0, SWT.BOTTOM );
+    fd_expandCheckButton.left = new FormAttachment( wPassExport, 45 );
     wExpandRemote.setLayoutData( fd_expandCheckButton );
+  }
 
+  protected void optionsSectionControls() {
     wClearLog = new Button( gDetails, SWT.CHECK );
     wClearLog.setText( BaseMessages.getString( PKG, "JobExecutionConfigurationDialog.ClearLog.Label" ) );
     wClearLog.setToolTipText( BaseMessages.getString( PKG, "JobExecutionConfigurationDialog.ClearLog.Tooltip" ) );
     props.setLook( wClearLog );
     FormData fdClearLog = new FormData();
-    fdClearLog.top = new FormAttachment( wExpandRemote, 10 );
+    fdClearLog.top = new FormAttachment( 0, 10 );
     fdClearLog.left = new FormAttachment( 0, 10 );
     wClearLog.setLayoutData( fdClearLog );
 
@@ -151,7 +181,8 @@ public class JobExecutionConfigurationDialog extends ConfigurationDialog {
   public boolean open() {
 
     mainLayout( PKG, "JobExecutionConfigurationDialog", GUIResource.getInstance().getImageJobGraph() );
-    runConfigurationSectionLayout( PKG, "TransExecutionConfigurationDialog" );
+
+    environmentTypeSectionLayout( PKG, "JobExecutionConfigurationDialog" );
     optionsSectionLayout( PKG, "JobExecutionConfigurationDialog" );
     parametersSectionLayout( PKG, "JobExecutionConfigurationDialog" );
 
@@ -196,30 +227,22 @@ public class JobExecutionConfigurationDialog extends ConfigurationDialog {
   }
 
   public void getData() {
+    wExecLocal.setSelection( configuration.isExecutingLocally() );
+    if ( configuration.isExecutingLocally() ) {
+      stackedLayout.topControl = localOptionsComposite;
+    }
+    wExecRemote.setSelection( configuration.isExecutingRemotely() );
+    if ( configuration.isExecutingRemotely() ) {
+      stackedLayout.topControl = serverOptionsComposite;
+    }
+
     wSafeMode.setSelection( configuration.isSafeModeEnabled() );
     wClearLog.setSelection( configuration.isClearingLog() );
+    wRemoteHost.setText( configuration.getRemoteServer() == null ? "" : configuration.getRemoteServer().toString() );
+    wPassExport.setSelection( configuration.isPassingExport() );
     wExpandRemote.setSelection( getConfiguration().isExpandingRemoteJob() );
     wLogLevel.select( DefaultLogLevel.getLogLevel().getLevel() );
     wGatherMetrics.setSelection( configuration.isGatheringMetrics() );
-
-    List<String> runConfigurations = new ArrayList<>();
-    try {
-      ExtensionPointHandler
-        .callExtensionPoint( Spoon.getInstance().getLog(), KettleExtensionPoint.SpoonRunConfiguration.id,
-          new Object[] { runConfigurations, JobMeta.XML_TAG } );
-    } catch ( KettleException e ) {
-      // Ignore errors
-    }
-
-    wRunConfiguration.setItems( runConfigurations.toArray( new String[ 0 ] ) );
-    if ( !runConfigurations.contains( getConfiguration().getRunConfiguration() ) ) {
-      getConfiguration().setRunConfiguration( null );
-    }
-    if ( Utils.isEmpty( getConfiguration().getRunConfiguration() ) ) {
-      wRunConfiguration.select( 0 );
-    } else {
-      wRunConfiguration.setText( getConfiguration().getRunConfiguration() );
-    }
 
     String startCopy = "";
     if ( !Utils.isEmpty( getConfiguration().getStartCopyName() ) ) {
@@ -238,8 +261,17 @@ public class JobExecutionConfigurationDialog extends ConfigurationDialog {
 
   public void getInfo() {
     try {
+      configuration.setExecutingLocally( wExecLocal.getSelection() );
+      configuration.setExecutingRemotely( wExecRemote.getSelection() );
+
+      // Remote data
+      //
+      if ( wExecRemote.getSelection() ) {
+        String serverName = wRemoteHost.getText();
+        configuration.setRemoteServer( abstractMeta.findSlaveServer( serverName ) );
+      }
+      configuration.setPassingExport( wPassExport.getSelection() );
       getConfiguration().setExpandingRemoteJob( wExpandRemote.getSelection() );
-      getConfiguration().setRunConfiguration( wRunConfiguration.getText() );
 
       // various settings
       //

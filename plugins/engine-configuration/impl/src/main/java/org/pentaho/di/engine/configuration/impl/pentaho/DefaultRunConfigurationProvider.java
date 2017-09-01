@@ -29,15 +29,11 @@ import org.pentaho.di.engine.configuration.api.RunConfiguration;
 import org.pentaho.di.engine.configuration.api.RunConfigurationExecutor;
 import org.pentaho.di.engine.configuration.api.RunConfigurationProvider;
 import org.pentaho.di.engine.configuration.impl.MetaStoreRunConfigurationFactory;
-import org.pentaho.di.job.JobMeta;
-import org.pentaho.di.trans.TransMeta;
 import org.pentaho.metastore.api.exceptions.MetaStoreException;
 import org.pentaho.metastore.persist.MetaStoreFactory;
 import org.pentaho.osgi.metastore.locator.api.MetastoreLocator;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -48,7 +44,6 @@ public class DefaultRunConfigurationProvider extends MetaStoreRunConfigurationFa
 
   public static final String DEFAULT_CONFIG_NAME = "Pentaho local";
   private static String TYPE = "Pentaho";
-  private List<String> supported = Arrays.asList( TransMeta.XML_TAG, JobMeta.XML_TAG );
 
   private static DefaultRunConfiguration defaultRunConfiguration = new DefaultRunConfiguration();
 
@@ -98,14 +93,6 @@ public class DefaultRunConfigurationProvider extends MetaStoreRunConfigurationFa
     names.add( defaultRunConfiguration.getName() );
     names.addAll( super.getNames() );
     return names;
-  }
-
-  @Override public boolean isSupported( String type ) {
-    return supported.contains( type );
-  }
-
-  @Override public List<String> getNames( String type ) {
-    return isSupported( type ) ? getNames() : Collections.emptyList();
   }
 
   @Override public RunConfigurationExecutor getExecutor() {
