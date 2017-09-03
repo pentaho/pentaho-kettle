@@ -18,20 +18,28 @@ define([
   "../../../components/utils",
   "angular"
 ], function(utils, angular) {
-  resize.$inject = ["$window"];
+  resize.$inject = ["$window", "$timeout"];
+
   /**
    * @param {Service} $window - A reference to the browser's window object
+   * @param {Function} $timeout - Angular wrapper for window.setTimeout.
    * @return {{restrict: string, link: link}} - resizeFolders directive
    */
-  function resize($window) {
+  function resize($window, $timeout) {
     return {
       restrict: "A",
       link: function(scope, element, attrs) {
         var w = angular.element($window);
 
-        w.on("resize", function() {
+        scope.$watch(attrs.resizeFolders, function() {
           resizeFolderWidths();
-          scope.$apply();
+        });
+
+        w.on("resize", function() {
+          $timeout(function() {
+            resizeFolderWidths();
+            scope.$apply();
+          });
         });
 
         /**
@@ -41,7 +49,9 @@ define([
         function resizeFolderWidths() {
           var maxWidth = scope.vm.maxWidth;
           var clientWidth = element[0].parentElement.parentElement.clientWidth;
+          var overflowAuto = maxWidth > clientWidth;
           scope.vm.width = maxWidth > clientWidth ? maxWidth : clientWidth;
+          angular.element(element[0].parentElement.parentElement).css("overflow-x", overflowAuto ? "auto" : "hidden");
         }
       }
     };
@@ -49,6 +59,6 @@ define([
 
   return {
     name: "resizeFolders",
-    options: ["$window", resize]
+    options: ["$window", "$timeout", resize]
   };
 });
