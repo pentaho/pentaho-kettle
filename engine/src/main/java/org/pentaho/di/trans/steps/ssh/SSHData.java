@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -24,10 +24,13 @@ package org.pentaho.di.trans.steps.ssh;
 
 import java.io.File;
 
+import com.google.common.annotations.VisibleForTesting;
+import org.apache.commons.vfs2.FileObject;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.variables.VariableSpace;
+import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.step.BaseStepData;
 import org.pentaho.di.trans.step.StepDataInterface;
@@ -76,13 +79,14 @@ public class SSHData extends BaseStepData implements StepDataInterface {
         if ( Utils.isEmpty( keyFilename ) ) {
           throw new KettleException( BaseMessages.getString( SSHMeta.PKG, "SSH.Error.PrivateKeyFileMissing" ) );
         }
-        keyFile = new File( keyFilename );
+        FileObject keyFileObject = KettleVFS.getFileObject( keyFilename );
+        keyFile = getFile( keyFileObject );
         if ( !keyFile.exists() ) {
           throw new KettleException( BaseMessages.getString( SSHMeta.PKG, "SSH.Error.PrivateKeyNotExist", keyFilename ) );
         }
       }
       // Create a new connection
-      conn = new Connection( serveur, port );
+      conn = createConnection( serveur, port );
 
       /* We want to connect through a HTTP proxy */
       if ( !Utils.isEmpty( proxyhost ) ) {
@@ -120,5 +124,15 @@ public class SSHData extends BaseStepData implements StepDataInterface {
       throw new KettleException( BaseMessages.getString( SSHMeta.PKG, "SSH.Error.ErrorConnecting", serveur, username ), e );
     }
     return conn;
+  }
+
+  @VisibleForTesting
+  static Connection createConnection( String serveur, int port ) {
+    return new Connection( serveur, port );
+  }
+
+  @VisibleForTesting
+  static File getFile( FileObject fileObject ) {
+    return new File( KettleVFS.getFilename( fileObject ) );
   }
 }
