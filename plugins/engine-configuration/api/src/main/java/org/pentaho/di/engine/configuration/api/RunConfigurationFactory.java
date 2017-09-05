@@ -36,4 +36,5 @@ public interface RunConfigurationFactory {
   boolean delete( String name );
   void deleteAll();
   List<String> getNames();
+  List<String> getNames( String type );
 }
