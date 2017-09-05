@@ -21,14 +21,19 @@
  ******************************************************************************/
 package org.pentaho.di.trans;
 
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
+import org.pentaho.di.core.Const;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.database.DatabaseMeta;
+import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
+import org.pentaho.di.core.gui.OverwritePrompter;
 import org.pentaho.di.core.gui.Point;
 import org.pentaho.di.core.listeners.ContentChangedListener;
 import org.pentaho.di.core.row.RowMeta;
@@ -40,6 +45,7 @@ import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.metastore.DatabaseMetaStoreUtil;
 import org.pentaho.di.repository.ObjectRevision;
 import org.pentaho.di.repository.Repository;
+import org.pentaho.di.repository.RepositoryDirectory;
 import org.pentaho.di.repository.RepositoryDirectoryInterface;
 import org.pentaho.di.trans.step.StepIOMeta;
 import org.pentaho.di.trans.step.StepMeta;
@@ -51,6 +57,8 @@ import org.pentaho.di.trans.steps.userdefinedjavaclass.UserDefinedJavaClassDef;
 import org.pentaho.di.trans.steps.userdefinedjavaclass.UserDefinedJavaClassMeta;
 import org.pentaho.metastore.api.IMetaStore;
 import org.pentaho.metastore.stores.memory.MemoryMetaStore;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -398,4 +406,56 @@ public class TransMetaTest {
     @Override
     public abstract Object clone();
   }
+
+  @Test
+  public void testLoadXml() throws KettleException {
+    String directory = "/home/admin";
+    Node jobNode = Mockito.mock( Node.class );
+    NodeList nodeList = new NodeList() {
+      ArrayList<Node> nodes = new ArrayList<>();
+
+      {
+
+        Node nodeInfo = Mockito.mock( Node.class );
+        Mockito.when( nodeInfo.getNodeName() ).thenReturn( TransMeta.XML_TAG_INFO );
+        Mockito.when( nodeInfo.getChildNodes() ).thenReturn( this );
+
+        Node nodeDirectory = Mockito.mock( Node.class );
+        Mockito.when( nodeDirectory.getNodeName() ).thenReturn( "directory" );
+        Node child = Mockito.mock( Node.class );
+        Mockito.when( nodeDirectory.getFirstChild() ).thenReturn( child );
+        Mockito.when( child.getNodeValue() ).thenReturn( directory );
+
+        nodes.add( nodeDirectory );
+        nodes.add( nodeInfo );
+
+      }
+
+      @Override public Node item( int index ) {
+        return nodes.get( index );
+      }
+
+      @Override public int getLength() {
+        return nodes.size();
+      }
+    };
+
+    Mockito.when( jobNode.getChildNodes() ).thenReturn( nodeList );
+
+    Repository rep = Mockito.mock( Repository.class );
+    RepositoryDirectory repDirectory =
+      new RepositoryDirectory( new RepositoryDirectory( new RepositoryDirectory(), "home" ), "admin" );
+    Mockito.when( rep.findDirectory( Mockito.eq( directory ) ) ).thenReturn( repDirectory );
+    TransMeta meta = new TransMeta();
+
+    VariableSpace variableSpace = Mockito.mock( VariableSpace.class );
+    Mockito.when( variableSpace.listVariables() ).thenReturn( new String[0] );
+
+    meta.loadXML( jobNode, null, Mockito.mock( IMetaStore.class ), rep, false, variableSpace,
+      Mockito.mock( OverwritePrompter.class ) );
+    meta.setInternalKettleVariables( null );
+
+    Assert.assertEquals( repDirectory.getPath(), meta.getVariable( Const.INTERNAL_VARIABLE_TRANSFORMATION_REPOSITORY_DIRECTORY ) );
+  }
+
 }

@@ -22,13 +22,17 @@
 
 package org.pentaho.di.job;
 
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Mockito;
+import org.pentaho.di.core.Const;
 import org.pentaho.di.core.NotePadMeta;
 import org.pentaho.di.core.exception.IdNotFoundException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.exception.LookupReferencesException;
+import org.pentaho.di.core.gui.OverwritePrompter;
 import org.pentaho.di.core.gui.Point;
 import org.pentaho.di.core.listeners.ContentChangedListener;
 import org.pentaho.di.job.entries.empty.JobEntryEmpty;
@@ -36,9 +40,13 @@ import org.pentaho.di.job.entries.trans.JobEntryTrans;
 import org.pentaho.di.job.entry.JobEntryCopy;
 import org.pentaho.di.repository.ObjectRevision;
 import org.pentaho.di.repository.Repository;
+import org.pentaho.di.repository.RepositoryDirectory;
 import org.pentaho.di.repository.RepositoryDirectoryInterface;
 import org.pentaho.di.resource.ResourceDefinition;
 import org.pentaho.di.resource.ResourceNamingInterface;
+import org.pentaho.metastore.api.IMetaStore;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -292,4 +300,44 @@ public class JobMetaTest {
     jobMeta2.setFilename( filename );
     return jobMeta.equals( jobMeta2 );
   }
+
+  @Test
+  public void testLoadXml() throws KettleException {
+    String directory = "/home/admin";
+    Node jobNode = Mockito.mock( Node.class );
+    NodeList nodeList = new NodeList() {
+      Node node = Mockito.mock( Node.class );
+
+      {
+        Mockito.when( node.getNodeName() ).thenReturn( "directory" );
+        Node child = Mockito.mock( Node.class );
+        Mockito.when( node.getFirstChild() ).thenReturn( child );
+        Mockito.when( child.getNodeValue() ).thenReturn( directory );
+      }
+
+      @Override public Node item( int index ) {
+        return node;
+      }
+
+      @Override public int getLength() {
+        return 1;
+      }
+    };
+
+    Mockito.when( jobNode.getChildNodes() ).thenReturn( nodeList );
+
+    Repository rep = Mockito.mock( Repository.class );
+    RepositoryDirectory repDirectory =
+      new RepositoryDirectory( new RepositoryDirectory( new RepositoryDirectory(), "home" ), "admin" );
+    Mockito.when( rep.findDirectory( Mockito.eq( directory ) ) ).thenReturn( repDirectory );
+    JobMeta meta = new JobMeta();
+
+    meta.loadXML( jobNode, null, rep, Mockito.mock( IMetaStore.class ), false,
+      Mockito.mock( OverwritePrompter.class ) );
+    Job job = new Job( rep, meta );
+    job.setInternalKettleVariables( null );
+
+    Assert.assertEquals( repDirectory.getPath(), job.getVariable( Const.INTERNAL_VARIABLE_JOB_REPOSITORY_DIRECTORY ) );
+  }
+
 }
