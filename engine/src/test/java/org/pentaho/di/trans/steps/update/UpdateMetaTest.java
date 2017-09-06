@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -56,6 +56,7 @@ import org.pentaho.di.trans.steps.loadsave.validator.ArrayLoadSaveValidator;
 import org.pentaho.di.trans.steps.loadsave.validator.DatabaseMetaLoadSaveValidator;
 import org.pentaho.di.trans.steps.loadsave.validator.FieldLoadSaveValidator;
 import org.pentaho.di.trans.steps.loadsave.validator.StringLoadSaveValidator;
+import org.pentaho.di.trans.steps.mock.StepMockHelper;
 import org.pentaho.metastore.api.IMetaStore;
 
 import junit.framework.TestCase;
@@ -231,5 +232,40 @@ public class UpdateMetaTest extends TestCase implements InitializerInterface<Ste
   @Test
   public void testSerialization() throws KettleException {
     loadSaveTester.testSerialization();
+  }
+
+  @Test
+  public void testPDI16559() throws Exception {
+    StepMockHelper<UpdateMeta, UpdateData> mockHelper =
+        new StepMockHelper<UpdateMeta, UpdateData>( "update", UpdateMeta.class, UpdateData.class );
+
+    UpdateMeta update = new UpdateMeta();
+    update.setKeyStream( new String[] { "field1", "field2", "field3", "field4", "field5" } );
+    update.setKeyLookup( new String[] { "lkup1", "lkup2" } );
+    update.setKeyCondition( new String[] { "cond1", "cond2", "cond3" } );
+    update.setKeyStream2( new String[] { "str21", "str22", "str23", "str24" } );
+
+    update.setUpdateLookup( new String[] { "updlkup1", "updlkup2", "updlkup3", "updlkup4" } );
+    update.setUpdateStream( new String[] { "updlkup1", "updlkup2" } );
+
+    try {
+      String badXml = update.getXML();
+      Assert.fail( "Before calling afterInjectionSynchronization, should have thrown an ArrayIndexOOB" );
+    } catch ( Exception expected ) {
+      // Do Nothing
+    }
+    update.afterInjectionSynchronization();
+    //run without a exception
+    String ktrXml = update.getXML();
+
+    int targetSz = update.getKeyStream().length;
+
+    Assert.assertEquals( targetSz, update.getKeyLookup().length );
+    Assert.assertEquals( targetSz, update.getKeyCondition().length );
+    Assert.assertEquals( targetSz, update.getKeyStream2().length );
+
+    targetSz = update.getUpdateLookup().length;
+    Assert.assertEquals( targetSz, update.getUpdateStream().length );
+
   }
 }

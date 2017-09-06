@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -27,8 +27,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.pentaho.di.trans.steps.mock.StepMockHelper;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.value.ValueMetaBase;
@@ -141,6 +143,62 @@ public class FieldSplitterMetaTest {
     meta.setFieldName( new String[] { "c1", "c2" } );
 
     meta.getXML();
+  }
+
+  @Test
+  public void testPDI16559() throws Exception {
+    StepMockHelper<FieldSplitterMeta, FieldSplitterData> mockHelper =
+            new StepMockHelper<FieldSplitterMeta, FieldSplitterData>( "fieldSplitter", FieldSplitterMeta.class, FieldSplitterData.class );
+
+    FieldSplitterMeta fieldSplitter = new FieldSplitterMeta();
+    fieldSplitter.setFieldName( new String[] { "field1", "field2", "field3", "field4", "field5", "field6", "field7", "field8", "field9", "field10", "field11", "field12" } );
+    fieldSplitter.setFieldID( new String[] { "fieldID1", "fieldID2", "fieldID3", "fieldID4", "fieldID5", "fieldID6", "fieldID7", "fieldID8", "fieldID9", "fieldID10", "fieldID11" } );
+    fieldSplitter.setFieldRemoveID( new boolean[] { true, false, false, false, false, false, true, false, true } );
+    fieldSplitter.setFieldFormat( new String[] { "asdf", "asdf", "qwer", "qwer", "QErasdf", "zxvv", "fasdf", "qwerqwr" } );
+    fieldSplitter.setFieldGroup( new String[] { "groupa", "groupb", "groupa", "groupb", "groupa", "groupb", "groupa", "groupb" } );
+    fieldSplitter.setFieldDecimal( new String[] { "asdf", "qwer", "zxcvb", "erty", "asfaf", "fhdfhg" } );
+    fieldSplitter.setFieldCurrency( new String[] { "$", "$", "$", "$", "$", "$" } );
+    fieldSplitter.setFieldLength( new int[] { 12, 6, 15, 14, 23, 177, 13, 21 } );
+    fieldSplitter.setFieldPrecision( new int[] { 7, 7, 7, 7, 12, 16, 5, 5, 5} );
+    fieldSplitter.setFieldNullIf( new String[] { "hdfgh", "sdfgsdg", "ZZfZDf", "dfhfh", "235gwst", "qreqwre" } );
+    fieldSplitter.setFieldIfNull( new String[] { "asdfsaf", "qwreqwr", "afxxvzxvc", "qwreasgf", "zxcgdfg" } );
+
+    fieldSplitter.setFieldTrimType( new int[] { 1, 0, 2 } );
+    fieldSplitter.setFieldType( new int[] { 1, 1, 0, 3 } );
+
+    try {
+      String badXml = fieldSplitter.getXML();
+      Assert.fail( "Before calling afterInjectionSynchronization, should have thrown an ArrayIndexOOB" );
+    } catch ( Exception expected ) {
+      // Do Nothing
+    }
+    fieldSplitter.afterInjectionSynchronization();
+    //run without a exception
+    String ktrXml = fieldSplitter.getXML();
+
+    int targetSz = fieldSplitter.getFieldName().length;
+    Assert.assertEquals( targetSz, fieldSplitter.getFieldID().length );
+    Assert.assertEquals( targetSz, fieldSplitter.getFieldRemoveID().length );
+    Assert.assertEquals( targetSz, fieldSplitter.getFieldFormat().length );
+    Assert.assertEquals( targetSz, fieldSplitter.getFieldGroup().length );
+    Assert.assertEquals( targetSz, fieldSplitter.getFieldDecimal().length );
+    Assert.assertEquals( targetSz, fieldSplitter.getFieldCurrency().length );
+    Assert.assertEquals( targetSz, fieldSplitter.getFieldLength().length );
+    Assert.assertEquals( targetSz, fieldSplitter.getFieldPrecision().length );
+    Assert.assertEquals( targetSz, fieldSplitter.getFieldNullIf().length );
+    Assert.assertEquals( targetSz, fieldSplitter.getFieldIfNull().length );
+    Assert.assertEquals( targetSz, fieldSplitter.getFieldType().length );
+    Assert.assertEquals( targetSz, fieldSplitter.getFieldTrimType().length );
+
+    // Check for null arrays being handled
+    fieldSplitter.setFieldType( null ); // null int array
+    fieldSplitter.setFieldRemoveID( null ); // null boolean array
+    fieldSplitter.setFieldID( null ); // null string array
+    fieldSplitter.afterInjectionSynchronization();
+    Assert.assertEquals( targetSz, fieldSplitter.getFieldType().length );
+    Assert.assertEquals( targetSz, fieldSplitter.getFieldID().length );
+    Assert.assertEquals( targetSz, fieldSplitter.getFieldRemoveID().length );
+
   }
 
 }

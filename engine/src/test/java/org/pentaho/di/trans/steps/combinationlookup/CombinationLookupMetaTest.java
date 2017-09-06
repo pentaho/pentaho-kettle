@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -30,6 +30,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -47,6 +48,7 @@ import org.pentaho.di.trans.steps.loadsave.validator.ArrayLoadSaveValidator;
 import org.pentaho.di.trans.steps.loadsave.validator.DatabaseMetaLoadSaveValidator;
 import org.pentaho.di.trans.steps.loadsave.validator.FieldLoadSaveValidator;
 import org.pentaho.di.trans.steps.loadsave.validator.StringLoadSaveValidator;
+import org.pentaho.di.trans.steps.mock.StepMockHelper;
 
 public class CombinationLookupMetaTest implements InitializerInterface<StepMetaInterface> {
   LoadSaveTester loadSaveTester;
@@ -133,5 +135,33 @@ public class CombinationLookupMetaTest implements InitializerInterface<StepMetaI
     assertEquals( "s5", combinationLookupMeta.getStreamFields().get( 1 ) );
     assertEquals( "s6", combinationLookupMeta.getStreamFields().get( 2 ) );
   }
-  // Note - removed cloneTest because the load/save tester provides a deep-clone test.
+
+  @Test
+  public void testPDI16559() throws Exception {
+    StepMockHelper<CombinationLookupMeta, CombinationLookupData> mockHelper =
+            new StepMockHelper<CombinationLookupMeta, CombinationLookupData>( "combinationLookup", CombinationLookupMeta.class, CombinationLookupData.class );
+
+    CombinationLookupMeta combinationLookup = new CombinationLookupMeta();
+    combinationLookup.setKeyField( new String[] { "test_field" } );
+    combinationLookup.setKeyLookup( new String[] {} );
+    combinationLookup.setCacheSize( 15 );
+    combinationLookup.setSchemaName( "test_schema" );
+    combinationLookup.setTablename( "test_table" );
+    combinationLookup.setReplaceFields( true );
+    combinationLookup.setPreloadCache( false );
+
+    try {
+      String badXml = combinationLookup.getXML();
+      Assert.fail( "Before calling afterInjectionSynchronization, should have thrown an ArrayIndexOOB" );
+    } catch ( Exception expected ) {
+      // Do Nothing
+    }
+    combinationLookup.afterInjectionSynchronization();
+    //run without a exception
+    String ktrXml = combinationLookup.getXML();
+
+    Assert.assertEquals( combinationLookup.getKeyField().length, combinationLookup.getKeyLookup().length );
+
+  }
+
 }

@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -171,6 +171,141 @@ public class Utils {
       // actually null
       return resolvedPassword;
     }
+  }
+
+  /**
+   * Normalize String array lengths for synchronization of arrays within steps
+   */
+
+  public static String[][] normalizeArrays( int normalizeToLength, String[]... arraysToNormalize ) {
+    if ( arraysToNormalize == null ) {
+      return null;
+    }
+    int arraysToProcess = arraysToNormalize.length;
+    String[][] rtn = new String[ arraysToProcess ][];
+    for ( int i = 0; i < arraysToNormalize.length; i++ ) {
+      String[] nextArray = arraysToNormalize[ i ];
+      if ( nextArray != null ) {
+        if (nextArray.length < normalizeToLength) {
+          String[] newArray = new String[normalizeToLength];
+          System.arraycopy(nextArray, 0, newArray, 0, nextArray.length);
+          rtn[ i ] = newArray;
+        } else {
+          rtn[ i ] = nextArray;
+        }
+      } else {
+        rtn[ i ] = new String[ normalizeToLength ];
+      }
+    }
+    return rtn;
+  }
+
+  /**
+   * Normalize long array lengths for synchronization of arrays within steps
+   */
+
+  public static long[][] normalizeArrays( int normalizeToLength, long[]... arraysToNormalize ) {
+    if ( arraysToNormalize == null ) {
+      return null;
+    }
+    int arraysToProcess = arraysToNormalize.length;
+    long[][] rtn = new long[ arraysToProcess ][];
+    for ( int i = 0; i < arraysToNormalize.length; i++ ) {
+      long[] nextArray = arraysToNormalize[ i ];
+      if ( nextArray != null ) {
+        if (nextArray.length < normalizeToLength) {
+          long[] newArray = new long[normalizeToLength];
+          System.arraycopy(nextArray, 0, newArray, 0, nextArray.length);
+          rtn[i] = newArray;
+        } else {
+          rtn[i] = nextArray;
+        }
+      } else {
+        rtn[ i ] = new long[ normalizeToLength ];
+      }
+    }
+    return rtn;
+  }
+
+  /**
+   * Normalize int array lengths for synchronization of arrays within steps
+   */
+
+  public static int[][] normalizeArrays( int normalizeToLength, int[]... arraysToNormalize ) {
+    if ( arraysToNormalize == null ) {
+      return null;
+    }
+    int arraysToProcess = arraysToNormalize.length;
+    int[][] rtn = new int[ arraysToProcess ][];
+    for ( int i = 0; i < arraysToNormalize.length; i++ ) {
+      int[] nextArray = arraysToNormalize[ i ];
+      if ( nextArray != null ) {
+        if (nextArray.length < normalizeToLength) {
+          int[] newArray = new int[normalizeToLength];
+          System.arraycopy(nextArray, 0, newArray, 0, nextArray.length);
+          rtn[i] = newArray;
+        } else {
+          rtn[i] = nextArray;
+        }
+      } else {
+        rtn[ i ] = new int[ normalizeToLength ];
+      }
+    }
+    return rtn;
+  }
+
+  /**
+   * Normalize boolean array lengths for synchronization of arrays within steps
+   */
+
+  public static boolean[][] normalizeArrays( int normalizeToLength, boolean[]... arraysToNormalize ) {
+    if ( arraysToNormalize == null ) {
+      return null;
+    }
+    int arraysToProcess = arraysToNormalize.length;
+    boolean[][] rtn = new boolean[ arraysToProcess ][];
+    for ( int i = 0; i < arraysToNormalize.length; i++ ) {
+      boolean[] nextArray = arraysToNormalize[ i ];
+      if ( nextArray != null ) {
+        if (nextArray.length < normalizeToLength) {
+          boolean[] newArray = new boolean[normalizeToLength];
+          System.arraycopy(nextArray, 0, newArray, 0, nextArray.length);
+          rtn[i] = newArray;
+        } else {
+          rtn[i] = nextArray;
+        }
+      } else {
+        rtn[ i ] = new boolean[ normalizeToLength ];
+      }
+    }
+    return rtn;
+  }
+
+  /**
+   * Normalize short array lengths for synchronization of arrays within steps
+   */
+
+  public static short[][] normalizeArrays( int normalizeToLength, short[]... arraysToNormalize ) {
+    if ( arraysToNormalize == null ) {
+      return null;
+    }
+    int arraysToProcess = arraysToNormalize.length;
+    short[][] rtn = new short[ arraysToProcess ][];
+    for ( int i = 0; i < arraysToNormalize.length; i++ ) {
+      short[] nextArray = arraysToNormalize[ i ];
+      if ( nextArray != null ) {
+        if (nextArray.length < normalizeToLength) {
+          short[] newArray = new short[normalizeToLength];
+          System.arraycopy(nextArray, 0, newArray, 0, nextArray.length);
+          rtn[i] = newArray;
+        } else {
+          rtn[i] = nextArray;
+        }
+      } else {
+        rtn[ i ] = new short[ normalizeToLength ];
+      }
+    }
+    return rtn;
   }
 
 }

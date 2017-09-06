@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -27,6 +27,7 @@ import java.util.List;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.injection.AfterInjection;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.SQLStatement;
 import org.pentaho.di.core.database.Database;
@@ -927,6 +928,26 @@ public class UpdateMeta extends BaseStepMeta implements StepMetaInterface {
    */
   public void setUseBatchUpdate( boolean useBatchUpdate ) {
     this.useBatchUpdate = useBatchUpdate;
+  }
+
+  /**
+   * If we use injection we can have different arrays lengths.
+   * We need synchronize them for consistency behavior with UI
+   */
+  @AfterInjection
+  public void afterInjectionSynchronization() {
+    int nrFields = ( keyStream == null ) ? -1 : keyStream.length;
+    if ( nrFields <= 0 ) {
+      return;
+    }
+    String[][] rtn = Utils.normalizeArrays( nrFields, keyLookup, keyCondition, keyStream2 );
+    keyLookup = rtn[ 0 ];
+    keyCondition = rtn[ 0 ];
+    keyStream2 = rtn[ 0 ];
+
+    nrFields = updateLookup.length;
+    rtn = Utils.normalizeArrays( nrFields, updateStream );
+    updateStream = rtn[ 0 ];
   }
 
 }
