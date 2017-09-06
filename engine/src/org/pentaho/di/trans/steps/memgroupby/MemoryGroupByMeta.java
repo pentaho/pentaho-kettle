@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -27,6 +27,7 @@ import java.util.List;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.injection.AfterInjection;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
@@ -217,7 +218,7 @@ public class MemoryGroupByMeta extends BaseStepMeta implements StepMetaInterface
   }
 
   /**
-   * @param separatorField
+   * @param valueField
    *          The valueField to set.
    */
   public void setValueField( String[] valueField ) {
@@ -559,5 +560,23 @@ public class MemoryGroupByMeta extends BaseStepMeta implements StepMetaInterface
    */
   public void setAlwaysGivingBackOneRow( boolean alwaysGivingBackOneRow ) {
     this.alwaysGivingBackOneRow = alwaysGivingBackOneRow;
+  }
+
+  /**
+   * If we use injection we can have different arrays lengths.
+   * We need synchronize them for consistency behavior with UI
+   */
+  @AfterInjection
+  public void afterInjectionSynchronization() {
+    int nrFields = ( subjectField == null ? -1 : subjectField.length );
+    if ( nrFields <= 0 ) {
+      return;
+    }
+    String[][] normalizedStringArrays = Utils.normalizeArrays( nrFields, aggregateField, valueField );
+    aggregateField = normalizedStringArrays[ 0 ];
+    valueField = normalizedStringArrays[ 1 ];
+
+    int[][] normalizedIntArrays = Utils.normalizeArrays( nrFields, aggregateType );
+    aggregateType = normalizedIntArrays[ 0 ];
   }
 }

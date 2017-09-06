@@ -622,71 +622,6 @@ public class ReplaceStringMeta extends BaseStepMeta implements StepMetaInterface
     return getRegExByCode( tt );
   }
 
-
-  /**
-   * If we use injection we can have different arrays lengths.
-   * We need synchronize them for consistency behavior with UI
-   */
-  @AfterInjection
-  public void afterInjectionSynchronization() {
-    if ( fieldInStream == null || fieldInStream.length == 0 ) {
-      return;
-    }
-    int nrFields = fieldInStream.length;
-    //PDI-16423
-    if ( fieldOutStream.length < nrFields ) {
-      String[] newFieldOutStream = new String[ nrFields ];
-      System.arraycopy( fieldOutStream, 0, newFieldOutStream, 0, fieldOutStream.length );
-      fieldOutStream = newFieldOutStream;
-    }
-    nullToEmpty( fieldOutStream );
-
-    if ( useRegEx.length < nrFields ) {
-      int[] newUseRegEx = new int[ nrFields ];
-      System.arraycopy( useRegEx, 0, newUseRegEx, 0, useRegEx.length );
-      useRegEx = newUseRegEx;
-    }
-
-    if ( caseSensitive.length < nrFields ) {
-      int[] newCaseSensitive = new int[ nrFields ];
-      System.arraycopy( caseSensitive, 0, newCaseSensitive, 0, caseSensitive.length );
-      caseSensitive = newCaseSensitive;
-    }
-
-    if ( wholeWord.length < nrFields ) {
-      int[] newWholeWord = new int[ nrFields ];
-      System.arraycopy( wholeWord, 0, newWholeWord, 0, wholeWord.length );
-      wholeWord = newWholeWord;
-    }
-
-    if ( replaceString.length < nrFields ) {
-      String[] newReplaceStrings = new String[ nrFields ];
-      System.arraycopy( replaceString, 0, newReplaceStrings, 0, replaceString.length );
-      replaceString = newReplaceStrings;
-    }
-    nullToEmpty( replaceString );
-
-    if ( replaceByString.length < nrFields ) {
-      String[] newReplaceByString = new String[ nrFields ];
-      System.arraycopy( replaceByString, 0, newReplaceByString, 0, replaceByString.length );
-      replaceByString = newReplaceByString;
-    }
-    nullToEmpty( replaceByString );
-
-    if ( setEmptyString.length < nrFields ) {
-      boolean[] newSetEmptyString = new boolean[ nrFields ];
-      System.arraycopy( setEmptyString, 0, newSetEmptyString, 0, setEmptyString.length );
-      setEmptyString = newSetEmptyString;
-    }
-
-    if ( replaceFieldByString.length < nrFields ) {
-      String[] newFieldReplaceByString = new String[ nrFields ];
-      System.arraycopy( replaceFieldByString, 0, newFieldReplaceByString, 0, replaceFieldByString.length );
-      replaceFieldByString = newFieldReplaceByString;
-    }
-    nullToEmpty( replaceFieldByString );
-  }
-
   private void nullToEmpty( String [] strings ) {
     for ( int i = 0; i < strings.length; i++ ) {
       if ( strings[ i ] == null ) {
@@ -694,4 +629,34 @@ public class ReplaceStringMeta extends BaseStepMeta implements StepMetaInterface
       }
     }
   }
+  /**
+   * If we use injection we can have different arrays lengths.
+   * We need synchronize them for consistency behavior with UI
+   */
+  @AfterInjection
+  public void afterInjectionSynchronization() {
+    int nrFields = ( fieldInStream == null ) ? -1 : fieldInStream.length;
+    if ( nrFields <= 0 ) {
+      return;
+    }
+    String[][] rtnStringArrays = Utils.normalizeArrays( nrFields, fieldOutStream, replaceString, replaceByString, replaceFieldByString );
+    fieldOutStream = rtnStringArrays[ 0 ];
+    replaceString = rtnStringArrays[ 1 ];
+    replaceByString = rtnStringArrays[ 2 ];
+    replaceFieldByString = rtnStringArrays[ 3 ];
+
+    nullToEmpty( fieldOutStream );
+    nullToEmpty( replaceString );
+    nullToEmpty( replaceByString );
+    nullToEmpty( replaceFieldByString );
+
+    int[][] rtnIntArrays = Utils.normalizeArrays( nrFields, useRegEx, wholeWord, caseSensitive );
+    useRegEx = rtnIntArrays[ 0 ];
+    wholeWord = rtnIntArrays[ 1 ];
+    caseSensitive = rtnIntArrays[ 2 ];
+
+    boolean[][] rtnBooleanArrays = Utils.normalizeArrays( nrFields, setEmptyString );
+    setEmptyString = rtnBooleanArrays[ 0 ];
+  }
+
 }

@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -33,6 +33,7 @@ import java.util.Map;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.Assert;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.exception.KettleException;
@@ -57,6 +58,8 @@ import org.pentaho.di.trans.steps.loadsave.validator.FieldLoadSaveValidator;
 import org.pentaho.di.trans.steps.loadsave.validator.IntLoadSaveValidator;
 import org.pentaho.di.trans.steps.loadsave.validator.PrimitiveIntArrayLoadSaveValidator;
 import org.pentaho.di.trans.steps.loadsave.validator.StringLoadSaveValidator;
+
+import org.pentaho.di.trans.steps.mock.StepMockHelper;
 
 public class MemoryGroupByMetaTest implements InitializerInterface<MemoryGroupByMeta> {
   LoadSaveTester<MemoryGroupByMeta> loadSaveTester;
@@ -325,4 +328,39 @@ public class MemoryGroupByMetaTest implements InitializerInterface<MemoryGroupBy
     assertTrue( rm.indexOfValue( "Average(Integer)" ) >= 0 );
     assertEquals( ValueMetaInterface.TYPE_NUMBER, rm.getValueMeta( rm.indexOfValue( "Average(Integer)" ) ).getType() );
   }
+
+  @Test
+  public void testPDI16559() throws Exception {
+    StepMockHelper<MemoryGroupByMeta, MemoryGroupByData> mockHelper =
+            new StepMockHelper<MemoryGroupByMeta, MemoryGroupByData>( "memoryGroupBy", MemoryGroupByMeta.class, MemoryGroupByData.class );
+
+    MemoryGroupByMeta memoryGroupBy = new MemoryGroupByMeta();
+    memoryGroupBy.setGroupField( new String[] { "group1", "group 2" } );
+    memoryGroupBy.setSubjectField( new String[] { "field1", "field2", "field3", "field4", "field5", "field6", "field7", "field8", "field9", "field10", "field11", "field12" } );
+    memoryGroupBy.setAggregateField( new String[] { "fieldID1", "fieldID2", "fieldID3", "fieldID4", "fieldID5", "fieldID6", "fieldID7", "fieldID8", "fieldID9", "fieldID10", "fieldID11" } );
+    memoryGroupBy.setValueField( new String[] { "asdf", "asdf", "qwer", "qwer", "QErasdf", "zxvv", "fasdf", "qwerqwr" } );
+    memoryGroupBy.setAggregateType( new int[] { 12, 6, 15, 14, 23, 177, 13, 21 } );
+
+    try {
+      String badXml = memoryGroupBy.getXML();
+      Assert.fail( "Before calling afterInjectionSynchronization, should have thrown an ArrayIndexOOB" );
+    } catch ( Exception expected ) {
+      // Do Nothing
+    }
+    memoryGroupBy.afterInjectionSynchronization();
+    //run without a exception
+    String ktrXml = memoryGroupBy.getXML();
+
+    int targetSz = memoryGroupBy.getSubjectField().length;
+    Assert.assertEquals( targetSz, memoryGroupBy.getAggregateField().length );
+    Assert.assertEquals( targetSz, memoryGroupBy.getAggregateType().length );
+    Assert.assertEquals( targetSz, memoryGroupBy.getValueField().length );
+
+    // Check for null arrays being handled
+    memoryGroupBy.setValueField( null ); // null string array
+    memoryGroupBy.afterInjectionSynchronization();
+    Assert.assertEquals( targetSz, memoryGroupBy.getValueField().length );
+
+  }
+
 }
