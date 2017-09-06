@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -27,6 +27,7 @@ import java.util.List;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.injection.AfterInjection;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.SQLStatement;
 import org.pentaho.di.core.database.Database;
@@ -1095,9 +1096,7 @@ public class SynchronizeAfterMergeMeta extends BaseStepMeta implements StepMetaI
     String[] newAllocation = null;
     if ( oldAllocation.length < length ) {
       newAllocation = new String[length];
-      for ( int i = 0; i < oldAllocation.length; i++ ) {
-        newAllocation[i] = oldAllocation[i];
-      }
+      System.arraycopy( oldAllocation, 0, newAllocation, 0, oldAllocation.length );
     } else {
       newAllocation = oldAllocation;
     }
@@ -1108,13 +1107,26 @@ public class SynchronizeAfterMergeMeta extends BaseStepMeta implements StepMetaI
     Boolean[] newAllocation = null;
     if ( oldAllocation.length < length ) {
       newAllocation = new Boolean[length];
-      for ( int i = 0; i < oldAllocation.length; i++ ) {
-        newAllocation[i] = oldAllocation[i];
+      System.arraycopy( oldAllocation, 0, newAllocation, 0, oldAllocation.length );
+      for ( int i = 0; i < length; i++ ) {
+        if ( newAllocation[ i ] == null ) {
+          newAllocation[ i ] = Boolean.TRUE; // Set based on default in setDefault
+        }
       }
     } else {
       newAllocation = oldAllocation;
     }
     return newAllocation;
   }
+
+  /**
+   * If we use injection we can have different arrays lengths.
+   * We need synchronize them for consistency behavior with UI
+   */
+  @AfterInjection
+  public void afterInjectionSynchronization() {
+    normalizeAllocationFields();
+  }
+
 
 }

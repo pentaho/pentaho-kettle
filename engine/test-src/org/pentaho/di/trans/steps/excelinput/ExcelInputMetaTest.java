@@ -44,6 +44,7 @@ import org.pentaho.di.trans.steps.loadsave.validator.FieldLoadSaveValidator;
 import org.pentaho.di.trans.steps.loadsave.validator.IntLoadSaveValidator;
 import org.pentaho.di.trans.steps.loadsave.validator.PrimitiveIntArrayLoadSaveValidator;
 import org.pentaho.di.trans.steps.loadsave.validator.StringLoadSaveValidator;
+import org.pentaho.di.trans.steps.mock.StepMockHelper;
 
 public class ExcelInputMetaTest {
   LoadSaveTester loadSaveTester;
@@ -405,4 +406,35 @@ public class ExcelInputMetaTest {
     Assert.assertEquals( meta.getXML(), clone.getXML() );
   }
   // Note - removed cloneTest as it's now covered by the load/save tester.
+
+
+  @Test
+  public void testPDI16559() throws Exception {
+    StepMockHelper<ExcelInputMeta, ExcelInputData> mockHelper =
+            new StepMockHelper<ExcelInputMeta, ExcelInputData>( "excelInput", ExcelInputMeta.class, ExcelInputData.class );
+
+    ExcelInputMeta excelInput = new ExcelInputMeta();
+    excelInput.setFileName( new String[] { "file1", "file2", "file3", "file4", "file5" } );
+    excelInput.setFileMask( new String[] { "mask1", "mask2", "mask3", "mask4" } );
+    excelInput.setExcludeFileMask( new String[] { "excludeMask1", "excludeMask2", "excludeMask3" } );
+    excelInput.setIncludeSubFolders( new String[] { "yes", "no" } );
+    excelInput.setSheetName( new String[] { "sheet1", "sheet2", "sheet3" } );
+    excelInput.setStartRow( new int[] { 0, 15 } );
+    excelInput.setStartColumn( new int[] { 9 } );
+
+    excelInput.afterInjectionSynchronization();
+    //run without a exception
+    String ktrXml = excelInput.getXML();
+
+    int targetLen = excelInput.getFileName().length;
+    Assert.assertEquals( targetLen, excelInput.getFileMask().length );
+    Assert.assertEquals( targetLen, excelInput.getExcludeFileMask().length );
+    Assert.assertEquals( targetLen, excelInput.getFileRequired().length );
+    Assert.assertEquals( targetLen, excelInput.getIncludeSubFolders().length );
+
+    targetLen = excelInput.getSheetName().length;
+    Assert.assertEquals( targetLen, excelInput.getStartRow().length );
+    Assert.assertEquals( targetLen, excelInput.getStartColumn().length );
+
+  }
 }
