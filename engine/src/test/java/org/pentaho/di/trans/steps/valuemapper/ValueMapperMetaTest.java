@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.pentaho.di.core.KettleEnvironment;
@@ -39,6 +40,7 @@ import org.pentaho.di.trans.steps.loadsave.initializer.InitializerInterface;
 import org.pentaho.di.trans.steps.loadsave.validator.ArrayLoadSaveValidator;
 import org.pentaho.di.trans.steps.loadsave.validator.FieldLoadSaveValidator;
 import org.pentaho.di.trans.steps.loadsave.validator.StringLoadSaveValidator;
+import org.pentaho.di.trans.steps.mock.StepMockHelper;
 
 public class ValueMapperMetaTest implements InitializerInterface<StepMetaInterface> {
   LoadSaveTester loadSaveTester;
@@ -144,5 +146,28 @@ public class ValueMapperMetaTest implements InitializerInterface<StepMetaInterfa
     private boolean nullOrEmpty( Object o ) {
       return o == null || StringUtils.isEmpty( o.toString() );
     }
+  }
+
+  @Test
+  public void testPDI16559() throws Exception {
+    StepMockHelper<ValueMapperMeta, ValueMapperData> mockHelper =
+        new StepMockHelper<ValueMapperMeta, ValueMapperData>( "valueMapper", ValueMapperMeta.class, ValueMapperData.class );
+
+    ValueMapperMeta valueMapper = new ValueMapperMeta();
+    valueMapper.setSourceValue( new String[] { "value1", "value2", "value3", "value4" } );
+    valueMapper.setTargetValue( new String[] { "targ1", "targ2" } );
+
+    try {
+      String badXml = valueMapper.getXML();
+      Assert.fail( "Before calling afterInjectionSynchronization, should have thrown an ArrayIndexOOB" );
+    } catch ( Exception expected ) {
+      // Do Nothing
+    }
+    valueMapper.afterInjectionSynchronization();
+    //run without a exception
+    String ktrXml = valueMapper.getXML();
+
+    Assert.assertEquals( valueMapper.getSourceValue().length, valueMapper.getTargetValue().length );
+
   }
 }
