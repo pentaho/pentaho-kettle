@@ -186,9 +186,9 @@ public class Utils {
     for ( int i = 0; i < arraysToNormalize.length; i++ ) {
       String[] nextArray = arraysToNormalize[ i ];
       if ( nextArray != null ) {
-        if (nextArray.length < normalizeToLength) {
-          String[] newArray = new String[normalizeToLength];
-          System.arraycopy(nextArray, 0, newArray, 0, nextArray.length);
+        if ( nextArray.length < normalizeToLength ) {
+          String[] newArray = new String[ normalizeToLength ];
+          System.arraycopy( nextArray, 0, newArray, 0, nextArray.length );
           rtn[ i ] = newArray;
         } else {
           rtn[ i ] = nextArray;
@@ -213,12 +213,12 @@ public class Utils {
     for ( int i = 0; i < arraysToNormalize.length; i++ ) {
       long[] nextArray = arraysToNormalize[ i ];
       if ( nextArray != null ) {
-        if (nextArray.length < normalizeToLength) {
-          long[] newArray = new long[normalizeToLength];
-          System.arraycopy(nextArray, 0, newArray, 0, nextArray.length);
-          rtn[i] = newArray;
+        if ( nextArray.length < normalizeToLength ) {
+          long[] newArray = new long[ normalizeToLength ];
+          System.arraycopy( nextArray, 0, newArray, 0, nextArray.length );
+          rtn[ i ] = newArray;
         } else {
-          rtn[i] = nextArray;
+          rtn[ i ] = nextArray;
         }
       } else {
         rtn[ i ] = new long[ normalizeToLength ];
@@ -240,12 +240,12 @@ public class Utils {
     for ( int i = 0; i < arraysToNormalize.length; i++ ) {
       int[] nextArray = arraysToNormalize[ i ];
       if ( nextArray != null ) {
-        if (nextArray.length < normalizeToLength) {
-          int[] newArray = new int[normalizeToLength];
-          System.arraycopy(nextArray, 0, newArray, 0, nextArray.length);
-          rtn[i] = newArray;
+        if ( nextArray.length < normalizeToLength ) {
+          int[] newArray = new int[ normalizeToLength ];
+          System.arraycopy( nextArray, 0, newArray, 0, nextArray.length );
+          rtn[ i ] = newArray;
         } else {
-          rtn[i] = nextArray;
+          rtn[ i ] = nextArray;
         }
       } else {
         rtn[ i ] = new int[ normalizeToLength ];
@@ -267,12 +267,12 @@ public class Utils {
     for ( int i = 0; i < arraysToNormalize.length; i++ ) {
       boolean[] nextArray = arraysToNormalize[ i ];
       if ( nextArray != null ) {
-        if (nextArray.length < normalizeToLength) {
-          boolean[] newArray = new boolean[normalizeToLength];
-          System.arraycopy(nextArray, 0, newArray, 0, nextArray.length);
-          rtn[i] = newArray;
+        if ( nextArray.length < normalizeToLength ) {
+          boolean[] newArray = new boolean[ normalizeToLength ];
+          System.arraycopy( nextArray, 0, newArray, 0, nextArray.length );
+          rtn[ i ] = newArray;
         } else {
-          rtn[i] = nextArray;
+          rtn[ i ] = nextArray;
         }
       } else {
         rtn[ i ] = new boolean[ normalizeToLength ];
@@ -294,12 +294,12 @@ public class Utils {
     for ( int i = 0; i < arraysToNormalize.length; i++ ) {
       short[] nextArray = arraysToNormalize[ i ];
       if ( nextArray != null ) {
-        if (nextArray.length < normalizeToLength) {
-          short[] newArray = new short[normalizeToLength];
-          System.arraycopy(nextArray, 0, newArray, 0, nextArray.length);
-          rtn[i] = newArray;
+        if ( nextArray.length < normalizeToLength ) {
+          short[] newArray = new short[ normalizeToLength ];
+          System.arraycopy( nextArray, 0, newArray, 0, nextArray.length );
+          rtn[ i ] = newArray;
         } else {
-          rtn[i] = nextArray;
+          rtn[ i ] = nextArray;
         }
       } else {
         rtn[ i ] = new short[ normalizeToLength ];

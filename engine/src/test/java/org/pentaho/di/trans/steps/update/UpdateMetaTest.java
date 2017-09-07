@@ -37,10 +37,12 @@ import org.apache.commons.lang.StringUtils;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Mockito;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.SQLStatement;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.logging.LoggingObjectInterface;
 import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.plugins.StepPluginType;
 import org.pentaho.di.core.row.RowMetaInterface;
@@ -98,6 +100,9 @@ public class UpdateMetaTest extends TestCase implements InitializerInterface<Ste
     stepMeta = new StepMeta( deletePid, "delete", umi );
     Trans trans = new Trans( transMeta );
     transMeta.addStep( stepMeta );
+    StepMockHelper<UpdateMeta, UpdateData> mockHelper = new StepMockHelper<>( "Update", UpdateMeta.class, UpdateData.class );
+    Mockito.when( mockHelper.logChannelInterfaceFactory.create( Mockito.any(), Mockito.any( LoggingObjectInterface.class ) ) ).thenReturn( mockHelper.logChannelInterface );
+
     upd = new Update( stepMeta, ud, 1, transMeta, trans );
     upd.copyVariablesFrom( transMeta );
 
