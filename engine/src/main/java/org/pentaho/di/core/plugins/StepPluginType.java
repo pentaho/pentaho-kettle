@@ -22,9 +22,11 @@
 
 package org.pentaho.di.core.plugins;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
 import java.lang.annotation.Annotation;
+import java.net.URL;
 import java.util.List;
 import java.util.Map;
 
@@ -82,6 +84,11 @@ public class StepPluginType extends BasePluginType implements PluginTypeInterfac
 
   private static StepPluginType stepPluginType;
 
+  private static final String FILE_SEPARATOR = File.separator;
+  private static final String UP_FOLDER = "..";
+  private static final String PLUGINS_FOLDER_NAME = "plugins";
+  private static final String MAVEN_PATH_REPOSITORY_ANCHOR = "repository/";
+
   protected StepPluginType() {
     super( Step.class, "STEP", "Step" );
     populateFolders( "steps" );
@@ -96,6 +103,58 @@ public class StepPluginType extends BasePluginType implements PluginTypeInterfac
       stepPluginType = new StepPluginType();
     }
     return stepPluginType;
+  }
+
+  public List<PluginFolderInterface> getPluginFolders() {
+    String referenceKettleStepsXmlFile = Const.XML_FILE_KETTLE_STEPS;
+    String alternative = System.getProperty( Const.KETTLE_CORE_STEPS_FILE, null );
+    if ( !Utils.isEmpty( alternative ) ) {
+      referenceKettleStepsXmlFile = alternative;
+    }
+
+    URL annotadedPluginsPath = getClass().getResource( referenceKettleStepsXmlFile );
+
+    if ( annotadedPluginsPath == null ) {
+      annotadedPluginsPath = getClass().getResource( FILE_SEPARATOR + referenceKettleStepsXmlFile );
+    }
+
+    if ( annotadedPluginsPath != null ) {
+
+      File file = new File( annotadedPluginsPath.toExternalForm() );
+
+      String realPath = getProperPath( file.getPath(), referenceKettleStepsXmlFile );
+
+      pluginFolders.add( new PluginFolder( realPath, false, true ) );
+
+    }
+
+    return pluginFolders;
+  }
+
+  private String getProperPath( String filePath, final String kettleFileName ) {
+    final boolean hasKetteFileNameInIt = filePath.endsWith( kettleFileName );
+    final boolean isInsideOfJar = filePath.startsWith( "jar:" );
+
+    if ( hasKetteFileNameInIt && !isInsideOfJar ) {
+      filePath = filePath.replace( kettleFileName, "" );
+
+    } else {
+      filePath = filePath.substring( 0, filePath.indexOf( MAVEN_PATH_REPOSITORY_ANCHOR ) + MAVEN_PATH_REPOSITORY_ANCHOR.length() );
+      filePath = filePath.replace( "jar:", "" );
+      filePath = filePath + "org/pentaho/di/plugins/pdi-core-plugins-impl/" + getClass().getPackage().getImplementationVersion();
+    }
+
+    if ( filePath.endsWith( FILE_SEPARATOR ) ) {
+      filePath = filePath.substring( 0, filePath.length() - 1 );
+    }
+
+    if ( hasKetteFileNameInIt && !isInsideOfJar ) {
+      StringBuilder sb = new StringBuilder( filePath );
+      sb.append( FILE_SEPARATOR ).append( UP_FOLDER ).append( FILE_SEPARATOR ).append( UP_FOLDER ).append( FILE_SEPARATOR ).append( UP_FOLDER ).append( FILE_SEPARATOR ).append( PLUGINS_FOLDER_NAME );
+      filePath = sb.toString();
+    }
+
+    return filePath;
   }
 
   /**
