@@ -28,11 +28,14 @@ import static org.mockito.Mockito.*;
 import java.util.Collections;
 
 import org.junit.Test;
+import org.mockito.Mockito;
 import org.pentaho.di.repository.LongObjectId;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectory;
 import org.pentaho.di.repository.RepositoryElementMetaInterface;
+import org.pentaho.di.repository.RepositoryExtended;
 import org.pentaho.di.repository.RepositoryObjectType;
+import org.pentaho.di.repository.UserInfo;
 
 public class UIRepositoryDirectoryTest {
 
@@ -81,6 +84,29 @@ public class UIRepositoryDirectoryTest {
     uiDir = new UIRepositoryDirectory( dir, uiDir, repo );
     objects = uiDir.getRepositoryObjects();
     assertEquals( 1, objects.size() );
+  }
+
+  @Test
+  public void testRefresh() throws Exception {
+    RepositoryDirectory root = new RepositoryDirectory();
+    LongObjectId rootObjectId = new LongObjectId( 0L );
+    root.setObjectId( rootObjectId );
+    RepositoryDirectory dir = new RepositoryDirectory();
+    dir.setObjectId( new LongObjectId( 1L ) );
+    root.addSubdirectory( dir );
+
+    RepositoryExtended repo = mock( RepositoryExtended.class );
+    UserInfo userInfo = new UserInfo();
+    userInfo.setAdmin( true );
+    Mockito.when( repo.getUserInfo() ).thenReturn( userInfo );
+    RepositoryDirectory rd = Mockito.mock( RepositoryDirectory.class );
+    Mockito.when( rd.findDirectory( Mockito.eq( rootObjectId ) ) )
+      .thenReturn( Mockito.mock( RepositoryDirectory.class ) );
+    Mockito.when( repo.loadRepositoryDirectoryTree( "/", "*.ktr|*.kjb", -1, true, true, true ) ).thenReturn( rd );
+
+    UIRepositoryDirectory uiDir = new UIRepositoryDirectory( root, null, repo );
+    uiDir.refresh();
+    Mockito.verify( repo ).loadRepositoryDirectoryTree( "/", "*.ktr|*.kjb", -1, true, true, true );
   }
 
 }
