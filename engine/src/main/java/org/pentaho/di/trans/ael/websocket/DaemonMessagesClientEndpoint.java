@@ -24,45 +24,66 @@
 package org.pentaho.di.trans.ael.websocket;
 
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.engine.api.remote.ExecutionRequest;
 import org.pentaho.di.engine.api.remote.Message;
 import org.pentaho.di.engine.api.remote.MessageDecoder;
 import org.pentaho.di.engine.api.remote.MessageEncoder;
 import org.pentaho.di.engine.api.remote.StopMessage;
+import org.pentaho.di.trans.ael.websocket.exception.MessageEventFireEventException;
 
-import javax.websocket.ClientEndpoint;
+import javax.websocket.ClientEndpointConfig;
 import javax.websocket.ContainerProvider;
 import javax.websocket.CloseReason;
-import javax.websocket.OnClose;
-import javax.websocket.OnMessage;
-import javax.websocket.OnOpen;
+import javax.websocket.Endpoint;
+import javax.websocket.EndpointConfig;
+import javax.websocket.MessageHandler;
 import javax.websocket.Session;
 import javax.websocket.WebSocketContainer;
 
 import java.io.IOException;
 import java.net.URI;
+import java.util.Collections;
 
 /**
  * Created by fcamara on 8/17/17.
  */
-@ClientEndpoint( encoders = MessageEncoder.class, decoders = MessageDecoder.class )
-public class DaemonMessagesClientEndpoint {
+
+public class DaemonMessagesClientEndpoint extends Endpoint {
   private static final String PRFX_WS = "ws://";
   private static final String PRFX_WS_SSL = "wss://";
   private final MessageEventService messageEventService;
   private Session userSession = null;
+  private String principal = null;
+  private String keytab = null;
 
   public DaemonMessagesClientEndpoint( String host, String port, boolean ssl,
                                        MessageEventService messageEventService ) throws KettleException {
     try {
       String url = ( ssl ? PRFX_WS_SSL : PRFX_WS ) + host + ":" + port + "/execution";
+      URI uri = new URI( url );
       this.messageEventService = messageEventService;
+      setAuthProperties();
 
       WebSocketContainer container = ContainerProvider.getWebSocketContainer();
-      container.connectToServer( this, new URI( url ) );
+      container.connectToServer( this, ClientEndpointConfig.Builder.create()
+        .encoders( Collections.singletonList( MessageEncoder.class ) )
+        .decoders( Collections.singletonList( MessageDecoder.class ) )
+        .configurator( new SessionConfigurator( uri, keytab, principal ) )
+        .build(), uri );
+
     } catch ( Exception e ) {
       throw new KettleException( e );
     }
+  }
+
+  //TODO: this is temporary for testing purpose we should get this values from the shim properties
+  private void setAuthProperties() {
+    Variables variables = new Variables();
+    variables.initializeVariablesFrom( null );
+
+    this.principal = variables.getVariable( "KETTLE_AEL_PDI_DAEMON_PRINCIPAL", null );
+    this.keytab = variables.getVariable( "KETTLE_AEL_PDI_DAEMON_KEYTAB", null );
   }
 
   /**
@@ -70,11 +91,27 @@ public class DaemonMessagesClientEndpoint {
    *
    * @param userSession the userSession which is opened.
    */
-  @OnOpen
-  public void onOpen( Session userSession ) {
+  @Override
+  public void onOpen( Session userSession, EndpointConfig endpointConfig ) {
     this.userSession = userSession;
     this.userSession.setMaxTextMessageBufferSize( 500000 );
     this.userSession.setMaxBinaryMessageBufferSize( 500000 );
+
+    userSession.addMessageHandler( new MessageHandler.Whole<Message>() {
+      /**
+       * Callback hook for Message Events. This method will be invoked when the server send a message.
+       *
+       * @param message The text message
+       */
+      @Override
+      public void onMessage( Message message ) {
+        try {
+          messageEventService.fireEvent( message );
+        } catch ( MessageEventFireEventException e ) {
+          throw new RuntimeException( e );
+        }
+      }
+    } );
   }
 
   /**
@@ -83,19 +120,20 @@ public class DaemonMessagesClientEndpoint {
    * @param userSession the userSession which is getting closed.
    * @param reason      the reason for connection close
    */
-  @OnClose
+  @Override
   public void onClose( Session userSession, CloseReason reason ) {
     this.userSession = null;
   }
 
   /**
-   * Callback hook for Message Events. This method will be invoked when a client send a message.
+   * Callback hook for Connection close events.
    *
-   * @param message The text message
+   * @param userSession the userSession which is getting closed.
+   * @param thr         throwable
    */
-  @OnMessage
-  public void onMessage( Message message, Session session ) throws KettleException {
-    messageEventService.fireEvent( message );
+  @Override
+  public void onError( Session userSession, Throwable thr ) {
+    throw new RuntimeException( thr );
   }
 
   /**
