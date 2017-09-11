@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,12 +22,18 @@
 
 package org.pentaho.di.trans.steps.ssh;
 
-import java.io.File;
+import java.io.CharArrayWriter;
+import java.io.InputStream;
 
+import com.google.common.annotations.VisibleForTesting;
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.vfs2.FileContent;
+import org.apache.commons.vfs2.FileObject;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.variables.VariableSpace;
+import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.step.BaseStepData;
 import org.pentaho.di.trans.step.StepDataInterface;
@@ -68,21 +74,32 @@ public class SSHData extends BaseStepData implements StepDataInterface {
       boolean useKey, String keyFilename, String passPhrase, int timeOut, VariableSpace space, String proxyhost,
       int proxyport, String proxyusername, String proxypassword ) throws KettleException {
     Connection conn = null;
+    char[] content = null;
     boolean isAuthenticated = false;
-    File keyFile = null;
     try {
       // perform some checks
       if ( useKey ) {
         if ( Utils.isEmpty( keyFilename ) ) {
           throw new KettleException( BaseMessages.getString( SSHMeta.PKG, "SSH.Error.PrivateKeyFileMissing" ) );
         }
-        keyFile = new File( keyFilename );
-        if ( !keyFile.exists() ) {
+        FileObject keyFileObject = KettleVFS.getFileObject( keyFilename );
+
+        if ( !keyFileObject.exists() ) {
           throw new KettleException( BaseMessages.getString( SSHMeta.PKG, "SSH.Error.PrivateKeyNotExist", keyFilename ) );
         }
+
+        FileContent keyFileContent = keyFileObject.getContent();
+
+        CharArrayWriter charArrayWriter = new CharArrayWriter( (int) keyFileContent.getSize() );
+
+        try ( InputStream in = keyFileContent.getInputStream() ) {
+          IOUtils.copy( in, charArrayWriter );
+        }
+
+        content = charArrayWriter.toCharArray();
       }
       // Create a new connection
-      conn = new Connection( serveur, port );
+      conn = createConnection( serveur, port );
 
       /* We want to connect through a HTTP proxy */
       if ( !Utils.isEmpty( proxyhost ) ) {
@@ -104,7 +121,7 @@ public class SSHData extends BaseStepData implements StepDataInterface {
       // authenticate
       if ( useKey ) {
         isAuthenticated =
-          conn.authenticateWithPublicKey( username, keyFile, space.environmentSubstitute( passPhrase ) );
+          conn.authenticateWithPublicKey( username, content, space.environmentSubstitute( passPhrase ) );
       } else {
         isAuthenticated = conn.authenticateWithPassword( username, password );
       }
@@ -120,5 +137,10 @@ public class SSHData extends BaseStepData implements StepDataInterface {
       throw new KettleException( BaseMessages.getString( SSHMeta.PKG, "SSH.Error.ErrorConnecting", serveur, username ), e );
     }
     return conn;
+  }
+
+  @VisibleForTesting
+   static Connection createConnection( String serveur, int port ) {
+    return new Connection( serveur, port );
   }
 }
