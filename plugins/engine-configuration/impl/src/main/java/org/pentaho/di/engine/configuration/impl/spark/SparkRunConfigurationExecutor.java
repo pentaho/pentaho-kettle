@@ -89,27 +89,27 @@ public class SparkRunConfigurationExecutor implements RunConfigurationExecutor {
       capability.install();
     }
 
+    SparkRunConfiguration sparkRunConfiguration = (SparkRunConfiguration) runConfiguration;
+
+    String runConfigURL = Const.NVL( sparkRunConfiguration.getUrl(), "" );
+    URI uri = URI.create( runConfigURL.trim() );
+    String protocol = uri.getScheme();
+    String host = uri.getHost();
+    String port = uri.getPort() == -1 ? null : String.valueOf( uri.getPort() );
+
+    //default for now is AEL Engine RSA
+    String version = variableSpace.getVariable( "KETTLE_AEL_PDI_DAEMON_VERSION", "1.0" );
+    boolean version2 = Const.toDouble( version, 1 ) >= 2;
     // Check to verify this is running on the server or not
-    if ( capabilityManager.getCapabilityById( PENTAHO_SERVER_CAPABILITY_ID ) == null ) {
-      SparkRunConfiguration sparkRunConfiguration = (SparkRunConfiguration) runConfiguration;
+    boolean serverMode = capabilityManager.getCapabilityById( PENTAHO_SERVER_CAPABILITY_ID ) != null;
+    if ( version2 ) {
+      // Variables for Websocket spark engine version
+      variableSpace.setVariable( "engine.protocol", Const.NVL( protocol, DEFAULT_PROTOCOL ) );
+      variableSpace.setVariable( "engine.host", Const.NVL( host, DEFAULT_HOST ) );
+      variableSpace.setVariable( "engine.port", Const.NVL( port, DEFAULT_PORT ) );
+    }
 
-      String runConfigURL = Const.NVL( sparkRunConfiguration.getUrl(), "" );
-      URI uri = URI.create( runConfigURL.trim() );
-      String protocol = uri.getScheme();
-      String host = uri.getHost();
-      String port = uri.getPort() == -1 ? null : String.valueOf( uri.getPort() );
-      boolean version2 = false;
-
-      //default for now is AEL Engine RSA
-      String version = variableSpace.getVariable( "KETTLE_AEL_PDI_DAEMON_VERSION", "1.0" );
-      if ( Const.toDouble( version, 1 ) >= 2 ) {
-        // Variables for Websocket spark engine version
-        variableSpace.setVariable( "engine.protocol", Const.NVL( protocol, DEFAULT_PROTOCOL ) );
-        variableSpace.setVariable( "engine.host", Const.NVL( host, DEFAULT_HOST ) );
-        variableSpace.setVariable( "engine.port", Const.NVL( port, DEFAULT_PORT ) );
-        version2 = true;
-      }
-
+    if ( !serverMode ) {
       try {
         // Set the configuration properties for zookeepr
         Configuration zookeeperConfiguration = configurationAdmin.getConfiguration( CONFIG_KEY );
