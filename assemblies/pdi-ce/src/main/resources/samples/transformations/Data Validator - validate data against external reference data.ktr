@@ -6,7 +6,7 @@
     <extended_description/>
     <trans_version/>
     <trans_type>Normal</trans_type>
-    <directory>/</directory>
+    <directory>&#x2f;</directory>
     <parameters>
     </parameters>
     <log>
@@ -427,10 +427,10 @@
     <clusterschemas>
     </clusterschemas>
     <created_user/>
-    <created_date>2014/02/26 14:49:49.010</created_date>
+    <created_date>2014&#x2f;02&#x2f;26 14&#x3a;49&#x3a;49.010</created_date>
     <modified_user>-</modified_user>
-    <modified_date>2008/09/04 11:49:56.623</modified_date>
-    <key_for_session_key>H4sIAAAAAAAAAAMAAAAAAAAAAAA=</key_for_session_key>
+    <modified_date>2008&#x2f;09&#x2f;04 11&#x3a;49&#x3a;56.623</modified_date>
+    <key_for_session_key>H4sIAAAAAAAAAAMAAAAAAAAAAAA&#x3d;</key_for_session_key>
     <is_key_private>N</is_key_private>
   </info>
   <notepads>
@@ -530,7 +530,8 @@
       <yloc>191</yloc>
       <draw>Y</draw>
     </GUI>
-  </step>
+    </step>
+
   <step>
     <name>Data Validator</name>
     <type>Validator</type>
@@ -542,37 +543,35 @@
       <method>none</method>
       <schema_name/>
     </partitioning>
-    <validate_all>N</validate_all>
-    <concat_errors>N</concat_errors>
-    <concat_separator/>
-    <validator_field>
-      <name>territory</name>
-      <validation_name>Check territory</validation_name>
-      <max_length>-1</max_length>
-      <min_length>-1</min_length>
-      <null_allowed>Y</null_allowed>
-      <only_null_allowed>N</only_null_allowed>
-      <only_numeric_allowed>N</only_numeric_allowed>
-      <data_type>String</data_type>
-      <data_type_verified>N</data_type_verified>
-      <conversion_mask/>
-      <decimal_symbol/>
-      <grouping_symbol/>
-      <max_value/>
-      <min_value/>
-      <start_string/>
-      <end_string/>
-      <start_string_not_allowed/>
-      <end_string_not_allowed/>
-      <regular_expression/>
-      <regular_expression_not_allowed/>
-      <error_code/>
-      <error_description/>
-      <is_sourcing_values>Y</is_sourcing_values>
-      <sourcing_step>Territories.txt</sourcing_step>
-      <sourcing_field>Territory</sourcing_field>
-      <allowed_value/>
-    </validator_field>
+<validate_all>N</validate_all>
+<concat_errors>N</concat_errors>
+<concat_separator/>
+       <validator_field><name>territory</name>
+<validation_name>Check territory</validation_name>
+<max_length>-1</max_length>
+<min_length>-1</min_length>
+<null_allowed>Y</null_allowed>
+<only_null_allowed>N</only_null_allowed>
+<only_numeric_allowed>N</only_numeric_allowed>
+<data_type>String</data_type>
+<data_type_verified>N</data_type_verified>
+<conversion_mask/>
+<decimal_symbol/>
+<grouping_symbol/>
+<max_value/>
+<min_value/>
+<start_string/>
+<end_string/>
+<start_string_not_allowed/>
+<end_string_not_allowed/>
+<regular_expression/>
+<regular_expression_not_allowed/>
+<error_code/>
+<error_description/>
+<is_sourcing_values>Y</is_sourcing_values>
+<sourcing_step>Territories.txt</sourcing_step>
+<sourcing_field>T</sourcing_field>
+<allowed_value></allowed_value></validator_field>
     <cluster_schema/>
     <remotesteps>
       <input>
@@ -585,7 +584,8 @@
       <yloc>124</yloc>
       <draw>Y</draw>
     </GUI>
-  </step>
+    </step>
+
   <step>
     <name>EMEA</name>
     <type>RowGenerator</type>
@@ -628,7 +628,8 @@
       <yloc>124</yloc>
       <draw>Y</draw>
     </GUI>
-  </step>
+    </step>
+
   <step>
     <name>Errors</name>
     <type>Dummy</type>
@@ -652,7 +653,8 @@
       <yloc>239</yloc>
       <draw>Y</draw>
     </GUI>
-  </step>
+    </step>
+
   <step>
     <name>OK</name>
     <type>Dummy</type>
@@ -676,7 +678,8 @@
       <yloc>124</yloc>
       <draw>Y</draw>
     </GUI>
-  </step>
+    </step>
+
   <step>
     <name>Territories.txt</name>
     <type>CsvInput</type>
@@ -688,12 +691,12 @@
       <method>none</method>
       <schema_name/>
     </partitioning>
-    <filename>${Internal.Transformation.Filename.Directory}/files/Territories.txt</filename>
+    <filename>&#x24;&#x7b;Internal.Transformation.Filename.Directory&#x7d;&#x2f;files&#x2f;Territories.txt</filename>
     <filename_field/>
     <rownum_field/>
     <include_filename>N</include_filename>
     <separator>,</separator>
-    <enclosure>"</enclosure>
+    <enclosure>&#x22;</enclosure>
     <header>Y</header>
     <buffer_size>50000</buffer_size>
     <lazy_conversion>N</lazy_conversion>
@@ -703,12 +706,12 @@
     <encoding/>
     <fields>
       <field>
-        <name>Territory</name>
+        <name>T</name>
         <type>String</type>
         <format/>
         <currency/>
         <decimal/>
-        <group>,</group>
+        <group/>
         <length>5</length>
         <precision>-1</precision>
         <trim_type>none</trim_type>
@@ -726,7 +729,8 @@
       <yloc>239</yloc>
       <draw>Y</draw>
     </GUI>
-  </step>
+    </step>
+
   <step>
     <name>USA</name>
     <type>RowGenerator</type>
@@ -769,20 +773,21 @@
       <yloc>57</yloc>
       <draw>Y</draw>
     </GUI>
-  </step>
+    </step>
+
   <step_error_handling>
-    <error>
-      <source_step>Data Validator</source_step>
-      <target_step>Errors</target_step>
-      <is_enabled>Y</is_enabled>
-      <nr_valuename>NrErrors</nr_valuename>
-      <descriptions_valuename>ErrorDescription</descriptions_valuename>
-      <fields_valuename>ErrorFields</fields_valuename>
-      <codes_valuename>ErrorCodes</codes_valuename>
-      <max_errors>-1</max_errors>
-      <max_pct_errors>-1</max_pct_errors>
-      <min_pct_rows>-1</min_pct_rows>
-    </error>
+      <error>
+        <source_step>Data Validator</source_step>
+        <target_step>Errors</target_step>
+        <is_enabled>Y</is_enabled>
+        <nr_valuename>NrErrors</nr_valuename>
+        <descriptions_valuename>ErrorDescription</descriptions_valuename>
+        <fields_valuename>ErrorFields</fields_valuename>
+        <codes_valuename>ErrorCodes</codes_valuename>
+        <max_errors>-1</max_errors>
+        <max_pct_errors>-1</max_pct_errors>
+        <min_pct_rows>-1</min_pct_rows>
+      </error>
   </step_error_handling>
   <slave-step-copy-partition-distribution>
   </slave-step-copy-partition-distribution>
