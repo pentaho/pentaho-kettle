@@ -32,9 +32,10 @@ import org.pentaho.ui.xul.swt.SwtXulLoader;
 
 public class DatabaseConnectionDialog {
 
+  protected Map<String, String> extendedClasses = new HashMap<>();
+  
   public static final String DIALOG_DEFINITION_FILE = "org/pentaho/ui/database/databasedialog.xul";
 
-  protected Map<String, String> extendedClasses = new HashMap<>();
 
   public DatabaseConnectionDialog() {
   }
