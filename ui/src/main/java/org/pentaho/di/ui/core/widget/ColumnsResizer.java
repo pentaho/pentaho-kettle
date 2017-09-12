@@ -102,6 +102,9 @@ public class ColumnsResizer implements Listener {
   }
 
   protected void applyWeigths( Table table ) {
+    if ( resizing ) {
+      return;
+    }
     float width = getTableWidth( table );
 
     TableColumn[] columns = table.getColumns();
