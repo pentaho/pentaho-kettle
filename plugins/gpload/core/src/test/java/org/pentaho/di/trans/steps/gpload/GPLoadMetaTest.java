@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -27,12 +27,19 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.junit.Assert;
 import org.junit.Test;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.trans.steps.loadsave.LoadSaveTester;
 
-import org.pentaho.di.trans.steps.loadsave.validator.*;
+import org.pentaho.di.trans.steps.loadsave.validator.FieldLoadSaveValidator;
+import org.pentaho.di.trans.steps.loadsave.validator.ArrayLoadSaveValidator;
+import org.pentaho.di.trans.steps.loadsave.validator.StringLoadSaveValidator;
+import org.pentaho.di.trans.steps.loadsave.validator.BooleanLoadSaveValidator;
+import org.pentaho.di.trans.steps.loadsave.validator.PrimitiveBooleanArrayLoadSaveValidator;
+
+import org.pentaho.di.trans.steps.mock.StepMockHelper;
 
 public class GPLoadMetaTest {
   @Test
@@ -104,4 +111,35 @@ public class GPLoadMetaTest {
     }
   }
 
+  @Test
+  public void testPDI16559() throws Exception {
+    StepMockHelper<GPLoadMeta, GPLoadData> mockHelper =
+        new StepMockHelper<GPLoadMeta, GPLoadData>( "gPLoad", GPLoadMeta.class, GPLoadData.class );
+
+    GPLoadMeta gPLoad = new GPLoadMeta();
+    gPLoad.setLocalHosts( new String[] { "http://foo.bar", "http://bar.foo" } );
+    gPLoad.setFieldTable( new String[] { "field1", "field2", "field3", "field4", "field5" } );
+    gPLoad.setFieldStream( new String[] { "fstr1", "fstr2", "fstr3"} );
+    gPLoad.setDateMask( new String[] { "dMask1", "dMask2" } );
+    gPLoad.setMatchColumns( new boolean[] { false, true } );
+    gPLoad.setUpdateColumn( new boolean[] { true, false, true } );
+
+    try {
+      String badXml = gPLoad.getXML();
+      Assert.fail( "Before calling afterInjectionSynchronization, should have thrown an ArrayIndexOOB" );
+    } catch ( Exception expected ) {
+      // Do Nothing
+    }
+    gPLoad.afterInjectionSynchronization();
+    //run without a exception
+    String ktrXml = gPLoad.getXML();
+
+    int targetSz = gPLoad.getFieldTable().length;
+
+    Assert.assertEquals( targetSz, gPLoad.getFieldStream().length );
+    Assert.assertEquals( targetSz, gPLoad.getDateMask().length );
+    Assert.assertEquals( targetSz, gPLoad.getMatchColumn().length );
+    Assert.assertEquals( targetSz, gPLoad.getUpdateColumn().length );
+
+  }
 }

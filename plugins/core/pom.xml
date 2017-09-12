@@ -14,8 +14,11 @@
   <name>PDI Core Plugins</name>
 
   <modules>
-    <module>assemblies</module>
-    <module>impl</module>
+    <module>abort</module>
+	<module>addsequence</module>
+	<module>analyticquery</module>
+	<module>append</module>
+	<module>autodoc</module>
   </modules>
 
 </project>

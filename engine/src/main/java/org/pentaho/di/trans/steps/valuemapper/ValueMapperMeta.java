@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -28,6 +28,7 @@ import org.apache.commons.lang.StringUtils;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.injection.AfterInjection;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
@@ -354,4 +355,19 @@ public class ValueMapperMeta extends BaseStepMeta implements StepMetaInterface {
   public void setNonMatchDefault( String nonMatchDefault ) {
     this.nonMatchDefault = nonMatchDefault;
   }
+
+  /**
+   * If we use injection we can have different arrays lengths.
+   * We need synchronize them for consistency behavior with UI
+   */
+  @AfterInjection
+  public void afterInjectionSynchronization() {
+    int nrFields = ( sourceValue == null ) ? -1 : sourceValue.length;
+    if ( nrFields <= 0 ) {
+      return;
+    }
+    String[][] rtn = Utils.normalizeArrays( nrFields, targetValue );
+    targetValue = rtn[ 0 ];
+  }
+
 }
