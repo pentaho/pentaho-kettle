@@ -553,6 +553,15 @@ public class ValueMetaBaseTest {
   }
 
   @Test
+  public void testCompareIntegerToDouble() throws KettleValueException {
+    ValueMetaBase intMeta = new ValueMetaBase( "int", ValueMetaInterface.TYPE_INTEGER );
+    Long int1 = new Long( 2L );
+    ValueMetaBase numberMeta = new ValueMetaBase( "number", ValueMetaInterface.TYPE_NUMBER );
+    Double double2 = new Double( 1.5 );
+    assertEquals( 1, intMeta.compare( int1, numberMeta, double2 ) );
+  }
+
+  @Test
   public void testCompareDate() throws KettleValueException {
     ValueMetaBase dateMeta = new ValueMetaBase( "int", ValueMetaInterface.TYPE_DATE );
     Date date1 = new Date( 6223372036854775804L );
