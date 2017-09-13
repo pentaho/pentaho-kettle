@@ -766,6 +766,10 @@ public class TextFileOutput extends BaseStep implements StepInterface {
     } catch ( Exception e ) {
       logError( "Exception trying to close file: " + e.toString() );
       setErrors( 1 );
+      //Clean resources
+      data.writer = null;
+      data.out = null;
+      data.fos = null;
       retval = false;
     }
 
@@ -892,6 +896,7 @@ public class TextFileOutput extends BaseStep implements StepInterface {
           data.fos.close();
         }
       } catch ( Exception e ) {
+        data.fos = null;
         logError( "Unexpected error closing file", e );
         setErrors( 1 );
       }
