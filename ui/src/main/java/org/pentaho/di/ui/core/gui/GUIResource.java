@@ -23,12 +23,6 @@
 
 package org.pentaho.di.ui.core.gui;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Hashtable;
-import java.util.List;
-import java.util.Map;
-
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.MessageDialogWithToggle;
 import org.eclipse.swt.SWT;
@@ -62,6 +56,12 @@ import org.pentaho.di.ui.core.ConstUI;
 import org.pentaho.di.ui.core.PropsUI;
 import org.pentaho.di.ui.util.ImageUtil;
 import org.pentaho.di.ui.util.SwtSvgImageUtil;
+
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Hashtable;
+import java.util.List;
+import java.util.Map;
 
 /*
  * colors etc. are allocated once and released once at the end of the program.
@@ -222,6 +222,8 @@ public class GUIResource {
   private SwtUniversalImage imageMissing;
 
   private Image imageSpoon;
+
+  private Image imageSpoonLow;
 
   private Image imageJob;
 
@@ -582,6 +584,7 @@ public class GUIResource {
       imageDummy.dispose();
       imageMissing.dispose();
       imageSpoon.dispose();
+      imageSpoonLow.dispose();
       imageJob.dispose();
       imagePentaho.dispose();
       imagePentahoSwirl.dispose();
@@ -904,6 +907,9 @@ public class GUIResource {
 
     // "ui/images/spoon.ico"
     imageSpoon = loadAsResource( display, BasePropertyHandler.getProperty( "spoon_image" ), 0 );
+
+    // "ui/images/spoon_lowres.ico"
+    imageSpoonLow = loadAsResource( display, BasePropertyHandler.getProperty( "spoon_image_low" ), 48 );
 
     // "ui/images/spoon_highres.png"
     imageSpoonHigh = ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "spoon_image_high" ) );
@@ -1640,6 +1646,13 @@ public class GUIResource {
    */
   public Image getImageSpoon() {
     return imageSpoon;
+  }
+
+  /**
+   * @return Returns the imageSpoonLow.
+   */
+  public Image getImageSpoonLow() {
+    return imageSpoonLow;
   }
 
   /**

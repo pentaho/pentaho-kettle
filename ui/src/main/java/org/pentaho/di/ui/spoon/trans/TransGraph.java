@@ -3005,7 +3005,7 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
       if ( tipImage != null ) {
         tooltipImage = tipImage;
       } else {
-        tooltipImage = GUIResource.getInstance().getImageSpoon();
+        tooltipImage = GUIResource.getInstance().getImageSpoonLow();
       }
       showTooltip( newTip, tooltipImage, screenX, screenY );
     }
