@@ -235,6 +235,10 @@ public class ConnectionsController extends LazilyInitializedController implement
       String dbName = getDatabaseDialog().open();
       if ( dbName != null ) {
         dbName = dbName.trim();
+        databaseMeta.setName( dbName );
+        databaseMeta.setDisplayName( dbName );
+        getDatabaseDialog().setDatabaseMeta( databaseMeta );
+
         if ( !dbName.isEmpty() ) {
           // See if this user connection exists...
           ObjectId idDatabase = repository.getDatabaseID( dbName );
