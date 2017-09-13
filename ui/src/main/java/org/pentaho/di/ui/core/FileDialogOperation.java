@@ -28,6 +28,7 @@ public class FileDialogOperation {
   private String command;
   private String filter;
   private RepositoryObject repositoryObject;
+  private String startDir;
 
   public FileDialogOperation( String command ) {
     this.command = command;
@@ -56,4 +57,13 @@ public class FileDialogOperation {
   public void setRepositoryObject( RepositoryObject repositoryObject ) {
     this.repositoryObject = repositoryObject;
   }
+
+  public String getStartDir() {
+    return startDir;
+  }
+
+  public void setStartDir( String startDir ) {
+    this.startDir = startDir;
+  }
+
 }
