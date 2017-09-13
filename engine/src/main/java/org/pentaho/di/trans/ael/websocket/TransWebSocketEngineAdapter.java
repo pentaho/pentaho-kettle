@@ -24,6 +24,7 @@
 
 package org.pentaho.di.trans.ael.websocket;
 
+import org.pentaho.di.core.Result;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.engine.api.events.PDIEvent;
@@ -54,6 +55,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 import java.util.Collection;
 
@@ -83,6 +85,7 @@ public class TransWebSocketEngineAdapter extends Trans {
 
   //completion signal used to wait until Transformation is finished
   private CountDownLatch transFinishedSignal = new CountDownLatch( 1 );
+  private AtomicInteger errors = new AtomicInteger();
 
 
   private static final Map<org.pentaho.di.core.logging.LogLevel, LogLevel> LEVEL_MAP = new HashMap<>();
@@ -266,6 +269,7 @@ public class TransWebSocketEngineAdapter extends Trans {
           Throwable throwable = ( (PDIEvent<RemoteSource, LogEntry>) message ).getData().getThrowable();
 
           getLogChannel().logError( "Error Executing Transformation", throwable );
+          errors.incrementAndGet();
           setFinished( true );
           // emit error on all steps
           getSteps().stream().map( stepMetaDataCombi -> stepMetaDataCombi.step ).forEach( step -> {
@@ -349,6 +353,17 @@ public class TransWebSocketEngineAdapter extends Trans {
     }
   }
 
+  @Override
+  public int getErrors() {
+    return errors.get();
+  }
+
+  @Override
+  public Result getResult() {
+    Result toRet = new Result();
+    toRet.setNrErrors( getErrors() );
+    return toRet;
+  }
 
   // ======================== May want to implement ================================= //
 
