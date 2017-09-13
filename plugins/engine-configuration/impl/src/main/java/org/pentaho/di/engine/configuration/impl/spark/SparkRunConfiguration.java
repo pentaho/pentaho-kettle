@@ -46,7 +46,7 @@ public class SparkRunConfiguration implements RunConfiguration {
   private String description;
 
   @MetaStoreAttribute
-  private String url = "ws://127.0.0.1:2181";
+  private String url = "http://127.0.0.1:53000";
 
   public String getName() {
     return name;

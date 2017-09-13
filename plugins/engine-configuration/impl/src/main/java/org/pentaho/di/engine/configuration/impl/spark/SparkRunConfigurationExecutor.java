@@ -50,9 +50,10 @@ public class SparkRunConfigurationExecutor implements RunConfigurationExecutor {
   public static String CONFIG_KEY = "org.apache.aries.rsa.discovery.zookeeper";
   public static String JAAS_CAPABILITY_ID = "pentaho-kerberos-jaas";
   public static String AEL_SECURITY_CAPABILITY_ID = "ael-security";
-  public static String DEFAULT_PROTOCOL = "ws";
+  public static String DEFAULT_PROTOCOL = "http";
   public static String DEFAULT_HOST = "127.0.0.1";
-  public static String DEFAULT_PORT = "2181";
+  public static String DEFAULT_ZOOKEEPER_PORT = "2181";
+  public static String DEFAULT_WEBSOCKET_PORT = "53000";
 
   private ConfigurationAdmin configurationAdmin;
   private ICapabilityManager capabilityManager = DefaultCapabilityManager.getInstance();
@@ -97,8 +98,8 @@ public class SparkRunConfigurationExecutor implements RunConfigurationExecutor {
     String host = uri.getHost();
     String port = uri.getPort() == -1 ? null : String.valueOf( uri.getPort() );
 
-    //default for now is AEL Engine RSA
-    String version = variableSpace.getVariable( "KETTLE_AEL_PDI_DAEMON_VERSION", "1.0" );
+    //default is the websocket daemon (version 2)
+    String version = variableSpace.getVariable( "KETTLE_AEL_PDI_DAEMON_VERSION", "2.0" );
     boolean version2 = Const.toDouble( version, 1 ) >= 2;
     // Check to verify this is running on the server or not
     boolean serverMode = capabilityManager.getCapabilityById( PENTAHO_SERVER_CAPABILITY_ID ) != null;
@@ -106,7 +107,7 @@ public class SparkRunConfigurationExecutor implements RunConfigurationExecutor {
       // Variables for Websocket spark engine version
       variableSpace.setVariable( "engine.protocol", Const.NVL( protocol, DEFAULT_PROTOCOL ) );
       variableSpace.setVariable( "engine.host", Const.NVL( host, DEFAULT_HOST ) );
-      variableSpace.setVariable( "engine.port", Const.NVL( port, DEFAULT_PORT ) );
+      variableSpace.setVariable( "engine.port", Const.NVL( port, DEFAULT_WEBSOCKET_PORT ) );
     }
 
     if ( !serverMode ) {
@@ -117,7 +118,7 @@ public class SparkRunConfigurationExecutor implements RunConfigurationExecutor {
         if ( properties != null ) {
           if ( !version2 ) {
             properties.put( "zookeeper.host", Const.NVL( host, DEFAULT_HOST ) );
-            properties.put( "zookeeper.port", Const.NVL( port, DEFAULT_PORT ) );
+            properties.put( "zookeeper.port", Const.NVL( port, DEFAULT_ZOOKEEPER_PORT ) );
             //just remove version2 variables values
             variableSpace.setVariable( "engine.protocol", null );
             variableSpace.setVariable( "engine.host", null );

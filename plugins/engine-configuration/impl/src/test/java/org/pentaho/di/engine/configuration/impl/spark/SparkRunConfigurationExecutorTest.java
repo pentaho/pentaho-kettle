@@ -45,7 +45,7 @@ import static org.mockito.Mockito.*;
 /**
  * Created by bmorrise on 3/22/17.
  */
-@RunWith( MockitoJUnitRunner.class )
+@RunWith ( MockitoJUnitRunner.class )
 public class SparkRunConfigurationExecutorTest {
 
   private SparkRunConfigurationExecutor sparkRunConfigurationExecutor;
@@ -74,16 +74,18 @@ public class SparkRunConfigurationExecutorTest {
     sparkRunConfigurationExecutor = new SparkRunConfigurationExecutor( configurationAdmin );
     capabilityProvider = mock( ICapabilityProvider.class );
 
-    capabilityManager =  DefaultCapabilityManager.getInstance();
+    capabilityManager = DefaultCapabilityManager.getInstance();
     capabilityManager.registerCapabilityProvider( capabilityProvider );
 
   }
 
   @Test
-  public void testExecute() {
+  public void testExecuteRSADaemon() {
     SparkRunConfiguration sparkRunConfiguration = new SparkRunConfiguration();
     sparkRunConfiguration.setName( "Spark Configuration" );
     sparkRunConfiguration.setUrl( "ws://127.0.0.2:8121" );
+
+    doReturn( "1.0" ).when( variableSpace ).getVariable( "KETTLE_AEL_PDI_DAEMON_VERSION", "2.0" );
 
     TransExecutionConfiguration transExecutionConfiguration = new TransExecutionConfiguration();
 
@@ -99,11 +101,14 @@ public class SparkRunConfigurationExecutorTest {
   }
 
   @Test
-  public void testExecuteNoPort() {
+  public void testExecuteNoPortRSADaemon() {
     SparkRunConfiguration sparkRunConfiguration = new SparkRunConfiguration();
     sparkRunConfiguration.setName( "Spark Configuration" );
+    sparkRunConfiguration.setUrl( "zk://127.0.0.1:2181" );
 
     TransExecutionConfiguration transExecutionConfiguration = new TransExecutionConfiguration();
+
+    doReturn( "1.0" ).when( variableSpace ).getVariable( "KETTLE_AEL_PDI_DAEMON_VERSION", "2.0" );
 
     sparkRunConfigurationExecutor
       .execute( sparkRunConfiguration, transExecutionConfiguration, abstractMeta, variableSpace );
@@ -111,7 +116,7 @@ public class SparkRunConfigurationExecutorTest {
     verify( variableSpace ).setVariable( "engine", "remote" );
     verify( variableSpace ).setVariable( "engine.remote", "spark" );
     verify( properties ).put( "zookeeper.host", SparkRunConfigurationExecutor.DEFAULT_HOST );
-    verify( properties ).put( "zookeeper.port", SparkRunConfigurationExecutor.DEFAULT_PORT );
+    verify( properties ).put( "zookeeper.port", SparkRunConfigurationExecutor.DEFAULT_ZOOKEEPER_PORT );
     verify( variableSpace ).setVariable( "engine.host", null );
     verify( variableSpace ).setVariable( "engine.port", null );
   }
@@ -121,7 +126,7 @@ public class SparkRunConfigurationExecutorTest {
     SparkRunConfiguration sparkRunConfiguration = new SparkRunConfiguration();
     sparkRunConfiguration.setName( "Spark Configuration" );
     sparkRunConfiguration.setUrl( "http://127.0.0.2:8121" );
-    doReturn( "2.0" ).when( variableSpace ).getVariable( "KETTLE_AEL_PDI_DAEMON_VERSION", "1.0" );
+    doReturn( "2.0" ).when( variableSpace ).getVariable( "KETTLE_AEL_PDI_DAEMON_VERSION", "2.0" );
 
 
     TransExecutionConfiguration transExecutionConfiguration = new TransExecutionConfiguration();
@@ -141,7 +146,7 @@ public class SparkRunConfigurationExecutorTest {
   public void testWebSocketVersionExecuteNoPort() {
     SparkRunConfiguration sparkRunConfiguration = new SparkRunConfiguration();
     sparkRunConfiguration.setName( "Spark Configuration" );
-    doReturn( "2.0" ).when( variableSpace ).getVariable( "KETTLE_AEL_PDI_DAEMON_VERSION", "1.0" );
+    doReturn( "2.0" ).when( variableSpace ).getVariable( "KETTLE_AEL_PDI_DAEMON_VERSION", "2.0" );
 
     TransExecutionConfiguration transExecutionConfiguration = new TransExecutionConfiguration();
 
@@ -154,7 +159,7 @@ public class SparkRunConfigurationExecutorTest {
     verify( properties ).remove( "zookeeper.port" );
     verify( variableSpace ).setVariable( "engine.protocol", SparkRunConfigurationExecutor.DEFAULT_PROTOCOL );
     verify( variableSpace ).setVariable( "engine.host", SparkRunConfigurationExecutor.DEFAULT_HOST );
-    verify( variableSpace ).setVariable( "engine.port", SparkRunConfigurationExecutor.DEFAULT_PORT );
+    verify( variableSpace ).setVariable( "engine.port", SparkRunConfigurationExecutor.DEFAULT_WEBSOCKET_PORT );
   }
 
   @Test
@@ -162,7 +167,7 @@ public class SparkRunConfigurationExecutorTest {
     SparkRunConfiguration sparkRunConfiguration = new SparkRunConfiguration();
     sparkRunConfiguration.setName( "Spark Configuration" );
     sparkRunConfiguration.setUrl( "wss://127.0.0.2:8121" );
-    doReturn( "2.0" ).when( variableSpace ).getVariable( "KETTLE_AEL_PDI_DAEMON_VERSION", "1.0" );
+    doReturn( "2.0" ).when( variableSpace ).getVariable( "KETTLE_AEL_PDI_DAEMON_VERSION", "2.0" );
 
 
     TransExecutionConfiguration transExecutionConfiguration = new TransExecutionConfiguration();
@@ -180,7 +185,7 @@ public class SparkRunConfigurationExecutorTest {
     SparkRunConfiguration sparkRunConfiguration = new SparkRunConfiguration();
     sparkRunConfiguration.setName( "Spark Configuration" );
     sparkRunConfiguration.setUrl( "  ws://127.0.0.2:8121  " );
-    doReturn( "2.0" ).when( variableSpace ).getVariable( "KETTLE_AEL_PDI_DAEMON_VERSION", "1.0" );
+    doReturn( "2.0" ).when( variableSpace ).getVariable( "KETTLE_AEL_PDI_DAEMON_VERSION", "2.0" );
 
 
     TransExecutionConfiguration transExecutionConfiguration = new TransExecutionConfiguration();
