@@ -56,7 +56,7 @@
   </div>
 
   <div id="middle" class="middle" resize-app="{{vm.wrapperClass}}">
-    <div id="directoryTreeArea" class="directoryTreeArea noselect">
+    <div id="directoryTreeArea" class="directoryTreeArea noselect" ng-model="vm.folder.path" scroll-to-folder="{{vm.wrapperClass}}">
       <folder auto-expand="vm.autoExpand"
               folders="vm.folders"
               on-select="vm.selectFolder(selectedFolder);"
