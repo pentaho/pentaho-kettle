@@ -110,10 +110,12 @@ public class StepInterfaceWebSocketEngineAdapter extends BaseStep {
             case PAUSED:
               StepInterfaceWebSocketEngineAdapter.this.setPaused( true );
               break;
+            case FAILED:
+              setErrors( 1L );
+              stopAll();
             case STOPPED:
               StepInterfaceWebSocketEngineAdapter.this.setStopped( true );
               break;
-            case FAILED:
             case FINISHED:
               StepInterfaceWebSocketEngineAdapter.this.setRunning( false );
               break;
