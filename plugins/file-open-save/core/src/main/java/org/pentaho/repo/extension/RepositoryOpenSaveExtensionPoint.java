@@ -57,24 +57,18 @@ public class RepositoryOpenSaveExtensionPoint implements ExtensionPointInterface
     FileDialogOperation fileDialogOperation = (FileDialogOperation) o;
 
     PropsUI propsUI = propsUISupplier.get();
-    LastUsedFile lastUsedFile = null;
+
     String username = getRepository().getUserInfo() != null ? getRepository().getUserInfo().getLogin() : "";
     String repoAndUser = getRepository().getName() + ":" + username;
     List<LastUsedFile>
       lastUsedFileList = propsUI.getLastUsedRepoFiles().getOrDefault( repoAndUser, Collections.emptyList() );
 
-    Calendar calendar = Calendar.getInstance();
-    calendar.add( Calendar.DATE, DAYS );
-    Date dateBefore = calendar.getTime();
-
-    if ( lastUsedFileList.size() > 0 && lastUsedFileList.get( 0 ).getLastOpened().after( dateBefore ) ) {
-      lastUsedFile = lastUsedFileList.get( 0 );
-    }
+    String startingDir = getStartingDir( fileDialogOperation, lastUsedFileList );
 
     RepositoryOpenSaveDialog repositoryOpenSaveDialog =
       new RepositoryOpenSaveDialog( spoonSupplier.get().getShell(), WIDTH, HEIGHT );
     repositoryOpenSaveDialog
-      .open( lastUsedFile != null ? lastUsedFile.getDirectory() : null,
+      .open( startingDir,
         RepositoryOpenSaveDialog.STATE_SAVE.equals( fileDialogOperation.getCommand() ) ?
           RepositoryOpenSaveDialog.STATE_SAVE :
           RepositoryOpenSaveDialog.STATE_OPEN, fileDialogOperation.getFilter() );
@@ -90,6 +84,23 @@ public class RepositoryOpenSaveExtensionPoint implements ExtensionPointInterface
           RepositoryObjectType.JOB );
       fileDialogOperation.setRepositoryObject( repositoryObject );
     }
+  }
+
+  private String getStartingDir( FileDialogOperation fileDialogOperation, List<LastUsedFile> lastUsedFileList ) {
+    String startingDir = fileDialogOperation.getStartDir();
+    if ( !Utils.isEmpty( startingDir ) ) {
+      return startingDir;
+    }
+
+    Calendar calendar = Calendar.getInstance();
+    calendar.add( Calendar.DATE, DAYS );
+    Date dateBefore = calendar.getTime();
+
+    LastUsedFile lastUsedFile = null;
+    if ( lastUsedFileList.size() > 0 && lastUsedFileList.get( 0 ).getLastOpened().after( dateBefore ) ) {
+      lastUsedFile = lastUsedFileList.get( 0 );
+    }
+    return lastUsedFile != null ? lastUsedFile.getDirectory() : null;
   }
 
   private Repository getRepository() {
