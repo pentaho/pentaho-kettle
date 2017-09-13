@@ -548,6 +548,8 @@ public class Database implements VariableSpace, LoggingObjectInterface {
         password = Encr.decryptPasswordOptionallyEncrypted( environmentSubstitute( databaseMeta.getPassword() ) );
       }
 
+      Properties properties = databaseMeta.getConnectionProperties();
+
       if ( databaseMeta.supportsOptionsInURL() ) {
         if ( !Utils.isEmpty( username ) || !Utils.isEmpty( password ) ) {
           if ( databaseMeta.getDatabaseInterface() instanceof MSSQLServerNativeDatabaseMeta ) {
@@ -555,23 +557,24 @@ public class Database implements VariableSpace, LoggingObjectInterface {
             //
             String instance = environmentSubstitute( databaseMeta.getSQLServerInstance() );
             if ( Utils.isEmpty( instance ) ) {
-              connection = DriverManager.getConnection( url + ";user=" + username + ";password=" + password );
+              connection = DriverManager.getConnection( url + ";user=" + username + ";password=" + password, properties );
             } else {
               connection =
                 DriverManager.getConnection( url
-                  + ";user=" + username + ";password=" + password + ";instanceName=" + instance );
+                  + ";user=" + username + ";password=" + password + ";instanceName=" + instance, properties );
             }
           } else {
             // also allow for empty username with given password, in this case
             // username must be given with one space
-            connection = DriverManager.getConnection( url, Const.NVL( username, " " ), Const.NVL( password, "" ) );
+            properties.put( "user", Const.NVL( username, " " ) );
+            properties.put( "password", Const.NVL( password, "" ) );
+            connection = DriverManager.getConnection( url, properties );
           }
         } else {
           // Perhaps the username is in the URL or no username is required...
-          connection = DriverManager.getConnection( url );
+          connection = DriverManager.getConnection( url, properties );
         }
       } else {
-        Properties properties = databaseMeta.getConnectionProperties();
         if ( !Utils.isEmpty( username ) ) {
           properties.put( "user", username );
         }
