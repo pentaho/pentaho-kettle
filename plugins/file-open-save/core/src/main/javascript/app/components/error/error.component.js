@@ -31,9 +31,10 @@
  */
 define([
   "text!./error.html",
+  "../utils",
   "pentaho/i18n-osgi!file-open-save.messages",
   "css!./error.css"
-], function(errorTemplate, i18n) {
+], function(errorTemplate, utils, i18n) {
   "use strict";
 
   var options = {
@@ -126,10 +127,14 @@ define([
     function _setMessages() {
       switch (vm.errorType) {
         case 1:// Overwrite
+          var filename1 = vm.errorFile.name;
+          if (utils.getTextWidth(filename1) > 974) {
+            filename1 = utils.truncateString(filename1, 974) + "...";
+          }
           _setMessage(i18n.get("file-open-save-plugin.error.overwrite.title"),
             vm.errorFile.type === "job" ? i18n.get("file-open-save-plugin.error.overwrite.job.top-before.message") :
                                           i18n.get("file-open-save-plugin.error.overwrite.trans.top-before.message"),
-            " " + vm.errorFile.name + " ",
+            " " + filename1 + " ",
             i18n.get("file-open-save-plugin.error.overwrite.top-after.message"),
             i18n.get("file-open-save-plugin.error.overwrite.bottom.message"),
             i18n.get("file-open-save-plugin.error.overwrite.accept.button"),
@@ -173,10 +178,14 @@ define([
             i18n.get("file-open-save-plugin.error.delete-folder.no.button"));
           break;
         case 7:// File Exists
+          var filename7 = vm.errorFile.newName;
+          if (utils.getTextWidth(filename7) > 1064) {
+            filename7 = utils.truncateString(filename7, 1064) + "... ";
+          }
           _setMessage(i18n.get("file-open-save-plugin.error.file-exists.title"),
             i18n.get("file-open-save-plugin.error.file-exists.top.message"),
             " ",
-            vm.errorFile.newName + ".",
+            filename7 + ".",
             i18n.get("file-open-save-plugin.error.file-exists.bottom.message"),
             "",
             i18n.get("file-open-save-plugin.error.file-exists.close.button"));
