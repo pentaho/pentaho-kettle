@@ -48,6 +48,7 @@ import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.core.vfs.configuration.IKettleFileSystemConfigBuilder;
 import org.pentaho.di.core.vfs.configuration.KettleFileSystemConfigBuilderFactory;
+import org.pentaho.di.core.vfs.configuration.KettleGenericFileSystemConfigBuilder;
 import org.pentaho.di.i18n.BaseMessages;
 
 public class KettleVFS {
@@ -192,8 +193,11 @@ public class KettleVFS {
     for ( String var : varList ) {
       if ( var.startsWith( "vfs." ) ) {
         String param = configBuilder.parseParameterName( var, scheme );
+        String varScheme = KettleGenericFileSystemConfigBuilder.extractScheme( var );
         if ( param != null ) {
-          configBuilder.setParameter( fsOptions, param, varSpace.getVariable( var ), var, vfsFilename );
+          if ( varScheme == null || varScheme.equals( "sftp" ) || varScheme.equals( scheme ) ) {
+            configBuilder.setParameter( fsOptions, param, varSpace.getVariable( var ), var, vfsFilename );
+          }
         } else {
           throw new IOException( "FileSystemConfigBuilder could not parse parameter: " + var );
         }
