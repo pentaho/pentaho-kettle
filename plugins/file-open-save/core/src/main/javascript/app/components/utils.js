@@ -21,7 +21,8 @@ define(
       var _font = "14px OpenSansRegular";
       return {
         naturalCompare: naturalCompare,
-        getTextWidth: getTextWidth
+        getTextWidth: getTextWidth,
+        truncateString: truncateString
       };
 
     /**
@@ -92,5 +93,22 @@ define(
         context.font = _font;
         var metrics = context.measureText(text);
         return (Math.ceil(metrics.width) + 2);
+      }
+
+      /**
+       * Truncates a string to be less than length len (in terms of display length, not character length).
+       * @param {String} str - string to be truncated
+       * @param {Number} len - Maximum display length of str.
+       * @return {String} - the truncated string.
+       */
+      function truncateString(str, len) {
+        var res = str;
+        if (str && str.length > 0) {
+          var strLen = str.length;
+          while (getTextWidth(res) > len) {
+            res = str.slice(0, --strLen);
+          }
+        }
+        return res;
       }
     });
