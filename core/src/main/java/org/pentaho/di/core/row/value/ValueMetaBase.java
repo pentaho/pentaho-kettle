@@ -3758,6 +3758,10 @@ public class ValueMetaBase implements ValueMetaInterface {
           default:
             throw new KettleValueException( toStringMeta() + " : Unknown storage type : " + getStorageType() );
         }
+      } else if ( ValueMetaInterface.TYPE_INTEGER == getType() && ValueMetaInterface.TYPE_NUMBER == meta2.getType() ) {
+        // BACKLOG-18738
+        // compare Double to Integer
+        return -meta2.compare( data2, meta2.convertData( this, data1 ) );
       }
 
       // If the data types are not the same, the first one is the driver...
