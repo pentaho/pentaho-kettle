@@ -1008,6 +1008,9 @@ public class TransMeta extends AbstractMeta
         list.add( stepMeta );
       }
     }
+    if ( list.isEmpty() && getSteps().size() == 1 ) {
+      list = getSteps();
+    }
 
     return list;
   }

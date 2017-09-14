@@ -457,4 +457,9 @@ public class TransMetaTest {
     Assert.assertEquals( repDirectory.getPath(), meta.getVariable( Const.INTERNAL_VARIABLE_TRANSFORMATION_REPOSITORY_DIRECTORY ) );
   }
 
+  @Test
+  public void testTransWithOneStepIsConsideredUsed() throws Exception {
+    TransMeta transMeta = new TransMeta( getClass().getResource( "one-step-trans.ktr" ).getPath() );
+    assertEquals( 1, transMeta.getUsedSteps().size() );
+  }
 }
