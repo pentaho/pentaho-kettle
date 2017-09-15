@@ -66,8 +66,8 @@ public class TransSupplier implements Supplier<Trans> {
 
     Variables variables = new Variables();
     variables.initializeVariablesFrom( null );
-    //default for now is AEL Engine RSA
-    String version = variables.getVariable( "KETTLE_AEL_PDI_DAEMON_VERSION", "1.0" );
+    //default is the websocket daemon
+    String version = variables.getVariable( "KETTLE_AEL_PDI_DAEMON_VERSION", "2.0" );
     if ( Const.toDouble( version, 1 ) >= 2 ) {
       String protocol = transMeta.getVariable( "engine.protocol" );
       String host = transMeta.getVariable( "engine.host" );
