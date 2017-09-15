@@ -83,10 +83,10 @@
     <spark.version>2.1.0</spark.version>
 
     <!-- plugins -->    
-	<pdi-autodoc-plugin.version>${project.version}</pdi-autodoc-plugin.version>
-	<pdi-append-plugin.version>${project.version}</pdi-append-plugin.version>
-	<pdi-analyticquery-plugin.version>${project.version}</pdi-analyticquery-plugin.version>
-	<pdi-addsequence-plugin.version>${project.version}</pdi-addsequence-plugin.version>
+    <pdi-autodoc-plugin.version>${project.version}</pdi-autodoc-plugin.version>
+    <pdi-append-plugin.version>${project.version}</pdi-append-plugin.version>
+    <pdi-analyticquery-plugin.version>${project.version}</pdi-analyticquery-plugin.version>
+    <pdi-addsequence-plugin.version>${project.version}</pdi-addsequence-plugin.version>
     <pdi-abort-plugin.version>${project.version}</pdi-abort-plugin.version>
     <kettle-version-checker.version>${project.version}</kettle-version-checker.version>
     <kettle-dummy-plugin.version>${project.version}</kettle-dummy-plugin.version>
