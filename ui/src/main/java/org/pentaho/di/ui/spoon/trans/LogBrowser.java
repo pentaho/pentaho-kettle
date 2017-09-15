@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,14 +22,6 @@
 
 package org.pentaho.di.ui.spoon.trans;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicInteger;
-
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StyleRange;
 import org.eclipse.swt.custom.StyledText;
@@ -39,11 +31,10 @@ import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.util.EnvUtil;
-import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.Props;
 import org.pentaho.di.core.logging.HasLogChannelInterface;
 import org.pentaho.di.core.logging.KettleLogLayout;
@@ -53,10 +44,24 @@ import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.logging.LogLevel;
 import org.pentaho.di.core.logging.LogParentProvidedInterface;
 import org.pentaho.di.core.logging.LoggingRegistry;
+import org.pentaho.di.core.util.EnvUtil;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.ui.core.ConstUI;
 import org.pentaho.di.ui.core.gui.GUIResource;
+import org.pentaho.di.ui.core.widget.text.Format;
+import org.pentaho.di.ui.core.widget.text.TextFormatter;
 import org.pentaho.di.ui.spoon.Spoon;
+
+import java.awt.Desktop;
+import java.net.URI;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class LogBrowser {
   private static Class<?> PKG = Spoon.class; // for i18n purposes, needed by Translator2!!
@@ -132,13 +137,18 @@ public class LogBrowser {
                   for ( int i = 0; i < logLines.size(); i++ ) {
                     KettleLoggingEvent event = logLines.get( i );
                     String line = logLayout.format( event ).trim();
-
                     int start = text.getText().length();
                     int length = line.length();
 
                     if ( length > 0 ) {
-                      text.append( line );
+                      Format format = TextFormatter.getInstance().execute( line );
+                      text.append( format.getText() );
                       text.append( Const.CR );
+
+                      for ( StyleRange styleRange : format.getStyleRanges() ) {
+                        styleRange.start += start;
+                        text.setStyleRange( styleRange );
+                      }
 
                       if ( event.getLevel() == LogLevel.ERROR ) {
                         StyleRange styleRange = new StyleRange();
@@ -184,6 +194,21 @@ public class LogBrowser {
     logRefreshTimer
       .schedule( timerTask, Const.toInt( EnvUtil.getSystemProperty( Const.KETTLE_LOG_TAB_REFRESH_DELAY ), 1000 ),
         Const.toInt( EnvUtil.getSystemProperty( Const.KETTLE_LOG_TAB_REFRESH_PERIOD ), 1000 ) );
+
+
+    text.addListener( SWT.MouseDown, e -> {
+      try {
+        int offset = text.getOffsetAtLocation( new Point( e.x, e.y ) );
+        StyleRange style = text.getStyleRangeAtOffset( offset );
+        if ( style != null && style.underline && style.underlineStyle == SWT.UNDERLINE_LINK ) {
+          if ( Desktop.isDesktopSupported() ) {
+            Desktop.getDesktop().browse( new URI( (String) style.data ) );
+          }
+        }
+      } catch ( Exception ex ) {
+        // no character under event.x, event.y
+      }
+    } );
 
     // Make sure the timer goes down when the widget is disposed
     //

@@ -3,7 +3,7 @@
  *
  *  Pentaho Data Integration
  *
- *  Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
+ *  Copyright (C) 2017 by Pentaho : http://www.pentaho.com
  *
  *  *******************************************************************************
  *  Licensed under the Apache License, Version 2.0 (the "License"); you may not use
@@ -22,18 +22,26 @@
  *
  */
 
-package org.pentaho.di.engine.configuration.api;
+package org.pentaho.di.ui.core.widget.text;
 
-import org.pentaho.di.ExecutionConfiguration;
-import org.pentaho.di.base.AbstractMeta;
-import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.variables.VariableSpace;
-import org.pentaho.di.repository.Repository;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
- * Created by bmorrise on 3/16/17.
+ * Created by bmorrise on 9/15/17.
  */
-public interface RunConfigurationExecutor {
-  void execute( RunConfiguration runConfiguration, ExecutionConfiguration configuration, AbstractMeta meta,
-                VariableSpace variableSpace, Repository repository ) throws KettleException;
+public abstract class FormatRule {
+
+  protected String pattern;
+
+  abstract Format execute( String value );
+
+  public FormatRule( String pattern ) {
+    this.pattern = pattern;
+  }
+
+  protected Matcher parse( String value ) {
+    Pattern p = Pattern.compile( pattern );
+    return p.matcher( value );
+  }
 }

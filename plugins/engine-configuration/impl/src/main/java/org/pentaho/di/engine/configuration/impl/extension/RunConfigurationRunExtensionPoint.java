@@ -37,6 +37,7 @@ import org.pentaho.di.engine.configuration.api.RunConfigurationExecutor;
 import org.pentaho.di.engine.configuration.impl.EmbeddedRunConfigurationManager;
 import org.pentaho.di.engine.configuration.impl.RunConfigurationManager;
 import org.pentaho.di.i18n.BaseMessages;
+import org.pentaho.di.repository.Repository;
 import org.pentaho.di.trans.TransMeta;
 
 /**
@@ -58,6 +59,7 @@ public class RunConfigurationRunExtensionPoint implements ExtensionPointInterfac
     ExecutionConfiguration executionConfiguration = (ExecutionConfiguration) ( (Object[]) o )[ 0 ];
     AbstractMeta meta = (AbstractMeta) ( (Object[]) o )[ 1 ];
     VariableSpace variableSpace = (VariableSpace) ( (Object[]) o )[ 2 ];
+    Repository repository = (Repository) ( (Object[]) o )[ 3 ];
     EmbeddedMetaStore embeddedMetaStore = meta.getEmbeddedMetaStore();
 
     RunConfiguration runConfiguration =
@@ -74,7 +76,7 @@ public class RunConfigurationRunExtensionPoint implements ExtensionPointInterfac
         runConfigurationManager.getExecutor( runConfiguration.getType() );
 
       if ( runConfigurationExecutor != null ) {
-        runConfigurationExecutor.execute( runConfiguration, executionConfiguration, meta, variableSpace );
+        runConfigurationExecutor.execute( runConfiguration, executionConfiguration, meta, variableSpace, repository );
       }
     } else {
       String name = "";

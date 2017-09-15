@@ -74,11 +74,11 @@ public class RunConfigurationRunExtensionPointTest {
   public void testCallExtensionPoint() throws Exception {
 
     runConfigurationRunExtensionPoint.callExtensionPoint( log, new Object[] {
-      transExecutionConfiguration, abstractMeta, variableSpace
+      transExecutionConfiguration, abstractMeta, variableSpace, null
     } );
 
     verify( runConfigurationExecutor )
-      .execute( runConfiguration, transExecutionConfiguration, abstractMeta, variableSpace );
+      .execute( runConfiguration, transExecutionConfiguration, abstractMeta, variableSpace, null );
   }
 
   @Test

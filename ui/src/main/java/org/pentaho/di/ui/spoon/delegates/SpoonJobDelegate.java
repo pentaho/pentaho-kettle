@@ -1366,7 +1366,7 @@ public class SpoonJobDelegate extends SpoonDelegate {
 
       try {
         ExtensionPointHandler.callExtensionPoint( log, KettleExtensionPoint.SpoonTransBeforeStart.id, new Object[] {
-          executionConfiguration, jobMeta, jobMeta
+          executionConfiguration, jobMeta, jobMeta, spoon.getRepository()
         } );
       } catch ( KettleException e ) {
         log.logError( e.getMessage(), jobMeta.getFilename() );
@@ -1420,7 +1420,7 @@ public class SpoonJobDelegate extends SpoonDelegate {
 
       try {
         ExtensionPointHandler.callExtensionPoint( log, KettleExtensionPoint.SpoonTransBeforeStart.id, new Object[] {
-          executionConfiguration, jobMeta, jobMeta
+          executionConfiguration, jobMeta, jobMeta, spoon.getRepository()
         } );
       } catch ( KettleException e ) {
         log.logError( e.getMessage(), jobMeta.getFilename() );
@@ -1466,8 +1466,6 @@ public class SpoonJobDelegate extends SpoonDelegate {
           mb.setText( BaseMessages.getString( PKG, "Spoon.Dialog.NoRemoteServerSpecified.Title" ) );
           mb.open();
         }
-      } else {
-        log.logBasic( "Executing on the connected Pentaho Server" );
       }
     }
   }

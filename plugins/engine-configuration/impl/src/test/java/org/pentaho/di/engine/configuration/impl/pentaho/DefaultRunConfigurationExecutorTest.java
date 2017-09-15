@@ -32,9 +32,6 @@ import org.mockito.runners.MockitoJUnitRunner;
 import org.pentaho.di.base.AbstractMeta;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.logging.LogChannelInterface;
-import org.pentaho.di.core.variables.VariableSpace;
-import org.pentaho.di.engine.configuration.impl.pentaho.scheduler.SpoonUtil;
 import org.pentaho.di.job.JobExecutionConfiguration;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectoryInterface;
@@ -42,11 +39,8 @@ import org.pentaho.di.repository.UserInfo;
 import org.pentaho.di.trans.TransExecutionConfiguration;
 import org.pentaho.di.ui.spoon.Spoon;
 
-import java.util.function.Supplier;
-
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 /**
@@ -89,7 +83,6 @@ public class DefaultRunConfigurationExecutorTest {
     when( abstractMeta.getName() ).thenReturn( "file" );
     when( abstractMeta.getDefaultExtension() ).thenReturn( "ktr" );
 
-    SpoonUtil.spoonSupplier = () -> spoon;
     defaultRunConfigurationExecutor = new DefaultRunConfigurationExecutor();
   }
 
@@ -102,11 +95,11 @@ public class DefaultRunConfigurationExecutorTest {
     TransExecutionConfiguration transExecutionConfiguration = new TransExecutionConfiguration();
 
     defaultRunConfigurationExecutor
-      .execute( defaultRunConfiguration, transExecutionConfiguration, abstractMeta, variableSpace );
+      .execute( defaultRunConfiguration, transExecutionConfiguration, abstractMeta, variableSpace, null );
 
     assertTrue( transExecutionConfiguration.isExecutingLocally() );
   }
-  
+
   @Test
   public void testExecuteRemoteTrans() throws Exception {
     DefaultRunConfiguration defaultRunConfiguration = new DefaultRunConfiguration();
@@ -119,7 +112,7 @@ public class DefaultRunConfigurationExecutorTest {
     doReturn( slaveServer ).when( abstractMeta ).findSlaveServer( "Test Server" );
 
     defaultRunConfigurationExecutor
-      .execute( defaultRunConfiguration, transExecutionConfiguration, abstractMeta, variableSpace );
+      .execute( defaultRunConfiguration, transExecutionConfiguration, abstractMeta, variableSpace, null );
 
     assertFalse( transExecutionConfiguration.isExecutingLocally() );
     assertTrue( transExecutionConfiguration.isExecutingRemotely() );
@@ -137,7 +130,7 @@ public class DefaultRunConfigurationExecutorTest {
     TransExecutionConfiguration transExecutionConfiguration = new TransExecutionConfiguration();
 
     defaultRunConfigurationExecutor
-      .execute( defaultRunConfiguration, transExecutionConfiguration, abstractMeta, variableSpace );
+      .execute( defaultRunConfiguration, transExecutionConfiguration, abstractMeta, variableSpace, null );
 
     assertFalse( transExecutionConfiguration.isExecutingLocally() );
     assertFalse( transExecutionConfiguration.isExecutingRemotely() );
@@ -154,7 +147,7 @@ public class DefaultRunConfigurationExecutorTest {
     TransExecutionConfiguration transExecutionConfiguration = new TransExecutionConfiguration();
 
     defaultRunConfigurationExecutor
-      .execute( defaultRunConfiguration, transExecutionConfiguration, abstractMeta, variableSpace );
+      .execute( defaultRunConfiguration, transExecutionConfiguration, abstractMeta, variableSpace, null );
 
     assertTrue( transExecutionConfiguration.isExecutingClustered() );
     assertFalse( transExecutionConfiguration.isExecutingRemotely() );
@@ -174,7 +167,7 @@ public class DefaultRunConfigurationExecutorTest {
 
     try {
       defaultRunConfigurationExecutor
-        .execute( defaultRunConfiguration, transExecutionConfiguration, abstractMeta, variableSpace );
+        .execute( defaultRunConfiguration, transExecutionConfiguration, abstractMeta, variableSpace, null );
       fail();
     } catch ( KettleException e ) {
       // expected
@@ -190,7 +183,7 @@ public class DefaultRunConfigurationExecutorTest {
     JobExecutionConfiguration jobExecutionConfiguration = new JobExecutionConfiguration();
 
     defaultRunConfigurationExecutor
-      .execute( defaultRunConfiguration, jobExecutionConfiguration, abstractMeta, variableSpace );
+      .execute( defaultRunConfiguration, jobExecutionConfiguration, abstractMeta, variableSpace, null );
 
     assertTrue( jobExecutionConfiguration.isExecutingLocally() );
   }
@@ -207,7 +200,7 @@ public class DefaultRunConfigurationExecutorTest {
     doReturn( slaveServer ).when( abstractMeta ).findSlaveServer( "Test Server" );
 
     defaultRunConfigurationExecutor
-      .execute( defaultRunConfiguration, jobExecutionConfiguration, abstractMeta, variableSpace );
+      .execute( defaultRunConfiguration, jobExecutionConfiguration, abstractMeta, variableSpace, null );
 
     assertFalse( jobExecutionConfiguration.isExecutingLocally() );
     assertTrue( jobExecutionConfiguration.isExecutingRemotely() );
@@ -227,7 +220,7 @@ public class DefaultRunConfigurationExecutorTest {
 
     try {
       defaultRunConfigurationExecutor
-        .execute( defaultRunConfiguration, jobExecutionConfiguration, abstractMeta, variableSpace );
+        .execute( defaultRunConfiguration, jobExecutionConfiguration, abstractMeta, variableSpace, null );
       fail();
     } catch ( KettleException e ) {
       // expected
@@ -245,7 +238,7 @@ public class DefaultRunConfigurationExecutorTest {
     JobExecutionConfiguration jobExecutionConfiguration = new JobExecutionConfiguration();
 
     defaultRunConfigurationExecutor
-      .execute( defaultRunConfiguration, jobExecutionConfiguration, abstractMeta, variableSpace );
+      .execute( defaultRunConfiguration, jobExecutionConfiguration, abstractMeta, variableSpace, null );
 
     assertFalse( jobExecutionConfiguration.isExecutingLocally() );
     assertFalse( jobExecutionConfiguration.isExecutingRemotely() );

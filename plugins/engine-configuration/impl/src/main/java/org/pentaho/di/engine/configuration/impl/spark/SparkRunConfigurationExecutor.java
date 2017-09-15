@@ -35,6 +35,7 @@ import org.pentaho.di.core.Const;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.engine.configuration.api.RunConfiguration;
 import org.pentaho.di.engine.configuration.api.RunConfigurationExecutor;
+import org.pentaho.di.repository.Repository;
 
 import java.io.IOException;
 import java.net.URI;
@@ -72,7 +73,7 @@ public class SparkRunConfigurationExecutor implements RunConfigurationExecutor {
    * @param variableSpace The variableSpace used to set the engine runtime values
    */
   @Override public void execute( RunConfiguration runConfiguration, ExecutionConfiguration configuration,
-                                 AbstractMeta meta, VariableSpace variableSpace ) {
+                                 AbstractMeta meta, VariableSpace variableSpace, Repository repository ) {
 
     // Check to see if the ael-security feature is installed. If it is, then install the jaas capability if it is
     // not already installed

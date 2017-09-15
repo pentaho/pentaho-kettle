@@ -303,6 +303,7 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
     retval.append( "      " ).append( XMLHandler.addTagValue( "expand_remote_job", expandingRemoteJob ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "create_parent_folder", createParentFolder ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "pass_export", passingExport ) );
+    retval.append( "      " ).append( XMLHandler.addTagValue( "run_configuration", runConfiguration ) );
 
     if ( arguments != null ) {
       for ( int i = 0; i < arguments.length; i++ ) {
@@ -388,6 +389,7 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
       passingExport = "Y".equalsIgnoreCase( XMLHandler.getTagValue( entrynode, "pass_export" ) );
       directory = XMLHandler.getTagValue( entrynode, "directory" );
       createParentFolder = "Y".equalsIgnoreCase( XMLHandler.getTagValue( entrynode, "create_parent_folder" ) );
+      runConfiguration = XMLHandler.getTagValue( entrynode, "run_configuration" );
 
       String wait = XMLHandler.getTagValue( entrynode, "wait_until_finished" );
       if ( Utils.isEmpty( wait ) ) {
@@ -467,6 +469,7 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
       followingAbortRemotely = rep.getJobEntryAttributeBoolean( id_jobentry, "follow_abort_remote" );
       expandingRemoteJob = rep.getJobEntryAttributeBoolean( id_jobentry, "expand_remote_job" );
       createParentFolder = rep.getJobEntryAttributeBoolean( id_jobentry, "create_parent_folder" );
+      runConfiguration = rep.getJobEntryAttributeString( id_jobentry, "run_configuration" );
 
       // How many arguments?
       int argnr = rep.countNrJobEntryAttributes( id_jobentry, "argument" );
@@ -525,6 +528,7 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
       rep.saveJobEntryAttribute( id_job, getObjectId(), "follow_abort_remote", followingAbortRemotely );
       rep.saveJobEntryAttribute( id_job, getObjectId(), "expand_remote_job", expandingRemoteJob );
       rep.saveJobEntryAttribute( id_job, getObjectId(), "create_parent_folder", createParentFolder );
+      rep.saveJobEntryAttribute( id_job, getObjectId(), "run_configuration", runConfiguration );
 
       // save the arguments...
       if ( arguments != null ) {
@@ -824,12 +828,12 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
         SlaveServer remoteSlaveServer = null;
         JobExecutionConfiguration executionConfiguration = new JobExecutionConfiguration();
         if ( !Utils.isEmpty( runConfiguration ) ) {
-          log.logBasic( BaseMessages.getString( PKG, "JobTrans.RunConfig.Message" ), runConfiguration );
+          log.logBasic( BaseMessages.getString( PKG, "JobJob.RunConfig.Message" ), runConfiguration );
           runConfiguration = environmentSubstitute( runConfiguration );
           executionConfiguration.setRunConfiguration( runConfiguration );
           try {
             ExtensionPointHandler.callExtensionPoint( log, KettleExtensionPoint.SpoonTransBeforeStart.id, new Object[] {
-              executionConfiguration, parentJob.getJobMeta(), jobMeta
+              executionConfiguration, parentJob.getJobMeta(), jobMeta, rep
             } );
             remoteSlaveServer = executionConfiguration.getRemoteServer();
             doFallback = false;
@@ -1258,6 +1262,7 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
     logext = null;
     setLogfile = false;
     setAppendLogfile = false;
+    runConfiguration = null;
   }
 
   @Override
