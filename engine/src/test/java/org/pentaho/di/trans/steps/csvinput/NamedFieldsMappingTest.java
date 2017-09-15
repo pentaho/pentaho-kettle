@@ -24,9 +24,6 @@ package org.pentaho.di.trans.steps.csvinput;
 
 import static org.junit.Assert.assertEquals;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.junit.Before;
 import org.junit.Test;
 
@@ -36,10 +33,7 @@ public class NamedFieldsMappingTest {
 
   @Before
   public void before() {
-    Map<Integer, Integer> actualToMetaFieldsMap = new HashMap<>();
-    actualToMetaFieldsMap.put( 0, 3 );
-    actualToMetaFieldsMap.put( 1, 4 );
-    fieldsMapping = new NamedFieldsMapping( actualToMetaFieldsMap );
+    fieldsMapping = new NamedFieldsMapping( new int[] { 3, 4 } );
   }
 
   @Test
@@ -78,6 +72,44 @@ public class NamedFieldsMappingTest {
     NamedFieldsMapping mapping =
         NamedFieldsMapping.mapping( new String[] { "Object", "Test", "Object" }, new String[] { "Object", "Test" } );
     assertEquals( FieldsMapping.FIELD_DOES_NOT_EXIST, mapping.fieldMetaIndex( 2 ) );
+  }
+
+  @Test
+  public void mappingWithNonMatchingColumnNames() {
+    NamedFieldsMapping mapping =
+      NamedFieldsMapping.mapping( new String[] {"One", "Two", "Three" }, new String[] { "A", "B", "C" } );
+    assertEquals( 0, mapping.fieldMetaIndex( 0 ) ); // One -> A
+    assertEquals( 1, mapping.fieldMetaIndex( 1 ) ); // Two -> B
+    assertEquals( 2, mapping.fieldMetaIndex( 2 ) ); // Three -> C
+
+    mapping =
+      NamedFieldsMapping.mapping( new String[] {"A", "B", "A" }, new String[] { "A", "A" } );
+    assertEquals( 0, mapping.fieldMetaIndex( 0 ) ); // A -> A
+    assertEquals( FieldsMapping.FIELD_DOES_NOT_EXIST, mapping.fieldMetaIndex( 1 ) ); // B -> undefined
+    assertEquals( 1, mapping.fieldMetaIndex( 2 ) ); // A -> A
+
+    mapping =
+      NamedFieldsMapping.mapping( new String[] {"A", "B", "A" }, new String[] { "A", "X", "B", "Z" } );
+    assertEquals( 0, mapping.fieldMetaIndex( 0 ) ); // A -> A
+    assertEquals( 2, mapping.fieldMetaIndex( 1 ) ); // B -> B
+    assertEquals( 1, mapping.fieldMetaIndex( 2 ) ); // A -> X
+    assertEquals( FieldsMapping.FIELD_DOES_NOT_EXIST, mapping.fieldMetaIndex( 3 ) ); // undefined -> undefined
+
+    mapping =
+      NamedFieldsMapping.mapping( new String[] {"A", "B", "A" }, new String[] { "A", "A", "C" } );
+    assertEquals( 0, mapping.fieldMetaIndex( 0 ) ); // A -> A
+    assertEquals( 2, mapping.fieldMetaIndex( 1 ) ); // B -> C
+    assertEquals( 1, mapping.fieldMetaIndex( 2 ) ); // A -> A
+
+    mapping =
+      NamedFieldsMapping.mapping(
+        new String[] {"A", "B", "C", "D", "E" },
+        new String[] { "X", "C", "Y", "B" } );
+    assertEquals( 0, mapping.fieldMetaIndex( 0 ) ); // A -> X
+    assertEquals( 3, mapping.fieldMetaIndex( 1 ) ); // B -> B
+    assertEquals( 1, mapping.fieldMetaIndex( 2 ) ); // C -> C
+    assertEquals( 2, mapping.fieldMetaIndex( 3 ) ); // D -> Y
+    assertEquals( FieldsMapping.FIELD_DOES_NOT_EXIST, mapping.fieldMetaIndex( 4 ) ); // E -> undefined
   }
 
 }
