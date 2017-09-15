@@ -10,7 +10,7 @@
   <modelVersion>4.0.0</modelVersion>
 
   <artifactId>pdi-abort-step-core</artifactId>
-  <name>PDI Abort Plugin Step Impl</name>
+  <name>PDI Abort Plugin Step Core</name>
 
   <properties>
     <kettle.version>8.0-SNAPSHOT</kettle.version>

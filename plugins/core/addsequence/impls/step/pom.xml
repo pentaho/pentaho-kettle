@@ -10,7 +10,7 @@
   <modelVersion>4.0.0</modelVersion>
 
   <artifactId>pdi-addsequence-step-core</artifactId>
-  <name>PDI Add Sequence Step Impl</name>
+  <name>PDI Add Sequence Step Core</name>
 
   <properties>
     <kettle.version>8.0-SNAPSHOT</kettle.version>
