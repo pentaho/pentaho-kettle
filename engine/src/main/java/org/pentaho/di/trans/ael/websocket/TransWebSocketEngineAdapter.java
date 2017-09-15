@@ -374,7 +374,7 @@ public class TransWebSocketEngineAdapter extends Trans {
 
   private Principal getActingPrincipal( TransMeta transMeta ) {
     if ( transMeta.getRepository() == null || transMeta.getRepository().getUserInfo() == null ) {
-      return new ActingPrincipal( ANONYMOUS_PRINCIPAL );
+      return ActingPrincipal.ANONYMOUS;
     }
     return new ActingPrincipal( transMeta.getRepository().getUserInfo().getName() );
   }
