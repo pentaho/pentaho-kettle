@@ -34,6 +34,7 @@ import java.util.Map;
 import java.util.concurrent.Callable;
 
 import com.google.common.annotations.VisibleForTesting;
+import org.apache.commons.lang.BooleanUtils;
 import org.eclipse.swt.widgets.Shell;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.i18n.BaseMessages;
@@ -160,7 +161,8 @@ public class BrowseController extends AbstractXulEventHandler implements IUISupp
       RepositoryDirectoryInterface root;
       try {
         if ( repository instanceof RepositoryExtended ) {
-          root = ( (RepositoryExtended) repository ).loadRepositoryDirectoryTree(  "/", "*.ktr|*.kjb", -1, true, true, true );
+          root = ( (RepositoryExtended) repository ).loadRepositoryDirectoryTree(  "/", "*.ktr|*.kjb", -1,
+                  BooleanUtils.isTrue( repository.getUserInfo().isAdmin() ), true, true );
         } else {
           root = repository.loadRepositoryDirectoryTree();
         }

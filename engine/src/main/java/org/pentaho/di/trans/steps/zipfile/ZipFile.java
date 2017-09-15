@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -153,7 +153,7 @@ public class ZipFile extends BaseStep implements StepInterface {
         log.logError( toString(), BaseMessages.getString( PKG, "ZipFile.Error.SourceFileEmpty" ) );
         throw new KettleException( BaseMessages.getString( PKG, "ZipFile.Error.SourceFileEmpty" ) );
       }
-      data.sourceFile = KettleVFS.getFileObject( sourceFilename );
+      data.sourceFile = KettleVFS.getFileObject( sourceFilename, this );
 
       // Check sourcefile
       boolean skip = false;
@@ -194,7 +194,7 @@ public class ZipFile extends BaseStep implements StepInterface {
           log.logError( toString(), BaseMessages.getString( PKG, "ZipFile.Error.TargetFileEmpty" ) );
           throw new KettleException( BaseMessages.getString( PKG, "ZipFile.Error.TargetFileEmpty" ) );
         }
-        data.zipFile = KettleVFS.getFileObject( targetFilename );
+        data.zipFile = KettleVFS.getFileObject( targetFilename, this );
         if ( data.zipFile.exists() ) {
           if ( log.isDetailed() ) {
             log.logDetailed( toString(), BaseMessages.getString(
@@ -275,7 +275,7 @@ public class ZipFile extends BaseStep implements StepInterface {
         FileObject moveToFolder = null;
         try {
           // Move to folder
-          moveToFolder = KettleVFS.getFileObject( folder );
+          moveToFolder = KettleVFS.getFileObject( folder, this );
 
           if ( moveToFolder.exists() ) {
             if ( moveToFolder.getType() != FileType.FOLDER ) {
@@ -289,7 +289,7 @@ public class ZipFile extends BaseStep implements StepInterface {
           String targetfilename =
             KettleVFS.getFilename( moveToFolder )
               + Const.FILE_SEPARATOR + data.sourceFile.getName().getBaseName();
-          file = KettleVFS.getFileObject( targetfilename );
+          file = KettleVFS.getFileObject( targetfilename, this );
 
           // Move file
           data.sourceFile.moveTo( file );
@@ -475,6 +475,11 @@ public class ZipFile extends BaseStep implements StepInterface {
     data = (ZipFileData) sdi;
 
     if ( super.init( smi, sdi ) ) {
+      //Set Embedded NamedCluter MetatStore Provider Key so that it can be passed to VFS
+      if ( getTransMeta().getNamedClusterEmbedManager() != null ) {
+        getTransMeta().getNamedClusterEmbedManager()
+          .passEmbeddedMetastoreKey( this, getTransMeta().getEmbeddedMetastoreProviderKey() );
+      }
       return true;
     }
     return false;

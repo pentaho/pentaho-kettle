@@ -73,15 +73,15 @@ public class LogEventSerializer extends BaseSerializer<LogEvent> {
 
         jsonGenerator.writeStringField( "message", data.getMessage() );
 
-        if( data.getThrowable() != null ) {
+        if ( data.getThrowable() != null ) {
           StringWriter stackTrace = new StringWriter();
           data.getThrowable().printStackTrace( new PrintWriter( stackTrace ) );
           jsonGenerator.writeStringField( "stacktrace", stackTrace.toString() );
         }
 
         Map<String, String> extras = data.getExtras();
-        if( extras.size() > 0 ) {
-          jsonGenerator.writeArrayFieldStart("extras" );
+        if ( extras.size() > 0 ) {
+          jsonGenerator.writeArrayFieldStart( "extras" );
           for ( Map.Entry<String, String> entry : extras.entrySet() ) {
             jsonGenerator.writeStartObject();
             jsonGenerator.writeStringField( "key", entry.getKey() );
@@ -109,15 +109,16 @@ public class LogEventSerializer extends BaseSerializer<LogEvent> {
           logger.error( "Error parsing Log timestamp: " + jsonNode.get( "timestamp" ) );
           builder.withTimestamp( new Date() );
         }
-        if( jsonNode.has( "stacktrace" ) ) {
+        if ( jsonNode.has( "stacktrace" ) ) {
           // We cannot recreate the exception so it's added to the message
-          builder.withMessage( jsonNode.get( "message" ).asText() + "\n\nStackTrace: \n" +jsonNode.get( "stacktrace" ).asText() );
+          builder.withMessage(
+            jsonNode.get( "message" ).asText() + "\n\nStackTrace: \n" + jsonNode.get( "stacktrace" ).asText() );
         } else {
 
           builder.withMessage( jsonNode.get( "message" ).asText() );
         }
 
-        if( jsonNode.has( "extras" ) ) {
+        if ( jsonNode.has( "extras" ) ) {
           Map<String, String> extras = new HashMap<>();
 
           for ( JsonNode extra : jsonNode.get( "extras" ) ) {

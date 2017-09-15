@@ -31,13 +31,18 @@ define([
   "./components/card/card.component",
   "./components/folder/folder.component",
   "./components/error/error.component",
+  "./components/loading/loading.component",
   "./components/breadcrumb/breadcrumb.component",
   "./components/files/files.component",
-  "./components/files/edit.directive",
+  "./shared/directives/edit.directive",
+  "./shared/directives/key.directive",
+  "./shared/directives/focus.directive",
   "./components/breadcrumb/breadcrumb.directive",
-  "./services/data.service"
-], function(angular, appComponent, cardComponent, folderComponent, errorComponent,
-            breadcrumbComponent, filesComponent, editDirective, breadcrumbDirective, dataService) {
+  "./services/data.service",
+  "./shared/directives/resize/resize.module"
+], function(angular, appComponent, cardComponent, folderComponent, errorComponent, loadingComponent,
+            breadcrumbComponent, filesComponent, editDirective, keyDirective, focusDirective,
+            breadcrumbDirective, dataService, resizeModule) {
   "use strict";
 
   var module = {
@@ -55,22 +60,25 @@ define([
    * @private
    */
   function activate() {
-    angular.module(module.name, [])
-        .component(appComponent.name, appComponent.options)
-        .component(cardComponent.name, cardComponent.options)
-        .component(folderComponent.name, folderComponent.options)
-        .component(errorComponent.name, errorComponent.options)
-        .component(breadcrumbComponent.name, breadcrumbComponent.options)
-        .component(filesComponent.name, filesComponent.options)
-        .directive(editDirective.name, editDirective.options)
-        .directive(breadcrumbDirective.name, breadcrumbDirective.options)
-        .service(dataService.name, dataService.factory);
+    angular.module(module.name, [resizeModule.name])
+      .component(appComponent.name, appComponent.options)
+      .component(cardComponent.name, cardComponent.options)
+      .component(folderComponent.name, folderComponent.options)
+      .component(errorComponent.name, errorComponent.options)
+      .component(loadingComponent.name, loadingComponent.options)
+      .component(breadcrumbComponent.name, breadcrumbComponent.options)
+      .component(filesComponent.name, filesComponent.options)
+      .directive(editDirective.name, editDirective.options)
+      .directive(keyDirective.name, keyDirective.options)
+      .directive(focusDirective.name, focusDirective.options)
+      .directive(breadcrumbDirective.name, breadcrumbDirective.options)
+      .service(dataService.name, dataService.factory);
   }
 
   /**
    * Bootstraps angular module to the DOM element on the page
    * @private
-   * @param {Object} element - The DOM element
+   * @param {DOMElement} element - The DOM element
    */
   function bootstrap(element) {
     angular.element(element).ready(function() {

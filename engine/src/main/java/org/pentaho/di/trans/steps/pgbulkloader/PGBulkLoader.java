@@ -31,6 +31,8 @@ package org.pentaho.di.trans.steps.pgbulkloader;
 //
 
 import java.math.BigDecimal;
+import java.sql.Connection;
+import java.sql.Statement;
 
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.util.Utils;
@@ -143,19 +145,49 @@ public class PGBulkLoader extends BaseStep implements StepInterface {
     data.db = new Database( this, meta.getDatabaseMeta() );
     String copyCmd = getCopyCommand( );
     try {
-      if ( getTransMeta().isUsingUniqueConnections() ) {
-        synchronized ( getTrans() ) {
-          data.db.connect( getTrans().getTransactionId(), getPartitionID() );
-        }
-      } else {
-        data.db.connect( getPartitionID() );
-      }
+      connect();
+
+      processTruncate();
 
       logBasic( "Launching command: " + copyCmd );
       pgCopyOut = new PGCopyOutputStream( (PGConnection) data.db.getConnection(), copyCmd );
 
     } catch ( Exception ex ) {
       throw new KettleException( "Error while preparing the COPY " + copyCmd, ex );
+    }
+  }
+
+  void connect() throws KettleException {
+    if ( getTransMeta().isUsingUniqueConnections() ) {
+      synchronized ( getTrans() ) {
+        data.db.connect( getTrans().getTransactionId(), getPartitionID() );
+      }
+    } else {
+      data.db.connect( getPartitionID() );
+    }
+  }
+
+  void processTruncate() throws Exception {
+    Connection connection = data.db.getConnection();
+
+    String loadAction = environmentSubstitute( meta.getLoadAction() );
+
+    if ( loadAction.equalsIgnoreCase( "truncate" ) ) {
+      DatabaseMeta dm = meta.getDatabaseMeta();
+      String tableName =
+        dm.getQuotedSchemaTableCombination( environmentSubstitute( meta.getSchemaName() ),
+          environmentSubstitute( meta.getTableName() ) );
+      logBasic( "Launching command: " + "TRUNCATE " + tableName );
+
+      Statement statement = connection.createStatement();
+
+      try {
+        statement.executeUpdate( "TRUNCATE " + tableName );
+      } catch ( Exception ex ) {
+        throw new KettleException( "Error while truncating " + tableName, ex );
+      } finally {
+        statement.close();
+      }
     }
   }
 

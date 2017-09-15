@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -85,6 +85,11 @@ public class ComboVar extends Composite {
 
   public ComboVar( VariableSpace space, Composite composite, int flags, String toolTipText,
     GetCaretPositionInterface getCaretPositionInterface, InsertTextInterface insertTextInterface ) {
+    this( space, composite, flags, toolTipText, getCaretPositionInterface, insertTextInterface, true );
+  }
+
+  public ComboVar( VariableSpace space, Composite composite, int flags, String toolTipText,
+    GetCaretPositionInterface getCaretPositionInterface, InsertTextInterface insertTextInterface, boolean insertImage ) {
     super( composite, SWT.NONE );
     this.toolTipText = toolTipText;
     this.getCaretPositionInterface = getCaretPositionInterface;
@@ -105,11 +110,12 @@ public class ComboVar extends Composite {
     // add a text field on it...
     wCombo = new CCombo( this, flags );
 
-    controlDecoration = new ControlDecoration( wCombo, SWT.CENTER | SWT.RIGHT );
-
     Image image = GUIResource.getInstance().getImageVariable();
-    controlDecoration.setImage( image );
-    controlDecoration.setDescriptionText( BaseMessages.getString( PKG, "TextVar.tooltip.InsertVariable" ) );
+    if ( insertImage ) {
+      controlDecoration = new ControlDecoration( wCombo, SWT.CENTER | SWT.RIGHT, this );
+      controlDecoration.setImage( image );
+      controlDecoration.setDescriptionText( BaseMessages.getString( PKG, "TextVar.tooltip.InsertVariable" ) );
+    }
 
     // props.setLook(wText);
     modifyListenerTooltipText = getModifyListenerTooltipText( wCombo );
@@ -128,7 +134,7 @@ public class ComboVar extends Composite {
     FormData fdText = new FormData();
     fdText.top = new FormAttachment( 0, 0 );
     fdText.left = new FormAttachment( 0, 0 );
-    fdText.right = new FormAttachment( 100, -image.getBounds().width );
+    fdText.right = new FormAttachment( 100, insertImage ? -image.getBounds().width : 0 );
     wCombo.setLayoutData( fdText );
   }
 

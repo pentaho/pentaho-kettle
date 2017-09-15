@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -30,6 +30,8 @@ import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.job.Job;
+import org.pentaho.di.job.JobMeta;
+import org.pentaho.di.trans.steps.named.cluster.NamedClusterEmbedManager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -43,6 +45,7 @@ public class JobEntryDeleteFilesTest {
   private final String STRING_SPACES_ONLY = "   ";
 
   private JobEntryDeleteFiles jobEntry;
+  private NamedClusterEmbedManager mockNamedClusterEmbedManager;
 
   @Before
   public void setUp() throws Exception {
@@ -51,6 +54,10 @@ public class JobEntryDeleteFilesTest {
     doReturn( false ).when( parentJob ).isStopped();
 
     jobEntry.setParentJob( parentJob );
+    JobMeta mockJobMeta = mock( JobMeta.class );
+    mockNamedClusterEmbedManager = mock( NamedClusterEmbedManager.class );
+    when( mockJobMeta.getNamedClusterEmbedManager() ).thenReturn( mockNamedClusterEmbedManager );
+    jobEntry.setParentJobMeta( mockJobMeta );
     jobEntry = spy( jobEntry );
     doReturn( true ).when( jobEntry ).processFile( anyString(), anyString(), eq( parentJob ) );
   }
@@ -75,6 +82,7 @@ public class JobEntryDeleteFilesTest {
 
     jobEntry.execute( new Result(), 0 );
     verify( jobEntry, times( args.length ) ).processFile( anyString(), anyString(), any( Job.class ) );
+    verify( mockNamedClusterEmbedManager ).passEmbeddedMetastoreKey( anyObject(), anyString() );
   }
 
 

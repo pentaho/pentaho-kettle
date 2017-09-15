@@ -46,6 +46,8 @@
   </licenses>
 
   <properties>
+    <maven.compiler.source>1.8</maven.compiler.source>
+    <maven.compiler.target>1.8</maven.compiler.target>
     <maven.build.timestamp.format>yyyy-MM-dd hh.mm.ss</maven.build.timestamp.format>
 
     <!-- License Configuration -->
@@ -58,6 +60,8 @@
     <!-- Third-party dependencies -->
     <org.eclipse.swt.version>4.6</org.eclipse.swt.version>
     <js.version>1.7R3</js.version>
+    <httpclient.version>4.5.3</httpclient.version>
+    <httpccore.version>4.4.6</httpccore.version>
     <commons-codec.version>1.10</commons-codec.version>
     <commons-beanutils.version>1.9.3</commons-beanutils.version>
     <commons-logging.version>1.1.3</commons-logging.version>

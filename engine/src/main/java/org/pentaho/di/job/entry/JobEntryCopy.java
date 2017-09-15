@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -95,6 +95,7 @@ public class JobEntryCopy implements Cloneable, XMLInterface, GUIPositionInterfa
     StringBuilder retval = new StringBuilder( 100 );
 
     retval.append( "    " ).append( XMLHandler.openTag( XML_TAG ) ).append( Const.CR );
+    entry.setParentJobMeta( parentJobMeta );  // Attempt to set the JobMeta for entries that need it
     retval.append( entry.getXML() );
 
     retval.append( "      " ).append( XMLHandler.addTagValue( "parallel", launchingInParallel ) );

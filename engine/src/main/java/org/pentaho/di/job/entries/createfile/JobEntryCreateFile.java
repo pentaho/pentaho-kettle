@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -92,7 +92,9 @@ public class JobEntryCreateFile extends JobEntryBase implements Cloneable, JobEn
     retval.append( "      " ).append( XMLHandler.addTagValue( "filename", filename ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "fail_if_file_exists", failIfFileExists ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "add_filename_result", addfilenameresult ) );
-
+    if ( parentJobMeta != null ) {
+      parentJobMeta.getNamedClusterEmbedManager().registerUrl( filename );
+    }
     return retval.toString();
   }
 
@@ -151,6 +153,12 @@ public class JobEntryCreateFile extends JobEntryBase implements Cloneable, JobEn
     result.setResult( false );
 
     if ( filename != null ) {
+      //Set Embedded NamedCluter MetatStore Provider Key so that it can be passed to VFS
+      if ( parentJobMeta.getNamedClusterEmbedManager() != null ) {
+        parentJobMeta.getNamedClusterEmbedManager()
+          .passEmbeddedMetastoreKey( this, parentJobMeta.getEmbeddedMetastoreProviderKey() );
+      }
+
       String realFilename = getRealFilename();
       FileObject fileObject = null;
       try {

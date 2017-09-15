@@ -97,11 +97,7 @@ files td {
   line-height: 18px;
   padding: 6px 10px;
   white-space: nowrap;
-  user-select: none;
   cursor: pointer;
-  -webkit-user-select: none; /* webkit (safari, chrome) browsers */
-  -moz-user-select: none; /* mozilla browsers */
-  -ms-user-select: none; /* IE10+ */
 }
 
 files td {
@@ -126,7 +122,8 @@ files th:first-child {
 
 files tbody tr.selected td,
 files tbody tr.selected:hover td,
-files tbody tr.selected .fileLastSaved {
+files tbody tr.selected .fileModified,
+files tbody tr.selected .fileType {
   background-color: #005DA6;
   color: #FFFFFF;
 }
@@ -139,11 +136,6 @@ files tbody td div {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-}
-
-files tbody td input {
-  font-size: 14px;
-  width: 98%;
 }
 
 files tr .fileName {
@@ -162,7 +154,11 @@ files tr .fileName .editing input {
   display: block;
   border: 0 none;
   outline: none;
-
+  font-family: OpenSansRegular;
+  font-size: 14px;
+  width: 98%;
+  padding: 0;
+  height: 18px;
 }
 
 files tr .fileTypeIcon {
@@ -176,15 +172,15 @@ files td.editing .fileTypeIcon {
 }
 
 files tr .fileTypeIcon.file-trans {
-  background: url("../../images/trans_small.svg") no-repeat left center;
+  background: url("../../img/trans_small.svg") no-repeat left center;
 }
 
 files tr .fileTypeIcon.file-job {
-  background: url("../../images/job_small.svg") no-repeat left center;
+  background: url("../../img/job_small.svg") no-repeat left center;
 }
 
 files tr .fileTypeIcon.file-folder {
-  background: url("../../images/folder.svg") no-repeat left center;
+  background: url("../../img/folder.svg") no-repeat left center;
 }
 
 files tr.selected .fileTypeIcon {
@@ -217,12 +213,13 @@ files .fileType::first-letter {
 }
 
 files .searchTable .fileType,
-files .searchTable .fileLastSaved {
+files .searchTable .fileModified {
   height: 44px;
 }
 
-files .fileLastSaved {
-	color: #999;
+files .fileModified,
+files .fileType {
+  color: #999;
 }
 
 files tr .fileLocation {
@@ -243,18 +240,18 @@ files .sortWrapper {
 }
 
 files .sortWrapper .sort {
-  background: url("../../images/sort_none.svg") center no-repeat;
+  background: url("../../img/sort_none.svg") center no-repeat;
   height: 17px;
   width: 10px;
   visibility: hidden;
 }
 
 files .sortWrapper .sort.sortUp {
-  background-image: url("../../images/sort_up.svg");
+  background-image: url("../../img/sort_up.svg");
   visibility: visible;
 }
 
 files .sortWrapper .sort.sortDown {
-  background-image: url("../../images/sort_down.svg");
+  background-image: url("../../img/sort_down.svg");
   visibility: visible;
 }

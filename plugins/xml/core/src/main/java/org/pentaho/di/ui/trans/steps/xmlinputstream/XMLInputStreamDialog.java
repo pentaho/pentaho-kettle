@@ -22,8 +22,6 @@
 
 package org.pentaho.di.ui.trans.steps.xmlinputstream;
 
-import java.util.Arrays;
-
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.events.ModifyEvent;
@@ -1146,18 +1144,7 @@ public class XMLInputStreamDialog extends BaseStepDialog implements StepDialogIn
   public void getData() {
     wStepname.setText( stepname );
     if ( isReceivingInput ) {
-      RowMetaInterface previousFields = null;
-      try {
-        previousFields = transMeta.getPrevStepFields( stepMeta );
-      } catch ( KettleStepException e ) {
-        //Ignore
-      }
-      if ( previousFields != null
-          && Arrays.asList( previousFields.getFieldNames() ).contains( inputMeta.getFilename() ) ) {
-        wFilenameCombo.setText( Const.NVL( inputMeta.getFilename(), "" ) );
-      } else {
-        wFilenameCombo.setText( "" );
-      }
+      wFilenameCombo.setText( Const.NVL( inputMeta.getFilename(), "" ) );
     } else {
       wFilename.setText( Const.NVL( inputMeta.getFilename(), "" ) );
     }

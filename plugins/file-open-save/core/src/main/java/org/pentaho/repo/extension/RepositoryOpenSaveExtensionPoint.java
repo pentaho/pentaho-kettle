@@ -20,12 +20,18 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.extension.ExtensionPoint;
 import org.pentaho.di.core.extension.ExtensionPointInterface;
 import org.pentaho.di.core.logging.LogChannelInterface;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.repository.Repository;
+import org.pentaho.di.repository.RepositoryObject;
+import org.pentaho.di.repository.RepositoryObjectType;
+import org.pentaho.di.ui.core.FileDialogOperation;
 import org.pentaho.di.ui.core.PropsUI;
 import org.pentaho.di.ui.spoon.Spoon;
 import org.pentaho.repo.dialog.RepositoryOpenSaveDialog;
 
+import java.util.Calendar;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.function.Supplier;
 
@@ -40,10 +46,15 @@ import java.util.function.Supplier;
 )
 public class RepositoryOpenSaveExtensionPoint implements ExtensionPointInterface {
 
+  public static final String TRANSFORMATION = "transformation";
+  public static final int WIDTH = 947;
+  public static final int HEIGHT = 616;
+  public static final int DAYS = -30;
   private Supplier<Spoon> spoonSupplier = Spoon::getInstance;
   private Supplier<PropsUI> propsUISupplier = PropsUI::getInstance;
 
   @Override public void callExtensionPoint( LogChannelInterface logChannelInterface, Object o ) throws KettleException {
+    FileDialogOperation fileDialogOperation = (FileDialogOperation) o;
 
     PropsUI propsUI = propsUISupplier.get();
     LastUsedFile lastUsedFile = null;
@@ -51,15 +62,34 @@ public class RepositoryOpenSaveExtensionPoint implements ExtensionPointInterface
     String repoAndUser = getRepository().getName() + ":" + username;
     List<LastUsedFile>
       lastUsedFileList = propsUI.getLastUsedRepoFiles().getOrDefault( repoAndUser, Collections.emptyList() );
-    if ( lastUsedFileList.size() > 0 ) {
+
+    Calendar calendar = Calendar.getInstance();
+    calendar.add( Calendar.DATE, DAYS );
+    Date dateBefore = calendar.getTime();
+
+    if ( lastUsedFileList.size() > 0 && lastUsedFileList.get( 0 ).getLastOpened().after( dateBefore ) ) {
       lastUsedFile = lastUsedFileList.get( 0 );
     }
 
     RepositoryOpenSaveDialog repositoryOpenSaveDialog =
-      new RepositoryOpenSaveDialog( spoonSupplier.get().getShell(), 937, 616 );
+      new RepositoryOpenSaveDialog( spoonSupplier.get().getShell(), WIDTH, HEIGHT );
     repositoryOpenSaveDialog
       .open( lastUsedFile != null ? lastUsedFile.getDirectory() : null,
-        RepositoryOpenSaveDialog.STATE_SAVE.equals( o ) ? RepositoryOpenSaveDialog.STATE_SAVE : RepositoryOpenSaveDialog.STATE_OPEN );
+        RepositoryOpenSaveDialog.STATE_SAVE.equals( fileDialogOperation.getCommand() ) ?
+          RepositoryOpenSaveDialog.STATE_SAVE :
+          RepositoryOpenSaveDialog.STATE_OPEN, fileDialogOperation.getFilter() );
+
+    if ( !Utils.isEmpty( repositoryOpenSaveDialog.getObjectName() ) ) {
+      RepositoryObject repositoryObject = new RepositoryObject();
+      repositoryObject.setObjectId( repositoryOpenSaveDialog::getObjectId );
+      repositoryObject.setName( repositoryOpenSaveDialog.getObjectName() );
+      repositoryObject
+        .setRepositoryDirectory( getRepository().findDirectory( repositoryOpenSaveDialog.getObjectDirectory() ) );
+      repositoryObject.setObjectType(
+        repositoryOpenSaveDialog.getObjectType().equals( TRANSFORMATION ) ? RepositoryObjectType.TRANSFORMATION :
+          RepositoryObjectType.JOB );
+      fileDialogOperation.setRepositoryObject( repositoryObject );
+    }
   }
 
   private Repository getRepository() {

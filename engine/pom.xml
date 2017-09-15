@@ -26,7 +26,7 @@
     <pentaho-reporting.version>${project.version}</pentaho-reporting.version>
     <pentaho-registry.version>${project.version}</pentaho-registry.version>
     <pentaho-connections.version>${project.version}</pentaho-connections.version>
-    <mondrian.version>3.15-SNAPSHOT</mondrian.version>
+    <mondrian.version>8.0-SNAPSHOT</mondrian.version>
 
     <!-- Third-party dependencies -->
     <antlr-complete.version>3.5.2</antlr-complete.version>
@@ -56,7 +56,7 @@
     <poi-ooxml.version>3.15</poi-ooxml.version>
     <commons-collections4.version>4.1</commons-collections4.version>
     <xmlbeans.version>2.6.0</xmlbeans.version>
-    <postgresql.version>9.3-1102-jdbc4</postgresql.version>
+    <postgresql.version>42.1.1</postgresql.version>
     <rome.version>1.0</rome.version>
     <SassyReader.version>0.5</SassyReader.version>
     <saxon.version>9.1.0.8</saxon.version>
@@ -70,7 +70,6 @@
     <olap4j-xmla.version>1.2.0</olap4j-xmla.version>
     <wsdl4j.version>1.6.2</wsdl4j.version>
     <wsdl4j-qname.version>1.6.1</wsdl4j-qname.version>
-    <xercesImpl.version>2.9.1</xercesImpl.version>
     <ehcache-core.version>2.5.1</ehcache-core.version>
     <jackson-core-asl.version>1.9.2</jackson-core-asl.version>
     <jackson-mapper-asl.version>1.9.2</jackson-mapper-asl.version>
@@ -95,6 +94,7 @@
     <log4jdbc.version>1.2</log4jdbc.version>
     <javax.servlet-api.version>3.0.1</javax.servlet-api.version>
     <oro.version>2.0.8</oro.version>
+    <javax.websocket-api.version>1.1</javax.websocket-api.version>
   </properties>
 
   <dependencies>
@@ -622,17 +622,6 @@
       </exclusions>
     </dependency>
     <dependency>
-      <groupId>xerces</groupId>
-      <artifactId>xercesImpl</artifactId>
-      <version>${xercesImpl.version}</version>
-      <exclusions>
-        <exclusion>
-          <groupId>*</groupId>
-          <artifactId>*</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-    <dependency>
       <groupId>net.sf.ehcache</groupId>
       <artifactId>ehcache-core</artifactId>
       <version>${ehcache-core.version}</version>
@@ -855,6 +844,18 @@
       <groupId>javax.servlet</groupId>
       <artifactId>javax.servlet-api</artifactId>
       <version>${javax.servlet-api.version}</version>
+      <scope>provided</scope>
+      <exclusions>
+        <exclusion>
+          <groupId>*</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>javax.websocket</groupId>
+      <artifactId>javax.websocket-api</artifactId>
+      <version>${javax.websocket-api.version}</version>
       <scope>provided</scope>
       <exclusions>
         <exclusion>

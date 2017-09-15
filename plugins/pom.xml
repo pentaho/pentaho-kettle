@@ -43,6 +43,7 @@
         </property>
       </activation>
       <modules>
+        <module>core</module>
         <module>file-open-save</module>
         <module>repositories</module>
         <module>meta-inject</module>

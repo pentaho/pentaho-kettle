@@ -22,20 +22,13 @@
 
 package org.pentaho.di.trans.steps.http;
 
-import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.InetSocketAddress;
-
-import org.apache.commons.httpclient.Header;
-import org.apache.commons.httpclient.HostConfiguration;
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.HttpMethod;
+import com.sun.net.httpserver.Headers;
+import com.sun.net.httpserver.HttpHandler;
+import com.sun.net.httpserver.HttpServer;
+import org.apache.http.Header;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.message.BasicHeader;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -60,9 +53,12 @@ import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.steps.mock.StepMockHelper;
 
-import com.sun.net.httpserver.Headers;
-import com.sun.net.httpserver.HttpHandler;
-import com.sun.net.httpserver.HttpServer;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.InetSocketAddress;
+
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.*;
 
 /**
  * User: Dzmitry Stsiapanau Date: 12/2/13 Time: 1:24 PM
@@ -76,7 +72,7 @@ public class HTTPIT {
     boolean override = false;
 
     public HTTPHandler( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta,
-        Trans trans, boolean override ) {
+                        Trans trans, boolean override ) {
       super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
       this.row = new Object[] { "anyData" };
       this.override = override;
@@ -96,10 +92,8 @@ public class HTTPIT {
      * (synchronized) If distribute is true, a row is copied only once to the output rowsets, otherwise copies are sent
      * to each rowset!
      *
-     * @param row
-     *          The row to put to the destination rowset(s).
+     * @param row The row to put to the destination rowset(s).
      * @throws org.pentaho.di.core.exception.KettleStepException
-     *
      */
     @Override
     public void putRow( RowMetaInterface rowMeta, Object[] row ) throws KettleStepException {
@@ -111,38 +105,35 @@ public class HTTPIT {
     }
 
 
-
     @Override
-    protected int requestStatusCode( HttpMethod method, HostConfiguration hostConfiguration, HttpClient httpClient )
-      throws IOException {
+    protected int requestStatusCode( HttpResponse httpResponse ) {
       if ( override ) {
         return 402;
       } else {
-        return super.requestStatusCode( method, hostConfiguration, httpClient );
+        return super.requestStatusCode( httpResponse );
       }
     }
 
     @Override
-    protected InputStreamReader openStream( String encoding, HttpMethod method ) throws Exception {
+    protected InputStreamReader openStream( String encoding, HttpResponse httpResponse ) throws Exception {
       if ( override ) {
         InputStreamReader mockInputStreamReader = Mockito.mock( InputStreamReader.class );
         when( mockInputStreamReader.read() ).thenReturn( -1 );
         return mockInputStreamReader;
       } else {
-        return super.openStream( encoding, method );
+        return super.openStream( encoding, httpResponse );
       }
     }
 
     @Override
-    protected Header[] searchForHeaders( HttpMethod method ) {
-      Header[] headers = { new Header( "host", host ) };
+    protected Header[] searchForHeaders( CloseableHttpResponse response ) {
+      Header[] headers = { new BasicHeader( "host", host ) };
       if ( override ) {
         return headers;
       } else {
-        return super.searchForHeaders( method );
+        return super.searchForHeaders( response );
       }
     }
-
 
   }
 
@@ -164,7 +155,7 @@ public class HTTPIT {
   public void setUp() throws Exception {
     stepMockHelper = new StepMockHelper<HTTPMeta, HTTPData>( "HTTP CLIENT TEST", HTTPMeta.class, HTTPData.class );
     when( stepMockHelper.logChannelInterfaceFactory.create( any(), any( LoggingObjectInterface.class ) ) ).thenReturn(
-        stepMockHelper.logChannelInterface );
+      stepMockHelper.logChannelInterface );
     when( stepMockHelper.trans.isRunning() ).thenReturn( true );
     verify( stepMockHelper.trans, never() ).stopAll();
   }
@@ -258,7 +249,7 @@ public class HTTPIT {
     Object[] out = ( (HTTPHandler) http ).getOutputRow();
     Assert.assertTrue( out.length == 1 );
     JSONParser parser = new JSONParser();
-    JSONObject json = (JSONObject) parser.parse( (String) out[0] );
+    JSONObject json = (JSONObject) parser.parse( (String) out[ 0 ] );
     Object userAgent = json.get( "User-agent" );
     Assert.assertTrue( "HTTPTool/1.0".equals( userAgent ) );
     Object cookies = json.get( "Set-cookie" );

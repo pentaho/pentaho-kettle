@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,23 +22,29 @@
 
 package org.pentaho.di.cluster;
 
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.MultiThreadedHttpConnectionManager;
-
-import java.security.SecureRandom;
-import java.security.cert.CertificateException;
-import java.security.cert.X509Certificate;
+import org.apache.http.HttpHost;
+import org.apache.http.auth.AuthScope;
+import org.apache.http.auth.UsernamePasswordCredentials;
+import org.apache.http.client.CredentialsProvider;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.config.RequestConfig;
+import org.apache.http.impl.client.BasicCredentialsProvider;
+import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 
 import javax.net.ssl.KeyManager;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.X509TrustManager;
+import java.security.SecureRandom;
+import java.security.cert.CertificateException;
+import java.security.cert.X509Certificate;
 
 /**
  * Encapsulates the Apache commons HTTP connection manager with a singleton. We can use this to limit the number of open
  * connections to slave servers.
  *
  * @author matt
- *
  */
 public class SlaveConnectionManager {
 
@@ -47,21 +53,21 @@ public class SlaveConnectionManager {
 
   private static SlaveConnectionManager slaveConnectionManager;
 
-  private MultiThreadedHttpConnectionManager manager;
+  private PoolingHttpClientConnectionManager manager;
 
   private SlaveConnectionManager() {
     if ( needToInitializeSSLContext() ) {
       try {
         SSLContext context = SSLContext.getInstance( SSL );
-        context.init( new KeyManager[0], new X509TrustManager[] { getDefaultTrustManager() }, new SecureRandom() );
+        context.init( new KeyManager[ 0 ], new X509TrustManager[] { getDefaultTrustManager() }, new SecureRandom() );
         SSLContext.setDefault( context );
       } catch ( Exception e ) {
         //log.logError( "Default SSL context hasn't been initialized", e );
       }
     }
-    manager = new MultiThreadedHttpConnectionManager();
-    manager.getParams().setDefaultMaxConnectionsPerHost( 100 );
-    manager.getParams().setMaxTotalConnections( 200 );
+    manager = new PoolingHttpClientConnectionManager();
+    manager.setDefaultMaxPerRoute( 100 );
+    manager.setMaxTotal( 200 );
   }
 
   private static boolean needToInitializeSSLContext() {
@@ -76,7 +82,42 @@ public class SlaveConnectionManager {
   }
 
   public HttpClient createHttpClient() {
-    return new HttpClient( manager );
+    return HttpClients.custom().setConnectionManager( manager )
+      .build();
+  }
+
+  public HttpClient createHttpClient( String user, String password ) {
+    CredentialsProvider provider = new BasicCredentialsProvider();
+    UsernamePasswordCredentials credentials = new UsernamePasswordCredentials( user, password );
+    provider.setCredentials( AuthScope.ANY, credentials );
+
+    return
+      HttpClientBuilder
+        .create()
+        .setDefaultCredentialsProvider( provider )
+        .setConnectionManager( manager )
+        .build();
+  }
+
+  public HttpClient createHttpClient( String user, String password,
+                                               String proxyHost, int proxyPort, AuthScope authScope ) {
+    HttpHost httpHost = new HttpHost( proxyHost, proxyPort );
+
+    RequestConfig requestConfig = RequestConfig.custom()
+      .setProxy( httpHost )
+      .build();
+
+    CredentialsProvider provider = new BasicCredentialsProvider();
+    UsernamePasswordCredentials credentials = new UsernamePasswordCredentials( user, password );
+    provider.setCredentials( authScope, credentials );
+
+    return
+      HttpClientBuilder
+        .create()
+        .setDefaultCredentialsProvider( provider )
+        .setDefaultRequestConfig( requestConfig )
+        .setConnectionManager( manager )
+        .build();
   }
 
   public void shutdown() {

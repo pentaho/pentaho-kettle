@@ -261,6 +261,10 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
         // Ignore object reference problems. It simply means that the reference is no longer valid.
       }
     }
+    if ( parentJobMeta != null ) {
+      parentJobMeta.getNamedClusterEmbedManager().registerUrl( filename );
+    }
+
     retval.append( "      " ).append( XMLHandler.addTagValue( "filename", filename ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "jobname", jobname ) );
 
@@ -541,6 +545,12 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
     LogChannelFileWriter logChannelFileWriter = null;
 
     LogLevel jobLogLevel = parentJob.getLogLevel();
+    //Set Embedded NamedCluter MetatStore Provider Key so that it can be passed to VFS
+    if ( parentJobMeta.getNamedClusterEmbedManager() != null ) {
+      parentJobMeta.getNamedClusterEmbedManager()
+        .passEmbeddedMetastoreKey( this, parentJobMeta.getEmbeddedMetastoreProviderKey() );
+    }
+
     if ( setLogfile ) {
       String realLogFilename = environmentSubstitute( getLogFilename() );
       // We need to check here the log filename

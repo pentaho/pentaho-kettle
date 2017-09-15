@@ -22,10 +22,13 @@
 
 /* ERROR */
 error .error {
+  margin: 0;
   position: absolute;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
+  -ms-transform: translate(-50%, -50%);
+  -webkit-transform: translate(-50%, -50%);
   padding: 30px;
   height: auto;
   width: 423px;
@@ -48,13 +51,14 @@ error .errorHeader {
 
 error .errorMiddle {
   margin-bottom: 30px;
-  line-height: 16px;
+  line-height: 18px;
+  word-wrap: break-word;
 }
 
 error .errorMiddleTop {
   margin-bottom: 20px;
   overflow: hidden;
-  max-height: 32px;
+  max-height: 72px;
 }
 
 error .errorBottom button {

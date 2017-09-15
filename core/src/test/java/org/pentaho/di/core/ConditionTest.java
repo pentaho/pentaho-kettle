@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -25,6 +25,8 @@ package org.pentaho.di.core;
 import junit.framework.TestCase;
 import org.junit.Test;
 import org.pentaho.di.core.row.RowMeta;
+import org.pentaho.di.core.row.RowMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaNumber;
 
 public class ConditionTest extends TestCase {
 
@@ -37,5 +39,25 @@ public class ConditionTest extends TestCase {
 
     Condition condition = new Condition( negate, left, func, right, null );
     assertFalse( condition.evaluate( new RowMeta(), new Object[]{ "test" } ) );
+  }
+
+  @Test
+  public void testPdi13227() throws Exception {
+    RowMetaInterface rowMeta1 = new RowMeta();
+    rowMeta1.addValueMeta( new ValueMetaNumber( "name1" ) );
+    rowMeta1.addValueMeta( new ValueMetaNumber( "name2" ) );
+    rowMeta1.addValueMeta( new ValueMetaNumber( "name3" ) );
+
+    RowMetaInterface rowMeta2 = new RowMeta();
+    rowMeta2.addValueMeta( new ValueMetaNumber( "name2" ) );
+    rowMeta2.addValueMeta( new ValueMetaNumber( "name1" ) );
+    rowMeta2.addValueMeta( new ValueMetaNumber( "name3" ) );
+
+    String left = "name1";
+    String right = "name3";
+    Condition condition = new Condition( left, Condition.FUNC_EQUAL, right, null );
+
+    assertTrue( condition.evaluate( rowMeta1, new Object[] { 1.0, 2.0, 1.0} ) );
+    assertTrue( condition.evaluate( rowMeta2, new Object[] { 2.0, 1.0, 1.0} ) );
   }
 }

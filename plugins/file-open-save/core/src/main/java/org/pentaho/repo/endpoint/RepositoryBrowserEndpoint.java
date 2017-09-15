@@ -16,7 +16,10 @@
 package org.pentaho.repo.endpoint;
 
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.exception.KettleJobException;
 import org.pentaho.di.core.exception.KettleObjectExistsException;
+import org.pentaho.di.core.exception.KettleTransException;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.repo.controller.RepositoryBrowserController;
 import org.pentaho.repo.model.RepositoryDirectory;
@@ -45,10 +48,12 @@ public class RepositoryBrowserEndpoint {
   }
 
   @GET
-  @Path( "/loadDirectoryTree" )
+  @Path( "/loadDirectoryTree{filter : (/filter)?}" )
   @Produces( { MediaType.APPLICATION_JSON } )
-  public Response loadDirectoryTree() {
-    List<RepositoryDirectory> repositoryDirectories = repositoryBrowserController.loadDirectoryTree();
+  public Response loadDirectoryTree( @PathParam( "filter" ) String filter ) {
+    List<RepositoryDirectory> repositoryDirectories =
+      Utils.isEmpty( filter ) ? repositoryBrowserController.loadDirectoryTree() :
+        repositoryBrowserController.loadDirectoryTree( filter );
     if ( repositoryDirectories != null ) {
       return Response.ok( repositoryDirectories ).build();
     }
@@ -98,17 +103,20 @@ public class RepositoryBrowserEndpoint {
   }
 
   @POST
-  @Path( "/rename/{id}/{path}/{name}/{type}" )
+  @Path( "/rename/{id}/{path}/{newName}/{type}/{oldName}" )
   public Response rename( @PathParam( "id" ) String id, @PathParam( "path" ) String path,
-                          @PathParam( "name" ) String name, @PathParam( "type" ) String type ) {
+                          @PathParam( "newName" ) String newName, @PathParam( "type" ) String type,
+                          @PathParam( "oldName" ) String oldName ) {
 
     try {
-      ObjectId objectId = repositoryBrowserController.rename( id, path, name, type );
+      ObjectId objectId = repositoryBrowserController.rename( id, path, newName, type, oldName );
       if ( objectId != null ) {
         return Response.ok( objectId ).build();
       }
     } catch ( KettleObjectExistsException koee ) {
       return Response.status( Response.Status.CONFLICT ).build();
+    } catch ( KettleTransException | KettleJobException ktje ) {
+      return Response.status( Response.Status.NOT_ACCEPTABLE ).build();
     } catch ( KettleException ke ) {
       return Response.notModified().build();
     }
@@ -129,12 +137,16 @@ public class RepositoryBrowserEndpoint {
   }
 
   @DELETE
-  @Path( "/remove/{id}/{type}" )
-  public Response delete( @PathParam( "id" ) String id, @PathParam( "type" ) String type ) {
-    if ( repositoryBrowserController.remove( id, type ) ) {
-      return Response.ok().build();
+  @Path( "/remove/{id}/{name}/{path}/{type}" )
+  public Response delete( @PathParam( "id" ) String id, @PathParam( "name" ) String name,
+                          @PathParam( "path" ) String path, @PathParam( "type" ) String type ) {
+    try {
+      if ( repositoryBrowserController.remove( id, name, path, type ) ) {
+        return Response.ok().build();
+      }
+    } catch ( KettleException ke ) {
+      return Response.status( Response.Status.NOT_ACCEPTABLE ).build();
     }
-
     return Response.status( Response.Status.NOT_MODIFIED ).build();
   }
 

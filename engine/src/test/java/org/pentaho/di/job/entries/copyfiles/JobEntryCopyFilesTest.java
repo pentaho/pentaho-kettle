@@ -30,6 +30,8 @@ import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.logging.KettleLogStore;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.job.Job;
+import org.pentaho.di.job.JobMeta;
+import org.pentaho.di.trans.steps.named.cluster.NamedClusterEmbedManager;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
@@ -39,6 +41,7 @@ import static org.mockito.Mockito.*;
 
 public class JobEntryCopyFilesTest {
   private JobEntryCopyFiles entry;
+  private NamedClusterEmbedManager mockNamedClusterEmbedManager;
 
   private final String EMPTY = "";
 
@@ -52,6 +55,10 @@ public class JobEntryCopyFilesTest {
     entry = new JobEntryCopyFiles();
     Job parentJob = new Job();
     entry.setParentJob( parentJob );
+    JobMeta mockJobMeta = mock( JobMeta.class );
+    mockNamedClusterEmbedManager = mock( NamedClusterEmbedManager.class );
+    when( mockJobMeta.getNamedClusterEmbedManager() ).thenReturn( mockNamedClusterEmbedManager );
+    entry.setParentJobMeta( mockJobMeta );
     entry = spy( entry );
   }
 
@@ -83,6 +90,7 @@ public class JobEntryCopyFilesTest {
     verify( entry, atLeast( 1 ) ).preprocessfilefilder( any( String[].class ) );
     assertFalse( result.getResult() );
     assertEquals( 1, result.getNrErrors() );
+    verify( mockNamedClusterEmbedManager ).passEmbeddedMetastoreKey( anyObject(), anyString() );
   }
 
   @Test
@@ -128,6 +136,6 @@ public class JobEntryCopyFilesTest {
       null );
     assertTrue( loadedentry.destination_filefolder[0].equals( destPath[0] ) );
     assertTrue( loadedentry.source_filefolder[0].equals( srcPath[0] ) );
-
+    verify( mockNamedClusterEmbedManager, times( 2 ) ).registerUrl( anyString() );
   }
 }

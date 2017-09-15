@@ -38,11 +38,11 @@ define([
 
   var options = {
     bindings: {
-      errorType: '<',
-      errorFile: '<',
-      errorFolder: '<',
-      onErrorConfirm: '&',
-      onErrorCancel: '&'
+      errorType: "<",
+      errorFile: "<",
+      errorFolder: "<",
+      onErrorConfirm: "&",
+      onErrorCancel: "&"
     },
     template: errorTemplate,
     controllerAs: "vm",
@@ -60,6 +60,7 @@ define([
     vm.$onChanges = onChanges;
     vm.errorCancel = errorCancel;
     vm.errorConfirm = errorConfirm;
+    vm.hideConfirmButton = hideConfirmButton;
 
     /**
      * The $onInit hook of components lifecycle which is called on each controller
@@ -95,6 +96,14 @@ define([
     }
 
     /**
+     * Check the errorType and returns true if it is not 1, 5, or 6. Returns false otherwise.
+     * @return {boolean} - true if the errorType is not 1, 5, or 6. Returns false otherwise.
+     */
+    function hideConfirmButton() {
+      return vm.errorType !== 1 && vm.errorType !== 5 && vm.errorType !== 6;
+    }
+
+    /**
      * Calls the setMessage function according to the errorType.
      * errorType:
      * 1. Overwrite
@@ -103,6 +112,14 @@ define([
      * 4. Unable to create folder
      * 5. Delete file confirmation
      * 6. Delete folder confirmation
+     * 7. File Exists
+     * 8. Unable to delete folder
+     * 9. Unable to delete file
+     * 10. Unable to rename folder
+     * 11. Unable to rename file
+     * 12. Unable to rename file b/c already opened in spoon
+     * 13. Unable to delete folder b/c in use
+     * 14. Unable to delete file b/c in use
      *
      * @private
      */
@@ -122,7 +139,7 @@ define([
           _setMessage(i18n.get("file-open-save-plugin.error.folder-exists.title"),
             i18n.get("file-open-save-plugin.error.folder-exists.top.message"),
             " ",
-            vm.errorFolder.name + ".",
+            vm.errorFolder.newName + ".",
             i18n.get("file-open-save-plugin.error.folder-exists.bottom.message"),
             "",
             i18n.get("file-open-save-plugin.error.folder-exists.close.button"));
@@ -175,6 +192,42 @@ define([
               i18n.get("file-open-save-plugin.error.unable-to-delete-file.message"),
               "", "", "", "",
               i18n.get("file-open-save-plugin.error.unable-to-delete-file.close.button"));
+          break;
+        case 10:// Unable to rename folder
+          _setMessage(i18n.get("file-open-save-plugin.error.unable-to-rename-folder.title"),
+            i18n.get("file-open-save-plugin.error.unable-to-rename-folder.message"),
+            "", "", "", "",
+            i18n.get("file-open-save-plugin.error.unable-to-rename-folder.close.button"));
+          break;
+        case 11:// Unable to rename file
+          _setMessage(i18n.get("file-open-save-plugin.error.unable-to-rename-file.title"),
+            i18n.get("file-open-save-plugin.error.unable-to-rename-file.message"),
+            "", "", "", "",
+            i18n.get("file-open-save-plugin.error.unable-to-rename-file.close.button"));
+          break;
+        case 12:// Unable to rename file b/c already opened in spoon
+          _setMessage(i18n.get("file-open-save-plugin.error.unable-to-rename-file-opened.title"),
+            i18n.get("file-open-save-plugin.error.unable-to-rename-file-opened.top.message"),
+            "", "",
+            i18n.get("file-open-save-plugin.error.unable-to-rename-file-opened.bottom.message"),
+            "",
+            i18n.get("file-open-save-plugin.error.unable-to-rename-file-opened.close.button"));
+          break;
+        case 13:// Unable to delete folder b/c in use
+          _setMessage(i18n.get("file-open-save-plugin.error.unable-to-delete-folder-opened.title"),
+            i18n.get("file-open-save-plugin.error.unable-to-delete-folder-opened.top.message"),
+            "", "",
+            i18n.get("file-open-save-plugin.error.unable-to-delete-folder-opened.bottom.message"),
+            "",
+            i18n.get("file-open-save-plugin.error.unable-to-delete-folder-opened.close.button"));
+          break;
+        case 14:// Unable to delete file b/c in use
+          _setMessage(i18n.get("file-open-save-plugin.error.unable-to-delete-file-opened.title"),
+            i18n.get("file-open-save-plugin.error.unable-to-delete-file-opened.top.message"),
+            "", "",
+            i18n.get("file-open-save-plugin.error.unable-to-delete-file-opened.bottom.message"),
+            "",
+            i18n.get("file-open-save-plugin.error.unable-to-delete-file-opened.close.button"));
           break;
         default:
           _setMessage("", "", "", "", "", "", "");

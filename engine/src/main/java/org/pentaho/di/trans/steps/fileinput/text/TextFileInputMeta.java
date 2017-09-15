@@ -722,6 +722,7 @@ public class TextFileInputMeta extends BaseFileInputMeta<BaseFileInputAdditional
     retval.append( "    <file>" ).append( Const.CR );
     for ( int i = 0; i < inputFiles.fileName.length; i++ ) {
       saveSource( retval, inputFiles.fileName[i] );
+      parentStepMeta.getParentTransMeta().getNamedClusterEmbedManager().registerUrl( inputFiles.fileName[i] );
       retval.append( "      " ).append( XMLHandler.addTagValue( "filemask", inputFiles.fileMask[i] ) );
       retval.append( "      " ).append( XMLHandler.addTagValue( "exclude_filemask", inputFiles.excludeFileMask[i] ) );
       retval.append( "      " ).append( XMLHandler.addTagValue( "file_required", inputFiles.fileRequired[i] ) );

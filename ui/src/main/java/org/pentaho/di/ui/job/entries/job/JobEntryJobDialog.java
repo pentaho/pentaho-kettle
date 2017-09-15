@@ -57,9 +57,10 @@ import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.gui.WindowProperty;
 import org.pentaho.di.ui.job.dialog.JobDialog;
 import org.pentaho.di.ui.job.entries.trans.JobEntryBaseDialog;
-import org.pentaho.di.ui.repository.dialog.SelectObjectDialog;
 import org.pentaho.di.ui.spoon.Spoon;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
+import org.pentaho.di.ui.util.DialogHelper;
+import org.pentaho.di.ui.util.DialogUtils;
 import org.pentaho.di.ui.util.SwtSvgImageUtil;
 
 import java.io.File;
@@ -242,16 +243,14 @@ public class JobEntryJobDialog extends JobEntryBaseDialog implements JobEntryDia
     }
   }
 
-  protected void selectJob() {
-    if ( rep != null ) {
-      SelectObjectDialog sod = new SelectObjectDialog( shell, rep, false, true );
-      String jobname = sod.open();
-      if ( jobname != null ) {
-        String path = getPath( sod.getDirectory().getPath() );
-        String fullPath = path + "/" + jobname;
-        wPath.setText( fullPath );
-        specificationMethod = ObjectLocationSpecificationMethod.REPOSITORY_BY_NAME;
-      }
+  private void selectJob() {
+    RepositoryObject repositoryObject = DialogHelper.selectRepositoryObject( "*.kjb", log );
+
+    if ( repositoryObject != null ) {
+      String path = DialogUtils
+        .getPath( jobMeta.getRepositoryDirectory().getPath(), repositoryObject.getRepositoryDirectory().getPath() );
+      String fullPath = ( path.equals( "/" ) ? "/" : path + "/" ) + repositoryObject.getName();
+      wPath.setText( fullPath );
     }
   }
 
@@ -442,7 +441,8 @@ public class JobEntryJobDialog extends JobEntryBaseDialog implements JobEntryDia
   private void getByReferenceData( ObjectId referenceObjectId ) {
     try {
       RepositoryObject jobInf = rep.getObjectInformation( referenceObjectId, RepositoryObjectType.JOB );
-      String path = getPath( jobInf.getRepositoryDirectory().getPath() );
+      String path =
+        DialogUtils.getPath( jobMeta.getRepositoryDirectory().getPath(), jobInf.getRepositoryDirectory().getPath() );
       String fullPath =
         Const.NVL( path, "" ) + "/" + Const.NVL( jobInf.getName(), "" );
       wPath.setText( fullPath );

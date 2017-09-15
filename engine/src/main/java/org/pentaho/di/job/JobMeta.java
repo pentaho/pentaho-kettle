@@ -88,6 +88,7 @@ import org.pentaho.di.resource.ResourceDefinition;
 import org.pentaho.di.resource.ResourceExportInterface;
 import org.pentaho.di.resource.ResourceNamingInterface;
 import org.pentaho.di.resource.ResourceReference;
+import org.pentaho.di.trans.steps.named.cluster.NamedClusterEmbedManager;
 import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
@@ -328,9 +329,9 @@ public class JobMeta extends AbstractMeta
    * and then performing a string comparison, ultimately returning the result of the filename string comparison.
    * </ol>
    *
-   * @param t1
+   * @param j1
    *          the first job to compare
-   * @param t2
+   * @param j2
    *          the second job to compare
    * @return 0 if the two jobs are equal, 1 or -1 depending on the values (see description above)
    *
@@ -559,6 +560,9 @@ public class JobMeta extends AbstractMeta
    * @see org.pentaho.di.core.xml.XMLInterface#getXML()
    */
   public String getXML() {
+    //Clear the embedded named clusters.  We will be repopulating from steps that used named clusters
+    getNamedClusterEmbedManager().clear();
+
     Props props = null;
     if ( Props.isInitialized() ) {
       props = Props.getInstance();
@@ -2767,5 +2771,13 @@ public class JobMeta extends AbstractMeta
 
   public boolean hasMissingPlugins() {
     return missingEntries != null && !missingEntries.isEmpty();
+  }
+
+  @Override
+  public NamedClusterEmbedManager getNamedClusterEmbedManager( ) {
+    if ( namedClusterEmbedManager == null ) {
+      namedClusterEmbedManager = new NamedClusterEmbedManager( this, LogChannel.GENERAL );
+    }
+    return namedClusterEmbedManager;
   }
 }

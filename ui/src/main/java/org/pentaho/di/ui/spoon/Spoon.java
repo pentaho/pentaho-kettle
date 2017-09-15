@@ -254,6 +254,7 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.di.trans.step.StepPartitioningMeta;
 import org.pentaho.di.trans.steps.selectvalues.SelectValuesMeta;
 import org.pentaho.di.ui.core.ConstUI;
+import org.pentaho.di.ui.core.FileDialogOperation;
 import org.pentaho.di.ui.core.PrintSpool;
 import org.pentaho.di.ui.core.PropsUI;
 import org.pentaho.di.ui.core.auth.AuthProviderDialog;
@@ -4293,8 +4294,14 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
         }
       } else {
         try {
-          ExtensionPointHandler.callExtensionPoint( log, KettleExtensionPoint.SpoonOpenSaveRepository.id, "open" );
-        } catch ( KettleException ke ) {
+          FileDialogOperation fileDialogOperation = new FileDialogOperation( FileDialogOperation.OPEN );
+          ExtensionPointHandler.callExtensionPoint( log, KettleExtensionPoint.SpoonOpenSaveRepository.id,
+            fileDialogOperation );
+          if ( fileDialogOperation.getRepositoryObject() != null ) {
+            loadObjectFromRepository( fileDialogOperation.getRepositoryObject().getObjectId(),
+              fileDialogOperation.getRepositoryObject().getObjectType(), null );
+          }
+        } catch ( Exception e ) {
          // Ignore
         }
       }
@@ -4716,6 +4723,12 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
       refreshTree();
     }
     loadPerspective( MainSpoonPerspective.ID );
+
+    try {
+      ExtensionPointHandler.callExtensionPoint( log, KettleExtensionPoint.TransformationCreateNew.id, transMeta );
+    } catch ( KettleException e ) {
+      log.logError( "Failed to call extension point", e );
+    }
   }
 
   public void newJobFile() {
@@ -5094,7 +5107,15 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
 
       if ( ask_name ) {
         try {
-          ExtensionPointHandler.callExtensionPoint( LogChannel.GENERAL, KettleExtensionPoint.SpoonOpenSaveRepository.id, "save" );
+          FileDialogOperation fileDialogOperation = new FileDialogOperation( FileDialogOperation.SAVE );
+          ExtensionPointHandler.callExtensionPoint( log, KettleExtensionPoint.SpoonOpenSaveRepository.id,
+            fileDialogOperation );
+          if ( fileDialogOperation.getRepositoryObject() != null ) {
+            meta.setRepositoryDirectory( fileDialogOperation.getRepositoryObject().getRepositoryDirectory() );
+            meta.setName( fileDialogOperation.getRepositoryObject().getName() );
+            saveToRepositoryConfirmed( meta );
+            delegates.tabs.renameTabs();
+          }
         } catch ( KettleException ke ) {
           //Ignore
         }

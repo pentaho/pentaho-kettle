@@ -73,9 +73,10 @@ import org.pentaho.di.ui.core.widget.ColumnInfo;
 import org.pentaho.di.ui.core.widget.ColumnsResizer;
 import org.pentaho.di.ui.core.widget.TableView;
 import org.pentaho.di.ui.core.widget.TextVar;
-import org.pentaho.di.ui.repository.dialog.SelectObjectDialog;
 import org.pentaho.di.ui.spoon.Spoon;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
+import org.pentaho.di.ui.util.DialogHelper;
+import org.pentaho.di.ui.util.DialogUtils;
 import org.pentaho.di.ui.util.SwtSvgImageUtil;
 import org.pentaho.vfs.ui.VfsFileChooserDialog;
 
@@ -212,7 +213,6 @@ public class JobExecutorDialog extends BaseStepDialog implements StepDialogInter
 
     Label spacer = new Label( shell, SWT.HORIZONTAL | SWT.SEPARATOR );
     FormData fdSpacer = new FormData();
-    fdSpacer.height = 1;
     fdSpacer.left = new FormAttachment( 0, 0 );
     fdSpacer.top = new FormAttachment( wStepname, 15 );
     fdSpacer.right = new FormAttachment( 100, 0 );
@@ -240,7 +240,7 @@ public class JobExecutorDialog extends BaseStepDialog implements StepDialogInter
     wbBrowse.setText( BaseMessages.getString( PKG, "JobExecutorDialog.Browse.Label" ) );
     FormData fdBrowse = new FormData();
     fdBrowse.left = new FormAttachment( wPath, 5 );
-    fdBrowse.top = new FormAttachment( wlPath, 5 );
+    fdBrowse.top = new FormAttachment( wlPath, Const.isOSX() ? 0 : 5 );
     wbBrowse.setLayoutData( fdBrowse );
 
     wbBrowse.addSelectionListener( new SelectionAdapter() {
@@ -279,7 +279,6 @@ public class JobExecutorDialog extends BaseStepDialog implements StepDialogInter
 
     Label hSpacer = new Label( shell, SWT.HORIZONTAL | SWT.SEPARATOR );
     FormData fdhSpacer = new FormData();
-    fdhSpacer.height = 1;
     fdhSpacer.left = new FormAttachment( 0, 0 );
     fdhSpacer.bottom = new FormAttachment( wCancel, -15 );
     fdhSpacer.right = new FormAttachment( 100, 0 );
@@ -354,15 +353,15 @@ public class JobExecutorDialog extends BaseStepDialog implements StepDialogInter
         ConstUI.ICON_SIZE );
   }
 
-  void selectRepositoryJob() {
+  private void selectRepositoryJob() {
+    RepositoryObject repositoryObject = DialogHelper.selectRepositoryObject( "*.kjb", log );
+
     try {
-      SelectObjectDialog sod = new SelectObjectDialog( shell, repository );
-      String transName = sod.open();
-      RepositoryDirectoryInterface repdir = sod.getDirectory();
-      if ( transName != null && repdir != null ) {
-        loadRepositoryJob( transName, repdir );
-        String path = getPath( executorJobMeta.getRepositoryDirectory().getPath() );
-        String fullPath = path + "/" + executorJobMeta.getName();
+      if ( repositoryObject != null ) {
+        loadRepositoryJob( repositoryObject.getName(), repositoryObject.getRepositoryDirectory() );
+        String path = DialogUtils
+          .getPath( transMeta.getRepositoryDirectory().getPath(), executorJobMeta.getRepositoryDirectory().getPath() );
+        String fullPath = ( path.equals( "/" ) ? "/" : path + "/" ) + executorJobMeta.getName();
         wPath.setText( fullPath );
         specificationMethod = ObjectLocationSpecificationMethod.REPOSITORY_BY_NAME;
       }
@@ -371,14 +370,6 @@ public class JobExecutorDialog extends BaseStepDialog implements StepDialogInter
         BaseMessages.getString( PKG, "SingleThreaderDialog.ErrorSelectingObject.DialogTitle" ),
         BaseMessages.getString( PKG, "SingleThreaderDialog.ErrorSelectingObject.DialogMessage" ), ke );
     }
-  }
-
-  protected String getPath( String path ) {
-    String parentPath = this.transMeta.getRepositoryDirectory().getPath();
-    if ( path.startsWith( parentPath ) ) {
-      path = path.replace( parentPath, "${" + Const.INTERNAL_VARIABLE_ENTRY_CURRENT_DIRECTORY + "}" );
-    }
-    return path;
   }
 
   private void loadRepositoryJob( String transName, RepositoryDirectoryInterface repdir ) throws KettleException {
@@ -593,7 +584,8 @@ public class JobExecutorDialog extends BaseStepDialog implements StepDialogInter
   private void getByReferenceData( ObjectId jobObjectId ) {
     try {
       RepositoryObject jobInf = repository.getObjectInformation( jobObjectId, RepositoryObjectType.JOB );
-      String path = getPath( jobInf.getRepositoryDirectory().getPath() );
+      String path =
+        DialogUtils.getPath( transMeta.getRepositoryDirectory().getPath(), jobInf.getRepositoryDirectory().getPath() );
       String fullPath =
         Const.NVL( path, "" ) + "/" + Const.NVL( jobInf.getName(), "" );
       wPath.setText( fullPath );

@@ -365,7 +365,11 @@ public class PropsUI extends Props {
   }
 
   public void setLastUsedRepoFiles() {
-    properties.setProperty( "lastrepofiles", "" + lastUsedRepoFiles.size() );
+    int lastRepoFiles = 0;
+    for ( String repoName : lastUsedRepoFiles.keySet() ) {
+      lastRepoFiles += lastUsedRepoFiles.get( repoName ).size();
+    }
+    properties.setProperty( "lastrepofiles", "" + lastRepoFiles );
     int i = 0;
     for ( String repoName : lastUsedRepoFiles.keySet() ) {
       for ( LastUsedFile lastUsedFile : lastUsedRepoFiles.get( repoName ) ) {
@@ -532,7 +536,7 @@ public class PropsUI extends Props {
         // Default of null is acceptable
       }
 
-      List<LastUsedFile> lastUsedFiles = lastUsedRepoFiles.getOrDefault( repositoryName, new ArrayList<>() );
+      List<LastUsedFile> lastUsedFiles = lastUsedRepoFiles.getOrDefault( repositoryName + ":" + username, new ArrayList<>() );
       lastUsedFiles.add(
         new LastUsedFile( fileType, filename, directory, sourceRepository, repositoryName, username, isOpened,
           openItemTypes, lastOpened ) );

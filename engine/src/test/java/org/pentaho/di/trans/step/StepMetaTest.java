@@ -26,8 +26,8 @@ import org.apache.commons.lang.builder.EqualsBuilder;
 import org.junit.Test;
 import org.pentaho.di.cluster.ClusterSchema;
 import org.pentaho.di.cluster.SlaveServer;
+import org.pentaho.di.core.util.AbstractStepMeta;
 import org.pentaho.di.partition.PartitionSchema;
-import org.pentaho.di.trans.steps.abort.AbortMeta;
 import org.pentaho.di.utils.TestUtils;
 import org.pentaho.di.trans.steps.missing.MissingTrans;
 
@@ -88,7 +88,7 @@ public class StepMetaTest {
   }
 
   private static StepMeta createTestMeta() throws Exception {
-    StepMetaInterface stepMetaInterface = mock( AbortMeta.class );
+    StepMetaInterface stepMetaInterface = mock( AbstractStepMeta.class );
     when( stepMetaInterface.clone() ).thenReturn( stepMetaInterface );
 
     StepMeta meta = new StepMeta( STEP_ID, "stepname", stepMetaInterface );

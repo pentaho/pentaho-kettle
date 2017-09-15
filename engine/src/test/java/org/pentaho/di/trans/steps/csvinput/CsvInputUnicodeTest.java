@@ -22,6 +22,8 @@
 
 package org.pentaho.di.trans.steps.csvinput;
 
+import java.nio.charset.StandardCharsets;
+
 import org.junit.Assert;
 import org.mockito.Matchers;
 import org.mockito.Mockito;
@@ -55,6 +57,18 @@ public class CsvInputUnicodeTest extends CsvInputUnitTestBase {
   private static final String TEST_DATA1 = String.format( TEXT, MULTI_CHAR_DELIM );
   private static final String TEST_DATA2 = String.format( TEXT_WITH_ENCLOSURES, ONE_CHAR_DELIM );
   private static final String TEST_DATA3 = String.format( TEXT_WITH_ENCLOSURES, MULTI_CHAR_DELIM );
+
+  private static final byte[] UTF8_BOM = { (byte) 0xEF, (byte) 0xBB, (byte) 0xBF };
+  private static final String TEST_DATA_UTF8_BOM =
+      String.format( new String( UTF8_BOM, StandardCharsets.UTF_8 ) + TEXT, ONE_CHAR_DELIM );
+
+  private static final byte[] UTF16LE_BOM = { (byte) 0xFF, (byte) 0xFE };
+  private static final String TEST_DATA_UTF16LE_BOM =
+      String.format( new String( UTF16LE_BOM, StandardCharsets.UTF_16LE ) + TEST_DATA2, ONE_CHAR_DELIM );
+
+  private static final byte[] UTF16BE_BOM = { (byte) 0xFE, (byte) 0xFF };
+  private static final String TEST_DATA_UTF16BE_BOM =
+      String.format( new String( UTF16BE_BOM, StandardCharsets.UTF_16BE ) + TEST_DATA2, ONE_CHAR_DELIM );
 
   private static StepMockHelper<?, ?> stepMockHelper;
 
@@ -98,13 +112,28 @@ public class CsvInputUnicodeTest extends CsvInputUnitTestBase {
   }
 
   @Test
+  public void testUTF8_headerWithBOM() throws Exception {
+    doTest( UTF8, UTF8, TEST_DATA_UTF8_BOM, ONE_CHAR_DELIM );
+  }
+
+  @Test
   public void testUTF16LEDataWithEnclosures() throws Exception {
     doTest( UTF16LE, UTF16LE, TEST_DATA2, ONE_CHAR_DELIM );
   }
 
   @Test
+  public void testUTF16LE_headerWithBOM() throws Exception {
+    doTest( UTF16LE, UTF16LE, TEST_DATA_UTF16LE_BOM, ONE_CHAR_DELIM );
+  }
+
+  @Test
   public void testUTF16BEDataWithEnclosures() throws Exception {
     doTest( UTF16BE, UTF16BE, TEST_DATA2, ONE_CHAR_DELIM );
+  }
+
+  @Test
+  public void testUTF16BE_headerWithBOM() throws Exception {
+    doTest( UTF16BE, UTF16BE, TEST_DATA_UTF16BE_BOM, ONE_CHAR_DELIM );
   }
 
   @Test

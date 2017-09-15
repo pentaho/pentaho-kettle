@@ -99,6 +99,7 @@
 					<checkbox id="force-lower-case-check" label="${DatabaseDialog.label.AdvancedForceIdentifiersLowerCase}" checked="false" />
 					<checkbox id="force-upper-case-check" label="${DatabaseDialog.label.AdvancedForceIdentifiersUpperCase}" checked="false" />
 					<checkbox id="preserve-reserved-case" label="${DatabaseDialog.label.PreserveReservedCase}" checked="false" />
+					<checkbox id="strict-bignum-interpretation" label="${DatabaseDialog.label.StrictBigNumberInterpretation}" checked="false" />
                     <label id="preferred-schema-name" value="${DatabaseDialog.label.PreferredSchemaName}" />
                         <textbox id="preferred-schema-name-text" pen:customclass="variabletextbox" />
 

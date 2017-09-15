@@ -83,7 +83,7 @@ public class SparkRunConfigurationExecutorTest {
   public void testExecute() {
     SparkRunConfiguration sparkRunConfiguration = new SparkRunConfiguration();
     sparkRunConfiguration.setName( "Spark Configuration" );
-    sparkRunConfiguration.setUrl( "127.0.0.2:8121" );
+    sparkRunConfiguration.setUrl( "ws://127.0.0.2:8121" );
 
     TransExecutionConfiguration transExecutionConfiguration = new TransExecutionConfiguration();
 
@@ -94,6 +94,8 @@ public class SparkRunConfigurationExecutorTest {
     verify( variableSpace ).setVariable( "engine.remote", "spark" );
     verify( properties ).put( "zookeeper.host", "127.0.0.2" );
     verify( properties ).put( "zookeeper.port", "8121" );
+    verify( variableSpace ).setVariable( "engine.host", null );
+    verify( variableSpace ).setVariable( "engine.port", null );
   }
 
   @Test
@@ -110,6 +112,85 @@ public class SparkRunConfigurationExecutorTest {
     verify( variableSpace ).setVariable( "engine.remote", "spark" );
     verify( properties ).put( "zookeeper.host", SparkRunConfigurationExecutor.DEFAULT_HOST );
     verify( properties ).put( "zookeeper.port", SparkRunConfigurationExecutor.DEFAULT_PORT );
+    verify( variableSpace ).setVariable( "engine.host", null );
+    verify( variableSpace ).setVariable( "engine.port", null );
+  }
+
+  @Test
+  public void testWebSocketVersionExecute() {
+    SparkRunConfiguration sparkRunConfiguration = new SparkRunConfiguration();
+    sparkRunConfiguration.setName( "Spark Configuration" );
+    sparkRunConfiguration.setUrl( "http://127.0.0.2:8121" );
+    doReturn( "2.0" ).when( variableSpace ).getVariable( "KETTLE_AEL_PDI_DAEMON_VERSION", "1.0" );
+
+
+    TransExecutionConfiguration transExecutionConfiguration = new TransExecutionConfiguration();
+
+    sparkRunConfigurationExecutor
+      .execute( sparkRunConfiguration, transExecutionConfiguration, abstractMeta, variableSpace );
+
+    verify( variableSpace ).setVariable( "engine", "remote" );
+    verify( variableSpace ).setVariable( "engine.remote", "spark" );
+    verify( properties ).remove( "zookeeper.host" );
+    verify( properties ).remove( "zookeeper.port" );
+    verify( variableSpace ).setVariable( "engine.host", "127.0.0.2" );
+    verify( variableSpace ).setVariable( "engine.port", "8121" );
+  }
+
+  @Test
+  public void testWebSocketVersionExecuteNoPort() {
+    SparkRunConfiguration sparkRunConfiguration = new SparkRunConfiguration();
+    sparkRunConfiguration.setName( "Spark Configuration" );
+    doReturn( "2.0" ).when( variableSpace ).getVariable( "KETTLE_AEL_PDI_DAEMON_VERSION", "1.0" );
+
+    TransExecutionConfiguration transExecutionConfiguration = new TransExecutionConfiguration();
+
+    sparkRunConfigurationExecutor
+      .execute( sparkRunConfiguration, transExecutionConfiguration, abstractMeta, variableSpace );
+
+    verify( variableSpace ).setVariable( "engine", "remote" );
+    verify( variableSpace ).setVariable( "engine.remote", "spark" );
+    verify( properties ).remove( "zookeeper.host" );
+    verify( properties ).remove( "zookeeper.port" );
+    verify( variableSpace ).setVariable( "engine.protocol", SparkRunConfigurationExecutor.DEFAULT_PROTOCOL );
+    verify( variableSpace ).setVariable( "engine.host", SparkRunConfigurationExecutor.DEFAULT_HOST );
+    verify( variableSpace ).setVariable( "engine.port", SparkRunConfigurationExecutor.DEFAULT_PORT );
+  }
+
+  @Test
+  public void testWssWebSocketVersionExecute() {
+    SparkRunConfiguration sparkRunConfiguration = new SparkRunConfiguration();
+    sparkRunConfiguration.setName( "Spark Configuration" );
+    sparkRunConfiguration.setUrl( "wss://127.0.0.2:8121" );
+    doReturn( "2.0" ).when( variableSpace ).getVariable( "KETTLE_AEL_PDI_DAEMON_VERSION", "1.0" );
+
+
+    TransExecutionConfiguration transExecutionConfiguration = new TransExecutionConfiguration();
+
+    sparkRunConfigurationExecutor
+      .execute( sparkRunConfiguration, transExecutionConfiguration, abstractMeta, variableSpace );
+
+    verify( variableSpace ).setVariable( "engine.protocol", "wss" );
+    verify( variableSpace ).setVariable( "engine.host", "127.0.0.2" );
+    verify( variableSpace ).setVariable( "engine.port", "8121" );
+  }
+
+  @Test
+  public void testUrlWssWebSocketVersionExecute() {
+    SparkRunConfiguration sparkRunConfiguration = new SparkRunConfiguration();
+    sparkRunConfiguration.setName( "Spark Configuration" );
+    sparkRunConfiguration.setUrl( "  ws://127.0.0.2:8121  " );
+    doReturn( "2.0" ).when( variableSpace ).getVariable( "KETTLE_AEL_PDI_DAEMON_VERSION", "1.0" );
+
+
+    TransExecutionConfiguration transExecutionConfiguration = new TransExecutionConfiguration();
+
+    sparkRunConfigurationExecutor
+      .execute( sparkRunConfiguration, transExecutionConfiguration, abstractMeta, variableSpace );
+
+    verify( variableSpace ).setVariable( "engine.protocol", "ws" );
+    verify( variableSpace ).setVariable( "engine.host", "127.0.0.2" );
+    verify( variableSpace ).setVariable( "engine.port", "8121" );
   }
 
   @Test

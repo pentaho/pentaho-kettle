@@ -44,7 +44,7 @@ import javax.wsdl.xml.WSDLLocator;
 import javax.wsdl.xml.WSDLReader;
 import javax.xml.namespace.QName;
 
-import org.apache.commons.httpclient.auth.AuthenticationException;
+import org.apache.http.auth.AuthenticationException;
 import org.pentaho.di.core.HTTPProtocol;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;

@@ -83,51 +83,55 @@ file-open-save-app .headerSearch {
 }
 
 file-open-save-app .headerSearchLeft {
-  background: url("./images/search_gray.png") no-repeat left 8px center;
-  width: 30px;
+  width: 16px;
   height: 100%;
   border: none;
   cursor: text;
   float: left;
+  margin-left: 8px;
 }
 
-file-open-save-app .headerSearchLeft.blueState {
-  background: url("./images/search_blue.png") no-repeat left 7px center;
+file-open-save-app .headerSearchLeftIcon {
+  background: url("./img/search_field.svg") no-repeat right center;
+  width: 30px;
+  height: 100%;
+}
+
+file-open-save-app .headerSearchLeft.blueState .headerSearchLeftIcon {
+  background-position: right 16px center;
 }
 
 file-open-save-app .headerSearchRight {
-  background: url("./images/clear_gray.png") no-repeat center center;
-  width: 28px;
-  height: 100%;
+  width: 12px;
+  height: 12px;
   border: none;
   cursor: pointer;
   float: left;
+  margin: 11px 10px 11px 8px;
 }
 
 file-open-save-app .headerSearchRightInvisible {
-  width: 28px;
-  height: 100%;
-  border: none;
   cursor: text;
-  float: left;
+  visibility: hidden;
 }
 
-file-open-save-app .headerSearchRight:hover {
-  background: url("./images/clear_blue.png") no-repeat center center;
+file-open-save-app .headerSearchRightIcon {
+  background: url("./img/clear_field.svg") no-repeat left center;
+  width: 12px;
+  height: 100%;
+}
+
+file-open-save-app .headerSearchRight:hover .headerSearchRightIcon {
+  background-position: right center;
 }
 
 file-open-save-app input.searchBox,
 file-open-save-app input.searchBox:focus {
-  width: calc(270px - 60px);
-  /*width: 240px;*/
+  width: 216px;
   height: 100%;
   border: none;
-  padding: 0;
+  padding: 0 0 0 6px;
   float: left;
-}
-
-file-open-save-app input.searchBox.home, file-open-save-app input.searchBox.public {
-  text-transform: capitalize;
 }
 
 /*HIDES THE X ON THE SEARCHBOX ON IE11*/
@@ -169,7 +173,7 @@ file-open-save-app .headerBottom {
   padding-bottom: 20px;
 }
 
-file-open-save-app .breadcrumbSection{
+file-open-save-app .breadcrumbSection {
   line-height: 18px;
   float: left;
 }
@@ -179,22 +183,40 @@ file-open-save-app .addDelete {
   float: right;
 }
 
+file-open-save-app .addDelete button {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+}
+
+file-open-save-app .addDelete button:disabled {
+  cursor: default;
+}
+
 file-open-save-app .save .addDelete {
   display: inline;
 }
 
 file-open-save-app .addFolder {
-  background: url("./images/add_folder.svg") no-repeat left center;
+  background: url("./img/add_folder.svg") no-repeat center center;
   height: 19px;
   width: 23px;
   cursor: pointer;
 }
 
 file-open-save-app .deleteFolder {
-  background: url("./images/delete_folder_file.svg") no-repeat left center;
+  background: url("./img/delete_folder_file.svg") no-repeat center center;
   height: 18px;
   width: 14px;
   cursor: pointer;
+}
+
+file-open-save-app .addFolder[disabled],
+file-open-save-app .deleteFolder[disabled],
+file-open-save-app .addFolder[disabled]:hover,
+file-open-save-app .deleteFolder[disabled]:hover {
+  background-position: left center;
 }
 
 file-open-save-app .addFolder:hover,
@@ -352,26 +374,50 @@ file-open-save-app .open .fileAreaMessageView {
   line-height: 368px;
 }
 
-.searchBoxExtra {
+file-open-save-app .searchBoxExtra {
   position: absolute;
   background-color: #ffffff;
   -moz-box-shadow: 0 0 4px 0 rgba(0, 0, 0, 0.4);
   -webkit-box-shadow: 0 0 4px 0 rgba(0, 0, 0, 0.4);
-  box-shadow: 0px 0px 4px 0px rgba(0, 0, 0, 0.4);
+  box-shadow: 0 0 4px 0 rgba(0, 0, 0, 0.4);
   padding: 5px 0;
   max-width: 267px;
   min-width: 267px;
   z-index: 100;
   border: 1px solid #f2f2f2;
+  top: 67px;
+  right: 31px;
+
 }
 
-.searchBoxExtraItem {
+file-open-save-app .searchBoxExtraItem {
   padding: 5px 10px 5px 10px;
   text-overflow: ellipsis;
   overflow: hidden;
   white-space: nowrap;
+  cursor: pointer;
 }
 
-.searchBoxExtraItem:hover {
+file-open-save-app .searchBoxExtraItem:hover {
   background-color: #E6EFF6;
+}
+
+file-open-save-app .noselect {
+  -webkit-touch-callout: none; /* iOS Safari */
+  -webkit-user-select: none; /* Safari */
+  -moz-user-select: none; /* Firefox */
+  -ms-user-select: none; /* Internet Explorer/Edge */
+  user-select: none; /* Non-prefixed version, currently supported by Chrome and Opera */
+}
+
+file-open-save-app input[placeholder] {
+  text-overflow: ellipsis;
+}
+
+file-open-save-app ::-moz-placeholder {
+  text-overflow: ellipsis;
+}
+
+file-open-save-app input:-moz-placeholder {
+  text-overflow: ellipsis;
 }

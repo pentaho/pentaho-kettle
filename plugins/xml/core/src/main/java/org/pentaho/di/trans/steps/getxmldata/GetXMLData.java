@@ -29,12 +29,13 @@ import java.util.Date;
 import java.util.List;
 import java.util.zip.GZIPInputStream;
 
-import org.apache.commons.httpclient.Header;
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.HttpMethod;
-import org.apache.commons.httpclient.methods.GetMethod;
+import org.apache.http.Header;
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
 import org.apache.commons.vfs2.FileObject;
 import org.apache.commons.vfs2.FileSystemException;
+import org.apache.http.client.methods.HttpGet;
 import org.dom4j.Element;
 import org.dom4j.ElementHandler;
 import org.dom4j.ElementPath;
@@ -44,6 +45,7 @@ import org.dom4j.XPath;
 import org.dom4j.io.SAXReader;
 import org.dom4j.tree.AbstractNode;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.HttpClientManager;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.ResultFile;
 import org.pentaho.di.core.exception.KettleException;
@@ -161,19 +163,23 @@ public class GetXMLData extends BaseStep implements StepInterface {
         data.document = reader.read( new StringReader( StringXML ) );
       } else if ( readurl ) {
         // read url as source
-        HttpClient client = new HttpClient();
-        HttpMethod method = new GetMethod( StringXML );
-        method.addRequestHeader( "Accept-Encoding", "gzip" );
-        client.executeMethod( method );
-        Header contentEncoding = method.getResponseHeader( "Content-Encoding" );
-        if ( contentEncoding != null ) {
-          String acceptEncodingValue = contentEncoding.getValue();
-          if ( acceptEncodingValue.indexOf( "gzip" ) != -1 ) {
-            GZIPInputStream in = new GZIPInputStream( method.getResponseBodyAsStream() );
-            data.document = reader.read( in );
+        HttpClient client = HttpClientManager.getInstance().createDefaultClient();
+        HttpGet method = new HttpGet( StringXML );
+        method.addHeader( "Accept-Encoding", "gzip" );
+        HttpResponse response = client.execute( method );
+        Header contentEncoding = response.getFirstHeader( "Content-Encoding" );
+        HttpEntity responseEntity = response.getEntity();
+        if ( responseEntity != null ) {
+          if ( contentEncoding != null ) {
+            String acceptEncodingValue = contentEncoding.getValue();
+            if ( acceptEncodingValue.contains( "gzip" ) ) {
+              GZIPInputStream in = new GZIPInputStream( responseEntity.getContent() );
+
+              data.document = reader.read( in );
+            }
+          } else {
+            data.document = reader.read( responseEntity.getContent() );
           }
-        } else {
-          data.document = reader.read( method.getResponseBodyAsStream() );
         }
       } else {
         // get encoding. By default UTF-8

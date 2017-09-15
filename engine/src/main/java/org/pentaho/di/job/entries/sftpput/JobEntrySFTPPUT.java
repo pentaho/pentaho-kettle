@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -178,6 +178,9 @@ public class JobEntrySFTPPUT extends JobEntryBase implements Cloneable, JobEntry
       .append( "      " ).append( XMLHandler.addTagValue( "createdestinationfolder", createDestinationFolder ) );
 
     retval.append( "      " ).append( XMLHandler.addTagValue( "successWhenNoFile", successWhenNoFile ) );
+    if ( parentJobMeta != null ) {
+      parentJobMeta.getNamedClusterEmbedManager().registerUrl( localDirectory );
+    }
 
     return retval.toString();
   }
@@ -617,6 +620,12 @@ public class JobEntrySFTPPUT extends JobEntryBase implements Cloneable, JobEntry
     Result result = previousResult;
     List<RowMetaAndData> rows = result.getRows();
     result.setResult( false );
+
+    //Set Embedded NamedCluter MetatStore Provider Key so that it can be passed to VFS
+    if ( parentJobMeta.getNamedClusterEmbedManager() != null ) {
+      parentJobMeta.getNamedClusterEmbedManager()
+        .passEmbeddedMetastoreKey( this, parentJobMeta.getEmbeddedMetastoreProviderKey() );
+    }
 
     if ( log.isDetailed() ) {
       logDetailed( BaseMessages.getString( PKG, "JobSFTPPUT.Log.StartJobEntry" ) );

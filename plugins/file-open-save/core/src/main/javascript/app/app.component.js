@@ -32,9 +32,10 @@ define([
   "./services/data.service",
   "text!./app.html",
   "pentaho/i18n-osgi!file-open-save.messages",
+  "./components/utils",
   "angular",
   "css!./app.css"
-], function(dataService, template, i18n, angular) {
+], function(dataService, template, i18n, utils, angular) {
   "use strict";
 
   var options = {
@@ -44,7 +45,7 @@ define([
     controller: appController
   };
 
-  appController.$inject = [dataService.name, "$location"];
+  appController.$inject = [dataService.name, "$location", "$scope", "$timeout"];
 
   /**
    * The App Controller.
@@ -53,8 +54,10 @@ define([
    *
    * @param {Object} dt - Angular service that contains helper functions for the app component controller
    * @param {Function} $location - Angular service used for parsing the URL in browser address bar
+   * @param {Object} $scope - Application model
+   * @param {Object} $timeout - Angular wrapper around window.setTimeout
    */
-  function appController(dt, $location) {
+  function appController(dt, $location, $scope, $timeout) {
     var vm = this;
     vm.$onInit = onInit;
     vm.selectFolder = selectFolder;
@@ -74,18 +77,20 @@ define([
     vm.storeRecentSearch = storeRecentSearch;
     vm.updateDirectories = updateDirectories;
     vm.renameError = renameError;
-    vm.duplicateError = duplicateError;
     vm.displayRecentSearches = displayRecentSearches;
     vm.focusSearchBox = focusSearchBox;
     vm.setTooltip = setTooltip;
-    vm.getOffsetTop = getOffsetTop;
-    vm.getOffsetLeft = getOffsetLeft;
     vm.recentsHasScrollBar = recentsHasScrollBar;
+    vm.addDisabled = addDisabled;
+    vm.deleteDisabled = deleteDisabled;
+    vm.onKeyUp = onKeyUp;
+    vm.getPlaceholder = getPlaceholder;
     vm.selectedFolder = "";
     vm.fileToSave = "";
     vm.searchString = "";
     vm.showError = false;
     vm.errorType = 0;
+    vm.loading = true;
 
     /**
      * The $onInit hook of components lifecycle which is called on each controller
@@ -112,48 +117,49 @@ define([
       vm.includeRoot = false;
       vm.autoExpand = false;
       _resetFileAreaMessage();
-      dt.getDirectoryTree().then(_populateTree);
+      dt.getDirectoryTree($location.search().filter).then(_populateTree);
       dt.getRecentFiles().then(_populateRecentFiles);
       dt.getRecentSearches().then(_populateRecentSearches);
-
-      /**
-       * Sets the folder directory tree
-       *
-       * @param {Object} response - $http response from call to the data service
-       * @private
-       */
-      function _populateTree(response) {
-        vm.folders = response.data;
-        for (var i = 0; i < vm.folders.length; i++) {
-          if (vm.folders[i].depth === 0) {
-            vm.folders[i].visible = true;
-          }
-        }
-        var path = $location.search().path;
-        if (path) {
-          selectFolderByPath(path);
-          vm.autoExpand = true;
-        }
-        if (vm.folders[0].path === "/") {
-          vm.includeRoot = true;
-        }
-      }
-
-      /**
-       * Sets the recents folders
-       *
-       * @param {Object} response - $http response from call to the data service
-       * @private
-       */
-      function _populateRecentFiles(response) {
-        vm.recentFiles = response.data;
-      }
 
       var state = $location.search().state;
       if (state) {
         vm.setState(state);
       }
+    }
+
+    /**
+     * Sets the folder directory tree
+     *
+     * @param {Object} response - $http response from call to the data service
+     * @private
+     */
+    function _populateTree(response) {
+      vm.folders = response.data;
+      for (var i = 0; i < vm.folders.length; i++) {
+        if (vm.folders[i].depth === 0) {
+          vm.folders[i].visible = true;
+        }
+      }
+      var path = $location.search().path;
+      if (path) {
+        selectFolderByPath(path);
+        vm.autoExpand = true;
+      }
+      if (vm.folders[0].path === "/") {
+        vm.includeRoot = true;
+      }
+      vm.loading = false;
       _setFileToSaveName();
+    }
+
+    /**
+     * Sets the recents folders
+     *
+     * @param {Object} response - $http response from call to the data service
+     * @private
+     */
+    function _populateRecentFiles(response) {
+      vm.recentFiles = response.data;
     }
 
     /**
@@ -172,6 +178,10 @@ define([
       }
     }
 
+    /**
+     * Determines if the Recents view has a vertical scrollbar
+     * @return {boolean} - true if Recents view has a vertical scrollbar, false otherwise
+     */
     function recentsHasScrollBar() {
       var recentsView = document.getElementsByClassName("recentsView");
       return recentsView.scrollHeight > recentsView.clientHeight;
@@ -188,18 +198,7 @@ define([
         }, function() {
           vm.fileToSave = "";
         });
-        _selectFileName();
       }
-    }
-
-    /**
-     * Selects the file name text
-     * @private
-     */
-    function _selectFileName() {
-      setTimeout(function() {
-        document.getElementById("fileNameEntryTextBox").select();
-      }, 10);
     }
 
     /**
@@ -215,7 +214,8 @@ define([
         if (folder) {
           vm.showRecents = false;
           vm.folder = folder;
-          vm.selectedFolder = folder.name;
+          vm.selectedFolder = ((vm.folder.name === "home" || vm.folder.name === "public") && vm.folder.parent === "/") ?
+            _capsFirstLetter(folder.name) : folder.name;
         } else {
           vm.showRecents = true;
           vm.folder = {name: "Recents", path: "Recents"};
@@ -246,7 +246,7 @@ define([
     function selectFile(file) {
       if (file.type === "folder") {
         selectFolder(file);
-      } else {
+      } else if (vm.wrapperClass === "open") {
         _open(file);
       }
     }
@@ -269,7 +269,7 @@ define([
      * Resets the search string and runs search against that string (which returns normal dir structure).
      */
     function resetSearch() {
-      if(vm.searchString !== "") {
+      if (vm.searchString !== "") {
         vm.searchString = "";
         vm.doSearch();
         _resetFileAreaMessage();
@@ -349,17 +349,23 @@ define([
 
     /**
      * Calls data service to open file
+     * @param {Object} file - File object
      * @private
      */
     function _open(file) {
-      if (file.repository) {
-        dt.openRecent(file.repository + ":" + (file.username ? file.username : ""), file.objectId.id).then(function(response) {
-          _closeBrowser();
-        });
-      } else {
-        dt.openFile(file.objectId.id, file.type).then(function(response) {
-          _closeBrowser();
-        });
+      try {
+        select(file.objectId.id, file.name, file.path, file.type);
+      } catch (e) {
+        if (file.repository) {
+          dt.openRecent(file.repository + ":" + (file.username ? file.username : ""),
+            file.objectId.id).then(function (response) {
+              _closeBrowser();
+            });
+        } else {
+          dt.openFile(file.objectId.id, file.type).then(function(response) {
+            _closeBrowser();
+          });
+        }
       }
     }
 
@@ -370,13 +376,17 @@ define([
      */
     function _save(override) {
       if (!_isDuplicate() || override) {
-        dt.saveFile(vm.folder.path, vm.fileToSave).then(function(response) {
-          if (response.status === 200) {
-            _closeBrowser();
-          } else {
-            _triggerError(3);
-          }
-        });
+        try {
+          select("", vm.fileToSave, vm.folder.path, "");
+        } catch (e) {
+          dt.saveFile(vm.folder.path, vm.fileToSave).then(function(response) {
+            if (response.status === 200) {
+              _closeBrowser();
+            } else {
+              _triggerError(3);
+            }
+          });
+        }
       } else {
         _triggerError(1);
       }
@@ -407,6 +417,7 @@ define([
     function _triggerError(type) {
       vm.errorType = type;
       vm.showError = true;
+      $scope.$apply();
     }
 
     /**
@@ -417,12 +428,6 @@ define([
       switch (vm.errorType) {
         case 1: // File exists...override
           _save(true);
-          break;
-        case 2: // Folder exists...no action needed
-          break;
-        case 3: // Unable to save...no action needed
-          break;
-        case 4: // Unable to create folder...no action needed
           break;
         case 5: // Delete File
           commitRemove();
@@ -446,19 +451,24 @@ define([
 
     /**
      * Shows an error if one occurs during rename
+     * @param {number} errorType - the number corresponding to the appropriate error
      */
-    function renameError() {
-      vm.errorType = 4;
-      vm.showError = true;
-    }
-
-    function duplicateError(type) {
-      if (type === "folder") {
-        vm.errorType = 2;
-      } else {
-        vm.errorType = 7;
+    function renameError(errorType, file) {
+      if (file) {
+        var index = vm.folder.children.indexOf(file);
+        vm.folder.children.splice(index, 1);
+        if (vm.file.type === "folder") {
+          for (var i = 0; i < vm.folders.length; i++) {
+            if (vm.folders[i].path === vm.file.path) {
+              vm.folders.splice(i, 1);
+              break;
+            }
+          }
+        }
       }
-      vm.showError = true;
+      $timeout(function() {
+        _triggerError(errorType);
+      });
     }
 
     /**
@@ -471,29 +481,53 @@ define([
       }
     }
 
+    /**
+     * Determines if there are recent searches to show
+     */
     function displayRecentSearches() {
-      if(vm.recentSearches.length !== 0) {
-        vm.isInSearch = true
+      if (vm.recentSearches.length !== 0) {
+        vm.isInSearch = true;
       }
     }
 
+    /**
+     * Determines if add button is to be disabled
+     * @return {boolean} - True if Recents is selected, false otherwise
+     */
+    function addDisabled() {
+      if (vm.folder && vm.folder.path === "Recents") {
+        return true;
+      }
+      return false;
+    }
+
+    /**
+     * Determines if delete button is to be disabled
+     * @return {boolean} - True if a file is not selected or if Recents is selected, false otherwise
+     */
+    function deleteDisabled() {
+      if (vm.file === null || (vm.folder && vm.folder.path === "Recents")) {
+        return true;
+      }
+      return false;
+    }
+
+    /**
+     * Sets focus on the search box
+     */
     function focusSearchBox() {
       document.getElementById("searchBoxId").focus();
     }
 
+    /**
+     * Sets the tooltip of a recent search in the search dropdown if it is wider than its container
+     * @param {String} id - the suffix of an element id
+     * @param {String} tooltip - the tooltip to add if necessary
+     */
     function setTooltip(id, tooltip) {
-        var searchItem = document.getElementById("search-item-index-" + id);
-        if( searchItem.scrollWidth > 267 ) {
-            searchItem.title = tooltip;
-        }
-    }
-
-    function getOffsetTop() {
-      return document.getElementById("headerSearchId").offsetTop;
-    }
-
-    function getOffsetLeft() {
-      return document.getElementById("headerSearchId").offsetLeft;
+      if (utils.getTextWidth(tooltip) - 1 > 247) {
+        document.getElementById("search-item-index-" + id).title = tooltip;
+      }
     }
 
     /**
@@ -511,11 +545,10 @@ define([
     function remove() {
       if (vm.file !== null) {
         if (vm.file.type === "folder") {
-          vm.errorType = 6;
+          _triggerError(6);
         } else {
-          vm.errorType = 5;
+          _triggerError(5);
         }
-        vm.showError = true;
       }
     }
 
@@ -524,33 +557,40 @@ define([
      */
     function commitRemove() {
       if (vm.file !== null) {
-        dt.remove(vm.file.type === "folder" ? vm.file.path : vm.file.objectId.id, vm.file.type).then(function(response) {
-          var index = vm.folder.children.indexOf(vm.file);
-          vm.folder.children.splice(index, 1);
-          if (vm.file.type === "folder") {
-            for (var i = 0; i < vm.folders.length; i++) {
-              if (vm.folders[i].path === vm.file.path) {
-                vm.folders.splice(i, 1);
-                break;
+        dt.remove(vm.file.objectId.id, vm.file.name, vm.file.path, vm.file.type)
+          .then(function(response) {
+            var index = vm.folder.children.indexOf(vm.file);
+            vm.folder.children.splice(index, 1);
+            if (vm.file.type === "folder") {
+              for (var i = 0; i < vm.folders.length; i++) {
+                if (vm.folders[i].path.indexOf(vm.file.path) === 0) {
+                  vm.folders.splice(i, 1);
+                  i--;
+                }
               }
             }
-          }
-          var hasChildFolders = false;
-          for (var j = 0; j < vm.folder.children.length; j++) {
-            if (vm.folder.children[j].type === "folder") {
-              hasChildFolders = true;
+            var hasChildFolders = false;
+            for (var j = 0; j < vm.folder.children.length; j++) {
+              if (vm.folder.children[j].type === "folder") {
+                hasChildFolders = true;
+              }
             }
-          }
-          vm.folder.hasChildren = hasChildFolders;
-          vm.file = null;
-        }, function() {
-          if (vm.file.type === "folder") {
-            vm.errorType = 8;
-          } else {
-            vm.errorType = 9;
-          }
-          vm.showError = true;
-        });
+            vm.folder.hasChildren = hasChildFolders;
+            vm.file = null;
+            dt.getRecentFiles().then(_populateRecentFiles);
+          }, function(response) {
+            if (vm.file.type === "folder") {
+              if (response.status === 406) {// folder has open file
+                _triggerError(13);
+              }
+              _triggerError(8);
+            } else {
+              if (response.status === 406) {// file is open
+                _triggerError(14);
+              }
+              _triggerError(9);
+            }
+          });
       }
     }
 
@@ -563,11 +603,11 @@ define([
         var folder = {};
         var name = _getFolderName();
         folder.parent = vm.folder.path;
-        folder.path = vm.folder.path + (vm.folder.path.charAt(vm.folder.path.length-1) === "/" ? "" : "/") + name;
+        folder.path = vm.folder.path + (vm.folder.path.charAt(vm.folder.path.length - 1) === "/" ? "" : "/") + name;
         folder.name = name;
         folder.visible = vm.folder.open;
         folder.depth = vm.folder.depth + 1;
-        folder.indent = (folder.depth * 27) + "px";
+        folder.indent = folder.depth * 27;
         folder.new = true;
         folder.autoEdit = true;
         folder.type = "folder";
@@ -584,32 +624,38 @@ define([
       }
     }
 
+    /**
+     * Updates the directories with a new name for a file
+     * @param {string} oldPath - String path of old directory path
+     * @param {string} newPath - String path of new directory path
+     * @param {string} newName - New file name
+     */
     function updateDirectories(oldPath, newPath, newName) {
       for (var i = 0; i < vm.folders.length; i++) {
         if (vm.folders[i].path === oldPath) {
           vm.folders[i].name = newName;
         }
       }
-      for (var i = 0; i < vm.folders.length; i++) {
-        _updateDirectories(vm.folders[i], oldPath, newPath);
+      for (var j = 0; j < vm.folders.length; j++) {
+        _updateDirectories(vm.folders[j], oldPath, newPath);
       }
     }
 
     /**
      * Update all child folder paths on parent rename
      *
-     * @param folder
-     * @param oldPath
-     * @param newPath
+     * @param {Object} folder - Folder Object
+     * @param {String} oldPath - String path of old directory path
+     * @param {String} newPath - String path of new directory path
      * @private
      */
     function _updateDirectories(folder, oldPath, newPath) {
-      if (folder.path.indexOf(oldPath) !== -1) {
+      if (folder.path.indexOf(oldPath) === 0) {
         folder.path = folder.path.replace(oldPath, newPath);
-        folder.parent = folder.path.replace(oldPath, newPath);
-      }
-      for (var i = 0; i < folder.children.length; i++) {
-        _updateDirectories(folder.children[i], oldPath, newPath);
+        folder.parent = folder.parent.replace(oldPath, newPath);
+        for (var i = 0; i < folder.children.length; i++) {
+          _updateDirectories(folder.children[i], oldPath, newPath);
+        }
       }
     }
 
@@ -660,6 +706,58 @@ define([
       return false;
     }
 
+    /**
+     * Gets the key up event from the app
+     *
+     * @param {Object} event - Event Object
+     */
+    function onKeyUp(event) {
+      if (event.keyCode === 13 && event.target.id !== "searchBoxId") {
+        if (vm.wrapperClass === "open") {
+          if (vm.file !== null) {
+            selectFile(vm.file);
+          }
+        } else {
+          _save(false);
+        }
+        $scope.$apply();
+      }
+    }
+
+    /**
+     * Determines if the browser is Internet Explorer.
+     * If it is, it truncates the placeholder for the search box if it's width is greater than the
+     * search box. It then adds ellipsis to the end of that string and returns that value.
+     * If it is not Internet Explorer, it just returns the search box placeholder and any
+     * truncation/ellipsis is handled using CSS. NOTE: this is a workaround for an IE bug
+     * that doesn't allow placeholders to be ellipsis unless the input is readonly.
+     * @return {string} - the Placeholder for the search box
+     */
+    function getPlaceholder() {
+      var isIE = navigator.userAgent.indexOf("Trident") !== -1 && Boolean(document.documentMode);
+      var retVal = vm.searchPlaceholder + " " + vm.selectedFolder;
+      if (isIE && utils.getTextWidth(retVal) > 210) {
+        var tmp = "";
+        for (var i = 0; i < retVal.length; i++) {
+          tmp = retVal.slice(0, i);
+          if (utils.getTextWidth(tmp) > 196) {
+            break;
+          }
+        }
+        retVal = tmp + "...";
+      }
+      return retVal;
+    }
+
+    /**
+    * Returns input with first letter capitalized
+    * @param {string} input - input string
+    * @return {string} - returns input with first letter capitalized
+    * @private
+    */
+    function _capsFirstLetter(input) {
+      return input.charAt(0).toUpperCase() + input.slice(1);
+    }
   }
 
   return {

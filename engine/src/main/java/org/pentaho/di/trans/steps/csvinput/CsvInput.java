@@ -24,13 +24,14 @@ package org.pentaho.di.trans.steps.csvinput;
 
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.io.ByteOrderMark;
+import org.apache.commons.io.input.BOMInputStream;
 import org.apache.commons.vfs2.FileObject;
 import org.apache.commons.vfs2.provider.local.LocalFile;
 import org.pentaho.di.core.Const;
@@ -408,14 +409,15 @@ public class CsvInput extends BaseStep implements StepInterface {
     return mapping;
   }
 
-  String[] readFieldNamesFromFile( String fileName, CsvInputMeta csvInputMeta )
-    throws KettleException {
+  String[] readFieldNamesFromFile( String fileName, CsvInputMeta csvInputMeta ) throws KettleException {
     String delimiter = environmentSubstitute( csvInputMeta.getDelimiter() );
     String enclosure = environmentSubstitute( csvInputMeta.getEnclosure() );
     String realEncoding = environmentSubstitute( csvInputMeta.getEncoding() );
 
     try ( FileObject fileObject = KettleVFS.getFileObject( fileName, getTransMeta() );
-        InputStream inputStream = KettleVFS.getInputStream( fileObject ) ) {
+        BOMInputStream inputStream =
+            new BOMInputStream( KettleVFS.getInputStream( fileObject ), ByteOrderMark.UTF_8, ByteOrderMark.UTF_16LE,
+                ByteOrderMark.UTF_16BE ) ) {
       InputStreamReader reader = null;
       if ( Utils.isEmpty( realEncoding ) ) {
         reader = new InputStreamReader( inputStream );
@@ -426,16 +428,12 @@ public class CsvInput extends BaseStep implements StepInterface {
       String line =
           TextFileInput.getLine( log, reader, encodingType, TextFileInputMeta.FILE_FORMAT_UNIX, new StringBuilder(
               1000 ) );
-      // remove BOM
-      boolean containsBOM = line.indexOf( "\uFEFF" ) == 0;
-      if ( containsBOM ) {
-        line = line.substring( 1 );
-      }
       String[] fieldNames =
           CsvInput.guessStringsFromLine( log, line, delimiter, enclosure, csvInputMeta.getEscapeCharacter() );
       if ( !Utils.isEmpty( csvInputMeta.getEnclosure() ) ) {
         removeEnclosure( fieldNames, csvInputMeta.getEnclosure() );
       }
+      trimFieldNames( fieldNames );
       return fieldNames;
     } catch ( IOException e ) {
       throw new KettleFileException( BaseMessages.getString( PKG, "CsvInput.Exception.CreateFieldMappingError" ), e );
@@ -446,9 +444,16 @@ public class CsvInput extends BaseStep implements StepInterface {
     TextFileInputField[] fields = csvInputMeta.getInputFields();
     String[] fieldNames = new String[fields.length];
     for ( int i = 0; i < fields.length; i++ ) {
-      fieldNames[i] = fields[i].getName();
+      // We need to sanitize field names because existing ktr files may contain field names with leading BOM
+      fieldNames[i] = EncodingType.removeBOMIfPresent( fields[i].getName() );
     }
     return fieldNames;
+  }
+
+  static void trimFieldNames( String[] strings ) {
+    for ( int i = 0; i < strings.length; i++ ) {
+      strings[i] = strings[i].trim();
+    }
   }
 
   static void removeEnclosure( String[] fields, String enclosure ) {

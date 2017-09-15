@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -349,6 +349,7 @@ public class GetSubFoldersMeta extends BaseStepMeta implements StepMetaInterface
     for ( int i = 0; i < folderName.length; i++ ) {
       retval.append( "      " ).append( XMLHandler.addTagValue( "name", folderName[i] ) );
       retval.append( "      " ).append( XMLHandler.addTagValue( "file_required", folderRequired[i] ) );
+      parentStepMeta.getParentTransMeta().getNamedClusterEmbedManager().registerUrl( folderName[i] );
     }
     retval.append( "    </file>" ).append( Const.CR );
 

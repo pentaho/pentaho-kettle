@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -34,7 +34,6 @@ import java.util.Properties;
 
 import javax.xml.namespace.QName;
 
-import org.apache.commons.httpclient.auth.AuthenticationException;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.custom.CTabFolder;
@@ -86,7 +85,6 @@ import org.pentaho.di.trans.steps.webservices.wsdl.WsdlOperationContainer;
 import org.pentaho.di.trans.steps.webservices.wsdl.WsdlParamContainer;
 import org.pentaho.di.trans.steps.webservices.wsdl.XsdType;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
-import org.pentaho.di.ui.core.dialog.ShowMessageDialog;
 import org.pentaho.di.ui.core.widget.ColumnInfo;
 import org.pentaho.di.ui.core.widget.PasswordTextVar;
 import org.pentaho.di.ui.core.widget.TableView;
@@ -201,8 +199,6 @@ public class WebServiceDialog extends BaseStepDialog implements StepDialogInterf
   private void loadWebService( String anURI ) throws KettleException {
     anURI = transMeta.environmentSubstitute( anURI );
 
-    //
-    //
     try {
       if ( wProxyHost.getText() != null && !"".equals( wProxyHost.getText() ) ) {
         Properties systemProperties = System.getProperties();
@@ -210,14 +206,6 @@ public class WebServiceDialog extends BaseStepDialog implements StepDialogInterf
         systemProperties.setProperty( "http.proxyPort", transMeta.environmentSubstitute( wProxyPort.getText() ) );
       }
       wsdl = new Wsdl( new URI( anURI ), null, null, wHttpLogin.getText(), wHttpPassword.getText() );
-    } catch ( AuthenticationException ae ) {
-      wsdl = null;
-      ShowMessageDialog smd =
-        new ShowMessageDialog(
-          shell, SWT.OK, BaseMessages.getString( PKG, "WebServiceDialog.ErrorDialog.Title" ), BaseMessages
-            .getString( PKG, "Webservices.Error.Authentication", anURI ) );
-      smd.open();
-      return;
     } catch ( Exception e ) {
       wsdl = null;
       new ErrorDialog(
@@ -357,7 +345,7 @@ public class WebServiceDialog extends BaseStepDialog implements StepDialogInterf
   /**
    * Initialization of the tree: - construction using the URL of the WS - add selection listeners to the tree
    *
-   * @throws KettleStepException
+   * @throws KettleException
    *
    */
   private void initTreeTabWebService( String anURI ) throws KettleException {

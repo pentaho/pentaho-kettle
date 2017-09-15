@@ -122,6 +122,8 @@ public class JobEntryBase implements Cloneable, VariableSpace, CheckResultSource
 
   protected Map<String, Object> extensionDataMap;
 
+  protected JobMeta parentJobMeta;
+
   /**
    * Instantiates a new job entry base object.
    */
@@ -1497,5 +1499,22 @@ public class JobEntryBase implements Cloneable, VariableSpace, CheckResultSource
   @Override
   public Map<String, Object> getExtensionDataMap() {
     return extensionDataMap;
+  }
+
+  /**
+   * @return The parent jobMeta at save and during execution.
+   */
+  public JobMeta getParentJobMeta() {
+    return parentJobMeta;
+  }
+
+  /**
+   * At save and run time, the system will attempt to set the jobMeta so that it can be accessed by the jobEntries
+   * if necessary.
+   *
+   * @param parentJobMeta the JobMeta to which this JobEntryInterface belongs
+   */
+  public void setParentJobMeta( JobMeta parentJobMeta ) {
+    this.parentJobMeta = parentJobMeta;
   }
 }

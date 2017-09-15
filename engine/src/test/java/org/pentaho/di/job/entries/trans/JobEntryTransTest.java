@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2014 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -50,6 +50,7 @@ import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.logging.LogLevel;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.job.Job;
+import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Document;
@@ -176,6 +177,8 @@ public class JobEntryTransTest {
     JobEntryTrans jobEntryTrans = spy( new JobEntryTrans( JOB_ENTRY_TRANS_NAME ) );
     jobEntryTrans.setSpecificationMethod( ObjectLocationSpecificationMethod.FILENAME );
     jobEntryTrans.setParentJob( mock( Job.class ) );
+    JobMeta mockJobMeta = mock( JobMeta.class );
+    jobEntryTrans.setParentJobMeta( mockJobMeta );
     jobEntryTrans.setLogLevel( LogLevel.NOTHING );
     doThrow( new KettleException( "Error while loading transformation" ) ).when( jobEntryTrans ).getTransMeta( any(
         Repository.class ), any( IMetaStore.class ), any( VariableSpace.class ) );

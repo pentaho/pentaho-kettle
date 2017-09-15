@@ -17,52 +17,80 @@
 define(
     [],
     function() {
-      'use strict';
+      "use strict";
+      var _font = "14px OpenSansRegular";
       return {
-        naturalCompare: naturalCompare
+        naturalCompare: naturalCompare,
+        getTextWidth: getTextWidth
       };
 
     /**
      * String comparison with arithmetic comparison of numbers
+     * @param {String} first - The first string to compare
+     * @param {String} second - The second string to compare
+     * @return {number} - Returns -1, 1, or 0 according to the natural comparison of first and second
      **/
-    function naturalCompare(first, second) {
-      // any number ignoring preceding spaces
-      var recognizeNbr = /[\\s]*[-+]?(?:(?:\d[\d,]*)(?:[.][\d]+)?|([.][\d]+))/;
-      var idx1 = 0, idx2 = 0;
-      var sub1 = first, sub2 = second;
-      var match1, match2;
-      while( idx1 < sub1.length || idx2 < sub2.length ) {
-        sub1 = sub1.substring(idx1);
-        sub2 = sub2.substring(idx2);
-        // any numbers?
-        match1 = sub1.match(recognizeNbr);
-        match2 = sub2.match(recognizeNbr);
-        if ( match1 == null || match2 == null ) {
-          // treat as plain strings
-          return strComp(sub1, sub2);
+      function naturalCompare(first, second) {
+        // any number ignoring preceding spaces
+        var recognizeNbr = /[\\s]*[-+]?(?:(?:\d[\d,]*)(?:[.][\d]+)?|([.][\d]+))/;
+        var idx1 = 0;
+        var idx2 = 0;
+        var sub1 = first;
+        var sub2 = second;
+        var match1;
+        var match2;
+        while (idx1 < sub1.length || idx2 < sub2.length) {
+          sub1 = sub1.substring(idx1);
+          sub2 = sub2.substring(idx2);
+          // any numbers?
+          match1 = sub1.match(recognizeNbr);
+          match2 = sub2.match(recognizeNbr);
+          if (match1 === null || match2 === null) {
+            // treat as plain strings
+            return _strComp(sub1, sub2);
+          }
+          // compare before match as string
+          var pre1 = sub1.substring(0, match1.index);
+          var pre2 = sub2.substring(0, match2.index);
+          var comp = _strComp(pre1, pre2);
+          if (comp !== 0) {
+            return comp;
+          }
+          // compare numbers
+          var num1 = new Number(match1[0]);
+          var num2 = new Number(match2[0]);
+          comp = (num1 < num2) ? -1 : (num1 > num2) ? 1 : 0;
+          if (comp !== 0) {
+            return comp;
+          }
+          // check after match
+          idx1 = match1.index + match1[0].length;
+          idx2 = match2.index + match2[0].length;
         }
-        // compare before match as string
-        var pre1 = sub1.substring(0, match1.index);
-        var pre2 = sub2.substring(0, match2.index);
-        var comp = strComp(pre1, pre2);
-        if ( comp != 0 ) {
-          return comp;
-        }
-        // compare numbers
-        var num1 = new Number( match1[0] );
-        var num2 = new Number( match2[0] );
-        comp = (num1 < num2) ? -1 : (num1 > num2) ? 1 : 0;
-        if(comp != 0) {
-          return comp;
-        }
-        // check after match
-        idx1 = match1.index + match1[0].length;
-        idx2 = match2.index + match2[0].length;
+        return 0;
       }
-      return 0;
-    }
 
-    function strComp(str1, str2) {
-      return str1.localeCompare(str2);
-    }
-  } );
+      /**
+       * Performs localeCompare on str1 and str2
+       * @param {String} str1 - first string
+       * @param {String} str2 - second string
+       * @return {number} - result of localeCompare
+       * @private
+       */
+      function _strComp(str1, str2) {
+        return str1.localeCompare(str2);
+      }
+
+      /**
+       * Calculates the display width of the text parameter
+       * @param {Object} text - String object to measure
+       * @return {number} - width in pixels of text using font font
+       */
+      function getTextWidth(text) {
+        var canvas = document.createElement("canvas");
+        var context = canvas.getContext("2d");
+        context.font = _font;
+        var metrics = context.measureText(text);
+        return (Math.ceil(metrics.width) + 2);
+      }
+    });

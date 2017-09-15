@@ -36,9 +36,10 @@ define([
 
   var options = {
     bindings: {
-      path: '<',
-      includeRoot: '<',
-      onSelect: '&'
+      path: "<",
+      includeRoot: "<",
+      onSelect: "&",
+      wrapperClass: "<"
     },
     template: breadcrumbTemplate,
     controllerAs: "vm",
@@ -55,6 +56,8 @@ define([
     vm.$onInit = onInit;
     vm.$onChanges = onChanges;
     vm.select = select;
+    vm.maxWidths = [440, 0, 0];
+    vm.titles = ["", "", ""];
     vm.parts = [];
     vm.extras = [];
 

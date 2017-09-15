@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -24,12 +24,16 @@ package org.pentaho.di.base;
 
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.trans.TransMeta;
+import org.pentaho.di.trans.step.BaseStepMeta;
+import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.steps.loadsave.getter.Getter;
 import org.pentaho.di.trans.steps.loadsave.initializer.InitializerInterface;
 import org.pentaho.di.trans.steps.loadsave.setter.Setter;
 import org.pentaho.di.trans.steps.loadsave.validator.DefaultFieldLoadSaveValidatorFactory;
 import org.pentaho.di.trans.steps.loadsave.validator.FieldLoadSaveValidator;
 import org.pentaho.di.trans.steps.loadsave.validator.FieldLoadSaveValidatorFactory;
+import org.pentaho.di.trans.steps.named.cluster.NamedClusterEmbedManager;
 import org.pentaho.test.util.JavaBeanManipulator;
 
 import java.lang.reflect.Method;
@@ -37,6 +41,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 /**
  * @author Andrey Khayrutdinov
@@ -90,7 +97,16 @@ public abstract class LoadSaveBase<T> {
   }
   public T createMeta() {
     try {
-      return clazz.newInstance();
+      T meta = clazz.newInstance();
+      if ( meta instanceof BaseStepMeta ) {
+        StepMeta mockParentStepMeta = mock( StepMeta.class );
+        ( (BaseStepMeta) meta ).setParentStepMeta( mockParentStepMeta );
+        TransMeta mockTransMeta = mock( TransMeta.class );
+        NamedClusterEmbedManager embedManager = mock( NamedClusterEmbedManager.class );
+        when( mockParentStepMeta.getParentTransMeta() ).thenReturn( mockTransMeta );
+        when( mockTransMeta.getNamedClusterEmbedManager() ).thenReturn( embedManager );
+      }
+      return meta;
     } catch ( Exception e ) {
       throw new RuntimeException( "Unable to create meta of class " + clazz.getCanonicalName(), e );
     }
