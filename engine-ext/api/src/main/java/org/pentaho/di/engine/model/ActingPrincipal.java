@@ -52,22 +52,30 @@ public class ActingPrincipal implements Principal, Serializable {
     return name;
   }
 
-  public boolean equals( Object other ) {
-    if ( other instanceof ActingPrincipal ) {
-      ActingPrincipal that = (ActingPrincipal) other;
-      return ( this.isAnonymous() && that.isAnonymous() )
-        || ( this.getName() != null && this.getName().equals( that.getName() ) );
-    } else {
-      return false;
-    }
-  }
-
   public String toString() {
     return this.name;
   }
 
-  public int hashCode() {
-    return this.name.hashCode();
+  @Override public boolean equals( Object o ) {
+    if ( this == o ) {
+      return true;
+    }
+    if ( o == null || getClass() != o.getClass() ) {
+      return false;
+    }
+
+    ActingPrincipal that = (ActingPrincipal) o;
+
+    if ( isAnonymous() != that.isAnonymous() ) {
+      return false;
+    }
+    return getName() != null ? getName().equals( that.getName() ) : that.getName() == null;
+  }
+
+  @Override public int hashCode() {
+    int result = ( isAnonymous() ? 1 : 0 );
+    result = 31 * result + ( getName() != null ? getName().hashCode() : 0 );
+    return result;
   }
 
   public boolean isAnonymous() {
