@@ -55,6 +55,9 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 import java.util.Collection;
@@ -66,12 +69,17 @@ import static java.util.stream.Collectors.toMap;
  */
 public class TransWebSocketEngineAdapter extends Trans {
 
-  private static final String ANONYMOUS_PRINCIPAL = "anonymous";
   private static final String OPERATION_LOG = "OPERATION_LOG_TRANS_WEBSOCK_";
   private static final String TRANSFORMATION_LOG = "TRANSFORMATION_LOG_TRANS_WEBSOCK";
   private static final String TRANSFORMATION_STATUS = "TRANSFORMATION_STATUS_TRANS_WEBSOCK";
   private static final String TRANSFORMATION_ERROR = "TRANSFORMATION_ERROR_TRANS_WEBSOCK";
   private static final String TRANSFORMATION_STOP = "TRANSFORMATION_STOP_TRANS_WEBSOCK";
+  private static final String SPARK_SESSION_KILLED_MSG = "Spark session was killed";
+
+  //session monitor properties
+  private static final int SLEEP_TIME_MS = 10000;
+  private static final int MAX_TEST_FAILED = 3;
+  private ExecutorService sessionMonitor = null;
 
   private final Transformation transformation;
   private ExecutionRequest executionRequest;
@@ -115,6 +123,8 @@ public class TransWebSocketEngineAdapter extends Trans {
       }
       return daemonMessagesClientEndpoint;
     } catch ( KettleException e ) {
+      finishProcess( true );
+      transFinishedSignal.countDown();
       throw e;
     }
   }
@@ -129,9 +139,12 @@ public class TransWebSocketEngineAdapter extends Trans {
 
   @Override public void stopAll() {
     try {
-      getDaemonEndpoint().sendMessage( new StopMessage( "User Request" ) );
+      getDaemonEndpoint().sendMessage( new StopMessage( getErrors() == 0 ? "User Request" : "Error reported" ) );
+      if ( getErrors() == 0 ) {
+        waitUntilFinished();
+      }
     } catch ( KettleException e ) {
-      getLogChannel().logError( "Error finalizing the transformation", e );
+      getLogChannel().logDebug( e.getMessage() );
     }
   }
 
@@ -159,7 +172,7 @@ public class TransWebSocketEngineAdapter extends Trans {
     LogLevel logLogLevel = data.getLogLogLevel();
     switch ( logLogLevel ) {
       case ERROR:
-        logChannel.logError( data.getMessage() );
+        logChannel.logError( data.getMessage(), data.getThrowable() );
         break;
       case MINIMAL:
         logChannel.logMinimal( data.getMessage() );
@@ -270,19 +283,7 @@ public class TransWebSocketEngineAdapter extends Trans {
 
           getLogChannel().logError( "Error Executing Transformation", throwable );
           errors.incrementAndGet();
-          setFinished( true );
-          // emit error on all steps
-          getSteps().stream().map( stepMetaDataCombi -> stepMetaDataCombi.step ).forEach( step -> {
-            step.setStopped( true );
-            step.setRunning( false );
-          } );
-          getTransListeners().forEach( l -> {
-            try {
-              l.transFinished( TransWebSocketEngineAdapter.this );
-            } catch ( KettleException e ) {
-              getLogChannel().logError( "Error notifying trans listener", e );
-            }
-          } );
+          finishProcess( true );
         }
 
         @Override
@@ -295,19 +296,23 @@ public class TransWebSocketEngineAdapter extends Trans {
       .addHandler( Util.getStopMessage(), new MessageEventHandler() {
         @Override
         public void execute( Message message ) throws MessageEventHandlerExecutionException {
-          setFinished( true );
-          getTransListeners().forEach( l -> {
-            try {
-              l.transFinished( TransWebSocketEngineAdapter.this );
-            } catch ( KettleException e ) {
-              getLogChannel().logError( "Error notifying trans listener", e );
-            }
-          } );
+          String stopMessage = ((StopMessage) message ).getReasonPhrase();
+          if ( SPARK_SESSION_KILLED_MSG.equals( stopMessage ) ) {
+            errors.incrementAndGet();
+            getLogChannel().logError( "Finalizing execution: " + stopMessage );
+          } else {
+            getLogChannel().logBasic( "Finalizing execution: " + stopMessage );
+          }
+
+          finishProcess( false );
           try {
-            getDaemonEndpoint().close();
+            getDaemonEndpoint().close( stopMessage );
           } catch ( KettleException e ) {
             getLogChannel().logError( "Error finalizing", e );
           }
+
+          //let's shutdown the session monitor thread
+          closeSessionMonitor();
           // Signal for the the waitUntilFinished blocker...
           transFinishedSignal.countDown();
         }
@@ -343,6 +348,60 @@ public class TransWebSocketEngineAdapter extends Trans {
 
   @Override public void startThreads() throws KettleException {
     getDaemonEndpoint().sendMessage( executionRequest );
+    //let's start the session monitor
+    startSessionMonitor();
+  }
+
+  private void startSessionMonitor() {
+    getLogChannel().logDebug( "Starting Session Monitor." );
+    sessionMonitor = Executors.newSingleThreadExecutor();
+    sessionMonitor.submit( () -> {
+      int failedTests = 0;
+      while ( !isFinished() ) {
+        try {
+          if ( failedTests > MAX_TEST_FAILED ) {
+            // Too many tests missed let's close
+            errors.incrementAndGet();
+            getLogChannel().logError(
+              "Session Monitor detected that communication with the server was lost. Finalizing execution." );
+            finishProcess( false );
+            // Signal for the the waitUntilFinished blocker...
+            transFinishedSignal.countDown();
+          } else {
+            TimeUnit.MILLISECONDS.sleep( SLEEP_TIME_MS );
+            getDaemonEndpoint().sessionValid();
+            if ( failedTests > 0 ) {
+              getLogChannel()
+                .logDebug( "Session Monitor - Server Communication restored." );
+            }
+            failedTests = 0;
+          }
+        } catch ( KettleException e ) {
+          failedTests++;
+          getLogChannel()
+            .logDebug(
+              "Session Monitor detected communication problem with the server. Retry (" + failedTests + "/"
+                + MAX_TEST_FAILED + ")." );
+        } catch ( InterruptedException e ) {
+          getLogChannel().logDebug( "Session Monitor was interrupted." );
+        }
+      }
+      closeSessionMonitor();
+    } );
+  }
+
+  private void closeSessionMonitor() {
+    if ( sessionMonitor != null && !sessionMonitor.isShutdown() ) {
+      try {
+        getLogChannel().logDebug( "Shutting down the Session Monitor." );
+        sessionMonitor.shutdown();
+      } finally {
+        if ( !sessionMonitor.isTerminated() ) {
+          sessionMonitor.shutdownNow();
+        }
+        getLogChannel().logDebug( "Session Monitor shutdown." );
+      }
+    }
   }
 
   @Override public void waitUntilFinished() {
@@ -355,7 +414,14 @@ public class TransWebSocketEngineAdapter extends Trans {
 
   @Override
   public int getErrors() {
-    return errors.get();
+    int nrErrors = errors.get();
+
+    if ( getSteps() != null ) {
+      for ( int i = 0; i < getSteps().size(); i++ ) {
+        nrErrors += getSteps().get( i ).step.getErrors();
+      }
+    }
+    return nrErrors;
   }
 
   @Override
@@ -363,6 +429,24 @@ public class TransWebSocketEngineAdapter extends Trans {
     Result toRet = new Result();
     toRet.setNrErrors( getErrors() );
     return toRet;
+  }
+
+  private void finishProcess( boolean emitToAllSteps ) {
+    setFinished( true );
+    if ( emitToAllSteps ) {
+      // emit error on all steps
+      getSteps().stream().map( stepMetaDataCombi -> stepMetaDataCombi.step ).forEach( step -> {
+        step.setStopped( true );
+        step.setRunning( false );
+      } );
+    }
+    getTransListeners().forEach( l -> {
+      try {
+        l.transFinished( TransWebSocketEngineAdapter.this );
+      } catch ( KettleException e1 ) {
+        getLogChannel().logError( "Error notifying trans listener", e1 );
+      }
+    } );
   }
 
   // ======================== May want to implement ================================= //

@@ -44,6 +44,7 @@ import javax.websocket.WebSocketContainer;
 import java.io.IOException;
 import java.net.URI;
 import java.util.Collections;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Created by fcamara on 8/17/17.
@@ -56,6 +57,8 @@ public class DaemonMessagesClientEndpoint extends Endpoint {
   private Session userSession = null;
   private String principal = null;
   private String keytab = null;
+  //only one stop message
+  private AtomicBoolean alReadySendedStopMessage =  new AtomicBoolean( false );
 
   public DaemonMessagesClientEndpoint( String host, String port, boolean ssl,
                                        MessageEventService messageEventService ) throws KettleException {
@@ -137,11 +140,10 @@ public class DaemonMessagesClientEndpoint extends Endpoint {
   }
 
   /**
-   * Send a message.
-   *
-   * @param request
+   * Send a execution request message.
    */
   public void sendMessage( ExecutionRequest request ) throws KettleException {
+    sessionValid();
     try {
       this.userSession.getBasicRemote().sendObject( request );
     } catch ( Exception e ) {
@@ -149,21 +151,40 @@ public class DaemonMessagesClientEndpoint extends Endpoint {
     }
   }
 
+  /**
+   * Send a stop message to server as result of user request.
+   */
   public void sendMessage( StopMessage stopMessage ) throws KettleException {
+    sessionValid();
     try {
-      this.userSession.getBasicRemote().sendObject( stopMessage );
+      if ( !alReadySendedStopMessage.getAndSet( true ) ) {
+        this.userSession.getBasicRemote().sendObject( stopMessage );
+      }
     } catch ( Exception e ) {
       throw new KettleException( e );
     }
   }
 
-  public void close() throws KettleException {
+  /**
+   * Close the session informing the reason.
+   */
+  public void close( String message ) throws KettleException {
+    sessionValid();
     try {
       if ( this.userSession != null && this.userSession.isOpen() ) {
-        this.userSession.close();
+        this.userSession.close( new CloseReason( CloseReason.CloseCodes.NORMAL_CLOSURE, message ) );
       }
     } catch ( IOException e ) {
       throw new KettleException( e );
+    }
+  }
+
+  /**
+   * Validates if the session is open.
+   */
+  public void sessionValid() throws KettleException {
+    if ( this.userSession == null || !this.userSession.isOpen() ) {
+      throw new KettleException( "Session is closed." );
     }
   }
 }
