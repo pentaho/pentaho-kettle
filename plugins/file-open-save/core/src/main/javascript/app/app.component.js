@@ -122,6 +122,7 @@ define([
       dt.getRecentSearches().then(_populateRecentSearches);
 
       var state = $location.search().state;
+      vm.origin = $location.search().origin;
       if (state) {
         vm.setState(state);
       }
@@ -354,11 +355,18 @@ define([
      */
     function _open(file) {
       try {
-        select(file.objectId.id, file.name, file.path, file.type);
+        if (vm.selectedFolder === "Recents" && vm.origin === "spoon") {
+          dt.openRecent(file.repository + ":" + (file.username ? file.username : ""),
+            file.objectId.id).then(function(response) {
+              _closeBrowser();
+            });
+        } else {
+          select(file.objectId.id, file.name, file.path, file.type);
+        }
       } catch (e) {
         if (file.repository) {
           dt.openRecent(file.repository + ":" + (file.username ? file.username : ""),
-            file.objectId.id).then(function (response) {
+            file.objectId.id).then(function(response) {
               _closeBrowser();
             });
         } else {

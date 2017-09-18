@@ -24,14 +24,22 @@ public class FileDialogOperation {
 
   public static String OPEN = "open";
   public static String SAVE = "save";
+  public static String ORIGIN_SPOON = "spoon";
+  public static String ORIGIN_OTHER = "other";
 
   private String command;
   private String filter;
+  private String origin;
   private RepositoryObject repositoryObject;
   private String startDir;
 
   public FileDialogOperation( String command ) {
     this.command = command;
+  }
+
+  public FileDialogOperation( String command, String origin ) {
+    this.command = command;
+    this.origin = origin;
   }
 
   public String getCommand() {
@@ -48,6 +56,14 @@ public class FileDialogOperation {
 
   public void setFilter( String filter ) {
     this.filter = filter;
+  }
+
+  public String getOrigin() {
+    return origin;
+  }
+
+  public void setOrigin( String origin ) {
+    this.origin = origin;
   }
 
   public RepositoryObject getRepositoryObject() {

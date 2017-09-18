@@ -51,7 +51,7 @@ public class RepositoryOpenSaveDialog extends ThinDialog {
     super( shell, width, height );
   }
 
-  public void open( String directory, String state, String filter ) {
+  public void open( String directory, String state, String filter, String origin ) {
     StringBuilder clientPath = new StringBuilder();
     clientPath.append( CLIENT_PATH );
     clientPath.append( !Utils.isEmpty( directory ) ? "#?path=" + directory : "#?" );
@@ -59,6 +59,8 @@ public class RepositoryOpenSaveDialog extends ThinDialog {
     clientPath.append( !Utils.isEmpty( state ) ? "state=" + state : "" );
     clientPath.append( !Utils.isEmpty( state ) ? "&" : "" );
     clientPath.append( !Utils.isEmpty( filter ) ? "filter=" + filter : "" );
+    clientPath.append( !Utils.isEmpty( filter ) ? "&" : "" );
+    clientPath.append( !Utils.isEmpty( origin ) ? "origin=" + origin : "" );
     super.createDialog( StringUtils.capitalize( state ), getRepoURL( clientPath.toString() ), OPTIONS, LOGO );
     super.dialog.setMinimumSize( 545, 458 );
 

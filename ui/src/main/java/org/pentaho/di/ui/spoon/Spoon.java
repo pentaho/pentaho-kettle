@@ -4294,7 +4294,8 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
         }
       } else {
         try {
-          FileDialogOperation fileDialogOperation = new FileDialogOperation( FileDialogOperation.OPEN );
+          FileDialogOperation fileDialogOperation =
+            new FileDialogOperation( FileDialogOperation.OPEN, FileDialogOperation.ORIGIN_SPOON );
           ExtensionPointHandler.callExtensionPoint( log, KettleExtensionPoint.SpoonOpenSaveRepository.id,
             fileDialogOperation );
           if ( fileDialogOperation.getRepositoryObject() != null ) {
@@ -5107,7 +5108,8 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
 
       if ( ask_name ) {
         try {
-          FileDialogOperation fileDialogOperation = new FileDialogOperation( FileDialogOperation.SAVE );
+          FileDialogOperation fileDialogOperation = new FileDialogOperation( FileDialogOperation.SAVE,
+            FileDialogOperation.ORIGIN_SPOON );
           fileDialogOperation.setStartDir( meta.getRepositoryDirectory().getPath() );
           ExtensionPointHandler.callExtensionPoint( log, KettleExtensionPoint.SpoonOpenSaveRepository.id,
             fileDialogOperation );

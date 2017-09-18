@@ -71,7 +71,8 @@ public class RepositoryOpenSaveExtensionPoint implements ExtensionPointInterface
       .open( startingDir,
         RepositoryOpenSaveDialog.STATE_SAVE.equals( fileDialogOperation.getCommand() ) ?
           RepositoryOpenSaveDialog.STATE_SAVE :
-          RepositoryOpenSaveDialog.STATE_OPEN, fileDialogOperation.getFilter() );
+          RepositoryOpenSaveDialog.STATE_OPEN, fileDialogOperation.getFilter(),
+        fileDialogOperation.getOrigin() );
 
     if ( !Utils.isEmpty( repositoryOpenSaveDialog.getObjectName() ) ) {
       RepositoryObject repositoryObject = new RepositoryObject();
