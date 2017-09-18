@@ -172,7 +172,11 @@ public class TransWebSocketEngineAdapter extends Trans {
     LogLevel logLogLevel = data.getLogLogLevel();
     switch ( logLogLevel ) {
       case ERROR:
-        logChannel.logError( data.getMessage(), data.getThrowable() );
+        if ( data.getThrowable() != null ) {
+          logChannel.logError( data.getMessage(), data.getThrowable() );
+        } else {
+          logChannel.logError( data.getMessage() );
+        }
         break;
       case MINIMAL:
         logChannel.logMinimal( data.getMessage() );
