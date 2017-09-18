@@ -1319,7 +1319,7 @@ public class KettleDatabaseRepositoryTransDelegate extends KettleDatabaseReposit
     step = (StepMeta) logTable.getSubject( TransLogTable.ID.LINES_UPDATED );
     table.addValue( new ValueMetaInteger( KettleDatabaseRepository.FIELD_TRANSFORMATION_ID_STEP_UPDATE ), step == null ? null : step.getObjectId() );
 
-    table.addValue( new ValueMetaInteger( KettleDatabaseRepository.FIELD_TRANSFORMATION_ID_DATABASE_LOG ), (logTable.getConnectionName() == null || logTable.getDatabaseMeta() == null) ? new LongObjectId( -1L ).longValue() : new LongObjectId( logTable.getDatabaseMeta().getObjectId() ).longValue() );
+    table.addValue( new ValueMetaInteger( KettleDatabaseRepository.FIELD_TRANSFORMATION_ID_DATABASE_LOG ), ( logTable.getConnectionName() == null || logTable.getDatabaseMeta() == null ) ? new LongObjectId( -1L ).longValue() : new LongObjectId( logTable.getDatabaseMeta().getObjectId() ).longValue() );
     table.addValue( new ValueMetaString( KettleDatabaseRepository.FIELD_TRANSFORMATION_TABLE_NAME_LOG ), logTable.getTableName() );
     table.addValue( new ValueMetaBoolean( KettleDatabaseRepository.FIELD_TRANSFORMATION_USE_BATCHID ), Boolean.valueOf( logTable.isBatchIdUsed() ) );
     table.addValue( new ValueMetaBoolean( KettleDatabaseRepository.FIELD_TRANSFORMATION_USE_LOGFIELD ), Boolean.valueOf( logTable.isLogFieldUsed() ) );
