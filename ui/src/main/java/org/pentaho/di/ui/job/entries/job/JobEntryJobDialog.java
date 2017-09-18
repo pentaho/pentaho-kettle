@@ -609,6 +609,7 @@ public class JobEntryJobDialog extends JobEntryBaseDialog implements JobEntryDia
     jej.createParentFolder = wCreateParentFolder.getSelection();
     jej.setFollowingAbortRemotely( wFollowingAbortRemotely.getSelection() );
     jej.setExpandingRemoteJob( wExpandRemote.getSelection() );
+    jej.setRunConfiguration( wRunConfiguration.getText() );
 
     JobExecutionConfiguration executionConfiguration = new JobExecutionConfiguration();
     executionConfiguration.setRunConfiguration( jej.getRunConfiguration() );

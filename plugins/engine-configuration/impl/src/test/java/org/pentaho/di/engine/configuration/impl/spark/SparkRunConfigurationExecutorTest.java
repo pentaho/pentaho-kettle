@@ -90,7 +90,7 @@ public class SparkRunConfigurationExecutorTest {
     TransExecutionConfiguration transExecutionConfiguration = new TransExecutionConfiguration();
 
     sparkRunConfigurationExecutor
-      .execute( sparkRunConfiguration, transExecutionConfiguration, abstractMeta, variableSpace );
+      .execute( sparkRunConfiguration, transExecutionConfiguration, abstractMeta, variableSpace, null );
 
     verify( variableSpace ).setVariable( "engine", "remote" );
     verify( variableSpace ).setVariable( "engine.remote", "spark" );
@@ -111,7 +111,7 @@ public class SparkRunConfigurationExecutorTest {
     doReturn( "1.0" ).when( variableSpace ).getVariable( "KETTLE_AEL_PDI_DAEMON_VERSION", "2.0" );
 
     sparkRunConfigurationExecutor
-      .execute( sparkRunConfiguration, transExecutionConfiguration, abstractMeta, variableSpace );
+      .execute( sparkRunConfiguration, transExecutionConfiguration, abstractMeta, variableSpace, null );
 
     verify( variableSpace ).setVariable( "engine", "remote" );
     verify( variableSpace ).setVariable( "engine.remote", "spark" );
@@ -132,7 +132,7 @@ public class SparkRunConfigurationExecutorTest {
     TransExecutionConfiguration transExecutionConfiguration = new TransExecutionConfiguration();
 
     sparkRunConfigurationExecutor
-      .execute( sparkRunConfiguration, transExecutionConfiguration, abstractMeta, variableSpace );
+      .execute( sparkRunConfiguration, transExecutionConfiguration, abstractMeta, variableSpace, null );
 
     verify( variableSpace ).setVariable( "engine", "remote" );
     verify( variableSpace ).setVariable( "engine.remote", "spark" );
@@ -151,7 +151,7 @@ public class SparkRunConfigurationExecutorTest {
     TransExecutionConfiguration transExecutionConfiguration = new TransExecutionConfiguration();
 
     sparkRunConfigurationExecutor
-      .execute( sparkRunConfiguration, transExecutionConfiguration, abstractMeta, variableSpace );
+      .execute( sparkRunConfiguration, transExecutionConfiguration, abstractMeta, variableSpace, null );
 
     verify( variableSpace ).setVariable( "engine", "remote" );
     verify( variableSpace ).setVariable( "engine.remote", "spark" );
@@ -173,7 +173,7 @@ public class SparkRunConfigurationExecutorTest {
     TransExecutionConfiguration transExecutionConfiguration = new TransExecutionConfiguration();
 
     sparkRunConfigurationExecutor
-      .execute( sparkRunConfiguration, transExecutionConfiguration, abstractMeta, variableSpace );
+      .execute( sparkRunConfiguration, transExecutionConfiguration, abstractMeta, variableSpace, null );
 
     verify( variableSpace ).setVariable( "engine.protocol", "wss" );
     verify( variableSpace ).setVariable( "engine.host", "127.0.0.2" );
@@ -191,7 +191,7 @@ public class SparkRunConfigurationExecutorTest {
     TransExecutionConfiguration transExecutionConfiguration = new TransExecutionConfiguration();
 
     sparkRunConfigurationExecutor
-      .execute( sparkRunConfiguration, transExecutionConfiguration, abstractMeta, variableSpace );
+      .execute( sparkRunConfiguration, transExecutionConfiguration, abstractMeta, variableSpace, null );
 
     verify( variableSpace ).setVariable( "engine.protocol", "ws" );
     verify( variableSpace ).setVariable( "engine.host", "127.0.0.2" );
@@ -212,7 +212,7 @@ public class SparkRunConfigurationExecutorTest {
     TransExecutionConfiguration transExecutionConfiguration = new TransExecutionConfiguration();
 
     sparkRunConfigurationExecutor
-      .execute( sparkRunConfiguration, transExecutionConfiguration, abstractMeta, variableSpace );
+      .execute( sparkRunConfiguration, transExecutionConfiguration, abstractMeta, variableSpace, null );
 
     verify( jaasCapability ).isInstalled();
     verify( jaasCapability ).install();
@@ -233,7 +233,7 @@ public class SparkRunConfigurationExecutorTest {
     TransExecutionConfiguration transExecutionConfiguration = new TransExecutionConfiguration();
 
     sparkRunConfigurationExecutor
-      .execute( sparkRunConfiguration, transExecutionConfiguration, abstractMeta, variableSpace );
+      .execute( sparkRunConfiguration, transExecutionConfiguration, abstractMeta, variableSpace, null );
 
     verify( jaasCapability, never() ).isInstalled();
 

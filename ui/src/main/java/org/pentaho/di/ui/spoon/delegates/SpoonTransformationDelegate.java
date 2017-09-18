@@ -868,7 +868,7 @@ public class SpoonTransformationDelegate extends SpoonDelegate {
 
       try {
         ExtensionPointHandler.callExtensionPoint( log, KettleExtensionPoint.SpoonTransBeforeStart.id, new Object[] {
-          executionConfiguration, transMeta, transMeta
+          executionConfiguration, transMeta, transMeta, spoon.getRepository()
         } );
       } catch ( KettleException e ) {
         log.logError( e.getMessage(), transMeta.getFilename() );
@@ -926,8 +926,6 @@ public class SpoonTransformationDelegate extends SpoonDelegate {
         } else {
           splitTrans( transMeta, executionConfiguration );
         }
-      } else {
-        log.logBasic( "Executing on the connected Pentaho Server" );
       }
     }
   }
