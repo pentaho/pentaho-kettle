@@ -34,8 +34,11 @@ import org.pentaho.di.engine.configuration.api.RunConfigurationExecutor;
 import org.pentaho.di.engine.configuration.impl.pentaho.scheduler.SchedulerRequest;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.JobExecutionConfiguration;
+import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.trans.TransExecutionConfiguration;
+import org.pentaho.di.trans.TransMeta;
+import org.pentaho.di.ui.spoon.Spoon;
 
 /**
  * Created by bmorrise on 3/16/17.
@@ -119,6 +122,16 @@ public class DefaultRunConfigurationExecutor implements RunConfigurationExecutor
   }
 
   private void sendNow( Repository repository, AbstractMeta meta ) {
+    try {
+      if ( meta instanceof TransMeta ) {
+        Spoon.getInstance().getActiveTransGraph().handleTransMetaChanges( (TransMeta) meta );
+      } else {
+        Spoon.getInstance().getActiveJobGraph().handleJobMetaChanges( (JobMeta) meta );
+      }
+    } catch ( Exception e ) {
+      // Ignore an exception if occurs
+    }
+
     SchedulerRequest.Builder builder = new SchedulerRequest.Builder();
     builder.repository( repository );
     SchedulerRequest schedulerRequest = builder.build();
