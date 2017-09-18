@@ -37,7 +37,8 @@ public class DialogHelper {
 
   public static RepositoryObject selectRepositoryObject( String filter, LogChannel log ) {
     try {
-      FileDialogOperation fileDialogOperation = new FileDialogOperation( FileDialogOperation.OPEN );
+      FileDialogOperation fileDialogOperation =
+        new FileDialogOperation( FileDialogOperation.OPEN, FileDialogOperation.ORIGIN_OTHER );
       if ( !Utils.isEmpty( filter ) ) {
         fileDialogOperation.setFilter( filter );
       }
