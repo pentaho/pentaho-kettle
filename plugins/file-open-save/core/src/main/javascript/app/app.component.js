@@ -660,7 +660,9 @@ define([
     function _updateDirectories(folder, oldPath, newPath) {
       if (folder.path.indexOf(oldPath) === 0) {
         folder.path = folder.path.replace(oldPath, newPath);
-        folder.parent = folder.parent.replace(oldPath, newPath);
+        if ( folder.parent != null )  {
+          folder.parent = folder.parent.replace(oldPath, newPath);
+        }
       }
       for (var i = 0; i < folder.children.length; i++) {
         _updateDirectories(folder.children[i], oldPath, newPath);
