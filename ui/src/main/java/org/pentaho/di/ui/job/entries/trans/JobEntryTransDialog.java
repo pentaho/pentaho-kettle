@@ -608,7 +608,7 @@ public class JobEntryTransDialog extends JobEntryBaseDialog implements JobEntryD
     executionConfiguration.setRunConfiguration( jet.getRunConfiguration() );
     try {
       ExtensionPointHandler.callExtensionPoint( jobEntry.getLogChannel(), KettleExtensionPoint.SpoonTransBeforeStart.id,
-        new Object[] { executionConfiguration, jobMeta, jobMeta } );
+        new Object[] { executionConfiguration, jobMeta, jobMeta, null } );
     } catch ( KettleException e ) {
       // Ignore errors
     }
