@@ -51,6 +51,9 @@ import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.engine.api.model.Hop;
 import org.pentaho.di.engine.api.model.Operation;
 import org.pentaho.di.engine.api.model.Transformation;
+import org.pentaho.di.repository.Repository;
+import org.pentaho.di.repository.RepositoryDirectory;
+import org.pentaho.di.repository.RepositoryDirectoryInterface;
 import org.pentaho.di.trans.TransHopMeta;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.StepMeta;
@@ -76,7 +79,13 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @RunWith ( MockitoJUnitRunner.class )
 public class TransMetaConverterTest {
@@ -343,7 +352,26 @@ public class TransMetaConverterTest {
     HashMap<String, Transformation> config =
       (HashMap<String, Transformation>) transformation.getConfig( TransMetaConverter.SUB_TRANSFORMATIONS_KEY ).get();
     assertEquals( 1, config.size() );
-    assertNotNull( "file://" + config.get( getClass().getResource( "trans-meta-converter-sub.ktr" ).getPath() ) );
+    assertNotNull( config.get( "file://" + getClass().getResource( "trans-meta-converter-sub.ktr" ).getPath() ) );
+  }
+
+  @Test
+  public void testIncludesSubTransformationsFromRepository() throws Exception {
+    TransMeta parentTransMeta = new TransMeta( getClass().getResource( "trans-meta-converter-parent.ktr" ).getPath() );
+    Repository repository = mock( Repository.class );
+    TransMeta transMeta = new TransMeta();
+    RepositoryDirectoryInterface repositoryDirectory = new RepositoryDirectory();
+    String directory = getClass().getResource( "" ).toString();
+    when( repository.findDirectory( directory.substring( 0, directory.length() - 1 ) ) ).thenReturn( repositoryDirectory );
+    when( repository.loadTransformation( "trans-meta-converter-sub.ktr", repositoryDirectory, null, true, null ) ).thenReturn( transMeta );
+    parentTransMeta.setRepository( repository );
+    Transformation transformation = TransMetaConverter.convert( parentTransMeta );
+
+    @SuppressWarnings( { "unchecked", "ConstantConditions" } )
+    HashMap<String, Transformation> config =
+      (HashMap<String, Transformation>) transformation.getConfig( TransMetaConverter.SUB_TRANSFORMATIONS_KEY ).get();
+    assertEquals( 1, config.size() );
+    assertNotNull( config.get( "file://" + getClass().getResource( "trans-meta-converter-sub.ktr" ).getPath() ) );
   }
 
   @Test
