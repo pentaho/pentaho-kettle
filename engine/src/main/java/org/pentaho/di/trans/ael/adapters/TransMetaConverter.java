@@ -27,6 +27,8 @@ package org.pentaho.di.trans.ael.adapters;
 import com.google.common.base.Throwables;
 
 import java.io.Serializable;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -36,14 +38,14 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.exception.KettleMissingPluginsException;
-import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.osgi.api.NamedClusterOsgi;
 import org.pentaho.di.core.osgi.api.NamedClusterServiceOsgi;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.engine.api.model.Hop;
 import org.pentaho.di.engine.api.model.Operation;
 import org.pentaho.di.engine.api.model.Transformation;
+import org.pentaho.di.repository.Repository;
+import org.pentaho.di.repository.RepositoryDirectoryInterface;
 import org.pentaho.di.resource.ResourceEntry;
 import org.pentaho.di.trans.TransHopMeta;
 import org.pentaho.di.trans.TransMeta;
@@ -90,8 +92,15 @@ public class TransMetaConverter {
         .filter( entry -> ResourceEntry.ResourceType.ACTIONFILE.equals( entry.getResourcetype() ) )
         .collect( toMap( ResourceEntry::getResource, entry -> {
           try {
+            Repository repository = copyTransMeta.getRepository();
+            if ( repository != null ) {
+              Path path = Paths.get( entry.getResource() );
+              RepositoryDirectoryInterface directory = repository.findDirectory( path.getParent().toString() );
+              return convert(
+                repository.loadTransformation( path.getFileName().toString(), directory, null, true, null ) );
+            }
             return convert( new TransMeta( entry.getResource(), copyTransMeta.getParentVariableSpace() ) );
-          } catch ( KettleXMLException | KettleMissingPluginsException e ) {
+          } catch ( KettleException e ) {
             throw new RuntimeException( e );
           }
         } ) );
