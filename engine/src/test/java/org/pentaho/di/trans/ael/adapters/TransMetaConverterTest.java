@@ -28,11 +28,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+
+import org.hamcrest.CoreMatchers;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Spy;
+import org.mockito.internal.matchers.Matches;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.mockito.stubbing.Answer;
@@ -54,8 +57,12 @@ import org.pentaho.di.engine.api.model.Transformation;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectory;
 import org.pentaho.di.repository.RepositoryDirectoryInterface;
+import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransHopMeta;
 import org.pentaho.di.trans.TransMeta;
+import org.pentaho.di.trans.step.BaseStepMeta;
+import org.pentaho.di.trans.step.StepDataInterface;
+import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.di.trans.steps.csvinput.CsvInputMeta;
@@ -64,6 +71,7 @@ import org.pentaho.di.trans.steps.fileinput.text.TextFileInputMeta;
 import org.pentaho.di.trans.steps.named.cluster.NamedClusterEmbedManager;
 import org.pentaho.di.trans.steps.tableinput.TableInputMeta;
 import org.pentaho.di.trans.steps.textfileoutput.TextFileOutputMeta;
+import org.pentaho.di.workarounds.ResolvableResource;
 import org.pentaho.metastore.api.IMetaStore;
 import org.pentaho.metastore.api.exceptions.MetaStoreException;
 import org.w3c.dom.Document;
@@ -474,6 +482,28 @@ public class TransMetaConverterTest {
     }
   }
 
+  @Test
+  public void testResolveStepMetaResources() throws KettleException, MetaStoreException {
+    Variables variables = new Variables();
+    TransMeta transMeta = spy( new TransMeta() );
+    transMeta.setParentVariableSpace( variables );
+
+    doReturn( transMeta ).when( transMeta ).realClone( false );
+
+    TestMetaResolvableResource testMetaResolvableResource = spy(new TestMetaResolvableResource());
+    TestMetaResolvableResource testMetaResolvableResourceTwo = spy(new TestMetaResolvableResource());
+
+    StepMeta testMeta = new StepMeta( "TestMeta", testMetaResolvableResource );
+    StepMeta testMetaTwo = new StepMeta( "TestMeta2", testMetaResolvableResourceTwo );
+
+    transMeta.addStep( testMeta );
+    transMeta.addStep( testMetaTwo );
+    transMeta.addTransHop( new TransHopMeta( testMeta, testMetaTwo ) );
+    TransMetaConverter.convert( transMeta );
+
+    verify( testMetaResolvableResource ).resolve();
+    verify( testMetaResolvableResourceTwo ).resolve();
+  }
 
   private TransMeta getTransMetaFromTrans( Transformation trans ) {
     String transMetaXml = (String) trans.getConfig().get( TransMetaConverter.TRANS_META_CONF_KEY );
@@ -484,6 +514,27 @@ public class TransMetaConverterTest {
       return new TransMeta( stepNode, null );
     } catch ( KettleXMLException | KettleMissingPluginsException e ) {
       throw new RuntimeException( e );
+    }
+  }
+
+  private static class TestMetaResolvableResource extends BaseStepMeta
+    implements StepMetaInterface, ResolvableResource {
+
+    @Override public void resolve() {
+    }
+
+    @Override public void setDefault() {
+    }
+
+    @Override
+    public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr,
+                                  TransMeta transMeta,
+                                  Trans trans ) {
+      return null;
+    }
+
+    @Override public StepDataInterface getStepData() {
+      return null;
     }
   }
 }

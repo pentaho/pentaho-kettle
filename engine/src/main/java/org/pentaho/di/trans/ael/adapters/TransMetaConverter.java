@@ -50,10 +50,12 @@ import org.pentaho.di.resource.ResourceEntry;
 import org.pentaho.di.trans.TransHopMeta;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.StepMeta;
+import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.di.trans.steps.csvinput.CsvInputMeta;
 import org.pentaho.di.trans.steps.fileinput.text.TextFileInputMeta;
 import org.pentaho.di.trans.steps.tableinput.TableInputMeta;
 import org.pentaho.di.trans.steps.textfileoutput.TextFileOutputMeta;
+import org.pentaho.di.workarounds.ResolvableResource;
 import org.pentaho.metastore.api.IMetaStore;
 import org.pentaho.metastore.api.exceptions.MetaStoreException;
 
@@ -80,6 +82,7 @@ public class TransMetaConverter {
       disableLazyConversion( copyTransMeta );
 
       searchAndReplaceHadoopClusterWithFileSystemURL( copyTransMeta );
+      resolveStepMetaResources( copyTransMeta );
 
       copyTransMeta.getSteps().forEach( createOperation( transformation ) );
       findHops( copyTransMeta, hop -> true ).forEach( createHop( transformation ) );
@@ -255,6 +258,16 @@ public class TransMetaConverter {
         if ( transformedURL != null ) {
           textFileOutputMeta.setFileName( transformedURL );
         }
+      }
+    }
+  }
+
+  private static void resolveStepMetaResources( TransMeta transMeta ) {
+    for ( StepMeta stepMeta : transMeta.getSteps() ) {
+      StepMetaInterface smi = stepMeta.getStepMetaInterface();
+      if ( smi instanceof ResolvableResource ) {
+        ResolvableResource resolvableMeta = (ResolvableResource) smi;
+        resolvableMeta.resolve();
       }
     }
   }
