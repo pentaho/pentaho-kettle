@@ -9,7 +9,7 @@
   </parent>
   <modelVersion>4.0.0</modelVersion>
 
-  <artifactId>pdi-analyticquery-step-core</artifactId>
+  <artifactId>pdi-analyticquery-step-impl</artifactId>
   <name>PDI Analytic Query Step Core</name>
 
   <properties>
@@ -62,16 +62,6 @@
       <artifactId>kettle-engine</artifactId>
       <version>${kettle.version}</version>
       <classifier>tests</classifier>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.powermock</groupId>
-      <artifactId>powermock-module-junit4</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.powermock</groupId>
-      <artifactId>powermock-api-mockito</artifactId>
       <scope>test</scope>
     </dependency>
   </dependencies>

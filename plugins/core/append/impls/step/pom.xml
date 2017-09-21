@@ -9,12 +9,11 @@
   </parent>
   <modelVersion>4.0.0</modelVersion>
 
-  <artifactId>pdi-append-step-core</artifactId>
+  <artifactId>pdi-append-step-impl</artifactId>
   <name>PDI Append Step Core</name>
 
   <properties>
     <kettle.version>8.0-SNAPSHOT</kettle.version>
-    <mockito-core.version>1.10.19</mockito-core.version>
   </properties>
 
   <dependencies>
@@ -52,26 +51,10 @@
 
     <!-- Test dependencies -->
     <dependency>
-      <groupId>org.mockito</groupId>
-      <artifactId>mockito-core</artifactId>
-      <version>${mockito-core.version}</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
       <groupId>pentaho-kettle</groupId>
       <artifactId>kettle-engine</artifactId>
       <version>${kettle.version}</version>
       <classifier>tests</classifier>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.powermock</groupId>
-      <artifactId>powermock-module-junit4</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.powermock</groupId>
-      <artifactId>powermock-api-mockito</artifactId>
       <scope>test</scope>
     </dependency>
   </dependencies>

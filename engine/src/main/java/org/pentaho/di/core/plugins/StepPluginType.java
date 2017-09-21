@@ -26,7 +26,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
 import java.lang.annotation.Annotation;
-import java.net.URL;
 import java.util.List;
 import java.util.Map;
 
@@ -83,11 +82,6 @@ import org.w3c.dom.Node;
 public class StepPluginType extends BasePluginType implements PluginTypeInterface {
 
   private static StepPluginType stepPluginType;
-
-  private static final String FILE_SEPARATOR = File.separator;
-  private static final String UP_FOLDER = "..";
-  private static final String PLUGINS_FOLDER_NAME = "plugins";
-  private static final String MAVEN_PATH_REPOSITORY_ANCHOR = "repository/";
 
   protected StepPluginType() {
     super( Step.class, "STEP", "Step" );
