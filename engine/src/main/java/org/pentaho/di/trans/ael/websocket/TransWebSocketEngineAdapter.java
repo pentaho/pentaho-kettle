@@ -142,6 +142,7 @@ public class TransWebSocketEngineAdapter extends Trans {
       getDaemonEndpoint().sendMessage( new StopMessage( getErrors() == 0 ? "User Request" : "Error reported" ) );
       if ( getErrors() == 0 ) {
         waitUntilFinished();
+        finishProcess( true );
       }
     } catch ( KettleException e ) {
       getLogChannel().logDebug( e.getMessage() );
