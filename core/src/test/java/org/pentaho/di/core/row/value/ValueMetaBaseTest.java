@@ -628,6 +628,16 @@ public class ValueMetaBaseTest {
   }
 
   @Test
+  public void testCompareBinary() throws KettleValueException {
+    ValueMetaBase dateMeta = new ValueMetaBase( "int", ValueMetaInterface.TYPE_BINARY );
+    byte[] value1 = new byte[] { 0, 1, 0, 0, 0, 1 };
+    byte[] value2 = new byte[] { 0, 1, 0, 0, 0, 0 };
+    assertEquals( 1, dateMeta.compare( value1, value2 ) );
+    assertEquals( -1, dateMeta.compare( value2, value1 ) );
+    assertEquals( 0, dateMeta.compare( value1, value1 ) );
+  }
+
+  @Test
   public void testDateParsing8601() throws Exception {
     ValueMetaBase dateMeta = new ValueMetaBase( "date", ValueMetaInterface.TYPE_DATE );
     dateMeta.setDateFormatLenient( false );
