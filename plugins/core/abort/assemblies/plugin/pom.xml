@@ -16,7 +16,7 @@
   <dependencies>
     <dependency>
       <groupId>org.pentaho.di.plugins</groupId>
-      <artifactId>pdi-abort-step-core</artifactId>
+      <artifactId>pdi-abort-step-impl</artifactId>
       <version>${project.version}</version>
     </dependency>
   </dependencies>

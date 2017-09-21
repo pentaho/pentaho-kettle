@@ -9,7 +9,7 @@
   </parent>
   <modelVersion>4.0.0</modelVersion>
 
-  <artifactId>pdi-addsequence-step-core</artifactId>
+  <artifactId>pdi-addsequence-step-impl</artifactId>
   <name>PDI Add Sequence Step Core</name>
 
   <properties>

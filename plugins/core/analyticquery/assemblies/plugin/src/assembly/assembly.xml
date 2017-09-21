@@ -26,7 +26,7 @@
     <dependencySet>
       <outputDirectory>.</outputDirectory>
       <includes>
-        <include>org.pentaho.di.plugins:pdi-analyticquery-step-core:jar</include>
+        <include>org.pentaho.di.plugins:pdi-analyticquery-step-impl:jar</include>
       </includes>
       <useProjectArtifact>false</useProjectArtifact>
     </dependencySet>

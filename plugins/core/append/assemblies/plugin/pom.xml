@@ -16,7 +16,7 @@
   <dependencies>
     <dependency>
       <groupId>org.pentaho.di.plugins</groupId>
-      <artifactId>pdi-append-step-core</artifactId>
+      <artifactId>pdi-append-step-impl</artifactId>
       <version>${project.version}</version>
     </dependency>
   </dependencies>

@@ -16,7 +16,7 @@
   <dependencies>
     <dependency>
       <groupId>org.pentaho.di.plugins</groupId>
-      <artifactId>pdi-analyticquery-step-core</artifactId>
+      <artifactId>pdi-analyticquery-step-impl</artifactId>
       <version>${project.version}</version>
     </dependency>
   </dependencies>
