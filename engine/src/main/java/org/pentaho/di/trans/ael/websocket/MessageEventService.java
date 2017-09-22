@@ -24,6 +24,7 @@
 package org.pentaho.di.trans.ael.websocket;
 
 import org.pentaho.di.engine.api.events.PDIEvent;
+import org.pentaho.di.engine.api.model.ModelType;
 import org.pentaho.di.engine.api.remote.Message;
 import org.pentaho.di.engine.api.remote.RemoteSource;
 import org.pentaho.di.engine.api.remote.StopMessage;
@@ -176,15 +177,27 @@ public class MessageEventService {
           //others messages from the Daemon to Client are PDIEvent <RemoteSource, ?>
           RemoteSource keyRemoteSource = ( (RemoteSource) ( (PDIEvent) o1 ).getSource() );
           RemoteSource remoteSource = ( (RemoteSource) ( (PDIEvent) o2 ).getSource() );
-          if ( keyRemoteSource.getModelType() == remoteSource.getModelType()
-            && ( ( Objects.isNull( keyRemoteSource.getId() ) && Objects.isNull( remoteSource.getId() ) )
-            || ( Objects.nonNull( keyRemoteSource.getId() ) && keyRemoteSource.getId()
-            .equals( remoteSource.getId() ) ) ) ) {
+
+          if ( sameType( keyRemoteSource, remoteSource )
+               && ( sameId( keyRemoteSource, remoteSource ) || isTrans( keyRemoteSource ) ) ) {
             return 0;
           }
         }
       }
       return -1;
+    }
+
+    private boolean isTrans( RemoteSource source1 ) {
+      return source1.getModelType() == ModelType.TRANSFORMATION;
+    }
+
+    private boolean sameId( RemoteSource source1, RemoteSource source2 ) {
+      return ( Objects.isNull( source1.getId() ) && Objects.isNull( source2.getId() ) )
+        || ( Objects.nonNull( source1.getId() ) && source1.getId().equals( source2.getId() ) );
+    }
+
+    private boolean sameType( RemoteSource source1, RemoteSource source2 ) {
+      return source1.getModelType() == source2.getModelType();
     }
   }
 }

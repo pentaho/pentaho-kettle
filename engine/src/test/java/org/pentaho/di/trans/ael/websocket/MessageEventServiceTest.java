@@ -207,6 +207,16 @@ public class MessageEventServiceTest {
     verify( messageEventHandler2 ).execute( msg );
   }
 
+  @Test
+  public void testTransformationFireEvent() throws Exception {
+    addHandlers( transformationMessageEvent, messageEventHandler, messageEventHandler2 );
+
+    LogEvent logEvent = new LogEvent<>( new RemoteSource( ModelType.TRANSFORMATION, "Operation_ID" ), logEntry );
+    messageEventService.fireEvent( logEvent );
+    verify( messageEventHandler ).execute( logEvent );
+    verify( messageEventHandler2 ).execute( logEvent );
+  }
+
   public void addHandlers( Message messageEvent, MessageEventHandler handler,
                            MessageEventHandler handler2 ) throws KettleException {
     messageEventService.addHandler( messageEvent, handler );
