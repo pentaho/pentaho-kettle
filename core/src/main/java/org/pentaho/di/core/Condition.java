@@ -445,10 +445,19 @@ public class Condition implements Cloneable, XMLInterface {
             retval = ( fieldMeta.compare( field, fieldMeta2, field2 ) != 0 );
             break;
           case FUNC_SMALLER:
-            retval = ( fieldMeta.compare( field, fieldMeta2, field2 ) < 0 );
+            if ( fieldMeta.isNull( field ) ) {
+              // BACKLOG-18831
+              retval = false;
+            } else {
+              retval = ( fieldMeta.compare( field, fieldMeta2, field2 ) < 0 );
+            }
             break;
           case FUNC_SMALLER_EQUAL:
-            retval = ( fieldMeta.compare( field, fieldMeta2, field2 ) <= 0 );
+            if ( fieldMeta.isNull( field ) ) {
+              retval = false;
+            } else {
+              retval = ( fieldMeta.compare( field, fieldMeta2, field2 ) <= 0 );
+            }
             break;
           case FUNC_LARGER:
             retval = ( fieldMeta.compare( field, fieldMeta2, field2 ) > 0 );
