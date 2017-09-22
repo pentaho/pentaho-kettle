@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.TimeZone;
 
+import com.google.common.primitives.Ints;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
@@ -154,6 +155,16 @@ public class SalesforceInsert extends SalesforceStep {
               value = utc.getTime();
             } else if ( valueMeta.isStorageBinaryString() ) {
               value = valueMeta.convertToNormalStorageType( value );
+            }
+
+            if ( ValueMetaInterface.TYPE_INTEGER == valueMeta.getType() ) {
+              // Salesforce integer values can be only http://www.w3.org/2001/XMLSchema:int
+              // see org.pentaho.di.ui.trans.steps.salesforceinput.SalesforceInputDialog#addFieldToTable
+              // So we need convert Pentaho integer (real java Long value) to real int.
+              // It will be sent correct as http://www.w3.org/2001/XMLSchema:int
+
+              // use checked cast for prevent losing data
+              value = Ints.checkedCast( (Long) value );
             }
 
             insertfields.add( SalesforceConnection.createMessageElement(
