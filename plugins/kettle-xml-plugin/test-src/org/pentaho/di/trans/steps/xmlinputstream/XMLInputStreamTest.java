@@ -29,9 +29,11 @@ import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.Writer;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -300,6 +302,62 @@ public class XMLInputStreamTest {
         expectedRowNum )[typeDescriptionPos] );
     assertEquals( INCORRECT_XML_PATH_MESSAGE, "/ProductGroup", rl.getWritten().get( expectedRowNum )[pathPos] );
     assertEquals( INCORRECT_XML_DATA_NAME_MESSAGE, "ProductGroup", rl.getWritten().get( expectedRowNum )[dataNamePos] );
+  }
+
+  @Test
+  public void testFileNameEnteredManuallyWithIncomingHops() throws Exception {
+    testCorrectFileSelected( getFile( "default.xml" ) );
+  }
+
+  @Test
+  public void testFileNameSelectedFromIncomingHops() throws Exception {
+    testCorrectFileSelected( "filename" );
+  }
+
+  @Test( expected = KettleException.class )
+  public void testNotValidFilePathAndFileField() throws Exception {
+    testCorrectFileSelected( "notPathNorValidFieldName" );
+  }
+
+  @Test( expected = KettleException.class )
+  public void testEmptyFileField() throws Exception {
+    testCorrectFileSelected( StringUtils.EMPTY );
+  }
+
+  private void testCorrectFileSelected( String filenameParam ) throws KettleException {
+    xmlInputStreamMeta.sourceFromInput = false;
+    xmlInputStreamMeta.setFilename( filenameParam );
+    xmlInputStreamData.outputRowMeta = new RowMeta();
+
+    RowMeta rm = new RowMeta();
+    String pathValue = getFile( "default.xml" );
+    ValueMetaString ms = new ValueMetaString( "filename" );
+    RowSet rs = new SingleRowRowSet();
+    rs.putRow( rm, new Object[] { pathValue } );
+    rs.setDone();
+
+    when( stepMockHelper.transMeta.findNrPrevSteps( stepMockHelper.stepMeta ) ).thenReturn( 1 );
+
+    XMLInputStream xmlInputStream =
+            new XMLInputStream( stepMockHelper.stepMeta, stepMockHelper.stepDataInterface, 0, stepMockHelper.transMeta,
+                    stepMockHelper.trans );
+    xmlInputStream.setInputRowMeta( rm );
+    xmlInputStream.getInputRowMeta().addValueMeta( ms );
+    xmlInputStream.getInputRowSets().add( rs );
+    xmlInputStream.setOutputRowSets( new ArrayList<>() );
+
+    xmlInputStream.init( xmlInputStreamMeta, xmlInputStreamData );
+    xmlInputStream.addRowListener( rl );
+    boolean haveRowsToRead;
+    do {
+      haveRowsToRead = !xmlInputStream.processRow( xmlInputStreamMeta, xmlInputStreamData );
+    } while ( !haveRowsToRead );
+  }
+
+  private String getFile( String filename ) {
+    String inPrefix = '/' + this.getClass().getPackage().getName().replace( '.', '/' ) + "/files/";
+    URL res = this.getClass().getResource( inPrefix + filename );
+    return res.getFile();
   }
 
   private String createTestFile( String xmlContent ) throws IOException {

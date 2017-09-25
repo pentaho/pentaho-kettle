@@ -89,7 +89,7 @@ public class XMLInputStream extends BaseStep implements StepInterface {
       first = false;
 
       if ( data.filenames == null ) {
-        getFilenamesFromPreviousSteps();
+        getFilenames();
       }
       openNextFile();
       resetElementCounters();
@@ -213,7 +213,18 @@ public class XMLInputStream extends BaseStep implements StepInterface {
     }
   }
 
-  private void getFilenamesFromPreviousSteps() throws KettleException {
+  /**
+   * If there are incoming hops:
+   *  Retrieves filenames from all rows that pass through this step
+   *  using field name selected from incoming hops. If no input field is
+   *  chosen and there is some manually typed text it will try to open
+   *  a file using this text (for compatibility reasons)
+   * If there is no incoming hops it will simply try to open file with
+   * path provided in step dialog
+   *
+   * @throws KettleException
+   */
+  private void getFilenames() throws KettleException {
     List<String> filenames = new ArrayList<String>();
     int index = -1;
 
@@ -221,25 +232,25 @@ public class XMLInputStream extends BaseStep implements StepInterface {
 
     // Get the filename field index...
     //
-    String filenameField = environmentSubstitute( meta.getFilename() );
-    index = getInputRowMeta().indexOfValue( filenameField );
+    String filenameValue = environmentSubstitute( meta.getFilename() );
+    index = getInputRowMeta().indexOfValue( filenameValue );
     if ( index < 0 ) {
-      throw new KettleException( BaseMessages.getString(
-        PKG, "XMLInputStream.FilenameFieldNotFound", filenameField ) );
+      // try using this value as a path if not found in incoming hops
+      data.filenames = new String[] { filenameValue };
+    } else {
+      while ( row != null ) {
+
+        String filename = getInputRowMeta().getString( row, index );
+        filenames.add( filename ); // add it to the list...
+
+        row = getRow(); // Grab another row...
+      }
+
+      data.filenames = filenames.toArray( new String[filenames.size()] );
+
+      logDetailed( BaseMessages.getString( PKG, "XMLInputStream.Log.ReadingFromNrFiles", Integer
+              .toString( data.filenames.length ) ) );
     }
-
-    while ( row != null ) {
-
-      String filename = getInputRowMeta().getString( row, index );
-      filenames.add( filename ); // add it to the list...
-
-      row = getRow(); // Grab another row...
-    }
-
-    data.filenames = filenames.toArray( new String[filenames.size()] );
-
-    logDetailed( BaseMessages.getString( PKG, "XMLInputStream.Log.ReadingFromNrFiles", Integer
-      .toString( data.filenames.length ) ) );
   }
 
   // sends the normal row and attributes
