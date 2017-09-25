@@ -35,6 +35,7 @@
     <require-css.version>0.1.8</require-css.version>
     <angular-i18n.version>1.5.6</angular-i18n.version>
     <swt.version>4.6</swt.version>
+    <dojo.version>1.9.2</dojo.version>
     <requirejs.version>2.2.0</requirejs.version>
     <dependency.javax.servlet-api.version>3.0.1</dependency.javax.servlet-api.version>
     <dependency.jackson.version>1.9.2</dependency.jackson.version>
@@ -216,6 +217,12 @@
         <groupId>org.webjars.bower</groupId>
         <artifactId>require-css</artifactId>
         <version>${require-css.version}</version>
+        <scope>provided</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.webjars.bower</groupId>
+        <artifactId>dojo</artifactId>
+        <version>${dojo.version}</version>
         <scope>provided</scope>
       </dependency>
       <dependency>

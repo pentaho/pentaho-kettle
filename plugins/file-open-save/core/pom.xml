@@ -98,12 +98,15 @@
       <artifactId>require-css</artifactId>
     </dependency>
     <dependency>
+      <groupId>org.webjars.bower</groupId>
+      <artifactId>dojo</artifactId>
+    </dependency>
+    <dependency>
       <groupId>com.googlecode.json-simple</groupId>
       <artifactId>json-simple</artifactId>
     </dependency>
   </dependencies>
   <build>
-    <sourceDirectory>${src.dir}</sourceDirectory>
     <resources>
       <resource>
         <filtering>false</filtering>

@@ -14,6 +14,8 @@
     <bundle>pentaho-webjars:mvn:org.webjars.bower/angular-i18n/${angular-i18n.version}</bundle>
     <bundle>pentaho-webjars:mvn:org.webjars.bower/require-css/${require-css.version}</bundle>
     <bundle>pentaho-webjars:mvn:org.webjars.bower/requirejs-text/${requirejs-text.version}</bundle>
+    <bundle>pentaho-webjars:mvn:org.webjars.bower/dojo/${dojo.version}</bundle>
+
     <!-- END -->
   </feature>
 
