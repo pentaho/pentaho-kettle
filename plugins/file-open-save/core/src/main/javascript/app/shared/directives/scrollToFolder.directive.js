@@ -26,23 +26,40 @@ define([
   function scrollToFolder($timeout) {
     return {
       restrict: "A",
-      scope: {model: "<ngModel"},
+      scope: {model: "<ngModel", delete: "=didDelete"},
       link: function(scope, element, attrs) {
-        var wrapperClass = attrs.scrollToFolder;
         var watch = scope.$watch("model", function(value) {
           if (value === "" || value === "Recents") {
             return;
           }
+
           $timeout(function() {
-            var scrollToElem = document.getElementById(value);
-            var aScrollToElem = angular.element(scrollToElem);
-            var topPos = aScrollToElem[0].offsetTop;
-            if (wrapperClass === "open" && topPos > 444 || wrapperClass === "save" && topPos > 368) {
-              element[0].scrollTop = topPos - (wrapperClass === "open" ? 292 : 254);
-            }
+            scrollToSelectedFolder(value);
             watch();
           });
         });
+
+        scope.$watch("delete", function(newVal) {
+          if (newVal) {
+            $timeout(function() {
+              scrollToSelectedFolder(scope.model, newVal);
+              scope.delete = false;
+            });
+          }
+        });
+
+        function scrollToSelectedFolder(value, didDeleteFolder) {
+          var wrapperClass = attrs.scrollToFolder;
+          var scrollToElem = document.getElementById(value);
+          var aScrollToElem = angular.element(scrollToElem);
+          var topPos = aScrollToElem[0].offsetTop;
+          var needsScroll = wrapperClass === "open" && topPos > 444 || wrapperClass === "save" && topPos > 368;
+          if (needsScroll) {
+            element[0].scrollTop = topPos - (wrapperClass === "open" ? 292 : 254);
+          } else if (!needsScroll && didDeleteFolder) {
+            element[0].scrollTop = 0;
+          }
+        }
       }
     };
   }

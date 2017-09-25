@@ -1,7 +1,7 @@
 <error ng-show="vm.showError"
        error-type="vm.errorType"
        error-file="vm.file"
-       error-folder="vm.file"
+       error-folder="vm.file === null ? vm.folder : vm.file"
        on-error-confirm="vm.confirmError()"
        on-error-cancel="vm.cancelError()"></error>
 <loading ng-show="vm.loading"></loading>
@@ -49,14 +49,14 @@
                     wrapper-class="vm.wrapperClass"></breadcrumb>
       </div>
       <div class="addDelete">
-        <button class="addFolder" ng-click="vm.addFolder()" title="{{::vm.addFolderText}}" ng-disabled="vm.addDisabled()"></button>
-        <button class="deleteFolder" ng-click="vm.remove()" title="{{::vm.removeText}}" ng-disabled="vm.deleteDisabled()"></button>
+        <button class="addFolder" ng-click="vm.addFolder()" title="{{::vm.addFolderText}}" ng-disabled="vm.addDeleteDisabled()"></button>
+        <button class="deleteFolder" ng-click="vm.remove()" title="{{::vm.removeText}}" ng-disabled="vm.addDeleteDisabled()"></button>
       </div>
     </div>
   </div>
 
   <div id="middle" class="middle" resize-app="{{vm.wrapperClass}}">
-    <div id="directoryTreeArea" class="directoryTreeArea noselect" ng-model="vm.folder.path" scroll-to-folder="{{vm.wrapperClass}}">
+    <div id="directoryTreeArea" class="directoryTreeArea noselect" ng-model="vm.folder.path" scroll-to-folder="{{vm.wrapperClass}}"  did-delete="vm.didDeleteFolder">
       <folder auto-expand="vm.autoExpand"
               folders="vm.folders"
               on-select="vm.selectFolder(selectedFolder);"
@@ -82,11 +82,12 @@
       <files search="vm.searchString"
              ng-show="!vm.showMessage && !vm.showRecents"
              folder="vm.folder"
+             selected-file="vm.file"
              wrapper="vm.wrapperClass"
              on-click="vm.selectFile(file)"
              on-select="vm.highlightFile(selectedFile)"
              on-error="vm.renameError(errorType, file)"
-             on-rename="vm.updateDirectories(oldPath, newPath, newName)"
+             on-rename="vm.updateDirectories(oldPath, newPath, newName, id)"
              on-edit-start="vm.onEditStart()"
              on-edit-complete="vm.onEditComplete()"></files>
     </div>

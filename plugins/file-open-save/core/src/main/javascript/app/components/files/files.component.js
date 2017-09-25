@@ -47,6 +47,7 @@ define([
       onRename: "&",
       onEditStart: "&",
       onEditComplete: "&",
+      selectedFile: "<",
       wrapper: "<"
     },
     template: filesTemplate,
@@ -211,8 +212,9 @@ define([
         var index = file.path.lastIndexOf("/");
         var oldPath = file.path;
         var newPath = file.path.substr(0, index) + "/" + newName;
-        vm.onRename({oldPath: oldPath, newPath: newPath, newName: newName});
-        file.objectId = response.data.objectId;
+        var id = response.data.objectId;
+        vm.onRename({oldPath: oldPath, newPath: newPath, newName: newName, id: id});
+        file.objectId = id;
         file.parent = response.data.parent;
         file.path = response.data.path;
         file.name = newName;
