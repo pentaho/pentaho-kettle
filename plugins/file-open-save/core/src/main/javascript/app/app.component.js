@@ -81,8 +81,7 @@ define([
     vm.focusSearchBox = focusSearchBox;
     vm.setTooltip = setTooltip;
     vm.recentsHasScrollBar = recentsHasScrollBar;
-    vm.addDisabled = addDisabled;
-    vm.deleteDisabled = deleteDisabled;
+    vm.addDeleteDisabled = addDeleteDisabled;
     vm.onKeyUp = onKeyUp;
     vm.getPlaceholder = getPlaceholder;
     vm.selectedFolder = "";
@@ -116,6 +115,7 @@ define([
       vm.file = null;
       vm.includeRoot = false;
       vm.autoExpand = false;
+      vm.didDeleteFolder = false;
       _resetFileAreaMessage();
       dt.getDirectoryTree($location.search().filter).then(_populateTree);
       dt.getRecentFiles().then(_populateRecentFiles);
@@ -210,18 +210,16 @@ define([
     function selectFolder(folder) {
       vm.searchString = "";
       _resetFileAreaMessage();
-      if (folder !== vm.folder) {
-        vm.file = null;
-        if (folder) {
-          vm.showRecents = false;
-          vm.folder = folder;
-          vm.selectedFolder = ((vm.folder.name === "home" || vm.folder.name === "public") && vm.folder.parent === "/") ?
-            _capsFirstLetter(folder.name) : folder.name;
-        } else {
-          vm.showRecents = true;
-          vm.folder = {name: "Recents", path: "Recents"};
-          vm.selectedFolder = "Recents";
-        }
+      vm.file = null;
+      if (folder) {
+        vm.showRecents = false;
+        vm.folder = folder;
+        vm.selectedFolder = ((vm.folder.name === "home" || vm.folder.name === "public") && vm.folder.parent === "/") ?
+          _capsFirstLetter(folder.name) : folder.name;
+      } else {
+        vm.showRecents = true;
+        vm.folder = {name: "Recents", path: "Recents"};
+        vm.selectedFolder = "Recents";
       }
     }
 
@@ -460,6 +458,7 @@ define([
     /**
      * Shows an error if one occurs during rename
      * @param {number} errorType - the number corresponding to the appropriate error
+     * @param {object} file - file object
      */
     function renameError(errorType, file) {
       if (file) {
@@ -499,25 +498,11 @@ define([
     }
 
     /**
-     * Determines if add button is to be disabled
-     * @return {boolean} - True if Recents is selected, false otherwise
+     * Determines if add or delete button is to be disabled
+     * @return {boolean} - True if no folder is selected or if Recents is selected, false otherwise
      */
-    function addDisabled() {
-      if (vm.folder && vm.folder.path === "Recents") {
-        return true;
-      }
-      return false;
-    }
-
-    /**
-     * Determines if delete button is to be disabled
-     * @return {boolean} - True if a file is not selected or if Recents is selected, false otherwise
-     */
-    function deleteDisabled() {
-      if (vm.file === null || (vm.folder && vm.folder.path === "Recents")) {
-        return true;
-      }
-      return false;
+    function addDeleteDisabled() {
+      return (vm.folder === null || vm.folder.path === "Recents");
     }
 
     /**
@@ -551,12 +536,10 @@ define([
      * Called if user selects to delete the selected folder or file.
      */
     function remove() {
-      if (vm.file !== null) {
-        if (vm.file.type === "folder") {
-          _triggerError(6);
-        } else {
-          _triggerError(5);
-        }
+      if (vm.file === null || vm.file.type === "folder") {
+        _triggerError(6);
+      } else {
+        _triggerError(5);
       }
     }
 
@@ -564,9 +547,44 @@ define([
      * Calls the service for removing the file
      */
     function commitRemove() {
-      if (vm.file !== null) {
+      if (vm.file === null) {// delete folder from directory tree panel
+        dt.remove(vm.folder.objectId ? vm.folder.objectId.id : "", vm.folder.name, vm.folder.path, vm.folder.type)
+          .then(function() {
+            var parent = vm.folder;
+            for (var i = 0; i < vm.folders.length; i++) {
+              if (vm.folders[i].path === vm.folder.parent) {
+                parent = vm.folders[i];
+                for (var j = 0; j < vm.folders[i].children.length; j++) {
+                  if (vm.folders[i].children[j].path === vm.folder.path) {
+                    vm.folders[i].children.splice(j, 1);
+                    j--;
+                  }
+                }
+                if (vm.folders[i].children.length === 0) {
+                  vm.folders[i].hasChildren = false;
+                }
+              }
+              if (vm.folders[i].parent === vm.folder.path || vm.folders[i].path === vm.folder.path) {
+                vm.folders.splice(i, 1);
+                i--;
+              }
+            }
+            vm.folder = parent;
+            vm.selectedFolder = vm.folder.name;
+            vm.file = null;
+            vm.searchString = "";
+            vm.showMessage = false;
+            dt.getRecentFiles().then(_populateRecentFiles);
+            vm.didDeleteFolder = true;
+          }, function(response) {
+            if (response.status === 406) {// folder has open file
+              _triggerError(13);
+            }
+            _triggerError(8);
+          });
+      } else {// delete file or folder from files list panel
         dt.remove(vm.file.objectId.id, vm.file.name, vm.file.path, vm.file.type)
-          .then(function(response) {
+          .then(function() {
             var index = vm.folder.children.indexOf(vm.file);
             vm.folder.children.splice(index, 1);
             if (vm.file.type === "folder") {
@@ -637,11 +655,13 @@ define([
      * @param {string} oldPath - String path of old directory path
      * @param {string} newPath - String path of new directory path
      * @param {string} newName - New file name
+     * @param {object} id - objectId
      */
-    function updateDirectories(oldPath, newPath, newName) {
+    function updateDirectories(oldPath, newPath, newName, id) {
       for (var i = 0; i < vm.folders.length; i++) {
         if (vm.folders[i].path === oldPath) {
           vm.folders[i].name = newName;
+          vm.folders[i].objectId = id;
         }
       }
       for (var j = 0; j < vm.folders.length; j++) {
@@ -660,7 +680,7 @@ define([
     function _updateDirectories(folder, oldPath, newPath) {
       if (folder.path.indexOf(oldPath) === 0) {
         folder.path = folder.path.replace(oldPath, newPath);
-        if ( folder.parent != null )  {
+        if (folder.parent !== null) {
           folder.parent = folder.parent.replace(oldPath, newPath);
         }
       }
