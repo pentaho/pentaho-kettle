@@ -46,7 +46,6 @@ import java.util.Dictionary;
  */
 public class SparkRunConfigurationExecutor implements RunConfigurationExecutor {
 
-  public static String ZOOKEEPER_CAPABILITY_ID = "aries-rsa-discovery-zookeeper";
   public static String PENTAHO_SERVER_CAPABILITY_ID = "pentaho-server";
   public static String CONFIG_KEY = "org.apache.aries.rsa.discovery.zookeeper";
   public static String JAAS_CAPABILITY_ID = "pentaho-kerberos-jaas";
@@ -83,12 +82,6 @@ public class SparkRunConfigurationExecutor implements RunConfigurationExecutor {
       if ( jaasCapability != null && !jaasCapability.isInstalled() ) {
         jaasCapability.install();
       }
-    }
-
-    // Check to see if the aries-rsa-discovery-zookeeper feature is installed and install if not
-    ICapability capability = capabilityManager.getCapabilityById( ZOOKEEPER_CAPABILITY_ID );
-    if ( capability != null && !capability.isInstalled() ) {
-      capability.install();
     }
 
     SparkRunConfiguration sparkRunConfiguration = (SparkRunConfiguration) runConfiguration;
