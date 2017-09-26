@@ -107,6 +107,7 @@
     </dependency>
   </dependencies>
   <build>
+    <sourceDirectory>${src.dir}</sourceDirectory>
     <resources>
       <resource>
         <filtering>false</filtering>
