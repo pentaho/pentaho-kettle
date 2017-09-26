@@ -86,12 +86,15 @@ public class DefaultRunConfigurationUI implements RunConfigurationUI {
 
     Button wbPentaho = new Button( wTarget, SWT.RADIO );
     props.setLook( wbPentaho );
-    wbPentaho.setVisible( spoonSupplier.get().getRepository() != null );
-    if ( spoonSupplier.get().getRepository() != null ) {
+    boolean connectedToPentahoServer =
+      spoonSupplier.get().getRepository() != null && spoonSupplier.get().getRepository().getRepositoryMeta().getId()
+        .equals( "PentahoEnterpriseRepository" );
+    wbPentaho.setVisible( connectedToPentahoServer );
+    if ( connectedToPentahoServer ) {
       wbPentaho.setText( BaseMessages.getString( PKG, "DefaultRunConfigurationDialog.Label.Pentaho" ) );
       wbPentaho.setSelection( defaultRunConfiguration.isPentaho() );
       FormData fdbPentaho = new FormData();
-      fdbPentaho.top = new FormAttachment( wbLocal, 5 );
+      fdbPentaho.top = new FormAttachment( wbLocal, 10 );
       fdbPentaho.left = new FormAttachment( 0 );
       wbPentaho.setLayoutData( fdbPentaho );
     }
@@ -101,7 +104,7 @@ public class DefaultRunConfigurationUI implements RunConfigurationUI {
     wbRemote.setText( BaseMessages.getString( PKG, "DefaultRunConfigurationDialog.Label.Remote" ) );
     wbRemote.setSelection( defaultRunConfiguration.isRemote() || defaultRunConfiguration.isClustered() );
     FormData fdbRemote = new FormData();
-    fdbRemote.top = new FormAttachment( wbPentaho, 5 );
+    fdbRemote.top = new FormAttachment( wbPentaho, 10 );
     fdbRemote.left = new FormAttachment( 0 );
     wbRemote.setLayoutData( fdbRemote );
 
@@ -130,7 +133,7 @@ public class DefaultRunConfigurationUI implements RunConfigurationUI {
     wlLocal.setLayoutData( gdlLocal );
 
     FormData fdcLocal = new FormData();
-    fdcLocal.left = new FormAttachment( vSpacer, 30 );
+    fdcLocal.left = new FormAttachment( vSpacer, 10 );
     fdcLocal.top = new FormAttachment( 0 );
     fdcLocal.right = new FormAttachment( 100 );
     fdcLocal.bottom = new FormAttachment( 100 );
@@ -140,7 +143,7 @@ public class DefaultRunConfigurationUI implements RunConfigurationUI {
     props.setLook( wcPentaho );
     wcPentaho.setLayout( new GridLayout() );
 
-    Text wlPentaho = new Text( wcPentaho, SWT.MULTI | SWT.WRAP );
+    Text wlPentaho = new Text( wcPentaho, SWT.MULTI | SWT.WRAP | SWT.LEFT );
     props.setLook( wlPentaho );
     wlPentaho.setText( BaseMessages.getString( PKG, "DefaultRunConfigurationDialog.Text.Pentaho" ) );
     GridData gdlPentaho = new GridData( GridData.FILL_HORIZONTAL );
@@ -148,7 +151,7 @@ public class DefaultRunConfigurationUI implements RunConfigurationUI {
     wlPentaho.setLayoutData( gdlPentaho );
 
     FormData fdcPentaho = new FormData();
-    fdcPentaho.left = new FormAttachment( vSpacer, 30 );
+    fdcPentaho.left = new FormAttachment( vSpacer, 10 );
     fdcPentaho.top = new FormAttachment( 0 );
     fdcPentaho.right = new FormAttachment( 100 );
     fdcPentaho.bottom = new FormAttachment( 100 );
@@ -223,7 +226,7 @@ public class DefaultRunConfigurationUI implements RunConfigurationUI {
     } );
 
     FormData fdcRemote = new FormData();
-    fdcRemote.left = new FormAttachment( vSpacer, 30 );
+    fdcRemote.left = new FormAttachment( vSpacer, 20 );
     fdcRemote.top = new FormAttachment( 0 );
     fdcRemote.right = new FormAttachment( 100 );
     fdcRemote.bottom = new FormAttachment( 100 );
