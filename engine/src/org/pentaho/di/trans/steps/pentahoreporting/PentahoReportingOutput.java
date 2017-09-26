@@ -22,11 +22,13 @@
 
 package org.pentaho.di.trans.steps.pentahoreporting;
 
+import java.awt.GraphicsEnvironment;
 import java.math.BigDecimal;
 import java.net.URL;
 import java.util.Date;
 
 import org.apache.commons.vfs2.FileObject;
+import org.pentaho.di.core.Const;
 import org.pentaho.di.core.ResultFile;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
@@ -77,6 +79,11 @@ public class PentahoReportingOutput extends BaseStep implements StepInterface {
   public PentahoReportingOutput( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr,
     TransMeta transMeta, Trans trans ) {
     super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
+
+    // To prevent CGLGraphicsConfig.getConfig() hang forever on mac
+    if ( Const.isOSX() ) {
+      GraphicsEnvironment.getLocalGraphicsEnvironment();
+    }
   }
 
   @Override
