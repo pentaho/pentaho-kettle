@@ -937,7 +937,7 @@ public class Const {
    * The name of the Kettle encryption seed environment variable for the KettleTwoWayPasswordEncoder class
    */
   public static final String KETTLE_TWO_WAY_PASSWORD_ENCODER_SEED = "KETTLE_TWO_WAY_PASSWORD_ENCODER_SEED";
-  
+
   /**
    * The XML file that contains the list of native Kettle logging plugins
    */
@@ -1130,6 +1130,11 @@ public class Const {
    * A variable to configure jetty option: lowResourcesMaxIdleTime for Carte
    */
   public static final String KETTLE_CARTE_JETTY_RES_MAX_IDLE_TIME = "KETTLE_CARTE_JETTY_RES_MAX_IDLE_TIME";
+
+  /**
+   * A variable to configure s3vfs to use a temporary file on upload data to S3 Amazon."
+   */
+  public static final String S3VFS_USE_TEMPORARY_FILE_ON_UPLOAD_DATA = "s3.vfs.useTempFileOnUploadData";
 
   /**
    * A variable to configure VFS USER_DIR_IS_ROOT option: should be "true" or "false"
