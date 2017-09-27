@@ -132,9 +132,11 @@ public class DefaultRunConfigurationExecutor implements RunConfigurationExecutor
       // Ignore an exception if occurs
     }
 
-    SchedulerRequest.Builder builder = new SchedulerRequest.Builder();
-    builder.repository( repository );
-    SchedulerRequest schedulerRequest = builder.build();
-    schedulerRequest.submit( meta );
+    if ( !meta.hasChanged() ) {
+      SchedulerRequest.Builder builder = new SchedulerRequest.Builder();
+      builder.repository( repository );
+      SchedulerRequest schedulerRequest = builder.build();
+      schedulerRequest.submit( meta );
+    }
   }
 }

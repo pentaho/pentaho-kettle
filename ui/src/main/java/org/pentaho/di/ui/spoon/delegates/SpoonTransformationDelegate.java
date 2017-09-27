@@ -859,9 +859,6 @@ public class SpoonTransformationDelegate extends SpoonDelegate {
 
     if ( execConfigAnswer ) {
 
-      TransGraph activeTransGraph = spoon.getActiveTransGraph();
-      activeTransGraph.transLogDelegate.addTransLog();
-
       ExtensionPointHandler.callExtensionPoint( log, KettleExtensionPoint.SpoonTransMetaExecutionStart.id, transMeta );
       ExtensionPointHandler.callExtensionPoint( log, KettleExtensionPoint.SpoonTransExecutionConfiguration.id,
           executionConfiguration );
@@ -874,6 +871,12 @@ public class SpoonTransformationDelegate extends SpoonDelegate {
         log.logError( e.getMessage(), transMeta.getFilename() );
         return;
       }
+
+      TransGraph activeTransGraph = spoon.getActiveTransGraph();
+      if ( !executionConfiguration.isExecutingLocally() && !executionConfiguration.isExecutingRemotely() ) {
+        activeTransGraph.transLogDelegate.clearLog();
+      }
+      activeTransGraph.transLogDelegate.addTransLog();
 
       // Verify if there is at least one step specified to debug or preview...
       //
