@@ -54,7 +54,13 @@ public class XMLFormatter {
     StringWriter result = new StringWriter();
     try {
       rd = INPUT_FACTORY.createXMLStreamReader( new StringReader( xml ) );
-      wr = OUTPUT_FACTORY.createXMLStreamWriter( result );
+
+      synchronized ( OUTPUT_FACTORY ) {
+        // BACKLOG-18743: This object was not thread safe in some scenarios
+        // causing the `result` variable to have data from other concurrent executions
+        // and making the final output invalid.
+        wr = OUTPUT_FACTORY.createXMLStreamWriter( result );
+      }
 
       StartElementBuffer startElementBuffer = null;
       StringBuilder str = new StringBuilder();
