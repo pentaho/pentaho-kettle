@@ -250,7 +250,7 @@ public class RunConfigurationDialog extends Dialog
     wCancel.addListener( SWT.Selection, lsCancel );
 
     BaseStepDialog.setSize( shell, 450, 300 );
-    shell.setMinimumSize( 450, 300 );
+    shell.setMinimumSize( shell.getSize() );
     wName.setSelection( 0, wName.getText().length() );
 
     // Detect X or ALT-F4 or something that kills this window...
