@@ -27,7 +27,7 @@ define([
     return {
       restrict: "A",
       link: function(scope, element, attrs) {
-        var firstTime = true;
+        var needsTimeout = true;
         var openOrSave = scope.vm.wrapperClass;
         var scrollClass = openOrSave === "open" ? "scrollTableOpen" : "scrollTableSave";
         var table = angular.element(element[0].querySelector("#filesTableBody"));
@@ -37,8 +37,8 @@ define([
 
         scope.$watch(attrs.resizeFiles, function(newValue, oldValue) {
           if (newValue !== oldValue) {
-            if (firstTime) {
-              firstTime = false;
+            if (needsTimeout) {
+              needsTimeout = false;
               $timeout(function() {
                 setScrollTableClass();
                 setWidths();
@@ -55,6 +55,7 @@ define([
          */
         function setScrollTableClass() {
           if (scope.vm.folder.name === "Recents" && scope.vm.folder.path === "Recents") {
+            needsTimeout = true;
             return;
           }
           bodyWrapper.css("height", "calc(100% - 31px)");
