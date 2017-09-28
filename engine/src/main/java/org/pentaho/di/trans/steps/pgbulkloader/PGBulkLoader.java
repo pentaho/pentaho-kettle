@@ -83,8 +83,6 @@ public class PGBulkLoader extends BaseStep implements StepInterface {
   public String getCopyCommand( ) throws KettleException {
     DatabaseMeta dm = meta.getDatabaseMeta();
 
-    String loadAction = environmentSubstitute( meta.getLoadAction() );
-
     StringBuilder contents = new StringBuilder( 500 );
 
     String tableName =
@@ -97,11 +95,6 @@ public class PGBulkLoader extends BaseStep implements StepInterface {
     // contents.append(Const.CR);
 
     // Create a Postgres / Greenplum COPY string for use with a psql client
-    if ( loadAction.equalsIgnoreCase( "truncate" ) ) {
-      contents.append( "TRUNCATE TABLE " );
-      contents.append( tableName + ";" );
-      contents.append( Const.CR );
-    }
     contents.append( "COPY " );
     // Table name
 
