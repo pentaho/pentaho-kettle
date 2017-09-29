@@ -54,6 +54,11 @@ public class KettleURLClassLoader extends URLClassLoader {
   }
 
   @Override
+  protected void addURL( URL url ) {
+    super.addURL( url );
+  }
+
+  @Override
   public String toString() {
     return super.toString() + " : " + name;
   }
@@ -67,7 +72,7 @@ public class KettleURLClassLoader extends URLClassLoader {
   }
 
   protected Class<?> loadClassFromThisLoader( String arg0, boolean arg1 ) throws ClassNotFoundException {
-    Class<?> clz = null;
+    Class<?> clz;
     if ( ( clz = findLoadedClass( arg0 ) ) != null ) {
       if ( arg1 ) {
         resolveClass( clz );
@@ -99,9 +104,7 @@ public class KettleURLClassLoader extends URLClassLoader {
   protected synchronized Class<?> loadClass( String arg0, boolean arg1 ) throws ClassNotFoundException {
     try {
       return loadClassFromThisLoader( arg0, arg1 );
-    } catch ( ClassNotFoundException e ) {
-      // ignore
-    } catch ( NoClassDefFoundError e ) {
+    } catch ( ClassNotFoundException | NoClassDefFoundError e ) {
       // ignore
     }
 
@@ -109,7 +112,7 @@ public class KettleURLClassLoader extends URLClassLoader {
   }
 
   /*
-   * Cglib doe's not creates custom class loader (to access package methotds and classes ) it uses reflection to invoke
+   * Cglib doe's not creates custom class loader (to access package methods and classes ) it uses reflection to invoke
    * "defineClass", but you can call protected method in subclass without problems:
    */
   public Class<?> loadClass( String name, ProtectionDomain protectionDomain ) {
@@ -127,7 +130,7 @@ public class KettleURLClassLoader extends URLClassLoader {
        */
 
       String newName = name.replace( '.', '/' );
-      InputStream is = super.getResourceAsStream( newName );
+      InputStream is = getResourceAsStream( newName );
       byte[] driverBytes = toBytes( is );
 
       loaded = super.defineClass( name, driverBytes, 0, driverBytes.length, protectionDomain );
@@ -173,12 +176,9 @@ public class KettleURLClassLoader extends URLClassLoader {
 
   /**
    * This method is designed to clear out classloader file locks in windows.
-   * 
-   * @param clazzLdr
-   *          class loader to clean up
    */
   public void closeClassLoader() {
-    HashSet<String> closedFiles = new HashSet<String>();
+    HashSet<String> closedFiles = new HashSet<>();
     try {
       Object obj = getFieldObject( URLClassLoader.class, "ucp", this );
       ArrayList<?> loaders = (ArrayList<?>) getFieldObject( obj.getClass(), "loaders", obj );
@@ -199,9 +199,9 @@ public class KettleURLClassLoader extends URLClassLoader {
       Vector<?> nativeLibArr = (Vector<?>) getFieldObject( ClassLoader.class, "nativeLibraries", this );
       for ( Object lib : nativeLibArr ) {
         try {
-          Method fMethod = lib.getClass().getDeclaredMethod( "finalize", new Class<?>[0] );
+          Method fMethod = lib.getClass().getDeclaredMethod( "finalize" );
           fMethod.setAccessible( true );
-          fMethod.invoke( lib, new Object[0] );
+          fMethod.invoke( lib );
         } catch ( Exception e ) {
           // skip
         }
