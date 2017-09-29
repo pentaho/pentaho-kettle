@@ -168,6 +168,18 @@ public class RepositoryBrowserController {
     }
   }
 
+  private void removeRecentsUsingPath( String path ) {
+    Collection<List<LastUsedFile>> lastUsedRepoFiles = PropsUI.getInstance().getLastUsedRepoFiles().values();
+    for ( List<LastUsedFile> lastUsedFiles : lastUsedRepoFiles ) {
+      for ( int i = 0; i < lastUsedFiles.size(); i++ ) {
+        if ( lastUsedFiles.get( i ).getDirectory().startsWith( path ) ) {
+          lastUsedFiles.remove( i );
+          i--;
+        }
+      }
+    }
+  }
+
   public boolean remove( String id, String name, String path, String type ) throws KettleException {
     try {
       switch ( type ) {
@@ -187,6 +199,7 @@ public class RepositoryBrowserController {
           break;
         case "folder":
           isFileOpenedInFolder( path );
+          removeRecentsUsingPath( path );
           RepositoryDirectoryInterface repositoryDirectoryInterface = getRepository().findDirectory( path );
           if ( getRepository() instanceof RepositoryExtended ) {
             ( (RepositoryExtended) getRepository() ).deleteRepositoryDirectory( repositoryDirectoryInterface, true );
