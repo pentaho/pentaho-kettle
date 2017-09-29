@@ -44,6 +44,8 @@ public class LogChannelFileWriter {
   private int pollingInterval;
 
   private AtomicBoolean active;
+  private AtomicBoolean finished;
+
   private KettleException exception;
   protected OutputStream logFileOutputStream;
 
@@ -71,6 +73,7 @@ public class LogChannelFileWriter {
     this.pollingInterval = pollingInterval;
 
     active = new AtomicBoolean( false );
+    finished = new AtomicBoolean( false );
 
     try {
       logFileOutputStream = KettleVFS.getOutputStream( logFile, appending );
@@ -129,6 +132,8 @@ public class LogChannelFileWriter {
             }
           } catch ( Exception e ) {
             exception = new KettleException( "There was an error closing log file file '" + logFile + "'", e );
+          } finally {
+            finished.set( true );
           }
         }
       }
@@ -149,6 +154,9 @@ public class LogChannelFileWriter {
   public void stopLogging() {
     flush();
     active.set( false );
+    while ( !finished.get() ) {
+      Thread.yield();
+    }
   }
 
   public KettleException getException() {
