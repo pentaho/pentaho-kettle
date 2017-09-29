@@ -17,14 +17,14 @@
 define([
   "angular"
 ], function(angular) {
-  edit.$inject = ["$timeout"];
+  edit.$inject = ["$timeout", "$document"];
 
   /**
    * @param {Function} $timeout - Angular wrapper for window.setTimeout.
    * @return {{restrict: string, scope: {onStart: string, onComplete: string, onCancel: string, new: string,
    * value: string, auto: string, editing: string}, template: string, link: link}} - Edit directive
    */
-  function edit($timeout) {
+  function edit($timeout, $document) {
     return {
       restrict: "AE",
       scope: {
@@ -85,7 +85,21 @@ define([
           });
         }
 
+        var mouseDown = false;
+
+        $document.on("mousedown", function(e) {
+          mouseDown = false;
+        });
+
+        angular.element(inputElement).on("mousedown", function(e) {
+          mouseDown = true;
+          e.stopPropagation();
+        });
+
         angular.element(inputElement).on("keyup blur", function(e) {
+          if (e.type == "blur" && mouseDown) {
+            return;
+          }
           if (e.keyCode === 13 || e.keyCode === 27 || e.type === "blur") {
             if (e.keyCode === 27) {
               scope.updated = "";
@@ -123,6 +137,6 @@ define([
 
   return {
     name: "edit",
-    options: ["$timeout", edit]
+    options: ["$timeout", "$document", edit]
   };
 });
