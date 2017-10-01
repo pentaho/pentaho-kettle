@@ -3674,15 +3674,16 @@ public class ValueMetaBase implements ValueMetaInterface {
 
         int length = b1.length < b2.length ? b1.length : b2.length;
 
-        for ( int i = 0; i < length; i++ ) {
-          cmp = b1[i] - b2[i];
-          if ( cmp != 0 ) {
-            cmp = cmp < 0 ? -1 : 1;
-            break;
+        cmp = b1.length - b2.length;
+        if ( cmp == 0 ) {
+          for ( int i = 0; i < length; i++ ) {
+            cmp = b1[ i ] - b2[ i ];
+            if ( cmp != 0 ) {
+              cmp = cmp < 0 ? -1 : 1;
+              break;
+            }
           }
         }
-
-        cmp = b1.length - b2.length;
 
         break;
       default:
