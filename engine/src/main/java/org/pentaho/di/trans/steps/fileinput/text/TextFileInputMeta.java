@@ -1381,7 +1381,7 @@ public class TextFileInputMeta extends BaseFileInputMeta<BaseFileInputAdditional
         } catch ( KettleFileException e ) {
           throw new RuntimeException( e );
         }
-      } 
-    }   
+      }
+    }
   }
 }
