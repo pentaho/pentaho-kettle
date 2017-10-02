@@ -172,7 +172,7 @@ public class RepositoryBrowserController {
     Collection<List<LastUsedFile>> lastUsedRepoFiles = PropsUI.getInstance().getLastUsedRepoFiles().values();
     for ( List<LastUsedFile> lastUsedFiles : lastUsedRepoFiles ) {
       for ( int i = 0; i < lastUsedFiles.size(); i++ ) {
-        if ( lastUsedFiles.get( i ).getDirectory().startsWith( path ) ) {
+        if ( ( lastUsedFiles.get( i ).getDirectory() + "/" ).startsWith( path + "/" ) ) {
           lastUsedFiles.remove( i );
           i--;
         }
