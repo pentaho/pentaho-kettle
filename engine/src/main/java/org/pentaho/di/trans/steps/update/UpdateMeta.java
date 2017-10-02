@@ -22,24 +22,22 @@
 
 package org.pentaho.di.trans.steps.update;
 
-import java.util.List;
-
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.injection.AfterInjection;
-import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.SQLStatement;
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleXMLException;
+import org.pentaho.di.core.injection.AfterInjection;
 import org.pentaho.di.core.injection.Injection;
 import org.pentaho.di.core.injection.InjectionSupported;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.row.value.ValueMetaBoolean;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
@@ -54,9 +52,12 @@ import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
+
 import org.pentaho.di.trans.step.utils.RowMetaUtils;
 import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Node;
+
+import java.util.List;
 
 /*
  * Created on 26-apr-2003
@@ -942,8 +943,8 @@ public class UpdateMeta extends BaseStepMeta implements StepMetaInterface {
     }
     String[][] rtn = Utils.normalizeArrays( nrFields, keyLookup, keyCondition, keyStream2 );
     keyLookup = rtn[ 0 ];
-    keyCondition = rtn[ 0 ];
-    keyStream2 = rtn[ 0 ];
+    keyCondition = rtn[ 1 ];
+    keyStream2 = rtn[ 2 ];
 
     nrFields = updateLookup.length;
     rtn = Utils.normalizeArrays( nrFields, updateStream );
