@@ -34,6 +34,7 @@ import org.owasp.esapi.Encoder;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.database.DatabaseInterface;
 import org.pentaho.di.core.database.DatabaseMeta;
+import org.pentaho.di.core.database.MySQLDatabaseMeta;
 import org.pentaho.di.core.database.NetezzaDatabaseMeta;
 import org.pentaho.di.core.database.Vertica5DatabaseMeta;
 import org.pentaho.di.core.exception.KettleDatabaseException;
@@ -649,4 +650,28 @@ public class ValueMetaBaseTest {
     Assert.assertFalse( vmb.convertBigNumberToBoolean( new BigDecimal( "0" ) ) );
     Assert.assertTrue( vmb.convertBigNumberToBoolean( new BigDecimal( "1.7976E308" ) ) );
   }
+
+
+  //PDI-14721 ESR-5021
+  @Test
+  public void testGetValueFromSQLTypeBinaryMysql() throws Exception {
+
+    final int binaryColumnIndex = 1;
+    ValueMetaBase valueMetaBase = new ValueMetaBase();
+    DatabaseMeta dbMeta = Mockito.spy( new DatabaseMeta() );
+    DatabaseInterface databaseInterface = new MySQLDatabaseMeta();
+    dbMeta.setDatabaseInterface( databaseInterface );
+
+    ResultSet resultSet = Mockito.mock( ResultSet.class );
+    ResultSetMetaData metaData = Mockito.mock( ResultSetMetaData.class );
+
+    Mockito.when( resultSet.getMetaData() ).thenReturn( metaData );
+    Mockito.when( metaData.getColumnType( binaryColumnIndex ) ).thenReturn( Types.LONGVARBINARY );
+
+    ValueMetaInterface binaryValueMeta =
+      valueMetaBase.getValueFromSQLType( dbMeta, TEST_NAME, metaData, binaryColumnIndex, false, false );
+    Assert.assertEquals( ValueMetaInterface.TYPE_BINARY, binaryValueMeta.getType() );
+    Assert.assertTrue( binaryValueMeta.isBinary() );
+  }
+
 }

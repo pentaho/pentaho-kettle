@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,11 +22,6 @@
 
 package org.pentaho.di.core.database;
 
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
-import static org.pentaho.di.core.database.DataSourceProviderInterface.DatasourceType.JNDI;
-import static org.pentaho.di.core.database.DataSourceProviderInterface.DatasourceType.POOLED;
-
 import java.lang.reflect.Field;
 import java.sql.BatchUpdateException;
 import java.sql.Connection;
@@ -37,6 +32,7 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.List;
 
+import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -132,12 +128,12 @@ public class DatabaseUnitTest {
 
   @Test
   public void testCreateKettleDatabaseBatchExceptionNullUpdatesWhenSQLException() {
-    assertNull( Database.createKettleDatabaseBatchException( "", new SQLException() ).getUpdateCounts() );
+    Assert.assertNull( Database.createKettleDatabaseBatchException( "", new SQLException() ).getUpdateCounts() );
   }
 
   @Test
   public void testCreateKettleDatabaseBatchExceptionNotUpdatesWhenBatchUpdateException() {
-    assertNotNull(
+    Assert.assertNotNull(
       Database.createKettleDatabaseBatchException( "", new BatchUpdateException( new int[ 0 ] ) ).getUpdateCounts() );
   }
 
@@ -149,22 +145,22 @@ public class DatabaseUnitTest {
     root.setNextException( next );
     next.setNextException( next2 );
     List<Exception> exceptionList = Database.createKettleDatabaseBatchException( "", root ).getExceptionsList();
-    assertEquals( 2, exceptionList.size() );
-    assertEquals( next, exceptionList.get( 0 ) );
-    assertEquals( next2, exceptionList.get( 1 ) );
+    Assert.assertEquals( 2, exceptionList.size() );
+    Assert.assertEquals( next, exceptionList.get( 0 ) );
+    Assert.assertEquals( next2, exceptionList.get( 1 ) );
   }
 
   @Test( expected = KettleDatabaseBatchException.class )
   public void testInsertRowWithBatchAlwaysThrowsKettleBatchException() throws KettleDatabaseException, SQLException {
-    DatabaseMeta mockDatabaseMeta = mock( DatabaseMeta.class );
-    when( mockDatabaseMeta.supportsBatchUpdates() ).thenReturn( true );
+    DatabaseMeta mockDatabaseMeta = Mockito.mock( DatabaseMeta.class );
+    Mockito.when( mockDatabaseMeta.supportsBatchUpdates() ).thenReturn( true );
 
-    DatabaseMetaData mockDatabaseMetaData = mock( DatabaseMetaData.class );
-    when( mockDatabaseMetaData.supportsBatchUpdates() ).thenReturn( true );
+    DatabaseMetaData mockDatabaseMetaData = Mockito.mock( DatabaseMetaData.class );
+    Mockito.when( mockDatabaseMetaData.supportsBatchUpdates() ).thenReturn( true );
     Connection mockConnection = mockConnection( mockDatabaseMetaData );
 
-    PreparedStatement ps = mock( PreparedStatement.class );
-    when( ps.executeBatch() ).thenThrow( new SQLException() );
+    PreparedStatement ps = Mockito.mock( PreparedStatement.class );
+    Mockito.when( ps.executeBatch() ).thenThrow( new SQLException() );
 
     Database database = new Database( mockLogger(), mockDatabaseMeta );
     database.setCommit( 1 );
@@ -174,15 +170,15 @@ public class DatabaseUnitTest {
 
   @Test( expected = KettleDatabaseException.class )
   public void testInsertRowWithoutBatchDoesntThrowKettleBatchException() throws KettleDatabaseException, SQLException {
-    DatabaseMeta mockDatabaseMeta = mock( DatabaseMeta.class );
-    when( mockDatabaseMeta.supportsBatchUpdates() ).thenReturn( true );
+    DatabaseMeta mockDatabaseMeta = Mockito.mock( DatabaseMeta.class );
+    Mockito.when( mockDatabaseMeta.supportsBatchUpdates() ).thenReturn( true );
 
-    DatabaseMetaData mockDatabaseMetaData = mock( DatabaseMetaData.class );
-    when( mockDatabaseMetaData.supportsBatchUpdates() ).thenReturn( true );
+    DatabaseMetaData mockDatabaseMetaData = Mockito.mock( DatabaseMetaData.class );
+    Mockito.when( mockDatabaseMetaData.supportsBatchUpdates() ).thenReturn( true );
     Connection mockConnection = mockConnection( mockDatabaseMetaData );
 
-    PreparedStatement ps = mock( PreparedStatement.class );
-    when( ps.executeUpdate() ).thenThrow( new SQLException() );
+    PreparedStatement ps = Mockito.mock( PreparedStatement.class );
+    Mockito.when( ps.executeUpdate() ).thenThrow( new SQLException() );
 
     Database database = new Database( mockLogger(), mockDatabaseMeta );
     database.setConnection( mockConnection );
@@ -196,15 +192,15 @@ public class DatabaseUnitTest {
   @Test( expected = KettleDatabaseBatchException.class )
   public void testEmptyAndCommitWithBatchAlwaysThrowsKettleBatchException() throws KettleDatabaseException,
     SQLException {
-    DatabaseMeta mockDatabaseMeta = mock( DatabaseMeta.class );
-    when( mockDatabaseMeta.supportsBatchUpdates() ).thenReturn( true );
+    DatabaseMeta mockDatabaseMeta = Mockito.mock( DatabaseMeta.class );
+    Mockito.when( mockDatabaseMeta.supportsBatchUpdates() ).thenReturn( true );
 
-    DatabaseMetaData mockDatabaseMetaData = mock( DatabaseMetaData.class );
-    when( mockDatabaseMetaData.supportsBatchUpdates() ).thenReturn( true );
+    DatabaseMetaData mockDatabaseMetaData = Mockito.mock( DatabaseMetaData.class );
+    Mockito.when( mockDatabaseMetaData.supportsBatchUpdates() ).thenReturn( true );
     Connection mockConnection = mockConnection( mockDatabaseMetaData );
 
-    PreparedStatement ps = mock( PreparedStatement.class );
-    when( ps.executeBatch() ).thenThrow( new SQLException() );
+    PreparedStatement ps = Mockito.mock( PreparedStatement.class );
+    Mockito.when( ps.executeBatch() ).thenThrow( new SQLException() );
 
     Database database = new Database( mockLogger(), mockDatabaseMeta );
     database.setCommit( 1 );
@@ -215,15 +211,15 @@ public class DatabaseUnitTest {
   @Test( expected = KettleDatabaseException.class )
   public void testEmptyAndCommitWithoutBatchDoesntThrowKettleBatchException()
     throws KettleDatabaseException, SQLException {
-    DatabaseMeta mockDatabaseMeta = mock( DatabaseMeta.class );
-    when( mockDatabaseMeta.supportsBatchUpdates() ).thenReturn( true );
+    DatabaseMeta mockDatabaseMeta = Mockito.mock( DatabaseMeta.class );
+    Mockito.when( mockDatabaseMeta.supportsBatchUpdates() ).thenReturn( true );
 
-    DatabaseMetaData mockDatabaseMetaData = mock( DatabaseMetaData.class );
-    when( mockDatabaseMetaData.supportsBatchUpdates() ).thenReturn( true );
+    DatabaseMetaData mockDatabaseMetaData = Mockito.mock( DatabaseMetaData.class );
+    Mockito.when( mockDatabaseMetaData.supportsBatchUpdates() ).thenReturn( true );
     Connection mockConnection = mockConnection( mockDatabaseMetaData );
 
-    PreparedStatement ps = mock( PreparedStatement.class );
-    doThrow( new SQLException() ).when( ps ).close();
+    PreparedStatement ps = Mockito.mock( PreparedStatement.class );
+    Mockito.doThrow( new SQLException() ).when( ps ).close();
 
     Database database = new Database( mockLogger(), mockDatabaseMeta );
     database.setConnection( mockConnection );
@@ -238,15 +234,15 @@ public class DatabaseUnitTest {
   @Test( expected = KettleDatabaseBatchException.class )
   public void testInsertFinishedWithBatchAlwaysThrowsKettleBatchException() throws KettleDatabaseException,
     SQLException {
-    DatabaseMeta mockDatabaseMeta = mock( DatabaseMeta.class );
-    when( mockDatabaseMeta.supportsBatchUpdates() ).thenReturn( true );
+    DatabaseMeta mockDatabaseMeta = Mockito.mock( DatabaseMeta.class );
+    Mockito.when( mockDatabaseMeta.supportsBatchUpdates() ).thenReturn( true );
 
-    DatabaseMetaData mockDatabaseMetaData = mock( DatabaseMetaData.class );
-    when( mockDatabaseMetaData.supportsBatchUpdates() ).thenReturn( true );
+    DatabaseMetaData mockDatabaseMetaData = Mockito.mock( DatabaseMetaData.class );
+    Mockito.when( mockDatabaseMetaData.supportsBatchUpdates() ).thenReturn( true );
     Connection mockConnection = mockConnection( mockDatabaseMetaData );
 
-    PreparedStatement ps = mock( PreparedStatement.class );
-    when( ps.executeBatch() ).thenThrow( new SQLException() );
+    PreparedStatement ps = Mockito.mock( PreparedStatement.class );
+    Mockito.when( ps.executeBatch() ).thenThrow( new SQLException() );
 
     Database database = new Database( mockLogger(), mockDatabaseMeta );
     database.setCommit( 1 );
@@ -258,15 +254,15 @@ public class DatabaseUnitTest {
   @Test( expected = KettleDatabaseException.class )
   public void testInsertFinishedWithoutBatchDoesntThrowKettleBatchException()
     throws KettleDatabaseException, SQLException {
-    DatabaseMeta mockDatabaseMeta = mock( DatabaseMeta.class );
-    when( mockDatabaseMeta.supportsBatchUpdates() ).thenReturn( true );
+    DatabaseMeta mockDatabaseMeta = Mockito.mock( DatabaseMeta.class );
+    Mockito.when( mockDatabaseMeta.supportsBatchUpdates() ).thenReturn( true );
 
-    DatabaseMetaData mockDatabaseMetaData = mock( DatabaseMetaData.class );
-    when( mockDatabaseMetaData.supportsBatchUpdates() ).thenReturn( true );
+    DatabaseMetaData mockDatabaseMetaData = Mockito.mock( DatabaseMetaData.class );
+    Mockito.when( mockDatabaseMetaData.supportsBatchUpdates() ).thenReturn( true );
     Connection mockConnection = mockConnection( mockDatabaseMetaData );
 
-    PreparedStatement ps = mock( PreparedStatement.class );
-    doThrow( new SQLException() ).when( ps ).close();
+    PreparedStatement ps = Mockito.mock( PreparedStatement.class );
+    Mockito.doThrow( new SQLException() ).when( ps ).close();
 
     Database database = new Database( mockLogger(), mockDatabaseMeta );
     database.setConnection( mockConnection );
@@ -279,70 +275,70 @@ public class DatabaseUnitTest {
 
   @Test
   public void insertRowAndExecuteBatchCauseNoErrors() throws Exception {
-    DatabaseMeta dbMeta = mock( DatabaseMeta.class );
-    when( dbMeta.supportsBatchUpdates() ).thenReturn( true );
+    DatabaseMeta dbMeta = Mockito.mock( DatabaseMeta.class );
+    Mockito.when( dbMeta.supportsBatchUpdates() ).thenReturn( true );
 
-    DatabaseMetaData dbMetaData = mock( DatabaseMetaData.class );
-    when( dbMetaData.supportsBatchUpdates() ).thenReturn( true );
+    DatabaseMetaData dbMetaData = Mockito.mock( DatabaseMetaData.class );
+    Mockito.when( dbMetaData.supportsBatchUpdates() ).thenReturn( true );
 
     Database db = new Database( mockLogger(), dbMeta );
     db.setConnection( mockConnection( dbMetaData ) );
     db.setCommit( 1 );
 
-    PreparedStatement ps = mock( PreparedStatement.class );
+    PreparedStatement ps = Mockito.mock( PreparedStatement.class );
 
     db.insertRow( ps, true, false );
-    verify( ps ).addBatch();
+    Mockito.verify( ps ).addBatch();
 
     db.executeAndClearBatch( ps );
-    verify( ps ).executeBatch();
-    verify( ps ).clearBatch();
+    Mockito.verify( ps ).executeBatch();
+    Mockito.verify( ps ).clearBatch();
   }
 
   @Test
   public void insertRowWhenDbDoNotSupportBatchLeadsToCommit() throws Exception {
-    DatabaseMeta dbMeta = mock( DatabaseMeta.class );
-    when( dbMeta.supportsBatchUpdates() ).thenReturn( false );
+    DatabaseMeta dbMeta = Mockito.mock( DatabaseMeta.class );
+    Mockito.when( dbMeta.supportsBatchUpdates() ).thenReturn( false );
 
-    DatabaseMetaData dbMetaData = mock( DatabaseMetaData.class );
-    when( dbMetaData.supportsBatchUpdates() ).thenReturn( false );
+    DatabaseMetaData dbMetaData = Mockito.mock( DatabaseMetaData.class );
+    Mockito.when( dbMetaData.supportsBatchUpdates() ).thenReturn( false );
 
     Database db = new Database( mockLogger(), dbMeta );
     db.setConnection( mockConnection( dbMetaData ) );
     db.setCommit( 1 );
 
-    PreparedStatement ps = mock( PreparedStatement.class );
+    PreparedStatement ps = Mockito.mock( PreparedStatement.class );
 
     db.insertRow( ps, true, false );
-    verify( ps, never() ).addBatch();
-    verify( ps ).executeUpdate();
+    Mockito.verify( ps, Mockito.never() ).addBatch();
+    Mockito.verify( ps ).executeUpdate();
   }
 
   @Test
   public void testGetCreateSequenceStatement() throws Exception {
-    DatabaseMeta dbMeta = mock( DatabaseMeta.class );
-    when( dbMeta.supportsSequences() ).thenReturn( true );
-    when( dbMeta.supportsSequenceNoMaxValueOption() ).thenReturn( true );
+    DatabaseMeta dbMeta = Mockito.mock( DatabaseMeta.class );
+    Mockito.when( dbMeta.supportsSequences() ).thenReturn( true );
+    Mockito.when( dbMeta.supportsSequenceNoMaxValueOption() ).thenReturn( true );
 
-    DatabaseMetaData dbMetaData = mock( DatabaseMetaData.class );
-    DatabaseInterface databaseInterface = mock( DatabaseInterface.class );
-    doReturn( databaseInterface ).when( dbMeta ).getDatabaseInterface();
+    DatabaseMetaData dbMetaData = Mockito.mock( DatabaseMetaData.class );
+    DatabaseInterface databaseInterface = Mockito.mock( DatabaseInterface.class );
+    Mockito.doReturn( databaseInterface ).when( dbMeta ).getDatabaseInterface();
 
     Database db = new Database( mockLogger(), dbMeta );
     db.setConnection( mockConnection( dbMetaData ) );
     db.setCommit( 1 );
 
     db.getCreateSequenceStatement( "schemaName", "seq", "10", "1", "-1", false );
-    verify( databaseInterface, times( 1 ) ).getSequenceNoMaxValueOption();
+    Mockito.verify( databaseInterface, Mockito.times( 1 ) ).getSequenceNoMaxValueOption();
   }
 
   @Test
   public void testPrepareSQL() throws Exception {
-    DatabaseMeta dbMeta = mock( DatabaseMeta.class );
-    DatabaseInterface databaseInterface = mock( DatabaseInterface.class );
-    doReturn( databaseInterface ).when( dbMeta ).getDatabaseInterface();
+    DatabaseMeta dbMeta = Mockito.mock( DatabaseMeta.class );
+    DatabaseInterface databaseInterface = Mockito.mock( DatabaseInterface.class );
+    Mockito.doReturn( databaseInterface ).when( dbMeta ).getDatabaseInterface();
 
-    DatabaseMetaData dbMetaData = mock( DatabaseMetaData.class );
+    DatabaseMetaData dbMetaData = Mockito.mock( DatabaseMetaData.class );
 
     Database db = new Database( mockLogger(), dbMeta );
     db.setConnection( mockConnection( dbMetaData ) );
@@ -350,36 +346,36 @@ public class DatabaseUnitTest {
     db.prepareSQL( "SELECT * FROM DUMMY" );
     db.prepareSQL( "SELECT * FROM DUMMY", true );
 
-    verify( databaseInterface, times( 2 ) ).supportsAutoGeneratedKeys();
+    Mockito.verify( databaseInterface, Mockito.times( 2 ) ).supportsAutoGeneratedKeys();
   }
 
   @Test
   public void testGetCreateTableStatement() throws Exception {
-    ValueMetaInterface v = mock( ValueMetaInterface.class );
+    ValueMetaInterface v = Mockito.mock( ValueMetaInterface.class );
 
-    DatabaseMeta dbMeta = mock( DatabaseMeta.class );
+    DatabaseMeta dbMeta = Mockito.mock( DatabaseMeta.class );
 
-    DatabaseInterface databaseInterface = mock( DatabaseInterface.class );
-    doReturn( " " ).when( databaseInterface ).getDataTablespaceDDL( any( VariableSpace.class ), eq( dbMeta ) );
-    doReturn( "CREATE TABLE " ).when( databaseInterface ).getCreateTableStatement();
+    DatabaseInterface databaseInterface = Mockito.mock( DatabaseInterface.class );
+    Mockito.doReturn( " " ).when( databaseInterface ).getDataTablespaceDDL( Mockito.any( VariableSpace.class ), Mockito.eq( dbMeta ) );
+    Mockito.doReturn( "CREATE TABLE " ).when( databaseInterface ).getCreateTableStatement();
 
-    doReturn( databaseInterface ).when( dbMeta ).getDatabaseInterface();
+    Mockito.doReturn( databaseInterface ).when( dbMeta ).getDatabaseInterface();
 
-    DatabaseMetaData dbMetaData = mock( DatabaseMetaData.class );
+    DatabaseMetaData dbMetaData = Mockito.mock( DatabaseMetaData.class );
 
     Database db = new Database( mockLogger(), dbMeta );
     db.setConnection( mockConnection( dbMetaData ) );
     db.setCommit( 1 );
 
     String tableName = "DUMMY", tk = "tKey", pk = "pKey";
-    RowMetaInterface fields = mock( RowMetaInterface.class );
-    doReturn( 1 ).when( fields ).size();
-    doReturn( v ).when( fields ).getValueMeta( 0 );
+    RowMetaInterface fields = Mockito.mock( RowMetaInterface.class );
+    Mockito.doReturn( 1 ).when( fields ).size();
+    Mockito.doReturn( v ).when( fields ).getValueMeta( 0 );
     boolean useAutoInc = true, semiColon = true;
 
-    doReturn( "double foo" ).when( dbMeta ).getFieldDefinition( v, tk, pk, useAutoInc );
+    Mockito.doReturn( "double foo" ).when( dbMeta ).getFieldDefinition( v, tk, pk, useAutoInc );
 
-    doReturn( true ).when( dbMeta ).requiresCreateTablePrimaryKeyAppend();
+    Mockito.doReturn( true ).when( dbMeta ).requiresCreateTablePrimaryKeyAppend();
 
     String statement = db.getCreateTableStatement( tableName, fields, tk, useAutoInc, pk, semiColon );
 
@@ -389,9 +385,9 @@ public class DatabaseUnitTest {
       "PRIMARY KEY \\(tKey\\)", ",",
       "PRIMARY KEY \\(pKey\\)",
       "\\)", ";" );
-    assertTrue( statement.matches( expectedStatRegexp ) );
+    Assert.assertTrue( statement.matches( expectedStatRegexp ) );
 
-    doReturn( "CREATE COLUMN TABLE " ).when( databaseInterface ).getCreateTableStatement();
+    Mockito.doReturn( "CREATE COLUMN TABLE " ).when( databaseInterface ).getCreateTableStatement();
 
     statement = db.getCreateTableStatement( tableName, fields, tk, useAutoInc, pk, semiColon );
 
@@ -401,39 +397,38 @@ public class DatabaseUnitTest {
       "PRIMARY KEY \\(tKey\\)", ",",
       "PRIMARY KEY \\(pKey\\)",
       "\\)", ";" );
-    assertTrue( statement.matches( expectedStatRegexp ) );
+    Assert.assertTrue( statement.matches( expectedStatRegexp ) );
   }
 
   @Test
   public void mySqlVarBinaryIsConvertedToStringType() throws Exception {
-    ResultSetMetaData rsMeta = mock( ResultSetMetaData.class );
-    when( rsMeta.getColumnCount() ).thenReturn( 1 );
-    when( rsMeta.getColumnLabel( 1 ) ).thenReturn( "column" );
-    when( rsMeta.getColumnName( 1 ) ).thenReturn( "column" );
-    when( rsMeta.getColumnType( 1 ) ).thenReturn( java.sql.Types.VARBINARY );
+    ResultSetMetaData rsMeta = Mockito.mock( ResultSetMetaData.class );
+    Mockito.when( rsMeta.getColumnCount() ).thenReturn( 1 );
+    Mockito.when( rsMeta.getColumnLabel( 1 ) ).thenReturn( "column" );
+    Mockito.when( rsMeta.getColumnName( 1 ) ).thenReturn( "column" );
+    Mockito.when( rsMeta.getColumnType( 1 ) ).thenReturn( java.sql.Types.VARBINARY );
 
-    ResultSet rs = mock( ResultSet.class );
-    when( rs.getMetaData() ).thenReturn( rsMeta );
+    ResultSet rs = Mockito.mock( ResultSet.class );
+    Mockito.when( rs.getMetaData() ).thenReturn( rsMeta );
 
-    PreparedStatement ps = mock( PreparedStatement.class );
-    when( ps.executeQuery() ).thenReturn( rs );
+    PreparedStatement ps = Mockito.mock( PreparedStatement.class );
+    Mockito.when( ps.executeQuery() ).thenReturn( rs );
 
     DatabaseMeta meta = new DatabaseMeta();
     meta.setDatabaseInterface( new MySQLDatabaseMeta() );
 
-    DatabaseMetaData dbMetaData = mock( DatabaseMetaData.class );
+    DatabaseMetaData dbMetaData = Mockito.mock( DatabaseMetaData.class );
 
     Database db = new Database( log, meta );
     db.setConnection( mockConnection( dbMetaData ) );
 
-    db.getLookup( ps, false, true );
+    db.getLookup( ps, false );
 
     RowMetaInterface rowMeta = db.getReturnRowMeta();
-    assertEquals( 1, rowMeta.size() );
+    Assert.assertEquals( 1, rowMeta.size() );
 
     ValueMetaInterface valueMeta = rowMeta.getValueMeta( 0 );
-    assertEquals( ValueMetaInterface.TYPE_STRING, valueMeta.getType() );
-    assertEquals( ValueMetaInterface.STORAGE_TYPE_BINARY_STRING, valueMeta.getStorageType() );
+    Assert.assertEquals( ValueMetaInterface.TYPE_BINARY, valueMeta.getType() );
   }
 
   private static String concatWordsForRegexp( String... words ) {
@@ -446,14 +441,14 @@ public class DatabaseUnitTest {
   }
 
   private static LoggingObjectInterface mockLogger() {
-    LoggingObjectInterface logger = mock( LoggingObjectInterface.class );
-    when( logger.getLogLevel() ).thenReturn( LogLevel.NOTHING );
+    LoggingObjectInterface logger = Mockito.mock( LoggingObjectInterface.class );
+    Mockito.when( logger.getLogLevel() ).thenReturn( LogLevel.NOTHING );
     return logger;
   }
 
   private static Connection mockConnection( DatabaseMetaData dbMetaData ) throws SQLException {
-    Connection connection = mock( Connection.class );
-    when( connection.getMetaData() ).thenReturn( dbMetaData );
+    Connection connection = Mockito.mock( Connection.class );
+    Mockito.when( connection.getMetaData() ).thenReturn( dbMetaData );
     return connection;
   }
 
@@ -473,13 +468,13 @@ public class DatabaseUnitTest {
   }
 
   private DataSourceProviderInterface testUsesCustomDsProviderIfSet( DatabaseMeta meta ) throws Exception {
-    Connection connection = mock( Connection.class );
-    DataSource ds = mock( DataSource.class );
-    when( ds.getConnection() ).thenReturn( connection );
-    when( ds.getConnection( anyString(), anyString() ) ).thenReturn( connection );
+    Connection connection = Mockito.mock( Connection.class );
+    DataSource ds = Mockito.mock( DataSource.class );
+    Mockito.when( ds.getConnection() ).thenReturn( connection );
+    Mockito.when( ds.getConnection( Mockito.anyString(), Mockito.anyString() ) ).thenReturn( connection );
 
-    DataSourceProviderInterface provider = mock( DataSourceProviderInterface.class );
-    when( provider.getNamedDataSource( anyString(), any( DataSourceProviderInterface.DatasourceType.class ) ) )
+    DataSourceProviderInterface provider = Mockito.mock( DataSourceProviderInterface.class );
+    Mockito.when( provider.getNamedDataSource( Mockito.anyString(), Mockito.any( DataSourceProviderInterface.DatasourceType.class ) ) )
       .thenReturn( ds );
 
     Database db = new Database( log, meta );
@@ -493,7 +488,7 @@ public class DatabaseUnitTest {
       DataSourceProviderFactory.setDataSourceProviderInterface( existing );
     }
 
-    assertEquals( connection, db.getConnection() );
+    Assert.assertEquals( connection, db.getConnection() );
     return provider;
   }
 
@@ -507,23 +502,23 @@ public class DatabaseUnitTest {
     meta.setUsingConnectionPool( true );
 
     DataSourceProviderInterface provider = testUsesCustomDsProviderIfSet( meta );
-    verify( provider ).getNamedDataSource( anyString(), eq( JNDI ) );
-    verify( provider, never() ).getNamedDataSource( anyString(), eq( POOLED ) );
+    Mockito.verify( provider ).getNamedDataSource( Mockito.anyString(), Mockito.eq( DataSourceProviderInterface.DatasourceType.JNDI ) );
+    Mockito.verify( provider, Mockito.never() ).getNamedDataSource( Mockito.anyString(), Mockito.eq( DataSourceProviderInterface.DatasourceType.POOLED ) );
   }
 
   @Test
   public void testDisconnectPstmCloseFail()
     throws SQLException, KettleDatabaseException, NoSuchFieldException, IllegalAccessException {
 
-    DatabaseMeta dbMeta = mock( DatabaseMeta.class );
-    DatabaseMetaData dbMetaData = mock( DatabaseMetaData.class );
+    DatabaseMeta dbMeta = Mockito.mock( DatabaseMeta.class );
+    DatabaseMetaData dbMetaData = Mockito.mock( DatabaseMetaData.class );
 
     Database db = new Database( mockLogger(), dbMeta );
     Connection connection = mockConnection( dbMetaData );
     db.setConnection( connection );
     db.setCommit( 1 );
 
-    PreparedStatement ps = mock( PreparedStatement.class );
+    PreparedStatement ps = Mockito.mock( PreparedStatement.class );
 
     Class<Database> databaseClass = Database.class;
     Field fieldPstmt = databaseClass.getDeclaredField( "pstmt" );
@@ -533,7 +528,7 @@ public class DatabaseUnitTest {
     Mockito.doThrow( new SQLException( "Test SQL exception" ) ).when( ps ).close();
 
     db.disconnect();
-    verify( connection, times( 1 ) ).close();
+    Mockito.verify( connection, Mockito.times( 1 ) ).close();
 
   }
 
@@ -541,18 +536,18 @@ public class DatabaseUnitTest {
   @Test
   public void testDisconnectCommitFail() throws SQLException, NoSuchFieldException, IllegalAccessException {
 
-    DatabaseMeta dbMeta = mock( DatabaseMeta.class );
-    when( dbMeta.supportsEmptyTransactions() ).thenReturn( true );
+    DatabaseMeta dbMeta = Mockito.mock( DatabaseMeta.class );
+    Mockito.when( dbMeta.supportsEmptyTransactions() ).thenReturn( true );
 
-    DatabaseMetaData dbMetaData = mock( DatabaseMetaData.class );
-    when( dbMetaData.supportsTransactions() ).thenReturn( true );
+    DatabaseMetaData dbMetaData = Mockito.mock( DatabaseMetaData.class );
+    Mockito.when( dbMetaData.supportsTransactions() ).thenReturn( true );
 
     Database db = new Database( mockLogger(), dbMeta );
     Connection connection = mockConnection( dbMetaData );
     db.setConnection( connection );
     db.setCommit( 1 );
 
-    PreparedStatement ps = mock( PreparedStatement.class );
+    PreparedStatement ps = Mockito.mock( PreparedStatement.class );
 
     Class<Database> databaseClass = Database.class;
     Field fieldPstmt = databaseClass.getDeclaredField( "pstmt" );
@@ -563,7 +558,7 @@ public class DatabaseUnitTest {
 
     db.disconnect();
 
-    verify( connection, times( 1 ) ).close();
+    Mockito.verify( connection, Mockito.times( 1 ) ).close();
 
   }
 
@@ -571,8 +566,8 @@ public class DatabaseUnitTest {
   @Test
   public void testDisconnectConnectionGroup() throws SQLException {
 
-    DatabaseMeta dbMeta = mock( DatabaseMeta.class );
-    DatabaseMetaData dbMetaData = mock( DatabaseMetaData.class );
+    DatabaseMeta dbMeta = Mockito.mock( DatabaseMeta.class );
+    DatabaseMetaData dbMetaData = Mockito.mock( DatabaseMetaData.class );
 
     Database db = new Database( mockLogger(), dbMeta );
     Connection connection = mockConnection( dbMetaData );
@@ -581,7 +576,7 @@ public class DatabaseUnitTest {
     db.setConnectionGroup( "1" );
     db.disconnect();
 
-    verify( connection, never() ).close();
+    Mockito.verify( connection, Mockito.never() ).close();
   }
 
 }
