@@ -26,4 +26,27 @@
   </bean>
   <bean class="org.pentaho.platform.engine.core.system.objfac.spring.ApplicationContextPentahoSystemRegisterer"
         scope="singleton"/>
+  <bean id="IPdiContentProvider" class="com.pentaho.repository.importexport.PdiContentProvider" scope="prototype"/>
+  <bean id="PDITransformationStreamConverter"
+        class="com.pentaho.repository.importexport.StreamToTransNodeConverter">
+    <constructor-arg>
+      <pen:bean class="org.pentaho.platform.api.repository2.unified.IUnifiedRepository"/>
+    </constructor-arg>
+    <pen:publish as-type="INTERFACES">
+      <pen:attributes>
+        <pen:attr key="name" value="PDITransformationStreamConverter"/>
+      </pen:attributes>
+    </pen:publish>
+  </bean>
+  <bean id="PDIJobStreamConverter"
+        class="com.pentaho.repository.importexport.StreamToJobNodeConverter">
+    <constructor-arg>
+      <pen:bean class="org.pentaho.platform.api.repository2.unified.IUnifiedRepository"/>
+    </constructor-arg>
+    <pen:publish as-type="INTERFACES">
+      <pen:attributes>
+        <pen:attr key="name" value="PDIJobStreamConverter"/>
+      </pen:attributes>
+    </pen:publish>
+  </bean>
 </beans>
