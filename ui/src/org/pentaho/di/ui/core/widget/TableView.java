@@ -1470,6 +1470,8 @@ public class TableView extends Composite {
     text.dispose();
     table.setFocus();
 
+    tableViewModifyListener.cellFocusLost( rownr );
+
     String[] afterEdit = getItemText( row );
     checkChanged( new String[][]{ beforeEdit }, new String[][]{ afterEdit }, new int[]{ rownr } );
 
