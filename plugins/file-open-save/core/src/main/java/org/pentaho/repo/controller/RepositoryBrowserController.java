@@ -156,13 +156,15 @@ public class RepositoryBrowserController {
   private void isFileOpenedInFolder( String path ) throws KettleException {
     List<TransMeta> openedTransFiles = getSpoon().delegates.trans.getTransformationList();
     for ( TransMeta t : openedTransFiles ) {
-      if ( t.getRepositoryDirectory().getPath() != null && t.getRepositoryDirectory().getPath().startsWith( path ) ) {
+      if ( t.getRepositoryDirectory().getPath() != null
+        && ( t.getRepositoryDirectory().getPath() + "/" ).startsWith( path + "/" ) ) {
         throw new KettleTransException();
       }
     }
     List<JobMeta> openedJobFiles = getSpoon().delegates.jobs.getJobList();
     for ( JobMeta j : openedJobFiles ) {
-      if ( j.getRepositoryDirectory().getPath() != null && j.getRepositoryDirectory().getPath().startsWith( path ) ) {
+      if ( j.getRepositoryDirectory().getPath() != null
+        && ( j.getRepositoryDirectory().getPath() + "/" ).startsWith( path + "/" ) ) {
         throw new KettleJobException();
       }
     }

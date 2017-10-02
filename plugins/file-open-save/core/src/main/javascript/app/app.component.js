@@ -554,15 +554,18 @@ define([
             for (var i = 0; i < vm.folders.length; i++) {
               if (vm.folders[i].path === vm.folder.parent) {
                 parent = vm.folders[i];
+                var numChildrenFolders = 0;
                 for (var j = 0; j < vm.folders[i].children.length; j++) {
+                  if (vm.folders[i].children[j].type === "folder") {
+                    numChildrenFolders++;
+                  }
                   if (vm.folders[i].children[j].path === vm.folder.path) {
                     vm.folders[i].children.splice(j, 1);
+                    numChildrenFolders--;
                     j--;
                   }
                 }
-                if (vm.folders[i].children.length === 0) {
-                  vm.folders[i].hasChildren = false;
-                }
+                vm.folders[i].hasChildren = numChildrenFolders > 0;
               }
               if (vm.folders[i].parent === vm.folder.path || vm.folders[i].path === vm.folder.path) {
                 vm.folders.splice(i, 1);
