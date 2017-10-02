@@ -424,6 +424,7 @@ public class JobEntryCopy implements Cloneable, XMLInterface, GUIPositionInterfa
 
   public void setParentJobMeta( JobMeta parentJobMeta ) {
     this.parentJobMeta = parentJobMeta;
+    this.entry.setParentJobMeta( parentJobMeta );
   }
 
   @Override

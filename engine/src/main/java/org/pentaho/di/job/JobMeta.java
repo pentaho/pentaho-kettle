@@ -1263,6 +1263,8 @@ public class JobMeta extends AbstractMeta
   public void removeJobEntry( int i ) {
     JobEntryCopy deleted = jobcopies.remove( i );
     if ( deleted != null ) {
+      // give step a chance to cleanup
+      deleted.setParentJobMeta( null );
       if ( deleted.getEntry() instanceof MissingEntry ) {
         removeMissingEntry( (MissingEntry) deleted.getEntry() );
       }
@@ -2330,10 +2332,17 @@ public class JobMeta extends AbstractMeta
       variables.setVariable( Const.INTERNAL_VARIABLE_JOB_REPOSITORY_DIRECTORY,
           variables.getVariable( Const.INTERNAL_VARIABLE_JOB_FILENAME_DIRECTORY ) );
     }
+    updateCurrentDir();
+  }
 
-    variables.setVariable( Const.INTERNAL_VARIABLE_ENTRY_CURRENT_DIRECTORY, variables.getVariable(
-        repository != null ? Const.INTERNAL_VARIABLE_JOB_REPOSITORY_DIRECTORY
-            : Const.INTERNAL_VARIABLE_JOB_FILENAME_DIRECTORY ) );
+  private void updateCurrentDir() {
+    String prevCurrentDir = variables.getVariable( Const.INTERNAL_VARIABLE_ENTRY_CURRENT_DIRECTORY );
+    String currentDir = variables.getVariable(
+      repository != null
+          ? Const.INTERNAL_VARIABLE_JOB_REPOSITORY_DIRECTORY
+          : Const.INTERNAL_VARIABLE_JOB_FILENAME_DIRECTORY );
+    variables.setVariable( Const.INTERNAL_VARIABLE_ENTRY_CURRENT_DIRECTORY, currentDir );
+    fireCurrentDirectoryChanged( prevCurrentDir, currentDir );
   }
 
   /**
