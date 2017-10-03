@@ -268,6 +268,29 @@ public class RepositoryBrowserController {
     return true;
   }
 
+  public boolean updateRecentFiles( String oldPath, String newPath ) {
+    try {
+      Collection<List<LastUsedFile>> lastUsedRepoFiles = PropsUI.getInstance().getLastUsedRepoFiles().values();
+      for ( List<LastUsedFile> lastUsedFiles : lastUsedRepoFiles ) {
+        for ( int i = 0; i < lastUsedFiles.size(); i++ ) {
+          if ( ( lastUsedFiles.get( i ).getDirectory() + "/" ).startsWith( oldPath + "/" ) ) {
+            if ( lastUsedFiles.get( i ).getDirectory().length() == oldPath.length() ) {
+              lastUsedFiles.get( i ).setDirectory( newPath );
+            } else {
+              String prefix = newPath.substring( 0, newPath.lastIndexOf( "/" ) ) + "/";
+              String newFolder = newPath.substring( newPath.lastIndexOf( "/" ) + 1 );
+              String suffix = lastUsedFiles.get( i ).getDirectory().substring( oldPath.length() );
+              lastUsedFiles.get( i ).setDirectory( prefix + newFolder + suffix );
+            }
+          }
+        }
+      }
+    } catch ( Exception e ) {
+      return false;
+    }
+    return true;
+  }
+
   public RepositoryDirectory create( String parent, String name ) {
     try {
       RepositoryDirectoryInterface repositoryDirectoryInterface =
