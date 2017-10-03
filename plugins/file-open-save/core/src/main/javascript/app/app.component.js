@@ -670,6 +670,14 @@ define([
       for (var j = 0; j < vm.folders.length; j++) {
         _updateDirectories(vm.folders[j], oldPath, newPath);
       }
+      for (var k = 0; k < vm.recentFiles.length; k++) {
+        if ((vm.recentFiles[k].path + "/").lastIndexOf(oldPath + "/", 0) === 0) {
+          dt.updateRecentFiles(oldPath, newPath).then(function() {
+            dt.getRecentFiles().then(_populateRecentFiles);
+          });
+          break;
+        }
+      }
     }
 
     /**

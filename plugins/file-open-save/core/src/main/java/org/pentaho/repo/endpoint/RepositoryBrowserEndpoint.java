@@ -158,6 +158,13 @@ public class RepositoryBrowserEndpoint {
   }
 
   @GET
+  @Path( "/updateRecentFiles/{oldPath}/{newPath}" )
+  @Produces( { MediaType.APPLICATION_JSON } )
+  public Response updateRecentFiles( @PathParam( "oldPath" ) String oldPath, @PathParam( "newPath" ) String newPath ) {
+    return Response.ok( repositoryBrowserController.updateRecentFiles( oldPath, newPath ) ).build();
+  }
+
+  @GET
   @Path( "/recentSearches" )
   @Produces( { MediaType.APPLICATION_JSON } )
   public Response recentSearches() { return Response.ok( repositoryBrowserController.getRecentSearches() ).build(); }
