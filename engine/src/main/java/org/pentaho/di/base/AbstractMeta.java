@@ -46,6 +46,7 @@ import org.pentaho.di.core.gui.OverwritePrompter;
 import org.pentaho.di.core.gui.Point;
 import org.pentaho.di.core.gui.UndoInterface;
 import org.pentaho.di.core.listeners.ContentChangedListener;
+import org.pentaho.di.core.listeners.CurrentDirectoryChangedListener;
 import org.pentaho.di.core.listeners.FilenameChangedListener;
 import org.pentaho.di.core.listeners.NameChangedListener;
 import org.pentaho.di.core.logging.ChannelLogTable;
@@ -143,6 +144,8 @@ public abstract class AbstractMeta implements ChangedFlagInterface, UndoInterfac
   protected List<FilenameChangedListener> filenameChangedListeners;
 
   protected List<ContentChangedListener> contentChangedListeners;
+
+  protected List<CurrentDirectoryChangedListener> currentDirectoryChangedListeners;
 
   protected List<SlaveServer> slaveServers;
 
@@ -608,6 +611,38 @@ public abstract class AbstractMeta implements ChangedFlagInterface, UndoInterfac
         for ( ContentChangedListener listener : contentChangedListeners ) {
           listener.contentSafe( this );
         }
+      }
+    }
+  }
+
+  /**
+   * Remove listener
+   */
+  public void addCurrentDirectoryChangedListener( CurrentDirectoryChangedListener listener ) {
+    if ( currentDirectoryChangedListeners == null ) {
+      currentDirectoryChangedListeners = new ArrayList<>();
+    }
+    if ( listener != null && !currentDirectoryChangedListeners.contains( listener ) ) {
+      currentDirectoryChangedListeners.add( listener );
+    }
+  }
+
+  /**
+   * Add a listener to be notified of design-time changes to current directory variable
+   */
+  public void removeCurrentDirectoryChangedListener( CurrentDirectoryChangedListener listener ) {
+    if ( currentDirectoryChangedListeners != null ) {
+      currentDirectoryChangedListeners.remove( listener );
+    }
+  }
+
+  /**
+   * Notify listeners of a change in current directory.
+   */
+  protected void fireCurrentDirectoryChanged( String previous, String current ) {
+    if ( currentDirectoryChangedListeners != null && nameChanged( previous, current ) ) {
+      for ( CurrentDirectoryChangedListener listener : currentDirectoryChangedListeners ) {
+        listener.directoryChanged( this, previous, current );
       }
     }
   }

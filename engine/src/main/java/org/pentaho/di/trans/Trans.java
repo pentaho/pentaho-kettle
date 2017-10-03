@@ -138,8 +138,8 @@ import org.pentaho.di.trans.step.StepMetaDataCombi;
 import org.pentaho.di.trans.step.StepPartitioningMeta;
 import org.pentaho.di.trans.steps.mappinginput.MappingInput;
 import org.pentaho.di.trans.steps.mappingoutput.MappingOutput;
-import org.pentaho.di.www.AddExportServlet;
 import org.pentaho.di.www.PrepareExecutionTransServlet;
+import org.pentaho.di.www.RegisterPackageServlet;
 import org.pentaho.di.www.RegisterTransServlet;
 import org.pentaho.di.www.SlaveServerTransStatus;
 import org.pentaho.di.www.SocketRepository;
@@ -4222,9 +4222,10 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 
         // Send the zip file over to the slave server...
         //
-        String result =
-            slaveServer.sendExport( topLevelResource.getArchiveName(), AddExportServlet.TYPE_TRANS, topLevelResource
-                .getBaseResourceName() );
+        String result = slaveServer.sendExport(
+            topLevelResource.getArchiveName(),
+            RegisterPackageServlet.TYPE_TRANS,
+            topLevelResource.getBaseResourceName() );
         WebResult webResult = WebResult.fromXMLString( result );
         if ( !webResult.getResult().equalsIgnoreCase( WebResult.STRING_OK ) ) {
           throw new KettleException( "There was an error passing the exported transformation to the remote server: "

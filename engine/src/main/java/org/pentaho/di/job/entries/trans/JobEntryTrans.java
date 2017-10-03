@@ -33,6 +33,8 @@ import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.extension.ExtensionPointHandler;
 import org.pentaho.di.core.extension.KettleExtensionPoint;
+import org.pentaho.di.core.listeners.CurrentDirectoryChangedListener;
+import org.pentaho.di.core.listeners.impl.EntryCurrentDirectoryChangedListener;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.ObjectLocationSpecificationMethod;
 import org.pentaho.di.core.Result;
@@ -149,6 +151,11 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
   private String runConfiguration;
 
   private Trans trans;
+
+  private CurrentDirectoryChangedListener currentDirListener = new EntryCurrentDirectoryChangedListener(
+      this::getSpecificationMethod,
+      this::getDirectory,
+      this::setDirectory );
 
   public JobEntryTrans( String name ) {
     super( name, "" );
@@ -1645,4 +1652,17 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
   public Object loadReferencedObject( int index, Repository rep, IMetaStore metaStore, VariableSpace space ) throws KettleException {
     return getTransMeta( rep, metaStore, space );
   }
+
+  @Override
+  public void setParentJobMeta( JobMeta parentJobMeta ) {
+    JobMeta previous = getParentJobMeta();
+    super.setParentJobMeta( parentJobMeta );
+    if ( parentJobMeta !=  null ) {
+      parentJobMeta.addCurrentDirectoryChangedListener( currentDirListener );
+      variables.setParentVariableSpace( parentJobMeta );
+    } else if ( previous != null ) {
+      previous.removeCurrentDirectoryChangedListener( currentDirListener );
+    }
+  }
+
 }

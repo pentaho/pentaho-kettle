@@ -22,18 +22,27 @@
 
 package org.pentaho.di.cluster;
 
-import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.HttpEntity;
+import org.apache.http.HttpHost;
 import org.apache.http.HttpResponse;
+import org.apache.http.HttpStatus;
 import org.apache.http.StatusLine;
 import org.apache.http.auth.AuthScope;
+import org.apache.http.auth.UsernamePasswordCredentials;
+import org.apache.http.client.AuthCache;
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.CredentialsProvider;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
-import org.apache.http.client.methods.HttpRequestBase;
+import org.apache.http.client.methods.HttpUriRequest;
+import org.apache.http.client.protocol.HttpClientContext;
 import org.apache.http.entity.ByteArrayEntity;
 import org.apache.http.entity.InputStreamEntity;
+import org.apache.http.impl.auth.BasicScheme;
+import org.apache.http.impl.client.BasicAuthCache;
+import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.message.BasicHeader;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.changed.ChangedFlag;
@@ -58,7 +67,6 @@ import org.pentaho.di.repository.RepositoryDirectoryInterface;
 import org.pentaho.di.repository.RepositoryElementInterface;
 import org.pentaho.di.repository.RepositoryObjectType;
 import org.pentaho.di.shared.SharedObjectInterface;
-import org.pentaho.di.www.AddExportServlet;
 import org.pentaho.di.www.AllocateServerSocketServlet;
 import org.pentaho.di.www.CleanupTransServlet;
 import org.pentaho.di.www.GetJobStatusServlet;
@@ -93,7 +101,6 @@ import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.net.InetAddress;
 import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -121,8 +128,6 @@ public class SlaveServer extends ChangedFlag implements Cloneable, SharedObjectI
   private static final String HTTPS = "https";
 
   public static final String SSL_MODE_TAG = "sslMode";
-
-  private static final int NOT_FOUND_ERROR = 404;
 
   public static final int KETTLE_CARTE_RETRIES = getNumberOfSlaveServerRetries();
 
@@ -600,44 +605,8 @@ public class SlaveServer extends ChangedFlag implements Cloneable, SharedObjectI
 
   public String sendXML( String xml, String service ) throws Exception {
     HttpPost method = buildSendXMLMethod( xml.getBytes( Const.XML_ENCODING ), service );
-    addCredentials( method );
-
-    // Execute request
     try {
-      HttpResponse httpResponse = getHttpClient().execute( method );
-      StatusLine statusLine = httpResponse.getStatusLine();
-      int result = statusLine.getStatusCode();
-
-      // The status code
-      if ( log.isDebug() ) {
-        log.logDebug( BaseMessages.getString( PKG, "SlaveServer.DEBUG_ResponseStatus", Integer.toString( result ) ) );
-      }
-
-      String responseBody = getResponseBodyAsString( httpResponse.getEntity().getContent() );
-
-      if ( log.isDebug() ) {
-        log.logDebug( BaseMessages.getString( PKG, "SlaveServer.DEBUG_ResponseBody", responseBody ) );
-      }
-
-      if ( result >= 400 ) {
-        String message;
-        if ( result == NOT_FOUND_ERROR ) {
-          message = String.format( "%s%s%s%s",
-            BaseMessages.getString( PKG, "SlaveServer.Error.404.Title" ),
-            Const.CR, Const.CR,
-            BaseMessages.getString( PKG, "SlaveServer.Error.404.Message" )
-          );
-        } else {
-          message = String.format( "HTTP Status %d - %s - %s",
-            result,
-            method.getURI().toString(),
-            statusLine.getReasonPhrase()
-          );
-        }
-        throw new KettleException( message );
-      }
-
-      return responseBody;
+      return executeAuth( method );
     } finally {
       // Release current connection to the connection pool once you are done
       method.releaseConnection();
@@ -648,13 +617,35 @@ public class SlaveServer extends ChangedFlag implements Cloneable, SharedObjectI
     }
   }
 
+  /**
+   * Throws if not ok
+   */
+  private void handleStatus( HttpUriRequest method, StatusLine statusLine, int status ) throws KettleException {
+    if ( status >= 300 ) {
+      String message;
+      if ( status == HttpStatus.SC_NOT_FOUND ) {
+        message = String.format( "%s%s%s%s",
+          BaseMessages.getString( PKG, "SlaveServer.Error.404.Title" ),
+          Const.CR, Const.CR,
+          BaseMessages.getString( PKG, "SlaveServer.Error.404.Message" )
+        );
+      } else {
+        message = String.format( "HTTP Status %d - %s - %s",
+          status,
+          method.getURI().toString(),
+          statusLine.getReasonPhrase() );
+      }
+      throw new KettleException( message );
+    }
+  }
+
   // Method is defined as package-protected in order to be accessible by unit tests
   HttpPost buildSendExportMethod( String type, String load, InputStream is ) throws UnsupportedEncodingException {
     String serviceUrl = RegisterPackageServlet.CONTEXT_PATH;
     if ( type != null && load != null ) {
       serviceUrl +=
-        "/?" + AddExportServlet.PARAMETER_TYPE + "=" + type + "&" + AddExportServlet.PARAMETER_LOAD + "="
-          + URLEncoder.encode( load, "UTF-8" );
+        "/?" + RegisterPackageServlet.PARAMETER_TYPE + "=" + type
+        + "&" + RegisterPackageServlet.PARAMETER_LOAD + "=" + URLEncoder.encode( load, "UTF-8" );
     }
 
     String urlString = constructUrl( serviceUrl );
@@ -680,69 +671,89 @@ public class SlaveServer extends ChangedFlag implements Cloneable, SharedObjectI
    */
   public String sendExport( String filename, String type, String load ) throws Exception {
     // Request content will be retrieved directly from the input stream
-    //
-    InputStream is = null;
-    try {
-      is = KettleVFS.getInputStream( KettleVFS.getFileObject( filename ) );
-
+    try ( InputStream is = KettleVFS.getInputStream( KettleVFS.getFileObject( filename ) ) ) {
       // Execute request
-      //
       HttpPost method = buildSendExportMethod( type, load, is );
-      addCredentials( method );
       try {
-        HttpResponse httpResponse = getHttpClient().execute( method );
-        StatusLine statusLine = httpResponse.getStatusLine();
-        int statusCode = statusLine.getStatusCode();
-
-        // The status code
-        if ( log.isDebug() ) {
-          log.logDebug(
-            BaseMessages.getString( PKG, "SlaveServer.DEBUG_ResponseStatus", Integer.toString( statusCode ) ) );
-        }
-
-        String responseBody = getResponseBodyAsString( httpResponse.getEntity().getContent() );
-
-        if ( log.isDebug() ) {
-          log.logDebug( BaseMessages.getString( PKG, "SlaveServer.DEBUG_ResponseBody", responseBody ) );
-        }
-
-        if ( statusCode >= 400 ) {
-          throw new KettleException( String.format( "HTTP Status %d - %s - %s", statusCode, method.getURI().toString(),
-            statusLine.getReasonPhrase() ) );
-        }
-
-        return responseBody;
+        return executeAuth( method );
       } finally {
         // Release current connection to the connection pool once you are done
         method.releaseConnection();
         if ( log.isDetailed() ) {
           log.logDetailed( BaseMessages.getString( PKG, "SlaveServer.DETAILED_SentExportToService",
-            RegisterPackageServlet.CONTEXT_PATH, environmentSubstitute( hostname ) ) );
+              RegisterPackageServlet.CONTEXT_PATH, environmentSubstitute( hostname ) ) );
         }
-      }
-    } finally {
-      try {
-        if ( is != null ) {
-          is.close();
-        }
-      } catch ( IOException ignored ) {
-        // nothing to do here...
       }
     }
   }
 
-  public void addCredentials( HttpRequestBase method ) {
-    String user;
-    String pass;
+  /**
+   * Executes method with authentication.
+   * @param method
+   * @return
+   * @throws IOException
+   * @throws ClientProtocolException
+   * @throws KettleException if response not ok
+   */
+  private String executeAuth( HttpUriRequest method ) throws IOException, ClientProtocolException, KettleException {
+    HttpResponse httpResponse = getHttpClient().execute( method, getAuthContext() );
+    return getResponse( method, httpResponse );
+  }
+
+  private String getResponse( HttpUriRequest method, HttpResponse httpResponse ) throws IOException, KettleException {
+    StatusLine statusLine = httpResponse.getStatusLine();
+    int statusCode = statusLine.getStatusCode();
+    // The status code
+    if ( log.isDebug() ) {
+      log.logDebug( BaseMessages.getString( PKG, "SlaveServer.DEBUG_ResponseStatus", Integer.toString( statusCode ) ) );
+    }
+
+    String responseBody = getResponseBodyAsString( httpResponse.getEntity().getContent() );
+    if ( log.isDebug() ) {
+      log.logDebug( BaseMessages.getString( PKG, "SlaveServer.DEBUG_ResponseBody", responseBody ) );
+    }
+
+    // throw if not ok
+    handleStatus( method, statusLine, statusCode );
+
+    return responseBody;
+  }
+
+  private void addCredentials( HttpClientContext context ) {
+    String userName;
+    String password;
+    String host;
+    int port;
     lock.readLock().lock();
     try {
-      user = environmentSubstitute( username );
-      pass = Encr.decryptPasswordOptionallyEncrypted( environmentSubstitute( this.password ) );
+      host = environmentSubstitute( hostname );
+      port = Const.toInt( environmentSubstitute( this.port ), 80 );
+      userName = environmentSubstitute( username );
+      password = Encr.decryptPasswordOptionallyEncrypted( environmentSubstitute( this.password ) );
     } finally {
       lock.readLock().unlock();
     }
-    byte[] credentials = Base64.encodeBase64( ( user + ":" + pass ).getBytes( StandardCharsets.UTF_8 ) );
-    method.setHeader(  "Authorization", "Basic " + new String( credentials, StandardCharsets.UTF_8 ) );
+    CredentialsProvider provider = new BasicCredentialsProvider();
+    UsernamePasswordCredentials credentials = new UsernamePasswordCredentials( userName, password );
+    provider.setCredentials( new AuthScope( host, port ), credentials );
+    context.setCredentialsProvider( provider );
+
+    // Generate BASIC scheme object and add it to the local auth cache
+    HttpHost target = new HttpHost( host, port, "http" );
+    AuthCache authCache = new BasicAuthCache();
+    BasicScheme basicAuth = new BasicScheme();
+    authCache.put( target, basicAuth );
+    context.setAuthCache( authCache );
+  }
+
+  /**
+   *
+   * @return HttpClientContext with authorization credentials
+   */
+  protected HttpClientContext getAuthContext() {
+    HttpClientContext context = HttpClientContext.create();
+    addCredentials( context );
+    return context;
   }
 
   /**
@@ -837,10 +848,9 @@ public class SlaveServer extends ChangedFlag implements Cloneable, SharedObjectI
   public String execService( String service, Map<String, String> headerValues ) throws Exception {
     // Prepare HTTP get
     HttpGet method = buildExecuteServiceMethod( service, headerValues );
-    addCredentials( method );
     // Execute request
     try {
-      HttpResponse httpResponse = getHttpClient().execute( method );
+      HttpResponse httpResponse = getHttpClient().execute( method, getAuthContext() );
       StatusLine statusLine = httpResponse.getStatusLine();
       int statusCode = statusLine.getStatusCode();
 

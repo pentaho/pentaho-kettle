@@ -35,6 +35,7 @@ import org.pentaho.di.core.exception.KettlePluginException;
 import org.pentaho.di.core.gui.OverwritePrompter;
 import org.pentaho.di.core.gui.Point;
 import org.pentaho.di.core.listeners.ContentChangedListener;
+import org.pentaho.di.core.listeners.CurrentDirectoryChangedListener;
 import org.pentaho.di.core.listeners.FilenameChangedListener;
 import org.pentaho.di.core.listeners.NameChangedListener;
 import org.pentaho.di.core.logging.ChannelLogTable;
@@ -313,7 +314,23 @@ public class AbstractMetaTest {
     verify( listener, times( 1 ) ).contentSafe( anyObject() );
     meta.removeContentChangedListener( listener );
     assertTrue( meta.getContentChangedListeners().isEmpty() );
+  }
 
+  @Test
+  public void testAddCurrentDirectoryChangedListener() throws Exception {
+    meta.fireNameChangedListeners( "a", "a" );
+    meta.fireNameChangedListeners( "a", "b" );
+    meta.addCurrentDirectoryChangedListener( null );
+    meta.fireCurrentDirectoryChanged( "a", "b" );
+    CurrentDirectoryChangedListener listener = mock( CurrentDirectoryChangedListener.class );
+    meta.addCurrentDirectoryChangedListener( listener );
+    meta.fireCurrentDirectoryChanged( "b", "a" );
+    verify( listener, times( 1 ) ).directoryChanged( meta, "b", "a" );
+    meta.fireCurrentDirectoryChanged( "a", "a" );
+    meta.removeCurrentDirectoryChangedListener( null );
+    meta.removeCurrentDirectoryChangedListener( listener );
+    meta.fireNameChangedListeners( "b", "a" );
+    verifyNoMoreInteractions( listener );
   }
 
   @Test

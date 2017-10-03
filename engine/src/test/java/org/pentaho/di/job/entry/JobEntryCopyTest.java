@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2014 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -27,6 +27,8 @@ import static org.junit.Assert.assertNotSame;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Mockito;
+import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entries.special.JobEntrySpecial;
 
 public class JobEntryCopyTest {
@@ -70,4 +72,10 @@ public class JobEntryCopyTest {
         .hasChanged() );
   }
 
+  @Test
+  public void testSetParentMeta() throws Exception {
+    JobMeta meta = Mockito.mock( JobMeta.class );
+    originJobEntry.setParentJobMeta( meta );
+    assertEquals( meta, originEntry.getParentJobMeta() );
+  }
 }

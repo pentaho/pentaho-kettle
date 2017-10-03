@@ -25,6 +25,7 @@ package org.pentaho.di.job.entries.trans;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.doThrow;
@@ -188,4 +189,13 @@ public class JobEntryTransTest {
     verify( result ).setResult( false );
   }
 
+  @Test
+  public void testCurrDirListener() throws Exception {
+    JobMeta meta = mock( JobMeta.class );
+    JobEntryTrans jet = getJobEntryTrans();
+    jet.setParentJobMeta( meta );
+    jet.setParentJobMeta( null );
+    verify( meta, times( 1 ) ).addCurrentDirectoryChangedListener( any() );
+    verify( meta, times( 1 ) ).removeCurrentDirectoryChangedListener( any() );
+  }
 }

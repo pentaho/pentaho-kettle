@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -52,13 +52,12 @@ public class RegisterPackageServlet extends BaseJobServlet {
 
   private static final long serialVersionUID = -7582587179862317791L;
 
-  private static final String PARAMETER_LOAD = "load";
-  private static final String PARAMETER_TYPE = "type";
-  private static final String TYPE_JOB = "job";
+  public static final String PARAMETER_LOAD = "load";
+  public static final String PARAMETER_TYPE = "type";
+  public static final String TYPE_JOB = "job";
+  public static final String TYPE_TRANS = "trans";
 
   private static final String ZIP_CONT = "zip:{0}!{1}";
-
-  // private static final String TYPE_TRANS = "trans";
 
   @Override
   public String getContextPath() {
