@@ -112,6 +112,7 @@ public class RepositoryBrowserController {
         objectId = getRepository().renameTransformation( () -> id, repositoryDirectoryInterface, newName );
         break;
       case "folder":
+        isFileOpenedInFolder( path );
         RepositoryDirectoryInterface parent = getRepository().findDirectory( path ).getParent();
         if ( parent == null ) {
           parent = getRepository().findDirectory( path );
