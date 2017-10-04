@@ -39,11 +39,6 @@ import org.pentaho.di.core.exception.KettleValueException;
  */
 public class KettleTwoWayPasswordEncoderTest {
 
-  @BeforeClass
-  public static void setUpBeforeClass() throws Exception {
-    KettleClientEnvironment.init();
-  }
-
   /**
    * Test password encryption.
    *
