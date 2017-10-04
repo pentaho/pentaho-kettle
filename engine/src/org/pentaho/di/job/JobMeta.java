@@ -3,7 +3,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -908,6 +908,9 @@ public class JobMeta extends AbstractMeta
       // Set the filename here so it can be used in variables for ALL aspects of the job FIX: PDI-8890
       if ( null == rep ) {
         setFilename( fname );
+      }  else {
+        // Set the repository here so it can be used in variables for ALL aspects of the job FIX: PDI-16441
+        setRepository( rep );
       }
 
       //
