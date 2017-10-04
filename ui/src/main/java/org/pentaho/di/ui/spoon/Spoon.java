@@ -7785,9 +7785,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     }
 
     final CopyTableWizardPage1 page1 = new CopyTableWizardPage1( "1", databases );
-    page1.createControl( shell );
     final CopyTableWizardPage2 page2 = new CopyTableWizardPage2( "2" );
-    page2.createControl( shell );
 
     Wizard wizard = new Wizard() {
       @Override
