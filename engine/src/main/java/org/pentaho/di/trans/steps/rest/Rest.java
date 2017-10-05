@@ -62,7 +62,6 @@ import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.UniformInterfaceException;
 import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.api.client.filter.HTTPBasicAuthFilter;
-import com.sun.jersey.client.apache.ApacheHttpClient;
 import com.sun.jersey.client.apache.config.ApacheHttpClientConfig;
 import com.sun.jersey.client.apache.config.DefaultApacheHttpClientConfig;
 import com.sun.jersey.client.urlconnection.HTTPSProperties;
@@ -273,8 +272,7 @@ public class Rest extends BaseStep implements StepInterface {
   }
 
   private Client getClient() {
-
-    Client c = ApacheHttpClient.create( data.config );
+    Client c = Client.create( data.config );
     if ( data.basicAuthentication != null ) {
       c.addFilter( data.basicAuthentication );
     }
