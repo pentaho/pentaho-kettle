@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -23,15 +23,21 @@
 package org.pentaho.di.core;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.pentaho.di.core.injection.DefaultInjectionTypeConverter;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaBigNumber;
+import org.pentaho.di.core.row.value.ValueMetaBinary;
 import org.pentaho.di.core.row.value.ValueMetaBoolean;
+import org.pentaho.di.core.row.value.ValueMetaDate;
 import org.pentaho.di.core.row.value.ValueMetaInteger;
+import org.pentaho.di.core.row.value.ValueMetaNumber;
 import org.pentaho.di.core.row.value.ValueMetaString;
+import org.pentaho.di.core.row.value.ValueMetaTimestamp;
 
 public class RowMetaAndDataTest {
   RowMeta rowsMeta;
@@ -165,5 +171,28 @@ public class RowMetaAndDataTest {
     assertEquals( null, row.getAsJavaType( "int", Integer.class, converter ) );
     assertEquals( null, row.getAsJavaType( "int", Long.class, converter ) );
     assertEquals( null, row.getAsJavaType( "int", Boolean.class, converter ) );
+  }
+
+  @Test
+  public void testEmptyValues() throws Exception {
+    RowMeta rowsMetaEmpty = new RowMeta();
+
+    rowsMetaEmpty.addValueMeta( new ValueMetaString( "str" ) );
+    rowsMetaEmpty.addValueMeta( new ValueMetaBoolean( "bool" ) );
+    rowsMetaEmpty.addValueMeta( new ValueMetaInteger( "int" ) );
+    rowsMetaEmpty.addValueMeta( new ValueMetaNumber( "num" ) );
+    rowsMetaEmpty.addValueMeta( new ValueMetaBigNumber( "bignum" ) );
+    rowsMetaEmpty.addValueMeta( new ValueMetaBinary( "bin" ) );
+    rowsMetaEmpty.addValueMeta( new ValueMetaDate( "date" ) );
+    rowsMetaEmpty.addValueMeta( new ValueMetaTimestamp( "timestamp" ) );
+    row = new RowMetaAndData( rowsMetaEmpty, null, null, null, null, null, null, null, null );
+    assertTrue( row.isEmptyValue( "str" ) );
+    assertTrue( row.isEmptyValue( "bool" ) );
+    assertTrue( row.isEmptyValue( "int" ) );
+    assertTrue( row.isEmptyValue( "num" ) );
+    assertTrue( row.isEmptyValue( "bignum" ) );
+    assertTrue( row.isEmptyValue( "bin" ) );
+    assertTrue( row.isEmptyValue( "date" ) );
+    assertTrue( row.isEmptyValue( "timestamp" ) );
   }
 }
