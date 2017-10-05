@@ -22,32 +22,27 @@
 
 package org.pentaho.di.trans.steps.rest;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.security.KeyManagementException;
-import java.security.KeyStore;
-import java.security.KeyStoreException;
-import java.security.NoSuchAlgorithmException;
-import java.security.cert.CertificateException;
-import java.util.List;
-
-import javax.net.ssl.HostnameVerifier;
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLSession;
-import javax.net.ssl.TrustManagerFactory;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.core.UriBuilder;
-
+import com.sun.jersey.api.client.Client;
+import com.sun.jersey.api.client.ClientResponse;
+import com.sun.jersey.api.client.UniformInterfaceException;
+import com.sun.jersey.api.client.WebResource;
+import com.sun.jersey.api.client.filter.HTTPBasicAuthFilter;
 import com.sun.jersey.api.uri.UriComponent;
+import com.sun.jersey.client.apache4.ApacheHttpClient4;
+import com.sun.jersey.client.apache4.config.ApacheHttpClient4Config;
+import com.sun.jersey.client.apache4.config.DefaultApacheHttpClient4Config;
+import com.sun.jersey.client.urlconnection.HTTPSProperties;
+import com.sun.jersey.core.util.MultivaluedMapImpl;
 import org.apache.http.auth.AuthScope;
+import org.apache.http.auth.UsernamePasswordCredentials;
+import org.apache.http.client.CredentialsProvider;
+import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.json.simple.JSONObject;
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.encryption.Encr;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowDataUtil;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
@@ -57,16 +52,22 @@ import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
 
-import com.sun.jersey.api.client.Client;
-import com.sun.jersey.api.client.ClientResponse;
-import com.sun.jersey.api.client.UniformInterfaceException;
-import com.sun.jersey.api.client.WebResource;
-import com.sun.jersey.api.client.filter.HTTPBasicAuthFilter;
-import com.sun.jersey.client.apache.ApacheHttpClient;
-import com.sun.jersey.client.apache.config.ApacheHttpClientConfig;
-import com.sun.jersey.client.apache.config.DefaultApacheHttpClientConfig;
-import com.sun.jersey.client.urlconnection.HTTPSProperties;
-import com.sun.jersey.core.util.MultivaluedMapImpl;
+import javax.net.ssl.HostnameVerifier;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLSession;
+import javax.net.ssl.TrustManagerFactory;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.MultivaluedMap;
+import javax.ws.rs.core.UriBuilder;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.security.KeyManagementException;
+import java.security.KeyStore;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.cert.CertificateException;
+import java.util.List;
 
 /**
  * @author Samatar
@@ -274,7 +275,7 @@ public class Rest extends BaseStep implements StepInterface {
 
   private Client getClient() {
 
-    Client c = ApacheHttpClient.create( data.config );
+    Client c = ApacheHttpClient4.create( data.config );
     if ( data.basicAuthentication != null ) {
       c.addFilter( data.basicAuthentication );
     }
@@ -285,15 +286,21 @@ public class Rest extends BaseStep implements StepInterface {
 
     if ( data.config == null ) {
       // Use ApacheHttpClient for supporting proxy authentication.
-      data.config = new DefaultApacheHttpClientConfig();
+      data.config = new DefaultApacheHttpClient4Config();
 
       if ( !Utils.isEmpty( data.realProxyHost ) ) {
         // PROXY CONFIGURATION
-        data.config.getProperties().put( DefaultApacheHttpClientConfig.PROPERTY_PROXY_URI,
+        data.config.getProperties().put( ApacheHttpClient4Config.PROPERTY_PROXY_URI,
             "http://" + data.realProxyHost + ":" + data.realProxyPort );
         if ( !Utils.isEmpty( data.realHttpLogin ) && !Utils.isEmpty( data.realHttpPassword ) ) {
-          data.config.getState().setProxyCredentials( AuthScope.ANY_REALM, data.realProxyHost, data.realProxyPort,
-              data.realHttpLogin, data.realHttpPassword );
+          AuthScope authScope = new AuthScope( data.realProxyHost, data.realProxyPort );
+          UsernamePasswordCredentials credentials =
+                  new UsernamePasswordCredentials( data.realHttpLogin, data.realHttpPassword );
+
+          CredentialsProvider credentialsProvider = new BasicCredentialsProvider();
+          credentialsProvider.setCredentials( authScope, credentials );
+
+          data.config.getProperties().put( ApacheHttpClient4Config.PROPERTY_CREDENTIALS_PROVIDER, credentialsProvider );
         }
       } else {
         if ( !Utils.isEmpty( data.realHttpLogin ) ) {
@@ -302,7 +309,7 @@ public class Rest extends BaseStep implements StepInterface {
         }
       }
       if ( meta.isPreemptive() ) {
-        data.config.getProperties().put( ApacheHttpClientConfig.PROPERTY_PREEMPTIVE_AUTHENTICATION, true );
+        data.config.getProperties().put( ApacheHttpClient4Config.PROPERTY_PREEMPTIVE_BASIC_AUTHENTICATION, true );
       }
 
       // SSL TRUST STORE CONFIGURATION
