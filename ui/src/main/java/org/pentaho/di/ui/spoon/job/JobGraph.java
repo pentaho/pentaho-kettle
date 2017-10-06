@@ -3537,10 +3537,7 @@ public class JobGraph extends AbstractGraph implements XulEventHandler, Redrawab
         }
       } else {
         if ( jobMeta.hasChanged() ) {
-          MessageBox m = new MessageBox( shell, SWT.OK | SWT.ICON_WARNING );
-          m.setText( BaseMessages.getString( PKG, "JobLog.Dialog.JobHasChangedSave.Title" ) );
-          m.setMessage( BaseMessages.getString( PKG, "JobLog.Dialog.JobHasChangedSave.Message" ) );
-          m.open();
+          showSaveFileMessage();
         } else if ( spoon.rep != null && jobMeta.getName() == null ) {
           MessageBox m = new MessageBox( shell, SWT.OK | SWT.ICON_WARNING );
           m.setText( BaseMessages.getString( PKG, "JobLog.Dialog.PleaseGiveThisJobAName.Title" ) );
@@ -3555,6 +3552,13 @@ public class JobGraph extends AbstractGraph implements XulEventHandler, Redrawab
       }
       setControlStates();
     }
+  }
+
+  public void showSaveFileMessage() {
+    MessageBox m = new MessageBox( shell, SWT.OK | SWT.ICON_WARNING );
+    m.setText( BaseMessages.getString( PKG, "JobLog.Dialog.JobHasChangedSave.Title" ) );
+    m.setMessage( BaseMessages.getString( PKG, "JobLog.Dialog.JobHasChangedSave.Message" ) );
+    m.open();
   }
 
   private JobEntryListener createRefreshJobEntryListener() {
@@ -3723,7 +3727,12 @@ public class JobGraph extends AbstractGraph implements XulEventHandler, Redrawab
   }
 
   public HasLogChannelInterface getLogChannelProvider() {
-    return job;
+    return new HasLogChannelInterface() {
+      @Override
+      public LogChannelInterface getLogChannel() {
+        return getJob() != null ? getJob().getLogChannel() : getJobMeta().getLogChannel();
+      }
+    };
   }
 
   // Change of step, connection, hop or note...

@@ -31,6 +31,7 @@ import org.pentaho.di.base.AbstractMeta;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.LastUsedFile;
 import org.pentaho.di.core.NotePadMeta;
@@ -146,6 +147,9 @@ public class JobMeta extends AbstractMeta
 
   protected List<LogTableInterface> extraLogTables;
 
+  /** The log channel interface. */
+  protected LogChannelInterface log;
+
   /**
    * Constant = "SPECIAL"
    **/
@@ -232,6 +236,8 @@ public class JobMeta extends AbstractMeta
     // setInternalKettleVariables(); Don't clear the internal variables for
     // ad-hoc jobs, it's ruins the previews
     // etc.
+
+    log = LogChannel.GENERAL;
   }
 
   /**
@@ -2617,6 +2623,15 @@ public class JobMeta extends AbstractMeta
    */
   public RepositoryObjectType getRepositoryElementType() {
     return REPOSITORY_ELEMENT_TYPE;
+  }
+
+  /**
+   * Gets the log channel.
+   *
+   * @return the log channel
+   */
+  public LogChannelInterface getLogChannel() {
+    return log;
   }
 
   /**

@@ -874,9 +874,12 @@ public class SpoonTransformationDelegate extends SpoonDelegate {
 
       TransGraph activeTransGraph = spoon.getActiveTransGraph();
       if ( !executionConfiguration.isExecutingLocally() && !executionConfiguration.isExecutingRemotely() ) {
-        activeTransGraph.transLogDelegate.clearLog();
+        if ( transMeta.hasChanged() ) {
+          activeTransGraph.showSaveFileMessage();
+        } else {
+          activeTransGraph.transLogDelegate.addTransLog();
+        }
       }
-      activeTransGraph.transLogDelegate.addTransLog();
 
       // Verify if there is at least one step specified to debug or preview...
       //
