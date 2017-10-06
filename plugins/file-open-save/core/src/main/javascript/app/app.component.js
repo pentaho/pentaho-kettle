@@ -423,7 +423,6 @@ define([
     function _triggerError(type) {
       vm.errorType = type;
       vm.showError = true;
-      $scope.$apply();
     }
 
     /**
@@ -761,7 +760,6 @@ define([
         } else {
           _save(false);
         }
-        $scope.$apply();
       }
     }
 
