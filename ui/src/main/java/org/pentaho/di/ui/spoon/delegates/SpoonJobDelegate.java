@@ -1360,6 +1360,7 @@ public class SpoonJobDelegate extends SpoonDelegate {
       new JobExecutionConfigurationDialog( spoon.getShell(), executionConfiguration, jobMeta );
 
     if ( !jobMeta.isShowDialog() || dialog.open() ) {
+
       ExtensionPointHandler.callExtensionPoint( log, KettleExtensionPoint.SpoonJobMetaExecutionStart.id, jobMeta );
       ExtensionPointHandler.callExtensionPoint( log, KettleExtensionPoint.SpoonJobExecutionConfiguration.id,
           executionConfiguration );
@@ -1375,10 +1376,12 @@ public class SpoonJobDelegate extends SpoonDelegate {
 
       // addJobLog(jobMeta);
       JobGraph jobGraph = spoon.getActiveJobGraph();
-
       if ( !executionConfiguration.isExecutingLocally() && !executionConfiguration.isExecutingRemotely() ) {
-        jobGraph.jobLogDelegate.clearLog();
-        jobGraph.jobLogDelegate.addJobLog();
+        if ( jobMeta.hasChanged() ) {
+          jobGraph.showSaveFileMessage();
+        } else {
+          jobGraph.jobLogDelegate.addJobLog();
+        }
       }
 
       // Set the variables that where specified...
