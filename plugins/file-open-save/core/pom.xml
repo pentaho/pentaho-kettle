@@ -161,10 +161,6 @@
               <token>@PROJECT_ARTIFACT_ID@</token>
               <value>${project.artifactId}</value>
             </replacement>
-            <replacement>
-              <token>@PROJECT_VERSION@</token>
-              <value>${project.version}</value>
-            </replacement>
           </replacements>
         </configuration>
       </plugin>
