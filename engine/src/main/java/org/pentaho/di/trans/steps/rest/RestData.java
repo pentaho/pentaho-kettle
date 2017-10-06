@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -29,7 +29,7 @@ import org.pentaho.di.trans.step.BaseStepData;
 import org.pentaho.di.trans.step.StepDataInterface;
 
 import com.sun.jersey.api.client.filter.HTTPBasicAuthFilter;
-import com.sun.jersey.client.apache.config.DefaultApacheHttpClientConfig;
+import com.sun.jersey.client.apache4.config.DefaultApacheHttpClient4Config;
 
 /**
  * @author Samatar
@@ -94,7 +94,7 @@ public class RestData extends BaseStepData implements StepDataInterface {
   public String trustStoreFile;
   public String trustStorePassword;
 
-  public DefaultApacheHttpClientConfig config;
+  public DefaultApacheHttpClient4Config config;
 
   public HTTPBasicAuthFilter basicAuthentication;
 
