@@ -50,6 +50,24 @@ define([
           }
         });
 
+        scope.$watch(attrs.searchValue, function(newValue) {
+          if (newValue === "") {
+            $timeout(function() {
+              setScrollTableClass();
+              setWidths();
+            });
+          }
+        });
+
+        scope.$watch(attrs.selectedFile, function(newValue) {
+          if (newValue === null) {
+            $timeout(function() {
+              setScrollTableClass();
+              setWidths();
+            });
+          }
+        });
+
         /**
          * Sets the class of the element if scrolling is needed. Also, sets css for the elements within file area.
          */

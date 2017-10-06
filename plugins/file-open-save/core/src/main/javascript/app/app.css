@@ -424,3 +424,7 @@ file-open-save-app ::-moz-placeholder {
 file-open-save-app input:-moz-placeholder {
   text-overflow: ellipsis;
 }
+
+file-open-save-app .hasError {
+  pointer-events: none;
+}
