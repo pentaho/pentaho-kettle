@@ -99,6 +99,10 @@
      <!--<priority value="ERROR"/>-->
    <!--</category>-->
 
+    <category name="org.apache.hadoop.io.retry">
+        <priority value="INFO" />
+    </category>
+
 	<category name="org.pentaho.platform.osgi">
 		<priority value="INFO" />
 	</category>
