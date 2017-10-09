@@ -28,11 +28,17 @@ import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.CredentialsProvider;
 import org.apache.http.client.RedirectStrategy;
 import org.apache.http.client.config.RequestConfig;
+import org.apache.http.config.RegistryBuilder;
+import org.apache.http.conn.socket.ConnectionSocketFactory;
+import org.apache.http.conn.socket.PlainConnectionSocketFactory;
+import org.apache.http.conn.ssl.NoopHostnameVerifier;
+import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
+import org.apache.http.ssl.SSLContexts;
 
 /**
  * Single entry point for all {@link org.apache.http.client.HttpClient HttpClient instances} usages in pentaho projects.
@@ -52,7 +58,10 @@ public class HttpClientManager {
   private static PoolingHttpClientConnectionManager manager;
 
   private HttpClientManager() {
-    manager = new PoolingHttpClientConnectionManager();
+    manager = new PoolingHttpClientConnectionManager( RegistryBuilder.<ConnectionSocketFactory>create()
+            .register( "http" , PlainConnectionSocketFactory.getSocketFactory() )
+            .register( "https" , new SSLConnectionSocketFactory( SSLContexts.createDefault(), NoopHostnameVerifier.INSTANCE ) )
+            .build() );
     manager.setDefaultMaxPerRoute( CONNECTIONS_PER_ROUTE );
     manager.setMaxTotal( TOTAL_CONNECTIONS );
   }
