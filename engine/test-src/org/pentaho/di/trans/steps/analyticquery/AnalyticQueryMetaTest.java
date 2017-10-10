@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -27,6 +27,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.pentaho.di.core.KettleEnvironment;
@@ -37,6 +38,7 @@ import org.pentaho.di.trans.steps.loadsave.validator.FieldLoadSaveValidator;
 import org.pentaho.di.trans.steps.loadsave.validator.IntLoadSaveValidator;
 import org.pentaho.di.trans.steps.loadsave.validator.PrimitiveIntArrayLoadSaveValidator;
 import org.pentaho.di.trans.steps.loadsave.validator.StringLoadSaveValidator;
+import org.pentaho.di.trans.steps.mock.StepMockHelper;
 
 public class AnalyticQueryMetaTest {
 
@@ -64,5 +66,36 @@ public class AnalyticQueryMetaTest {
     LoadSaveTester loadSaveTester =
       new LoadSaveTester( AnalyticQueryMeta.class, attributes, getterMap, setterMap, fieldValidators, typeValidators );
     loadSaveTester.testSerialization();
+  }
+
+
+  @Test
+  public void testPDI16559() throws Exception {
+    StepMockHelper<AnalyticQueryMeta, AnalyticQueryData> mockHelper =
+            new StepMockHelper<AnalyticQueryMeta, AnalyticQueryData>( "analyticQuery", AnalyticQueryMeta.class, AnalyticQueryData.class );
+
+    AnalyticQueryMeta analyticQuery = new AnalyticQueryMeta();
+    analyticQuery.setGroupField( new String[] { "group1", "group2" } );
+    analyticQuery.setSubjectField( new String[] { "field1", "field2", "field3", "field4", "field5" } );
+    analyticQuery.setAggregateField( new String[] { "subj1", "subj2", "subj3" } );
+    analyticQuery.setAggregateType( new int[] { 0, 1, 2, 3 } );
+    analyticQuery.setValueField( new int[] { 0, 4, 8 } );
+
+    try {
+      String badXml = analyticQuery.getXML();
+      Assert.fail( "Before calling afterInjectionSynchronization, should have thrown an ArrayIndexOOB" );
+    } catch ( Exception expected ) {
+      // Do Nothing
+    }
+    analyticQuery.afterInjectionSynchronization();
+    //run without a exception
+    String ktrXml = analyticQuery.getXML();
+
+    int targetSz = analyticQuery.getSubjectField().length;
+
+    Assert.assertEquals( targetSz, analyticQuery.getAggregateField().length );
+    Assert.assertEquals( targetSz, analyticQuery.getAggregateType().length );
+    Assert.assertEquals( targetSz, analyticQuery.getValueField().length );
+
   }
 }

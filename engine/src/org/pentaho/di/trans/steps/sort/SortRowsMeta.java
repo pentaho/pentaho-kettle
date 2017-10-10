@@ -32,6 +32,7 @@ import java.util.Locale;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.injection.AfterInjection;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
@@ -277,7 +278,6 @@ public class SortRowsMeta extends BaseStepMeta implements StepMetaInterface, Ser
   @Override
   public String getXML() {
     StringBuilder retval = new StringBuilder( 256 );
-
     retval.append( "      " ).append( XMLHandler.addTagValue( "directory", directory ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "prefix", prefix ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "sort_size", sortSize ) );
@@ -643,7 +643,7 @@ public class SortRowsMeta extends BaseStepMeta implements StepMetaInterface, Ser
   }
 
   /**
-   * @param preSortedField
+   * @param preSorted
    *          the preSorteField to set
    */
   public void setPreSortedField( boolean[] preSorted ) {
@@ -667,4 +667,26 @@ public class SortRowsMeta extends BaseStepMeta implements StepMetaInterface, Ser
   public boolean isGroupSortEnabled() {
     return ( this.getGroupFields() != null ) ? true : false;
   }
+
+  /**
+   * If we use injection we can have different arrays lengths.
+   * We need synchronize them for consistency behavior with UI
+   */
+  @AfterInjection
+  public void afterInjectionSynchronization() {
+    int nrFields = ( fieldName == null ) ? -1 : fieldName.length;
+    if ( nrFields <= 0 ) {
+      return;
+    }
+    boolean[][] rtnBooleanArrays = Utils.normalizeArrays( nrFields, ascending, caseSensitive, collatorEnabled, preSortedField );
+    ascending = rtnBooleanArrays[ 0 ];
+    caseSensitive = rtnBooleanArrays[ 1 ];
+    collatorEnabled = rtnBooleanArrays[ 2 ];
+    preSortedField = rtnBooleanArrays[ 3 ];
+
+    int[][] rtnIntArrays = Utils.normalizeArrays( nrFields, collatorStrength );
+    collatorStrength = rtnIntArrays[ 0 ];
+
+  }
+
 }
