@@ -433,6 +433,13 @@
   </kettle-variable>
 
   <kettle-variable>
+    <description>Set this variable to Y to create S3 Object for upload based on a temporary file with data.
+    </description>
+    <variable>s3.vfs.useTempFileOnUploadData</variable>
+    <default-value>N</default-value>
+  </kettle-variable>
+
+  <kettle-variable>
     <description>Set this variable to restore the directory loading behavior of the repository as it was before 6.1. Changing this to false will make repository loading more expensive</description>
     <variable>KETTLE_LAZY_REPOSITORY</variable>
     <default-value>true</default-value>

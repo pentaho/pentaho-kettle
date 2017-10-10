@@ -1,6 +1,6 @@
-<div id="filesWrapper" class="filesWrapper" resize-files="vm.folder.path + vm.search">
-  <div class="headerWrapper">
-    <table>
+<div id="filesWrapper" class="filesWrapper" selected-file="vm.selectedFile" search-value="vm.search" resize-files="vm.folder.path">
+  <div id="headerWrapper" class="headerWrapper">
+    <table class="headerTable">
       <thead>
       <tr>
         <th class="nameCell" ng-click="vm.sortFiles(vm._name)">
@@ -39,7 +39,7 @@
   </div>
 
   <div id="bodyWrapper" class="bodyWrapper">
-    <table ng-class="{searchTable: vm.search}">
+    <table id="filesTableBody" ng-class="{searchTable: vm.search}">
       <tbody>
       <tr ng-repeat="file in vm.getFiles(vm.folder.children) | orderBy: file: vm.sortReverse: vm.compareFiles "
           ng-click="vm.selectFile(file)"
@@ -77,6 +77,5 @@
         </td>
       </tr>
     </table>
-    <div class="spacer"></div>
   </div>
 </div>

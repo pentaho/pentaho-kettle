@@ -37,6 +37,8 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.extension.ExtensionPointHandler;
 import org.pentaho.di.core.extension.KettleExtensionPoint;
+import org.pentaho.di.core.listeners.CurrentDirectoryChangedListener;
+import org.pentaho.di.core.listeners.impl.EntryCurrentDirectoryChangedListener;
 import org.pentaho.di.core.logging.LogChannelFileWriter;
 import org.pentaho.di.core.logging.LogLevel;
 import org.pentaho.di.core.parameters.DuplicateParamException;
@@ -133,6 +135,11 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
   public static final LogLevel DEFAULT_LOG_LEVEL = LogLevel.NOTHING;
 
   private Job job;
+
+  private CurrentDirectoryChangedListener dirListener = new EntryCurrentDirectoryChangedListener(
+      this::getSpecificationMethod,
+      this::getDirectory,
+      this::setDirectory );
 
   public JobEntryJob( String name ) {
     super( name, "" );
@@ -1672,4 +1679,17 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
   public void setExpandingRemoteJob( boolean expandingRemoteJob ) {
     this.expandingRemoteJob = expandingRemoteJob;
   }
+
+  @Override
+  public void setParentJobMeta( JobMeta parentJobMeta ) {
+    JobMeta previous = getParentJobMeta();
+    super.setParentJobMeta( parentJobMeta );
+    if ( previous != null ) {
+      previous.removeCurrentDirectoryChangedListener( this.dirListener );
+    }
+    if ( parentJobMeta !=  null ) {
+      parentJobMeta.addCurrentDirectoryChangedListener( this.dirListener );
+    }
+  }
+
 }

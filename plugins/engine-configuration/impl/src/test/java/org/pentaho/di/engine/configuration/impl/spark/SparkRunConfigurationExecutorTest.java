@@ -45,7 +45,7 @@ import static org.mockito.Mockito.*;
 /**
  * Created by bmorrise on 3/22/17.
  */
-@RunWith ( MockitoJUnitRunner.class )
+@RunWith( MockitoJUnitRunner.class )
 public class SparkRunConfigurationExecutorTest {
 
   private SparkRunConfigurationExecutor sparkRunConfigurationExecutor;
@@ -83,7 +83,8 @@ public class SparkRunConfigurationExecutorTest {
   public void testExecuteRSADaemon() {
     SparkRunConfiguration sparkRunConfiguration = new SparkRunConfiguration();
     sparkRunConfiguration.setName( "Spark Configuration" );
-    sparkRunConfiguration.setUrl( "ws://127.0.0.2:8121" );
+    sparkRunConfiguration.setSchema( "http://" );
+    sparkRunConfiguration.setUrl( "127.0.0.2:8121" );
 
     doReturn( "1.0" ).when( variableSpace ).getVariable( "KETTLE_AEL_PDI_DAEMON_VERSION", "2.0" );
 
@@ -104,7 +105,8 @@ public class SparkRunConfigurationExecutorTest {
   public void testExecuteNoPortRSADaemon() {
     SparkRunConfiguration sparkRunConfiguration = new SparkRunConfiguration();
     sparkRunConfiguration.setName( "Spark Configuration" );
-    sparkRunConfiguration.setUrl( "zk://127.0.0.1:2181" );
+    sparkRunConfiguration.setSchema( "zk://" );
+    sparkRunConfiguration.setUrl( "127.0.0.1:2181" );
 
     TransExecutionConfiguration transExecutionConfiguration = new TransExecutionConfiguration();
 
@@ -125,7 +127,8 @@ public class SparkRunConfigurationExecutorTest {
   public void testWebSocketVersionExecute() {
     SparkRunConfiguration sparkRunConfiguration = new SparkRunConfiguration();
     sparkRunConfiguration.setName( "Spark Configuration" );
-    sparkRunConfiguration.setUrl( "http://127.0.0.2:8121" );
+    sparkRunConfiguration.setSchema( "http://" );
+    sparkRunConfiguration.setUrl( "127.0.0.2:8121" );
     doReturn( "2.0" ).when( variableSpace ).getVariable( "KETTLE_AEL_PDI_DAEMON_VERSION", "2.0" );
 
 
@@ -166,7 +169,8 @@ public class SparkRunConfigurationExecutorTest {
   public void testWssWebSocketVersionExecute() {
     SparkRunConfiguration sparkRunConfiguration = new SparkRunConfiguration();
     sparkRunConfiguration.setName( "Spark Configuration" );
-    sparkRunConfiguration.setUrl( "wss://127.0.0.2:8121" );
+    sparkRunConfiguration.setSchema( "https://" );
+    sparkRunConfiguration.setUrl( "127.0.0.2:8121" );
     doReturn( "2.0" ).when( variableSpace ).getVariable( "KETTLE_AEL_PDI_DAEMON_VERSION", "2.0" );
 
 
@@ -175,7 +179,7 @@ public class SparkRunConfigurationExecutorTest {
     sparkRunConfigurationExecutor
       .execute( sparkRunConfiguration, transExecutionConfiguration, abstractMeta, variableSpace, null );
 
-    verify( variableSpace ).setVariable( "engine.protocol", "wss" );
+    verify( variableSpace ).setVariable( "engine.protocol", "https" );
     verify( variableSpace ).setVariable( "engine.host", "127.0.0.2" );
     verify( variableSpace ).setVariable( "engine.port", "8121" );
   }
@@ -184,7 +188,8 @@ public class SparkRunConfigurationExecutorTest {
   public void testUrlWssWebSocketVersionExecute() {
     SparkRunConfiguration sparkRunConfiguration = new SparkRunConfiguration();
     sparkRunConfiguration.setName( "Spark Configuration" );
-    sparkRunConfiguration.setUrl( "  ws://127.0.0.2:8121  " );
+    sparkRunConfiguration.setSchema( "http://" );
+    sparkRunConfiguration.setUrl( "  127.0.0.2:8121  " );
     doReturn( "2.0" ).when( variableSpace ).getVariable( "KETTLE_AEL_PDI_DAEMON_VERSION", "2.0" );
 
 
@@ -193,7 +198,7 @@ public class SparkRunConfigurationExecutorTest {
     sparkRunConfigurationExecutor
       .execute( sparkRunConfiguration, transExecutionConfiguration, abstractMeta, variableSpace, null );
 
-    verify( variableSpace ).setVariable( "engine.protocol", "ws" );
+    verify( variableSpace ).setVariable( "engine.protocol", "http" );
     verify( variableSpace ).setVariable( "engine.host", "127.0.0.2" );
     verify( variableSpace ).setVariable( "engine.port", "8121" );
   }

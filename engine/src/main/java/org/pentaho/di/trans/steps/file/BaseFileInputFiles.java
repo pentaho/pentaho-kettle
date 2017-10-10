@@ -23,6 +23,7 @@
 package org.pentaho.di.trans.steps.file;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.pentaho.di.core.fileinput.FileInputList;
@@ -92,7 +93,13 @@ public class BaseFileInputFiles implements Cloneable {
   @Override
   public Object clone() {
     try {
-      return super.clone();
+      BaseFileInputFiles cloned = (BaseFileInputFiles) super.clone();
+      cloned.fileName = Arrays.copyOf( fileName, fileName.length );
+      cloned.fileMask = Arrays.copyOf( fileMask, fileMask.length );
+      cloned.excludeFileMask = Arrays.copyOf( excludeFileMask, excludeFileMask.length );
+      cloned.fileRequired = Arrays.copyOf( fileRequired, fileRequired.length );
+      cloned.includeSubFolders = Arrays.copyOf( includeSubFolders, includeSubFolders.length );
+      return cloned;
     } catch ( CloneNotSupportedException ex ) {
       throw new IllegalArgumentException( "Clone not supported for " + this.getClass().getName() );
     }

@@ -81,6 +81,7 @@
     <kafka-clients.version>0.10.2.1</kafka-clients.version>
     <tyrus-standalone-client.version>1.13.1</tyrus-standalone-client.version>
     <spark.version>2.1.0</spark.version>
+    <databricks.version>3.2.0</databricks.version>
 
     <!-- plugins -->
     <pdi-core-plugin.version>${project.version}</pdi-core-plugin.version>
@@ -716,6 +717,17 @@
       <groupId>org.codehaus.enunciate</groupId>
       <artifactId>enunciate-core-annotations</artifactId>
       <version>${enunciate-core-annotations.version}</version>
+      <exclusions>
+        <exclusion>
+          <groupId>*</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>com.databricks</groupId>
+      <artifactId>spark-avro_2.10</artifactId>
+      <version>${databricks.version}</version>
       <exclusions>
         <exclusion>
           <groupId>*</groupId>

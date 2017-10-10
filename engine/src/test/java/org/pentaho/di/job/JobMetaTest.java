@@ -35,6 +35,7 @@ import org.pentaho.di.core.exception.LookupReferencesException;
 import org.pentaho.di.core.gui.OverwritePrompter;
 import org.pentaho.di.core.gui.Point;
 import org.pentaho.di.core.listeners.ContentChangedListener;
+import org.pentaho.di.core.listeners.CurrentDirectoryChangedListener;
 import org.pentaho.di.job.entries.empty.JobEntryEmpty;
 import org.pentaho.di.job.entries.trans.JobEntryTrans;
 import org.pentaho.di.job.entry.JobEntryCopy;
@@ -340,4 +341,30 @@ public class JobMetaTest {
     Assert.assertEquals( repDirectory.getPath(), job.getVariable( Const.INTERNAL_VARIABLE_JOB_REPOSITORY_DIRECTORY ) );
   }
 
+  @Test
+  public void testAddRemoveJobEntryCopySetUnsetParent() throws Exception {
+    JobEntryCopy jobEntryCopy = mock( JobEntryCopy.class );
+    jobMeta.addJobEntry( jobEntryCopy );
+    jobMeta.removeJobEntry( 0 );
+    verify( jobEntryCopy, times( 1 ) ).setParentJobMeta( jobMeta );
+    verify( jobEntryCopy, times( 1 ) ).setParentJobMeta( null );
+  }
+
+  @Test
+  public void testFireCurrentDirChanged() throws Exception {
+    String pathBefore = "/path/before", pathAfter = "path/after";
+    RepositoryDirectoryInterface repoDirOrig = mock( RepositoryDirectoryInterface.class );
+    when( repoDirOrig.getPath() ).thenReturn( pathBefore );
+    RepositoryDirectoryInterface repoDir = mock( RepositoryDirectoryInterface.class );
+    when( repoDir.getPath() ).thenReturn( pathAfter );
+
+    jobMeta.setRepository( mock( Repository.class ) );
+    jobMeta.setRepositoryDirectory( repoDirOrig );
+
+    CurrentDirectoryChangedListener listener = mock( CurrentDirectoryChangedListener.class );
+    jobMeta.addCurrentDirectoryChangedListener( listener );
+    jobMeta.setRepositoryDirectory( repoDir );
+
+    verify( listener, times( 1 ) ).directoryChanged( jobMeta, pathBefore, pathAfter );
+  }
 }

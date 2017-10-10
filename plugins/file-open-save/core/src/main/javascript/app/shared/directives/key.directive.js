@@ -15,23 +15,76 @@
  */
 
 define([
-], function() {
+  "angular"
+], function(angular) {
   key.$inject = ["$document"];
 
   /**
    * @param {Object} $document - jQuery or jqLite wrapper for the browser's window.document object.
-   * @return {{restrict: string, scope: {onKeyUp: string}, link: link}} - Key Directive
+   * @return {{restrict: string, link: link}} - Key Directive
    */
   function key($document) {
     return {
-      restrict: "AE",
-      scope: {
-        onKeyUp: "&"
-      },
-      link: function(scope, element, attr) {
-        $document.on("keyup", function(event) {
-          scope.onKeyUp({event: event});
+      restrict: "A",
+      link: function(scope, element) {
+        var errorWithConfirm = [1, 5, 6];
+        var confirmButton = angular.element(element[0].querySelector("#errorConfirmButton"));
+        var cancelButton = angular.element(element[0].querySelector("#errorCancelButton"));
+
+        var stopEvents = function(event) {
+          event.stopPropagation();
+          event.preventDefault();
+          event.returnValue = false;
+          event.cancelBubble = true;
+          return false;
+        };
+
+        $document.on("keydown", function(event) {
+          handleKeyDownAndKeyPress(event);
         });
+
+        $document.on("keypress", function(event) {
+          handleKeyDownAndKeyPress(event);
+        });
+
+        $document.on("keyup", function(event) {
+          handleKeyUp(event);
+        });
+
+        /**
+         * Function to handle keydown and keypress events
+         * @param {Object} event - DOM event
+         */
+        function handleKeyDownAndKeyPress(event) {
+          if (scope.vm.errorType !== 0) {
+            stopEvents(event);
+          }
+        }
+
+        /**
+         * Function to handle key events
+         * @param {Object} event - DOM event
+         */
+        function handleKeyUp(event) {
+          if (scope.vm.errorType === 0) {
+            scope.vm.onKeyUp(event);
+            scope.$apply();
+          } else if (event.keyCode === 13) {
+            handleEnter(scope.vm.errorType);
+          }
+        }
+
+        /**
+         * Function to handle key events
+         * @param {Number} errorType - Number to designate the type of error
+         */
+        function handleEnter(errorType) {
+          if (errorWithConfirm.indexOf(errorType) === -1) {
+            cancelButton[0].click();
+          } else {
+            confirmButton[0].click();
+          }
+        }
       }
     };
   }

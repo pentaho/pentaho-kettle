@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2014 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -23,7 +23,10 @@
 package org.pentaho.di.job.entries.job;
 
 import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.io.ByteArrayInputStream;
@@ -41,6 +44,7 @@ import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.ObjectLocationSpecificationMethod;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleXMLException;
+import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Document;
@@ -161,5 +165,16 @@ public class JobEntryJobTest {
     testJobEntry( rep, true, ObjectLocationSpecificationMethod.REPOSITORY_BY_NAME, ObjectLocationSpecificationMethod.REPOSITORY_BY_NAME );
     // connected, jobname, FILENAME method    
     testJobEntry( rep, true, ObjectLocationSpecificationMethod.FILENAME, ObjectLocationSpecificationMethod.REPOSITORY_BY_NAME );
+  }
+
+  @Test
+  public void testCurrDirListener() throws Exception {
+    JobMeta meta = mock( JobMeta.class );
+    JobEntryJob jej = getJobEntryJob();
+    jej.setParentJobMeta( null );
+    jej.setParentJobMeta( meta );
+    jej.setParentJobMeta( null );
+    verify( meta, times( 1 ) ).addCurrentDirectoryChangedListener( any() );
+    verify( meta, times( 1 ) ).removeCurrentDirectoryChangedListener( any() );
   }
 }

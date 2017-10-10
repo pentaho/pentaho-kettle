@@ -1042,6 +1042,29 @@ public class BaseStepDialog extends Dialog {
                                                   int[] nameColumn, int[] dataTypeColumn, int lengthColumn,
                                                   int precisionColumn,
                                                   TableItemInsertListener listener ) {
+    getFieldsFromPrevious( row, tableView, keyColumn, nameColumn, dataTypeColumn, lengthColumn, precisionColumn, true,
+      listener );
+  }
+
+  /**
+   * Gets unused fields from previous steps and inserts them as rows into a table view.
+   *
+   * @param row             the input fields
+   * @param tableView       the table view to modify
+   * @param keyColumn       the column in the table view to match with the names of the fields, checks for existance if
+   *                        >0
+   * @param nameColumn      the column numbers in which the name should end up in
+   * @param dataTypeColumn  the target column numbers in which the data type should end up in
+   * @param lengthColumn    the length column where the length should end up in (if >0)
+   * @param precisionColumn the length column where the precision should end up in (if >0)
+   * @param optimizeWidth
+   * @param listener        A listener that you can use to do custom modifications to the inserted table item, based on
+   *                        a value from the provided row
+   */
+  public static final void getFieldsFromPrevious( RowMetaInterface row, TableView tableView, int keyColumn,
+                                                  int[] nameColumn, int[] dataTypeColumn, int lengthColumn,
+                                                  int precisionColumn, boolean optimizeWidth,
+                                                  TableItemInsertListener listener ) {
     if ( row == null || row.size() == 0 ) {
       return; // nothing to do
     }
@@ -1070,10 +1093,10 @@ public class BaseStepDialog extends Dialog {
           null,
           BaseMessages.getString( PKG, "BaseStepDialog.GetFieldsChoice.Message", "" + keys.size(), "" + row.size() ),
           MessageDialog.WARNING, new String[] {
-            BaseMessages.getString( PKG, "BaseStepDialog.AddNew" ),
-            BaseMessages.getString( PKG, "BaseStepDialog.Add" ),
-            BaseMessages.getString( PKG, "BaseStepDialog.ClearAndAdd" ),
-            BaseMessages.getString( PKG, "BaseStepDialog.Cancel" ), }, 0 );
+          BaseMessages.getString( PKG, "BaseStepDialog.AddNew" ),
+          BaseMessages.getString( PKG, "BaseStepDialog.Add" ),
+          BaseMessages.getString( PKG, "BaseStepDialog.ClearAndAdd" ),
+          BaseMessages.getString( PKG, "BaseStepDialog.Cancel" ), }, 0 );
       MessageDialog.setDefaultImage( GUIResource.getInstance().getImageSpoon() );
       int idx = md.open();
       choice = idx & 0xFF;
@@ -1130,7 +1153,9 @@ public class BaseStepDialog extends Dialog {
     }
     tableView.removeEmptyRows();
     tableView.setRowNums();
-    tableView.optWidth( true );
+    if ( optimizeWidth ) {
+      tableView.optWidth( true );
+    }
   }
 
   /**

@@ -100,8 +100,8 @@ import org.pentaho.di.repository.RepositoryDirectoryInterface;
 import org.pentaho.di.resource.ResourceUtil;
 import org.pentaho.di.resource.TopLevelResource;
 import org.pentaho.di.trans.Trans;
-import org.pentaho.di.www.AddExportServlet;
 import org.pentaho.di.www.RegisterJobServlet;
+import org.pentaho.di.www.RegisterPackageServlet;
 import org.pentaho.di.www.SocketRepository;
 import org.pentaho.di.www.StartJobServlet;
 import org.pentaho.di.www.WebResult;
@@ -1811,10 +1811,10 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
                 metaStore, executionConfiguration.getXML(), CONFIGURATION_IN_EXPORT_FILENAME );
 
         // Send the zip file over to the slave server...
-        //
-        String result =
-            slaveServer.sendExport( topLevelResource.getArchiveName(), AddExportServlet.TYPE_JOB, topLevelResource
-                .getBaseResourceName() );
+        String result = slaveServer.sendExport(
+            topLevelResource.getArchiveName(),
+            RegisterPackageServlet.TYPE_JOB,
+            topLevelResource.getBaseResourceName() );
         WebResult webResult = WebResult.fromXMLString( result );
         if ( !webResult.getResult().equalsIgnoreCase( WebResult.STRING_OK ) ) {
           throw new KettleException( "There was an error passing the exported job to the remote server: " + Const.CR

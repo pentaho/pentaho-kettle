@@ -234,14 +234,16 @@ file-open-save-app .addDelete .deleteFolder {
 }
 
 file-open-save-app .middle {
-  height: 292px;
+  position: absolute;
+  top: 122px;
+  bottom: 171px;
   width: 100%;
   border-top: 1px solid #CCC;
   border-bottom: 1px solid #CCC;
 }
 
 file-open-save-app .open .middle {
-  height: 368px;
+  bottom: 96px;
 }
 
 file-open-save-app .directoryTreeArea {
@@ -256,9 +258,7 @@ file-open-save-app .directoryTreeArea {
 
 file-open-save-app .fileArea {
   height: 100%;
-  width: auto;
-  overflow-x: auto;
-  overflow-y: hidden;
+  overflow: hidden;
   position: relative;
 }
 
@@ -278,6 +278,10 @@ file-open-save-app .fileArea.hasMessage {
 
 file-open-save-app .bottom {
   padding: 20px 30px 30px;
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  right: 0;
   height: 119px;
 }
 
@@ -419,4 +423,8 @@ file-open-save-app ::-moz-placeholder {
 
 file-open-save-app input:-moz-placeholder {
   text-overflow: ellipsis;
+}
+
+file-open-save-app .hasError {
+  pointer-events: none;
 }

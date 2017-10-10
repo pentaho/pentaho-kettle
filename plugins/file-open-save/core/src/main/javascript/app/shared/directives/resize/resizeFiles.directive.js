@@ -17,82 +17,120 @@
 define([
   "angular"
 ], function(angular) {
-  resize.$inject = ["$window"];
+  resize.$inject = ["$window", "$timeout"];
   /**
    * @param {Service} $window - A reference to the browser's window object
+   * @param {Function} $timeout - Angular wrapper for window.setTimeout.
    * @return {{restrict: string, link: link}} - resizeFiles directive
    */
-  function resize($window) {
+  function resize($window, $timeout) {
     return {
       restrict: "A",
       link: function(scope, element, attrs) {
-        var _filesHeaderHeight = 31;
-        var _openSaveDiff = 73;
-        var _openOtherHeight = 220;
-        var _saveOtherHeight = _openOtherHeight + _openSaveDiff;
-        var _openOtherMaxHeight = 251;
-        var _saveOtherMaxHeight = _openOtherMaxHeight + _openSaveDiff;
-        var _buffer = 17;
+        var needsTimeout = true;
         var openOrSave = scope.vm.wrapperClass;
+        var scrollClass = openOrSave === "open" ? "scrollTableOpen" : "scrollTableSave";
+        var table = angular.element(element[0].querySelector("#filesTableBody"));
+        var bodyWrapper = angular.element(element[0].querySelector("#bodyWrapper"));
+        var headerWrapper = angular.element(document.querySelector("#headerWrapper"));
         var w = angular.element($window);
 
         scope.$watch(attrs.resizeFiles, function(newValue, oldValue) {
           if (newValue !== oldValue) {
-            setScrollTableClass();
+            if (needsTimeout) {
+              needsTimeout = false;
+              $timeout(function() {
+                setScrollTableClass();
+                setWidths();
+              });
+            } else {
+              setScrollTableClass();
+              setWidths();
+            }
+          }
+        });
+
+        scope.$watch(attrs.searchValue, function(newValue) {
+          if (newValue === "") {
+            $timeout(function() {
+              setScrollTableClass();
+              setWidths();
+            });
+          }
+        });
+
+        scope.$watch(attrs.selectedFile, function(newValue) {
+          if (newValue === null) {
+            $timeout(function() {
+              setScrollTableClass();
+              setWidths();
+            });
           }
         });
 
         /**
-         * Sets the class of the element if scrolling is needed
+         * Sets the class of the element if scrolling is needed. Also, sets css for the elements within file area.
          */
         function setScrollTableClass() {
-          var folder = scope.vm.folder;
-          if (folder.name === "Recents" && folder.path === "Recents") {
+          if (scope.vm.folder.name === "Recents" && scope.vm.folder.path === "Recents") {
+            needsTimeout = true;
             return;
           }
-          var filesLength = folder.children.length;
-          var isSearch = scope.vm.search;
-          var numResults = scope.vm.numResults;
-          var totalFileHeight = 0;
-          var bodyWrapperHeight = 0;
-          var scrollClass = "";
-          if (isSearch) {// searching
-            totalFileHeight = numResults * 60 + _buffer;
-          } else {// not searching
-            totalFileHeight = filesLength * 30 + _buffer;
-          }
-          if (openOrSave === "open") {
-            bodyWrapperHeight = w[0].innerHeight - _openOtherHeight - _filesHeaderHeight;
-            scrollClass = "scrollTableOpen";
-          } else if (openOrSave === "save") {
-            bodyWrapperHeight = w[0].innerHeight - _saveOtherHeight - _filesHeaderHeight;
-            scrollClass = "scrollTableSave";
-          }
-          if (bodyWrapperHeight < totalFileHeight) {
+          bodyWrapper.css("height", "calc(100% - 31px)");
+          table.css("margin-bottom", "0");
+          var hasVertScroll = bodyWrapper[0].scrollHeight > bodyWrapper[0].clientHeight;
+          if (hasVertScroll) {
+            table.css("min-width", "612px");
+            bodyWrapper.css("height", "calc(100% - 31px)");
+            table.css("margin-bottom", "0");
             element.addClass(scrollClass);
           } else {
+            table.css("min-width", "629px");
+            bodyWrapper.css("height", "auto");
+            var spacing = bodyWrapper[0].scrollWidth > bodyWrapper[0].clientWidth ? 17 : 0;
+            table.css("margin-bottom", (element[0].clientHeight - table[0].clientHeight - 31 - spacing) + "px");
             element.removeClass(scrollClass);
           }
         }
 
+        /**
+         * Sets the width of this element and the header/body wrappers in the file area.
+         * The width is the remaining space from the window width - the directory area.
+         */
+        function setWidths() {
+          var innerWidth = w[0].innerWidth;
+          var dirTreeAreaWidth = angular.element(document.querySelector("#directoryTreeArea"))[0].offsetWidth - 1;
+          var widthToSet = (innerWidth - dirTreeAreaWidth - 1) + "px";
+          element.css("width", widthToSet);
+          headerWrapper.css("width", widthToSet);
+          bodyWrapper.css("width", widthToSet);
+          setHeaderWidthAndPos();
+        }
+
+        /**
+         * Since the header needs to scroll with the body, we need to handle the width
+         */
+        function setHeaderWidthAndPos() {
+          var left = -1 * bodyWrapper[0].scrollLeft;
+          var width = bodyWrapper[0].clientWidth + (-1 * left);
+          var buffer = bodyWrapper[0].scrollHeight > bodyWrapper[0].clientHeight ? 17 : 0;
+          headerWrapper.css("left", left + "px");
+          headerWrapper.css("width", (width + buffer) + "px");
+        }
+
         w.on("resize", function() {
-          var innerHeight = w[0].innerHeight;
-          var _tmpBuffer = w[0].innerWidth < 930 ? _buffer : 0;
-          var elem = angular.element(element[0].querySelector("#bodyWrapper"));
           setScrollTableClass();
-          if (openOrSave === "open") {
-            elem.css("max-height", (innerHeight - _openOtherMaxHeight - _tmpBuffer) + "px");
-          } else if (openOrSave === "save") {
-            elem.css("max-height", (innerHeight - _saveOtherMaxHeight - _tmpBuffer) + "px");
-          }
+          setWidths();
           scope.$apply();
         });
+
+        bodyWrapper.on("scroll", setHeaderWidthAndPos);
       }
     };
   }
 
   return {
     name: "resizeFiles",
-    options: ["$window", resize]
+    options: ["$window", "$timeout", resize]
   };
 });

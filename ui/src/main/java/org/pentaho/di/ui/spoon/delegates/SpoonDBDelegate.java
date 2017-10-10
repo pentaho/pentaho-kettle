@@ -106,6 +106,7 @@ public class SpoonDBDelegate extends SpoonDelegate {
         return;
       }
       databaseMeta.setName( newname.trim() );
+      databaseMeta.setDisplayName( newname.trim() );
       saveConnection( databaseMeta, Const.VERSION_COMMENT_EDIT_VERSION );
       if ( databaseMeta.isShared() ) {
         sharedObjectSyncUtil.synchronizeConnections( databaseMeta, originalName );

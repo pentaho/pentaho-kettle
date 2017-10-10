@@ -32,6 +32,7 @@ import org.pentaho.di.trans.steps.transexecutor.TransExecutorData;
 import org.pentaho.di.trans.steps.transexecutor.TransExecutorParameters;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Will run the given sub-transformation with the rows passed to execute
@@ -53,9 +54,9 @@ public class SubtransExecutor {
     this.parameters = parameters;
   }
 
-  public Result execute( List<RowMetaAndData> rows ) throws KettleException {
+  public Optional<Result> execute( List<RowMetaAndData> rows ) throws KettleException {
     if ( rows.isEmpty() ) {
-      return null;
+      return Optional.empty();
     }
     this.transExecutorData.groupTimeStart = System.currentTimeMillis();
 
@@ -74,7 +75,7 @@ public class SubtransExecutor {
 
     subtrans.waitUntilFinished();
 
-    return subtrans.getResult();
+    return Optional.of( subtrans.getResult() );
   }
 
   private Trans createSubtrans() {

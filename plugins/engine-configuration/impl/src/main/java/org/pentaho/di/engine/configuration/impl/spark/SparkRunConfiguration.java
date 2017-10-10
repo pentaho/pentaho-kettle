@@ -46,7 +46,10 @@ public class SparkRunConfiguration implements RunConfiguration {
   private String description;
 
   @MetaStoreAttribute
-  private String url = "http://127.0.0.1:53000";
+  private String schema = "http://";
+
+  @MetaStoreAttribute
+  private String url = "127.0.0.1:53000";
 
   public String getName() {
     return name;
@@ -62,6 +65,15 @@ public class SparkRunConfiguration implements RunConfiguration {
 
   public void setDescription( String description ) {
     this.description = description;
+  }
+
+
+  public String getSchema() {
+    return schema;
+  }
+
+  public void setSchema( String schema ) {
+    this.schema = schema;
   }
 
   public String getUrl() {

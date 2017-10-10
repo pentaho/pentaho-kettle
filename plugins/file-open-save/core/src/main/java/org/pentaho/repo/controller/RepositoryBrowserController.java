@@ -112,6 +112,7 @@ public class RepositoryBrowserController {
         objectId = getRepository().renameTransformation( () -> id, repositoryDirectoryInterface, newName );
         break;
       case "folder":
+        isFileOpenedInFolder( path );
         RepositoryDirectoryInterface parent = getRepository().findDirectory( path ).getParent();
         if ( parent == null ) {
           parent = getRepository().findDirectory( path );
@@ -156,14 +157,28 @@ public class RepositoryBrowserController {
   private void isFileOpenedInFolder( String path ) throws KettleException {
     List<TransMeta> openedTransFiles = getSpoon().delegates.trans.getTransformationList();
     for ( TransMeta t : openedTransFiles ) {
-      if ( path.equals( t.getRepositoryDirectory().getPath() ) ) {
+      if ( t.getRepositoryDirectory().getPath() != null
+        && ( t.getRepositoryDirectory().getPath() + "/" ).startsWith( path + "/" ) ) {
         throw new KettleTransException();
       }
     }
     List<JobMeta> openedJobFiles = getSpoon().delegates.jobs.getJobList();
     for ( JobMeta j : openedJobFiles ) {
-      if ( path.equals( j.getRepositoryDirectory().getPath() ) ) {
+      if ( j.getRepositoryDirectory().getPath() != null
+        && ( j.getRepositoryDirectory().getPath() + "/" ).startsWith( path + "/" ) ) {
         throw new KettleJobException();
+      }
+    }
+  }
+
+  private void removeRecentsUsingPath( String path ) {
+    Collection<List<LastUsedFile>> lastUsedRepoFiles = PropsUI.getInstance().getLastUsedRepoFiles().values();
+    for ( List<LastUsedFile> lastUsedFiles : lastUsedRepoFiles ) {
+      for ( int i = 0; i < lastUsedFiles.size(); i++ ) {
+        if ( ( lastUsedFiles.get( i ).getDirectory() + "/" ).startsWith( path + "/" ) ) {
+          lastUsedFiles.remove( i );
+          i--;
+        }
       }
     }
   }
@@ -187,6 +202,7 @@ public class RepositoryBrowserController {
           break;
         case "folder":
           isFileOpenedInFolder( path );
+          removeRecentsUsingPath( path );
           RepositoryDirectoryInterface repositoryDirectoryInterface = getRepository().findDirectory( path );
           if ( getRepository() instanceof RepositoryExtended ) {
             ( (RepositoryExtended) getRepository() ).deleteRepositoryDirectory( repositoryDirectoryInterface, true );
@@ -250,6 +266,29 @@ public class RepositoryBrowserController {
       }
     }
 
+    return true;
+  }
+
+  public boolean updateRecentFiles( String oldPath, String newPath ) {
+    try {
+      Collection<List<LastUsedFile>> lastUsedRepoFiles = PropsUI.getInstance().getLastUsedRepoFiles().values();
+      for ( List<LastUsedFile> lastUsedFiles : lastUsedRepoFiles ) {
+        for ( int i = 0; i < lastUsedFiles.size(); i++ ) {
+          if ( ( lastUsedFiles.get( i ).getDirectory() + "/" ).startsWith( oldPath + "/" ) ) {
+            if ( lastUsedFiles.get( i ).getDirectory().length() == oldPath.length() ) {
+              lastUsedFiles.get( i ).setDirectory( newPath );
+            } else {
+              String prefix = newPath.substring( 0, newPath.lastIndexOf( "/" ) ) + "/";
+              String newFolder = newPath.substring( newPath.lastIndexOf( "/" ) + 1 );
+              String suffix = lastUsedFiles.get( i ).getDirectory().substring( oldPath.length() );
+              lastUsedFiles.get( i ).setDirectory( prefix + newFolder + suffix );
+            }
+          }
+        }
+      }
+    } catch ( Exception e ) {
+      return false;
+    }
     return true;
   }
 

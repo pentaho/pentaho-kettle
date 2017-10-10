@@ -1560,7 +1560,7 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
     try {
 
       //RepositoryDirectoryInterface repDir = getRootDir().findDirectory( dirId );
-      RepositoryFile dirFile = pur.getFile( dirId.getId() );
+      RepositoryFile dirFile = pur.getFileById( dirId.getId() );
       RepositoryDirectory repDir = new RepositoryDirectory();
       repDir.setObjectId( dirId );
       repDir.setName( dirFile.getName() );

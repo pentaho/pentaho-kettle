@@ -96,7 +96,7 @@ public class NamedClusterEmbedManager {
   }
 
   /**
-   * If nc:// protocol is explicitly defined, check for a literal named Cluster.  If present, add that cluster to the
+   * If hc:// protocol is explicitly defined, check for a literal named Cluster.  If present, add that cluster to the
    * embedded meta.  If the cluster name starts with a variable, add all named clusters.
    * <p/>
    * if the url starts with a variable, embed all named clusters.

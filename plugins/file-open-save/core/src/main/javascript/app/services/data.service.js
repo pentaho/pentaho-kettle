@@ -49,6 +49,7 @@ define(
           getFiles: getFiles,
           getActiveFileName: getActiveFileName,
           getRecentFiles: getRecentFiles,
+          updateRecentFiles: updateRecentFiles,
           getRecentSearches: getRecentSearches,
           storeRecentSearch: storeRecentSearch,
           openRecent: openRecent,
@@ -115,6 +116,18 @@ define(
          */
         function getRecentFiles() {
           return _httpGet([baseUrl, "recentFiles"].join("/"));
+        }
+
+        /**
+         * Updates the recent files with new file path
+         * @param {String} oldPath - file path to be changed
+         * @param {String} newPath - new file path
+         *
+         * @return {Promise} - a promise resolved once data is returned
+         */
+        function updateRecentFiles(oldPath, newPath) {
+          return _httpGet([baseUrl, "updateRecentFiles", encodeURIComponent(oldPath),
+            encodeURIComponent(newPath)].join("/"));
         }
 
         /**

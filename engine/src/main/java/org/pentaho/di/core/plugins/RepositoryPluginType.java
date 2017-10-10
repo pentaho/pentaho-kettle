@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -55,6 +55,10 @@ public class RepositoryPluginType extends BasePluginType implements PluginTypeIn
   private RepositoryPluginType() {
     super( RepositoryPlugin.class, "REPOSITORY_TYPE", "Repository type" );
     populateFolders( "repositories" );
+    String systemDir = System.getProperty( "PentahoSystemPath" );
+    if ( systemDir != null ) {
+      this.pluginFolders.add( new PluginFolder( systemDir, false, true ) );
+    }
   }
 
   public static RepositoryPluginType getInstance() {

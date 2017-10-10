@@ -31,6 +31,7 @@ import org.pentaho.di.base.AbstractMeta;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.LastUsedFile;
 import org.pentaho.di.core.NotePadMeta;
@@ -146,6 +147,9 @@ public class JobMeta extends AbstractMeta
 
   protected List<LogTableInterface> extraLogTables;
 
+  /** The log channel interface. */
+  protected LogChannelInterface log;
+
   /**
    * Constant = "SPECIAL"
    **/
@@ -232,6 +236,8 @@ public class JobMeta extends AbstractMeta
     // setInternalKettleVariables(); Don't clear the internal variables for
     // ad-hoc jobs, it's ruins the previews
     // etc.
+
+    log = LogChannel.GENERAL;
   }
 
   /**
@@ -1263,6 +1269,8 @@ public class JobMeta extends AbstractMeta
   public void removeJobEntry( int i ) {
     JobEntryCopy deleted = jobcopies.remove( i );
     if ( deleted != null ) {
+      // give step a chance to cleanup
+      deleted.setParentJobMeta( null );
       if ( deleted.getEntry() instanceof MissingEntry ) {
         removeMissingEntry( (MissingEntry) deleted.getEntry() );
       }
@@ -2330,10 +2338,17 @@ public class JobMeta extends AbstractMeta
       variables.setVariable( Const.INTERNAL_VARIABLE_JOB_REPOSITORY_DIRECTORY,
           variables.getVariable( Const.INTERNAL_VARIABLE_JOB_FILENAME_DIRECTORY ) );
     }
+    updateCurrentDir();
+  }
 
-    variables.setVariable( Const.INTERNAL_VARIABLE_ENTRY_CURRENT_DIRECTORY, variables.getVariable(
-        repository != null ? Const.INTERNAL_VARIABLE_JOB_REPOSITORY_DIRECTORY
-            : Const.INTERNAL_VARIABLE_JOB_FILENAME_DIRECTORY ) );
+  private void updateCurrentDir() {
+    String prevCurrentDir = variables.getVariable( Const.INTERNAL_VARIABLE_ENTRY_CURRENT_DIRECTORY );
+    String currentDir = variables.getVariable(
+      repository != null
+          ? Const.INTERNAL_VARIABLE_JOB_REPOSITORY_DIRECTORY
+          : Const.INTERNAL_VARIABLE_JOB_FILENAME_DIRECTORY );
+    variables.setVariable( Const.INTERNAL_VARIABLE_ENTRY_CURRENT_DIRECTORY, currentDir );
+    fireCurrentDirectoryChanged( prevCurrentDir, currentDir );
   }
 
   /**
@@ -2608,6 +2623,15 @@ public class JobMeta extends AbstractMeta
    */
   public RepositoryObjectType getRepositoryElementType() {
     return REPOSITORY_ELEMENT_TYPE;
+  }
+
+  /**
+   * Gets the log channel.
+   *
+   * @return the log channel
+   */
+  public LogChannelInterface getLogChannel() {
+    return log;
   }
 
   /**

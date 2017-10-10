@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -34,6 +34,8 @@ import static org.mockito.Mockito.when;
 
 import java.util.UUID;
 
+import com.sforce.ws.bind.XmlObject;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -45,6 +47,7 @@ import org.pentaho.di.core.logging.LoggingObjectInterface;
 import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.value.ValueMetaBase;
+import org.pentaho.di.core.row.value.ValueMetaInteger;
 import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.core.util.EnvUtil;
 import org.pentaho.di.trans.steps.mock.StepMockHelper;
@@ -202,4 +205,24 @@ public class SalesforceUpsertTest {
     doReturn( useExternalId ).when( meta ).getUseExternalId();
     return meta;
   }
+
+  @Test
+  public void testWriteToSalesForcePentahoIntegerValue() throws Exception {
+    SalesforceUpsert sfInputStep =
+      new SalesforceUpsert( smh.stepMeta, smh.stepDataInterface, 0, smh.transMeta, smh.trans );
+    SalesforceUpsertMeta meta =
+      generateSalesforceUpsertMeta( new String[] { ACCOUNT_ID }, new Boolean[] { false } );
+    SalesforceUpsertData data = generateSalesforceUpsertData();
+    sfInputStep.init( meta, data );
+
+    RowMeta rowMeta = new RowMeta();
+    ValueMetaBase valueMeta = new ValueMetaInteger( "IntValue" );
+    rowMeta.addValueMeta( valueMeta );
+    smh.initStepDataInterface.inputRowMeta = rowMeta;
+
+    sfInputStep.writeToSalesForce( new Object[] { 1L } );
+    XmlObject sObject = data.sfBuffer[ 0 ].getChild( ACCOUNT_ID );
+    Assert.assertEquals( sObject.getValue(), 1 );
+  }
+
 }

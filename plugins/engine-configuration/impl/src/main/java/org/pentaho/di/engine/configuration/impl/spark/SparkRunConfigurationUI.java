@@ -25,16 +25,22 @@
 package org.pentaho.di.engine.configuration.impl.spark;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
-import org.eclipse.swt.layout.FormAttachment;
-import org.eclipse.swt.layout.FormData;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.engine.configuration.api.RunConfigurationDialog;
 import org.pentaho.di.engine.configuration.api.RunConfigurationUI;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.ui.core.PropsUI;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by bmorrise on 8/22/17.
@@ -51,27 +57,60 @@ public class SparkRunConfigurationUI implements RunConfigurationUI {
   }
 
   @Override public void attach( RunConfigurationDialog runConfigurationDialog ) {
+
+    // Attach Schema Label & Combo
+    List<String> schemas = new ArrayList<>();
+    schemas.add( "http://" );
+    schemas.add( "https://" );
+
+    GridData protocolLabelData = new GridData( SWT.NONE, SWT.FILL, false, false );
+    GridData urlLabelData = new GridData( SWT.FILL, SWT.FILL, true, false );
+
+    GridLayout gridLayout = new GridLayout( 2, false );
+    runConfigurationDialog.getGroup().setLayout( gridLayout );
+
+    Label schemaLabel = new Label( runConfigurationDialog.getGroup(), SWT.LEFT );
+    props.setLook( schemaLabel );
+    schemaLabel.setText( BaseMessages.getString( PKG, "SparkRunConfigurationDialog.Label.Schema" ) );
+    schemaLabel.setLayoutData( protocolLabelData );
+
     Label optionLabel = new Label( runConfigurationDialog.getGroup(), SWT.LEFT );
     props.setLook( optionLabel );
     optionLabel.setText( BaseMessages.getString( PKG, "SparkRunConfigurationDialog.Label.URL" ) );
-    FormData fdlOption = new FormData();
-    fdlOption.left = new FormAttachment( 0 );
-    fdlOption.top = new FormAttachment( 0 );
-    optionLabel.setLayoutData( fdlOption );
+    optionLabel.setLayoutData( urlLabelData );
 
-    Text optionText = new Text( runConfigurationDialog.getGroup(), SWT.SINGLE | SWT.LEFT | SWT.BORDER );
-    props.setLook( optionText );
-    optionText.setText( sparkRunConfiguration.getUrl() );
-    FormData fdOption = new FormData();
-    fdOption.left = new FormAttachment( 0 );
-    fdOption.top = new FormAttachment( optionLabel, 5 );
-    fdOption.right = new FormAttachment( 100 );
-    optionText.setLayoutData( fdOption );
+    CCombo schemaCombo = new CCombo( runConfigurationDialog.getGroup(), SWT.SINGLE | SWT.READ_ONLY | SWT.BORDER );
+    for ( String schema : schemas ) {
+      schemaCombo.add( schema );
+    }
+    schemaCombo.addSelectionListener( new SelectionAdapter() {
+      @Override public void widgetSelected( SelectionEvent selectionEvent ) {
+        String schema = schemaCombo.getText();
+        sparkRunConfiguration.setSchema( schema );
+      }
+    } );
 
-    optionText.addModifyListener( new ModifyListener() {
+    int selected = schemas.indexOf( sparkRunConfiguration.getSchema() );
+    schemaCombo.select( selected );
+    props.setLook( schemaCombo );
+
+    GridData protocolData = new GridData( SWT.NONE, SWT.FILL, false, false );
+    schemaCombo.setLayoutData( protocolData );
+
+
+    Text urlText = new Text( runConfigurationDialog.getGroup(), SWT.SINGLE | SWT.LEFT | SWT.BORDER );
+    props.setLook( urlText );
+    urlText.setText( sparkRunConfiguration.getUrl() );
+
+    GridData urlData = new GridData( SWT.FILL, SWT.FILL, true, false );
+    urlData.heightHint = 16;
+    urlText.setLayoutData( urlData );
+
+    urlText.addModifyListener( new ModifyListener() {
       @Override public void modifyText( ModifyEvent modifyEvent ) {
-        sparkRunConfiguration.setUrl( optionText.getText() );
+        sparkRunConfiguration.setUrl( urlText.getText() );
       }
     } );
   }
+
 }

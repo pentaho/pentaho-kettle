@@ -3860,10 +3860,7 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
       }
     } else {
       if ( transMeta.hasChanged() ) {
-        MessageBox m = new MessageBox( shell, SWT.OK | SWT.ICON_WARNING );
-        m.setText( BaseMessages.getString( PKG, "TransLog.Dialog.SaveTransformationBeforeRunning.Title" ) );
-        m.setMessage( BaseMessages.getString( PKG, "TransLog.Dialog.SaveTransformationBeforeRunning.Message" ) );
-        m.open();
+        showSaveFileMessage();
       } else if ( spoon.rep != null && transMeta.getName() == null ) {
         MessageBox m = new MessageBox( shell, SWT.OK | SWT.ICON_WARNING );
         m.setText( BaseMessages.getString( PKG, "TransLog.Dialog.GiveTransformationANameBeforeRunning.Title" ) );
@@ -3876,6 +3873,13 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
         m.open();
       }
     }
+  }
+
+  public void showSaveFileMessage() {
+    MessageBox m = new MessageBox( shell, SWT.OK | SWT.ICON_WARNING );
+    m.setText( BaseMessages.getString( PKG, "TransLog.Dialog.SaveTransformationBeforeRunning.Title" ) );
+    m.setMessage( BaseMessages.getString( PKG, "TransLog.Dialog.SaveTransformationBeforeRunning.Message" ) );
+    m.open();
   }
 
   public void addAllTabs() {
