@@ -510,14 +510,9 @@ public class JobEntryTransDialog extends JobEntryBaseDialog implements JobEntryD
         int index = transPath.lastIndexOf( "/" );
         if ( index != -1 ) {
           transName = transPath.substring( index + 1 );
-          directory = transPath.substring( 0, index );
+          directory = index == 0 ? "/" : transPath.substring( 0, index );
         }
         jet.setDirectory( directory );
-        if ( jet.getDirectory().isEmpty() ) {
-          throw new KettleException( BaseMessages.getString( PKG,
-            "JobTrans.Dialog.Exception.UnableToFindRepositoryDirectory" ) );
-        }
-
         jet.setTransname( transName );
         jet.setFileName( null );
         jet.setTransObjectId( null );
