@@ -22,6 +22,7 @@
 
 package org.pentaho.di.core.plugins;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
 import java.lang.annotation.Annotation;
