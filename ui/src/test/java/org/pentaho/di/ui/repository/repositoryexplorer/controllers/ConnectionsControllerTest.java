@@ -223,4 +223,20 @@ public class ConnectionsControllerTest {
     // repository.save() was invoked
     verify( repository ).save( any( DatabaseMeta.class ), anyString(), any( ProgressMonitorListener.class ) );
   }
+
+  @Test
+  public void editConnection_NameExists_SameWithSpaces() throws Exception {
+    final String dbName = " name";
+    DatabaseMeta dbmeta = spy( new DatabaseMeta() );
+    dbmeta.setName( dbName );
+    List<UIDatabaseConnection> selectedConnection = singletonList( new UIDatabaseConnection( dbmeta, repository ) );
+
+    when( connectionsTable.<UIDatabaseConnection>getSelectedItems() ).thenReturn( selectedConnection );
+
+    when( repository.getDatabaseID( dbName ) ).thenReturn( new StringObjectId( "existing" ) );
+    when( databaseDialog.open() ).thenReturn( dbName );
+
+    controller.editConnection();
+    verify( dbmeta ).setName( dbName.trim() );
+  }
 }
