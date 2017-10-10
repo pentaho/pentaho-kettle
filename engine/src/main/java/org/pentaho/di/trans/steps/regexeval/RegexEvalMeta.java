@@ -487,7 +487,7 @@ public class RegexEvalMeta extends BaseStepMeta implements StepMetaInterface {
     StringBuilder retval = new StringBuilder();
 
     retval.append( "    "
-      + XMLHandler.openTag( "script" ) + XMLHandler.buildCDATA( script ) + XMLHandler.closeTag( "script" ) );
+      + XMLHandler.addTagValue( "script", script ) );
     retval.append( "    " + XMLHandler.addTagValue( "matcher", matcher ) );
     retval.append( "    " + XMLHandler.addTagValue( "resultfieldname", resultfieldname ) );
     retval.append( "    " + XMLHandler.addTagValue( "usevar", usevar ) );
@@ -523,7 +523,7 @@ public class RegexEvalMeta extends BaseStepMeta implements StepMetaInterface {
       }
     }
     retval.append( "    </fields>" ).append( Const.CR );
-
+    String a = "]]>";
     return retval.toString();
   }
 
