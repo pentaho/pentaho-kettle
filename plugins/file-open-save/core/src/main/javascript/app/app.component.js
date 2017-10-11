@@ -581,8 +581,9 @@ define([
           }, function(response) {
             if (response.status === 406) {// folder has open file
               _triggerError(13);
+            } else {
+              _triggerError(8);
             }
-            _triggerError(8);
           });
       } else {// delete file or folder from files list panel
         dt.remove(vm.file.objectId.id, vm.file.name, vm.file.path, vm.file.type)
@@ -610,12 +611,12 @@ define([
             if (vm.file.type === "folder") {
               if (response.status === 406) {// folder has open file
                 _triggerError(13);
+              } else {
+                _triggerError(8);
               }
-              _triggerError(8);
+            } else if (response.status === 406) {// file is open
+              _triggerError(14);
             } else {
-              if (response.status === 406) {// file is open
-                _triggerError(14);
-              }
               _triggerError(9);
             }
           });
