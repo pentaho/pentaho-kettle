@@ -22,7 +22,12 @@
 
 package org.pentaho.di.job.entries.zipfile;
 
-import org.apache.commons.vfs2.*;
+import org.apache.commons.vfs2.FileName;
+import org.apache.commons.vfs2.FileObject;
+import org.apache.commons.vfs2.FileSelector;
+import org.apache.commons.vfs2.FileSelectInfo;
+import org.apache.commons.vfs2.FileSystemException;
+import org.apache.commons.vfs2.FileType;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;

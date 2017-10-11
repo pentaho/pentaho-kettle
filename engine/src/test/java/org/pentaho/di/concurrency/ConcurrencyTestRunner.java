@@ -137,6 +137,7 @@ class ConcurrencyTestRunner<M, B> {
 
       for ( int i = 0; i < background.size(); i++ ) {
         Future<? extends B> future = background.get( i );
+        //CHECKSTYLE IGNORE EmptyBlock FOR NEXT 3 LINES
         while ( !future.isDone() ) {
           // wait: condition flag is cleared, thus background tasks must complete by convention
         }

@@ -33,7 +33,8 @@ import org.w3c.dom.Document;
 
 import java.io.ByteArrayInputStream;
 
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.spy;
 
 /**
  * @author Andrey Khayrutdinov

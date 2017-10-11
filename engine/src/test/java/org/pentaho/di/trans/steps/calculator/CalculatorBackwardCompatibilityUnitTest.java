@@ -144,7 +144,6 @@ public class CalculatorBackwardCompatibilityUnitTest {
     ValueMetaNumber valueMeta = new ValueMetaNumber( "Value" );
     inputRowMeta.addValueMeta( valueMeta );
 
-    ;
     RowSet inputRowSet = smh.getMockInputRowSet( new Object[] { value } );
     inputRowSet.setRowMeta( inputRowMeta );
 

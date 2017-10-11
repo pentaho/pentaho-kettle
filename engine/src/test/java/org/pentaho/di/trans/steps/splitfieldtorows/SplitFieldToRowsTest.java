@@ -25,7 +25,7 @@ package org.pentaho.di.trans.steps.splitfieldtorows;
 import org.junit.Test;
 import org.pentaho.di.trans.steps.StepMockUtil;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 /**
  * @author Andrey Khayrutdinov

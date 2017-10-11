@@ -22,7 +22,7 @@
 
 package org.pentaho.di.trans.steps.csvinput;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 

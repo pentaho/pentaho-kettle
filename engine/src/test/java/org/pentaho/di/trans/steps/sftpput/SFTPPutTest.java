@@ -32,7 +32,7 @@ import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.job.entries.sftp.SFTPClient;
 import org.pentaho.di.trans.steps.StepMockUtil;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;

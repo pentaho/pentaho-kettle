@@ -37,7 +37,10 @@ import org.pentaho.di.trans.HasDatabasesInterface;
 import java.util.ArrayList;
 
 import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.doCallRealMethod;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 public class JobTest {
   private static final String STRING_DEFAULT = "<def>";

@@ -22,7 +22,7 @@
 
 package org.pentaho.di.core.listeners.impl;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 import org.pentaho.di.core.Const;

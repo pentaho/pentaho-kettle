@@ -2324,6 +2324,40 @@ public class TransMeta extends AbstractMeta
    */
   public String getXML( boolean includeSteps, boolean includeDatabase, boolean includeSlaves, boolean includeClusters,
       boolean includePartitions ) throws KettleException {
+    return getXML( true, true, true, true, true, true, true, true, true, true );
+  }
+
+  /**
+   * Gets the XML representation of this transformation, including or excluding step, database, slave server, cluster,
+   * or partition information as specified by the parameters
+   *
+   * @param includeSteps
+   *          whether to include step data
+   * @param includeDatabase
+   *          whether to include database data
+   * @param includeSlaves
+   *          whether to include slave server data
+   * @param includeClusters
+   *          whether to include cluster data
+   * @param includePartitions
+   *          whether to include partition data
+   * @param includeNamedParameters
+   *          whether to include named parameters data
+   * @param includeLog
+   *          whether to include log data
+   * @param includeDependencies
+   *          whether to include dependencies data
+   * @param includeNotePads
+   *          whether to include notepads data
+   * @param includeAttributeGroups
+   *          whether to include attributes map data
+   * @return the XML representation of this transformation
+   * @throws KettleException
+   *           if any errors occur during generation of the XML
+   */
+  public String getXML( boolean includeSteps, boolean includeDatabase, boolean includeSlaves, boolean includeClusters,
+    boolean includePartitions, boolean includeNamedParameters, boolean includeLog, boolean includeDependencies,
+    boolean includeNotePads, boolean includeAttributeGroups ) throws KettleException {
 
     //Clear the embedded named clusters.  We will be repopulating from steps that used named clusters
     getNamedClusterEmbedManager().clear();
@@ -2351,30 +2385,36 @@ public class TransMeta extends AbstractMeta
     retval.append( "    " ).append( XMLHandler.addTagValue( "directory",
             directory != null ? directory.getPath() : RepositoryDirectory.DIRECTORY_SEPARATOR ) );
 
-    retval.append( "    " ).append( XMLHandler.openTag( XML_TAG_PARAMETERS ) ).append( Const.CR );
-    String[] parameters = listParameters();
-    for ( int idx = 0; idx < parameters.length; idx++ ) {
-      retval.append( "      " ).append( XMLHandler.openTag( "parameter" ) ).append( Const.CR );
-      retval.append( "        " ).append( XMLHandler.addTagValue( "name", parameters[idx] ) );
-      retval.append( "        " )
-          .append( XMLHandler.addTagValue( "default_value", getParameterDefault( parameters[idx] ) ) );
-      retval.append( "        " )
-          .append( XMLHandler.addTagValue( "description", getParameterDescription( parameters[idx] ) ) );
-      retval.append( "      " ).append( XMLHandler.closeTag( "parameter" ) ).append( Const.CR );
+
+    if ( includeNamedParameters ) {
+      retval.append( "    " ).append( XMLHandler.openTag( XML_TAG_PARAMETERS ) ).append( Const.CR );
+      String[] parameters = listParameters();
+      for ( int idx = 0; idx < parameters.length; idx++ ) {
+        retval.append( "      " ).append( XMLHandler.openTag( "parameter" ) ).append( Const.CR );
+        retval.append( "        " ).append( XMLHandler.addTagValue( "name", parameters[idx] ) );
+        retval.append( "        " )
+                .append( XMLHandler.addTagValue( "default_value", getParameterDefault( parameters[idx] ) ) );
+        retval.append( "        " )
+                .append( XMLHandler.addTagValue( "description", getParameterDescription( parameters[idx] ) ) );
+        retval.append( "      " ).append( XMLHandler.closeTag( "parameter" ) ).append( Const.CR );
+      }
+      retval.append( "    " ).append( XMLHandler.closeTag( XML_TAG_PARAMETERS ) ).append( Const.CR );
     }
-    retval.append( "    " ).append( XMLHandler.closeTag( XML_TAG_PARAMETERS ) ).append( Const.CR );
 
-    retval.append( "    " ).append( XMLHandler.openTag( "log" ) ).append( Const.CR );
+    if ( includeLog ) {
+      retval.append( "    " ).append( XMLHandler.openTag( "log" ) ).append( Const.CR );
 
-    // Add the metadata for the various logging tables
-    //
-    retval.append( transLogTable.getXML() );
-    retval.append( performanceLogTable.getXML() );
-    retval.append( channelLogTable.getXML() );
-    retval.append( stepLogTable.getXML() );
-    retval.append( metricsLogTable.getXML() );
+      // Add the metadata for the various logging tables
+      //
+      retval.append( transLogTable.getXML() );
+      retval.append( performanceLogTable.getXML() );
+      retval.append( channelLogTable.getXML() );
+      retval.append( stepLogTable.getXML() );
+      retval.append( metricsLogTable.getXML() );
 
-    retval.append( "    " ).append( XMLHandler.closeTag( "log" ) ).append( Const.CR );
+      retval.append( "    " ).append( XMLHandler.closeTag( "log" ) ).append( Const.CR );
+    }
+
     retval.append( "    " ).append( XMLHandler.openTag( "maxdate" ) ).append( Const.CR );
     retval.append( "      " )
         .append( XMLHandler.addTagValue( "connection", maxDateConnection == null ? "" : maxDateConnection.getName() ) );
@@ -2405,12 +2445,14 @@ public class TransMeta extends AbstractMeta
     retval.append( "    " )
         .append( XMLHandler.addTagValue( "step_performance_capturing_size_limit", stepPerformanceCapturingSizeLimit ) );
 
-    retval.append( "    " ).append( XMLHandler.openTag( XML_TAG_DEPENDENCIES ) ).append( Const.CR );
-    for ( int i = 0; i < nrDependencies(); i++ ) {
-      TransDependency td = getDependency( i );
-      retval.append( td.getXML() );
+    if ( includeDependencies ) {
+      retval.append( "    " ).append( XMLHandler.openTag( XML_TAG_DEPENDENCIES ) ).append( Const.CR );
+      for ( int i = 0; i < nrDependencies(); i++ ) {
+        TransDependency td = getDependency( i );
+        retval.append( td.getXML() );
+      }
+      retval.append( "    " ).append( XMLHandler.closeTag( XML_TAG_DEPENDENCIES ) ).append( Const.CR );
     }
-    retval.append( "    " ).append( XMLHandler.closeTag( XML_TAG_DEPENDENCIES ) ).append( Const.CR );
 
     // The partitioning schemas...
     //
@@ -2458,14 +2500,16 @@ public class TransMeta extends AbstractMeta
 
     retval.append( "  " ).append( XMLHandler.closeTag( XML_TAG_INFO ) ).append( Const.CR );
 
-    retval.append( "  " ).append( XMLHandler.openTag( XML_TAG_NOTEPADS ) ).append( Const.CR );
-    if ( notes != null ) {
-      for ( int i = 0; i < nrNotes(); i++ ) {
-        NotePadMeta ni = getNote( i );
-        retval.append( ni.getXML() );
+    if ( includeNotePads ) {
+      retval.append( "  " ).append( XMLHandler.openTag( XML_TAG_NOTEPADS ) ).append( Const.CR );
+      if ( notes != null ) {
+        for ( int i = 0; i < nrNotes(); i++ ) {
+          NotePadMeta ni = getNote( i );
+          retval.append( ni.getXML() );
+        }
       }
+      retval.append( "  " ).append( XMLHandler.closeTag( XML_TAG_NOTEPADS ) ).append( Const.CR );
     }
-    retval.append( "  " ).append( XMLHandler.closeTag( XML_TAG_NOTEPADS ) ).append( Const.CR );
 
     // The database connections...
     if ( includeDatabase ) {
@@ -2518,8 +2562,9 @@ public class TransMeta extends AbstractMeta
 
     // Also store the attribute groups
     //
-    retval.append( AttributesUtil.getAttributesXml( attributesMap ) );
-
+    if ( includeAttributeGroups ) {
+      retval.append( AttributesUtil.getAttributesXml( attributesMap ) );
+    }
     retval.append( XMLHandler.closeTag( XML_TAG ) ).append( Const.CR );
 
     return XMLFormatter.format( retval.toString() );
