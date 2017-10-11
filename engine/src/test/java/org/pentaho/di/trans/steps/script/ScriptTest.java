@@ -22,7 +22,7 @@
 
 package org.pentaho.di.trans.steps.script;
 
-import static org.mockito.Matchers.*;
+import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;

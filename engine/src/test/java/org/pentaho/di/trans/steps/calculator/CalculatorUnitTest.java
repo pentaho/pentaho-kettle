@@ -22,7 +22,7 @@
 
 package org.pentaho.di.trans.steps.calculator;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.fail;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
@@ -625,6 +625,7 @@ public class CalculatorUnitTest {
    */
   public void assertRoundEveryDataType( final Number expectedResult, final int calcFunction, final Number value,
       final Long precision, final Long roundingMode ) throws KettleException {
+    //CHECKSTYLE IGNORE AvoidNestedBlocks FOR NEXT 3 LINES
     {
       final double resultValue = expectedResult.doubleValue();
       assertRoundGeneral( resultValue, calcFunction, value.doubleValue(), precision, roundingMode, ValueMetaInterface.TYPE_NUMBER,
@@ -636,6 +637,7 @@ public class CalculatorUnitTest {
             ValueMetaInterface.TYPE_NUMBER );
       }
     }
+    //CHECKSTYLE IGNORE AvoidNestedBlocks FOR NEXT 3 LINES
     {
       final BigDecimal resultValue = BigDecimal.valueOf( expectedResult.doubleValue() );
       assertRoundGeneral( resultValue, calcFunction, value.doubleValue(), precision, roundingMode, ValueMetaInterface.TYPE_NUMBER,

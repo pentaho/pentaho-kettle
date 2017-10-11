@@ -37,7 +37,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.StringTokenizer;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertNull;
 
 /**
  * @author Andrey Khayrutdinov

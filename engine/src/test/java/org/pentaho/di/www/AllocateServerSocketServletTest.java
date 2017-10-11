@@ -41,7 +41,9 @@ import java.io.IOException;
 import static junit.framework.Assert.assertFalse;
 import static org.mockito.Matchers.anyInt;
 import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 
 @RunWith( PowerMockRunner.class )

@@ -22,7 +22,10 @@
 
 package org.pentaho.di.trans.steps.missing;
 
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.anyString;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import org.junit.Test;
 import org.mockito.invocation.InvocationOnMock;
@@ -39,7 +42,7 @@ import org.pentaho.di.trans.steps.StepMockUtil;
 import org.pentaho.di.trans.steps.datagrid.DataGridMeta;
 import org.pentaho.di.trans.steps.mock.StepMockHelper;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertFalse;
 
 public class MissingTransStepTest {
 

@@ -22,7 +22,7 @@
 
 package org.pentaho.di.repository.kdr;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.when;
 
 import org.json.simple.JSONObject;

@@ -30,7 +30,7 @@ import org.pentaho.di.core.exception.KettleSecurityException;
  *
  */
 public interface ReconnectableRepository extends Repository {
-  
+
   /**
    * Connect to the repository. This repository type allows to connect more than once to the same repository
    * object.

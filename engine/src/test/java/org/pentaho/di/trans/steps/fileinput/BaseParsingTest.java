@@ -116,6 +116,7 @@ public abstract class BaseParsingTest<Meta extends StepMetaInterface, Data exten
    * Process all rows.
    */
   protected void process() throws Exception {
+    //CHECKSTYLE IGNORE EmptyBlock FOR NEXT 3 LINES
     while ( step.processRow( meta, data ) ) {
       // nothing here - just make sure the rows process
     }

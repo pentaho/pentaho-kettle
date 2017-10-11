@@ -29,7 +29,10 @@ import org.pentaho.di.job.Job;
 import org.pentaho.di.trans.Trans;
 
 import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 
 public class ScriptValueAddFunctions_SetVariableScopeTest {
   private static final String VARIABLE_NAME = "variable-name";

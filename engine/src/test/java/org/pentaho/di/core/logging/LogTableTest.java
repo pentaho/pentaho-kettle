@@ -17,7 +17,7 @@
 
 package org.pentaho.di.core.logging;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
 
 import org.junit.Before;

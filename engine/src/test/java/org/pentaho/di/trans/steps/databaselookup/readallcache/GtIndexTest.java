@@ -28,7 +28,7 @@ import org.junit.runners.Parameterized;
 import java.util.BitSet;
 import java.util.List;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.fail;
 
 /**
  * @author Andrey Khayrutdinov
