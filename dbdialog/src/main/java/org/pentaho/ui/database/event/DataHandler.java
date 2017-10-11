@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -176,7 +176,7 @@ public class DataHandler extends AbstractXulEventHandler {
   // MySQL specific
   private XulCheckbox resultStreamingCursorCheck;
 
-  // Pentaho data services specific
+  // Hitachi Vantara data services specific
   private XulTextbox webAppName;
 
   // ==== Options Panel ==== //

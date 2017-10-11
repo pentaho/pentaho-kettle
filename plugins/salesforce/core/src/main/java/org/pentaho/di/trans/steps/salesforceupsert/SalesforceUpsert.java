@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -144,7 +144,7 @@ public class SalesforceUpsert extends SalesforceStep {
             if ( ValueMetaInterface.TYPE_INTEGER == valueMeta.getType() ) {
               // Salesforce integer values can be only http://www.w3.org/2001/XMLSchema:int
               // see org.pentaho.di.ui.trans.steps.salesforceinput.SalesforceInputDialog#addFieldToTable
-              // So we need convert Pentaho integer (real java Long value) to real int.
+              // So we need convert Hitachi Vantara integer (real java Long value) to real int.
               // It will be sent correct as http://www.w3.org/2001/XMLSchema:int
 
               // use checked cast for prevent losing data
