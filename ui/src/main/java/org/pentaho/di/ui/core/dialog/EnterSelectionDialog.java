@@ -93,6 +93,8 @@ public class EnterSelectionDialog extends Dialog {
   private String[] choices;
   private String selection;
   private int selectionNr;
+  private int shellHeight;
+  private int shellWidth;
   private String shellText;
   private String lineText;
   private PropsUI props;
@@ -151,6 +153,13 @@ public class EnterSelectionDialog extends Dialog {
     multi = false;
     fixed = false;
     quickSearch = true;
+  }
+
+  public EnterSelectionDialog( Shell parent, String[] choices, String shellText, String message,
+                               int shellWidth, int shellHeight ) {
+    this( parent, choices, shellText, message );
+    this.shellWidth = shellWidth;
+    this.shellHeight = shellHeight;
   }
 
   public EnterSelectionDialog( Shell parent, String[] choices, String shellText, String message,
@@ -396,7 +405,11 @@ public class EnterSelectionDialog extends Dialog {
 
     getData();
 
-    BaseStepDialog.setSize( shell );
+    if ( shellWidth == 0 || shellHeight == 0 ) {
+      BaseStepDialog.setSize( shell );
+    } else {
+      shell.setSize( shellWidth, shellHeight );
+    }
 
     wOK.setFocus();
 
