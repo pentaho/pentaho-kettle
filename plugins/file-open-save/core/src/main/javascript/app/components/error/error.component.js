@@ -121,6 +121,7 @@ define([
      * 12. Unable to rename file b/c already opened in spoon
      * 13. Unable to delete folder b/c in use
      * 14. Unable to delete file b/c in use
+     * 15. Unable to rename folder b/c it has an open file in it or a subfolder of it
      *
      * @private
      */
@@ -237,6 +238,14 @@ define([
             i18n.get("file-open-save-plugin.error.unable-to-delete-file-opened.bottom.message"),
             "",
             i18n.get("file-open-save-plugin.error.unable-to-delete-file-opened.close.button"));
+          break;
+        case 15:// Unable to rename folder b/c it has an open file in it or a subfolder of it
+          _setMessage(i18n.get("file-open-save-plugin.error.unable-to-rename-folder-opened.title"),
+            i18n.get("file-open-save-plugin.error.unable-to-rename-folder-opened.top.message"),
+            "", "",
+            i18n.get("file-open-save-plugin.error.unable-to-rename-folder-opened.bottom.message"),
+            "",
+            i18n.get("file-open-save-plugin.error.unable-to-rename-folder-opened.close.button"));
           break;
         default:
           _setMessage("", "", "", "", "", "", "");
