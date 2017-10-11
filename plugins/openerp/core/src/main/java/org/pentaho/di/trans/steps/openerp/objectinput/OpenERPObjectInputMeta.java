@@ -13,7 +13,7 @@
  *   along with this software.  If not, see <http://www.gnu.org/licenses/>.
  *
  *   Copyright 2011 De Bortoli Wines Pty Limited (Australia)
- *   Portions Copyright 2011 - 2016 Pentaho Corporation
+ *   Portions Copyright 2011 - 2017 Hitachi Vantara
  */
 
 package org.pentaho.di.trans.steps.openerp.objectinput;
