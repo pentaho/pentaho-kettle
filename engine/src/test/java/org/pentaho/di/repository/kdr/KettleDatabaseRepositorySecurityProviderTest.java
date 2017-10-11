@@ -34,6 +34,7 @@ import org.pentaho.di.repository.kdr.delegates.KettleDatabaseRepositoryUserDeleg
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 /**
