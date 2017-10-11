@@ -254,7 +254,7 @@ define([
             _doError(file.type === "folder" ? 10 : 11);
           }
         } else if (response.status === 406) {
-          _doError(12);
+          _doError(file.type === "folder" ? 15 : 12);
         } else {
           _doError(file.type === "folder" ? 10 : 11);
         }
