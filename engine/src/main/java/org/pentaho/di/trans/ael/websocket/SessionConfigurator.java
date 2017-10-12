@@ -153,15 +153,21 @@ public class SessionConfigurator extends ClientEndpointConfig.Configurator {
 
   private Header spnegoAuthenticate( boolean stripPort, URI uri ) throws Exception {
     SPNegoSchemeFactory spNegoSchemeFactory = new SPNegoSchemeFactory( stripPort );
-    SPNegoScheme spNegoScheme = (SPNegoScheme) spNegoSchemeFactory.create( null );
+    // using newInstance method instead of create method to be compatible httpclient library from 4.2 to 4.5
+    // the create method was introduced at version 4.3
+    SPNegoScheme spNegoScheme = (SPNegoScheme) spNegoSchemeFactory.newInstance( null );
     spNegoScheme.processChallenge( AUTHENTICATE_HEADER );
     return spNegoScheme.authenticate( credentials, new HttpGet( "" ), getContext( uri ) );
   }
 
   private HttpContext getContext( URI uri ) {
     HttpClientContext httpClientContext = HttpClientContext.create();
+    //used by httpclient version >= 4.3
     httpClientContext
       .setAttribute( HttpClientContext.HTTP_ROUTE, new HttpRoute( new HttpHost( uri.getHost(), uri.getPort() ) ) );
+    //used by httpclient version 4.2
+    httpClientContext
+      .setAttribute( HttpClientContext.HTTP_TARGET_HOST, new HttpHost( uri.getHost(), uri.getPort() ) );
     return httpClientContext;
   }
 
