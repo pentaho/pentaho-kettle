@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -27,6 +27,7 @@ import java.util.ArrayList;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.row.RowDataUtil;
+import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
@@ -136,8 +137,11 @@ public class SalesforceUpdate extends SalesforceStep {
             fieldsToNull.add( SalesforceUtils.getFieldToNullName( log, meta.getUpdateLookup()[i], meta
                 .getUseExternalId()[i] ) );
           } else {
+            ValueMetaInterface valueMeta = data.inputRowMeta.getValueMeta( data.fieldnrs[i] );
+            Object value = rowData[ data.fieldnrs[ i ] ];
+            Object normalObject = normalizeValue( valueMeta, value );
             updatefields.add( SalesforceConnection.createMessageElement( meta.getUpdateLookup()[i],
-                rowData[data.fieldnrs[i]], meta.getUseExternalId()[i] ) );
+              normalObject, meta.getUseExternalId()[i] ) );
           }
         }
 
