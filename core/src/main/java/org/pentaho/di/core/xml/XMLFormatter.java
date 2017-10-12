@@ -21,6 +21,8 @@
  ******************************************************************************/
 package org.pentaho.di.core.xml;
 
+import com.ctc.wstx.api.WstxInputProperties;
+
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.util.ArrayList;
@@ -46,6 +48,11 @@ public class XMLFormatter {
 
   private static XMLInputFactory INPUT_FACTORY = XMLInputFactory.newInstance();
   private static XMLOutputFactory OUTPUT_FACTORY = XMLOutputFactory.newInstance();
+
+  static {
+    INPUT_FACTORY.setProperty( WstxInputProperties.P_MIN_TEXT_SEGMENT, Integer.MAX_VALUE );
+    INPUT_FACTORY.setProperty( XMLInputFactory.IS_COALESCING, false );
+  }
 
   public static String format( String xml ) {
     XMLStreamReader rd = null;
