@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -27,6 +27,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.pentaho.di.core.KettleEnvironment;
@@ -39,6 +40,7 @@ import org.pentaho.di.trans.steps.loadsave.validator.ArrayLoadSaveValidator;
 import org.pentaho.di.trans.steps.loadsave.validator.BooleanLoadSaveValidator;
 import org.pentaho.di.trans.steps.loadsave.validator.FieldLoadSaveValidator;
 import org.pentaho.di.trans.steps.loadsave.validator.StringLoadSaveValidator;
+import org.pentaho.di.trans.steps.mock.StepMockHelper;
 
 public class SynchronizeAfterMergeMetaTest implements InitializerInterface<StepMetaInterface> {
   LoadSaveTester loadSaveTester;
@@ -99,4 +101,34 @@ public class SynchronizeAfterMergeMetaTest implements InitializerInterface<StepM
     loadSaveTester.testSerialization();
   }
 
+  @Test
+  public void testPDI16559() throws Exception {
+    StepMockHelper<SynchronizeAfterMergeMeta, SynchronizeAfterMergeData> mockHelper =
+        new StepMockHelper<SynchronizeAfterMergeMeta, SynchronizeAfterMergeData>( "synchronizeAfterMerge", SynchronizeAfterMergeMeta.class, SynchronizeAfterMergeData.class );
+
+    SynchronizeAfterMergeMeta synchronizeAfterMerge = new SynchronizeAfterMergeMeta();
+
+    synchronizeAfterMerge.setKeyStream( new String[] { "field1", "field2", "field3", "field4", "field5" } );
+    synchronizeAfterMerge.setKeyLookup( new String[] { "lookup1", "lookup2" } );
+    synchronizeAfterMerge.setKeyCondition( new String[] { "cond1", "cond2", "cond3" } );
+    synchronizeAfterMerge.setKeyStream2( new String[] { "stream2-a", "stream2-b", "stream2-x", "stream2-d" } );
+
+    synchronizeAfterMerge.setUpdateLookup( new String[] { "updlook1", "updlook2", "updlook3", "updlook4", "updlook5" } );
+    synchronizeAfterMerge.setUpdateStream( new String[] { "updstr1", "updstr2", "updstr3" } );
+    synchronizeAfterMerge.setUpdate( new Boolean[] { false, true } );
+
+    synchronizeAfterMerge.afterInjectionSynchronization();
+    String ktrXml = synchronizeAfterMerge.getXML();
+
+    int targetSz = synchronizeAfterMerge.getKeyStream().length;
+
+    Assert.assertEquals( targetSz, synchronizeAfterMerge.getKeyLookup().length );
+    Assert.assertEquals( targetSz, synchronizeAfterMerge.getKeyCondition().length );
+    Assert.assertEquals( targetSz, synchronizeAfterMerge.getKeyStream2().length );
+
+    targetSz = synchronizeAfterMerge.getUpdateLookup().length;
+    Assert.assertEquals( targetSz, synchronizeAfterMerge.getUpdateStream().length );
+    Assert.assertEquals( targetSz, synchronizeAfterMerge.getUpdate().length );
+
+  }
 }

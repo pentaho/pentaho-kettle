@@ -12,7 +12,7 @@
  * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  * See the GNU Lesser General Public License for more details.
  *
- * Copyright (c) 2002-2016 Pentaho Corporation..  All rights reserved.
+ * Copyright (c) 2002-2017 Pentaho Corporation..  All rights reserved.
  */
 
 package org.pentaho.di.trans.steps.gpload;
@@ -22,6 +22,7 @@ import java.util.List;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.injection.AfterInjection;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.SQLStatement;
 import org.pentaho.di.core.annotations.Step;
@@ -962,5 +963,25 @@ public class GPLoadMeta extends BaseStepMeta implements StepMetaInterface {
 
   public String getUpdateCondition() {
     return updateCondition;
+  }
+
+  /**
+   * If we use injection we can have different arrays lengths.
+   * We need synchronize them for consistency behavior with UI
+   */
+  @AfterInjection
+  public void afterInjectionSynchronization() {
+    int nrFields = ( fieldTable == null ) ? -1 : fieldTable.length;
+    if ( nrFields <= 0 ) {
+      return;
+    }
+    String[][] rtnStringArray = Utils.normalizeArrays( nrFields, fieldStream, dateMask );
+    fieldStream = rtnStringArray[ 0 ];
+    dateMask = rtnStringArray[ 1 ];
+
+    boolean[][] rtnBoolArray = Utils.normalizeArrays( nrFields, matchColumn, updateColumn );
+    matchColumn = rtnBoolArray[ 0 ];
+    updateColumn = rtnBoolArray[ 1 ];
+
   }
 }

@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -27,6 +27,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.pentaho.di.core.KettleEnvironment;
@@ -38,6 +39,7 @@ import org.pentaho.di.trans.steps.loadsave.validator.FieldLoadSaveValidator;
 import org.pentaho.di.trans.steps.loadsave.validator.IntLoadSaveValidator;
 import org.pentaho.di.trans.steps.loadsave.validator.PrimitiveIntArrayLoadSaveValidator;
 import org.pentaho.di.trans.steps.loadsave.validator.StringLoadSaveValidator;
+import org.pentaho.di.trans.steps.mock.StepMockHelper;
 
 /**
  * @author Andrey Khayrutdinov
@@ -72,4 +74,36 @@ public class GaInputStepMetaTest {
 
     tester.testSerialization();
   }
+
+  @Test
+  public void testPDI16559() throws Exception {
+    StepMockHelper<GaInputStepMeta, GaInputStepData> mockHelper =
+        new StepMockHelper<GaInputStepMeta, GaInputStepData>( "gaInput", GaInputStepMeta.class, GaInputStepData.class );
+
+    GaInputStepMeta gaInput = new GaInputStepMeta();
+    gaInput.setFeedField( new String[] { "field1", "field2", "field3", "field4", "field5" } );
+    gaInput.setFeedFieldType( new String[] { "ftype1", "ftype2", "ftype3" } );
+    gaInput.setOutputField( new String[] { "out1", "out2", "out3" } );
+    gaInput.setOutputType( new int[] { 0, 1, 3, 2 } );
+    gaInput.setConversionMask( new String[] { "conv1", "conv2" } );
+
+    try {
+      String badXml = gaInput.getXML();
+      Assert.fail( "Before calling afterInjectionSynchronization, should have thrown an ArrayIndexOOB" );
+    } catch ( Exception expected ) {
+      // Do Nothing
+    }
+    gaInput.afterInjectionSynchronization();
+    //run without a exception
+    String ktrXml = gaInput.getXML();
+
+    int targetSz = gaInput.getFeedField().length;
+
+    Assert.assertEquals( targetSz, gaInput.getFeedFieldType().length );
+    Assert.assertEquals( targetSz, gaInput.getOutputType().length );
+    Assert.assertEquals( targetSz, gaInput.getOutputField().length );
+    Assert.assertEquals( targetSz, gaInput.getConversionMask().length );
+
+  }
+
 }
