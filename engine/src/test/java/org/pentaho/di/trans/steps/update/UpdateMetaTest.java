@@ -24,8 +24,9 @@ package org.pentaho.di.trans.steps.update;
 
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.spy;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -47,6 +48,7 @@ import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.plugins.StepPluginType;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
@@ -272,5 +274,36 @@ public class UpdateMetaTest extends TestCase implements InitializerInterface<Ste
     targetSz = update.getUpdateLookup().length;
     Assert.assertEquals( targetSz, update.getUpdateStream().length );
 
+  }
+
+  @Test
+  public void testReadRepAllocatesSizeProperly() throws Exception {
+    Repository rep = mock( Repository.class );
+    ObjectId objectId = new ObjectId() {
+      @Override public String getId() {
+        return "testId";
+      }
+    };
+    when( rep.countNrStepAttributes( objectId, "key_name" ) ).thenReturn( 2 );
+    when( rep.countNrStepAttributes( objectId, "key_field" ) ).thenReturn( 2 );
+    when( rep.countNrStepAttributes( objectId, "key_condition" ) ).thenReturn( 0 );
+    when( rep.countNrStepAttributes( objectId, "key_name2" ) ).thenReturn( 0 );
+
+    when( rep.countNrStepAttributes( objectId, "value_name" ) ).thenReturn( 3 );
+    when( rep.countNrStepAttributes( objectId, "value_rename" ) ).thenReturn( 2 );
+
+    UpdateMeta updateMeta = spy( UpdateMeta.class );
+
+    updateMeta.readRep( rep, null, objectId, null );
+
+    verify( rep ).countNrStepAttributes( objectId, "key_name" );
+    verify( rep ).countNrStepAttributes( objectId, "key_field" );
+    verify( rep ).countNrStepAttributes( objectId, "key_condition" );
+    verify( rep ).countNrStepAttributes( objectId, "key_name2" );
+
+    verify( rep ).countNrStepAttributes( objectId, "value_name" );
+    verify( rep ).countNrStepAttributes( objectId, "value_rename" );
+
+    verify( updateMeta ).allocate( 2, 3 );
   }
 }
