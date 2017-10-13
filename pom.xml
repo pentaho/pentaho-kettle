@@ -50,6 +50,9 @@
     <maven.compiler.target>1.8</maven.compiler.target>
     <maven.build.timestamp.format>yyyy-MM-dd hh.mm.ss</maven.build.timestamp.format>
 
+    <!-- parsedVersion properties are dynamically created by the build-helper-maven-plugin:create-doc-version-property -->
+    <doc.version>${parsedVersion.majorVersion}.${parsedVersion.minorVersion}</doc.version>
+
     <!-- License Configuration -->
     <license.licenseName>apache_v2</license.licenseName>
 
@@ -256,6 +259,19 @@
 
   <build>
     <plugins>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>build-helper-maven-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>create-doc-version-property</id>
+            <goals>
+              <goal>parse-version</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+
       <plugin>
         <artifactId>maven-compiler-plugin</artifactId>
       </plugin>

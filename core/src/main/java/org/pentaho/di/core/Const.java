@@ -1994,7 +1994,8 @@ public class Const {
    * Provides the documentation url with the configured base + the given URI.
    *
    * @param uri
-   *          the resource identifier for the documentation (eg. 0L0/0Y0/030/050/000)
+   *          the resource identifier for the documentation
+   *          (eg. Products/Data_Integration/Data_Integration_Perspective/050/000)
    *
    * @return the fully qualified documentation URL for the given URI
    */
