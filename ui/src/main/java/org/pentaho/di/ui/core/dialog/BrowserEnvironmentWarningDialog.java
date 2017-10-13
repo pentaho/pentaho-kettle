@@ -66,7 +66,7 @@ public class BrowserEnvironmentWarningDialog extends Dialog {
   private final int MAX_TEXT_WIDTH_WINDOWS = 286;
   private final int MAX_TEXT_WIDTH_MAC = 326;
   private final LogChannelInterface log = new LogChannel( this );
-  private static final String URI_PATH = "/0D0/160/000";
+  private static final String URI_PATH = "Setup/Components_Reference";
 
   public BrowserEnvironmentWarningDialog( Shell parent ) {
     super( parent, SWT.NONE );
