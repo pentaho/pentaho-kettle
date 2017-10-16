@@ -66,7 +66,7 @@ import org.w3c.dom.Node;
     name = "ElasticSearchBulk.TypeLongDesc.ElasticSearchBulk",
     description = "ElasticSearchBulk.TypeTooltipDesc.ElasticSearchBulk",
     categoryDescription = "i18n:org.pentaho.di.trans.step:BaseStep.Category.Bulk", image = "ESB.svg",
-    documentationUrl = "0L0/0Y0/0K0/ElasticSearch_Bulk_Insert" )
+    documentationUrl = "Products/Data_Integration/Transformation_Step_Reference/ElasticSearch_Bulk_Insert" )
 @InjectionSupported( localizationPrefix = "ElasticSearchBulk.Injection." )
 public class ElasticSearchBulkMeta extends BaseStepMeta implements StepMetaInterface {
 
