@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -561,8 +561,11 @@ public class JobEntryJobDialog extends JobEntryBaseDialog implements JobEntryDia
     jej.argFromPrevious = wPrevious.getSelection();
     jej.paramsFromPrevious = wPrevToParams.getSelection();
     jej.execPerRow = wEveryRow.getSelection();
-
-    jej.setRemoteSlaveServerName( wSlaveServer.getText() );
+    if ( this.wbLocal.getSelection() ) {
+      jej.setRemoteSlaveServerName( null );
+    } else {
+      jej.setRemoteSlaveServerName( wSlaveServer.getText() );
+    }
     jej.setPassingExport( wPassExport.getSelection() );
     jej.setAppendLogfile = wAppendLogfile.getSelection();
     jej.setWaitingToFinish( wWaitingToFinish.getSelection() );
