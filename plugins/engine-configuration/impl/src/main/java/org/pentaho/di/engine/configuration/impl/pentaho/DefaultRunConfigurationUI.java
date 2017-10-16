@@ -126,6 +126,7 @@ public class DefaultRunConfigurationUI implements RunConfigurationUI {
     wcLocal.setLayout( new GridLayout() );
 
     Text wlLocal = new Text( wcLocal, SWT.MULTI | SWT.WRAP );
+    wlLocal.setEditable( false );
     props.setLook( wlLocal );
     wlLocal.setText( BaseMessages.getString( PKG, "DefaultRunConfigurationDialog.Text.Local" ) );
     GridData gdlLocal = new GridData( GridData.FILL_HORIZONTAL );
@@ -144,6 +145,7 @@ public class DefaultRunConfigurationUI implements RunConfigurationUI {
     wcPentaho.setLayout( new GridLayout() );
 
     Text wlPentaho = new Text( wcPentaho, SWT.MULTI | SWT.WRAP | SWT.LEFT );
+    wlPentaho.setEditable( false );
     props.setLook( wlPentaho );
     wlPentaho.setText( BaseMessages.getString( PKG, "DefaultRunConfigurationDialog.Text.Pentaho" ) );
     GridData gdlPentaho = new GridData( GridData.FILL_HORIZONTAL );
