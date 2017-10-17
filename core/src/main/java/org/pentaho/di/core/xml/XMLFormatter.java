@@ -21,8 +21,6 @@
  ******************************************************************************/
 package org.pentaho.di.core.xml;
 
-import com.ctc.wstx.api.WstxInputProperties;
-
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.util.ArrayList;
@@ -50,7 +48,6 @@ public class XMLFormatter {
   private static XMLOutputFactory OUTPUT_FACTORY = XMLOutputFactory.newInstance();
 
   static {
-    INPUT_FACTORY.setProperty( WstxInputProperties.P_MIN_TEXT_SEGMENT, Integer.MAX_VALUE );
     INPUT_FACTORY.setProperty( XMLInputFactory.IS_COALESCING, false );
   }
 
@@ -72,10 +69,16 @@ public class XMLFormatter {
       StartElementBuffer startElementBuffer = null;
       StringBuilder str = new StringBuilder();
       StringBuilder prefix = new StringBuilder();
+      StringBuilder cdata = new StringBuilder();
       boolean wasStart = false;
       boolean wasSomething = false;
       while ( rd.hasNext() ) {
         int event = rd.next();
+        if ( event != XMLStreamConstants.CDATA && cdata.length() > 0 ) {
+          // was CDATA
+          wr.writeCData( cdata.toString() );
+          cdata.setLength( 0 );
+        }
 
         if ( startElementBuffer != null ) {
           if ( event == XMLStreamConstants.END_ELEMENT ) {
@@ -127,7 +130,7 @@ public class XMLFormatter {
               wr.writeCharacters( str.toString() );
             }
             str.setLength( 0 );
-            wr.writeCData( rd.getText() );
+            cdata.append( rd.getText() );
             wasSomething = true;
             break;
           case XMLStreamConstants.COMMENT:
