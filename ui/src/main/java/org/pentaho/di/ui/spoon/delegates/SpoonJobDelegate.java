@@ -1361,6 +1361,9 @@ public class SpoonJobDelegate extends SpoonDelegate {
 
     if ( !jobMeta.isShowDialog() || dialog.open() ) {
 
+      JobGraph jobGraph = spoon.getActiveJobGraph();
+      jobGraph.jobLogDelegate.addJobLog();
+
       ExtensionPointHandler.callExtensionPoint( log, KettleExtensionPoint.SpoonJobMetaExecutionStart.id, jobMeta );
       ExtensionPointHandler.callExtensionPoint( log, KettleExtensionPoint.SpoonJobExecutionConfiguration.id,
           executionConfiguration );
@@ -1374,13 +1377,9 @@ public class SpoonJobDelegate extends SpoonDelegate {
         return;
       }
 
-      // addJobLog(jobMeta);
-      JobGraph jobGraph = spoon.getActiveJobGraph();
       if ( !executionConfiguration.isExecutingLocally() && !executionConfiguration.isExecutingRemotely() ) {
         if ( jobMeta.hasChanged() ) {
           jobGraph.showSaveFileMessage();
-        } else {
-          jobGraph.jobLogDelegate.addJobLog();
         }
       }
 

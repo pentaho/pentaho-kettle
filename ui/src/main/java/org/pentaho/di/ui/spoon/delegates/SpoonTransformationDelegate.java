@@ -858,6 +858,8 @@ public class SpoonTransformationDelegate extends SpoonDelegate {
     }
 
     if ( execConfigAnswer ) {
+      TransGraph activeTransGraph = spoon.getActiveTransGraph();
+      activeTransGraph.transLogDelegate.addTransLog();
 
       ExtensionPointHandler.callExtensionPoint( log, KettleExtensionPoint.SpoonTransMetaExecutionStart.id, transMeta );
       ExtensionPointHandler.callExtensionPoint( log, KettleExtensionPoint.SpoonTransExecutionConfiguration.id,
@@ -872,12 +874,9 @@ public class SpoonTransformationDelegate extends SpoonDelegate {
         return;
       }
 
-      TransGraph activeTransGraph = spoon.getActiveTransGraph();
       if ( !executionConfiguration.isExecutingLocally() && !executionConfiguration.isExecutingRemotely() ) {
         if ( transMeta.hasChanged() ) {
           activeTransGraph.showSaveFileMessage();
-        } else {
-          activeTransGraph.transLogDelegate.addTransLog();
         }
       }
 
