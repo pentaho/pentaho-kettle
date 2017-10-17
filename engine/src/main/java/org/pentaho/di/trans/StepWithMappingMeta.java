@@ -32,13 +32,9 @@ import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.Repository;
-import org.pentaho.di.repository.RepositoryDirectory;
 import org.pentaho.di.repository.RepositoryDirectoryInterface;
-import org.pentaho.di.resource.ResourceDefinition;
-import org.pentaho.di.resource.ResourceNamingInterface;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.metastore.api.IMetaStore;
-import java.util.Map;
 
 /**
  * This class is supposed to use in steps where the mapping to sub transformations takes place
@@ -240,52 +236,4 @@ public abstract class StepWithMappingMeta extends BaseStepMeta {
     this.transObjectId = transObjectId;
   }
 
-  @Override
-  public String exportResources( VariableSpace space, Map<String, ResourceDefinition> definitions,
-                                 ResourceNamingInterface resourceNamingInterface, Repository repository,
-                                 IMetaStore metaStore ) throws KettleException {
-    try {
-      // Try to load the transformation from repository or file.
-      // Modify this recursively too...
-      //
-      // NOTE: there is no need to clone this step because the caller is
-      // responsible for this.
-      //
-      // First load the mapping transformation...
-      //
-      TransMeta mappingTransMeta = loadMappingMeta( this, repository, metaStore, space );
-
-      // Also go down into the mapping transformation and export the files
-      // there. (mapping recursively down)
-      //
-      String proposedNewFilename =
-              mappingTransMeta.exportResources(
-                      mappingTransMeta, definitions, resourceNamingInterface, repository, metaStore );
-
-      // To get a relative path to it, we inject
-      // ${Internal.Transformation.Filename.Directory}
-      //
-      String newFilename =
-              "${" + Const.INTERNAL_VARIABLE_TRANSFORMATION_FILENAME_DIRECTORY + "}/" + proposedNewFilename;
-
-      // Set the correct filename inside the XML.
-      //
-      mappingTransMeta.setFilename( newFilename );
-
-      // exports always reside in the root directory, in case we want to turn
-      // this into a file repository...
-      //
-      mappingTransMeta.setRepositoryDirectory( new RepositoryDirectory() );
-
-      // change it in the job entry
-      //
-      fileName = newFilename;
-
-      setSpecificationMethod( ObjectLocationSpecificationMethod.FILENAME );
-
-      return proposedNewFilename;
-    } catch ( Exception e ) {
-      throw new KettleException( BaseMessages.getString( PKG, "StepWithMappingMeta.Exception.UnableToLoadTrans", fileName ) );
-    }
-  }
 }

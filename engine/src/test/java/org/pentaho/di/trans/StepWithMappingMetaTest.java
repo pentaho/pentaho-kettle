@@ -22,21 +22,15 @@
 package org.pentaho.di.trans;
 
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
-import org.pentaho.di.core.Const;
 import org.pentaho.di.core.ObjectLocationSpecificationMethod;
 import org.pentaho.di.core.ProgressMonitorListener;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectoryInterface;
-import org.powermock.api.mockito.PowerMockito;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.any;
@@ -48,11 +42,7 @@ import static org.mockito.Mockito.when;
 /**
  * Created by Yury_Bakhmutski on 2/8/2017.
  */
-@RunWith( PowerMockRunner.class )
 public class StepWithMappingMetaTest {
-
-  @Mock
-  TransMeta transMeta;
 
   @Test
   public void loadMappingMeta() throws Exception {
@@ -94,18 +84,4 @@ public class StepWithMappingMetaTest {
     StepWithMappingMeta.loadMappingMeta( mappingMetaMock, rep, null, variables, true );
   }
 
-  @Test
-  @PrepareForTest( StepWithMappingMeta.class )
-  public void testExportResources() throws Exception {
-    StepWithMappingMeta stepWithMappingMeta = spy( StepWithMappingMeta.class );
-    String testName = "test";
-    PowerMockito.mockStatic( StepWithMappingMeta.class );
-    when( StepWithMappingMeta.loadMappingMeta( any(), any(), any(), any() ) ).thenReturn( transMeta );
-    when( transMeta.exportResources( any(), anyMap(), any(), any(), any() ) ).thenReturn( testName );
-
-    stepWithMappingMeta.exportResources( null, null, null, null, null );
-    verify( transMeta ).setFilename( "${" + Const.INTERNAL_VARIABLE_TRANSFORMATION_FILENAME_DIRECTORY + "}/" + testName );
-    verify( stepWithMappingMeta ).setSpecificationMethod( ObjectLocationSpecificationMethod.FILENAME );
-
-  }
 }
