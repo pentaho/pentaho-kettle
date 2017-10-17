@@ -28,8 +28,6 @@ import static org.mockito.Mockito.when;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -84,14 +82,43 @@ public class JsonInputTest {
   protected StepMockHelper<JsonInputMeta, JsonInputData> helper;
 
   protected static final String getBasicTestJson() {
-    try {
-      // Load from src/test/resources/sample.json
-      ClassLoader classLoader = JsonInputTest.class.getClassLoader();
-      InputStream is = classLoader.getResourceAsStream( "sample.json" );
-      return IOUtils.toString( is );
-    } catch ( IOException e ) {
-      throw new RuntimeException( "Unable to read sample JSON file.", e );
-    }
+    return "{\n"
+        + "  \"home\": {},\n"
+        + "  \"store\": {\n"
+        + "    \"book\": [\n"
+        + "      {\n"
+        + "        \"category\": \"reference\",\n"
+        + "        \"author\": \"Nigel Rees\",\n"
+        + "        \"title\": \"Sayings of the Century\",\n"
+        + "        \"price\": 8.95\n"
+        + "      },\n"
+        + "      {\n"
+        + "        \"category\": \"fiction\",\n"
+        + "        \"author\": \"Evelyn Waugh\",\n"
+        + "        \"title\": \"Sword of Honour\",\n"
+        + "        \"price\": 12.99\n"
+        + "      },\n"
+        + "      {\n"
+        + "        \"category\": \"fiction\",\n"
+        + "        \"author\": \"Herman Melville\",\n"
+        + "        \"title\": \"Moby Dick\",\n"
+        + "        \"isbn\": \"0-553-21311-3\",\n"
+        + "        \"price\": 8.99\n"
+        + "      },\n"
+        + "      {\n"
+        + "        \"category\": \"fiction\",\n"
+        + "        \"author\": \"J. R. R. Tolkien\",\n"
+        + "        \"title\": \"The Lord of the Rings\",\n"
+        + "        \"isbn\": \"0-395-19395-8\",\n"
+        + "        \"price\": 22.99\n"
+        + "      }\n"
+        + "    ],\n"
+        + "    \"bicycle\": {\n"
+        + "      \"color\": \"red\",\n"
+        + "      \"price\": 19.95\n"
+        + "    }\n"
+        + "  }\n"
+        + "}";
   }
 
   @BeforeClass
@@ -412,9 +439,9 @@ public class JsonInputTest {
              new Object[] { input6 }
             );
     step.addRowListener(
-            new RowComparatorListener(
-                     new Object[]{ input1, "1", "2" }, new Object[]{ input2, "3", null }, new Object[]{ input3, null, "4" },
-                     new Object[]{ input4, null, null }, new Object[]{ input5, null, null }, new Object[]{ input6, null, null }   ) );
+      new RowComparatorListener(
+        new Object[]{ input1, "1", "2" }, new Object[]{ input2, "3", null }, new Object[]{ input3, null, "4" },
+        new Object[]{ input4, null, null }, new Object[]{ input5, null, null }, new Object[]{ input6, null, null } ) );
     processRows( step, 5 );
   }
 
@@ -1119,8 +1146,8 @@ public class JsonInputTest {
               eq = valueMeta.compare( data[ rowNbr ][ i ], row[ i ] ) == 0;
             }
             if ( !eq ) {
-              throw new ComparisonFailure( String.format( "Mismatch row %d, column %d", rowNbr, i ), rowMeta
-                .getString( data[ rowNbr ] ), rowMeta.getString( row ) );
+              throw new ComparisonFailure( String.format( "Mismatch row %d, column %d", rowNbr, i ),
+                rowMeta.getString( data[ rowNbr ] ), rowMeta.getString( row ) );
             }
           } catch ( Exception e ) {
             throw new AssertionError( String.format( "Value type at row %d, column %d", rowNbr, i ), e );
@@ -1186,4 +1213,5 @@ public class JsonInputTest {
     processRows( jsonInput, 2 );
     assertEquals( "Meta input fields paths should be the same after processRows", PATH, inputMeta.getInputFields()[0].getPath() );
   }
+
 }
