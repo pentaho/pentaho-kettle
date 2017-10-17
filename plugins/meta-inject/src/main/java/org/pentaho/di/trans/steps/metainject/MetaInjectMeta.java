@@ -623,6 +623,8 @@ public class MetaInjectMeta extends BaseStepMeta implements StepMetaInterface, S
       //
       fileName = newFilename;
 
+      setSpecificationMethod( ObjectLocationSpecificationMethod.FILENAME );
+
       return proposedNewFilename;
     } catch ( Exception e ) {
       throw new KettleException( BaseMessages.getString( PKG, "MetaInjectMeta.Exception.UnableToLoadTrans",
