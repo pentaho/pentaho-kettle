@@ -810,8 +810,6 @@ public class JobExecutorMeta extends BaseStepMeta implements StepMetaInterface, 
       //
       fileName = newFilename;
 
-      setSpecificationMethod( ObjectLocationSpecificationMethod.FILENAME );
-
       return proposedNewFilename;
     } catch ( Exception e ) {
       throw new KettleException( BaseMessages.getString(
