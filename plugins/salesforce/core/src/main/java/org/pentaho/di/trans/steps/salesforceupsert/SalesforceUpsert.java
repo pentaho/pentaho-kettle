@@ -24,7 +24,6 @@ package org.pentaho.di.trans.steps.salesforceupsert;
 
 import java.util.ArrayList;
 
-import com.google.common.primitives.Ints;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
@@ -140,17 +139,7 @@ public class SalesforceUpsert extends SalesforceStep {
             fieldsToNull.add( SalesforceUtils.getFieldToNullName( log, meta.getUpdateLookup()[i], meta
                 .getUseExternalId()[i] ) );
           } else {
-            Object normalObject = valueMeta.convertToNormalStorageType( object );
-            if ( ValueMetaInterface.TYPE_INTEGER == valueMeta.getType() ) {
-              // Salesforce integer values can be only http://www.w3.org/2001/XMLSchema:int
-              // see org.pentaho.di.ui.trans.steps.salesforceinput.SalesforceInputDialog#addFieldToTable
-              // So we need convert Hitachi Vantara integer (real java Long value) to real int.
-              // It will be sent correct as http://www.w3.org/2001/XMLSchema:int
-
-              // use checked cast for prevent losing data
-              normalObject = Ints.checkedCast( (Long) normalObject );
-            }
-
+            Object normalObject = normalizeValue( valueMeta, rowData[data.fieldnrs[i]] );
             upsertfields.add( SalesforceConnection.createMessageElement( meta.getUpdateLookup()[i], normalObject, meta
                 .getUseExternalId()[i] ) );
           }
