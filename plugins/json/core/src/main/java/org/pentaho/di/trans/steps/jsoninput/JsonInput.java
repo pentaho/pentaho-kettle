@@ -25,7 +25,6 @@ package org.pentaho.di.trans.steps.jsoninput;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Arrays;
 import java.util.BitSet;
 
 import org.apache.commons.lang.NotImplementedException;
@@ -35,7 +34,6 @@ import org.apache.poi.util.IOUtils;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.QueueRowSet;
 import org.pentaho.di.core.ResultFile;
-import org.pentaho.di.core.RowSet;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleValueException;
@@ -355,13 +353,7 @@ public class JsonInput extends BaseFileInputStep<JsonInputMeta, JsonInputData> i
         return null;
       }
     }
-    boolean rowContainsData = Arrays.stream( rawReaderRow ).anyMatch( el -> el != null );
-    Object[] outputRow;
-    if ( rowContainsData ) {
-      outputRow = rowOutputConverter.getRow( buildBaseOutputRow(), rawReaderRow, data );
-    } else {
-      outputRow = buildBaseOutputRow();
-    }
+    Object[] outputRow = rowOutputConverter.getRow( buildBaseOutputRow(), rawReaderRow, data );
     addExtraFields( outputRow, data );
     return outputRow;
   }
@@ -383,10 +375,6 @@ public class JsonInput extends BaseFileInputStep<JsonInputMeta, JsonInputData> i
 
   private boolean hasAdditionalFileFields() {
     return data.file != null;
-  }
-
-  private boolean isEmpty( RowSet readerRowSet ) {
-    return readerRowSet.size() == 0 && readerRowSet.isDone();
   }
 
   /**
