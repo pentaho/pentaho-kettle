@@ -3,7 +3,7 @@
  *
  *  Pentaho Data Integration
  *
- *  Copyright (C) 2017 by Pentaho : http://www.pentaho.com
+ *  Copyright (C) 2017 by Hitachi Vantara : http://www.pentaho.com
  *
  *  *******************************************************************************
  *  Licensed under the Apache License, Version 2.0 (the "License"); you may not use
@@ -30,8 +30,8 @@ import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.layout.FormAttachment;
-import org.eclipse.swt.layout.FormData;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.engine.configuration.api.RunConfigurationDialog;
@@ -63,13 +63,21 @@ public class SparkRunConfigurationUI implements RunConfigurationUI {
     schemas.add( "http://" );
     schemas.add( "https://" );
 
+    GridData protocolLabelData = new GridData( SWT.NONE, SWT.FILL, false, false );
+    GridData urlLabelData = new GridData( SWT.FILL, SWT.FILL, true, false );
+
+    GridLayout gridLayout = new GridLayout( 2, false );
+    runConfigurationDialog.getGroup().setLayout( gridLayout );
+
     Label schemaLabel = new Label( runConfigurationDialog.getGroup(), SWT.LEFT );
     props.setLook( schemaLabel );
     schemaLabel.setText( BaseMessages.getString( PKG, "SparkRunConfigurationDialog.Label.Schema" ) );
-    FormData schemaLabelForm = new FormData();
-    schemaLabelForm.left = new FormAttachment( 0 );
-    schemaLabelForm.top = new FormAttachment( 0 );
-    schemaLabel.setLayoutData( schemaLabelForm );
+    schemaLabel.setLayoutData( protocolLabelData );
+
+    Label optionLabel = new Label( runConfigurationDialog.getGroup(), SWT.LEFT );
+    props.setLook( optionLabel );
+    optionLabel.setText( BaseMessages.getString( PKG, "SparkRunConfigurationDialog.Label.URL" ) );
+    optionLabel.setLayoutData( urlLabelData );
 
     CCombo schemaCombo = new CCombo( runConfigurationDialog.getGroup(), SWT.SINGLE | SWT.READ_ONLY | SWT.BORDER );
     for ( String schema : schemas ) {
@@ -85,33 +93,22 @@ public class SparkRunConfigurationUI implements RunConfigurationUI {
     int selected = schemas.indexOf( sparkRunConfiguration.getSchema() );
     schemaCombo.select( selected );
     props.setLook( schemaCombo );
-    FormData schemaComboForm = new FormData();
-    schemaComboForm.width = 65;
-    schemaComboForm.left = new FormAttachment( 0, 0 );
-    schemaComboForm.top = new FormAttachment( schemaLabel, 5 );
-    schemaCombo.setLayoutData( schemaComboForm );
 
-    // Attach URL Label & Combo
-    Label optionLabel = new Label( runConfigurationDialog.getGroup(), SWT.LEFT );
-    props.setLook( optionLabel );
-    optionLabel.setText( BaseMessages.getString( PKG, "SparkRunConfigurationDialog.Label.URL" ) );
-    FormData fdlOption = new FormData();
-    fdlOption.left = new FormAttachment( schemaLabel, 25 );
-    fdlOption.top = new FormAttachment( 0 );
-    optionLabel.setLayoutData( fdlOption );
+    GridData protocolData = new GridData( SWT.NONE, SWT.FILL, false, false );
+    schemaCombo.setLayoutData( protocolData );
 
-    Text optionText = new Text( runConfigurationDialog.getGroup(), SWT.SINGLE | SWT.LEFT | SWT.BORDER );
-    props.setLook( optionText );
-    optionText.setText( sparkRunConfiguration.getUrl() );
-    FormData fdOption = new FormData();
-    fdOption.left = new FormAttachment( schemaCombo, 15 );
-    fdOption.top = new FormAttachment( optionLabel, 5 );
-    fdOption.right = new FormAttachment( 100 );
-    optionText.setLayoutData( fdOption );
 
-    optionText.addModifyListener( new ModifyListener() {
+    Text urlText = new Text( runConfigurationDialog.getGroup(), SWT.SINGLE | SWT.LEFT | SWT.BORDER );
+    props.setLook( urlText );
+    urlText.setText( sparkRunConfiguration.getUrl() );
+
+    GridData urlData = new GridData( SWT.FILL, SWT.FILL, true, false );
+    urlData.heightHint = 16;
+    urlText.setLayoutData( urlData );
+
+    urlText.addModifyListener( new ModifyListener() {
       @Override public void modifyText( ModifyEvent modifyEvent ) {
-        sparkRunConfiguration.setUrl( optionText.getText() );
+        sparkRunConfiguration.setUrl( urlText.getText() );
       }
     } );
   }

@@ -337,7 +337,7 @@
     </dependency>
     <dependency>
       <groupId>com.sun.jersey.contribs</groupId>
-      <artifactId>jersey-apache-client</artifactId>
+      <artifactId>jersey-apache-client4</artifactId>
       <version>${jersey-apache-client.version}</version>
       <exclusions>
         <exclusion>
@@ -863,6 +863,10 @@
           <artifactId>*</artifactId>
         </exclusion>
       </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.codehaus.woodstox</groupId>
+      <artifactId>wstx-asl</artifactId>
     </dependency>
 
     <!-- Test dependencies -->

@@ -3,7 +3,7 @@
  *
  *  Pentaho Data Integration
  *
- *  Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
+ *  Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
  *
  * ******************************************************************************
  *
@@ -35,7 +35,14 @@ import org.reactivestreams.Subscription;
 
 import java.util.concurrent.atomic.AtomicReference;
 
-import static org.pentaho.di.trans.step.BaseStepData.StepExecutionStatus.*;
+import static org.pentaho.di.trans.step.BaseStepData.StepExecutionStatus.STATUS_DISPOSED;
+import static org.pentaho.di.trans.step.BaseStepData.StepExecutionStatus.STATUS_EMPTY;
+import static org.pentaho.di.trans.step.BaseStepData.StepExecutionStatus.STATUS_FINISHED;
+import static org.pentaho.di.trans.step.BaseStepData.StepExecutionStatus.STATUS_IDLE;
+import static org.pentaho.di.trans.step.BaseStepData.StepExecutionStatus.STATUS_INIT;
+import static org.pentaho.di.trans.step.BaseStepData.StepExecutionStatus.STATUS_PAUSED;
+import static org.pentaho.di.trans.step.BaseStepData.StepExecutionStatus.STATUS_RUNNING;
+import static org.pentaho.di.trans.step.BaseStepData.StepExecutionStatus.STATUS_STOPPED;
 
 /**
  * Maps AEL Status events to corresponding step state.

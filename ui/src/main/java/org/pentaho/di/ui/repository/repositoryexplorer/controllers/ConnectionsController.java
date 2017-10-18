@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -367,6 +367,8 @@ public class ConnectionsController extends LazilyInitializedController implement
           String dbName = getDatabaseDialog().open();
           if ( dbName != null ) {
             dbName = dbName.trim();
+            databaseMeta.setName( dbName );
+            databaseMeta.setDisplayName( dbName );
             if ( !dbName.isEmpty() ) {
               ObjectId idRenamed = repository.getDatabaseID( dbName );
               if ( idRenamed == null || idRenamed.equals( idDatabase ) ) {
@@ -374,6 +376,7 @@ public class ConnectionsController extends LazilyInitializedController implement
                 repository.insertLogEntry( BaseMessages.getString(
                   PKG, "ConnectionsController.Message.UpdatingDatabase", databaseMeta.getName() ) );
                 repository.save( databaseMeta, Const.VERSION_COMMENT_EDIT_VERSION, null );
+                reloadLoadedJobsAndTransformations();
               } else {
                 // trying to rename to an existing name - show error dialog
                 showAlreadyExistsMessage();

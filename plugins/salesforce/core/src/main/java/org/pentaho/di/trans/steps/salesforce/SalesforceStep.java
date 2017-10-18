@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,9 +22,12 @@
 
 package org.pentaho.di.trans.steps.salesforce;
 
+import com.google.common.primitives.Ints;
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.exception.KettleValueException;
+import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
@@ -33,6 +36,10 @@ import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
+
+import java.util.Calendar;
+import java.util.TimeZone;
+
 
 public abstract class SalesforceStep extends BaseStep implements StepInterface {
 
@@ -99,5 +106,40 @@ public abstract class SalesforceStep extends BaseStep implements StepInterface {
       data.connection = null;
     }
     super.dispose( smi, sdi );
+  }
+
+  /**
+   * normalize object for future sent in Salesforce
+   *
+   * @param valueMeta value meta
+   * @param value pentaho internal value object
+   * @return object for sending in Salesforce
+   * @throws KettleValueException
+   */
+  public Object normalizeValue( ValueMetaInterface valueMeta, Object value ) throws KettleValueException {
+    if ( valueMeta.isDate() ) {
+      // Pass date field converted to UTC, see PDI-10836
+      Calendar cal = Calendar.getInstance( valueMeta.getDateFormatTimeZone() );
+      cal.setTime( valueMeta.getDate( value ) );
+      Calendar utc = Calendar.getInstance( TimeZone.getTimeZone( "UTC" ) );
+      // Reset time-related fields
+      utc.clear();
+      utc.set( cal.get( Calendar.YEAR ), cal.get( Calendar.MONTH ), cal.get( Calendar.DATE ),
+        cal.get( Calendar.HOUR_OF_DAY ), cal.get( Calendar.MINUTE ), cal.get( Calendar.SECOND ) );
+      value = utc;
+    } else if ( valueMeta.isStorageBinaryString() ) {
+      value = valueMeta.convertToNormalStorageType( value );
+    }
+
+    if ( ValueMetaInterface.TYPE_INTEGER == valueMeta.getType() ) {
+      // Salesforce integer values can be only http://www.w3.org/2001/XMLSchema:int
+      // see org.pentaho.di.ui.trans.steps.salesforceinput.SalesforceInputDialog#addFieldToTable
+      // So we need convert Hitachi Vantara integer (real java Long value) to real int.
+      // It will be sent correct as http://www.w3.org/2001/XMLSchema:int
+
+      // use checked cast for prevent losing data
+      value = Ints.checkedCast( (Long) value );
+    }
+    return value;
   }
 }

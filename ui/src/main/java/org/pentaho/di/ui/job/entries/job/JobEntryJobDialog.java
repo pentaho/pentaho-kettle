@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -524,7 +524,7 @@ public class JobEntryJobDialog extends JobEntryBaseDialog implements JobEntryDia
         int index = jobPath.lastIndexOf( "/" );
         if ( index != -1 ) {
           jobName = jobPath.substring( index + 1 );
-          directory = jobPath.substring( 0, index );
+          directory = index == 0 ? "/" : jobPath.substring( 0, index );
         }
         jej.setDirectory( directory );
         jej.setJobName( jobName );

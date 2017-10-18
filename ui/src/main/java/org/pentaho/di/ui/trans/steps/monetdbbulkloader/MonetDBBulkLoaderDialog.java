@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -231,7 +231,7 @@ public class MonetDBBulkLoaderDialog extends BaseStepDialog implements StepDialo
     shell.setText( BaseMessages.getString( PKG, "MonetDBBulkLoaderDialog.Shell.Title" ) );
 
     // The right side of all the labels is available as a user-defined percentage: props.getMiddlePct()
-    // Page 610 - Pentaho Kettle Solutions
+    // Page 610 - Hitachi Vantara Kettle Solutions
     int middle = props.getMiddlePct();
     int margin = Const.MARGIN; // Default 4 pixel margin around components.
 

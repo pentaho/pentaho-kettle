@@ -6,7 +6,7 @@
   <property name="ivy.local.default.artifact.pattern" value="[organisation]/[module]/[revision]/[type]s/[artifact]-[revision].[ext]"
     override="false" />
     
-  <!-- Repository for Pentaho-hosted artifacts -->  
+  <!-- Repository for Hitachi Vantara-hosted artifacts -->  
   <property name="pentaho.resolve.repo" value="http://ivy-nexus.pentaho.org/content/groups/omni" override="false" />
   <!-- Repository for External-hosted artifacts (Optional. Defaults to Pentaho-hosted.) -->
   <property name="public.resolve.repo" value="${pentaho.resolve.repo}" override="false" />

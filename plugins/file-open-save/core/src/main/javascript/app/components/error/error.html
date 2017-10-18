@@ -13,12 +13,12 @@
     </div>
   </div>
   <div class="errorBottom">
-    <button class="button2"
+    <button id="errorCancelButton" class="button2"
             ng-class="{primary: vm.errorType !== 1, secondary: vm.errorType === 1}"
             ng-click="vm.errorCancel()">
       {{vm.errorCancelButton}}
     </button>
-    <button class="primary button1"
+    <button id="errorConfirmButton" class="primary button1"
             ng-click="vm.errorConfirm()"
             ng-hide="vm.hideConfirmButton();">
       {{vm.errorConfirmButton}}

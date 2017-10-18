@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2016-2017 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2016-2017 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -44,50 +44,40 @@ public class XMLFormatterTest {
   }
 
   @Test
-  public void testcdata() throws Exception {
-    String input =
-      "    <annotations>"
-        + "  <annotation>"
-        + "    <name>c44cc4ed-9647-44f2-b1d9-0523c01f0c94</name>\n"
-        + "    <field>HiddenField</field>\n"
-        + "    <type>CREATE_ATTRIBUTE</type>\n"
-        + "     <properties>"
-        + "        <property>"
-        + "           <name>hidden</name>\n"
-        + "           <value><![CDATA[true]]></value>"
-        + "        </property>"
-        + "    </properties>      "
-        + "   </annotation>"
-        + "  <sharedDimension>N</sharedDimension>\n"
-        + "  <description/>\n"
-        + "</annotations>";
-    String result = XMLFormatter.format( input );
-    String expected =
-      "<annotations>\n"
-        + "  <annotation>\n"
-        + "    <name>c44cc4ed-9647-44f2-b1d9-0523c01f0c94</name>\n"
-        + "    <field>HiddenField</field>\n"
-        + "    <type>CREATE_ATTRIBUTE</type>\n"
-        + "    <properties>\n"
-        + "      <property>\n"
-        + "        <name>hidden</name>\n"
-        + "        <value><![CDATA[true]]></value>\n"
-        + "      </property>\n"
-        + "    </properties>\n"
-        + "  </annotation>\n"
-        + "  <sharedDimension>N</sharedDimension>\n"
-        + "  <description/>\n"
-        + "</annotations>\n";
-    assertEquals( expected, result );
-  }
-
-  @Test
   public void test2() throws Exception {
     String inXml, expectedXml;
     try ( InputStream in = XMLFormatterTest.class.getResourceAsStream( "XMLFormatterIn2.xml" ) ) {
       inXml = IOUtils.toString( in );
     }
     try ( InputStream in = XMLFormatterTest.class.getResourceAsStream( "XMLFormatterExpected2.xml" ) ) {
+      expectedXml = IOUtils.toString( in );
+    }
+
+    String result = XMLFormatter.format( inXml );
+    assertEquals( expectedXml, result );
+  }
+
+  @Test
+  public void test3() throws Exception {
+    String inXml, expectedXml;
+    try ( InputStream in = XMLFormatterTest.class.getResourceAsStream( "XMLFormatterIn3cdata.xml" ) ) {
+      inXml = IOUtils.toString( in );
+    }
+    try ( InputStream in = XMLFormatterTest.class.getResourceAsStream( "XMLFormatterExpected3cdata.xml" ) ) {
+      expectedXml = IOUtils.toString( in );
+    }
+
+    String result = XMLFormatter.format( inXml );
+    assertEquals( expectedXml, result );
+  }
+
+  @Test
+  public void test4() throws Exception {
+    String inXml, expectedXml;
+    try ( InputStream in = XMLFormatterTest.class.getResourceAsStream( "XMLFormatterIn4multilinecdata.xml" ) ) {
+      inXml = IOUtils.toString( in );
+    }
+    try ( InputStream in = XMLFormatterTest.class.getResourceAsStream( "XMLFormatterExpected4multilinecdata.xml" ) ) {
       expectedXml = IOUtils.toString( in );
     }
 

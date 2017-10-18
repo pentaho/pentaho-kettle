@@ -69,6 +69,7 @@
     <encoder.version>1.2</encoder.version>
     <h2.version>1.2.131</h2.version>
     <jaxen.version>1.1.1</jaxen.version>
+    <wstx-asl.version>3.2.4</wstx-asl.version>
 
     <!-- Test dependencies -->
     <powermock-module-junit4.version>1.6.6</powermock-module-junit4.version>
@@ -206,6 +207,12 @@
           </exclusion>
         </exclusions>
       </dependency>
+      <dependency>
+        <groupId>org.codehaus.woodstox</groupId>
+        <artifactId>wstx-asl</artifactId>
+        <version>${wstx-asl.version}</version>
+        <scope>provided</scope>
+      </dependency>
 
       <!-- Test dependencies -->
       <dependency>
@@ -306,4 +313,22 @@
       </modules>
     </profile>
   </profiles>
+
+
+  <repositories>
+    <repository>
+      <id>pentaho-public</id>
+      <name>Pentaho Public</name>
+      <url>http://nexus.pentaho.org/content/groups/omni/</url>
+      <releases>
+        <enabled>true</enabled>
+        <updatePolicy>daily</updatePolicy>
+      </releases>
+      <snapshots>
+        <enabled>true</enabled>
+        <updatePolicy>interval:15</updatePolicy>
+      </snapshots>
+    </repository>
+  </repositories>
+
 </project>

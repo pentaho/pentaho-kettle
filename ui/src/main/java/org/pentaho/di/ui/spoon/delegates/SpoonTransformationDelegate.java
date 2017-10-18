@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -858,6 +858,8 @@ public class SpoonTransformationDelegate extends SpoonDelegate {
     }
 
     if ( execConfigAnswer ) {
+      TransGraph activeTransGraph = spoon.getActiveTransGraph();
+      activeTransGraph.transLogDelegate.addTransLog();
 
       ExtensionPointHandler.callExtensionPoint( log, KettleExtensionPoint.SpoonTransMetaExecutionStart.id, transMeta );
       ExtensionPointHandler.callExtensionPoint( log, KettleExtensionPoint.SpoonTransExecutionConfiguration.id,
@@ -872,11 +874,11 @@ public class SpoonTransformationDelegate extends SpoonDelegate {
         return;
       }
 
-      TransGraph activeTransGraph = spoon.getActiveTransGraph();
       if ( !executionConfiguration.isExecutingLocally() && !executionConfiguration.isExecutingRemotely() ) {
-        activeTransGraph.transLogDelegate.clearLog();
+        if ( transMeta.hasChanged() ) {
+          activeTransGraph.showSaveFileMessage();
+        }
       }
-      activeTransGraph.transLogDelegate.addTransLog();
 
       // Verify if there is at least one step specified to debug or preview...
       //

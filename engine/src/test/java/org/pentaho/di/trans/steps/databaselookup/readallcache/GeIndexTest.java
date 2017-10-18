@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -29,7 +29,7 @@ import org.pentaho.di.core.row.ValueMetaInterface;
 import java.util.BitSet;
 import java.util.List;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.fail;
 
 /**
  * @author Andrey Khayrutdinov

@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -34,8 +34,14 @@ import org.pentaho.metastore.persist.MetaStoreFactory;
 
 import java.util.Arrays;
 
-import static org.mockito.Matchers.*;
-import static org.mockito.Mockito.*;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 
 /**
@@ -67,7 +73,7 @@ public class NamedClusterEmbedManagerTest {
     mockNamedClusterService = mock( NamedClusterServiceOsgi.class );
     when( mockMeta.getNamedClusterServiceOsgi() ).thenReturn( mockNamedClusterService );
     when( mockMeta.getMetaStore() ).thenReturn( mockMetaStore );
-    when ( mockNamedClusterService.getClusterTemplate() ).thenReturn( mock( NamedClusterOsgi.class ) );
+    when( mockNamedClusterService.getClusterTemplate() ).thenReturn( mock( NamedClusterOsgi.class ) );
     when( mockNamedClusterService.getNamedClusterByName( eq( CLUSTER1_NAME ), any() ) ).thenReturn( mockNamedCluster1 );
     when( mockNamedClusterService.getNamedClusterByName( eq( CLUSTER2_NAME ), any() ) ).thenReturn( mockNamedCluster2 );
 
@@ -117,7 +123,7 @@ public class NamedClusterEmbedManagerTest {
   public void testRegisterUrlAlreadyRegistered() throws Exception {
     when( mockMetaStoreFactory.loadElement( CLUSTER1_NAME ) ).thenReturn( mockNamedCluster1 );
     namedClusterEmbedManager.registerUrl( "hc://" + CLUSTER1_NAME + "/dir1/dir2" );
-    verify( mockMetaStoreFactory, times(0 ) ).saveElement( mockNamedCluster1 );
+    verify( mockMetaStoreFactory, times( 0 ) ).saveElement( mockNamedCluster1 );
   }
 
   @Test

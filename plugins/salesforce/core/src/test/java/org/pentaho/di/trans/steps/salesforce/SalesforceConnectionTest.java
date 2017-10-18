@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -34,8 +34,10 @@ import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.Random;
 
+import com.sforce.soap.partner.Field;
 import com.sforce.soap.partner.sobject.SObject;
 import com.sforce.ws.wsdl.Constants;
+import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -340,4 +342,18 @@ public class SalesforceConnectionTest {
     result.setValue( value );
     return result;
   }
+
+  @Test //PDI-16459
+  public void getFieldsTest() throws KettleException {
+    String name = "name";
+    SalesforceConnection conn = new SalesforceConnection( null, "http://localhost:1234", "aUser", "aPass" );
+    Field[] fields = new Field[ 1 ];
+    Field field = new Field();
+    field.setRelationshipName( "Parent" );
+    field.setName( name );
+    fields[ 0 ] = field;
+    String[] names = conn.getFields( fields );
+    Assert.assertEquals( name, names[ 0 ] );
+  }
+
 }

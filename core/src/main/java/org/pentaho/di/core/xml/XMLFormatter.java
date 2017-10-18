@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2016-2017 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2016-2017 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -47,6 +47,10 @@ public class XMLFormatter {
   private static XMLInputFactory INPUT_FACTORY = XMLInputFactory.newInstance();
   private static XMLOutputFactory OUTPUT_FACTORY = XMLOutputFactory.newInstance();
 
+  static {
+    INPUT_FACTORY.setProperty( XMLInputFactory.IS_COALESCING, false );
+  }
+
   public static String format( String xml ) {
     XMLStreamReader rd = null;
     XMLStreamWriter wr = null;
@@ -65,10 +69,16 @@ public class XMLFormatter {
       StartElementBuffer startElementBuffer = null;
       StringBuilder str = new StringBuilder();
       StringBuilder prefix = new StringBuilder();
+      StringBuilder cdata = new StringBuilder();
       boolean wasStart = false;
       boolean wasSomething = false;
       while ( rd.hasNext() ) {
         int event = rd.next();
+        if ( event != XMLStreamConstants.CDATA && cdata.length() > 0 ) {
+          // was CDATA
+          wr.writeCData( cdata.toString() );
+          cdata.setLength( 0 );
+        }
 
         if ( startElementBuffer != null ) {
           if ( event == XMLStreamConstants.END_ELEMENT ) {
@@ -120,7 +130,7 @@ public class XMLFormatter {
               wr.writeCharacters( str.toString() );
             }
             str.setLength( 0 );
-            wr.writeCData( rd.getText() );
+            cdata.append( rd.getText() );
             wasSomething = true;
             break;
           case XMLStreamConstants.COMMENT:

@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -424,6 +424,7 @@ public class JobEntryCopy implements Cloneable, XMLInterface, GUIPositionInterfa
 
   public void setParentJobMeta( JobMeta parentJobMeta ) {
     this.parentJobMeta = parentJobMeta;
+    this.entry.setParentJobMeta( parentJobMeta );
   }
 
   @Override

@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -821,13 +821,7 @@ public class SalesforceConnection {
 
       for ( int i = 0; i < nrFields; i++ ) {
         Field field = fields[i];
-
-        if ( field.getRelationshipName() != null ) {
-          fieldsMapp[i] = field.getRelationshipName();
-        } else {
-          fieldsMapp[i] = field.getName();
-        }
-
+        fieldsMapp[i] = field.getName();
       }
       return fieldsMapp;
     }

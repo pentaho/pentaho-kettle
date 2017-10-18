@@ -3,7 +3,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -563,6 +563,10 @@ public class TableView extends Composite {
     lsFocusText = new FocusAdapter() {
       @Override
       public void focusLost( FocusEvent e ) {
+        if ( isWrongLostFocusEvent() ) {
+          return;
+        }
+
         final Display d = Display.getCurrent();
 
         if ( table.isDisposed() ) {
@@ -625,6 +629,18 @@ public class TableView extends Composite {
           worker.run();
         }
         tableViewModifyListener.cellFocusLost( rownr );
+      }
+
+      /**
+       * This is a workaround for SWT bug (see PDI-15268).
+       * Calling a context menu should be ignored in
+       * SWT org.eclipse.swt.widgets.Control#gtk_event_after
+       *
+       * @return true if it is wrong event
+       */
+      private boolean isWrongLostFocusEvent() {
+        Control controlGotFocus = Display.getCurrent().getCursorControl();
+        return Const.isLinux() && ( controlGotFocus == null || text.equals( controlGotFocus ) );
       }
     };
     lsFocusCombo = new FocusAdapter() {
@@ -1497,6 +1513,8 @@ public class TableView extends Composite {
     row.setText( colnr, textData );
     text.dispose();
     table.setFocus();
+
+    tableViewModifyListener.cellFocusLost( rownr );
 
     String[] afterEdit = getItemText( row );
     checkChanged( new String[][]{ beforeEdit }, new String[][]{ afterEdit }, new int[]{ rownr } );

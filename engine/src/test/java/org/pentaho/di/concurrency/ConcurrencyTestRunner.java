@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -137,6 +137,7 @@ class ConcurrencyTestRunner<M, B> {
 
       for ( int i = 0; i < background.size(); i++ ) {
         Future<? extends B> future = background.get( i );
+        //CHECKSTYLE IGNORE EmptyBlock FOR NEXT 3 LINES
         while ( !future.isDone() ) {
           // wait: condition flag is cleared, thus background tasks must complete by convention
         }

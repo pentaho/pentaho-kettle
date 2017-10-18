@@ -1,22 +1,22 @@
 /*!
- * PENTAHO CORPORATION PROPRIETARY AND CONFIDENTIAL
+ * HITACHI VANTARA PROPRIETARY AND CONFIDENTIAL
  *
- * Copyright 2017 Pentaho Corporation (Pentaho). All rights reserved.
+ * Copyright 2017 Hitachi Vantara. All rights reserved.
  *
  * NOTICE: All information including source code contained herein is, and
- * remains the sole property of Pentaho and its licensors. The intellectual
+ * remains the sole property of Hitachi Vantara and its licensors. The intellectual
  * and technical concepts contained herein are proprietary and confidential
- * to, and are trade secrets of Pentaho and may be covered by U.S. and foreign
+ * to, and are trade secrets of Hitachi Vantara and may be covered by U.S. and foreign
  * patents, or patents in process, and are protected by trade secret and
  * copyright laws. The receipt or possession of this source code and/or related
  * information does not convey or imply any rights to reproduce, disclose or
  * distribute its contents, or to manufacture, use, or sell anything that it
  * may describe, in whole or in part. Any reproduction, modification, distribution,
  * or public display of this information without the express written authorization
- * from Pentaho is strictly prohibited and in violation of applicable laws and
+ * from Hitachi Vantara is strictly prohibited and in violation of applicable laws and
  * international treaties. Access to the source code contained herein is strictly
  * prohibited to anyone except those individuals and entities who have executed
- * confidentiality and non-disclosure agreements or other agreements with Pentaho,
+ * confidentiality and non-disclosure agreements or other agreements with Hitachi Vantara,
  * explicitly covering such access.
  */
 
@@ -423,7 +423,6 @@ define([
     function _triggerError(type) {
       vm.errorType = type;
       vm.showError = true;
-      $scope.$apply();
     }
 
     /**
@@ -554,15 +553,18 @@ define([
             for (var i = 0; i < vm.folders.length; i++) {
               if (vm.folders[i].path === vm.folder.parent) {
                 parent = vm.folders[i];
+                var numChildrenFolders = 0;
                 for (var j = 0; j < vm.folders[i].children.length; j++) {
+                  if (vm.folders[i].children[j].type === "folder") {
+                    numChildrenFolders++;
+                  }
                   if (vm.folders[i].children[j].path === vm.folder.path) {
                     vm.folders[i].children.splice(j, 1);
+                    numChildrenFolders--;
                     j--;
                   }
                 }
-                if (vm.folders[i].children.length === 0) {
-                  vm.folders[i].hasChildren = false;
-                }
+                vm.folders[i].hasChildren = numChildrenFolders > 0;
               }
               if (vm.folders[i].parent === vm.folder.path || vm.folders[i].path === vm.folder.path) {
                 vm.folders.splice(i, 1);
@@ -579,8 +581,9 @@ define([
           }, function(response) {
             if (response.status === 406) {// folder has open file
               _triggerError(13);
+            } else {
+              _triggerError(8);
             }
-            _triggerError(8);
           });
       } else {// delete file or folder from files list panel
         dt.remove(vm.file.objectId.id, vm.file.name, vm.file.path, vm.file.type)
@@ -608,12 +611,12 @@ define([
             if (vm.file.type === "folder") {
               if (response.status === 406) {// folder has open file
                 _triggerError(13);
+              } else {
+                _triggerError(8);
               }
-              _triggerError(8);
+            } else if (response.status === 406) {// file is open
+              _triggerError(14);
             } else {
-              if (response.status === 406) {// file is open
-                _triggerError(14);
-              }
               _triggerError(9);
             }
           });
@@ -666,6 +669,14 @@ define([
       }
       for (var j = 0; j < vm.folders.length; j++) {
         _updateDirectories(vm.folders[j], oldPath, newPath);
+      }
+      for (var k = 0; k < vm.recentFiles.length; k++) {
+        if ((vm.recentFiles[k].path + "/").lastIndexOf(oldPath + "/", 0) === 0) {
+          dt.updateRecentFiles(oldPath, newPath).then(function() {
+            dt.getRecentFiles().then(_populateRecentFiles);
+          });
+          break;
+        }
       }
     }
 
@@ -750,7 +761,6 @@ define([
         } else {
           _save(false);
         }
-        $scope.$apply();
       }
     }
 

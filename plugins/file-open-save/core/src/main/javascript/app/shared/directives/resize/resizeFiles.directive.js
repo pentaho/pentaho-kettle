@@ -1,5 +1,5 @@
 /*!
- * Copyright 2017 Pentaho Corporation. All rights reserved.
+ * Copyright 2017 Hitachi Vantara. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -47,6 +47,24 @@ define([
               setScrollTableClass();
               setWidths();
             }
+          }
+        });
+
+        scope.$watch(attrs.searchValue, function(newValue) {
+          if (newValue === "") {
+            $timeout(function() {
+              setScrollTableClass();
+              setWidths();
+            });
+          }
+        });
+
+        scope.$watch(attrs.selectedFile, function(newValue) {
+          if (newValue === null) {
+            $timeout(function() {
+              setScrollTableClass();
+              setWidths();
+            });
           }
         });
 

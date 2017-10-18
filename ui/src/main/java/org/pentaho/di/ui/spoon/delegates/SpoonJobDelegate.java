@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -1360,6 +1360,10 @@ public class SpoonJobDelegate extends SpoonDelegate {
       new JobExecutionConfigurationDialog( spoon.getShell(), executionConfiguration, jobMeta );
 
     if ( !jobMeta.isShowDialog() || dialog.open() ) {
+
+      JobGraph jobGraph = spoon.getActiveJobGraph();
+      jobGraph.jobLogDelegate.addJobLog();
+
       ExtensionPointHandler.callExtensionPoint( log, KettleExtensionPoint.SpoonJobMetaExecutionStart.id, jobMeta );
       ExtensionPointHandler.callExtensionPoint( log, KettleExtensionPoint.SpoonJobExecutionConfiguration.id,
           executionConfiguration );
@@ -1373,12 +1377,10 @@ public class SpoonJobDelegate extends SpoonDelegate {
         return;
       }
 
-      // addJobLog(jobMeta);
-      JobGraph jobGraph = spoon.getActiveJobGraph();
-
       if ( !executionConfiguration.isExecutingLocally() && !executionConfiguration.isExecutingRemotely() ) {
-        jobGraph.jobLogDelegate.clearLog();
-        jobGraph.jobLogDelegate.addJobLog();
+        if ( jobMeta.hasChanged() ) {
+          jobGraph.showSaveFileMessage();
+        }
       }
 
       // Set the variables that where specified...

@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -37,9 +37,63 @@ import java.util.Map;
 import java.util.Random;
 
 import java.util.Arrays;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import org.pentaho.di.core.row.ValueMetaInterface;
-import static org.pentaho.di.trans.steps.textfileinput.TextFileInputMetaInjection.Entry.*;
+
+import static org.pentaho.di.trans.steps.textfileinput.TextFileInputMetaInjection.Entry.ACCEPT_FILE_FIELD;
+import static org.pentaho.di.trans.steps.textfileinput.TextFileInputMetaInjection.Entry.ACCEPT_FILE_NAMES;
+import static org.pentaho.di.trans.steps.textfileinput.TextFileInputMetaInjection.Entry.ACCEPT_FILE_STEP;
+import static org.pentaho.di.trans.steps.textfileinput.TextFileInputMetaInjection.Entry.ADD_FILES_TO_RESULT;
+import static org.pentaho.di.trans.steps.textfileinput.TextFileInputMetaInjection.Entry.BREAK_IN_ENCLOSURE;
+import static org.pentaho.di.trans.steps.textfileinput.TextFileInputMetaInjection.Entry.COMPRESSION_TYPE;
+import static org.pentaho.di.trans.steps.textfileinput.TextFileInputMetaInjection.Entry.DATE_FORMAT_LENIENT;
+import static org.pentaho.di.trans.steps.textfileinput.TextFileInputMetaInjection.Entry.DATE_FORMAT_LOCALE;
+import static org.pentaho.di.trans.steps.textfileinput.TextFileInputMetaInjection.Entry.ENCLOSURE;
+import static org.pentaho.di.trans.steps.textfileinput.TextFileInputMetaInjection.Entry.ENCODING;
+import static org.pentaho.di.trans.steps.textfileinput.TextFileInputMetaInjection.Entry.ERROR_COUNT_FIELD;
+import static org.pentaho.di.trans.steps.textfileinput.TextFileInputMetaInjection.Entry.ERROR_FIELDS_FIELD;
+import static org.pentaho.di.trans.steps.textfileinput.TextFileInputMetaInjection.Entry.ERROR_FILES_EXTENTION;
+import static org.pentaho.di.trans.steps.textfileinput.TextFileInputMetaInjection.Entry.ERROR_FILES_TARGET_DIR;
+import static org.pentaho.di.trans.steps.textfileinput.TextFileInputMetaInjection.Entry.ERROR_LINES_SKIPPED;
+import static org.pentaho.di.trans.steps.textfileinput.TextFileInputMetaInjection.Entry.ERROR_TEXT_FIELD;
+import static org.pentaho.di.trans.steps.textfileinput.TextFileInputMetaInjection.Entry.ESCAPE_CHAR;
+import static org.pentaho.di.trans.steps.textfileinput.TextFileInputMetaInjection.Entry.FILE_ERROR_FIELD;
+import static org.pentaho.di.trans.steps.textfileinput.TextFileInputMetaInjection.Entry.FILE_ERROR_MESSAGE_FIELD;
+import static org.pentaho.di.trans.steps.textfileinput.TextFileInputMetaInjection.Entry.FILE_EXTENSION_FIELDNAME;
+import static org.pentaho.di.trans.steps.textfileinput.TextFileInputMetaInjection.Entry.FILE_FORMAT;
+import static org.pentaho.di.trans.steps.textfileinput.TextFileInputMetaInjection.Entry.FILE_HIDDEN_FIELDNAME;
+import static org.pentaho.di.trans.steps.textfileinput.TextFileInputMetaInjection.Entry.FILE_LAST_MODIFICATION_FIELDNAME;
+import static org.pentaho.di.trans.steps.textfileinput.TextFileInputMetaInjection.Entry.FILE_PATH_FIELDNAME;
+import static org.pentaho.di.trans.steps.textfileinput.TextFileInputMetaInjection.Entry.FILE_SHORT_FILE_FIELDNAME;
+import static org.pentaho.di.trans.steps.textfileinput.TextFileInputMetaInjection.Entry.FILE_SIZE_FIELDNAME;
+import static org.pentaho.di.trans.steps.textfileinput.TextFileInputMetaInjection.Entry.FILE_TYPE;
+import static org.pentaho.di.trans.steps.textfileinput.TextFileInputMetaInjection.Entry.FILE_URI_FIELDNAME;
+import static org.pentaho.di.trans.steps.textfileinput.TextFileInputMetaInjection.Entry.FILENAME_FIELD;
+import static org.pentaho.di.trans.steps.textfileinput.TextFileInputMetaInjection.Entry.HAS_FOOTER;
+import static org.pentaho.di.trans.steps.textfileinput.TextFileInputMetaInjection.Entry.HAS_PAGED_LAYOUT;
+import static org.pentaho.di.trans.steps.textfileinput.TextFileInputMetaInjection.Entry.HAS_WRAPPED_LINES;
+import static org.pentaho.di.trans.steps.textfileinput.TextFileInputMetaInjection.Entry.HEADER_PRESENT;
+import static org.pentaho.di.trans.steps.textfileinput.TextFileInputMetaInjection.Entry.IGNORE_ERRORS;
+import static org.pentaho.di.trans.steps.textfileinput.TextFileInputMetaInjection.Entry.INCLUDE_FILENAME;
+import static org.pentaho.di.trans.steps.textfileinput.TextFileInputMetaInjection.Entry.INCLUDE_ROW_NUMBER;
+import static org.pentaho.di.trans.steps.textfileinput.TextFileInputMetaInjection.Entry.LINE_NR_FILES_EXTENTION;
+import static org.pentaho.di.trans.steps.textfileinput.TextFileInputMetaInjection.Entry.LINE_NR_FILES_TARGET_DIR;
+import static org.pentaho.di.trans.steps.textfileinput.TextFileInputMetaInjection.Entry.NR_DOC_HEADER_LINES;
+import static org.pentaho.di.trans.steps.textfileinput.TextFileInputMetaInjection.Entry.NO_EMPTY_LINES;
+import static org.pentaho.di.trans.steps.textfileinput.TextFileInputMetaInjection.Entry.NR_FOOTER_LINES;
+import static org.pentaho.di.trans.steps.textfileinput.TextFileInputMetaInjection.Entry.NR_HEADER_LINES;
+import static org.pentaho.di.trans.steps.textfileinput.TextFileInputMetaInjection.Entry.NR_LINES_PER_PAGE;
+import static org.pentaho.di.trans.steps.textfileinput.TextFileInputMetaInjection.Entry.NR_WRAPS;
+import static org.pentaho.di.trans.steps.textfileinput.TextFileInputMetaInjection.Entry.PASS_THROUGH_FIELDS;
+import static org.pentaho.di.trans.steps.textfileinput.TextFileInputMetaInjection.Entry.ROW_LIMIT;
+import static org.pentaho.di.trans.steps.textfileinput.TextFileInputMetaInjection.Entry.ROW_NUMBER_BY_FILE;
+import static org.pentaho.di.trans.steps.textfileinput.TextFileInputMetaInjection.Entry.ROW_NUMBER_FIELD;
+import static org.pentaho.di.trans.steps.textfileinput.TextFileInputMetaInjection.Entry.SEPARATOR;
+import static org.pentaho.di.trans.steps.textfileinput.TextFileInputMetaInjection.Entry.SKIP_BAD_FILES;
+import static org.pentaho.di.trans.steps.textfileinput.TextFileInputMetaInjection.Entry.WARNING_FILES_EXTENTION;
+import static org.pentaho.di.trans.steps.textfileinput.TextFileInputMetaInjection.Entry.WARNING_FILES_TARGET_DIR;
 
 /**
  * @deprecated replaced by implementation in the ...steps.fileinput.text package

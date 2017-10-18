@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -64,7 +64,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertNotNull;
 import static org.mockito.Matchers.same;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.anyString;
@@ -412,7 +416,7 @@ public class TransMetaTest {
     String directory = "/home/admin";
     Node jobNode = Mockito.mock( Node.class );
     NodeList nodeList = new NodeList() {
-     ArrayList<Node> nodes = new ArrayList<>(  );
+      ArrayList<Node> nodes = new ArrayList<>(  );
       {
 
         Node nodeInfo = Mockito.mock( Node.class );

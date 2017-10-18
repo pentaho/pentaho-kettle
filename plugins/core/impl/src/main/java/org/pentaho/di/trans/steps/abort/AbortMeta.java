@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -49,12 +49,10 @@ import org.w3c.dom.Node;
 
 /**
  * Meta data for the abort step.
- *
- * @author sboden
  */
 @Step( id = "Abort", image = "ABR.svg", i18nPackageName = "org.pentaho.di.trans.steps.abort",
   name = "Abort.Name", description = "Abort.Description",
-  documentationUrl = "http://wiki.pentaho.com/display/EAI/Abort",
+  documentationUrl = "Products/Data_Integration/Transformation_Step_Reference/Abort",
   categoryDescription = "i18n:org.pentaho.di.trans.step:BaseStep.Category.Flow" )
 public class AbortMeta extends BaseStepMeta implements StepMetaInterface {
   private static Class<?> PKG = AbortMeta.class; // for i18n purposes, needed by Translator2!!

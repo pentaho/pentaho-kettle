@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -423,9 +423,8 @@ public class UserDefinedJavaClassMeta extends BaseStepMeta implements StepMetaIn
         XMLHandler.addTagValue( ElementNames.class_type.name(), def.getClassType().name() ) );
       retval.append( "\n        " ).append(
         XMLHandler.addTagValue( ElementNames.class_name.name(), def.getClassName() ) );
-      retval.append( "\n        " ).append( XMLHandler.openTag( ElementNames.class_source.name() ) );
-      retval.append( XMLHandler.buildCDATA( def.getSource() ) ).append(
-        XMLHandler.closeTag( ElementNames.class_source.name() ) );
+      retval.append( "\n        " );
+      retval.append( XMLHandler.addTagValue( ElementNames.class_source.name(), def.getSource() ) );
       retval.append( String.format( "\n        </%s>", ElementNames.definition.name() ) );
     }
     retval.append( String.format( "\n    </%s>", ElementNames.definitions.name() ) );

@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -307,8 +307,15 @@ public class RowMetaAndData implements Cloneable {
         return rowMeta.getInteger( data, idx ) == null;
       case ValueMetaInterface.TYPE_NUMBER:
         return rowMeta.getNumber( data, idx ) == null;
+      case ValueMetaInterface.TYPE_BIGNUMBER:
+        return rowMeta.getBigNumber( data, idx ) == null;
+      case ValueMetaInterface.TYPE_BINARY:
+        return rowMeta.getBinary( data, idx ) == null;
+      case ValueMetaInterface.TYPE_DATE:
+      case ValueMetaInterface.TYPE_TIMESTAMP:
+        return rowMeta.getDate( data, idx ) == null;
     }
-    throw new KettleValueException( "Unknown source type" + metaType.getTypeDesc() );
+    throw new KettleValueException( "Unknown source type: " + metaType.getTypeDesc() );
   }
 
   /**

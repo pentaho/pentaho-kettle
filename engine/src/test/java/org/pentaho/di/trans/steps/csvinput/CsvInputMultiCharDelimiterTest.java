@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2016-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2016-2017 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -33,7 +33,9 @@ import org.pentaho.di.trans.steps.textfileinput.TextFileInputField;
 
 import java.io.File;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 public class CsvInputMultiCharDelimiterTest extends CsvInputUnitTestBase {
 
