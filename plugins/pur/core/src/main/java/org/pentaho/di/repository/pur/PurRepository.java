@@ -37,6 +37,7 @@ import java.util.Set;
 
 import javax.xml.namespace.QName;
 import javax.xml.ws.Service;
+import javax.xml.ws.soap.SOAPFaultException;
 
 import org.apache.commons.lang.StringUtils;
 import org.pentaho.di.cluster.ClusterSchema;
@@ -101,6 +102,8 @@ import org.pentaho.platform.api.repository2.unified.RepositoryFile;
 import org.pentaho.platform.api.repository2.unified.RepositoryFileAcl;
 import org.pentaho.platform.api.repository2.unified.RepositoryFileTree;
 import org.pentaho.platform.api.repository2.unified.RepositoryRequest;
+import org.pentaho.platform.api.repository2.unified.UnifiedRepositoryCreateFileException;
+import org.pentaho.platform.api.repository2.unified.UnifiedRepositoryUpdateFileException;
 import org.pentaho.platform.api.repository2.unified.VersionSummary;
 import org.pentaho.platform.api.repository2.unified.RepositoryRequest.FILES_TYPE_FILTER;
 import org.pentaho.platform.api.repository2.unified.data.node.DataNode;
@@ -2999,9 +3002,18 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
           new RepositoryFile.Builder( file ).title( RepositoryFile.DEFAULT_LOCALE, element.getName() ).createdDate(
               versionDate != null ? versionDate.getTime() : new Date() ).description( RepositoryFile.DEFAULT_LOCALE,
               Const.NVL( element.getDescription(), "" ) ).build();
-      file =
+      try {
+        file =
           pur.updateFile( file, new NodeRepositoryFileData( objectTransformer.elementToDataNode( element ) ),
-              versionComment );
+            versionComment );
+      } catch ( SOAPFaultException e ) {
+        if ( e.getMessage().contains( UnifiedRepositoryUpdateFileException.PREFIX ) ) {
+          throw new KettleException(
+            BaseMessages.getString( PKG, "PurRepository.fileUpdateException", file.getName() ) );
+        }
+        throw e;
+      }
+
       if ( checkRename && isRenamed( element, file ) ) {
         renameKettleEntity( element, null, element.getName() );
       }
@@ -3012,9 +3024,16 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
               RepositoryFile.DEFAULT_LOCALE, element.getName() ).createdDate(
               versionDate != null ? versionDate.getTime() : new Date() ).description( RepositoryFile.DEFAULT_LOCALE,
               Const.NVL( element.getDescription(), "" ) ).build();
-      file =
+      try {
+        file =
           pur.createFile( element.getRepositoryDirectory().getObjectId().getId(), file,
-              new NodeRepositoryFileData( objectTransformer.elementToDataNode( element ) ), versionComment );
+            new NodeRepositoryFileData( objectTransformer.elementToDataNode( element ) ), versionComment );
+      } catch ( SOAPFaultException e ) {
+        if ( e.getMessage().contains( UnifiedRepositoryCreateFileException.PREFIX ) ) {
+          throw new KettleException(
+            BaseMessages.getString( PKG, "PurRepository.fileCreateException", file.getName() ) );
+        }
+      }
     }
     // side effects
     ObjectId objectId = new StringObjectId( file.getId().toString() );
