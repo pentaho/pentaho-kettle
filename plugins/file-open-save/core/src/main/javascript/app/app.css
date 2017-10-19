@@ -56,6 +56,10 @@ file-open-save-app .dialogWrapper {
 
 file-open-save-app .header {
   padding: 30px 30px 0;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
 }
 
 file-open-save-app .headerTop {
