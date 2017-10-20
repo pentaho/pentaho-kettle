@@ -28,8 +28,10 @@ import org.junit.Test;
 import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
+import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.KettleEnvironment;
+import org.pentaho.di.core.ProgressMonitorListener;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
@@ -42,6 +44,7 @@ import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.row.value.ValueMetaFactory;
 import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.core.variables.VariableSpace;
+import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.metastore.DatabaseMetaStoreUtil;
 import org.pentaho.di.repository.ObjectRevision;
 import org.pentaho.di.repository.Repository;
@@ -465,5 +468,14 @@ public class TransMetaTest {
   public void testTransWithOneStepIsConsideredUsed() throws Exception {
     TransMeta transMeta = new TransMeta( getClass().getResource( "one-step-trans.ktr" ).getPath() );
     assertEquals( 1, transMeta.getUsedSteps().size() );
+    Repository rep = mock( Repository.class );
+    ProgressMonitorListener monitor = mock( ProgressMonitorListener.class );
+    List<CheckResultInterface> remarks = new ArrayList<>();
+    IMetaStore metaStore = mock( IMetaStore.class );
+    transMeta.checkSteps( remarks, false, monitor, new Variables(), rep, metaStore );
+    assertEquals( 4, remarks.size() );
+    for ( CheckResultInterface remark : remarks ) {
+      assertEquals( CheckResultInterface.TYPE_RESULT_OK, remark.getType() );
+    }
   }
 }

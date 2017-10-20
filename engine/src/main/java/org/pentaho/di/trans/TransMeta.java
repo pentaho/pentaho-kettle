@@ -4491,7 +4491,7 @@ public class TransMeta extends AbstractMeta
           stop_checking = true;
         }
 
-        if ( isStepUsedInTransHops( stepMeta ) ) {
+        if ( isStepUsedInTransHops( stepMeta ) || getSteps().size() == 1 ) {
           // Get the input & output steps!
           // Copy to arrays:
           String[] input = getPrevStepNames( stepMeta );
