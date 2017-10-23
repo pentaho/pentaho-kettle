@@ -22,9 +22,7 @@
 
 package org.pentaho.di.ui.trans.step;
 
-import java.util.ArrayList;
-import java.util.List;
-
+import com.google.common.annotations.VisibleForTesting;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CCombo;
@@ -49,7 +47,6 @@ import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.SourceToTargetMapping;
 import org.pentaho.di.core.database.DatabaseInterface;
 import org.pentaho.di.core.database.DatabaseMeta;
@@ -63,6 +60,7 @@ import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.plugins.StepPluginType;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.i18n.BaseMessages;
@@ -89,7 +87,8 @@ import org.pentaho.di.ui.util.DialogUtils;
 import org.pentaho.di.ui.util.HelpUtils;
 import org.pentaho.metastore.api.IMetaStore;
 
-import com.google.common.annotations.VisibleForTesting;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * This class provides functionality common to Step Dialogs.
@@ -1065,6 +1064,31 @@ public class BaseStepDialog extends Dialog {
                                                   int[] nameColumn, int[] dataTypeColumn, int lengthColumn,
                                                   int precisionColumn, boolean optimizeWidth,
                                                   TableItemInsertListener listener ) {
+    getFieldsFromPrevious( row, tableView, keyColumn, nameColumn, dataTypeColumn, lengthColumn, precisionColumn,
+      optimizeWidth, listener, BaseStepDialog::getFieldsChoiceDialog );
+  }
+
+  /**
+   * Gets unused fields from previous steps and inserts them as rows into a table view.
+   *
+   * @param row             the input fields
+   * @param tableView       the table view to modify
+   * @param keyColumn       the column in the table view to match with the names of the fields, checks for existance if
+   *                        >0
+   * @param nameColumn      the column numbers in which the name should end up in
+   * @param dataTypeColumn  the target column numbers in which the data type should end up in
+   * @param lengthColumn    the length column where the length should end up in (if >0)
+   * @param precisionColumn the length column where the precision should end up in (if >0)
+   * @param optimizeWidth
+   * @param listener        A listener that you can use to do custom modifications to the inserted table item, based on
+   *                        a value from the provided row
+   * @param getFieldsChoiceDialogProvider the GetFieldsChoice dialog provider
+   */
+  public static final void getFieldsFromPrevious( RowMetaInterface row, TableView tableView, int keyColumn,
+                                                  int[] nameColumn, int[] dataTypeColumn, int lengthColumn,
+                                                  int precisionColumn, boolean optimizeWidth,
+                                                  TableItemInsertListener listener,
+                                                  FieldsChoiceDialogProvider getFieldsChoiceDialogProvider ) {
     if ( row == null || row.size() == 0 ) {
       return; // nothing to do
     }
@@ -1073,7 +1097,7 @@ public class BaseStepDialog extends Dialog {
 
     // get a list of all the non-empty keys (names)
     //
-    List<String> keys = new ArrayList<String>();
+    List<String> keys = new ArrayList<>();
     for ( int i = 0; i < table.getItemCount(); i++ ) {
       TableItem tableItem = table.getItem( i );
       String key = tableItem.getText( keyColumn );
@@ -1087,18 +1111,10 @@ public class BaseStepDialog extends Dialog {
     if ( keys.size() > 0 ) {
       // Ask what we should do with the existing data in the step.
       //
-      MessageDialog md =
-        new MessageDialog( tableView.getShell(),
-          BaseMessages.getString( PKG, "BaseStepDialog.GetFieldsChoice.Title" ), // "Warning!"
-          null,
-          BaseMessages.getString( PKG, "BaseStepDialog.GetFieldsChoice.Message", "" + keys.size(), "" + row.size() ),
-          MessageDialog.WARNING, new String[] {
-          BaseMessages.getString( PKG, "BaseStepDialog.AddNew" ),
-          BaseMessages.getString( PKG, "BaseStepDialog.Add" ),
-          BaseMessages.getString( PKG, "BaseStepDialog.ClearAndAdd" ),
-          BaseMessages.getString( PKG, "BaseStepDialog.Cancel" ), }, 0 );
-      MessageDialog.setDefaultImage( GUIResource.getInstance().getImageSpoon() );
-      int idx = md.open();
+      MessageDialog getFieldsChoiceDialog =
+        getFieldsChoiceDialogProvider.provide( tableView.getShell(), keys.size(), row.size() );
+
+      int idx = getFieldsChoiceDialog.open();
       choice = idx & 0xFF;
     }
 
@@ -1156,6 +1172,21 @@ public class BaseStepDialog extends Dialog {
     if ( optimizeWidth ) {
       tableView.optWidth( true );
     }
+  }
+
+  static MessageDialog getFieldsChoiceDialog( Shell shell, int existingFields, int newFields ) {
+    MessageDialog messageDialog =
+      new MessageDialog( shell,
+        BaseMessages.getString( PKG, "BaseStepDialog.GetFieldsChoice.Title" ), // "Warning!"
+        null,
+        BaseMessages.getString( PKG, "BaseStepDialog.GetFieldsChoice.Message", "" + existingFields, "" + newFields ),
+        MessageDialog.WARNING, new String[] {
+        BaseMessages.getString( PKG, "BaseStepDialog.AddNew" ),
+        BaseMessages.getString( PKG, "BaseStepDialog.Add" ),
+        BaseMessages.getString( PKG, "BaseStepDialog.ClearAndAdd" ),
+        BaseMessages.getString( PKG, "BaseStepDialog.Cancel" ), }, 0 );
+    MessageDialog.setDefaultImage( GUIResource.getInstance().getImageSpoon() );
+    return messageDialog;
   }
 
   /**
@@ -1429,6 +1460,10 @@ public class BaseStepDialog extends Dialog {
         reinitConnectionDropDown( wConnection, databaseMeta.getName() );
       }
     }
+  }
+
+  public interface FieldsChoiceDialogProvider {
+    MessageDialog provide( Shell shell, int existingFields, int newFields );
   }
 
   @VisibleForTesting
