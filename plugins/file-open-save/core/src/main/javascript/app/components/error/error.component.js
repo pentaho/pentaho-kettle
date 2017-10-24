@@ -56,6 +56,9 @@ define([
    * This provides the controller for the error component.
    */
   function errorController() {
+    var _buffer = 25;
+    var _max = 1440 - _buffer; // maximum width of 4 lines at 360px each minus a small buffer
+    var _ellipsis = "...";
     var vm = this;
     vm.$onInit = onInit;
     vm.$onChanges = onChanges;
@@ -128,24 +131,35 @@ define([
     function _setMessages() {
       switch (vm.errorType) {
         case 1:// Overwrite
-          var filename1 = vm.errorFile.name;
-          if (utils.getTextWidth(filename1) > 974) {
-            filename1 = utils.truncateString(filename1, 974) + "...";
+          var overwriteBefore = vm.errorFile.type === "job" ?
+            i18n.get("file-open-save-plugin.error.overwrite.job.top-before.message") :
+            i18n.get("file-open-save-plugin.error.overwrite.trans.top-before.message") + " ";
+          var overwriteAfter = " " + i18n.get("file-open-save-plugin.error.overwrite.top-after.message");
+          var overwriteFilenameMaxWidth = _max - utils.getTextWidth(overwriteBefore + overwriteAfter + _ellipsis);
+          var overwriteFilename = vm.errorFile.name;
+          if (utils.getTextWidth(overwriteFilename) > overwriteFilenameMaxWidth) {
+            overwriteFilename = utils.truncateString(overwriteFilename, overwriteFilenameMaxWidth) + _ellipsis;
           }
           _setMessage(i18n.get("file-open-save-plugin.error.overwrite.title"),
-            vm.errorFile.type === "job" ? i18n.get("file-open-save-plugin.error.overwrite.job.top-before.message") :
-                                          i18n.get("file-open-save-plugin.error.overwrite.trans.top-before.message"),
-            " " + filename1 + " ",
-            i18n.get("file-open-save-plugin.error.overwrite.top-after.message"),
+            overwriteBefore,
+            overwriteFilename,
+            overwriteAfter,
             i18n.get("file-open-save-plugin.error.overwrite.bottom.message"),
             i18n.get("file-open-save-plugin.error.overwrite.accept.button"),
             i18n.get("file-open-save-plugin.error.overwrite.cancel.button"));
           break;
         case 2:// Folder Exists
+          var folderExistsBefore = i18n.get("file-open-save-plugin.error.folder-exists.top.message") + " ";
+          var folderExistsFoldernameMaxWidth = _max - utils.getTextWidth(folderExistsBefore + " ." + _ellipsis);
+          var folderExistsFoldername = vm.errorFolder.newName;
+          if (utils.getTextWidth(folderExistsFoldername) > folderExistsFoldernameMaxWidth) {
+            folderExistsFoldername = utils.truncateString(folderExistsFoldername, folderExistsFoldernameMaxWidth) +
+              _ellipsis + " ";
+          }
           _setMessage(i18n.get("file-open-save-plugin.error.folder-exists.title"),
-            i18n.get("file-open-save-plugin.error.folder-exists.top.message"),
-            " ",
-            vm.errorFolder.newName + ".",
+            folderExistsBefore,
+            folderExistsFoldername + ".",
+            "",
             i18n.get("file-open-save-plugin.error.folder-exists.bottom.message"),
             "",
             i18n.get("file-open-save-plugin.error.folder-exists.close.button"));
@@ -163,30 +177,47 @@ define([
             i18n.get("file-open-save-plugin.error.unable-to-create-folder.close.button"));
           break;
         case 5:// Delete file
+          var deleteFileBefore = i18n.get("file-open-save-plugin.error.delete-file.message") + " ";
+          var deleteFileName = vm.errorFile.name;
+          var deleteFileFilenameMaxWidth = _max - utils.getTextWidth(deleteFileBefore + " ?" + _ellipsis);
+          if (utils.getTextWidth(deleteFileName) > deleteFileFilenameMaxWidth) {
+            deleteFileName = utils.truncateString(deleteFileName, deleteFileFilenameMaxWidth) + _ellipsis + " ";
+          }
           _setMessage(i18n.get("file-open-save-plugin.error.delete-file.title"),
-            i18n.get("file-open-save-plugin.error.delete-file.message") + " ",
-            vm.errorFile.name,
-            "?", "",
+            deleteFileBefore,
+            deleteFileName + "?",
+            "", "",
             i18n.get("file-open-save-plugin.error.delete-file.accept.button"),
             i18n.get("file-open-save-plugin.error.delete-file.no.button"));
           break;
         case 6:// Delete folder
+          var deleteFolderBefore = i18n.get("file-open-save-plugin.error.delete-folder.before.message") + " ";
+          var deleteFolderName = vm.errorFolder.name;
+          var deleteFolderAfter = " " + i18n.get("file-open-save-plugin.error.delete-folder.after.message");
+          var deleteFolderFoldernameMaxWidth = _max -
+            utils.getTextWidth(deleteFolderBefore + deleteFolderAfter + _ellipsis);
+          if (utils.getTextWidth(deleteFolderName) > deleteFolderFoldernameMaxWidth) {
+            deleteFolderName = utils.truncateString(deleteFolderName, deleteFolderFoldernameMaxWidth) + _ellipsis;
+          }
           _setMessage(i18n.get("file-open-save-plugin.error.delete-folder.title"),
-            i18n.get("file-open-save-plugin.error.delete-folder.before.message") + " ",
-            vm.errorFolder.name + " ", i18n.get("file-open-save-plugin.error.delete-folder.after.message"),
+            deleteFolderBefore,
+            deleteFolderName,
+            deleteFolderAfter,
             "",
             i18n.get("file-open-save-plugin.error.delete-folder.accept.button"),
             i18n.get("file-open-save-plugin.error.delete-folder.no.button"));
           break;
         case 7:// File Exists
-          var filename7 = vm.errorFile.newName;
-          if (utils.getTextWidth(filename7) > 1064) {
-            filename7 = utils.truncateString(filename7, 1064) + "... ";
+          var fileExistsBefore = i18n.get("file-open-save-plugin.error.file-exists.top.message") + " ";
+          var fileExistsFilenameMaxWidth = _max - utils.getTextWidth(fileExistsBefore + " ." + _ellipsis);
+          var fileExistsFilename = vm.errorFile.newName;
+          if (utils.getTextWidth(fileExistsFilename) > fileExistsFilenameMaxWidth) {
+            fileExistsFilename = utils.truncateString(fileExistsFilename, fileExistsFilenameMaxWidth) + _ellipsis + " ";
           }
           _setMessage(i18n.get("file-open-save-plugin.error.file-exists.title"),
-            i18n.get("file-open-save-plugin.error.file-exists.top.message"),
-            " ",
-            filename7 + ".",
+            fileExistsBefore,
+            fileExistsFilename + ".",
+            "",
             i18n.get("file-open-save-plugin.error.file-exists.bottom.message"),
             "",
             i18n.get("file-open-save-plugin.error.file-exists.close.button"));
@@ -265,7 +296,8 @@ define([
      */
     function _setMessage(title, topBefore, topMiddle, topAfter, bottom, confirm, cancel) {
       vm.errorTitle = title;
-      vm.errorMessageTop = topBefore + topMiddle + topAfter;
+      vm.errorMessageTopBefore = topBefore + topMiddle;
+      vm.errorMessageTopAfter = topAfter;
       vm.errorMessageBottom = bottom;
       vm.errorConfirmButton = confirm;
       vm.errorCancelButton = cancel;

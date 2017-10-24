@@ -50,15 +50,29 @@ error .errorHeader {
 }
 
 error .errorMiddle {
-  margin-bottom: 30px;
   line-height: 18px;
+  max-height: 72px;
   word-wrap: break-word;
+  overflow: hidden;
 }
 
-error .errorMiddleTop {
-  margin-bottom: 20px;
-  overflow: hidden;
-  max-height: 72px;
+error .errorMiddleTopBefore {
+  word-break: break-all;
+}
+
+error .errorMiddleTopAfter {
+  display: inline;
+  display: -moz-inline-box;
+  word-break: keep-all;
+  white-space: nowrap;
+}
+
+error .errorMiddleBottom {
+  margin-top: 20px;
+}
+
+error .errorBottom {
+  margin-top: 30px;
 }
 
 error .errorBottom button {

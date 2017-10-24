@@ -5,12 +5,13 @@
     {{vm.errorTitle}}
   </div>
   <div class="errorMiddle">
-    <div class="errorMiddleTop">
-      {{vm.errorMessageTop}}
+    <div class="errorMiddleTopBefore">
+      {{vm.errorMessageTopBefore}}
+      <span class="errorMiddleTopAfter">{{vm.errorMessageTopAfter}}</span>
     </div>
-    <div class="errorMiddleBottom" ng-hide="vm.errorMessageBottom === ''">
-      {{vm.errorMessageBottom}}
-    </div>
+  </div>
+  <div class="errorMiddleBottom" ng-hide="vm.errorMessageBottom === ''">
+    {{vm.errorMessageBottom}}
   </div>
   <div class="errorBottom">
     <button id="errorCancelButton" class="button2"
