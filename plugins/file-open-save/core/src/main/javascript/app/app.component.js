@@ -566,7 +566,8 @@ define([
                 }
                 vm.folders[i].hasChildren = numChildrenFolders > 0;
               }
-              if (vm.folders[i].parent === vm.folder.path || vm.folders[i].path === vm.folder.path) {
+              if ((vm.folders[i].path + "/").indexOf(vm.folder.path + "/") === 0) {
+                console.log(vm.folders[i].path + ":" + vm.folder.path);
                 vm.folders.splice(i, 1);
                 i--;
               }
@@ -592,7 +593,7 @@ define([
             vm.folder.children.splice(index, 1);
             if (vm.file.type === "folder") {
               for (var i = 0; i < vm.folders.length; i++) {
-                if (vm.folders[i].path.indexOf(vm.file.path) === 0) {
+                if ((vm.folders[i].path + "/").indexOf(vm.file.path + "/") === 0) {
                   vm.folders.splice(i, 1);
                   i--;
                 }
