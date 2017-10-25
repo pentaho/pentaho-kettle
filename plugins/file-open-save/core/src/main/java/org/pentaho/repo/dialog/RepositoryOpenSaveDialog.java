@@ -27,6 +27,10 @@ import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.platform.settings.ServerPort;
 import org.pentaho.platform.settings.ServerPortRegistry;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Properties;
+
 /**
  * Created by bmorrise on 5/23/17.
  */
@@ -36,7 +40,6 @@ public class RepositoryOpenSaveDialog extends ThinDialog {
   public static final String STATE_OPEN = "open";
   private static final Image LOGO = GUIResource.getInstance().getImageLogoSmall();
   private static final String OSGI_SERVICE_PORT = "OSGI_SERVICE_PORT";
-  private static final String CLIENT_PATH = "/@PROJECT_ARTIFACT_ID@/@PROJECT_VERSION@/index.html";
   private static final int OPTIONS = SWT.APPLICATION_MODAL | SWT.DIALOG_TRIM | SWT.RESIZE | SWT.MAX;
   private static final String THIN_CLIENT_HOST = "THIN_CLIENT_HOST";
   private static final String THIN_CLIENT_PORT = "THIN_CLIENT_PORT";
@@ -53,7 +56,7 @@ public class RepositoryOpenSaveDialog extends ThinDialog {
 
   public void open( String directory, String state, String filter, String origin ) {
     StringBuilder clientPath = new StringBuilder();
-    clientPath.append( CLIENT_PATH );
+    clientPath.append( getClientPath() );
     clientPath.append( !Utils.isEmpty( directory ) ? "#?path=" + directory : "#?" );
     clientPath.append( !Utils.isEmpty( directory ) ? "&" : "" );
     clientPath.append( !Utils.isEmpty( state ) ? "state=" + state : "" );
@@ -92,6 +95,18 @@ public class RepositoryOpenSaveDialog extends ThinDialog {
         display.sleep();
       }
     }
+  }
+
+  private static String getClientPath() {
+    Properties properties = new Properties();
+    try {
+      InputStream inputStream =
+        RepositoryOpenSaveDialog.class.getClassLoader().getResourceAsStream( "project.properties" );
+      properties.load( inputStream );
+    } catch ( IOException e ) {
+      e.printStackTrace();
+    }
+    return properties.getProperty( "CLIENT_PATH" );
   }
 
   private static Integer getOsgiServicePort() {
