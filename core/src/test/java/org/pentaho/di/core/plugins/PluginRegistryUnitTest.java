@@ -22,19 +22,25 @@
 
 package org.pentaho.di.core.plugins;
 
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-
 import org.junit.Test;
+import org.pentaho.di.core.exception.KettlePluginClassMapException;
 import org.pentaho.di.core.exception.KettlePluginException;
+import org.pentaho.di.core.extension.PluginMockInterface;
 import org.pentaho.di.core.logging.LoggingPluginType;
 import org.pentaho.di.core.row.RowBuffer;
 import org.pentaho.di.core.row.ValueMetaInterface;
 
 import java.util.HashMap;
 import java.util.UUID;
+
+import static junit.framework.TestCase.fail;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public class PluginRegistryUnitTest {
 
@@ -119,5 +125,19 @@ public class PluginRegistryUnitTest {
 
     // cleanup
     registry.removePlugin( BasePluginType.class, mockPlugin1 );
+  }
+
+  @Test
+  public void testClassloadingPluginNoClassRegistered() {
+    PluginRegistry registry = PluginRegistry.getInstance();
+    PluginMockInterface plugin = mock( PluginMockInterface.class );
+    when( plugin.loadClass( any() ) ).thenReturn( null );
+    try {
+      registry.loadClass( plugin, Class.class );
+    } catch ( KettlePluginClassMapException e ) {
+      // Expected exception
+    } catch ( KettlePluginException e ) {
+      fail();
+    }
   }
 }
