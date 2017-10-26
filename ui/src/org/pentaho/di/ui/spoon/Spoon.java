@@ -3,7 +3,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -2390,14 +2390,25 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
         if ( baseCategory.equalsIgnoreCase( JobEntryPluginType.GENERAL_CATEGORY ) ) {
           generalItem = item;
         }
-
-        for ( int j = 0; j < baseJobEntries.size(); j++ ) {
-          if ( !baseJobEntries.get( j ).getIds()[ 0 ].equals( "SPECIAL" ) ) {
-            if ( baseJobEntries.get( j ).getCategory().equalsIgnoreCase( baseCategory ) ) {
+        List<PluginInterface> sortedCat = new ArrayList<>();
+        for ( PluginInterface baseJob : baseJobEntries ) {
+          if ( baseJob.getCategory().equalsIgnoreCase( baseCategory ) ) {
+            sortedCat.add( baseJob );
+          }
+        }
+        Collections.sort( sortedCat, new Comparator<PluginInterface>() {
+          @Override
+          public int compare( PluginInterface p1, PluginInterface p2 ) {
+            return p1.getName().compareTo( p2.getName() );
+          }
+        } );
+        for ( int j = 0; j < sortedCat.size(); j++ ) {
+          if ( !sortedCat.get( j ).getIds()[ 0 ].equals( "SPECIAL" ) ) {
+            if ( sortedCat.get( j ).getCategory().equalsIgnoreCase( baseCategory ) ) {
               final Image jobEntryImage =
-                  GUIResource.getInstance().getImagesJobentriesSmall().get( baseJobEntries.get( j ).getIds()[0] );
-              String pluginName = Const.NVL( baseJobEntries.get( j ).getName(), "" );
-              String pluginDescription = Const.NVL( baseJobEntries.get( j ).getDescription(), "" );
+                  GUIResource.getInstance().getImagesJobentriesSmall().get( sortedCat.get( j ).getIds()[0] );
+              String pluginName = Const.NVL( sortedCat.get( j ).getName(), "" );
+              String pluginDescription = Const.NVL( sortedCat.get( j ).getDescription(), "" );
 
               if ( !filterMatch( pluginName ) && !filterMatch( pluginDescription ) ) {
                 continue;
