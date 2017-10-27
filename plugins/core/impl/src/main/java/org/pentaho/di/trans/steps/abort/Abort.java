@@ -33,8 +33,6 @@ import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
 
-import java.util.concurrent.Executors;
-
 /**
  * Step that will abort after having seen 'x' number of rows on its input.
  *
@@ -97,9 +95,7 @@ public class Abort extends BaseStep implements StepInterface {
         if ( meta.isAbortWithError() ) {
           setErrors( 1 );
         }
-        //needed this so that abort in Spark would finish processing log messages before the trans is stopped
-        setStopped( true );
-        Executors.newSingleThreadExecutor().submit( this::stopAll );
+        stopAll();
       } else {
         // seen a row but not yet reached the threshold
         if ( meta.isAlwaysLogRows() ) {
