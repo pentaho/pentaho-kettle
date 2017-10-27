@@ -54,6 +54,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import javax.swing.UIManager;
 import javax.swing.plaf.metal.MetalLookAndFeel;
@@ -2314,18 +2315,11 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
         item.setText( baseCategory );
         item.setImage( GUIResource.getInstance().getImageFolder() );
 
-        List<PluginInterface> sortedCat = new ArrayList<>();
-        for ( PluginInterface baseStep : baseSteps ) {
-          if ( baseStep.getCategory().equalsIgnoreCase( baseCategory ) ) {
-            sortedCat.add( baseStep );
-          }
-        }
-        Collections.sort( sortedCat, new Comparator<PluginInterface>() {
-          @Override
-          public int compare( PluginInterface p1, PluginInterface p2 ) {
-            return p1.getName().compareTo( p2.getName() );
-          }
-        } );
+        List<PluginInterface> sortedCat = baseSteps.stream()
+          .filter( baseStep -> baseStep.getCategory().equalsIgnoreCase( baseCategory ) )
+          .sorted( Comparator.comparing( PluginInterface::getName ) )
+          .collect( Collectors.toList() );
+
         for ( PluginInterface p : sortedCat ) {
           final Image stepImage =
             GUIResource.getInstance().getImagesStepsSmall().get( p.getIds()[ 0 ] );
@@ -2398,25 +2392,14 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
         if ( baseCategory.equalsIgnoreCase( JobEntryPluginType.GENERAL_CATEGORY ) ) {
           generalItem = item;
         }
-        List<PluginInterface> sortedCat = new ArrayList<>();
-        for ( PluginInterface baseJob : baseJobEntries ) {
-          if ( baseJob.getCategory().equalsIgnoreCase( baseCategory ) ) {
-            sortedCat.add( baseJob );
-          }
-        }
-        Collections.sort( sortedCat, new Comparator<PluginInterface>() {
-          @Override
-          public int compare( PluginInterface p1, PluginInterface p2 ) {
-            return p1.getName().compareTo( p2.getName() );
-          }
-        } );
-        for ( int j = 0; j < sortedCat.size(); j++ ) {
-          if ( !sortedCat.get( j ).getIds()[ 0 ].equals( "SPECIAL" ) ) {
-            if ( sortedCat.get( j ).getCategory().equalsIgnoreCase( baseCategory ) ) {
+
+        for ( int j = 0; j < baseJobEntries.size(); j++ ) {
+          if ( !baseJobEntries.get( j ).getIds()[ 0 ].equals( JobMeta.STRING_SPECIAL ) ) {
+            if ( baseJobEntries.get( j ).getCategory().equalsIgnoreCase( baseCategory ) ) {
               final Image jobEntryImage =
-                  GUIResource.getInstance().getImagesJobentriesSmall().get( sortedCat.get( j ).getIds()[0] );
-              String pluginName = Const.NVL( sortedCat.get( j ).getName(), "" );
-              String pluginDescription = Const.NVL( sortedCat.get( j ).getDescription(), "" );
+                  GUIResource.getInstance().getImagesJobentriesSmall().get( baseJobEntries.get( j ).getIds()[0] );
+              String pluginName = Const.NVL( baseJobEntries.get( j ).getName(), "" );
+              String pluginDescription = Const.NVL( baseJobEntries.get( j ).getDescription(), "" );
 
               if ( !filterMatch( pluginName ) && !filterMatch( pluginDescription ) ) {
                 continue;

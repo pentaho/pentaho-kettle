@@ -30,9 +30,9 @@ public class JarFileAnnotationPlugin {
   private String className;
 
   /**
+   * @param className
    * @param jarFile
-   * @param classFile
-   * @param annotation
+   * @param pluginFolder
    */
   public JarFileAnnotationPlugin( String className, URL jarFile, URL pluginFolder ) {
     this.className = className;

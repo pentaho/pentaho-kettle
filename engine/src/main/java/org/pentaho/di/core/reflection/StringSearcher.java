@@ -42,7 +42,7 @@ public class StringSearcher {
   private static List<String> stepPluginPackages;
   private static List<String> jobEntryPluginPackages;
 
-  public static final void findMetaData( Object object, int level, List<StringSearchResult> stringList,
+  public static void findMetaData( Object object, int level, List<StringSearchResult> stringList,
     Object parentObject, Object grandParentObject ) {
     // System.out.println(Const.rightPad(" ", level)+"Finding strings in "+object.toString());
 
