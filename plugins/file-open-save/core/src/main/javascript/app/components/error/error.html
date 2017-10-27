@@ -17,12 +17,16 @@
     <button id="errorCancelButton" class="button2"
             ng-class="{primary: vm.errorType !== 1, secondary: vm.errorType === 1}"
             ng-click="vm.errorCancel()">
-      {{vm.errorCancelButton}}
+      <span>
+        {{vm.errorCancelButton}}
+      </span>
     </button>
     <button id="errorConfirmButton" class="primary button1"
             ng-click="vm.errorConfirm()"
             ng-hide="vm.hideConfirmButton();">
-      {{vm.errorConfirmButton}}
+      <span>
+        {{vm.errorConfirmButton}}
+      </span>
     </button>
   </div>
 </div>

@@ -108,13 +108,19 @@
     </div>
     <div class="buttons">
       <button class="secondary" ng-click="vm.cancel()">
-        {{::vm.cancelButton}}
+        <span>
+          {{::vm.cancelButton}}
+        </span>
       </button>
       <button class="primary" ng-show="vm.wrapperClass === 'open'" ng-click="vm.openClicked()" ng-disabled="!vm.file">
-        {{::vm.openButton}}
+        <span>
+          {{::vm.openButton}}
+        </span>
       </button>
       <button class="primary" ng-show="vm.wrapperClass === 'save'" ng-click="vm.saveClicked()" ng-disabled="vm.fileToSave === '' || vm.folder.path == 'Recents'">
-        {{::vm.saveButton}}
+        <span>
+          {{::vm.saveButton}}
+        </span>
       </button>
     </div>
   </div>

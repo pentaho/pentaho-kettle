@@ -331,6 +331,10 @@ file-open-save-app button {
   outline: 0 none;
 }
 
+file-open-save-app button span {
+  position: relative;
+}
+
 file-open-save-app button.primary:enabled {
   border: 1px solid #005DA6;
   background-color: #005DA6;
