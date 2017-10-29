@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Hitachi Vantara.  All rights reserved.
  *
  *******************************************************************************
  *
@@ -397,4 +397,15 @@ public class DatabaseMetaTest {
     assertTrue( dbmeta.getURL().contains( "someValue" ) );
   }
 
+  @Test
+  public void testfindDatabase() throws KettleDatabaseException {
+    List<DatabaseMeta> databases = new ArrayList<DatabaseMeta>();
+    databases.add( new DatabaseMeta( "  1", "Infobright", "JDBC", null, "stub:stub", null, null, null ) );
+    databases.add( new DatabaseMeta( "  1  ", "Infobright", "JDBC", null, "stub:stub", null, null, null ) );
+    databases.add( new DatabaseMeta( "1  ", "Infobright", "JDBC", null, "stub:stub", null, null, null ) );
+    assertNotNull( DatabaseMeta.findDatabase( databases, "1" ) );
+    assertNotNull( DatabaseMeta.findDatabase( databases, "1 " ) );
+    assertNotNull( DatabaseMeta.findDatabase( databases, " 1" ) );
+    assertNotNull( DatabaseMeta.findDatabase( databases, " 1 " ) );
+  }
 }
