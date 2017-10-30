@@ -83,7 +83,7 @@ public class SpoonPluginType extends BasePluginType implements PluginTypeInterfa
 
   @Override
   protected String extractImageFile( Annotation annotation ) {
-    return null;
+    return ( (SpoonPlugin) annotation ).image();
   }
 
   @Override
