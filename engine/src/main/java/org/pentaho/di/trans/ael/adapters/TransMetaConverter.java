@@ -26,6 +26,7 @@ package org.pentaho.di.trans.ael.adapters;
 
 import com.google.common.base.Throwables;
 
+import java.io.File;
 import java.io.Serializable;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -91,7 +92,8 @@ public class TransMetaConverter {
             Repository repository = copyTransMeta.getRepository();
             if ( repository != null ) {
               Path path = Paths.get( entry.getResource() );
-              RepositoryDirectoryInterface directory = repository.findDirectory( path.getParent().toString() );
+              RepositoryDirectoryInterface directory =
+                repository.findDirectory( path.getParent().toString().replace( File.separator, "/" ) );
               return convert(
                 repository.loadTransformation( path.getFileName().toString(), directory, null, true, null ) );
             }
