@@ -24,6 +24,7 @@
 
 package org.pentaho.di.trans.ael.adapters;
 
+import java.io.File;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -360,7 +361,7 @@ public class TransMetaConverterTest {
     Repository repository = mock( Repository.class );
     TransMeta transMeta = new TransMeta();
     RepositoryDirectoryInterface repositoryDirectory = new RepositoryDirectory();
-    String directory = getClass().getResource( "" ).toString();
+    String directory = getClass().getResource( "" ).toString().replace( File.separator, "/" );
     when( repository.findDirectory( directory.substring( 0, directory.length() - 1 ) ) ).thenReturn( repositoryDirectory );
     when( repository.loadTransformation( "trans-meta-converter-sub.ktr", repositoryDirectory, null, true, null ) ).thenReturn( transMeta );
     parentTransMeta.setRepository( repository );
