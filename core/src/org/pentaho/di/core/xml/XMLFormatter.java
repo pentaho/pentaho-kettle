@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2016-2017 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2016-2017 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -35,7 +35,7 @@ import javax.xml.stream.XMLStreamWriter;
 
 /**
  * XML formatting for better VCS diff.
- * 
+ *
  * It preserve formatting only in cases: 1) inside one tag if there are only characters, 2) in comments, 3) if there are
  * some characters outside tags
  *
@@ -47,6 +47,10 @@ public class XMLFormatter {
   private static XMLInputFactory INPUT_FACTORY = XMLInputFactory.newInstance();
   private static XMLOutputFactory OUTPUT_FACTORY = XMLOutputFactory.newInstance();
 
+  static {
+    INPUT_FACTORY.setProperty( XMLInputFactory.IS_COALESCING, false );
+  }
+
   public static String format( String xml ) {
     XMLStreamReader rd = null;
     XMLStreamWriter wr = null;
@@ -54,15 +58,27 @@ public class XMLFormatter {
     StringWriter result = new StringWriter();
     try {
       rd = INPUT_FACTORY.createXMLStreamReader( new StringReader( xml ) );
-      wr = OUTPUT_FACTORY.createXMLStreamWriter( result );
+
+      synchronized ( OUTPUT_FACTORY ) {
+        // BACKLOG-18743: This object was not thread safe in some scenarios
+        // causing the `result` variable to have data from other concurrent executions
+        // and making the final output invalid.
+        wr = OUTPUT_FACTORY.createXMLStreamWriter( result );
+      }
 
       StartElementBuffer startElementBuffer = null;
       StringBuilder str = new StringBuilder();
       StringBuilder prefix = new StringBuilder();
+      StringBuilder cdata = new StringBuilder();
       boolean wasStart = false;
       boolean wasSomething = false;
       while ( rd.hasNext() ) {
         int event = rd.next();
+        if ( event != XMLStreamConstants.CDATA && cdata.length() > 0 ) {
+          // was CDATA
+          wr.writeCData( cdata.toString() );
+          cdata.setLength( 0 );
+        }
 
         if ( startElementBuffer != null ) {
           if ( event == XMLStreamConstants.END_ELEMENT ) {
@@ -114,7 +130,7 @@ public class XMLFormatter {
               wr.writeCharacters( str.toString() );
             }
             str.setLength( 0 );
-            wr.writeCData( rd.getText() );
+            cdata.append( rd.getText() );
             wasSomething = true;
             break;
           case XMLStreamConstants.COMMENT:
