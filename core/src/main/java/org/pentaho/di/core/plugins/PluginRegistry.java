@@ -78,9 +78,6 @@ public class PluginRegistry {
   private static final List<PluginRegistryExtension> extensions = new ArrayList<>();
   private static final String SUPPLEMENTALS_SUFFIX = "-supplementals";
 
-  private static Comparator<PluginInterface> pluginNameComparator =
-    ( p1, p2 ) -> p1.getName().compareToIgnoreCase( p2.getName() );
-
   public static final LogChannelInterface log = new LogChannel( "PluginRegistry", true );
 
   // the list of plugins
@@ -147,7 +144,7 @@ public class PluginRegistry {
   public void registerPluginType( Class<? extends PluginTypeInterface> pluginType ) {
     lock.writeLock().lock();
     try {
-      pluginMap.computeIfAbsent( pluginType, k -> new TreeSet<>( pluginNameComparator ) );
+      pluginMap.computeIfAbsent( pluginType, k -> new TreeSet<>( Plugin.nullStringComparator ) );
 
       // Keep track of the categories separately for performance reasons...
       //
@@ -225,7 +222,7 @@ public class PluginRegistry {
 
       // Keep the list of plugins sorted by name...
       //
-      Set<PluginInterface> list = pluginMap.computeIfAbsent( pluginType, k -> new TreeSet<>( pluginNameComparator ) );
+      Set<PluginInterface> list = pluginMap.computeIfAbsent( pluginType, k -> new TreeSet<>( Plugin.nullStringComparator ) );
 
       if ( !list.add( plugin ) ) {
         list.remove( plugin );
