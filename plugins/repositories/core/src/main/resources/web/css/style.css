@@ -173,6 +173,11 @@ a:visited {
   margin-left: 3px;
 }
 
+.connectHeader {
+  margin-top: 83px;
+  line-height: 44px;
+}
+
 /*
 * FLOATING
 */
