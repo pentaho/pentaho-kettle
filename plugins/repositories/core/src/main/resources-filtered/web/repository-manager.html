@@ -24,9 +24,21 @@
     </div>
   </div>
   <div>
-    <button id="deleteBtn" class="right margin_left_10 secondary" type="button" ng-class="{invisible : !model.selectedRepository || model.repositories.length == 0}" ng-click="delete(model.selectedRepository)">{{ 'repositories.delete.label' | translate }}</button>
-    <button id="editBtn" class="right secondary" type="button" style="margin-left: 85px;" ng-class="{invisible : !model.selectedRepository || model.repositories.length == 0}" ng-click="edit(model.selectedRepository)">{{ 'repositories.edit.label' | translate }}</button>
-    <button id="addBtn" class="right standard" type="button" ng-click="add()">{{ 'repositories.manager.add.label' | translate }}</button>
+    <button id="deleteBtn" class="right margin_left_10 secondary" type="button" ng-class="{invisible : !model.selectedRepository || model.repositories.length == 0}" ng-click="delete(model.selectedRepository)">
+      <span>
+        {{ 'repositories.delete.label' | translate }}
+      </span>
+    </button>
+    <button id="editBtn" class="right secondary" type="button" style="margin-left: 85px;" ng-class="{invisible : !model.selectedRepository || model.repositories.length == 0}" ng-click="edit(model.selectedRepository)">
+      <span>
+        {{ 'repositories.edit.label' | translate }}
+      </span>
+    </button>
+    <button id="addBtn" class="right standard" type="button" ng-click="add()">
+      <span>
+        {{ 'repositories.manager.add.label' | translate }}
+      </span>
+    </button>
   </div>
   <div class="bottom">
     <div class="margin_bottom_20">
@@ -34,7 +46,11 @@
     </div>
     <div>
       <img class="left helpImg" alt="" src="images/help.svg" /><a id="btnHelp" class="left" ng-click="help()">{{ 'repositories.help.label' | translate }}</a>
-      <button id="btnClose" class="right secondary" type="button" ng-click="close()">{{ 'repositories.close.label' | translate }}</button>
+      <button id="btnClose" class="right secondary" type="button" ng-click="close()">
+        <span>
+          {{ 'repositories.close.label' | translate }}
+        </span>
+      </button>
     </div>
   </div>
 </div>

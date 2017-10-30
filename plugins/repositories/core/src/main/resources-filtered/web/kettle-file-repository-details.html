@@ -7,7 +7,11 @@
     <div>
       <label for="location" class="margin_bottom_5 block text_left">{{ 'repositories.file.location.label' | translate }}</label>
       <input id="location" class="block left" type="text" ng-model="model.location" />
-      <button id="browse" class="left standard margin_bottom_20" ng-click="selectLocation()">{{ 'repositories.file.browse.label' | translate }}</button>
+      <button id="browse" class="left standard margin_bottom_20" ng-click="selectLocation()">
+        <span>
+          {{ 'repositories.file.browse.label' | translate }}
+        </span>
+      </button>
     </div>
     <div class="text_left" style="margin-bottom: 27px;">
       <div style="margin-bottom: 17px;">
@@ -40,8 +44,16 @@
     </div>
     <div>
       <img class="left helpImg" alt="" src="images/help.svg" /><a id="btnHelp" class="left" ng-click="help()">{{ 'repositories.help.label' | translate }}</a>
-      <button id="finish" class="right margin_left_10 standard" type="button" ng-disabled="!canFinish()" ng-click="finish()">{{ 'repositories.finish.label' | translate }}</button>
-      <button class="right secondary" type="button" ng-click="back()">{{ 'repositories.back.label' | translate }}</button>
+      <button id="finish" class="right margin_left_10 standard" type="button" ng-disabled="!canFinish()" ng-click="finish()">
+        <span>
+          {{ 'repositories.finish.label' | translate }}
+        </span>
+      </button>
+      <button class="right secondary" type="button" ng-click="back()">
+        <span>
+          {{ 'repositories.back.label' | translate }}
+        </span>
+      </button>
     </div>
   </div>
 </div>

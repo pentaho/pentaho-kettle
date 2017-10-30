@@ -17,7 +17,11 @@
       <input id="password" class="block repo_conn_txt" type="password" ng-model="model.password" ng-change="resetErrorMsg()"/>
     </div>
     <div>
-      <button id="connect" class="standard" type="submit" ng-disabled="!canConnect()" ng-click="connect()">{{ 'repositories.connect.connect.label' | translate }}</button>
+      <button id="connect" class="standard" type="submit" ng-disabled="!canConnect()" ng-click="connect()">
+        <span>
+          {{ 'repositories.connect.connect.label' | translate }}
+        </span>
+      </button>
     </div>
     </form>
   </div>
