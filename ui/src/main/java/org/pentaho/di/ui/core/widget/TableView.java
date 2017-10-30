@@ -1354,6 +1354,8 @@ public class TableView extends Composite {
       return;
     }
 
+    removeEmptyRows();
+
     try {
       // First, get all info and put it in a Vector of Rows...
       TableItem[] items = table.getItems();
@@ -1487,6 +1489,7 @@ public class TableView extends Composite {
       table.setSortDirection( sortingDescending ? SWT.DOWN : SWT.UP );
 
       lastRowCount = table.getItemCount();
+      setRowNums();
     } catch ( Exception e ) {
       new ErrorDialog( this.getShell(), BaseMessages.getString( PKG, "TableView.ErrorDialog.title" ), BaseMessages
         .getString( PKG, "TableView.ErrorDialog.description" ), e );
