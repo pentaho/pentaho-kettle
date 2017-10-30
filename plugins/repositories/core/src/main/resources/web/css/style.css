@@ -195,6 +195,10 @@ button:not(.defaultBtn):not(.detailsBtn) {
   font-size: 14px;
 }
 
+button span {
+  position: relative;
+}
+
 button.standard:enabled {
   background-color: #005EAA;
   color: #FFFFFF;
