@@ -22,6 +22,7 @@
 
 package org.pentaho.di.trans.steps.update;
 
+import com.google.common.primitives.Ints;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
@@ -511,8 +512,17 @@ public class UpdateMeta extends BaseStepMeta implements StepMetaInterface {
       errorIgnored = rep.getStepAttributeBoolean( id_step, "error_ignored" );
       ignoreFlagField = rep.getStepAttributeString( id_step, "ignore_flag_field" );
 
-      int nrkeys = rep.countNrStepAttributes( id_step, "key_name" );
-      int nrvalues = rep.countNrStepAttributes( id_step, "value_name" );
+      int nrKeyName = rep.countNrStepAttributes( id_step, "key_name" );
+      int nrKeyField = rep.countNrStepAttributes( id_step, "key_field" );
+      int nrKeyCondition = rep.countNrStepAttributes( id_step, "key_condition" );
+      int nrKeyName2 = rep.countNrStepAttributes( id_step, "key_name2" );
+
+      int nrkeys = Ints.max( nrKeyName, nrKeyCondition, nrKeyField, nrKeyName2 );
+
+      int nrValueName = rep.countNrStepAttributes( id_step, "value_name" );
+      int nrValueRename = rep.countNrStepAttributes( id_step, "value_rename" );
+
+      int nrvalues = Ints.max( nrValueName, nrValueRename );
 
       allocate( nrkeys, nrvalues );
 
