@@ -3247,7 +3247,7 @@ public class Const {
    * @return cleaned string
    */
   public static String removeCR( String in ) {
-    return removeChar( in, '\n' );
+    return removeChar( in, '\r' );
   } // removeCR
 
   /**
@@ -3258,7 +3258,7 @@ public class Const {
    * @return cleaned string
    */
   public static String removeLF( String in ) {
-    return removeChar( in, '\r' );
+    return removeChar( in, '\n' );
   } // removeCRLF
 
   /**
