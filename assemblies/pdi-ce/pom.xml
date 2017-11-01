@@ -62,7 +62,7 @@
     <spring-aop.version>4.3.2.RELEASE</spring-aop.version>
     <spring-beans.version>4.3.2.RELEASE</spring-beans.version>
     <spring-context.version>4.3.2.RELEASE</spring-context.version>
-    <spring-security-core.version>4.1.3.RELEASE</spring-security-core.version>
+    <spring-security-core.version>4.2.3.RELEASE</spring-security-core.version>
     <webservices-api.version>2.3.1</webservices-api.version>
     <webservices-rt.version>2.3.1</webservices-rt.version>
     <asm.version>3.2</asm.version>
