@@ -24,6 +24,7 @@ package org.pentaho.di.core.logging;
 
 import org.apache.commons.vfs2.FileContent;
 import org.apache.commons.vfs2.FileObject;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -33,14 +34,16 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import java.io.OutputStream;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.anyBoolean;
 import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.when;
 
 @RunWith( MockitoJUnitRunner.class )
 public class LogChannelFileWriterTest {
@@ -82,8 +85,15 @@ public class LogChannelFileWriterTest {
   @Test
   public void testStartStopLogging() throws Exception {
     LogChannelFileWriter writer = new LogChannelFileWriter( id, fileObject, false );
+
+    doAnswer( invocationOnMock -> {
+      Thread.sleep( 2000 );
+      return null; } )
+            .when( outputStream ).close();
+
     writer.startLogging();
-    Thread.sleep( 2000 );
+
+    Thread.sleep( 500 );
 
     verify( outputStream, atLeastOnce() ).write( any( byte[].class ) );
     verify( outputStream, atLeastOnce() ).flush();
@@ -91,7 +101,7 @@ public class LogChannelFileWriterTest {
 
     writer.stopLogging();
 
-    Thread.sleep( 2000 );
     verify( outputStream ).close();
+
   }
 }
