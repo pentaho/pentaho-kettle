@@ -22,7 +22,6 @@
 
 package org.pentaho.di.trans.steps.xmljoin;
 
-import java.util.Arrays;
 import java.util.List;
 
 import org.pentaho.di.core.annotations.Step;
@@ -154,14 +153,7 @@ public class XMLJoinMeta extends BaseStepMeta implements StepMetaInterface {
 
     ValueMetaInterface v = new ValueMeta( this.getValueXMLfield(), ValueMetaInterface.TYPE_STRING );
     v.setOrigin( name );
-
-    RowMetaInterface rowMeta = ( (TransMeta) space ) .getStepFields( getTargetXMLstep() ).clone();
-    if ( rowMeta != null ) {
-      rowMeta.addValueMeta( v );
-      row.setValueMetaList( rowMeta.getValueMetaList() );
-    } else {
-      row.setValueMetaList( Arrays.asList( v ) );
-    }
+    row.addValueMeta( v );
   }
 
   public String getXML() {
