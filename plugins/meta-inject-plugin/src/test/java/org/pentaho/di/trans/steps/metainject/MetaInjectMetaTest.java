@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -23,10 +23,16 @@
 package org.pentaho.di.trans.steps.metainject;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.doReturn;
+import static org.junit.Assert.assertNotNull;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyBoolean;
+import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.when;
 
 import java.util.Collections;
 import java.util.List;
@@ -35,9 +41,13 @@ import java.util.Map;
 import org.junit.Before;
 import org.junit.Test;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.ObjectLocationSpecificationMethod;
+import org.pentaho.di.core.ProgressMonitorListener;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.variables.VariableSpace;
+import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.repository.Repository;
+import org.pentaho.di.repository.RepositoryDirectoryInterface;
 import org.pentaho.di.resource.ResourceDefinition;
 import org.pentaho.di.resource.ResourceNamingInterface;
 import org.pentaho.di.resource.ResourceReference;
@@ -145,6 +155,40 @@ public class MetaInjectMetaTest {
     SourceStepField sourceStepField = actualResult.values().iterator().next();
     assertEquals( SOURCE_STEP_NAME, sourceStepField.getStepname() );
     assertEquals( SOURCE_FIELD_NAME, sourceStepField.getField() );
+  }
+
+  @Test
+  public void testLoadMappingMetaWhenConnectedToRep() throws Exception {
+    String variablePath = "Internal.Entry.Current.Directory";
+    String virtualDir = "/testFolder/test";
+    String fileName = "testTrans.ktr";
+
+    VariableSpace variables = new Variables();
+    variables.setVariable( variablePath, virtualDir );
+
+    MetaInjectMeta metaInjectMetaMock = mock( MetaInjectMeta.class );
+    when( metaInjectMetaMock.getSpecificationMethod() ).thenReturn( ObjectLocationSpecificationMethod.FILENAME );
+    when( metaInjectMetaMock.getFileName() ).thenReturn( "${" + variablePath + "}/" + fileName );
+
+    // mock repo and answers
+    Repository rep = mock( Repository.class );
+
+    doAnswer( invocation -> {
+      String originalArgument = (String) ( invocation.getArguments() )[ 0 ];
+      // be sure that the variable was replaced by real path
+      assertEquals( originalArgument, virtualDir );
+      return null;
+    } ).when( rep ).findDirectory( anyString() );
+
+    doAnswer( invocation -> {
+      String originalArgument = (String) ( invocation.getArguments() )[ 0 ];
+      // be sure that transformation name was resolved correctly
+      assertEquals( originalArgument, fileName );
+      return mock( TransMeta.class );
+    } ).when( rep ).loadTransformation( anyString(), any( RepositoryDirectoryInterface.class ),
+      any( ProgressMonitorListener.class ), anyBoolean(), anyString() );
+
+    assertNotNull( MetaInjectMeta.loadTransformationMeta( metaInjectMetaMock, rep, null, variables ) );
   }
 
 }
