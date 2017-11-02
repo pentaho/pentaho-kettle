@@ -29,6 +29,7 @@ import org.junit.Test;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.logging.KettleLogStore;
 import org.pentaho.di.job.Job;
+import org.pentaho.di.job.JobMeta;
 
 import java.io.File;
 import java.nio.file.Files;
@@ -53,6 +54,7 @@ public class JobEntryCopyFilesIT {
   public void setUp() throws Exception {
     entry = new JobEntryCopyFiles( "Job entry copy files" );
     entry.setParentJob( new Job() );
+    entry.setParentJobMeta( new JobMeta() );
 
     source = Files.createTempDirectory( "src" );
     destination = Files.createTempDirectory( "dest" );
