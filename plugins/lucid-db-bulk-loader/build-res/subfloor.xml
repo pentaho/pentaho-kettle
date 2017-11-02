@@ -133,7 +133,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
   <property name="artifact.repo.root.url" value="http://nexus.pentaho.org/content/groups/omni"/>
 	   
   <!-- Project meta properties -->
-  <property name="impl.vendor" value="Pentaho Corporation" description="Jar file metadata describing the jar's vendor"/>
+  <property name="impl.vendor" value="Hitachi Vantara" description="Jar file metadata describing the jar's vendor"/>
   <property name="impl.productID"
             value=""
             description="Jar file metadata indicating the product ID (this is not the revision)"/>
