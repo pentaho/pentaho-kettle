@@ -500,9 +500,35 @@ public class MetaInjectMeta extends BaseStepMeta implements StepMetaInterface, S
           //
           // Don't set internal variables: they belong to the parent thread!
           //
-          mappingTransMeta = new TransMeta( realFilename, metaStore, rep, false, tmpSpace, null );
-          mappingTransMeta.getLogChannel().logDetailed( "Loading Mapping from repository",
-            "Mapping transformation was loaded from XML file [" + realFilename + "]" );
+          if ( rep != null ) {
+            // need to try to load from the repository
+            realFilename = resolver.normalizeSlashes( realFilename );
+            try {
+              String dirStr = realFilename.substring( 0, realFilename.lastIndexOf( "/" ) );
+              String tmpFilename = realFilename.substring( realFilename.lastIndexOf( "/" ) + 1 );
+              RepositoryDirectoryInterface dir = rep.findDirectory( dirStr );
+              mappingTransMeta = rep.loadTransformation( tmpFilename, dir, null, true, null );
+            } catch ( KettleException ke ) {
+              // try without extension
+              if ( realFilename.endsWith( Const.STRING_TRANS_DEFAULT_EXT ) ) {
+                try {
+                  String tmpFilename =
+                    realFilename.substring( realFilename.lastIndexOf( "/" ) + 1, realFilename.indexOf( "."
+                      + Const.STRING_TRANS_DEFAULT_EXT ) );
+                  String dirStr = realFilename.substring( 0, realFilename.lastIndexOf( "/" ) );
+                  RepositoryDirectoryInterface dir = rep.findDirectory( dirStr );
+                  mappingTransMeta = rep.loadTransformation( tmpFilename, dir, null, true, null );
+                } catch ( KettleException ke2 ) {
+                  // fall back to try loading from file system (transMeta is going to be null)
+                }
+              }
+            }
+          }
+          if ( mappingTransMeta == null ) {
+            mappingTransMeta = new TransMeta( realFilename, metaStore, rep, false, tmpSpace, null );
+            mappingTransMeta.getLogChannel().logDetailed( "Loading Mapping from repository",
+              "Mapping transformation was loaded from XML file [" + realFilename + "]" );
+          }
         } catch ( Exception e ) {
           throw new KettleException( BaseMessages.getString( PKG,
             "MetaInjectMeta.Exception.UnableToLoadTransformationFromFile", realFilename ), e );
