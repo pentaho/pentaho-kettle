@@ -24,7 +24,6 @@ package org.pentaho.di.trans.steps.singlethreader;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
@@ -42,16 +41,13 @@ import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.HasRepositoryInterface;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.Repository;
-import org.pentaho.di.repository.RepositoryDirectory;
 import org.pentaho.di.repository.RepositoryDirectoryInterface;
 import org.pentaho.di.repository.RepositoryImportLocation;
 import org.pentaho.di.repository.RepositoryObject;
 import org.pentaho.di.repository.RepositoryObjectType;
 import org.pentaho.di.repository.StringObjectId;
-import org.pentaho.di.resource.ResourceDefinition;
 import org.pentaho.di.resource.ResourceEntry;
 import org.pentaho.di.resource.ResourceEntry.ResourceType;
-import org.pentaho.di.resource.ResourceNamingInterface;
 import org.pentaho.di.resource.ResourceReference;
 import org.pentaho.di.trans.StepWithMappingMeta;
 import org.pentaho.di.trans.Trans;
@@ -357,53 +353,6 @@ public class SingleThreaderMeta extends StepWithMappingMeta implements StepMetaI
       references.add( reference );
     }
     return references;
-  }
-
-  @Override
-  public String exportResources( VariableSpace space, Map<String, ResourceDefinition> definitions,
-    ResourceNamingInterface resourceNamingInterface, Repository repository, IMetaStore metaStore ) throws KettleException {
-    try {
-      // Try to load the transformation from repository or file.
-      // Modify this recursively too...
-      //
-      // NOTE: there is no need to clone this step because the caller is
-      // responsible for this.
-      //
-      // First load the mapping metadata...
-      //
-      TransMeta mappingTransMeta = loadSingleThreadedTransMeta( this, repository, space );
-
-      // Also go down into the mapping transformation and export the files
-      // there. (mapping recursively down)
-      //
-      String proposedNewFilename =
-        mappingTransMeta.exportResources(
-          mappingTransMeta, definitions, resourceNamingInterface, repository, metaStore );
-
-      // To get a relative path to it, we inject
-      // ${Internal.Job.Filename.Directory}
-      //
-      String newFilename =
-        "${" + Const.INTERNAL_VARIABLE_TRANSFORMATION_FILENAME_DIRECTORY + "}/" + proposedNewFilename;
-
-      // Set the correct filename inside the XML.
-      //
-      mappingTransMeta.setFilename( newFilename );
-
-      // exports always reside in the root directory, in case we want to turn
-      // this into a file repository...
-      //
-      mappingTransMeta.setRepositoryDirectory( new RepositoryDirectory() );
-
-      // change it in the job entry
-      //
-      fileName = newFilename;
-
-      return proposedNewFilename;
-    } catch ( Exception e ) {
-      throw new KettleException( BaseMessages.getString(
-        PKG, "SingleThreaderMeta.Exception.UnableToLoadTransformation", fileName ) );
-    }
   }
 
   /**
