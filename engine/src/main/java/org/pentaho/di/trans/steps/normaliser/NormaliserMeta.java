@@ -230,7 +230,12 @@ public class NormaliserMeta extends BaseStepMeta implements StepMetaInterface {
     for ( int i = 0; i < norm_occ.size(); i++ ) {
       String normname = norm_occ.get( i );
       String fieldname = field_occ.get( i );
-      ValueMetaInterface v = row.searchValueMeta( fieldname ).clone();
+      ValueMetaInterface v = row.searchValueMeta( fieldname );
+      if ( v != null ) {
+        v = v.clone();
+      } else {
+        throw new KettleStepException( BaseMessages.getString( PKG, "NormaliserMeta.Exception.UnableToFindField", fieldname ) );
+      }
       v.setName( normname );
       v.setOrigin( name );
       row.addValueMeta( v );
@@ -387,11 +392,6 @@ public class NormaliserMeta extends BaseStepMeta implements StepMetaInterface {
     @Injection( name = "NORMALISED", group = "FIELDS" )
     private String norm;
 
-    /**
-     * @param name
-     * @param value
-     * @param norm
-     */
     public NormaliserField() {
     }
 
