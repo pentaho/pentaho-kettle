@@ -624,6 +624,7 @@ public class MetaInjectMeta extends BaseStepMeta implements StepMetaInterface, S
       //
       executorTransMeta.setRepositoryDirectory( new RepositoryDirectory() );
 
+      setSpecificationMethod( ObjectLocationSpecificationMethod.FILENAME );
       // change it in the entry
       //
       fileName = newFilename;
