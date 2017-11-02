@@ -16,13 +16,21 @@
  */
 package org.pentaho.di.repository.pur;
 
+import java.net.URI;
 import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 
 import javax.xml.ws.WebServiceException;
+import javax.ws.rs.core.MediaType;
 
+import com.sun.jersey.api.client.Client;
+import com.sun.jersey.api.client.ClientResponse;
+import com.sun.jersey.api.client.WebResource;
+import com.sun.jersey.api.client.config.ClientConfig;
+import com.sun.jersey.api.client.config.DefaultClientConfig;
+import com.sun.jersey.api.client.filter.HTTPBasicAuthFilter;
 import org.apache.commons.lang.BooleanUtils;
 import org.pentaho.di.core.encryption.Encr;
 import org.pentaho.di.core.exception.KettleException;
@@ -134,7 +142,7 @@ public class PurRepositoryConnector implements IRepositoryConnector {
         }
       }
 
-      ExecutorService executor = ExecutorUtil.getExecutor();
+      ExecutorService executor = getExecutor();
 
       Future<Boolean> authorizationWebserviceFuture = executor.submit( new Callable<Boolean>() {
 
@@ -223,6 +231,37 @@ public class PurRepositoryConnector implements IRepositoryConnector {
         }
       } );
 
+      Future<String> sessionServiceFuture = executor.submit( new Callable<String>() {
+
+        @Override
+        public String call() throws Exception {
+          try {
+            if ( log.isBasic() ) {
+              log.logBasic( BaseMessages.getString( PKG, "PurRepositoryConnector.SessionService.Start" ) );
+            }
+            ClientConfig clientConfig = new DefaultClientConfig();
+            Client client = Client.create( clientConfig );
+            client.addFilter( new HTTPBasicAuthFilter( username, password ) );
+            WebResource resource =
+              client.resource( new URI( repositoryMeta.getRepositoryLocation().getUrl() + "/api/session/userName" ) );
+            WebResource.Builder resourceBuilder = resource.getRequestBuilder();
+            resourceBuilder = resourceBuilder.accept( MediaType.TEXT_PLAIN );
+            com.sun.jersey.api.client.ClientResponse response;
+            response = resourceBuilder.method( "GET", ClientResponse.class );
+            if ( log.isBasic() ) {
+              log.logBasic( BaseMessages.getString( PKG, "PurRepositoryConnector.SessionService.Sync" ) ); //$NON-NLS-1$
+            }
+            return response.getEntity( String.class );
+          } catch ( Exception e ) {
+            if ( log.isError() ) {
+              log.logError( "Unable get userName", e );
+            }
+            return null;
+          }
+
+        }
+      } );
+
       WebServiceException repoException = repoWebServiceFuture.get();
       if ( repoException != null ) {
         log.logError( repoException.getMessage() );
@@ -237,6 +276,11 @@ public class PurRepositoryConnector implements IRepositoryConnector {
       Boolean isAdmin = authorizationWebserviceFuture.get();
       result.getUser().setAdmin( isAdmin );
 
+
+      String userName = sessionServiceFuture.get();
+      if ( userName != null ) {
+        result.getUser().setLogin( userName );
+      }
       if ( log.isBasic() ) {
         log.logBasic( BaseMessages.getString( PKG, "PurRepositoryConnector.RegisterSecurityProvider.Start" ) );
       }
@@ -278,7 +322,9 @@ public class PurRepositoryConnector implements IRepositoryConnector {
     }
     return result;
   }
-
+  ExecutorService getExecutor() {
+    return ExecutorUtil.getExecutor();
+  }
   @Override
   public synchronized void disconnect() {
     if ( serviceManager != null ) {
