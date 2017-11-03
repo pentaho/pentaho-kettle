@@ -41,16 +41,20 @@ import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.plugins.StepPluginType;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.variables.Variables;
+import org.pentaho.di.trans.step.StepStatus;
 import org.pentaho.di.trans.steps.transexecutor.TransExecutorData;
 import org.pentaho.di.trans.steps.transexecutor.TransExecutorParameters;
 
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 
 @RunWith( MockitoJUnitRunner.class )
@@ -107,6 +111,17 @@ public class SubtransExecutorTest {
           + "\n"
           + "===================="
       );
-  }
 
+    Map<String, StepStatus> statuses = subtransExecutor.getStatuses();
+    assertEquals( 3, statuses.size() );
+    for ( Map.Entry<String, StepStatus> entry : statuses.entrySet() ) {
+      StepStatus statusSpy = spy( entry.getValue() );
+      statuses.put( entry.getKey(), statusSpy );
+    }
+
+    subtransExecutor.execute( rows );
+    for ( Map.Entry<String, StepStatus> entry : statuses.entrySet() ) {
+      verify( entry.getValue() ).updateAll( any() );
+    }
+  }
 }
