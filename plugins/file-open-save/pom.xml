@@ -113,7 +113,7 @@
       <dependency>
         <groupId>com.fasterxml.jackson.core</groupId>
         <artifactId>jackson-core</artifactId>
-        <version>${dependency.fasterxml.jackson.version}</version>
+        <version>${fasterxml.jackson.core.version}</version>
         <exclusions>
           <exclusion>
             <artifactId>*</artifactId>
@@ -124,18 +124,7 @@
       <dependency>
         <groupId>com.fasterxml.jackson.core</groupId>
         <artifactId>jackson-annotations</artifactId>
-        <version>${dependency.fasterxml.jackson.version}</version>
-        <exclusions>
-          <exclusion>
-            <artifactId>*</artifactId>
-            <groupId>*</groupId>
-          </exclusion>
-        </exclusions>
-      </dependency>
-      <dependency>
-        <groupId>com.fasterxml.jackson.jaxrs</groupId>
-        <artifactId>jackson-jaxrs-json-provider</artifactId>
-        <version>${dependency.fasterxml.jackson.version}</version>
+        <version>${fasterxml.jackson.core.version}</version>
         <exclusions>
           <exclusion>
             <artifactId>*</artifactId>
@@ -146,6 +135,17 @@
       <dependency>
         <groupId>com.fasterxml.jackson.core</groupId>
         <artifactId>jackson-databind</artifactId>
+        <version>${fasterxml.jackson.core.version}</version>
+        <exclusions>
+          <exclusion>
+            <artifactId>*</artifactId>
+            <groupId>*</groupId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+      <dependency>
+        <groupId>com.fasterxml.jackson.jaxrs</groupId>
+        <artifactId>jackson-jaxrs-json-provider</artifactId>
         <version>${dependency.fasterxml.jackson.version}</version>
         <exclusions>
           <exclusion>
