@@ -42,6 +42,7 @@ import org.pentaho.di.ui.core.PropsUI;
 import org.pentaho.di.ui.spoon.Spoon;
 import org.pentaho.repo.model.RepositoryDirectory;
 import org.pentaho.repo.model.RepositoryFile;
+import org.pentaho.repo.model.RepositoryName;
 import org.pentaho.repo.util.Util;
 
 import java.util.Calendar;
@@ -355,9 +356,6 @@ public class RepositoryBrowserController {
           getRepository().getRepositoryMeta().getId().equals( "PentahoEnterpriseRepository" );
         int depth = isPentahoRepository ? -1 : 0;
         createRepositoryDirectory( repositoryDirectoryInterface, repositoryDirectories, depth, null, filter );
-        if ( isPentahoRepository ) {
-          repositoryDirectories.remove( 0 );
-        }
         return repositoryDirectories;
       } catch ( Exception e ) {
         return null;
@@ -544,5 +542,9 @@ public class RepositoryBrowserController {
     }
 
     return recentSearches;
+  }
+
+  public RepositoryName getCurrentRepo() {
+    return new RepositoryName( spoonSupplier.get().rep.getName() );
   }
 }

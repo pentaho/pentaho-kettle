@@ -77,19 +77,19 @@ define([
     vm.storeRecentSearch = storeRecentSearch;
     vm.updateDirectories = updateDirectories;
     vm.renameError = renameError;
-    vm.displayRecentSearches = displayRecentSearches;
-    vm.focusSearchBox = focusSearchBox;
-    vm.setTooltip = setTooltip;
     vm.recentsHasScrollBar = recentsHasScrollBar;
     vm.addDeleteDisabled = addDeleteDisabled;
     vm.onKeyUp = onKeyUp;
     vm.getPlaceholder = getPlaceholder;
+    vm.isPentahoRepo = isPentahoRepo;
+    vm.getSelectedFolderName = getSelectedFolderName;
+    vm.currentRepo = "";
     vm.selectedFolder = "";
     vm.fileToSave = "";
-    vm.searchString = "";
     vm.showError = false;
     vm.errorType = 0;
     vm.loading = true;
+    var globalSearch = false;
 
     /**
      * The $onInit hook of components lifecycle which is called on each controller
@@ -108,7 +108,6 @@ define([
       vm.saveFileNameLabel = i18n.get("file-open-save-plugin.app.save.file-name.label");
       vm.addFolderText = i18n.get("file-open-save-plugin.app.add-folder.button");
       vm.removeText = i18n.get("file-open-save-plugin.app.delete.button");
-      vm.isInSearch = false;
       vm.showRecents = true;
       vm.folder = {name: "Recents", path: "Recents"};
       vm.selectedFolder = vm.folder.name;
@@ -116,6 +115,7 @@ define([
       vm.includeRoot = false;
       vm.autoExpand = false;
       vm.didDeleteFolder = false;
+      vm.searchString = "";
       _resetFileAreaMessage();
       dt.getDirectoryTree($location.search().filter).then(_populateTree);
       dt.getRecentFiles().then(_populateRecentFiles);
@@ -146,11 +146,27 @@ define([
         selectFolderByPath(path);
         vm.autoExpand = true;
       }
-      if (vm.folders[0].path === "/") {
+      if (vm.folders[0].path === "/" && !isPentahoRepo()) {
         vm.includeRoot = true;
       }
-      vm.loading = false;
+      dt.getCurrentRepo().then(function(response) {
+        vm.currentRepo = response.data.name;
+        vm.loading = false;
+      });
       _setFileToSaveName();
+    }
+
+    /**
+     * Determines whether or no this is a pentaho repository
+     *
+     * @returns {boolean}
+     * @private
+     */
+    function isPentahoRepo() {
+      if (vm.folders.length >= 3 && vm.folders[1].path === "/home" ) {
+        return true;
+      }
+      return false;
     }
 
     /**
@@ -208,14 +224,18 @@ define([
      * @param {Object} folder - folder object
      */
     function selectFolder(folder) {
-      vm.searchString = "";
+      if ((folder === null && vm.searchString !== "")
+          || (folder !== null && folder.name !== "/" && vm.searchString !== "")
+          || (folder !== null && folder.name === "/" && !isPentahoRepo() && vm.searchString !== "")) {
+        resetSearch();
+      }
       _resetFileAreaMessage();
       vm.file = null;
       if (folder) {
         vm.showRecents = false;
         vm.folder = folder;
         vm.selectedFolder = ((vm.folder.name === "home" || vm.folder.name === "public") && vm.folder.parent === "/") ?
-          _capsFirstLetter(folder.name) : folder.name;
+            _capsFirstLetter(folder.name) : folder.name;
       } else {
         vm.showRecents = true;
         vm.folder = {name: "Recents", path: "Recents"};
@@ -244,6 +264,7 @@ define([
      */
     function selectFile(file) {
       if (file.type === "folder") {
+        vm.searchString = "";
         selectFolder(file);
       } else if (vm.wrapperClass === "open") {
         _open(file);
@@ -253,15 +274,24 @@ define([
     /**
      * Calls a filter for either recent files or files/folders in current folder
      */
-    function doSearch() {
+    function doSearch(searchValue) {
+      vm.searchString = searchValue;
       vm.isInSearch = false;
       vm.showMessage = true;
       if (vm.showRecents === true) {
-        _filter(vm.recentFiles, vm.searchString);
-      } else {
-        _filter(vm.folder.children, vm.searchString);
+        vm.showRecents = false;
+        selectFolder(vm.folders[0]);
+        globalSearch = true;
       }
+      _filter(vm.folder.children, vm.searchString);
       _setFileAreaMessage();
+      if (isPentahoRepo() && vm.searchString === "" && vm.selectedFolder === "/") {
+        vm.showRecents = true;
+        vm.folder = {name: "Recents", path: "Recents"};
+        vm.selectedFolder = vm.folder.name;
+      } else if (vm.searchString === "") {
+        _resetFileAreaMessage();
+      }
     }
 
     /**
@@ -270,8 +300,13 @@ define([
     function resetSearch() {
       if (vm.searchString !== "") {
         vm.searchString = "";
-        vm.doSearch();
+        vm.doSearch("");
         _resetFileAreaMessage();
+        if (isPentahoRepo()) {
+          vm.showRecents = true;
+          vm.folder = {name: "Recents", path: "Recents"};
+          vm.selectedFolder = vm.folder.name;
+        }
       } else {
         vm.focusSearchBox();
       }
@@ -333,6 +368,7 @@ define([
      */
     function openClicked() {
       if (vm.file && vm.file.type === "folder") {
+        vm.searchString = "";
         selectFolder(vm.file);
       } else {
         _open(vm.file);
@@ -481,18 +517,11 @@ define([
      * Stores the most recent search
      */
     function storeRecentSearch() {
-      vm.isInSearch = false;
       if (vm.searchString !== "") {
-        dt.storeRecentSearch(vm.searchString).then(_populateRecentSearches);
-      }
-    }
-
-    /**
-     * Determines if there are recent searches to show
-     */
-    function displayRecentSearches() {
-      if (vm.recentSearches.length !== 0) {
-        vm.isInSearch = true;
+        if (vm.recentSearches.indexOf(vm.searchString) === -1) {
+          vm.recentSearches.push(vm.searchString);
+          dt.storeRecentSearch(vm.searchString).then();
+        }
       }
     }
 
@@ -502,24 +531,6 @@ define([
      */
     function addDeleteDisabled() {
       return (vm.folder === null || vm.folder.path === "Recents");
-    }
-
-    /**
-     * Sets focus on the search box
-     */
-    function focusSearchBox() {
-      document.getElementById("searchBoxId").focus();
-    }
-
-    /**
-     * Sets the tooltip of a recent search in the search dropdown if it is wider than its container
-     * @param {String} id - the suffix of an element id
-     * @param {String} tooltip - the tooltip to add if necessary
-     */
-    function setTooltip(id, tooltip) {
-      if (utils.getTextWidth(tooltip) - 1 > 247) {
-        document.getElementById("search-item-index-" + id).title = tooltip;
-      }
     }
 
     /**
@@ -776,7 +787,12 @@ define([
      */
     function getPlaceholder() {
       var isIE = navigator.userAgent.indexOf("Trident") !== -1 && Boolean(document.documentMode);
-      var retVal = vm.searchPlaceholder + " " + vm.selectedFolder;
+      var retVal = vm.searchPlaceholder;
+      if (vm.folder.path !== "Recents") {
+        retVal += " " + vm.selectedFolder;
+      } else {
+        retVal += " " + vm.currentRepo;
+      }
       if (isIE && utils.getTextWidth(retVal) > 210) {
         var tmp = "";
         for (var i = 0; i < retVal.length; i++) {
@@ -798,6 +814,14 @@ define([
     */
     function _capsFirstLetter(input) {
       return input.charAt(0).toUpperCase() + input.slice(1);
+    }
+
+    function getSelectedFolderName() {
+      if (vm.selectedFolder === "/" && isPentahoRepo()) {
+        return vm.currentRepo;
+      }
+
+      return vm.selectedFolder;
     }
   }
 

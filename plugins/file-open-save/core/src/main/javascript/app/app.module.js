@@ -34,6 +34,7 @@ define([
   "./components/loading/loading.component",
   "./components/breadcrumb/breadcrumb.component",
   "./components/files/files.component",
+  "./components/search/search.component",
   "./shared/directives/edit.directive",
   "./shared/directives/key.directive",
   "./shared/directives/focus.directive",
@@ -42,8 +43,8 @@ define([
   "./services/data.service",
   "./shared/directives/resize/resize.module"
 ], function(angular, appComponent, cardComponent, folderComponent, errorComponent, loadingComponent,
-            breadcrumbComponent, filesComponent, editDirective, keyDirective, focusDirective, scrollToFolderDirective,
-            breadcrumbDirective, dataService, resizeModule) {
+            breadcrumbComponent, filesComponent, searchComponent, editDirective, keyDirective, focusDirective,
+            scrollToFolderDirective, breadcrumbDirective, dataService, resizeModule) {
   "use strict";
 
   var module = {
@@ -69,6 +70,7 @@ define([
       .component(loadingComponent.name, loadingComponent.options)
       .component(breadcrumbComponent.name, breadcrumbComponent.options)
       .component(filesComponent.name, filesComponent.options)
+      .component(searchComponent.name, searchComponent.options)
       .directive(editDirective.name, editDirective.options)
       .directive(keyDirective.name, keyDirective.options)
       .directive(focusDirective.name, focusDirective.options)

@@ -12,36 +12,17 @@
       <div class="headerTitle headerText">
         {{::vm.headerTitle}}
       </div>
-      <div id="headerSearchId" class="headerSearch" ng-class="{focused: vm.isInSearch === true || searchBoxHasFocus === true }">
-        <div class="headerSearchLeft" ng-click="vm.focusSearchBox()" ng-class="{blueState: vm.searchString !== '' || vm.isInSearch === true || searchBoxHasFocus === true }" >
-          <div class="headerSearchLeftIcon"></div>
-        </div>
-        <input id="searchBoxId" type="text" class="searchBox"
-               placeholder="{{vm.getPlaceholder()}}"
-               ng-blur="vm.storeRecentSearch();searchBoxHasFocus = false"
-               ng-focus="vm.displayRecentSearches();searchBoxHasFocus = true"
-               ng-change="vm.doSearch()"
-               ng-model="vm.searchString"/>
-          <div class="searchBoxExtra" ng-show="vm.isInSearch">
-              <div class="searchBoxExtraItem"
-                   ng-mousedown="vm.searchString = search; vm.doSearch();"
-                   ng-repeat="search in vm.recentSearches"
-                   ng-mouseover="vm.setTooltip(this.$index, search)"
-                   id="search-item-index-{{this.$index}}">
-                {{search}}
-              </div>
-          </div>
-        <div class="headerSearchRight"
-             ng-class="{headerSearchRightInvisible: vm.searchString === ''}"
-             ng-click="vm.resetSearch()">
-          <div class="headerSearchRightIcon"></div>
-        </div>
-      </div>
+      <search
+          placeholder="vm.getPlaceholder()"
+          on-search="vm.doSearch(searchValue)"
+          on-blur="vm.storeRecentSearch()"
+          autofill="vm.recentSearches"
+          search-value="vm.searchString"></search>
     </div>
 
     <div class="headerBottom">
       <div ng-show="vm.searchString" class="breadcrumbSection">
-        Search results in "{{vm.selectedFolder}}"
+        Search results in "{{vm.getSelectedFolderName()}}"
       </div>
       <div ng-hide="vm.searchString" class="breadcrumbSection">
         <breadcrumb path="vm.folder.path"
