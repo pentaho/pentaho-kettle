@@ -132,7 +132,7 @@ define([
       switch (vm.errorType) {
         case 1:// Overwrite
           var overwriteBefore = vm.errorFile.type === "job" ?
-            i18n.get("file-open-save-plugin.error.overwrite.job.top-before.message") :
+            i18n.get("file-open-save-plugin.error.overwrite.job.top-before.message") + " " :
             i18n.get("file-open-save-plugin.error.overwrite.trans.top-before.message") + " ";
           var overwriteAfter = " " + i18n.get("file-open-save-plugin.error.overwrite.top-after.message");
           var overwriteFilenameMaxWidth = _max - utils.getTextWidth(overwriteBefore + overwriteAfter + _ellipsis);
