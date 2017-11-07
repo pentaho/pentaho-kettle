@@ -51,6 +51,7 @@ define(
           getRecentFiles: getRecentFiles,
           updateRecentFiles: updateRecentFiles,
           getRecentSearches: getRecentSearches,
+          getCurrentRepo: getCurrentRepo,
           storeRecentSearch: storeRecentSearch,
           openRecent: openRecent,
           openFile: openFile,
@@ -128,6 +129,15 @@ define(
         function updateRecentFiles(oldPath, newPath) {
           return _httpGet([baseUrl, "updateRecentFiles", encodeURIComponent(oldPath),
             encodeURIComponent(newPath)].join("/"));
+        }
+
+        /*
+         * Returns the name of the current repo
+         *
+         * @return {Promise} - a promise resolved once data is returned
+         */
+        function getCurrentRepo() {
+          return _httpGet([baseUrl, "currentRepo"].join("/"));
         }
 
         /**
