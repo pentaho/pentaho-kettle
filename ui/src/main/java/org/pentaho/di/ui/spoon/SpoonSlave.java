@@ -1114,13 +1114,6 @@ public class SpoonSlave extends Composite implements TabItemInterface {
 
       public void setObjectRevision( ObjectRevision objectRevision ) {
       }
-
-      public void setVersioningEnabled( Boolean versioningEnabled ) {
-      }
-
-      public Boolean getVersioningEnabled() {
-        return null;
-      }
     };
   }
 
