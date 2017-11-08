@@ -31,12 +31,14 @@ import java.util.Collections;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Shell;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.pentaho.di.base.AbstractMeta;
+import org.pentaho.di.core.EngineMetaInterface;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.LastUsedFile;
 import org.pentaho.di.core.NotePadMeta;
@@ -48,6 +50,7 @@ import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.ObjectRevision;
 import org.pentaho.di.repository.RepositoryDirectory;
+import org.pentaho.di.repository.RepositoryDirectoryInterface;
 import org.pentaho.di.repository.RepositoryObjectType;
 import org.pentaho.di.repository.RepositorySecurityProvider;
 import org.pentaho.di.repository.Repository;
@@ -339,6 +342,7 @@ public class SpoonTest {
     }
     doReturn( "/admin" ).when( mockRepDirectory ).getPath();
 
+    Mockito.doReturn( null ).when( abstractMeta ).getVersioningEnabled();
     if ( !repIsNull ) {
       doReturn( mockRepSecurityProvider ).when( mockRepository ).getSecurityProvider();
       doReturn( versionEnabled ).when( mockRepSecurityProvider ).isVersioningEnabled( anyString() );
@@ -817,5 +821,57 @@ public class SpoonTest {
     doCallRealMethod().when( spoon ).promptForSave();
 
     return mockSpoonBrowser;
+  }
+
+  @Test
+  public void testVersioningEnabled() throws Exception {
+    Repository repository = Mockito.mock( Repository.class );
+    RepositorySecurityProvider securityProvider = Mockito.mock( RepositorySecurityProvider.class );
+    Mockito.doReturn( securityProvider ).when( repository ).getSecurityProvider();
+    EngineMetaInterface jobTransMeta = Mockito.spy( new TransMeta() );
+    RepositoryDirectoryInterface repositoryDirectoryInterface = Mockito.mock( RepositoryDirectoryInterface.class );
+    Mockito.doReturn( "/home" ).when( repositoryDirectoryInterface ).toString();
+    Mockito.doReturn( "trans" ).when( jobTransMeta ).getName();
+    Mockito.doReturn( RepositoryObjectType.TRANSFORMATION ).when( jobTransMeta ).getRepositoryElementType();
+    Mockito.doReturn( true ).when( jobTransMeta ).getVersioningEnabled();
+
+    boolean result = Spoon.isVersionEnabled( repository, jobTransMeta );
+
+    Assert.assertTrue( result );
+    Mockito.verify( securityProvider, Mockito.never() ).isVersioningEnabled( Mockito.anyString() );
+  }
+
+  @Test
+  public void testVersioningDisabled() throws Exception {
+    Repository repository = Mockito.mock( Repository.class );
+    RepositorySecurityProvider securityProvider = Mockito.mock( RepositorySecurityProvider.class );
+    Mockito.doReturn( securityProvider ).when( repository ).getSecurityProvider();
+    EngineMetaInterface jobTransMeta = Mockito.spy( new TransMeta() );
+    RepositoryDirectoryInterface repositoryDirectoryInterface = Mockito.mock( RepositoryDirectoryInterface.class );
+    Mockito.doReturn( "/home" ).when( repositoryDirectoryInterface ).toString();
+    Mockito.doReturn( "trans" ).when( jobTransMeta ).getName();
+    Mockito.doReturn( RepositoryObjectType.TRANSFORMATION ).when( jobTransMeta ).getRepositoryElementType();
+    Mockito.doReturn( false ).when( jobTransMeta ).getVersioningEnabled();
+
+    boolean result = Spoon.isVersionEnabled( repository, jobTransMeta );
+
+    Assert.assertFalse( result );
+    Mockito.verify( securityProvider, Mockito.never() ).isVersioningEnabled( Mockito.anyString() );
+  }
+
+  @Test
+  public void testVersioningCheckingOnServer() throws Exception {
+    Repository repository = Mockito.mock( Repository.class );
+    RepositorySecurityProvider securityProvider = Mockito.mock( RepositorySecurityProvider.class );
+    Mockito.doReturn( securityProvider ).when( repository ).getSecurityProvider();
+    EngineMetaInterface jobTransMeta = Mockito.spy( new TransMeta() );
+    RepositoryDirectoryInterface repositoryDirectoryInterface = Mockito.mock( RepositoryDirectoryInterface.class );
+    Mockito.doReturn( "/home" ).when( repositoryDirectoryInterface ).toString();
+    Mockito.doReturn( "trans" ).when( jobTransMeta ).getName();
+    Mockito.doReturn( RepositoryObjectType.TRANSFORMATION ).when( jobTransMeta ).getRepositoryElementType();
+    Mockito.doReturn( true ).when( securityProvider ).isVersioningEnabled( Mockito.anyString() );
+
+    boolean result = Spoon.isVersionEnabled( repository, jobTransMeta );
+    Assert.assertTrue( result );
   }
 }
