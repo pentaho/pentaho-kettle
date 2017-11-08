@@ -6764,13 +6764,23 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     return fullPath;
   }
 
-  private static boolean isVersionEnabled( Repository rep, EngineMetaInterface jobTransMeta ) {
+  static boolean isVersionEnabled( Repository rep, EngineMetaInterface jobTransMeta ) {
+    //It is not necessary to check VersioningEnabled on the server every time (see PDI-16684)
+    if ( jobTransMeta.getVersioningEnabled() == null ) {
+      boolean versioningEnabled = checkIsVersioningEnabledOnServer( rep, jobTransMeta );
+      jobTransMeta.setVersioningEnabled( versioningEnabled );
+      return versioningEnabled;
+    }
+    return jobTransMeta.getVersioningEnabled();
+  }
+
+  private static boolean checkIsVersioningEnabledOnServer( Repository rep, EngineMetaInterface jobTransMeta ) {
     boolean versioningEnabled = true;
 
     String fullPath = getJobTransfFullPath( jobTransMeta );
     RepositorySecurityProvider
-        repositorySecurityProvider =
-        rep != null && rep.getSecurityProvider() != null ? rep.getSecurityProvider() : null;
+      repositorySecurityProvider =
+      rep != null && rep.getSecurityProvider() != null ? rep.getSecurityProvider() : null;
     if ( repositorySecurityProvider != null && fullPath != null ) {
       versioningEnabled = repositorySecurityProvider.isVersioningEnabled( fullPath );
     }

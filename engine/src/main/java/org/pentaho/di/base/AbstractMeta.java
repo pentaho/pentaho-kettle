@@ -201,6 +201,8 @@ public abstract class AbstractMeta implements ChangedFlagInterface, UndoInterfac
   private boolean showDialog = true;
   private boolean alwaysShowRunOptions = true;
 
+  private Boolean versioningEnabled;
+
   public boolean isShowDialog() {
     return showDialog;
   }
@@ -2066,6 +2068,16 @@ public abstract class AbstractMeta implements ChangedFlagInterface, UndoInterfac
 
   public void setEmbeddedMetastoreProviderKey( String embeddedMetastoreProviderKey ) {
     this.embeddedMetastoreProviderKey = embeddedMetastoreProviderKey;
+  }
+
+  @Override
+  public void setVersioningEnabled( Boolean versioningEnabled ) {
+    this.versioningEnabled = versioningEnabled;
+  }
+
+  @Override
+  public Boolean getVersioningEnabled() {
+    return this.versioningEnabled;
   }
 
 }
