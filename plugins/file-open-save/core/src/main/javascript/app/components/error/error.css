@@ -56,7 +56,7 @@ error .errorMiddle {
   overflow: hidden;
 }
 
-error .errorMiddleTopBefore {
+error .errorMiddleTopBefore.breakAll {
   word-break: break-all;
 }
 

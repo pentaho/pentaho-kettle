@@ -72,6 +72,7 @@ define([
      * bindings initialized. We use this hook to put initialization code for our controller.
      */
     function onInit() {
+      vm.breakAll = false;
     }
 
     /**
@@ -129,6 +130,7 @@ define([
      * @private
      */
     function _setMessages() {
+      vm.breakAll = false;
       switch (vm.errorType) {
         case 1:// Overwrite
           var overwriteBefore = vm.errorFile.type === "job" ?
@@ -147,6 +149,7 @@ define([
             i18n.get("file-open-save-plugin.error.overwrite.bottom.message"),
             i18n.get("file-open-save-plugin.error.overwrite.accept.button"),
             i18n.get("file-open-save-plugin.error.overwrite.cancel.button"));
+          vm.breakAll = true;
           break;
         case 2:// Folder Exists
           var folderExistsBefore = i18n.get("file-open-save-plugin.error.folder-exists.top.message") + " ";
@@ -163,6 +166,7 @@ define([
             i18n.get("file-open-save-plugin.error.folder-exists.bottom.message"),
             "",
             i18n.get("file-open-save-plugin.error.folder-exists.close.button"));
+          vm.breakAll = true;
           break;
         case 3:// Unable to Save
           _setMessage(i18n.get("file-open-save-plugin.error.unable-to-save.title"),
@@ -189,6 +193,7 @@ define([
             "", "",
             i18n.get("file-open-save-plugin.error.delete-file.accept.button"),
             i18n.get("file-open-save-plugin.error.delete-file.no.button"));
+          vm.breakAll = true;
           break;
         case 6:// Delete folder
           var deleteFolderBefore = i18n.get("file-open-save-plugin.error.delete-folder.before.message") + " ";
@@ -206,6 +211,7 @@ define([
             "",
             i18n.get("file-open-save-plugin.error.delete-folder.accept.button"),
             i18n.get("file-open-save-plugin.error.delete-folder.no.button"));
+          vm.breakAll = true;
           break;
         case 7:// File Exists
           var fileExistsBefore = i18n.get("file-open-save-plugin.error.file-exists.top.message") + " ";
@@ -221,6 +227,7 @@ define([
             i18n.get("file-open-save-plugin.error.file-exists.bottom.message"),
             "",
             i18n.get("file-open-save-plugin.error.file-exists.close.button"));
+          vm.breakAll = true;
           break;
         case 8:// Unable to delete folder
           _setMessage(i18n.get("file-open-save-plugin.error.unable-to-delete-folder.title"),
