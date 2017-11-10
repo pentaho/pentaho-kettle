@@ -69,9 +69,9 @@
     <blueprints-core.version>2.6.0</blueprints-core.version>
     <commons-configuration.version>1.9</commons-configuration.version>
     <flexjson.version>2.1</flexjson.version>
-    <jackson-annotations.version>2.3.3</jackson-annotations.version>
-    <jackson-databind.version>2.3.3</jackson-databind.version>
-    <jackson-core.version>2.3.3</jackson-core.version>
+    <!-- jackson-databind depends on jackson-core and jackson-annotations
+    so that this artifacts have the same version to prevent compile errors -->
+    <fasterxml.jackson.core.version>2.9.2</fasterxml.jackson.core.version>
     <jackson-xc.version>1.9.3</jackson-xc.version>
     <jersey-multipart.version>1.19.1</jersey-multipart.version>
     <mimepull.version>1.9.3</mimepull.version>
@@ -625,8 +625,19 @@
     </dependency>
     <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-core</artifactId>
+      <version>${fasterxml.jackson.core.version}</version>
+      <exclusions>
+        <exclusion>
+          <groupId>*</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
       <artifactId>jackson-annotations</artifactId>
-      <version>${jackson-annotations.version}</version>
+      <version>${fasterxml.jackson.core.version}</version>
       <exclusions>
         <exclusion>
           <groupId>*</groupId>
@@ -637,18 +648,7 @@
     <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>
       <artifactId>jackson-databind</artifactId>
-      <version>${jackson-databind.version}</version>
-      <exclusions>
-        <exclusion>
-          <groupId>*</groupId>
-          <artifactId>*</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-    <dependency>
-      <groupId>com.fasterxml.jackson.core</groupId>
-      <artifactId>jackson-core</artifactId>
-      <version>${jackson-core.version}</version>
+      <version>${fasterxml.jackson.core.version}</version>
       <exclusions>
         <exclusion>
           <groupId>*</groupId>
