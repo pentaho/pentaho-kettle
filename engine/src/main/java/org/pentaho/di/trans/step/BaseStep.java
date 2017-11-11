@@ -37,6 +37,7 @@ import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
@@ -516,7 +517,7 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
       }
     }
 
-    rowListeners = new ArrayList<RowListener>();
+    rowListeners = new CopyOnWriteArrayList<RowListener>();
     resultFiles = new HashMap<String, ResultFile>();
     resultFilesLock = new ReentrantReadWriteLock();
 
@@ -1275,11 +1276,8 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
 
     // call all row listeners...
     //
-    synchronized ( rowListeners ) {
-      for ( int i = 0; i < rowListeners.size(); i++ ) {
-        RowListener rowListener = rowListeners.get( i );
-        rowListener.rowWrittenEvent( rowMeta, row );
-      }
+    for ( RowListener listener : rowListeners ) {
+      listener.rowWrittenEvent( rowMeta, row );
     }
 
     // Keep adding to terminator_rows buffer...
@@ -1600,11 +1598,8 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
 
     // call all row listeners...
     //
-    synchronized ( rowListeners ) {
-      for ( int i = 0; i < rowListeners.size(); i++ ) {
-        RowListener rowListener = rowListeners.get( i );
-        rowListener.rowWrittenEvent( rowMeta, row );
-      }
+    for ( RowListener listener : rowListeners ) {
+      listener.rowWrittenEvent( rowMeta, row );
     }
 
     // Keep adding to terminator_rows buffer...
@@ -1680,11 +1675,8 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
       errorRowData, rowMeta.size(), nrErrors, errorDescriptions, fieldNames, errorCodes );
 
     // call all row listeners...
-    synchronized ( rowListeners ) {
-      for ( int i = 0; i < rowListeners.size(); i++ ) {
-        RowListener rowListener = rowListeners.get( i );
-        rowListener.errorRowWrittenEvent( rowMeta, row );
-      }
+    for ( RowListener listener : rowListeners ) {
+      listener.errorRowWrittenEvent( rowMeta, row );
     }
 
     if ( errorRowSet != null ) {
@@ -1947,11 +1939,8 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
         }
       }
 
-      synchronized ( rowListeners ) {
-        for ( int i = 0; i < rowListeners.size(); i++ ) {
-          RowListener rowListener = rowListeners.get( i );
-          rowListener.rowReadEvent( inputRowMeta, row );
-        }
+      for ( RowListener listener : rowListeners ) {
+        listener.rowReadEvent( inputRowMeta, row );
       }
     }
 
@@ -2243,11 +2232,8 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
 
     // call all rowlisteners...
     //
-    synchronized ( rowListeners ) {
-      for ( int i = 0; i < rowListeners.size(); i++ ) {
-        RowListener rowListener = rowListeners.get( i );
-        rowListener.rowReadEvent( rowSet.getRowMeta(), rowData );
-      }
+    for ( RowListener listener : rowListeners ) {
+      listener.rowReadEvent( rowSet.getRowMeta(), rowData );
     }
 
     return rowData;
@@ -3374,7 +3360,7 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
    */
   @Override
   public List<RowListener> getRowListeners() {
-    return rowListeners;
+    return Collections.unmodifiableList( rowListeners );
   }
 
   /**
