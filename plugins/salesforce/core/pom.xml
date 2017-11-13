@@ -19,7 +19,7 @@
     <maven.build.timestamp.format>yyyy/MM/dd hh\:mm</maven.build.timestamp.format>
 
     <kettle.version>8.1-SNAPSHOT</kettle.version>
-    <com.force.api.version>37.0.3</com.force.api.version>
+    <com.force.api.version>41.0.0</com.force.api.version>
   </properties>
 
   <build>
