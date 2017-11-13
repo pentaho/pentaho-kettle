@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,8 +22,11 @@
 
 package org.pentaho.di.trans.steps.replacestring;
 
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.anyString;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -82,7 +85,7 @@ public class ReplaceStringMetaTest {
   @Test
   public void testRoundTrips() throws KettleException {
     List<String> attributes = Arrays.asList( "in_stream_name", "out_stream_name", "use_regex", "replace_string",
-      "replace_by_string", "set_empty_string", "replace_field_by_string", "whole_word", "case_sensitive" );
+      "replace_by_string", "set_empty_string", "replace_field_by_string", "whole_word", "case_sensitive", "is_unicode" );
 
     Map<String, String> getterMap = new HashMap<String, String>();
     getterMap.put( "in_stream_name", "getFieldInStream" );
@@ -94,6 +97,7 @@ public class ReplaceStringMetaTest {
     getterMap.put( "replace_field_by_string", "getFieldReplaceByString" );
     getterMap.put( "whole_word", "getWholeWord" );
     getterMap.put( "case_sensitive", "getCaseSensitive" );
+    getterMap.put( "is_unicode", "isUnicode" );
 
     Map<String, String> setterMap = new HashMap<String, String>();
     setterMap.put( "in_stream_name", "setFieldInStream" );
@@ -105,6 +109,7 @@ public class ReplaceStringMetaTest {
     setterMap.put( "replace_field_by_string", "setFieldReplaceByString" );
     setterMap.put( "whole_word", "setWholeWord" );
     setterMap.put( "case_sensitive", "setCaseSensitive" );
+    setterMap.put( "is_unicode", "setIsUnicode" );
 
     Map<String, FieldLoadSaveValidator<?>> fieldLoadSaveValidatorAttributeMap =
       new HashMap<String, FieldLoadSaveValidator<?>>();
@@ -121,6 +126,9 @@ public class ReplaceStringMetaTest {
     FieldLoadSaveValidator<int[]> caseSensitiveArrayLoadSaveValidator =
       new PrimitiveIntegerArrayLoadSaveValidator(
         new IntLoadSaveValidator( ReplaceStringMeta.caseSensitiveCode.length ), 25 );
+    FieldLoadSaveValidator<int[]> isUnicodeArrayLoadSaveValidator =
+      new PrimitiveIntegerArrayLoadSaveValidator(
+        new IntLoadSaveValidator( ReplaceStringMeta.isUnicodeCode.length ), 25 );
 
     fieldLoadSaveValidatorAttributeMap.put( "in_stream_name", stringArrayLoadSaveValidator );
     fieldLoadSaveValidatorAttributeMap.put( "out_stream_name", stringArrayLoadSaveValidator );
@@ -131,6 +139,7 @@ public class ReplaceStringMetaTest {
     fieldLoadSaveValidatorAttributeMap.put( "replace_field_by_string", stringArrayLoadSaveValidator );
     fieldLoadSaveValidatorAttributeMap.put( "whole_word", wholeWordArrayLoadSaveValidator );
     fieldLoadSaveValidatorAttributeMap.put( "case_sensitive", caseSensitiveArrayLoadSaveValidator );
+    fieldLoadSaveValidatorAttributeMap.put( "is_unicode", isUnicodeArrayLoadSaveValidator );
 
     LoadSaveTester loadSaveTester =
       new LoadSaveTester( ReplaceStringMeta.class, attributes, getterMap, setterMap,
@@ -158,6 +167,7 @@ public class ReplaceStringMetaTest {
     replaceString.setWholeWord( new int[] { 1, 1, 0, 0, 1 } );
     replaceString.setCaseSensitive( new int[] { 1, 0, 0, 1 } );
     replaceString.setEmptyString( new boolean[] { true, false } );
+    replaceString.setIsUnicode( new int[] { 1, 0, 0, 1 } );
 
     try {
       String badXml = replaceString.getXML();
@@ -178,6 +188,7 @@ public class ReplaceStringMetaTest {
     Assert.assertEquals( targetSz, replaceString.getFieldReplaceByString().length );
     Assert.assertEquals( targetSz, replaceString.getWholeWord().length );
     Assert.assertEquals( targetSz, replaceString.getCaseSensitive().length );
+    Assert.assertEquals( targetSz, replaceString.isUnicode().length );
 
     Assert.assertEquals( "", replaceString.getFieldOutStream()[ 3 ] );
     Assert.assertEquals( "", replaceString.getReplaceString()[ 3 ] );
