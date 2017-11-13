@@ -142,7 +142,7 @@ public class ReplaceStringDialog extends BaseStepDialog implements StepDialogInt
     fdlKey.top = new FormAttachment( wStepname, 2 * margin );
     wlKey.setLayoutData( fdlKey );
 
-    int nrFieldCols = 9;
+    int nrFieldCols = 10;
     int nrFieldRows = ( input.getFieldInStream() != null ? input.getFieldInStream().length : 1 );
 
     ciKey = new ColumnInfo[nrFieldCols];
@@ -185,6 +185,11 @@ public class ReplaceStringDialog extends BaseStepDialog implements StepDialogInt
       new ColumnInfo(
         BaseMessages.getString( PKG, "ReplaceStringDialog.ColumnInfo.CaseSensitive" ),
         ColumnInfo.COLUMN_TYPE_CCOMBO, ReplaceStringMeta.caseSensitiveDesc );
+    ciKey[9] =
+      new ColumnInfo(
+        "Is Unicode",
+        //BaseMessages.getString( PKG, "ReplaceStringDialog.ColumnInfo.CaseSensitive" ),
+        ColumnInfo.COLUMN_TYPE_CCOMBO, ReplaceStringMeta.isUnicodeDesc );
 
     ciKey[1].setToolTip( BaseMessages.getString( PKG, "ReplaceStringDialog.ColumnInfo.OutStreamField.Tooltip" ) );
     ciKey[1].setUsingVariables( true );
@@ -343,6 +348,7 @@ public class ReplaceStringDialog extends BaseStepDialog implements StepDialogInt
 
         item.setText( 8, ReplaceStringMeta.getWholeWordDesc( input.getWholeWord()[i] ) );
         item.setText( 9, ReplaceStringMeta.getCaseSensitiveDesc( input.getCaseSensitive()[i] ) );
+        item.setText( 10, ReplaceStringMeta.getIsUnicodeDesc( input.isUnicode()[i] ) );
       }
     }
 
@@ -388,6 +394,7 @@ public class ReplaceStringDialog extends BaseStepDialog implements StepDialogInt
 
       inf.getWholeWord()[i] = ReplaceStringMeta.getWholeWordByDesc( item.getText( 8 ) );
       inf.getCaseSensitive()[i] = ReplaceStringMeta.getCaseSensitiveByDesc( item.getText( 9 ) );
+      inf.isUnicode()[i] = ReplaceStringMeta.getIsUnicodeByDesc( item.getText( 10 ) );
     }
 
     stepname = wStepname.getText(); // return value
@@ -416,6 +423,7 @@ public class ReplaceStringDialog extends BaseStepDialog implements StepDialogInt
               tableItem.setText( 6, BaseMessages.getString( PKG, "System.Combo.No" ) );
               tableItem.setText( 8, BaseMessages.getString( PKG, "System.Combo.No" ) );
               tableItem.setText( 9, BaseMessages.getString( PKG, "System.Combo.No" ) );
+              tableItem.setText( 10, BaseMessages.getString( PKG, "System.Combo.No" ) );
               return true;
             } else {
               return false;
