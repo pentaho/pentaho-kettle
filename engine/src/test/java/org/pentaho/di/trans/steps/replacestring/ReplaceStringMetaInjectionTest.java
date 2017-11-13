@@ -83,5 +83,10 @@ public class ReplaceStringMetaInjectionTest extends BaseMetadataInjectionTest<Re
         return meta.getCaseSensitive()[ 0 ];
       }
     } );
+    check( "IS_UNICODE", new IntGetter() {
+      @Override public int get() {
+        return meta.isUnicode()[ 0 ];
+      }
+    } );
   }
 }

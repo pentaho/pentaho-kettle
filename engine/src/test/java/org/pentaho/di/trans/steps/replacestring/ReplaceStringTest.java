@@ -27,6 +27,7 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Mockito;
 import org.pentaho.di.core.logging.LoggingObjectInterface;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
@@ -37,6 +38,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyObject;
 import static org.mockito.Matchers.anyString;
@@ -154,7 +156,7 @@ public class ReplaceStringTest {
 
   @Test
   public void testBuildPatternWithLiteralParsingAndWholeWord() throws Exception {
-    Pattern actualPattern = ReplaceString.buildPattern( true, true, true, LITERAL_STRING );
+    Pattern actualPattern = ReplaceString.buildPattern( true, true, true, LITERAL_STRING, false );
     Matcher matcher = actualPattern.matcher( INPUT_STRING );
     String actualString = matcher.replaceAll( "are" );
     Assert.assertEquals( INPUT_STRING, actualString );
@@ -162,10 +164,53 @@ public class ReplaceStringTest {
 
   @Test
   public void testBuildPatternWithNonLiteralParsingAndWholeWord() throws Exception {
-    Pattern actualPattern = ReplaceString.buildPattern( false, true, true, LITERAL_STRING );
+    Pattern actualPattern = ReplaceString.buildPattern( false, true, true, LITERAL_STRING, false );
     Matcher matcher = actualPattern.matcher( INPUT_STRING );
     String actualString = matcher.replaceAll( "are" );
     Assert.assertEquals( "This are String This Is String THIS IS STRING", actualString );
   }
 
+  @Test
+  public void testProcessRow() throws Exception {
+    ReplaceStringData data = new ReplaceStringData();
+
+    ReplaceString replaceString = Mockito.spy(
+      new ReplaceString( stepMockHelper.stepMeta, data, 0, stepMockHelper.transMeta, stepMockHelper.trans ) );
+    RowMetaInterface inputRowMeta = new RowMeta();
+    byte[] array = { 0, 97, 0, 65, -1, 65, -1, 33 };
+    byte[] matcharray = { -1, 33 };
+    String match = new String( matcharray , "UTF-16BE" );
+    Object[] _row = new Object[] { new String( array, "UTF-16BE" ), "another data" };
+    doReturn( _row ).when( replaceString ).getRow();
+    inputRowMeta.addValueMeta( 0, new ValueMetaString( "string" ) );
+    ReplaceStringMeta meta = stepMockHelper.processRowsStepMetaInterface;
+
+    doReturn( new String[] { "string" }  ).when( meta ).getFieldInStream();
+    doReturn( new String[] { "output" }  ).when( meta ).getFieldOutStream();
+
+    doReturn( new int[] { 1 } ).when( meta ).isUnicode();
+    doReturn( new int[] { 0 } ).when( meta ).getUseRegEx();
+    doReturn( new int[] { 0 } ).when( meta ).getCaseSensitive();
+    doReturn( new int[] { 0 } ).when( meta ).getWholeWord();
+    doReturn( new String[] { match } ).when( meta ).getReplaceString();
+    doReturn( new String[] { "" } ).when( meta ).getFieldReplaceByString();
+    doReturn( new String[] { "matched" } ).when( meta ).getReplaceByString();
+    doReturn( new boolean[] { false } ).when( meta ).isSetEmptyString();
+
+    replaceString.init( meta, data );
+    replaceString.setInputRowMeta( inputRowMeta );
+    data.outputRowMeta = inputRowMeta;
+    data.inputFieldsNr = 1;
+    data.numFields = 1;
+    data.inStreamNrs = new int[] { 0 };
+    data.replaceFieldIndex = new int[] { -1 };
+    data.outStreamNrs = new String[] { "", "1" };
+    data.replaceByString = new String[] { "1" };
+    data.setEmptyString = new boolean[] { false, false };
+
+    replaceString.processRow( meta, data );
+    System.out.println( replaceString.getRow()[1] );
+    assertTrue( "Expected: aAmatchedmatched","aAmatchedmatched".equals( replaceString.getRow()[1] ) );
+  }
 }
+
