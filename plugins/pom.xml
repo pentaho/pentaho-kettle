@@ -56,6 +56,7 @@
         <module>elasticsearch-bulk-insert</module>
         <module>google-analytics</module>
         <module>gp-bulk-loader</module>
+        <module>pentaho-googledrive-vfs</module>
         <module>hl7</module>
         <module>drools</module>
         <module>dummy</module>

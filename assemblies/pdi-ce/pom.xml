@@ -100,6 +100,7 @@
     <ms-access-bulk-loader-plugin.version>${project.version}</ms-access-bulk-loader-plugin.version>
     <lucid-db-streaming-loader-plugin.version>${project.version}</lucid-db-streaming-loader-plugin.version>
     <gp-bulk-loader-plugin.version>${project.version}</gp-bulk-loader-plugin.version>
+    <pentaho-googledrive-vfs-plugin.version>${project.version}</pentaho-googledrive-vfs-plugin.version>
     <elasticsearch-bulk-insert-plugin.version>${project.version}</elasticsearch-bulk-insert-plugin.version>
     <pdi-xml-plugin.version>${project.version}</pdi-xml-plugin.version>
     <kettle-json-plugin.version>8.1-SNAPSHOT</kettle-json-plugin.version>
@@ -920,6 +921,12 @@
                   <groupId>org.pentaho.di.plugins</groupId>
                   <artifactId>gp-bulk-loader-plugin</artifactId>
                   <version>${gp-bulk-loader-plugin.version}</version>
+                  <type>zip</type>
+                </artifactItem>
+                <artifactItem>
+                  <groupId>org.pentaho.di.plugins</groupId>
+                  <artifactId>pentaho-googledrive-vfs-plugin</artifactId>
+                  <version>${pentaho-googledrive-vfs-plugin.version}</version>
                   <type>zip</type>
                 </artifactItem>
                 <artifactItem>
