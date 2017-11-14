@@ -124,6 +124,7 @@ public class JobEntryJobIT extends JobEntryJob {
     job.setSpecificationMethod( ObjectLocationSpecificationMethod.FILENAME );
     job.setRemoteSlaveServerName( REMOTE_SLAVE_SERVER_NAME );
     job.setParentJob( parentJob );
+    job.setParentJobMeta( parentJobMeta );
 
     job.execute( new Result(), 0 );
     String result = Files.lines( file ).collect( Collectors.joining( "" ) );
