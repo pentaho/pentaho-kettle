@@ -24,7 +24,6 @@
 
 package org.pentaho.di.engine.api;
 
-import org.pentaho.di.engine.api.converter.RowConversionManager;
 import org.pentaho.di.engine.api.model.Transformation;
 import org.pentaho.di.engine.api.reporting.LogLevel;
 import org.pentaho.di.engine.api.reporting.SubscriptionManager;
@@ -52,8 +51,6 @@ public interface ExecutionContext extends SubscriptionManager {
   Transformation getTransformation();
 
   CompletableFuture<ExecutionResult> execute();
-
-  RowConversionManager getConversionManager();
 
   Principal getActingPrincipal();
 

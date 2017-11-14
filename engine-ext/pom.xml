@@ -18,6 +18,5 @@
 
   <modules>
     <module>api</module>
-    <module>serializers</module>
   </modules>
 </project>
