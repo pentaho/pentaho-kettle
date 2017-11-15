@@ -429,7 +429,7 @@ public class WebService extends BaseStep implements StepInterface {
       // fix: both meta.getHttpLogin() and meta.HttpPassword() needed to be wrapped with environmentSubstitute()
       //
       cachedWsdl = new Wsdl( new java.net.URI( data.realUrl ),
-        null, null, environmentSubstitute(meta.getHttpLogin()), environmentSubstitute(meta.getHttpPassword()) );
+        null, null, environmentSubstitute( meta.getHttpLogin() ), environmentSubstitute( meta.getHttpPassword() ) );
     } catch ( Exception e ) {
       throw new KettleStepException( BaseMessages.getString( PKG, "WebServices.ERROR0013.ExceptionLoadingWSDL" ), e );
     }
