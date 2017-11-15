@@ -426,7 +426,7 @@ public class WebService extends BaseStep implements StepInterface {
 
     try {
       cachedWsdl = new Wsdl( new java.net.URI( data.realUrl ),
-        null, null, meta.getHttpLogin(), meta.getHttpPassword() );
+        null, null, environmentSubstitute( meta.getHttpLogin() ), environmentSubstitute( meta.getHttpPassword() ) );
     } catch ( Exception e ) {
       throw new KettleStepException( BaseMessages.getString( PKG, "WebServices.ERROR0013.ExceptionLoadingWSDL" ), e );
     }
