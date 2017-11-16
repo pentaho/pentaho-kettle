@@ -26,6 +26,7 @@ import org.hamcrest.core.IsInstanceOf;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentMatcher;
+import org.mockito.Mockito;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.extension.ExtensionPointInterface;
@@ -39,6 +40,7 @@ import org.pentaho.di.core.plugins.ClassLoadingPluginInterface;
 import org.pentaho.di.core.plugins.PluginInterface;
 import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.variables.VariableSpace;
+import org.pentaho.di.imp.Import;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.RepositoryDirectory;
 import org.pentaho.di.repository.RepositoryDirectoryInterface;
@@ -478,5 +480,19 @@ public class PurRepositoryUnitTest extends RepositoryTestLazySupport {
     rep.saveTransOrJob( transformer, trans, "", Calendar.getInstance(), false, false, false, false, false );
 
     verify( extensionPoint, times( 1 ) ).callExtensionPoint( any( LogChannelInterface.class ), same( transFromRepo ) );
+  }
+
+  @Test( expected = KettleException.class )
+  public void testSaveTransOrJob() throws KettleException {
+    PurRepository purRepository = new PurRepository();
+    RepositoryElementInterface element = Mockito.mock( RepositoryElementInterface.class );
+    RepositoryDirectoryInterface directoryInterface = Mockito.mock( RepositoryDirectoryInterface.class );
+    Mockito.when( element.getRepositoryDirectory() ).thenReturn( directoryInterface );
+    Mockito.when( element.getRepositoryElementType() ).thenReturn( RepositoryObjectType.TRANSFORMATION );
+    Mockito.when( directoryInterface.toString() ).thenReturn( Import.ROOT_DIRECTORY );
+
+    purRepository.saveTransOrJob( null, element,
+      null, null, false, false, false,
+      false, false );
   }
 }
