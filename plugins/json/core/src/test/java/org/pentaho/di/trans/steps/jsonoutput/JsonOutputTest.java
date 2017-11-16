@@ -22,20 +22,13 @@
 
 package org.pentaho.di.trans.steps.jsonoutput;
 
-import java.io.File;
-import java.io.Writer;
-import java.util.ArrayList;
-import java.util.List;
-
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import junit.framework.TestCase;
-
 import org.apache.commons.io.FileUtils;
-import org.codehaus.jackson.JsonNode;
-import org.codehaus.jackson.map.ObjectMapper;
 import org.json.simple.JSONObject;
 import org.junit.Assert;
 import org.pentaho.di.TestUtilities;
-import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.logging.LoggingObjectInterface;
@@ -46,6 +39,7 @@ import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.row.value.ValueMetaInteger;
 import org.pentaho.di.core.row.value.ValueMetaString;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.trans.RowStepCollector;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransHopMeta;
@@ -56,8 +50,22 @@ import org.pentaho.di.trans.steps.dummytrans.DummyTransMeta;
 import org.pentaho.di.trans.steps.mock.StepMockHelper;
 import org.pentaho.di.trans.steps.rowgenerator.RowGeneratorMeta;
 
+import java.io.File;
+import java.io.Writer;
+import java.util.ArrayList;
+import java.util.List;
+
 import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.anyString;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+//import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * This class was a "copy and modification" of Kettle's JsonOutputTests.
@@ -191,8 +199,7 @@ public class JsonOutputTest extends TestCase {
 
   /**
    * Creates data... Will add more as I figure what the data is.
-   * 
-   * @param fileName
+   *
    * @return
    */
   public List<RowMetaAndData> createData() {

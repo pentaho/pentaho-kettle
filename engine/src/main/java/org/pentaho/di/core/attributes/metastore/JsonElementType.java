@@ -22,15 +22,14 @@
 
 package org.pentaho.di.core.attributes.metastore;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
-import org.codehaus.jackson.map.ObjectMapper;
 import org.pentaho.metastore.api.BaseElementType;
 import org.pentaho.metastore.api.IMetaStoreElementType;
 import org.pentaho.metastore.api.exceptions.MetaStoreException;
 
 import java.io.IOException;
-
-import com.google.common.base.Preconditions;
 
 /**
  * @author nhudak

@@ -22,7 +22,8 @@
 
 package org.pentaho.di.core.attributes.metastore;
 
-import org.codehaus.jackson.annotate.JsonIgnore;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import java.io.IOException;
 
@@ -30,7 +31,8 @@ import java.io.IOException;
  * @author nhudak
  */
 interface AttributesInterfaceEntry {
-  @JsonIgnore String groupName();
+  @JsonIgnore
+  String groupName();
 
   @JsonIgnore String key();
 
