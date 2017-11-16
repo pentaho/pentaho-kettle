@@ -842,6 +842,10 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
             ExtensionPointHandler.callExtensionPoint( log, KettleExtensionPoint.SpoonTransBeforeStart.id, new Object[] {
               executionConfiguration, parentJob.getJobMeta(), jobMeta, rep
             } );
+            if ( !executionConfiguration.isExecutingLocally() && !executionConfiguration.isExecutingRemotely() ) {
+              result.setResult( true );
+              return result;
+            }
             remoteSlaveServer = executionConfiguration.getRemoteServer();
             doFallback = false;
           } catch ( KettleException e ) {
