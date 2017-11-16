@@ -73,6 +73,7 @@ import org.pentaho.di.ui.core.widget.ColumnInfo;
 import org.pentaho.di.ui.core.widget.TableView;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 import org.pentaho.di.ui.trans.step.TableItemInsertListener;
+import org.pentaho.di.ui.core.widget.TextVar;
 
 public class AddXMLDialog extends BaseStepDialog implements StepDialogInterface {
   private static Class<?> PKG = AddXMLMeta.class; // for i18n purposes, needed by Translator2!!
@@ -97,11 +98,11 @@ public class AddXMLDialog extends BaseStepDialog implements StepDialogInterface 
   private FormData fdlEncoding, fdEncoding;
 
   private Label wlOutputValue;
-  private CCombo wOutputValue;
+  private TextVar wOutputValue;
   private FormData fdlOutputValue, fdOutputValue;
 
   private Label wlRepeatElement;
-  private CCombo wRepeatElement;
+  private TextVar wRepeatElement;
   private FormData fdlRepeatElement, fdRepeatElement;
 
   private TableView wFields;
@@ -222,8 +223,8 @@ public class AddXMLDialog extends BaseStepDialog implements StepDialogInterface 
     fdlOutputValue.top = new FormAttachment( wEncoding, margin );
     fdlOutputValue.right = new FormAttachment( middle, -margin );
     wlOutputValue.setLayoutData( fdlOutputValue );
-    wOutputValue = new CCombo( wContentComp, SWT.BORDER | SWT.READ_ONLY );
-    wOutputValue.setEditable( true );
+    wOutputValue = new TextVar( transMeta, wContentComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
+    wOutputValue.setText( "" );
     props.setLook( wOutputValue );
     wOutputValue.addModifyListener( lsMod );
     fdOutputValue = new FormData();
@@ -240,8 +241,8 @@ public class AddXMLDialog extends BaseStepDialog implements StepDialogInterface 
     fdlRepeatElement.top = new FormAttachment( wOutputValue, margin );
     fdlRepeatElement.right = new FormAttachment( middle, -margin );
     wlRepeatElement.setLayoutData( fdlRepeatElement );
-    wRepeatElement = new CCombo( wContentComp, SWT.BORDER | SWT.READ_ONLY );
-    wRepeatElement.setEditable( true );
+    wRepeatElement = new TextVar( transMeta, wContentComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
+    wRepeatElement.setText( "" );
     props.setLook( wRepeatElement );
     wRepeatElement.addModifyListener( lsMod );
     fdRepeatElement = new FormData();

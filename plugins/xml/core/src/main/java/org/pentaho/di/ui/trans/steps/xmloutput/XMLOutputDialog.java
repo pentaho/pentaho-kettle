@@ -134,11 +134,11 @@ public class XMLOutputDialog extends BaseStepDialog implements StepDialogInterfa
   private FormData fdlNameSpace, fdNameSpace;
 
   private Label wlMainElement;
-  private CCombo wMainElement;
+  private TextVar wMainElement;
   private FormData fdlMainElement, fdMainElement;
 
   private Label wlRepeatElement;
-  private CCombo wRepeatElement;
+  private TextVar wRepeatElement;
   private FormData fdlRepeatElement, fdRepeatElement;
 
   private Label wlSplitEvery;
@@ -605,8 +605,8 @@ public class XMLOutputDialog extends BaseStepDialog implements StepDialogInterfa
     fdlMainElement.top = new FormAttachment( wNameSpace, margin );
     fdlMainElement.right = new FormAttachment( middle, -margin );
     wlMainElement.setLayoutData( fdlMainElement );
-    wMainElement = new CCombo( wContentComp, SWT.BORDER | SWT.READ_ONLY );
-    wMainElement.setEditable( true );
+    wMainElement = new TextVar( transMeta, wContentComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
+    wMainElement.setText( "" );
     props.setLook( wMainElement );
     wMainElement.addModifyListener( lsMod );
     fdMainElement = new FormData();
@@ -623,8 +623,8 @@ public class XMLOutputDialog extends BaseStepDialog implements StepDialogInterfa
     fdlRepeatElement.top = new FormAttachment( wMainElement, margin );
     fdlRepeatElement.right = new FormAttachment( middle, -margin );
     wlRepeatElement.setLayoutData( fdlRepeatElement );
-    wRepeatElement = new CCombo( wContentComp, SWT.BORDER | SWT.READ_ONLY );
-    wRepeatElement.setEditable( true );
+    wRepeatElement = new TextVar( transMeta, wContentComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
+    wRepeatElement.setText( "" );
     props.setLook( wRepeatElement );
     wRepeatElement.addModifyListener( lsMod );
     fdRepeatElement = new FormData();
