@@ -80,6 +80,7 @@ public class TextFileInputUtils {
           boolean encl_found;
           boolean contains_escaped_enclosures = false;
           boolean contains_escaped_separators = false;
+          boolean contains_escaped_escape = false;
 
           // Is the field beginning with an enclosure?
           // "aa;aa";123;"aaa-aaa";000;...
@@ -112,6 +113,12 @@ public class TextFileInputUtils {
                 if ( is_escape ) {
                   contains_escaped_enclosures = true;
                 }
+              } else if ( strnext.equals( escapeCharacter ) ) {
+                p++;
+                // Remember to replace them later on!
+                if ( is_escape ) {
+                  contains_escaped_escape = true; // remember
+                }
               }
             }
 
@@ -136,6 +143,12 @@ public class TextFileInputUtils {
                   // Remember to replace them later on!
                   if ( is_escape ) {
                     contains_escaped_enclosures = true; // remember
+                  }
+                } else if ( strnext.equals( escapeCharacter ) ) {
+                  p++;
+                  // Remember to replace them later on!
+                  if ( is_escape ) {
+                    contains_escaped_escape = true; // remember
                   }
                 }
               }
@@ -216,6 +229,14 @@ public class TextFileInputUtils {
           if ( contains_escaped_separators ) {
             String replace = escapeCharacter + delimiter;
             String replaceWith = delimiter;
+
+            pol = Const.replace( pol, replace, replaceWith );
+          }
+
+          // replace the escaped escape with escape...
+          if ( contains_escaped_escape ) {
+            String replace = escapeCharacter + escapeCharacter;
+            String replaceWith = escapeCharacter;
 
             pol = Const.replace( pol, replace, replaceWith );
           }
@@ -566,6 +587,7 @@ public class TextFileInputUtils {
           boolean encl_found;
           boolean contains_escaped_enclosures = false;
           boolean contains_escaped_separators = false;
+          boolean contains_escaped_escape = false;
 
           // Is the field beginning with an enclosure?
           // "aa;aa";123;"aaa-aaa";000;...
@@ -598,6 +620,12 @@ public class TextFileInputUtils {
                 if ( is_escape ) {
                   contains_escaped_enclosures = true;
                 }
+              } else if ( strnext.equals( inf.content.escapeCharacter ) ) {
+                p++;
+                // Remember to replace them later on!
+                if ( is_escape ) {
+                  contains_escaped_escape = true; // remember
+                }
               }
             }
 
@@ -623,6 +651,12 @@ public class TextFileInputUtils {
                   // Remember to replace them later on!
                   if ( is_escape ) {
                     contains_escaped_enclosures = true; // remember
+                  }
+                } else if ( strnext.equals( inf.content.escapeCharacter ) ) {
+                  p++;
+                  // Remember to replace them later on!
+                  if ( is_escape ) {
+                    contains_escaped_escape = true; // remember
                   }
                 }
               }
@@ -703,6 +737,14 @@ public class TextFileInputUtils {
           if ( contains_escaped_separators ) {
             String replace = inf.content.escapeCharacter + delimiter;
             String replaceWith = delimiter;
+
+            pol = Const.replace( pol, replace, replaceWith );
+          }
+
+          // replace the escaped escape with escape...
+          if ( contains_escaped_escape ) {
+            String replace = inf.content.escapeCharacter + inf.content.escapeCharacter;
+            String replaceWith = inf.content.escapeCharacter;
 
             pol = Const.replace( pol, replace, replaceWith );
           }
