@@ -53,7 +53,7 @@ public class LoadFileInputData extends BaseStepData implements StepDataInterface
 
   public Object[] readrow;
 
-  public String filecontent;
+  public byte[] filecontent;
 
   public long fileSize;
 
