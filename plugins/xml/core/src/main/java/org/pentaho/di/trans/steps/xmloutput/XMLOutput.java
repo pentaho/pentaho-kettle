@@ -128,8 +128,9 @@ public class XMLOutput extends BaseStep implements StepInterface {
   }
 
   private void writeRowToFile( RowMetaInterface rowMeta, Object[] r ) throws KettleException {
+    String repeatElement = this.environmentSubstitute( meta.getRepeatElement() );
+
     try {
-      String repeatElement = this.environmentSubstitute( meta.getRepeatElement() );
 
       if ( first ) {
         data.formatRowMeta = rowMeta.clone();
@@ -260,6 +261,7 @@ public class XMLOutput extends BaseStep implements StepInterface {
   public boolean openNewFile() {
     boolean retval = false;
     data.writer = null;
+    String mainElement = this.environmentSubstitute( meta.getMainElement() );
 
     try {
       if ( meta.isServletOutput() ) {
@@ -308,7 +310,7 @@ public class XMLOutput extends BaseStep implements StepInterface {
       }
 
       // OK, write the header & the parent element:
-      data.writer.writeStartElement( this.environmentSubstitute( meta.getMainElement() ) );
+      data.writer.writeStartElement( mainElement );
       // Add the name space if defined
       if ( ( meta.getNameSpace() != null ) && ( !"".equals( meta.getNameSpace() ) ) ) {
         data.writer.writeDefaultNamespace( meta.getNameSpace() );
