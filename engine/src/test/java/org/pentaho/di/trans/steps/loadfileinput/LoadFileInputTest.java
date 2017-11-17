@@ -25,9 +25,16 @@ package org.pentaho.di.trans.steps.loadfileinput;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNotEquals;
 import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyInt;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.vfs2.FileObject;
 import org.apache.commons.vfs2.FileSystemException;
 import org.apache.commons.vfs2.FileSystemManager;
@@ -41,6 +48,10 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.fileinput.FileInputList;
 import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.plugins.StepPluginType;
+import org.pentaho.di.core.row.RowMetaInterface;
+import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaBinary;
+import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
@@ -242,5 +253,85 @@ public class LoadFileInputTest {
 
     assertTrue( stepLoadFileInput.openNextFile() );
     assertFalse( stepLoadFileInput.openNextFile() );
+  }
+
+  @Test
+  public void testGetOneRow() throws Exception {
+    // string without specified encoding
+    stepInputFiles.addFile( getFile( "input1.txt" ) );
+
+    assertNotNull( stepLoadFileInput.getOneRow() );
+    assertEquals( "input1 - not empty", new String( stepLoadFileInput.data.filecontent ) );
+
+    // for next tests
+    LoadFileInputField inputField = new LoadFileInputField();
+    Mockito.doReturn( new LoadFileInputField[]{ inputField } ).when( (LoadFileInputMeta) runtimeSMI ).getInputFields();
+    stepLoadFileInput.data.nrInputFields = 1;
+    RowMetaInterface mockedRowMetaInterface = mock( RowMetaInterface.class );
+    stepLoadFileInput.data.outputRowMeta = mockedRowMetaInterface;
+    stepLoadFileInput.data.convertRowMeta = mockedRowMetaInterface;
+    Mockito.doReturn( new ValueMetaString() ).when( mockedRowMetaInterface ).getValueMeta( anyInt() );
+
+    stepMetaInterface.setIncludeFilename( true );
+    stepMetaInterface.setFilenameField( "filename" );
+    stepMetaInterface.setIncludeRowNumber( true );
+    stepMetaInterface.setRowNumberField( "rownumber" );
+    stepMetaInterface.setShortFileNameField( "shortname" );
+    stepMetaInterface.setExtensionField( "extension" );
+    stepMetaInterface.setPathField( "path" );
+    stepMetaInterface.setIsHiddenField( "hidden" );
+    stepMetaInterface.setLastModificationDateField( "lastmodified" );
+    stepMetaInterface.setUriField( "uri" );
+    stepMetaInterface.setRootUriField( "root uri" );
+
+    // string with UTF-8 encoding
+    stepInputFiles.addFile( getFile( "UTF-8.txt" ) );
+    ( (LoadFileInputMeta) runtimeSMI ).setEncoding( "UTF-8" );
+    Object[] result = stepLoadFileInput.getOneRow();
+    assertEquals( " UTF-8 string ÕÕÕ€ ", result[0] );
+    assertEquals( new Long( 1 ), result[2] );
+    assertEquals( "UTF-8.txt", result[3] );
+    assertEquals( "txt", result[4] );
+    assertEquals( false, result[6] );
+    assertEquals( getFile( "UTF-8.txt" ).getURL().toString(), result[8] );
+    assertEquals( getFile( "UTF-8.txt" ).getName().getRootURI(), result[9] );
+
+    // string with UTF-8 encoding - trail left
+    inputField.setTrimType( ValueMetaInterface.TRIM_TYPE_LEFT );
+    stepInputFiles.addFile( getFile( "UTF-8.txt" ) );
+    assertEquals( "UTF-8 string ÕÕÕ€ ", stepLoadFileInput.getOneRow()[0] );
+
+    // string with UTF-8 encoding - trail right
+    inputField.setTrimType( ValueMetaInterface.TRIM_TYPE_RIGHT );
+    stepInputFiles.addFile( getFile( "UTF-8.txt" ) );
+    assertEquals( " UTF-8 string ÕÕÕ€", stepLoadFileInput.getOneRow()[0] );
+
+    // string with UTF-8 encoding - trail both
+    inputField.setTrimType( ValueMetaInterface.TRIM_TYPE_BOTH );
+    stepInputFiles.addFile( getFile( "UTF-8.txt" ) );
+    assertEquals( "UTF-8 string ÕÕÕ€", stepLoadFileInput.getOneRow()[0] );
+
+    // string with Windows-1252 encoding
+    inputField.setTrimType( ValueMetaInterface.TRIM_TYPE_NONE );
+    stepInputFiles.addFile( getFile( "Windows-1252.txt" ) );
+    ( (LoadFileInputMeta) runtimeSMI ).setEncoding( "Windows-1252" );
+    assertEquals( " Windows-1252 string ÕÕÕ€ ", stepLoadFileInput.getOneRow()[0] );
+
+    // string with Windows-1252 encoding but with no encoding set
+    stepInputFiles.addFile( getFile( "Windows-1252.txt" ) );
+    ( (LoadFileInputMeta) runtimeSMI ).setEncoding( null );
+    assertNotEquals( " Windows-1252 string ÕÕÕ€ ", stepLoadFileInput.getOneRow()[0] );
+    assertEquals( " Windows-1252 string ÕÕÕ€ ", new String( stepLoadFileInput.data.filecontent, "Windows-1252" ) );
+
+    // byte array
+    Mockito.doReturn( new ValueMetaBinary() ).when( mockedRowMetaInterface ).getValueMeta( anyInt() );
+    ( (LoadFileInputMeta) runtimeSMI ).setEncoding( "UTF-8" );
+    stepInputFiles.addFile( getFile( "pentaho_splash.png" ) );
+    inputField = new LoadFileInputField();
+    inputField.setType( ValueMetaInterface.TYPE_BINARY );
+    ( (LoadFileInputMeta) runtimeSMI ).setInputFields( new LoadFileInputField[]{ inputField } );
+
+    assertNotNull( stepLoadFileInput.getOneRow() );
+    assertArrayEquals( IOUtils.toByteArray( getFile( "pentaho_splash.png" ).getContent().getInputStream() ), stepLoadFileInput.data.filecontent );
   }
 }
