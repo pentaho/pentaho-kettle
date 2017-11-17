@@ -43,6 +43,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import com.google.common.base.Preconditions;
+
+import org.apache.commons.lang.StringUtils;
 import org.pentaho.di.core.BlockingRowSet;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.util.Utils;
@@ -1233,6 +1235,16 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
    */
   @Override
   public void putRow( RowMetaInterface rowMeta, Object[] row ) throws KettleStepException {
+    // check row meta
+    for ( ValueMetaInterface vmi : rowMeta.getValueMetaList() ) {
+      // check for empty field name (BACKLOG-18004)
+      if ( StringUtils.isEmpty( vmi.getName() ) ) {
+        throw new KettleStepException( "Field name shouldn't be empty" );
+      }
+      if ( vmi.getType() <= ValueMetaInterface.TYPE_NONE ) {
+        throw new KettleStepException( "Field type should be defined" );
+      }
+    }
     getRowHandler().putRow( rowMeta, row );
   }
 

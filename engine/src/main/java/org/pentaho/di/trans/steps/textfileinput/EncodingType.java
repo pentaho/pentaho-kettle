@@ -102,6 +102,9 @@ public enum EncodingType {
   }
 
   public static String removeBOMIfPresent( String string ) {
+    if ( string == null ) {
+      return null;
+    }
     return string.replaceFirst( UTF_8_BOM, "" );
   }
 
