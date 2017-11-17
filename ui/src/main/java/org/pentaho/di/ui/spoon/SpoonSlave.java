@@ -25,9 +25,7 @@ package org.pentaho.di.ui.spoon;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -100,15 +98,15 @@ import org.w3c.dom.Node;
 public class SpoonSlave extends Composite implements TabItemInterface {
   private static Class<?> PKG = Spoon.class; // for i18n purposes, needed by Translator2!!
 
-  public static final long UPDATE_TIME_VIEW = 30000L; // 30s
+  public static final long UPDATE_TIME_VIEW = Long.parseLong( Const.getEnvironmentVariable( "SPOON_CARTE_VIEW_UPDATE_TIME", "30000" ) );
 
   public static final String STRING_SLAVE_LOG_TREE_NAME = "SLAVE_LOG : ";
+
+  private String currentLogText;
 
   private Shell shell;
   private Display display;
   private SlaveServer slaveServer;
-  private Map<String, Integer> lastLineMap;
-  private Map<String, String> loggingMap;
 
   private Spoon spoon;
 
@@ -236,10 +234,7 @@ public class SpoonSlave extends Composite implements TabItemInterface {
     private TreeItem findTreeItem( TreeItem treeItem, int level ) {
       if ( treeItem.getText().equals( path[ level ] ) ) {
         if ( level == 1 ) {
-          if ( this.equals( getTreeEntry( treeItem ) ) ) {
-            treeItemSelected( treeItem );
-            treeItem.setExpanded( true );
-          } else {
+          if ( !this.equals( getTreeEntry( treeItem ) ) ) {
             return null;
           }
         }
@@ -261,14 +256,12 @@ public class SpoonSlave extends Composite implements TabItemInterface {
 
   public SpoonSlave( Composite parent, int style, final Spoon spoon, SlaveServer slaveServer ) {
     super( parent, style );
+
     this.shell = parent.getShell();
     this.display = shell.getDisplay();
     this.spoon = spoon;
     this.slaveServer = slaveServer;
     this.log = spoon.getLog();
-
-    lastLineMap = new HashMap<String, Integer>();
-    loggingMap = new HashMap<String, String>();
 
     FormLayout formLayout = new FormLayout();
     formLayout.marginWidth = Const.FORM_MARGIN;
@@ -474,12 +467,9 @@ public class SpoonSlave extends Composite implements TabItemInterface {
               SpoonSlave.this.slaveServer );
         }
 
-        Integer lastLine = lastLineMap.get( transStatus.getId() );
-        int lastLineNr = lastLine == null ? 0 : lastLine;
-
         SlaveServerTransStatus ts =
           SpoonSlave.this.slaveServer.getTransStatus(
-            transStatus.getTransName(), transStatus.getId(), lastLineNr );
+            transStatus.getTransName(), transStatus.getId(), 0 );
         if ( log.isDetailed() ) {
           log.logDetailed( "Finished receiving transformation status for [{0}] from server [{1}]", transStatus
             .getTransName(), SpoonSlave.this.slaveServer );
@@ -487,13 +477,7 @@ public class SpoonSlave extends Composite implements TabItemInterface {
         List<StepStatus> stepStatusList = ts.getStepStatusList();
         transStatus.setStepStatusList( stepStatusList );
 
-        lastLineMap.put( transStatus.getId(), ts.getLastLoggingLineNr() );
-        String logging = loggingMap.get( transStatus.getId() );
-        if ( logging == null ) {
-          logging = ts.getLoggingString();
-        } else {
-          logging = logging + ts.getLoggingString();
-        }
+        String logging = ts.getLoggingString();
 
         String[] lines = logging.split( "\r\n|\r|\n" );
         if ( lines.length > PropsUI.getInstance().getMaxNrLinesInLog() ) {
@@ -507,7 +491,7 @@ public class SpoonSlave extends Composite implements TabItemInterface {
           logging = trimmedLog.toString();
         }
 
-        loggingMap.put( transStatus.getId(), logging );
+        currentLogText = logging;
 
         item.removeAll();
         for ( StepStatus stepStatus : stepStatusList ) {
@@ -525,23 +509,14 @@ public class SpoonSlave extends Composite implements TabItemInterface {
           log.logDetailed( "Getting job status for [{0}] on server [{1}]", jobStatus.getJobName(), slaveServer );
         }
 
-        Integer lastLine = lastLineMap.get( jobStatus.getId() );
-        int lastLineNr = lastLine == null ? 0 : lastLine;
-
-        SlaveServerJobStatus ts = slaveServer.getJobStatus( jobStatus.getJobName(), jobStatus.getId(), lastLineNr );
+        SlaveServerJobStatus ts = slaveServer.getJobStatus( jobStatus.getJobName(), jobStatus.getId(), 0 );
 
         if ( log.isDetailed() ) {
           log.logDetailed(
             "Finished receiving job status for [{0}] from server [{1}]", jobStatus.getJobName(), slaveServer );
         }
 
-        lastLineMap.put( jobStatus.getId(), ts.getLastLoggingLineNr() );
-        String logging = loggingMap.get( jobStatus.getId() );
-        if ( logging == null ) {
-          logging = ts.getLoggingString();
-        } else {
-          logging = logging + ts.getLoggingString();
-        }
+        String logging = ts.getLoggingString();
 
         String[] lines = logging.split( "\r\n|\r|\n" );
         if ( lines.length > PropsUI.getInstance().getMaxNrLinesInLog() ) {
@@ -555,7 +530,7 @@ public class SpoonSlave extends Composite implements TabItemInterface {
           logging = trimmedLog.toString();
         }
 
-        loggingMap.put( jobStatus.getId(), logging );
+        currentLogText = logging;
 
         Result result = ts.getResult();
         if ( result != null ) {
@@ -654,9 +629,8 @@ public class SpoonSlave extends Composite implements TabItemInterface {
         message.append( errorDescription ).append( Const.CR ).append( Const.CR );
       }
 
-      String logging = loggingMap.get( transStatus.getId() );
-      if ( !Utils.isEmpty( logging ) ) {
-        message.append( logging ).append( Const.CR );
+      if ( !Utils.isEmpty( currentLogText ) ) {
+        message.append( currentLogText ).append( Const.CR );
       }
 
       wText.setText( message.toString() );
@@ -671,14 +645,15 @@ public class SpoonSlave extends Composite implements TabItemInterface {
         message.append( errorDescription ).append( Const.CR ).append( Const.CR );
       }
 
-      String logging = loggingMap.get( jobStatus.getId() );
-      if ( !Utils.isEmpty( logging ) ) {
-        message.append( logging ).append( Const.CR );
+      if ( !Utils.isEmpty( currentLogText ) ) {
+        message.append( currentLogText ).append( Const.CR );
       }
 
       wText.setText( message.toString() );
       wText.setSelection( wText.getText().length() );
       wText.showSelection();
+    } else {
+      currentLogText = null;
     }
   }
 
