@@ -40,6 +40,7 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.row.RowDataUtil;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLParserFactoryProducer;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
@@ -102,8 +103,8 @@ public class AddXML extends BaseStep implements StepInterface {
         }
       }
     }
-
-    Document xmldoc = getDomImplentation().createDocument( null, meta.getRootNode(), null );
+    String rootNode = this.environmentSubstitute( meta.getRootNode() );
+    Document xmldoc = getDomImplentation().createDocument( null, rootNode, null );
     Element root = xmldoc.getDocumentElement();
     for ( int i = 0; i < meta.getOutputFields().length; i++ ) {
       XMLField outputField = meta.getOutputFields()[i];
@@ -142,7 +143,7 @@ public class AddXML extends BaseStep implements StepInterface {
           node.setAttribute( element, value );
 
         } else { /* encode as subnode */
-          if ( !element.equals( meta.getRootNode() ) ) {
+          if ( !element.equals( rootNode ) ) {
             Element e = xmldoc.createElement( element );
             Node n = xmldoc.createTextNode( value );
             e.appendChild( n );
