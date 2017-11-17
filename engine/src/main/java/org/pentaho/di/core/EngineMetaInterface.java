@@ -192,4 +192,20 @@ public interface EngineMetaInterface extends RepositoryElementInterface {
    * Sets the internal kettle variables.
    */
   public void setInternalKettleVariables();
+
+  /**
+   * Set versioning enabled
+   *
+   * @param versioningEnabled
+   *          is versioning enabled
+   */
+  public void setVersioningEnabled( Boolean versioningEnabled );
+
+  /**
+   * Is versioning enabled.
+   *
+   * @return is versioning enabled
+   */
+  public Boolean getVersioningEnabled();
+
 }
