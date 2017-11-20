@@ -520,7 +520,7 @@ define([
       if (vm.searchString !== "") {
         if (vm.recentSearches.indexOf(vm.searchString) === -1) {
           vm.recentSearches.push(vm.searchString);
-          dt.storeRecentSearch(vm.searchString).then();
+          dt.storeRecentSearch(vm.searchString).then(_populateRecentSearches);
         }
       }
     }

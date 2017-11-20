@@ -56,7 +56,6 @@ define([
    */
   function searchController() {
     var vm = this;
-    vm.$onChanges = onChanges;
     vm.searchValue = "";
     vm.inSearch = false;
     vm.getTooltip = getTooltip;
@@ -67,19 +66,10 @@ define([
     vm.focus = focus;
 
     /**
-     * Called whenever one-way bindings are updated.
-     *
-     * @param {Object} changes - hash whose keys are the names of the bound properties
-     * that have changed, and the values are an object of the form
-     */
-    function onChanges(changes) {
-      console.log(changes);
-    }
-
-    /**
      * Clears the search value
      */
     function clearSearch() {
+      vm.blur();
       vm.searchValue = "";
       vm.onSearch({searchValue:""});
     }
