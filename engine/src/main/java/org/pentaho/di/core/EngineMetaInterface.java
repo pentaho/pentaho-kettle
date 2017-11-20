@@ -199,13 +199,17 @@ public interface EngineMetaInterface extends RepositoryElementInterface {
    * @param versioningEnabled
    *          is versioning enabled
    */
-  public void setVersioningEnabled( Boolean versioningEnabled );
+  public default void setVersioningEnabled( Boolean versioningEnabled ) {
+    // Default implementation does nothing
+  }
 
   /**
    * Is versioning enabled.
    *
    * @return is versioning enabled
    */
-  public Boolean getVersioningEnabled();
+  public default Boolean getVersioningEnabled() {
+    return null;
+  }
 
 }

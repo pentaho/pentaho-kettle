@@ -821,16 +821,6 @@ public class AbstractMetaTest {
     }
 
     @Override
-    public void setVersioningEnabled( Boolean isVersioningEnabled ) {
-
-    }
-
-    @Override
-    public Boolean getVersioningEnabled() {
-      return null;
-    }
-
-    @Override
     public String getLogChannelId() {
       return null;
     }
