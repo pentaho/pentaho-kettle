@@ -49,7 +49,6 @@
                 <include>com.google.guava:guava-jdk5:jar</include>
                 <include>org.apache.httpcomponents:httpclient:jar</include>
                 <include>org.apache.httpcomponents:httpcore:jar</include>
-                <include>com.fasterxml.jackson.core:jackson-core:jar</include>
                 <include>org.mortbay.jetty:jetty:jar</include>
                 <include>org.mortbay.jetty:jetty-util:jar</include>
                 <include>org.mortbay.jetty:servlet-api:jar</include>

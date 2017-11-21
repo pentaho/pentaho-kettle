@@ -26,6 +26,12 @@
       <artifactId>pdi-google-analytics-plugin-core</artifactId>
       <version>${project.revision}</version>
       <scope>provided</scope>
+      <exclusions>
+        <exclusion>
+          <artifactId>jackson-core</artifactId>
+          <groupId>com.fasterxml.jackson.core</groupId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>commons-codec</groupId>
@@ -62,6 +68,12 @@
       <artifactId>google-http-client-jackson2</artifactId>
       <version>1.20.0</version>
       <scope>runtime</scope>
+      <exclusions>
+        <exclusion>
+          <artifactId>jackson-core</artifactId>
+          <groupId>com.fasterxml.jackson.core</groupId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>com.google.oauth-client</groupId>
@@ -84,7 +96,7 @@
     <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>
       <artifactId>jackson-core</artifactId>
-      <version>2.1.3</version>
+      <version>2.9.2</version>
       <scope>runtime</scope>
     </dependency>
     <dependency>
