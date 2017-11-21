@@ -207,7 +207,7 @@ public class ValueMetaBase implements ValueMetaInterface {
   }
 
   public ValueMetaBase( String name, int type, int length, int precision ) {
-    this.name = name;
+    this.name = name != null ? name : "";
     this.type = type;
     this.length = length;
     this.precision = precision;
@@ -298,6 +298,9 @@ public class ValueMetaBase implements ValueMetaInterface {
     }
 
     name = XMLHandler.getTagValue( node, "name" );
+    if ( name == null ) {
+      name = "";
+    }
     length = Integer.parseInt( XMLHandler.getTagValue( node, "length" ) );
     precision = Integer.parseInt( XMLHandler.getTagValue( node, "precision" ) );
     origin = XMLHandler.getTagValue( node, "origin" );
@@ -523,7 +526,7 @@ public class ValueMetaBase implements ValueMetaInterface {
    */
   @Override
   public void setName( String name ) {
-    this.name = name;
+    this.name = name != null ? name : "";
   }
 
   /**
@@ -3109,6 +3112,9 @@ public class ValueMetaBase implements ValueMetaInterface {
 
       // name
       name = readString( inputStream );
+      if ( name == null ) {
+        name = "";
+      }
 
       // length & precision
       length = inputStream.readInt();
