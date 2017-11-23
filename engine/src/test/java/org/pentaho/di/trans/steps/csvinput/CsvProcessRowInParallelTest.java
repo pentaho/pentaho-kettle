@@ -158,8 +158,10 @@ public class CsvProcessRowInParallelTest extends CsvInputUnitTestBase {
 
     File sharedFile = createTestFile( "UTF-8", fileContent );
 
-    assertEquals( createAndRunOneStep( sharedFile, 0, totalNumberOfSteps ), 1 );
-    assertEquals( createAndRunOneStep( sharedFile, 1, totalNumberOfSteps ), 1 );
+    int t1 = createAndRunOneStep( sharedFile, 0, totalNumberOfSteps );
+    int t2 = createAndRunOneStep( sharedFile, 1, totalNumberOfSteps );
+
+    assertEquals( 2, t1 + t2 );
   }
 
 
