@@ -34,6 +34,7 @@ import org.apache.http.client.AuthCache;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.CredentialsProvider;
 import org.apache.http.client.HttpClient;
+import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpUriRequest;
@@ -565,21 +566,27 @@ public class SlaveServer extends ChangedFlag implements Cloneable, SharedObjectI
   }
 
   public String constructUrl( String serviceAndArguments ) throws UnsupportedEncodingException {
+    String realHostname = null;
+    String proxyHostname = null;
     lock.readLock().lock();
     try {
-      String realHostname = environmentSubstitute( hostname );
-      if ( !StringUtils.isBlank( webAppName ) ) {
-        serviceAndArguments = "/" + environmentSubstitute( getWebAppName() ) + serviceAndArguments;
-      }
-
-      String result =
-        ( isSslMode() ? HTTPS : HTTP ) + "://" + realHostname + getPortSpecification() + serviceAndArguments;
-      result = Const.replace( result, " ", "%20" );
-      return result;
-
+      realHostname = environmentSubstitute( hostname );
+      proxyHostname = environmentSubstitute( getProxyHostname() );
     } finally {
       lock.readLock().unlock();
     }
+    if ( !Utils.isEmpty( proxyHostname ) && realHostname.equals( "localhost" ) ) {
+      realHostname = "127.0.0.1";
+    }
+
+    if ( !StringUtils.isBlank( webAppName ) ) {
+      serviceAndArguments = "/" + environmentSubstitute( getWebAppName() ) + serviceAndArguments;
+    }
+
+    String result =
+      ( isSslMode() ? HTTPS : HTTP ) + "://" + realHostname + getPortSpecification() + serviceAndArguments;
+    result = Const.replace( result, " ", "%20" );
+    return result;
 
   }
 
@@ -724,26 +731,63 @@ public class SlaveServer extends ChangedFlag implements Cloneable, SharedObjectI
     String password;
     String host;
     int port;
+    String proxyHost;
     lock.readLock().lock();
     try {
       host = environmentSubstitute( hostname );
       port = Const.toInt( environmentSubstitute( this.port ), 80 );
       userName = environmentSubstitute( username );
       password = Encr.decryptPasswordOptionallyEncrypted( environmentSubstitute( this.password ) );
+      proxyHost = environmentSubstitute( proxyHostname );
     } finally {
       lock.readLock().unlock();
     }
     CredentialsProvider provider = new BasicCredentialsProvider();
     UsernamePasswordCredentials credentials = new UsernamePasswordCredentials( userName, password );
+    if ( !Utils.isEmpty( proxyHost ) && host.equals( "localhost" ) ) {
+      host = "127.0.0.1";
+    }
     provider.setCredentials( new AuthScope( host, port ), credentials );
     context.setCredentialsProvider( provider );
-
     // Generate BASIC scheme object and add it to the local auth cache
     HttpHost target = new HttpHost( host, port, "http" );
     AuthCache authCache = new BasicAuthCache();
     BasicScheme basicAuth = new BasicScheme();
     authCache.put( target, basicAuth );
     context.setAuthCache( authCache );
+  }
+
+  private void addProxy( HttpClientContext context ) {
+    String proxyHost;
+    String proxyPort;
+    String nonProxyHosts;
+
+    String hostName;
+
+    lock.readLock().lock();
+    try {
+      proxyHost = environmentSubstitute( this.proxyHostname );
+      proxyPort = environmentSubstitute( this.proxyPort );
+      nonProxyHosts = environmentSubstitute( this.nonProxyHosts );
+
+      hostName = environmentSubstitute( this.hostname );
+    } finally {
+      lock.readLock().unlock();
+    }
+    if ( Utils.isEmpty( proxyHost ) || Utils.isEmpty( proxyPort ) ) {
+      return;
+    }
+    // skip applying proxy if non-proxy host matches
+    if ( !Utils.isEmpty( nonProxyHosts ) && hostName.matches( nonProxyHosts ) ) {
+      return;
+    }
+    HttpHost httpHost = new HttpHost( proxyHost, Integer.valueOf( proxyPort ) );
+
+    RequestConfig requestConfig = RequestConfig.custom()
+      .setProxy( httpHost )
+      .build();
+
+    context.setRequestConfig( requestConfig );
   }
 
   /**
@@ -753,6 +797,7 @@ public class SlaveServer extends ChangedFlag implements Cloneable, SharedObjectI
   protected HttpClientContext getAuthContext() {
     HttpClientContext context = HttpClientContext.create();
     addCredentials( context );
+    addProxy( context );
     return context;
   }
 
@@ -888,40 +933,7 @@ public class SlaveServer extends ChangedFlag implements Cloneable, SharedObjectI
   // Method is defined as package-protected in order to be accessible by unit tests
   HttpClient getHttpClient() {
     SlaveConnectionManager connectionManager = SlaveConnectionManager.getInstance();
-    String userName;
-    String password;
-
-    String hostName;
-    int httpPort;
-
-    String proxyHost;
-    String proxyPort;
-    String nonProxyHosts;
-
-    lock.readLock().lock();
-    try {
-      hostName = environmentSubstitute( this.hostname );
-      httpPort = Const.toInt( environmentSubstitute( this.port ), 80 );
-      proxyHost = environmentSubstitute( this.proxyHostname );
-      proxyPort = environmentSubstitute( this.proxyPort );
-      nonProxyHosts = environmentSubstitute( this.nonProxyHosts );
-      userName = environmentSubstitute( username );
-      password = Encr
-        .decryptPasswordOptionallyEncrypted( environmentSubstitute( environmentSubstitute( this.password ) ) );
-    } finally {
-      lock.readLock().unlock();
-    }
-    if ( !Utils.isEmpty( proxyHost ) && !Utils.isEmpty( proxyPort ) ) {
-      // skip applying proxy if non-proxy host matches
-      if ( !Utils.isEmpty( nonProxyHosts ) && !Utils.isEmpty( hostName ) && hostName.matches( nonProxyHosts ) ) {
-        return connectionManager.createHttpClient( userName, password );
-      }
-      AuthScope authScope = new AuthScope( hostName, httpPort );
-      return connectionManager
-        .createHttpClient( userName, password, hostName, Integer.parseInt( proxyPort ), authScope );
-    } else {
-      return connectionManager.createHttpClient();
-    }
+    return connectionManager.createHttpClient();
   }
 
   public SlaveServerStatus getStatus() throws Exception {
