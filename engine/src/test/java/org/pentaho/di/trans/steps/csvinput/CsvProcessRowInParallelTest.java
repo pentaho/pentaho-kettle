@@ -158,8 +158,10 @@ public class CsvProcessRowInParallelTest extends CsvInputUnitTestBase {
 
     File sharedFile = createTestFile( "UTF-8", fileContent );
 
-    assertEquals( createAndRunOneStep( sharedFile, 0, totalNumberOfSteps ), 1 );
-    assertEquals( createAndRunOneStep( sharedFile, 1, totalNumberOfSteps ), 1 );
+    int t1 = createAndRunOneStep( sharedFile, 0, totalNumberOfSteps );
+    int t2 = createAndRunOneStep( sharedFile, 1, totalNumberOfSteps );
+
+    assertEquals( 2, t1 + t2 );
   }
 
 
@@ -224,6 +226,33 @@ public class CsvProcessRowInParallelTest extends CsvInputUnitTestBase {
     assertEquals( createAndRunOneStep( sharedFile, 1, totalNumberOfSteps ), 2 );
   }
 
+  @Test
+  public void PDI_16589_twoByteNewLineIndicator_withHeaders_NewLineAtTheEnd_4Threads() throws Exception {
+    final int totalNumberOfSteps = 4;
+
+    final String fileContent =
+      "Col1,Col2\r\n"
+        + "a,1\r\n"
+        + "b,2\r\n"
+        + "c,3\r\n"
+        + "d,4\r\n"
+        + "e,5\r\n"
+        + "f,6\r\n"
+        + "g,7\r\n"
+        + "h,8\r\n"
+        + "i,9\r\n"
+        + "jk,10\r\n"
+        + "lm,11\r\n";
+
+    File sharedFile = createTestFile( "UTF-8", fileContent );
+
+    int t1 = createAndRunOneStep( sharedFile, 0, totalNumberOfSteps, true, "," );
+    int t2 = createAndRunOneStep( sharedFile, 1, totalNumberOfSteps, true, "," );
+    int t3 = createAndRunOneStep( sharedFile, 2, totalNumberOfSteps, true, "," );
+    int t4 = createAndRunOneStep( sharedFile, 3, totalNumberOfSteps, true, "," );
+
+    assertEquals( 11, t1 + t2 + t3 + t4 );
+  }
 
   /**
    * So as not to heap up list of taken parameters, we are passing combi, but we expect to see CsvInput class instances
@@ -265,18 +294,23 @@ public class CsvProcessRowInParallelTest extends CsvInputUnitTestBase {
 
   private int createAndRunOneStep( File sharedFile, int stepNr, int totalNumberOfSteps )
     throws Exception {
-    StepMetaDataCombi combiStep1 = createBaseCombi( sharedFile );
+    return createAndRunOneStep( sharedFile, stepNr, totalNumberOfSteps, false, ";" );
+  }
+
+  private int createAndRunOneStep( File sharedFile, int stepNr, int totalNumberOfSteps, boolean headersPresent, String delimiter )
+    throws Exception {
+    StepMetaDataCombi combiStep1 = createBaseCombi( sharedFile, headersPresent, delimiter );
     configureData( (CsvInputData) combiStep1.data, stepNr, totalNumberOfSteps );
 
     return processRows( combiStep1 );
   }
 
-  private StepMetaDataCombi createBaseCombi( File sharedFile ) {
+  private StepMetaDataCombi createBaseCombi( File sharedFile, boolean headerPresent, String delimiter ) {
 
     StepMetaDataCombi combi = new StepMetaDataCombi();
 
     CsvInputData data = new CsvInputData();
-    CsvInputMeta meta = createMeta( sharedFile, createInputFileFields( "Field_000", "Field_001" ) );
+    CsvInputMeta meta = createMeta( sharedFile, createInputFileFields( "Field_000", "Field_001" ), headerPresent, delimiter );
 
     CsvInput csvInput = createCsvInput();
     csvInput.init( meta, data );
@@ -288,16 +322,20 @@ public class CsvProcessRowInParallelTest extends CsvInputUnitTestBase {
     return combi;
   }
 
-  private CsvInputMeta createMeta( File file, TextFileInputField[] fields ) {
+  private CsvInputMeta createMeta( File file, TextFileInputField[] fields, boolean headerPresent, String delimiter ) {
     CsvInputMeta meta = new CsvInputMeta();
 
     meta.setFilename( file.getAbsolutePath() );
-    meta.setDelimiter( ";" );
+    meta.setDelimiter( delimiter );
     meta.setEncoding( "utf-8" );
     meta.setEnclosure( "\"" );
     meta.setBufferSize( "1024" );
-    meta.setInputFields( fields );
-    meta.setHeaderPresent( false );
+
+    if ( !headerPresent ) {
+      meta.setInputFields( fields );
+    }
+
+    meta.setHeaderPresent( headerPresent );
     meta.setRunningInParallel( true );
 
     return meta;
