@@ -22,15 +22,6 @@
 
 package org.pentaho.di.core.vfs;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.util.Comparator;
-
 import org.apache.commons.vfs2.FileContent;
 import org.apache.commons.vfs2.FileName;
 import org.apache.commons.vfs2.FileObject;
@@ -51,7 +42,18 @@ import org.pentaho.di.core.vfs.configuration.KettleFileSystemConfigBuilderFactor
 import org.pentaho.di.core.vfs.configuration.KettleGenericFileSystemConfigBuilder;
 import org.pentaho.di.i18n.BaseMessages;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.util.Comparator;
+
 public class KettleVFS {
+  public static final String TEMP_DIR = System.getProperty( "java.io.tmpdir" );
+
   private static Class<?> PKG = KettleVFS.class; // for i18n purposes, needed by Translator2!!
 
   private static final KettleVFS kettleVFS = new KettleVFS();
@@ -376,8 +378,58 @@ public class KettleVFS {
     return fileObject.getName().getFriendlyURI();
   }
 
+  /**
+   * Creates a file using "java.io.tmpdir" directory
+   *
+   * @param prefix - file name
+   * @param prefix - file extension
+   * @return FileObject
+   * @throws KettleFileException
+   */
+  public static FileObject createTempFile( String prefix, Suffix suffix ) throws KettleFileException {
+    return createTempFile( prefix, suffix, TEMP_DIR );
+  }
+
+  /**
+   * Creates a file using "java.io.tmpdir" directory
+   *
+   * @param prefix        - file name
+   * @param suffix        - file extension
+   * @param variableSpace is used to get system variables
+   * @return FileObject
+   * @throws KettleFileException
+   */
+  public static FileObject createTempFile( String prefix, Suffix suffix, VariableSpace variableSpace )
+    throws KettleFileException {
+    return createTempFile( prefix, suffix, TEMP_DIR, variableSpace );
+  }
+
+  /**
+   *
+   * @param prefix    - file name
+   * @param suffix    - file extension
+   * @param directory - directory where file will be created
+   * @return FileObject
+   * @throws KettleFileException
+   */
+  public static FileObject createTempFile( String prefix, Suffix suffix, String directory ) throws KettleFileException {
+    return createTempFile( prefix, suffix, directory, null );
+  }
+
   public static FileObject createTempFile( String prefix, String suffix, String directory ) throws KettleFileException {
     return createTempFile( prefix, suffix, directory, null );
+  }
+
+  /**
+   * @param prefix    - file name
+   * @param directory path to directory where file will be created
+   * @param space     is used to get system variables
+   * @return FileObject
+   * @throws KettleFileException
+   */
+  public static FileObject createTempFile( String prefix, Suffix suffix, String directory, VariableSpace space )
+    throws KettleFileException {
+    return createTempFile( prefix, suffix.ext, directory, space );
   }
 
   public static FileObject createTempFile( String prefix, String suffix, String directory, VariableSpace space ) throws KettleFileException {
@@ -444,7 +496,7 @@ public class KettleVFS {
     boolean found = false;
     String[] schemes = fsManager.getSchemes();
     for ( int i = 0; i < schemes.length; i++ ) {
-      if ( vfsFileName.startsWith( schemes[i] + ":" ) ) {
+      if ( vfsFileName.startsWith( schemes[ i ] + ":" ) ) {
         found = true;
         break;
       }
@@ -457,6 +509,16 @@ public class KettleVFS {
     if ( getInstance().getFileSystemManager() instanceof ConcurrentFileSystemManager ) {
       ( (ConcurrentFileSystemManager) getInstance().getFileSystemManager() )
         .closeEmbeddedFileSystem( embeddedMetastoreKey );
+    }
+  }
+
+  public enum Suffix {
+    ZIP( ".zip" ), TMP( ".tmp" ), JAR( ".jar" );
+
+    private String ext;
+
+    Suffix( String ext ) {
+      this.ext = ext;
     }
   }
 
