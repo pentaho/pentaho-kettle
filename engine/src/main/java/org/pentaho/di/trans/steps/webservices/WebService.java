@@ -41,6 +41,7 @@ import org.apache.http.impl.client.BasicAuthCache;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.util.EntityUtils;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.encryption.Encr;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.row.RowDataUtil;
@@ -425,8 +426,8 @@ public class WebService extends BaseStep implements StepInterface {
     cachedMeta = meta;
 
     try {
-      cachedWsdl = new Wsdl( new java.net.URI( data.realUrl ),
-        null, null, environmentSubstitute( meta.getHttpLogin() ), environmentSubstitute( meta.getHttpPassword() ) );
+      cachedWsdl = new Wsdl( new java.net.URI( data.realUrl ), null, null, environmentSubstitute( meta.getHttpLogin() ),
+        Encr.decryptPasswordOptionallyEncrypted( environmentSubstitute( meta.getHttpPassword() ) ) );
     } catch ( Exception e ) {
       throw new KettleStepException( BaseMessages.getString( PKG, "WebServices.ERROR0013.ExceptionLoadingWSDL" ), e );
     }
@@ -471,7 +472,8 @@ public class WebService extends BaseStep implements StepInterface {
 
     String login = environmentSubstitute( meta.getHttpLogin() );
     if ( StringUtils.isNotBlank( login ) ) {
-      clientBuilder.setCredentials( login, environmentSubstitute( meta.getHttpPassword() ) );
+      clientBuilder.setCredentials( login,
+        Encr.decryptPasswordOptionallyEncrypted( environmentSubstitute( meta.getHttpPassword() ) ) );
     }
     int proxyPort = 0;
     if ( StringUtils.isNotBlank( meta.getProxyHost() ) ) {
