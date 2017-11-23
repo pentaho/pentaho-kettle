@@ -355,7 +355,7 @@ public class CsvInput extends BaseStep implements StepInterface {
             // in parallel mode we don't support new lines inside field data so it's safe to fast forward until we find a new line.
             // when a newline is found we need to check for an additional new line character, while in unix systems it's just a single '\n',
             // on windows systems, it's a sequence of '\r' and '\n'. finally we set the start of the buffer to the end buffer position.
-            while( !data.newLineFound() ) {
+            while ( !data.newLineFound() ) {
               data.moveEndBufferPointer();
             }
 
