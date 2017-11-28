@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -37,6 +37,7 @@ import java.util.List;
 import java.util.Random;
 
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
@@ -58,6 +59,13 @@ import org.w3c.dom.NodeList;
 
 @RunWith( PowerMockRunner.class )
 public class ValueMetaAndDataTest {
+
+  private PluginRegistry pluginRegistry;
+
+  @Before
+  public void before() {
+    pluginRegistry = Mockito.mock( PluginRegistry.class );
+  }
 
   @Test
   public void testConstructors() throws KettleValueException {
@@ -130,7 +138,7 @@ public class ValueMetaAndDataTest {
     Mockito.when( EnvUtil.getSystemProperty( Const.KETTLE_DEFAULT_DATE_FORMAT ) ).thenReturn( "yyyy-MM-dd HH:mm:ss.SSS" );
 
     ValueMetaAndData valueMetaAndData = new ValueMetaAndData( Mockito.mock( ValueMetaInterface.class ), new Object() );
-    PluginRegistry pluginRegistry = Mockito.mock( PluginRegistry.class );
+
     List<PluginInterface> pluginTypeList = new ArrayList<>();
     PluginInterface plugin = Mockito.mock( PluginInterface.class );
     Mockito.when( plugin.getName() ).thenReturn( "3" );
