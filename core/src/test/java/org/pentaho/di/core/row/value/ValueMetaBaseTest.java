@@ -115,7 +115,7 @@ public class ValueMetaBaseTest {
   public void testDefaultCtor() {
     ValueMetaBase base = new ValueMetaBase();
     assertNotNull( base );
-    assertNull( base.getName() );
+    assertEquals( "", base.getName() );
     assertEquals( base.getType(), ValueMetaInterface.TYPE_NONE );
   }
 
@@ -492,7 +492,7 @@ public class ValueMetaBaseTest {
     base.setName( "myName" );
     assertEquals( base.getName(), "myName" );
     base.setName( null );
-    assertNull( base.getName() );
+    assertEquals( "", base.getName() );
     base.setName( "" );
     assertEquals( base.getName(), "" );
 
@@ -891,4 +891,11 @@ public class ValueMetaBaseTest {
     Assert.assertTrue( binaryValueMeta.isBinary() );
   }
 
+  @Test
+  public void testEmptyFieldName() {
+    ValueMetaBase b = new ValueMetaBase();
+    assertEquals( "", b.getName() );
+    b.setName( null );
+    assertEquals( "", b.getName() );
+  }
 }

@@ -434,8 +434,9 @@ public class RowMetaTest {
     String[] names = rowMeta.getFieldNames();
     assertEquals( 10, names.length );
     assertEquals( "sample", names[0] );
-    for ( int i = 1; i < names.length; i++ ) {
-      assertEquals( "", names[i] );
+    assertEquals( "", names[1] );
+    for ( int i = 2; i < names.length; i++ ) {
+      assertEquals( "_" + ( i - 1 ), names[i] );
     }
   }
 

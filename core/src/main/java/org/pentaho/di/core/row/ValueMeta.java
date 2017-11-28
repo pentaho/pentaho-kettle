@@ -102,7 +102,7 @@ public class ValueMeta extends ValueMetaBase {
   }
 
   public ValueMeta( String name, int type, int length, int precision ) {
-    this.name = name;
+    this.name = name != null ? name : "";
     this.type = type;
     this.length = length;
     this.precision = precision;

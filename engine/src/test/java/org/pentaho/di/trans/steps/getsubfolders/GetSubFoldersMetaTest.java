@@ -81,7 +81,7 @@ public class GetSubFoldersMetaTest {
     assertEquals( "uri", rowMeta.getValueMeta( 7 ).getName() );
     assertEquals( "rooturi", rowMeta.getValueMeta( 8 ).getName() );
     assertEquals( "childrens", rowMeta.getValueMeta( 9 ).getName() );
-    assertEquals( null, rowMeta.getValueMeta( 10 ).getName() );
+    assertEquals( "", rowMeta.getValueMeta( 10 ).getName() );
 
     stepMeta.setRowNumberField( "MyRowNumber" );
     rowMeta = new RowMeta();

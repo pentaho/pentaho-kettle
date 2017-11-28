@@ -124,7 +124,7 @@ public class ValueMetaFactoryTest {
 
     testObject = ValueMetaFactory.createValueMeta( ValueMetaInterface.TYPE_NONE );
     assertTrue( testObject instanceof ValueMetaNone );
-    assertEquals( null, testObject.getName() );
+    assertEquals( "", testObject.getName() );
     assertEquals( -1, testObject.getLength() );
     assertEquals( -1, testObject.getPrecision() );
 
@@ -142,7 +142,7 @@ public class ValueMetaFactoryTest {
 
     testObject = ValueMetaFactory.createValueMeta( ValueMetaInterface.TYPE_NUMBER );
     assertTrue( testObject instanceof ValueMetaNumber );
-    assertEquals( null, testObject.getName() );
+    assertEquals( "", testObject.getName() );
     assertEquals( -1, testObject.getLength() );
     assertEquals( -1, testObject.getPrecision() );
 
@@ -160,7 +160,7 @@ public class ValueMetaFactoryTest {
 
     testObject = ValueMetaFactory.createValueMeta( ValueMetaInterface.TYPE_STRING );
     assertTrue( testObject instanceof ValueMetaString );
-    assertEquals( null, testObject.getName() );
+    assertEquals( "", testObject.getName() );
     assertEquals( -1, testObject.getLength() );
     assertEquals( -1, testObject.getPrecision() );
 
@@ -178,7 +178,7 @@ public class ValueMetaFactoryTest {
 
     testObject = ValueMetaFactory.createValueMeta( ValueMetaInterface.TYPE_DATE );
     assertTrue( testObject instanceof ValueMetaDate );
-    assertEquals( null, testObject.getName() );
+    assertEquals( "", testObject.getName() );
     assertEquals( -1, testObject.getLength() );
     assertEquals( -1, testObject.getPrecision() );
 
@@ -196,7 +196,7 @@ public class ValueMetaFactoryTest {
 
     testObject = ValueMetaFactory.createValueMeta( ValueMetaInterface.TYPE_BOOLEAN );
     assertTrue( testObject instanceof ValueMetaBoolean );
-    assertEquals( null, testObject.getName() );
+    assertEquals( "", testObject.getName() );
     assertEquals( -1, testObject.getLength() );
     assertEquals( -1, testObject.getPrecision() );
 
@@ -214,7 +214,7 @@ public class ValueMetaFactoryTest {
 
     testObject = ValueMetaFactory.createValueMeta( ValueMetaInterface.TYPE_INTEGER );
     assertTrue( testObject instanceof ValueMetaInteger );
-    assertEquals( null, testObject.getName() );
+    assertEquals( "", testObject.getName() );
     assertEquals( -1, testObject.getLength() );
     assertEquals( 0, testObject.getPrecision() ); // Special case for Integer
 
@@ -232,7 +232,7 @@ public class ValueMetaFactoryTest {
 
     testObject = ValueMetaFactory.createValueMeta( ValueMetaInterface.TYPE_BIGNUMBER );
     assertTrue( testObject instanceof ValueMetaBigNumber );
-    assertEquals( null, testObject.getName() );
+    assertEquals( "", testObject.getName() );
     assertEquals( -1, testObject.getLength() );
     assertEquals( -1, testObject.getPrecision() );
 
@@ -250,7 +250,7 @@ public class ValueMetaFactoryTest {
 
     testObject = ValueMetaFactory.createValueMeta( ValueMetaInterface.TYPE_SERIALIZABLE );
     assertTrue( testObject instanceof ValueMetaSerializable );
-    assertEquals( null, testObject.getName() );
+    assertEquals( "", testObject.getName() );
     assertEquals( -1, testObject.getLength() );
     assertEquals( -1, testObject.getPrecision() );
 
@@ -268,7 +268,7 @@ public class ValueMetaFactoryTest {
 
     testObject = ValueMetaFactory.createValueMeta( ValueMetaInterface.TYPE_BINARY );
     assertTrue( testObject instanceof ValueMetaBinary );
-    assertEquals( null, testObject.getName() );
+    assertEquals( "", testObject.getName() );
     assertEquals( -1, testObject.getLength() );
     assertEquals( 0, testObject.getPrecision() ); // Special case for Binary
 
@@ -286,7 +286,7 @@ public class ValueMetaFactoryTest {
 
     testObject = ValueMetaFactory.createValueMeta( ValueMetaInterface.TYPE_TIMESTAMP );
     assertTrue( testObject instanceof ValueMetaTimestamp );
-    assertEquals( null, testObject.getName() );
+    assertEquals( "", testObject.getName() );
     assertEquals( -1, testObject.getLength() );
     assertEquals( -1, testObject.getPrecision() );
 
@@ -304,7 +304,7 @@ public class ValueMetaFactoryTest {
 
     testObject = ValueMetaFactory.createValueMeta( ValueMetaInterface.TYPE_INET );
     assertTrue( testObject instanceof ValueMetaInternetAddress );
-    assertEquals( null, testObject.getName() );
+    assertEquals( "", testObject.getName() );
     assertEquals( -1, testObject.getLength() );
     assertEquals( -1, testObject.getPrecision() );
 
