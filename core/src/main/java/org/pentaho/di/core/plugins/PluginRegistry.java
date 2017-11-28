@@ -81,34 +81,25 @@ public class PluginRegistry {
   public static final LogChannelInterface log = new LogChannel( "PluginRegistry", true );
 
   // the list of plugins
-  private final Map<Class<? extends PluginTypeInterface>, Set<PluginInterface>> pluginMap;
+  private final Map<Class<? extends PluginTypeInterface>, Set<PluginInterface>> pluginMap = new HashMap<>();
 
-  private final Map<Class<? extends PluginTypeInterface>, Map<PluginInterface, URLClassLoader>> classLoaderMap;
-  private final Map<URLClassLoader, Set<PluginInterface>> inverseClassLoaderLookup;
-  private final Map<String, URLClassLoader> classLoaderGroupsMap;
-  private final Map<String, URLClassLoader> folderBasedClassLoaderMap;
+  private final Map<Class<? extends PluginTypeInterface>, Map<PluginInterface, URLClassLoader>> classLoaderMap = new HashMap<>();
+  private final Map<URLClassLoader, Set<PluginInterface>> inverseClassLoaderLookup = new HashMap<>();
+  private final Map<String, URLClassLoader> classLoaderGroupsMap = new HashMap<>();
+  private final Map<String, URLClassLoader> folderBasedClassLoaderMap = new HashMap<>();
 
-  private final Map<Class<? extends PluginTypeInterface>, Set<String>> categoryMap;
-  private final Map<PluginInterface, String[]> parentClassloaderPatternMap;
+  private final Map<Class<? extends PluginTypeInterface>, Set<String>> categoryMap = new HashMap<>();
+  private final Map<PluginInterface, String[]> parentClassloaderPatternMap = new HashMap<>();
 
-  private final Map<Class<? extends PluginTypeInterface>, Set<PluginTypeListener>> listeners;
+  private final Map<Class<? extends PluginTypeInterface>, Set<PluginTypeListener>> listeners = new HashMap<>();
 
-  private final ReentrantReadWriteLock lock;
+  private final ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
 
 
   /**
    * Initialize the registry, keep private to keep this a singleton
    */
   private PluginRegistry() {
-    pluginMap = new HashMap<>();
-    classLoaderMap = new HashMap<>();
-    inverseClassLoaderLookup = new HashMap<>();
-    categoryMap = new HashMap<>();
-    classLoaderGroupsMap = new HashMap<>();
-    parentClassloaderPatternMap = new HashMap<>();
-    lock = new ReentrantReadWriteLock();
-    listeners = new HashMap<>();
-    folderBasedClassLoaderMap = new HashMap<>();
   }
 
   /**
@@ -543,7 +534,6 @@ public class PluginRegistry {
    * @throws KettlePluginException
    */
   public static synchronized void init( boolean keepCache ) throws KettlePluginException {
-
     final PluginRegistry registry = getInstance();
 
     log.snap( Metrics.METRIC_PLUGIN_REGISTRY_REGISTER_EXTENSIONS_START );
