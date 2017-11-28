@@ -135,8 +135,12 @@ public class StepInterfaceWebSocketEngineAdapter extends BaseStep {
         public void execute( Message message ) throws MessageEventHandlerExecutionException {
           PDIEvent<RemoteSource, Metrics> data = (PDIEvent<RemoteSource, Metrics>) message;
 
-          StepInterfaceWebSocketEngineAdapter.this.setLinesRead( data.getData().getIn() );
-          StepInterfaceWebSocketEngineAdapter.this.setLinesWritten( data.getData().getOut() );
+          if ( data.getData().getIn() > 0 ) {
+            StepInterfaceWebSocketEngineAdapter.this.setLinesRead( data.getData().getIn() );
+          }
+          if ( data.getData().getOut() > 0 ) {
+            StepInterfaceWebSocketEngineAdapter.this.setLinesWritten( data.getData().getOut() );
+          }
         }
 
         @Override

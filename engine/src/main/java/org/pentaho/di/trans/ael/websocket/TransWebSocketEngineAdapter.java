@@ -53,14 +53,16 @@ import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
-import java.util.Collection;
+import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toMap;
 
@@ -160,7 +162,7 @@ public class TransWebSocketEngineAdapter extends Trans {
     this.executionRequest = new ExecutionRequest( new HashMap<>(), env, transformation, new HashMap<>(), logLevel,
       getActingPrincipal( transMeta ) );
 
-    setSteps( new ArrayList<>( opsToSteps() ) );
+    setSteps( opsToSteps() );
     wireStatusToTransListeners();
 
     subscribeToOpLogging();
@@ -330,7 +332,16 @@ public class TransWebSocketEngineAdapter extends Trans {
 
   }
 
-  private Collection<StepMetaDataCombi> opsToSteps() {
+  @SuppressWarnings( "unchecked" )
+  private List<StepMetaDataCombi> opsToSteps() {
+    return ( (Optional<HashMap<String, Transformation>>)
+      transformation.getConfig( TransMetaConverter.SUB_TRANSFORMATIONS_KEY ) )
+      .orElse( new HashMap<>() )
+      .values().stream().flatMap( t -> opsToSteps( t ).stream() )
+      .collect( Collectors.toCollection( () -> opsToSteps( transformation ) ) );
+  }
+
+  private List<StepMetaDataCombi> opsToSteps( Transformation transformation ) {
     Map<Operation, StepMetaDataCombi> operationToCombi = transformation.getOperations().stream()
       .collect( toMap( Function.identity(),
         op -> {
@@ -348,7 +359,7 @@ public class TransWebSocketEngineAdapter extends Trans {
           combi.stepname = combi.stepMeta.getName();
           return combi;
         } ) );
-    return operationToCombi.values();
+    return new ArrayList<>( operationToCombi.values() );
   }
 
   @Override public void startThreads() throws KettleException {
