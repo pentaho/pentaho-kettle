@@ -3,7 +3,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -285,6 +285,9 @@ public class TransMeta extends AbstractMeta
 
   /** The loop cache. */
   protected Map<String, Boolean> loopCache;
+
+  /** The previous step cache */
+  protected Map<StepMeta, List<StepMeta>> previousStepCache;
 
   /** The log channel interface. */
   protected LogChannelInterface log;
@@ -695,6 +698,7 @@ public class TransMeta extends AbstractMeta
 
     stepsFieldsCache = new HashMap<>();
     loopCache = new HashMap<>();
+    previousStepCache = new HashMap<>();
     transformationType = TransformationType.Normal;
 
     log = LogChannel.GENERAL;
@@ -714,6 +718,7 @@ public class TransMeta extends AbstractMeta
       addStepChangeListener( (StepMetaChangeListenerInterface) iface );
     }
     changed_steps = true;
+    clearCaches();
   }
 
   /**
@@ -737,6 +742,7 @@ public class TransMeta extends AbstractMeta
       addStepChangeListener( index, (StepMetaChangeListenerInterface) iface );
     }
     changed_steps = true;
+    clearCaches();
   }
 
   /**
@@ -749,6 +755,7 @@ public class TransMeta extends AbstractMeta
   public void addTransHop( TransHopMeta hi ) {
     hops.add( hi );
     changed_hops = true;
+    clearCaches();
   }
 
   /**
@@ -778,6 +785,7 @@ public class TransMeta extends AbstractMeta
     if ( iface instanceof StepMetaChangeListenerInterface ) {
       addStepChangeListener( p, (StepMetaChangeListenerInterface) stepMeta.getStepMetaInterface() );
     }
+    clearCaches();
   }
 
   /**
@@ -796,6 +804,7 @@ public class TransMeta extends AbstractMeta
       hops.add( hi );
     }
     changed_hops = true;
+    clearCaches();
   }
 
   /**
@@ -877,6 +886,7 @@ public class TransMeta extends AbstractMeta
     }
 
     changed_steps = true;
+    clearCaches();
   }
 
   /**
@@ -893,6 +903,7 @@ public class TransMeta extends AbstractMeta
 
     hops.remove( i );
     changed_hops = true;
+    clearCaches();
   }
 
   /**
@@ -905,6 +916,7 @@ public class TransMeta extends AbstractMeta
   public void removeTransHop( TransHopMeta hop ) {
     hops.remove( hop );
     changed_hops = true;
+    clearCaches();
   }
 
   /**
@@ -980,6 +992,7 @@ public class TransMeta extends AbstractMeta
     }
     steps.set( i, stepMeta );
     stepMeta.setParentTransMeta( this );
+    clearCaches();
   }
 
   /**
@@ -993,6 +1006,7 @@ public class TransMeta extends AbstractMeta
    */
   public void setTransHop( int i, TransHopMeta hi ) {
     hops.set( i, hi );
+    clearCaches();
   }
 
   /**
@@ -1355,16 +1369,21 @@ public class TransMeta extends AbstractMeta
    * @return The list of the preceding steps
    */
   public List<StepMeta> findPreviousSteps( StepMeta stepMeta, boolean info ) {
-    List<StepMeta> previousSteps = new ArrayList<>();
+    List<StepMeta> previousSteps;
 
-    for ( TransHopMeta hi : hops ) {
-      if ( hi.getToStep() != null && hi.isEnabled() && hi.getToStep().equals( stepMeta ) ) {
-        // Check if this previous step isn't informative (StreamValueLookup)
-        // We don't want fields from this stream to show up!
-        if ( info || !isStepInformative( stepMeta, hi.getFromStep() ) ) {
-          previousSteps.add( hi.getFromStep() );
+    previousSteps = previousStepCache.get( stepMeta );
+    if ( previousSteps == null ) {
+      previousSteps = new ArrayList<>();
+      for ( TransHopMeta hi : hops ) {
+        if ( hi.getToStep() != null && hi.isEnabled() && hi.getToStep().equals( stepMeta ) ) {
+          // Check if this previous step isn't informative (StreamValueLookup)
+          // We don't want fields from this stream to show up!
+          if ( info || !isStepInformative( stepMeta, hi.getFromStep() ) ) {
+            previousSteps.add( hi.getFromStep() );
+          }
         }
       }
+      previousStepCache.put( stepMeta, previousSteps );
     }
     return previousSteps;
   }
@@ -1517,12 +1536,15 @@ public class TransMeta extends AbstractMeta
    * @return An array containing the preceding steps.
    */
   public StepMeta[] getPrevSteps( StepMeta stepMeta ) {
-    List<StepMeta> prevSteps = new ArrayList<>();
-    for ( int i = 0; i < nrTransHops(); i++ ) { // Look at all the hops;
-
-      TransHopMeta hopMeta = getTransHop( i );
-      if ( hopMeta.isEnabled() && hopMeta.getToStep().equals( stepMeta ) ) {
-        prevSteps.add( hopMeta.getFromStep() );
+    List<StepMeta> prevSteps;
+    prevSteps = previousStepCache.get(  stepMeta );
+    if ( prevSteps == null ) {
+      prevSteps = new ArrayList<>();
+      for ( int i = 0; i < nrTransHops(); i++ ) { // Look at all the hops;
+        TransHopMeta hopMeta = getTransHop( i );
+        if ( hopMeta.isEnabled() && hopMeta.getToStep().equals( stepMeta ) ) {
+          prevSteps.add( hopMeta.getFromStep() );
+        }
       }
     }
 
@@ -1729,7 +1751,6 @@ public class TransMeta extends AbstractMeta
    *           the kettle step exception
    */
   public RowMetaInterface getStepFields( StepMeta stepMeta, ProgressMonitorListener monitor ) throws KettleStepException {
-    clearStepFieldsCachce();
     setRepositoryOnMappingSteps();
     return getStepFields( stepMeta, null, monitor );
   }
@@ -1781,13 +1802,15 @@ public class TransMeta extends AbstractMeta
 
     // Resume the regular program...
 
+    List<StepMeta> prevSteps = findPreviousSteps( stepMeta );
+    int nrPrevious = prevSteps.size();
+
     if ( log.isDebug() ) {
       log.logDebug( BaseMessages.getString( PKG, "TransMeta.Log.FromStepALookingAtPreviousStep", stepMeta.getName(),
-          String.valueOf( findNrPrevSteps( stepMeta ) ) ) );
+          String.valueOf( nrPrevious ) ) );
     }
-    int nrPrevious = findNrPrevSteps( stepMeta );
-    for ( int i = 0; i < nrPrevious; i++ ) {
-      StepMeta prevStepMeta = findPrevStep( stepMeta, i );
+    for ( int i = 0; i < prevSteps.size(); i++ ) {
+      StepMeta prevStepMeta = prevSteps.get( i );
 
       if ( monitor != null ) {
         monitor.subTask(
@@ -1850,7 +1873,6 @@ public class TransMeta extends AbstractMeta
    *           the kettle step exception
    */
   public RowMetaInterface getPrevStepFields( String stepname ) throws KettleStepException {
-    clearStepFieldsCachce();
     return getPrevStepFields( findStep( stepname ) );
   }
 
@@ -1864,7 +1886,6 @@ public class TransMeta extends AbstractMeta
    *           the kettle step exception
    */
   public RowMetaInterface getPrevStepFields( StepMeta stepMeta ) throws KettleStepException {
-    clearStepFieldsCachce();
     return getPrevStepFields( stepMeta, null );
   }
 
@@ -1881,19 +1902,20 @@ public class TransMeta extends AbstractMeta
    */
   public RowMetaInterface getPrevStepFields( StepMeta stepMeta, ProgressMonitorListener monitor ) throws KettleStepException {
     clearStepFieldsCachce();
-
     RowMetaInterface row = new RowMeta();
 
     if ( stepMeta == null ) {
       return null;
     }
-
+    List<StepMeta> prevSteps = findPreviousSteps( stepMeta );
+    int nrPrevSteps = prevSteps.size();
     if ( log.isDebug() ) {
       log.logDebug( BaseMessages.getString( PKG, "TransMeta.Log.FromStepALookingAtPreviousStep", stepMeta.getName(),
-          String.valueOf( findNrPrevSteps( stepMeta ) ) ) );
+          String.valueOf( nrPrevSteps ) ) );
     }
-    for ( int i = 0; i < findNrPrevSteps( stepMeta ); i++ ) {
-      StepMeta prevStepMeta = findPrevStep( stepMeta, i );
+    StepMeta prevStepMeta = null;
+    for ( int i = 0; i < nrPrevSteps; i++ ) {
+      prevStepMeta = prevSteps.get( i );
 
       if ( monitor != null ) {
         monitor.subTask(
@@ -3695,7 +3717,6 @@ public class TransMeta extends AbstractMeta
    * @return true if a loop has been found, false if no loop is found.
    */
   public boolean hasLoop( StepMeta stepMeta ) {
-    clearLoopCache();
     return hasLoop( stepMeta, null, true ) || hasLoop( stepMeta, null, false );
   }
 
@@ -3722,10 +3743,10 @@ public class TransMeta extends AbstractMeta
     }
 
     boolean hasLoop = false;
-
-    int nr = findNrPrevSteps( stepMeta, info );
+    List<StepMeta> prevSteps = findPreviousSteps( stepMeta, info );
+    int nr = prevSteps.size();
     for ( int i = 0; i < nr && !hasLoop; i++ ) {
-      StepMeta prevStepMeta = findPrevStep( stepMeta, i, info );
+      StepMeta prevStepMeta = prevSteps.get( i );
       if ( prevStepMeta != null ) {
         if ( prevStepMeta.equals( stepMeta ) ) {
           hasLoop = true;
@@ -5530,12 +5551,13 @@ public class TransMeta extends AbstractMeta
    *           in case we detect a row mixing violation
    */
   public void checkRowMixingStatically( StepMeta stepMeta, ProgressMonitorListener monitor ) throws KettleRowException {
-    int nrPrevious = findNrPrevSteps( stepMeta );
+    List<StepMeta> prevSteps = findPreviousSteps( stepMeta );
+    int nrPrevious = prevSteps.size();
     if ( nrPrevious > 1 ) {
       RowMetaInterface referenceRow = null;
       // See if all previous steps send out the same rows...
       for ( int i = 0; i < nrPrevious; i++ ) {
-        StepMeta previousStep = findPrevStep( stepMeta, i );
+        StepMeta previousStep = prevSteps.get( i );
         try {
           RowMetaInterface row = getStepFields( previousStep, monitor ); // Throws KettleStepException
           if ( referenceRow == null ) {
@@ -5967,6 +5989,7 @@ public class TransMeta extends AbstractMeta
   public void clearCaches() {
     clearStepFieldsCachce();
     clearLoopCache();
+    clearPreviousStepCache();
   }
 
   /**
@@ -5981,6 +6004,10 @@ public class TransMeta extends AbstractMeta
    */
   private void clearLoopCache() {
     loopCache.clear();
+  }
+
+  private void clearPreviousStepCache() {
+    previousStepCache.clear();
   }
 
   /**
