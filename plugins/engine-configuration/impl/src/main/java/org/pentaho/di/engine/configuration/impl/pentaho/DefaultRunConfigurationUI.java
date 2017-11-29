@@ -71,6 +71,11 @@ public class DefaultRunConfigurationUI implements RunConfigurationUI {
   @Override public void attach( RunConfigurationDialog runConfigurationDialog ) {
     this.runConfigurationDialog = runConfigurationDialog;
 
+    FormLayout gformLayout = new FormLayout();
+    gformLayout.marginWidth = 10;
+    gformLayout.marginHeight = 10;
+    runConfigurationDialog.getGroup().setLayout( gformLayout );
+
     Composite wTarget = new Composite( runConfigurationDialog.getGroup(), SWT.NONE );
     wTarget.setLayout( new FormLayout() );
     props.setLook( wTarget );
