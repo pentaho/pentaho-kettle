@@ -24,7 +24,6 @@
 
 package org.pentaho.di.engine.configuration.impl.spark;
 
-import org.osgi.service.cm.Configuration;
 import org.osgi.service.cm.ConfigurationAdmin;
 import org.pentaho.capabilities.api.ICapability;
 import org.pentaho.capabilities.api.ICapabilityManager;
@@ -37,22 +36,17 @@ import org.pentaho.di.engine.configuration.api.RunConfiguration;
 import org.pentaho.di.engine.configuration.api.RunConfigurationExecutor;
 import org.pentaho.di.repository.Repository;
 
-import java.io.IOException;
 import java.net.URI;
-import java.util.Dictionary;
 
 /**
  * Created by bmorrise on 3/17/17.
  */
 public class SparkRunConfigurationExecutor implements RunConfigurationExecutor {
 
-  public static String PENTAHO_SERVER_CAPABILITY_ID = "pentaho-server";
-  public static String CONFIG_KEY = "org.apache.aries.rsa.discovery.zookeeper";
   public static String JAAS_CAPABILITY_ID = "pentaho-kerberos-jaas";
   public static String AEL_SECURITY_CAPABILITY_ID = "ael-security";
   public static String DEFAULT_PROTOCOL = "http";
   public static String DEFAULT_HOST = "127.0.0.1";
-  public static String DEFAULT_ZOOKEEPER_PORT = "2181";
   public static String DEFAULT_WEBSOCKET_PORT = "53000";
 
   private ConfigurationAdmin configurationAdmin;
@@ -93,41 +87,10 @@ public class SparkRunConfigurationExecutor implements RunConfigurationExecutor {
     String host = uri.getHost();
     String port = uri.getPort() == -1 ? null : String.valueOf( uri.getPort() );
 
-    //default is the websocket daemon (version 2)
-    String version = variableSpace.getVariable( "KETTLE_AEL_PDI_DAEMON_VERSION", "2.0" );
-    boolean version2 = Const.toDouble( version, 1 ) >= 2;
-    // Check to verify this is running on the server or not
-    boolean serverMode = capabilityManager.getCapabilityById( PENTAHO_SERVER_CAPABILITY_ID ) != null;
-    if ( version2 ) {
-      // Variables for Websocket spark engine version
-      variableSpace.setVariable( "engine.protocol", Const.NVL( protocol, DEFAULT_PROTOCOL ) );
-      variableSpace.setVariable( "engine.host", Const.NVL( host, DEFAULT_HOST ) );
-      variableSpace.setVariable( "engine.port", Const.NVL( port, DEFAULT_WEBSOCKET_PORT ) );
-    }
-
-    if ( !serverMode ) {
-      try {
-        // Set the configuration properties for zookeepr
-        Configuration zookeeperConfiguration = configurationAdmin.getConfiguration( CONFIG_KEY );
-        Dictionary<String, Object> properties = zookeeperConfiguration.getProperties();
-        if ( properties != null ) {
-          if ( !version2 ) {
-            properties.put( "zookeeper.host", Const.NVL( host, DEFAULT_HOST ) );
-            properties.put( "zookeeper.port", Const.NVL( port, DEFAULT_ZOOKEEPER_PORT ) );
-            //just remove version2 variables values
-            variableSpace.setVariable( "engine.protocol", null );
-            variableSpace.setVariable( "engine.host", null );
-            variableSpace.setVariable( "engine.port", null );
-          } else {
-            properties.remove( "zookeeper.host" );
-            properties.remove( "zookeeper.port" );
-          }
-          zookeeperConfiguration.update( properties );
-        }
-      } catch ( IOException ioe ) {
-        System.out.println( "Error occurred accessing configuration" );
-      }
-    }
+    // Variables for Websocket spark engine version
+    variableSpace.setVariable( "engine.protocol", Const.NVL( protocol, DEFAULT_PROTOCOL ) );
+    variableSpace.setVariable( "engine.host", Const.NVL( host, DEFAULT_HOST ) );
+    variableSpace.setVariable( "engine.port", Const.NVL( port, DEFAULT_WEBSOCKET_PORT ) );
 
     // Sets the appropriate variables on the transformation for the spark engine
     variableSpace.setVariable( "engine", "remote" );
