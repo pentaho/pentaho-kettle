@@ -3,7 +3,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -3241,7 +3241,7 @@ public class Const {
    * @return cleaned string
    */
   public static String removeCR( String in ) {
-    return removeChar( in, '\n' );
+    return removeChar( in, '\r' );
   } // removeCR
 
   /**
@@ -3252,7 +3252,7 @@ public class Const {
    * @return cleaned string
    */
   public static String removeLF( String in ) {
-    return removeChar( in, '\r' );
+    return removeChar( in, '\n' );
   } // removeCRLF
 
   /**
