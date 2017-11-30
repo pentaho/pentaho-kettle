@@ -200,11 +200,6 @@ public class RunConfigurationDialog extends Dialog
     gOptions.setText( BaseMessages.getString( PKG, "RunConfigurationDialog.Group.Settings" ) );
     props.setLook( gOptions );
 
-    FormLayout gformLayout = new FormLayout();
-    gformLayout.marginWidth = 10;
-    gformLayout.marginHeight = 10;
-    gOptions.setLayout( gformLayout );
-
     FormData fdOptions = new FormData();
     fdOptions.top = new FormAttachment( wEngine, 15 );
     fdOptions.right = new FormAttachment( 100 );
