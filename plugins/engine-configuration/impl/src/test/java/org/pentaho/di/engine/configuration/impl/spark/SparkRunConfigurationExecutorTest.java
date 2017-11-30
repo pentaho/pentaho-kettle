@@ -2,7 +2,7 @@
  * *****************************************************************************
  *
  *  Pentaho Data Integration
- *
+ s *
  *  Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
  *
  *  *******************************************************************************
@@ -67,8 +67,6 @@ public class SparkRunConfigurationExecutorTest {
     Configuration configuration = mock( Configuration.class );
     ConfigurationAdmin configurationAdmin = mock( ConfigurationAdmin.class );
 
-    doReturn( configuration ).when( configurationAdmin ).getConfiguration( SparkRunConfigurationExecutor.CONFIG_KEY );
-
     doReturn( properties ).when( configuration ).getProperties();
 
     sparkRunConfigurationExecutor = new SparkRunConfigurationExecutor( configurationAdmin );
@@ -80,57 +78,11 @@ public class SparkRunConfigurationExecutorTest {
   }
 
   @Test
-  public void testExecuteRSADaemon() {
-    SparkRunConfiguration sparkRunConfiguration = new SparkRunConfiguration();
-    sparkRunConfiguration.setName( "Spark Configuration" );
-    sparkRunConfiguration.setSchema( "http://" );
-    sparkRunConfiguration.setUrl( "127.0.0.2:8121" );
-
-    doReturn( "1.0" ).when( variableSpace ).getVariable( "KETTLE_AEL_PDI_DAEMON_VERSION", "2.0" );
-
-    TransExecutionConfiguration transExecutionConfiguration = new TransExecutionConfiguration();
-
-    sparkRunConfigurationExecutor
-      .execute( sparkRunConfiguration, transExecutionConfiguration, abstractMeta, variableSpace, null );
-
-    verify( variableSpace ).setVariable( "engine", "remote" );
-    verify( variableSpace ).setVariable( "engine.remote", "spark" );
-    verify( properties ).put( "zookeeper.host", "127.0.0.2" );
-    verify( properties ).put( "zookeeper.port", "8121" );
-    verify( variableSpace ).setVariable( "engine.host", null );
-    verify( variableSpace ).setVariable( "engine.port", null );
-  }
-
-  @Test
-  public void testExecuteNoPortRSADaemon() {
-    SparkRunConfiguration sparkRunConfiguration = new SparkRunConfiguration();
-    sparkRunConfiguration.setName( "Spark Configuration" );
-    sparkRunConfiguration.setSchema( "zk://" );
-    sparkRunConfiguration.setUrl( "127.0.0.1:2181" );
-
-    TransExecutionConfiguration transExecutionConfiguration = new TransExecutionConfiguration();
-
-    doReturn( "1.0" ).when( variableSpace ).getVariable( "KETTLE_AEL_PDI_DAEMON_VERSION", "2.0" );
-
-    sparkRunConfigurationExecutor
-      .execute( sparkRunConfiguration, transExecutionConfiguration, abstractMeta, variableSpace, null );
-
-    verify( variableSpace ).setVariable( "engine", "remote" );
-    verify( variableSpace ).setVariable( "engine.remote", "spark" );
-    verify( properties ).put( "zookeeper.host", SparkRunConfigurationExecutor.DEFAULT_HOST );
-    verify( properties ).put( "zookeeper.port", SparkRunConfigurationExecutor.DEFAULT_ZOOKEEPER_PORT );
-    verify( variableSpace ).setVariable( "engine.host", null );
-    verify( variableSpace ).setVariable( "engine.port", null );
-  }
-
-  @Test
   public void testWebSocketVersionExecute() {
     SparkRunConfiguration sparkRunConfiguration = new SparkRunConfiguration();
     sparkRunConfiguration.setName( "Spark Configuration" );
     sparkRunConfiguration.setSchema( "http://" );
     sparkRunConfiguration.setUrl( "127.0.0.2:8121" );
-    doReturn( "2.0" ).when( variableSpace ).getVariable( "KETTLE_AEL_PDI_DAEMON_VERSION", "2.0" );
-
 
     TransExecutionConfiguration transExecutionConfiguration = new TransExecutionConfiguration();
 
@@ -139,8 +91,6 @@ public class SparkRunConfigurationExecutorTest {
 
     verify( variableSpace ).setVariable( "engine", "remote" );
     verify( variableSpace ).setVariable( "engine.remote", "spark" );
-    verify( properties ).remove( "zookeeper.host" );
-    verify( properties ).remove( "zookeeper.port" );
     verify( variableSpace ).setVariable( "engine.host", "127.0.0.2" );
     verify( variableSpace ).setVariable( "engine.port", "8121" );
   }
@@ -158,8 +108,6 @@ public class SparkRunConfigurationExecutorTest {
 
     verify( variableSpace ).setVariable( "engine", "remote" );
     verify( variableSpace ).setVariable( "engine.remote", "spark" );
-    verify( properties ).remove( "zookeeper.host" );
-    verify( properties ).remove( "zookeeper.port" );
     verify( variableSpace ).setVariable( "engine.protocol", SparkRunConfigurationExecutor.DEFAULT_PROTOCOL );
     verify( variableSpace ).setVariable( "engine.host", SparkRunConfigurationExecutor.DEFAULT_HOST );
     verify( variableSpace ).setVariable( "engine.port", SparkRunConfigurationExecutor.DEFAULT_WEBSOCKET_PORT );
@@ -171,8 +119,6 @@ public class SparkRunConfigurationExecutorTest {
     sparkRunConfiguration.setName( "Spark Configuration" );
     sparkRunConfiguration.setSchema( "https://" );
     sparkRunConfiguration.setUrl( "127.0.0.2:8121" );
-    doReturn( "2.0" ).when( variableSpace ).getVariable( "KETTLE_AEL_PDI_DAEMON_VERSION", "2.0" );
-
 
     TransExecutionConfiguration transExecutionConfiguration = new TransExecutionConfiguration();
 
@@ -190,7 +136,6 @@ public class SparkRunConfigurationExecutorTest {
     sparkRunConfiguration.setName( "Spark Configuration" );
     sparkRunConfiguration.setSchema( "http://" );
     sparkRunConfiguration.setUrl( "  127.0.0.2:8121  " );
-    doReturn( "2.0" ).when( variableSpace ).getVariable( "KETTLE_AEL_PDI_DAEMON_VERSION", "2.0" );
 
 
     TransExecutionConfiguration transExecutionConfiguration = new TransExecutionConfiguration();
