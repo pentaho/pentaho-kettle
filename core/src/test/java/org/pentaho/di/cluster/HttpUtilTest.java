@@ -78,6 +78,7 @@ public class HttpUtilTest {
    *
    * @throws IOException
    */
+  @Test
   public void testEncodeBase64ZippedString() throws IOException {
     String enc64 = HttpUtil.encodeBase64ZippedString( STANDART );
     String decoded = HttpUtil.decodeBase64ZippedString( enc64 );
