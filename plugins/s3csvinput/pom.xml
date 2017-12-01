@@ -35,7 +35,7 @@
     <jface.version>3.3.0-I20070606-0010</jface.version>
     <junit.version>4.7</junit.version>
     <jets3t.version>0.9.3</jets3t.version>
-    <kettle.version>8.1-SNAPSHOT</kettle.version>
+    <pdi.version>8.1-SNAPSHOT</pdi.version>
   </properties>
 
   <dependencyManagement>
@@ -43,19 +43,19 @@
       <dependency>
         <groupId>pentaho-kettle</groupId>
         <artifactId>kettle-engine</artifactId>
-        <version>${kettle.version}</version>
+        <version>${pdi.version}</version>
         <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>pentaho-kettle</groupId>
         <artifactId>kettle-core</artifactId>
-        <version>${kettle.version}</version>
+        <version>${pdi.version}</version>
         <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>pentaho-kettle</groupId>
         <artifactId>kettle-ui-swt</artifactId>
-        <version>${kettle.version}</version>
+        <version>${pdi.version}</version>
         <scope>provided</scope>
         <exclusions>
           <exclusion>
@@ -67,7 +67,7 @@
       <dependency>
         <groupId>pentaho</groupId>
         <artifactId>metastore</artifactId>
-        <version>${kettle.version}</version>
+        <version>${pdi.version}</version>
         <scope>provided</scope>
         <exclusions>
           <exclusion>
@@ -123,7 +123,7 @@
       <dependency>
         <groupId>pentaho-kettle</groupId>
         <artifactId>kettle-engine</artifactId>
-        <version>${kettle.version}</version>
+        <version>${pdi.version}</version>
         <classifier>tests</classifier>
         <scope>test</scope>
         </dependency>

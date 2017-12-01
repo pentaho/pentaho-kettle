@@ -15,7 +15,7 @@
   <name>PDI Json Plugin Core</name>
 
   <properties>
-    <pentaho-kettle.version>8.1-SNAPSHOT</pentaho-kettle.version>
+    <pdi.version>8.1-SNAPSHOT</pdi.version>
     <commons.io.version>1.4</commons.io.version>
     <commons-vfs2.version>2.1-20150824</commons-vfs2.version>
     <commons-codec.version>1.9</commons-codec.version>
@@ -34,7 +34,7 @@
     <dependency>
       <groupId>pentaho-kettle</groupId>
       <artifactId>kettle-engine</artifactId>
-      <version>${pentaho-kettle.version}</version>
+      <version>${pdi.version}</version>
       <exclusions>
         <exclusion>
           <groupId>*</groupId>
@@ -45,7 +45,7 @@
     <dependency>
       <groupId>pentaho-kettle</groupId>
       <artifactId>kettle-core</artifactId>
-      <version>${pentaho-kettle.version}</version>
+      <version>${pdi.version}</version>
       <exclusions>
         <exclusion>
           <groupId>*</groupId>
@@ -56,7 +56,7 @@
     <dependency>
       <groupId>pentaho-kettle</groupId>
       <artifactId>kettle-ui-swt</artifactId>
-      <version>${pentaho-kettle.version}</version>
+      <version>${pdi.version}</version>
       <exclusions>
         <exclusion>
           <groupId>*</groupId>
@@ -186,7 +186,7 @@
     <dependency>
       <groupId>pentaho-kettle</groupId>
       <artifactId>kettle-engine</artifactId>
-      <version>${pentaho-kettle.version}</version>
+      <version>${pdi.version}</version>
       <classifier>tests</classifier>
       <scope>test</scope>
     </dependency>

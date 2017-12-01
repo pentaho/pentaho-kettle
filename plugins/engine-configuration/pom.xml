@@ -16,7 +16,7 @@
   <name>PDI Engine Configuration Plugin</name>
 
   <properties>
-    <kettle.version>8.1-SNAPSHOT</kettle.version>
+    <pdi.version>8.1-SNAPSHOT</pdi.version>
   </properties>
 
   <modules>

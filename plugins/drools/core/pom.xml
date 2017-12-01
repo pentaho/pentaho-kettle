@@ -18,7 +18,7 @@
     <timestamp>${maven.build.timestamp}</timestamp>
     <maven.build.timestamp.format>yyyy/MM/dd hh\:mm</maven.build.timestamp.format>
 
-    <kettle.version>8.1-SNAPSHOT</kettle.version>
+    <pdi.version>8.1-SNAPSHOT</pdi.version>
     <drools.version>6.4.0.Final</drools.version>
     <xstream.version>1.4.10</xstream.version>
     <mvel2.version>2.2.8.Final</mvel2.version>
@@ -45,19 +45,19 @@
     <dependency>
       <groupId>pentaho-kettle</groupId>
       <artifactId>kettle-core</artifactId>
-      <version>${kettle.version}</version>
+      <version>${pdi.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>pentaho-kettle</groupId>
       <artifactId>kettle-engine</artifactId>
-      <version>${kettle.version}</version>
+      <version>${pdi.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>pentaho-kettle</groupId>
       <artifactId>kettle-ui-swt</artifactId>
-      <version>${kettle.version}</version>
+      <version>${pdi.version}</version>
       <scope>provided</scope>
     </dependency>
 

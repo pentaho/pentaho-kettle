@@ -19,31 +19,31 @@
     <dependency>
       <groupId>pentaho-kettle</groupId>
       <artifactId>kettle-core</artifactId>
-      <version>${kettle.version}</version>
+      <version>${pdi.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>pentaho-kettle</groupId>
       <artifactId>kettle-engine</artifactId>
-      <version>${kettle.version}</version>
+      <version>${pdi.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>pentaho-kettle</groupId>
       <artifactId>kettle-ui-swt</artifactId>
-      <version>${kettle.version}</version>
+      <version>${pdi.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.pentaho</groupId>
       <artifactId>pdi-engine-api</artifactId>
-      <version>${kettle.version}</version>
+      <version>${pdi.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.pentaho.di.plugins</groupId>
       <artifactId>pdi-engine-configuration-impl</artifactId>
-      <version>${kettle.version}</version>
+      <version>${pdi.version}</version>
       <scope>provided</scope>
     </dependency>
   </dependencies>

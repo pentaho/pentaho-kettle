@@ -16,7 +16,7 @@
 
   <properties>
     <dependency.javax.servlet-api.version>3.0.1</dependency.javax.servlet-api.version>
-    <dependency.pentaho-kettle.version>8.1-SNAPSHOT</dependency.pentaho-kettle.version>
+    <pdi.version>8.1-SNAPSHOT</pdi.version>
     <build.revision>${project.version}</build.revision>
     <timestamp>${maven.build.timestamp}</timestamp>
     <build.description>${project.description}</build.description>
@@ -27,17 +27,17 @@
     <dependency>
       <groupId>pentaho-kettle</groupId>
       <artifactId>kettle-engine</artifactId>
-      <version>${dependency.pentaho-kettle.version}</version>
+      <version>${pdi.version}</version>
     </dependency>
     <dependency>
       <groupId>pentaho-kettle</groupId>
       <artifactId>kettle-core</artifactId>
-      <version>${dependency.pentaho-kettle.version}</version>
+      <version>${pdi.version}</version>
     </dependency>
     <dependency>
       <groupId>pentaho-kettle</groupId>
       <artifactId>kettle-ui-swt</artifactId>
-      <version>${dependency.pentaho-kettle.version}</version>
+      <version>${pdi.version}</version>
     </dependency>
     <dependency>
       <groupId>org.eclipse.swt</groupId>
@@ -63,7 +63,7 @@
       <groupId>pentaho-kettle</groupId>
       <artifactId>kettle-engine</artifactId>
       <classifier>tests</classifier>
-      <version>${dependency.pentaho-kettle.version}</version>
+      <version>${pdi.version}</version>
     </dependency>
     <dependency>
       <groupId>javax.servlet</groupId>

@@ -13,7 +13,7 @@
   <name>PDI Core Plugins Impl</name>
 
   <properties>
-    <kettle.version>8.1-SNAPSHOT</kettle.version>
+    <pdi.version>8.1-SNAPSHOT</pdi.version>
     <mockito-core.version>1.10.19</mockito-core.version>
   </properties>
 
@@ -21,19 +21,19 @@
     <dependency>
       <groupId>pentaho-kettle</groupId>
       <artifactId>kettle-core</artifactId>
-      <version>${kettle.version}</version>
+      <version>${pdi.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>pentaho-kettle</groupId>
       <artifactId>kettle-engine</artifactId>
-      <version>${kettle.version}</version>
+      <version>${pdi.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>pentaho-kettle</groupId>
       <artifactId>kettle-ui-swt</artifactId>
-      <version>${kettle.version}</version>
+      <version>${pdi.version}</version>
       <scope>provided</scope>
     </dependency>
 
@@ -60,7 +60,7 @@
     <dependency>
       <groupId>pentaho-kettle</groupId>
       <artifactId>kettle-engine</artifactId>
-      <version>${kettle.version}</version>
+      <version>${pdi.version}</version>
       <classifier>tests</classifier>
       <scope>test</scope>
     </dependency>

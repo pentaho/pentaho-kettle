@@ -36,7 +36,7 @@
     <dependency>
       <groupId>pentaho</groupId>
       <artifactId>pentaho-versionchecker</artifactId>
-      <version>${kettle.version}</version>
+      <version>${pdi.version}</version>
     </dependency>
     <dependency>
       <groupId>commons-codec</groupId>

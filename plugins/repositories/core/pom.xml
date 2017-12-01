@@ -16,7 +16,7 @@
   </parent>
 
   <properties>
-    <pentaho-kettle.version>8.1-SNAPSHOT</pentaho-kettle.version>
+    <pdi.version>8.1-SNAPSHOT</pdi.version>
     <fasterxml.jackson.version>2.5.4</fasterxml.jackson.version>
     <javax.ws.rs-api.version>2.0</javax.ws.rs-api.version>
     <guava.version>17.0</guava.version>
@@ -127,25 +127,25 @@
     <dependency>
       <groupId>pentaho-kettle</groupId>
       <artifactId>kettle-engine</artifactId>
-      <version>${pentaho-kettle.version}</version>
+      <version>${pdi.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>pentaho-kettle</groupId>
       <artifactId>kettle-core</artifactId>
-      <version>${pentaho-kettle.version}</version>
+      <version>${pdi.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>pentaho-kettle</groupId>
       <artifactId>kettle-ui-swt</artifactId>
-      <version>${pentaho-kettle.version}</version>
+      <version>${pdi.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>pentaho</groupId>
       <artifactId>metastore</artifactId>
-      <version>${pentaho-kettle.version}</version>
+      <version>${pdi.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
@@ -223,7 +223,7 @@
     <dependency>
       <groupId>pentaho</groupId>
       <artifactId>pentaho-vfs-browser</artifactId>
-      <version>${pentaho-kettle.version}</version>
+      <version>${pdi.version}</version>
       <scope>test</scope>
     </dependency>
     <dependency>

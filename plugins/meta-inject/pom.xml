@@ -18,7 +18,7 @@
   <url>http://www.pentaho.com</url>
 
   <properties>
-    <kettle.version>8.1-SNAPSHOT</kettle.version>
+    <pdi.version>8.1-SNAPSHOT</pdi.version>
     <servlet-api.version>2.3</servlet-api.version>
     <mockito.version>1.9.5</mockito.version>
     <guava.version>17.0</guava.version>
@@ -38,19 +38,19 @@
     <dependency>
       <groupId>pentaho-kettle</groupId>
       <artifactId>kettle-core</artifactId>
-      <version>${kettle.version}</version>
+      <version>${pdi.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>pentaho-kettle</groupId>
       <artifactId>kettle-engine</artifactId>
-      <version>${kettle.version}</version>
+      <version>${pdi.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>pentaho-kettle</groupId>
       <artifactId>kettle-ui-swt</artifactId>
-      <version>${kettle.version}</version>
+      <version>${pdi.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
