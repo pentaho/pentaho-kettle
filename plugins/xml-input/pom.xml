@@ -34,7 +34,7 @@
   <properties>
     <org.eclipse.swt.version>4.6</org.eclipse.swt.version>
     <junit.version>4.4</junit.version>
-    <kettle.version>${project.version}</kettle.version>
+    <pdi.version>${project.version}</pdi.version>
   </properties>
 
   <dependencyManagement>
@@ -42,19 +42,19 @@
       <dependency>
         <groupId>pentaho-kettle</groupId>
         <artifactId>kettle-engine</artifactId>
-        <version>${kettle.version}</version>
+        <version>${pdi.version}</version>
         <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>pentaho-kettle</groupId>
         <artifactId>kettle-core</artifactId>
-        <version>${kettle.version}</version>
+        <version>${pdi.version}</version>
         <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>pentaho-kettle</groupId>
         <artifactId>kettle-ui-swt</artifactId>
-        <version>${kettle.version}</version>
+        <version>${pdi.version}</version>
         <scope>provided</scope>
         <exclusions>
           <exclusion>
