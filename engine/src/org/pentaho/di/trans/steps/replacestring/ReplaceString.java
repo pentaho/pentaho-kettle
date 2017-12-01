@@ -38,6 +38,7 @@ import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
+import com.google.common.annotations.VisibleForTesting;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -79,7 +80,6 @@ public class ReplaceString extends BaseStep implements StepInterface {
       return matcher.replaceAll( replaceByString );
     }
   }
-
 
   @VisibleForTesting
   static Pattern buildPattern( boolean literalParsing, boolean caseSensitive, boolean wholeWord,
