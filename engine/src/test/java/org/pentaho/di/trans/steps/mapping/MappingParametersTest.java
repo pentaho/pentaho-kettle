@@ -23,8 +23,6 @@
 package org.pentaho.di.trans.steps.mapping;
 
 import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import org.junit.After;
@@ -36,6 +34,7 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.Repository;
+import org.pentaho.di.trans.StepWithMappingMeta;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.steps.StepMockUtil;
@@ -61,23 +60,6 @@ public class MappingParametersTest {
   }
 
   /**
-   * PDI-3064 Test copy variables from actually copy variables from parent to child transformation
-   * 
-   * @throws Exception
-   */
-  @Test
-  public void testInheritAllParametersCopy() throws Exception {
-    MappingParameters param = new MappingParameters();
-    step.setVariable( "a", "1" );
-    step.setVariable( "b", "2" );
-    param.setInheritingAllVariables( true );
-    when( transMeta.listParameters() ).thenReturn( new String[] { "a" } );
-    step.setMappingParameters( trans, transMeta, param );
-    verify( trans ).setVariable( "b", "2" );
-    verify( trans ).setParameterValue( "a", "1" );
-  }
-
-  /**
    * PDI-3064 Test parent transformation overrides parameters for child transformation.
    * 
    * @throws KettleException
@@ -88,8 +70,8 @@ public class MappingParametersTest {
     Mockito.when( param.getVariable() ).thenReturn( new String[] { "a", "b" } );
     Mockito.when( param.getInputField() ).thenReturn( new String[] { "11", "12" } );
     when( transMeta.listParameters() ).thenReturn( new String[] { "a" } );
-    step.setMappingParameters( trans, transMeta, param );
-
+    StepWithMappingMeta
+      .activateParams( trans, trans, step, transMeta.listParameters(), param.getVariable(), param.getInputField() );
     // parameters was overridden 2 times
     Mockito.verify( trans, Mockito.times( 1 ) ).setParameterValue( Mockito.anyString(), Mockito.anyString() );
     Mockito.verify( trans, Mockito.times( 1 ) ).setVariable( Mockito.anyString(), Mockito.anyString() );
@@ -104,17 +86,6 @@ public class MappingParametersTest {
   public void testDoNotOverrideMappingParametes() throws KettleException {
     prepareMappingParametesActions( false );
     Mockito.verify( transMeta, never() ).copyVariablesFrom( Mockito.any( VariableSpace.class ) );
-  }
-
-  /**
-   * Regression of PDI-3064 : keep correct 'inherit all variables' settings. This is a case for 'do override'
-   * 
-   * @throws KettleException
-   */
-  @Test
-  public void testDoOverrideMappingParametes() throws KettleException {
-    prepareMappingParametesActions( true );
-    Mockito.verify( transMeta, times( 1 ) ).copyVariablesFrom( Mockito.any( VariableSpace.class ) );
   }
 
   private void prepareMappingParametesActions( boolean override ) throws KettleException {

@@ -24,9 +24,11 @@ package org.pentaho.di.trans.steps.transexecutor;
 
 import java.util.Arrays;
 import org.junit.After;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.mockito.Mockito;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.QueueRowSet;
 import org.pentaho.di.core.Result;
@@ -35,6 +37,7 @@ import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.RowSet;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
+import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.logging.LogLevel;
 import org.pentaho.di.core.row.RowMeta;
@@ -396,5 +399,40 @@ public class TransExecutorUnitTest {
     when( stepMeta.getName() ).thenReturn( stepName );
     doReturn( rowSet ).when( executor ).findOutputRowSet( stepName );
     return stepMeta;
+  }
+
+  @Test
+  //PDI-16066
+  public void testExecuteTrans() throws KettleException {
+
+    String childParam = "childParam";
+    String childValue = "childValue";
+    String paramOverwrite = "paramOverwrite";
+    String parentValue = "parentValue";
+
+    meta.getParameters().setVariable( new String[]{ childParam, paramOverwrite } );
+    meta.getParameters().setInput( new String[]{ childValue, childValue } );
+    Trans parent = new Trans();
+    Mockito.when( executor.getTrans() ).thenReturn( parent );
+
+    executor.init( meta, data );
+
+    executor.setVariable( paramOverwrite, parentValue );
+
+    Mockito.when( executor.getLogLevel() ).thenReturn( LogLevel.NOTHING );
+    parent.setLog( new LogChannel( this ) );
+    Mockito.doCallRealMethod().when( executor ).createInternalTrans( );
+    Mockito.when(  executor.getData().getExecutorTransMeta().listVariables() ).thenReturn( new String[0] );
+    Mockito.when(  executor.getData().getExecutorTransMeta().listParameters() ).thenReturn( new String[0] /*{parentParam}*/ );
+
+    Trans internalTrans = executor.createInternalTrans();
+    executor.getData().setExecutorTrans( internalTrans );
+    executor.passParametersToTrans();
+
+    //When the child parameter does exist in the parent parameters, overwrite the child parameter by the parent parameter.
+    Assert.assertEquals( parentValue, internalTrans.getVariable( paramOverwrite ) );
+
+    //All other parent parameters need to get copied into the child parameters  (when the 'Inherit all variables from the transformation?' option is checked)
+    Assert.assertEquals( childValue, internalTrans.getVariable( childParam ) );
   }
 }

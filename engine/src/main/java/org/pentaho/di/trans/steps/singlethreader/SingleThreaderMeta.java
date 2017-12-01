@@ -293,6 +293,11 @@ public class SingleThreaderMeta extends StepWithMappingMeta implements StepMetaI
     return loadMappingMeta( mappingMeta, rep, null, space );
   }
 
+  public static final synchronized TransMeta loadSingleThreadedTransMeta( SingleThreaderMeta mappingMeta,
+                                                                          Repository rep, VariableSpace space, boolean passingAllParameters  ) throws KettleException {
+    return loadMappingMeta( mappingMeta, rep, null, space, passingAllParameters );
+  }
+
   public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta,
     RowMetaInterface prev, String[] input, String[] output, RowMetaInterface info, VariableSpace space,
     Repository repository, IMetaStore metaStore ) {
