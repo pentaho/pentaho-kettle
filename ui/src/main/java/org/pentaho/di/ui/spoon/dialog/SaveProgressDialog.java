@@ -25,6 +25,7 @@ package org.pentaho.di.ui.spoon.dialog;
 import java.lang.reflect.InvocationTargetException;
 
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.swt.widgets.Shell;
@@ -80,9 +81,11 @@ public class SaveProgressDialog {
       ProgressMonitorDialog pmd = new ProgressMonitorDialog( shell );
       pmd.run( true, true, op );
     } catch ( InvocationTargetException e ) {
-      new ErrorDialog( shell,
-        BaseMessages.getString( PKG, "TransSaveProgressDialog.ErrorSavingTransformation.DialogTitle" ),
-        BaseMessages.getString( PKG, "TransSaveProgressDialog.ErrorSavingTransformation.DialogMessage" ), e );
+      MessageDialog errorDialog =
+        new MessageDialog( shell, BaseMessages.getString( PKG, "TransSaveProgressDialog.UnableToSave.DialogTitle" ), null,
+          BaseMessages.getString( PKG, "TransSaveProgressDialog.UnableToSave.DialogMessage" ), MessageDialog.ERROR,
+          new String[] { BaseMessages.getString( PKG, "TransSaveProgressDialog.UnableToSave.Close" ) }, 0 );
+      errorDialog.open();
       retval = false;
     } catch ( InterruptedException e ) {
       new ErrorDialog( shell,
