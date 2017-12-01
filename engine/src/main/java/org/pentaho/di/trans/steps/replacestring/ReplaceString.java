@@ -27,6 +27,7 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.google.common.annotations.VisibleForTesting;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.row.RowDataUtil;
@@ -66,7 +67,6 @@ public class ReplaceString extends BaseStep implements StepInterface {
     if ( originalString == null ) {
       return null;
     }
-
     final Matcher matcher = pattern.matcher( originalString );
 
     if ( replaceByString == null ) {
@@ -80,14 +80,18 @@ public class ReplaceString extends BaseStep implements StepInterface {
     }
   }
 
-  private Pattern buildPattern( boolean literalParsing, boolean caseSensitive, boolean wholeWord,
-    String patternString ) {
+  @VisibleForTesting
+  static Pattern buildPattern( boolean literalParsing, boolean caseSensitive, boolean wholeWord,
+    String patternString, boolean isUnicode ) {
     int flags = 0;
     if ( literalParsing && !wholeWord ) {
       flags |= Pattern.LITERAL;
     }
     if ( !caseSensitive ) {
       flags |= Pattern.CASE_INSENSITIVE;
+    }
+    if ( isUnicode ) {
+      flags |= Pattern.UNICODE_CHARACTER_CLASS;
     }
 
     /*
@@ -188,7 +192,8 @@ public class ReplaceString extends BaseStep implements StepInterface {
             meta.getUseRegEx()[i] != ReplaceStringMeta.USE_REGEX_YES,
             meta.getCaseSensitive()[i] == ReplaceStringMeta.CASE_SENSITIVE_YES,
             meta.getWholeWord()[i] == ReplaceStringMeta.WHOLE_WORD_YES, environmentSubstitute( meta
-              .getReplaceString()[i] ) );
+              .getReplaceString()[i] ),
+            meta.isUnicode()[i] == ReplaceStringMeta.IS_UNICODE_YES );
 
         String field = meta.getFieldReplaceByString()[i];
         if ( !Utils.isEmpty( field ) ) {

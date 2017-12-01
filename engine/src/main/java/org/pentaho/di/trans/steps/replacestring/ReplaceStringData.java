@@ -52,6 +52,8 @@ public class ReplaceStringData extends BaseStepData implements StepDataInterface
 
   public int[] caseSensitive;
 
+  public int[] isUnicode;
+
   public String realChangeField;
 
   public String[] valueChange;
