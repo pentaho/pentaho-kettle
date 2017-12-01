@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,11 +22,7 @@
 
 package org.pentaho.di.trans.steps.replacestring;
 
-import java.util.HashSet;
-import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
+import com.google.common.annotations.VisibleForTesting;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.row.RowDataUtil;
@@ -42,6 +38,11 @@ import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
+
+import java.util.HashSet;
+import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Search and replace in string.
@@ -66,7 +67,6 @@ public class ReplaceString extends BaseStep implements StepInterface {
     if ( originalString == null ) {
       return null;
     }
-
     final Matcher matcher = pattern.matcher( originalString );
 
     if ( replaceByString == null ) {
@@ -80,8 +80,10 @@ public class ReplaceString extends BaseStep implements StepInterface {
     }
   }
 
-  private Pattern buildPattern( boolean literalParsing, boolean caseSensitive, boolean wholeWord,
-    String patternString ) {
+
+  @VisibleForTesting
+  static Pattern buildPattern( boolean literalParsing, boolean caseSensitive, boolean wholeWord,
+    String patternString, boolean isUnicode ) {
     int flags = 0;
     if ( literalParsing && !wholeWord ) {
       flags |= Pattern.LITERAL;
@@ -89,12 +91,18 @@ public class ReplaceString extends BaseStep implements StepInterface {
     if ( !caseSensitive ) {
       flags |= Pattern.CASE_INSENSITIVE;
     }
+    if ( isUnicode ) {
+      flags |= Pattern.UNICODE_CHARACTER_CLASS;
+    }
 
     /*
      * XXX: I don't like this parameter. I think it would almost always be better for the user to define either word
      * boundaries or ^/$ anchors explicitly in their pattern.
      */
     if ( wholeWord ) {
+      if ( literalParsing ) {
+        patternString = "\\Q" + patternString + "\\E";
+      }
       patternString = "\\b" + patternString + "\\b";
     }
 
@@ -188,7 +196,8 @@ public class ReplaceString extends BaseStep implements StepInterface {
             meta.getUseRegEx()[i] != ReplaceStringMeta.USE_REGEX_YES,
             meta.getCaseSensitive()[i] == ReplaceStringMeta.CASE_SENSITIVE_YES,
             meta.getWholeWord()[i] == ReplaceStringMeta.WHOLE_WORD_YES, environmentSubstitute( meta
-              .getReplaceString()[i] ) );
+              .getReplaceString()[i] ),
+            meta.isUnicode()[i] == ReplaceStringMeta.IS_UNICODE_YES );
 
         String field = meta.getFieldReplaceByString()[i];
         if ( !Utils.isEmpty( field ) ) {

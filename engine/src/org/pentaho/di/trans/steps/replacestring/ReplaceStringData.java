@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -51,6 +51,8 @@ public class ReplaceStringData extends BaseStepData implements StepDataInterface
   public int[] wholeWord;
 
   public int[] caseSensitive;
+
+  public int[] isUnicode;
 
   public String realChangeField;
 
