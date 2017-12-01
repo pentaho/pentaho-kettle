@@ -22,11 +22,7 @@
 
 package org.pentaho.di.trans.steps.replacestring;
 
-import java.util.HashSet;
-import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
+import com.google.common.annotations.VisibleForTesting;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.row.RowDataUtil;
@@ -42,6 +38,11 @@ import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
+
+import java.util.HashSet;
+import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Search and replace in string.
@@ -80,7 +81,8 @@ public class ReplaceString extends BaseStep implements StepInterface {
     }
   }
 
-  private Pattern buildPattern( boolean literalParsing, boolean caseSensitive, boolean wholeWord,
+  @VisibleForTesting
+  static Pattern buildPattern( boolean literalParsing, boolean caseSensitive, boolean wholeWord,
     String patternString ) {
     int flags = 0;
     if ( literalParsing && !wholeWord ) {
@@ -95,6 +97,9 @@ public class ReplaceString extends BaseStep implements StepInterface {
      * boundaries or ^/$ anchors explicitly in their pattern.
      */
     if ( wholeWord ) {
+      if ( literalParsing ) {
+        patternString = "\\Q" + patternString + "\\E";
+      }
       patternString = "\\b" + patternString + "\\b";
     }
 
