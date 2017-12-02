@@ -5,7 +5,7 @@
 
   <groupId>org.pentaho.di</groupId>
   <artifactId>pdi-ce</artifactId>
-  <version>8.1-SNAPSHOT</version>
+  <version>8.1.0-SNAPSHOT</version>
   <packaging>pom</packaging>
 
   <name>PDI Client Community Edition</name>
@@ -13,7 +13,7 @@
   <parent>
     <artifactId>pdi-assemblies</artifactId>
     <groupId>org.pentaho.di</groupId>
-    <version>8.1-SNAPSHOT</version>
+    <version>8.1.0-SNAPSHOT</version>
   </parent>
 
   <properties>
@@ -21,20 +21,20 @@
     <assembly.launcher.jar>pentaho-application-launcher-${pentaho-launcher.version}.jar</assembly.launcher.jar>
 
     <pdi-dataservice-driver-bundle.version>${project.version}</pdi-dataservice-driver-bundle.version>
-    <ael.version>8.1-SNAPSHOT</ael.version>
+    <ael.version>8.1.0-SNAPSHOT</ael.version>
     <pdi-spark-driver.version>${project.version}</pdi-spark-driver.version>
     <pdi-engine-spark.version>${project.version}</pdi-engine-spark.version>
     <rxjava.version>2.0.4</rxjava.version>
 
-    <pentaho-karaf.version>8.1-SNAPSHOT</pentaho-karaf.version>
-    <pdi-osgi-bridge.version>8.1-SNAPSHOT</pdi-osgi-bridge.version>
-    <pentaho-launcher.version>8.1-SNAPSHOT</pentaho-launcher.version>
-    <pentaho-database-model.version>8.1-SNAPSHOT</pentaho-database-model.version>
-    <pentaho-registry.version>8.1-SNAPSHOT</pentaho-registry.version>
-    <pentaho-metaverse.version>8.1-SNAPSHOT</pentaho-metaverse.version>
-    <platform.version>8.1-SNAPSHOT</platform.version>
-    <pentaho-reporting.version>8.1-SNAPSHOT</pentaho-reporting.version>
-    <oss-licenses.version>8.1-SNAPSHOT</oss-licenses.version>
+    <pentaho-karaf.version>8.1.0-SNAPSHOT</pentaho-karaf.version>
+    <pdi-osgi-bridge.version>8.1.0-SNAPSHOT</pdi-osgi-bridge.version>
+    <pentaho-launcher.version>8.1.0-SNAPSHOT</pentaho-launcher.version>
+    <pentaho-database-model.version>8.1.0-SNAPSHOT</pentaho-database-model.version>
+    <pentaho-registry.version>8.1.0-SNAPSHOT</pentaho-registry.version>
+    <pentaho-metaverse.version>8.1.0-SNAPSHOT</pentaho-metaverse.version>
+    <platform.version>8.1.0-SNAPSHOT</platform.version>
+    <pentaho-reporting.version>8.1.0-SNAPSHOT</pentaho-reporting.version>
+    <oss-licenses.version>8.1.0-SNAPSHOT</oss-licenses.version>
 
     <!-- swt -->
     <org.eclipse.swt.gtk.linux.x86.version>4.3.2</org.eclipse.swt.gtk.linux.x86.version>
@@ -95,23 +95,23 @@
     <kettle-openerp-plugin.version>${project.version}</kettle-openerp-plugin.version>
     <kettle-palo-plugin.version>${project.version}</kettle-palo-plugin.version>
     <kettle5-log4j-plugin.version>${project.version}</kettle5-log4j-plugin.version>
-    <pdi-google-analytics-plugin.version>8.1-SNAPSHOT</pdi-google-analytics-plugin.version>
-    <pdi-salesforce-plugin.version>8.1-SNAPSHOT</pdi-salesforce-plugin.version>
+    <pdi-google-analytics-plugin.version>8.1.0-SNAPSHOT</pdi-google-analytics-plugin.version>
+    <pdi-salesforce-plugin.version>8.1.0-SNAPSHOT</pdi-salesforce-plugin.version>
     <ms-access-bulk-loader-plugin.version>${project.version}</ms-access-bulk-loader-plugin.version>
     <lucid-db-streaming-loader-plugin.version>${project.version}</lucid-db-streaming-loader-plugin.version>
     <gp-bulk-loader-plugin.version>${project.version}</gp-bulk-loader-plugin.version>
     <pentaho-googledrive-vfs-plugin.version>${project.version}</pentaho-googledrive-vfs-plugin.version>
     <elasticsearch-bulk-insert-plugin.version>${project.version}</elasticsearch-bulk-insert-plugin.version>
-    <pdi-xml-plugin.version>${project.version}</pdi-xml-plugin.version>
-    <pdi-json-plugin.version>8.1-SNAPSHOT</pdi-json-plugin.version>
-    <pdi-sap-plugin.version>8.1-SNAPSHOT</pdi-sap-plugin.version>
-    <big-data-plugin.version>8.1-SNAPSHOT</big-data-plugin.version>
-    <pentaho-cassandra-plugin.version>8.1-SNAPSHOT</pentaho-cassandra-plugin.version>
+    <pdi-xml-plugin.version>8.1.0-SNAPSHOT</pdi-xml-plugin.version>
+    <pdi-json-plugin.version>8.1.0-SNAPSHOT</pdi-json-plugin.version>
+    <pdi-sap-plugin.version>8.1.0-SNAPSHOT</pdi-sap-plugin.version>
+    <big-data-plugin.version>8.1.0-SNAPSHOT</big-data-plugin.version>
+    <pentaho-cassandra-plugin.version>8.1.0-SNAPSHOT</pentaho-cassandra-plugin.version>
     <pdi-teradata-tpt-plugin-package.version>${project.version}</pdi-teradata-tpt-plugin-package.version>
-    <pdi-platform-utils-plugin.version>8.1-SNAPSHOT</pdi-platform-utils-plugin.version>
-    <vertica-bulkloader-plugin.version>8.1-SNAPSHOT</vertica-bulkloader-plugin.version>
-    <pdi-pur-plugin.version>8.1-SNAPSHOT</pdi-pur-plugin.version>
-    <pentaho-hadoop-shims-api.version>8.1-SNAPSHOT</pentaho-hadoop-shims-api.version>
+    <pdi-platform-utils-plugin.version>8.1.0-SNAPSHOT</pdi-platform-utils-plugin.version>
+    <vertica-bulkloader-plugin.version>8.1.0-SNAPSHOT</vertica-bulkloader-plugin.version>
+    <pdi-pur-plugin.version>8.1.0-SNAPSHOT</pdi-pur-plugin.version>
+    <pentaho-hadoop-shims-api.version>8.1.0-SNAPSHOT</pentaho-hadoop-shims-api.version>
 
     <!-- build plugins -->
     <properties-maven-plugin.version>1.0.0</properties-maven-plugin.version>
