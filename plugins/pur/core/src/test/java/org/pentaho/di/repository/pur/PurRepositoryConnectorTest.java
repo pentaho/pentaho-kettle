@@ -16,11 +16,24 @@
  */
 package org.pentaho.di.repository.pur;
 
-import static org.mockito.Mockito.mock;
-
+import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.mockito.Matchers;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
 import org.pentaho.di.core.KettleEnvironment;
+import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.util.ExecutorUtil;
+
+import javax.xml.ws.WebServiceException;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Future;
+
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.*;
 
 public class PurRepositoryConnectorTest {
 
@@ -40,5 +53,45 @@ public class PurRepositoryConnectorTest {
         new PurRepositoryConnector( mockPurRepository, mockPurRepositoryMeta, mockRootRef );
     purRepositoryConnector.disconnect();
     purRepositoryConnector.disconnect();
+  }
+
+  @Test
+  public void testConnect() {
+    PurRepository mockPurRepository = mock( PurRepository.class );
+    PurRepositoryMeta mockPurRepositoryMeta = mock( PurRepositoryMeta.class );
+    PurRepositoryLocation location = mock( PurRepositoryLocation.class );
+    RootRef mockRootRef = mock( RootRef.class );
+    PurRepositoryConnector purRepositoryConnector =
+      spy( new PurRepositoryConnector( mockPurRepository, mockPurRepositoryMeta, mockRootRef ) );
+    doReturn( location ).when( mockPurRepositoryMeta ).getRepositoryLocation();
+    doReturn( "" ).when( location ).getUrl();
+    ExecutorService service = mock( ExecutorService.class );
+    doReturn( service ).when( purRepositoryConnector ).getExecutor();
+    Future future = mock( Future.class );
+    try {
+      doReturn( "U1" ).when( future ).get();
+    } catch ( Exception e ) {
+      e.printStackTrace();
+    }
+    Future future2 = mock( Future.class );
+    try {
+      doReturn( false ).when( future2 ).get();
+    } catch ( Exception e ) {
+      e.printStackTrace();
+    }
+    Future future3 = mock( Future.class );
+    try {
+      doReturn( null ).when( future3 ).get();
+    } catch ( Exception e ) {
+      e.printStackTrace();
+    }
+    when( service.submit( any( Callable.class ) ) ).thenReturn( future2 ).thenReturn( future3 ).thenReturn( future3 ).thenReturn( future );
+
+    try {
+      RepositoryConnectResult res = purRepositoryConnector.connect( "userNam", "password" );
+      Assert.assertEquals( "U1", res.getUser().getLogin() );
+    } catch ( KettleException e ) {
+      e.printStackTrace();
+    }
   }
 }
