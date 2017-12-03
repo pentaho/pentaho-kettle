@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -33,6 +33,7 @@ import java.util.Calendar;
 import java.util.TimeZone;
 import java.util.UUID;
 
+import com.sforce.ws.bind.XmlObject;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -118,7 +119,8 @@ public class PDI_10836_Test {
     DateFormat utc = new SimpleDateFormat( "yyyy-MM-dd" );
     utc.setTimeZone( TimeZone.getTimeZone( "UTC" ) );
 
+    XmlObject xmlObject = SalesforceConnection.getChildren( data.sfBuffer[ 0 ] )[ 0 ];
     Assert.assertEquals( "2013-10-16",
-      utc.format( SalesforceConnection.getChildren( data.sfBuffer[0] )[0].getValue() ) );
+            utc.format( ( (Calendar) xmlObject.getValue() ).getTime() ) );
   }
 }
