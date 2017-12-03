@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -37,6 +37,7 @@ import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.pentaho.di.base.AbstractMeta;
+import org.pentaho.di.core.EngineMetaInterface;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.LastUsedFile;
 import org.pentaho.di.core.NotePadMeta;
@@ -48,6 +49,7 @@ import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.ObjectRevision;
 import org.pentaho.di.repository.RepositoryDirectory;
+import org.pentaho.di.repository.RepositoryDirectoryInterface;
 import org.pentaho.di.repository.RepositoryObjectType;
 import org.pentaho.di.repository.RepositorySecurityProvider;
 import org.pentaho.di.repository.Repository;
@@ -339,6 +341,7 @@ public class SpoonTest {
     }
     doReturn( "/admin" ).when( mockRepDirectory ).getPath();
 
+    doReturn( null ).when( abstractMeta ).getVersioningEnabled();
     if ( !repIsNull ) {
       doReturn( mockRepSecurityProvider ).when( mockRepository ).getSecurityProvider();
       doReturn( versionEnabled ).when( mockRepSecurityProvider ).isVersioningEnabled( anyString() );
@@ -795,6 +798,55 @@ public class SpoonTest {
   public void testCanClosePromptToSave() throws Exception {
     setPromptToSave( SWT.YES, true );
     assertTrue( spoon.promptForSave() );
+  }
+
+  @Test
+  public void testVersioningEnabled() throws Exception {
+    Repository repository = mock( Repository.class );
+    RepositorySecurityProvider securityProvider = mock( RepositorySecurityProvider.class );
+    doReturn( securityProvider ).when( repository ).getSecurityProvider();
+    EngineMetaInterface jobTransMeta = spy( new TransMeta() );
+    RepositoryDirectoryInterface repositoryDirectoryInterface = mock( RepositoryDirectoryInterface.class );
+    doReturn( "/home" ).when( repositoryDirectoryInterface ).toString();
+    doReturn( "trans" ).when( jobTransMeta ).getName();
+    doReturn( true ).when( jobTransMeta ).getVersioningEnabled();
+
+    boolean result = Spoon.isVersionEnabled( repository, jobTransMeta );
+
+    assertTrue( result );
+    verify( securityProvider, never() ).isVersioningEnabled( anyString() );
+  }
+
+  @Test
+  public void testVersioningDisabled() throws Exception {
+    Repository repository = mock( Repository.class );
+    RepositorySecurityProvider securityProvider = mock( RepositorySecurityProvider.class );
+    doReturn( securityProvider ).when( repository ).getSecurityProvider();
+    EngineMetaInterface jobTransMeta = spy( new TransMeta() );
+    RepositoryDirectoryInterface repositoryDirectoryInterface = mock( RepositoryDirectoryInterface.class );
+    doReturn( "/home" ).when( repositoryDirectoryInterface ).toString();
+    doReturn( "trans" ).when( jobTransMeta ).getName();
+    doReturn( false ).when( jobTransMeta ).getVersioningEnabled();
+
+    boolean result = Spoon.isVersionEnabled( repository, jobTransMeta );
+
+    assertFalse( result );
+    verify( securityProvider, never() ).isVersioningEnabled( anyString() );
+  }
+
+  @Test
+  public void testVersioningCheckingOnServer() throws Exception {
+    Repository repository = mock( Repository.class );
+    RepositorySecurityProvider securityProvider = mock( RepositorySecurityProvider.class );
+    doReturn( securityProvider ).when( repository ).getSecurityProvider();
+    EngineMetaInterface jobTransMeta = spy( new TransMeta() );
+    RepositoryDirectoryInterface repositoryDirectoryInterface = mock( RepositoryDirectoryInterface.class );
+    doReturn( "/home" ).when( repositoryDirectoryInterface ).toString();
+    doReturn( "trans" ).when( jobTransMeta ).getName();
+    doReturn( true ).when( securityProvider ).isVersioningEnabled( anyString() );
+
+    boolean result = Spoon.isVersionEnabled( repository, jobTransMeta );
+    assertTrue( result );
   }
 
   private SpoonBrowser setPromptToSave( int buttonPressed, boolean canbeClosed ) throws Exception {
