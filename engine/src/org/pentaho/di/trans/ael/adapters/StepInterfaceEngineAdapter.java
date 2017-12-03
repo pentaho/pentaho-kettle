@@ -3,7 +3,7 @@
  *
  *  Pentaho Data Integration
  *
- *  Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
+ *  Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
  *
  * ******************************************************************************
  *
@@ -118,13 +118,9 @@ public class StepInterfaceEngineAdapter extends BaseStep {
         // no way to convert this row to a RowMetaInterface.
         return;
       }
-      synchronized ( rowListeners ) {
-        for ( int i = 0; i < rowListeners.size(); i++ ) {
-          RowListener rowListener = rowListeners.get( i );
-          rowListener.rowWrittenEvent(
-            executionContext.getConversionManager().convert( row, RowMetaInterface.class ),
-            row.getObjects() );
-        }
+      for ( RowListener listener : rowListeners ) {
+        listener.rowWrittenEvent( executionContext.getConversionManager().convert( row, RowMetaInterface.class ),
+                row.getObjects() );
       }
     } catch ( KettleStepException e ) {
       // log that we were unable to convert row.
