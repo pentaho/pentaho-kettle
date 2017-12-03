@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -182,6 +182,8 @@ public abstract class AbstractMeta implements ChangedFlagInterface, UndoInterfac
 
   private boolean showDialog = true;
   private boolean alwaysShowRunOptions = true;
+
+  private Boolean versioningEnabled;
 
   public boolean isShowDialog() {
     return showDialog;
@@ -1912,5 +1914,15 @@ public abstract class AbstractMeta implements ChangedFlagInterface, UndoInterfac
    */
   public void saveMetaStoreObjects( Repository repository, IMetaStore metaStore ) throws MetaStoreException {
 
+  }
+
+  @Override
+  public void setVersioningEnabled( Boolean versioningEnabled ) {
+    this.versioningEnabled = versioningEnabled;
+  }
+
+  @Override
+  public Boolean getVersioningEnabled() {
+    return versioningEnabled;
   }
 }
