@@ -3,7 +3,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -3090,6 +3090,7 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
 
     transMeta.setRepository( spoon.rep );
     SearchFieldsProgressDialog op = new SearchFieldsProgressDialog( transMeta, stepMeta, before );
+    boolean alreadyThrownError = false;
     try {
       final ProgressMonitorDialog pmd = new ProgressMonitorDialog( shell );
 
@@ -3123,9 +3124,11 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
     } catch ( InvocationTargetException e ) {
       new ErrorDialog( shell, BaseMessages.getString( PKG, "TransGraph.Dialog.GettingFields.Title" ), BaseMessages
         .getString( PKG, "TransGraph.Dialog.GettingFields.Message" ), e );
+      alreadyThrownError = true;
     } catch ( InterruptedException e ) {
       new ErrorDialog( shell, BaseMessages.getString( PKG, "TransGraph.Dialog.GettingFields.Title" ), BaseMessages
         .getString( PKG, "TransGraph.Dialog.GettingFields.Message" ), e );
+      alreadyThrownError = true;
     }
 
     RowMetaInterface fields = op.getFields();
@@ -3140,10 +3143,12 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
         }
       }
     } else {
-      MessageBox mb = new MessageBox( shell, SWT.OK | SWT.ICON_INFORMATION );
-      mb.setMessage( BaseMessages.getString( PKG, "TransGraph.Dialog.CouldntFindFields.Message" ) );
-      mb.setText( BaseMessages.getString( PKG, "TransGraph.Dialog.CouldntFindFields.Title" ) );
-      mb.open();
+      if ( !alreadyThrownError ) {
+        MessageBox mb = new MessageBox( shell, SWT.OK | SWT.ICON_INFORMATION );
+        mb.setMessage( BaseMessages.getString( PKG, "TransGraph.Dialog.CouldntFindFields.Message" ) );
+        mb.setText( BaseMessages.getString( PKG, "TransGraph.Dialog.CouldntFindFields.Title" ) );
+        mb.open();
+      }
     }
 
   }
