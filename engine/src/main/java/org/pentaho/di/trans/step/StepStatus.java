@@ -204,12 +204,16 @@ public class StepStatus {
   }
 
   public String[] getTransLogFields() {
+    return getTransLogFields( statusDescription );
+  }
+
+  public String[] getTransLogFields( String overrideDescription ) {
     String[] fields =
       new String[] {
         "", // Row number
         stepname, Integer.toString( copy ), Long.toString( linesRead ), Long.toString( linesWritten ),
         Long.toString( linesInput ), Long.toString( linesOutput ), Long.toString( linesUpdated ),
-        Long.toString( linesRejected ), Long.toString( errors ), statusDescription, convertSeconds( seconds ),
+        Long.toString( linesRejected ), Long.toString( errors ), overrideDescription, convertSeconds( seconds ),
         speed, priority, };
 
     return fields;

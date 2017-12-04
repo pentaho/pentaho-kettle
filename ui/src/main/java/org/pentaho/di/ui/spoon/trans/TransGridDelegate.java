@@ -427,7 +427,7 @@ public class TransGridDelegate extends SpoonDelegate implements XulEventHandler 
           Collection<StepStatus> stepStatuses = baseStep.subStatuses();
           for ( StepStatus status : stepStatuses ) {
             ti = new TableItem( table, SWT.NONE );
-            String[] subFields = status.getTransLogFields();
+            String[] subFields = status.getTransLogFields( baseStep.getStatus().getDescription() );
 
             // Anti-flicker: if nothing has changed, don't change it on the
             // screen!
