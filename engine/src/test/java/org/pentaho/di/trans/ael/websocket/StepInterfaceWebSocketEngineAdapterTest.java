@@ -35,6 +35,8 @@ import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepMeta;
 
+import java.util.Collections;
+
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
 
@@ -57,7 +59,8 @@ public class StepInterfaceWebSocketEngineAdapterTest {
 
   @Test
   public void testHandlerCreation() throws KettleException {
-    new StepInterfaceWebSocketEngineAdapter( op, messageEventService, stepMeta, transMeta, dataInterface, tran );
+    new StepInterfaceWebSocketEngineAdapter( op, messageEventService, stepMeta, transMeta, dataInterface, tran,
+      Collections.emptyList() );
 
     assertTrue( messageEventService.hasHandlers( Util.getOperationRowEvent( op.getId() ) ) );
     assertTrue( messageEventService.hasHandlers( Util.getOperationStatusEvent( op.getId() ) ) );

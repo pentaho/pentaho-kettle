@@ -40,6 +40,7 @@ import org.pentaho.di.core.plugins.StepPluginType;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.StepMetaDataCombi;
 
+import java.util.Comparator;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
@@ -73,6 +74,9 @@ public class TransWebSocketEngineAdapterTest {
       new TransWebSocketEngineAdapter( transMeta, "", "", false );
     adapter.prepareExecution( new String[]{} );
     List<StepMetaDataCombi> steps = adapter.getSteps();
-    assertEquals( 4, steps.size() );
+    steps.sort( Comparator.comparing( s -> s.stepname ) );
+    assertEquals( 2, steps.size() );
+    assertEquals( 0, steps.get( 0 ).step.subStatuses().size() );
+    assertEquals( 2, steps.get( 1 ).step.subStatuses().size() );
   }
 }

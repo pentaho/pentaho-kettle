@@ -24,6 +24,7 @@
 
 package org.pentaho.di.trans.ael.websocket;
 
+import com.google.common.collect.Maps;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.LogChannelInterface;
@@ -38,6 +39,7 @@ import org.pentaho.di.engine.api.reporting.LogEntry;
 import org.pentaho.di.engine.api.reporting.LogLevel;
 import org.pentaho.di.engine.api.reporting.Status;
 import org.pentaho.di.engine.model.ActingPrincipal;
+import org.pentaho.di.resource.ResourceEntry;
 import org.pentaho.di.trans.RowProducer;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
@@ -48,6 +50,7 @@ import org.pentaho.di.trans.ael.websocket.handler.MessageEventHandler;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaDataCombi;
+import org.pentaho.di.trans.step.StepMetaInterface;
 
 import java.security.Principal;
 import java.util.ArrayList;
@@ -332,13 +335,8 @@ public class TransWebSocketEngineAdapter extends Trans {
 
   }
 
-  @SuppressWarnings( "unchecked" )
   private List<StepMetaDataCombi> opsToSteps() {
-    return ( (Optional<HashMap<String, Transformation>>)
-      transformation.getConfig( TransMetaConverter.SUB_TRANSFORMATIONS_KEY ) )
-      .orElse( new HashMap<>() )
-      .values().stream().flatMap( t -> opsToSteps( t ).stream() )
-      .collect( Collectors.toCollection( () -> opsToSteps( transformation ) ) );
+    return opsToSteps( transformation );
   }
 
   private List<StepMetaDataCombi> opsToSteps( Transformation transformation ) {
@@ -349,8 +347,9 @@ public class TransWebSocketEngineAdapter extends Trans {
           combi.stepMeta = StepMeta.fromXml( (String) op.getConfig().get( TransMetaConverter.STEP_META_CONF_KEY ) );
           try {
             combi.data = new StepDataInterfaceWebSocketEngineAdapter( op, messageEventService );
-            combi.step = new StepInterfaceWebSocketEngineAdapter( op, messageEventService, combi.stepMeta, transMeta,
-              combi.data, this );
+            List<StepMetaDataCombi> subSteps = getSubSteps( transformation, combi );
+            combi.step = new StepInterfaceWebSocketEngineAdapter(
+              op, messageEventService, combi.stepMeta, transMeta, combi.data, this, subSteps );
           } catch ( KettleException e ) {
             //TODO: treat the exception
             e.printStackTrace();
@@ -360,6 +359,26 @@ public class TransWebSocketEngineAdapter extends Trans {
           return combi;
         } ) );
     return new ArrayList<>( operationToCombi.values() );
+  }
+
+  @SuppressWarnings( "unchecked" )
+  private List<StepMetaDataCombi> getSubSteps( Transformation transformation, StepMetaDataCombi combi ) {
+    HashMap<String, Transformation> config =
+      ( (Optional<HashMap<String, Transformation>>) transformation
+        .getConfig( TransMetaConverter.SUB_TRANSFORMATIONS_KEY ) )
+        .orElse( Maps.newHashMap() );
+    StepMetaInterface smi = combi.stepMeta.getStepMetaInterface();
+    return config.keySet().stream()
+      .filter( key -> stepHasDependency( combi, smi, key ) )
+      .flatMap( key -> opsToSteps( config.get( key ) ).stream() )
+      .collect( Collectors.toList() );
+  }
+
+  private boolean stepHasDependency( StepMetaDataCombi combi, StepMetaInterface smi, String path ) {
+    return smi.getResourceDependencies( transMeta, combi.stepMeta ).stream()
+      .flatMap( resourceReference -> resourceReference.getEntries().stream() )
+      .filter( entry -> ResourceEntry.ResourceType.ACTIONFILE.equals( entry.getResourcetype() ) )
+      .anyMatch( entry -> entry.getResource().equals( path ) );
   }
 
   @Override public void startThreads() throws KettleException {
