@@ -230,6 +230,7 @@ import org.pentaho.di.repository.RepositoryCapabilities;
 import org.pentaho.di.repository.RepositoryDirectory;
 import org.pentaho.di.repository.RepositoryDirectoryInterface;
 import org.pentaho.di.repository.RepositoryElementInterface;
+import org.pentaho.di.repository.RepositoryObject;
 import org.pentaho.di.repository.RepositoryObjectType;
 import org.pentaho.di.repository.RepositoryOperation;
 import org.pentaho.di.repository.RepositorySecurityManager;
@@ -4307,8 +4308,8 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
           ExtensionPointHandler.callExtensionPoint( log, KettleExtensionPoint.SpoonOpenSaveRepository.id,
             fileDialogOperation );
           if ( fileDialogOperation.getRepositoryObject() != null ) {
-            loadObjectFromRepository( fileDialogOperation.getRepositoryObject().getObjectId(),
-              fileDialogOperation.getRepositoryObject().getObjectType(), null );
+            RepositoryObject repositoryObject = (RepositoryObject) fileDialogOperation.getRepositoryObject();
+            loadObjectFromRepository( repositoryObject.getObjectId(), repositoryObject.getObjectType(), null );
           }
         } catch ( Exception e ) {
          // Ignore
@@ -5122,8 +5123,9 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
           ExtensionPointHandler.callExtensionPoint( log, KettleExtensionPoint.SpoonOpenSaveRepository.id,
             fileDialogOperation );
           if ( fileDialogOperation.getRepositoryObject() != null ) {
-            meta.setRepositoryDirectory( fileDialogOperation.getRepositoryObject().getRepositoryDirectory() );
-            meta.setName( fileDialogOperation.getRepositoryObject().getName() );
+            RepositoryObject repositoryObject = (RepositoryObject) fileDialogOperation.getRepositoryObject();
+            meta.setRepositoryDirectory( repositoryObject.getRepositoryDirectory() );
+            meta.setName( repositoryObject.getName() );
             saveToRepositoryConfirmed( meta );
             delegates.tabs.renameTabs();
           }

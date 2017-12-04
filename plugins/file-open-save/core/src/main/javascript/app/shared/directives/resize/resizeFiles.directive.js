@@ -17,19 +17,23 @@
 define([
   "angular"
 ], function(angular) {
-  resize.$inject = ["$window", "$timeout"];
+  resize.$inject = ["$window", "$timeout", "$state"];
   /**
    * @param {Service} $window - A reference to the browser's window object
    * @param {Function} $timeout - Angular wrapper for window.setTimeout.
+   * @param {Object} $state - The application state object
    * @return {{restrict: string, link: link}} - resizeFiles directive
    */
-  function resize($window, $timeout) {
+  function resize($window, $timeout, $state) {
     return {
       restrict: "A",
       link: function(scope, element, attrs) {
+        var scrollClass = "";
+        $timeout(function() {
+          scrollClass = $state.is("save") ? "scrollTableOpen" : "scrollTableSave";
+        });
+
         var needsTimeout = true;
-        var openOrSave = scope.vm.wrapperClass;
-        var scrollClass = openOrSave === "open" ? "scrollTableOpen" : "scrollTableSave";
         var table = angular.element(element[0].querySelector("#filesTableBody"));
         var bodyWrapper = angular.element(element[0].querySelector("#bodyWrapper"));
         var headerWrapper = angular.element(document.querySelector("#headerWrapper"));
@@ -131,6 +135,6 @@ define([
 
   return {
     name: "resizeFiles",
-    options: ["$window", "$timeout", resize]
+    options: ["$window", "$timeout", "$state", resize]
   };
 });

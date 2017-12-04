@@ -28,6 +28,7 @@
     <js.project.list>requirejs,requirejs-text,angular,require-css,angular-i18n</js.project.list>
     <angular.version>1.5.8</angular.version>
     <pentaho-osgi-bundles.version>8.1.0.0-SNAPSHOT</pentaho-osgi-bundles.version>
+    <angular-ui-router.version>0.4.2</angular-ui-router.version>
     <karaf-maven-plugin.version>3.0.3</karaf-maven-plugin.version>
     <pdi.version>8.1.0.0-SNAPSHOT</pdi.version>
     <cxf.karaf.version>3.0.13</cxf.karaf.version>

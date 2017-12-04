@@ -38,8 +38,7 @@ define([
     bindings: {
       path: "<",
       includeRoot: "<",
-      onSelect: "&",
-      wrapperClass: "<"
+      onSelect: "&"
     },
     template: breadcrumbTemplate,
     controllerAs: "vm",

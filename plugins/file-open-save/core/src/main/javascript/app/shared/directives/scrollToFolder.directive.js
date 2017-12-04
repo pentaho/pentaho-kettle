@@ -17,7 +17,7 @@
 define([
   "angular"
 ], function(angular) {
-  scrollToFolder.inject = ["$timeout"];
+  scrollToFolder.inject = ["$timeout", "$state"];
 
   /**
    * @param {Function} $timeout - Angular wrapper for window.setTimeout.
@@ -49,13 +49,12 @@ define([
         });
 
         function scrollToSelectedFolder(value, didDeleteFolder) {
-          var wrapperClass = attrs.scrollToFolder;
           var scrollToElem = document.getElementById(value);
           var aScrollToElem = angular.element(scrollToElem);
           var topPos = aScrollToElem[0].offsetTop;
-          var needsScroll = wrapperClass === "open" && topPos > 444 || wrapperClass === "save" && topPos > 368;
+          var needsScroll = $state.is("open") && topPos > 444 || $state.is("save") && topPos > 368;
           if (needsScroll) {
-            element[0].scrollTop = topPos - (wrapperClass === "open" ? 292 : 254);
+            element[0].scrollTop = topPos - ($state.is("open") ? 292 : 254);
           } else if (!needsScroll && didDeleteFolder) {
             element[0].scrollTop = 0;
           }
@@ -66,6 +65,6 @@ define([
 
   return {
     name: "scrollToFolder",
-    options: ["$timeout", scrollToFolder]
+    options: ["$timeout", "$state", scrollToFolder]
   };
 });

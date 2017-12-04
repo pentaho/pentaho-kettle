@@ -88,7 +88,6 @@ file-open-save-app .breadcrumbSection {
 }
 
 file-open-save-app .addDelete {
-  display: none;
   float: right;
 }
 
@@ -101,10 +100,6 @@ file-open-save-app .addDelete button {
 
 file-open-save-app .addDelete button:disabled {
   cursor: default;
-}
-
-file-open-save-app .save .addDelete {
-  display: inline;
 }
 
 file-open-save-app .addFolder {
@@ -151,7 +146,8 @@ file-open-save-app .middle {
   border-bottom: 1px solid #CCC;
 }
 
-file-open-save-app .open .middle {
+file-open-save-app .open .middle,
+file-open-save-app .selectFolder .middle {
   bottom: 96px;
 }
 
@@ -194,7 +190,8 @@ file-open-save-app .bottom {
   height: 119px;
 }
 
-file-open-save-app .open .bottom {
+file-open-save-app .open .bottom,
+file-open-save-app .selectFolder .bottom {
   padding-top: 30px;
   height: 36px;
 }
@@ -273,10 +270,6 @@ file-open-save-app button.secondary:hover {
 file-open-save-app .buttons button {
   margin-left: 10px;
   float: right;
-}
-
-file-open-save-app .open .fileNameEntry {
-  display: none;
 }
 
 file-open-save-app .fileAreaMessageView {

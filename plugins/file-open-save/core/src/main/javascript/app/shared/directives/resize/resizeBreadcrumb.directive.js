@@ -18,12 +18,12 @@ define([
   "../../../components/utils",
   "angular"
 ], function(utils, angular) {
-  resize.$inject = ["$window"];
+  resize.$inject = ["$window", "$state"];
   /**
    * @param {Service} $window - A reference to the browser's window object
    * @return {{restrict: string, link: link}} - resizeBreadcrumb directive
    */
-  function resize($window) {
+  function resize($window, $state) {
     return {
       restrict: "AE",
       link: function(scope, element, attrs) {
@@ -48,7 +48,7 @@ define([
          */
         function _getInnerWidthCalc() {
           var innerWidth = w[0].innerWidth;
-          var maxInnerWidth = scope.vm.wrapperClass === "open" ? 503 : 568;
+          var maxInnerWidth = $state.is("save") ? 568 : 503;
           if (innerWidth < maxInnerWidth) {
             return (440 - (maxInnerWidth - innerWidth));
           }
@@ -124,6 +124,6 @@ define([
 
   return {
     name: "resizeBreadcrumb",
-    options: ["$window", resize]
+    options: ["$window", "$state", resize]
   };
 });

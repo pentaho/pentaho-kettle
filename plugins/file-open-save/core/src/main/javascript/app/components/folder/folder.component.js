@@ -50,7 +50,7 @@ define([
     controller: folderController
   };
 
-  folderController.$inject = ["$timeout"];
+  folderController.$inject = ["$timeout", "$state"];
 
   /**
    * The Folder Controller.
@@ -58,7 +58,7 @@ define([
    * This provides the controller for the folder component.
    * @param {Function} $timeout - Angular wrapper for window.setTimeout.
    */
-  function folderController($timeout) {
+  function folderController($timeout, $state) {
     var _iconsWidth = 58;
     var _paddingLeft = 27;
     var vm = this;
@@ -70,6 +70,7 @@ define([
     vm.compareFolders = compareFolders;
     vm.maxWidth = 0;
     vm.width = 0;
+    vm.state = $state;
 
     /**
      * The $onInit hook of components lifecycle which is called on each controller
@@ -77,6 +78,7 @@ define([
      * bindings initialized. We use this hook to put initialization code for our controller.
      */
     function onInit() {
+
     }
 
     /**

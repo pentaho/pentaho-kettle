@@ -45,7 +45,7 @@ define([
     controller: appController
   };
 
-  appController.$inject = [dataService.name, "$location", "$scope", "$timeout"];
+  appController.$inject = [dataService.name, "$location", "$scope", "$timeout", "$state"];
 
   /**
    * The App Controller.
@@ -57,7 +57,7 @@ define([
    * @param {Object} $scope - Application model
    * @param {Object} $timeout - Angular wrapper around window.setTimeout
    */
-  function appController(dt, $location, $scope, $timeout) {
+  function appController(dt, $location, $scope, $timeout, $state) {
     var vm = this;
     vm.$onInit = onInit;
     vm.selectFolder = selectFolder;
@@ -68,10 +68,10 @@ define([
     vm.addFolder = addFolder;
     vm.openClicked = openClicked;
     vm.saveClicked = saveClicked;
+    vm.okClicked = okClicked;
     vm.cancel = cancel;
     vm.highlightFile = highlightFile;
     vm.remove = remove;
-    vm.setState = setState;
     vm.confirmError = confirmError;
     vm.cancelError = cancelError;
     vm.storeRecentSearch = storeRecentSearch;
@@ -83,12 +83,15 @@ define([
     vm.getPlaceholder = getPlaceholder;
     vm.isPentahoRepo = isPentahoRepo;
     vm.getSelectedFolderName = getSelectedFolderName;
+    vm.isSaveEnabled = isSaveEnabled;
+    vm.isShowRecents = isShowRecents;
     vm.currentRepo = "";
     vm.selectedFolder = "";
     vm.fileToSave = "";
     vm.showError = false;
     vm.errorType = 0;
     vm.loading = true;
+    vm.state = $state;
     var globalSearch = false;
 
     /**
@@ -97,13 +100,12 @@ define([
      * bindings initialized. We use this hook to put initialization code for our controller.
      */
     function onInit() {
-      vm.wrapperClass = "save";
-      vm.headerTitle = i18n.get("file-open-save-plugin.app.header.save.title");
       vm.searchPlaceholder = i18n.get("file-open-save-plugin.app.header.search.placeholder");
       vm.saveFileNameLabel = i18n.get("file-open-save-plugin.app.save.file-name.label");
       vm.openButton = i18n.get("file-open-save-plugin.app.open.button");
       vm.cancelButton = i18n.get("file-open-save-plugin.app.cancel.button");
       vm.saveButton = i18n.get("file-open-save-plugin.app.save.button");
+      vm.okButton = i18n.get("file-open-save-plugin.app.ok.button");
       vm.confirmButton = i18n.get("file-open-save-plugin.app.save.button");
       vm.saveFileNameLabel = i18n.get("file-open-save-plugin.app.save.file-name.label");
       vm.addFolderText = i18n.get("file-open-save-plugin.app.add-folder.button");
@@ -117,15 +119,26 @@ define([
       vm.didDeleteFolder = false;
       vm.searchString = "";
       _resetFileAreaMessage();
-      dt.getDirectoryTree($location.search().filter).then(_populateTree);
-      dt.getRecentFiles().then(_populateRecentFiles);
-      dt.getRecentSearches().then(_populateRecentSearches);
 
-      var state = $location.search().state;
-      vm.origin = $location.search().origin;
-      if (state) {
-        vm.setState(state);
-      }
+      // vm.origin = $location.search().origin;
+      $timeout(function() {
+        if ($state.is('open')) {
+          vm.headerTitle = i18n.get("file-open-save-plugin.app.header.open.title");
+        }
+        if ($state.is('save')) {
+          vm.headerTitle = i18n.get("file-open-save-plugin.app.header.save.title");
+        }
+        if ($state.is('selectFolder')) {
+          vm.headerTitle = i18n.get("file-open-save-plugin.app.header.select.title");
+        }
+        if (!$state.is('selectFolder')) {
+          dt.getDirectoryTree($location.search().filter).then(_populateTree);
+          dt.getRecentFiles().then(_populateRecentFiles);
+        } else {
+          dt.getDirectoryTree("false").then(_populateTree);
+        }
+        dt.getRecentSearches().then(_populateRecentSearches);
+      });
     }
 
     /**
@@ -154,6 +167,13 @@ define([
         vm.loading = false;
       });
       _setFileToSaveName();
+      if ($state.is('selectFolder')) {
+        if (isPentahoRepo()) {
+          selectFolderByPath("/home");
+        } else {
+          selectFolderByPath("/");
+        }
+      }
     }
 
     /**
@@ -163,10 +183,7 @@ define([
      * @private
      */
     function isPentahoRepo() {
-      if (vm.folders.length >= 3 && vm.folders[1].path === "/home" ) {
-        return true;
-      }
-      return false;
+      return vm.folders.length >= 3 && vm.folders[1].path === "/home";
     }
 
     /**
@@ -177,22 +194,6 @@ define([
      */
     function _populateRecentFiles(response) {
       vm.recentFiles = response.data;
-    }
-
-    /**
-     * Sets the wrapper class, title, and open/save button according to open or save option
-     *
-     * @param {String} state - "open" or "save" state
-     */
-    function setState(state) {
-      if (state === "open") {
-        vm.wrapperClass = "open";
-        vm.headerTitle = i18n.get("file-open-save-plugin.app.header.open.title");
-      }
-      if (state === "save") {
-        vm.wrapperClass = "save";
-        vm.headerTitle = i18n.get("file-open-save-plugin.app.header.save.title");
-      }
     }
 
     /**
@@ -209,7 +210,7 @@ define([
      * @private
      */
     function _setFileToSaveName() {
-      if (vm.wrapperClass === "save") {
+      if ($state.is("save")) {
         dt.getActiveFileName().then(function(response) {
           vm.fileToSave = response.data.fileName;
         }, function() {
@@ -266,7 +267,7 @@ define([
       if (file.type === "folder") {
         vm.searchString = "";
         selectFolder(file);
-      } else if (vm.wrapperClass === "open") {
+      } else if ($state.is("open")) {
         _open(file);
       }
     }
@@ -432,6 +433,10 @@ define([
       } else {
         _triggerError(1);
       }
+    }
+
+    function okClicked() {
+      select(vm.file.objectId.id, vm.file.name, vm.file.path, vm.file.type);
     }
 
     /**
@@ -766,7 +771,7 @@ define([
      */
     function onKeyUp(event) {
       if (event.keyCode === 13 && event.target.id !== "searchBoxId") {
-        if (vm.wrapperClass === "open") {
+        if ($state.is("open")) {
           if (vm.file !== null) {
             selectFile(vm.file);
           }
@@ -816,12 +821,37 @@ define([
       return input.charAt(0).toUpperCase() + input.slice(1);
     }
 
+    /**
+     * Returns the name of the selected folder
+     *
+     * @returns {String} - The name of the selected folder
+     */
     function getSelectedFolderName() {
       if (vm.selectedFolder === "/" && isPentahoRepo()) {
         return vm.currentRepo;
       }
 
       return vm.selectedFolder;
+    }
+
+    /**
+     * Returns whether or not the save button should be enabled
+     *
+     * @returns {boolean} - true if the save button should be enabled
+     */
+    function isSaveEnabled() {
+      return vm.fileToSave === '' || vm.folder.path === 'Recents';
+    }
+
+    /**
+     * Returns whether or not the recents panel should be shown
+     *
+     * @returns {boolean} - true if recents should be shown
+     */
+    function isShowRecents() {
+      if (vm.recentFiles) {
+        return !vm.showMessage && vm.showRecents && vm.recentFiles.length > 0 && !$state.is('selectFolder');
+      }
     }
   }
 

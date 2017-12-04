@@ -50,9 +50,14 @@ public class RepositoryBrowserEndpoint {
   @Path( "/loadDirectoryTree{filter : (/filter)?}" )
   @Produces( { MediaType.APPLICATION_JSON } )
   public Response loadDirectoryTree( @PathParam( "filter" ) String filter ) {
-    List<RepositoryDirectory> repositoryDirectories =
-      Utils.isEmpty( filter ) ? repositoryBrowserController.loadDirectoryTree()
+    List<RepositoryDirectory> repositoryDirectories;
+    if ( filter.equals( "false" ) ) {
+      repositoryDirectories = repositoryBrowserController.loadDirectoryTree( null );
+    } else {
+      repositoryDirectories = Utils.isEmpty( filter ) ? repositoryBrowserController.loadDirectoryTree()
         : repositoryBrowserController.loadDirectoryTree( filter );
+    }
+
     if ( repositoryDirectories != null ) {
       return Response.ok( repositoryDirectories ).build();
     }
