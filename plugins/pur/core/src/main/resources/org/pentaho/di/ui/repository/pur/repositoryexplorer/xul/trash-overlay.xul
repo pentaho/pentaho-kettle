@@ -36,17 +36,35 @@ explicitly covering such access.
         <button id="delete-button" image="${Delete_image}" pen:disabledimage="${Disabled_Delete_image}" tooltiptext="${Trash.Delete}"
           onclick="browseController.delete()" />
       </hbox>
-      <tree id="deleted-file-table" flex="4" hidecolumnpicker="true" sortable="true" treeLines="false" context="deleteContextMenu">
-        <treecols>
-          <treecol id="name-col" flex="1" label="${TrashTable.NameColumn}" pen:binding="name" pen:childrenbinding="children"
-            pen:imagebinding="image" pen:comparatorbinding="comparator" />
-          <treecol id="type-col" flex="1" label="${TrashTable.TypeColumn}" pen:binding="type" />
-          <!-- modified date used as deleted date -->
-          <treecol id="date-del-col" flex="1" label="${TrashTable.DateDeletedColumn}" pen:binding="deletedDate" />
-          <treecol id="orig-loc-col" flex="1" label="${TrashTable.OriginalLocation}" pen:binding="originalParentPath" />
-        </treecols>
-        <treechildren />
-      </tree>
+      <deck id="tree-deck" selectedIndex="0" flex="1">
+        <vbox>
+          <tree id="deleted-file-table" flex="4" hidecolumnpicker="true" sortable="true" treeLines="false" context="deleteContextMenu">
+            <treecols>
+              <treecol id="name-col" flex="1" label="${TrashTable.NameColumn}" pen:binding="name" pen:childrenbinding="children"
+                pen:imagebinding="image" pen:comparatorbinding="comparator" />
+              <treecol id="type-col" flex="1" label="${TrashTable.TypeColumn}" pen:binding="type" />
+              <!-- modified date used as deleted date -->
+              <treecol id="date-del-col" flex="1" label="${TrashTable.DateDeletedColumn}" pen:binding="deletedDate" />
+              <treecol id="orig-loc-col" flex="1" label="${TrashTable.OriginalLocation}" pen:binding="originalParentPath" />
+            </treecols>
+            <treechildren />
+          </tree>
+        </vbox>
+        <vbox>
+          <!-- admin version has an extra owner column -->
+          <tree id="deleted-file-table-admin" flex="5" hidecolumnpicker="true" sortable="true" treeLines="false" context="deleteContextMenu">
+            <treecols>
+              <treecol id="name-col" flex="1" label="${TrashTable.NameColumn}" pen:binding="name" pen:childrenbinding="children"
+                pen:imagebinding="image" pen:comparatorbinding="comparator" />
+              <treecol id="type-col" flex="1" label="${TrashTable.TypeColumn}" pen:binding="type" />
+              <treecol id="date-del-col" flex="1" label="${TrashTable.DateDeletedColumn}" pen:binding="deletedDate" />
+              <treecol id="orig-loc-col" flex="1" label="${TrashTable.OriginalLocation}" pen:binding="originalParentPath" />
+              <treecol id="owner-loc-col" flex="1" label="${TrashTable.Owner}" pen:binding="owner" />
+            </treecols>
+            <treechildren />
+          </tree>
+        </vbox>
+      </deck>
     </vbox>
   </deck>
 </overlay>

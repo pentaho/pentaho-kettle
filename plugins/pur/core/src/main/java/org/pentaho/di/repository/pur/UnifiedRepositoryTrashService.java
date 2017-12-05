@@ -60,7 +60,6 @@ public class UnifiedRepositoryTrashService implements ITrashService {
 
     for ( final RepositoryFile file : deletedChildren ) {
       trash.add( new IDeletedObject() {
-
         @Override
         public String getOriginalParentPath() {
           return file.getOriginalParentFolderPath();
@@ -92,9 +91,13 @@ public class UnifiedRepositoryTrashService implements ITrashService {
           return file.getTitle();
         }
 
+        @Override
+        public String getOwner() {
+          return file.getCreatorId();
+        }
       } );
     }
-
     return trash;
   }
+
 }
