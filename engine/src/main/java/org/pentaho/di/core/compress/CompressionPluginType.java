@@ -24,7 +24,6 @@ package org.pentaho.di.core.compress;
 
 import java.io.InputStream;
 import java.lang.annotation.Annotation;
-import java.net.URL;
 import java.util.List;
 import java.util.Map;
 
@@ -94,13 +93,6 @@ public class CompressionPluginType extends BasePluginType implements PluginTypeI
 
   @Override
   protected void registerXmlPlugins() throws KettlePluginException {
-  }
-
-  @Override
-  public void handlePluginAnnotation( Class<?> clazz, Annotation annotation, List<String> libraries,
-    boolean nativePluginType, URL pluginFolder ) throws KettlePluginException {
-
-    super.handlePluginAnnotation( clazz, annotation, libraries, nativePluginType, pluginFolder );
   }
 
   public String[] getNaturalCategoriesOrder() {

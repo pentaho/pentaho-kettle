@@ -25,6 +25,7 @@ package org.pentaho.di.core.plugins;
 import java.net.URL;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * This interface describes the plugin itself, the IDs it listens too, what libraries (jar files) it uses, the names,
@@ -42,116 +43,143 @@ public interface PluginInterface {
    *         It can also happen if you deprecate an older plugin and you want to have a new one provide compatibility
    *         for it.<br>
    */
-  public String[] getIds();
+  String[] getIds();
 
   /**
    * @return The type of plugin
    */
-  public Class<? extends PluginTypeInterface> getPluginType();
+  Class<? extends PluginTypeInterface> getPluginType();
 
   /**
    * @return The main class assigned to this Plugin.
    */
-  public Class<?> getMainType();
+  Class<?> getMainType();
 
   /**
    * @return The libraries (jar file names) that are used by this plugin
    */
-  public List<String> getLibraries();
+  List<String> getLibraries();
 
   /**
    * @return The name of the plugin
    */
-  public String getName();
+  String getName();
 
   /**
    * @return The description of the plugin
    */
-  public String getDescription();
+  String getDescription();
 
   /**
    * @return The location of the image (icon) file for this plugin
    */
-  public String getImageFile();
+  String getImageFile();
+
+  /**
+   * @param imageFile
+   *          the location of the image (icon) file for this plugin
+   */
+  void setImageFile( String imageFile );
 
   /**
    * @return The category of this plugin or null if this is not applicable
    */
-  public String getCategory();
+  String getCategory();
 
   /**
    * @return True if a separate class loader is needed every time this class is instantiated
    */
-  public boolean isSeparateClassLoaderNeeded();
+  boolean isSeparateClassLoaderNeeded();
 
   /**
    * @return true if this is considered to be a standard native plugin.
    */
-  public boolean isNativePlugin();
+  boolean isNativePlugin();
 
   /**
    * @return All the possible class names that can be loaded with this plugin, split up by type.
    */
-  public Map<Class<?>, String> getClassMap();
+  Map<Class<?>, String> getClassMap();
 
   /**
    * @param id
    *          the plugin id to match
    * @return true if one of the ids matches the given argument. Return false if it doesn't.
    */
-  public boolean matches( String id );
+  boolean matches( String id );
 
   /**
    * @return An optional location to a help file that the plugin can refer to in case there is a loading problem. This
    *         usually happens if a jar file is not installed correctly (class not found exceptions) etc.
    */
-  public String getErrorHelpFile();
+  String getErrorHelpFile();
 
-  public URL getPluginDirectory();
+  /**
+   * @param errorHelpFile
+   *          the errorHelpFile to set
+   */
+  void setErrorHelpFile( String errorHelpFile );
+
+  URL getPluginDirectory();
 
   /**
    * @return the documentationUrl
    */
-  public String getDocumentationUrl();
+  String getDocumentationUrl();
 
   /**
    * @param documentationUrl
    *          the documentationUrl to set
    */
-  public void setDocumentationUrl( String documentationUrl );
+  void setDocumentationUrl( String documentationUrl );
 
   /**
    * @return The cases URL of the plugin
    */
-  public String getCasesUrl();
+  String getCasesUrl();
 
   /**
    * @param casesUrl
    *          the cases URL to set for this plugin
    */
-  public void setCasesUrl( String casesUrl );
+  void setCasesUrl( String casesUrl );
 
   /**
    * @return the forum URL
    */
-  public String getForumUrl();
+  String getForumUrl();
 
   /**
    * @param forumUrl
    *          the forum URL to set
    */
-  public void setForumUrl( String forumUrl );
+  void setForumUrl( String forumUrl );
 
   /**
    * @return The group to which this class loader belongs.  
    * Returns null if the plugin does not belong to a group (the default)
    */
-  public String getClassLoaderGroup();
+  String getClassLoaderGroup();
 
   /**
    * @param group The group to which this class loader belongs.  
    * Set to null if the plugin does not belong to a group (the default)
    */
-  public void setClassLoaderGroup( String group );
+  void setClassLoaderGroup( String group );
 
+  /**
+   * @param fragment A plugin interface to merge with
+   */
+  default void merge( PluginInterface fragment ) {
+    if ( fragment != null ) {
+      Optional.ofNullable( fragment.getClassMap() ).ifPresent( this.getClassMap()::putAll );
+      Optional.ofNullable( fragment.getImageFile() ).ifPresent( this::setImageFile );
+      Optional.ofNullable( fragment.getLibraries() ).ifPresent( this.getLibraries()::addAll );
+      Optional.ofNullable( fragment.getErrorHelpFile() ).ifPresent( this::setErrorHelpFile );
+      Optional.ofNullable( fragment.getDocumentationUrl() ).ifPresent( this::setDocumentationUrl );
+      Optional.ofNullable( fragment.getCasesUrl() ).ifPresent( this::setCasesUrl );
+      Optional.ofNullable( fragment.getForumUrl() ).ifPresent( this::setForumUrl );
+      Optional.ofNullable( fragment.getClassLoaderGroup() ).ifPresent( this::setClassLoaderGroup );
+    }
+  }
 }

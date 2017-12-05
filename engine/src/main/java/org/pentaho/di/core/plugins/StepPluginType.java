@@ -87,10 +87,6 @@ public class StepPluginType extends BasePluginType implements PluginTypeInterfac
     populateFolders( "steps" );
   }
 
-  protected StepPluginType( Class<? extends Annotation> pluginType, String id, String name ) {
-    super( pluginType, id, name );
-  }
-
   public static StepPluginType getInstance() {
     if ( stepPluginType == null ) {
       stepPluginType = new StepPluginType();

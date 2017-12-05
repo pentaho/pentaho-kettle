@@ -224,8 +224,7 @@ public class PluginRegistry {
       if ( !Utils.isEmpty( plugin.getCategory() ) ) {
         // Keep categories sorted in the natural order here too!
         //
-        categoryMap.computeIfAbsent( pluginType, k -> new TreeSet<>(
-          getNaturalCategoriesOrderComparator( pluginType ) ) )
+        categoryMap.computeIfAbsent( pluginType, k -> new TreeSet<>( getNaturalCategoriesOrderComparator( pluginType ) ) )
           .add( plugin.getCategory() );
       }
     } finally {
@@ -362,7 +361,7 @@ public class PluginRegistry {
    * Load the class of the type specified for the plugin with the ID specified.
    *
    * @param pluginType the type of plugin
-   * @param pluginId    The plugin id to use
+   * @param pluginId   The plugin id to use
    * @param classType  The type of class to load
    * @return the instantiated class.
    * @throws KettlePluginException
@@ -591,19 +590,14 @@ public class PluginRegistry {
       ext.searchForType( pluginType );
     }
 
-    List<String> pluginClassNames = new ArrayList<>();
+    Set<String> pluginClassNames = new HashSet<>();
 
     // Scan for plugin classes to facilitate debugging etc.
     //
     String pluginClasses = EnvUtil.getSystemProperty( Const.KETTLE_PLUGIN_CLASSES );
     if ( !Utils.isEmpty( pluginClasses ) ) {
       String[] classNames = pluginClasses.split( "," );
-
-      for ( String className : classNames ) {
-        if ( !pluginClassNames.contains( className ) ) {
-          pluginClassNames.add( className );
-        }
-      }
+      Collections.addAll( pluginClassNames, classNames );
     }
 
     for ( String className : pluginClassNames ) {
@@ -620,7 +614,7 @@ public class PluginRegistry {
           if ( annotation != null ) {
             // Register this one!
             //
-            pluginType.handlePluginAnnotation( clazz, annotation, new ArrayList<String>(), true, null );
+            pluginType.handlePluginAnnotation( clazz, annotation, new ArrayList<>(), true, null );
             LogChannel.GENERAL.logBasic( "Plugin class "
                 + className + " registered for plugin type '" + pluginType.getName() + "'" );
           } else {
@@ -658,13 +652,11 @@ public class PluginRegistry {
    * @return The ID of the plugin to which this class belongs (checks the plugin class maps)
    */
   public String getPluginId( Object pluginClass ) {
-    for ( Class<? extends PluginTypeInterface> pluginType : getPluginTypes() ) {
-      String id = getPluginId( pluginType, pluginClass );
-      if ( id != null ) {
-        return id;
-      }
-    }
-    return null;
+    return getPluginTypes().stream()
+      .map( pluginType -> getPluginId( pluginType, pluginClass ) )
+      .filter( Objects::nonNull )
+      .findFirst()
+      .orElse( null );
   }
 
   /**
@@ -746,10 +738,7 @@ public class PluginRegistry {
    * @return The plugin with the specified name or null if nothing was found.
    */
   public PluginInterface findPluginWithId( Class<? extends PluginTypeInterface> pluginType, String pluginId ) {
-    return getPlugins( pluginType ).stream()
-      .filter( plugin -> plugin.matches( pluginId ) )
-      .findFirst()
-      .orElse( null );
+    return getPlugin( pluginType, pluginId );
   }
 
   /**
@@ -984,11 +973,8 @@ public class PluginRegistry {
   public <T extends PluginTypeInterface> void addPluginListener( Class<T> typeToTrack, PluginTypeListener listener ) {
     lock.writeLock().lock();
     try {
-      Set<PluginTypeListener> list =
-        listeners.computeIfAbsent( typeToTrack, k -> new HashSet<>() );
-      if ( !list.contains( listener ) ) {
-        list.add( listener );
-      }
+      Set<PluginTypeListener> list = listeners.computeIfAbsent( typeToTrack, k -> new HashSet<>() );
+      list.add( listener );
     } finally {
       lock.writeLock().unlock();
     }

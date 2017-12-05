@@ -61,9 +61,7 @@ import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectoryInterface;
 import org.pentaho.di.trans.TransHopMeta;
 import org.pentaho.di.trans.TransMeta;
-import org.pentaho.di.trans.step.StepDialogInterface;
 import org.pentaho.di.trans.step.StepMeta;
-import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.di.trans.steps.tableinput.TableInputMeta;
 import org.pentaho.di.trans.steps.tableoutput.TableOutputMeta;
 import org.pentaho.di.ui.core.PropsUI;
@@ -220,24 +218,6 @@ public class SpoonJobDelegate extends SpoonDelegate {
       spoon.getLog().logError( spoon.toString(), "Could not create dialog for " + dialogClassName, t );
       return null;
     }
-  }
-
-  public StepDialogInterface getStepEntryDialog( StepMetaInterface stepMeta, TransMeta transMeta, String stepName ) {
-
-    String dialogClassName = stepMeta.getDialogClassName();
-    try {
-      Class<?> dialogClass;
-      Class<?>[] paramClasses =
-        new Class<?>[] { spoon.getShell().getClass(), Object.class, TransMeta.class, String.class };
-      Object[] paramArgs = new Object[] { spoon.getShell(), stepMeta, transMeta, stepName };
-      Constructor<?> dialogConstructor;
-      dialogClass = stepMeta.getClass().getClassLoader().loadClass( dialogClassName );
-      dialogConstructor = dialogClass.getConstructor( paramClasses );
-      return (StepDialogInterface) dialogConstructor.newInstance( paramArgs );
-    } catch ( Throwable t ) {
-      spoon.getLog().logError( spoon.toString(), "Could not create dialog for " + dialogClassName, t );
-    }
-    return null;
   }
 
   public void editJobEntry( JobMeta jobMeta, JobEntryCopy je ) {

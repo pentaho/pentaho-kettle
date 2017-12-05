@@ -91,7 +91,7 @@ public class PluginFolder implements PluginFolderInterface {
    * @return The list of plugin folders found
    */
   public static List<PluginFolderInterface> populateFolders( String xmlSubfolder ) {
-    List<PluginFolderInterface> pluginFolders = new ArrayList<PluginFolderInterface>();
+    List<PluginFolderInterface> pluginFolders = new ArrayList<>();
     String folderPaths = EnvUtil.getSystemProperty( "KETTLE_PLUGIN_BASE_FOLDERS" );
     if ( folderPaths == null ) {
       folderPaths = Const.DEFAULT_PLUGIN_BASE_FOLDERS;
@@ -123,7 +123,8 @@ public class PluginFolder implements PluginFolderInterface {
       // Find all the jar files in this folder...
       //
       FileObject folderObject = KettleVFS.getFileObject( this.getFolder() );
-      FileObject[] fileObjects = folderObject.findFiles( new FileSelector() {
+
+      return folderObject.findFiles( new FileSelector() {
         @Override
         public boolean traverseDescendents( FileSelectInfo fileSelectInfo ) throws Exception {
           FileObject fileObject = fileSelectInfo.getFile();
@@ -138,8 +139,6 @@ public class PluginFolder implements PluginFolderInterface {
           return file.isFile() && file.toString().endsWith( ".jar" );
         }
       } );
-
-      return fileObjects;
     } catch ( Exception e ) {
       throw new KettleFileException( "Unable to list jar files in plugin folder '" + toString() + "'", e );
     }

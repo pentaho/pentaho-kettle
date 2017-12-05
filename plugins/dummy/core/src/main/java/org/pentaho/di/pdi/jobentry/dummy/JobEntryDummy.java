@@ -164,6 +164,11 @@ public class JobEntryDummy extends JobEntryBase implements Cloneable, JobEntryIn
   }
 
   @Override
+  public String getDialogClassName() {
+    return JobEntryDummyDialog.class.getName();
+  }
+
+  @Override
   public Result execute( Result prev_result, int nr ) {
     Result result = new Result( nr );
     result.setResult( false );

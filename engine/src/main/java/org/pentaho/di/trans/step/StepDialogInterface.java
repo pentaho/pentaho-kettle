@@ -39,7 +39,7 @@ public interface StepDialogInterface {
    *
    * @return the (potentially new) name of the step
    */
-  public String open();
+  String open();
 
   /**
    * Sets the repository.
@@ -47,11 +47,11 @@ public interface StepDialogInterface {
    * @param repository
    *          the new repository
    */
-  public void setRepository( Repository repository );
+  void setRepository( Repository repository );
 
   /**
    * @param metaStore
    *          The MetaStore to pass
    */
-  public void setMetaStore( IMetaStore metaStore );
+  void setMetaStore( IMetaStore metaStore );
 }

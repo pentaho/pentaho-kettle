@@ -76,11 +76,10 @@ public class Plugin implements PluginInterface, Comparable<Plugin> {
    * @param libraries
    */
   public Plugin( String[] ids, Class<? extends PluginTypeInterface> pluginType, Class<?> mainType,
-    String category, String name, String description, String imageFile, boolean separateClassLoaderNeeded,
-    boolean nativePlugin, Map<Class<?>, String> classMap, List<String> libraries, String errorHelpFile,
-    URL pluginFolder ) {
-    this(
-      ids, pluginType, mainType, category, name, description, imageFile, separateClassLoaderNeeded,
+                 String category, String name, String description, String imageFile, boolean separateClassLoaderNeeded,
+                 boolean nativePlugin, Map<Class<?>, String> classMap, List<String> libraries, String errorHelpFile,
+                 URL pluginFolder ) {
+    this( ids, pluginType, mainType, category, name, description, imageFile, separateClassLoaderNeeded,
       nativePlugin, classMap, libraries, errorHelpFile, pluginFolder, null, null, null );
   }
 
@@ -97,9 +96,9 @@ public class Plugin implements PluginInterface, Comparable<Plugin> {
    * @param libraries
    */
   public Plugin( String[] ids, Class<? extends PluginTypeInterface> pluginType, Class<?> mainType,
-    String category, String name, String description, String imageFile, boolean separateClassLoaderNeeded,
-    boolean nativePlugin, Map<Class<?>, String> classMap, List<String> libraries, String errorHelpFile,
-    URL pluginFolder, String documentationUrl, String casesUrl, String forumUrl ) {
+                 String category, String name, String description, String imageFile, boolean separateClassLoaderNeeded,
+                 boolean nativePlugin, Map<Class<?>, String> classMap, List<String> libraries, String errorHelpFile,
+                 URL pluginFolder, String documentationUrl, String casesUrl, String forumUrl ) {
     this( ids, pluginType, mainType, category, name, description, imageFile, separateClassLoaderNeeded, null,
       nativePlugin, classMap, libraries, errorHelpFile, pluginFolder, documentationUrl, casesUrl, forumUrl );
   }
@@ -124,10 +123,9 @@ public class Plugin implements PluginInterface, Comparable<Plugin> {
    * @param forumUrl
    */
   public Plugin( String[] ids, Class<? extends PluginTypeInterface> pluginType, Class<?> mainType,
-    String category, String name, String description, String imageFile, boolean separateClassLoaderNeeded,
-    String classLoaderGroup, boolean nativePlugin, Map<Class<?>, String> classMap, List<String> libraries,
-    String errorHelpFile, URL pluginFolder, String documentationUrl, String casesUrl, String forumUrl ) {
-
+                 String category, String name, String description, String imageFile, boolean separateClassLoaderNeeded,
+                 String classLoaderGroup, boolean nativePlugin, Map<Class<?>, String> classMap, List<String> libraries,
+                 String errorHelpFile, URL pluginFolder, String documentationUrl, String casesUrl, String forumUrl ) {
     this.ids = ids;
     this.pluginType = pluginType;
     this.mainType = mainType;
@@ -268,6 +266,7 @@ public class Plugin implements PluginInterface, Comparable<Plugin> {
    * @param imageFile
    *          the imageFile to set
    */
+  @Override
   public void setImageFile( String imageFile ) {
     this.imageFile = imageFile;
   }
@@ -348,6 +347,7 @@ public class Plugin implements PluginInterface, Comparable<Plugin> {
    * @param errorHelpFile
    *          the errorHelpFile to set
    */
+  @Override
   public void setErrorHelpFile( String errorHelpFile ) {
     this.errorHelpFile = errorHelpFile;
   }

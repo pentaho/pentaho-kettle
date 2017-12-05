@@ -27,66 +27,66 @@ public interface LogChannelInterface {
   /**
    * @return the id of the logging channel
    */
-  public String getLogChannelId();
+  String getLogChannelId();
 
-  public LogLevel getLogLevel();
+  LogLevel getLogLevel();
 
-  public void setLogLevel( LogLevel logLevel );
+  void setLogLevel( LogLevel logLevel );
 
   /**
    * @return the containerObjectId
    */
-  public String getContainerObjectId();
+  String getContainerObjectId();
 
   /**
    * @param containerObjectId
    *          the containerObjectId to set
    */
-  public void setContainerObjectId( String containerObjectId );
+  void setContainerObjectId( String containerObjectId );
 
-  public String getFilter();
+  String getFilter();
 
-  public void setFilter( String filter );
+  void setFilter( String filter );
 
-  public boolean isBasic();
+  boolean isBasic();
 
-  public boolean isDetailed();
+  boolean isDetailed();
 
-  public boolean isDebug();
+  boolean isDebug();
 
-  public boolean isRowLevel();
+  boolean isRowLevel();
 
-  public boolean isError();
+  boolean isError();
 
-  public void logMinimal( String message );
+  void logMinimal( String message );
 
-  public void logMinimal( String message, Object... arguments );
+  void logMinimal( String message, Object... arguments );
 
-  public void logBasic( String message );
+  void logBasic( String message );
 
-  public void logBasic( String message, Object... arguments );
+  void logBasic( String message, Object... arguments );
 
-  public void logDetailed( String message );
+  void logDetailed( String message );
 
-  public void logDetailed( String message, Object... arguments );
+  void logDetailed( String message, Object... arguments );
 
-  public void logDebug( String message );
+  void logDebug( String message );
 
-  public void logDebug( String message, Object... arguments );
+  void logDebug( String message, Object... arguments );
 
-  public void logRowlevel( String message );
+  void logRowlevel( String message );
 
-  public void logRowlevel( String message, Object... arguments );
+  void logRowlevel( String message, Object... arguments );
 
-  public void logError( String message );
+  void logError( String message );
 
-  public void logError( String message, Throwable e );
+  void logError( String message, Throwable e );
 
-  public void logError( String message, Object... arguments );
+  void logError( String message, Object... arguments );
 
-  public boolean isGatheringMetrics();
+  boolean isGatheringMetrics();
 
-  public void setGatheringMetrics( boolean gatheringMetrics );
+  void setGatheringMetrics( boolean gatheringMetrics );
 
   /**
    * This option will force the create of a separate logging channel even if the logging concerns identical objects with
@@ -95,12 +95,12 @@ public interface LogChannelInterface {
    * @param forcingSeparateLogging
    *          Set to true to force separate logging
    */
-  public void setForcingSeparateLogging( boolean forcingSeparateLogging );
+  void setForcingSeparateLogging( boolean forcingSeparateLogging );
 
   /**
    * @return True if the logging is forcibly separated out from even identical objects.
    */
-  public boolean isForcingSeparateLogging();
+  boolean isForcingSeparateLogging();
 
   /**
    * Add a snapshot to the metrics system for this log channel at the time of invocation. This will process the value
@@ -112,7 +112,7 @@ public interface LogChannelInterface {
    * @param value
    *          the value to store
    */
-  public void snap( MetricsInterface metric, long... value );
+  void snap( MetricsInterface metric, long... value );
 
   /**
    * Add a maximum snapshot to the metrics system for this log channel at the time of invocation. This will look up the
@@ -126,5 +126,5 @@ public interface LogChannelInterface {
    * @param value
    *          the value to store
    */
-  public void snap( MetricsInterface metric, String subject, long... value );
+  void snap( MetricsInterface metric, String subject, long... value );
 }

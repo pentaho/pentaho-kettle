@@ -46,28 +46,28 @@ public interface PluginTypeInterface {
    * @param xmlNodeName
    *          xml node to search for a class name
    */
-  public void addObjectType( Class<?> clz, String xmlNodeName );
+  void addObjectType( Class<?> clz, String xmlNodeName );
 
   /**
    * @return The ID of this plugin type
    */
-  public String getId();
+  String getId();
 
   /**
    * @return The name of this plugin
    */
-  public String getName();
+  String getName();
 
   /**
    * @return The places where we should look for plugins, both as plugin.xml and as
    */
-  public List<PluginFolderInterface> getPluginFolders();
+  List<PluginFolderInterface> getPluginFolders();
 
   /**
    *
    * @throws KettlePluginException
    */
-  public void searchPlugins() throws KettlePluginException;
+  void searchPlugins() throws KettlePluginException;
 
   /**
    * Handle an annotated plugin
@@ -84,6 +84,10 @@ public interface PluginTypeInterface {
    *          The plugin folder to use
    * @throws KettlePluginException
    */
-  public void handlePluginAnnotation( Class<?> clazz, java.lang.annotation.Annotation annotation,
+  void handlePluginAnnotation( Class<?> clazz, java.lang.annotation.Annotation annotation,
     List<String> libraries, boolean nativePluginType, URL pluginFolder ) throws KettlePluginException;
+
+  default boolean isFragment() {
+    return false;
+  }
 }

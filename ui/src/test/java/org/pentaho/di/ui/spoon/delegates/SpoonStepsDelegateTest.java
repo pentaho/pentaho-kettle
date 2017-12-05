@@ -22,6 +22,7 @@
 
 package org.pentaho.di.ui.spoon.delegates;
 
+import org.eclipse.swt.widgets.Shell;
 import org.junit.Test;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.extension.ExtensionPointInterface;
@@ -31,14 +32,21 @@ import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.plugins.ClassLoadingPluginInterface;
 import org.pentaho.di.core.plugins.PluginInterface;
 import org.pentaho.di.core.plugins.PluginRegistry;
+import org.pentaho.di.core.plugins.StepPluginType;
 import org.pentaho.di.trans.TransMeta;
+import org.pentaho.di.trans.step.StepDialogInterface;
 import org.pentaho.di.trans.step.StepMeta;
+import org.pentaho.di.trans.step.StepMetaInterface;
+import org.pentaho.di.ui.spoon.Spoon;
+
+import java.util.HashMap;
 
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.doCallRealMethod;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -69,5 +77,51 @@ public class SpoonStepsDelegateTest {
     delegate.delSteps( trans, steps );
 
     verify( extensionPoint, times( 1 ) ).callExtensionPoint( any(), eq( steps ) );
+  }
+
+  @Test
+  public void testGetStepDialogClass() throws Exception {
+    PluginMockInterface plugin = mock( PluginMockInterface.class );
+    when( plugin.getIds() ).thenReturn( new String[] { "mockPlugin"} );
+    when( plugin.matches( "mockPlugin" ) ).thenReturn( true );
+    when( plugin.getName() ).thenReturn( "mockPlugin" );
+
+    StepMetaInterface meta = mock( StepMetaInterface.class );
+    when( meta.getDialogClassName() ).thenReturn( String.class.getName() );
+    when( plugin.getClassMap() ).thenReturn( new HashMap<Class<?>, String>() {{
+        put( StepMetaInterface.class, meta.getClass().getName() );
+        put( StepDialogInterface.class, StepDialogInterface.class.getName() );
+      }} );
+
+    PluginRegistry.getInstance().registerPlugin( StepPluginType.class, plugin );
+
+    SpoonStepsDelegate delegate = mock( SpoonStepsDelegate.class );
+    Spoon spoon = mock( Spoon.class );
+    delegate.spoon = spoon;
+    delegate.log = mock( LogChannelInterface.class );
+    when( spoon.getShell() ).thenReturn( mock( Shell.class ) );
+    doCallRealMethod().when( delegate ).getStepDialog( any( StepMetaInterface.class ), any( TransMeta.class ), any( String.class ) );
+
+    TransMeta trans = mock( TransMeta.class );
+
+    // verify that dialog class is requested from plugin
+    try {
+      delegate.getStepDialog( meta, trans, "" ); // exception is expected here
+    } catch ( Exception ignore ) {
+      verify( meta, never() ).getDialogClassName();
+    }
+
+    // verify that the deprecated way is still valid
+    when( plugin.getClassMap() ).thenReturn( new HashMap<Class<?>, String>() {{
+        put( StepMetaInterface.class, meta.getClass().getName() );
+      }} );
+    try {
+      delegate.getStepDialog( meta, trans, "" ); // exception is expected here
+    } catch ( Exception ignore ) {
+      verify( meta, times( 1 ) ).getDialogClassName();
+    }
+
+    // cleanup
+    PluginRegistry.getInstance().removePlugin( StepPluginType.class, plugin );
   }
 }

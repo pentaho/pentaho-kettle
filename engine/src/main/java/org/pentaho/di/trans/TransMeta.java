@@ -5730,13 +5730,9 @@ public class TransMeta extends AbstractMeta
    * @return a list of ResourceReferences
    */
   public List<ResourceReference> getResourceDependencies() {
-    List<ResourceReference> resourceReferences = new ArrayList<>();
-
-    for ( StepMeta stepMeta : steps ) {
-      resourceReferences.addAll( stepMeta.getResourceDependencies( this ) );
-    }
-
-    return resourceReferences;
+    return steps.stream()
+      .flatMap( (StepMeta stepMeta) -> stepMeta.getResourceDependencies( this ).stream() )
+      .collect( Collectors.toList() );
   }
 
   /**

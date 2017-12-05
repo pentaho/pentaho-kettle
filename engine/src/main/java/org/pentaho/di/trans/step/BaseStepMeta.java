@@ -24,6 +24,7 @@ package org.pentaho.di.trans.step;
 
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -186,9 +187,7 @@ public class BaseStepMeta implements Cloneable, StepAttributesInterface {
    *           in case there is an XML conversion or encoding error
    */
   public String getXML() throws KettleException {
-    String retval = "";
-
-    return retval;
+    return "";
   }
 
   /**
@@ -445,11 +444,7 @@ public class BaseStepMeta implements Cloneable, StepAttributesInterface {
    * @return a list of all the resource dependencies that the step is depending on
    */
   public List<ResourceReference> getResourceDependencies( TransMeta transMeta, StepMeta stepInfo ) {
-    List<ResourceReference> references = new ArrayList<ResourceReference>( 5 ); // Lower the initial capacity - unusual
-                                                                                // to have more than 1 actually
-    ResourceReference reference = new ResourceReference( stepInfo );
-    references.add( reference );
-    return references;
+    return Arrays.asList( new ResourceReference( stepInfo ) );
   }
 
   /**
@@ -490,7 +485,10 @@ public class BaseStepMeta implements Cloneable, StepAttributesInterface {
    * appropriate class name
    *
    * @return full class name of the dialog
+   *
+   * @deprecated As of release 8.1, use annotated-based dialog instead {@see org.pentaho.di.ui.core.annotations.StepDialog}
    */
+  @Deprecated
   public String getDialogClassName() {
     String className = getClass().getCanonicalName();
     className = className.replaceFirst( "\\.di\\.", ".di.ui." );
@@ -1068,8 +1066,6 @@ public class BaseStepMeta implements Cloneable, StepAttributesInterface {
    *
    * @deprecated use {@link #loadReferencedObject(int, Repository, IMetaStore, VariableSpace)}
    *
-   * @param meta
-   *          The metadata that references
    * @param index
    *          the object index to load
    * @param rep
