@@ -58,7 +58,7 @@ public class GoogleDrivePluginLifecycleListener implements KettleLifecycleListen
           GoogleDriveFileObject.resolveCredentialsPath() + "/" + resourceBundle.getString( "stored.credential" ) )
           .exists() ) {
         DefaultCapabilityManager capabilityManager = DefaultCapabilityManager.getInstance();
-        if ( capabilityManager.getCapabilityById( "pentaho-server" ) != null ) {
+        if ( capabilityManager.capabilityExist( "pentaho-server" ) ) {
           proceed = false;
           log.warn( "The Google Authorization Code Flow security token file (" + resourceBundle
               .getString( "stored.credential" ) + ") is not present in the credentials folder.  This file is necessary to activate the Google Drive VFS plugin." );
