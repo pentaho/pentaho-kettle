@@ -45,6 +45,7 @@ import org.pentaho.di.core.row.value.ValueMetaDate;
 import org.pentaho.di.core.row.value.ValueMetaInteger;
 import org.pentaho.di.core.row.value.ValueMetaNumber;
 import org.pentaho.di.core.row.value.ValueMetaString;
+import org.pentaho.di.core.row.value.ValueMetaTimestamp;
 
 /**
  * This class evaluates strings and extracts a data type. It allows you to criteria after which the analysis should be
@@ -413,6 +414,16 @@ public class StringEvaluator {
         conversionMeta.setDateFormatLenient( false );
         evaluationResults.add( new StringEvaluationResult( conversionMeta ) );
       }
+      String secondsPattern = "";
+      for ( int i = 0; i < 9; i++ ) {
+        secondsPattern = secondsPattern.concat( "S" );
+        ValueMetaInterface conversionMeta = new ValueMetaTimestamp( "timestamp" );
+        conversionMeta.setConversionMask( "yyyy-MM-dd HH:mm:ss.".concat( secondsPattern ) );
+        conversionMeta.setTrimType( trimType );
+        conversionMeta.setDateFormatLenient( false );
+        evaluationResults.add( new StringEvaluationResult( conversionMeta ) );
+      }
+
 
       EvalResultBuilder numberUsBuilder = new EvalResultBuilder( "number-us", ValueMetaInterface.TYPE_NUMBER, 15, trimType, ".", "," );
       EvalResultBuilder numberEuBuilder = new EvalResultBuilder( "number-eu", ValueMetaInterface.TYPE_NUMBER, 15, trimType, ",", "." );
