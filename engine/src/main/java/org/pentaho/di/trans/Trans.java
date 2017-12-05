@@ -4192,29 +4192,28 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
       throw new KettleException( "The transformation needs a name to uniquely identify it by on the remote server." );
     }
 
+    // Inject certain internal variables to make it more intuitive.
+    //
+    Map<String, String> vars = new HashMap<>();
+
+    for ( String var : Const.INTERNAL_TRANS_VARIABLES ) {
+      vars.put( var, transMeta.getVariable( var ) );
+    }
+    for ( String var : Const.INTERNAL_JOB_VARIABLES ) {
+      vars.put( var, transMeta.getVariable( var ) );
+    }
+
+    executionConfiguration.getVariables().putAll( vars );
+    slaveServer.injectVariables( executionConfiguration.getVariables() );
+
+    slaveServer.getLogChannel().setLogLevel( executionConfiguration.getLogLevel() );
+
     try {
-      // Inject certain internal variables to make it more intuitive.
-      //
-      Map<String, String> vars = new HashMap<>();
-
-      for ( String var : Const.INTERNAL_TRANS_VARIABLES ) {
-        vars.put( var, transMeta.getVariable( var ) );
-      }
-      for ( String var : Const.INTERNAL_JOB_VARIABLES ) {
-        vars.put( var, transMeta.getVariable( var ) );
-      }
-
-      executionConfiguration.getVariables().putAll( vars );
-      slaveServer.injectVariables( executionConfiguration.getVariables() );
-
-      slaveServer.getLogChannel().setLogLevel( executionConfiguration.getLogLevel() );
-
       if ( executionConfiguration.isPassingExport() ) {
 
         // First export the job...
         //
-        FileObject tempFile =
-            KettleVFS.createTempFile( "transExport", ".zip", System.getProperty( "java.io.tmpdir" ), transMeta );
+        FileObject tempFile = KettleVFS.createTempFile( "transExport", KettleVFS.Suffix.ZIP, transMeta );
 
         TopLevelResource topLevelResource =
             ResourceUtil.serializeResourceExportInterface( tempFile.getName().toString(), transMeta, transMeta,
