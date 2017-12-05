@@ -1672,7 +1672,12 @@ public class TableView extends Composite {
       table.removeAll();
       new TableItem( table, SWT.NONE );
       if ( !readonly ) {
-        edit( 0, 1 );
+        parent.getDisplay().asyncExec( new Runnable() {
+          @Override
+          public void run() {
+            edit( 0, 1 );
+          }
+        } );
       }
       this.setModified(); // timh
     }
