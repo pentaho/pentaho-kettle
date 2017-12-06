@@ -473,8 +473,6 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
 
   private CTabItem view, design;
 
-  private Label selectionLabel;
-
   public Text selectionFilter;
 
   private org.eclipse.swt.widgets.Menu fileMenus;
@@ -1917,16 +1915,6 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     fdSep3.top = new FormAttachment( tabFolder, 0 );
     sep3.setLayoutData( fdSep3 );
 
-    selectionLabel = new Label( mainComposite, SWT.HORIZONTAL );
-    FormData fdsLabel = new FormData();
-    fdsLabel.left = new FormAttachment( 3, 0 );
-    if ( Const.isLinux() ) {
-      fdsLabel.top = new FormAttachment( sep3, 10 );
-    } else {
-      fdsLabel.top = new FormAttachment( sep3, 8 );
-    }
-    selectionLabel.setLayoutData( fdsLabel );
-
     ToolBar treeTb = new ToolBar( mainComposite, SWT.HORIZONTAL | SWT.FLAT );
     props.setLook( treeTb, Props.WIDGET_STYLE_TOOLBAR );
     /*
@@ -1943,23 +1931,43 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     } else {
       fdTreeToolbar.top = new FormAttachment( sep3, 5 );
     }
-    fdTreeToolbar.right = new FormAttachment( 95, 5 );
+    fdTreeToolbar.right = new FormAttachment( 100, -10 );
     treeTb.setLayoutData( fdTreeToolbar );
+
+    ToolBar selectionFilterTb = new ToolBar( mainComposite, SWT.HORIZONTAL | SWT.FLAT );
+    props.setLook( selectionFilterTb, Props.WIDGET_STYLE_TOOLBAR );
+
+    ToolItem clearSelectionFilter = new ToolItem( selectionFilterTb, SWT.PUSH );
+    clearSelectionFilter.setImage( GUIResource.getInstance().getImageClearText() );
+    clearSelectionFilter.setDisabledImage( GUIResource.getInstance().getImageClearTextDisabled() );
+
+    FormData fdSelectionFilterToolbar = new FormData();
+    if ( Const.isLinux() ) {
+      fdSelectionFilterToolbar.top = new FormAttachment( sep3, 3 );
+    } else {
+      fdSelectionFilterToolbar.top = new FormAttachment( sep3, 5 );
+    }
+    fdSelectionFilterToolbar.right = new FormAttachment( treeTb, -20 );
+    selectionFilterTb.setLayoutData( fdSelectionFilterToolbar );
 
     selectionFilter =
       new Text( mainComposite, SWT.SINGLE
-        | SWT.BORDER | SWT.LEFT | SWT.SEARCH | SWT.ICON_SEARCH | SWT.ICON_CANCEL );
+        | SWT.BORDER | SWT.LEFT | SWT.SEARCH );
     selectionFilter.setToolTipText( BaseMessages.getString( PKG, "Spoon.SelectionFilter.Tooltip" ) );
+    selectionFilter.setMessage( BaseMessages.getString( PKG, "Spoon.SelectionFilter.Placeholder" ) );
     FormData fdSelectionFilter = new FormData();
-    int offset = -( GUIResource.getInstance().getImageExpandAll().getBounds().height + 5 );
+    int offset = -( GUIResource.getInstance().getImageClearTextDisabled().getBounds().height + 6 );
     if ( Const.isLinux() ) {
-      if ( !Const.isKDE() ) {
-        offset = -( GUIResource.getInstance().getImageExpandAll().getBounds().height + 12 );
-      }
+      // TODO: On ubuntu with KDE 5.18.0 this condition is not required. We should check
+      // the version from which this fix is not needed
+      // if ( !Const.isKDE() ) {
+      offset = -( GUIResource.getInstance().getImageClearTextDisabled().getBounds().height + 13 );
+      // }
     }
-    fdSelectionFilter.top = new FormAttachment( treeTb, offset );
-    fdSelectionFilter.right = new FormAttachment( 95, -55 );
-    fdSelectionFilter.left = new FormAttachment( selectionLabel, 10 );
+
+    fdSelectionFilter.top = new FormAttachment( selectionFilterTb, offset );
+    fdSelectionFilter.right = new FormAttachment( selectionFilterTb, 0 );
+    fdSelectionFilter.left = new FormAttachment( 0, 10 );
     selectionFilter.setLayoutData( fdSelectionFilter );
 
     selectionFilter.addModifyListener( new ModifyListener() {
@@ -1984,8 +1992,19 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
           }
           selectionFilter.setFocus();
         }
+
+        clearSelectionFilter.setEnabled( !Utils.isEmpty( selectionFilter.getText() ) );
       }
     } );
+
+    clearSelectionFilter.addSelectionListener( new SelectionAdapter() {
+      @Override
+      public void widgetSelected( SelectionEvent event ) {
+        selectionFilter.setText( "" );
+      }
+    } );
+
+    clearSelectionFilter.setEnabled( !Utils.isEmpty( selectionFilter.getText() ) );
 
     expandAll.addSelectionListener( new SelectionAdapter() {
       @Override
@@ -2118,9 +2137,6 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     previousShowJob = false;
 
     // stepHistoryChanged=true;
-
-    selectionLabel.setText( tree ? BaseMessages.getString( PKG, "Spoon.Explorer" ) : BaseMessages.getString(
-      PKG, "Spoon.Steps" ) );
   }
 
   public void addCoreObjectsTree() {
@@ -2298,7 +2314,6 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     }
 
     if ( showTrans ) {
-      selectionLabel.setText( BaseMessages.getString( PKG, "Spoon.Steps" ) );
       // Fill the base components...
       //
       // ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -2377,7 +2392,6 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
       // JOBS
       // ////////////////////////////////////////////////////////////////////////////////////////////////
 
-      selectionLabel.setText( BaseMessages.getString( PKG, "Spoon.Entries" ) );
       PluginRegistry registry = PluginRegistry.getInstance();
       List<PluginInterface> baseJobEntries = registry.getPlugins( JobEntryPluginType.class );
       List<String> baseCategories = registry.getCategories( JobEntryPluginType.class );
@@ -4978,8 +4992,8 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
       // on windows [...].swt.ole.win32.OleClientSite.OnInPlaceDeactivate can
       // cause the focus to move to an already disposed tab, resulting in a NPE
       // so we first move the focus to somewhere else
-      if ( this.selectionLabel != null && !this.selectionLabel.isDisposed() ) {
-        this.selectionLabel.forceFocus();
+      if ( this.selectionFilter != null && !this.selectionFilter.isDisposed() ) {
+        this.selectionFilter.forceFocus();
       }
 
       close();
