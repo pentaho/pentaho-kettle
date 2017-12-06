@@ -43,6 +43,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import com.google.common.base.Preconditions;
+
+import org.apache.commons.lang.StringUtils;
 import org.pentaho.di.core.BlockingRowSet;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.util.Utils;
@@ -1233,9 +1235,23 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
    */
   @Override
   public void putRow( RowMetaInterface rowMeta, Object[] row ) throws KettleStepException {
+    if ( rowMeta != null ) {
+      String property = System.getProperties().getProperty( Const.ALLOW_EMPTY_FIELD_NAMES_AND_TYPES, "false" );
+      boolean allowEmpty = Boolean.parseBoolean( property );
+      if ( !allowEmpty ) {
+        // check row meta for empty field name (BACKLOG-18004)
+        for ( ValueMetaInterface vmi : rowMeta.getValueMetaList() ) {
+          if ( StringUtils.isBlank( vmi.getName() ) ) {
+            throw new KettleStepException( "Please set a field name for all field(s) that have 'null'." );
+          }
+          if ( vmi.getType() <= 0 ) {
+            throw new KettleStepException( "Please set a value for the missing field(s) type." );
+          }
+        }
+      }
+    }
     getRowHandler().putRow( rowMeta, row );
   }
-
 
   private void handlePutRow( RowMetaInterface rowMeta, Object[] row ) throws KettleStepException {
     // Are we pausing the step? If so, stall forever...

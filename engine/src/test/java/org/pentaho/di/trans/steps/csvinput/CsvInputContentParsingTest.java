@@ -23,6 +23,7 @@
 package org.pentaho.di.trans.steps.csvinput;
 
 import org.junit.Test;
+import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.trans.steps.textfileinput.TextFileInputField;
 
 public class CsvInputContentParsingTest extends BaseCsvParsingTest {
@@ -79,7 +80,7 @@ public class CsvInputContentParsingTest extends BaseCsvParsingTest {
         "\u043d\u0435-\u043b\u0430\u0446\u0456\u043d\u043a\u0430(non-latin)", "4", "4" } } );
   }
 
-  @Test
+  @Test( expected = KettleStepException.class )
   public void testNoHeaderOptions() throws Exception {
     meta.setHeaderPresent( false );
     init( "default.csv" );
@@ -87,8 +88,5 @@ public class CsvInputContentParsingTest extends BaseCsvParsingTest {
     setFields( new TextFileInputField(), new TextFileInputField(), new TextFileInputField() );
 
     process();
-
-    check( new Object[][] { { "Field 1", "Field 2", "Field 3" }, { "first", "1", "1.1" }, { "second", "2", "2.2" }, {
-        "third", "3", "3.3" } } );
   }
 }

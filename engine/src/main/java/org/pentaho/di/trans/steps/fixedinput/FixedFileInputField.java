@@ -93,6 +93,14 @@ public class FixedFileInputField implements Cloneable, XMLInterface {
     trimType = ValueMetaInterface.TRIM_TYPE_NONE;
   }
 
+  /**
+   * For testing only.
+   */
+  protected FixedFileInputField( String name ) {
+    this();
+    this.name = name;
+  }
+
   @Override
   public boolean equals( Object obj ) {
     return name.equalsIgnoreCase( ( (FixedFileInputField) obj ).name );
