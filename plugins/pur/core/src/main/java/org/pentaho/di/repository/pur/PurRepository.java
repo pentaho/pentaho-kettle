@@ -58,6 +58,7 @@ import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.i18n.BaseMessages;
+import org.pentaho.di.imp.Import;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.partition.PartitionSchema;
 import org.pentaho.di.repository.AbstractRepository;
@@ -2981,6 +2982,11 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
                                boolean saveSharedObjects,
                                boolean checkLock, boolean checkRename,
                                boolean loadRevision, boolean checkDeleted ) throws KettleException {
+    if ( Import.ROOT_DIRECTORY.equals( element.getRepositoryDirectory().toString() ) ) {
+      // We don't have possibility to read this file via UI
+      throw new KettleException( BaseMessages.getString( PKG, "PurRepository.fileCannotBeSavedInRootDirectory",
+        element.getName() + element.getRepositoryElementType().getExtension() ) );
+    }
     if ( saveSharedObjects ) {
       objectTransformer.saveSharedObjects( element, versionComment );
     }

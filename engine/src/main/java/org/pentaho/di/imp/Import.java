@@ -65,7 +65,7 @@ public class Import {
   private static final Class<?> PKG = Import.class; // i18n
 
   public static final String STRING_IMPORT = "Import";
-  private static final String ROOT_DIRECTORY = "/";
+  public static final String ROOT_DIRECTORY = "/";
 
   private static class ImportFeedback implements RepositoryImportFeedbackInterface, HasOverwritePrompter {
     private final LogChannelInterface log;
