@@ -1061,6 +1061,11 @@ public class Const {
   public static final String KETTLE_SPLIT_FIELDS_REMOVE_ENCLOSURE = "KETTLE_SPLIT_FIELDS_REMOVE_ENCLOSURE";
 
   /**
+   * Variable that is responsible for checking empty field names and types.
+   */
+  public static final String ALLOW_EMPTY_FIELD_NAMES_AND_TYPES = "ALLOW_EMPTY_FIELD_NAMES_AND_TYPES";
+
+  /**
    * Set this variable to false to preserve global log variables defined in transformation / job Properties -> Log panel.
    * Changing it to true will clear all global log variables when export transformation / job
    */

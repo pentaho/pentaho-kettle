@@ -129,10 +129,10 @@ public class BaseStepTest {
     when( partitioner.getNrPartitions() ).thenReturn( 2 );
 
     Object object0 = "name0";
-    ValueMetaInterface meta0 = new ValueMetaBase( object0.toString() );
+    ValueMetaInterface meta0 = new ValueMetaString( object0.toString() );
 
     Object object1 = "name1";
-    ValueMetaInterface meta2 = new ValueMetaBase( object1.toString() );
+    ValueMetaInterface meta2 = new ValueMetaString( object1.toString() );
 
     RowMetaInterface rowMeta0 = new RowMeta();
     rowMeta0.addValueMeta( meta0 );
@@ -456,5 +456,55 @@ public class BaseStepTest {
     };
   }
 
+  @Test
+  public void notEmptyFieldName() throws KettleStepException {
+    BaseStep baseStep =
+        new BaseStep( mockHelper.stepMeta, mockHelper.stepDataInterface, 0, mockHelper.transMeta, mockHelper.trans );
+    baseStep.setRowHandler( rowHandler );
 
+    RowMetaInterface rowMeta = new RowMeta();
+    rowMeta.addValueMeta( new ValueMetaBase( "name", ValueMetaInterface.TYPE_INTEGER ) );
+
+    baseStep.putRow( rowMeta, new Object[] {
+      0 } );
+  }
+
+  @Test( expected = KettleStepException.class )
+  public void nullFieldName() throws KettleStepException {
+    BaseStep baseStep =
+        new BaseStep( mockHelper.stepMeta, mockHelper.stepDataInterface, 0, mockHelper.transMeta, mockHelper.trans );
+    baseStep.setRowHandler( rowHandler );
+
+    RowMetaInterface rowMeta = new RowMeta();
+    rowMeta.addValueMeta( new ValueMetaBase( null, ValueMetaInterface.TYPE_INTEGER ) );
+
+    baseStep.putRow( rowMeta, new Object[] {
+      0 } );
+  }
+
+  @Test( expected = KettleStepException.class )
+  public void emptyFieldName() throws KettleStepException {
+    BaseStep baseStep =
+        new BaseStep( mockHelper.stepMeta, mockHelper.stepDataInterface, 0, mockHelper.transMeta, mockHelper.trans );
+    baseStep.setRowHandler( rowHandler );
+
+    RowMetaInterface rowMeta = new RowMeta();
+    rowMeta.addValueMeta( new ValueMetaBase( "", ValueMetaInterface.TYPE_INTEGER ) );
+
+    baseStep.putRow( rowMeta, new Object[] {
+      0 } );
+  }
+
+  @Test( expected = KettleStepException.class )
+  public void blankFieldName() throws KettleStepException {
+    BaseStep baseStep =
+        new BaseStep( mockHelper.stepMeta, mockHelper.stepDataInterface, 0, mockHelper.transMeta, mockHelper.trans );
+    baseStep.setRowHandler( rowHandler );
+
+    RowMetaInterface rowMeta = new RowMeta();
+    rowMeta.addValueMeta( new ValueMetaBase( "  ", ValueMetaInterface.TYPE_INTEGER ) );
+
+    baseStep.putRow( rowMeta, new Object[] {
+      0 } );
+  }
 }
