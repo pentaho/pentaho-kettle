@@ -505,7 +505,7 @@ public class MultiMergeJoinDialog extends BaseStepDialog implements StepDialogIn
         inputStepName = Const.NVL( inputStepNames[i], "" );
         wInputStepArray[i].setText( inputStepName );
 
-        keyField = Const.NVL( keyFields[i], "" );
+        keyField = Const.NVL( i < keyFields.length ? keyFields[i] : null, "" );
         keyValTextBox[i].setText( keyField );
       }
 
