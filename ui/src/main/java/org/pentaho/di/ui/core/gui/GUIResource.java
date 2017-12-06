@@ -301,6 +301,10 @@ public class GUIResource {
 
   private SwtUniversalImage imageExpandAll;
 
+  private SwtUniversalImage imageClearText;
+
+  private SwtUniversalImage imageClearTextDisabled;
+
   private Image imageSearchSmall;
 
   private Image imageRegExSmall;
@@ -607,6 +611,8 @@ public class GUIResource {
       imageInfoHop.dispose();
       imageWarning.dispose();
       imageVersionBrowser.dispose();
+      imageClearText.dispose();
+      imageClearTextDisabled.dispose();
       imageExpandAll.dispose();
       imageSearchSmall.dispose();
       imageRegExSmall.dispose();
@@ -1003,6 +1009,14 @@ public class GUIResource {
 
     // "ui/images/View.png;
     imageViewPanel = loadAsResource( display, BasePropertyHandler.getProperty( "ViewPanel_image" ), 0 );
+
+    // "ui/images/ClearText.png;
+    imageClearText =
+      SwtSvgImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "ClearText_image" ) );
+
+    // "ui/images/ClearTextDisabled.png;
+    imageClearTextDisabled =
+      SwtSvgImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "ClearTextDisabled_image" ) );
 
     // "ui/images/ExpandAll.png;
     imageExpandAll =
@@ -2186,6 +2200,14 @@ public class GUIResource {
 
   public Image getImageViewPanel() {
     return imageViewPanel;
+  }
+
+  public Image getImageClearText() {
+    return imageClearText.getAsBitmapForSize( display, ConstUI.SMALL_ICON_SIZE, ConstUI.SMALL_ICON_SIZE );
+  }
+
+  public Image getImageClearTextDisabled() {
+    return imageClearTextDisabled.getAsBitmapForSize( display, ConstUI.SMALL_ICON_SIZE, ConstUI.SMALL_ICON_SIZE );
   }
 
   public Image getImageExpandAll() {

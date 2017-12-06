@@ -1935,7 +1935,7 @@ public class ConstTest extends TestCase {
 
   @Test
   public void testIsKDE() {
-    final String kdeVersion = System.getProperty( "KDE_SESSION_VERSION" );
+    final String kdeVersion = System.getenv( "KDE_SESSION_VERSION" );
     assertEquals( kdeVersion != null && !kdeVersion.isEmpty(), Const.isKDE() );
   }
 
