@@ -21,6 +21,7 @@ import org.pentaho.di.core.extension.ExtensionPoint;
 import org.pentaho.di.core.extension.ExtensionPointInterface;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.util.Utils;
+import org.pentaho.di.core.Const;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryObject;
 import org.pentaho.di.repository.RepositoryObjectType;
@@ -47,8 +48,8 @@ import java.util.function.Supplier;
 public class RepositoryOpenSaveExtensionPoint implements ExtensionPointInterface {
 
   public static final String TRANSFORMATION = "transformation";
-  public static final int WIDTH = 947;
-  public static final int HEIGHT = 626;
+  public static final int WIDTH = ( Const.isOSX() || Const.isLinux() ) ? 930 : 947;
+  public static final int HEIGHT = ( Const.isOSX() || Const.isLinux() ) ? 618 : 626;
   public static final int DAYS = -30;
   private Supplier<Spoon> spoonSupplier = Spoon::getInstance;
   private Supplier<PropsUI> propsUISupplier = PropsUI::getInstance;
@@ -69,9 +70,9 @@ public class RepositoryOpenSaveExtensionPoint implements ExtensionPointInterface
       new RepositoryOpenSaveDialog( spoonSupplier.get().getShell(), WIDTH, HEIGHT );
     repositoryOpenSaveDialog
       .open( startingDir,
-        RepositoryOpenSaveDialog.STATE_SAVE.equals( fileDialogOperation.getCommand() ) ?
-          RepositoryOpenSaveDialog.STATE_SAVE :
-          RepositoryOpenSaveDialog.STATE_OPEN, fileDialogOperation.getFilter(),
+        RepositoryOpenSaveDialog.STATE_SAVE.equals( fileDialogOperation.getCommand() )
+          ? RepositoryOpenSaveDialog.STATE_SAVE
+          : RepositoryOpenSaveDialog.STATE_OPEN, fileDialogOperation.getFilter(),
         fileDialogOperation.getOrigin() );
 
     if ( !Utils.isEmpty( repositoryOpenSaveDialog.getObjectName() ) ) {
@@ -81,8 +82,8 @@ public class RepositoryOpenSaveExtensionPoint implements ExtensionPointInterface
       repositoryObject
         .setRepositoryDirectory( getRepository().findDirectory( repositoryOpenSaveDialog.getObjectDirectory() ) );
       repositoryObject.setObjectType(
-        repositoryOpenSaveDialog.getObjectType().equals( TRANSFORMATION ) ? RepositoryObjectType.TRANSFORMATION :
-          RepositoryObjectType.JOB );
+        repositoryOpenSaveDialog.getObjectType().equals( TRANSFORMATION ) ? RepositoryObjectType.TRANSFORMATION
+          : RepositoryObjectType.JOB );
       fileDialogOperation.setRepositoryObject( repositoryObject );
     }
   }
