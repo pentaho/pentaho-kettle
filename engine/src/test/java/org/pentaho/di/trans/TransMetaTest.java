@@ -38,6 +38,7 @@ import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.gui.OverwritePrompter;
 import org.pentaho.di.core.gui.Point;
 import org.pentaho.di.core.listeners.ContentChangedListener;
+import org.pentaho.di.core.logging.TransLogTable;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
@@ -50,10 +51,11 @@ import org.pentaho.di.repository.ObjectRevision;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectory;
 import org.pentaho.di.repository.RepositoryDirectoryInterface;
-import org.pentaho.di.trans.step.StepIOMeta;
 import org.pentaho.di.trans.step.StepMeta;
-import org.pentaho.di.trans.step.StepMetaChangeListenerInterface;
 import org.pentaho.di.trans.step.StepMetaInterface;
+import org.pentaho.di.trans.step.StepIOMeta;
+import org.pentaho.di.trans.step.StepMetaChangeListenerInterface;
+import org.pentaho.di.trans.step.StepPartitioningMeta;
 import org.pentaho.di.trans.steps.datagrid.DataGridMeta;
 import org.pentaho.di.trans.steps.userdefinedjavaclass.StepDefinition;
 import org.pentaho.di.trans.steps.userdefinedjavaclass.UserDefinedJavaClassDef;
@@ -63,11 +65,15 @@ import org.pentaho.metastore.stores.memory.MemoryMetaStore;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
+import java.util.HashMap;
+import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.Date;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertSame;
@@ -461,7 +467,7 @@ public class TransMetaTest {
       Mockito.mock( OverwritePrompter.class ) );
     meta.setInternalKettleVariables( null );
 
-    Assert.assertEquals( repDirectory.getPath(), meta.getVariable( Const.INTERNAL_VARIABLE_TRANSFORMATION_REPOSITORY_DIRECTORY ) );
+    assertEquals( repDirectory.getPath(), meta.getVariable( Const.INTERNAL_VARIABLE_TRANSFORMATION_REPOSITORY_DIRECTORY ) );
   }
 
   @Test
@@ -477,5 +483,81 @@ public class TransMetaTest {
     for ( CheckResultInterface remark : remarks ) {
       assertEquals( CheckResultInterface.TYPE_RESULT_OK, remark.getType() );
     }
+  }
+
+  @Test
+  public void testGetCacheVersion() throws Exception {
+    TransMeta transMeta = new TransMeta( getClass().getResource( "one-step-trans.ktr" ).getPath() );
+    int oldCacheVersion = transMeta.getCacheVersion();
+    transMeta.setSizeRowset(10);
+    int currCacheVersion = transMeta.getCacheVersion();
+    assertNotEquals( oldCacheVersion, currCacheVersion );
+  }
+
+  @Test
+  public void testGetCacheVersionWithIrrelevantParameters() throws Exception {
+    TransMeta transMeta = new TransMeta( getClass().getResource( "one-step-trans.ktr" ).getPath() );
+    int oldCacheVersion = transMeta.getCacheVersion();
+    int currCacheVersion;
+
+    transMeta.setSizeRowset( 1000 );
+    currCacheVersion = transMeta.getCacheVersion();
+    assertNotEquals( oldCacheVersion, currCacheVersion );
+
+    oldCacheVersion = currCacheVersion;
+
+    // scenarios that should not impact the cache version
+
+    // transformation description
+    transMeta.setDescription( "transformation description" );
+
+    // transformation status
+    transMeta.setTransstatus( 100 );
+
+    // transformation log table
+    transMeta.setTransLogTable( mock(TransLogTable.class ) );
+
+    // transformation created user
+    transMeta.setCreatedUser( "user" );
+
+    // transformation modified user
+    transMeta.setModifiedUser( "user" );
+
+    // transformation created date
+    transMeta.setCreatedDate( new Date() );
+
+    // transformation modified date
+    transMeta.setModifiedDate( new Date() );
+
+    // transformation is key private flag
+    transMeta.setPrivateKey( false );
+
+    // transformation attributes
+    Map<String, String> attributes = new HashMap<>();
+    attributes.put( "key", "value" );
+    transMeta.setAttributes( "group", attributes );
+
+    // step description
+    StepMeta stepMeta = transMeta.getStep( 0 );
+    stepMeta.setDescription( "stepDescription" );
+
+    // step position
+    stepMeta.setLocation( 10, 20 );
+    stepMeta.setLocation( new Point( 30, 40 ) );
+
+    // step type id
+    stepMeta.setStepID( "Dummy" );
+
+    // step is distributed flag
+    stepMeta.setDistributes( false );
+
+    // step copies
+    stepMeta.setCopies( 5 );
+
+    // step partitioning meta
+    stepMeta.setStepPartitioningMeta( mock( StepPartitioningMeta.class ) );
+
+    // assert that nothing impacted the cache version
+    assertEquals( oldCacheVersion, transMeta.getCacheVersion() );
   }
 }
