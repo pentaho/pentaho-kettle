@@ -340,7 +340,7 @@ public class LoadFileInput extends BaseStep implements StepInterface {
     try {
       // Create new row or clone
       if ( meta.getIsInFields() ) {
-        System.arraycopy( data.readrow, 0, outputRowData, 0, data.readrow.length );
+        outputRowData = data.readrow.clone();
       }
 
       // Read fields...
@@ -458,7 +458,7 @@ public class LoadFileInput extends BaseStep implements StepInterface {
       data.rownr++;
 
     } catch ( Exception e ) {
-      throw new KettleException( "Impossible de charger le fichier", e );
+      throw new KettleException( "Error during processing a row", e );
     }
 
     return outputRowData;
