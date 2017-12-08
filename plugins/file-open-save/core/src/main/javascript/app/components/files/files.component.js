@@ -47,8 +47,7 @@ define([
       onRename: "&",
       onEditStart: "&",
       onEditComplete: "&",
-      selectedFile: "<",
-      wrapper: "<"
+      selectedFile: "<"
     },
     template: filesTemplate,
     controllerAs: "vm",
@@ -86,7 +85,6 @@ define([
      * bindings initialized. We use this hook to put initialization code for our controller.
      */
     function onInit() {
-      vm.wrapperClass = vm.wrapper;
       vm.nameHeader = i18n.get("file-open-save-plugin.files.name.header");
       vm.typeHeader = i18n.get("file-open-save-plugin.files.type.header");
       vm.modifiedHeader = i18n.get("file-open-save-plugin.files.modified.header");

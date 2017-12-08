@@ -5,6 +5,7 @@
   "main": "app.module.js",
   "dependencies": {
     "angular": "${angular.version}",
+    "angular-ui-router": "${angular-ui-router.version}",
     "angular-i18n": "${angular-i18n.version}",
     "require-css": "${require-css.version}",
     "requirejs-text": "${requirejs-text.version}",

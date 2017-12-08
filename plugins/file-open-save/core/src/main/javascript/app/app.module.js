@@ -27,6 +27,7 @@
  **/
 define([
   "angular",
+  "./app.config",
   "./app.component",
   "./components/card/card.component",
   "./components/folder/folder.component",
@@ -41,10 +42,11 @@ define([
   "./shared/directives/scrollToFolder.directive",
   "./components/breadcrumb/breadcrumb.directive",
   "./services/data.service",
-  "./shared/directives/resize/resize.module"
-], function(angular, appComponent, cardComponent, folderComponent, errorComponent, loadingComponent,
-            breadcrumbComponent, filesComponent, searchComponent, editDirective, keyDirective, focusDirective,
-            scrollToFolderDirective, breadcrumbDirective, dataService, resizeModule) {
+  "./shared/directives/resize/resize.module",
+  "angular-ui-router"
+], function(angular, appConfig, appComponent, cardComponent, folderComponent, errorComponent,
+            loadingComponent, breadcrumbComponent, filesComponent, searchComponent, editDirective, keyDirective,
+            focusDirective, scrollToFolderDirective, breadcrumbDirective, dataService, resizeModule) {
   "use strict";
 
   var module = {
@@ -62,7 +64,7 @@ define([
    * @private
    */
   function activate() {
-    angular.module(module.name, [resizeModule.name])
+    angular.module(module.name, [resizeModule.name, "ui.router"])
       .component(appComponent.name, appComponent.options)
       .component(cardComponent.name, cardComponent.options)
       .component(folderComponent.name, folderComponent.options)
@@ -76,7 +78,8 @@ define([
       .directive(focusDirective.name, focusDirective.options)
       .directive(breadcrumbDirective.name, breadcrumbDirective.options)
       .directive(scrollToFolderDirective.name, scrollToFolderDirective.options)
-      .service(dataService.name, dataService.factory);
+      .service(dataService.name, dataService.factory)
+      .config(appConfig);
   }
 
   /**

@@ -44,7 +44,7 @@ public class DialogHelper {
       }
       ExtensionPointHandler.callExtensionPoint( log, KettleExtensionPoint.SpoonOpenSaveRepository.id,
         fileDialogOperation );
-      return fileDialogOperation.getRepositoryObject();
+      return (RepositoryObject) fileDialogOperation.getRepositoryObject();
     } catch ( KettleException ke ) {
       // Ignore
     }

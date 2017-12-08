@@ -22,10 +22,12 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Shell;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.util.Utils;
+import org.pentaho.di.repository.Repository;
 import org.pentaho.di.ui.core.dialog.ThinDialog;
 import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.platform.settings.ServerPort;
 import org.pentaho.platform.settings.ServerPortRegistry;
+import org.pentaho.repo.controller.RepositoryBrowserController;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -38,6 +40,7 @@ public class RepositoryOpenSaveDialog extends ThinDialog {
 
   public static final String STATE_SAVE = "save";
   public static final String STATE_OPEN = "open";
+  public static final String SELECT_FOLDER = "selectFolder";
   private static final Image LOGO = GUIResource.getInstance().getImageLogoSmall();
   private static final String OSGI_SERVICE_PORT = "OSGI_SERVICE_PORT";
   private static final int OPTIONS = SWT.APPLICATION_MODAL | SWT.DIALOG_TRIM | SWT.RESIZE | SWT.MAX;
@@ -49,18 +52,19 @@ public class RepositoryOpenSaveDialog extends ThinDialog {
   private String objectName;
   private String objectDirectory;
   private String objectType;
+  private Repository repository;
 
   public RepositoryOpenSaveDialog( Shell shell, int width, int height ) {
     super( shell, width, height );
   }
 
-  public void open( String directory, String state, String filter, String origin ) {
+  public void open( Repository repository, String directory, String state, String filter, String origin ) {
+    RepositoryBrowserController.repository = repository;
     StringBuilder clientPath = new StringBuilder();
     clientPath.append( getClientPath() );
-    clientPath.append( !Utils.isEmpty( directory ) ? "#?path=" + directory : "#?" );
+    clientPath.append( !Utils.isEmpty( state ) ? "#/" + state : "" );
+    clientPath.append( !Utils.isEmpty( directory ) ? "?path=" + directory : "?" );
     clientPath.append( !Utils.isEmpty( directory ) ? "&" : "" );
-    clientPath.append( !Utils.isEmpty( state ) ? "state=" + state : "" );
-    clientPath.append( !Utils.isEmpty( state ) ? "&" : "" );
     clientPath.append( !Utils.isEmpty( filter ) ? "filter=" + filter : "" );
     clientPath.append( !Utils.isEmpty( filter ) ? "&" : "" );
     clientPath.append( !Utils.isEmpty( origin ) ? "origin=" + origin : "" );

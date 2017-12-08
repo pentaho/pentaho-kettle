@@ -28,6 +28,7 @@ import org.pentaho.di.repository.RepositoryObjectType;
 import org.pentaho.di.ui.core.FileDialogOperation;
 import org.pentaho.di.ui.core.PropsUI;
 import org.pentaho.di.ui.spoon.Spoon;
+import org.pentaho.repo.controller.RepositoryBrowserController;
 import org.pentaho.repo.dialog.RepositoryOpenSaveDialog;
 
 import java.util.Calendar;
@@ -59,21 +60,19 @@ public class RepositoryOpenSaveExtensionPoint implements ExtensionPointInterface
 
     PropsUI propsUI = propsUISupplier.get();
 
-    String username = getRepository().getUserInfo() != null ? getRepository().getUserInfo().getLogin() : "";
-    String repoAndUser = getRepository().getName() + ":" + username;
-    List<LastUsedFile>
-      lastUsedFileList = propsUI.getLastUsedRepoFiles().getOrDefault( repoAndUser, Collections.emptyList() );
-
-    String startingDir = getStartingDir( fileDialogOperation, lastUsedFileList );
+    String startingDir = null;
+    if ( fileDialogOperation.getRepository() == null ) {
+      String username = getRepository().getUserInfo() != null ? getRepository().getUserInfo().getLogin() : "";
+      String repoAndUser = getRepository().getName() + ":" + username;
+      List<LastUsedFile> lastUsedFileList =
+        propsUI.getLastUsedRepoFiles().getOrDefault( repoAndUser, Collections.emptyList() );
+      startingDir = getStartingDir( fileDialogOperation, lastUsedFileList );
+    }
 
     RepositoryOpenSaveDialog repositoryOpenSaveDialog =
       new RepositoryOpenSaveDialog( spoonSupplier.get().getShell(), WIDTH, HEIGHT );
-    repositoryOpenSaveDialog
-      .open( startingDir,
-        RepositoryOpenSaveDialog.STATE_SAVE.equals( fileDialogOperation.getCommand() )
-          ? RepositoryOpenSaveDialog.STATE_SAVE
-          : RepositoryOpenSaveDialog.STATE_OPEN, fileDialogOperation.getFilter(),
-        fileDialogOperation.getOrigin() );
+    repositoryOpenSaveDialog.open( fileDialogOperation.getRepository(), startingDir, fileDialogOperation.getCommand(),
+      fileDialogOperation.getFilter(), fileDialogOperation.getOrigin() );
 
     if ( !Utils.isEmpty( repositoryOpenSaveDialog.getObjectName() ) ) {
       RepositoryObject repositoryObject = new RepositoryObject();
@@ -106,6 +105,6 @@ public class RepositoryOpenSaveExtensionPoint implements ExtensionPointInterface
   }
 
   private Repository getRepository() {
-    return spoonSupplier.get().getRepository();
+    return RepositoryBrowserController.repository != null ? RepositoryBrowserController.repository : spoonSupplier.get().getRepository();
   }
 }

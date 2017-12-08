@@ -1,5 +1,5 @@
 <div resize-folders="vm.width"></div>
-<div class="folder recents empty"
+<div ng-if="!vm.state.is('selectFolder')" class="folder recents empty"
      ng-class="{selected: vm.showRecents}"
      ng-click="vm.selectFolder(null)"
      ng-style="{width: vm.width === 0 ? 'auto' : vm.width + 'px'}">

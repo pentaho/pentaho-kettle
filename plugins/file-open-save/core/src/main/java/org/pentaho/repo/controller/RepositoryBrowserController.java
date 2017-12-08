@@ -61,6 +61,7 @@ public class RepositoryBrowserController {
 
   public static final String TRANSFORMATION = "transformation";
   private Supplier<Spoon> spoonSupplier = Spoon::getInstance;
+  public static Repository repository;
 
   public boolean loadFile( String id, String type ) {
     try {
@@ -485,10 +486,6 @@ public class RepositoryBrowserController {
     return spoonSupplier.get();
   }
 
-  private Repository getRepository() {
-    return getSpoon().rep;
-  }
-
   public LinkedList<String> getRecentSearches() {
     LinkedList<String> recentSearches = new LinkedList<String>();
     try {
@@ -545,6 +542,10 @@ public class RepositoryBrowserController {
   }
 
   public RepositoryName getCurrentRepo() {
-    return new RepositoryName( spoonSupplier.get().rep.getName() );
+    return new RepositoryName( getRepository().getName() );
+  }
+
+  private Repository getRepository() {
+    return repository != null ? repository : spoonSupplier.get().rep;
   }
 }

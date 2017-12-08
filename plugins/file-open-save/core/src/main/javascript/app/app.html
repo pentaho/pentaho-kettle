@@ -6,7 +6,7 @@
        on-error-cancel="vm.cancelError()"
        key></error>
 <loading ng-show="vm.loading"></loading>
-<div class="dialogWrapper noselect" ng-class="[vm.wrapperClass, {hasError : vm.showError}]" ng-hide="vm.loading">
+<div class="dialogWrapper noselect" ng-class="[vm.state.current.name, {hasError : vm.showError}]" ng-hide="vm.loading">
   <div class="header">
     <div class="headerTop">
       <div class="headerTitle headerText">
@@ -26,11 +26,11 @@
       </div>
       <div ng-hide="vm.searchString" class="breadcrumbSection">
         <breadcrumb path="vm.folder.path"
-                    include-root="vm.includeRoot"
-                    on-select="vm.selectFolderByPath(selectedPath)"
-                    wrapper-class="vm.wrapperClass"></breadcrumb>
+            include-root="vm.includeRoot"
+            on-select="vm.selectFolderByPath(selectedPath)">
+        </breadcrumb>
       </div>
-      <div class="addDelete">
+      <div class="addDelete" ng-if="vm.state.is('save') || vm.state.is('selectFolder')">
         <button class="addFolder" ng-click="vm.addFolder()" title="{{::vm.addFolderText}}" ng-disabled="vm.addDeleteDisabled()"></button>
         <button class="deleteFolder" ng-click="vm.remove()" title="{{::vm.removeText}}" ng-disabled="vm.addDeleteDisabled()"></button>
       </div>
@@ -38,7 +38,7 @@
   </div>
 
   <div id="middle" class="middle">
-    <div id="directoryTreeArea" class="directoryTreeArea noselect" ng-model="vm.folder.path" scroll-to-folder="{{vm.wrapperClass}}"  did-delete="vm.didDeleteFolder">
+    <div id="directoryTreeArea" class="directoryTreeArea noselect" ng-model="vm.folder.path"  did-delete="vm.didDeleteFolder">
       <folder auto-expand="vm.autoExpand"
               folders="vm.folders"
               on-select="vm.selectFolder(selectedFolder);"
@@ -54,7 +54,7 @@
       <div class="fileAreaMessageView" ng-show="vm.showRecents && vm.recentFiles.length === 0 || vm.showMessage">
         {{vm.fileAreaMessage}}
       </div>
-      <card ng-show="!vm.showMessage && vm.showRecents && vm.recentFiles.length > 0"
+      <card ng-if="vm.isShowRecents()"
             recent-files="vm.recentFiles"
             folder="vm.folder"
             on-click="vm.selectFile(file)"
@@ -65,7 +65,6 @@
              ng-show="!vm.showMessage && !vm.showRecents"
              folder="vm.folder"
              selected-file="vm.file"
-             wrapper="vm.wrapperClass"
              on-click="vm.selectFile(file)"
              on-select="vm.highlightFile(selectedFile)"
              on-error="vm.renameError(errorType, file)"
@@ -76,7 +75,7 @@
   </div>
 
   <div class="bottom">
-    <div class="fileNameEntry" ng-show="vm.wrapperClass === 'save'">
+    <div class="fileNameEntry" ng-show="vm.state.is('save')">
       <div class="fileNameEntryLabel">
         <label for="fileNameEntryTextBox">
           {{::vm.saveFileNameLabel}}
@@ -93,12 +92,17 @@
           {{::vm.cancelButton}}
         </span>
       </button>
-      <button class="primary" ng-show="vm.wrapperClass === 'open'" ng-click="vm.openClicked()" ng-disabled="!vm.file">
+      <button class="primary" ng-if="vm.state.is('selectFolder')" ng-click="vm.okClicked()" ng-disabled="!vm.file">
+        <span>
+          {{::vm.okButton}}
+        </span>
+      </button>
+      <button class="primary" ng-if="vm.state.is('open')" ng-click="vm.openClicked()" ng-disabled="!vm.file">
         <span>
           {{::vm.openButton}}
         </span>
       </button>
-      <button class="primary" ng-show="vm.wrapperClass === 'save'" ng-click="vm.saveClicked()" ng-disabled="vm.fileToSave === '' || vm.folder.path == 'Recents'">
+      <button class="primary" ng-if="vm.state.is('save')" ng-click="vm.saveClicked()" ng-disabled="vm.isSaveEnabled()">
         <span>
           {{::vm.saveButton}}
         </span>
