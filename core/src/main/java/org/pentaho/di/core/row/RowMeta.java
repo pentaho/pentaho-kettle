@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -1169,7 +1169,11 @@ public class RowMeta implements RowMetaInterface {
 
     int nrValues = XMLHandler.countNodes( node, ValueMeta.XML_META_TAG );
     for ( int i = 0; i < nrValues; i++ ) {
-      addValueMeta( new ValueMeta( XMLHandler.getSubNodeByNr( node, ValueMeta.XML_META_TAG, i ) ) );
+      ValueMeta valueMetaSource = new ValueMeta( XMLHandler.getSubNodeByNr( node, ValueMeta.XML_META_TAG, i ) );
+      ValueMetaInterface valueMeta = ValueMetaFactory.createValueMeta( valueMetaSource.getName(), valueMetaSource.getType(),
+        valueMetaSource.getLength(), valueMetaSource.getPrecision() );
+      ValueMetaFactory.cloneInfo( valueMetaSource, valueMeta );
+      addValueMeta( valueMeta );
     }
   }
 
