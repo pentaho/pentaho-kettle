@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -74,6 +74,13 @@ public class ValueMetaFactory {
     } else {
       target = createValueMeta( source.getName(), targetType, source.getLength(), source.getPrecision() );
     }
+
+    cloneInfo( source, target );
+
+    return target;
+  }
+
+  public static void cloneInfo( ValueMetaInterface source, ValueMetaInterface target ) throws KettlePluginException {
     target.setConversionMask( source.getConversionMask() );
     target.setDecimalSymbol( source.getDecimalSymbol() );
     target.setGroupingSymbol( source.getGroupingSymbol() );
@@ -104,8 +111,6 @@ public class ValueMetaFactory {
     target.setOriginalPrecision( source.getOriginalPrecision() );
     target.setOriginalScale( source.getOriginalScale() );
     target.setOriginalSigned( source.isOriginalSigned() );
-
-    return target;
   }
 
   public static String[] getValueMetaNames() {
