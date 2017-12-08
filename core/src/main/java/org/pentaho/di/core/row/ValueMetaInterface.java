@@ -220,6 +220,14 @@ public interface ValueMetaInterface extends Cloneable {
   /** Default integer length for hardcoded metadata integers */
   int DEFAULT_INTEGER_LENGTH = 10;
 
+  static String getTypeDescription( int type ) {
+    try {
+      return typeCodes[ type ];
+    } catch ( Exception e ) {
+      return "unknown/illegal";
+    }
+  }
+
   /**
    * Gets the name.
    *
