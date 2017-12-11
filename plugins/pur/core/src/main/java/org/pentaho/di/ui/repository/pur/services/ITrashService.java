@@ -72,5 +72,8 @@ public interface ITrashService extends IRepositoryService {
 
     String getName();
 
+    default String getOwner() {
+      return "";
+    }
   }
 }

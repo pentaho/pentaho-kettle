@@ -893,6 +893,10 @@ public class BrowseController extends AbstractXulEventHandler implements IUISupp
     }
   }
 
+  protected Shell getShell() {
+    return shell;
+  }
+
   private boolean contains( TYPE type, List<TYPE> typeList ) {
     for ( TYPE t : typeList ) {
       if ( t.equals( type ) ) {
