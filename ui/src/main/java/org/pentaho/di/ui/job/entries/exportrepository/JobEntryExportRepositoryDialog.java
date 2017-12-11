@@ -48,13 +48,13 @@ import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.Props;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.extension.ExtensionPointHandler;
 import org.pentaho.di.core.extension.KettleExtensionPoint;
-import org.pentaho.di.core.util.Utils;
-import org.pentaho.di.core.Props;
 import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.plugins.RepositoryPluginType;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entries.exportrepository.JobEntryExportRepository;
@@ -62,8 +62,8 @@ import org.pentaho.di.job.entry.JobEntryDialogInterface;
 import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.repository.RepositoriesMeta;
 import org.pentaho.di.repository.Repository;
-import org.pentaho.di.repository.RepositoryDirectoryInterface;
 import org.pentaho.di.repository.RepositoryMeta;
+import org.pentaho.di.repository.RepositoryObject;
 import org.pentaho.di.ui.core.FileDialogOperation;
 import org.pentaho.di.ui.core.dialog.EnterSelectionDialog;
 import org.pentaho.di.ui.core.gui.GUIResource;
@@ -1257,25 +1257,28 @@ public class JobEntryExportRepositoryDialog extends JobEntryDialog implements Jo
           .getString( PKG, "JobExportRepository.Error.CanNotConnectMsg", wRepositoryname.getText() ), true );
       }
 
-      RepositoryDirectoryInterface rd = null;
-      try {
-        FileDialogOperation fileDialogOperation =
-          new FileDialogOperation( FileDialogOperation.SELECT_FOLDER, FileDialogOperation.ORIGIN_SPOON );
-        fileDialogOperation.setFilter( null );
-        fileDialogOperation.setRepository( repos );
-        ExtensionPointHandler.callExtensionPoint( null, KettleExtensionPoint.SpoonOpenSaveRepository.id,
-          fileDialogOperation );
-        if ( fileDialogOperation.getRepositoryObject() != null ) {
-          rd = repos.findDirectory( fileDialogOperation.getRepositoryObject().getObjectId() );
+      if ( repos.isConnected() ) {
+        try {
+          FileDialogOperation fileDialogOperation =
+            new FileDialogOperation( FileDialogOperation.SELECT_FOLDER, FileDialogOperation.ORIGIN_SPOON );
+          fileDialogOperation
+            .setTitle( BaseMessages.getString( PKG, "JobExportRepository.SelectDirectoryDialog.Title" ) );
+          fileDialogOperation.setFilter( null );
+          fileDialogOperation.setRepository( repos );
+          if ( !Utils.isEmpty( wFoldername.getText() ) ) {
+            fileDialogOperation.setStartDir( wFoldername.getText() );
+          }
+          ExtensionPointHandler.callExtensionPoint( null, KettleExtensionPoint.SpoonOpenSaveRepository.id,
+            fileDialogOperation );
+          if ( fileDialogOperation.getRepositoryObject() != null ) {
+            String path =
+              ( (RepositoryObject) fileDialogOperation.getRepositoryObject() ).getRepositoryDirectory().getPath();
+            wFoldername.setText( path );
+          }
+        } catch ( KettleException e ) {
+          // Do Nothing
         }
-      } catch ( KettleException e ) {
-        // Do something
       }
-
-      if ( rd != null ) {
-        wFoldername.setText( rd.getPath() );
-      }
-
     } catch ( Exception e ) {
       displayMsg( BaseMessages.getString( PKG, "System.Dialog.Error.Title" ), BaseMessages.getString(
         PKG, "JobExportRepository.ErrorGettingFolderds.DialogMessage" )

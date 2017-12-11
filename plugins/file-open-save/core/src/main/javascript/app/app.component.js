@@ -120,7 +120,7 @@ define([
       vm.searchString = "";
       _resetFileAreaMessage();
 
-      // vm.origin = $location.search().origin;
+      vm.origin = $location.search().origin;
       $timeout(function() {
         if ($state.is('open')) {
           vm.headerTitle = i18n.get("file-open-save-plugin.app.header.open.title");
@@ -158,6 +158,14 @@ define([
       if (path) {
         selectFolderByPath(path);
         vm.autoExpand = true;
+      } else {
+        if ($state.is('selectFolder')) {
+          if (isPentahoRepo()) {
+            selectFolderByPath("/home");
+          } else {
+            selectFolderByPath("/");
+          }
+        }
       }
       if (vm.folders[0].path === "/" && !isPentahoRepo()) {
         vm.includeRoot = true;
@@ -167,13 +175,6 @@ define([
         vm.loading = false;
       });
       _setFileToSaveName();
-      if ($state.is('selectFolder')) {
-        if (isPentahoRepo()) {
-          selectFolderByPath("/home");
-        } else {
-          selectFolderByPath("/");
-        }
-      }
     }
 
     /**
