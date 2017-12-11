@@ -15,13 +15,13 @@
 
 package org.pentaho.repo.extension;
 
+import org.pentaho.di.core.Const;
 import org.pentaho.di.core.LastUsedFile;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.extension.ExtensionPoint;
 import org.pentaho.di.core.extension.ExtensionPointInterface;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.util.Utils;
-import org.pentaho.di.core.Const;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryObject;
 import org.pentaho.di.repository.RepositoryObjectType;
@@ -67,12 +67,14 @@ public class RepositoryOpenSaveExtensionPoint implements ExtensionPointInterface
       List<LastUsedFile> lastUsedFileList =
         propsUI.getLastUsedRepoFiles().getOrDefault( repoAndUser, Collections.emptyList() );
       startingDir = getStartingDir( fileDialogOperation, lastUsedFileList );
+    } else {
+      startingDir = fileDialogOperation.getStartDir();
     }
 
     RepositoryOpenSaveDialog repositoryOpenSaveDialog =
       new RepositoryOpenSaveDialog( spoonSupplier.get().getShell(), WIDTH, HEIGHT );
     repositoryOpenSaveDialog.open( fileDialogOperation.getRepository(), startingDir, fileDialogOperation.getCommand(),
-      fileDialogOperation.getFilter(), fileDialogOperation.getOrigin() );
+      fileDialogOperation.getTitle(), fileDialogOperation.getFilter(), fileDialogOperation.getOrigin() );
 
     if ( !Utils.isEmpty( repositoryOpenSaveDialog.getObjectName() ) ) {
       RepositoryObject repositoryObject = new RepositoryObject();
