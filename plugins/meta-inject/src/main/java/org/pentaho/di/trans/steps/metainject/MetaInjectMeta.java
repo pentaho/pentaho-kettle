@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -46,6 +46,7 @@ import org.pentaho.di.core.util.CurrentDirectoryResolver;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
+import org.pentaho.di.repository.HasRepositoryDirectories;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectory;
@@ -75,7 +76,8 @@ import org.w3c.dom.Node;
     documentationUrl = "Products/Data_Integration/Transformation_Step_Reference/ETL_Metadata_Injection" )
 @InjectionSupported( localizationPrefix = "MetaInject.Injection.", groups = { "SOURCE_OUTPUT_FIELDS",
   "MAPPING_FIELDS" } )
-public class MetaInjectMeta extends BaseStepMeta implements StepMetaInterface, StepMetaChangeListenerInterface {
+public class MetaInjectMeta extends BaseStepMeta implements StepMetaInterface, StepMetaChangeListenerInterface,
+  HasRepositoryDirectories {
 
   private static Class<?> PKG = MetaInjectMeta.class; // for i18n purposes, needed by Translator2!!
 
@@ -443,6 +445,16 @@ public class MetaInjectMeta extends BaseStepMeta implements StepMetaInterface, S
     this.directoryPath = directoryPath;
   }
 
+  @Override
+  public String[] getDirectories() {
+    return new String[]{ directoryPath };
+  }
+
+  @Override
+  public void setDirectories( String[] directories ) {
+    this.directoryPath = directories[0];
+  }
+
   /**
    * @return the transObjectId
    */
@@ -467,6 +479,11 @@ public class MetaInjectMeta extends BaseStepMeta implements StepMetaInterface, S
    */
   public ObjectLocationSpecificationMethod getSpecificationMethod() {
     return specificationMethod;
+  }
+
+  @Override
+  public ObjectLocationSpecificationMethod[] getSpecificationMethods() {
+    return new ObjectLocationSpecificationMethod[] { specificationMethod };
   }
 
   /**
