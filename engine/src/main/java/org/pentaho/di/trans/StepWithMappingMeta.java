@@ -33,7 +33,6 @@ import org.pentaho.di.core.util.CurrentDirectoryResolver;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.i18n.BaseMessages;
-import org.pentaho.di.repository.HasRepositoryDirectories;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectory;
@@ -55,7 +54,7 @@ import java.util.Set;
  * @since 02-jan-2017
  * @author Yury Bakhmutski
  */
-public abstract class StepWithMappingMeta extends BaseStepMeta implements HasRepositoryDirectories {
+public abstract class StepWithMappingMeta extends BaseStepMeta {
   //default value
   private static Class<?> PKG = StepWithMappingMeta.class;
 
@@ -232,11 +231,6 @@ public abstract class StepWithMappingMeta extends BaseStepMeta implements HasRep
     return specificationMethod;
   }
 
-  @Override
-  public ObjectLocationSpecificationMethod[] getSpecificationMethods() {
-    return new ObjectLocationSpecificationMethod[] { specificationMethod };
-  }
-
   /**
    * @param specificationMethod the specificationMethod to set
    */
@@ -256,16 +250,6 @@ public abstract class StepWithMappingMeta extends BaseStepMeta implements HasRep
    */
   public void setDirectoryPath( String directoryPath ) {
     this.directoryPath = directoryPath;
-  }
-
-  @Override
-  public String[] getDirectories() {
-    return new String[]{ directoryPath };
-  }
-
-  @Override
-  public void setDirectories( String[] directories ) {
-    this.directoryPath = directories[0];
   }
 
   /**
