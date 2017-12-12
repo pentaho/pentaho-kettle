@@ -17,6 +17,9 @@
 package org.pentaho.di.ui.repository.pur.repositoryexplorer.controller;
 
 import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.widgets.Shell;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.extension.ExtensionPointHandler;
 import org.pentaho.di.core.extension.KettleExtensionPoint;
@@ -103,6 +106,8 @@ public class TrashBrowseController extends BrowseController implements java.io.S
   protected XulButton undeleteButton;
 
   protected XulButton deleteButton;
+
+  private static final int DIALOG_WIDTH = 357, DIALOG_HEIGHT = 165, DIALOG_COLOR = SWT.COLOR_WHITE;
 
   // ~ Constructors ====================================================================================================
 
@@ -399,7 +404,19 @@ public class TrashBrowseController extends BrowseController implements java.io.S
   private void confirmDialog( Callable<Void> callback, String title, String msg, String yes, String no )
     throws Exception {
     MessageDialog confirmDialog =
-        new MessageDialog( getShell(), title, null, msg, MessageDialog.NONE, new String[] { yes, no }, 0 );
+      new MessageDialog( getShell(), title, null, msg, MessageDialog.NONE, new String[] { yes, no }, 0 ) {
+        @Override
+        protected Point getInitialSize() {
+          return new Point( DIALOG_WIDTH, DIALOG_HEIGHT );
+        }
+
+        @Override
+        protected void configureShell( Shell shell ) {
+          super.configureShell( shell );
+          shell.setBackground( shell.getDisplay().getSystemColor( DIALOG_COLOR ) );
+          shell.setBackgroundMode( SWT.INHERIT_FORCE );
+        }
+      };
     int result = confirmDialog.open();
     if ( result == 0 ) {
       callback.call();
