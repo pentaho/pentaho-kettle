@@ -28,6 +28,7 @@ import org.pentaho.di.core.Result;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStep;
@@ -44,8 +45,10 @@ import java.util.List;
 
 public class BaseStreamStep<I> extends BaseStep {
 
+
   protected StreamWindow<I, Result> window;
   protected StreamSource<I> source;
+  private static final Class<?> PKG = BaseStreamStep.class;
 
   public BaseStreamStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr,
                          TransMeta transMeta, Trans trans ) {
@@ -54,9 +57,8 @@ public class BaseStreamStep<I> extends BaseStep {
 
 
   public boolean processRow( StepMetaInterface smi, StepDataInterface sdi ) throws KettleException {
-
     Preconditions.checkArgument( first,
-      "Streaming steps should only have processRow called once." );
+      BaseMessages.getString( PKG, "BaseStreamStep.ProcessRowsError" ) );
 
     bufferStream().forEach( result -> {
         if ( result.getNrErrors() > 0 ) {
@@ -76,12 +78,16 @@ public class BaseStreamStep<I> extends BaseStep {
   @Override
   public void stopRunning( StepMetaInterface stepMetaInterface, StepDataInterface stepDataInterface )
     throws KettleException {
-    source.close();
+    if ( source != null ) {
+      source.close();
+    }
     super.stopRunning( stepMetaInterface, stepDataInterface );
   }
 
   @Override public void resumeRunning() {
-    source.resume();
+    if ( source != null ) {
+      source.resume();
+    }
     super.resumeRunning();
   }
 
@@ -90,7 +96,9 @@ public class BaseStreamStep<I> extends BaseStep {
   }
 
   @Override public void pauseRunning() {
-    source.pause();
+    if ( source != null ) {
+      source.pause();
+    }
     super.pauseRunning();
   }
 

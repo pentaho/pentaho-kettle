@@ -77,7 +77,6 @@ public abstract class BaseStreamStepMeta extends StepWithMappingMeta implements 
       field.set( this, XMLHandler.getTagValue( stepnode, tagname ) );
     } catch ( IllegalAccessException e ) {
       Throwables.propagate( e );
-      //LOG
     }
   }
 
@@ -98,8 +97,6 @@ public abstract class BaseStreamStepMeta extends StepWithMappingMeta implements 
       return field.get( this ).toString();
     } catch ( IllegalAccessException e ) {
       Throwables.propagate( e );
-      // todo LOG ERROR
-      //throw new RuntimeException( e );
     }
     return "";
   }
