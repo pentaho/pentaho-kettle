@@ -23,13 +23,7 @@
 package org.pentaho.di.trans.steps.mapping;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
 
 import com.google.common.annotations.VisibleForTesting;
 import org.pentaho.di.core.Const;
@@ -41,6 +35,7 @@ import org.pentaho.di.core.logging.LogTableField;
 import org.pentaho.di.core.logging.TransLogTable;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.SingleThreadedTransExecutor;
+import org.pentaho.di.trans.StepWithMappingMeta;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.TransMeta.TransformationType;
@@ -280,39 +275,6 @@ public class Mapping extends BaseStep implements StepInterface {
     }
   }
 
-  public void setMappingParameters( Trans trans, TransMeta transMeta, MappingParameters mappingParameters )
-    throws KettleException {
-    if ( mappingParameters == null ) {
-      return;
-    }
-
-    Map<String, String> parameters = new HashMap<>();
-    Set<String> subTransParameters = new HashSet<>( Arrays.asList( transMeta.listParameters() ) );
-
-    if ( mappingParameters.isInheritingAllVariables() ) {
-      // This will include parameters
-      for ( String variableName : listVariables() ) {
-        parameters.put( variableName, getVariable( variableName ) );
-      }
-    }
-
-    String[] mappingVariables = mappingParameters.getVariable();
-    String[] inputFields = mappingParameters.getInputField();
-    for ( int i = 0; i < mappingVariables.length; i++ ) {
-      parameters.put( mappingVariables[i], environmentSubstitute( inputFields[i] ) );
-    }
-
-    for ( Entry<String, String> entry : parameters.entrySet() ) {
-      String key = entry.getKey();
-      String value = Const.NVL( entry.getValue(), "" );
-      if ( subTransParameters.contains( key ) ) {
-        trans.setParameterValue( key, Const.NVL( entry.getValue(), "" ) );
-      } else {
-        trans.setVariable( key, value );
-      }
-    }
-    trans.activateParameters();
-  }
 
   public void prepareMappingExecution() throws KettleException {
     initTransFromMeta();
@@ -567,7 +529,14 @@ public class Mapping extends BaseStep implements StepInterface {
 
     // Set the parameters values in the mapping.
     //
-    setMappingParameters( data.mappingTrans, data.mappingTransMeta, meta.getMappingParameters() );
+
+    MappingParameters mappingParameters = meta.getMappingParameters();
+    if ( mappingParameters != null ) {
+      StepWithMappingMeta
+        .activateParams( data.mappingTrans, data.mappingTrans, this, data.mappingTransMeta.listParameters(),
+          mappingParameters.getVariable(), mappingParameters.getInputField() );
+    }
+
   }
 
   void initServletConfig() {

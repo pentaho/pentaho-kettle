@@ -23,7 +23,6 @@
 package org.pentaho.di.trans.steps.simplemapping;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import org.pentaho.di.core.CheckResult;
@@ -35,7 +34,6 @@ import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleXMLException;
-import org.pentaho.di.core.parameters.UnknownParamException;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.variables.VariableSpace;
@@ -279,7 +277,8 @@ public class SimpleMappingMeta extends StepWithMappingMeta implements StepMetaIn
     //
     TransMeta mappingTransMeta = null;
     try {
-      mappingTransMeta = loadMappingMeta( this, repository, metaStore, space );
+      mappingTransMeta =
+        loadMappingMeta( this, repository, metaStore, space, mappingParameters.isInheritingAllVariables() );
     } catch ( KettleException e ) {
       throw new KettleStepException( BaseMessages.getString(
         PKG, "SimpleMappingMeta.Exception.UnableToLoadMappingTransformation" ), e );
@@ -287,34 +286,13 @@ public class SimpleMappingMeta extends StepWithMappingMeta implements StepMetaIn
 
     // The field structure may depend on the input parameters as well (think of parameter replacements in MDX queries
     // for instance)
-    if ( mappingParameters != null ) {
-
-      // See if we need to pass all variables from the parent or not...
-      //
-      if ( mappingParameters.isInheritingAllVariables() ) {
-        mappingTransMeta.copyVariablesFrom( space );
-      }
+    if ( mappingParameters != null && mappingTransMeta != null ) {
 
       // Just set the variables in the transformation statically.
       // This just means: set a number of variables or parameter values:
       //
-      List<String> subParams = Arrays.asList( mappingTransMeta.listParameters() );
-
-      for ( int i = 0; i < mappingParameters.getVariable().length; i++ ) {
-        String name = mappingParameters.getVariable()[i];
-        String value = space.environmentSubstitute( mappingParameters.getInputField()[i] );
-        if ( !Utils.isEmpty( name ) && !Utils.isEmpty( value ) ) {
-          if ( subParams.contains( name ) ) {
-            try {
-              mappingTransMeta.setParameterValue( name, value );
-            } catch ( UnknownParamException e ) {
-              // this is explicitly checked for up front
-            }
-          }
-          mappingTransMeta.setVariable( name, value );
-
-        }
-      }
+      StepWithMappingMeta.activateParams( mappingTransMeta, mappingTransMeta, space, mappingTransMeta.listParameters(),
+        mappingParameters.getVariable(), mappingParameters.getInputField() );
     }
 
     // Keep track of all the fields that need renaming...
