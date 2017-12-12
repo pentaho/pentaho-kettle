@@ -61,7 +61,6 @@ public class FileStreamMeta extends BaseStreamStepMeta implements StepMetaInterf
 
   public FileStreamMeta() {
     super();
-    // TODO - is this right?  What about repo saved ktrs?
     setSpecificationMethod( ObjectLocationSpecificationMethod.FILENAME );
   }
 

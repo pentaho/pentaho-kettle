@@ -23,10 +23,14 @@
 package org.pentaho.di.trans.step.filestream;
 
 import com.google.common.base.Preconditions;
+import org.apache.commons.vfs2.FileObject;
+import org.apache.commons.vfs2.FileSystemException;
+import org.pentaho.di.core.exception.KettleFileException;
 import org.pentaho.di.core.exception.KettleMissingPluginsException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.value.ValueMetaString;
+import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.trans.SubtransExecutor;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
@@ -43,9 +47,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.FileNotFoundException;
+import java.net.URISyntaxException;
+import java.nio.file.Paths;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+
+import static com.google.common.base.Throwables.propagate;
 
 /**
  * An example step plugin for purposes of demonstrating a strategy for handling streams of data.
@@ -67,11 +75,12 @@ public class FileStream extends BaseStreamStep<List<String>> implements StepInte
     Preconditions.checkNotNull( stepMetaInterface );
     fileStreamMeta = (FileStreamMeta) stepMetaInterface;
 
-    Preconditions.checkNotNull( fileStreamMeta.getTransformationPath() );
+    String ktr = getFilePath( fileStreamMeta.getTransformationPath() );
+    String sourceFile = getFilePath( fileStreamMeta.getSourcePath() );
 
     try {
       subtransExecutor = new SubtransExecutor(
-        getTrans(), new TransMeta( fileStreamMeta.getTransformationPath() ), true,
+        getTrans(), new TransMeta( ktr ), true,
         new TransExecutorData(), new TransExecutorParameters() );
 
     } catch ( KettleXMLException | KettleMissingPluginsException e ) {
@@ -82,17 +91,29 @@ public class FileStream extends BaseStreamStep<List<String>> implements StepInte
 
     window = new FixedTimeStreamWindow<>( subtransExecutor, rowMeta, getDuration(), getBatchSize() );
     try {
-      source = new TailFileStreamSource( fileStreamMeta.getSourcePath() );
+      source = new TailFileStreamSource( sourceFile );
     } catch ( FileNotFoundException e ) {
       logger.error( e.getLocalizedMessage(), e );
     }
     return super.init( stepMetaInterface, stepDataInterface );
   }
 
+  private String getFilePath( String path ) {
+    try {
+      final FileObject fileObject = KettleVFS.getFileObject( environmentSubstitute( path ) );
+      if ( !fileObject.exists() ) {
+        throw new FileNotFoundException( path );
+      }
+      return Paths.get( fileObject.getURL().toURI() ).normalize().toString();
+    } catch ( URISyntaxException | FileNotFoundException | FileSystemException | KettleFileException e ) {
+      propagate( e );
+    }
+    return null;
+  }
+
   private int getBatchSize() {
     try {
       return Integer.parseInt( fileStreamMeta.getBatchSize() );
-
     } catch ( NumberFormatException nfe ) {
       return 50;
     }

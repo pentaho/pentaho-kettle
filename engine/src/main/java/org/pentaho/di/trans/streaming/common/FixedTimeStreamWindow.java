@@ -36,6 +36,10 @@ import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
+/**
+ * A StreamWindow implementation which buffers rows of I by a fixed amount of time and size, executing each batch in a
+ * subtransformation.
+ */
 public class FixedTimeStreamWindow<I extends List> implements StreamWindow<I, Result> {
 
   private final RowMetaInterface rowMeta;
@@ -56,26 +60,22 @@ public class FixedTimeStreamWindow<I extends List> implements StreamWindow<I, Re
       .subscribeOn( Schedulers.newThread() )
       .buffer( millis, TimeUnit.MILLISECONDS, batchSize )
       .filter( list -> !list.isEmpty() )
-
-      // future enhancement - this will allow the sendBuffer to be run in a separate thread.
-      //      .flatMap( list -> Observable.just( list )
-      //        .subscribeOn( Schedulers.newThread() )
-      //        .map( this::sendBufferToSubtrans ) )
-      //      .blockingIterable();
-
       .map( this::sendBufferToSubtrans )
       .blockingIterable();
   }
 
   private Result sendBufferToSubtrans( List<I> input ) throws KettleException {
-    System.out.println( "sendBuffer thread:  " + Thread.currentThread() );
-    Optional<Result> result = subtransExecutor.execute(
-      input.stream()
-        .map( row -> row.toArray( new Object[ 0 ] ) )
-        .map( objects -> new RowMetaAndData( rowMeta, objects ) )
-        .collect( Collectors.toList() )
-    );
-    return result.orElseThrow( () -> new KettleException( "Failed to get results" ) ); // TODO messagify
+    final List<RowMetaAndData> rows = input.stream()
+      .map( row -> row.toArray( new Object[ 0 ] ) )
+      .map( objects -> new RowMetaAndData( rowMeta, objects ) )
+      .collect( Collectors.toList() );
+    Optional<Result> optionalRes = subtransExecutor.execute( rows );
+    Result result = optionalRes.orElseThrow( () -> new KettleException( "Failed to get results" ) );
+    // Set rows to the input rows, rather than the transformed rows.
+    // In the future, may want to allow the subtrans result target to be specified.
+    result.setRows( rows );
+
+    return result;
   }
 
 }
