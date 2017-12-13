@@ -187,7 +187,9 @@ public class DateDetectorTest {
     String dateString =
         pattern.replace( "dd", "31" ).replace( "yyyy", "2015" ).replace( "MMMM", "Decr" ).replace( "MMM", "Dec" )
             .replace( "MM", "12" ).replace( "yy", "15" ).replace( "HH", "12" ).replace( "mm", "00" ).replace( "ss",
-                "00" ).replace( "SSS", "123" );
+          "00" ).replace( "SSSSSSSSS", "123456789" ).replace( "SSSSSSSS", "12345678" ).replace( "SSSSSSS", "1234567" )
+          .replace( "SSSSSS", "123456" ).replace( "SSSSS", "12345" ).replace( "SSSS", "1234" ).replace( "SSS", "123" )
+          .replace( "SS", "12" ).replace( "S", "1" );
     System.out.println( pattern + " : " + dateString );
     return dateString;
   }

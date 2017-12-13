@@ -27,6 +27,7 @@ import java.util.Date;
 
 import org.apache.commons.collections.BidiMap;
 import org.apache.commons.collections.bidimap.DualHashBidiMap;
+import org.pentaho.di.core.row.value.timestamp.SimpleTimestampFormat;
 
 public class DateDetector {
 
@@ -83,7 +84,15 @@ public class DateDetector {
       put( "dd.MM.yyyy HH:mm:ss.SSS", "^\\d{1,2}\\.\\d{1,2}\\.\\d{4}\\s\\d{1,2}:\\d{2}:\\d{2}\\.\\d{3}$" );
       put( "MM/dd/yy HH:mm:ss.SSS", "^\\d{1,2}/\\d{1,2}/\\d{2}\\s\\d{1,2}:\\d{2}:\\d{2}\\.\\d{3}$" );
       put( "MM/dd/yyyy HH:mm:ss.SSS", "^\\d{1,2}/\\d{1,2}/\\d{4}\\s\\d{1,2}:\\d{2}:\\d{2}\\.\\d{3}$" );
+      put( "yyyy-MM-dd HH:mm:ss.S", "^\\d{4}-\\d{1,2}-\\d{1,2}\\s\\d{1,2}:\\d{2}:\\d{2}\\.\\d{1}$" );
+      put( "yyyy-MM-dd HH:mm:ss.SS", "^\\d{4}-\\d{1,2}-\\d{1,2}\\s\\d{1,2}:\\d{2}:\\d{2}\\.\\d{2}$" );
       put( "yyyy-MM-dd HH:mm:ss.SSS", "^\\d{4}-\\d{1,2}-\\d{1,2}\\s\\d{1,2}:\\d{2}:\\d{2}\\.\\d{3}$" );
+      put( "yyyy-MM-dd HH:mm:ss.SSSS", "^\\d{4}-\\d{1,2}-\\d{1,2}\\s\\d{1,2}:\\d{2}:\\d{2}\\.\\d{4}$" );
+      put( "yyyy-MM-dd HH:mm:ss.SSSSS", "^\\d{4}-\\d{1,2}-\\d{1,2}\\s\\d{1,2}:\\d{2}:\\d{2}\\.\\d{5}$" );
+      put( "yyyy-MM-dd HH:mm:ss.SSSSSS", "^\\d{4}-\\d{1,2}-\\d{1,2}\\s\\d{1,2}:\\d{2}:\\d{2}\\.\\d{6}$" );
+      put( "yyyy-MM-dd HH:mm:ss.SSSSSSS", "^\\d{4}-\\d{1,2}-\\d{1,2}\\s\\d{1,2}:\\d{2}:\\d{2}\\.\\d{7}$" );
+      put( "yyyy-MM-dd HH:mm:ss.SSSSSSSS", "^\\d{4}-\\d{1,2}-\\d{1,2}\\s\\d{1,2}:\\d{2}:\\d{2}\\.\\d{8}$" );
+      put( "yyyy-MM-dd HH:mm:ss.SSSSSSSSS", "^\\d{4}-\\d{1,2}-\\d{1,2}\\s\\d{1,2}:\\d{2}:\\d{2}\\.\\d{9}$" );
       put( "yyyy.MM.dd HH:mm:ss.SSS", "^\\d{4}\\.\\d{1,2}\\.\\d{1,2}\\s\\d{1,2}:\\d{2}:\\d{2}\\.\\d{3}$" );
       put( "yyyy/MM/dd HH:mm:ss.SSS", "^\\d{4}/\\d{1,2}/\\d{1,2}\\s\\d{1,2}:\\d{2}:\\d{2}\\.\\d{3}$" );
       put( "dd MMM yyyy HH:mm:ss.SSS", "^\\d{1,2}\\s[a-z]{3}\\s\\d{4}\\s\\d{1,2}:\\d{2}:\\d{2}\\.\\d{3}$" );
@@ -142,7 +151,15 @@ public class DateDetector {
       put( "dd.MM.yyyy HH:mm:ss.SSS", "^\\d{1,2}\\.\\d{1,2}\\.\\d{4}\\s\\d{1,2}:\\d{2}:\\d{2}\\.\\d{3}$" );
       put( "dd/MM/yy HH:mm:ss.SSS", "^\\d{1,2}/\\d{1,2}/\\d{2}\\s\\d{1,2}:\\d{2}:\\d{2}\\.\\d{3}$" );
       put( "dd/MM/yyyy HH:mm:ss.SSS", "^\\d{1,2}/\\d{1,2}/\\d{4}\\s\\d{1,2}:\\d{2}:\\d{2}\\.\\d{3}$" );
+      put( "yyyy-MM-dd HH:mm:ss.S", "^\\d{4}-\\d{1,2}-\\d{1,2}\\s\\d{1,2}:\\d{2}:\\d{2}\\.\\d{1}$" );
+      put( "yyyy-MM-dd HH:mm:ss.SS", "^\\d{4}-\\d{1,2}-\\d{1,2}\\s\\d{1,2}:\\d{2}:\\d{2}\\.\\d{2}$" );
       put( "yyyy-MM-dd HH:mm:ss.SSS", "^\\d{4}-\\d{1,2}-\\d{1,2}\\s\\d{1,2}:\\d{2}:\\d{2}\\.\\d{3}$" );
+      put( "yyyy-MM-dd HH:mm:ss.SSSS", "^\\d{4}-\\d{1,2}-\\d{1,2}\\s\\d{1,2}:\\d{2}:\\d{2}\\.\\d{4}$" );
+      put( "yyyy-MM-dd HH:mm:ss.SSSSS", "^\\d{4}-\\d{1,2}-\\d{1,2}\\s\\d{1,2}:\\d{2}:\\d{2}\\.\\d{5}$" );
+      put( "yyyy-MM-dd HH:mm:ss.SSSSSS", "^\\d{4}-\\d{1,2}-\\d{1,2}\\s\\d{1,2}:\\d{2}:\\d{2}\\.\\d{6}$" );
+      put( "yyyy-MM-dd HH:mm:ss.SSSSSSS", "^\\d{4}-\\d{1,2}-\\d{1,2}\\s\\d{1,2}:\\d{2}:\\d{2}\\.\\d{7}$" );
+      put( "yyyy-MM-dd HH:mm:ss.SSSSSSSS", "^\\d{4}-\\d{1,2}-\\d{1,2}\\s\\d{1,2}:\\d{2}:\\d{2}\\.\\d{8}$" );
+      put( "yyyy-MM-dd HH:mm:ss.SSSSSSSSS", "^\\d{4}-\\d{1,2}-\\d{1,2}\\s\\d{1,2}:\\d{2}:\\d{2}\\.\\d{9}$" );
       put( "yyyy.MM.dd HH:mm:ss.SSS", "^\\d{4}\\.\\d{1,2}\\.\\d{1,2}\\s\\d{1,2}:\\d{2}:\\d{2}\\.\\d{3}$" );
       put( "yyyy/MM/dd HH:mm:ss.SSS", "^\\d{4}/\\d{1,2}/\\d{1,2}\\s\\d{1,2}:\\d{2}:\\d{2}\\.\\d{3}$" );
       put( "dd MMM yyyy HH:mm:ss.SSS", "^\\d{1,2}\\s[a-z]{3}\\s\\d{4}\\s\\d{1,2}:\\d{2}:\\d{2}\\.\\d{3}$" );
@@ -252,7 +269,7 @@ public class DateDetector {
     if ( dateString == null ) {
       throw new ParseException( "Unknown date string. Date string is null. ", 0 );
     }
-    SimpleDateFormat simpleDateFormat = new SimpleDateFormat( dateFormat );
+    SimpleDateFormat simpleDateFormat = new SimpleTimestampFormat( dateFormat );
     simpleDateFormat.setLenient( false ); // Don't automatically convert invalid date.
     return simpleDateFormat.parse( dateString );
   }
