@@ -25,7 +25,9 @@ package org.pentaho.di.trans.steps.salesforceinput;
 import java.text.SimpleDateFormat;
 import java.util.GregorianCalendar;
 
+import mondrian.util.Base64;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowDataUtil;
@@ -211,11 +213,7 @@ public class SalesforceInput extends SalesforceStep {
             break;
         }
 
-        // DO CONVERSIONS...
-        //
-        ValueMetaInterface targetValueMeta = data.outputRowMeta.getValueMeta( i );
-        ValueMetaInterface sourceValueMeta = data.convertRowMeta.getValueMeta( i );
-        outputRowData[i] = targetValueMeta.convertData( sourceValueMeta, value );
+        doConversions( outputRowData, i, value );
 
         // Do we need to repeat this field if it is null?
         if ( meta.getInputFields()[i].isRepeated() ) {
@@ -266,6 +264,23 @@ public class SalesforceInput extends SalesforceStep {
     }
 
     return outputRowData;
+  }
+
+  // DO CONVERSIONS...
+  void doConversions( Object[] outputRowData, int i, String value ) throws KettleValueException {
+    ValueMetaInterface targetValueMeta = data.outputRowMeta.getValueMeta( i );
+    ValueMetaInterface sourceValueMeta = data.convertRowMeta.getValueMeta( i );
+
+    if ( ValueMetaInterface.TYPE_BINARY != targetValueMeta.getType() ) {
+      outputRowData[i] = targetValueMeta.convertData( sourceValueMeta, value );
+    } else {
+      // binary type of salesforce requires specific conversion
+      if ( value != null ) {
+        outputRowData[ i ] = Base64.decode( value );
+      } else {
+        outputRowData[ i ] = null;
+      }
+    }
   }
 
   /*
