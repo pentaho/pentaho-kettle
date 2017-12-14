@@ -123,7 +123,7 @@ public abstract class BaseStreamingDialog extends BaseStepDialog implements Step
     formLayout.marginHeight = 15;
 
     shell.setLayout( formLayout );
-    shell.setText( BaseMessages.getString( PKG, "BaseStreamingDialog.Shell.Title" ) );
+    shell.setText( getDialogTitle() );
 
     Label wicon = new Label( shell, SWT.RIGHT );
     wicon.setImage( getImage() );
@@ -277,6 +277,8 @@ public abstract class BaseStreamingDialog extends BaseStepDialog implements Step
     return stepname;
   }
 
+  protected abstract String getDialogTitle();
+
   private void buildSetupTab() {
     wSetupTab = new CTabItem( wTabFolder, SWT.NONE );
     wSetupTab.setText( BaseMessages.getString( PKG, "BaseStreamingDialog.SetupTab" ) );
@@ -321,7 +323,7 @@ public abstract class BaseStreamingDialog extends BaseStepDialog implements Step
     fdBatchComp.top = new FormAttachment( 0, 0 );
     fdBatchComp.right = new FormAttachment( 100, 0 );
     fdBatchComp.bottom = new FormAttachment( 100, 0 );
-    wSetupComp.setLayoutData( fdBatchComp );
+    wBatchComp.setLayoutData( fdBatchComp );
 
     wlBatchDuration = new Label( wBatchComp, SWT.LEFT );
     props.setLook( wlBatchDuration );
