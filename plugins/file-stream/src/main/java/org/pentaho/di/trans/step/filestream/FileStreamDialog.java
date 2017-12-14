@@ -53,6 +53,10 @@ public class FileStreamDialog extends BaseStreamingDialog implements StepDialogI
     meta = (FileStreamMeta) in;
   }
 
+  @Override protected String getDialogTitle() {
+    return BaseMessages.getString( PKG, "FileStreamDialog.Shell.Title" );
+  }
+
   @Override protected void buildSetup( Composite wSetupComp ) {
     wlSourcePath = new Label( wSetupComp, SWT.LEFT );
     props.setLook( wlSourcePath );

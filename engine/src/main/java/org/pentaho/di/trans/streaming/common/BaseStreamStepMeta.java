@@ -23,11 +23,18 @@
 package org.pentaho.di.trans.streaming.common;
 
 import com.google.common.base.Throwables;
+import org.pentaho.di.core.CheckResult;
+import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.injection.Injection;
-import org.pentaho.di.core.injection.InjectionSupported;
+import org.pentaho.di.core.row.RowMetaInterface;
+import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
+import org.pentaho.di.i18n.BaseMessages;
+import org.pentaho.di.repository.Repository;
 import org.pentaho.di.trans.StepWithMappingMeta;
+import org.pentaho.di.trans.TransMeta;
+import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Node;
@@ -42,10 +49,10 @@ import java.util.stream.Stream;
 
 import static com.google.common.collect.Maps.immutableEntry;
 
-@InjectionSupported ( localizationPrefix = "StreamingFileInput.Injection." )
 public abstract class BaseStreamStepMeta extends StepWithMappingMeta implements StepMetaInterface {
 
 
+  private static final Class<?> PKG = BaseStreamStep.class;  // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
   @Injection ( name = "TRANSFORMATION_PATH" )  // pull this stuff up to common
   protected String transformationPath;
 
@@ -129,5 +136,37 @@ public abstract class BaseStreamStepMeta extends StepWithMappingMeta implements 
 
   public String getBatchDuration() {
     return batchDuration;
+  }
+
+  public void check( List<CheckResultInterface> remarks, TransMeta transMeta,
+                     StepMeta stepMeta, RowMetaInterface prev, String[] input, String[] output,
+                     RowMetaInterface info, VariableSpace space, Repository repository,
+                     IMetaStore metaStore ) {
+    long duration = Long.MIN_VALUE;
+    try {
+      duration = Long.parseLong( space.environmentSubstitute( getBatchDuration() ) );
+    } catch ( NumberFormatException e ) {
+      remarks.add( new CheckResult(
+        CheckResultInterface.TYPE_RESULT_ERROR,
+        BaseMessages.getString( PKG, "BaseStreamStepMeta.CheckResult.NaN", "Duration" ),
+        stepMeta ) );
+    }
+
+    long size = Long.MIN_VALUE;
+    try {
+      size = Long.parseLong( space.environmentSubstitute( getBatchSize() ) );
+    } catch ( NumberFormatException e ) {
+      remarks.add( new CheckResult(
+        CheckResultInterface.TYPE_RESULT_ERROR,
+        BaseMessages.getString( PKG, "BaseStreamStepMeta.CheckResult.NaN", "Number of records" ),
+        stepMeta ) );
+    }
+
+    if ( duration == 0 && size == 0 ) {
+      remarks.add( new CheckResult(
+        CheckResultInterface.TYPE_RESULT_ERROR,
+        BaseMessages.getString( PKG, "BaseStreamStepMeta.CheckResult.NoBatchDefined" ),
+        stepMeta ) );
+    }
   }
 }
