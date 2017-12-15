@@ -37,6 +37,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.commons.vfs2.FileName;
 import org.apache.commons.vfs2.FileObject;
 import org.apache.commons.vfs2.FileSystemException;
@@ -6284,4 +6285,60 @@ public class TransMeta extends AbstractMeta
     return namedClusterEmbedManager;
   }
 
+  /**
+   *
+   * @return
+   */
+  public int getCacheVersion() throws KettleException {
+    HashCodeBuilder hashCodeBuilder =  new HashCodeBuilder( 17, 31 )
+        // info
+        .append( this.getName() )
+        .append( this.getTransformationType() )
+        .append( this.getSizeRowset() )
+        .append( this.getSleepTimeEmpty() )
+        .append( this.getSleepTimeFull() )
+        .append( this.isUsingUniqueConnections() )
+        .append( this.isFeedbackShown() )
+        .append( this.getFeedbackSize() )
+        .append( this.isUsingThreadPriorityManagment() )
+        .append( this.getSharedObjectsFile() )
+        .append( this.isCapturingStepPerformanceSnapShots() )
+        .append( this.getStepPerformanceCapturingDelay() )
+        .append( this.getStepPerformanceCapturingSizeLimit() )
+
+        .append( this.getMaxDateConnection() )
+        .append( this.getMaxDateTable() )
+        .append( this.getMaxDateField() )
+        .append( this.getMaxDateOffset() )
+        .append( this.getMaxDateDifference() )
+
+        .append( this.getDependencies() )
+        .append( this.getPartitionSchemas() )
+        .append( this.getSlaveServers() )
+        .append( this.getClusterSchemas() )
+        .append( this.getSlaveStepCopyPartitionDistribution() )
+        .append( this.isSlaveTransformation() )
+
+        .append( this.nrTransHops() )
+
+        // steps
+        .append( this.getSteps().size() )
+        .append( this.getStepNames() )
+
+        // hops
+        .append( this.hops );
+
+    List<StepMeta> steps = this.getSteps();
+
+    for ( StepMeta step : steps ) {
+      hashCodeBuilder
+          .append( step.getName() )
+          .append( step.getStepMetaInterface().getXML() )
+          .append( step.getClusterSchema() )
+          .append( step.getRemoteInputSteps() )
+          .append( step.getRemoteOutputSteps() )
+          .append( step.isDoingErrorHandling() );
+    }
+    return hashCodeBuilder.toHashCode();
+  }
 }
