@@ -314,6 +314,8 @@ public class RowMetaAndData implements Cloneable {
       case ValueMetaInterface.TYPE_DATE:
       case ValueMetaInterface.TYPE_TIMESTAMP:
         return rowMeta.getDate( data, idx ) == null;
+      case ValueMetaInterface.TYPE_INET:
+        return rowMeta.getString( data, idx ) == null;
     }
     throw new KettleValueException( "Unknown source type: " + metaType.getTypeDesc() );
   }

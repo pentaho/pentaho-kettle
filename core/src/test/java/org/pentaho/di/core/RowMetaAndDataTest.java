@@ -35,6 +35,7 @@ import org.pentaho.di.core.row.value.ValueMetaBinary;
 import org.pentaho.di.core.row.value.ValueMetaBoolean;
 import org.pentaho.di.core.row.value.ValueMetaDate;
 import org.pentaho.di.core.row.value.ValueMetaInteger;
+import org.pentaho.di.core.row.value.ValueMetaInternetAddress;
 import org.pentaho.di.core.row.value.ValueMetaNumber;
 import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.core.row.value.ValueMetaTimestamp;
@@ -185,7 +186,8 @@ public class RowMetaAndDataTest {
     rowsMetaEmpty.addValueMeta( new ValueMetaBinary( "bin" ) );
     rowsMetaEmpty.addValueMeta( new ValueMetaDate( "date" ) );
     rowsMetaEmpty.addValueMeta( new ValueMetaTimestamp( "timestamp" ) );
-    row = new RowMetaAndData( rowsMetaEmpty, null, null, null, null, null, null, null, null );
+    rowsMetaEmpty.addValueMeta( new ValueMetaInternetAddress( "inet" ) );
+    row = new RowMetaAndData( rowsMetaEmpty, null, null, null, null, null, null, null, null, null );
     assertTrue( row.isEmptyValue( "str" ) );
     assertTrue( row.isEmptyValue( "bool" ) );
     assertTrue( row.isEmptyValue( "int" ) );
@@ -194,5 +196,6 @@ public class RowMetaAndDataTest {
     assertTrue( row.isEmptyValue( "bin" ) );
     assertTrue( row.isEmptyValue( "date" ) );
     assertTrue( row.isEmptyValue( "timestamp" ) );
+    assertTrue( row.isEmptyValue( "inet" ) );
   }
 }
