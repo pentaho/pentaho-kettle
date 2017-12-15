@@ -22,20 +22,7 @@
 
 package org.pentaho.di.trans.steps.metainject;
 
-import java.io.IOException;
-import java.io.OutputStream;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
-
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.RowSet;
@@ -46,9 +33,12 @@ import org.pentaho.di.core.injection.bean.BeanInjectionInfo;
 import org.pentaho.di.core.injection.bean.BeanInjector;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
+import org.pentaho.di.repository.RepositoryDirectory;
+import org.pentaho.di.repository.RepositoryDirectoryInterface;
 import org.pentaho.di.trans.RowProducer;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
@@ -62,6 +52,19 @@ import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInjectionInterface;
 import org.pentaho.di.trans.step.StepMetaInterface;
 
+import java.io.IOException;
+import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
+
 /**
  * Read a simple CSV file Just output Strings found in the file...
  *
@@ -69,14 +72,13 @@ import org.pentaho.di.trans.step.StepMetaInterface;
  * @since 2007-07-05
  */
 public class MetaInject extends BaseStep implements StepInterface {
-  private static Class<?> PKG = MetaInject.class; // for i18n purposes, needed
-                                                  // by Translator2!!
+  private static Class<?> PKG = MetaInject.class; // for i18n purposes, needed by Translator2!!
 
   private MetaInjectMeta meta;
   private MetaInjectData data;
 
-  public MetaInject( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta,
-      Trans trans ) {
+  public MetaInject(
+    StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta, Trans trans ) {
     super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
   }
 
@@ -233,15 +235,30 @@ public class MetaInject extends BaseStep implements StepInterface {
     return new Trans( data.transMeta, this );
   }
 
-  private void writeInjectedKtr( String targetFile ) throws KettleException {
+  private void writeInjectedKtr( String targetFilPath ) throws KettleException {
+
+    if ( getRepository() == null ) {
+      writeInjectedKtrToFs( targetFilPath );
+    } else {
+      writeInjectedKtrToRepo( targetFilPath );
+    }
+  }
+
+  /**
+   * Writes the generated meta injection transformation to the file system.
+   * @param targetFilePath the filesystem path to which to save the generated injection ktr
+   * @throws KettleException
+   */
+  private void writeInjectedKtrToFs( String targetFilePath ) throws KettleException {
+
     OutputStream os = null;
     try {
-      os = KettleVFS.getOutputStream( targetFile, false );
+      os = KettleVFS.getOutputStream( targetFilePath, false );
       os.write( XMLHandler.getXMLHeader().getBytes( Const.XML_ENCODING ) );
       os.write( data.transMeta.getXML().getBytes( Const.XML_ENCODING ) );
     } catch ( IOException e ) {
-      throw new KettleException( "Unable to write target file (ktr after injection) to file '" + targetFile + "'",
-        e );
+      throw new KettleException( "Unable to write target file (ktr after injection) to file '"
+        + targetFilePath + "'", e );
     } finally {
       if ( os != null ) {
         try {
@@ -251,6 +268,49 @@ public class MetaInject extends BaseStep implements StepInterface {
         }
       }
     }
+  }
+
+  /**
+   * Writes the generated meta injection transformation to the repository. It is assumed that the repository
+   * exists (user is connected).
+   * @param targetFilePath the repo path to which to save the generated injection ktr
+   * @throws KettleException
+   */
+  private void writeInjectedKtrToRepo( final String targetFilePath ) throws KettleException {
+
+    // clone the transMeta associated with the data, this is the generated meta injection transformation
+    final TransMeta generatedTrans = (TransMeta) data.transMeta.clone();
+    // the targetFilePath holds the absolute repo path that is the requested destination of this generated
+    // transformation, extract the file name (no extension) and the containing directory and adjust the generated
+    // transformation properties accordingly
+    List<String> targetPath = new ArrayList( Arrays.asList( Const.splitPath( targetFilePath,
+      RepositoryDirectory.DIRECTORY_SEPARATOR  ) ) );
+    final String fileName = targetPath.get( targetPath.size() - 1 ).replace( ".ktr", "" );
+    generatedTrans.setName( fileName );
+    // remove the last targetPath element, so we're left with the target directory path
+    targetPath.remove( targetPath.size() - 1 );
+    if ( targetPath.size() > 0 ) {
+      final String dirPath = String.join( RepositoryDirectory.DIRECTORY_SEPARATOR, targetPath );
+      RepositoryDirectoryInterface directory = getRepository().findDirectory( dirPath );
+      // if the directory does not exist, try to create it
+      if ( directory == null ) {
+        directory = getRepository().createRepositoryDirectory( new RepositoryDirectory( null, "/" ), dirPath );
+      }
+      generatedTrans.setRepositoryDirectory( directory );
+    } else {
+      // if the directory is null, set it to the directory of the cloned template ktr
+      if ( log.isDebug() ) {
+        log.logDebug( "The target injection ktr file path provided by the user is not a valid fully qualified "
+          + "repository path - will store the generated ktr in the same directory as the template ktr: ",
+          data.transMeta.getRepositoryDirectory() );
+      }
+      generatedTrans.setRepositoryDirectory( data.transMeta.getRepositoryDirectory() );
+    }
+    // set the objectId, in case the injected transformation already exists in the repo, so that is is updated in
+    // the repository - the objectId will remain null, if the transformation is begin generated for the first time,
+    // in which a new ktr will be created in the repo
+    generatedTrans.setObjectId( getRepository().getTransformationID( fileName, generatedTrans.getRepositoryDirectory() ) );
+    getRepository().save( generatedTrans, null, null, true );
   }
 
   /**
@@ -286,7 +346,7 @@ public class MetaInject extends BaseStep implements StepInterface {
               for ( RowMetaAndData r : rows ) {
                 if ( r.getRowMeta().indexOfValue( source.getField() ) < 0 ) {
                   logError( BaseMessages.getString( PKG, "MetaInject.SourceFieldIsNotDefined.Message", source
-                      .getField(), getTransMeta().getName() ) );
+                    .getField(), getTransMeta().getName() ) );
                   // source step doesn't contain specified field
                   skip = true;
                 }
@@ -299,7 +359,7 @@ public class MetaInject extends BaseStep implements StepInterface {
             } else {
               // target step doesn't have specified key - just report but don't fail like in 6.0 (BACKLOG-6753)
               logError( BaseMessages.getString( PKG, "MetaInject.TargetKeyIsNotDefined.Message", target
-                  .getAttributeKey(), getTransMeta().getName() ) );
+                .getAttributeKey(), getTransMeta().getName() ) );
             }
           }
         }
@@ -338,7 +398,7 @@ public class MetaInject extends BaseStep implements StepInterface {
           } else {
             // target step doesn't have specified key - just report but don't fail like in 6.0 (BACKLOG-6753)
             logError( BaseMessages.getString( PKG, "MetaInject.TargetKeyIsNotDefined.Message", target.getAttributeKey(),
-                getTransMeta().getName() ) );
+              getTransMeta().getName() ) );
           }
         }
       }
@@ -433,7 +493,7 @@ public class MetaInject extends BaseStep implements StepInterface {
                     } else {
                       if ( log.isDetailed() ) {
                         logDetailed( "No detail source found for key: " + rowEntry.getKey() + " and target step: "
-                            + targetStep );
+                          + targetStep );
                       }
                     }
                   }
@@ -477,7 +537,7 @@ public class MetaInject extends BaseStep implements StepInterface {
   }
 
   private StepInjectionMetaEntry findDetailRootEntry( List<StepInjectionMetaEntry> metadataEntries,
-      StepInjectionMetaEntry entry ) {
+                                                      StepInjectionMetaEntry entry ) {
     for ( StepInjectionMetaEntry rowsEntry : metadataEntries ) {
       for ( StepInjectionMetaEntry rowEntry : rowsEntry.getDetails() ) {
         for ( StepInjectionMetaEntry detailEntry : rowEntry.getDetails() ) {
@@ -491,7 +551,7 @@ public class MetaInject extends BaseStep implements StepInterface {
   }
 
   private SourceStepField findDetailSource( Map<TargetStepAttribute, SourceStepField> targetMap, String targetStep,
-      String key ) {
+                                            String key ) {
     return targetMap.get( new TargetStepAttribute( targetStep, key, true ) );
   }
 
@@ -512,7 +572,7 @@ public class MetaInject extends BaseStep implements StepInterface {
    * package-local visibility for testing purposes
    */
   void setEntryValueIfFieldExists( StepInjectionMetaEntry entry, RowMetaAndData row, SourceStepField source )
-      throws KettleValueException {
+    throws KettleValueException {
     RowMetaInterface rowMeta = row.getRowMeta();
     if ( rowMeta.indexOfValue( source.getField() ) < 0 ) {
       return;
@@ -579,7 +639,7 @@ public class MetaInject extends BaseStep implements StepInterface {
         data.stepInjectionMap = new HashMap<String, StepMetaInjectionInterface>();
         for ( StepMeta stepMeta : data.transMeta.getUsedSteps() ) {
           StepMetaInjectionInterface injectionInterface =
-              stepMeta.getStepMetaInterface().getStepMetaInjectionInterface();
+            stepMeta.getStepMetaInterface().getStepMetaInjectionInterface();
           if ( injectionInterface != null ) {
             data.stepInjectionMap.put( stepMeta.getName(), injectionInterface );
           }
@@ -615,31 +675,31 @@ public class MetaInject extends BaseStep implements StepInterface {
       alreadyMarkedSteps.add( currentTarget.getStepname() );
       if ( existedStepNames.contains( currentTarget.getStepname().toUpperCase() ) ) {
         logError( BaseMessages.getString( PKG, "MetaInject.TargetStepIsNotUsed.Message", currentTarget.getStepname(),
-            data.transMeta.getName() ) );
+          data.transMeta.getName() ) );
       } else {
         logError( BaseMessages.getString( PKG, "MetaInject.TargetStepIsNotDefined.Message", currentTarget.getStepname(),
-            data.transMeta.getName() ) );
+          data.transMeta.getName() ) );
       }
     }
     // alreadyMarked contains wrong steps. Spoon can report error if it will not fail transformation [BACKLOG-6753]
   }
 
   public static void removeUnavailableStepsFromMapping( Map<TargetStepAttribute, SourceStepField> targetMap,
-      Set<SourceStepField> unavailableSourceSteps, Set<TargetStepAttribute> unavailableTargetSteps ) {
+                                                        Set<SourceStepField> unavailableSourceSteps, Set<TargetStepAttribute> unavailableTargetSteps ) {
     Iterator<Entry<TargetStepAttribute, SourceStepField>> targetMapIterator = targetMap.entrySet().iterator();
     while ( targetMapIterator.hasNext() ) {
       Entry<TargetStepAttribute, SourceStepField> entry = targetMapIterator.next();
       SourceStepField currentSourceStepField = entry.getValue();
       TargetStepAttribute currentTargetStepAttribute = entry.getKey();
       if ( unavailableSourceSteps.contains( currentSourceStepField ) || unavailableTargetSteps.contains(
-          currentTargetStepAttribute ) ) {
+        currentTargetStepAttribute ) ) {
         targetMapIterator.remove();
       }
     }
   }
 
   public static Set<TargetStepAttribute> getUnavailableTargetSteps( Map<TargetStepAttribute, SourceStepField> targetMap,
-      TransMeta injectedTransMeta ) {
+                                                                    TransMeta injectedTransMeta ) {
     Set<String> usedStepNames = getUsedStepsForReferencendTransformation( injectedTransMeta );
     Set<TargetStepAttribute> unavailableTargetSteps = new HashSet<TargetStepAttribute>();
     for ( TargetStepAttribute currentTarget : targetMap.keySet() ) {
@@ -651,7 +711,7 @@ public class MetaInject extends BaseStep implements StepInterface {
   }
 
   public static Set<TargetStepAttribute> getUnavailableTargetKeys( Map<TargetStepAttribute, SourceStepField> targetMap,
-      TransMeta injectedTransMeta, Set<TargetStepAttribute> unavailableTargetSteps ) {
+                                                                   TransMeta injectedTransMeta, Set<TargetStepAttribute> unavailableTargetSteps ) {
     Set<TargetStepAttribute> missingKeys = new HashSet<>();
     Map<String, BeanInjectionInfo> beanInfos = getUsedStepBeanInfos( injectedTransMeta );
     for ( TargetStepAttribute key : targetMap.keySet() ) {
@@ -685,7 +745,7 @@ public class MetaInject extends BaseStep implements StepInterface {
   }
 
   public static Set<SourceStepField> getUnavailableSourceSteps( Map<TargetStepAttribute, SourceStepField> targetMap,
-      TransMeta sourceTransMeta, StepMeta stepMeta ) {
+                                                                TransMeta sourceTransMeta, StepMeta stepMeta ) {
     String[] stepNamesArray = sourceTransMeta.getPrevStepNames( stepMeta );
     Set<String> existedStepNames = convertToUpperCaseSet( stepNamesArray );
     Set<SourceStepField> unavailableSourceSteps = new HashSet<SourceStepField>();
@@ -702,7 +762,7 @@ public class MetaInject extends BaseStep implements StepInterface {
   private void checkSoureStepsAvailability() {
     Map<TargetStepAttribute, SourceStepField> targetMap = meta.getTargetSourceMapping();
     Set<SourceStepField> unavailableSourceSteps =
-        getUnavailableSourceSteps( targetMap, getTransMeta(), getStepMeta() );
+      getUnavailableSourceSteps( targetMap, getTransMeta(), getStepMeta() );
     Set<String> alreadyMarkedSteps = new HashSet<String>();
     for ( SourceStepField currentSource : unavailableSourceSteps ) {
       if ( alreadyMarkedSteps.contains( currentSource.getStepname() ) ) {
@@ -710,7 +770,7 @@ public class MetaInject extends BaseStep implements StepInterface {
       }
       alreadyMarkedSteps.add( currentSource.getStepname() );
       logError( BaseMessages.getString( PKG, "MetaInject.SourceStepIsNotAvailable.Message", currentSource.getStepname(),
-          getTransMeta().getName() ) );
+        getTransMeta().getName() ) );
     }
     // alreadyMarked contains wrong steps. Spoon can report error if it will not fail transformation [BACKLOG-6753]
   }

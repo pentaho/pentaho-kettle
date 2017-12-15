@@ -32,6 +32,8 @@
     <batik-js.version>1.8</batik-js.version>
     <cobertura-maven-plugin.version>2.6</cobertura-maven-plugin.version>
     <maven-bundle-plugin.version>2.3.7</maven-bundle-plugin.version>
+    <mockito.version>1.10.19</mockito.version>
+    <powermock.version>1.6.3</powermock.version>
   </properties>
 
   <dependencies>
@@ -106,6 +108,18 @@
       <groupId>org.mockito</groupId>
       <artifactId>mockito-all</artifactId>
       <version>${mockito.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.powermock</groupId>
+      <artifactId>powermock-module-junit4</artifactId>
+      <version>${powermock.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.powermock</groupId>
+      <artifactId>powermock-api-mockito</artifactId>
+      <version>${powermock.version}</version>
       <scope>test</scope>
     </dependency>
     <dependency>
