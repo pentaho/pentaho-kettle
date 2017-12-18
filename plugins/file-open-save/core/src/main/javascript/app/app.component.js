@@ -776,7 +776,7 @@ define([
           if (vm.file !== null) {
             selectFile(vm.file);
           }
-        } else {
+        } else if (!vm.showRecents) {
           _save(false);
         }
       }
