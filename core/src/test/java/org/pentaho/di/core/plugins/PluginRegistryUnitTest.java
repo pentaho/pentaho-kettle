@@ -22,6 +22,7 @@
 
 package org.pentaho.di.core.plugins;
 
+import org.junit.After;
 import org.junit.Test;
 import org.pentaho.di.core.exception.KettlePluginClassMapException;
 import org.pentaho.di.core.exception.KettlePluginException;
@@ -47,6 +48,18 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 public class PluginRegistryUnitTest {
+
+  private void cleanRegistry( Class<? extends PluginTypeInterface> aClass ) {
+    PluginRegistry registry = PluginRegistry.getInstance();
+    registry.getPlugins( aClass ).forEach( pluginInterface -> registry.removePlugin( aClass, pluginInterface ) );
+  }
+
+  @After
+  public void cleanup() {
+    cleanRegistry( LoggingPluginType.class );
+    cleanRegistry( BasePluginType.class );
+    cleanRegistry( BaseFragmentType.class );
+  }
 
   @Test
   public void getGetPluginInformation() throws KettlePluginException {
@@ -83,9 +96,6 @@ public class PluginRegistryUnitTest {
     UUID out = registry.loadClass( LoggingPluginType.class, "mockPlugin", UUID.class );
     assertEquals( uuid, out );
     assertEquals( 2, registry.getPlugins( LoggingPluginType.class ).size() );
-
-    // cleanup
-    registry.removePlugin( LoggingPluginType.class, mockPlugin );
   }
 
   /**
@@ -124,9 +134,6 @@ public class PluginRegistryUnitTest {
     // test removing a shared plugin creates a new classloader
     registry.removePlugin( BasePluginType.class, mockPlugin2 );
     assertNotEquals( ucl, registry.getClassLoader( mockPlugin1 ) );
-
-    // cleanup
-    registry.removePlugin( BasePluginType.class, mockPlugin1 );
   }
 
   @Test( expected = KettlePluginClassMapException.class )
@@ -191,9 +198,5 @@ public class PluginRegistryUnitTest {
     // verify plugin changes
     registry.registerPlugin( BasePluginType.class, plugin );
     verify( plugin, times( 3 ) ).merge( any() );
-
-    // cleanup
-    registry.removePlugin( BasePluginType.class, plugin );
-    registry.removePlugin( BaseFragmentType.class, fragment );
   }
 }
