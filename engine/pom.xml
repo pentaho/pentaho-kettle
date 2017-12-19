@@ -96,6 +96,7 @@
     <oro.version>2.0.8</oro.version>
     <javax.websocket-api.version>1.1</javax.websocket-api.version>
     <rxjava.version>2.0.4</rxjava.version>
+    <slf4j.version>1.7.25</slf4j.version>
   </properties>
 
   <dependencies>
@@ -145,6 +146,7 @@
       <version>${pentaho-reporting.version}</version>
     </dependency>
 
+
     <!-- Third-party dependencies -->
     <dependency>
       <groupId>commons-codec</groupId>
@@ -169,6 +171,13 @@
     <dependency>
       <groupId>rhino</groupId>
       <artifactId>js</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-api</artifactId>
+      <version>${slf4j.version}</version>
+      <scope>compile</scope>
     </dependency>
 
     <dependency>
@@ -891,6 +900,7 @@
       <artifactId>powermock-api-mockito</artifactId>
       <scope>test</scope>
     </dependency>
+
     <dependency>
       <groupId>io.reactivex.rxjava2</groupId>
       <artifactId>rxjava</artifactId>

@@ -41,11 +41,13 @@ import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.RowHandler;
 import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepMeta;
+import org.pentaho.di.trans.streaming.api.StreamSource;
 
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
@@ -83,8 +85,8 @@ public class FileStreamTest {
     trans.setTransMeta( transMeta );
     trans.setLog( new LogChannel( this ) );
     streamMeta.setTransformationPath( getClass().getResource( "/subtrans.ktr" ).getPath() );
-    streamMeta.setBatchDuration( "50" );
-    streamMeta.setBatchSize( "5" );
+    streamMeta.setBatchDuration( "5" );
+    streamMeta.setBatchSize( "1" );
     streamMeta.setSourcePath( streamFile.getPath() );
 
     when( stepMeta.getName() ).thenReturn( "mocked name" );
@@ -98,6 +100,7 @@ public class FileStreamTest {
     writer.close();
   }
 
+
   @Ignore
   @Test public void testStreamFile() throws KettleException, InterruptedException, IOException, ExecutionException {
     FileStream step =
@@ -108,22 +111,28 @@ public class FileStreamTest {
     final RowHandler rowHandler = getRowHandler();
     step.setRowHandler( rowHandler );
 
-    Future<Boolean> processRowReturn = executor.submit( () -> step.processRow( streamMeta, null ) );
+    StreamSource<List<Object>> source = step.getStreamSource();
+    source.open();
 
-
-    assertThat( rows.size(), equalTo( 0 ) );
     writer.write( "line 1" );
     writer.flush();
-    Thread.sleep( 2000 );
+    //Thread.sleep( 2000 );
+    executor.submit( () -> {
+      int i = 0;
+      while ( true ) {
+        Thread.sleep( 100 );
+        writer.write( "line" + i++ + "\n" );
+        writer.flush();
+      }
+    } );
 
-    System.out.println(rows.size());
-    processRowReturn.get();
-    //assertThat( rows.size(), equalTo( 1 ) );
-    //    Observable.just(
-    //      step.processRow( streamMeta, null ) );
+    Iterator iter = source.rows().iterator();
 
+    for ( int i = 0; i < 10; i++ ) {
 
-
+      System.out.println( iter.next() );
+    }
+    source.close();
   }
 
   List<Object[]> rows = new ArrayList<>();
