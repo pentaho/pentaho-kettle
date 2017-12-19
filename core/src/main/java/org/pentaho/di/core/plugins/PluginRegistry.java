@@ -812,6 +812,8 @@ public class PluginRegistry {
     try {
       if ( plugin.isNativePlugin() ) {
         return (T) Class.forName( className );
+      } else if ( plugin instanceof ClassLoadingPluginInterface ) {
+        return (T) ( (ClassLoadingPluginInterface) plugin ).getClassLoader().loadClass( className );
       } else {
         URLClassLoader ucl;
         lock.writeLock().lock();

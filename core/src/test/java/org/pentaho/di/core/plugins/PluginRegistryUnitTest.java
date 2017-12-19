@@ -23,6 +23,7 @@
 package org.pentaho.di.core.plugins;
 
 import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.pentaho.di.core.exception.KettlePluginClassMapException;
 import org.pentaho.di.core.exception.KettlePluginException;
@@ -30,6 +31,7 @@ import org.pentaho.di.core.extension.PluginMockInterface;
 import org.pentaho.di.core.logging.LoggingPluginType;
 import org.pentaho.di.core.row.RowBuffer;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaPluginType;
 
 import java.lang.annotation.Annotation;
 import java.util.HashMap;
@@ -39,11 +41,13 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.atLeast;
 import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -55,6 +59,7 @@ public class PluginRegistryUnitTest {
   }
 
   @After
+  @Before
   public void cleanup() {
     cleanRegistry( LoggingPluginType.class );
     cleanRegistry( BasePluginType.class );
@@ -149,7 +154,7 @@ public class PluginRegistryUnitTest {
     // setup
     // initialize Fragment Type
     PluginRegistry registry = PluginRegistry.getInstance();
-    BaseFragmentType fragmentType = new BaseFragmentType( Annotation.class, "", "", BasePluginType.class ) {
+    BaseFragmentType fragmentType = new BaseFragmentType( Annotation.class, "", "", ValueMetaPluginType.class ) {
       @Override protected void initListeners( Class<? extends PluginTypeInterface> aClass,
                                               Class<? extends PluginTypeInterface> typeToTrack ) {
         super.initListeners( BaseFragmentType.class, typeToTrack );
@@ -175,28 +180,30 @@ public class PluginRegistryUnitTest {
     PluginInterface plugin = mock( PluginInterface.class );
     when( plugin.getIds() ).thenReturn( new String[] { "mock" } );
     when( plugin.matches( any() ) ).thenReturn( true );
-    doReturn( BasePluginType.class ).when( plugin ).getPluginType();
+    doReturn( ValueMetaPluginType.class ).when( plugin ).getPluginType();
+    doAnswer( invocationOnMock -> null ).when( plugin ).merge( any( PluginInterface.class ) );
 
     PluginInterface fragment = mock( PluginInterface.class );
     when( fragment.getIds() ).thenReturn( new String[] { "mock" } );
     when( fragment.matches( any() ) ).thenReturn( true );
     doReturn( BaseFragmentType.class ).when( fragment ).getPluginType();
+    doAnswer( invocationOnMock -> null ).when( fragment ).merge( any( PluginInterface.class ) );
 
     // test
-    registry.registerPlugin( BasePluginType.class, plugin );
+    registry.registerPlugin( ValueMetaPluginType.class, plugin );
     verify( plugin, atLeastOnce() ).merge( any() );
 
     registry.registerPlugin( BaseFragmentType.class, fragment );
-    verify( fragment, atLeastOnce() ).merge( any() );
-    verify( plugin, times( 1 ) ).merge( any() );
+    verify( fragment, never() ).merge( any() );
+    verify( plugin, atLeast( 2 ) ).merge( any() );
 
     // verify that the order doesn't influence
-    registry.removePlugin( BasePluginType.class, plugin );
-    registry.registerPlugin( BasePluginType.class, plugin );
-    verify( plugin, times( 2 ) ).merge( any() );
+    registry.removePlugin( ValueMetaPluginType.class, plugin );
+    registry.registerPlugin( ValueMetaPluginType.class, plugin );
+    verify( plugin, atLeast( 3 ) ).merge( any() );
 
     // verify plugin changes
-    registry.registerPlugin( BasePluginType.class, plugin );
-    verify( plugin, times( 3 ) ).merge( any() );
+    registry.registerPlugin( ValueMetaPluginType.class, plugin );
+    verify( plugin, atLeast( 4 ) ).merge( any() );
   }
 }
