@@ -23,6 +23,7 @@
 package org.pentaho.di.trans.streaming.api;
 
 
+
 /**
  * Defines a source of streaming data.  A StreamSource implementation is used
  * by {@link org.pentaho.di.trans.streaming.common.BaseStreamStep} when
@@ -51,4 +52,9 @@ public interface StreamSource<R>  {
    */
   void resume();
 
+  /**
+   * Open the source for loading rows.
+   * Used for initializing resources required to load the stream.
+   */
+  void open();
 }
