@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -21,42 +21,63 @@
  ******************************************************************************/
 package org.pentaho.di.trans;
 
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
+import org.pentaho.di.core.CheckResultInterface;
+import org.pentaho.di.core.Const;
 import org.pentaho.di.core.KettleEnvironment;
+import org.pentaho.di.core.ProgressMonitorListener;
 import org.pentaho.di.core.database.DatabaseMeta;
+import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
+import org.pentaho.di.core.gui.OverwritePrompter;
 import org.pentaho.di.core.gui.Point;
 import org.pentaho.di.core.listeners.ContentChangedListener;
+import org.pentaho.di.core.logging.TransLogTable;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.row.value.ValueMetaFactory;
 import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.core.variables.VariableSpace;
+import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.metastore.DatabaseMetaStoreUtil;
 import org.pentaho.di.repository.ObjectRevision;
 import org.pentaho.di.repository.Repository;
+import org.pentaho.di.repository.RepositoryDirectory;
 import org.pentaho.di.repository.RepositoryDirectoryInterface;
-import org.pentaho.di.trans.step.StepIOMeta;
 import org.pentaho.di.trans.step.StepMeta;
-import org.pentaho.di.trans.step.StepMetaChangeListenerInterface;
 import org.pentaho.di.trans.step.StepMetaInterface;
+import org.pentaho.di.trans.step.StepIOMeta;
+import org.pentaho.di.trans.step.StepMetaChangeListenerInterface;
+import org.pentaho.di.trans.step.StepPartitioningMeta;
 import org.pentaho.di.trans.steps.datagrid.DataGridMeta;
 import org.pentaho.di.trans.steps.userdefinedjavaclass.StepDefinition;
 import org.pentaho.di.trans.steps.userdefinedjavaclass.UserDefinedJavaClassDef;
 import org.pentaho.di.trans.steps.userdefinedjavaclass.UserDefinedJavaClassMeta;
 import org.pentaho.metastore.api.IMetaStore;
 import org.pentaho.metastore.stores.memory.MemoryMetaStore;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
+import java.util.HashMap;
+import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.Date;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertNotNull;
 import static org.mockito.Matchers.same;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.anyString;
@@ -397,5 +418,146 @@ public class TransMetaTest {
   private abstract static class StepMetaChangeListenerInterfaceMock implements StepMetaInterface, StepMetaChangeListenerInterface {
     @Override
     public abstract Object clone();
+  }
+
+  @Test
+  public void testLoadXml() throws KettleException {
+    String directory = "/home/admin";
+    Node jobNode = Mockito.mock( Node.class );
+    NodeList nodeList = new NodeList() {
+      ArrayList<Node> nodes = new ArrayList<>(  );
+      {
+
+        Node nodeInfo = Mockito.mock( Node.class );
+        Mockito.when( nodeInfo.getNodeName() ).thenReturn( TransMeta.XML_TAG_INFO );
+        Mockito.when( nodeInfo.getChildNodes() ).thenReturn( this );
+
+        Node nodeDirectory = Mockito.mock( Node.class );
+        Mockito.when( nodeDirectory.getNodeName() ).thenReturn( "directory" );
+        Node child = Mockito.mock( Node.class );
+        Mockito.when( nodeDirectory.getFirstChild() ).thenReturn( child );
+        Mockito.when( child.getNodeValue() ).thenReturn( directory );
+
+        nodes.add( nodeDirectory );
+        nodes.add( nodeInfo );
+
+      }
+
+      @Override public Node item( int index ) {
+        return nodes.get( index );
+      }
+
+      @Override public int getLength() {
+        return nodes.size();
+      }
+    };
+
+    Mockito.when( jobNode.getChildNodes() ).thenReturn( nodeList );
+
+    Repository rep = Mockito.mock( Repository.class );
+    RepositoryDirectory repDirectory =
+      new RepositoryDirectory( new RepositoryDirectory( new RepositoryDirectory(), "home" ), "admin" );
+    Mockito.when( rep.findDirectory( Mockito.eq( directory ) ) ).thenReturn( repDirectory );
+    TransMeta meta = new TransMeta();
+
+    VariableSpace variableSpace = Mockito.mock( VariableSpace.class );
+    Mockito.when( variableSpace.listVariables() ).thenReturn( new String[0] );
+
+    meta.loadXML( jobNode, null, Mockito.mock( IMetaStore.class ), rep, false, variableSpace,
+      Mockito.mock( OverwritePrompter.class ) );
+    meta.setInternalKettleVariables( null );
+
+    assertEquals( repDirectory.getPath(), meta.getVariable( Const.INTERNAL_VARIABLE_TRANSFORMATION_REPOSITORY_DIRECTORY ) );
+  }
+
+  @Test
+  public void testTransWithOneStepIsConsideredUsed() throws Exception {
+    TransMeta transMeta = new TransMeta( getClass().getResource( "one-step-trans.ktr" ).getPath() );
+    assertEquals( 1, transMeta.getUsedSteps().size() );
+    Repository rep = mock( Repository.class );
+    ProgressMonitorListener monitor = mock( ProgressMonitorListener.class );
+    List<CheckResultInterface> remarks = new ArrayList<>();
+    IMetaStore metaStore = mock( IMetaStore.class );
+    transMeta.checkSteps( remarks, false, monitor, new Variables(), rep, metaStore );
+    assertEquals( 4, remarks.size() );
+    for ( CheckResultInterface remark : remarks ) {
+      assertEquals( CheckResultInterface.TYPE_RESULT_OK, remark.getType() );
+    }
+  }
+
+  @Test
+  public void testGetCacheVersion() throws Exception {
+    TransMeta transMeta = new TransMeta( getClass().getResource( "one-step-trans.ktr" ).getPath() );
+    int oldCacheVersion = transMeta.getCacheVersion();
+    transMeta.setSizeRowset(10);
+    int currCacheVersion = transMeta.getCacheVersion();
+    assertNotEquals( oldCacheVersion, currCacheVersion );
+  }
+
+  @Test
+  public void testGetCacheVersionWithIrrelevantParameters() throws Exception {
+    TransMeta transMeta = new TransMeta( getClass().getResource( "one-step-trans.ktr" ).getPath() );
+    int oldCacheVersion = transMeta.getCacheVersion();
+    int currCacheVersion;
+
+    transMeta.setSizeRowset( 1000 );
+    currCacheVersion = transMeta.getCacheVersion();
+    assertNotEquals( oldCacheVersion, currCacheVersion );
+
+    oldCacheVersion = currCacheVersion;
+
+    // scenarios that should not impact the cache version
+
+    // transformation description
+    transMeta.setDescription( "transformation description" );
+
+    // transformation status
+    transMeta.setTransstatus( 100 );
+
+    // transformation log table
+    transMeta.setTransLogTable( mock(TransLogTable.class ) );
+
+    // transformation created user
+    transMeta.setCreatedUser( "user" );
+
+    // transformation modified user
+    transMeta.setModifiedUser( "user" );
+
+    // transformation created date
+    transMeta.setCreatedDate( new Date() );
+
+    // transformation modified date
+    transMeta.setModifiedDate( new Date() );
+
+    // transformation is key private flag
+    transMeta.setPrivateKey( false );
+
+    // transformation attributes
+    Map<String, String> attributes = new HashMap<>();
+    attributes.put( "key", "value" );
+    transMeta.setAttributes( "group", attributes );
+
+    // step description
+    StepMeta stepMeta = transMeta.getStep( 0 );
+    stepMeta.setDescription( "stepDescription" );
+
+    // step position
+    stepMeta.setLocation( 10, 20 );
+    stepMeta.setLocation( new Point( 30, 40 ) );
+
+    // step type id
+    stepMeta.setStepID( "Dummy" );
+
+    // step is distributed flag
+    stepMeta.setDistributes( false );
+
+    // step copies
+    stepMeta.setCopies( 5 );
+
+    // step partitioning meta
+    stepMeta.setStepPartitioningMeta( mock( StepPartitioningMeta.class ) );
+
+    // assert that nothing impacted the cache version
+    assertEquals( oldCacheVersion, transMeta.getCacheVersion() );
   }
 }

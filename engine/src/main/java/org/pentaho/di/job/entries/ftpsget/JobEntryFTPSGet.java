@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -198,7 +198,9 @@ public class JobEntryFTPSGet extends JobEntryBase implements Cloneable, JobEntry
     retval.append( "      " ).append( XMLHandler.addTagValue( "success_condition", success_condition ) );
     retval.append( "      " ).append(
       XMLHandler.addTagValue( "connection_type", FTPSConnection.getConnectionTypeCode( connectionType ) ) );
-
+    if ( parentJobMeta != null ) {
+      parentJobMeta.getNamedClusterEmbedManager().registerUrl( targetDirectory );
+    }
     return retval.toString();
   }
 
@@ -726,6 +728,12 @@ public class JobEntryFTPSGet extends JobEntryBase implements Cloneable, JobEntry
     boolean exitjobentry = false;
     limitFiles = Const.toInt( environmentSubstitute( getLimit() ), 10 );
 
+    //Set Embedded NamedCluter MetatStore Provider Key so that it can be passed to VFS
+    if ( parentJobMeta.getNamedClusterEmbedManager() != null ) {
+      parentJobMeta.getNamedClusterEmbedManager()
+        .passEmbeddedMetastoreKey( this, parentJobMeta.getEmbeddedMetastoreProviderKey() );
+    }
+
     // Here let's put some controls before stating the job
     if ( movefiles ) {
       if ( Utils.isEmpty( movetodirectory ) ) {
@@ -750,7 +758,7 @@ public class JobEntryFTPSGet extends JobEntryBase implements Cloneable, JobEntry
       String realPassword = Encr.decryptPasswordOptionallyEncrypted( environmentSubstitute( password ) );
       int realPort = Const.toInt( environmentSubstitute( this.port ), 0 );
 
-      connection = new FTPSConnection( getConnectionType(), realServername, realPort, realUsername, realPassword );
+      connection = new FTPSConnection( getConnectionType(), realServername, realPort, realUsername, realPassword, this );
 
       this.buildFTPSConnection( connection );
 
@@ -933,7 +941,7 @@ public class JobEntryFTPSGet extends JobEntryBase implements Cloneable, JobEntry
     if ( isaddresult ) {
       FileObject targetFile = null;
       try {
-        targetFile = KettleVFS.getFileObject( filename );
+        targetFile = KettleVFS.getFileObject( filename, this );
 
         // Add to the result files...
         ResultFile resultFile =

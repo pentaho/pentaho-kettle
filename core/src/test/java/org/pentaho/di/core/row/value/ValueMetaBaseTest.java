@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -33,6 +33,7 @@ import org.owasp.encoder.Encode;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.database.DatabaseInterface;
 import org.pentaho.di.core.database.DatabaseMeta;
+import org.pentaho.di.core.database.MySQLDatabaseMeta;
 import org.pentaho.di.core.database.NetezzaDatabaseMeta;
 import org.pentaho.di.core.database.Vertica5DatabaseMeta;
 import org.pentaho.di.core.exception.KettleDatabaseException;
@@ -553,6 +554,15 @@ public class ValueMetaBaseTest {
   }
 
   @Test
+  public void testCompareIntegerToDouble() throws KettleValueException {
+    ValueMetaBase intMeta = new ValueMetaBase( "int", ValueMetaInterface.TYPE_INTEGER );
+    Long int1 = new Long( 2L );
+    ValueMetaBase numberMeta = new ValueMetaBase( "number", ValueMetaInterface.TYPE_NUMBER );
+    Double double2 = new Double( 1.5 );
+    assertEquals( 1, intMeta.compare( int1, numberMeta, double2 ) );
+  }
+
+  @Test
   public void testCompareDate() throws KettleValueException {
     ValueMetaBase dateMeta = new ValueMetaBase( "int", ValueMetaInterface.TYPE_DATE );
     Date date1 = new Date( 6223372036854775804L );
@@ -560,6 +570,71 @@ public class ValueMetaBaseTest {
     assertEquals( 1, dateMeta.compare( date1, date2 ) );
     assertEquals( -1, dateMeta.compare( date2, date1 ) );
     assertEquals( 0, dateMeta.compare( date1, date1 ) );
+  }
+
+  @Test
+  public void testCompareDateWithStorageMask() throws KettleValueException {
+    ValueMetaBase storageMeta = new ValueMetaBase( "string", ValueMetaInterface.TYPE_STRING );
+    storageMeta.setStorageType( ValueMetaInterface.STORAGE_TYPE_NORMAL );
+    storageMeta.setConversionMask( "MM/dd/yyyy HH:mm" );
+
+    ValueMetaBase dateMeta = new ValueMetaBase( "date", ValueMetaInterface.TYPE_DATE );
+    dateMeta.setStorageType( ValueMetaInterface.STORAGE_TYPE_BINARY_STRING );
+    dateMeta.setStorageMetadata( storageMeta );
+    dateMeta.setConversionMask( "yyyy-MM-dd" );
+
+    ValueMetaBase targetDateMeta = new ValueMetaBase( "date", ValueMetaInterface.TYPE_DATE );
+    targetDateMeta.setConversionMask( "yyyy-MM-dd" );
+    targetDateMeta.setStorageType( ValueMetaInterface.STORAGE_TYPE_NORMAL );
+
+    String date = "2/24/2017 0:00";
+
+    Date equalDate = new GregorianCalendar( 2017, Calendar.FEBRUARY, 24 ).getTime();
+    assertEquals( 0, dateMeta.compare( date.getBytes(), targetDateMeta, equalDate ) );
+
+    Date pastDate = new GregorianCalendar( 2017, Calendar.JANUARY, 24 ).getTime();
+    assertEquals( 1, dateMeta.compare( date.getBytes(), targetDateMeta, pastDate ) );
+
+    Date futureDate = new GregorianCalendar( 2017, Calendar.MARCH, 24 ).getTime();
+    assertEquals( -1, dateMeta.compare( date.getBytes(), targetDateMeta, futureDate ) );
+  }
+
+  @Test
+  public void testCompareDateNoStorageMask() throws KettleValueException {
+    ValueMetaBase storageMeta = new ValueMetaBase( "string", ValueMetaInterface.TYPE_STRING );
+    storageMeta.setStorageType( ValueMetaInterface.STORAGE_TYPE_NORMAL );
+    storageMeta.setConversionMask( null ); // explicit set to null, to make sure test condition are met
+
+    ValueMetaBase dateMeta = new ValueMetaBase( "date", ValueMetaInterface.TYPE_DATE );
+    dateMeta.setStorageType( ValueMetaInterface.STORAGE_TYPE_BINARY_STRING );
+    dateMeta.setStorageMetadata( storageMeta );
+    dateMeta.setConversionMask( "yyyy-MM-dd" );
+
+    ValueMetaBase targetDateMeta = new ValueMetaBase( "date", ValueMetaInterface.TYPE_DATE );
+    //targetDateMeta.setConversionMask( "yyyy-MM-dd" ); by not setting a maks, the default one is used
+    //and since this is a date of normal storage it should work
+    targetDateMeta.setStorageType( ValueMetaInterface.STORAGE_TYPE_NORMAL );
+
+    String date = "2017/02/24 00:00:00.000";
+
+    Date equalDate = new GregorianCalendar( 2017, Calendar.FEBRUARY, 24 ).getTime();
+    assertEquals( 0, dateMeta.compare( date.getBytes(), targetDateMeta, equalDate ) );
+
+    Date pastDate = new GregorianCalendar( 2017, Calendar.JANUARY, 24 ).getTime();
+    assertEquals( 1, dateMeta.compare( date.getBytes(), targetDateMeta, pastDate ) );
+
+    Date futureDate = new GregorianCalendar( 2017, Calendar.MARCH, 24 ).getTime();
+    assertEquals( -1, dateMeta.compare( date.getBytes(), targetDateMeta, futureDate ) );
+  }
+
+  @Test
+  public void testCompareBinary() throws KettleValueException {
+    ValueMetaBase dateMeta = new ValueMetaBase( "int", ValueMetaInterface.TYPE_BINARY );
+    byte[] value1 = new byte[] { 0, 1, 0, 0, 0, 1 };
+    byte[] value2 = new byte[] { 0, 1, 0, 0, 0, 0 };
+    assertEquals( 1, dateMeta.compare( value1, value2 ) );
+    assertEquals( -1, dateMeta.compare( value2, value1 ) );
+    assertEquals( 0, dateMeta.compare( value1, value1 ) );
   }
 
   @Test
@@ -792,4 +867,28 @@ public class ValueMetaBaseTest {
     Assert.assertFalse( vmb.convertBigNumberToBoolean( new BigDecimal( "0" ) ) );
     Assert.assertTrue( vmb.convertBigNumberToBoolean( new BigDecimal( "1.7976E308" ) ) );
   }
+
+
+  //PDI-14721 ESR-5021
+  @Test
+  public void testGetValueFromSQLTypeBinaryMysql() throws Exception {
+
+    final int binaryColumnIndex = 1;
+    ValueMetaBase valueMetaBase = new ValueMetaBase();
+    DatabaseMeta dbMeta = Mockito.spy( new DatabaseMeta() );
+    DatabaseInterface databaseInterface = new MySQLDatabaseMeta();
+    dbMeta.setDatabaseInterface( databaseInterface );
+
+    ResultSet resultSet = Mockito.mock( ResultSet.class );
+    ResultSetMetaData metaData = Mockito.mock( ResultSetMetaData.class );
+
+    Mockito.when( resultSet.getMetaData() ).thenReturn( metaData );
+    Mockito.when( metaData.getColumnType( binaryColumnIndex ) ).thenReturn( Types.LONGVARBINARY );
+
+    ValueMetaInterface binaryValueMeta =
+      valueMetaBase.getValueFromSQLType( dbMeta, TEST_NAME, metaData, binaryColumnIndex, false, false );
+    Assert.assertEquals( ValueMetaInterface.TYPE_BINARY, binaryValueMeta.getType() );
+    Assert.assertTrue( binaryValueMeta.isBinary() );
+  }
+
 }

@@ -1,22 +1,22 @@
 /*!
- * PENTAHO CORPORATION PROPRIETARY AND CONFIDENTIAL
+ * HITACHI VANTARA PROPRIETARY AND CONFIDENTIAL
  *
- * Copyright 2017 Pentaho Corporation (Pentaho). All rights reserved.
+ * Copyright 2017 Hitachi Vantara. All rights reserved.
  *
  * NOTICE: All information including source code contained herein is, and
- * remains the sole property of Pentaho and its licensors. The intellectual
+ * remains the sole property of Hitachi Vantara and its licensors. The intellectual
  * and technical concepts contained herein are proprietary and confidential
- * to, and are trade secrets of Pentaho and may be covered by U.S. and foreign
+ * to, and are trade secrets of Hitachi Vantara and may be covered by U.S. and foreign
  * patents, or patents in process, and are protected by trade secret and
  * copyright laws. The receipt or possession of this source code and/or related
  * information does not convey or imply any rights to reproduce, disclose or
  * distribute its contents, or to manufacture, use, or sell anything that it
  * may describe, in whole or in part. Any reproduction, modification, distribution,
  * or public display of this information without the express written authorization
- * from Pentaho is strictly prohibited and in violation of applicable laws and
+ * from Hitachi Vantara is strictly prohibited and in violation of applicable laws and
  * international treaties. Access to the source code contained herein is strictly
  * prohibited to anyone except those individuals and entities who have executed
- * confidentiality and non-disclosure agreements or other agreements with Pentaho,
+ * confidentiality and non-disclosure agreements or other agreements with Hitachi Vantara,
  * explicitly covering such access.
  */
 
@@ -56,6 +56,10 @@ file-open-save-app .dialogWrapper {
 
 file-open-save-app .header {
   padding: 30px 30px 0;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
 }
 
 file-open-save-app .headerTop {
@@ -71,93 +75,6 @@ file-open-save-app .headerTitle {
   float: left;
   color: #333;
 }
-
-file-open-save-app .headerSearch {
-  width: 270px;
-  height: 34px;
-  float: right;
-  border: 1px solid #CCC;
-  border-radius: 4px;
-  -moz-border-radius: 4px;
-  -webkit-border-radius: 4px;
-}
-
-file-open-save-app .headerSearchLeft {
-  background: url("./images/search_gray.png") no-repeat left 8px center;
-  width: 30px;
-  height: 100%;
-  border: none;
-  cursor: text;
-  float: left;
-}
-
-file-open-save-app .headerSearchLeft.blueState {
-  background: url("./images/search_blue.png") no-repeat left 7px center;
-}
-
-file-open-save-app .headerSearchRight {
-  background: url("./images/clear_gray.png") no-repeat center center;
-  width: 28px;
-  height: 100%;
-  border: none;
-  cursor: pointer;
-  float: left;
-}
-
-file-open-save-app .headerSearchRightInvisible {
-  width: 28px;
-  height: 100%;
-  border: none;
-  cursor: text;
-  float: left;
-}
-
-file-open-save-app .headerSearchRight:hover {
-  background: url("./images/clear_blue.png") no-repeat center center;
-}
-
-file-open-save-app input.searchBox,
-file-open-save-app input.searchBox:focus {
-  width: calc(270px - 60px);
-  /*width: 240px;*/
-  height: 100%;
-  border: none;
-  padding: 0;
-  float: left;
-}
-
-/*HIDES THE X ON THE SEARCHBOX ON IE11*/
-file-open-save-app input.searchBox::-ms-clear {
-  display: none;
-  width:0;
-  height:0;
-}
-/*HIDES THE X ON THE SEARCHBOX ON IE11*/
-
-/*CHANGES THE COLOR OF THE PLACEHOLDER ON DIFFERENT BROWSERS*/
-file-open-save-app input.searchBox::-webkit-input-placeholder {
-  color: #999999;
-}
-
-file-open-save-app input.searchBox:-ms-input-placeholder {
-  color: #999999;
-}
-
-file-open-save-app input.searchBox::-moz-placeholder {
-  color: #999999;
-}
-
-file-open-save-app input.searchBox:focus::-webkit-input-placeholder {
-  color: #CCCCCC;
-}
-
-file-open-save-app input.searchBox:focus:-ms-input-placeholder {
-  color: #CCCCCC;
-}
-
-file-open-save-app input.searchBox:focus::-moz-placeholder {
-  color: #CCCCCC;
-}
 /*CHANGES THE COLOR OF THE PLACEHOLDER ON DIFFERENT BROWSERS*/
 
 file-open-save-app .headerBottom {
@@ -165,32 +82,45 @@ file-open-save-app .headerBottom {
   padding-bottom: 20px;
 }
 
-file-open-save-app .breadcrumbSection{
+file-open-save-app .breadcrumbSection {
   line-height: 18px;
   float: left;
 }
 
 file-open-save-app .addDelete {
-  display: none;
   float: right;
 }
 
-file-open-save-app .save .addDelete {
-  display: inline-flex;
+file-open-save-app .addDelete button {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+}
+
+file-open-save-app .addDelete button:disabled {
+  cursor: default;
 }
 
 file-open-save-app .addFolder {
-  background: url("./images/add_folder.svg") no-repeat left center;
+  background: url("./img/add_folder.svg") no-repeat center center;
   height: 19px;
   width: 23px;
   cursor: pointer;
 }
 
 file-open-save-app .deleteFolder {
-  background: url("./images/delete_folder_file.svg") no-repeat left center;
+  background: url("./img/delete_folder_file.svg") no-repeat center center;
   height: 18px;
   width: 14px;
   cursor: pointer;
+}
+
+file-open-save-app .addFolder[disabled],
+file-open-save-app .deleteFolder[disabled],
+file-open-save-app .addFolder[disabled]:hover,
+file-open-save-app .deleteFolder[disabled]:hover {
+  background-position: left center;
 }
 
 file-open-save-app .addFolder:hover,
@@ -198,19 +128,27 @@ file-open-save-app .deleteFolder:hover {
   background-position: right center;
 }
 
+file-open-save-app .addDelete .addFolder {
+  float: left;
+}
+
 file-open-save-app .addDelete .deleteFolder {
+  float: right;
   margin-left: 15px;
 }
 
 file-open-save-app .middle {
-  height: 292px;
+  position: absolute;
+  top: 122px;
+  bottom: 171px;
   width: 100%;
   border-top: 1px solid #CCC;
   border-bottom: 1px solid #CCC;
 }
 
-file-open-save-app .open .middle {
-  height: 368px;
+file-open-save-app .open .middle,
+file-open-save-app .selectFolder .middle {
+  bottom: 96px;
 }
 
 file-open-save-app .directoryTreeArea {
@@ -225,9 +163,7 @@ file-open-save-app .directoryTreeArea {
 
 file-open-save-app .fileArea {
   height: 100%;
-  width: auto;
-  overflow-x: auto;
-  overflow-y: hidden;
+  overflow: hidden;
   position: relative;
 }
 
@@ -241,12 +177,21 @@ file-open-save-app .fileArea.recentsView.scrolling {
   padding-right: 0;
 }
 
+file-open-save-app .fileArea.hasMessage {
+  overflow: hidden;
+}
+
 file-open-save-app .bottom {
   padding: 20px 30px 30px;
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  right: 0;
   height: 119px;
 }
 
-file-open-save-app .open .bottom {
+file-open-save-app .open .bottom,
+file-open-save-app .selectFolder .bottom {
   padding-top: 30px;
   height: 36px;
 }
@@ -288,6 +233,10 @@ file-open-save-app button {
   outline: 0 none;
 }
 
+file-open-save-app button span {
+  position: relative;
+}
+
 file-open-save-app button.primary:enabled {
   border: 1px solid #005DA6;
   background-color: #005DA6;
@@ -323,46 +272,65 @@ file-open-save-app .buttons button {
   float: right;
 }
 
-file-open-save-app .open .fileNameEntry {
-  display: none;
-}
-
 file-open-save-app .fileAreaMessageView {
   width: 100%;
   text-align: center;
-  height: 292px;
-  line-height: 292px;
+  height: 100%;
+  line-height: 100%;
+  transform: translate(0%, 50%) translateY(-7px);
+  -ms-transform: translate(0%, 50%) translateY(-7px);
+  -webkit-transform: translate(0%, 50%) translateY(-7px);
+  -moz-transform: translate(0%, 50%) translateY(-7px);
 }
 
-file-open-save-app .open .fileAreaMessageView {
-  height: 368px;
-  line-height: 368px;
-}
-
-file-open-save-app .recentsView .fileAreaMessageView {
-  width: calc(100% + 20px);
-}
-
-.searchBoxExtra {
+file-open-save-app .searchBoxExtra {
   position: absolute;
   background-color: #ffffff;
   -moz-box-shadow: 0 0 4px 0 rgba(0, 0, 0, 0.4);
   -webkit-box-shadow: 0 0 4px 0 rgba(0, 0, 0, 0.4);
-  box-shadow: 0px 0px 4px 0px rgba(0, 0, 0, 0.4);
+  box-shadow: 0 0 4px 0 rgba(0, 0, 0, 0.4);
   padding: 5px 0;
   max-width: 267px;
   min-width: 267px;
   z-index: 100;
   border: 1px solid #f2f2f2;
+  top: 67px;
+  right: 31px;
+
 }
 
-.searchBoxExtraItem {
+file-open-save-app .searchBoxExtraItem {
   padding: 5px 10px 5px 10px;
   text-overflow: ellipsis;
   overflow: hidden;
   white-space: nowrap;
+  cursor: pointer;
 }
 
-.searchBoxExtraItem:hover {
+file-open-save-app .searchBoxExtraItem:hover {
   background-color: #E6EFF6;
+}
+
+file-open-save-app .noselect {
+  -webkit-touch-callout: none; /* iOS Safari */
+  -webkit-user-select: none; /* Safari */
+  -moz-user-select: none; /* Firefox */
+  -ms-user-select: none; /* Internet Explorer/Edge */
+  user-select: none; /* Non-prefixed version, currently supported by Chrome and Opera */
+}
+
+file-open-save-app input[placeholder] {
+  text-overflow: ellipsis;
+}
+
+file-open-save-app ::-moz-placeholder {
+  text-overflow: ellipsis;
+}
+
+file-open-save-app input:-moz-placeholder {
+  text-overflow: ellipsis;
+}
+
+file-open-save-app .hasError {
+  pointer-events: none;
 }

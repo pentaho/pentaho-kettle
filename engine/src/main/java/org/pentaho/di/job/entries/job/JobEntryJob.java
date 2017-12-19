@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,19 +22,10 @@
 
 package org.pentaho.di.job.entries.job;
 
-import java.io.OutputStream;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
-
 import org.apache.commons.vfs2.FileObject;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.ObjectLocationSpecificationMethod;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.ResultFile;
@@ -44,12 +35,17 @@ import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
+import org.pentaho.di.core.extension.ExtensionPointHandler;
+import org.pentaho.di.core.extension.KettleExtensionPoint;
+import org.pentaho.di.core.listeners.CurrentDirectoryChangedListener;
+import org.pentaho.di.core.listeners.impl.EntryCurrentDirectoryChangedListener;
 import org.pentaho.di.core.logging.LogChannelFileWriter;
 import org.pentaho.di.core.logging.LogLevel;
 import org.pentaho.di.core.parameters.DuplicateParamException;
 import org.pentaho.di.core.parameters.NamedParams;
 import org.pentaho.di.core.parameters.NamedParamsDefault;
 import org.pentaho.di.core.util.CurrentDirectoryResolver;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.core.vfs.KettleVFS;
@@ -63,6 +59,7 @@ import org.pentaho.di.job.entry.JobEntryBase;
 import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.job.entry.validator.AndValidator;
 import org.pentaho.di.job.entry.validator.JobEntryValidatorUtils;
+import org.pentaho.di.repository.HasRepositoryDirectories;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectory;
@@ -80,6 +77,14 @@ import org.pentaho.di.www.SlaveServerJobStatus;
 import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Node;
 
+import java.io.OutputStream;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+
 /**
  * Recursive definition of a Job. This step means that an entire Job has to be executed. It can be the same Job, but
  * just make sure that you don't get an endless loop. Provide an escape routine using JobEval.
@@ -88,7 +93,7 @@ import org.w3c.dom.Node;
  * @since 01-10-2003, Rewritten on 18-06-2004
  *
  */
-public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInterface {
+public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInterface, HasRepositoryDirectories {
   private static Class<?> PKG = JobEntryJob.class; // for i18n purposes, needed by Translator2!!
 
   private String filename;
@@ -126,9 +131,16 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
 
   private boolean passingExport;
 
+  private String runConfiguration;
+
   public static final LogLevel DEFAULT_LOG_LEVEL = LogLevel.NOTHING;
 
   private Job job;
+
+  private CurrentDirectoryChangedListener dirListener = new EntryCurrentDirectoryChangedListener(
+      this::getSpecificationMethod,
+      this::getDirectory,
+      this::setDirectory );
 
   public JobEntryJob( String name ) {
     super( name, "" );
@@ -206,6 +218,16 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
     this.directory = directory;
   }
 
+  @Override
+  public String[] getDirectories() {
+    return new String[]{ directory };
+  }
+
+  @Override
+  public void setDirectories( String[] directories ) {
+    this.directory = directories[0];
+  }
+
   public boolean isPassingExport() {
     return passingExport;
   }
@@ -213,6 +235,15 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
   public void setPassingExport( boolean passingExport ) {
     this.passingExport = passingExport;
   }
+
+  public String getRunConfiguration() {
+    return runConfiguration;
+  }
+
+  public void setRunConfiguration( String runConfiguration ) {
+    this.runConfiguration = runConfiguration;
+  }
+
 
   public String getLogFilename() {
     String retval = "";
@@ -261,6 +292,10 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
         // Ignore object reference problems. It simply means that the reference is no longer valid.
       }
     }
+    if ( parentJobMeta != null ) {
+      parentJobMeta.getNamedClusterEmbedManager().registerUrl( filename );
+    }
+
     retval.append( "      " ).append( XMLHandler.addTagValue( "filename", filename ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "jobname", jobname ) );
 
@@ -286,6 +321,7 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
     retval.append( "      " ).append( XMLHandler.addTagValue( "expand_remote_job", expandingRemoteJob ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "create_parent_folder", createParentFolder ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "pass_export", passingExport ) );
+    retval.append( "      " ).append( XMLHandler.addTagValue( "run_configuration", runConfiguration ) );
 
     if ( arguments != null ) {
       for ( int i = 0; i < arguments.length; i++ ) {
@@ -371,6 +407,7 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
       passingExport = "Y".equalsIgnoreCase( XMLHandler.getTagValue( entrynode, "pass_export" ) );
       directory = XMLHandler.getTagValue( entrynode, "directory" );
       createParentFolder = "Y".equalsIgnoreCase( XMLHandler.getTagValue( entrynode, "create_parent_folder" ) );
+      runConfiguration = XMLHandler.getTagValue( entrynode, "run_configuration" );
 
       String wait = XMLHandler.getTagValue( entrynode, "wait_until_finished" );
       if ( Utils.isEmpty( wait ) ) {
@@ -450,6 +487,7 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
       followingAbortRemotely = rep.getJobEntryAttributeBoolean( id_jobentry, "follow_abort_remote" );
       expandingRemoteJob = rep.getJobEntryAttributeBoolean( id_jobentry, "expand_remote_job" );
       createParentFolder = rep.getJobEntryAttributeBoolean( id_jobentry, "create_parent_folder" );
+      runConfiguration = rep.getJobEntryAttributeString( id_jobentry, "run_configuration" );
 
       // How many arguments?
       int argnr = rep.countNrJobEntryAttributes( id_jobentry, "argument" );
@@ -508,6 +546,7 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
       rep.saveJobEntryAttribute( id_job, getObjectId(), "follow_abort_remote", followingAbortRemotely );
       rep.saveJobEntryAttribute( id_job, getObjectId(), "expand_remote_job", expandingRemoteJob );
       rep.saveJobEntryAttribute( id_job, getObjectId(), "create_parent_folder", createParentFolder );
+      rep.saveJobEntryAttribute( id_job, getObjectId(), "run_configuration", runConfiguration );
 
       // save the arguments...
       if ( arguments != null ) {
@@ -541,6 +580,12 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
     LogChannelFileWriter logChannelFileWriter = null;
 
     LogLevel jobLogLevel = parentJob.getLogLevel();
+    //Set Embedded NamedCluter MetatStore Provider Key so that it can be passed to VFS
+    if ( parentJobMeta.getNamedClusterEmbedManager() != null ) {
+      parentJobMeta.getNamedClusterEmbedManager()
+        .passEmbeddedMetastoreKey( this, parentJobMeta.getEmbeddedMetastoreProviderKey() );
+    }
+
     if ( setLogfile ) {
       String realLogFilename = environmentSubstitute( getLogFilename() );
       // We need to check here the log filename
@@ -573,17 +618,6 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
       jobLogLevel = logFileLevel;
     }
 
-    // Figure out the remote slave server...
-    //
-    SlaveServer remoteSlaveServer = null;
-    if ( !Utils.isEmpty( remoteSlaveServerName ) ) {
-      String realRemoteSlaveServerName = environmentSubstitute( remoteSlaveServerName );
-      remoteSlaveServer = parentJob.getJobMeta().findSlaveServer( realRemoteSlaveServerName );
-      if ( remoteSlaveServer == null ) {
-        throw new KettleException( BaseMessages.getString(
-          PKG, "JobJob.Exception.UnableToFindRemoteSlaveServer", realRemoteSlaveServerName ) );
-      }
-    }
     try {
       // First load the job, outside of the loop...
       if ( parentJob.getJobMeta() != null ) {
@@ -804,6 +838,44 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
                   }
                 }
               }
+            }
+          }
+        }
+
+        boolean doFallback = true;
+        SlaveServer remoteSlaveServer = null;
+        JobExecutionConfiguration executionConfiguration = new JobExecutionConfiguration();
+        if ( !Utils.isEmpty( runConfiguration ) ) {
+          log.logBasic( BaseMessages.getString( PKG, "JobJob.RunConfig.Message" ), runConfiguration );
+          runConfiguration = environmentSubstitute( runConfiguration );
+          executionConfiguration.setRunConfiguration( runConfiguration );
+          try {
+            ExtensionPointHandler.callExtensionPoint( log, KettleExtensionPoint.SpoonTransBeforeStart.id, new Object[] {
+              executionConfiguration, parentJob.getJobMeta(), jobMeta, rep
+            } );
+            if ( !executionConfiguration.isExecutingLocally() && !executionConfiguration.isExecutingRemotely() ) {
+              result.setResult( true );
+              return result;
+            }
+            remoteSlaveServer = executionConfiguration.getRemoteServer();
+            doFallback = false;
+          } catch ( KettleException e ) {
+            log.logError( e.getMessage(), getName() );
+            result.setNrErrors( 1 );
+            result.setResult( false );
+            return result;
+          }
+        }
+
+        if ( doFallback ) {
+          // Figure out the remote slave server...
+          //
+          if ( !Utils.isEmpty( remoteSlaveServerName ) ) {
+            String realRemoteSlaveServerName = environmentSubstitute( remoteSlaveServerName );
+            remoteSlaveServer = parentJob.getJobMeta().findSlaveServer( realRemoteSlaveServerName );
+            if ( remoteSlaveServer == null ) {
+              throw new KettleException( BaseMessages.getString(
+                PKG, "JobTrans.Exception.UnableToFindRemoteSlaveServer", realRemoteSlaveServerName ) );
             }
           }
         }
@@ -1212,6 +1284,7 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
     logext = null;
     setLogfile = false;
     setAppendLogfile = false;
+    runConfiguration = null;
   }
 
   @Override
@@ -1549,6 +1622,11 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
     return specificationMethod;
   }
 
+  @Override
+  public ObjectLocationSpecificationMethod[] getSpecificationMethods() {
+    return new ObjectLocationSpecificationMethod[]{ specificationMethod };
+  }
+
   /**
    * @param specificationMethod
    *          the specificationMethod to set
@@ -1621,4 +1699,17 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
   public void setExpandingRemoteJob( boolean expandingRemoteJob ) {
     this.expandingRemoteJob = expandingRemoteJob;
   }
+
+  @Override
+  public void setParentJobMeta( JobMeta parentJobMeta ) {
+    JobMeta previous = getParentJobMeta();
+    super.setParentJobMeta( parentJobMeta );
+    if ( previous != null ) {
+      previous.removeCurrentDirectoryChangedListener( this.dirListener );
+    }
+    if ( parentJobMeta !=  null ) {
+      parentJobMeta.addCurrentDirectoryChangedListener( this.dirListener );
+    }
+  }
+
 }

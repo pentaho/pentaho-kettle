@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,13 +22,7 @@
 
 package org.pentaho.di.trans.steps.validator;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.RowSet;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettlePluginException;
@@ -37,6 +31,7 @@ import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.row.value.ValueMetaFactory;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
@@ -47,6 +42,11 @@ import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaDataCombi;
 import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.di.trans.step.errorhandling.StreamInterface;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Calculate new field values using pre-defined functions.
@@ -440,7 +440,7 @@ public class Validator extends BaseStep implements StepInterface {
             KettleValidatorException exception =
               new KettleValidatorException(
                 this, field, KettleValidatorException.ERROR_DOES_NOT_END_WITH_STRING, BaseMessages.getString(
-                PKG, "Validator.Exception.DoesNotStartWithString", field.getFieldName(), valueMeta
+                PKG, "Validator.Exception.DoesNotEndWithString", field.getFieldName(), valueMeta
                   .getString( valueData ), field.getEndString() ), field.getFieldName() );
             exceptions.add( exception );
             if ( !meta.isValidatingAll() ) {

@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -74,6 +74,7 @@ import org.pentaho.di.trans.steps.loadsave.validator.NonZeroIntLoadSaveValidator
 import org.pentaho.di.trans.steps.loadsave.validator.PrimitiveIntArrayLoadSaveValidator;
 import org.pentaho.di.trans.steps.loadsave.validator.StringLoadSaveValidator;
 import org.pentaho.metastore.api.IMetaStore;
+import org.pentaho.di.trans.steps.mock.StepMockHelper;
 
 public class DimensionLookupMetaTest implements InitializerInterface<StepMetaInterface> {
   LoadSaveTester loadSaveTester;
@@ -321,6 +322,37 @@ public class DimensionLookupMetaTest implements InitializerInterface<StepMetaInt
       }
       return testObject;
     }
+  }
+
+
+  @Test
+  public void testPDI16559() throws Exception {
+    StepMockHelper<DimensionLookupMeta, DimensionLookupData> mockHelper =
+            new StepMockHelper<DimensionLookupMeta, DimensionLookupData>( "dimensionLookup", DimensionLookupMeta.class, DimensionLookupData.class );
+
+    DimensionLookupMeta dimensionLookup = new DimensionLookupMeta();
+    dimensionLookup.setKeyStream( new String[] { "test_field" } );
+    dimensionLookup.setKeyLookup( new String[] {} );
+    dimensionLookup.setCacheSize( 15 );
+    dimensionLookup.setSchemaName( "test_schema" );
+    dimensionLookup.setFieldStream( new String[] { "123", "abc", "def" } );
+    dimensionLookup.setFieldLookup( new String[] { "wibble" } );
+    dimensionLookup.setFieldUpdate( new int[] { 11, 12 } );
+
+    try {
+      String badXml = dimensionLookup.getXML();
+      Assert.fail( "Before calling afterInjectionSynchronization, should have thrown an ArrayIndexOOB" );
+    } catch ( Exception expected ) {
+      // Do Nothing
+    }
+    dimensionLookup.afterInjectionSynchronization();
+    //run without a exception
+    String ktrXml = dimensionLookup.getXML();
+
+    Assert.assertEquals( dimensionLookup.getKeyStream().length, dimensionLookup.getKeyLookup().length );
+    Assert.assertEquals( dimensionLookup.getFieldStream().length, dimensionLookup.getFieldLookup().length );
+    Assert.assertEquals( dimensionLookup.getFieldUpdate().length, dimensionLookup.getFieldUpdate().length );
+
   }
 
 }

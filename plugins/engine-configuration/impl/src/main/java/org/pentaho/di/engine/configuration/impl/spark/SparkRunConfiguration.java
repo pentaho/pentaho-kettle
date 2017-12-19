@@ -3,7 +3,7 @@
  *
  *  Pentaho Data Integration
  *
- *  Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
+ *  Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
  *
  *  *******************************************************************************
  *  Licensed under the Apache License, Version 2.0 (the "License"); you may not use
@@ -25,7 +25,7 @@
 package org.pentaho.di.engine.configuration.impl.spark;
 
 import org.pentaho.di.engine.configuration.api.RunConfiguration;
-import org.pentaho.di.engine.configuration.api.RunOption;
+import org.pentaho.di.engine.configuration.api.RunConfigurationUI;
 import org.pentaho.metastore.persist.MetaStoreAttribute;
 import org.pentaho.metastore.persist.MetaStoreElementType;
 
@@ -46,8 +46,10 @@ public class SparkRunConfiguration implements RunConfiguration {
   private String description;
 
   @MetaStoreAttribute
-  @RunOption( label = "Spark host URL:", value = "127.0.0.1:2181" )
-  private String url;
+  private String schema = "http://";
+
+  @MetaStoreAttribute
+  private String url = "127.0.0.1:53000";
 
   public String getName() {
     return name;
@@ -65,6 +67,15 @@ public class SparkRunConfiguration implements RunConfiguration {
     this.description = description;
   }
 
+
+  public String getSchema() {
+    return schema;
+  }
+
+  public void setSchema( String schema ) {
+    this.schema = schema;
+  }
+
   public String getUrl() {
     return url;
   }
@@ -79,5 +90,9 @@ public class SparkRunConfiguration implements RunConfiguration {
 
   @Override public boolean isReadOnly() {
     return false;
+  }
+
+  @Override public RunConfigurationUI getUI() {
+    return new SparkRunConfigurationUI( this );
   }
 }

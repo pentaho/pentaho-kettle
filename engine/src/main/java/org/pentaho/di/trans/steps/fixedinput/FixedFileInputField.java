@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -91,6 +91,14 @@ public class FixedFileInputField implements Cloneable, XMLInterface {
     length = -1;
     precision = -1;
     trimType = ValueMetaInterface.TRIM_TYPE_NONE;
+  }
+
+  /**
+   * For testing only.
+   */
+  protected FixedFileInputField( String name ) {
+    this();
+    this.name = name;
   }
 
   @Override

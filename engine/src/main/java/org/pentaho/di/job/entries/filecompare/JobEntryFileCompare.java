@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -73,6 +73,7 @@ public class JobEntryFileCompare extends JobEntryBase implements Cloneable, JobE
   private String filename1;
   private String filename2;
   private boolean addFilenameToResult;
+  private JobMeta parentJobMeta;
 
   public JobEntryFileCompare( String n ) {
     super( n, "" );
@@ -97,6 +98,10 @@ public class JobEntryFileCompare extends JobEntryBase implements Cloneable, JobE
     retval.append( "      " ).append( XMLHandler.addTagValue( "filename1", filename1 ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "filename2", filename2 ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "add_filename_result", addFilenameToResult ) );
+    if ( parentJobMeta != null ) {
+      parentJobMeta.getNamedClusterEmbedManager().registerUrl( filename1 );
+      parentJobMeta.getNamedClusterEmbedManager().registerUrl( filename2 );
+    }
     return retval.toString();
   }
 
@@ -212,6 +217,12 @@ public class JobEntryFileCompare extends JobEntryBase implements Cloneable, JobE
     FileObject file2 = null;
     try {
       if ( filename1 != null && filename2 != null ) {
+        //Set Embedded NamedCluter MetatStore Provider Key so that it can be passed to VFS
+        if ( parentJobMeta.getNamedClusterEmbedManager() != null ) {
+          parentJobMeta.getNamedClusterEmbedManager()
+            .passEmbeddedMetastoreKey( this, parentJobMeta.getEmbeddedMetastoreProviderKey() );
+        }
+
         file1 = KettleVFS.getFileObject( realFilename1, this );
         file2 = KettleVFS.getFileObject( realFilename2, this );
 
@@ -320,6 +331,14 @@ public class JobEntryFileCompare extends JobEntryBase implements Cloneable, JobE
         JobEntryValidatorUtils.fileExistsValidator() );
     JobEntryValidatorUtils.andValidator().validate( this, "filename1", remarks, ctx );
     JobEntryValidatorUtils.andValidator().validate( this, "filename2", remarks, ctx );
+  }
+
+  @Override public JobMeta getParentJobMeta() {
+    return parentJobMeta;
+  }
+
+  @Override public void setParentJobMeta( JobMeta parentJobMeta ) {
+    this.parentJobMeta = parentJobMeta;
   }
 
 }

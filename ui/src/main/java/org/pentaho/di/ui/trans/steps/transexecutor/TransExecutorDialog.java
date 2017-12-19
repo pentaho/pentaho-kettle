@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -72,9 +72,10 @@ import org.pentaho.di.ui.core.widget.ColumnInfo;
 import org.pentaho.di.ui.core.widget.ColumnsResizer;
 import org.pentaho.di.ui.core.widget.TableView;
 import org.pentaho.di.ui.core.widget.TextVar;
-import org.pentaho.di.ui.repository.dialog.SelectObjectDialog;
 import org.pentaho.di.ui.spoon.Spoon;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
+import org.pentaho.di.ui.util.DialogHelper;
+import org.pentaho.di.ui.util.DialogUtils;
 import org.pentaho.di.ui.util.SwtSvgImageUtil;
 import org.pentaho.vfs.ui.VfsFileChooserDialog;
 
@@ -213,7 +214,6 @@ public class TransExecutorDialog extends BaseStepDialog implements StepDialogInt
 
     Label spacer = new Label( shell, SWT.HORIZONTAL | SWT.SEPARATOR );
     FormData fdSpacer = new FormData();
-    fdSpacer.height = 1;
     fdSpacer.left = new FormAttachment( 0, 0 );
     fdSpacer.top = new FormAttachment( wStepname, 15 );
     fdSpacer.right = new FormAttachment( 100, 0 );
@@ -241,7 +241,7 @@ public class TransExecutorDialog extends BaseStepDialog implements StepDialogInt
     wbBrowse.setText( BaseMessages.getString( PKG, "TransExecutorDialog.Browse.Label" ) );
     FormData fdBrowse = new FormData();
     fdBrowse.left = new FormAttachment( wPath, 5 );
-    fdBrowse.top = new FormAttachment( wlPath, 5 );
+    fdBrowse.top = new FormAttachment( wlPath, Const.isOSX() ? 0 : 5 );
     wbBrowse.setLayoutData( fdBrowse );
 
     wbBrowse.addSelectionListener( new SelectionAdapter() {
@@ -280,7 +280,6 @@ public class TransExecutorDialog extends BaseStepDialog implements StepDialogInt
 
     Label hSpacer = new Label( shell, SWT.HORIZONTAL | SWT.SEPARATOR );
     FormData fdhSpacer = new FormData();
-    fdhSpacer.height = 1;
     fdhSpacer.left = new FormAttachment( 0, 0 );
     fdhSpacer.bottom = new FormAttachment( wCancel, -15 );
     fdhSpacer.right = new FormAttachment( 100, 0 );
@@ -356,14 +355,14 @@ public class TransExecutorDialog extends BaseStepDialog implements StepDialogInt
   }
 
   private void selectRepositoryTrans() {
+    RepositoryObject repositoryObject = DialogHelper.selectRepositoryObject( "*.ktr", log );
+
     try {
-      SelectObjectDialog sod = new SelectObjectDialog( shell, repository );
-      String transName = sod.open();
-      RepositoryDirectoryInterface repdir = sod.getDirectory();
-      if ( transName != null && repdir != null ) {
-        loadRepositoryTrans( transName, repdir );
-        String path = getPath( executorTransMeta.getRepositoryDirectory().getPath() );
-        String fullPath = path + "/" + executorTransMeta.getName();
+      if ( repositoryObject != null ) {
+        loadRepositoryTrans( repositoryObject.getName(), repositoryObject.getRepositoryDirectory() );
+        String path = DialogUtils.getPath( transMeta.getRepositoryDirectory().getPath(),
+          executorTransMeta.getRepositoryDirectory().getPath() );
+        String fullPath = ( path.equals( "/" ) ? "/" : path + "/" ) + executorTransMeta.getName();
         wPath.setText( fullPath );
         specificationMethod = ObjectLocationSpecificationMethod.REPOSITORY_BY_NAME;
       }
@@ -372,14 +371,6 @@ public class TransExecutorDialog extends BaseStepDialog implements StepDialogInt
         BaseMessages.getString( PKG, "TransExecutorDialog.ErrorSelectingObject.DialogTitle" ),
         BaseMessages.getString( PKG, "TransExecutorDialog.ErrorSelectingObject.DialogMessage" ), ke );
     }
-  }
-
-  protected String getPath( String path ) {
-    String parentPath = this.transMeta.getRepositoryDirectory().getPath();
-    if ( path.startsWith( parentPath ) ) {
-      path = path.replace( parentPath, "${" + Const.INTERNAL_VARIABLE_ENTRY_CURRENT_DIRECTORY + "}" );
-    }
-    return path;
   }
 
   private void loadRepositoryTrans( String transName, RepositoryDirectoryInterface repdir ) throws KettleException {
@@ -1197,7 +1188,8 @@ public class TransExecutorDialog extends BaseStepDialog implements StepDialogInt
   private void getByReferenceData( ObjectId transObjectId ) {
     try {
       RepositoryObject transInf = repository.getObjectInformation( transObjectId, RepositoryObjectType.TRANSFORMATION );
-      String path = getPath( transInf.getRepositoryDirectory().getPath() );
+      String path = DialogUtils
+        .getPath( transMeta.getRepositoryDirectory().getPath(), transInf.getRepositoryDirectory().getPath() );
       String fullPath =
         Const.NVL( path, "" ) + "/" + Const.NVL( transInf.getName(), "" );
       wPath.setText( fullPath );

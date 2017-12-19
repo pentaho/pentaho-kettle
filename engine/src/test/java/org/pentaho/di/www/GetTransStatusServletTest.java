@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -31,11 +31,13 @@ import org.pentaho.di.core.logging.KettleLogStore;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
+import org.pentaho.di.www.cache.CarteStatusCache;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
 import javax.servlet.ServletException;
+import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -45,9 +47,12 @@ import java.io.StringWriter;
 import static junit.framework.Assert.assertFalse;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 @RunWith( PowerMockRunner.class )
 public class GetTransStatusServletTest {
@@ -109,4 +114,43 @@ public class GetTransStatusServletTest {
     PowerMockito.verifyStatic( atLeastOnce() );
     Encode.forHtml( anyString() );
   }
+
+  @Test
+  public void testGetTransStatus() throws ServletException, IOException {
+    KettleLogStore.init();
+    CarteStatusCache cacheMock = mock( CarteStatusCache.class );
+    getTransStatusServlet.cache = cacheMock;
+    HttpServletRequest mockHttpServletRequest = mock( HttpServletRequest.class );
+    HttpServletResponse mockHttpServletResponse = mock( HttpServletResponse.class );
+    Trans mockTrans = mock( Trans.class );
+    TransMeta mockTransMeta = mock( TransMeta.class );
+    LogChannelInterface mockChannelInterface = mock( LogChannelInterface.class );
+    ServletOutputStream outMock = mock( ServletOutputStream.class );
+
+    String id = "123";
+    String logId = "logId";
+    String useXml = "Y";
+
+    when( mockHttpServletRequest.getContextPath() ).thenReturn( GetTransStatusServlet.CONTEXT_PATH );
+    when( mockHttpServletRequest.getParameter( "id" ) ).thenReturn( id );
+    when( mockHttpServletRequest.getParameter( "xml" ) ).thenReturn( useXml );
+    when( mockHttpServletResponse.getOutputStream() ).thenReturn( outMock );
+    when( mockTransformationMap.getTransformation( any( CarteObjectEntry.class ) ) ).thenReturn( mockTrans );
+    when( mockTrans.getLogChannel() ).thenReturn( mockChannelInterface );
+    when( mockTrans.getTransMeta() ).thenReturn( mockTransMeta );
+    when( mockTrans.getLogChannelId() ).thenReturn( logId );
+    when( mockTrans.isFinishedOrStopped() ).thenReturn( true );
+
+    when( mockTransMeta.getMaximum() ).thenReturn( new Point( 10, 10 ) );
+
+    getTransStatusServlet.doGet( mockHttpServletRequest, mockHttpServletResponse );
+    when( cacheMock.get( logId, 0 ) ).thenReturn( new byte[] { 0, 1, 2 } );
+    getTransStatusServlet.doGet( mockHttpServletRequest, mockHttpServletResponse );
+
+    verify( cacheMock, times( 2 ) ).get( logId, 0 );
+    verify( cacheMock, times( 1 ) ).put( eq( logId ), anyString(), eq( 0 ) );
+    verify( mockTrans.getLogChannel(), times( 1 ) );
+
+  }
+
 }

@@ -1,5 +1,5 @@
 /*!
- * Copyright 2010 - 2016 Pentaho Corporation.  All rights reserved.
+ * Copyright 2010 - 2017 Hitachi Vantara.  All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,10 @@
  */
 package org.pentaho.di.ui.repository.pur.repositoryexplorer.controller;
 
+import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.widgets.Shell;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.extension.ExtensionPointHandler;
 import org.pentaho.di.core.extension.KettleExtensionPoint;
@@ -60,6 +64,8 @@ import java.util.Date;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.ResourceBundle;
+import java.util.concurrent.Callable;
+import java.util.stream.Collectors;
 
 public class TrashBrowseController extends BrowseController implements java.io.Serializable {
 
@@ -100,6 +106,8 @@ public class TrashBrowseController extends BrowseController implements java.io.S
   protected XulButton undeleteButton;
 
   protected XulButton deleteButton;
+
+  private static final int DIALOG_WIDTH = 357, DIALOG_HEIGHT = 165, DIALOG_COLOR = SWT.COLOR_WHITE;
 
   // ~ Constructors ====================================================================================================
 
@@ -176,7 +184,8 @@ public class TrashBrowseController extends BrowseController implements java.io.S
 
   protected void doCreateBindings() {
     deck = (XulDeck) document.getElementById( "browse-tab-right-panel-deck" ); //$NON-NLS-1$
-    trashFileTable = (XulTree) document.getElementById( "deleted-file-table" ); //$NON-NLS-1$
+
+    trashFileTable = selectDeletedFileTable( repository.getUserInfo().isAdmin() );
 
     deleteButton = (XulButton) document.getElementById( "delete-button" ); //$NON-NLS-1$
     undeleteButton = (XulButton) document.getElementById( "undelete-button" ); //$NON-NLS-1$
@@ -197,6 +206,18 @@ public class TrashBrowseController extends BrowseController implements java.io.S
           return null;
         }
       };
+
+    createTrashTableBindings( buttonConverter, trashFileTable );
+  }
+
+  private XulTree selectDeletedFileTable( boolean isAdmin ) {
+    XulDeck treeDeck = (XulDeck) document.getElementById( "tree-deck" );
+    treeDeck.setSelectedIndex( isAdmin ? 1 : 0 );
+    return (XulTree) document.getElementById( isAdmin ? "deleted-file-table-admin" : "deleted-file-table" );
+  }
+
+  private void createTrashTableBindings( BindingConvertor<List<UIDeletedObject>, Boolean> buttonConverter,
+      XulTree trashFileTable ) {
     bf.createBinding( trashFileTable, "selectedItems", this, "selectedTrashFileItems" ); //$NON-NLS-1$ //$NON-NLS-2$
     bf.createBinding( trashFileTable, "selectedItems", deleteButton, "!disabled", buttonConverter ); //$NON-NLS-1$ //$NON-NLS-2$
     bf.createBinding( trashFileTable, "selectedItems", undeleteButton, "!disabled", buttonConverter ); //$NON-NLS-1$ //$NON-NLS-2$
@@ -260,6 +281,10 @@ public class TrashBrowseController extends BrowseController implements java.io.S
 
     public String getName() {
       return obj.getName();
+    }
+
+    public String getOwner() {
+      return obj.getOwner();
     }
 
     public String getImage() {
@@ -348,23 +373,58 @@ public class TrashBrowseController extends BrowseController implements java.io.S
 
   public void delete() {
     if ( selectedTrashFileItems != null && selectedTrashFileItems.size() > 0 ) {
-      List<ObjectId> ids = new ArrayList<ObjectId>();
-      for ( UIDeletedObject uiObj : selectedTrashFileItems ) {
-        ids.add( uiObj.getId() );
-      }
-      try {
+      Callable<Void> deleteCallable = () -> {
+        List<ObjectId> ids = selectedTrashFileItems.stream().map( obj -> obj.getId() ).collect( Collectors.toList() );
         trashService.delete( ids );
         setTrash( trashService.getTrash() );
-      } catch ( Throwable th ) {
-        if ( mainController == null || !mainController.handleLostRepository( th ) ) {
-          displayExceptionMessage( BaseMessages.getString( PKG,
-              "TrashBrowseController.UnableToDeleteFile", th.getLocalizedMessage() ) ); //$NON-NLS-1$
+        return null;
+      };
+      try {
+        confirmDialog( deleteCallable );
+      } catch ( Exception e ) {
+        if ( !handleRepositoryLost( e ) ) {
+          displayExceptionMessage( getMsg( "TrashBrowseController.UnableToDeleteFile", e.getLocalizedMessage() ) );
         }
       }
-    } else {
-      // ui probably allowed the button to be enabled when it shouldn't have been enabled
-      throw new RuntimeException();
     }
+  }
+
+  private boolean handleRepositoryLost( Throwable th ) {
+    return mainController != null && mainController.handleLostRepository( th );
+  }
+
+  private void confirmDialog( Callable<Void> callback ) throws Exception {
+    String title = getMsg( "TrashBrowseController.RemoveDeleted.Title" );
+    String msg = getMsg( "TrashBrowseController.RemoveDeleted.ConfirmationMessage" );
+    String yes = getMsg( "TrashBrowseController.RemoveDeleted.Yes" );
+    String no = getMsg( "TrashBrowseController.RemoveDeleted.No" );
+    confirmDialog( callback, title, msg, yes, no );
+  }
+
+  private void confirmDialog( Callable<Void> callback, String title, String msg, String yes, String no )
+    throws Exception {
+    MessageDialog confirmDialog =
+      new MessageDialog( getShell(), title, null, msg, MessageDialog.NONE, new String[] { yes, no }, 0 ) {
+        @Override
+        protected Point getInitialSize() {
+          return new Point( DIALOG_WIDTH, DIALOG_HEIGHT );
+        }
+
+        @Override
+        protected void configureShell( Shell shell ) {
+          super.configureShell( shell );
+          shell.setBackground( shell.getDisplay().getSystemColor( DIALOG_COLOR ) );
+          shell.setBackgroundMode( SWT.INHERIT_FORCE );
+        }
+      };
+    int result = confirmDialog.open();
+    if ( result == 0 ) {
+      callback.call();
+    }
+  }
+
+  private String getMsg( String key, String...params ) {
+    return BaseMessages.getString( PKG, key, params );
   }
 
   public void undelete() {
@@ -411,8 +471,7 @@ public class TrashBrowseController extends BrowseController implements java.io.S
               }
             } else {
               displayExceptionMessage( BaseMessages.getString( PKG, "TrashBrowseController.UnableToRestoreDirectory",
-                  uiObj.getOriginalParentPath() + RepositoryDirectory.DIRECTORY_SEPARATOR + uiObj
-                      .getName() ) ); //$NON-NLS-1$
+                  uiObj.getOriginalParentPath() + RepositoryDirectory.DIRECTORY_SEPARATOR + uiObj.getName() ) );
             }
           }
         }

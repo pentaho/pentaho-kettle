@@ -1,22 +1,22 @@
 /*!
- * PENTAHO CORPORATION PROPRIETARY AND CONFIDENTIAL
+ * HITACHI VANTARA PROPRIETARY AND CONFIDENTIAL
  *
- * Copyright 2017 Pentaho Corporation (Pentaho). All rights reserved.
+ * Copyright 2017 Hitachi Vantara. All rights reserved.
  *
  * NOTICE: All information including source code contained herein is, and
- * remains the sole property of Pentaho and its licensors. The intellectual
+ * remains the sole property of Hitachi Vantara and its licensors. The intellectual
  * and technical concepts contained herein are proprietary and confidential
- * to, and are trade secrets of Pentaho and may be covered by U.S. and foreign
+ * to, and are trade secrets of Hitachi Vantara and may be covered by U.S. and foreign
  * patents, or patents in process, and are protected by trade secret and
  * copyright laws. The receipt or possession of this source code and/or related
  * information does not convey or imply any rights to reproduce, disclose or
  * distribute its contents, or to manufacture, use, or sell anything that it
  * may describe, in whole or in part. Any reproduction, modification, distribution,
  * or public display of this information without the express written authorization
- * from Pentaho is strictly prohibited and in violation of applicable laws and
+ * from Hitachi Vantara is strictly prohibited and in violation of applicable laws and
  * international treaties. Access to the source code contained herein is strictly
  * prohibited to anyone except those individuals and entities who have executed
- * confidentiality and non-disclosure agreements or other agreements with Pentaho,
+ * confidentiality and non-disclosure agreements or other agreements with Hitachi Vantara,
  * explicitly covering such access.
  */
 
@@ -31,37 +31,46 @@
  **/
 define([
   "text!./folder.html",
+  "../utils",
   "css!./folder.css"
-], function(folderTemplate) {
+], function(folderTemplate, utils) {
   "use strict";
 
   var options = {
     bindings: {
-      folders: '<',
-      onSelect: '&',
-      onOpen: '&',
-      showRecents: '<',
-      selectedFolder: '<',
-      autoExpand: '<'
+      folders: "<",
+      onSelect: "&",
+      onOpen: "&",
+      showRecents: "<",
+      selectedFolder: "<",
+      autoExpand: "<"
     },
     template: folderTemplate,
     controllerAs: "vm",
     controller: folderController
   };
 
+  folderController.$inject = ["$timeout", "$state"];
+
   /**
    * The Folder Controller.
    *
    * This provides the controller for the folder component.
+   * @param {Function} $timeout - Angular wrapper for window.setTimeout.
    */
-  function folderController() {
+  function folderController($timeout, $state) {
+    var _iconsWidth = 58;
+    var _paddingLeft = 27;
     var vm = this;
     vm.$onInit = onInit;
-    vm.maxDepth = 0;
     vm.$onChanges = onChanges;
     vm.openFolder = openFolder;
     vm.selectFolder = selectFolder;
     vm.selectAndOpenFolder = selectAndOpenFolder;
+    vm.compareFolders = compareFolders;
+    vm.maxWidth = 0;
+    vm.width = 0;
+    vm.state = $state;
 
     /**
      * The $onInit hook of components lifecycle which is called on each controller
@@ -69,6 +78,7 @@ define([
      * bindings initialized. We use this hook to put initialization code for our controller.
      */
     function onInit() {
+
     }
 
     /**
@@ -95,28 +105,24 @@ define([
      * @param {Object} folder - folder object
      */
     function openFolder(folder) {
-      vm.maxDepth = 0;
+      vm.maxWidth = 0;
       if (folder.hasChildren) {
         folder.open = folder.open !== true;
       }
       for (var i = 0; i < vm.folders.length; i++) {
         if (folder.open === true && vm.folders[i].depth === folder.depth + 1 && _isChild(folder, vm.folders[i])) {
           vm.folders[i].visible = true;
+          vm.folders[i].indent = vm.folders[i].depth * _paddingLeft;
         } else if (folder.open === false && vm.folders[i].depth > folder.depth && _isChild(folder, vm.folders[i])) {
           vm.folders[i].visible = false;
           vm.folders[i].open = false;
         }
-      }
-      _setDepth();
-      _setWidth();
-    }
-
-    function _setDepth() {
-      for (var i = 0; i < vm.folders.length; i++) {
-        if (vm.folders[i].open) {
-          vm.maxDepth = Math.max(vm.maxDepth, vm.folders[i].depth + 1);
+        if (vm.folders[i].visible) {
+          vm.maxWidth = Math.max(vm.maxWidth, utils.getTextWidth(vm.folders[i].name) +
+            (vm.folders[i].depth * _paddingLeft) + _iconsWidth);
         }
       }
+      _setWidth();
     }
 
     /**
@@ -149,7 +155,12 @@ define([
      * @private
      */
     function _isChild(folder, child) {
-      return child.path.indexOf(folder.path) === 0;
+      var childPath = child.path;
+      var depthDiff = child.depth - folder.depth;
+      for (var i = 0; i < depthDiff; i++) {
+        childPath = childPath.slice(0, childPath.lastIndexOf("/"));
+      }
+      return childPath === folder.path || childPath === "";
     }
 
     /**
@@ -158,7 +169,9 @@ define([
      * @private
      */
     function _selectFolderByPath(path) {
+      vm.maxWidth = 0;
       for (var i = 0; i < vm.folders.length; i++) {
+        vm.folders[i].indent = vm.folders[i].depth * _paddingLeft;
         if (vm.folders[i].path === path) {
           selectFolder(vm.folders[i]);
           if (vm.autoExpand) {
@@ -166,8 +179,11 @@ define([
             vm.autoExpand = false;
           }
         }
+        if (vm.folders[i].visible) {
+          var width = utils.getTextWidth(vm.folders[i].name);
+          vm.maxWidth = Math.max(vm.maxWidth, width + (vm.folders[i].depth * _paddingLeft) + _iconsWidth);
+        }
       }
-      _setDepth();
       _setWidth();
     }
 
@@ -190,7 +206,7 @@ define([
     /**
      * Opens parent folders of folder
      *
-     * @param {String} folder - Path to a folder
+     * @param {Object} folder - Folder Object
      * @private
      */
     function _openParentFolders(folder) {
@@ -200,24 +216,47 @@ define([
       for (var i = 0; i < vm.folders.length; i++) {
         if (vm.folders[i].parent === folder.path) {
           vm.folders[i].visible = true;
+          var width = utils.getTextWidth(vm.folders[i].name);
+          vm.maxWidth = Math.max(vm.maxWidth, width + (vm.folders[i].depth * _paddingLeft) + _iconsWidth);
         }
       }
     }
 
     /**
-     * Sets the css width of each folder according to the maxDepth of all open folders in the dir tree.
+     * Sets vm.width for scrolling purposes.
      * @private
      */
     function _setWidth() {
-      for (var i = 0; i < vm.folders.length; i++) {
-        if (vm.folders[i].depth <= vm.maxDepth) {
-          var width = "calc(100% + " + ((vm.maxDepth - vm.folders[i].depth) * 27) + "px)";
-          vm.folders[i].width = width;
-          vm.folders[i].indent = (vm.folders[i].depth * 27) + "px";
-        }
-      }
+      $timeout(function() {
+        var tmpClientWidth = document.getElementById("directoryTreeArea").clientWidth;
+        vm.width = vm.maxWidth > tmpClientWidth ? vm.maxWidth : tmpClientWidth;
+      }, 0);
     }
 
+    /**
+     * Compare folders according to sortField
+     * @param {Object} first - Folder Object
+     * @param {Object} second - Folder Object
+     * @return {Number} -1 or 1 according to comparisons of first and second names
+     **/
+    function compareFolders(first, second) {
+      var folder1 = first.value;
+      var folder2 = second.value;
+      var path1 = folder1.path.split("/");
+      var path2 = folder2.path.split("/");
+      var comp = 0;
+      var len = Math.min(path1.length, path2.length);
+      for (var i = 0; i < len; i++) {
+        comp = utils.naturalCompare(path1[i], path2[i]);
+        if (comp !== 0) {
+          return comp;
+        }
+      }
+      if (path1.length !== path2.length) {
+        return path1.length - path2.length;
+      }
+      return first.index - second.index;
+    }
   }
 
   return {

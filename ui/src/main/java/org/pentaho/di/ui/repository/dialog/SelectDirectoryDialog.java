@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,6 +22,7 @@
 
 package org.pentaho.di.ui.repository.dialog;
 
+import org.apache.commons.lang.BooleanUtils;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.MenuDetectEvent;
 import org.eclipse.swt.events.MenuDetectListener;
@@ -131,7 +132,7 @@ public class SelectDirectoryDialog extends Dialog {
     try {
       if ( rep instanceof RepositoryExtended ) {
         RepositoryExtended repositoryExtended = (RepositoryExtended) this.rep;
-        repositoryTree = repositoryExtended.loadRepositoryDirectoryTree(  "/", null, -1, true, true, false );
+        repositoryTree = repositoryExtended.loadRepositoryDirectoryTree(  "/", null, -1, BooleanUtils.isTrue( repositoryExtended.getUserInfo().isAdmin() ), true, false );
       } else {
         repositoryTree = this.rep.loadRepositoryDirectoryTree();
       }

@@ -3,7 +3,7 @@
  *
  *  Pentaho Data Integration
  *
- *  Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
+ *  Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
  *
  * ******************************************************************************
  *
@@ -25,6 +25,7 @@
 package org.pentaho.di.engine.api.remote;
 
 import org.pentaho.di.engine.api.model.LogicalModelElement;
+import org.pentaho.di.engine.api.model.ModelType;
 
 import java.io.Serializable;
 
@@ -40,12 +41,28 @@ import java.io.Serializable;
 public final class RemoteSource implements LogicalModelElement, Serializable {
   private static final long serialVersionUID = -8344589338390125137L;
   private final String id;
+  private final ModelType modelType;
 
   public RemoteSource( String id ) {
+    this.id = id;
+    this.modelType = null;
+  }
+
+  public RemoteSource( ModelType modelType ) {
+    this.modelType = modelType;
+    this.id = null;
+  }
+
+  public RemoteSource( ModelType modelType, String id ) {
+    this.modelType = modelType;
     this.id = id;
   }
 
   @Override public String getId() {
     return id;
+  }
+
+  public ModelType getModelType() {
+    return modelType;
   }
 }

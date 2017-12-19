@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -23,6 +23,7 @@
 package org.pentaho.di.ui.spoon.trans;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -422,6 +423,20 @@ public class TransGridDelegate extends SpoonDelegate implements XulEventHandler 
             }
           }
           nr++;
+
+          Collection<StepStatus> stepStatuses = baseStep.subStatuses();
+          for ( StepStatus status : stepStatuses ) {
+            ti = new TableItem( table, SWT.NONE );
+            String[] subFields = status.getTransLogFields( baseStep.getStatus().getDescription() );
+
+            // Anti-flicker: if nothing has changed, don't change it on the
+            // screen!
+            for ( int f = 1; f < subFields.length; f++ ) {
+              if ( !subFields[f].equalsIgnoreCase( ti.getText( f ) ) ) {
+                ti.setText( f, subFields[f] );
+              }
+            }
+          }
         }
       }
 

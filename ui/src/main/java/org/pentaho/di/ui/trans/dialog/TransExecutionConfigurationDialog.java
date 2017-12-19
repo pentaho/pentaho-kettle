@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -26,9 +26,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
-import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Button;
-import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TableItem;
@@ -52,8 +50,6 @@ import java.util.List;
 
 public class TransExecutionConfigurationDialog extends ConfigurationDialog {
   private static Class<?> PKG = TransExecutionConfigurationDialog.class; // for i18n purposes, needed by Translator2!!
-
-  private CCombo wRunConfiguration;
 
   public TransExecutionConfigurationDialog( Shell parent, TransExecutionConfiguration configuration,
     TransMeta transMeta ) {
@@ -117,38 +113,9 @@ public class TransExecutionConfigurationDialog extends ConfigurationDialog {
   public boolean open() {
 
     mainLayout( PKG, "TransExecutionConfigurationDialog", GUIResource.getInstance().getImageTransGraph() );
-
-    Composite cRunConfiguration = new Composite( shell, SWT.NONE );
-    cRunConfiguration.setLayout( new FormLayout() );
-    props.setLook( cRunConfiguration );
-    FormData fdLocal = new FormData();
-    fdLocal.top = new FormAttachment( 0, 15 );
-    fdLocal.right = new FormAttachment( 100, -15 );
-    fdLocal.left = new FormAttachment( 0, 15 );
-
-    cRunConfiguration.setBackground( shell.getBackground() ); // the default looks ugly
-    cRunConfiguration.setLayoutData( fdLocal );
-
-    Label wlRunConfiguration = new Label( cRunConfiguration, SWT.LEFT );
-    props.setLook( wlRunConfiguration );
-    wlRunConfiguration.setText( "Run configuration:" );
-    FormData fdlRunConfiguration = new FormData();
-    fdlRunConfiguration.top = new FormAttachment( 0 );
-    fdlRunConfiguration.left = new FormAttachment( 0 );
-    wlRunConfiguration.setLayoutData( fdlRunConfiguration );
-
-    wRunConfiguration = new CCombo( cRunConfiguration, SWT.BORDER );
-    props.setLook( wRunConfiguration );
-    FormData fdRunConfiguration = new FormData();
-    fdRunConfiguration.width = 200;
-    fdRunConfiguration.top = new FormAttachment( wlRunConfiguration, 5 );
-    fdRunConfiguration.left = new FormAttachment( 0 );
-    wRunConfiguration.setLayoutData( fdRunConfiguration );
-
+    runConfigurationSectionLayout( PKG, "TransExecutionConfigurationDialog" );
     optionsSectionLayout( PKG, "TransExecutionConfigurationDialog" );
     parametersSectionLayout( PKG, "TransExecutionConfigurationDialog" );
-
-    fdDetails.top = new FormAttachment( cRunConfiguration, 15 );
 
     String docUrl =
         Const.getDocUrl( BaseMessages.getString( Spoon.class, "Spoon.TransExecutionConfigurationDialog.Help" ) );
@@ -191,7 +158,7 @@ public class TransExecutionConfigurationDialog extends ConfigurationDialog {
     try {
       ExtensionPointHandler
         .callExtensionPoint( Spoon.getInstance().getLog(), KettleExtensionPoint.SpoonRunConfiguration.id,
-          runConfigurations );
+          new Object[] { runConfigurations, TransMeta.XML_TAG } );
     } catch ( KettleException e ) {
       // Ignore errors
     }

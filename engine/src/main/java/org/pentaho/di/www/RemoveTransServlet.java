@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -29,6 +29,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.google.common.annotations.VisibleForTesting;
 import org.owasp.encoder.Encode;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.util.Utils;
@@ -36,6 +37,7 @@ import org.pentaho.di.core.logging.KettleLogStore;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
+import org.pentaho.di.www.cache.CarteStatusCache;
 
 
 public class RemoveTransServlet extends BaseHttpServlet implements CartePluginInterface {
@@ -44,6 +46,9 @@ public class RemoveTransServlet extends BaseHttpServlet implements CartePluginIn
   private static final long serialVersionUID = 6618979989596401783L;
 
   public static final String CONTEXT_PATH = "/kettle/removeTrans";
+
+  @VisibleForTesting
+  private CarteStatusCache cache = CarteStatusCache.getInstance();
 
   public RemoveTransServlet() {
   }
@@ -186,6 +191,7 @@ public class RemoveTransServlet extends BaseHttpServlet implements CartePluginIn
 
     if ( trans != null ) {
 
+      cache.remove( trans.getLogChannelId() );
       KettleLogStore.discardLines( trans.getLogChannelId(), true );
       getTransformationMap().removeTransformation( entry );
 

@@ -173,6 +173,11 @@ a:visited {
   margin-left: 3px;
 }
 
+.connectHeader {
+  margin-top: 83px;
+  line-height: 44px;
+}
+
 /*
 * FLOATING
 */
@@ -193,6 +198,10 @@ button:not(.defaultBtn):not(.detailsBtn) {
   border-radius: 4px;
   padding: 0px 20px 0px 20px;
   font-size: 14px;
+}
+
+button span {
+  position: relative;
 }
 
 button.standard:enabled {

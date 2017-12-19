@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -246,6 +246,11 @@ public class BlockingStep extends BaseStep implements StepInterface {
     data = (BlockingStepData) sdi;
 
     if ( super.init( smi, sdi ) ) {
+      //Set Embedded NamedCluter MetatStore Provider Key so that it can be passed to VFS
+      if ( getTransMeta().getNamedClusterEmbedManager() != null ) {
+        getTransMeta().getNamedClusterEmbedManager()
+          .passEmbeddedMetastoreKey( getTransMeta(), getTransMeta().getEmbeddedMetastoreProviderKey() );
+      }
       // Add init code here.
       return true;
     }

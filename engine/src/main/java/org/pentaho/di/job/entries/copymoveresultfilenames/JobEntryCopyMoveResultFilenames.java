@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -156,7 +156,9 @@ public class JobEntryCopyMoveResultFilenames extends JobEntryBase implements Clo
       .append( "      " ).append( XMLHandler.addTagValue( "CreateDestinationFolder", CreateDestinationFolder ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "RemovedSourceFilename", RemovedSourceFilename ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "AddDestinationFilename", AddDestinationFilename ) );
-
+    if ( parentJobMeta != null ) {
+      parentJobMeta.getNamedClusterEmbedManager().registerUrl( destination_folder );
+    }
     return retval.toString();
   }
 
@@ -395,6 +397,12 @@ public class JobEntryCopyMoveResultFilenames extends JobEntryBase implements Clo
     result.setResult( false );
 
     boolean deleteFile = getAction().equals( "delete" );
+
+    //Set Embedded NamedCluter MetatStore Provider Key so that it can be passed to VFS
+    if ( parentJobMeta.getNamedClusterEmbedManager() != null ) {
+      parentJobMeta.getNamedClusterEmbedManager()
+        .passEmbeddedMetastoreKey( this, parentJobMeta.getEmbeddedMetastoreProviderKey() );
+    }
 
     String realdestinationFolder = null;
     if ( !deleteFile ) {

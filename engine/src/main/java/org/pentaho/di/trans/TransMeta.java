@@ -3,7 +3,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -37,6 +37,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.commons.vfs2.FileName;
 import org.apache.commons.vfs2.FileObject;
 import org.apache.commons.vfs2.FileSystemException;
@@ -118,6 +119,7 @@ import org.pentaho.di.trans.step.errorhandling.StreamInterface;
 import org.pentaho.di.trans.steps.jobexecutor.JobExecutorMeta;
 import org.pentaho.di.trans.steps.mapping.MappingMeta;
 import org.pentaho.di.trans.steps.missing.MissingTrans;
+import org.pentaho.di.trans.steps.named.cluster.NamedClusterEmbedManager;
 import org.pentaho.di.trans.steps.singlethreader.SingleThreaderMeta;
 import org.pentaho.di.trans.steps.transexecutor.TransExecutorMeta;
 import org.pentaho.metastore.api.IMetaStore;
@@ -1006,6 +1008,9 @@ public class TransMeta extends AbstractMeta
       if ( isStepUsedInTransHops( stepMeta ) ) {
         list.add( stepMeta );
       }
+    }
+    if ( list.isEmpty() && getSteps().size() == 1 ) {
+      list = getSteps();
     }
 
     return list;
@@ -2320,6 +2325,44 @@ public class TransMeta extends AbstractMeta
    */
   public String getXML( boolean includeSteps, boolean includeDatabase, boolean includeSlaves, boolean includeClusters,
       boolean includePartitions ) throws KettleException {
+    return getXML( true, true, true, true, true, true, true, true, true, true );
+  }
+
+  /**
+   * Gets the XML representation of this transformation, including or excluding step, database, slave server, cluster,
+   * or partition information as specified by the parameters
+   *
+   * @param includeSteps
+   *          whether to include step data
+   * @param includeDatabase
+   *          whether to include database data
+   * @param includeSlaves
+   *          whether to include slave server data
+   * @param includeClusters
+   *          whether to include cluster data
+   * @param includePartitions
+   *          whether to include partition data
+   * @param includeNamedParameters
+   *          whether to include named parameters data
+   * @param includeLog
+   *          whether to include log data
+   * @param includeDependencies
+   *          whether to include dependencies data
+   * @param includeNotePads
+   *          whether to include notepads data
+   * @param includeAttributeGroups
+   *          whether to include attributes map data
+   * @return the XML representation of this transformation
+   * @throws KettleException
+   *           if any errors occur during generation of the XML
+   */
+  public String getXML( boolean includeSteps, boolean includeDatabase, boolean includeSlaves, boolean includeClusters,
+    boolean includePartitions, boolean includeNamedParameters, boolean includeLog, boolean includeDependencies,
+    boolean includeNotePads, boolean includeAttributeGroups ) throws KettleException {
+
+    //Clear the embedded named clusters.  We will be repopulating from steps that used named clusters
+    getNamedClusterEmbedManager().clear();
+
     Props props = null;
     if ( Props.isInitialized() ) {
       props = Props.getInstance();
@@ -2343,30 +2386,36 @@ public class TransMeta extends AbstractMeta
     retval.append( "    " ).append( XMLHandler.addTagValue( "directory",
             directory != null ? directory.getPath() : RepositoryDirectory.DIRECTORY_SEPARATOR ) );
 
-    retval.append( "    " ).append( XMLHandler.openTag( XML_TAG_PARAMETERS ) ).append( Const.CR );
-    String[] parameters = listParameters();
-    for ( int idx = 0; idx < parameters.length; idx++ ) {
-      retval.append( "      " ).append( XMLHandler.openTag( "parameter" ) ).append( Const.CR );
-      retval.append( "        " ).append( XMLHandler.addTagValue( "name", parameters[idx] ) );
-      retval.append( "        " )
-          .append( XMLHandler.addTagValue( "default_value", getParameterDefault( parameters[idx] ) ) );
-      retval.append( "        " )
-          .append( XMLHandler.addTagValue( "description", getParameterDescription( parameters[idx] ) ) );
-      retval.append( "      " ).append( XMLHandler.closeTag( "parameter" ) ).append( Const.CR );
+
+    if ( includeNamedParameters ) {
+      retval.append( "    " ).append( XMLHandler.openTag( XML_TAG_PARAMETERS ) ).append( Const.CR );
+      String[] parameters = listParameters();
+      for ( int idx = 0; idx < parameters.length; idx++ ) {
+        retval.append( "      " ).append( XMLHandler.openTag( "parameter" ) ).append( Const.CR );
+        retval.append( "        " ).append( XMLHandler.addTagValue( "name", parameters[idx] ) );
+        retval.append( "        " )
+                .append( XMLHandler.addTagValue( "default_value", getParameterDefault( parameters[idx] ) ) );
+        retval.append( "        " )
+                .append( XMLHandler.addTagValue( "description", getParameterDescription( parameters[idx] ) ) );
+        retval.append( "      " ).append( XMLHandler.closeTag( "parameter" ) ).append( Const.CR );
+      }
+      retval.append( "    " ).append( XMLHandler.closeTag( XML_TAG_PARAMETERS ) ).append( Const.CR );
     }
-    retval.append( "    " ).append( XMLHandler.closeTag( XML_TAG_PARAMETERS ) ).append( Const.CR );
 
-    retval.append( "    " ).append( XMLHandler.openTag( "log" ) ).append( Const.CR );
+    if ( includeLog ) {
+      retval.append( "    " ).append( XMLHandler.openTag( "log" ) ).append( Const.CR );
 
-    // Add the metadata for the various logging tables
-    //
-    retval.append( transLogTable.getXML() );
-    retval.append( performanceLogTable.getXML() );
-    retval.append( channelLogTable.getXML() );
-    retval.append( stepLogTable.getXML() );
-    retval.append( metricsLogTable.getXML() );
+      // Add the metadata for the various logging tables
+      //
+      retval.append( transLogTable.getXML() );
+      retval.append( performanceLogTable.getXML() );
+      retval.append( channelLogTable.getXML() );
+      retval.append( stepLogTable.getXML() );
+      retval.append( metricsLogTable.getXML() );
 
-    retval.append( "    " ).append( XMLHandler.closeTag( "log" ) ).append( Const.CR );
+      retval.append( "    " ).append( XMLHandler.closeTag( "log" ) ).append( Const.CR );
+    }
+
     retval.append( "    " ).append( XMLHandler.openTag( "maxdate" ) ).append( Const.CR );
     retval.append( "      " )
         .append( XMLHandler.addTagValue( "connection", maxDateConnection == null ? "" : maxDateConnection.getName() ) );
@@ -2397,12 +2446,14 @@ public class TransMeta extends AbstractMeta
     retval.append( "    " )
         .append( XMLHandler.addTagValue( "step_performance_capturing_size_limit", stepPerformanceCapturingSizeLimit ) );
 
-    retval.append( "    " ).append( XMLHandler.openTag( XML_TAG_DEPENDENCIES ) ).append( Const.CR );
-    for ( int i = 0; i < nrDependencies(); i++ ) {
-      TransDependency td = getDependency( i );
-      retval.append( td.getXML() );
+    if ( includeDependencies ) {
+      retval.append( "    " ).append( XMLHandler.openTag( XML_TAG_DEPENDENCIES ) ).append( Const.CR );
+      for ( int i = 0; i < nrDependencies(); i++ ) {
+        TransDependency td = getDependency( i );
+        retval.append( td.getXML() );
+      }
+      retval.append( "    " ).append( XMLHandler.closeTag( XML_TAG_DEPENDENCIES ) ).append( Const.CR );
     }
-    retval.append( "    " ).append( XMLHandler.closeTag( XML_TAG_DEPENDENCIES ) ).append( Const.CR );
 
     // The partitioning schemas...
     //
@@ -2450,14 +2501,16 @@ public class TransMeta extends AbstractMeta
 
     retval.append( "  " ).append( XMLHandler.closeTag( XML_TAG_INFO ) ).append( Const.CR );
 
-    retval.append( "  " ).append( XMLHandler.openTag( XML_TAG_NOTEPADS ) ).append( Const.CR );
-    if ( notes != null ) {
-      for ( int i = 0; i < nrNotes(); i++ ) {
-        NotePadMeta ni = getNote( i );
-        retval.append( ni.getXML() );
+    if ( includeNotePads ) {
+      retval.append( "  " ).append( XMLHandler.openTag( XML_TAG_NOTEPADS ) ).append( Const.CR );
+      if ( notes != null ) {
+        for ( int i = 0; i < nrNotes(); i++ ) {
+          NotePadMeta ni = getNote( i );
+          retval.append( ni.getXML() );
+        }
       }
+      retval.append( "  " ).append( XMLHandler.closeTag( XML_TAG_NOTEPADS ) ).append( Const.CR );
     }
-    retval.append( "  " ).append( XMLHandler.closeTag( XML_TAG_NOTEPADS ) ).append( Const.CR );
 
     // The database connections...
     if ( includeDatabase ) {
@@ -2510,8 +2563,9 @@ public class TransMeta extends AbstractMeta
 
     // Also store the attribute groups
     //
-    retval.append( AttributesUtil.getAttributesXml( attributesMap ) );
-
+    if ( includeAttributeGroups ) {
+      retval.append( AttributesUtil.getAttributesXml( attributesMap ) );
+    }
     retval.append( XMLHandler.closeTag( XML_TAG ) ).append( Const.CR );
 
     return XMLFormatter.format( retval.toString() );
@@ -2881,6 +2935,9 @@ public class TransMeta extends AbstractMeta
         // Set the filename here so it can be used in variables for ALL aspects of the transformation FIX: PDI-8890
         if ( null == rep ) {
           setFilename( fname );
+        } else {
+          // Set the repository here so it can be used in variables for ALL aspects of the job FIX: PDI-16441
+          setRepository( rep );
         }
 
         // Read all the database connections from the repository to make sure that we don't overwrite any there by
@@ -3208,6 +3265,10 @@ public class TransMeta extends AbstractMeta
         for ( int i = 0; i < nrSlaveServers; i++ ) {
           Node slaveServerNode = XMLHandler.getSubNodeByNr( slaveServersNode, SlaveServer.XML_TAG, i );
           SlaveServer slaveServer = new SlaveServer( slaveServerNode );
+          if ( slaveServer.getName() == null ) {
+            log.logError( BaseMessages.getString( PKG, "TransMeta.Log.WarningWhileCreationSlaveServer", slaveServer.getName() ) );
+            continue;
+          }
           slaveServer.shareVariablesWith( this );
 
           // Check if the object exists and if it's a shared object.
@@ -4431,7 +4492,7 @@ public class TransMeta extends AbstractMeta
           stop_checking = true;
         }
 
-        if ( isStepUsedInTransHops( stepMeta ) ) {
+        if ( isStepUsedInTransHops( stepMeta ) || getSteps().size() == 1 ) {
           // Get the input & output steps!
           // Copy to arrays:
           String[] input = getPrevStepNames( stepMeta );
@@ -6214,5 +6275,70 @@ public class TransMeta extends AbstractMeta
   @Override
   public boolean hasMissingPlugins() {
     return missingTrans != null && !missingTrans.isEmpty();
+  }
+
+  @Override
+  public NamedClusterEmbedManager getNamedClusterEmbedManager( ) {
+    if ( namedClusterEmbedManager == null ) {
+      namedClusterEmbedManager = new NamedClusterEmbedManager( this, getLogChannel() );
+    }
+    return namedClusterEmbedManager;
+  }
+
+  /**
+   *
+   * @return
+   */
+  public int getCacheVersion() throws KettleException {
+    HashCodeBuilder hashCodeBuilder =  new HashCodeBuilder( 17, 31 )
+        // info
+        .append( this.getName() )
+        .append( this.getTransformationType() )
+        .append( this.getSizeRowset() )
+        .append( this.getSleepTimeEmpty() )
+        .append( this.getSleepTimeFull() )
+        .append( this.isUsingUniqueConnections() )
+        .append( this.isFeedbackShown() )
+        .append( this.getFeedbackSize() )
+        .append( this.isUsingThreadPriorityManagment() )
+        .append( this.getSharedObjectsFile() )
+        .append( this.isCapturingStepPerformanceSnapShots() )
+        .append( this.getStepPerformanceCapturingDelay() )
+        .append( this.getStepPerformanceCapturingSizeLimit() )
+
+        .append( this.getMaxDateConnection() )
+        .append( this.getMaxDateTable() )
+        .append( this.getMaxDateField() )
+        .append( this.getMaxDateOffset() )
+        .append( this.getMaxDateDifference() )
+
+        .append( this.getDependencies() )
+        .append( this.getPartitionSchemas() )
+        .append( this.getSlaveServers() )
+        .append( this.getClusterSchemas() )
+        .append( this.getSlaveStepCopyPartitionDistribution() )
+        .append( this.isSlaveTransformation() )
+
+        .append( this.nrTransHops() )
+
+        // steps
+        .append( this.getSteps().size() )
+        .append( this.getStepNames() )
+
+        // hops
+        .append( this.hops );
+
+    List<StepMeta> steps = this.getSteps();
+
+    for ( StepMeta step : steps ) {
+      hashCodeBuilder
+          .append( step.getName() )
+          .append( step.getStepMetaInterface().getXML() )
+          .append( step.getClusterSchema() )
+          .append( step.getRemoteInputSteps() )
+          .append( step.getRemoteOutputSteps() )
+          .append( step.isDoingErrorHandling() );
+    }
+    return hashCodeBuilder.toHashCode();
   }
 }

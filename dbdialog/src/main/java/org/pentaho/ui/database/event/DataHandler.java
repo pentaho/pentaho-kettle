@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -43,6 +43,7 @@ import org.pentaho.di.core.database.DatabaseInterface;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.database.GenericDatabaseMeta;
 import org.pentaho.di.core.database.MSSQLServerNativeDatabaseMeta;
+import org.pentaho.di.core.database.OracleDatabaseMeta;
 import org.pentaho.di.core.database.PartitionDatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.LogChannel;
@@ -120,7 +121,7 @@ public class DataHandler extends AbstractXulEventHandler {
 
   protected DatabaseMeta databaseMeta = null;
 
-  private DatabaseMeta cache = new DatabaseMeta();
+  protected DatabaseMeta cache = new DatabaseMeta();
 
   private XulDeck dialogDeck;
 
@@ -175,7 +176,7 @@ public class DataHandler extends AbstractXulEventHandler {
   // MySQL specific
   private XulCheckbox resultStreamingCursorCheck;
 
-  // Pentaho data services specific
+  // Hitachi Vantara data services specific
   private XulTextbox webAppName;
 
   // ==== Options Panel ==== //
@@ -203,6 +204,8 @@ public class DataHandler extends AbstractXulEventHandler {
   XulCheckbox upperCaseIdentifiersCheck;
 
   XulCheckbox preserveReservedCaseCheck;
+
+  XulCheckbox strictBigNumberInterpretaion;
 
   XulCheckbox useIntegratedSecurityCheck;
 
@@ -516,6 +519,13 @@ public class DataHandler extends AbstractXulEventHandler {
   }
 
   public void pushCache() {
+    // Database type:
+    if ( connectionBox != null ) {
+      Object connection = connectionBox.getSelectedItem();
+      if ( connection != null ) {
+        cache.setDatabaseType( (String) connection );
+      }
+    }
     getConnectionSpecificInfo( cache );
   }
 
@@ -690,6 +700,11 @@ public class DataHandler extends AbstractXulEventHandler {
       meta.setPreserveReservedCase( preserveReservedCaseCheck.isChecked() );
     }
 
+    if ( strictBigNumberInterpretaion != null && meta.getDatabaseInterface() instanceof OracleDatabaseMeta ) {
+      ( (OracleDatabaseMeta) meta.getDatabaseInterface() )
+        .setStrictBigNumberInterpretation( strictBigNumberInterpretaion.isChecked() );
+    }
+
     if ( preferredSchemaName != null ) {
       meta.setPreferredSchemaName( preferredSchemaName.getValue() );
     }
@@ -831,7 +846,6 @@ public class DataHandler extends AbstractXulEventHandler {
     setOptionsData( meta.getExtraOptions() );
 
     // Advanced panel settings:
-
     if ( supportBooleanDataType != null ) {
       supportBooleanDataType.setChecked( meta.supportsBooleanDataType() );
     }
@@ -854,6 +868,18 @@ public class DataHandler extends AbstractXulEventHandler {
 
     if ( preserveReservedCaseCheck != null ) {
       preserveReservedCaseCheck.setChecked( meta.preserveReservedCase() );
+    }
+
+    if ( strictBigNumberInterpretaion != null ) {
+      //check if Oracle
+      if ( meta.getDatabaseInterface() instanceof OracleDatabaseMeta ) {
+        strictBigNumberInterpretaion.setVisible( true );
+        strictBigNumberInterpretaion.setChecked( ( (OracleDatabaseMeta) meta.getDatabaseInterface() )
+          .strictBigNumberInterpretation() );
+      } else {
+        strictBigNumberInterpretaion.setVisible( false );
+        strictBigNumberInterpretaion.setChecked( false );
+      }
     }
 
     if ( preferredSchemaName != null ) {
@@ -1320,6 +1346,19 @@ public class DataHandler extends AbstractXulEventHandler {
       indexTablespaceBox.setValue( meta.getIndexTablespace() );
     }
 
+    // Strict Number(38) interpretation
+    if ( strictBigNumberInterpretaion != null ) {
+      // Check if oracle
+      if ( meta.getDatabaseInterface() instanceof OracleDatabaseMeta ) {
+        strictBigNumberInterpretaion.setVisible( true );
+        strictBigNumberInterpretaion.setChecked( ( (OracleDatabaseMeta) meta.getDatabaseInterface() )
+          .strictBigNumberInterpretation() );
+      } else {
+        strictBigNumberInterpretaion.setVisible( false );
+        strictBigNumberInterpretaion.setChecked( false );
+      }
+    }
+
     if ( serverInstanceBox != null ) {
       serverInstanceBox.setValue( meta.getSQLServerInstance() );
     }
@@ -1421,6 +1460,7 @@ public class DataHandler extends AbstractXulEventHandler {
     lowerCaseIdentifiersCheck = (XulCheckbox) document.getElementById( "force-lower-case-check" );
     upperCaseIdentifiersCheck = (XulCheckbox) document.getElementById( "force-upper-case-check" );
     preserveReservedCaseCheck = (XulCheckbox) document.getElementById( "preserve-reserved-case" );
+    strictBigNumberInterpretaion = (XulCheckbox) document.getElementById( "strict-bignum-interpretation" );
     preferredSchemaName = (XulTextbox) document.getElementById( "preferred-schema-name-text" );
     sqlBox = (XulTextbox) document.getElementById( "sql-text" );
     useIntegratedSecurityCheck = (XulCheckbox) document.getElementById( "use-integrated-security-check" );

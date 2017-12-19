@@ -3,7 +3,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -37,11 +37,14 @@ import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import com.google.common.base.Preconditions;
+
+import org.apache.commons.lang.StringUtils;
 import org.pentaho.di.core.BlockingRowSet;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.util.Utils;
@@ -516,7 +519,7 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
       }
     }
 
-    rowListeners = new ArrayList<RowListener>();
+    rowListeners = new CopyOnWriteArrayList<RowListener>();
     resultFiles = new HashMap<String, ResultFile>();
     resultFilesLock = new ReentrantReadWriteLock();
 
@@ -1232,9 +1235,23 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
    */
   @Override
   public void putRow( RowMetaInterface rowMeta, Object[] row ) throws KettleStepException {
+    if ( rowMeta != null ) {
+      String property = System.getProperties().getProperty( Const.ALLOW_EMPTY_FIELD_NAMES_AND_TYPES, "false" );
+      boolean allowEmpty = Boolean.parseBoolean( property );
+      if ( !allowEmpty ) {
+        // check row meta for empty field name (BACKLOG-18004)
+        for ( ValueMetaInterface vmi : rowMeta.getValueMetaList() ) {
+          if ( StringUtils.isBlank( vmi.getName() ) ) {
+            throw new KettleStepException( "Please set a field name for all field(s) that have 'null'." );
+          }
+          if ( vmi.getType() <= 0 ) {
+            throw new KettleStepException( "Please set a value for the missing field(s) type." );
+          }
+        }
+      }
+    }
     getRowHandler().putRow( rowMeta, row );
   }
-
 
   private void handlePutRow( RowMetaInterface rowMeta, Object[] row ) throws KettleStepException {
     // Are we pausing the step? If so, stall forever...
@@ -1275,11 +1292,8 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
 
     // call all row listeners...
     //
-    synchronized ( rowListeners ) {
-      for ( int i = 0; i < rowListeners.size(); i++ ) {
-        RowListener rowListener = rowListeners.get( i );
-        rowListener.rowWrittenEvent( rowMeta, row );
-      }
+    for ( RowListener listener : rowListeners ) {
+      listener.rowWrittenEvent( rowMeta, row );
     }
 
     // Keep adding to terminator_rows buffer...
@@ -1600,11 +1614,8 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
 
     // call all row listeners...
     //
-    synchronized ( rowListeners ) {
-      for ( int i = 0; i < rowListeners.size(); i++ ) {
-        RowListener rowListener = rowListeners.get( i );
-        rowListener.rowWrittenEvent( rowMeta, row );
-      }
+    for ( RowListener listener : rowListeners ) {
+      listener.rowWrittenEvent( rowMeta, row );
     }
 
     // Keep adding to terminator_rows buffer...
@@ -1680,11 +1691,8 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
       errorRowData, rowMeta.size(), nrErrors, errorDescriptions, fieldNames, errorCodes );
 
     // call all row listeners...
-    synchronized ( rowListeners ) {
-      for ( int i = 0; i < rowListeners.size(); i++ ) {
-        RowListener rowListener = rowListeners.get( i );
-        rowListener.errorRowWrittenEvent( rowMeta, row );
-      }
+    for ( RowListener listener : rowListeners ) {
+      listener.errorRowWrittenEvent( rowMeta, row );
     }
 
     if ( errorRowSet != null ) {
@@ -1947,11 +1955,8 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
         }
       }
 
-      synchronized ( rowListeners ) {
-        for ( int i = 0; i < rowListeners.size(); i++ ) {
-          RowListener rowListener = rowListeners.get( i );
-          rowListener.rowReadEvent( inputRowMeta, row );
-        }
+      for ( RowListener listener : rowListeners ) {
+        listener.rowReadEvent( inputRowMeta, row );
       }
     }
 
@@ -2243,11 +2248,8 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
 
     // call all rowlisteners...
     //
-    synchronized ( rowListeners ) {
-      for ( int i = 0; i < rowListeners.size(); i++ ) {
-        RowListener rowListener = rowListeners.get( i );
-        rowListener.rowReadEvent( rowSet.getRowMeta(), rowData );
-      }
+    for ( RowListener listener : rowListeners ) {
+      listener.rowReadEvent( rowSet.getRowMeta(), rowData );
     }
 
     return rowData;
@@ -3374,7 +3376,7 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
    */
   @Override
   public List<RowListener> getRowListeners() {
-    return rowListeners;
+    return Collections.unmodifiableList( rowListeners );
   }
 
   /**

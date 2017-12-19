@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,33 +22,9 @@
 
 package org.pentaho.di.trans.steps.metainject;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.refEq;
-import static org.mockito.Mockito.atLeastOnce;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.RowSet;
@@ -65,6 +41,9 @@ import org.pentaho.di.core.row.value.ValueMetaDate;
 import org.pentaho.di.core.row.value.ValueMetaInteger;
 import org.pentaho.di.core.row.value.ValueMetaNumber;
 import org.pentaho.di.core.row.value.ValueMetaString;
+import org.pentaho.di.repository.ObjectId;
+import org.pentaho.di.repository.Repository;
+import org.pentaho.di.repository.RepositoryDirectory;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStepMeta;
@@ -76,7 +55,28 @@ import org.pentaho.di.trans.step.StepMetaInjectionInterface;
 import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.di.trans.steps.StepMockUtil;
 import org.pentaho.metastore.api.IMetaStore;
+import org.powermock.api.mockito.PowerMockito;
+import org.powermock.core.classloader.annotations.PrepareForTest;
+import org.powermock.modules.junit4.PowerMockRunner;
+import org.powermock.reflect.Whitebox;
 
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import static org.junit.Assert.*;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.refEq;
+import static org.mockito.Mockito.*;
+
+@RunWith( PowerMockRunner.class )
+@PrepareForTest( { MetaInject.class } )
 public class MetaInjectTest {
 
   private static final String INJECTOR_STEP_NAME = "TEST_STEP_FOR_INJECTION";
@@ -103,6 +103,7 @@ public class MetaInjectTest {
   private static final SourceStepField UNAVAILABLE_SOURCE_STEP = new SourceStepField( UNAVAILABLE_STEP, TEST_FIELD );
 
   private MetaInject metaInject;
+  private Repository repository;
 
   private MetaInjectMeta meta;
 
@@ -115,15 +116,17 @@ public class MetaInjectTest {
 
   @Before
   public void before() throws Exception {
-    metaInject = StepMockUtil.getStep( MetaInject.class, MetaInjectMeta.class, "MetaInjectTest" );
-    metaInject = spy( metaInject );
-    metaStore = mock( IMetaStore.class );
-    metaInject.setMetaStore( metaStore );
-    transMeta = mock( TransMeta.class );
-    doReturn( transMeta ).when( metaInject ).getTransMeta();
-
+    repository = PowerMockito.mock( Repository.class );
+    transMeta = PowerMockito.spy( new TransMeta() );
     meta = new MetaInjectMeta();
     data = new MetaInjectData();
+    data.transMeta = transMeta;
+    metaInject = StepMockUtil.getStep( MetaInject.class, MetaInjectMeta.class, "MetaInjectTest" );
+    metaInject = PowerMockito.spy( metaInject );
+    metaInject.init( meta, data );
+    metaStore = mock( IMetaStore.class );
+    metaInject.setMetaStore( metaStore );
+    doReturn( transMeta ).when( metaInject ).getTransMeta();
 
     TransMeta internalTransMeta = mock( TransMeta.class );
     StepMeta stepMeta = mock( StepMeta.class );
@@ -482,4 +485,70 @@ public class MetaInjectTest {
     return row;
   }
 
+  @Test
+  public void testWriteInjectedKtrNoRepo() throws Exception{
+    PowerMockito.doNothing().when( metaInject , "writeInjectedKtrToRepo", "/home/admin/injected_trans.ktr" );
+    PowerMockito.doNothing().when( metaInject , "writeInjectedKtrToFs", "/home/admin/injected_trans.ktr" );
+    metaInject.setRepository( null );
+    Whitebox.<String>invokeMethod( metaInject, "writeInjectedKtr", "/home/admin/injected_trans.ktr" );
+    PowerMockito.verifyPrivate( metaInject , times( 0 ) ).invoke( "writeInjectedKtrToRepo" ,
+      "/home/admin/injected_trans.ktr" );
+    PowerMockito.verifyPrivate( metaInject , times( 1) ).invoke( "writeInjectedKtrToFs" , "/home/admin/injected_trans"
+      + ".ktr" );
+  }
+
+  @Test
+  public void testWriteInjectedKtrWithRepo() throws Exception{
+    PowerMockito.doNothing().when( metaInject , "writeInjectedKtrToRepo", "/home/admin/injected_trans.ktr" );
+    PowerMockito.doNothing().when( metaInject , "writeInjectedKtrToFs", "/home/admin/injected_trans.ktr" );
+    metaInject.setRepository( repository );
+    Whitebox.<String>invokeMethod( metaInject, "writeInjectedKtr", "/home/admin/injected_trans.ktr" );
+    PowerMockito.verifyPrivate( metaInject , times( 1 ) ).invoke( "writeInjectedKtrToRepo" ,
+      "/home/admin/injected_trans.ktr" );
+    PowerMockito.verifyPrivate( metaInject , times( 0 ) ).invoke( "writeInjectedKtrToFs" ,
+      "/home/admin/injected_trans.ktr" );
+  }
+
+  @Test
+  public void testWriteInjectedKtrToRepoSameDir() throws Exception{
+    RepositoryDirectory rootDir = PowerMockito.spy( new RepositoryDirectory( null, "/" ) );
+    RepositoryDirectory adminDir = PowerMockito.spy( new RepositoryDirectory( new RepositoryDirectory(
+      new RepositoryDirectory(null, "/" ), "home" ), "admin" ) );
+    TransMeta cloneMeta = PowerMockito.spy( (TransMeta) data.transMeta.clone() );
+    PowerMockito.doReturn( cloneMeta ).when( data.transMeta ).clone();
+
+    PowerMockito.doReturn( adminDir ).when( repository ).createRepositoryDirectory( rootDir, "home/admin" );
+    PowerMockito.doReturn( adminDir ).when( data.transMeta ).getRepositoryDirectory();
+    PowerMockito.whenNew( RepositoryDirectory.class).withArguments( null, "/" ).thenReturn( rootDir );
+
+    metaInject.setRepository( repository );
+    Whitebox.<String>invokeMethod( metaInject, "writeInjectedKtrToRepo", "/home/admin/injected_trans.ktr" );
+    verify( repository, times( 1 ) ).findDirectory( "home/admin" );
+    verify( repository, times( 1 ) ).createRepositoryDirectory( rootDir, "home/admin" );
+    verify( cloneMeta, times( 1 ) ).setRepositoryDirectory( adminDir );
+    verify( cloneMeta, times( 1 ) ).setObjectId( any( ObjectId.class ) );
+    verify( repository, times( 1 ) ).save( cloneMeta, null, null, true );
+  }
+
+  @Test
+  public void testWriteInjectedKtrToRepoDifferentDir() throws Exception{
+    RepositoryDirectory rootDir = PowerMockito.spy( new RepositoryDirectory( null, "/" ) );
+    RepositoryDirectory adminDir = PowerMockito.spy( new RepositoryDirectory( new RepositoryDirectory(
+      new RepositoryDirectory(null, "/" ), "home" ), "admin" ) );
+    TransMeta cloneMeta = PowerMockito.spy( (TransMeta) data.transMeta.clone() );
+    PowerMockito.doReturn( cloneMeta ).when( data.transMeta ).clone();
+
+    PowerMockito.doReturn( adminDir ).when( repository ).createRepositoryDirectory( rootDir,
+      "/home/admin" );
+    PowerMockito.doReturn( adminDir ).when( data.transMeta ).getRepositoryDirectory();
+    PowerMockito.whenNew( RepositoryDirectory.class).withArguments( null, "/" ).thenReturn( rootDir );
+
+    metaInject.setRepository( repository );
+    Whitebox.<String>invokeMethod( metaInject, "writeInjectedKtrToRepo", "injected_trans" );
+    verify( repository, times( 0 ) ).findDirectory( anyString() );
+    verify( repository, times( 0 ) ).createRepositoryDirectory( any(), any() );
+    verify( cloneMeta, times( 1 ) ).setRepositoryDirectory( adminDir );
+    verify( cloneMeta, times( 1 ) ).setObjectId( any( ObjectId.class ) );
+    verify( repository, times( 1 ) ).save( cloneMeta, null, null, true );
+  }
 }

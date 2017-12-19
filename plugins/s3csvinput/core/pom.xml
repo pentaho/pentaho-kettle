@@ -6,11 +6,11 @@
   <parent>
     <groupId>org.pentaho.di.plugins</groupId>
     <artifactId>s3csvinput</artifactId>
-    <version>8.0-SNAPSHOT</version>
+    <version>8.1.0.0-SNAPSHOT</version>
   </parent>
 
   <artifactId>kettle-s3csvinput-plugin-core</artifactId>
-  <version>8.0-SNAPSHOT</version>
+  <version>8.1.0.0-SNAPSHOT</version>
   <packaging>jar</packaging>
 
   <name>PDI S3 CSV Input Plugin Core</name>
@@ -49,6 +49,16 @@
     <dependency>
       <groupId>net.java.dev.jets3t</groupId>
       <artifactId>jets3t</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.powermock</groupId>
+      <artifactId>powermock-module-junit4</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.powermock</groupId>
+      <artifactId>powermock-api-mockito</artifactId>
+      <scope>test</scope>
     </dependency>
   </dependencies>
 </project>

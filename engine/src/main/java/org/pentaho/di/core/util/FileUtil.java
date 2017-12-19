@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -27,6 +27,8 @@ import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.i18n.BaseMessages;
+
+import java.io.File;
 
 public class FileUtil {
   public static boolean createParentFolder( Class<?> PKG, String filename, boolean createParentFolder,
@@ -75,6 +77,16 @@ public class FileUtil {
     }
 
     return resultat;
+  }
+
+  /**
+   * Tests whether this abstract pathname is absolute.
+   *
+   * The pathname is absolute if its prefix is "/", "\" and on Microsoft Windows systems,
+   * a pathname is absolute if its prefix is a drive specifier followed by "\\", or if its prefix is "\\\\".
+   */
+  public static boolean isFullyQualified( String pathname ) {
+    return new File( pathname ).isAbsolute() || pathname.startsWith( "/" ) || pathname.startsWith( "\\" );
   }
 
 }

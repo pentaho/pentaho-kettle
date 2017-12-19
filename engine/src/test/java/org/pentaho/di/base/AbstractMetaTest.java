@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -35,11 +35,14 @@ import org.pentaho.di.core.exception.KettlePluginException;
 import org.pentaho.di.core.gui.OverwritePrompter;
 import org.pentaho.di.core.gui.Point;
 import org.pentaho.di.core.listeners.ContentChangedListener;
+import org.pentaho.di.core.listeners.CurrentDirectoryChangedListener;
 import org.pentaho.di.core.listeners.FilenameChangedListener;
 import org.pentaho.di.core.listeners.NameChangedListener;
 import org.pentaho.di.core.logging.ChannelLogTable;
 import org.pentaho.di.core.logging.LogLevel;
 import org.pentaho.di.core.logging.LoggingObjectType;
+import org.pentaho.di.core.osgi.api.MetastoreLocatorOsgi;
+import org.pentaho.di.core.osgi.api.NamedClusterServiceOsgi;
 import org.pentaho.di.core.parameters.NamedParams;
 import org.pentaho.di.core.parameters.NamedParamsDefault;
 import org.pentaho.di.core.plugins.DatabasePluginType;
@@ -55,6 +58,7 @@ import org.pentaho.di.repository.RepositoryDirectoryInterface;
 import org.pentaho.di.repository.RepositoryObjectType;
 import org.pentaho.di.shared.SharedObjects;
 import org.pentaho.di.trans.step.StepMeta;
+import org.pentaho.di.trans.steps.named.cluster.NamedClusterEmbedManager;
 import org.pentaho.metastore.api.IMetaStore;
 import org.pentaho.metastore.api.IMetaStoreElement;
 import org.pentaho.metastore.api.IMetaStoreElementType;
@@ -310,7 +314,23 @@ public class AbstractMetaTest {
     verify( listener, times( 1 ) ).contentSafe( anyObject() );
     meta.removeContentChangedListener( listener );
     assertTrue( meta.getContentChangedListeners().isEmpty() );
+  }
 
+  @Test
+  public void testAddCurrentDirectoryChangedListener() throws Exception {
+    meta.fireNameChangedListeners( "a", "a" );
+    meta.fireNameChangedListeners( "a", "b" );
+    meta.addCurrentDirectoryChangedListener( null );
+    meta.fireCurrentDirectoryChanged( "a", "b" );
+    CurrentDirectoryChangedListener listener = mock( CurrentDirectoryChangedListener.class );
+    meta.addCurrentDirectoryChangedListener( listener );
+    meta.fireCurrentDirectoryChanged( "b", "a" );
+    verify( listener, times( 1 ) ).directoryChanged( meta, "b", "a" );
+    meta.fireCurrentDirectoryChanged( "a", "a" );
+    meta.removeCurrentDirectoryChangedListener( null );
+    meta.removeCurrentDirectoryChangedListener( listener );
+    meta.fireNameChangedListeners( "b", "a" );
+    verifyNoMoreInteractions( listener );
   }
 
   @Test
@@ -717,6 +737,37 @@ public class AbstractMetaTest {
     assertFalse( meta.shouldOverwrite( prompter, Props.getInstance(), "message", "remember" ) );
   }
 
+  @Test
+  public void testGetSetNamedClusterServiceOsgi() throws Exception {
+    assertNull( meta.getNamedClusterServiceOsgi() );
+    NamedClusterServiceOsgi mockNamedClusterOsgi = mock( NamedClusterServiceOsgi.class );
+    meta.setNamedClusterServiceOsgi( mockNamedClusterOsgi );
+    assertEquals( mockNamedClusterOsgi, meta.getNamedClusterServiceOsgi() );
+  }
+
+  @Test
+  public void testGetNamedClusterEmbedManager() throws Exception {
+    assertNull( meta.getNamedClusterEmbedManager() );
+    NamedClusterEmbedManager mockNamedClusterEmbedManager = mock( NamedClusterEmbedManager.class );
+    meta.namedClusterEmbedManager = mockNamedClusterEmbedManager;
+    assertEquals( mockNamedClusterEmbedManager, meta.getNamedClusterEmbedManager() );
+  }
+
+  @Test
+  public void testGetSetEmbeddedMetastoreProviderKey() throws Exception {
+    assertNull( meta.getEmbeddedMetastoreProviderKey() );
+    String keyValue = "keyValue";
+    meta.setEmbeddedMetastoreProviderKey( keyValue );
+    assertEquals( keyValue, meta.getEmbeddedMetastoreProviderKey() );
+  }
+
+  @Test
+  public void testGetSetMetastoreLocatorOsgi() throws Exception {
+    assertNull( meta.getMetastoreLocatorOsgi() );
+    MetastoreLocatorOsgi mockMetastoreLocatorOsgi = mock( MetastoreLocatorOsgi.class );
+    meta.setMetastoreLocatorOsgi( mockMetastoreLocatorOsgi );
+    assertEquals( mockMetastoreLocatorOsgi, meta.getMetastoreLocatorOsgi() );
+  }
 
   /**
    * Stub class for AbstractMeta. No need to test the abstract methods here, they should be done in unit tests for

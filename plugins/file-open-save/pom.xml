@@ -6,11 +6,11 @@
   <parent>
     <groupId>org.pentaho.di.plugins</groupId>
     <artifactId>pdi-plugins</artifactId>
-    <version>8.0-SNAPSHOT</version>
+    <version>8.1.0.0-SNAPSHOT</version>
   </parent>
 
   <artifactId>file-open-save</artifactId>
-  <version>8.0-SNAPSHOT</version>
+  <version>8.1.0.0-SNAPSHOT</version>
   <packaging>pom</packaging>
 
   <name>PDI File Open and Save Plugin</name>
@@ -21,20 +21,22 @@
   </modules>
 
   <properties>
-    <dependency.pentaho-kettle.version>${project.version}</dependency.pentaho-kettle.version>
+    <pdi.version>8.1.0.0-SNAPSHOT</pdi.version>
     <dependency.karaf.version>3.0.3</dependency.karaf.version>
     <dependency.osgi.version>4.3.1</dependency.osgi.version>
     <version.for.license>${project.version}</version.for.license>
     <js.project.list>requirejs,requirejs-text,angular,require-css,angular-i18n</js.project.list>
     <angular.version>1.5.8</angular.version>
-    <dependency.pentaho-osgi-bundles.revision>8.0-SNAPSHOT</dependency.pentaho-osgi-bundles.revision>
+    <pentaho-osgi-bundles.version>8.1.0.0-SNAPSHOT</pentaho-osgi-bundles.version>
+    <angular-ui-router.version>0.4.2</angular-ui-router.version>
     <karaf-maven-plugin.version>3.0.3</karaf-maven-plugin.version>
-    <dependency.kettle.ui.swt.revision>8.0-SNAPSHOT</dependency.kettle.ui.swt.revision>
-    <cxf.karaf.version>3.0.7</cxf.karaf.version>
+    <pdi.version>8.1.0.0-SNAPSHOT</pdi.version>
+    <cxf.karaf.version>3.0.13</cxf.karaf.version>
     <requirejs-text.version>2.0.10</requirejs-text.version>
     <require-css.version>0.1.8</require-css.version>
     <angular-i18n.version>1.5.6</angular-i18n.version>
     <swt.version>4.6</swt.version>
+    <dojo.version>1.9.2</dojo.version>
     <requirejs.version>2.2.0</requirejs.version>
     <dependency.javax.servlet-api.version>3.0.1</dependency.javax.servlet-api.version>
     <dependency.jackson.version>1.9.2</dependency.jackson.version>
@@ -46,7 +48,7 @@
       <dependency>
         <groupId>pentaho-kettle</groupId>
         <artifactId>kettle-core</artifactId>
-        <version>${dependency.pentaho-kettle.version}</version>
+        <version>${pdi.version}</version>
         <scope>provided</scope>
         <!--<exclusions>-->
           <!--<exclusion>-->
@@ -58,13 +60,13 @@
       <dependency>
         <groupId>pentaho-kettle</groupId>
         <artifactId>kettle-ui-swt</artifactId>
-        <version>${dependency.kettle.ui.swt.revision}</version>
+        <version>${pdi.version}</version>
         <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>pentaho-kettle</groupId>
         <artifactId>kettle-engine</artifactId>
-        <version>${dependency.pentaho-kettle.version}</version>
+        <version>${pdi.version}</version>
         <scope>provided</scope>
         <!--<exclusions>-->
           <!--<exclusion>-->
@@ -112,7 +114,7 @@
       <dependency>
         <groupId>com.fasterxml.jackson.core</groupId>
         <artifactId>jackson-core</artifactId>
-        <version>${dependency.fasterxml.jackson.version}</version>
+        <version>${fasterxml.jackson.core.version}</version>
         <exclusions>
           <exclusion>
             <artifactId>*</artifactId>
@@ -123,18 +125,7 @@
       <dependency>
         <groupId>com.fasterxml.jackson.core</groupId>
         <artifactId>jackson-annotations</artifactId>
-        <version>${dependency.fasterxml.jackson.version}</version>
-        <exclusions>
-          <exclusion>
-            <artifactId>*</artifactId>
-            <groupId>*</groupId>
-          </exclusion>
-        </exclusions>
-      </dependency>
-      <dependency>
-        <groupId>com.fasterxml.jackson.jaxrs</groupId>
-        <artifactId>jackson-jaxrs-json-provider</artifactId>
-        <version>${dependency.fasterxml.jackson.version}</version>
+        <version>${fasterxml.jackson.core.version}</version>
         <exclusions>
           <exclusion>
             <artifactId>*</artifactId>
@@ -145,6 +136,17 @@
       <dependency>
         <groupId>com.fasterxml.jackson.core</groupId>
         <artifactId>jackson-databind</artifactId>
+        <version>${fasterxml.jackson.core.version}</version>
+        <exclusions>
+          <exclusion>
+            <artifactId>*</artifactId>
+            <groupId>*</groupId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+      <dependency>
+        <groupId>com.fasterxml.jackson.jaxrs</groupId>
+        <artifactId>jackson-jaxrs-json-provider</artifactId>
         <version>${dependency.fasterxml.jackson.version}</version>
         <exclusions>
           <exclusion>
@@ -219,9 +221,21 @@
         <scope>provided</scope>
       </dependency>
       <dependency>
+        <groupId>org.webjars.bower</groupId>
+        <artifactId>dojo</artifactId>
+        <version>${dojo.version}</version>
+        <scope>provided</scope>
+      </dependency>
+      <dependency>
         <groupId>com.googlecode.json-simple</groupId>
         <artifactId>json-simple</artifactId>
         <version>1.1.1</version>
+        <exclusions>
+          <exclusion>
+            <artifactId>*</artifactId>
+            <groupId>*</groupId>
+          </exclusion>
+        </exclusions>
       </dependency>
     </dependencies>
   </dependencyManagement>

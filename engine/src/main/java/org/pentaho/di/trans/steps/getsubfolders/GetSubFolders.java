@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -251,6 +251,11 @@ public class GetSubFolders extends BaseStep implements StepInterface {
     data = (GetSubFoldersData) sdi;
 
     if ( super.init( smi, sdi ) ) {
+      //Set Embedded NamedCluter MetatStore Provider Key so that it can be passed to VFS
+      if ( getTransMeta().getNamedClusterEmbedManager() != null ) {
+        getTransMeta().getNamedClusterEmbedManager()
+          .passEmbeddedMetastoreKey( this, getTransMeta().getEmbeddedMetastoreProviderKey() );
+      }
       try {
         data.filessize = 0;
         data.rownr = 1L;

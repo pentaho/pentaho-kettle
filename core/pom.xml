@@ -6,7 +6,7 @@
 
   <groupId>pentaho-kettle</groupId>
   <artifactId>kettle-core</artifactId>
-  <version>8.0-SNAPSHOT</version>
+  <version>8.1.0.0-SNAPSHOT</version>
   <packaging>jar</packaging>
 
   <name>PDI Core</name>
@@ -14,7 +14,7 @@
   <parent>
     <groupId>org.pentaho.di</groupId>
     <artifactId>pdi</artifactId>
-    <version>8.0-SNAPSHOT</version>
+    <version>8.1.0.0-SNAPSHOT</version>
   </parent>
 
   <properties>
@@ -22,12 +22,11 @@
     <maven-surefire-plugin.reuseForks>false</maven-surefire-plugin.reuseForks>
 
     <!-- Third-party dependencies -->
-    <batik.version>1.8</batik.version>
+    <batik.version>1.9.1</batik.version>
     <xml-apis-ext.version>1.3.04</xml-apis-ext.version>
     <spring.framework.version>4.3.2.RELEASE</spring.framework.version>
     <commons-collections.version>3.2.2</commons-collections.version>
     <commons-lang.version>2.6</commons-lang.version>
-    <commons-httpclient.version>3.1</commons-httpclient.version>
     <commons-vfs2.version>2.1-20150824</commons-vfs2.version>
     <commons-io.version>2.2</commons-io.version>
     <commons-dbcp.version>1.4</commons-dbcp.version>
@@ -45,6 +44,8 @@
     <org.apache.karaf.main.version>3.0.3</org.apache.karaf.main.version>
     <simple-jndi.version>1.0.0</simple-jndi.version>
     <woodstox-core-asl.version>4.4.1</woodstox-core-asl.version>
+    <httpclient.version>4.5.3</httpclient.version>
+    <httpccore.version>4.4.6</httpccore.version>
   </properties>
 
   <dependencies>
@@ -230,6 +231,28 @@
       </exclusions>
     </dependency>
     <dependency>
+      <groupId>org.apache.xmlgraphics</groupId>
+      <artifactId>batik-constants</artifactId>
+      <version>${batik.version}</version>
+      <exclusions>
+        <exclusion>
+          <groupId>*</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.xmlgraphics</groupId>
+      <artifactId>batik-i18n</artifactId>
+      <version>${batik.version}</version>
+      <exclusions>
+        <exclusion>
+          <groupId>*</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
       <groupId>xml-apis</groupId>
       <artifactId>xml-apis-ext</artifactId>
       <version>${xml-apis-ext.version}</version>
@@ -263,15 +286,20 @@
       </exclusions>
     </dependency>
     <dependency>
-      <groupId>commons-httpclient</groupId>
-      <artifactId>commons-httpclient</artifactId>
-      <version>${commons-httpclient.version}</version>
+      <groupId>org.apache.httpcomponents</groupId>
+      <artifactId>httpclient</artifactId>
+      <version>${httpclient.version}</version>
       <exclusions>
         <exclusion>
           <groupId>*</groupId>
           <artifactId>*</artifactId>
         </exclusion>
       </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.httpcomponents</groupId>
+      <artifactId>httpcore</artifactId>
+      <version>${httpccore.version}</version>
     </dependency>
     <dependency>
       <groupId>org.apache.commons</groupId>
@@ -438,6 +466,10 @@
         </exclusion>
       </exclusions>
     </dependency>
+    <dependency>
+      <groupId>org.codehaus.woodstox</groupId>
+      <artifactId>wstx-asl</artifactId>
+    </dependency>
 
     <!-- Test dependencies -->
     <dependency>
@@ -465,12 +497,6 @@
       <groupId>org.springframework</groupId>
       <artifactId>spring-test</artifactId>
       <version>${spring.framework.version}</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.codehaus.woodstox</groupId>
-      <artifactId>woodstox-core-asl</artifactId>
-      <version>${woodstox-core-asl.version}</version>
       <scope>test</scope>
     </dependency>
   </dependencies>

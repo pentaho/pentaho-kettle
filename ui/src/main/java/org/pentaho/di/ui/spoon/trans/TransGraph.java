@@ -3,7 +3,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -83,7 +83,6 @@ import org.pentaho.di.core.SwtUniversalImage;
 import org.pentaho.di.core.dnd.DragAndDropContainer;
 import org.pentaho.di.core.dnd.XMLTransfer;
 import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.exception.KettlePluginException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.extension.ExtensionPointHandler;
@@ -107,13 +106,11 @@ import org.pentaho.di.core.logging.LoggingObjectInterface;
 import org.pentaho.di.core.logging.LoggingObjectType;
 import org.pentaho.di.core.logging.LoggingRegistry;
 import org.pentaho.di.core.logging.SimpleLoggingObject;
-import org.pentaho.di.core.plugins.EnginePluginType;
 import org.pentaho.di.core.plugins.PluginInterface;
 import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.plugins.StepPluginType;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.util.Utils;
-import org.pentaho.di.engine.api.Engine;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.Job;
 import org.pentaho.di.job.JobMeta;
@@ -129,7 +126,7 @@ import org.pentaho.di.trans.TransExecutionConfiguration;
 import org.pentaho.di.trans.TransHopMeta;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.TransPainter;
-import org.pentaho.di.trans.ael.adapters.TransEngineAdapter;
+import org.pentaho.di.trans.TransSupplier;
 import org.pentaho.di.trans.debug.BreakPointListener;
 import org.pentaho.di.trans.debug.StepDebugMeta;
 import org.pentaho.di.trans.debug.TransDebugMeta;
@@ -205,7 +202,6 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.UUID;
 import java.util.concurrent.Callable;
-import java.util.function.Predicate;
 
 /**
  * This class handles the display of the transformations in a graphical way using icons, arrows, etc. One transformation
@@ -3009,7 +3005,7 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
       if ( tipImage != null ) {
         tooltipImage = tipImage;
       } else {
-        tooltipImage = GUIResource.getInstance().getImageSpoon();
+        tooltipImage = GUIResource.getInstance().getImageSpoonLow();
       }
       showTooltip( newTip, tooltipImage, screenX, screenY );
     }
@@ -3091,6 +3087,7 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
 
     transMeta.setRepository( spoon.rep );
     SearchFieldsProgressDialog op = new SearchFieldsProgressDialog( transMeta, stepMeta, before );
+    boolean alreadyThrownError = false;
     try {
       final ProgressMonitorDialog pmd = new ProgressMonitorDialog( shell );
 
@@ -3124,9 +3121,11 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
     } catch ( InvocationTargetException e ) {
       new ErrorDialog( shell, BaseMessages.getString( PKG, "TransGraph.Dialog.GettingFields.Title" ), BaseMessages
         .getString( PKG, "TransGraph.Dialog.GettingFields.Message" ), e );
+      alreadyThrownError = true;
     } catch ( InterruptedException e ) {
       new ErrorDialog( shell, BaseMessages.getString( PKG, "TransGraph.Dialog.GettingFields.Title" ), BaseMessages
         .getString( PKG, "TransGraph.Dialog.GettingFields.Message" ), e );
+      alreadyThrownError = true;
     }
 
     RowMetaInterface fields = op.getFields();
@@ -3141,10 +3140,12 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
         }
       }
     } else {
-      MessageBox mb = new MessageBox( shell, SWT.OK | SWT.ICON_INFORMATION );
-      mb.setMessage( BaseMessages.getString( PKG, "TransGraph.Dialog.CouldntFindFields.Message" ) );
-      mb.setText( BaseMessages.getString( PKG, "TransGraph.Dialog.CouldntFindFields.Title" ) );
-      mb.open();
+      if ( !alreadyThrownError ) {
+        MessageBox mb = new MessageBox( shell, SWT.OK | SWT.ICON_INFORMATION );
+        mb.setMessage( BaseMessages.getString( PKG, "TransGraph.Dialog.CouldntFindFields.Message" ) );
+        mb.setText( BaseMessages.getString( PKG, "TransGraph.Dialog.CouldntFindFields.Title" ) );
+        mb.open();
+      }
     }
 
   }
@@ -3803,7 +3804,7 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
           // memory
           // To be able to completely test this, we need to run it as we would normally do in pan
           //
-          trans = createTrans();
+          trans = new TransSupplier( transMeta, log, this::createLegacyTrans ).get();
 
           trans.setRepository( spoon.getRepository() );
           trans.setMetaStore( spoon.getMetaStore() );
@@ -3864,10 +3865,7 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
       }
     } else {
       if ( transMeta.hasChanged() ) {
-        MessageBox m = new MessageBox( shell, SWT.OK | SWT.ICON_WARNING );
-        m.setText( BaseMessages.getString( PKG, "TransLog.Dialog.SaveTransformationBeforeRunning.Title" ) );
-        m.setMessage( BaseMessages.getString( PKG, "TransLog.Dialog.SaveTransformationBeforeRunning.Message" ) );
-        m.open();
+        showSaveFileMessage();
       } else if ( spoon.rep != null && transMeta.getName() == null ) {
         MessageBox m = new MessageBox( shell, SWT.OK | SWT.ICON_WARNING );
         m.setText( BaseMessages.getString( PKG, "TransLog.Dialog.GiveTransformationANameBeforeRunning.Title" ) );
@@ -3880,6 +3878,13 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
         m.open();
       }
     }
+  }
+
+  public void showSaveFileMessage() {
+    MessageBox m = new MessageBox( shell, SWT.OK | SWT.ICON_WARNING );
+    m.setText( BaseMessages.getString( PKG, "TransLog.Dialog.SaveTransformationBeforeRunning.Title" ) );
+    m.setMessage( BaseMessages.getString( PKG, "TransLog.Dialog.SaveTransformationBeforeRunning.Message" ) );
+    m.open();
   }
 
   public void addAllTabs() {
@@ -5005,56 +5010,12 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
     return trans;
   }
 
-  /**
-   * Creates the appropriate trans.  Either
-   * 1)  A {@link TransEngineAdapter} wrapping an {@link Engine}
-   * if an alternate execution engine has been selected
-   * 2)  A legacy {@link Trans} otherwise.
-   */
-  private Trans createTrans() throws KettleException {
-    if ( Utils.isEmpty( transMeta.getVariable( "engine" ) ) ) {
-      log.logBasic( "Using legacy execution engine" );
-      return createLegacyTrans();
-    }
-
-    return PluginRegistry.getInstance().getPlugins( EnginePluginType.class ).stream()
-      .filter( useThisEngine() )
-      .findFirst()
-      .map( plugin -> (Engine) loadPlugin( plugin ) )
-      .map( engine -> {
-        log.logBasic( "Using execution engine " + engine.getClass().getCanonicalName() );
-        return (Trans) new TransEngineAdapter( engine, transMeta );
-      } )
-      .orElseThrow( () -> new KettleException( "Unable to find engine [" + transMeta.getVariable( "engine" ) + "]" ) );
-  }
-
-  /**
-   * Uses a trans variable called "engine" to determine which engine to use.
-   * Will be replaced when UI engine selection is available.
-   *
-   * @return
-   */
-  private Predicate<PluginInterface> useThisEngine() {
-    return plugin -> Arrays.stream( plugin.getIds() )
-      .filter( id -> id.equals( ( transMeta.getVariable( "engine" ) ) ) )
-      .findAny()
-      .isPresent();
-  }
-
   private Trans createLegacyTrans() {
     try {
       return new Trans( transMeta, spoon.rep, transMeta.getName(),
         transMeta.getRepositoryDirectory().getPath(),
         transMeta.getFilename() );
     } catch ( KettleException e ) {
-      throw new RuntimeException( e );
-    }
-  }
-
-  private Object loadPlugin( PluginInterface plugin ) {
-    try {
-      return PluginRegistry.getInstance().loadClass( plugin );
-    } catch ( KettlePluginException e ) {
       throw new RuntimeException( e );
     }
   }

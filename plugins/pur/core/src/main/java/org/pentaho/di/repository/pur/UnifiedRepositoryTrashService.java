@@ -1,5 +1,5 @@
 /*!
- * Copyright 2010 - 2015 Pentaho Corporation.  All rights reserved.
+ * Copyright 2010 - 2017 Hitachi Vantara.  All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -60,7 +60,6 @@ public class UnifiedRepositoryTrashService implements ITrashService {
 
     for ( final RepositoryFile file : deletedChildren ) {
       trash.add( new IDeletedObject() {
-
         @Override
         public String getOriginalParentPath() {
           return file.getOriginalParentFolderPath();
@@ -92,9 +91,13 @@ public class UnifiedRepositoryTrashService implements ITrashService {
           return file.getTitle();
         }
 
+        @Override
+        public String getOwner() {
+          return file.getCreatorId();
+        }
       } );
     }
-
     return trash;
   }
+
 }

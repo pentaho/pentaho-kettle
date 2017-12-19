@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2016-2017 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2016-2017 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -24,11 +24,15 @@ package org.pentaho.di.trans.steps.xmljoin;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.Mockito;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.trans.TransMeta;
+import org.pentaho.di.trans.step.StepMeta;
+
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 
 public class XmlJoinMetaGetFieldsTest {
@@ -39,20 +43,31 @@ public class XmlJoinMetaGetFieldsTest {
   @Before
   public void setup() throws Exception {
     xmlJoinMeta = new XMLJoinMeta();
-    transMeta = Mockito.mock( TransMeta.class );
+    transMeta = mock( TransMeta.class );
   }
 
   @Test
   public void testGetFieldsReturnTargetStepFieldsPlusResultXmlField() throws Exception {
-    String targetXmlStep = "target xml step name";
-    String targetStepField = "source field test name";
+    String sourceXmlStep = "source xml step name";
+    String sourceStepField = "source field test name";
+    String targetStepField = "target field test name";
     String resultXmlFieldName = "result xml field name";
     RowMeta rowMetaPreviousSteps = new RowMeta();
-    rowMetaPreviousSteps.addValueMeta( new ValueMeta( targetStepField, ValueMetaInterface.TYPE_STRING ) );
+    rowMetaPreviousSteps.addValueMeta( new ValueMeta( sourceStepField, ValueMetaInterface.TYPE_STRING ) );
+    xmlJoinMeta.setSourceXMLstep( sourceXmlStep );
     xmlJoinMeta.setValueXMLfield( "result xml field name" );
-    xmlJoinMeta.setTargetXMLstep( targetXmlStep );
-    Mockito.when( transMeta.getStepFields( targetXmlStep ) ).thenReturn( rowMetaPreviousSteps );
+    StepMeta sourceStepMeta = new StepMeta();
+    sourceStepMeta.setName( sourceXmlStep );
+
+    when( transMeta.findStep( sourceXmlStep ) ).thenReturn( sourceStepMeta );
+    when( transMeta.getStepFields( sourceStepMeta, null, null ) ).thenReturn( rowMetaPreviousSteps );
+
     RowMeta rowMeta = new RowMeta();
+    ValueMetaString keepValueMeta = new ValueMetaString( targetStepField );
+    ValueMetaString removeValueMeta = new ValueMetaString( sourceStepField );
+    rowMeta.addValueMeta( keepValueMeta );
+    rowMeta.addValueMeta( removeValueMeta );
+
     xmlJoinMeta.getFields( rowMeta, "testStepName", null, null, transMeta, null, null );
     Assert.assertEquals( 2, rowMeta.size() );
     String[] strings = rowMeta.getFieldNames();

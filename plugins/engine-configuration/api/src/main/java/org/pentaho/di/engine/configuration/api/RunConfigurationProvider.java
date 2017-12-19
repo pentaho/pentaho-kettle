@@ -3,7 +3,7 @@
  *
  *  Pentaho Data Integration
  *
- *  Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
+ *  Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
  *
  *  *******************************************************************************
  *  Licensed under the Apache License, Version 2.0 (the "License"); you may not use
@@ -31,4 +31,5 @@ public interface RunConfigurationProvider extends RunConfigurationFactory {
   RunConfiguration getConfiguration();
   RunConfigurationExecutor getExecutor();
   String getType();
+  boolean isSupported( String type );
 }

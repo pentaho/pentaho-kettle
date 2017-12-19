@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -421,7 +421,9 @@ public class JobDialog extends Dialog {
     fdlJobname.right = new FormAttachment( middle, -margin );
     fdlJobname.top = new FormAttachment( 0, margin );
     wlJobname.setLayoutData( fdlJobname );
-    wJobname = new Text( wJobComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
+    wJobname = new Text( wJobComp, rep == null ? SWT.SINGLE | SWT.LEFT | SWT.BORDER
+      : SWT.SINGLE | SWT.LEFT | SWT.BORDER | SWT.READ_ONLY );
+    wJobname.setEnabled( rep == null );
     props.setLook( wJobname );
     wJobname.addModifyListener( lsMod );
     fdJobname = new FormData();
@@ -1463,9 +1465,9 @@ public class JobDialog extends Dialog {
   }
 
   public void setFlags() {
-    wbDirectory.setEnabled( rep != null );
+    wbDirectory.setEnabled( false );
     // wDirectory.setEnabled(rep!=null);
-    wlDirectory.setEnabled( rep != null );
+    wlDirectory.setEnabled( false );
 
     // DatabaseMeta dbMeta = jobMeta.findDatabase(wLogconnection.getText());
     // wbLogconnection.setEnabled(dbMeta!=null);

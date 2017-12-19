@@ -3,7 +3,7 @@
  *
  *  Pentaho Data Integration
  *
- *  Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
+ *  Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
  *
  * ******************************************************************************
  *
@@ -26,6 +26,7 @@ package org.pentaho.di.engine.api.events;
 
 
 import org.pentaho.di.engine.api.model.LogicalModelElement;
+import org.pentaho.di.engine.api.remote.RemoteSource;
 
 import java.io.Serializable;
 
@@ -56,7 +57,6 @@ public abstract class BaseEvent<S extends LogicalModelElement, D extends Seriali
     }
 
     BaseEvent<?, ?> baseEvent = (BaseEvent<?, ?>) o;
-
     if ( !source.getId().equals( baseEvent.source.getId() ) ) {
       return false;
     }
@@ -64,8 +64,17 @@ public abstract class BaseEvent<S extends LogicalModelElement, D extends Seriali
   }
 
   @Override public int hashCode() {
-    int result = source.getId().hashCode();
-    result = 31 * result + data.hashCode();
+    int result = 0;
+    if ( source instanceof RemoteSource ) {
+      result = this.getClass().getName().hashCode();
+      result = 31 * result + ( ( (RemoteSource) source ).getModelType() != null
+        ? ( (RemoteSource) source ).getModelType().toString().hashCode() : 0 );
+      result =
+        31 * result + ( ( (RemoteSource) source ).getId() != null ? ( (RemoteSource) source ).getId().hashCode() : 0 );
+    } else {
+      result = source.getId().hashCode();
+      result = 31 * result + data.hashCode();
+    }
     return result;
   }
 }

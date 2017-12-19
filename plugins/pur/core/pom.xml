@@ -5,23 +5,23 @@
 
   <artifactId>pdi-pur-plugin-core</artifactId>
   <packaging>jar</packaging>
-  <version>8.0-SNAPSHOT</version>
+  <version>8.1.0.0-SNAPSHOT</version>
 
   <name>PDI PUR Plugin Core</name>
 
   <parent>
     <groupId>org.pentaho.di.plugins</groupId>
     <artifactId>pur</artifactId>
-    <version>8.0-SNAPSHOT</version>
+    <version>8.1.0.0-SNAPSHOT</version>
   </parent>
 
   <properties>
     <!-- Kettle dependencies -->
-    <kettle.version>${project.version}</kettle.version>
+    <pdi.version>8.1.0.0-SNAPSHOT</pdi.version>
 
     <!-- Pentaho dependenceis -->
-    <pentaho-platform.version>${project.version}</pentaho-platform.version>
-    <json.version>${project.version}</json.version>
+    <platform.version>8.1.0.0-SNAPSHOT</platform.version>
+    <pentaho-json.version>8.1.0.0-SNAPSHOT</pentaho-json.version>
 
     <!-- Third party dependencies -->
     <slf4j-api.version>1.7.7</slf4j-api.version>
@@ -46,7 +46,7 @@
     <spring.webflow.version>2.4.4.RELEASE</spring.webflow.version>
     <se-jcr.version>0.9</se-jcr.version>
     <jcr.version>2.0</jcr.version>
-    <jackrabbit-core.version>2.10.0</jackrabbit-core.version>
+    <jackrabbit-core.version>2.14.2</jackrabbit-core.version>
 
     <!-- Wadl2Java Settings -->
     <wadl2java.generated-class-name>Localhost_PentahoPlugin</wadl2java.generated-class-name>
@@ -59,19 +59,19 @@
     <dependency>
       <groupId>pentaho-kettle</groupId>
       <artifactId>kettle-core</artifactId>
-      <version>${kettle.version}</version>
+      <version>${pdi.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>pentaho-kettle</groupId>
       <artifactId>kettle-engine</artifactId>
-      <version>${kettle.version}</version>
+      <version>${pdi.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>pentaho-kettle</groupId>
       <artifactId>kettle-ui-swt</artifactId>
-      <version>${kettle.version}</version>
+      <version>${pdi.version}</version>
       <scope>provided</scope>
     </dependency>
 
@@ -100,13 +100,13 @@
     <dependency>
       <groupId>pentaho</groupId>
       <artifactId>pentaho-platform-core</artifactId>
-      <version>${pentaho-platform.version}</version>
+      <version>${platform.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>pentaho</groupId>
       <artifactId>pentaho-platform-api</artifactId>
-      <version>${pentaho-platform.version}</version>
+      <version>${platform.version}</version>
       <scope>provided</scope>
       <exclusions>
         <exclusion>
@@ -118,7 +118,7 @@
     <dependency>
       <groupId>pentaho</groupId>
       <artifactId>pentaho-platform-repository</artifactId>
-      <version>${pentaho-platform.version}</version>
+      <version>${platform.version}</version>
       <scope>provided</scope>
       <exclusions>
         <exclusion>
@@ -130,7 +130,7 @@
     <dependency>
       <groupId>pentaho</groupId>
       <artifactId>pentaho-platform-extensions</artifactId>
-      <version>${pentaho-platform.version}</version>
+      <version>${platform.version}</version>
       <scope>provided</scope>
       <exclusions>
         <exclusion>
@@ -142,7 +142,7 @@
     <dependency>
       <groupId>org.pentaho</groupId>
       <artifactId>json</artifactId>
-      <version>${json.version}</version>
+      <version>${pentaho-json.version}</version>
       <scope>compile</scope>
       <exclusions>
         <exclusion>
@@ -355,7 +355,7 @@
     <dependency>
       <groupId>pentaho</groupId>
       <artifactId>pentaho-platform-repository</artifactId>
-      <version>${pentaho-platform.version}</version>
+      <version>${platform.version}</version>
       <classifier>tests</classifier>
       <scope>test</scope>
       <exclusions>
@@ -368,7 +368,7 @@
     <dependency>
       <groupId>pentaho</groupId>
       <artifactId>pentaho-platform-core</artifactId>
-      <version>${pentaho-platform.version}</version>
+      <version>${platform.version}</version>
       <classifier>tests</classifier>
       <scope>test</scope>
       <exclusions>

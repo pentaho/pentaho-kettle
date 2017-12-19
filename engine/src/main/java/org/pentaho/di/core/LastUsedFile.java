@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -97,7 +97,7 @@ public class LastUsedFile {
       if ( directory.endsWith( RepositoryDirectory.DIRECTORY_SEPARATOR ) ) {
         string += ": " + directory + filename;
       } else {
-        string += ": " + RepositoryDirectory.DIRECTORY_SEPARATOR + filename;
+        string += ": " + directory + RepositoryDirectory.DIRECTORY_SEPARATOR + filename;
       }
     } else {
       string += filename;

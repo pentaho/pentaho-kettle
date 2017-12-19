@@ -7,6 +7,12 @@
   <includeBaseDirectory>true</includeBaseDirectory>
   <baseDirectory>data-integration</baseDirectory>
   <fileSets>
+    <fileSet>
+      <directory>${project.basedir}/src/main/resources-filtered</directory>
+      <outputDirectory>.</outputDirectory>
+      <filtered>true</filtered>
+    </fileSet>
+
     <!-- .bat and .plist files that need filtering -->
     <fileSet>
       <directory>${project.basedir}/src/main/resources</directory>
@@ -17,6 +23,7 @@
       </includes>
       <filtered>true</filtered>
     </fileSet>
+
     <!-- .sh files that need execution permissions and filtering -->
     <fileSet>
       <directory>${project.basedir}/src/main/resources</directory>

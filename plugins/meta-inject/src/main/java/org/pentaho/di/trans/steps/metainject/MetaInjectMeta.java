@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -46,6 +46,7 @@ import org.pentaho.di.core.util.CurrentDirectoryResolver;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
+import org.pentaho.di.repository.HasRepositoryDirectories;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectory;
@@ -68,19 +69,15 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Node;
 
-/**
- * @author matt
- * @version 3.0
- * @since 2007-07-05
- */
 @Step( id = "MetaInject",
     image = "org/pentaho/di/ui/trans/steps/metainject/img/GenericTransform.svg",
     name = "i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.MetaInject",
     categoryDescription = "i18n:org.pentaho.di.trans.step:BaseStep.Category.Flow",
-    documentationUrl = "0L0/0Y0/0K0/ETL_Metadata_Injection" )
+    documentationUrl = "Products/Data_Integration/Transformation_Step_Reference/ETL_Metadata_Injection" )
 @InjectionSupported( localizationPrefix = "MetaInject.Injection.", groups = { "SOURCE_OUTPUT_FIELDS",
   "MAPPING_FIELDS" } )
-public class MetaInjectMeta extends BaseStepMeta implements StepMetaInterface, StepMetaChangeListenerInterface {
+public class MetaInjectMeta extends BaseStepMeta implements StepMetaInterface, StepMetaChangeListenerInterface,
+  HasRepositoryDirectories {
 
   private static Class<?> PKG = MetaInjectMeta.class; // for i18n purposes, needed by Translator2!!
 
@@ -448,6 +445,16 @@ public class MetaInjectMeta extends BaseStepMeta implements StepMetaInterface, S
     this.directoryPath = directoryPath;
   }
 
+  @Override
+  public String[] getDirectories() {
+    return new String[]{ directoryPath };
+  }
+
+  @Override
+  public void setDirectories( String[] directories ) {
+    this.directoryPath = directories[0];
+  }
+
   /**
    * @return the transObjectId
    */
@@ -472,6 +479,11 @@ public class MetaInjectMeta extends BaseStepMeta implements StepMetaInterface, S
    */
   public ObjectLocationSpecificationMethod getSpecificationMethod() {
     return specificationMethod;
+  }
+
+  @Override
+  public ObjectLocationSpecificationMethod[] getSpecificationMethods() {
+    return new ObjectLocationSpecificationMethod[] { specificationMethod };
   }
 
   /**
@@ -505,9 +517,35 @@ public class MetaInjectMeta extends BaseStepMeta implements StepMetaInterface, S
           //
           // Don't set internal variables: they belong to the parent thread!
           //
-          mappingTransMeta = new TransMeta( realFilename, metaStore, rep, false, tmpSpace, null );
-          mappingTransMeta.getLogChannel().logDetailed( "Loading Mapping from repository",
-            "Mapping transformation was loaded from XML file [" + realFilename + "]" );
+          if ( rep != null ) {
+            // need to try to load from the repository
+            realFilename = resolver.normalizeSlashes( realFilename );
+            try {
+              String dirStr = realFilename.substring( 0, realFilename.lastIndexOf( "/" ) );
+              String tmpFilename = realFilename.substring( realFilename.lastIndexOf( "/" ) + 1 );
+              RepositoryDirectoryInterface dir = rep.findDirectory( dirStr );
+              mappingTransMeta = rep.loadTransformation( tmpFilename, dir, null, true, null );
+            } catch ( KettleException ke ) {
+              // try without extension
+              if ( realFilename.endsWith( Const.STRING_TRANS_DEFAULT_EXT ) ) {
+                try {
+                  String tmpFilename =
+                    realFilename.substring( realFilename.lastIndexOf( "/" ) + 1, realFilename.indexOf( "."
+                      + Const.STRING_TRANS_DEFAULT_EXT ) );
+                  String dirStr = realFilename.substring( 0, realFilename.lastIndexOf( "/" ) );
+                  RepositoryDirectoryInterface dir = rep.findDirectory( dirStr );
+                  mappingTransMeta = rep.loadTransformation( tmpFilename, dir, null, true, null );
+                } catch ( KettleException ke2 ) {
+                  // fall back to try loading from file system (transMeta is going to be null)
+                }
+              }
+            }
+          }
+          if ( mappingTransMeta == null ) {
+            mappingTransMeta = new TransMeta( realFilename, metaStore, rep, false, tmpSpace, null );
+            mappingTransMeta.getLogChannel().logDetailed( "Loading Mapping from repository",
+              "Mapping transformation was loaded from XML file [" + realFilename + "]" );
+          }
         } catch ( Exception e ) {
           throw new KettleException( BaseMessages.getString( PKG,
             "MetaInjectMeta.Exception.UnableToLoadTransformationFromFile", realFilename ), e );
@@ -627,6 +665,8 @@ public class MetaInjectMeta extends BaseStepMeta implements StepMetaInterface, S
       // change it in the entry
       //
       fileName = newFilename;
+
+      setSpecificationMethod( ObjectLocationSpecificationMethod.FILENAME );
 
       return proposedNewFilename;
     } catch ( Exception e ) {

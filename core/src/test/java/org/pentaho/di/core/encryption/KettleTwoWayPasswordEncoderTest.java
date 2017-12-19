@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -23,6 +23,8 @@
 package org.pentaho.di.core.encryption;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.BeforeClass;
@@ -32,19 +34,14 @@ import org.pentaho.di.core.exception.KettleValueException;
 
 /**
  * Test cases for encryption, to make sure that encrypted password remain the same between versions.
- * 
+ *
  * @author Matt Casters
  */
 public class KettleTwoWayPasswordEncoderTest {
 
-  @BeforeClass
-  public static void setUpBeforeClass() throws Exception {
-    KettleClientEnvironment.init();
-  }
-
   /**
    * Test password encryption.
-   * 
+   *
    * @throws KettleValueException
    */
   @Test
@@ -81,7 +78,7 @@ public class KettleTwoWayPasswordEncoderTest {
 
   /**
    * Test password decryption.
-   * 
+   *
    * @throws KettleValueException
    */
   @Test
@@ -128,7 +125,7 @@ public class KettleTwoWayPasswordEncoderTest {
 
   /**
    * Test password encryption (variable style).
-   * 
+   *
    * @throws KettleValueException
    */
   @Test
@@ -161,7 +158,7 @@ public class KettleTwoWayPasswordEncoderTest {
 
   /**
    * Test password decryption (variable style).
-   * 
+   *
    * @throws KettleValueException
    */
   @Test
@@ -199,4 +196,39 @@ public class KettleTwoWayPasswordEncoderTest {
     decryption = encoder.decode( encryption );
     assertTrue( "${%%$$$$".equals( decryption ) );
   }
+
+  @Test
+  public void testEncodeDifferentSeed() {
+
+    KettleTwoWayPasswordEncoder encoder = new KettleTwoWayPasswordEncoder( );
+    String encodeWithDefaultSeed = encoder.encode( "Wibble", false );
+    assertNotNull( encodeWithDefaultSeed );
+    String decodeWithDefaultSeed = encoder.decode( encodeWithDefaultSeed );
+    assertNotNull( decodeWithDefaultSeed );
+
+
+    TestKettleTwoWayPasswordEncoder encoder2 = new TestKettleTwoWayPasswordEncoder();
+
+    String encodeWithNondefaultSeed = encoder2.encode( "Wibble", false );
+    assertNotNull( encodeWithNondefaultSeed );
+    String decodeWithNondefaultSeed = encoder2.decode( encodeWithNondefaultSeed );
+    assertNotNull( decodeWithNondefaultSeed );
+
+    assertFalse( encodeWithDefaultSeed.equals( encodeWithNondefaultSeed ) ); // Make sure that if the seed changes, so does the the encoded value
+    assertEquals( decodeWithDefaultSeed, decodeWithNondefaultSeed ); // Make sure that the decode from either is correct.
+
+  }
+
+  private class TestKettleTwoWayPasswordEncoder extends KettleTwoWayPasswordEncoder {
+
+    public TestKettleTwoWayPasswordEncoder() {
+      super();
+    }
+
+    protected String getSeed() {
+      return "123456789012345435987";
+    }
+
+  }
+
 }

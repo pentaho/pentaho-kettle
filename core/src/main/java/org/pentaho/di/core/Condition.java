@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -382,13 +382,13 @@ public class Condition implements Cloneable, XMLInterface {
         // Get fieldnrs left value
         //
         // Check out the fieldnrs if we don't have them...
-        if ( left_valuename != null && left_valuename.length() > 0 && left_fieldnr < -1 ) {
+        if ( left_valuename != null && left_valuename.length() > 0 ) {
           left_fieldnr = rowMeta.indexOfValue( left_valuename );
         }
 
         // Get fieldnrs right value
         //
-        if ( right_valuename != null && right_valuename.length() > 0 && right_fieldnr < -1 ) {
+        if ( right_valuename != null && right_valuename.length() > 0 ) {
           right_fieldnr = rowMeta.indexOfValue( right_valuename );
         }
 
@@ -445,10 +445,19 @@ public class Condition implements Cloneable, XMLInterface {
             retval = ( fieldMeta.compare( field, fieldMeta2, field2 ) != 0 );
             break;
           case FUNC_SMALLER:
-            retval = ( fieldMeta.compare( field, fieldMeta2, field2 ) < 0 );
+            if ( fieldMeta.isNull( field ) ) {
+              // BACKLOG-18831
+              retval = false;
+            } else {
+              retval = ( fieldMeta.compare( field, fieldMeta2, field2 ) < 0 );
+            }
             break;
           case FUNC_SMALLER_EQUAL:
-            retval = ( fieldMeta.compare( field, fieldMeta2, field2 ) <= 0 );
+            if ( fieldMeta.isNull( field ) ) {
+              retval = false;
+            } else {
+              retval = ( fieldMeta.compare( field, fieldMeta2, field2 ) <= 0 );
+            }
             break;
           case FUNC_LARGER:
             retval = ( fieldMeta.compare( field, fieldMeta2, field2 ) > 0 );

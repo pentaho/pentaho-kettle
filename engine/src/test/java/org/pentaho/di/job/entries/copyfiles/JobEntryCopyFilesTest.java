@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -21,7 +21,9 @@
  ******************************************************************************/
 package org.pentaho.di.job.entries.copyfiles;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -30,15 +32,27 @@ import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.logging.KettleLogStore;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.job.Job;
+import org.pentaho.di.job.JobMeta;
+import org.pentaho.di.trans.steps.named.cluster.NamedClusterEmbedManager;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.util.ArrayList;
 
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.anyObject;
+import static org.mockito.Mockito.anyString;
+import static org.mockito.Mockito.atLeast;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 public class JobEntryCopyFilesTest {
   private JobEntryCopyFiles entry;
+  private NamedClusterEmbedManager mockNamedClusterEmbedManager;
 
   private final String EMPTY = "";
 
@@ -52,6 +66,10 @@ public class JobEntryCopyFilesTest {
     entry = new JobEntryCopyFiles();
     Job parentJob = new Job();
     entry.setParentJob( parentJob );
+    JobMeta mockJobMeta = mock( JobMeta.class );
+    mockNamedClusterEmbedManager = mock( NamedClusterEmbedManager.class );
+    when( mockJobMeta.getNamedClusterEmbedManager() ).thenReturn( mockNamedClusterEmbedManager );
+    entry.setParentJobMeta( mockJobMeta );
     entry = spy( entry );
   }
 
@@ -83,6 +101,7 @@ public class JobEntryCopyFilesTest {
     verify( entry, atLeast( 1 ) ).preprocessfilefilder( any( String[].class ) );
     assertFalse( result.getResult() );
     assertEquals( 1, result.getNrErrors() );
+    verify( mockNamedClusterEmbedManager ).passEmbeddedMetastoreKey( anyObject(), anyString() );
   }
 
   @Test
@@ -128,6 +147,6 @@ public class JobEntryCopyFilesTest {
       null );
     assertTrue( loadedentry.destination_filefolder[0].equals( destPath[0] ) );
     assertTrue( loadedentry.source_filefolder[0].equals( srcPath[0] ) );
-
+    verify( mockNamedClusterEmbedManager, times( 2 ) ).registerUrl( anyString() );
   }
 }

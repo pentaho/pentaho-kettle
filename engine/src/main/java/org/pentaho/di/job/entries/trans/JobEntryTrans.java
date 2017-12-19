@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -24,21 +24,17 @@ package org.pentaho.di.job.entries.trans;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Predicate;
 
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.exception.KettlePluginException;
 import org.pentaho.di.core.extension.ExtensionPointHandler;
 import org.pentaho.di.core.extension.KettleExtensionPoint;
-import org.pentaho.di.core.plugins.EnginePluginType;
-import org.pentaho.di.core.plugins.PluginInterface;
-import org.pentaho.di.core.plugins.PluginRegistry;
+import org.pentaho.di.core.listeners.CurrentDirectoryChangedListener;
+import org.pentaho.di.core.listeners.impl.EntryCurrentDirectoryChangedListener;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.ObjectLocationSpecificationMethod;
 import org.pentaho.di.core.Result;
@@ -58,7 +54,6 @@ import org.pentaho.di.core.util.FileUtil;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
-import org.pentaho.di.engine.api.Engine;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.DelegationListener;
 import org.pentaho.di.job.Job;
@@ -67,6 +62,7 @@ import org.pentaho.di.job.entry.JobEntryBase;
 import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.job.entry.validator.AndValidator;
 import org.pentaho.di.job.entry.validator.JobEntryValidatorUtils;
+import org.pentaho.di.repository.HasRepositoryDirectories;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectory;
@@ -83,7 +79,7 @@ import org.pentaho.di.resource.ResourceReference;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransExecutionConfiguration;
 import org.pentaho.di.trans.TransMeta;
-import org.pentaho.di.trans.ael.adapters.TransEngineAdapter;
+import org.pentaho.di.trans.TransSupplier;
 import org.pentaho.di.trans.cluster.TransSplitter;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.www.SlaveServerTransStatus;
@@ -96,7 +92,7 @@ import org.w3c.dom.Node;
  * @author Matt Casters
  * @since 1-Oct-2003, rewritten on 18-June-2004
  */
-public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryInterface {
+public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryInterface, HasRepositoryDirectories {
   private static Class<?> PKG = JobEntryTrans.class; // for i18n purposes, needed by Translator2!!
 
   private String transname;
@@ -156,6 +152,11 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
   private String runConfiguration;
 
   private Trans trans;
+
+  private CurrentDirectoryChangedListener currentDirListener = new EntryCurrentDirectoryChangedListener(
+      this::getSpecificationMethod,
+      this::getDirectory,
+      this::setDirectory );
 
   public JobEntryTrans( String name ) {
     super( name, "" );
@@ -233,6 +234,16 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
     this.directory = directory;
   }
 
+  @Override
+  public String[] getDirectories() {
+    return new String[]{ directory };
+  }
+
+  @Override
+  public void setDirectories( String[] directories ) {
+    this.directory = directories[0];
+  }
+
   public String getLogFilename() {
     String retval = "";
     if ( setLogfile ) {
@@ -282,9 +293,12 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
         // Ignore object reference problems. It simply means that the reference is no longer valid.
       }
     }
+
     retval.append( "      " ).append( XMLHandler.addTagValue( "filename", filename ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "transname", transname ) );
-
+    if ( parentJobMeta != null ) {
+      parentJobMeta.getNamedClusterEmbedManager().registerUrl( filename );
+    }
     if ( directory != null ) {
       retval.append( "      " ).append( XMLHandler.addTagValue( "directory", directory ) );
     } else if ( directoryPath != null ) {
@@ -611,6 +625,12 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
 
     LogLevel transLogLevel = parentJob.getLogLevel();
 
+    //Set Embedded NamedCluter MetatStore Provider Key so that it can be passed to VFS
+    if ( parentJobMeta.getNamedClusterEmbedManager() != null ) {
+      parentJobMeta.getNamedClusterEmbedManager()
+        .passEmbeddedMetastoreKey( this, parentJobMeta.getEmbeddedMetastoreProviderKey() );
+    }
+
     String realLogFilename = "";
     if ( setLogfile ) {
       transLogLevel = logFileLevel;
@@ -634,7 +654,7 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
       try {
         logChannelFileWriter =
           new LogChannelFileWriter(
-            this.getLogChannelId(), KettleVFS.getFileObject( realLogFilename ), setAppendLogfile );
+            this.getLogChannelId(), KettleVFS.getFileObject( realLogFilename, this ), setAppendLogfile );
         logChannelFileWriter.startLogging();
       } catch ( KettleException e ) {
         logError( BaseMessages.getString( PKG, "JobTrans.Error.UnableOpenAppender", realLogFilename, e.toString() ) );
@@ -890,8 +910,12 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
           executionConfiguration.setRunConfiguration( runConfiguration );
           try {
             ExtensionPointHandler.callExtensionPoint( log, KettleExtensionPoint.SpoonTransBeforeStart.id, new Object[] {
-              executionConfiguration, parentJob.getJobMeta(), transMeta
+              executionConfiguration, parentJob.getJobMeta(), transMeta, rep
             } );
+            if ( !executionConfiguration.isExecutingLocally() && !executionConfiguration.isExecutingRemotely() && !executionConfiguration.isExecutingClustered() ) {
+              result.setResult( true );
+              return result;
+            }
             clustering = executionConfiguration.isExecutingClustered();
             remoteSlaveServer = executionConfiguration.getRemoteServer();
             doFallback = false;
@@ -1094,7 +1118,8 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
           // Create the transformation from meta-data
           //
           //trans = new Trans( transMeta, this );
-          trans = createTrans( transMeta );
+          final TransMeta meta = transMeta;
+          trans = new TransSupplier( transMeta, log, () -> new Trans( meta ) ).get();
           trans.setParent( this );
 
           // Pass the socket repository as early as possible...
@@ -1584,6 +1609,11 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
     return specificationMethod;
   }
 
+  @Override
+  public ObjectLocationSpecificationMethod[] getSpecificationMethods() {
+    return new ObjectLocationSpecificationMethod[] { specificationMethod };
+  }
+
   /**
    * @param specificationMethod the specificationMethod to set
    */
@@ -1643,47 +1673,15 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
     return getTransMeta( rep, metaStore, space );
   }
 
-  /**
-   * Creates the appropriate trans.  Either
-   * 1)  A {@link TransEngineAdapter} wrapping an {@link Engine}
-   * if an alternate execution engine has been selected
-   * 2)  A legacy {@link Trans} otherwise.
-   */
-  private Trans createTrans( TransMeta transMeta ) throws KettleException {
-    if ( Utils.isEmpty( transMeta.getVariable( "engine" ) ) ) {
-      log.logBasic( "Using legacy execution engine" );
-      return new Trans( transMeta );
-    }
-
-    return PluginRegistry.getInstance().getPlugins( EnginePluginType.class ).stream()
-      .filter( useThisEngine( transMeta ) )
-      .findFirst()
-      .map( plugin -> (Engine) loadPlugin( plugin ) )
-      .map( engine -> {
-        log.logBasic( "Using execution engine " + engine.getClass().getCanonicalName() );
-        return (Trans) new TransEngineAdapter( engine, transMeta );
-      } )
-      .orElseThrow( () -> new KettleException( "Unable to find engine [" + transMeta.getVariable( "engine" ) + "]" ) );
-  }
-
-  /**
-   * Uses a trans variable called "engine" to determine which engine to use.
-   * Will be replaced when UI engine selection is available.
-   *
-   * @return
-   */
-  private Predicate<PluginInterface> useThisEngine( TransMeta transMeta ) {
-    return plugin -> Arrays.stream( plugin.getIds() )
-      .filter( id -> id.equals( ( transMeta.getVariable( "engine" ) ) ) )
-      .findAny()
-      .isPresent();
-  }
-
-  private Object loadPlugin( PluginInterface plugin ) {
-    try {
-      return PluginRegistry.getInstance().loadClass( plugin );
-    } catch ( KettlePluginException e ) {
-      throw new RuntimeException( e );
+  @Override
+  public void setParentJobMeta( JobMeta parentJobMeta ) {
+    JobMeta previous = getParentJobMeta();
+    super.setParentJobMeta( parentJobMeta );
+    if ( parentJobMeta !=  null ) {
+      parentJobMeta.addCurrentDirectoryChangedListener( currentDirListener );
+      variables.setParentVariableSpace( parentJobMeta );
+    } else if ( previous != null ) {
+      previous.removeCurrentDirectoryChangedListener( currentDirListener );
     }
   }
 

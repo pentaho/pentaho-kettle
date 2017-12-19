@@ -1,53 +1,44 @@
 <error ng-show="vm.showError"
        error-type="vm.errorType"
        error-file="vm.file"
-       error-folder="vm.file"
+       error-folder="vm.file === null ? vm.folder : vm.file"
        on-error-confirm="vm.confirmError()"
-       on-error-cancel="vm.cancelError()"></error>
-<div class="dialogWrapper" ng-class="vm.wrapperClass">
+       on-error-cancel="vm.cancelError()"
+       key></error>
+<loading ng-show="vm.loading"></loading>
+<div class="dialogWrapper noselect" ng-class="[vm.state.current.name, {hasError : vm.showError}]" ng-hide="vm.loading">
   <div class="header">
     <div class="headerTop">
       <div class="headerTitle headerText">
         {{::vm.headerTitle}}
       </div>
-      <div id="headerSearchId" class="headerSearch" ng-class="{'focused': vm.isInSearch === true || searchBoxHasFocus === true }">
-        <div class="headerSearchLeft" ng-click="vm.focusSearchBox()" ng-class="{'blueState': vm.searchString !== '' || vm.isInSearch === true || searchBoxHasFocus === true }" ></div>
-          <input id="searchBoxId" type="text" class="searchBox"
-                 placeholder="{{::vm.searchPlaceholder}} {{vm.selectedFolder}}"
-                 ng-blur="vm.storeRecentSearch();searchBoxHasFocus=false"
-                 ng-focus="vm.displayRecentSearches();searchBoxHasFocus=true"
-                 ng-change="vm.doSearch()"
-                 ng-model="vm.searchString"/>
-          <div class="searchBoxExtra" ng-show="vm.isInSearch"
-               ng-style="{top: vm.getOffsetTop() + 37 + 'px', left: vm.getOffsetLeft() + 2 + 'px'}">
-              <div class="searchBoxExtraItem"
-                   ng-mousedown="vm.searchString = search;vm.doSearch()"
-                   ng-repeat="search in vm.recentSearches"
-                   ng-mouseover="vm.setTooltip(this.$index, search)"
-                   id="search-item-index-{{this.$index}}">{{search}}</div>
-          </div>
-        <div ng-class="vm.searchString !== '' ? 'headerSearchRight' : 'headerSearchRightInvisible'" ng-click="vm.resetSearch()"></div>
-      </div>
+      <search
+          placeholder="vm.getPlaceholder()"
+          on-search="vm.doSearch(searchValue)"
+          on-blur="vm.storeRecentSearch()"
+          autofill="vm.recentSearches"
+          search-value="vm.searchString"></search>
     </div>
 
     <div class="headerBottom">
       <div ng-show="vm.searchString" class="breadcrumbSection">
-        Search results in "{{vm.folder.name}}"
+        Search results in "{{vm.getSelectedFolderName()}}"
       </div>
       <div ng-hide="vm.searchString" class="breadcrumbSection">
         <breadcrumb path="vm.folder.path"
-                    include-root="vm.includeRoot"
-                    on-select="vm.selectFolderByPath(selectedPath)"></breadcrumb>
+            include-root="vm.includeRoot"
+            on-select="vm.selectFolderByPath(selectedPath)">
+        </breadcrumb>
       </div>
-      <div class="addDelete">
-        <div class="addFolder" ng-click="vm.addFolder()" title="{{::vm.addFolderText}}"></div>
-        <div class="deleteFolder" ng-click="vm.remove()" title="{{::vm.removeText}}"></div>
+      <div class="addDelete" ng-if="vm.state.is('save') || vm.state.is('selectFolder')">
+        <button class="addFolder" ng-click="vm.addFolder()" title="{{::vm.addFolderText}}" ng-disabled="vm.addDeleteDisabled()"></button>
+        <button class="deleteFolder" ng-click="vm.remove()" title="{{::vm.removeText}}" ng-disabled="vm.addDeleteDisabled()"></button>
       </div>
     </div>
   </div>
 
-  <div class="middle">
-    <div class="directoryTreeArea">
+  <div id="middle" class="middle">
+    <div id="directoryTreeArea" class="directoryTreeArea noselect" ng-model="vm.folder.path"  did-delete="vm.didDeleteFolder">
       <folder auto-expand="vm.autoExpand"
               folders="vm.folders"
               on-select="vm.selectFolder(selectedFolder);"
@@ -56,38 +47,66 @@
               ng-class="{dark: vm.file !== null}"></folder>
     </div>
 
-    <div class="fileArea" ng-class="{recentsView: vm.showRecents, scrolling: vm.recentsHasScrollBar}">
-      <div class="fileAreaMessageView" ng-show="vm.showRecents && vm.recentFiles.length === 0">{{::vm.noRecentsMsg}}</div>
-      <card ng-show="vm.showRecents && vm.recentFiles.length > 0"
+    <div class="fileArea"
+         ng-class="{recentsView: vm.showRecents && !vm.showMessage,
+                    scrolling: vm.recentsHasScrollBar,
+                    hasMessage: vm.showRecents && vm.recentFiles.length === 0 || vm.showMessage}">
+      <div class="fileAreaMessageView" ng-show="vm.showRecents && vm.recentFiles.length === 0 || vm.showMessage">
+        {{vm.fileAreaMessage}}
+      </div>
+      <card ng-if="vm.isShowRecents()"
             recent-files="vm.recentFiles"
             folder="vm.folder"
             on-click="vm.selectFile(file)"
             on-select="vm.highlightFile(selectedFile)"
-            selected-file="vm.file"></card>
+            selected-file="vm.file"
+            resize-cards="vm.showRecents"></card>
       <files search="vm.searchString"
-             ng-show="!vm.showRecents"
+             ng-show="!vm.showMessage && !vm.showRecents"
              folder="vm.folder"
+             selected-file="vm.file"
              on-click="vm.selectFile(file)"
              on-select="vm.highlightFile(selectedFile)"
-             on-file-duplicate="vm.duplicateError('file')"
-             on-folder-duplicate="vm.duplicateError('folder')"
-             on-error="vm.renameError()"
-             on-rename="vm.updateDirectories(oldPath, newPath, newName)"></files>
+             on-error="vm.renameError(errorType, file)"
+             on-rename="vm.updateDirectories(oldPath, newPath, newName, id)"
+             on-edit-start="vm.onEditStart()"
+             on-edit-complete="vm.onEditComplete()"></files>
     </div>
   </div>
 
   <div class="bottom">
-    <div class="fileNameEntry" ng-show="vm.wrapperClass === 'save'">
+    <div class="fileNameEntry" ng-show="vm.state.is('save')">
       <div class="fileNameEntryLabel">
-        <label for="fileNameEntryTextBox">{{::vm.saveFileNameLabel}}</label>
+        <label for="fileNameEntryTextBox">
+          {{::vm.saveFileNameLabel}}
+        </label>
       </div>
-      <input id="fileNameEntryTextBox" type="text" class="fileNameEntryTextBox"
-      ng-model="vm.fileToSave"/>
+      <input id="fileNameEntryTextBox"
+             type="text"
+             class="fileNameEntryTextBox"
+             ng-model="vm.fileToSave" focus/>
     </div>
     <div class="buttons">
-      <button class="secondary" ng-click="vm.cancel()">{{::vm.cancelButton}}</button>
-      <button class="primary" ng-show="vm.wrapperClass === 'open'" ng-click="vm.openClicked()" ng-disabled="!vm.file">{{::vm.openButton}}</button>
-      <button class="primary" ng-show="vm.wrapperClass === 'save'" ng-click="vm.saveClicked()" ng-disabled="vm.fileToSave === '' || vm.folder.path == 'Recents'">{{::vm.saveButton}}</button>
+      <button class="secondary" ng-click="vm.cancel()">
+        <span>
+          {{::vm.cancelButton}}
+        </span>
+      </button>
+      <button class="primary" ng-if="vm.state.is('selectFolder')" ng-click="vm.okClicked()" ng-disabled="!vm.file">
+        <span>
+          {{::vm.okButton}}
+        </span>
+      </button>
+      <button class="primary" ng-if="vm.state.is('open')" ng-click="vm.openClicked()" ng-disabled="!vm.file">
+        <span>
+          {{::vm.openButton}}
+        </span>
+      </button>
+      <button class="primary" ng-if="vm.state.is('save')" ng-click="vm.saveClicked()" ng-disabled="vm.isSaveEnabled()">
+        <span>
+          {{::vm.saveButton}}
+        </span>
+      </button>
     </div>
   </div>
 </div>

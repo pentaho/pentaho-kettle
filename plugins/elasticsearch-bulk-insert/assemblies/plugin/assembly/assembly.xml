@@ -34,7 +34,6 @@
         <include>com.google.guava:guava:jar</include>
         <include>org.hdrhistogram:HdrHistogram:jar</include>
         <include>com.carrotsearch:hppc:jar</include>
-        <include>com.fasterxml.jackson.core:jackson-core:jar</include>
         <include>com.fasterxml.jackson.dataformat:jackson-dataformat-cbor:jar</include>
         <include>com.fasterxml.jackson.dataformat:jackson-dataformat-smile:jar</include>
         <include>com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:jar</include>

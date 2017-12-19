@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,17 +22,17 @@
 
 package org.pentaho.di.core.reflection;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
-import java.util.List;
-import java.util.Map;
-
 import org.pentaho.di.core.Condition;
 import org.pentaho.di.core.database.DatabaseInterface;
 import org.pentaho.di.core.plugins.JobEntryPluginType;
 import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.plugins.StepPluginType;
+
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
+import java.util.List;
+import java.util.Map;
 
 public class StringSearcher {
   private static final String LOCAL_PACKAGE = "org.pentaho.di";
@@ -42,11 +42,17 @@ public class StringSearcher {
   private static List<String> stepPluginPackages;
   private static List<String> jobEntryPluginPackages;
 
+  static {
+    PluginRegistry registry = PluginRegistry.getInstance();
+    stepPluginPackages = registry.getPluginPackages( StepPluginType.class );
+    jobEntryPluginPackages = registry.getPluginPackages( JobEntryPluginType.class );
+  }
+
   public static final void findMetaData( Object object, int level, List<StringSearchResult> stringList,
     Object parentObject, Object grandParentObject ) {
     // System.out.println(Const.rightPad(" ", level)+"Finding strings in "+object.toString());
 
-    if ( level > 5 ) {
+    if ( ( object == null ) || level > 5 ) {
       return;
     }
 
@@ -78,21 +84,22 @@ public class StringSearcher {
       // a package of one of the plugins.
       //
       boolean sanctionedPackage = false;
-      if ( field.toString().indexOf( LOCAL_PACKAGE ) >= 0 ) {
+      String fieldToString = field.toString();
+      if ( fieldToString.indexOf( LOCAL_PACKAGE ) >= 0 ) {
         sanctionedPackage = true;
       }
       for ( int x = 0; x < JAVA_PACKAGES.length && !sanctionedPackage; x++ ) {
-        if ( field.toString().indexOf( JAVA_PACKAGES[x] ) >= 0 ) {
+        if ( fieldToString.indexOf( JAVA_PACKAGES[x] ) >= 0 ) {
           sanctionedPackage = true;
         }
       }
       for ( int x = 0; x < stepPluginPackages.size() && !sanctionedPackage; x++ ) {
-        if ( field.toString().indexOf( stepPluginPackages.get( x ) ) >= 0 ) {
+        if ( fieldToString.indexOf( stepPluginPackages.get( x ) ) >= 0 ) {
           sanctionedPackage = true;
         }
       }
       for ( int x = 0; x < jobEntryPluginPackages.size() && !sanctionedPackage; x++ ) {
-        if ( field.toString().indexOf( jobEntryPluginPackages.get( x ) ) >= 0 ) {
+        if ( fieldToString.indexOf( jobEntryPluginPackages.get( x ) ) >= 0 ) {
           sanctionedPackage = true;
         }
       }
@@ -136,25 +143,24 @@ public class StringSearcher {
 
   private static void stringSearchInObject( Object obj, int level, List<StringSearchResult> stringList,
     Object parentObject, Object grandParentObject, Field field ) {
+    String fieldName = field.getName();
     if ( obj instanceof String ) {
       // OK, let's add the String
-      stringList.add( new StringSearchResult( (String) obj, parentObject, grandParentObject, field.getName() ) );
+      stringList.add( new StringSearchResult( (String) obj, parentObject, grandParentObject, fieldName ) );
     } else if ( obj instanceof String[] ) {
       String[] array = (String[]) obj;
       for ( int x = 0; x < array.length; x++ ) {
         if ( array[x] != null ) {
-          stringList.add( new StringSearchResult( array[x], parentObject, grandParentObject, field.getName()
+          stringList.add( new StringSearchResult( array[x], parentObject, grandParentObject, fieldName
             + " #" + ( x + 1 ) ) );
         }
       }
     } else if ( obj instanceof Boolean ) {
       // OK, let's add the String
-      stringList.add( new StringSearchResult( ( (Boolean) obj ).toString(), parentObject, grandParentObject, field
-        .getName()
+      stringList.add( new StringSearchResult( ( (Boolean) obj ).toString(), parentObject, grandParentObject, fieldName
         + " (Boolean)" ) );
     } else if ( obj instanceof Condition ) {
-      stringList.add( new StringSearchResult(
-        ( (Condition) obj ).toString(), parentObject, grandParentObject, field.getName() + " (Condition)" ) );
+      stringList.add( new StringSearchResult( ( (Condition) obj).toString(), parentObject, grandParentObject, fieldName + " (Condition)" ) );
     } else if ( obj instanceof DatabaseInterface ) {
       // Make sure we read the attributes. This is not picked up by default. (getDeclaredFields doesn't pick up
       // inherited fields)
@@ -177,14 +183,15 @@ public class StringSearcher {
   private static void findMapMetaData( Map<?, ?> map, int level, List<StringSearchResult> stringList,
     Object parentObject, Object grandParentObject, Field field ) {
 
+    String fieldName = field.getName();
     for ( Object key : map.keySet() ) {
       Object value = map.get( key );
       if ( key != null ) {
-        stringList.add( new StringSearchResult( key.toString(), parentObject, grandParentObject, field.getName()
+        stringList.add( new StringSearchResult( key.toString(), parentObject, grandParentObject, fieldName
           + " (Map key)" ) );
       }
       if ( value != null ) {
-        stringList.add( new StringSearchResult( value.toString(), parentObject, grandParentObject, field.getName()
+        stringList.add( new StringSearchResult( value.toString(), parentObject, grandParentObject, fieldName
           + " (Map value)" ) );
       }
     }

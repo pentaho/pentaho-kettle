@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -100,7 +100,7 @@ public class LogTablePluginType extends BasePluginType implements PluginTypeInte
 
   @Override
   protected String extractDesc( Annotation annotation ) {
-    return null;
+    return ( (LogTablePlugin) annotation ).description();
   }
 
   @Override
@@ -114,7 +114,7 @@ public class LogTablePluginType extends BasePluginType implements PluginTypeInte
 
   @Override
   protected String extractName( Annotation annotation ) {
-    return null;
+    return ( (LogTablePlugin) annotation ).name();
   }
 
   @Override

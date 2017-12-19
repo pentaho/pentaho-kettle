@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -53,7 +53,7 @@ public class LoadFileInputData extends BaseStepData implements StepDataInterface
 
   public Object[] readrow;
 
-  public String filecontent;
+  public byte[] filecontent;
 
   public long fileSize;
 

@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -31,6 +31,7 @@ import java.util.List;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.injection.AfterInjection;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.ProvidesModelerMeta;
 import org.pentaho.di.core.SQLStatement;
@@ -2009,6 +2010,28 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
     public int string2intPrimitive( String v ) throws KettleValueException {
       return DimensionLookupMeta.getUpdateType( false, v );
     }
+  }
+
+  /**
+   * If we use injection we can have different arrays lengths.
+   * We need synchronize them for consistency behavior with UI
+   */
+  @AfterInjection
+  public void afterInjectionSynchronization() {
+    int nrStream = ( keyStream == null ) ? -1 : keyStream.length;
+    if ( nrStream > 0 ) {
+      String[][] rtn = Utils.normalizeArrays( nrStream, keyLookup );
+      keyLookup = rtn[ 0 ];
+    }
+    int nrFields = ( fieldStream == null ) ? -1 : fieldStream.length;
+    if ( nrFields <= 0 ) {
+      return;
+    }
+    String[][] rtnFieldLookup = Utils.normalizeArrays( nrFields, fieldLookup );
+    fieldLookup = rtnFieldLookup[ 0 ];
+
+    int[][] rtnFieldUpdate = Utils.normalizeArrays( nrFields, fieldUpdate );
+    fieldUpdate = rtnFieldUpdate[ 0 ];
   }
 
 }

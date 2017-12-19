@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -94,7 +94,7 @@ public class StepMeta extends SharedObjectBase implements Cloneable, Comparable<
 
   private String stepid; // --> StepPlugin.id
 
-  private String stepname;
+  private String name;
 
   private StepMetaInterface stepMetaInterface;
 
@@ -171,7 +171,7 @@ public class StepMeta extends SharedObjectBase implements Cloneable, Comparable<
     if ( stepMetaInterface != null ) {
       this.stepid = PluginRegistry.getInstance().getPluginId( StepPluginType.class, stepMetaInterface );
     }
-    this.stepname = stepname;
+    this.name = stepname;
     setStepMetaInterface( stepMetaInterface );
 
     selected = false;
@@ -291,14 +291,14 @@ public class StepMeta extends SharedObjectBase implements Cloneable, Comparable<
     PluginRegistry registry = PluginRegistry.getInstance();
 
     try {
-      stepname = XMLHandler.getTagValue( stepnode, "name" );
+      name = XMLHandler.getTagValue( stepnode, "name" );
       stepid = XMLHandler.getTagValue( stepnode, "type" );
 
       // Create a new StepMetaInterface object...
       PluginInterface sp = registry.findPluginWithId( StepPluginType.class, stepid );
 
       if ( sp == null ) {
-        setStepMetaInterface( new MissingTrans( stepname, stepid ) );
+        setStepMetaInterface( new MissingTrans( name, stepid ) );
       } else {
         setStepMetaInterface( (StepMetaInterface) registry.loadClass( sp ) );
       }
@@ -541,7 +541,7 @@ public class StepMeta extends SharedObjectBase implements Cloneable, Comparable<
 
   @Override
   public int hashCode() {
-    return stepname.toLowerCase().hashCode();
+    return name.toLowerCase().hashCode();
   }
 
   @Override
@@ -586,7 +586,7 @@ public class StepMeta extends SharedObjectBase implements Cloneable, Comparable<
 
   public void replaceMeta( StepMeta stepMeta ) {
     this.stepid = stepMeta.stepid; // --> StepPlugin.id
-    this.stepname = stepMeta.stepname;
+    this.name = stepMeta.name;
     if ( stepMeta.stepMetaInterface != null ) {
       setStepMetaInterface( (StepMetaInterface) stepMeta.stepMetaInterface.clone() );
     } else {
@@ -673,11 +673,11 @@ public class StepMeta extends SharedObjectBase implements Cloneable, Comparable<
 
   @Override
   public String getName() {
-    return stepname;
+    return name;
   }
 
   public void setName( String sname ) {
-    stepname = sname;
+    name = sname;
   }
 
   @Override

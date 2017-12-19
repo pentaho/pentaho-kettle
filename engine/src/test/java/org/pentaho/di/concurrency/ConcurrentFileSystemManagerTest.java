@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -24,8 +24,11 @@ package org.pentaho.di.concurrency;
 
 import org.apache.commons.vfs2.impl.DefaultFileSystemManager;
 import org.apache.commons.vfs2.provider.AbstractFileProvider;
+import org.apache.commons.vfs2.provider.FileProvider;
 import org.junit.After;
 import org.junit.Test;
+import org.pentaho.di.core.osgi.api.VfsEmbeddedFileSystemCloser;
+import org.pentaho.di.core.vfs.ConcurrentFileSystemManager;
 import org.pentaho.di.core.vfs.KettleVFS;
 
 import java.util.ArrayList;
@@ -34,6 +37,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 public class ConcurrentFileSystemManagerTest {
 
@@ -64,6 +69,27 @@ public class ConcurrentFileSystemManagerTest {
     }
 
     ConcurrencyTestRunner.runAndCheckNoExceptionRaised( putters, getters, condition );
+  }
+
+  @Test
+  public void testNcCloseEmbeddedFileSystem() throws Exception {
+    ConcurrentFileSystemManager concurrentFileSystemManager = new ConcurrentFileSystemManager();
+    MockNamedClusterProvider mockFileProvider = mock( MockNamedClusterProvider.class );
+    concurrentFileSystemManager.addProvider( new String[] { "hc" }, mockFileProvider );
+    concurrentFileSystemManager.closeEmbeddedFileSystem( "key" );
+    verify( mockFileProvider ).closeFileSystem( "key" );
+  }
+
+  @Test
+  public void testNonNcCloseEmbeddedFileSystem() throws Exception {
+    ConcurrentFileSystemManager concurrentFileSystemManager = new ConcurrentFileSystemManager();
+    MockNamedClusterProvider mockFileProvider = mock( MockNamedClusterProvider.class );
+    concurrentFileSystemManager.addProvider( new String[] { "notnc" }, mockFileProvider );
+    concurrentFileSystemManager.closeEmbeddedFileSystem( "key" );
+    verify( mockFileProvider, times( 0 ) ).closeFileSystem( "key" );
+  }
+
+  private interface MockNamedClusterProvider extends FileProvider, VfsEmbeddedFileSystemCloser {
   }
 
   private class Getter extends StopOnErrorCallable<Object> {

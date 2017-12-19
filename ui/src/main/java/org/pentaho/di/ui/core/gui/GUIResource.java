@@ -3,7 +3,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,12 +22,6 @@
  ******************************************************************************/
 
 package org.pentaho.di.ui.core.gui;
-
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Hashtable;
-import java.util.List;
-import java.util.Map;
 
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.MessageDialogWithToggle;
@@ -62,6 +56,12 @@ import org.pentaho.di.ui.core.ConstUI;
 import org.pentaho.di.ui.core.PropsUI;
 import org.pentaho.di.ui.util.ImageUtil;
 import org.pentaho.di.ui.util.SwtSvgImageUtil;
+
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Hashtable;
+import java.util.List;
+import java.util.Map;
 
 /*
  * colors etc. are allocated once and released once at the end of the program.
@@ -223,6 +223,8 @@ public class GUIResource {
 
   private Image imageSpoon;
 
+  private Image imageSpoonLow;
+
   private Image imageJob;
 
   private Image imagePentaho;
@@ -298,6 +300,10 @@ public class GUIResource {
   private Image imageViewPanel;
 
   private SwtUniversalImage imageExpandAll;
+
+  private SwtUniversalImage imageClearText;
+
+  private SwtUniversalImage imageClearTextDisabled;
 
   private Image imageSearchSmall;
 
@@ -582,6 +588,7 @@ public class GUIResource {
       imageDummy.dispose();
       imageMissing.dispose();
       imageSpoon.dispose();
+      imageSpoonLow.dispose();
       imageJob.dispose();
       imagePentaho.dispose();
       imagePentahoSwirl.dispose();
@@ -604,6 +611,8 @@ public class GUIResource {
       imageInfoHop.dispose();
       imageWarning.dispose();
       imageVersionBrowser.dispose();
+      imageClearText.dispose();
+      imageClearTextDisabled.dispose();
       imageExpandAll.dispose();
       imageSearchSmall.dispose();
       imageRegExSmall.dispose();
@@ -905,6 +914,9 @@ public class GUIResource {
     // "ui/images/spoon.ico"
     imageSpoon = loadAsResource( display, BasePropertyHandler.getProperty( "spoon_image" ), 0 );
 
+    // "ui/images/spoon_lowres.ico"
+    imageSpoonLow = loadAsResource( display, BasePropertyHandler.getProperty( "spoon_image_low" ), 48 );
+
     // "ui/images/spoon_highres.png"
     imageSpoonHigh = ImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "spoon_image_high" ) );
 
@@ -997,6 +1009,14 @@ public class GUIResource {
 
     // "ui/images/View.png;
     imageViewPanel = loadAsResource( display, BasePropertyHandler.getProperty( "ViewPanel_image" ), 0 );
+
+    // "ui/images/ClearText.png;
+    imageClearText =
+      SwtSvgImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "ClearText_image" ) );
+
+    // "ui/images/ClearTextDisabled.png;
+    imageClearTextDisabled =
+      SwtSvgImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "ClearTextDisabled_image" ) );
 
     // "ui/images/ExpandAll.png;
     imageExpandAll =
@@ -1643,6 +1663,13 @@ public class GUIResource {
   }
 
   /**
+   * @return Returns the imageSpoonLow.
+   */
+  public Image getImageSpoonLow() {
+    return imageSpoonLow;
+  }
+
+  /**
    * @return Returns the image Pentaho.
    */
   public Image getImagePentaho() {
@@ -2173,6 +2200,14 @@ public class GUIResource {
 
   public Image getImageViewPanel() {
     return imageViewPanel;
+  }
+
+  public Image getImageClearText() {
+    return imageClearText.getAsBitmapForSize( display, ConstUI.SMALL_ICON_SIZE, ConstUI.SMALL_ICON_SIZE );
+  }
+
+  public Image getImageClearTextDisabled() {
+    return imageClearTextDisabled.getAsBitmapForSize( display, ConstUI.SMALL_ICON_SIZE, ConstUI.SMALL_ICON_SIZE );
   }
 
   public Image getImageExpandAll() {

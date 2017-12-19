@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -284,7 +284,7 @@ public class TransTestFactory {
 
     // Sets output fields for cases when no rows are sent to the test step, but metadata is still needed
     if ( outputRowMeta != null && outputRowMeta.size() > 0 ) {
-      String[] fieldName = new String[outputRowMeta.size()];;
+      String[] fieldName = new String[outputRowMeta.size()];
       int[] fieldLength = new int[outputRowMeta.size()];
       int[] fieldPrecision = new int[outputRowMeta.size()];
       int[] fieldType = new int[outputRowMeta.size()];

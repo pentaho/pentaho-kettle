@@ -10,10 +10,18 @@
     <div class="margin_bottom_80" ng-if="!fromEdit">{{ 'repositories.failure.statuscreate.label' | translate }}</div>
     <div class="margin_bottom_30">{{ 'repositories.question.label' | translate }}</div>
     <div class="margin_bottom_30">
-      <button class="same_width standard" type="button" ng-click="changeSettings()">{{ 'repositories.failure.changesettings.label' | translate }}</button>
+      <button class="same_width standard" type="button" ng-click="changeSettings()">
+        <span>
+          {{ 'repositories.failure.changesettings.label' | translate }}
+        </span>
+      </button>
     </div>
     <div>
-      <button class="same_width secondary" type="button" ng-click="createNewConnection()">{{ 'repositories.manageconnections.label' | translate }}</button>
+      <button class="same_width secondary" type="button" ng-click="createNewConnection()">
+        <span>
+          {{ 'repositories.manageconnections.label' | translate }}
+        </span>
+      </button>
     </div>
   </div>
   <div class="bottom">
@@ -22,7 +30,11 @@
     </div>
     <div>
       <img class="left helpImg" alt="" src="images/help.svg" /><a id="btnHelp" class="left" ng-click="help()">{{ 'repositories.help.label' | translate }}</a>
-      <button class="right secondary" type="button" ng-click="close()">{{ 'repositories.finish.label' | translate }}</button>
+      <button class="right secondary" type="button" ng-click="close()">
+        <span>
+          {{ 'repositories.finish.label' | translate }}
+        </span>
+      </button>
     </div>
   </div>
 </div>

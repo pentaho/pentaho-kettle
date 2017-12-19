@@ -16,7 +16,7 @@
  *
  *   Portions Copyright 2008 Stratebi Business Solutions, S.L.
  *   Portions Copyright 2011 De Bortoli Wines Pty Limited (Australia)
- *   Portions Copyright 2011 - 2013 Pentaho Corporation
+ *   Portions Copyright 2011 - 2017 Hitachi Vantara
  */
 
 package org.pentaho.di.ui.trans.steps.palo.celloutput;

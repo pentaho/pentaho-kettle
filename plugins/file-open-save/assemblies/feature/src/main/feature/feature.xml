@@ -7,13 +7,16 @@
     <feature>pentaho-deployers</feature>
 
     <feature>pentaho-i18n</feature>
-    <bundle>mvn:pentaho/pentaho-i18n-webservice-bundle/${dependency.pentaho-osgi-bundles.revision}</bundle>
+    <bundle>mvn:pentaho/pentaho-i18n-webservice-bundle/${pentaho-osgi-bundles.version}</bundle>
 
     <!-- START client side dependencies -->
     <bundle>pentaho-webjars:mvn:org.webjars.bower/angular/${angular.version}</bundle>
     <bundle>pentaho-webjars:mvn:org.webjars.bower/angular-i18n/${angular-i18n.version}</bundle>
+    <bundle>pentaho-webjars:mvn:org.webjars.bower/angular-ui-router/${angular-ui-router.version}</bundle>
     <bundle>pentaho-webjars:mvn:org.webjars.bower/require-css/${require-css.version}</bundle>
     <bundle>pentaho-webjars:mvn:org.webjars.bower/requirejs-text/${requirejs-text.version}</bundle>
+    <bundle>pentaho-webjars:mvn:org.webjars.bower/dojo/${dojo.version}</bundle>
+
     <!-- END -->
   </feature>
 

@@ -3,7 +3,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,6 +22,32 @@
  ******************************************************************************/
 
 package org.pentaho.di.core.row.value;
+
+import org.pentaho.di.compatibility.Value;
+import org.pentaho.di.core.Const;
+import org.pentaho.di.core.database.DatabaseInterface;
+import org.pentaho.di.core.database.DatabaseMeta;
+import org.pentaho.di.core.database.GreenplumDatabaseMeta;
+import org.pentaho.di.core.database.NetezzaDatabaseMeta;
+import org.pentaho.di.core.database.OracleDatabaseMeta;
+import org.pentaho.di.core.database.PostgreSQLDatabaseMeta;
+import org.pentaho.di.core.database.SQLiteDatabaseMeta;
+import org.pentaho.di.core.database.TeradataDatabaseMeta;
+import org.pentaho.di.core.exception.KettleDatabaseException;
+import org.pentaho.di.core.exception.KettleEOFException;
+import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.exception.KettleFileException;
+import org.pentaho.di.core.exception.KettleValueException;
+import org.pentaho.di.core.gui.PrimitiveGCInterface;
+import org.pentaho.di.core.logging.KettleLogStore;
+import org.pentaho.di.core.logging.LogChannelInterface;
+import org.pentaho.di.core.row.ValueDataUtil;
+import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.util.EnvUtil;
+import org.pentaho.di.core.util.Utils;
+import org.pentaho.di.core.xml.XMLHandler;
+import org.pentaho.di.i18n.BaseMessages;
+import org.w3c.dom.Node;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -51,32 +77,6 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 import java.util.TimeZone;
-
-import org.pentaho.di.compatibility.Value;
-import org.pentaho.di.core.Const;
-import org.pentaho.di.core.util.Utils;
-import org.pentaho.di.core.database.DatabaseInterface;
-import org.pentaho.di.core.database.DatabaseMeta;
-import org.pentaho.di.core.database.GreenplumDatabaseMeta;
-import org.pentaho.di.core.database.NetezzaDatabaseMeta;
-import org.pentaho.di.core.database.OracleDatabaseMeta;
-import org.pentaho.di.core.database.PostgreSQLDatabaseMeta;
-import org.pentaho.di.core.database.SQLiteDatabaseMeta;
-import org.pentaho.di.core.database.TeradataDatabaseMeta;
-import org.pentaho.di.core.exception.KettleDatabaseException;
-import org.pentaho.di.core.exception.KettleEOFException;
-import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.exception.KettleFileException;
-import org.pentaho.di.core.exception.KettleValueException;
-import org.pentaho.di.core.gui.PrimitiveGCInterface;
-import org.pentaho.di.core.logging.KettleLogStore;
-import org.pentaho.di.core.logging.LogChannelInterface;
-import org.pentaho.di.core.row.ValueDataUtil;
-import org.pentaho.di.core.row.ValueMetaInterface;
-import org.pentaho.di.core.util.EnvUtil;
-import org.pentaho.di.core.xml.XMLHandler;
-import org.pentaho.di.i18n.BaseMessages;
-import org.w3c.dom.Node;
 
 public class ValueMetaBase implements ValueMetaInterface {
 
@@ -3674,15 +3674,16 @@ public class ValueMetaBase implements ValueMetaInterface {
 
         int length = b1.length < b2.length ? b1.length : b2.length;
 
-        for ( int i = 0; i < length; i++ ) {
-          cmp = b1[i] - b2[i];
-          if ( cmp != 0 ) {
-            cmp = cmp < 0 ? -1 : 1;
-            break;
+        cmp = b1.length - b2.length;
+        if ( cmp == 0 ) {
+          for ( int i = 0; i < length; i++ ) {
+            cmp = b1[ i ] - b2[ i ];
+            if ( cmp != 0 ) {
+              cmp = cmp < 0 ? -1 : 1;
+              break;
+            }
           }
         }
-
-        cmp = b1.length - b2.length;
 
         break;
       default:
@@ -3731,10 +3732,17 @@ public class ValueMetaBase implements ValueMetaInterface {
         switch ( getStorageType() ) {
           case STORAGE_TYPE_NORMAL:
             return compare( data1, meta2.convertToNormalStorageType( data2 ) );
-
           case STORAGE_TYPE_BINARY_STRING:
-            return compare( data1, meta2.convertToBinaryStringStorageType( data2 ) );
-
+            if ( storageMetadata != null && storageMetadata.getConversionMask() != null ) {
+              // BACKLOG-18754 - if there is a storage conversion mask, we should use
+              // it as the mask for meta2 (meta2 can have specific storage type and type, so
+              // it can't be used directly to convert data2 to binary string)
+              ValueMetaInterface meta2StorageMask = meta2.clone();
+              meta2StorageMask.setConversionMask( storageMetadata.getConversionMask() );
+              return compare( data1, meta2StorageMask.convertToBinaryStringStorageType( data2 ) );
+            } else {
+              return compare( data1, meta2.convertToBinaryStringStorageType( data2 ) );
+            }
           case STORAGE_TYPE_INDEXED:
             switch ( meta2.getStorageType() ) {
               case STORAGE_TYPE_INDEXED:
@@ -3751,6 +3759,10 @@ public class ValueMetaBase implements ValueMetaInterface {
           default:
             throw new KettleValueException( toStringMeta() + " : Unknown storage type : " + getStorageType() );
         }
+      } else if ( ValueMetaInterface.TYPE_INTEGER == getType() && ValueMetaInterface.TYPE_NUMBER == meta2.getType() ) {
+        // BACKLOG-18738
+        // compare Double to Integer
+        return -meta2.compare( data2, meta2.convertData( this, data1 ) );
       }
 
       // If the data types are not the same, the first one is the driver...
@@ -4728,7 +4740,8 @@ public class ValueMetaBase implements ValueMetaInterface {
 
           if ( databaseMeta.getDatabaseInterface() instanceof OracleDatabaseMeta ) {
             if ( precision == 0 && length == 38 ) {
-              valtype = ValueMetaInterface.TYPE_INTEGER;
+              valtype = ( (OracleDatabaseMeta) databaseMeta.getDatabaseInterface() )
+                .strictBigNumberInterpretation() ? TYPE_BIGNUMBER : TYPE_INTEGER;
             }
             if ( precision <= 0 && length <= 0 ) {
               // undefined size: BIGNUMBER,
@@ -4790,8 +4803,6 @@ public class ValueMetaBase implements ValueMetaInterface {
             length = rm.getColumnDisplaySize( index );
           } else if ( databaseMeta.isMySQLVariant()
               && ( type == java.sql.Types.VARBINARY || type == java.sql.Types.LONGVARBINARY ) ) {
-            // set the data type to String, see PDI-4812
-            valtype = ValueMetaInterface.TYPE_STRING;
             // PDI-6677 - don't call 'length = rm.getColumnDisplaySize(index);'
             length = -1; // keep the length to -1, e.g. for string functions (e.g.
             // CONCAT see PDI-4812)

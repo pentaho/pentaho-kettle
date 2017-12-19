@@ -3,7 +3,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -138,8 +138,8 @@ import org.pentaho.di.trans.step.StepMetaDataCombi;
 import org.pentaho.di.trans.step.StepPartitioningMeta;
 import org.pentaho.di.trans.steps.mappinginput.MappingInput;
 import org.pentaho.di.trans.steps.mappingoutput.MappingOutput;
-import org.pentaho.di.www.AddExportServlet;
 import org.pentaho.di.www.PrepareExecutionTransServlet;
+import org.pentaho.di.www.RegisterPackageServlet;
 import org.pentaho.di.www.RegisterTransServlet;
 import org.pentaho.di.www.SlaveServerTransStatus;
 import org.pentaho.di.www.SocketRepository;
@@ -646,6 +646,12 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
     log.snap( Metrics.METRIC_TRANSFORMATION_INIT_START );
 
     ExtensionPointHandler.callExtensionPoint( log, KettleExtensionPoint.TransformationPrepareExecution.id, this );
+
+    transMeta.disposeEmbeddedMetastoreProvider();
+    if ( transMeta.getMetastoreLocatorOsgi() != null ) {
+      transMeta.setEmbeddedMetastoreProviderKey(
+        transMeta.getMetastoreLocatorOsgi().setEmbeddedMetastore( transMeta.getEmbeddedMetaStore() ) );
+    }
 
     checkCompatibility();
 
@@ -1316,6 +1322,8 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
         if ( transMeta.isCapturingStepPerformanceSnapShots() && stepPerformanceSnapShotTimer != null ) {
           stepPerformanceSnapShotTimer.cancel();
         }
+
+        transMeta.disposeEmbeddedMetastoreProvider();
 
         setFinished( true );
         setRunning( false ); // no longer running
@@ -4184,29 +4192,28 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
       throw new KettleException( "The transformation needs a name to uniquely identify it by on the remote server." );
     }
 
+    // Inject certain internal variables to make it more intuitive.
+    //
+    Map<String, String> vars = new HashMap<>();
+
+    for ( String var : Const.INTERNAL_TRANS_VARIABLES ) {
+      vars.put( var, transMeta.getVariable( var ) );
+    }
+    for ( String var : Const.INTERNAL_JOB_VARIABLES ) {
+      vars.put( var, transMeta.getVariable( var ) );
+    }
+
+    executionConfiguration.getVariables().putAll( vars );
+    slaveServer.injectVariables( executionConfiguration.getVariables() );
+
+    slaveServer.getLogChannel().setLogLevel( executionConfiguration.getLogLevel() );
+
     try {
-      // Inject certain internal variables to make it more intuitive.
-      //
-      Map<String, String> vars = new HashMap<>();
-
-      for ( String var : Const.INTERNAL_TRANS_VARIABLES ) {
-        vars.put( var, transMeta.getVariable( var ) );
-      }
-      for ( String var : Const.INTERNAL_JOB_VARIABLES ) {
-        vars.put( var, transMeta.getVariable( var ) );
-      }
-
-      executionConfiguration.getVariables().putAll( vars );
-      slaveServer.injectVariables( executionConfiguration.getVariables() );
-
-      slaveServer.getLogChannel().setLogLevel( executionConfiguration.getLogLevel() );
-
       if ( executionConfiguration.isPassingExport() ) {
 
         // First export the job...
         //
-        FileObject tempFile =
-            KettleVFS.createTempFile( "transExport", ".zip", System.getProperty( "java.io.tmpdir" ), transMeta );
+        FileObject tempFile = KettleVFS.createTempFile( "transExport", KettleVFS.Suffix.ZIP, transMeta );
 
         TopLevelResource topLevelResource =
             ResourceUtil.serializeResourceExportInterface( tempFile.getName().toString(), transMeta, transMeta,
@@ -4214,9 +4221,10 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 
         // Send the zip file over to the slave server...
         //
-        String result =
-            slaveServer.sendExport( topLevelResource.getArchiveName(), AddExportServlet.TYPE_TRANS, topLevelResource
-                .getBaseResourceName() );
+        String result = slaveServer.sendExport(
+            topLevelResource.getArchiveName(),
+            RegisterPackageServlet.TYPE_TRANS,
+            topLevelResource.getBaseResourceName() );
         WebResult webResult = WebResult.fromXMLString( result );
         if ( !webResult.getResult().equalsIgnoreCase( WebResult.STRING_OK ) ) {
           throw new KettleException( "There was an error passing the exported transformation to the remote server: "

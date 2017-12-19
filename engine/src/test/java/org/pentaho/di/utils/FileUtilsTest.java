@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -57,5 +57,11 @@ public class FileUtilsTest {
     assertTrue( "Dir should exist", fl.exists() );
     fl.delete();
     new File( tempDir ).delete();
+  }
+
+  @Test
+  public void testIsFullyQualified() {
+    assertTrue( FileUtil.isFullyQualified( "/test" ) );
+    assertTrue( FileUtil.isFullyQualified( "\\test" ) );
   }
 }

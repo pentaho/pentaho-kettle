@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -54,11 +54,13 @@ public class DenormalizerMetaTest implements InitializerInterface<StepMetaInterf
         Arrays.asList( "groupField", "keyField", "denormaliserTargetField" );
 
     Map<String, String> getterMap = new HashMap<String, String>() {
+      //CHECKSTYLE IGNORE EmptyBlock FOR NEXT 3 LINES
       {
         // put( "fieldName", "getFieldName" );
       }
     };
     Map<String, String> setterMap = new HashMap<String, String>() {
+      //CHECKSTYLE IGNORE EmptyBlock FOR NEXT 3 LINES
       {
         // put( "fieldName", "setFieldName" );
       }

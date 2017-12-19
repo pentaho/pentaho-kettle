@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -30,19 +30,30 @@ import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.job.Job;
+import org.pentaho.di.job.JobMeta;
+import org.pentaho.di.trans.steps.named.cluster.NamedClusterEmbedManager;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.anyObject;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 public class JobEntryDeleteFilesTest {
   private final String PATH_TO_FILE = "path/to/file";
   private final String STRING_SPACES_ONLY = "   ";
 
   private JobEntryDeleteFiles jobEntry;
+  private NamedClusterEmbedManager mockNamedClusterEmbedManager;
 
   @Before
   public void setUp() throws Exception {
@@ -51,6 +62,10 @@ public class JobEntryDeleteFilesTest {
     doReturn( false ).when( parentJob ).isStopped();
 
     jobEntry.setParentJob( parentJob );
+    JobMeta mockJobMeta = mock( JobMeta.class );
+    mockNamedClusterEmbedManager = mock( NamedClusterEmbedManager.class );
+    when( mockJobMeta.getNamedClusterEmbedManager() ).thenReturn( mockNamedClusterEmbedManager );
+    jobEntry.setParentJobMeta( mockJobMeta );
     jobEntry = spy( jobEntry );
     doReturn( true ).when( jobEntry ).processFile( anyString(), anyString(), eq( parentJob ) );
   }
@@ -75,6 +90,7 @@ public class JobEntryDeleteFilesTest {
 
     jobEntry.execute( new Result(), 0 );
     verify( jobEntry, times( args.length ) ).processFile( anyString(), anyString(), any( Job.class ) );
+    verify( mockNamedClusterEmbedManager ).passEmbeddedMetastoreKey( anyObject(), anyString() );
   }
 
 

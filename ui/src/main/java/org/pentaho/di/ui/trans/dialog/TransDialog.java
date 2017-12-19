@@ -3,7 +3,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -437,7 +437,9 @@ public class TransDialog extends Dialog {
     fdlTransname.right = new FormAttachment( middle, -margin );
     fdlTransname.top = new FormAttachment( 0, margin );
     wlTransname.setLayoutData( fdlTransname );
-    wTransname = new Text( wTransComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
+    wTransname = new Text( wTransComp, rep == null ? SWT.SINGLE | SWT.LEFT | SWT.BORDER
+      : SWT.SINGLE | SWT.LEFT | SWT.BORDER | SWT.READ_ONLY );
+    wTransname.setEnabled( rep == null );
     props.setLook( wTransname );
     wTransname.addModifyListener( lsMod );
     FormData fdTransname = new FormData();
@@ -2196,8 +2198,10 @@ public class TransDialog extends Dialog {
     wStepPerfInterval.setText( Long.toString( transMeta.getStepPerformanceCapturingDelay() ) );
     wStepPerfMaxSize.setText( Const.NVL( transMeta.getStepPerformanceCapturingSizeLimit(), "" ) );
 
-    wTransname.selectAll();
-    wTransname.setFocus();
+    if ( rep == null ) {
+      wTransname.selectAll();
+      wTransname.setFocus();
+    }
 
     for ( TransDialogPluginInterface extraTab : extraTabs ) {
       try {
@@ -2211,9 +2215,9 @@ public class TransDialog extends Dialog {
   }
 
   public void setFlags() {
-    wbDirectory.setEnabled( rep != null );
+    wbDirectory.setEnabled( false );
     // wDirectory.setEnabled(rep!=null);
-    wlDirectory.setEnabled( rep != null );
+    wlDirectory.setEnabled( false );
 
     // wlStepLogtable.setEnabled(wEnableStepPerfMonitor.getSelection());
     // wStepLogtable.setEnabled(wEnableStepPerfMonitor.getSelection());

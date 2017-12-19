@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,33 +22,24 @@
 
 package org.pentaho.di.cluster;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyMapOf;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.spy;
-
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.List;
-
-import org.apache.commons.httpclient.Credentials;
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.HttpMethod;
-import org.apache.commons.httpclient.UsernamePasswordCredentials;
-import org.apache.commons.httpclient.auth.AuthScope;
-import org.apache.commons.httpclient.methods.GetMethod;
-import org.apache.commons.httpclient.methods.PostMethod;
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.HttpStatus;
+import org.apache.http.StatusLine;
+import org.apache.http.auth.AuthScope;
+import org.apache.http.auth.Credentials;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.protocol.HttpClientContext;
+import org.apache.http.protocol.HttpContext;
+import org.h2.util.IOUtils;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.encryption.Encr;
 import org.pentaho.di.core.encryption.TwoWayPasswordEncoderPluginType;
@@ -57,6 +48,24 @@ import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.util.EnvUtil;
 import org.pentaho.di.utils.TestUtils;
 import org.pentaho.di.www.GetPropertiesServlet;
+
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URI;
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyMapOf;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.when;
 
 /**
  * Tests for SlaveServer class
@@ -78,33 +87,75 @@ public class SlaveServerTest {
 
   @Before
   public void init() throws IOException {
-    HttpClient httpClient = spy( new HttpClient() );
-    doReturn( 404 ).when( httpClient ).executeMethod( any( HttpMethod.class ) );
+    SlaveConnectionManager connectionManager = SlaveConnectionManager.getInstance();
+    HttpClient httpClient = spy( connectionManager.createHttpClient() );
+
+    // mock response
+    CloseableHttpResponse closeableHttpResponseMock = mock( CloseableHttpResponse.class );
+
+    // mock status line
+    StatusLine statusLineMock = mock( StatusLine.class );
+    doReturn( HttpStatus.SC_NOT_FOUND ).when( statusLineMock ).getStatusCode();
+    doReturn( statusLineMock ).when( closeableHttpResponseMock ).getStatusLine();
+
+    // mock entity
+    HttpEntity httpEntityMock = mock( HttpEntity.class );
+    doReturn( httpEntityMock ).when( closeableHttpResponseMock ).getEntity();
+
+    doReturn( closeableHttpResponseMock ).when( httpClient ).execute( any( HttpGet.class ) );
+    doReturn( closeableHttpResponseMock ).when( httpClient ).execute( any( HttpPost.class ) );
+    doReturn( closeableHttpResponseMock ).when( httpClient ).execute( any( HttpPost.class ), any( HttpClientContext.class ) );
 
     slaveServer = spy( new SlaveServer() );
     doReturn( httpClient ).when( slaveServer ).getHttpClient();
     doReturn( "response_body" ).when( slaveServer ).getResponseBodyAsString( any( InputStream.class ) );
   }
 
+  private HttpResponse mockResponse( int statusCode, String entityText ) throws IOException {
+    HttpResponse resp = mock( HttpResponse.class );
+    StatusLine status = mock( StatusLine.class );
+    when( status.getStatusCode() ).thenReturn( statusCode );
+    when( resp.getStatusLine() ).thenReturn( status );
+    HttpEntity entity = mock( HttpEntity.class );
+    when( entity.getContent() ).thenReturn( IOUtils.getInputStream( entityText ) );
+    when( resp.getEntity() ).thenReturn( entity );
+    return resp;
+  }
+
   @Test( expected = KettleException.class )
   public void testExecService() throws Exception {
-    doReturn( mock( GetMethod.class ) ).when( slaveServer ).buildExecuteServiceMethod( anyString(),
-        anyMapOf( String.class, String.class ) );
+    HttpGet httpGetMock = mock( HttpGet.class );
+    URI uriMock = new URI( "fake" );
+    doReturn( uriMock ).when( httpGetMock ).getURI();
+    doReturn( httpGetMock ).when( slaveServer ).buildExecuteServiceMethod( anyString(), anyMapOf( String.class,
+        String.class ) );
+    slaveServer.setHostname( "hostNameStub" );
+    slaveServer.setUsername( "userNAmeStub" );
     slaveServer.execService( "wrong_app_name" );
     fail( "Incorrect connection details had been used, but no exception was thrown" );
   }
 
   @Test( expected = KettleException.class )
   public void testSendXML() throws Exception {
-    doReturn( mock( PostMethod.class ) ).when( slaveServer ).buildSendXMLMethod( any( byte[].class ), anyString() );
+    slaveServer.setHostname( "hostNameStub" );
+    slaveServer.setUsername( "userNAmeStub" );
+    HttpPost httpPostMock = mock( HttpPost.class );
+    URI uriMock = new URI( "fake" );
+    doReturn( uriMock ).when( httpPostMock ).getURI();
+    doReturn( httpPostMock ).when( slaveServer ).buildSendXMLMethod( any( byte[].class ), anyString() );
     slaveServer.sendXML( "", "" );
     fail( "Incorrect connection details had been used, but no exception was thrown" );
   }
 
   @Test( expected = KettleException.class )
   public void testSendExport() throws Exception {
-    doReturn( mock( PostMethod.class ) ).when( slaveServer ).buildSendExportMethod( anyString(), anyString(),
-        any( InputStream.class ) );
+    slaveServer.setHostname( "hostNameStub" );
+    slaveServer.setUsername( "userNAmeStub" );
+    HttpPost httpPostMock = mock( HttpPost.class );
+    URI uriMock = new URI( "fake" );
+    doReturn( uriMock ).when( httpPostMock ).getURI();
+    doReturn( httpPostMock ).when( slaveServer ).buildSendExportMethod( anyString(), anyString(), any(
+        InputStream.class ) );
     File tempFile;
     tempFile = File.createTempFile( "PDI-", "tmp" );
     tempFile.deleteOnExit();
@@ -113,24 +164,62 @@ public class SlaveServerTest {
   }
 
   @Test
-  public void testAddCredentials() {
-    slaveServer.setUsername( "test_username" );
-    slaveServer.setPassword( "test_password" );
-    slaveServer.setHostname( "test_host" );
-    slaveServer.setPort( "8081" );
+  public void testSendExportOk() throws Exception {
+    slaveServer.setUsername( "uname" );
+    slaveServer.setPassword( "passw" );
+    slaveServer.setHostname( "hname" );
+    slaveServer.setPort( "1111" );
+    HttpPost httpPostMock = mock( HttpPost.class );
+    URI uriMock = new URI( "fake" );
+    final String responseContent = "baah";
+    when( httpPostMock.getURI() ).thenReturn( uriMock );
+    doReturn( uriMock ).when( httpPostMock ).getURI();
 
-    HttpClient client = slaveServer.getHttpClient();
-    slaveServer.addCredentials( client );
-    HttpClient authClient = slaveServer.getHttpClient();
+    HttpClient client = mock( HttpClient.class );
+    when( client.execute( any(), any( HttpContext.class ) ) ).then( new Answer<HttpResponse>() {
+      @Override
+      public HttpResponse answer( InvocationOnMock invocation ) throws Throwable {
+        HttpClientContext context = invocation.getArgumentAt( 1, HttpClientContext.class );
+        Credentials cred = context.getCredentialsProvider().getCredentials( new AuthScope( "hname", 1111 ) );
+        assertEquals( "uname", cred.getUserPrincipal().getName() );
+        return mockResponse( 200, responseContent );
+      }
+    } );
+    // override init
+    when( slaveServer.getHttpClient() ).thenReturn( client );
+    when( slaveServer.getResponseBodyAsString( any() ) ).thenCallRealMethod();
 
-    assertTrue( authClient.getParams().isAuthenticationPreemptive() );
-    AuthScope scope = new AuthScope( slaveServer.getHostname(), Const.toInt( slaveServer.getPort(), 80 ) );
-    Credentials credentials = authClient.getState().getCredentials( scope );
-    assertNotNull( credentials );
-    assertTrue( credentials instanceof UsernamePasswordCredentials );
-    UsernamePasswordCredentials baseCredentials = (UsernamePasswordCredentials) credentials;
-    assertEquals( slaveServer.getUsername(), baseCredentials.getUserName() );
-    assertEquals( slaveServer.getPassword(), baseCredentials.getPassword() );
+    doReturn( httpPostMock ).when( slaveServer ).buildSendExportMethod( anyString(), anyString(), any(
+        InputStream.class ) );
+    File tempFile;
+    tempFile = File.createTempFile( "PDI-", "tmp" );
+    tempFile.deleteOnExit();
+    String result = slaveServer.sendExport( tempFile.getAbsolutePath(), null, null );
+    assertEquals( responseContent, result );
+  }
+
+  @Test
+  public void testAddCredentials() throws IOException, ClassNotFoundException {
+    String testUser = "test_username";
+    slaveServer.setUsername( testUser );
+    String testPassword = "test_password";
+    slaveServer.setPassword( testPassword );
+    String host = "somehost";
+    slaveServer.setHostname( host );
+    int port = 1000;
+    slaveServer.setPort( "" + port );
+
+    HttpClientContext auth = slaveServer.getAuthContext();
+    Credentials cred = auth.getCredentialsProvider().getCredentials( new AuthScope( host, port ) );
+    assertEquals( testUser, cred.getUserPrincipal().getName() );
+    assertEquals( testPassword, cred.getPassword() );
+
+    String user2 = "user2";
+    slaveServer.setUsername( user2 );
+    slaveServer.setPassword( "pass2" );
+    auth = slaveServer.getAuthContext();
+    cred = auth.getCredentialsProvider().getCredentials( new AuthScope( host, port ) );
+    assertEquals( user2, cred.getUserPrincipal().getName() );
   }
 
   @Test
@@ -176,9 +265,7 @@ public class SlaveServerTest {
       + "70726f706572746965733e0a2020203c636f6d6d656e743e3c2f636f6d6d6"
       + "56e743e0a2020203c656e747279206b65793d224167696c6542494461746162"
       + "617365223e4167696c6542493c2f656e7470c7a6a5f445d7808bbb1cbc64d797bc84";
-    doReturn(
-      encryptedResponse )
-      .when( slaveServer ).execService( GetPropertiesServlet.CONTEXT_PATH + "/?xml=Y" );
+    doReturn( encryptedResponse ).when( slaveServer ).execService( GetPropertiesServlet.CONTEXT_PATH + "/?xml=Y" );
     slaveServer.getKettleProperties().getProperty( "AgileBIDatabase" );
     assertEquals( "AgileBI", slaveServer.getKettleProperties().getProperty( "AgileBIDatabase" ) );
 

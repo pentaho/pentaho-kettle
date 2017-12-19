@@ -6,18 +6,17 @@
   <parent>
     <groupId>org.pentaho.di.plugins</groupId>
     <artifactId>file-open-save</artifactId>
-    <version>8.0-SNAPSHOT</version>
+    <version>8.1.0.0-SNAPSHOT</version>
   </parent>
   
   <artifactId>file-open-save-core</artifactId>
-  <version>8.0-SNAPSHOT</version>
+  <version>8.1.0.0-SNAPSHOT</version>
   <packaging>bundle</packaging>
 
   <name>PDI File Open and Save Plugin Core</name>
 
   <properties>
     <maven-replacer-plugin.version>1.5.2</maven-replacer-plugin.version>
-    <src.dir>target/processed-sources</src.dir>
   </properties>
 
   <dependencies>
@@ -98,12 +97,15 @@
       <artifactId>require-css</artifactId>
     </dependency>
     <dependency>
+      <groupId>org.webjars.bower</groupId>
+      <artifactId>dojo</artifactId>
+    </dependency>
+    <dependency>
       <groupId>com.googlecode.json-simple</groupId>
       <artifactId>json-simple</artifactId>
     </dependency>
   </dependencies>
   <build>
-    <sourceDirectory>${src.dir}</sourceDirectory>
     <resources>
       <resource>
         <filtering>false</filtering>
@@ -134,36 +136,6 @@
       </resource>
     </resources>
     <plugins>
-      <plugin>
-        <groupId>com.google.code.maven-replacer-plugin</groupId>
-        <artifactId>replacer</artifactId>
-        <version>${maven-replacer-plugin.version}</version>
-        <executions>
-          <execution>
-            <phase>generate-sources</phase>
-            <goals>
-              <goal>replace</goal>
-            </goals>
-          </execution>
-        </executions>
-        <configuration>
-          <basedir>${basedir}/src/main/java</basedir>
-          <outputDir>../../../target/processed-sources</outputDir>
-          <includes>
-            <include>**/*.java</include>
-          </includes>
-          <replacements>
-            <replacement>
-              <token>@PROJECT_ARTIFACT_ID@</token>
-              <value>${project.artifactId}</value>
-            </replacement>
-            <replacement>
-              <token>@PROJECT_VERSION@</token>
-              <value>${project.version}</value>
-            </replacement>
-          </replacements>
-        </configuration>
-      </plugin>
       <plugin>
         <artifactId>maven-remote-resources-plugin</artifactId>
         <version>1.5</version>

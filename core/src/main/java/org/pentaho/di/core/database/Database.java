@@ -3,7 +3,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -548,30 +548,28 @@ public class Database implements VariableSpace, LoggingObjectInterface {
         password = Encr.decryptPasswordOptionallyEncrypted( environmentSubstitute( databaseMeta.getPassword() ) );
       }
 
+      Properties properties = databaseMeta.getConnectionProperties();
+
       if ( databaseMeta.supportsOptionsInURL() ) {
         if ( !Utils.isEmpty( username ) || !Utils.isEmpty( password ) ) {
+          // Allow for empty username with given password, in this case username must be given with one space
+          properties.put( "user", Const.NVL( username, " " ) );
+          properties.put( "password", Const.NVL( password, "" ) );
           if ( databaseMeta.getDatabaseInterface() instanceof MSSQLServerNativeDatabaseMeta ) {
-            // Needs user & password in the URL
-            //
+            // Handle MSSQL Instance name. Would rather this was handled in the dialect
+            // but cannot (without refactor) get to variablespace for variable substitution from
+            // a BaseDatabaseMeta subclass.
             String instance = environmentSubstitute( databaseMeta.getSQLServerInstance() );
-            if ( Utils.isEmpty( instance ) ) {
-              connection = DriverManager.getConnection( url + ";user=" + username + ";password=" + password );
-            } else {
-              connection =
-                DriverManager.getConnection( url
-                  + ";user=" + username + ";password=" + password + ";instanceName=" + instance );
+            if ( !Utils.isEmpty( instance ) ) {
+              url += ";instanceName=" + instance;
             }
-          } else {
-            // also allow for empty username with given password, in this case
-            // username must be given with one space
-            connection = DriverManager.getConnection( url, Const.NVL( username, " " ), Const.NVL( password, "" ) );
           }
+          connection = DriverManager.getConnection( url, properties );
         } else {
           // Perhaps the username is in the URL or no username is required...
-          connection = DriverManager.getConnection( url );
+          connection = DriverManager.getConnection( url, properties );
         }
       } else {
-        Properties properties = databaseMeta.getConnectionProperties();
         if ( !Utils.isEmpty( username ) ) {
           properties.put( "user", username );
         }

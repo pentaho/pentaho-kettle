@@ -1,7 +1,7 @@
 /*
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
  *
  * **************************************************************************
  *
@@ -75,7 +75,7 @@ public class ShowHelpDialog extends Dialog {
   }
 
   protected Shell createShell( Shell parent ) {
-    return new Shell( parent, SWT.RESIZE | SWT.MAX | SWT.MIN | SWT.APPLICATION_MODAL );
+    return new Shell( parent, SWT.RESIZE | SWT.MAX | SWT.MIN );
   }
 
   public void open() {

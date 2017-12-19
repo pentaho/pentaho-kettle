@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -23,8 +23,6 @@
 package org.pentaho.di.trans.steps.salesforceinsert;
 
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.TimeZone;
 
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.exception.KettleException;
@@ -143,21 +141,9 @@ public class SalesforceInsert extends SalesforceStep {
             fieldsToNull.add( SalesforceUtils.getFieldToNullName( log, meta.getUpdateLookup()[i], meta
                 .getUseExternalId()[i] ) );
           } else {
-            if ( valueMeta.isDate() ) {
-              // Pass date field converted to UTC, see PDI-10836
-              Calendar cal = Calendar.getInstance( valueMeta.getDateFormatTimeZone() );
-              cal.setTime( valueMeta.getDate( value ) );
-              Calendar utc = Calendar.getInstance( TimeZone.getTimeZone( "UTC" ) );
-              // Reset time-related fields
-              utc.clear();
-              utc.set( cal.get( Calendar.YEAR ), cal.get( Calendar.MONTH ), cal.get( Calendar.DATE ) );
-              value = utc.getTime();
-            } else if ( valueMeta.isStorageBinaryString() ) {
-              value = valueMeta.convertToNormalStorageType( value );
-            }
-
+            Object normalObject = normalizeValue( valueMeta, value );
             insertfields.add( SalesforceConnection.createMessageElement(
-              meta.getUpdateLookup()[i], value, meta.getUseExternalId()[i] ) );
+              meta.getUpdateLookup()[i], normalObject, meta.getUseExternalId()[i] ) );
           }
         }
 

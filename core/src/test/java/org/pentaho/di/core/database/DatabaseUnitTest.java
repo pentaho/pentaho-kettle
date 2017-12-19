@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -632,14 +632,13 @@ public class DatabaseUnitTest {
     Database db = new Database( log, meta );
     db.setConnection( mockConnection( dbMetaData ) );
 
-    db.getLookup( ps, false, true );
+    db.getLookup( ps, false );
 
     RowMetaInterface rowMeta = db.getReturnRowMeta();
     assertEquals( 1, rowMeta.size() );
 
     ValueMetaInterface valueMeta = rowMeta.getValueMeta( 0 );
-    assertEquals( ValueMetaInterface.TYPE_STRING, valueMeta.getType() );
-    assertEquals( ValueMetaInterface.STORAGE_TYPE_BINARY_STRING, valueMeta.getStorageType() );
+    assertEquals( ValueMetaInterface.TYPE_BINARY, valueMeta.getType() );
   }
 
   private static String concatWordsForRegexp( String... words ) {

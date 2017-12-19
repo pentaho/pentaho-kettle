@@ -3,7 +3,7 @@
  *
  *  Pentaho Data Integration
  *
- *  Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
+ *  Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
  *
  * ******************************************************************************
  *
@@ -26,8 +26,6 @@ package org.pentaho.di.engine.api;
 
 
 import org.pentaho.di.engine.api.model.Transformation;
-
-import java.io.Serializable;
 
 /**
  * An Engine is responsible for executing an Transformation.

@@ -14,3 +14,6 @@ bin
 *.ear
 .DS_Store
 routes.yml
+
+rebel.xml
+rebel-remote.xml

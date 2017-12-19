@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -86,6 +86,9 @@ public class JobEntryCreateFolder extends JobEntryBase implements Cloneable, Job
     retval.append( super.getXML() );
     retval.append( "      " ).append( XMLHandler.addTagValue( "foldername", foldername ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "fail_of_folder_exists", failOfFolderExists ) );
+    if ( parentJobMeta != null ) {
+      parentJobMeta.getNamedClusterEmbedManager().registerUrl( foldername );
+    }
 
     return retval.toString();
   }
@@ -140,6 +143,12 @@ public class JobEntryCreateFolder extends JobEntryBase implements Cloneable, Job
     result.setResult( false );
 
     if ( foldername != null ) {
+      //Set Embedded NamedCluter MetatStore Provider Key so that it can be passed to VFS
+      if ( parentJobMeta.getNamedClusterEmbedManager() != null ) {
+        parentJobMeta.getNamedClusterEmbedManager()
+          .passEmbeddedMetastoreKey( this, parentJobMeta.getEmbeddedMetastoreProviderKey() );
+      }
+
       String realFoldername = getRealFoldername();
       FileObject folderObject = null;
       try {
@@ -221,4 +230,5 @@ public class JobEntryCreateFolder extends JobEntryBase implements Cloneable, Job
     AndValidator.putValidators( ctx, JobEntryValidatorUtils.notNullValidator(), JobEntryValidatorUtils.fileDoesNotExistValidator() );
     JobEntryValidatorUtils.andValidator().validate( this, "filename", remarks, ctx );
   }
+
 }

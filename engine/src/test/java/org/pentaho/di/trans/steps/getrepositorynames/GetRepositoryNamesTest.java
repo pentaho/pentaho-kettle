@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -24,8 +24,15 @@ package org.pentaho.di.trans.steps.getrepositorynames;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.pentaho.di.trans.steps.getrepositorynames.ObjectTypeSelection.*;
-import static org.mockito.Mockito.*;
+import static org.pentaho.di.trans.steps.getrepositorynames.ObjectTypeSelection.All;
+import static org.pentaho.di.trans.steps.getrepositorynames.ObjectTypeSelection.Jobs;
+import static org.pentaho.di.trans.steps.getrepositorynames.ObjectTypeSelection.Transformations;
+
+import static org.mockito.Mockito.anyBoolean;
+import static org.mockito.Mockito.anyInt;
+import static org.mockito.Mockito.anyString;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import java.io.File;
 import java.io.IOException;
@@ -39,6 +46,7 @@ import org.apache.commons.io.FileUtils;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.pentaho.di.core.KettleClientEnvironment;
@@ -46,6 +54,7 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.job.JobMeta;
+import org.pentaho.di.repository.IUser;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectory;
 import org.pentaho.di.repository.RepositoryDirectoryInterface;
@@ -165,6 +174,10 @@ public class GetRepositoryNamesTest {
             }
           }
         } );
+
+    IUser user = Mockito.mock( IUser.class );
+    Mockito.when( user.isAdmin() ).thenReturn( true );
+    Mockito.when( repoExtended.getUserInfo() ).thenReturn( user );
   }
 
   @AfterClass
@@ -243,6 +256,24 @@ public class GetRepositoryNamesTest {
   @Test
   public void testGetRepoList_excludeNameMask_Extended() throws KettleException {
     init( repoExtended, "/", true, ".*", "Trans1.*", All, 3 );
+  }
+
+  @Test
+  //PDI-16258
+  public void testShowHidden() throws KettleException {
+    IUser user = Mockito.mock( IUser.class );
+    Mockito.when( user.isAdmin() ).thenReturn( true );
+    Mockito.when( repoExtended.getUserInfo() ).thenReturn( user );
+    init( repoExtended, "/", false, ".*", "", All, 0 );
+    Mockito.verify( repoExtended, Mockito.never() )
+      .loadRepositoryDirectoryTree( Mockito.anyString(), Mockito.anyString(), Mockito.anyInt(), Mockito.eq( false ),
+        Mockito.anyBoolean(), anyBoolean() );
+
+    Mockito.when( user.isAdmin() ).thenReturn( false );
+    init( repoExtended, "/", false, ".*", "", All, 0 );
+    Mockito.verify( repoExtended )
+      .loadRepositoryDirectoryTree( Mockito.anyString(), Mockito.anyString(), Mockito.anyInt(), Mockito.eq( false ),
+        Mockito.anyBoolean(), Mockito.anyBoolean() );
   }
 
   private void init( Repository repository, String directoryName, boolean includeSubFolders, String nameMask, String exludeNameMask,

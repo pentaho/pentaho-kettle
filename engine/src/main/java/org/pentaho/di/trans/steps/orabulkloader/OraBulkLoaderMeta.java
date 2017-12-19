@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -24,9 +24,11 @@ package org.pentaho.di.trans.steps.orabulkloader;
 
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.injection.AfterInjection;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.ProvidesDatabaseConnectionInformation;
 import org.pentaho.di.core.SQLStatement;
@@ -1056,5 +1058,33 @@ public class OraBulkLoaderMeta extends BaseStepMeta implements StepMetaInterface
   public String getMissingDatabaseConnectionInformationMessage() {
     // TODO Auto-generated method stub
     return null;
+  }
+
+  /**
+   * If we use injection we can have different arrays lengths.
+   * We need synchronize them for consistency behavior with UI
+   */
+  @AfterInjection
+  public void afterInjectionSynchronization() {
+    if ( fieldTable == null || fieldTable.length == 0 ) {
+      return;
+    }
+    int nrFields = fieldTable.length;
+    if ( fieldStream.length < nrFields ) {
+      String[] newFieldStream = new String[ nrFields ];
+      System.arraycopy( fieldStream, 0, newFieldStream, 0, fieldStream.length );
+      fieldStream = newFieldStream;
+    }
+    for ( int i = 0; i < fieldStream.length; i++ ) {
+      if ( fieldStream[ i ] == null ) {
+        fieldStream[ i ] = StringUtils.EMPTY;
+      }
+    }
+    //PDI-16472
+    if ( dateMask.length < nrFields ) {
+      String[] newDateMask = new String[ nrFields ];
+      System.arraycopy( dateMask, 0, newDateMask, 0, dateMask.length );
+      dateMask = newDateMask;
+    }
   }
 }

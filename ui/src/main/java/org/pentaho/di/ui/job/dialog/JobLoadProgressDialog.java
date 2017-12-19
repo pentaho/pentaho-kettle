@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -30,6 +30,8 @@ import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.swt.widgets.Shell;
 import org.pentaho.di.core.ProgressMonitorAdapter;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.extension.ExtensionPointHandler;
+import org.pentaho.di.core.extension.KettleExtensionPoint;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.repository.KettleRepositoryLostException;
 import org.pentaho.di.repository.ObjectId;
@@ -37,6 +39,7 @@ import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectoryInterface;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.job.entries.missing.MissingEntryDialog;
+import org.pentaho.di.ui.spoon.Spoon;
 
 /**
  *
@@ -82,12 +85,23 @@ public class JobLoadProgressDialog {
   public JobMeta open() {
     IRunnableWithProgress op = new IRunnableWithProgress() {
       public void run( IProgressMonitor monitor ) throws InvocationTargetException, InterruptedException {
+        Spoon spoon = Spoon.getInstance();
         try {
+          // Call extension point(s) before the file has been opened
+          ExtensionPointHandler.callExtensionPoint(
+            spoon.getLog(),
+            KettleExtensionPoint.JobBeforeOpen.id,
+            ( objectId == null ) ? jobname : objectId.toString() );
+
           if ( objectId != null ) {
             jobInfo = rep.loadJob( objectId, versionLabel );
           } else {
             jobInfo = rep.loadJob( jobname, repdir, new ProgressMonitorAdapter( monitor ), versionLabel );
           }
+
+          // Call extension point(s) now that the file has been opened
+          ExtensionPointHandler.callExtensionPoint( spoon.getLog(), KettleExtensionPoint.JobAfterOpen.id, jobInfo );
+
           if ( jobInfo.hasMissingPlugins() ) {
             MissingEntryDialog missingDialog = new MissingEntryDialog( shell, jobInfo.getMissingEntries() );
             if ( missingDialog.open() == null ) {

@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -93,11 +93,14 @@ public class EnterSelectionDialog extends Dialog {
   private String[] choices;
   private String selection;
   private int selectionNr;
+  private int shellHeight;
+  private int shellWidth;
   private String shellText;
   private String lineText;
   private PropsUI props;
   private String constant;
   private VariableSpace variableSpace;
+  private String currentValue;
 
   private boolean viewOnly, modal;
   private int[] selectedNrs;
@@ -153,6 +156,13 @@ public class EnterSelectionDialog extends Dialog {
   }
 
   public EnterSelectionDialog( Shell parent, String[] choices, String shellText, String message,
+                               int shellWidth, int shellHeight ) {
+    this( parent, choices, shellText, message );
+    this.shellWidth = shellWidth;
+    this.shellHeight = shellHeight;
+  }
+
+  public EnterSelectionDialog( Shell parent, String[] choices, String shellText, String message,
     HasDatabasesInterface databasesInterface ) {
     this( parent, choices, shellText, message );
     this.databasesInterface = databasesInterface;
@@ -171,6 +181,10 @@ public class EnterSelectionDialog extends Dialog {
 
   public void setAvoidQuickSearch() {
     quickSearch = false;
+  }
+
+  public void setCurrentValue( String currentValue ) {
+    this.currentValue = currentValue;
   }
 
   public void clearModal() {
@@ -391,7 +405,11 @@ public class EnterSelectionDialog extends Dialog {
 
     getData();
 
-    BaseStepDialog.setSize( shell );
+    if ( shellWidth == 0 || shellHeight == 0 ) {
+      BaseStepDialog.setSize( shell );
+    } else {
+      shell.setSize( shellWidth, shellHeight );
+    }
 
     wOK.setFocus();
 
@@ -568,7 +586,7 @@ public class EnterSelectionDialog extends Dialog {
   }
 
   private void cancel() {
-    selection = null;
+    selection = currentValue;
     dispose();
   }
 

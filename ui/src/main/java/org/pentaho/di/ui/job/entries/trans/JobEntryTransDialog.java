@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -63,9 +63,10 @@ import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.gui.WindowProperty;
 import org.pentaho.di.ui.core.widget.ComboVar;
 import org.pentaho.di.ui.job.dialog.JobDialog;
-import org.pentaho.di.ui.repository.dialog.SelectObjectDialog;
 import org.pentaho.di.ui.spoon.Spoon;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
+import org.pentaho.di.ui.util.DialogHelper;
+import org.pentaho.di.ui.util.DialogUtils;
 import org.pentaho.di.ui.util.SwtSvgImageUtil;
 
 import java.io.File;
@@ -82,7 +83,6 @@ public class JobEntryTransDialog extends JobEntryBaseDialog implements JobEntryD
   private static Class<?> PKG = JobEntryTrans.class; // for i18n purposes, needed by Translator2!!
 
   protected JobEntryTrans jobEntry;
-  protected ComboVar wRunConfiguration;
 
   private static final String[] FILE_FILTERLOGNAMES = new String[] {
     BaseMessages.getString( PKG, "JobTrans.Fileformat.TXT" ),
@@ -136,7 +136,6 @@ public class JobEntryTransDialog extends JobEntryBaseDialog implements JobEntryD
     shell.setText( BaseMessages.getString( PKG, "JobTrans.Header" ) );
 
     wlPath.setText( BaseMessages.getString( PKG, "JobTrans.JobStep.Transformation.Label" ) );
-    wlDescription.setText( BaseMessages.getString( PKG, "JobTrans.Local.Label" ) );
     wPassParams.setText( BaseMessages.getString( PKG, "JobTrans.PassAllParameters.Label" ) );
 
     wClearRows = new Button( gExecution, SWT.CHECK );
@@ -170,8 +169,6 @@ public class JobEntryTransDialog extends JobEntryBaseDialog implements JobEntryD
     fdFollow.top = new FormAttachment( wWaitingToFinish, 10 );
     fdFollow.left = new FormAttachment( 0, 0 );
     wFollowingAbortRemotely.setLayoutData( fdFollow );
-
-    gEnvironmentType.setVisible( false );
 
     Composite cRunConfiguration = new Composite( wOptions, SWT.NONE );
     cRunConfiguration.setLayout( new FormLayout() );
@@ -276,15 +273,14 @@ public class JobEntryTransDialog extends JobEntryBaseDialog implements JobEntryD
 
   }
 
-  protected void selectTransformation() {
-    if ( rep != null ) {
-      SelectObjectDialog sod = new SelectObjectDialog( shell, rep, true, false );
-      String transname = sod.open();
-      if ( transname != null ) {
-        String path = getPath( sod.getDirectory().getPath() );
-        String fullPath = path + "/" + transname;
-        wPath.setText( fullPath );
-      }
+  private void selectTransformation() {
+    RepositoryObject repositoryObject = DialogHelper.selectRepositoryObject( "*.ktr", log );
+
+    if ( repositoryObject != null ) {
+      String path = DialogUtils
+        .getPath( jobMeta.getRepositoryDirectory().getPath(), repositoryObject.getRepositoryDirectory().getPath() );
+      String fullPath = ( path.equals( "/" ) ? "/" : path + "/" ) + repositoryObject.getName();
+      wPath.setText( fullPath );
     }
   }
 
@@ -449,7 +445,7 @@ public class JobEntryTransDialog extends JobEntryBaseDialog implements JobEntryD
     try {
       ExtensionPointHandler
         .callExtensionPoint( Spoon.getInstance().getLog(), KettleExtensionPoint.SpoonRunConfiguration.id,
-          runConfigurations );
+          new Object[] { runConfigurations, TransMeta.XML_TAG } );
     } catch ( KettleException e ) {
       // Ignore errors
     }
@@ -461,12 +457,15 @@ public class JobEntryTransDialog extends JobEntryBaseDialog implements JobEntryD
       wRunConfiguration.setText( jobEntry.getRunConfiguration() );
     }
 
+    wName.selectAll();
+    wName.setFocus();
   }
 
   private void getByReferenceData( ObjectId transObjectId ) {
     try {
       RepositoryObject transInf = rep.getObjectInformation( transObjectId, RepositoryObjectType.TRANSFORMATION );
-      String path = getPath( transInf.getRepositoryDirectory().getPath() );
+      String path =
+        DialogUtils.getPath( jobMeta.getRepositoryDirectory().getPath(), transInf.getRepositoryDirectory().getPath() );
       String fullPath =
         Const.NVL( path, "" ) + "/" + Const.NVL( transInf.getName(), "" );
       wPath.setText( fullPath );
@@ -511,14 +510,9 @@ public class JobEntryTransDialog extends JobEntryBaseDialog implements JobEntryD
         int index = transPath.lastIndexOf( "/" );
         if ( index != -1 ) {
           transName = transPath.substring( index + 1 );
-          directory = transPath.substring( 0, index );
+          directory = index == 0 ? "/" : transPath.substring( 0, index );
         }
         jet.setDirectory( directory );
-        if ( jet.getDirectory().isEmpty() ) {
-          throw new KettleException( BaseMessages.getString( PKG,
-            "JobTrans.Dialog.Exception.UnableToFindRepositoryDirectory" ) );
-        }
-
         jet.setTransname( transName );
         jet.setFileName( null );
         jet.setTransObjectId( null );
@@ -609,7 +603,7 @@ public class JobEntryTransDialog extends JobEntryBaseDialog implements JobEntryD
     executionConfiguration.setRunConfiguration( jet.getRunConfiguration() );
     try {
       ExtensionPointHandler.callExtensionPoint( jobEntry.getLogChannel(), KettleExtensionPoint.SpoonTransBeforeStart.id,
-        new Object[] { executionConfiguration, jobMeta, jobMeta } );
+        new Object[] { executionConfiguration, jobMeta, jobMeta, null } );
     } catch ( KettleException e ) {
       // Ignore errors
     }

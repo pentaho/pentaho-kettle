@@ -3,7 +3,7 @@
  *
  *  Pentaho Data Integration
  *
- *  Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
+ *  Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
  *
  *  *******************************************************************************
  *  Licensed under the Apache License, Version 2.0 (the "License"); you may not use
@@ -114,6 +114,21 @@ public class RunConfigurationManager implements RunConfigurationService {
     return names;
   }
 
+  public List<String> getNames( String type ) {
+    List<String> names = new ArrayList<>();
+    for ( RunConfigurationProvider runConfigurationProvider : getRunConfigurationProviders( type ) ) {
+      names.addAll( runConfigurationProvider.getNames() );
+    }
+    Collections.sort( names, ( o1, o2 ) -> {
+      if ( o2.equals( DefaultRunConfigurationProvider.DEFAULT_CONFIG_NAME ) ) {
+        return 1;
+      }
+      return o1.compareToIgnoreCase( o2 );
+    } );
+    return names;
+  }
+
+
   public RunConfiguration getRunConfigurationByType( String type ) {
     RunConfigurationProvider runConfigurationProvider = getProvider( type );
     if ( runConfigurationProvider != null ) {
@@ -137,6 +152,19 @@ public class RunConfigurationManager implements RunConfigurationService {
       }
     }
     return null;
+  }
+
+  public List<RunConfigurationProvider> getRunConfigurationProviders( String type ) {
+    List<RunConfigurationProvider> runConfigurationProviders = new ArrayList<>();
+    if ( defaultRunConfigurationProvider != null ) {
+      runConfigurationProviders.add( defaultRunConfigurationProvider );
+    }
+    for ( RunConfigurationProvider runConfigurationProvider : this.runConfigurationProviders ) {
+      if ( runConfigurationProvider.isSupported( type ) ) {
+        runConfigurationProviders.add( runConfigurationProvider );
+      }
+    }
+    return runConfigurationProviders;
   }
 
   public List<RunConfigurationProvider> getRunConfigurationProviders() {

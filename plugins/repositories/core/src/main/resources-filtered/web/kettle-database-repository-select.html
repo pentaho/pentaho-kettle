@@ -6,10 +6,22 @@
     </div>
     <div>
       <button id="delete" class="right margin_left_10 secondary" ng-class="{visible : selectedDatabase || databases.length == 1}"
-          type="button" ng-click="deleteConnection()">{{ 'repositories.delete.label' | translate }}</button>
+          type="button" ng-click="deleteConnection()">
+        <span>
+          {{ 'repositories.delete.label' | translate }}
+        </span>
+      </button>
       <button id="edit" class="right margin_left_10 secondary" ng-class="{visible : selectedDatabase || databases.length == 1}"
-          type="button" ng-click="editConnection()">{{ 'repositories.edit.label' | translate }}</button>
-      <button id="new" class="right secondary" type="button" ng-click="createNewConnection()">{{ 'repositories.database.new.label' | translate }}</button>
+          type="button" ng-click="editConnection()">
+        <span>
+          {{ 'repositories.edit.label' | translate }}
+        </span>
+      </button>
+      <button id="new" class="right secondary" type="button" ng-click="createNewConnection()">
+        <span>
+          {{ 'repositories.database.new.label' | translate }}
+        </span>
+      </button>
     </div>
   </div>
 </div>
@@ -20,7 +32,11 @@
       <textarea id="no_conn" class="text_center" readonly="readonly">{{ 'repositories.database.none.label' | translate }}</textarea>
     </div>
     <div>
-      <button class="same_width standard" type="button" ng-click="createNewConnection()">{{ 'repositories.database.create.label' | translate }}</button>
+      <button class="same_width standard" type="button" ng-click="createNewConnection()">
+        <span>
+          {{ 'repositories.database.create.label' | translate }}
+        </span>
+      </button>
     </div>
   </div>
 </div>
@@ -30,6 +46,10 @@
   </div>
   <div>
     <img class="left helpImg" alt="" src="images/help.svg" /><a id="btnHelp" class="left" ng-click="help()">{{ 'repositories.help.label' | translate }}</a>
-    <button class="right standard" type="button" ng-click="back()">{{ 'repositories.back.label' | translate }}</button>
+    <button class="right standard" type="button" ng-click="back()">
+      <span>
+        {{ 'repositories.back.label' | translate }}
+      </span>
+    </button>
   </div>
 </div>

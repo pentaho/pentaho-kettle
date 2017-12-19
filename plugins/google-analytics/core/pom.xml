@@ -7,17 +7,17 @@
   <parent>
     <groupId>org.pentaho.di.plugins</groupId>
     <artifactId>google-analytics</artifactId>
-    <version>8.0-SNAPSHOT</version>
+    <version>8.1.0.0-SNAPSHOT</version>
   </parent>
 
   <artifactId>pdi-google-analytics-plugin-core</artifactId>
-  <version>8.0-SNAPSHOT</version>
+  <version>8.1.0.0-SNAPSHOT</version>
   <packaging>jar</packaging>
 
   <name>PDI Google Analytics Plugin Core</name>
 
   <properties>
-    <pentaho-kettle.version>${project.version}</pentaho-kettle.version>
+    <pdi.version>8.1.0.0-SNAPSHOT</pdi.version>
     <commons-vfs2.version>2.1-20150824</commons-vfs2.version>
     <commons-codec.version>1.9</commons-codec.version>
     <commons-lang.version>2.6</commons-lang.version>
@@ -29,13 +29,14 @@
     <timestamp>${maven.build.timestamp}</timestamp>
     <build.description>${project.description}</build.description>
     <maven.build.timestamp.format>yyyy/MM/dd hh:mm</maven.build.timestamp.format>
+    <fasterxml.jackson.core.version>2.9.2</fasterxml.jackson.core.version>
   </properties>
 
   <dependencies>
     <dependency>
       <groupId>pentaho-kettle</groupId>
       <artifactId>kettle-engine</artifactId>
-      <version>${pentaho-kettle.version}</version>
+      <version>${pdi.version}</version>
       <exclusions>
         <exclusion>
           <groupId>*</groupId>
@@ -46,7 +47,7 @@
     <dependency>
       <groupId>pentaho-kettle</groupId>
       <artifactId>kettle-core</artifactId>
-      <version>${pentaho-kettle.version}</version>
+      <version>${pdi.version}</version>
       <exclusions>
         <exclusion>
           <groupId>*</groupId>
@@ -57,7 +58,7 @@
     <dependency>
       <groupId>pentaho-kettle</groupId>
       <artifactId>kettle-ui-swt</artifactId>
-      <version>${pentaho-kettle.version}</version>
+      <version>${pdi.version}</version>
       <exclusions>
         <exclusion>
           <groupId>*</groupId>
@@ -110,6 +111,17 @@
       <groupId>com.google.http-client</groupId>
       <artifactId>google-http-client-jackson2</artifactId>
       <version>1.20.0</version>
+      <exclusions>
+        <exclusion>
+          <artifactId>jackson-core</artifactId>
+          <groupId>com.fasterxml.jackson.core</groupId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <artifactId>jackson-core</artifactId>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <version>${fasterxml.jackson.core.version}</version>
     </dependency>
     <dependency>
       <groupId>com.google.http-client</groupId>
@@ -166,7 +178,7 @@
     <dependency>
       <groupId>pentaho-kettle</groupId>
       <artifactId>kettle-engine</artifactId>
-      <version>${pentaho-kettle.version}</version>
+      <version>${pdi.version}</version>
       <classifier>tests</classifier>
       <scope>test</scope>
     </dependency>

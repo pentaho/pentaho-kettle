@@ -1,6 +1,6 @@
 /********************************************************************************
  *  Portions Copyright (C) 2000-2003  Enterprise Distributed Technologies Ltd
- *  Portions Copyright (c) 2002-2013 by Pentaho : http://www.pentaho.com
+ *  Portions Copyright (c) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
  *
  *  This file is dual licensed under the terms of the Apache Software License
  *  Version 2.0, and the GNU Lesser GPL Version 2.1 as provided for by the

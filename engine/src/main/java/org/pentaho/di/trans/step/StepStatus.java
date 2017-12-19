@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -60,22 +60,39 @@ public class StepStatus {
   private String priority;
   private boolean stopped;
   private boolean paused;
+  private long accumlatedRuntime;
 
   private RowMetaInterface sampleRowMeta;
   private List<Object[]> sampleRows;
+  private final DecimalFormat speedDf = new DecimalFormat( "#,###,###,###,##0" );
 
   public StepStatus() {
     sampleRows = Collections.synchronizedList( new LinkedList<Object[]>() );
   }
 
   public StepStatus( StepInterface baseStep ) {
-    // Proc: nr of lines processed: input + output!
-    long in_proc = Math.max( baseStep.getLinesInput(), baseStep.getLinesRead() );
-    long out_proc =
-      Math.max( baseStep.getLinesOutput() + baseStep.getLinesUpdated(), baseStep.getLinesWritten()
-        + baseStep.getLinesRejected() );
+    updateAll( baseStep );
+  }
 
-    float lapsed = ( (float) baseStep.getRuntime() ) / 1000;
+  public synchronized void updateAll( StepInterface baseStep ) {
+    // Proc: nr of lines processed: input + output!
+
+    this.stepname = baseStep.getStepname();
+    this.copy = baseStep.getCopy();
+    this.linesRead = linesRead + baseStep.getLinesRead();
+    this.linesWritten = linesWritten + baseStep.getLinesWritten();
+    this.linesInput = linesInput + baseStep.getLinesInput();
+    this.linesOutput = linesOutput + baseStep.getLinesOutput();
+    this.linesUpdated = linesUpdated + baseStep.getLinesUpdated();
+    this.linesRejected = linesRejected + baseStep.getLinesRejected();
+    this.errors = errors + baseStep.getErrors();
+    this.accumlatedRuntime = accumlatedRuntime + baseStep.getRuntime();
+    this.statusDescription = baseStep.getStatus().getDescription();
+
+    long in_proc = Math.max( linesInput, linesRead );
+    long out_proc = Math.max( linesOutput + linesUpdated, linesWritten + linesRejected );
+
+    float lapsed = ( (float) accumlatedRuntime ) / 1000;
     double in_speed = 0;
     double out_speed = 0;
 
@@ -85,18 +102,7 @@ public class StepStatus {
     }
 
     double speedNumber = ( in_speed > out_speed ? in_speed : out_speed );
-    DecimalFormat speedDf = new DecimalFormat( "#,###,###,###,##0" );
 
-    this.stepname = baseStep.getStepname();
-    this.copy = baseStep.getCopy();
-    this.linesRead = baseStep.getLinesRead();
-    this.linesWritten = baseStep.getLinesWritten();
-    this.linesInput = baseStep.getLinesInput();
-    this.linesOutput = baseStep.getLinesOutput();
-    this.linesUpdated = baseStep.getLinesUpdated();
-    this.linesRejected = baseStep.getLinesRejected();
-    this.errors = baseStep.getErrors();
-    this.statusDescription = baseStep.getStatus().getDescription();
     this.seconds = Math.floor( ( lapsed * 10 ) + 0.5 ) / 10;
     this.speed = lapsed == 0 ? "-" : " " + speedDf.format( speedNumber );
     this.priority =
@@ -198,12 +204,16 @@ public class StepStatus {
   }
 
   public String[] getTransLogFields() {
+    return getTransLogFields( statusDescription );
+  }
+
+  public String[] getTransLogFields( String overrideDescription ) {
     String[] fields =
       new String[] {
         "", // Row number
         stepname, Integer.toString( copy ), Long.toString( linesRead ), Long.toString( linesWritten ),
         Long.toString( linesInput ), Long.toString( linesOutput ), Long.toString( linesUpdated ),
-        Long.toString( linesRejected ), Long.toString( errors ), statusDescription, convertSeconds( seconds ),
+        Long.toString( linesRejected ), Long.toString( errors ), overrideDescription, convertSeconds( seconds ),
         speed, priority, };
 
     return fields;

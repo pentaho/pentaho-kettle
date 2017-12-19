@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -158,10 +158,10 @@ public class JobEntryPluginType extends BasePluginType implements PluginTypeInte
           try {
             Document document = XMLHandler.loadXMLFile( file );
             Node pluginNode = XMLHandler.getSubNode( document, "plugin" );
-
-            registerPluginFromXmlResource(
-              pluginNode, KettleVFS.getFilename( file.getParent() ), this.getClass(), false, file
-                .getParent().getURL() );
+            if ( pluginNode != null ) {
+              registerPluginFromXmlResource( pluginNode, KettleVFS.getFilename( file.getParent() ), this
+                .getClass(), false, file.getParent().getURL() );
+            }
           } catch ( Exception e ) {
             // We want to report this plugin.xml error, perhaps an XML typo or something like that...
             //

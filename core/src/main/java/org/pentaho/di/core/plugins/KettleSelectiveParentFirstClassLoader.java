@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2014 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -24,38 +24,37 @@ package org.pentaho.di.core.plugins;
 
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 public class KettleSelectiveParentFirstClassLoader extends KettleURLClassLoader {
-  private final List<Pattern> patterns;
+  private List<Pattern> patterns = new ArrayList<>();
 
   public KettleSelectiveParentFirstClassLoader( URL[] url, ClassLoader classLoader, String[] patterns ) {
     super( url, classLoader );
-    this.patterns = initPatterns( patterns );
+    addPatterns( patterns );
   }
 
   public KettleSelectiveParentFirstClassLoader( URL[] url, ClassLoader classLoader, String name, String[] patterns ) {
     super( url, classLoader, name );
-    this.patterns = initPatterns( patterns );
+    addPatterns( patterns );
   }
 
-  private List<Pattern> initPatterns( String[] patterns ) {
-    List<Pattern> result = new ArrayList<Pattern>();
+  public void addPatterns( String[] patterns ) {
     if ( patterns != null ) {
-      for ( String pattern : patterns ) {
-        result.add( Pattern.compile( pattern ) );
-      }
+      this.patterns.addAll( Arrays.stream( patterns )
+        .map( Pattern::compile )
+        .collect( Collectors.toList() )
+      );
     }
-    return result;
   }
 
   private Class<?> loadClassParentFirst( String arg0, boolean arg1 ) throws ClassNotFoundException {
     try {
       return loadClassFromParent( arg0, arg1 );
-    } catch ( ClassNotFoundException e ) {
-      // ignore
-    } catch ( NoClassDefFoundError e ) {
+    } catch ( ClassNotFoundException | NoClassDefFoundError e ) {
       // ignore
     }
 

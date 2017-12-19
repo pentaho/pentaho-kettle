@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -31,6 +31,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.google.common.annotations.VisibleForTesting;
 import org.apache.commons.lang.StringUtils;
 import org.owasp.encoder.Encode;
 import org.pentaho.di.core.Const;
@@ -42,6 +43,7 @@ import org.pentaho.di.core.logging.SimpleLoggingObject;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
+import org.pentaho.di.www.cache.CarteStatusCache;
 
 
 public class StartTransServlet extends BaseHttpServlet implements CartePluginInterface {
@@ -51,6 +53,9 @@ public class StartTransServlet extends BaseHttpServlet implements CartePluginInt
   private static final long serialVersionUID = -5879200987669847357L;
 
   public static final String CONTEXT_PATH = "/kettle/startTrans";
+
+  @VisibleForTesting
+  CarteStatusCache cache = CarteStatusCache.getInstance();
 
   public StartTransServlet() {
   }
@@ -204,6 +209,8 @@ public class StartTransServlet extends BaseHttpServlet implements CartePluginInt
       }
 
       if ( trans != null ) {
+
+        cache.remove( trans.getLogChannelId() );
 
         // Discard old log lines from old transformation runs
         //

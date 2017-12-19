@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -28,6 +28,7 @@ import java.util.List;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.injection.AfterInjection;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.ProvidesModelerMeta;
 import org.pentaho.di.core.SQLStatement;
@@ -920,5 +921,23 @@ public class InsertUpdateMeta extends BaseStepMeta implements StepMetaInterface,
 
   @Override public List<String> getStreamFields() {
     return Arrays.asList( updateStream );
+  }
+
+  /**
+   * If we use injection we can have different arrays lengths.
+   * We need synchronize them for consistency behavior with UI
+   */
+  @AfterInjection
+  public void afterInjectionSynchronization() {
+    if ( keyStream == null || keyStream.length == 0 ) {
+      return;
+    }
+    int nrFields = keyStream.length;
+    //PDI-16349
+    if ( keyStream2.length < nrFields ) {
+      String[] newKeyStream2 = new String[ nrFields ];
+      System.arraycopy( keyStream2, 0, newKeyStream2, 0, keyStream2.length );
+      keyStream2 = newKeyStream2;
+    }
   }
 }

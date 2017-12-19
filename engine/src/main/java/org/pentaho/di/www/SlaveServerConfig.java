@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -108,7 +108,7 @@ public class SlaveServerConfig {
     slaveSequences = new ArrayList<SlaveSequence>();
     automaticCreationAllowed = false;
     metaStore = new DelegatingMetaStore();
-    // Add the local Pentaho MetaStore to the delegation.
+    // Add the local Hitachi Vantara MetaStore to the delegation.
     // This sets it as the active one.
     //
     try {

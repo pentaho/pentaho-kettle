@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -318,13 +318,13 @@ public abstract class BasePluginType implements PluginTypeInterface {
    *
    * @param clazz
    *          the plugin implementation to register
-   * @param category
+   * @param cat
    *          the category of the plugin
    * @param id
    *          the id for the plugin
    * @param name
    *          the name for the plugin
-   * @param description
+   * @param desc
    *          the description for the plugin
    * @param image
    *          the image for the plugin
@@ -495,12 +495,13 @@ public abstract class BasePluginType implements PluginTypeInterface {
    * @return The URL class loader
    */
   protected URLClassLoader createUrlClassLoader( URL jarFileUrl, ClassLoader classLoader ) {
-    List<URL> urls = new ArrayList<URL>();
+    List<URL> urls = new ArrayList<>();
 
     // Also append all the files in the underlying lib folder if it exists...
     //
     try {
-      String libFolderName = new File( URLDecoder.decode( jarFileUrl.getFile(), "UTF-8" ) ).getParent() + "/lib";
+      String libFolderName = new File( URLDecoder.decode( jarFileUrl.getFile(), "UTF-8" ) ).getParent()
+        + Const.FILE_SEPARATOR + "lib";
       if ( new File( libFolderName ).exists() ) {
         PluginFolder pluginFolder = new PluginFolder( libFolderName, false, true, searchLibDir );
         FileObject[] libFiles = pluginFolder.findJarFiles( true );
@@ -543,7 +544,7 @@ public abstract class BasePluginType implements PluginTypeInterface {
   }
 
   /**
-   * When set to true the FluginFolder objects created by this type will be instructed to search for additional plugins
+   * When set to true the PluginFolder objects created by this type will be instructed to search for additional plugins
    * in the lib directory of plugin folders.
    *
    * @param transverseLibDirs
@@ -564,8 +565,8 @@ public abstract class BasePluginType implements PluginTypeInterface {
         if ( clazz == null ) {
           throw new KettlePluginException( "Unable to load class: " + jarFilePlugin.getClassName() );
         }
-        List<String> libraries = new ArrayList<String>();
-        java.lang.annotation.Annotation annotation = null;
+        List<String> libraries = new ArrayList<>();
+        java.lang.annotation.Annotation annotation;
         try {
           annotation = clazz.getAnnotation( pluginType );
 
@@ -574,7 +575,7 @@ public abstract class BasePluginType implements PluginTypeInterface {
           FileObject fileObject = KettleVFS.getFileObject( jarFilename );
           FileObject parentFolder = fileObject.getParent();
           String parentFolderName = KettleVFS.getFilename( parentFolder );
-          String libFolderName = null;
+          String libFolderName;
           if ( parentFolderName.endsWith( Const.FILE_SEPARATOR + "lib" ) ) {
             libFolderName = parentFolderName;
           } else {
@@ -651,8 +652,9 @@ public abstract class BasePluginType implements PluginTypeInterface {
     String documentationUrl = extractDocumentationUrl( annotation );
     String casesUrl = extractCasesUrl( annotation );
     String forumUrl = extractForumUrl( annotation );
+    String classLoaderGroup = extractClassLoaderGroup( annotation );
 
-    Map<Class<?>, String> classMap = new HashMap<Class<?>, String>();
+    Map<Class<?>, String> classMap = new HashMap<>();
 
     PluginMainClassType mainType = getClass().getAnnotation( PluginMainClassType.class );
 
@@ -672,7 +674,8 @@ public abstract class BasePluginType implements PluginTypeInterface {
     PluginInterface plugin =
       new Plugin(
         ids, this.getClass(), mainType.value(), category, name, description, imageFile, separateClassLoader,
-        nativePluginType, classMap, libraries, null, pluginFolder, documentationUrl, casesUrl, forumUrl );
+        classLoaderGroup, nativePluginType, classMap, libraries, null, pluginFolder, documentationUrl,
+        casesUrl, forumUrl );
     ParentFirst parentFirstAnnotation = clazz.getAnnotation( ParentFirst.class );
     if ( parentFirstAnnotation != null ) {
       registry.addParentClassLoaderPatterns( plugin, parentFirstAnnotation.patterns() );

@@ -3,7 +3,7 @@
  *
  *  Pentaho Data Integration
  *
- *  Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
+ *  Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
  *
  * ******************************************************************************
  *
@@ -32,31 +32,53 @@ import java.security.Principal;
  */
 public class ActingPrincipal implements Principal, Serializable {
   private static final long serialVersionUID = -8326458100440326949L;
-  private String name;
+  private final boolean anonymous;
+  private final String name;
+
+  public static final ActingPrincipal ANONYMOUS = new ActingPrincipal();
 
   public ActingPrincipal( String name ) {
     this.name = name;
+    anonymous = false;
+  }
+
+  private ActingPrincipal() {
+    anonymous = true;
+    name = null;
   }
 
   @Override
-  public String getName( ) {
+  public String getName() {
     return name;
   }
 
-  public boolean equals( Object object ) {
-    if ( object instanceof ActingPrincipal ) {
-      return this.name.equals( object.toString() );
-    } else {
-      return false;
-    }
-  }
-
-  public String toString( ) {
+  public String toString() {
     return this.name;
   }
 
-  public int hashCode( ) {
-    return this.name.hashCode();
+  @Override public boolean equals( Object o ) {
+    if ( this == o ) {
+      return true;
+    }
+    if ( o == null || getClass() != o.getClass() ) {
+      return false;
+    }
+
+    ActingPrincipal that = (ActingPrincipal) o;
+
+    if ( isAnonymous() != that.isAnonymous() ) {
+      return false;
+    }
+    return getName() != null ? getName().equals( that.getName() ) : that.getName() == null;
   }
 
+  @Override public int hashCode() {
+    int result = ( isAnonymous() ? 1 : 0 );
+    result = 31 * result + ( getName() != null ? getName().hashCode() : 0 );
+    return result;
+  }
+
+  public boolean isAnonymous() {
+    return anonymous;
+  }
 }

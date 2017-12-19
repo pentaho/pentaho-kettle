@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -1935,7 +1935,7 @@ public class ConstTest extends TestCase {
 
   @Test
   public void testIsKDE() {
-    final String kdeVersion = System.getProperty( "KDE_SESSION_VERSION" );
+    final String kdeVersion = System.getenv( "KDE_SESSION_VERSION" );
     assertEquals( kdeVersion != null && !kdeVersion.isEmpty(), Const.isKDE() );
   }
 
@@ -2193,23 +2193,23 @@ public class ConstTest extends TestCase {
 
   @Test
   public void testRemoveCR() {
-    assertEquals( "foo\r\tbar", Const.removeCR( "foo\r\n\tbar" ) );
+    assertEquals( "foo\n\tbar", Const.removeCR( "foo\r\n\tbar" ) );
     assertEquals( "", Const.removeCR( "" ) );
     assertEquals( "", Const.removeCR( null ) );
-    assertEquals( "", Const.removeCR( "\n" ) );
-    assertEquals( "\r", Const.removeCR( "\n\r\n" ) );
-    assertEquals( "This \ris \ra test \rof \rthe \remergency \rbroadcast system\r",
+    assertEquals( "", Const.removeCR( "\r" ) );
+    assertEquals( "\n\n", Const.removeCR( "\n\r\n" ) );
+    assertEquals( "This \nis a \ntest of \nthe \nemergency broadcast \nsystem\n",
         Const.removeCR( "This \r\nis \ra \ntest \rof \n\rthe \r\nemergency \rbroadcast \nsystem\r\n" ) );
   }
 
   @Test
   public void testRemoveLF() {
-    assertEquals( "foo\n\tbar", Const.removeLF( "foo\r\n\tbar" ) );
+    assertEquals( "foo\r\tbar", Const.removeLF( "foo\r\n\tbar" ) );
     assertEquals( "", Const.removeLF( "" ) );
     assertEquals( "", Const.removeLF( null ) );
-    assertEquals( "", Const.removeLF( "\r" ) );
-    assertEquals( "\n", Const.removeLF( "\r\n\r" ) );
-    assertEquals( "This \nis a \ntest of \nthe \nemergency broadcast \nsystem\n",
+    assertEquals( "", Const.removeLF( "\n" ) );
+    assertEquals( "\r\r", Const.removeLF( "\r\n\r" ) );
+    assertEquals( "This \ris \ra test \rof \rthe \remergency \rbroadcast system\r",
         Const.removeLF( "This \r\nis \ra \ntest \rof \n\rthe \r\nemergency \rbroadcast \nsystem\r\n" ) );
   }
 

@@ -16,8 +16,16 @@
     </div>
     <div>
       <img class="left helpImg" alt="" src="images/help.svg" /><a id="btnHelp" class="left" ng-click="help()">{{ 'repositories.help.label' | translate }}</a>
-      <button id="btnClose" class="right margin_left_10 secondary" ng-click="close()">{{ 'repositories.close.label' | translate }}</button>
-      <button id="btnGetStarted" class="right standard" ng-click="getStarted()">{{ 'repositories.getstarted.label' | translate }}</button>
+      <button id="btnClose" class="right margin_left_10 secondary" ng-click="close()">
+        <span>
+          {{ 'repositories.close.label' | translate }}
+        </span>
+      </button>
+      <button id="btnGetStarted" class="right standard" ng-click="getStarted()">
+        <span>
+          {{ 'repositories.getstarted.label' | translate }}
+        </span>
+      </button>
     </div>
   </div>
 </div>

@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,37 +22,65 @@
 
 package org.pentaho.di.trans.steps.csvinput;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.List;
 
 public class NamedFieldsMapping implements FieldsMapping {
 
-  private final Map<Integer, Integer> actualToMetaFieldMapping;
+  private final int[] actualToMetaFieldMapping;
 
-  public NamedFieldsMapping( Map<Integer, Integer> actualToMetaFieldMapping ) {
+  public NamedFieldsMapping( int[] actualToMetaFieldMapping ) {
     this.actualToMetaFieldMapping = actualToMetaFieldMapping;
   }
 
   @Override
   public int fieldMetaIndex( int index ) {
-    Integer metaIndex = actualToMetaFieldMapping.get( index );
-    return metaIndex == null ? FieldsMapping.FIELD_DOES_NOT_EXIST : metaIndex.intValue();
+    if ( index >= size() || index < 0 ) {
+      return FIELD_DOES_NOT_EXIST;
+    }
+    return actualToMetaFieldMapping[index];
   }
 
   @Override
   public int size() {
-    return actualToMetaFieldMapping.size();
+    return actualToMetaFieldMapping.length;
   }
 
   public static NamedFieldsMapping mapping( String[] actualFieldNames, String[] metaFieldNames ) {
-    Map<String, Integer> metaNameToIndex = new HashMap<>();
-    for ( int j = 0; j < metaFieldNames.length; j++ ) {
-      metaNameToIndex.put( metaFieldNames[j], Integer.valueOf( j ) );
+    LinkedHashMap<String, List<Integer>> metaNameToIndex = new LinkedHashMap<>();
+    List<Integer> unmatchedMetaFields = new ArrayList<>();
+    int[] actualToMetaFieldMapping = new int[actualFieldNames.length];
+
+    for ( int i = 0; i < metaFieldNames.length; i++ ) {
+      List<Integer> coll = metaNameToIndex.getOrDefault( metaFieldNames[i], new ArrayList<>() );
+      coll.add( i );
+      metaNameToIndex.put( metaFieldNames[i], coll );
     }
-    Map<Integer, Integer> actualToMetaFieldMapping = new HashMap<>();
+
     for ( int i = 0; i < actualFieldNames.length; i++ ) {
-      actualToMetaFieldMapping.put( i, metaNameToIndex.get( actualFieldNames[i] ) );
+      List<Integer> columnIndexes = metaNameToIndex.get( actualFieldNames[i] );
+      if ( columnIndexes == null || columnIndexes.isEmpty() ) {
+        unmatchedMetaFields.add( i );
+        actualToMetaFieldMapping[i] = FIELD_DOES_NOT_EXIST;
+        continue;
+      }
+      actualToMetaFieldMapping[i] = columnIndexes.remove( 0 );
     }
+
+    Iterator<Integer> remainingMetaIndexes = metaNameToIndex.values().stream()
+      .flatMap( List::stream )
+      .sorted()
+      .iterator();
+
+    for ( int idx : unmatchedMetaFields ) {
+      if ( !remainingMetaIndexes.hasNext() ) {
+        break;
+      }
+      actualToMetaFieldMapping[ idx ] = remainingMetaIndexes.next();
+    }
+
     return new NamedFieldsMapping( actualToMetaFieldMapping );
   }
 

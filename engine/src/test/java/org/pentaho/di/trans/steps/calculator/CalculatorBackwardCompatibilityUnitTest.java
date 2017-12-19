@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -144,7 +144,6 @@ public class CalculatorBackwardCompatibilityUnitTest {
     ValueMetaNumber valueMeta = new ValueMetaNumber( "Value" );
     inputRowMeta.addValueMeta( valueMeta );
 
-    ;
     RowSet inputRowSet = smh.getMockInputRowSet( new Object[] { value } );
     inputRowSet.setRowMeta( inputRowMeta );
 

@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -35,12 +35,14 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettlePluginException;
 import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.exception.KettleXMLException;
+import org.pentaho.di.core.injection.AfterInjection;
 import org.pentaho.di.core.injection.Injection;
 import org.pentaho.di.core.injection.InjectionSupported;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.row.value.ValueMetaFactory;
 import org.pentaho.di.core.row.value.ValueMetaString;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
@@ -688,4 +690,25 @@ public class GaInputStepMeta extends BaseStepMeta implements StepMetaInterface {
   public void setOauthServiceAccount( String oauthServiceAccount ) {
     setOAuthServiceAccount( oauthServiceAccount );
   }
+
+  /**
+   * If we use injection we can have different arrays lengths.
+   * We need synchronize them for consistency behavior with UI
+   */
+  @AfterInjection
+  public void afterInjectionSynchronization() {
+    int nrFields = ( feedField == null ) ? -1 : feedField.length;
+    if ( nrFields <= 0 ) {
+      return;
+    }
+    String[][] rtnStringArray = Utils.normalizeArrays( nrFields, feedFieldType, outputField, conversionMask );
+    feedFieldType = rtnStringArray[ 0 ];
+    outputField = rtnStringArray[ 1 ];
+    conversionMask = rtnStringArray[ 2 ];
+
+    int[][] rtnIntArray = Utils.normalizeArrays( nrFields, outputType );
+    outputType = rtnIntArray[ 0 ];
+
+  }
+
 }

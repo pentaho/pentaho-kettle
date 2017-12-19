@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -30,7 +30,7 @@ public class ExcelInputContentParsingTest extends BaseExcelParsingTest {
     meta.setSpreadSheetType( SpreadSheetType.JXL );
     init( "sample.xls" );
 
-    setFields( new ExcelInputField(), new ExcelInputField() );
+    setFields( new ExcelInputField( "f1", -1, -1 ), new ExcelInputField( "f2", -1, -1 ) );
 
     process();
 
@@ -42,7 +42,7 @@ public class ExcelInputContentParsingTest extends BaseExcelParsingTest {
     meta.setSpreadSheetType( SpreadSheetType.POI );
     init( "sample.xlsx" );
 
-    setFields( new ExcelInputField(), new ExcelInputField() );
+    setFields( new ExcelInputField( "f1", -1, -1 ), new ExcelInputField( "f2", -1, -1 ) );
 
     process();
 
@@ -54,7 +54,7 @@ public class ExcelInputContentParsingTest extends BaseExcelParsingTest {
     meta.setSpreadSheetType( SpreadSheetType.SAX_POI );
     init( "sample.xlsx" );
 
-    setFields( new ExcelInputField(), new ExcelInputField() );
+    setFields( new ExcelInputField( "f1", -1, -1 ), new ExcelInputField( "f2", -1, -1 ) );
 
     process();
 
@@ -66,7 +66,7 @@ public class ExcelInputContentParsingTest extends BaseExcelParsingTest {
     meta.setSpreadSheetType( SpreadSheetType.ODS );
     init( "sample-2.4.ods" );
 
-    setFields( new ExcelInputField(), new ExcelInputField() );
+    setFields( new ExcelInputField( "f1", -1, -1 ), new ExcelInputField( "f2", -1, -1 ) );
 
     process();
 
@@ -78,7 +78,7 @@ public class ExcelInputContentParsingTest extends BaseExcelParsingTest {
     meta.setSpreadSheetType( SpreadSheetType.ODS );
     init( "sample-3.4.1.ods" );
 
-    setFields( new ExcelInputField(), new ExcelInputField() );
+    setFields( new ExcelInputField( "f1", -1, -1 ), new ExcelInputField( "f2", -1, -1 ) );
 
     process();
 

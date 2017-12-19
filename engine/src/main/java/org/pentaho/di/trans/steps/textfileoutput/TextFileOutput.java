@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -766,6 +766,10 @@ public class TextFileOutput extends BaseStep implements StepInterface {
     } catch ( Exception e ) {
       logError( "Exception trying to close file: " + e.toString() );
       setErrors( 1 );
+      //Clean resources
+      data.writer = null;
+      data.out = null;
+      data.fos = null;
       retval = false;
     }
 
@@ -781,6 +785,12 @@ public class TextFileOutput extends BaseStep implements StepInterface {
   public boolean init( StepMetaInterface smi, StepDataInterface sdi ) {
     meta = (TextFileOutputMeta) smi;
     data = (TextFileOutputData) sdi;
+
+    //Set Embedded NamedCluter MetatStore Provider Key so that it can be passed to VFS
+    if ( getTransMeta().getNamedClusterEmbedManager() != null ) {
+      getTransMeta().getNamedClusterEmbedManager()
+        .passEmbeddedMetastoreKey( getTransMeta(), getTransMeta().getEmbeddedMetastoreProviderKey() );
+    }
 
     if ( super.init( smi, sdi ) ) {
       data.splitnr = 0;
@@ -886,6 +896,7 @@ public class TextFileOutput extends BaseStep implements StepInterface {
           data.fos.close();
         }
       } catch ( Exception e ) {
+        data.fos = null;
         logError( "Unexpected error closing file", e );
         setErrors( 1 );
       }
@@ -991,7 +1002,7 @@ public class TextFileOutput extends BaseStep implements StepInterface {
     FileObject parentfolder = null;
     try {
       // Get parent folder
-      parentfolder = getFileObject( filename ).getParent();
+      parentfolder = getFileObject( filename, getTransMeta() ).getParent();
       if ( parentfolder.exists() ) {
         if ( isDetailed() ) {
           logDetailed( BaseMessages.getString( PKG, "TextFileOutput.Log.ParentFolderExist",

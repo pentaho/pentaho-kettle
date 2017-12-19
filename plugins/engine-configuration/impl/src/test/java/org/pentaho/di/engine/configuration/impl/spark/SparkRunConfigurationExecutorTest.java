@@ -2,8 +2,8 @@
  * *****************************************************************************
  *
  *  Pentaho Data Integration
- *
- *  Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
+ s *
+ *  Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
  *
  *  *******************************************************************************
  *  Licensed under the Apache License, Version 2.0 (the "License"); you may not use
@@ -67,49 +67,85 @@ public class SparkRunConfigurationExecutorTest {
     Configuration configuration = mock( Configuration.class );
     ConfigurationAdmin configurationAdmin = mock( ConfigurationAdmin.class );
 
-    doReturn( configuration ).when( configurationAdmin ).getConfiguration( SparkRunConfigurationExecutor.CONFIG_KEY );
-
     doReturn( properties ).when( configuration ).getProperties();
 
     sparkRunConfigurationExecutor = new SparkRunConfigurationExecutor( configurationAdmin );
     capabilityProvider = mock( ICapabilityProvider.class );
 
-    capabilityManager =  DefaultCapabilityManager.getInstance();
+    capabilityManager = DefaultCapabilityManager.getInstance();
     capabilityManager.registerCapabilityProvider( capabilityProvider );
 
   }
 
   @Test
-  public void testExecute() {
+  public void testWebSocketVersionExecute() {
     SparkRunConfiguration sparkRunConfiguration = new SparkRunConfiguration();
     sparkRunConfiguration.setName( "Spark Configuration" );
+    sparkRunConfiguration.setSchema( "http://" );
     sparkRunConfiguration.setUrl( "127.0.0.2:8121" );
 
     TransExecutionConfiguration transExecutionConfiguration = new TransExecutionConfiguration();
 
     sparkRunConfigurationExecutor
-      .execute( sparkRunConfiguration, transExecutionConfiguration, abstractMeta, variableSpace );
+      .execute( sparkRunConfiguration, transExecutionConfiguration, abstractMeta, variableSpace, null );
 
     verify( variableSpace ).setVariable( "engine", "remote" );
     verify( variableSpace ).setVariable( "engine.remote", "spark" );
-    verify( properties ).put( "zookeeper.host", "127.0.0.2" );
-    verify( properties ).put( "zookeeper.port", "8121" );
+    verify( variableSpace ).setVariable( "engine.host", "127.0.0.2" );
+    verify( variableSpace ).setVariable( "engine.port", "8121" );
   }
 
   @Test
-  public void testExecuteNoPort() {
+  public void testWebSocketVersionExecuteNoPort() {
     SparkRunConfiguration sparkRunConfiguration = new SparkRunConfiguration();
     sparkRunConfiguration.setName( "Spark Configuration" );
+    doReturn( "2.0" ).when( variableSpace ).getVariable( "KETTLE_AEL_PDI_DAEMON_VERSION", "2.0" );
 
     TransExecutionConfiguration transExecutionConfiguration = new TransExecutionConfiguration();
 
     sparkRunConfigurationExecutor
-      .execute( sparkRunConfiguration, transExecutionConfiguration, abstractMeta, variableSpace );
+      .execute( sparkRunConfiguration, transExecutionConfiguration, abstractMeta, variableSpace, null );
 
     verify( variableSpace ).setVariable( "engine", "remote" );
     verify( variableSpace ).setVariable( "engine.remote", "spark" );
-    verify( properties ).put( "zookeeper.host", SparkRunConfigurationExecutor.DEFAULT_HOST );
-    verify( properties ).put( "zookeeper.port", SparkRunConfigurationExecutor.DEFAULT_PORT );
+    verify( variableSpace ).setVariable( "engine.protocol", SparkRunConfigurationExecutor.DEFAULT_PROTOCOL );
+    verify( variableSpace ).setVariable( "engine.host", SparkRunConfigurationExecutor.DEFAULT_HOST );
+    verify( variableSpace ).setVariable( "engine.port", SparkRunConfigurationExecutor.DEFAULT_WEBSOCKET_PORT );
+  }
+
+  @Test
+  public void testWssWebSocketVersionExecute() {
+    SparkRunConfiguration sparkRunConfiguration = new SparkRunConfiguration();
+    sparkRunConfiguration.setName( "Spark Configuration" );
+    sparkRunConfiguration.setSchema( "https://" );
+    sparkRunConfiguration.setUrl( "127.0.0.2:8121" );
+
+    TransExecutionConfiguration transExecutionConfiguration = new TransExecutionConfiguration();
+
+    sparkRunConfigurationExecutor
+      .execute( sparkRunConfiguration, transExecutionConfiguration, abstractMeta, variableSpace, null );
+
+    verify( variableSpace ).setVariable( "engine.protocol", "https" );
+    verify( variableSpace ).setVariable( "engine.host", "127.0.0.2" );
+    verify( variableSpace ).setVariable( "engine.port", "8121" );
+  }
+
+  @Test
+  public void testUrlWssWebSocketVersionExecute() {
+    SparkRunConfiguration sparkRunConfiguration = new SparkRunConfiguration();
+    sparkRunConfiguration.setName( "Spark Configuration" );
+    sparkRunConfiguration.setSchema( "http://" );
+    sparkRunConfiguration.setUrl( "  127.0.0.2:8121  " );
+
+
+    TransExecutionConfiguration transExecutionConfiguration = new TransExecutionConfiguration();
+
+    sparkRunConfigurationExecutor
+      .execute( sparkRunConfiguration, transExecutionConfiguration, abstractMeta, variableSpace, null );
+
+    verify( variableSpace ).setVariable( "engine.protocol", "http" );
+    verify( variableSpace ).setVariable( "engine.host", "127.0.0.2" );
+    verify( variableSpace ).setVariable( "engine.port", "8121" );
   }
 
   @Test
@@ -126,7 +162,7 @@ public class SparkRunConfigurationExecutorTest {
     TransExecutionConfiguration transExecutionConfiguration = new TransExecutionConfiguration();
 
     sparkRunConfigurationExecutor
-      .execute( sparkRunConfiguration, transExecutionConfiguration, abstractMeta, variableSpace );
+      .execute( sparkRunConfiguration, transExecutionConfiguration, abstractMeta, variableSpace, null );
 
     verify( jaasCapability ).isInstalled();
     verify( jaasCapability ).install();
@@ -147,7 +183,7 @@ public class SparkRunConfigurationExecutorTest {
     TransExecutionConfiguration transExecutionConfiguration = new TransExecutionConfiguration();
 
     sparkRunConfigurationExecutor
-      .execute( sparkRunConfiguration, transExecutionConfiguration, abstractMeta, variableSpace );
+      .execute( sparkRunConfiguration, transExecutionConfiguration, abstractMeta, variableSpace, null );
 
     verify( jaasCapability, never() ).isInstalled();
 

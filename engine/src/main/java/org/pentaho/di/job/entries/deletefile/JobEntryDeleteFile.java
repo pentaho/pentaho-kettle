@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -91,6 +91,9 @@ public class JobEntryDeleteFile extends JobEntryBase implements Cloneable, JobEn
     retval.append( super.getXML() );
     retval.append( "      " ).append( XMLHandler.addTagValue( "filename", filename ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "fail_if_file_not_exists", failIfFileNotExists ) );
+    if ( parentJobMeta != null ) {
+      parentJobMeta.getNamedClusterEmbedManager().registerUrl( filename );
+    }
 
     return retval.toString();
   }
@@ -143,6 +146,12 @@ public class JobEntryDeleteFile extends JobEntryBase implements Cloneable, JobEn
   public Result execute( Result previousResult, int nr ) {
     Result result = previousResult;
     result.setResult( false );
+
+    //Set Embedded NamedCluter MetatStore Provider Key so that it can be passed to VFS
+    if ( parentJobMeta.getNamedClusterEmbedManager() != null ) {
+      parentJobMeta.getNamedClusterEmbedManager()
+        .passEmbeddedMetastoreKey( this, parentJobMeta.getEmbeddedMetastoreProviderKey() );
+    }
 
     if ( filename != null ) {
       String realFilename = getRealFilename();
@@ -236,4 +245,5 @@ public class JobEntryDeleteFile extends JobEntryBase implements Cloneable, JobEn
     new JobEntryDeleteFile().check( remarks, null, new Variables(), null, null );
     System.out.printf( "Remarks: %s\n", remarks );
   }
+
 }

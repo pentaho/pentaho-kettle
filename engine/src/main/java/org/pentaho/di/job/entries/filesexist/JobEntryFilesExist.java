@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -88,6 +88,9 @@ public class JobEntryFilesExist extends JobEntryBase implements Cloneable, JobEn
     StringBuilder retval = new StringBuilder( 30 );
 
     retval.append( super.getXML() );
+    if ( parentJobMeta != null ) {
+      parentJobMeta.getNamedClusterEmbedManager().registerUrl( filename );
+    }
     retval.append( "      " ).append( XMLHandler.addTagValue( "filename", filename ) );
 
     retval.append( "      <fields>" ).append( Const.CR );
@@ -96,6 +99,9 @@ public class JobEntryFilesExist extends JobEntryBase implements Cloneable, JobEn
         retval.append( "        <field>" ).append( Const.CR );
         retval.append( "          " ).append( XMLHandler.addTagValue( "name", arguments[i] ) );
         retval.append( "        </field>" ).append( Const.CR );
+        if ( parentJobMeta != null ) {
+          parentJobMeta.getNamedClusterEmbedManager().registerUrl( arguments[i] );
+        }
       }
     }
     retval.append( "      </fields>" ).append( Const.CR );
@@ -197,6 +203,11 @@ public class JobEntryFilesExist extends JobEntryBase implements Cloneable, JobEn
 
         try {
           String realFilefoldername = environmentSubstitute( arguments[i] );
+          //Set Embedded NamedCluter MetatStore Provider Key so that it can be passed to VFS
+          if ( parentJobMeta.getNamedClusterEmbedManager() != null ) {
+            parentJobMeta.getNamedClusterEmbedManager()
+              .passEmbeddedMetastoreKey( this, parentJobMeta.getEmbeddedMetastoreProviderKey() );
+          }
           file = KettleVFS.getFileObject( realFilefoldername, this );
 
           if ( file.exists() && file.isReadable() ) { // TODO: is it needed to check file for readability?

@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -203,6 +203,11 @@ public class JobEntryUnZip extends JobEntryBase implements Cloneable, JobEntryIn
     retval.append( "      " ).append( XMLHandler.addTagValue( "create_move_to_directory", createMoveToDirectory ) );
     retval.append( "      " ).append(
       XMLHandler.addTagValue( "setOriginalModificationDate", setOriginalModificationDate ) );
+    if ( parentJobMeta != null ) {
+      parentJobMeta.getNamedClusterEmbedManager().registerUrl( sourcedirectory );
+      parentJobMeta.getNamedClusterEmbedManager().registerUrl( zipFilename );
+      parentJobMeta.getNamedClusterEmbedManager().registerUrl( movetodirectory );
+    }
     return retval.toString();
   }
 
@@ -320,6 +325,12 @@ public class JobEntryUnZip extends JobEntryBase implements Cloneable, JobEntryIn
     String realWildcardExclude = environmentSubstitute( wildcardexclude );
     String realTargetdirectory = environmentSubstitute( sourcedirectory );
     String realMovetodirectory = environmentSubstitute( movetodirectory );
+
+    //Set Embedded NamedCluter MetatStore Provider Key so that it can be passed to VFS
+    if ( parentJobMeta.getNamedClusterEmbedManager() != null ) {
+      parentJobMeta.getNamedClusterEmbedManager()
+        .passEmbeddedMetastoreKey( this, parentJobMeta.getEmbeddedMetastoreProviderKey() );
+    }
 
     limitFiles = Const.toInt( environmentSubstitute( getLimit() ), 10 );
     NrErrors = 0;

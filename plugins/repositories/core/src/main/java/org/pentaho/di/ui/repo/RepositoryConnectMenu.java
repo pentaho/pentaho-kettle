@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -191,9 +191,17 @@ public class RepositoryConnectMenu {
         disconnectItem.addSelectionListener( new SelectionAdapter() {
           @Override
           public void widgetSelected( SelectionEvent selectionEvent ) {
-            spoon.closeRepository();
-            repoConnectController.setConnectedRepository( null );
-            renderAndUpdate();
+            boolean cancelled = false;
+            try {
+              cancelled = !spoon.promptForSave();
+            } catch ( KettleException e ) {
+              log.logError( "Error saving Job or Transformation", e );
+            }
+            if ( !cancelled ) {
+              spoon.closeRepository();
+              repoConnectController.setConnectedRepository( null );
+              renderAndUpdate();
+            }
           }
         } );
 

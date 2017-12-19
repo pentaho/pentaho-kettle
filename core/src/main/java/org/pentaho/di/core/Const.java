@@ -3,7 +3,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -934,6 +934,11 @@ public class Const {
   public static final String KETTLE_PASSWORD_ENCODER_PLUGINS_FILE = "KETTLE_PASSWORD_ENCODER_PLUGINS_FILE";
 
   /**
+   * The name of the Kettle encryption seed environment variable for the KettleTwoWayPasswordEncoder class
+   */
+  public static final String KETTLE_TWO_WAY_PASSWORD_ENCODER_SEED = "KETTLE_TWO_WAY_PASSWORD_ENCODER_SEED";
+
+  /**
    * The XML file that contains the list of native Kettle logging plugins
    */
   public static final String XML_FILE_KETTLE_LOGGING_PLUGINS = "kettle-logging-plugins.xml";
@@ -1056,6 +1061,11 @@ public class Const {
   public static final String KETTLE_SPLIT_FIELDS_REMOVE_ENCLOSURE = "KETTLE_SPLIT_FIELDS_REMOVE_ENCLOSURE";
 
   /**
+   * Variable that is responsible for checking empty field names and types.
+   */
+  public static final String ALLOW_EMPTY_FIELD_NAMES_AND_TYPES = "ALLOW_EMPTY_FIELD_NAMES_AND_TYPES";
+
+  /**
    * Set this variable to false to preserve global log variables defined in transformation / job Properties -> Log panel.
    * Changing it to true will clear all global log variables when export transformation / job
    */
@@ -1125,6 +1135,11 @@ public class Const {
    * A variable to configure jetty option: lowResourcesMaxIdleTime for Carte
    */
   public static final String KETTLE_CARTE_JETTY_RES_MAX_IDLE_TIME = "KETTLE_CARTE_JETTY_RES_MAX_IDLE_TIME";
+
+  /**
+   * A variable to configure s3vfs to use a temporary file on upload data to S3 Amazon."
+   */
+  public static final String S3VFS_USE_TEMPORARY_FILE_ON_UPLOAD_DATA = "s3.vfs.useTempFileOnUploadData";
 
   /**
    * A variable to configure VFS USER_DIR_IS_ROOT option: should be "true" or "false"
@@ -1984,7 +1999,8 @@ public class Const {
    * Provides the documentation url with the configured base + the given URI.
    *
    * @param uri
-   *          the resource identifier for the documentation (eg. 0L0/0Y0/030/050/000)
+   *          the resource identifier for the documentation
+   *          (eg. Products/Data_Integration/Data_Integration_Perspective/050/000)
    *
    * @return the fully qualified documentation URL for the given URI
    */
@@ -3236,7 +3252,7 @@ public class Const {
    * @return cleaned string
    */
   public static String removeCR( String in ) {
-    return removeChar( in, '\n' );
+    return removeChar( in, '\r' );
   } // removeCR
 
   /**
@@ -3247,7 +3263,7 @@ public class Const {
    * @return cleaned string
    */
   public static String removeLF( String in ) {
-    return removeChar( in, '\r' );
+    return removeChar( in, '\n' );
   } // removeCRLF
 
   /**

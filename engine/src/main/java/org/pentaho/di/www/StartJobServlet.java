@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -31,6 +31,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.google.common.annotations.VisibleForTesting;
 import org.owasp.encoder.Encode;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.util.Utils;
@@ -42,6 +43,7 @@ import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.Job;
 import org.pentaho.di.job.JobConfiguration;
+import org.pentaho.di.www.cache.CarteStatusCache;
 
 
 public class StartJobServlet extends BaseHttpServlet implements CartePluginInterface {
@@ -52,6 +54,9 @@ public class StartJobServlet extends BaseHttpServlet implements CartePluginInter
   private static final long serialVersionUID = -8487225953910464032L;
 
   public static final String CONTEXT_PATH = "/kettle/startJob";
+
+  @VisibleForTesting
+  CarteStatusCache cache = CarteStatusCache.getInstance();
 
   public StartJobServlet() {
   }
@@ -218,6 +223,8 @@ public class StartJobServlet extends BaseHttpServlet implements CartePluginInter
               job.getRep().connect( null, null );
             }
           }
+
+          cache.remove( job.getLogChannelId() );
 
           // Create a new job object to start from a sane state. Then replace
           // the new job in the job map

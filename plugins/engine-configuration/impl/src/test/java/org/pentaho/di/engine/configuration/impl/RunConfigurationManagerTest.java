@@ -3,7 +3,7 @@
  *
  *  Pentaho Data Integration
  *
- *  Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
+ *  Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
  *
  *  *******************************************************************************
  *  Licensed under the Apache License, Version 2.0 (the "License"); you may not use
@@ -242,6 +242,17 @@ public class RunConfigurationManagerTest {
       @Override
       public IMetaStore getMetastore() {
         return memoryMetaStore;
+      }
+
+      @Override public String setEmbeddedMetastore( IMetaStore metastore ) {
+        return null;
+      }
+
+      @Override public void disposeMetastoreProvider( String providerKey ) {
+      }
+
+      @Override public IMetaStore getExplicitMetastore( String providerKey ) {
+        return null;
       }
     };
   }

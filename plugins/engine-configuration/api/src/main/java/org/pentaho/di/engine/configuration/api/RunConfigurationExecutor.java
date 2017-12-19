@@ -3,7 +3,7 @@
  *
  *  Pentaho Data Integration
  *
- *  Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
+ *  Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
  *
  *  *******************************************************************************
  *  Licensed under the Apache License, Version 2.0 (the "License"); you may not use
@@ -24,16 +24,16 @@
 
 package org.pentaho.di.engine.configuration.api;
 
+import org.pentaho.di.ExecutionConfiguration;
 import org.pentaho.di.base.AbstractMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.variables.VariableSpace;
-import org.pentaho.di.trans.TransExecutionConfiguration;
-import org.pentaho.di.trans.TransMeta;
+import org.pentaho.di.repository.Repository;
 
 /**
  * Created by bmorrise on 3/16/17.
  */
 public interface RunConfigurationExecutor {
-  void execute( RunConfiguration runConfiguration, TransExecutionConfiguration configuration, AbstractMeta meta,
-                VariableSpace variableSpace ) throws KettleException;
+  void execute( RunConfiguration runConfiguration, ExecutionConfiguration configuration, AbstractMeta meta,
+                VariableSpace variableSpace, Repository repository ) throws KettleException;
 }

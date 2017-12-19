@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -33,7 +33,7 @@ public interface KettleLifecycleListener {
    *           to indicate the listener did not complete successfully. Severe {@link LifecycleException}s will stop the
    *           initialization of the KettleEnvironment.
    */
-  void onEnvironmentInit() throws LifecycleException;
+  void onEnvironmentInit() throws org.pentaho.di.core.lifecycle.LifecycleException;
 
   /**
    * Called when the VM that initialized KettleEnvironment terminates.

@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -27,6 +27,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.junit.Assert;
 import org.junit.Test;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.trans.steps.loadsave.LoadSaveTester;
@@ -35,6 +36,7 @@ import org.pentaho.di.trans.steps.loadsave.validator.BooleanLoadSaveValidator;
 import org.pentaho.di.trans.steps.loadsave.validator.FieldLoadSaveValidator;
 import org.pentaho.di.trans.steps.loadsave.validator.PrimitiveBooleanArrayLoadSaveValidator;
 import org.pentaho.di.trans.steps.loadsave.validator.StringLoadSaveValidator;
+import org.pentaho.di.trans.steps.mock.StepMockHelper;
 
 public class SortedMergeMetaTest {
 
@@ -65,5 +67,30 @@ public class SortedMergeMetaTest {
         fieldLoadSaveValidatorAttributeMap, new HashMap<String, FieldLoadSaveValidator<?>>() );
 
     loadSaveTester.testSerialization();
+  }
+
+  @Test
+  public void testPDI16559() throws Exception {
+    StepMockHelper<SortedMergeMeta, SortedMergeData> mockHelper =
+        new StepMockHelper<SortedMergeMeta, SortedMergeData>( "sortedMerge", SortedMergeMeta.class, SortedMergeData.class );
+
+    SortedMergeMeta sortedMerge = new SortedMergeMeta();
+    sortedMerge.setFieldName( new String[] { "field1", "field2", "field3", "field4", "field5" } );
+    sortedMerge.setAscending( new boolean[] { false, true } );
+
+    try {
+      String badXml = sortedMerge.getXML();
+      Assert.fail( "Before calling afterInjectionSynchronization, should have thrown an ArrayIndexOOB" );
+    } catch ( Exception expected ) {
+      // Do Nothing
+    }
+    sortedMerge.afterInjectionSynchronization();
+    //run without a exception
+    String ktrXml = sortedMerge.getXML();
+
+    int targetSz = sortedMerge.getFieldName().length;
+
+    Assert.assertEquals( targetSz, sortedMerge.getAscending().length );
+
   }
 }

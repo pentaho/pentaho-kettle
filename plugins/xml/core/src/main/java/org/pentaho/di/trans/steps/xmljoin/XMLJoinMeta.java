@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,7 +22,6 @@
 
 package org.pentaho.di.trans.steps.xmljoin;
 
-import java.util.Arrays;
 import java.util.List;
 
 import org.pentaho.di.core.annotations.Step;
@@ -32,6 +31,7 @@ import org.pentaho.di.core.Const;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
+import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.injection.Injection;
 import org.pentaho.di.core.injection.InjectionSupported;
@@ -155,13 +155,21 @@ public class XMLJoinMeta extends BaseStepMeta implements StepMetaInterface {
     ValueMetaInterface v = new ValueMeta( this.getValueXMLfield(), ValueMetaInterface.TYPE_STRING );
     v.setOrigin( name );
 
-    RowMetaInterface rowMeta = ( (TransMeta) space ) .getStepFields( getTargetXMLstep() ).clone();
-    if ( rowMeta != null ) {
-      rowMeta.addValueMeta( v );
-      row.setValueMetaList( rowMeta.getValueMetaList() );
-    } else {
-      row.setValueMetaList( Arrays.asList( v ) );
+    TransMeta transMeta = (TransMeta) space;
+    try {
+      // Row should only include fields from the target and not the source. During the preview table generation
+      // the fields from all previous steps (source and target) are included in the row so lets remove the
+      // source fields.
+      for ( String fieldName : transMeta.getStepFields( transMeta.findStep( getSourceXMLstep() ),
+                                                                            null,
+                                                                            null ).getFieldNames() ) {
+        row.removeValueMeta( fieldName );
+      }
+    } catch ( KettleValueException e ) {
+      // Pass
     }
+
+    row.addValueMeta( v );
   }
 
   public String getXML() {

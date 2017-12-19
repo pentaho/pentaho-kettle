@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,7 +22,10 @@
 
 package org.pentaho.di.job.entries.filesexist;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
 
 import org.junit.After;
 import org.junit.AfterClass;
@@ -61,6 +64,8 @@ public class JobEntryFilesExistTest {
 
     job.getJobMeta().addJobEntry( new JobEntryCopy( entry ) );
     entry.setParentJob( job );
+    JobMeta mockJobMeta = mock( JobMeta.class );
+    entry.setParentJobMeta( mockJobMeta );
 
     job.setStopped( false );
 

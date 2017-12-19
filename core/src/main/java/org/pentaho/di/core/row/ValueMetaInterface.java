@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -219,6 +219,14 @@ public interface ValueMetaInterface extends Cloneable {
 
   /** Default integer length for hardcoded metadata integers */
   int DEFAULT_INTEGER_LENGTH = 10;
+
+  static String getTypeDescription( int type ) {
+    try {
+      return typeCodes[ type ];
+    } catch ( Exception e ) {
+      return "unknown/illegal";
+    }
+  }
 
   /**
    * Gets the name.

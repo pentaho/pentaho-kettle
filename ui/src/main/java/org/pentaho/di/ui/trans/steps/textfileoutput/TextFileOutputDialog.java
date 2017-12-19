@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -1568,7 +1568,6 @@ public class TextFileOutputDialog extends BaseStepDialog implements StepDialogIn
     tfoi.setHeaderEnabled( wHeader.getSelection() );
     tfoi.setFooterEnabled( wFooter.getSelection() );
     tfoi.setFileAppended( wAppend.getSelection() );
-    System.out.println( "wAppend.getSelection()-1: " + wAppend.getSelection() );
     tfoi.setStepNrInFilename( wAddStepnr.getSelection() );
     tfoi.setPartNrInFilename( wAddPartnr.getSelection() );
     tfoi.setDateInFilename( wAddDate.getSelection() );

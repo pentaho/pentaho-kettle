@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -38,8 +38,10 @@ import java.io.OutputStream;
 import java.io.PrintStream;
 import java.util.List;
 
-import static org.junit.Assert.*;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.when;
 
@@ -93,6 +95,7 @@ public class ExcelWriterStepTest {
         String content = expected.getMessage();
         if ( !content.contains( "12345678901234567890123456789012" ) ) {
           fail();
+          //CHECKSTYLE IGNORE EmptyBlock FOR NEXT 3 LINES
         } else {
           // We expected this error message, the sheet name is too long for Excel
         }

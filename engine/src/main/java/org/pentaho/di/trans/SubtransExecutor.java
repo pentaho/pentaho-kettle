@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -27,17 +27,24 @@ import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.i18n.BaseMessages;
+import org.pentaho.di.trans.step.BaseStepData.StepExecutionStatus;
+import org.pentaho.di.trans.step.StepMetaDataCombi;
+import org.pentaho.di.trans.step.StepStatus;
 import org.pentaho.di.trans.steps.TransStepUtil;
 import org.pentaho.di.trans.steps.transexecutor.TransExecutorData;
 import org.pentaho.di.trans.steps.transexecutor.TransExecutorParameters;
 
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Will run the given sub-transformation with the rows passed to execute
  */
 public class SubtransExecutor {
   private static final Class<?> PKG = SubtransExecutor.class;
+  private final Map<String, StepStatus> statuses;
   private Trans parentTrans;
   private TransMeta subtransMeta;
   private boolean shareVariables;
@@ -51,11 +58,12 @@ public class SubtransExecutor {
     this.shareVariables = shareVariables;
     this.transExecutorData = transExecutorData;
     this.parameters = parameters;
+    this.statuses = new ConcurrentHashMap<>();
   }
 
-  public Result execute( List<RowMetaAndData> rows ) throws KettleException {
+  public Optional<Result> execute( List<RowMetaAndData> rows ) throws KettleException {
     if ( rows.isEmpty() ) {
-      return null;
+      return Optional.empty();
     }
     this.transExecutorData.groupTimeStart = System.currentTimeMillis();
 
@@ -73,8 +81,23 @@ public class SubtransExecutor {
     subtrans.startThreads();
 
     subtrans.waitUntilFinished();
+    List<StepMetaDataCombi> steps = subtrans.getSteps();
+    for ( StepMetaDataCombi combi : steps ) {
+      StepStatus stepStatus;
+      if ( statuses.containsKey( combi.stepname ) ) {
+        stepStatus = statuses.get( combi.stepname );
+        stepStatus.updateAll( combi.step );
+      } else {
+        stepStatus = new StepStatus( combi.step );
+        statuses.put( combi.stepname, stepStatus );
+      }
 
-    return subtrans.getResult();
+      if ( stepStatus != null ) {
+        stepStatus.setStatusDescription( StepExecutionStatus.STATUS_RUNNING.getDescription() );
+      }
+    }
+
+    return Optional.of( subtrans.getResult() );
   }
 
   private Trans createSubtrans() {
@@ -123,5 +146,15 @@ public class SubtransExecutor {
     }
 
     internalTrans.activateParameters();
+  }
+
+  public void stop() {
+    for ( Map.Entry<String, StepStatus> entry : statuses.entrySet() ) {
+      entry.getValue().setStatusDescription( StepExecutionStatus.STATUS_STOPPED.getDescription() );
+    }
+  }
+
+  public Map<String, StepStatus> getStatuses() {
+    return statuses;
   }
 }

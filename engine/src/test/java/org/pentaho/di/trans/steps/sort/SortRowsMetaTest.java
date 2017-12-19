@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -29,8 +29,11 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import org.junit.Assert;
 import org.junit.Test;
 import static org.junit.Assert.assertEquals;
+
+import org.mockito.Mockito;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.trans.steps.loadsave.LoadSaveTester;
 import org.pentaho.di.trans.steps.loadsave.validator.ArrayLoadSaveValidator;
@@ -40,6 +43,7 @@ import org.pentaho.di.trans.steps.loadsave.validator.IntLoadSaveValidator;
 import org.pentaho.di.trans.steps.loadsave.validator.PrimitiveBooleanArrayLoadSaveValidator;
 import org.pentaho.di.trans.steps.loadsave.validator.PrimitiveIntArrayLoadSaveValidator;
 import org.pentaho.di.trans.steps.loadsave.validator.StringLoadSaveValidator;
+import org.pentaho.di.trans.steps.mock.StepMockHelper;
 
 public class SortRowsMetaTest {
 
@@ -85,5 +89,41 @@ public class SortRowsMetaTest {
     int usStrength = srm.getDefaultCollationStrength( Locale.US );
     assertEquals( Collator.TERTIARY, usStrength );
     assertEquals( Collator.IDENTICAL, srm.getDefaultCollationStrength( null ) );
+  }
+
+  @Test
+  public void testPDI16559() throws Exception {
+    StepMockHelper<SortRowsMeta, SortRowsData> mockHelper =
+        new StepMockHelper<SortRowsMeta, SortRowsData>( "sortRows", SortRowsMeta.class, SortRowsData.class );
+
+    SortRowsMeta sortRowsReal = new SortRowsMeta();
+    SortRowsMeta sortRows = Mockito.spy( sortRowsReal );
+    Mockito.doNothing().when( sortRows ).registerUrlWithDirectory();
+    sortRows.setDirectory( "/tmp" );
+    sortRows.setFieldName( new String[] { "field1", "field2", "field3", "field4", "field5" } );
+    sortRows.setAscending( new boolean[] { false, true, false } );
+    sortRows.setCaseSensitive( new boolean[] { true, false, true, false } );
+    sortRows.setCollatorEnabled( new boolean[] { false, false, true } );
+    sortRows.setCollatorStrength( new int[] { 2, 1, 3 } );
+    sortRows.setPreSortedField( new boolean[] { true, true, false } );
+
+    try {
+      String badXml = sortRows.getXML();
+      Assert.fail( "Before calling afterInjectionSynchronization, should have thrown an ArrayIndexOOB" );
+    } catch ( Exception expected ) {
+      // Do Nothing
+    }
+    sortRows.afterInjectionSynchronization();
+    //run without a exception
+    String ktrXml = sortRows.getXML();
+
+    int targetSz = sortRows.getFieldName().length;
+
+    Assert.assertEquals( targetSz, sortRows.getAscending().length );
+    Assert.assertEquals( targetSz, sortRows.getCaseSensitive().length );
+    Assert.assertEquals( targetSz, sortRows.getCollatorEnabled().length );
+    Assert.assertEquals( targetSz, sortRows.getCollatorStrength().length );
+    Assert.assertEquals( targetSz, sortRows.getPreSortedField().length );
+
   }
 }

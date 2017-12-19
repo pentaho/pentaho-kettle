@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -30,9 +30,9 @@ public class JarFileAnnotationPlugin {
   private String className;
 
   /**
+   * @param className
    * @param jarFile
-   * @param classFile
-   * @param annotation
+   * @param pluginFolder
    */
   public JarFileAnnotationPlugin( String className, URL jarFile, URL pluginFolder ) {
     this.className = className;

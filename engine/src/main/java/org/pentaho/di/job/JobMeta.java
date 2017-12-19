@@ -3,7 +3,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -31,6 +31,7 @@ import org.pentaho.di.base.AbstractMeta;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.LastUsedFile;
 import org.pentaho.di.core.NotePadMeta;
@@ -88,6 +89,7 @@ import org.pentaho.di.resource.ResourceDefinition;
 import org.pentaho.di.resource.ResourceExportInterface;
 import org.pentaho.di.resource.ResourceNamingInterface;
 import org.pentaho.di.resource.ResourceReference;
+import org.pentaho.di.trans.steps.named.cluster.NamedClusterEmbedManager;
 import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
@@ -144,6 +146,9 @@ public class JobMeta extends AbstractMeta
   protected JobEntryLogTable jobEntryLogTable;
 
   protected List<LogTableInterface> extraLogTables;
+
+  /** The log channel interface. */
+  protected LogChannelInterface log;
 
   /**
    * Constant = "SPECIAL"
@@ -231,6 +236,8 @@ public class JobMeta extends AbstractMeta
     // setInternalKettleVariables(); Don't clear the internal variables for
     // ad-hoc jobs, it's ruins the previews
     // etc.
+
+    log = LogChannel.GENERAL;
   }
 
   /**
@@ -328,9 +335,9 @@ public class JobMeta extends AbstractMeta
    * and then performing a string comparison, ultimately returning the result of the filename string comparison.
    * </ol>
    *
-   * @param t1
+   * @param j1
    *          the first job to compare
-   * @param t2
+   * @param j2
    *          the second job to compare
    * @return 0 if the two jobs are equal, 1 or -1 depending on the values (see description above)
    *
@@ -559,6 +566,9 @@ public class JobMeta extends AbstractMeta
    * @see org.pentaho.di.core.xml.XMLInterface#getXML()
    */
   public String getXML() {
+    //Clear the embedded named clusters.  We will be repopulating from steps that used named clusters
+    getNamedClusterEmbedManager().clear();
+
     Props props = null;
     if ( Props.isInitialized() ) {
       props = Props.getInstance();
@@ -894,6 +904,9 @@ public class JobMeta extends AbstractMeta
       // Set the filename here so it can be used in variables for ALL aspects of the job FIX: PDI-8890
       if ( null == rep ) {
         setFilename( fname );
+      }  else {
+        // Set the repository here so it can be used in variables for ALL aspects of the job FIX: PDI-16441
+        setRepository( rep );
       }
 
       //
@@ -1256,6 +1269,8 @@ public class JobMeta extends AbstractMeta
   public void removeJobEntry( int i ) {
     JobEntryCopy deleted = jobcopies.remove( i );
     if ( deleted != null ) {
+      // give step a chance to cleanup
+      deleted.setParentJobMeta( null );
       if ( deleted.getEntry() instanceof MissingEntry ) {
         removeMissingEntry( (MissingEntry) deleted.getEntry() );
       }
@@ -2323,10 +2338,17 @@ public class JobMeta extends AbstractMeta
       variables.setVariable( Const.INTERNAL_VARIABLE_JOB_REPOSITORY_DIRECTORY,
           variables.getVariable( Const.INTERNAL_VARIABLE_JOB_FILENAME_DIRECTORY ) );
     }
+    updateCurrentDir();
+  }
 
-    variables.setVariable( Const.INTERNAL_VARIABLE_ENTRY_CURRENT_DIRECTORY, variables.getVariable(
-        repository != null ? Const.INTERNAL_VARIABLE_JOB_REPOSITORY_DIRECTORY
-            : Const.INTERNAL_VARIABLE_JOB_FILENAME_DIRECTORY ) );
+  private void updateCurrentDir() {
+    String prevCurrentDir = variables.getVariable( Const.INTERNAL_VARIABLE_ENTRY_CURRENT_DIRECTORY );
+    String currentDir = variables.getVariable(
+      repository != null
+          ? Const.INTERNAL_VARIABLE_JOB_REPOSITORY_DIRECTORY
+          : Const.INTERNAL_VARIABLE_JOB_FILENAME_DIRECTORY );
+    variables.setVariable( Const.INTERNAL_VARIABLE_ENTRY_CURRENT_DIRECTORY, currentDir );
+    fireCurrentDirectoryChanged( prevCurrentDir, currentDir );
   }
 
   /**
@@ -2604,6 +2626,15 @@ public class JobMeta extends AbstractMeta
   }
 
   /**
+   * Gets the log channel.
+   *
+   * @return the log channel
+   */
+  public LogChannelInterface getLogChannel() {
+    return log;
+  }
+
+  /**
    * Create a unique list of job entry interfaces
    *
    * @return
@@ -2767,5 +2798,13 @@ public class JobMeta extends AbstractMeta
 
   public boolean hasMissingPlugins() {
     return missingEntries != null && !missingEntries.isEmpty();
+  }
+
+  @Override
+  public NamedClusterEmbedManager getNamedClusterEmbedManager( ) {
+    if ( namedClusterEmbedManager == null ) {
+      namedClusterEmbedManager = new NamedClusterEmbedManager( this, LogChannel.GENERAL );
+    }
+    return namedClusterEmbedManager;
   }
 }

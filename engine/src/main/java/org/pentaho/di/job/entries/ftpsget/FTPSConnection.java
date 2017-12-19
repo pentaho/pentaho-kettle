@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -40,6 +40,8 @@ import org.ftp4che.event.FTPListener;
 import org.ftp4che.util.ftpfile.FTPFile;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.util.Utils;
+import org.pentaho.di.core.variables.VariableSpace;
+import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.i18n.BaseMessages;
 
@@ -87,14 +89,25 @@ public class FTPSConnection implements FTPListener {
   private String proxyUser;
   private String proxyPassword;
   private int proxyPort;
+  private VariableSpace nameSpace;
 
+  /**
+   * Please supply real namespace as it is required for proper VFS operation
+   */
+  @Deprecated
   public FTPSConnection( int connectionType, String hostname, int port, String username, String password ) {
+    this( connectionType, hostname, port, username, password, new Variables() );
+  }
+
+  public FTPSConnection( int connectionType, String hostname, int port, String username, String password,
+                         VariableSpace nameSpace ) {
     this.hostName = hostname;
     this.portNumber = port;
     this.userName = username;
     this.passWord = password;
     this.connectionType = connectionType;
     this.passiveMode = false;
+    this.nameSpace = nameSpace;
   }
 
   /**
@@ -412,7 +425,7 @@ public class FTPSConnection implements FTPListener {
    */
   public void downloadFile( FTPFile file, String localFilename ) throws KettleException {
     try {
-      FileObject localFile = KettleVFS.getFileObject( localFilename );
+      FileObject localFile = KettleVFS.getFileObject( localFilename, nameSpace );
       writeToFile( connection.downloadStream( file ), localFile.getContent().getOutputStream(), localFilename );
     } catch ( Exception e ) {
       throw new KettleException( e );
@@ -444,7 +457,7 @@ public class FTPSConnection implements FTPListener {
     FileObject file = null;
 
     try {
-      file = KettleVFS.getFileObject( localFileName );
+      file = KettleVFS.getFileObject( localFileName, nameSpace );
       this.connection.uploadStream( file.getContent().getInputStream(), new FTPFile( new File( shortFileName ) ) );
     } catch ( Exception e ) {
       throw new KettleException( BaseMessages.getString( PKG, "JobFTPS.Error.UuploadingFile", localFileName ), e );

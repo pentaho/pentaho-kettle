@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -32,12 +32,14 @@ import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleXMLException;
+import org.pentaho.di.core.injection.AfterInjection;
 import org.pentaho.di.core.injection.Injection;
 import org.pentaho.di.core.injection.InjectionSupported;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.row.value.ValueMetaFactory;
 import org.pentaho.di.core.row.value.ValueMetaString;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
@@ -612,5 +614,36 @@ public class FieldSplitterMeta extends BaseStepMeta implements StepMetaInterface
 
   public StepDataInterface getStepData() {
     return new FieldSplitterData();
+  }
+
+  /**
+   * If we use injection we can have different arrays lengths.
+   * We need synchronize them for consistency behavior with UI
+   */
+  @AfterInjection
+  public void afterInjectionSynchronization() {
+    int nrFields = ( fieldName == null ? -1 : fieldName.length );
+    if ( nrFields <= 0 ) {
+      return;
+    }
+
+    String[][] normalizedStringArrays = Utils.normalizeArrays( nrFields, fieldID, fieldFormat, fieldGroup, fieldDecimal, fieldCurrency, fieldNullIf, fieldIfNull );
+    fieldID = normalizedStringArrays[ 0 ];
+    fieldFormat = normalizedStringArrays[ 1 ];
+    fieldGroup = normalizedStringArrays[ 2 ];
+    fieldDecimal = normalizedStringArrays[ 3 ];
+    fieldCurrency = normalizedStringArrays[ 4 ];
+    fieldNullIf = normalizedStringArrays[ 5 ];
+    fieldIfNull = normalizedStringArrays[ 6 ];
+
+    boolean[][] normalizedBooleanArrays = Utils.normalizeArrays( nrFields, fieldRemoveID );
+    fieldRemoveID = normalizedBooleanArrays[ 0 ];
+
+    int[][] normalizedIntArrays = Utils.normalizeArrays( nrFields, fieldType, fieldLength, fieldPrecision, fieldTrimType );
+    fieldType = normalizedIntArrays[ 0 ];
+    fieldLength = normalizedIntArrays[ 1 ];
+    fieldPrecision = normalizedIntArrays[ 2 ];
+    fieldTrimType = normalizedIntArrays[ 3 ];
+
   }
 }

@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -177,11 +177,13 @@ public class DataHandlerTest {
     when( accessBox.getSelectedItem() ).thenReturn( "ODBC" );
 
     DatabaseInterface dbInterface = mock( DatabaseInterface.class );
+    DatabaseMeta databaseMeta = mock( DatabaseMeta.class );
     when( dbInterface.getAccessTypeList() ).thenReturn(
       new int[]{ DatabaseMeta.TYPE_ACCESS_NATIVE, DatabaseMeta.TYPE_ACCESS_ODBC } );
     when( dbInterface.getDefaultDatabasePort() ).thenReturn( 5309 );
     when( connectionBox.getSelectedItem() ).thenReturn( "myDb" );
     DataHandler.connectionMap.put( "myDb", dbInterface );
+    dataHandler.cache = databaseMeta;
     dataHandler.getData();
     dataHandler.loadAccessData();
   }
@@ -256,6 +258,17 @@ public class DataHandlerTest {
     dataHandler.pushCache();
     dataHandler.popCache();
     verify( webappName ).setValue( "pentaho" );
+  }
+
+  @Test
+  public void testPushCacheUpdatesDatabaseInterface() throws Exception {
+    DatabaseMeta databaseMeta = mock( DatabaseMeta.class );
+    when( connectionBox.getSelectedItem() ).thenReturn( "test" );
+    dataHandler.cache = databaseMeta;
+    dataHandler.getControls();
+    dataHandler.getData();
+    dataHandler.pushCache();
+    verify( databaseMeta ).setDatabaseType( "test" );
   }
 
   @Test

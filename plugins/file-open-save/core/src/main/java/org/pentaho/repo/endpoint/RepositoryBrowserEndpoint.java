@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Pentaho Corporation. All rights reserved.
+ * Copyright 2017 Hitachi Vantara. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,10 @@
 package org.pentaho.repo.endpoint;
 
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.exception.KettleJobException;
 import org.pentaho.di.core.exception.KettleObjectExistsException;
+import org.pentaho.di.core.exception.KettleTransException;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.repo.controller.RepositoryBrowserController;
 import org.pentaho.repo.model.RepositoryDirectory;
@@ -27,10 +30,8 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-
 import java.util.Collections;
 import java.util.List;
 
@@ -46,10 +47,17 @@ public class RepositoryBrowserEndpoint {
   }
 
   @GET
-  @Path( "/loadDirectoryTree" )
+  @Path( "/loadDirectoryTree{filter : (/filter)?}" )
   @Produces( { MediaType.APPLICATION_JSON } )
-  public Response loadDirectoryTree() {
-    List<RepositoryDirectory> repositoryDirectories = repositoryBrowserController.loadDirectoryTree();
+  public Response loadDirectoryTree( @PathParam( "filter" ) String filter ) {
+    List<RepositoryDirectory> repositoryDirectories;
+    if ( filter.equals( "false" ) ) {
+      repositoryDirectories = repositoryBrowserController.loadDirectoryTree( null );
+    } else {
+      repositoryDirectories = Utils.isEmpty( filter ) ? repositoryBrowserController.loadDirectoryTree()
+        : repositoryBrowserController.loadDirectoryTree( filter );
+    }
+
     if ( repositoryDirectories != null ) {
       return Response.ok( repositoryDirectories ).build();
     }
@@ -99,17 +107,20 @@ public class RepositoryBrowserEndpoint {
   }
 
   @POST
-  @Path( "/rename/{id}/{path}/{name}/{type}" )
+  @Path( "/rename/{id}/{path}/{newName}/{type}/{oldName}" )
   public Response rename( @PathParam( "id" ) String id, @PathParam( "path" ) String path,
-                          @PathParam( "name" ) String name, @PathParam( "type" ) String type ) {
+                          @PathParam( "newName" ) String newName, @PathParam( "type" ) String type,
+                          @PathParam( "oldName" ) String oldName ) {
 
     try {
-      ObjectId objectId = repositoryBrowserController.rename( id, path, name, type );
+      ObjectId objectId = repositoryBrowserController.rename( id, path, newName, type, oldName );
       if ( objectId != null ) {
         return Response.ok( objectId ).build();
       }
     } catch ( KettleObjectExistsException koee ) {
       return Response.status( Response.Status.CONFLICT ).build();
+    } catch ( KettleTransException | KettleJobException ktje ) {
+      return Response.status( Response.Status.NOT_ACCEPTABLE ).build();
     } catch ( KettleException ke ) {
       return Response.notModified().build();
     }
@@ -130,13 +141,17 @@ public class RepositoryBrowserEndpoint {
   }
 
   @DELETE
-  @Path( "/remove/{id}/{type}" )
-  public Response delete( @PathParam( "id" ) String id, @PathParam( "type" ) String type ) {
-    if ( repositoryBrowserController.remove( id, type ) ) {
-      return Response.ok().build();
+  @Path( "/remove/{id}/{name}/{path}/{type}" )
+  public Response delete( @PathParam( "id" ) String id, @PathParam( "name" ) String name,
+                          @PathParam( "path" ) String path, @PathParam( "type" ) String type ) {
+    try {
+      if ( repositoryBrowserController.remove( id, name, path, type ) ) {
+        return Response.ok().build();
+      }
+    } catch ( KettleException ke ) {
+      return Response.status( Response.Status.NOT_ACCEPTABLE ).build();
     }
-
-    return Response.noContent().build();
+    return Response.status( Response.Status.NOT_MODIFIED ).build();
   }
 
   @GET
@@ -147,14 +162,30 @@ public class RepositoryBrowserEndpoint {
   }
 
   @GET
+  @Path( "/updateRecentFiles/{oldPath}/{newPath}" )
+  @Produces( { MediaType.APPLICATION_JSON } )
+  public Response updateRecentFiles( @PathParam( "oldPath" ) String oldPath, @PathParam( "newPath" ) String newPath ) {
+    return Response.ok( repositoryBrowserController.updateRecentFiles( oldPath, newPath ) ).build();
+  }
+
+  @GET
   @Path( "/recentSearches" )
   @Produces( { MediaType.APPLICATION_JSON } )
-  public Response recentSearches() { return Response.ok( repositoryBrowserController.getRecentSearches() ).build(); }
+  public Response recentSearches() {
+    return Response.ok( repositoryBrowserController.getRecentSearches() ).build();
+  }
 
   @GET
   @Path( "/storeRecentSearch/{recentSearch}" )
   @Produces( { MediaType.APPLICATION_JSON } )
   public Response storeRecentSearch( @PathParam( "recentSearch" ) String recentSearch ) {
     return Response.ok( repositoryBrowserController.storeRecentSearch( recentSearch ) ).build();
+  }
+
+  @GET
+  @Path( "/currentRepo" )
+  @Produces( { MediaType.APPLICATION_JSON } )
+  public Response getCurrentRepo() {
+    return Response.ok( repositoryBrowserController.getCurrentRepo() ).build();
   }
 }

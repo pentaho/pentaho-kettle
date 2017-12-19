@@ -4,7 +4,7 @@
   <modelVersion>4.0.0</modelVersion>
 
   <artifactId>repositories-plugin-core</artifactId>
-  <version>8.0-SNAPSHOT</version>
+  <version>8.1.0.0-SNAPSHOT</version>
   <packaging>bundle</packaging>
 
   <name>PDI Repositories Plugin Core</name>
@@ -12,23 +12,20 @@
   <parent>
     <groupId>org.pentaho.di.plugins</groupId>
     <artifactId>repositories</artifactId>
-    <version>8.0-SNAPSHOT</version>
+    <version>8.1.0.0-SNAPSHOT</version>
   </parent>
 
   <properties>
-    <pentaho-kettle.version>8.0-SNAPSHOT</pentaho-kettle.version>
-
+    <pdi.version>8.1.0.0-SNAPSHOT</pdi.version>
+    <fasterxml.jackson.version>2.5.4</fasterxml.jackson.version>
     <javax.ws.rs-api.version>2.0</javax.ws.rs-api.version>
     <guava.version>17.0</guava.version>
-    <xercesImpl.version>2.9.1</xercesImpl.version>
     <jackson-mapper-asl.version>1.9.2</jackson-mapper-asl.version>
     <mockito-all.version>1.9.5</mockito-all.version>
     <karaf.version>3.0.3</karaf.version>
     <osgi.version>4.3.1</osgi.version>
-    <fasterxml.jackson.version>2.5.4</fasterxml.jackson.version>
     <json-simple.version>1.1</json-simple.version>
     <javax.servlet-api.version>3.0.1</javax.servlet-api.version>
-    <jackson.version>1.9.2</jackson.version>
     <commons-vfs2.version>2.1-20150824</commons-vfs2.version>
     <eclipse.version>3.6.0</eclipse.version>
     <pax-web-spi.version>3.1.4</pax-web-spi.version>
@@ -39,7 +36,7 @@
     <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>
       <artifactId>jackson-core</artifactId>
-      <version>${fasterxml.jackson.version}</version>
+      <version>${fasterxml.jackson.core.version}</version>
       <exclusions>
         <exclusion>
           <artifactId>*</artifactId>
@@ -50,18 +47,7 @@
     <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>
       <artifactId>jackson-annotations</artifactId>
-      <version>${fasterxml.jackson.version}</version>
-      <exclusions>
-        <exclusion>
-          <artifactId>*</artifactId>
-          <groupId>*</groupId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-    <dependency>
-      <groupId>com.fasterxml.jackson.jaxrs</groupId>
-      <artifactId>jackson-jaxrs-json-provider</artifactId>
-      <version>${fasterxml.jackson.version}</version>
+      <version>${fasterxml.jackson.core.version}</version>
       <exclusions>
         <exclusion>
           <artifactId>*</artifactId>
@@ -72,6 +58,17 @@
     <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>
       <artifactId>jackson-databind</artifactId>
+      <version>${fasterxml.jackson.core.version}</version>
+      <exclusions>
+        <exclusion>
+          <artifactId>*</artifactId>
+          <groupId>*</groupId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>com.fasterxml.jackson.jaxrs</groupId>
+      <artifactId>jackson-jaxrs-json-provider</artifactId>
       <version>${fasterxml.jackson.version}</version>
       <exclusions>
         <exclusion>
@@ -130,25 +127,25 @@
     <dependency>
       <groupId>pentaho-kettle</groupId>
       <artifactId>kettle-engine</artifactId>
-      <version>${pentaho-kettle.version}</version>
+      <version>${pdi.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>pentaho-kettle</groupId>
       <artifactId>kettle-core</artifactId>
-      <version>${pentaho-kettle.version}</version>
+      <version>${pdi.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>pentaho-kettle</groupId>
       <artifactId>kettle-ui-swt</artifactId>
-      <version>${pentaho-kettle.version}</version>
+      <version>${pdi.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>pentaho</groupId>
       <artifactId>metastore</artifactId>
-      <version>${pentaho-kettle.version}</version>
+      <version>${pdi.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
@@ -226,13 +223,7 @@
     <dependency>
       <groupId>pentaho</groupId>
       <artifactId>pentaho-vfs-browser</artifactId>
-      <version>${pentaho-kettle.version}</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>xerces</groupId>
-      <artifactId>xercesImpl</artifactId>
-      <version>${xercesImpl.version}</version>
+      <version>${pdi.version}</version>
       <scope>test</scope>
     </dependency>
     <dependency>

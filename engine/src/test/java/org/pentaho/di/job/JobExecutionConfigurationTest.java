@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -135,16 +135,19 @@ public class JobExecutionConfigurationTest {
     final long passedBatchId2 = 5L;
 
     jec.setPassedBatchId( passedBatchId0 );
+    //CHECKSTYLE IGNORE AvoidNestedBlocks FOR NEXT 3 LINES
     {
       JobExecutionConfiguration jecCopy = (JobExecutionConfiguration) jec.clone();
       assertEquals( "clone-copy", jec.getPassedBatchId(), jecCopy.getPassedBatchId() );
     }
     jec.setPassedBatchId( passedBatchId1 );
+    //CHECKSTYLE IGNORE AvoidNestedBlocks FOR NEXT 3 LINES
     {
       JobExecutionConfiguration jecCopy = (JobExecutionConfiguration) jec.clone();
       assertEquals( "clone-copy", jec.getPassedBatchId(), jecCopy.getPassedBatchId() );
     }
     jec.setPassedBatchId( passedBatchId2 );
+    //CHECKSTYLE IGNORE AvoidNestedBlocks FOR NEXT 3 LINES
     {
       JobExecutionConfiguration jecCopy = (JobExecutionConfiguration) jec.clone();
       assertEquals( "clone-copy", jec.getPassedBatchId(), jecCopy.getPassedBatchId() );
@@ -159,6 +162,7 @@ public class JobExecutionConfigurationTest {
     final long passedBatchId2 = 5L;
 
     jec.setPassedBatchId( passedBatchId0 );
+    //CHECKSTYLE IGNORE AvoidNestedBlocks FOR NEXT 3 LINES
     {
       String xml = jec.getXML();
       Document doc = XMLHandler.loadXMLString( xml );
@@ -167,6 +171,7 @@ public class JobExecutionConfigurationTest {
       assertEquals( "xml-copy", jec.getPassedBatchId(), jecCopy.getPassedBatchId() );
     }
     jec.setPassedBatchId( passedBatchId1 );
+    //CHECKSTYLE IGNORE AvoidNestedBlocks FOR NEXT 3 LINES
     {
       String xml = jec.getXML();
       Document doc = XMLHandler.loadXMLString( xml );
@@ -175,6 +180,7 @@ public class JobExecutionConfigurationTest {
       assertEquals( "xml-copy", jec.getPassedBatchId(), jecCopy.getPassedBatchId() );
     }
     jec.setPassedBatchId( passedBatchId2 );
+    //CHECKSTYLE IGNORE AvoidNestedBlocks FOR NEXT 3 LINES
     {
       String xml = jec.getXML();
       Document doc = XMLHandler.loadXMLString( xml );

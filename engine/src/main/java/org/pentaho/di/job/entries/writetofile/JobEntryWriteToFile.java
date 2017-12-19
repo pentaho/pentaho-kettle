@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -97,6 +97,10 @@ public class JobEntryWriteToFile extends JobEntryBase implements Cloneable, JobE
     retval.append( "      " ).append( XMLHandler.addTagValue( "appendFile", appendFile ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "content", content ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "encoding", encoding ) );
+    if ( parentJobMeta != null ) {
+      parentJobMeta.getNamedClusterEmbedManager().registerUrl( filename );
+    }
+
     return retval.toString();
   }
 
@@ -176,6 +180,13 @@ public class JobEntryWriteToFile extends JobEntryBase implements Cloneable, JobE
 
     String realFilename = getRealFilename();
     if ( !Utils.isEmpty( realFilename ) ) {
+
+      //Set Embedded NamedCluter MetatStore Provider Key so that it can be passed to VFS
+      if ( parentJobMeta.getNamedClusterEmbedManager() != null ) {
+        parentJobMeta.getNamedClusterEmbedManager()
+          .passEmbeddedMetastoreKey( this, parentJobMeta.getEmbeddedMetastoreProviderKey() );
+      }
+
       String content = environmentSubstitute( getContent() );
       String encoding = environmentSubstitute( getEncoding() );
 
@@ -187,7 +198,7 @@ public class JobEntryWriteToFile extends JobEntryBase implements Cloneable, JobE
         createParentFolder( realFilename );
 
         // Create / open file for writing
-        os = KettleVFS.getOutputStream( realFilename, isAppendFile() );
+        os = KettleVFS.getOutputStream( realFilename, this, isAppendFile() );
 
         if ( Utils.isEmpty( encoding ) ) {
           if ( isDebug() ) {
@@ -234,7 +245,7 @@ public class JobEntryWriteToFile extends JobEntryBase implements Cloneable, JobE
   private void createParentFolder( String realFilename ) throws KettleException {
     FileObject parent = null;
     try {
-      parent = KettleVFS.getFileObject( realFilename ).getParent();
+      parent = KettleVFS.getFileObject( realFilename, this ).getParent();
       if ( !parent.exists() ) {
         if ( isCreateParentFolder() ) {
           if ( isDetailed() ) {

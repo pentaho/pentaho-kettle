@@ -3,7 +3,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -2600,13 +2600,13 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
    * @return The database object if one was found, null otherwise.
    */
   public static final DatabaseMeta findDatabase( List<? extends SharedObjectInterface> databases, String dbname ) {
-    if ( databases == null ) {
+    if ( databases == null || dbname == null ) {
       return null;
     }
 
     for ( int i = 0; i < databases.size(); i++ ) {
       DatabaseMeta ci = (DatabaseMeta) databases.get( i );
-      if ( ci.getName().equalsIgnoreCase( dbname ) ) {
+      if ( ci.getName().trim().equalsIgnoreCase( dbname.trim() ) ) {
         return ci;
       }
     }

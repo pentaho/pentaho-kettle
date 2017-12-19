@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -63,7 +63,6 @@ import org.pentaho.di.ui.spoon.SharedObjectSyncUtil;
 import org.pentaho.di.ui.spoon.Spoon;
 import org.pentaho.di.ui.spoon.dialog.GetJobSQLProgressDialog;
 import org.pentaho.di.ui.spoon.dialog.GetSQLProgressDialog;
-import org.pentaho.di.ui.util.DialogUtils;
 
 public class SpoonDBDelegate extends SpoonDelegate {
   private static Class<?> PKG = Spoon.class; // for i18n purposes, needed by Translator2!!
@@ -95,12 +94,22 @@ public class SpoonDBDelegate extends SpoonDelegate {
     getDatabaseDialog().setDatabases( hasDatabasesInterface.getDatabases() );
     String newname = getDatabaseDialog().open();
     if ( !Utils.isEmpty( newname ) ) { // null: CANCEL
+      databaseMeta.setName( originalName );
 
       databaseMeta = getDatabaseDialog().getDatabaseMeta();
-      if ( !newname.equals( originalName ) && DialogUtils.objectWithTheSameNameExists( databaseMeta,
-          hasDatabasesInterface.getDatabases() ) ) {
+      if ( !newname.equals( originalName )
+          && databaseMeta.findDatabase( hasDatabasesInterface.getDatabases(), newname ) != null ) {
+        databaseMeta.setName( newname.trim() );
         DatabaseDialog.showDatabaseExistsDialog( spoon.getShell(), databaseMeta );
+        databaseMeta.setName( originalName );
+        databaseMeta.setDisplayName( originalName );
         return;
+      }
+      databaseMeta.setName( newname.trim() );
+      databaseMeta.setDisplayName( newname.trim() );
+      saveConnection( databaseMeta, Const.VERSION_COMMENT_EDIT_VERSION );
+      if ( databaseMeta.isShared() ) {
+        sharedObjectSyncUtil.synchronizeConnections( databaseMeta, originalName );
       }
 
       saveConnection( databaseMeta, Const.VERSION_COMMENT_EDIT_VERSION );
@@ -484,10 +493,12 @@ public class SpoonDBDelegate extends SpoonDelegate {
     getDatabaseDialog().setDatabaseMeta( databaseMeta );
     String con_name = getDatabaseDialog().open();
     if ( !Utils.isEmpty( con_name ) ) {
+      con_name = con_name.trim();
+      databaseMeta.setName( con_name );
+      databaseMeta.setDisplayName( con_name );
       databaseMeta = getDatabaseDialog().getDatabaseMeta();
 
-      if ( !DialogUtils.objectWithTheSameNameExists( databaseMeta,
-              hasDatabasesInterface.getDatabases() ) ) {
+      if ( databaseMeta.findDatabase( hasDatabasesInterface.getDatabases(), con_name ) == null ) {
         hasDatabasesInterface.addDatabase( databaseMeta );
         spoon.addUndoNew( (UndoInterface) hasDatabasesInterface, new DatabaseMeta[]{(DatabaseMeta) databaseMeta
                 .clone()}, new int[]{hasDatabasesInterface.indexOfDatabase( databaseMeta )} );

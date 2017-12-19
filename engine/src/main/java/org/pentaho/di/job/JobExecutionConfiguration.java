@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -99,6 +99,8 @@ public class JobExecutionConfiguration implements ExecutionConfiguration {
   private Map<String, String> extensionOptions;
 
   private Long passedBatchId;
+
+  private String runConfiguration;
 
   public JobExecutionConfiguration() {
     executingLocally = true;
@@ -302,6 +304,14 @@ public class JobExecutionConfiguration implements ExecutionConfiguration {
    */
   public void setSafeModeEnabled( boolean usingSafeMode ) {
     this.safeModeEnabled = usingSafeMode;
+  }
+
+  @Override public String getRunConfiguration() {
+    return runConfiguration;
+  }
+
+  @Override public void setRunConfiguration( String runConfiguration ) {
+    this.runConfiguration = runConfiguration;
   }
 
   /**

@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.pentaho.di.core.KettleEnvironment;
@@ -153,4 +154,19 @@ public class OraBulkLoaderMetaTest {
       return test.equals( actual );
     }
   }
+
+  //PDI-16472
+  @Test
+  public void testGetXML() {
+    OraBulkLoaderMeta oraBulkLoaderMeta = new OraBulkLoaderMeta();
+    oraBulkLoaderMeta.setFieldTable( new String[] { "fieldTable1", "fieldTable2" } );
+    oraBulkLoaderMeta.setFieldStream( new String[] { "fieldStreamValue1" } );
+    oraBulkLoaderMeta.setDateMask( new String[] {} );
+
+    oraBulkLoaderMeta.afterInjectionSynchronization();
+    //run without exception
+    oraBulkLoaderMeta.getXML();
+    Assert.assertEquals( oraBulkLoaderMeta.getFieldStream().length, oraBulkLoaderMeta.getDateMask().length );
+  }
+
 }

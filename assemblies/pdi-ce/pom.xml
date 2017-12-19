@@ -5,7 +5,7 @@
 
   <groupId>org.pentaho.di</groupId>
   <artifactId>pdi-ce</artifactId>
-  <version>8.0-SNAPSHOT</version>
+  <version>8.1.0.0-SNAPSHOT</version>
   <packaging>pom</packaging>
 
   <name>PDI Client Community Edition</name>
@@ -13,7 +13,7 @@
   <parent>
     <artifactId>pdi-assemblies</artifactId>
     <groupId>org.pentaho.di</groupId>
-    <version>8.0-SNAPSHOT</version>
+    <version>8.1.0.0-SNAPSHOT</version>
   </parent>
 
   <properties>
@@ -21,20 +21,20 @@
     <assembly.launcher.jar>pentaho-application-launcher-${pentaho-launcher.version}.jar</assembly.launcher.jar>
 
     <pdi-dataservice-driver-bundle.version>${project.version}</pdi-dataservice-driver-bundle.version>
-    <pdi-daemon-assembly.version>${project.version}</pdi-daemon-assembly.version>
+    <ael.version>8.1.0.0-SNAPSHOT</ael.version>
     <pdi-spark-driver.version>${project.version}</pdi-spark-driver.version>
     <pdi-engine-spark.version>${project.version}</pdi-engine-spark.version>
     <rxjava.version>2.0.4</rxjava.version>
 
-    <pentaho-karaf-assembly.version>${project.version}</pentaho-karaf-assembly.version>
-    <pdi-osgi-bridge.version>${project.version}</pdi-osgi-bridge.version>
-    <pentaho-launcher.version>${project.version}</pentaho-launcher.version>
-    <pentaho-database-model.version>${project.version}</pentaho-database-model.version>
-    <pentaho-registry.version>${project.version}</pentaho-registry.version>
-    <pentaho-metaverse.version>${project.version}</pentaho-metaverse.version>
-    <pentaho-platform.version>${project.version}</pentaho-platform.version>
-    <reporting-engine.version>${project.version}</reporting-engine.version>
-    <oss-licenses.version>${project.version}</oss-licenses.version>
+    <pentaho-karaf.version>8.1.0.0-SNAPSHOT</pentaho-karaf.version>
+    <pdi-osgi-bridge.version>8.1.0.0-SNAPSHOT</pdi-osgi-bridge.version>
+    <pentaho-launcher.version>8.1.0.0-SNAPSHOT</pentaho-launcher.version>
+    <pentaho-database-model.version>8.1.0.0-SNAPSHOT</pentaho-database-model.version>
+    <pentaho-registry.version>8.1.0.0-SNAPSHOT</pentaho-registry.version>
+    <pentaho-metaverse.version>8.1.0.0-SNAPSHOT</pentaho-metaverse.version>
+    <platform.version>8.1.0.0-SNAPSHOT</platform.version>
+    <pentaho-reporting.version>8.1.0.0-SNAPSHOT</pentaho-reporting.version>
+    <oss-licenses.version>8.1.0.0-SNAPSHOT</oss-licenses.version>
 
     <!-- swt -->
     <org.eclipse.swt.gtk.linux.x86.version>4.3.2</org.eclipse.swt.gtk.linux.x86.version>
@@ -62,24 +62,29 @@
     <spring-aop.version>4.3.2.RELEASE</spring-aop.version>
     <spring-beans.version>4.3.2.RELEASE</spring-beans.version>
     <spring-context.version>4.3.2.RELEASE</spring-context.version>
-    <spring-security-core.version>4.1.3.RELEASE</spring-security-core.version>
+    <spring-security-core.version>4.2.3.RELEASE</spring-security-core.version>
     <webservices-api.version>2.3.1</webservices-api.version>
     <webservices-rt.version>2.3.1</webservices-rt.version>
     <asm.version>3.2</asm.version>
     <blueprints-core.version>2.6.0</blueprints-core.version>
     <commons-configuration.version>1.9</commons-configuration.version>
     <flexjson.version>2.1</flexjson.version>
-    <jackson-annotations.version>2.3.3</jackson-annotations.version>
-    <jackson-databind.version>2.3.3</jackson-databind.version>
-    <jackson-core.version>2.3.3</jackson-core.version>
+    <!-- jackson-databind depends on jackson-core and jackson-annotations
+    so that this artifacts have the same version to prevent compile errors -->
+    <fasterxml.jackson.core.version>2.9.2</fasterxml.jackson.core.version>
     <jackson-xc.version>1.9.3</jackson-xc.version>
     <jersey-multipart.version>1.19.1</jersey-multipart.version>
     <mimepull.version>1.9.3</mimepull.version>
     <jsr311-api.version>1.1.1</jsr311-api.version>
     <enunciate-jersey-rt.version>1.27</enunciate-jersey-rt.version>
     <enunciate-core-annotations.version>1.27</enunciate-core-annotations.version>
+    <kafka-clients.version>0.10.2.1</kafka-clients.version>
+    <tyrus-standalone-client.version>1.13.1</tyrus-standalone-client.version>
+    <spark.version>2.1.0</spark.version>
+    <databricks.version>3.2.0</databricks.version>
 
     <!-- plugins -->
+    <pdi-core-plugin.version>${project.version}</pdi-core-plugin.version>
     <kettle-version-checker.version>${project.version}</kettle-version-checker.version>
     <kettle-dummy-plugin.version>${project.version}</kettle-dummy-plugin.version>
     <kettle-s3csvinput-plugin.version>${project.version}</kettle-s3csvinput-plugin.version>
@@ -90,21 +95,23 @@
     <kettle-openerp-plugin.version>${project.version}</kettle-openerp-plugin.version>
     <kettle-palo-plugin.version>${project.version}</kettle-palo-plugin.version>
     <kettle5-log4j-plugin.version>${project.version}</kettle5-log4j-plugin.version>
-    <pdi-google-analytics-plugin.version>${project.version}</pdi-google-analytics-plugin.version>
-    <pdi-salesforce-plugin.version>${project.version}</pdi-salesforce-plugin.version>
+    <pdi-google-analytics-plugin.version>8.1.0.0-SNAPSHOT</pdi-google-analytics-plugin.version>
+    <pdi-salesforce-plugin.version>8.1.0.0-SNAPSHOT</pdi-salesforce-plugin.version>
     <ms-access-bulk-loader-plugin.version>${project.version}</ms-access-bulk-loader-plugin.version>
     <lucid-db-streaming-loader-plugin.version>${project.version}</lucid-db-streaming-loader-plugin.version>
     <gp-bulk-loader-plugin.version>${project.version}</gp-bulk-loader-plugin.version>
+    <pentaho-googledrive-vfs-plugin.version>${project.version}</pentaho-googledrive-vfs-plugin.version>
     <elasticsearch-bulk-insert-plugin.version>${project.version}</elasticsearch-bulk-insert-plugin.version>
-    <pdi-xml-plugin.version>${project.version}</pdi-xml-plugin.version>
-    <kettle-json-plugin.version>${project.version}</kettle-json-plugin.version>
-    <kettle-sap-plugin.version>${project.version}</kettle-sap-plugin.version>
-    <pentaho-big-data-plugin.version>${project.version}</pentaho-big-data-plugin.version>
-    <pentaho-cassandra-plugin.version>${project.version}</pentaho-cassandra-plugin.version>
+    <pdi-xml-plugin.version>8.1.0.0-SNAPSHOT</pdi-xml-plugin.version>
+    <pdi-json-plugin.version>8.1.0.0-SNAPSHOT</pdi-json-plugin.version>
+    <pdi-sap-plugin.version>8.1.0.0-SNAPSHOT</pdi-sap-plugin.version>
+    <big-data-plugin.version>8.1.0.0-SNAPSHOT</big-data-plugin.version>
+    <pentaho-cassandra-plugin.version>8.1.0.0-SNAPSHOT</pentaho-cassandra-plugin.version>
     <pdi-teradata-tpt-plugin-package.version>${project.version}</pdi-teradata-tpt-plugin-package.version>
-    <pdi-platform-utils-plugin.version>${project.version}</pdi-platform-utils-plugin.version>
-    <vertica-bulkloader-plugin.version>${project.version}</vertica-bulkloader-plugin.version>
-    <pdi-pur-plugin.version>${project.version}</pdi-pur-plugin.version>
+    <pdi-platform-utils-plugin.version>8.1.0.0-SNAPSHOT</pdi-platform-utils-plugin.version>
+    <vertica-bulkloader-plugin.version>8.1.0.0-SNAPSHOT</vertica-bulkloader-plugin.version>
+    <pdi-pur-plugin.version>8.1.0.0-SNAPSHOT</pdi-pur-plugin.version>
+    <pentaho-hadoop-shims-api.version>8.1.0.0-SNAPSHOT</pentaho-hadoop-shims-api.version>
 
     <!-- build plugins -->
     <properties-maven-plugin.version>1.0.0</properties-maven-plugin.version>
@@ -118,6 +125,11 @@
       <groupId>pentaho-kettle</groupId>
       <artifactId>kettle-core</artifactId>
       <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.pentaho</groupId>
+      <artifactId>pentaho-hadoop-shims-api</artifactId>
+      <version>${pentaho-hadoop-shims-api.version}</version>
     </dependency>
     <dependency>
       <groupId>pentaho-kettle</groupId>
@@ -181,6 +193,39 @@
       <artifactId>rxjava</artifactId>
       <version>${rxjava.version}</version>
     </dependency>
+    <dependency>
+      <groupId>org.apache.spark</groupId>
+      <artifactId>spark-streaming-kafka-0-10_2.11</artifactId>
+      <version>${spark.version}</version>
+      <exclusions>
+        <exclusion>
+          <groupId>*</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.kafka</groupId>
+      <artifactId>kafka-clients</artifactId>
+      <version>${kafka-clients.version}</version>
+      <exclusions>
+        <exclusion>
+          <groupId>*</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.glassfish.tyrus.bundles</groupId>
+      <artifactId>tyrus-standalone-client</artifactId>
+      <version>${tyrus-standalone-client.version}</version>
+      <exclusions>
+        <exclusion>
+          <groupId>*</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
 
     <!-- Pentaho dependencies -->
     <dependency>
@@ -213,7 +258,7 @@
     <dependency>
       <groupId>pentaho</groupId>
       <artifactId>pentaho-platform-repository</artifactId>
-      <version>${pentaho-platform.version}</version>
+      <version>${platform.version}</version>
       <exclusions>
         <exclusion>
           <groupId>*</groupId>
@@ -224,7 +269,7 @@
     <dependency>
       <groupId>pentaho</groupId>
       <artifactId>pentaho-platform-extensions</artifactId>
-      <version>${pentaho-platform.version}</version>
+      <version>${platform.version}</version>
       <exclusions>
         <exclusion>
           <groupId>*</groupId>
@@ -246,7 +291,7 @@
     <dependency>
       <groupId>pentaho</groupId>
       <artifactId>pentaho-platform-api</artifactId>
-      <version>${pentaho-platform.version}</version>
+      <version>${platform.version}</version>
       <exclusions>
         <exclusion>
           <groupId>*</groupId>
@@ -257,7 +302,7 @@
     <dependency>
       <groupId>pentaho</groupId>
       <artifactId>pentaho-platform-core</artifactId>
-      <version>${pentaho-platform.version}</version>
+      <version>${platform.version}</version>
       <exclusions>
         <exclusion>
           <groupId>*</groupId>
@@ -270,72 +315,72 @@
     <dependency>
       <groupId>org.pentaho.reporting.engine</groupId>
       <artifactId>classic-extensions</artifactId>
-      <version>${reporting-engine.version}</version>
+      <version>${pentaho-reporting.version}</version>
     </dependency>
     <dependency>
       <groupId>org.pentaho.reporting.engine</groupId>
       <artifactId>classic-extensions-drill-down</artifactId>
-      <version>${reporting-engine.version}</version>
+      <version>${pentaho-reporting.version}</version>
     </dependency>
     <dependency>
       <groupId>org.pentaho.reporting.engine</groupId>
       <artifactId>classic-extensions-kettle</artifactId>
-      <version>${reporting-engine.version}</version>
+      <version>${pentaho-reporting.version}</version>
     </dependency>
     <dependency>
       <groupId>org.pentaho.reporting.engine</groupId>
       <artifactId>classic-extensions-mondrian</artifactId>
-      <version>${reporting-engine.version}</version>
+      <version>${pentaho-reporting.version}</version>
     </dependency>
     <dependency>
       <groupId>org.pentaho.reporting.engine</groupId>
       <artifactId>classic-extensions-olap4j</artifactId>
-      <version>${reporting-engine.version}</version>
+      <version>${pentaho-reporting.version}</version>
     </dependency>
     <dependency>
       <groupId>org.pentaho.reporting.engine</groupId>
       <artifactId>classic-extensions-pmd</artifactId>
-      <version>${reporting-engine.version}</version>
+      <version>${pentaho-reporting.version}</version>
     </dependency>
     <dependency>
       <groupId>org.pentaho.reporting.engine</groupId>
       <artifactId>classic-extensions-reportdesigner-parser</artifactId>
-      <version>${reporting-engine.version}</version>
+      <version>${pentaho-reporting.version}</version>
     </dependency>
     <dependency>
       <groupId>org.pentaho.reporting.engine</groupId>
       <artifactId>classic-extensions-sampledata</artifactId>
-      <version>${reporting-engine.version}</version>
+      <version>${pentaho-reporting.version}</version>
     </dependency>
     <dependency>
       <groupId>org.pentaho.reporting.engine</groupId>
       <artifactId>classic-extensions-scripting</artifactId>
-      <version>${reporting-engine.version}</version>
+      <version>${pentaho-reporting.version}</version>
     </dependency>
     <dependency>
       <groupId>org.pentaho.reporting.engine</groupId>
       <artifactId>classic-extensions-toc</artifactId>
-      <version>${reporting-engine.version}</version>
+      <version>${pentaho-reporting.version}</version>
     </dependency>
     <dependency>
       <groupId>org.pentaho.reporting.engine</groupId>
       <artifactId>classic-extensions-xpath</artifactId>
-      <version>${reporting-engine.version}</version>
+      <version>${pentaho-reporting.version}</version>
     </dependency>
     <dependency>
       <groupId>org.pentaho.reporting.engine</groupId>
       <artifactId>legacy-charts</artifactId>
-      <version>${reporting-engine.version}</version>
+      <version>${pentaho-reporting.version}</version>
     </dependency>
     <dependency>
       <groupId>org.pentaho.reporting.engine</groupId>
       <artifactId>legacy-functions</artifactId>
-      <version>${reporting-engine.version}</version>
+      <version>${pentaho-reporting.version}</version>
     </dependency>
     <dependency>
       <groupId>org.pentaho.reporting.engine</groupId>
       <artifactId>wizard-core</artifactId>
-      <version>${reporting-engine.version}</version>
+      <version>${pentaho-reporting.version}</version>
     </dependency>
 
     <!-- Karaf Dependencies -->
@@ -581,8 +626,19 @@
     </dependency>
     <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-core</artifactId>
+      <version>${fasterxml.jackson.core.version}</version>
+      <exclusions>
+        <exclusion>
+          <groupId>*</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
       <artifactId>jackson-annotations</artifactId>
-      <version>${jackson-annotations.version}</version>
+      <version>${fasterxml.jackson.core.version}</version>
       <exclusions>
         <exclusion>
           <groupId>*</groupId>
@@ -593,18 +649,7 @@
     <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>
       <artifactId>jackson-databind</artifactId>
-      <version>${jackson-databind.version}</version>
-      <exclusions>
-        <exclusion>
-          <groupId>*</groupId>
-          <artifactId>*</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-    <dependency>
-      <groupId>com.fasterxml.jackson.core</groupId>
-      <artifactId>jackson-core</artifactId>
-      <version>${jackson-core.version}</version>
+      <version>${fasterxml.jackson.core.version}</version>
       <exclusions>
         <exclusion>
           <groupId>*</groupId>
@@ -673,6 +718,17 @@
       <groupId>org.codehaus.enunciate</groupId>
       <artifactId>enunciate-core-annotations</artifactId>
       <version>${enunciate-core-annotations.version}</version>
+      <exclusions>
+        <exclusion>
+          <groupId>*</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>com.databricks</groupId>
+      <artifactId>spark-avro_2.11</artifactId>
+      <version>${databricks.version}</version>
       <exclusions>
         <exclusion>
           <groupId>*</groupId>
@@ -773,6 +829,12 @@
               <artifactItems>
                 <artifactItem>
                   <groupId>org.pentaho.di.plugins</groupId>
+                  <artifactId>pdi-core-plugins</artifactId>
+                  <version>${pdi-core-plugin.version}</version>
+                  <type>zip</type>
+                </artifactItem>
+                <artifactItem>
+                  <groupId>org.pentaho.di.plugins</groupId>
                   <artifactId>kettle-version-checker</artifactId>
                   <version>${kettle-version-checker.version}</version>
                   <type>zip</type>
@@ -863,6 +925,12 @@
                 </artifactItem>
                 <artifactItem>
                   <groupId>org.pentaho.di.plugins</groupId>
+                  <artifactId>pentaho-googledrive-vfs-plugin</artifactId>
+                  <version>${pentaho-googledrive-vfs-plugin.version}</version>
+                  <type>zip</type>
+                </artifactItem>
+                <artifactItem>
+                  <groupId>org.pentaho.di.plugins</groupId>
                   <artifactId>elasticsearch-bulk-insert-plugin</artifactId>
                   <version>${elasticsearch-bulk-insert-plugin.version}</version>
                   <type>zip</type>
@@ -876,19 +944,19 @@
                 <artifactItem>
                   <groupId>org.pentaho.di.plugins</groupId>
                   <artifactId>kettle-json-plugin</artifactId>
-                  <version>${kettle-json-plugin.version}</version>
+                  <version>${pdi-json-plugin.version}</version>
                   <type>zip</type>
                 </artifactItem>
                 <artifactItem>
                   <groupId>org.pentaho.di.plugins</groupId>
                   <artifactId>kettle-sap-plugin</artifactId>
-                  <version>${kettle-sap-plugin.version}</version>
+                  <version>${pdi-sap-plugin.version}</version>
                   <type>zip</type>
                 </artifactItem>
                 <artifactItem>
                   <groupId>pentaho</groupId>
                   <artifactId>pentaho-big-data-plugin</artifactId>
-                  <version>${pentaho-big-data-plugin.version}</version>
+                  <version>${big-data-plugin.version}</version>
                   <type>zip</type>
                 </artifactItem>
                 <artifactItem>
@@ -898,7 +966,7 @@
                   <type>zip</type>
                 </artifactItem>
                 <artifactItem>
-                  <groupId>pentaho</groupId>
+                  <groupId>org.pentaho.di.plugins</groupId>
                   <artifactId>pdi-teradata-tpt-plugin-package</artifactId>
                   <version>${pdi-teradata-tpt-plugin-package.version}</version>
                   <type>zip</type>
@@ -936,7 +1004,7 @@
                 <artifactItem>
                   <groupId>pentaho</groupId>
                   <artifactId>pentaho-karaf-assembly</artifactId>
-                  <version>${pentaho-karaf-assembly.version}</version>
+                  <version>${pentaho-karaf.version}</version>
                   <classifier>client</classifier>
                   <type>zip</type>
                 </artifactItem>
@@ -1009,8 +1077,8 @@
               <artifactItems>
                 <artifactItem>
                   <groupId>org.pentaho.adaptive</groupId>
-                  <artifactId>pdi-daemon-assembly</artifactId>
-                  <version>${pdi-daemon-assembly.version}</version>
+                  <artifactId>pdi-websocket-daemon-assembly</artifactId>
+                  <version>${ael.version}</version>
                   <type>zip</type>
                 </artifactItem>
               </artifactItems>
@@ -1051,8 +1119,7 @@
               <target>
                 <echo message="Moving unpacked dependencies to the right place..."/>
                 <move file="${assembly.dir}/system/pentaho-karaf-assembly" tofile="${assembly.dir}/system/karaf"/>
-                <!-- TODO: remove the version from the pdi-daemon-assembly archive root dir -->
-                <move file="${assembly.dir}/pdi-daemon-assembly-${pdi-daemon-assembly.version}" tofile="${assembly.dir}/adaptive-execution"/>
+                <move file="${assembly.dir}/pdi-websocket-daemon" tofile="${assembly.dir}/adaptive-execution"/>
               </target>
             </configuration>
           </execution>

@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -257,12 +257,12 @@ public class GetStatusServlet extends BaseHttpServlet implements CartePluginInte
         Comparator<CarteObjectEntry> transComparator = new Comparator<CarteObjectEntry>() {
           @Override
           public int compare( CarteObjectEntry o1, CarteObjectEntry o2 ) {
-            Trans t1 = getTransformationMap().getTransformation( o1 ); 
-            Trans t2 = getTransformationMap().getTransformation( o2 ); 
+            Trans t1 = getTransformationMap().getTransformation( o1 );
+            Trans t2 = getTransformationMap().getTransformation( o2 );
             Date d1 = t1.getLogDate();
             Date d2 = t2.getLogDate();
             // if both transformations have last log date, desc sort by log date
-            if (d1 != null && d2 != null) {
+            if ( d1 != null && d2 != null ) {
               int logDateCompare = d2.compareTo( d1 );
               if ( logDateCompare != 0 ) {
                 return logDateCompare;
@@ -313,12 +313,12 @@ public class GetStatusServlet extends BaseHttpServlet implements CartePluginInte
         Comparator<CarteObjectEntry> jobComparator = new Comparator<CarteObjectEntry>() {
           @Override
           public int compare( CarteObjectEntry o1, CarteObjectEntry o2 ) {
-            Job t1 = getJobMap().getJob( o1 ); 
-            Job t2 = getJobMap().getJob( o2 ); 
+            Job t1 = getJobMap().getJob( o1 );
+            Job t2 = getJobMap().getJob( o2 );
             Date d1 = t1.getLogDate();
             Date d2 = t2.getLogDate();
             // if both jobs have last log date, desc sort by log date
-            if (d1 != null && d2 != null) {
+            if ( d1 != null && d2 != null ) {
               int logDateCompare = d2.compareTo( d1 );
               if ( logDateCompare != 0 ) {
                 return logDateCompare;

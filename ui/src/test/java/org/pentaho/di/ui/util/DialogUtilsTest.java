@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -123,6 +123,15 @@ public class DialogUtilsTest {
     SharedObjectInterface sharedObject = mock( SharedObjectInterface.class );
     when( sharedObject.getName() ).thenReturn( objectName );
     return Collections.singleton( sharedObject );
+  }
+
+  @Test
+  public void testGetPath() {
+    String path = "/this/is/the/path/to/file";
+    String parentPath = "/this/is/the";
+
+    String newPath = DialogUtils.getPath( parentPath, path );
+    assertEquals( "${Internal.Entry.Current.Directory}/path/to/file", newPath );
   }
 
 }

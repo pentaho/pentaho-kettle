@@ -3,7 +3,7 @@
  *
  *  Pentaho Data Integration
  *
- *  Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
+ *  Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
  *
  *  *******************************************************************************
  *  Licensed under the Apache License, Version 2.0 (the "License"); you may not use
@@ -24,6 +24,7 @@
 
 package org.pentaho.di.engine.configuration.impl.extension;
 
+import org.pentaho.di.ExecutionConfiguration;
 import org.pentaho.di.base.AbstractMeta;
 import org.pentaho.di.core.attributes.metastore.EmbeddedMetaStore;
 import org.pentaho.di.core.exception.KettleException;
@@ -36,7 +37,7 @@ import org.pentaho.di.engine.configuration.api.RunConfigurationExecutor;
 import org.pentaho.di.engine.configuration.impl.EmbeddedRunConfigurationManager;
 import org.pentaho.di.engine.configuration.impl.RunConfigurationManager;
 import org.pentaho.di.i18n.BaseMessages;
-import org.pentaho.di.trans.TransExecutionConfiguration;
+import org.pentaho.di.repository.Repository;
 import org.pentaho.di.trans.TransMeta;
 
 /**
@@ -55,18 +56,19 @@ public class RunConfigurationRunExtensionPoint implements ExtensionPointInterfac
   }
 
   @Override public void callExtensionPoint( LogChannelInterface logChannelInterface, Object o ) throws KettleException {
-    TransExecutionConfiguration transExecutionConfiguration = (TransExecutionConfiguration) ( (Object[]) o )[ 0 ];
+    ExecutionConfiguration executionConfiguration = (ExecutionConfiguration) ( (Object[]) o )[ 0 ];
     AbstractMeta meta = (AbstractMeta) ( (Object[]) o )[ 1 ];
     VariableSpace variableSpace = (VariableSpace) ( (Object[]) o )[ 2 ];
+    Repository repository = (Repository) ( (Object[]) o )[ 3 ];
     EmbeddedMetaStore embeddedMetaStore = meta.getEmbeddedMetaStore();
 
     RunConfiguration runConfiguration =
-      runConfigurationManager.load( transExecutionConfiguration.getRunConfiguration() );
+      runConfigurationManager.load( executionConfiguration.getRunConfiguration() );
 
     if ( runConfiguration == null ) {
       RunConfigurationManager embeddedRunConfigurationManager =
         EmbeddedRunConfigurationManager.build( embeddedMetaStore );
-      runConfiguration = embeddedRunConfigurationManager.load( transExecutionConfiguration.getRunConfiguration() );
+      runConfiguration = embeddedRunConfigurationManager.load( executionConfiguration.getRunConfiguration() );
     }
 
     if ( runConfiguration != null ) {
@@ -74,7 +76,7 @@ public class RunConfigurationRunExtensionPoint implements ExtensionPointInterfac
         runConfigurationManager.getExecutor( runConfiguration.getType() );
 
       if ( runConfigurationExecutor != null ) {
-        runConfigurationExecutor.execute( runConfiguration, transExecutionConfiguration, meta, variableSpace );
+        runConfigurationExecutor.execute( runConfiguration, executionConfiguration, meta, variableSpace, repository );
       }
     } else {
       String name = "";
@@ -83,7 +85,7 @@ public class RunConfigurationRunExtensionPoint implements ExtensionPointInterfac
       }
       throw new KettleException( BaseMessages
         .getString( PKG, "RunConfigurationRunExtensionPoint.ConfigNotFound.Error", name,
-          transExecutionConfiguration.getRunConfiguration(), "{0}" ) );
+          executionConfiguration.getRunConfiguration(), "{0}" ) );
     }
   }
 }

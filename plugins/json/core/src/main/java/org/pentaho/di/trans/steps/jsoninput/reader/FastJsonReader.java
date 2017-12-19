@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2016 - 2017 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -24,8 +24,6 @@ package org.pentaho.di.trans.steps.jsoninput.reader;
 
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
 import java.util.List;
 
 import org.pentaho.di.core.RowSet;
@@ -35,13 +33,13 @@ import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.steps.jsoninput.JsonInputField;
 import org.pentaho.di.trans.steps.jsoninput.JsonInputMeta;
+import org.pentaho.di.trans.steps.jsoninput.exception.JsonInputException;
 
 import com.jayway.jsonpath.Configuration;
 import com.jayway.jsonpath.JsonPath;
 import com.jayway.jsonpath.Option;
 import com.jayway.jsonpath.ParseContext;
 import com.jayway.jsonpath.ReadContext;
-import org.pentaho.di.trans.steps.jsoninput.exception.JsonInputException;
 
 /**
  * @author Samatar
@@ -76,8 +74,7 @@ public class FastJsonReader implements IJsonReader {
 
   public FastJsonReader( JsonInputField[] fields, LogChannelInterface log ) throws KettleException {
     this( log );
-    this.fields = fields;
-    this.paths = compilePaths( fields );
+    setFields( fields );
   }
 
   public void setIgnoreMissingPath( boolean value ) {
@@ -121,33 +118,66 @@ public class FastJsonReader implements IJsonReader {
   @Override
   public RowSet parse( InputStream in ) throws KettleException {
     readInput( in );
-    List<Object[]> results = evalCombinedResult();
+    List<List<?>> results = evalCombinedResult();
+    int len = results.isEmpty() ? 0 : results.get( 0 ).size();
     if ( log.isDetailed() ) {
-      log.logDetailed( BaseMessages.getString( PKG, "JsonInput.Log.NrRecords", results.size() ) );
+      log.logDetailed( BaseMessages.getString( PKG, "JsonInput.Log.NrRecords", len ) );
+    }
+    if ( len == 0 ) {
+      return getEmptyResponse();
     }
     return new TransposedRowSet( results );
   }
 
-  private static class TransposedRowSet extends SingleRowRowSet {
-    private List<Object[]> results;
+  private RowSet getEmptyResponse() {
+    RowSet nullInputResponse = new SingleRowRowSet();
+    nullInputResponse.putRow( null, new Object[ fields.length ] );
+    nullInputResponse.setDone();
+    return nullInputResponse;
+  }
 
-    public TransposedRowSet( List<Object[]> results ) {
+  private static class TransposedRowSet extends SingleRowRowSet {
+    private List<List<?>> results;
+    private final int rowCount;
+    private int rowNbr;
+    /**
+     * if should skip null-only rows; size won't be exact if set
+     */
+    private boolean cullNulls = true;
+
+    public TransposedRowSet( List<List<?>> results ) {
       super();
       this.results = results;
+      this.rowCount = results.isEmpty() ? 0 : results.get( 0 ).size();
     }
 
     @Override
     public Object[] getRow() {
-      if ( !results.isEmpty() ) {
-        return results.remove( 0 );
-      }
-
-      return null;
+      boolean allNulls = cullNulls && rowCount > 1;
+      Object[] rowData = null;
+      do {
+        if ( rowNbr >= rowCount ) {
+          results.clear();
+          return null;
+        }
+        rowData = new Object[results.size()];
+        for ( int col = 0; col < results.size(); col++ ) {
+          if ( results.get( col ).size() == 0 ) {
+            rowData[col] = null;
+            continue;
+          }
+          Object val = results.get( col ).get( rowNbr );
+          rowData[col] = val;
+          allNulls &= val == null;
+        }
+        rowNbr++;
+      } while ( allNulls );
+      return rowData;
     }
 
     @Override
     public int size() {
-      return results.size();
+      return rowCount - rowNbr;
     }
 
     @Override
@@ -162,88 +192,26 @@ public class FastJsonReader implements IJsonReader {
     }
   }
 
-  private List<Object[]> evalCombinedResult() throws JsonInputException {
+  private List<List<?>> evalCombinedResult() throws JsonInputException {
     int lastSize = -1;
     String prevPath = null;
-    List<List<?>> inputs = new ArrayList<>( paths.length );
+    List<List<?>> results = new ArrayList<>( paths.length );
     int i = 0;
     for ( JsonPath path : paths ) {
-      List<Object> input = getReadContext().read( path );
-      if ( input.size() != lastSize && lastSize > 0 & input.size() != 0 ) {
+      List<Object> result = getReadContext().read( path );
+      if ( result.size() != lastSize && lastSize > 0 & result.size() != 0 ) {
         throw new JsonInputException( BaseMessages.getString(
-            PKG, "JsonInput.Error.BadStructure", input.size(), fields[i].getPath(), prevPath, lastSize ) );
+            PKG, "JsonInput.Error.BadStructure", result.size(), fields[i].getPath(), prevPath, lastSize ) );
       }
-      if ( ( isAllNull( input ) || input.size() == 0 ) && !isIgnoreMissingPath() ) {
+      if ( !isIgnoreMissingPath() && ( isAllNull( result ) || result.size() == 0 ) ) {
         throw new JsonInputException( BaseMessages.getString( PKG, "JsonReader.Error.CanNotFindPath", fields[i].getPath() ) );
       }
-      inputs.add( input );
-      lastSize = input.size();
+      results.add( result );
+      lastSize = result.size();
       prevPath = fields[i].getPath();
       i++;
     }
-
-    List<Object[]> resultRows = convertInputsIntoResultRows( inputs );
-
-    filterOutExcessRows( resultRows );
-
-    if ( !ignoreMissingPath & paths.length != 0 ) {
-      raiseExceptionIfAnyMissingPath( resultRows );
-    }
-
-    return resultRows;
-  }
-
-  private List<Object[]> convertInputsIntoResultRows( List<List<?>> inputs ) {
-
-    List<Object[]> resultRows = null;
-
-    if ( inputs.isEmpty() ) {
-      resultRows = new ArrayList<>( 1 );
-      resultRows.add( new Object[]{} );
-      return resultRows;
-    }
-
-    int rowCount = inputs.stream().max( Comparator.comparingInt( List::size ) ).get().size();
-
-    resultRows = new ArrayList<>( rowCount );
-
-    Object[] resultRow = null;
-    for ( int rownum = 0; rownum < rowCount; rownum++ ) {
-      resultRow = new Object[ inputs.size() ];
-      for ( int col = 0; col < inputs.size(); col++ ) {
-        if ( inputs.get( col ).size() == 0 ) {
-          resultRow[ col ] = null;
-          continue;
-        }
-        resultRow[ col ] = inputs.get( col ).get( rownum );
-      }
-      resultRows.add( resultRow );
-    }
-
-    return resultRows;
-  }
-
-  private void filterOutExcessRows( List<Object[]> resultRows ) {
-    boolean atLeastOneNonNull = resultRows.stream().anyMatch( el -> Arrays.stream( el ).anyMatch( in -> in != null ) );
-
-    if ( !atLeastOneNonNull ) {
-      resultRows.clear();
-      resultRows.add( new Object[]{} );
-      return;
-    }
-
-    resultRows.removeIf( el -> Arrays.stream( el ).allMatch( in -> in == null ) );
-
-  }
-
-  private void raiseExceptionIfAnyMissingPath( List<Object[]> resultRows ) throws JsonInputException {
-    for ( Object[] resultRow : resultRows ) {
-      for ( int i = 0; i < resultRow.length; i++ ) {
-        if ( resultRow[i] == null ) {
-          throw new JsonInputException( BaseMessages.getString( PKG, "JsonReader.Error.CanNotFindPath", fields[i].getPath() ) );
-        }
-      }
-    }
+    return results;
   }
 
   public static boolean isAllNull( Iterable<?> list ) {

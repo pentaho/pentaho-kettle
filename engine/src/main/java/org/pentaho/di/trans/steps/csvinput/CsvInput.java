@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -24,13 +24,14 @@ package org.pentaho.di.trans.steps.csvinput;
 
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.io.ByteOrderMark;
+import org.apache.commons.io.input.BOMInputStream;
 import org.apache.commons.vfs2.FileObject;
 import org.apache.commons.vfs2.provider.local.LocalFile;
 import org.pentaho.di.core.Const;
@@ -350,8 +351,22 @@ public class CsvInput extends BaseStep implements StepInterface {
 
           // evaluate whether there is a need to skip a row
           if ( needToSkipRow() ) {
-            readOneRow( true, true );
+            // PDI-16589 - when reading in parallel, the previous code would introduce additional rows and / or invalid data in the output.
+            // in parallel mode we don't support new lines inside field data so it's safe to fast forward until we find a new line.
+            // when a newline is found we need to check for an additional new line character, while in unix systems it's just a single '\n',
+            // on windows systems, it's a sequence of '\r' and '\n'. finally we set the start of the buffer to the end buffer position.
+            while ( !data.newLineFound() ) {
+              data.moveEndBufferPointer();
+            }
+
+            data.moveEndBufferPointer();
+
+            if ( data.newLineFound() ) {
+              data.moveEndBufferPointer();
+            }
           }
+
+          data.setStartBuffer( data.getEndBuffer() );
         }
       }
 
@@ -408,14 +423,15 @@ public class CsvInput extends BaseStep implements StepInterface {
     return mapping;
   }
 
-  String[] readFieldNamesFromFile( String fileName, CsvInputMeta csvInputMeta )
-    throws KettleException {
+  String[] readFieldNamesFromFile( String fileName, CsvInputMeta csvInputMeta ) throws KettleException {
     String delimiter = environmentSubstitute( csvInputMeta.getDelimiter() );
     String enclosure = environmentSubstitute( csvInputMeta.getEnclosure() );
     String realEncoding = environmentSubstitute( csvInputMeta.getEncoding() );
 
     try ( FileObject fileObject = KettleVFS.getFileObject( fileName, getTransMeta() );
-        InputStream inputStream = KettleVFS.getInputStream( fileObject ) ) {
+        BOMInputStream inputStream =
+            new BOMInputStream( KettleVFS.getInputStream( fileObject ), ByteOrderMark.UTF_8, ByteOrderMark.UTF_16LE,
+                ByteOrderMark.UTF_16BE ) ) {
       InputStreamReader reader = null;
       if ( Utils.isEmpty( realEncoding ) ) {
         reader = new InputStreamReader( inputStream );
@@ -426,16 +442,12 @@ public class CsvInput extends BaseStep implements StepInterface {
       String line =
           TextFileInput.getLine( log, reader, encodingType, TextFileInputMeta.FILE_FORMAT_UNIX, new StringBuilder(
               1000 ) );
-      // remove BOM
-      boolean containsBOM = line.indexOf( "\uFEFF" ) == 0;
-      if ( containsBOM ) {
-        line = line.substring( 1 );
-      }
       String[] fieldNames =
           CsvInput.guessStringsFromLine( log, line, delimiter, enclosure, csvInputMeta.getEscapeCharacter() );
       if ( !Utils.isEmpty( csvInputMeta.getEnclosure() ) ) {
         removeEnclosure( fieldNames, csvInputMeta.getEnclosure() );
       }
+      trimFieldNames( fieldNames );
       return fieldNames;
     } catch ( IOException e ) {
       throw new KettleFileException( BaseMessages.getString( PKG, "CsvInput.Exception.CreateFieldMappingError" ), e );
@@ -446,9 +458,16 @@ public class CsvInput extends BaseStep implements StepInterface {
     TextFileInputField[] fields = csvInputMeta.getInputFields();
     String[] fieldNames = new String[fields.length];
     for ( int i = 0; i < fields.length; i++ ) {
-      fieldNames[i] = fields[i].getName();
+      // We need to sanitize field names because existing ktr files may contain field names with leading BOM
+      fieldNames[i] = EncodingType.removeBOMIfPresent( fields[i].getName() );
     }
     return fieldNames;
+  }
+
+  static void trimFieldNames( String[] strings ) {
+    for ( int i = 0; i < strings.length; i++ ) {
+      strings[i] = strings[i].trim();
+    }
   }
 
   static void removeEnclosure( String[] fields, String enclosure ) {

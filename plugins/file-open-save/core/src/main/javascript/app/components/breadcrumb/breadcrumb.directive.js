@@ -1,5 +1,5 @@
 /*!
- * Copyright 2017 Pentaho Corporation. All rights reserved.
+ * Copyright 2017 Hitachi Vantara. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,13 +18,13 @@ define([
 ], function() {
     /**
      * @param {Object} $document - $document javascript object.
-     * @return {{restrict: string, scope: {onSet: string, onHideExtras: string}, link: link}}.
+     * @return {{restrict: string, scope: {onHideExtras: string}, link: link}}.
      */
   function breadcrumbExtrasDirective($document) {
     return {
-      restrict: 'A',
+      restrict: "A",
       scope: {
-        onHideExtras: '&'
+        onHideExtras: "&"
       },
       link: function(scope, element) {
         scope.showExtras = false;

@@ -6,11 +6,11 @@
   <parent>
     <groupId>org.pentaho.di.plugins</groupId>
     <artifactId>pdi-plugins</artifactId>
-    <version>8.0-SNAPSHOT</version>
+    <version>8.1.0.0-SNAPSHOT</version>
   </parent>
 
   <artifactId>s3csvinput</artifactId>
-  <version>8.0-SNAPSHOT</version>
+  <version>8.1.0.0-SNAPSHOT</version>
   <packaging>pom</packaging>
 
   <name>PDI S3 CSV Input Plugin</name>
@@ -34,8 +34,8 @@
     <org.eclipse.swt.version>4.6</org.eclipse.swt.version>
     <jface.version>3.3.0-I20070606-0010</jface.version>
     <junit.version>4.7</junit.version>
-    <jets3t.version>0.7.0</jets3t.version>
-    <kettle.version>${project.version}</kettle.version>
+    <jets3t.version>0.9.3</jets3t.version>
+    <pdi.version>8.1.0.0-SNAPSHOT</pdi.version>
   </properties>
 
   <dependencyManagement>
@@ -43,19 +43,19 @@
       <dependency>
         <groupId>pentaho-kettle</groupId>
         <artifactId>kettle-engine</artifactId>
-        <version>${kettle.version}</version>
+        <version>${pdi.version}</version>
         <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>pentaho-kettle</groupId>
         <artifactId>kettle-core</artifactId>
-        <version>${kettle.version}</version>
+        <version>${pdi.version}</version>
         <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>pentaho-kettle</groupId>
         <artifactId>kettle-ui-swt</artifactId>
-        <version>${kettle.version}</version>
+        <version>${pdi.version}</version>
         <scope>provided</scope>
         <exclusions>
           <exclusion>
@@ -67,7 +67,7 @@
       <dependency>
         <groupId>pentaho</groupId>
         <artifactId>metastore</artifactId>
-        <version>${kettle.version}</version>
+        <version>${pdi.version}</version>
         <scope>provided</scope>
         <exclusions>
           <exclusion>
@@ -123,7 +123,7 @@
       <dependency>
         <groupId>pentaho-kettle</groupId>
         <artifactId>kettle-engine</artifactId>
-        <version>${kettle.version}</version>
+        <version>${pdi.version}</version>
         <classifier>tests</classifier>
         <scope>test</scope>
         </dependency>

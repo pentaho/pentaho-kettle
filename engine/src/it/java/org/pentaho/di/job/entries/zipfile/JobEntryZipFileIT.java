@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -59,32 +59,36 @@ public class JobEntryZipFileIT {
 
   @Test
   public void processFile_ReturnsTrue_OnSuccess() throws Exception {
-    final String zipPath = "ram://pdi-15013.zip";
+    final String zipPath = createTempZipFileName( "pdi-15013" );
     final String content = "temp file";
     final File tempFile = createTempFile( content );
     tempFile.deleteOnExit();
+
     try {
       Result result = new Result();
       JobEntryZipFile entry = new JobEntryZipFile();
       assertTrue(
-        entry.processRowFile( new Job(), result, zipPath, null, null, tempFile.getAbsolutePath(), null, false ) );
+              entry.processRowFile(new Job(), result, zipPath, null, null, tempFile.getAbsolutePath(), null, false));
+      boolean isTrue = true;
+
+      FileObject zip = KettleVFS.getFileObject(zipPath);
+      assertTrue("Zip archive should be created", zip.exists());
+
+      ByteArrayOutputStream os = new ByteArrayOutputStream();
+      IOUtils.copy(zip.getContent().getInputStream(), os);
+
+      ZipInputStream zis = new ZipInputStream(new ByteArrayInputStream(os.toByteArray()));
+      ZipEntry zipEntry = zis.getNextEntry();
+      assertEquals("Input file should be put into the archive", tempFile.getName(), zipEntry.getName());
+
+      os.reset();
+      IOUtils.copy(zis, os);
+      assertEquals("File's content should be equal to original", content, new String(os.toByteArray()));
     } finally {
       tempFile.delete();
+      File tempZipFile = new File( zipPath );
+      tempZipFile.delete();
     }
-
-    FileObject zip = KettleVFS.getFileObject( zipPath );
-    assertTrue( "Zip archive should be created", zip.exists() );
-
-    ByteArrayOutputStream os = new ByteArrayOutputStream();
-    IOUtils.copy( zip.getContent().getInputStream(), os );
-
-    ZipInputStream zis = new ZipInputStream( new ByteArrayInputStream( os.toByteArray() ) );
-    ZipEntry entry = zis.getNextEntry();
-    assertEquals( "Input file should be put into the archive", tempFile.getName(), entry.getName() );
-
-    os.reset();
-    IOUtils.copy( zis, os );
-    assertEquals( "File's content should be equal to original", content, new String( os.toByteArray() ) );
   }
 
   private static File createTempFile( String content ) throws Exception {
@@ -93,5 +97,14 @@ public class JobEntryZipFileIT {
       pw.print( content );
     }
     return file;
+  }
+
+  private static String createTempZipFileName( String tempFilePrefix ) throws Exception {
+    File file = File.createTempFile( tempFilePrefix, ".zip" );
+    String tempFileName = file.getAbsolutePath();
+
+    file.delete();
+
+    return tempFileName;
   }
 }

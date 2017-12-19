@@ -6,11 +6,11 @@
   <parent>
     <groupId>org.pentaho.di.plugins</groupId>
     <artifactId>pdi-plugins</artifactId>
-    <version>8.0-SNAPSHOT</version>
+    <version>8.1.0.0-SNAPSHOT</version>
   </parent>
 
   <artifactId>meta-inject-plugin</artifactId>
-  <version>8.0-SNAPSHOT</version>
+  <version>8.1.0.0-SNAPSHOT</version>
   <packaging>bundle</packaging>
 
   <name>PDI Metadata Injection Plugin</name>
@@ -18,7 +18,7 @@
   <url>http://www.pentaho.com</url>
 
   <properties>
-    <kettle.version>8.0-SNAPSHOT</kettle.version>
+    <pdi.version>8.1.0.0-SNAPSHOT</pdi.version>
     <servlet-api.version>2.3</servlet-api.version>
     <mockito.version>1.9.5</mockito.version>
     <guava.version>17.0</guava.version>
@@ -28,30 +28,31 @@
     <java-hamcrest.version>2.0.0.0</java-hamcrest.version>
     <jackson-mapper-asl.version>1.9.2</jackson-mapper-asl.version>
     <jsr305.version>2.0.3</jsr305.version>
-    <xercesImpl.version>2.9.1</xercesImpl.version>
     <commons-io.version>2.4</commons-io.version>
     <batik-js.version>1.8</batik-js.version>
     <cobertura-maven-plugin.version>2.6</cobertura-maven-plugin.version>
     <maven-bundle-plugin.version>2.3.7</maven-bundle-plugin.version>
+    <mockito.version>1.10.19</mockito.version>
+    <powermock.version>1.6.3</powermock.version>
   </properties>
 
   <dependencies>
     <dependency>
       <groupId>pentaho-kettle</groupId>
       <artifactId>kettle-core</artifactId>
-      <version>${kettle.version}</version>
+      <version>${pdi.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>pentaho-kettle</groupId>
       <artifactId>kettle-engine</artifactId>
-      <version>${kettle.version}</version>
+      <version>${pdi.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>pentaho-kettle</groupId>
       <artifactId>kettle-ui-swt</artifactId>
-      <version>${kettle.version}</version>
+      <version>${pdi.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
@@ -110,6 +111,18 @@
       <scope>test</scope>
     </dependency>
     <dependency>
+      <groupId>org.powermock</groupId>
+      <artifactId>powermock-module-junit4</artifactId>
+      <version>${powermock.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.powermock</groupId>
+      <artifactId>powermock-api-mockito</artifactId>
+      <version>${powermock.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
       <groupId>org.codehaus.jackson</groupId>
       <artifactId>jackson-mapper-asl</artifactId>
       <version>${jackson-mapper-asl.version}</version>
@@ -119,12 +132,6 @@
       <groupId>com.google.code.findbugs</groupId>
       <artifactId>jsr305</artifactId>
       <version>${jsr305.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>xerces</groupId>
-      <artifactId>xercesImpl</artifactId>
-      <version>${xercesImpl.version}</version>
-      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>commons-io</groupId>

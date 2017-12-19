@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -26,12 +26,14 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
+import org.apache.commons.lang.BooleanUtils;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectory;
 import org.pentaho.di.repository.RepositoryDirectoryInterface;
 import org.pentaho.di.repository.RepositoryElementMetaInterface;
+import org.pentaho.di.repository.RepositoryExtended;
 import org.pentaho.di.repository.RepositoryObjectType;
 
 public class UIRepositoryDirectory extends UIRepositoryObject {
@@ -311,7 +313,13 @@ public class UIRepositoryDirectory extends UIRepositoryObject {
       kidElementCache = null;
       kidDirectoryCache = null;
       if ( this == getRootDirectory() ) {
-        RepositoryDirectoryInterface localRoot = rep.findDirectory( rd.getObjectId() );
+        RepositoryDirectoryInterface localRoot;
+        if ( rep instanceof RepositoryExtended ) {
+          localRoot = ( (RepositoryExtended) rep ).loadRepositoryDirectoryTree( "/", "*.ktr|*.kjb", -1,
+            BooleanUtils.isTrue( rep.getUserInfo().isAdmin() ), true, true ).findDirectory( rd.getObjectId() );
+        } else {
+          localRoot = rep.findDirectory( rd.getObjectId() );
+        }
         rd = localRoot;
         // Rebuild caches
         fireCollectionChanged();

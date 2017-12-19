@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,8 +22,9 @@
 
 package org.pentaho.di.core.xml;
 
-import java.util.ArrayList;
-import java.util.Hashtable;
+import java.util.Collections;
+import java.util.Map;
+import java.util.WeakHashMap;
 
 /**
  * Singleton to help speed up lookups in an XML DOM tree.<br>
@@ -44,29 +45,23 @@ import java.util.Hashtable;
  * @since 22-Apr-2006
  */
 public class XMLHandlerCache {
-  public static final int MAX_NUMBER_OF_ENTRIES = 500;
 
-  private static XMLHandlerCache cache;
+  private static XMLHandlerCache instance;
 
-  private Hashtable<XMLHandlerCacheEntry, Integer> hashtable;
-  private ArrayList<XMLHandlerCacheEntry> list;
+  Map<XMLHandlerCacheEntry, Integer> cache;
 
-  private int cacheHits;
+  private volatile int cacheHits;
 
   private XMLHandlerCache() {
-    hashtable = new Hashtable<XMLHandlerCacheEntry, Integer>( MAX_NUMBER_OF_ENTRIES );
-    list = new ArrayList<XMLHandlerCacheEntry>( MAX_NUMBER_OF_ENTRIES );
-
+    cache = Collections.synchronizedMap( new WeakHashMap<XMLHandlerCacheEntry, Integer>() );
     cacheHits = 0;
   }
 
-  public static final synchronized XMLHandlerCache getInstance() {
-    if ( cache != null ) {
-      return cache;
+  public static synchronized XMLHandlerCache getInstance() {
+    if ( instance == null ) {
+      return instance = new XMLHandlerCache();
     }
-
-    cache = new XMLHandlerCache();
-    return cache;
+    return instance;
   }
 
   /**
@@ -75,20 +70,8 @@ public class XMLHandlerCache {
    * @param entry
    *          The cache entry to store
    */
-  public synchronized void storeCache( XMLHandlerCacheEntry entry, int lastChildNr ) {
-    hashtable.put( entry, Integer.valueOf( lastChildNr ) );
-    list.add( entry );
-
-    if ( list.size() > MAX_NUMBER_OF_ENTRIES ) {
-      // Simple: the oldest is the first in the list
-      XMLHandlerCacheEntry cacheEntry = list.get( 0 );
-
-      // Remove this one from the cache...
-      hashtable.remove( cacheEntry );
-
-      // Remove from the list
-      list.remove( 0 );
-    }
+  public void storeCache( XMLHandlerCacheEntry entry, int lastChildNr ) {
+    cache.put( entry, lastChildNr );
   }
 
   /**
@@ -99,10 +82,10 @@ public class XMLHandlerCache {
    * @return the last child position or -1 if nothing was found.
    */
   public int getLastChildNr( XMLHandlerCacheEntry entry ) {
-    Integer lastChildNr = hashtable.get( entry );
+    Integer lastChildNr = cache.get( entry );
     if ( lastChildNr != null ) {
       cacheHits++;
-      return lastChildNr.intValue();
+      return lastChildNr;
     }
     return -1;
   }
@@ -128,8 +111,7 @@ public class XMLHandlerCache {
    * Clears the cache
    *
    */
-  public synchronized void clear() {
-    this.hashtable.clear();
-    this.list.clear();
+  public void clear() {
+    cache.clear();
   }
 }

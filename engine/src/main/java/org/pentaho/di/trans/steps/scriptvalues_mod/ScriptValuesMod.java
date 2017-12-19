@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -529,9 +529,15 @@ public class ScriptValuesMod extends BaseStep implements StepInterface {
         stopAll();
       }
 
-      if ( data.cx != null ) {
-        Context.exit();
+      try {
+        if ( data.cx != null ) {
+          Context.exit();
+        }
+      } catch ( Exception er ) {
+        // Eat this error, it's typically : "Calling Context.exit without previous Context.enter"
+        // logError(BaseMessages.getString(PKG, "System.Log.UnexpectedError"), er);
       }
+
       setOutputDone();
       return false;
     }

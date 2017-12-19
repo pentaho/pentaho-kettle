@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,21 +22,8 @@
 
 package org.pentaho.di.core.row;
 
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-
-import java.math.BigDecimal;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
-import java.util.Random;
-
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
@@ -56,8 +43,29 @@ import org.powermock.modules.junit4.PowerMockRunner;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import java.math.BigDecimal;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
+import java.util.Random;
+
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
 @RunWith( PowerMockRunner.class )
 public class ValueMetaAndDataTest {
+
+  private PluginRegistry pluginRegistry;
+
+  @Before
+  public void before() {
+    pluginRegistry = Mockito.mock( PluginRegistry.class );
+  }
 
   @Test
   public void testConstructors() throws KettleValueException {
@@ -128,9 +136,7 @@ public class ValueMetaAndDataTest {
   public void testLoadXML() throws KettleValueException, KettlePluginException, ParseException {
     PowerMockito.mockStatic( EnvUtil.class );
     Mockito.when( EnvUtil.getSystemProperty( Const.KETTLE_DEFAULT_DATE_FORMAT ) ).thenReturn( "yyyy-MM-dd HH:mm:ss.SSS" );
-
     ValueMetaAndData valueMetaAndData = new ValueMetaAndData( Mockito.mock( ValueMetaInterface.class ), new Object() );
-    PluginRegistry pluginRegistry = Mockito.mock( PluginRegistry.class );
     List<PluginInterface> pluginTypeList = new ArrayList<>();
     PluginInterface plugin = Mockito.mock( PluginInterface.class );
     Mockito.when( plugin.getName() ).thenReturn( "3" );

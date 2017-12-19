@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -162,7 +162,6 @@ public class SpoonPerspectiveManager {
     }
   }
 
-  @SuppressWarnings( "rawtypes" )
   private SpoonPerspectiveManager() {
     perspectives = new LinkedHashMap<Class<? extends SpoonPerspective>, SpoonPerspective>();
     perspectiveManagerMap = new HashMap<SpoonPerspective, PerspectiveManager>();
@@ -251,7 +250,6 @@ public class SpoonPerspectiveManager {
    *
    * @return
    */
-  @SuppressWarnings( "unchecked" )
   public List<SpoonPerspective> getPerspectives() {
     return Collections.unmodifiableList( new ArrayList<SpoonPerspective>( orderedPerspectives ) );
   }
@@ -334,8 +332,10 @@ public class SpoonPerspectiveManager {
     }
 
     sp.setActive( true );
-    deck.setSelectedIndex( deck.getChildNodes().indexOf( deck.getElementById( "perspective-" + sp.getId() ) ) );
-    getSpoon().enableMenus();
+    if ( sp.equals( activePerspective ) ) {
+      deck.setSelectedIndex( deck.getChildNodes().indexOf( deck.getElementById( "perspective-" + sp.getId() ) ) );
+      getSpoon().enableMenus();
+    }
   }
 
   /**

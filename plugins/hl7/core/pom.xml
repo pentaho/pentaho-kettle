@@ -6,16 +6,16 @@
   <parent>
     <groupId>org.pentaho.di.plugins</groupId>
     <artifactId>hl7</artifactId>
-    <version>8.0-SNAPSHOT</version>
+    <version>8.1.0.0-SNAPSHOT</version>
   </parent>
 
   <artifactId>kettle-hl7-plugin-core</artifactId>
-  <version>8.0-SNAPSHOT</version>
+  <version>8.1.0.0-SNAPSHOT</version>
 
   <name>PDI HL7 Plugin Core</name>
 
   <properties>
-    <dependency.pentaho-kettle.version>8.0-SNAPSHOT</dependency.pentaho-kettle.version>
+    <pdi.version>8.1.0.0-SNAPSHOT</pdi.version>
     <build.revision>${project.version}</build.revision>
     <timestamp>${maven.build.timestamp}</timestamp>
     <build.description>${project.description}</build.description>
@@ -26,17 +26,17 @@
     <dependency>
       <groupId>pentaho-kettle</groupId>
       <artifactId>kettle-engine</artifactId>
-      <version>${dependency.pentaho-kettle.version}</version>
+      <version>${pdi.version}</version>
     </dependency>
     <dependency>
       <groupId>pentaho-kettle</groupId>
       <artifactId>kettle-core</artifactId>
-      <version>${dependency.pentaho-kettle.version}</version>
+      <version>${pdi.version}</version>
     </dependency>
     <dependency>
       <groupId>pentaho-kettle</groupId>
       <artifactId>kettle-ui-swt</artifactId>
-      <version>${dependency.pentaho-kettle.version}</version>
+      <version>${pdi.version}</version>
     </dependency>
     <dependency>
       <groupId>ca.uhn.hapi</groupId>

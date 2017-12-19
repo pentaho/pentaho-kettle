@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -23,9 +23,7 @@
 package org.pentaho.di.trans.steps.simplemapping;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
@@ -36,7 +34,6 @@ import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleXMLException;
-import org.pentaho.di.core.parameters.UnknownParamException;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.variables.VariableSpace;
@@ -45,16 +42,13 @@ import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.HasRepositoryInterface;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.Repository;
-import org.pentaho.di.repository.RepositoryDirectory;
 import org.pentaho.di.repository.RepositoryDirectoryInterface;
 import org.pentaho.di.repository.RepositoryImportLocation;
 import org.pentaho.di.repository.RepositoryObject;
 import org.pentaho.di.repository.RepositoryObjectType;
 import org.pentaho.di.repository.StringObjectId;
-import org.pentaho.di.resource.ResourceDefinition;
 import org.pentaho.di.resource.ResourceEntry;
 import org.pentaho.di.resource.ResourceEntry.ResourceType;
-import org.pentaho.di.resource.ResourceNamingInterface;
 import org.pentaho.di.resource.ResourceReference;
 import org.pentaho.di.trans.StepWithMappingMeta;
 import org.pentaho.di.trans.Trans;
@@ -283,7 +277,8 @@ public class SimpleMappingMeta extends StepWithMappingMeta implements StepMetaIn
     //
     TransMeta mappingTransMeta = null;
     try {
-      mappingTransMeta = loadMappingMeta( this, repository, metaStore, space );
+      mappingTransMeta =
+        loadMappingMeta( this, repository, metaStore, space, mappingParameters.isInheritingAllVariables() );
     } catch ( KettleException e ) {
       throw new KettleStepException( BaseMessages.getString(
         PKG, "SimpleMappingMeta.Exception.UnableToLoadMappingTransformation" ), e );
@@ -291,34 +286,13 @@ public class SimpleMappingMeta extends StepWithMappingMeta implements StepMetaIn
 
     // The field structure may depend on the input parameters as well (think of parameter replacements in MDX queries
     // for instance)
-    if ( mappingParameters != null ) {
-
-      // See if we need to pass all variables from the parent or not...
-      //
-      if ( mappingParameters.isInheritingAllVariables() ) {
-        mappingTransMeta.copyVariablesFrom( space );
-      }
+    if ( mappingParameters != null && mappingTransMeta != null ) {
 
       // Just set the variables in the transformation statically.
       // This just means: set a number of variables or parameter values:
       //
-      List<String> subParams = Arrays.asList( mappingTransMeta.listParameters() );
-
-      for ( int i = 0; i < mappingParameters.getVariable().length; i++ ) {
-        String name = mappingParameters.getVariable()[i];
-        String value = space.environmentSubstitute( mappingParameters.getInputField()[i] );
-        if ( !Utils.isEmpty( name ) && !Utils.isEmpty( value ) ) {
-          if ( subParams.contains( name ) ) {
-            try {
-              mappingTransMeta.setParameterValue( name, value );
-            } catch ( UnknownParamException e ) {
-              // this is explicitly checked for up front
-            }
-          }
-          mappingTransMeta.setVariable( name, value );
-
-        }
-      }
+      StepWithMappingMeta.activateParams( mappingTransMeta, mappingTransMeta, space, mappingTransMeta.listParameters(),
+        mappingParameters.getVariable(), mappingParameters.getInputField() );
     }
 
     // Keep track of all the fields that need renaming...
@@ -477,53 +451,6 @@ public class SimpleMappingMeta extends StepWithMappingMeta implements StepMetaIn
       references.add( reference );
     }
     return references;
-  }
-
-  @Override
-  public String exportResources( VariableSpace space, Map<String, ResourceDefinition> definitions,
-    ResourceNamingInterface resourceNamingInterface, Repository repository, IMetaStore metaStore ) throws KettleException {
-    try {
-      // Try to load the transformation from repository or file.
-      // Modify this recursively too...
-      //
-      // NOTE: there is no need to clone this step because the caller is
-      // responsible for this.
-      //
-      // First load the mapping metadata...
-      //
-      TransMeta mappingTransMeta = loadMappingMeta( this, repository, metaStore, space );
-
-      // Also go down into the mapping transformation and export the files
-      // there. (mapping recursively down)
-      //
-      String proposedNewFilename =
-        mappingTransMeta.exportResources(
-          mappingTransMeta, definitions, resourceNamingInterface, repository, metaStore );
-
-      // To get a relative path to it, we inject
-      // ${Internal.Job.Filename.Directory}
-      //
-      String newFilename =
-        "${" + Const.INTERNAL_VARIABLE_TRANSFORMATION_FILENAME_DIRECTORY + "}/" + proposedNewFilename;
-
-      // Set the correct filename inside the XML.
-      //
-      mappingTransMeta.setFilename( newFilename );
-
-      // exports always reside in the root directory, in case we want to turn
-      // this into a file repository...
-      //
-      mappingTransMeta.setRepositoryDirectory( new RepositoryDirectory() );
-
-      // change it in the job entry
-      //
-      fileName = newFilename;
-
-      return proposedNewFilename;
-    } catch ( Exception e ) {
-      throw new KettleException( BaseMessages.getString(
-        PKG, "SimpleMappingMeta.Exception.UnableToLoadTransformation", fileName ) );
-    }
   }
 
   /**

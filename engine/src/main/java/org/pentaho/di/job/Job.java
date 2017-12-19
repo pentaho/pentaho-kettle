@@ -3,7 +3,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -100,8 +100,8 @@ import org.pentaho.di.repository.RepositoryDirectoryInterface;
 import org.pentaho.di.resource.ResourceUtil;
 import org.pentaho.di.resource.TopLevelResource;
 import org.pentaho.di.trans.Trans;
-import org.pentaho.di.www.AddExportServlet;
 import org.pentaho.di.www.RegisterJobServlet;
+import org.pentaho.di.www.RegisterPackageServlet;
 import org.pentaho.di.www.SocketRepository;
 import org.pentaho.di.www.StartJobServlet;
 import org.pentaho.di.www.WebResult;
@@ -457,6 +457,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
         shutdownHeartbeat( heartbeat );
 
         ExtensionPointHandler.callExtensionPoint( log, KettleExtensionPoint.JobFinish.id, this );
+        jobMeta.disposeEmbeddedMetastoreProvider();
 
         fireJobFinishListeners();
       } catch ( KettleException e ) {
@@ -674,6 +675,12 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
     JobExecutionExtension extension = new JobExecutionExtension( this, prevResult, jobEntryCopy, true );
     ExtensionPointHandler.callExtensionPoint( log, KettleExtensionPoint.JobBeforeJobEntryExecution.id, extension );
 
+    jobMeta.disposeEmbeddedMetastoreProvider();
+    if ( jobMeta.getMetastoreLocatorOsgi() != null ) {
+      jobMeta.setEmbeddedMetastoreProviderKey(
+        jobMeta.getMetastoreLocatorOsgi().setEmbeddedMetastore( jobMeta.getEmbeddedMetaStore() ) );
+    }
+
     if ( extension.result != null ) {
       prevResult = extension.result;
     }
@@ -706,6 +713,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
         cloneJei.setMetaStore( rep.getMetaStore() );
       }
       cloneJei.setParentJob( this );
+      cloneJei.setParentJobMeta( this.getJobMeta() );
       final long start = System.currentTimeMillis();
 
       cloneJei.getLogChannel().logDetailed( "Starting job entry" );
@@ -1803,10 +1811,10 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
                 metaStore, executionConfiguration.getXML(), CONFIGURATION_IN_EXPORT_FILENAME );
 
         // Send the zip file over to the slave server...
-        //
-        String result =
-            slaveServer.sendExport( topLevelResource.getArchiveName(), AddExportServlet.TYPE_JOB, topLevelResource
-                .getBaseResourceName() );
+        String result = slaveServer.sendExport(
+            topLevelResource.getArchiveName(),
+            RegisterPackageServlet.TYPE_JOB,
+            topLevelResource.getBaseResourceName() );
         WebResult webResult = WebResult.fromXMLString( result );
         if ( !webResult.getResult().equalsIgnoreCase( WebResult.STRING_OK ) ) {
           throw new KettleException( "There was an error passing the exported job to the remote server: " + Const.CR

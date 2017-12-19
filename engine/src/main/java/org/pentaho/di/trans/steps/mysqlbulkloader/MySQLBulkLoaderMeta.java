@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -27,6 +27,7 @@ import java.util.List;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.injection.AfterInjection;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.ProvidesDatabaseConnectionInformation;
 import org.pentaho.di.core.SQLStatement;
@@ -835,4 +836,22 @@ public class MySQLBulkLoaderMeta extends BaseStepMeta implements StepMetaInterfa
       return FIELD_FORMAT_TYPE_OK;
     }
   }
+
+  /**
+   * If we use injection we can have different arrays lengths.
+   * We need synchronize them for consistency behavior with UI
+   */
+  @AfterInjection
+  public void afterInjectionSynchronization() {
+    int nrFields = ( fieldTable == null ) ? -1 : fieldTable.length;
+    if ( nrFields <= 0 ) {
+      return;
+    }
+    String[][] rtnStrings = Utils.normalizeArrays( nrFields, fieldStream );
+    fieldStream = rtnStrings[ 0 ];
+
+    int[][] rtnInts = Utils.normalizeArrays( nrFields, fieldFormatType );
+    fieldFormatType = rtnInts[ 0 ];
+  }
+
 }

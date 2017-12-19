@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -30,6 +30,7 @@ import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.pentaho.di.core.KettleClientEnvironment;
 import org.pentaho.di.core.Props;
+import org.pentaho.di.core.Result;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.logging.KettleLogStore;
 import org.pentaho.di.core.logging.LogChannel;
@@ -40,13 +41,20 @@ import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.plugins.StepPluginType;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.variables.Variables;
+import org.pentaho.di.trans.step.StepStatus;
 import org.pentaho.di.trans.steps.transexecutor.TransExecutorData;
 import org.pentaho.di.trans.steps.transexecutor.TransExecutorParameters;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 
 @RunWith( MockitoJUnitRunner.class )
@@ -68,6 +76,13 @@ public class SubtransExecutorTest {
     if ( !Props.isInitialized() ) {
       Props.init( 0 );
     }
+  }
+
+  @Test
+  public void testRunningZeroRowsIsEmptyOptional() throws Exception {
+    SubtransExecutor subtransExecutor = new SubtransExecutor( null, null, false, null, null );
+    Optional<Result> execute = subtransExecutor.execute( Collections.emptyList() );
+    assertFalse( execute.isPresent() );
   }
 
   @Test
@@ -96,6 +111,17 @@ public class SubtransExecutorTest {
           + "\n"
           + "===================="
       );
-  }
 
+    Map<String, StepStatus> statuses = subtransExecutor.getStatuses();
+    assertEquals( 3, statuses.size() );
+    for ( Map.Entry<String, StepStatus> entry : statuses.entrySet() ) {
+      StepStatus statusSpy = spy( entry.getValue() );
+      statuses.put( entry.getKey(), statusSpy );
+    }
+
+    subtransExecutor.execute( rows );
+    for ( Map.Entry<String, StepStatus> entry : statuses.entrySet() ) {
+      verify( entry.getValue() ).updateAll( any() );
+    }
+  }
 }

@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,19 +22,32 @@
 
 package org.pentaho.di.trans;
 
+import org.apache.commons.lang.ArrayUtils;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.ObjectLocationSpecificationMethod;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.LogChannel;
+import org.pentaho.di.core.parameters.NamedParams;
+import org.pentaho.di.core.parameters.UnknownParamException;
 import org.pentaho.di.core.util.CurrentDirectoryResolver;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.i18n.BaseMessages;
+import org.pentaho.di.repository.HasRepositoryDirectories;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.Repository;
+import org.pentaho.di.repository.RepositoryDirectory;
 import org.pentaho.di.repository.RepositoryDirectoryInterface;
+import org.pentaho.di.resource.ResourceDefinition;
+import org.pentaho.di.resource.ResourceNamingInterface;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.metastore.api.IMetaStore;
+
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * This class is supposed to use in steps where the mapping to sub transformations takes place
@@ -42,7 +55,7 @@ import org.pentaho.metastore.api.IMetaStore;
  * @since 02-jan-2017
  * @author Yury Bakhmutski
  */
-public abstract class StepWithMappingMeta extends BaseStepMeta {
+public abstract class StepWithMappingMeta extends BaseStepMeta implements HasRepositoryDirectories {
   //default value
   private static Class<?> PKG = StepWithMappingMeta.class;
 
@@ -62,8 +75,10 @@ public abstract class StepWithMappingMeta extends BaseStepMeta {
     TransMeta mappingTransMeta = null;
 
     CurrentDirectoryResolver r = new CurrentDirectoryResolver();
+    // send parentVariables = null we don't need it here for resolving resolveCurrentDirectory.
+    // Otherwise we destroy child variables and the option "Inherit all variables from the transformation" is enabled always.
     VariableSpace tmpSpace =
-      r.resolveCurrentDirectory( executorMeta.getSpecificationMethod(), space, rep, executorMeta.getParentStepMeta(),
+      r.resolveCurrentDirectory( executorMeta.getSpecificationMethod(), null, rep, executorMeta.getParentStepMeta(),
         executorMeta.getFileName() );
 
     switch ( executorMeta.getSpecificationMethod() ) {
@@ -154,10 +169,17 @@ public abstract class StepWithMappingMeta extends BaseStepMeta {
       default:
         break;
     }
+    if ( mappingTransMeta == null ) {  //skip warning
+      return null;
+    }
 
-    // Pass some important information to the mapping transformation metadata:
+    //  When the child parameter does exist in the parent parameters, overwrite the child parameter by the
+    // parent parameter.
+    replaceVariableValues( mappingTransMeta, space );
     if ( share ) {
-      mappingTransMeta.copyVariablesFrom( space );
+      // All other parent parameters need to get copied into the child parameters  (when the 'Inherit all
+      // variables from the transformation?' option is checked)
+      addMissingVariables( mappingTransMeta, space );
     }
     mappingTransMeta.setRepository( rep );
     mappingTransMeta.setMetaStore( metaStore );
@@ -166,11 +188,53 @@ public abstract class StepWithMappingMeta extends BaseStepMeta {
     return mappingTransMeta;
   }
 
+  public static void activateParams( VariableSpace childVariableSpace, NamedParams childNamedParams, VariableSpace parent, String[] listParameters,
+                                     String[] mappingVariables, String[] inputFields ) {
+    Map<String, String> parameters = new HashMap<>();
+    Set<String> subTransParameters = new HashSet<>( Arrays.asList( listParameters ) );
+
+    for ( int i = 0; i < mappingVariables.length; i++ ) {
+      parameters.put( mappingVariables[ i ], parent.environmentSubstitute( inputFields[ i ] ) );
+    }
+
+    for ( String variableName : parent.listVariables() ) {
+      // When the child parameter does exist in the parent parameters, overwrite the child parameter by the
+      // parent parameter.
+      if ( parameters.containsKey( variableName ) ) {
+        parameters.put( variableName, parent.getVariable( variableName ) );
+      } else if ( ArrayUtils.contains( listParameters, variableName ) ) {
+        // there is a definition only in Transformation properties - params tab
+        parameters.put( variableName, parent.getVariable( variableName ) );
+      }
+    }
+
+    for ( Map.Entry<String, String> entry : parameters.entrySet() ) {
+      String key = entry.getKey();
+      String value = Const.NVL( entry.getValue(), "" );
+      if ( subTransParameters.contains( key ) ) {
+        try {
+          childNamedParams.setParameterValue( key, Const.NVL( entry.getValue(), "" ) );
+        } catch ( UnknownParamException e ) {
+          // this is explicitly checked for up front
+        }
+      } else {
+        childVariableSpace.setVariable( key, value );
+      }
+    }
+
+    childNamedParams.activateParameters();
+  }
+
   /**
    * @return the specificationMethod
    */
   public ObjectLocationSpecificationMethod getSpecificationMethod() {
     return specificationMethod;
+  }
+
+  @Override
+  public ObjectLocationSpecificationMethod[] getSpecificationMethods() {
+    return new ObjectLocationSpecificationMethod[] { specificationMethod };
   }
 
   /**
@@ -192,6 +256,16 @@ public abstract class StepWithMappingMeta extends BaseStepMeta {
    */
   public void setDirectoryPath( String directoryPath ) {
     this.directoryPath = directoryPath;
+  }
+
+  @Override
+  public String[] getDirectories() {
+    return new String[]{ directoryPath };
+  }
+
+  @Override
+  public void setDirectories( String[] directories ) {
+    this.directoryPath = directories[0];
   }
 
   /**
@@ -236,4 +310,76 @@ public abstract class StepWithMappingMeta extends BaseStepMeta {
     this.transObjectId = transObjectId;
   }
 
+  @Override
+  public String exportResources( VariableSpace space, Map<String, ResourceDefinition> definitions,
+                                 ResourceNamingInterface resourceNamingInterface, Repository repository,
+                                 IMetaStore metaStore ) throws KettleException {
+    try {
+      // Try to load the transformation from repository or file.
+      // Modify this recursively too...
+      //
+      // NOTE: there is no need to clone this step because the caller is
+      // responsible for this.
+      //
+      // First load the mapping transformation...
+      //
+      TransMeta mappingTransMeta = loadMappingMeta( this, repository, metaStore, space );
+
+      // Also go down into the mapping transformation and export the files
+      // there. (mapping recursively down)
+      //
+      String proposedNewFilename =
+              mappingTransMeta.exportResources(
+                      mappingTransMeta, definitions, resourceNamingInterface, repository, metaStore );
+
+      // To get a relative path to it, we inject
+      // ${Internal.Transformation.Filename.Directory}
+      //
+      String newFilename =
+              "${" + Const.INTERNAL_VARIABLE_TRANSFORMATION_FILENAME_DIRECTORY + "}/" + proposedNewFilename;
+
+      // Set the correct filename inside the XML.
+      //
+      mappingTransMeta.setFilename( newFilename );
+
+      // exports always reside in the root directory, in case we want to turn
+      // this into a file repository...
+      //
+      mappingTransMeta.setRepositoryDirectory( new RepositoryDirectory() );
+
+      // change it in the job entry
+      //
+      fileName = newFilename;
+
+      setSpecificationMethod( ObjectLocationSpecificationMethod.FILENAME );
+
+      return proposedNewFilename;
+    } catch ( Exception e ) {
+      throw new KettleException( BaseMessages.getString( PKG, "StepWithMappingMeta.Exception.UnableToLoadTrans", fileName ) );
+    }
+  }
+
+  private static  void addMissingVariables( TransMeta source, VariableSpace target ) {
+    if ( target == null ) {
+      return;
+    }
+    String[] variableNames = target.listVariables();
+    for ( String variable : variableNames ) {
+      if ( source.getVariable( variable ) == null ) {
+        source.setVariable( variable, target.getVariable( variable ) );
+      }
+    }
+  }
+
+  private static void replaceVariableValues( TransMeta childTransMeta, VariableSpace replaceBy ) {
+    if ( replaceBy == null ) {
+      return;
+    }
+    String[] variableNames = replaceBy.listVariables();
+    for ( String variableName : variableNames ) {
+      if ( childTransMeta.getVariable( variableName ) != null ) {
+        childTransMeta.setVariable( variableName, replaceBy.getVariable( variableName ) );
+      }
+    }
+  }
 }

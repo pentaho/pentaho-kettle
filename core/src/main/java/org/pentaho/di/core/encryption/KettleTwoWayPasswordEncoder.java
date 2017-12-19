@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -27,8 +27,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.pentaho.di.core.util.Utils;
+
+import com.google.common.annotations.VisibleForTesting;
+
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.util.StringUtil;
+import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.EnvUtil;
 
 /**
  * This class handles basic encryption of passwords in Kettle. Note that it's not really encryption, it's more
@@ -39,10 +44,22 @@ import org.pentaho.di.core.util.StringUtil;
  *
  */
 public class KettleTwoWayPasswordEncoder implements TwoWayPasswordEncoderInterface {
+  private static final KettleTwoWayPasswordEncoder instance = new KettleTwoWayPasswordEncoder();
   private static final int RADIX = 16;
-  private static final String SEED = "0933910847463829827159347601486730416058";
+  private String Seed;
+  /**
+   * The word that is put before a password to indicate an encrypted form. If this word is not present, the password is
+   * considered to be NOT encrypted
+   */
+  public static final String PASSWORD_ENCRYPTED_PREFIX = "Encrypted ";
 
   public KettleTwoWayPasswordEncoder() {
+    String envSeed = Const.NVL( EnvUtil.getSystemProperty( Const.KETTLE_TWO_WAY_PASSWORD_ENCODER_SEED ), "0933910847463829827159347601486730416058" ); // Solve for PDI-16512
+    Seed = envSeed;
+  }
+
+  private static KettleTwoWayPasswordEncoder getInstance() {
+    return instance;
   }
 
   @Override
@@ -58,9 +75,9 @@ public class KettleTwoWayPasswordEncoder implements TwoWayPasswordEncoderInterfa
   @Override
   public String encode( String rawPassword, boolean includePrefix ) {
     if ( includePrefix ) {
-      return encryptPasswordIfNotUsingVariables( rawPassword );
+      return encryptPasswordIfNotUsingVariablesInternal( rawPassword );
     } else {
-      return encryptPassword( rawPassword );
+      return encryptPasswordInternal( rawPassword );
     }
   }
 
@@ -71,7 +88,7 @@ public class KettleTwoWayPasswordEncoder implements TwoWayPasswordEncoderInterfa
       encodedPassword = encodedPassword.substring( PASSWORD_ENCRYPTED_PREFIX.length() );
     }
 
-    return decryptPassword( encodedPassword );
+    return decryptPasswordInternal( encodedPassword );
   }
 
   @Override
@@ -85,16 +102,17 @@ public class KettleTwoWayPasswordEncoder implements TwoWayPasswordEncoderInterfa
 
       if ( encodedPassword.startsWith( PASSWORD_ENCRYPTED_PREFIX ) ) {
         encodedPassword = encodedPassword.substring( PASSWORD_ENCRYPTED_PREFIX.length() );
-        return decryptPassword( encodedPassword );
+        return decryptPasswordInternal( encodedPassword );
       } else {
         return encodedPassword;
       }
     } else {
-      return decryptPassword( encodedPassword );
+      return decryptPasswordInternal( encodedPassword );
     }
   }
 
-  public static final String encryptPassword( String password ) {
+  @VisibleForTesting
+  protected String encryptPasswordInternal( String password ) {
     if ( password == null ) {
       return "";
     }
@@ -104,13 +122,14 @@ public class KettleTwoWayPasswordEncoder implements TwoWayPasswordEncoderInterfa
 
     BigInteger bi_passwd = new BigInteger( password.getBytes() );
 
-    BigInteger bi_r0 = new BigInteger( SEED );
+    BigInteger bi_r0 = new BigInteger( getSeed() );
     BigInteger bi_r1 = bi_r0.xor( bi_passwd );
 
     return bi_r1.toString( RADIX );
   }
 
-  public static final String decryptPassword( String encrypted ) {
+  @VisibleForTesting
+  protected String decryptPasswordInternal( String encrypted ) {
     if ( encrypted == null ) {
       return "";
     }
@@ -118,7 +137,7 @@ public class KettleTwoWayPasswordEncoder implements TwoWayPasswordEncoderInterfa
       return "";
     }
 
-    BigInteger bi_confuse = new BigInteger( SEED );
+    BigInteger bi_confuse = new BigInteger( getSeed() );
 
     try {
       BigInteger bi_r1 = new BigInteger( encrypted, RADIX );
@@ -130,16 +149,17 @@ public class KettleTwoWayPasswordEncoder implements TwoWayPasswordEncoderInterfa
     }
   }
 
-  /**
-   * The word that is put before a password to indicate an encrypted form. If this word is not present, the password is
-   * considered to be NOT encrypted
-   */
-  public static final String PASSWORD_ENCRYPTED_PREFIX = "Encrypted ";
+
+  @VisibleForTesting
+  protected String getSeed() {
+    return this.Seed;
+  }
 
   @Override
   public String[] getPrefixes() {
     return new String[] { PASSWORD_ENCRYPTED_PREFIX };
   }
+
 
   /**
    * Encrypt the password, but only if the password doesn't contain any variables.
@@ -148,9 +168,9 @@ public class KettleTwoWayPasswordEncoder implements TwoWayPasswordEncoderInterfa
    *          The password to encrypt
    * @return The encrypted password or the
    */
-  public static final String encryptPasswordIfNotUsingVariables( String password ) {
+  protected final String encryptPasswordIfNotUsingVariablesInternal( String password ) {
     String encrPassword = "";
-    List<String> varList = new ArrayList<String>();
+    List<String> varList = new ArrayList<>();
     StringUtil.getUsedVariables( password, varList, true );
     if ( varList.isEmpty() ) {
       encrPassword = PASSWORD_ENCRYPTED_PREFIX + KettleTwoWayPasswordEncoder.encryptPassword( password );
@@ -161,6 +181,7 @@ public class KettleTwoWayPasswordEncoder implements TwoWayPasswordEncoderInterfa
     return encrPassword;
   }
 
+
   /**
    * Decrypts a password if it contains the prefix "Encrypted "
    *
@@ -168,10 +189,60 @@ public class KettleTwoWayPasswordEncoder implements TwoWayPasswordEncoderInterfa
    *          The encrypted password
    * @return The decrypted password or the original value if the password doesn't start with "Encrypted "
    */
-  public static final String decryptPasswordOptionallyEncrypted( String password ) {
+  protected final String decryptPasswordOptionallyEncryptedInternal( String password ) {
     if ( !Utils.isEmpty( password ) && password.startsWith( PASSWORD_ENCRYPTED_PREFIX ) ) {
       return KettleTwoWayPasswordEncoder.decryptPassword( password.substring( PASSWORD_ENCRYPTED_PREFIX.length() ) );
     }
     return password;
   }
+
+  // Old Static Methods - should be deprecated
+
+
+  /**
+   * Encrypt the password, but only if the password doesn't contain any variables.
+   *
+   * @param password
+   *          The password to encrypt
+   * @return The encrypted password or the
+   * @deprecated - Use the instance method through Encr instead of this directly
+   */
+  public static final String encryptPasswordIfNotUsingVariables( String password ) {
+    return getInstance().encryptPasswordIfNotUsingVariablesInternal( password );
+  }
+
+  /**
+   * Decrypts a password if it contains the prefix "Encrypted "
+   *
+   * @param password
+   *          The encrypted password
+   * @return The decrypted password or the original value if the password doesn't start with "Encrypted "
+   * @deprecated - Use the instance method through Encr instead of this directly
+   */
+  public static final String decryptPasswordOptionallyEncrypted( String password ) {
+    return getInstance().decryptPasswordOptionallyEncryptedInternal( password );
+  }
+
+  /**
+   * Deprecared - use the instance method instead
+   * @param password
+   * @return encrypted password
+   * @deprecated - use the instance method through Encr instead of this directly
+   */
+  public static final String encryptPassword( String password ) {
+    return getInstance().encryptPasswordInternal( password );
+  }
+
+  /**
+   * Deprecated - use Encr instead of this directly
+   * @param encrypted
+   * @return decrypted password
+   * @deprecated
+   */
+  public static final String decryptPassword( String encrypted ) {
+    return getInstance().decryptPasswordInternal( encrypted );
+  }
+
+
+
 }

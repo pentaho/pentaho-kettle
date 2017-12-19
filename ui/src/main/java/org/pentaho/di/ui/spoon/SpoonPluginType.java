@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -83,7 +83,7 @@ public class SpoonPluginType extends BasePluginType implements PluginTypeInterfa
 
   @Override
   protected String extractImageFile( Annotation annotation ) {
-    return null;
+    return ( (SpoonPlugin) annotation ).image();
   }
 
   @Override

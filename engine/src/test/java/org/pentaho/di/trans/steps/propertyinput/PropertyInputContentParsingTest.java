@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -28,9 +28,9 @@ public class PropertyInputContentParsingTest extends BasePropertyParsingTest {
   public void testDefaultOptions() throws Exception {
     init( "default.properties" );
 
-    PropertyInputField f1 = new PropertyInputField();
+    PropertyInputField f1 = new PropertyInputField( "f1" );
     f1.setColumn( PropertyInputField.COLUMN_KEY );
-    PropertyInputField f2 = new PropertyInputField();
+    PropertyInputField f2 = new PropertyInputField( "f2" );
     f2.setColumn( PropertyInputField.COLUMN_VALUE );
     setFields( f1, f2 );
 

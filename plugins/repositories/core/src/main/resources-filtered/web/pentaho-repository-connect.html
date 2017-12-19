@@ -1,6 +1,6 @@
 <div class="main_div">
-  <div class="header" style="margin-bottom:37px;margin-top:77px;">
-    <img id="pentaho-img" alt="" src="images/pentaho_logo.png" />
+  <div class="header margin_bottom_60 connectHeader">
+    {{ 'repositories.connect.header' | translate }}
   </div>
   <div class="middle_div2">
     <label class="block text_left">{{ 'repositories.connect.connectto.label' | translate }}</label>
@@ -17,7 +17,11 @@
       <input id="password" class="block repo_conn_txt" type="password" ng-model="model.password" ng-change="resetErrorMsg()"/>
     </div>
     <div>
-      <button id="connect" class="standard" type="submit" ng-disabled="!canConnect()" ng-click="connect()">{{ 'repositories.connect.connect.label' | translate }}</button>
+      <button id="connect" class="standard" type="submit" ng-disabled="!canConnect()" ng-click="connect()">
+        <span>
+          {{ 'repositories.connect.connect.label' | translate }}
+        </span>
+      </button>
     </div>
     </form>
   </div>

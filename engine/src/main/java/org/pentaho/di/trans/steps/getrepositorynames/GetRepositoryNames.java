@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -25,6 +25,7 @@ package org.pentaho.di.trans.steps.getrepositorynames;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang.BooleanUtils;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowDataUtil;
 import org.pentaho.di.core.row.RowMeta;
@@ -179,7 +180,8 @@ public class GetRepositoryNames extends BaseStep implements StepInterface {
             depth = -1;
           }
           RepositoryDirectoryInterface directory =
-              extendedRep.loadRepositoryDirectoryTree( directoryPath, filter, depth, true, false, false );
+              extendedRep.loadRepositoryDirectoryTree( directoryPath, filter, depth, BooleanUtils
+                .isTrue( repository.getUserInfo().isAdmin() ), false, false );
 
           list.addAll( getRepositoryObjects( directory, environmentSubstitute( meta.getNameMask()[i] ),
               environmentSubstitute( meta.getExcludeNameMask()[i] ) ) );

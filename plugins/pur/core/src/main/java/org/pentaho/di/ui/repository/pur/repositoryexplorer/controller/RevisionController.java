@@ -1,5 +1,5 @@
 /*!
- * Copyright 2010 - 2015 Pentaho Corporation.  All rights reserved.
+ * Copyright 2010 - 2017 Hitachi Vantara.  All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -45,12 +45,12 @@ import org.pentaho.ui.xul.binding.BindingConvertor;
 import org.pentaho.ui.xul.binding.BindingFactory;
 import org.pentaho.ui.xul.binding.DefaultBindingFactory;
 import org.pentaho.ui.xul.components.XulMessageBox;
-import org.pentaho.ui.xul.components.XulPromptBox;
 import org.pentaho.ui.xul.components.XulTab;
 import org.pentaho.ui.xul.containers.XulTabbox;
 import org.pentaho.ui.xul.containers.XulTree;
 import org.pentaho.ui.xul.impl.AbstractXulEventHandler;
 import org.pentaho.ui.xul.swt.custom.DialogConstant;
+import org.pentaho.ui.xul.swt.tags.SwtConfirmBox;
 import org.pentaho.ui.xul.util.XulDialogCallback;
 
 public class RevisionController extends AbstractXulEventHandler implements IUISupportController, java.io.Serializable {
@@ -255,9 +255,8 @@ public class RevisionController extends AbstractXulEventHandler implements IUISu
     UIRepositoryObjectRevision revisionToOpen = revision.iterator().next();
     if ( mainController != null && mainController.getCallback() != null ) {
       try {
-        if ( mainController.getCallback().open( contentToOpen, revisionToOpen.getName() ) ) {
-          // TODO: fire request to close dialog
-        }
+        // TODO: fire request to close dialog
+        mainController.getCallback().open( contentToOpen, revisionToOpen.getName() );
       } catch ( Exception e ) {
         if ( mainController != null ) {
           mainController.handleLostRepository( e );
@@ -275,7 +274,7 @@ public class RevisionController extends AbstractXulEventHandler implements IUISu
       Collection<UIRepositoryObjectRevision> versions = revisionTable.getSelectedItems();
       final UIRepositoryObjectRevision versionToRestore = versions.iterator().next();
 
-      XulPromptBox commitPrompt = promptCommitComment( document, messages, null );
+      SwtConfirmBox confirmbox = promptCommitComment( document );
 
       if ( contentToRestore instanceof ILockObject && ( (ILockObject) contentToRestore ).isLocked() ) {
         // Cannot restore revision of locked content
@@ -286,7 +285,7 @@ public class RevisionController extends AbstractXulEventHandler implements IUISu
         return;
       }
 
-      commitPrompt.addDialogCallback( new XulDialogCallback<String>() {
+      confirmbox.addDialogCallback( new XulDialogCallback<String>() {
         public void onClose( XulComponent component, Status status, String value ) {
 
           if ( !status.equals( Status.CANCEL ) ) {
@@ -316,7 +315,7 @@ public class RevisionController extends AbstractXulEventHandler implements IUISu
         }
       } );
 
-      commitPrompt.open();
+      confirmbox.open();
     } catch ( Exception e ) {
       if ( mainController == null || !mainController.handleLostRepository( e ) ) {
         throw new RuntimeException( new KettleException( e ) );
@@ -324,17 +323,13 @@ public class RevisionController extends AbstractXulEventHandler implements IUISu
     }
   }
 
-  private XulPromptBox promptCommitComment( org.pentaho.ui.xul.dom.Document document, ResourceBundle messages,
-      String defaultMessage ) throws XulException {
-    XulPromptBox prompt = (XulPromptBox) document.createElement( "promptbox" ); //$NON-NLS-1$
+  private SwtConfirmBox promptCommitComment( org.pentaho.ui.xul.dom.Document document ) throws XulException {
+    SwtConfirmBox confirmbox = (SwtConfirmBox) document.createElement( "confirmbox" );
+    confirmbox.setTitle( BaseMessages.getString( PKG, "RepositoryExplorer.CommitTitle" ) ); //$NON-NLS-1$
+    confirmbox.setButtons( new DialogConstant[] { DialogConstant.OK, DialogConstant.CANCEL } );
 
-    prompt.setTitle( BaseMessages.getString( PKG, "RepositoryExplorer.CommitTitle" ) ); //$NON-NLS-1$
-    prompt.setButtons( new DialogConstant[] { DialogConstant.OK, DialogConstant.CANCEL } );
-
-    prompt.setMessage( BaseMessages.getString( PKG, "RepositoryExplorer.CommitLabel" ) ); //$NON-NLS-1$
-    prompt.setValue( defaultMessage == null
-        ? BaseMessages.getString( PKG, "RepositoryExplorer.DefaultCommitMessage" ) : defaultMessage ); //$NON-NLS-1$
-    return prompt;
+    confirmbox.setMessage( BaseMessages.getString( PKG, "RepositoryExplorer.CommitLabel" ) ); //$NON-NLS-1$//$NON-NLS-1$
+    return confirmbox;
   }
 
   private void setRevisionTableColumns( Boolean versionCommentEnabled ) {

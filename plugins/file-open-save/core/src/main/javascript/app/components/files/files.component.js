@@ -1,24 +1,25 @@
 /*!
- * PENTAHO CORPORATION PROPRIETARY AND CONFIDENTIAL
+ * HITACHI VANTARA PROPRIETARY AND CONFIDENTIAL
  *
- * Copyright 2017 Pentaho Corporation (Pentaho). All rights reserved.
+ * Copyright 2017 Hitachi Vantara. All rights reserved.
  *
  * NOTICE: All information including source code contained herein is, and
- * remains the sole property of Pentaho and its licensors. The intellectual
+ * remains the sole property of Hitachi Vantara and its licensors. The intellectual
  * and technical concepts contained herein are proprietary and confidential
- * to, and are trade secrets of Pentaho and may be covered by U.S. and foreign
+ * to, and are trade secrets of Hitachi Vantara and may be covered by U.S. and foreign
  * patents, or patents in process, and are protected by trade secret and
  * copyright laws. The receipt or possession of this source code and/or related
  * information does not convey or imply any rights to reproduce, disclose or
  * distribute its contents, or to manufacture, use, or sell anything that it
  * may describe, in whole or in part. Any reproduction, modification, distribution,
  * or public display of this information without the express written authorization
- * from Pentaho is strictly prohibited and in violation of applicable laws and
+ * from Hitachi Vantara is strictly prohibited and in violation of applicable laws and
  * international treaties. Access to the source code contained herein is strictly
  * prohibited to anyone except those individuals and entities who have executed
- * confidentiality and non-disclosure agreements or other agreements with Pentaho,
+ * confidentiality and non-disclosure agreements or other agreements with Hitachi Vantara,
  * explicitly covering such access.
  */
+
 /**
  * The File Open and Save Files component.
  *
@@ -31,27 +32,29 @@ define([
   "../../services/data.service",
   "../utils",
   "text!./files.html",
+  "pentaho/i18n-osgi!file-open-save.messages",
   "css!./files.css"
-], function(dataService, utils, filesTemplate) {
+], function(dataService, utils, filesTemplate, i18n) {
   "use strict";
 
   var options = {
     bindings: {
-      folder: '<',
-      search: '<',
-      onClick: '&',
-      onSelect: '&',
-      onFileDuplicate: '&',
-      onFolderDuplicate: '&',
-      onError: '&',
-      onRename: '&'
+      folder: "<",
+      search: "<",
+      onClick: "&",
+      onSelect: "&",
+      onError: "&",
+      onRename: "&",
+      onEditStart: "&",
+      onEditComplete: "&",
+      selectedFile: "<"
     },
     template: filesTemplate,
     controllerAs: "vm",
     controller: filesController
   };
 
-  filesController.$inject = [dataService.name];
+  filesController.$inject = [dataService.name, "$timeout"];
 
   /**
    * The Files Controller.
@@ -59,8 +62,9 @@ define([
    * This provides the controller for the files component.
    *
    * @param {Object} dt - Angular service that contains helper functions for the files component controller
+   * @param {Function} $timeout - Angular wrapper for window.setTimeout.
    */
-  function filesController(dt) {
+  function filesController(dt, $timeout) {
     var vm = this;
     vm.$onInit = onInit;
     vm.$onChanges = onChanges;
@@ -81,12 +85,10 @@ define([
      * bindings initialized. We use this hook to put initialization code for our controller.
      */
     function onInit() {
-      vm.nameHeader = "Name";
-      vm.typeHeader = "Type";
-      vm.lastSaveHeader = "Last saved";
-      vm.hasResults = false;
-      vm.noResults = "No results";// i18n.get("file-open-save-plugin.app.middle.no-results.message");
-      _setSort(0, false, 'name');
+      vm.nameHeader = i18n.get("file-open-save-plugin.files.name.header");
+      vm.typeHeader = i18n.get("file-open-save-plugin.files.type.header");
+      vm.modifiedHeader = i18n.get("file-open-save-plugin.files.modified.header");
+      _setSort(0, false, "name");
       vm.numResults = 0;
     }
 
@@ -98,8 +100,10 @@ define([
      */
     function onChanges(changes) {
       if (changes.folder) {
-        vm.selectedFile = null;
-        _setSort(0, false, 'name');
+        $timeout(function() {
+          vm.selectedFile = null;
+          _setSort(0, false, "name");
+        }, 200);
       }
     }
 
@@ -109,9 +113,8 @@ define([
      * @param {Object} file - file object.
      */
     function commitFile(file) {
-      if (file.isEditing !== true) {
+      if (file.editing !== true) {
         vm.onClick({file: file});
-        file.isEditing = false;
       }
     }
 
@@ -121,8 +124,10 @@ define([
      * @param {Object} file - file object.
      */
     function selectFile(file) {
-      vm.selectedFile = file;
-      vm.onSelect({selectedFile: file});
+      if (vm.selectedFile !== file) {
+        vm.selectedFile = file;
+        vm.onSelect({selectedFile: file});
+      }
     }
 
     /**
@@ -135,13 +140,11 @@ define([
     function getFiles(elements) {
       vm.numResults = 0;
       var files = [];
-      vm.hasResults = false;
       if (vm.search.length > 0) {
         resolveChildren(elements, files);
       } else {
         files = elements;
         vm.numResults = (files ? files.length : 0);
-        vm.hasResults = true;
       }
       return files;
     }
@@ -158,7 +161,6 @@ define([
           files.push(elements[i]);
           if (elements[i].inResult) {
             vm.numResults++;
-            vm.hasResults = true;
           }
           if (elements[i].children.length > 0) {
             resolveChildren(elements[i].children, files);
@@ -169,47 +171,121 @@ define([
 
     /**
      * Rename the selected file.
+     *
+     * @param {Object} file - File Object
+     * @param {String} current - Current file
+     * @param {String} previous - Previous file
+     * @param {Function} errorCallback - Function to call error
      */
     function rename(file, current, previous, errorCallback) {
-      var path = file.type === "folder" ? file.path : file.parent;
-      dt.rename(file.objectId.id, path, current, file.type).then(function(response) {
-        file.name = current;
-        file.objectId = response.data;
+      if (current) {
+        if (file.new) {
+          _createFolder(file, current, previous, errorCallback);
+        } else {
+          _renameFile(file, current, previous, errorCallback);
+        }
+      }
+      vm.onEditComplete();
+    }
+
+    /**
+     * Create a new folder
+     *
+     * @param {Object} file - File Object
+     * @param {String} current - Current file
+     * @param {String} previous - Previous file
+     * @param {Function} errorCallback - Function to call error
+     * @private
+     */
+    function _createFolder(file, current, previous, errorCallback) {
+      var newName = current;
+      if (_hasDuplicate(current, file)) {
+        file.newName = current;
+        errorCallback();
+        _doError(file.type === "folder" ? 2 : 7);
+        newName = previous;
+      }
+      file.new = false;
+      dt.create(file.parent, newName).then(function(response) {
         var index = file.path.lastIndexOf("/");
         var oldPath = file.path;
-        var newPath = file.path.substr(0, index) + "/" + current;
+        var newPath = file.path.substr(0, index) + "/" + newName;
+        var id = response.data.objectId;
+        vm.onRename({oldPath: oldPath, newPath: newPath, newName: newName, id: id});
+        file.objectId = id;
+        file.parent = response.data.parent;
+        file.path = response.data.path;
+        file.name = newName;
+      }, function() {
+        _doError(4, file);
+      });
+    }
+
+    /**
+     * Rename an existing file/folder
+     *
+     * @param {Object} file - File Object
+     * @param {String} current - Current file
+     * @param {String} previous - Previous file
+     * @param {Function} errorCallback - Function to call error
+     * @private
+     */
+    function _renameFile(file, current, previous, errorCallback) {
+      dt.rename(file.objectId.id, file.path, current, file.type, file.name).then(function(response) {
+        file.name = current;
+        file.objectId = response.data;
         if (file.type === "folder") {
-          vm.onRename({oldPath:oldPath, newPath:newPath, newName:current});
+          var index = file.path.lastIndexOf("/");
+          var oldPath = file.path;
+          var newPath = file.path.substr(0, index) + "/" + current;
+          vm.onRename({oldPath: oldPath, newPath: newPath, newName: current});
         }
-        _updateDirectories(file, oldPath, newPath);
       }, function(response) {
+        file.newName = current;
         errorCallback();
-        if (response.status === 304) {
-          vm.onError();
-        }
-        if (response.status === 409) {
-          if (file.type === "folder") {
-            vm.onFolderDuplicate();
+        if (response.status === 304 || response.status === 500) {
+          _doError(file.type === "folder" ? 10 : 11);
+        } else if (response.status === 409) {
+          if (_hasDuplicate(current, file)) {
+            _doError(file.type === "folder" ? 2 : 7);
           } else {
-            vm.onFileDuplicate();
+            _doError(file.type === "folder" ? 10 : 11);
           }
+        } else if (response.status === 406) {
+          _doError(file.type === "folder" ? 15 : 12);
+        } else {
+          _doError(file.type === "folder" ? 10 : 11);
         }
       });
     }
 
     /**
-     * Update all child folder paths on parent rename
-     *
-     * @param folder
-     * @param oldPath
-     * @param newPath
+     * Calls vm.onError using the parameter errorType
+     * @param {number} errorType - the number corresponding to the appropriate error
      * @private
      */
-    function _updateDirectories(folder, oldPath, newPath) {
-      folder.path = folder.path.replace( oldPath, newPath );
-      for (var i = 0;i < folder.children.length; i++) {
-        updateDirectories(folder.children[i], oldPath, newPath);
+    function _doError(errorType, file) {
+      vm.onError({errorType: errorType, file: file});
+    }
+
+    /**
+     * Checks for a duplicate name
+     *
+     * @param {String} name - file name to check if it already exists within vm.folder.children
+     * @param {Object} file - File Object
+     * @return {Boolean} true if it vm.folder.children already has a file named "name", false otherwise
+     * @private
+     */
+    function _hasDuplicate(name, file) {
+      for (var i = 0; i < vm.folder.children.length; i++) {
+        var check = vm.folder.children[i];
+        if (check !== file) {
+          if (check.name.toLowerCase() === name.toLowerCase() && check.type === file.type) {
+            return true;
+          }
+        }
       }
+      return false;
     }
 
     /**
@@ -249,43 +325,62 @@ define([
       vm.sortField = field;
     }
 
+    /**
+     * Calls selectFile for file and onEditStart()
+     * @param {Object} file - File Object
+     */
     function onStart(file) {
       selectFile(file);
+      vm.onEditStart();
     }
 
     /**
      * Compare files according to sortField, keeping folders first
+     * @param {Object} first - File Object
+     * @param {Object} second - File Object
+     * @return {Number} -1 or 1 according to comparisons of first and second names
      **/
     function compareFiles(first, second) {
-      var obj1 = first.value, obj2 = second.value;
-      // folders always first, even if reversed
+      var obj1 = first.value;
+      var obj2 = second.value;
+
       var comp = foldersFirst(obj1.type, obj2.type);
-      if(comp != 0) {
-        return vm.sortReverse ? -comp : comp;
+      if (comp !== 0) {
+        return comp;
       }
       // field compare
-      switch(vm.sortField) {
-        case 'name':
+      switch (vm.sortField) {
+        case "name":
           comp = utils.naturalCompare(obj1.name, obj2.name);
           break;
         default:
-          var val1 = obj1[vm.sortField], val2 = obj2[vm.sortField];
+          var val1 = obj1[vm.sortField];
+          var val2 = obj2[vm.sortField];
           comp = (val1 < val2) ? -1 : (val1 > val2) ? 1 : 0;
+          if (comp === 0) {
+            comp = utils.naturalCompare(obj1.name, obj2.name);
+          }
       }
-      if ( comp != 0 ){
+
+      if (comp !== 0) {
         return comp;
       }
       // keep order if equal
       return first.index < second.index ? -1 : 1;
     }
 
+    /**
+     * Tests 2 strings to determine if they are different or if they equal "folder"
+     * @param {String} type1 - String object
+     * @param {String} type2 - String object
+     * @return {number} - a number according to the values of type1 and type2
+     */
     function foldersFirst(type1, type2) {
-      if (type1 != type2) {
-        return (type1 == 'folder')? -1 : (type2 == 'folder') ? 1 : 0;
+      if (type1 !== type2) {
+        return (type1 === "folder") ? -1 : (type2 === "folder") ? 1 : 0;
       }
       return 0;
     }
-
   }
 
   return {

@@ -1,6 +1,6 @@
 //CHECKSTYLE:FileLength:OFF
 /*!
-* Copyright 2010 - 2017 Pentaho Corporation.  All rights reserved.
+* Copyright 2010 - 2017 Hitachi Vantara.  All rights reserved.
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -37,6 +37,7 @@ import java.util.Set;
 
 import javax.xml.namespace.QName;
 import javax.xml.ws.Service;
+import javax.xml.ws.soap.SOAPFaultException;
 
 import org.apache.commons.lang.StringUtils;
 import org.pentaho.di.cluster.ClusterSchema;
@@ -57,6 +58,7 @@ import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.i18n.BaseMessages;
+import org.pentaho.di.imp.Import;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.partition.PartitionSchema;
 import org.pentaho.di.repository.AbstractRepository;
@@ -101,6 +103,8 @@ import org.pentaho.platform.api.repository2.unified.RepositoryFile;
 import org.pentaho.platform.api.repository2.unified.RepositoryFileAcl;
 import org.pentaho.platform.api.repository2.unified.RepositoryFileTree;
 import org.pentaho.platform.api.repository2.unified.RepositoryRequest;
+import org.pentaho.platform.api.repository2.unified.UnifiedRepositoryCreateFileException;
+import org.pentaho.platform.api.repository2.unified.UnifiedRepositoryUpdateFileException;
 import org.pentaho.platform.api.repository2.unified.VersionSummary;
 import org.pentaho.platform.api.repository2.unified.RepositoryRequest.FILES_TYPE_FILTER;
 import org.pentaho.platform.api.repository2.unified.data.node.DataNode;
@@ -1560,7 +1564,7 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
     try {
 
       //RepositoryDirectoryInterface repDir = getRootDir().findDirectory( dirId );
-      RepositoryFile dirFile = pur.getFile( dirId.getId() );
+      RepositoryFile dirFile = pur.getFileById( dirId.getId() );
       RepositoryDirectory repDir = new RepositoryDirectory();
       repDir.setObjectId( dirId );
       repDir.setName( dirFile.getName() );
@@ -2978,6 +2982,11 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
                                boolean saveSharedObjects,
                                boolean checkLock, boolean checkRename,
                                boolean loadRevision, boolean checkDeleted ) throws KettleException {
+    if ( Import.ROOT_DIRECTORY.equals( element.getRepositoryDirectory().toString() ) ) {
+      // We don't have possibility to read this file via UI
+      throw new KettleException( BaseMessages.getString( PKG, "PurRepository.fileCannotBeSavedInRootDirectory",
+        element.getName() + element.getRepositoryElementType().getExtension() ) );
+    }
     if ( saveSharedObjects ) {
       objectTransformer.saveSharedObjects( element, versionComment );
     }
@@ -2999,9 +3008,18 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
           new RepositoryFile.Builder( file ).title( RepositoryFile.DEFAULT_LOCALE, element.getName() ).createdDate(
               versionDate != null ? versionDate.getTime() : new Date() ).description( RepositoryFile.DEFAULT_LOCALE,
               Const.NVL( element.getDescription(), "" ) ).build();
-      file =
+      try {
+        file =
           pur.updateFile( file, new NodeRepositoryFileData( objectTransformer.elementToDataNode( element ) ),
-              versionComment );
+            versionComment );
+      } catch ( SOAPFaultException e ) {
+        if ( e.getMessage().contains( UnifiedRepositoryUpdateFileException.PREFIX ) ) {
+          throw new KettleException(
+            BaseMessages.getString( PKG, "PurRepository.fileUpdateException", file.getName() ) );
+        }
+        throw e;
+      }
+
       if ( checkRename && isRenamed( element, file ) ) {
         renameKettleEntity( element, null, element.getName() );
       }
@@ -3012,9 +3030,16 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
               RepositoryFile.DEFAULT_LOCALE, element.getName() ).createdDate(
               versionDate != null ? versionDate.getTime() : new Date() ).description( RepositoryFile.DEFAULT_LOCALE,
               Const.NVL( element.getDescription(), "" ) ).build();
-      file =
+      try {
+        file =
           pur.createFile( element.getRepositoryDirectory().getObjectId().getId(), file,
-              new NodeRepositoryFileData( objectTransformer.elementToDataNode( element ) ), versionComment );
+            new NodeRepositoryFileData( objectTransformer.elementToDataNode( element ) ), versionComment );
+      } catch ( SOAPFaultException e ) {
+        if ( e.getMessage().contains( UnifiedRepositoryCreateFileException.PREFIX ) ) {
+          throw new KettleException(
+            BaseMessages.getString( PKG, "PurRepository.fileCreateException", file.getName() ) );
+        }
+      }
     }
     // side effects
     ObjectId objectId = new StringObjectId( file.getId().toString() );

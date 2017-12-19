@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -30,9 +30,9 @@ public class FixedInputContentParsingTest extends BaseFixedParsingTest {
     meta.setLineWidth( "24" );
     init( "default.txt" );
 
-    FixedFileInputField f1 = new FixedFileInputField();
-    FixedFileInputField f2 = new FixedFileInputField();
-    FixedFileInputField f3 = new FixedFileInputField();
+    FixedFileInputField f1 = new FixedFileInputField( "f1" );
+    FixedFileInputField f2 = new FixedFileInputField( "f2" );
+    FixedFileInputField f3 = new FixedFileInputField( "f2" );
     f1.setWidth( 8 );
     f2.setWidth( 8 );
     f3.setWidth( 8 );

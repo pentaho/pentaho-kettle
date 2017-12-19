@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,7 +22,6 @@
 
 package org.pentaho.di.pan;
 
-import java.io.File;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -31,6 +30,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.FileUtil;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.KettleClientEnvironment;
 import org.pentaho.di.core.KettleEnvironment;
@@ -387,7 +387,7 @@ public class Pan {
           // If the filename starts with scheme like zip:, then isAbsolute() will return false even though the
           // the path following the zip is absolute path. Check for isAbsolute only if the fileName does not
           // start with scheme
-          if ( !KettleVFS.startsWithScheme( fileName ) && !new File( fileName ).isAbsolute() ) {
+          if ( !KettleVFS.startsWithScheme( fileName ) && !FileUtil.isFullyQualified( fileName ) ) {
             fileName = initialDir.toString() + fileName;
           }
 

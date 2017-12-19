@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -585,6 +585,11 @@ public class LoadFileInputDialog extends BaseStepDialog implements StepDialogInt
     fdIgnoreEmptyFile.left = new FormAttachment( middle, 0 );
     fdIgnoreEmptyFile.top = new FormAttachment( wEncoding, margin );
     wIgnoreEmptyFile.setLayoutData( fdIgnoreEmptyFile );
+    wIgnoreEmptyFile.addSelectionListener( new SelectionAdapter() {
+      public void widgetSelected( SelectionEvent e ) {
+        input.setChanged();
+      }
+    } );
 
     // Ignore missing path
     wlIgnoreMissingPath = new Label( wFileConf, SWT.RIGHT );
@@ -602,6 +607,11 @@ public class LoadFileInputDialog extends BaseStepDialog implements StepDialogInt
     fdIgnoreMissingPath.left = new FormAttachment( middle, 0 );
     fdIgnoreMissingPath.top = new FormAttachment( wIgnoreEmptyFile, margin );
     wIgnoreMissingPath.setLayoutData( fdIgnoreMissingPath );
+    wIgnoreMissingPath.addSelectionListener( new SelectionAdapter() {
+      public void widgetSelected( SelectionEvent e ) {
+        input.setChanged();
+      }
+    } );
 
     // preview limit
     wlLimit = new Label( wFileConf, SWT.RIGHT );
@@ -746,6 +756,11 @@ public class LoadFileInputDialog extends BaseStepDialog implements StepDialogInt
     fdAddResult.left = new FormAttachment( middle, 0 );
     fdAddResult.top = new FormAttachment( wAdditionalFields, margin );
     wAddResult.setLayoutData( fdAddResult );
+    wAddResult.addSelectionListener( new SelectionAdapter() {
+      public void widgetSelected( SelectionEvent e ) {
+        input.setChanged();
+      }
+    } );
 
     fdAddFileResult = new FormData();
     fdAddFileResult.left = new FormAttachment( 0, margin );
@@ -999,6 +1014,7 @@ public class LoadFileInputDialog extends BaseStepDialog implements StepDialogInt
     wInclFilename.addSelectionListener( new SelectionAdapter() {
       public void widgetSelected( SelectionEvent e ) {
         setIncludeFilename();
+        input.setChanged();
       }
     } );
 
@@ -1006,6 +1022,7 @@ public class LoadFileInputDialog extends BaseStepDialog implements StepDialogInt
     wInclRownum.addSelectionListener( new SelectionAdapter() {
       public void widgetSelected( SelectionEvent e ) {
         setIncludeRownum();
+        input.setChanged();
       }
     } );
 
@@ -1369,6 +1386,7 @@ public class LoadFileInputDialog extends BaseStepDialog implements StepDialogInt
     in.setIgnoreMissingPath( wIgnoreMissingPath.getSelection() );
 
     in.setIncludeFilename( wInclFilename.getSelection() );
+    in.setFilenameField( wInclFilenameField.getText() );
     in.setIncludeRowNumber( wInclRownum.getSelection() );
 
     in.setIsInFields( wFilenameInField.getSelection() );
@@ -1379,7 +1397,6 @@ public class LoadFileInputDialog extends BaseStepDialog implements StepDialogInt
     if ( wFilenameInField.getSelection() ) {
       in.allocate( 0, nrFields );
 
-      in.setFilenameField( wInclFilenameField.getText() );
       in.setFileName( new String[0] );
       in.setFileMask( new String[0] );
       in.setExcludeFileMask( new String[0] );
@@ -1388,7 +1405,6 @@ public class LoadFileInputDialog extends BaseStepDialog implements StepDialogInt
     } else {
       in.allocate( wFilenameList.getItemCount(), nrFields );
 
-      in.setFilenameField( null );
       in.setFileName( wFilenameList.getItems( 0 ) );
       in.setFileMask( wFilenameList.getItems( 1 ) );
       in.setExcludeFileMask( wFilenameList.getItems( 2 ) );

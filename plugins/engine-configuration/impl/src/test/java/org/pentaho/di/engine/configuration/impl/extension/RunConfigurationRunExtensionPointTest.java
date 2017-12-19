@@ -3,7 +3,7 @@
  *
  *  Pentaho Data Integration
  *
- *  Copyright (C) 2017 by Pentaho : http://www.pentaho.com
+ *  Copyright (C) 2017 by Hitachi Vantara : http://www.pentaho.com
  *
  *  *******************************************************************************
  *  Licensed under the Apache License, Version 2.0 (the "License"); you may not use
@@ -74,11 +74,11 @@ public class RunConfigurationRunExtensionPointTest {
   public void testCallExtensionPoint() throws Exception {
 
     runConfigurationRunExtensionPoint.callExtensionPoint( log, new Object[] {
-      transExecutionConfiguration, abstractMeta, variableSpace
+      transExecutionConfiguration, abstractMeta, variableSpace, null
     } );
 
     verify( runConfigurationExecutor )
-      .execute( runConfiguration, transExecutionConfiguration, abstractMeta, variableSpace );
+      .execute( runConfiguration, transExecutionConfiguration, abstractMeta, variableSpace, null );
   }
 
   @Test

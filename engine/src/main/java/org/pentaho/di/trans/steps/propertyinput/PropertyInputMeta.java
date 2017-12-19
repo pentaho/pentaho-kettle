@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -691,6 +691,7 @@ public class PropertyInputMeta extends BaseStepMeta implements StepMetaInterface
       retval.append( "      " ).append( XMLHandler.addTagValue( "filemask", fileMask[i] ) );
       retval.append( "      " ).append( XMLHandler.addTagValue( "file_required", fileRequired[i] ) );
       retval.append( "      " ).append( XMLHandler.addTagValue( "include_subfolders", includeSubFolders[i] ) );
+      parentStepMeta.getParentTransMeta().getNamedClusterEmbedManager().registerUrl( fileName[i] );
     }
     retval.append( "    </file>" ).append( Const.CR );
 

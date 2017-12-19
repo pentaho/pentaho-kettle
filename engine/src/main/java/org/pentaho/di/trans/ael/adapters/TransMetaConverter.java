@@ -3,7 +3,7 @@
  *
  *  Pentaho Data Integration
  *
- *  Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
+ *  Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
  *
  * ******************************************************************************
  *
@@ -25,27 +25,42 @@
 package org.pentaho.di.trans.ael.adapters;
 
 import com.google.common.base.Throwables;
+
+import java.io.File;
+import java.io.Serializable;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.engine.api.model.Hop;
 import org.pentaho.di.engine.api.model.Operation;
 import org.pentaho.di.engine.api.model.Transformation;
+import org.pentaho.di.repository.Repository;
+import org.pentaho.di.repository.RepositoryDirectoryInterface;
+import org.pentaho.di.resource.ResourceEntry;
 import org.pentaho.di.trans.TransHopMeta;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.StepMeta;
+import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.di.trans.steps.csvinput.CsvInputMeta;
 import org.pentaho.di.trans.steps.tableinput.TableInputMeta;
+import org.pentaho.di.workarounds.ResolvableResource;
+
+import static java.util.stream.Collectors.toMap;
 
 public class TransMetaConverter {
 
   public static final String TRANS_META_CONF_KEY = "TransMeta";
   public static final String TRANS_META_NAME_CONF_KEY = "TransMetaName";
+  public static final String SUB_TRANSFORMATIONS_KEY = "SubTransformations";
   public static final String STEP_META_CONF_KEY = "StepMeta";
   public static final String TRANS_DEFAULT_NAME = "No Name";
 
@@ -61,12 +76,33 @@ public class TransMetaConverter {
       // Turn off lazy conversion for AEL for now
       disableLazyConversion( copyTransMeta );
 
+      resolveStepMetaResources( copyTransMeta );
+
       copyTransMeta.getSteps().forEach( createOperation( transformation ) );
       findHops( copyTransMeta, hop -> true ).forEach( createHop( transformation ) );
 
       transformation.setConfig( TRANS_META_CONF_KEY, copyTransMeta.getXML() );
       transformation.setConfig( TRANS_META_NAME_CONF_KEY,
         Optional.ofNullable( transMeta.getName() ).orElse( TRANS_DEFAULT_NAME ) );
+      Map<String, Transformation> subTransformations = copyTransMeta.getResourceDependencies().stream()
+        .flatMap( resourceReference -> resourceReference.getEntries().stream() )
+        .filter( entry -> ResourceEntry.ResourceType.ACTIONFILE.equals( entry.getResourcetype() ) )
+        .collect( toMap( ResourceEntry::getResource, entry -> {
+          try {
+            Repository repository = copyTransMeta.getRepository();
+            if ( repository != null ) {
+              Path path = Paths.get( entry.getResource() );
+              RepositoryDirectoryInterface directory =
+                repository.findDirectory( path.getParent().toString().replace( File.separator, "/" ) );
+              return convert(
+                repository.loadTransformation( path.getFileName().toString(), directory, null, true, null ) );
+            }
+            return convert( new TransMeta( entry.getResource(), copyTransMeta.getParentVariableSpace() ) );
+          } catch ( KettleException e ) {
+            throw new RuntimeException( e );
+          }
+        } ) );
+      transformation.setConfig( SUB_TRANSFORMATIONS_KEY, (Serializable) subTransformations );
     } catch ( KettleException e ) {
       Throwables.propagate( e );
     }
@@ -198,4 +234,15 @@ public class TransMetaConverter {
 
     return ( nrEnabledOutHops == 0 && nrDisabledOutHops > 0 && nrInputHops == 0 );
   }
+
+  private static void resolveStepMetaResources( TransMeta transMeta ) {
+    for ( StepMeta stepMeta : transMeta.getSteps() ) {
+      StepMetaInterface smi = stepMeta.getStepMetaInterface();
+      if ( smi instanceof ResolvableResource ) {
+        ResolvableResource resolvableMeta = (ResolvableResource) smi;
+        resolvableMeta.resolve();
+      }
+    }
+  }
+
 }
