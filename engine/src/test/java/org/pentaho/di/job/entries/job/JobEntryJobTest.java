@@ -28,12 +28,15 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.doReturn;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
+import java.util.Map;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -41,11 +44,14 @@ import javax.xml.parsers.ParserConfigurationException;
 
 import org.junit.Test;
 import org.pentaho.di.cluster.SlaveServer;
+import org.pentaho.di.core.Const;
 import org.pentaho.di.core.ObjectLocationSpecificationMethod;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleXMLException;
+import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.repository.Repository;
+import org.pentaho.di.resource.ResourceNamingInterface;
 import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
@@ -176,5 +182,23 @@ public class JobEntryJobTest {
     jej.setParentJobMeta( null );
     verify( meta, times( 1 ) ).addCurrentDirectoryChangedListener( any() );
     verify( meta, times( 1 ) ).removeCurrentDirectoryChangedListener( any() );
+  }
+
+  @Test
+  public void testExportResources() throws Exception {
+    JobEntryJob jobEntryJob = spy( getJobEntryJob() );
+    JobMeta jobMeta = mock( JobMeta.class );
+
+    String testName = "test";
+
+    doReturn( jobMeta ).when( jobEntryJob ).getJobMeta( any( Repository.class ),
+            any( IMetaStore.class ), any( VariableSpace.class ) );
+    when( jobMeta.exportResources( any( JobMeta.class ), any( Map.class ), any( ResourceNamingInterface.class ),
+            any( Repository.class ), any( IMetaStore.class ) ) ).thenReturn( testName );
+
+    jobEntryJob.exportResources( null, null, null, null, null );
+
+    verify( jobMeta ).setFilename( "${" + Const.INTERNAL_VARIABLE_ENTRY_CURRENT_DIRECTORY + "}/" + testName );
+    verify( jobEntryJob ).setSpecificationMethod( ObjectLocationSpecificationMethod.FILENAME );
   }
 }

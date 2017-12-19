@@ -107,7 +107,7 @@ public class AutoDocMeta extends BaseStepMeta implements StepMetaInterface, Auto
   @Override
   public void setDefault() {
     outputType = OutputType.PDF;
-    targetFilename = "${Internal.Transformation.Filename.Directory}/kettle-autodoc.pdf";
+    targetFilename = "${Internal.Entry.Current.Directory}/kettle-autodoc.pdf";
     includingName = true;
     includingDescription = true;
     includingExtendedDescription = true;

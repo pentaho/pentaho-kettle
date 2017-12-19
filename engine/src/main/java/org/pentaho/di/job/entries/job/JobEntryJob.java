@@ -1481,9 +1481,9 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
       jobMeta.exportResources( jobMeta, definitions, namingInterface, repository, metaStore );
 
     // To get a relative path to it, we inject
-    // ${Internal.Job.Filename.Directory}
+    // ${Internal.Entry.Current.Directory}
     //
-    String newFilename = "${" + Const.INTERNAL_VARIABLE_JOB_FILENAME_DIRECTORY + "}/" + proposedNewFilename;
+    String newFilename = "${" + Const.INTERNAL_VARIABLE_ENTRY_CURRENT_DIRECTORY + "}/" + proposedNewFilename;
 
     // Set the filename in the job
     //

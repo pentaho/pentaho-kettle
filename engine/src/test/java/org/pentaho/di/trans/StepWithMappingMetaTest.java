@@ -118,7 +118,7 @@ public class StepWithMappingMetaTest {
     when( transMeta.exportResources( any(), anyMap(), any(), any(), any() ) ).thenReturn( testName );
 
     stepWithMappingMeta.exportResources( null, null, null, null, null );
-    verify( transMeta ).setFilename( "${" + Const.INTERNAL_VARIABLE_TRANSFORMATION_FILENAME_DIRECTORY + "}/" + testName );
+    verify( transMeta ).setFilename( "${" + Const.INTERNAL_VARIABLE_ENTRY_CURRENT_DIRECTORY + "}/" + testName );
     verify( stepWithMappingMeta ).setSpecificationMethod( ObjectLocationSpecificationMethod.FILENAME );
 
   }
