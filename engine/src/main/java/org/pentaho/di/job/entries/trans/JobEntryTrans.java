@@ -912,7 +912,7 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
             ExtensionPointHandler.callExtensionPoint( log, KettleExtensionPoint.SpoonTransBeforeStart.id, new Object[] {
               executionConfiguration, parentJob.getJobMeta(), transMeta, rep
             } );
-            if ( !executionConfiguration.isExecutingLocally() && !executionConfiguration.isExecutingRemotely() ) {
+            if ( !executionConfiguration.isExecutingLocally() && !executionConfiguration.isExecutingRemotely() && !executionConfiguration.isExecutingClustered() ) {
               result.setResult( true );
               return result;
             }
