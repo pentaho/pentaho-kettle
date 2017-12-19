@@ -29,12 +29,25 @@ import java.util.Map;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.pentaho.di.core.Const;
+import org.pentaho.di.core.ObjectLocationSpecificationMethod;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.variables.VariableSpace;
+import org.pentaho.di.job.JobMeta;
+import org.pentaho.di.repository.Repository;
+import org.pentaho.di.resource.ResourceNamingInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.steps.loadsave.LoadSaveTester;
 import org.pentaho.di.trans.steps.loadsave.validator.FieldLoadSaveValidator;
+import org.pentaho.metastore.api.IMetaStore;
 
 import static org.junit.Assert.assertNull;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.doReturn;
 
 /**
  * <p>
@@ -89,5 +102,23 @@ public class JobExecutorMetaTest {
     assertNull( jobExecutorMeta.getExecutionResultTargetStepMeta() );
     assertNull( jobExecutorMeta.getResultRowsTargetStepMeta() );
     assertNull( jobExecutorMeta.getResultFilesTargetStepMeta() );
+  }
+
+  @Test
+  public void testExportResources() throws KettleException {
+    JobExecutorMeta jobExecutorMeta = spy( new JobExecutorMeta() );
+    JobMeta jobMeta = mock( JobMeta.class );
+
+    String testName = "test";
+
+    doReturn( jobMeta ).when( jobExecutorMeta ).loadJobMetaProxy( any( JobExecutorMeta.class ),
+            any( Repository.class ), any( VariableSpace.class ) );
+    when( jobMeta.exportResources( any( JobMeta.class ), any( Map.class ), any( ResourceNamingInterface.class ),
+            any( Repository.class ), any( IMetaStore.class ) ) ).thenReturn( testName );
+
+    jobExecutorMeta.exportResources( null, null, null, null, null );
+
+    verify( jobMeta ).setFilename( "${" + Const.INTERNAL_VARIABLE_ENTRY_CURRENT_DIRECTORY + "}/" + testName );
+    verify( jobExecutorMeta ).setSpecificationMethod( ObjectLocationSpecificationMethod.FILENAME );
   }
 }

@@ -772,6 +772,22 @@ public class JobExecutorMeta extends BaseStepMeta implements StepMetaInterface, 
     return references;
   }
 
+  /**
+   * This method was created exclusively for tests
+   * to bypass the mock static final method
+   * without using PowerMock
+   *
+   * @param executorMeta
+   * @param rep
+   * @param space
+   * @return JobMeta
+   * @throws KettleException
+   */
+  JobMeta loadJobMetaProxy( JobExecutorMeta executorMeta, Repository rep,
+                           VariableSpace space ) throws KettleException {
+    return loadJobMeta( executorMeta, rep, space );
+  }
+
   @Override
   public String exportResources( VariableSpace space, Map<String, ResourceDefinition> definitions,
     ResourceNamingInterface resourceNamingInterface, Repository repository, IMetaStore metaStore ) throws KettleException {
@@ -784,7 +800,7 @@ public class JobExecutorMeta extends BaseStepMeta implements StepMetaInterface, 
       //
       // First load the executor job metadata...
       //
-      JobMeta executorJobMeta = loadJobMeta( this, repository, space );
+      JobMeta executorJobMeta = loadJobMetaProxy( this, repository, space );
 
       // Also go down into the mapping transformation and export the files
       // there. (mapping recursively down)
@@ -794,10 +810,10 @@ public class JobExecutorMeta extends BaseStepMeta implements StepMetaInterface, 
           executorJobMeta, definitions, resourceNamingInterface, repository, metaStore );
 
       // To get a relative path to it, we inject
-      // ${Internal.Transformation.Filename.Directory}
+      // ${Internal.Entry.Current.Directory}
       //
       String newFilename =
-        "${" + Const.INTERNAL_VARIABLE_TRANSFORMATION_FILENAME_DIRECTORY + "}/" + proposedNewFilename;
+        "${" + Const.INTERNAL_VARIABLE_ENTRY_CURRENT_DIRECTORY + "}/" + proposedNewFilename;
 
       // Set the correct filename inside the XML.
       //
