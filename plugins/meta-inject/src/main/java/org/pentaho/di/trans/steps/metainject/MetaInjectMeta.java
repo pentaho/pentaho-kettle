@@ -22,14 +22,7 @@
 
 package org.pentaho.di.trans.steps.metainject;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.ObjectLocationSpecificationMethod;
 import org.pentaho.di.core.annotations.Step;
 import org.pentaho.di.core.database.DatabaseMeta;
@@ -43,6 +36,7 @@ import org.pentaho.di.core.injection.InjectionSupported;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.value.ValueMetaFactory;
 import org.pentaho.di.core.util.CurrentDirectoryResolver;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
@@ -68,6 +62,12 @@ import org.pentaho.di.trans.step.StepMetaChangeListenerInterface;
 import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Node;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 @Step( id = "MetaInject",
     image = "org/pentaho/di/ui/trans/steps/metainject/img/GenericTransform.svg",
@@ -555,29 +555,44 @@ public class MetaInjectMeta extends BaseStepMeta implements StepMetaInterface, S
       case REPOSITORY_BY_NAME:
         String realTransname = tmpSpace.environmentSubstitute( injectMeta.getTransName() );
         String realDirectory = tmpSpace.environmentSubstitute( injectMeta.getDirectoryPath() );
+        if ( rep != null ) {
+          if ( !Utils.isEmpty( realTransname ) && !Utils.isEmpty( realDirectory ) && rep != null ) {
+            RepositoryDirectoryInterface repdir = rep.findDirectory( realDirectory );
+            if ( repdir != null ) {
+              try {
+                // reads the last revision in the repository...
+                //
+                // TODO: FIXME: see if we need to pass external MetaStore references to the repository?
+                //
+                mappingTransMeta = rep.loadTransformation( realTransname, repdir, null, true, null );
 
-        if ( !Utils.isEmpty( realTransname ) && !Utils.isEmpty( realDirectory ) && rep != null ) {
-          RepositoryDirectoryInterface repdir = rep.findDirectory( realDirectory );
-          if ( repdir != null ) {
-            try {
-              // reads the last revision in the repository...
-              //
-              // TODO: FIXME: see if we need to pass external MetaStore references to the repository?
-              //
-              mappingTransMeta = rep.loadTransformation( realTransname, repdir, null, true, null );
-
-              mappingTransMeta.getLogChannel().logDetailed( "Loading Mapping from repository",
-                "Mapping transformation [" + realTransname + "] was loaded from the repository" );
-            } catch ( Exception e ) {
-              throw new KettleException( "Unable to load transformation [" + realTransname + "]", e );
+                mappingTransMeta.getLogChannel().logDetailed( "Loading Mapping from repository",
+                  "Mapping transformation [" + realTransname + "] was loaded from the repository" );
+              } catch ( Exception e ) {
+                throw new KettleException( "Unable to load transformation [" + realTransname + "]", e );
+              }
+            } else {
+              throw new KettleException( BaseMessages.getString( PKG,
+                "MetaInjectMeta.Exception.UnableToLoadTransformationFromRepository", realTransname, realDirectory ) );
             }
-          } else {
-            throw new KettleException( BaseMessages.getString( PKG,
-              "MetaInjectMeta.Exception.UnableToLoadTransformationFromRepository", realTransname, realDirectory ) );
+          }
+        } else {
+          try {
+            mappingTransMeta =
+              new TransMeta( realDirectory + "/" + realTransname, metaStore, rep, true, tmpSpace, null );
+          } catch ( KettleException ke ) {
+            try {
+              // add .ktr extension and try again
+              mappingTransMeta =
+                new TransMeta( realDirectory + "/" + realTransname + "." + Const.STRING_TRANS_DEFAULT_EXT, metaStore,
+                  rep, true, tmpSpace, null );
+            } catch ( KettleException ke2 ) {
+              throw new KettleException( BaseMessages.getString( PKG, "StepWithMappingMeta.Exception.UnableToLoadTrans",
+                realTransname ) + realDirectory );
+            }
           }
         }
         break;
-
       case REPOSITORY_BY_REFERENCE:
         // Read the last revision by reference...
         mappingTransMeta = rep.loadTransformation( injectMeta.getTransObjectId(), null );
