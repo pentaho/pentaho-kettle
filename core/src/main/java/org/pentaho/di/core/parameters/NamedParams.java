@@ -118,6 +118,17 @@ public interface NamedParams {
   void copyParametersFrom( NamedParams params );
 
   /**
+   * Merge the given named parameters with current ones.
+   *
+   * @param params
+   *          the parameters to merge with.
+   * @param replace
+   *          replace if exists
+   */
+  default void mergeParametersWith( NamedParams params, boolean replace ) {
+  }
+
+  /**
    * Activate the currently set parameters
    */
   void activateParameters();

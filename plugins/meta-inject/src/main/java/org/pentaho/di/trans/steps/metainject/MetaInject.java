@@ -622,7 +622,7 @@ public class MetaInject extends BaseStep implements StepInterface {
         meta.actualizeMetaInjectMapping();
         data.transMeta = loadTransformationMeta();
         data.transMeta.copyVariablesFrom( this );
-        data.transMeta.copyParametersFrom( this.getTransMeta() );
+        data.transMeta.mergeParametersWith( this.getTrans(), true );
         checkSoureStepsAvailability();
         checkTargetStepsAvailability();
         // Get a mapping between the step name and the injection...

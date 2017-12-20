@@ -1491,6 +1491,16 @@ public abstract class AbstractMeta implements ChangedFlagInterface, UndoInterfac
   /*
    * (non-Javadoc)
    *
+   * @see org.pentaho.di.core.parameters.NamedParams#mergeParametersWith(org.pentaho.di.core.parameters.NamedParams, boolean replace)
+   */
+  @Override
+  public void mergeParametersWith( NamedParams params, boolean replace ) {
+    namedParams.mergeParametersWith( params, replace );
+  }
+
+  /*
+   * (non-Javadoc)
+   *
    * @see org.pentaho.di.core.parameters.NamedParams#activateParameters()
    */
   @Override

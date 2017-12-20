@@ -4971,6 +4971,16 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
     namedParams.copyParametersFrom( params );
   }
 
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.pentaho.di.core.parameters.NamedParams#mergeParametersWith(org.pentaho.di.core.parameters.NamedParams, boolean replace)
+   */
+  @Override
+  public void mergeParametersWith( NamedParams params, boolean replace ) {
+    namedParams.mergeParametersWith( params, replace );
+  }
+
   /**
    * Gets the parent transformation, which is null if no parent transformation exists.
    *
