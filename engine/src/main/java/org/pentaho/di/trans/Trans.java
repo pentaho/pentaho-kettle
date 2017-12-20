@@ -3,7 +3,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -4969,6 +4969,16 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
   @Override
   public void copyParametersFrom( NamedParams params ) {
     namedParams.copyParametersFrom( params );
+  }
+
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.pentaho.di.core.parameters.NamedParams#mergeParametersWith(org.pentaho.di.core.parameters.NamedParams, boolean replace)
+   */
+  @Override
+  public void mergeParametersWith( NamedParams params, boolean replace ) {
+    namedParams.mergeParametersWith( params, replace );
   }
 
   /**
