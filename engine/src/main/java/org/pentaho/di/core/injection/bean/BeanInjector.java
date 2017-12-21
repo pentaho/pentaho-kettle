@@ -43,6 +43,15 @@ public class BeanInjector {
     this.info = info;
   }
 
+  public Object getObject( Object root, String propName ) throws Exception {
+    BeanInjectionInfo.Property prop = info.getProperties().get( propName );
+    if ( prop == null ) {
+      throw new RuntimeException( "Property not found" );
+    }
+    BeanLevelInfo beanLevelInfo = prop.path.get( 1 );
+    return beanLevelInfo.field.get( root );
+  }
+
   public Object getProperty( Object root, String propName ) throws Exception {
     List<Integer> extractedIndexes = new ArrayList<>();
 

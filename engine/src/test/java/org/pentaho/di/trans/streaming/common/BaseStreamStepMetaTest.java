@@ -24,7 +24,16 @@ package org.pentaho.di.trans.streaming.common;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.runners.MockitoJUnitRunner;
 import org.pentaho.di.core.CheckResultInterface;
+import org.pentaho.di.core.Const;
+import org.pentaho.di.core.injection.Injection;
+import org.pentaho.di.core.injection.InjectionSupported;
+import org.pentaho.di.core.logging.KettleLogStore;
+import org.pentaho.di.core.logging.LogChannelInterface;
+import org.pentaho.di.core.logging.LogChannelInterfaceFactory;
 import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
@@ -33,28 +42,43 @@ import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
+import static org.mockito.Matchers.any;
+import static org.powermock.api.mockito.PowerMockito.when;
 
+@RunWith( MockitoJUnitRunner.class )
 public class BaseStreamStepMetaTest {
 
   private BaseStreamStepMeta meta;
+  @Mock LogChannelInterfaceFactory logChannelFactory;
+  @Mock LogChannelInterface logChannel;
 
   @Before
   public void setUp() throws Exception {
-    meta = new BaseStreamStepMeta() {
-      @Override
-      public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr,
-                                    TransMeta transMeta,
-                                    Trans trans ) {
-        return null;
-      }
+    meta = new StuffStreamMeta();
+    KettleLogStore.setLogChannelInterfaceFactory( logChannelFactory );
+    when( logChannelFactory.create( any(), any() ) ).thenReturn( logChannel );
+    when( logChannelFactory.create( any() ) ).thenReturn( logChannel );
+  }
 
-      @Override public StepDataInterface getStepData() {
-        return null;
-      }
-    };
+  @InjectionSupported( localizationPrefix = "stuff" )
+  private static class StuffStreamMeta extends BaseStreamStepMeta {
+    @Injection( name = "stuff" )
+    List<String> stuff = Arrays.asList( "one", "two" );
+
+    @Override
+    public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr,
+                                  TransMeta transMeta,
+                                  Trans trans ) {
+      return null;
+    }
+
+    @Override public StepDataInterface getStepData() {
+      return null;
+    }
   }
 
   @Test
@@ -106,5 +130,20 @@ public class BaseStreamStepMetaTest {
     assertEquals( 1, remarks.size() );
     assertEquals( "The \"Number of records\" and \"Duration\" fields can’t both be set to 0. Please set a value of 1 "
       + "or higher for one of the fields.", remarks.get( 0 ).getText() );
+  }
+
+  @Test
+  public void testSaveXMLWithInjectionList() {
+    meta.setBatchDuration( "1000" );
+    meta.setBatchSize( "100" );
+    meta.setTransformationPath( "aPath" );
+    String xml = meta.getXML();
+    assertEquals(
+      "<NUM_MESSAGES>100</NUM_MESSAGES>" + Const.CR
+        + "<DURATION>1000</DURATION>" + Const.CR
+        + "<stuff>one</stuff>" + Const.CR
+        + "<stuff>two</stuff>" + Const.CR
+        + "<TRANSFORMATION_PATH>aPath</TRANSFORMATION_PATH>" + Const.CR,
+      xml );
   }
 }
