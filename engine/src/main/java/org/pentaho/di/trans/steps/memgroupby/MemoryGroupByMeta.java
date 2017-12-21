@@ -424,7 +424,11 @@ public class MemoryGroupByMeta extends BaseStepMeta implements StepMetaInterface
           }
           v.setOrigin( origin );
           v.setLength( length, precision );
-          v.setConversionMask( subj.getConversionMask() );
+
+          if ( subj != null ) {
+            v.setConversionMask( subj.getConversionMask() );
+          }
+
           fields.addValueMeta( v );
         }
       }
