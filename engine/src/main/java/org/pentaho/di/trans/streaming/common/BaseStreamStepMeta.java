@@ -22,15 +22,20 @@
 
 package org.pentaho.di.trans.streaming.common;
 
-import com.google.common.base.Throwables;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
+import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.database.DatabaseMeta;
+import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.injection.Injection;
+import org.pentaho.di.core.injection.bean.BeanInjectionInfo;
+import org.pentaho.di.core.injection.bean.BeanInjector;
 import org.pentaho.di.core.row.RowMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
+import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.trans.StepWithMappingMeta;
 import org.pentaho.di.trans.TransMeta;
@@ -39,75 +44,87 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Node;
 
-import java.lang.reflect.Field;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Function;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
-import static com.google.common.collect.Maps.immutableEntry;
 
 public abstract class BaseStreamStepMeta extends StepWithMappingMeta implements StepMetaInterface {
 
 
   private static final Class<?> PKG = BaseStreamStep.class;  // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
-  @Injection ( name = "TRANSFORMATION_PATH" )  // pull this stuff up to common
+  public static final String TRANSFORMATION_PATH = "TRANSFORMATION_PATH";
+  public static final String NUM_MESSAGES = "NUM_MESSAGES";
+  public static final String DURATION = "DURATION";
+  @Injection ( name = TRANSFORMATION_PATH )  // pull this stuff up to common
   protected String transformationPath;
 
-  @Injection ( name = "NUM_MESSAGES" )
+  @Injection ( name = NUM_MESSAGES )
   protected String batchSize;
 
-  @Injection ( name = "DURATION" )
+  @Injection ( name = DURATION )
   protected String batchDuration;
 
   @Override public String getXML() {
-    StringBuilder builder = new StringBuilder();
-    getFieldToNameStream()
-      // create an xml fragment for each field, using the injection annotation name as the element name
-      .forEach( entry -> builder.append( "    " )
-        .append( XMLHandler.addTagValue(
-          entry.getValue(), fieldVal( entry.getKey() ) ) ) );
-    return builder.toString();
+    BeanInjectionInfo info = new BeanInjectionInfo( this.getClass() );
+    BeanInjector injector = new BeanInjector( info );
+    Map<String, BeanInjectionInfo.Property> properties = info.getProperties();
+    return properties.entrySet().stream()
+      .map( entry -> {
+        try {
+          Object obj = injector.getObject( this, entry.getKey() );
+          if ( entry.getValue().pathArraysCount == 1 ) {
+            @SuppressWarnings( "unchecked" )
+            List<String> list = (List<String>) obj;
+            return list.stream()
+              .map( v -> XMLHandler.addTagValue( entry.getKey(), v ) )
+              .collect( Collectors.joining() );
+          }
+          return XMLHandler.addTagValue( entry.getKey(), obj.toString() );
+        } catch ( Exception e ) {
+          throw new RuntimeException( e );
+        }
+      } ).collect( Collectors.joining() );
   }
 
   @Override public void loadXML(
     Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore ) {
 
-    getFieldToNameStream()
-      .forEach( entry -> setTagValue( stepnode, entry.getKey(), entry.getValue() ) );
+    BeanInjectionInfo info = new BeanInjectionInfo( this.getClass() );
+    BeanInjector injector = new BeanInjector( info );
+    info.getProperties().keySet().forEach( name -> {
+      try {
+        injector.setProperty(
+          this, name, nodesToRowMetaAndData( XMLHandler.getNodes( stepnode, name ) ), name );
+      } catch ( KettleException e ) {
+        throw new RuntimeException( e );
+      }
+    } );
   }
 
-  private void setTagValue( Node stepnode, Field field, String tagname ) {
-    try {
-      field.set( this, XMLHandler.getTagValue( stepnode, tagname ) );
-    } catch ( IllegalAccessException e ) {
-      Throwables.propagate( e );
-    }
+  private List<RowMetaAndData> nodesToRowMetaAndData( List<Node> nodes ) {
+    return nodes.stream()
+      .map( node -> {
+        RowMetaAndData rmad = new RowMetaAndData();
+        rmad.addValue( new ValueMetaString( node.getNodeName() ), node.getTextContent() );
+        return rmad;
+      } )
+      .collect( Collectors.toList() );
   }
 
-  private Stream<Map.Entry<Field, String>> getFieldToNameStream() {
-    return Stream.concat( Arrays.stream( getClass().getDeclaredFields() ), Arrays.stream( getClass().getSuperclass().getDeclaredFields() ) )
-      // get this class' fields, map them to injection annotations.
-      .collect( Collectors.toMap( Function.identity(), field -> field.getAnnotationsByType( Injection.class ) ) )
-      .entrySet().stream()
-      // filter out fields that don't have an injection annotation
-      .filter( entry -> entry.getValue().length > 0 )
-      // extract out the name as specified in the injection
-      .map( entry -> immutableEntry( entry.getKey(), entry.getValue()[ 0 ].name() ) );
+  @Override public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases )
+    throws KettleException {
+    setTransformationPath( rep.getStepAttributeString( id_step, TRANSFORMATION_PATH ) );
+    setFileName( rep.getStepAttributeString( id_step, TRANSFORMATION_PATH ) );
+    setBatchSize( rep.getStepAttributeString( id_step, BaseStreamStepMeta.NUM_MESSAGES ) );
+    setBatchDuration( rep.getStepAttributeString( id_step, BaseStreamStepMeta.DURATION ) );
   }
 
-
-  private String fieldVal( Field field ) {
-    try {
-      return field.get( this ).toString();
-    } catch ( IllegalAccessException e ) {
-      Throwables.propagate( e );
-    }
-    return "";
+  @Override public void saveRep( Repository rep, IMetaStore metaStore, ObjectId transId, ObjectId stepId )
+    throws KettleException {
+    rep.saveStepAttribute( transId, stepId, TRANSFORMATION_PATH, transformationPath );
+    rep.saveStepAttribute( transId, stepId, BaseStreamStepMeta.NUM_MESSAGES, batchSize );
+    rep.saveStepAttribute( transId, stepId, BaseStreamStepMeta.DURATION, batchDuration );
   }
-
 
   public void setTransformationPath( String transformationPath ) {
     this.transformationPath = transformationPath;
