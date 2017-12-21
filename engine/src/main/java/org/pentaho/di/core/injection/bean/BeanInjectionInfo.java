@@ -165,7 +165,7 @@ public class BeanInjectionInfo {
     private final String name;
     private final String groupName;
     protected final List<BeanLevelInfo> path;
-    protected final int pathArraysCount;
+    public final int pathArraysCount;
 
     public Property( String name, String groupName, List<BeanLevelInfo> path ) {
       this.name = name;
