@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2017 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -29,45 +29,24 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * An alternate way of defining steps. Classes annotated with "Step" are automatically recognized and registered as a
- * step.
- *
- * Important: The XML definitions alienate annotated steps and the two methods of definition are therefore mutually
- * exclusive.
- *
- * @author Alex Silva
+ * An alternate way of defining step dialogs. Classes annotated with "StepDialog" are automatically recognized and added
+ * to the corresponding step's classloader.
  *
  */
 @Documented
 @Retention( RetentionPolicy.RUNTIME )
 @Target( ElementType.TYPE )
-public @interface Step {
+public @interface StepDialog {
 
   /**
-   * @return The ID of the step. You can specify more than one ID in a comma separated format: id1,id2,id3 for
-   *         deprecation purposes.
+   * @return The ID of the step.
    */
   String id();
-
-  String name();
-
-  String description() default "";
 
   /**
    * @return The image resource path
    */
-  String image() default "";
-
-  /**
-   * @return True if a separate class loader is needed every time this class is instantiated
-   */
-  boolean isSeparateClassLoaderNeeded() default false;
-
-  String classLoaderGroup() default "";
-
-  String categoryDescription() default "";
-
-  String i18nPackageName() default "";
+  String image();
 
   /**
    * @return The documentation url

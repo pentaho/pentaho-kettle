@@ -22,6 +22,8 @@
 
 package org.pentaho.di.core.plugins;
 
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.pentaho.di.core.exception.KettlePluginClassMapException;
 import org.pentaho.di.core.exception.KettlePluginException;
@@ -29,20 +31,40 @@ import org.pentaho.di.core.extension.PluginMockInterface;
 import org.pentaho.di.core.logging.LoggingPluginType;
 import org.pentaho.di.core.row.RowBuffer;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaPluginType;
 
+import java.lang.annotation.Annotation;
 import java.util.HashMap;
 import java.util.UUID;
 
-import static junit.framework.TestCase.fail;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.mockito.Matchers.any;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.atLeast;
+import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 public class PluginRegistryUnitTest {
+
+  private void cleanRegistry( Class<? extends PluginTypeInterface> aClass ) {
+    PluginRegistry registry = PluginRegistry.getInstance();
+    registry.getPlugins( aClass ).forEach( pluginInterface -> registry.removePlugin( aClass, pluginInterface ) );
+  }
+
+  @After
+  @Before
+  public void cleanup() {
+    cleanRegistry( LoggingPluginType.class );
+    cleanRegistry( BasePluginType.class );
+    cleanRegistry( BaseFragmentType.class );
+  }
 
   @Test
   public void getGetPluginInformation() throws KettlePluginException {
@@ -68,12 +90,10 @@ public class PluginRegistryUnitTest {
     doReturn( LoggingPluginType.class ).when( mockPlugin ).getPluginType();
     registry.registerPlugin( LoggingPluginType.class, mockPlugin );
 
-
     registry.addClassFactory( LoggingPluginType.class, String.class, "mockPlugin", () -> "Foo" );
     String result = registry.loadClass( LoggingPluginType.class, "mockPlugin", String.class );
     assertEquals( "Foo", result );
     assertEquals( 2, registry.getPlugins( LoggingPluginType.class ).size() );
-
 
     // Now add another mapping and verify that it works and the existing supplementalPlugin was reused.
     UUID uuid = UUID.randomUUID();
@@ -81,9 +101,6 @@ public class PluginRegistryUnitTest {
     UUID out = registry.loadClass( LoggingPluginType.class, "mockPlugin", UUID.class );
     assertEquals( uuid, out );
     assertEquals( 2, registry.getPlugins( LoggingPluginType.class ).size() );
-
-    // cleanup
-    registry.removePlugin( LoggingPluginType.class, mockPlugin );
   }
 
   /**
@@ -97,8 +114,8 @@ public class PluginRegistryUnitTest {
     when( mockPlugin1.matches( "mockPlugin" ) ).thenReturn( true );
     when( mockPlugin1.getName() ).thenReturn( "mockPlugin" );
     when( mockPlugin1.getClassMap() ).thenReturn( new HashMap<Class<?>, String>() {{
-      put( PluginTypeInterface.class, String.class.getName() );
-    }} );
+        put( PluginTypeInterface.class, String.class.getName() );
+      }} );
     when( mockPlugin1.getClassLoaderGroup() ).thenReturn( "groupPlugin" );
     doReturn( BasePluginType.class ).when( mockPlugin1 ).getPluginType();
 
@@ -107,8 +124,8 @@ public class PluginRegistryUnitTest {
     when( mockPlugin2.matches( "mockPlugin2" ) ).thenReturn( true );
     when( mockPlugin2.getName() ).thenReturn( "mockPlugin2" );
     when( mockPlugin2.getClassMap() ).thenReturn( new HashMap<Class<?>, String>() {{
-      put( PluginTypeInterface.class, Integer.class.getName() );
-    }} );
+        put( PluginTypeInterface.class, Integer.class.getName() );
+      }} );
     when( mockPlugin2.getClassLoaderGroup() ).thenReturn( "groupPlugin" );
     doReturn( BasePluginType.class ).when( mockPlugin2 ).getPluginType();
 
@@ -122,22 +139,71 @@ public class PluginRegistryUnitTest {
     // test removing a shared plugin creates a new classloader
     registry.removePlugin( BasePluginType.class, mockPlugin2 );
     assertNotEquals( ucl, registry.getClassLoader( mockPlugin1 ) );
-
-    // cleanup
-    registry.removePlugin( BasePluginType.class, mockPlugin1 );
   }
 
-  @Test
-  public void testClassloadingPluginNoClassRegistered() {
+  @Test( expected = KettlePluginClassMapException.class )
+  public void testClassloadingPluginNoClassRegistered() throws KettlePluginException {
     PluginRegistry registry = PluginRegistry.getInstance();
     PluginMockInterface plugin = mock( PluginMockInterface.class );
     when( plugin.loadClass( any() ) ).thenReturn( null );
-    try {
-      registry.loadClass( plugin, Class.class );
-    } catch ( KettlePluginClassMapException e ) {
-      // Expected exception
-    } catch ( KettlePluginException e ) {
-      fail();
-    }
+    registry.loadClass( plugin, Class.class );
+  }
+
+  @Test
+  public void testMergingPluginFragment() throws KettlePluginException {
+    // setup
+    // initialize Fragment Type
+    PluginRegistry registry = PluginRegistry.getInstance();
+    BaseFragmentType fragmentType = new BaseFragmentType( Annotation.class, "", "", ValueMetaPluginType.class ) {
+      @Override protected void initListeners( Class<? extends PluginTypeInterface> aClass,
+                                              Class<? extends PluginTypeInterface> typeToTrack ) {
+        super.initListeners( BaseFragmentType.class, typeToTrack );
+      }
+      @Override protected String extractID( Annotation annotation ) {
+        return null;
+      }
+      @Override protected String extractImageFile( Annotation annotation ) {
+        return null;
+      }
+      @Override protected String extractDocumentationUrl( Annotation annotation ) {
+        return null;
+      }
+      @Override protected String extractCasesUrl( Annotation annotation ) {
+        return null;
+      }
+      @Override protected String extractForumUrl( Annotation annotation ) {
+        return null;
+      }
+    };
+    assertTrue( fragmentType.isFragment() );
+
+    PluginInterface plugin = mock( PluginInterface.class );
+    when( plugin.getIds() ).thenReturn( new String[] { "mock" } );
+    when( plugin.matches( any() ) ).thenReturn( true );
+    doReturn( ValueMetaPluginType.class ).when( plugin ).getPluginType();
+    doAnswer( invocationOnMock -> null ).when( plugin ).merge( any( PluginInterface.class ) );
+
+    PluginInterface fragment = mock( PluginInterface.class );
+    when( fragment.getIds() ).thenReturn( new String[] { "mock" } );
+    when( fragment.matches( any() ) ).thenReturn( true );
+    doReturn( BaseFragmentType.class ).when( fragment ).getPluginType();
+    doAnswer( invocationOnMock -> null ).when( fragment ).merge( any( PluginInterface.class ) );
+
+    // test
+    registry.registerPlugin( ValueMetaPluginType.class, plugin );
+    verify( plugin, atLeastOnce() ).merge( any() );
+
+    registry.registerPlugin( BaseFragmentType.class, fragment );
+    verify( fragment, never() ).merge( any() );
+    verify( plugin, atLeast( 2 ) ).merge( any() );
+
+    // verify that the order doesn't influence
+    registry.removePlugin( ValueMetaPluginType.class, plugin );
+    registry.registerPlugin( ValueMetaPluginType.class, plugin );
+    verify( plugin, atLeast( 3 ) ).merge( any() );
+
+    // verify plugin changes
+    registry.registerPlugin( ValueMetaPluginType.class, plugin );
+    verify( plugin, atLeast( 4 ) ).merge( any() );
   }
 }

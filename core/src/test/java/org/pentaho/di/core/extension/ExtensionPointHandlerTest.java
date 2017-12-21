@@ -23,11 +23,24 @@ package org.pentaho.di.core.extension;
 import org.junit.Test;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.plugins.PluginRegistry;
+import org.pentaho.di.core.plugins.PluginTypeInterface;
 
-import static org.mockito.Mockito.*;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Matchers.isNull;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 public class ExtensionPointHandlerTest {
-  public static final String TEST_NAME = "testName";
+  private static final String TEST_NAME = "testName";
+
+  private void cleanRegistry( Class<? extends PluginTypeInterface> aClass ) {
+    PluginRegistry registry = PluginRegistry.getInstance();
+    registry.getPlugins( aClass ).forEach( pluginInterface -> registry.removePlugin( aClass, pluginInterface ) );
+  }
 
   @Test
   public void callExtensionPointTest() throws Exception {
@@ -49,5 +62,7 @@ public class ExtensionPointHandlerTest {
 
     ExtensionPointHandler.callExtensionPoint( log, TEST_NAME, null );
     verify( extensionPoint, times( 1 ) ).callExtensionPoint( eq( log ), isNull() );
+
+    cleanRegistry( ExtensionPointPluginType.class );
   }
 }

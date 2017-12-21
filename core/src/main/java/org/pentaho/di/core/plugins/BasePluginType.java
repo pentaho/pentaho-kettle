@@ -28,11 +28,14 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.net.URLDecoder;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.apache.commons.vfs2.FileObject;
 import org.apache.commons.vfs2.FileSelectInfo;
@@ -61,14 +64,14 @@ public abstract class BasePluginType implements PluginTypeInterface {
 
   protected LogChannel log;
 
-  protected Map<Class<?>, String> objectTypes = new HashMap<Class<?>, String>();
+  protected Map<Class<?>, String> objectTypes = new HashMap<>();
 
   protected boolean searchLibDir;
 
   Class<? extends java.lang.annotation.Annotation> pluginType;
 
   public BasePluginType( Class<? extends java.lang.annotation.Annotation> pluginType ) {
-    this.pluginFolders = new ArrayList<PluginFolderInterface>();
+    this.pluginFolders = new ArrayList<>();
     this.log = new LogChannel( "Plugin type" );
 
     registry = PluginRegistry.getInstance();
@@ -239,7 +242,7 @@ public abstract class BasePluginType implements PluginTypeInterface {
 
   protected List<JarFileAnnotationPlugin> findAnnotatedClassFiles( String annotationClassName ) {
     JarFileCache jarFileCache = JarFileCache.getInstance();
-    List<JarFileAnnotationPlugin> classFiles = new ArrayList<JarFileAnnotationPlugin>();
+    List<JarFileAnnotationPlugin> classFiles = new ArrayList<>();
 
     // We want to scan the plugins folder for plugin.xml files...
     //
@@ -257,9 +260,6 @@ public abstract class BasePluginType implements PluginTypeInterface {
               // These are the jar files : find annotations in it...
               //
               AnnotationDB annotationDB = jarFileCache.getAnnotationDB( fileObject );
-
-              // These are the jar files : find annotations in it...
-              //
               Set<String> impls = annotationDB.getAnnotationIndex().get( annotationClassName );
               if ( impls != null ) {
 
@@ -286,7 +286,7 @@ public abstract class BasePluginType implements PluginTypeInterface {
 
   protected List<FileObject> findPluginFiles( String folder, final String regex ) {
 
-    List<FileObject> list = new ArrayList<FileObject>();
+    List<FileObject> list = new ArrayList<>();
     try {
       FileObject folderObject = KettleVFS.getFileObject( folder );
       FileObject[] files = folderObject.findFiles( new FileSelector() {
@@ -302,9 +302,7 @@ public abstract class BasePluginType implements PluginTypeInterface {
         }
       } );
       if ( files != null ) {
-        for ( FileObject file : files ) {
-          list.add( file );
-        }
+        Collections.addAll( list, files );
       }
     } catch ( Exception e ) {
       // ignore this: unknown folder, insufficient permissions, etc
@@ -332,7 +330,7 @@ public abstract class BasePluginType implements PluginTypeInterface {
    */
   public void registerCustom( Class<?> clazz, String cat, String id, String name, String desc, String image ) throws KettlePluginException {
     Class<? extends PluginTypeInterface> pluginType = getClass();
-    Map<Class<?>, String> classMap = new HashMap<Class<?>, String>();
+    Map<Class<?>, String> classMap = new HashMap<>();
     PluginMainClassType mainClassTypesAnnotation = pluginType.getAnnotation( PluginMainClassType.class );
     classMap.put( mainClassTypesAnnotation.value(), clazz.getName() );
     PluginInterface stepPlugin =
@@ -565,42 +563,10 @@ public abstract class BasePluginType implements PluginTypeInterface {
         if ( clazz == null ) {
           throw new KettlePluginException( "Unable to load class: " + jarFilePlugin.getClassName() );
         }
-        List<String> libraries = new ArrayList<>();
-        java.lang.annotation.Annotation annotation;
-        try {
-          annotation = clazz.getAnnotation( pluginType );
-
-          String jarFilename = URLDecoder.decode( jarFilePlugin.getJarFile().getFile(), "UTF-8" );
-          libraries.add( jarFilename );
-          FileObject fileObject = KettleVFS.getFileObject( jarFilename );
-          FileObject parentFolder = fileObject.getParent();
-          String parentFolderName = KettleVFS.getFilename( parentFolder );
-          String libFolderName;
-          if ( parentFolderName.endsWith( Const.FILE_SEPARATOR + "lib" ) ) {
-            libFolderName = parentFolderName;
-          } else {
-            libFolderName = parentFolderName + Const.FILE_SEPARATOR + "lib";
-          }
-
-          PluginFolder folder = new PluginFolder( libFolderName, false, false, searchLibDir );
-          FileObject[] jarFiles = folder.findJarFiles( true );
-
-          if ( jarFiles != null ) {
-            for ( FileObject jarFile : jarFiles ) {
-
-              String fileName = KettleVFS.getFilename( jarFile );
-
-              // If the plugin is in the lib folder itself, we'll ignore it here
-              if ( fileObject.equals( jarFile ) ) {
-                continue;
-              }
-              libraries.add( fileName );
-            }
-          }
-        } catch ( Exception e ) {
-          throw new KettlePluginException( "Unexpected error loading class "
-            + clazz.getName() + " of plugin type: " + pluginType, e );
-        }
+        List<String> libraries = Arrays.stream( urlClassLoader.getURLs() )
+          .map( URL::getFile )
+          .collect( Collectors.toList() );
+        Annotation annotation = clazz.getAnnotation( pluginType );
 
         handlePluginAnnotation( clazz, annotation, libraries, false, jarFilePlugin.getPluginFolder() );
       } catch ( Exception e ) {
@@ -662,20 +628,12 @@ public abstract class BasePluginType implements PluginTypeInterface {
 
     addExtraClasses( classMap, clazz, annotation );
 
-    /*
-     * PluginExtraClassTypes extraTypes = this.getClass().getAnnotation(PluginExtraClassTypes.class); if(extraTypes !=
-     * null){ for(int i=0; i< extraTypes.classTypes().length; i++){ Class<?> extraClass = extraTypes.classTypes()[i]; //
-     * The extra class name is stored in an annotation. // The name of the annotation is known //
-     * ((RepositoryPlugin)annotation).dialogClass() String extraClassName = extraTypes.classTypes()[i].getName();
-     *
-     * classMap.put(extraClass, extraClassName); } }
-     */
-
     PluginInterface plugin =
       new Plugin(
         ids, this.getClass(), mainType.value(), category, name, description, imageFile, separateClassLoader,
         classLoaderGroup, nativePluginType, classMap, libraries, null, pluginFolder, documentationUrl,
         casesUrl, forumUrl );
+
     ParentFirst parentFirstAnnotation = clazz.getAnnotation( ParentFirst.class );
     if ( parentFirstAnnotation != null ) {
       registry.addParentClassLoaderPatterns( plugin, parentFirstAnnotation.patterns() );

@@ -155,7 +155,7 @@ public class RepositoryConnectControllerTest {
     assertEquals( false, result );
 
     when( repository.test() ).thenReturn( true );
-    doThrow( new KettleException() ).when( repositoriesMeta ).writeData();
+    doThrow( new KettleException( "forced exception" ) ).when( repositoriesMeta ).writeData();
 
     result = controller.createRepository( id, items );
     assertEquals( false, result );
@@ -304,7 +304,7 @@ public class RepositoryConnectControllerTest {
     RepositoryMeta edited = new TestRepositoryMeta( ID, "name2", PLUGIN_DESCRIPTION, "same" );
 
     when( pluginRegistry.loadClass( RepositoryPluginType.class, ID, Repository.class ) )
-    .thenReturn( repository );
+      .thenReturn( repository );
     when( pluginRegistry.loadClass( RepositoryPluginType.class, ID, RepositoryMeta.class ) )
       .thenReturn( edited );
 
@@ -314,8 +314,8 @@ public class RepositoryConnectControllerTest {
     controller.setConnectedRepository( before.clone() );
     controller.setCurrentRepository( before );
 
-    controller.createRepository( ID, new HashMap<String,Object>() );
-    assertEquals( edited , controller.getConnectedRepository() );
+    controller.createRepository( ID, new HashMap<>() );
+    assertEquals( edited, controller.getConnectedRepository() );
   }
 
   @Test
@@ -324,7 +324,7 @@ public class RepositoryConnectControllerTest {
     RepositoryMeta edited = new TestRepositoryMeta( ID, "name2", PLUGIN_DESCRIPTION, "something completely different" );
 
     when( pluginRegistry.loadClass( RepositoryPluginType.class, ID, Repository.class ) )
-    .thenReturn( repository );
+      .thenReturn( repository );
     when( pluginRegistry.loadClass( RepositoryPluginType.class, ID, RepositoryMeta.class ) )
       .thenReturn( edited );
 
@@ -334,8 +334,8 @@ public class RepositoryConnectControllerTest {
     controller.setConnectedRepository( before.clone() );
     controller.setCurrentRepository( before );
 
-    controller.createRepository( ID, new HashMap<String,Object>() );
-    assertNotEquals( edited , controller.getConnectedRepository() );
+    controller.createRepository( ID, new HashMap<>() );
+    assertNotEquals( edited, controller.getConnectedRepository() );
   }
 
   @Test

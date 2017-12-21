@@ -45,7 +45,7 @@ import static org.junit.Assert.assertTrue;
 
 /**
  * @author Andrey Khayrutdinov
- * @deprecated replaced by implementation in the ...steps.fileinput.text package
+   * @deprecated replaced by implementation in the ...steps.fileinput.text package
  */
 @Deprecated
 public class TextFileInputMetaLoadSaveTest {

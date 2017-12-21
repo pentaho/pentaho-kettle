@@ -56,28 +56,10 @@ public class LifecyclePluginType extends BasePluginType implements PluginTypeInt
   }
 
   /**
-   * Let's put in code here to search for the step plugins..
-   */
-  public void searchPlugins() throws KettlePluginException {
-    registerNatives(); // none
-    registerAnnotations(); // no longer performed
-    registerPluginJars();
-    registerXmlPlugins();
-  }
-
-  /**
    * Scan & register internal step plugins
    */
   protected void registerNatives() throws KettlePluginException {
     // Up until now, we have no natives.
-  }
-
-  /**
-   * Scan & register internal repository type plugins
-   */
-  protected void registerAnnotations() throws KettlePluginException {
-    // This is no longer done because it was deemed too slow. Only jar files in
-    // the plugins/ folders are scanned for annotations.
   }
 
   protected void registerXmlPlugins() throws KettlePluginException {

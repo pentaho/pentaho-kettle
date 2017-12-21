@@ -65,7 +65,7 @@ public class KettleEnvironment {
    * Indicates whether the Kettle environment has been initialized.
    */
   private static AtomicReference<SettableFuture<Boolean>> initialized =
-    new AtomicReference<SettableFuture<Boolean>>( null );
+    new AtomicReference<>( null );
   private static KettleLifecycleSupport kettleLifecycleSupport;
 
   /**
@@ -156,8 +156,7 @@ public class KettleEnvironment {
       try {
         ready.get();
       } catch ( Throwable t ) {
-        // If it's a KettleException, throw it, otherwise wrap it in a KettleException
-        throw ( ( t instanceof KettleException ) ? (KettleException) t : new KettleException( t ) );
+        throw new KettleException( t );
       }
     }
   }
@@ -187,12 +186,14 @@ public class KettleEnvironment {
   }
 
   private static void shutdown( KettleLifecycleSupport kettleLifecycleSupport ) {
-    try {
-      kettleLifecycleSupport.onEnvironmentShutdown();
-    } catch ( Throwable t ) {
-      System.err.println( BaseMessages.getString( PKG,
-        "LifecycleSupport.ErrorInvokingKettleEnvironmentShutdownListeners" ) );
-      t.printStackTrace();
+    if ( isInitialized() ) {
+      try {
+        kettleLifecycleSupport.onEnvironmentShutdown();
+      } catch ( Throwable t ) {
+        System.err.println( BaseMessages.getString( PKG,
+          "LifecycleSupport.ErrorInvokingKettleEnvironmentShutdownListeners" ) );
+        t.printStackTrace();
+      }
     }
   }
 

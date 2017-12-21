@@ -151,9 +151,9 @@ public class GUIResource {
   private ManagedFont fontBold;
 
   /* * * Images * * */
-  private Map<String, SwtUniversalImage> imagesSteps = new Hashtable<String, SwtUniversalImage>();
+  private Map<String, SwtUniversalImage> imagesSteps = new Hashtable<>();
 
-  private Map<String, Image> imagesStepsSmall = new Hashtable<String, Image>();
+  private Map<String, Image> imagesStepsSmall = new Hashtable<>();
 
   private Map<String, SwtUniversalImage> imagesJobentries;
 
@@ -732,23 +732,23 @@ public class GUIResource {
     PluginRegistry registry = PluginRegistry.getInstance();
 
     List<PluginInterface> steps = registry.getPlugins( StepPluginType.class );
-    for ( int i = 0; i < steps.size(); i++ ) {
-      if ( imagesSteps.get( steps.get( i ).getIds()[ 0 ] ) != null ) {
+    for ( PluginInterface step : steps ) {
+      if ( imagesSteps.get( step.getIds()[ 0 ] ) != null ) {
         continue;
       }
 
       SwtUniversalImage image = null;
       Image small_image = null;
 
-      String filename = steps.get( i ).getImageFile();
+      String filename = step.getImageFile();
       try {
-        ClassLoader classLoader = registry.getClassLoader( steps.get( i ) );
+        ClassLoader classLoader = registry.getClassLoader( step );
         image = SwtSvgImageUtil.getUniversalImage( display, classLoader, filename );
       } catch ( Throwable t ) {
-        log.logError( "Error occurred loading image [" + filename + "] for plugin " + steps.get( i ), t );
+        log.logError( "Error occurred loading image [" + filename + "] for plugin " + step, t );
       } finally {
         if ( image == null ) {
-          log.logError( "Unable to load image file [" + filename + "] for plugin " + steps.get( i ) );
+          log.logError( "Unable to load image file [" + filename + "] for plugin " + step );
           image = SwtSvgImageUtil.getMissingImage( display );
         }
       }
@@ -756,12 +756,10 @@ public class GUIResource {
       // Calculate the smaller version of the image @ 16x16...
       // Perhaps we should make this configurable?
       //
-      if ( image != null ) {
-        small_image = image.getAsBitmapForSize( display, ConstUI.MEDIUM_ICON_SIZE, ConstUI.MEDIUM_ICON_SIZE );
-      }
+      small_image = image.getAsBitmapForSize( display, ConstUI.MEDIUM_ICON_SIZE, ConstUI.MEDIUM_ICON_SIZE );
 
-      imagesSteps.put( steps.get( i ).getIds()[ 0 ], image );
-      imagesStepsSmall.put( steps.get( i ).getIds()[ 0 ], small_image );
+      imagesSteps.put( step.getIds()[ 0 ], image );
+      imagesStepsSmall.put( step.getIds()[ 0 ], small_image );
     }
   }
 

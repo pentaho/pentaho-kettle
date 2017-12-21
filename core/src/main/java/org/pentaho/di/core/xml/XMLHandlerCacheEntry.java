@@ -77,6 +77,12 @@ public class XMLHandlerCacheEntry {
 
   @Override
   public boolean equals( Object object ) {
+    if ( this == object ) {
+      return true;
+    }
+    if ( object == null || getClass() != object.getClass() ) {
+      return false;
+    }
     XMLHandlerCacheEntry entry = (XMLHandlerCacheEntry) object;
 
     return parentNode.equals( entry.getParentNode() ) && tag.equals( entry.getTag() );

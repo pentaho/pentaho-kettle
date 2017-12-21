@@ -27,7 +27,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.vfs2.FileObject;
-import org.apache.commons.vfs2.FileSystemException;
 import org.pentaho.di.core.exception.KettleFileException;
 import org.scannotation.AnnotationDB;
 
@@ -40,8 +39,8 @@ public class JarFileCache {
   private final Map<FileObject, AnnotationDB> annotationMap;
 
   private JarFileCache() {
-    annotationMap = new HashMap<FileObject, AnnotationDB>();
-    folderMap = new HashMap<PluginFolderInterface, FileObject[]>();
+    annotationMap = new HashMap<>();
+    folderMap = new HashMap<>();
   }
 
   public static JarFileCache getInstance() {
@@ -51,7 +50,7 @@ public class JarFileCache {
     return cache;
   }
 
-  public AnnotationDB getAnnotationDB( FileObject fileObject ) throws FileSystemException, IOException {
+  public AnnotationDB getAnnotationDB( FileObject fileObject ) throws IOException {
     AnnotationDB result = annotationMap.get( fileObject );
     if ( result == null ) {
       result = new AnnotationDB();

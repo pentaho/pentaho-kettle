@@ -62,8 +62,8 @@ public class KettleClientEnvironment {
 
   public enum ClientType {
     SPOON, PAN, KITCHEN, CARTE, DI_SERVER, OTHER;
-    public String getID(){
-      if( this != OTHER ) {
+    public String getID() {
+      if ( this != OTHER ) {
         return this.name();
       }
       return instance.clientID;
@@ -112,7 +112,7 @@ public class KettleClientEnvironment {
     // Load plugins
     //
     pluginsToLoad.forEach( PluginRegistry::addPluginType );
-    PluginRegistry.init( true );
+    PluginRegistry.init();
 
     List<PluginInterface> logginPlugins = PluginRegistry.getInstance().getPlugins( LoggingPluginType.class );
     initLogginPlugins( logginPlugins );

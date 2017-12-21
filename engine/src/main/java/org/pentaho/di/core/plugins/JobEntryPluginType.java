@@ -83,16 +83,6 @@ public class JobEntryPluginType extends BasePluginType implements PluginTypeInte
   }
 
   /**
-   * Let's put in code here to search for the step plugins..
-   */
-  public void searchPlugins() throws KettlePluginException {
-    registerNatives();
-    registerAnnotations();
-    registerPluginJars();
-    registerXmlPlugins();
-  }
-
-  /**
    * Scan & register internal step plugins
    */
   protected void registerNatives() throws KettlePluginException {
@@ -138,14 +128,6 @@ public class JobEntryPluginType extends BasePluginType implements PluginTypeInte
       throw new KettlePluginException( "Unable to read the kettle job entries XML config file: "
         + kettleJobEntriesXmlFile, e );
     }
-  }
-
-  /**
-   * Scan & register internal job entry plugins
-   */
-  protected void registerAnnotations() throws KettlePluginException {
-    // This is no longer done because it was deemed too slow. Only jar files in the plugins/ folders are scanned for
-    // annotations.
   }
 
   protected void registerXmlPlugins() throws KettlePluginException {

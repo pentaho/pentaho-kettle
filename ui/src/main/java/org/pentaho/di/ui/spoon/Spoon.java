@@ -193,6 +193,7 @@ import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.plugins.PluginTypeInterface;
 import org.pentaho.di.core.plugins.PluginTypeListener;
 import org.pentaho.di.core.plugins.RepositoryPluginType;
+import org.pentaho.di.core.plugins.StepDialogFragmentType;
 import org.pentaho.di.core.plugins.StepPluginType;
 import org.pentaho.di.core.reflection.StringSearchResult;
 import org.pentaho.di.core.row.RowBuffer;
@@ -784,9 +785,9 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
    * happen in those listeners.
    */
   private static void registerUIPluginObjectTypes() {
-    RepositoryPluginType.getInstance()
-                        .addObjectType( RepositoryRevisionBrowserDialogInterface.class, "version-browser-classname" );
-    RepositoryPluginType.getInstance().addObjectType( RepositoryDialogInterface.class, "dialog-classname" );
+    RepositoryPluginType repositoryPluginType = RepositoryPluginType.getInstance();
+    repositoryPluginType.addObjectType( RepositoryRevisionBrowserDialogInterface.class, "version-browser-classname" );
+    repositoryPluginType.addObjectType( RepositoryDialogInterface.class, "dialog-classname" );
 
     PluginRegistry.addPluginType( SpoonPluginType.getInstance() );
 
@@ -797,6 +798,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
 
     PluginRegistry.addPluginType( JobDialogPluginType.getInstance() );
     PluginRegistry.addPluginType( TransDialogPluginType.getInstance() );
+    PluginRegistry.addPluginType( StepDialogFragmentType.getInstance() );
   }
 
   public void init( TransMeta ti ) {
@@ -6002,6 +6004,9 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
       List<Class<? extends PluginTypeInterface>> pluginTypeClasses = registry.getPluginTypes();
       for ( Class<? extends PluginTypeInterface> pluginTypeClass : pluginTypeClasses ) {
         PluginTypeInterface pluginTypeInterface = registry.getPluginType( pluginTypeClass );
+        if ( pluginTypeInterface.isFragment() ) {
+          continue;
+        }
 
         String subject = pluginTypeInterface.getName();
         RowBuffer pluginInformation = registry.getPluginInformation( pluginTypeClass );
@@ -6647,10 +6652,9 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     }
 
     PluginRegistry registry = PluginRegistry.getInstance();
-    PluginInterface stepPlugin = null;
+    PluginInterface stepPlugin = registry.findPluginWithName( StepPluginType.class, description );
 
     try {
-      stepPlugin = registry.findPluginWithName( StepPluginType.class, description );
       if ( stepPlugin != null ) {
         StepMetaInterface info = (StepMetaInterface) registry.loadClass( stepPlugin );
 
@@ -6699,7 +6703,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
       }
     } catch ( KettleException e ) {
       String filename = stepPlugin.getErrorHelpFile();
-      if ( stepPlugin != null && !Utils.isEmpty( filename ) ) {
+      if ( !Utils.isEmpty( filename ) ) {
         // OK, in stead of a normal error message, we give back the
         // content of the error help file... (HTML)
         FileInputStream fis = null;

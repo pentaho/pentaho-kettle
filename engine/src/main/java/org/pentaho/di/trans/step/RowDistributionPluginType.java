@@ -23,8 +23,6 @@
 package org.pentaho.di.trans.step;
 
 import java.lang.annotation.Annotation;
-import java.net.URL;
-import java.util.List;
 import java.util.Map;
 
 import org.pentaho.di.core.exception.KettlePluginException;
@@ -65,12 +63,6 @@ public class RowDistributionPluginType extends BasePluginType implements PluginT
 
   protected void registerXmlPlugins() throws KettlePluginException {
     // None at this moment
-  }
-
-  @Override
-  public void handlePluginAnnotation( Class<?> clazz, Annotation annotation, List<String> libraries,
-    boolean nativePluginType, URL pluginFolder ) throws KettlePluginException {
-    super.handlePluginAnnotation( clazz, annotation, libraries, nativePluginType, pluginFolder );
   }
 
   public String[] getNaturalCategoriesOrder() {
