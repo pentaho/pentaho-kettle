@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -165,15 +165,10 @@ public abstract class BaseFileInputStep<M extends BaseFileInputStepMeta, D exten
 
       data.reader = createReader( meta, data, data.file );
     } catch ( Exception e ) {
-      String errorMsg =
-          "Couldn't open file #" + data.currentFileIndex + " : " + data.file.getName().getFriendlyURI() + " --> " + e
-              .toString();
-      logError( errorMsg );
-      if ( failAfterBadFile( errorMsg ) ) { // !meta.isSkipBadFiles()) stopAll();
-        stopAll();
+      if ( !handleOpenFileException( e ) ) {
+        return false;
       }
-      setErrors( getErrors() + 1 );
-      return false;
+      data.reader = null;
     }
 
     // Move file pointer ahead!
@@ -181,6 +176,19 @@ public abstract class BaseFileInputStep<M extends BaseFileInputStepMeta, D exten
 
     return true;
   }
+
+  protected boolean handleOpenFileException( Exception e ) {
+    String errorMsg =
+      "Couldn't open file #" + data.currentFileIndex + " : " + data.file.getName().getFriendlyURI() + " --> " + e.toString();
+    if ( !failAfterBadFile( errorMsg ) ) { // !meta.isSkipBadFiles()) stopAll();
+      return true;
+    }
+    stopAll();
+    setErrors( getErrors() + 1 );
+    logError( errorMsg );
+    return false;
+  }
+
 
   /**
    * Process next row. This methods opens next file automatically.
@@ -202,7 +210,7 @@ public abstract class BaseFileInputStep<M extends BaseFileInputStepMeta, D exten
     }
 
     while ( true ) {
-      if ( data.reader.readRow() ) {
+      if ( data.reader != null && data.reader.readRow() ) {
         // row processed
         return true;
       }
