@@ -146,6 +146,7 @@ public class Props implements Cloneable {
   public static final String STRING_DISABLE_INITIAL_EXECUTION_HISTORY = "DisableInitialExecutionHistory";
   private static final String STRING_MAX_LOG_LINE_TIMEOUT_MINUTES = "MaxLogLineTimeOutMinutes";
   public static final String STRING_RECENT_SEARCHES = "RecentSearches";
+  public static final String STRING_SHOW_NEW_SUBTRANS_POPUP = "ShowNewSubtransPopup";
 
   protected LogChannelInterface log;
   protected Properties properties;
@@ -606,6 +607,15 @@ public class Props implements Cloneable {
 
   public void setReplaceDatabaseConnections( boolean replace ) {
     properties.setProperty( STRING_REPLACE_DATABASES, replace ? "Y" : "N" );
+  }
+
+  public boolean showNewSubtransPopup() {
+    String show = properties.getProperty( STRING_SHOW_NEW_SUBTRANS_POPUP, "Y" );
+    return "Y".equalsIgnoreCase( show );
+  }
+
+  public void setShowNewSubtransPopup( boolean show ) {
+    properties.setProperty( STRING_SHOW_NEW_SUBTRANS_POPUP, show ? "Y" : "N" );
   }
 
   public int getMaxNrLinesInLog() {
