@@ -85,17 +85,16 @@ public class BlockingQueueStreamSourceTest {
     // pause receipt of new rows
     streamSource.pause();
 
-    // trying to add another row to the source should time out, since paused.
-    assertTimesOut( execSvc.submit( () -> streamSource.acceptRows( singletonList( "new row" ) ) ) );
+    // trying to add and retrieve another row to the source should time out, since paused.
+    final Future<?> newRow = execSvc.submit( () -> streamSource.acceptRows( singletonList( "new row" ) ) );
+    assertTimesOut( newRow );
 
     // resume accepting rows
     streamSource.resume();
 
-    // add a new row
-    streamSource.acceptRows( singletonList( "new row after resume" ) );
-    // try to retrieve it
+    // retrieve the last row added
     nextString = execSvc.submit( iter::next );
-    assertThat( getQuickly( nextString ), equalTo( "new row after resume" ) );
+    assertThat( getQuickly( nextString ), equalTo( "new row" ) );
 
   }
 
@@ -130,6 +129,49 @@ public class BlockingQueueStreamSourceTest {
     } );
     final List<String> quickly = getQuickly( iterLoop );
     assertThat( quickly.size(), equalTo( 4 ) );
+  }
+
+  @Test
+  public void testError() {
+    // verifies that calling .error() results in an exception being thrown
+    // by the .rows() blocking iterable.
+
+    final String exceptionMessage = "Exception raised during acceptRows loop";
+    streamSource = new BlockingQueueStreamSource<String>() {
+      @Override public void open() {
+        execSvc.submit( () -> {
+          for ( int i = 0; i < 10; i++ ) {
+            acceptRows( singletonList( "new row " + i ) );
+            try {
+              Thread.sleep( 5 );
+            } catch ( InterruptedException e ) {
+              fail();
+            }
+            if ( i == 5 ) {
+
+              error( new RuntimeException( exceptionMessage ) );
+              break;
+            }
+          }
+        } );
+      }
+    };
+    streamSource.open();
+    Iterator<String> iterator = streamSource.rows().iterator();
+
+    Future<List<String>> iterLoop = execSvc.submit( () -> {
+      List<String> strings = new ArrayList<>();
+      do {
+        strings.add( iterator.next() );
+      } while ( strings.size() < 9 );
+      return strings;
+    } );
+    try {
+      iterLoop.get( 50, MILLISECONDS );
+      fail( "expected exception" );
+    } catch ( InterruptedException | ExecutionException | TimeoutException e ) {
+      assertThat( e.getCause().getMessage(), equalTo( exceptionMessage ) );
+    }
   }
 
 
