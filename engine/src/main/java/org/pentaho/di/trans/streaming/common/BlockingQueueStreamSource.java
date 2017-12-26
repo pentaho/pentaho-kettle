@@ -30,24 +30,33 @@ import org.pentaho.di.trans.streaming.api.StreamSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Arrays;
 import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import static org.pentaho.di.i18n.BaseMessages.getString;
+
+/**
+ * Implementation of StreamSource which handles pause/resume logic, as well as creation of .rows() which generates a
+ * blocking iterable.
+ * <p>
+ * Child classes should implement {@link #open()} to connect to a datasource.  The child .open implementation will
+ * typically start a new thread that feeds rows of data to the {@link #acceptRows(List)} method. Any resource cleanup
+ * should be included in a .close() implementation, along with a call to super.close() to complete the blocking
+ * iterable.
+ */
 public abstract class BlockingQueueStreamSource<T> implements StreamSource<T> {
 
+  private static final Class<?> PKG = BlockingQueueStreamSource.class;
   private final Logger logger = LoggerFactory.getLogger( getClass() );
 
   private final AtomicBoolean paused = new AtomicBoolean( false );
 
   private final FlowableProcessor<T> publishProcessor = ReplayProcessor.create();
 
+  // binary semaphore used to block acceptance of rows when paused
   private final Semaphore acceptingRowsSemaphore = new Semaphore( 1 );
-  private final ExecutorService execService = Executors.newSingleThreadExecutor();
-  private Future<?> future;
 
 
   @Override public Iterable<T> rows() {
@@ -62,24 +71,33 @@ public abstract class BlockingQueueStreamSource<T> implements StreamSource<T> {
     }
   }
 
-  @Override public void pause() {
-    paused.set( true );
-    if ( !acceptingRowsSemaphore.tryAcquire() ) {
-      logger.info( "already paused" );
+  /**
+   * Marks the source paused (if not already) and acquires the permit, which will cause acceptRows to block.
+   */
+  @Override public synchronized void pause() {
+    if ( !paused.getAndSet( true ) ) {
+      try {
+        assert acceptingRowsSemaphore.availablePermits() == 1;
+        acceptingRowsSemaphore.acquire();
+      } catch ( InterruptedException e ) {
+        logger.warn( getString( PKG, "BlockingQueueStream.PauseInterrupt" ) );
+      }
     }
   }
 
-  @Override public void resume() {
-    paused.set( false );
-    acceptingRowsSemaphore.release();
+  @Override public synchronized void resume() {
+    if ( paused.getAndSet( false ) ) {
+      assert acceptingRowsSemaphore.availablePermits() == 0;
+      acceptingRowsSemaphore.release();
+    }
   }
 
 
   /**
    * Accept rows, blocking if currently paused.
-   *
-   * Implementations should implement the open() function
-   * to pass external row events to the acceptRows method.
+   * <p>
+   * Implementations should implement the open() function to pass external row events to the acceptRows method.
+   * <p>
    */
   protected void acceptRows( List<T> rows ) {
     try {
@@ -87,17 +105,22 @@ public abstract class BlockingQueueStreamSource<T> implements StreamSource<T> {
       rows.stream()
         .forEach( ( row ) -> publishProcessor.onNext( row ) );
     } catch ( InterruptedException e ) {
-      logger.error( "Interrupted while adding row  " + rows, e );
+      logger.warn( getString( PKG, "BlockingQueueStream.AcceptRowsInterrupt",
+        Arrays.toString( rows.toArray() ) ) );
     } finally {
       acceptingRowsSemaphore.release();
     }
   }
 
+  /**
+   * Child implementations of this class can call .error() when an unexpected event occurs while passing rows to the
+   * acceptRows() method.  For example, if an implementation includes a poll loop which retrieves data from a message
+   * queue and passes chunks of rows to .acceptRows, an connection failure to the message queue should be handled by
+   * calling error() with the connection exception. This will make sure that any consumers of the rows() iterable will
+   * receive that error.
+   */
   public void error( Throwable throwable ) {
     publishProcessor.onError( throwable );
   }
 
-  protected boolean isPaused() {
-    return paused.get();
-  }
 }
