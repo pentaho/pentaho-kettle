@@ -84,6 +84,7 @@ public abstract class BaseStreamingDialog extends BaseStepDialog implements Step
   protected Label wlTransPath;
   protected TextVar wTransPath;
   protected Button wbBrowseTrans;
+  protected Button wbCreateSubtrans;
 
   protected ObjectId referenceObjectId;
   protected ObjectLocationSpecificationMethod specificationMethod;
@@ -175,8 +176,8 @@ public abstract class BaseStreamingDialog extends BaseStepDialog implements Step
     wTransPath.addModifyListener( lsMod );
     FormData fdTransPath = new FormData();
     fdTransPath.left = new FormAttachment( 0, 0 );
-    fdTransPath.right = new FormAttachment( 75, 0 );
     fdTransPath.top = new FormAttachment( wlTransPath, 5 );
+    fdTransPath.width = 275;
     wTransPath.setLayoutData( fdTransPath );
 
     wbBrowseTrans = new Button( shell, SWT.PUSH );
@@ -201,6 +202,20 @@ public abstract class BaseStreamingDialog extends BaseStepDialog implements Step
             }
           } );
         }
+      }
+    } );
+
+    wbCreateSubtrans = new Button( shell, SWT.PUSH );
+    props.setLook( wbCreateSubtrans );
+    wbCreateSubtrans.setText( BaseMessages.getString( PKG, "BaseStreaming.Dialog.Transformation.CreateSubtrans" ) );
+    FormData fdCreateSubtrans = new FormData();
+    fdCreateSubtrans.left = new FormAttachment( wbBrowseTrans, 5 );
+    fdCreateSubtrans.top = new FormAttachment( wbBrowseTrans, -25 );
+    wbCreateSubtrans.setLayoutData( fdCreateSubtrans );
+
+    wbCreateSubtrans.addSelectionListener( new SelectionAdapter() {
+      public void widgetSelected( SelectionEvent e ) {
+        createNewSubtrans();
       }
     } );
 
@@ -305,6 +320,9 @@ public abstract class BaseStreamingDialog extends BaseStepDialog implements Step
   protected abstract void buildSetup( Composite wSetupComp );
 
   protected void createAdditionalTabs() {
+  }
+
+  protected void createNewSubtrans() {
   }
 
   private void buildBatchTab() {
