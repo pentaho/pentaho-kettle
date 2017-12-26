@@ -509,11 +509,6 @@
         <target_detail>Y</target_detail>
         <source_step>Fields</source_step>
         <source_field>format</source_field>
-      </mapping>      <mapping>        <target_step_name>Select values</target_step_name>
-        <target_attribute_key>meta_rename</target_attribute_key>
-        <target_detail>Y</target_detail>
-        <source_step>Rename</source_step>
-        <source_field>rename</source_field>
       </mapping>      <mapping>        <target_step_name>CSV file input</target_step_name>
         <target_attribute_key>field_name</target_attribute_key>
         <target_detail>Y</target_detail>
@@ -544,21 +539,11 @@
         <target_detail>Y</target_detail>
         <source_step>Fields</source_step>
         <source_field>precision</source_field>
-      </mapping>      <mapping>        <target_step_name>Select values</target_step_name>
-        <target_attribute_key>remove_name</target_attribute_key>
-        <target_detail>Y</target_detail>
-        <source_step>Remove</source_step>
-        <source_field>name</source_field>
       </mapping>      <mapping>        <target_step_name>CSV file input</target_step_name>
         <target_attribute_key>FIELD_FORMAT</target_attribute_key>
         <target_detail>Y</target_detail>
         <source_step>Fields</source_step>
         <source_field>format</source_field>
-      </mapping>      <mapping>        <target_step_name>Select values</target_step_name>
-        <target_attribute_key>meta_name</target_attribute_key>
-        <target_detail>Y</target_detail>
-        <source_step>Rename</source_step>
-        <source_field>name</source_field>
       </mapping>      <mapping>        <target_step_name>CSV file input</target_step_name>
         <target_attribute_key>field_currency</target_attribute_key>
         <target_detail>Y</target_detail>
@@ -579,11 +564,6 @@
         <target_detail>Y</target_detail>
         <source_step>Fields</source_step>
         <source_field>type</source_field>
-      </mapping>      <mapping>        <target_step_name>CSV file input</target_step_name>
-        <target_attribute_key>filename</target_attribute_key>
-        <target_detail>N</target_detail>
-        <source_step>Filename</source_step>
-        <source_field>filename</source_field>
       </mapping>      <mapping>        <target_step_name>CSV file input</target_step_name>
         <target_attribute_key>field_decimal</target_attribute_key>
         <target_detail>Y</target_detail>
@@ -619,11 +599,6 @@
         <target_detail>Y</target_detail>
         <source_step>Rename</source_step>
         <source_field>rename</source_field>
-      </mapping>      <mapping>        <target_step_name>Select values</target_step_name>
-        <target_attribute_key>name</target_attribute_key>
-        <target_detail>Y</target_detail>
-        <source_step>Rename fields</source_step>
-        <source_field>name</source_field>
       </mapping>      <mapping>        <target_step_name>CSV file input</target_step_name>
         <target_attribute_key>precision</target_attribute_key>
         <target_detail>Y</target_detail>
