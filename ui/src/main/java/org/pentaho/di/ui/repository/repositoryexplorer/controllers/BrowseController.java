@@ -546,8 +546,7 @@ public class BrowseController extends AbstractXulEventHandler implements IUISupp
         // otherwise we will end this method call
         confirmBox = (XulConfirmBox) document.createElement( "confirmbox" );
         confirmBox.setTitle( BaseMessages.getString( PKG, "BrowseController.DeleteNonEmptyFolderWarningTitle" ) );
-        confirmBox.setMessage( BaseMessages
-          .getString( PKG, "BrowseController.DeleteFolderWarningMessage" ) );
+        confirmBox.setMessage( BaseMessages.getString( PKG, "BrowseController.DeleteFilesWarningMessage" ) );
         confirmBox.setAcceptLabel( BaseMessages.getString( PKG, "Dialog.Ok" ) );
         confirmBox.setCancelLabel( BaseMessages.getString( PKG, "Dialog.Cancel" ) );
         confirmBox.addDialogCallback( new XulDialogCallback<Object>() {
