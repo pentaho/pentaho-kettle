@@ -65,11 +65,11 @@ define([
    */
   function activate() {
     angular.module(module.name, [resizeModule.name, "ui.router"])
+      .component(loadingComponent.name, loadingComponent.options)
       .component(appComponent.name, appComponent.options)
       .component(cardComponent.name, cardComponent.options)
       .component(folderComponent.name, folderComponent.options)
       .component(errorComponent.name, errorComponent.options)
-      .component(loadingComponent.name, loadingComponent.options)
       .component(breadcrumbComponent.name, breadcrumbComponent.options)
       .component(filesComponent.name, filesComponent.options)
       .component(searchComponent.name, searchComponent.options)
