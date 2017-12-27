@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -113,7 +113,7 @@ public class XMLJoin extends BaseStep implements StepInterface {
 
       data.outputRowMeta = data.TargetRowSet.getRowMeta().clone();
       meta.getFields( data.outputRowMeta, getStepname(), new RowMetaInterface[] { data.TargetRowSet.getRowMeta() },
-          null, this, repository, metaStore );
+          null, getTransMeta(), repository, metaStore );
       data.outputRowData = rTarget.clone();
 
       // get the target xml structure and create a DOM
