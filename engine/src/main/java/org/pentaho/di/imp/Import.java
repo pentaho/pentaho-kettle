@@ -65,6 +65,7 @@ public class Import {
   private static final Class<?> PKG = Import.class; // i18n
 
   public static final String STRING_IMPORT = "Import";
+  public static final String ROOT_DIRECTORY = "/";
 
   private static class ImportFeedback implements RepositoryImportFeedbackInterface, HasOverwritePrompter {
     private final LogChannelInterface log;
@@ -349,6 +350,11 @@ public class Import {
     SimpleDateFormat df = new SimpleDateFormat( "yyyy/MM/dd HH:mm:ss.SSS" );
     start = new Date(  );
     int returnCode = 0;
+
+    if ( ROOT_DIRECTORY.equals( optionDirname.toString() ) ) {
+      log.logError( BaseMessages.getString( PKG, "Import.Error.TargetDirectoryIsRootDirectory" ) );
+      exitJVM( 1 );
+    }
 
     try {
       RepositoryDirectoryInterface tree = repository.loadRepositoryDirectoryTree();
