@@ -21,18 +21,8 @@
  ******************************************************************************/
 package org.pentaho.di.ui.spoon.trans;
 
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.doCallRealMethod;
-
-import java.util.Arrays;
-import java.util.List;
-
-import org.junit.Assert;
-
 import org.eclipse.swt.events.MouseEvent;
+import org.junit.Assert;
 import org.junit.Test;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.gui.Point;
@@ -44,6 +34,15 @@ import org.pentaho.di.ui.spoon.Spoon;
 import org.pentaho.ui.xul.components.XulMenuitem;
 import org.pentaho.ui.xul.containers.XulMenu;
 import org.pentaho.ui.xul.dom.Document;
+
+import java.util.Arrays;
+import java.util.List;
+
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.doCallRealMethod;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 public class TransGraphTest {
   private static final boolean TRUE_RESULT = true;
@@ -86,7 +85,7 @@ public class TransGraphTest {
     selectedHop.setFromStep( stepMeta );
 
     when( stepMeta.getStepErrorMeta() ).thenReturn( errorMeta );
-    selectedHop.setToStep( new StepMeta() );
+    selectedHop.setToStep( new StepMeta( "toStepName", null ) ); // prevent NPE
     when( transGraph.getCurrentHop() ).thenReturn( selectedHop );
 
     doCallRealMethod().when( transGraph ).enableHop();
@@ -106,7 +105,7 @@ public class TransGraphTest {
     XulMenu xulMenu = mock( XulMenu.class );
     StepErrorMeta stepErrorMeta = mock( StepErrorMeta.class );
     Spoon spoon = mock( Spoon.class );
-    List<StepMeta> selection = Arrays.asList( new StepMeta(), stepMeta, new StepMeta() );
+    List<StepMeta> selection = Arrays.asList( new StepMeta( "stepMeta1", null ), stepMeta, new StepMeta( "stepMeta2", null ) );
 
     doCallRealMethod().when( transGraph ).setTransMeta( any( TransMeta.class ) );
     doCallRealMethod().when( transGraph ).setSpoon( any( Spoon.class ) );
