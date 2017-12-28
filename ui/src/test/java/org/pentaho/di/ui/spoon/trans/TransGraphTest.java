@@ -86,7 +86,9 @@ public class TransGraphTest {
     selectedHop.setFromStep( stepMeta );
 
     when( stepMeta.getStepErrorMeta() ).thenReturn( errorMeta );
-    selectedHop.setToStep( new StepMeta() );
+    StepMeta toStep = new StepMeta();
+    toStep.setName( "toStep" );
+    selectedHop.setToStep( toStep );
     when( transGraph.getCurrentHop() ).thenReturn( selectedHop );
 
     doCallRealMethod().when( transGraph ).enableHop();

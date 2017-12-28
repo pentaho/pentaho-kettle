@@ -210,7 +210,7 @@ public abstract class BaseStreamingDialog extends BaseStepDialog implements Step
     wbCreateSubtrans.setText( BaseMessages.getString( PKG, "BaseStreaming.Dialog.Transformation.CreateSubtrans" ) );
     FormData fdCreateSubtrans = new FormData();
     fdCreateSubtrans.left = new FormAttachment( wbBrowseTrans, 5 );
-    fdCreateSubtrans.top = new FormAttachment( wbBrowseTrans, -25 );
+    fdCreateSubtrans.top = new FormAttachment( wbBrowseTrans, 0, SWT.TOP );
     wbCreateSubtrans.setLayoutData( fdCreateSubtrans );
 
     wbCreateSubtrans.addSelectionListener( new SelectionAdapter() {

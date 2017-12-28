@@ -82,9 +82,6 @@ public class NewSubtransDialog extends Dialog {
     shell.setLayout( formLayout );
     shell.setText( BaseMessages.getString( PKG, "NewSubtransDialog.Title" ) );
     shell.setImage( GUIResource.getInstance().getImageLogoSmall() );
-    shell.setMinimumSize( 327, 172 );
-
-    int margin = 15;
 
     wiInfo = new Label( shell, SWT.NONE );
     wiInfo.setImage( display.getSystemImage( SWT.ICON_INFORMATION ) );
@@ -101,9 +98,10 @@ public class NewSubtransDialog extends Dialog {
     props.setLook( wlInfo );
     fdlInfo = new FormData();
     fdlInfo.left = new FormAttachment( wiInfo, 15 );
-    fdlInfo.top = new FormAttachment( 0, 0 );
-    fdlInfo.height = 30;
-    fdlInfo.width = 250;
+    fdlInfo.right = new FormAttachment( 100, 0 );
+    fdlInfo.width = 320;
+    fdlInfo.top = new FormAttachment( wiInfo, 0, SWT.TOP );
+    fdlInfo.bottom = new FormAttachment( wiInfo, 0, SWT.BOTTOM );
     wlInfo.setLayoutData( fdlInfo );
 
     wShow = new Button( shell, SWT.CHECK );
@@ -111,14 +109,18 @@ public class NewSubtransDialog extends Dialog {
     wShow.setLayoutData( new FormDataBuilder().left().result() );
     props.setLook( wShow );
     fdShowButton = new FormData();
-    fdShowButton.left = new FormAttachment( wiInfo, 15 );
-    fdShowButton.top = new FormAttachment( wlInfo, 15 );
+    fdShowButton.left = new FormAttachment( wlInfo, 0, SWT.LEFT );
+    fdShowButton.right = new FormAttachment( wlInfo, 0, SWT.RIGHT );
+    fdShowButton.top = new FormAttachment( wlInfo, 15, SWT.BOTTOM );
     wShow.setLayoutData( fdShowButton );
 
     wOK = new Button( shell, SWT.PUSH );
     wOK.setText( BaseMessages.getString( PKG, "System.Button.OK" ) );
 
-    BaseStepDialog.positionBottomRightButtons( shell, new Button[] { wOK }, margin, null );
+    FormData fdOk = new FormData();
+    fdOk.right = new FormAttachment( 100, 0 );
+    fdOk.top = new FormAttachment( wShow, 30, SWT.BOTTOM );
+    wOK.setLayoutData( fdOk );
 
     lsOK = new Listener() {
       public void handleEvent( Event e ) {
