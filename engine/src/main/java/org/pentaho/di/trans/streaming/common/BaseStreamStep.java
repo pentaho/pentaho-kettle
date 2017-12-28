@@ -22,18 +22,14 @@
 
 package org.pentaho.di.trans.streaming.common;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Throwables;
-import org.apache.commons.vfs2.FileObject;
-import org.apache.commons.vfs2.FileSystemException;
+import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.exception.KettleFileException;
-import org.pentaho.di.core.exception.KettleMissingPluginsException;
 import org.pentaho.di.core.exception.KettleStepException;
-import org.pentaho.di.core.exception.KettleXMLException;
-import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.SubtransExecutor;
 import org.pentaho.di.trans.Trans;
@@ -44,20 +40,17 @@ import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.di.trans.step.StepStatus;
 import org.pentaho.di.trans.steps.transexecutor.TransExecutorData;
+import org.pentaho.di.trans.steps.transexecutor.TransExecutorMeta;
 import org.pentaho.di.trans.steps.transexecutor.TransExecutorParameters;
 import org.pentaho.di.trans.streaming.api.StreamSource;
 import org.pentaho.di.trans.streaming.api.StreamWindow;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.FileNotFoundException;
-import java.net.URISyntaxException;
-import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-
-import static com.google.common.base.Throwables.propagate;
 
 public class BaseStreamStep extends BaseStep {
 
@@ -77,19 +70,37 @@ public class BaseStreamStep extends BaseStep {
   public boolean init( StepMetaInterface stepMetaInterface, StepDataInterface stepDataInterface ) {
     Preconditions.checkNotNull( stepMetaInterface );
     stepMeta = (BaseStreamStepMeta) stepMetaInterface;
+    stepMeta.setParentStepMeta( getStepMeta() );
+    stepMeta.setFileName( stepMeta.getTransformationPath() );
 
-    String ktr = getFilePath( stepMeta.getTransformationPath() );
+    boolean superInit = super.init( stepMetaInterface, stepDataInterface );
 
     try {
+      TransMeta transMeta = TransExecutorMeta
+        .loadMappingMeta( stepMeta, getTransMeta().getRepository(), getTransMeta().getMetaStore(),
+          getParentVariableSpace() );
       subtransExecutor = new SubtransExecutor(
-        getTrans(), new TransMeta( ktr ), true,
+        getTrans(), transMeta, true,
         new TransExecutorData(), new TransExecutorParameters() );
 
-    } catch ( KettleXMLException | KettleMissingPluginsException e ) {
+    } catch ( KettleException e ) {
       logger.error( e.getLocalizedMessage(), e );
+      return false;
     }
 
-    return super.init( stepMetaInterface, stepDataInterface );
+    List<CheckResultInterface> remarks = new ArrayList<>();
+    stepMeta.check(
+      remarks, getTransMeta(), stepMeta.getParentStepMeta(),
+      null, null, null, null, //these parameters are not used inside the method
+      variables, getRepository(), getMetaStore() );
+    boolean errorsPresent =
+      remarks.stream().filter( result -> result.getType() == CheckResultInterface.TYPE_RESULT_ERROR )
+        .peek( result -> logError( result.getText() ) )
+        .count() > 0;
+    if ( errorsPresent ) {
+      return false;
+    }
+    return superInit;
   }
 
 
@@ -101,14 +112,8 @@ public class BaseStreamStep extends BaseStep {
 
     source.open();
 
-    bufferStream().forEach( result -> {
-        if ( result.getNrErrors() > 0 ) {
-          stopAll();
-        } else {
-          putRows( result.getRows() );
-        }
-      }
-    );
+    bufferStream().forEach( result -> putRows( result.getRows() ) );
+    stopAll();
     return false;
   }
 
@@ -122,6 +127,7 @@ public class BaseStreamStep extends BaseStep {
     if ( source != null ) {
       source.close();
     }
+    subtransExecutor.stop();
     super.stopRunning( stepMetaInterface, stepDataInterface );
   }
 
@@ -149,19 +155,6 @@ public class BaseStreamStep extends BaseStep {
     } );
   }
 
-  private String getFilePath( String path ) {
-    try {
-      final FileObject fileObject = KettleVFS.getFileObject( environmentSubstitute( path ) );
-      if ( !fileObject.exists() ) {
-        throw new FileNotFoundException( path );
-      }
-      return Paths.get( fileObject.getURL().toURI() ).normalize().toString();
-    } catch ( URISyntaxException | FileNotFoundException | FileSystemException | KettleFileException e ) {
-      propagate( e );
-    }
-    return null;
-  }
-
   protected int getBatchSize() {
     try {
       return Integer.parseInt( stepMeta.getBatchSize() );
@@ -174,7 +167,7 @@ public class BaseStreamStep extends BaseStep {
     try {
       return Long.parseLong( stepMeta.getBatchDuration() );
     } catch ( NumberFormatException nfe ) {
-      return 5000l;
+      return 5000L;
     }
   }
 
@@ -182,5 +175,13 @@ public class BaseStreamStep extends BaseStep {
     return subtransExecutor != null ? subtransExecutor.getStatuses().values() : Collections.emptyList();
   }
 
+  @VisibleForTesting
+  public StreamSource<List<Object>> getSource() {
+    return source;
+  }
 
+  @VisibleForTesting
+  public void setSource( StreamSource<List<Object>> source ) {
+    this.source = source;
+  }
 }

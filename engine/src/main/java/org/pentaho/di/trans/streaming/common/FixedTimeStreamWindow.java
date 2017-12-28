@@ -33,8 +33,9 @@ import org.pentaho.di.trans.streaming.api.StreamWindow;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
+
+import static java.util.concurrent.TimeUnit.MILLISECONDS;
 
 /**
  * A StreamWindow implementation which buffers rows of I by a fixed amount of time and size, executing each batch in a
@@ -56,11 +57,15 @@ public class FixedTimeStreamWindow<I extends List> implements StreamWindow<I, Re
   }
 
   @Override public Iterable<Result> buffer( Iterable<I> rowIterator ) {
-    return Observable.fromIterable( rowIterator )
-      .subscribeOn( Schedulers.newThread() )
-      .buffer( millis, TimeUnit.MILLISECONDS, batchSize )
+    Observable<I> observable = Observable.fromIterable( rowIterator )
+      .subscribeOn( Schedulers.newThread() );
+    Observable<List<I>> buffer = millis > 0
+      ? batchSize > 0 ? observable.buffer( millis, MILLISECONDS, batchSize ) : observable.buffer( millis, MILLISECONDS )
+      : observable.buffer( batchSize );
+    return buffer
       .filter( list -> !list.isEmpty() )
       .map( this::sendBufferToSubtrans )
+      .takeWhile( result -> result.getNrErrors() == 0 )
       .blockingIterable();
   }
 

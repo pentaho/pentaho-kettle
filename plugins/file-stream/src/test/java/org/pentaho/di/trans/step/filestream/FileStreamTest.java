@@ -33,7 +33,6 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.trans.Trans;
@@ -49,13 +48,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
 
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.when;
 
@@ -102,7 +97,7 @@ public class FileStreamTest {
 
 
   @Ignore
-  @Test public void testStreamFile() throws KettleException, InterruptedException, IOException, ExecutionException {
+  @Test public void testStreamFile() throws IOException {
     FileStream step =
       (FileStream) streamMeta.getStep( stepMeta, stepData, 1, transMeta, trans );
     step.init( streamMeta, new FileStreamData() );
@@ -141,16 +136,16 @@ public class FileStreamTest {
     return new RowHandler() {
 
 
-      @Override public Object[] getRow() throws KettleException {
+      @Override public Object[] getRow() {
         return rows.size() > 0 ? rows.remove( 0 ) : null;
       }
 
-      @Override public void putRow( RowMetaInterface rowMeta, Object[] row ) throws KettleStepException {
+      @Override public void putRow( RowMetaInterface rowMeta, Object[] row ) {
         rows.add( row );
       }
 
       @Override public void putError( RowMetaInterface rowMeta, Object[] row, long nrErrors, String errorDescriptions,
-                                      String fieldNames, String errorCodes ) throws KettleStepException {
+                                      String fieldNames, String errorCodes ) {
 
       }
     };

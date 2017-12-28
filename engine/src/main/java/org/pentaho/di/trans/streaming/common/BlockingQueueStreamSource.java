@@ -54,9 +54,14 @@ public abstract class BlockingQueueStreamSource<T> implements StreamSource<T> {
   private final AtomicBoolean paused = new AtomicBoolean( false );
 
   private final FlowableProcessor<T> publishProcessor = ReplayProcessor.create();
+  private final BaseStreamStep streamStep;
 
   // binary semaphore used to block acceptance of rows when paused
   private final Semaphore acceptingRowsSemaphore = new Semaphore( 1 );
+
+  protected BlockingQueueStreamSource( BaseStreamStep streamStep ) {
+    this.streamStep = streamStep;
+  }
 
 
   @Override public Iterable<T> rows() {
@@ -102,8 +107,10 @@ public abstract class BlockingQueueStreamSource<T> implements StreamSource<T> {
   protected void acceptRows( List<T> rows ) {
     try {
       acceptingRowsSemaphore.acquire();
-      rows.stream()
-        .forEach( ( row ) -> publishProcessor.onNext( row ) );
+      rows.forEach( ( row ) -> {
+        streamStep.incrementLinesInput();
+        publishProcessor.onNext( row );
+      } );
     } catch ( InterruptedException e ) {
       logger.warn( getString( PKG, "BlockingQueueStream.AcceptRowsInterrupt",
         Arrays.toString( rows.toArray() ) ) );
@@ -122,5 +129,4 @@ public abstract class BlockingQueueStreamSource<T> implements StreamSource<T> {
   public void error( Throwable throwable ) {
     publishProcessor.onError( throwable );
   }
-
 }
