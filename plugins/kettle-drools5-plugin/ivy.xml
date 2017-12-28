@@ -29,7 +29,7 @@
 	  <exclude org="com.thoughtworks.xstream" name="xstream" />
 	</dependency>
 	<!-- add xstream manually -->
-	<dependency org="com.thoughtworks.xstream" name="xstream" rev="1.4.9" transitive="false" conf="default->default"/>
+	<dependency org="com.thoughtworks.xstream" name="xstream" rev="1.4.10" transitive="false" conf="default->default"/>
 
     <dependency org="org.mvel" name="mvel2" rev="2.0.10" conf="default->default" transitive="false"/>
     <dependency org="org.eclipse.jdt" name="core" rev="3.4.2.v_883_R34x" conf="default->default" transitive="false"/>
