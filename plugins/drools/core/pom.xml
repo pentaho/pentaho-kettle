@@ -20,7 +20,7 @@
 
     <kettle.version>8.0-SNAPSHOT</kettle.version>
     <drools.version>6.4.0.Final</drools.version>
-    <xstream.version>1.4.9</xstream.version>
+    <xstream.version>1.4.10</xstream.version>
     <mvel2.version>2.2.8.Final</mvel2.version>
     <org.eclipse.jdt>3.4.2.v_883_R34x</org.eclipse.jdt>
     <org.eclipse.swt.version>4.6</org.eclipse.swt.version>
