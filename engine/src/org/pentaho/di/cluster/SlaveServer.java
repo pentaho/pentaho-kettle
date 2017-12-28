@@ -22,25 +22,6 @@
 
 package org.pentaho.di.cluster;
 
-import java.io.BufferedReader;
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.UnsupportedEncodingException;
-import java.net.InetAddress;
-import java.net.URLEncoder;
-import java.text.MessageFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-import java.util.Random;
-import java.util.concurrent.locks.ReadWriteLock;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
-
 import org.apache.commons.httpclient.Header;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpState;
@@ -53,7 +34,6 @@ import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.httpclient.methods.RequestEntity;
 import org.apache.commons.lang.StringUtils;
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.changed.ChangedFlag;
 import org.pentaho.di.core.encryption.Encr;
 import org.pentaho.di.core.exception.KettleException;
@@ -62,6 +42,7 @@ import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.value.ValueMetaString;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.core.vfs.KettleVFS;
@@ -101,6 +82,25 @@ import org.pentaho.di.www.StopTransServlet;
 import org.pentaho.di.www.WebResult;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
+
+import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
+import java.net.InetAddress;
+import java.net.URLEncoder;
+import java.text.MessageFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+import java.util.Random;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 public class SlaveServer extends ChangedFlag implements Cloneable, SharedObjectInterface, VariableSpace,
   RepositoryElementInterface, XMLInterface {
@@ -564,6 +564,10 @@ public class SlaveServer extends ChangedFlag implements Cloneable, SharedObjectI
         serviceAndArguments = "/" + environmentSubstitute( getWebAppName() ) + serviceAndArguments;
       }
 
+      if ( !Utils.isEmpty( proxyHostname ) && realHostname.equals( "localhost" ) ) {
+        realHostname = "127.0.0.1";
+      }
+
       String result =
         ( isSslMode() ? HTTPS : HTTP ) + "://" + realHostname + getPortSpecification() + serviceAndArguments;
       result = Const.replace( result, " ", "%20" );
@@ -742,6 +746,9 @@ public class SlaveServer extends ChangedFlag implements Cloneable, SharedObjectI
     }
 
     if ( !Utils.isEmpty( proxyHost ) && !Utils.isEmpty( proxyPort ) ) {
+      if ( proxyHost.equals( "localhost" ) ) {
+        proxyHost = "127.0.0.1";
+      }
       // skip applying proxy if non-proxy host matches
       if ( !Utils.isEmpty( nonProxyHosts ) && !Utils.isEmpty( hostName ) && hostName.matches( nonProxyHosts ) ) {
         return;
@@ -753,10 +760,15 @@ public class SlaveServer extends ChangedFlag implements Cloneable, SharedObjectI
   public void addCredentials( HttpClient client ) {
     HttpState state = client.getState();
 
+    String targetHost = hostname;
+    if ( !Utils.isEmpty( hostname ) && hostname.equals( "localhost" ) ) {
+      targetHost = "127.0.0.1";
+    }
+
     lock.readLock().lock();
     try {
       state.setCredentials(
-        new AuthScope( environmentSubstitute( hostname ), Const.toInt( environmentSubstitute( port ), 80 ) ),
+        new AuthScope( environmentSubstitute( targetHost ), Const.toInt( environmentSubstitute( port ), 80 ) ),
         new UsernamePasswordCredentials( environmentSubstitute( username ), Encr
           .decryptPasswordOptionallyEncrypted( environmentSubstitute( password ) ) ) );
     } finally {
