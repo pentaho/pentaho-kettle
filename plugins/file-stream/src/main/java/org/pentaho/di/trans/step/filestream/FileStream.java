@@ -78,7 +78,7 @@ public class FileStream extends BaseStreamStep implements StepInterface {
     window = new FixedTimeStreamWindow<>( subtransExecutor, rowMeta, getDuration(), getBatchSize() );
 
     try {
-      source = new TailFileStreamSource( sourceFile );
+      source = new TailFileStreamSource( sourceFile, this );
     } catch ( FileNotFoundException e ) {
       logger.error( e.getLocalizedMessage(), e );
       return false;

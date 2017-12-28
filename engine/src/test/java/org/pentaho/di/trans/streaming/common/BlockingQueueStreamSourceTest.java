@@ -24,6 +24,8 @@ package org.pentaho.di.trans.streaming.common;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import java.util.ArrayList;
@@ -45,7 +47,9 @@ import static org.hamcrest.MatcherAssert.assertThat;
 @RunWith ( MockitoJUnitRunner.class )
 public class BlockingQueueStreamSourceTest {
   private ExecutorService execSvc = Executors.newCachedThreadPool();
-  private BlockingQueueStreamSource<String> streamSource = new BlockingQueueStreamSource<String>() {
+  private BaseStreamStep streamStep = Mockito.mock( BaseStreamStep.class );
+
+  private BlockingQueueStreamSource<String> streamSource = new BlockingQueueStreamSource<String>( streamStep ) {
     @Override public void open() {
 
     }
@@ -103,7 +107,7 @@ public class BlockingQueueStreamSourceTest {
 
     // implement the blockingQueueStreamSource with an .open which will
     // launch a thread that sends rows to the queue.
-    streamSource = new BlockingQueueStreamSource<String>() {
+    streamSource = new BlockingQueueStreamSource<String>( streamStep ) {
       @Override public void open() {
         execSvc.submit( () -> {
           for ( int i = 0; i < 4; i++ ) {
@@ -137,7 +141,7 @@ public class BlockingQueueStreamSourceTest {
     // by the .rows() blocking iterable.
 
     final String exceptionMessage = "Exception raised during acceptRows loop";
-    streamSource = new BlockingQueueStreamSource<String>() {
+    streamSource = new BlockingQueueStreamSource<String>( streamStep ) {
       @Override public void open() {
         execSvc.submit( () -> {
           for ( int i = 0; i < 10; i++ ) {

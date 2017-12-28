@@ -53,7 +53,8 @@ public class TailFileStreamSource extends BlockingQueueStreamSource<List<Object>
   private final ExecutorService executorService = Executors.newCachedThreadPool();
   private Future<?> future;
 
-  public TailFileStreamSource( String filename ) throws FileNotFoundException {
+  public TailFileStreamSource( String filename, FileStream fileStream ) throws FileNotFoundException {
+    super( fileStream );
     this.filename = filename;
   }
 
@@ -84,7 +85,7 @@ public class TailFileStreamSource extends BlockingQueueStreamSource<List<Object>
 
   private String getNextLine( BufferedReader reader ) throws IOException, InterruptedException {
     String currentLine;
-    while ( isPaused() || ( currentLine = reader.readLine() ) == null ) {
+    while ( ( currentLine = reader.readLine() ) == null ) {
       Thread.sleep( 500 );
     }
     return currentLine;

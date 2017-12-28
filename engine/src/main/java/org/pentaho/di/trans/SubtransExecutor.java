@@ -157,4 +157,8 @@ public class SubtransExecutor {
   public Map<String, StepStatus> getStatuses() {
     return statuses;
   }
+
+  public Trans getParentTrans() {
+    return parentTrans;
+  }
 }
