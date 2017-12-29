@@ -38,6 +38,7 @@ import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
@@ -45,6 +46,9 @@ import org.pentaho.di.core.Const;
 import org.pentaho.di.core.ObjectLocationSpecificationMethod;
 import org.pentaho.di.core.Props;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.extension.ExtensionPointHandler;
+import org.pentaho.di.core.extension.KettleExtensionPoint;
+import org.pentaho.di.core.gui.Point;
 import org.pentaho.di.core.plugins.PluginInterface;
 import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.plugins.StepPluginType;
@@ -55,20 +59,29 @@ import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.RepositoryDirectoryInterface;
 import org.pentaho.di.repository.RepositoryObject;
 import org.pentaho.di.repository.RepositoryObjectType;
+import org.pentaho.di.shared.SharedObjects;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDialogInterface;
+import org.pentaho.di.trans.step.StepMeta;
+import org.pentaho.di.trans.steps.recordsfromstream.RecordsFromStreamMeta;
 import org.pentaho.di.trans.streaming.common.BaseStreamStepMeta;
 import org.pentaho.di.ui.core.ConstUI;
+import org.pentaho.di.ui.core.FileDialogOperation;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.core.widget.TextVar;
 import org.pentaho.di.ui.repository.dialog.SelectObjectDialog;
+import org.pentaho.di.ui.spoon.MainSpoonPerspective;
 import org.pentaho.di.ui.spoon.Spoon;
+import org.pentaho.di.ui.spoon.dialog.NewSubtransDialog;
 import org.pentaho.di.ui.util.DialogUtils;
 import org.pentaho.vfs.ui.VfsFileChooserDialog;
+import org.pentaho.xul.swt.tab.TabItem;
+import org.pentaho.xul.swt.tab.TabSet;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Optional;
 
 @SuppressWarnings( { "FieldCanBeLocal", "unused", "WeakerAccess" } )
@@ -80,6 +93,7 @@ public abstract class BaseStreamingDialog extends BaseStepDialog implements Step
 
   protected BaseStreamStepMeta meta;
   protected TransMeta executorTransMeta = null;
+  private Spoon spoonInstance;
 
   protected Label wlTransPath;
   protected TextVar wTransPath;
@@ -105,6 +119,7 @@ public abstract class BaseStreamingDialog extends BaseStepDialog implements Step
   public BaseStreamingDialog( Shell parent, Object in, TransMeta tr, String sname ) {
     super( parent, (BaseStepMeta) in, tr, sname );
     meta = (BaseStreamStepMeta) in;
+    spoonInstance = Spoon.getInstance();
   }
 
   public String open() {
@@ -323,6 +338,147 @@ public abstract class BaseStreamingDialog extends BaseStepDialog implements Step
   }
 
   protected void createNewSubtrans() {
+    TransMeta newTransMeta = createTransMeta();
+    if ( spoonInstance.getRepository() != null ) {
+      saveToRepository( newTransMeta );
+    } else {
+      saveXMLFile( newTransMeta );
+    }
+  }
+
+  protected TransMeta createTransMeta() {
+    RecordsFromStreamMeta rm = new RecordsFromStreamMeta();
+    String[] fieldNames = getFieldNames();
+    int[] empty = new int[ fieldNames.length ];
+    Arrays.fill( empty, -1 );
+    rm.setFieldname( fieldNames );
+    rm.setType( getFieldTypes() );
+    rm.setLength( empty );
+    rm.setPrecision( empty );
+
+    StepMeta recsFromStream = new StepMeta( "RecordsFromStream", "Get records from stream", rm );
+    recsFromStream.setLocation( new Point( 100, 100 ) );
+    recsFromStream.setDraw( true );
+
+    TransMeta transMeta = new TransMeta();
+    transMeta.addStep( recsFromStream );
+
+    return transMeta;
+  }
+
+  protected abstract int[] getFieldTypes();
+
+  protected abstract String[] getFieldNames();
+
+  protected void saveToRepository( TransMeta newTransMeta ) {
+    try {
+      // If the repository directory is root then get the default save directory
+      if ( newTransMeta.getRepositoryDirectory() == null || newTransMeta.getRepositoryDirectory().isRoot() ) {
+        newTransMeta.setRepositoryDirectory( spoonInstance.getRepository().getDefaultSaveDirectory( newTransMeta ) );
+      }
+      FileDialogOperation fileDialogOperation = new FileDialogOperation( FileDialogOperation.SAVE,
+        FileDialogOperation.ORIGIN_SPOON );
+      fileDialogOperation.setStartDir( newTransMeta.getRepositoryDirectory().getPath() );
+      fileDialogOperation.setTitle( BaseMessages.getString( PKG, "BaseStreamingDialog.Subtrans.DefaultName" ) );
+      ExtensionPointHandler.callExtensionPoint( log, KettleExtensionPoint.SpoonOpenSaveRepository.id,
+        fileDialogOperation );
+      if ( fileDialogOperation.getRepositoryObject() != null ) {
+        RepositoryObject repositoryObject = (RepositoryObject) fileDialogOperation.getRepositoryObject();
+        newTransMeta.setRepositoryDirectory( repositoryObject.getRepositoryDirectory() );
+        newTransMeta.setName( repositoryObject.getName() );
+
+        createSubtrans( repositoryObject.getName(), newTransMeta );
+
+        spoonInstance.saveToRepositoryConfirmed( newTransMeta );
+
+        String path = getPath( newTransMeta.getRepositoryDirectory().getPath() );
+        String fullPath = path + "/" + newTransMeta.getName();
+        wTransPath.setText( fullPath );
+
+        if ( props.showNewSubtransPopup() ) {
+          NewSubtransDialog newSubtransDialog = new NewSubtransDialog( shell, SWT.NONE );
+          props.setShowNewSubtransPopup( !newSubtransDialog.open() );
+        }
+      }
+    } catch ( KettleException e ) {
+      log.logError( "Failed to save transformation to the repository", e );
+    }
+  }
+
+  protected void saveXMLFile( TransMeta newTransMeta ) {
+    FileDialog dialog = new FileDialog( shell, SWT.SAVE );
+    String[] extensions = newTransMeta.getFilterExtensions();
+    dialog.setFilterExtensions( extensions );
+    dialog.setFilterNames( newTransMeta.getFilterNames() );
+    dialog.setFileName( BaseMessages.getString( PKG, "BaseStreamingDialog.Subtrans.DefaultName" ) );
+    String filename = dialog.open();
+    if ( filename != null ) {
+      wTransPath.setText( filename );
+      createSubtrans( filename, newTransMeta );
+
+      // check ending and save
+      if ( filename != null ) {
+        boolean ending = false;
+        for ( int i = 0; i < extensions.length - 1; i++ ) {
+          String[] parts = extensions[i].split( ";" );
+          for ( String part : parts ) {
+            if ( filename.toLowerCase().endsWith( part.substring( 1 ).toLowerCase() ) ) {
+              ending = true;
+              break;
+            }
+          }
+        }
+        if ( filename.endsWith( newTransMeta.getDefaultExtension() ) ) {
+          ending = true;
+        }
+        if ( !ending ) {
+          if ( !newTransMeta.getDefaultExtension().startsWith( "." ) && !filename.endsWith( "." ) ) {
+            filename += ".";
+          }
+          filename += newTransMeta.getDefaultExtension();
+        }
+      }
+      spoonInstance.save( newTransMeta, filename, false );
+
+      if ( props.showNewSubtransPopup() ) {
+        NewSubtransDialog newSubtransDialog = new NewSubtransDialog( shell, SWT.NONE );
+        props.setShowNewSubtransPopup( !newSubtransDialog.open() );
+      }
+    }
+  }
+
+  private void createSubtrans( String filename, TransMeta newTransMeta ) {
+    TabItem tabItem =  spoonInstance.getTabSet().getSelected(); // remember current tab
+
+    newTransMeta.setMetaStore( spoonInstance.getMetaStore() );
+    try {
+      SharedObjects sharedObjects = newTransMeta.readSharedObjects();
+      newTransMeta.setSharedObjects( sharedObjects );
+      newTransMeta.importFromMetaStore();
+      newTransMeta.clearChanged();
+    } catch ( Exception e ) {
+      log.logError( "Failed to retrieve shared objects", e );
+    }
+
+    newTransMeta.setName( Const.createName( filename ) );
+    newTransMeta.setFilename( filename );
+    spoonInstance.delegates.tabs.makeTabName( newTransMeta, false );
+    spoonInstance.addTransGraph( newTransMeta );
+    spoonInstance.applyVariables();
+    if ( spoonInstance.setDesignMode() ) {
+      // No refresh done yet, do so
+      spoonInstance.refreshTree();
+    }
+    spoonInstance.loadPerspective( MainSpoonPerspective.ID );
+    try {
+      ExtensionPointHandler.callExtensionPoint( log, KettleExtensionPoint.TransformationCreateNew.id, newTransMeta );
+    } catch ( KettleException e ) {
+      log.logError( "Failed to call extension point", e );
+    }
+
+    // go back to inital tab
+    TabSet ts = spoonInstance.getTabSet();
+    ts.setSelected( tabItem );
   }
 
   private void buildBatchTab() {

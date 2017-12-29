@@ -31,6 +31,7 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
+import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.StepDialogInterface;
@@ -97,6 +98,14 @@ public class FileStreamDialog extends BaseStreamingDialog implements StepDialogI
 
   @Override protected void createAdditionalTabs() {
     shell.setText( BaseMessages.getString( PKG, "FileStreamDialog.Shell.Title" ) );
+  }
+
+  @Override protected int[] getFieldTypes() {
+    return new int[]{ ValueMetaInterface.TYPE_STRING };
+  }
+
+  @Override protected String[] getFieldNames() {
+    return new String[]{ "line" };
   }
 
   @Override protected void getData() {
