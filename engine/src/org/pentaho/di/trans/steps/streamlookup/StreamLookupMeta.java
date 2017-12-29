@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -223,7 +223,7 @@ public class StreamLookupMeta extends BaseStepMeta implements StepMetaInterface 
         ValueMetaInterface v = info[0].searchValueMeta( getValue()[i] );
         if ( v != null ) {
           // Configuration error/missing resources...
-          ValueMetaInterface copy = v.clone(); 
+          ValueMetaInterface copy = v.clone();
           copy.setName( getValueName()[i] );
           copy.setOrigin( origin );
           row.addValueMeta( copy );
