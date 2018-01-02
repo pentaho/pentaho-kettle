@@ -30,6 +30,9 @@ import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.vfs2.FileObject;
+import org.apache.commons.vfs2.VFS;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -42,6 +45,7 @@ import org.pentaho.di.core.plugins.StepPluginType;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaBinary;
 import org.pentaho.di.core.row.value.ValueMetaNumber;
 import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.trans.RowProducer;
@@ -77,7 +81,7 @@ public class CheckSumTest {
     }
   }
 
-  private Trans buildHexadecimalChecksumTrans( int checkSumType, boolean compatibilityMode ) throws Exception {
+  private Trans buildHexadecimalChecksumTrans( int checkSumType, boolean compatibilityMode, boolean oldChecksumBehaviour ) throws Exception {
     // Create a new transformation...
     TransMeta transMeta = new TransMeta();
     transMeta.setName( getClass().getName() );
@@ -92,6 +96,7 @@ public class CheckSumTest {
     meta.setCheckSumType( checkSumType );
     meta.setResultType( CheckSumMeta.result_TYPE_HEXADECIMAL );
     meta.setFieldName( new String[] { "test" } );
+    meta.setOldChecksumBehaviour( oldChecksumBehaviour );
 
     String checkSumPluginPid = PluginRegistry.getInstance().getPluginId( StepPluginType.class, meta );
     StepMeta checkSumStep = new StepMeta( checkSumPluginPid, checkSumStepname, meta );
@@ -163,8 +168,8 @@ public class CheckSumTest {
    *          meta to be used
    * @return RowListener with results.
    */
-  private MockRowListener executeHexTest( int checkSumType, boolean compatibilityMode, Object input, ValueMetaInterface meta ) throws Exception {
-    Trans trans = buildHexadecimalChecksumTrans( checkSumType, compatibilityMode );
+  private MockRowListener executeHexTest( int checkSumType, boolean compatibilityMode, Object input, ValueMetaInterface meta, boolean oldChecksumBehaviour ) throws Exception {
+    Trans trans = buildHexadecimalChecksumTrans( checkSumType, compatibilityMode, oldChecksumBehaviour );
 
     trans.prepareExecution( null );
 
@@ -189,77 +194,180 @@ public class CheckSumTest {
 
   @Test
   public void testHexOutput_md5() throws Exception {
-    MockRowListener results = executeHexTest( 2, false, "xyz", new ValueMetaString( "test" ) );
+    MockRowListener results = executeHexTest( 2, false, "xyz", new ValueMetaString( "test" ), false );
     assertEquals( 1, results.getWritten().size() );
     assertEquals( "d16fb36f0911f878998c136191af705e", results.getWritten().get( 0 )[1] );
 
-    results = executeHexTest( 2, false, 10.8, new ValueMetaNumber( "test" ) );
+    results = executeHexTest( 2, false, 10.8, new ValueMetaNumber( "test" ), false );
     assertEquals( 1, results.getWritten().size() );
     assertEquals( "372df98e33ac1bf6b26d225361ba7eb5", results.getWritten().get( 0 )[1] );
 
-    results = executeHexTest( 2, false, 10.82, new ValueMetaNumber( "test" ) );
+    results = executeHexTest( 2, false, 10.82, new ValueMetaNumber( "test" ), false );
+    assertEquals( 1, results.getWritten().size() );
+    assertEquals( "68b142f87143c917f29d178aa1715957", results.getWritten().get( 0 )[1] );
+
+    byte[] input = IOUtils.toByteArray( getFile( "/org/pentaho/di/trans/steps/loadfileinput/files/pentaho_splash.png" ).getContent().getInputStream() );
+    results = executeHexTest( 2, false, input, new ValueMetaBinary( "test" ), false );
+    assertEquals( 1, results.getWritten().size() );
+    assertEquals( "8d808ff9051fdbfd8050f762daddf813", results.getWritten().get( 0 )[1] );
+  }
+
+  @Test
+  public void testHexOutput_md5_oldChecksumBehaviourMode() throws Exception {
+    MockRowListener results = executeHexTest( 2, false, "xyz", new ValueMetaString( "test" ), true );
+    assertEquals( 1, results.getWritten().size() );
+    assertEquals( "d16fb36f0911f878998c136191af705e", results.getWritten().get( 0 )[1] );
+
+    results = executeHexTest( 2, false, 10.8, new ValueMetaNumber( "test" ), true );
+    assertEquals( 1, results.getWritten().size() );
+    assertEquals( "372df98e33ac1bf6b26d225361ba7eb5", results.getWritten().get( 0 )[1] );
+
+    results = executeHexTest( 2, false, 10.82, new ValueMetaNumber( "test" ), true );
     assertEquals( 1, results.getWritten().size() );
     assertEquals( "68b142f87143c917f29d178aa1715957", results.getWritten().get( 0 )[1] );
   }
 
   @Test
   public void testHexOutput_md5_compatibilityMode() throws Exception {
-    MockRowListener results = executeHexTest( 2, true, "xyz", new ValueMetaString( "test" ) );
+    MockRowListener results = executeHexTest( 2, true, "xyz", new ValueMetaString( "test" ), false );
     assertEquals( 1, results.getWritten().size() );
     assertEquals( "FD6FFD6F0911FD78FDFD1361FDFD705E", results.getWritten().get( 0 )[1] );
 
-    results = executeHexTest( 2, true, 10.8, new ValueMetaNumber( "test" ) );
+    results = executeHexTest( 2, true, 10.8, new ValueMetaNumber( "test" ), false );
     assertEquals( 1, results.getWritten().size() );
     assertEquals( "372DFDFD33FD1BFDFD6D225361FD7EFD", results.getWritten().get( 0 )[1] );
 
-    results = executeHexTest( 2, true, 10.82, new ValueMetaNumber( "test" ) );
+    results = executeHexTest( 2, true, 10.82, new ValueMetaNumber( "test" ), false );
+    assertEquals( 1, results.getWritten().size() );
+    assertEquals( "68FD42FD7143FD17FD17FDFD715957", results.getWritten().get( 0 )[1] );
+
+    byte[] input = IOUtils.toByteArray( getFile( "/org/pentaho/di/trans/steps/loadfileinput/files/pentaho_splash.png" ).getContent().getInputStream() );
+    results = executeHexTest( 2, true, input, new ValueMetaBinary( "test" ), false );
+    assertEquals( 1, results.getWritten().size() );
+    assertEquals( "FDFDFDFD051FFDFDFD50FD62FDFDFD13", results.getWritten().get( 0 )[1] );
+  }
+
+  @Test
+  public void testHexOutput_md5_compatibilityMode_oldChecksumBehaviourMode() throws Exception {
+    MockRowListener results = executeHexTest( 2, true, "xyz", new ValueMetaString( "test" ), true );
+    assertEquals( 1, results.getWritten().size() );
+    assertEquals( "FD6FFD6F0911FD78FDFD1361FDFD705E", results.getWritten().get( 0 )[1] );
+
+    results = executeHexTest( 2, true, 10.8, new ValueMetaNumber( "test" ), true );
+    assertEquals( 1, results.getWritten().size() );
+    assertEquals( "372DFDFD33FD1BFDFD6D225361FD7EFD", results.getWritten().get( 0 )[1] );
+
+    results = executeHexTest( 2, true, 10.82, new ValueMetaNumber( "test" ), true );
     assertEquals( 1, results.getWritten().size() );
     assertEquals( "68FD42FD7143FD17FD17FDFD715957", results.getWritten().get( 0 )[1] );
   }
 
   @Test
   public void testHexOutput_sha1() throws Exception {
-    MockRowListener results = executeHexTest( 3, false, "xyz", new ValueMetaString( "test" ) );
+    MockRowListener results = executeHexTest( 3, false, "xyz", new ValueMetaString( "test" ), false );
     assertEquals( 1, results.getWritten().size() );
     assertEquals( "66b27417d37e024c46526c2f6d358a754fc552f3", results.getWritten().get( 0 )[1] );
 
-    results = executeHexTest( 3, false, 10.8, new ValueMetaNumber( "test" ) );
+    results = executeHexTest( 3, false, 10.8, new ValueMetaNumber( "test" ), false );
     assertEquals( 1, results.getWritten().size() );
     assertEquals( "78aef53da0b8d7a80656c80aa35ad6d410b7f068", results.getWritten().get( 0 )[1] );
 
-    results = executeHexTest( 3, false, 10.82, new ValueMetaNumber( "test" ) );
+    results = executeHexTest( 3, false, 10.82, new ValueMetaNumber( "test" ), false );
+    assertEquals( 1, results.getWritten().size() );
+    assertEquals( "749f3d4c2db67c9f3186563a72ef5da9461f0496", results.getWritten().get( 0 )[1] );
+
+    byte[] input = IOUtils.toByteArray( getFile( "/org/pentaho/di/trans/steps/loadfileinput/files/pentaho_splash.png" ).getContent().getInputStream() );
+    results = executeHexTest( 3, false, input, new ValueMetaBinary( "test" ), false );
+    assertEquals( 1, results.getWritten().size() );
+    assertEquals( "e67d0b5b60663b8a5e0df1d23b44de673738315a", results.getWritten().get( 0 )[1] );
+  }
+
+  @Test
+  public void testHexOutput_sha1_oldChecksumBehaviourMode() throws Exception {
+    MockRowListener results = executeHexTest( 3, false, "xyz", new ValueMetaString( "test" ), true );
+    assertEquals( 1, results.getWritten().size() );
+    assertEquals( "66b27417d37e024c46526c2f6d358a754fc552f3", results.getWritten().get( 0 )[1] );
+
+    results = executeHexTest( 3, false, 10.8, new ValueMetaNumber( "test" ), true );
+    assertEquals( 1, results.getWritten().size() );
+    assertEquals( "78aef53da0b8d7a80656c80aa35ad6d410b7f068", results.getWritten().get( 0 )[1] );
+
+    results = executeHexTest( 3, false, 10.82, new ValueMetaNumber( "test" ), true );
     assertEquals( 1, results.getWritten().size() );
     assertEquals( "749f3d4c2db67c9f3186563a72ef5da9461f0496", results.getWritten().get( 0 )[1] );
   }
 
   @Test
   public void testHexOutput_sha1_compatibilityMode() throws Exception {
-    MockRowListener results = executeHexTest( 3, true, "xyz", new ValueMetaString( "test" ) );
+    MockRowListener results = executeHexTest( 3, true, "xyz", new ValueMetaString( "test" ), false );
     assertEquals( 1, results.getWritten().size() );
     assertEquals( "66FD7417FD7E024C46526C2F6D35FD754FFD52FD", results.getWritten().get( 0 )[1] );
 
-    results = executeHexTest( 3, true, 10.8, new ValueMetaNumber( "test" ) );
+    results = executeHexTest( 3, true, 10.8, new ValueMetaNumber( "test" ), false );
     assertEquals( 1, results.getWritten().size() );
     assertEquals( "78FDFD3DFDFDE80656FD0AFD5AFDFD10FDFD68", results.getWritten().get( 0 )[1] );
 
-    results = executeHexTest( 3, true, 10.82, new ValueMetaNumber( "test" ) );
+    results = executeHexTest( 3, true, 10.82, new ValueMetaNumber( "test" ), false );
+    assertEquals( 1, results.getWritten().size() );
+    assertEquals( "74FD3D4C2DFD7CFD31FD563A72FD5DFD461F04FD", results.getWritten().get( 0 )[1] );
+
+    byte[] input = IOUtils.toByteArray( getFile( "/org/pentaho/di/trans/steps/loadfileinput/files/pentaho_splash.png" ).getContent().getInputStream() );
+    results = executeHexTest( 3, true, input, new ValueMetaBinary( "test" ), false );
+    assertEquals( 1, results.getWritten().size() );
+    assertEquals( "FD7D0B5B60663BFD5E0DFDFD3B44FD673738315A", results.getWritten().get( 0 )[1] );
+  }
+
+  @Test
+  public void testHexOutput_sha1_compatibilityMode_oldChecksumBehaviourMode() throws Exception {
+    MockRowListener results = executeHexTest( 3, true, "xyz", new ValueMetaString( "test" ), true );
+    assertEquals( 1, results.getWritten().size() );
+    assertEquals( "66FD7417FD7E024C46526C2F6D35FD754FFD52FD", results.getWritten().get( 0 )[1] );
+
+    results = executeHexTest( 3, true, 10.8, new ValueMetaNumber( "test" ), true );
+    assertEquals( 1, results.getWritten().size() );
+    assertEquals( "78FDFD3DFDFDE80656FD0AFD5AFDFD10FDFD68", results.getWritten().get( 0 )[1] );
+
+    results = executeHexTest( 3, true, 10.82, new ValueMetaNumber( "test" ), true );
     assertEquals( 1, results.getWritten().size() );
     assertEquals( "74FD3D4C2DFD7CFD31FD563A72FD5DFD461F04FD", results.getWritten().get( 0 )[1] );
   }
 
   @Test
   public void testHexOutput_sha256() throws Exception {
-    MockRowListener results = executeHexTest( 4, false, "xyz", new ValueMetaString( "test" ) );
+    MockRowListener results = executeHexTest( 4, false, "xyz", new ValueMetaString( "test" ), false );
     assertEquals( 1, results.getWritten().size() );
     assertEquals( "3608bca1e44ea6c4d268eb6db02260269892c0b42b86bbf1e77a6fa16c3c9282",
       results.getWritten().get( 0 )[1] );
 
-    results = executeHexTest( 4, false, 10.8, new ValueMetaNumber( "test" ) );
+    results = executeHexTest( 4, false, 10.8, new ValueMetaNumber( "test" ), false );
     assertEquals( 1, results.getWritten().size() );
     assertEquals( "b52b603f9ec86c382a8483cad4f788f2f927535a76ad1388caedcef5e3c3c813",
             results.getWritten().get( 0 )[1] );
 
-    results = executeHexTest( 4, false, 10.82, new ValueMetaNumber( "test" ) );
+    results = executeHexTest( 4, false, 10.82, new ValueMetaNumber( "test" ), false );
+    assertEquals( 1, results.getWritten().size() );
+    assertEquals( "45cbb96ff9625490cd675a7a39fecad6c167c1ed9b8957f53224fcb3e4a1e4a1",
+            results.getWritten().get( 0 )[1] );
+
+    byte[] input = IOUtils.toByteArray( getFile( "/org/pentaho/di/trans/steps/loadfileinput/files/pentaho_splash.png" ).getContent().getInputStream() );
+    results = executeHexTest( 4, false, input, new ValueMetaBinary( "test" ), false );
+    assertEquals( 1, results.getWritten().size() );
+    assertEquals( "6914d0cb9296d658569570c23924ea4822be73f0ee3bc46d11651fb4041a43e1", results.getWritten().get( 0 )[1] );
+  }
+
+  @Test
+  public void testHexOutput_sha256_oldChecksumBehaviourMode() throws Exception {
+    MockRowListener results = executeHexTest( 4, false, "xyz", new ValueMetaString( "test" ), true );
+    assertEquals( 1, results.getWritten().size() );
+    assertEquals( "3608bca1e44ea6c4d268eb6db02260269892c0b42b86bbf1e77a6fa16c3c9282",
+            results.getWritten().get( 0 )[1] );
+
+    results = executeHexTest( 4, false, 10.8, new ValueMetaNumber( "test" ), true );
+    assertEquals( 1, results.getWritten().size() );
+    assertEquals( "b52b603f9ec86c382a8483cad4f788f2f927535a76ad1388caedcef5e3c3c813",
+            results.getWritten().get( 0 )[1] );
+
+    results = executeHexTest( 4, false, 10.82, new ValueMetaNumber( "test" ), true );
     assertEquals( 1, results.getWritten().size() );
     assertEquals( "45cbb96ff9625490cd675a7a39fecad6c167c1ed9b8957f53224fcb3e4a1e4a1",
             results.getWritten().get( 0 )[1] );
@@ -267,30 +375,70 @@ public class CheckSumTest {
 
   @Test
   public void testHexOutput_adler32() throws Exception {
-    MockRowListener results = executeHexTest( 1, false, "xyz", new ValueMetaString( "test" ) );
+    MockRowListener results = executeHexTest( 1, false, "xyz", new ValueMetaString( "test" ), false );
     assertEquals( 1, results.getWritten().size() );
     assertEquals( Long.valueOf( "47645036" ), results.getWritten().get( 0 )[1] );
 
-    results = executeHexTest( 1, false, 10.8, new ValueMetaNumber( "test" ) );
+    results = executeHexTest( 1, false, 10.8, new ValueMetaNumber( "test" ), false );
     assertEquals( 1, results.getWritten().size() );
     assertEquals( Long.valueOf( "32243912" ), results.getWritten().get( 0 )[1] );
 
-    results = executeHexTest( 1, false, 10.82, new ValueMetaNumber( "test" ) );
+    results = executeHexTest( 1, false, 10.82, new ValueMetaNumber( "test" ), false );
+    assertEquals( 1, results.getWritten().size() );
+    assertEquals( Long.valueOf( "48627962" ), results.getWritten().get( 0 )[1] );
+
+    byte[] input = IOUtils.toByteArray( getFile( "/org/pentaho/di/trans/steps/loadfileinput/files/pentaho_splash.png" ).getContent().getInputStream() );
+    results = executeHexTest( 1, false, input, new ValueMetaBinary( "test" ), false );
+    assertEquals( 1, results.getWritten().size() );
+    assertEquals( Long.valueOf( "1586189688" ), results.getWritten().get( 0 )[1] );
+  }
+
+  @Test
+  public void testHexOutput_adler32_oldChecksumBehaviourMode() throws Exception {
+    MockRowListener results = executeHexTest( 1, false, "xyz", new ValueMetaString( "test" ), true );
+    assertEquals( 1, results.getWritten().size() );
+    assertEquals( Long.valueOf( "47645036" ), results.getWritten().get( 0 )[1] );
+
+    results = executeHexTest( 1, false, 10.8, new ValueMetaNumber( "test" ), true );
+    assertEquals( 1, results.getWritten().size() );
+    assertEquals( Long.valueOf( "32243912" ), results.getWritten().get( 0 )[1] );
+
+    results = executeHexTest( 1, false, 10.82, new ValueMetaNumber( "test" ), true );
     assertEquals( 1, results.getWritten().size() );
     assertEquals( Long.valueOf( "48627962" ), results.getWritten().get( 0 )[1] );
   }
 
   @Test
   public void testHexOutput_crc32() throws Exception {
-    MockRowListener results = executeHexTest( 0, false, "xyz", new ValueMetaString( "test" ) );
+    MockRowListener results = executeHexTest( 0, false, "xyz", new ValueMetaString( "test" ), false );
     assertEquals( 1, results.getWritten().size() );
     assertEquals( Long.valueOf( "3951999591" ), results.getWritten().get( 0 )[1] );
 
-    results = executeHexTest( 0, false, 10.8, new ValueMetaNumber( "test" ) );
+    results = executeHexTest( 0, false, 10.8, new ValueMetaNumber( "test" ), false );
     assertEquals( 1, results.getWritten().size() );
     assertEquals( Long.valueOf( "1857885434" ), results.getWritten().get( 0 )[1] );
 
-    results = executeHexTest( 0, false, 10.82, new ValueMetaNumber( "test" ) );
+    results = executeHexTest( 0, false, 10.82, new ValueMetaNumber( "test" ), false );
+    assertEquals( 1, results.getWritten().size() );
+    assertEquals( Long.valueOf( "1205016603" ), results.getWritten().get( 0 )[1] );
+
+    byte[] input = IOUtils.toByteArray( getFile( "/org/pentaho/di/trans/steps/loadfileinput/files/pentaho_splash.png" ).getContent().getInputStream() );
+    results = executeHexTest( 0, false, input, new ValueMetaBinary( "test" ), false );
+    assertEquals( 1, results.getWritten().size() );
+    assertEquals( Long.valueOf( "1508231614" ), results.getWritten().get( 0 )[1] );
+  }
+
+  @Test
+  public void testHexOutput_crc32_oldChecksumBehaviourMode() throws Exception {
+    MockRowListener results = executeHexTest( 0, false, "xyz", new ValueMetaString( "test" ), true );
+    assertEquals( 1, results.getWritten().size() );
+    assertEquals( Long.valueOf( "3951999591" ), results.getWritten().get( 0 )[1] );
+
+    results = executeHexTest( 0, false, 10.8, new ValueMetaNumber( "test" ), true );
+    assertEquals( 1, results.getWritten().size() );
+    assertEquals( Long.valueOf( "1857885434" ), results.getWritten().get( 0 )[1] );
+
+    results = executeHexTest( 0, false, 10.82, new ValueMetaNumber( "test" ), true );
     assertEquals( 1, results.getWritten().size() );
     assertEquals( Long.valueOf( "1205016603" ), results.getWritten().get( 0 )[1] );
   }
@@ -298,10 +446,28 @@ public class CheckSumTest {
   @Test
   public void testHexOutput_sha256_compatibilityMode() throws Exception {
     try {
-      executeHexTest( 4, true, "xyz", new ValueMetaString( "test" ) );
+      executeHexTest( 4, true, "xyz", new ValueMetaString( "test" ), false );
       fail();
     } catch ( KettleException e ) {
       // expected, SHA-256 is not supported for compatibility mode
+    }
+  }
+
+  @Test
+  public void testHexOutput_sha256_compatibilityMode_oldChecksumBehaviourMode() throws Exception {
+    try {
+      executeHexTest( 4, true, "xyz", new ValueMetaString( "test" ), true );
+      fail();
+    } catch ( KettleException e ) {
+      // expected, SHA-256 is not supported for compatibility mode
+    }
+  }
+
+  private FileObject getFile( final String filepath ) {
+    try {
+      return VFS.getManager().resolveFile( this.getClass().getResource( filepath ) );
+    } catch ( Exception e ) {
+      throw new RuntimeException( "fail. " + e.getMessage(), e );
     }
   }
 }
