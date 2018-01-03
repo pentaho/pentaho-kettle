@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -290,6 +290,11 @@ public class SingleThreaderMeta extends StepWithMappingMeta implements StepMetaI
   public static final synchronized TransMeta loadSingleThreadedTransMeta( SingleThreaderMeta mappingMeta,
     Repository rep, VariableSpace space ) throws KettleException {
     return loadMappingMeta( mappingMeta, rep, null, space );
+  }
+
+  public static final synchronized TransMeta loadSingleThreadedTransMeta( SingleThreaderMeta mappingMeta,
+                                                                          Repository rep, VariableSpace space, boolean passingAllParameters  ) throws KettleException {
+    return loadMappingMeta( mappingMeta, rep, null, space, passingAllParameters );
   }
 
   public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta,

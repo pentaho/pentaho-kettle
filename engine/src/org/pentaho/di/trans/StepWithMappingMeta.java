@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,10 +22,13 @@
 
 package org.pentaho.di.trans;
 
+import org.apache.commons.lang.ArrayUtils;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.ObjectLocationSpecificationMethod;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.LogChannel;
+import org.pentaho.di.core.parameters.NamedParams;
+import org.pentaho.di.core.parameters.UnknownParamException;
 import org.pentaho.di.core.util.CurrentDirectoryResolver;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.variables.VariableSpace;
@@ -39,7 +42,11 @@ import org.pentaho.di.resource.ResourceNamingInterface;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.metastore.api.IMetaStore;
 
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * This class is supposed to use in steps where the mapping to sub transformations takes place
@@ -67,8 +74,10 @@ public abstract class StepWithMappingMeta extends BaseStepMeta {
     TransMeta mappingTransMeta = null;
 
     CurrentDirectoryResolver r = new CurrentDirectoryResolver();
+    // send parentVariables = null we don't need it here for resolving resolveCurrentDirectory.
+    // Otherwise we destroy child variables and the option "Inherit all variables from the transformation" is enabled always.
     VariableSpace tmpSpace =
-      r.resolveCurrentDirectory( executorMeta.getSpecificationMethod(), space, rep, executorMeta.getParentStepMeta(),
+      r.resolveCurrentDirectory( executorMeta.getSpecificationMethod(), null, rep, executorMeta.getParentStepMeta(),
         executorMeta.getFileName() );
 
     switch ( executorMeta.getSpecificationMethod() ) {
@@ -159,16 +168,60 @@ public abstract class StepWithMappingMeta extends BaseStepMeta {
       default:
         break;
     }
+    if ( mappingTransMeta == null ) {  //skip warning
+      return null;
+    }
 
-    // Pass some important information to the mapping transformation metadata:
+    //  When the child parameter does exist in the parent parameters, overwrite the child parameter by the
+    // parent parameter.
+    replaceVariableValues( mappingTransMeta, space );
     if ( share ) {
-      mappingTransMeta.copyVariablesFrom( space );
+      // All other parent parameters need to get copied into the child parameters  (when the 'Inherit all
+      // variables from the transformation?' option is checked)
+      addMissingVariables( mappingTransMeta, space );
     }
     mappingTransMeta.setRepository( rep );
     mappingTransMeta.setMetaStore( metaStore );
     mappingTransMeta.setFilename( mappingTransMeta.getFilename() );
 
     return mappingTransMeta;
+  }
+
+  public static void activateParams( VariableSpace childVariableSpace, NamedParams childNamedParams, VariableSpace parent, String[] listParameters,
+                                     String[] mappingVariables, String[] inputFields ) {
+    Map<String, String> parameters = new HashMap<>();
+    Set<String> subTransParameters = new HashSet<>( Arrays.asList( listParameters ) );
+
+    for ( int i = 0; i < mappingVariables.length; i++ ) {
+      parameters.put( mappingVariables[ i ], parent.environmentSubstitute( inputFields[ i ] ) );
+    }
+
+    for ( String variableName : parent.listVariables() ) {
+      // When the child parameter does exist in the parent parameters, overwrite the child parameter by the
+      // parent parameter.
+      if ( parameters.containsKey( variableName ) ) {
+        parameters.put( variableName, parent.getVariable( variableName ) );
+      } else if ( ArrayUtils.contains( listParameters, variableName ) ) {
+        // there is a definition only in Transformation properties - params tab
+        parameters.put( variableName, parent.getVariable( variableName ) );
+      }
+    }
+
+    for ( Map.Entry<String, String> entry : parameters.entrySet() ) {
+      String key = entry.getKey();
+      String value = Const.NVL( entry.getValue(), "" );
+      if ( subTransParameters.contains( key ) ) {
+        try {
+          childNamedParams.setParameterValue( key, Const.NVL( entry.getValue(), "" ) );
+        } catch ( UnknownParamException e ) {
+          // this is explicitly checked for up front
+        }
+      } else {
+        childVariableSpace.setVariable( key, value );
+      }
+    }
+
+    childNamedParams.activateParameters();
   }
 
   /**
@@ -287,6 +340,30 @@ public abstract class StepWithMappingMeta extends BaseStepMeta {
       return proposedNewFilename;
     } catch ( Exception e ) {
       throw new KettleException( BaseMessages.getString( PKG, "StepWithMappingMeta.Exception.UnableToLoadTrans", fileName ) );
+    }
+  }
+
+  private static  void addMissingVariables( TransMeta source, VariableSpace target ) {
+    if ( target == null ) {
+      return;
+    }
+    String[] variableNames = target.listVariables();
+    for ( String variable : variableNames ) {
+      if ( source.getVariable( variable ) == null ) {
+        source.setVariable( variable, target.getVariable( variable ) );
+      }
+    }
+  }
+
+  private static void replaceVariableValues( TransMeta childTransMeta, VariableSpace replaceBy ) {
+    if ( replaceBy == null ) {
+      return;
+    }
+    String[] variableNames = replaceBy.listVariables();
+    for ( String variableName : variableNames ) {
+      if ( childTransMeta.getVariable( variableName ) != null ) {
+        childTransMeta.setVariable( variableName, replaceBy.getVariable( variableName ) );
+      }
     }
   }
 
