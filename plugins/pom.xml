@@ -9,7 +9,7 @@
   </parent>
   <groupId>pentaho-kettle</groupId>
   <artifactId>plugins</artifactId>
-  <version>7.0.0.5-89</version>
+  <version>7.0.0.5-C221-98</version>
   <packaging>pom</packaging>
   <modules>
     <module>repositories-plugin</module>
