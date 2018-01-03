@@ -351,8 +351,22 @@ public class CsvInput extends BaseStep implements StepInterface {
 
           // evaluate whether there is a need to skip a row
           if ( needToSkipRow() ) {
-            readOneRow( true, true );
+            // PDI-16589 - when reading in parallel, the previous code would introduce additional rows and / or invalid data in the output.
+            // in parallel mode we don't support new lines inside field data so it's safe to fast forward until we find a new line.
+            // when a newline is found we need to check for an additional new line character, while in unix systems it's just a single '\n',
+            // on windows systems, it's a sequence of '\r' and '\n'. finally we set the start of the buffer to the end buffer position.
+            while ( !data.newLineFound() ) {
+              data.moveEndBufferPointer();
+            }
+
+            data.moveEndBufferPointer();
+
+            if ( data.newLineFound() ) {
+              data.moveEndBufferPointer();
+            }
           }
+
+          data.setStartBuffer( data.getEndBuffer() );
         }
       }
 
