@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -505,7 +505,7 @@ public class MultiMergeJoinDialog extends BaseStepDialog implements StepDialogIn
         inputStepName = Const.NVL( inputStepNames[i], "" );
         wInputStepArray[i].setText( inputStepName );
 
-        keyField = Const.NVL( keyFields[i], "" );
+        keyField = Const.NVL( i < keyFields.length ? keyFields[i] : null, "" );
         keyValTextBox[i].setText( keyField );
       }
 
