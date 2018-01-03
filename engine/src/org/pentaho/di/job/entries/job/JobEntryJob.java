@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -63,6 +63,7 @@ import org.pentaho.di.job.entry.JobEntryBase;
 import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.job.entry.validator.AndValidator;
 import org.pentaho.di.job.entry.validator.JobEntryValidatorUtils;
+import org.pentaho.di.repository.HasRepositoryDirectories;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectory;
@@ -88,7 +89,7 @@ import org.w3c.dom.Node;
  * @since 01-10-2003, Rewritten on 18-06-2004
  *
  */
-public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInterface {
+public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInterface, HasRepositoryDirectories {
   private static Class<?> PKG = JobEntryJob.class; // for i18n purposes, needed by Translator2!!
 
   private String filename;
@@ -212,6 +213,16 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
 
   public void setPassingExport( boolean passingExport ) {
     this.passingExport = passingExport;
+  }
+
+  @Override
+  public String[] getDirectories() {
+    return new String[]{ directory };
+  }
+
+  @Override
+  public void setDirectories( String[] directories ) {
+    this.directory = directories[0];
   }
 
   public String getLogFilename() {
@@ -1612,6 +1623,11 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
   @Override
   public Object loadReferencedObject( int index, Repository rep, IMetaStore metaStore, VariableSpace space ) throws KettleException {
     return getJobMeta( rep, metaStore, space );
+  }
+
+  @Override
+  public ObjectLocationSpecificationMethod[] getSpecificationMethods() {
+    return new ObjectLocationSpecificationMethod[]{ specificationMethod };
   }
 
   public boolean isExpandingRemoteJob() {

@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -30,6 +30,7 @@ import org.pentaho.di.core.util.CurrentDirectoryResolver;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.i18n.BaseMessages;
+import org.pentaho.di.repository.HasRepositoryDirectories;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectory;
@@ -47,7 +48,7 @@ import java.util.Map;
  * @since 02-jan-2017
  * @author Yury Bakhmutski
  */
-public abstract class StepWithMappingMeta extends BaseStepMeta {
+public abstract class StepWithMappingMeta extends BaseStepMeta implements HasRepositoryDirectories {
   //default value
   private static Class<?> PKG = StepWithMappingMeta.class;
 
@@ -234,11 +235,26 @@ public abstract class StepWithMappingMeta extends BaseStepMeta {
     return transObjectId;
   }
 
+  @Override
+  public ObjectLocationSpecificationMethod[] getSpecificationMethods() {
+    return new ObjectLocationSpecificationMethod[] { specificationMethod };
+  }
+
   /**
    * @param transObjectId the transObjectId to set
    */
   public void setTransObjectId( ObjectId transObjectId ) {
     this.transObjectId = transObjectId;
+  }
+
+  @Override
+  public String[] getDirectories() {
+    return new String[]{ directoryPath };
+  }
+
+  @Override
+  public void setDirectories( String[] directories ) {
+    this.directoryPath = directories[0];
   }
 
   @Override
