@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -424,6 +424,11 @@ public class MemoryGroupByMeta extends BaseStepMeta implements StepMetaInterface
           }
           v.setOrigin( origin );
           v.setLength( length, precision );
+
+          if ( subj != null ) {
+            v.setConversionMask( subj.getConversionMask() );
+          }
+
           fields.addValueMeta( v );
         }
       }
