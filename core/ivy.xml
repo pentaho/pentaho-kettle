@@ -66,6 +66,8 @@
     <dependency org="org.apache.xmlgraphics" name="batik-parser" rev="${dependency.batik.revision}" transitive="false"/>
     <dependency org="org.apache.xmlgraphics" name="batik-script" rev="${dependency.batik.revision}" transitive="false"/>
     <dependency org="org.apache.xmlgraphics" name="batik-awt-util" rev="${dependency.batik.revision}" transitive="false"/>
+    <dependency org="org.apache.xmlgraphics" name="batik-constants" rev="${dependency.batik.revision}" transitive="false"/>
+    <dependency org="org.apache.xmlgraphics" name="batik-i18n" rev="${dependency.batik.revision}" transitive="false"/>
 
     <dependency org="xml-apis" name="xml-apis-ext" rev="${dependency.xml-apis-ext.revision}" transitive="false"/>
 
