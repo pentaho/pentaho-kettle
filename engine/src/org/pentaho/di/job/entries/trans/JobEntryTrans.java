@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -67,6 +67,7 @@ import org.pentaho.di.job.entry.JobEntryBase;
 import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.job.entry.validator.AndValidator;
 import org.pentaho.di.job.entry.validator.JobEntryValidatorUtils;
+import org.pentaho.di.repository.HasRepositoryDirectories;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectory;
@@ -96,7 +97,7 @@ import org.w3c.dom.Node;
  * @author Matt Casters
  * @since 1-Oct-2003, rewritten on 18-June-2004
  */
-public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryInterface {
+public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryInterface, HasRepositoryDirectories {
   private static Class<?> PKG = JobEntryTrans.class; // for i18n purposes, needed by Translator2!!
 
   private String transname;
@@ -231,6 +232,16 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
 
   public void setDirectory( String directory ) {
     this.directory = directory;
+  }
+
+  @Override
+  public String[] getDirectories() {
+    return new String[]{ directory };
+  }
+
+  @Override
+  public void setDirectories( String[] directories ) {
+    this.directory = directories[0];
   }
 
   public String getLogFilename() {
@@ -1599,6 +1610,11 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
   @Override
   public boolean hasRepositoryReferences() {
     return specificationMethod == ObjectLocationSpecificationMethod.REPOSITORY_BY_REFERENCE;
+  }
+
+  @Override
+  public ObjectLocationSpecificationMethod[] getSpecificationMethods() {
+    return new ObjectLocationSpecificationMethod[] { specificationMethod };
   }
 
   /**
