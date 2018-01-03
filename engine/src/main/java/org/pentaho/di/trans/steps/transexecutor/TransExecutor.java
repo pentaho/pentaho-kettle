@@ -38,6 +38,7 @@ import org.pentaho.di.core.row.RowDataUtil;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.DelegationListener;
+import org.pentaho.di.trans.StepWithMappingMeta;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransExecutionConfiguration;
 import org.pentaho.di.trans.TransMeta;
@@ -255,11 +256,7 @@ public class TransExecutor extends BaseStep implements StepInterface {
     executorTrans.setLogLevel( getLogLevel() );
     executorTrans.setArguments( getTrans().getArguments() );
 
-    if ( meta.getParameters().isInheritingAllVariables() ) {
-      executorTrans.shareVariablesWith( this );
-    }
     executorTrans.setInternalKettleVariables( this );
-    executorTrans.copyParametersFrom( getData().getExecutorTransMeta() );
 
     executorTrans.setPreview( getTrans().isPreview() );
 
@@ -268,43 +265,16 @@ public class TransExecutor extends BaseStep implements StepInterface {
     return executorTrans;
   }
 
-  private void passParametersToTrans() throws KettleException {
+  @VisibleForTesting
+  void passParametersToTrans() throws KettleException {
     // Set parameters, when fields are used take the first row in the set.
     TransExecutorParameters parameters = meta.getParameters();
 
     Trans internalTrans = getData().getExecutorTrans();
 
-    internalTrans.clearParameters();
+    StepWithMappingMeta.activateParams( internalTrans, internalTrans, this, internalTrans.listParameters(),
+      parameters.getVariable(), parameters.getInput() );
 
-    String[] parameterNames = internalTrans.listParameters();
-    for ( int i = 0; i < parameters.getVariable().length; i++ ) {
-      String variable = parameters.getVariable()[ i ];
-      String fieldName = parameters.getField()[ i ];
-      String inputValue = parameters.getInput()[ i ];
-
-      String value;
-      // Take the value from an input row or from a static value?
-      if ( !Utils.isEmpty( fieldName ) ) {
-        int idx = getInputRowMeta().indexOfValue( fieldName );
-        if ( idx < 0 ) {
-          throw new KettleException( BaseMessages.getString(
-            PKG, "TransExecutor.Exception.UnableToFindField", fieldName ) );
-        }
-
-        value = getData().groupBuffer.get( 0 ).getString( idx, "" );
-      } else {
-        value = environmentSubstitute( inputValue );
-      }
-
-      // See if this is a parameter or just a variable...
-      if ( Const.indexOfString( variable, parameterNames ) < 0 ) {
-        internalTrans.setVariable( variable, Const.NVL( value, "" ) );
-      } else {
-        internalTrans.setParameterValue( variable, Const.NVL( value, "" ) );
-      }
-    }
-
-    internalTrans.activateParameters();
   }
 
   @VisibleForTesting
@@ -440,7 +410,7 @@ public class TransExecutor extends BaseStep implements StepInterface {
 
   @VisibleForTesting
   TransMeta loadExecutorTransMeta() throws KettleException {
-    return TransExecutorMeta.loadMappingMeta( meta, meta.getRepository(), meta.getMetaStore(), this );
+    return TransExecutorMeta.loadMappingMeta( meta, meta.getRepository(), meta.getMetaStore(), this, meta.getParameters().isInheritingAllVariables() );
   }
 
   public void dispose( StepMetaInterface smi, StepDataInterface sdi ) {
