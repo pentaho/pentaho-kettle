@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,10 +22,6 @@
 
 package org.pentaho.di.repository;
 
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
 import java.util.Collections;
 
 import org.junit.Before;
@@ -39,13 +35,19 @@ import org.pentaho.di.core.exception.KettleMissingPluginsException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.job.JobMeta;
-import org.pentaho.di.job.entries.trans.JobEntryTrans;
 import org.pentaho.di.job.entry.JobEntryCopy;
+import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.StepMeta;
-import org.pentaho.di.trans.steps.mapping.MappingMeta;
+import org.pentaho.di.trans.step.StepMetaInterface;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.withSettings;
 
 @RunWith( MockitoJUnitRunner.class )
 public class RepositoryImporterTest {
@@ -74,148 +76,147 @@ public class RepositoryImporterTest {
 
   @Test
   public void testImportJob_patchJobEntries_without_variables() throws KettleException {
-    JobEntryTrans jobEntryTrans = createJobEntryTrans( "/userName" );
-    MappingMeta mappingMeta = createMappingMeta();
-    RepositoryImporter importer = createRepositoryImporter( jobEntryTrans, mappingMeta, true );
+    JobEntryInterface jobEntry = createJobEntry( "/userName" );
+    StepMetaInterface stepMeta = createStepMeta( "" );
+    RepositoryImporter importer = createRepositoryImporter( jobEntry, stepMeta, true );
     importer.setBaseDirectory( baseDirectory );
 
     importer.importJob( entityNode, feedback );
-    verify( jobEntryTrans ).setDirectory( ROOT_PATH + USER_NAME_PATH );
+    verify( (HasRepositoryDirectories) jobEntry  ).setDirectories( new String[]{ ROOT_PATH + USER_NAME_PATH } );
   }
 
   @Test
   public void testImportJob_patchJobEntries_with_variable() throws KettleException {
-    JobEntryTrans jobEntryTrans = createJobEntryTrans( "${USER_VARIABLE}" );
-    MappingMeta mappingMeta = createMappingMeta();
-    RepositoryImporter importer = createRepositoryImporter( jobEntryTrans, mappingMeta, true );
+    JobEntryInterface jobEntryInterface = createJobEntry( "${USER_VARIABLE}" );
+    StepMetaInterface stepMeta = createStepMeta( "" );
+    RepositoryImporter importer = createRepositoryImporter( jobEntryInterface, stepMeta, true );
     importer.setBaseDirectory( baseDirectory );
 
     importer.importJob( entityNode, feedback );
-    verify( jobEntryTrans ).setDirectory( "${USER_VARIABLE}" );
+    verify( (HasRepositoryDirectories) jobEntryInterface ).setDirectories( new String[]{ "${USER_VARIABLE}" } );
   }
 
   @Test
   public void testImportJob_patchJobEntries_when_directory_path_starts_with_variable() throws KettleException {
-    JobEntryTrans jobEntryTrans = createJobEntryTrans( "${USER_VARIABLE}/myDir" );
-    MappingMeta mappingMeta = createMappingMeta();
-    RepositoryImporter importer = createRepositoryImporter( jobEntryTrans, mappingMeta, true );
+    JobEntryInterface jobEntryInterface = createJobEntry( "${USER_VARIABLE}/myDir" );
+    StepMetaInterface stepMeta = createStepMeta( "" );
+    RepositoryImporter importer = createRepositoryImporter( jobEntryInterface, stepMeta, true );
     importer.setBaseDirectory( baseDirectory );
 
     importer.importJob( entityNode, feedback );
-    verify( jobEntryTrans ).setDirectory( "${USER_VARIABLE}/myDir" );
+    verify( (HasRepositoryDirectories) jobEntryInterface ).setDirectories( new String[] { "${USER_VARIABLE}/myDir" } );
 
-    JobEntryTrans jobEntryTrans2 = createJobEntryTrans( "${USER_VARIABLE}/myDir" );
+    JobEntryInterface jobEntryInterface2 = createJobEntry( "${USER_VARIABLE}/myDir" );
     RepositoryImporter importerWithCompatibilityImportPath =
-        createRepositoryImporter( jobEntryTrans2, mappingMeta, false );
+        createRepositoryImporter( jobEntryInterface2, stepMeta, false );
     importerWithCompatibilityImportPath.setBaseDirectory( baseDirectory );
 
     importerWithCompatibilityImportPath.importJob( entityNode, feedback );
-    verify( jobEntryTrans2 ).setDirectory( ROOT_PATH + "/${USER_VARIABLE}/myDir" );
+    verify( (HasRepositoryDirectories) jobEntryInterface2 ).setDirectories( new String[]{ ROOT_PATH + "/${USER_VARIABLE}/myDir" } );
   }
 
   @Test
   public void testImportJob_patchJobEntries_when_directory_path_ends_with_variable() throws KettleException {
-    JobEntryTrans jobEntryTrans = createJobEntryTrans( "/myDir/${USER_VARIABLE}" );
-    MappingMeta mappingMeta = createMappingMeta();
-    RepositoryImporter importer = createRepositoryImporter( jobEntryTrans, mappingMeta, true );
+    JobEntryInterface jobEntryInterface = createJobEntry( "/myDir/${USER_VARIABLE}" );
+    StepMetaInterface stepMeta = createStepMeta( "" );
+    RepositoryImporter importer = createRepositoryImporter( jobEntryInterface, stepMeta, true );
     importer.setBaseDirectory( baseDirectory );
 
     importer.importJob( entityNode, feedback );
-    verify( jobEntryTrans ).setDirectory( "/myDir/${USER_VARIABLE}" );
+    verify( (HasRepositoryDirectories) jobEntryInterface ).setDirectories( new String[] { "/myDir/${USER_VARIABLE}" } );
 
-    JobEntryTrans jobEntryTrans2 = createJobEntryTrans( "/myDir/${USER_VARIABLE}" );
+    JobEntryInterface jobEntryInterface2 = createJobEntry( "/myDir/${USER_VARIABLE}" );
     RepositoryImporter importerWithCompatibilityImportPath =
-        createRepositoryImporter( jobEntryTrans2, mappingMeta, false );
+        createRepositoryImporter( jobEntryInterface2, stepMeta, false );
     importerWithCompatibilityImportPath.setBaseDirectory( baseDirectory );
 
     importerWithCompatibilityImportPath.importJob( entityNode, feedback );
-    verify( jobEntryTrans2 ).setDirectory( ROOT_PATH + "/myDir/${USER_VARIABLE}" );
+    verify( (HasRepositoryDirectories) jobEntryInterface2 ).setDirectories( new String[] { ROOT_PATH + "/myDir/${USER_VARIABLE}" } );
   }
 
   @Test
   public void testImportTrans_patchTransEntries_without_variables() throws KettleException {
-    JobEntryTrans jobEntryTrans = createJobEntryTrans();
-    MappingMeta mappingMeta = createMappingMeta( "/userName" );
-    RepositoryImporter importer = createRepositoryImporter( jobEntryTrans, mappingMeta, true );
+    JobEntryInterface jobEntryInterface = createJobEntry( "" );
+    StepMetaInterface stepMeta = createStepMeta( "/userName" );
+    RepositoryImporter importer = createRepositoryImporter( jobEntryInterface, stepMeta, true );
     importer.setBaseDirectory( baseDirectory );
 
     importer.importTransformation( entityNode, feedback );
-    verify( mappingMeta ).setDirectoryPath( ROOT_PATH + USER_NAME_PATH );
+    verify( (HasRepositoryDirectories) stepMeta ).setDirectories( new String[] { ROOT_PATH + USER_NAME_PATH } );
   }
 
   @Test
   public void testImportTrans_patchTransEntries_with_variable() throws KettleException {
-    JobEntryTrans jobEntryTrans = createJobEntryTrans();
-    MappingMeta mappingMeta = createMappingMeta( "${USER_VARIABLE}" );
-    RepositoryImporter importer = createRepositoryImporter( jobEntryTrans, mappingMeta, true );
+    JobEntryInterface jobEntryInterface = createJobEntry( "" );
+    StepMetaInterface stepMeta = createStepMeta(  "${USER_VARIABLE}" );
+    RepositoryImporter importer = createRepositoryImporter( jobEntryInterface, stepMeta, true );
     importer.setBaseDirectory( baseDirectory );
 
     importer.importTransformation( entityNode, feedback );
-    verify( mappingMeta ).setDirectoryPath( "${USER_VARIABLE}" );
+    verify( (HasRepositoryDirectories) stepMeta ).setDirectories( new String[] { "${USER_VARIABLE}" } );
   }
 
   @Test
   public void testImportTrans_patchTransEntries_when_directory_path_starts_with_variable() throws KettleException {
-    JobEntryTrans jobEntryTrans = createJobEntryTrans();
-    MappingMeta mappingMeta = createMappingMeta( "${USER_VARIABLE}/myDir" );
-    RepositoryImporter importer = createRepositoryImporter( jobEntryTrans, mappingMeta, true );
+    JobEntryInterface jobEntryInterface = createJobEntry( "" );
+    StepMetaInterface stepMeta = createStepMeta( "${USER_VARIABLE}/myDir" );
+    RepositoryImporter importer = createRepositoryImporter( jobEntryInterface, stepMeta, true );
     importer.setBaseDirectory( baseDirectory );
 
     importer.importTransformation( entityNode, feedback );
-    verify( mappingMeta ).setDirectoryPath( "${USER_VARIABLE}/myDir" );
+    verify( (HasRepositoryDirectories) stepMeta ).setDirectories( new String[] { "${USER_VARIABLE}/myDir" } );
 
-    MappingMeta mappingMeta2 = createMappingMeta( "${USER_VARIABLE}/myDir" );
+    StepMetaInterface stepMeta2 = createStepMeta( "${USER_VARIABLE}/myDir" );
     RepositoryImporter importerWithCompatibilityImportPath =
-        createRepositoryImporter( jobEntryTrans, mappingMeta2, false );
+        createRepositoryImporter( jobEntryInterface, stepMeta2, false );
     importerWithCompatibilityImportPath.setBaseDirectory( baseDirectory );
 
     importerWithCompatibilityImportPath.importTransformation( entityNode, feedback );
-    verify( mappingMeta2 ).setDirectoryPath( ROOT_PATH + "/${USER_VARIABLE}/myDir" );
+    verify( (HasRepositoryDirectories) stepMeta2 ).setDirectories( new String[] { ROOT_PATH + "/${USER_VARIABLE}/myDir" } );
   }
 
   @Test
   public void testImportTrans_patchTransEntries_when_directory_path_ends_with_variable() throws KettleException {
-    JobEntryTrans jobEntryTrans = createJobEntryTrans();
-    MappingMeta mappingMeta = createMappingMeta( "/myDir/${USER_VARIABLE}" );
-    RepositoryImporter importer = createRepositoryImporter( jobEntryTrans, mappingMeta, true );
+    JobEntryInterface jobEntryInterface = createJobEntry( "" );
+    StepMetaInterface stepMeta = createStepMeta(  "/myDir/${USER_VARIABLE}" );
+    RepositoryImporter importer = createRepositoryImporter( jobEntryInterface, stepMeta, true );
     importer.setBaseDirectory( baseDirectory );
 
     importer.importTransformation( entityNode, feedback );
-    verify( mappingMeta ).setDirectoryPath( "/myDir/${USER_VARIABLE}" );
+    verify( (HasRepositoryDirectories) stepMeta ).setDirectories( new String[] { "/myDir/${USER_VARIABLE}" } );
 
-    MappingMeta mappingMeta2 = createMappingMeta( "/myDir/${USER_VARIABLE}" );
+    StepMetaInterface stepMeta2 = createStepMeta( "/myDir/${USER_VARIABLE}" );
     RepositoryImporter importerWithCompatibilityImportPath =
-        createRepositoryImporter( jobEntryTrans, mappingMeta2, false );
+        createRepositoryImporter( jobEntryInterface, stepMeta2, false );
     importerWithCompatibilityImportPath.setBaseDirectory( baseDirectory );
 
     importerWithCompatibilityImportPath.importTransformation( entityNode, feedback );
-    verify( mappingMeta2 ).setDirectoryPath( ROOT_PATH + "/myDir/${USER_VARIABLE}" );
+    verify( (HasRepositoryDirectories) stepMeta2 ).setDirectories( new String[] { ROOT_PATH + "/myDir/${USER_VARIABLE}" } );
   }
 
-  private static JobEntryTrans createJobEntryTrans() {
-    return createJobEntryTrans( "" );
+  private static JobEntryInterface createJobEntry( String directory ) {
+    JobEntryInterface jobEntryInterface = mock( JobEntryInterface.class, withSettings().extraInterfaces( HasRepositoryDirectories.class ) );
+    when( jobEntryInterface.isReferencedObjectEnabled() ).thenReturn( new boolean[] { true } );
+    doAnswer( invocationOnMock -> new ObjectLocationSpecificationMethod[] { ObjectLocationSpecificationMethod.REPOSITORY_BY_NAME } )
+      .when( ( (HasRepositoryDirectories) jobEntryInterface ) ).getSpecificationMethods();
+    doAnswer( invocationOnMock -> new String[] { directory } )
+      .when( (HasRepositoryDirectories) jobEntryInterface ).getDirectories();
+    return jobEntryInterface;
   }
 
-  private static JobEntryTrans createJobEntryTrans( String directory ) {
-    JobEntryTrans jet = mock( JobEntryTrans.class );
-    when( jet.getSpecificationMethod() ).thenReturn( ObjectLocationSpecificationMethod.REPOSITORY_BY_NAME );
-    when( jet.getDirectory() ).thenReturn( directory );
-    return jet;
+  private static StepMetaInterface createStepMeta( String directory ) {
+    StepMetaInterface stepMetaInterface = mock( StepMetaInterface.class, withSettings().extraInterfaces( HasRepositoryDirectories.class ) );
+    when( stepMetaInterface.isReferencedObjectEnabled() ).thenReturn( new boolean[] { true } );
+    doAnswer( invocationOnMock -> new ObjectLocationSpecificationMethod[] { ObjectLocationSpecificationMethod.REPOSITORY_BY_NAME } )
+      .when( ( (HasRepositoryDirectories) stepMetaInterface ) ).getSpecificationMethods();
+    doAnswer( invocationOnMock -> new String[] { directory } )
+      .when( (HasRepositoryDirectories) stepMetaInterface ).getDirectories();
+    return stepMetaInterface;
   }
 
-  private static MappingMeta createMappingMeta() {
-    return createMappingMeta( "" );
-  }
-
-  private static MappingMeta createMappingMeta( String directory ) {
-    MappingMeta mappingMeta = mock( MappingMeta.class );
-    when( mappingMeta.getSpecificationMethod() ).thenReturn( ObjectLocationSpecificationMethod.REPOSITORY_BY_NAME );
-    when( mappingMeta.getDirectoryPath() ).thenReturn( directory );
-    return mappingMeta;
-  }
-
-  private static RepositoryImporter createRepositoryImporter( final JobEntryTrans jobEntryTrans,
-      final MappingMeta mappingMeta, final boolean needToCheckPathForVariables ) {
+  private static RepositoryImporter createRepositoryImporter( final JobEntryInterface jobEntryInterface, final
+                                                              StepMetaInterface stepMetaInterface,
+                                                              final boolean needToCheckPathForVariables ) {
     Repository repository = mock( Repository.class );
     LogChannelInterface log = mock( LogChannelInterface.class );
     RepositoryImporter importer = new RepositoryImporter( repository, log ) {
@@ -225,7 +226,7 @@ public class RepositoryImporterTest {
         JobMeta meta = mock( JobMeta.class );
         JobEntryCopy jec = mock( JobEntryCopy.class );
         when( jec.isTransformation() ).thenReturn( true );
-        when( jec.getEntry() ).thenReturn( jobEntryTrans );
+        when( jec.getEntry() ).thenReturn( jobEntryInterface );
         when( meta.getJobCopies() ).thenReturn( Collections.singletonList( jec ) );
         return meta;
       }
@@ -235,7 +236,7 @@ public class RepositoryImporterTest {
         TransMeta meta = mock( TransMeta.class );
         StepMeta stepMeta = mock( StepMeta.class );
         when( stepMeta.isMapping() ).thenReturn( true );
-        when( stepMeta.getStepMetaInterface() ).thenReturn( mappingMeta );
+        when( stepMeta.getStepMetaInterface() ).thenReturn( stepMetaInterface );
         when( meta.getSteps() ).thenReturn( Collections.singletonList( stepMeta ) );
         return meta;
       }

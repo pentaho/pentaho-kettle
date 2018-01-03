@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -49,6 +49,7 @@ import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.JobMeta;
+import org.pentaho.di.repository.HasRepositoryDirectories;
 import org.pentaho.di.repository.HasRepositoryInterface;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.Repository;
@@ -88,7 +89,8 @@ import org.w3c.dom.Node;
  *
  */
 
-public class JobExecutorMeta extends BaseStepMeta implements StepMetaInterface, HasRepositoryInterface {
+public class JobExecutorMeta extends BaseStepMeta implements StepMetaInterface, HasRepositoryInterface,
+  HasRepositoryDirectories {
   private static Class<?> PKG = JobExecutorMeta.class; // for i18n purposes, needed by Translator2!!
   private String jobName;
   private String fileName;
@@ -918,6 +920,16 @@ public class JobExecutorMeta extends BaseStepMeta implements StepMetaInterface, 
     this.directoryPath = directoryPath;
   }
 
+  @Override
+  public String[] getDirectories() {
+    return new String[]{ directoryPath };
+  }
+
+  @Override
+  public void setDirectories( String[] directories ) {
+    this.directoryPath = directories[0];
+  }
+
   /**
    * @return the fileName
    */
@@ -970,6 +982,11 @@ public class JobExecutorMeta extends BaseStepMeta implements StepMetaInterface, 
    */
   public ObjectLocationSpecificationMethod getSpecificationMethod() {
     return specificationMethod;
+  }
+
+  @Override
+  public ObjectLocationSpecificationMethod[] getSpecificationMethods() {
+    return new ObjectLocationSpecificationMethod[] { specificationMethod };
   }
 
   /**

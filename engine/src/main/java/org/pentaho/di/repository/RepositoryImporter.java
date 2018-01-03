@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -23,6 +23,7 @@
 package org.pentaho.di.repository;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -46,8 +47,6 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleMissingPluginsException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.exception.LookupReferencesException;
-import org.pentaho.di.core.extension.ExtensionPointHandler;
-import org.pentaho.di.core.extension.KettleExtensionPoint;
 import org.pentaho.di.core.gui.HasOverwritePrompter;
 import org.pentaho.di.core.gui.OverwritePrompter;
 import org.pentaho.di.core.gui.SpoonFactory;
@@ -59,15 +58,14 @@ import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.imp.ImportRules;
 import org.pentaho.di.imp.rule.ImportValidationFeedback;
 import org.pentaho.di.job.JobMeta;
-import org.pentaho.di.job.entries.job.JobEntryJob;
-import org.pentaho.di.job.entries.trans.JobEntryTrans;
 import org.pentaho.di.job.entry.JobEntryCopy;
+import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.partition.PartitionSchema;
 import org.pentaho.di.shared.SharedObjectInterface;
 import org.pentaho.di.shared.SharedObjects;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.StepMeta;
-import org.pentaho.di.trans.steps.mapping.MappingMeta;
+import org.pentaho.di.trans.step.StepMetaInterface;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.xml.sax.SAXParseException;
@@ -577,61 +575,39 @@ public class RepositoryImporter implements IRepositoryImporter, CanLimitDirs {
    * package-local visibility for testing purposes
    */
   void patchTransSteps( TransMeta transMeta ) {
-
-    Object[] metaInjectObjectArray = new Object[4];
-
-    metaInjectObjectArray[0] = transDirOverride;
-    metaInjectObjectArray[1] = baseDirectory;
-    metaInjectObjectArray[3] = needToCheckPathForVariables;
-
     for ( StepMeta stepMeta : transMeta.getSteps() ) {
-      if ( stepMeta.isMapping() ) {
-        MappingMeta mappingMeta = (MappingMeta) stepMeta.getStepMetaInterface();
-        if ( mappingMeta.getSpecificationMethod() == ObjectLocationSpecificationMethod.REPOSITORY_BY_NAME ) {
-          if ( transDirOverride != null ) {
-            mappingMeta.setDirectoryPath( transDirOverride );
-            continue;
-          }
-          String mappingMetaPath = resolvePath( baseDirectory.getPath(), mappingMeta.getDirectoryPath() );
-          mappingMeta.setDirectoryPath( mappingMetaPath );
-        }
-      }
-
-      metaInjectObjectArray[2] = stepMeta;
-
-      try {
-        ExtensionPointHandler
-          .callExtensionPoint( log, KettleExtensionPoint.RepositoryImporterPatchTransStep.id, metaInjectObjectArray );
-      } catch ( KettleException ke ) {
-        log.logError( ke.getMessage(), ke );
+      StepMetaInterface stepMetaInterface = stepMeta.getStepMetaInterface();
+      if ( stepMetaInterface instanceof HasRepositoryDirectories ) {
+        patchRepositoryDirectories( stepMetaInterface.isReferencedObjectEnabled(), (HasRepositoryDirectories) stepMetaInterface  );
       }
     }
   }
 
   private void patchJobEntries( JobMeta jobMeta ) {
     for ( JobEntryCopy copy : jobMeta.getJobCopies() ) {
-      if ( copy.isTransformation() ) {
-        JobEntryTrans entry = (JobEntryTrans) copy.getEntry();
-        if ( entry.getSpecificationMethod() == ObjectLocationSpecificationMethod.REPOSITORY_BY_NAME ) {
-          if ( transDirOverride != null ) {
-            entry.setDirectory( transDirOverride );
-            continue;
+      JobEntryInterface jobEntryInterface = copy.getEntry();
+      if ( jobEntryInterface instanceof HasRepositoryDirectories ) {
+        patchRepositoryDirectories( jobEntryInterface.isReferencedObjectEnabled(), (HasRepositoryDirectories) jobEntryInterface  );
+      }
+    } }
+
+  private void patchRepositoryDirectories( boolean[] referenceEnabled, HasRepositoryDirectories metaWithReferences ) {
+    String[] repDirectories = metaWithReferences.getDirectories();
+    if ( referenceEnabled != null && repDirectories != null ) {
+      ObjectLocationSpecificationMethod[] specificationMethods = metaWithReferences.getSpecificationMethods();
+      String[] resolvedDirectories = Arrays.copyOf( repDirectories, repDirectories.length );
+      for ( int i = 0; i < referenceEnabled.length; i++ ) {
+        if ( referenceEnabled[ i ] ) {
+          if ( specificationMethods[ i ] == ObjectLocationSpecificationMethod.REPOSITORY_BY_NAME ) {
+            if ( transDirOverride != null ) {
+              resolvedDirectories[ i ] = transDirOverride;
+            } else {
+              resolvedDirectories[ i ] = resolvePath( baseDirectory.getPath(), repDirectories[ i ] );
+            }
           }
-          String entryPath = resolvePath( baseDirectory.getPath(), entry.getDirectory() );
-          entry.setDirectory( entryPath );
         }
       }
-      if ( copy.isJob() ) {
-        JobEntryJob entry = (JobEntryJob) copy.getEntry();
-        if ( entry.getSpecificationMethod() == ObjectLocationSpecificationMethod.REPOSITORY_BY_NAME ) {
-          if ( jobDirOverride != null ) {
-            entry.setDirectory( jobDirOverride );
-            continue;
-          }
-          String entryPath = resolvePath( baseDirectory.getPath(), entry.getDirectory() );
-          entry.setDirectory( entryPath );
-        }
-      }
+      metaWithReferences.setDirectories( resolvedDirectories );
     }
   }
 
