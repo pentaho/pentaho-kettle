@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -67,6 +67,7 @@ import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.httpclient.methods.RequestEntity;
 import org.pentaho.di.cluster.SlaveConnectionManager;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.encryption.Encr;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
@@ -417,8 +418,8 @@ public class WebService extends BaseStep implements StepInterface {
     cachedMeta = meta;
 
     try {
-      cachedWsdl = new Wsdl( new java.net.URI( data.realUrl ),
-              null, null, meta.getHttpLogin(), meta.getHttpPassword() );
+      cachedWsdl = new Wsdl( new java.net.URI( data.realUrl ), null, null, environmentSubstitute( meta.getHttpLogin() ),
+        Encr.decryptPasswordOptionallyEncrypted( environmentSubstitute( meta.getHttpPassword() ) ) );
     } catch ( Exception e ) {
       throw new KettleStepException( BaseMessages.getString( PKG, "WebServices.ERROR0013.ExceptionLoadingWSDL" ), e );
     }
@@ -477,7 +478,7 @@ public class WebService extends BaseStep implements StepInterface {
     if ( httpLogin != null && !"".equals( httpLogin ) ) {
       vHttpClient.getParams().setAuthenticationPreemptive( true );
       Credentials defaultcreds =
-          new UsernamePasswordCredentials( httpLogin, environmentSubstitute( meta.getHttpPassword() ) );
+          new UsernamePasswordCredentials( httpLogin, Encr.decryptPasswordOptionallyEncrypted( environmentSubstitute( meta.getHttpPassword() ) ) );
       vHttpClient.getState().setCredentials( AuthScope.ANY, defaultcreds );
     }
 
