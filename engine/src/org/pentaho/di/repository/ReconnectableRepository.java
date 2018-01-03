@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -30,7 +30,7 @@ import org.pentaho.di.core.exception.KettleSecurityException;
  *
  */
 public interface ReconnectableRepository extends Repository {
-  
+
   /**
    * Connect to the repository. This repository type allows to connect more than once to the same repository
    * object.

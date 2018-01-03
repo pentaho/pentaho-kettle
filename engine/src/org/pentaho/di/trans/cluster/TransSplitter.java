@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -490,10 +490,10 @@ public class TransSplitter {
 
       for ( int r = 0; r < referenceSteps.length; r++ ) {
         StepMeta referenceStep = referenceSteps[r];
-
-        int nrPreviousSteps = originalTransformation.findNrPrevSteps( referenceStep );
+        List<StepMeta> prevSteps = originalTransformation.findPreviousSteps( referenceStep );
+        int nrPreviousSteps = prevSteps.size();
         for ( int p = 0; p < nrPreviousSteps; p++ ) {
-          StepMeta previousStep = originalTransformation.findPrevStep( referenceStep, p );
+          StepMeta previousStep = prevSteps.get( p );
 
           if ( !referenceStep.isClustered() ) {
             if ( !previousStep.isClustered() ) {
@@ -1413,7 +1413,7 @@ public class TransSplitter {
    *
    * @param slaveServer
    *          the slave server
-   * @param referenceStep
+   * @param step
    *          the reference step
    * @return the number of step copies that we run.
    */
