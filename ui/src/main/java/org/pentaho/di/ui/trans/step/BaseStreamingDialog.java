@@ -298,6 +298,9 @@ public abstract class BaseStreamingDialog extends BaseStepDialog implements Step
 
     wTabFolder.setSelection( 0 );
 
+    wStepname.selectAll();
+    wStepname.setFocus();
+
     shell.open();
     while ( !shell.isDisposed() ) {
       if ( !display.readAndDispatch() ) {
