@@ -35,6 +35,9 @@ import java.util.concurrent.Callable;
 
 import com.google.common.annotations.VisibleForTesting;
 import org.apache.commons.lang.BooleanUtils;
+import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Shell;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.i18n.BaseMessages;
@@ -115,6 +118,8 @@ public class BrowseController extends AbstractXulEventHandler implements IUISupp
   protected XulConfirmBox confirmBox;
 
   private Shell shell;
+
+  private static final int DIALOG_WIDTH = 357, DIALOG_HEIGHT = 165, DIALOG_COLOR = SWT.COLOR_WHITE;
 
   /**
    * Allows for lookup of a UIRepositoryDirectory by ObjectId. This allows the reuse of instances that are inside a UI
@@ -369,33 +374,44 @@ public class BrowseController extends AbstractXulEventHandler implements IUISupp
   }
 
   protected void confirm( String title, String message, final Callable<Void> onAccept ) throws XulException {
-    confirmBox = (XulConfirmBox) document.createElement( "confirmbox" );
-    confirmBox.setTitle( BaseMessages.getString( PKG, title ) );
-    confirmBox.setMessage( BaseMessages.getString( PKG, message ) );
-    confirmBox.setAcceptLabel( BaseMessages.getString( PKG, "Dialog.Ok" ) );
-    confirmBox.setCancelLabel( BaseMessages.getString( PKG, "Dialog.Cancel" ) );
-    confirmBox.addDialogCallback( new XulDialogCallback<Object>() {
+    String yes = BaseMessages.getString( PKG, "Dialog.YesDelete" );
+    String no = BaseMessages.getString( PKG, "Dialog.No" );
+    try {
+      confirmDialog( onAccept, BaseMessages.getString( PKG, title ), BaseMessages.getString( PKG, message ), yes, no );
+    } catch ( Exception e ) {
+      throw new XulException( e );
+    }
+  }
 
-      public void onClose( XulComponent sender, Status returnCode, Object retVal ) {
-        if ( returnCode == Status.ACCEPT ) {
-          try {
-            onAccept.call();
-          } catch ( Exception e ) {
-            if ( mainController == null || !mainController.handleLostRepository( e ) ) {
-              messageBox.setTitle( BaseMessages.getString( PKG, "Dialog.Error" ) );
-              messageBox.setAcceptLabel( BaseMessages.getString( PKG, "Dialog.Ok" ) );
-              messageBox.setMessage( BaseMessages.getString( PKG, e.getLocalizedMessage() ) );
-              messageBox.open();
-            }
-          }
+  protected void confirmDialog( Callable<Void> callback, String title, String msg, String yes, String no )
+    throws Exception {
+    MessageDialog confirmDialog =
+      new MessageDialog( getShell(), title, null, msg, MessageDialog.NONE, new String[] { yes, no }, 0 ) {
+        @Override
+        protected Point getInitialSize() {
+          return new Point( DIALOG_WIDTH, DIALOG_HEIGHT );
+        }
+
+        @Override
+        protected void configureShell( Shell shell ) {
+          super.configureShell( shell );
+          shell.setBackground( shell.getDisplay().getSystemColor( DIALOG_COLOR ) );
+          shell.setBackgroundMode( SWT.INHERIT_FORCE );
+        }
+      };
+    int result = confirmDialog.open();
+    if ( result == 0 ) {
+      try {
+        callback.call();
+      } catch ( Exception e ) {
+        if ( mainController == null || !mainController.handleLostRepository( e ) ) {
+          messageBox.setTitle( BaseMessages.getString( PKG, "Dialog.Error" ) );
+          messageBox.setAcceptLabel( BaseMessages.getString( PKG, "Dialog.Ok" ) );
+          messageBox.setMessage( BaseMessages.getString( PKG, e.getLocalizedMessage() ) );
+          messageBox.open();
         }
       }
-
-      public void onError( XulComponent sender, Throwable t ) {
-        throw new RuntimeException( t );
-      }
-    } );
-    confirmBox.open();
+    }
   }
 
   public void deleteContent() throws Exception {
@@ -745,17 +761,6 @@ public class BrowseController extends AbstractXulEventHandler implements IUISupp
     for ( UIRepositoryObject o : objects ) {
       o.move( targetDirectory );
     }
-  }
-
-  private void messageBox( String message ) {
-    messageBox( "Dialog.Error", "Dialog.Ok", message );
-  }
-
-  private void messageBox( String title, String acceptLabel, String message ) {
-    messageBox.setTitle( BaseMessages.getString( PKG, title ) );
-    messageBox.setAcceptLabel( BaseMessages.getString( PKG, acceptLabel ) );
-    messageBox.setMessage( message );
-    messageBox.open();
   }
 
   public void onDoubleClick( Object[] selectedItems ) {
