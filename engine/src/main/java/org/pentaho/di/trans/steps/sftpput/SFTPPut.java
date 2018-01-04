@@ -169,7 +169,7 @@ public class SFTPPut extends BaseStep implements StepInterface {
 
       if ( meta.isInputStream() ) {
         // Source data is a stream
-        inputStream = new ByteArrayInputStream( sourceData.getBytes() );
+        inputStream = new ByteArrayInputStream( getInputRowMeta().getBinary( r, data.indexOfSourceFileFieldName ) );
 
         if ( data.indexOfRemoteFilename == -1 ) {
           // for the case when put data is transferred via input field
