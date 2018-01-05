@@ -197,9 +197,7 @@ public class GetTransImageServlet extends BaseHttpServlet implements CartePlugin
     transPainter.setMagnification( magnification );
     transPainter.buildTransformationImage();
 
-    BufferedImage image = (BufferedImage) gc.getImage();
-
-    return image;
+    return (BufferedImage) gc.getImage();
   }
 
   public String toString() {

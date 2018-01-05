@@ -57,9 +57,8 @@ import org.w3c.dom.Node;
  * @author matt
  * @version 4
  */
-@Step( id = "AutoDoc", image = "autodoc.svg", i18nPackageName = "org.pentaho.di.trans.steps.autodoc",
+@Step( id = "AutoDoc", i18nPackageName = "org.pentaho.di.trans.steps.autodoc",
   name = "AutoDoc.Name", description = "AutoDoc.Description",
-  documentationUrl = "http://wiki.pentaho.com/display/EAI/Automatic+Documentation+Output",
   categoryDescription = "i18n:org.pentaho.di.trans.step:BaseStep.Category.Output" )
 public class AutoDocMeta extends BaseStepMeta implements StepMetaInterface, AutoDocOptionsInterface {
   private static Class<?> PKG = AutoDocMeta.class; // for i18n purposes, needed by Translator2!!

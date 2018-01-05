@@ -49,6 +49,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.annotations.StepDialog;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowMetaInterface;
@@ -57,7 +58,6 @@ import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDialogInterface;
 import org.pentaho.di.trans.step.StepMeta;
-import org.pentaho.di.trans.steps.analyticquery.AnalyticQuery;
 import org.pentaho.di.trans.steps.analyticquery.AnalyticQueryMeta;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.gui.GUIResource;
@@ -65,8 +65,10 @@ import org.pentaho.di.ui.core.widget.ColumnInfo;
 import org.pentaho.di.ui.core.widget.TableView;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
+@StepDialog( id = "AnalyticQuery", image = "AQI.svg",
+  documentationUrl = "http://wiki.pentaho.com/display/EAI/Analytic+Query" )
 public class AnalyticQueryDialog extends BaseStepDialog implements StepDialogInterface {
-  private static Class<?> PKG = AnalyticQuery.class; // for i18n purposes, needed by Translator2!!
+  private static Class<?> PKG = AnalyticQueryDialog.class; // for i18n purposes, needed by Translator2!!
 
   public static final String STRING_SORT_WARNING_PARAMETER = "AnalyticQuerySortWarning";
   private Label wlGroup;

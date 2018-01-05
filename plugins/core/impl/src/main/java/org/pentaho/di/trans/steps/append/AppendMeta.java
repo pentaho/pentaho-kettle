@@ -60,9 +60,8 @@ import org.w3c.dom.Node;
  * @author Sven Boden
  * @since 3-june-2007
  */
-@Step( id = "Append", image = "APP.svg", i18nPackageName = "org.pentaho.di.trans.steps.append",
+@Step( id = "Append", i18nPackageName = "org.pentaho.di.trans.steps.append",
   name = "Append.Name", description = "Append.Description",
-  documentationUrl = "http://wiki.pentaho.com/display/EAI/Append+streams",
   categoryDescription = "i18n:org.pentaho.di.trans.step:BaseStep.Category.Flow" )
 @InjectionSupported( localizationPrefix = "AppendMeta.Injection." )
 public class AppendMeta extends BaseStepMeta implements StepMetaInterface {

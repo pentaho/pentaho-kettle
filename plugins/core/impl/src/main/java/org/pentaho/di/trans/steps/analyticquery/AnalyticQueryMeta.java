@@ -59,9 +59,8 @@ import org.w3c.dom.Node;
  * @author ngoodman
  * @since 27-jan-2009
  */
-@Step( id = "AnalyticQuery", image = "AQI.svg", i18nPackageName = "org.pentaho.di.trans.steps.analyticquery",
+@Step( id = "AnalyticQuery", i18nPackageName = "org.pentaho.di.trans.steps.analyticquery",
   name = "AnalyticQuery.Name", description = "AnalyticQuery.Description",
-  documentationUrl = "http://wiki.pentaho.com/display/EAI/Analytic+Query",
   categoryDescription = "i18n:org.pentaho.di.trans.step:BaseStep.Category.Statistics" )
 @InjectionSupported( localizationPrefix = "AnalyticQuery.Injection." )
 public class AnalyticQueryMeta extends BaseStepMeta implements StepMetaInterface {

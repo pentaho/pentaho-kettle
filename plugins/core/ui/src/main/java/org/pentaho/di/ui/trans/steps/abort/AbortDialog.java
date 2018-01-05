@@ -40,20 +40,22 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
+import org.pentaho.di.core.annotations.StepDialog;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDialogInterface;
-import org.pentaho.di.trans.steps.abort.Abort;
 import org.pentaho.di.trans.steps.abort.AbortMeta;
 import org.pentaho.di.ui.core.ConstUI;
 import org.pentaho.di.ui.core.widget.TextVar;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 import org.pentaho.di.ui.util.SwtSvgImageUtil;
 
+@StepDialog( id = "Abort", image = "ABR.svg",
+  documentationUrl = "Products/Data_Integration/Transformation_Step_Reference/Abort" )
 public class AbortDialog extends BaseStepDialog implements StepDialogInterface {
-  private static Class<?> PKG = Abort.class; // for i18n purposes, needed by Translator2!!
+  private static Class<?> PKG = AbortDialog.class; // for i18n purposes, needed by Translator2!!
 
   private Label wlRowThreshold;
   private TextVar wRowThreshold;
