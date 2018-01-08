@@ -56,13 +56,13 @@ public abstract class BaseStreamStepMeta extends StepWithMappingMeta implements 
   public static final String NUM_MESSAGES = "NUM_MESSAGES";
   public static final String DURATION = "DURATION";
   @Injection ( name = TRANSFORMATION_PATH )  // pull this stuff up to common
-  protected String transformationPath;
+  protected String transformationPath = "";
 
   @Injection ( name = NUM_MESSAGES )
-  protected String batchSize;
+  protected String batchSize = "1000";
 
   @Injection ( name = DURATION )
-  protected String batchDuration;
+  protected String batchDuration = "1000";
 
   @Override public String getXML() {
     BeanInjectionInfo info = new BeanInjectionInfo( this.getClass() );

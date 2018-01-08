@@ -146,4 +146,17 @@ public class BaseStreamStepMetaTest {
         + "<TRANSFORMATION_PATH>aPath</TRANSFORMATION_PATH>" + Const.CR,
       xml );
   }
+
+  @Test
+  public void testSaveDefaultEmptyConnection() {
+    StuffStreamMeta meta = new StuffStreamMeta();
+    String xml = meta.getXML();
+    assertEquals(
+      "<NUM_MESSAGES>1000</NUM_MESSAGES>" + Const.CR
+        + "<DURATION>1000</DURATION>" + Const.CR
+        + "<stuff>one</stuff>" + Const.CR
+        + "<stuff>two</stuff>" + Const.CR
+        + "<TRANSFORMATION_PATH/>" + Const.CR,
+      xml );
+  }
 }
