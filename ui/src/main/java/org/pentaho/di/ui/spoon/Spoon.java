@@ -5778,8 +5778,8 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
         if ( f.exists() ) {
           MessageBox mb = new MessageBox( shell, SWT.NO | SWT.YES | SWT.ICON_WARNING );
           // "This file already exists.  Do you want to overwrite it?"
-          mb.setMessage( BaseMessages.getString( PKG, "Spoon.Dialog.PromptOverwriteFile.Message",
-            meta.getFileType(), Const.createName( filename ) ) );
+          mb.setMessage( BaseMessages.getString( PKG, "Spoon.Dialog.PromptOverwriteFile." + meta.getFileType()
+            + ".Message", Const.createName( filename ) ) );
           // "This file already exists!"
           mb.setText( BaseMessages.getString( PKG, "Spoon.Dialog.PromptOverwriteFile.Title" ) );
           id = mb.open();
@@ -5876,8 +5876,8 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
         if ( f.exists() ) {
           MessageBox mb = new MessageBox( shell, SWT.NO | SWT.YES | SWT.ICON_WARNING );
           // "This file already exists.  Do you want to overwrite it?"
-          mb.setMessage( BaseMessages.getString( PKG, "Spoon.Dialog.PromptOverwriteFile.Message",
-            meta.getFileType(), Const.createName( filename ) ) );
+          mb.setMessage( BaseMessages.getString( PKG, "Spoon.Dialog.PromptOverwriteFile." + meta.getFileType()
+            + ".Message", Const.createName( filename ) ) );
           mb.setText( BaseMessages.getString( PKG, "Spoon.Dialog.PromptOverwriteFile.Title" ) );
           id = mb.open();
         }
