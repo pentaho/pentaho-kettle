@@ -3,7 +3,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -1564,7 +1564,26 @@ public class JobMeta extends AbstractMeta
    */
   public boolean hasLoop( JobEntryCopy entry ) {
     clearLoopCache();
-    return hasLoop( entry, null, true ) || hasLoop( entry, null, false );
+    return hasLoop( entry, null );
+  }
+
+  /**
+   * @deprecated use {@link #hasLoop(JobEntryCopy, JobEntryCopy)}}
+   */
+  @Deprecated
+  public boolean hasLoop( JobEntryCopy entry, JobEntryCopy lookup, boolean info ) {
+    return hasLoop( entry, lookup );
+  }
+  /**
+   * Checks for loop.
+   *
+   * @param entry  the entry
+   * @param lookup the lookup
+   * @return true, if successful
+   */
+
+  public boolean hasLoop( JobEntryCopy entry, JobEntryCopy lookup ) {
+    return hasLoop( entry, lookup, new HashSet<JobEntryCopy>() );
   }
 
   /**
@@ -1574,36 +1593,31 @@ public class JobMeta extends AbstractMeta
    * @param lookup the lookup
    * @return true, if successful
    */
-  public boolean hasLoop( JobEntryCopy entry, JobEntryCopy lookup, boolean info ) {
+  private boolean hasLoop( JobEntryCopy entry, JobEntryCopy lookup, HashSet<JobEntryCopy> checkedEntries ) {
     String cacheKey =
-        entry.getName() + " - " + ( lookup != null ? lookup.getName() : "" ) + " - " + ( info ? "true" : "false" );
+        entry.getName() + " - " + ( lookup != null ? lookup.getName() : "" );
 
-    Boolean loop = loopCache.get( cacheKey );
-    if ( loop != null ) {
-      return loop.booleanValue();
+    Boolean hasLoop = loopCache.get( cacheKey );
+
+    if ( hasLoop != null ) {
+      return hasLoop;
     }
 
-    boolean hasLoop = false;
+    hasLoop = false;
 
-    int nr = findNrPrevJobEntries( entry, info );
-    for ( int i = 0; i < nr && !hasLoop; i++ ) {
-      JobEntryCopy prevJobMeta = findPrevJobEntry( entry, i, info );
-      if ( prevJobMeta != null ) {
-        if ( prevJobMeta.equals( entry ) ) {
-          hasLoop = true;
-          break; // no need to check more but caching this one below
-        } else if ( prevJobMeta.equals( lookup ) ) {
-          hasLoop = true;
-          break; // no need to check more but caching this one below
-        } else if ( hasLoop( prevJobMeta, lookup == null ? entry : lookup, info ) ) {
-          hasLoop = true;
-          break; // no need to check more but caching this one below
-        }
+    checkedEntries.add( entry );
+
+    int nr = findNrPrevJobEntries( entry );
+    for ( int i = 0; i < nr; i++ ) {
+      JobEntryCopy prevJobMeta = findPrevJobEntry( entry, i );
+      if ( prevJobMeta != null && ( prevJobMeta.equals( lookup )
+              || ( !checkedEntries.contains( prevJobMeta ) && hasLoop( prevJobMeta, lookup == null ? entry : lookup, checkedEntries ) ) ) ) {
+        hasLoop = true;
+        break;
       }
     }
-    // Store in the cache...
-    //
-    loopCache.put( cacheKey, Boolean.valueOf( hasLoop ) );
+
+    loopCache.put( cacheKey, hasLoop );
     return hasLoop;
   }
 
