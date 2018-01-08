@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,6 +22,8 @@
 
 package org.pentaho.di.concurrency;
 
+import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.trans.Trans;
@@ -33,76 +35,134 @@ import org.pentaho.di.trans.step.StepPartitioningMeta;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public class BaseStepConcurrencyTest {
-    private static final String STEP_META = "StepMeta";
+  private static final String STEP_META = "StepMeta";
 
-    private BaseStep baseStep;
+  private BaseStep baseStep;
 
-    /**
-     * Row listeners collection modifiers are exposed out of BaseStep class,
-     * whereas the collection traversal is happening on every row being processed.
-     *
-     * We should be sure that modification of the collection will not throw a concurrent modification exception.
-     */
-    @Test
-    public void testRowListeners() throws Exception {
-        int modifiersAmount = 100;
-        int traversersAmount = 100;
+  @Before public void setup() throws Exception {
+    StepMeta stepMeta = mock( StepMeta.class );
+    TransMeta transMeta = mock( TransMeta.class );
+    when( stepMeta.getName() ).thenReturn( STEP_META );
+    when( transMeta.findStep( STEP_META ) ).thenReturn( stepMeta );
+    when( stepMeta.getTargetStepPartitioningMeta() ).thenReturn( mock( StepPartitioningMeta.class ) );
 
-        StepMeta stepMeta = mock( StepMeta.class);
-        TransMeta transMeta = mock( TransMeta.class);
-        when( stepMeta.getName() ).thenReturn( STEP_META );
-        when( transMeta.findStep( STEP_META ) ).thenReturn( stepMeta );
-        when( stepMeta.getTargetStepPartitioningMeta() ).thenReturn( mock( StepPartitioningMeta.class ) );
+    baseStep = new BaseStep( stepMeta, null, 0, transMeta, mock( Trans.class ) );
+  }
 
-        baseStep = new BaseStep( stepMeta, null, 0, transMeta, mock( Trans.class ) );
+  /**
+   * Row listeners collection modifiers are exposed out of BaseStep class,
+   * whereas the collection traversal is happening on every row being processed.
+   * <p>
+   * We should be sure that modification of the collection will not throw a concurrent modification exception.
+   */
+  @Test public void testRowListeners() throws Exception {
+    int modifiersAmount = 100;
+    int traversersAmount = 100;
 
-        AtomicBoolean condition = new AtomicBoolean( true );
+    AtomicBoolean condition = new AtomicBoolean( true );
 
-        List<Modifier> modifiers = new ArrayList<>();
-        for ( int i = 0; i < modifiersAmount; i++ ) {
-            modifiers.add( new Modifier( condition ) );
-        }
-        List<Traverser> traversers = new ArrayList<>();
-        for ( int i = 0; i < traversersAmount; i++ ) {
-            traversers.add( new Traverser( condition ) );
-        }
-
-        ConcurrencyTestRunner<?, ?> runner =
-                new ConcurrencyTestRunner<Object, Object>( modifiers, traversers, condition );
-        runner.runConcurrentTest();
-
-        runner.checkNoExceptionRaised();
+    List<Modifier> modifiers = new ArrayList<>();
+    for ( int i = 0; i < modifiersAmount; i++ ) {
+      modifiers.add( new Modifier( condition ) );
+    }
+    List<Traverser> traversers = new ArrayList<>();
+    for ( int i = 0; i < traversersAmount; i++ ) {
+      traversers.add( new Traverser( condition ) );
     }
 
-    private class Modifier extends StopOnErrorCallable<BaseStep> {
-        Modifier( AtomicBoolean condition ) {
-            super( condition );
-        }
+    ConcurrencyTestRunner<?, ?> runner = new ConcurrencyTestRunner<Object, Object>( modifiers, traversers, condition );
+    runner.runConcurrentTest();
 
-        @Override
-        BaseStep doCall() throws Exception {
-            baseStep.addRowListener( mock( RowListener.class ) );
-            return null;
-        }
+    runner.checkNoExceptionRaised();
+  }
+
+  private class Modifier extends StopOnErrorCallable<BaseStep> {
+    Modifier( AtomicBoolean condition ) {
+      super( condition );
     }
 
-    private class Traverser extends StopOnErrorCallable<BaseStep> {
-        Traverser( AtomicBoolean condition ) {
-            super( condition );
-        }
-
-        @Override
-        BaseStep doCall() throws Exception {
-            for ( RowListener rowListener : baseStep.getRowListeners() ) {
-                rowListener.rowWrittenEvent( mock( RowMetaInterface.class ), new Object[]{} );
-            }
-            return null;
-        }
+    @Override BaseStep doCall() throws Exception {
+      baseStep.addRowListener( mock( RowListener.class ) );
+      return null;
     }
+  }
+
+  @Test public void testAtomicStatistics() throws Exception {
+    int modifiersAmount = 100;
+    int readerAmount = 100;
+    AtomicBoolean condition = new AtomicBoolean( true );
+    List<StatusCounterModify> modifiers = new ArrayList( modifiersAmount );
+    List<StatusCounterReader> readers = new ArrayList( readerAmount );
+    for ( int i = 0; i < modifiersAmount; i++ ) {
+      modifiers.add( new StatusCounterModify( condition ) );
+    }
+    for ( int i = 0; i < readerAmount; i++ ) {
+      readers.add( new StatusCounterReader( condition ) );
+    }
+
+    ConcurrencyTestRunner<?, ?> runner = new ConcurrencyTestRunner<Object, Object>( modifiers, readers, condition );
+    runner.runConcurrentTest();
+    runner.checkNoExceptionRaised();
+
+    // Lines read should be ( 100 x 100 ) or 10,000
+    Assert.assertEquals( 10000, baseStep.getLinesRead() );
+    Assert.assertEquals( 10000, baseStep.getLinesOutput() );
+  }
+
+  private class Traverser extends StopOnErrorCallable<BaseStep> {
+    Traverser( AtomicBoolean condition ) {
+      super( condition );
+    }
+
+    @Override BaseStep doCall() throws Exception {
+      for ( RowListener rowListener : baseStep.getRowListeners() ) {
+        rowListener.rowWrittenEvent( mock( RowMetaInterface.class ), new Object[] {} );
+      }
+      return null;
+    }
+  }
+
+  private class StatusCounterModify extends StopOnErrorCallable<BaseStep> {
+    StatusCounterModify( AtomicBoolean condition ) {
+      super( condition );
+    }
+
+    @Override BaseStep doCall() throws Exception {
+      int cycles = 0;
+      Random rand = new Random();
+      while ( ( cycles < 100 ) && ( condition.get() ) ) {
+        cycles++;
+        baseStep.incrementLinesRead();
+        baseStep.incrementLinesOutput();
+        Thread.sleep( rand.nextInt( 200 ) );
+      }
+      return null;
+    }
+  }
+
+  private class StatusCounterReader extends StopOnErrorCallable<BaseStep> {
+    StatusCounterReader( AtomicBoolean condition ) {
+      super( condition );
+    }
+
+    @Override BaseStep doCall() throws Exception {
+      int cycles = 0;
+      Random rand = new Random();
+      while ( ( cycles < 100 ) && ( condition.get() ) ) {
+        cycles++;
+        baseStep.getLinesRead();
+        baseStep.getLinesOutput();
+        Thread.sleep( rand.nextInt( 200 ) );
+      }
+      return null;
+    }
+  }
+
 }

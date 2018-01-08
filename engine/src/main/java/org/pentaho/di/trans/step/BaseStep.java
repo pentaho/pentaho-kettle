@@ -3,7 +3,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -23,31 +23,10 @@
 
 package org.pentaho.di.trans.step;
 
-import java.io.Closeable;
-import java.io.IOException;
-import java.net.ServerSocket;
-import java.text.DecimalFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Hashtable;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
-
 import com.google.common.base.Preconditions;
-
 import org.apache.commons.lang.StringUtils;
 import org.pentaho.di.core.BlockingRowSet;
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.ExtensionDataInterface;
 import org.pentaho.di.core.ResultFile;
 import org.pentaho.di.core.RowMetaAndData;
@@ -68,6 +47,7 @@ import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.row.value.ValueMetaDate;
 import org.pentaho.di.core.row.value.ValueMetaNumber;
 import org.pentaho.di.core.row.value.ValueMetaString;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.i18n.BaseMessages;
@@ -87,6 +67,26 @@ import org.pentaho.di.trans.steps.mappinginput.MappingInput;
 import org.pentaho.di.trans.steps.mappingoutput.MappingOutput;
 import org.pentaho.di.www.SocketRepository;
 import org.pentaho.metastore.api.IMetaStore;
+
+import java.io.Closeable;
+import java.io.IOException;
+import java.net.ServerSocket;
+import java.text.DecimalFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 /**
  * This class can be extended for the actual row processing of the implemented step.
@@ -164,63 +164,13 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
 
   private Trans trans;
 
-  private Object statusCountersLock = new Object();
-
-  /**
-   * nr of lines read from previous step(s)
-   *
-   * @deprecated use {@link #getLinesRead()}, {@link #incrementLinesRead()}, or {@link #decrementLinesRead()}
-   */
-  @Deprecated
-  public long linesRead;
-
-  /**
-   * nr of lines written to next step(s)
-   *
-   * @deprecated use {@link #getLinesWritten()}, {@link #incrementLinesWritten()}, or {@link #decrementLinesWritten()}
-   */
-  @Deprecated
-  public long linesWritten;
-
-  /**
-   * nr of lines read from file or database
-   *
-   * @deprecated use {@link #getLinesInput()} or {@link #incrementLinesInput()}
-   */
-  @Deprecated
-  public long linesInput;
-
-  /**
-   * nr of lines written to file or database
-   *
-   * @deprecated use {@link #getLinesOutput()} or {@link #incrementLinesOutput()}
-   */
-  @Deprecated
-  public long linesOutput;
-
-  /**
-   * nr of updates in a database table or file
-   *
-   * @deprecated use {@link #getLinesUpdated()} or {@link #incrementLinesUpdated()}
-   */
-  @Deprecated
-  public long linesUpdated;
-
-  /**
-   * nr of lines skipped
-   *
-   * @deprecated use {@link #getLinesSkipped()} or {@link #incrementLinesSkipped()}
-   */
-  @Deprecated
-  public long linesSkipped;
-
-  /**
-   * total sleep time in ns caused by an empty input buffer (previous step is slow)
-   *
-   * @deprecated use {@link #getLinesRejected()} or {@link #incrementLinesRejected()}
-   */
-  @Deprecated
-  public long linesRejected;
+  private AtomicLong linesRead = new AtomicLong( 0L );
+  private AtomicLong linesWritten = new AtomicLong( 0L );
+  private AtomicLong linesInput = new AtomicLong( 0L );
+  private AtomicLong linesOutput = new AtomicLong( 0L );
+  private AtomicLong linesUpdated = new AtomicLong( 0L );
+  private AtomicLong linesSkipped = new AtomicLong( 0L );
+  private AtomicLong linesRejected = new AtomicLong( 0L );
 
   private boolean distributed;
 
@@ -447,7 +397,7 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
    * @param trans             The (running) transformation to obtain information shared among the steps.
    */
   public BaseStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta,
-                   Trans trans ) {
+      Trans trans ) {
     this.stepMeta = stepMeta;
     this.stepDataInterface = stepDataInterface;
     this.stepcopy = copyNr;
@@ -459,7 +409,7 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
     // Set the name of the thread
     if ( stepMeta.getName() == null ) {
       throw new RuntimeException( "A step in transformation ["
-        + transMeta.toString() + "] doesn't have a name.  A step should always have a name to identify it by." );
+          + transMeta.toString() + "] doesn't have a name.  A step should always have a name to identify it by." );
     }
 
     log = KettleLogStore.getLogChannelInterfaceFactory().create( this, trans );
@@ -473,15 +423,14 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
 
     init = false;
 
-    synchronized ( statusCountersLock ) {
-      linesRead = 0L; // new AtomicLong(0L); // Keep some statistics!
-      linesWritten = 0L; // new AtomicLong(0L);
-      linesUpdated = 0L; // new AtomicLong(0L);
-      linesSkipped = 0L; // new AtomicLong(0L);
-      linesRejected = 0L; // new AtomicLong(0L);
-      linesInput = 0L; // new AtomicLong(0L);
-      linesOutput = 0L; // new AtomicLong(0L);
-    }
+    // Keep some statistics!
+    linesRead.set( 0L );
+    linesWritten.set( 0L );
+    linesUpdated.set( 0L );
+    linesSkipped.set( 0L );
+    linesRejected.set( 0L );
+    linesInput.set( 0L );
+    linesOutput.set( 0L );
 
     inputRowSets = null;
     outputRowSets = null;
@@ -489,7 +438,7 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
 
     terminator = stepMeta.hasTerminator();
     if ( terminator ) {
-      terminator_rows = new ArrayList<Object[]>();
+      terminator_rows = new ArrayList<>();
     } else {
       terminator_rows = null;
     }
@@ -506,7 +455,7 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
       if ( rowDistribution != null ) {
         if ( log.isDetailed() ) {
           logDetailed( BaseMessages.getString(
-            PKG, "BaseStep.Log.CustomRowDistributionActivated", rowDistributionCode ) );
+              PKG, "BaseStep.Log.CustomRowDistributionActivated", rowDistributionCode ) );
         }
       } else {
         if ( log.isDetailed() ) {
@@ -519,16 +468,16 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
       }
     }
 
-    rowListeners = new CopyOnWriteArrayList<RowListener>();
-    resultFiles = new HashMap<String, ResultFile>();
+    rowListeners = new CopyOnWriteArrayList<>();
+    resultFiles = new HashMap<>();
     resultFilesLock = new ReentrantReadWriteLock();
 
     repartitioning = StepPartitioningMeta.PARTITIONING_METHOD_NONE;
-    partitionTargets = new Hashtable<String, BlockingRowSet>();
+    partitionTargets = new Hashtable<>();
 
-    serverSockets = new ArrayList<ServerSocket>();
+    serverSockets = new ArrayList<>();
 
-    extensionDataMap = new HashMap<String, Object>();
+    extensionDataMap = new HashMap<>();
 
     // tuning parameters
     // putTimeOut = 10; //s
@@ -594,7 +543,7 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
         //
         PartitionSchema partitionSchema = stepMeta.getStepPartitioningMeta().getPartitionSchema();
         int partitionNr =
-          partitionDistribution.getPartition( slaveServerName, partitionSchema.getName(), stepCopyNr );
+            partitionDistribution.getPartition( slaveServerName, partitionSchema.getName(), stepCopyNr );
         if ( partitionNr >= 0 ) {
           String partitionNrString = new DecimalFormat( "000" ).format( partitionNr );
           setVariable( Const.INTERNAL_VARIABLE_STEP_PARTITION_NR, partitionNrString );
@@ -608,7 +557,7 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
             //
             for ( PartitionSchema originalPartitionSchema : partitionDistribution.getOriginalPartitionSchemas() ) {
               String slavePartitionSchemaName =
-                TransSplitter.createSlavePartitionSchemaName( originalPartitionSchema.getName() );
+                  TransSplitter.createSlavePartitionSchemaName( originalPartitionSchema.getName() );
               if ( slavePartitionSchemaName.equals( partitionSchemaName ) ) {
                 PartitionSchema schema = (PartitionSchema) originalPartitionSchema.clone();
 
@@ -638,7 +587,7 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
           setVariable( Const.INTERNAL_VARIABLE_STEP_PARTITION_ID, partitionID );
         } else {
           logError( BaseMessages.getString( PKG, "BaseStep.Log.UnableToRetrievePartitionId",
-            stepMeta.getStepPartitioningMeta().getPartitionSchema().getName() ) );
+              stepMeta.getStepPartitioningMeta().getPartitionSchema().getName() ) );
           return false;
         }
       }
@@ -652,7 +601,7 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
     //
     uniqueStepNrAcrossSlaves = this.slaveNr * getStepMeta().getCopies() + stepcopy;
     uniqueStepCountAcrossSlaves =
-      this.clusterSize <= 1 ? getStepMeta().getCopies() : this.clusterSize * getStepMeta().getCopies();
+        this.clusterSize <= 1 ? getStepMeta().getCopies() : this.clusterSize * getStepMeta().getCopies();
     if ( uniqueStepCountAcrossSlaves == 0 ) {
       uniqueStepCountAcrossSlaves = 1;
     }
@@ -669,7 +618,7 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
       //
       // boolean isMaster = "Y".equalsIgnoreCase(getVariable(Const.INTERNAL_VARIABLE_CLUSTER_MASTER));
 
-      remoteOutputSteps = new ArrayList<RemoteStep>();
+      remoteOutputSteps = new ArrayList<>();
       for ( int i = 0; i < stepMeta.getRemoteOutputSteps().size(); i++ ) {
         RemoteStep remoteStep = stepMeta.getRemoteOutputSteps().get( i );
 
@@ -682,7 +631,7 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
           try {
             if ( log.isDetailed() ) {
               logDetailed( BaseMessages.getString( PKG, "BaseStep.Log.SelectedRemoteOutputStepToServer",
-                copy, copy.getTargetStep(), copy.getTargetStepCopyNr(), copy.getPort() ) );
+                  copy, copy.getTargetStep(), copy.getTargetStepCopyNr(), copy.getPort() ) );
             }
             copy.openServerSocket( this );
             if ( log.isDetailed() ) {
@@ -712,7 +661,7 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
     // For the remote input steps to read from, we do the same: make a list and initialize what we can...
     //
     try {
-      remoteInputSteps = new ArrayList<RemoteStep>();
+      remoteInputSteps = new ArrayList<>();
 
       if ( ( stepMeta.isPartitioned() && getClusterSize() > 1 ) || stepMeta.getCopies() > 1 ) {
         // If the step is partitioned or has multiple copies and clustered, we only want to take one remote input step
@@ -752,35 +701,35 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
       boolean envSubFailed = false;
       try {
         maxErrors =
-          ( !Utils.isEmpty( stepErrorMeta.getMaxErrors() ) ? Long.valueOf( trans
-            .environmentSubstitute( stepErrorMeta.getMaxErrors() ) ) : -1L );
+            ( !Utils.isEmpty( stepErrorMeta.getMaxErrors() ) ? Long.valueOf( trans
+                .environmentSubstitute( stepErrorMeta.getMaxErrors() ) ) : -1L );
       } catch ( NumberFormatException nfe ) {
         log.logError( BaseMessages.getString( PKG, "BaseStep.Log.NumberFormatException", BaseMessages.getString(
-          PKG, "BaseStep.Property.MaxErrors.Name" ), this.stepname, ( stepErrorMeta.getMaxErrors() != null
-          ? stepErrorMeta.getMaxErrors() : "" ) ) );
+            PKG, "BaseStep.Property.MaxErrors.Name" ), this.stepname, ( stepErrorMeta.getMaxErrors() != null
+            ? stepErrorMeta.getMaxErrors() : "" ) ) );
         envSubFailed = true;
       }
 
       try {
         minRowsForMaxErrorPercent =
-          ( !Utils.isEmpty( stepErrorMeta.getMinPercentRows() ) ? Long.valueOf( trans
-            .environmentSubstitute( stepErrorMeta.getMinPercentRows() ) ) : -1L );
+            ( !Utils.isEmpty( stepErrorMeta.getMinPercentRows() ) ? Long.valueOf( trans
+                .environmentSubstitute( stepErrorMeta.getMinPercentRows() ) ) : -1L );
       } catch ( NumberFormatException nfe ) {
         log.logError( BaseMessages.getString( PKG, "BaseStep.Log.NumberFormatException", BaseMessages.getString(
-          PKG, "BaseStep.Property.MinRowsForErrorsPercentCalc.Name" ), this.stepname, ( stepErrorMeta
-          .getMinPercentRows() != null ? stepErrorMeta.getMinPercentRows() : "" ) ) );
+            PKG, "BaseStep.Property.MinRowsForErrorsPercentCalc.Name" ), this.stepname, ( stepErrorMeta
+            .getMinPercentRows() != null ? stepErrorMeta.getMinPercentRows() : "" ) ) );
         envSubFailed = true;
       }
 
       try {
         maxPercentErrors =
-          ( !Utils.isEmpty( stepErrorMeta.getMaxPercentErrors() ) ? Integer.valueOf( trans
-            .environmentSubstitute( stepErrorMeta.getMaxPercentErrors() ) ) : -1 );
+            ( !Utils.isEmpty( stepErrorMeta.getMaxPercentErrors() ) ? Integer.valueOf( trans
+                .environmentSubstitute( stepErrorMeta.getMaxPercentErrors() ) ) : -1 );
       } catch ( NumberFormatException nfe ) {
         log.logError( BaseMessages.getString(
-          PKG, "BaseStep.Log.NumberFormatException", BaseMessages.getString(
-            PKG, "BaseStep.Property.MaxPercentErrors.Name" ), this.stepname, ( stepErrorMeta
-            .getMaxPercentErrors() != null ? stepErrorMeta.getMaxPercentErrors() : "" ) ) );
+            PKG, "BaseStep.Log.NumberFormatException", BaseMessages.getString(
+                PKG, "BaseStep.Property.MaxPercentErrors.Name" ), this.stepname, ( stepErrorMeta
+                .getMaxPercentErrors() != null ? stepErrorMeta.getMaxPercentErrors() : "" ) ) );
         envSubFailed = true;
       }
 
@@ -816,7 +765,7 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
 
         socketRepository.releaseSocket( serverSocket.getLocalPort() );
         logDetailed(
-          BaseMessages.getString( PKG, "BaseStep.Log.ReleasedServerSocketOnPort", serverSocket.getLocalPort() ) );
+            BaseMessages.getString( PKG, "BaseStep.Log.ReleasedServerSocketOnPort", serverSocket.getLocalPort() ) );
       } catch ( IOException e ) {
         logError( "Cleanup: Unable to release server socket (" + serverSocket.getLocalPort() + ")", e );
       }
@@ -895,9 +844,7 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
    */
   @Override
   public long getLinesRead() {
-    synchronized ( statusCountersLock ) {
-      return linesRead;
-    }
+    return linesRead.get();
   }
 
   /**
@@ -906,9 +853,7 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
    * @return Returns the new value
    */
   public long incrementLinesRead() {
-    synchronized ( statusCountersLock ) {
-      return ++linesRead;
-    }
+    return linesRead.incrementAndGet();
   }
 
   /**
@@ -917,18 +862,14 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
    * @return Returns the new value
    */
   public long decrementLinesRead() {
-    synchronized ( statusCountersLock ) {
-      return --linesRead;
-    }
+    return linesRead.decrementAndGet();
   }
 
   /**
    * @param newLinesReadValue the new number of lines read from previous steps
    */
   public void setLinesRead( long newLinesReadValue ) {
-    synchronized ( statusCountersLock ) {
-      linesRead = newLinesReadValue;
-    }
+    linesRead.set( newLinesReadValue );
   }
 
   /**
@@ -936,9 +877,7 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
    */
   @Override
   public long getLinesInput() {
-    synchronized ( statusCountersLock ) {
-      return linesInput;
-    }
+    return linesInput.get();
   }
 
   /**
@@ -947,18 +886,14 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
    * @return the new incremented value
    */
   public long incrementLinesInput() {
-    synchronized ( statusCountersLock ) {
-      return ++linesInput;
-    }
+    return linesInput.incrementAndGet();
   }
 
   /**
    * @param newLinesInputValue the new number of lines read from an input source: database, file, socket, etc.
    */
   public void setLinesInput( long newLinesInputValue ) {
-    synchronized ( statusCountersLock ) {
-      linesInput = newLinesInputValue;
-    }
+    linesInput.set( newLinesInputValue );
   }
 
   /**
@@ -966,9 +901,7 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
    */
   @Override
   public long getLinesOutput() {
-    synchronized ( statusCountersLock ) {
-      return linesOutput;
-    }
+    return linesOutput.get();
   }
 
   /**
@@ -977,18 +910,14 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
    * @return the new incremented value
    */
   public long incrementLinesOutput() {
-    synchronized ( statusCountersLock ) {
-      return ++linesOutput;
-    }
+    return linesOutput.incrementAndGet();
   }
 
   /**
    * @param newLinesOutputValue the new number of lines written to an output target: database, file, socket, etc.
    */
   public void setLinesOutput( long newLinesOutputValue ) {
-    synchronized ( statusCountersLock ) {
-      linesOutput = newLinesOutputValue;
-    }
+    linesOutput.set( newLinesOutputValue );
   }
 
   /**
@@ -996,9 +925,7 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
    */
   @Override
   public long getLinesWritten() {
-    synchronized ( statusCountersLock ) {
-      return linesWritten;
-    }
+    return linesWritten.get();
   }
 
   /**
@@ -1007,9 +934,7 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
    * @return Returns the new value
    */
   public long incrementLinesWritten() {
-    synchronized ( statusCountersLock ) {
-      return ++linesWritten;
-    }
+    return linesWritten.incrementAndGet();
   }
 
   /**
@@ -1018,18 +943,14 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
    * @return Returns the new value
    */
   public long decrementLinesWritten() {
-    synchronized ( statusCountersLock ) {
-      return --linesWritten;
-    }
+    return linesWritten.decrementAndGet();
   }
 
   /**
    * @param newLinesWrittenValue the new number of lines written to next steps
    */
   public void setLinesWritten( long newLinesWrittenValue ) {
-    synchronized ( statusCountersLock ) {
-      linesWritten = newLinesWrittenValue;
-    }
+    linesWritten.set( newLinesWrittenValue );
   }
 
   /**
@@ -1037,9 +958,7 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
    */
   @Override
   public long getLinesUpdated() {
-    synchronized ( statusCountersLock ) {
-      return linesUpdated;
-    }
+    return linesUpdated.get();
   }
 
   /**
@@ -1048,18 +967,14 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
    * @return the new incremented value
    */
   public long incrementLinesUpdated() {
-    synchronized ( statusCountersLock ) {
-      return ++linesUpdated;
-    }
+    return linesUpdated.incrementAndGet();
   }
 
   /**
    * @param newLinesUpdatedValue the new number of lines updated in an output target: database, file, socket, etc.
    */
   public void setLinesUpdated( long newLinesUpdatedValue ) {
-    synchronized ( statusCountersLock ) {
-      linesUpdated = newLinesUpdatedValue;
-    }
+    linesUpdated.set( newLinesUpdatedValue );
   }
 
   /**
@@ -1067,9 +982,7 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
    */
   @Override
   public long getLinesRejected() {
-    synchronized ( statusCountersLock ) {
-      return linesRejected;
-    }
+    return linesRejected.get();
   }
 
   /**
@@ -1078,9 +991,7 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
    * @return the new incremented value
    */
   public long incrementLinesRejected() {
-    synchronized ( statusCountersLock ) {
-      return ++linesRejected;
-    }
+    return linesRejected.incrementAndGet();
   }
 
   /**
@@ -1088,18 +999,14 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
    */
   @Override
   public void setLinesRejected( long newLinesRejectedValue ) {
-    synchronized ( statusCountersLock ) {
-      linesRejected = newLinesRejectedValue;
-    }
+    linesRejected.set( newLinesRejectedValue );
   }
 
   /**
    * @return the number of lines skipped
    */
   public long getLinesSkipped() {
-    synchronized ( statusCountersLock ) {
-      return linesSkipped;
-    }
+    return linesSkipped.get();
   }
 
   /**
@@ -1108,18 +1015,14 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
    * @return the new incremented value
    */
   public long incrementLinesSkipped() {
-    synchronized ( statusCountersLock ) {
-      return ++linesSkipped;
-    }
+    return linesSkipped.incrementAndGet();
   }
 
   /**
    * @param newLinesSkippedValue lines number of lines skipped
    */
   public void setLinesSkipped( long newLinesSkippedValue ) {
-    synchronized ( statusCountersLock ) {
-      linesSkipped = newLinesSkippedValue;
-    }
+    linesSkipped.set( newLinesSkippedValue );
   }
 
   /*
@@ -1256,9 +1159,13 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
   private void handlePutRow( RowMetaInterface rowMeta, Object[] row ) throws KettleStepException {
     // Are we pausing the step? If so, stall forever...
     //
+    int base = 0;
     while ( paused.get() && !stopped.get() ) {
       try {
-        Thread.sleep( 1 );
+        if ( base < 2000 ) { // Don't sleep longer than 2sec
+          base += 10; // Start sleeping for 10ms, bump by 10ms each time through loop...
+        }
+        Thread.sleep( base ); // Sleep for 100ms allowing UI to operate
       } catch ( InterruptedException e ) {
         throw new KettleStepException( e );
       }
@@ -1280,9 +1187,13 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
     // started.
     //
     if ( this.checkTransRunning == false ) {
+      base = 0;
       while ( !trans.isRunning() && !stopped.get() ) {
         try {
-          Thread.sleep( 1 );
+          if ( base < 2000 ) { // Don't sleep longer than 2sec
+            base += 10; // Start sleeping for 10ms, bump by 10ms each time through loop...
+          }
+          Thread.sleep( base );
         } catch ( InterruptedException e ) {
           // Ignore
         }
@@ -1367,7 +1278,7 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
       partitionNr = nextStepPartitioningMeta.getPartition( rowMeta, row );
     } catch ( KettleException e ) {
       throw new KettleStepException(
-        "Unable to convert a value to integer while calculating the partition number", e );
+          "Unable to convert a value to integer while calculating the partition number", e );
     }
 
     RowSet selectedRowSet = null;
@@ -1379,8 +1290,8 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
       // something.
       //
       clusteredPartitioning =
-        transMeta.getSlaveStepCopyPartitionDistribution() != null
-          && !transMeta.getSlaveStepCopyPartitionDistribution().getDistribution().isEmpty();
+          transMeta.getSlaveStepCopyPartitionDistribution() != null
+              && !transMeta.getSlaveStepCopyPartitionDistribution().getDistribution().isEmpty();
     }
 
     // OK, we have a SlaveStepCopyPartitionDistribution in the transformation...
@@ -1401,23 +1312,23 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
         SlaveStepCopyPartitionDistribution distribution = transMeta.getSlaveStepCopyPartitionDistribution();
 
         String nextPartitionSchemaName =
-          TransSplitter.createPartitionSchemaNameFromTarget( nextStepPartitioningMeta
-            .getPartitionSchema().getName() );
+            TransSplitter.createPartitionSchemaNameFromTarget( nextStepPartitioningMeta
+                .getPartitionSchema().getName() );
 
         for ( RowSet outputRowSet : outputRowSets ) {
           try {
             // Look at the pre-determined distribution, decided at "transformation split" time.
             //
             int partNr =
-              distribution.getPartition(
-                outputRowSet.getRemoteSlaveServerName(), nextPartitionSchemaName, outputRowSet
-                  .getDestinationStepCopy() );
+                distribution.getPartition(
+                    outputRowSet.getRemoteSlaveServerName(), nextPartitionSchemaName, outputRowSet
+                        .getDestinationStepCopy() );
 
             if ( partNr < 0 ) {
               throw new KettleStepException( "Unable to find partition using rowset data, slave="
-                + outputRowSet.getRemoteSlaveServerName() + ", partition schema="
-                + nextStepPartitioningMeta.getPartitionSchema().getName() + ", copy="
-                + outputRowSet.getDestinationStepCopy() );
+                  + outputRowSet.getRemoteSlaveServerName() + ", partition schema="
+                  + nextStepPartitioningMeta.getPartitionSchema().getName() + ", copy="
+                  + outputRowSet.getDestinationStepCopy() );
             }
             partitionNrRowSetList[ partNr ] = outputRowSet;
           } catch ( NullPointerException e ) {
@@ -1437,8 +1348,8 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
           rowsets += "[" + rowSet.toString() + "] ";
         }
         throw new KettleStepException( "Internal error: the referenced partition nr '"
-          + partitionNr + "' is higher than the maximum of '" + ( partitionNrRowSetList.length - 1 )
-          + ".  The available row sets are: {" + rowsets + "}" );
+            + partitionNr + "' is higher than the maximum of '" + ( partitionNrRowSetList.length - 1 )
+            + ".  The available row sets are: {" + rowsets + "}" );
       }
 
       if ( selectedRowSet == null ) {
@@ -1451,7 +1362,7 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
         if ( log.isRowLevel() ) {
           try {
             logRowlevel(
-              "Partitioned #" + partitionNr + " to " + selectedRowSet + ", row=" + rowMeta.getString( row ) );
+                "Partitioned #" + partitionNr + " to " + selectedRowSet + ", row=" + rowMeta.getString( row ) );
           } catch ( KettleValueException e ) {
             throw new KettleStepException( e );
           }
@@ -1480,7 +1391,7 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
           if ( log.isRowLevel() ) {
             try {
               logRowlevel( BaseMessages.getString( PKG, "BaseStep.PartitionedToRow", partitionNr,
-                selectedRowSet, rowMeta.getString( row ) ) );
+                  selectedRowSet, rowMeta.getString( row ) ) );
             } catch ( KettleValueException e ) {
               throw new KettleStepException( e );
             }
@@ -1510,7 +1421,7 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
         //
         if ( isUsingThreadPriorityManagment() && !rs.isDone() && rs.size() >= upperBufferBoundary && !isStopped() ) {
           try {
-            Thread.sleep( 0, 1 );
+            Thread.sleep( 1 ); // Look at thread.sleep code - sleep of 1-500000 ns = sleep of 1ms.
           } catch ( InterruptedException e ) {
             // Ignore sleep interruption exception
           }
@@ -1546,7 +1457,7 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
         //
         if ( isUsingThreadPriorityManagment() && !rs.isDone() && rs.size() >= upperBufferBoundary && !isStopped() ) {
           try {
-            Thread.sleep( 0, 1 );
+            Thread.sleep( 1 ); // See Thread.sleep - sleep of 1-500000 ns = sleep of 1ms.
           } catch ( InterruptedException e ) {
             // Ignore sleep interruption exception
           }
@@ -1604,9 +1515,13 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
 
     // Are we pausing the step? If so, stall forever...
     //
+    int base = 10;
     while ( paused.get() && !stopped.get() ) {
       try {
-        Thread.sleep( 1 );
+        if ( base < 2000 ) { // Don't sleep longer than 2sec
+          base += 10; // More times through the loop, longer we sleep...
+        }
+        Thread.sleep( base );
       } catch ( InterruptedException e ) {
         throw new KettleStepException( e );
       }
@@ -1657,18 +1572,18 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
    * @throws KettleStepException the kettle step exception
    */
   public void putError( RowMetaInterface rowMeta, Object[] row, long nrErrors, String errorDescriptions,
-                        String fieldNames, String errorCodes ) throws KettleStepException {
+      String fieldNames, String errorCodes ) throws KettleStepException {
     getRowHandler().putError( rowMeta, row, nrErrors, errorDescriptions, fieldNames, errorCodes );
   }
 
 
   private void handlePutError( RowMetaInterface rowMeta, Object[] row, long nrErrors, String errorDescriptions,
-                               String fieldNames, String errorCodes ) throws KettleStepException {
+      String fieldNames, String errorCodes ) throws KettleStepException {
     if ( trans.isSafeModeEnabled() ) {
       if ( rowMeta.size() > row.length ) {
         throw new KettleStepException( BaseMessages.getString(
-          PKG, "BaseStep.Exception.MetadataDoesntMatchDataRowSize", Integer.toString( rowMeta.size() ), Integer
-            .toString( row != null ? row.length : 0 ) ) );
+            PKG, "BaseStep.Exception.MetadataDoesntMatchDataRowSize", Integer.toString( rowMeta.size() ), Integer
+                .toString( row != null ? row.length : 0 ) ) );
       }
     }
 
@@ -1688,7 +1603,7 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
 
     // Also add the error fields...
     stepErrorMeta.addErrorRowData(
-      errorRowData, rowMeta.size(), nrErrors, errorDescriptions, fieldNames, errorCodes );
+        errorRowData, rowMeta.size(), nrErrors, errorDescriptions, fieldNames, errorCodes );
 
     // call all row listeners...
     for ( RowListener listener : rowListeners ) {
@@ -1719,20 +1634,20 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
     // Was this one error too much?
     if ( maxErrors > 0 && getLinesRejected() > maxErrors ) {
       logError( BaseMessages.getString( PKG, "BaseStep.Log.TooManyRejectedRows", Long.toString( maxErrors ), Long
-        .toString( getLinesRejected() ) ) );
+          .toString( getLinesRejected() ) ) );
       setErrors( 1L );
       stopAll();
     }
 
     if ( maxPercentErrors > 0
-      && getLinesRejected() > 0
-      && ( minRowsForMaxErrorPercent <= 0 || getLinesRead() >= minRowsForMaxErrorPercent ) ) {
+        && getLinesRejected() > 0
+        && ( minRowsForMaxErrorPercent <= 0 || getLinesRead() >= minRowsForMaxErrorPercent ) ) {
       int pct =
-        (int) Math.ceil( 100 * (double) getLinesRejected() / getLinesRead() ); // additional conversion for PDI-10210
+          (int) Math.ceil( 100 * (double) getLinesRejected() / getLinesRead() ); // additional conversion for PDI-10210
       if ( pct > maxPercentErrors ) {
         logError( BaseMessages.getString(
-          PKG, "BaseStep.Log.MaxPercentageRejectedReached", Integer.toString( pct ), Long
-            .toString( getLinesRejected() ), Long.toString( getLinesRead() ) ) );
+            PKG, "BaseStep.Log.MaxPercentageRejectedReached", Integer.toString( pct ), Long
+                .toString( getLinesRejected() ), Long.toString( getLinesRead() ) ) );
         setErrors( 1L );
         stopAll();
       }
@@ -1784,9 +1699,13 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
     // started.
     //
     if ( this.checkTransRunning == false ) {
+      int base = 0;
       while ( !trans.isRunning() && !stopped.get() ) {
         try {
-          Thread.sleep( 1 );
+          if ( base < 2000 ) { // Don't sleep longer than 2sec
+            base += 10;
+          }
+          Thread.sleep( base ); // Incremental sleeping ...
         } catch ( InterruptedException e ) {
           // Ignore sleep interruption exception
         }
@@ -1810,9 +1729,13 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
 
     // Are we pausing the step? If so, stall forever...
     //
+    int base = 0;
     while ( paused.get() && !stopped.get() ) {
       try {
-        Thread.sleep( 100 );
+        if ( base < 2000 ) { // Don't sleep longer than 2sec
+          base += 10;
+        }
+        Thread.sleep( base ); // Incremental sleep duration...
       } catch ( InterruptedException e ) {
         throw new KettleStepException( e );
       }
@@ -1868,9 +1791,13 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
     // We'll only do that if the previous step has not ended...
     //
     if ( isUsingThreadPriorityManagment()
-      && !inputRowSet.isDone() && inputRowSet.size() <= lowerBufferBoundary && !isStopped() ) {
+        && !inputRowSet.isDone() && inputRowSet.size() <= lowerBufferBoundary && !isStopped() ) {
       try {
-        Thread.sleep( 0, 1 );
+        // Changed from Thread.sleep(0,1) because Sleeping for a nanosecond is insane for the following reasons:
+        // 1- The number of context switches goes through the roof
+        // 2- It's spending more time
+        // 3- Look at the code for Thread.sleep - all it will do is sleep for 1ms anyway.
+        Thread.sleep( 10 );
       } catch ( InterruptedException e ) {
         // Ignore sleep interruption exception
       }
@@ -1951,7 +1878,7 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
         // checking
         if ( row.length < inputRowMeta.size() ) {
           throw new KettleException( "Safe mode check noticed that the length of the row data is smaller ("
-            + row.length + ") than the row metadata size (" + inputRowMeta.size() + ")" );
+              + row.length + ") than the row metadata size (" + inputRowMeta.size() + ")" );
         }
       }
 
@@ -2030,7 +1957,7 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
           rowSet.setRemoteSlaveServerName( getVariable( Const.INTERNAL_VARIABLE_SLAVE_SERVER_NAME ) );
           if ( getVariable( Const.INTERNAL_VARIABLE_SLAVE_SERVER_NAME ) == null ) {
             throw new KettleStepException( "Variable '"
-              + Const.INTERNAL_VARIABLE_SLAVE_SERVER_NAME + "' is not defined." );
+                + Const.INTERNAL_VARIABLE_SLAVE_SERVER_NAME + "' is not defined." );
           }
         }
 
@@ -2041,7 +1968,7 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
           try {
             if ( remoteStep.getTargetSlaveServerName() == null ) {
               throw new KettleStepException(
-                "The target slave server name is not defined for remote output step: " + remoteStep );
+                  "The target slave server name is not defined for remote output step: " + remoteStep );
             }
             BlockingRowSet rowSet = remoteStep.openWriterSocket();
             if ( log.isDetailed() ) {
@@ -2079,7 +2006,7 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
       for ( int i = 0; i < fieldnames.length - 1; i++ ) {
         if ( fieldnames[ i ].equals( fieldnames[ i + 1 ] ) ) {
           throw new KettleRowException( BaseMessages.getString(
-            PKG, "BaseStep.SafeMode.Exception.DoubleFieldnames", fieldnames[ i ] ) );
+              PKG, "BaseStep.SafeMode.Exception.DoubleFieldnames", fieldnames[ i ] ) );
         }
       }
     } else {
@@ -2118,13 +2045,13 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
    * @throws KettleRowException the kettle row exception
    */
   public static void safeModeChecking( RowMetaInterface referenceRowMeta, RowMetaInterface rowMeta )
-    throws KettleRowException {
+      throws KettleRowException {
     // See if the row we got has the same layout as the reference row.
     // First check the number of fields
     //
     if ( referenceRowMeta.size() != rowMeta.size() ) {
       throw new KettleRowException( BaseMessages.getString( PKG, "BaseStep.SafeMode.Exception.VaryingSize", ""
-        + referenceRowMeta.size(), "" + rowMeta.size(), rowMeta.toString() ) );
+          + referenceRowMeta.size(), "" + rowMeta.size(), rowMeta.toString() ) );
     } else {
       // Check field by field for the position of the names...
       for ( int i = 0; i < referenceRowMeta.size(); i++ ) {
@@ -2133,22 +2060,22 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
 
         if ( !referenceValue.getName().equalsIgnoreCase( compareValue.getName() ) ) {
           throw new KettleRowException( BaseMessages.getString(
-            PKG, "BaseStep.SafeMode.Exception.MixingLayout", "" + ( i + 1 ), referenceValue.getName()
-              + " " + referenceValue.toStringMeta(), compareValue.getName()
-              + " " + compareValue.toStringMeta() ) );
+              PKG, "BaseStep.SafeMode.Exception.MixingLayout", "" + ( i + 1 ), referenceValue.getName()
+                  + " " + referenceValue.toStringMeta(), compareValue.getName()
+                  + " " + compareValue.toStringMeta() ) );
         }
 
         if ( referenceValue.getType() != compareValue.getType() ) {
           throw new KettleRowException( BaseMessages.getString( PKG, "BaseStep.SafeMode.Exception.MixingTypes", ""
-            + ( i + 1 ), referenceValue.getName() + " " + referenceValue.toStringMeta(), compareValue.getName()
-            + " " + compareValue.toStringMeta() ) );
+              + ( i + 1 ), referenceValue.getName() + " " + referenceValue.toStringMeta(), compareValue.getName()
+              + " " + compareValue.toStringMeta() ) );
         }
 
         if ( referenceValue.getStorageType() != compareValue.getStorageType() ) {
           throw new KettleRowException( BaseMessages.getString(
-            PKG, "BaseStep.SafeMode.Exception.MixingStorageTypes", "" + ( i + 1 ), referenceValue.getName()
-              + " " + referenceValue.toStringMeta(), compareValue.getName()
-              + " " + compareValue.toStringMeta() ) );
+              PKG, "BaseStep.SafeMode.Exception.MixingStorageTypes", "" + ( i + 1 ), referenceValue.getName()
+                  + " " + referenceValue.toStringMeta(), compareValue.getName()
+                  + " " + compareValue.toStringMeta() ) );
         }
       }
     }
@@ -2168,9 +2095,13 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
   public Object[] handleGetRowFrom( RowSet rowSet ) throws KettleStepException {
     // Are we pausing the step? If so, stall forever...
     //
+    int base = 0;
     while ( paused.get() && !stopped.get() ) {
       try {
-        Thread.sleep( 10 );
+        if ( base < 2000 ) { // Don't sleep longer than 2sec
+          base += 10;
+        }
+        Thread.sleep( base );
       } catch ( InterruptedException e ) {
         throw new KettleStepException( e );
       }
@@ -2180,9 +2111,13 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
     // Are we running yet? If not, wait a bit until all threads have been
     // started.
     if ( this.checkTransRunning == false ) {
+      base = 0;
       while ( !trans.isRunning() && !stopped.get() ) {
         try {
-          Thread.sleep( 1 );
+          if ( base < 2000 ) { // Don't sleep longer than 2sec
+            base += 10;
+          }
+          Thread.sleep( base );
         } catch ( InterruptedException e ) {
           // Ignore sleep interruption exception
         }
@@ -2196,9 +2131,9 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
     // We'll only do that if the previous step has not ended...
     //
     if ( isUsingThreadPriorityManagment()
-      && !rowSet.isDone() && rowSet.size() <= lowerBufferBoundary && !isStopped() ) {
+        && !rowSet.isDone() && rowSet.size() <= lowerBufferBoundary && !isStopped() ) {
       try {
-        Thread.sleep( 0, 1 );
+        Thread.sleep( 10 ); // Look at Thread.sleep - sleep of 1ns = sleep of 1ms. And, this granularity doesn't make sense anyway - minimum of 15-50ms sleep is what you will get anyway
       } catch ( InterruptedException e ) {
         // Ignore sleep interruption exception
       }
@@ -2309,8 +2244,8 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
             //
             if ( transMeta.findPrevious( stepMeta, combi.stepMeta ) ) {
               throw new KettleStepException( "A deadlock was detected between steps '"
-                + combi.stepname + "' and '" + stepname
-                + "'.  The steps are both waiting for each other because a series of row set buffers filled up." );
+                  + combi.stepname + "' and '" + stepname
+                  + "'.  The steps are both waiting for each other because a series of row set buffers filled up." );
             }
           }
         }
@@ -2332,13 +2267,13 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
     StepMeta sourceStepMeta = transMeta.findStep( sourceStep );
     if ( sourceStepMeta == null ) {
       throw new KettleStepException( BaseMessages.getString(
-        PKG, "BaseStep.Exception.SourceStepToReadFromDoesntExist", sourceStep ) );
+          PKG, "BaseStep.Exception.SourceStepToReadFromDoesntExist", sourceStep ) );
     }
 
     if ( sourceStepMeta.getCopies() > 1 ) {
       throw new KettleStepException( BaseMessages.getString(
-        PKG, "BaseStep.Exception.SourceStepToReadFromCantRunInMultipleCopies", sourceStep, Integer
-          .toString( sourceStepMeta.getCopies() ) ) );
+          PKG, "BaseStep.Exception.SourceStepToReadFromCantRunInMultipleCopies", sourceStep, Integer
+              .toString( sourceStepMeta.getCopies() ) ) );
     }
 
     return findInputRowSet( sourceStep, 0, getStepname(), getCopy() );
@@ -2356,8 +2291,8 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
   public RowSet findInputRowSet( String from, int fromcopy, String to, int tocopy ) {
     for ( RowSet rs : inputRowSets ) {
       if ( rs.getOriginStepName().equalsIgnoreCase( from )
-        && rs.getDestinationStepName().equalsIgnoreCase( to ) && rs.getOriginStepCopy() == fromcopy
-        && rs.getDestinationStepCopy() == tocopy ) {
+          && rs.getDestinationStepName().equalsIgnoreCase( to ) && rs.getOriginStepCopy() == fromcopy
+          && rs.getDestinationStepCopy() == tocopy ) {
         return rs;
       }
     }
@@ -2412,13 +2347,13 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
     StepMeta targetStepMeta = transMeta.findStep( targetStep );
     if ( targetStepMeta == null ) {
       throw new KettleStepException( BaseMessages.getString(
-        PKG, "BaseStep.Exception.TargetStepToWriteToDoesntExist", targetStep ) );
+          PKG, "BaseStep.Exception.TargetStepToWriteToDoesntExist", targetStep ) );
     }
 
     if ( targetStepMeta.getCopies() > 1 ) {
       throw new KettleStepException( BaseMessages.getString(
-        PKG, "BaseStep.Exception.TargetStepToWriteToCantRunInMultipleCopies", targetStep, Integer
-          .toString( targetStepMeta.getCopies() ) ) );
+          PKG, "BaseStep.Exception.TargetStepToWriteToCantRunInMultipleCopies", targetStep, Integer
+              .toString( targetStepMeta.getCopies() ) ) );
     }
 
     return findOutputRowSet( getStepname(), getCopy(), targetStep, 0 );
@@ -2437,8 +2372,8 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
   public RowSet findOutputRowSet( String from, int fromcopy, String to, int tocopy ) {
     for ( RowSet rs : outputRowSets ) {
       if ( rs.getOriginStepName().equalsIgnoreCase( from )
-        && rs.getDestinationStepName().equalsIgnoreCase( to ) && rs.getOriginStepCopy() == fromcopy
-        && rs.getDestinationStepCopy() == tocopy ) {
+          && rs.getDestinationStepName().equalsIgnoreCase( to ) && rs.getOriginStepCopy() == fromcopy
+          && rs.getDestinationStepCopy() == tocopy ) {
         return rs;
       }
     }
@@ -2538,8 +2473,8 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
     int nrInput = previousSteps.size();
     int nrOutput = succeedingSteps.size();
 
-    inputRowSets = new ArrayList<RowSet>();
-    outputRowSets = new ArrayList<RowSet>();
+    inputRowSets = new ArrayList<>();
+    outputRowSets = new ArrayList<>();
     errorRowSet = null;
     prevSteps = new StepMeta[ nrInput ];
     nextSteps = new StepMeta[ nrOutput ];
@@ -2548,14 +2483,14 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
 
     if ( log.isDetailed() ) {
       logDetailed( BaseMessages.getString( PKG, "BaseStep.Log.StepInfo", String.valueOf( nrInput ), String
-        .valueOf( nrOutput ) ) );
+          .valueOf( nrOutput ) ) );
     }
     // populate input rowsets.
     for ( int i = 0; i < previousSteps.size(); i++ ) {
       prevSteps[ i ] = previousSteps.get( i );
       if ( log.isDetailed() ) {
         logDetailed( BaseMessages.getString(
-          PKG, "BaseStep.Log.GotPreviousStep", stepname, String.valueOf( i ), prevSteps[ i ].getName() ) );
+            PKG, "BaseStep.Log.GotPreviousStep", stepname, String.valueOf( i ), prevSteps[ i ].getName() ) );
       }
 
       // Looking at the previous step, you can have either 1 rowset to look at or more then one.
@@ -2563,7 +2498,7 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
       int nextCopies = stepMeta.getCopies();
       if ( log.isDetailed() ) {
         logDetailed( BaseMessages.getString(
-          PKG, "BaseStep.Log.InputRowInfo", String.valueOf( prevCopies ), String.valueOf( nextCopies ) ) );
+            PKG, "BaseStep.Log.InputRowInfo", String.valueOf( prevCopies ), String.valueOf( nextCopies ) ) );
       }
 
       int nrCopies;
@@ -2571,7 +2506,7 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
       boolean repartitioning;
       if ( prevSteps[ i ].isPartitioned() ) {
         repartitioning = !prevSteps[ i ].getStepPartitioningMeta()
-          .equals( stepMeta.getStepPartitioningMeta() );
+            .equals( stepMeta.getStepPartitioningMeta() );
       } else {
         repartitioning = stepMeta.isPartitioned();
       }
@@ -2642,7 +2577,7 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
 
       if ( log.isDetailed() ) {
         logDetailed( BaseMessages.getString(
-          PKG, "BaseStep.Log.OutputRowInfo", String.valueOf( prevCopies ), String.valueOf( nextCopies ) ) );
+            PKG, "BaseStep.Log.OutputRowInfo", String.valueOf( prevCopies ), String.valueOf( nextCopies ) ) );
       }
 
       int nrCopies;
@@ -2650,7 +2585,7 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
       boolean repartitioning;
       if ( stepMeta.isPartitioned() ) {
         repartitioning = !stepMeta.getStepPartitioningMeta()
-          .equals( nextSteps[ i ].getStepPartitioningMeta() );
+            .equals( nextSteps[ i ].getStepPartitioningMeta() );
       } else {
         repartitioning = nextSteps[ i ].isPartitioned();
       }
@@ -3096,44 +3031,44 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
    * @return the row meta and data
    */
   public RowMetaAndData buildLog( String sname, int copynr, long lines_read, long lines_written,
-                                  long lines_updated, long lines_skipped, long errors, Date start_date,
-                                  Date end_date ) {
+      long lines_updated, long lines_skipped, long errors, Date start_date,
+      Date end_date ) {
     RowMetaInterface r = new RowMeta();
     Object[] data = new Object[ 9 ];
     int nr = 0;
 
     r.addValueMeta( new ValueMetaString(
-      BaseMessages.getString( PKG, "BaseStep.ColumnName.Stepname" ) ) );
+        BaseMessages.getString( PKG, "BaseStep.ColumnName.Stepname" ) ) );
     data[ nr ] = sname;
     nr++;
 
     r.addValueMeta( new ValueMetaNumber(
-      BaseMessages.getString( PKG, "BaseStep.ColumnName.Copy" ) ) );
+        BaseMessages.getString( PKG, "BaseStep.ColumnName.Copy" ) ) );
     data[ nr ] = new Double( copynr );
     nr++;
 
     r.addValueMeta( new ValueMetaNumber(
-      BaseMessages.getString( PKG, "BaseStep.ColumnName.LinesReaded" ) ) );
+        BaseMessages.getString( PKG, "BaseStep.ColumnName.LinesReaded" ) ) );
     data[ nr ] = new Double( lines_read );
     nr++;
 
     r.addValueMeta( new ValueMetaNumber(
-      BaseMessages.getString( PKG, "BaseStep.ColumnName.LinesWritten" ) ) );
+        BaseMessages.getString( PKG, "BaseStep.ColumnName.LinesWritten" ) ) );
     data[ nr ] = new Double( lines_written );
     nr++;
 
     r.addValueMeta( new ValueMetaNumber(
-      BaseMessages.getString( PKG, "BaseStep.ColumnName.LinesUpdated" ) ) );
+        BaseMessages.getString( PKG, "BaseStep.ColumnName.LinesUpdated" ) ) );
     data[ nr ] = new Double( lines_updated );
     nr++;
 
     r.addValueMeta( new ValueMetaNumber(
-      BaseMessages.getString( PKG, "BaseStep.ColumnName.LinesSkipped" ) ) );
+        BaseMessages.getString( PKG, "BaseStep.ColumnName.LinesSkipped" ) ) );
     data[ nr ] = new Double( lines_skipped );
     nr++;
 
     r.addValueMeta( new ValueMetaNumber(
-      BaseMessages.getString( PKG, "BaseStep.ColumnName.Errors" ) ) );
+        BaseMessages.getString( PKG, "BaseStep.ColumnName.Errors" ) ) );
     data[ nr ] = new Double( errors );
     nr++;
 
@@ -3157,27 +3092,27 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
   public static final RowMetaInterface getLogFields( String comm ) {
     RowMetaInterface r = new RowMeta();
     ValueMetaInterface sname =
-      new ValueMetaString(
-        BaseMessages.getString( PKG, "BaseStep.ColumnName.Stepname" ) );
+        new ValueMetaString(
+            BaseMessages.getString( PKG, "BaseStep.ColumnName.Stepname" ) );
     sname.setLength( 256 );
     r.addValueMeta( sname );
 
     r.addValueMeta( new ValueMetaNumber(
-      BaseMessages.getString( PKG, "BaseStep.ColumnName.Copy" ) ) );
+        BaseMessages.getString( PKG, "BaseStep.ColumnName.Copy" ) ) );
     r.addValueMeta( new ValueMetaNumber(
-      BaseMessages.getString( PKG, "BaseStep.ColumnName.LinesReaded" ) ) );
+        BaseMessages.getString( PKG, "BaseStep.ColumnName.LinesReaded" ) ) );
     r.addValueMeta( new ValueMetaNumber(
-      BaseMessages.getString( PKG, "BaseStep.ColumnName.LinesWritten" ) ) );
+        BaseMessages.getString( PKG, "BaseStep.ColumnName.LinesWritten" ) ) );
     r.addValueMeta( new ValueMetaNumber(
-      BaseMessages.getString( PKG, "BaseStep.ColumnName.LinesUpdated" ) ) );
+        BaseMessages.getString( PKG, "BaseStep.ColumnName.LinesUpdated" ) ) );
     r.addValueMeta( new ValueMetaNumber(
-      BaseMessages.getString( PKG, "BaseStep.ColumnName.LinesSkipped" ) ) );
+        BaseMessages.getString( PKG, "BaseStep.ColumnName.LinesSkipped" ) ) );
     r.addValueMeta( new ValueMetaNumber(
-      BaseMessages.getString( PKG, "BaseStep.ColumnName.Errors" ) ) );
+        BaseMessages.getString( PKG, "BaseStep.ColumnName.Errors" ) ) );
     r.addValueMeta( new ValueMetaDate(
-      BaseMessages.getString( PKG, "BaseStep.ColumnName.StartDate" ) ) );
+        BaseMessages.getString( PKG, "BaseStep.ColumnName.StartDate" ) ) );
     r.addValueMeta( new ValueMetaDate(
-      BaseMessages.getString( PKG, "BaseStep.ColumnName.EndDate" ) ) );
+        BaseMessages.getString( PKG, "BaseStep.ColumnName.EndDate" ) ) );
 
     for ( int i = 0; i < r.size(); i++ ) {
       r.getValueMeta( i ).setOrigin( comm );
@@ -3207,7 +3142,7 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
       string.append( stepname ).append( '.' ).append( partitionID );
     } else if ( clusterSize > 1 ) {
       string
-        .append( stepname ).append( '.' ).append( slaveNr ).append( '.' ).append( Integer.toString( getCopy() ) );
+          .append( stepname ).append( '.' ).append( slaveNr ).append( '.' ).append( Integer.toString( getCopy() ) );
     } else {
       string.append( stepname ).append( '.' ).append( Integer.toString( getCopy() ) );
     }
@@ -3256,7 +3191,7 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
    */
   @Override
   public void stopRunning( StepMetaInterface stepMetaInterface, StepDataInterface stepDataInterface )
-    throws KettleException {
+      throws KettleException {
   }
 
   /**
@@ -3273,22 +3208,20 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
    * Log summary.
    */
   public void logSummary() {
-    synchronized ( statusCountersLock ) {
-      long li = getLinesInput();
-      long lo = getLinesOutput();
-      long lr = getLinesRead();
-      long lw = getLinesWritten();
-      long lu = getLinesUpdated();
-      long lj = getLinesRejected();
-      if ( li > 0 || lo > 0 || lr > 0 || lw > 0 || lu > 0 || lj > 0 || errors > 0 ) {
-        logBasic( BaseMessages.getString( PKG, "BaseStep.Log.SummaryInfo", String.valueOf( li ), String
+    long li = getLinesInput();
+    long lo = getLinesOutput();
+    long lr = getLinesRead();
+    long lw = getLinesWritten();
+    long lu = getLinesUpdated();
+    long lj = getLinesRejected();
+    if ( li > 0 || lo > 0 || lr > 0 || lw > 0 || lu > 0 || lj > 0 || errors > 0 ) {
+      logBasic( BaseMessages.getString( PKG, "BaseStep.Log.SummaryInfo", String.valueOf( li ), String
           .valueOf( lo ), String.valueOf( lr ), String.valueOf( lw ), String.valueOf( lw ), String
           .valueOf( errors + lj ) ) );
-      } else {
-        logDetailed( BaseMessages.getString( PKG, "BaseStep.Log.SummaryInfo", String.valueOf( li ), String
+    } else {
+      logDetailed( BaseMessages.getString( PKG, "BaseStep.Log.SummaryInfo", String.valueOf( li ), String
           .valueOf( lo ), String.valueOf( lr ), String.valueOf( lw ), String.valueOf( lw ), String
           .valueOf( errors + lj ) ) );
-      }
     }
   }
 
@@ -3404,7 +3337,7 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
     ReentrantReadWriteLock.ReadLock lock = resultFilesLock.readLock();
     lock.lock();
     try {
-      return new HashMap<String, ResultFile>( this.resultFiles );
+      return new HashMap<>( this.resultFiles );
     } finally {
       lock.unlock();
     }
@@ -3534,8 +3467,8 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
    */
   protected boolean checkFeedback( long lines ) {
     return getTransMeta().isFeedbackShown()
-      && ( lines > 0 ) && ( getTransMeta().getFeedbackSize() > 0 )
-      && ( lines % getTransMeta().getFeedbackSize() ) == 0;
+        && ( lines > 0 ) && ( getTransMeta().getFeedbackSize() > 0 )
+        && ( lines % getTransMeta().getFeedbackSize() ) == 0;
   }
 
   /**
@@ -3612,7 +3545,7 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
 
   @Override
   public String fieldSubstitute( String aString, RowMetaInterface rowMeta, Object[] rowData )
-    throws KettleValueException {
+      throws KettleValueException {
     return variables.fieldSubstitute( aString, rowMeta, rowData );
   }
 
@@ -4187,7 +4120,7 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
     }
 
     @Override public void putError( RowMetaInterface rowMeta, Object[] row, long nrErrors, String errorDescriptions,
-                                    String fieldNames, String errorCodes ) throws KettleStepException {
+        String fieldNames, String errorCodes ) throws KettleStepException {
       handlePutError( rowMeta, row, nrErrors, errorDescriptions, fieldNames, errorCodes );
     }
 
@@ -4201,4 +4134,3 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
 
   }
 }
-

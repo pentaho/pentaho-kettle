@@ -152,11 +152,12 @@ public class SelectValues extends BaseStep implements StepInterface {
 
     // Get the field values
     //
+    int rowMetaSz = rowMeta.size();
     for ( int idx : data.fieldnrs ) {
       // Normally this can't happen, except when streams are mixed with different
       // number of fields.
       //
-      if ( idx < rowMeta.size() ) {
+      if ( idx < rowMetaSz ) {
         ValueMetaInterface valueMeta = rowMeta.getValueMeta( idx );
 
         // TODO: Clone might be a 'bit' expensive as it is only needed in case you want to copy a single field to 2 or

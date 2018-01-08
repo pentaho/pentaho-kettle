@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,15 +22,16 @@
 
 package org.pentaho.di.core.logging;
 
+import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.EnvUtil;
+
 import java.io.PrintStream;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.atomic.AtomicBoolean;
-
-import org.pentaho.di.core.Const;
-import org.pentaho.di.core.util.EnvUtil;
 
 public class KettleLogStore {
 
@@ -126,8 +127,8 @@ public class KettleLogStore {
    *
    * @param maxSize
    *          the maximum size
-   * @param maxLogTimeoutHours
-   *          The maximum time that a log line times out in hours.
+   * @param maxLogTimeoutMinutes
+   *          The maximum time that a log line times out in minutes.
    */
   public static void init( int maxSize, int maxLogTimeoutMinutes ) {
     init( maxSize, maxLogTimeoutMinutes, EnvUtil
@@ -201,8 +202,7 @@ public class KettleLogStore {
    * @param to
    * @return the log lines found
    */
-  public static List<KettleLoggingEvent> getLogBufferFromTo( String parentLogChannelId, boolean includeGeneral,
-    int from, int to ) {
+  public static List<KettleLoggingEvent> getLogBufferFromTo( String parentLogChannelId, boolean includeGeneral, int from, int to ) {
     return getInstance().appender.getLogBufferFromTo( parentLogChannelId, includeGeneral, from, to );
   }
 
@@ -217,8 +217,7 @@ public class KettleLogStore {
    * @param to
    * @return
    */
-  public static List<KettleLoggingEvent> getLogBufferFromTo( List<String> channelId, boolean includeGeneral,
-    int from, int to ) {
+  public static List<KettleLoggingEvent> getLogBufferFromTo( List<String> channelId, boolean includeGeneral, int from, int to ) {
     return getInstance().appender.getLogBufferFromTo( channelId, includeGeneral, from, to );
   }
 
@@ -239,7 +238,7 @@ public class KettleLogStore {
   public static void discardLines( String parentLogChannelId, boolean includeGeneralMessages ) {
     LoggingRegistry registry = LoggingRegistry.getInstance();
     MetricsRegistry metricsRegistry = MetricsRegistry.getInstance();
-    List<String> ids = registry.getLogChannelChildren( parentLogChannelId );
+    Set<String> ids = registry.getLogChannelChildrenSet( parentLogChannelId );
 
     // Remove all the rows for these ids
     //

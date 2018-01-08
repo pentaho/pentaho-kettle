@@ -3,7 +3,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -102,7 +102,6 @@ import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.logging.LogMessage;
 import org.pentaho.di.core.logging.LogParentProvidedInterface;
-import org.pentaho.di.core.logging.LoggingObjectInterface;
 import org.pentaho.di.core.logging.LoggingObjectType;
 import org.pentaho.di.core.logging.LoggingRegistry;
 import org.pentaho.di.core.logging.SimpleLoggingObject;
@@ -4571,13 +4570,7 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
 
   public void dumpLoggingRegistry() {
     LoggingRegistry registry = LoggingRegistry.getInstance();
-    Map<String, LoggingObjectInterface> loggingMap = registry.getMap();
-
-    for ( LoggingObjectInterface loggingObject : loggingMap.values() ) {
-      System.out.println( loggingObject.getLogChannelId() + " - " + loggingObject.getObjectName() + " - "
-        + loggingObject.getObjectType() );
-    }
-
+    registry.dump( true );
   }
 
   @Override

@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -26,6 +26,8 @@ import org.pentaho.di.core.Const;
 
 import java.util.Iterator;
 import java.util.List;
+import java.util.ArrayList;
+import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.LinkedBlockingDeque;
 import java.util.stream.Collectors;
@@ -71,8 +73,7 @@ public class LoggingBuffer {
    * @param to
    * @return
    */
-  public List<KettleLoggingEvent> getLogBufferFromTo( List<String> channelId, boolean includeGeneral, int from,
-                                                      int to ) {
+  public List<KettleLoggingEvent> getLogBufferFromTo( List<String> channelId, boolean includeGeneral, int from, int to ) {
     Stream<BufferLine> bufferStream = buffer.stream().filter( line -> line.getNr() > from && line.getNr() <= to );
     if ( channelId != null ) {
       bufferStream = bufferStream.filter( line -> {
@@ -90,23 +91,20 @@ public class LoggingBuffer {
    * @param to
    * @return
    */
-  public List<KettleLoggingEvent> getLogBufferFromTo( String parentLogChannelId, boolean includeGeneral, int from,
-                                                      int to ) {
+  public List<KettleLoggingEvent> getLogBufferFromTo( String parentLogChannelId, boolean includeGeneral, int from, int to ) {
 
     // Typically, the log channel id is the one from the transformation or job running currently.
     // However, we also want to see the details of the steps etc.
     // So we need to look at the parents all the way up if needed...
     //
-    List<String> childIds = loggingRegistry.getLogChannelChildren( parentLogChannelId );
-
-    return getLogBufferFromTo( childIds, includeGeneral, from, to );
+    Set<String> childIds = loggingRegistry.getLogChannelChildrenSet( parentLogChannelId );
+    return getLogBufferFromTo( ( childIds != null ) ? new ArrayList<String>( childIds ) : (ArrayList<String>) null, includeGeneral, from, to );
   }
 
   public StringBuffer getBuffer( String parentLogChannelId, boolean includeGeneral, int startLineNr, int endLineNr ) {
     StringBuilder eventBuffer = new StringBuilder( 10000 );
 
-    List<KettleLoggingEvent> events =
-      getLogBufferFromTo( parentLogChannelId, includeGeneral, startLineNr, endLineNr );
+    List<KettleLoggingEvent> events = getLogBufferFromTo( parentLogChannelId, includeGeneral, startLineNr, endLineNr );
     for ( KettleLoggingEvent event : events ) {
       eventBuffer.append( layout.format( event ) ).append( Const.CR );
     }
