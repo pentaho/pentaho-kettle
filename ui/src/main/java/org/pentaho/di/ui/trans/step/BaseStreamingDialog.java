@@ -354,11 +354,14 @@ public abstract class BaseStreamingDialog extends BaseStepDialog implements Step
       }
     } else {
       saved = spoonInstance.saveXMLFile( newSubTransMeta, false );
-      try {
-        path = getRelativePath( KettleVFS.getFileObject( newSubTransMeta.getFilename() ).toString() );
-      } catch ( KettleFileException e ) {
-        new ErrorDialog( shell, BaseMessages.getString( PKG, "BaseStreamingDialog.File.Save.Fail.Title" ), BaseMessages.getString(
-          PKG, "BaseStreamingDialog.File.Save.Fail.Message" ), e );
+      if ( saved ) {
+        try {
+          path = getRelativePath( KettleVFS.getFileObject( newSubTransMeta.getFilename() ).toString() );
+        } catch ( KettleFileException e ) {
+          new ErrorDialog( shell, BaseMessages.getString( PKG, "BaseStreamingDialog.File.Save.Fail.Title" ),
+            BaseMessages.getString(
+              PKG, "BaseStreamingDialog.File.Save.Fail.Message" ), e );
+        }
       }
     }
 
