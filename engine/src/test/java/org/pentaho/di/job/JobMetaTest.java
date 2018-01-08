@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -39,6 +39,7 @@ import org.pentaho.di.core.listeners.CurrentDirectoryChangedListener;
 import org.pentaho.di.job.entries.empty.JobEntryEmpty;
 import org.pentaho.di.job.entries.trans.JobEntryTrans;
 import org.pentaho.di.job.entry.JobEntryCopy;
+import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.repository.ObjectRevision;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectory;
@@ -373,5 +374,49 @@ public class JobMetaTest {
     jobMeta.setRepositoryDirectory( repoDir );
 
     verify( listener, times( 1 ) ).directoryChanged( jobMeta, pathBefore, pathAfter );
+  }
+
+  @Test
+  public void testHasLoop_simpleLoop() throws Exception {
+    //main->2->3->main
+    JobMeta jobMetaSpy = spy( jobMeta );
+    JobEntryCopy jobEntryCopyMain = createJobEntryCopy( "mainStep" );
+    JobEntryCopy jobEntryCopy2 = createJobEntryCopy( "step2" );
+    JobEntryCopy jobEntryCopy3 = createJobEntryCopy( "step3" );
+    when( jobMetaSpy.findNrPrevJobEntries( jobEntryCopyMain ) ).thenReturn( 1 );
+    when( jobMetaSpy.findPrevJobEntry( jobEntryCopyMain, 0 ) ).thenReturn( jobEntryCopy2 );
+    when( jobMetaSpy.findNrPrevJobEntries( jobEntryCopy2 ) ).thenReturn( 1 );
+    when( jobMetaSpy.findPrevJobEntry( jobEntryCopy2, 0 ) ).thenReturn( jobEntryCopy3 );
+    when( jobMetaSpy.findNrPrevJobEntries( jobEntryCopy3 ) ).thenReturn( 1 );
+    when( jobMetaSpy.findPrevJobEntry( jobEntryCopy3, 0 ) ).thenReturn( jobEntryCopyMain );
+    assertTrue( jobMetaSpy.hasLoop( jobEntryCopyMain ) );
+  }
+
+  @Test
+  public void testHasLoop_loopInPrevSteps() throws Exception {
+    //main->2->3->4->3
+    JobMeta jobMetaSpy = spy( jobMeta );
+    JobEntryCopy jobEntryCopyMain = createJobEntryCopy( "mainStep" );
+    JobEntryCopy jobEntryCopy2 = createJobEntryCopy( "step2" );
+    JobEntryCopy jobEntryCopy3 = createJobEntryCopy( "step3" );
+    JobEntryCopy jobEntryCopy4 = createJobEntryCopy( "step4" );
+    when( jobMetaSpy.findNrPrevJobEntries( jobEntryCopyMain ) ).thenReturn( 1 );
+    when( jobMetaSpy.findPrevJobEntry( jobEntryCopyMain, 0 ) ).thenReturn( jobEntryCopy2 );
+    when( jobMetaSpy.findNrPrevJobEntries( jobEntryCopy2 ) ).thenReturn( 1 );
+    when( jobMetaSpy.findPrevJobEntry( jobEntryCopy2, 0 ) ).thenReturn( jobEntryCopy3 );
+    when( jobMetaSpy.findNrPrevJobEntries( jobEntryCopy3 ) ).thenReturn( 1 );
+    when( jobMetaSpy.findPrevJobEntry( jobEntryCopy3, 0 ) ).thenReturn( jobEntryCopy4 );
+    when( jobMetaSpy.findNrPrevJobEntries( jobEntryCopy4 ) ).thenReturn( 1 );
+    when( jobMetaSpy.findPrevJobEntry( jobEntryCopy4, 0 ) ).thenReturn( jobEntryCopy3 );
+    //check no StackOverflow error
+    assertFalse( jobMetaSpy.hasLoop( jobEntryCopyMain ) );
+  }
+
+  private JobEntryCopy createJobEntryCopy( String name ) {
+    JobEntryInterface jobEntry = mock( JobEntryInterface.class );
+    JobEntryCopy jobEntryCopy = new JobEntryCopy( jobEntry );
+    when( jobEntryCopy.getName() ).thenReturn( name );
+    jobEntryCopy.setNr( 0 );
+    return jobEntryCopy;
   }
 }
