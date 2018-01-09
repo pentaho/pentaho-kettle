@@ -145,6 +145,9 @@ public class BaseStreamStep extends BaseStep {
   }
 
   private void putRows( List<RowMetaAndData> rows ) {
+    if ( isStopped() ) {
+      return;
+    }
     rows.forEach( row -> {
       try {
         putRow( row.getRowMeta(), row.getData() );
