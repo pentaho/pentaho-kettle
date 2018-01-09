@@ -45,7 +45,6 @@ import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectoryInterface;
 import org.pentaho.di.repository.RepositoryExtended;
-import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.repository.repositoryexplorer.ContextChangeVetoer;
 import org.pentaho.di.ui.repository.repositoryexplorer.ContextChangeVetoer.TYPE;
 import org.pentaho.di.ui.repository.repositoryexplorer.ContextChangeVetoerCollection;
@@ -555,36 +554,11 @@ public class BrowseController extends AbstractXulEventHandler implements IUISupp
       if ( object instanceof UIRepositoryDirectory ) {
         repoDir = (UIRepositoryDirectory) object;
         newSelectedItem = repoDir.getParent();
-
-        // If content to be deleted is a folder we will display a warning message
-        // notwithstanding the folder is empty or not. If you choose to delete this folder, all its
-        // item(s) will be lost. If the user accept this, then we will delete that folder
-        // otherwise we will end this method call
-        confirmBox = (XulConfirmBox) document.createElement( "confirmbox" );
-        confirmBox.setTitle( BaseMessages.getString( PKG, "BrowseController.DeleteNonEmptyFolderWarningTitle" ) );
-        confirmBox.setMessage( BaseMessages.getString( PKG, "BrowseController.DeleteFilesWarningMessage" ) );
-        confirmBox.setAcceptLabel( BaseMessages.getString( PKG, "Dialog.Ok" ) );
-        confirmBox.setCancelLabel( BaseMessages.getString( PKG, "Dialog.Cancel" ) );
-        confirmBox.addDialogCallback( new XulDialogCallback<Object>() {
-
-          public void onClose( XulComponent sender, Status returnCode, Object retVal ) {
-            if ( returnCode == Status.ACCEPT ) {
-              try {
-                deleteFolder( repoDir );
-              } catch ( Exception e ) {
-                if ( mainController == null || !mainController.handleLostRepository( e ) ) {
-                  new ErrorDialog( shell, BaseMessages.getString( PKG, "RepositoryExplorerDialog.ErrorDialog.Title" ),
-                      BaseMessages.getString( PKG, "RepositoryExplorerDialog.ErrorDialog.Message" ), e );
-                }
-              }
-            }
-          }
-
-          public void onError( XulComponent sender, Throwable t ) {
-            throw new RuntimeException( t );
-          }
-        } );
-        confirmBox.open();
+        confirm( "BrowseController.DeleteNonEmptyFolderWarningTitle", "BrowseController.DeleteFolderWarningMessage",
+          () -> {
+            deleteFolder( repoDir );
+            return null;
+          } );
         break;
       } else {
         deleteFolder( repoDir );
