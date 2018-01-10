@@ -3,7 +3,7 @@
  *
  *  Pentaho Data Integration
  *
- *  Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ *  Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  * ******************************************************************************
  *
@@ -42,20 +42,30 @@ public final class RemoteSource implements LogicalModelElement, Serializable {
   private static final long serialVersionUID = -8344589338390125137L;
   private final String id;
   private final ModelType modelType;
+  private final String requestUUID;
 
   public RemoteSource( String id ) {
     this.id = id;
     this.modelType = null;
+    this.requestUUID = null;
   }
 
   public RemoteSource( ModelType modelType ) {
     this.modelType = modelType;
     this.id = null;
+    this.requestUUID = null;
   }
 
   public RemoteSource( ModelType modelType, String id ) {
     this.modelType = modelType;
     this.id = id;
+    this.requestUUID = null;
+  }
+
+  public RemoteSource( String requestUUID, ModelType modelType, String id ) {
+    this.modelType = modelType;
+    this.id = id;
+    this.requestUUID = requestUUID;
   }
 
   @Override public String getId() {
@@ -64,5 +74,9 @@ public final class RemoteSource implements LogicalModelElement, Serializable {
 
   public ModelType getModelType() {
     return modelType;
+  }
+
+  public String getRequestUUID() {
+    return requestUUID;
   }
 }
