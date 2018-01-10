@@ -564,7 +564,7 @@ public class SlaveServer extends ChangedFlag implements Cloneable, SharedObjectI
         serviceAndArguments = "/" + environmentSubstitute( getWebAppName() ) + serviceAndArguments;
       }
 
-      if ( !Utils.isEmpty( proxyHostname ) && realHostname.equals( "localhost" ) ) {
+      if ( !Utils.isEmpty( realHostname ) && !Utils.isEmpty( proxyHostname ) && realHostname.equals( "localhost" ) ) {
         realHostname = "127.0.0.1";
       }
 
@@ -761,7 +761,7 @@ public class SlaveServer extends ChangedFlag implements Cloneable, SharedObjectI
     HttpState state = client.getState();
 
     String targetHost = hostname;
-    if ( !Utils.isEmpty( hostname ) && hostname.equals( "localhost" ) ) {
+    if ( !Utils.isEmpty( hostname ) && !Utils.isEmpty( proxyHostname ) && hostname.equals( "localhost" ) ) {
       targetHost = "127.0.0.1";
     }
 
