@@ -283,49 +283,53 @@ public class XMLInputStreamTest {
     } while ( !haveRowsToRead );
 
     int expectedRowNum = 1;
+
+    assertEquals( INCORRECT_XML_DATA_TYPE_DESCRIPTION_MESSAGE, "<ProductGroup attribute1=\"v1\"/>",
+        rl.getWritten().get( expectedRowNum )[typeDescriptionPos] );
+
     assertEquals( INCORRECT_XML_DATA_TYPE_DESCRIPTION_MESSAGE, "START_ELEMENT", rl.getWritten().get(
-        expectedRowNum )[typeDescriptionPos] );
-    assertEquals( INCORRECT_XML_PATH_MESSAGE, "/ProductGroup", rl.getWritten().get( expectedRowNum )[pathPos] );
-    assertEquals( INCORRECT_XML_DATA_NAME_MESSAGE, "ProductGroup", rl.getWritten().get( expectedRowNum )[dataNamePos] );
+        expectedRowNum )[typeDescriptionPos + 1] );
+    assertEquals( INCORRECT_XML_PATH_MESSAGE, "/ProductGroup", rl.getWritten().get( expectedRowNum )[pathPos + 1] );
+    assertEquals( INCORRECT_XML_DATA_NAME_MESSAGE, "ProductGroup", rl.getWritten().get( expectedRowNum )[dataNamePos + 1] );
 
     // attributes
     // ATTRIBUTE_1
     expectedRowNum++;
     assertEquals( INCORRECT_XML_DATA_TYPE_DESCRIPTION_MESSAGE, "ATTRIBUTE", rl.getWritten().get(
-        expectedRowNum )[typeDescriptionPos] );
-    assertEquals( INCORRECT_XML_PATH_MESSAGE, "/ProductGroup", rl.getWritten().get( expectedRowNum )[pathPos] );
-    assertEquals( INCORRECT_XML_DATA_NAME_MESSAGE, "attribute1", rl.getWritten().get( expectedRowNum )[dataNamePos] );
-    assertEquals( INCORRECT_XML_DATA_VALUE_MESSAGE, "v1", rl.getWritten().get( expectedRowNum )[dataValue] );
+        expectedRowNum )[typeDescriptionPos + 1] );
+    assertEquals( INCORRECT_XML_PATH_MESSAGE, "/ProductGroup", rl.getWritten().get( expectedRowNum )[pathPos + 1] );
+    assertEquals( INCORRECT_XML_DATA_NAME_MESSAGE, "attribute1", rl.getWritten().get( expectedRowNum )[dataNamePos + 1] );
+    assertEquals( INCORRECT_XML_DATA_VALUE_MESSAGE, "v1", rl.getWritten().get( expectedRowNum )[dataValue + 1] );
 
     // check EndElement for the ProductGroup element
     expectedRowNum++;
     assertEquals( INCORRECT_XML_DATA_TYPE_DESCRIPTION_MESSAGE, "END_ELEMENT", rl.getWritten().get(
-        expectedRowNum )[typeDescriptionPos] );
-    assertEquals( INCORRECT_XML_PATH_MESSAGE, "/ProductGroup", rl.getWritten().get( expectedRowNum )[pathPos] );
-    assertEquals( INCORRECT_XML_DATA_NAME_MESSAGE, "ProductGroup", rl.getWritten().get( expectedRowNum )[dataNamePos] );
+        expectedRowNum )[typeDescriptionPos + 1] );
+    assertEquals( INCORRECT_XML_PATH_MESSAGE, "/ProductGroup", rl.getWritten().get( expectedRowNum )[pathPos + 1] );
+    assertEquals( INCORRECT_XML_DATA_NAME_MESSAGE, "ProductGroup", rl.getWritten().get( expectedRowNum )[dataNamePos +1] );
   }
 
   @Test
   public void testFileNameEnteredManuallyWithIncomingHops() throws Exception {
-    testCorrectFileSelected( getFile( "default.xml" ) );
+    testCorrectFileSelected( getFile( "default.xml" ), 0 );
   }
 
   @Test
   public void testFileNameSelectedFromIncomingHops() throws Exception {
-    testCorrectFileSelected( "filename" );
+    testCorrectFileSelected( "filename", 1 );
   }
 
   @Test(expected = KettleException.class)
   public void testNotValidFilePathAndFileField() throws Exception {
-    testCorrectFileSelected( "notPathNorValidFieldName" );
+    testCorrectFileSelected( "notPathNorValidFieldName", 0 );
   }
 
   @Test(expected = KettleException.class)
   public void testEmptyFileField() throws Exception {
-    testCorrectFileSelected( StringUtils.EMPTY );
+    testCorrectFileSelected( StringUtils.EMPTY, 0 );
   }
 
-  private void testCorrectFileSelected( String filenameParam ) throws KettleException {
+  private void testCorrectFileSelected( String filenameParam, int xmlTagsStartPosition ) throws KettleException {
     xmlInputStreamMeta.sourceFromInput = false;
     xmlInputStreamMeta.setFilename( filenameParam );
     xmlInputStreamData.outputRowMeta = new RowMeta();
@@ -353,6 +357,8 @@ public class XMLInputStreamTest {
     do {
       haveRowsToRead = !xmlInputStream.processRow( xmlInputStreamMeta, xmlInputStreamData );
     } while ( !haveRowsToRead );
+    assertEquals( INCORRECT_XML_DATA_TYPE_DESCRIPTION_MESSAGE, "START_ELEMENT", rl.getWritten().get(
+        1 )[xmlTagsStartPosition] );
   }
 
   private String createTestFile( String xmlContent ) throws IOException {
