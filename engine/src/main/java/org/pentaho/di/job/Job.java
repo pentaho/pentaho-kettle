@@ -2046,6 +2046,16 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
     namedParams.copyParametersFrom( params );
   }
 
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.pentaho.di.core.parameters.NamedParams#mergeParametersWith(org.pentaho.di.core.parameters.NamedParams, boolean replace)
+   */
+  @Override
+  public void mergeParametersWith( NamedParams params, boolean replace ) {
+    namedParams.mergeParametersWith( params, replace );
+  }
+
   /**
    * Sets the socket repository.
    *

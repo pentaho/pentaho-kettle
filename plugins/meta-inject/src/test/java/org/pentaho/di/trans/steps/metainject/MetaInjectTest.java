@@ -70,10 +70,21 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.fail;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.refEq;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.anyString;
 
 @RunWith( PowerMockRunner.class )
 @PrepareForTest( { MetaInject.class } )
@@ -111,6 +122,8 @@ public class MetaInjectTest {
 
   private TransMeta transMeta;
 
+  private Trans trans;
+
   private StepMetaInjectionInterface metaInjectionInterface;
   private IMetaStore metaStore;
 
@@ -130,6 +143,8 @@ public class MetaInjectTest {
 
     TransMeta internalTransMeta = mock( TransMeta.class );
     StepMeta stepMeta = mock( StepMeta.class );
+    trans = mock( Trans.class );
+    doReturn( trans ).when( metaInject ).getTrans();
     doReturn( INJECTOR_STEP_NAME ).when( stepMeta ).getName();
     doReturn( Collections.singletonList( stepMeta ) ).when( internalTransMeta ).getUsedSteps();
     StepMetaInterface stepMetaInterface = mock( StepMetaInterface.class );
@@ -248,11 +263,11 @@ public class MetaInjectTest {
 
   @Test
   public void transParametersPassedToChildTransformation() throws KettleException {
-    TransMeta transMeta = new TransMeta();
-    transMeta.addParameterDefinition( TEST_PARAMETER, "TEST_DEF_VALUE", "" );
-    transMeta.setParameterValue( TEST_PARAMETER, TEST_VALUE );
+    Trans trans = new Trans();
+    trans.addParameterDefinition( TEST_PARAMETER, "TEST_DEF_VALUE", "" );
+    trans.setParameterValue( TEST_PARAMETER, TEST_VALUE );
 
-    doReturn( transMeta ).when( metaInject ).getTransMeta();
+    doReturn( trans ).when( metaInject ).getTrans();
     TransMeta internalTransMeta = new TransMeta();
     doReturn( internalTransMeta ).when( metaInject ).loadTransformationMeta();
 
@@ -486,40 +501,40 @@ public class MetaInjectTest {
   }
 
   @Test
-  public void testWriteInjectedKtrNoRepo() throws Exception{
-    PowerMockito.doNothing().when( metaInject , "writeInjectedKtrToRepo", "/home/admin/injected_trans.ktr" );
-    PowerMockito.doNothing().when( metaInject , "writeInjectedKtrToFs", "/home/admin/injected_trans.ktr" );
+  public void testWriteInjectedKtrNoRepo() throws Exception {
+    PowerMockito.doNothing().when( metaInject, "writeInjectedKtrToRepo", "/home/admin/injected_trans.ktr" );
+    PowerMockito.doNothing().when( metaInject, "writeInjectedKtrToFs", "/home/admin/injected_trans.ktr" );
     metaInject.setRepository( null );
     Whitebox.<String>invokeMethod( metaInject, "writeInjectedKtr", "/home/admin/injected_trans.ktr" );
-    PowerMockito.verifyPrivate( metaInject , times( 0 ) ).invoke( "writeInjectedKtrToRepo" ,
+    PowerMockito.verifyPrivate( metaInject, times( 0 ) ).invoke( "writeInjectedKtrToRepo",
       "/home/admin/injected_trans.ktr" );
-    PowerMockito.verifyPrivate( metaInject , times( 1) ).invoke( "writeInjectedKtrToFs" , "/home/admin/injected_trans"
+    PowerMockito.verifyPrivate( metaInject, times( 1 ) ).invoke( "writeInjectedKtrToFs", "/home/admin/injected_trans"
       + ".ktr" );
   }
 
   @Test
-  public void testWriteInjectedKtrWithRepo() throws Exception{
-    PowerMockito.doNothing().when( metaInject , "writeInjectedKtrToRepo", "/home/admin/injected_trans.ktr" );
-    PowerMockito.doNothing().when( metaInject , "writeInjectedKtrToFs", "/home/admin/injected_trans.ktr" );
+  public void testWriteInjectedKtrWithRepo() throws Exception {
+    PowerMockito.doNothing().when( metaInject, "writeInjectedKtrToRepo", "/home/admin/injected_trans.ktr" );
+    PowerMockito.doNothing().when( metaInject, "writeInjectedKtrToFs", "/home/admin/injected_trans.ktr" );
     metaInject.setRepository( repository );
     Whitebox.<String>invokeMethod( metaInject, "writeInjectedKtr", "/home/admin/injected_trans.ktr" );
-    PowerMockito.verifyPrivate( metaInject , times( 1 ) ).invoke( "writeInjectedKtrToRepo" ,
+    PowerMockito.verifyPrivate( metaInject, times( 1 ) ).invoke( "writeInjectedKtrToRepo",
       "/home/admin/injected_trans.ktr" );
-    PowerMockito.verifyPrivate( metaInject , times( 0 ) ).invoke( "writeInjectedKtrToFs" ,
+    PowerMockito.verifyPrivate( metaInject, times( 0 ) ).invoke( "writeInjectedKtrToFs",
       "/home/admin/injected_trans.ktr" );
   }
 
   @Test
-  public void testWriteInjectedKtrToRepoSameDir() throws Exception{
+  public void testWriteInjectedKtrToRepoSameDir() throws Exception {
     RepositoryDirectory rootDir = PowerMockito.spy( new RepositoryDirectory( null, "/" ) );
     RepositoryDirectory adminDir = PowerMockito.spy( new RepositoryDirectory( new RepositoryDirectory(
-      new RepositoryDirectory(null, "/" ), "home" ), "admin" ) );
+      new RepositoryDirectory( null, "/" ), "home" ), "admin" ) );
     TransMeta cloneMeta = PowerMockito.spy( (TransMeta) data.transMeta.clone() );
     PowerMockito.doReturn( cloneMeta ).when( data.transMeta ).clone();
 
     PowerMockito.doReturn( adminDir ).when( repository ).createRepositoryDirectory( rootDir, "home/admin" );
     PowerMockito.doReturn( adminDir ).when( data.transMeta ).getRepositoryDirectory();
-    PowerMockito.whenNew( RepositoryDirectory.class).withArguments( null, "/" ).thenReturn( rootDir );
+    PowerMockito.whenNew( RepositoryDirectory.class ).withArguments( null, "/" ).thenReturn( rootDir );
 
     metaInject.setRepository( repository );
     Whitebox.<String>invokeMethod( metaInject, "writeInjectedKtrToRepo", "/home/admin/injected_trans.ktr" );
@@ -531,17 +546,17 @@ public class MetaInjectTest {
   }
 
   @Test
-  public void testWriteInjectedKtrToRepoDifferentDir() throws Exception{
+  public void testWriteInjectedKtrToRepoDifferentDir() throws Exception {
     RepositoryDirectory rootDir = PowerMockito.spy( new RepositoryDirectory( null, "/" ) );
     RepositoryDirectory adminDir = PowerMockito.spy( new RepositoryDirectory( new RepositoryDirectory(
-      new RepositoryDirectory(null, "/" ), "home" ), "admin" ) );
+      new RepositoryDirectory( null, "/" ), "home" ), "admin" ) );
     TransMeta cloneMeta = PowerMockito.spy( (TransMeta) data.transMeta.clone() );
     PowerMockito.doReturn( cloneMeta ).when( data.transMeta ).clone();
 
     PowerMockito.doReturn( adminDir ).when( repository ).createRepositoryDirectory( rootDir,
       "/home/admin" );
     PowerMockito.doReturn( adminDir ).when( data.transMeta ).getRepositoryDirectory();
-    PowerMockito.whenNew( RepositoryDirectory.class).withArguments( null, "/" ).thenReturn( rootDir );
+    PowerMockito.whenNew( RepositoryDirectory.class ).withArguments( null, "/" ).thenReturn( rootDir );
 
     metaInject.setRepository( repository );
     Whitebox.<String>invokeMethod( metaInject, "writeInjectedKtrToRepo", "injected_trans" );
