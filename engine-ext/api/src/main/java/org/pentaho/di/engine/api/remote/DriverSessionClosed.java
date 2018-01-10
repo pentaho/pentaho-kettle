@@ -22,18 +22,27 @@
  * *****************************************************************************
  */
 
-package org.pentaho.di.engine.api;
-
-
-import org.pentaho.di.engine.api.model.Transformation;
+package org.pentaho.di.engine.api.remote;
 
 /**
- * An Engine is responsible for executing an Transformation.
+ * Message sent by the AEL Driver Session to inform that session is going to close.
+ *
+ * @author fcamara
  */
-public interface Engine {
-  ExecutionContext prepare( Transformation trans );
+public class DriverSessionClosed implements Message {
+  public final String userId;
+  public final String reason;
 
-  void shutdown();
+  public DriverSessionClosed( String userId, String reason ) {
+    this.userId = userId;
+    this.reason = reason;
+  }
 
-  String getId();
+  public String getUserId() {
+    return userId;
+  }
+
+  public String getReason() {
+    return reason;
+  }
 }

@@ -3,7 +3,7 @@
  *
  *  Pentaho Data Integration
  *
- *  Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ *  Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  * ******************************************************************************
  *
@@ -53,20 +53,25 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class DaemonMessagesClientEndpoint extends Endpoint {
   private static final String PRFX_WS = "ws://";
   private static final String PRFX_WS_SSL = "wss://";
+  private static final String REUSE_ENDPOINT = "/executionReuse";
+  private static final String ENDPOINT = "/execution";
   private final MessageEventService messageEventService;
   private Session userSession = null;
   private String principal = null;
   private String keytab = null;
+  private boolean reuseSparkContext = false;
   //only one stop message
   private AtomicBoolean alReadySendedStopMessage =  new AtomicBoolean( false );
 
   public DaemonMessagesClientEndpoint( String host, String port, boolean ssl,
                                        MessageEventService messageEventService ) throws KettleException {
     try {
-      String url = ( ssl ? PRFX_WS_SSL : PRFX_WS ) + host + ":" + port + "/execution";
+      setAuthProperties();
+
+      String url =
+        ( ssl ? PRFX_WS_SSL : PRFX_WS ) + host + ":" + port + ( reuseSparkContext ? REUSE_ENDPOINT : ENDPOINT );
       URI uri = new URI( url );
       this.messageEventService = messageEventService;
-      setAuthProperties();
 
       WebSocketContainer container = ContainerProvider.getWebSocketContainer();
       container.connectToServer( this, ClientEndpointConfig.Builder.create()
@@ -87,6 +92,8 @@ public class DaemonMessagesClientEndpoint extends Endpoint {
 
     this.principal = variables.getVariable( "KETTLE_AEL_PDI_DAEMON_PRINCIPAL", null );
     this.keytab = variables.getVariable( "KETTLE_AEL_PDI_DAEMON_KEYTAB", null );
+    String reuse = variables.getVariable( "KETTLE_AEL_PDI_DAEMON_CONTEXT_REUSE", "false" );
+    this.reuseSparkContext = "true".equals( reuse.toLowerCase() ) || "y".equals( reuse.toLowerCase() );
   }
 
   /**

@@ -3,7 +3,7 @@
  *
  *  Pentaho Data Integration
  *
- *  Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ *  Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  * ******************************************************************************
  *
@@ -40,6 +40,7 @@ public class StopMessage implements Message {
   private static final long serialVersionUID = 8842623444691045346L;
   //private CloseReason.CloseCode closeCode;
   private String reasonPhrase;
+  private String requestUUID;
 
   public StopMessage(
     //CloseReason.CloseCode closeCode,
@@ -48,8 +49,19 @@ public class StopMessage implements Message {
     this.reasonPhrase = reasonPhrase;
   }
 
+  public StopMessage(
+    String requestUUID,
+    String reasonPhrase ) {
+    this.requestUUID = requestUUID;
+    this.reasonPhrase = reasonPhrase;
+  }
+
   public String getReasonPhrase() {
     return reasonPhrase;
+  }
+
+  public String getRequestUUID() {
+    return requestUUID;
   }
 
   public void setReasonPhrase( String reasonPhrase ) {
