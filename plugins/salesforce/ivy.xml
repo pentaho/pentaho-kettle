@@ -22,8 +22,8 @@
     <dependency org="pentaho-kettle" name="kettle-engine"      rev="${dependency.kettle.revision}" conf="dev->default" changing="true"/>
     <dependency org="pentaho-kettle" name="kettle-ui-swt"      rev="${dependency.kettle.revision}" conf="dev->default" changing="true"/>
 
-    <dependency org="com.force.api"   name="force-wsc" rev="37.0.3" transitive="false"/>
-    <dependency org="com.force.api"   name="force-partner-api" rev="37.0.3" transitive="false"/>
+    <dependency org="com.force.api"   name="force-wsc" rev="41.0.0" transitive="false"/>
+    <dependency org="com.force.api"   name="force-partner-api" rev="41.0.0" transitive="false"/>
     <!--dependency org="org.apache.axis" name="axis-saaj" rev="1.4"/-->
 
     <!-- SWT it required to compile any version of any architecture will work -->

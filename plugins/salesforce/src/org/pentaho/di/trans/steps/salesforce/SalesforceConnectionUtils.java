@@ -31,7 +31,7 @@ public class SalesforceConnectionUtils {
 
   private static Class<?> PKG = SalesforceInputMeta.class; // for i18n purposes, needed by Translator2!!
 
-  public static final String TARGET_DEFAULT_URL = "https://login.salesforce.com/services/Soap/u/37.0";
+  public static final String TARGET_DEFAULT_URL = "https://login.salesforce.com/services/Soap/u/41.0";
 
   public static final String DEFAULT_TIMEOUT = "60000";
 
