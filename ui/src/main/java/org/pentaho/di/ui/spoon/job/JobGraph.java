@@ -3,7 +3,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -1268,7 +1268,7 @@ public class JobGraph extends AbstractGraph implements XulEventHandler, Redrawab
       if ( checkIfHopAlreadyExists( jobMeta, hop_candidate ) ) {
         boolean cancel = false;
         jobMeta.addJobHop( hop_candidate );
-        if ( jobMeta.hasLoop( hop_candidate.getFromEntry() ) || jobMeta.hasLoop( hop_candidate.getToEntry() ) ) {
+        if ( jobMeta.hasLoop( hop_candidate.getToEntry() ) ) {
           MessageBox mb = new MessageBox( spoon.getShell(), SWT.OK | SWT.CANCEL | SWT.ICON_WARNING );
           mb.setMessage( BaseMessages.getString( PKG, "JobGraph.Dialog.HopCausesLoop.Message" ) );
           mb.setText( BaseMessages.getString( PKG, "JobGraph.Dialog.HopCausesLoop.Title" ) );
