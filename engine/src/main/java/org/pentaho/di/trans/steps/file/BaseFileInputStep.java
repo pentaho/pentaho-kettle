@@ -22,17 +22,10 @@
 
 package org.pentaho.di.trans.steps.file;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.vfs2.FileObject;
 import org.apache.commons.vfs2.FileSystemException;
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.ResultFile;
 import org.pentaho.di.core.RowSet;
@@ -42,6 +35,7 @@ import org.pentaho.di.core.row.RowDataUtil;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
@@ -54,6 +48,12 @@ import org.pentaho.di.trans.step.errorhandling.CompositeFileErrorHandler;
 import org.pentaho.di.trans.step.errorhandling.FileErrorHandler;
 import org.pentaho.di.trans.step.errorhandling.FileErrorHandlerContentLineNumber;
 import org.pentaho.di.trans.step.errorhandling.FileErrorHandlerMissingFiles;
+
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * This class contains base functionality for file-based input steps.
@@ -171,21 +171,28 @@ public abstract class BaseFileInputStep<M extends BaseFileInputMeta<?, ?, ?>, D 
 
       data.reader = createReader( meta, data, data.file );
     } catch ( Exception e ) {
-      String errorMsg =
-          "Couldn't open file #" + data.currentFileIndex + " : " + data.file.getName().getFriendlyURI() + " --> " + e
-              .toString();
-      logError( errorMsg );
-      if ( failAfterBadFile( errorMsg ) ) { // !meta.isSkipBadFiles()) stopAll();
-        stopAll();
+      if ( !handleOpenFileException( e ) ) {
+        return false;
       }
-      setErrors( getErrors() + 1 );
-      return false;
+      data.reader = null;
     }
-
     // Move file pointer ahead!
     data.currentFileIndex++;
 
     return true;
+  }
+
+  protected boolean handleOpenFileException( Exception e ) {
+    String errorMsg =
+      "Couldn't open file #" + data.currentFileIndex + " : " + data.file.getName().getFriendlyURI() + " --> " + e
+        .toString();
+    if ( !failAfterBadFile( errorMsg ) ) { // !meta.isSkipBadFiles()) stopAll();
+      return true;
+    }
+    stopAll();
+    setErrors( getErrors() + 1 );
+    logError( errorMsg );
+    return false;
   }
 
   /**
@@ -208,7 +215,7 @@ public abstract class BaseFileInputStep<M extends BaseFileInputMeta<?, ?, ?>, D 
     }
 
     while ( true ) {
-      if ( data.reader.readRow() ) {
+      if ( data.reader != null && data.reader.readRow() ) {
         // row processed
         return true;
       }
