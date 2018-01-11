@@ -259,6 +259,7 @@ import org.pentaho.di.trans.steps.selectvalues.SelectValuesMeta;
 import org.pentaho.di.ui.core.ConstUI;
 import org.pentaho.di.ui.core.FileDialogOperation;
 import org.pentaho.di.ui.core.PrintSpool;
+import org.pentaho.di.ui.core.FileSpool;
 import org.pentaho.di.ui.core.PropsUI;
 import org.pentaho.di.ui.core.auth.AuthProviderDialog;
 import org.pentaho.di.ui.core.database.wizard.CreateDatabaseWizard;
