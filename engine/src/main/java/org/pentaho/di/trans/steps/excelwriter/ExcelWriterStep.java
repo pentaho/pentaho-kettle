@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -610,41 +610,15 @@ public class ExcelWriterStep extends BaseStep implements StepInterface {
    * @throws KettleException
    */
   public static void copyFile( FileObject in, FileObject out ) throws KettleException {
-
-    BufferedInputStream fis = null;
-    BufferedOutputStream fos = null;
-
-    try {
-
-      fis = new BufferedInputStream( KettleVFS.getInputStream( in ) );
-      fos = new BufferedOutputStream( KettleVFS.getOutputStream( out, false ) );
-
+    try ( BufferedInputStream fis = new BufferedInputStream( KettleVFS.getInputStream( in ) );
+          BufferedOutputStream fos = new BufferedOutputStream( KettleVFS.getOutputStream( out, false ) ) ) {
       byte[] buf = new byte[ 1024 * 1024 ]; // copy in chunks of 1 MB
       int i = 0;
       while ( ( i = fis.read( buf ) ) != -1 ) {
         fos.write( buf, 0, i );
       }
-      fos.flush();
-      fos.close();
-      fis.close();
     } catch ( Exception e ) {
       throw new KettleException( e );
-    } finally {
-      if ( fis != null ) {
-        try {
-          fis.close();
-        } catch ( IOException e ) {
-          e.printStackTrace();
-        }
-      }
-
-      if ( fos != null ) {
-        try {
-          fos.close();
-        } catch ( IOException e ) {
-          e.printStackTrace();
-        }
-      }
     }
   }
 
@@ -744,9 +718,11 @@ public class ExcelWriterStep extends BaseStep implements StepInterface {
       // file is guaranteed to be in place now
       if ( meta.getExtension().equalsIgnoreCase( "xlsx" ) ) {
         XSSFWorkbook xssfWorkbook = new XSSFWorkbook( KettleVFS.getInputStream( data.file ) );
-        if ( meta.isStreamingData() ) {
+        if ( meta.isStreamingData() && !meta.isTemplateEnabled() ) {
           data.wb = new SXSSFWorkbook( xssfWorkbook, 100 );
         } else {
+          //Initialize it later after writing header/template because SXSSFWorkbook can't read/rewrite existing data,
+          // only append.
           data.wb = xssfWorkbook;
         }
       } else {
@@ -856,6 +832,11 @@ public class ExcelWriterStep extends BaseStep implements StepInterface {
       // may have to write a header here
       if ( meta.isHeaderEnabled() && !( !data.createNewSheet && meta.isAppendOmitHeader() && appendingToSheet ) ) {
         writeHeader();
+      }
+
+      if ( meta.isStreamingData() && meta.isTemplateEnabled() ) {
+        data.wb = new SXSSFWorkbook( (XSSFWorkbook) data.wb, 100 );
+        data.sheet = data.wb.getSheet( data.realSheetname );
       }
 
       if ( log.isDebug() ) {
