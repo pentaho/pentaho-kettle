@@ -7085,6 +7085,62 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
 
     return false;
   }
+    
+  public void convertToPNG() {
+	    TransMeta transMeta = getActiveTransformation();
+	    if ( transMeta != null ) {
+	      convertTransFile( transMeta );
+	    }
+	    
+	    JobMeta jobMeta = getActiveJob();
+	    if ( jobMeta != null ) {
+	    	convertJobFile( jobMeta );
+	    }
+	}
+    
+  private void convertTransFile( TransMeta transMeta ) {
+	    TransGraph transGraph = getActiveTransGraph();
+	    if ( transGraph == null ) {
+	      return;
+	    }
+
+	    FileSpool fs = new FileSpool();
+	    String targetFile = fs.getTargetFile( shell, transMeta );
+
+	    if(targetFile != null){
+		    Point max = transMeta.getMaximum();
+	
+		    Image img = transGraph.getTransformationImage( null, max.x, max.y, 1.0f );
+		    
+		    ImageLoader loader = new ImageLoader();
+		    loader.data = new ImageData[] {img.getImageData()};
+		    loader.save(targetFile, SWT.IMAGE_PNG);
+	
+		    img.dispose();
+	    }
+  }  
+    
+  private void convertJobFile( JobMeta jobMeta ) {
+	    JobGraph jobGraph = getActiveJobGraph();
+	    if ( jobGraph == null ) {
+	      return;
+	    }
+
+	    FileSpool fs = new FileSpool();
+	    String targetFile = fs.getTargetFile( shell, jobMeta );
+
+	    if(targetFile != null){
+		    Point max = jobMeta.getMaximum();
+	
+		    Image img = jobGraph.getJobImage( null, max.x, max.y, 1.0f );
+		    
+		    ImageLoader loader = new ImageLoader();
+		    loader.data = new ImageData[] {img.getImageData()};
+		    loader.save(targetFile, SWT.IMAGE_PNG);
+	
+		    img.dispose();
+	    }
+  }    
 
   public void printFile() {
     TransMeta transMeta = getActiveTransformation();
