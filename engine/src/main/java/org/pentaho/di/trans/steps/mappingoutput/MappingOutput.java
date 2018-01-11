@@ -25,6 +25,7 @@ package org.pentaho.di.trans.steps.mappingoutput;
 import java.util.List;
 
 import org.pentaho.di.core.BlockingRowSet;
+import org.pentaho.di.core.RowSet;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
@@ -150,7 +151,10 @@ public class MappingOutput extends BaseStep implements StepInterface {
       // As such, we'll simply grab the remaining row sets at the Mapping#processRow() level and assign them to a
       // Mapping Input step.
       //
-      targetSteps[i].getInputRowSets().add( rowSet );
+      List<RowSet> targetStepInputRowSets = targetSteps[i].getInputRowSets();
+      synchronized (targetStepInputRowSets) {
+        targetStepInputRowSets.add( rowSet );
+      }
     }
 
     data.inputValueRenames = inputValueRenames;

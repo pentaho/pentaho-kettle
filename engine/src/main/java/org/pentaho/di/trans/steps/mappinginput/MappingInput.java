@@ -25,6 +25,7 @@ package org.pentaho.di.trans.steps.mappinginput;
 import java.util.List;
 
 import org.pentaho.di.core.BlockingRowSet;
+import org.pentaho.di.core.RowSet;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.row.RowDataUtil;
@@ -217,7 +218,10 @@ public class MappingInput extends BaseStep implements StepInterface {
 
         // Make sure to connect it to both sides...
         //
-        sourceStep.getOutputRowSets().add( rowSet );
+        List<RowSet> sourceStepOutputRowSets = sourceStep.getOutputRowSets();
+        synchronized (sourceStepOutputRowSets) {
+          sourceStepOutputRowSets.add( rowSet );
+        }
         sourceStep.identifyErrorOutput();
         getInputRowSets().add( rowSet );
       }
