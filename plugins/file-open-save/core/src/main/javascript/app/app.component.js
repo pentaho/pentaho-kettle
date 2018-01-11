@@ -78,7 +78,8 @@ define([
     vm.updateDirectories = updateDirectories;
     vm.renameError = renameError;
     vm.recentsHasScrollBar = recentsHasScrollBar;
-    vm.addDeleteDisabled = addDeleteDisabled;
+    vm.addDisabled = addDisabled;
+    vm.deleteDisabled = deleteDisabled;
     vm.onKeyUp = onKeyUp;
     vm.getPlaceholder = getPlaceholder;
     vm.isPentahoRepo = isPentahoRepo;
@@ -532,11 +533,48 @@ define([
     }
 
     /**
-     * Determines if add or delete button is to be disabled
+     * Determines if add button is to be disabled
      * @return {boolean} - True if no folder is selected or if Recents is selected, false otherwise
      */
+    function addDisabled() {
+      return addDeleteDisabled() || vm.searchString !== "";
+    }
+
+    /**
+     * Determines if delete button is to be disabled
+     * @return {boolean} - True if no folder is selected, if Recents is selected,
+     * or if root folder/file is selected, false otherwise
+     */
+    function deleteDisabled() {
+      return addDeleteDisabled() || isRoot();
+    }
+
+    /**
+     * Determines if add or delete button is to be disabled
+     * @return {boolean} - True if no folder is selected, if Recents is selected, or if a message is showing.
+     * False otherwise
+     */
     function addDeleteDisabled() {
-      return (vm.folder === null || vm.folder.path === "Recents");
+      return (vm.folder === null || vm.folder.path === "Recents" || vm.showMessage);
+    }
+
+    /**
+     * Determines if (selected folder is a root folder according to repository type AND if no file is selected) OR
+     * if the selected file is a root folder
+     * @return {boolean} - True if root folder is selected and no file is selected, false otherwise
+     */
+    function isRoot() {
+      var isFileNull = vm.file === null;
+      if (isPentahoRepo()) {
+        if (isFileNull) {
+          return vm.folder.path === "/home" || vm.folder.path === "/home/admin" || vm.folder.path === "/";
+        }
+        return vm.file.type === "folder" && (vm.file.path === "/home" || vm.file.path === "/home/admin");
+      }
+      if (isFileNull) {
+        return vm.folder.path === "/";
+      }
+      return vm.file.type === "folder" && vm.file.path === "/";
     }
 
     /**

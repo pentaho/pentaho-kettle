@@ -31,8 +31,8 @@
         </breadcrumb>
       </div>
       <div class="addDelete" ng-if="vm.state.is('save') || vm.state.is('selectFolder')">
-        <button class="addFolder" ng-click="vm.addFolder()" title="{{::vm.addFolderText}}" ng-disabled="vm.addDeleteDisabled()"></button>
-        <button class="deleteFolder" ng-click="vm.remove()" title="{{::vm.removeText}}" ng-disabled="vm.addDeleteDisabled()"></button>
+        <button class="addFolder" ng-click="vm.addFolder()" title="{{::vm.addFolderText}}" ng-disabled="vm.addDisabled()"></button>
+        <button class="deleteFolder" ng-click="vm.remove()" title="{{::vm.removeText}}" ng-disabled="vm.deleteDisabled()"></button>
       </div>
     </div>
   </div>
