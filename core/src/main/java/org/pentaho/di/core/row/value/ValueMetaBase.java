@@ -3,7 +3,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -1631,8 +1631,7 @@ public class ValueMetaBase implements ValueMetaInterface {
           return object;
 
         case ValueMetaInterface.TYPE_DATE:
-          return new Date( ( (Date) object ).getTime() ); // just to make sure: very
-          // inexpensive too.
+          return ( (Date) object ).clone(); // just to make sure: very inexpensive too.
 
         case ValueMetaInterface.TYPE_BINARY:
           byte[] origin = (byte[]) object;

@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,13 +22,13 @@
 
 package org.pentaho.di.core.logging;
 
-import java.io.OutputStream;
-import java.util.List;
-
 import org.apache.commons.vfs2.FileObject;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.vfs.KettleVFS;
+
+import java.io.OutputStream;
+import java.util.Set;
 
 public class FileLoggingEventListener implements KettleLoggingEventListener {
 
@@ -94,9 +94,9 @@ public class FileLoggingEventListener implements KettleLoggingEventListener {
         } else {
           LogMessage message = (LogMessage) messageObject;
           // This should be fast enough cause cached.
-          List<String> logChannelChildren = LoggingRegistry.getInstance().getLogChannelChildren( logChannelId );
+          Set<String> logChannelChildren = LoggingRegistry.getInstance().getLogChannelChildrenSet( logChannelId );
           // This could be non-optimal, consider keeping the list sorted in the logging registry
-          logToFile = Const.indexOfString( message.getLogChannelId(), logChannelChildren ) >= 0;
+          logToFile = logChannelChildren.contains( message.getLogChannelId() );
         }
 
         if ( logToFile ) {
