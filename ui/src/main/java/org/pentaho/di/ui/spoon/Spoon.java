@@ -5120,6 +5120,8 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
           FileDialogOperation fileDialogOperation = new FileDialogOperation( FileDialogOperation.SAVE,
             FileDialogOperation.ORIGIN_SPOON );
           fileDialogOperation.setStartDir( meta.getRepositoryDirectory().getPath() );
+          //Set the filename so it can be used as the default filename in the save dialog
+          fileDialogOperation.setFilename( meta.getFilename() );
           ExtensionPointHandler.callExtensionPoint( log, KettleExtensionPoint.SpoonOpenSaveRepository.id,
             fileDialogOperation );
           if ( fileDialogOperation.getRepositoryObject() != null ) {

@@ -121,6 +121,7 @@ define([
       vm.searchString = "";
       _resetFileAreaMessage();
 
+      vm.filename = $location.search().filename;
       vm.origin = $location.search().origin;
       $timeout(function() {
         if ($state.is('open')) {
@@ -213,11 +214,15 @@ define([
      */
     function _setFileToSaveName() {
       if ($state.is("save")) {
-        dt.getActiveFileName().then(function(response) {
-          vm.fileToSave = response.data.fileName;
-        }, function() {
-          vm.fileToSave = "";
-        });
+        if (vm.filename != undefined) {
+          vm.fileToSave = vm.filename;
+        } else {
+          dt.getActiveFileName().then(function (response) {
+            vm.fileToSave = response.data.fileName;
+          }, function () {
+            vm.fileToSave = "";
+          });
+        }
       }
     }
 

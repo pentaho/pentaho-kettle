@@ -36,6 +36,7 @@ public class FileDialogOperation {
   private RepositoryObjectInterface repositoryObject;
   private String startDir;
   private String title;
+  private String filename;
 
   public FileDialogOperation( String command ) {
     this.command = command;
@@ -100,5 +101,13 @@ public class FileDialogOperation {
 
   public void setTitle( String title ) {
     this.title = title;
+  }
+
+  public String getFilename() {
+    return filename;
+  }
+
+  public void setFilename( String filename ) {
+    this.filename = filename;
   }
 }

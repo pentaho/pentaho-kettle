@@ -392,6 +392,7 @@ public abstract class BaseStreamingDialog extends BaseStepDialog implements Step
 
     TransMeta transMeta = new TransMeta();
     transMeta.addStep( recsFromStream );
+    transMeta.setFilename( "" );
 
     return transMeta;
   }
