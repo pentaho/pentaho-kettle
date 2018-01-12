@@ -43,13 +43,13 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.annotations.StepDialog;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDialogInterface;
 import org.pentaho.di.trans.step.errorhandling.StreamInterface;
-import org.pentaho.di.trans.steps.append.Append;
 import org.pentaho.di.trans.steps.append.AppendMeta;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
@@ -58,8 +58,10 @@ import org.pentaho.di.ui.trans.step.BaseStepDialog;
  *
  * @author Sven Boden
  */
+@StepDialog( id = "Append", image = "APP.svg",
+  documentationUrl = "http://wiki.pentaho.com/display/EAI/Append+streams" )
 public class AppendDialog extends BaseStepDialog implements StepDialogInterface {
-  private static Class<?> PKG = Append.class; // for i18n purposes, needed by Translator2!!
+  private static Class<?> PKG = AppendDialog.class; // for i18n purposes, needed by Translator2!!
 
   private Label wlHeadHop;
   private CCombo wHeadHop;

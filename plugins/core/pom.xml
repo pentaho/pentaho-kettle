@@ -13,9 +13,42 @@
   <packaging>pom</packaging>
   <name>PDI Core Plugins</name>
 
+  <properties>
+    <pdi.version>8.1.0.0-SNAPSHOT</pdi.version>
+  </properties>
+
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>pentaho-kettle</groupId>
+        <artifactId>kettle-core</artifactId>
+        <version>${pdi.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>pentaho-kettle</groupId>
+        <artifactId>kettle-engine</artifactId>
+        <version>${pdi.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>pentaho-kettle</groupId>
+        <artifactId>kettle-ui-swt</artifactId>
+        <version>${pdi.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>pentaho-kettle</groupId>
+        <artifactId>kettle-engine</artifactId>
+        <version>${pdi.version}</version>
+        <classifier>tests</classifier>
+        <scope>test</scope>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
+
   <modules>
     <module>assemblies</module>
     <module>impl</module>
+    <module>ui</module>
   </modules>
 
 </project>

@@ -41,6 +41,7 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.annotations.StepDialog;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.row.RowMeta;
@@ -49,7 +50,6 @@ import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDialogInterface;
-import org.pentaho.di.trans.steps.autodoc.AutoDoc;
 import org.pentaho.di.trans.steps.autodoc.AutoDocMeta;
 import org.pentaho.di.trans.steps.autodoc.KettleReportBuilder;
 import org.pentaho.di.trans.steps.autodoc.KettleReportBuilder.OutputType;
@@ -58,8 +58,10 @@ import org.pentaho.di.ui.core.widget.LabelComboVar;
 import org.pentaho.di.ui.core.widget.LabelTextVar;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
+@StepDialog( id = "AutoDoc", image = "autodoc.svg",
+  documentationUrl = "http://wiki.pentaho.com/display/EAI/Automatic+Documentation+Output" )
 public class AutoDocDialog extends BaseStepDialog implements StepDialogInterface {
-  private static Class<?> PKG = AutoDoc.class; // for i18n purposes, needed by Translator2!!
+  private static Class<?> PKG = AutoDocDialog.class; // for i18n purposes, needed by Translator2!!
 
   private AutoDocMeta inputMeta;
 

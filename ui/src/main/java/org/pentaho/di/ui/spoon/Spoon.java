@@ -193,7 +193,6 @@ import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.plugins.PluginTypeInterface;
 import org.pentaho.di.core.plugins.PluginTypeListener;
 import org.pentaho.di.core.plugins.RepositoryPluginType;
-import org.pentaho.di.core.plugins.StepDialogFragmentType;
 import org.pentaho.di.core.plugins.StepPluginType;
 import org.pentaho.di.core.reflection.StringSearchResult;
 import org.pentaho.di.core.row.RowBuffer;
@@ -798,7 +797,6 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
 
     PluginRegistry.addPluginType( JobDialogPluginType.getInstance() );
     PluginRegistry.addPluginType( TransDialogPluginType.getInstance() );
-    PluginRegistry.addPluginType( StepDialogFragmentType.getInstance() );
   }
 
   public void init( TransMeta ti ) {

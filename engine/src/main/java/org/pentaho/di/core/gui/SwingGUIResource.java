@@ -44,6 +44,7 @@ import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.plugins.StepPluginType;
 import org.pentaho.di.core.svg.SvgImage;
 import org.pentaho.di.core.svg.SvgSupport;
+import org.pentaho.di.job.JobMeta;
 import org.pentaho.reporting.libraries.base.util.WaitingImageObserver;
 
 public class SwingGUIResource {
@@ -54,20 +55,20 @@ public class SwingGUIResource {
   private Map<String, SwingUniversalImage> stepImages;
   private Map<String, SwingUniversalImage> entryImages;
 
-  private SwingGUIResource() throws KettleException {
+  private SwingGUIResource() {
     this.stepImages = loadStepImages();
     this.entryImages = loadEntryImages();
   }
 
-  public static SwingGUIResource getInstance() throws KettleException {
+  public static SwingGUIResource getInstance() {
     if ( instance == null ) {
       instance = new SwingGUIResource();
     }
     return instance;
   }
 
-  private Map<String, SwingUniversalImage> loadStepImages() throws KettleException {
-    Map<String, SwingUniversalImage> map = new HashMap<String, SwingUniversalImage>();
+  private Map<String, SwingUniversalImage> loadStepImages() {
+    Map<String, SwingUniversalImage> map = new HashMap<>();
 
     for ( PluginInterface plugin : PluginRegistry.getInstance().getPlugins( StepPluginType.class ) ) {
       try {
@@ -77,19 +78,19 @@ public class SwingGUIResource {
         }
       } catch ( Exception e ) {
         log.logError( "Unable to load step icon image for plugin: "
-          + plugin.getName() + " (id=" + plugin.getIds()[0], e );
+          + plugin.getName() + " (id=" + plugin.getIds()[0] + ")", e );
       }
     }
 
     return map;
   }
 
-  private Map<String, SwingUniversalImage> loadEntryImages() throws KettleException {
-    Map<String, SwingUniversalImage> map = new HashMap<String, SwingUniversalImage>();
+  private Map<String, SwingUniversalImage> loadEntryImages() {
+    Map<String, SwingUniversalImage> map = new HashMap<>();
 
     for ( PluginInterface plugin : PluginRegistry.getInstance().getPlugins( JobEntryPluginType.class ) ) {
       try {
-        if ( "SPECIAL".equals( plugin.getIds()[0] ) ) {
+        if ( JobMeta.STRING_SPECIAL.equals( plugin.getIds()[0] ) ) {
           continue;
         }
 
@@ -102,7 +103,7 @@ public class SwingGUIResource {
         map.put( plugin.getIds()[0], image );
       } catch ( Exception e ) {
         log.logError( "Unable to load job entry icon image for plugin: "
-          + plugin.getName() + " (id=" + plugin.getIds()[0], e );
+          + plugin.getName() + " (id=" + plugin.getIds()[0] + ")", e );
       }
     }
 

@@ -40,6 +40,7 @@ import org.pentaho.di.core.plugins.PartitionerPluginType;
 import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.plugins.PluginTypeInterface;
 import org.pentaho.di.core.plugins.RepositoryPluginType;
+import org.pentaho.di.core.plugins.StepDialogFragmentType;
 import org.pentaho.di.core.plugins.StepPluginType;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.IUser;
@@ -98,6 +99,7 @@ public class KettleEnvironment {
     init( Arrays.asList(
       RowDistributionPluginType.getInstance(),
       StepPluginType.getInstance(),
+      StepDialogFragmentType.getInstance(),
       PartitionerPluginType.getInstance(),
       JobEntryPluginType.getInstance(),
       LogTablePluginType.getInstance(),

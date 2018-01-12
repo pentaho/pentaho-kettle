@@ -50,9 +50,8 @@ import org.w3c.dom.Node;
 /**
  * Meta data for the abort step.
  */
-@Step( id = "Abort", image = "ABR.svg", i18nPackageName = "org.pentaho.di.trans.steps.abort",
+@Step( id = "Abort", i18nPackageName = "org.pentaho.di.trans.steps.abort",
   name = "Abort.Name", description = "Abort.Description",
-  documentationUrl = "Products/Data_Integration/Transformation_Step_Reference/Abort",
   categoryDescription = "i18n:org.pentaho.di.trans.step:BaseStep.Category.Flow" )
 public class AbortMeta extends BaseStepMeta implements StepMetaInterface {
   private static Class<?> PKG = AbortMeta.class; // for i18n purposes, needed by Translator2!!

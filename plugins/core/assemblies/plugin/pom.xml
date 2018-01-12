@@ -19,6 +19,11 @@
       <artifactId>pdi-core-plugins-impl</artifactId>
       <version>${project.version}</version>
     </dependency>
+    <dependency>
+      <groupId>org.pentaho.di.plugins</groupId>
+      <artifactId>pdi-core-plugins-ui</artifactId>
+      <version>${project.version}</version>
+    </dependency>
   </dependencies>
 
   <build>
@@ -35,7 +40,7 @@
             <configuration>
               <outputDirectory>${project.build.directory}/assembly/lib</outputDirectory>
               <includeScope>compile</includeScope>
-              <excludeArtifactIds>pdi-core-plugins-impl</excludeArtifactIds>
+              <excludeArtifactIds>pdi-core-plugins-impl,pdi-core-plugins-ui</excludeArtifactIds>
             </configuration>
           </execution>
         </executions>
