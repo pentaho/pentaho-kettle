@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -96,8 +96,8 @@ public class LoadFileInput extends BaseStep implements StepInterface {
           meta.getFields( data.outputRowMeta, getStepname(), null, null, this, repository, metaStore );
 
           // Create convert meta-data objects that will contain Date & Number formatters
-          //
-          data.convertRowMeta = data.outputRowMeta.clone();
+          // All non binary content is handled as a String. It would be converted to the target type after the processing.
+          data.convertRowMeta = data.outputRowMeta.cloneToType( ValueMetaInterface.TYPE_STRING );
 
           if ( meta.getIsInFields() ) {
             // Check is filename field is provided
@@ -383,12 +383,14 @@ public class LoadFileInput extends BaseStep implements StepInterface {
                 break;
             }
             if ( targetValueMeta.getType() != ValueMetaInterface.TYPE_BINARY ) {
+              // handle as a String
               if (  meta.getEncoding() != null ) {
                 o = new String( data.filecontent, meta.getEncoding() );
               } else {
                 o = new String( data.filecontent );
               }
             } else {
+              // save as byte[] without any conversion
               o = data.filecontent;
             }
             break;
@@ -399,8 +401,13 @@ public class LoadFileInput extends BaseStep implements StepInterface {
             break;
         }
 
-        // Do conversions
-        outputRowData[indexField] = targetValueMeta.convertData( sourceValueMeta, o );
+        if ( targetValueMeta.getType() == ValueMetaInterface.TYPE_BINARY ) {
+          // save as byte[] without any conversion
+          outputRowData[indexField] = o;
+        } else {
+          // convert string (processing type) to the target type
+          outputRowData[indexField] = targetValueMeta.convertData( sourceValueMeta, o );
+        }
 
         // Do we need to repeat this field if it is null?
         if ( loadFileInputField.isRepeated() ) {
@@ -480,8 +487,8 @@ public class LoadFileInput extends BaseStep implements StepInterface {
                                                                                                         // populated
 
           // Create convert meta-data objects that will contain Date & Number formatters
-          //
-          data.convertRowMeta = data.outputRowMeta.clone();
+          // All non binary content is handled as a String. It would be converted to the target type after the processing.
+          data.convertRowMeta = data.outputRowMeta.cloneToType( ValueMetaInterface.TYPE_STRING );
         } catch ( Exception e ) {
           logError( "Error at step initialization: " + e.toString() );
           logError( Const.getStackTracker( e ) );
