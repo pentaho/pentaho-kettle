@@ -21,8 +21,11 @@
     </div>
 
     <div class="headerBottom">
-      <div ng-show="vm.searchString" class="breadcrumbSection">
-        Search results in "{{vm.getSelectedFolderName()}}"
+      <div ng-show="vm.searchString">
+        <div class="breadcrumbSection searchResults" ng-class="{searchResultsSave : vm.state.is('save')}">
+          Search results in "{{vm.getSelectedFolderName()}}
+        </div>
+        <div class="quotes">"</div>
       </div>
       <div ng-hide="vm.searchString" class="breadcrumbSection">
         <breadcrumb path="vm.folder.path"

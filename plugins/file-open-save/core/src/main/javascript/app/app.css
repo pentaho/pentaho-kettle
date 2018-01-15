@@ -87,6 +87,23 @@ file-open-save-app .breadcrumbSection {
   float: left;
 }
 
+file-open-save-app .breadcrumbSection.searchResults {
+  width: auto;
+  max-width: 435px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+file-open-save-app .breadcrumbSection.searchResults.searchResultsSave {
+  max-width: 398px;
+}
+
+file-open-save-app .quotes {
+  line-height: 18px;
+  float: left;
+}
+
 file-open-save-app .addDelete {
   float: right;
 }
