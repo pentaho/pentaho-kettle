@@ -29,6 +29,7 @@
         <menuitem id="file-save-as" label="${Spoon.Menu.File.SaveAs}" command="spoon.saveFileAs()" />
         <menuitem id="file-save-as-vfs" label="${Spoon.Menu.File.SaveAsVFS}" command="spoon.saveXMLFileToVfs()" />
         <!-- <menuitem id="file-publish" label="${Spoon.Menu.File.Publish}"/> -->
+        <menuitem id="file-convert" label="Save As (PNG)..." command="spoon.convertToPNG()" />
         <menuseparator id="file-separator-2"/>
         <menuitem id="file-print" label="${Spoon.Menu.File.Print}" command="spoon.printFile()" />
 
