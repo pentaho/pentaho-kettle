@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -527,7 +527,7 @@ public class BrowseController extends AbstractXulEventHandler implements IUISupp
       if ( mainController == null || !mainController.handleLostRepository( e ) ) {
         messageBox.setTitle( BaseMessages.getString( PKG, "Dialog.Error" ) );
         messageBox.setAcceptLabel( BaseMessages.getString( PKG, "Dialog.Ok" ) );
-        messageBox.setMessage( BaseMessages.getString( PKG, e.getLocalizedMessage() ) );
+        messageBox.setMessage( e.getLocalizedMessage() );
         messageBox.open();
       }
     }
