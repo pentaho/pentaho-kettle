@@ -37,7 +37,7 @@
         <module>log4j</module>
       </modules>
     </profile>
-  
+
     <profile>
       <id>highdeps</id>
       <activation>
@@ -51,7 +51,7 @@
         <module>repositories</module>
         <module>meta-inject</module>
         <module>engine-configuration</module>
-        <module>get-previous-row-field</module> 
+        <module>get-previous-row-field</module>
         <module>aggregate-rows</module>
         <module>elasticsearch-bulk-insert</module>
         <module>google-analytics</module>
@@ -73,8 +73,9 @@
         <module>pur</module>
         <module>ms-access-bulk-loader</module>
         <module>xml</module>
+        <module>google-cloud-storage-vfs</module>
       </modules>
     </profile>
-    
+
   </profiles>
 </project>

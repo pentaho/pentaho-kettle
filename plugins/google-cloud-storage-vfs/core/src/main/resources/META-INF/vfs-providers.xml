@@ -1,0 +1,5 @@
+<providers>
+  <provider class-name="org.pentaho.googlecloudstorage.vfs.GoogleCloudStorageFileProvider">
+    <scheme name="gs"/>
+  </provider>
+</providers>
