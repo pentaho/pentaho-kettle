@@ -77,8 +77,8 @@
 
     <!-- Pentaho dependencies -->
     <dependency>
-      <groupId>pentaho</groupId>
-      <artifactId>pentaho-xul-core</artifactId>
+      <groupId>org.pentaho</groupId>
+      <artifactId>commons-xul-core</artifactId>
       <scope>provided</scope>
       <exclusions>
         <exclusion>
@@ -88,8 +88,8 @@
       </exclusions>
     </dependency>
     <dependency>
-      <groupId>pentaho</groupId>
-      <artifactId>pentaho-xul-swt</artifactId>
+      <groupId>org.pentaho</groupId>
+      <artifactId>commons-xul-swt</artifactId>
       <scope>provided</scope>
     </dependency>
     <dependency>

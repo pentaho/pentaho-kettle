@@ -54,7 +54,7 @@
     <license.licenseName>apache_v2</license.licenseName>
 
     <!-- Pentaho dependencies -->
-    <pentaho-xul.version>8.1.0.0-SNAPSHOT</pentaho-xul.version>
+    <commons-xul.version>8.1.0.0-SNAPSHOT</commons-xul.version>
     <pentaho-metastore.version>8.1.0.0-SNAPSHOT</pentaho-metastore.version>
 
     <!-- Third-party dependencies -->
@@ -81,19 +81,19 @@
   <dependencyManagement>
     <dependencies>
       <dependency>
-        <groupId>pentaho</groupId>
-        <artifactId>pentaho-xul-core</artifactId>
-        <version>${pentaho-xul.version}</version>
+        <groupId>org.pentaho</groupId>
+        <artifactId>commons-xul-core</artifactId>
+        <version>${commons-xul.version}</version>
       </dependency>
       <dependency>
-        <groupId>pentaho</groupId>
-        <artifactId>pentaho-xul-swing</artifactId>
-        <version>${pentaho-xul.version}</version>
+        <groupId>org.pentaho</groupId>
+        <artifactId>commons-xul-swing</artifactId>
+        <version>${commons-xul.version}</version>
       </dependency>
       <dependency>
-        <groupId>pentaho</groupId>
-        <artifactId>pentaho-xul-swt</artifactId>
-        <version>${pentaho-xul.version}</version>
+        <groupId>org.pentaho</groupId>
+        <artifactId>commons-xul-swt</artifactId>
+        <version>${commons-xul.version}</version>
         <exclusions>
           <exclusion>
             <groupId>org.eclipse.swt</groupId>
