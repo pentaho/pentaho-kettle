@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -32,6 +32,9 @@ import org.pentaho.di.core.KettleClientEnvironment;
 import org.pentaho.di.core.Props;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.RowMetaAndData;
+import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.exception.KettleMissingPluginsException;
+import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.logging.KettleLogStore;
 import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.logging.LogChannelInterfaceFactory;
@@ -54,6 +57,7 @@ import java.util.Optional;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 
@@ -123,5 +127,36 @@ public class SubtransExecutorTest {
     for ( Map.Entry<String, StepStatus> entry : statuses.entrySet() ) {
       verify( entry.getValue() ).updateAll( any() );
     }
+  }
+
+  @Test
+  public void doesNotExecuteWhenStopped() throws KettleException {
+
+    TransMeta parentMeta =
+      new TransMeta( this.getClass().getResource( "subtrans-executor-parent.ktr" ).getPath(), new Variables() );
+    TransMeta subMeta =
+      new TransMeta( this.getClass().getResource( "subtrans-executor-sub.ktr" ).getPath(), new Variables() );
+    LoggingObjectInterface loggingObject = new LoggingObject( "anything" );
+    Trans parentTrans = new Trans( parentMeta, loggingObject );
+    SubtransExecutor subtransExecutor =
+      new SubtransExecutor( parentTrans, subMeta, true, new TransExecutorData(), new TransExecutorParameters() );
+    RowMetaInterface rowMeta = parentMeta.getStepFields( "Data Grid" );
+    List<RowMetaAndData> rows = Arrays.asList(
+      new RowMetaAndData( rowMeta, "Pentaho", 1L ),
+      new RowMetaAndData( rowMeta, "Pentaho", 2L ),
+      new RowMetaAndData( rowMeta, "Pentaho", 3L ),
+      new RowMetaAndData( rowMeta, "Pentaho", 4L ) );
+    subtransExecutor.stop();
+    subtransExecutor.execute( rows );
+
+    verify( this.logChannel, never() )
+      .logBasic(
+        "\n"
+          + "------------> Linenr 1------------------------------\n"
+          + "name = Pentaho\n"
+          + "sum = 10\n"
+          + "\n"
+          + "===================="
+      );
   }
 }

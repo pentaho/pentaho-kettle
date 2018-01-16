@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -50,6 +50,7 @@ public class SubtransExecutor {
   private boolean shareVariables;
   private TransExecutorData transExecutorData;
   private TransExecutorParameters parameters;
+  private boolean stopped;
 
   public SubtransExecutor( Trans parentTrans, TransMeta subtransMeta, boolean shareVariables,
                            TransExecutorData transExecutorData, TransExecutorParameters parameters ) {
@@ -62,7 +63,7 @@ public class SubtransExecutor {
   }
 
   public Optional<Result> execute( List<RowMetaAndData> rows ) throws KettleException {
-    if ( rows.isEmpty() ) {
+    if ( rows.isEmpty() || stopped ) {
       return Optional.empty();
     }
     this.transExecutorData.groupTimeStart = System.currentTimeMillis();
@@ -149,6 +150,7 @@ public class SubtransExecutor {
   }
 
   public void stop() {
+    stopped = true;
     for ( Map.Entry<String, StepStatus> entry : statuses.entrySet() ) {
       entry.getValue().setStatusDescription( StepExecutionStatus.STATUS_STOPPED.getDescription() );
     }
