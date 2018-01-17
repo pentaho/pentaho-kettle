@@ -1,5 +1,5 @@
 /*!
- * Copyright 2017 Hitachi Vantara. All rights reserved.
+ * Copyright 2017-2018 Hitachi Vantara. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,7 +30,7 @@ define([
       link: function(scope, element, attrs) {
         var scrollClass = "";
         $timeout(function() {
-          scrollClass = $state.is("save") ? "scrollTableOpen" : "scrollTableSave";
+          scrollClass = $state.is("save") ? "scrollTableSave" : "scrollTableOpen";
         });
 
         var needsTimeout = true;
@@ -55,12 +55,10 @@ define([
         });
 
         scope.$watch(attrs.searchValue, function(newValue) {
-          if (newValue === "") {
-            $timeout(function() {
-              setScrollTableClass();
-              setWidths();
-            });
-          }
+          $timeout(function() {
+            setScrollTableClass();
+            setWidths();
+          });
         });
 
         scope.$watch(attrs.selectedFile, function(newValue) {
