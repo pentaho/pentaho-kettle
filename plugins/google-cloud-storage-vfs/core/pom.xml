@@ -7,7 +7,7 @@
   <parent>
     <groupId>org.pentaho.di.plugins</groupId>
     <artifactId>google-cloud-storage-vfs</artifactId>
-    <version>8.1.0.0-SNAPSHOT</version>
+    <version>8.1.0.0-200</version>
   </parent>
 
   <artifactId>google-cloud-storage-vfs-core</artifactId>
@@ -15,7 +15,7 @@
   <name>Pentaho Google Cloud Storage VFS Plugin Core</name>
 
   <properties>
-    <pdi.version>8.1.0.0-SNAPSHOT</pdi.version>
+    <pdi.version>8.1.0.0-200</pdi.version>
     <mockito-core.version>1.9.5</mockito-core.version>
     <google-cloud-storage.version>1.12.0</google-cloud-storage.version>
     <commons-vfs2.version>2.1-20150824</commons-vfs2.version>
