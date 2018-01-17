@@ -960,8 +960,8 @@
                   <type>zip</type>
                 </artifactItem>
                 <artifactItem>
-                  <groupId>pentaho</groupId>
-                  <artifactId>pentaho-cassandra-plugin</artifactId>
+                  <groupId>org.pentaho</groupId>
+                  <artifactId>pentaho-cassandra-plugin-package</artifactId>
                   <version>${pentaho-cassandra-plugin.version}</version>
                   <type>zip</type>
                 </artifactItem>
