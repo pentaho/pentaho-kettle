@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -781,8 +781,8 @@ public class ValueDataUtil {
           - divideLongs( multiplyLongs( metaA.getInteger( dataA ), metaB.getInteger( dataB ) ), 100L ) );
       case ValueMetaInterface.TYPE_BIGNUMBER:
         return metaA.getBigNumber( dataA ).subtract(
-          divideBigDecimals( metaA.getBigNumber( dataA ), multiplyBigDecimals(
-            metaB.getBigNumber( dataB ), new BigDecimal( 100 ), null ), null ) );
+          divideBigDecimals( multiplyBigDecimals(
+            metaB.getBigNumber( dataB ), metaA.getBigNumber( dataA ), null ), new BigDecimal( 100 ), null ) );
       default:
         throw new KettleValueException( "The 'A-B%' function only works on numeric data" );
     }
@@ -812,8 +812,8 @@ public class ValueDataUtil {
           + divideLongs( multiplyLongs( metaA.getInteger( dataA ), metaB.getInteger( dataB ) ), 100L ) );
       case ValueMetaInterface.TYPE_BIGNUMBER:
         return metaA.getBigNumber( dataA ).add(
-          divideBigDecimals( metaA.getBigNumber( dataA ), multiplyBigDecimals(
-            metaB.getBigNumber( dataB ), new BigDecimal( 100 ), null ), null ) );
+          divideBigDecimals( multiplyBigDecimals(
+            metaB.getBigNumber( dataB ), metaA.getBigNumber( dataA ), null ), new BigDecimal( 100 ), null ) );
       default:
         throw new KettleValueException( "The 'A+B%' function only works on numeric data" );
     }
