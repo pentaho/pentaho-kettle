@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -39,8 +39,6 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.di.trans.streaming.api.StreamSource;
 import org.pentaho.di.trans.streaming.common.BaseStreamStep;
 import org.pentaho.di.trans.streaming.common.FixedTimeStreamWindow;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.FileNotFoundException;
 import java.net.URISyntaxException;
@@ -56,8 +54,6 @@ public class FileStream extends BaseStreamStep implements StepInterface {
 
   private static Class<?> PKG = FileStreamMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
   private FileStreamMeta fileStreamMeta;
-
-  private final Logger logger = LoggerFactory.getLogger( getClass() );
 
   public FileStream( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta,
                      Trans trans ) {
@@ -80,7 +76,7 @@ public class FileStream extends BaseStreamStep implements StepInterface {
     try {
       source = new TailFileStreamSource( sourceFile, this );
     } catch ( FileNotFoundException e ) {
-      logger.error( e.getLocalizedMessage(), e );
+      logError( e.getLocalizedMessage(), e );
       return false;
     }
     return true;

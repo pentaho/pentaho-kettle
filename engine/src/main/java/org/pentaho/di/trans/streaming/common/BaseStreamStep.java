@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -44,8 +44,6 @@ import org.pentaho.di.trans.steps.transexecutor.TransExecutorMeta;
 import org.pentaho.di.trans.steps.transexecutor.TransExecutorParameters;
 import org.pentaho.di.trans.streaming.api.StreamSource;
 import org.pentaho.di.trans.streaming.api.StreamWindow;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -57,7 +55,6 @@ public class BaseStreamStep extends BaseStep {
   private static final Class<?> PKG = BaseStreamStep.class;
   private BaseStreamStepMeta stepMeta;
 
-  protected final Logger logger = LoggerFactory.getLogger( getClass() );
   protected SubtransExecutor subtransExecutor;
   protected StreamWindow<List<Object>, Result> window;
   protected StreamSource<List<Object>> source;
@@ -73,6 +70,7 @@ public class BaseStreamStep extends BaseStep {
     stepMeta.setParentStepMeta( getStepMeta() );
     stepMeta.setFileName( stepMeta.getTransformationPath() );
 
+
     boolean superInit = super.init( stepMetaInterface, stepDataInterface );
 
     try {
@@ -84,7 +82,7 @@ public class BaseStreamStep extends BaseStep {
         new TransExecutorData(), new TransExecutorParameters() );
 
     } catch ( KettleException e ) {
-      logger.error( e.getLocalizedMessage(), e );
+      log.logError( e.getLocalizedMessage(), e );
       return false;
     }
 

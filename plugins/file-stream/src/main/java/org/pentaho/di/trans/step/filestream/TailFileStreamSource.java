@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,10 +22,10 @@
 
 package org.pentaho.di.trans.step.filestream;
 
+import org.pentaho.di.core.logging.LogChannel;
+import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.streaming.common.BlockingQueueStreamSource;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
@@ -47,9 +47,9 @@ import static java.util.Collections.singletonList;
 public class TailFileStreamSource extends BlockingQueueStreamSource<List<Object>> {
 
   private static Class<?> PKG = FileStream.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
-  private final Logger logger = LoggerFactory.getLogger( getClass() );
   private final String filename;
 
+  private LogChannelInterface logChannel = new LogChannel( this );
   private final ExecutorService executorService = Executors.newCachedThreadPool();
   private Future<?> future;
 
@@ -61,7 +61,7 @@ public class TailFileStreamSource extends BlockingQueueStreamSource<List<Object>
 
   @Override public void open() {
     if ( future != null ) {
-      logger.warn( "open() called more than once" );
+      logChannel.logError( "open() called more than once" );
       return;
     }
     future = executorService.submit( this::fileReadLoop );
@@ -79,7 +79,7 @@ public class TailFileStreamSource extends BlockingQueueStreamSource<List<Object>
         acceptRows( singletonList( singletonList( getNextLine( reader ) ) ) );
       }
     } catch ( IOException | InterruptedException e ) {
-      logger.error( BaseMessages.getString( PKG, "FileStream.Error.FileStreamError" ), e );
+      logChannel.logError( BaseMessages.getString( PKG, "FileStream.Error.FileStreamError" ), e );
     }
   }
 
