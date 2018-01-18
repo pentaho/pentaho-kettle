@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -23,12 +23,12 @@
 
 package org.pentaho.di.trans.streaming.common;
 
+import com.google.common.annotations.VisibleForTesting;
 import io.reactivex.Observable;
 import io.reactivex.processors.FlowableProcessor;
 import io.reactivex.processors.ReplayProcessor;
+import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.trans.streaming.api.StreamSource;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.Arrays;
 import java.util.List;
@@ -49,7 +49,7 @@ import static org.pentaho.di.i18n.BaseMessages.getString;
 public abstract class BlockingQueueStreamSource<T> implements StreamSource<T> {
 
   private static final Class<?> PKG = BlockingQueueStreamSource.class;
-  private final Logger logger = LoggerFactory.getLogger( getClass() );
+
 
   private final AtomicBoolean paused = new AtomicBoolean( false );
 
@@ -57,7 +57,8 @@ public abstract class BlockingQueueStreamSource<T> implements StreamSource<T> {
   private final BaseStreamStep streamStep;
 
   // binary semaphore used to block acceptance of rows when paused
-  private final Semaphore acceptingRowsSemaphore = new Semaphore( 1 );
+  @VisibleForTesting Semaphore acceptingRowsSemaphore = new Semaphore( 1 );
+  @VisibleForTesting LogChannel logChannel = new LogChannel( this );
 
   protected BlockingQueueStreamSource( BaseStreamStep streamStep ) {
     this.streamStep = streamStep;
@@ -85,7 +86,7 @@ public abstract class BlockingQueueStreamSource<T> implements StreamSource<T> {
         assert acceptingRowsSemaphore.availablePermits() == 1;
         acceptingRowsSemaphore.acquire();
       } catch ( InterruptedException e ) {
-        logger.warn( getString( PKG, "BlockingQueueStream.PauseInterrupt" ) );
+        logChannel.logError( getString( PKG, "BlockingQueueStream.PauseInterrupt" ) );
       }
     }
   }
@@ -112,8 +113,9 @@ public abstract class BlockingQueueStreamSource<T> implements StreamSource<T> {
         publishProcessor.onNext( row );
       } );
     } catch ( InterruptedException e ) {
-      logger.warn( getString( PKG, "BlockingQueueStream.AcceptRowsInterrupt",
-        Arrays.toString( rows.toArray() ) ) );
+      logChannel.logError(
+        getString( PKG, "BlockingQueueStream.AcceptRowsInterrupt",
+          Arrays.toString( rows.toArray() ) ) );
     } finally {
       acceptingRowsSemaphore.release();
     }

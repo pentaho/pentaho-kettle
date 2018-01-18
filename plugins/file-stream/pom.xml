@@ -59,7 +59,6 @@
     <junit.version>4.12</junit.version>
     <guava.version>17.0</guava.version>
     <mockito-all.version>1.9.5</mockito-all.version>
-    <slf4j.version>1.7.25</slf4j.version>
   </properties>
 
   <dependencies>
@@ -96,14 +95,6 @@
       <version>${junit.version}</version>
       <scope>test</scope>
     </dependency>
-
-    <dependency>
-      <groupId>org.slf4j</groupId>
-      <artifactId>slf4j-api</artifactId>
-      <version>${slf4j.version}</version>
-      <scope>compile</scope>
-    </dependency>
-
   </dependencies>
 
 
