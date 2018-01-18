@@ -31,16 +31,16 @@
 
     <!-- Pentaho (non-Kettle) dependencies -->
     <dependency>
-      <groupId>pentaho</groupId>
-      <artifactId>pentaho-xul-core</artifactId>
+      <groupId>org.pentaho</groupId>
+      <artifactId>commons-xul-core</artifactId>
     </dependency>
     <dependency>
-      <groupId>pentaho</groupId>
-      <artifactId>pentaho-xul-swt</artifactId>
+      <groupId>org.pentaho</groupId>
+      <artifactId>commons-xul-swt</artifactId>
     </dependency>
     <dependency>
-      <groupId>pentaho</groupId>
-      <artifactId>pentaho-xul-swing</artifactId>
+      <groupId>org.pentaho</groupId>
+      <artifactId>commons-xul-swing</artifactId>
     </dependency>
 
     <!-- Third-party (external) dependencies -->
