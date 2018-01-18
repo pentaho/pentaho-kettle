@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -77,8 +77,6 @@ public class FilterRowsMeta extends BaseStepMeta implements StepMetaInterface {
    * @since version 2.1
    */
   private Condition condition;
-
-  private String conditionXML;
 
   public FilterRowsMeta() {
     super(); // allocate BaseStepMeta
@@ -446,6 +444,7 @@ public class FilterRowsMeta extends BaseStepMeta implements StepMetaInterface {
   }
 
   public String getConditionXML() {
+    String conditionXML = null;
     try {
       conditionXML = condition.getXML();
     } catch ( KettleValueException e ) {
@@ -458,7 +457,6 @@ public class FilterRowsMeta extends BaseStepMeta implements StepMetaInterface {
   public void setConditionXML( String conditionXML ) {
     try  {
       this.condition = new Condition( conditionXML );
-      this.conditionXML = conditionXML;
     } catch ( KettleXMLException e ) {
       log.logError( e.getMessage() );
     }
