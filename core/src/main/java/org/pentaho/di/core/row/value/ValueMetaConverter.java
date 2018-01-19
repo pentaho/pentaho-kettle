@@ -40,7 +40,7 @@ import java.util.Date;
  *
  * Created by tkafalas on 12/8/2017.
  */
-public class ValueMetaConverter implements IValueMetaConverter {
+public class ValueMetaConverter implements Serializable, IValueMetaConverter {
   private final String DEFAULT_DATE_FORMAT = ValueMetaBase.DEFAULT_DATE_FORMAT_MASK;
   private SimpleDateFormat datePattern = new SimpleDateFormat( DEFAULT_DATE_FORMAT );
 
@@ -175,6 +175,8 @@ public class ValueMetaConverter implements IValueMetaConverter {
           return Double.toString( (Double) value );
         case ValueMetaInterface.TYPE_NUMBER:
           return new Double( (Double) value );
+        case ValueMetaInterface.TYPE_INTEGER:
+          return ( (Double) value ).longValue();
         case ValueMetaInterface.TYPE_BIGNUMBER:
           return new BigDecimal( (Double) value );
         default:
