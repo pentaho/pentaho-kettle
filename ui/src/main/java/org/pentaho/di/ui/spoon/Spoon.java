@@ -3,7 +3,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -23,42 +23,7 @@
 
 package org.pentaho.di.ui.spoon;
 
-import java.beans.PropertyChangeListener;
-import java.beans.PropertyChangeSupport;
-import java.io.DataOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.PrintStream;
-import java.lang.reflect.Method;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Hashtable;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Properties;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import java.util.stream.Collectors;
-
-import javax.swing.UIManager;
-import javax.swing.plaf.metal.MetalLookAndFeel;
-
+import com.google.common.annotations.VisibleForTesting;
 import org.apache.commons.io.output.TeeOutputStream;
 import org.apache.commons.vfs2.FileObject;
 import org.eclipse.jface.action.Action;
@@ -262,6 +227,7 @@ import org.pentaho.di.ui.core.PropsUI;
 import org.pentaho.di.ui.core.auth.AuthProviderDialog;
 import org.pentaho.di.ui.core.database.wizard.CreateDatabaseWizard;
 import org.pentaho.di.ui.core.dialog.AboutDialog;
+import org.pentaho.di.ui.core.dialog.BrowserEnvironmentWarningDialog;
 import org.pentaho.di.ui.core.dialog.CheckResultDialog;
 import org.pentaho.di.ui.core.dialog.EnterMappingDialog;
 import org.pentaho.di.ui.core.dialog.EnterOptionsDialog;
@@ -277,7 +243,6 @@ import org.pentaho.di.ui.core.dialog.ShowBrowserDialog;
 import org.pentaho.di.ui.core.dialog.ShowMessageDialog;
 import org.pentaho.di.ui.core.dialog.Splash;
 import org.pentaho.di.ui.core.dialog.SubjectDataBrowserDialog;
-import org.pentaho.di.ui.core.dialog.BrowserEnvironmentWarningDialog;
 import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.core.gui.WindowProperty;
 import org.pentaho.di.ui.core.widget.OsHelper;
@@ -319,8 +284,8 @@ import org.pentaho.di.ui.spoon.wizards.CopyTableWizardPage2;
 import org.pentaho.di.ui.trans.dialog.TransDialogPluginType;
 import org.pentaho.di.ui.trans.dialog.TransHopDialog;
 import org.pentaho.di.ui.trans.dialog.TransLoadProgressDialog;
-import org.pentaho.di.ui.util.EnvironmentUtils;
 import org.pentaho.di.ui.util.EngineMetaUtils;
+import org.pentaho.di.ui.util.EnvironmentUtils;
 import org.pentaho.di.ui.util.HelpUtils;
 import org.pentaho.di.ui.util.ThreadGuiResources;
 import org.pentaho.di.ui.xul.KettleWaitBox;
@@ -352,7 +317,40 @@ import org.pentaho.xul.swt.tab.TabSet;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
-import com.google.common.annotations.VisibleForTesting;
+import javax.swing.UIManager;
+import javax.swing.plaf.metal.MetalLookAndFeel;
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
+import java.io.DataOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.PrintStream;
+import java.lang.reflect.Method;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Hashtable;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Properties;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 /**
  * This class handles the main window of the Spoon graphical transformation editor.
@@ -7942,7 +7940,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
           if ( !lastUsedFile.isSourceRepository()
             || lastUsedFile.isSourceRepository() && rep != null
             && rep.getName().equals( lastUsedFile.getRepositoryName() ) ) {
-            loadLastUsedFile( lastUsedFile, rep == null ? null : rep.getName(), false );
+            loadLastUsedFileAtStartup( lastUsedFile, rep == null ? null : rep.getName() );
           }
         } catch ( Exception e ) {
           hideSplash();
@@ -8100,12 +8098,35 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     return clOptions;
   }
 
+  /**
+   * Loads the {@link LastUsedFile} residing the the {@link Repository} with {@code repoName} without "tracking it" -
+   * meaning that it is not explicitly added to the "recent" file collection, since it is expected to already exist
+   * in this collections.
+   *
+   * @param lastUsedFile   the {@link LastUsedFile} being loaded
+   * @param repositoryName the name of the {@link Repository} containing the {@link LastUsedFile}
+   * @throws KettleException
+   */
+  public void loadLastUsedFileAtStartup( LastUsedFile lastUsedFile, String repositoryName ) throws KettleException {
+    // when loading tabs at startup, we do not need to track it, as it should already be added to the appropriate
+    // lastUsedFile collections
+    loadLastUsedFile( lastUsedFile, repositoryName, false, true );
+  }
+
+  /**
+   * Loads the {@link LastUsedFile} residing the the {@link Repository} with {@code repoName}, and "tracks" it by
+   * adding it to the "recent" files collection.
+   *
+   * @param lastUsedFile   the {@link LastUsedFile} being loaded
+   * @param repositoryName the name of the {@link Repository} containing the {@link LastUsedFile}
+   * @throws KettleException
+   */
   public void loadLastUsedFile( LastUsedFile lastUsedFile, String repositoryName ) throws KettleException {
-    loadLastUsedFile( lastUsedFile, repositoryName, true );
+    loadLastUsedFile( lastUsedFile, repositoryName, true, false );
   }
 
   private void loadLastUsedFile(
-      LastUsedFile lastUsedFile, String repositoryName, boolean trackIt ) throws KettleException {
+      LastUsedFile lastUsedFile, String repositoryName, boolean trackIt, boolean isStartup ) throws KettleException {
     boolean useRepository = repositoryName != null;
     // Perhaps we need to connect to the repository?
     //
@@ -8123,46 +8144,67 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
         if ( rep.getName().equalsIgnoreCase( lastUsedFile.getRepositoryName() ) ) {
           RepositoryDirectoryInterface rdi = rep.findDirectory( lastUsedFile.getDirectory() );
           if ( rdi != null ) {
-            // Are we loading a transformation or a job?
-            if ( lastUsedFile.isTransformation() ) {
-              if ( log.isDetailed() ) {
-                // "Auto loading transformation ["+lastfiles[0]+"] from repository directory ["+lastdirs[0]+"]"
-                log.logDetailed( BaseMessages.getString( PKG, "Spoon.Log.AutoLoadingTransformation", lastUsedFile
-                  .getFilename(), lastUsedFile.getDirectory() ) );
-              }
-              TransLoadProgressDialog tlpd =
-                new TransLoadProgressDialog( shell, rep, lastUsedFile.getFilename(), rdi, null );
-              TransMeta transMeta = tlpd.open();
-              if ( transMeta != null ) {
-                if ( trackIt ) {
-                  props.addLastFile( LastUsedFile.FILE_TYPE_TRANSFORMATION, lastUsedFile.getFilename(), rdi
-                    .getPath(), true, rep.getName(), getUsername(), null );
+            // does the file exist in the repo?
+            final RepositoryObjectType fileType = lastUsedFile.isJob() ? RepositoryObjectType.JOB
+              : RepositoryObjectType.TRANSFORMATION;
+            if ( !rep.exists( lastUsedFile.getFilename(), rdi, fileType ) ) {
+              // open an warning dialog only if this file was explicitly selected to be opened; on startup, simply skip
+              // opening this file
+              if ( isStartup ) {
+                if ( log.isDetailed() ) {
+                  log.logDetailed( BaseMessages.getString( PKG, "Spoon.log.openingMissingFile" ) );
                 }
-                // transMeta.setFilename(lastUsedFile.getFilename());
-                transMeta.clearChanged();
-                addTransGraph( transMeta );
-                refreshTree();
+              } else {
+                final ShowMessageDialog dlg = new ShowMessageDialog( shell, SWT.OK | SWT.ICON_WARNING, BaseMessages
+                  .getString( PKG, "Spoon.Dialog.MissingRecentFile.Title" ), BaseMessages.getString( PKG, "Spoon.Dialog"
+                  + ".MissingRecentFile.Message", fileType, lastUsedFile.toString() ) );
+                dlg.open();
               }
-            } else if ( lastUsedFile.isJob() ) {
-              JobLoadProgressDialog progressDialog =
-                new JobLoadProgressDialog( shell, rep, lastUsedFile.getFilename(), rdi, null );
-              JobMeta jobMeta = progressDialog.open();
-              if ( jobMeta != null ) {
-                if ( trackIt ) {
-                  props.addLastFile(
-                    LastUsedFile.FILE_TYPE_JOB, lastUsedFile.getFilename(), rdi.getPath(), true, rep
-                      .getName(), getUsername(), null );
+              // remove from recents, since the file no longer exists
+              PropsUI.removeRecent( rep.getName(), lastUsedFile.getDirectory(), lastUsedFile.getFilename() );
+            } else {
+              // Are we loading a transformation or a job?
+              if ( lastUsedFile.isTransformation() ) {
+                if ( log.isDetailed() ) {
+                  // "Auto loading transformation ["+lastfiles[0]+"] from repository directory ["+lastdirs[0]+"]"
+                  log.logDetailed( BaseMessages.getString( PKG, "Spoon.Log.AutoLoadingTransformation", lastUsedFile
+                    .getFilename(), lastUsedFile.getDirectory() ) );
                 }
-                jobMeta.clearChanged();
-                addJobGraph( jobMeta );
+                TransLoadProgressDialog tlpd =
+                  new TransLoadProgressDialog( shell, rep, lastUsedFile.getFilename(), rdi, null );
+                TransMeta transMeta = tlpd.open();
+                if ( transMeta != null ) {
+                  if ( trackIt ) {
+                    props.addLastFile( LastUsedFile.FILE_TYPE_TRANSFORMATION, lastUsedFile.getFilename(), rdi
+                      .getPath(), true, rep.getName(), getUsername(), null );
+                  }
+                  // transMeta.setFilename(lastUsedFile.getFilename());
+                  transMeta.clearChanged();
+                  addTransGraph( transMeta );
+                  refreshTree();
+                }
+              } else if ( lastUsedFile.isJob() ) {
+                JobLoadProgressDialog progressDialog =
+                  new JobLoadProgressDialog( shell, rep, lastUsedFile.getFilename(), rdi, null );
+                JobMeta jobMeta = progressDialog.open();
+                if ( jobMeta != null ) {
+                  if ( trackIt ) {
+                    props.addLastFile(
+                      LastUsedFile.FILE_TYPE_JOB, lastUsedFile.getFilename(), rdi.getPath(), true, rep
+                        .getName(), getUsername(), null );
+                  }
+                  jobMeta.clearChanged();
+                  addJobGraph( jobMeta );
+                }
               }
+              refreshTree();
             }
-            refreshTree();
           }
         }
       }
     }
 
+    // open files stored locally, not in the repository
     if ( !lastUsedFile.isSourceRepository() && !Utils.isEmpty( lastUsedFile.getFilename() ) ) {
       if ( lastUsedFile.isTransformation() ) {
         openFile( lastUsedFile.getFilename(), rep != null );

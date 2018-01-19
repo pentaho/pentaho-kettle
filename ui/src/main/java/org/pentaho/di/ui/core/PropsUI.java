@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,19 +22,6 @@
 
 package org.pentaho.di.ui.core;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.Enumeration;
-import java.util.Hashtable;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-import java.util.ResourceBundle;
-
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.events.PaintEvent;
@@ -52,7 +39,6 @@ import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TableItem;
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.LastUsedFile;
 import org.pentaho.di.core.ObjectUsageCount;
 import org.pentaho.di.core.Props;
@@ -63,9 +49,29 @@ import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.plugins.LifecyclePluginType;
 import org.pentaho.di.core.plugins.PluginInterface;
 import org.pentaho.di.core.plugins.PluginRegistry;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.laf.BasePropertyHandler;
+import org.pentaho.di.repository.Repository;
+import org.pentaho.di.repository.RepositoryObject;
+import org.pentaho.di.repository.RepositoryObjectType;
 import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.core.gui.WindowProperty;
+import org.pentaho.di.ui.spoon.Spoon;
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.util.Enumeration;
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+import java.util.ResourceBundle;
+
 
 /**
  * We use Props to store all kinds of user interactive information such as the selected colors, fonts, positions of
@@ -1284,5 +1290,105 @@ public class PropsUI extends Props {
 
   public String getRecentSearches() {
     return properties.getProperty( STRING_RECENT_SEARCHES );
+  }
+
+  /**
+   * Removes the file identified by the {@code id} and {@code type} within the {@code repo} {@link Repository} from
+   * the {@code  lastUsedRepoFiles} and {@code lastUsedFiles} collections of the {@link PropsUI} singleton instance.
+   *
+   * @param repo the {@link Repository} containing the removed file
+   * @param id   the file's unique identifier
+   * @param type the file type (transformation or job)
+   */
+  public static void removeRecent( final Repository repo, final String id, final String type ) {
+    RepositoryObject repositoryObject = null;
+    try {
+      repositoryObject = repo.getObjectInformation( () -> id,
+        ( type == "transformation" ? RepositoryObjectType.TRANSFORMATION : RepositoryObjectType.JOB ) );
+    } catch ( Exception e ) {
+      return;
+    }
+    if ( repositoryObject != null ) {
+      removeRecentImpl( repo.getName(), repositoryObject.getRepositoryDirectory().getPath(),
+        repositoryObject.getName(), getInstance().getLastUsedRepoFiles(), getInstance().getLastUsedFiles() );
+    }
+  }
+
+  /**
+   * Removes the file identified by the {@code repoDirectory} and {@code repoFileName} within the repo with name {@code
+   * repoName} from the {@code lastUsedRepoFiles} and {@code lastUsedFiles} collections of this {@link PropsUI}
+   * instance.
+   *
+   * @param repoName      the name of the repository containing the file
+   * @param repoDirectory the path to the file's directory
+   * @param repoFileName  the file name
+   */
+  public static void removeRecent(
+    final String repoName, final String repoDirectory, final String repoFileName ) {
+    removeRecentImpl( repoName, repoDirectory, repoFileName, PropsUI.getInstance().getLastUsedRepoFiles(),
+      getInstance().getLastUsedFiles() );
+  }
+
+  /**
+   * Removes the file identified by the {@code repoDirectory} and {@code repoFileName} within the repo with name {@code
+   * repoName} from the {@code lastUsedRepoFiles} and {@code lastUsedFiles} collections.
+   *
+   * @param repoName          the name of the repository containing the file
+   * @param repoDirectory     the path to the file's directory
+   * @param repoFileName      the file name
+   * @param lastUsedRepoFiles the {@link Map} of known repository name and user name combinations (example: {@code
+   *                          Local Connection:admin}) to a {@link List} of {@link LastUsedFile}s that have been
+   *                          recently opened from within the repository; this is expected to match the
+   *                          {@link #getLastUsedRepoFiles()} of the {@link PropsUI} singleton instance.
+   * @param lastUsedFiles     The {@link List} of all {@link LastUsedFile}s, opened from the repository, as well as the
+   *                          local file system; this is expected to match the {@link #getLastUsedFiles()} of the {@link
+   *                          PropsUI} singleton instance.
+   */
+  private static void removeRecentImpl(
+    final String repoName, final String repoDirectory, final String repoFileName,
+    final Map<String, List<LastUsedFile>> lastUsedRepoFiles, final List<LastUsedFile> lastUsedFiles ) {
+
+    if ( lastUsedRepoFiles != null ) {
+      final Iterator<Map.Entry<String, List<LastUsedFile>>> lastUsedRepoFilesIter = lastUsedRepoFiles.entrySet()
+        .iterator();
+      while ( lastUsedRepoFilesIter.hasNext() ) {
+        final Map.Entry<String, List<LastUsedFile>> entry = lastUsedRepoFilesIter.next();
+        final String currentRepoNameAndUser = entry.getKey();
+        final String currentRepoName = currentRepoNameAndUser.split( ":" )[ 0 ];
+        if ( currentRepoName.equals( repoName ) ) {
+          final List<LastUsedFile> lastUsedRepoFilesPerRepo = entry.getValue();
+          removeRecentImpl( repoName, repoDirectory, repoFileName, lastUsedRepoFilesPerRepo );
+          break;
+        }
+      }
+    }
+
+    // cleanup last used files, which affects the File > Open Recent menu
+    removeRecentImpl( repoName, repoDirectory, repoFileName, lastUsedFiles );
+  }
+
+  /**
+   * Removes the file identified by the {@code repoDirectory} and {@code repoFileName} within the repo {@code repoName}
+   * from the {@code files} collection.
+   *
+   * @param repoName      the name of the repository containing the file
+   * @param repoDirectory the path to the file's directory
+   * @param repoFileName  the file name
+   * @param files         the {@link List} of {@link LastUsedFile}s from which the recent file will be removed
+   */
+  private static void removeRecentImpl(
+    final String repoName, final String repoDirectory, final String repoFileName, final List<LastUsedFile> files ) {
+
+    if ( files != null ) {
+      for ( LastUsedFile lastUsedRepoFile : files ) {
+        if ( lastUsedRepoFile.getDirectory().equals( repoDirectory )
+          && lastUsedRepoFile.getFilename().equals( repoFileName )
+          && lastUsedRepoFile.getRepositoryName().equals( repoName ) ) {
+          files.remove( lastUsedRepoFile );
+          Spoon.getInstance().addMenuLast();
+          break;
+        }
+      }
+    }
   }
 }

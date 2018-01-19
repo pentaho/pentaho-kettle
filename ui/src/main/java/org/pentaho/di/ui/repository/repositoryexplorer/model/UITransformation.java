@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -28,6 +28,7 @@ import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectory;
 import org.pentaho.di.repository.RepositoryElementMetaInterface;
+import org.pentaho.di.ui.core.PropsUI;
 
 public class UITransformation extends UIRepositoryContent {
 
@@ -56,6 +57,7 @@ public class UITransformation extends UIRepositoryContent {
   }
 
   public void delete() throws Exception {
+    PropsUI.removeRecent( getRepository(), getId(), getType().toLowerCase() );
     rep.deleteTransformation( this.getObjectId() );
     if ( uiParent.getRepositoryObjects().contains( this ) ) {
       uiParent.getRepositoryObjects().remove( this );

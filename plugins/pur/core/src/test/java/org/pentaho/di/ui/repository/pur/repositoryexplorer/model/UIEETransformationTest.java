@@ -1,5 +1,5 @@
 /*!
- * Copyright 2010 - 2017 Hitachi Vantara.  All rights reserved.
+ * Copyright 2010 - 2018 Hitachi Vantara.  All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,54 +16,57 @@
  */
 package org.pentaho.di.ui.repository.pur.repositoryexplorer.model;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.fail;
-import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-import static org.mockito.Mockito.doThrow;
-
-import java.io.File;
-import java.util.Arrays;
-import java.util.List;
-
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mockito;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.ObjectRecipient;
+import org.pentaho.di.repository.ObjectRecipient.Type;
 import org.pentaho.di.repository.ObjectRevision;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectory;
 import org.pentaho.di.repository.RepositoryElementMetaInterface;
-import org.pentaho.di.repository.ObjectRecipient.Type;
+import org.pentaho.di.repository.RepositoryObjectType;
 import org.pentaho.di.repository.pur.model.EERepositoryObject;
 import org.pentaho.di.repository.pur.model.ObjectAcl;
 import org.pentaho.di.repository.pur.model.RepositoryLock;
 import org.pentaho.di.repository.pur.model.RepositoryObjectAcl;
 import org.pentaho.di.repository.pur.model.RepositoryObjectRecipient;
+import org.pentaho.di.ui.core.PropsUI;
 import org.pentaho.di.ui.repository.pur.services.IAclService;
 import org.pentaho.di.ui.repository.pur.services.ILockService;
 import org.pentaho.di.ui.repository.pur.services.IRevisionService;
 import org.pentaho.di.ui.repository.repositoryexplorer.AccessDeniedException;
 import org.pentaho.di.ui.repository.repositoryexplorer.model.UIRepositoryDirectory;
+import org.pentaho.di.ui.repository.repositoryexplorer.model.UIRepositoryObjects;
+import org.pentaho.di.ui.repository.repositoryexplorer.model.UITransformation;
 import org.pentaho.platform.api.repository2.unified.RepositoryFilePermission;
+import org.powermock.api.mockito.PowerMockito;
+import org.powermock.core.classloader.annotations.PrepareForTest;
+import org.powermock.modules.junit4.PowerMockRunner;
+
+import java.io.File;
+import java.util.Arrays;
+import java.util.List;
+
+import static org.junit.Assert.*;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.*;
 
 /**
  * 
  * @author tkafalas
  * 
  */
+@PrepareForTest( { PropsUI.class } )
+@RunWith( PowerMockRunner.class )
 public class UIEETransformationTest {
   private final static String LOCK_MESSAGE = "lockMessage";
   private final static String LOCK_NOTE = "lockNote";
   private final static String TRANS_ID = "transId";
+  private final static RepositoryObjectType TRANS_TYPE = RepositoryObjectType.TRANSFORMATION;
 
   private ObjectId mockObjectId;
   private UIEETransformation uiTransformation;
@@ -82,6 +85,7 @@ public class UIEETransformationTest {
     when( mockObjectId.getId() ).thenReturn( TRANS_ID );
     mockEERepositoryObject = mock( EERepositoryObject.class );
     when( mockEERepositoryObject.getObjectId() ).thenReturn( mockObjectId );
+    when( mockEERepositoryObject.getObjectType() ).thenReturn( TRANS_TYPE );
     mockParent = mock( UIRepositoryDirectory.class );
 
     mockLockService = mock( ILockService.class );
@@ -255,4 +259,35 @@ public class UIEETransformationTest {
     uiTransformation = new UIEETransformation( badObject, mockParent, mockRepository );
   }
 
+  @Test
+  public void testDelete() throws Exception {
+
+    PowerMockito.mockStatic( PropsUI.class );
+
+    UIRepositoryObjects repoObjects = Mockito.mock( UIRepositoryObjects.class );
+    Mockito.when( mockParent.getRepositoryObjects() ).thenReturn( repoObjects );
+    uiTransformation.delete();
+
+    // verify that the PropsUI.removeRecent method is called with the expected artuments
+    PowerMockito.verifyStatic( times( 1 ));
+    PropsUI.removeRecent( mockRepository, TRANS_ID, TRANS_TYPE.getTypeDescription().toLowerCase() );
+
+    // verify that deleteTransformation is called on the repository with the correct arguments
+    Mockito.verify( mockRepository, Mockito.times( 1 ) ).deleteTransformation( mockObjectId );
+    // verity that getRepositoryObjects is called on the repository
+    Mockito.verify( mockParent, Mockito.times( 1 ) ).getRepositoryObjects();
+    // and that contains is called on the repoObjects
+    Mockito.verify( repoObjects, Mockito.times( 1 ) ).contains( uiTransformation );
+    // since the repoObjects collection does not contain the transaction, remove should not be called
+    Mockito.verify( repoObjects, Mockito.times( 0 ) ).remove( Mockito.any( UITransformation.class ) );
+
+    // adds the transaction to the repoObjects and try deleting again
+    repoObjects = Mockito.spy( new UIRepositoryObjects( Arrays.asList( uiTransformation ) ) );
+    assertTrue( repoObjects.size() == 1 );
+    Mockito.when( mockParent.getRepositoryObjects() ).thenReturn( repoObjects );
+    uiTransformation.delete();
+    Mockito.verify( repoObjects, Mockito.times( 1 ) ).remove( uiTransformation );
+    // verify removal from repoObjects
+    assertTrue( repoObjects.size() == 0 );
+  }
 }
