@@ -121,10 +121,10 @@ public class BaseStreamStep extends BaseStep {
   @Override
   public void stopRunning( StepMetaInterface stepMetaInterface, StepDataInterface stepDataInterface )
     throws KettleException {
+    subtransExecutor.stop();
     if ( source != null ) {
       source.close();
     }
-    subtransExecutor.stop();
     super.stopRunning( stepMetaInterface, stepDataInterface );
   }
 
