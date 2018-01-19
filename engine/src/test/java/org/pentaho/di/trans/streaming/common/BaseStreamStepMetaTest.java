@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -35,6 +35,8 @@ import org.pentaho.di.core.logging.KettleLogStore;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.logging.LogChannelInterfaceFactory;
 import org.pentaho.di.core.variables.Variables;
+import org.pentaho.di.resource.ResourceEntry;
+import org.pentaho.di.resource.ResourceReference;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.StepDataInterface;
@@ -158,5 +160,24 @@ public class BaseStreamStepMetaTest {
         + "<stuff>two</stuff>" + Const.CR
         + "<TRANSFORMATION_PATH/>" + Const.CR,
       xml );
+  }
+
+  @Test
+  public void testGetResourceDependencies() {
+    String stepId = "KafkConsumerInput";
+    String path = "/home/bgroves/fake.ktr";
+
+    StepMeta stepMeta = new StepMeta();
+    stepMeta.setStepID( stepId );
+    StuffStreamMeta inputMeta = new StuffStreamMeta();
+    List<ResourceReference> resourceDependencies = inputMeta.getResourceDependencies( new TransMeta(), stepMeta );
+    assertEquals( 0, resourceDependencies.get( 0 ).getEntries().size() );
+
+    inputMeta.setTransformationPath( path );
+    resourceDependencies = inputMeta.getResourceDependencies( new TransMeta(), stepMeta );
+    assertEquals( 1, resourceDependencies.get( 0 ).getEntries().size() );
+    assertEquals( path, resourceDependencies.get( 0 ).getEntries().get( 0 ).getResource() );
+    assertEquals( ResourceEntry.ResourceType.ACTIONFILE,
+      resourceDependencies.get( 0 ).getEntries().get( 0 ).getResourcetype() );
   }
 }

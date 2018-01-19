@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -32,11 +32,14 @@ import org.pentaho.di.core.injection.bean.BeanInjectionInfo;
 import org.pentaho.di.core.injection.bean.BeanInjector;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.value.ValueMetaString;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.Repository;
+import org.pentaho.di.resource.ResourceEntry;
+import org.pentaho.di.resource.ResourceReference;
 import org.pentaho.di.trans.StepWithMappingMeta;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.StepMeta;
@@ -44,6 +47,7 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Node;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -185,5 +189,22 @@ public abstract class BaseStreamStepMeta extends StepWithMappingMeta implements 
         BaseMessages.getString( PKG, "BaseStreamStepMeta.CheckResult.NoBatchDefined" ),
         stepMeta ) );
     }
+  }
+
+  @Override
+  public List<ResourceReference> getResourceDependencies( TransMeta transMeta, StepMeta stepInfo ) {
+    List<ResourceReference> references = new ArrayList<ResourceReference>( 5 );
+    String realFilename = transMeta.environmentSubstitute( transformationPath );
+    ResourceReference reference = new ResourceReference( stepInfo );
+    references.add( reference );
+
+    if ( !Utils.isEmpty( realFilename ) ) {
+      // Add the filename to the references, including a reference to this step
+      // meta data.
+      //
+      reference.getEntries().add( new ResourceEntry( realFilename, ResourceEntry.ResourceType.ACTIONFILE ) );
+    }
+
+    return references;
   }
 }

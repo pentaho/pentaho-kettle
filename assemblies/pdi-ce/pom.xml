@@ -79,6 +79,8 @@
     <enunciate-jersey-rt.version>1.27</enunciate-jersey-rt.version>
     <enunciate-core-annotations.version>1.27</enunciate-core-annotations.version>
     <kafka-clients.version>0.10.2.1</kafka-clients.version>
+    <paho.version>1.2.0</paho.version>
+    <bahir.version>2.1.1</bahir.version>
     <tyrus-standalone-client.version>1.13.1</tyrus-standalone-client.version>
     <spark.version>2.1.0</spark.version>
     <databricks.version>3.2.0</databricks.version>
@@ -209,6 +211,28 @@
       <groupId>org.apache.kafka</groupId>
       <artifactId>kafka-clients</artifactId>
       <version>${kafka-clients.version}</version>
+      <exclusions>
+        <exclusion>
+          <groupId>*</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.eclipse.paho</groupId>
+      <artifactId>org.eclipse.paho.client.mqttv3</artifactId>
+      <version>${paho.version}</version>
+      <exclusions>
+        <exclusion>
+          <groupId>*</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.bahir</groupId>
+      <artifactId>spark-streaming-mqtt_2.11</artifactId>
+      <version>${bahir.version}</version>
       <exclusions>
         <exclusion>
           <groupId>*</groupId>
