@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2017-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -64,6 +64,7 @@ public class ValueMetaConverterTest {
       { ValueMetaInterface.TYPE_NUMBER, ValueMetaInterface.TYPE_NONE, 1234.56d, null },
       { ValueMetaInterface.TYPE_NUMBER, ValueMetaInterface.TYPE_STRING, 1234.56d, "1234.56" },
       { ValueMetaInterface.TYPE_NUMBER, ValueMetaInterface.TYPE_NUMBER, 1234.56d, 1234.56d },
+      { ValueMetaInterface.TYPE_NUMBER, ValueMetaInterface.TYPE_INTEGER, 1234.56d, 1234L },
       { ValueMetaInterface.TYPE_NUMBER, ValueMetaInterface.TYPE_BIGNUMBER, 1234.56d, new BigDecimal( 1234.56 ) },
 
       { ValueMetaInterface.TYPE_STRING, ValueMetaInterface.TYPE_NONE, inetHost, null },
@@ -165,7 +166,7 @@ public class ValueMetaConverterTest {
 
         //Now Try to send in a source that is an invalid type - should always fail
         try {
-          converter.convertFromSourceToTargetDataType( sourceType, targetType, new ValueMetaConverter() );
+          converter.convertFromSourceToTargetDataType( sourceType, targetType, new Object() );
         } catch ( ValueMetaConversionException e ) {
           // We are expecting this exception.  Any combination we are not testing should not be supported
           if ( !e.getMessage().contains( "Error.  Expecting value of type" ) ) {
