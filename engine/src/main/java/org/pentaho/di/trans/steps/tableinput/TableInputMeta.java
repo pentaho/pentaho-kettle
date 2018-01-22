@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -25,6 +25,8 @@ package org.pentaho.di.trans.steps.tableinput;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.injection.Injection;
+import org.pentaho.di.core.injection.InjectionSupported;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
@@ -51,7 +53,6 @@ import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepIOMeta;
 import org.pentaho.di.trans.step.StepIOMetaInterface;
-import org.pentaho.di.trans.step.StepInjectionMetaEntry;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
@@ -68,22 +69,37 @@ import java.util.List;
  * Created on 2-jun-2003
  *
  */
+@InjectionSupported( localizationPrefix = "TableInputMeta.Injection." )
 public class TableInputMeta extends BaseStepMeta implements StepMetaInterface {
   private static Class<?> PKG = TableInputMeta.class; // for i18n purposes, needed by Translator2!!
 
+  private List<? extends SharedObjectInterface> databases;
+
   private DatabaseMeta databaseMeta;
+
+  @Injection( name = "SQL" )
   private String sql;
+
+  @Injection( name = "LIMIT" )
   private String rowLimit;
 
   /** Should I execute once per row? */
+  @Injection( name = "EXECUTE_FOR_EACH_ROW" )
   private boolean executeEachInputRow;
 
+  @Injection( name = "REPLACE_VARIABLES" )
   private boolean variableReplacementActive;
 
+  @Injection( name = "LAZY_CONVERSION" )
   private boolean lazyConversionActive;
 
   public TableInputMeta() {
     super();
+  }
+
+  @Injection( name = "CONNECTIONNAME" )
+  public void setConnection( String connectionName ) {
+    databaseMeta = DatabaseMeta.findDatabase( this.databases, connectionName );
   }
 
   /**
@@ -156,6 +172,7 @@ public class TableInputMeta extends BaseStepMeta implements StepMetaInterface {
   }
 
   private void readData( Node stepnode, List<? extends SharedObjectInterface> databases ) throws KettleXMLException {
+    this.databases = databases;
     try {
       databaseMeta = DatabaseMeta.findDatabase( databases, XMLHandler.getTagValue( stepnode, "connection" ) );
       sql = XMLHandler.getTagValue( stepnode, "sql" );
@@ -193,7 +210,7 @@ public class TableInputMeta extends BaseStepMeta implements StepMetaInterface {
     boolean param = false;
 
     Database db = getDatabase();
-    databases = new Database[] { db }; // keep track of it for canceling purposes...
+    super.databases = new Database[] { db }; // keep track of it for canceling purposes...
 
     // First try without connecting to the database... (can be S L O W)
     String sNewSQL = sql;
@@ -283,6 +300,7 @@ public class TableInputMeta extends BaseStepMeta implements StepMetaInterface {
   }
 
   public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases ) throws KettleException {
+    this.databases = databases;
     try {
       databaseMeta = rep.loadDatabaseMetaFromStepAttribute( id_step, "id_connection", databases );
 
@@ -335,7 +353,7 @@ public class TableInputMeta extends BaseStepMeta implements StepMetaInterface {
 
       Database db = new Database( loggingObject, databaseMeta );
       db.shareVariablesWith( transMeta );
-      databases = new Database[] { db }; // keep track of it for canceling purposes...
+      super.databases = new Database[] { db }; // keep track of it for canceling purposes...
 
       try {
         db.connect();
@@ -560,14 +578,5 @@ public class TableInputMeta extends BaseStepMeta implements StepMetaInterface {
    */
   public StepMeta getLookupFromStep() {
     return getStepIOMeta().getInfoStreams().get( 0 ).getStepMeta();
-  }
-
-  @Override
-  public TableInputMetaInjection getStepMetaInjectionInterface() {
-    return new TableInputMetaInjection( this );
-  }
-
-  public List<StepInjectionMetaEntry> extractStepMetadataEntries() throws KettleException {
-    return getStepMetaInjectionInterface().extractStepMetadataEntries();
   }
 }
