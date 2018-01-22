@@ -43,9 +43,9 @@ public class GoogleCloudStorageKettleLifecycleListener implements LifecycleListe
       public void run() {
         VfsFileChooserDialog dialog = spoon.getVfsFileChooserDialog( null, null );
         GoogleCloudStorageFileChooserDialog
-          hadoopVfsFileChooserDialog =
+          googleCloudStorageVfsFileChooserDialog =
           new GoogleCloudStorageFileChooserDialog( dialog, null, null );
-        dialog.addVFSUIPanel( hadoopVfsFileChooserDialog );
+        dialog.addVFSUIPanel( googleCloudStorageVfsFileChooserDialog );
       }
     } );
   }
@@ -53,4 +53,3 @@ public class GoogleCloudStorageKettleLifecycleListener implements LifecycleListe
   public void onExit( LifeEventHandler handler ) throws LifecycleException {
   }
 }
-
