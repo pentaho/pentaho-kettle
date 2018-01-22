@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -44,7 +44,9 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.di.trans.step.errorhandling.StreamInterface;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -181,7 +183,8 @@ public class Validator extends BaseStep implements StepInterface {
     return true;
   }
 
-  private void readSourceValuesFromInfoSteps() throws KettleStepException {
+  void readSourceValuesFromInfoSteps() throws KettleStepException {
+    Map<String, Integer> inputStepWasProcessed = new HashMap<>();
     for ( int i = 0; i < meta.getValidations().size(); i++ ) {
       Validation field = meta.getValidations().get( i );
       List<StreamInterface> streams = meta.getStepIOMeta().getInfoStreams();
@@ -203,7 +206,14 @@ public class Validator extends BaseStep implements StepInterface {
         // Still here : OK, read the data from the specified step...
         // The data is stored in data.listValues[i] and data.constantsMeta
         //
-        RowSet allowedRowSet = findInputRowSet( streams.get( i ).getStepname() );
+        String stepName = streams.get( i ).getStepname();
+        if ( inputStepWasProcessed.containsKey( stepName ) ) {
+          // step was processed for other StreamInterface
+          data.listValues[ i ] = data.listValues[ inputStepWasProcessed.get( stepName ) ];
+          data.constantsMeta[ i ] = data.constantsMeta[ inputStepWasProcessed.get( stepName ) ];
+          continue;
+        }
+        RowSet allowedRowSet = findInputRowSet( stepName );
         int fieldIndex = -1;
         List<Object> allowedValues = new ArrayList<Object>();
         Object[] allowedRowData = getRowFrom( allowedRowSet );
@@ -229,6 +239,7 @@ public class Validator extends BaseStep implements StepInterface {
         // Set the list values in the data block...
         //
         data.listValues[ i ] = allowedValues.toArray( new Object[ allowedValues.size() ] );
+        inputStepWasProcessed.put( stepName, i );
       }
     }
   }

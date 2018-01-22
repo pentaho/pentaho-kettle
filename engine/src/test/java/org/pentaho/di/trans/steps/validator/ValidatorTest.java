@@ -3,7 +3,7 @@
  *  *
  *  * Pentaho Data Integration
  *  *
- *  * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ *  * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *  *
  *  *******************************************************************************
  *  *
@@ -35,19 +35,27 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
 
+import java.lang.reflect.Field;
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 import java.util.regex.Pattern;
 
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Mockito;
+import org.pentaho.di.core.RowSet;
 import org.pentaho.di.core.exception.KettlePluginException;
 import org.pentaho.di.core.logging.LoggingObjectInterface;
+import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.row.value.ValueMetaBigNumber;
 import org.pentaho.di.core.row.value.ValueMetaInteger;
 import org.pentaho.di.core.row.value.ValueMetaNumber;
 import org.pentaho.di.core.row.value.ValueMetaString;
+import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.steps.mock.StepMockHelper;
 
 public class ValidatorTest {
@@ -128,5 +136,70 @@ public class ValidatorTest {
     ValueMetaString metaString = new ValueMetaString( "string" );
     assertNotNull( "General strings are not allowed",
       validator.assertNumeric( metaString, "qwerty", new Validation() ) );
+  }
+
+  @Test
+  public void readSourceValuesFromInfoStepsTest() throws Exception {
+    String name = "Valid list";
+    String field = "sourcing field 1";
+    String values = "A";
+    mockHelper.stepMeta.setName( name );
+    ValidatorMeta meta = new ValidatorMeta();
+    List<Validation> validations = new ArrayList<>();
+    Validation validation1 = new Validation( "validation1" );
+    validation1.setSourcingValues( true );
+    validation1.setSourcingField( field );
+    validations.add( validation1 );
+
+    Validation validation2 = new Validation( "validation2" );
+    validation2.setSourcingValues( true );
+    validation2.setSourcingField( "sourcing field 2" );
+    validations.add( validation2 );
+
+    meta.setValidations( validations );
+
+    StepMeta stepMeta = new StepMeta();
+    stepMeta.setName( name );
+
+    RowSet rowSet = Mockito.mock( RowSet.class );
+    Mockito.when( rowSet.getOriginStepName() ).thenReturn( name );
+    Mockito.when( rowSet.getDestinationStepName() ).thenReturn( "Validator" );
+    Mockito.when( rowSet.getOriginStepCopy() ).thenReturn( 0 );
+    Mockito.when( rowSet.getDestinationStepCopy() ).thenReturn( 0 );
+    Mockito.when( rowSet.getRow() ).thenReturn( new String[] { values } ).thenReturn( null );
+    Mockito.when( rowSet.isDone() ).thenReturn( true );
+    RowMetaInterface allowedRowMeta = Mockito.mock( RowMetaInterface.class );
+    Mockito.when( rowSet.getRowMeta() ).thenReturn( allowedRowMeta );
+    Mockito.when( rowSet.getRowMeta() ).thenReturn( Mockito.mock( RowMetaInterface.class ) );
+    Mockito.when( allowedRowMeta.indexOfValue( field ) ).thenReturn( 0 );
+    Mockito.when( allowedRowMeta.getValueMeta( 0 ) ).thenReturn( Mockito.mock( ValueMetaInterface.class ) );
+
+    List<RowSet> rowSets = new ArrayList<>();
+    rowSets.add( rowSet );
+    validator.setInputRowSets( rowSets );
+    mockHelper.transMeta.setStep( 0, stepMeta );
+    Mockito.when( mockHelper.transMeta.findStep( Mockito.eq( name ) ) ).thenReturn( stepMeta );
+
+    StepMeta stepMetaValidList = new StepMeta();
+    stepMetaValidList.setName( name );
+
+    meta.getStepIOMeta().getInfoStreams().get( 0 ).setStepMeta( stepMetaValidList );
+    meta.getStepIOMeta().getInfoStreams().get( 1 ).setStepMeta( stepMetaValidList );
+    Class<?> validatorClass = Validator.class;
+    Field metaField = validatorClass.getDeclaredField( "meta" );
+    metaField.setAccessible( true );
+    metaField.set( validator, meta );
+
+    ValidatorData data = new ValidatorData();
+    data.constantsMeta = new ValueMetaInterface[ 2 ];
+    Field dataField = validatorClass.getDeclaredField( "data" );
+    dataField.setAccessible( true );
+    dataField.set( validator, data );
+    data.listValues = new Object[ 2 ][ 2 ];
+
+    validator.readSourceValuesFromInfoSteps();
+
+    Assert.assertEquals( values, data.listValues[ 0 ][ 0 ] );
+    Assert.assertEquals( values, data.listValues[ 1 ][ 0 ] );
   }
 }
