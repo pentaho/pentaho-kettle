@@ -382,6 +382,33 @@ public class BrowseController extends AbstractXulEventHandler implements IUISupp
     }
   }
 
+  protected void confirm( String title, String message ) throws XulException {
+    String ok = BaseMessages.getString( PKG, "Dialog.Ok" );
+    try {
+      confirmDialog( title, message, ok );
+    } catch ( Exception e ) {
+      throw new XulException( e );
+    }
+  }
+
+  protected void confirmDialog( String title, String msg, String ok ) throws Exception {
+    MessageDialog confirmDialog =
+      new MessageDialog( getShell(), title, null, msg, MessageDialog.NONE, new String[] { ok }, 0 ) {
+        @Override
+        protected Point getInitialSize() {
+          return new Point( DIALOG_WIDTH, DIALOG_HEIGHT );
+        }
+
+        @Override
+        protected void configureShell( Shell shell ) {
+          super.configureShell( shell );
+          shell.setBackground( shell.getDisplay().getSystemColor( DIALOG_COLOR ) );
+          shell.setBackgroundMode( SWT.INHERIT_FORCE );
+        }
+      };
+    confirmDialog.open();
+  }
+
   protected void confirmDialog( Callable<Void> callback, String title, String msg, String yes, String no )
     throws Exception {
     MessageDialog confirmDialog =
@@ -525,10 +552,7 @@ public class BrowseController extends AbstractXulEventHandler implements IUISupp
       newName = null;
     } catch ( Exception e ) {
       if ( mainController == null || !mainController.handleLostRepository( e ) ) {
-        messageBox.setTitle( BaseMessages.getString( PKG, "Dialog.Error" ) );
-        messageBox.setAcceptLabel( BaseMessages.getString( PKG, "Dialog.Ok" ) );
-        messageBox.setMessage( e.getLocalizedMessage() );
-        messageBox.open();
+        confirm( BaseMessages.getString( PKG, "Dialog.Error" ), e.getLocalizedMessage() );
       }
     }
   }
