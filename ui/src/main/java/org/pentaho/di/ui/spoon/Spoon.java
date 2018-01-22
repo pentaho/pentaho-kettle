@@ -6106,14 +6106,6 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
       return true;
     }
 
-    try {
-      if ( string.matches( filter ) ) {
-        return true;
-      }
-    } catch ( Exception e ) {
-      log.logError( "Not a valid pattern [" + filter + "] : " + e.getMessage() );
-    }
-
     return string.toUpperCase().contains( filter.toUpperCase() );
   }
 

@@ -78,7 +78,7 @@ public class SpoonFilterMatchingTest {
   public void specialCharsMatching() {
     when( spoon.selectionFilter.getText() ).thenReturn( "qw*y" );
     assertFalse( spoon.filterMatch( "qwerty" ) );
-    assertTrue( spoon.filterMatch( "qwy" ) );
-    assertTrue( spoon.filterMatch( "qwwwwy" ) );
+    assertTrue( spoon.filterMatch( "qw*y" ) );
+    assertFalse( spoon.filterMatch( "qwwwwy" ) );
   }
 }
