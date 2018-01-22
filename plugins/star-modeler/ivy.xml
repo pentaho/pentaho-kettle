@@ -24,7 +24,7 @@
     <dependency org="org.apache.commons" name="commons-vfs2" rev="2.1-20150824" transitive="false"/>
     <dependency org="org.pentaho" name="commons-xul-core" rev="${pdi.version}" changing="true"/>
     <dependency org="org.pentaho" name="commons-xul-swt" rev="${pdi.version}" changing="true"/>
-    <dependency org="pentaho" name="pentaho-metadata" rev="${pentaho-metadata.version}" changing="true"/>
+    <dependency org="org.pentaho" name="pentaho-metadata" rev="${pentaho-metadata.version}" changing="true"/>
     
     <dependency org="junit" name="junit" rev="4.7" conf="test->default"/>
             
