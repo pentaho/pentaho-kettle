@@ -107,13 +107,11 @@ public class GoogleCloudStorageFileObject extends AbstractFileObject<GoogleCloud
       folders.put( "", new ArrayList<>() );
       for ( Blob blob : bucket.list().iterateAll() ) {
         String path = blob.getName();
-        System.out.println( path );
         boolean isDirectory = path.endsWith( DELIMITER );
         String parent = "";
         if ( path.contains( DELIMITER ) ) {
           parent = path.substring( 0, path.lastIndexOf( DELIMITER ) );
         }
-        System.out.println( "Parent: " + parent );
         String[] parts = path.split( DELIMITER );
         String name = parts[ parts.length - 1 ];
         if ( isDirectory ) {
