@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -162,6 +162,7 @@ public class SpoonStepsDelegate extends SpoonDelegate {
 
         StepMeta newStepMeta = (StepMeta) stepMeta.clone();
         newStepMeta.setName( stepname );
+        transMeta.clearCaches();
         transMeta.notifyAllListeners( stepMeta, newStepMeta );
         stepMeta.setName( stepname );
 
