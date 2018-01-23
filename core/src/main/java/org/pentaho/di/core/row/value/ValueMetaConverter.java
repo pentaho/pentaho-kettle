@@ -2,7 +2,7 @@
  *
  * Pentaho Big Data
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -89,6 +89,7 @@ public class ValueMetaConverter implements Serializable, IValueMetaConverter {
         "Error.  Expecting value of type string.    actual value type = '" + value.getClass() + "'.    value = '"
           + value + "'." );
     }
+    String stringValue = (String) value;
 
     try {
       switch ( targetValueMetaType ) {
@@ -99,21 +100,21 @@ public class ValueMetaConverter implements Serializable, IValueMetaConverter {
             return null;
           }
         case ValueMetaInterface.TYPE_STRING:
-          return new String( (String) value );
+          return new String( stringValue );
         case ValueMetaInterface.TYPE_INTEGER:
-          return Long.parseLong( (String) value );
+          return Long.parseLong( stripDecimal( stringValue ) );
         case ValueMetaInterface.TYPE_NUMBER:
-          return Double.parseDouble( (String) value );
+          return Double.parseDouble( stringValue );
         case ValueMetaInterface.TYPE_BIGNUMBER:
-          return new BigDecimal( ( (String) value ) );
+          return new BigDecimal( stringValue );
         case ValueMetaInterface.TYPE_TIMESTAMP:
-          return new Timestamp( ( datePattern.parse( (String) value ) ).getTime() );
+          return new Timestamp( ( datePattern.parse( stringValue ) ).getTime() );
         case ValueMetaInterface.TYPE_DATE:
-          return datePattern.parse( (String) value );
+          return datePattern.parse( stringValue );
         case ValueMetaInterface.TYPE_BOOLEAN:
-          return Boolean.parseBoolean( (String) value );
+          return Boolean.parseBoolean( stringValue );
         case ValueMetaInterface.TYPE_BINARY:
-          return ( (String) value ).getBytes();
+          return stringValue.getBytes();
         default:
           throwBadConversionCombination( ValueMetaInterface.TYPE_STRING, targetValueMetaType, value );
       }
@@ -430,6 +431,11 @@ public class ValueMetaConverter implements Serializable, IValueMetaConverter {
   private void handleConversionError( String errorMessage, Exception e ) throws ValueMetaConversionException {
     throw new ValueMetaConversionException( errorMessage, e );
     //      TODO - log an error message to let the user know there's a problem.  For now, return null
+  }
+
+  private String stripDecimal( String s ) {
+    int decimalPosition = s.indexOf( "." );
+    return decimalPosition != -1 ? s.substring( 0, decimalPosition ) : s;
   }
 }
 
