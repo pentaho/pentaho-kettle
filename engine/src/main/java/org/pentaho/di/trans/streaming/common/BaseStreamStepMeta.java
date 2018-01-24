@@ -207,4 +207,18 @@ public abstract class BaseStreamStepMeta extends StepWithMappingMeta implements 
 
     return references;
   }
+
+  @Override public String[] getReferencedObjectDescriptions() {
+    return new String[] {
+      BaseMessages.getString( PKG, "BaseStreamStepMeta.ReferencedObject.SubTrans.Description" ) };
+  }
+
+  @Override public boolean[] isReferencedObjectEnabled() {
+    return new boolean[] { !Utils.isEmpty( transformationPath ) };
+  }
+
+  @Override public Object loadReferencedObject( int index, Repository rep, IMetaStore metaStore, VariableSpace space )
+    throws KettleException {
+    return loadMappingMeta( this, rep, metaStore, space );
+  }
 }
