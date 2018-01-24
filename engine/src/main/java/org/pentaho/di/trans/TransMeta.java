@@ -3,7 +3,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -23,20 +23,6 @@
 
 package org.pentaho.di.trans;
 
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Hashtable;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
-
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.commons.vfs2.FileName;
 import org.apache.commons.vfs2.FileObject;
@@ -47,7 +33,6 @@ import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.Counter;
 import org.pentaho.di.core.DBCache;
 import org.pentaho.di.core.LastUsedFile;
@@ -90,6 +75,7 @@ import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.util.StringUtil;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLFormatter;
@@ -126,6 +112,20 @@ import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Hashtable;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * This class defines information about a transformation and offers methods to save and load it from XML or a PDI
@@ -309,12 +309,12 @@ public class TransMeta extends AbstractMeta
     /** A normal transformation. */
     Normal( "Normal", BaseMessages.getString( PKG, "TransMeta.TransformationType.Normal" ) ),
 
-      /** A serial single-threaded transformation. */
-      SerialSingleThreaded( "SerialSingleThreaded", BaseMessages.getString(
+    /** A serial single-threaded transformation. */
+    SerialSingleThreaded( "SerialSingleThreaded", BaseMessages.getString(
         PKG, "TransMeta.TransformationType.SerialSingleThreaded" ) ),
 
-      /** A single-threaded transformation. */
-      SingleThreaded( "SingleThreaded", BaseMessages
+    /** A single-threaded transformation. */
+    SingleThreaded( "SingleThreaded", BaseMessages
         .getString( PKG, "TransMeta.TransformationType.SingleThreaded" ) );
 
     /** The code corresponding to the transformation type. */
@@ -392,8 +392,7 @@ public class TransMeta extends AbstractMeta
   // //////////////////////////////////////////////////////////////////////////
 
   /** A list of localized strings corresponding to string descriptions of the undo/redo actions. */
-  public static final String[] desc_type_undo = {
-    "",
+  public static final String[] desc_type_undo = { "",
     BaseMessages.getString( PKG, "TransMeta.UndoTypeDesc.UndoChange" ),
     BaseMessages.getString( PKG, "TransMeta.UndoTypeDesc.UndoNew" ),
     BaseMessages.getString( PKG, "TransMeta.UndoTypeDesc.UndoDelete" ),
@@ -1108,8 +1107,8 @@ public class TransMeta extends AbstractMeta
 
   public List<TransHopMeta> findAllTransHopFrom( StepMeta fromstep ) {
     return hops.stream()
-      .filter( hop ->  hop.getFromStep() != null && hop.getFromStep().equals( fromstep ) )
-      .collect( Collectors.toList() );
+        .filter( hop ->  hop.getFromStep() != null && hop.getFromStep().equals( fromstep ) )
+        .collect( Collectors.toList() );
   }
   /**
    * Find a certain hop in the transformation.
@@ -1752,6 +1751,7 @@ public class TransMeta extends AbstractMeta
    *           the kettle step exception
    */
   public RowMetaInterface getStepFields( StepMeta stepMeta, ProgressMonitorListener monitor ) throws KettleStepException {
+    clearStepFieldsCache();
     setRepositoryOnMappingSteps();
     return getStepFields( stepMeta, null, monitor );
   }
@@ -1903,6 +1903,17 @@ public class TransMeta extends AbstractMeta
    */
   public RowMetaInterface getPrevStepFields( StepMeta stepMeta, ProgressMonitorListener monitor ) throws KettleStepException {
 
+    // Required by current design. This cache is (or should be) a short-lived cache which gets mutated
+    // as the list of step fields is computed (e.g. adding the error fields when a step directs output to an error-handling
+    // step, and in other edge-cases). Clearing before recomputing is required, and since it's recursive, there's no elegant
+    // way to simply clear it after the fact.
+    //
+    // Suggest re-design. The stepFieldsCache isn't a cache at all - rather it's an intermediate result. Suggest creating the
+    // map when this process starts and pass it to the methods that require mutation of it. That way, there is no instance variable
+    // at all. This is out of scope for this fix.
+    //
+    // MB
+    clearStepFieldsCache();
     RowMetaInterface row = new RowMeta();
 
     if ( stepMeta == null ) {
@@ -2379,8 +2390,8 @@ public class TransMeta extends AbstractMeta
    *           if any errors occur during generation of the XML
    */
   public String getXML( boolean includeSteps, boolean includeDatabase, boolean includeSlaves, boolean includeClusters,
-    boolean includePartitions, boolean includeNamedParameters, boolean includeLog, boolean includeDependencies,
-    boolean includeNotePads, boolean includeAttributeGroups ) throws KettleException {
+      boolean includePartitions, boolean includeNamedParameters, boolean includeLog, boolean includeDependencies,
+      boolean includeNotePads, boolean includeAttributeGroups ) throws KettleException {
 
     //Clear the embedded named clusters.  We will be repopulating from steps that used named clusters
     getNamedClusterEmbedManager().clear();
@@ -2406,7 +2417,7 @@ public class TransMeta extends AbstractMeta
       retval.append( "    " ).append( XMLHandler.addTagValue( "trans_status", trans_status ) );
     }
     retval.append( "    " ).append( XMLHandler.addTagValue( "directory",
-            directory != null ? directory.getPath() : RepositoryDirectory.DIRECTORY_SEPARATOR ) );
+        directory != null ? directory.getPath() : RepositoryDirectory.DIRECTORY_SEPARATOR ) );
 
 
     if ( includeNamedParameters ) {
@@ -2416,9 +2427,9 @@ public class TransMeta extends AbstractMeta
         retval.append( "      " ).append( XMLHandler.openTag( "parameter" ) ).append( Const.CR );
         retval.append( "        " ).append( XMLHandler.addTagValue( "name", parameters[idx] ) );
         retval.append( "        " )
-                .append( XMLHandler.addTagValue( "default_value", getParameterDefault( parameters[idx] ) ) );
+            .append( XMLHandler.addTagValue( "default_value", getParameterDefault( parameters[idx] ) ) );
         retval.append( "        " )
-                .append( XMLHandler.addTagValue( "description", getParameterDescription( parameters[idx] ) ) );
+            .append( XMLHandler.addTagValue( "description", getParameterDescription( parameters[idx] ) ) );
         retval.append( "      " ).append( XMLHandler.closeTag( "parameter" ) ).append( Const.CR );
       }
       retval.append( "    " ).append( XMLHandler.closeTag( XML_TAG_PARAMETERS ) ).append( Const.CR );
@@ -2624,7 +2635,7 @@ public class TransMeta extends AbstractMeta
    *           in case missing plugins were found (details are in the exception in that case)
    */
   public TransMeta( String fname, VariableSpace parentVariableSpace ) throws KettleXMLException,
-    KettleMissingPluginsException {
+      KettleMissingPluginsException {
     this( fname, null, true, parentVariableSpace );
   }
 
@@ -2642,7 +2653,7 @@ public class TransMeta extends AbstractMeta
    *           in case missing plugins were found (details are in the exception in that case)
    */
   public TransMeta( String fname, boolean setInternalVariables ) throws KettleXMLException,
-    KettleMissingPluginsException {
+      KettleMissingPluginsException {
     this( fname, null, setInternalVariables );
   }
 
@@ -2677,7 +2688,7 @@ public class TransMeta extends AbstractMeta
    *           in case missing plugins were found (details are in the exception in that case)
    */
   public TransMeta( String fname, Repository rep, boolean setInternalVariables ) throws KettleXMLException,
-    KettleMissingPluginsException {
+      KettleMissingPluginsException {
     this( fname, rep, setInternalVariables, null );
   }
 
@@ -2745,8 +2756,8 @@ public class TransMeta extends AbstractMeta
    *           in case missing plugins were found (details are in the exception in that case)
    */
   public TransMeta( String fname, IMetaStore metaStore, Repository rep, boolean setInternalVariables,
-                    VariableSpace parentVariableSpace, OverwritePrompter prompter )
-    throws KettleXMLException, KettleMissingPluginsException {
+      VariableSpace parentVariableSpace, OverwritePrompter prompter )
+      throws KettleXMLException, KettleMissingPluginsException {
     this.metaStore = metaStore;
     this.repository = rep;
 
@@ -2756,7 +2767,7 @@ public class TransMeta extends AbstractMeta
       doc = XMLHandler.loadXMLFile( KettleVFS.getFileObject( fname, parentVariableSpace ) );
     } catch ( KettleFileException e ) {
       throw new KettleXMLException( BaseMessages.getString(
-        PKG, "TransMeta.Exception.ErrorOpeningOrValidatingTheXMLFile", fname ), e );
+          PKG, "TransMeta.Exception.ErrorOpeningOrValidatingTheXMLFile", fname ), e );
     }
 
     if ( doc != null ) {
@@ -2765,7 +2776,7 @@ public class TransMeta extends AbstractMeta
 
       if ( transnode == null ) {
         throw new KettleXMLException( BaseMessages.getString(
-          PKG, "TransMeta.Exception.NotValidTransformationXML", fname ) );
+            PKG, "TransMeta.Exception.NotValidTransformationXML", fname ) );
       }
 
       // Load from this node...
@@ -2773,7 +2784,7 @@ public class TransMeta extends AbstractMeta
 
     } else {
       throw new KettleXMLException( BaseMessages.getString(
-        PKG, "TransMeta.Exception.ErrorOpeningOrValidatingTheXMLFile", fname ) );
+          PKG, "TransMeta.Exception.ErrorOpeningOrValidatingTheXMLFile", fname ) );
     }
   }
 
@@ -2796,8 +2807,8 @@ public class TransMeta extends AbstractMeta
    *           in case missing plugins were found (details are in the exception in that case)
    */
   public TransMeta( InputStream xmlStream, Repository rep, boolean setInternalVariables,
-                    VariableSpace parentVariableSpace, OverwritePrompter prompter )
-    throws KettleXMLException, KettleMissingPluginsException {
+      VariableSpace parentVariableSpace, OverwritePrompter prompter )
+      throws KettleXMLException, KettleMissingPluginsException {
     Document doc = XMLHandler.loadXMLFile( xmlStream, null, false, false );
     Node transnode = XMLHandler.getSubNode( doc, XML_TAG );
     loadXML( transnode, rep, setInternalVariables, parentVariableSpace, prompter );
@@ -2835,7 +2846,7 @@ public class TransMeta extends AbstractMeta
    *           in case missing plugins were found (details are in the exception in that case)
    */
   public void loadXML( Node transnode, Repository rep, boolean setInternalVariables ) throws KettleXMLException,
-    KettleMissingPluginsException {
+      KettleMissingPluginsException {
     loadXML( transnode, rep, setInternalVariables, null );
   }
 
@@ -2856,7 +2867,7 @@ public class TransMeta extends AbstractMeta
    *           in case missing plugins were found (details are in the exception in that case)
    */
   public void loadXML( Node transnode, Repository rep, boolean setInternalVariables, VariableSpace parentVariableSpace )
-    throws KettleXMLException, KettleMissingPluginsException {
+      throws KettleXMLException, KettleMissingPluginsException {
     loadXML( transnode, rep, setInternalVariables, parentVariableSpace, null );
   }
 
@@ -2904,8 +2915,8 @@ public class TransMeta extends AbstractMeta
    *           in case missing plugins were found (details are in the exception in that case)
    */
   public void loadXML( Node transnode, String fname, Repository rep, boolean setInternalVariables,
-                       VariableSpace parentVariableSpace, OverwritePrompter prompter )
-    throws KettleXMLException, KettleMissingPluginsException {
+      VariableSpace parentVariableSpace, OverwritePrompter prompter )
+      throws KettleXMLException, KettleMissingPluginsException {
     loadXML( transnode, fname, null, rep, setInternalVariables, parentVariableSpace, prompter );
   }
 
@@ -2930,13 +2941,13 @@ public class TransMeta extends AbstractMeta
    *           in case missing plugins were found (details are in the exception in that case)
    */
   public void loadXML( Node transnode, String fname, IMetaStore metaStore, Repository rep, boolean setInternalVariables,
-                       VariableSpace parentVariableSpace, OverwritePrompter prompter )
-    throws KettleXMLException, KettleMissingPluginsException {
+      VariableSpace parentVariableSpace, OverwritePrompter prompter )
+      throws KettleXMLException, KettleMissingPluginsException {
 
     KettleMissingPluginsException
-      missingPluginsException =
-      new KettleMissingPluginsException(
-        BaseMessages.getString( PKG, "TransMeta.MissingPluginsFoundWhileLoadingTransformation.Exception" ) );
+        missingPluginsException =
+        new KettleMissingPluginsException(
+            BaseMessages.getString( PKG, "TransMeta.MissingPluginsFoundWhileLoadingTransformation.Exception" ) );
 
     this.metaStore = metaStore; // Remember this as the primary meta store.
 
@@ -2970,7 +2981,7 @@ public class TransMeta extends AbstractMeta
           sharedObjects = rep != null ? rep.readTransSharedObjects( this ) : readSharedObjects();
         } catch ( Exception e ) {
           log
-            .logError( BaseMessages.getString( PKG, "TransMeta.ErrorReadingSharedObjects.Message", e.toString() ) );
+              .logError( BaseMessages.getString( PKG, "TransMeta.ErrorReadingSharedObjects.Message", e.toString() ) );
           log.logError( Const.getStackTracker( e ) );
         }
 
@@ -3256,7 +3267,7 @@ public class TransMeta extends AbstractMeta
             if ( !check.isShared() ) {
               // we don't overwrite shared objects.
               if ( shouldOverwrite( prompter, props, BaseMessages
-                  .getString( PKG, "TransMeta.Message.OverwritePartitionSchemaYN", partitionSchema.getName() ),
+                      .getString( PKG, "TransMeta.Message.OverwritePartitionSchemaYN", partitionSchema.getName() ),
                   BaseMessages.getString( PKG, "TransMeta.Message.OverwriteConnection.DontShowAnyMoreMessage" ) ) ) {
                 addOrReplacePartitionSchema( partitionSchema );
               }
@@ -3530,8 +3541,6 @@ public class TransMeta extends AbstractMeta
   /**
    * Checks if any selected step has been used in a hop or not.
    *
-   * @param stepMeta
-   *          The step queried.
    * @return true if a step is used in a hop (active or not), false otherwise
    */
   public boolean isAnySelectedStepUsedInTransHops() {
@@ -4226,7 +4235,7 @@ public class TransMeta extends AbstractMeta
   public void analyseImpact( List<DatabaseImpact> impact, ProgressMonitorListener monitor ) throws KettleStepException {
     if ( monitor != null ) {
       monitor
-        .beginTask( BaseMessages.getString( PKG, "TransMeta.Monitor.DeterminingImpactTask.Title" ), nrSteps() );
+          .beginTask( BaseMessages.getString( PKG, "TransMeta.Monitor.DeterminingImpactTask.Title" ), nrSteps() );
     }
     boolean stop = false;
     for ( int i = 0; i < nrSteps() && !stop; i++ ) {
@@ -4342,8 +4351,7 @@ public class TransMeta extends AbstractMeta
     if ( transLogTable.getDatabaseMeta() != null && ( !Utils.isEmpty( transLogTable.getTableName() ) || !Utils
         .isEmpty( performanceLogTable.getTableName() ) ) ) {
       try {
-        for ( LogTableInterface logTable : new LogTableInterface[] { transLogTable, performanceLogTable,
-          channelLogTable, stepLogTable, } ) {
+        for ( LogTableInterface logTable : new LogTableInterface[] { transLogTable, performanceLogTable, channelLogTable, stepLogTable, } ) {
           if ( logTable.getDatabaseMeta() != null && !Utils.isEmpty( logTable.getTableName() ) ) {
 
             Database db = null;
@@ -4539,8 +4547,7 @@ public class TransMeta extends AbstractMeta
                     .getString( PKG, "TransMeta.Value.CheckingFieldName.FieldNameContainsSpaces.Description" ) );
               } else {
                 char[] list =
-                  new char[] { '.', ',', '-', '/', '+', '*', '\'', '\t', '"', '|', '@', '(', ')', '{', '}', '!',
-                    '^' };
+                    new char[] { '.', ',', '-', '/', '+', '*', '\'', '\t', '"', '|', '@', '(', ')', '{', '}', '!', '^' };
                 for ( int c = 0; c < list.length; c++ ) {
                   if ( name.indexOf( list[c] ) >= 0 ) {
                     values.put( v, BaseMessages.getString( PKG,
@@ -5616,8 +5623,8 @@ public class TransMeta extends AbstractMeta
     }
 
     variables.setVariable( Const.INTERNAL_VARIABLE_ENTRY_CURRENT_DIRECTORY,
-      variables.getVariable( repository != null ? Const.INTERNAL_VARIABLE_TRANSFORMATION_REPOSITORY_DIRECTORY
-        : Const.INTERNAL_VARIABLE_TRANSFORMATION_FILENAME_DIRECTORY ) );
+        variables.getVariable( repository != null ? Const.INTERNAL_VARIABLE_TRANSFORMATION_REPOSITORY_DIRECTORY
+            : Const.INTERNAL_VARIABLE_TRANSFORMATION_FILENAME_DIRECTORY ) );
   }
 
   /**
@@ -5667,7 +5674,7 @@ public class TransMeta extends AbstractMeta
 
     variables.setVariable( Const.INTERNAL_VARIABLE_ENTRY_CURRENT_DIRECTORY,
         variables.getVariable( repository != null ? Const.INTERNAL_VARIABLE_TRANSFORMATION_REPOSITORY_DIRECTORY
-          : Const.INTERNAL_VARIABLE_TRANSFORMATION_FILENAME_DIRECTORY ) );
+            : Const.INTERNAL_VARIABLE_TRANSFORMATION_FILENAME_DIRECTORY ) );
   }
 
   /**
@@ -5684,7 +5691,7 @@ public class TransMeta extends AbstractMeta
       StepMeta stepMeta = findStep( stepname ); // TODO verify that it's a mapping input!!
       if ( stepMeta == null ) {
         throw new KettleStepException( BaseMessages.getString(
-          PKG, "TransMeta.Exception.StepNameNotFound", stepname ) );
+            PKG, "TransMeta.Exception.StepNameNotFound", stepname ) );
       }
       return stepMeta;
     } else {
@@ -5696,13 +5703,13 @@ public class TransMeta extends AbstractMeta
             stepMeta = mappingStep;
           } else if ( stepMeta != null ) {
             throw new KettleStepException( BaseMessages.getString(
-              PKG, "TransMeta.Exception.OnlyOneMappingInputStepAllowed", "2" ) );
+                PKG, "TransMeta.Exception.OnlyOneMappingInputStepAllowed", "2" ) );
           }
         }
       }
       if ( stepMeta == null ) {
         throw new KettleStepException( BaseMessages.getString(
-          PKG, "TransMeta.Exception.OneMappingInputStepRequired" ) );
+            PKG, "TransMeta.Exception.OneMappingInputStepRequired" ) );
       }
       return stepMeta;
     }
@@ -5722,7 +5729,7 @@ public class TransMeta extends AbstractMeta
       StepMeta stepMeta = findStep( stepname ); // TODO verify that it's a mapping output step.
       if ( stepMeta == null ) {
         throw new KettleStepException( BaseMessages.getString(
-          PKG, "TransMeta.Exception.StepNameNotFound", stepname ) );
+            PKG, "TransMeta.Exception.StepNameNotFound", stepname ) );
       }
       return stepMeta;
     } else {
@@ -5734,13 +5741,13 @@ public class TransMeta extends AbstractMeta
             stepMeta = mappingStep;
           } else if ( stepMeta != null ) {
             throw new KettleStepException( BaseMessages.getString(
-              PKG, "TransMeta.Exception.OnlyOneMappingOutputStepAllowed", "2" ) );
+                PKG, "TransMeta.Exception.OnlyOneMappingOutputStepAllowed", "2" ) );
           }
         }
       }
       if ( stepMeta == null ) {
         throw new KettleStepException( BaseMessages.getString(
-          PKG, "TransMeta.Exception.OneMappingOutputStepRequired" ) );
+            PKG, "TransMeta.Exception.OneMappingOutputStepRequired" ) );
       }
       return stepMeta;
     }
@@ -5753,8 +5760,8 @@ public class TransMeta extends AbstractMeta
    */
   public List<ResourceReference> getResourceDependencies() {
     return steps.stream()
-      .flatMap( (StepMeta stepMeta) -> stepMeta.getResourceDependencies( this ).stream() )
-      .collect( Collectors.toList() );
+        .flatMap( (StepMeta stepMeta) -> stepMeta.getResourceDependencies( this ).stream() )
+        .collect( Collectors.toList() );
   }
 
   /**
@@ -5790,9 +5797,9 @@ public class TransMeta extends AbstractMeta
         originalPath = directory.getPath();
         baseName = getName();
         fullname =
-          directory.getPath()
-            + ( directory.getPath().endsWith( RepositoryDirectory.DIRECTORY_SEPARATOR )
-              ? "" : RepositoryDirectory.DIRECTORY_SEPARATOR ) + getName() + "." + extension; //
+            directory.getPath()
+                + ( directory.getPath().endsWith( RepositoryDirectory.DIRECTORY_SEPARATOR )
+                ? "" : RepositoryDirectory.DIRECTORY_SEPARATOR ) + getName() + "." + extension; //
       } else {
         // Assume file
         //
@@ -5863,10 +5870,10 @@ public class TransMeta extends AbstractMeta
       return exportFileName;
     } catch ( FileSystemException e ) {
       throw new KettleException( BaseMessages.getString(
-        PKG, "TransMeta.Exception.ErrorOpeningOrValidatingTheXMLFile", getFilename() ), e );
+          PKG, "TransMeta.Exception.ErrorOpeningOrValidatingTheXMLFile", getFilename() ), e );
     } catch ( KettleFileException e ) {
       throw new KettleException( BaseMessages.getString(
-        PKG, "TransMeta.Exception.ErrorOpeningOrValidatingTheXMLFile", getFilename() ), e );
+          PKG, "TransMeta.Exception.ErrorOpeningOrValidatingTheXMLFile", getFilename() ), e );
     }
   }
 
@@ -5984,7 +5991,7 @@ public class TransMeta extends AbstractMeta
    * Clears the step fields and loop caches.
    */
   public void clearCaches() {
-    clearStepFieldsCachce();
+    clearStepFieldsCache();
     clearLoopCache();
     clearPreviousStepCache();
   }
@@ -5992,7 +5999,7 @@ public class TransMeta extends AbstractMeta
   /**
    * Clears the step fields cachce.
    */
-  private void clearStepFieldsCachce() {
+  private void clearStepFieldsCache() {
     stepsFieldsCache.clear();
   }
 
@@ -6061,8 +6068,7 @@ public class TransMeta extends AbstractMeta
   /**
    * Sets the log table for the transformation.
    *
-   * @param the
-   *          log table to set
+   * @param transLogTable the log table to set
    */
   public void setTransLogTable( TransLogTable transLogTable ) {
     this.transLogTable = transLogTable;
