@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,7 +22,6 @@
 
 package org.pentaho.di.core.plugins;
 
-import java.io.InputStream;
 import java.lang.annotation.Annotation;
 import java.util.List;
 import java.util.Map;
@@ -31,7 +30,6 @@ import org.apache.commons.vfs2.FileObject;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.annotations.RepositoryPlugin;
 import org.pentaho.di.core.exception.KettlePluginException;
-import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.repository.Repository;
@@ -68,36 +66,19 @@ public class RepositoryPluginType extends BasePluginType implements PluginTypeIn
     return pluginType;
   }
 
-  /**
-   * Scan & register internal step plugins
-   */
-  protected void registerNatives() throws KettlePluginException {
-    // Scan the native repository types...
-    //
-    String xmlFile = Const.XML_FILE_KETTLE_REPOSITORIES;
+  @Override
+  protected String getXmlPluginFile() {
+    return Const.XML_FILE_KETTLE_REPOSITORIES;
+  }
 
-    // Load the plugins for this file...
-    //
-    try {
-      InputStream inputStream = getClass().getResourceAsStream( xmlFile );
-      if ( inputStream == null ) {
-        inputStream = getClass().getResourceAsStream( "/" + xmlFile );
-      }
-      if ( inputStream == null ) {
-        throw new KettlePluginException( "Unable to find native repository type definition file: " + xmlFile );
-      }
-      Document document = XMLHandler.loadXMLFile( inputStream, null, true, false );
+  @Override
+  protected String getMainTag() {
+    return "repositories";
+  }
 
-      // Document document = XMLHandler.loadXMLFile(kettleStepsXmlFile);
-
-      Node repsNode = XMLHandler.getSubNode( document, "repositories" );
-      List<Node> repsNodes = XMLHandler.getNodes( repsNode, "repository" );
-      for ( Node repNode : repsNodes ) {
-        registerPluginFromXmlResource( repNode, null, this.getClass(), true, null );
-      }
-    } catch ( KettleXMLException e ) {
-      throw new KettlePluginException( "Unable to read the kettle repositories XML config file: " + xmlFile, e );
-    }
+  @Override
+  protected String getSubTag() {
+    return "repository";
   }
 
   protected void registerXmlPlugins() throws KettlePluginException {
