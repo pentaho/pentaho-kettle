@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -75,7 +75,8 @@ public class RowMeta implements RowMetaInterface {
   private RowMeta( RowMeta rowMeta, Integer targetType ) throws KettlePluginException {
     this( new ArrayList<ValueMetaInterface>( rowMeta.valueMetaList.size() ), new RowMetaCache( rowMeta.cache ) );
     for ( ValueMetaInterface valueMetaInterface : rowMeta.valueMetaList ) {
-      valueMetaList.add( ValueMetaFactory.cloneValueMeta( valueMetaInterface, targetType == null ? valueMetaInterface.getType() : targetType ) );
+      valueMetaList.add( ValueMetaFactory
+        .cloneValueMeta( valueMetaInterface, targetType == null ? valueMetaInterface.getType() : targetType ) );
     }
     this.needRealClone = rowMeta.needRealClone;
   }
@@ -543,7 +544,6 @@ public class RowMeta implements RowMetaInterface {
           // but it makes no harm as they will put the same value,
           // because valueMetaList is defended from modifications by read lock
           cache.storeMapping( valueName, index );
-          needRealClone = null;
         }
       }
       if ( index == null ) {
@@ -730,7 +730,8 @@ public class RowMeta implements RowMetaInterface {
     } catch ( SocketTimeoutException e ) {
       throw e;
     } catch ( EOFException e ) {
-      throw new KettleEOFException( "End of file while reading the number of metadata values in the row metadata", e );
+      throw new KettleEOFException(
+        "End of file while reading the number of metadata values in the row metadata", e );
     } catch ( IOException e ) {
       throw new KettleFileException( "Unable to read nr of metadata values: " + e.toString(), e );
     }
@@ -794,7 +795,8 @@ public class RowMeta implements RowMetaInterface {
     try {
       int index = indexOfValue( valueName );
       if ( index < 0 ) {
-        throw new KettleValueException( "Unable to find value metadata with name '" + valueName + "', so I can't delete it." );
+        throw new KettleValueException( "Unable to find value metadata with name '"
+          + valueName + "', so I can't delete it." );
       }
       removeValueMeta( index );
     } finally {
@@ -958,7 +960,8 @@ public class RowMeta implements RowMetaInterface {
    * @throws KettleValueException
    */
   @Override
-  public int compare( Object[] rowData1, Object[] rowData2, int[] fieldnrs1, int[] fieldnrs2 ) throws KettleValueException {
+  public int compare( Object[] rowData1, Object[] rowData2, int[] fieldnrs1, int[] fieldnrs2 )
+    throws KettleValueException {
     int len = ( fieldnrs1.length < fieldnrs2.length ) ? fieldnrs1.length : fieldnrs2.length;
     lock.readLock().lock();
     try {
@@ -990,7 +993,8 @@ public class RowMeta implements RowMetaInterface {
    * @throws KettleValueException
    */
   @Override
-  public int compare( Object[] rowData1, RowMetaInterface rowMeta2, Object[] rowData2, int[] fieldnrs1, int[] fieldnrs2 ) throws KettleValueException {
+  public int compare( Object[] rowData1, RowMetaInterface rowMeta2, Object[] rowData2, int[] fieldnrs1,
+                      int[] fieldnrs2 ) throws KettleValueException {
     int len = ( fieldnrs1.length < fieldnrs2.length ) ? fieldnrs1.length : fieldnrs2.length;
     lock.readLock().lock();
     try {
@@ -1197,7 +1201,8 @@ public class RowMeta implements RowMetaInterface {
     int nrValues = XMLHandler.countNodes( node, ValueMeta.XML_META_TAG );
     for ( int i = 0; i < nrValues; i++ ) {
       ValueMeta valueMetaSource = new ValueMeta( XMLHandler.getSubNodeByNr( node, ValueMeta.XML_META_TAG, i ) );
-      ValueMetaInterface valueMeta = ValueMetaFactory.createValueMeta( valueMetaSource.getName(), valueMetaSource.getType(), valueMetaSource.getLength(), valueMetaSource.getPrecision() );
+      ValueMetaInterface valueMeta = ValueMetaFactory.createValueMeta( valueMetaSource.getName(), valueMetaSource.getType(),
+        valueMetaSource.getLength(), valueMetaSource.getPrecision() );
       ValueMetaFactory.cloneInfo( valueMetaSource, valueMeta );
       addValueMeta( valueMeta );
     }
@@ -1310,3 +1315,4 @@ public class RowMeta implements RowMetaInterface {
 
   }
 }
+
