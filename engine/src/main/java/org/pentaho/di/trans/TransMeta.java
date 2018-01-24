@@ -3772,9 +3772,10 @@ public class TransMeta extends AbstractMeta
 
     checkedEntries.add( stepMeta );
 
-    int nr = findNrPrevSteps( stepMeta );
+    List<StepMeta> prevSteps = findPreviousSteps( stepMeta, info );
+    int nr = prevSteps.size();
     for ( int i = 0; i < nr; i++ ) {
-      StepMeta prevStepMeta = findPrevStep( stepMeta, i );
+      StepMeta prevStepMeta = prevSteps.get( i );
       if ( prevStepMeta != null && ( prevStepMeta.equals( lookup )
               || ( !checkedEntries.contains( prevStepMeta ) && hasLoop( prevStepMeta, lookup == null ? stepMeta : lookup, checkedEntries ) ) ) ) {
         hasLoop = true;
