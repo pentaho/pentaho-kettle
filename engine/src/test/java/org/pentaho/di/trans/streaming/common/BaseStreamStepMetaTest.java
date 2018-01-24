@@ -29,6 +29,8 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.ObjectLocationSpecificationMethod;
+import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.injection.Injection;
 import org.pentaho.di.core.injection.InjectionSupported;
 import org.pentaho.di.core.logging.KettleLogStore;
@@ -48,7 +50,10 @@ import java.util.Arrays;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.fail;
 import static org.mockito.Matchers.any;
+import static org.pentaho.di.core.util.Assert.assertTrue;
 import static org.powermock.api.mockito.PowerMockito.when;
 
 @RunWith( MockitoJUnitRunner.class )
@@ -179,5 +184,34 @@ public class BaseStreamStepMetaTest {
     assertEquals( path, resourceDependencies.get( 0 ).getEntries().get( 0 ).getResource() );
     assertEquals( ResourceEntry.ResourceType.ACTIONFILE,
       resourceDependencies.get( 0 ).getEntries().get( 0 ).getResourcetype() );
+  }
+
+  @Test
+  public void testReferencedObjectHasDescription() {
+    BaseStreamStepMeta meta = new StuffStreamMeta();
+    assertEquals( 1, meta.getReferencedObjectDescriptions().length );
+    assertTrue( meta.getReferencedObjectDescriptions()[ 0 ] != null );
+  }
+
+  @Test
+  public void testIsReferencedObjectEnabled() {
+    BaseStreamStepMeta meta = new StuffStreamMeta();
+    assertEquals( 1, meta.isReferencedObjectEnabled().length );
+    assertFalse( meta.isReferencedObjectEnabled()[ 0 ] );
+    meta.setTransformationPath( "/some/path" );
+    assertTrue( meta.isReferencedObjectEnabled()[ 0 ] );
+  }
+
+  @Test
+  public void testLoadReferencedObject() {
+    BaseStreamStepMeta meta = new StuffStreamMeta();
+    meta.setFileName( getClass().getResource( "/org/pentaho/di/trans/subtrans-executor-sub.ktr" ).getPath() );
+    meta.setSpecificationMethod( ObjectLocationSpecificationMethod.FILENAME );
+    try {
+      TransMeta subTrans = (TransMeta) meta.loadReferencedObject( 0, null, null, new Variables() );
+      assertEquals( "subtrans-executor-sub", subTrans.getName() );
+    } catch ( KettleException e ) {
+      fail();
+    }
   }
 }
