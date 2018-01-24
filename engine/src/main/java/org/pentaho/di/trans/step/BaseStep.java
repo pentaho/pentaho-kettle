@@ -3,7 +3,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -42,6 +42,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Preconditions;
 
 import org.apache.commons.lang.StringUtils;
@@ -1744,7 +1745,8 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
    *
    * @return the row set
    */
-  private RowSet currentInputStream() {
+  @VisibleForTesting
+  RowSet currentInputStream() {
     return inputRowSets.get( currentInputRowSetNr );
   }
 
@@ -1947,12 +1949,7 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
       // row compositions...
       //
       if ( trans.isSafeModeEnabled() ) {
-        safeModeChecking( inputRowSet.getRowMeta(), inputRowMeta ); // Extra
-        // checking
-        if ( row.length < inputRowMeta.size() ) {
-          throw new KettleException( "Safe mode check noticed that the length of the row data is smaller ("
-            + row.length + ") than the row metadata size (" + inputRowMeta.size() + ")" );
-        }
+        transMeta.checkRowMixingStatically( stepMeta, null );
       }
 
       for ( RowListener listener : rowListeners ) {
