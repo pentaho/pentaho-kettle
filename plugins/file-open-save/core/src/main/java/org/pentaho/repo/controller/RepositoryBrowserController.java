@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Hitachi Vantara. All rights reserved.
+ * Copyright 2017-2018 Hitachi Vantara. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -45,13 +45,13 @@ import org.pentaho.repo.model.RepositoryFile;
 import org.pentaho.repo.model.RepositoryName;
 import org.pentaho.repo.util.Util;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
-import java.util.Date;
-import java.util.List;
-import java.util.LinkedList;
-import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.function.Supplier;
 
 /**
@@ -192,14 +192,14 @@ public class RepositoryBrowserController {
           if ( isJobOpened( id, path, name ) ) {
             throw new KettleJobException();
           }
-          removeRecent( id, type );
+          PropsUI.removeRecent( getRepository(), id, type );
           getRepository().deleteJob( () -> id );
           break;
         case "transformation":
           if ( isTransOpened( id, path, name ) ) {
             throw new KettleTransException();
           }
-          removeRecent( id, type );
+          PropsUI.removeRecent( getRepository(), id, type );
           getRepository().deleteTransformation( () -> id );
           break;
         case "folder":
@@ -219,31 +219,6 @@ public class RepositoryBrowserController {
     } catch ( Exception e ) {
       return false;
     }
-  }
-
-  private boolean removeRecent( String id, String type ) {
-    RepositoryObject repositoryObject = null;
-    try {
-      repositoryObject = getRepository().getObjectInformation( () -> id,
-        ( type == "transformation" ? RepositoryObjectType.TRANSFORMATION : RepositoryObjectType.JOB ) );
-    } catch ( Exception e ) {
-      return false;
-    }
-
-    if ( repositoryObject != null ) {
-      Collection<List<LastUsedFile>> lastUsedRepoFiles = PropsUI.getInstance().getLastUsedRepoFiles().values();
-      for ( List<LastUsedFile> lastUsedFiles : lastUsedRepoFiles ) {
-        for ( LastUsedFile lastUsedFile : lastUsedFiles ) {
-          if ( lastUsedFile.getDirectory().equals( repositoryObject.getRepositoryDirectory().getPath() ) && lastUsedFile
-            .getFilename().equals( repositoryObject.getName() ) ) {
-            lastUsedFiles.remove( lastUsedFile );
-            return true;
-          }
-        }
-      }
-    }
-
-    return true;
   }
 
   private boolean renameRecent( String id, String type, String name ) {
