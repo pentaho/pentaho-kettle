@@ -3,7 +3,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -94,6 +94,7 @@ import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.row.value.ValueMetaFactory;
 import org.pentaho.di.core.row.value.ValueMetaInteger;
+import org.pentaho.di.core.row.value.ValueMetaNumber;
 import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.core.undo.TransAction;
 import org.pentaho.di.core.variables.VariableSpace;
@@ -265,8 +266,8 @@ public class TableView extends Composite {
     clearUndo();
 
     numberColumn = new ColumnInfo( "#", ColumnInfo.COLUMN_TYPE_TEXT, true, true );
-    ValueMetaInterface numberColumnValueMeta = new ValueMetaInteger( "#" );
-    numberColumnValueMeta.setConversionMask( "####0" );
+    ValueMetaInterface numberColumnValueMeta = new ValueMetaNumber( "#" );
+    numberColumnValueMeta.setConversionMask( "####0.###" );
     numberColumn.setValueMeta( numberColumnValueMeta );
 
     lsUndo = new ModifyListener() {
@@ -1326,6 +1327,9 @@ public class TableView extends Composite {
   }
 
   public void sortTable( int sortField, boolean sortingDescending ) {
+    sortTable( sortField, sortingDescending, true );
+  }
+  public void sortTable( int sortField, boolean sortingDescending, boolean resetRowNums ) {
     boolean shouldRefresh = false;
     if ( this.sortfieldLast == -1 && this.sortingDescendingLast == null ) {
       // first time through, so update
@@ -1489,7 +1493,9 @@ public class TableView extends Composite {
       table.setSortDirection( sortingDescending ? SWT.DOWN : SWT.UP );
 
       lastRowCount = table.getItemCount();
-      setRowNums();
+      if ( resetRowNums ) {
+        setRowNums();
+      }
     } catch ( Exception e ) {
       new ErrorDialog( this.getShell(), BaseMessages.getString( PKG, "TableView.ErrorDialog.title" ), BaseMessages
         .getString( PKG, "TableView.ErrorDialog.description" ), e );
