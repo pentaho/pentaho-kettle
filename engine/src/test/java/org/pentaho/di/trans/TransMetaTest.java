@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -21,6 +21,7 @@
  ******************************************************************************/
 package org.pentaho.di.trans;
 
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -87,7 +88,6 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
-import static org.mockito.Mockito.spy;
 
 public class TransMetaTest {
   public static final String STEP_NAME = "Any step name";
@@ -489,7 +489,7 @@ public class TransMetaTest {
   public void testGetCacheVersion() throws Exception {
     TransMeta transMeta = new TransMeta( getClass().getResource( "one-step-trans.ktr" ).getPath() );
     int oldCacheVersion = transMeta.getCacheVersion();
-    transMeta.setSizeRowset( 10 );
+    transMeta.setSizeRowset(10);
     int currCacheVersion = transMeta.getCacheVersion();
     assertNotEquals( oldCacheVersion, currCacheVersion );
   }
@@ -515,7 +515,7 @@ public class TransMetaTest {
     transMeta.setTransstatus( 100 );
 
     // transformation log table
-    transMeta.setTransLogTable( mock( TransLogTable.class ) );
+    transMeta.setTransLogTable( mock(TransLogTable.class ) );
 
     // transformation created user
     transMeta.setCreatedUser( "user" );
@@ -559,47 +559,5 @@ public class TransMetaTest {
 
     // assert that nothing impacted the cache version
     assertEquals( oldCacheVersion, transMeta.getCacheVersion() );
-  }
-
-  @Test
-  public void testHasLoop_simpleLoop() throws Exception {
-    //main->2->3->main
-    TransMeta transMetaSpy = spy( transMeta );
-    StepMeta stepMetaMain = createStepMeta( "mainStep" );
-    StepMeta stepMeta2 = createStepMeta( "step2" );
-    StepMeta stepMeta3 = createStepMeta( "step3" );
-    when( transMetaSpy.findNrPrevSteps( stepMetaMain ) ).thenReturn( 1 );
-    when( transMetaSpy.findPrevStep( stepMetaMain, 0 ) ).thenReturn( stepMeta2 );
-    when( transMetaSpy.findNrPrevSteps( stepMeta2 ) ).thenReturn( 1 );
-    when( transMetaSpy.findPrevStep( stepMeta2, 0 ) ).thenReturn( stepMeta3 );
-    when( transMetaSpy.findNrPrevSteps( stepMeta3 ) ).thenReturn( 1 );
-    when( transMetaSpy.findPrevStep( stepMeta3, 0 ) ).thenReturn( stepMetaMain );
-    assertTrue( transMetaSpy.hasLoop( stepMetaMain ) );
-  }
-
-  @Test
-  public void testHasLoop_loopInPrevSteps() throws Exception {
-    //main->2->3->4->3
-    TransMeta transMetaSpy = spy( transMeta );
-    StepMeta stepMetaMain = createStepMeta( "mainStep" );
-    StepMeta stepMeta2 = createStepMeta( "step2" );
-    StepMeta stepMeta3 = createStepMeta( "step3" );
-    StepMeta stepMeta4 = createStepMeta( "step4" );
-    when( transMetaSpy.findNrPrevSteps( stepMetaMain ) ).thenReturn( 1 );
-    when( transMetaSpy.findPrevStep( stepMetaMain, 0 ) ).thenReturn( stepMeta2 );
-    when( transMetaSpy.findNrPrevSteps( stepMeta2 ) ).thenReturn( 1 );
-    when( transMetaSpy.findPrevStep( stepMeta2, 0 ) ).thenReturn( stepMeta3 );
-    when( transMetaSpy.findNrPrevSteps( stepMeta3 ) ).thenReturn( 1 );
-    when( transMetaSpy.findPrevStep( stepMeta3, 0 ) ).thenReturn( stepMeta4 );
-    when( transMetaSpy.findNrPrevSteps( stepMeta4 ) ).thenReturn( 1 );
-    when( transMetaSpy.findPrevStep( stepMeta4, 0 ) ).thenReturn( stepMeta3 );
-    //check no StackOverflow error
-    assertFalse( transMetaSpy.hasLoop( stepMetaMain ) );
-  }
-
-  private StepMeta createStepMeta( String name ) {
-    StepMeta stepMeta = mock( StepMeta.class );
-    when( stepMeta.getName() ).thenReturn( name );
-    return stepMeta;
   }
 }
