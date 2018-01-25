@@ -1,0 +1,41 @@
+<div class="main_div">
+  <div class="title_text margin_bottom_30">{{::vm.connectionDetails}}</div>
+  <div class="middle_div">
+    <div class="margin_bottom_15">
+      <label for="displayName" class="margin_bottom_5 block text_left">{{::vm.displayNameLabel}}</label>
+      <input focus="300" id="displayName" class="block" type="text" size="50" ng-model="vm.connection.displayName" ng-keyup="vm.resetErrorMsg()"/>
+    </div>
+    <div class="margin_bottom_15">
+      <label for="connectionDD" class="margin_bottom_5 block text_left">{{::vm.databaseConnection}}</label>
+      <div ng-click="vm.selectDatabase()" id="connectionDD" style="cursor:pointer" ng-class="{italic : vm.connection.databaseConnection == 'None'}">{{vm.connection.databaseConnection}}</div>
+    </div>
+    <div class="margin_bottom_20">
+      <label for="description" class="margin_bottom_5 block text_left">{{::vm.descriptionLabel}}</label>
+      <textarea id="description" class="block" rows="4" cols="50" ng-model="vm.connection.description"></textarea>
+    </div>
+    <div class="text_left">
+      <button id="isDefault" class="detailsBtn inline" ng-class="{activate : vm.connection.isDefault}" ng-click="vm.setDefaultConn(!vm.connection.isDefault)">
+        <div class="detailsBtnCheckmark" ng-show="vm.connection.isDefault"></div>
+      </button>
+      <label for="isDefault" class="inline margin_left_3">{{::vm.launchLabel}}</label>
+    </div>
+  </div>
+  <div class="bottom">
+    <div class="margin_bottom_20">
+      <hr />
+    </div>
+    <div>
+      <help></help>
+      <button id="finish" class="right margin_left_10 standard" type="button" disabled="disabled" ng-disabled="!vm.canFinish()" ng-click="vm.finish()">
+        <span>
+          {{::vm.finishLabel}}
+        </span>
+      </button>
+      <button class="right secondary" type="button" ng-click="vm.back()">
+        <span>
+          {{::vm.backLabel}}
+        </span>
+      </button>
+    </div>
+  </div>
+</div>

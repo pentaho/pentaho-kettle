@@ -1,0 +1,59 @@
+<div class="main_div">
+  <div class="title_text margin_bottom_30">{{::vm.detailsLabel}}</div>
+  <div class="middle_div">
+    <div class="margin_bottom_15">
+      <label for="displayName" class="margin_bottom_5 block text_left">{{::vm.displayNameLabel}}</label> <input focus="300" id="displayName" class="block" type="text" size="50" ng-model="vm.connection.displayName" ng-change="vm.resetErrorMsg()"/>
+    </div>
+    <div>
+      <label for="location" class="margin_bottom_5 block text_left">{{::vm.fileLocationLabel}}</label>
+      <input id="location" class="block left" type="text" ng-model="vm.connection.location" />
+      <button id="browse" class="left standard margin_bottom_20" ng-click="vm.browse()">
+        <span>
+          {{::vm.fileBrowseLabel}}
+        </span>
+      </button>
+    </div>
+    <div class="text_left" style="margin-bottom: 27px;">
+      <div style="margin-bottom: 17px;">
+        <button id="dont_modify" class="detailsBtn inline" ng-class="{activate : vm.connection.doNotModify}" ng-click="vm.setDoNotModify(!vm.connection.doNotModify)">
+          <div class="detailsBtnCheckmark" ng-show="vm.connection.doNotModify"></div>
+        </button>
+        <label for="dont_modify" class="inline margin_left_3">{{::vm.noModifyLabel}}</label>
+      </div>
+      <div>
+        <button id="showFolders" class="detailsBtn inline" ng-class="{activate : vm.connection.showHiddenFolders}" ng-click="vm.setShowHiddenFolders(!vm.connection.showHiddenFolders)">
+          <div class="detailsBtnCheckmark" ng-show="vm.connection.showHiddenFolders"></div>
+        </button>
+        <label for="showFolders" class="inline margin_left_3">{{::vm.showHiddenLabel}}</label>
+      </div>
+    </div>
+    <div class="margin_bottom_20">
+      <label for="description" class="margin_bottom_5 block text_left">{{::vm.descriptionLabel}}</label>
+      <textarea id="description" class="block" rows="4" cols="50" ng-model="vm.connection.description"></textarea>
+    </div>
+    <div class="text_left">
+      <button id="isDefault" class="detailsBtn inline" ng-class="{activate : vm.connection.isDefault}" ng-click="vm.setDefaultConn(!vm.connection.isDefault)">
+        <div class="detailsBtnCheckmark" ng-show="vm.connection.isDefault"></div>
+      </button>
+      <label for="isDefault" class="inline margin_left_3">{{::vm.launchLabel}}</label>
+    </div>
+  </div>
+  <div class="bottom">
+    <div class="margin_bottom_20">
+      <hr />
+    </div>
+    <div>
+      <help></help>
+      <button id="finish" class="right margin_left_10 standard" type="button" ng-disabled="!vm.canFinish()" ng-click="vm.finish()">
+        <span>
+          {{::vm.finishLabel}}
+        </span>
+      </button>
+      <button class="right secondary" type="button" ng-click="vm.back()">
+        <span>
+          {{::vm.backLabel}}
+        </span>
+      </button>
+    </div>
+  </div>
+</div>

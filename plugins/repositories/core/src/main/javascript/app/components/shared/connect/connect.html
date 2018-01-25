@@ -1,0 +1,29 @@
+<error error="vm.errorMessage"></error>
+<div class="main_div">
+  <div class="header margin_bottom_60 connectHeader">
+    {{::vm.connectHeader}}
+  </div>
+  <div class="middle_div2">
+    <label class="block text_left">{{::vm.connectToLabel}}</label>
+    <div ng-init="addToolTips()"
+        class="connection_name_label block text_left mightOverflow" style="margin-bottom:18px;">{{vm.connection.displayName}}
+    </div>
+    <form ng-submit="vm.connect(vm.credentials)">
+      <div style="margin-bottom:18px;">
+        <label for="userName" class="margin_bottom_5 block text_left">{{::vm.usernameLabel}}</label>
+        <input focus="300" id="userName" class="block repo_conn_txt" type="text" ng-model="vm.credentials.username" ng-change="vm.resetErrorMsg()"/>
+      </div>
+      <div style="margin-bottom:18px;">
+        <label for="password" class="margin_bottom_5 block text_left">{{::vm.passwordLabel}}</label>
+        <input id="password" class="block repo_conn_txt" type="password" ng-model="vm.credentials.password" ng-change="vm.resetErrorMsg()"/>
+      </div>
+      <div>
+        <button id="connect" class="standard" type="submit" ng-disabled="!vm.canConnect()">
+        <span>
+          {{::vm.connectLabel}}
+        </span>
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
