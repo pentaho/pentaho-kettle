@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,15 +22,16 @@
 
 package org.pentaho.di.job.entries.eval;
 
+import org.pentaho.di.core.Const;
+import org.pentaho.di.job.entry.loadSave.JobEntryLoadSaveTestSupport;
+import org.pentaho.di.trans.steps.loadsave.validator.FieldLoadSaveValidator;
+import org.pentaho.di.trans.steps.loadsave.validator.StringLoadSaveValidator;
+
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
-import org.pentaho.di.core.Const;
-import org.pentaho.di.job.entry.loadSave.JobEntryLoadSaveTestSupport;
-import org.pentaho.di.trans.steps.loadsave.validator.FieldLoadSaveValidator;
-import org.pentaho.di.trans.steps.loadsave.validator.StringLoadSaveValidator;
 
 public class JobEntryEvalLoadSaveTest extends JobEntryLoadSaveTestSupport<JobEntryEval> {
 
@@ -55,12 +56,13 @@ public class JobEntryEvalLoadSaveTest extends JobEntryLoadSaveTestSupport<JobEnt
 
     @Override
     public String getTestObject() {
+      String lineTerminator = Const.isWindows() ? "\n" : Const.CR;
       StringBuilder text = new StringBuilder();
       int lines = new Random().nextInt( 10 ) + 1;
       for ( int i = 0; i < lines; i++ ) {
         text.append( super.getTestObject() );
         if ( i + 1 < lines ) {
-          text.append( Const.CR );
+          text.append( lineTerminator );
         }
       }
       return text.toString();

@@ -28,13 +28,12 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.pentaho.di.core.Const;
 import org.pentaho.di.core.KettleClientEnvironment;
 import org.pentaho.di.core.Props;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.exception.KettleMissingPluginsException;
-import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.logging.KettleLogStore;
 import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.logging.LogChannelInterfaceFactory;
@@ -108,11 +107,14 @@ public class SubtransExecutorTest {
     subtransExecutor.execute( rows );
     verify( this.logChannel )
       .logBasic(
-        "\n"
-          + "------------> Linenr 1------------------------------\n"
-          + "name = Pentaho\n"
-          + "sum = 10\n"
-          + "\n"
+        Const.CR
+          + "------------> Linenr 1------------------------------"
+          + Const.CR
+          + "name = Pentaho"
+          + Const.CR
+          + "sum = 10"
+          + Const.CR
+          + Const.CR
           + "===================="
       );
 

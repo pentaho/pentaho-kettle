@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,27 +22,17 @@
 
 package org.pentaho.di.trans.steps.loadfileinput;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNotEquals;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyInt;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.spy;
-
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.vfs2.FileObject;
 import org.apache.commons.vfs2.FileSystemException;
 import org.apache.commons.vfs2.FileSystemManager;
 import org.apache.commons.vfs2.VFS;
+import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.mockito.Mockito;
+import org.pentaho.di.core.Const;
 import org.pentaho.di.core.KettleClientEnvironment;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.fileinput.FileInputList;
@@ -60,6 +50,20 @@ import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
 
 import java.io.UnsupportedEncodingException;
+import java.lang.reflect.Field;
+import java.nio.charset.Charset;
+
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyInt;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
 
 public class LoadFileInputTest {
 
@@ -81,10 +85,35 @@ public class LoadFileInputTest {
   private StepMetaInterface runtimeSMI;
   private StepDataInterface runtimeSDI;
   private LoadFileInputField inputField;
+  private static String wasEncoding;
 
   @BeforeClass
   public static void setupBeforeClass() throws KettleException {
+    if ( Const.isWindows() ) {
+      wasEncoding = System.getProperty( "file.encoding" );
+      fiddleWithDefaultCharset( "utf8" );
+    }
     KettleClientEnvironment.init();
+  }
+
+  @AfterClass
+  public static void teardownAfterClass() {
+    if ( wasEncoding != null ) {
+      fiddleWithDefaultCharset( wasEncoding );
+    }
+  }
+
+  // Yeah, I don't like it much either, but it lets me set file.encoding after
+  // the VM has fired up. Remove this code when the backlog ticket BACKLOG-20800 gets fixed.
+  private static void fiddleWithDefaultCharset( String fiddleValue ) {
+    try {
+      Class<Charset> charSet = Charset.class;
+      Field defaultCharsetFld = charSet.getDeclaredField( "defaultCharset" );
+      defaultCharsetFld.setAccessible( true );
+      defaultCharsetFld.set( null, Charset.forName( fiddleValue ) );
+    } catch ( Exception ex ) {
+      System.out.println( "*** Fiddling with Charset class failed" );
+    }
   }
 
   @Before
