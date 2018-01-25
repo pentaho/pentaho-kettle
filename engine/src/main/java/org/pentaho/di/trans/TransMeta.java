@@ -3,7 +3,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -837,15 +837,6 @@ public class TransMeta extends AbstractMeta
    */
   public StepMeta getStep( int i ) {
     return steps.get( i );
-  }
-
-  /**
-   * Gets the trans hops.
-   *
-   * @return the trans hops
-   */
-  public List<TransHopMeta> getTransHops() {
-    return Collections.unmodifiableList( hops );
   }
 
   /**
@@ -3541,7 +3532,10 @@ public class TransMeta extends AbstractMeta
   public boolean isStepUsedInTransHops( StepMeta stepMeta ) {
     TransHopMeta fr = findTransHopFrom( stepMeta );
     TransHopMeta to = findTransHopTo( stepMeta );
-    return fr != null || to != null;
+    if ( fr != null || to != null ) {
+      return true;
+    }
+    return false;
   }
 
   /**
@@ -3682,8 +3676,11 @@ public class TransMeta extends AbstractMeta
     if ( havePartitionSchemasChanged() ) {
       return true;
     }
-    return haveClusterSchemasChanged();
+    if ( haveClusterSchemasChanged() ) {
+      return true;
+    }
 
+    return false;
   }
 
   private boolean isErrorNode( Node errorHandingNode, Node checkNode ) {
@@ -3730,28 +3727,7 @@ public class TransMeta extends AbstractMeta
    * @return true if a loop has been found, false if no loop is found.
    */
   public boolean hasLoop( StepMeta stepMeta ) {
-    clearLoopCache();
-    return hasLoop( stepMeta, null );
-  }
-
-  /**
-   * @deprecated use {@link #hasLoop(StepMeta, StepMeta)}}
-   */
-  @Deprecated
-  public boolean hasLoop( StepMeta stepMeta, StepMeta lookup, boolean info ) {
-    return hasLoop( stepMeta, lookup, new HashSet<StepMeta>() );
-  }
-
-  /**
-   * Checks for loop.
-   *
-   * @param stepMeta  the stepmeta
-   * @param lookup the lookup
-   * @return true, if successful
-   */
-
-  public boolean hasLoop( StepMeta stepMeta, StepMeta lookup ) {
-    return hasLoop( stepMeta, lookup, new HashSet<StepMeta>() );
+    return hasLoop( stepMeta, null, true ) || hasLoop( stepMeta, null, false );
   }
 
   /**
@@ -3762,37 +3738,43 @@ public class TransMeta extends AbstractMeta
    *          The step position to start looking
    * @param lookup
    *          The original step when wandering around the transformation.
-   * @param checkedEntries
-   *          Already checked entries
+   * @param info
+   *          Check the informational steps or not.
    *
    * @return true if a loop has been found, false if no loop is found.
    */
-  private boolean hasLoop( StepMeta stepMeta, StepMeta lookup, HashSet<StepMeta> checkedEntries ) {
-    String cacheKey =
-            stepMeta.getName() + " - " + ( lookup != null ? lookup.getName() : "" );
-
-    Boolean hasLoop = loopCache.get( cacheKey );
-
-    if ( hasLoop != null ) {
-      return hasLoop;
+  private boolean hasLoop( StepMeta stepMeta, StepMeta lookup, boolean info ) {
+    String
+        cacheKey =
+        stepMeta.getName() + " - " + ( lookup != null ? lookup.getName() : "" ) + " - " + ( info ? "true" : "false" );
+    Boolean loop = loopCache.get( cacheKey );
+    if ( loop != null ) {
+      return loop.booleanValue();
     }
 
-    hasLoop = false;
-
-    checkedEntries.add( stepMeta );
-
+    boolean hasLoop = false;
     List<StepMeta> prevSteps = findPreviousSteps( stepMeta, info );
     int nr = prevSteps.size();
-    for ( int i = 0; i < nr; i++ ) {
+    for ( int i = 0; i < nr && !hasLoop; i++ ) {
       StepMeta prevStepMeta = prevSteps.get( i );
-      if ( prevStepMeta != null && ( prevStepMeta.equals( lookup )
-              || ( !checkedEntries.contains( prevStepMeta ) && hasLoop( prevStepMeta, lookup == null ? stepMeta : lookup, checkedEntries ) ) ) ) {
-        hasLoop = true;
-        break;
+      if ( prevStepMeta != null ) {
+        if ( prevStepMeta.equals( stepMeta ) ) {
+          hasLoop = true;
+          break; // no need to check more but caching this one below
+        } else if ( prevStepMeta.equals( lookup ) ) {
+          hasLoop = true;
+          break; // no need to check more but caching this one below
+        } else if ( hasLoop( prevStepMeta, lookup == null ? stepMeta : lookup, info ) ) {
+          hasLoop = true;
+          break; // no need to check more but caching this one below
+        }
       }
     }
 
-    loopCache.put( cacheKey, hasLoop );
+    // Store in the cache...
+    //
+    loopCache.put( cacheKey, Boolean.valueOf( hasLoop ) );
+
     return hasLoop;
   }
 
@@ -5173,8 +5155,11 @@ public class TransMeta extends AbstractMeta
       }
     }
 
-    return transLogTable.getDatabaseMeta() != null && transLogTable.getDatabaseMeta().equals( databaseMeta );
+    if ( transLogTable.getDatabaseMeta() != null && transLogTable.getDatabaseMeta().equals( databaseMeta ) ) {
+      return true;
+    }
 
+    return false;
   }
 
   /**
