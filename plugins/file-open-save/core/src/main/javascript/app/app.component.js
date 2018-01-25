@@ -868,14 +868,21 @@ define([
     /**
      * Returns the name of the selected folder
      *
-     * @returns {String} - The name of the selected folder
+     * @return {String} - "Search results in "<The name of the selected folder>", truncating with ellipsis accordingly
      */
     function getSelectedFolderName() {
+      var retVal = i18n.get("file-open-save-plugin.app.search-results-in.label");
       if (vm.selectedFolder === "/" && isPentahoRepo()) {
-        return vm.currentRepo;
+        retVal += "\"" + vm.currentRepo;
+      } else {
+        retVal += "\"" + vm.selectedFolder;
       }
-
-      return vm.selectedFolder;
+      if ($state.is("open") && utils.getTextWidth(retVal) > 435) {
+        retVal = utils.truncateString(retVal, 426) + "...";
+      } else if ($state.is("save") && utils.getTextWidth(retVal) > 395) {
+        retVal = utils.truncateString(retVal, 386) + "...";
+      }
+      return retVal + "\"";
     }
 
     /**
