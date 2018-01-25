@@ -790,15 +790,6 @@ public class JobGraph extends AbstractGraph implements XulEventHandler, Redrawab
         if ( hop != null ) {
           JobHopMeta before = (JobHopMeta) hop.clone();
           hop.setEnabled( !hop.isEnabled() );
-          if ( hop.isEnabled() && ( jobMeta.hasLoop( hop.getToEntry() ) ) ) {
-            MessageBox mb = new MessageBox( shell, SWT.CANCEL | SWT.OK | SWT.ICON_WARNING );
-            mb.setMessage( BaseMessages.getString( PKG, "JobGraph.Dialog.LoopAfterHopEnabled.Message" ) );
-            mb.setText( BaseMessages.getString( PKG, "JobGraph.Dialog.LoopAfterHopEnabled.Title" ) );
-            int choice = mb.open();
-            if ( choice == SWT.CANCEL ) {
-              hop.setEnabled( false );
-            }
-          }
           JobHopMeta after = (JobHopMeta) hop.clone();
           spoon.addUndoChange(
             jobMeta, new JobHopMeta[] { before }, new JobHopMeta[] { after }, new int[] { jobMeta
@@ -2127,7 +2118,7 @@ public class JobGraph extends AbstractGraph implements XulEventHandler, Redrawab
     currentHop.setToEntry( origFrom );
 
     boolean cancel = false;
-    if ( jobMeta.hasLoop( currentHop.getToEntry() ) ) {
+    if ( jobMeta.hasLoop( currentHop.getFromEntry() ) || jobMeta.hasLoop( currentHop.getToEntry() ) ) {
       MessageBox mb = new MessageBox( shell, SWT.OK | SWT.CANCEL | SWT.ICON_WARNING );
       mb.setMessage( BaseMessages.getString( PKG, "JobGraph.Dialog.HopFlipCausesLoop.Message" ) );
       mb.setText( BaseMessages.getString( PKG, "JobGraph.Dialog.HopCausesLoop.Title" ) );
@@ -2151,7 +2142,7 @@ public class JobGraph extends AbstractGraph implements XulEventHandler, Redrawab
     boolean orig = currentHop.isEnabled();
     currentHop.setEnabled( !currentHop.isEnabled() );
 
-    if ( !orig && ( jobMeta.hasLoop( currentHop.getToEntry() ) ) ) {
+    if ( !orig && ( jobMeta.hasLoop( currentHop.getFromEntry() ) || jobMeta.hasLoop( currentHop.getToEntry() ) ) ) {
       MessageBox mb = new MessageBox( shell, SWT.CANCEL | SWT.OK | SWT.ICON_WARNING );
       mb.setMessage( BaseMessages.getString( PKG, "JobGraph.Dialog.LoopAfterHopEnabled.Message" ) );
       mb.setText( BaseMessages.getString( PKG, "JobGraph.Dialog.LoopAfterHopEnabled.Title" ) );
@@ -2223,7 +2214,7 @@ public class JobGraph extends AbstractGraph implements XulEventHandler, Redrawab
         JobHopMeta after = (JobHopMeta) hop.clone();
         spoon.addUndoChange( jobMeta, new JobHopMeta[] { before }, new JobHopMeta[] { after }, new int[] { jobMeta
           .indexOfJobHop( hop ) } );
-        if ( jobMeta.hasLoop( hop.getToEntry() ) ) {
+        if ( jobMeta.hasLoop( hop.getFromEntry() ) || jobMeta.hasLoop( hop.getToEntry() ) ) {
           hasLoop = true;
         }
       }
@@ -2251,41 +2242,36 @@ public class JobGraph extends AbstractGraph implements XulEventHandler, Redrawab
     if ( currentHop == null ) {
       return;
     }
+
     JobHopMeta before = (JobHopMeta) currentHop.clone();
     currentHop.setEnabled( enabled );
     JobHopMeta after = (JobHopMeta) currentHop.clone();
     spoon.addUndoChange( jobMeta, new JobHopMeta[] { before }, new JobHopMeta[] { after }, new int[] { jobMeta
       .indexOfJobHop( currentHop ) } );
 
-    Set<JobEntryCopy> checkedEntries = enableDisableNextHops( currentHop.getToEntry(), enabled, new HashSet<>() );
-
-    if ( checkedEntries.stream().anyMatch( entry -> jobMeta.hasLoop( entry ) ) ) {
-      MessageBox mb = new MessageBox( shell, SWT.OK | SWT.ICON_WARNING );
-      mb.setMessage( BaseMessages.getString( PKG, "JobGraph.Dialog.LoopAfterHopEnabled.Message" ) );
-      mb.setText( BaseMessages.getString( PKG, "JobGraph.Dialog.LoopAfterHopEnabled.Title" ) );
-      mb.open();
-    }
+    enableDisableNextHops( currentHop.getToEntry(), enabled, 1 );
 
     spoon.refreshGraph();
   }
 
-  private Set<JobEntryCopy> enableDisableNextHops( JobEntryCopy from, boolean enabled, Set<JobEntryCopy> checkedEntries ) {
-    checkedEntries.add( from );
-    jobMeta.getJobhops().stream()
-            .filter( hop -> from.equals( hop.getFromEntry() ) )
-            .forEach( hop -> {
-              if ( hop.isEnabled() != enabled ) {
-                JobHopMeta before = (JobHopMeta) hop.clone();
-                hop.setEnabled( enabled );
-                JobHopMeta after = (JobHopMeta) hop.clone();
-                spoon.addUndoChange( jobMeta, new JobHopMeta[]{ before }, new JobHopMeta[]{ after }, new int[]{ jobMeta
-                        .indexOfJobHop( hop ) } );
-              }
-              if ( !checkedEntries.contains( hop.getToEntry() ) ) {
-                enableDisableNextHops( hop.getToEntry(), enabled, checkedEntries );
-              }
-            } );
-    return checkedEntries;
+  private void enableDisableNextHops( JobEntryCopy from, boolean enabled, int level ) {
+
+    if ( level > 100 ) {
+      return; // prevent endless running with loops in jobs
+    }
+
+    for ( JobEntryCopy to : jobMeta.getJobCopies() ) {
+      JobHopMeta hop = jobMeta.findJobHop( from, to, true );
+      if ( hop != null ) {
+        JobHopMeta before = (JobHopMeta) hop.clone();
+        hop.setEnabled( enabled );
+        JobHopMeta after = (JobHopMeta) hop.clone();
+        spoon.addUndoChange( jobMeta, new JobHopMeta[] { before }, new JobHopMeta[] { after }, new int[] { jobMeta
+          .indexOfJobHop( hop ) } );
+
+        enableDisableNextHops( to, enabled, level++ );
+      }
+    }
   }
 
   protected void setToolTip( int x, int y, int screenX, int screenY ) {
