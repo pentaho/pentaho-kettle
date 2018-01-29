@@ -1,0 +1,58 @@
+<div class="main_div">
+  <div class="title_text margin_bottom_30">
+    {{::vm.managerTitle}}
+  </div>
+  <div id="table-wrapper" class="margin_bottom_20 table_border">
+    <div class="table-scroll-mng">
+      <table id="repoMngTable">
+        <tr ng-repeat="repository in vm.repositories" ng-class="{active : repository === vm.selectedRepository}"  ng-click="vm.selectRepository(repository)" ng-init="$last && addToolTips()">
+          <td class="bullet" />
+          <td class="repo_type text_left">
+            <div class="repoType mightOverflow">
+              {{repository.displayName}}
+            </div>
+            <div id="repoDesc">{{repository.description}}</div>
+          </td>
+          <td class="default">
+            <button class="defaultBtn" ng-click="vm.setDefault(repository); $event.stopPropagation();"
+                ng-if="!repository.isDefault" title="{{::vm.launchLabel}}"></button>
+            <button class="defaultBtn activate" ng-click="vm.clearDefault(repository); $event.stopPropagation();"
+                ng-if="repository.isDefault" title="{{::vm.launchLabel}}">
+              <div id="defaultBtnCheckmark"></div>
+            </button>
+          </td>
+        </tr>
+      </table>
+    </div>
+  </div>
+  <div>
+    <button id="deleteBtn" class="right margin_left_10 secondary" type="button" ng-class="{invisible : !vm.selectedRepository || vm.repositories.length == 0}" ng-click="vm.remove(vm.selectedRepository)">
+      <span>
+        {{::vm.deleteLabel}}
+      </span>
+    </button>
+    <button id="editBtn" class="right secondary" type="button" style="margin-left: 85px;" ng-class="{invisible : !vm.selectedRepository || vm.repositories.length == 0}" ng-click="vm.edit(vm.selectedRepository)">
+      <span>
+        {{::vm.editLabel}}
+      </span>
+    </button>
+    <button id="addBtn" class="right standard" type="button" ng-click="vm.add()">
+      <span>
+        {{::vm.addLabel}}
+      </span>
+    </button>
+  </div>
+  <div class="bottom">
+    <div class="margin_bottom_20">
+      <hr />
+    </div>
+    <div>
+      <help></help>
+      <button id="btnClose" class="right secondary" type="button" ng-click="vm.close()">
+        <span>
+          {{::vm.closeLabel}}
+        </span>
+      </button>
+    </div>
+  </div>
+</div>

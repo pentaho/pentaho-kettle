@@ -1,0 +1,40 @@
+<div class="main_div">
+  <div class="add_container">
+    <div class="title_text margin_bottom_5">{{::vm.otherLabel}}</div>
+    <div class="margin_bottom_30 primary_text">{{::vm.newDescriptionLabel}}</div>
+    <div id="table-wrapper" class="primary_text" style="margin-bottom:55px;">
+      <div id="table-scroll">
+        <table id="reposTable" class="text_left">
+          <tr ng-repeat="repositoryType in vm.repositoryTypes" ng-class="{active : repositoryType == vm.selectedRepositoryType}">
+            <td class="bullet" />
+            <td class="repo_type" ng-click="vm.selectRepositoryType(repositoryType)">
+              <div class="repoType">{{repositoryType.name}}</div>
+              <div>{{repositoryType.description}}</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+    </div>
+  </div>
+  <div class="margin_bottom_30">
+    <a style="cursor:pointer" ui-sref="add">{{::vm.newPentahoRepositoryLabel}}</a>
+  </div>
+  <div class="bottom">
+    <div class="margin_bottom_20">
+      <hr />
+    </div>
+    <div>
+      <help></help>
+      <button id="btnClose" class="right margin_left_10 secondary" type="button" ng-click="vm.close()">
+        <span>
+          {{::vm.closeLabel}}
+        </span>
+      </button>
+      <button id="btnGetStarted" class="right standard" type="button" ng-disabled="!vm.selectedRepositoryType" ng-click="vm.getStarted(vm.selectedRepositoryType)">
+        <span>
+          {{::vm.getStartedLabel}}
+        </span>
+      </button>
+    </div>
+  </div>
+</div>

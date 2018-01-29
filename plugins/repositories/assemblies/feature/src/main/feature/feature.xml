@@ -10,6 +10,7 @@
     <bundle>pentaho-webjars:mvn:org.webjars.bower/angular-sanitize/${angular-sanitize.version}</bundle>
     <bundle>pentaho-webjars:mvn:org.webjars.bower/angular-translate/${angular-translate.version}</bundle>
     <bundle>pentaho-webjars:mvn:org.webjars.bower/angular-animate/${angular-animate.version}</bundle>
+    <bundle>pentaho-webjars:mvn:org.webjars.bower/angular-ui-router/${angular-ui-router.version}</bundle>
     <!-- END -->
   </feature>
 
