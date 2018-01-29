@@ -17,6 +17,7 @@
   </parent>
 
   <modules>
-    <module>pdi-ce</module>
+    <module>lib</module>
+    <module>client</module>
   </modules>
 </project>
