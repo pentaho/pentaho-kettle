@@ -9,13 +9,13 @@
   </parent>
   <groupId>pentaho-kettle</groupId>
   <artifactId>repositories-plugin</artifactId>
-  <version>7.0.0.5-89</version>
+  <version>7.0.0.5-C222-100</version>
   <packaging>bundle</packaging>
   <name>Pentaho Community Edition Project: ${project.artifactId}</name>
   <description>a Pentaho open source project</description>
   <url>http://www.pentaho.com</url>
   <properties>
-    <dependency.pentaho-kettle.version>7.0.0.5-89</dependency.pentaho-kettle.version>
+    <dependency.pentaho-kettle.version>7.0.0.5-C222-100</dependency.pentaho-kettle.version>
     <junit.version>4.11</junit.version>
     <org.eclipse.core.commands.version>3.6.0</org.eclipse.core.commands.version>
     <plugin.org.codehaus.mojo.build-helper-maven-plugin.version>1.5</plugin.org.codehaus.mojo.build-helper-maven-plugin.version>
