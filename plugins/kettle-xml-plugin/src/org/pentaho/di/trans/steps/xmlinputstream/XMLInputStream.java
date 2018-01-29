@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -25,6 +25,7 @@ package org.pentaho.di.trans.steps.xmlinputstream;
 import java.io.IOException;
 import java.io.StringReader;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
@@ -93,6 +94,7 @@ public class XMLInputStream extends BaseStep implements StepInterface {
       }
       openNextFile();
       resetElementCounters();
+      data.previousFieldsNumber = getInputRowMeta() == null ? 0 : getInputRowMeta().size();
     }
 
     Object[] outputRowData;
@@ -110,6 +112,7 @@ public class XMLInputStream extends BaseStep implements StepInterface {
           throw new KettleException( BaseMessages.getString( PKG, "XMLInputStream.FilenameFieldNotFound",
               meta.sourceFieldName ) );
         }
+        data.previousFieldsNumber = getInputRowMeta() == null ? 0 : getInputRowMeta().size();
       }
       if ( data.xmlEventReader == null ) {
         if ( row == null ) {
@@ -127,12 +130,18 @@ public class XMLInputStream extends BaseStep implements StepInterface {
         }
         resetElementCounters();
       }
+      if ( row != null ) {
+        data.currentInputRow = (Object[]) row.clone();
+      }
       outputRowData = getRowFromXML();
       if ( outputRowData == null ) {
         data.xmlEventReader = null;
         return true;
       }
     } else {
+      if ( data.inputDataRows != null ) {
+        data.currentInputRow = (Object[]) ( data.inputDataRows.get( data.filenames[ data.filenr - 1 ] ) ).clone();
+      }
       outputRowData = getRowFromXML();
       if ( outputRowData == null ) {
         if ( openNextFile() ) {
@@ -238,10 +247,12 @@ public class XMLInputStream extends BaseStep implements StepInterface {
       // try using this value as a path if not found in incoming hops
       data.filenames = new String[] { filenameValue };
     } else {
+      data.inputDataRows = new HashMap<String, Object[]>();
       while ( row != null ) {
 
         String filename = getInputRowMeta().getString( row, index );
         filenames.add( filename ); // add it to the list...
+        data.inputDataRows.put( filename, row );
 
         row = getRow(); // Grab another row...
       }
@@ -286,6 +297,9 @@ public class XMLInputStream extends BaseStep implements StepInterface {
     if ( data.nrRowsToSkip == 0 || data.rowNumber > data.nrRowsToSkip ) {
       if ( log.isRowLevel() ) {
         logRowlevel( "Read row: " + data.outputRowMeta.getString( r ) );
+      }
+      if ( data.currentInputRow != null ) {
+        r = RowDataUtil.addRowData( (Object[]) data.currentInputRow.clone(), data.previousFieldsNumber, r );
       }
       putRow( data.outputRowMeta, r );
     }
