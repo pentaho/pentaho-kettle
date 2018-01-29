@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -99,6 +99,7 @@ public class CheckSumMeta extends BaseStepMeta implements StepMetaInterface {
   private String checksumtype;
 
   private boolean compatibilityMode;
+  private boolean oldChecksumBehaviour;
 
   /** result type */
   private int resultType;
@@ -234,6 +235,7 @@ public class CheckSumMeta extends BaseStepMeta implements StepMetaInterface {
       resultfieldName = XMLHandler.getTagValue( stepnode, "resultfieldName" );
       resultType = getResultTypeByCode( Const.NVL( XMLHandler.getTagValue( stepnode, "resultType" ), "" ) );
       compatibilityMode = parseCompatibilityMode( XMLHandler.getTagValue( stepnode, "compatibilityMode" ) );
+      oldChecksumBehaviour = parseOldChecksumBehaviour( XMLHandler.getTagValue( stepnode, "oldChecksumBehaviour" ) );
 
       Node fields = XMLHandler.getSubNode( stepnode, "fields" );
       int nrfields = XMLHandler.countNodes( fields, "field" );
@@ -257,6 +259,14 @@ public class CheckSumMeta extends BaseStepMeta implements StepMetaInterface {
     }
   }
 
+  private boolean parseOldChecksumBehaviour( String oldChecksumBehaviour ) {
+    if ( oldChecksumBehaviour == null ) {
+      return true; // It was previously not saved
+    } else {
+      return Boolean.parseBoolean( oldChecksumBehaviour ) || "Y".equalsIgnoreCase( oldChecksumBehaviour );
+    }
+  }
+
   private static String getResultTypeCode( int i ) {
     if ( i < 0 || i >= resultTypeCode.length ) {
       return resultTypeCode[0];
@@ -271,6 +281,7 @@ public class CheckSumMeta extends BaseStepMeta implements StepMetaInterface {
     retval.append( "      " ).append( XMLHandler.addTagValue( "resultfieldName", resultfieldName ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "resultType", getResultTypeCode( resultType ) ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "compatibilityMode", compatibilityMode ) );
+    retval.append( "      " ).append( XMLHandler.addTagValue( "oldChecksumBehaviour", oldChecksumBehaviour ) );
 
     retval.append( "    <fields>" ).append( Const.CR );
     for ( int i = 0; i < fieldName.length; i++ ) {
@@ -305,6 +316,7 @@ public class CheckSumMeta extends BaseStepMeta implements StepMetaInterface {
       resultfieldName = rep.getStepAttributeString( id_step, "resultfieldName" );
       resultType = getResultTypeByCode( Const.NVL( rep.getStepAttributeString( id_step, "resultType" ), "" ) );
       compatibilityMode = parseCompatibilityMode( rep.getStepAttributeString( id_step, "compatibilityMode" ) );
+      oldChecksumBehaviour = parseOldChecksumBehaviour( rep.getStepAttributeString( id_step, "oldChecksumBehaviour" ) );
 
       int nrfields = rep.countNrStepAttributes( id_step, "field_name" );
 
@@ -326,6 +338,7 @@ public class CheckSumMeta extends BaseStepMeta implements StepMetaInterface {
       rep.saveStepAttribute( id_transformation, id_step, "resultfieldName", resultfieldName );
       rep.saveStepAttribute( id_transformation, id_step, "resultType", getResultTypeCode( resultType ) );
       rep.saveStepAttribute( id_transformation, id_step, "compatibilityMode", compatibilityMode );
+      rep.saveStepAttribute( id_transformation, id_step, "oldChecksumBehaviour", oldChecksumBehaviour );
 
       for ( int i = 0; i < fieldName.length; i++ ) {
         rep.saveStepAttribute( id_transformation, id_step, i, "field_name", fieldName[i] );
@@ -468,6 +481,10 @@ public class CheckSumMeta extends BaseStepMeta implements StepMetaInterface {
     return compatibilityMode;
   }
 
+  public boolean isOldChecksumBehaviour() {
+    return oldChecksumBehaviour;
+  }
+
   /**
    * @deprecated Update to non-compatibility mode
    * @param compatibilityMode
@@ -475,5 +492,9 @@ public class CheckSumMeta extends BaseStepMeta implements StepMetaInterface {
   @Deprecated
   public void setCompatibilityMode( boolean compatibilityMode ) {
     this.compatibilityMode = compatibilityMode;
+  }
+
+  public void setOldChecksumBehaviour( boolean oldChecksumBehaviour ) {
+    this.oldChecksumBehaviour = oldChecksumBehaviour;
   }
 }
