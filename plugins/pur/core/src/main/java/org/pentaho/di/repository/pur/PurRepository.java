@@ -1,6 +1,6 @@
 //CHECKSTYLE:FileLength:OFF
 /*!
-* Copyright 2010 - 2017 Hitachi Vantara.  All rights reserved.
+* Copyright 2010 - 2018 Hitachi Vantara.  All rights reserved.
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -2186,6 +2186,7 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
     throws KettleException {
     TransMeta transMeta = new TransMeta();
     transMeta.setName( file.getTitle() );
+    transMeta.setFilename( file.getName() );
     transMeta.setDescription( file.getDescription() );
     transMeta.setObjectId( new StringObjectId( file.getId().toString() ) );
     transMeta.setObjectRevision( revision );
@@ -2282,6 +2283,7 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
     throws KettleException {
     JobMeta jobMeta = new JobMeta();
     jobMeta.setName( file.getTitle() );
+    jobMeta.setFilename( file.getName() );
     jobMeta.setDescription( file.getDescription() );
     jobMeta.setObjectId( new StringObjectId( file.getId().toString() ) );
     jobMeta.setObjectRevision( revision );
