@@ -18,9 +18,18 @@
 
   <properties>
     <reactive-streams.version>1.0.0</reactive-streams.version>
+    <pdi-version>$(project.version}</pdi-version>
   </properties>
 
   <dependencies>
+    <!-- Pentaho Dependencies -->
+    <dependency>
+      <groupId>pentaho-kettle</groupId>
+      <artifactId>kettle-core</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+
+    <!-- Third-party dependencies -->
     <dependency>
       <groupId>javax.websocket</groupId>
       <artifactId>javax.websocket-api</artifactId>

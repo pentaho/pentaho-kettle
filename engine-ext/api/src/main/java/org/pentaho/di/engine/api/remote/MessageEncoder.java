@@ -3,7 +3,7 @@
  *
  *  Pentaho Data Integration
  *
- *  Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ *  Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  * ******************************************************************************
  *
@@ -24,18 +24,29 @@
 
 package org.pentaho.di.engine.api.remote;
 
+import org.pentaho.di.core.util.EncodeUtil;
+
 import javax.websocket.EncodeException;
 import javax.websocket.Encoder;
 import javax.websocket.EndpointConfig;
 import java.io.ByteArrayOutputStream;
 import java.io.ObjectOutputStream;
-import java.util.Base64;
 
 /**
+ * A WebSocket encoder that converts AEL Message objects into gziped strings that can be transported across the wire
+ * and used in WebSockets calls.
+ *
+ * This class will be used by WebSockets endpoint when sending webSocket messages.
+ *
  * Created by ccaspanello on 7/20/17.
  */
 public class MessageEncoder implements Encoder.Text<Message> {
-
+  /**
+   * Encode the given AEL Message object into a String.
+   *
+   * @param object the Message object being encoded.
+   * @return the encoded object as a string.
+   */
   @Override
   public String encode( Message object ) throws EncodeException {
     try {
@@ -43,7 +54,7 @@ public class MessageEncoder implements Encoder.Text<Message> {
       ObjectOutputStream oos = new ObjectOutputStream( baos );
       oos.writeObject( object );
       oos.close();
-      return Base64.getEncoder().encodeToString( baos.toByteArray() );
+      return EncodeUtil.encodeBase64Zipped( baos.toByteArray() );
     } catch ( Exception e ) {
       throw new RuntimeException( "Unexpected error trying to encode object.", e );
     }
