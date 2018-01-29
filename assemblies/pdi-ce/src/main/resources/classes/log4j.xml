@@ -41,6 +41,34 @@
       </layout>
    </appender>
 
+   <appender name="trans-appender" class="org.apache.log4j.DailyRollingFileAppender">
+      <param name="File" value="logs/pdi.log"/>
+      <param name="Append" value="true"/>
+     <!-- Rollover at midnight each day -->
+     <param name="DatePattern" value="'.'yyyy-MM-dd"/>
+
+     <!-- Rollover at the top of each hour
+     <param name="DatePattern" value="'.'yyyy-MM-dd-HH"/>
+     -->
+      <layout class="org.apache.log4j.PatternLayout">
+        <param name="ConversionPattern" value="%d{yyyy-MM-dd HH:mm:ss.SSS} &lt;%t&gt; %m%n"/>
+      </layout>
+   </appender>
+   
+   <appender name="job-appender" class="org.apache.log4j.DailyRollingFileAppender">
+      <param name="File" value="logs/pdi.log"/>
+      <param name="Append" value="true"/>
+     <!-- Rollover at midnight each day -->
+     <param name="DatePattern" value="'.'yyyy-MM-dd"/>
+
+     <!-- Rollover at the top of each hour
+     <param name="DatePattern" value="'.'yyyy-MM-dd-HH"/>
+     -->
+      <layout class="org.apache.log4j.PatternLayout">
+        <param name="ConversionPattern" value="%d{yyyy-MM-dd HH:mm:ss.SSS} &lt;%t&gt; %m%n"/>
+      </layout>
+   </appender>
+
    <!-- ================== -->
    <!-- Log4JDBC Appenders -->
    <!-- ================== -->
@@ -121,6 +149,15 @@
       <!--<appender-ref ref="PENTAHOFILE"/>-->
    </root>
 
+   <logger name="org.pentaho.di.trans.Trans" additivity="false">
+    <level value="INFO"/>
+    <appender-ref ref="trans-appender"/>
+   </logger>
+   
+   <logger name="org.pentaho.di.job.Job" additivity="false">
+    <level value="INFO"/>
+    <appender-ref ref="job-appender"/>
+   </logger>
    <!-- ================ -->
    <!-- Log4JDBC Loggers -->
    <!-- ================ -->
