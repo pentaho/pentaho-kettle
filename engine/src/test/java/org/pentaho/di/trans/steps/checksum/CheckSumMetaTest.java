@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -70,7 +70,7 @@ public class CheckSumMetaTest implements InitializerInterface<CheckSumMeta> {
   @Test
   public void testSerialization() throws KettleException {
     List<String> attributes =
-      Arrays.asList( "FieldName", "ResultFieldName", "CheckSumType", "CompatibilityMode", "ResultType" );
+      Arrays.asList( "FieldName", "ResultFieldName", "CheckSumType", "CompatibilityMode", "ResultType", "oldChecksumBehaviour" );
 
     Map<String, String> getterMap = new HashMap<String, String>();
     Map<String, String> setterMap = new HashMap<String, String>();

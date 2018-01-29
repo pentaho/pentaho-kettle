@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -85,6 +85,10 @@ public class CheckSumDialog extends BaseStepDialog implements StepDialogInterfac
   private Label wlCompatibility;
   private Button wCompatibility;
   private FormData fdlCompatibility, fdCompatibility;
+
+  private Label wlOldChecksumBehaviour;
+  private Button wOldChecksumBehaviour;
+  private FormData fdlOldChecksumBehaviour, fdOldChecksumBehaviour;
 
   private ColumnInfo[] colinf;
 
@@ -253,6 +257,30 @@ public class CheckSumDialog extends BaseStepDialog implements StepDialogInterfac
     };
     wCompatibility.addSelectionListener( lsSelR );
 
+    wlOldChecksumBehaviour = new Label( shell, SWT.RIGHT );
+    wlOldChecksumBehaviour.setText( BaseMessages.getString( PKG, "CheckSumDialog.OldChecksumBehaviourMode.Label" ) );
+    props.setLook( wlOldChecksumBehaviour );
+    fdlOldChecksumBehaviour = new FormData();
+    fdlOldChecksumBehaviour.left = new FormAttachment( 0, 0 );
+    fdlOldChecksumBehaviour.top = new FormAttachment( wCompatibility, margin );
+    fdlOldChecksumBehaviour.right = new FormAttachment( middle, -margin );
+    wlOldChecksumBehaviour.setLayoutData( fdlOldChecksumBehaviour );
+    wOldChecksumBehaviour = new Button( shell, SWT.CHECK );
+    wOldChecksumBehaviour.setToolTipText( BaseMessages.getString( PKG, "CheckSumDialog.OldChecksumBehaviourMode.Tooltip" ) );
+    props.setLook( wOldChecksumBehaviour );
+    fdOldChecksumBehaviour = new FormData();
+    fdOldChecksumBehaviour.left = new FormAttachment( middle, 0 );
+    fdOldChecksumBehaviour.top = new FormAttachment( wCompatibility, margin );
+    fdOldChecksumBehaviour.right = new FormAttachment( 100, 0 );
+    wOldChecksumBehaviour.setLayoutData( fdOldChecksumBehaviour );
+    wOldChecksumBehaviour.addSelectionListener( new SelectionAdapter() {
+
+      @Override
+      public void widgetSelected( SelectionEvent e ) {
+        input.setChanged();
+      }
+    } );
+
     // Table with fields
     wlFields = new Label( shell, SWT.NONE );
     wlFields.setText( BaseMessages.getString( PKG, "CheckSumDialog.Fields.Label" ) );
@@ -418,6 +446,7 @@ public class CheckSumDialog extends BaseStepDialog implements StepDialogInterfac
     }
     wResultType.setText( CheckSumMeta.getResultTypeDesc( input.getResultType() ) );
     wCompatibility.setSelection( input.isCompatibilityMode() );
+    wOldChecksumBehaviour.setSelection( input.isOldChecksumBehaviour() );
 
     Table table = wFields.table;
     if ( input.getFieldName().length > 0 ) {
@@ -458,6 +487,7 @@ public class CheckSumDialog extends BaseStepDialog implements StepDialogInterfac
     input.setResultType( CheckSumMeta.getResultTypeByDesc( wResultType.getText() ) );
 
     input.setCompatibilityMode( wCompatibility.getSelection() );
+    input.setOldChecksumBehaviour( wOldChecksumBehaviour.getSelection() );
 
     int nrfields = wFields.nrNonEmpty();
     input.allocate( nrfields );

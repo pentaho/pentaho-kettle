@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,6 +22,7 @@
 
 package org.pentaho.di.trans.steps.checksum;
 
+import java.io.ByteArrayOutputStream;
 import java.security.MessageDigest;
 import java.util.zip.Adler32;
 import java.util.zip.CRC32;
@@ -169,15 +170,32 @@ public class CheckSum extends BaseStep implements StepInterface {
   }
 
   private byte[] createCheckSum( Object[] r ) throws Exception {
-    StringBuilder Buff = new StringBuilder();
+    if ( meta.isOldChecksumBehaviour() ) {
+      StringBuilder Buff = new StringBuilder();
 
-    // Loop through fields
-    for ( int i = 0; i < data.fieldnr; i++ ) {
-      Buff.append( getInputRowMeta().getValueMeta( data.fieldnrs[i] ).getNativeDataType( r[i] ) );
+      // Loop through fields
+      for ( int i = 0; i < data.fieldnr; i++ ) {
+        Buff.append( getInputRowMeta().getValueMeta( data.fieldnrs[i] ).getNativeDataType( r[data.fieldnrs[i]] ) );
+      }
+
+      // Updates the digest using the specified array of bytes
+      data.digest.update( Buff.toString().getBytes() );
+    } else {
+      ByteArrayOutputStream baos = new ByteArrayOutputStream();
+
+      // Loop through fields
+      for ( int i = 0; i < data.fieldnr; i++ ) {
+        if ( getInputRowMeta().getValueMeta( data.fieldnrs[i] ).isBinary() ) {
+          baos.write( getInputRowMeta().getBinary( r, data.fieldnrs[i] ) );
+        } else {
+          baos.write( getInputRowMeta().getValueMeta( data.fieldnrs[i] ).getNativeDataType( r[data.fieldnrs[i]] )
+              .toString().getBytes() );
+        }
+      }
+
+      // Updates the digest using the specified array of bytes
+      data.digest.update( baos.toByteArray() );
     }
-
-    // Updates the digest using the specified array of bytes
-    data.digest.update( Buff.toString().getBytes() );
     // Completes the hash computation by performing final operations such as padding
     byte[] hash = data.digest.digest();
     // After digest has been called, the MessageDigest object is reset to its initialized state
@@ -218,20 +236,37 @@ public class CheckSum extends BaseStep implements StepInterface {
 
   private Long calculCheckSum( Object[] r ) throws Exception {
     Long retval;
-    StringBuilder Buff = new StringBuilder();
+    byte[] byteArray;
+    if ( meta.isOldChecksumBehaviour() ) {
+      StringBuilder Buff = new StringBuilder();
 
-    // Loop through fields
-    for ( int i = 0; i < data.fieldnr; i++ ) {
-      Buff.append( getInputRowMeta().getValueMeta( data.fieldnrs[i] ).getNativeDataType( r[i] ) );
+      // Loop through fields
+      for ( int i = 0; i < data.fieldnr; i++ ) {
+        Buff.append( getInputRowMeta().getValueMeta( data.fieldnrs[i] ).getNativeDataType( r[data.fieldnrs[i]] ) );
+      }
+      byteArray = Buff.toString().getBytes();
+    } else {
+      ByteArrayOutputStream baos = new ByteArrayOutputStream();
+
+      // Loop through fields
+      for ( int i = 0; i < data.fieldnr; i++ ) {
+        if ( getInputRowMeta().getValueMeta( data.fieldnrs[i] ).isBinary() ) {
+          baos.write( getInputRowMeta().getBinary( r, data.fieldnrs[i] ) );
+        } else {
+          baos.write( getInputRowMeta().getValueMeta( data.fieldnrs[i] ).getNativeDataType( r[data.fieldnrs[i]] )
+              .toString().getBytes() );
+        }
+      }
+      byteArray = baos.toByteArray();
     }
 
     if ( meta.getCheckSumType().equals( CheckSumMeta.TYPE_CRC32 ) ) {
       CRC32 crc32 = new CRC32();
-      crc32.update( Buff.toString().getBytes() );
+      crc32.update( byteArray );
       retval = new Long( crc32.getValue() );
     } else {
       Adler32 adler32 = new Adler32();
-      adler32.update( Buff.toString().getBytes() );
+      adler32.update( byteArray );
       retval = new Long( adler32.getValue() );
     }
 
