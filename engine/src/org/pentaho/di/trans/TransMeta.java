@@ -629,16 +629,16 @@ public class TransMeta extends AbstractMeta
         transMeta.clear();
       } else {
         // Clear out the things we're replacing below
-        transMeta.databases = new ArrayList<DatabaseMeta>();
-        transMeta.steps = new ArrayList<StepMeta>();
-        transMeta.hops = new ArrayList<TransHopMeta>();
-        transMeta.notes = new ArrayList<NotePadMeta>();
-        transMeta.dependencies = new ArrayList<TransDependency>();
-        transMeta.partitionSchemas = new ArrayList<PartitionSchema>();
-        transMeta.slaveServers = new ArrayList<SlaveServer>();
-        transMeta.clusterSchemas = new ArrayList<ClusterSchema>();
+        transMeta.databases = new ArrayList<>();
+        transMeta.steps = new ArrayList<>();
+        transMeta.hops = new ArrayList<>();
+        transMeta.notes = new ArrayList<>();
+        transMeta.dependencies = new ArrayList<>();
+        transMeta.partitionSchemas = new ArrayList<>();
+        transMeta.slaveServers = new ArrayList<>();
+        transMeta.clusterSchemas = new ArrayList<>();
         transMeta.namedParams = new NamedParamsDefault();
-        transMeta.stepChangeListeners = new ArrayList<StepMetaChangeListenerInterface>();
+        transMeta.stepChangeListeners = new ArrayList<>();
       }
       for ( DatabaseMeta db : databases ) {
         transMeta.addDatabase( (DatabaseMeta) db.clone() );
@@ -699,12 +699,12 @@ public class TransMeta extends AbstractMeta
   @Override
   public void clear() {
     setObjectId( null );
-    steps = new ArrayList<StepMeta>();
-    hops = new ArrayList<TransHopMeta>();
-    dependencies = new ArrayList<TransDependency>();
-    partitionSchemas = new ArrayList<PartitionSchema>();
-    clusterSchemas = new ArrayList<ClusterSchema>();
-    stepChangeListeners = new ArrayList<StepMetaChangeListenerInterface>();
+    steps = new ArrayList<>();
+    hops = new ArrayList<>();
+    dependencies = new ArrayList<>();
+    partitionSchemas = new ArrayList<>();
+    clusterSchemas = new ArrayList<>();
+    stepChangeListeners = new ArrayList<>();
 
     slaveStepCopyPartitionDistribution = new SlaveStepCopyPartitionDistribution();
 
@@ -727,11 +727,11 @@ public class TransMeta extends AbstractMeta
 
     maxDateDifference = 0.0;
 
-    undo = new ArrayList<TransAction>();
+    undo = new ArrayList<>();
     max_undo = Const.MAX_UNDO;
     undo_position = -1;
 
-    counters = new Hashtable<String, Counter>();
+    counters = new Hashtable<>();
     resultRows = null;
 
     super.clear();
@@ -739,8 +739,8 @@ public class TransMeta extends AbstractMeta
     // LOAD THE DATABASE CACHE!
     dbCache = DBCache.getInstance();
 
-    resultRows = new ArrayList<RowMetaAndData>();
-    resultFiles = new ArrayList<ResultFile>();
+    resultRows = new ArrayList<>();
+    resultFiles = new ArrayList<>();
 
     feedbackShown = true;
     feedbackSize = Const.ROWS_UPDATE;
@@ -757,9 +757,9 @@ public class TransMeta extends AbstractMeta
     stepPerformanceCapturingDelay = 1000; // every 1 seconds
     stepPerformanceCapturingSizeLimit = "100"; // maximum 100 data points
 
-    stepsFieldsCache = new HashMap<String, RowMetaInterface>();
-    loopCache = new HashMap<String, Boolean>();
-    previousStepCache = new HashMap<StepMeta, List<StepMeta>>();
+    stepsFieldsCache = new HashMap<>();
+    loopCache = new HashMap<>();
+    previousStepCache = new HashMap<>();
     transformationType = TransformationType.Normal;
 
     log = LogChannel.GENERAL;
@@ -1076,7 +1076,7 @@ public class TransMeta extends AbstractMeta
    * @return a list with all the used steps
    */
   public List<StepMeta> getUsedSteps() {
-    List<StepMeta> list = new ArrayList<StepMeta>();
+    List<StepMeta> list = new ArrayList<>();
 
     for ( StepMeta stepMeta : steps ) {
       if ( isStepUsedInTransHops( stepMeta ) ) {
@@ -1430,7 +1430,7 @@ public class TransMeta extends AbstractMeta
     List<StepMeta> previousSteps;
     previousSteps = previousStepCache.get( stepMeta );
     if ( previousSteps == null ) {
-      previousSteps = new ArrayList<StepMeta>();
+      previousSteps = new ArrayList<>();
       for ( TransHopMeta hi : hops ) {
         if ( hi.getToStep() != null && hi.isEnabled() && hi.getToStep().equals( stepMeta ) ) {
           // Check if this previous step isn't informative (StreamValueLookup)
@@ -1596,7 +1596,7 @@ public class TransMeta extends AbstractMeta
     List<StepMeta> prevSteps;
     prevSteps = previousStepCache.get(  stepMeta );
     if ( prevSteps == null ) {
-      prevSteps = new ArrayList<StepMeta>();
+      prevSteps = new ArrayList<>();
       for ( int i = 0; i < nrTransHops(); i++ ) { // Look at all the hops;
         TransHopMeta hopMeta = getTransHop( i );
         if ( hopMeta.isEnabled() && hopMeta.getToStep().equals( stepMeta ) ) {
@@ -1646,7 +1646,7 @@ public class TransMeta extends AbstractMeta
    */
   @Deprecated
   public StepMeta[] getNextSteps( StepMeta stepMeta ) {
-    List<StepMeta> nextSteps = new ArrayList<StepMeta>();
+    List<StepMeta> nextSteps = new ArrayList<>();
     for ( int i = 0; i < nrTransHops(); i++ ) { // Look at all the hops;
 
       TransHopMeta hi = getTransHop( i );
@@ -1666,7 +1666,7 @@ public class TransMeta extends AbstractMeta
    * @return an array of succeeding steps.
    */
   public List<StepMeta> findNextSteps( StepMeta stepMeta ) {
-    List<StepMeta> nextSteps = new ArrayList<StepMeta>();
+    List<StepMeta> nextSteps = new ArrayList<>();
     for ( int i = 0; i < nrTransHops(); i++ ) { // Look at all the hops;
 
       TransHopMeta hi = getTransHop( i );
@@ -1808,6 +1808,7 @@ public class TransMeta extends AbstractMeta
    *           the kettle step exception
    */
   public RowMetaInterface getStepFields( StepMeta stepMeta, ProgressMonitorListener monitor ) throws KettleStepException {
+    clearStepFieldsCache();
     setRepositoryOnMappingSteps();
     return getStepFields( stepMeta, null, monitor );
   }
@@ -1958,7 +1959,7 @@ public class TransMeta extends AbstractMeta
    *           the kettle step exception
    */
   public RowMetaInterface getPrevStepFields( StepMeta stepMeta, ProgressMonitorListener monitor ) throws KettleStepException {
-
+    clearStepFieldsCache();
     RowMetaInterface row = new RowMeta();
 
     if ( stepMeta == null ) {
@@ -2984,7 +2985,7 @@ public class TransMeta extends AbstractMeta
 
         // Handle connections
         int n = XMLHandler.countNodes( transnode, DatabaseMeta.XML_TAG );
-        Set<String> privateTransformationDatabases = new HashSet<String>( n );
+        Set<String> privateTransformationDatabases = new HashSet<>( n );
         if ( log.isDebug() ) {
           log.logDebug( BaseMessages.getString( PKG, "TransMeta.Log.WeHaveConnections", String.valueOf( n ) ) );
         }
@@ -3500,7 +3501,7 @@ public class TransMeta extends AbstractMeta
    * @return A List of steps
    */
   public List<StepMeta> getTransHopSteps( boolean all ) {
-    List<StepMeta> st = new ArrayList<StepMeta>();
+    List<StepMeta> st = new ArrayList<>();
     int idx;
 
     for ( int x = 0; x < nrTransHops(); x++ ) {
@@ -3780,7 +3781,7 @@ public class TransMeta extends AbstractMeta
    * @return The selected step locations.
    */
   public Point[] getSelectedStepLocations() {
-    List<Point> points = new ArrayList<Point>();
+    List<Point> points = new ArrayList<>();
 
     for ( StepMeta stepMeta : getSelectedSteps() ) {
       Point p = stepMeta.getLocation();
@@ -3796,7 +3797,7 @@ public class TransMeta extends AbstractMeta
    * @return The selected note locations.
    */
   public Point[] getSelectedNoteLocations() {
-    List<Point> points = new ArrayList<Point>();
+    List<Point> points = new ArrayList<>();
 
     for ( NotePadMeta ni : getSelectedNotes() ) {
       Point p = ni.getLocation();
@@ -3812,7 +3813,7 @@ public class TransMeta extends AbstractMeta
    * @return A list of all the selected steps.
    */
   public List<StepMeta> getSelectedSteps() {
-    List<StepMeta> selection = new ArrayList<StepMeta>();
+    List<StepMeta> selection = new ArrayList<>();
     for ( StepMeta stepMeta : steps ) {
       if ( stepMeta.isSelected() ) {
         selection.add( stepMeta );
@@ -4045,15 +4046,15 @@ public class TransMeta extends AbstractMeta
 
     // First create a map where all the previous steps of another step are kept...
     //
-    final Map<StepMeta, Map<StepMeta, Boolean>> stepMap = new HashMap<StepMeta, Map<StepMeta, Boolean>>();
+    final Map<StepMeta, Map<StepMeta, Boolean>> stepMap = new HashMap<>();
 
     // Also cache the previous steps
     //
-    final Map<StepMeta, List<StepMeta>> previousCache = new HashMap<StepMeta, List<StepMeta>>();
+    final Map<StepMeta, List<StepMeta>> previousCache = new HashMap<>();
 
     // Cache calculation of steps before another
     //
-    Map<StepMeta, Map<StepMeta, Boolean>> beforeCache = new HashMap<StepMeta, Map<StepMeta, Boolean>>();
+    Map<StepMeta, Map<StepMeta, Boolean>> beforeCache = new HashMap<>();
 
     for ( StepMeta stepMeta : steps ) {
       // What are the previous steps? (cached version for performance)
@@ -4125,7 +4126,7 @@ public class TransMeta extends AbstractMeta
     //
     Map<StepMeta, Boolean> beforeMap = beforeCache.get( previousStepMeta );
     if ( beforeMap == null ) {
-      beforeMap = new HashMap<StepMeta, Boolean>();
+      beforeMap = new HashMap<>();
     } else {
       return beforeMap; // Nothing left to do here!
     }
@@ -4280,7 +4281,7 @@ public class TransMeta extends AbstractMeta
     if ( monitor != null ) {
       monitor.beginTask( BaseMessages.getString( PKG, "TransMeta.Monitor.GettingTheSQLForTransformationTask.Title" ), nrSteps() + 1 );
     }
-    List<SQLStatement> stats = new ArrayList<SQLStatement>();
+    List<SQLStatement> stats = new ArrayList<>();
 
     for ( int i = 0; i < nrSteps(); i++ ) {
       StepMeta stepMeta = getStep( i );
@@ -4416,7 +4417,7 @@ public class TransMeta extends AbstractMeta
     try {
       remarks.clear(); // Start with a clean slate...
 
-      Map<ValueMetaInterface, String> values = new Hashtable<ValueMetaInterface, String>();
+      Map<ValueMetaInterface, String> values = new Hashtable<>();
       String[] stepnames;
       StepMeta[] steps;
       List<StepMeta> selectedSteps = getSelectedSteps();
@@ -5027,7 +5028,7 @@ public class TransMeta extends AbstractMeta
    * @return A row with the used arguments (and their values) in it.
    */
   public Map<String, String> getUsedArguments( String[] arguments ) {
-    Map<String, String> transArgs = new HashMap<String, String>();
+    Map<String, String> transArgs = new HashMap<>();
 
     for ( int i = 0; i < nrSteps(); i++ ) {
       StepMetaInterface smi = getStep( i ).getStepMetaInterface();
@@ -5141,7 +5142,7 @@ public class TransMeta extends AbstractMeta
    */
   public List<StringSearchResult> getStringList( boolean searchSteps, boolean searchDatabases, boolean searchNotes,
       boolean includePasswords ) {
-    List<StringSearchResult> stringList = new ArrayList<StringSearchResult>();
+    List<StringSearchResult> stringList = new ArrayList<>();
 
     if ( searchSteps ) {
       // Loop over all steps in the transformation and see what the used vars are...
@@ -5236,7 +5237,7 @@ public class TransMeta extends AbstractMeta
     // Get the list of Strings.
     List<StringSearchResult> stringList = getStringList( true, true, false, true );
 
-    List<String> varList = new ArrayList<String>();
+    List<String> varList = new ArrayList<>();
 
     // Look around in the strings, see what we find...
     for ( int i = 0; i < stringList.size(); i++ ) {
@@ -5503,7 +5504,7 @@ public class TransMeta extends AbstractMeta
       SharedObjects sharedObjects = new SharedObjects( soFile );
 
       // Now overwrite the objects in there
-      List<SharedObjectInterface> shared = new ArrayList<SharedObjectInterface>();
+      List<SharedObjectInterface> shared = new ArrayList<>();
       shared.addAll( databases );
       shared.addAll( steps );
       shared.addAll( partitionSchemas );
@@ -5752,7 +5753,7 @@ public class TransMeta extends AbstractMeta
    * @return a list of ResourceReferences
    */
   public List<ResourceReference> getResourceDependencies() {
-    List<ResourceReference> resourceReferences = new ArrayList<ResourceReference>();
+    List<ResourceReference> resourceReferences = new ArrayList<>();
 
     for ( StepMeta stepMeta : steps ) {
       resourceReferences.addAll( stepMeta.getResourceDependencies( this ) );
@@ -5988,7 +5989,7 @@ public class TransMeta extends AbstractMeta
    * Clears the step fields and loop caches.
    */
   public void clearCaches() {
-    clearStepFieldsCachce();
+    clearStepFieldsCache();
     clearLoopCache();
     clearPreviousStepCache();
   }
@@ -5996,7 +5997,7 @@ public class TransMeta extends AbstractMeta
   /**
    * Clears the step fields cachce.
    */
-  private void clearStepFieldsCachce() {
+  private void clearStepFieldsCache() {
     stepsFieldsCache.clear();
   }
 
@@ -6116,7 +6117,7 @@ public class TransMeta extends AbstractMeta
    * @return a list of LogTableInterfaces for the transformation
    */
   public List<LogTableInterface> getLogTables() {
-    List<LogTableInterface> logTables = new ArrayList<LogTableInterface>();
+    List<LogTableInterface> logTables = new ArrayList<>();
     logTables.add( transLogTable );
     logTables.add( stepLogTable );
     logTables.add( performanceLogTable );
@@ -6302,7 +6303,7 @@ public class TransMeta extends AbstractMeta
 
   public void addMissingTrans( MissingTrans trans ) {
     if ( missingTrans == null ) {
-      missingTrans = new ArrayList<MissingTrans>();
+      missingTrans = new ArrayList<>();
     }
     missingTrans.add( trans );
   }

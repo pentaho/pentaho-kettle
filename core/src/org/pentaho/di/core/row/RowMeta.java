@@ -85,7 +85,7 @@ public class RowMeta implements RowMetaInterface {
     lock = new ReentrantReadWriteLock();
     this.cache = rowMetaCache;
     this.valueMetaList = valueMetaList;
-    this.needRealClone = new ArrayList<Integer>();
+    this.needRealClone = new ArrayList<>();
   }
 
   @Override
@@ -148,7 +148,7 @@ public class RowMeta implements RowMetaInterface {
 
     lock.readLock().lock();
     try {
-      copy = new ArrayList<ValueMetaInterface>( valueMetaList );
+      copy = new ArrayList<>( valueMetaList );
     } finally {
       lock.readLock().unlock();
     }
@@ -481,7 +481,7 @@ public class RowMeta implements RowMetaInterface {
     try {
       if ( needRealClone == null ) {
         int len = values.size();
-        needRealClone = new ArrayList<Integer>( len );
+        needRealClone = new ArrayList<>( len );
         for ( int i = 0; i < len; i++ ) {
           ValueMetaInterface valueMeta = values.get( i );
           if ( valueMeta.requiresRealClone() ) {
@@ -544,6 +544,7 @@ public class RowMeta implements RowMetaInterface {
           // but it makes no harm as they will put the same value,
           // because valueMetaList is defended from modifications by read lock
           cache.storeMapping( valueName, index );
+          needRealClone = null;
         }
       }
       if ( index == null ) {
@@ -1267,7 +1268,7 @@ public class RowMeta implements RowMetaInterface {
      * @param rowMetaCache
      */
     RowMetaCache( RowMetaCache rowMetaCache ) {
-      this( new ConcurrentHashMap<String, Integer>( rowMetaCache.mapping ) );
+      this( new ConcurrentHashMap<>( rowMetaCache.mapping ) );
     }
 
     RowMetaCache( Map<String, Integer> mapping ) {
