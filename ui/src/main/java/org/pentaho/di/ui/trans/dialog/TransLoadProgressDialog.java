@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -27,6 +27,7 @@ import java.lang.reflect.InvocationTargetException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.pentaho.di.core.ProgressMonitorAdapter;
 import org.pentaho.di.core.exception.KettleException;
@@ -109,12 +110,14 @@ public class TransLoadProgressDialog {
           ExtensionPointHandler.callExtensionPoint( spoon.getLog(), KettleExtensionPoint.TransAfterOpen.id, transInfo );
           if ( transInfo.hasMissingPlugins() ) {
             StepMeta stepMeta = transInfo.getStep( 0 );
-            MissingTransDialog missingTransDialog =
+            Display.getDefault().syncExec( () -> {
+              MissingTransDialog missingTransDialog =
                 new MissingTransDialog( shell, transInfo.getMissingTrans(), stepMeta.getStepMetaInterface(), transInfo,
-                    stepMeta.getName() );
-            if ( missingTransDialog.open() == null ) {
-              transInfo = null;
-            }
+                  stepMeta.getName() );
+              if ( missingTransDialog.open() == null ) {
+                transInfo = null;
+              }
+            } );
           }
         } catch ( KettleException e ) {
           throw new InvocationTargetException( e, BaseMessages.getString(
