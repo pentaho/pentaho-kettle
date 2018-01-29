@@ -3,7 +3,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -460,6 +460,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
   public PropsUI props;
 
   public Repository rep;
+  private String repositoryName;
 
   // private RepositorySecurityManager securityManager;
 
@@ -3341,10 +3342,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
   }
 
   public String getRepositoryName() {
-    if ( rep == null ) {
-      return null;
-    }
-    return rep.getName();
+    return repositoryName;
   }
 
   public String getUsername() {
@@ -8649,6 +8647,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
 
   public void setRepository( Repository rep ) {
     this.rep = rep;
+    this.repositoryName = rep != null ? rep.getName() : null;
     try {
 
       // Keep one metastore here...
@@ -8690,6 +8689,10 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     }
     delegates.update( this );
     enableMenus();
+  }
+
+  public void setRepositoryName( String repoName ) {
+    this.repositoryName = repoName;
   }
 
   public void addMenuListener( String id, Object listener, String methodName ) {

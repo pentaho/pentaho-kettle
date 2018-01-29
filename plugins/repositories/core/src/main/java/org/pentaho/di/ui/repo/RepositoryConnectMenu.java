@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -113,6 +113,7 @@ public class RepositoryConnectMenu {
     }
     render();
     update();
+    spoon.setShellText();
   }
 
   private void renderConnectButton() {
@@ -140,7 +141,7 @@ public class RepositoryConnectMenu {
             String truncatedName = truncateName( repositoriesMeta.getRepository( i ).getName() );
             item.setText( truncatedName );
             item.setData( repositoriesMeta.getRepository( i ).getName() );
-            if ( spoon.rep != null && spoon.rep.getName().equals( repositoriesMeta.getRepository( i ).getName() ) ) {
+            if ( spoon.rep != null && spoon.getRepositoryName().equals( repositoriesMeta.getRepository( i ).getName() ) ) {
               item.setSelection( true );
               continue;
             }
@@ -180,6 +181,10 @@ public class RepositoryConnectMenu {
           @Override
           public void widgetSelected( SelectionEvent selectionEvent ) {
             new RepositoryDialog( spoon.getShell(), repoConnectController ).openManager();
+            RepositoryMeta connected = repoConnectController.getConnectedRepository();
+            if ( connected != null ) {
+              spoon.setRepositoryName( connected.getName() );
+            }
             renderAndUpdate();
           }
         } );
