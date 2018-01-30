@@ -648,10 +648,10 @@ public class MetaInjectMeta extends BaseStepMeta implements StepMetaInterface, S
           metaStore );
 
       // To get a relative path to it, we inject
-      // ${Internal.Transformation.Filename.Directory}
+      // ${Internal.Entry.Current.Directory}
       //
       String newFilename =
-        "${" + Const.INTERNAL_VARIABLE_TRANSFORMATION_FILENAME_DIRECTORY + "}/" + proposedNewFilename;
+        "${" + Const.INTERNAL_VARIABLE_ENTRY_CURRENT_DIRECTORY + "}/" + proposedNewFilename;
 
       // Set the correct filename inside the XML.
       //
