@@ -1485,9 +1485,9 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
     String proposedNewFilename =
       transMeta.exportResources( transMeta, definitions, namingInterface, repository, metaStore );
 
-    // To get a relative path to it, we inject ${Internal.Job.Filename.Directory}
+    // To get a relative path to it, we inject ${Internal.Entry.Current.Directory}
     //
-    String newFilename = "${" + Const.INTERNAL_VARIABLE_JOB_FILENAME_DIRECTORY + "}/" + proposedNewFilename;
+    String newFilename = "${" + Const.INTERNAL_VARIABLE_ENTRY_CURRENT_DIRECTORY + "}/" + proposedNewFilename;
 
     // Set the correct filename inside the XML.
     //
