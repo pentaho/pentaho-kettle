@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -30,12 +30,14 @@ import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.doReturn;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
+import java.util.Map;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -43,6 +45,7 @@ import javax.xml.parsers.ParserConfigurationException;
 
 import org.junit.Test;
 import org.pentaho.di.cluster.SlaveServer;
+import org.pentaho.di.core.Const;
 import org.pentaho.di.core.ObjectLocationSpecificationMethod;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.database.DatabaseMeta;
@@ -53,6 +56,8 @@ import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.job.Job;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.repository.Repository;
+import org.pentaho.di.resource.ResourceNamingInterface;
+import org.pentaho.di.trans.TransMeta;
 import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
@@ -197,5 +202,23 @@ public class JobEntryTransTest {
     jet.setParentJobMeta( null );
     verify( meta, times( 1 ) ).addCurrentDirectoryChangedListener( any() );
     verify( meta, times( 1 ) ).removeCurrentDirectoryChangedListener( any() );
+  }
+
+  @Test
+  public void testExportResources() throws KettleException {
+    JobEntryTrans jobEntryTrans = spy( getJobEntryTrans() );
+    TransMeta transMeta = mock( TransMeta.class );
+
+    String testName = "test";
+
+    doReturn( transMeta ).when( jobEntryTrans ).getTransMeta( any( Repository.class ),
+            any( VariableSpace.class ) );
+    when( transMeta.exportResources( any( TransMeta.class ), any( Map.class ), any( ResourceNamingInterface.class ),
+            any( Repository.class ), any( IMetaStore.class ) ) ).thenReturn( testName );
+
+    jobEntryTrans.exportResources( null, null, null, null, null );
+
+    verify( transMeta ).setFilename( "${" + Const.INTERNAL_VARIABLE_ENTRY_CURRENT_DIRECTORY + "}/" + testName );
+    verify( jobEntryTrans ).setSpecificationMethod( ObjectLocationSpecificationMethod.FILENAME );
   }
 }

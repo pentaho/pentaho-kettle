@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -107,7 +107,7 @@ public class AutoDocMeta extends BaseStepMeta implements StepMetaInterface, Auto
   @Override
   public void setDefault() {
     outputType = OutputType.PDF;
-    targetFilename = "${Internal.Transformation.Filename.Directory}/kettle-autodoc.pdf";
+    targetFilename = "${Internal.Entry.Current.Directory}/kettle-autodoc.pdf";
     includingName = true;
     includingDescription = true;
     includingExtendedDescription = true;

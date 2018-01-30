@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -68,7 +68,7 @@ public class MetaInjectMetaTest {
   private static final String TEST_FILE_NAME = "TEST_FILE_NAME";
 
   private static final String EXPORTED_FILE_NAME =
-      "${" + Const.INTERNAL_VARIABLE_TRANSFORMATION_FILENAME_DIRECTORY + "}/" + TEST_FILE_NAME;
+      "${" + Const.INTERNAL_VARIABLE_ENTRY_CURRENT_DIRECTORY + "}/" + TEST_FILE_NAME;
 
   private MetaInjectMeta metaInjectMeta;
 
