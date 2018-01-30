@@ -34,10 +34,10 @@ import org.pentaho.di.trans.steps.TransStepUtil;
 import org.pentaho.di.trans.steps.transexecutor.TransExecutorData;
 import org.pentaho.di.trans.steps.transexecutor.TransExecutorParameters;
 
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Will run the given sub-transformation with the rows passed to execute
@@ -59,7 +59,7 @@ public class SubtransExecutor {
     this.shareVariables = shareVariables;
     this.transExecutorData = transExecutorData;
     this.parameters = parameters;
-    this.statuses = new ConcurrentHashMap<>();
+    this.statuses = new LinkedHashMap<>();
   }
 
   public Optional<Result> execute( List<RowMetaAndData> rows ) throws KettleException {
@@ -82,6 +82,12 @@ public class SubtransExecutor {
     subtrans.startThreads();
 
     subtrans.waitUntilFinished();
+    updateStatuses( subtrans );
+
+    return Optional.of( subtrans.getResult() );
+  }
+
+  private synchronized void updateStatuses( Trans subtrans ) {
     List<StepMetaDataCombi> steps = subtrans.getSteps();
     for ( StepMetaDataCombi combi : steps ) {
       StepStatus stepStatus;
@@ -97,8 +103,6 @@ public class SubtransExecutor {
         stepStatus.setStatusDescription( StepExecutionStatus.STATUS_RUNNING.getDescription() );
       }
     }
-
-    return Optional.of( subtrans.getResult() );
   }
 
   private Trans createSubtrans() {
