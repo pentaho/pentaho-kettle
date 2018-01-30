@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -1515,6 +1515,8 @@ public class SalesforceInputDialog extends SalesforceStepDialog {
       item.setText( 4, "Number" );
     } else if ( fieldType.equals( "int" ) ) {
       item.setText( 4, "Integer" );
+    } else if ( fieldType.equals( "base64" ) ) {
+      item.setText( 4, "Binary" );
     } else {
       item.setText( 4, "String" );
     }
