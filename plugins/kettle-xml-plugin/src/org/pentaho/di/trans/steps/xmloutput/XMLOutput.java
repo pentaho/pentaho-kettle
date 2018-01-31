@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -63,6 +63,8 @@ public class XMLOutput extends BaseStep implements StepInterface {
   private XMLOutputMeta meta;
 
   private XMLOutputData data;
+
+  private OutputStream outputStream;
 
   public XMLOutput( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta, Trans trans ) {
     super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
@@ -280,7 +282,6 @@ public class XMLOutput extends BaseStep implements StepInterface {
           addResultFile( resultFile );
         }
 
-        OutputStream outputStream;
         if ( meta.isZipped() ) {
           OutputStream fos = KettleVFS.getOutputStream( file, false );
           data.zip = new ZipOutputStream( fos );
@@ -290,8 +291,7 @@ public class XMLOutput extends BaseStep implements StepInterface {
           data.zip.putNextEntry( zipentry );
           outputStream = data.zip;
         } else {
-          OutputStream fos = KettleVFS.getOutputStream( file, false );
-          outputStream = fos;
+          outputStream = KettleVFS.getOutputStream( file, false );
         }
         if ( meta.getEncoding() != null && meta.getEncoding().length() > 0 ) {
           logBasic( "Opening output stream in encoding: " + meta.getEncoding() );
@@ -324,6 +324,14 @@ public class XMLOutput extends BaseStep implements StepInterface {
     return retval;
   }
 
+  void closeOutputStream( OutputStream stream ) {
+    try {
+      stream.close();
+    } catch ( Exception e ) {
+      logError( "Error closing output stream : " + e.toString() );
+    }
+  }
+
   private boolean closeFile() {
     boolean retval = false;
     if ( data.OpenedNewFile ) {
@@ -344,6 +352,8 @@ public class XMLOutput extends BaseStep implements StepInterface {
           data.zip.finish();
           data.zip.close();
         }
+
+        closeOutputStream( outputStream );
 
         retval = true;
       } catch ( Exception e ) {
