@@ -83,7 +83,7 @@
     <bahir.version>2.1.1</bahir.version>
     <tyrus-standalone-client.version>1.13.1</tyrus-standalone-client.version>
     <spark.version>2.1.0</spark.version>
-    <databricks.version>3.2.0</databricks.version>
+    <databricks.version>4.0.0</databricks.version>
 
     <!-- plugins -->
     <pdi-core-plugin.version>${project.version}</pdi-core-plugin.version>
