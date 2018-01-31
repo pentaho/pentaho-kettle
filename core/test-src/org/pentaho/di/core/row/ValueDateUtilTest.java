@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -27,8 +27,12 @@ import org.junit.Before;
 import org.junit.Test;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleValueException;
+import org.pentaho.di.core.row.value.ValueMetaBigNumber;
 import org.pentaho.di.core.row.value.ValueMetaDate;
+import org.pentaho.di.core.row.value.ValueMetaInteger;
+import org.pentaho.di.core.row.value.ValueMetaNumber;
 
+import java.math.BigDecimal;
 import java.util.Calendar;
 import java.util.TimeZone;
 
@@ -222,6 +226,87 @@ public class ValueDateUtilTest {
     endDate.setTimeInMillis( 1262217600000L );     // 2009-12-31 00:00:00
     Object workingDayOfDEC = ValueDataUtil.DateWorkingDiff( metaA, endDate.getTime(), metaB, startDate.getTime() );
     assertEquals( "Working days count in DEC ", 23L, workingDayOfDEC );
+  }
+
+  @Test
+  public void testPercent2() throws KettleValueException {
+    ValueMetaInterface metaNumberA = createValueMeta( "metaA", ValueMetaInterface.TYPE_NUMBER );
+    ValueMetaInterface metaIntA = createValueMeta( "metaB", ValueMetaInterface.TYPE_INTEGER );
+    ValueMetaInterface metaBigNumA = createValueMeta( "metaC", ValueMetaInterface.TYPE_BIGNUMBER );
+    ValueMetaInterface metaNumberB = createValueMeta( "metaA", ValueMetaInterface.TYPE_NUMBER );
+    ValueMetaInterface metaIntB = createValueMeta( "metaB", ValueMetaInterface.TYPE_INTEGER );
+    ValueMetaInterface metaBigNumB = createValueMeta( "metaC", ValueMetaInterface.TYPE_BIGNUMBER );
+    // Test Kettle number types
+    assertEquals( Double.valueOf( "0.99" ), ValueDataUtil.percent2( metaNumberA, Double.valueOf( "1" ), metaNumberB, Double.valueOf( "1" ) ) );
+    assertEquals( Double.valueOf( "1.96" ), ValueDataUtil.percent2( metaNumberA, Double.valueOf( "2" ), metaNumberB, Double.valueOf( "2" ) ) );
+    assertEquals( Double.valueOf( "8.0" ), ValueDataUtil.percent2( metaNumberA, Double.valueOf( "10" ), metaNumberB, Double.valueOf( "20" ) ) );
+    assertEquals( Double.valueOf( "50.0" ), ValueDataUtil.percent2( metaNumberA, Double.valueOf( "100" ), metaNumberB, Double.valueOf( "50" ) ) );
+
+    // Test Kettle Integer (Java Long) types
+    assertEquals( Long.valueOf( "1" ), ValueDataUtil.percent2( metaIntA, Long.valueOf( "1" ), metaIntB, Long.valueOf( "1" ) ) );
+    assertEquals( Long.valueOf( "2" ), ValueDataUtil.percent2( metaIntA, Long.valueOf( "2" ), metaIntB, Long.valueOf( "2" ) ) );
+    assertEquals( Long.valueOf( "8" ), ValueDataUtil.percent2( metaIntA, Long.valueOf( "10" ), metaIntB, Long.valueOf( "20" ) ) );
+    assertEquals( Long.valueOf( "50" ), ValueDataUtil.percent2( metaIntA, Long.valueOf( "100" ), metaIntB, Long.valueOf( "50" ) ) );
+
+    // Test Kettle big Number types
+    assertEquals( BigDecimal.valueOf( Double.valueOf( "0.99" ) ),
+      ValueDataUtil.percent2( metaBigNumA, new BigDecimal( "1" ), metaBigNumB, new BigDecimal( "1" ) ) );
+    assertEquals( BigDecimal.valueOf( Double.valueOf( "1.96" ) ),
+      ValueDataUtil.percent2( metaBigNumA, new BigDecimal( "2" ), metaBigNumB, new BigDecimal( "2" ) ) );
+    assertEquals( new BigDecimal( "8" ),
+      ValueDataUtil.percent2( metaBigNumA, new BigDecimal( "10" ), metaBigNumB, new BigDecimal( "20" ) ) );
+    assertEquals( new BigDecimal( "50" ),
+      ValueDataUtil.percent2( metaBigNumA, new BigDecimal( "100" ), metaBigNumB, new BigDecimal( "50" ) ) );
+  }
+
+  @Test
+  public void testPercent3() throws KettleValueException {
+    ValueMetaInterface metaNumberA = createValueMeta( "metaA", ValueMetaInterface.TYPE_NUMBER );
+    ValueMetaInterface metaIntA = createValueMeta( "metaB", ValueMetaInterface.TYPE_INTEGER );
+    ValueMetaInterface metaBigNumA = createValueMeta( "metaC", ValueMetaInterface.TYPE_BIGNUMBER );
+    ValueMetaInterface metaNumberB = createValueMeta( "metaA", ValueMetaInterface.TYPE_NUMBER );
+    ValueMetaInterface metaIntB = createValueMeta( "metaB", ValueMetaInterface.TYPE_INTEGER );
+    ValueMetaInterface metaBigNumB = createValueMeta( "metaC", ValueMetaInterface.TYPE_BIGNUMBER );
+
+    // Test Kettle number types
+    assertEquals( Double.valueOf( "1.01" ), ValueDataUtil.percent3( metaNumberA, Double.valueOf( "1" ), metaNumberB, Double.valueOf( "1" ) ) );
+    assertEquals( Double.valueOf( "2.04" ), ValueDataUtil.percent3( metaNumberA, Double.valueOf( "2" ), metaNumberB, Double.valueOf( "2" ) ) );
+    assertEquals( Double.valueOf( "12.0" ), ValueDataUtil.percent3( metaNumberA, Double.valueOf( "10" ), metaNumberB, Double.valueOf( "20" ) ) );
+    assertEquals( Double.valueOf( "150.0" ), ValueDataUtil.percent3( metaNumberA, Double.valueOf( "100" ), metaNumberB, Double.valueOf( "50" ) ) );
+
+    // Test Kettle Integer (Java Long) types
+    assertEquals( Long.valueOf( "1" ), ValueDataUtil.percent3( metaIntA, Long.valueOf( "1" ), metaIntB, Long.valueOf( "1" ) ) );
+    assertEquals( Long.valueOf( "2" ), ValueDataUtil.percent3( metaIntA, Long.valueOf( "2" ), metaIntB, Long.valueOf( "2" ) ) );
+    assertEquals( Long.valueOf( "12" ), ValueDataUtil.percent3( metaIntA, Long.valueOf( "10" ), metaIntB, Long.valueOf( "20" ) ) );
+    assertEquals( Long.valueOf( "150" ), ValueDataUtil.percent3( metaIntA, Long.valueOf( "100" ), metaIntB, Long.valueOf( "50" ) ) );
+
+    // Test Kettle big Number types
+    assertEquals( BigDecimal.valueOf( Double.valueOf( "1.01" ) ),
+      ValueDataUtil.percent3( metaBigNumA, new BigDecimal( "1" ), metaBigNumB, new BigDecimal( "1" ) ) );
+    assertEquals( BigDecimal.valueOf( Double.valueOf( "2.04" ) ),
+      ValueDataUtil.percent3( metaBigNumA, new BigDecimal( "2" ), metaBigNumB, new BigDecimal( "2" ) ) );
+    assertEquals( new BigDecimal( "12" ),
+      ValueDataUtil.percent3( metaBigNumA, new BigDecimal( "10" ), metaBigNumB, new BigDecimal( "20" ) ) );
+    assertEquals( new BigDecimal( "150" ),
+      ValueDataUtil.percent3( metaBigNumA, new BigDecimal( "100" ), metaBigNumB, new BigDecimal( "50" ) ) );
+  }
+
+  private ValueMetaInterface createValueMeta( String name, int valueType ) {
+    ValueMetaInterface meta;
+    switch ( valueType ) {
+      case ValueMetaInterface.TYPE_NUMBER:
+        meta = new ValueMetaNumber();
+        break;
+      case ValueMetaInterface.TYPE_INTEGER:
+        meta = new ValueMetaInteger();
+        break;
+      case ValueMetaInterface.TYPE_BIGNUMBER:
+        meta = new ValueMetaBigNumber();
+        break;
+      default: return null;
+    }
+    meta.setName( name );
+    return meta;
   }
 
 }
