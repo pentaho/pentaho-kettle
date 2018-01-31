@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -21,9 +21,6 @@
  ******************************************************************************/
 
 package org.pentaho.di.ui.core.widget;
-
-import java.util.LinkedList;
-import java.util.List;
 
 import org.eclipse.jface.fieldassist.ControlDecoration;
 import org.eclipse.swt.SWT;
@@ -52,15 +49,22 @@ import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.FillLayout;
+import org.eclipse.swt.layout.FormAttachment;
+import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.i18n.BaseMessages;
+import org.pentaho.di.ui.core.FormDataBuilder;
 import org.pentaho.di.ui.core.PropsUI;
 import org.pentaho.di.ui.core.gui.GUIResource;
+
+import java.util.LinkedList;
+import java.util.List;
 
 public class StyledTextComp extends Composite {
   private static Class<?> PKG = StyledTextComp.class; // for i18n purposes, needed by Translator2!!
@@ -74,16 +78,23 @@ public class StyledTextComp extends Composite {
   private Menu styledTextPopupmenu;
   private String strTabName;
   private Composite xParent;
+  private Image image;
 
   private KeyListener kls;
   private VariableSpace variables;
   private boolean varsSensitive;
 
   public StyledTextComp( VariableSpace space, Composite parent, int args, String strTabName ) {
-    this( space, parent, args, strTabName, true );
+    this( space, parent, args, strTabName, true, false );
   }
 
+
   public StyledTextComp( VariableSpace space, Composite parent, int args, String strTabName, boolean varsSensitive ) {
+    this( space, parent, args, strTabName, varsSensitive, false );
+  }
+
+  public StyledTextComp( VariableSpace space, Composite parent, int args, String strTabName, boolean varsSensitive,
+                         boolean variableIconOnTop ) {
     super( parent, SWT.NONE );
     this.varsSensitive = varsSensitive;
     this.variables = space;
@@ -94,7 +105,7 @@ public class StyledTextComp extends Composite {
     xParent = parent;
     this.strTabName = strTabName;
     // clipboard = new Clipboard(parent.getDisplay());
-    this.setLayout( new FillLayout() );
+    this.setLayout( variableIconOnTop ? new FormLayout() : new FillLayout() );
     buildingStyledTextMenu();
     addUndoRedoSupport();
 
@@ -119,13 +130,23 @@ public class StyledTextComp extends Composite {
     styledText.addKeyListener( kls );
 
     if ( this.varsSensitive ) {
-      ControlDecoration controlDecoration = new ControlDecoration( styledText, SWT.TOP | SWT.RIGHT );
-      Image image = GUIResource.getInstance().getImageVariable();
-      controlDecoration.setImage( image );
-      controlDecoration
-        .setDescriptionText( BaseMessages.getString( PKG, "StyledTextComp.tooltip.InsertVariable" ) );
-      PropsUI.getInstance().setLook( controlDecoration.getControl() );
       styledText.addKeyListener( new ControlSpaceKeyAdapter( this.variables, styledText ) );
+      image = GUIResource.getInstance().getImageVariable();
+      if ( variableIconOnTop ) {
+        final Label wicon = new Label( this, SWT.RIGHT );
+        PropsUI.getInstance().setLook( wicon );
+        wicon.setToolTipText( BaseMessages.getString( PKG, "StyledTextComp.tooltip.InsertVariable" ) );
+        wicon.setImage( image );
+        wicon.setLayoutData( new FormDataBuilder().top().right( 100, 0 ).result() );
+        styledText.setLayoutData( new FormDataBuilder().top( new FormAttachment( wicon, 0, 0 ) ).left().right( 100,
+          0 ).bottom( 100, 0 ).result() );
+      } else {
+        ControlDecoration controlDecoration = new ControlDecoration( styledText, SWT.TOP | SWT.RIGHT );
+        controlDecoration.setImage( image );
+        controlDecoration
+          .setDescriptionText( BaseMessages.getString( PKG, "StyledTextComp.tooltip.InsertVariable" ) );
+        PropsUI.getInstance().setLook( controlDecoration.getControl() );
+      }
     }
 
     // Create the drop target on the StyledText
@@ -451,6 +472,14 @@ public class StyledTextComp extends Composite {
       }
       undoStack.add( 0, rro );
     }
+  }
+
+  /**
+   * Returns the {@link Image} that the {@link StyledText} is decorated with.
+   * @return the {@link Image} that the {@link StyledText} is decorated with.
+   */
+  public Image getImage() {
+    return image;
   }
 
   public StyledText getStyledText() {
