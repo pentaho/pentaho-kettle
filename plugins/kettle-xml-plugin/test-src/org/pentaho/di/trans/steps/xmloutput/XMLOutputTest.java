@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -26,6 +26,8 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.atLeastOnce;
 
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
@@ -80,14 +82,15 @@ public class XMLOutputTest {
     xmlOutputMeta = new XMLOutputMeta();
     xmlOutputMeta.setOutputFields( initOutputFields( rowWithData.length, ContentType.Attribute ) );
     // Set as true to prevent unnecessary for this test checks at initialization
-    xmlOutputMeta.setDoNotOpenNewFileInit( true );
+    xmlOutputMeta.setDoNotOpenNewFileInit( false );
 
     xmlOutputData = new XMLOutputData();
     xmlOutputData.formatRowMeta = initRowMeta( rowWithData.length );
     xmlOutputData.fieldnrs = initFieldNmrs( rowWithData.length );
+    xmlOutputData.OpenedNewFile = true;
 
     StepMeta stepMeta = new StepMeta( "StepMetaId", "StepMetaName", xmlOutputMeta );
-    xmlOutput = new XMLOutput( stepMeta, xmlOutputData, 0, stepMockHelper.transMeta, stepMockHelper.trans );
+    xmlOutput = spy( new XMLOutput( stepMeta, xmlOutputData, 0, stepMockHelper.transMeta, stepMockHelper.trans ) );
   }
 
   @Test
@@ -96,7 +99,9 @@ public class XMLOutputTest {
 
     xmlOutputData.writer = mock( XMLStreamWriter.class );
     xmlOutput.writeRowAttributes( rowWithData );
+    xmlOutput.dispose( xmlOutputMeta, xmlOutputData );
     verify( xmlOutputData.writer, times( rowWithData.length ) ).writeAttribute( any(), any() );
+    verify( xmlOutput, atLeastOnce() ).closeOutputStream( any() );
   }
 
   private static Object[] initRowWithData( String[] dt ) {
