@@ -560,25 +560,41 @@ public class MetaInjectMeta extends BaseStepMeta implements StepMetaInterface, S
       case REPOSITORY_BY_NAME:
         String realTransname = tmpSpace.environmentSubstitute( injectMeta.getTransName() );
         String realDirectory = tmpSpace.environmentSubstitute( injectMeta.getDirectoryPath() );
+        if ( rep != null ) {
+          if ( !Utils.isEmpty( realTransname ) && !Utils.isEmpty( realDirectory ) && rep != null ) {
+            RepositoryDirectoryInterface repdir = rep.findDirectory( realDirectory );
+            if ( repdir != null ) {
+              try {
+                // reads the last revision in the repository...
+                //
+                // TODO: FIXME: see if we need to pass external MetaStore references to the repository?
+                //
+                mappingTransMeta = rep.loadTransformation( realTransname, repdir, null, true, null );
 
-        if ( !Utils.isEmpty( realTransname ) && !Utils.isEmpty( realDirectory ) && rep != null ) {
-          RepositoryDirectoryInterface repdir = rep.findDirectory( realDirectory );
-          if ( repdir != null ) {
-            try {
-              // reads the last revision in the repository...
-              //
-              // TODO: FIXME: see if we need to pass external MetaStore references to the repository?
-              //
-              mappingTransMeta = rep.loadTransformation( realTransname, repdir, null, true, null );
-
-              mappingTransMeta.getLogChannel().logDetailed( "Loading Mapping from repository",
-                "Mapping transformation [" + realTransname + "] was loaded from the repository" );
-            } catch ( Exception e ) {
-              throw new KettleException( "Unable to load transformation [" + realTransname + "]", e );
+                mappingTransMeta.getLogChannel().logDetailed( "Loading Mapping from repository",
+                  "Mapping transformation [" + realTransname + "] was loaded from the repository" );
+              } catch ( Exception e ) {
+                throw new KettleException( "Unable to load transformation [" + realTransname + "]", e );
+              }
+            } else {
+              throw new KettleException( BaseMessages.getString( PKG,
+                "MetaInjectMeta.Exception.UnableToLoadTransformationFromRepository", realTransname, realDirectory ) );
             }
-          } else {
-            throw new KettleException( BaseMessages.getString( PKG,
-              "MetaInjectMeta.Exception.UnableToLoadTransformationFromRepository", realTransname, realDirectory ) );
+          }
+        } else {
+          try {
+            mappingTransMeta =
+              new TransMeta( realDirectory + "/" + realTransname, metaStore, rep, true, tmpSpace, null );
+          } catch ( KettleException ke ) {
+            try {
+              // add .ktr extension and try again
+              mappingTransMeta =
+                new TransMeta( realDirectory + "/" + realTransname + "." + Const.STRING_TRANS_DEFAULT_EXT, metaStore,
+                  rep, true, tmpSpace, null );
+            } catch ( KettleException ke2 ) {
+              throw new KettleException( BaseMessages.getString( PKG, "StepWithMappingMeta.Exception.UnableToLoadTrans",
+                realTransname ) + realDirectory );
+            }
           }
         }
         break;
