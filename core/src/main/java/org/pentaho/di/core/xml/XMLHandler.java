@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -57,6 +57,7 @@ import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.vfs2.FileObject;
 import org.owasp.encoder.Encode;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.row.value.timestamp.SimpleTimestampFormat;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.KettleAttributeInterface;
 import org.pentaho.di.core.exception.KettleException;
@@ -83,7 +84,7 @@ public class XMLHandler {
 
   private static XMLHandlerCache cache = XMLHandlerCache.getInstance();
   private static final SimpleDateFormat simpleDateFormat = new SimpleDateFormat( ValueMeta.DEFAULT_DATE_FORMAT_MASK );
-  private static final SimpleDateFormat simpleTimeStampFormat = new SimpleDateFormat( ValueMeta.DEFAULT_TIMESTAMP_FORMAT_MASK );
+  private static final SimpleTimestampFormat simpleTimeStampFormat = new SimpleTimestampFormat( ValueMeta.DEFAULT_TIMESTAMP_FORMAT_MASK );
   /**
    * The header string to specify encoding in UTF-8 for XML files
    *
@@ -1117,6 +1118,20 @@ public class XMLHandler {
     try {
       synchronized ( simpleDateFormat ) {
         return simpleDateFormat.parse( dateString );
+      }
+    } catch ( ParseException e ) {
+      return null;
+    }
+  }
+
+  public static Timestamp stringToTimestamp( String dateString ) {
+    if ( Utils.isEmpty( dateString ) ) {
+      return null;
+    }
+
+    try {
+      synchronized ( simpleTimeStampFormat ) {
+        return (Timestamp) simpleTimeStampFormat.parse( dateString );
       }
     } catch ( ParseException e ) {
       return null;
