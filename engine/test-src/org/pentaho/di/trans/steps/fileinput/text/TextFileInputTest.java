@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -33,6 +33,7 @@ import java.io.UnsupportedEncodingException;
 import java.util.List;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.vfs2.FileObject;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -44,11 +45,16 @@ import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.core.vfs.KettleVFS;
+import org.pentaho.di.trans.Trans;
+import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.TransTestingUtil;
+import org.pentaho.di.trans.step.StepDataInterface;
+import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.errorhandling.AbstractFileErrorHandler;
 import org.pentaho.di.trans.step.errorhandling.FileErrorHandler;
 import org.pentaho.di.trans.steps.StepMockUtil;
 import org.pentaho.di.trans.steps.fileinput.BaseFileInputField;
+import org.pentaho.di.trans.steps.fileinput.IBaseFileInputReader;
 import org.pentaho.di.utils.TestUtils;
 
 public class TextFileInputTest {
@@ -190,6 +196,7 @@ public class TextFileInputTest {
 
     deleteVfsFile( virtualFile );
   }
+
   @Test
   public void testErrorHandlerLineNumber() throws Exception {
     final String content = new StringBuilder()
@@ -214,6 +221,33 @@ public class TextFileInputTest {
     Mockito.verify( data.dataErrorLineHandler ).handleLineError( 4, AbstractFileErrorHandler.NO_PARTS );
     deleteVfsFile( virtualFile );
   }
+
+  @Test
+  public void testHandleOpenFileException() throws Exception {
+    final String content = new StringBuilder()
+      .append( "123" ).append( '\n' ).append( "333\n" ).toString();
+    final String virtualFile = createVirtualFile( "pdi-16697.txt", content );
+
+    TextFileInputMeta meta = createMetaObject( field( "col1" ) );
+
+    meta.errorHandling.errorIgnored = true;
+    meta.errorHandling.skipBadFiles = true;
+
+    TextFileInputData data = createDataObject( virtualFile, ";", "col1" );
+    data.dataErrorLineHandler = Mockito.mock( FileErrorHandler.class );
+
+    TestTextFileInput textFileInput = StepMockUtil.getStep( TestTextFileInput.class, TextFileInputMeta.class, "test" );
+    StepMeta stepMeta = textFileInput.getStepMeta();
+    Mockito.doReturn( true ).when( stepMeta ).isDoingErrorHandling();
+
+    List<Object[]> output = TransTestingUtil.execute( textFileInput, meta, data, 0, false );
+
+    deleteVfsFile( virtualFile );
+
+    assertEquals( 1, data.rejectedFiles.size() );
+    assertEquals( 0, textFileInput.getErrors() );
+  }
+
   private TextFileInputMeta createMetaObject( BaseFileInputField... fields ) {
     TextFileInputMeta meta = new TextFileInputMeta();
     meta.content.fileCompression = "None";
@@ -274,5 +308,18 @@ public class TextFileInputTest {
 
   private static BaseFileInputField field( String name ) {
     return new BaseFileInputField( name, -1, -1 );
+  }
+
+  public static class TestTextFileInput extends TextFileInput {
+    public TestTextFileInput( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta,
+                              Trans trans ) {
+      super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
+    }
+
+    @Override
+    protected IBaseFileInputReader createReader( TextFileInputMeta meta, TextFileInputData data, FileObject file )
+      throws Exception {
+      throw new Exception( "Can not create reader for the file object " + file );
+    }
   }
 }
