@@ -2915,7 +2915,8 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
     return new PurRepositoryImporter( this );
   }
 
-  public IUnifiedRepository getPur() {
+  @Override
+  public IUnifiedRepository getUnderlyingRepository() {
     return pur;
   }
 

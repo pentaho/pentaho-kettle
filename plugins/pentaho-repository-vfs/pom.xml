@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<parent>
+		<artifactId>pdi-plugins</artifactId>
+		<groupId>org.pentaho.di.plugins</groupId>
+		<version>8.1.0.0-SNAPSHOT</version>
+	</parent>
+
+	<artifactId>pentaho-repository-vfs</artifactId>
+	<packaging>pom</packaging>
+
+	<name>Pentaho Repository VFS</name>
+
+	<licenses>
+		<license>
+			<name>Apache License, Version 2.0</name>
+			<url>https://www.apache.org/licenses/LICENSE-2.0.txt</url>
+			<distribution>repo</distribution>
+			<comments>A business-friendly OSS license</comments>
+		</license>
+	</licenses>
+
+	<properties>
+		<karaf-maven-plugin.version>3.0.3</karaf-maven-plugin.version>
+	</properties>
+
+	<modules>
+		<module>core</module>
+		<module>assemblies</module>
+	</modules>
+
+	<build>
+		<pluginManagement>
+			<plugins>
+				<plugin>
+					<groupId>org.apache.karaf.tooling</groupId>
+					<artifactId>karaf-maven-plugin</artifactId>
+					<version>${karaf-maven-plugin.version}</version>
+					<extensions>true</extensions>
+					<configuration>
+						<aggregateFeatures>true</aggregateFeatures>
+					</configuration>
+				</plugin>
+			</plugins>
+		</pluginManagement>
+	</build>
+</project>

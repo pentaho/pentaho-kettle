@@ -38,6 +38,7 @@ import org.pentaho.di.partition.PartitionSchema;
 import org.pentaho.di.shared.SharedObjects;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.metastore.api.IMetaStore;
+import org.pentaho.platform.api.repository2.unified.IUnifiedRepository;
 
 public interface Repository {
 
@@ -752,4 +753,9 @@ public interface Repository {
    *         Metastore.
    */
   public IMetaStore getMetaStore();
+
+  /**
+   * @return repository for connect to server
+   */
+  public IUnifiedRepository getUnderlyingRepository();
 }

@@ -71,7 +71,7 @@ public class PurRepositoryMetaStore extends MemoryMetaStore implements IMetaStor
 
   public PurRepositoryMetaStore( PurRepository repository ) throws KettleException {
     this.repository = repository;
-    this.pur = repository.getPur();
+    this.pur = repository.getUnderlyingRepository();
 
     namespacesFolder = pur.getFile( METASTORE_FOLDER_PATH );
     if ( namespacesFolder == null ) {
