@@ -178,9 +178,9 @@ public class RepositoryConnectMenu {
           @Override
           public void widgetSelected( SelectionEvent selectionEvent ) {
             new RepositoryDialog( spoon.getShell(), repoConnectController ).openManager();
-            RepositoryMeta connected = repoConnectController.getConnectedRepository();
-            if ( connected != null ) {
-              spoon.setRepositoryName( connected.getName() );
+            RepositoryMeta current = repoConnectController.getCurrentRepository();
+            if ( current != null ) {
+              spoon.setRepositoryName( current.getName() );
             }
             renderAndUpdate();
           }
