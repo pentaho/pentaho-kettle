@@ -64,7 +64,7 @@ setPentahoEnv
 # **************************************************
 
 LIBPATH="NONE"
-STARTUP="$BASEDIR/launcher/${assembly.launcher.jar}"
+STARTUP="$BASEDIR/launcher/launcher.jar"
 
 if [ -z "$IS_YARN" ]; then
 	# Go to directory where spoon.sh located
