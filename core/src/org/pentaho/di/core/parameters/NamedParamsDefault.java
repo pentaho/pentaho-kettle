@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -195,4 +195,42 @@ public class NamedParamsDefault implements NamedParams {
       }
     }
   }
+
+  @Override
+  public void mergeParametersWith( NamedParams aParam, boolean replace ) {
+    if ( params != null && aParam != null && aParam.listParameters() != null ) {
+      for ( String key : aParam.listParameters() ) {
+        if ( replace || !params.containsKey( key ) ) {
+
+          String desc;
+          try {
+            desc = aParam.getParameterDescription( key );
+          } catch ( UnknownParamException e ) {
+            desc = "";
+          }
+          String defValue;
+          try {
+            defValue = aParam.getParameterDefault( key );
+          } catch ( UnknownParamException e ) {
+            defValue = "";
+          }
+          String value;
+          try {
+            value = aParam.getParameterValue( key );
+          } catch ( UnknownParamException e ) {
+            value = "";
+          }
+
+          try {
+            addParameterDefinition( key, defValue, desc );
+          } catch ( DuplicateParamException e ) {
+            params.get( key ).defaultValue = defValue;
+            params.get( key ).description = desc;
+          }
+          setParameterValue( key, value );
+        }
+      }
+    }
+  }
+
 }

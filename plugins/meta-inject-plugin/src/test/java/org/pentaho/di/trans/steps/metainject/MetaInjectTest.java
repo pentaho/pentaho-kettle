@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -110,6 +110,8 @@ public class MetaInjectTest {
 
   private TransMeta transMeta;
 
+  private Trans trans;
+
   private StepMetaInjectionInterface metaInjectionInterface;
   private IMetaStore metaStore;
 
@@ -127,6 +129,8 @@ public class MetaInjectTest {
 
     TransMeta internalTransMeta = mock( TransMeta.class );
     StepMeta stepMeta = mock( StepMeta.class );
+    trans = mock( Trans.class );
+    doReturn( trans ).when( metaInject ).getTrans();
     doReturn( INJECTOR_STEP_NAME ).when( stepMeta ).getName();
     doReturn( Collections.singletonList( stepMeta ) ).when( internalTransMeta ).getUsedSteps();
     StepMetaInterface stepMetaInterface = mock( StepMetaInterface.class );
@@ -245,11 +249,11 @@ public class MetaInjectTest {
 
   @Test
   public void transParametersPassedToChildTransformation() throws KettleException {
-    TransMeta transMeta = new TransMeta();
-    transMeta.addParameterDefinition( TEST_PARAMETER, "TEST_DEF_VALUE", "" );
-    transMeta.setParameterValue( TEST_PARAMETER, TEST_VALUE );
+    Trans trans = new Trans();
+    trans.addParameterDefinition( TEST_PARAMETER, "TEST_DEF_VALUE", "" );
+    trans.setParameterValue( TEST_PARAMETER, TEST_VALUE );
 
-    doReturn( transMeta ).when( metaInject ).getTransMeta();
+    doReturn( trans ).when( metaInject ).getTrans();
     TransMeta internalTransMeta = new TransMeta();
     doReturn( internalTransMeta ).when( metaInject ).loadTransformationMeta();
 
@@ -429,7 +433,6 @@ public class MetaInjectTest {
     assertEquals( 1, unavailable.size() );
     assertTrue( unavailable.contains( unavailableTargetAttr ) );
   }
-  
 
   @Test
   public void testStepChangeListener() throws Exception {

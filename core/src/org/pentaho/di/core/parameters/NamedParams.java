@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -126,4 +126,16 @@ public interface NamedParams {
    * Clear all parameters
    */
   void clearParameters();
+
+  /**
+   * Merge the given named parameters with current ones.
+   *
+   * @param params
+   *          the parameters to merge with.
+   * @param replace
+   *          replace if exists
+   */
+  default void mergeParametersWith( NamedParams params, boolean replace ) {
+  }
+
 }
