@@ -3,7 +3,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -3386,10 +3386,12 @@ public class ValueMetaBase implements ValueMetaInterface {
             return Long.parseLong( valueString );
           case TYPE_DATE:
             return XMLHandler.stringToDate( valueString );
+          case TYPE_TIMESTAMP:
+            return XMLHandler.stringToTimestamp( valueString );
           case TYPE_BIGNUMBER:
             return new BigDecimal( valueString );
           case TYPE_BOOLEAN:
-            return Boolean.valueOf( "Y".equalsIgnoreCase( valueString ) );
+            return "Y".equalsIgnoreCase( valueString );
           case TYPE_BINARY:
             return XMLHandler.stringToBinary( XMLHandler.getTagValue( node, "binary-value" ) );
           default:

@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -50,6 +50,7 @@ import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
+import org.w3c.dom.Node;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -75,7 +76,11 @@ import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.TimeZone;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertArrayEquals;
 
 public class ValueMetaBaseTest {
 
@@ -825,6 +830,57 @@ public class ValueMetaBaseTest {
       valueMetaBase.getValueFromSQLType( dbMeta, TEST_NAME, metaData, binaryColumnIndex, false, false );
     Assert.assertEquals( ValueMetaInterface.TYPE_BINARY, binaryValueMeta.getType() );
     Assert.assertTrue( binaryValueMeta.isBinary() );
+  }
+
+  @Test
+  public void testGetValueFromNode() throws Exception {
+
+    ValueMetaBase valueMetaBase = null;
+    Node xmlNode = null;
+
+    valueMetaBase = new ValueMetaBase( "test", ValueMetaInterface.TYPE_STRING );
+    xmlNode = XMLHandler.loadXMLString( "<value-data>String val</value-data>" ).getFirstChild();
+    Assert.assertEquals( "String val", valueMetaBase.getValue( xmlNode ) );
+
+    valueMetaBase = new ValueMetaBase( "test", ValueMetaInterface.TYPE_NUMBER );
+    xmlNode = XMLHandler.loadXMLString( "<value-data>689.2</value-data>" ).getFirstChild();
+    Assert.assertEquals( 689.2, valueMetaBase.getValue( xmlNode ) );
+
+    valueMetaBase = new ValueMetaBase( "test", ValueMetaInterface.TYPE_NUMBER );
+    xmlNode = XMLHandler.loadXMLString( "<value-data>689.2</value-data>" ).getFirstChild();
+    Assert.assertEquals( 689.2, valueMetaBase.getValue( xmlNode ) );
+
+    valueMetaBase = new ValueMetaBase( "test", ValueMetaInterface.TYPE_INTEGER );
+    xmlNode = XMLHandler.loadXMLString( "<value-data>68933</value-data>" ).getFirstChild();
+    Assert.assertEquals( 68933l, valueMetaBase.getValue( xmlNode ) );
+
+    valueMetaBase = new ValueMetaBase( "test", ValueMetaInterface.TYPE_DATE );
+    xmlNode = XMLHandler.loadXMLString( "<value-data>2017/11/27 08:47:10.000</value-data>" ).getFirstChild();
+    Assert.assertEquals( XMLHandler.stringToDate( "2017/11/27 08:47:10.000" ), valueMetaBase.getValue( xmlNode ) );
+
+    valueMetaBase = new ValueMetaBase( "test", ValueMetaInterface.TYPE_TIMESTAMP );
+    xmlNode = XMLHandler.loadXMLString( "<value-data>2017/11/27 08:47:10.123456789</value-data>" ).getFirstChild();
+    Assert.assertEquals( XMLHandler.stringToTimestamp( "2017/11/27 08:47:10.123456789" ), valueMetaBase.getValue( xmlNode ) );
+
+    valueMetaBase = new ValueMetaBase( "test", ValueMetaInterface.TYPE_BOOLEAN );
+    xmlNode = XMLHandler.loadXMLString( "<value-data>Y</value-data>" ).getFirstChild();
+    Assert.assertEquals( true, valueMetaBase.getValue( xmlNode ) );
+
+    valueMetaBase = new ValueMetaBase( "test", ValueMetaInterface.TYPE_BINARY );
+    byte[] bytes = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
+    String s = XMLHandler.encodeBinaryData( bytes );
+    xmlNode = XMLHandler.loadXMLString( "<value-data>test<binary-value>" + s + "</binary-value></value-data>" ).getFirstChild();
+    Assert.assertArrayEquals( bytes, (byte[]) valueMetaBase.getValue( xmlNode ) );
+
+    valueMetaBase = new ValueMetaBase( "test", ValueMetaInterface.TYPE_STRING );
+    xmlNode = XMLHandler.loadXMLString( "<value-data></value-data>" ).getFirstChild();
+    Assert.assertNull( valueMetaBase.getValue( xmlNode ) );
+  }
+
+  @Test( expected = KettleException.class )
+  public void testGetValueUnknownType() throws Exception {
+    ValueMetaBase valueMetaBase = new ValueMetaBase( "test", ValueMetaInterface.TYPE_NONE );
+    valueMetaBase.getValue( XMLHandler.loadXMLString( "<value-data>not empty</value-data>" ).getFirstChild() );
   }
 
 }
