@@ -107,7 +107,7 @@ public class DatabaseDelegate extends AbstractDelegate implements ITransformer, 
       // Save this attribute
       //
       // Escape the code as it might contain invalid JCR characters like '/' as in AS/400
-      String escapedCode = RepositoryFilenameUtils.escape( code, repo.getPur().getReservedChars() );
+      String escapedCode = RepositoryFilenameUtils.escape( code, repo.getUnderlyingRepository().getReservedChars() );
       attrNode.setProperty( escapedCode, attribute );
     }
     return rootNode;

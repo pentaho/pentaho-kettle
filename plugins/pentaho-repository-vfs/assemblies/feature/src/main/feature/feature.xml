@@ -1,0 +1,7 @@
+<features name="${project.artifactId}-repo" xmlns="http://karaf.apache.org/xmlns/features/v1.2.1">
+
+  <feature name="${project.artifactId}" version="${project.version}">
+    <feature>pentaho-requirejs-osgi-manager</feature>
+  </feature>
+
+</features>

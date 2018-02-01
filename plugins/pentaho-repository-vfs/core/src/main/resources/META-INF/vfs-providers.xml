@@ -1,0 +1,5 @@
+<providers>
+    <provider class-name="org.pentaho.repositoryvfs.vfs.RepositoryVfsProvider">
+        <scheme name="repo"/>
+    </provider>
+</providers>

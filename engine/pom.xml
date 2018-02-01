@@ -132,6 +132,11 @@
       <artifactId>mondrian</artifactId>
       <version>${mondrian.version}</version>
     </dependency>
+    <dependency>
+      <groupId>pentaho</groupId>
+      <artifactId>pentaho-platform-api</artifactId>
+      <version>${project.version}</version>
+    </dependency>
 
     <!-- Reporting dependencies -->
     <dependency>

@@ -22,7 +22,17 @@
 
 package org.pentaho.di.ui.repo.controller;
 
-import com.google.common.annotations.VisibleForTesting;
+import java.lang.reflect.Proxy;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Future;
+import java.util.function.Supplier;
+
 import org.apache.commons.lang.ClassUtils;
 import org.eclipse.swt.widgets.DirectoryDialog;
 import org.json.simple.JSONArray;
@@ -44,26 +54,18 @@ import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryMeta;
 import org.pentaho.di.ui.core.PropsUI;
 import org.pentaho.di.ui.core.database.dialog.DatabaseDialog;
+import org.pentaho.di.ui.repo.IConnectedRepositoryInstance;
 import org.pentaho.di.ui.repo.model.RepositoryModel;
 import org.pentaho.di.ui.repo.timeout.RepositorySessionTimeoutHandler;
 import org.pentaho.di.ui.spoon.Spoon;
 import org.pentaho.di.ui.util.HelpUtils;
 
-import java.lang.reflect.Proxy;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Future;
-import java.util.function.Supplier;
+import com.google.common.annotations.VisibleForTesting;
 
 /**
  * Created by bmorrise on 4/18/16.
  */
-public class RepositoryConnectController {
+public class RepositoryConnectController implements IConnectedRepositoryInstance {
 
   public static final String DISPLAY_NAME = "displayName";
   public static final String DESCRIPTION = "description";

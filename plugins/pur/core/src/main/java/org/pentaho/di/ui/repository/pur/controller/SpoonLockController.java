@@ -296,8 +296,9 @@ public class SpoonLockController extends AbstractXulEventHandler implements java
         lockMenuItem.setSelected( true );
         // Permit locking/unlocking if the user owns the lock
         if ( Spoon.getInstance().getRepository() instanceof PurRepository ) {
-          setLockingAllowed( new UnifiedRepositoryLockService( ( (PurRepository) Spoon.getInstance().getRepository() )
-              .getPur() ).canUnlockFileById( workingMeta.getObjectId() ) );
+          setLockingAllowed( new UnifiedRepositoryLockService(
+              ( (PurRepository) Spoon.getInstance().getRepository() ).getUnderlyingRepository() )
+                  .canUnlockFileById( workingMeta.getObjectId() ) );
         } else {
           setLockingAllowed( repoLock.getLogin().equalsIgnoreCase(
               Spoon.getInstance().getRepository().getUserInfo().getLogin() ) );
