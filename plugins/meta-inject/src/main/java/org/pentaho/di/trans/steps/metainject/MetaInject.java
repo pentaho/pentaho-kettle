@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -562,7 +562,7 @@ public class MetaInject extends BaseStep implements StepInterface {
         meta.actualizeMetaInjectMapping();
         data.transMeta = loadTransformationMeta();
         data.transMeta.copyVariablesFrom( this );
-        data.transMeta.copyParametersFrom( this.getTransMeta() );
+        data.transMeta.mergeParametersWith( this.getTrans(), true );
         checkSoureStepsAvailability();
         checkTargetStepsAvailability();
         // Get a mapping between the step name and the injection...

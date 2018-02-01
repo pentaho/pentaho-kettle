@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -118,5 +118,52 @@ public class NamedParamsDefaultTest {
     assertNull( namedParams.getParameterDescription( "key" ) );
     assertNull( namedParams.getParameterDefault( "key" ) );
     assertNull( namedParams.getParameterValue( "key" ) );
+  }
+
+  @Test
+  public void testMergeParametersWith() throws Exception {
+    NamedParams namedParamsTest = new NamedParamsDefault();
+    namedParamsTest.addParameterDefinition( "key1", "def1", "desc1" );
+    namedParamsTest.addParameterDefinition( "key2", "def2", "desc2" );
+    namedParamsTest.addParameterDefinition( "key3", "def3", "desc3" );
+    namedParamsTest.addParameterDefinition( "key4", "def4", "desc4" );
+    namedParamsTest.setParameterValue( "key1", "val1" );
+    namedParamsTest.setParameterValue( "key2", "val2" );
+    namedParamsTest.setParameterValue( "key3", "val3" );
+    namedParamsTest.setParameterValue( "key4", "val4" );
+
+    NamedParams namedParamsMerge = new NamedParamsDefault();
+    namedParamsMerge.addParameterDefinition( "key5", "def5", "desc5" );
+    namedParamsMerge.addParameterDefinition( "key6", "def6", "desc6" );
+    namedParamsMerge.addParameterDefinition( "key3", "def3a", "desc3a" );
+    namedParamsMerge.addParameterDefinition( "key4", "def4a", "desc4a" );
+    namedParamsMerge.setParameterValue( "key5", "val1" );
+    namedParamsMerge.setParameterValue( "key6", "val2" );
+    namedParamsMerge.setParameterValue( "key3", "val3a" );
+    namedParamsMerge.setParameterValue( "key4", "val4a" );
+
+    namedParamsTest.mergeParametersWith( namedParamsMerge, false );
+
+    assertEquals( 6,  namedParamsTest.listParameters().length );
+    assertEquals( "def3", namedParamsTest.getParameterDefault( "key3" ) );
+    assertEquals( "desc3", namedParamsTest.getParameterDescription( "key3" ) );
+    assertEquals( "val3", namedParamsTest.getParameterValue( "key3" ) );
+    assertEquals( "def4", namedParamsTest.getParameterDefault( "key4" ) );
+    assertEquals( "desc4", namedParamsTest.getParameterDescription( "key4" ) );
+    assertEquals( "val4", namedParamsTest.getParameterValue( "key4" ) );
+
+    namedParamsMerge.addParameterDefinition( "key7", "def7", "desc7" );
+    namedParamsTest.setParameterValue( "ke7", "val7" );
+
+    namedParamsTest.mergeParametersWith( namedParamsMerge, true );
+
+    assertEquals( 7, namedParamsTest.listParameters().length );
+    assertEquals( "def3a", namedParamsTest.getParameterDefault( "key3" ) );
+    assertEquals( "desc3a", namedParamsTest.getParameterDescription( "key3" ) );
+    assertEquals( "val3a", namedParamsTest.getParameterValue( "key3" ) );
+    assertEquals( "def4a", namedParamsTest.getParameterDefault( "key4" ) );
+    assertEquals( "desc4a", namedParamsTest.getParameterDescription( "key4" ) );
+    assertEquals( "val4a", namedParamsTest.getParameterValue( "key4" ) );
+
   }
 }

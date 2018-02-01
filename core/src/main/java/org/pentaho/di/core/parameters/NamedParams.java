@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -116,6 +116,17 @@ public interface NamedParams {
    *          the parameters to copy from.
    */
   void copyParametersFrom( NamedParams params );
+
+  /**
+   * Merge the given named parameters with current ones.
+   *
+   * @param params
+   *          the parameters to merge with.
+   * @param replace
+   *          replace if exists
+   */
+  default void mergeParametersWith( NamedParams params, boolean replace ) {
+  }
 
   /**
    * Activate the currently set parameters
