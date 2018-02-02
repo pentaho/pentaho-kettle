@@ -30,6 +30,8 @@
     <build.description>${project.description}</build.description>
     <maven.build.timestamp.format>yyyy/MM/dd hh:mm</maven.build.timestamp.format>
     <fasterxml.jackson.core.version>2.9.2</fasterxml.jackson.core.version>
+    <slf4j-api.version>1.7.7</slf4j-api.version>
+    <slf4j-log4j12.version>1.7.7</slf4j-log4j12.version>
   </properties>
 
   <dependencies>
@@ -192,6 +194,18 @@
       <groupId>com.jcraft</groupId>
       <artifactId>jsch</artifactId>
       <version>0.1.54</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-api</artifactId>
+      <version>${slf4j-api.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-log4j12</artifactId>
+      <version>${slf4j-log4j12.version}</version>
       <scope>test</scope>
     </dependency>
   </dependencies>

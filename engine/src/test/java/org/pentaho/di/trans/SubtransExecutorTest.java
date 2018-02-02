@@ -47,6 +47,7 @@ import org.pentaho.di.trans.step.StepStatus;
 import org.pentaho.di.trans.steps.transexecutor.TransExecutorData;
 import org.pentaho.di.trans.steps.transexecutor.TransExecutorParameters;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -120,6 +121,10 @@ public class SubtransExecutorTest {
 
     Map<String, StepStatus> statuses = subtransExecutor.getStatuses();
     assertEquals( 3, statuses.size() );
+    List<StepStatus> statusList = new ArrayList<>( statuses.values() );
+    assertEquals( "Get rows from result", statusList.get( 0 ).getStepname() );
+    assertEquals( "Group by", statusList.get( 1 ).getStepname() );
+    assertEquals( "Write to log", statusList.get( 2 ).getStepname() );
     for ( Map.Entry<String, StepStatus> entry : statuses.entrySet() ) {
       StepStatus statusSpy = spy( entry.getValue() );
       statuses.put( entry.getKey(), statusSpy );

@@ -23,6 +23,7 @@
 package org.pentaho.di.trans.steps.pentahoreporting;
 
 import java.awt.GraphicsEnvironment;
+import java.io.OutputStream;
 import java.math.BigDecimal;
 import java.net.URL;
 import java.util.Date;
@@ -43,22 +44,38 @@ import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.di.trans.steps.pentahoreporting.PentahoReportingOutputMeta.ProcessorType;
+import org.pentaho.di.trans.steps.pentahoreporting.urlrepository.FileObjectRepository;
 import org.pentaho.reporting.engine.classic.core.ClassicEngineBoot;
 import org.pentaho.reporting.engine.classic.core.MasterReport;
+import org.pentaho.reporting.engine.classic.core.layout.output.ReportProcessor;
 import org.pentaho.reporting.engine.classic.core.modules.gui.common.StatusType;
-import org.pentaho.reporting.engine.classic.core.modules.gui.csv.CSVTableExportTask;
-import org.pentaho.reporting.engine.classic.core.modules.gui.html.HtmlStreamExportTask;
-import org.pentaho.reporting.engine.classic.core.modules.gui.pdf.PdfExportTask;
-import org.pentaho.reporting.engine.classic.core.modules.gui.rtf.RTFExportTask;
-import org.pentaho.reporting.engine.classic.core.modules.gui.xls.ExcelExportTask;
-import org.pentaho.reporting.engine.classic.core.modules.gui.xls.XSSFExcelExportTask;
-import org.pentaho.reporting.engine.classic.core.modules.output.table.html.HtmlReportUtil;
+import org.pentaho.reporting.engine.classic.core.modules.output.fast.csv.FastCsvExportProcessor;
+import org.pentaho.reporting.engine.classic.core.modules.output.fast.html.FastHtmlContentItems;
+import org.pentaho.reporting.engine.classic.core.modules.output.fast.html.FastHtmlExportProcessor;
+import org.pentaho.reporting.engine.classic.core.modules.output.fast.validator.ReportStructureValidator;
+import org.pentaho.reporting.engine.classic.core.modules.output.fast.xls.FastExcelExportProcessor;
+import org.pentaho.reporting.engine.classic.core.modules.output.pageable.base.PageableReportProcessor;
+import org.pentaho.reporting.engine.classic.core.modules.output.pageable.pdf.PdfOutputProcessor;
+import org.pentaho.reporting.engine.classic.core.modules.output.table.base.FlowReportProcessor;
+import org.pentaho.reporting.engine.classic.core.modules.output.table.base.StreamReportProcessor;
+import org.pentaho.reporting.engine.classic.core.modules.output.table.csv.StreamCSVOutputProcessor;
+import org.pentaho.reporting.engine.classic.core.modules.output.table.html.AllItemsHtmlPrinter;
+import org.pentaho.reporting.engine.classic.core.modules.output.table.html.FileSystemURLRewriter;
+import org.pentaho.reporting.engine.classic.core.modules.output.table.html.FlowHtmlOutputProcessor;
+import org.pentaho.reporting.engine.classic.core.modules.output.table.html.HtmlOutputProcessor;
+import org.pentaho.reporting.engine.classic.core.modules.output.table.html.HtmlPrinter;
+import org.pentaho.reporting.engine.classic.core.modules.output.table.html.StreamHtmlOutputProcessor;
+import org.pentaho.reporting.engine.classic.core.modules.output.table.rtf.StreamRTFOutputProcessor;
+import org.pentaho.reporting.engine.classic.core.modules.output.table.xls.FlowExcelOutputProcessor;
 import org.pentaho.reporting.engine.classic.core.parameters.ParameterDefinitionEntry;
 import org.pentaho.reporting.engine.classic.core.parameters.ReportParameterDefinition;
 import org.pentaho.reporting.engine.classic.core.util.ReportParameterValues;
-import org.pentaho.reporting.libraries.base.config.ModifiableConfiguration;
+import org.pentaho.reporting.libraries.base.util.IOUtils;
 import org.pentaho.reporting.libraries.base.util.ObjectUtilities;
 import org.pentaho.reporting.libraries.fonts.LibFontBoot;
+import org.pentaho.reporting.libraries.repository.ContentLocation;
+import org.pentaho.reporting.libraries.repository.DefaultNameGenerator;
+import org.pentaho.reporting.libraries.repository.file.FileRepository;
 import org.pentaho.reporting.libraries.resourceloader.LibLoaderBoot;
 import org.pentaho.reporting.libraries.resourceloader.Resource;
 import org.pentaho.reporting.libraries.resourceloader.ResourceManager;
@@ -233,60 +250,145 @@ public class PentahoReportingOutput extends BaseStep implements StepInterface {
         }
       }
 
-      ModifiableConfiguration modifiableConfiguration = (ModifiableConfiguration) report.getConfiguration();
-      String property;
       Runnable exportTask;
       PentahoReportingSwingGuiContext context = new PentahoReportingSwingGuiContext();
 
       switch ( outputProcessorType ) {
         case PDF:
-          property = "org.pentaho.reporting.engine.classic.core.modules.gui.pdf.TargetFileName";
-          modifiableConfiguration.setConfigProperty( property, targetFilename );
-          property = "org.pentaho.reporting.engine.classic.core.modules.gui.pdf.CreateParentFolder";
-          modifiableConfiguration.setConfigProperty( property, createParentFolder.toString() );
-          exportTask = new PdfExportTask( report, null, context );
+          exportTask = new ReportExportTask( report, context, targetFilename, createParentFolder ) {
+            protected ReportProcessor createReportProcessor( OutputStream fout ) throws Exception {
+              PdfOutputProcessor outputProcessor =
+                  new PdfOutputProcessor( report.getConfiguration(), fout, report.getResourceManager() );
+              return new PageableReportProcessor( report, outputProcessor );
+            }
+          };
           break;
         case CSV:
-          property = "org.pentaho.reporting.engine.classic.core.modules.gui.csv.FileName";
-          modifiableConfiguration.setConfigProperty( property, targetFilename );
-          property = "org.pentaho.reporting.engine.classic.core.modules.gui.csv.CreateParentFolder";
-          modifiableConfiguration.setConfigProperty( property, createParentFolder.toString() );
-          exportTask = new CSVTableExportTask( report, null, context );
+          exportTask = new ReportExportTask( report, context, targetFilename, createParentFolder ) {
+            protected ReportProcessor createReportProcessor( OutputStream fout ) throws Exception {
+              ReportStructureValidator validator = new ReportStructureValidator();
+              if ( validator.isValidForFastProcessing( report ) == false ) {
+                StreamCSVOutputProcessor target = new StreamCSVOutputProcessor( fout );
+                return new StreamReportProcessor( report, target );
+              } else {
+                return new FastCsvExportProcessor( report, fout );
+              }
+            }
+          };
           break;
         case Excel:
-          property = "org.pentaho.reporting.engine.classic.core.modules.gui.xls.FileName";
-          modifiableConfiguration.setConfigProperty( property, targetFilename );
-          property = "org.pentaho.reporting.engine.classic.core.modules.gui.xls.CreateParentFolder";
-          modifiableConfiguration.setConfigProperty( property, createParentFolder.toString() );
-          exportTask = new ExcelExportTask( report, null, context );
+          exportTask = new ReportExportTask( report, context, targetFilename, createParentFolder ) {
+            protected ReportProcessor createReportProcessor( OutputStream fout ) throws Exception {
+              ReportStructureValidator validator = new ReportStructureValidator();
+              if ( validator.isValidForFastProcessing( report ) == false ) {
+                final FlowExcelOutputProcessor target =
+                    new FlowExcelOutputProcessor( report.getConfiguration(), fout, report.getResourceManager() );
+                target.setUseXlsxFormat( false );
+                return new FlowReportProcessor( report, target );
+              } else {
+                return new FastExcelExportProcessor( report, fout, false );
+              }
+            }
+          };
           break;
         case Excel_2007:
-          property = "org.pentaho.reporting.engine.classic.core.modules.gui.xls.FileName";
-          modifiableConfiguration.setConfigProperty( property, targetFilename );
-          property = "org.pentaho.reporting.engine.classic.core.modules.gui.xls.CreateParentFolder";
-          modifiableConfiguration.setConfigProperty( property, createParentFolder.toString() );
-          exportTask = new XSSFExcelExportTask( report, null, context );
+          exportTask = new ReportExportTask( report, context, targetFilename, createParentFolder ) {
+            protected ReportProcessor createReportProcessor( OutputStream fout ) throws Exception {
+              ReportStructureValidator validator = new ReportStructureValidator();
+              if ( validator.isValidForFastProcessing( report ) == false ) {
+                final FlowExcelOutputProcessor target =
+                    new FlowExcelOutputProcessor( report.getConfiguration(), fout, report.getResourceManager() );
+                target.setUseXlsxFormat( true );
+                return new FlowReportProcessor( report, target );
+              } else {
+                return new FastExcelExportProcessor( report, fout, true );
+              }
+            }
+          };
           break;
         case StreamingHTML:
-          property = "org.pentaho.reporting.engine.classic.core.modules.gui.html.stream.TargetFileName";
-          modifiableConfiguration.setConfigProperty( property, targetFilename );
-          property = "org.pentaho.reporting.engine.classic.core.modules.gui.html.stream.CreateParentFolder";
-          modifiableConfiguration.setConfigProperty( property, createParentFolder.toString() );
-          exportTask = new HtmlStreamExportTask( report, null, context );
+          exportTask = new ReportExportTask( report, context, targetFilename, createParentFolder ) {
+            protected String filename, suffix;
+            protected ContentLocation targetRoot;
+
+            @Override
+            protected void execute() throws Exception {
+              FileObject targetDirectory = targetFile.getParent();
+              FileObjectRepository targetRepository = new FileObjectRepository( targetDirectory );
+              targetRoot = targetRepository.getRoot();
+              suffix = getSuffix( targetPath );
+              filename = IOUtils.getInstance().stripFileExtension( targetFile.getName().toString() );
+
+              ReportProcessor reportProcessor = createReportProcessor( null );
+              try {
+                reportProcessor.processReport();
+              } finally {
+                reportProcessor.close();
+              }
+            }
+
+            protected ReportProcessor createReportProcessor( OutputStream fout ) throws Exception {
+              ReportStructureValidator validator = new ReportStructureValidator();
+              if ( validator.isValidForFastProcessing( report ) == false ) {
+                final HtmlOutputProcessor outputProcessor = new StreamHtmlOutputProcessor( report.getConfiguration() );
+                final HtmlPrinter printer = new AllItemsHtmlPrinter( report.getResourceManager() );
+                printer.setContentWriter( targetRoot, new DefaultNameGenerator( targetRoot, filename, suffix ) );
+                printer.setDataWriter( null, null ); // $NON-NLS-1$
+                printer.setUrlRewriter( new FileSystemURLRewriter() );
+                outputProcessor.setPrinter( printer );
+                return new StreamReportProcessor( report, outputProcessor );
+              } else {
+                FastHtmlContentItems printer = new FastHtmlContentItems();
+                printer.setContentWriter( targetRoot, new DefaultNameGenerator( targetRoot, filename, suffix ) );
+                printer.setDataWriter( null, null ); // $NON-NLS-1$
+                printer.setUrlRewriter( new FileSystemURLRewriter() );
+                return new FastHtmlExportProcessor( report, printer );
+              }
+            }
+          };
           break;
         case PagedHTML:
-          property = "org.pentaho.reporting.engine.classic.core.modules.gui.html.paged.CreateParentFolder";
-          modifiableConfiguration.setConfigProperty( property, createParentFolder.toString() );
-          HtmlReportUtil.createDirectoryHTML( report, targetFilename );
-          exportTask = null;
-          break;
+          exportTask = new ReportExportTask( report, context, targetFilename, createParentFolder ) {
+            protected String filename, suffix;
+            protected ContentLocation targetRoot;
 
+            @Override
+            protected void execute() throws Exception {
+              FileObject targetDirectory = targetFile.getParent();
+              FileObjectRepository targetRepository = new FileObjectRepository( targetDirectory );
+              targetRoot = targetRepository.getRoot();
+              suffix = getSuffix( targetPath );
+              filename = IOUtils.getInstance().stripFileExtension( targetFile.getName().toString() );
+
+              ReportProcessor reportProcessor = createReportProcessor( null );
+              try {
+                reportProcessor.processReport();
+              } finally {
+                reportProcessor.close();
+              }
+            }
+
+            protected ReportProcessor createReportProcessor( OutputStream fout ) throws Exception {
+              final FlowHtmlOutputProcessor outputProcessor = new FlowHtmlOutputProcessor();
+
+              final HtmlPrinter printer = new AllItemsHtmlPrinter( report.getResourceManager() );
+              printer.setContentWriter( targetRoot, new DefaultNameGenerator( targetRoot, filename, suffix ) );
+              printer.setDataWriter( targetRoot, new DefaultNameGenerator( targetRoot, "content" ) );
+              printer.setUrlRewriter( new FileSystemURLRewriter() );
+              outputProcessor.setPrinter( printer );
+
+              return new FlowReportProcessor( report, outputProcessor );
+            }
+          };
+          break;
         case RTF:
-          property = "org.pentaho.reporting.engine.classic.core.modules.gui.rtf.FileName";
-          modifiableConfiguration.setConfigProperty( property, targetFilename );
-          property = "org.pentaho.reporting.engine.classic.core.modules.gui.rtf.CreateParentFolder";
-          modifiableConfiguration.setConfigProperty( property, createParentFolder.toString() );
-          exportTask = new RTFExportTask( report, null, context );
+          exportTask = new ReportExportTask( report, context, targetFilename, createParentFolder ) {
+            protected ReportProcessor createReportProcessor( OutputStream fout ) throws Exception {
+              StreamRTFOutputProcessor target =
+                  new StreamRTFOutputProcessor( report.getConfiguration(), fout, report.getResourceManager() );
+              return new StreamReportProcessor( report, target );
+            }
+          };
           break;
         default:
           exportTask = null;
@@ -313,7 +415,6 @@ public class PentahoReportingOutput extends BaseStep implements StepInterface {
       addResultFile( resultFile );
 
     } catch ( Throwable e ) {
-
       throw new KettleException( BaseMessages.getString(
         PKG, "PentahoReportingOutput.Exception.UnexpectedErrorRenderingReport", sourceFilename, targetFilename,
         outputProcessorType.getDescription() ), e );
@@ -330,5 +431,4 @@ public class PentahoReportingOutput extends BaseStep implements StepInterface {
     }
     return null;
   }
-
 }

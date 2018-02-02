@@ -241,8 +241,12 @@ public class ValueMetaConverter implements Serializable, IValueMetaConverter {
           return ( (Long) value ).doubleValue();
         case ValueMetaInterface.TYPE_BIGNUMBER:
           return new BigDecimal( ( (Long) value ).doubleValue() );
+        case ValueMetaInterface.TYPE_DATE:
+          return new Date( (long) value );
+        case ValueMetaInterface.TYPE_TIMESTAMP:
+          return new Timestamp( (long) value );
         default:
-          throwBadConversionCombination( ValueMetaInterface.TYPE_NUMBER, targetValueMetaType, value );
+          throwBadConversionCombination( ValueMetaInterface.TYPE_INTEGER, targetValueMetaType, value );
       }
     } catch ( Exception e ) {
       throwErroredConversion( ValueMetaInterface.TYPE_INTEGER, targetValueMetaType, value, e );

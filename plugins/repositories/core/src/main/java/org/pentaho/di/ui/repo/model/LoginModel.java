@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -26,8 +26,17 @@ package org.pentaho.di.ui.repo.model;
  * Created by bmorrise on 10/20/16.
  */
 public class LoginModel {
+  private String repositoryName;
   private String username;
   private String password;
+
+  public String getRepositoryName() {
+    return repositoryName;
+  }
+
+  public void setRepositoryName( String repositoryName ) {
+    this.repositoryName = repositoryName;
+  }
 
   public String getUsername() {
     return username;

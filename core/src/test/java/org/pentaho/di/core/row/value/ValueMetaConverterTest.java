@@ -90,10 +90,12 @@ public class ValueMetaConverterTest {
       { ValueMetaInterface.TYPE_BOOLEAN, ValueMetaInterface.TYPE_BOOLEAN, true, true },
 
       { ValueMetaInterface.TYPE_INTEGER, ValueMetaInterface.TYPE_NONE, 1234L, null },
+      { ValueMetaInterface.TYPE_INTEGER, ValueMetaInterface.TYPE_DATE, date1.getTime(), date1 },
       { ValueMetaInterface.TYPE_INTEGER, ValueMetaInterface.TYPE_STRING, 1234L, "1234" },
       { ValueMetaInterface.TYPE_INTEGER, ValueMetaInterface.TYPE_INTEGER, 1234L, 1234L },
       { ValueMetaInterface.TYPE_INTEGER, ValueMetaInterface.TYPE_NUMBER, 1234L, 1234.0 },
       { ValueMetaInterface.TYPE_INTEGER, ValueMetaInterface.TYPE_BIGNUMBER, 1234L, new BigDecimal( "1234" ) },
+      { ValueMetaInterface.TYPE_INTEGER, ValueMetaInterface.TYPE_TIMESTAMP, timeStamp1.getTime(), timeStamp1 },
 
       { ValueMetaInterface.TYPE_BIGNUMBER, ValueMetaInterface.TYPE_NONE, new BigDecimal( "123456.123456" ), null },
       { ValueMetaInterface.TYPE_BIGNUMBER, ValueMetaInterface.TYPE_STRING, new BigDecimal( "123456.123456" ),

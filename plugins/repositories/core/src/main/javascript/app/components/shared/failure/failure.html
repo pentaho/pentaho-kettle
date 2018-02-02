@@ -1,0 +1,39 @@
+<div class="main_div" style="padding-top:40px;">
+  <div style="margin-bottom: 22px;">
+    <div class="fail"></div>
+  </div>
+  <div class="title_text margin_bottom_30">
+    {{::vm.notConnectLabel}}
+  </div>
+  <div class="primary_text">
+    <div class="margin_bottom_80">{{::vm.statusCreate}}</div>
+    <div class="margin_bottom_30">{{::vm.questionLabel}}</div>
+    <div class="margin_bottom_30">
+      <button class="same_width standard" type="button" ng-click="vm.onChange()">
+        <span>
+          {{::vm.changeSettings}}
+        </span>
+      </button>
+    </div>
+    <div>
+      <button class="same_width secondary" type="button" ng-click="vm.onManage()">
+        <span>
+          {{::vm.manageConnections}}
+        </span>
+      </button>
+    </div>
+  </div>
+  <div class="bottom">
+    <div class="margin_bottom_20">
+      <hr />
+    </div>
+    <div>
+      <help></help>
+      <button class="right secondary" type="button" ng-click="vm.onClose()">
+        <span>
+          {{::vm.finishLabel}}
+        </span>
+      </button>
+    </div>
+  </div>
+</div>

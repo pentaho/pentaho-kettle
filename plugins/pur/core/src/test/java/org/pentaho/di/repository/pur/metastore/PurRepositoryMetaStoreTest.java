@@ -47,7 +47,7 @@ public class PurRepositoryMetaStoreTest {
     pur = mock( IUnifiedRepository.class );
     namespacesFolder = mock( RepositoryFile.class );
 
-    when( purRepository.getPur() ).thenReturn( pur );
+    when( purRepository.getUnderlyingRepository() ).thenReturn( pur );
     when( pur.getFile( PurRepositoryMetaStore.METASTORE_FOLDER_PATH ) ).thenReturn( namespacesFolder );
     PurRepositoryMeta mockPurRepositoryMeta = mock( PurRepositoryMeta.class );
     when( purRepository.getRepositoryMeta() ).thenReturn( mockPurRepositoryMeta );

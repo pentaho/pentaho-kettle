@@ -4,28 +4,28 @@
            xmlns:jaxrs="http://cxf.apache.org/blueprint/jaxrs" default-timeout="20000">
 
   <bean id="repositoryConnectController" scope="singleton"
-        class="org.pentaho.di.ui.repo.RepositoryConnectController">
+        class="org.pentaho.di.ui.repo.controller.RepositoryConnectController">
   </bean>
 
-  <bean id="repositoriesSpoonPlugin" class="org.pentaho.di.ui.repo.RepositorySpoonPlugin"
+  <bean id="repositoriesSpoonPlugin" class="org.pentaho.di.ui.repo.plugin.RepositorySpoonPlugin"
         scope="singleton" destroy-method="removeFromContainer">
     <argument ref="repositoryConnectController"/>
   </bean>
 
   <bean id="repositorySpoonStartExtensionPoint" scope="singleton"
-        class="org.pentaho.di.ui.repo.RepositorySpoonStartExtensionPoint">
+        class="org.pentaho.di.ui.repo.extension.RepositorySpoonStartExtensionPoint">
     <argument ref="repositoryConnectController"/>
     <pen:di-plugin type="org.pentaho.di.core.extension.ExtensionPointPluginType"/>
   </bean>
 
   <bean id="repositoryOpenRecentExtensionPoint" scope="singleton"
-        class="org.pentaho.di.ui.repo.RepositoryOpenRecentFileExtensionPoint">
+        class="org.pentaho.di.ui.repo.extension.RepositoryOpenRecentFileExtensionPoint">
     <argument ref="repositoryConnectController"/>
     <pen:di-plugin type="org.pentaho.di.core.extension.ExtensionPointPluginType"/>
   </bean>
 
   <bean id="requestLoginToRepositoryExtensionPoint" scope="singleton"
-        class="org.pentaho.di.ui.repo.RequestLoginToRepositoryExtensionPoint">
+        class="org.pentaho.di.ui.repo.extension.RequestLoginToRepositoryExtensionPoint">
     <argument ref="repositoryConnectController"/>
     <pen:di-plugin type="org.pentaho.di.core.extension.ExtensionPointPluginType"/>
   </bean>
@@ -66,21 +66,29 @@
     </service-properties>
   </service>
 
+  <service id="repositoryConnectControllerService"
+           interface="org.pentaho.di.ui.repo.IConnectedRepositoryInstance"
+           ref="repositoryConnectController">
+  </service>
+
   <!--  HttpService Whiteboard registration of web assets -->
   <service interface="org.ops4j.pax.web.extender.whiteboard.ResourceMapping">
     <bean class="org.ops4j.pax.web.extender.whiteboard.runtime.DefaultResourceMapping">
-      <!-- http path -->
-      <property name="alias" value="/repositories/web"/>
-      <!--Local Folder -->
-      <property name="path" value="/web"/>
+      <property name="alias" value="/${project.artifactId}/${project.version}"/>
+      <property name="path" value="/app"/>
    </bean>
   </service>
 
+  <bean id="jsonProvider" class="com.fasterxml.jackson.jaxrs.json.JacksonJaxbJsonProvider">
+  </bean>
+
+  <bean id="repositoryEndpoint" class="org.pentaho.di.ui.repo.endpoints.RepositoryEndpoint">
+    <argument ref="repositoryConnectController" />
+  </bean>
+
   <jaxrs:server address="/repositories" id="repositories-endpoint">
     <jaxrs:serviceBeans>
-      <bean class="org.pentaho.di.ui.repo.endpoints.RepositoryEndpoint">
-        <argument ref="repositoryConnectController" />
-      </bean>
+      <ref component-id="repositoryEndpoint"/>
     </jaxrs:serviceBeans>
 
     <jaxrs:extensionMappings>
@@ -88,7 +96,7 @@
     </jaxrs:extensionMappings>
 
     <jaxrs:providers>
-      <bean class="com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider"/>
+      <ref component-id="jsonProvider"/>
     </jaxrs:providers>
 
   </jaxrs:server>

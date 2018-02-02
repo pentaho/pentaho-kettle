@@ -16,12 +16,14 @@
   </parent>
 
   <properties>
-    <angular.version>1.5.6</angular.version>
+    <angular.version>1.5.8</angular.version>
     <angular-route.version>${angular.version}</angular-route.version>
     <angular-sanitize.version>${angular.version}</angular-sanitize.version>
     <angular-animate.version>${angular.version}</angular-animate.version>
     <angular-translate.version>2.12.1</angular-translate.version>
+    <angular-ui-router.version>0.4.2</angular-ui-router.version>
     <jquery.version>2.2.1</jquery.version>
+    <angular-i18n.version>${angular.version}</angular-i18n.version>
     <karaf-maven-plugin.version>3.0.3</karaf-maven-plugin.version>
   </properties>
 

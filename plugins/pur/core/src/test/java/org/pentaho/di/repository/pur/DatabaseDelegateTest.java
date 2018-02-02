@@ -70,7 +70,7 @@ public class DatabaseDelegateTest {
 
     IUnifiedRepository purRepo = mock( IUnifiedRepository.class );
     when( purRepo.getReservedChars() ).thenReturn( Arrays.asList( new Character[] { '/' } ) );
-    when( mockPurRepository.getPur() ).thenReturn( purRepo );
+    when( mockPurRepository.getUnderlyingRepository() ).thenReturn( purRepo );
 
     DataNode escapedAttributes = dbDelegate.elementToDataNode( dbMeta );
 

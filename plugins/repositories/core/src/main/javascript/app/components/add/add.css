@@ -1,0 +1,12 @@
+.add_container {
+  height: 440px;
+  overflow: hidden;
+}
+
+.pentaho_repo {
+  background-image: url("../../img/pentaho_repo.svg");
+  background-position: center center;
+  width: 380px;
+  height: 243px;
+  margin: auto;
+}
