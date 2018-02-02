@@ -218,7 +218,7 @@
       </exclusions>
     </dependency>
     <dependency>
-      <groupId>pentaho</groupId>
+      <groupId>org.pentaho</groupId>
       <artifactId>pentaho-registry</artifactId>
       <version>${pentaho-registry.version}</version>
       <exclusions>
