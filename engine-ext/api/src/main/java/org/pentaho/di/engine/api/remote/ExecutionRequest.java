@@ -3,7 +3,7 @@
  *
  *  Pentaho Data Integration
  *
- *  Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ *  Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  * ******************************************************************************
  *
@@ -47,7 +47,7 @@ public final class ExecutionRequest implements Message {
   private final Map<String, Object> environment;
   private final Transformation transformation;
   private final Map<String, Set<Class<? extends Serializable>>> reportingTopics;
-
+  private boolean reuseSparkContext = false;
 
   private final Principal actingPrincipal;
   private LogLevel loggingLogLevel;
@@ -64,6 +64,10 @@ public final class ExecutionRequest implements Message {
     this.reportingTopics = reportingTopics;
     this.loggingLogLevel = loggingLogLevel;
     this.actingPrincipal = actingPrincipal;
+  }
+
+  public void setReuseSparkContext( boolean reuseSparkContext ) {
+    this.reuseSparkContext = reuseSparkContext;
   }
 
   public String getRequestId() {
@@ -92,5 +96,9 @@ public final class ExecutionRequest implements Message {
 
   public LogLevel getLoggingLogLevel() {
     return loggingLogLevel;
+  }
+
+  public boolean isToReuseSparkContext() {
+    return reuseSparkContext;
   }
 }
