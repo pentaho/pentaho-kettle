@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,10 +22,6 @@
 
 package org.pentaho.di.ui.trans.dialog;
 
-import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
-import java.util.List;
-
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
@@ -41,6 +37,10 @@ import org.pentaho.di.trans.debug.StepDebugMeta;
 import org.pentaho.di.trans.debug.TransDebugMeta;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
+
+import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Takes care of displaying a dialog that will handle the wait while previewing a transformation...
@@ -74,9 +74,19 @@ public class TransPreviewProgressDialog {
   }
 
   public TransMeta open() {
+    return open( true );
+  }
+
+  /**
+   * Opens the progress dialog
+   * @param showErrorDialogs dictates whether error dialogs should be shown when errors occur - can be set to false
+   *                         to let the caller control error dialogs instead.
+   * @return a {@link TransMeta}
+   */
+  public TransMeta open( final boolean showErrorDialogs ) {
     IRunnableWithProgress op = new IRunnableWithProgress() {
       public void run( IProgressMonitor monitor ) throws InvocationTargetException, InterruptedException {
-        doPreview( monitor );
+        doPreview( monitor, showErrorDialogs );
       }
     };
 
@@ -110,21 +120,25 @@ public class TransPreviewProgressDialog {
 
       pmd.run( true, true, op );
     } catch ( InvocationTargetException e ) {
-      new ErrorDialog( shell,
-        BaseMessages.getString( PKG, "TransPreviewProgressDialog.ErrorLoadingTransformation.DialogTitle" ),
-        BaseMessages.getString( PKG, "TransPreviewProgressDialog.ErrorLoadingTransformation.DialogMessage" ), e );
+      if ( showErrorDialogs ) {
+        new ErrorDialog( shell,
+          BaseMessages.getString( PKG, "TransPreviewProgressDialog.ErrorLoadingTransformation.DialogTitle" ),
+          BaseMessages.getString( PKG, "TransPreviewProgressDialog.ErrorLoadingTransformation.DialogMessage" ), e );
+      }
       transMeta = null;
     } catch ( InterruptedException e ) {
-      new ErrorDialog( shell,
-        BaseMessages.getString( PKG, "TransPreviewProgressDialog.ErrorLoadingTransformation.DialogTitle" ),
-        BaseMessages.getString( PKG, "TransPreviewProgressDialog.ErrorLoadingTransformation.DialogMessage" ), e );
+      if ( showErrorDialogs ) {
+        new ErrorDialog( shell,
+          BaseMessages.getString( PKG, "TransPreviewProgressDialog.ErrorLoadingTransformation.DialogTitle" ),
+          BaseMessages.getString( PKG, "TransPreviewProgressDialog.ErrorLoadingTransformation.DialogMessage" ), e );
+      }
       transMeta = null;
     }
 
     return transMeta;
   }
 
-  private void doPreview( final IProgressMonitor progressMonitor ) {
+  private void doPreview( final IProgressMonitor progressMonitor, final boolean showErrorDialogs  ) {
     progressMonitor.beginTask(
       BaseMessages.getString( PKG, "TransPreviewProgressDialog.Monitor.BeginTask.Title" ), 100 );
 
@@ -137,13 +151,15 @@ public class TransPreviewProgressDialog {
     try {
       trans.prepareExecution( null );
     } catch ( final KettleException e ) {
-      shell.getDisplay().asyncExec( new Runnable() {
-        public void run() {
-          new ErrorDialog( shell,
-            BaseMessages.getString( PKG, "System.Dialog.Error.Title" ),
-            BaseMessages.getString( PKG, "TransPreviewProgressDialog.Exception.ErrorPreparingTransformation" ), e );
-        }
-      } );
+      if ( showErrorDialogs ) {
+        shell.getDisplay().asyncExec( new Runnable() {
+          public void run() {
+            new ErrorDialog( shell,
+              BaseMessages.getString( PKG, "System.Dialog.Error.Title" ),
+              BaseMessages.getString( PKG, "TransPreviewProgressDialog.Exception.ErrorPreparingTransformation" ), e );
+          }
+        } );
+      }
 
       // It makes no sense to continue, so just stop running...
       //
