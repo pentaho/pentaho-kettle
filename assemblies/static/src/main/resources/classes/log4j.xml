@@ -139,6 +139,16 @@
     <priority value="INFO"/>
   </category>
 
+  <logger name="org.pentaho.di.trans.Trans" additivity="false">
+    <level value="INFO"/>
+    <appender-ref ref="trans-appender"/>
+  </logger>
+
+  <logger name="org.pentaho.di.job.Job" additivity="false">
+    <level value="INFO"/>
+    <appender-ref ref="job-appender"/>
+  </logger>
+
    <!-- ======================= -->
    <!-- Setup the Root category -->
    <!-- ======================= -->
@@ -149,15 +159,6 @@
       <!--<appender-ref ref="PENTAHOFILE"/>-->
    </root>
 
-   <logger name="org.pentaho.di.trans.Trans" additivity="false">
-    <level value="INFO"/>
-    <appender-ref ref="trans-appender"/>
-   </logger>
-   
-   <logger name="org.pentaho.di.job.Job" additivity="false">
-    <level value="INFO"/>
-    <appender-ref ref="job-appender"/>
-   </logger>
    <!-- ================ -->
    <!-- Log4JDBC Loggers -->
    <!-- ================ -->
