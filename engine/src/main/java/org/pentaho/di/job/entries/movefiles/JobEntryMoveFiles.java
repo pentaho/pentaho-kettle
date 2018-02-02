@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -399,9 +399,8 @@ public class JobEntryMoveFiles extends JobEntryBase implements Cloneable, JobEnt
         logError( BaseMessages.getString( PKG, "JobMoveFiles.Log.Error.MoveToFolderMissing" ) );
         return result;
       }
-      FileObject folder = null;
-      try {
-        folder = KettleVFS.getFileObject( MoveToFolder, this );
+
+      try ( FileObject folder = KettleVFS.getFileObject( MoveToFolder, this ) ) {
         if ( !folder.exists() ) {
           if ( log.isDetailed() ) {
             logDetailed( BaseMessages.getString( PKG, "JobMoveFiles.Log.Error.FolderMissing", MoveToFolder ) );
@@ -420,14 +419,11 @@ public class JobEntryMoveFiles extends JobEntryBase implements Cloneable, JobEnt
       } catch ( Exception e ) {
         logError( BaseMessages.getString( PKG, "JobMoveFiles.Log.Error.GettingMoveToFolder", MoveToFolder, e
           .getMessage() ) );
+
+        // PDI-16845 - Force VFS reload to avoid SFTP pending connections
+        KettleVFS.rebootDefaultFileSystem();
+
         return result;
-      } finally {
-        if ( folder != null ) {
-          try {
-            folder.close();
-          } catch ( IOException ex ) { /* Ignore */
-          }
-        }
       }
     }
 
@@ -448,6 +444,8 @@ public class JobEntryMoveFiles extends JobEntryBase implements Cloneable, JobEnt
           }
           result.setNrErrors( NrErrors );
           displayResults();
+
+          KettleVFS.rebootDefaultFileSystem();
           return result;
         }
 
@@ -490,6 +488,8 @@ public class JobEntryMoveFiles extends JobEntryBase implements Cloneable, JobEnt
           }
           result.setNrErrors( NrErrors );
           displayResults();
+
+          KettleVFS.rebootDefaultFileSystem();
           return result;
         }
 
@@ -525,6 +525,7 @@ public class JobEntryMoveFiles extends JobEntryBase implements Cloneable, JobEnt
     }
 
     displayResults();
+    KettleVFS.rebootDefaultFileSystem();
 
     return result;
   }
@@ -607,35 +608,40 @@ public class JobEntryMoveFiles extends JobEntryBase implements Cloneable, JobEnt
 
               String destinationfilenamefull =
                 KettleVFS.getFilename( destinationfilefolder ) + Const.FILE_SEPARATOR + shortfilename;
-              FileObject destinationfile = KettleVFS.getFileObject( destinationfilenamefull, this );
 
-              entrystatus =
-                MoveFile(
-                  shortfilename, sourcefilefolder, destinationfile, movetofolderfolder, parentJob, result );
+              try ( FileObject destinationfile = KettleVFS.getFileObject( destinationfilenamefull, this ) ) {
+                entrystatus =
+                  MoveFile(
+                    shortfilename, sourcefilefolder, destinationfile, movetofolderfolder, parentJob, result );
+              }
+
               return entrystatus;
             } else if ( sourcefilefolder.getType().equals( FileType.FILE ) && destination_is_a_file ) {
               // Source is a file, destination is a file
 
-              FileObject destinationfile = KettleVFS.getFileObject( realDestinationFilefoldername, this );
+              try ( FileObject destinationfile = KettleVFS.getFileObject( realDestinationFilefoldername, this ) ) {
 
-              // return destination short filename
-              String shortfilename = destinationfile.getName().getBaseName();
-              try {
-                shortfilename = getDestinationFilename( shortfilename );
-              } catch ( Exception e ) {
-                logError( BaseMessages.getString( PKG, BaseMessages.getString(
-                  PKG, "JobMoveFiles.Error.GettingFilename", sourcefilefolder.getName().getBaseName(), e
-                    .toString() ) ) );
-                return entrystatus;
+                // return destination short filename
+                String shortfilename = destinationfile.getName().getBaseName();
+                try {
+                  shortfilename = getDestinationFilename( shortfilename );
+                } catch ( Exception e ) {
+                  logError( BaseMessages.getString( PKG, BaseMessages.getString(
+                    PKG, "JobMoveFiles.Error.GettingFilename", sourcefilefolder.getName().getBaseName(), e
+                      .toString() ) ) );
+                  return entrystatus;
+                }
+
+                String destinationfilenamefull =
+                  KettleVFS.getFilename( destinationfile.getParent() ) + Const.FILE_SEPARATOR + shortfilename;
+
+                try ( FileObject destinationfileAux = KettleVFS.getFileObject( destinationfilenamefull, this ) ) {
+                  entrystatus =
+                    MoveFile(
+                      shortfilename, sourcefilefolder, destinationfileAux, movetofolderfolder, parentJob, result );
+                }
               }
 
-              String destinationfilenamefull =
-                KettleVFS.getFilename( destinationfile.getParent() ) + Const.FILE_SEPARATOR + shortfilename;
-              destinationfile = KettleVFS.getFileObject( destinationfilenamefull, this );
-
-              entrystatus =
-                MoveFile(
-                  shortfilename, sourcefilefolder, destinationfile, movetofolderfolder, parentJob, result );
               return entrystatus;
             } else {
               // Both source and destination are folders

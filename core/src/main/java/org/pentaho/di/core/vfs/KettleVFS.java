@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -50,16 +50,20 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.util.Comparator;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 public class KettleVFS {
   public static final String TEMP_DIR = System.getProperty( "java.io.tmpdir" );
 
   private static Class<?> PKG = KettleVFS.class; // for i18n purposes, needed by Translator2!!
 
-  private static final KettleVFS kettleVFS = new KettleVFS();
+  private static KettleVFS kettleVFS = new KettleVFS();
   private final DefaultFileSystemManager fsm;
 
   private static VariableSpace defaultVariableSpace;
+  private static ReadWriteLock ktlVFSLock = new ReentrantReadWriteLock();
+
 
   static {
     // Create a new empty variable space...
@@ -115,8 +119,6 @@ public class KettleVFS {
 
   public static FileObject getFileObject( String vfsFilename, VariableSpace space, FileSystemOptions fsOptions ) throws KettleFileException {
     try {
-      FileSystemManager fsManager = getInstance().getFileSystemManager();
-
       // We have one problem with VFS: if the file is in a subdirectory of the current one: somedir/somefile
       // In that case, VFS doesn't parse the file correctly.
       // We need to put file: in front of it to make it work.
@@ -126,13 +128,19 @@ public class KettleVFS {
       // If not, we are going to assume it's a file.
       //
       boolean relativeFilename = true;
-      String[] schemes = fsManager.getSchemes();
-      for ( int i = 0; i < schemes.length && relativeFilename; i++ ) {
-        if ( vfsFilename.startsWith( schemes[i] + ":" ) ) {
-          relativeFilename = false;
-          // We have a VFS URL, load any options for the file system driver
-          fsOptions = buildFsOptions( space, fsOptions, vfsFilename, schemes[i] );
+
+      ktlVFSLock.readLock().lock();
+      try {
+        String[] schemes = getInstance().getFileSystemManager().getSchemes();
+        for ( int i = 0; i < schemes.length && relativeFilename; i++ ) {
+          if ( vfsFilename.startsWith( schemes[ i ] + ":" ) ) {
+            relativeFilename = false;
+            // We have a VFS URL, load any options for the file system driver
+            fsOptions = buildFsOptions( space, fsOptions, vfsFilename, schemes[ i ] );
+          }
         }
+      } finally {
+        ktlVFSLock.readLock().unlock();
       }
 
       String filename;
@@ -150,15 +158,20 @@ public class KettleVFS {
 
       FileObject fileObject = null;
 
-      if ( fsOptions != null ) {
-        fileObject = fsManager.resolveFile( filename, fsOptions );
-      } else {
-        fileObject = fsManager.resolveFile( filename );
-      }
+      ktlVFSLock.readLock().lock();
+      try {
+        if ( fsOptions != null ) {
+          fileObject = getInstance().getFileSystemManager().resolveFile( filename, fsOptions );
+        } else {
+          fileObject = getInstance().getFileSystemManager().resolveFile( filename );
+        }
 
-      if ( fileObject instanceof SftpFileObject ) {
-        fileObject = new SftpFileObjectWithWindowsSupport( (SftpFileObject) fileObject,
-                SftpFileSystemWindowsProvider.getSftpFileSystemWindows( (SftpFileObject) fileObject ) );
+        if ( fileObject instanceof SftpFileObject ) {
+          fileObject = new SftpFileObjectWithWindowsSupport( (SftpFileObject) fileObject,
+            SftpFileSystemWindowsProvider.getSftpFileSystemWindows( (SftpFileObject) fileObject ) );
+        }
+      } finally {
+        ktlVFSLock.readLock().unlock();
       }
 
       return fileObject;
@@ -491,24 +504,33 @@ public class KettleVFS {
    * @return boolean
    */
   public static boolean startsWithScheme( String vfsFileName ) {
-    FileSystemManager fsManager = getInstance().getFileSystemManager();
-
     boolean found = false;
-    String[] schemes = fsManager.getSchemes();
-    for ( int i = 0; i < schemes.length; i++ ) {
-      if ( vfsFileName.startsWith( schemes[ i ] + ":" ) ) {
-        found = true;
-        break;
+
+    ktlVFSLock.readLock().lock();
+    try {
+      String[] schemes = getInstance().getFileSystemManager().getSchemes();
+      for ( int i = 0; i < schemes.length; i++ ) {
+        if ( vfsFileName.startsWith( schemes[ i ] + ":" ) ) {
+          found = true;
+          break;
+        }
       }
+    } finally {
+      ktlVFSLock.readLock().unlock();
     }
 
     return found;
   }
 
   public static void closeEmbeddedFileSystem( String embeddedMetastoreKey ) {
-    if ( getInstance().getFileSystemManager() instanceof ConcurrentFileSystemManager ) {
-      ( (ConcurrentFileSystemManager) getInstance().getFileSystemManager() )
-        .closeEmbeddedFileSystem( embeddedMetastoreKey );
+    ktlVFSLock.readLock().lock();
+    try {
+      if ( getInstance().getFileSystemManager() instanceof ConcurrentFileSystemManager ) {
+        ( (ConcurrentFileSystemManager) getInstance().getFileSystemManager() )
+          .closeEmbeddedFileSystem( embeddedMetastoreKey );
+      }
+    } finally {
+      ktlVFSLock.readLock().unlock();
     }
   }
 
@@ -522,4 +544,17 @@ public class KettleVFS {
     }
   }
 
+  /**
+   * Reboot default file system manager and by consequence shutting down any pending SFTP connection's
+   */
+  public static void rebootDefaultFileSystem() {
+    ktlVFSLock.writeLock().lock();
+
+    try {
+      ( (DefaultFileSystemManager) getInstance().getFileSystemManager() ).close();
+      kettleVFS = new KettleVFS();
+    } finally {
+      ktlVFSLock.writeLock().unlock();
+    }
+  }
 }
