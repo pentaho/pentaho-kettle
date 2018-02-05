@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -43,6 +43,8 @@ public class ConstUI {
    * Default icon size
    */
   public static final int ICON_SIZE = 32;
+
+  public static final int LARGE_ICON_SIZE = 48;
 
   public static final int SMALL_ICON_SIZE = 16;
 
