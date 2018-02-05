@@ -30,6 +30,7 @@ import org.pentaho.di.engine.api.remote.Message;
 import org.pentaho.di.engine.api.remote.MessageDecoder;
 import org.pentaho.di.engine.api.remote.MessageEncoder;
 import org.pentaho.di.engine.api.remote.StopMessage;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.ael.websocket.exception.MessageEventFireEventException;
 
 import javax.websocket.ClientEndpointConfig;
@@ -51,10 +52,21 @@ import java.util.concurrent.atomic.AtomicBoolean;
  */
 
 public class DaemonMessagesClientEndpoint extends Endpoint {
-  private static final String PRFX_WS = "ws://";
-  private static final String PRFX_WS_SSL = "wss://";
-  private static final String REUSE_ENDPOINT = "/executionReuse";
-  private static final String ENDPOINT = "/execution";
+  /** The package name, used for internationalization of messages. */
+  private static Class<?> PKG = DaemonMessagesClientEndpoint.class; // for i18n purposes
+  //i18n messages
+  private static final String EXCEPTION_SESSION_CLOSED = "DaemonMessagesClientEndpoint.Exception.SessionIsClosed";
+
+  private static final String KETTLE_AEL_PDI_DAEMON_PRINCIPAL = "KETTLE_AEL_PDI_DAEMON_PRINCIPAL";
+  private static final String KETTLE_AEL_PDI_DAEMON_KEYTAB = "KETTLE_AEL_PDI_DAEMON_KEYTAB";
+  private static final String KETTLE_AEL_PDI_DAEMON_CONTEXT_REUSE = "KETTLE_AEL_PDI_DAEMON_CONTEXT_REUSE";
+  private static final String Y_LWC = "y";
+  private static final int MAX_TXT_MSG_BUF_SIZE = 500000;
+  private static final int MAX_BIN_MSG_BUF_SIZE = 500000;
+
+  private static final String URL_TEMPLATE = "%s://%s:%s/execution";
+  private static final String PRFX_WS = "ws";
+  private static final String PRFX_WS_SSL = "wss";
   private final MessageEventService messageEventService;
   private Session userSession = null;
   private String principal = null;
@@ -68,8 +80,7 @@ public class DaemonMessagesClientEndpoint extends Endpoint {
     try {
       setAuthProperties();
 
-      String url =
-        ( ssl ? PRFX_WS_SSL : PRFX_WS ) + host + ":" + port + ( reuseSparkContext ? REUSE_ENDPOINT : ENDPOINT );
+      String url = String.format( URL_TEMPLATE, ( ssl ? PRFX_WS_SSL : PRFX_WS ), host, port );
       URI uri = new URI( url );
       this.messageEventService = messageEventService;
 
@@ -90,10 +101,11 @@ public class DaemonMessagesClientEndpoint extends Endpoint {
     Variables variables = new Variables();
     variables.initializeVariablesFrom( null );
 
-    this.principal = variables.getVariable( "KETTLE_AEL_PDI_DAEMON_PRINCIPAL", null );
-    this.keytab = variables.getVariable( "KETTLE_AEL_PDI_DAEMON_KEYTAB", null );
-    String reuse = variables.getVariable( "KETTLE_AEL_PDI_DAEMON_CONTEXT_REUSE", "false" );
-    this.reuseSparkContext = "true".equals( reuse.toLowerCase() ) || "y".equals( reuse.toLowerCase() );
+    this.principal = variables.getVariable( KETTLE_AEL_PDI_DAEMON_PRINCIPAL, null );
+    this.keytab = variables.getVariable( KETTLE_AEL_PDI_DAEMON_KEYTAB, null );
+    String reuse = variables.getVariable( KETTLE_AEL_PDI_DAEMON_CONTEXT_REUSE, Boolean.FALSE.toString() );
+    this.reuseSparkContext =
+      Boolean.TRUE.toString().equals( reuse.toLowerCase() ) || Y_LWC.equals( reuse.toLowerCase() );
   }
 
   /**
@@ -104,8 +116,8 @@ public class DaemonMessagesClientEndpoint extends Endpoint {
   @Override
   public void onOpen( Session userSession, EndpointConfig endpointConfig ) {
     this.userSession = userSession;
-    this.userSession.setMaxTextMessageBufferSize( 500000 );
-    this.userSession.setMaxBinaryMessageBufferSize( 500000 );
+    this.userSession.setMaxTextMessageBufferSize( MAX_TXT_MSG_BUF_SIZE );
+    this.userSession.setMaxBinaryMessageBufferSize( MAX_BIN_MSG_BUF_SIZE );
 
     userSession.addMessageHandler( new MessageHandler.Whole<Message>() {
       /**
@@ -152,6 +164,7 @@ public class DaemonMessagesClientEndpoint extends Endpoint {
   public void sendMessage( ExecutionRequest request ) throws KettleException {
     sessionValid();
     try {
+      request.setReuseSparkContext( reuseSparkContext );
       this.userSession.getBasicRemote().sendObject( request );
     } catch ( Exception e ) {
       throw new KettleException( e );
@@ -191,7 +204,7 @@ public class DaemonMessagesClientEndpoint extends Endpoint {
    */
   public void sessionValid() throws KettleException {
     if ( this.userSession == null || !this.userSession.isOpen() ) {
-      throw new KettleException( "Session is closed." );
+      throw new KettleException( BaseMessages.getString( PKG, EXCEPTION_SESSION_CLOSED ) );
     }
   }
 }
