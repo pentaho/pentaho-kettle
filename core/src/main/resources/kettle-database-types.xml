@@ -214,5 +214,10 @@
     <description>Vertica 5+</description>
     <classname>org.pentaho.di.core.database.Vertica5DatabaseMeta</classname>
   </database-type>
- 
+
+  <database-type id="GOOGLEBIGQUERY">
+    <description>Google BigQuery</description>
+    <classname>org.pentaho.di.core.database.GoogleBigQueryDatabaseMeta</classname>
+  </database-type>
+
  </database-types>
