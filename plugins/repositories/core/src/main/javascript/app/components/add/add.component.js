@@ -44,6 +44,7 @@ define([
     vm.$onInit = onInit;
     vm.other = other;
     vm.getStarted = getStarted;
+    vm.close = close;
 
     /**
      * The $onInit hook of components lifecycle which is called on each controller
@@ -71,6 +72,13 @@ define([
      */
     function getStarted() {
       $state.go("pentaho.details");
+    }
+
+    /**
+     * Closes the window
+     */
+    function close() {
+      closeWindow();
     }
   }
 
