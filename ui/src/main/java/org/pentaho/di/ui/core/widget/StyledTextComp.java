@@ -45,6 +45,7 @@ import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
+import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
@@ -52,6 +53,7 @@ import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
@@ -492,5 +494,19 @@ public class StyledTextComp extends Composite {
 
   public void setEditable( boolean canEdit ) {
     styledText.setEditable( canEdit );
+  }
+
+
+  @Override
+  public void setEnabled( boolean enabled ) {
+    styledText.setEnabled( enabled );
+    // StyledText component does not get the "disabled" look, so it needs to be applied explicitly
+    // See https://bugs.eclipse.org/bugs/show_bug.cgi?id=4745
+    if ( Display.getDefault() != null ) {
+      Color foreground = Display.getDefault().getSystemColor( enabled ? SWT.COLOR_BLACK : SWT.COLOR_DARK_GRAY );
+      Color background = Display.getDefault().getSystemColor( enabled ? SWT.COLOR_WHITE : SWT.COLOR_WIDGET_BACKGROUND );
+      styledText.setForeground( foreground );
+      styledText.setBackground( background );
+    }
   }
 }

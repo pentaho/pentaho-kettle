@@ -406,7 +406,7 @@ public abstract class CommonStepDialog<StepMetaType extends CommonStepMeta> exte
   }
 
   protected void ok() {
-    if ( StringUtils.isEmpty( wStepname.getText() ) ) {
+    if ( StringUtils.isEmpty( wStepname.getText().trim() ) ) {
       return;
     }
     stepname = wStepname.getText();
