@@ -3,7 +3,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -265,6 +265,8 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
 
   private AtomicBoolean stopped;
 
+  protected AtomicBoolean safeStopped;
+
   private AtomicBoolean paused;
 
   private boolean init;
@@ -469,6 +471,7 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
 
     running = new AtomicBoolean( false );
     stopped = new AtomicBoolean( false );
+    safeStopped = new AtomicBoolean( false );
     paused = new AtomicBoolean( false );
 
     init = false;
@@ -1267,7 +1270,7 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
     // Right after the pause loop we have to check if this thread is stopped or
     // not.
     //
-    if ( stopped.get() ) {
+    if ( stopped.get() && !safeStopped.get() ) {
       if ( log.isDebug() ) {
         logDebug( BaseMessages.getString( PKG, "BaseStep.Log.StopPuttingARow" ) );
       }
@@ -1582,7 +1585,7 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
     }
 
     while ( !rs.putRow( toBeSent, row ) ) {
-      if ( isStopped() ) {
+      if ( isStopped() && !safeStopped.get() ) {
         return;
       }
     }
@@ -2957,6 +2960,10 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
     this.stopped.set( stopped );
   }
 
+  @Override
+  public void setSafeStopped( boolean stopped ) {
+    this.safeStopped.set( stopped );
+  }
   /*
    * (non-Javadoc)
    *

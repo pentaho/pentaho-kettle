@@ -3,7 +3,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -332,6 +332,8 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
 
   private boolean halting;
 
+  private boolean safeStopping;
+
   private boolean debug;
 
   private boolean pausing;
@@ -372,6 +374,7 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
   private StepMeta showTargetStreamsStep;
 
   Timer redrawTimer;
+  private ToolItem stopItem;
 
   public void setCurrentNote( NotePadMeta ni ) {
     this.ni = ni;
@@ -1806,6 +1809,42 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
             menu.setVisible( true );
           } else {
             runTransformation();
+          }
+        }
+      } );
+
+      stopItem = new ToolItem( swtToolbar, SWT.DROP_DOWN, 2 );
+
+      stopItem.setImage( GUIResource.getInstance().getImage( "ui/images/stop.svg" ) );
+      stopItem.setToolTipText( BaseMessages.getString( PKG, "Spoon.Tooltip.StopTranformation" ) );
+      stopItem.addSelectionListener( new SelectionAdapter() {
+
+        @Override
+        public void widgetSelected( SelectionEvent e ) {
+          if ( e.detail == SWT.DROP_DOWN ) {
+            Menu menu = new Menu( shell, SWT.POP_UP );
+
+            MenuItem item1 = new MenuItem( menu, SWT.PUSH );
+            item1.setText( BaseMessages.getString( PKG, "Spoon.Tooltip.StopTranformation" ) );
+            item1.addSelectionListener( new SelectionAdapter() {
+              @Override
+              public void widgetSelected( SelectionEvent e1 ) {
+                stopTransformation();
+              }
+            } );
+
+            MenuItem item2 = new MenuItem( menu, SWT.PUSH );
+            item2.setText( BaseMessages.getString( PKG, "Spoon.Tooltip.SafeStopTranformation" ) );
+            item2.addSelectionListener( new SelectionAdapter() {
+              @Override
+              public void widgetSelected( SelectionEvent e2 ) {
+                safeStop();
+              }
+            } );
+            menu.setLocation( shell.getDisplay().map( mainComposite.getParent(), null, mainComposite.getLocation() ) );
+            menu.setVisible( true );
+          } else {
+            stopTransformation();
           }
         }
       } );
@@ -4082,7 +4121,7 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
   }
 
   public void stop() {
-    if ( running && !halting ) {
+    if ( ( running && !halting ) || safeStopping ) {
       halting = true;
       trans.stopAll();
       log.logMinimal( BaseMessages.getString( PKG, "TransLog.Log.ProcessingOfTransformationStopped" ) );
@@ -4091,6 +4130,23 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
       initialized = false;
       halted = false;
       halting = false;
+      safeStopping = false;
+
+      setControlStates();
+
+      transMeta.setInternalKettleVariables(); // set the original vars back as they may be changed by a mapping
+    }
+  }
+
+  public void safeStop() {
+    if ( running && !halting ) {
+      halting = true;
+      safeStopping = true;
+      trans.safeStop();
+      log.logMinimal( BaseMessages.getString( PKG, "TransLog.Log.TransformationSafeStopped" ) );
+
+      initialized = false;
+      halted = false;
 
       setControlStates();
 
@@ -4168,11 +4224,8 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
 
         // Stop button...
         //
-        XulToolbarbutton stopButton = (XulToolbarbutton) toolbar.getElementById( "trans-stop" );
-        if ( stopButton != null && !controlDisposed( stopButton ) ) {
-          if ( stopButton.isDisabled() ^ !running ) {
-            stopButton.setDisabled( !running );
-          }
+        if ( !stopItem.isEnabled() ^ !running ) {
+          stopItem.setEnabled( running );
         }
 
         // Debug button...
@@ -4322,6 +4375,7 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
         initialized = false;
         halted = false;
         halting = false;
+        safeStopping = false;
 
         setControlStates();
 
