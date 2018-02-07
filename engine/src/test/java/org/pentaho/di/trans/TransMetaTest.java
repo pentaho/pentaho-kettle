@@ -89,6 +89,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.spy;
 
 public class TransMetaTest {
   public static final String STEP_NAME = "Any step name";
@@ -601,5 +602,47 @@ public class TransMetaTest {
     assertEquals( "name", row.getValueMeta( 1 ).getName() );
     assertEquals( ValueMetaInterface.TYPE_INTEGER, row.getValueMeta( 0 ).getType() );
     assertEquals( ValueMetaInterface.TYPE_STRING, row.getValueMeta( 1 ).getType() );
+  }
+
+  @Test
+  public void testHasLoop_simpleLoop() throws Exception {
+    //main->2->3->main
+    TransMeta transMetaSpy = spy( transMeta );
+    StepMeta stepMetaMain = createStepMeta( "mainStep" );
+    StepMeta stepMeta2 = createStepMeta( "step2" );
+    StepMeta stepMeta3 = createStepMeta( "step3" );
+    when( transMetaSpy.findNrPrevSteps( stepMetaMain ) ).thenReturn( 1 );
+    when( transMetaSpy.findPrevStep( stepMetaMain, 0 ) ).thenReturn( stepMeta2 );
+    when( transMetaSpy.findNrPrevSteps( stepMeta2 ) ).thenReturn( 1 );
+    when( transMetaSpy.findPrevStep( stepMeta2, 0 ) ).thenReturn( stepMeta3 );
+    when( transMetaSpy.findNrPrevSteps( stepMeta3 ) ).thenReturn( 1 );
+    when( transMetaSpy.findPrevStep( stepMeta3, 0 ) ).thenReturn( stepMetaMain );
+    assertTrue( transMetaSpy.hasLoop( stepMetaMain ) );
+  }
+
+  @Test
+  public void testHasLoop_loopInPrevSteps() throws Exception {
+    //main->2->3->4->3
+    TransMeta transMetaSpy = spy( transMeta );
+    StepMeta stepMetaMain = createStepMeta( "mainStep" );
+    StepMeta stepMeta2 = createStepMeta( "step2" );
+    StepMeta stepMeta3 = createStepMeta( "step3" );
+    StepMeta stepMeta4 = createStepMeta( "step4" );
+    when( transMetaSpy.findNrPrevSteps( stepMetaMain ) ).thenReturn( 1 );
+    when( transMetaSpy.findPrevStep( stepMetaMain, 0 ) ).thenReturn( stepMeta2 );
+    when( transMetaSpy.findNrPrevSteps( stepMeta2 ) ).thenReturn( 1 );
+    when( transMetaSpy.findPrevStep( stepMeta2, 0 ) ).thenReturn( stepMeta3 );
+    when( transMetaSpy.findNrPrevSteps( stepMeta3 ) ).thenReturn( 1 );
+    when( transMetaSpy.findPrevStep( stepMeta3, 0 ) ).thenReturn( stepMeta4 );
+    when( transMetaSpy.findNrPrevSteps( stepMeta4 ) ).thenReturn( 1 );
+    when( transMetaSpy.findPrevStep( stepMeta4, 0 ) ).thenReturn( stepMeta3 );
+    //check no StackOverflow error
+    assertFalse( transMetaSpy.hasLoop( stepMetaMain ) );
+  }
+
+  private StepMeta createStepMeta( String name ) {
+    StepMeta stepMeta = mock( StepMeta.class );
+    when( stepMeta.getName() ).thenReturn( name );
+    return stepMeta;
   }
 }
