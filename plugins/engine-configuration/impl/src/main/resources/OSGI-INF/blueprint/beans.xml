@@ -63,6 +63,12 @@
     <pen:di-plugin type="org.pentaho.di.core.extension.ExtensionPointPluginType"/>
   </bean>
 
+  <bean id="runConfigurationInjectExtensionPoint" scope="singleton"
+        class="org.pentaho.di.engine.configuration.impl.extension.RunConfigurationInjectExtensionPoint">
+    <argument ref="runConfigurationManager"/>
+    <pen:di-plugin type="org.pentaho.di.core.extension.ExtensionPointPluginType"/>
+  </bean>
+
   <bean id="runConfigurationSaveExtensionPoint" scope="singleton"
         class="org.pentaho.di.engine.configuration.impl.extension.RunConfigurationSaveExtensionPoint">
     <argument ref="runConfigurationManager"/>
