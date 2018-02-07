@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -87,6 +87,11 @@ public class StopTransServlet extends BaseHttpServlet implements CartePluginInte
       <td>Carte transformation ID of the transformation to be stopped. This parameter is optional when xml=Y is used.</td>
       <td>query, optional</td>
       </tr>
+      <tr>
+      <td>inputOnly</td>
+      <td>Boolean flag indicates which steps to stop.  Use <code>Y</code> to stop Input steps only</td>
+      <td>boolean, optional</td>
+      </tr>
       </tbody>
       </table>
 
@@ -148,6 +153,7 @@ public class StopTransServlet extends BaseHttpServlet implements CartePluginInte
 
     String transName = request.getParameter( "name" );
     String id = request.getParameter( "id" );
+    boolean inputOnly = "Y".equalsIgnoreCase( request.getParameter( "inputOnly" ) );
     boolean useXML = "Y".equalsIgnoreCase( request.getParameter( "xml" ) );
 
     PrintWriter out = response.getWriter();
@@ -191,7 +197,11 @@ public class StopTransServlet extends BaseHttpServlet implements CartePluginInte
       }
 
       if ( trans != null ) {
-        trans.stopAll();
+        if ( inputOnly ) {
+          trans.safeStop();
+        } else {
+          trans.stopAll();
+        }
 
         String message = BaseMessages.getString( PKG, "StopTransServlet.TransSopRequested", transName );
 

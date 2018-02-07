@@ -102,6 +102,12 @@ public class BaseStreamStep extends BaseStep {
   }
 
 
+  @Override public void setOutputDone() {
+    if ( !safeStopped.get() ) {
+      super.setOutputDone();
+    }
+  }
+
   @Override public boolean processRow( StepMetaInterface smi, StepDataInterface sdi ) throws KettleException {
     Preconditions.checkArgument( first,
       BaseMessages.getString( PKG, "BaseStreamStep.ProcessRowsError" ) );
@@ -111,6 +117,7 @@ public class BaseStreamStep extends BaseStep {
     source.open();
 
     bufferStream().forEach( result -> putRows( result.getRows() ) );
+    super.setOutputDone();
     return false;
   }
 
@@ -121,7 +128,9 @@ public class BaseStreamStep extends BaseStep {
   @Override
   public void stopRunning( StepMetaInterface stepMetaInterface, StepDataInterface stepDataInterface )
     throws KettleException {
-    subtransExecutor.stop();
+    if ( !safeStopped.get() ) {
+      subtransExecutor.stop();
+    }
     if ( source != null ) {
       source.close();
     }
@@ -143,7 +152,7 @@ public class BaseStreamStep extends BaseStep {
   }
 
   private void putRows( List<RowMetaAndData> rows ) {
-    if ( isStopped() ) {
+    if ( isStopped() && !safeStopped.get() ) {
       return;
     }
     rows.forEach( row -> {

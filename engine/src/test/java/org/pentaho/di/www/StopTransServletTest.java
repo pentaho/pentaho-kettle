@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -25,6 +25,7 @@ package org.pentaho.di.www;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mockito;
 import org.owasp.encoder.Encode;
 import org.pentaho.di.core.gui.Point;
 import org.pentaho.di.core.logging.KettleLogStore;
@@ -109,5 +110,31 @@ public class StopTransServletTest {
 
     PowerMockito.verifyStatic( atLeastOnce() );
     Encode.forHtml( anyString() );
+  }
+
+  @Test
+  @PrepareForTest( { Encode.class } )
+  public void testWillStopInputStepsOnly() throws ServletException, IOException {
+    KettleLogStore.init();
+    HttpServletRequest mockHttpServletRequest = mock( HttpServletRequest.class );
+    HttpServletResponse mockHttpServletResponse = mock( HttpServletResponse.class );
+    Trans mockTrans = mock( Trans.class );
+    TransMeta mockTransMeta = mock( TransMeta.class );
+    LogChannelInterface mockChannelInterface = mock( LogChannelInterface.class );
+    StringWriter out = new StringWriter();
+    PrintWriter printWriter = new PrintWriter( out );
+
+    when( mockHttpServletRequest.getContextPath() ).thenReturn( StopTransServlet.CONTEXT_PATH );
+    when( mockHttpServletRequest.getParameter( "inputOnly" ) ).thenReturn( "Y" );
+    when( mockHttpServletRequest.getParameter( "name" ) ).thenReturn( "test" );
+    when( mockHttpServletRequest.getParameter( "id" ) ).thenReturn( "123" );
+    when( mockHttpServletResponse.getWriter() ).thenReturn( printWriter );
+    when( mockTransformationMap.getTransformation( any( CarteObjectEntry.class ) ) ).thenReturn( mockTrans );
+    when( mockTrans.getLogChannel() ).thenReturn( mockChannelInterface );
+    when( mockTrans.getLogChannelId() ).thenReturn( "test" );
+    when( mockTrans.getTransMeta() ).thenReturn( mockTransMeta );
+
+    stopTransServlet.doGet( mockHttpServletRequest, mockHttpServletResponse );
+    Mockito.verify( mockTrans ).safeStop();
   }
 }

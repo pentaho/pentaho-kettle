@@ -2,8 +2,6 @@
   <toolbar id="nav-toolbar" mode="icons">
     <toolbarbutton id="trans-pause" label="${Spoon.Menu.Transformation.Pause}" image="images/pause.svg"
       tooltiptext="${Spoon.Tooltip.PauseTranformation}" onclick="transgraph.pauseTransformation()" />
-    <toolbarbutton id="trans-stop" label="${Spoon.Menu.Transformation.Stop}" image="images/stop.svg"
-      tooltiptext="${Spoon.Tooltip.StopTranformation}" onclick="transgraph.stopTransformation()" />
     <toolbarbutton id="trans-preview" label="${Spoon.Menu.Transformation.Preview}" image="images/preview.svg"
       tooltiptext="${Spoon.Tooltip.PreviewTranformation}" onclick="transgraph.previewFile()" />
     <toolbarbutton id="trans-debug" label="${Spoon.Menu.Transformation.Debug}" image="images/debug.svg"

@@ -3,7 +3,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -1879,37 +1879,52 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
   }
 
   /**
+   * Stops only input steps so that all downstream steps can finish processing rows that have already been input
+   */
+  public void safeStop() {
+    if ( steps == null ) {
+      return;
+    }
+    steps.stream().filter( combi -> combi.step.getInputRowSets().isEmpty() )
+      .forEach( combi -> stopStep( combi, true ) );
+
+    notifyStoppedListeners();
+  }
+
+  /**
    * Stops all steps from running, and alerts any registered listeners.
    */
   public void stopAll() {
     if ( steps == null ) {
       return;
     }
-
-    // log.logDetailed("DIS: Checking wether of not ["+sname+"]."+cnr+" has started!");
-    // log.logDetailed("DIS: hasStepStarted() looking in "+threads.size()+" threads");
-    for ( int i = 0; i < steps.size(); i++ ) {
-      StepMetaDataCombi sid = steps.get( i );
-      StepInterface rt = sid.step;
-      rt.setStopped( true );
-      rt.resumeRunning();
-
-      // Cancel queries etc. by force...
-      StepInterface si = rt;
-      try {
-        si.stopRunning( sid.meta, sid.data );
-      } catch ( Exception e ) {
-        log.logError( "Something went wrong while trying to stop the transformation: " + e.toString() );
-        log.logError( Const.getStackTracker( e ) );
-      }
-
-      sid.data.setStatus( StepExecutionStatus.STATUS_STOPPED );
-    }
+    steps.forEach( combi -> stopStep( combi, false ) );
 
     // if it is stopped it is not paused
     setPaused( false );
     setStopped( true );
 
+    notifyStoppedListeners();
+  }
+
+  public void stopStep( StepMetaDataCombi combi, boolean safeStop ) {
+    StepInterface rt = combi.step;
+    rt.setStopped( true );
+    rt.setSafeStopped( safeStop );
+    rt.resumeRunning();
+
+    try {
+      rt.stopRunning( combi.meta, combi.data );
+    } catch ( Exception e ) {
+      log.logError( "Something went wrong while trying to safe stop the transformation: ", e );
+    }
+    combi.data.setStatus( StepExecutionStatus.STATUS_STOPPED );
+    if ( safeStop ) {
+      rt.setOutputDone();
+    }
+  }
+
+  public void notifyStoppedListeners() {
     // Fire the stopped listener...
     //
     synchronized ( transStoppedListeners ) {
