@@ -1767,7 +1767,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
       };
 
       URL url = new URL( DOCUMENTATION_URL );
-      addSpoonBrowser( STRING_DOCUMENT_TAB_NAME, url.toString(), listener );
+      HelpUtils.openHelpDialog( shell, STRING_DOCUMENT_TAB_NAME, url.toString(), STRING_DOCUMENT_TAB_NAME, listener );
 
     } catch ( MalformedURLException e1 ) {
       log.logError( Const.getStackTracker( e1 ) );
