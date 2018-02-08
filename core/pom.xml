@@ -484,6 +484,11 @@
       <groupId>org.codehaus.woodstox</groupId>
       <artifactId>wstx-asl</artifactId>
     </dependency>
+    <dependency>
+      <groupId>pentaho</groupId>
+      <artifactId>simple-jndi</artifactId>
+      <version>${simple-jndi.version}</version>
+    </dependency>
 
     <!-- Test dependencies -->
     <dependency>
@@ -499,12 +504,6 @@
     <dependency>
       <groupId>org.powermock</groupId>
       <artifactId>powermock-api-mockito</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>pentaho</groupId>
-      <artifactId>simple-jndi</artifactId>
-      <version>${simple-jndi.version}</version>
       <scope>test</scope>
     </dependency>
     <dependency>
