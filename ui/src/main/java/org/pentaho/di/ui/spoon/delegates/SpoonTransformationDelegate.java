@@ -861,6 +861,13 @@ public class SpoonTransformationDelegate extends SpoonDelegate {
       TransGraph activeTransGraph = spoon.getActiveTransGraph();
       activeTransGraph.transLogDelegate.addTransLog();
 
+      // Set the named parameters
+      Map<String, String> paramMap = executionConfiguration.getParams();
+      for ( String key : paramMap.keySet() ) {
+        transMeta.setParameterValue( key, Const.NVL( paramMap.get( key ), "" ) );
+      }
+      transMeta.activateParameters();
+
       ExtensionPointHandler.callExtensionPoint( log, KettleExtensionPoint.SpoonTransMetaExecutionStart.id, transMeta );
       ExtensionPointHandler.callExtensionPoint( log, KettleExtensionPoint.SpoonTransExecutionConfiguration.id,
           executionConfiguration );

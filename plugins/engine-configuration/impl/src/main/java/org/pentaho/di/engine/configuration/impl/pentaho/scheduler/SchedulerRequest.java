@@ -29,6 +29,7 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.HttpClients;
 import org.pentaho.di.base.AbstractMeta;
+import org.pentaho.di.core.parameters.UnknownParamException;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.Repository;
 
@@ -108,11 +109,8 @@ public class SchedulerRequest {
   }
 
   public void submit( AbstractMeta meta ) {
-    String filename = getFullPath( meta );
     try {
-      httpPost.setEntity( new StringEntity( "<jobScheduleRequest>\n"
-        + "<inputFile>" + filename + "</inputFile>\n"
-        + "</jobScheduleRequest>" ) );
+      httpPost.setEntity( buildSchedulerRequestEntity( meta ) );
       httpclient.execute( httpPost );
       logMessage();
     } catch ( Exception e ) {
@@ -128,6 +126,26 @@ public class SchedulerRequest {
 
   private String getFullPath( AbstractMeta meta ) {
     return meta.getRepositoryDirectory().getPath() + "/" + meta.getName() + "." + meta.getDefaultExtension();
+  }
+
+  StringEntity buildSchedulerRequestEntity( AbstractMeta meta )
+          throws UnsupportedEncodingException, UnknownParamException {
+    String filename = getFullPath( meta );
+
+    StringBuilder sb = new StringBuilder();
+    sb.append( "<jobScheduleRequest>\n" );
+    sb.append( "<inputFile>" ).append( filename ).append( "</inputFile>\n" );
+    sb.append( "<pdiParameters>\n" );
+    for ( String param : meta.listParameters() ) {
+      sb.append( "<entry>\n" );
+      sb.append( "<key>" ).append( param ).append( "</key>\n" );
+      sb.append( "<value>" ).append( meta.getParameterValue( param ) ).append( "</value>\n" );
+      sb.append( "</entry>\n" );
+    }
+    sb.append( "</pdiParameters>\n" );
+    sb.append( "</jobScheduleRequest>" );
+
+    return new StringEntity( sb.toString() );
   }
 
 }
