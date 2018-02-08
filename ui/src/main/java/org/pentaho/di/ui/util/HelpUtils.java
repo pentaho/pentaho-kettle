@@ -1,7 +1,7 @@
 /*
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  * **************************************************************************
  *
@@ -21,6 +21,7 @@
 package org.pentaho.di.ui.util;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.browser.LocationListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.FormAttachment;
@@ -121,6 +122,13 @@ public class HelpUtils {
 
   public static ShowHelpDialog openHelpDialog( Shell shell, String dialogTitle, String url, String header ) {
     ShowHelpDialog helpDlg = new ShowHelpDialog( shell, dialogTitle, url, header );
+    helpDlg.open();
+    return helpDlg;
+  }
+
+  public static ShowHelpDialog openHelpDialog( Shell shell, String dialogTitle, String url, String header,
+                                               LocationListener locationListener ) {
+    ShowHelpDialog helpDlg = new ShowHelpDialog( shell, dialogTitle, url, header, locationListener );
     helpDlg.open();
     return helpDlg;
   }

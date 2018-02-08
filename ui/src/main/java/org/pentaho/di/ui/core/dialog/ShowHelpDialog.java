@@ -1,7 +1,7 @@
 /*
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  * **************************************************************************
  *
@@ -22,6 +22,7 @@ package org.pentaho.di.ui.core.dialog;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.browser.Browser;
+import org.eclipse.swt.browser.LocationListener;
 import org.eclipse.swt.events.ShellAdapter;
 import org.eclipse.swt.events.ShellEvent;
 import org.eclipse.swt.graphics.Color;
@@ -66,12 +67,24 @@ public class ShowHelpDialog extends Dialog {
   private int headerHeight = 55;
   private int headerLabelPosition = 10;
 
+  private LocationListener locationListener;
+
   public ShowHelpDialog( Shell parent, String dialogTitle, String url, String header ) {
     super( parent, SWT.NONE );
     props = PropsUI.getInstance();
     this.dialogTitle = dialogTitle;
     this.header = header;
     this.url = url;
+  }
+
+  public ShowHelpDialog( Shell parent, String dialogTitle, String url, String header,
+                        LocationListener locationListener ) {
+    super( parent, SWT.NONE );
+    props = PropsUI.getInstance();
+    this.dialogTitle = dialogTitle;
+    this.header = header;
+    this.url = url;
+    this.locationListener = locationListener;
   }
 
   protected Shell createShell( Shell parent ) {
@@ -153,6 +166,9 @@ public class ShowHelpDialog extends Dialog {
     } );
 
     wBrowser.setUrl( url );
+    if ( locationListener != null ) {
+      wBrowser.addLocationListener( locationListener );
+    }
 
     BaseStepDialog.setSize( shell, 800, 600, true );
 
