@@ -198,6 +198,8 @@ public abstract class AbstractMeta implements ChangedFlagInterface, UndoInterfac
 
   protected int undo_position;
 
+  protected RunOptions runOptions = new RunOptions();
+
   private boolean showDialog = true;
   private boolean alwaysShowRunOptions = true;
 
@@ -2090,4 +2092,29 @@ public abstract class AbstractMeta implements ChangedFlagInterface, UndoInterfac
     return this.versioningEnabled;
   }
 
+  private class RunOptions {
+    boolean clearingLog;
+    boolean safeModeEnabled;
+
+    RunOptions() {
+      clearingLog = true;
+      safeModeEnabled = false;
+    }
+  }
+
+  public boolean isClearingLog() {
+    return runOptions.clearingLog;
+  }
+
+  public void setClearingLog( boolean clearingLog ) {
+    this.runOptions.clearingLog = clearingLog;
+  }
+
+  public boolean isSafeModeEnabled() {
+    return runOptions.safeModeEnabled;
+  }
+
+  public void setSafeModeEnabled( boolean safeModeEnabled ) {
+    this.runOptions.safeModeEnabled = safeModeEnabled;
+  }
 }
