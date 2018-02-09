@@ -2384,6 +2384,8 @@ public class TableView extends Composite {
       ComboVar widget = (ComboVar) combo;
       if ( lsFocusInTabItem != null ) {
         widget.getCComboWidget().addListener( SWT.FocusIn, lsFocusInTabItem );
+      } else {
+        widget.setItems( opt );
       }
       props.setLook( widget, Props.WIDGET_STYLE_TABLE );
       widget.addTraverseListener( lsTraverse );
