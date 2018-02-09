@@ -122,7 +122,7 @@ public class BaseStreamStep extends BaseStep {
   }
 
   private Iterable<Result> bufferStream() {
-    return window.buffer( source.rows() );
+    return window.buffer( source.observable() );
   }
 
   @Override

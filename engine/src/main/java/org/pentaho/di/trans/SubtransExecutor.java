@@ -21,6 +21,7 @@
  ******************************************************************************/
 package org.pentaho.di.trans;
 
+import org.eclipse.jetty.util.ConcurrentHashSet;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.RowMetaAndData;
@@ -38,6 +39,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 
 /**
  * Will run the given sub-transformation with the rows passed to execute
@@ -48,28 +50,27 @@ public class SubtransExecutor {
   private Trans parentTrans;
   private TransMeta subtransMeta;
   private boolean shareVariables;
-  private TransExecutorData transExecutorData;
   private TransExecutorParameters parameters;
   private boolean stopped;
+  Set<Trans> running;
 
   public SubtransExecutor( Trans parentTrans, TransMeta subtransMeta, boolean shareVariables,
                            TransExecutorData transExecutorData, TransExecutorParameters parameters ) {
     this.parentTrans = parentTrans;
     this.subtransMeta = subtransMeta;
     this.shareVariables = shareVariables;
-    this.transExecutorData = transExecutorData;
     this.parameters = parameters;
     this.statuses = new LinkedHashMap<>();
+    this.running = new ConcurrentHashSet<>();
   }
 
   public Optional<Result> execute( List<RowMetaAndData> rows ) throws KettleException {
     if ( rows.isEmpty() || stopped ) {
       return Optional.empty();
     }
-    this.transExecutorData.groupTimeStart = System.currentTimeMillis();
 
     Trans subtrans = this.createSubtrans();
-    this.transExecutorData.setExecutorTrans( subtrans );
+    running.add( subtrans );
 
     // Pass parameter values
     passParametersToTrans( subtrans, rows.get( 0 ) );
@@ -83,6 +84,7 @@ public class SubtransExecutor {
 
     subtrans.waitUntilFinished();
     updateStatuses( subtrans );
+    running.remove( subtrans );
 
     return Optional.of( subtrans.getResult() );
   }
@@ -99,9 +101,7 @@ public class SubtransExecutor {
         statuses.put( combi.stepname, stepStatus );
       }
 
-      if ( stepStatus != null ) {
-        stepStatus.setStatusDescription( StepExecutionStatus.STATUS_RUNNING.getDescription() );
-      }
+      stepStatus.setStatusDescription( StepExecutionStatus.STATUS_RUNNING.getDescription() );
     }
   }
 
@@ -155,6 +155,10 @@ public class SubtransExecutor {
 
   public void stop() {
     stopped = true;
+    for ( Trans subTrans : running ) {
+      subTrans.stopAll();
+    }
+    running.clear();
     for ( Map.Entry<String, StepStatus> entry : statuses.entrySet() ) {
       entry.getValue().setStatusDescription( StepExecutionStatus.STATUS_STOPPED.getDescription() );
     }

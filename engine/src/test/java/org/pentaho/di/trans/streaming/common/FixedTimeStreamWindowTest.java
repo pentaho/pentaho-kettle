@@ -21,6 +21,7 @@
  ******************************************************************************/
 package org.pentaho.di.trans.streaming.common;
 
+import io.reactivex.Observable;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -50,6 +51,6 @@ public class FixedTimeStreamWindowTest {
     rowMeta.addValueMeta( new ValueMetaString( "field" ) );
     FixedTimeStreamWindow<List> window =
       new FixedTimeStreamWindow<>( subtransExecutor, rowMeta, 0, 2 );
-    window.buffer( singletonList( asList( "v1", "v2" ) ) ).forEach( result -> { } );
+    window.buffer( Observable.fromIterable( singletonList( asList( "v1", "v2" ) ) ) ).forEach( result -> { } );
   }
 }

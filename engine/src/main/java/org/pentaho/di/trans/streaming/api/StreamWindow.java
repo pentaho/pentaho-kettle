@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,6 +22,8 @@
 
 package org.pentaho.di.trans.streaming.api;
 
+import io.reactivex.Observable;
+
 /** A StreamWindow governs buffering and sending rows to a sub-transformation.
  *
  *  Windowing strategies could include sending buffered rows
@@ -33,7 +35,7 @@ package org.pentaho.di.trans.streaming.api;
 public interface StreamWindow<I, O> {
 
   /**
-   * Takes an iterable (would typically be a {@link StreamSource#rows()}
+   * Takes an iterable (would typically be a {@link StreamSource#observable()}}
    * call) and buffers it according to the window strategy.
    *
    * Returns an iterable of data for the window.  Depending on stream implementation,
@@ -42,6 +44,6 @@ public interface StreamWindow<I, O> {
    * will pass windowed data to a subtransformation, and return the
    * transformed results.
    */
-  Iterable<O> buffer( Iterable<I> rowIterator );
+  Iterable<O> buffer( Observable<I> observable );
 }
 
