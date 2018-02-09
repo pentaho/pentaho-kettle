@@ -74,8 +74,8 @@ public class RepositoryConnectMenu {
         }
         StringBuilder connectionLabelTip = new StringBuilder( connectionLabel.toString() );
         if ( repoConnectController != null && repoConnectController.getConnectedRepository() != null ) {
-          connectionLabel.append( truncateName( repoConnectController.getConnectedRepository().getName() ) );
-          connectionLabelTip.append( repoConnectController.getConnectedRepository().getName() );
+          connectionLabel.append( truncateName( spoon.getRepositoryName() ) );
+          connectionLabelTip.append( spoon.getRepositoryName() );
         }
         connectDropdown.setText( connectionLabel.toString() );
         connectDropdown.setToolTipText( connectionLabelTip.toString() );
