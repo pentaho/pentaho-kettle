@@ -25,6 +25,7 @@ package org.pentaho.di.core.logging;
 import java.util.Iterator;
 import java.util.LinkedList;
 
+import org.pentaho.di.repository.RepositoryDirectoryInterface;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -38,6 +39,8 @@ public class Slf4jLoggingEventListener implements KettleLoggingEventListener {
   Logger transLogger = LoggerFactory.getLogger( "org.pentaho.di.trans.Trans" );
 
   Logger jobLogger = LoggerFactory.getLogger( "org.pentaho.di.job.Job" );
+
+  private static final String SEPARATOR = "/";
 
   public Slf4jLoggingEventListener() {
   }
@@ -89,12 +92,20 @@ public class Slf4jLoggingEventListener implements KettleLoggingEventListener {
   private String getDetailedSubject( LoggingObjectInterface loggingObject ) {
     LinkedList<String> subjects = new LinkedList<String>();
     while ( loggingObject != null ) {
-      subjects.add( loggingObject.getObjectName() );
       if ( loggingObject.getObjectType() == TRANS || loggingObject.getObjectType() == JOB ) {
-        if ( loggingObject.getFilename() != null ) {
-          subjects.add( loggingObject.getFilename() );
-        } else if ( loggingObject.getRepositoryDirectory() != null ) {
-          subjects.add( loggingObject.getRepositoryDirectory().getPath() );
+        RepositoryDirectoryInterface rd = loggingObject.getRepositoryDirectory();
+        String filename = loggingObject.getFilename();
+        if ( rd != null ) {
+          String path = rd.getPath();
+          if ( path.equals( SEPARATOR ) ) {
+            if ( filename != null && filename.length() > 0 ) {
+              subjects.add( filename );
+            }
+          } else {
+            subjects.add( path + SEPARATOR + filename );
+          }
+        } else if ( filename != null && filename.length() > 0 ) {
+          subjects.add( filename );
         }
       }
       loggingObject = loggingObject.getParent();
