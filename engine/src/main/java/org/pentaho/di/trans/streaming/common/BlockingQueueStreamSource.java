@@ -65,14 +65,14 @@ public abstract class BlockingQueueStreamSource<T> implements StreamSource<T> {
   }
 
 
-  @Override public Iterable<T> rows() {
+  @Override public Observable<T> observable() {
     return Observable
-      .fromPublisher( publishProcessor )
-      .blockingIterable();
+      .fromPublisher( publishProcessor );
   }
 
   @Override public void close() {
     if ( !publishProcessor.hasComplete() ) {
+
       publishProcessor.onComplete();
     }
   }

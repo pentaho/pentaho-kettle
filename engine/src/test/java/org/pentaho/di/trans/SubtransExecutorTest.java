@@ -56,6 +56,7 @@ import java.util.Optional;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
@@ -134,6 +135,29 @@ public class SubtransExecutorTest {
     for ( Map.Entry<String, StepStatus> entry : statuses.entrySet() ) {
       verify( entry.getValue() ).updateAll( any() );
     }
+  }
+
+  @Test
+  public void stopsAll() throws KettleException {
+    TransMeta parentMeta =
+      new TransMeta( this.getClass().getResource( "subtrans-executor-parent.ktr" ).getPath(), new Variables() );
+    TransMeta subMeta =
+      new TransMeta( this.getClass().getResource( "subtrans-executor-sub.ktr" ).getPath(), new Variables() );
+    LoggingObjectInterface loggingObject = new LoggingObject( "anything" );
+    Trans parentTrans = new Trans( parentMeta, loggingObject );
+    SubtransExecutor subtransExecutor =
+      new SubtransExecutor( parentTrans, subMeta, true, new TransExecutorData(), new TransExecutorParameters() );
+    subtransExecutor.running = Mockito.spy( subtransExecutor.running );
+    RowMetaInterface rowMeta = parentMeta.getStepFields( "Data Grid" );
+    List<RowMetaAndData> rows = Arrays.asList(
+      new RowMetaAndData( rowMeta, "Pentaho", 1L ),
+      new RowMetaAndData( rowMeta, "Pentaho", 2L ),
+      new RowMetaAndData( rowMeta, "Pentaho", 3L ),
+      new RowMetaAndData( rowMeta, "Pentaho", 4L ) );
+    subtransExecutor.execute( rows );
+    verify( subtransExecutor.running ).add( any() );
+    subtransExecutor.stop();
+    assertTrue( subtransExecutor.running.isEmpty() );
   }
 
   @Test

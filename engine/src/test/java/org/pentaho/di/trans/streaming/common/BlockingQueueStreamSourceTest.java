@@ -93,7 +93,7 @@ public class BlockingQueueStreamSourceTest {
   @Test
   public void rowIterableBlocksTillRowReceived() throws Exception {
     streamSource.open();
-    Iterator<String> iterator = streamSource.rows().iterator();
+    Iterator<String> iterator = streamSource.observable().blockingIterable().iterator();
 
     // first call .hasNext() on the iterator while streamSource is empty
     Future<Boolean> hasNext = execSvc.submit( iterator::hasNext );
@@ -113,7 +113,7 @@ public class BlockingQueueStreamSourceTest {
   public void streamIsPausable() throws InterruptedException, ExecutionException, TimeoutException {
     streamSource.open();
 
-    Iterator<String> iter = streamSource.rows().iterator();
+    Iterator<String> iter = streamSource.observable().blockingIterable().iterator();
     Future<String> nextString = execSvc.submit( iter::next );
 
     // add a row
@@ -157,7 +157,7 @@ public class BlockingQueueStreamSourceTest {
       }
     };
     streamSource.open();
-    Iterator<String> iterator = streamSource.rows().iterator();
+    Iterator<String> iterator = streamSource.observable().blockingIterable().iterator();
 
     Future<List<String>> iterLoop = execSvc.submit( () -> {
       List<String> strings = new ArrayList<>();
@@ -196,7 +196,7 @@ public class BlockingQueueStreamSourceTest {
       }
     };
     streamSource.open();
-    Iterator<String> iterator = streamSource.rows().iterator();
+    Iterator<String> iterator = streamSource.observable().blockingIterable().iterator();
 
     Future<List<String>> iterLoop = execSvc.submit( () -> {
       List<String> strings = new ArrayList<>();
