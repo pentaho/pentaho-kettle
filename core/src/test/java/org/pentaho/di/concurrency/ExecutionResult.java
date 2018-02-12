@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -30,9 +30,6 @@ import java.util.concurrent.Future;
  */
 class ExecutionResult<T> {
   static <T> ExecutionResult<T> from( Future<? extends T> future ) {
-    if ( !future.isDone() ) {
-      throw new IllegalArgumentException( "Future is not completed yet" );
-    }
     try {
       return new ExecutionResult<T>( future.get(), null );
     } catch ( InterruptedException e ) {

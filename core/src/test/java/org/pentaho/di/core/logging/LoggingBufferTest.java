@@ -1,7 +1,7 @@
 /*
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  * **************************************************************************
  *
@@ -147,7 +147,7 @@ public class LoggingBufferTest {
   }
 
   @Test
-  public void testRemoveBufferLinesBefore() throws Exception {
+  public void testRemoveBufferLinesBefore() {
     LoggingBuffer loggingBuffer = new LoggingBuffer( 100 );
     for ( int i = 0; i < 40; i++ ) {
       KettleLoggingEvent event = new KettleLoggingEvent();
@@ -157,7 +157,6 @@ public class LoggingBufferTest {
     }
     loggingBuffer.removeBufferLinesBefore( 20 );
     Assert.assertEquals( 20, loggingBuffer.size() );
-    Assert.assertEquals(  0, loggingBuffer.getBufferLinesBefore( 20 ).size() );
   }
 
 }
