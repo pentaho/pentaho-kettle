@@ -984,6 +984,13 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
         if ( hop != null ) {
           TransHopMeta before = (TransHopMeta) hop.clone();
           hop.setEnabled( !hop.isEnabled() );
+          if ( hop.isEnabled() && transMeta.hasLoop( hop.getToStep() ) ) {
+            hop.setEnabled( false );
+            MessageBox mb = new MessageBox( shell, SWT.OK | SWT.ICON_ERROR );
+            mb.setMessage( BaseMessages.getString( PKG, "TransGraph.Dialog.HopCausesLoop.Message" ) );
+            mb.setText( BaseMessages.getString( PKG, "TransGraph.Dialog.HopCausesLoop.Title" ) );
+            mb.open();
+          }
           TransHopMeta after = (TransHopMeta) hop.clone();
           spoon.addUndoChange( transMeta, new TransHopMeta[] { before }, new TransHopMeta[] { after },
             new int[] { transMeta.indexOfTransHop( hop ) } );
@@ -2391,7 +2398,7 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
     TransHopMeta hi = getCurrentHop();
 
     hi.flip();
-    if ( transMeta.hasLoop( hi.getFromStep() ) ) {
+    if ( transMeta.hasLoop( hi.getToStep() ) ) {
       spoon.refreshGraph();
       MessageBox mb = new MessageBox( shell, SWT.OK | SWT.ICON_ERROR );
       mb.setMessage( BaseMessages.getString( PKG, "TransGraph.Dialog.LoopsAreNotAllowed.Message" ) );
@@ -2413,8 +2420,8 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
     TransHopMeta hi = getCurrentHop();
     TransHopMeta before = (TransHopMeta) hi.clone();
     hi.setEnabled( !hi.isEnabled() );
-    if ( transMeta.hasLoop( hi.getToStep() ) ) {
-      hi.setEnabled( !hi.isEnabled() );
+    if ( hi.isEnabled() && transMeta.hasLoop( hi.getToStep() ) ) {
+      hi.setEnabled( false );
       MessageBox mb = new MessageBox( shell, SWT.OK | SWT.ICON_ERROR );
       mb.setMessage( BaseMessages.getString( PKG, "TransGraph.Dialog.LoopAfterHopEnabled.Message" ) );
       mb.setText( BaseMessages.getString( PKG, "TransGraph.Dialog.LoopAfterHopEnabled.Title" ) );
@@ -2458,6 +2465,8 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
   public void enableHopsBetweenSelectedSteps( boolean enabled ) {
     List<StepMeta> list = transMeta.getSelectedSteps();
 
+    boolean hasLoop = false;
+
     for ( int i = 0; i < transMeta.nrTransHops(); i++ ) {
       TransHopMeta hop = transMeta.getTransHop( i );
       if ( list.contains( hop.getFromStep() ) && list.contains( hop.getToStep() ) ) {
@@ -2467,7 +2476,18 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
         TransHopMeta after = (TransHopMeta) hop.clone();
         spoon.addUndoChange( transMeta, new TransHopMeta[] { before }, new TransHopMeta[] { after },
           new int[] { transMeta.indexOfTransHop( hop ) } );
+        if ( transMeta.hasLoop( hop.getToStep() ) ) {
+          hasLoop = true;
+          hop.setEnabled( false );
+        }
       }
+    }
+
+    if ( enabled && hasLoop ) {
+      MessageBox mb = new MessageBox( shell, SWT.OK | SWT.ICON_ERROR );
+      mb.setMessage( BaseMessages.getString( PKG, "TransGraph.Dialog.HopCausesLoop.Message" ) );
+      mb.setText( BaseMessages.getString( PKG, "TransGraph.Dialog.HopCausesLoop.Title" ) );
+      mb.open();
     }
 
     spoon.refreshGraph();
@@ -2492,24 +2512,35 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
     spoon.addUndoChange( transMeta, new TransHopMeta[] { before }, new TransHopMeta[] { after }, new int[] { transMeta
       .indexOfTransHop( currentHop ) } );
 
-    enableDisableNextHops( currentHop.getToStep(), enabled );
+    Set<StepMeta> checkedEntries = enableDisableNextHops( currentHop.getToStep(), enabled, new HashSet<>() );
+
+    if ( checkedEntries.stream().anyMatch( entry -> transMeta.hasLoop( entry ) ) ) {
+      MessageBox mb = new MessageBox( shell, SWT.OK | SWT.ICON_ERROR );
+      mb.setMessage( BaseMessages.getString( PKG, "TransGraph.Dialog.HopCausesLoop.Message" ) );
+      mb.setText( BaseMessages.getString( PKG, "TransGraph.Dialog.HopCausesLoop.Title" ) );
+      mb.open();
+    }
 
     spoon.refreshGraph();
   }
 
-  private void enableDisableNextHops( StepMeta from, boolean enabled ) {
-    for ( StepMeta to : transMeta.getSteps() ) {
-      TransHopMeta hop = transMeta.findTransHop( from, to, true );
-      if ( hop != null ) {
-        TransHopMeta before = (TransHopMeta) hop.clone();
-        hop.setEnabled( enabled );
-        TransHopMeta after = (TransHopMeta) hop.clone();
-        spoon.addUndoChange( transMeta, new TransHopMeta[] { before }, new TransHopMeta[] { after },
-          new int[] { transMeta.indexOfTransHop( hop ) } );
-
-        enableDisableNextHops( to, enabled );
-      }
-    }
+  private Set<StepMeta> enableDisableNextHops( StepMeta from, boolean enabled, Set<StepMeta> checkedEntries ) {
+    checkedEntries.add( from );
+    transMeta.getTransHops().stream()
+            .filter( hop -> from.equals( hop.getFromStep() ) )
+            .forEach( hop -> {
+              if ( hop.isEnabled() != enabled ) {
+                TransHopMeta before = (TransHopMeta) hop.clone();
+                hop.setEnabled( enabled );
+                TransHopMeta after = (TransHopMeta) hop.clone();
+                spoon.addUndoChange( transMeta, new TransHopMeta[]{ before }, new TransHopMeta[]{ after }, new int[]{ transMeta
+                        .indexOfTransHop( hop ) } );
+              }
+              if ( !checkedEntries.contains( hop.getToStep() ) ) {
+                enableDisableNextHops( hop.getToStep(), enabled, checkedEntries );
+              }
+            } );
+    return checkedEntries;
   }
 
   public void editNote() {
