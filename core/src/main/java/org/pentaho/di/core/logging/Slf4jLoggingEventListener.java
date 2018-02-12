@@ -110,7 +110,11 @@ public class Slf4jLoggingEventListener implements KettleLoggingEventListener {
       }
       loggingObject = loggingObject.getParent();
     }
-    return subjects.size() > 1 ? formatDetailedSubject( subjects ) : subjects.get( 0 );
+    if ( subjects.size() > 0 ) {
+      return subjects.size() > 1 ? formatDetailedSubject( subjects ) : subjects.get( 0 );
+    } else {
+      return "";
+    }
   }
 
   private String formatDetailedSubject( LinkedList<String> subjects ) {
