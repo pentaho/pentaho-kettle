@@ -34,7 +34,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.vfs2.FileObject;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -245,6 +244,8 @@ public class XMLInputStreamTest {
         new XMLInputStream( stepMockHelper.stepMeta, stepMockHelper.stepDataInterface, 0, stepMockHelper.transMeta,
             stepMockHelper.trans );
 
+    RowMetaInterface inputRowMeta = new RowMeta(  );
+    xmlInputStream.setInputRowMeta( inputRowMeta );
     xmlInputStream.init( xmlInputStreamMeta, xmlInputStreamData );
     xmlInputStream.addRowListener( rl );
     boolean haveRowsToRead;
