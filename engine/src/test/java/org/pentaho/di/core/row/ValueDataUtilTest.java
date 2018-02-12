@@ -727,6 +727,13 @@ public class ValueDataUtilTest {
 
     assertEquals( new BigDecimal( "-15.184" ),
       calculate( "-144.144", "16.12", ValueMetaInterface.TYPE_BIGNUMBER, CalculatorMetaFunction.CALC_REMAINDER ) );
+    assertEquals( new Double( "2.6000000000000005" ).doubleValue(),
+      calculate( "12.5", "3.3", ValueMetaInterface.TYPE_NUMBER, CalculatorMetaFunction.CALC_REMAINDER ) );
+    assertEquals( new Double( "4.0" ).doubleValue(),
+      calculate( "12.5", "4.25", ValueMetaInterface.TYPE_NUMBER, CalculatorMetaFunction.CALC_REMAINDER ) );
+    assertEquals( new Long( "1" ).longValue(),
+      calculate( "10", "3.3",null,
+        ValueMetaInterface.TYPE_INTEGER, ValueMetaInterface.TYPE_NUMBER, ValueMetaInterface.TYPE_NUMBER, CalculatorMetaFunction.CALC_REMAINDER ) );
   }
 
   @Test
@@ -773,7 +780,47 @@ public class ValueDataUtilTest {
     return calculate( string_dataA, string_dataB, null, valueMetaInterfaceType, calculatorMetaFunction );
   }
 
-  private Object calculate( String string_dataA, String string_dataB, String string_dataC, int valueMetaInterfaceType,
+  private Object createObject( String string_value, int valueMetaInterfaceType, ValueMetaInterface parameterValueMeta) throws KettleValueException {
+    if ( valueMetaInterfaceType == ValueMetaInterface.TYPE_NUMBER ) {
+      return ( !Utils.isEmpty( string_value ) ? Double.valueOf( string_value ) : null );
+    } else if ( valueMetaInterfaceType == ValueMetaInterface.TYPE_INTEGER ) {
+      return ( !Utils.isEmpty( string_value ) ? Long.valueOf( string_value ) : null );
+    } else if ( valueMetaInterfaceType == ValueMetaInterface.TYPE_DATE ) {
+      SimpleDateFormat simpleDateFormat = new SimpleDateFormat( yyyy_MM_dd );
+      try {
+        return ( !Utils.isEmpty( string_value ) ? simpleDateFormat.parse( string_value ) : null );
+      } catch ( ParseException pe ) {
+        fail( pe.getMessage() );
+        return null;
+      }
+    } else if ( valueMetaInterfaceType == ValueMetaInterface.TYPE_BIGNUMBER ) {
+      return ( !Utils.isEmpty( string_value ) ? BigDecimal.valueOf( Double.valueOf( string_value ) ) : null );
+    } else if ( valueMetaInterfaceType == ValueMetaInterface.TYPE_STRING ) {
+      return ( !Utils.isEmpty( string_value ) ? string_value : null );
+    } else if ( valueMetaInterfaceType == ValueMetaInterface.TYPE_BINARY ) {
+      ValueMetaInterface binaryValueMeta = new ValueMetaBinary( "binary_data" );
+      return
+        ( !Utils.isEmpty( string_value ) ? binaryValueMeta.convertData( parameterValueMeta, string_value ) : null );
+    } else if ( valueMetaInterfaceType == ValueMetaInterface.TYPE_BOOLEAN ) {
+      if ( !Utils.isEmpty( string_value ) ) {
+        return ( string_value.equalsIgnoreCase( "true" ) ? true : false );
+      } else {
+        return null;
+      }
+    } else {
+      fail( "Invalid ValueMetaInterface type." );
+      return null;
+    }
+  }
+
+  private Object calculate( String string_dataA, String string_dataB, String string_dataC, int valueMetaInterfaceTypeABC,
+                            int calculatorMetaFunction ) {
+    return calculate( string_dataA, string_dataB, string_dataC,
+      valueMetaInterfaceTypeABC, valueMetaInterfaceTypeABC, valueMetaInterfaceTypeABC, calculatorMetaFunction );
+  }
+
+  private Object calculate( String string_dataA, String string_dataB, String string_dataC,
+      int valueMetaInterfaceTypeA, int valueMetaInterfaceTypeB, int valueMetaInterfaceTypeC,
       int calculatorMetaFunction ) {
 
     try {
@@ -782,69 +829,13 @@ public class ValueDataUtilTest {
       ValueMetaInterface parameterValueMeta = new ValueMetaString( "parameter" );
 
       // We create the meta information for
-      ValueMetaInterface valueMetaA = createValueMeta( "data_A", valueMetaInterfaceType );
-      ValueMetaInterface valueMetaB = createValueMeta( "data_B", valueMetaInterfaceType );
-      ValueMetaInterface valueMetaC = createValueMeta( "data_C", valueMetaInterfaceType );
+      ValueMetaInterface valueMetaA = createValueMeta( "data_A", valueMetaInterfaceTypeA );
+      ValueMetaInterface valueMetaB = createValueMeta( "data_B", valueMetaInterfaceTypeB );
+      ValueMetaInterface valueMetaC = createValueMeta( "data_C", valueMetaInterfaceTypeC );
 
-      Object dataA = null;
-      Object dataB = null;
-      Object dataC = null;
-
-      if ( valueMetaInterfaceType == ValueMetaInterface.TYPE_NUMBER ) {
-        dataA = ( !Utils.isEmpty( string_dataA ) ? Double.valueOf( string_dataA ) : null );
-        dataB = ( !Utils.isEmpty( string_dataB ) ? Double.valueOf( string_dataB ) : null );
-        dataC = ( !Utils.isEmpty( string_dataC ) ? Double.valueOf( string_dataC ) : null );
-      } else if ( valueMetaInterfaceType == ValueMetaInterface.TYPE_INTEGER ) {
-        dataA = ( !Utils.isEmpty( string_dataA ) ? Long.valueOf( string_dataA ) : null );
-        dataB = ( !Utils.isEmpty( string_dataB ) ? Long.valueOf( string_dataB ) : null );
-        dataC = ( !Utils.isEmpty( string_dataC ) ? Long.valueOf( string_dataC ) : null );
-      } else if ( valueMetaInterfaceType == ValueMetaInterface.TYPE_DATE ) {
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat( yyyy_MM_dd );
-        try {
-          dataA = ( !Utils.isEmpty( string_dataA ) ? simpleDateFormat.parse( string_dataA ) : null );
-          dataB = ( !Utils.isEmpty( string_dataB ) ? simpleDateFormat.parse( string_dataB ) : null );
-          dataC = ( !Utils.isEmpty( string_dataC ) ? simpleDateFormat.parse( string_dataC ) : null );
-        } catch ( ParseException pe ) {
-          fail( pe.getMessage() );
-          return null;
-        }
-      } else if ( valueMetaInterfaceType == ValueMetaInterface.TYPE_BIGNUMBER ) {
-        dataA = ( !Utils.isEmpty( string_dataA ) ? BigDecimal.valueOf( Double.valueOf( string_dataA ) ) : null );
-        dataB = ( !Utils.isEmpty( string_dataB ) ? BigDecimal.valueOf( Double.valueOf( string_dataB ) ) : null );
-        dataC = ( !Utils.isEmpty( string_dataC ) ? BigDecimal.valueOf( Double.valueOf( string_dataC ) ) : null );
-      } else if ( valueMetaInterfaceType == ValueMetaInterface.TYPE_STRING ) {
-        dataA = ( !Utils.isEmpty( string_dataA ) ? string_dataA : null );
-        dataB = ( !Utils.isEmpty( string_dataB ) ? string_dataB : null );
-        dataC = ( !Utils.isEmpty( string_dataC ) ? string_dataC : null );
-      } else if ( valueMetaInterfaceType == ValueMetaInterface.TYPE_BINARY ) {
-        ValueMetaInterface binaryValueMeta = new ValueMetaBinary( "binary_data" );
-
-        dataA =
-            ( !Utils.isEmpty( string_dataA ) ? binaryValueMeta.convertData( parameterValueMeta, string_dataA ) : null );
-        dataB =
-            ( !Utils.isEmpty( string_dataB ) ? binaryValueMeta.convertData( parameterValueMeta, string_dataB ) : null );
-        dataC =
-            ( !Utils.isEmpty( string_dataC ) ? binaryValueMeta.convertData( parameterValueMeta, string_dataC ) : null );
-      } else if ( valueMetaInterfaceType == ValueMetaInterface.TYPE_BOOLEAN ) {
-        if ( !Utils.isEmpty( string_dataA ) ) {
-          dataA = ( string_dataA.equalsIgnoreCase( "true" ) ? true : false );
-        } else {
-          dataA = null;
-        }
-        if ( !Utils.isEmpty( string_dataB ) ) {
-          dataB = ( string_dataB.equalsIgnoreCase( "true" ) ? true : false );
-        } else {
-          dataB = null;
-        }
-        if ( !Utils.isEmpty( string_dataC ) ) {
-          dataC = ( string_dataC.equalsIgnoreCase( "true" ) ? true : false );
-        } else {
-          dataC = null;
-        }
-      } else {
-        fail( "Invalid ValueMetaInterface type." );
-        return null;
-      }
+      Object dataA = createObject( string_dataA, valueMetaInterfaceTypeA, parameterValueMeta);
+      Object dataB = createObject( string_dataB, valueMetaInterfaceTypeB, parameterValueMeta);
+      Object dataC = createObject( string_dataC, valueMetaInterfaceTypeC, parameterValueMeta);
 
       if ( calculatorMetaFunction == CalculatorMetaFunction.CALC_ADD ) {
         return ValueDataUtil.plus( valueMetaA, dataA, valueMetaB, dataB );
