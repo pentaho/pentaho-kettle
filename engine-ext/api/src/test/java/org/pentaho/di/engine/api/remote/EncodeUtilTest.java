@@ -20,7 +20,7 @@
  *
  ******************************************************************************/
 
-package org.pentaho.di.core.util;
+package org.pentaho.di.engine.api.remote;
 
 import org.junit.Assert;
 import org.junit.Test;

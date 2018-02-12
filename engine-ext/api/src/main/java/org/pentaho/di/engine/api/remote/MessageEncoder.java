@@ -24,8 +24,6 @@
 
 package org.pentaho.di.engine.api.remote;
 
-import org.pentaho.di.core.util.EncodeUtil;
-
 import javax.websocket.EncodeException;
 import javax.websocket.Encoder;
 import javax.websocket.EndpointConfig;
