@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -94,7 +94,7 @@ public class XMLInputStream extends BaseStep implements StepInterface {
       }
       openNextFile();
       resetElementCounters();
-      data.previousFieldsNumber = getInputRowMeta() == null ? 0 : getInputRowMeta().size();
+      prepareProcessPreviousFields();
     }
 
     Object[] outputRowData;
@@ -112,7 +112,7 @@ public class XMLInputStream extends BaseStep implements StepInterface {
           throw new KettleException( BaseMessages.getString( PKG, "XMLInputStream.FilenameFieldNotFound",
               meta.sourceFieldName ) );
         }
-        data.previousFieldsNumber = getInputRowMeta() == null ? 0 : getInputRowMeta().size();
+        prepareProcessPreviousFields();
       }
       if ( data.xmlEventReader == null ) {
         if ( row == null ) {
@@ -162,6 +162,17 @@ public class XMLInputStream extends BaseStep implements StepInterface {
       return false;
     }
     return true;
+  }
+
+  private void prepareProcessPreviousFields() {
+    if ( getInputRowMeta() == null ) {
+      data.previousFieldsNumber = 0;
+      data.finalOutputRowMeta = data.outputRowMeta;
+    } else {
+      data.previousFieldsNumber = getInputRowMeta().size();
+      data.finalOutputRowMeta = getInputRowMeta().clone();
+      meta.getFields( data.finalOutputRowMeta, getStepname(), null, null, this, repository, metaStore );
+    }
   }
 
   private boolean openNextFile() throws KettleException {
@@ -301,7 +312,7 @@ public class XMLInputStream extends BaseStep implements StepInterface {
       if ( data.currentInputRow != null ) {
         r = RowDataUtil.addRowData( (Object[]) data.currentInputRow.clone(), data.previousFieldsNumber, r );
       }
-      putRow( data.outputRowMeta, r );
+      putRow( data.finalOutputRowMeta, r );
     }
   }
 
