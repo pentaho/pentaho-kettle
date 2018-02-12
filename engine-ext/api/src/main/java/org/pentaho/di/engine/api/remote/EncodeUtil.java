@@ -22,7 +22,7 @@
  * *****************************************************************************
  */
 
-package org.pentaho.di.core.util;
+package org.pentaho.di.engine.api.remote;
 
 import org.apache.commons.codec.binary.Base64OutputStream;
 
