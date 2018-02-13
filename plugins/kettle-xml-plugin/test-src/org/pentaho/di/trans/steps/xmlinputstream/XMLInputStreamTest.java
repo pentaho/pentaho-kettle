@@ -244,6 +244,8 @@ public class XMLInputStreamTest {
         new XMLInputStream( stepMockHelper.stepMeta, stepMockHelper.stepDataInterface, 0, stepMockHelper.transMeta,
             stepMockHelper.trans );
 
+    RowMetaInterface inputRowMeta = new RowMeta(  );
+    xmlInputStream.setInputRowMeta( inputRowMeta );
     xmlInputStream.init( xmlInputStreamMeta, xmlInputStreamData );
     xmlInputStream.addRowListener( rl );
     boolean haveRowsToRead;
