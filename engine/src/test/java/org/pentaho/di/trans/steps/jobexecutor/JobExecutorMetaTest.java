@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -27,12 +27,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Mockito;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.ObjectLocationSpecificationMethod;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.variables.VariableSpace;
+import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.resource.ResourceNamingInterface;
@@ -120,5 +123,46 @@ public class JobExecutorMetaTest {
 
     verify( jobMeta ).setFilename( "${" + Const.INTERNAL_VARIABLE_ENTRY_CURRENT_DIRECTORY + "}/" + testName );
     verify( jobExecutorMeta ).setSpecificationMethod( ObjectLocationSpecificationMethod.FILENAME );
+  }
+
+  @Test
+  public void testLoadJobMeta() throws KettleException {
+    String param1 = "param1";
+    String param2 = "param2";
+    String param3 = "param3";
+    String parentValue1 = "parentValue1";
+    String parentValue2 = "parentValue2";
+    String childValue3 = "childValue3";
+
+    JobExecutorMeta jobExecutorMeta = spy( new JobExecutorMeta() );
+    Repository repository = Mockito.mock( Repository.class );
+
+    JobMeta meta = new JobMeta();
+    meta.setVariable( param2, "childValue2 should be override" );
+    meta.setVariable( param3, childValue3 );
+
+    Mockito.doReturn( meta ).when( repository )
+      .loadJob( Mockito.eq( "test.kjb" ), Mockito.anyObject(), Mockito.anyObject(), Mockito.anyObject() );
+
+    VariableSpace parentSpace = new Variables();
+    parentSpace.setVariable( param1, parentValue1 );
+    parentSpace.setVariable( param2, parentValue2 );
+
+    jobExecutorMeta.setSpecificationMethod( ObjectLocationSpecificationMethod.FILENAME );
+    jobExecutorMeta.setFileName( "/home/admin/test.kjb" );
+
+    JobMeta jobMeta;
+
+    jobExecutorMeta.getParameters().setInheritingAllVariables( false );
+    jobMeta = JobExecutorMeta.loadJobMeta( jobExecutorMeta, repository, parentSpace );
+    Assert.assertEquals( null, jobMeta.getVariable( param1 ) );
+    Assert.assertEquals( parentValue2, jobMeta.getVariable( param2 ) );
+    Assert.assertEquals( childValue3, jobMeta.getVariable( param3 ) );
+
+    jobExecutorMeta.getParameters().setInheritingAllVariables( true );
+    jobMeta = JobExecutorMeta.loadJobMeta( jobExecutorMeta, repository, parentSpace );
+    Assert.assertEquals( parentValue1, jobMeta.getVariable( param1 ) );
+    Assert.assertEquals( parentValue2, jobMeta.getVariable( param2 ) );
+    Assert.assertEquals( childValue3, jobMeta.getVariable( param3 ) );
   }
 }

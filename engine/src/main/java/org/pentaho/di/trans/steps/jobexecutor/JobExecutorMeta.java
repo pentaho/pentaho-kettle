@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -64,6 +64,7 @@ import org.pentaho.di.resource.ResourceEntry;
 import org.pentaho.di.resource.ResourceEntry.ResourceType;
 import org.pentaho.di.resource.ResourceNamingInterface;
 import org.pentaho.di.resource.ResourceReference;
+import org.pentaho.di.trans.StepWithMappingMeta;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.TransMeta.TransformationType;
@@ -645,7 +646,7 @@ public class JobExecutorMeta extends BaseStepMeta implements StepMetaInterface, 
             }
           }
           if ( mappingJobMeta == null ) {
-            mappingJobMeta = new JobMeta( tmpSpace, realFilename, rep, metaStore, null );
+            mappingJobMeta = new JobMeta( null, realFilename, rep, metaStore, null );
             LogChannel.GENERAL.logDetailed( "Loading job from repository", "Job was loaded from XML file ["
               + realFilename + "]" );
           }
@@ -679,11 +680,11 @@ public class JobExecutorMeta extends BaseStepMeta implements StepMetaInterface, 
         } else {
           // rep is null, let's try loading by filename
           try {
-            mappingJobMeta = new JobMeta( tmpSpace, realDirectory + "/" + realJobname, rep, metaStore, null );
+            mappingJobMeta = new JobMeta( null, realDirectory + "/" + realJobname, rep, metaStore, null );
           } catch ( KettleException ke ) {
             try {
               // add .kjb extension and try again
-              mappingJobMeta = new JobMeta( tmpSpace,
+              mappingJobMeta = new JobMeta( null,
                   realDirectory + "/" + realJobname + "." + Const.STRING_JOB_DEFAULT_EXT, rep, metaStore, null );
             } catch ( KettleException ke2 ) {
               throw new KettleException( BaseMessages.getString(
@@ -703,8 +704,15 @@ public class JobExecutorMeta extends BaseStepMeta implements StepMetaInterface, 
     }
 
     // Pass some important information to the mapping transformation metadata:
-    //
-    mappingJobMeta.copyVariablesFrom( space );
+
+    //  When the child parameter does exist in the parent parameters, overwrite the child parameter by the
+    // parent parameter.
+    StepWithMappingMeta.replaceVariableValues( mappingJobMeta, space );
+    if ( executorMeta.getParameters().isInheritingAllVariables() ) {
+      // All other parent parameters need to get copied into the child parameters  (when the 'Inherit all
+      // variables from the transformation?' option is checked)
+      StepWithMappingMeta.addMissingVariables( mappingJobMeta, space );
+    }
     mappingJobMeta.setRepository( rep );
     mappingJobMeta.setMetaStore( metaStore );
     mappingJobMeta.setFilename( mappingJobMeta.getFilename() );

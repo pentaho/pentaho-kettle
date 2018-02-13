@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -359,19 +359,19 @@ public abstract class StepWithMappingMeta extends BaseStepMeta implements HasRep
     }
   }
 
-  private static  void addMissingVariables( TransMeta source, VariableSpace target ) {
-    if ( target == null ) {
+  public static  void addMissingVariables( VariableSpace fromSpace, VariableSpace toSpace ) {
+    if ( toSpace == null ) {
       return;
     }
-    String[] variableNames = target.listVariables();
+    String[] variableNames = toSpace.listVariables();
     for ( String variable : variableNames ) {
-      if ( source.getVariable( variable ) == null ) {
-        source.setVariable( variable, target.getVariable( variable ) );
+      if ( fromSpace.getVariable( variable ) == null ) {
+        fromSpace.setVariable( variable, toSpace.getVariable( variable ) );
       }
     }
   }
 
-  private static void replaceVariableValues( TransMeta childTransMeta, VariableSpace replaceBy ) {
+  public static void replaceVariableValues( VariableSpace childTransMeta, VariableSpace replaceBy ) {
     if ( replaceBy == null ) {
       return;
     }
