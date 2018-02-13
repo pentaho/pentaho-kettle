@@ -3,7 +3,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -970,6 +970,16 @@ public class Const {
    * Set this variable to Y if you want to test a more efficient batching row set. (default = N)
    */
   public static final String KETTLE_BATCHING_ROWSET = "KETTLE_BATCHING_ROWSET";
+
+  /**
+   * Set this variable to limit max number of files the Text File Output step can have open at one time.
+   */
+  public static final String KETTLE_FILE_OUTPUT_MAX_STREAM_COUNT = "KETTLE_FILE_OUTPUT_MAX_STREAM_COUNT";
+
+  /**
+   * This variable contains the number of milliseconds between flushes of all open files in the Text File Output step.
+   */
+  public static final String KETTLE_FILE_OUTPUT_MAX_STREAM_LIFE = "KETTLE_FILE_OUTPUT_MAX_STREAM_LIFE";
 
   /**
    * Set this variable to Y to disable standard Kettle logging to the console. (stdout)
