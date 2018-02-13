@@ -23,20 +23,6 @@
 
 package org.pentaho.di.trans;
 
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Hashtable;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
-
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.commons.vfs2.FileName;
 import org.apache.commons.vfs2.FileObject;
@@ -47,7 +33,6 @@ import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.Counter;
 import org.pentaho.di.core.DBCache;
 import org.pentaho.di.core.LastUsedFile;
@@ -90,6 +75,7 @@ import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.util.StringUtil;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLFormatter;
@@ -126,6 +112,20 @@ import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Hashtable;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * This class defines information about a transformation and offers methods to save and load it from XML or a PDI
@@ -3536,8 +3536,6 @@ public class TransMeta extends AbstractMeta
   /**
    * Checks if any selected step has been used in a hop or not.
    *
-   * @param stepMeta
-   *          The step queried.
    * @return true if a step is used in a hop (active or not), false otherwise
    */
   public boolean isAnySelectedStepUsedInTransHops() {
@@ -3772,7 +3770,7 @@ public class TransMeta extends AbstractMeta
 
     checkedEntries.add( stepMeta );
 
-    List<StepMeta> prevSteps = findPreviousSteps( stepMeta, info );
+    List<StepMeta> prevSteps = findPreviousSteps( stepMeta, true );
     int nr = prevSteps.size();
     for ( int i = 0; i < nr; i++ ) {
       StepMeta prevStepMeta = prevSteps.get( i );
@@ -6076,8 +6074,7 @@ public class TransMeta extends AbstractMeta
   /**
    * Sets the log table for the transformation.
    *
-   * @param the
-   *          log table to set
+   * @param transLogTable the log table to set
    */
   public void setTransLogTable( TransLogTable transLogTable ) {
     this.transLogTable = transLogTable;
