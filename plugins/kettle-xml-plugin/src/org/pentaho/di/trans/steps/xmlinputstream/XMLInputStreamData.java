@@ -40,6 +40,7 @@ import org.pentaho.di.trans.step.StepDataInterface;
 public class XMLInputStreamData extends BaseStepData implements StepDataInterface {
 
   public RowMetaInterface outputRowMeta;
+  public RowMetaInterface finalOutputRowMeta;
 
   public XMLInputFactory staxInstance;
 
