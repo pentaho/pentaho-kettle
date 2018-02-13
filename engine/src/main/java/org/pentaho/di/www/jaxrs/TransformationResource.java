@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -174,6 +174,15 @@ public class TransformationResource {
   @Produces( { MediaType.APPLICATION_JSON } )
   public TransformationStatus stopTransformation( @PathParam( "id" ) String id ) {
     CarteResource.getTransformation( id ).stopAll();
+    return getTransformationStatus( id );
+  }
+
+  // change from GET to UPDATE/POST for proper REST method
+  @GET
+  @Path( "/safeStop/{id : .+}" )
+  @Produces( { MediaType.APPLICATION_JSON } )
+  public TransformationStatus safeStopTransformation( @PathParam( "id" ) String id ) {
+    CarteResource.getTransformation( id ).safeStop();
     return getTransformationStatus( id );
   }
 
