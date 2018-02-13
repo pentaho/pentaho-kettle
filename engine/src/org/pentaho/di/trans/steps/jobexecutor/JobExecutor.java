@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -46,6 +46,7 @@ import org.pentaho.di.job.Job;
 import org.pentaho.di.job.JobExecutionConfiguration;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.repository.Repository;
+import org.pentaho.di.trans.StepWithMappingMeta;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStep;
@@ -193,12 +194,9 @@ public class JobExecutor extends BaseStep implements StepInterface {
 
     data.executorJob = createJob( meta.getRepository(), data.executorJobMeta, this );
 
+    data.executorJob.shareVariablesWith( data.executorJobMeta );
     data.executorJob.setParentTrans( getTrans() );
     data.executorJob.setLogLevel( getLogLevel() );
-
-    if ( meta.getParameters().isInheritingAllVariables() ) {
-      data.executorJob.shareVariablesWith( this );
-    }
     data.executorJob.setInternalKettleVariables( this );
     data.executorJob.copyParametersFrom( data.executorJobMeta );
     data.executorJob.setArguments( getTrans().getArguments() );
@@ -366,37 +364,8 @@ public class JobExecutor extends BaseStep implements StepInterface {
     // Set parameters, when fields are used take the first row in the set.
     //
     JobExecutorParameters parameters = meta.getParameters();
-    data.executorJob.clearParameters();
-
-    String[] parameterNames = data.executorJob.listParameters();
-    for ( int i = 0; i < parameters.getVariable().length; i++ ) {
-      String variable = parameters.getVariable()[i];
-      String fieldName = parameters.getField()[i];
-      String inputValue = parameters.getInput()[i];
-      String value;
-      // Take the value from an input row or from a static value?
-      //
-      if ( !Utils.isEmpty( fieldName ) ) {
-        int idx = getInputRowMeta().indexOfValue( fieldName );
-        if ( idx < 0 ) {
-          throw new KettleException( BaseMessages.getString(
-            PKG, "JobExecutor.Exception.UnableToFindField", fieldName ) );
-        }
-
-        value = data.groupBuffer.get( 0 ).getString( idx, "" );
-      } else {
-        value = environmentSubstitute( inputValue );
-      }
-
-      // See if this is a parameter or just a variable...
-      //
-      if ( Const.indexOfString( variable, parameterNames ) < 0 ) {
-        data.executorJob.setVariable( variable, Const.NVL( value, "" ) );
-      } else {
-        data.executorJob.setParameterValue( variable, Const.NVL( value, "" ) );
-      }
-    }
-    data.executorJob.activateParameters();
+    StepWithMappingMeta.activateParams( data.executorJob, data.executorJob, this, data.executorJob.listParameters(),
+      parameters.getVariable(), parameters.getInput() );
   }
 
   public boolean init( StepMetaInterface smi, StepDataInterface sdi ) {
