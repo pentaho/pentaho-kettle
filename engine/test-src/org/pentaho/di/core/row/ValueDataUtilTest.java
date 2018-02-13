@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -377,11 +377,11 @@ public class ValueDataUtilTest {
     // Test Kettle big Number types
     assertEquals( BigDecimal.valueOf( Double.valueOf( "0.99" ) ), calculate( "1", "1",
         ValueMetaInterface.TYPE_BIGNUMBER, CalculatorMetaFunction.CALC_PERCENT_2 ) );
-    assertEquals( BigDecimal.valueOf( Double.valueOf( "1.99" ) ), calculate( "2", "2",
+    assertEquals( BigDecimal.valueOf( Double.valueOf( "1.96" ) ), calculate( "2", "2",
         ValueMetaInterface.TYPE_BIGNUMBER, CalculatorMetaFunction.CALC_PERCENT_2 ) );
-    assertEquals( BigDecimal.valueOf( Double.valueOf( "9.995" ) ), calculate( "10", "20",
+    assertEquals( new BigDecimal( "8.00" ), calculate( "10", "20",
         ValueMetaInterface.TYPE_BIGNUMBER, CalculatorMetaFunction.CALC_PERCENT_2 ) );
-    assertEquals( BigDecimal.valueOf( Double.valueOf( "99.98" ) ), calculate( "100", "50",
+    assertEquals( new BigDecimal( "50.00" ), calculate( "100", "50",
         ValueMetaInterface.TYPE_BIGNUMBER, CalculatorMetaFunction.CALC_PERCENT_2 ) );
   }
 
@@ -411,11 +411,11 @@ public class ValueDataUtilTest {
     // Test Kettle big Number types
     assertEquals( 0, new BigDecimal( "1.01" ).compareTo( (BigDecimal) calculate( "1", "1",
         ValueMetaInterface.TYPE_BIGNUMBER, CalculatorMetaFunction.CALC_PERCENT_3 ) ) );
-    assertEquals( 0, new BigDecimal( "2.01" ).compareTo( (BigDecimal) calculate( "2", "2",
+    assertEquals( 0, new BigDecimal( "2.04" ).compareTo( (BigDecimal) calculate( "2", "2",
         ValueMetaInterface.TYPE_BIGNUMBER, CalculatorMetaFunction.CALC_PERCENT_3 ) ) );
-    assertEquals( 0, new BigDecimal( "10.005" ).compareTo( (BigDecimal) calculate( "10", "20",
+    assertEquals( 0, new BigDecimal( "12" ).compareTo( (BigDecimal) calculate( "10", "20",
         ValueMetaInterface.TYPE_BIGNUMBER, CalculatorMetaFunction.CALC_PERCENT_3 ) ) );
-    assertEquals( 0, new BigDecimal( "100.02" ).compareTo( (BigDecimal) calculate( "100", "50",
+    assertEquals( 0, new BigDecimal( "150" ).compareTo( (BigDecimal) calculate( "100", "50",
         ValueMetaInterface.TYPE_BIGNUMBER, CalculatorMetaFunction.CALC_PERCENT_3 ) ) );
   }
 
