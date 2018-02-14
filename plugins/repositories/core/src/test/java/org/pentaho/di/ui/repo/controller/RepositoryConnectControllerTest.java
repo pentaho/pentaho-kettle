@@ -57,6 +57,7 @@ import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -285,6 +286,7 @@ public class RepositoryConnectControllerTest {
 
     Map<String, Object> items = new HashMap<>();
     boolean result = controller.createRepository( ID, items );
+    controller.setCurrentRepository( repositoryMeta );
 
     assertEquals( true, result );
     assertNull( controller.getConnectedRepository() );
@@ -309,7 +311,9 @@ public class RepositoryConnectControllerTest {
     controller.setConnectedRepository( before.clone() );
     controller.setCurrentRepository( before );
 
-    controller.createRepository( ID, new HashMap<>() );
+    when( repositoriesMeta.findRepository( anyString() ) ).thenReturn( edited );
+
+    controller.updateRepository( ID, new HashMap<>() );
     assertEquals( edited, controller.getConnectedRepository() );
   }
 
@@ -329,7 +333,7 @@ public class RepositoryConnectControllerTest {
     controller.setConnectedRepository( before.clone() );
     controller.setCurrentRepository( before );
 
-    controller.createRepository( ID, new HashMap<>() );
+    controller.updateRepository( ID, new HashMap<>() );
     assertNotEquals( edited, controller.getConnectedRepository() );
   }
 
