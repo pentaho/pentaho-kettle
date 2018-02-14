@@ -386,11 +386,10 @@ public class TextFileOutput extends BaseStep implements StepInterface {
 
 
   private boolean writeRowToServlet( Object[] row ) throws KettleException {
-    if ( ( first && meta.isDoNotOpenNewFileInit() ) ) {
-      initServletStreamWriter( );
-    }
-
     if ( row != null ) {
+      if ( data.writer == null ) {
+        initServletStreamWriter( );
+      }
       first = false;
       writeRow( data.outputRowMeta, row );
       putRow( data.outputRowMeta, row ); // in case we want it to go further...
@@ -401,6 +400,10 @@ public class TextFileOutput extends BaseStep implements StepInterface {
 
       return true;
     } else {
+      if ( ( data.writer == null ) && !Utils.isEmpty( meta.getEndedLine() ) ) {
+        initServletStreamWriter( );
+        initBinaryDataFields();
+      }
       writeEndedLine();
       setOutputDone();
       return false;
@@ -408,11 +411,10 @@ public class TextFileOutput extends BaseStep implements StepInterface {
   }
 
   private boolean writeRowToCommand( Object[] row ) throws KettleException {
-    if ( ( first && meta.isDoNotOpenNewFileInit() ) ) {
-      initCommandStreamWriter( environmentSubstitute( meta.getFileName() ) );
-    }
-
     if ( row != null ) {
+      if ( data.writer == null ) {
+        initCommandStreamWriter( environmentSubstitute( meta.getFileName() ) );
+      }
       first = false;
       writeRow( data.outputRowMeta, row );
       putRow( data.outputRowMeta, row ); // in case we want it to go further...
@@ -422,12 +424,15 @@ public class TextFileOutput extends BaseStep implements StepInterface {
       }
       return true;
     } else {
+      if ( ( data.writer == null ) && !Utils.isEmpty( meta.getEndedLine() ) ) {
+        initCommandStreamWriter( environmentSubstitute( meta.getFileName() ) );
+        initBinaryDataFields();
+      }
       writeEndedLine();
       closeCommand();
       setOutputDone();
       return false;
     }
-
   }
 
   private boolean writeRowToFile( Object[] row ) throws KettleException {
@@ -494,10 +499,12 @@ public class TextFileOutput extends BaseStep implements StepInterface {
         if ( data.outputRowMeta != null && meta.isFooterEnabled() ) {
           writeHeader();
         }
-        writeEndedLine();
-      } else if ( ( meta.getEndedLine() != null ) && ( meta.getEndedLine().length() > 0 ) && !meta.isFileNameInField() ) {
+      } else if ( !Utils.isEmpty( meta.getEndedLine() ) && !meta.isFileNameInField() ) {
         String filename = getOutputFileName( null );
         initFileStreamWriter( filename );
+        initBinaryDataFields();
+      }
+      if ( data.writer != null ) {
         writeEndedLine();
       }
       flushOpenFiles( true );
@@ -874,22 +881,25 @@ public class TextFileOutput extends BaseStep implements StepInterface {
       if ( log.isDebug() ) {
         logDebug( "Ending running external command" );
       }
-      int procStatus = data.cmdProc.waitFor();
-      // close the streams
-      // otherwise you get "Too many open files, java.io.IOException" after a lot of iterations
-      try {
-        data.cmdProc.getErrorStream().close();
-        data.cmdProc.getOutputStream().flush();
-        data.cmdProc.getOutputStream().close();
-        data.cmdProc.getInputStream().close();
-      } catch ( IOException e ) {
-        if ( log.isDetailed() ) {
-          logDetailed( "Warning: Error closing streams: " + e.getMessage() );
+
+      if ( data.cmdProc != null ) {
+        int procStatus = data.cmdProc.waitFor();
+        // close the streams
+        // otherwise you get "Too many open files, java.io.IOException" after a lot of iterations
+        try {
+          data.cmdProc.getErrorStream().close();
+          data.cmdProc.getOutputStream().flush();
+          data.cmdProc.getOutputStream().close();
+          data.cmdProc.getInputStream().close();
+        } catch ( IOException e ) {
+          if ( log.isDetailed() ) {
+            logDetailed( "Warning: Error closing streams: " + e.getMessage() );
+          }
         }
-      }
-      data.cmdProc = null;
-      if ( log.isBasic() && procStatus != 0 ) {
-        logBasic( "Command exit status: " + procStatus );
+        data.cmdProc = null;
+        if ( log.isBasic() && procStatus != 0 ) {
+          logBasic( "Command exit status: " + procStatus );
+        }
       }
 
       retval = true;
