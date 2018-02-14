@@ -23,6 +23,7 @@
 package org.pentaho.di.trans.streaming.common;
 
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -30,13 +31,19 @@ import org.mockito.runners.MockitoJUnitRunner;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.ObjectLocationSpecificationMethod;
+import org.pentaho.di.core.annotations.Step;
+import org.pentaho.di.core.encryption.Encr;
+import org.pentaho.di.core.encryption.TwoWayPasswordEncoderPluginType;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.injection.Injection;
 import org.pentaho.di.core.injection.InjectionSupported;
 import org.pentaho.di.core.logging.KettleLogStore;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.logging.LogChannelInterfaceFactory;
+import org.pentaho.di.core.plugins.PluginRegistry;
+import org.pentaho.di.core.util.EnvUtil;
 import org.pentaho.di.core.variables.Variables;
+import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.resource.ResourceEntry;
 import org.pentaho.di.resource.ResourceReference;
 import org.pentaho.di.trans.Trans;
@@ -44,9 +51,12 @@ import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
+import org.pentaho.metastore.api.IMetaStore;
+import org.w3c.dom.Node;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
@@ -60,8 +70,18 @@ import static org.powermock.api.mockito.PowerMockito.when;
 public class BaseStreamStepMetaTest {
 
   private BaseStreamStepMeta meta;
+  @Mock private IMetaStore metastore;
   @Mock LogChannelInterfaceFactory logChannelFactory;
   @Mock LogChannelInterface logChannel;
+
+  @BeforeClass
+  public static void setUpBeforeClass() throws KettleException {
+    PluginRegistry.addPluginType( TwoWayPasswordEncoderPluginType.getInstance() );
+    PluginRegistry.init( true );
+    String passwordEncoderPluginID =
+      Const.NVL( EnvUtil.getSystemProperty( Const.KETTLE_PASSWORD_ENCODER_PLUGIN ), "Kettle" );
+    Encr.init( passwordEncoderPluginID );
+  }
 
   @Before
   public void setUp() throws Exception {
@@ -71,10 +91,14 @@ public class BaseStreamStepMetaTest {
     when( logChannelFactory.create( any() ) ).thenReturn( logChannel );
   }
 
+  @Step( id = "StuffStream", name = "Stuff Stream" )
   @InjectionSupported( localizationPrefix = "stuff" )
   private static class StuffStreamMeta extends BaseStreamStepMeta {
     @Injection( name = "stuff" )
     List<String> stuff = Arrays.asList( "one", "two" );
+
+    @Injection( name = "AUTH_PASSWORD" )
+    String password = "test";
 
     @Override
     public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr,
@@ -140,13 +164,14 @@ public class BaseStreamStepMetaTest {
   }
 
   @Test
-  public void testSaveXMLWithInjectionList() {
+  public void testSaveLoadXMLWithInjectionList() throws Exception {
     meta.setBatchDuration( "1000" );
     meta.setBatchSize( "100" );
     meta.setTransformationPath( "aPath" );
     String xml = meta.getXML();
     assertEquals(
       "<NUM_MESSAGES>100</NUM_MESSAGES>" + Const.CR
+        + "<AUTH_PASSWORD>Encrypted 2be98afc86aa7f2e4cb79ce10ca97bcce</AUTH_PASSWORD>" + Const.CR
         + "<DURATION>1000</DURATION>" + Const.CR
         + "<stuff>one</stuff>" + Const.CR
         + "<stuff>two</stuff>" + Const.CR
@@ -160,11 +185,56 @@ public class BaseStreamStepMetaTest {
     String xml = meta.getXML();
     assertEquals(
       "<NUM_MESSAGES>1000</NUM_MESSAGES>" + Const.CR
+        + "<AUTH_PASSWORD>Encrypted 2be98afc86aa7f2e4cb79ce10ca97bcce</AUTH_PASSWORD>" + Const.CR
         + "<DURATION>1000</DURATION>" + Const.CR
         + "<stuff>one</stuff>" + Const.CR
         + "<stuff>two</stuff>" + Const.CR
         + "<TRANSFORMATION_PATH/>" + Const.CR,
       xml );
+  }
+
+  @Test
+  public void testLoadingXML() throws Exception {
+    String inputXml = "  <step>\n"
+      + "    <name>Stuff Stream</name>\n"
+      + "    <type>StuffStream</type>\n"
+      + "    <description />\n"
+      + "    <distribute>Y</distribute>\n"
+      + "    <custom_distribution />\n"
+      + "    <copies>1</copies>\n"
+      + "    <partitioning>\n"
+      + "      <method>none</method>\n"
+      + "      <schema_name />\n"
+      + "    </partitioning>\n"
+      + "    <NUM_MESSAGES>5</NUM_MESSAGES>\n"
+      + "    <AUTH_PASSWORD>Encrypted 2be98afc86aa7f2e4cb79ce10ca97bcce</AUTH_PASSWORD>\n"
+      + "    <DURATION>60000</DURATION>\n"
+      + "    <stuff>one</stuff>\n"
+      + "    <stuff>two</stuff>\n"
+      + "    <TRANSFORMATION_PATH>write-to-log.ktr</TRANSFORMATION_PATH>\n"
+      + "    <cluster_schema />\n"
+      + "    <remotesteps>\n"
+      + "      <input>\n"
+      + "      </input>\n"
+      + "      <output>\n"
+      + "      </output>\n"
+      + "    </remotesteps>\n"
+      + "    <GUI>\n"
+      + "      <xloc>80</xloc>\n"
+      + "      <yloc>64</yloc>\n"
+      + "      <draw>Y</draw>\n"
+      + "    </GUI>\n"
+      + "  </step>\n";
+    Node node = XMLHandler.loadXMLString( inputXml ).getFirstChild();
+    StuffStreamMeta loadedMeta = new StuffStreamMeta();
+    loadedMeta.loadXML( node, Collections.emptyList(), metastore );
+    assertEquals( "5", loadedMeta.getBatchSize() );
+    assertEquals( "60000", loadedMeta.getBatchDuration() );
+    assertEquals( "test", loadedMeta.password );
+    assertEquals( 2, loadedMeta.stuff.size() );
+    assertTrue( loadedMeta.stuff.contains( "one" ) );
+    assertTrue( loadedMeta.stuff.contains( "two" ) );
+    assertEquals( "write-to-log.ktr", loadedMeta.getTransformationPath() );
   }
 
   @Test

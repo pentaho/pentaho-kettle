@@ -26,6 +26,7 @@ import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.database.DatabaseMeta;
+import org.pentaho.di.core.encryption.Encr;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.injection.Injection;
 import org.pentaho.di.core.injection.bean.BeanInjectionInfo;
@@ -59,6 +60,8 @@ public abstract class BaseStreamStepMeta extends StepWithMappingMeta implements 
   public static final String TRANSFORMATION_PATH = "TRANSFORMATION_PATH";
   public static final String NUM_MESSAGES = "NUM_MESSAGES";
   public static final String DURATION = "DURATION";
+  public static final String PASSWORD = "PASSWORD";
+
   @Injection ( name = TRANSFORMATION_PATH )  // pull this stuff up to common
   protected String transformationPath = "";
 
@@ -75,15 +78,19 @@ public abstract class BaseStreamStepMeta extends StepWithMappingMeta implements 
     return properties.entrySet().stream()
       .map( entry -> {
         try {
-          Object obj = injector.getObject( this, entry.getKey() );
+          String key = entry.getKey();
+          Object obj = injector.getObject( this, key );
           if ( entry.getValue().pathArraysCount == 1 ) {
             @SuppressWarnings( "unchecked" )
             List<String> list = (List<String>) obj;
             return list.stream()
-              .map( v -> XMLHandler.addTagValue( entry.getKey(), v ) )
+              .map( v -> XMLHandler.addTagValue( key, v ) )
               .collect( Collectors.joining() );
           }
-          return XMLHandler.addTagValue( entry.getKey(), obj.toString() );
+          // Suffix PASSWORD to all elements that need to be encrypted/decrypted
+          String value = key.endsWith( PASSWORD )
+            ? Encr.encryptPasswordIfNotUsingVariables( obj.toString() ) : obj.toString();
+          return XMLHandler.addTagValue( key, value );
         } catch ( Exception e ) {
           throw new RuntimeException( e );
         }
@@ -109,7 +116,11 @@ public abstract class BaseStreamStepMeta extends StepWithMappingMeta implements 
     return nodes.stream()
       .map( node -> {
         RowMetaAndData rmad = new RowMetaAndData();
-        rmad.addValue( new ValueMetaString( node.getNodeName() ), node.getTextContent() );
+        String nodeName = node.getNodeName();
+        // Suffix PASSWORD to all elements that need to be encrypted/decrypted
+        Object nodeValue = nodeName.endsWith( PASSWORD )
+          ? Encr.decryptPasswordOptionallyEncrypted( node.getTextContent() ) : node.getTextContent();
+        rmad.addValue( new ValueMetaString( nodeName ), nodeValue );
         return rmad;
       } )
       .collect( Collectors.toList() );
