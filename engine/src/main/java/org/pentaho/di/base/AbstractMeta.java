@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -197,6 +197,8 @@ public abstract class AbstractMeta implements ChangedFlagInterface, UndoInterfac
   protected int max_undo;
 
   protected int undo_position;
+
+  protected RunOptions runOptions = new RunOptions();
 
   private boolean showDialog = true;
   private boolean alwaysShowRunOptions = true;
@@ -2090,4 +2092,29 @@ public abstract class AbstractMeta implements ChangedFlagInterface, UndoInterfac
     return this.versioningEnabled;
   }
 
+  private class RunOptions {
+    boolean clearingLog;
+    boolean safeModeEnabled;
+
+    RunOptions() {
+      clearingLog = true;
+      safeModeEnabled = false;
+    }
+  }
+
+  public boolean isClearingLog() {
+    return runOptions.clearingLog;
+  }
+
+  public void setClearingLog( boolean clearingLog ) {
+    this.runOptions.clearingLog = clearingLog;
+  }
+
+  public boolean isSafeModeEnabled() {
+    return runOptions.safeModeEnabled;
+  }
+
+  public void setSafeModeEnabled( boolean safeModeEnabled ) {
+    this.runOptions.safeModeEnabled = safeModeEnabled;
+  }
 }

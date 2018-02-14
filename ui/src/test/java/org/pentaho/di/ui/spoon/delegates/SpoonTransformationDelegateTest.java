@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -59,6 +59,8 @@ public class SpoonTransformationDelegateTest {
       put( TEST_PARAM_KEY, TEST_PARAM_VALUE );
     }
   };
+  private static final LogLevel TEST_LOG_LEVEL = LogLevel.BASIC;
+  private static final boolean TEST_BOOLEAN_PARAM = true;
 
   private SpoonTransformationDelegate delegate;
   private Spoon spoon;
@@ -114,25 +116,33 @@ public class SpoonTransformationDelegateTest {
 
   @Test
   @SuppressWarnings( "ResultOfMethodCallIgnored" )
-  public void testSetNamedParameters() throws KettleException {
+  public void testSetParamsIntoMetaInExecuteTransformation() throws KettleException {
     doCallRealMethod().when( delegate ).executeTransformation( transMeta, true, false, false,
             false, false, null, false, LogLevel.BASIC );
 
-    RowMetaInterface rowMetaInterface = mock( RowMetaInterface.class );
+    RowMetaInterface rowMeta = mock( RowMetaInterface.class );
     TransExecutionConfiguration transExecutionConfiguration = mock( TransExecutionConfiguration.class );
     TransGraph activeTransGraph = mock( TransGraph.class );
     activeTransGraph.transLogDelegate = mock( TransLogDelegate.class );
 
-    doReturn( rowMetaInterface ).when( spoon.variables ).getRowMeta();
-    doReturn( EMPTY_STRING_ARRAY ).when( rowMetaInterface ).getFieldNames();
+    doReturn( rowMeta ).when( spoon.variables ).getRowMeta();
+    doReturn( EMPTY_STRING_ARRAY ).when( rowMeta ).getFieldNames();
     doReturn( transExecutionConfiguration ).when( spoon ).getTransExecutionConfiguration();
     doReturn( MAP_WITH_TEST_PARAM ).when( transExecutionConfiguration ).getParams();
     doReturn( activeTransGraph ).when( spoon ).getActiveTransGraph();
+    doReturn( TEST_LOG_LEVEL ).when( transExecutionConfiguration ).getLogLevel();
+    doReturn( TEST_BOOLEAN_PARAM ).when( transExecutionConfiguration ).isClearingLog();
+    doReturn( TEST_BOOLEAN_PARAM ).when( transExecutionConfiguration ).isSafeModeEnabled();
+    doReturn( TEST_BOOLEAN_PARAM ).when( transExecutionConfiguration ).isGatheringMetrics();
 
     delegate.executeTransformation( transMeta, true, false, false, false, false,
             null, false, LogLevel.BASIC );
 
     verify( transMeta ).setParameterValue( TEST_PARAM_KEY, TEST_PARAM_VALUE );
     verify( transMeta ).activateParameters();
+    verify( transMeta ).setLogLevel( TEST_LOG_LEVEL );
+    verify( transMeta ).setClearingLog( TEST_BOOLEAN_PARAM );
+    verify( transMeta ).setSafeModeEnabled( TEST_BOOLEAN_PARAM );
+    verify( transMeta ).setGatheringMetrics( TEST_BOOLEAN_PARAM );
   }
 }

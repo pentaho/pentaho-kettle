@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -867,6 +867,17 @@ public class SpoonTransformationDelegate extends SpoonDelegate {
         transMeta.setParameterValue( key, Const.NVL( paramMap.get( key ), "" ) );
       }
       transMeta.activateParameters();
+
+      // Set the log level
+      //
+      if ( executionConfiguration.getLogLevel() != null ) {
+        transMeta.setLogLevel( executionConfiguration.getLogLevel() );
+      }
+
+      // Set the run options
+      transMeta.setClearingLog( executionConfiguration.isClearingLog() );
+      transMeta.setSafeModeEnabled( executionConfiguration.isSafeModeEnabled() );
+      transMeta.setGatheringMetrics( executionConfiguration.isGatheringMetrics() );
 
       ExtensionPointHandler.callExtensionPoint( log, KettleExtensionPoint.SpoonTransMetaExecutionStart.id, transMeta );
       ExtensionPointHandler.callExtensionPoint( log, KettleExtensionPoint.SpoonTransExecutionConfiguration.id,
