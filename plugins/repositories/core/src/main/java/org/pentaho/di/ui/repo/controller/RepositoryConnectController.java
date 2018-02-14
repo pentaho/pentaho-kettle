@@ -224,6 +224,10 @@ public class RepositoryConnectController implements IConnectedRepositoryInstance
     if ( repositoryMeta != null ) {
       repositoriesMeta.removeRepository( repositoriesMeta.indexOfRepository( repositoryMeta ) );
     }
+    if ( currentRepository != null && isCompatibleRepositoryEdit( repositoryMeta ) ) {
+      setConnectedRepository( repositoryMeta );
+    }
+    currentRepository = repositoryMeta;
     return createRepository( id, items );
   }
 
@@ -236,12 +240,8 @@ public class RepositoryConnectController implements IConnectedRepositoryInstance
         Repository repository =
           pluginRegistry.loadClass( RepositoryPluginType.class, repositoryMeta.getId(), Repository.class );
         repository.init( repositoryMeta );
-        if ( currentRepository != null && isCompatibleRepositoryEdit( repositoryMeta ) ) {
-          setConnectedRepository( repositoryMeta );
-        }
         repositoriesMeta.addRepository( repositoryMeta );
         repositoriesMeta.writeData();
-        currentRepository = repositoryMeta;
         if ( !testRepository( repository ) ) {
           return false;
         }
@@ -255,7 +255,7 @@ public class RepositoryConnectController implements IConnectedRepositoryInstance
   }
 
   private boolean isCompatibleRepositoryEdit( RepositoryMeta repositoryMeta ) {
-    if ( repositoriesMeta.indexOfRepository( currentRepository ) >= 0
+    if ( repositoryMeta != null && repositoriesMeta.indexOfRepository( currentRepository ) >= 0
         && connectedRepository != null
         && repositoryEquals( connectedRepository, currentRepository ) ) {
       // only name / description / default changed ?
@@ -439,9 +439,17 @@ public class RepositoryConnectController implements IConnectedRepositoryInstance
     int index = repositoriesMeta.indexOfRepository( repositoryMeta );
     if ( index != -1 ) {
       Spoon spoon = spoonSupplier.get();
-      if ( spoon.getRepositoryName() != null && spoon.getRepositoryName().equals( repositoryMeta.getName() ) ) {
-        spoon.closeRepository();
-        setConnectedRepository( null );
+      Runnable execute = () -> {
+        if ( spoon.getRepositoryName() != null && spoon.getRepositoryName().equals( repositoryMeta.getName() ) ) {
+          spoon.closeRepository();
+          setConnectedRepository( null );
+        }
+        fireListeners();
+      };
+      if ( spoon.getShell() != null ) {
+        spoon.getShell().getDisplay().asyncExec( execute );
+      } else {
+        execute.run();
       }
       repositoriesMeta.removeRepository( index );
       save();
