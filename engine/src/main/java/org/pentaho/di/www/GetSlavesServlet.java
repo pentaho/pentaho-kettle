@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -24,6 +24,7 @@ package org.pentaho.di.www;
 
 import java.io.IOException;
 import java.io.PrintStream;
+import java.util.Date;
 import java.util.List;
 
 import javax.servlet.ServletException;
@@ -145,6 +146,12 @@ public class GetSlavesServlet extends BaseHttpServlet implements CartePluginInte
 
     if ( getDetections() != null ) {
       for ( SlaveServerDetection slaveServer : getDetections() ) {
+        try {
+          slaveServer.getSlaveServer().getStatus();
+        } catch ( Exception e ) {
+          slaveServer.setActive( false );
+          slaveServer.setLastInactiveDate( new Date() );
+        }
         out.println( slaveServer.getXML() );
       }
     }
