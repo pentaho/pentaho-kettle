@@ -764,6 +764,18 @@ public class ValueDataUtilTest {
     assertEquals( metaA.getStorageType(), ValueMetaInterface.STORAGE_TYPE_NORMAL );
   }
 
+  @Test
+  public void testJaro() {
+    assertEquals(new Double("0.0"), calculate("abcd", "defg", ValueMetaInterface.TYPE_STRING, CalculatorMetaFunction.CALC_JARO ) );
+    assertEquals(new Double("0.44166666666666665"), calculate("elephant", "hippo", ValueMetaInterface.TYPE_STRING, CalculatorMetaFunction.CALC_JARO ) );
+    assertEquals(new Double("0.8666666666666667"), calculate("hello", "hallo", ValueMetaInterface.TYPE_STRING, CalculatorMetaFunction.CALC_JARO ) );
+  }
+
+  @Test
+  public void testJaroWinkler() {
+    assertEquals(new Double("0.0"), calculate("abcd", "defg", ValueMetaInterface.TYPE_STRING, CalculatorMetaFunction.CALC_JARO_WINKLER ) );
+  }
+
   private Object calculate( String string_dataA, int valueMetaInterfaceType, int calculatorMetaFunction ) {
     return calculate( string_dataA, null, null, valueMetaInterfaceType, calculatorMetaFunction );
   }
@@ -878,6 +890,10 @@ public class ValueDataUtilTest {
         return ValueDataUtil.DateWorkingDiff( valueMetaA, dataA, valueMetaB, dataB );
       } else if ( calculatorMetaFunction == CalculatorMetaFunction.CALC_REMAINDER ) {
         return ValueDataUtil.remainder( valueMetaA, dataA, valueMetaB, dataB );
+      } else if ( calculatorMetaFunction == CalculatorMetaFunction.CALC_JARO ) {
+        return ValueDataUtil.getJaro_Similitude( valueMetaA, dataA, valueMetaB, dataB );
+      } else if ( calculatorMetaFunction == CalculatorMetaFunction.CALC_JARO_WINKLER ) {
+        return ValueDataUtil.getJaroWinkler_Similitude( valueMetaA, dataA, valueMetaB, dataB );
       } else {
         fail( "Invalid CalculatorMetaFunction specified." );
         return null;
