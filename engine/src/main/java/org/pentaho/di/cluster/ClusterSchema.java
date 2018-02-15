@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -457,6 +457,12 @@ public class ClusterSchema extends ChangedFlag implements Cloneable, SharedObjec
             List<SlaveServerDetection> detections = slave.getSlaveServerDetections();
             dynamicSlaves = new ArrayList<SlaveServer>();
             for ( SlaveServerDetection detection : detections ) {
+              try {
+                detection.getSlaveServer().getStatus();
+              } catch ( Exception e ) {
+                detection.setActive( false );
+                detection.setLastInactiveDate( new Date() );
+              }
               if ( detection.isActive() ) {
                 dynamicSlaves.add( detection.getSlaveServer() );
               }
