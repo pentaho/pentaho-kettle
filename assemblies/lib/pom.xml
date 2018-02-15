@@ -18,6 +18,7 @@
     <pdi-engine-spark.version>${project.version}</pdi-engine-spark.version>
     <rxjava.version>2.0.4</rxjava.version>
 
+    <pentaho-json.version>${project.version}</pentaho-json.version>
     <pdi-spark-driver.version>${project.version}</pdi-spark-driver.version>
     <pdi-osgi-bridge.version>${project.version}</pdi-osgi-bridge.version>
     <pentaho-database-model.version>${project.version}</pentaho-database-model.version>
@@ -43,10 +44,6 @@
     <geronimo-servlet_3.0_spec.version>1.0</geronimo-servlet_3.0_spec.version>
     <slf4j-api.version>1.7.7</slf4j-api.version>
     <slf4j-log4j12.version>1.7.7</slf4j-log4j12.version>
-    <spring-aop.version>4.3.2.RELEASE</spring-aop.version>
-    <spring-beans.version>4.3.2.RELEASE</spring-beans.version>
-    <spring-context.version>4.3.2.RELEASE</spring-context.version>
-    <spring-security-core.version>4.2.3.RELEASE</spring-security-core.version>
     <webservices-api.version>2.3.1</webservices-api.version>
     <webservices-rt.version>2.3.1</webservices-rt.version>
     <asm.version>3.2</asm.version>
@@ -68,6 +65,10 @@
     <databricks.version>4.0.0</databricks.version>
     <paho.version>1.2.0</paho.version>
     <bahir.version>2.1.1</bahir.version>
+
+    <!-- Spring -->
+    <springframework4.version>4.3.2.RELEASE</springframework4.version>
+    <springframework4-security.version>4.2.3.RELEASE</springframework4-security.version>
   </properties>
 
   <dependencies>
@@ -201,6 +202,11 @@
     </dependency>
 
     <!-- Pentaho dependencies -->
+    <dependency>
+      <groupId>org.pentaho</groupId>
+      <artifactId>json</artifactId>
+      <version>${pentaho-json.version}</version>
+    </dependency>
     <dependency>
       <groupId>pentaho</groupId>
       <artifactId>pdi-osgi-bridge-core</artifactId>
@@ -500,6 +506,45 @@
       </exclusions>
     </dependency>
 
+    <!-- Spring -->
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-core</artifactId>
+      <version>${springframework4.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-aop</artifactId>
+      <version>${springframework4.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-web</artifactId>
+      <version>${springframework4.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-beans</artifactId>
+      <version>${springframework4.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-context</artifactId>
+      <version>${springframework4.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-context-support</artifactId>
+      <version>${springframework4.version}</version>
+    </dependency>
+
+    <!-- Spring Security -->
+    <dependency>
+      <groupId>org.springframework.security</groupId>
+      <artifactId>spring-security-core</artifactId>
+      <version>${springframework4-security.version}</version>
+    </dependency>
+
     <!-- Other third-party dependencies -->
     <dependency>
       <groupId>org.slf4j</groupId>
@@ -510,26 +555,6 @@
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-log4j12</artifactId>
       <version>${slf4j-log4j12.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.springframework</groupId>
-      <artifactId>spring-aop</artifactId>
-      <version>${spring-aop.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.springframework</groupId>
-      <artifactId>spring-beans</artifactId>
-      <version>${spring-beans.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.springframework</groupId>
-      <artifactId>spring-context</artifactId>
-      <version>${spring-context.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.springframework.security</groupId>
-      <artifactId>spring-security-core</artifactId>
-      <version>${spring-security-core.version}</version>
     </dependency>
     <dependency>
       <groupId>org.glassfish.metro</groupId>
