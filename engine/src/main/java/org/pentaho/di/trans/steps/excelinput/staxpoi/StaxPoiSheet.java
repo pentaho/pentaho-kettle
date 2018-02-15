@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -114,15 +114,33 @@ public class StaxPoiSheet implements KSheet {
           }
           if ( event == XMLStreamConstants.START_ELEMENT && sheetReader.getLocalName().equals( "c" ) ) {
             String attributeValue = sheetReader.getAttributeValue( null, "t" );
-            if ( attributeValue != null && attributeValue.equals( "s" ) ) {
-              // only if the type of the cell is string, we continue
-              while ( sheetReader.hasNext() ) {
-                event = sheetReader.next();
-                if ( event == XMLStreamConstants.START_ELEMENT && sheetReader.getLocalName().equals( "v" ) ) {
-                  int idx = Integer.parseInt( sheetReader.getElementText() );
-                  String content = new XSSFRichTextString( sst.getEntryAt( idx ) ).toString();
-                  headerRow.add( content );
-                  break;
+            if ( attributeValue != null ) {
+              if ( attributeValue.equals( "s" ) ) {
+                // if the type of the cell is string, we continue
+                while ( sheetReader.hasNext() ) {
+                  event = sheetReader.next();
+                  if ( event == XMLStreamConstants.START_ELEMENT && sheetReader.getLocalName().equals( "v" ) ) {
+                    int idx = Integer.parseInt( sheetReader.getElementText() );
+                    String content = new XSSFRichTextString( sst.getEntryAt( idx ) ).toString();
+                    headerRow.add( content );
+                    break;
+                  }
+                }
+              } else if ( attributeValue.equals( "inlineStr" ) ) {
+                // if the type of the cell is string, we continue
+                while ( sheetReader.hasNext() ) {
+                  event = sheetReader.next();
+                  if ( event == XMLStreamConstants.START_ELEMENT && sheetReader.getLocalName().equals( "is" ) ) {
+                    while ( sheetReader.hasNext() ) {
+                      event = sheetReader.next();
+                      if ( event == XMLStreamConstants.CHARACTERS ) {
+                        String content = new XSSFRichTextString( sheetReader.getText() ).toString();
+                        headerRow.add( content );
+                        break;
+                      }
+                    }
+                    break;
+                  }
                 }
               }
             } else {
@@ -207,6 +225,15 @@ public class StaxPoiSheet implements KSheet {
             content = new XSSFRichTextString( sst.getEntryAt( idx ) ).toString();
           } else {
             content = sheetReader.getElementText();
+          }
+        }
+        if ( event == XMLStreamConstants.START_ELEMENT && sheetReader.getLocalName().equals( "is" ) ) {
+          while ( sheetReader.hasNext() ) {
+            event = sheetReader.next();
+            if ( event == XMLStreamConstants.CHARACTERS ) {
+              content = new XSSFRichTextString( sheetReader.getText() ).toString();
+              break;
+            }
           }
         }
         if ( event == XMLStreamConstants.START_ELEMENT && sheetReader.getLocalName().equals( "f" ) ) {
