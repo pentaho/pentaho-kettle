@@ -1833,7 +1833,7 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
             Menu menu = new Menu( shell, SWT.POP_UP );
 
             MenuItem item1 = new MenuItem( menu, SWT.PUSH );
-            item1.setText( BaseMessages.getString( PKG, "Spoon.Tooltip.StopTranformation" ) );
+            item1.setText( BaseMessages.getString( PKG, "Spoon.Menu.StopTranformation" ) );
             item1.addSelectionListener( new SelectionAdapter() {
               @Override
               public void widgetSelected( SelectionEvent e1 ) {
@@ -1842,7 +1842,7 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
             } );
 
             MenuItem item2 = new MenuItem( menu, SWT.PUSH );
-            item2.setText( BaseMessages.getString( PKG, "Spoon.Tooltip.SafeStopTranformation" ) );
+            item2.setText( BaseMessages.getString( PKG, "Spoon.Menu.SafeStopTranformation" ) );
             item2.addSelectionListener( new SelectionAdapter() {
               @Override
               public void widgetSelected( SelectionEvent e2 ) {
