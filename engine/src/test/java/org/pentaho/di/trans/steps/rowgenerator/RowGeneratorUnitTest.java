@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -35,8 +35,11 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.exception.KettleStepException;
+import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
+import org.pentaho.di.trans.step.RowAdapter;
 import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
@@ -86,4 +89,19 @@ public class RowGeneratorUnitTest {
     assertEquals( rowLimit,  1440 );
   }
 
+  @Test
+  public void doesNotWriteRowOnTimeWhenStopped() throws KettleException, InterruptedException {
+    TransMeta transMeta = new TransMeta( getClass().getResource( "safe-stop.ktr" ).getPath() );
+    Trans trans = new Trans( transMeta );
+    trans.prepareExecution( new String[] {} );
+    trans.getSteps().get( 1 ).step.addRowListener( new RowAdapter() {
+      @Override public void rowWrittenEvent( RowMetaInterface rowMeta, Object[] row ) throws KettleStepException {
+        trans.safeStop();
+      }
+    } );
+    trans.startThreads();
+    trans.waitUntilFinished();
+    assertEquals( 1, trans.getSteps().get( 0 ).step.getLinesWritten() );
+    assertEquals( 1, trans.getSteps().get( 1 ).step.getLinesRead() );
+  }
 }
