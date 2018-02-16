@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -217,9 +217,9 @@ public class MappingInput extends BaseStep implements StepInterface {
 
         // Make sure to connect it to both sides...
         //
-        sourceStep.getOutputRowSets().add( rowSet );
+        sourceStep.addRowSetToOutputRowSets( rowSet );
         sourceStep.identifyErrorOutput();
-        getInputRowSets().add( rowSet );
+        addRowSetToInputRowSets( rowSet );
       }
     }
     data.valueRenames = valueRenames;

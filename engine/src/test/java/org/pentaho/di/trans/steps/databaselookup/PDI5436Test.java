@@ -162,10 +162,10 @@ public class PDI5436Test {
     Database database = mockDatabase();
     doReturn( database ).when( stepSpy ).getDatabase( any( DatabaseMeta.class ) );
 
-    stepSpy.getInputRowSets().add( mockInputRowSet() );
+    stepSpy.addRowSetToInputRowSets( mockInputRowSet() );
     stepSpy.setInputRowMeta( mockInputRowMeta() );
     RowSet outputRowSet = new QueueRowSet();
-    stepSpy.getOutputRowSets().add( outputRowSet );
+    stepSpy.addRowSetToOutputRowSets( outputRowSet );
 
     StepMetaInterface meta = mockStepMeta();
     StepDataInterface data = smh.initStepDataInterface;

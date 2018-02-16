@@ -135,7 +135,7 @@ public class PDI_15270_Test extends CsvInputUnitTestBase {
       CsvInputData data = new CsvInputData();
       csvInput.init( meta, data );
 
-      csvInput.getOutputRowSets().add( output );
+      csvInput.addRowSetToOutputRowSets( output );
 
       try {
         csvInput.processRow( meta, data );
