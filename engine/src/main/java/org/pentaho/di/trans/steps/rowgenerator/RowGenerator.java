@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -208,7 +208,7 @@ public class RowGenerator extends BaseStep implements StepInterface {
       }
     }
 
-    if ( meta.isNeverEnding() || data.rowsWritten < data.rowLimit ) {
+    if ( ( meta.isNeverEnding() || data.rowsWritten < data.rowLimit ) && !isStopped() ) {
       r = data.outputRowMeta.cloneRow( data.outputRowData );
     } else {
       setOutputDone(); // signal end to receiver(s)
