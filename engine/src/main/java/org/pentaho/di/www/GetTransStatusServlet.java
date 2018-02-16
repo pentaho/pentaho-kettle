@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -383,7 +383,11 @@ public class GetTransStatusServlet extends BaseHttpServlet implements CartePlugi
             out.print( "<a href=\""
               + convertContextPath( StopTransServlet.CONTEXT_PATH ) + "?name="
               + URLEncoder.encode( transName, "UTF-8" ) + "&id=" + URLEncoder.encode( id, "UTF-8" ) + "\">"
-              + BaseMessages.getString( PKG, "TransStatusServlet.StopTrans" ) + "</a>" );
+              + BaseMessages.getString( PKG, "TransStatusServlet.StopTrans" ) + "</a><br>" );
+            out.print( "<a href=\""
+              + convertContextPath( StopTransServlet.CONTEXT_PATH ) + "?name="
+              + URLEncoder.encode( transName, "UTF-8" ) + "&id=" + URLEncoder.encode( id, "UTF-8" ) + "&inputOnly=Y" + "\">"
+              + BaseMessages.getString( PKG, "TransStatusServlet.SafeStopTrans" ) + "</a>" );
             out.print( "<p>" );
           }
           out.print( "<a href=\""
