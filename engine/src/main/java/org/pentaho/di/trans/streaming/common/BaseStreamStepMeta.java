@@ -49,9 +49,15 @@ import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Node;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
+
+import static com.google.common.base.Preconditions.checkState;
+import static com.google.common.base.Strings.isNullOrEmpty;
+
 
 public abstract class BaseStreamStepMeta extends StepWithMappingMeta implements StepMetaInterface {
 
@@ -75,20 +81,54 @@ public abstract class BaseStreamStepMeta extends StepWithMappingMeta implements 
     BeanInjectionInfo info = new BeanInjectionInfo( this.getClass() );
     BeanInjector injector = new BeanInjector( info );
     Map<String, BeanInjectionInfo.Property> properties = info.getProperties();
+
+    StringBuilder builder = new StringBuilder();
+    info.getGroups()
+      .forEach( appendXmlForGroup( injector, properties, builder ) );
+    return builder.toString();
+  }
+
+  /**
+   * Maps a group of injector properties to XML tags, wrapping them in a parent element
+   * <GROUPNAME></GROUPNAME>
+   * if a GroupName has been defined.
+   */
+  private Consumer<BeanInjectionInfo.Group> appendXmlForGroup( BeanInjector injector,
+                                                               Map<String, BeanInjectionInfo.Property> properties,
+                                                               StringBuilder builder ) {
+    return group -> {
+      boolean groupHasName = !isNullOrEmpty( group.getName() );
+      if ( groupHasName ) {
+        builder.append( "<" ).append( group.getName() ).append( ">\n" );
+      }
+      List<BeanInjectionInfo.Property> groupProps = group.getGroupProperties();
+      builder.append( getXmlForProps( injector,
+
+        properties.entrySet().stream()
+          .filter( entry -> groupProps.contains( entry.getValue() ) )
+          .collect( Collectors.toMap( Map.Entry::getKey, Map.Entry::getValue ) )
+      ) );
+      if ( groupHasName ) {
+        builder.append( "</" ).append( group.getName() ).append( ">\n" );
+      }
+    };
+  }
+
+  private String getXmlForProps( BeanInjector injector, Map<String, BeanInjectionInfo.Property> properties ) {
     return properties.entrySet().stream()
       .map( entry -> {
         try {
           String key = entry.getKey();
           Object obj = injector.getObject( this, key );
           if ( entry.getValue().pathArraysCount == 1 ) {
-            @SuppressWarnings( "unchecked" )
+            @SuppressWarnings ( "unchecked" )
             List<String> list = (List<String>) obj;
             return list.stream()
               .map( v -> XMLHandler.addTagValue( key, v ) )
               .collect( Collectors.joining() );
           }
           // Suffix PASSWORD to all elements that need to be encrypted/decrypted
-          String value = key.endsWith( PASSWORD )
+          String value = isPassword( key )
             ? Encr.encryptPasswordIfNotUsingVariables( obj.toString() ) : obj.toString();
           return XMLHandler.addTagValue( key, value );
         } catch ( Exception e ) {
@@ -97,36 +137,64 @@ public abstract class BaseStreamStepMeta extends StepWithMappingMeta implements 
       } ).collect( Collectors.joining() );
   }
 
+  private boolean isPassword( String attributeName ) {
+    return attributeName.toUpperCase().contains( PASSWORD );
+  }
+
   @Override public void loadXML(
     Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore ) {
 
     BeanInjectionInfo info = new BeanInjectionInfo( this.getClass() );
     BeanInjector injector = new BeanInjector( info );
-    info.getProperties().keySet().forEach( name -> {
+    info.getProperties().values().forEach( property -> {
       try {
         injector.setProperty(
-          this, name, nodesToRowMetaAndData( XMLHandler.getNodes( stepnode, name ) ), name );
+          this, property.getName(), nodesToRowMetaAndData( stepnode, property ), property.getName() );
       } catch ( KettleException e ) {
         throw new RuntimeException( e );
       }
     } );
   }
 
-  private List<RowMetaAndData> nodesToRowMetaAndData( List<Node> nodes ) {
-    return nodes.stream()
-      .map( node -> {
-        RowMetaAndData rmad = new RowMetaAndData();
-        String nodeName = node.getNodeName();
-        // Suffix PASSWORD to all elements that need to be encrypted/decrypted
-        Object nodeValue = nodeName.endsWith( PASSWORD )
-          ? Encr.decryptPasswordOptionallyEncrypted( node.getTextContent() ) : node.getTextContent();
-        rmad.addValue( new ValueMetaString( nodeName ), nodeValue );
-        return rmad;
-      } )
-      .collect( Collectors.toList() );
+  private List<RowMetaAndData> nodesToRowMetaAndData( Node stepnode, BeanInjectionInfo.Property name ) {
+    List<Node> nodes = getChildrenForProp( stepnode, name );
+
+    if ( nodes.size() == 0 ) {
+      // return placeholder
+      RowMetaAndData rmad = new RowMetaAndData();
+      rmad.addValue( new ValueMetaString( name.getName() ), "" );
+      return Collections.singletonList( rmad );
+    } else {
+      return nodes.stream()
+        .map( node -> {
+          RowMetaAndData rmad = new RowMetaAndData();
+          String nodeName = node.getNodeName();
+          // Suffix PASSWORD to all elements that need to be encrypted/decrypted
+          Object nodeValue = isPassword( nodeName )
+            ? Encr.decryptPasswordOptionallyEncrypted( node.getTextContent() ) : node.getTextContent();
+          rmad.addValue( new ValueMetaString( node.getNodeName() ), nodeValue );
+          return rmad;
+        } )
+        .collect( Collectors.toList() );
+    }
   }
 
-  @Override public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases )
+  private List<Node> getChildrenForProp( Node stepnode, BeanInjectionInfo.Property property ) {
+
+    String groupName = property.getGroupName();
+    List<Node> groupNodeList = XMLHandler.getNodes( stepnode, groupName );
+    checkState( groupNodeList.size() == 0 || groupNodeList.size() == 1,
+      "Expecting only zero or one group of name %s within xml.",
+      isNullOrEmpty( groupName ) ? "(empty)" : groupName );
+    if ( groupNodeList.size() == 1 ) {
+      return XMLHandler.getNodes( groupNodeList.get( 0 ), property.getName() );
+
+    }
+    return XMLHandler.getNodes( stepnode, property.getName() );
+  }
+
+  @Override public void readRep( Repository rep, IMetaStore metaStore, ObjectId
+    id_step, List<DatabaseMeta> databases )
     throws KettleException {
     setTransformationPath( rep.getStepAttributeString( id_step, TRANSFORMATION_PATH ) );
     setFileName( rep.getStepAttributeString( id_step, TRANSFORMATION_PATH ) );
@@ -204,7 +272,7 @@ public abstract class BaseStreamStepMeta extends StepWithMappingMeta implements 
 
   @Override
   public List<ResourceReference> getResourceDependencies( TransMeta transMeta, StepMeta stepInfo ) {
-    List<ResourceReference> references = new ArrayList<ResourceReference>( 5 );
+    List<ResourceReference> references = new ArrayList<>( 5 );
     String realFilename = transMeta.environmentSubstitute( transformationPath );
     ResourceReference reference = new ResourceReference( stepInfo );
     references.add( reference );

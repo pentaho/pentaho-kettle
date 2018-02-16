@@ -35,6 +35,7 @@ import org.pentaho.di.core.annotations.Step;
 import org.pentaho.di.core.encryption.Encr;
 import org.pentaho.di.core.encryption.TwoWayPasswordEncoderPluginType;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.injection.Injection;
 import org.pentaho.di.core.injection.InjectionSupported;
 import org.pentaho.di.core.logging.KettleLogStore;
@@ -55,10 +56,11 @@ import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Node;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.fail;
@@ -66,7 +68,7 @@ import static org.mockito.Matchers.any;
 import static org.pentaho.di.core.util.Assert.assertTrue;
 import static org.powermock.api.mockito.PowerMockito.when;
 
-@RunWith( MockitoJUnitRunner.class )
+@RunWith ( MockitoJUnitRunner.class )
 public class BaseStreamStepMetaTest {
 
   private BaseStreamStepMeta meta;
@@ -91,13 +93,20 @@ public class BaseStreamStepMetaTest {
     when( logChannelFactory.create( any() ) ).thenReturn( logChannel );
   }
 
-  @Step( id = "StuffStream", name = "Stuff Stream" )
-  @InjectionSupported( localizationPrefix = "stuff" )
+  @Step ( id = "StuffStream", name = "Stuff Stream" )
+  @InjectionSupported ( localizationPrefix = "stuff", groups = { "stuffGroup" } )
   private static class StuffStreamMeta extends BaseStreamStepMeta {
-    @Injection( name = "stuff" )
-    List<String> stuff = Arrays.asList( "one", "two" );
+    @Injection ( name = "stuff", group = "stuffGroup" )
+    List<String> stuff = new ArrayList();
 
-    @Injection( name = "AUTH_PASSWORD" )
+    // stuff needs to be mutable to support .add() for metadatainjection.
+    // otherwise would use Arrays.asList();
+    {
+      stuff.add( "one" );
+      stuff.add( "two" );
+    }
+
+    @Injection ( name = "AUTH_PASSWORD" )
     String password = "test";
 
     @Override
@@ -120,7 +129,8 @@ public class BaseStreamStepMetaTest {
     meta.check( remarks, null, null, null, null, null, null, new Variables(), null, null );
     assertEquals( 1, remarks.size() );
     assertEquals(
-      "The \"Number of records\" and \"Duration\" fields can’t both be set to 0. Please set a value of 1 or higher for one of the fields.",
+      "The \"Number of records\" and \"Duration\" fields can’t both be set to 0. Please set a value of 1 or higher "
+        + "for one of the fields.",
       remarks.get( 0 ).getText() );
   }
 
@@ -161,6 +171,7 @@ public class BaseStreamStepMetaTest {
     assertEquals( 1, remarks.size() );
     assertEquals( "The \"Number of records\" and \"Duration\" fields can’t both be set to 0. Please set a value of 1 "
       + "or higher for one of the fields.", remarks.get( 0 ).getText() );
+    testRoundTrip( meta );
   }
 
   @Test
@@ -173,11 +184,29 @@ public class BaseStreamStepMetaTest {
       "<NUM_MESSAGES>100</NUM_MESSAGES>" + Const.CR
         + "<AUTH_PASSWORD>Encrypted 2be98afc86aa7f2e4cb79ce10ca97bcce</AUTH_PASSWORD>" + Const.CR
         + "<DURATION>1000</DURATION>" + Const.CR
+        + "<TRANSFORMATION_PATH>aPath</TRANSFORMATION_PATH>" + Const.CR
+        + "<stuffGroup>" + Const.CR
         + "<stuff>one</stuff>" + Const.CR
         + "<stuff>two</stuff>" + Const.CR
-        + "<TRANSFORMATION_PATH>aPath</TRANSFORMATION_PATH>" + Const.CR,
+        + "</stuffGroup>" + Const.CR,
       xml );
+    testRoundTrip( meta );
   }
+
+  @Test
+  public void testRoundTripXMLWithInjectionList() {
+    StuffStreamMeta startingMeta = new StuffStreamMeta();
+    startingMeta.stuff = new ArrayList();
+    startingMeta.stuff.add( "foo" );
+    startingMeta.stuff.add( "bar" );
+    startingMeta.stuff.add( "baz" );
+    startingMeta.setBatchDuration( "1000" );
+    startingMeta.setBatchSize( "100" );
+    startingMeta.setTransformationPath( "aPath" );
+    testRoundTrip( startingMeta );
+  }
+
+
 
   @Test
   public void testSaveDefaultEmptyConnection() {
@@ -187,10 +216,13 @@ public class BaseStreamStepMetaTest {
       "<NUM_MESSAGES>1000</NUM_MESSAGES>" + Const.CR
         + "<AUTH_PASSWORD>Encrypted 2be98afc86aa7f2e4cb79ce10ca97bcce</AUTH_PASSWORD>" + Const.CR
         + "<DURATION>1000</DURATION>" + Const.CR
+        + "<TRANSFORMATION_PATH/>" + Const.CR
+        + "<stuffGroup>" + Const.CR
         + "<stuff>one</stuff>" + Const.CR
         + "<stuff>two</stuff>" + Const.CR
-        + "<TRANSFORMATION_PATH/>" + Const.CR,
+        + "</stuffGroup>" + Const.CR,
       xml );
+    testRoundTrip( meta );
   }
 
   @Test
@@ -235,6 +267,7 @@ public class BaseStreamStepMetaTest {
     assertTrue( loadedMeta.stuff.contains( "one" ) );
     assertTrue( loadedMeta.stuff.contains( "two" ) );
     assertEquals( "write-to-log.ktr", loadedMeta.getTransformationPath() );
+    testRoundTrip( loadedMeta );
   }
 
   @Test
@@ -254,6 +287,7 @@ public class BaseStreamStepMetaTest {
     assertEquals( path, resourceDependencies.get( 0 ).getEntries().get( 0 ).getResource() );
     assertEquals( ResourceEntry.ResourceType.ACTIONFILE,
       resourceDependencies.get( 0 ).getEntries().get( 0 ).getResourcetype() );
+    testRoundTrip( inputMeta );
   }
 
   @Test
@@ -261,6 +295,7 @@ public class BaseStreamStepMetaTest {
     BaseStreamStepMeta meta = new StuffStreamMeta();
     assertEquals( 1, meta.getReferencedObjectDescriptions().length );
     assertTrue( meta.getReferencedObjectDescriptions()[ 0 ] != null );
+    testRoundTrip( meta );
   }
 
   @Test
@@ -270,6 +305,7 @@ public class BaseStreamStepMetaTest {
     assertFalse( meta.isReferencedObjectEnabled()[ 0 ] );
     meta.setTransformationPath( "/some/path" );
     assertTrue( meta.isReferencedObjectEnabled()[ 0 ] );
+    testRoundTrip( meta );
   }
 
   @Test
@@ -283,5 +319,24 @@ public class BaseStreamStepMetaTest {
     } catch ( KettleException e ) {
       fail();
     }
+    testRoundTrip( meta );
+  }
+
+  // Checks that a serialization->deserialization does not alter meta fields
+  private void testRoundTrip( BaseStreamStepMeta thisMeta  ) {
+    StuffStreamMeta startingMeta = (StuffStreamMeta) thisMeta;
+    String xml = startingMeta.getXML();
+    StuffStreamMeta metaToRoundTrip = new StuffStreamMeta();
+    try {
+      Node stepNode = XMLHandler.getSubNode( XMLHandler.loadXMLString( "<step>" + xml + "</step>" ), "step" );
+      metaToRoundTrip.loadXML( stepNode, Collections.emptyList(), (IMetaStore) null );
+    } catch ( KettleXMLException e ) {
+      throw new RuntimeException( e );
+    }
+    assertThat( startingMeta.getBatchDuration(), equalTo( metaToRoundTrip.getBatchDuration() ) );
+    assertThat( startingMeta.getBatchSize(), equalTo( metaToRoundTrip.getBatchSize() ) );
+    assertThat( startingMeta.getTransformationPath(), equalTo( metaToRoundTrip.getTransformationPath() ) );
+
+    assertThat( startingMeta.stuff, equalTo( metaToRoundTrip.stuff ) );
   }
 }
