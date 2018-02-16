@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -1070,7 +1070,7 @@ public class JsonInputTest {
     RowSet input = helper.getMockInputRowSet( inputRows );
     RowMetaInterface rowMeta = createRowMeta( new ValueMetaString( inCol ) );
     input.setRowMeta( rowMeta );
-    jsonInput.getInputRowSets().add( input );
+    jsonInput.addRowSetToInputRowSets( input );
     jsonInput.setInputRowMeta( rowMeta );
     jsonInput.initializeVariablesFrom( variables );
     jsonInput.init( meta, data );

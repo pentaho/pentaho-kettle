@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -25,6 +25,7 @@ package org.pentaho.di.trans.steps.sortedmerge;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.List;
 
 import org.pentaho.di.core.RowSet;
 import org.pentaho.di.core.exception.KettleException;
@@ -86,10 +87,10 @@ public class SortedMerge extends BaseStep implements StepInterface {
       // Instead of modifying BaseStep, I figure reversing the loop here would
       // effect change in less areas. If the reverse loop causes a problem, please
       // re-open http://jira.pentaho.com/browse/PDI-1212.
+      List<RowSet> inputRowSets = getInputRowSets();
+      for ( int i = inputRowSets.size() - 1; i >= 0 && !isStopped(); i-- ) {
 
-      for ( int i = getInputRowSets().size() - 1; i >= 0 && !isStopped(); i-- ) {
-
-        RowSet rowSet = getInputRowSets().get( i );
+        RowSet rowSet = inputRowSets.get( i );
         Object[] row = getRowFrom( rowSet );
         if ( row != null ) {
           // Add this row to the sortedBuffer...

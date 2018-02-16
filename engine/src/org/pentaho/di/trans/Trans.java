@@ -3291,7 +3291,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
     }
 
     // Add this rowset to the list of active rowsets for the selected step
-    stepInterface.getInputRowSets().add( rowSet );
+    stepInterface.addRowSetToInputRowSets( rowSet );
 
     return new RowProducer( stepInterface, rowSet );
   }

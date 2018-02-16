@@ -275,9 +275,9 @@ public class ExcelWriterStep_StyleFormatTest {
     when( mockOutputRowMeta.size() ).thenReturn( outFields.length );
     when( inputRowSet.getRowMeta() ).thenReturn( inputRowMeta );
 
-    step.getInputRowSets().add( inputRowSet );
+    step.addRowSetToInputRowSets( inputRowSet );
     step.setInputRowMeta( inputRowMeta );
-    step.getOutputRowSets().add( inputRowSet );
+    step.addRowSetToOutputRowSets( inputRowSet );
   }
 
   /**

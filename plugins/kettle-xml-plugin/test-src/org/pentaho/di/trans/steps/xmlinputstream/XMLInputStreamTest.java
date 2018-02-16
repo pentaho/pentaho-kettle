@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -50,7 +50,7 @@ import org.pentaho.di.trans.steps.mock.StepMockHelper;
 
 /**
  * @author Tatsiana_Kasiankova
- * 
+ *
  */
 public class XMLInputStreamTest {
   private static final String INCORRECT_XML_DATA_VALUE_MESSAGE = "Incorrect xml data value - ";
@@ -273,7 +273,7 @@ public class XMLInputStreamTest {
             stepMockHelper.trans );
     xmlInputStream.setInputRowMeta( rm );
     xmlInputStream.getInputRowMeta().addValueMeta( ms );
-    xmlInputStream.getInputRowSets().add( rs );
+    xmlInputStream.addRowSetToInputRowSets( rs );
     xmlInputStream.setOutputRowSets( new ArrayList<>() );
 
     xmlInputStream.init( xmlInputStreamMeta, xmlInputStreamData );
@@ -350,7 +350,7 @@ public class XMLInputStreamTest {
                     stepMockHelper.trans );
     xmlInputStream.setInputRowMeta( rm );
     xmlInputStream.getInputRowMeta().addValueMeta( ms );
-    xmlInputStream.getInputRowSets().add( rs );
+    xmlInputStream.addRowSetToInputRowSets( rs );
     xmlInputStream.setOutputRowSets( new ArrayList<>() );
 
     xmlInputStream.init( xmlInputStreamMeta, xmlInputStreamData );

@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -149,7 +149,7 @@ public class CalculatorBackwardCompatibilityUnitTest {
     inputRowSet.setRowMeta( inputRowMeta );
 
     Calculator calculator = new Calculator( smh.stepMeta, smh.stepDataInterface, 0, smh.transMeta, smh.trans );
-    calculator.getInputRowSets().add( inputRowSet );
+    calculator.addRowSetToInputRowSets( inputRowSet );
     calculator.setInputRowMeta( inputRowMeta );
     calculator.init( smh.initStepMetaInterface, smh.initStepDataInterface );
 
@@ -202,7 +202,7 @@ public class CalculatorBackwardCompatibilityUnitTest {
     inputRowSet.setRowMeta( inputRowMeta );
 
     Calculator calculator = new Calculator( smh.stepMeta, smh.stepDataInterface, 0, smh.transMeta, smh.trans );
-    calculator.getInputRowSets().add( inputRowSet );
+    calculator.addRowSetToInputRowSets( inputRowSet );
     calculator.setInputRowMeta( inputRowMeta );
     calculator.init( smh.initStepMetaInterface, smh.initStepDataInterface );
 
@@ -252,7 +252,7 @@ public class CalculatorBackwardCompatibilityUnitTest {
     inputRowSet.setRowMeta( inputRowMeta );
 
     Calculator calculator = new Calculator( smh.stepMeta, smh.stepDataInterface, 0, smh.transMeta, smh.trans );
-    calculator.getInputRowSets().add( inputRowSet );
+    calculator.addRowSetToInputRowSets( inputRowSet );
     calculator.setInputRowMeta( inputRowMeta );
     calculator.init( smh.initStepMetaInterface, smh.initStepDataInterface );
 
@@ -305,7 +305,7 @@ public class CalculatorBackwardCompatibilityUnitTest {
     inputRowSet.setRowMeta( inputRowMeta );
 
     Calculator calculator = new Calculator( smh.stepMeta, smh.stepDataInterface, 0, smh.transMeta, smh.trans );
-    calculator.getInputRowSets().add( inputRowSet );
+    calculator.addRowSetToInputRowSets( inputRowSet );
     calculator.setInputRowMeta( inputRowMeta );
     calculator.init( smh.initStepMetaInterface, smh.initStepDataInterface );
 

@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -81,33 +81,26 @@ public class JoinRows extends BaseStep implements StepInterface {
       data.filenr = 1;
 
       // See if a main step is supplied: in that case move the corresponding rowset to position 0
-      for ( int i = 0; i < getInputRowSets().size(); i++ ) {
-        RowSet rs = getInputRowSets().get( i );
-        if ( rs.getOriginStepName().equalsIgnoreCase( meta.getMainStepname() ) ) {
-          // swap this one and position 0...
-          // That means, the main stream is always stream 0 --> easy!
-          //
-          RowSet zero = getInputRowSets().get( 0 );
-          getInputRowSets().set( 0, rs );
-          getInputRowSets().set( i, zero );
-        }
-      }
+      swapFirstInputRowSetIfExists( meta.getMainStepname() );
+
+      List<RowSet> inputRowSets = getInputRowSets();
+      int rowSetsSize = inputRowSets.size();
 
       // ** INPUT SIDE **
-      data.file = new File[getInputRowSets().size()];
-      data.fileInputStream = new FileInputStream[getInputRowSets().size()];
-      data.dataInputStream = new DataInputStream[getInputRowSets().size()];
-      data.size = new int[getInputRowSets().size()];
-      data.fileRowMeta = new RowMetaInterface[getInputRowSets().size()];
-      data.joinrow = new Object[getInputRowSets().size()][];
-      data.rs = new RowSet[getInputRowSets().size()];
-      data.cache = new List[getInputRowSets().size()];
-      data.position = new int[getInputRowSets().size()];
-      data.fileOutputStream = new FileOutputStream[getInputRowSets().size()];
-      data.dataOutputStream = new DataOutputStream[getInputRowSets().size()];
-      data.restart = new boolean[getInputRowSets().size()];
+      data.file = new File[rowSetsSize];
+      data.fileInputStream = new FileInputStream[rowSetsSize];
+      data.dataInputStream = new DataInputStream[rowSetsSize];
+      data.size = new int[rowSetsSize];
+      data.fileRowMeta = new RowMetaInterface[rowSetsSize];
+      data.joinrow = new Object[rowSetsSize][];
+      data.rs = new RowSet[rowSetsSize];
+      data.cache = new List[rowSetsSize];
+      data.position = new int[rowSetsSize];
+      data.fileOutputStream = new FileOutputStream[rowSetsSize];
+      data.dataOutputStream = new DataOutputStream[rowSetsSize];
+      data.restart = new boolean[rowSetsSize];
 
-      for ( int i = 1; i < getInputRowSets().size(); i++ ) {
+      for ( int i = 1; i < rowSetsSize; i++ ) {
         String directoryName = environmentSubstitute( meta.getDirectory() );
         File file = null;
         if ( directoryName != null ) {
@@ -116,7 +109,7 @@ public class JoinRows extends BaseStep implements StepInterface {
         data.file[i] = File.createTempFile( meta.getPrefix(), ".tmp", file );
 
         data.size[i] = 0;
-        data.rs[i] = getInputRowSets().get( i );
+        data.rs[i] = inputRowSets.get( i );
         data.cache[i] = null;
         // data.row[i] = null;
         data.position[i] = 0;
@@ -149,7 +142,7 @@ public class JoinRows extends BaseStep implements StepInterface {
     // Do we read from the first rowset or a file?
     if ( filenr == 0 ) {
       // Rowset 0:
-      RowSet rowSet = getInputRowSets().get( 0 );
+      RowSet rowSet = getFirstInputRowSet();
       rowData = getRowFrom( rowSet );
       if ( rowData != null ) {
         data.fileRowMeta[0] = rowSet.getRowMeta();
@@ -462,7 +455,7 @@ public class JoinRows extends BaseStep implements StepInterface {
 
   @Override
   public void batchComplete() throws KettleException {
-    RowSet rowSet = getInputRowSets().get( 0 );
+    RowSet rowSet = getFirstInputRowSet();
     int repeats = 0;
     for ( int i = 0; i < data.cache.length; i++ ) {
       if ( repeats == 0 ) {
