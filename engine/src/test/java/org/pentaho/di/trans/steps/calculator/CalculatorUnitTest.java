@@ -103,7 +103,7 @@ public class CalculatorUnitTest {
     inputRowSet.setRowMeta( inputRowMeta );
 
     Calculator calculator = new Calculator( smh.stepMeta, smh.stepDataInterface, 0, smh.transMeta, smh.trans );
-    calculator.getInputRowSets().add( inputRowSet );
+    calculator.addRowSetToInputRowSets( inputRowSet );
     calculator.setInputRowMeta( inputRowMeta );
     calculator.init( smh.initStepMetaInterface, smh.initStepDataInterface );
 
@@ -142,7 +142,7 @@ public class CalculatorUnitTest {
     inputRowSet.setRowMeta( inputRowMeta );
 
     Calculator calculator = new Calculator( smh.stepMeta, smh.stepDataInterface, 0, smh.transMeta, smh.trans );
-    calculator.getInputRowSets().add( inputRowSet );
+    calculator.addRowSetToInputRowSets( inputRowSet );
     calculator.setInputRowMeta( inputRowMeta );
     calculator.init( smh.initStepMetaInterface, smh.initStepDataInterface );
 
@@ -175,7 +175,7 @@ public class CalculatorUnitTest {
     inputRowSet.setRowMeta( inputRowMeta );
 
     Calculator calculator = new Calculator( smh.stepMeta, smh.stepDataInterface, 0, smh.transMeta, smh.trans );
-    calculator.getInputRowSets().add( inputRowSet );
+    calculator.addRowSetToInputRowSets( inputRowSet );
     calculator.setInputRowMeta( inputRowMeta );
     calculator.init( smh.initStepMetaInterface, smh.initStepDataInterface );
 
@@ -584,7 +584,7 @@ public class CalculatorUnitTest {
     final int expectedResultRowSize = inputRowMeta.size() + 1;
 
     Calculator calculator = new Calculator( smh.stepMeta, smh.stepDataInterface, 0, smh.transMeta, smh.trans );
-    calculator.getInputRowSets().add( inputRowSet );
+    calculator.addRowSetToInputRowSets( inputRowSet );
     calculator.setInputRowMeta( inputRowMeta );
     calculator.init( smh.initStepMetaInterface, smh.initStepDataInterface );
 
@@ -791,7 +791,7 @@ public class CalculatorUnitTest {
     inputRowSet.setRowMeta( inputRowMeta );
 
     Calculator calculator = new Calculator( smh.stepMeta, smh.stepDataInterface, 0, smh.transMeta, smh.trans );
-    calculator.getInputRowSets().add( inputRowSet );
+    calculator.addRowSetToInputRowSets( inputRowSet );
     calculator.setInputRowMeta( inputRowMeta );
     calculator.init( smh.initStepMetaInterface, smh.initStepDataInterface );
 

@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -276,9 +276,9 @@ public class ExcelWriterStep_StyleFormatTest {
     when( mockOutputRowMeta.size() ).thenReturn( outFields.length );
     when( inputRowSet.getRowMeta() ).thenReturn( inputRowMeta );
 
-    step.getInputRowSets().add( inputRowSet );
+    step.addRowSetToInputRowSets( inputRowSet );
     step.setInputRowMeta( inputRowMeta );
-    step.getOutputRowSets().add( inputRowSet );
+    step.addRowSetToOutputRowSets( inputRowSet );
   }
 
   /**

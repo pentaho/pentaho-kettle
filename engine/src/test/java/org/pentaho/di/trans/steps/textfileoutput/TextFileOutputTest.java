@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -417,8 +417,8 @@ public class TextFileOutputTest {
       Mockito.when( inputRowMeta.indexOfValue( name ) ).thenReturn( i );
     }
 
-    textFileOutput.getInputRowSets().add( rowSet );
-    textFileOutput.getOutputRowSets().add( rowSet );
+    textFileOutput.addRowSetToInputRowSets( rowSet );
+    textFileOutput.addRowSetToOutputRowSets( rowSet );
 
     Mockito.when( stepMockHelper.processRowsStepMetaInterface.getEndedLine() ).thenReturn( endedLine );
     Mockito.when( stepMockHelper.processRowsStepMetaInterface.isFastDump() ).thenReturn( true );

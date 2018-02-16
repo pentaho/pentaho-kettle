@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -76,7 +76,7 @@ public class RegexEvalUnitTest {
     when( inputRowSet.getRowMeta() ).thenReturn( mockInputRowMeta );
     when( mockInputRowMeta.clone() ).thenReturn( mockOutputRoMeta );
     when( mockInputRowMeta.isNull( any( Object[].class ), anyInt() ) ).thenReturn( true );
-    regexEval.getInputRowSets().add( inputRowSet );
+    regexEval.addRowSetToInputRowSets( inputRowSet );
 
     regexEval.init( stepMockHelper.initStepMetaInterface, stepMockHelper.initStepDataInterface );
     regexEval

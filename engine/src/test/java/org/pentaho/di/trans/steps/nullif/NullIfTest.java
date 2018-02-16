@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -102,8 +102,8 @@ public class NullIfTest {
     NullIf step = new NullIf( smh.stepMeta, smh.stepDataInterface, 0, smh.transMeta, smh.trans );
     step.init( smh.initStepMetaInterface, smh.stepDataInterface );
     step.setInputRowMeta( getInputRowMeta() );
-    step.getInputRowSets().add( mockInputRowSet() );
-    step.getOutputRowSets().add( new QueueRowSet() );
+    step.addRowSetToInputRowSets( mockInputRowSet() );
+    step.addRowSetToOutputRowSets( new QueueRowSet() );
 
     boolean hasMoreRows;
     do {
@@ -182,8 +182,8 @@ public class NullIfTest {
     } catch ( ParseException e ) {
       e.printStackTrace();
     }
-    step.getInputRowSets().add( smh.getMockInputRowSet( new Object[][] { { d1, d2, d3, d4 } } ) );
-    step.getOutputRowSets().add( new QueueRowSet() );
+    step.addRowSetToInputRowSets( smh.getMockInputRowSet( new Object[][] { { d1, d2, d3, d4 } } ) );
+    step.addRowSetToOutputRowSets( new QueueRowSet() );
     boolean hasMoreRows;
     do {
       hasMoreRows = step.processRow( mockProcessRowMeta2(), smh.processRowsStepDataInterface );
