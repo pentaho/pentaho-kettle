@@ -21,7 +21,7 @@
     <pentaho-json.version>${project.version}</pentaho-json.version>
     <pdi-spark-driver.version>${project.version}</pdi-spark-driver.version>
     <pdi-osgi-bridge.version>${project.version}</pdi-osgi-bridge.version>
-    <pentaho-database-model.version>${project.version}</pentaho-database-model.version>
+    <commons-database.version>${project.version}</commons-database.version>
     <pentaho-registry.version>${project.version}</pentaho-registry.version>
     <pentaho-metaverse.version>${project.version}</pentaho-metaverse.version>
     <platform.version>${project.version}</platform.version>
@@ -213,9 +213,9 @@
       <version>${pdi-osgi-bridge.version}</version>
     </dependency>
     <dependency>
-      <groupId>pentaho</groupId>
-      <artifactId>pentaho-database-model</artifactId>
-      <version>${pentaho-database-model.version}</version>
+      <groupId>org.pentaho</groupId>
+      <artifactId>commons-database-model</artifactId>
+      <version>${commons-database.version}</version>
       <exclusions>
         <exclusion>
           <groupId>*</groupId>
