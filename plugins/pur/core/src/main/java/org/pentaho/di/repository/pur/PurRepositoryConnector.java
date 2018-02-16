@@ -1,5 +1,5 @@
 /*!
- * Copyright 2010 - 2017 Hitachi Vantara.  All rights reserved.
+ * Copyright 2010 - 2018 Hitachi Vantara.  All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,7 +34,6 @@ import com.sun.jersey.api.client.filter.HTTPBasicAuthFilter;
 import org.apache.commons.lang.BooleanUtils;
 import org.pentaho.di.core.encryption.Encr;
 import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.exception.KettleSecurityException;
 import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.util.ExecutorUtil;
@@ -73,7 +72,7 @@ public class PurRepositoryConnector implements IRepositoryConnector {
 
   public PurRepositoryConnector( PurRepository purRepository, PurRepositoryMeta repositoryMeta, RootRef rootRef ) {
     log = new LogChannel( this.getClass().getSimpleName() );
-    if ( purRepository != null & purRepository.getLog() != null ) {
+    if ( purRepository != null && purRepository.getLog() != null ) {
       log.setLogLevel( purRepository.getLog().getLogLevel() );
     }
     this.purRepository = purRepository;
@@ -92,7 +91,7 @@ public class PurRepositoryConnector implements IRepositoryConnector {
   }
 
   public synchronized RepositoryConnectResult connect( final String username, final String password )
-    throws KettleException, KettleSecurityException {
+    throws KettleException {
     if ( serviceManager != null ) {
       disconnect();
     }
@@ -121,7 +120,7 @@ public class PurRepositoryConnector implements IRepositoryConnector {
           result.setUnifiedRepository( PentahoSystem.get( IUnifiedRepository.class ) );
           if ( result.getUnifiedRepository() != null ) {
             if ( log.isDebug() ) {
-              log.logDebug( "begin connectInProcess()" );
+              log.logDebug( BaseMessages.getString( PKG, "PurRepositoryConnector.ConnectInProgress.Begin" ) );
             }
             String name = PentahoSessionHolder.getSession().getName();
             user1 = new EEUserInfo();
@@ -132,7 +131,8 @@ public class PurRepositoryConnector implements IRepositoryConnector {
             result.setSuccess( true );
 
             if ( log.isDebug() ) {
-              log.logDebug( "connected in process as '" + name + "' pur repository = " + result.getUnifiedRepository() );
+              log.logDebug( BaseMessages.getString(
+                      PKG, "PurRepositoryConnector.ConnectInProgress", name, result.getUnifiedRepository() ) );
             }
 
             // for now, there is no need to support the security manager
@@ -254,7 +254,7 @@ public class PurRepositoryConnector implements IRepositoryConnector {
             return response.getEntity( String.class );
           } catch ( Exception e ) {
             if ( log.isError() ) {
-              log.logError( "Unable get userName", e );
+              log.logError( BaseMessages.getString( PKG, "PurRepositoryConnector.Error.EnableToGetUser" ), e );
             }
             return null;
           }
