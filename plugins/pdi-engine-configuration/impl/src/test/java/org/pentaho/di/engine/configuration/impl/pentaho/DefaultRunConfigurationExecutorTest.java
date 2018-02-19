@@ -3,7 +3,7 @@
  *
  *  Pentaho Data Integration
  *
- *  Copyright (C) 2017 by Pentaho : http://www.pentaho.com
+ *  Copyright (C) 2017-2018 by Pentaho : http://www.pentaho.com
  *
  *  *******************************************************************************
  *  Licensed under the Apache License, Version 2.0 (the "License"); you may not use
@@ -32,7 +32,6 @@ import org.mockito.runners.MockitoJUnitRunner;
 import org.pentaho.di.base.AbstractMeta;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.trans.TransExecutionConfiguration;
 
@@ -74,7 +73,7 @@ public class DefaultRunConfigurationExecutorTest {
 
     assertTrue( transExecutionConfiguration.isExecutingLocally() );
   }
-  
+
   @Test
   public void testExecuteRemote() throws Exception {
     DefaultRunConfiguration defaultRunConfiguration = new DefaultRunConfiguration();
@@ -92,6 +91,18 @@ public class DefaultRunConfigurationExecutorTest {
     assertFalse( transExecutionConfiguration.isExecutingLocally() );
     assertTrue( transExecutionConfiguration.isExecutingRemotely() );
     assertEquals( transExecutionConfiguration.getRemoteServer(), slaveServer );
+  }
+
+  @Test
+  public void testSendResources() throws Exception {
+    DefaultRunConfiguration defaultRunConfiguration = new DefaultRunConfiguration();
+    defaultRunConfiguration.setSendResources( true );
+
+    TransExecutionConfiguration transExecutionConfiguration = new TransExecutionConfiguration();
+
+    defaultRunConfigurationExecutor
+      .execute( defaultRunConfiguration, transExecutionConfiguration, abstractMeta, variableSpace );
+    assertTrue( transExecutionConfiguration.isPassingExport() );
   }
 
   @Test
