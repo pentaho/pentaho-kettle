@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -36,6 +36,7 @@ import com.google.common.annotations.VisibleForTesting;
 import org.owasp.encoder.Encode;
 import org.pentaho.di.cluster.HttpUtil;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.EnvUtil;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.gui.Point;
@@ -303,10 +304,12 @@ public class GetJobStatusServlet extends BaseHttpServlet implements CartePluginI
         out
           .println( "<TITLE>"
             + BaseMessages.getString( PKG, "GetJobStatusServlet.KettleJobStatus" ) + "</TITLE>" );
-        out.println( "<META http-equiv=\"Refresh\" content=\"10;url="
-          + convertContextPath( GetJobStatusServlet.CONTEXT_PATH ) + "?name="
-          + URLEncoder.encode( Const.NVL( jobName, "" ), "UTF-8" ) + "&id=" + URLEncoder.encode( id, "UTF-8" )
-          + "\">" );
+        if ( EnvUtil.getSystemProperty( Const.KETTLE_CARTE_REFRESH_STATUS, "N" ).equalsIgnoreCase( "Y" ) ) {
+          out.println( "<META http-equiv=\"Refresh\" content=\"10;url="
+            + convertContextPath( GetJobStatusServlet.CONTEXT_PATH ) + "?name="
+            + URLEncoder.encode( Const.NVL( jobName, "" ), "UTF-8" ) + "&id=" + URLEncoder.encode( id, "UTF-8" )
+            + "\">" );
+        }
         out.println( "<META http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\">" );
         out.println( "</HEAD>" );
         out.println( "<BODY>" );

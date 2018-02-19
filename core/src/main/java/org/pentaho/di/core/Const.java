@@ -1147,6 +1147,11 @@ public class Const {
   public static final String KETTLE_CARTE_JETTY_RES_MAX_IDLE_TIME = "KETTLE_CARTE_JETTY_RES_MAX_IDLE_TIME";
 
   /**
+   * A variable to configure refresh for carte job/trans status page
+   */
+  public static final String KETTLE_CARTE_REFRESH_STATUS = "KETTLE_CARTE_REFRESH_STATUS";
+
+  /**
    * A variable to configure s3vfs to use a temporary file on upload data to S3 Amazon."
    */
   public static final String S3VFS_USE_TEMPORARY_FILE_ON_UPLOAD_DATA = "s3.vfs.useTempFileOnUploadData";
