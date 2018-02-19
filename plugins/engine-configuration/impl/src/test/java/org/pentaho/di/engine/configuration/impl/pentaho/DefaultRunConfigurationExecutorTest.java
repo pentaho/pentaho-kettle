@@ -3,7 +3,7 @@
  *
  *  Pentaho Data Integration
  *
- *  Copyright (C) 2017 by Hitachi Vantara : http://www.pentaho.com
+ *  Copyright (C) 2017-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *  *******************************************************************************
  *  Licensed under the Apache License, Version 2.0 (the "License"); you may not use
@@ -98,6 +98,18 @@ public class DefaultRunConfigurationExecutorTest {
       .execute( defaultRunConfiguration, transExecutionConfiguration, abstractMeta, variableSpace, null );
 
     assertTrue( transExecutionConfiguration.isExecutingLocally() );
+  }
+
+  @Test
+  public void testSendResources() throws Exception {
+    DefaultRunConfiguration defaultRunConfiguration = new DefaultRunConfiguration();
+    defaultRunConfiguration.setSendResources( true );
+
+    TransExecutionConfiguration transExecutionConfiguration = new TransExecutionConfiguration();
+
+    defaultRunConfigurationExecutor
+      .execute( defaultRunConfiguration, transExecutionConfiguration, abstractMeta, variableSpace, null );
+    assertTrue( transExecutionConfiguration.isPassingExport() );
   }
 
   @Test
