@@ -31,8 +31,10 @@ import java.util.Random;
 import java.util.UUID;
 
 import org.junit.Before;
+import org.junit.ClassRule;
 import org.junit.Test;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.junit.rules.RestorePDIEngineEnvironment;
 import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.di.trans.steps.loadsave.LoadSaveTester;
 import org.pentaho.di.trans.steps.loadsave.initializer.InitializerInterface;
@@ -42,6 +44,7 @@ import org.pentaho.di.trans.steps.loadsave.validator.StringLoadSaveValidator;
 import org.pentaho.di.trans.steps.loadsave.validator.YNLoadSaveValidator;
 
 public class LDIFInputMetaTest implements InitializerInterface<StepMetaInterface> {
+  @ClassRule public static RestorePDIEngineEnvironment env = new RestorePDIEngineEnvironment();
   LoadSaveTester loadSaveTester;
 
   @Before

@@ -49,6 +49,7 @@
     <maven.compiler.source>1.8</maven.compiler.source>
     <maven.compiler.target>1.8</maven.compiler.target>
     <maven.build.timestamp.format>yyyy-MM-dd hh.mm.ss</maven.build.timestamp.format>
+    <maven-surefire-plugin.argLine>-Duser.timezone=UTC -Dfile.encoding=UTF-8 -Duser.language=en</maven-surefire-plugin.argLine>
 
     <!-- License Configuration -->
     <license.licenseName>apache_v2</license.licenseName>
@@ -73,8 +74,9 @@
 
     <!-- Test dependencies -->
     <mockito-all.version>1.10.19</mockito-all.version>
-    <powermock-module-junit4.version>1.6.6</powermock-module-junit4.version>
-    <powermock-api-mockito.version>1.6.6</powermock-api-mockito.version>
+
+    <powermock-module-junit4.version>1.7.3</powermock-module-junit4.version>
+    <powermock-api-mockito.version>1.7.3</powermock-api-mockito.version>
     <java-hamcrest.version>2.0.0.0</java-hamcrest.version>
   </properties>
 

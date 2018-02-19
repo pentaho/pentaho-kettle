@@ -42,6 +42,7 @@ import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.ClassRule;
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.pentaho.di.core.RowSet;
@@ -57,6 +58,7 @@ import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.row.value.ValueMetaBase;
 import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.core.variables.VariableSpace;
+import org.pentaho.di.junit.rules.RestorePDIEngineEnvironment;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.StepDataInterface;
@@ -68,6 +70,7 @@ import org.pentaho.di.utils.TestUtils;
  * User: Dzmitry Stsiapanau Date: 10/18/13 Time: 2:23 PM
  */
 public class TextFileOutputTest {
+  @ClassRule public static RestorePDIEngineEnvironment env = new RestorePDIEngineEnvironment();
 
   /**
    *
@@ -81,7 +84,7 @@ public class TextFileOutputTest {
   @BeforeClass
   public static void setUpBeforeClass() throws Exception {
     PluginRegistry.addPluginType( CompressionPluginType.getInstance() );
-    PluginRegistry.init( true );
+    PluginRegistry.init( false );
   }
 
   @AfterClass
@@ -89,7 +92,7 @@ public class TextFileOutputTest {
     FileUtils.deleteQuietly( Paths.get( TEXT_FILE_OUTPUT_PREFIX + TEXT_FILE_OUTPUT_EXTENSION ).toFile() );
   }
 
-  private class TextFileOutputTestHandler extends TextFileOutput {
+  public class TextFileOutputTestHandler extends TextFileOutput {
     public List<Throwable> errors = new ArrayList<Throwable>();
     private Object[] row;
 
@@ -100,6 +103,10 @@ public class TextFileOutputTest {
 
     public void setRow( Object[] row ) {
       this.row = row;
+    }
+
+    @Override public String buildFilename( String filename, boolean ziparchive ) {
+      return filename;
     }
 
     @Override
@@ -235,8 +242,8 @@ public class TextFileOutputTest {
   private FileObject createTemplateFile() throws IOException {
     String path =
         TestUtils.createRamFile( getClass().getSimpleName() + "/" + TEXT_FILE_OUTPUT_PREFIX + new Random().nextLong()
-            + TEXT_FILE_OUTPUT_EXTENSION );
-    return TestUtils.getFileObject( path );
+            + TEXT_FILE_OUTPUT_EXTENSION, stepMockHelper.transMeta );
+    return TestUtils.getFileObject( path, stepMockHelper.transMeta );
   }
 
   private FileObject createTemplateFile( String content ) throws IOException {
@@ -528,7 +535,6 @@ public class TextFileOutputTest {
 
     textFileOutputSpy.processRow( stepMockHelper.processRowsStepMetaInterface, stepMockHelper.initStepDataInterface );
     Mockito.verify( textFileOutputSpy, Mockito.times( 1 ) ).writeHeader(  );
-    Files.deleteIfExists( new File( TEXT_FILE_OUTPUT_PREFIX + TEXT_FILE_OUTPUT_EXTENSION ).toPath() );
   }
 
 

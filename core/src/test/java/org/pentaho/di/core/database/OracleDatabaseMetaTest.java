@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -32,6 +32,7 @@ import static org.junit.Assert.fail;
 import java.sql.ResultSet;
 
 import org.junit.Before;
+import org.junit.ClassRule;
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
@@ -49,8 +50,10 @@ import org.pentaho.di.core.row.value.ValueMetaNumber;
 import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.core.row.value.ValueMetaTimestamp;
 import org.pentaho.di.core.variables.Variables;
+import org.pentaho.di.junit.rules.RestorePDIEnvironment;
 
 public class OracleDatabaseMetaTest {
+  @ClassRule public static RestorePDIEnvironment env = new RestorePDIEnvironment();
   private OracleDatabaseMeta nativeMeta, odbcMeta, ociMeta;
 
   @Before
@@ -145,7 +148,7 @@ public class OracleDatabaseMetaTest {
   @Test
   public void testOverriddenSQLStatements() throws Exception {
     assertEquals( " WHERE ROWNUM <= 5", nativeMeta.getLimitClause( 5 ) );
-    String reusedFieldsQuery = "SELECT * FROM FOO WHERE 1=0";;
+    String reusedFieldsQuery = "SELECT * FROM FOO WHERE 1=0";
     assertEquals( reusedFieldsQuery, nativeMeta.getSQLQueryFields( "FOO" ) );
     assertEquals( reusedFieldsQuery, nativeMeta.getSQLTableExists( "FOO" ) );
     String reusedColumnsQuery = "SELECT FOO FROM BAR WHERE 1=0";

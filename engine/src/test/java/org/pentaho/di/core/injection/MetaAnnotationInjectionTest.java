@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -34,6 +34,7 @@ import java.util.Collections;
 import java.util.List;
 
 import org.junit.Before;
+import org.junit.ClassRule;
 import org.junit.Test;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.exception.KettleException;
@@ -43,8 +44,10 @@ import org.pentaho.di.core.injection.inheritance.MetaBeanChild;
 import org.pentaho.di.core.logging.KettleLogStore;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.value.ValueMetaString;
+import org.pentaho.di.junit.rules.RestorePDIEngineEnvironment;
 
 public class MetaAnnotationInjectionTest {
+  @ClassRule public static RestorePDIEngineEnvironment env = new RestorePDIEngineEnvironment();
 
   private static final String FIELD_ONE = "FIELD_ONE";
 
@@ -195,7 +198,6 @@ public class MetaAnnotationInjectionTest {
       new BeanInjectionInfo( MetaBeanWrong7.class );
       fail();
     } catch ( Exception ex ) {
-      ex.printStackTrace();
     }
   }
 

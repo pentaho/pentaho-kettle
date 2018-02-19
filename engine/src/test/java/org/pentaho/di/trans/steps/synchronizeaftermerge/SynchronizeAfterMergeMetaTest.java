@@ -29,10 +29,12 @@ import java.util.Map;
 
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.ClassRule;
 import org.junit.Test;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.plugins.PluginRegistry;
+import org.pentaho.di.junit.rules.RestorePDIEngineEnvironment;
 import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.di.trans.steps.loadsave.LoadSaveTester;
 import org.pentaho.di.trans.steps.loadsave.initializer.InitializerInterface;
@@ -40,16 +42,16 @@ import org.pentaho.di.trans.steps.loadsave.validator.ArrayLoadSaveValidator;
 import org.pentaho.di.trans.steps.loadsave.validator.BooleanLoadSaveValidator;
 import org.pentaho.di.trans.steps.loadsave.validator.FieldLoadSaveValidator;
 import org.pentaho.di.trans.steps.loadsave.validator.StringLoadSaveValidator;
-import org.pentaho.di.trans.steps.mock.StepMockHelper;
 
 public class SynchronizeAfterMergeMetaTest implements InitializerInterface<StepMetaInterface> {
   LoadSaveTester loadSaveTester;
   Class<SynchronizeAfterMergeMeta> testMetaClass = SynchronizeAfterMergeMeta.class;
+  @ClassRule public static RestorePDIEngineEnvironment env = new RestorePDIEngineEnvironment();
 
   @Before
   public void setUpLoadSave() throws Exception {
     KettleEnvironment.init();
-    PluginRegistry.init( true );
+    PluginRegistry.init( false );
     List<String> attributes =
         Arrays.asList( "schemaName", "tableName", "databaseMeta", "commitSize", "tableNameInField", "tablenameField",
             "operationOrderField", "useBatchUpdate", "performLookup", "OrderInsert", "OrderUpdate", "OrderDelete",
@@ -103,9 +105,6 @@ public class SynchronizeAfterMergeMetaTest implements InitializerInterface<StepM
 
   @Test
   public void testPDI16559() throws Exception {
-    StepMockHelper<SynchronizeAfterMergeMeta, SynchronizeAfterMergeData> mockHelper =
-        new StepMockHelper<SynchronizeAfterMergeMeta, SynchronizeAfterMergeData>( "synchronizeAfterMerge", SynchronizeAfterMergeMeta.class, SynchronizeAfterMergeData.class );
-
     SynchronizeAfterMergeMeta synchronizeAfterMerge = new SynchronizeAfterMergeMeta();
 
     synchronizeAfterMerge.setKeyStream( new String[] { "field1", "field2", "field3", "field4", "field5" } );

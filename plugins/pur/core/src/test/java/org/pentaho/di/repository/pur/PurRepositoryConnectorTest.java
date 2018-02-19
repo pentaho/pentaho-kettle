@@ -18,6 +18,7 @@ package org.pentaho.di.repository.pur;
 
 import org.junit.Assert;
 import org.junit.BeforeClass;
+import org.junit.ClassRule;
 import org.junit.Test;
 import org.mockito.Matchers;
 import org.mockito.invocation.InvocationOnMock;
@@ -25,6 +26,7 @@ import org.mockito.stubbing.Answer;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.util.ExecutorUtil;
+import org.pentaho.di.junit.rules.RestorePDIEngineEnvironment;
 
 import javax.xml.ws.WebServiceException;
 import java.util.concurrent.Callable;
@@ -36,6 +38,7 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
 
 public class PurRepositoryConnectorTest {
+  @ClassRule public static RestorePDIEngineEnvironment env = new RestorePDIEngineEnvironment();
 
   @BeforeClass
   public static void setUpClass() throws Exception {

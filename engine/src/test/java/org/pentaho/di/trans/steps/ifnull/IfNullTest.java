@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -31,7 +31,10 @@ import static org.mockito.Mockito.when;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.ClassRule;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.pentaho.di.core.Const;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.QueueRowSet;
 import org.pentaho.di.core.RowSet;
@@ -41,16 +44,19 @@ import org.pentaho.di.core.logging.LoggingObjectInterface;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaBase;
 import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.core.variables.VariableSpace;
+import org.pentaho.di.junit.rules.RestorePDIEngineEnvironment;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.steps.ifnull.IfNullMeta.Fields;
 import org.pentaho.di.trans.steps.mock.StepMockHelper;
 import org.pentaho.metastore.api.IMetaStore;
-import org.pentaho.test.util.FieldAccessor;
 
 import junit.framework.Assert;
+import org.powermock.modules.junit4.PowerMockRunner;
+import org.powermock.reflect.Whitebox;
 
 /**
  * Tests for IfNull step
@@ -58,8 +64,10 @@ import junit.framework.Assert;
  * @author Ivan Pogodin
  * @see IfNull
  */
+@RunWith( PowerMockRunner.class )
 public class IfNullTest {
   StepMockHelper<IfNullMeta, IfNullData> smh;
+  @ClassRule public static RestorePDIEngineEnvironment env = new RestorePDIEngineEnvironment();
 
   @BeforeClass
   public static void beforeClass() throws KettleException {
@@ -77,7 +85,7 @@ public class IfNullTest {
 
   @After
   public void clean() throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
-    FieldAccessor.resetEmptyStringIsNotNull();
+    smh.cleanUp();
   }
 
   private RowSet buildInputRowSet( Object... row ) {
@@ -115,7 +123,7 @@ public class IfNullTest {
   @Test
   public void testString_emptyIsNull() throws KettleException {
 
-    FieldAccessor.ensureEmptyStringIsNotNull( false );
+    Whitebox.setInternalState( ValueMetaBase.class, "EMPTY_STRING_AND_NULL_ARE_DIFFERENT", false );
 
     IfNull step = new IfNull( smh.stepMeta, smh.stepDataInterface, 0, smh.transMeta, smh.trans );
     step.init( smh.initStepMetaInterface, smh.stepDataInterface );
@@ -148,7 +156,8 @@ public class IfNullTest {
   @Test
   public void testString_emptyIsNotNull() throws KettleException {
 
-    FieldAccessor.ensureEmptyStringIsNotNull( true );
+//    FieldAccessor.ensureEmptyStringIsNotNull( true );
+    Whitebox.setInternalState( ValueMetaBase.class, "EMPTY_STRING_AND_NULL_ARE_DIFFERENT", true );
 
     IfNull step = new IfNull( smh.stepMeta, smh.stepDataInterface, 0, smh.transMeta, smh.trans );
     step.init( smh.initStepMetaInterface, smh.stepDataInterface );

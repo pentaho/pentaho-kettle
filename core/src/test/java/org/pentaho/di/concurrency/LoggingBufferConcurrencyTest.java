@@ -34,55 +34,55 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 public class LoggingBufferConcurrencyTest {
 
-    private LoggingBuffer buffer;
+  private LoggingBuffer buffer;
 
-    @Test
-    public void shouldNotFailProcessingEventsUnderHighContention() throws Exception {
-        int modifiersAmount = 100;
-        int readersAmount = 100;
+  @Test
+  public void shouldNotFailProcessingEventsUnderHighContention() throws Exception {
+    int modifiersAmount = 100;
+    int readersAmount = 100;
 
-        buffer = new LoggingBuffer( 5000 );
+    buffer = new LoggingBuffer( 5000 );
 
-        AtomicBoolean condition = new AtomicBoolean( true );
+    AtomicBoolean condition = new AtomicBoolean( true );
 
-        List<StopOnErrorCallable<?>> modifiers = new ArrayList<>();
-        for ( int i = 0; i < modifiersAmount; i++ ) {
-            modifiers.add( new Appender( condition ) );
-        }
-        List<StopOnErrorCallable<?>> readers = new ArrayList<>();
-        for ( int i = 0; i < readersAmount; i++ ) {
-            readers.add( new Reader( condition ) );
-        }
-
-        ConcurrencyTestRunner<?, ?> runner =
-                new ConcurrencyTestRunner<>( modifiers, readers, condition, 5000 );
-        runner.runConcurrentTest();
-        runner.checkNoExceptionRaised();
+    List<StopOnErrorCallable<?>> modifiers = new ArrayList<>();
+    for ( int i = 0; i < modifiersAmount; i++ ) {
+      modifiers.add( new Appender( condition ) );
+    }
+    List<StopOnErrorCallable<?>> readers = new ArrayList<>();
+    for ( int i = 0; i < readersAmount; i++ ) {
+      readers.add( new Reader( condition ) );
     }
 
-    private class Appender extends StopOnErrorCallable<Void> {
-      Appender( AtomicBoolean condition ) {
-        super( condition );
-      }
+    ConcurrencyTestRunner<?, ?> runner =
+      new ConcurrencyTestRunner<>( modifiers, readers, condition, 5000 );
+    runner.runConcurrentTest();
+    runner.checkNoExceptionRaised();
+  }
 
-      @Override
-      Void doCall() {
-        for ( int i = 0; i < 5000; i++ ) {
-          buffer.addLogggingEvent( new KettleLoggingEvent(
-              new LogMessage( "subject", LogLevel.DEBUG ), System.currentTimeMillis(), LogLevel.DEBUG ) );
-        }
-        return null;
-      }
+  private class Appender extends StopOnErrorCallable<Void> {
+    Appender( AtomicBoolean condition ) {
+      super( condition );
     }
 
-    private class Reader extends StopOnErrorCallable<StringBuffer> {
-      Reader( AtomicBoolean condition ) {
-        super( condition );
+    @Override
+    Void doCall() {
+      for ( int i = 0; i < 5000; i++ ) {
+        buffer.addLogggingEvent( new KettleLoggingEvent(
+          new LogMessage( "subject", LogLevel.DEBUG ), System.currentTimeMillis(), LogLevel.DEBUG ) );
       }
-
-      @Override
-      StringBuffer doCall() {
-        return buffer.getBuffer();
-      }
+      return null;
     }
+  }
+
+  private class Reader extends StopOnErrorCallable<StringBuffer> {
+    Reader( AtomicBoolean condition ) {
+      super( condition );
+    }
+
+    @Override
+    StringBuffer doCall() {
+      return buffer.getBuffer();
+    }
+  }
 }

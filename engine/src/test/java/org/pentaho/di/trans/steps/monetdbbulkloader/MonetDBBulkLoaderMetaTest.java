@@ -34,6 +34,7 @@ import java.util.Map;
 
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.ClassRule;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.pentaho.di.core.KettleEnvironment;
@@ -42,6 +43,7 @@ import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.plugins.StepPluginType;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.row.value.ValueMetaPluginType;
+import org.pentaho.di.junit.rules.RestorePDIEngineEnvironment;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.StepInjectionMetaEntry;
@@ -60,6 +62,7 @@ import org.pentaho.di.trans.steps.loadsave.validator.StringLoadSaveValidator;
  * Created by gmoran on 2/25/14.
  */
 public class MonetDBBulkLoaderMetaTest implements InitializerInterface<StepMetaInterface> {
+  @ClassRule public static RestorePDIEngineEnvironment env = new RestorePDIEngineEnvironment();
 
   private StepMeta stepMeta;
   private MonetDBBulkLoader loader;
@@ -71,13 +74,13 @@ public class MonetDBBulkLoaderMetaTest implements InitializerInterface<StepMetaI
   @BeforeClass
   public static void setUpBeforeClass() throws Exception {
     PluginRegistry.addPluginType( ValueMetaPluginType.getInstance() );
-    PluginRegistry.init( true );
+    PluginRegistry.init( false );
   }
 
   @Before
   public void setUp() throws Exception {
     KettleEnvironment.init();
-    PluginRegistry.init( true );
+    PluginRegistry.init( false );
     TransMeta transMeta = new TransMeta();
     transMeta.setName( "loader" );
 

@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -36,8 +36,8 @@ import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.ClassRule;
 import org.junit.Test;
-import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.KettleClientEnvironment;
@@ -55,6 +55,7 @@ import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.job.Job;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entry.JobEntryCopy;
+import org.pentaho.di.junit.rules.RestorePDIEngineEnvironment;
 
 /*
  * tests fix for PDI-1044
@@ -65,6 +66,8 @@ public class JobEntryEvalTableContentTest {
   private static final Map<Class<?>, String> dbMap = new HashMap<Class<?>, String>();
   JobEntryEvalTableContent entry;
   private static PluginInterface mockDbPlugin;
+
+  @ClassRule public static RestorePDIEngineEnvironment env = new RestorePDIEngineEnvironment();
 
   public static class DBMockIface extends BaseDatabaseMeta {
 
@@ -131,19 +134,10 @@ public class JobEntryEvalTableContentTest {
     mockDbPlugin = mock( PluginInterface.class );
     when( mockDbPlugin.matches( anyString() ) ).thenReturn( true );
     when( mockDbPlugin.isNativePlugin() ).thenReturn( true );
-    when( mockDbPlugin.getMainType() ).thenAnswer( new Answer<Class<?>>() {
-      @Override
-      public Class<?> answer( InvocationOnMock invocation ) throws Throwable {
-        return DatabaseInterface.class;
-      }
-    } );
+    when( mockDbPlugin.getMainType() ).thenAnswer( (Answer<Class<?>>) invocation -> DatabaseInterface.class );
 
-    when( mockDbPlugin.getPluginType() ).thenAnswer( new Answer<Class<? extends PluginTypeInterface>>() {
-      @Override
-      public Class<? extends PluginTypeInterface> answer( InvocationOnMock invocation ) throws Throwable {
-        return DatabasePluginType.class;
-      }
-    } );
+    when( mockDbPlugin.getPluginType() ).thenAnswer(
+      (Answer<Class<? extends PluginTypeInterface>>) invocation -> DatabasePluginType.class );
 
     when( mockDbPlugin.getIds() ).thenReturn( new String[] { "Oracle", "mock-db-id" } );
     when( mockDbPlugin.getName() ).thenReturn( "mock-db-name" );
@@ -154,7 +148,7 @@ public class JobEntryEvalTableContentTest {
 
   @AfterClass
   public static void tearDownAfterClass() throws Exception {
-    PluginRegistry.getInstance().removePlugin( DatabasePluginType.class, mockDbPlugin );
+    KettleClientEnvironment.reset();
   }
 
   @Before

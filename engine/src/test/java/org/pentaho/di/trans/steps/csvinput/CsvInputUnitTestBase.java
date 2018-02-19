@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -34,7 +34,7 @@ import java.io.PrintWriter;
 /**
  * @author Andrey Khayrutdinov
  */
-public class CsvInputUnitTestBase {
+public abstract class CsvInputUnitTestBase {
 
   @BeforeClass
   public static void initKettle() throws Exception {

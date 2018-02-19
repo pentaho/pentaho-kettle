@@ -23,10 +23,13 @@
 package org.pentaho.di.trans.steps.multimerge;
 
 import org.junit.Before;
+import org.junit.ClassRule;
 import org.junit.Test;
 import org.pentaho.di.core.injection.BaseMetadataInjectionTest;
+import org.pentaho.di.junit.rules.RestorePDIEngineEnvironment;
 
 public class MultiMergeJoinMetaInjectionTest extends BaseMetadataInjectionTest<MultiMergeJoinMeta> {
+  @ClassRule public static RestorePDIEngineEnvironment env = new RestorePDIEngineEnvironment();
   @Before
   public void setup() {
     setup( new MultiMergeJoinMeta() );

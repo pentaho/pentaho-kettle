@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -211,5 +211,33 @@ public class ExtensionPointMap {
       log = new LogChannel( "ExtensionPointMap" );
     }
     return log;
+  }
+
+  public void reset() {
+    lock.writeLock().lock();
+    try {
+      extensionPointPluginMap.clear();
+      registry.addPluginListener( ExtensionPointPluginType.class, new PluginTypeListener() {
+
+        @Override
+        public void pluginAdded( Object serviceObject ) {
+          addExtensionPoint( (PluginInterface) serviceObject );
+        }
+
+        @Override
+        public void pluginRemoved( Object serviceObject ) {
+          removeExtensionPoint( (PluginInterface) serviceObject );
+        }
+
+        @Override
+        public void pluginChanged( Object serviceObject ) {
+          removeExtensionPoint( (PluginInterface) serviceObject );
+          addExtensionPoint( (PluginInterface) serviceObject );
+        }
+
+      } );
+    } finally {
+      lock.writeLock().unlock();
+    }
   }
 }

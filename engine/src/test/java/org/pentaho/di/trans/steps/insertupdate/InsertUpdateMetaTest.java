@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -29,9 +29,11 @@ import java.util.List;
 import java.util.Map;
 
 
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.ClassRule;
 import org.junit.Test;
 
 import org.mockito.Mockito;
@@ -45,6 +47,7 @@ import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.plugins.StepPluginType;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
+import org.pentaho.di.junit.rules.RestorePDIEngineEnvironment;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.StepMeta;
@@ -59,11 +62,13 @@ import org.pentaho.di.trans.steps.mock.StepMockHelper;
 
 public class InsertUpdateMetaTest {
   LoadSaveTester loadSaveTester;
+  @ClassRule public static RestorePDIEngineEnvironment env = new RestorePDIEngineEnvironment();
 
   private StepMeta stepMeta;
   private InsertUpdate upd;
   private InsertUpdateData ud;
   private InsertUpdateMeta umi;
+  private StepMockHelper<InsertUpdateMeta, InsertUpdateData> mockHelper;
 
   @BeforeClass
   public static void initEnvironment() throws Exception {
@@ -90,6 +95,17 @@ public class InsertUpdateMetaTest {
     transMeta.addStep( stepMeta );
     upd = new InsertUpdate( stepMeta, ud, 1, transMeta, trans );
     upd.copyVariablesFrom( transMeta );
+
+    mockHelper =
+      new StepMockHelper<>( "insertUpdate", InsertUpdateMeta.class, InsertUpdateData.class );
+    Mockito.when( mockHelper.logChannelInterfaceFactory.create( Mockito.any(), Mockito.any( LoggingObjectInterface.class ) ) )
+      .thenReturn( mockHelper.logChannelInterface );
+    Mockito.when( mockHelper.stepMeta.getStepMetaInterface() ).thenReturn( new InsertUpdateMeta() );
+  }
+
+  @After
+  public void cleanUp() {
+    mockHelper.cleanUp();
   }
 
   @Test
@@ -199,8 +215,6 @@ public class InsertUpdateMetaTest {
 
   @Test
   public void testErrorProcessRow() throws KettleException {
-    StepMockHelper<InsertUpdateMeta, InsertUpdateData> mockHelper =
-      new StepMockHelper<>( "insertUpdate", InsertUpdateMeta.class, InsertUpdateData.class );
     Mockito.when( mockHelper.logChannelInterfaceFactory.create( Mockito.any(), Mockito.any( LoggingObjectInterface.class ) ) )
       .thenReturn(
         mockHelper.logChannelInterface );
@@ -226,13 +240,6 @@ public class InsertUpdateMetaTest {
   //PDI-16349
   @Test
   public void keyStream2ProcessRow() throws KettleException {
-    StepMockHelper<InsertUpdateMeta, InsertUpdateData> mockHelper =
-      new StepMockHelper<>( "insertUpdate", InsertUpdateMeta.class, InsertUpdateData.class );
-    Mockito.when(
-      mockHelper.logChannelInterfaceFactory.create( Mockito.any(), Mockito.any( LoggingObjectInterface.class ) ) )
-      .thenReturn( mockHelper.logChannelInterface );
-    Mockito.when( mockHelper.stepMeta.getStepMetaInterface() ).thenReturn( new InsertUpdateMeta() );
-
     InsertUpdate insertUpdateStep =
       new InsertUpdate( mockHelper.stepMeta, mockHelper.stepDataInterface, 0, mockHelper.transMeta, mockHelper.trans );
     insertUpdateStep.setInputRowMeta( Mockito.mock( RowMetaInterface.class ) );

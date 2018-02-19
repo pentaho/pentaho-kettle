@@ -108,7 +108,7 @@ public class SystemDataTest {
 
   @After
   public void tearDown() throws Exception {
-
+    stepMockHelper.cleanUp();
   }
 
   @Test

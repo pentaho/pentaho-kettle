@@ -3,7 +3,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -101,6 +101,10 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
   private static volatile Future<Map<String, DatabaseInterface>> allDatabaseInterfaces;
 
   static {
+    init();
+  }
+
+  public static void init() {
     PluginRegistry.getInstance().addPluginListener( DatabasePluginType.class,
       new org.pentaho.di.core.plugins.PluginTypeListener() {
         @Override public void pluginAdded( Object serviceObject ) {

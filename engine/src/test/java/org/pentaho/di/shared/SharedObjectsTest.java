@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -32,6 +32,7 @@ import java.io.IOException;
 
 import org.apache.commons.vfs2.FileObject;
 import org.junit.Before;
+import org.junit.ClassRule;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -39,6 +40,7 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.vfs.KettleVFS;
 
 import org.junit.Assert;
+import org.pentaho.di.junit.rules.RestorePDIEngineEnvironment;
 
 /**
  * SharedObjects tests
@@ -47,6 +49,7 @@ import org.junit.Assert;
  * @see SharedObjects
  */
 public class SharedObjectsTest {
+  @ClassRule public static RestorePDIEngineEnvironment env = new RestorePDIEngineEnvironment();
 
   @Mock
   SharedObjects sharedObjectsMock;

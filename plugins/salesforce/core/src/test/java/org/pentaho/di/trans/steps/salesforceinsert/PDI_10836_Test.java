@@ -34,9 +34,11 @@ import java.util.TimeZone;
 import java.util.UUID;
 
 import com.sforce.ws.bind.XmlObject;
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.ClassRule;
 import org.junit.Test;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.encryption.Encr;
@@ -48,6 +50,7 @@ import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.row.value.ValueMetaDate;
 import org.pentaho.di.core.util.EnvUtil;
+import org.pentaho.di.junit.rules.RestorePDIEngineEnvironment;
 import org.pentaho.di.trans.steps.mock.StepMockHelper;
 import org.pentaho.di.trans.steps.salesforce.SalesforceConnection;
 
@@ -60,6 +63,7 @@ import com.sforce.soap.partner.sobject.SObject;
  * @see SalesforceInsert
  */
 public class PDI_10836_Test {
+  @ClassRule public static RestorePDIEngineEnvironment env = new RestorePDIEngineEnvironment();
   private StepMockHelper<SalesforceInsertMeta, SalesforceInsertData> smh;
 
   @BeforeClass
@@ -78,6 +82,11 @@ public class PDI_10836_Test {
             SalesforceInsertData.class );
     when( smh.logChannelInterfaceFactory.create( any(), any( LoggingObjectInterface.class ) ) ).thenReturn(
         smh.logChannelInterface );
+  }
+
+  @After
+  public void cleanUp() {
+    smh.cleanUp();
   }
 
   @Test

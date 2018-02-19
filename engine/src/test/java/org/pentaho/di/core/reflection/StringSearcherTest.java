@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,11 +22,13 @@
 package org.pentaho.di.core.reflection;
 
 import org.junit.BeforeClass;
+import org.junit.ClassRule;
 import org.junit.Test;
 import org.pentaho.di.core.Condition;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.plugins.StepPluginType;
+import org.pentaho.di.junit.rules.RestorePDIEngineEnvironment;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.steps.dummytrans.DummyTransMeta;
 import org.pentaho.di.trans.steps.filterrows.FilterRowsMeta;
@@ -37,9 +39,10 @@ import java.util.List;
 import static org.junit.Assert.assertEquals;
 
 public class StringSearcherTest {
+  @ClassRule public static RestorePDIEngineEnvironment env = new RestorePDIEngineEnvironment();
 
   @BeforeClass
-  public static void setUpBeforeClass() throws org.pentaho.di.core.exception.KettleException, NoSuchFieldException, IllegalAccessException {
+  public static void setUpBeforeClass() throws org.pentaho.di.core.exception.KettleException {
     KettleEnvironment.init();
   }
 

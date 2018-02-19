@@ -27,6 +27,7 @@ import static org.mockito.Mockito.when;
 
 import java.util.HashMap;
 
+import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -64,6 +65,11 @@ public class MemoryGroupByAggregationNullsTest {
     when( mockHelper.logChannelInterfaceFactory.create( any(), any( LoggingObjectInterface.class ) ) ).thenReturn(
         mockHelper.logChannelInterface );
     when( mockHelper.trans.isRunning() ).thenReturn( true );
+  }
+
+  @AfterClass
+  public static void cleanUp() {
+    mockHelper.cleanUp();
   }
 
   @Before

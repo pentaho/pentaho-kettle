@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -36,21 +36,25 @@ import java.util.Scanner;
 public class VWLoadMocker {
 
   public static void main( String[] args ) {
-
     System.out.println( "Start VWLOADMOCKER" );
-    int bufferSize = Integer.decode( args[0] == null ? "5000" : args[0] );
-    int errorsAllowed = Integer.decode( args[1] == null ? "0" : args[1] );
-    String errorFileName = args[2] == null ? "/tmp/error_test.txt" : args[2];
-
-    VWLoadMocker vwload = new VWLoadMocker( bufferSize );
-    vwload.setErrorsAllowed( errorsAllowed );
-    vwload.setErrorFileName( errorFileName );
-
     int exitStatus = 0;
-
-    Scanner sc = new Scanner( System.in );
     try {
-      FileWriter out = new FileWriter( "/tmp/test.txt" );
+      File tempErrorFile = File.createTempFile( "error_test", ".txt" );
+      File tempFile = File.createTempFile( "test", ".txt" );
+      tempErrorFile.deleteOnExit();
+      tempFile.deleteOnExit();
+
+      int bufferSize = Integer.decode( args[0] == null ? "5000" : args[0] );
+      int errorsAllowed = Integer.decode( args[1] == null ? "0" : args[1] );
+      String errorFileName = args[2] == null ? tempErrorFile.getAbsolutePath() : args[2];
+
+      VWLoadMocker vwload = new VWLoadMocker( bufferSize );
+      vwload.setErrorsAllowed( errorsAllowed );
+      vwload.setErrorFileName( errorFileName );
+
+
+      Scanner sc = new Scanner( System.in );
+      FileWriter out = new FileWriter( tempFile );
       StringBuilder cmd = new StringBuilder();
       String line = null;
       while ( ( line = sc.nextLine() ) != null && !line.contains( "\\q" ) ) {

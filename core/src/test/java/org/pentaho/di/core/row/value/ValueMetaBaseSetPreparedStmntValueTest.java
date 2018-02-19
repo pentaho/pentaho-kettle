@@ -1,7 +1,7 @@
 /*
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  * **************************************************************************
  *
@@ -35,14 +35,18 @@ import java.util.Calendar;
 import java.util.Date;
 
 import org.junit.Before;
+import org.junit.ClassRule;
 import org.junit.Test;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.junit.rules.RestorePDIEnvironment;
 
 public class ValueMetaBaseSetPreparedStmntValueTest {
+
+  @ClassRule public static RestorePDIEnvironment env = new RestorePDIEnvironment();
 
   private DatabaseMeta dbMeta;
   private PreparedStatement ps;

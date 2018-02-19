@@ -24,6 +24,7 @@ package org.pentaho.di.trans;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
@@ -63,6 +64,7 @@ import org.pentaho.di.trans.steps.userdefinedjavaclass.UserDefinedJavaClassDef;
 import org.pentaho.di.trans.steps.userdefinedjavaclass.UserDefinedJavaClassMeta;
 import org.pentaho.metastore.api.IMetaStore;
 import org.pentaho.metastore.stores.memory.MemoryMetaStore;
+import org.powermock.modules.junit4.PowerMockRunner;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
@@ -83,6 +85,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.mockito.Matchers.same;
 import static org.mockito.Mockito.*;
 
+@RunWith( PowerMockRunner.class )
 public class TransMetaTest {
   public static final String STEP_NAME = "Any step name";
 
@@ -313,8 +316,8 @@ public class TransMetaTest {
       ValueMetaFactory.getValueMetaName( ValueMetaInterface.TYPE_INTEGER ),
       ValueMetaFactory.getValueMetaName( ValueMetaInterface.TYPE_STRING ) } );
     List<List<String>> dgm1Data = new ArrayList<>();
-    dgm1Data.add( Arrays.asList( new String[]{ "1", "A" } ) );
-    dgm1Data.add( Arrays.asList( new String[]{ "2", "B" } ) );
+    dgm1Data.add( Arrays.asList( "1", "A" ) );
+    dgm1Data.add( Arrays.asList( "2", "B" ) );
     dgm1.setDataLines( dgm1Data );
 
     DataGridMeta dgm2 = new DataGridMeta();
@@ -323,7 +326,7 @@ public class TransMetaTest {
     dgm2.setFieldType( new String[]{
       ValueMetaFactory.getValueMetaName( ValueMetaInterface.TYPE_STRING ) } );
     List<List<String>> dgm2Data = new ArrayList<>();
-    dgm2Data.add( Arrays.asList( new String[]{ "Some Informational Data" } ) );
+    dgm2Data.add( Arrays.asList( "Some Informational Data" ) );
     dgm2.setDataLines( dgm2Data );
 
     StepMeta dg1 = new StepMeta( "input1", dgm1 );
@@ -333,8 +336,8 @@ public class TransMetaTest {
       "public boolean processRow( StepMetaInterface smi, StepDataInterface sdi ) throws KettleException { return false; }";
     UserDefinedJavaClassMeta udjcMeta = new UserDefinedJavaClassMeta();
     udjcMeta.getInfoStepDefinitions().add( new StepDefinition( dg2.getName(), dg2.getName(), dg2, "info_data" ) );
-    udjcMeta.replaceDefinitions( Arrays.asList( new UserDefinedJavaClassDef[]{
-      new UserDefinedJavaClassDef( UserDefinedJavaClassDef.ClassType.TRANSFORM_CLASS, "MainClass", UDJC_METHOD ) } ) );
+    udjcMeta.replaceDefinitions( Collections.singletonList(
+      new UserDefinedJavaClassDef( UserDefinedJavaClassDef.ClassType.TRANSFORM_CLASS, "MainClass", UDJC_METHOD ) ) );
 
     StepMeta udjc = new StepMeta( "PDI-14910", udjcMeta );
 
@@ -409,7 +412,7 @@ public class TransMetaTest {
     return meta;
   }
 
-  private abstract static class StepMetaChangeListenerInterfaceMock implements StepMetaInterface, StepMetaChangeListenerInterface {
+  public abstract static class StepMetaChangeListenerInterfaceMock implements StepMetaInterface, StepMetaChangeListenerInterface {
     @Override
     public abstract Object clone();
   }

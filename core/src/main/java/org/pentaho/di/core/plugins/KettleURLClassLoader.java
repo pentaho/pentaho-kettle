@@ -178,7 +178,7 @@ public class KettleURLClassLoader extends URLClassLoader {
   }
 
   /**
-   * This method is designed to clear out classloader file locks in windows.
+   * This method is designed to shutdown out classloader file locks in windows.
    */
   public void closeClassLoader() {
     HashSet<String> closedFiles = new HashSet<>();

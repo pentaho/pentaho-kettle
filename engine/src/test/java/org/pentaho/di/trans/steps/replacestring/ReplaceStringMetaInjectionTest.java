@@ -23,13 +23,16 @@
 package org.pentaho.di.trans.steps.replacestring;
 
 import org.junit.Before;
+import org.junit.ClassRule;
 import org.junit.Test;
 import org.pentaho.di.core.injection.BaseMetadataInjectionTest;
+import org.pentaho.di.junit.rules.RestorePDIEngineEnvironment;
 
 /**
  * Created by bmorrise on 3/21/16.
  */
 public class ReplaceStringMetaInjectionTest extends BaseMetadataInjectionTest<ReplaceStringMeta> {
+  @ClassRule public static RestorePDIEngineEnvironment env = new RestorePDIEngineEnvironment();
 
   @Before
   public void setup() {

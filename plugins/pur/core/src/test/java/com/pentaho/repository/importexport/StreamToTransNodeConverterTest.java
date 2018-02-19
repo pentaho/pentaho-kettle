@@ -16,6 +16,7 @@
  */
 package com.pentaho.repository.importexport;
 
+import org.junit.ClassRule;
 import org.junit.Test;
 import org.pentaho.di.core.extension.ExtensionPointInterface;
 import org.pentaho.di.core.extension.ExtensionPointPluginType;
@@ -24,6 +25,7 @@ import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.plugins.ClassLoadingPluginInterface;
 import org.pentaho.di.core.plugins.PluginInterface;
 import org.pentaho.di.core.plugins.PluginRegistry;
+import org.pentaho.di.junit.rules.RestorePDIEngineEnvironment;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.platform.api.repository2.unified.RepositoryFile;
@@ -38,6 +40,8 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 public class StreamToTransNodeConverterTest {
+  @ClassRule public static RestorePDIEngineEnvironment env = new RestorePDIEngineEnvironment();
+
   interface PluginMockInterface extends ClassLoadingPluginInterface, PluginInterface {
   }
 

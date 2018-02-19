@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -36,6 +36,7 @@ import java.util.Map;
 import java.util.Properties;
 
 import org.junit.Before;
+import org.junit.ClassRule;
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
@@ -44,9 +45,11 @@ import org.pentaho.di.core.KettleClientEnvironment;
 import org.pentaho.di.core.row.value.ValueMetaDate;
 import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.core.variables.Variables;
+import org.pentaho.di.junit.rules.RestorePDIEnvironment;
 import org.pentaho.di.repository.LongObjectId;
 
 public class BaseDatabaseMetaTest {
+  @ClassRule public static RestorePDIEnvironment env = new RestorePDIEnvironment();
   BaseDatabaseMeta nativeMeta, odbcMeta, jndiMeta;
 
   @Before

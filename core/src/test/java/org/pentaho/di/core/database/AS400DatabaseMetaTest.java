@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -28,6 +28,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Before;
+import org.junit.ClassRule;
 import org.junit.Test;
 import org.pentaho.di.core.KettleClientEnvironment;
 import org.pentaho.di.core.row.value.ValueMetaBigNumber;
@@ -38,8 +39,10 @@ import org.pentaho.di.core.row.value.ValueMetaInternetAddress;
 import org.pentaho.di.core.row.value.ValueMetaNumber;
 import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.core.row.value.ValueMetaTimestamp;
+import org.pentaho.di.junit.rules.RestorePDIEnvironment;
 
 public class AS400DatabaseMetaTest {
+  @ClassRule public static RestorePDIEnvironment env = new RestorePDIEnvironment();
 
   AS400DatabaseMeta nativeMeta;
   AS400DatabaseMeta odbcMeta;

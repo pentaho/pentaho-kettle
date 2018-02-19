@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,16 +22,20 @@
 
 package org.pentaho.di.core.row;
 
-import junit.framework.TestCase;
-
+import org.junit.BeforeClass;
+import org.junit.ClassRule;
 import org.junit.Test;
 import org.pentaho.di.core.KettleClientEnvironment;
 import org.pentaho.di.core.row.value.ValueMetaFactory;
+import org.pentaho.di.junit.rules.RestorePDIEnvironment;
 
-public class RowMetaAddRemoveValueTest extends TestCase {
+import static org.junit.Assert.assertEquals;
 
-  @Override
-  protected void setUp() throws Exception {
+public class RowMetaAddRemoveValueTest {
+  @ClassRule public static RestorePDIEnvironment env = new RestorePDIEnvironment();
+
+  @BeforeClass
+  public static void setUpClass() throws Exception {
     KettleClientEnvironment.init();
   }
 

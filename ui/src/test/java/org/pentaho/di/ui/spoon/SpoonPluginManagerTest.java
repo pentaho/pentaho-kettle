@@ -22,6 +22,7 @@
 package org.pentaho.di.ui.spoon;
 
 import org.junit.Before;
+import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -30,6 +31,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 import org.pentaho.di.core.exception.KettlePluginException;
 import org.pentaho.di.core.plugins.PluginInterface;
 import org.pentaho.di.core.plugins.PluginRegistry;
+import org.pentaho.di.junit.rules.RestorePDIEngineEnvironment;
 import org.pentaho.ui.xul.XulDomContainer;
 import org.pentaho.ui.xul.XulException;
 
@@ -48,6 +50,7 @@ import static org.mockito.Mockito.when;
 
 @RunWith( MockitoJUnitRunner.class )
 public class SpoonPluginManagerTest {
+  @ClassRule public static RestorePDIEngineEnvironment env = new RestorePDIEngineEnvironment();
   @Spy
   private SpoonPluginManager spoonPluginManager;
 

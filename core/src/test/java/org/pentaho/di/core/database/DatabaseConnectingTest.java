@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -24,11 +24,13 @@ package org.pentaho.di.core.database;
 
 import org.junit.After;
 import org.junit.BeforeClass;
+import org.junit.ClassRule;
 import org.junit.Test;
 import org.pentaho.di.core.KettleClientEnvironment;
 import org.pentaho.di.core.database.map.DatabaseConnectionMap;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.logging.LoggingObjectInterface;
+import org.pentaho.di.junit.rules.RestorePDIEnvironment;
 
 import java.sql.Connection;
 import java.util.ArrayList;
@@ -52,6 +54,7 @@ import static org.mockito.Mockito.mock;
  * @author Andrey Khayrutdinov
  */
 public class DatabaseConnectingTest {
+  @ClassRule public static RestorePDIEnvironment env = new RestorePDIEnvironment();
 
   private static final String GROUP = "group";
   private static final String ANOTHER_GROUP = "another-group";

@@ -22,6 +22,7 @@
 
 package org.pentaho.di.trans.steps.syslog;
 
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -52,14 +53,28 @@ public class SyslogMessageConcurrentTest {
   CountDownLatch countDownLatch = null;
   private String testMessage = "message value";
   int numOfTasks = 5;
+  private StepMockHelper<SyslogMessageMeta, SyslogMessageData> stepMockHelper;
 
   @Before
    public void setUp() throws Exception {
     numOfErrors = new AtomicInteger( 0 );
     countDownLatch = new CountDownLatch( 1 );
+    stepMockHelper = new StepMockHelper<SyslogMessageMeta, SyslogMessageData>( "SYSLOG_MESSAGE TEST", SyslogMessageMeta.class,
+      SyslogMessageData.class );
+    when( stepMockHelper.logChannelInterfaceFactory.create( any(), any( LoggingObjectInterface.class ) ) ).thenReturn(
+      stepMockHelper.logChannelInterface );
+    when( stepMockHelper.processRowsStepMetaInterface.getServerName() ).thenReturn( "localhost" );
+    when( stepMockHelper.processRowsStepMetaInterface.getMessageFieldName() ).thenReturn( "message field" );
+    when( stepMockHelper.processRowsStepMetaInterface.getPort() ).thenReturn( "9988" );
+    when( stepMockHelper.processRowsStepMetaInterface.getPriority() ).thenReturn( "ERROR" );
   }
 
-  @Test( timeout = 10000 )
+  @After
+  public void cleanUp() {
+    stepMockHelper.cleanUp();
+  }
+
+  @Test
    public void concurrentSyslogMessageTest() throws Exception {
     SyslogMessageTask syslogMessage = null;
     ExecutorService service = Executors.newFixedThreadPool( numOfTasks );
@@ -69,7 +84,7 @@ public class SyslogMessageConcurrentTest {
     }
     service.shutdown();
     countDownLatch.countDown();
-    service.awaitTermination( Long.MAX_VALUE, TimeUnit.NANOSECONDS );
+    service.awaitTermination( 10000, TimeUnit.NANOSECONDS );
     Assert.assertTrue( numOfErrors.get() == 0 );
   }
 
@@ -84,7 +99,7 @@ public class SyslogMessageConcurrentTest {
     }
 
     @Override
-  public void run() {
+    public void run() {
       try {
         countDownLatch.await();
         processRow( syslogMessageMeta, getStepDataInterface() );
@@ -116,15 +131,6 @@ public class SyslogMessageConcurrentTest {
 
   private SyslogMessageTask createSyslogMessageTask() throws Exception {
     SyslogMessageData data = new SyslogMessageData();
-    StepMockHelper<SyslogMessageMeta, SyslogMessageData> stepMockHelper =
-             new StepMockHelper<SyslogMessageMeta, SyslogMessageData>( "SYSLOG_MESSAGE TEST", SyslogMessageMeta.class,
-                     SyslogMessageData.class );
-    when( stepMockHelper.logChannelInterfaceFactory.create( any(), any( LoggingObjectInterface.class ) ) ).thenReturn(
-             stepMockHelper.logChannelInterface );
-    when( stepMockHelper.processRowsStepMetaInterface.getServerName() ).thenReturn( "localhost" );
-    when( stepMockHelper.processRowsStepMetaInterface.getMessageFieldName() ).thenReturn( "message field" );
-    when( stepMockHelper.processRowsStepMetaInterface.getPort() ).thenReturn( "9988" );
-    when( stepMockHelper.processRowsStepMetaInterface.getPriority() ).thenReturn( "ERROR" );
     RowMetaInterface inputRowMeta = mock( RowMetaInterface.class );
     when( inputRowMeta.indexOfValue( any() ) ).thenReturn( 0 );
     when( inputRowMeta.getString( any(), eq( 0 ) ) ).thenReturn( testMessage );

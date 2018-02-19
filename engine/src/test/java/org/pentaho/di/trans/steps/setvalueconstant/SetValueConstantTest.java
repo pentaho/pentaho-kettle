@@ -30,6 +30,7 @@ import java.lang.reflect.Method;
 
 import junit.framework.Assert;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.pentaho.di.core.logging.LoggingObjectInterface;
@@ -54,6 +55,11 @@ public class SetValueConstantTest {
             SetValueConstantData.class );
     when( smh.logChannelInterfaceFactory.create( any(), any( LoggingObjectInterface.class ) ) ).thenReturn(
         smh.logChannelInterface );
+  }
+
+  @After
+  public void cleanUp() {
+    smh.cleanUp();
   }
 
   @Test

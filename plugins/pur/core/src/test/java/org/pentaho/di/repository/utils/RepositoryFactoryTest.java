@@ -16,11 +16,13 @@
  */
 package org.pentaho.di.repository.utils;
 
-import org.junit.Before;
+import org.junit.After;
 import org.junit.BeforeClass;
+import org.junit.ClassRule;
 import org.junit.Test;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.junit.rules.RestorePDIEngineEnvironment;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.platform.api.engine.ICacheManager;
 import org.pentaho.platform.api.engine.IPentahoSession;
@@ -32,12 +34,16 @@ import org.pentaho.platform.engine.core.system.StandaloneSession;
 import static org.hamcrest.CoreMatchers.sameInstance;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.fail;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 /**
  * Created by nbaker on 11/5/15.
  */
 public class RepositoryFactoryTest {
+  @ClassRule public static RestorePDIEngineEnvironment env = new RestorePDIEngineEnvironment();
 
   @BeforeClass
   public static void setup() throws Exception {
@@ -45,7 +51,7 @@ public class RepositoryFactoryTest {
     KettleEnvironment.init();
   }
 
-  @Before
+  @After
   public void reset() {
     PentahoSystem.clearObjectFactory();
   }

@@ -30,19 +30,21 @@ import java.util.Map;
 import org.apache.commons.lang.StringUtils;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.ClassRule;
 import org.junit.Test;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.plugins.PluginRegistry;
+import org.pentaho.di.junit.rules.RestorePDIEngineEnvironment;
 import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.di.trans.steps.loadsave.LoadSaveTester;
 import org.pentaho.di.trans.steps.loadsave.initializer.InitializerInterface;
 import org.pentaho.di.trans.steps.loadsave.validator.ArrayLoadSaveValidator;
 import org.pentaho.di.trans.steps.loadsave.validator.FieldLoadSaveValidator;
 import org.pentaho.di.trans.steps.loadsave.validator.StringLoadSaveValidator;
-import org.pentaho.di.trans.steps.mock.StepMockHelper;
 
 public class ValueMapperMetaTest implements InitializerInterface<StepMetaInterface> {
+  @ClassRule public static RestorePDIEngineEnvironment env = new RestorePDIEngineEnvironment();
   LoadSaveTester loadSaveTester;
   Class<ValueMapperMeta> testMetaClass = ValueMapperMeta.class;
 
@@ -58,7 +60,7 @@ public class ValueMapperMetaTest implements InitializerInterface<StepMetaInterfa
     FieldLoadSaveValidator<String[]> targetStringArrayLoadSaveValidator ) throws KettleException {
 
     KettleEnvironment.init();
-    PluginRegistry.init( true );
+    PluginRegistry.init( false );
     List<String> attributes =
       Arrays.asList( "fieldToUse", "targetField", "nonMatchDefault", "sourceValue", "targetValue" );
 
@@ -150,9 +152,6 @@ public class ValueMapperMetaTest implements InitializerInterface<StepMetaInterfa
 
   @Test
   public void testPDI16559() throws Exception {
-    StepMockHelper<ValueMapperMeta, ValueMapperData> mockHelper =
-        new StepMockHelper<ValueMapperMeta, ValueMapperData>( "valueMapper", ValueMapperMeta.class, ValueMapperData.class );
-
     ValueMapperMeta valueMapper = new ValueMapperMeta();
     valueMapper.setSourceValue( new String[] { "value1", "value2", "value3", "value4" } );
     valueMapper.setTargetValue( new String[] { "targ1", "targ2" } );

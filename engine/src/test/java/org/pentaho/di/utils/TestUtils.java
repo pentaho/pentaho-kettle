@@ -31,6 +31,9 @@ import java.util.UUID;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.vfs2.FileObject;
 import org.apache.commons.vfs2.FileSystemException;
+import org.pentaho.di.core.exception.KettleFileException;
+import org.pentaho.di.core.variables.VariableSpace;
+import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.core.vfs.KettleVFS;
 
 public class TestUtils {
@@ -67,19 +70,35 @@ public class TestUtils {
   }
 
   public static String createRamFile( String path ) {
+    return createRamFile( path, null );
+  }
+
+  public static String createRamFile( String path, VariableSpace space ) {
+    if ( space == null ) {
+      space = new Variables();
+      space.initializeVariablesFrom( null );
+    }
     try {
-      FileObject file = KettleVFS.getInstance().getFileSystemManager().resolveFile( "ram://" + path );
+      FileObject file = KettleVFS.getFileObject( "ram://" + path, space );
       file.createFile();
       return file.getName().getURI();
-    } catch ( FileSystemException e ) {
+    } catch ( FileSystemException | KettleFileException e ) {
       throw new RuntimeException( e );
     }
   }
 
   public static FileObject getFileObject( String vfsPath ) {
+    return getFileObject( vfsPath, null );
+  }
+
+  public static FileObject getFileObject( String vfsPath, VariableSpace space ) {
+    if ( space == null ) {
+      space = new Variables();
+      space.initializeVariablesFrom( null );
+    }
     try {
-      return KettleVFS.getInstance().getFileSystemManager().resolveFile( vfsPath );
-    } catch ( FileSystemException e ) {
+      return KettleVFS.getFileObject( vfsPath, space );
+    } catch ( KettleFileException e ) {
       throw new RuntimeException( e );
     }
   }

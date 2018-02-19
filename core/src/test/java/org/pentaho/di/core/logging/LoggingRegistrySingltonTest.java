@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -37,6 +37,8 @@ import java.util.concurrent.TimeUnit;
 import junit.framework.Assert;
 
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.powermock.modules.junit4.PowerMockRunner;
 
 /**
  * Note, this test must be run on separate JAVA instance, to be sure 
@@ -44,6 +46,7 @@ import org.junit.Test;
  * or do initialize immediate in static way.
  *
  */
+@RunWith( PowerMockRunner.class )
 public class LoggingRegistrySingltonTest {
 
   /**

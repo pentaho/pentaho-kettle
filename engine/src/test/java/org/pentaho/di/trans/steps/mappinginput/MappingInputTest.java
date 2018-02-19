@@ -64,7 +64,7 @@ public class MappingInputTest {
 
   @After
   public void tearDown() throws Exception {
-    stepMockHelper = null;
+    stepMockHelper.cleanUp();
   }
 
   @Test

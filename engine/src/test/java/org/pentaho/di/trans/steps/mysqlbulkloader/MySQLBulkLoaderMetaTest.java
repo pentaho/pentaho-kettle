@@ -27,8 +27,10 @@ import java.util.List;
 import java.util.Map;
 
 import org.junit.Assert;
+import org.junit.ClassRule;
 import org.junit.Test;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.junit.rules.RestorePDIEngineEnvironment;
 import org.pentaho.di.trans.steps.loadsave.LoadSaveTester;
 import org.pentaho.di.trans.steps.loadsave.validator.ArrayLoadSaveValidator;
 import org.pentaho.di.trans.steps.loadsave.validator.FieldLoadSaveValidator;
@@ -38,6 +40,7 @@ import org.pentaho.di.trans.steps.loadsave.validator.StringLoadSaveValidator;
 import org.pentaho.di.trans.steps.mock.StepMockHelper;
 
 public class MySQLBulkLoaderMetaTest {
+  @ClassRule public static RestorePDIEngineEnvironment env = new RestorePDIEngineEnvironment();
 
   @Test
   public void testRoundTrip() throws KettleException {
@@ -102,9 +105,6 @@ public class MySQLBulkLoaderMetaTest {
 
   @Test
   public void testPDI16559() throws Exception {
-    StepMockHelper<MySQLBulkLoaderMeta, MySQLBulkLoaderData> mockHelper =
-            new StepMockHelper<MySQLBulkLoaderMeta, MySQLBulkLoaderData>( "mySQLBulkLoader", MySQLBulkLoaderMeta.class, MySQLBulkLoaderData.class );
-
     MySQLBulkLoaderMeta mySQLBulkLoader = new MySQLBulkLoaderMeta();
     mySQLBulkLoader.setFieldTable( new String[] { "table1", "table2", "table3" } );
     mySQLBulkLoader.setFieldStream( new String[] { "stream1" } );

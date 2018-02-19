@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -24,8 +24,10 @@ package org.pentaho.di.cluster;
 
 import junit.framework.Assert;
 import org.apache.commons.codec.binary.Base64;
+import org.junit.ClassRule;
 import org.junit.Test;
 import org.pentaho.di.core.variables.Variables;
+import org.pentaho.di.junit.rules.RestorePDIEnvironment;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -37,6 +39,7 @@ import java.security.NoSuchAlgorithmException;
 import java.util.zip.GZIPOutputStream;
 
 public class HttpUtilTest {
+  @ClassRule public static RestorePDIEnvironment env = new RestorePDIEnvironment();
 
   public static final String DEFAULT_ENCODING = "UTF-8";
   public static final String STANDART = "(\u256e\u00b0-\u00b0)\u256e\u2533\u2501\u2501\u2533\u30c6\u30fc\u30d6"

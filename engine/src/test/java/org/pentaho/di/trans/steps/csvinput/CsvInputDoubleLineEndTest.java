@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -26,12 +26,15 @@ import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.when;
 
+import org.junit.AfterClass;
 import org.junit.BeforeClass;
+import org.junit.ClassRule;
 import org.junit.Test;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.logging.LoggingObjectInterface;
 import org.pentaho.di.core.row.RowMetaInterface;
+import org.pentaho.di.junit.rules.RestorePDIEngineEnvironment;
 import org.pentaho.di.trans.step.RowAdapter;
 import org.pentaho.di.trans.steps.mock.StepMockHelper;
 import org.pentaho.di.trans.steps.textfileinput.TextFileInputField;
@@ -43,6 +46,7 @@ import org.pentaho.di.trans.steps.textfileinput.TextFileInputField;
  * @see CsvInput
  */
 public class CsvInputDoubleLineEndTest extends CsvInputUnitTestBase {
+  @ClassRule public static RestorePDIEngineEnvironment env = new RestorePDIEngineEnvironment();
   private static final String ASCII = "windows-1252";
   private static final String UTF8 = "UTF-8";
   private static final String UTF16LE = "UTF-16LE";
@@ -58,6 +62,11 @@ public class CsvInputDoubleLineEndTest extends CsvInputUnitTestBase {
     when( stepMockHelper.logChannelInterfaceFactory.create( any(), any( LoggingObjectInterface.class ) ) )
       .thenReturn( stepMockHelper.logChannelInterface );
     when( stepMockHelper.trans.isRunning() ).thenReturn( true );
+  }
+
+  @AfterClass
+  public static void cleanUp() {
+    stepMockHelper.cleanUp();
   }
 
   @Test

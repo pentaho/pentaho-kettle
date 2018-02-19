@@ -33,6 +33,8 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Shell;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.ClassRule;
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
@@ -47,6 +49,7 @@ import org.pentaho.di.core.gui.Point;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.JobMeta;
+import org.pentaho.di.junit.rules.RestorePDIEngineEnvironment;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.ObjectRevision;
 import org.pentaho.di.repository.RepositoryDirectory;
@@ -75,13 +78,15 @@ import org.pentaho.xul.swt.tab.TabSet;
  * @see Spoon
  */
 public class SpoonTest {
+  @ClassRule public static RestorePDIEngineEnvironment env = new RestorePDIEngineEnvironment();
 
   private final Spoon spoon = mock( Spoon.class );
   private final LogChannelInterface log = mock( LogChannelInterface.class );
   private static SpoonPerspective mockSpoonPerspective = mock( SpoonPerspective.class );
   private static SpoonPerspectiveManager perspective = SpoonPerspectiveManager.getInstance();
 
-  static {
+  @BeforeClass
+  public static void setUpClass() {
     perspective.addPerspective( mockSpoonPerspective );
   }
 

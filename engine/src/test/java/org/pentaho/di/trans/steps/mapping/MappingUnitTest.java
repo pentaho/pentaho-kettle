@@ -22,6 +22,7 @@
 
 package org.pentaho.di.trans.steps.mapping;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -57,6 +58,10 @@ public class MappingUnitTest {
       new Mapping( mockHelper.stepMeta, mockHelper.stepDataInterface, 0, mockHelper.transMeta, mockHelper.trans );
   }
 
+  @After
+  public void cleanUp() {
+    mockHelper.cleanUp();
+  }
 
   @SuppressWarnings( "unchecked" )
   @Test

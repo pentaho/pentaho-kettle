@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -21,12 +21,15 @@
  ******************************************************************************/
 package org.pentaho.di.job.entries.deletefiles;
 
+import org.junit.ClassRule;
 import org.pentaho.di.job.entry.loadSave.JobEntryLoadSaveTestSupport;
+import org.pentaho.di.junit.rules.RestorePDIEngineEnvironment;
 
 import java.util.Arrays;
 import java.util.List;
 
 public class JobEntryDeleteFilesLoadSaveTest extends JobEntryLoadSaveTestSupport<JobEntryDeleteFiles> {
+  @ClassRule public static RestorePDIEngineEnvironment env = new RestorePDIEngineEnvironment();
   @Override protected Class<JobEntryDeleteFiles> getJobEntryClass() {
     return JobEntryDeleteFiles.class;
   }

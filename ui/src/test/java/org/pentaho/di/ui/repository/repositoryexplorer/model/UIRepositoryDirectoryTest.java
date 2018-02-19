@@ -27,13 +27,11 @@ import static org.mockito.Mockito.*;
 
 import java.util.Collections;
 
-import org.apache.commons.lang.BooleanUtils;
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.pentaho.di.repository.LongObjectId;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectory;
-import org.pentaho.di.repository.RepositoryDirectoryInterface;
 import org.pentaho.di.repository.RepositoryElementMetaInterface;
 import org.pentaho.di.repository.RepositoryExtended;
 import org.pentaho.di.repository.RepositoryObjectType;

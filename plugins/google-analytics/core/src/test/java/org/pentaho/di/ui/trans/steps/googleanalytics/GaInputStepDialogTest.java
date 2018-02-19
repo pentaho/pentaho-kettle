@@ -29,6 +29,7 @@ import com.google.api.services.analytics.model.GaData.ColumnHeaders;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableItem;
 import org.junit.Before;
+import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -40,6 +41,7 @@ import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.row.value.ValueMetaBase;
 import org.pentaho.di.core.row.value.ValueMetaPluginType;
+import org.pentaho.di.junit.rules.RestorePDIEngineEnvironment;
 import org.pentaho.di.trans.steps.googleanalytics.GaInputStepMeta;
 import org.pentaho.di.ui.core.widget.TableView;
 
@@ -52,6 +54,7 @@ import java.util.List;
  */
 @RunWith( MockitoJUnitRunner.class )
 public class GaInputStepDialogTest {
+  @ClassRule public static RestorePDIEngineEnvironment env = new RestorePDIEngineEnvironment();
   @Mock
   Analytics.Data.Ga.Get query;
   @Mock

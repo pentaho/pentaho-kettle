@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,9 +22,11 @@
 
 package org.pentaho.di.core.util;
 
+import org.junit.ClassRule;
 import org.junit.Test;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.variables.Variables;
+import org.pentaho.di.junit.rules.RestorePDIEnvironment;
 
 import java.util.Locale;
 
@@ -36,6 +38,7 @@ import static org.junit.Assert.assertNull;
  * Created by Yury_Bakhmutski on 11/4/2015.
  */
 public class EnvUtilTest {
+  @ClassRule public static RestorePDIEnvironment env = new RestorePDIEnvironment();
 
   @Test
   public void vfsUserDirIsRoot_IsPublishedOnInitialisation() throws Exception {

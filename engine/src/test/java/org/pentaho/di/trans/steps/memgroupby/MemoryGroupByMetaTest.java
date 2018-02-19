@@ -32,6 +32,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.junit.Before;
+import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.Assert;
 import org.pentaho.di.core.Const;
@@ -51,6 +52,7 @@ import org.pentaho.di.core.row.value.ValueMetaNumber;
 import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.core.row.value.ValueMetaTimestamp;
 import org.pentaho.di.core.variables.Variables;
+import org.pentaho.di.junit.rules.RestorePDIEngineEnvironment;
 import org.pentaho.di.trans.steps.loadsave.LoadSaveTester;
 import org.pentaho.di.trans.steps.loadsave.initializer.InitializerInterface;
 import org.pentaho.di.trans.steps.loadsave.validator.ArrayLoadSaveValidator;
@@ -59,16 +61,15 @@ import org.pentaho.di.trans.steps.loadsave.validator.IntLoadSaveValidator;
 import org.pentaho.di.trans.steps.loadsave.validator.PrimitiveIntArrayLoadSaveValidator;
 import org.pentaho.di.trans.steps.loadsave.validator.StringLoadSaveValidator;
 
-import org.pentaho.di.trans.steps.mock.StepMockHelper;
-
 public class MemoryGroupByMetaTest implements InitializerInterface<MemoryGroupByMeta> {
   LoadSaveTester<MemoryGroupByMeta> loadSaveTester;
   Class<MemoryGroupByMeta> testMetaClass = MemoryGroupByMeta.class;
+  @ClassRule public static RestorePDIEngineEnvironment env = new RestorePDIEngineEnvironment();
 
   @Before
   public void setUpLoadSave() throws Exception {
     KettleEnvironment.init();
-    PluginRegistry.init( true );
+    PluginRegistry.init( false );
     List<String> attributes =
         Arrays.asList( "alwaysGivingBackOneRow", "groupField", "aggregateField", "subjectField", "aggregateType", "valueField" );
 
@@ -331,9 +332,6 @@ public class MemoryGroupByMetaTest implements InitializerInterface<MemoryGroupBy
 
   @Test
   public void testPDI16559() throws Exception {
-    StepMockHelper<MemoryGroupByMeta, MemoryGroupByData> mockHelper =
-            new StepMockHelper<MemoryGroupByMeta, MemoryGroupByData>( "memoryGroupBy", MemoryGroupByMeta.class, MemoryGroupByData.class );
-
     MemoryGroupByMeta memoryGroupBy = new MemoryGroupByMeta();
     memoryGroupBy.setGroupField( new String[] { "group1", "group 2" } );
     memoryGroupBy.setSubjectField( new String[] { "field1", "field2", "field3", "field4", "field5", "field6", "field7", "field8", "field9", "field10", "field11", "field12" } );

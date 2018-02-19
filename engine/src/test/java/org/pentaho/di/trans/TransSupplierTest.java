@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -23,12 +23,11 @@
 package org.pentaho.di.trans;
 
 import org.junit.Before;
+import org.junit.ClassRule;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.LogChannelInterface;
+import org.pentaho.di.junit.rules.RestorePDIEngineEnvironment;
 import org.pentaho.di.trans.ael.websocket.TransWebSocketEngineAdapter;
 
 import java.util.Properties;
@@ -37,17 +36,18 @@ import java.util.function.Supplier;
 import static org.junit.Assert.assertEquals;
 
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-@RunWith( MockitoJUnitRunner.class )
 public class TransSupplierTest {
+  @ClassRule public static RestorePDIEngineEnvironment env = new RestorePDIEngineEnvironment();
 
-  @Mock private Trans trans;
-  @Mock private TransMeta meta;
-  @Mock private Supplier<Trans> fallbackSupplier;
-  @Mock private LogChannelInterface log;
-  @Mock private TransHopMeta transHopMeta;
+  private Trans trans = mock( Trans.class );
+  private TransMeta meta = mock( TransMeta.class );
+  private Supplier<Trans> fallbackSupplier = mock( Supplier.class );
+  private LogChannelInterface log = mock( LogChannelInterface.class );
+  private TransHopMeta transHopMeta = mock( TransHopMeta.class );
   private TransSupplier transSupplier;
   private Properties props = null;
 

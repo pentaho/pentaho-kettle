@@ -29,9 +29,11 @@ import org.eclipse.swt.widgets.Shell;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.ClassRule;
 import org.junit.Test;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.Props;
+import org.pentaho.di.junit.rules.RestorePDIEngineEnvironment;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.steps.salesforceinput.SalesforceInputMeta;
 import org.pentaho.di.ui.core.PropsUI;
@@ -50,6 +52,7 @@ import static org.mockito.Mockito.doNothing;
 
 
 public class SalesforceInputDialogTest {
+  @ClassRule public static RestorePDIEngineEnvironment env = new RestorePDIEngineEnvironment();
 
   public static final String VALUE = "value";
   private static boolean changedPropsUi;

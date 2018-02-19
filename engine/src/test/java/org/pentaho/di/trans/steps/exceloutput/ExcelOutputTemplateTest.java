@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -31,11 +31,14 @@ import java.util.HashMap;
 
 import junit.framework.Assert;
 
+import org.junit.AfterClass;
 import org.junit.BeforeClass;
+import org.junit.ClassRule;
 import org.junit.Test;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.LoggingObjectInterface;
+import org.pentaho.di.junit.rules.RestorePDIEngineEnvironment;
 import org.pentaho.di.trans.steps.mock.StepMockHelper;
 
 /**
@@ -45,6 +48,7 @@ import org.pentaho.di.trans.steps.mock.StepMockHelper;
  */
 public class ExcelOutputTemplateTest {
   private static StepMockHelper<ExcelOutputMeta, ExcelOutputData> helper;
+  @ClassRule public static RestorePDIEngineEnvironment env = new RestorePDIEngineEnvironment();
 
   @BeforeClass
   public static void setUp() throws KettleException {
@@ -55,6 +59,11 @@ public class ExcelOutputTemplateTest {
     when( helper.logChannelInterfaceFactory.create( any(), any( LoggingObjectInterface.class ) ) ).thenReturn(
         helper.logChannelInterface );
     when( helper.trans.isRunning() ).thenReturn( true );
+  }
+
+  @AfterClass
+  public static void cleanUp() {
+    helper.cleanUp();
   }
 
   @Test

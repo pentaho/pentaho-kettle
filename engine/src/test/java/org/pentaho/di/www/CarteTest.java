@@ -21,12 +21,14 @@
  ******************************************************************************/
 package org.pentaho.di.www;
 
+import org.junit.ClassRule;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.junit.rules.RestorePDIEngineEnvironment;
 
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
@@ -40,6 +42,7 @@ import static org.mockito.Mockito.when;
  * Created by ccaspanello on 5/31/2016.
  */
 public class CarteTest {
+  @ClassRule public static RestorePDIEngineEnvironment env = new RestorePDIEngineEnvironment();
 
   // this test isn't consistent/doesn't work.
   @Ignore

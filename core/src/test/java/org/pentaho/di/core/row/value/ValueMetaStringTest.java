@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -33,11 +33,13 @@ import java.util.Locale;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.ClassRule;
 import org.junit.Test;
 import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.row.ValueMetaInterface;
 
 import junit.framework.Assert;
+import org.pentaho.di.junit.rules.RestorePDIEnvironment;
 
 import static org.junit.Assert.assertEquals;
 
@@ -46,6 +48,8 @@ public class ValueMetaStringTest {
   private static final String TEST_VALUE = "Some text";
 
   private ConfigurableMeta meta;
+
+  @ClassRule public static RestorePDIEnvironment env = new RestorePDIEnvironment();
 
   @Before
   public void setUp() {

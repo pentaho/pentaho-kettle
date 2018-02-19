@@ -34,6 +34,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.junit.Assert;
+import org.junit.ClassRule;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.pentaho.di.core.exception.KettleException;
@@ -41,6 +42,7 @@ import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.variables.VariableSpace;
+import org.pentaho.di.junit.rules.RestorePDIEngineEnvironment;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.steps.loadsave.LoadSaveTester;
@@ -55,6 +57,7 @@ import org.pentaho.di.trans.steps.mock.StepMockHelper;
 import org.pentaho.metastore.api.IMetaStore;
 
 public class ReplaceStringMetaTest {
+  @ClassRule public static RestorePDIEngineEnvironment env = new RestorePDIEngineEnvironment();
 
   private static final String FIELD_NAME = "test";
   private static final String ENCODING_NAME = "UTF-8";
@@ -150,9 +153,6 @@ public class ReplaceStringMetaTest {
 
   @Test
   public void testPDI16559() throws Exception {
-    StepMockHelper<ReplaceStringMeta, ReplaceStringData> mockHelper =
-        new StepMockHelper<ReplaceStringMeta, ReplaceStringData>( "replaceString", ReplaceStringMeta.class, ReplaceStringData.class );
-
     ReplaceStringMeta replaceString = new ReplaceStringMeta();
 
     // String Arrays

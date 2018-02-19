@@ -107,6 +107,11 @@ public class SimpleMappingTest {
     when( stepMockHelper.processRowsStepMetaInterface.getInputMapping() ).thenReturn( mpIODefMock );
   }
 
+  @After
+  public void cleanUp() {
+    stepMockHelper.cleanUp();
+  }
+
   @Test
   public void testStepSetUpAsWasStarted_AtProcessingFirstRow() throws KettleException {
 

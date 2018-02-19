@@ -32,12 +32,14 @@ import java.util.List;
 import java.util.Map;
 
 import org.junit.Before;
+import org.junit.ClassRule;
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.plugins.PluginRegistry;
+import org.pentaho.di.junit.rules.RestorePDIEngineEnvironment;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.StringObjectId;
@@ -53,6 +55,7 @@ import org.pentaho.di.trans.steps.loadsave.validator.StringLoadSaveValidator;
 import org.pentaho.metastore.api.IMetaStore;
 
 public class RowGeneratorMetaTest implements InitializerInterface<StepMetaInterface> {
+  @ClassRule public static RestorePDIEngineEnvironment env = new RestorePDIEngineEnvironment();
 
   private Repository rep;
 
@@ -89,7 +92,7 @@ public class RowGeneratorMetaTest implements InitializerInterface<StepMetaInterf
   @Before
   public void setUpLoadSave() throws Exception {
     KettleEnvironment.init();
-    PluginRegistry.init( true );
+    PluginRegistry.init( false );
     List<String> attributes =
         Arrays.asList( "neverEnding", "intervalInMs", "rowTimeField", "lastTimeField", "rowLimit", "currency", "decimal", "group",
             "value", "fieldName", "fieldType", "fieldFormat", "fieldLength", "fieldPrecision" );

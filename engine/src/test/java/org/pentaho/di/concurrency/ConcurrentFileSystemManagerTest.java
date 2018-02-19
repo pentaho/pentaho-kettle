@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -26,10 +26,12 @@ import org.apache.commons.vfs2.impl.DefaultFileSystemManager;
 import org.apache.commons.vfs2.provider.AbstractFileProvider;
 import org.apache.commons.vfs2.provider.FileProvider;
 import org.junit.After;
+import org.junit.ClassRule;
 import org.junit.Test;
 import org.pentaho.di.core.osgi.api.VfsEmbeddedFileSystemCloser;
 import org.pentaho.di.core.vfs.ConcurrentFileSystemManager;
 import org.pentaho.di.core.vfs.KettleVFS;
+import org.pentaho.di.junit.rules.RestorePDIEngineEnvironment;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -41,6 +43,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 public class ConcurrentFileSystemManagerTest {
+  @ClassRule public static RestorePDIEngineEnvironment env = new RestorePDIEngineEnvironment();
 
   private DefaultFileSystemManager fileSystemManager =
           (DefaultFileSystemManager)  KettleVFS.getInstance().getFileSystemManager();
@@ -89,7 +92,7 @@ public class ConcurrentFileSystemManagerTest {
     verify( mockFileProvider, times( 0 ) ).closeFileSystem( "key" );
   }
 
-  private interface MockNamedClusterProvider extends FileProvider, VfsEmbeddedFileSystemCloser {
+  public interface MockNamedClusterProvider extends FileProvider, VfsEmbeddedFileSystemCloser {
   }
 
   private class Getter extends StopOnErrorCallable<Object> {

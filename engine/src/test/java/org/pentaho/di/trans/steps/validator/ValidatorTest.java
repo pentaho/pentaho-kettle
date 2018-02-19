@@ -42,6 +42,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.regex.Pattern;
 
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -74,6 +75,11 @@ public class ValidatorTest {
     validator =
       spy( new Validator(
         mockHelper.stepMeta, mockHelper.stepDataInterface, 0, mockHelper.transMeta, mockHelper.trans ) );
+  }
+
+  @After
+  public void cleanUp() {
+    mockHelper.cleanUp();
   }
 
   @Test

@@ -25,11 +25,13 @@ package org.pentaho.di.ui.trans.step;
 import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.widgets.Shell;
 import org.junit.BeforeClass;
+import org.junit.ClassRule;
 import org.junit.Test;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.database.DatabaseMeta;
+import org.pentaho.di.junit.rules.RestorePDIEngineEnvironment;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.ui.core.database.dialog.DatabaseDialog;
 
@@ -43,6 +45,7 @@ import static org.mockito.Mockito.verify;
  * @author Andrey Khayrutdinov
  */
 public class BaseStepDialog_ConnectionLine_Test {
+  @ClassRule public static RestorePDIEngineEnvironment env = new RestorePDIEngineEnvironment();
 
   private static String INITIAL_NAME = "qwerty";
   private static String INPUT_NAME = "asdfg";

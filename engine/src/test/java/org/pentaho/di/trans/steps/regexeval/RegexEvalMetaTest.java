@@ -36,6 +36,7 @@ import java.util.Map;
 
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.ClassRule;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.pentaho.di.core.KettleEnvironment;
@@ -47,6 +48,7 @@ import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.row.value.ValueMetaBase;
 import org.pentaho.di.core.row.value.ValueMetaPluginType;
 import org.pentaho.di.core.variables.VariableSpace;
+import org.pentaho.di.junit.rules.RestorePDIEngineEnvironment;
 import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.di.trans.steps.loadsave.LoadSaveTester;
 import org.pentaho.di.trans.steps.loadsave.initializer.InitializerInterface;
@@ -61,6 +63,7 @@ public class RegexEvalMetaTest implements InitializerInterface<StepMetaInterface
   VariableSpace mockVariableSpace;
   LoadSaveTester loadSaveTester;
   Class<RegexEvalMeta> testMetaClass = RegexEvalMeta.class;
+  @ClassRule public static RestorePDIEngineEnvironment env = new RestorePDIEngineEnvironment();
 
   @BeforeClass
   public static void setupClass() throws KettleException {
@@ -153,7 +156,7 @@ public class RegexEvalMetaTest implements InitializerInterface<StepMetaInterface
   @Before
   public void setUpLoadSave() throws Exception {
     KettleEnvironment.init();
-    PluginRegistry.init( true );
+    PluginRegistry.init( false );
     List<String> attributes =
         Arrays.asList( "script", "matcher", "resultfieldname", "usevar", "allowcapturegroups", "replacefields", "canoneq",
             "caseinsensitive", "comment", "dotall", "multiline", "unicode", "unix", "fieldName", "fieldFormat", "fieldGroup",

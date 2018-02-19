@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -25,15 +25,26 @@ package org.pentaho.di.core.encryption;
 import java.security.KeyPair;
 import java.util.Arrays;
 
+import org.junit.BeforeClass;
+import org.junit.ClassRule;
 import org.junit.Test;
+import org.pentaho.di.core.logging.KettleLogStore;
+import org.pentaho.di.junit.rules.RestorePDIEnvironment;
+
 import java.security.Key;
 
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.fail;
 
 public class CertificateGenEncryptUtilTest {
+  @ClassRule public static RestorePDIEnvironment env = new RestorePDIEnvironment();
   private String pattern = "Test string \u2020";
+
+  @BeforeClass
+  public static void setupClass() {
+    KettleLogStore.init();
+  }
 
   @Test
   public void testPublicPrivate() {
@@ -64,47 +75,32 @@ public class CertificateGenEncryptUtilTest {
 
     byte [] encr = CertificateGenEncryptUtil.encryptUsingKey( pat, kp.getPrivate() );
     KeyPair kp1 = CertificateGenEncryptUtil.generateKeyPair();
-    try {
-      byte [] decr = CertificateGenEncryptUtil.decryptUsingKey( encr, kp1.getPublic() );
-      assertFalse( Arrays.equals( encr, decr ) );
-      fail();
-    } catch ( Exception ex ) {
-      ex.printStackTrace();
-    }
-    byte [] decr = CertificateGenEncryptUtil.decryptUsingKey( encr, kp.getPublic() );
+    byte [] decr = CertificateGenEncryptUtil.decryptUsingKey( encr, kp1.getPublic() );
+    assertNotEquals( encr, decr );
+    decr = CertificateGenEncryptUtil.decryptUsingKey( encr, kp.getPublic() );
     assertTrue( Arrays.equals( pat, decr ) );
   }
 
   @Test
   public void testPublicPublic() {
     byte[] pat = pattern.getBytes();
-    try {
-      KeyPair kp = CertificateGenEncryptUtil.generateKeyPair();
+    KeyPair kp = CertificateGenEncryptUtil.generateKeyPair();
 
-      byte [] encr = CertificateGenEncryptUtil.encryptUsingKey( pat, kp.getPublic() );
-      byte [] decr = CertificateGenEncryptUtil.decryptUsingKey( encr, kp.getPublic() );
+    byte [] encr = CertificateGenEncryptUtil.encryptUsingKey( pat, kp.getPublic() );
+    byte [] decr = CertificateGenEncryptUtil.decryptUsingKey( encr, kp.getPublic() );
 
-      assertFalse( Arrays.equals( encr, decr ) );
-      fail();
-    } catch ( Exception ex ) {
-      ex.printStackTrace();
-    }
+    assertNotEquals( encr, decr );
   }
 
   @Test
   public void testPrivatePrivate() {
     byte[] pat = pattern.getBytes();
-    try {
-      KeyPair kp = CertificateGenEncryptUtil.generateKeyPair();
+    KeyPair kp = CertificateGenEncryptUtil.generateKeyPair();
 
-      byte [] encr = CertificateGenEncryptUtil.encryptUsingKey( pat, kp.getPrivate() );
-      byte [] decr = CertificateGenEncryptUtil.decryptUsingKey( encr, kp.getPrivate() );
+    byte [] encr = CertificateGenEncryptUtil.encryptUsingKey( pat, kp.getPrivate() );
+    byte [] decr = CertificateGenEncryptUtil.decryptUsingKey( encr, kp.getPrivate() );
 
-      assertFalse( Arrays.equals( encr, decr ) );
-      fail();
-    } catch ( Exception ex ) {
-      ex.printStackTrace();
-    }
+    assertNotEquals( encr, decr );
   }
 
   @Test
@@ -135,101 +131,71 @@ public class CertificateGenEncryptUtilTest {
     assertTrue( key.equals( key1 ) );
   }
 
-  @Test
-  public void testImproperSessionKeyEncryptionDecryption() {
-    try {
-      Key key = CertificateGenEncryptUtil.generateSingleKey();
-      KeyPair kp = CertificateGenEncryptUtil.generateKeyPair();
-      Key privateKey = kp.getPrivate();
-      byte[] encryptedKey = CertificateGenEncryptUtil.encodeKeyForTransmission( kp.getPublic(), key );
-      CertificateGenEncryptUtil.decodeTransmittedKey( privateKey.getEncoded(), encryptedKey, false );
-      fail();
-    } catch ( Exception ex ) {
-      ex.printStackTrace();
-    }
+  @Test( expected = Exception.class )
+  public void testImproperSessionKeyEncryptionDecryption() throws Exception {
+    Key key = CertificateGenEncryptUtil.generateSingleKey();
+    KeyPair kp = CertificateGenEncryptUtil.generateKeyPair();
+    Key privateKey = kp.getPrivate();
+    byte[] encryptedKey = CertificateGenEncryptUtil.encodeKeyForTransmission( kp.getPublic(), key );
+    CertificateGenEncryptUtil.decodeTransmittedKey( privateKey.getEncoded(), encryptedKey, false );
   }
 
-  @Test
+  @Test( expected = Exception.class )
   public void testImproperSessionKeyEncryptionDecryption2() throws Exception {
-    try {
-      Key key = CertificateGenEncryptUtil.generateSingleKey();
-      KeyPair kp = CertificateGenEncryptUtil.generateKeyPair();
-      Key privateKey = kp.getPrivate();
-      byte[] encryptedKey = CertificateGenEncryptUtil.encodeKeyForTransmission( privateKey, key );
-      CertificateGenEncryptUtil.decodeTransmittedKey( kp.getPublic().getEncoded(), encryptedKey, true );
-      fail();
-    } catch ( Exception ex ) {
-      ex.printStackTrace();
-    }
+    Key key = CertificateGenEncryptUtil.generateSingleKey();
+    KeyPair kp = CertificateGenEncryptUtil.generateKeyPair();
+    Key privateKey = kp.getPrivate();
+    byte[] encryptedKey = CertificateGenEncryptUtil.encodeKeyForTransmission( privateKey, key );
+    CertificateGenEncryptUtil.decodeTransmittedKey( kp.getPublic().getEncoded(), encryptedKey, true );
   }
 
-  @Test
-  public void testImproperSessionKeyEncryptionDecryption3() {
-    try {
-      Key key = CertificateGenEncryptUtil.generateSingleKey();
-      KeyPair kp = CertificateGenEncryptUtil.generateKeyPair();
-      Key privateKey = kp.getPrivate();
-      byte[] encryptedKey = CertificateGenEncryptUtil.encodeKeyForTransmission( kp.getPublic(), key );
-      byte[] encryptedKey1 = new byte[encryptedKey.length];
-      System.arraycopy( encryptedKey, 0, encryptedKey1, 0, encryptedKey.length );
-      encryptedKey1[encryptedKey1.length - 1] = (byte) ( encryptedKey1[encryptedKey1.length - 1] - 1 );
-      encryptedKey = encryptedKey1;
-      CertificateGenEncryptUtil.decodeTransmittedKey( privateKey.getEncoded(), encryptedKey, true );
-      fail();
-    } catch ( Exception ex ) {
-      ex.printStackTrace();
-    }
+  @Test( expected = Exception.class )
+  public void testImproperSessionKeyEncryptionDecryption3() throws Exception {
+    Key key = CertificateGenEncryptUtil.generateSingleKey();
+    KeyPair kp = CertificateGenEncryptUtil.generateKeyPair();
+    Key privateKey = kp.getPrivate();
+    byte[] encryptedKey = CertificateGenEncryptUtil.encodeKeyForTransmission( kp.getPublic(), key );
+    byte[] encryptedKey1 = new byte[encryptedKey.length];
+    System.arraycopy( encryptedKey, 0, encryptedKey1, 0, encryptedKey.length );
+    encryptedKey1[encryptedKey1.length - 1] = (byte) ( encryptedKey1[encryptedKey1.length - 1] - 1 );
+    encryptedKey = encryptedKey1;
+    CertificateGenEncryptUtil.decodeTransmittedKey( privateKey.getEncoded(), encryptedKey, true );
   }
 
-  @Test
+  @Test( expected = Exception.class )
   public void testImproperSessionKeyEncryptionDecryption4() throws Exception {
-    try {
-      Key key = CertificateGenEncryptUtil.generateSingleKey();
-      KeyPair kp = CertificateGenEncryptUtil.generateKeyPair();
-      Key privateKey = kp.getPrivate();
-      byte[] encryptedKey = CertificateGenEncryptUtil.encodeKeyForTransmission( privateKey, key );
-      byte[] encryptedKey1 = new byte[encryptedKey.length];
-      System.arraycopy( encryptedKey, 0, encryptedKey1, 0, encryptedKey.length );
-      encryptedKey1[encryptedKey1.length - 1] = (byte) ( encryptedKey1[encryptedKey1.length - 1] - 1 );
-      encryptedKey = encryptedKey1;
-      CertificateGenEncryptUtil.decodeTransmittedKey( kp.getPublic().getEncoded(), encryptedKey, false );
-      fail();
-    } catch ( Exception ex ) {
-      ex.printStackTrace();
-    }
+    Key key = CertificateGenEncryptUtil.generateSingleKey();
+    KeyPair kp = CertificateGenEncryptUtil.generateKeyPair();
+    Key privateKey = kp.getPrivate();
+    byte[] encryptedKey = CertificateGenEncryptUtil.encodeKeyForTransmission( privateKey, key );
+    byte[] encryptedKey1 = new byte[encryptedKey.length];
+    System.arraycopy( encryptedKey, 0, encryptedKey1, 0, encryptedKey.length );
+    encryptedKey1[encryptedKey1.length - 1] = (byte) ( encryptedKey1[encryptedKey1.length - 1] - 1 );
+    encryptedKey = encryptedKey1;
+    CertificateGenEncryptUtil.decodeTransmittedKey( kp.getPublic().getEncoded(), encryptedKey, false );
   }
 
-  @Test
-  public void testImproperSessionKeyEncryptionDecryption5() {
-    try {
-      Key key = CertificateGenEncryptUtil.generateSingleKey();
-      KeyPair kp = CertificateGenEncryptUtil.generateKeyPair();
-      Key privateKey = kp.getPrivate();
-      byte[] encryptedKey = CertificateGenEncryptUtil.encodeKeyForTransmission( kp.getPublic(), key );
-      byte[] encryptedKey1 = new byte[privateKey.getEncoded().length];
-      System.arraycopy( privateKey.getEncoded(), 0, encryptedKey1, 0, privateKey.getEncoded().length );
-      encryptedKey1[encryptedKey1.length - 1] = (byte) ( encryptedKey1[encryptedKey1.length - 1] - 1 );
-      CertificateGenEncryptUtil.decodeTransmittedKey( encryptedKey1, encryptedKey, true );
-      fail();
-    } catch ( Exception ex ) {
-      ex.printStackTrace();
-    }
+  @Test( expected = Exception.class )
+  public void testImproperSessionKeyEncryptionDecryption5() throws Exception {
+    Key key = CertificateGenEncryptUtil.generateSingleKey();
+    KeyPair kp = CertificateGenEncryptUtil.generateKeyPair();
+    Key privateKey = kp.getPrivate();
+    byte[] encryptedKey = CertificateGenEncryptUtil.encodeKeyForTransmission( kp.getPublic(), key );
+    byte[] encryptedKey1 = new byte[privateKey.getEncoded().length];
+    System.arraycopy( privateKey.getEncoded(), 0, encryptedKey1, 0, privateKey.getEncoded().length );
+    encryptedKey1[encryptedKey1.length - 1] = (byte) ( encryptedKey1[encryptedKey1.length - 1] - 1 );
+    CertificateGenEncryptUtil.decodeTransmittedKey( encryptedKey1, encryptedKey, true );
   }
 
-  @Test
+  @Test( expected = Exception.class )
   public void testImproperSessionKeyEncryptionDecryption6() throws Exception {
-    try {
-      Key key = CertificateGenEncryptUtil.generateSingleKey();
-      KeyPair kp = CertificateGenEncryptUtil.generateKeyPair();
-      Key privateKey = kp.getPrivate();
-      byte[] encryptedKey = CertificateGenEncryptUtil.encodeKeyForTransmission( privateKey, key );
-      byte[] encryptedKey1 = new byte[kp.getPublic().getEncoded().length];
-      System.arraycopy( kp.getPublic().getEncoded(), 0, encryptedKey1, 0, kp.getPublic().getEncoded().length );
-      encryptedKey1[encryptedKey1.length - 1] = (byte) ( encryptedKey1[encryptedKey1.length - 1] - 1 );
-      CertificateGenEncryptUtil.decodeTransmittedKey( encryptedKey1, encryptedKey, false );
-      fail();
-    } catch ( Exception ex ) {
-      ex.printStackTrace();
-    }
+    Key key = CertificateGenEncryptUtil.generateSingleKey();
+    KeyPair kp = CertificateGenEncryptUtil.generateKeyPair();
+    Key privateKey = kp.getPrivate();
+    byte[] encryptedKey = CertificateGenEncryptUtil.encodeKeyForTransmission( privateKey, key );
+    byte[] encryptedKey1 = new byte[kp.getPublic().getEncoded().length];
+    System.arraycopy( kp.getPublic().getEncoded(), 0, encryptedKey1, 0, kp.getPublic().getEncoded().length );
+    encryptedKey1[encryptedKey1.length - 1] = (byte) ( encryptedKey1[encryptedKey1.length - 1] - 1 );
+    CertificateGenEncryptUtil.decodeTransmittedKey( encryptedKey1, encryptedKey, false );
   }
 }

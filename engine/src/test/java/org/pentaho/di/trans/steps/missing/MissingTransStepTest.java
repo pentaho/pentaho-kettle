@@ -27,6 +27,8 @@ import static org.mockito.Mockito.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
@@ -45,6 +47,17 @@ import org.pentaho.di.trans.steps.mock.StepMockHelper;
 import static org.junit.Assert.assertFalse;
 
 public class MissingTransStepTest {
+  private StepMockHelper<DataGridMeta, StepDataInterface> helper;
+
+  @Before
+  public void setUp() {
+    helper = StepMockUtil.getStepMockHelper( DataGridMeta.class, "DataGrid_EmptyStringVsNull_Test" );
+  }
+
+  @After
+  public void cleanUp() {
+    helper.cleanUp();
+  }
 
   @Test
   public void testInit() {
@@ -83,8 +96,6 @@ public class MissingTransStepTest {
   }
 
   private MissingTransStep createAndInitStep( StepMetaInterface meta, StepDataInterface data ) {
-    StepMockHelper<DataGridMeta, StepDataInterface> helper =
-      StepMockUtil.getStepMockHelper( DataGridMeta.class, "DataGrid_EmptyStringVsNull_Test" );
     when( helper.stepMeta.getStepMetaInterface() ).thenReturn( meta );
 
     MissingTransStep step = new MissingTransStep( helper.stepMeta, data, 0, helper.transMeta, helper.trans );

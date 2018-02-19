@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2017-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,9 +22,13 @@
 
 package org.pentaho.di.trans.steps.csvinput;
 
+import org.junit.After;
+import org.junit.Before;
+import org.junit.ClassRule;
 import org.junit.Test;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.row.RowMetaInterface;
+import org.pentaho.di.junit.rules.RestorePDIEngineEnvironment;
 import org.pentaho.di.trans.step.RowAdapter;
 import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepMetaDataCombi;
@@ -61,7 +65,20 @@ import static org.junit.Assert.assertEquals;
  *  - file ends with new line or not
  */
 public class CsvProcessRowInParallelTest extends CsvInputUnitTestBase {
+  private StepMockHelper<CsvInputMeta, StepDataInterface> stepMockHelper;
 
+  @ClassRule public static RestorePDIEngineEnvironment env = new RestorePDIEngineEnvironment();
+
+  @Before
+  public void setUp() {
+    stepMockHelper =
+      StepMockUtil.getStepMockHelper( CsvInputMeta.class, "CsvInputEnclosureTest" );
+  }
+
+  @After
+  public void cleanUp() {
+    stepMockHelper.cleanUp();
+  }
 
   @Test
   public void oneByteNewLineIndicator_NewLineAtTheEnd_2Threads() throws Exception {
@@ -284,9 +301,6 @@ public class CsvProcessRowInParallelTest extends CsvInputUnitTestBase {
   }
 
   private CsvInput createCsvInput() {
-    StepMockHelper<CsvInputMeta, StepDataInterface> stepMockHelper =
-      StepMockUtil.getStepMockHelper( CsvInputMeta.class, "CsvInputEnclosureTest" );
-
     return new CsvInput( stepMockHelper.stepMeta, stepMockHelper.stepDataInterface, 0,
       stepMockHelper.transMeta, stepMockHelper.trans );
   }

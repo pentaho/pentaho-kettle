@@ -46,7 +46,7 @@ public class ValueMetaConverterTest {
   private static final int endSource = 10;
   private static final int startTarget = 1;
   private static final int endTarget = 10;
-  private static final boolean IS_VERBOSE = true; //Change to true to display information
+  private static final boolean IS_VERBOSE = false; //Change to true to display information
 
   @Test
   public void convertFromSourceToTargetDataTypeTest() throws Exception {
@@ -55,7 +55,7 @@ public class ValueMetaConverterTest {
     DateFormat dateFormat = new SimpleDateFormat( "yyyy/MM/dd HH:mm:ss.SSS" );
     Date date1 = ( dateFormat.parse( "1999/12/31 00:00:00.000" ) );
     Date timeStamp1 = new Timestamp( dateFormat.parse( "2001/11/01 20:30:15.123" ).getTime() );
-    final String inetHost = "www.microsoft.com";
+    final String inetHost = "127.0.0.1";
     InetAddress inetAddress1 = InetAddress.getByName( inetHost );
 
     //All combination not listed here should generate ValueMetaConversionExceptions

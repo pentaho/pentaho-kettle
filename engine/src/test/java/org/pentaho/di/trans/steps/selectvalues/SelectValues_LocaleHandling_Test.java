@@ -25,11 +25,13 @@ package org.pentaho.di.trans.steps.selectvalues;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.ClassRule;
 import org.junit.Test;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.row.value.ValueMetaDate;
+import org.pentaho.di.junit.rules.RestorePDIEngineEnvironment;
 import org.pentaho.di.trans.TransTestingUtil;
 import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.steps.StepMockUtil;
@@ -51,6 +53,7 @@ import static org.mockito.Mockito.when;
  * @author Andrey Khayrutdinov
  */
 public class SelectValues_LocaleHandling_Test {
+  @ClassRule public static RestorePDIEngineEnvironment env = new RestorePDIEngineEnvironment();
 
   @BeforeClass
   public static void initKettle() throws Exception {
@@ -59,13 +62,14 @@ public class SelectValues_LocaleHandling_Test {
 
   private SelectValues step;
   private Locale current;
+  private StepMockHelper<SelectValuesMeta, StepDataInterface> helper;
 
   @Before
   public void setUp() throws Exception {
     current = Locale.getDefault();
     Locale.setDefault( Locale.UK );
 
-    StepMockHelper<SelectValuesMeta, StepDataInterface> helper =
+    helper =
       StepMockUtil.getStepMockHelper( SelectValuesMeta.class, "SelectValues_LocaleHandling_Test" );
     when( helper.stepMeta.isDoingErrorHandling() ).thenReturn( true );
 
@@ -85,6 +89,8 @@ public class SelectValues_LocaleHandling_Test {
 
     Locale.setDefault( current );
     current = null;
+
+    helper.cleanUp();
   }
 
 

@@ -211,7 +211,7 @@ public class KettleClientEnvironment {
   }
 
   /**
-   * Return this singleton. Craete it if it hasn't been.
+   * Return this singleton. Create it if it hasn't been.
    *
    * @return
    */
@@ -222,5 +222,13 @@ public class KettleClientEnvironment {
     }
 
     return KettleClientEnvironment.instance;
+  }
+
+  public static void reset() {
+    if ( KettleLogStore.isInitialized() ) {
+      KettleLogStore.getInstance().reset();
+    }
+    PluginRegistry.getInstance().reset();
+    initialized = null;
   }
 }

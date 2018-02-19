@@ -36,9 +36,11 @@ import java.util.Collections;
 import java.util.List;
 
 import org.apache.commons.lang.reflect.FieldUtils;
+import org.junit.ClassRule;
 import org.junit.Test;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
+import org.pentaho.di.junit.rules.RestorePDIEngineEnvironment;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.StepMeta;
@@ -50,6 +52,7 @@ import com.google.api.services.analytics.model.GaData;
  * @author Andrey Khayrutdinov
  */
 public class GaInputStepTest {
+  @ClassRule public static RestorePDIEngineEnvironment env = new RestorePDIEngineEnvironment();
 
   @Test
   public void getNextDataEntry_WithPaging() throws Exception {

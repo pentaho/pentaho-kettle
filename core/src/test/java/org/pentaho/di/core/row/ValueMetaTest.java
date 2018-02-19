@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -27,21 +27,30 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.TimeZone;
 
+import org.junit.ClassRule;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.plugins.PluginRegistry;
 
-import junit.framework.TestCase;
 import org.pentaho.di.core.row.value.ValueMetaFactory;
 import org.pentaho.di.core.row.value.ValueMetaInteger;
 import org.pentaho.di.core.row.value.ValueMetaNumber;
 import org.pentaho.di.core.row.value.ValueMetaPluginType;
 import org.pentaho.di.core.row.value.ValueMetaString;
+import org.pentaho.di.junit.rules.RestorePDIEnvironment;
+
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
+
 
 /**
  * Test functionality in ValueMeta
  */
 @SuppressWarnings( "deprecation" )
-public class ValueMetaTest extends TestCase {
+public class ValueMetaTest {
+  @ClassRule public static RestorePDIEnvironment env = new RestorePDIEnvironment();
   /**
    * Compare to byte arrays for equality.
    *
@@ -64,6 +73,7 @@ public class ValueMetaTest extends TestCase {
     return true;
   }
 
+  @Test
   public void testCvtStringToBinaryString() throws Exception {
     ValueMeta val1 = new ValueMeta( "STR1", ValueMetaInterface.TYPE_STRING );
     val1.setLength( 6 );
@@ -92,6 +102,7 @@ public class ValueMetaTest extends TestCase {
     assertTrue( byteCompare( b6, new byte[]{ 'P', 'D', 'I', '1', '2', '3', '4', '5', '6' } ) );
   }
 
+  @Test
   public void testCvtStringBinaryString() throws Exception {
     ValueMeta val1 = new ValueMeta( "STR1", ValueMetaInterface.TYPE_STRING );
     val1.setLength( 6 );
@@ -113,6 +124,7 @@ public class ValueMetaTest extends TestCase {
     assertTrue( "PDI123456".equals( str3 ) );
   }
 
+  @Test
   public void testIntegerToStringToInteger() throws Exception {
     ValueMetaInterface intValueMeta = new ValueMetaInteger( "i" );
     intValueMeta.setConversionMask( null );
@@ -132,6 +144,7 @@ public class ValueMetaTest extends TestCase {
     assertEquals( originalValue, x );
   }
 
+  @Test
   public void testNumberToStringToNumber() throws Exception {
     ValueMetaInterface numValueMeta = new ValueMetaNumber( "i" );
     numValueMeta.setConversionMask( null );
@@ -153,6 +166,7 @@ public class ValueMetaTest extends TestCase {
     assertEquals( originalValue, x );
   }
 
+  @Test
   public void testBigNumberToStringToBigNumber() throws Exception {
     ValueMetaInterface numValueMeta = new ValueMeta( "i", ValueMetaInterface.TYPE_BIGNUMBER );
     numValueMeta.setLength( 42, 9 );
@@ -173,6 +187,7 @@ public class ValueMetaTest extends TestCase {
     assertEquals( originalValue, x );
   }
 
+  @Test
   public void testDateToStringToDate() throws Exception {
     TimeZone.setDefault( TimeZone.getTimeZone( "CET" ) );
 
@@ -192,6 +207,7 @@ public class ValueMetaTest extends TestCase {
     assertEquals( originalValue, x );
   }
 
+  @Test
   public void testDateStringDL8601() throws Exception {
     TimeZone.setDefault( TimeZone.getTimeZone( "America/New_York" ) );
 
@@ -238,6 +254,7 @@ public class ValueMetaTest extends TestCase {
     }
   }
 
+  @Test
   public void testDateStringUTC() throws Exception {
     TimeZone.setDefault( TimeZone.getTimeZone( "America/New_York" ) );
 
@@ -256,6 +273,7 @@ public class ValueMetaTest extends TestCase {
     }
   }
 
+  @Test
   public void testDateStringOffset() throws Exception {
     TimeZone.setDefault( TimeZone.getTimeZone( "America/New_York" ) );
 
@@ -287,6 +305,7 @@ public class ValueMetaTest extends TestCase {
     }
   }
 
+  @Test
   public void testDateString8601() throws Exception {
     TimeZone.setDefault( TimeZone.getTimeZone( "Europe/Kaliningrad" ) );
 
@@ -313,6 +332,7 @@ public class ValueMetaTest extends TestCase {
     }
   }
 
+  @Test
   public void testConvertDataDate() throws Exception {
     TimeZone.setDefault( TimeZone.getTimeZone( "CET" ) );
 
@@ -330,6 +350,7 @@ public class ValueMetaTest extends TestCase {
 
   }
 
+  @Test
   public void testConvertDataInteger() throws Exception {
     ValueMetaInterface source = new ValueMeta( "src", ValueMetaInterface.TYPE_STRING );
     source.setConversionMask( " #,##0" );
@@ -349,6 +370,7 @@ public class ValueMetaTest extends TestCase {
     assertEquals( "2'837.00", string );
   }
 
+  @Test
   public void testConvertDataNumber() throws Exception {
     ValueMetaInterface source = new ValueMeta( "src", ValueMetaInterface.TYPE_STRING );
     source.setConversionMask( "###,###,##0.000" );
@@ -358,7 +380,7 @@ public class ValueMetaTest extends TestCase {
     ValueMetaInterface target = new ValueMeta( "tgt", ValueMetaInterface.TYPE_NUMBER );
 
     Double d = (Double) target.convertData( source, "123.456.789,012" );
-    assertEquals( 123456789.012, d );
+    assertEquals( Double.valueOf( 123456789.012 ), d );
 
     target.setConversionMask( "###,###,##0.00" );
     target.setLength( 12, 4 );
@@ -377,6 +399,7 @@ public class ValueMetaTest extends TestCase {
    *
    * @throws Exception
    */
+  @Test
   public void testLazyConversionInteger() throws Exception {
     byte[] data = ( "1234" ).getBytes();
     ValueMetaInterface intValueMeta = new ValueMetaInteger( "i" );
@@ -406,6 +429,7 @@ public class ValueMetaTest extends TestCase {
    *
    * @throws Exception
    */
+  @Test
   public void testLazyConversionNumber() throws Exception {
     byte[] data = ( "1,234.56" ).getBytes();
     ValueMetaInterface numValueMeta = new ValueMetaNumber( "i" );
@@ -452,6 +476,7 @@ public class ValueMetaTest extends TestCase {
    *
    * @throws Exception
    */
+  @Test
   public void testLazyConversionBigNumber() throws Exception {
     String originalValue = "34983433433212304121900934.5634314343";
     byte[] data = originalValue.getBytes();
@@ -491,6 +516,7 @@ public class ValueMetaTest extends TestCase {
     assertEquals( originalValue, string );
   }
 
+  @Test
   public void testLazyConversionNullInteger() throws Exception {
     byte[] data = new byte[0];
     ValueMetaInterface intValueMeta = new ValueMeta( "i", ValueMetaInterface.TYPE_BOOLEAN );
@@ -512,6 +538,7 @@ public class ValueMetaTest extends TestCase {
     assertEquals( null, string );
   }
 
+  @Test
   public void testLazyConversionNullNumber() throws Exception {
     byte[] data = new byte[0];
     ValueMetaInterface intValueMeta = new ValueMeta( "i", ValueMetaInterface.TYPE_NUMBER );
@@ -536,6 +563,7 @@ public class ValueMetaTest extends TestCase {
     assertEquals( null, b );
   }
 
+  @Test
   public void testCompareIntegersNormalStorageData() throws Exception {
     Long integer1 = new Long( 1234L );
     Long integer2 = new Long( 1235L );
@@ -560,6 +588,7 @@ public class ValueMetaTest extends TestCase {
     assertTrue( one.compare( integer5, two, integer6 ) == 0 );
   }
 
+  @Test
   public void testCompareNumbersNormalStorageData() throws Exception {
     Double number1 = new Double( 1234.56 );
     Double number2 = new Double( 1235.56 );
@@ -584,6 +613,7 @@ public class ValueMetaTest extends TestCase {
     assertTrue( one.compare( number5, two, number6 ) == 0 );
   }
 
+  @Test
   public void testCompareBigNumberNormalStorageData() throws Exception {
     BigDecimal number1 = new BigDecimal( "987908798769876.23943409" );
     BigDecimal number2 = new BigDecimal( "999908798769876.23943409" );
@@ -608,6 +638,7 @@ public class ValueMetaTest extends TestCase {
     assertTrue( one.compare( number5, two, number6 ) == 0 );
   }
 
+  @Test
   public void testCompareDatesNormalStorageData() throws Exception {
     Date date1 = new Date();
     Date date2 = new Date( date1.getTime() + 3600 );
@@ -632,6 +663,7 @@ public class ValueMetaTest extends TestCase {
     assertTrue( one.compare( date5, two, date6 ) == 0 );
   }
 
+  @Test
   public void testCompareBooleanNormalStorageData() throws Exception {
     Boolean boolean1 = new Boolean( false );
     Boolean boolean2 = new Boolean( true );
@@ -653,6 +685,7 @@ public class ValueMetaTest extends TestCase {
     assertTrue( one.compare( boolean4, two, boolean5 ) == 0 );
   }
 
+  @Test
   public void testCompareStringsNormalStorageData() throws Exception {
     String string1 = "bbbbb";
     String string2 = "ccccc";
@@ -677,10 +710,12 @@ public class ValueMetaTest extends TestCase {
     assertTrue( one.compare( string5, two, string6 ) == 0 );
   }
 
+  @Test
   public void testValueMetaInheritance() {
     assertTrue( new ValueMeta() instanceof ValueMetaInterface );
   }
 
+  @Test
   public void testGetNativeDataTypeClass() throws KettleException {
     PluginRegistry.addPluginType( ValueMetaPluginType.getInstance() );
     PluginRegistry.init();

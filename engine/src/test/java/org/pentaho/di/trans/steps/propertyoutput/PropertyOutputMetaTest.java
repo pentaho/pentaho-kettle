@@ -25,11 +25,14 @@ package org.pentaho.di.trans.steps.propertyoutput;
 import java.util.Arrays;
 import java.util.List;
 
+import org.junit.ClassRule;
 import org.junit.Test;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.junit.rules.RestorePDIEngineEnvironment;
 import org.pentaho.di.trans.steps.loadsave.LoadSaveTester;
 
 public class PropertyOutputMetaTest {
+  @ClassRule public static RestorePDIEngineEnvironment env = new RestorePDIEngineEnvironment();
   @Test
   public void testSerialization() throws KettleException {
     List<String> attributes = Arrays.asList( "KeyField", "ValueField", "Comment", "FileNameInField",

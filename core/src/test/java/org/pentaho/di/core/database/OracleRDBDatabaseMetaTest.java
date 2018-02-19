@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -27,10 +27,13 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Before;
+import org.junit.ClassRule;
 import org.junit.Test;
 import org.pentaho.di.core.KettleClientEnvironment;
+import org.pentaho.di.junit.rules.RestorePDIEnvironment;
 
 public class OracleRDBDatabaseMetaTest {
+  @ClassRule public static RestorePDIEnvironment env = new RestorePDIEnvironment();
   private OracleRDBDatabaseMeta nativeMeta, odbcMeta, jndiMeta;
 
   @Before

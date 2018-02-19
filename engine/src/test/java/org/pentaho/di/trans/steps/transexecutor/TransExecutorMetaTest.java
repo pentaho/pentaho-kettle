@@ -24,6 +24,7 @@ package org.pentaho.di.trans.steps.transexecutor;
 
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.ClassRule;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.pentaho.di.core.exception.KettleException;
@@ -31,6 +32,7 @@ import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.row.value.ValueMetaPluginType;
+import org.pentaho.di.junit.rules.RestorePDIEngineEnvironment;
 import org.pentaho.di.trans.step.StepIOMetaInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.errorhandling.StreamInterface;
@@ -65,13 +67,14 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 public class TransExecutorMetaTest {
+  @ClassRule public static RestorePDIEngineEnvironment env = new RestorePDIEngineEnvironment();
 
   LoadSaveTester loadSaveTester;
 
   @BeforeClass
   public static void setUpBeforeClass() throws Exception {
     PluginRegistry.addPluginType( ValueMetaPluginType.getInstance() );
-    PluginRegistry.init( true );
+    PluginRegistry.init( false );
   }
 
   @Before

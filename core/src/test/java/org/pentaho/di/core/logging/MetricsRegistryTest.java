@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -21,11 +21,12 @@
  ******************************************************************************/
 package org.pentaho.di.core.logging;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertEquals;
 
 import org.junit.Before;
+import org.junit.ClassRule;
 import org.junit.Test;
-
+import org.pentaho.di.junit.rules.RestorePDIEnvironment;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,8 +35,10 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 public class MetricsRegistryTest {
+  @ClassRule public static RestorePDIEnvironment env = new RestorePDIEnvironment();
   private MetricsRegistry metricsRegistry;
   private List<String> logIds;
   private int threadCount = 100;
@@ -45,6 +48,7 @@ public class MetricsRegistryTest {
   @Before
   public void setUp() {
     metricsRegistry = MetricsRegistry.getInstance();
+    metricsRegistry.reset();
     logIds = new ArrayList<>( logChannelIdCount );
     for ( int i = 1; i <= logChannelIdCount; i++ ) {
       logIds.add( "logChannelId_" + i );
@@ -53,19 +57,16 @@ public class MetricsRegistryTest {
   }
 
 
-  @Test( timeout = 2000 )
+  @Test
   public void testConcurrencySnap() throws Exception {
     ExecutorService service = Executors.newFixedThreadPool( threadCount );
     for ( int i = 0; i < threadCount; i++ ) {
       service.submit( new ConcurrentPutIfAbsent( logIds.get( i % 20 ) ) );
     }
     countDownLatch.countDown();
-    service.shutdown();
-    while ( !service.isTerminated() ) {
-      Thread.currentThread().sleep( 1 );
-    }
+    service.awaitTermination( 2000, TimeUnit.MILLISECONDS );
     int expectedQueueCount = logChannelIdCount > threadCount ? threadCount : logChannelIdCount;
-    assertTrue( expectedQueueCount == metricsRegistry.getSnapshotLists().size() );
+    assertEquals( expectedQueueCount, metricsRegistry.getSnapshotLists().size() );
   }
 
   private class ConcurrentPutIfAbsent implements Callable<Queue> {

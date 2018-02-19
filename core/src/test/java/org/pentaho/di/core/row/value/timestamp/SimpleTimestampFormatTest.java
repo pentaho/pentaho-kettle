@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -35,12 +35,16 @@ import java.util.Set;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.ClassRule;
 import org.junit.Test;
+import org.pentaho.di.junit.rules.RestorePDIEnvironment;
 
 /**
  * User: Dzmitry Stsiapanau Date: 3/17/14 Time: 4:46 PM
  */
 public class SimpleTimestampFormatTest {
+  @ClassRule public static RestorePDIEnvironment env = new RestorePDIEnvironment();
+
   private static Locale formatLocale;
   private Set<Locale> locales =
     new HashSet<Locale>( Arrays.asList( Locale.US, Locale.GERMANY, Locale.JAPANESE, Locale.CHINESE ) );
@@ -51,13 +55,13 @@ public class SimpleTimestampFormatTest {
   private static String stringThreePrecision = "2014-03-15 15:30:45.123";
   private static String stringWithoutPrecision = "2014-03-15 15:30:45";
   private static String stringWithoutPrecisionWithDot = "2014-11-15 15:30:45.000";
-  private static Timestamp timestampNinePrecision = Timestamp.valueOf( stringNinePrecision );
-  private static Timestamp timestampFourPrecision = Timestamp.valueOf( stringFourPrecision );
-  private static Timestamp timestampThreePrecision = Timestamp.valueOf( stringThreePrecision );
-  private static Timestamp timestampWithoutPrecision = Timestamp.valueOf( stringWithoutPrecision );
-  private static Timestamp timestampWithoutPrecisionWithDot = Timestamp.valueOf( stringWithoutPrecisionWithDot );
-  private static Date dateThreePrecision = new Date( timestampThreePrecision.getTime() );
-  private static Date dateWithoutPrecision = new Date( timestampWithoutPrecision.getTime() );
+  private Timestamp timestampNinePrecision = Timestamp.valueOf( stringNinePrecision );
+  private Timestamp timestampFourPrecision = Timestamp.valueOf( stringFourPrecision );
+  private Timestamp timestampThreePrecision = Timestamp.valueOf( stringThreePrecision );
+  private Timestamp timestampWithoutPrecision = Timestamp.valueOf( stringWithoutPrecision );
+  private Timestamp timestampWithoutPrecisionWithDot = Timestamp.valueOf( stringWithoutPrecisionWithDot );
+  private Date dateThreePrecision = new Date( timestampThreePrecision.getTime() );
+  private Date dateWithoutPrecision = new Date( timestampWithoutPrecision.getTime() );
 
   @Before
   public void setUp() throws Exception {

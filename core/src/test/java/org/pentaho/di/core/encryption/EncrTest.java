@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -25,9 +25,11 @@ package org.pentaho.di.core.encryption;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.BeforeClass;
+import org.junit.ClassRule;
 import org.junit.Test;
 import org.pentaho.di.core.KettleClientEnvironment;
 import org.pentaho.di.core.exception.KettleValueException;
+import org.pentaho.di.junit.rules.RestorePDIEnvironment;
 
 /**
  * Test cases for encryption, to make sure that encrypted password remain the same between versions.
@@ -35,6 +37,7 @@ import org.pentaho.di.core.exception.KettleValueException;
  * @author Sven Boden
  */
 public class EncrTest {
+  @ClassRule public static RestorePDIEnvironment env = new RestorePDIEnvironment();
 
   @BeforeClass
   public static void setUpBeforeClass() throws Exception {

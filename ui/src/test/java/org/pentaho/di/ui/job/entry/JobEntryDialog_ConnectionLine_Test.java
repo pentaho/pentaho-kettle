@@ -24,12 +24,14 @@ package org.pentaho.di.ui.job.entry;
 
 import org.eclipse.swt.custom.CCombo;
 import org.junit.BeforeClass;
+import org.junit.ClassRule;
 import org.junit.Test;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.job.JobMeta;
+import org.pentaho.di.junit.rules.RestorePDIEngineEnvironment;
 import org.pentaho.di.ui.core.database.dialog.DatabaseDialog;
 
 import static org.junit.Assert.*;
@@ -40,6 +42,7 @@ import static org.mockito.Mockito.*;
  * @author Andrey Khayrutdinov
  */
 public class JobEntryDialog_ConnectionLine_Test {
+  @ClassRule public static RestorePDIEngineEnvironment env = new RestorePDIEngineEnvironment();
 
   private static String INITIAL_NAME = "qwerty";
   private static String INPUT_NAME = "asdfg";

@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -45,6 +45,7 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.vfs2.FileObject;
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.ClassRule;
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.pentaho.di.core.KettleEnvironment;
@@ -57,11 +58,13 @@ import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.logging.StepLogTable;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.vfs.KettleVFS;
+import org.pentaho.di.junit.rules.RestorePDIEngineEnvironment;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectoryInterface;
 import org.pentaho.di.trans.step.StepMetaDataCombi;
 
 public class TransTest {
+  @ClassRule public static RestorePDIEngineEnvironment env = new RestorePDIEngineEnvironment();
 
   int count = 10000;
   Trans trans;
@@ -201,12 +204,9 @@ public class TransTest {
     when( mockTransMeta.listParameters() ).thenReturn( new String[] { testParam } );
     when( mockTransMeta.getParameterValue( testParam ) ).thenReturn( testParamValue );
     FileObject ktr = KettleVFS.createTempFile( "parameters", ".ktr", "ram://" );
-    OutputStream outputStream = ktr.getContent().getOutputStream( true );
-    try {
+    try ( OutputStream outputStream = ktr.getContent().getOutputStream( true ) ) {
       InputStream inputStream = new ByteArrayInputStream( "<transformation></transformation>".getBytes() );
       IOUtils.copy( inputStream, outputStream );
-    } finally {
-      outputStream.close();
     }
     Trans trans = new Trans( mockTransMeta, null, null, null, ktr.getURL().toURI().toString() );
     assertEquals( testParamValue, trans.getParameterValue( testParam ) );
@@ -245,7 +245,7 @@ public class TransTest {
   }
 
   @Test( expected = KettleException.class )
-  public void testFireTransFinishedListenersExceprionOnTransFinished() throws Exception {
+  public void testFireTransFinishedListenersExceptionOnTransFinished() throws Exception {
     Trans trans = new Trans();
     TransListener mockListener = mock( TransListener.class );
     doThrow( KettleException.class ).when( mockListener ).transFinished( trans );

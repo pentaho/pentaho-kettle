@@ -19,7 +19,7 @@
 
   <properties>
     <!-- Test running configuration -->
-    <maven-surefire-plugin.reuseForks>false</maven-surefire-plugin.reuseForks>
+    <maven-surefire-plugin.reuseForks>true</maven-surefire-plugin.reuseForks>
 
     <!-- Third-party dependencies -->
     <slf4j-api.version>1.7.7</slf4j-api.version>
@@ -543,6 +543,12 @@
             <goals>
               <goal>test-jar</goal>
             </goals>
+            <configuration>
+              <includes>
+                <include>org/pentaho/di/junit/**</include>
+                <include>org/pentaho/di/concurrency/**</include>
+              </includes>
+            </configuration>
           </execution>
         </executions>
       </plugin>

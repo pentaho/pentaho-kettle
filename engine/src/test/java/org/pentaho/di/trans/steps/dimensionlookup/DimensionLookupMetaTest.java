@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -40,8 +40,11 @@ import java.util.Random;
 import java.util.UUID;
 
 import org.apache.commons.lang.StringUtils;
+import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.ClassRule;
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.pentaho.di.core.KettleEnvironment;
@@ -54,12 +57,12 @@ import org.pentaho.di.core.logging.KettleLogStore;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.logging.LogChannelInterfaceFactory;
 import org.pentaho.di.core.logging.LoggingObjectInterface;
-import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.i18n.BaseMessages;
+import org.pentaho.di.junit.rules.RestorePDIEngineEnvironment;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.StepMeta;
@@ -74,17 +77,20 @@ import org.pentaho.di.trans.steps.loadsave.validator.NonZeroIntLoadSaveValidator
 import org.pentaho.di.trans.steps.loadsave.validator.PrimitiveIntArrayLoadSaveValidator;
 import org.pentaho.di.trans.steps.loadsave.validator.StringLoadSaveValidator;
 import org.pentaho.metastore.api.IMetaStore;
-import org.pentaho.di.trans.steps.mock.StepMockHelper;
 
 public class DimensionLookupMetaTest implements InitializerInterface<StepMetaInterface> {
   LoadSaveTester loadSaveTester;
   Class<DimensionLookupMeta> testMetaClass = DimensionLookupMeta.class;
   private ThreadLocal<DimensionLookupMeta> holdTestingMeta = new ThreadLocal<DimensionLookupMeta>();
+  @ClassRule public static RestorePDIEngineEnvironment env = new RestorePDIEngineEnvironment();
+
+  @BeforeClass
+  public static void setupClass() throws KettleException {
+    KettleEnvironment.init();
+  }
 
   @Before
   public void setUpLoadSave() throws Exception {
-    KettleEnvironment.init();
-    PluginRegistry.init( true );
     List<String> attributes =
         Arrays.asList( "schemaName", "tableName", "update", "dateField", "dateFrom", "dateTo", "keyField", "keyRename",
             "autoIncrement", "versionField", "commitSize", "useBatchUpdate", "minYear", "maxYear", "techKeyCreation",
@@ -190,8 +196,6 @@ public class DimensionLookupMetaTest implements InitializerInterface<StepMetaInt
 
   @Test
   public void testUseDefaultSchemaName() throws Exception {
-    KettleEnvironment.init();
-
     String schemaName = "";
     String tableName = "tableName";
     String schemaTable = "default.tableName";
@@ -327,9 +331,6 @@ public class DimensionLookupMetaTest implements InitializerInterface<StepMetaInt
 
   @Test
   public void testPDI16559() throws Exception {
-    StepMockHelper<DimensionLookupMeta, DimensionLookupData> mockHelper =
-            new StepMockHelper<DimensionLookupMeta, DimensionLookupData>( "dimensionLookup", DimensionLookupMeta.class, DimensionLookupData.class );
-
     DimensionLookupMeta dimensionLookup = new DimensionLookupMeta();
     dimensionLookup.setKeyStream( new String[] { "test_field" } );
     dimensionLookup.setKeyLookup( new String[] {} );

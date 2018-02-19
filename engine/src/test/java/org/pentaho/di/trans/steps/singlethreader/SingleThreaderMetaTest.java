@@ -28,10 +28,12 @@ import java.util.List;
 import java.util.Map;
 
 import org.junit.Before;
+import org.junit.ClassRule;
 import org.junit.Test;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.plugins.PluginRegistry;
+import org.pentaho.di.junit.rules.RestorePDIEngineEnvironment;
 import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.di.trans.steps.loadsave.LoadSaveTester;
 import org.pentaho.di.trans.steps.loadsave.initializer.InitializerInterface;
@@ -44,11 +46,12 @@ import org.pentaho.di.trans.steps.loadsave.validator.StringLoadSaveValidator;
 public class SingleThreaderMetaTest implements InitializerInterface<StepMetaInterface> {
   LoadSaveTester loadSaveTester;
   Class<SingleThreaderMeta> testMetaClass = SingleThreaderMeta.class;
+  @ClassRule public static RestorePDIEngineEnvironment env = new RestorePDIEngineEnvironment();
 
   @Before
   public void setUpLoadSave() throws Exception {
     KettleEnvironment.init();
-    PluginRegistry.init( true );
+    PluginRegistry.init( false );
     List<String> attributes =
         Arrays.asList( "transName", "fileName", "directoryPath", "batchSize", "batchTime", "injectStep", "retrieveStep",
             "passingAllParameters", "specificationMethod", "transObjectId", "parameters", "parameterValues" );

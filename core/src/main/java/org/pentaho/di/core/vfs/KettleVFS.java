@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -510,6 +510,18 @@ public class KettleVFS {
       ( (ConcurrentFileSystemManager) getInstance().getFileSystemManager() )
         .closeEmbeddedFileSystem( embeddedMetastoreKey );
     }
+  }
+
+  public void reset() {
+    defaultVariableSpace = new Variables();
+    defaultVariableSpace.initializeVariablesFrom( null );
+    fsm.close();
+    try {
+      fsm.setFilesCache( new WeakRefFilesCache() );
+      fsm.init();
+    } catch ( FileSystemException ignored ) {
+    }
+
   }
 
   public enum Suffix {

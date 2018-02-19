@@ -25,12 +25,15 @@ package org.pentaho.di.trans.steps.jsoninput;
 import static org.junit.Assert.assertEquals;
 
 import org.junit.Before;
+import org.junit.ClassRule;
 import org.junit.Test;
 import org.pentaho.di.core.injection.BaseMetadataInjectionTest;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.row.value.ValueMetaString;
+import org.pentaho.di.junit.rules.RestorePDIEngineEnvironment;
 
 public class JsonInputMetaInjectionTest extends BaseMetadataInjectionTest<JsonInputMeta> {
+  @ClassRule public static RestorePDIEngineEnvironment env = new RestorePDIEngineEnvironment();
   @Before
   public void setup() {
     setup( new JsonInputMeta() );

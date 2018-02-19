@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -34,10 +34,12 @@ import org.apache.commons.lang.SystemUtils;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.ClassRule;
 import org.junit.Test;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.plugins.PluginRegistry;
+import org.pentaho.di.junit.rules.RestorePDIEngineEnvironment;
 import org.pentaho.di.trans.steps.loadsave.LoadSaveTester;
 import org.pentaho.di.trans.steps.loadsave.validator.ArrayLoadSaveValidator;
 import org.pentaho.di.trans.steps.loadsave.validator.FieldLoadSaveValidator;
@@ -49,11 +51,11 @@ import org.pentaho.di.trans.steps.mock.StepMockHelper;
 public class ExcelInputMetaTest {
   LoadSaveTester loadSaveTester;
   ExcelInputMeta meta;
+  @ClassRule public static RestorePDIEngineEnvironment env = new RestorePDIEngineEnvironment();
 
   @Before
   public void setUp() throws Exception {
     KettleEnvironment.init();
-    PluginRegistry.init( true );
 
     meta = new ExcelInputMeta();
     meta.setFileName( new String[] { "1", "2", "3" } );
@@ -410,9 +412,6 @@ public class ExcelInputMetaTest {
 
   @Test
   public void testPDI16559() throws Exception {
-    StepMockHelper<ExcelInputMeta, ExcelInputData> mockHelper =
-            new StepMockHelper<ExcelInputMeta, ExcelInputData>( "excelInput", ExcelInputMeta.class, ExcelInputData.class );
-
     ExcelInputMeta excelInput = new ExcelInputMeta();
     excelInput.setFileName( new String[] { "file1", "file2", "file3", "file4", "file5" } );
     excelInput.setFileMask( new String[] { "mask1", "mask2", "mask3", "mask4" } );

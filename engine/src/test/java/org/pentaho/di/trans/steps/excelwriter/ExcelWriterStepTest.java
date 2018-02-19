@@ -25,6 +25,7 @@ package org.pentaho.di.trans.steps.excelwriter;
 import com.google.common.io.Files;
 import org.apache.commons.vfs2.FileObject;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.pentaho.di.core.exception.KettleException;
@@ -77,6 +78,11 @@ public class ExcelWriterStepTest {
     stepMeta = new ExcelWriterStepMeta();
     metaMock = mock( ExcelWriterStepMeta.class );
     dataMock = mock( ExcelWriterStepData.class );
+  }
+
+  @After
+  public void cleanUp() {
+    mockHelper.cleanUp();
   }
 
   @Test
