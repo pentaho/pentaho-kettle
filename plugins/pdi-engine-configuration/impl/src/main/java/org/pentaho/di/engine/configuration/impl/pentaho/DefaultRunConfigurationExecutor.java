@@ -3,7 +3,7 @@
  *
  *  Pentaho Data Integration
  *
- *  Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
+ *  Copyright (C) 2002-2018 by Pentaho : http://www.pentaho.com
  *
  *  *******************************************************************************
  *  Licensed under the Apache License, Version 2.0 (the "License"); you may not use
@@ -27,8 +27,6 @@ package org.pentaho.di.engine.configuration.impl.pentaho;
 import org.pentaho.di.base.AbstractMeta;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.logging.LogChannel;
-import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.engine.configuration.api.RunConfiguration;
 import org.pentaho.di.engine.configuration.api.RunConfigurationExecutor;
@@ -63,8 +61,8 @@ public class DefaultRunConfigurationExecutor implements RunConfigurationExecutor
             runConfiguration.getName(), "{0}", defaultRunConfiguration.getServer() ) );
       }
     }
+    configuration.setPassingExport( defaultRunConfiguration.isSendResources() );
     if ( defaultRunConfiguration.isClustered() ) {
-      configuration.setPassingExport( defaultRunConfiguration.isSendResources() );
       configuration.setClusterShowingTransformation( defaultRunConfiguration.isShowTransformations() );
       configuration.setClusterPosting( defaultRunConfiguration.isClustered() );
       configuration.setClusterPreparing( defaultRunConfiguration.isClustered() );
