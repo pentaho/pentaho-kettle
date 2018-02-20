@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -39,6 +39,7 @@ import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.logging.LoggingObjectInterface;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.i18n.BaseMessages;
@@ -50,6 +51,9 @@ import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
 import org.postgresql.copy.PGCopyOutputStream;
+
+import com.google.common.annotations.VisibleForTesting;
+
 import org.postgresql.PGConnection;
 
 /**
@@ -133,10 +137,8 @@ public class PGBulkLoader extends BaseStep implements StepInterface {
   }
 
   private void do_copy( PGBulkLoaderMeta meta, boolean wait ) throws KettleException {
-    Runtime rt = Runtime.getRuntime();
-
-    data.db = new Database( this, meta.getDatabaseMeta() );
-    String copyCmd = getCopyCommand( );
+    data.db = getDatabase( this, meta );
+    String copyCmd = getCopyCommand();
     try {
       connect();
 
@@ -148,6 +150,19 @@ public class PGBulkLoader extends BaseStep implements StepInterface {
     } catch ( Exception ex ) {
       throw new KettleException( "Error while preparing the COPY " + copyCmd, ex );
     }
+  }
+
+  @VisibleForTesting
+  Database getDatabase( LoggingObjectInterface parentObject, PGBulkLoaderMeta pgBulkLoaderMeta ) {
+    DatabaseMeta dbMeta = pgBulkLoaderMeta.getDatabaseMeta();
+    // If dbNameOverride is present, clone the origin db meta and override the DB name
+    String dbNameOverride = environmentSubstitute( pgBulkLoaderMeta.getDbNameOverride() );
+    if ( !Utils.isEmpty( dbNameOverride ) ) {
+      dbMeta = (DatabaseMeta) pgBulkLoaderMeta.getDatabaseMeta().clone();
+      dbMeta.setDBName( dbNameOverride.trim() );
+      logDebug( "DB name overridden to the value: " + dbNameOverride );
+    }
+    return new Database( parentObject, dbMeta );
   }
 
   void connect() throws KettleException {
