@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -918,8 +918,7 @@ public class BaseStepMeta implements Cloneable, StepAttributesInterface {
    *           the kettle exception
    */
   protected void loadStepAttributes() throws KettleException {
-    try {
-      InputStream inputStream = getClass().getResourceAsStream( STEP_ATTRIBUTES_FILE );
+    try ( InputStream inputStream = getClass().getResourceAsStream( STEP_ATTRIBUTES_FILE ) ) {
       if ( inputStream != null ) {
         Document document = XMLHandler.loadXMLFile( inputStream );
         Node attrsNode = XMLHandler.getSubNode( document, "attributes" );
@@ -934,9 +933,7 @@ public class BaseStepMeta implements Cloneable, StepAttributesInterface {
           int valueType = ValueMetaFactory.getIdForValueMeta( XMLHandler.getTagValue( node, "valuetype" ) );
           String parentId = XMLHandler.getTagValue( node, "parentid" );
 
-          KettleAttribute attribute =
-            new KettleAttribute( key, xmlCode, repCode, description, tooltip, valueType, findParent(
-              attributes, parentId ) );
+          KettleAttribute attribute = new KettleAttribute( key, xmlCode, repCode, description, tooltip, valueType, findParent( attributes, parentId ) );
           attributes.add( attribute );
         }
       }
