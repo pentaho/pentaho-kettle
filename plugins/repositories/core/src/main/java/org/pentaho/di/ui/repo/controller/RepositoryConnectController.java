@@ -52,6 +52,7 @@ import org.pentaho.di.repository.ReconnectableRepository;
 import org.pentaho.di.repository.RepositoriesMeta;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryMeta;
+import org.pentaho.di.trans.Trans;
 import org.pentaho.di.ui.core.PropsUI;
 import org.pentaho.di.ui.core.database.dialog.DatabaseDialog;
 import org.pentaho.di.ui.repo.IConnectedRepositoryInstance;
@@ -395,7 +396,7 @@ public class RepositoryConnectController implements IConnectedRepositoryInstance
     Future<KettleException> future = executorService.submit( () -> {
       ClassLoader currentClassLoader = Thread.currentThread().getContextClassLoader();
       try {
-        Thread.currentThread().setContextClassLoader( Spoon.class.getClassLoader() );
+        Thread.currentThread().setContextClassLoader( Trans.class.getClassLoader() );
         repository.connect( username, password );
       } catch ( KettleException e ) {
         return e;
@@ -420,7 +421,7 @@ public class RepositoryConnectController implements IConnectedRepositoryInstance
     Future<Boolean> future = executorService.submit( () -> {
       ClassLoader currentClassLoader = Thread.currentThread().getContextClassLoader();
       try {
-        Thread.currentThread().setContextClassLoader( Spoon.class.getClassLoader() );
+        Thread.currentThread().setContextClassLoader( Trans.class.getClassLoader() );
         return ( (AbstractRepository) repository ).test();
       } finally {
         Thread.currentThread().setContextClassLoader( currentClassLoader );
@@ -438,6 +439,8 @@ public class RepositoryConnectController implements IConnectedRepositoryInstance
     RepositoryMeta repositoryMeta = repositoriesMeta.findRepository( name );
     int index = repositoriesMeta.indexOfRepository( repositoryMeta );
     if ( index != -1 ) {
+      repositoriesMeta.removeRepository( index );
+      save();
       Spoon spoon = spoonSupplier.get();
       Runnable execute = () -> {
         if ( spoon.getRepositoryName() != null && spoon.getRepositoryName().equals( repositoryMeta.getName() ) ) {
@@ -451,8 +454,6 @@ public class RepositoryConnectController implements IConnectedRepositoryInstance
       } else {
         execute.run();
       }
-      repositoriesMeta.removeRepository( index );
-      save();
     }
     return true;
   }

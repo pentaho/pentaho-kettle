@@ -23,6 +23,9 @@
     <angular-translate.version>2.12.1</angular-translate.version>
     <angular-ui-router.version>0.4.2</angular-ui-router.version>
     <jquery.version>2.2.1</jquery.version>
+    <requirejs-text.version>2.0.10</requirejs-text.version>
+    <require-css.version>0.1.8</require-css.version>
+    <dojo.version>1.9.2</dojo.version>
     <angular-i18n.version>${angular.version}</angular-i18n.version>
     <karaf-maven-plugin.version>3.0.3</karaf-maven-plugin.version>
   </properties>

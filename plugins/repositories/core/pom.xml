@@ -17,11 +17,6 @@
 
   <properties>
     <pdi.version>8.1.0.0-SNAPSHOT</pdi.version>
-    <fasterxml.jackson.version>2.5.4</fasterxml.jackson.version>
-    <javax.ws.rs-api.version>2.0</javax.ws.rs-api.version>
-    <pentaho-kettle.version>8.1-SNAPSHOT</pentaho-kettle.version>
-    <guava.version>17.0</guava.version>
-    <jackson-mapper-asl.version>1.9.2</jackson-mapper-asl.version>
     <fasterxml.jackson.version>2.9.2</fasterxml.jackson.version>
     <javax.ws.rs-api.version>2.0</javax.ws.rs-api.version>
     <mockito-all.version>1.9.5</mockito-all.version>
@@ -40,17 +35,17 @@
     <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>
       <artifactId>jackson-core</artifactId>
-      <version>${fasterxml.jackson.core.version}</version>
+      <version>${fasterxml.jackson.version}</version>
     </dependency>
     <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>
       <artifactId>jackson-annotations</artifactId>
-      <version>${fasterxml.jackson.core.version}</version>
+      <version>${fasterxml.jackson.version}</version>
     </dependency>
     <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>
       <artifactId>jackson-databind</artifactId>
-      <version>${fasterxml.jackson.core.version}</version>
+      <version>${fasterxml.jackson.version}</version>
     </dependency>
     <dependency>
       <groupId>com.fasterxml.jackson.jaxrs</groupId>
@@ -60,6 +55,11 @@
     <dependency>
       <groupId>com.fasterxml.jackson.jaxrs</groupId>
       <artifactId>jackson-jaxrs-base</artifactId>
+      <version>${fasterxml.jackson.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.fasterxml.jackson.module</groupId>
+      <artifactId>jackson-module-jaxb-annotations</artifactId>
       <version>${fasterxml.jackson.version}</version>
     </dependency>
     <dependency>

@@ -15,9 +15,11 @@
       // overrides just for this app
       require.config({
         paths: {
-          "angular-i18n": "/angular-i18n/${angular-i18n.version}"
-        },
-        shim: {
+          "pentaho": "${project.artifactId}/${project.version}/pentaho",
+          "angular-i18n": "/angular-i18n/${angular-i18n.version}",
+          "css": "/require-css/${require-css.version}/css",
+          "text": "/requirejs-text/${requirejs-text.version}/text",
+          "dojo": "/dojo/${dojo.version}"
         }
       });
 
