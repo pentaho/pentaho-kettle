@@ -64,7 +64,7 @@
           command="spoon.paste()" />
         <menuseparator />
         <menuitem id="trans-copy-image" acceltext="CTRL-ALT-I" accesskey="ctrl-alt-i"
-          label="${Spoon.Menu.Transformation.CopyTransformationImageClipboard}" command="spoon.copyTransformationImage()" />   
+          label="${Spoon.Menu.Transformation.CopyTransformationImageClipboard}" command="spoon.copyToImage()" />   
         <menuseparator />
         <menuitem id="edit-clear-selection" acceltext="ESC" accesskey="esc" label="${Spoon.Menu.Edit.ClearSelection}"
           command="spoon.editUnselectAll()" />
