@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2017-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,13 +22,24 @@
 package org.pentaho.di.ui.spoon.delegates;
 
 
+import org.eclipse.swt.widgets.Shell;
 import org.junit.Before;
 import org.junit.Test;
+import org.pentaho.di.core.RowMetaAndData;
+import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.JobLogTable;
+import org.pentaho.di.core.logging.LogLevel;
+import org.pentaho.di.core.row.RowMetaInterface;
+import org.pentaho.di.job.JobExecutionConfiguration;
 import org.pentaho.di.job.JobMeta;
+import org.pentaho.di.ui.job.dialog.JobExecutionConfigurationDialog;
 import org.pentaho.di.ui.spoon.Spoon;
+import org.pentaho.di.ui.spoon.job.JobGraph;
+import org.pentaho.di.ui.spoon.job.JobLogDelegate;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -36,8 +47,28 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.doCallRealMethod;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 
 public class SpoonJobDelegateTest {
+  private static final String[] EMPTY_STRING_ARRAY = new String[]{};
+  private static final String TEST_VARIABLE_KEY = "variableKey";
+  private static final String TEST_VARIABLE_VALUE = "variableValue";
+  private static final Map<String, String> MAP_WITH_TEST_VARIABLE = new HashMap<String, String>() {
+    {
+      put( TEST_VARIABLE_KEY, TEST_VARIABLE_VALUE );
+    }
+  };
+  private static final String TEST_PARAM_KEY = "paramKey";
+  private static final String TEST_PARAM_VALUE = "paramValue";
+  private static final Map<String, String> MAP_WITH_TEST_PARAM = new HashMap<String, String>() {
+    {
+      put( TEST_PARAM_KEY, TEST_PARAM_VALUE );
+    }
+  };
+  private static final LogLevel TEST_LOG_LEVEL = LogLevel.BASIC;
+  private static final String TEST_START_COPY_NAME = "startCopyName";
+  private static final boolean TEST_BOOLEAN_PARAM = true;
+
   private SpoonJobDelegate delegate;
   private Spoon spoon;
   private JobLogTable jobLogTable;
@@ -53,6 +84,8 @@ public class SpoonJobDelegateTest {
     spoon = mock( Spoon.class );
     spoon.delegates = mock( SpoonDelegates.class );
     spoon.delegates.tabs = mock( SpoonTabsDelegate.class );
+    spoon.variables = mock( RowMetaAndData.class );
+    delegate.spoon = spoon;
 
     doReturn( jobMap ).when( delegate ).getJobList();
     doReturn( spoon ).when( delegate ).getSpoon();
@@ -67,5 +100,47 @@ public class SpoonJobDelegateTest {
     assertFalse( delegate.addJob( jobMeta ) );
     delegate.closeJob( jobMeta );
     assertTrue( delegate.addJob( jobMeta ) );
+  }
+
+  @Test
+  @SuppressWarnings( "ResultOfMethodCallIgnored" )
+  public void testSetParamsIntoMetaInExecuteJob() throws KettleException {
+    doCallRealMethod().when( delegate ).executeJob( jobMeta, true, false, null, false,
+        null, 0 );
+
+    JobExecutionConfiguration jobExecutionConfiguration = mock( JobExecutionConfiguration.class );
+    RowMetaInterface rowMeta = mock( RowMetaInterface.class );
+    Shell shell = mock( Shell.class );
+    JobExecutionConfigurationDialog jobExecutionConfigurationDialog = mock( JobExecutionConfigurationDialog.class );
+    JobGraph activeJobGraph = mock( JobGraph.class );
+    activeJobGraph.jobLogDelegate = mock( JobLogDelegate.class );
+
+
+    doReturn( jobExecutionConfiguration ).when( spoon ).getJobExecutionConfiguration();
+    doReturn( rowMeta ).when( spoon.variables ).getRowMeta();
+    doReturn( EMPTY_STRING_ARRAY ).when( rowMeta ).getFieldNames();
+    doReturn( shell ).when( spoon ).getShell();
+    doReturn( jobExecutionConfigurationDialog ).when( delegate ).newJobExecutionConfigurationDialog( shell,
+        jobExecutionConfiguration, jobMeta );
+    doReturn( activeJobGraph ).when( spoon ).getActiveJobGraph();
+    doReturn( MAP_WITH_TEST_VARIABLE ).when( jobExecutionConfiguration ).getVariables();
+    doReturn( MAP_WITH_TEST_PARAM ).when( jobExecutionConfiguration ).getParams();
+    doReturn( TEST_LOG_LEVEL ).when( jobExecutionConfiguration ).getLogLevel();
+    doReturn( TEST_START_COPY_NAME ).when( jobExecutionConfiguration ).getStartCopyName();
+    doReturn( TEST_BOOLEAN_PARAM ).when( jobExecutionConfiguration ).isClearingLog();
+    doReturn( TEST_BOOLEAN_PARAM ).when( jobExecutionConfiguration ).isSafeModeEnabled();
+    doReturn( TEST_BOOLEAN_PARAM ).when( jobExecutionConfiguration ).isExpandingRemoteJob();
+
+    delegate.executeJob( jobMeta, true, false, null, false,
+        null, 0 );
+
+    verify( jobMeta ).setVariable( TEST_VARIABLE_KEY, TEST_VARIABLE_VALUE );
+    verify( jobMeta ).setParameterValue( TEST_PARAM_KEY, TEST_PARAM_VALUE );
+    verify( jobMeta ).activateParameters();
+    verify( jobMeta ).setLogLevel( TEST_LOG_LEVEL );
+    verify( jobMeta ).setStartCopyName( TEST_START_COPY_NAME );
+    verify( jobMeta ).setClearingLog( TEST_BOOLEAN_PARAM );
+    verify( jobMeta ).setSafeModeEnabled( TEST_BOOLEAN_PARAM );
+    verify( jobMeta ).setExpandingRemoteJob( TEST_BOOLEAN_PARAM );
   }
 }

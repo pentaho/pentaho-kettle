@@ -147,6 +147,10 @@ public class JobMeta extends AbstractMeta
 
   protected List<LogTableInterface> extraLogTables;
 
+  protected String startCopyName;
+
+  protected boolean expandingRemoteJob;
+
   /** The log channel interface. */
   protected LogChannelInterface log;
 
@@ -2820,5 +2824,21 @@ public class JobMeta extends AbstractMeta
       namedClusterEmbedManager = new NamedClusterEmbedManager( this, LogChannel.GENERAL );
     }
     return namedClusterEmbedManager;
+  }
+
+  public String getStartCopyName() {
+    return startCopyName;
+  }
+
+  public void setStartCopyName( String startCopyName ) {
+    this.startCopyName = startCopyName;
+  }
+
+  public boolean isExpandingRemoteJob() {
+    return expandingRemoteJob;
+  }
+
+  public void setExpandingRemoteJob( boolean expandingRemoteJob ) {
+    this.expandingRemoteJob = expandingRemoteJob;
   }
 }

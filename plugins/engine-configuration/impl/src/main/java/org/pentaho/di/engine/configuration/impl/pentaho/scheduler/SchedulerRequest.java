@@ -1,26 +1,24 @@
-/*
- * *****************************************************************************
+/*! ******************************************************************************
  *
- *  Pentaho Data Integration
+ * Pentaho Data Integration
  *
- *  Copyright (C) 2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
- *  *******************************************************************************
- *  Licensed under the Apache License, Version 2.0 (the "License"); you may not use
- *  this file except in compliance with the License. You may obtain a copy of the
- *  License at
+ *******************************************************************************
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
  *
- *  Unless required by applicable law or agreed to in writing, software
- *  distributed under the License is distributed on an "AS IS" BASIS,
- *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *  See the License for the specific language governing permissions and
- *  limitations under the License.
+ *    http://www.apache.org/licenses/LICENSE-2.0
  *
- * *****************************************************************************
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  *
- */
+ ******************************************************************************/
 
 package org.pentaho.di.engine.configuration.impl.pentaho.scheduler;
 
@@ -29,7 +27,9 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.HttpClients;
 import org.pentaho.di.base.AbstractMeta;
+import org.pentaho.di.core.parameters.UnknownParamException;
 import org.pentaho.di.i18n.BaseMessages;
+import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.repository.Repository;
 
 import java.io.UnsupportedEncodingException;
@@ -108,11 +108,8 @@ public class SchedulerRequest {
   }
 
   public void submit( AbstractMeta meta ) {
-    String filename = getFullPath( meta );
     try {
-      httpPost.setEntity( new StringEntity( "<jobScheduleRequest>\n"
-        + "<inputFile>" + filename + "</inputFile>\n"
-        + "</jobScheduleRequest>" ) );
+      httpPost.setEntity( buildSchedulerRequestEntity( meta ) );
       httpclient.execute( httpPost );
       logMessage();
     } catch ( Exception e ) {
@@ -128,6 +125,81 @@ public class SchedulerRequest {
 
   private String getFullPath( AbstractMeta meta ) {
     return meta.getRepositoryDirectory().getPath() + "/" + meta.getName() + "." + meta.getDefaultExtension();
+  }
+
+  StringEntity buildSchedulerRequestEntity( AbstractMeta meta )
+          throws UnsupportedEncodingException, UnknownParamException {
+    String filename = getFullPath( meta );
+
+    StringBuilder sb = new StringBuilder();
+    sb.append( "<jobScheduleRequest>\n" );
+    sb.append( "<inputFile>" ).append( filename ).append( "</inputFile>\n" );
+
+    // Set the log level
+    if ( meta.getLogLevel() != null ) {
+      sb.append( "<jobParameters>\n" );
+      sb.append( "<name>" ).append( "logLevel" ).append( "</name>\n" );
+      sb.append( "<type>" ).append( "string" ).append( "</type>\n" );
+      sb.append( "<stringValue>" ).append( meta.getLogLevel().getCode() ).append( "</stringValue>\n" );
+      sb.append( "</jobParameters>\n" );
+    }
+
+    // Set the clearing log param
+    sb.append( "<jobParameters>\n" );
+    sb.append( "<name>" ).append( "clearLog" ).append( "</name>\n" );
+    sb.append( "<type>" ).append( "string" ).append( "</type>\n" );
+    sb.append( "<stringValue>" ).append( meta.isClearingLog() ).append( "</stringValue>\n" );
+    sb.append( "</jobParameters>\n" );
+
+    // Set the safe mode enabled param
+    sb.append( "<jobParameters>\n" );
+    sb.append( "<name>" ).append( "runSafeMode" ).append( "</name>\n" );
+    sb.append( "<type>" ).append( "string" ).append( "</type>\n" );
+    sb.append( "<stringValue>" ).append( meta.isSafeModeEnabled() ).append( "</stringValue>\n" );
+    sb.append( "</jobParameters>\n" );
+
+    // Set the gathering metrics param
+    sb.append( "<jobParameters>\n" );
+    sb.append( "<name>" ).append( "gatheringMetrics" ).append( "</name>\n" );
+    sb.append( "<type>" ).append( "string" ).append( "</type>\n" );
+    sb.append( "<stringValue>" ).append( meta.isGatheringMetrics() ).append( "</stringValue>\n" );
+    sb.append( "</jobParameters>\n" );
+
+    if ( meta instanceof JobMeta ) {
+      JobMeta jobMeta = (JobMeta) meta;
+
+      if ( jobMeta.getStartCopyName() != null ) {
+        // Set the start step name
+        sb.append( "<jobParameters>\n" );
+        sb.append( "<name>" ).append( "startCopyName" ).append( "</name>\n" );
+        sb.append( "<type>" ).append( "string" ).append( "</type>\n" );
+        sb.append( "<stringValue>" ).append( jobMeta.getStartCopyName() ).append( "</stringValue>\n" );
+        sb.append( "</jobParameters>\n" );
+      }
+
+      // Set the expanding remote job param
+      sb.append( "<jobParameters>\n" );
+      sb.append( "<name>" ).append( "expandingRemoteJob" ).append( "</name>\n" );
+      sb.append( "<type>" ).append( "string" ).append( "</type>\n" );
+      sb.append( "<stringValue>" ).append( jobMeta.isExpandingRemoteJob() ).append( "</stringValue>\n" );
+      sb.append( "</jobParameters>\n" );
+    }
+
+    // Set the PDI parameters
+    if ( meta.listParameters() != null ) {
+      sb.append( "<pdiParameters>\n" );
+      for ( String param : meta.listParameters() ) {
+        sb.append( "<entry>\n" );
+        sb.append( "<key>" ).append( param ).append( "</key>\n" );
+        sb.append( "<value>" ).append( meta.getParameterValue( param ) ).append( "</value>\n" );
+        sb.append( "</entry>\n" );
+      }
+      sb.append( "</pdiParameters>\n" );
+    }
+
+    sb.append( "</jobScheduleRequest>" );
+
+    return new StringEntity( sb.toString() );
   }
 
 }

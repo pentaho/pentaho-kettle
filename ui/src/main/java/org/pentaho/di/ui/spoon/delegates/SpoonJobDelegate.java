@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,6 +22,7 @@
 
 package org.pentaho.di.ui.spoon.delegates;
 
+import com.google.common.annotations.VisibleForTesting;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
@@ -29,6 +30,7 @@ import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.MessageBox;
+import org.eclipse.swt.widgets.Shell;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.NotePadMeta;
 import org.pentaho.di.core.ObjectLocationSpecificationMethod;
@@ -1336,13 +1338,46 @@ public class SpoonJobDelegate extends SpoonDelegate {
     executionConfiguration.getUsedArguments( jobMeta, spoon.getArguments(), spoon.getMetaStore() );
     executionConfiguration.setLogLevel( DefaultLogLevel.getLogLevel() );
 
-    JobExecutionConfigurationDialog dialog =
-      new JobExecutionConfigurationDialog( spoon.getShell(), executionConfiguration, jobMeta );
+    JobExecutionConfigurationDialog dialog = newJobExecutionConfigurationDialog( spoon.getShell(),
+            executionConfiguration, jobMeta );
 
     if ( !jobMeta.isShowDialog() || dialog.open() ) {
 
       JobGraph jobGraph = spoon.getActiveJobGraph();
       jobGraph.jobLogDelegate.addJobLog();
+
+      // Set the variables that where specified...
+      //
+      for ( String varName : executionConfiguration.getVariables().keySet() ) {
+        String varValue = executionConfiguration.getVariables().get( varName );
+        jobMeta.setVariable( varName, varValue );
+      }
+
+      // Set and activate the parameters...
+      //
+      for ( String paramName : executionConfiguration.getParams().keySet() ) {
+        String paramValue = executionConfiguration.getParams().get( paramName );
+        jobMeta.setParameterValue( paramName, paramValue );
+      }
+      jobMeta.activateParameters();
+
+      // Set the log level
+      //
+      if ( executionConfiguration.getLogLevel() != null ) {
+        jobMeta.setLogLevel( executionConfiguration.getLogLevel() );
+      }
+
+      // Set the start step name
+      //
+      if ( executionConfiguration.getStartCopyName() != null ) {
+        jobMeta.setStartCopyName( executionConfiguration.getStartCopyName() );
+      }
+
+      // Set the run options
+      //
+      jobMeta.setClearingLog( executionConfiguration.isClearingLog() );
+      jobMeta.setSafeModeEnabled( executionConfiguration.isSafeModeEnabled() );
+      jobMeta.setExpandingRemoteJob( executionConfiguration.isExpandingRemoteJob() );
 
       ExtensionPointHandler.callExtensionPoint( log, KettleExtensionPoint.SpoonJobMetaExecutionStart.id, jobMeta );
       ExtensionPointHandler.callExtensionPoint( log, KettleExtensionPoint.SpoonJobExecutionConfiguration.id,
@@ -1361,20 +1396,6 @@ public class SpoonJobDelegate extends SpoonDelegate {
         if ( jobMeta.hasChanged() ) {
           jobGraph.showSaveFileMessage();
         }
-      }
-
-      // Set the variables that where specified...
-      //
-      for ( String varName : executionConfiguration.getVariables().keySet() ) {
-        String varValue = executionConfiguration.getVariables().get( varName );
-        jobMeta.setVariable( varName, varValue );
-      }
-
-      // Set and activate the parameters...
-      //
-      for ( String paramName : executionConfiguration.getParams().keySet() ) {
-        String paramValue = executionConfiguration.getParams().get( paramName );
-        jobMeta.setParameterValue( paramName, paramValue );
       }
 
       // Is this a local execution?
@@ -1401,5 +1422,11 @@ public class SpoonJobDelegate extends SpoonDelegate {
         }
       }
     }
+  }
+
+  @VisibleForTesting
+  JobExecutionConfigurationDialog newJobExecutionConfigurationDialog( Shell shell,
+      JobExecutionConfiguration executionConfiguration, JobMeta jobMeta ) {
+    return new JobExecutionConfigurationDialog( spoon.getShell(), executionConfiguration, jobMeta );
   }
 }
