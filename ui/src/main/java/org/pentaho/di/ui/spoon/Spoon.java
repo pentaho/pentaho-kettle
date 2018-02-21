@@ -102,8 +102,6 @@ import org.eclipse.swt.events.TreeEvent;
 import org.eclipse.swt.graphics.Cursor;
 import org.eclipse.swt.graphics.DeviceData;
 import org.eclipse.swt.graphics.Image;
-import org.eclipse.swt.graphics.ImageData;
-import org.eclipse.swt.graphics.ImageLoader;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.FormAttachment;
@@ -6911,7 +6909,6 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
         disableMenuItem( doc, "file-save-as-vfs", disableTransMenu && disableJobMenu && disableMetaMenu );
         disableMenuItem( doc, "file-close", disableTransMenu && disableJobMenu && disableMetaMenu );
         disableMenuItem( doc, "file-print", disableTransMenu && disableJobMenu );
-        disableMenuItem( doc, "file-convert", disableTransMenu && disableJobMenu );
         disableMenuItem( doc, "file-export-to-xml", disableTransMenu && disableJobMenu );
         disableMenuItem( doc, "file-export-all-to-xml", disableTransMenu && disableJobMenu );
 
