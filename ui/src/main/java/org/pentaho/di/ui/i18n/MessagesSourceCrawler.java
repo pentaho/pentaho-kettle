@@ -349,6 +349,7 @@ public class MessagesSourceCrawler {
         if ( extraLine ) {
           line2 = reader.readLine();
           line += line2;
+          line = line.replaceAll( "BaseMessages.getString\\(\\s*PKG, ", "BaseMessages.getString( PKG," );
         }
       } while ( extraLine );
 
