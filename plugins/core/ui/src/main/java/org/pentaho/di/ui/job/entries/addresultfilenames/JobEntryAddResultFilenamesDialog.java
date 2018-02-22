@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -68,7 +68,7 @@ import org.pentaho.di.ui.trans.step.BaseStepDialog;
  */
 
 public class JobEntryAddResultFilenamesDialog extends JobEntryDialog implements JobEntryDialogInterface {
-  private static Class<?> PKG = JobEntryAddResultFilenames.class; // for i18n purposes, needed by Translator2!!
+  private static Class<?> PKG = JobEntryAddResultFilenamesDialog.class; // for i18n purposes, needed by Translator2!!
 
   private static final String[] FILETYPES = new String[] { BaseMessages.getString(
     PKG, "JobEntryAddResultFilenames.Filetype.All" ) };
