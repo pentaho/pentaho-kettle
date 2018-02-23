@@ -58,6 +58,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
@@ -85,7 +87,7 @@ public class SubtransExecutorTest {
 
   @Test
   public void testRunningZeroRowsIsEmptyOptional() throws Exception {
-    SubtransExecutor subtransExecutor = new SubtransExecutor( null, null, false, null, null );
+    SubtransExecutor subtransExecutor = new SubtransExecutor( "subtransname", null, null, false, null, null );
     Optional<Result> execute = subtransExecutor.execute( Collections.emptyList() );
     assertFalse( execute.isPresent() );
   }
@@ -97,9 +99,10 @@ public class SubtransExecutorTest {
     TransMeta subMeta =
       new TransMeta( this.getClass().getResource( "subtrans-executor-sub.ktr" ).getPath(), new Variables() );
     LoggingObjectInterface loggingObject = new LoggingObject( "anything" );
-    Trans parentTrans = new Trans( parentMeta, loggingObject );
+    Trans parentTrans = spy( new Trans( parentMeta, loggingObject ) );
     SubtransExecutor subtransExecutor =
-      new SubtransExecutor( parentTrans, subMeta, true, new TransExecutorData(), new TransExecutorParameters() );
+      new SubtransExecutor( "subtransname", parentTrans, subMeta, true, new TransExecutorData(),
+        new TransExecutorParameters() );
     RowMetaInterface rowMeta = parentMeta.getStepFields( "Data Grid" );
     List<RowMetaAndData> rows = Arrays.asList(
       new RowMetaAndData( rowMeta, "Pentaho", 1L ),
@@ -135,6 +138,8 @@ public class SubtransExecutorTest {
     for ( Map.Entry<String, StepStatus> entry : statuses.entrySet() ) {
       verify( entry.getValue() ).updateAll( any() );
     }
+
+    verify( parentTrans, atLeastOnce() ).addActiveSubTransformation( eq( "subtransname" ), any( Trans.class ) );
   }
 
   @Test
@@ -146,7 +151,8 @@ public class SubtransExecutorTest {
     LoggingObjectInterface loggingObject = new LoggingObject( "anything" );
     Trans parentTrans = new Trans( parentMeta, loggingObject );
     SubtransExecutor subtransExecutor =
-      new SubtransExecutor( parentTrans, subMeta, true, new TransExecutorData(), new TransExecutorParameters() );
+      new SubtransExecutor( "subtransname", parentTrans, subMeta, true, new TransExecutorData(),
+        new TransExecutorParameters() );
     subtransExecutor.running = Mockito.spy( subtransExecutor.running );
     RowMetaInterface rowMeta = parentMeta.getStepFields( "Data Grid" );
     List<RowMetaAndData> rows = Arrays.asList(
@@ -170,7 +176,8 @@ public class SubtransExecutorTest {
     LoggingObjectInterface loggingObject = new LoggingObject( "anything" );
     Trans parentTrans = new Trans( parentMeta, loggingObject );
     SubtransExecutor subtransExecutor =
-      new SubtransExecutor( parentTrans, subMeta, true, new TransExecutorData(), new TransExecutorParameters() );
+      new SubtransExecutor( "subtransname", parentTrans, subMeta, true, new TransExecutorData(),
+        new TransExecutorParameters() );
     RowMetaInterface rowMeta = parentMeta.getStepFields( "Data Grid" );
     List<RowMetaAndData> rows = Arrays.asList(
       new RowMetaAndData( rowMeta, "Pentaho", 1L ),

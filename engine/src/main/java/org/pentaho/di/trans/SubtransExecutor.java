@@ -47,6 +47,7 @@ import java.util.Set;
 public class SubtransExecutor {
   private static final Class<?> PKG = SubtransExecutor.class;
   private final Map<String, StepStatus> statuses;
+  private final String subTransName;
   private Trans parentTrans;
   private TransMeta subtransMeta;
   private boolean shareVariables;
@@ -54,8 +55,9 @@ public class SubtransExecutor {
   private boolean stopped;
   Set<Trans> running;
 
-  public SubtransExecutor( Trans parentTrans, TransMeta subtransMeta, boolean shareVariables,
+  public SubtransExecutor( String subTransName, Trans parentTrans, TransMeta subtransMeta, boolean shareVariables,
                            TransExecutorData transExecutorData, TransExecutorParameters parameters ) {
+    this.subTransName = subTransName;
     this.parentTrans = parentTrans;
     this.subtransMeta = subtransMeta;
     this.shareVariables = shareVariables;
@@ -71,6 +73,7 @@ public class SubtransExecutor {
 
     Trans subtrans = this.createSubtrans();
     running.add( subtrans );
+    parentTrans.addActiveSubTransformation( subTransName, subtrans );
 
     // Pass parameter values
     passParametersToTrans( subtrans, rows.get( 0 ) );
