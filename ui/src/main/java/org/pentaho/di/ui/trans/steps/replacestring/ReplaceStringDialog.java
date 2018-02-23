@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -21,12 +21,6 @@
  ******************************************************************************/
 
 package org.pentaho.di.ui.trans.steps.replacestring;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
@@ -47,10 +41,10 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStepMeta;
@@ -62,6 +56,12 @@ import org.pentaho.di.ui.core.widget.ColumnInfo;
 import org.pentaho.di.ui.core.widget.TableView;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 import org.pentaho.di.ui.trans.step.TableItemInsertListener;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Search and replace in string.
@@ -187,8 +187,7 @@ public class ReplaceStringDialog extends BaseStepDialog implements StepDialogInt
         ColumnInfo.COLUMN_TYPE_CCOMBO, ReplaceStringMeta.caseSensitiveDesc );
     ciKey[9] =
       new ColumnInfo(
-        "Is Unicode",
-        //BaseMessages.getString( PKG, "ReplaceStringDialog.ColumnInfo.CaseSensitive" ),
+        BaseMessages.getString( PKG, "ReplaceStringDialog.ColumnInfo.IsUnicode" ),
         ColumnInfo.COLUMN_TYPE_CCOMBO, ReplaceStringMeta.isUnicodeDesc );
 
     ciKey[1].setToolTip( BaseMessages.getString( PKG, "ReplaceStringDialog.ColumnInfo.OutStreamField.Tooltip" ) );
