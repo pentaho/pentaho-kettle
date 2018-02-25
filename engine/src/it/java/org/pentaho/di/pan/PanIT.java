@@ -157,6 +157,37 @@ public class PanIT {
   }
 
   @Test
+  public void testFileTransExpectedExecutionWithSuccess() throws Exception {
+
+    for ( String testKTR : KTRS_EXPECTED_COMPLETE_WITH_SUCCESS ) {
+
+      String testKTRPath = EXPECTED_COMPLETE_WITH_SUCCESS_PATH + File.separator + testKTR;
+      String testKTRFilePath = this.getClass().getResource( testKTRPath ).getFile();
+      String logFilePath = testKTRFilePath.replace( ".ktr" , "." + System.currentTimeMillis() ) + ".log";
+
+      try {
+
+        Pan.main( new String[]{ "/file:" + testKTRFilePath, "/level:Basic", "/logfile:" + logFilePath } );
+
+      } catch ( SecurityException e ) {
+        // All OK / expected: SecurityException is purposely thrown when Pan triggers System.exitJVM()
+
+        // get log file contents
+        String logFileContent = new String( Files.readAllBytes( Paths.get( logFilePath ) ) );
+
+        // use FINISHED_PROCESSING_ERROR_COUNT_REGEX to get execution error count
+        int errorCount = parseErrorCount( logFileContent );
+
+        assertTrue( !logFileContent.contains( FAILED_TO_INITIALIZE_ERROR_PATTERN ) &&  errorCount == 0 );
+
+      } finally {
+        // sanitize
+        new File( logFilePath ).deleteOnExit();
+      }
+    }
+  }
+
+  @Test
   public void testFileTransWithParams() throws Exception {
 
     String param1Name = "p1";
