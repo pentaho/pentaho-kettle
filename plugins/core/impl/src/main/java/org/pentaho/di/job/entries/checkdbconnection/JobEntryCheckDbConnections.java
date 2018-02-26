@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -27,6 +27,7 @@ import org.pentaho.di.job.entry.validator.JobEntryValidatorUtils;
 
 import java.util.List;
 
+import org.pentaho.di.core.annotations.JobEntry;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
@@ -57,7 +58,13 @@ import org.w3c.dom.Node;
  * @since 10-12-2007
  *
  */
-
+@JobEntry( id = "CHECK_DB_CONNECTIONS",
+  i18nPackageName = "org.pentaho.di.job.entries.checkdbconnection",
+  image = "CDBC.svg",
+  name = "JobEntryCheckDbConnections.Name",
+  description = "JobEntryCheckDbConnections.TypeDesc",
+  categoryDescription = "JobEntryCheckDbConnections.Category",
+  documentationUrl = "http://wiki.pentaho.com/display/EAI/Check+Db+connections" )
 public class JobEntryCheckDbConnections extends JobEntryBase implements Cloneable, JobEntryInterface {
   private static Class<?> PKG = JobEntryCheckDbConnections.class; // for i18n purposes, needed by Translator2!!
 
