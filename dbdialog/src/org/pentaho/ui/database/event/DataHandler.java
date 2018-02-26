@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -1098,7 +1098,7 @@ public class DataHandler extends AbstractXulEventHandler {
 
     }
     // Have at least 5 option rows, with at least one blank
-    int numToAdd = 5;
+    int numToAdd = 15;
     int numSet = optionsParameterTree.getRootChildren().getItemCount();
     if ( numSet < numToAdd ) {
       numToAdd -= numSet;
