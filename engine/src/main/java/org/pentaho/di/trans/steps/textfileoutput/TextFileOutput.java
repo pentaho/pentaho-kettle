@@ -128,11 +128,12 @@ public class TextFileOutput extends BaseStep implements StepInterface {
     TextFileOutputData.FileStreamsValue fileStreams;
 
     try {
-      boolean fileExists = isFileExists( filename );
+      fileStreams = data.fileWriterMap.get( filename );
+
+      boolean fileExists = fileStreams != null || isFileExists( filename );
       boolean createParentDirIfNotExists = meta.isCreateParentFolder();
       boolean appendToExistingFile = meta.isFileAppended();
 
-      fileStreams = data.fileWriterMap.get( filename );
 
 
       if ( fileStreams == null ) { // Opening file for first time
