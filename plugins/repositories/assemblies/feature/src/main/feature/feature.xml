@@ -11,6 +11,10 @@
     <bundle>pentaho-webjars:mvn:org.webjars.bower/angular-translate/${angular-translate.version}</bundle>
     <bundle>pentaho-webjars:mvn:org.webjars.bower/angular-animate/${angular-animate.version}</bundle>
     <bundle>pentaho-webjars:mvn:org.webjars.bower/angular-ui-router/${angular-ui-router.version}</bundle>
+    <bundle>pentaho-webjars:mvn:org.webjars.bower/angular-i18n/${angular-i18n.version}</bundle>
+    <bundle>pentaho-webjars:mvn:org.webjars.bower/require-css/${require-css.version}</bundle>
+    <bundle>pentaho-webjars:mvn:org.webjars.bower/requirejs-text/${requirejs-text.version}</bundle>
+    <bundle>pentaho-webjars:mvn:org.webjars.bower/dojo/${dojo.version}</bundle>
     <!-- END -->
   </feature>
 
