@@ -29,13 +29,8 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.util.FileUtil;
 import org.pentaho.di.core.util.Utils;
 
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.PrintStream;
+import java.io.*;
 import java.net.URL;
-import java.nio.charset.Charset;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.security.Permission;
 import java.util.Enumeration;
 import java.util.Random;
@@ -130,19 +125,22 @@ public class PanIT {
 
     for ( String testKTR : KTRS_EXPECTED_COMPLETE_WITH_FAILURE ) {
 
-      String testKTRPath = EXPECTED_COMPLETE_WITH_FAILURE_PATH + File.separator + testKTR;
-      String testKTRFilePath = this.getClass().getResource( testKTRPath ).getFile();
-      String logFilePath = testKTRFilePath.replace( ".ktr" , "." + System.currentTimeMillis() ) + ".log";
+      long now = System.currentTimeMillis();
+
+      String testKTRRelativePath = EXPECTED_COMPLETE_WITH_FAILURE_PATH + File.separator + testKTR;
+      String testKTRFullPath = this.getClass().getResource( testKTRRelativePath ).getFile();
+      String logFileRelativePath = testKTRRelativePath + "." + now + ".log";
+      String logFileFullPath = testKTRFullPath + "." + now + ".log";
 
       try {
 
-        Pan.main( new String[]{ "/file:" + testKTRFilePath, "/level:Basic", "/logfile:" + logFilePath } );
+        Pan.main( new String[]{ "/file:" + testKTRFullPath, "/level:Basic", "/logfile:" + logFileFullPath } );
 
       } catch ( SecurityException e ) {
         // All OK / expected: SecurityException is purposely thrown when Pan triggers System.exitJVM()
 
         // get log file contents
-        String logFileContent = new String( Files.readAllBytes( Paths.get( logFilePath ) ) );
+        String logFileContent = getFileContentAsString( logFileRelativePath );
 
         // use FINISHED_PROCESSING_ERROR_COUNT_REGEX to get execution error count
         int errorCount = parseErrorCount( logFileContent );
@@ -151,7 +149,10 @@ public class PanIT {
 
       } finally {
         // sanitize
-        new File( logFilePath ).deleteOnExit();
+        File f = new File( logFileFullPath );
+        if ( f != null && f.exists() ) {
+          f.deleteOnExit();
+        }
       }
     }
   }
@@ -161,19 +162,22 @@ public class PanIT {
 
     for ( String testKTR : KTRS_EXPECTED_COMPLETE_WITH_SUCCESS ) {
 
-      String testKTRPath = EXPECTED_COMPLETE_WITH_SUCCESS_PATH + File.separator + testKTR;
-      String testKTRFilePath = this.getClass().getResource( testKTRPath ).getFile();
-      String logFilePath = testKTRFilePath.replace( ".ktr" , "." + System.currentTimeMillis() ) + ".log";
+      long now = System.currentTimeMillis();
+
+      String testKTRRelativePath = EXPECTED_COMPLETE_WITH_SUCCESS_PATH + File.separator + testKTR;
+      String testKTRFullPath = this.getClass().getResource( testKTRRelativePath ).getFile();
+      String logFileRelativePath = testKTRRelativePath + "." + now + ".log";
+      String logFileFullPath = testKTRFullPath + "." + now + ".log";
 
       try {
 
-        Pan.main( new String[]{ "/file:" + testKTRFilePath, "/level:Basic", "/logfile:" + logFilePath } );
+        Pan.main( new String[]{ "/file:" + testKTRFullPath, "/level:Basic", "/logfile:" + logFileFullPath } );
 
       } catch ( SecurityException e ) {
         // All OK / expected: SecurityException is purposely thrown when Pan triggers System.exitJVM()
 
         // get log file contents
-        String logFileContent = new String( Files.readAllBytes( Paths.get( logFilePath ) ) );
+        String logFileContent = getFileContentAsString( logFileRelativePath );
 
         // use FINISHED_PROCESSING_ERROR_COUNT_REGEX to get execution error count
         int errorCount = parseErrorCount( logFileContent );
@@ -182,7 +186,10 @@ public class PanIT {
 
       } finally {
         // sanitize
-        new File( logFilePath ).deleteOnExit();
+        File f = new File( logFileFullPath );
+        if ( f != null && f.exists() ) {
+          f.deleteOnExit();
+        }
       }
     }
   }
@@ -196,16 +203,21 @@ public class PanIT {
     String param1Val = UUID.randomUUID().toString();
     String param2Val = UUID.randomUUID().toString();
 
-    String testKTRFilePath = this.getClass().getResource( "print_received_params.ktr" ).getFile();
-    String logFilePath = testKTRFilePath.replace( ".ktr" , "." + System.currentTimeMillis() ) + ".log";
+    final String EXPECTED_OUTPUT = "Received params " + param1Name + ":" + param1Val + ", " + param2Name + ":" + param2Val;
 
+    long now = System.currentTimeMillis();
+
+    String testKTRRelativePath = "./print_received_params.ktr";
+    String testKTRFullPath = this.getClass().getResource( testKTRRelativePath ).getFile();
+    String logFileRelativePath = testKTRRelativePath + "." + now + ".log";
+    String logFileFullPath = testKTRFullPath + "." + now + ".log";
 
     try {
 
       Pan.main( new String[] {
-              "/file:" + testKTRFilePath,
+              "/file:" + testKTRFullPath,
               "/level:Basic",
-              "/logfile:" + logFilePath,
+              "/logfile:" + logFileFullPath,
               "/param:" + param1Name + "=" + param1Val,
               "/param:" + param2Name + "=" + param2Val
       } );
@@ -214,21 +226,43 @@ public class PanIT {
       // All OK / expected: SecurityException is purposely thrown when Pan triggers System.exitJVM()
 
       // get log file contents
-      String logFileContent = new String( Files.readAllBytes( Paths.get( logFilePath ) ) );
+      String logFileContent = getFileContentAsString( logFileRelativePath );
 
       // use FINISHED_PROCESSING_ERROR_COUNT_REGEX to get execution error count
       int errorCount = parseErrorCount( logFileContent );
 
       assertTrue( !logFileContent.contains( FAILED_TO_INITIALIZE_ERROR_PATTERN ) && errorCount == 0 );
-
-      String expectedOutput = "Received params " + param1Name + ":" + param1Val + ", " + param2Name + ":" + param2Val;
-
-      assertTrue( logFileContent.contains( expectedOutput ) );
+      assertTrue( logFileContent.contains( EXPECTED_OUTPUT ) );
 
     } finally {
       // sanitize
-      new File( logFilePath ).deleteOnExit();
+      File f = new File( logFileFullPath );
+      if ( f != null && f.exists() ) {
+        f.deleteOnExit();
+      }
     }
+  }
+
+  private String getFileContentAsString( String relativePath ) {
+
+    String content = "";
+
+    try {
+      BufferedReader rd = new BufferedReader(
+              new InputStreamReader( this.getClass().getResourceAsStream( relativePath ) ) );
+      StringBuffer logFileContentBuffer = new StringBuffer();
+      String line = "";
+      while ( ( line = rd.readLine() ) != null ) {
+        logFileContentBuffer.append( line );
+      }
+
+      content = logFileContentBuffer.toString();
+
+    } catch ( Throwable t ) {
+      // no-op
+    }
+
+    return content;
   }
 
   private int parseErrorCount( String text ) {
