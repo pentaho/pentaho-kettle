@@ -1,23 +1,23 @@
-/*! ******************************************************************************
- *
- * Pentaho Data Integration
- *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
- *
- *******************************************************************************
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with
- * the License. You may obtain a copy of the License at
- *
- *    http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- *
+ /*! ******************************************************************************
+  *
+  * Pentaho Data Integration
+  *
+  * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+  *
+  *******************************************************************************
+  *
+  * Licensed under the Apache License, Version 2.0 (the "License");
+  * you may not use this file except in compliance with
+  * the License. You may obtain a copy of the License at
+  *
+  *    http://www.apache.org/licenses/LICENSE-2.0
+  *
+  * Unless required by applicable law or agreed to in writing, software
+  * distributed under the License is distributed on an "AS IS" BASIS,
+  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  * See the License for the specific language governing permissions and
+  * limitations under the License.
+  *
  ******************************************************************************/
 
 package org.pentaho.di.ui.trans.steps.getfilenames;
@@ -369,6 +369,13 @@ public class GetFileNamesDialog extends BaseStepDialog implements StepDialogInte
     fdIncludeSubFolder.left = new FormAttachment( middle, -margin );
     fdIncludeSubFolder.top = new FormAttachment( wExcludeWildcardField, margin );
     wIncludeSubFolder.setLayoutData( fdIncludeSubFolder );
+    wIncludeSubFolder.addSelectionListener( new SelectionAdapter() {
+      @Override
+      public void widgetSelected( SelectionEvent selectionEvent ) {
+        input.setChanged();
+      }
+    } );
+
 
     fdOriginFiles = new FormData();
     fdOriginFiles.left = new FormAttachment( 0, margin );
@@ -582,6 +589,7 @@ public class GetFileNamesDialog extends BaseStepDialog implements StepDialogInte
     fdFilterFileType.top = new FormAttachment( 0, 3 * margin );
     fdFilterFileType.right = new FormAttachment( 100, 0 );
     wFilterFileType.setLayoutData( fdFilterFileType );
+    wFilterFileType.addModifyListener( lsMod );
 
     // /////////////////////////////////
     // START OF Additional Fields GROUP
@@ -611,6 +619,12 @@ public class GetFileNamesDialog extends BaseStepDialog implements StepDialogInte
     fdRownum.left = new FormAttachment( middle, 0 );
     fdRownum.top = new FormAttachment( wFilterFileType, 2 * margin );
     wInclRownum.setLayoutData( fdRownum );
+    wInclRownum.addSelectionListener( new SelectionAdapter() {
+      @Override
+      public void widgetSelected( SelectionEvent selectionEvent ) {
+        input.setChanged();
+      }
+    } );
 
     wlInclRownumField = new Label( wAdditionalGroup, SWT.RIGHT );
     wlInclRownumField.setText( BaseMessages.getString( PKG, "GetFileNamesDialog.InclRownumField.Label" ) );
@@ -655,6 +669,12 @@ public class GetFileNamesDialog extends BaseStepDialog implements StepDialogInte
     fddoNotFailIfNoFile.left = new FormAttachment( middle, 0 );
     fddoNotFailIfNoFile.top = new FormAttachment( wAdditionalGroup, 2 * margin );
     wdoNotFailIfNoFile.setLayoutData( fddoNotFailIfNoFile );
+    wdoNotFailIfNoFile.addSelectionListener( new SelectionAdapter() {
+      @Override
+      public void widgetSelected( SelectionEvent selectionEvent ) {
+        input.setChanged();
+      }
+    } );
 
     wlLimit = new Label( wFilterComp, SWT.RIGHT );
     wlLimit.setText( BaseMessages.getString( PKG, "GetFileNamesDialog.Limit.Label" ) );
@@ -701,6 +721,12 @@ public class GetFileNamesDialog extends BaseStepDialog implements StepDialogInte
     fdAddResult.left = new FormAttachment( middle, 0 );
     fdAddResult.top = new FormAttachment( wLimit, margin );
     wAddResult.setLayoutData( fdAddResult );
+    wAddResult.addSelectionListener( new SelectionAdapter() {
+      @Override
+      public void widgetSelected( SelectionEvent selectionEvent ) {
+        input.setChanged();
+      }
+    } );
 
     fdAddFileResult = new FormData();
     fdAddFileResult.left = new FormAttachment( 0, margin );
@@ -789,6 +815,7 @@ public class GetFileNamesDialog extends BaseStepDialog implements StepDialogInte
         wFilenameList.remove( idx );
         wFilenameList.removeEmptyRows();
         wFilenameList.setRowNums();
+        input.setChanged();
       }
     } );
 
@@ -805,6 +832,7 @@ public class GetFileNamesDialog extends BaseStepDialog implements StepDialogInte
         }
         wFilenameList.removeEmptyRows();
         wFilenameList.setRowNums();
+        input.setChanged();
       }
     } );
 
@@ -877,6 +905,7 @@ public class GetFileNamesDialog extends BaseStepDialog implements StepDialogInte
     getData( input );
     ActiveFileField();
     setSize();
+    input.setChanged( changed );
 
     shell.open();
     while ( !shell.isDisposed() ) {
