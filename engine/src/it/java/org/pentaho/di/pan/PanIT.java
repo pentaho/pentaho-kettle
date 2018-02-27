@@ -253,7 +253,7 @@ public class PanIT {
       StringBuffer logFileContentBuffer = new StringBuffer();
       String line = "";
       while ( ( line = rd.readLine() ) != null ) {
-        logFileContentBuffer.append( line );
+        logFileContentBuffer.append( line ).append( "\n" );
       }
 
       content = logFileContentBuffer.toString();
