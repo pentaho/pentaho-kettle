@@ -134,14 +134,11 @@ public class TextFileOutput extends BaseStep implements StepInterface {
       boolean createParentDirIfNotExists = meta.isCreateParentFolder();
       boolean appendToExistingFile = meta.isFileAppended();
 
-
-
       if ( fileStreams == null ) { // Opening file for first time
         CompressionProvider compressionProvider = getCompressionProvider();
         boolean isZipFile = compressionProvider instanceof ZIPCompressionProvider;
-        boolean isNewFile = !isFileExists( filename );
 
-        if ( appendToExistingFile && isZipFile && !isNewFile ) {
+        if ( appendToExistingFile && isZipFile && fileExists ) {
           throw new KettleException( "Can not append to an existing zip file : " + filename );
         }
 
@@ -200,7 +197,7 @@ public class TextFileOutput extends BaseStep implements StepInterface {
         bufferedOutputStream = new BufferedOutputStream( compressionOutputStream, 5000 );
 
         fileStreams = data.new FileStreamsValue( fileOutputStream, compressionOutputStream, bufferedOutputStream );
-        fileStreams.setNewFile( isNewFile );
+        fileStreams.setNewFile( !fileExists );
 
         data.fileWriterMap.put( filename, fileStreams );
 
@@ -322,11 +319,15 @@ public class TextFileOutput extends BaseStep implements StepInterface {
   public String getOutputFileName( Object[] row ) throws KettleException {
     String filename = null;
     if ( row == null ) {
-      filename = meta.getFileName();
-      if ( filename == null ) {
-        throw new KettleFileException( BaseMessages.getString( PKG, "TextFileOutput.Exception.FileNameNotSet" ) );
+      if ( data.writer != null ) {
+        filename = data.fileWriterMap.lastKey().getFileName( );
+      } else {
+        filename = meta.getFileName();
+        if ( filename == null ) {
+          throw new KettleFileException( BaseMessages.getString( PKG, "TextFileOutput.Exception.FileNameNotSet" ) );
+        }
+        filename = buildFilename( environmentSubstitute( filename ), true );
       }
-      filename = buildFilename( environmentSubstitute( filename ), true );
     } else {
       data.fileNameFieldIndex = getInputRowMeta().indexOfValue( meta.getFileNameField() );
       if ( data.fileNameFieldIndex < 0 ) {
@@ -466,6 +467,9 @@ public class TextFileOutput extends BaseStep implements StepInterface {
 
         // Open a new file and write footer if needed.
         data.splitnr++;
+        data.fos = null;
+        data.out = null;
+        data.writer = null;
         filename = getOutputFileName( null );
         initFileStreamWriter( filename );
         fileStreams = data.fileWriterMap.get( filename );
