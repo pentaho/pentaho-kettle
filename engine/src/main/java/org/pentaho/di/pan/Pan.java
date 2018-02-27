@@ -64,9 +64,12 @@ import org.w3c.dom.Document;
 public class Pan {
   private static Class<?> PKG = Pan.class; // for i18n purposes, needed by Translator2!!
 
-  private static final String STRING_PAN = "Pan";
+  public static final String STRING_PAN = "Pan";
+  private static LogChannelInterface log = new LogChannel( STRING_PAN );
 
   private static FileLoggingEventListener fileLoggingEventListener;
+
+  private static PanCommandExecutor commandExecutor = new PanCommandExecutor( PKG, log );
 
   public static void main( String[] a ) throws Exception {
     KettleClientEnvironment.getInstance().setClient( KettleClientEnvironment.ClientType.PAN );
@@ -165,16 +168,16 @@ public class Pan {
 
     if ( args.size() == 2 ) { // 2 internal hidden argument (flag and value)
       CommandLineOption.printUsage( options );
-      exitJVM( 9 );
+      exitJVM( PanReturnCode.CMD_LINE_PRINT.getCode() );
     }
 
-    LogChannelInterface log = new LogChannel( STRING_PAN );
+
 
     // Parse the options...
     if ( !CommandLineOption.parseArguments( args, options, log ) ) {
       log.logError( BaseMessages.getString( PKG, "Pan.Error.CommandLineError" ) );
 
-      exitJVM( 8 );
+      exitJVM( PanReturnCode.ERROR_LOADING_STEPS_PLUGINS.getCode() );
     }
 
     Kitchen.configureLogging( maxLogLinesOption, maxLogTimeoutOption );
@@ -241,380 +244,22 @@ public class Pan {
 
     // ///////////////////////////////////////////////////////////////////////////////////////////////////
 
-    log.logMinimal( BaseMessages.getString( PKG, "Pan.Log.StartingToRun" ) );
-
-    Date start, stop;
-    Calendar cal;
-    SimpleDateFormat df = new SimpleDateFormat( "yyyy/MM/dd HH:mm:ss.SSS" );
-    cal = Calendar.getInstance();
-    start = cal.getTime();
-
-    if ( log.isDebug() ) {
-      log.logDebug( BaseMessages.getString( PKG, "Pan.Log.AllocatteNewTrans" ) );
-    }
-
-    TransMeta transMeta = new TransMeta();
-    // In case we use a repository...
-    Repository rep = null;
     try {
-      if ( log.isDebug() ) {
-        log.logDebug( BaseMessages.getString( PKG, "Pan.Log.StartingToLookOptions" ) );
-      }
 
-      // Read kettle transformation specified on command-line?
-      if ( !Utils.isEmpty( optionRepname )
-        || !Utils.isEmpty( optionFilename ) || !Utils.isEmpty( optionJarFilename ) ) {
-        if ( log.isDebug() ) {
-          log.logDebug( BaseMessages.getString( PKG, "Pan.Log.ParsingCommandline" ) );
-        }
+      PanCommandExecutor pan = new PanCommandExecutor( PKG, log );
+      pan.setMetaStore( metaStore );
+      int returnCode = pan.execute( optionRepname.toString(), optionNorep.toString(), optionUsername.toString(), optionPassword.toString(),
+              optionDirname.toString(), optionFilename.toString(), optionJarFilename.toString(), optionTransname.toString(),
+              optionListtrans.toString(), optionListdir.toString(), optionExprep.toString(), initialDir.toString(),
+              optionListrep.toString(), optionSafemode.toString(), optionMetrics.toString(), optionListParam.toString(),
+              optionParams, args.toArray( new String[ args.size() ] ) );
 
-        if ( !Utils.isEmpty( optionRepname ) && !"Y".equalsIgnoreCase( optionNorep.toString() ) ) {
-          if ( log.isDebug() ) {
-            log.logDebug( BaseMessages.getString( PKG, "Pan.Log.LoadingAvailableRep" ) );
-          }
+      exitJVM( returnCode );
 
-          RepositoriesMeta repsinfo = new RepositoriesMeta();
-          repsinfo.getLog().setLogLevel( log.getLogLevel() );
-
-          try {
-            repsinfo.readData();
-          } catch ( Exception e ) {
-            throw new KettleException( BaseMessages.getString( PKG, "Pan.Error.NoRepsDefined" ), e );
-          }
-
-          if ( log.isDebug() ) {
-            log.logDebug( BaseMessages.getString( PKG, "Pan.Log.FindingRep", "" + optionRepname ) );
-          }
-
-          repositoryMeta = repsinfo.findRepository( optionRepname.toString() );
-          if ( repositoryMeta != null ) {
-            // Define and connect to the repository...
-            if ( log.isDebug() ) {
-              log.logDebug( BaseMessages.getString( PKG, "Pan.Log.Allocate&ConnectRep" ) );
-            }
-
-            rep =
-              PluginRegistry.getInstance().loadClass(
-                RepositoryPluginType.class, repositoryMeta, Repository.class );
-            rep.init( repositoryMeta );
-            rep.getLog().setLogLevel( log.getLogLevel() );
-            rep.connect( optionUsername != null ? optionUsername.toString() : null, optionPassword != null
-              ? optionPassword.toString() : null );
-
-            rep.getSecurityProvider().validateAction( RepositoryOperation.EXECUTE_TRANSFORMATION );
-
-            // Default is the root directory
-            //
-            RepositoryDirectoryInterface directory = rep.loadRepositoryDirectoryTree();
-
-            // Add the IMetaStore of the repository to our delegation
-            //
-            if ( rep.getMetaStore() != null ) {
-              metaStore.addMetaStore( rep.getMetaStore() );
-            }
-
-            // Find the directory name if one is specified...
-            if ( !Utils.isEmpty( optionDirname ) ) {
-              directory = directory.findDirectory( optionDirname.toString() );
-            }
-
-            if ( directory != null ) {
-              // Check username, password
-              if ( log.isDebug() ) {
-                log.logDebug( BaseMessages.getString( PKG, "Pan.Log.CheckSuppliedUserPass" ) );
-              }
-
-              // Load a transformation
-              if ( !Utils.isEmpty( optionTransname ) ) {
-                if ( log.isDebug() ) {
-                  log.logDebug( BaseMessages.getString( PKG, "Pan.Log.LoadTransInfo" ) );
-                }
-
-                transMeta = rep.loadTransformation( optionTransname.toString(), directory, null, true, null );
-                if ( log.isDebug() ) {
-                  log.logDebug( BaseMessages.getString( PKG, "Pan.Log.AllocateTrans" ) );
-                }
-
-                trans = new Trans( transMeta );
-                trans.setRepository( rep );
-                trans.setMetaStore( metaStore );
-
-              } else if ( "Y".equalsIgnoreCase( optionListtrans.toString() ) ) {
-                // List the transformations in the repository
-                if ( log.isDebug() ) {
-                  log
-                    .logDebug( BaseMessages.getString( PKG, "Pan.Log.GettingListTransDirectory", "" + directory ) );
-                }
-
-                String[] transnames = rep.getTransformationNames( directory.getObjectId(), false );
-                for ( int i = 0; i < transnames.length; i++ ) {
-                  System.out.println( transnames[i] );
-                }
-              } else if ( "Y".equalsIgnoreCase( optionListdir.toString() ) ) {
-                // List the directories in the repository
-                String[] dirnames = rep.getDirectoryNames( directory.getObjectId() );
-                for ( int i = 0; i < dirnames.length; i++ ) {
-                  System.out.println( dirnames[i] );
-                }
-              } else if ( !Utils.isEmpty( optionExprep ) ) {
-                // Export the repository
-                System.out.println( BaseMessages.getString( PKG, "Pan.Log.ExportingObjectsRepToFile", ""
-                  + optionExprep ) );
-
-                rep.getExporter().exportAllObjects( null, optionExprep.toString(), directory, "all" );
-                System.out.println( BaseMessages.getString( PKG, "Pan.Log.FinishedExportObjectsRepToFile", ""
-                  + optionExprep ) );
-              } else {
-                System.out.println( BaseMessages.getString( PKG, "Pan.Error.NoTransNameSupplied" ) );
-              }
-            } else {
-              System.out.println( BaseMessages.getString( PKG, "Pan.Error.CanNotFindSpecifiedDirectory", ""
-                + optionDirname ) );
-              repositoryMeta = null;
-            }
-          } else {
-            System.out.println( BaseMessages.getString( PKG, "Pan.Error.NoRepProvided" ) );
-          }
-        }
-
-        // Try to load the transformation from file, even if it failed to load
-        // from the repository
-        // You could implement some fail-over mechanism this way.
-        //
-        if ( trans == null && !Utils.isEmpty( optionFilename ) ) {
-
-          String fileName = optionFilename.toString();
-          // If the filename starts with scheme like zip:, then isAbsolute() will return false even though the
-          // the path following the zip is absolute path. Check for isAbsolute only if the fileName does not
-          // start with scheme
-          if ( !KettleVFS.startsWithScheme( fileName ) && !FileUtil.isFullyQualified( fileName ) ) {
-            fileName = initialDir.toString() + fileName;
-          }
-
-          if ( log.isDetailed() ) {
-            log.logDetailed( BaseMessages.getString( PKG, "Pan.Log.LoadingTransXML", "" + fileName ) );
-          }
-          transMeta = new TransMeta( fileName );
-          trans = new Trans( transMeta );
-        }
-
-        // Try to load the transformation from a jar file
-        //
-        if ( trans == null && !Utils.isEmpty( optionJarFilename ) ) {
-          try {
-            if ( log.isDetailed() ) {
-              log.logDetailed( BaseMessages.getString( PKG, "Pan.Log.LoadingTransJar", "" + optionJarFilename ) );
-            }
-
-            InputStream inputStream = Pan.class.getResourceAsStream( optionJarFilename.toString() );
-            StringBuilder xml = new StringBuilder();
-            int c;
-            while ( ( c = inputStream.read() ) != -1 ) {
-              xml.append( (char) c );
-            }
-            inputStream.close();
-            Document document = XMLHandler.loadXMLString( xml.toString() );
-            transMeta = new TransMeta( XMLHandler.getSubNode( document, "transformation" ), null );
-            trans = new Trans( transMeta );
-          } catch ( Exception e ) {
-            System.out.println( BaseMessages.getString( PKG, "Pan.Error.ReadingJar", e.toString() ) );
-
-            System.out.println( Const.getStackTracker( e ) );
-            throw e;
-          }
-        }
-      }
-
-      if ( "Y".equalsIgnoreCase( optionListrep.toString() ) ) {
-        if ( log.isDebug() ) {
-          log.logDebug( BaseMessages.getString( PKG, "Pan.Log.GettingListReps" ) );
-        }
-
-        RepositoriesMeta ri = new RepositoriesMeta();
-        try {
-          ri.readData();
-        } catch ( Exception e ) {
-          throw new KettleException( BaseMessages.getString( PKG, "Pan.Error.UnableReadXML" ), e );
-        }
-
-        System.out.println( BaseMessages.getString( PKG, "Pan.Log.ListReps" ) );
-
-        for ( int i = 0; i < ri.nrRepositories(); i++ ) {
-          RepositoryMeta rinfo = ri.getRepository( i );
-          System.out.println( BaseMessages.getString(
-            PKG, "Pan.Log.RepNameDesc", "" + ( i + 1 ), rinfo.getName(), rinfo.getDescription() ) );
-        }
-      }
-    } catch ( Exception e ) {
-      trans = null;
-      transMeta = null;
-      if ( rep != null ) {
-        rep.disconnect();
-      }
-      System.out.println( BaseMessages.getString( PKG, "Pan.Error.ProcessStopError", e.getMessage() ) );
-
-      e.printStackTrace();
-      exitJVM( 1 );
+    } catch ( Throwable t ) {
+      t.printStackTrace();
+      exitJVM( PanReturnCode.UNEXPECTED_ERROR.getCode() );
     }
-
-    if ( trans == null ) {
-      if ( rep != null ) {
-        rep.disconnect();
-      }
-
-      if ( !"Y".equalsIgnoreCase( optionListtrans.toString() )
-        && !"Y".equalsIgnoreCase( optionListdir.toString() ) && !"Y".equalsIgnoreCase( optionListrep.toString() )
-        && Utils.isEmpty( optionExprep ) ) {
-        System.out.println( BaseMessages.getString( PKG, "Pan.Error.CanNotLoadTrans" ) );
-
-        exitJVM( 7 );
-      } else {
-        exitJVM( 0 );
-      }
-
-    }
-
-    try {
-      trans.setLogLevel( log.getLogLevel() );
-      configureParameters( trans, optionParams, transMeta );
-
-      // See if we want to run in safe mode:
-      if ( "Y".equalsIgnoreCase( optionSafemode.toString() ) ) {
-        trans.setSafeModeEnabled( true );
-      }
-
-      // Enable kettle metric gathering if required:
-      if ( "Y".equalsIgnoreCase( optionMetrics.toString() ) ) {
-        trans.setGatheringMetrics( true );
-      }
-
-      // List the parameters defined in this transformation
-      // Then simply exit...
-      //
-      if ( "Y".equalsIgnoreCase( optionListParam.toString() ) ) {
-        for ( String parameterName : trans.listParameters() ) {
-          String value = trans.getParameterValue( parameterName );
-          String deflt = trans.getParameterDefault( parameterName );
-          String descr = trans.getParameterDescription( parameterName );
-
-          if ( deflt != null ) {
-            System.out.println( "Parameter: "
-              + parameterName + "=" + Const.NVL( value, "" ) + ", default=" + deflt + " : "
-              + Const.NVL( descr, "" ) );
-          } else {
-            System.out.println( "Parameter: "
-              + parameterName + "=" + Const.NVL( value, "" ) + " : " + Const.NVL( descr, "" ) );
-          }
-        }
-
-        // stop right here...
-        //
-        exitJVM( 7 ); // same as the other list options
-      }
-
-      // allocate & run the required sub-threads
-      try {
-        trans.execute( args.toArray( new String[args.size()] ) );
-      } catch ( KettleException e ) {
-        System.out.println( BaseMessages.getString( PKG, "Pan.Error.UnablePrepareInitTrans" ) );
-
-        exitJVM( 3 );
-      }
-
-      trans.waitUntilFinished();
-
-      // Give the transformation up to 10 seconds to finish execution
-      for ( int i = 0; i < 100; i++ ) {
-        if ( !trans.isRunning() ) {
-          break;
-        }
-        try {
-          Thread.sleep( 100 );
-        } catch ( Exception e ) {
-          break;
-        }
-      }
-
-      if ( trans.isRunning() ) {
-        log.logError( BaseMessages.getString( PKG, "Pan.Log.NotStopping" ) );
-      }
-
-      log.logMinimal( BaseMessages.getString( PKG, "Pan.Log.Finished" ) );
-
-      cal = Calendar.getInstance();
-      stop = cal.getTime();
-      String begin = df.format( start ).toString();
-      String end = df.format( stop ).toString();
-
-      log.logMinimal( BaseMessages.getString( PKG, "Pan.Log.StartStop", begin, end ) );
-
-      long millis = stop.getTime() - start.getTime();
-      int seconds = (int) ( millis / 1000 );
-      if ( seconds <= 60 ) {
-        log.logMinimal( BaseMessages.getString( PKG, "Pan.Log.ProcessingEndAfter", String.valueOf( seconds ) ) );
-      } else if ( seconds <= 60 * 60 ) {
-        int min = ( seconds / 60 );
-        int rem = ( seconds % 60 );
-        log.logMinimal( BaseMessages.getString(
-          PKG, "Pan.Log.ProcessingEndAfterLong", String.valueOf( min ), String.valueOf( rem ), String
-            .valueOf( seconds ) ) );
-      } else if ( seconds <= 60 * 60 * 24 ) {
-        int rem;
-        int hour = ( seconds / ( 60 * 60 ) );
-        rem = ( seconds % ( 60 * 60 ) );
-        int min = rem / 60;
-        rem = rem % 60;
-        log.logMinimal( BaseMessages.getString(
-          PKG, "Pan.Log.ProcessingEndAfterLonger", String.valueOf( hour ), String.valueOf( min ), String
-            .valueOf( rem ), String.valueOf( seconds ) ) );
-      } else {
-        int rem;
-        int days = ( seconds / ( 60 * 60 * 24 ) );
-        rem = ( seconds % ( 60 * 60 * 24 ) );
-        int hour = rem / ( 60 * 60 );
-        rem = rem % ( 60 * 60 );
-        int min = rem / 60;
-        rem = rem % 60;
-        log.logMinimal( BaseMessages.getString(
-          PKG, "Pan.Log.ProcessingEndAfterLongest", String.valueOf( days ), String.valueOf( hour ), String
-            .valueOf( min ), String.valueOf( rem ), String.valueOf( seconds ) ) );
-      }
-
-      if ( trans.getResult().getNrErrors() == 0 ) {
-        trans.printStats( seconds );
-        exitJVM( 0 );
-      } else {
-
-        String transJVMExitCode = trans.getVariable( Const.KETTLE_TRANS_PAN_JVM_EXIT_CODE );
-
-        // If the trans has a return code to return to the OS, then we exit with that
-        if ( !Utils.isEmpty( transJVMExitCode ) ) {
-          try {
-            exitJVM( Integer.valueOf( transJVMExitCode ) );
-          } catch ( NumberFormatException nfe ) {
-            log
-              .logError( BaseMessages.getString(
-                PKG, "Pan.Error.TransJVMExitCodeInvalid", Const.KETTLE_TRANS_PAN_JVM_EXIT_CODE,
-                transJVMExitCode ) );
-            log.logError( BaseMessages.getString( PKG, "Pan.Log.JVMExitCode", "1" ) );
-            exitJVM( 1 );
-          }
-        } else { // the trans does not have a return code.
-          exitJVM( 1 );
-        }
-      }
-    } catch ( KettleException ke ) {
-      System.out.println( BaseMessages.getString( PKG, "Pan.Log.ErrorOccurred", "" + ke.getMessage() ) );
-
-      log.logError( BaseMessages.getString( PKG, "Pan.Log.UnexpectedErrorOccurred", "" + ke.getMessage() ) );
-
-      exitJVM( 2 );
-    } finally {
-      if ( rep != null ) {
-        rep.disconnect();
-      }
-    }
-
   }
 
   /**
@@ -627,24 +272,7 @@ public class Pan {
    */
   protected static void configureParameters( Trans trans, NamedParams optionParams,
                                              TransMeta transMeta ) throws UnknownParamException {
-    trans.initializeVariablesFrom( null );
-    trans.getTransMeta().setInternalKettleVariables( trans );
-
-    // Map the command line named parameters to the actual named parameters.
-    // Skip for
-    // the moment any extra command line parameter not known in the
-    // transformation.
-    String[] transParams = trans.listParameters();
-    for ( String param : transParams ) {
-      String value = optionParams.getParameterValue( param );
-      if ( value != null ) {
-        trans.setParameterValue( param, value );
-        transMeta.setParameterValue( param, value );
-      }
-    }
-    // Put the parameters over the already defined variable space. Parameters
-    // get priority.
-    trans.activateParameters();
+    PanCommandExecutor.configureParameters( trans, optionParams, transMeta );
   }
 
   private static final void exitJVM( int status ) {
@@ -662,5 +290,13 @@ public class Pan {
     }
 
     System.exit( status );
+  }
+
+  public static PanCommandExecutor getCommandExecutor() {
+    return commandExecutor;
+  }
+
+  public void setCommandExecutor( PanCommandExecutor commandExecutor ) {
+    this.commandExecutor = commandExecutor;
   }
 }
