@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,6 +22,7 @@
 
 package org.pentaho.di.trans.steps.excelwriter;
 
+import com.google.common.io.Files;
 import org.apache.commons.vfs2.FileObject;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.junit.Before;
@@ -34,6 +35,7 @@ import org.pentaho.di.trans.steps.mock.StepMockHelper;
 import org.pentaho.di.utils.TestUtils;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.OutputStream;
 import java.io.PrintStream;
 import java.util.List;
@@ -43,6 +45,8 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
 
 public class ExcelWriterStepTest {
@@ -54,6 +58,8 @@ public class ExcelWriterStepTest {
   private ExcelWriterStep step;
 
   private ExcelWriterStepMeta stepMeta;
+  private ExcelWriterStepMeta metaMock;
+  private ExcelWriterStepData dataMock;
 
   @Before
   public void setUp() throws Exception {
@@ -65,11 +71,12 @@ public class ExcelWriterStepTest {
         "Excel Writer Test", ExcelWriterStepMeta.class, ExcelWriterStepData.class );
     when( mockHelper.logChannelInterfaceFactory.create( any(), any( LoggingObjectInterface.class ) ) ).thenReturn(
         mockHelper.logChannelInterface );
-    step =
-      new ExcelWriterStep(
-        mockHelper.stepMeta, mockHelper.stepDataInterface, 0, mockHelper.transMeta, mockHelper.trans );
+    step = spy( new ExcelWriterStep(
+        mockHelper.stepMeta, mockHelper.stepDataInterface, 0, mockHelper.transMeta, mockHelper.trans ) );
 
     stepMeta = new ExcelWriterStepMeta();
+    metaMock = mock( ExcelWriterStepMeta.class );
+    dataMock = mock( ExcelWriterStepData.class );
   }
 
   @Test
@@ -228,6 +235,22 @@ public class ExcelWriterStepTest {
       fail( e.getMessage() );
     }
 
+  }
+
+  @Test
+  public void testPrepareNextOutputFile() throws Exception {
+    assertTrue( step.init( metaMock, dataMock ) );
+    File outDir = Files.createTempDir();
+    String testFileOut = outDir.getAbsolutePath() + File.separator + "test.xlsx";
+    when( step.buildFilename( 0 ) ).thenReturn( testFileOut );
+    when( metaMock.isTemplateEnabled() ).thenReturn( true );
+    when( metaMock.isStreamingData() ).thenReturn( true );
+    when( metaMock.isHeaderEnabled() ).thenReturn( true );
+    when( metaMock.getExtension() ).thenReturn( "xlsx" );
+    dataMock.createNewFile = true;
+    dataMock.realTemplateFileName = getClass().getResource( "template_test.xlsx" ).getFile();
+    dataMock.realSheetname = "Sheet1";
+    step.prepareNextOutputFile();
   }
 
   private HSSFWorkbook createWorkbook( FileObject file ) throws Exception {
