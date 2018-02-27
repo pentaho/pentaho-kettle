@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -47,9 +47,7 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
-import org.jets3t.service.S3Service;
 import org.jets3t.service.model.S3Bucket;
-import org.jets3t.service.model.S3Object;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.exception.KettleStepException;
@@ -583,14 +581,9 @@ public class S3CsvInputDialog extends BaseStepDialog implements StepDialogInterf
         try {
           S3CsvInputMeta meta = new S3CsvInputMeta();
           getInfo( meta );
-          S3Service service = meta.getS3Service( transMeta );
-          S3Bucket[] buckets = service.listAllBuckets();
-          String[] bucketNames = new String[buckets.length];
-          for ( int i = 0; i < buckets.length; i++ ) {
-            bucketNames[i] = buckets[i].getName();
-          }
+          S3ObjectsProvider s3ObjProvider = new S3ObjectsProvider( meta.getS3Service( transMeta ) );
 
-          EnterSelectionDialog dialog = new EnterSelectionDialog( shell, bucketNames,
+          EnterSelectionDialog dialog = new EnterSelectionDialog( shell, s3ObjProvider.getBucketsNames(),
               Messages.getString( "S3CsvInputDialog.Exception.SelectBucket.Title" ),
               Messages.getString( "S3CsvInputDialog.Exception.SelectBucket.Message" ) );
           dialog.setMulti( false );
@@ -615,26 +608,9 @@ public class S3CsvInputDialog extends BaseStepDialog implements StepDialogInterf
           try {
             S3CsvInputMeta meta = new S3CsvInputMeta();
             getInfo( meta );
-            S3Service service = meta.getS3Service( transMeta );
 
-            S3Bucket[] buckets = service.listAllBuckets();
-            S3Bucket bucket = null;
-
-            for ( S3Bucket compare : buckets ) {
-              if ( compare.getName().equals( meta.getBucket() ) ) {
-                bucket = compare;
-              }
-            }
-
-            if ( bucket == null ) {
-              throw new Exception( Messages.getString( "S3CsvInputDialog.Exception.UnableToFindBucket.Message", meta.getBucket() ) );
-            }
-
-            S3Object[] objects = service.listObjects( bucket );
-            String[] objectnames = new String[objects.length];
-            for ( int i = 0; i < objects.length; i++ ) {
-              objectnames[i] = objects[i].getKey();
-            }
+            S3ObjectsProvider s3ObjProvider = new S3ObjectsProvider( meta.getS3Service( transMeta ) );
+            String[] objectnames = s3ObjProvider.getS3ObjectsNames( meta.getBucket() );
 
             EnterSelectionDialog dialog = new EnterSelectionDialog( shell, objectnames,
               Messages.getString( "S3CsvInputDialog.Exception.SelectObject.Title" ),
@@ -807,17 +783,11 @@ public class S3CsvInputDialog extends BaseStepDialog implements StepDialogInterf
 
       wFields.table.removeAll();
 
-      S3Service s3Service = meta.getS3Service( transMeta );
-      S3Bucket[] buckets = s3Service.listAllBuckets();
-      S3Bucket s3bucket = null;
-      for ( S3Bucket bucket : buckets ) {
-        if ( bucket.getName().equals( bucketname ) ) {
-          s3bucket = bucket;
-        }
-      }
+      S3ObjectsProvider s3ObjProvider = new S3ObjectsProvider( meta.getS3Service( transMeta ) );
+      S3Bucket s3bucket = s3ObjProvider.getBucket( bucketname );
 
       if ( s3bucket == null ) {
-        throw new Exception( "Unable to find specified bucket : [" + bucketname + "]" ); // TODO i18n
+        throw new Exception( Messages.getString( "S3DefaultService.Exception.UnableToFindBucket.Message", bucketname ) );
       }
 
       // Now we can continue reading the rows of data and we can guess the
@@ -832,12 +802,8 @@ public class S3CsvInputDialog extends BaseStepDialog implements StepDialogInterf
       }
 
       // Only get the first lines, not the complete file
-      //
-      S3Object object = s3Service.getObject( s3bucket, filename, null, null, null, null, 0L, (long) samples * (long) maxLineSize );
-
-      // Grab an input stream to the data...
-      //
-      inputStream = object.getDataInputStream();
+      // And grab an input stream to the data...
+      inputStream = s3ObjProvider.getS3Object( s3bucket, filename, 0L, (long) samples * (long) maxLineSize ).getDataInputStream();
 
       InputStreamReader reader = new InputStreamReader( inputStream );
 

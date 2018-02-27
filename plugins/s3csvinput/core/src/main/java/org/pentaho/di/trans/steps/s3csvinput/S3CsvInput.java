@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -26,8 +26,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.jets3t.service.model.S3Bucket;
-import org.jets3t.service.model.S3Object;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleFileException;
@@ -139,10 +137,7 @@ public class S3CsvInput extends BaseStep implements StepInterface {
       // We'll use the same algorithm...
       //
       for ( String filename : data.filenames ) {
-
-        S3Object objectDetails = data.s3Service.getObjectDetails( data.s3bucket, filename );
-
-        long size = objectDetails.getContentLength();
+        long size = new S3ObjectsProvider( data.s3Service ).getS3ObjectContentLenght( data.s3bucket, filename );
         data.fileSizes.add( size );
         data.totalFileSize += size;
       }
@@ -250,10 +245,10 @@ public class S3CsvInput extends BaseStep implements StepInterface {
       //
       if ( data.parallel ) {
 
-        data.s3Object = data.s3Service.getObject( data.s3bucket, data.filenames[data.filenr], null, null, null, null, data.bytesToSkipInFirstFile, data.bytesToSkipInFirstFile + data.blockToRead + data.maxLineSize * 2 );
+        data.s3Object = new S3ObjectsProvider( data.s3Service ).getS3Object( data.s3bucket, data.filenames[data.filenr], data.bytesToSkipInFirstFile, data.bytesToSkipInFirstFile + data.blockToRead + data.maxLineSize * 2 );
 
       } else {
-        data.s3Object = data.s3Service.getObject( data.s3bucket, data.filenames[data.filenr] );
+        data.s3Object = new S3ObjectsProvider( data.s3Service ).getS3Object( data.s3bucket, data.filenames[data.filenr] );
       }
 
       if ( meta.isLazyConversionActive() ) {
@@ -546,21 +541,12 @@ public class S3CsvInput extends BaseStep implements StepInterface {
       data.preferredBufferSize = 500000; // Fixed size
 
       try {
-        data.s3Service = meta.getS3Service( this );
-
-        // Get a list of objects in the specified bucket!
-        //
+        //Get the specified bucket
         String bucketname = environmentSubstitute( meta.getBucket() );
-        S3Bucket[] buckets = data.s3Service.listAllBuckets();
-        data.s3bucket = null;
-        for ( S3Bucket bucket : buckets ) {
-          if ( bucket.getName().equals( bucketname ) ) {
-            data.s3bucket = bucket;
-          }
-        }
-
+        data.s3Service = meta.getS3Service( this );
+        data.s3bucket = new S3ObjectsProvider( data.s3Service ).getBucket( bucketname );
         if ( data.s3bucket == null ) {
-          logError( "Unable to find specified bucket : [" + bucketname + "]" ); // TODO i18n
+          logError( Messages.getString( "S3CsvInput.Log.UnableToFindBucket.Message", bucketname ) );
           return false;
         }
 
