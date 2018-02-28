@@ -101,21 +101,35 @@ folder .folder .folderImage {
   float: left;
 }
 
+folder .folder .folderImage.loading {
+  background: url("../../img/busy_thin.gif") no-repeat left center !important;
+  background-size: 16px !important;
+  background-position: center center !important;
+}
+
+folder .folder.selected .folderImage.loading {
+  background: url("../../img/busy_thin_white.gif") no-repeat left center !important;
+  background-size: 16px !important;
+  background-position: center center !important;
+}
+
 folder .folder.recents .folderImage {
   background: url("../../img/recents.svg") no-repeat left center;
 }
 
-folder .folder.home .folderName, folder .folder.public .folderName {
+folder .folder.home .folderName,
+folder .folder.public .folderName {
   text-transform: capitalize;
 }
 
 folder .folder.home .folderImage {
   background: url("../../img/home.svg") no-repeat left center;
-
+  background-size: 32px;
 }
 
 folder .folder.public .folderImage {
   background: url("../../img/public.svg") no-repeat left center;
+  background-size: 32px;
 }
 
 folder .folder.selected .folderImage {

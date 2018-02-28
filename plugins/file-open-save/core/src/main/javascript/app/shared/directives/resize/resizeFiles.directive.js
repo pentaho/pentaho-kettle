@@ -33,7 +33,6 @@ define([
           scrollClass = $state.is("save") ? "scrollTableSave" : "scrollTableOpen";
         });
 
-        var needsTimeout = true;
         var table = angular.element(element[0].querySelector("#filesTableBody"));
         var bodyWrapper = angular.element(element[0].querySelector("#bodyWrapper"));
         var headerWrapper = angular.element(document.querySelector("#headerWrapper"));
@@ -41,16 +40,10 @@ define([
 
         scope.$watch(attrs.resizeFiles, function(newValue, oldValue) {
           if (newValue !== oldValue) {
-            if (needsTimeout) {
-              needsTimeout = false;
-              $timeout(function() {
-                setScrollTableClass();
-                setWidths();
-              });
-            } else {
+            $timeout(function() {
               setScrollTableClass();
               setWidths();
-            }
+            });
           }
         });
 
@@ -75,7 +68,6 @@ define([
          */
         function setScrollTableClass() {
           if (scope.vm.folder.name === "Recents" && scope.vm.folder.path === "Recents") {
-            needsTimeout = true;
             return;
           }
           bodyWrapper.css("height", "calc(100% - 31px)");

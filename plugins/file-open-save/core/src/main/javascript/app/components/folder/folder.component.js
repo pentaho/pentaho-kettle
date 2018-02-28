@@ -30,15 +30,16 @@
 
  **/
 define([
+  "../../services/data.service",
   "text!./folder.html",
   "../utils",
   "css!./folder.css"
-], function(folderTemplate, utils) {
+], function(dataService, folderTemplate, utils) {
   "use strict";
 
   var options = {
     bindings: {
-      folders: "<",
+      tree: "<",
       onSelect: "&",
       onOpen: "&",
       showRecents: "<",
@@ -50,7 +51,7 @@ define([
     controller: folderController
   };
 
-  folderController.$inject = ["$timeout", "$state"];
+  folderController.$inject = [dataService.name, "$timeout", "$state"];
 
   /**
    * The Folder Controller.
@@ -58,17 +59,17 @@ define([
    * This provides the controller for the folder component.
    * @param {Function} $timeout - Angular wrapper for window.setTimeout.
    */
-  function folderController($timeout, $state) {
+  function folderController(dt, $timeout, $state) {
+    var vm = this;
     var _iconsWidth = 58;
     var _paddingLeft = 27;
-    var vm = this;
     vm.$onInit = onInit;
     vm.$onChanges = onChanges;
     vm.openFolder = openFolder;
     vm.selectFolder = selectFolder;
     vm.selectAndOpenFolder = selectAndOpenFolder;
     vm.compareFolders = compareFolders;
-    vm.maxWidth = 0;
+    vm.getTree = getTree;
     vm.width = 0;
     vm.state = $state;
 
@@ -92,10 +93,21 @@ define([
         var selectedFolder = changes.selectedFolder.currentValue;
         if (selectedFolder && selectedFolder.path) {
           if (selectedFolder.path !== "Recents") {
+            if (vm.autoExpand) {
+              vm.autoExpand = false;
+              _openFolderTree(selectedFolder.path);
+            }
             _selectFolderByPath(selectedFolder.path);
           }
         }
       }
+    }
+
+    function getTree() {
+      if (vm.tree) {
+        return vm.tree.includeRoot ? vm.tree.children : vm.tree.children[0].children;
+      }
+      return [];
     }
 
     /**
@@ -104,23 +116,28 @@ define([
      *
      * @param {Object} folder - folder object
      */
-    function openFolder(folder) {
-      vm.maxWidth = 0;
-      if (folder.hasChildren) {
-        folder.open = folder.open !== true;
+    function openFolder(folder, callback) {
+      _setFolder(folder);
+      if (!folder.subfoldersLoaded) {
+        folder.loading = true;
+        dt.getFolders(folder.path).then(function(response) {
+          folder.subfoldersLoaded = true;
+          var loadedFolder = response.data;
+          folder.children = loadedFolder.children;
+          folder.loading = false;
+          _setWidth();
+          if (callback) {
+            callback();
+          }
+        });
       }
-      for (var i = 0; i < vm.folders.length; i++) {
-        if (folder.open === true && vm.folders[i].depth === folder.depth + 1 && _isChild(folder, vm.folders[i])) {
-          vm.folders[i].visible = true;
-          vm.folders[i].indent = vm.folders[i].depth * _paddingLeft;
-        } else if (folder.open === false && vm.folders[i].depth > folder.depth && _isChild(folder, vm.folders[i])) {
-          vm.folders[i].visible = false;
-          vm.folders[i].open = false;
-        }
-        if (vm.folders[i].visible) {
-          vm.maxWidth = Math.max(vm.maxWidth, utils.getTextWidth(vm.folders[i].name) +
-            (vm.folders[i].depth * _paddingLeft) + _iconsWidth);
-        }
+    }
+
+    function _setFolder(folder) {
+      vm.width = 0;
+      folder.open = folder.open !== true;
+      if (folder.open === false) {
+        folder.loading = false;
       }
       _setWidth();
     }
@@ -147,20 +164,46 @@ define([
     }
 
     /**
-     * Determines if child is a child of folder
-     *
-     * @param {Object} folder - folder object
-     * @param {Object} child - child object
-     * @return {boolean} - true if child, false otherwise
+     * Selects a folder by path
+     * @param {String} path - Path to folder
      * @private
      */
-    function _isChild(folder, child) {
-      var childPath = child.path;
-      var depthDiff = child.depth - folder.depth;
-      for (var i = 0; i < depthDiff; i++) {
-        childPath = childPath.slice(0, childPath.lastIndexOf("/"));
+    function _openFolderTree(path) {
+      vm.tree.children[0].name = "/";
+      path = path === "/" ? "" : path;
+      var parts = path.split("/");
+      parts[0] = "/";
+      var index = 0;
+      _findAndOpenFolder(vm.tree.children, index, parts, function() {
+        // If the folder contents have loaded before the tree we want to use that object's children
+        if (vm.selectedFolder && vm.selectedFolder.path === path) {
+          var folder = _findFolderByPath(path);
+          folder.children = vm.selectedFolder.children;
+          selectFolder(folder);
+        } else {
+          _selectFolderByPath(path);
+        }
+      });
+      _setWidth();
+    }
+
+    function _findAndOpenFolder(children, index, parts, callback) {
+      if (parts.length === 1) {
+        if (callback) {
+          callback();
+        }
+        return;
       }
-      return childPath === folder.path || childPath === "";
+      if (children[index].name === parts[0]) {
+        if (parts.length >= 1) {
+          parts.shift();
+          openFolder(children[index], function() {
+            _findAndOpenFolder(children[index].children, 0, parts, callback);
+          });
+        }
+      } else {
+        _findAndOpenFolder(children, ++index, parts, callback);
+      }
     }
 
     /**
@@ -169,68 +212,29 @@ define([
      * @private
      */
     function _selectFolderByPath(path) {
-      vm.maxWidth = 0;
-      for (var i = 0; i < vm.folders.length; i++) {
-        vm.folders[i].indent = vm.folders[i].depth * _paddingLeft;
-        if (vm.folders[i].path === path) {
-          selectFolder(vm.folders[i]);
-          if (vm.autoExpand) {
-            _openParentFolder(vm.folders[i].parent);
-            vm.autoExpand = false;
-          }
-        }
-        if (vm.folders[i].visible) {
-          var width = utils.getTextWidth(vm.folders[i].name);
-          vm.maxWidth = Math.max(vm.maxWidth, width + (vm.folders[i].depth * _paddingLeft) + _iconsWidth);
-        }
-      }
+      selectFolder(_findFolderByPath(path));
       _setWidth();
     }
 
-    /**
-     * Opens parent folder of path
-     *
-     * @param {String} path - Path to a folder
-     * @private
-     */
-    function _openParentFolder(path) {
-      if (path) {
-        for (var i = 0; i < vm.folders.length; i++) {
-          if (path.indexOf(vm.folders[i].path) === 0) {
-            _openParentFolders(vm.folders[i]);
+    function _findFolderByPath(path) {
+      vm.tree.children[0].name = "/";
+      path = path === "/" ? "" : path;
+      var parts = path.split("/");
+      parts[0] = "/";
+      return _findFolder(vm.tree.children, parts);
+    }
+
+    function _findFolder(children, parts) {
+      for (var i = 0; i < children.length; i++) {
+        if (children[i].name === parts[0]) {
+          if (parts.length > 1) {
+            parts.shift();
+            return _findFolder(children[i].children, parts);
+          } else {
+            return children[i];
           }
         }
       }
-    }
-
-    /**
-     * Opens parent folders of folder
-     *
-     * @param {Object} folder - Folder Object
-     * @private
-     */
-    function _openParentFolders(folder) {
-      if (folder.hasChildren) {
-        folder.open = true;
-      }
-      for (var i = 0; i < vm.folders.length; i++) {
-        if (vm.folders[i].parent === folder.path) {
-          vm.folders[i].visible = true;
-          var width = utils.getTextWidth(vm.folders[i].name);
-          vm.maxWidth = Math.max(vm.maxWidth, width + (vm.folders[i].depth * _paddingLeft) + _iconsWidth);
-        }
-      }
-    }
-
-    /**
-     * Sets vm.width for scrolling purposes.
-     * @private
-     */
-    function _setWidth() {
-      $timeout(function() {
-        var tmpClientWidth = document.getElementById("directoryTreeArea").clientWidth;
-        vm.width = vm.maxWidth > tmpClientWidth ? vm.maxWidth : tmpClientWidth;
-      }, 0);
     }
 
     /**
@@ -256,6 +260,16 @@ define([
         return path1.length - path2.length;
       }
       return first.index - second.index;
+    }
+
+    /**
+     * Sets vm.width for scrolling purposes.
+     * @private
+     */
+    function _setWidth() {
+      $timeout(function() {
+        vm.width = document.getElementById("directoryTreeArea").scrollWidth;
+      }, 0);
     }
   }
 

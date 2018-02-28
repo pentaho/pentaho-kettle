@@ -23,27 +23,6 @@
 
 package org.pentaho.di.repository.pur;
 
-import java.io.Serializable;
-import java.lang.reflect.Proxy;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.Date;
-import java.util.EnumMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
-
-import javax.xml.namespace.QName;
-import javax.xml.ws.Service;
-import javax.xml.ws.soap.SOAPFaultException;
-
 import org.apache.commons.lang.StringUtils;
 import org.pentaho.di.cluster.ClusterSchema;
 import org.pentaho.di.cluster.SlaveServer;
@@ -82,6 +61,7 @@ import org.pentaho.di.repository.RepositoryElementMetaInterface;
 import org.pentaho.di.repository.RepositoryExtended;
 import org.pentaho.di.repository.RepositoryMeta;
 import org.pentaho.di.repository.RepositoryObject;
+import org.pentaho.di.repository.RepositoryObjectInterface;
 import org.pentaho.di.repository.RepositoryObjectType;
 import org.pentaho.di.repository.RepositorySecurityManager;
 import org.pentaho.di.repository.RepositorySecurityProvider;
@@ -108,15 +88,35 @@ import org.pentaho.platform.api.repository2.unified.RepositoryFile;
 import org.pentaho.platform.api.repository2.unified.RepositoryFileAcl;
 import org.pentaho.platform.api.repository2.unified.RepositoryFileTree;
 import org.pentaho.platform.api.repository2.unified.RepositoryRequest;
+import org.pentaho.platform.api.repository2.unified.RepositoryRequest.FILES_TYPE_FILTER;
 import org.pentaho.platform.api.repository2.unified.UnifiedRepositoryCreateFileException;
 import org.pentaho.platform.api.repository2.unified.UnifiedRepositoryUpdateFileException;
 import org.pentaho.platform.api.repository2.unified.VersionSummary;
-import org.pentaho.platform.api.repository2.unified.RepositoryRequest.FILES_TYPE_FILTER;
 import org.pentaho.platform.api.repository2.unified.data.node.DataNode;
 import org.pentaho.platform.api.repository2.unified.data.node.NodeRepositoryFileData;
 import org.pentaho.platform.repository.RepositoryFilenameUtils;
 import org.pentaho.platform.repository2.ClientRepositoryPaths;
 import org.pentaho.platform.repository2.unified.webservices.jaxws.IUnifiedRepositoryJaxwsWebService;
+
+import javax.xml.namespace.QName;
+import javax.xml.ws.Service;
+import javax.xml.ws.soap.SOAPFaultException;
+import java.io.Serializable;
+import java.lang.reflect.Proxy;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.Date;
+import java.util.EnumMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 
 /**
  * Implementation of {@link Repository} that delegates to the Pentaho unified repository (PUR), an instance of
@@ -3096,6 +3096,41 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
       default:
         throw new KettleException( "Unknown RepositoryObjectType. Should be TRANSFORMATION or JOB " );
     }
+  }
+
+  @Override
+  public List<RepositoryObjectInterface> getChildren( String path, String filter ) {
+    RepositoryRequest repoRequest = new RepositoryRequest();
+    repoRequest.setDepth( -1 );
+    repoRequest.setChildNodeFilter( "*" + filter + "*" );
+    repoRequest.setIncludeAcls( false );
+    repoRequest.setTypes( FILES_TYPE_FILTER.FILES_FOLDERS );
+    repoRequest.setPath( path );
+    repoRequest.setShowHidden( false );
+    List<RepositoryFile> repositoryFiles = pur.getChildren( repoRequest );
+    List<RepositoryObjectInterface> repositoryElementInterfaces = new ArrayList<>();
+    for ( RepositoryFile repositoryFile : repositoryFiles ) {
+      if ( repositoryFile.isFolder() ) {
+        RepositoryDirectoryInterface repositoryDirectory = new RepositoryDirectory();
+        repositoryDirectory.setName( repositoryFile.getName() );
+        repositoryDirectory.setObjectId( () -> repositoryFile.getId().toString() );
+        repositoryElementInterfaces.add( repositoryDirectory );
+      } else {
+        RepositoryObject repositoryObject = new RepositoryObject();
+        repositoryObject.setName( repositoryFile.getName() );
+        repositoryObject.setObjectId( () -> repositoryFile.getId().toString() );
+        RepositoryObjectType repositoryObjectType = RepositoryObjectType.UNKNOWN;
+        if ( repositoryFile.getName().endsWith( ".ktr" ) ) {
+          repositoryObjectType = RepositoryObjectType.TRANSFORMATION;
+        }
+        if ( repositoryFile.getName().endsWith( ".kjb" ) ) {
+          repositoryObjectType = RepositoryObjectType.JOB;
+        }
+        repositoryObject.setObjectType( repositoryObjectType );
+        repositoryElementInterfaces.add( repositoryObject );
+      }
+    }
+    return repositoryElementInterfaces;
   }
 
   @Override public boolean test() {

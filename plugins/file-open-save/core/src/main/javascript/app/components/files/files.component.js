@@ -39,8 +39,10 @@ define([
 
   var options = {
     bindings: {
+      files: "<",
       folder: "<",
       search: "<",
+      loading: "<",
       onClick: "&",
       onSelect: "&",
       onError: "&",
@@ -74,7 +76,6 @@ define([
     vm.selectFile = selectFile;
     vm.commitFile = commitFile;
     vm.rename = rename;
-    vm.getFiles = getFiles;
     vm.sortFiles = sortFiles;
     vm.compareFiles = compareFiles;
     vm.onStart = onStart;
@@ -131,45 +132,6 @@ define([
     }
 
     /**
-     * If not search, get all the files in the elements object.
-     * If it's search, get all files from search.
-     *
-     * @param {Array} elements - file structure
-     * @return {Array} - file structure with all resulting elements
-     */
-    function getFiles(elements) {
-      vm.numResults = 0;
-      var files = [];
-      if (vm.search.length > 0) {
-        resolveChildren(elements, files);
-      } else {
-        files = elements;
-        vm.numResults = (files ? files.length : 0);
-      }
-      return files;
-    }
-
-    /**
-     * Sets the files array with files that are "inResult" from search.
-     *
-     * @param {Array} elements - files to check if in search results.
-     * @param {Array} files - files in search results.
-     */
-    function resolveChildren(elements, files) {
-      if (elements) {
-        for (var i = 0; i < elements.length; i++) {
-          files.push(elements[i]);
-          if (elements[i].inResult) {
-            vm.numResults++;
-          }
-          if (elements[i].children.length > 0) {
-            resolveChildren(elements[i].children, files);
-          }
-        }
-      }
-    }
-
-    /**
      * Rename the selected file.
      *
      * @param {Object} file - File Object
@@ -211,7 +173,7 @@ define([
         var oldPath = file.path;
         var newPath = file.path.substr(0, index) + "/" + newName;
         var id = response.data.objectId;
-        vm.onRename({oldPath: oldPath, newPath: newPath, newName: newName, id: id});
+        vm.onRename({file: file, oldPath: oldPath, newPath: newPath});
         file.objectId = id;
         file.parent = response.data.parent;
         file.path = response.data.path;
@@ -238,7 +200,7 @@ define([
           var index = file.path.lastIndexOf("/");
           var oldPath = file.path;
           var newPath = file.path.substr(0, index) + "/" + current;
-          vm.onRename({oldPath: oldPath, newPath: newPath, newName: current});
+          vm.onRename({file: file, oldPath: oldPath, newPath: newPath});
         }
       }, function(response) {
         file.newName = current;
@@ -271,14 +233,14 @@ define([
     /**
      * Checks for a duplicate name
      *
-     * @param {String} name - file name to check if it already exists within vm.folder.children
+     * @param {String} name - file name to check if it already exists within vm.files
      * @param {Object} file - File Object
-     * @return {Boolean} true if it vm.folder.children already has a file named "name", false otherwise
+     * @return {Boolean} true if it vm.files already has a file named "name", false otherwise
      * @private
      */
     function _hasDuplicate(name, file) {
-      for (var i = 0; i < vm.folder.children.length; i++) {
-        var check = vm.folder.children[i];
+      for (var i = 0; i < vm.files.length; i++) {
+        var check = vm.files[i];
         if (check !== file) {
           if (check.name.toLowerCase() === name.toLowerCase() && check.type === file.type) {
             return true;

@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -23,6 +23,8 @@
 package org.pentaho.di.repository;
 
 import org.pentaho.di.core.exception.KettleException;
+
+import java.util.List;
 
 /**
  * Additional methods to be added to Repository in next major revision.
@@ -94,4 +96,6 @@ public interface RepositoryExtended extends Repository {
    */
   void deleteRepositoryDirectory( final RepositoryDirectoryInterface dir, final boolean deleteHomeDirectories )
           throws KettleException;
+
+  List<RepositoryObjectInterface> getChildren( String path, String filter );
 }
