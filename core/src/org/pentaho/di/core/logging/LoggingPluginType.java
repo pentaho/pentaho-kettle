@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,8 +22,6 @@
 
 package org.pentaho.di.core.logging;
 
-import java.io.FileInputStream;
-import java.io.InputStream;
 import java.lang.annotation.Annotation;
 import java.util.List;
 import java.util.Map;
@@ -32,7 +30,6 @@ import org.apache.commons.vfs2.FileObject;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.exception.KettlePluginException;
-import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.plugins.BasePluginType;
 import org.pentaho.di.core.plugins.PluginAnnotationType;
 import org.pentaho.di.core.plugins.PluginFolderInterface;
@@ -67,51 +64,24 @@ public class LoggingPluginType extends BasePluginType implements PluginTypeInter
     return loggingPluginType;
   }
 
-  /**
-   * Scan & register internal logging plugins
-   */
   @Override
-  protected void registerNatives() throws KettlePluginException {
-    // Scan the native steps...
-    //
-    String kettleLoggingPluginsXmlFile = Const.XML_FILE_KETTLE_LOGGING_PLUGINS;
-    String alternative = System.getProperty( Const.KETTLE_LOGGING_PLUGINS_FILE, null );
-    if ( !Utils.isEmpty( alternative ) ) {
-      kettleLoggingPluginsXmlFile = alternative;
-    }
+  protected String getXmlPluginFile() {
+    return Const.XML_FILE_KETTLE_LOGGING_PLUGINS;
+  }
 
-    // Load the plugins for this file...
-    //
-    try {
-      InputStream inputStream = getClass().getResourceAsStream( kettleLoggingPluginsXmlFile );
-      if ( inputStream == null ) {
-        inputStream = getClass().getResourceAsStream( "/" + kettleLoggingPluginsXmlFile );
-      }
-      // Retry to load a regular file...
-      if ( inputStream == null && !Utils.isEmpty( alternative ) ) {
-        try {
-          inputStream = new FileInputStream( kettleLoggingPluginsXmlFile );
-        } catch ( Exception e ) {
-          throw new KettlePluginException( "Unable to load native logging plugins '"
-            + kettleLoggingPluginsXmlFile + "'", e );
-        }
-      }
-      if ( inputStream == null ) {
-        throw new KettlePluginException( "Unable to find native logging plugins definition file: "
-          + Const.XML_FILE_KETTLE_LOGGING_PLUGINS );
-      }
-      Document document = XMLHandler.loadXMLFile( inputStream, null, true, false );
+  @Override
+  protected String getAlternativePluginFile() {
+    return Const.KETTLE_LOGGING_PLUGINS_FILE;
+  }
 
-      Node stepsNode = XMLHandler.getSubNode( document, "logging-plugins" );
-      List<Node> stepNodes = XMLHandler.getNodes( stepsNode, "logging-plugin" );
-      for ( Node stepNode : stepNodes ) {
-        registerPluginFromXmlResource( stepNode, null, this.getClass(), true, null );
-      }
+  @Override
+  protected String getMainTag() {
+    return "logging-plugins";
+  }
 
-    } catch ( KettleXMLException e ) {
-      throw new KettlePluginException( "Unable to read the kettle logging plugins XML config file: "
-        + kettleLoggingPluginsXmlFile, e );
-    }
+  @Override
+  protected String getSubTag() {
+    return "logging-plugin";
   }
 
   @Override

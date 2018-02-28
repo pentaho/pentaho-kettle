@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,7 +22,6 @@
 
 package org.pentaho.di.core.plugins;
 
-import java.io.InputStream;
 import java.lang.annotation.Annotation;
 import java.util.List;
 import java.util.Map;
@@ -31,7 +30,6 @@ import org.apache.commons.vfs2.FileObject;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.annotations.PartitionerPlugin;
 import org.pentaho.di.core.exception.KettlePluginException;
-import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.trans.Partitioner;
@@ -62,39 +60,19 @@ public class PartitionerPluginType extends BasePluginType implements PluginTypeI
     return pluginType;
   }
 
-  /**
-   * Scan & register internal step plugins
-   */
-  protected void registerNatives() throws KettlePluginException {
-    // Scan the native steps...
-    //
-    String kettlePartitionerXmlFile = Const.XML_FILE_KETTLE_PARTITION_PLUGINS;
+  @Override
+  protected String getXmlPluginFile() {
+    return Const.XML_FILE_KETTLE_PARTITION_PLUGINS;
+  }
 
-    // Load the plugins for this file...
-    //
-    try {
-      InputStream inputStream = getClass().getResourceAsStream( kettlePartitionerXmlFile );
-      if ( inputStream == null ) {
-        inputStream = getClass().getResourceAsStream( "/" + kettlePartitionerXmlFile );
-      }
-      if ( inputStream == null ) {
-        throw new KettlePluginException( "Unable to find native partition plugins definition file: "
-          + Const.XML_FILE_KETTLE_PARTITION_PLUGINS );
-      }
-      Document document = XMLHandler.loadXMLFile( inputStream, null, true, false );
+  @Override
+  protected String getMainTag() {
+    return "plugins";
+  }
 
-      // Document document = XMLHandler.loadXMLFile(kettleStepsXmlFile);
-
-      Node stepsNode = XMLHandler.getSubNode( document, "plugins" );
-      List<Node> stepNodes = XMLHandler.getNodes( stepsNode, "plugin-partitioner" );
-      for ( Node stepNode : stepNodes ) {
-        registerPluginFromXmlResource( stepNode, null, this.getClass(), true, null );
-      }
-
-    } catch ( KettleXMLException e ) {
-      throw new KettlePluginException( "Unable to read the kettle steps XML config file: "
-        + kettlePartitionerXmlFile, e );
-    }
+  @Override
+  protected String getSubTag() {
+    return "plugin-partitioner";
   }
 
   /**

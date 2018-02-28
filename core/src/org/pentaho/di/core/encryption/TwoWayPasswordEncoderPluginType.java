@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,17 +22,13 @@
 
 package org.pentaho.di.core.encryption;
 
-import java.io.FileInputStream;
-import java.io.InputStream;
 import java.lang.annotation.Annotation;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.vfs2.FileObject;
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.exception.KettlePluginException;
-import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.plugins.BasePluginType;
 import org.pentaho.di.core.plugins.PluginAnnotationType;
 import org.pentaho.di.core.plugins.PluginFolderInterface;
@@ -68,53 +64,29 @@ public class TwoWayPasswordEncoderPluginType extends BasePluginType implements P
     return twoWayPasswordEncoderPluginType;
   }
 
-  /**
-   * Scan & register internal plugins
-   */
   @Override
-  protected void registerNatives() throws KettlePluginException {
-    // Scan the native steps...
-    //
-    String passwordEncoderPluginsXmlFile = Const.XML_FILE_KETTLE_PASSWORD_ENCODER_PLUGINS;
-    String alternative = System.getProperty( Const.KETTLE_PASSWORD_ENCODER_PLUGINS_FILE, null );
-    if ( !Utils.isEmpty( alternative ) ) {
-      passwordEncoderPluginsXmlFile = alternative;
-    }
+  protected String getXmlPluginFile() {
+    return Const.XML_FILE_KETTLE_PASSWORD_ENCODER_PLUGINS;
+  }
 
-    // Load the plugins for this file...
-    //
-    try {
-      InputStream inputStream = getClass().getResourceAsStream( passwordEncoderPluginsXmlFile );
-      if ( inputStream == null ) {
-        inputStream = getClass().getResourceAsStream( "/" + passwordEncoderPluginsXmlFile );
-      }
-      // Retry to load a regular file...
-      if ( inputStream == null && !Utils.isEmpty( alternative ) ) {
-        try {
-          inputStream = new FileInputStream( passwordEncoderPluginsXmlFile );
-        } catch ( Exception e ) {
-          throw new KettlePluginException( "Unable to load native password encoder plugins '"
-            + passwordEncoderPluginsXmlFile + "'", e );
-        }
-      }
-      if ( inputStream == null ) {
-        return;
-        // throw new KettlePluginException( "Unable to find native password encoder plugins definition file: "  + passwordEncoderPluginsXmlFile );
-      }
-      Document document = XMLHandler.loadXMLFile( inputStream, null, true, false );
+  @Override
+  protected String getAlternativePluginFile() {
+    return Const.KETTLE_PASSWORD_ENCODER_PLUGINS_FILE;
+  }
 
-      // Document document = XMLHandler.loadXMLFile(kettleStepsXmlFile);
+  @Override
+  protected String getMainTag() {
+    return "password-encoder-plugins";
+  }
 
-      Node stepsNode = XMLHandler.getSubNode( document, "password-encoder-plugins" );
-      List<Node> stepNodes = XMLHandler.getNodes( stepsNode, "password-encoder-plugin" );
-      for ( Node stepNode : stepNodes ) {
-        registerPluginFromXmlResource( stepNode, null, this.getClass(), true, null );
-      }
+  @Override
+  protected String getSubTag() {
+    return "password-encoder-plugin";
+  }
 
-    } catch ( KettleXMLException e ) {
-      throw new KettlePluginException( "Unable to read the kettle metadata plugins XML config file: "
-        + passwordEncoderPluginsXmlFile, e );
-    }
+  @Override
+  protected boolean isReturn() {
+    return true;
   }
 
   @Override

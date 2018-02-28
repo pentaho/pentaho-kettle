@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,18 +22,14 @@
 
 package org.pentaho.di.core.plugins;
 
-import java.io.FileInputStream;
-import java.io.InputStream;
 import java.lang.annotation.Annotation;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.vfs2.FileObject;
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.annotations.CarteServlet;
 import org.pentaho.di.core.exception.KettlePluginException;
-import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.www.CartePluginInterface;
@@ -64,52 +60,24 @@ public class CartePluginType extends BasePluginType implements PluginTypeInterfa
     return cartePluginType;
   }
 
-  /**
-   * Scan & register internal step plugins
-   */
-  protected void registerNatives() throws KettlePluginException {
-    // Scan the native steps...
-    //
-    String kettleServletsXmlFile = Const.XML_FILE_KETTLE_SERVLETS;
-    String alternative = System.getProperty( Const.KETTLE_CORE_SERVLETS_FILE, null );
-    if ( !Utils.isEmpty( alternative ) ) {
-      kettleServletsXmlFile = alternative;
-    }
+  @Override
+  protected String getXmlPluginFile() {
+    return Const.XML_FILE_KETTLE_SERVLETS;
+  }
 
-    // Load the plugins for this file...
-    //
-    try {
-      InputStream inputStream = getClass().getResourceAsStream( kettleServletsXmlFile );
-      if ( inputStream == null ) {
-        inputStream = getClass().getResourceAsStream( "/" + kettleServletsXmlFile );
-      }
-      // Retry to load a regular file...
-      if ( inputStream == null && !Utils.isEmpty( alternative ) ) {
-        try {
-          inputStream = new FileInputStream( kettleServletsXmlFile );
-        } catch ( Exception e ) {
-          throw new KettlePluginException(
-            "Unable to load native servlet plugins '" + kettleServletsXmlFile + "'", e );
-        }
-      }
-      if ( inputStream == null ) {
-        throw new KettlePluginException( "Unable to find native servlets definition file: '"
-          + kettleServletsXmlFile + "'" );
-      }
-      Document document = XMLHandler.loadXMLFile( inputStream, null, true, false );
+  @Override
+  protected String getAlternativePluginFile() {
+    return Const.KETTLE_CORE_SERVLETS_FILE;
+  }
 
-      // Document document = XMLHandler.loadXMLFile(kettleStepsXmlFile);
+  @Override
+  protected String getMainTag() {
+    return "servlets";
+  }
 
-      Node servletsNode = XMLHandler.getSubNode( document, "servlets" );
-      List<Node> servletNodes = XMLHandler.getNodes( servletsNode, "servlet" );
-      for ( Node servletNode : servletNodes ) {
-        registerPluginFromXmlResource( servletNode, null, this.getClass(), true, null );
-      }
-
-    } catch ( KettleXMLException e ) {
-      throw new KettlePluginException( "Unable to read the kettle servlets XML config file: '"
-        + kettleServletsXmlFile + "'", e );
-    }
+  @Override
+  protected String getSubTag() {
+    return "servlet";
   }
 
   protected void registerXmlPlugins() throws KettlePluginException {

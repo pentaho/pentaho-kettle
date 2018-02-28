@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,17 +22,13 @@
 
 package org.pentaho.di.core.row.value;
 
-import java.io.FileInputStream;
-import java.io.InputStream;
 import java.lang.annotation.Annotation;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.vfs2.FileObject;
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.exception.KettlePluginException;
-import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.plugins.BasePluginType;
 import org.pentaho.di.core.plugins.PluginAnnotationType;
 import org.pentaho.di.core.plugins.PluginFolderInterface;
@@ -69,53 +65,24 @@ public class ValueMetaPluginType extends BasePluginType implements PluginTypeInt
     return valueMetaPluginType;
   }
 
-  /**
-   * Scan & register internal value meta plugins
-   */
   @Override
-  protected void registerNatives() throws KettlePluginException {
-    // Scan the native steps...
-    //
-    String kettleValueMetaPluginsXmlFile = Const.XML_FILE_KETTLE_VALUEMETA_PLUGINS;
-    String alternative = System.getProperty( Const.KETTLE_VALUEMETA_PLUGINS_FILE, null );
-    if ( !Utils.isEmpty( alternative ) ) {
-      kettleValueMetaPluginsXmlFile = alternative;
-    }
+  protected String getXmlPluginFile() {
+    return Const.XML_FILE_KETTLE_VALUEMETA_PLUGINS;
+  }
 
-    // Load the plugins for this file...
-    //
-    try {
-      InputStream inputStream = getClass().getResourceAsStream( kettleValueMetaPluginsXmlFile );
-      if ( inputStream == null ) {
-        inputStream = getClass().getResourceAsStream( "/" + kettleValueMetaPluginsXmlFile );
-      }
-      // Retry to load a regular file...
-      if ( inputStream == null && !Utils.isEmpty( alternative ) ) {
-        try {
-          inputStream = new FileInputStream( kettleValueMetaPluginsXmlFile );
-        } catch ( Exception e ) {
-          throw new KettlePluginException( "Unable to load native value meta plugins '"
-            + kettleValueMetaPluginsXmlFile + "'", e );
-        }
-      }
-      if ( inputStream == null ) {
-        throw new KettlePluginException( "Unable to find native value meta plugins definition file: "
-          + Const.XML_FILE_KETTLE_STEPS );
-      }
-      Document document = XMLHandler.loadXMLFile( inputStream, null, true, false );
+  @Override
+  protected String getAlternativePluginFile() {
+    return Const.KETTLE_VALUEMETA_PLUGINS_FILE;
+  }
 
-      // Document document = XMLHandler.loadXMLFile(kettleStepsXmlFile);
+  @Override
+  protected String getMainTag() {
+    return "valuemeta-plugins";
+  }
 
-      Node stepsNode = XMLHandler.getSubNode( document, "valuemeta-plugins" );
-      List<Node> stepNodes = XMLHandler.getNodes( stepsNode, "valuemeta-plugin" );
-      for ( Node stepNode : stepNodes ) {
-        registerPluginFromXmlResource( stepNode, null, this.getClass(), true, null );
-      }
-
-    } catch ( KettleXMLException e ) {
-      throw new KettlePluginException( "Unable to read the kettle metadata plugins XML config file: "
-        + kettleValueMetaPluginsXmlFile, e );
-    }
+  @Override
+  protected String getSubTag() {
+    return "valuemeta-plugin";
   }
 
   @Override

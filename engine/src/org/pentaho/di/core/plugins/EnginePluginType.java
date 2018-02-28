@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -24,15 +24,9 @@ package org.pentaho.di.core.plugins;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.annotations.EnginePlugin;
 import org.pentaho.di.core.exception.KettlePluginException;
-import org.pentaho.di.core.exception.KettleXMLException;
-import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.engine.api.Engine;
-import org.w3c.dom.Document;
-import org.w3c.dom.Node;
 
-import java.io.InputStream;
 import java.lang.annotation.Annotation;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -57,31 +51,28 @@ public class EnginePluginType extends BasePluginType implements PluginTypeInterf
   }
 
   @Override
-  protected void registerNatives() throws KettlePluginException {
-    // Scan the native database types...
-    //
-    String xmlFile = Const.XML_FILE_KETTLE_ENGINES;
+  protected String getXmlPluginFile() {
+    return Const.XML_FILE_KETTLE_ENGINES;
+  }
 
-    // Load the plugins for this file...
-    //
-    try {
-      InputStream inputStream = getClass().getResourceAsStream( xmlFile );
-      if ( inputStream == null ) {
-        inputStream = getClass().getResourceAsStream( "/" + xmlFile );
-      }
-      if ( inputStream == null ) {
-        return;
-      }
-      Document document = XMLHandler.loadXMLFile( inputStream, null, true, false );
+  @Override
+  protected String getMainTag() {
+    return "engines";
+  }
 
-      Node repsNode = XMLHandler.getSubNode( document, "engines" );
-      List<Node> repsNodes = XMLHandler.getNodes( repsNode, "engine" );
-      for ( Node repNode : repsNodes ) {
-        registerPluginFromXmlResource( repNode, "./", this.getClass(), true, null );
-      }
-    } catch ( KettleXMLException e ) {
-      throw new KettlePluginException( "Unable to read the kettle extension points XML config file: " + xmlFile, e );
-    }
+  @Override
+  protected String getSubTag() {
+    return "engine";
+  }
+
+  @Override
+  protected String getPath() {
+    return "./";
+  }
+
+  @Override
+  protected boolean isReturn() {
+    return true;
   }
 
   @Override

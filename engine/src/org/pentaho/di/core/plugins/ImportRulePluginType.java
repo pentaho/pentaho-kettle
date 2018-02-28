@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,19 +22,13 @@
 
 package org.pentaho.di.core.plugins;
 
-import java.io.InputStream;
 import java.lang.annotation.Annotation;
-import java.util.List;
 import java.util.Map;
 
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.annotations.ImportRulePlugin;
 import org.pentaho.di.core.exception.KettlePluginException;
-import org.pentaho.di.core.exception.KettleXMLException;
-import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.imp.rule.ImportRuleInterface;
-import org.w3c.dom.Document;
-import org.w3c.dom.Node;
 
 /**
  * This is the import rule plugin type.
@@ -60,39 +54,19 @@ public class ImportRulePluginType extends BasePluginType implements PluginTypeIn
     return pluginType;
   }
 
-  /**
-   * Scan & register internal step plugins
-   */
-  protected void registerNatives() throws KettlePluginException {
-    // Scan the native steps...
-    //
-    String kettleImportRulesXmlFile = Const.XML_FILE_KETTLE_IMPORT_RULES;
+  @Override
+  protected String getXmlPluginFile() {
+    return Const.XML_FILE_KETTLE_IMPORT_RULES;
+  }
 
-    // Load the plugins for this file...
-    //
-    try {
-      InputStream inputStream = getClass().getResourceAsStream( kettleImportRulesXmlFile );
-      if ( inputStream == null ) {
-        inputStream = getClass().getResourceAsStream( "/" + kettleImportRulesXmlFile );
-      }
-      if ( inputStream == null ) {
-        throw new KettlePluginException( "Unable to find native import rules definition file: "
-          + Const.XML_FILE_KETTLE_IMPORT_RULES );
-      }
-      Document document = XMLHandler.loadXMLFile( inputStream, null, true, false );
+  @Override
+  protected String getMainTag() {
+    return "rules";
+  }
 
-      // Document document = XMLHandler.loadXMLFile(kettleStepsXmlFile);
-
-      Node stepsNode = XMLHandler.getSubNode( document, "rules" );
-      List<Node> stepNodes = XMLHandler.getNodes( stepsNode, "rule" );
-      for ( Node stepNode : stepNodes ) {
-        registerPluginFromXmlResource( stepNode, null, this.getClass(), true, null );
-      }
-
-    } catch ( KettleXMLException e ) {
-      throw new KettlePluginException( "Unable to read the kettle steps XML config file: "
-        + kettleImportRulesXmlFile, e );
-    }
+  @Override
+  protected String getSubTag() {
+    return "rule";
   }
 
   /**
