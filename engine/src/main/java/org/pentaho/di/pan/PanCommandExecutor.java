@@ -1,14 +1,33 @@
+/*! ******************************************************************************
+ *
+ * Pentaho Data Integration
+ *
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ *
+ *******************************************************************************
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ ******************************************************************************/
+
 package org.pentaho.di.pan;
 
-import com.sun.org.apache.regexp.internal.RE;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleSecurityException;
 import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.logging.LogChannelInterface;
-import org.pentaho.di.core.logging.LogLevel;
 import org.pentaho.di.core.parameters.NamedParams;
-import org.pentaho.di.core.parameters.NamedParamsDefault;
 import org.pentaho.di.core.parameters.UnknownParamException;
 import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.plugins.RepositoryPluginType;
@@ -16,8 +35,6 @@ import org.pentaho.di.core.util.FileUtil;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.core.vfs.KettleVFS;
-import org.pentaho.di.core.util.FileUtil;
-import org.pentaho.di.core.parameters.UnknownParamException;
 import org.pentaho.di.metastore.MetaStoreConst;
 import org.pentaho.di.repository.RepositoriesMeta;
 import org.pentaho.di.repository.Repository;
@@ -71,7 +88,7 @@ public class PanCommandExecutor {
 
     try {
 
-      if( getMetaStore() == null ) {
+      if ( getMetaStore() == null ) {
         setMetaStore( createDefaultMetastore() );
       }
 
@@ -80,9 +97,9 @@ public class PanCommandExecutor {
       // Read kettle transformation specified
       if ( !Utils.isEmpty( repoName ) || !Utils.isEmpty( filename ) || !Utils.isEmpty( jarFile ) ) {
 
-        logDebug("Pan.Log.ParsingCommandline");
+        logDebug( "Pan.Log.ParsingCommandline" );
 
-        if (!Utils.isEmpty( repoName ) && !YES.equalsIgnoreCase( noRepo ) ) {
+        if ( !Utils.isEmpty( repoName ) && !YES.equalsIgnoreCase( noRepo ) ) {
 
           // In case we use a repository...
           // some commands are to load a Trans from the repo; others are merely to print some repo-related information
@@ -99,7 +116,7 @@ public class PanCommandExecutor {
       }
 
       if ( YES.equalsIgnoreCase( listRepos ) ) {
-          printRepositories( loadRepositoryInfo() ); // list the repositories placed at repositories.xml
+        printRepositories( loadRepositoryInfo() ); // list the repositories placed at repositories.xml
       }
 
     } catch ( Exception e ) {
@@ -116,8 +133,8 @@ public class PanCommandExecutor {
       if ( !YES.equalsIgnoreCase( listTrans ) && !YES.equalsIgnoreCase( listDirs )
               && !YES.equalsIgnoreCase( listRepos ) && Utils.isEmpty( exportRepo ) ) {
 
-          System.out.println( BaseMessages.getString( getPkgClazz(), "Pan.Error.CanNotLoadTrans" ) );
-          return PanReturnCode.COULD_NOT_LOAD_TRANS.getCode();
+        System.out.println( BaseMessages.getString( getPkgClazz(), "Pan.Error.CanNotLoadTrans" ) );
+        return PanReturnCode.COULD_NOT_LOAD_TRANS.getCode();
       } else {
           return PanReturnCode.SUCCESS.getCode();
       }
@@ -134,10 +151,10 @@ public class PanCommandExecutor {
       // List the parameters defined in this transformation, and then simply exit
       if ( YES.equalsIgnoreCase( listParams ) ) {
 
-          printTransformationParameters( trans );
+        printTransformationParameters( trans );
 
-          // stop right here...
-          return PanReturnCode.COULD_NOT_LOAD_TRANS.getCode(); // same as the other list options
+        // stop right here...
+        return PanReturnCode.COULD_NOT_LOAD_TRANS.getCode(); // same as the other list options
       }
 
       // allocate & run the required sub-threads
@@ -150,7 +167,7 @@ public class PanCommandExecutor {
         return PanReturnCode.UNABLE_TO_PREP_INIT_TRANS.getCode();
       }
 
-      waitUntilFinished( trans , 100 ); // Give the transformation up to 10 seconds to finish execution
+      waitUntilFinished( trans, 100 ); // Give the transformation up to 10 seconds to finish execution
 
       if ( trans.isRunning() ) {
         getLog().logError( BaseMessages.getString( getPkgClazz(), "Pan.Log.NotStopping" ) );
@@ -176,7 +193,7 @@ public class PanCommandExecutor {
           try {
             return Integer.parseInt( transJVMExitCode );
 
-          } catch( NumberFormatException nfe ) {
+          } catch ( NumberFormatException nfe ) {
             getLog().logError( BaseMessages.getString( getPkgClazz(), "Pan.Error.TransJVMExitCodeInvalid",
                     Const.KETTLE_TRANS_PAN_JVM_EXIT_CODE, transJVMExitCode ) );
             getLog().logError( BaseMessages.getString( getPkgClazz(), "Pan.Log.JVMExitCode", "1" ) );
@@ -225,7 +242,7 @@ public class PanCommandExecutor {
 
         // Add the IMetaStore of the repository to our delegation
         if ( repo.getMetaStore() != null && getMetaStore() != null ) {
-          getMetaStore().addMetaStore( repo.getMetaStore( ));
+          getMetaStore().addMetaStore( repo.getMetaStore() );
         }
 
         // Find the directory name if one is specified...
@@ -240,17 +257,17 @@ public class PanCommandExecutor {
           // transname is not empty ? then command it to load a transformation
           if ( !Utils.isEmpty( transName ) ) {
 
-            logDebug("Pan.Log.LoadTransInfo");
+            logDebug("Pan.Log.LoadTransInfo" );
             TransMeta transMeta = repo.loadTransformation( transName, directory, null, true, null );
 
-            logDebug("Pan.Log.AllocateTrans");
+            logDebug("Pan.Log.AllocateTrans" );
             Trans trans = new Trans( transMeta );
             trans.setRepository( repo );
             trans.setMetaStore( getMetaStore() );
 
             return trans; // return transformation loaded from the repo
 
-          } else if ( YES.equalsIgnoreCase( listTrans) ) {
+          } else if ( YES.equalsIgnoreCase( listTrans ) ) {
 
             printRepositoryStoredTransformations( repo, directory ); // List the transformations in the repository
 
@@ -387,8 +404,8 @@ public class PanCommandExecutor {
 
   protected void printTransformationParameters( Trans transformation ) throws UnknownParamException {
 
-    if( transformation == null || transformation.listParameters() == null ) {
-        return;
+    if ( transformation == null || transformation.listParameters() == null ) {
+      return;
     }
 
     for ( String paramName : transformation.listParameters() ) {
@@ -400,19 +417,19 @@ public class PanCommandExecutor {
         System.out.println( "Parameter: " + paramName + "=" + Const.NVL( value, "" ) + ", default=" + deflt + " : " + Const.NVL( descr, "" ) );
       } else {
         System.out.println( "Parameter: " + paramName + "=" + Const.NVL( value, "" ) + " : " + Const.NVL( descr, "" ) );
-          }
       }
+    }
   }
 
   protected void printRepositoryDirectories( Repository repository, RepositoryDirectoryInterface directory ) throws KettleException {
 
-      String[] directories = repository.getDirectoryNames( directory.getObjectId() );
+    String[] directories = repository.getDirectoryNames( directory.getObjectId() );
 
-      if( directories != null ) {
-          for ( String dir :  directories ) {
-              System.out.println( dir );
-          }
+    if ( directories != null ) {
+      for ( String dir :  directories ) {
+        System.out.println( dir );
       }
+    }
   }
 
   protected void printRepositoryStoredTransformations( Repository repository, RepositoryDirectoryInterface directory ) throws KettleException {
@@ -420,7 +437,7 @@ public class PanCommandExecutor {
     logDebug( "Pan.Log.GettingListTransDirectory", "" + directory );
     String[] transformations = repository.getTransformationNames( directory.getObjectId(), false );
 
-    if( transformations != null ) {
+    if ( transformations != null ) {
       for ( String trans :  transformations ) {
         System.out.println( trans );
       }
@@ -446,7 +463,7 @@ public class PanCommandExecutor {
     RepositoriesMeta repsinfo = null;
 
     if ( Utils.isEmpty( optionRepname ) || ( repsinfo = loadRepositoryInfo() ) == null ) {
-        return null;
+      return null;
     }
 
     logDebug(  "Pan.Log.FindingRep", optionRepname );
@@ -472,24 +489,24 @@ public class PanCommandExecutor {
   protected Repository establishRepositoryConnection( RepositoryMeta repositoryMeta, final String username, final String password,
                                                       final RepositoryOperation... operations ) throws KettleException, KettleSecurityException {
 
-      Repository rep = PluginRegistry.getInstance().loadClass( RepositoryPluginType.class, repositoryMeta, Repository.class );
-      rep.init( repositoryMeta );
-      rep.getLog().setLogLevel( getLog().getLogLevel() );
-      rep.connect( username != null ? username : null, password != null ? password : null );
+    Repository rep = PluginRegistry.getInstance().loadClass( RepositoryPluginType.class, repositoryMeta, Repository.class );
+    rep.init( repositoryMeta );
+    rep.getLog().setLogLevel( getLog().getLogLevel() );
+    rep.connect( username != null ? username : null, password != null ? password : null );
 
-      if( operations != null ) {
-        // throws KettleSecurityException if username does does have permission for given operations
-        rep.getSecurityProvider().validateAction( operations );
-      }
+    if( operations != null ) {
+      // throws KettleSecurityException if username does does have permission for given operations
+      rep.getSecurityProvider().validateAction( operations );
+    }
 
-      return rep;
+    return rep;
   }
 
   protected SimpleDateFormat getDateFormat() {
     return dateFormat;
   }
 
-  private void waitUntilFinished(Trans trans, final long waitMillis ) {
+  private void waitUntilFinished( Trans trans, final long waitMillis ) {
 
     if ( trans != null && trans.isRunning() ) {
 
@@ -497,7 +514,7 @@ public class PanCommandExecutor {
 
       for ( int i = 0; i < 100; i++ ) {
         if ( !trans.isRunning() ) {
-            break;
+          break;
         }
 
         try {
