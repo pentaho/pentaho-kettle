@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Hitachi Vantara. All rights reserved.
+ * Copyright 2017-2018 Hitachi Vantara. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -295,6 +295,9 @@ public class RepositoryBrowserController {
   }
 
   public RepositoryDirectory create( String parent, String name ) {
+    if ( hasDupeFolder( parent, name ) ) {
+      return null;
+    }
     try {
       RepositoryDirectoryInterface repositoryDirectoryInterface =
         getRepository().createRepositoryDirectory( getRepository().findDirectory( parent ), name );
@@ -309,8 +312,23 @@ public class RepositoryBrowserController {
     }
   }
 
+  /**Checks if there is a duplicate folder in a given directory (i.e. hidden folder)
+   * @param parent - Parent directory
+   * @param name - Name of folder
+   * @return - true if the parent directory has a folder equal to name, false otherwise
+   */
+  private boolean hasDupeFolder( String parent, String name ) {
+    try {
+      RepositoryDirectoryInterface rdi = getRepository().findDirectory( parent ).findChild( name );
+      return rdi != null;
+    } catch ( Exception e ) {
+      System.out.println( e );
+    }
+    return false;
+  }
+
   public boolean saveFile( String path, String name ) {
-    boolean result = checkSecurity();
+    boolean result = checkForSecurityOrDupeIssues( path, name );
     if ( result ) {
       try {
         RepositoryDirectoryInterface repositoryDirectoryInterface = getRepository().findDirectory( path );
@@ -330,6 +348,31 @@ public class RepositoryBrowserController {
       }
     }
     return result;
+  }
+
+  public boolean checkForSecurityOrDupeIssues( String path, String name ) {
+    return checkSecurity() && !hasDupeFile( path, name );
+  }
+
+  /**
+   * Checks if there is a duplicate file in a given directory (i.e. hidden file)
+   * @param path - Path to directory in which we are saving
+   * @param name - Name of file to save
+   * @return - true if a duplicate file is found, false otherwise
+   */
+  private boolean hasDupeFile( String path, String name ) {
+    try {
+      RepositoryDirectoryInterface repositoryDirectoryInterface = getRepository().findDirectory( path );
+      EngineMetaInterface meta = getSpoon().getActiveMeta();
+      RepositoryObjectType type = "Trans".equals( meta.getFileType() )
+        ? RepositoryObjectType.TRANSFORMATION : RepositoryObjectType.JOB;
+      if ( getRepository().exists( name, repositoryDirectoryInterface, type ) ) {
+        return true;
+      }
+    } catch ( Exception e ) {
+      System.out.println( e );
+    }
+    return false;
   }
 
   private boolean checkSecurity() {
