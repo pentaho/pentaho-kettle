@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,18 +22,14 @@
 
 package org.pentaho.di.core.plugins;
 
-import java.io.FileInputStream;
-import java.io.InputStream;
 import java.lang.annotation.Annotation;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.vfs2.FileObject;
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.annotations.Step;
 import org.pentaho.di.core.exception.KettlePluginException;
-import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.trans.step.StepInterface;
@@ -98,50 +94,24 @@ public class StepPluginType extends BasePluginType implements PluginTypeInterfac
     return stepPluginType;
   }
 
-  /**
-   * Scan & register internal step plugins
-   */
-  protected void registerNatives() throws KettlePluginException {
-    // Scan the native steps...
-    //
-    String kettleStepsXmlFile = Const.XML_FILE_KETTLE_STEPS;
-    String alternative = System.getProperty( Const.KETTLE_CORE_STEPS_FILE, null );
-    if ( !Utils.isEmpty( alternative ) ) {
-      kettleStepsXmlFile = alternative;
-    }
+  @Override
+  protected String getXmlPluginFile() {
+    return Const.XML_FILE_KETTLE_STEPS;
+  }
 
-    // Load the plugins for this file...
-    //
-    try {
-      InputStream inputStream = getClass().getResourceAsStream( kettleStepsXmlFile );
-      if ( inputStream == null ) {
-        inputStream = getClass().getResourceAsStream( "/" + kettleStepsXmlFile );
-      }
-      // Retry to load a regular file...
-      if ( inputStream == null && !Utils.isEmpty( alternative ) ) {
-        try {
-          inputStream = new FileInputStream( kettleStepsXmlFile );
-        } catch ( Exception e ) {
-          throw new KettlePluginException( "Unable to load native step plugins '" + kettleStepsXmlFile + "'", e );
-        }
-      }
-      if ( inputStream == null ) {
-        throw new KettlePluginException( "Unable to find native step definition file: "
-          + Const.XML_FILE_KETTLE_STEPS );
-      }
-      Document document = XMLHandler.loadXMLFile( inputStream, null, true, false );
+  @Override
+  protected String getAlternativePluginFile() {
+    return Const.KETTLE_CORE_STEPS_FILE;
+  }
 
-      // Document document = XMLHandler.loadXMLFile(kettleStepsXmlFile);
+  @Override
+  protected String getMainTag() {
+    return "steps";
+  }
 
-      Node stepsNode = XMLHandler.getSubNode( document, "steps" );
-      List<Node> stepNodes = XMLHandler.getNodes( stepsNode, "step" );
-      for ( Node stepNode : stepNodes ) {
-        registerPluginFromXmlResource( stepNode, null, this.getClass(), true, null );
-      }
-
-    } catch ( KettleXMLException e ) {
-      throw new KettlePluginException( "Unable to read the kettle steps XML config file: " + kettleStepsXmlFile, e );
-    }
+  @Override
+  protected String getSubTag() {
+    return "step";
   }
 
   protected void registerXmlPlugins() throws KettlePluginException {

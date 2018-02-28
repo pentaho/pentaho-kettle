@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,7 +22,6 @@
 
 package org.pentaho.di.core.plugins;
 
-import java.io.InputStream;
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.List;
@@ -30,11 +29,7 @@ import java.util.Map;
 
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettlePluginException;
-import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.gui.GUIOption;
-import org.pentaho.di.core.xml.XMLHandler;
-import org.w3c.dom.Document;
-import org.w3c.dom.Node;
 
 /**
  * Plugins of this type can extend to capabilities of the PluginRegiestry
@@ -80,31 +75,28 @@ public class PluginRegistryPluginType extends BasePluginType implements PluginTy
   }
 
   @Override
-  protected void registerNatives() throws KettlePluginException {
-    // Scan the native database types...
-    //
-    String xmlFile = Const.XML_FILE_KETTLE_REGISTRY_EXTENSIONS;
+  protected String getXmlPluginFile() {
+    return Const.XML_FILE_KETTLE_REGISTRY_EXTENSIONS;
+  }
 
-    // Load the plugins for this file...
-    //
-    try {
-      InputStream inputStream = getClass().getResourceAsStream( xmlFile );
-      if ( inputStream == null ) {
-        inputStream = getClass().getResourceAsStream( "/" + xmlFile );
-      }
-      if ( inputStream == null ) {
-        return;
-      }
-      Document document = XMLHandler.loadXMLFile( inputStream, null, true, false );
+  @Override
+  protected String getMainTag() {
+    return "registry-extensions";
+  }
 
-      Node repsNode = XMLHandler.getSubNode( document, "registry-extensions" );
-      List<Node> repsNodes = XMLHandler.getNodes( repsNode, "registry-extension" );
-      for ( Node repNode : repsNodes ) {
-        registerPluginFromXmlResource( repNode, "./", this.getClass(), true, null );
-      }
-    } catch ( KettleXMLException e ) {
-      throw new KettlePluginException( "Unable to read the kettle extension points XML config file: " + xmlFile, e );
-    }
+  @Override
+  protected String getSubTag() {
+    return "registry-extension";
+  }
+
+  @Override
+  protected String getPath() {
+    return "./";
+  }
+
+  @Override
+  protected boolean isReturn() {
+    return true;
   }
 
   @Override

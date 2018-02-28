@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,7 +22,6 @@
 
 package org.pentaho.di.core.compress;
 
-import java.io.InputStream;
 import java.lang.annotation.Annotation;
 import java.net.URL;
 import java.util.List;
@@ -30,14 +29,10 @@ import java.util.Map;
 
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettlePluginException;
-import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.plugins.BasePluginType;
 import org.pentaho.di.core.plugins.PluginAnnotationType;
 import org.pentaho.di.core.plugins.PluginMainClassType;
 import org.pentaho.di.core.plugins.PluginTypeInterface;
-import org.pentaho.di.core.xml.XMLHandler;
-import org.w3c.dom.Document;
-import org.w3c.dom.Node;
 
 /**
  * This class represents the compression plugin type.
@@ -60,36 +55,24 @@ public class CompressionPluginType extends BasePluginType implements PluginTypeI
     return pluginType;
   }
 
-  /**
-   * Scan & register internal step plugins
-   */
   @Override
-  protected void registerNatives() throws KettlePluginException {
-    // Scan the native database types...
-    //
-    String xmlFile = Const.XML_FILE_KETTLE_COMPRESSION_PROVIDERS;
+  protected String getXmlPluginFile() {
+    return Const.XML_FILE_KETTLE_COMPRESSION_PROVIDERS;
+  }
 
-    // Load the plugins for this file...
-    //
-    try {
-      InputStream inputStream = getClass().getResourceAsStream( xmlFile );
-      if ( inputStream == null ) {
-        inputStream = getClass().getResourceAsStream( "/" + xmlFile );
-      }
-      if ( inputStream == null ) {
-        throw new KettlePluginException( "Unable to find native kettle compression providers definition file: "
-          + xmlFile );
-      }
-      Document document = XMLHandler.loadXMLFile( inputStream, null, true, false );
+  @Override
+  protected String getMainTag() {
+    return "compression-providers";
+  }
 
-      Node repsNode = XMLHandler.getSubNode( document, "compression-providers" );
-      List<Node> repsNodes = XMLHandler.getNodes( repsNode, "compression-provider" );
-      for ( Node repNode : repsNodes ) {
-        registerPluginFromXmlResource( repNode, "./", this.getClass(), true, null );
-      }
-    } catch ( KettleXMLException e ) {
-      throw new KettlePluginException( "Unable to read the kettle compression providers config file: " + xmlFile, e );
-    }
+  @Override
+  protected String getSubTag() {
+    return "compression-provider";
+  }
+
+  @Override
+  protected String getPath() {
+    return "./";
   }
 
   @Override
