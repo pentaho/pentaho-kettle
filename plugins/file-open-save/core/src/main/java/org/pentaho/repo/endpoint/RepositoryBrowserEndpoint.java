@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Hitachi Vantara. All rights reserved.
+ * Copyright 2017-2018 Hitachi Vantara. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -103,6 +103,15 @@ public class RepositoryBrowserEndpoint {
       return Response.ok().build();
     }
 
+    return Response.noContent().build();
+  }
+
+  @GET
+  @Path( "/checkForSecurityOrDupeIssues/{path}/{name}" )
+  public Response checkForSecurityOrDupeIssues( @PathParam( "path" ) String path, @PathParam( "name" ) String name ) {
+    if ( repositoryBrowserController.checkForSecurityOrDupeIssues( path, name ) ) {
+      return Response.ok().build();
+    }
     return Response.noContent().build();
   }
 

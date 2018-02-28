@@ -1,7 +1,7 @@
 /*!
  * HITACHI VANTARA PROPRIETARY AND CONFIDENTIAL
  *
- * Copyright 2017 Hitachi Vantara. All rights reserved.
+ * Copyright 2017-2018 Hitachi Vantara. All rights reserved.
  *
  * NOTICE: All information including source code contained herein is, and
  * remains the sole property of Hitachi Vantara and its licensors. The intellectual
@@ -427,7 +427,13 @@ define([
     function _save(override) {
       if (!_isDuplicate() || override) {
         try {
-          select("", vm.fileToSave, vm.folder.path, "");
+          dt.checkForSecurityOrDupeIssues(vm.folder.path, vm.fileToSave).then(function(response) {
+            if (response.status === 200) {
+              select("", vm.fileToSave, vm.folder.path, "");
+            } else {
+              _triggerError(3);
+            }
+          });
         } catch (e) {
           dt.saveFile(vm.folder.path, vm.fileToSave).then(function(response) {
             if (response.status === 200) {
@@ -793,6 +799,7 @@ define([
 
     /**
      * Checks to see if the user has entered a file to save the same as a file already in current directory
+     * NOTE: does not check for hidden files. That is done in the checkForSecurityOrDupeIssues rest call
      * @return {boolean} - true if duplicate, false otherwise
      * @private
      */
