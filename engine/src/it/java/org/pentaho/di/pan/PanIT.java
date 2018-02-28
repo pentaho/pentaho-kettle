@@ -84,39 +84,69 @@ public class PanIT {
 
   @Test
   public void testArchivedTransExecution() throws Exception {
-    String file = this.getClass().getResource( "test-ktr.zip" ).getFile();
-    String[] args = new String[] { "/file:zip:file://" + file + "!Pan.ktr" };
-    oldOut = System.out;
-    oldErr = System.err;
-    System.setOut( new PrintStream( outContent ) );
-    System.setErr( new PrintStream( errContent ) );
+
+    long now = System.currentTimeMillis();
+
+    String testKTRRelativePath = "." + File.separator + "test-ktr.zip";
+    String testKTRFullPath = this.getClass().getResource( testKTRRelativePath ).getFile();
+    String logFileRelativePath = testKTRRelativePath + "." + now + ".log";
+    String logFileFullPath = testKTRFullPath + "." + now + ".log";
+
     try {
-      Pan.main( args );
+
+      Pan.main( new String[] { "/file:zip:file://" + testKTRFullPath + "!Pan.ktr", "/level:Basic", "/logfile:" + logFileFullPath } );
+
     } catch ( SecurityException e ) {
-      System.setOut( oldOut );
-      System.setErr( oldErr );
-      System.out.println( outContent );
-      assertFalse( outContent.toString().contains( "error" ) );
-      assertFalse( outContent.toString().contains( "stopped" ) );
+      // All OK / expected: SecurityException is purposely thrown when Pan triggers System.exitJVM()
+
+      // get log file contents
+      String logFileContent = getFileContentAsString( logFileRelativePath );
+
+      // use FINISHED_PROCESSING_ERROR_COUNT_REGEX to get execution error count
+      int errorCount = parseErrorCount( logFileContent );
+
+      assertTrue( !logFileContent.contains( FAILED_TO_INITIALIZE_ERROR_PATTERN ) &&  errorCount == 0 );
+
+    } finally {
+      // sanitize
+      File f = new File( logFileFullPath );
+      if ( f != null && f.exists() ) {
+        f.deleteOnExit();
+      }
     }
   }
 
   @Test
   public void testFileTransExecution() throws Exception {
-    String file = this.getClass().getResource( "Pan.ktr" ).getFile();
-    String[] args = new String[] { "/file:" + file };
-    oldOut = System.out;
-    oldErr = System.err;
-    System.setOut( new PrintStream( outContent ) );
-    System.setErr( new PrintStream( errContent ) );
+
+    long now = System.currentTimeMillis();
+
+    String testKTRRelativePath = "." + File.separator + "Pan.ktr";
+    String testKTRFullPath = this.getClass().getResource( testKTRRelativePath ).getFile();
+    String logFileRelativePath = testKTRRelativePath + "." + now + ".log";
+    String logFileFullPath = testKTRFullPath + "." + now + ".log";
+
     try {
-      Pan.main( args );
+
+      Pan.main( new String[] { "/file:" + testKTRFullPath, "/level:Basic", "/logfile:" + logFileFullPath } );
+
     } catch ( SecurityException e ) {
-      System.setOut( oldOut );
-      System.setErr( oldErr );
-      System.out.println( outContent );
-      assertFalse( outContent.toString().contains( "error" ) );
-      assertFalse( outContent.toString().contains( "stopped" ) );
+      // All OK / expected: SecurityException is purposely thrown when Pan triggers System.exitJVM()
+
+      // get log file contents
+      String logFileContent = getFileContentAsString( logFileRelativePath );
+
+      // use FINISHED_PROCESSING_ERROR_COUNT_REGEX to get execution error count
+      int errorCount = parseErrorCount( logFileContent );
+
+      assertTrue( !logFileContent.contains( FAILED_TO_INITIALIZE_ERROR_PATTERN ) &&  errorCount == 0 );
+
+    } finally {
+      // sanitize
+      File f = new File( logFileFullPath );
+      if ( f != null && f.exists() ) {
+        f.deleteOnExit();
+      }
     }
   }
 

@@ -987,6 +987,21 @@ public class Const {
   public static final String KETTLE_DISABLE_CONSOLE_LOGGING = "KETTLE_DISABLE_CONSOLE_LOGGING";
 
   /**
+   * Set this variable to with the intended repository name ( in repositories.xml )
+   */
+  public static final String KETTLE_REPOSITORY = "KETTLE_REPOSITORY";
+
+  /**
+   * Set this variable to with the intended username to pass as repository credentials
+   */
+  public static final String KETTLE_USER = "KETTLE_USER";
+
+  /**
+   * Set this variable to with the intended password to pass as repository credentials
+   */
+  public static final String KETTLE_PASSWORD = "KETTLE_PASSWORD";
+
+  /**
    * The XML file that contains the list of native Kettle job entries
    */
   public static final String XML_FILE_KETTLE_JOB_ENTRIES = "kettle-job-entries.xml";
