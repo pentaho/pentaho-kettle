@@ -167,9 +167,9 @@ public class Pan {
 
     Kitchen.configureLogging( maxLogLinesOption, maxLogTimeoutOption );
 
-    String kettleRepname = Const.getEnvironmentVariable( "KETTLE_REPOSITORY", null );
-    String kettleUsername = Const.getEnvironmentVariable( "KETTLE_USER", null );
-    String kettlePassword = Const.getEnvironmentVariable( "KETTLE_PASSWORD", null );
+    String kettleRepname = Const.getEnvironmentVariable( Const.KETTLE_REPOSITORY, null );
+    String kettleUsername = Const.getEnvironmentVariable( Const.KETTLE_USER, null );
+    String kettlePassword = Const.getEnvironmentVariable(  Const.KETTLE_PASSWORD, null );
 
     if ( kettleRepname != null && kettleRepname.length() > 0 ) {
       optionRepname = new StringBuilder( kettleRepname );
