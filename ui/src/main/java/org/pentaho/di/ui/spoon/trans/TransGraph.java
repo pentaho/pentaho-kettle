@@ -4256,7 +4256,7 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
 
         // Stop button...
         //
-        if ( !stopItem.isEnabled() ^ !running ) {
+        if ( !stopItem.isDisposed() && !stopItem.isEnabled() ^ !running ) {
           stopItem.setEnabled( running );
         }
 
