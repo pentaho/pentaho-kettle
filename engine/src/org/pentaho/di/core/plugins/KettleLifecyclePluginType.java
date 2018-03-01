@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,19 +22,13 @@
 
 package org.pentaho.di.core.plugins;
 
-import java.io.InputStream;
 import java.lang.annotation.Annotation;
-import java.util.List;
 import java.util.Map;
 
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.annotations.KettleLifecyclePlugin;
 import org.pentaho.di.core.exception.KettlePluginException;
-import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.lifecycle.KettleLifecycleListener;
-import org.pentaho.di.core.xml.XMLHandler;
-import org.w3c.dom.Document;
-import org.w3c.dom.Node;
 
 /**
  * Defines a Kettle Environment lifecycle plugin type. These plugins are invoked at Kettle Environment initialization
@@ -61,33 +55,23 @@ public class KettleLifecyclePluginType extends BasePluginType implements PluginT
   }
 
   @Override
-  protected void registerNatives() throws KettlePluginException {
-    // Scan the native repository types...
-    //
-    String xmlFile = Const.XML_FILE_KETTLE_LIFECYCLE_LISTENERS;
+  protected String getXmlPluginFile() {
+    return Const.XML_FILE_KETTLE_LIFECYCLE_LISTENERS;
+  }
 
-    // Load the plugins for this file...
-    //
-    try {
-      InputStream inputStream = getClass().getResourceAsStream( xmlFile );
-      if ( inputStream == null ) {
-        inputStream = getClass().getResourceAsStream( "/" + xmlFile );
-      }
-      if ( inputStream == null ) {
-        return;
-      }
-      Document document = XMLHandler.loadXMLFile( inputStream, null, true, false );
+  @Override
+  protected String getMainTag() {
+    return "listeners";
+  }
 
-      // Document document = XMLHandler.loadXMLFile(kettleStepsXmlFile);
+  @Override
+  protected String getSubTag() {
+    return "listener";
+  }
 
-      Node repsNode = XMLHandler.getSubNode( document, "listeners" );
-      List<Node> repsNodes = XMLHandler.getNodes( repsNode, "listener" );
-      for ( Node repNode : repsNodes ) {
-        registerPluginFromXmlResource( repNode, null, this.getClass(), true, null );
-      }
-    } catch ( KettleXMLException e ) {
-      throw new KettlePluginException( "Unable to read the kettle repositories XML config file: " + xmlFile, e );
-    }
+  @Override
+  protected boolean isReturn() {
+    return true;
   }
 
   @Override
