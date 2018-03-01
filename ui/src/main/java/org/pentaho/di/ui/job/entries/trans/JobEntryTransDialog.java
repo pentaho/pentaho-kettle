@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,6 +22,9 @@
 
 package org.pentaho.di.ui.job.entries.trans;
 
+import org.apache.commons.lang.StringUtils;
+import org.eclipse.jface.dialogs.Dialog;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -60,6 +63,7 @@ import org.pentaho.di.trans.TransExecutionConfiguration;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.ui.core.ConstUI;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
+import org.pentaho.di.ui.core.dialog.SimpleMessageDialog;
 import org.pentaho.di.ui.core.gui.WindowProperty;
 import org.pentaho.di.ui.core.widget.ComboVar;
 import org.pentaho.di.ui.job.dialog.JobDialog;
@@ -374,7 +378,9 @@ public class JobEntryTransDialog extends JobEntryBaseDialog implements JobEntryD
         wPath.setText( Const.NVL( jobEntry.getFilename(), "" ) );
         break;
       case REPOSITORY_BY_NAME:
-        String fullPath = Const.NVL( jobEntry.getDirectory(), "" ) + "/" + Const.NVL( jobEntry.getTransname(), "" );
+        String dirPath = Const.NVL( jobEntry.getDirectory(), "" );
+        String transPath = Const.NVL( jobEntry.getTransname(), "" );
+        String fullPath = ( StringUtils.isBlank( dirPath ) ? "" : dirPath + "/" ) + transPath;
         wPath.setText( fullPath );
         break;
       case REPOSITORY_BY_REFERENCE:
@@ -624,21 +630,20 @@ public class JobEntryTransDialog extends JobEntryBaseDialog implements JobEntryD
 
   protected void ok() {
     if ( Utils.isEmpty( wName.getText() ) ) {
-      MessageBox mb = new MessageBox( shell, SWT.OK | SWT.ICON_ERROR );
-      mb.setText( BaseMessages.getString( PKG, "System.StepJobEntryNameMissing.Title" ) );
-      mb.setMessage( BaseMessages.getString( PKG, "System.JobEntryNameMissing.Msg" ) );
-      mb.open();
+      final Dialog dialog = new SimpleMessageDialog( shell,
+        BaseMessages.getString( PKG, "System.StepJobEntryNameMissing.Title" ),
+        BaseMessages.getString( PKG, "System.JobEntryNameMissing.Msg" ), MessageDialog.ERROR );
+      dialog.open();
       return;
     }
     jobEntry.setName( wName.getText() );
 
     try {
       getInfo( jobEntry );
-      jobEntry.setChanged();
-      dispose();
     } catch ( KettleException e ) {
-      new ErrorDialog( shell, BaseMessages.getString( PKG, "JobTrans.Dialog.ErrorShowingTransformation.Title" ),
-        BaseMessages.getString( PKG, "JobTrans.Dialog.ErrorShowingTransformation.Message" ), e );
+      // suppress exceptions at this time - we will let the runtime report on any errors
     }
+    jobEntry.setChanged();
+    dispose();
   }
 }

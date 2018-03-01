@@ -68,6 +68,10 @@ import static org.mockito.Matchers.any;
 import static org.pentaho.di.core.util.Assert.assertTrue;
 import static org.powermock.api.mockito.PowerMockito.when;
 
+import org.custommonkey.xmlunit.XMLUnit;
+
+import static org.custommonkey.xmlunit.XMLAssert.assertXMLEqual;
+
 @RunWith ( MockitoJUnitRunner.class )
 public class BaseStreamStepMetaTest {
 
@@ -83,6 +87,7 @@ public class BaseStreamStepMetaTest {
     String passwordEncoderPluginID =
       Const.NVL( EnvUtil.getSystemProperty( Const.KETTLE_PASSWORD_ENCODER_PLUGIN ), "Kettle" );
     Encr.init( passwordEncoderPluginID );
+    XMLUnit.setIgnoreWhitespace( true );
   }
 
   @Before
@@ -180,16 +185,18 @@ public class BaseStreamStepMetaTest {
     meta.setBatchSize( "100" );
     meta.setTransformationPath( "aPath" );
     String xml = meta.getXML();
-    assertEquals(
-      "<NUM_MESSAGES>100</NUM_MESSAGES>" + Const.CR
+    assertXMLEqual(
+      "<ROOT>" + Const.CR
+        + "<NUM_MESSAGES>100</NUM_MESSAGES>" + Const.CR
         + "<AUTH_PASSWORD>Encrypted 2be98afc86aa7f2e4cb79ce10ca97bcce</AUTH_PASSWORD>" + Const.CR
         + "<DURATION>1000</DURATION>" + Const.CR
         + "<TRANSFORMATION_PATH>aPath</TRANSFORMATION_PATH>" + Const.CR
         + "<stuffGroup>" + Const.CR
         + "<stuff>one</stuff>" + Const.CR
         + "<stuff>two</stuff>" + Const.CR
-        + "</stuffGroup>" + Const.CR,
-      xml );
+        + "</stuffGroup>" + Const.CR
+        + "</ROOT>",
+      "<ROOT>" + xml + "</ROOT>" );
     testRoundTrip( meta );
   }
 
@@ -209,19 +216,20 @@ public class BaseStreamStepMetaTest {
 
 
   @Test
-  public void testSaveDefaultEmptyConnection() {
+  public void testSaveDefaultEmptyConnection() throws Exception {
     StuffStreamMeta meta = new StuffStreamMeta();
     String xml = meta.getXML();
-    assertEquals(
-      "<NUM_MESSAGES>1000</NUM_MESSAGES>" + Const.CR
-        + "<AUTH_PASSWORD>Encrypted 2be98afc86aa7f2e4cb79ce10ca97bcce</AUTH_PASSWORD>" + Const.CR
-        + "<DURATION>1000</DURATION>" + Const.CR
-        + "<TRANSFORMATION_PATH/>" + Const.CR
-        + "<stuffGroup>" + Const.CR
-        + "<stuff>one</stuff>" + Const.CR
-        + "<stuff>two</stuff>" + Const.CR
-        + "</stuffGroup>" + Const.CR,
-      xml );
+    assertXMLEqual(  "<ROOT>" + Const.CR
+      + "<NUM_MESSAGES>1000</NUM_MESSAGES>" + Const.CR
+      + "<AUTH_PASSWORD>Encrypted 2be98afc86aa7f2e4cb79ce10ca97bcce</AUTH_PASSWORD>" + Const.CR
+      + "<DURATION>1000</DURATION>" + Const.CR
+      + "<TRANSFORMATION_PATH/>" + Const.CR
+      + "<stuffGroup>" + Const.CR
+      + "<stuff>one</stuff>" + Const.CR
+      + "<stuff>two</stuff>" + Const.CR
+      + "</stuffGroup>" + Const.CR
+      + "</ROOT>" + Const.CR,
+      "<ROOT>" + xml + "</ROOT>" );
     testRoundTrip( meta );
   }
 

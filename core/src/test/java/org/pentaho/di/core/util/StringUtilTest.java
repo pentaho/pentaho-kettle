@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -59,6 +59,7 @@ public class StringUtilTest extends TestCase {
   Map<String, String> createVariables1( String open, String close ) {
     Map<String, String> map = new HashMap<String, String>();
 
+    map.put( "NULL", null );
     map.put( "EMPTY", "" );
     map.put( "checkcase", "case1" );
     map.put( "CheckCase", "case2" );
@@ -87,6 +88,8 @@ public class StringUtilTest extends TestCase {
    */
   public void testSubstituteBasic() {
     Map<String, String> map = createVariables1( "${", "}" );
+    assertEquals( "|${BAD_KEY}|", StringUtil.substitute( "|${BAD_KEY}|", map, "${", "}" ) );
+    assertEquals( "|${NULL}|", StringUtil.substitute( "|${NULL}|", map, "${", "}" ) );
     assertEquals( "||", StringUtil.substitute( "|${EMPTY}|", map, "${", "}" ) );
     assertEquals( "|case1|", StringUtil.substitute( "|${checkcase}|", map, "${", "}" ) );
     assertEquals( "|case2|", StringUtil.substitute( "|${CheckCase}|", map, "${", "}" ) );

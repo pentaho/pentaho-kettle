@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -268,7 +268,10 @@ public class JobExecutionConfiguration implements ExecutionConfiguration {
       for ( int i = 0; i < vars.size(); i++ ) {
         String varname = vars.get( i );
         if ( !varname.startsWith( Const.INTERNAL_VARIABLE_PREFIX ) ) {
-          newVariables.put( varname, Const.NVL( variables.get( varname ), sp.getProperty( varname, "" ) ) );
+          // add a variable only if it's defined within this configuration or it is a system property
+          if ( variables.containsKey( varname ) || sp.getProperty( varname ) != null ) {
+            newVariables.put( varname, Const.NVL( variables.get( varname ), sp.getProperty( varname, "" ) ) );
+          }
         }
       }
       // variables.clear();
@@ -705,7 +708,7 @@ public class JobExecutionConfiguration implements ExecutionConfiguration {
             }
           }
         } catch ( KettleException ke ) {
-          log.logBasic( ke.getMessage(), ke );
+          // suppress exceptions at this time - we will let the runtime report on any errors
         }
       }
     }
