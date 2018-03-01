@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -28,6 +28,7 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
@@ -700,7 +701,8 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
     try {
       transMeta = getTransMeta( rep, metaStore, this );
     } catch ( KettleException e ) {
-      logError( Const.getStackTracker( e ) );
+      logError( BaseMessages.getString( PKG, "JobTrans.Exception.UnableToRunJob", parentJobMeta.getName(),
+        StringUtils.trim( e.getMessage() ), getName() ), e );
       result.setNrErrors( 1 );
       result.setResult( false );
       return result;
@@ -1367,6 +1369,9 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
       }
 
       return transMeta;
+    } catch ( final KettleException ke ) {
+      // if we get a KettleException, simply re-throw it
+      throw ke;
     } catch ( Exception e ) {
       throw new KettleException( BaseMessages.getString( PKG, "JobTrans.Exception.MetaDataLoad" ), e );
     }

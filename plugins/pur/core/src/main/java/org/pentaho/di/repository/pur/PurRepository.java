@@ -1,20 +1,25 @@
-//CHECKSTYLE:FileLength:OFF
-/*!
-* Copyright 2010 - 2018 Hitachi Vantara.  All rights reserved.
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-*
-* http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*
-*/
+/*! ******************************************************************************
+ *
+ * Pentaho Data Integration
+ *
+ * Copyright (C) 2010-2018 by Hitachi Vantara : http://www.pentaho.com
+ *
+ *******************************************************************************
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ ******************************************************************************/
+
 
 package org.pentaho.di.repository.pur;
 
@@ -2157,16 +2162,34 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
     throws KettleException {
     String absPath = null;
     try {
-      absPath = getPath( transName, parentDir, RepositoryObjectType.TRANSFORMATION );
-      if ( absPath == null ) {
+      // if transName is empty, we cannot load the transformation - the transformation path was likely not provided
+      // by the user
+      if ( StringUtils.isBlank( transName ) ) {
+        throw new KettleFileException( BaseMessages.getString( PKG,
+          "PurRepository.ERROR_0007_TRANSFORMATION_NAME_MISSING" ) );
+      }
+      try {
+        absPath = getPath( transName, parentDir, RepositoryObjectType.TRANSFORMATION );
+      } catch ( Exception e ) {
+        // ignore and handle null value below
+      }
+      // if absPath is empty, we cannot load the transformation - the path provided by the user was likely defined as a
+      // variable that is not available at runtime
+      if ( StringUtils.isBlank( absPath )  ) {
         // Couldn't resolve path, throw an exception
         throw new KettleFileException( BaseMessages.getString( PKG,
-            "PurRepository.ERROR_0002_TRANSFORMATION_NOT_FOUND", transName ) );
+          "PurRepository.ERROR_0008_TRANSFORMATION_PATH_INVALID", transName ) );
       }
       RepositoryFile file = pur.getFile( absPath );
       if ( versionId != null ) {
         // need to go back to server to get versioned info
         file = pur.getFileAtVersion( file.getId(), versionId );
+      }
+      // if file is null, we cannot load the transformation - the provided path provided by the user is likely not a
+      // valid file
+      if ( file == null ) {
+        throw new KettleException( BaseMessages.getString( PKG,
+          "PurRepository.ERROR_0008_TRANSFORMATION_PATH_INVALID", absPath ) );
       }
       NodeRepositoryFileData data = null;
       ObjectRevision revision = null;
@@ -2176,6 +2199,9 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
       TransMeta transMeta = buildTransMeta( file, parentDir, data, revision );
       ExtensionPointHandler.callExtensionPoint( log, KettleExtensionPoint.TransformationMetaLoaded.id, transMeta );
       return transMeta;
+    } catch ( final KettleException ke ) {
+      // if we have a KettleException, simply re-throw it
+      throw ke;
     } catch ( Exception e ) {
       throw new KettleException( "Unable to load transformation from path [" + absPath + "]", e );
     }

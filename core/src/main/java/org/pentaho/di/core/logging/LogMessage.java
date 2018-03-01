@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,6 +22,7 @@
 
 package org.pentaho.di.core.logging;
 
+import org.apache.commons.lang.StringUtils;
 import org.pentaho.di.core.Const;
 
 import java.text.MessageFormat;
@@ -29,6 +30,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.pentaho.di.core.util.EnvUtil;
+import org.pentaho.di.core.util.StringUtil;
 
 public class LogMessage implements LogMessageInterface {
   private String logChannelId;
@@ -133,14 +135,12 @@ public class LogMessage implements LogMessageInterface {
   @Override
   @Deprecated
   public String toString() {
-    if ( message == null ) {
+    if ( StringUtils.isBlank( message ) ) {
       return subject;
+    } else if ( StringUtils.isBlank( subject ) ) {
+      return getMessage();
     }
-    if ( arguments != null && arguments.length > 0 ) {
-      return subject + " - " + MessageFormat.format( message, arguments );
-    } else {
-      return subject + " - " + message;
-    }
+    return String.format( "%s - %s", subject, getMessage() );
   }
 
   @Override
@@ -158,11 +158,25 @@ public class LogMessage implements LogMessageInterface {
    */
   @Override
   public String getMessage() {
-    if ( arguments != null && arguments.length > 0 ) {
-      return MessageFormat.format( message, arguments );
-    } else {
-      return message;
+    String formatted = message;
+    if ( arguments != null ) {
+      // get all "tokens" enclosed by curly brackets within the message
+      final List<String> tokens = new ArrayList<>();
+      StringUtil.getUsedVariables( formatted, "{", "}", tokens, true );
+      // perform MessageFormat.format( ... ) on each token, if we get an exception, we'll know that we have a
+      // segment that isn't parsable by MessageFormat, likely a pdi variable name (${foo}) - in this case, we need to
+      // escape the curly brackets in the message, so that MessageFormat does not complain
+      for ( final String token : tokens ) {
+        try {
+          MessageFormat.format( "{" + token + "}", arguments );
+        } catch ( final IllegalArgumentException iar ) {
+          formatted = formatted.replaceAll( "\\{" + token + "\\}",  "\\'{'" + token + "\\'}'" );
+        }
+      }
+      // now that we have escaped curly brackets in all invalid tokens, we can attempt to format the entire message
+      formatted = MessageFormat.format( formatted, arguments );
     }
+    return formatted;
   }
 
   /**

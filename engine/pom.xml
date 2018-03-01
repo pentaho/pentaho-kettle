@@ -96,6 +96,7 @@
     <oro.version>2.0.8</oro.version>
     <javax.websocket-api.version>1.1</javax.websocket-api.version>
     <rxjava.version>2.0.4</rxjava.version>
+    <xmlunit.version>1.5</xmlunit.version>
   </properties>
 
   <dependencies>
@@ -926,6 +927,12 @@
           <artifactId>*</artifactId>
         </exclusion>
       </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>xmlunit</groupId>
+      <artifactId>xmlunit</artifactId>
+      <version>${xmlunit.version}</version>
+      <scope>test</scope>
     </dependency>
   </dependencies>
 

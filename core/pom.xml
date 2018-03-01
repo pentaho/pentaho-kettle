@@ -48,6 +48,7 @@
     <woodstox-core-asl.version>4.4.1</woodstox-core-asl.version>
     <httpclient.version>4.5.3</httpclient.version>
     <httpccore.version>4.4.6</httpccore.version>
+    <xmlunit.version>1.5</xmlunit.version>
   </properties>
 
   <dependencies>
@@ -510,6 +511,12 @@
       <groupId>org.springframework</groupId>
       <artifactId>spring-test</artifactId>
       <version>${spring.framework.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>xmlunit</groupId>
+      <artifactId>xmlunit</artifactId>
+      <version>${xmlunit.version}</version>
       <scope>test</scope>
     </dependency>
   </dependencies>

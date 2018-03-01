@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2016-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2016-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -21,14 +21,23 @@
  ******************************************************************************/
 package org.pentaho.di.core.xml;
 
-import static org.junit.Assert.assertEquals;
+import static org.custommonkey.xmlunit.XMLAssert.assertXMLEqual;
 
 import java.io.InputStream;
 
 import org.apache.commons.io.IOUtils;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
+import org.custommonkey.xmlunit.XMLUnit;
+
 public class XMLFormatterTest {
+
+  @BeforeClass
+  public static void setupClass() {
+    XMLUnit.setIgnoreWhitespace( true );
+  }
+
   @Test
   public void test1() throws Exception {
     String inXml, expectedXml;
@@ -40,7 +49,7 @@ public class XMLFormatterTest {
     }
 
     String result = XMLFormatter.format( inXml );
-    assertEquals( expectedXml, result );
+    assertXMLEqual( expectedXml, result );
   }
 
   @Test
@@ -54,7 +63,7 @@ public class XMLFormatterTest {
     }
 
     String result = XMLFormatter.format( inXml );
-    assertEquals( expectedXml, result );
+    assertXMLEqual( expectedXml, result );
   }
 
   @Test
@@ -68,7 +77,7 @@ public class XMLFormatterTest {
     }
 
     String result = XMLFormatter.format( inXml );
-    assertEquals( expectedXml, result );
+    assertXMLEqual( expectedXml, result );
   }
 
   @Test
@@ -82,6 +91,6 @@ public class XMLFormatterTest {
     }
 
     String result = XMLFormatter.format( inXml );
-    assertEquals( expectedXml, result );
+    assertXMLEqual( expectedXml, result );
   }
 }
