@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -88,8 +88,8 @@ public class KettleLogStore {
 
         if ( maxLogTimeoutMinutes > 0 ) {
           long minTimeBoundary = new Date().getTime() - maxLogTimeoutMinutes * 60 * 1000;
-          // Remove all lines at once to prevent concurrent modification problems.
-          //
+
+          // Remove all the old lines.
           appender.removeBufferLinesBefore( minTimeBoundary );
         }
       }
