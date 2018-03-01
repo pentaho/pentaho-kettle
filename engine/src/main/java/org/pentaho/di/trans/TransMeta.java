@@ -23,6 +23,21 @@
 
 package org.pentaho.di.trans;
 
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Hashtable;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import com.google.common.annotations.VisibleForTesting;
 import org.apache.commons.vfs2.FileName;
 import org.apache.commons.vfs2.FileObject;
 import org.apache.commons.vfs2.FileSystemException;
@@ -106,25 +121,12 @@ import org.pentaho.di.trans.steps.mapping.MappingMeta;
 import org.pentaho.di.trans.steps.missing.MissingTrans;
 import org.pentaho.di.trans.steps.named.cluster.NamedClusterEmbedManager;
 import org.pentaho.di.trans.steps.singlethreader.SingleThreaderMeta;
+import org.pentaho.di.trans.steps.streamlookup.StreamLookupMeta;
 import org.pentaho.di.trans.steps.transexecutor.TransExecutorMeta;
 import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Hashtable;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 /**
  * This class defines information about a transformation and offers methods to save and load it from XML or a PDI
@@ -1811,7 +1813,8 @@ public class TransMeta extends AbstractMeta
 
     // Resume the regular program...
 
-    List<StepMeta> prevSteps = findPreviousSteps( stepMeta );
+    List<StepMeta> prevSteps = getPreviousSteps( stepMeta );
+
     int nrPrevious = prevSteps.size();
 
     if ( log.isDebug() ) {
@@ -1870,6 +1873,16 @@ public class TransMeta extends AbstractMeta
     stepsFieldsCache.put( fromToCacheEntry, rowMeta );
 
     return rowMeta;
+  }
+
+  @VisibleForTesting
+  List<StepMeta> getPreviousSteps( StepMeta stepMeta ) {
+    if ( stepMeta.getStepMetaInterface() instanceof StreamLookupMeta ) {
+      clearPreviousStepCache();
+      return findPreviousSteps( stepMeta, false );
+    } else {
+      return findPreviousSteps( stepMeta );
+    }
   }
 
   /**
@@ -6018,7 +6031,8 @@ public class TransMeta extends AbstractMeta
     loopCache.clear();
   }
 
-  private void clearPreviousStepCache() {
+  @VisibleForTesting
+  void clearPreviousStepCache() {
     previousStepCache.clear();
   }
 
