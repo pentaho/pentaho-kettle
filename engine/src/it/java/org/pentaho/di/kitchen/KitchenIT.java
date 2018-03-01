@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -24,12 +24,15 @@ package org.pentaho.di.kitchen;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.pentaho.di.pan.Pan;
 
-import java.io.ByteArrayOutputStream;
-import java.io.PrintStream;
+import java.io.*;
 import java.security.Permission;
+import java.util.UUID;
+import java.util.regex.Pattern;
 
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 public class KitchenIT {
 
@@ -39,6 +42,25 @@ public class KitchenIT {
   private PrintStream oldOut;
   private PrintStream oldErr;
   private SecurityManager oldSecurityManager;
+
+  private static final String JOB_EXEC_RESULT_FALSE = "(result=[false])";
+  private static final String JOB_EXEC_RESULT_TRUE = "(result=[true])";
+  private static final String FAILED_JOB_EXEC_PATTERN = "Finished with errors";
+
+  private static final String BASE_PATH = "." +  File.separator + "test_kjbs" + File.separator;
+  private static final String EXPECTED_COMPLETE_WITH_SUCCESS_PATH = BASE_PATH + "expected_complete_with_success";
+  private static final String EXPECTED_COMPLETE_WITH_FAILURE_PATH = BASE_PATH + "expected_complete_with_failure";
+  private static final String EXPECTED_PARAMS_PASSED_ALONG = BASE_PATH + "expected_params_passed_along";
+
+  private static final String[] KTRS_EXPECTED_COMPLETE_WITH_SUCCESS = new String[] {
+          "runs_well_hello_world.kjb"
+  };
+
+  private static final String[] KTRS_EXPECTED_COMPLETE_WITH_FAILURE = new String[] {
+          "fail_on_exec_hello_world.kjb",
+          "fail_on_prep_hello_world.kjb",
+          "missing_referenced_ktr.kjb"
+  };
 
   @Before
   public void setUp() {
@@ -90,6 +112,144 @@ public class KitchenIT {
     }
   }
 
+  @Test
+  public void testFileJobExpectedExecutionWithFailure() throws Exception {
+
+    for ( String testKJB : KTRS_EXPECTED_COMPLETE_WITH_FAILURE ) {
+
+      long now = System.currentTimeMillis();
+
+      String testKJBRelativePath = EXPECTED_COMPLETE_WITH_FAILURE_PATH + File.separator + testKJB;
+      String testKJBFullPath = this.getClass().getResource( testKJBRelativePath ).getFile();
+      String logFileRelativePath = testKJBRelativePath + "." + now + ".log";
+      String logFileFullPath = testKJBFullPath + "." + now + ".log";
+
+      try {
+
+        Kitchen.main( new String[]{ "/file:" + testKJBFullPath, "/level:Basic", "/logfile:" + logFileFullPath } );
+
+      } catch ( SecurityException e ) {
+        // All OK / expected: SecurityException is purposely thrown when Kitchen triggers System.exitJVM()
+
+        // get log file contents
+        String logFileContent = getFileContentAsString( logFileRelativePath );
+
+        assertTrue( logFileContent.contains( JOB_EXEC_RESULT_FALSE ) );
+        assertTrue( logFileContent.contains( FAILED_JOB_EXEC_PATTERN ) );
+
+      } finally {
+        // sanitize
+        File f = new File( logFileFullPath );
+        if ( f != null && f.exists() ) {
+          f.deleteOnExit();
+        }
+      }
+    }
+  }
+
+  @Test
+  public void testFileJobExpectedExecutionWithSuccess() throws Exception {
+
+    for ( String testKJB : KTRS_EXPECTED_COMPLETE_WITH_SUCCESS ) {
+
+      long now = System.currentTimeMillis();
+
+      String testKJBRelativePath = EXPECTED_COMPLETE_WITH_SUCCESS_PATH + File.separator + testKJB;
+      String testKJBFullPath = this.getClass().getResource( testKJBRelativePath ).getFile();
+      String logFileRelativePath = testKJBRelativePath + "." + now + ".log";
+      String logFileFullPath = testKJBFullPath + "." + now + ".log";
+
+      try {
+
+        Kitchen.main( new String[]{ "/file:" + testKJBFullPath, "/level:Basic", "/logfile:" + logFileFullPath } );
+
+      } catch ( SecurityException e ) {
+        // All OK / expected: SecurityException is purposely thrown when Kitchen triggers System.exitJVM()
+
+        // get log file contents
+        String logFileContent = getFileContentAsString( logFileRelativePath );
+
+        assertTrue( logFileContent.contains( JOB_EXEC_RESULT_TRUE ) );
+        assertFalse( logFileContent.contains( FAILED_JOB_EXEC_PATTERN ) );
+
+      } finally {
+        // sanitize
+        File f = new File( logFileFullPath );
+        if ( f != null && f.exists() ) {
+          f.deleteOnExit();
+        }
+      }
+    }
+  }
+
+  @Test
+  public void testFileJobWithParams() throws Exception {
+
+    String param1Name = "p1";
+    String param2Name = "p2";
+
+    String param1Val = UUID.randomUUID().toString();
+    String param2Val = UUID.randomUUID().toString();
+
+    final String EXPECTED_OUTPUT = "Received params " + param1Name + ":" + param1Val + ", " + param2Name + ":" + param2Val;
+
+    long now = System.currentTimeMillis();
+
+    String testKJBRelativePath = EXPECTED_PARAMS_PASSED_ALONG + File.separator + "print_received_params.kjb";
+    String testKJBFullPath = this.getClass().getResource( testKJBRelativePath ).getFile();
+    String logFileRelativePath = testKJBRelativePath + "." + now + ".log";
+    String logFileFullPath = testKJBFullPath + "." + now + ".log";
+
+    try {
+
+      Kitchen.main( new String[] {
+              "/file:" + testKJBFullPath,
+              "/level:Basic",
+              "/logfile:" + logFileFullPath,
+              "/param:" + param1Name + "=" + param1Val,
+              "/param:" + param2Name + "=" + param2Val
+      } );
+
+    } catch ( SecurityException e ) {
+      // All OK / expected: SecurityException is purposely thrown when Pan triggers System.exitJVM()
+
+      // get log file contents
+      String logFileContent = getFileContentAsString( logFileRelativePath );
+
+      assertTrue( logFileContent.contains( EXPECTED_OUTPUT ) );
+      assertTrue( logFileContent.contains( JOB_EXEC_RESULT_TRUE ) );
+      assertFalse( logFileContent.contains( FAILED_JOB_EXEC_PATTERN ) );
+
+    } finally {
+      // sanitize
+      File f = new File( logFileFullPath );
+      if ( f != null && f.exists() ) {
+        f.deleteOnExit();
+      }
+    }
+  }
+
+  private String getFileContentAsString( String relativePath ) {
+
+    String content = "";
+
+    try {
+      BufferedReader rd = new BufferedReader(
+              new InputStreamReader( this.getClass().getResourceAsStream( relativePath ) ) );
+      StringBuffer logFileContentBuffer = new StringBuffer();
+      String line = "";
+      while ( ( line = rd.readLine() ) != null ) {
+        logFileContentBuffer.append( line ).append( "\n" );
+      }
+
+      content = logFileContentBuffer.toString();
+
+    } catch ( Throwable t ) {
+      // no-op
+    }
+
+    return content;
+  }
 
   public class MySecurityManager extends SecurityManager {
 
