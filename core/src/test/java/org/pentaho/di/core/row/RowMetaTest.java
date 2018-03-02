@@ -63,6 +63,7 @@ public class RowMetaTest {
 
   ValueMetaInterface charly;
   ValueMetaInterface dup;
+  ValueMetaInterface bin;
 
   @BeforeClass
   public static void setUpBeforeClass() throws Exception {
@@ -85,6 +86,7 @@ public class RowMetaTest {
     charly = ValueMetaFactory.createValueMeta( "charly", ValueMetaInterface.TYPE_SERIALIZABLE );
 
     dup = ValueMetaFactory.createValueMeta( "dup", ValueMetaInterface.TYPE_SERIALIZABLE );
+    bin = ValueMetaFactory.createValueMeta(  "bin", ValueMetaInterface.TYPE_BINARY );
   }
 
   private List<ValueMetaInterface> generateVList( String[] names, int[] types ) throws KettlePluginException {
@@ -338,16 +340,44 @@ public class RowMetaTest {
   public void testCopyRowMetaCacheConstructor() {
     Map<String, Integer> mapping = new HashMap<>();
     mapping.put( "a", 1 );
-    List<Integer> needRealClone = new ArrayList<>();
-    needRealClone.add( 2 );
-    RowMeta.RowMetaCache rowMetaCache = new RowMeta.RowMetaCache( mapping, needRealClone );
+    RowMeta.RowMetaCache rowMetaCache = new RowMeta.RowMetaCache( mapping );
     RowMeta.RowMetaCache rowMetaCache2 = new RowMeta.RowMetaCache( rowMetaCache );
     assertEquals( rowMetaCache.mapping, rowMetaCache2.mapping );
-    assertEquals( rowMetaCache.needRealClone, rowMetaCache2.needRealClone );
-    rowMetaCache = new RowMeta.RowMetaCache( mapping, null );
+    rowMetaCache = new RowMeta.RowMetaCache( mapping );
     rowMetaCache2 = new RowMeta.RowMetaCache( rowMetaCache );
     assertEquals( rowMetaCache.mapping, rowMetaCache2.mapping );
-    assertNull( rowMetaCache2.needRealClone );
+  }
+
+  @Test
+  public void testNeedRealClone() {
+    RowMeta newRowMeta = new RowMeta();
+    newRowMeta.addValueMeta( string );
+    newRowMeta.addValueMeta( integer );
+    newRowMeta.addValueMeta( date );
+    newRowMeta.addValueMeta( charly );
+    newRowMeta.addValueMeta( dup );
+    newRowMeta.addValueMeta( bin );
+    List<Integer> list = newRowMeta.getOrCreateValuesThatNeedRealClone( newRowMeta.valueMetaList );
+    assertEquals( 3, list.size() ); // Should be charly, dup and bin
+    assertTrue( list.contains( 3 ) ); // charly
+    assertTrue( list.contains( 4 ) ); // dup
+    assertTrue( list.contains( 5 ) ); // bin
+    newRowMeta.addValueMeta( charly ); // should have nulled the newRowMeta.needRealClone
+    assertNull( newRowMeta.needRealClone ); // null because of the new add
+    list = newRowMeta.getOrCreateValuesThatNeedRealClone( newRowMeta.valueMetaList );
+    assertNotNull( newRowMeta.needRealClone );
+    assertEquals( 4, list.size() ); // Should still be charly, dup, bin, charly_1
+    newRowMeta.addValueMeta( bin ); // add new binary, should null out needRealClone again
+    assertNull( newRowMeta.needRealClone ); // null because of the new add
+    list = newRowMeta.getOrCreateValuesThatNeedRealClone( newRowMeta.valueMetaList );
+    assertNotNull( newRowMeta.needRealClone );
+    assertEquals( 5, list.size() ); // Should be charly, dup and bin, charly_1, bin_1
+
+    newRowMeta.addValueMeta( string ); // add new string, should null out needRealClone again
+    assertNull( newRowMeta.needRealClone ); // null because of the new add
+    list = newRowMeta.getOrCreateValuesThatNeedRealClone( newRowMeta.valueMetaList );
+    assertNotNull( newRowMeta.needRealClone );
+    assertEquals( 5, list.size() ); // Should still only be charly, dup and bin, charly_1, bin_1 - adding a string doesn't change of result
   }
 
   // @Test

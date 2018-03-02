@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -21,7 +21,6 @@
  ******************************************************************************/
 package org.pentaho.di.trans;
 
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -52,6 +51,7 @@ import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaChangeListenerInterface;
 import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.di.trans.steps.datagrid.DataGridMeta;
+import org.pentaho.di.trans.steps.textfileoutput.TextFileOutputMeta;
 import org.pentaho.di.trans.steps.userdefinedjavaclass.StepDefinition;
 import org.pentaho.di.trans.steps.userdefinedjavaclass.UserDefinedJavaClassDef;
 import org.pentaho.di.trans.steps.userdefinedjavaclass.UserDefinedJavaClassMeta;
@@ -60,6 +60,7 @@ import org.pentaho.metastore.stores.memory.MemoryMetaStore;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import java.util.Collections;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -458,12 +459,53 @@ public class TransMetaTest {
       Mockito.mock( OverwritePrompter.class ) );
     meta.setInternalKettleVariables( null );
 
-    Assert.assertEquals( repDirectory.getPath(), meta.getVariable( Const.INTERNAL_VARIABLE_TRANSFORMATION_REPOSITORY_DIRECTORY ) );
+    assertEquals( repDirectory.getPath(), meta.getVariable( Const.INTERNAL_VARIABLE_TRANSFORMATION_REPOSITORY_DIRECTORY ) );
   }
 
   @Test
   public void testTransWithOneStepIsConsideredUsed() throws Exception {
     TransMeta transMeta = new TransMeta( getClass().getResource( "one-step-trans.ktr" ).getPath() );
     assertEquals( 1, transMeta.getUsedSteps().size() );
+  }
+
+  @Test
+  public void testGetPrevStepFields() throws KettleStepException {
+    DataGridMeta dgm = new DataGridMeta();
+    dgm.allocate( 2 );
+    dgm.setFieldName( new String[]{ "id" } );
+    dgm.setFieldType( new String[]{ ValueMetaFactory.getValueMetaName( ValueMetaInterface.TYPE_INTEGER ) } );
+    List<List<String>> dgm1Data = new ArrayList<>();
+    dgm1Data.add( Collections.singletonList( "1" ) );
+    dgm1Data.add( Collections.singletonList( "2" ) );
+    dgm.setDataLines( dgm1Data );
+
+    StepMeta dg = new StepMeta( "input1", dgm );
+    TextFileOutputMeta textFileOutputMeta = new TextFileOutputMeta();
+    StepMeta textFileOutputStep = new StepMeta( "BACKLOG-21039", textFileOutputMeta );
+
+    TransHopMeta hop = new TransHopMeta( dg, textFileOutputStep, true );
+    transMeta.addStep( dg );
+    transMeta.addStep( textFileOutputStep );
+    transMeta.addTransHop( hop );
+
+    RowMetaInterface row = transMeta.getPrevStepFields( textFileOutputStep );
+    assertNotNull( row );
+    assertEquals( 1, row.size() );
+    assertEquals( "id", row.getValueMeta( 0 ).getName() );
+    assertEquals( ValueMetaInterface.TYPE_INTEGER, row.getValueMeta( 0 ).getType() );
+
+    dgm.setFieldName( new String[]{ "id", "name" } );
+    dgm.setFieldType( new String[]{
+      ValueMetaFactory.getValueMetaName( ValueMetaInterface.TYPE_INTEGER ),
+      ValueMetaFactory.getValueMetaName( ValueMetaInterface.TYPE_STRING ),
+    } );
+
+    row = transMeta.getPrevStepFields( textFileOutputStep );
+    assertNotNull( row );
+    assertEquals( 2, row.size() );
+    assertEquals( "id", row.getValueMeta( 0 ).getName() );
+    assertEquals( "name", row.getValueMeta( 1 ).getName() );
+    assertEquals( ValueMetaInterface.TYPE_INTEGER, row.getValueMeta( 0 ).getType() );
+    assertEquals( ValueMetaInterface.TYPE_STRING, row.getValueMeta( 1 ).getType() );
   }
 }

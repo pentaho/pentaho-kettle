@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -21,24 +21,6 @@
  ******************************************************************************/
 
 package org.pentaho.di.trans.cluster;
-
-import java.security.InvalidKeyException;
-import java.security.Key;
-import java.security.KeyPair;
-import java.security.PrivateKey;
-import java.security.PublicKey;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Hashtable;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Queue;
-import java.util.Set;
-import java.util.UUID;
-
-import javax.crypto.IllegalBlockSizeException;
 
 import org.pentaho.di.cluster.ClusterSchema;
 import org.pentaho.di.cluster.SlaveServer;
@@ -62,6 +44,23 @@ import org.pentaho.di.trans.step.StepPartitioningMeta;
 import org.pentaho.di.trans.steps.dummytrans.DummyTransMeta;
 import org.pentaho.di.trans.steps.socketreader.SocketReaderMeta;
 import org.pentaho.di.trans.steps.socketwriter.SocketWriterMeta;
+
+import javax.crypto.IllegalBlockSizeException;
+import java.security.InvalidKeyException;
+import java.security.Key;
+import java.security.KeyPair;
+import java.security.PrivateKey;
+import java.security.PublicKey;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Hashtable;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Queue;
+import java.util.Set;
+import java.util.UUID;
 
 /**
  * This class takes care of the separation of the original transformation into pieces that run on the different slave
@@ -490,10 +489,10 @@ public class TransSplitter {
 
       for ( int r = 0; r < referenceSteps.length; r++ ) {
         StepMeta referenceStep = referenceSteps[r];
-
-        int nrPreviousSteps = originalTransformation.findNrPrevSteps( referenceStep );
+        List<StepMeta> prevSteps = originalTransformation.findPreviousSteps( referenceStep );
+        int nrPreviousSteps = prevSteps.size();
         for ( int p = 0; p < nrPreviousSteps; p++ ) {
-          StepMeta previousStep = originalTransformation.findPrevStep( referenceStep, p );
+          StepMeta previousStep = prevSteps.get( p );
 
           if ( !referenceStep.isClustered() ) {
             if ( !previousStep.isClustered() ) {
@@ -1413,7 +1412,7 @@ public class TransSplitter {
    *
    * @param slaveServer
    *          the slave server
-   * @param referenceStep
+   * @param step
    *          the reference step
    * @return the number of step copies that we run.
    */

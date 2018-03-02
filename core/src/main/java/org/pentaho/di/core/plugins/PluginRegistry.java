@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -74,31 +74,27 @@ public class PluginRegistry {
   public static final LogChannelInterface log = new LogChannel( "PluginRegistry", true );
   public static final String SUPPLEMENTALS_SUFFIX = "-supplementals";
 
-  private final Map<Class<? extends PluginTypeInterface>, List<PluginInterface>> pluginMap;
+  // the list of plugins
+  private final Map<Class<? extends PluginTypeInterface>, List<PluginInterface>> pluginMap = new HashMap<>();
 
-  private final Map<String, URLClassLoader> folderBasedClassLoaderMap = new HashMap<String, URLClassLoader>();
+  private final Map<String, URLClassLoader> folderBasedClassLoaderMap = new HashMap<>();
 
-  private final Map<Class<? extends PluginTypeInterface>, Map<PluginInterface, URLClassLoader>> classLoaderMap;
+  private final Map<Class<? extends PluginTypeInterface>, Map<PluginInterface, URLClassLoader>> classLoaderMap = new HashMap<>();
 
-  private final Map<String, URLClassLoader> classLoaderGroupsMap;
+  private final Map<String, URLClassLoader> classLoaderGroupsMap = new HashMap<>();
 
-  private final Map<Class<? extends PluginTypeInterface>, List<String>> categoryMap;
-  private final Map<PluginInterface, String[]> parentClassloaderPatternMap = new HashMap<PluginInterface, String[]>();
+  private final Map<Class<? extends PluginTypeInterface>, List<String>> categoryMap = new HashMap<>();
 
-  private final Map<Class<? extends PluginTypeInterface>, List<PluginTypeListener>> listeners =
-      new HashMap<Class<? extends PluginTypeInterface>, List<PluginTypeListener>>();
+  private final Map<PluginInterface, String[]> parentClassloaderPatternMap = new HashMap<>();
 
-  private final ReentrantReadWriteLock lock;
+  private final Map<Class<? extends PluginTypeInterface>, List<PluginTypeListener>> listeners = new HashMap<>();
+
+  private final ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
 
   /**
    * Initialize the registry, keep private to keep this a singleton
    */
   private PluginRegistry() {
-    pluginMap = new HashMap<Class<? extends PluginTypeInterface>, List<PluginInterface>>();
-    classLoaderMap = new HashMap<Class<? extends PluginTypeInterface>, Map<PluginInterface, URLClassLoader>>();
-    categoryMap = new HashMap<Class<? extends PluginTypeInterface>, List<String>>();
-    classLoaderGroupsMap = new HashMap<String, URLClassLoader>();
-    lock = new ReentrantReadWriteLock();
   }
 
   /**
@@ -581,7 +577,6 @@ public class PluginRegistry {
    * @throws KettlePluginException
    */
   public static synchronized void init( boolean keepCache ) throws KettlePluginException {
-
     final PluginRegistry registry = getInstance();
 
     log.snap( Metrics.METRIC_PLUGIN_REGISTRY_REGISTER_EXTENSIONS_START );
