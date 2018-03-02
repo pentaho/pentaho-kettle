@@ -23,20 +23,6 @@
 
 package org.pentaho.di.trans;
 
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Hashtable;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
-
 import org.apache.commons.vfs2.FileName;
 import org.apache.commons.vfs2.FileObject;
 import org.apache.commons.vfs2.FileSystemException;
@@ -46,7 +32,6 @@ import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.Counter;
 import org.pentaho.di.core.DBCache;
 import org.pentaho.di.core.LastUsedFile;
@@ -89,6 +74,7 @@ import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.util.StringUtil;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLFormatter;
@@ -125,6 +111,20 @@ import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Hashtable;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * This class defines information about a transformation and offers methods to save and load it from XML or a PDI
@@ -837,6 +837,15 @@ public class TransMeta extends AbstractMeta
    */
   public StepMeta getStep( int i ) {
     return steps.get( i );
+  }
+
+  /**
+   * Get a list of defined hops in this transformation.
+   *
+   * @return a list of defined hops.
+   */
+  public List<TransHopMeta> getTransHops() {
+    return Collections.unmodifiableList( hops );
   }
 
   /**
@@ -3520,17 +3529,12 @@ public class TransMeta extends AbstractMeta
   public boolean isStepUsedInTransHops( StepMeta stepMeta ) {
     TransHopMeta fr = findTransHopFrom( stepMeta );
     TransHopMeta to = findTransHopTo( stepMeta );
-    if ( fr != null || to != null ) {
-      return true;
-    }
-    return false;
+    return fr != null || to != null;
   }
 
   /**
    * Checks if any selected step has been used in a hop or not.
    *
-   * @param stepMeta
-   *          The step queried.
    * @return true if a step is used in a hop (active or not), false otherwise
    */
   public boolean isAnySelectedStepUsedInTransHops() {
@@ -3666,11 +3670,8 @@ public class TransMeta extends AbstractMeta
     if ( havePartitionSchemasChanged() ) {
       return true;
     }
-    if ( haveClusterSchemasChanged() ) {
-      return true;
-    }
+    return haveClusterSchemasChanged();
 
-    return false;
   }
 
   private boolean isErrorNode( Node errorHandingNode, Node checkNode ) {
@@ -3717,7 +3718,27 @@ public class TransMeta extends AbstractMeta
    * @return true if a loop has been found, false if no loop is found.
    */
   public boolean hasLoop( StepMeta stepMeta ) {
-    return hasLoop( stepMeta, null, true ) || hasLoop( stepMeta, null, false );
+    return hasLoop( stepMeta, null );
+  }
+
+  /**
+   * @deprecated use {@link #hasLoop(StepMeta, StepMeta)}}
+   */
+  @Deprecated
+  public boolean hasLoop( StepMeta stepMeta, StepMeta lookup, boolean info ) {
+    return hasLoop( stepMeta, lookup, new HashSet<StepMeta>() );
+  }
+
+  /**
+   * Checks for loop.
+   *
+   * @param stepMeta  the stepmeta
+   * @param lookup the lookup
+   * @return true, if successful
+   */
+
+  public boolean hasLoop( StepMeta stepMeta, StepMeta lookup ) {
+    return hasLoop( stepMeta, lookup, new HashSet<StepMeta>() );
   }
 
   /**
@@ -3728,43 +3749,37 @@ public class TransMeta extends AbstractMeta
    *          The step position to start looking
    * @param lookup
    *          The original step when wandering around the transformation.
-   * @param info
-   *          Check the informational steps or not.
+   * @param checkedEntries
+   *          Already checked entries
    *
    * @return true if a loop has been found, false if no loop is found.
    */
-  private boolean hasLoop( StepMeta stepMeta, StepMeta lookup, boolean info ) {
-    String
-        cacheKey =
-        stepMeta.getName() + " - " + ( lookup != null ? lookup.getName() : "" ) + " - " + ( info ? "true" : "false" );
-    Boolean loop = loopCache.get( cacheKey );
-    if ( loop != null ) {
-      return loop.booleanValue();
+  private boolean hasLoop( StepMeta stepMeta, StepMeta lookup, HashSet<StepMeta> checkedEntries ) {
+    String cacheKey =
+            stepMeta.getName() + " - " + ( lookup != null ? lookup.getName() : "" );
+
+    Boolean hasLoop = loopCache.get( cacheKey );
+
+    if ( hasLoop != null ) {
+      return hasLoop;
     }
 
-    boolean hasLoop = false;
-    List<StepMeta> prevSteps = findPreviousSteps( stepMeta, info );
+    hasLoop = false;
+
+    checkedEntries.add( stepMeta );
+
+    List<StepMeta> prevSteps = findPreviousSteps( stepMeta, true );
     int nr = prevSteps.size();
-    for ( int i = 0; i < nr && !hasLoop; i++ ) {
+    for ( int i = 0; i < nr; i++ ) {
       StepMeta prevStepMeta = prevSteps.get( i );
-      if ( prevStepMeta != null ) {
-        if ( prevStepMeta.equals( stepMeta ) ) {
-          hasLoop = true;
-          break; // no need to check more but caching this one below
-        } else if ( prevStepMeta.equals( lookup ) ) {
-          hasLoop = true;
-          break; // no need to check more but caching this one below
-        } else if ( hasLoop( prevStepMeta, lookup == null ? stepMeta : lookup, info ) ) {
-          hasLoop = true;
-          break; // no need to check more but caching this one below
-        }
+      if ( prevStepMeta != null && ( prevStepMeta.equals( lookup )
+              || ( !checkedEntries.contains( prevStepMeta ) && hasLoop( prevStepMeta, lookup == null ? stepMeta : lookup, checkedEntries ) ) ) ) {
+        hasLoop = true;
+        break;
       }
     }
 
-    // Store in the cache...
-    //
-    loopCache.put( cacheKey, Boolean.valueOf( hasLoop ) );
-
+    loopCache.put( cacheKey, hasLoop );
     return hasLoop;
   }
 
@@ -5147,11 +5162,8 @@ public class TransMeta extends AbstractMeta
       }
     }
 
-    if ( transLogTable.getDatabaseMeta() != null && transLogTable.getDatabaseMeta().equals( databaseMeta ) ) {
-      return true;
-    }
+    return transLogTable.getDatabaseMeta() != null && transLogTable.getDatabaseMeta().equals( databaseMeta );
 
-    return false;
   }
 
   /**
@@ -6064,8 +6076,7 @@ public class TransMeta extends AbstractMeta
   /**
    * Sets the log table for the transformation.
    *
-   * @param the
-   *          log table to set
+   * @param transLogTable the log table to set
    */
   public void setTransLogTable( TransLogTable transLogTable ) {
     this.transLogTable = transLogTable;
