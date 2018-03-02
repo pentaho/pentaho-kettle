@@ -59,7 +59,8 @@ public class RowMeta implements RowMetaInterface {
 
   private final ReentrantReadWriteLock lock;
   private final RowMetaCache cache;
-  private List<ValueMetaInterface> valueMetaList;
+  List<ValueMetaInterface> valueMetaList;
+  List<Integer> needRealClone;
 
   public RowMeta() {
     this( new ArrayList<ValueMetaInterface>(), new RowMetaCache() );
@@ -77,12 +78,14 @@ public class RowMeta implements RowMetaInterface {
       valueMetaList.add( ValueMetaFactory
         .cloneValueMeta( valueMetaInterface, targetType == null ? valueMetaInterface.getType() : targetType ) );
     }
+    this.needRealClone = rowMeta.needRealClone;
   }
 
   private RowMeta( List<ValueMetaInterface> valueMetaList, RowMetaCache rowMetaCache ) {
     lock = new ReentrantReadWriteLock();
     this.cache = rowMetaCache;
     this.valueMetaList = valueMetaList;
+    this.needRealClone = new ArrayList<>();
   }
 
   @Override
@@ -145,7 +148,7 @@ public class RowMeta implements RowMetaInterface {
 
     lock.readLock().lock();
     try {
-      copy = new ArrayList<ValueMetaInterface>( valueMetaList );
+      copy = new ArrayList<>( valueMetaList );
     } finally {
       lock.readLock().unlock();
     }
@@ -166,6 +169,7 @@ public class RowMeta implements RowMetaInterface {
         ValueMetaInterface valueMeta = valueMetaList.get( i );
         cache.storeMapping( valueMeta.getName(), i );
       }
+      this.needRealClone = null;
     } finally {
       lock.writeLock().unlock();
     }
@@ -213,14 +217,16 @@ public class RowMeta implements RowMetaInterface {
       lock.writeLock().lock();
       try {
         ValueMetaInterface newMeta;
-        if ( !exists( meta ) ) {
+        Integer existsIdx = cache.findAndCompare( meta.getName(), valueMetaList );
+        if ( existsIdx == null ) {
           newMeta = meta;
         } else {
           newMeta = renameValueMetaIfInRow( meta, null );
         }
-        int index = valueMetaList.size();
+        int sz = valueMetaList.size();
         valueMetaList.add( newMeta );
-        cache.storeMapping( newMeta.getName(), index );
+        cache.storeMapping( newMeta.getName(), sz );
+        needRealClone = null;
       } finally {
         lock.writeLock().unlock();
       }
@@ -240,13 +246,15 @@ public class RowMeta implements RowMetaInterface {
       lock.writeLock().lock();
       try {
         ValueMetaInterface newMeta;
-        if ( !exists( meta ) ) {
+        Integer existsIdx = cache.findAndCompare( meta.getName(), valueMetaList );
+        if ( existsIdx == null ) {
           newMeta = meta;
         } else {
           newMeta = renameValueMetaIfInRow( meta, null );
         }
         valueMetaList.add( index, newMeta );
         cache.invalidate();
+        needRealClone = null;
       } finally {
         lock.writeLock().unlock();
       }
@@ -296,6 +304,7 @@ public class RowMeta implements RowMetaInterface {
         }
         valueMetaList.set( index, newMeta );
         cache.replaceMapping( old.getName(), newMeta.getName(), index );
+        needRealClone = null;
       } finally {
         lock.writeLock().unlock();
       }
@@ -453,9 +462,9 @@ public class RowMeta implements RowMetaInterface {
    */
   @Override
   public Object[] cloneRow( Object[] objects, Object[] newObjects ) throws KettleValueException {
+    List<Integer> list = getOrCreateValuesThatNeedRealClone( valueMetaList );
     lock.readLock().lock();
     try {
-      List<Integer> list = cache.getOrCreateValuesThatNeedRealClone( valueMetaList );
       for ( Integer i : list ) {
         ValueMetaInterface valueMeta = valueMetaList.get( i );
         newObjects[ i ] = valueMeta.cloneValueData( objects[ i ] );
@@ -464,6 +473,26 @@ public class RowMeta implements RowMetaInterface {
     } finally {
       lock.readLock().unlock();
     }
+  }
+
+  @VisibleForTesting
+  List<Integer> getOrCreateValuesThatNeedRealClone( List<ValueMetaInterface> values ) {
+    lock.writeLock().lock();
+    try {
+      if ( needRealClone == null ) {
+        int len = values.size();
+        needRealClone = new ArrayList<>( len );
+        for ( int i = 0; i < len; i++ ) {
+          ValueMetaInterface valueMeta = values.get( i );
+          if ( valueMeta.requiresRealClone() ) {
+            needRealClone.add( i );
+          }
+        }
+      }
+    } finally {
+      lock.writeLock().unlock();
+    }
+    return needRealClone;
   }
 
   @Override
@@ -754,6 +783,7 @@ public class RowMeta implements RowMetaInterface {
     try {
       valueMetaList.clear();
       cache.invalidate();
+      needRealClone = null;
     } finally {
       lock.writeLock().unlock();
     }
@@ -780,6 +810,7 @@ public class RowMeta implements RowMetaInterface {
     try {
       valueMetaList.remove( index );
       cache.invalidate();
+      needRealClone = null;
     } finally {
       lock.writeLock().unlock();
     }
@@ -1229,11 +1260,9 @@ public class RowMeta implements RowMetaInterface {
   static class RowMetaCache {
     @VisibleForTesting
     final Map<String, Integer> mapping;
-    @VisibleForTesting
-    List<Integer> needRealClone;
 
     RowMetaCache() {
-      this( new ConcurrentHashMap<String, Integer>(), null );
+      this( new ConcurrentHashMap<String, Integer>() );
     }
 
     /**
@@ -1242,32 +1271,25 @@ public class RowMeta implements RowMetaInterface {
      * @param rowMetaCache
      */
     RowMetaCache( RowMetaCache rowMetaCache ) {
-      this( new ConcurrentHashMap<>( rowMetaCache.mapping ), rowMetaCache.needRealClone == null ? null
-        : new ArrayList<>( rowMetaCache.needRealClone ) );
+      this( new ConcurrentHashMap<>( rowMetaCache.mapping ) );
     }
 
-    RowMetaCache( Map<String, Integer> mapping, List<Integer> needRealClone ) {
+    RowMetaCache( Map<String, Integer> mapping ) {
       this.mapping = mapping;
-      this.needRealClone = needRealClone;
     }
 
-    synchronized void invalidate() {
+    void invalidate() {
       mapping.clear();
-      needRealClone = null;
     }
 
     void storeMapping( String name, int index ) {
       if ( Utils.isEmpty( name ) ) {
         return;
       }
-
-      synchronized ( this ) {
-        mapping.put( name.toLowerCase(), index );
-        needRealClone = null;
-      }
+      mapping.put( name.toLowerCase(), index );
     }
 
-    synchronized void replaceMapping( String old, String current, int index ) {
+    void replaceMapping( String old, String current, int index ) {
       if ( !Utils.isEmpty( old ) ) {
         mapping.remove( old.toLowerCase() );
       }
@@ -1279,33 +1301,18 @@ public class RowMeta implements RowMetaInterface {
         return null;
       }
 
-      synchronized ( this ) {
-        name = name.toLowerCase();
-        Integer index = mapping.get( name );
-        if ( index != null ) {
-          ValueMetaInterface value = metas.get( index );
-          if ( !name.equalsIgnoreCase( value.getName() ) ) {
-            mapping.remove( name );
-            index = null;
-          }
+      name = name.toLowerCase();
+      Integer index = mapping.get( name );
+      if ( index != null ) {
+        ValueMetaInterface value = metas.get( index );
+        if ( !name.equalsIgnoreCase( value.getName() ) ) {
+          mapping.remove( name );
+          index = null;
         }
-        return index;
       }
+      return index;
     }
 
-    synchronized List<Integer> getOrCreateValuesThatNeedRealClone( List<ValueMetaInterface> values ) {
-      if ( needRealClone == null ) {
-        int len = values.size();
-        needRealClone = new ArrayList<Integer>( len );
-        for ( int i = 0; i < len; i++ ) {
-          ValueMetaInterface valueMeta = values.get( i );
-          if ( valueMeta.requiresRealClone() ) {
-            needRealClone.add( i );
-          }
-        }
-      }
-      return needRealClone;
-    }
   }
 }
 

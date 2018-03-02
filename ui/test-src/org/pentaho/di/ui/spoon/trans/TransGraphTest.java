@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2017 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2017-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -87,6 +87,9 @@ public class TransGraphTest {
 
     when( stepMeta.getStepErrorMeta() ).thenReturn( errorMeta );
     selectedHop.setToStep( new StepMeta() );
+    StepMeta toStep = new StepMeta();
+    toStep.setName( "toStep" );
+    selectedHop.setToStep( toStep );
     when( transGraph.getCurrentHop() ).thenReturn( selectedHop );
 
     doCallRealMethod().when( transGraph ).enableHop();
