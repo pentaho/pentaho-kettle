@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -294,7 +294,18 @@ public class TransHopDialog extends Dialog {
     input.setFromStep( transMeta.findStep( wFrom.getText() ) );
     input.setToStep( transMeta.findStep( wTo.getText() ) );
 
-    if ( transMeta.hasLoop( input.getFromStep() ) ) {
+    if ( input.getFromStep() == null || input.getToStep() == null ) {
+      MessageBox mb = new MessageBox( shell, SWT.YES | SWT.ICON_WARNING );
+      mb.setMessage( BaseMessages.getString( PKG, "TransHopDialog.StepDoesNotExist.DialogMessage", input.getFromStep() == null ? wFrom
+              .getText() : wTo.getText() ) );
+      mb.setText( BaseMessages.getString( PKG, "TransHopDialog.StepDoesNotExist.DialogTitle" ) );
+      mb.open();
+    } else if ( input.getFromStep().equals( input.getToStep() ) ) {
+      MessageBox mb = new MessageBox( shell, SWT.YES | SWT.ICON_WARNING );
+      mb.setMessage( BaseMessages.getString( PKG, "TransHopDialog.CannotGoToSameStep.DialogMessage" ) );
+      mb.setText( BaseMessages.getString( PKG, "TransHopDialog.CannotGoToSameStep.DialogTitle" ) );
+      mb.open();
+    } else if ( transMeta.hasLoop( input.getToStep() ) ) {
       input.setFromStep( fromBackup );
       input.setToStep( toBackup );
       MessageBox mb = new MessageBox( shell, SWT.OK | SWT.ICON_ERROR );
@@ -302,30 +313,7 @@ public class TransHopDialog extends Dialog {
       mb.setText( BaseMessages.getString( PKG, "TransHopDialog.LoopsNotAllowed.DialogTitle" ) );
       mb.open();
     } else {
-      if ( input.getFromStep() == null ) {
-        MessageBox mb = new MessageBox( shell, SWT.YES | SWT.ICON_WARNING );
-        mb.setMessage( BaseMessages.getString( PKG, "TransHopDialog.StepDoesNotExist.DialogMessage", wFrom
-          .getText() ) );
-        mb.setText( BaseMessages.getString( PKG, "TransHopDialog.StepDoesNotExist.DialogTitle" ) );
-        mb.open();
-      } else {
-        if ( input.getToStep() == null ) {
-          MessageBox mb = new MessageBox( shell, SWT.YES | SWT.ICON_WARNING );
-          mb.setMessage( BaseMessages.getString( PKG, "TransHopDialog.StepDoesNotExist.DialogMessage", wTo
-            .getText() ) );
-          mb.setText( BaseMessages.getString( PKG, "TransHopDialog.StepDoesNotExist.DialogTitle" ) );
-          mb.open();
-        } else {
-          if ( input.getFromStep().equals( input.getToStep() ) ) {
-            MessageBox mb = new MessageBox( shell, SWT.YES | SWT.ICON_WARNING );
-            mb.setMessage( BaseMessages.getString( PKG, "TransHopDialog.CannotGoToSameStep.DialogMessage" ) );
-            mb.setText( BaseMessages.getString( PKG, "TransHopDialog.CannotGoToSameStep.DialogTitle" ) );
-            mb.open();
-          } else {
-            dispose();
-          }
-        }
-      }
+      dispose();
     }
   }
 
