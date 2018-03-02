@@ -118,6 +118,7 @@ public class BaseStreamStep extends BaseStep {
 
     bufferStream().forEach( result -> putRows( result.getRows() ) );
     super.setOutputDone();
+    source.close();
     return false;
   }
 
