@@ -23,6 +23,7 @@
 
 package org.pentaho.di.trans;
 
+import com.google.common.annotations.VisibleForTesting;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.commons.vfs2.FileName;
 import org.apache.commons.vfs2.FileObject;
@@ -107,6 +108,7 @@ import org.pentaho.di.trans.steps.mapping.MappingMeta;
 import org.pentaho.di.trans.steps.missing.MissingTrans;
 import org.pentaho.di.trans.steps.named.cluster.NamedClusterEmbedManager;
 import org.pentaho.di.trans.steps.singlethreader.SingleThreaderMeta;
+import org.pentaho.di.trans.steps.streamlookup.StreamLookupMeta;
 import org.pentaho.di.trans.steps.transexecutor.TransExecutorMeta;
 import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Document;
@@ -1812,7 +1814,8 @@ public class TransMeta extends AbstractMeta
 
     // Resume the regular program...
 
-    List<StepMeta> prevSteps = findPreviousSteps( stepMeta );
+    List<StepMeta> prevSteps = getPreviousSteps( stepMeta );
+
     int nrPrevious = prevSteps.size();
 
     if ( log.isDebug() ) {
@@ -1871,6 +1874,16 @@ public class TransMeta extends AbstractMeta
     stepsFieldsCache.put( fromToCacheEntry, rowMeta );
 
     return rowMeta;
+  }
+
+  @VisibleForTesting
+  List<StepMeta> getPreviousSteps( StepMeta stepMeta ) {
+    if ( stepMeta.getStepMetaInterface() instanceof StreamLookupMeta ) {
+      clearPreviousStepCache();
+      return findPreviousSteps( stepMeta, false );
+    } else {
+      return findPreviousSteps( stepMeta );
+    }
   }
 
   /**
@@ -6016,7 +6029,8 @@ public class TransMeta extends AbstractMeta
     loopCache.clear();
   }
 
-  private void clearPreviousStepCache() {
+  @VisibleForTesting
+  void clearPreviousStepCache() {
     previousStepCache.clear();
   }
 
