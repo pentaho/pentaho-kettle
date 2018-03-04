@@ -20,7 +20,7 @@
  *
  ******************************************************************************/
 
-package org.pentaho.di.pan;
+package org.pentaho.di.kitchen;
 
 import org.junit.After;
 import org.junit.Before;
@@ -28,15 +28,13 @@ import org.junit.Test;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleSecurityException;
-import org.pentaho.di.core.parameters.NamedParams;
-import org.pentaho.di.core.parameters.NamedParamsDefault;
+import org.pentaho.di.job.Job;
+import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.repository.RepositoriesMeta;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectoryInterface;
 import org.pentaho.di.repository.RepositoryMeta;
 import org.pentaho.di.repository.RepositoryOperation;
-import org.pentaho.di.trans.Trans;
-import org.pentaho.di.trans.TransMeta;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
@@ -49,7 +47,7 @@ import static org.mockito.Matchers.anyObject;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public class PanTest {
+public class KitchenTest {
 
   private static final String TEST_PARAM_NAME = "testParam";
   private static final String DEFAULT_PARAM_VALUE = "default value";
@@ -91,29 +89,21 @@ public class PanTest {
 
   @Test
   public void testConfigureParameters() throws Exception {
-    TransMeta transMeta = new TransMeta();
-    transMeta.addParameterDefinition( TEST_PARAM_NAME, DEFAULT_PARAM_VALUE, "This tests a default parameter" );
+    JobMeta jobMeta = new JobMeta();
+    jobMeta.addParameterDefinition( TEST_PARAM_NAME, DEFAULT_PARAM_VALUE, "This tests a default parameter" );
 
-    assertEquals( "Default parameter was not set correctly on TransMeta",
-      DEFAULT_PARAM_VALUE, transMeta.getParameterDefault( TEST_PARAM_NAME ) );
+    assertEquals( "Default parameter was not set correctly on JobMeta", DEFAULT_PARAM_VALUE,
+            jobMeta.getParameterDefault( TEST_PARAM_NAME ) );
 
-    assertEquals( "Parameter value should be blank in TransMeta", "", transMeta.getParameterValue( TEST_PARAM_NAME ) );
+    assertEquals( "Parameter value should be blank in JobMeta", "", jobMeta.getParameterValue( TEST_PARAM_NAME ) );
 
-    Trans trans = new Trans( transMeta );
+    Job job = new Job( null, jobMeta );
+    job.copyParametersFrom( jobMeta );
 
-    assertEquals( "Default parameter was not set correctly on Trans",
-      DEFAULT_PARAM_VALUE, trans.getParameterDefault( TEST_PARAM_NAME ) );
+    assertEquals( "Default parameter was not set correctly on Job", DEFAULT_PARAM_VALUE,
+            job.getParameterDefault( TEST_PARAM_NAME ) );
 
-    assertEquals( "Parameter value should be blank in Trans", "", trans.getParameterValue( TEST_PARAM_NAME ) );
-
-    NamedParams params = new NamedParamsDefault();
-    params.addParameterDefinition( TEST_PARAM_NAME, NOT_DEFAULT_PARAM_VALUE, "This tests a non-default parameter" );
-    params.setParameterValue( TEST_PARAM_NAME, NOT_DEFAULT_PARAM_VALUE );
-    Pan.configureParameters( trans, params, transMeta );
-    assertEquals( "Parameter was not set correctly in Trans",
-      NOT_DEFAULT_PARAM_VALUE, trans.getParameterValue( TEST_PARAM_NAME ) );
-    assertEquals( "Parameter was not set correctly in TransMeta",
-      NOT_DEFAULT_PARAM_VALUE, transMeta.getParameterValue( TEST_PARAM_NAME ) );
+    assertEquals( "Parameter value should be blank in Job", "", job.getParameterValue( TEST_PARAM_NAME ) );
   }
 
   @Test
@@ -131,7 +121,7 @@ public class PanTest {
     when( mockRepositoriesMeta.nrRepositories() ).thenReturn( 1 );
     when( mockRepositoriesMeta.getRepository( 0 ) ).thenReturn( mockRepositoryMeta );
 
-    PanCommandExecutor testPanCommandExecutor = new PanCommandExecutorForTesting( null, null, mockRepositoriesMeta );
+    KitchenCommandExecutor testPanCommandExecutor = new KitchenCommandExecutorForTesting( null, null, mockRepositoriesMeta );
 
     origSysOut = System.out;
     origSysErr = System.err;
@@ -141,8 +131,8 @@ public class PanTest {
       System.setOut( new PrintStream( sysOutContent ) );
       System.setErr( new PrintStream( sysErrContent ) );
 
-      Pan.setCommandExecutor( testPanCommandExecutor );
-      Pan.main( new String[] { "/listrep" } );
+      Kitchen.setCommandExecutor( testPanCommandExecutor );
+      Kitchen.main( new String[] { "/listrep" } );
 
     } catch ( SecurityException e ) {
       // All OK / expected: SecurityException is purposely thrown when Pan triggers System.exitJVM()
@@ -155,7 +145,7 @@ public class PanTest {
     } finally {
       // sanitize
 
-      Pan.setCommandExecutor( null );
+      Kitchen.setCommandExecutor( null );
 
       System.setOut( origSysOut );
       System.setErr( origSysErr );
@@ -175,7 +165,7 @@ public class PanTest {
     when( mockRepository.getDirectoryNames( anyObject() ) ).thenReturn( new String[]{ DUMMY_DIR_1, DUMMY_DIR_2 } );
     when( mockRepository.loadRepositoryDirectoryTree() ).thenReturn( mockRepositoryDirectory );
 
-    PanCommandExecutor testPanCommandExecutor = new PanCommandExecutorForTesting( mockRepository, mockRepositoryMeta, null );
+    KitchenCommandExecutor testPanCommandExecutor = new KitchenCommandExecutorForTesting( mockRepository, mockRepositoryMeta, null );
 
     origSysOut = System.out;
     origSysErr = System.err;
@@ -185,8 +175,8 @@ public class PanTest {
       System.setOut( new PrintStream( sysOutContent ) );
       System.setErr( new PrintStream( sysErrContent ) );
 
-      Pan.setCommandExecutor( testPanCommandExecutor );
-      Pan.main( new String[] { "/listdir:Y", "/rep:test-repo", "/level:Basic" } );
+      Kitchen.setCommandExecutor( testPanCommandExecutor );
+      Kitchen.main( new String[] { "/listdir:Y", "/rep:test-repo", "/level:Basic" } );
 
     } catch ( SecurityException e ) {
       // All OK / expected: SecurityException is purposely thrown when Pan triggers System.exitJVM()
@@ -199,7 +189,7 @@ public class PanTest {
     } finally {
       // sanitize
 
-      Pan.setCommandExecutor( null );
+      Kitchen.setCommandExecutor( null );
 
       System.setOut( origSysOut );
       System.setErr( origSysErr );
@@ -207,18 +197,18 @@ public class PanTest {
   }
 
   @Test
-  public void testListTrans() throws Exception {
+  public void testListJobs() throws Exception {
 
     PrintStream origSysOut;
     PrintStream origSysErr;
 
-    final String DUMMY_TRANS_1 = "test-trans-name-1";
-    final String DUMMY_TRANS_2 = "test-trans-name-2";
+    final String DUMMY_JOB_1 = "test-job-name-1";
+    final String DUMMY_JOB_2 = "test-job-name-2";
 
-    when( mockRepository.getTransformationNames( anyObject(), anyBoolean() ) ).thenReturn( new String[]{ DUMMY_TRANS_1, DUMMY_TRANS_2 } );
+    when( mockRepository.getJobNames( anyObject(), anyBoolean() ) ).thenReturn( new String[]{ DUMMY_JOB_1, DUMMY_JOB_2 } );
     when( mockRepository.loadRepositoryDirectoryTree() ).thenReturn( mockRepositoryDirectory );
 
-    PanCommandExecutor testPanCommandExecutor = new PanCommandExecutorForTesting( mockRepository, mockRepositoryMeta,  null );
+    KitchenCommandExecutor testPanCommandExecutor = new KitchenCommandExecutorForTesting( mockRepository, mockRepositoryMeta,  null );
 
     origSysOut = System.out;
     origSysErr = System.err;
@@ -228,36 +218,36 @@ public class PanTest {
       System.setOut( new PrintStream( sysOutContent ) );
       System.setErr( new PrintStream( sysErrContent ) );
 
-      Pan.setCommandExecutor( testPanCommandExecutor );
-      Pan.main( new String[] { "/listtrans:Y", "/rep:test-repo", "/level:Basic" } );
+      Kitchen.setCommandExecutor( testPanCommandExecutor );
+      Kitchen.main( new String[] { "/listjobs:Y", "/rep:test-repo", "/level:Basic" } );
 
     } catch ( SecurityException e ) {
       // All OK / expected: SecurityException is purposely thrown when Pan triggers System.exitJVM()
 
       System.out.println( sysOutContent );
 
-      assertTrue( sysOutContent.toString().contains( DUMMY_TRANS_1 ) );
-      assertTrue( sysOutContent.toString().contains( DUMMY_TRANS_2 ) );
+      assertTrue( sysOutContent.toString().contains( DUMMY_JOB_1 ) );
+      assertTrue( sysOutContent.toString().contains( DUMMY_JOB_2 ) );
 
     } finally {
       // sanitize
 
-      Pan.setCommandExecutor( null );
+      Kitchen.setCommandExecutor( null );
 
       System.setOut( origSysOut );
       System.setErr( origSysErr );
     }
   }
 
-  private class PanCommandExecutorForTesting extends PanCommandExecutor {
+  private class KitchenCommandExecutorForTesting extends KitchenCommandExecutor {
 
     private Repository testRepository;
     private RepositoryMeta testRepositoryMeta;
     private RepositoriesMeta testRepositoriesMeta;
 
-    public PanCommandExecutorForTesting( Repository testRepository, RepositoryMeta testRepositoryMeta,
-                                         RepositoriesMeta testRepositoriesMeta ) {
-      super( Pan.class );
+    public KitchenCommandExecutorForTesting( Repository testRepository, RepositoryMeta testRepositoryMeta,
+                                             RepositoriesMeta testRepositoriesMeta ) {
+      super( Kitchen.class );
       this.testRepository = testRepository;
       this.testRepositoryMeta = testRepositoryMeta;
       this.testRepositoriesMeta = testRepositoriesMeta;
@@ -270,14 +260,14 @@ public class PanTest {
 
     @Override
     public RepositoryMeta loadRepositoryConnection( final String repoName, String loadingAvailableRepMsgTkn,
-                                                    String noRepsDefinedMsgTkn, String findingRepMsgTkn ) throws KettleException {
+                                                        String noRepsDefinedMsgTkn, String findingRepMsgTkn ) throws KettleException {
       return testRepositoryMeta != null ? testRepositoryMeta : super.loadRepositoryConnection( repoName, loadingAvailableRepMsgTkn,
-              noRepsDefinedMsgTkn, findingRepMsgTkn );
+                    noRepsDefinedMsgTkn, findingRepMsgTkn );
     }
 
     @Override
     public Repository establishRepositoryConnection( RepositoryMeta repositoryMeta, final String username, final String password,
-                                                     final RepositoryOperation... operations ) throws KettleException, KettleSecurityException {
+                                                         final RepositoryOperation... operations ) throws KettleException, KettleSecurityException {
       return testRepository != null ? testRepository : super.establishRepositoryConnection( repositoryMeta, username, password, operations );
     }
   }
@@ -301,6 +291,5 @@ public class PanTest {
         return;
       }
     }
-
   }
 }

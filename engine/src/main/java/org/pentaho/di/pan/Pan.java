@@ -25,6 +25,7 @@ package org.pentaho.di.pan;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.pentaho.di.base.CommandExecutorCodes;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.KettleClientEnvironment;
@@ -39,12 +40,9 @@ import org.pentaho.di.core.parameters.NamedParamsDefault;
 import org.pentaho.di.core.parameters.UnknownParamException;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.kitchen.Kitchen;
-import org.pentaho.di.metastore.MetaStoreConst;
 import org.pentaho.di.repository.RepositoryMeta;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
-import org.pentaho.di.version.BuildVersion;
-import org.pentaho.metastore.stores.delegate.DelegatingMetaStore;
 
 public class Pan {
   private static Class<?> PKG = Pan.class; // for i18n purposes, needed by Translator2!!
@@ -54,7 +52,7 @@ public class Pan {
 
   private static FileLoggingEventListener fileLoggingEventListener;
 
-  private static PanCommandExecutor commandExecutor = new PanCommandExecutor( PKG, log );
+  private static PanCommandExecutor commandExecutor;
 
   public static void main( String[] a ) throws Exception {
     KettleClientEnvironment.getInstance().setClient( KettleClientEnvironment.ClientType.PAN );
@@ -66,10 +64,6 @@ public class Pan {
         args.add( a[i] );
       }
     }
-
-    DelegatingMetaStore metaStore = new DelegatingMetaStore();
-    metaStore.addMetaStore( MetaStoreConst.openLocalPentahoMetaStore() );
-    metaStore.setActiveMetaStoreName( metaStore.getName() );
 
     RepositoryMeta repositoryMeta = null;
     Trans trans = null;
@@ -153,7 +147,7 @@ public class Pan {
 
     if ( args.size() == 2 ) { // 2 internal hidden argument (flag and value)
       CommandLineOption.printUsage( options );
-      exitJVM( PanReturnCode.CMD_LINE_PRINT.getCode() );
+      exitJVM( CommandExecutorCodes.Pan.CMD_LINE_PRINT.getCode() );
     }
 
 
@@ -162,7 +156,7 @@ public class Pan {
     if ( !CommandLineOption.parseArguments( args, options, log ) ) {
       log.logError( BaseMessages.getString( PKG, "Pan.Error.CommandLineError" ) );
 
-      exitJVM( PanReturnCode.ERROR_LOADING_STEPS_PLUGINS.getCode() );
+      exitJVM( CommandExecutorCodes.Pan.ERROR_LOADING_STEPS_PLUGINS.getCode() );
     }
 
     Kitchen.configureLogging( maxLogLinesOption, maxLogTimeoutOption );
@@ -200,19 +194,6 @@ public class Pan {
 
     }
 
-    if ( !Utils.isEmpty( optionVersion ) ) {
-      BuildVersion buildVersion = BuildVersion.getInstance();
-      if ( log.isBasic() ) {
-        log.logBasic( BaseMessages.getString(
-          PKG, "Pan.Log.KettleVersion", buildVersion.getVersion(), buildVersion.getRevision(), buildVersion
-            .getBuildDate() ) );
-      }
-
-      if ( a.length == 1 ) {
-        exitJVM( 6 );
-      }
-    }
-
     // ///////////////////////////////////////////////////////////////////////////////////////////////////
     // This is where the action starts.
     // Print the options before we start processing when running in Debug or
@@ -231,19 +212,29 @@ public class Pan {
 
     try {
 
-      PanCommandExecutor pan = new PanCommandExecutor( PKG, log );
-      pan.setMetaStore( metaStore );
-      int returnCode = pan.execute( optionRepname.toString(), optionNorep.toString(), optionUsername.toString(), optionPassword.toString(),
-              optionDirname.toString(), optionFilename.toString(), optionJarFilename.toString(), optionTransname.toString(),
-              optionListtrans.toString(), optionListdir.toString(), optionExprep.toString(), initialDir.toString(),
-              optionListrep.toString(), optionSafemode.toString(), optionMetrics.toString(), optionListParam.toString(),
-              optionParams, args.toArray( new String[ args.size() ] ) );
+      if ( getCommandExecutor() == null ) {
+        setCommandExecutor( new PanCommandExecutor( PKG, log ) ); // init
+      }
+
+      if ( !Utils.isEmpty( optionVersion ) ) {
+        getCommandExecutor().printVersion();
+
+        if ( a.length == 1 ) {
+          exitJVM( CommandExecutorCodes.Pan.KETTLE_VERSION_PRINT.getCode() );
+        }
+      }
+
+      int returnCode = getCommandExecutor().execute( optionRepname.toString(), optionNorep.toString(), optionUsername.toString(),
+              optionPassword.toString(), optionDirname.toString(), optionFilename.toString(), optionJarFilename.toString(),
+              optionTransname.toString(), optionListtrans.toString(), optionListdir.toString(), optionExprep.toString(),
+              initialDir.toString(), optionListrep.toString(), optionSafemode.toString(), optionMetrics.toString(),
+              optionListParam.toString(), optionParams, args.toArray( new String[ args.size() ] ) );
 
       exitJVM( returnCode );
 
     } catch ( Throwable t ) {
       t.printStackTrace();
-      exitJVM( PanReturnCode.UNEXPECTED_ERROR.getCode() );
+      exitJVM( CommandExecutorCodes.Pan.UNEXPECTED_ERROR.getCode() );
     }
   }
 
@@ -281,7 +272,7 @@ public class Pan {
     return commandExecutor;
   }
 
-  public void setCommandExecutor( PanCommandExecutor commandExecutor ) {
-    this.commandExecutor = commandExecutor;
+  public static void setCommandExecutor( PanCommandExecutor commandExecutor ) {
+    Pan.commandExecutor = commandExecutor;
   }
 }

@@ -22,20 +22,18 @@
 
 package org.pentaho.di.pan;
 
+import org.pentaho.di.base.AbstractBaseCommandExecutor;
+import org.pentaho.di.base.CommandExecutorCodes;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.exception.KettleSecurityException;
 import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.parameters.NamedParams;
 import org.pentaho.di.core.parameters.UnknownParamException;
-import org.pentaho.di.core.plugins.PluginRegistry;
-import org.pentaho.di.core.plugins.RepositoryPluginType;
 import org.pentaho.di.core.util.FileUtil;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.core.vfs.KettleVFS;
-import org.pentaho.di.metastore.MetaStoreConst;
 import org.pentaho.di.repository.RepositoriesMeta;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectoryInterface;
@@ -44,39 +42,27 @@ import org.pentaho.di.repository.RepositoryOperation;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.i18n.BaseMessages;
-import org.pentaho.metastore.api.exceptions.MetaStoreException;
-import org.pentaho.metastore.stores.delegate.DelegatingMetaStore;
 import org.w3c.dom.Document;
 
 import java.io.InputStream;
-import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 
-public class PanCommandExecutor {
-
-  private static final String YES = "Y";
-
-  private LogChannelInterface log;
-  private Class<?> pkgClazz;
-  DelegatingMetaStore metaStore;
-
-  private SimpleDateFormat dateFormat = new SimpleDateFormat( "yyyy/MM/dd HH:mm:ss.SSS" );
+public class PanCommandExecutor extends AbstractBaseCommandExecutor {
 
   public PanCommandExecutor( Class<?> pkgClazz ) {
     this( pkgClazz, new LogChannel( Pan.STRING_PAN ) );
   }
 
   public PanCommandExecutor( Class<?> pkgClazz, LogChannelInterface log ) {
-    this.pkgClazz = pkgClazz;
-    this.log = log;
+    setPkgClazz( pkgClazz );
+    setLog( log );
   }
 
-  public int execute( final String repoName, final String noRepo, final String username, final String password,
-                      final String dirName, final String filename, final String jarFile, final String transName,
-                      final String listTrans, final String listDirs, final String exportRepo, final String initialDir,
-                      final String listRepos, final String safemode, final String metrics, final String listParams,
-                      final NamedParams params, final String[] arguments ) throws Throwable {
+  public int execute( String repoName, String noRepo, String username, String password, String dirName, String filename,
+                      String jarFile, String transName, String listTrans, String listDirs, String exportRepo,
+                      String initialDir, String listRepos, String safemode, String metrics, String listParams,
+                      NamedParams params, String[] arguments ) throws Throwable {
 
     getLog().logMinimal( BaseMessages.getString( getPkgClazz(), "Pan.Log.StartingToRun" ) );
 
@@ -116,7 +102,7 @@ public class PanCommandExecutor {
       }
 
       if ( YES.equalsIgnoreCase( listRepos ) ) {
-        printRepositories( loadRepositoryInfo() ); // list the repositories placed at repositories.xml
+        printRepositories( loadRepositoryInfo( "Pan.Log.LoadingAvailableRep", "Pan.Error.NoRepsDefined" ) ); // list the repositories placed at repositories.xml
       }
 
     } catch ( Exception e ) {
@@ -125,7 +111,7 @@ public class PanCommandExecutor {
 
       System.out.println( BaseMessages.getString( getPkgClazz(), "Pan.Error.ProcessStopError", e.getMessage() ) );
       e.printStackTrace();
-      return PanReturnCode.ERRORS_DURING_PROCESSING.getCode();
+      return CommandExecutorCodes.Pan.ERRORS_DURING_PROCESSING.getCode();
     }
 
     if ( trans == null ) {
@@ -134,9 +120,9 @@ public class PanCommandExecutor {
               && !YES.equalsIgnoreCase( listRepos ) && Utils.isEmpty( exportRepo ) ) {
 
         System.out.println( BaseMessages.getString( getPkgClazz(), "Pan.Error.CanNotLoadTrans" ) );
-        return PanReturnCode.COULD_NOT_LOAD_TRANS.getCode();
+        return CommandExecutorCodes.Pan.COULD_NOT_LOAD_TRANS.getCode();
       } else {
-          return PanReturnCode.SUCCESS.getCode();
+        return CommandExecutorCodes.Pan.SUCCESS.getCode();
       }
     }
 
@@ -154,7 +140,7 @@ public class PanCommandExecutor {
         printTransformationParameters( trans );
 
         // stop right here...
-        return PanReturnCode.COULD_NOT_LOAD_TRANS.getCode(); // same as the other list options
+        return CommandExecutorCodes.Pan.COULD_NOT_LOAD_TRANS.getCode(); // same as the other list options
       }
 
       // allocate & run the required sub-threads
@@ -164,7 +150,7 @@ public class PanCommandExecutor {
       } catch ( KettleException ke ) {
         logDebug( ke.getLocalizedMessage() );
         System.out.println( BaseMessages.getString( getPkgClazz(), "Pan.Error.UnablePrepareInitTrans" ) );
-        return PanReturnCode.UNABLE_TO_PREP_INIT_TRANS.getCode();
+        return CommandExecutorCodes.Pan.UNABLE_TO_PREP_INIT_TRANS.getCode();
       }
 
       waitUntilFinished( trans, 100 ); // Give the transformation up to 10 seconds to finish execution
@@ -176,12 +162,13 @@ public class PanCommandExecutor {
       getLog().logMinimal( BaseMessages.getString( getPkgClazz(), "Pan.Log.Finished" ) );
       Date stop = Calendar.getInstance().getTime(); // capture execution stop time
 
-      int completionTimeSeconds = calculateAndPrintElapsedTime( start, stop );
+      int completionTimeSeconds = calculateAndPrintElapsedTime( start, stop, "Pan.Log.StartStop", "Pan.Log.ProcessingEndAfter",
+              "Pan.Log.ProcessingEndAfterLong", "Pan.Log.ProcessingEndAfterLonger", "Pan.Log.ProcessingEndAfterLongest" );
 
       if ( trans.getResult().getNrErrors() == 0 ) {
 
         trans.printStats( completionTimeSeconds );
-        return PanReturnCode.SUCCESS.getCode();
+        return CommandExecutorCodes.Pan.SUCCESS.getCode();
 
       } else {
 
@@ -197,12 +184,12 @@ public class PanCommandExecutor {
             getLog().logError( BaseMessages.getString( getPkgClazz(), "Pan.Error.TransJVMExitCodeInvalid",
                     Const.KETTLE_TRANS_PAN_JVM_EXIT_CODE, transJVMExitCode ) );
             getLog().logError( BaseMessages.getString( getPkgClazz(), "Pan.Log.JVMExitCode", "1" ) );
-            return PanReturnCode.ERRORS_DURING_PROCESSING.getCode();
+            return CommandExecutorCodes.Pan.ERRORS_DURING_PROCESSING.getCode();
           }
 
         } else {
-            // the trans does not have a return code.
-            return PanReturnCode.ERRORS_DURING_PROCESSING.getCode();
+          // the trans does not have a return code.
+          return CommandExecutorCodes.Pan.ERRORS_DURING_PROCESSING.getCode();
         }
       }
 
@@ -211,9 +198,14 @@ public class PanCommandExecutor {
       System.out.println( BaseMessages.getString( getPkgClazz(), "Pan.Log.ErrorOccurred", "" + ke.getMessage() ) );
       getLog().logError( BaseMessages.getString( getPkgClazz(), "Pan.Log.UnexpectedErrorOccurred", "" + ke.getMessage() ) );
 
-      return PanReturnCode.UNEXPECTED_ERROR.getCode();
+      return CommandExecutorCodes.Pan.UNEXPECTED_ERROR.getCode();
 
     }
+  }
+
+  public int printVersion() {
+    printVersion( "Pan.Log.KettleVersion" );
+    return CommandExecutorCodes.Pan.KETTLE_VERSION_PRINT.getCode();
   }
 
   public Trans executeRepositoryBasedCommand( final String repoName, final String username, final String password, final String dirName,
@@ -229,7 +221,7 @@ public class PanCommandExecutor {
 
     try {
 
-      RepositoryMeta repositoryMeta = loadRepositoryConnection( repoName );
+      RepositoryMeta repositoryMeta = loadRepositoryConnection( repoName, "Pan.Log.LoadingAvailableRep", "Pan.Error.NoRepsDefined", "Pan.Log.FindingRep" );
 
       if ( repositoryMeta != null ) {
         // Define and connect to the repository...
@@ -257,10 +249,10 @@ public class PanCommandExecutor {
           // transname is not empty ? then command it to load a transformation
           if ( !Utils.isEmpty( transName ) ) {
 
-            logDebug("Pan.Log.LoadTransInfo" );
+            logDebug( "Pan.Log.LoadTransInfo" );
             TransMeta transMeta = repo.loadTransformation( transName, directory, null, true, null );
 
-            logDebug("Pan.Log.AllocateTrans" );
+            logDebug( "Pan.Log.AllocateTrans" );
             Trans trans = new Trans( transMeta );
             trans.setRepository( repo );
             trans.setMetaStore( getMetaStore() );
@@ -379,55 +371,12 @@ public class PanCommandExecutor {
     trans.activateParameters();
   }
 
-  public DelegatingMetaStore createDefaultMetastore() throws MetaStoreException {
-    DelegatingMetaStore metaStore = new DelegatingMetaStore();
-    metaStore.addMetaStore( MetaStoreConst.openLocalPentahoMetaStore() );
-    metaStore.setActiveMetaStoreName( metaStore.getName() );
-    return metaStore;
-  }
+  protected void printTransformationParameters( Trans trans ) throws UnknownParamException {
 
-  public LogChannelInterface getLog() {
-    return log;
-  }
+    if ( trans != null && trans.listParameters() != null ) {
 
-  public Class<?> getPkgClazz() {
-    return pkgClazz;
-  }
-
-  public DelegatingMetaStore getMetaStore() {
-    return metaStore;
-  }
-
-  public void setMetaStore( DelegatingMetaStore metaStore ) {
-    this.metaStore = metaStore;
-  }
-
-  protected void printTransformationParameters( Trans transformation ) throws UnknownParamException {
-
-    if ( transformation == null || transformation.listParameters() == null ) {
-      return;
-    }
-
-    for ( String paramName : transformation.listParameters() ) {
-      String value = transformation.getParameterValue( paramName );
-      String deflt = transformation.getParameterDefault( paramName );
-      String descr = transformation.getParameterDescription( paramName );
-
-      if ( deflt != null ) {
-        System.out.println( "Parameter: " + paramName + "=" + Const.NVL( value, "" ) + ", default=" + deflt + " : " + Const.NVL( descr, "" ) );
-      } else {
-        System.out.println( "Parameter: " + paramName + "=" + Const.NVL( value, "" ) + " : " + Const.NVL( descr, "" ) );
-      }
-    }
-  }
-
-  protected void printRepositoryDirectories( Repository repository, RepositoryDirectoryInterface directory ) throws KettleException {
-
-    String[] directories = repository.getDirectoryNames( directory.getObjectId() );
-
-    if ( directories != null ) {
-      for ( String dir :  directories ) {
-        System.out.println( dir );
+      for ( String pName : trans.listParameters() ) {
+        printParameter( pName, trans.getParameterValue( pName ), trans.getParameterDefault( pName ), trans.getParameterDescription( pName ) );
       }
     }
   }
@@ -458,54 +407,6 @@ public class PanCommandExecutor {
     }
   }
 
-  protected RepositoryMeta loadRepositoryConnection( final String optionRepname ) throws KettleException {
-
-    RepositoriesMeta repsinfo = null;
-
-    if ( Utils.isEmpty( optionRepname ) || ( repsinfo = loadRepositoryInfo() ) == null ) {
-      return null;
-    }
-
-    logDebug(  "Pan.Log.FindingRep", optionRepname );
-    return repsinfo.findRepository( optionRepname );
-  }
-
-  protected RepositoriesMeta loadRepositoryInfo() throws KettleException {
-
-    RepositoriesMeta repsinfo = new RepositoriesMeta();
-    repsinfo.getLog().setLogLevel( getLog().getLogLevel() );
-
-    logDebug( "Pan.Log.LoadingAvailableRep" );
-
-    try {
-      repsinfo.readData();
-    } catch ( Exception e ) {
-      throw new KettleException( BaseMessages.getString( getPkgClazz(), "Pan.Error.NoRepsDefined" ), e );
-    }
-
-    return repsinfo;
-  }
-
-  protected Repository establishRepositoryConnection( RepositoryMeta repositoryMeta, final String username, final String password,
-                                                      final RepositoryOperation... operations ) throws KettleException, KettleSecurityException {
-
-    Repository rep = PluginRegistry.getInstance().loadClass( RepositoryPluginType.class, repositoryMeta, Repository.class );
-    rep.init( repositoryMeta );
-    rep.getLog().setLogLevel( getLog().getLogLevel() );
-    rep.connect( username != null ? username : null, password != null ? password : null );
-
-    if( operations != null ) {
-      // throws KettleSecurityException if username does does have permission for given operations
-      rep.getSecurityProvider().validateAction( operations );
-    }
-
-    return rep;
-  }
-
-  protected SimpleDateFormat getDateFormat() {
-    return dateFormat;
-  }
-
   private void waitUntilFinished( Trans trans, final long waitMillis ) {
 
     if ( trans != null && trans.isRunning() ) {
@@ -524,57 +425,6 @@ public class PanCommandExecutor {
         }
       }
     }
-  }
-
-  private void logDebug( final String messageKey ) {
-    if ( getLog().isDebug() ) {
-      getLog().logDebug( BaseMessages.getString( getPkgClazz(), messageKey ) );
-    }
-  }
-
-  private void logDebug( final String messageKey, String... messageTokens ) {
-    if ( getLog().isDebug() ) {
-      getLog().logDebug( BaseMessages.getString( getPkgClazz(), messageKey, messageTokens ) );
-    }
-  }
-
-  private int calculateAndPrintElapsedTime( Date start, Date stop ) {
-
-    String begin = getDateFormat().format( start ).toString();
-    String end = getDateFormat().format( stop ).toString();
-
-    getLog().logMinimal( BaseMessages.getString( getPkgClazz(), "Pan.Log.StartStop", begin, end ) );
-
-    long millis = stop.getTime() - start.getTime();
-    int seconds = (int) ( millis / 1000 );
-    if ( seconds <= 60 ) {
-      getLog().logMinimal( BaseMessages.getString( getPkgClazz(), "Pan.Log.ProcessingEndAfter", String.valueOf( seconds ) ) );
-    } else if ( seconds <= 60 * 60 ) {
-      int min = ( seconds / 60 );
-      int rem = ( seconds % 60 );
-      getLog().logMinimal( BaseMessages.getString( getPkgClazz(), "Pan.Log.ProcessingEndAfterLong", String.valueOf( min ),
-                  String.valueOf( rem ), String.valueOf( seconds ) ) );
-    } else if ( seconds <= 60 * 60 * 24 ) {
-      int rem;
-      int hour = ( seconds / ( 60 * 60 ) );
-      rem = ( seconds % ( 60 * 60 ) );
-      int min = rem / 60;
-      rem = rem % 60;
-      getLog().logMinimal( BaseMessages.getString(  getPkgClazz(), "Pan.Log.ProcessingEndAfterLonger", String.valueOf( hour ),
-                  String.valueOf( min ), String.valueOf( rem ), String.valueOf( seconds ) ) );
-    } else {
-      int rem;
-      int days = ( seconds / ( 60 * 60 * 24 ) );
-      rem = ( seconds % ( 60 * 60 * 24 ) );
-      int hour = rem / ( 60 * 60 );
-      rem = rem % ( 60 * 60 );
-      int min = rem / 60;
-      rem = rem % 60;
-      getLog().logMinimal( BaseMessages.getString( getPkgClazz(), "Pan.Log.ProcessingEndAfterLongest", String.valueOf( days ),
-                  String.valueOf( hour ), String.valueOf( min ), String.valueOf( rem ), String.valueOf( seconds ) ) );
-    }
-
-    return seconds;
   }
 }
 
