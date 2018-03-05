@@ -294,6 +294,8 @@ public class TransHopDialog extends Dialog {
     input.setFromStep( transMeta.findStep( wFrom.getText() ) );
     input.setToStep( transMeta.findStep( wTo.getText() ) );
 
+    transMeta.clearCaches();
+
     if ( input.getFromStep() == null || input.getToStep() == null ) {
       MessageBox mb = new MessageBox( shell, SWT.YES | SWT.ICON_WARNING );
       mb.setMessage( BaseMessages.getString( PKG, "TransHopDialog.StepDoesNotExist.DialogMessage", input.getFromStep() == null ? wFrom
