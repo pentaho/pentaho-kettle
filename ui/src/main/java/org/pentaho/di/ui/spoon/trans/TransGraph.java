@@ -981,9 +981,9 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
         TransHopMeta hop = findHop( real.x, real.y );
         if ( hop != null ) {
           TransHopMeta before = (TransHopMeta) hop.clone();
-          hop.setEnabled( !hop.isEnabled() );
+          setHopEnabled( hop, !hop.isEnabled() );
           if ( hop.isEnabled() && transMeta.hasLoop( hop.getToStep() ) ) {
-            hop.setEnabled( false );
+            setHopEnabled( hop, false );
             MessageBox mb = new MessageBox( shell, SWT.OK | SWT.ICON_ERROR );
             mb.setMessage( BaseMessages.getString( PKG, "TransGraph.Dialog.HopCausesLoop.Message" ) );
             mb.setText( BaseMessages.getString( PKG, "TransGraph.Dialog.HopCausesLoop.Title" ) );
@@ -2381,9 +2381,9 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
     selectionRegion = null;
     TransHopMeta hi = getCurrentHop();
     TransHopMeta before = (TransHopMeta) hi.clone();
-    hi.setEnabled( !hi.isEnabled() );
+    setHopEnabled( hi, !hi.isEnabled() );
     if ( hi.isEnabled() && transMeta.hasLoop( hi.getToStep() ) ) {
-      hi.setEnabled( false );
+      setHopEnabled( hi, false );
       MessageBox mb = new MessageBox( shell, SWT.OK | SWT.ICON_ERROR );
       mb.setMessage( BaseMessages.getString( PKG, "TransGraph.Dialog.LoopAfterHopEnabled.Message" ) );
       mb.setText( BaseMessages.getString( PKG, "TransGraph.Dialog.LoopAfterHopEnabled.Title" ) );
@@ -2434,13 +2434,13 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
       if ( list.contains( hop.getFromStep() ) && list.contains( hop.getToStep() ) ) {
 
         TransHopMeta before = (TransHopMeta) hop.clone();
-        hop.setEnabled( enabled );
+        setHopEnabled( hop, enabled );
         TransHopMeta after = (TransHopMeta) hop.clone();
         spoon.addUndoChange( transMeta, new TransHopMeta[] { before }, new TransHopMeta[] { after },
           new int[] { transMeta.indexOfTransHop( hop ) } );
         if ( transMeta.hasLoop( hop.getToStep() ) ) {
           hasLoop = true;
-          hop.setEnabled( false );
+          setHopEnabled( hop, false );
         }
       }
     }
@@ -2469,7 +2469,7 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
     }
 
     TransHopMeta before = (TransHopMeta) currentHop.clone();
-    currentHop.setEnabled( enabled );
+    setHopEnabled( currentHop, enabled );
     TransHopMeta after = (TransHopMeta) currentHop.clone();
     spoon.addUndoChange( transMeta, new TransHopMeta[] { before }, new TransHopMeta[] { after }, new int[] { transMeta
       .indexOfTransHop( currentHop ) } );
@@ -2493,7 +2493,7 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
             .forEach( hop -> {
               if ( hop.isEnabled() != enabled ) {
                 TransHopMeta before = (TransHopMeta) hop.clone();
-                hop.setEnabled( enabled );
+                setHopEnabled( hop, enabled );
                 TransHopMeta after = (TransHopMeta) hop.clone();
                 spoon.addUndoChange( transMeta, new TransHopMeta[]{ before }, new TransHopMeta[]{ after }, new int[]{ transMeta
                         .indexOfTransHop( hop ) } );
@@ -5050,5 +5050,10 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
     } catch ( KettleException e ) {
       throw new RuntimeException( e );
     }
+  }
+
+  private void setHopEnabled( TransHopMeta hop, boolean enabled ) {
+    hop.setEnabled( enabled );
+    transMeta.clearCaches();
   }
 }
