@@ -38,7 +38,7 @@
     <kettle.version>${project.version}</kettle.version>
     <mockito.version>1.9.5</mockito.version>
     <saxon.version>8.7</saxon.version>
-    <poi.version>3.15</poi.version>
+    <poi.version>3.17</poi.version>
   </properties>
 
   <dependencyManagement>
