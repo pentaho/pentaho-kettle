@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -752,8 +752,62 @@ public class SpoonTest {
     verify( spoon, never() ).openFile( anyString(), anyBoolean() );
   }
 
+
+  @Test
+  public void testLoadLastUsedTransLocalWithRepositoryAtStartup() throws Exception {
+    String repositoryName = "repositoryName";
+    String fileName = "fileName";
+
+    setLoadLastUsedJobLocalWithRepository( false, repositoryName, null, fileName, true, true );
+    verify( spoon ).openFile( fileName, true );
+  }
+
+  @Test
+  public void testLoadLastUsedTransLocalNoRepositoryAtStartup() throws Exception {
+    String repositoryName = null;
+    String fileName = "fileName";
+
+    setLoadLastUsedJobLocalWithRepository( false, repositoryName, null, fileName, true, true );
+    verify( spoon ).openFile( fileName, false );
+  }
+
+  @Test
+  public void testLoadLastUsedTransLocalNoFilenameAtStartup() throws Exception {
+    String repositoryName = null;
+    String fileName = null;
+
+    setLoadLastUsedJobLocalWithRepository( false, repositoryName, null, fileName, true, true );
+    verify( spoon, never() ).openFile( anyString(), anyBoolean() );
+  }
+
+  @Test
+  public void testLoadLastUsedJobLocalWithRepositoryAtStartup() throws Exception {
+    String repositoryName = null;
+    String fileName = "fileName";
+
+    setLoadLastUsedJobLocalWithRepository( false, repositoryName, null, fileName, false, true );
+    verify( spoon ).openFile( fileName, false );
+  }
+
+  @Test
+  public void testLoadLastUsedRepTransNoRepositoryAtStartup() throws Exception {
+    String repositoryName = null;
+    String fileName = "fileName";
+
+    setLoadLastUsedJobLocalWithRepository( true, repositoryName, null, fileName, false, true );
+    verify( spoon, never() ).openFile( anyString(), anyBoolean() );
+  }
+
+
+  private void setLoadLastUsedJobLocalWithRepository(
+    boolean isSourceRepository, String repositoryName, String directoryName, String fileName, boolean
+    isTransformation ) throws Exception {
+    setLoadLastUsedJobLocalWithRepository( isSourceRepository, repositoryName, directoryName, fileName,
+      isTransformation, false);
+  }
+
   private void setLoadLastUsedJobLocalWithRepository( boolean isSourceRepository, String repositoryName,
-      String directoryName, String fileName, boolean isTransformation ) throws Exception {
+      String directoryName, String fileName, boolean isTransformation, boolean isStartup ) throws Exception {
     LastUsedFile mockLastUsedFile = mock( LastUsedFile.class );
 
     if ( repositoryName != null ) {
@@ -771,8 +825,13 @@ public class SpoonTest {
     doReturn( isTransformation ).when( mockLastUsedFile ).isTransformation();
     doReturn( !isTransformation ).when( mockLastUsedFile ).isJob();
 
-    doCallRealMethod().when( spoon ).loadLastUsedFile( mockLastUsedFile, repositoryName );
-    spoon.loadLastUsedFile( mockLastUsedFile, repositoryName );
+    if ( isStartup ) {
+      doCallRealMethod().when( spoon ).loadLastUsedFileAtStartup( mockLastUsedFile, repositoryName );
+      spoon.loadLastUsedFileAtStartup( mockLastUsedFile, repositoryName );
+    } else {
+      doCallRealMethod().when( spoon ).loadLastUsedFile( mockLastUsedFile, repositoryName );
+      spoon.loadLastUsedFile( mockLastUsedFile, repositoryName );
+    }
   }
 
   @Test

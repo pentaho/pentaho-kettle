@@ -1,7 +1,7 @@
 /*!
  * HITACHI VANTARA PROPRIETARY AND CONFIDENTIAL
  *
- * Copyright 2017 Hitachi Vantara. All rights reserved.
+ * Copyright 2017-2018 Hitachi Vantara. All rights reserved.
  *
  * NOTICE: All information including source code contained herein is, and
  * remains the sole property of Hitachi Vantara and its licensors. The intellectual
@@ -126,6 +126,7 @@ define([
      * 13. Unable to delete folder b/c in use
      * 14. Unable to delete file b/c in use
      * 15. Unable to rename folder b/c it has an open file in it or a subfolder of it
+     * 16. Unable to open recent file
      *
      * @private
      */
@@ -284,6 +285,24 @@ define([
             i18n.get("file-open-save-plugin.error.unable-to-rename-folder-opened.bottom.message"),
             "",
             i18n.get("file-open-save-plugin.error.unable-to-rename-folder-opened.close.button"));
+          break;
+        case 16:// Unable to Open Recent file
+          var filename = vm.errorFile.name;
+          var fullMessage = i18n.get("file-open-save-plugin.missing-recent.message", {"filename": filename});
+          // is the full message wider than the max?
+          if (utils.getTextWidth(fullMessage) > _max) {
+            // figure out the width that can be used for the file name and truncate it, account for the ellipsis in
+            // the allowed max width
+            var fullMessageNoFilename = i18n.get("file-open-save-plugin.missing-recent.message", {"filename": ""});
+            var maxFilenameWidth = _max - utils.getTextWidth(fullMessageNoFilename);
+            filename = utils.truncateString(filename, maxFilenameWidth - utils.getTextWidth(_ellipsis)) + _ellipsis;
+            // recreate the fullMessage with the truncated filename
+            fullMessage = i18n.get("file-open-save-plugin.missing-recent.message", {"filename": filename});
+          }
+          _setMessage(i18n.get("file-open-save-plugin.missing-recent.title"),
+              fullMessage,
+              "", "", "", "",
+              i18n.get("file-open-save-plugin.missing-recent.close.button"));
           break;
         default:
           _setMessage("", "", "", "", "", "", "");

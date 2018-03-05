@@ -192,14 +192,12 @@ public class RepositoryBrowserController {
           if ( isJobOpened( id, path, name ) ) {
             throw new KettleJobException();
           }
-          removeRecent( id, type );
           getRepository().deleteJob( () -> id );
           break;
         case "transformation":
           if ( isTransOpened( id, path, name ) ) {
             throw new KettleTransException();
           }
-          removeRecent( id, type );
           getRepository().deleteTransformation( () -> id );
           break;
         case "folder":
@@ -219,31 +217,6 @@ public class RepositoryBrowserController {
     } catch ( Exception e ) {
       return false;
     }
-  }
-
-  private boolean removeRecent( String id, String type ) {
-    RepositoryObject repositoryObject = null;
-    try {
-      repositoryObject = getRepository().getObjectInformation( () -> id,
-        ( type == "transformation" ? RepositoryObjectType.TRANSFORMATION : RepositoryObjectType.JOB ) );
-    } catch ( Exception e ) {
-      return false;
-    }
-
-    if ( repositoryObject != null ) {
-      Collection<List<LastUsedFile>> lastUsedRepoFiles = PropsUI.getInstance().getLastUsedRepoFiles().values();
-      for ( List<LastUsedFile> lastUsedFiles : lastUsedRepoFiles ) {
-        for ( LastUsedFile lastUsedFile : lastUsedFiles ) {
-          if ( lastUsedFile.getDirectory().equals( repositoryObject.getRepositoryDirectory().getPath() ) && lastUsedFile
-            .getFilename().equals( repositoryObject.getName() ) ) {
-            lastUsedFiles.remove( lastUsedFile );
-            return true;
-          }
-        }
-      }
-    }
-
-    return true;
   }
 
   private boolean renameRecent( String id, String type, String name ) {
@@ -467,10 +440,16 @@ public class RepositoryBrowserController {
     return repositoryFiles;
   }
 
-  public void openRecentFile( String repo, String id ) {
-    getSpoon().getDisplay().asyncExec( () -> {
-      getSpoon().lastRepoFileSelect( repo, id );
-    } );
+  public boolean openRecentFile( String repo, String id ) {
+    // does the file exist?
+    if ( getSpoon().recentRepoFileExists( repo, id ) ) {
+      getSpoon().getDisplay().asyncExec( () -> {
+        getSpoon().lastRepoFileSelect( repo, id );
+      } );
+      return true;
+    } else {
+      return false;
+    }
   }
 
   private void createRepositoryDirectory( RepositoryDirectoryInterface repositoryDirectoryInterface,
