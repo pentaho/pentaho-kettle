@@ -32,6 +32,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import static com.google.common.base.Preconditions.checkNotNull;
+import static org.pentaho.di.core.logging.LoggingObjectType.DATABASE;
 import static org.pentaho.di.core.logging.LoggingObjectType.TRANS;
 import static org.pentaho.di.core.logging.LoggingObjectType.STEP;
 import static org.pentaho.di.core.logging.LoggingObjectType.JOB;
@@ -53,14 +54,6 @@ public class Slf4jLoggingEventListener implements KettleLoggingEventListener {
   public Slf4jLoggingEventListener() {
   }
 
-  private LogLevel extractLogLevel( LoggingObjectInterface loggingObject ) {
-    while ( loggingObject != null && loggingObject.getLogLevel() == null ) {
-      loggingObject = loggingObject.getParent();
-    }
-    return loggingObject != null
-      ? loggingObject.getLogLevel() != null ? loggingObject.getLogLevel() : LogLevel.BASIC
-      : LogLevel.BASIC;
-  }
 
   @Override
   public void eventAdded( KettleLoggingEvent event ) {
@@ -74,10 +67,10 @@ public class Slf4jLoggingEventListener implements KettleLoggingEventListener {
         // this can happen if logObject has been discarded while log events are still in flight.
         logToLogger( diLogger, message.getLevel(),
           message.getSubject() + " " + message.getMessage() );
-      } else if ( loggingObject.getObjectType() == TRANS || loggingObject.getObjectType() == STEP ) {
-        logToLogger( transLogger, extractLogLevel( loggingObject ), loggingObject, message );
+      } else if ( loggingObject.getObjectType() == TRANS || loggingObject.getObjectType() == STEP || loggingObject.getObjectType() == DATABASE  ) {
+        logToLogger( transLogger, message.getLevel(), loggingObject, message );
       } else if ( loggingObject.getObjectType() == JOB || loggingObject.getObjectType() == JOBENTRY ) {
-        logToLogger( jobLogger, extractLogLevel( loggingObject ), loggingObject, message );
+        logToLogger( jobLogger, message.getLevel(), loggingObject, message );
       }
     }
   }
@@ -85,7 +78,7 @@ public class Slf4jLoggingEventListener implements KettleLoggingEventListener {
   private void logToLogger( Logger logger, LogLevel logLevel, LoggingObjectInterface loggingObject,
                             LogMessage message ) {
     logToLogger( logger, logLevel,
-      getDetailedSubject( loggingObject ) + " " + message.getMessage() );
+      "[" + getDetailedSubject( loggingObject ) + "]  " + message.getMessage() );
   }
 
   private void logToLogger( Logger logger, LogLevel logLevel, String message ) {
@@ -144,7 +137,10 @@ public class Slf4jLoggingEventListener implements KettleLoggingEventListener {
   private String formatDetailedSubject( LinkedList<String> subjects ) {
     StringBuilder string = new StringBuilder();
     for ( Iterator<String> it = subjects.descendingIterator(); it.hasNext(); ) {
-      string.append( "  " ).append( it.next() );
+      string.append( it.next() );
+      if ( it.hasNext() ) {
+        string.append( "  " );
+      }
     }
     return string.toString();
   }

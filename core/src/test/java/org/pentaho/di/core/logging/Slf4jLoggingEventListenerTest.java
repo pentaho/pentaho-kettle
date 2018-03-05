@@ -87,14 +87,14 @@ public class Slf4jLoggingEventListenerTest {
     when( loggingObject.getLogChannelId() ).thenReturn( logChannelId );
     when( loggingObject.getObjectType() ).thenReturn( LoggingObjectType.TRANS );
     when( loggingObject.getFilename() ).thenReturn( "filename" );
+    when( message.getLevel() ).thenReturn( LogLevel.BASIC );
     listener.eventAdded( logEvent );
 
 
-    verify( transLogger ).info( "filename " + msgText );
-
-    when( loggingObject.getLogLevel() ).thenReturn( ERROR );
+    verify( transLogger ).info( "[filename]  " + msgText );
+    when( message.getLevel() ).thenReturn( LogLevel.ERROR );
     listener.eventAdded( logEvent );
-    verify( transLogger ).error( "filename " + msgText );
+    verify( transLogger ).error( "[filename]  " + msgText );
     verifyZeroInteractions( diLogger );
     verifyZeroInteractions( jobLogger );
   }
@@ -105,14 +105,15 @@ public class Slf4jLoggingEventListenerTest {
     when( loggingObject.getLogChannelId() ).thenReturn( logChannelId );
     when( loggingObject.getObjectType() ).thenReturn( LoggingObjectType.JOB );
     when( loggingObject.getFilename() ).thenReturn( "filename" );
+    when( message.getLevel() ).thenReturn( LogLevel.BASIC );
     listener.eventAdded( logEvent );
 
 
-    verify( jobLogger ).info( "filename " + msgText );
+    verify( jobLogger ).info( "[filename]  " + msgText );
 
-    when( loggingObject.getLogLevel() ).thenReturn( ERROR );
+    when( message.getLevel() ).thenReturn( LogLevel.ERROR );
     listener.eventAdded( logEvent );
-    verify( jobLogger ).error( "filename " + msgText );
+    verify( jobLogger ).error( "[filename]  " + msgText );
     verifyZeroInteractions( diLogger );
     verifyZeroInteractions( transLogger );
   }
