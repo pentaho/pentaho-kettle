@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -922,11 +922,11 @@ public class SelectValuesMeta extends BaseStepMeta implements StepMetaInterface 
 
     /** Select: length of field */
     @Injection( name = "FIELD_LENGTH", group = "FIELDS" )
-    private int length;
+    private int length = UNDEFINED;
 
     /** Select: Precision of field (for numbers) */
     @Injection( name = "FIELD_PRECISION", group = "FIELDS" )
-    private int precision;
+    private int precision = UNDEFINED;
 
     public String getName() {
       return name;

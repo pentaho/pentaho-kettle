@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -145,5 +145,15 @@ public class SelectValuesMetaInjectionTest extends BaseMetadataInjectionTest<Sel
 
     // TODO check field type plugins
     skipPropertyTest( "META_TYPE" );
+  }
+
+  //PDI-16932 test default values length and precision after injection
+  @Test
+  public void testDefaultValue() throws Exception {
+    ValueMetaInterface valueMeta = new ValueMetaString( "f" );
+    injector.setProperty( meta, "FIELD_NAME", setValue( valueMeta, "testValue" ), "f" );
+    nonTestedProperties.clear(); // we don't need to test other properties
+    assertEquals( SelectValuesMeta.UNDEFINED, meta.getSelectFields()[ 0 ].getLength() );
+    assertEquals( SelectValuesMeta.UNDEFINED, meta.getSelectFields()[ 0 ].getPrecision() );
   }
 }
