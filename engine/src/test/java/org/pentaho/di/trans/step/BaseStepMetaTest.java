@@ -20,45 +20,25 @@
  *
  ******************************************************************************/
 
-package org.pentaho.di.core.util;
+package org.pentaho.di.trans.step;
 
-import org.junit.Test;
-import org.pentaho.di.core.Const;
-import org.pentaho.di.core.KettleVariablesList;
-
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.RandomAccessFile;
 
-/**
- * Created by Yury_Bakhmutski on 11/4/2015.
- */
-public class KettleVariablesListTest {
+import org.junit.Test;
 
+public class BaseStepMetaTest {
+  
   @Test
-  public void testInit() throws Exception {
-    KettleVariablesList variablesList = KettleVariablesList.getInstance();
-    KettleVariablesList.init();
-    // See PDI-14522
-    boolean expected = false;
-    boolean actual = Boolean.valueOf( variablesList.getDefaultValueMap().get( Const.VFS_USER_DIR_IS_ROOT ) );
-    assertEquals( expected, actual );
-
-    String vfsUserDirIsRootDefaultMessage =
-        "Set this variable to true if VFS should treat the user directory"
-            + " as the root directory when connecting via ftp. Defaults to false.";
-    assertEquals( variablesList.getDescriptionMap().get( Const.VFS_USER_DIR_IS_ROOT ), vfsUserDirIsRootDefaultMessage );
-  }
-
-  @Test
-  public void testInit_closeInputStream() throws Exception {
-    KettleVariablesList.init();
+  public void testLoadStepAttributes_closeInputStream() throws Exception {
+    BaseStepMeta meta = new BaseStepMeta();
+    meta.loadStepAttributes();
     RandomAccessFile fos = null;
     try {
-      File file = new File( Const.KETTLE_VARIABLES_FILE );
+      File file = new File( getClass().getResource( BaseStepMeta.STEP_ATTRIBUTES_FILE ).getPath() );
       if ( file.exists() ) {
         fos = new RandomAccessFile( file, "rw" );
       }
@@ -70,4 +50,5 @@ public class KettleVariablesListTest {
       }
     }
   }
+
 }
