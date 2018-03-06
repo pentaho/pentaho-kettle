@@ -60,6 +60,22 @@ public class SimpleMessageDialog extends MessageDialog {
   }
 
   /**
+   * Creates a new dialog with the button label set to {@code closeButtonLabel}, dialog width set to
+   * {@link #DEFULT_WIDTH} and button width set to {@link #BUTTON_WIDTH}
+   *
+   * @param parentShell the parent {@link Shell}
+   * @param title       the dialog title
+   * @param message       the dialog message
+   * @param closeButtonLabel     the label for the close dialog
+   * @param dialogType  the dialog type ({@link MessageDialog#INFORMATION}, {@link MessageDialog#WARNING}, {@link
+   *                    MessageDialog#ERROR} etc...)
+   */
+  public SimpleMessageDialog( final Shell parentShell, final String title, final String message,
+                              final String closeButtonLabel, final int dialogType ) {
+    this( parentShell, title, message, dialogType, closeButtonLabel, DEFULT_WIDTH, BUTTON_WIDTH );
+  }
+
+  /**
    * Creates a new dialog with the specified title, message, dialogType and width.
    *
    * @param parentShell the parent {@link Shell}

@@ -91,9 +91,10 @@ public class RepositoryBrowserEndpoint {
   @GET
   @Path( "/loadRecent/{repo}/{id}" )
   public Response loadRecent( @PathParam( "repo" ) String repo, @PathParam( "id" ) String id ) {
-    repositoryBrowserController.openRecentFile( repo, id );
-
-    return Response.ok().build();
+    if ( repositoryBrowserController.openRecentFile( repo, id ) ) {
+      return Response.ok().build();
+    }
+    return Response.status( Response.Status.NOT_FOUND ).build();
   }
 
   @GET

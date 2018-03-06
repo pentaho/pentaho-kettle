@@ -401,6 +401,8 @@ define([
           dt.openRecent(file.repository + ":" + (file.username ? file.username : ""),
             file.objectId.id).then(function(response) {
               _closeBrowser();
+            }, function(response) {
+              _triggerError(16);
             });
         } else {
           select(file.objectId.id, file.name, file.path, file.type);
@@ -410,6 +412,8 @@ define([
           dt.openRecent(file.repository + ":" + (file.username ? file.username : ""),
             file.objectId.id).then(function(response) {
               _closeBrowser();
+            }, function(response) {
+              _triggerError(16);
             });
         } else {
           dt.openFile(file.objectId.id, file.type).then(function(response) {
