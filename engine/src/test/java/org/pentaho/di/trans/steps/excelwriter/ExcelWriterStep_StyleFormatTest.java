@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -26,6 +26,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.math.BigDecimal;
 
+import org.apache.poi.ss.usermodel.BorderStyle;
+import org.apache.poi.ss.usermodel.FillPatternType;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
@@ -243,8 +245,8 @@ public class ExcelWriterStep_StyleFormatTest {
     // Cell F1 has custom style applied, used as template
     Cell cell = xlsRow.createCell( 5 );
     CellStyle cellStyle = stepData.wb.createCellStyle();
-    cellStyle.setBorderRight( CellStyle.BORDER_THICK );
-    cellStyle.setFillPattern( CellStyle.FINE_DOTS );
+    cellStyle.setBorderRight( BorderStyle.THICK );
+    cellStyle.setFillPattern( FillPatternType.FINE_DOTS );
     cell.setCellStyle( cellStyle );
 
     // Cell G1 has same style, but also a custom data format

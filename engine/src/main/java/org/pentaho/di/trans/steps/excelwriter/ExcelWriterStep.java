@@ -27,6 +27,7 @@ import java.io.BufferedOutputStream;
 import java.io.IOException;
 
 import org.apache.commons.vfs2.FileObject;
+import org.apache.poi.common.usermodel.HyperlinkType;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Cell;
@@ -430,16 +431,16 @@ public class ExcelWriterStep extends BaseStep implements StepInterface {
           // set the link on the cell depending on link type
           Hyperlink hyperLink = null;
           if ( link.startsWith( "http:" ) || link.startsWith( "https:" ) || link.startsWith( "ftp:" ) ) {
-            hyperLink = ch.createHyperlink( Hyperlink.LINK_URL );
+            hyperLink = ch.createHyperlink( HyperlinkType.URL );
             hyperLink.setLabel( "URL Link" );
           } else if ( link.startsWith( "mailto:" ) ) {
-            hyperLink = ch.createHyperlink( Hyperlink.LINK_EMAIL );
+            hyperLink = ch.createHyperlink( HyperlinkType.EMAIL );
             hyperLink.setLabel( "Email Link" );
           } else if ( link.startsWith( "'" ) ) {
-            hyperLink = ch.createHyperlink( Hyperlink.LINK_DOCUMENT );
+            hyperLink = ch.createHyperlink( HyperlinkType.DOCUMENT );
             hyperLink.setLabel( "Link within this document" );
           } else {
-            hyperLink = ch.createHyperlink( Hyperlink.LINK_FILE );
+            hyperLink = ch.createHyperlink( HyperlinkType.FILE );
             hyperLink.setLabel( "Link to a file" );
           }
 
@@ -457,7 +458,7 @@ public class ExcelWriterStep extends BaseStep implements StepInterface {
               Font hlink_font = data.wb.createFont();
               // reporduce original font characteristics
 
-              hlink_font.setBoldweight( origFont.getBoldweight() );
+              hlink_font.setBold( origFont.getBold() );
               hlink_font.setCharSet( origFont.getCharSet() );
               hlink_font.setFontHeight( origFont.getFontHeight() );
               hlink_font.setFontName( origFont.getFontName() );
