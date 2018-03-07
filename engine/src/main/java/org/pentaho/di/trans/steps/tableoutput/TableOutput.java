@@ -122,6 +122,13 @@ public class TableOutput extends BaseStep implements StepInterface {
     }
 
     try {
+      if ( !data.db.getConnection().isClosed() ) {
+        connectDb(db);
+        if ( log.isBasic() ) {
+          logBasic( "Reconnected to database [" + meta.getDatabaseMeta() + "] (commit=" + data.commitSize + ")" );
+        }
+      }
+      
       Object[] outputRowData = writeToTable( getInputRowMeta(), r );
       if ( outputRowData != null ) {
         putRow( data.outputRowMeta, outputRowData ); // in case we want it go further...
@@ -467,6 +474,16 @@ public class TableOutput extends BaseStep implements StepInterface {
     // Clear the buffer afterwards...
     data.batchBuffer.clear();
   }
+  
+  private void connectDb(Database db) {
+    if ( getTransMeta().isUsingUniqueConnections() ) {
+          synchronized ( getTrans() ) {
+            db.connect( getTrans().getTransactionId(), getPartitionID() );
+          }
+        } else {
+          db.connect( getPartitionID() );
+        }
+  }
 
   public boolean init( StepMetaInterface smi, StepDataInterface sdi ) {
     meta = (TableOutputMeta) smi;
@@ -521,13 +538,7 @@ public class TableOutput extends BaseStep implements StepInterface {
         data.db = new Database( this, meta.getDatabaseMeta() );
         data.db.shareVariablesWith( this );
 
-        if ( getTransMeta().isUsingUniqueConnections() ) {
-          synchronized ( getTrans() ) {
-            data.db.connect( getTrans().getTransactionId(), getPartitionID() );
-          }
-        } else {
-          data.db.connect( getPartitionID() );
-        }
+        connectDb(db);
 
         if ( log.isBasic() ) {
           logBasic( "Connected to database [" + meta.getDatabaseMeta() + "] (commit=" + data.commitSize + ")" );
