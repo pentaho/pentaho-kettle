@@ -131,9 +131,38 @@ public abstract class BaseParsingTest<Meta extends StepMetaInterface, Data exten
    *          "field 1 value in row 2","field 2 value in row 2"} }
    */
   protected void check( Object[][] expected ) throws Exception {
+    checkErrors();
+    checkRowCount( expected );
+  }
+
+  /**
+   * Check result no has errors.
+   */
+  protected void checkErrors() throws Exception {
     assertEquals( "There are errors", 0, errorsCount );
     assertEquals( "There are step errors", 0, step.getErrors() );
+  }
+
+  /**
+   * Check result of parsing.
+   *
+   * @param expected
+   *          array of rows of fields, i.e. { {"field 1 value in row 1","field 2 value in row 1"}, {
+   *          "field 1 value in row 2","field 2 value in row 2"} }
+   */
+  protected void checkRowCount( Object[][] expected ) throws Exception {
     assertEquals( "Wrong rows count", expected.length, rows.size() );
+    checkContent( expected );
+  }
+
+  /**
+   * Check content of parsing.
+   *
+   * @param expected
+   *          array of rows of fields, i.e. { {"field 1 value in row 1","field 2 value in row 1"}, {
+   *          "field 1 value in row 2","field 2 value in row 2"} }
+   */
+  protected void checkContent( Object[][] expected ) throws Exception {
     for ( int i = 0; i < expected.length; i++ ) {
       assertArrayEquals( "Wrong row: " + Arrays.asList( rows.get( i ) ), expected[i], rows.get( i ) );
     }

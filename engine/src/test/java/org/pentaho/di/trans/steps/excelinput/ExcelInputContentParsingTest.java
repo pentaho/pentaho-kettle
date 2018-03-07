@@ -88,4 +88,17 @@ public class ExcelInputContentParsingTest extends BaseExcelParsingTest {
     check( new Object[][] { { "AAABBC", "Nissan" }, { "AAABBC", "Nissan" }, { "AAABBC", "Nissan" }, { "AAABBC",
         "Nissan" } } );
   }
+
+  @Test
+  public void testXLSXCompressionRatioIsBig() throws Exception {
+    meta.setSpreadSheetType( SpreadSheetType.SAX_POI );
+    init( "Balance_Type_Codes.xlsx" );
+
+    setFields( new ExcelInputField( "FIST ID", -1, -1 ), new ExcelInputField( "SOURCE SYSTEM", -1, -1 ) );
+
+    process();
+
+    checkErrors();
+    checkContent( new Object[][] { { "FIST0200", "ACM" } } );
+  }
 }
