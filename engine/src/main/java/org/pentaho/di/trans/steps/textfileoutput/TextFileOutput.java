@@ -48,6 +48,8 @@ import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.fileinput.CharsetToolkit;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.util.EnvUtil;
+import org.pentaho.di.core.util.StreamLogger;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.i18n.BaseMessages;
@@ -267,12 +269,36 @@ public class TextFileOutput extends BaseStep implements StepInterface {
     }
   }
 
-  protected void initOutput() throws KettleException {
-    if ( meta.isServletOutput( ) ) {
-      initServletStreamWriter( );
-    } else  {
-      String filename = getOutputFileName( null );
-      initFileStreamWriter( filename );
+  private void initCommandStreamWriter( String cmdstr ) throws KettleException {
+    data.writer = null;
+    try {
+      if ( log.isDebug() ) {
+        logDebug( "Spawning external process" );
+      }
+      if ( data.cmdProc != null ) {
+        logError( "Previous command not correctly terminated" );
+        setErrors( 1 );
+      }
+      if ( Const.getOS().equals( "Windows 95" ) ) {
+        cmdstr = "command.com /C " + cmdstr;
+      } else {
+        if ( Const.getOS().startsWith( "Windows" ) ) {
+          cmdstr = "cmd.exe /C " + cmdstr;
+        }
+      }
+      if ( isDetailed() ) {
+        logDetailed( "Starting: " + cmdstr );
+      }
+      Runtime runtime = Runtime.getRuntime();
+      data.cmdProc = runtime.exec( cmdstr, EnvUtil.getEnvironmentVariablesForRuntimeExec() );
+      data.writer = data.cmdProc.getOutputStream();
+
+      StreamLogger stdoutLogger = new StreamLogger( log, data.cmdProc.getInputStream(), "(stdout)" );
+      StreamLogger stderrLogger = new StreamLogger( log, data.cmdProc.getErrorStream(), "(stderr)" );
+      new Thread( stdoutLogger ).start();
+      new Thread( stderrLogger ).start();
+    } catch ( Exception e ) {
+      throw new KettleException( "Error opening new file : " + e.toString() );
     }
   }
 
@@ -386,6 +412,30 @@ public class TextFileOutput extends BaseStep implements StepInterface {
     }
   }
 
+  private boolean writeRowToCommand( Object[] row ) throws KettleException {
+    if ( row != null ) {
+      if ( data.writer == null ) {
+        initCommandStreamWriter( environmentSubstitute( meta.getFileName() ) );
+      }
+      first = false;
+      writeRow( data.outputRowMeta, row );
+      putRow( data.outputRowMeta, row ); // in case we want it to go further...
+
+      if ( checkFeedback( getLinesOutput() ) ) {
+        logBasic( "linenr " + getLinesOutput() );
+      }
+      return true;
+    } else {
+      if ( ( data.writer == null ) && !Utils.isEmpty( meta.getEndedLine() ) ) {
+        initCommandStreamWriter( environmentSubstitute( meta.getFileName() ) );
+        initBinaryDataFields();
+      }
+      writeEndedLine();
+      closeCommand();
+      setOutputDone();
+      return false;
+    }
+  }
 
   private boolean writeRowToFile( Object[] row ) throws KettleException {
     if ( row != null ) {
@@ -492,12 +542,11 @@ public class TextFileOutput extends BaseStep implements StepInterface {
         }
       }
     }
-    return writeRowTo( row );
-  }
 
-  protected boolean writeRowTo( Object[] row ) throws KettleException {
     if ( meta.isServletOutput( ) ) {
       return writeRowToServlet( row );
+    } else if ( meta.isFileAsCommand() ) {
+      return writeRowToCommand( row );
     } else {
       return writeRowToFile( row );
     }
@@ -814,6 +863,62 @@ public class TextFileOutput extends BaseStep implements StepInterface {
     return meta.buildFilename( filename, meta.getExtension(), this, getCopy(), getPartitionID(), data.splitnr,  ziparchive, meta );
   }
 
+  protected boolean closeCommand() {
+    boolean retval;
+
+    try {
+      if ( data.writer != null ) {
+        data.writer.flush();
+
+        // If writing a ZIP or GZIP file not from a command, do not close the writer or else
+        // the closing of the ZipOutputStream below will throw an "already closed" exception.
+        // Rather than checking for compression types, it is easier to check for cmdProc != null
+        // because if that check fails, we know we will get into the ZIP/GZIP processing below.
+        if ( log.isDebug() ) {
+          logDebug( "Closing output stream" );
+        }
+        data.writer.close();
+        if ( log.isDebug() ) {
+          logDebug( "Closed output stream" );
+        }
+      }
+      data.writer = null;
+      if ( log.isDebug() ) {
+        logDebug( "Ending running external command" );
+      }
+
+      if ( data.cmdProc != null ) {
+        int procStatus = data.cmdProc.waitFor();
+        // close the streams
+        // otherwise you get "Too many open files, java.io.IOException" after a lot of iterations
+        try {
+          data.cmdProc.getErrorStream().close();
+          data.cmdProc.getOutputStream().flush();
+          data.cmdProc.getOutputStream().close();
+          data.cmdProc.getInputStream().close();
+        } catch ( IOException e ) {
+          if ( log.isDetailed() ) {
+            logDetailed( "Warning: Error closing streams: " + e.getMessage() );
+          }
+        }
+        data.cmdProc = null;
+        if ( log.isBasic() && procStatus != 0 ) {
+          logBasic( "Command exit status: " + procStatus );
+        }
+      }
+
+      retval = true;
+    } catch ( Exception e ) {
+      logError( "Exception trying to close file: " + e.toString() );
+      setErrors( 1 );
+      //Clean resources
+      data.writer = null;
+      retval = false;
+    }
+
+    return retval;
+  }
+
   protected boolean closeFile( String filename ) {
     TextFileOutputData.FileStreamsValue outputStreams = data.fileWriterMap.get( filename );
     if ( outputStreams != null ) {
@@ -877,7 +982,14 @@ public class TextFileOutput extends BaseStep implements StepInterface {
       // In that case, DO NOT create file at Init
       if ( !meta.isDoNotOpenNewFileInit() && !meta.isFileNameInField() ) {
         try {
-          initOutput();
+          if ( meta.isServletOutput( ) ) {
+            initServletStreamWriter( );
+          } else if ( meta.isFileAsCommand() ) {
+            initCommandStreamWriter( environmentSubstitute( meta.getFileName() ) );
+          } else  {
+            String filename = getOutputFileName( null );
+            initFileStreamWriter( filename );
+          }
         } catch ( Exception e ) {
           logError( "Couldn't open file "
               + KettleVFS.getFriendlyURI( getParentVariableSpace().environmentSubstitute( meta.getFileName() ) )
@@ -901,7 +1013,7 @@ public class TextFileOutput extends BaseStep implements StepInterface {
     return false;
   }
 
-  protected void initBinaryDataFields() throws KettleException {
+  private void initBinaryDataFields() throws KettleException {
     try {
       data.hasEncoding = !Utils.isEmpty( meta.getEncoding() );
       data.binarySeparator = new byte[] {};
@@ -947,18 +1059,16 @@ public class TextFileOutput extends BaseStep implements StepInterface {
     }
   }
 
-  protected void close() {
-    if ( !meta.isServletOutput() ) {
-      flushOpenFiles( true );
-    }
-  }
-
   public void dispose( StepMetaInterface smi, StepDataInterface sdi ) {
     meta = (TextFileOutputMeta) smi;
     data = (TextFileOutputData) sdi;
 
     try {
-      close();
+      if ( meta.isFileAsCommand() ) {
+        closeCommand();
+      } else if ( !meta.isServletOutput() ) {
+        flushOpenFiles( true );
+      }
     } catch ( Exception e ) {
       logError( "Unexpected error closing file", e );
       setErrors( 1 );
