@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -84,5 +84,18 @@ public class ExcelInputContentParsingTest extends BaseExcelParsingTest {
 
     check( new Object[][] { { "AAABBC", "Nissan" }, { "AAABBC", "Nissan" }, { "AAABBC", "Nissan" }, { "AAABBC",
         "Nissan" } } );
+  }
+
+  @Test
+  public void testXLSXCompressionRatioIsBig() throws Exception {
+    meta.setSpreadSheetType( SpreadSheetType.SAX_POI );
+    init( "Balance_Type_Codes.xlsx" );
+
+    setFields( new ExcelInputField( "FIST ID", -1, -1 ), new ExcelInputField( "SOURCE SYSTEM", -1, -1 ) );
+
+    process();
+
+    checkErrors();
+    checkContent( new Object[][] { { "FIST0200", "ACM" } } );
   }
 }
