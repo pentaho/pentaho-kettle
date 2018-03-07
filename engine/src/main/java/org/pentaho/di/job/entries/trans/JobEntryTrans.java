@@ -77,6 +77,7 @@ import org.pentaho.di.resource.ResourceEntry;
 import org.pentaho.di.resource.ResourceEntry.ResourceType;
 import org.pentaho.di.resource.ResourceNamingInterface;
 import org.pentaho.di.resource.ResourceReference;
+import org.pentaho.di.trans.StepWithMappingMeta;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransExecutionConfiguration;
 import org.pentaho.di.trans.TransMeta;
@@ -882,27 +883,8 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
         //
         transMeta.clearParameters();
         String[] parameterNames = transMeta.listParameters();
-        for ( int idx = 0; idx < parameterNames.length; idx++ ) {
-          // Grab the parameter value set in the Trans job entry
-          //
-          String thisValue = namedParam.getParameterValue( parameterNames[ idx ] );
-          if ( !Utils.isEmpty( thisValue ) ) {
-            // Set the value as specified by the user in the job entry
-            //
-            transMeta.setParameterValue( parameterNames[ idx ], thisValue );
-          } else {
-            // See if the parameter had a value set in the parent job...
-            // This value should pass down to the transformation if that's what we opted to do.
-            //
-            if ( isPassingAllParameters() ) {
-              String parentValue = parentJob.getParameterValue( parameterNames[ idx ] );
-              if ( !Utils.isEmpty( parentValue ) ) {
-                transMeta.setParameterValue( parameterNames[ idx ], parentValue );
-              }
-            }
-          }
-        }
-
+        StepWithMappingMeta.activateParams( transMeta, transMeta, this, parameterNames,
+          parameters, parameterValues );
         boolean doFallback = true;
         SlaveServer remoteSlaveServer = null;
         TransExecutionConfiguration executionConfiguration = new TransExecutionConfiguration();
@@ -1302,7 +1284,7 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
           }
           if ( transMeta == null ) {
             logBasic( "Loading transformation from XML file [" + realFilename + "]" );
-            transMeta = new TransMeta( realFilename, metaStore, null, true, this, null );
+            transMeta = new TransMeta( realFilename, metaStore, null, true, null, null );
           }
           break;
         case REPOSITORY_BY_NAME:
@@ -1355,13 +1337,17 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
       }
 
       if ( transMeta != null ) {
-        // copy parent variables to this loaded variable space.
-        //
-        transMeta.copyVariablesFrom( this );
-
         // set Internal.Entry.Current.Directory again because it was changed
         transMeta.setInternalKettleVariables();
+        //  When the child parameter does exist in the parent parameters, overwrite the child parameter by the
+        // parent parameter.
 
+        StepWithMappingMeta.replaceVariableValues( transMeta, space );
+        if ( isPassingAllParameters() ) {
+          // All other parent parameters need to get copied into the child parameters  (when the 'Inherit all
+          // variables from the transformation?' option is checked)
+          StepWithMappingMeta.addMissingVariables( transMeta, space );
+        }
         // Pass repository and metastore references
         //
         transMeta.setRepository( rep );
