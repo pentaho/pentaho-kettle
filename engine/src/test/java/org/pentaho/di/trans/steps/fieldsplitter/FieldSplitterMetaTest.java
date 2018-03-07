@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -29,8 +29,9 @@ import java.util.Map;
 
 import org.junit.Assert;
 import org.junit.BeforeClass;
+import org.junit.ClassRule;
 import org.junit.Test;
-import org.pentaho.di.trans.steps.mock.StepMockHelper;
+import org.pentaho.di.junit.rules.RestorePDIEngineEnvironment;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.value.ValueMetaBase;
@@ -45,6 +46,8 @@ import org.pentaho.di.trans.steps.loadsave.validator.PrimitiveIntArrayLoadSaveVa
 import org.pentaho.di.trans.steps.loadsave.validator.StringLoadSaveValidator;
 
 public class FieldSplitterMetaTest {
+  @ClassRule public static RestorePDIEngineEnvironment env = new RestorePDIEngineEnvironment();
+
   @BeforeClass
   public static void setUpBeforeClass() throws KettleException {
     KettleEnvironment.init();
@@ -147,9 +150,6 @@ public class FieldSplitterMetaTest {
 
   @Test
   public void testPDI16559() throws Exception {
-    StepMockHelper<FieldSplitterMeta, FieldSplitterData> mockHelper =
-            new StepMockHelper<FieldSplitterMeta, FieldSplitterData>( "fieldSplitter", FieldSplitterMeta.class, FieldSplitterData.class );
-
     FieldSplitterMeta fieldSplitter = new FieldSplitterMeta();
     fieldSplitter.setFieldName( new String[] { "field1", "field2", "field3", "field4", "field5", "field6", "field7", "field8", "field9", "field10", "field11", "field12" } );
     fieldSplitter.setFieldID( new String[] { "fieldID1", "fieldID2", "fieldID3", "fieldID4", "fieldID5", "fieldID6", "fieldID7", "fieldID8", "fieldID9", "fieldID10", "fieldID11" } );

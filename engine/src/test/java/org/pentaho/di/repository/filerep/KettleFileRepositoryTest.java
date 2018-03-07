@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2016 - 2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2016 - 2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -24,13 +24,16 @@ package org.pentaho.di.repository.filerep;
 
 import static org.junit.Assert.assertEquals;
 
+import org.junit.ClassRule;
 import org.junit.Test;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.job.JobMeta;
+import org.pentaho.di.junit.rules.RestorePDIEngineEnvironment;
 import org.pentaho.di.repository.RepositoryDirectory;
 import org.pentaho.di.repository.RepositoryDirectoryInterface;
 
 public class KettleFileRepositoryTest extends KettleFileRepositoryTestBase {
+  @ClassRule public static RestorePDIEngineEnvironment env = new RestorePDIEngineEnvironment();
 
   @Test
   public void testCurrentDirJob() throws Exception {
@@ -38,8 +41,7 @@ public class KettleFileRepositoryTest extends KettleFileRepositoryTestBase {
     final String jobName = "job";
     JobMeta setupJobMeta = new JobMeta();
     setupJobMeta.setName( jobName );
-    RepositoryDirectoryInterface repoDir = new RepositoryDirectory( new RepositoryDirectory(), dirName );
-    repoDir = repository.createRepositoryDirectory( new RepositoryDirectory(), dirName );
+    RepositoryDirectoryInterface repoDir = repository.createRepositoryDirectory( new RepositoryDirectory(), dirName );
     setupJobMeta.setRepositoryDirectory( repoDir );
     repository.save( setupJobMeta, "" );
 

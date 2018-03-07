@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -29,6 +29,8 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
 
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.pentaho.di.core.logging.LoggingObjectInterface;
 import org.pentaho.di.core.row.RowMeta;
@@ -43,6 +45,21 @@ import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.trans.steps.mock.StepMockHelper;
 
 public class BlockingStep_PDI_11344_Test {
+  private StepMockHelper<BlockingStepMeta, BlockingStepData> mockHelper;
+
+  @Before
+  public void setUp() {
+    mockHelper = new StepMockHelper<BlockingStepMeta, BlockingStepData>( "BlockingStep", BlockingStepMeta.class,
+        BlockingStepData.class );
+    when( mockHelper.logChannelInterfaceFactory.create( any(), any( LoggingObjectInterface.class ) ) )
+      .thenReturn( mockHelper.logChannelInterface );
+    when( mockHelper.trans.isRunning() ).thenReturn( true );
+  }
+
+  @After
+  public void cleanUp() {
+    mockHelper.cleanUp();
+  }
 
   private static RowMetaInterface createRowMetaInterface() {
     RowMetaInterface rm = new RowMeta();
@@ -64,13 +81,6 @@ public class BlockingStep_PDI_11344_Test {
 
   @Test
   public void outputRowMetaIsCreateOnce() throws Exception {
-    StepMockHelper<BlockingStepMeta, BlockingStepData> mockHelper =
-      new StepMockHelper<BlockingStepMeta, BlockingStepData>( "BlockingStep", BlockingStepMeta.class,
-        BlockingStepData.class );
-    when( mockHelper.logChannelInterfaceFactory.create( any(), any( LoggingObjectInterface.class ) ) )
-      .thenReturn( mockHelper.logChannelInterface );
-    when( mockHelper.trans.isRunning() ).thenReturn( true );
-
     BlockingStep step =
       new BlockingStep( mockHelper.stepMeta, mockHelper.stepDataInterface, 0, mockHelper.transMeta,
         mockHelper.trans );

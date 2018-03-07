@@ -34,6 +34,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.junit.Before;
+import org.junit.ClassRule;
 import org.junit.Test;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.database.Database;
@@ -45,6 +46,7 @@ import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.core.variables.VariableSpace;
+import org.pentaho.di.junit.rules.RestorePDIEngineEnvironment;
 import org.pentaho.di.trans.steps.loadsave.LoadSaveTester;
 import org.pentaho.di.trans.steps.loadsave.validator.FieldLoadSaveValidator;
 
@@ -54,6 +56,7 @@ import org.pentaho.di.trans.steps.loadsave.validator.FieldLoadSaveValidator;
 public class TableInputMetaTest {
   LoadSaveTester loadSaveTester;
   Class<TableInputMeta> testMetaClass = TableInputMeta.class;
+  @ClassRule public static RestorePDIEngineEnvironment env = new RestorePDIEngineEnvironment();
 
   public class TableInputMetaHandler extends TableInputMeta {
     public Database database = mock( Database.class );
@@ -67,7 +70,7 @@ public class TableInputMetaTest {
   @Before
   public void setUpLoadSave() throws Exception {
     KettleEnvironment.init();
-    PluginRegistry.init( true );
+    PluginRegistry.init( false );
     List<String> attributes =
         Arrays.asList( "databaseMeta", "sQL", "rowLimit", "executeEachInputRow", "variableReplacementActive", "lazyConversionActive" );
 

@@ -21,9 +21,12 @@
  ******************************************************************************/
 package org.pentaho.di.trans.steps.propertyinput;
 
+import org.junit.ClassRule;
 import org.junit.Test;
+import org.pentaho.di.junit.rules.RestorePDIEngineEnvironment;
 
 public class PropertyInputContentParsingTest extends BasePropertyParsingTest {
+  @ClassRule public static RestorePDIEngineEnvironment env = new RestorePDIEngineEnvironment();
   @Test
   public void testDefaultOptions() throws Exception {
     init( "default.properties" );

@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,11 +22,14 @@
 
 package org.pentaho.di.trans.steps.cubeinput;
 
+import org.junit.ClassRule;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.pentaho.di.junit.rules.RestorePDIEngineEnvironment;
 
 @Ignore( "Ignored, not running with ant build. Investigate." )
 public class CubeInputContentParsingTest extends BaseCubeInputParsingTest {
+  @ClassRule public static RestorePDIEngineEnvironment env = new RestorePDIEngineEnvironment();
 
   @Test
   public void test() throws Exception {

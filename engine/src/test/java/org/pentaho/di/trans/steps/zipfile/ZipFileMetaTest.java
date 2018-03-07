@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,12 +22,10 @@
 
 package org.pentaho.di.trans.steps.zipfile;
 
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.KettleClientEnvironment;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.row.RowMetaInterface;
@@ -67,13 +65,6 @@ public class ZipFileMetaTest {
   private static final boolean CREATE_PARENT_FOLDER = true;
   private static final boolean KEEP_SOURCE_FOLDER = true;
   private static final String MOVE_TO_FOLDER_FIELD = "movetothisfolder";
-
-  @BeforeClass
-  public static void setUp() throws Exception {
-    if ( !KettleClientEnvironment.isInitialized() ) {
-      KettleClientEnvironment.init();
-    }
-  }
 
   @Test
   public void testGettersSetters() {

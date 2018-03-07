@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -24,22 +24,22 @@ package org.pentaho.di.repository.filerep;
 
 import org.json.simple.JSONObject;
 import org.junit.Before;
+import org.junit.ClassRule;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.pentaho.di.junit.rules.RestorePDIEngineEnvironment;
 import org.pentaho.di.repository.RepositoriesMeta;
 
 import java.util.HashMap;
 import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.mock;
 
 /**
  * Created by bmorrise on 4/26/16.
  */
-@RunWith( MockitoJUnitRunner.class )
 public class KettleFileRepositoryMetaTest {
+  @ClassRule public static RestorePDIEngineEnvironment env = new RestorePDIEngineEnvironment();
 
   public static final String NAME = "Name";
   public static final String DESCRIPTION = "Description";
@@ -48,8 +48,7 @@ public class KettleFileRepositoryMetaTest {
     + "\"description\":\"Description\",\"location\":\"\\/this\\/is\\/the\\/path\",\"id\":\"KettleFileRepository\","
     + "\"doNotModify\":true}";
 
-  @Mock
-  private RepositoriesMeta repositoriesMeta;
+  private RepositoriesMeta repositoriesMeta = mock( RepositoriesMeta.class );
 
   KettleFileRepositoryMeta kettleFileRepositoryMeta;
 

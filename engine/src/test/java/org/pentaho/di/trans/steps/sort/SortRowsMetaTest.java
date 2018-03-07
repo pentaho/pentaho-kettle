@@ -30,11 +30,13 @@ import java.util.Locale;
 import java.util.Map;
 
 import org.junit.Assert;
+import org.junit.ClassRule;
 import org.junit.Test;
 import static org.junit.Assert.assertEquals;
 
 import org.mockito.Mockito;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.junit.rules.RestorePDIEngineEnvironment;
 import org.pentaho.di.trans.steps.loadsave.LoadSaveTester;
 import org.pentaho.di.trans.steps.loadsave.validator.ArrayLoadSaveValidator;
 import org.pentaho.di.trans.steps.loadsave.validator.BooleanLoadSaveValidator;
@@ -46,6 +48,7 @@ import org.pentaho.di.trans.steps.loadsave.validator.StringLoadSaveValidator;
 import org.pentaho.di.trans.steps.mock.StepMockHelper;
 
 public class SortRowsMetaTest {
+  @ClassRule public static RestorePDIEngineEnvironment env = new RestorePDIEngineEnvironment();
 
   /**
    * Replaced previous testRep with load/save tester. Should cover http://jira.pentaho.com/browse/BACKLOG-377
@@ -93,9 +96,6 @@ public class SortRowsMetaTest {
 
   @Test
   public void testPDI16559() throws Exception {
-    StepMockHelper<SortRowsMeta, SortRowsData> mockHelper =
-        new StepMockHelper<SortRowsMeta, SortRowsData>( "sortRows", SortRowsMeta.class, SortRowsData.class );
-
     SortRowsMeta sortRowsReal = new SortRowsMeta();
     SortRowsMeta sortRows = Mockito.spy( sortRowsReal );
     Mockito.doNothing().when( sortRows ).registerUrlWithDirectory();

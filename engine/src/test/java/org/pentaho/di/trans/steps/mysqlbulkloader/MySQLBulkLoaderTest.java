@@ -29,6 +29,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import junit.framework.Assert;
+import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -46,6 +47,7 @@ import org.pentaho.di.core.row.value.ValueMetaNumber;
 import org.pentaho.di.core.row.value.ValueMetaPluginType;
 import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.core.xml.XMLHandler;
+import org.pentaho.di.junit.rules.RestorePDIEngineEnvironment;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.StepMeta;
@@ -54,6 +56,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
 public class MySQLBulkLoaderTest {
+  @ClassRule public static RestorePDIEngineEnvironment env = new RestorePDIEngineEnvironment();
 
   MySQLBulkLoaderMeta lmeta;
   MySQLBulkLoaderData ldata;
@@ -128,7 +131,7 @@ public class MySQLBulkLoaderTest {
   @Test
   public void testEscapeCharacters() throws KettleException, IOException {
     PluginRegistry.addPluginType( ValueMetaPluginType.getInstance() );
-    PluginRegistry.init( true );
+    PluginRegistry.init( false );
 
     MySQLBulkLoader loader;
     MySQLBulkLoaderData ld = new MySQLBulkLoaderData();
@@ -180,7 +183,7 @@ public class MySQLBulkLoaderTest {
   @Test
   public void testNumberFormatting() throws KettleException, IOException {
     PluginRegistry.addPluginType( ValueMetaPluginType.getInstance() );
-    PluginRegistry.init( true );
+    PluginRegistry.init( false );
 
     MySQLBulkLoader loader;
     MySQLBulkLoaderData ld = new MySQLBulkLoaderData();

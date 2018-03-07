@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -34,6 +34,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyInt;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
@@ -90,7 +92,7 @@ public class JobEntryJobRunnerTest {
     when( mockJob.isStopped() ).thenReturn( false );
     when( mockJob.getParentJob() ).thenReturn( parentJob );
     when( parentJob.isStopped() ).thenReturn( false );
-    when( mockJob.execute( Mockito.anyInt(), Mockito.any( Result.class ) ) ).thenThrow( KettleException.class );
+    doThrow( KettleException.class ).when( mockJob ).execute( anyInt(), any( Result.class ) );
 
     jobRunner.run();
     verify( mockJob, times( 1 ) ).setResult( Mockito.any( Result.class ) );
@@ -117,7 +119,7 @@ public class JobEntryJobRunnerTest {
     when( parentJob.isStopped() ).thenReturn( false );
     when( mockJob.execute( Mockito.anyInt(), Mockito.any( Result.class ) ) ).thenReturn( mockResult );
 
-    when( mockJob.execute( Mockito.anyInt(), Mockito.any( Result.class ) ) ).thenThrow( KettleException.class );
+    doThrow( KettleException.class ).when( mockJob ).execute( anyInt(), any( Result.class ) );
     doThrow( Exception.class ).when( mockJob ).fireJobFinishListeners();
 
     jobRunner.run();
@@ -130,7 +132,7 @@ public class JobEntryJobRunnerTest {
     when( mockJob.isStopped() ).thenReturn( false );
     when( mockJob.getParentJob() ).thenReturn( parentJob );
     when( parentJob.isStopped() ).thenReturn( false );
-    when( mockJob.execute( Mockito.anyInt(), Mockito.any( Result.class ) ) ).thenThrow( KettleException.class );
+    doThrow( KettleException.class ).when( mockJob ).execute( anyInt(), any( Result.class ) );
     jobRunner.run();
     verify( mockResult, times( 1 ) ).setNrErrors( Mockito.anyInt() );
 

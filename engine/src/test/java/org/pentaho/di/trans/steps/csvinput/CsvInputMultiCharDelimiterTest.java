@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2016-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2016-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,10 +22,13 @@
 
 package org.pentaho.di.trans.steps.csvinput;
 
+import org.junit.After;
 import org.junit.Before;
+import org.junit.ClassRule;
 import org.junit.Test;
 import org.pentaho.di.core.QueueRowSet;
 import org.pentaho.di.core.RowSet;
+import org.pentaho.di.junit.rules.RestorePDIEngineEnvironment;
 import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.steps.StepMockUtil;
 import org.pentaho.di.trans.steps.mock.StepMockHelper;
@@ -38,16 +41,23 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
 public class CsvInputMultiCharDelimiterTest extends CsvInputUnitTestBase {
+  @ClassRule public static RestorePDIEngineEnvironment env = new RestorePDIEngineEnvironment();
 
   private CsvInput csvInput;
+  private StepMockHelper<CsvInputMeta, StepDataInterface> stepMockHelper;
 
   @Before
   public void setUp() throws Exception {
-    StepMockHelper<CsvInputMeta, StepDataInterface> stepMockHelper =
+    stepMockHelper =
       StepMockUtil.getStepMockHelper( CsvInputMeta.class, "CsvInputEnclosureTest" );
     csvInput = new CsvInput(
       stepMockHelper.stepMeta, stepMockHelper.stepDataInterface, 0, stepMockHelper.transMeta,
       stepMockHelper.trans );
+  }
+
+  @After
+  public void cleanUp() {
+    stepMockHelper.cleanUp();
   }
 
   @Test

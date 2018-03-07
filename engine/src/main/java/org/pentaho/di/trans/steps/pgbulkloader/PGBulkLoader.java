@@ -79,9 +79,6 @@ public class PGBulkLoader extends BaseStep implements StepInterface {
   /**
    * Get the contents of the control file as specified in the meta object
    *
-   * @param meta
-   *          the meta object to model the control file after
-   *
    * @return a string containing the control file contents
    */
   public String getCopyCommand( ) throws KettleException {

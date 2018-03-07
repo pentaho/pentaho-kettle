@@ -1,7 +1,7 @@
 /*
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  * **************************************************************************
  *
@@ -28,6 +28,7 @@ import javassist.CtField;
 import javassist.CtNewMethod;
 import javassist.NotFoundException;
 import org.junit.BeforeClass;
+import org.junit.ClassRule;
 import org.junit.Test;
 import org.pentaho.di.core.KettleClientEnvironment;
 import org.pentaho.di.core.exception.KettleException;
@@ -35,6 +36,7 @@ import org.pentaho.di.core.exception.KettlePluginException;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.plugins.PluginInterface;
 import org.pentaho.di.core.plugins.PluginRegistry;
+import org.pentaho.di.junit.rules.RestorePDIEnvironment;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -45,11 +47,14 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 
-
 public class ExtensionPointIntegrationTest {
+  @ClassRule public static RestorePDIEnvironment env = new RestorePDIEnvironment();
   public static final String EXECUTED_FIELD_NAME = "executed";
   private static final int TOTAL_THREADS_TO_RUN = 2000;
   private static final int MAX_TIMEOUT_SECONDS = 60;

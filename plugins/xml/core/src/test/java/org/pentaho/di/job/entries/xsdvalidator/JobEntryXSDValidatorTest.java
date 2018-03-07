@@ -26,9 +26,12 @@ import static java.util.Arrays.asList;
 import java.util.List;
 import java.util.Map;
 
+import org.junit.ClassRule;
 import org.pentaho.di.job.entry.loadSave.JobEntryLoadSaveTestSupport;
+import org.pentaho.di.junit.rules.RestorePDIEngineEnvironment;
 
 public class JobEntryXSDValidatorTest extends JobEntryLoadSaveTestSupport<JobEntryXSDValidator> {
+  @ClassRule public static RestorePDIEngineEnvironment env = new RestorePDIEngineEnvironment();
 
   @Override
   protected Class<JobEntryXSDValidator> getJobEntryClass() {

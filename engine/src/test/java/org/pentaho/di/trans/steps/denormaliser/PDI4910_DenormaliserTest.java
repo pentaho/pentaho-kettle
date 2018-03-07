@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -23,6 +23,7 @@
 package org.pentaho.di.trans.steps.denormaliser;
 
 
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -45,14 +46,19 @@ import static org.mockito.Mockito.when;
 
 public class PDI4910_DenormaliserTest {
 
-  private StepMockHelper<DenormaliserMeta, DenormaliserData> mockHelper = new StepMockHelper<DenormaliserMeta,
-    DenormaliserData>( "Denormalizer", DenormaliserMeta.class, DenormaliserData.class );
+  private StepMockHelper<DenormaliserMeta, DenormaliserData> mockHelper;
   private Denormaliser denormaliser;
 
   @Before
   public void init() {
+    mockHelper = new StepMockHelper<DenormaliserMeta, DenormaliserData>( "Denormalizer", DenormaliserMeta.class, DenormaliserData.class );
     when( mockHelper.logChannelInterfaceFactory.create( any(), any( LoggingObjectInterface.class ) ) )
       .thenReturn( mockHelper.logChannelInterface );
+  }
+
+  @After
+  public void cleanUp() {
+    mockHelper.cleanUp();
   }
 
   @Test

@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -23,6 +23,7 @@ package org.pentaho.di.base;
 
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.ClassRule;
 import org.junit.Test;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.NotePadMeta;
@@ -51,6 +52,7 @@ import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.undo.TransAction;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.variables.Variables;
+import org.pentaho.di.junit.rules.RestorePDIEngineEnvironment;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.ObjectRevision;
 import org.pentaho.di.repository.Repository;
@@ -82,6 +84,7 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyObject;
 import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
@@ -94,6 +97,8 @@ public class AbstractMetaTest {
   AbstractMeta meta;
   ObjectId objectId;
   Repository repo;
+
+  @ClassRule public static RestorePDIEngineEnvironment env = new RestorePDIEngineEnvironment();
 
   @BeforeClass
   public static void setUpBeforeClass() throws Exception {
@@ -585,7 +590,7 @@ public class AbstractMetaTest {
     assertEquals( sharedObjects, meta.getSharedObjects() );
     meta.setSharedObjects( null );
     AbstractMeta spyMeta = spy( meta );
-    when( spyMeta.environmentSubstitute( anyString() ) ).thenThrow( KettleException.class );
+    doThrow( KettleException.class ).when( spyMeta ).environmentSubstitute( anyString() );
     assertNull( spyMeta.getSharedObjects() );
   }
 

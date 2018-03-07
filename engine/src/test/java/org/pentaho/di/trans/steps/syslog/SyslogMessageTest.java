@@ -22,6 +22,7 @@
 
 package org.pentaho.di.trans.steps.syslog;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.invocation.InvocationOnMock;
@@ -55,6 +56,11 @@ public class SyslogMessageTest {
     when( stepMockHelper.logChannelInterfaceFactory.create( any(), any( LoggingObjectInterface.class ) ) ).thenReturn(
         stepMockHelper.logChannelInterface );
 
+  }
+
+  @After
+  public void cleanUp() {
+    stepMockHelper.cleanUp();
   }
 
   @Test

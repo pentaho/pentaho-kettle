@@ -24,8 +24,10 @@
 
 package org.pentaho.di.trans.ael.adapters;
 
+import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Spy;
@@ -45,6 +47,7 @@ import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.engine.api.model.Hop;
 import org.pentaho.di.engine.api.model.Operation;
 import org.pentaho.di.engine.api.model.Transformation;
+import org.pentaho.di.junit.rules.RestorePDIEngineEnvironment;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectory;
 import org.pentaho.di.repository.RepositoryDirectoryInterface;
@@ -89,6 +92,7 @@ import static org.mockito.Mockito.when;
 
 @RunWith ( MockitoJUnitRunner.class )
 public class TransMetaConverterTest {
+  @ClassRule public static RestorePDIEngineEnvironment env = new RestorePDIEngineEnvironment();
 
   @Spy StepMetaInterface stepMetaInterface = new DummyTransMeta();
 
@@ -101,14 +105,17 @@ public class TransMetaConverterTest {
 
   @BeforeClass
   public static void init() throws Exception {
-    if ( !KettleClientEnvironment.isInitialized() ) {
-      KettleClientEnvironment.init();
-    }
+    KettleClientEnvironment.init();
     PluginRegistry.addPluginType( StepPluginType.getInstance() );
     PluginRegistry.init();
     if ( !Props.isInitialized() ) {
       Props.init( 0 );
     }
+  }
+
+  @AfterClass
+  public static void cleanUp() {
+    KettleClientEnvironment.reset();
   }
 
   @Test

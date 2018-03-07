@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -32,13 +32,16 @@ import java.util.Locale;
 import java.util.Random;
 import java.util.TimeZone;
 
+import org.junit.ClassRule;
 import org.junit.Test;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.junit.rules.RestorePDIEnvironment;
 
 /**
  * @author Andrey Khayrutdinov
  */
 public class ValueMetaBaseSerializationTest {
+  @ClassRule public static RestorePDIEnvironment env = new RestorePDIEnvironment();
 
   @Test
   public void restoresMetaData_storageTypeNormal() throws Exception {

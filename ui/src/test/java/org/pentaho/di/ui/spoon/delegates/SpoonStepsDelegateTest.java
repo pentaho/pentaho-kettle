@@ -23,6 +23,7 @@
 package org.pentaho.di.ui.spoon.delegates;
 
 import org.eclipse.swt.widgets.Shell;
+import org.junit.ClassRule;
 import org.junit.Test;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.extension.ExtensionPointInterface;
@@ -33,6 +34,7 @@ import org.pentaho.di.core.plugins.ClassLoadingPluginInterface;
 import org.pentaho.di.core.plugins.PluginInterface;
 import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.plugins.StepPluginType;
+import org.pentaho.di.junit.rules.RestorePDIEngineEnvironment;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.StepDialogInterface;
 import org.pentaho.di.trans.step.StepMeta;
@@ -52,8 +54,11 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 public class SpoonStepsDelegateTest {
+  @ClassRule public static RestorePDIEngineEnvironment env = new RestorePDIEngineEnvironment();
+
   public interface PluginMockInterface extends ClassLoadingPluginInterface, PluginInterface {
   }
+
   @Test
   public void testDelStepsExtensionPointCancelDelete() throws Exception {
     PluginMockInterface pluginInterface = mock( PluginMockInterface.class );
@@ -70,6 +75,7 @@ public class SpoonStepsDelegateTest {
     PluginRegistry.getInstance().registerPlugin( ExtensionPointPluginType.class, pluginInterface );
 
     SpoonStepsDelegate delegate = mock( SpoonStepsDelegate.class );
+    delegate.spoon = mock( Spoon.class );
     doCallRealMethod().when( delegate ).delSteps( any( TransMeta.class ), any( StepMeta[].class ) );
 
     TransMeta trans = mock( TransMeta.class );
@@ -107,7 +113,7 @@ public class SpoonStepsDelegateTest {
     // verify that dialog class is requested from plugin
     try {
       delegate.getStepDialog( meta, trans, "" ); // exception is expected here
-    } catch ( Exception ignore ) {
+    } catch ( Throwable ignore ) {
       verify( meta, never() ).getDialogClassName();
     }
 
@@ -117,7 +123,7 @@ public class SpoonStepsDelegateTest {
       }} );
     try {
       delegate.getStepDialog( meta, trans, "" ); // exception is expected here
-    } catch ( Exception ignore ) {
+    } catch ( Throwable ignore ) {
       verify( meta, times( 1 ) ).getDialogClassName();
     }
 

@@ -16,8 +16,10 @@
  */
 package org.pentaho.di.repository;
 
+import org.junit.ClassRule;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
+import org.pentaho.di.junit.rules.RestorePDIEngineEnvironment;
 import org.pentaho.di.repository.pur.PurRepository;
 
 import java.util.Arrays;
@@ -25,6 +27,8 @@ import java.util.Collection;
 
 @RunWith( Parameterized.class )
 public class RepositoryTestLazySupport {
+  @ClassRule public static RestorePDIEngineEnvironment env = new RestorePDIEngineEnvironment();
+
   public RepositoryTestLazySupport( Boolean lazyRepo ) {
     System.setProperty( PurRepository.LAZY_REPOSITORY, lazyRepo.toString() );
   }

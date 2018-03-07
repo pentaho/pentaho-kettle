@@ -228,7 +228,7 @@ public class RepositoriesMeta {
     return true;
   }
 
-  String getKettleUserRepositoriesFile() {
+  public String getKettleUserRepositoriesFile() {
     return Const.getKettleUserRepositoriesFile();
   }
 

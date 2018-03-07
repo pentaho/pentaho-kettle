@@ -25,13 +25,19 @@ package org.pentaho.di.trans.steps.textfileinput;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.ClassRule;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.pentaho.di.core.exception.KettlePluginException;
+import org.pentaho.di.core.logging.KettleLogStore;
+import org.pentaho.di.core.logging.KettleLoggingEvent;
 import org.pentaho.di.core.row.value.ValueMetaPluginType;
+import org.pentaho.di.junit.rules.RestorePDIEngineEnvironment;
 import org.pentaho.di.trans.steps.loadsave.LoadSaveTester;
 import org.pentaho.di.trans.steps.loadsave.validator.ArrayLoadSaveValidator;
 import org.pentaho.di.trans.steps.loadsave.validator.FieldLoadSaveValidator;
 import org.pentaho.di.trans.steps.loadsave.validator.TextFileInputFieldValidator;
+import org.powermock.modules.junit4.PowerMockRunner;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -48,12 +54,15 @@ import static org.junit.Assert.assertTrue;
    * @deprecated replaced by implementation in the ...steps.fileinput.text package
  */
 @Deprecated
+@RunWith( PowerMockRunner.class )
 public class TextFileInputMetaLoadSaveTest {
+  @ClassRule public static RestorePDIEngineEnvironment env = new RestorePDIEngineEnvironment();
 
   private LoadSaveTester<TextFileInputMeta> tester;
 
   @BeforeClass
   public static void setUpBeforeClass() throws KettlePluginException {
+    KettleLogStore.init();
     ValueMetaPluginType.getInstance().searchPlugins();
   }
 

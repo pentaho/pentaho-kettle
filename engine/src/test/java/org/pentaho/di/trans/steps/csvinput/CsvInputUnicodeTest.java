@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -24,7 +24,9 @@ package org.pentaho.di.trans.steps.csvinput;
 
 import java.nio.charset.StandardCharsets;
 
+import org.junit.AfterClass;
 import org.junit.Assert;
+import org.junit.ClassRule;
 import org.mockito.Matchers;
 import org.mockito.Mockito;
 
@@ -34,6 +36,7 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.logging.LoggingObjectInterface;
 import org.pentaho.di.core.row.RowMetaInterface;
+import org.pentaho.di.junit.rules.RestorePDIEngineEnvironment;
 import org.pentaho.di.trans.step.RowAdapter;
 import org.pentaho.di.trans.steps.mock.StepMockHelper;
 import org.pentaho.di.trans.steps.textfileinput.TextFileInputField;
@@ -45,6 +48,7 @@ import org.pentaho.di.trans.steps.textfileinput.TextFileInputField;
  * @see CsvInput
  */
 public class CsvInputUnicodeTest extends CsvInputUnitTestBase {
+  @ClassRule public static RestorePDIEngineEnvironment env = new RestorePDIEngineEnvironment();
   private static final String UTF8 = "UTF-8";
   private static final String UTF16LE = "UTF-16LE";
   private static final String UTF16LEBOM = "x-UTF-16LE-BOM";
@@ -79,6 +83,11 @@ public class CsvInputUnicodeTest extends CsvInputUnitTestBase {
     Mockito.when( stepMockHelper.logChannelInterfaceFactory.create( Matchers.any(), Matchers.any( LoggingObjectInterface.class ) ) )
       .thenReturn( stepMockHelper.logChannelInterface );
     Mockito.when( stepMockHelper.trans.isRunning() ).thenReturn( true );
+  }
+
+  @AfterClass
+  public static void cleanUp() {
+    stepMockHelper.cleanUp();
   }
 
   @Test

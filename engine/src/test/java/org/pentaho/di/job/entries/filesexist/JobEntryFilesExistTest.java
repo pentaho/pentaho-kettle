@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -28,16 +28,15 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 
 import org.junit.After;
-import org.junit.AfterClass;
 import org.junit.Before;
-import org.junit.BeforeClass;
+import org.junit.ClassRule;
 import org.junit.Test;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Result;
-import org.pentaho.di.core.logging.KettleLogStore;
 import org.pentaho.di.job.Job;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entry.JobEntryCopy;
+import org.pentaho.di.junit.rules.RestorePDIEngineEnvironment;
 import org.pentaho.di.utils.TestUtils;
 
 public class JobEntryFilesExistTest {
@@ -47,15 +46,7 @@ public class JobEntryFilesExistTest {
   private String existingFile1;
   private String existingFile2;
 
-  @BeforeClass
-  public static void setUpBeforeClass() throws Exception {
-
-    KettleLogStore.init();
-  }
-
-  @AfterClass
-  public static void tearDownAfterClass() throws Exception {
-  }
+  @ClassRule public static RestorePDIEngineEnvironment env = new RestorePDIEngineEnvironment();
 
   @Before
   public void setUp() throws Exception {
@@ -69,8 +60,8 @@ public class JobEntryFilesExistTest {
 
     job.setStopped( false );
 
-    existingFile1 = TestUtils.createRamFile( getClass().getSimpleName() + "/existingFile1.ext" );
-    existingFile2 = TestUtils.createRamFile( getClass().getSimpleName() + "/existingFile2.ext" );
+    existingFile1 = TestUtils.createRamFile( getClass().getSimpleName() + "/existingFile1.ext", entry );
+    existingFile2 = TestUtils.createRamFile( getClass().getSimpleName() + "/existingFile2.ext", entry );
   }
 
   @After

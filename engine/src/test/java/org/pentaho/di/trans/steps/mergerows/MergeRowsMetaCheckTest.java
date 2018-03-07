@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -58,13 +58,6 @@ public class MergeRowsMetaCheckTest {
   private StepMeta referenceStepMeta;
   private StepMeta comparisonStepMeta;
   private List<CheckResultInterface> remarks;
-
-  @BeforeClass
-  public static void setUpBeforeClass() throws Exception {
-    if ( !KettleClientEnvironment.isInitialized() ) {
-      KettleClientEnvironment.init();
-    }
-  }
 
   protected RowMetaInterface generateRowMetaEmpty() {
     return new RowMeta();

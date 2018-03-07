@@ -23,10 +23,13 @@
 package org.pentaho.di.trans.steps.gpload;
 
 import org.junit.Before;
+import org.junit.ClassRule;
 import org.junit.Test;
 import org.pentaho.di.core.injection.BaseMetadataInjectionTest;
+import org.pentaho.di.junit.rules.RestorePDIEngineEnvironment;
 
 public class GPLoadMetaInjectionTest extends BaseMetadataInjectionTest<GPLoadMeta> {
+  @ClassRule public static RestorePDIEngineEnvironment env = new RestorePDIEngineEnvironment();
   @Before
   public void setup() {
     setup( new GPLoadMeta() );

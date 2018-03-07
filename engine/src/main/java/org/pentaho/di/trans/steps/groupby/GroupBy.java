@@ -1,9 +1,8 @@
-
 /*! ******************************************************************************
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -785,8 +784,8 @@ public class GroupBy extends BaseStep implements StepInterface {
     }
   }
 
-  // Method is defined as package-protected in order to be accessible by unit tests
-  String retrieveVfsPath( String pathToTmp ) throws KettleFileException {
+  // Method is defined as public in order to be accessible by unit tests
+  public String retrieveVfsPath( String pathToTmp ) throws KettleFileException {
     FileObject vfsFile = KettleVFS.getFileObject( pathToTmp );
     String path = vfsFile.getName().getPath();
     return path;

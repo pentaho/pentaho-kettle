@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -30,6 +30,8 @@ import static org.mockito.Mockito.when;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URISyntaxException;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -82,8 +84,15 @@ public class IngresVectorwiseTest {
       int bufferSize = Utils.isEmpty( bufferSizeString ) ? 5000 : Const.toInt( bufferSizeString, 5000 );
 
       Class<?> vwload = VWLoadMocker.class;
+      String userDir;
+      try {
+        // note: we need to convert to URI to get a valid Path to use with windows
+        userDir = Paths.get( vwload.getProtectionDomain().getCodeSource().getLocation().toURI() ).toString();
+      } catch ( URISyntaxException e ) {
+        throw new KettleException( e );
+      }
 
-      return "java -cp . -Duser.dir=" + vwload.getProtectionDomain().getCodeSource().getLocation().getPath() + ' '
+      return "java -cp . -Duser.dir=" + userDir + ' '
         + vwload.getCanonicalName() + ' ' + bufferSize + ' ' + meta.getMaxNrErrors() + ' ' + meta.getErrorFileName();
 
     }

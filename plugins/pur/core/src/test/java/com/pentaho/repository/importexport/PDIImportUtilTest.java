@@ -16,10 +16,15 @@
  */
 package com.pentaho.repository.importexport;
 
-import org.junit.Before;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
+import org.junit.ClassRule;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.pentaho.di.core.KettleEnvironment;
+import org.pentaho.di.junit.rules.RestorePDIEngineEnvironment;
 import org.pentaho.di.repository.utils.IRepositoryFactory;
+import org.powermock.modules.junit4.PowerMockRunner;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
@@ -30,7 +35,10 @@ import static org.pentaho.di.core.util.Assert.assertNotNull;
 /**
  * Created by nbaker on 11/5/15.
  */
+@RunWith( PowerMockRunner.class )
 public class PDIImportUtilTest {
+  @ClassRule public static RestorePDIEngineEnvironment env = new RestorePDIEngineEnvironment();
+
   /**
    * @see <a href="https://en.wikipedia.org/wiki/Billion_laughs" />
    */
@@ -51,9 +59,14 @@ public class PDIImportUtilTest {
       + "]>\n"
       + "<lolz>&lol9;</lolz>";
 
-  @Before
-  public void setUp() throws Exception {
+  @BeforeClass
+  public static void setUp() throws Exception {
     KettleEnvironment.init();
+  }
+
+  @AfterClass
+  public static void reset() {
+    PDIImportUtil.setRepositoryFactory( new IRepositoryFactory.CachingRepositoryFactory() );
   }
 
   @Test

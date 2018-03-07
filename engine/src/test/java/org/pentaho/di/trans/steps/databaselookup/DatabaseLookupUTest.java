@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -51,7 +51,11 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.concurrent.TimeUnit;
 
+import org.junit.After;
+import org.junit.AfterClass;
+import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.ClassRule;
 import org.junit.Test;
 import org.mockito.Matchers;
 import org.mockito.Mockito;
@@ -71,6 +75,7 @@ import org.pentaho.di.core.row.value.ValueMetaBinary;
 import org.pentaho.di.core.row.value.ValueMetaInteger;
 import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.core.variables.VariableSpace;
+import org.pentaho.di.junit.rules.RestorePDIEngineEnvironment;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
@@ -84,18 +89,34 @@ import org.pentaho.metastore.api.IMetaStore;
  * @author Andrey Khayrutdinov
  */
 public class DatabaseLookupUTest {
+  @ClassRule public static RestorePDIEngineEnvironment env = new RestorePDIEngineEnvironment();
 
   private static final String BINARY_FIELD = "aBinaryFieldInDb";
   private static final String ID_FIELD = "id";
+  private StepMockHelper<DatabaseLookupMeta, DatabaseLookupData> mockHelper;
 
   @BeforeClass
-  public static void setUp() throws Exception {
+  public static void setUpClass() throws Exception {
     KettleEnvironment.init();
+  }
+
+  @AfterClass
+  public static void tearDown() {
+    KettleEnvironment.reset();
+  }
+
+  @Before
+  public void setUp() {
+    mockHelper = createMockHelper();
+  }
+
+  @After
+  public void cleanUp() {
+    mockHelper.cleanUp();
   }
 
   @Test
   public void mySqlVariantDbIsLazyConverted() throws Exception {
-    StepMockHelper<DatabaseLookupMeta, DatabaseLookupData> mockHelper = createMockHelper();
     DatabaseLookupMeta meta = createDatabaseMeta();
     DatabaseLookupData data = createDatabaseData();
     Database db = createVirtualDb( meta.getDatabaseMeta() );
@@ -229,8 +250,6 @@ public class DatabaseLookupUTest {
 
   @Test
   public void testEqualsAndIsNullAreCached() throws Exception {
-    StepMockHelper<DatabaseLookupMeta, DatabaseLookupData> mockHelper =
-        new StepMockHelper<>( "Test", DatabaseLookupMeta.class, DatabaseLookupData.class );
     when( mockHelper.logChannelInterfaceFactory.create( any(), any( LoggingObjectInterface.class ) ) )
       .thenReturn( mockHelper.logChannelInterface );
 
@@ -287,9 +306,6 @@ public class DatabaseLookupUTest {
 
   @Test
   public void getRowInCacheTest() throws KettleException {
-
-    StepMockHelper<DatabaseLookupMeta, DatabaseLookupData> mockHelper =
-      new StepMockHelper<>( "Test", DatabaseLookupMeta.class, DatabaseLookupData.class );
     when( mockHelper.logChannelInterfaceFactory.create( any(), any( LoggingObjectInterface.class ) ) )
       .thenReturn( mockHelper.logChannelInterface );
 
@@ -347,7 +363,6 @@ public class DatabaseLookupUTest {
     returnRowMeta.addValueMeta( new ValueMetaInteger() );
     when( db.getReturnRowMeta() ).thenReturn( returnRowMeta );
 
-    StepMockHelper<DatabaseLookupMeta, DatabaseLookupData> mockHelper = createMockHelper();
     DatabaseLookupMeta meta = createTestMeta();
     DatabaseLookupData data = new DatabaseLookupData();
 
@@ -405,7 +420,6 @@ public class DatabaseLookupUTest {
     returnRowMeta.addValueMeta( new ValueMetaInteger() );
     when( db.getReturnRowMeta() ).thenReturn( returnRowMeta );
 
-    StepMockHelper<DatabaseLookupMeta, DatabaseLookupData> mockHelper = createMockHelper();
     DatabaseLookupMeta meta = createTestMeta();
     DatabaseLookupData data = new DatabaseLookupData();
 

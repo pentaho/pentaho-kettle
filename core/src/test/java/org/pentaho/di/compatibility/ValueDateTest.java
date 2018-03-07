@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -29,29 +29,34 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.TimeZone;
 
-import junit.framework.TestCase;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.fail;
+import org.junit.Before;
+import org.junit.ClassRule;
+import org.junit.Test;
+import org.pentaho.di.junit.rules.RestorePDIEnvironment;
 
 /**
  * Test class for the basic functionality of ValueDate.
  *
  * @author Sven Boden
  */
-public class ValueDateTest extends TestCase {
-  private static Date dt = null;
+public class ValueDateTest {
+  private Date dt = null;
+  @ClassRule public static RestorePDIEnvironment env = new RestorePDIEnvironment();
 
-  static {
+  @Before
+  public void setUp() throws ParseException {
     TimeZone.setDefault( TimeZone.getTimeZone( "CET" ) );
     SimpleDateFormat format = new SimpleDateFormat( "yyyy/MM/dd HH:mm:ss.SSS", Locale.US );
-    try {
-      dt = format.parse( "2006/06/07 01:02:03.004" );
-    } catch ( ParseException ex ) {
-      dt = null;
-    }
+    dt = format.parse( "2006/06/07 01:02:03.004" );
   }
 
   /**
    * Constructor test 1.
    */
+  @Test
   public void testConstructor1() {
     ValueDate vs = new ValueDate();
     assertEquals( Value.VALUE_TYPE_DATE, vs.getType() );
@@ -78,6 +83,7 @@ public class ValueDateTest extends TestCase {
   /**
    * Test the getters of ValueDate.
    */
+  @Test
   public void testGetters() {
     TimeZone.setDefault( TimeZone.getTimeZone( "CET" ) );
 
@@ -111,6 +117,7 @@ public class ValueDateTest extends TestCase {
   /**
    * Test the setters of ValueDate.
    */
+  @Test
   public void testSetters() {
     TimeZone.setDefault( TimeZone.getTimeZone( "CET" ) );
 

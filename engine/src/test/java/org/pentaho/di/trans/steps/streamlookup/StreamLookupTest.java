@@ -28,6 +28,8 @@ import static org.mockito.Mockito.doCallRealMethod;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+
+import org.junit.After;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import junit.framework.Assert;
 
@@ -68,6 +70,11 @@ public class StreamLookupTest {
     when( smh.logChannelInterfaceFactory.create( any(), any( LoggingObjectInterface.class ) ) ).thenReturn(
       smh.logChannelInterface );
     when( smh.trans.isRunning() ).thenReturn( true );
+  }
+
+  @After
+  public void cleanUp() {
+    smh.cleanUp();
   }
 
   private void convertDataToBinary( Object[][] data ) {

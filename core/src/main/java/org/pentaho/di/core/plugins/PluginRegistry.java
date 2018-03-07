@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -1036,5 +1036,31 @@ public class PluginRegistry {
       lock.readLock().unlock();
     }
     return result;
+  }
+
+  public void reset() {
+    lock.writeLock().lock();
+    try {
+      pluginTypes.clear();
+      extensions.clear();
+      pluginMap.clear();
+      classLoaderMap.clear();
+      classLoaderGroupsMap.clear();
+      folderBasedClassLoaderMap.clear();
+      inverseClassLoaderLookup.forEach( ( key, value ) -> {
+        try {
+          key.close();
+        } catch ( IOException e ) {
+          e.printStackTrace();
+        }
+      } );
+      inverseClassLoaderLookup.clear();
+      categoryMap.clear();
+      parentClassloaderPatternMap.clear();
+      listeners.clear();
+      JarFileCache.getInstance().clear();
+    } finally {
+      lock.writeLock().unlock();
+    }
   }
 }

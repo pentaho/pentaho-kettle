@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -25,6 +25,7 @@ package org.pentaho.di.trans.steps.excelwriter;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.pentaho.di.trans.step.StepDataInterface;
@@ -45,10 +46,11 @@ public class ExcelWriterStep_FormulaRecalculationTest {
 
   private ExcelWriterStep step;
   private ExcelWriterStepData data;
+  private StepMockHelper<ExcelWriterStepMeta, StepDataInterface> mockHelper;
 
   @Before
   public void setUp() throws Exception {
-    StepMockHelper<ExcelWriterStepMeta, StepDataInterface> mockHelper =
+    mockHelper =
       StepMockUtil.getStepMockHelper( ExcelWriterStepMeta.class, "ExcelWriterStep_FormulaRecalculationTest" );
 
     step = new ExcelWriterStep(
@@ -60,6 +62,11 @@ public class ExcelWriterStep_FormulaRecalculationTest {
     data = new ExcelWriterStepData();
 
     step.init( mockHelper.initStepMetaInterface, data );
+  }
+
+  @After
+  public void cleanUp() {
+    mockHelper.cleanUp();
   }
 
   @Test

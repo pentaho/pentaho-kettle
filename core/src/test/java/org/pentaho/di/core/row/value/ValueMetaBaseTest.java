@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -27,6 +27,7 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.ClassRule;
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.owasp.encoder.Encode;
@@ -50,6 +51,7 @@ import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
+import org.pentaho.di.junit.rules.RestorePDIEnvironment;
 import org.w3c.dom.Node;
 
 import java.io.ByteArrayInputStream;
@@ -83,24 +85,21 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertArrayEquals;
 
 public class ValueMetaBaseTest {
+  @ClassRule public static RestorePDIEnvironment env = new RestorePDIEnvironment();
 
   private static final String TEST_NAME = "TEST_NAME";
   private static final String LOG_FIELD = "LOG_FIELD";
   public static final int MAX_TEXT_FIELD_LEN = 5;
 
   // Get PKG from class under test
-  private static Class<?> PKG = ( new ValueMetaBase() {
-    public Class<?> getPackage() {
-      return PKG;
-    }
-  } ).getPackage();
+  private Class<?> PKG = ValueMetaBase.PKG;
   private StoreLoggingEventListener listener;
 
   @BeforeClass
   public static void setUpBeforeClass() throws KettleException {
     PluginRegistry.addPluginType( ValueMetaPluginType.getInstance() );
     PluginRegistry.addPluginType( DatabasePluginType.getInstance() );
-    PluginRegistry.init( true );
+    PluginRegistry.init();
     KettleLogStore.init();
   }
 
@@ -862,11 +861,6 @@ public class ValueMetaBaseTest {
   @Test
   public void testConvertBigNumberToBoolean() {
     ValueMetaBase vmb = new ValueMetaBase();
-    System.out.println( vmb.convertBigNumberToBoolean( new BigDecimal( "-234" ) ) );
-    System.out.println( vmb.convertBigNumberToBoolean( new BigDecimal( "234" ) ) );
-    System.out.println( vmb.convertBigNumberToBoolean( new BigDecimal( "0" ) ) );
-    System.out.println( vmb.convertBigNumberToBoolean( new BigDecimal( "1.7976E308" ) ) );
-
     Assert.assertTrue( vmb.convertBigNumberToBoolean( new BigDecimal( "-234" ) ) );
     Assert.assertTrue( vmb.convertBigNumberToBoolean( new BigDecimal( "234" ) ) );
     Assert.assertFalse( vmb.convertBigNumberToBoolean( new BigDecimal( "0" ) ) );

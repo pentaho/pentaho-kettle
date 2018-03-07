@@ -26,7 +26,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.After;
-import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.Test;
 import org.pentaho.di.core.Const;
@@ -38,7 +37,6 @@ import java.text.MessageFormat;
  *
  */
 public class LogMessageTest {
-
   private LogMessage logMessage;
 
   private static final String LOG_MESSAGE = "Test Message";
@@ -54,11 +52,7 @@ public class LogMessageTest {
   @After
   public void tearDown() {
     LoggingRegistry.getInstance().removeIncludingChildren( treeLogChannelId );
-  }
-
-  @AfterClass
-  public static void afterClass() {
-    LoggingRegistry.getInstance().getMap().clear();
+    System.clearProperty( Const.KETTLE_LOG_MARK_MAPPINGS );
   }
 
   @Test

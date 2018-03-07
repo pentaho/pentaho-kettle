@@ -37,10 +37,12 @@ import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.ClassRule;
 import org.junit.Test;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.plugins.PluginRegistry;
+import org.pentaho.di.junit.rules.RestorePDIEngineEnvironment;
 import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.di.trans.steps.loadsave.LoadSaveTester;
 import org.pentaho.di.trans.steps.loadsave.initializer.InitializerInterface;
@@ -56,6 +58,7 @@ import org.xml.sax.InputSource;
  * User: Dzmitry Stsiapanau Date: 1/20/14 Time: 3:04 PM
  */
 public class SystemDataMetaTest implements InitializerInterface<StepMetaInterface> {
+  @ClassRule public static RestorePDIEngineEnvironment env = new RestorePDIEngineEnvironment();
   LoadSaveTester loadSaveTester;
   Class<SystemDataMeta> testMetaClass = SystemDataMeta.class;
   SystemDataMeta expectedSystemDataMeta;
@@ -102,7 +105,7 @@ public class SystemDataMetaTest implements InitializerInterface<StepMetaInterfac
   @Before
   public void setUpLoadSave() throws Exception {
     KettleEnvironment.init();
-    PluginRegistry.init( true );
+    PluginRegistry.init( false );
     List<String> attributes =
         Arrays.asList( "fieldName", "fieldType" );
 

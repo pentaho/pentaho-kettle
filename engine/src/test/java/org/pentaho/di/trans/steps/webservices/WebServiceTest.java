@@ -25,6 +25,7 @@ package org.pentaho.di.trans.steps.webservices;
 import org.apache.http.Header;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.message.BasicHeader;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.pentaho.di.core.logging.LoggingObjectInterface;
@@ -62,6 +63,11 @@ public class WebServiceTest {
     webServiceStep =
         spy( new WebService( mockHelper.stepMeta, mockHelper.stepDataInterface, 0, mockHelper.transMeta,
             mockHelper.trans ) );
+  }
+
+  @After
+  public void cleanUp() {
+    mockHelper.cleanUp();
   }
 
   @Test( expected = URISyntaxException.class )

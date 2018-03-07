@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,8 +22,7 @@
 
 package org.pentaho.di.core.plugins;
 
-import org.junit.After;
-import org.junit.Before;
+import org.junit.ClassRule;
 import org.junit.Test;
 import org.pentaho.di.core.exception.KettlePluginClassMapException;
 import org.pentaho.di.core.exception.KettlePluginException;
@@ -32,6 +31,7 @@ import org.pentaho.di.core.logging.LoggingPluginType;
 import org.pentaho.di.core.row.RowBuffer;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.row.value.ValueMetaPluginType;
+import org.pentaho.di.junit.rules.RestorePDIEnvironment;
 
 import java.lang.annotation.Annotation;
 import java.util.HashMap;
@@ -52,22 +52,11 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 public class PluginRegistryUnitTest {
-
-  private void cleanRegistry( Class<? extends PluginTypeInterface> aClass ) {
-    PluginRegistry registry = PluginRegistry.getInstance();
-    registry.getPlugins( aClass ).forEach( pluginInterface -> registry.removePlugin( aClass, pluginInterface ) );
-  }
-
-  @After
-  @Before
-  public void cleanup() {
-    cleanRegistry( LoggingPluginType.class );
-    cleanRegistry( BasePluginType.class );
-    cleanRegistry( BaseFragmentType.class );
-  }
+  @ClassRule public static RestorePDIEnvironment env = new RestorePDIEnvironment();
 
   @Test
   public void getGetPluginInformation() throws KettlePluginException {
+    PluginRegistry.getInstance().reset();
     RowBuffer result = PluginRegistry.getInstance().getPluginInformation( BasePluginType.class );
     assertNotNull( result );
     assertEquals( 8, result.getRowMeta().size() );

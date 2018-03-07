@@ -39,6 +39,7 @@ import com.sforce.soap.partner.sobject.SObject;
 import com.sforce.ws.wsdl.Constants;
 import org.junit.Assert;
 import org.junit.BeforeClass;
+import org.junit.ClassRule;
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.pentaho.di.core.Const;
@@ -55,10 +56,12 @@ import com.sforce.soap.partner.PartnerConnection;
 import com.sforce.ws.ConnectionException;
 import com.sforce.ws.ConnectorConfig;
 import com.sforce.ws.bind.XmlObject;
+import org.pentaho.di.junit.rules.RestorePDIEngineEnvironment;
 
 import javax.xml.namespace.QName;
 
 public class SalesforceConnectionTest {
+  @ClassRule public static RestorePDIEngineEnvironment env = new RestorePDIEngineEnvironment();
 
   private LogChannelInterface logInterface = mock( LogChannelInterface.class );
   private String url = "url";

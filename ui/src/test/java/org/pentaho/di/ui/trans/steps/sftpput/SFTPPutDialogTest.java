@@ -25,9 +25,11 @@ import org.apache.commons.lang.reflect.FieldUtils;
 import org.eclipse.swt.widgets.Shell;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
+import org.junit.ClassRule;
 import org.junit.Test;
 import org.pentaho.di.core.Props;
 import org.pentaho.di.job.entries.sftp.SFTPClient;
+import org.pentaho.di.junit.rules.RestorePDIEngineEnvironment;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.steps.sftpput.SFTPPutMeta;
 import org.pentaho.di.ui.core.PropsUI;
@@ -41,6 +43,7 @@ import static org.mockito.Mockito.*;
  * Created by Yury_Ilyukevich on 7/1/2015.
  */
 public class SFTPPutDialogTest {
+  @ClassRule public static RestorePDIEngineEnvironment env = new RestorePDIEngineEnvironment();
 
   private static boolean changedPropsUi;
 

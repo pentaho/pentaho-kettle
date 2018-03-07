@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -32,6 +32,7 @@ import java.util.List;
 
 import junit.framework.Assert;
 
+import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -70,6 +71,11 @@ public class GroupByNewAggregateTest {
     statistics = new ArrayList<Integer>();
     statistics.add( GroupByMeta.TYPE_GROUP_MEDIAN );
     statistics.add( GroupByMeta.TYPE_GROUP_PERCENTILE );
+  }
+
+  @AfterClass
+  public static void cleanUp() {
+    mockHelper.cleanUp();
   }
 
   @Before

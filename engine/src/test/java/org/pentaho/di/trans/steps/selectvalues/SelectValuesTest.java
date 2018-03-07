@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,12 +22,15 @@
 
 package org.pentaho.di.trans.steps.selectvalues;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.ClassRule;
 import org.junit.Test;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import org.junit.runner.RunWith;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.RowSet;
@@ -40,6 +43,7 @@ import org.pentaho.di.core.row.value.ValueMetaBase;
 import org.pentaho.di.core.row.value.ValueMetaBigNumber;
 import org.pentaho.di.core.row.value.ValueMetaInteger;
 import org.pentaho.di.core.row.value.ValueMetaString;
+import org.pentaho.di.junit.rules.RestorePDIEngineEnvironment;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.StepDataInterface;
@@ -64,12 +68,14 @@ import java.math.BigDecimal;
  * @author Andrey Khayrutdinov
  */
 public class SelectValuesTest {
+  @ClassRule public static RestorePDIEngineEnvironment env = new RestorePDIEngineEnvironment();
 
   private static final String SELECTED_FIELD = "field";
 
   private final Object[] inputRow = new Object[] { "a string" };
 
   private SelectValues step;
+  private StepMockHelper<SelectValuesMeta, StepDataInterface> helper;
 
   @BeforeClass
   public static void initKettle() throws Exception {
@@ -78,8 +84,7 @@ public class SelectValuesTest {
 
   @Before
   public void setUp() throws Exception {
-    StepMockHelper<SelectValuesMeta, StepDataInterface> helper =
-      StepMockUtil.getStepMockHelper( SelectValuesMeta.class, "SelectValuesTest" );
+    helper = StepMockUtil.getStepMockHelper( SelectValuesMeta.class, "SelectValuesTest" );
     when( helper.stepMeta.isDoingErrorHandling() ).thenReturn( true );
 
     step = new SelectValues( helper.stepMeta, helper.stepDataInterface, 1, helper.transMeta, helper.trans );
@@ -94,12 +99,16 @@ public class SelectValuesTest {
     step.setInputRowMeta( inputRowMeta );
   }
 
+  @After
+  public void cleanUp() {
+    helper.cleanUp();
+  }
+
   @Test
   public void testPDI16368() throws Exception {
     // This tests that the fix for PDI-16388 doesn't get re-broken.
     //
 
-    StepMockHelper<SelectValuesMeta, StepDataInterface> helper = StepMockUtil.getStepMockHelper( SelectValuesMeta.class, "SelectValuesTest2" );
     SelectValuesHandler  step2 = null;
     Object[] inputRow2 = null;
     RowMeta inputRowMeta = null;
@@ -323,7 +332,7 @@ public class SelectValuesTest {
     assertTrue( properException );
   }
 
-  private class SelectValuesHandler extends SelectValues {
+  public class SelectValuesHandler extends SelectValues {
     private Object[] resultRow;
     private RowMetaInterface rowMeta;
     private RowSet rowset;

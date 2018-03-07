@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,17 +22,25 @@
 
 package org.pentaho.di.trans.steps.fieldsplitter;
 
+import org.junit.After;
+import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.ClassRule;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.pentaho.di.core.Const;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaBase;
 import org.pentaho.di.core.row.value.ValueMetaString;
+import org.pentaho.di.junit.rules.RestorePDIEngineEnvironment;
 import org.pentaho.di.trans.TransTestingUtil;
 import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.steps.StepMockUtil;
 import org.pentaho.di.trans.steps.mock.StepMockHelper;
-import org.pentaho.test.util.FieldAccessor;
+import org.powermock.modules.junit4.PowerMockRunner;
+import org.powermock.reflect.Whitebox;
 
 import java.util.List;
 
@@ -44,43 +52,49 @@ import static org.mockito.Mockito.when;
 /**
  * @author Andrey Khayrutdinov
  */
+@RunWith( PowerMockRunner.class )
 public class FieldSplitter_EmptyStringVsNull_Test {
+  private StepMockHelper<FieldSplitterMeta, StepDataInterface> helper;
+  @ClassRule public static RestorePDIEngineEnvironment env = new RestorePDIEngineEnvironment();
 
   @BeforeClass
   public static void initKettle() throws Exception {
     KettleEnvironment.init();
   }
 
+  @Before
+  public void setUp() {
+    helper = StepMockUtil.getStepMockHelper( FieldSplitterMeta.class, "FieldSplitter_EmptyStringVsNull_Test" );
+  }
+
+  @After
+  public void cleanUp() {
+    helper.cleanUp();
+  }
 
   @Test
   public void emptyAndNullsAreNotDifferent() throws Exception {
+    System.setProperty( Const.KETTLE_EMPTY_STRING_DIFFERS_FROM_NULL, "N" );
+    Whitebox.setInternalState( ValueMetaBase.class, "EMPTY_STRING_AND_NULL_ARE_DIFFERENT", false );
     List<Object[]> expected = Arrays.asList(
       new Object[] { "a", "", "a" },
       new Object[] { "b", null, "b" },
       new Object[] { null }
     );
-    doTestEmptyStringVsNull( false, expected );
+    executeAndAssertResults( expected );
   }
 
 
   @Test
   public void emptyAndNullsAreDifferent() throws Exception {
+    System.setProperty( Const.KETTLE_EMPTY_STRING_DIFFERS_FROM_NULL, "Y" );
+    Whitebox.setInternalState( ValueMetaBase.class, "EMPTY_STRING_AND_NULL_ARE_DIFFERENT", true );
     List<Object[]> expected = Arrays.asList(
       new Object[] { "a", "", "a" },
       new Object[] { "b", "", "b" },
-      new Object[] { null }
+      new Object[] { "", "", "" }
     );
-    doTestEmptyStringVsNull( true, expected );
-  }
-
-
-  private void doTestEmptyStringVsNull( boolean diffProperty, List<Object[]> expected ) throws Exception {
-    FieldAccessor.ensureEmptyStringIsNotNull( diffProperty );
-    try {
-      executeAndAssertResults( expected );
-    } finally {
-      FieldAccessor.resetEmptyStringIsNotNull();
-    }
+    executeAndAssertResults( expected );
   }
 
   private void executeAndAssertResults( List<Object[]> expected ) throws Exception {
@@ -110,8 +124,6 @@ public class FieldSplitter_EmptyStringVsNull_Test {
   }
 
   private FieldSplitter createAndInitStep( FieldSplitterMeta meta, FieldSplitterData data ) throws Exception {
-    StepMockHelper<FieldSplitterMeta, StepDataInterface> helper =
-      StepMockUtil.getStepMockHelper( FieldSplitterMeta.class, "FieldSplitter_EmptyStringVsNull_Test" );
     when( helper.stepMeta.getStepMetaInterface() ).thenReturn( meta );
 
     FieldSplitter step = new FieldSplitter( helper.stepMeta, data, 0, helper.transMeta, helper.trans );

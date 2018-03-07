@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2016-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2016-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -57,6 +57,7 @@ import org.pentaho.di.trans.steps.file.BaseFileField;
  */
 @Ignore( "No tests in abstract base class" )
 public abstract class BaseParsingTest<Meta extends StepMetaInterface, Data extends StepDataInterface, Step extends BaseStep> {
+
   protected LogChannelInterface log = new LogChannel( "junit" );
   protected FileSystemManager fs;
   protected String inPrefix;
@@ -77,7 +78,7 @@ public abstract class BaseParsingTest<Meta extends StepMetaInterface, Data exten
   public final void beforeCommon() throws Exception {
     KettleEnvironment.init();
     PluginRegistry.addPluginType( CompressionPluginType.getInstance() );
-    PluginRegistry.init( true );
+    PluginRegistry.init( false );
 
     stepMeta = new StepMeta();
     stepMeta.setName( "test" );

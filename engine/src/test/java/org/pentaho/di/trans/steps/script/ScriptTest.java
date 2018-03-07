@@ -51,7 +51,7 @@ public class ScriptTest {
 
   @After
   public void tearDown() throws Exception {
-    helper = null;
+    helper.cleanUp();
   }
 
   @Test

@@ -40,6 +40,7 @@ import org.apache.commons.lang.reflect.FieldUtils;
 import org.eclipse.swt.widgets.Shell;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
+import org.junit.ClassRule;
 import org.junit.Test;
 import org.pentaho.di.core.BlockingRowSet;
 import org.pentaho.di.core.KettleEnvironment;
@@ -51,6 +52,7 @@ import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.core.vfs.KettleVFS;
+import org.pentaho.di.junit.rules.RestorePDIEngineEnvironment;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.errorhandling.FileErrorHandler;
 import org.pentaho.di.trans.steps.StepMockUtil;
@@ -67,6 +69,7 @@ import org.pentaho.di.ui.core.widget.TableView;
  * Created by jadametz on 9/9/15.
  */
 public class TextFileInputDialogTest {
+  @ClassRule public static RestorePDIEngineEnvironment env = new RestorePDIEngineEnvironment();
 
   private static boolean changedPropsUi;
 

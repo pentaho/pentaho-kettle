@@ -15,10 +15,6 @@
 
   <name>PDI S3 CSV Input Plugin Core</name>
 
-  <properties>
-    <junit.version>4.4</junit.version>
-  </properties>
-
   <dependencies>
     <dependency>
       <groupId>pentaho-kettle</groupId>
@@ -44,6 +40,11 @@
     <dependency>
       <groupId>pentaho-kettle</groupId>
       <artifactId>kettle-engine</artifactId>
+      <classifier>tests</classifier>
+    </dependency>
+    <dependency>
+      <groupId>pentaho-kettle</groupId>
+      <artifactId>kettle-core</artifactId>
       <classifier>tests</classifier>
     </dependency>
     <dependency>

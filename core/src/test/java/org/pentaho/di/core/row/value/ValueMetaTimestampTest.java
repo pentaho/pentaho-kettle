@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -34,16 +34,19 @@ import java.sql.PreparedStatement;
 import java.sql.Timestamp;
 import java.util.Date;
 
+import org.junit.ClassRule;
 import org.junit.Test;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleDatabaseException;
+import org.pentaho.di.junit.rules.RestorePDIEnvironment;
 
 /**
  * User: Dzmitry Stsiapanau Date: 3/20/2014 Time: 11:51 AM
  */
 public class ValueMetaTimestampTest {
+  @ClassRule public static RestorePDIEnvironment env = new RestorePDIEnvironment();
   @Test
   public void testSetPreparedStatementValue() throws Exception {
     ValueMetaTimestamp vm = new ValueMetaTimestamp();

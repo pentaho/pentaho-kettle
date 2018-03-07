@@ -26,6 +26,7 @@ import org.apache.commons.io.IOUtils;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.ClassRule;
 import org.junit.Test;
 import org.pentaho.di.core.KettleClientEnvironment;
 import org.pentaho.di.core.exception.KettlePluginException;
@@ -37,6 +38,7 @@ import org.pentaho.di.core.row.value.ValueMetaInteger;
 import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.core.row.value.ValueMetaTimestamp;
 import org.pentaho.di.core.xml.XMLHandler;
+import org.pentaho.di.junit.rules.RestorePDIEnvironment;
 import org.w3c.dom.Document;
 
 import java.io.InputStream;
@@ -51,6 +53,7 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.spy;
 
 public class RowMetaTest {
+  @ClassRule public static RestorePDIEnvironment env = new RestorePDIEnvironment();
 
   RowMetaInterface rowMeta = new RowMeta();
   ValueMetaInterface string;

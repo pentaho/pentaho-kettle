@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -188,7 +188,7 @@ public class DateDetectorTest {
         pattern.replace( "dd", "31" ).replace( "yyyy", "2015" ).replace( "MMMM", "Decr" ).replace( "MMM", "Dec" )
             .replace( "MM", "12" ).replace( "yy", "15" ).replace( "HH", "12" ).replace( "mm", "00" ).replace( "ss",
                 "00" ).replace( "SSS", "123" );
-    System.out.println( pattern + " : " + dateString );
+//    System.out.println( pattern + " : " + dateString );
     return dateString;
   }
 

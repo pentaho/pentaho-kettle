@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -30,6 +30,7 @@ import static org.junit.Assert.assertTrue;
 import java.sql.ResultSet;
 
 import org.junit.Before;
+import org.junit.ClassRule;
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
@@ -44,9 +45,11 @@ import org.pentaho.di.core.row.value.ValueMetaInternetAddress;
 import org.pentaho.di.core.row.value.ValueMetaNumber;
 import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.core.row.value.ValueMetaTimestamp;
+import org.pentaho.di.junit.rules.RestorePDIEnvironment;
 
 public class MSSQLServerDatabaseMetaTest {
   MSSQLServerDatabaseMeta nativeMeta, odbcMeta;
+  @ClassRule public static RestorePDIEnvironment env = new RestorePDIEnvironment();
 
   @Before
   public void setupOnce() throws Exception {

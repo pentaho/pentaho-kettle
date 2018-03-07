@@ -24,6 +24,7 @@ package org.pentaho.di.trans.streaming.common;
 
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -45,6 +46,7 @@ import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.util.EnvUtil;
 import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.core.xml.XMLHandler;
+import org.pentaho.di.junit.rules.RestorePDIEngineEnvironment;
 import org.pentaho.di.resource.ResourceEntry;
 import org.pentaho.di.resource.ResourceReference;
 import org.pentaho.di.trans.Trans;
@@ -75,6 +77,8 @@ import static org.custommonkey.xmlunit.XMLAssert.assertXMLEqual;
 @RunWith ( MockitoJUnitRunner.class )
 public class BaseStreamStepMetaTest {
 
+  @ClassRule public static RestorePDIEngineEnvironment env = new RestorePDIEngineEnvironment();
+
   private BaseStreamStepMeta meta;
   @Mock private IMetaStore metastore;
   @Mock LogChannelInterfaceFactory logChannelFactory;
@@ -83,7 +87,7 @@ public class BaseStreamStepMetaTest {
   @BeforeClass
   public static void setUpBeforeClass() throws KettleException {
     PluginRegistry.addPluginType( TwoWayPasswordEncoderPluginType.getInstance() );
-    PluginRegistry.init( true );
+    PluginRegistry.init( false );
     String passwordEncoderPluginID =
       Const.NVL( EnvUtil.getSystemProperty( Const.KETTLE_PASSWORD_ENCODER_PLUGIN ), "Kettle" );
     Encr.init( passwordEncoderPluginID );

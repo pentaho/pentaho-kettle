@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -30,6 +30,8 @@ import java.util.Locale;
 import java.util.TimeZone;
 
 import junit.framework.TestCase;
+import org.junit.ClassRule;
+import org.pentaho.di.junit.rules.RestorePDIEnvironment;
 
 /**
  * Test class for the basic functionality of ValueNumber.
@@ -37,6 +39,8 @@ import junit.framework.TestCase;
  * @author Sven Boden
  */
 public class ValueBigNumberTest extends TestCase {
+  @ClassRule public static RestorePDIEnvironment env = new RestorePDIEnvironment();
+
   /**
    * Constructor test 1.
    */

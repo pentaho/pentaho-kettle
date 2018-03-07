@@ -24,13 +24,18 @@ package org.pentaho.di.ui.core.dialog;
 
 import org.eclipse.swt.widgets.TableItem;
 import org.junit.BeforeClass;
+import org.junit.ClassRule;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaBase;
 import org.pentaho.di.core.row.value.ValueMetaString;
+import org.pentaho.di.junit.rules.RestorePDIEngineEnvironment;
 import org.pentaho.di.trans.TransTestingUtil;
-import org.pentaho.test.util.FieldAccessor;
+import org.powermock.modules.junit4.PowerMockRunner;
+import org.powermock.reflect.Whitebox;
 
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyInt;
@@ -41,7 +46,9 @@ import static org.mockito.Mockito.when;
 /**
  * @author Andrey Khayrutdinov
  */
+@RunWith( PowerMockRunner.class )
 public class EditRowsDialog_EmptyStringVsNull_Test {
+  @ClassRule public static RestorePDIEngineEnvironment env = new RestorePDIEngineEnvironment();
 
   @BeforeClass
   public static void initKettle() throws Exception {
@@ -51,23 +58,15 @@ public class EditRowsDialog_EmptyStringVsNull_Test {
 
   @Test
   public void emptyAndNullsAreNotDifferent() throws Exception {
-    doTestEmptyStringVsNull( false, "", null, null );
+    Whitebox.setInternalState( ValueMetaBase.class, "EMPTY_STRING_AND_NULL_ARE_DIFFERENT", false );
+    executeAndAssertResults( new String[]{ "", null, null } );
   }
 
 
   @Test
   public void emptyAndNullsAreDifferent() throws Exception {
-    doTestEmptyStringVsNull( true, "", "", null );
-  }
-
-
-  private void doTestEmptyStringVsNull( boolean diffProperty, String... expected ) throws Exception {
-    FieldAccessor.ensureEmptyStringIsNotNull( diffProperty );
-    try {
-      executeAndAssertResults( expected );
-    } finally {
-      FieldAccessor.resetEmptyStringIsNotNull();
-    }
+    Whitebox.setInternalState( ValueMetaBase.class, "EMPTY_STRING_AND_NULL_ARE_DIFFERENT", true );
+    executeAndAssertResults( new String[]{ "", "", null } );
   }
 
   private void executeAndAssertResults( String[] expected ) throws Exception {

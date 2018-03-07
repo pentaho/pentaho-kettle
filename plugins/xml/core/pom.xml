@@ -47,13 +47,14 @@
     </dependency>
     <!-- test dependencies -->
     <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <version>4.4</version>
+      <groupId>pentaho-kettle</groupId>
+      <artifactId>kettle-engine</artifactId>
+      <classifier>tests</classifier>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>pentaho-kettle</groupId>
-      <artifactId>kettle-engine</artifactId>
+      <artifactId>kettle-core</artifactId>
       <classifier>tests</classifier>
       <scope>test</scope>
     </dependency>

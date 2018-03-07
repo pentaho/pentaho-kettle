@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -113,5 +113,10 @@ public class MetricsRegistry {
       snapshotMaps.put( logChannelId, map );
     }
     return map;
+  }
+
+  public void reset() {
+    snapshotMaps.clear();
+    snapshotLists.clear();
   }
 }

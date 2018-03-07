@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,8 +22,10 @@
 
 package org.pentaho.di.job.entries.columnsexist;
 
+import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.ClassRule;
 import org.junit.Test;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.Result;
@@ -34,6 +36,7 @@ import org.pentaho.di.core.logging.LogLevel;
 import org.pentaho.di.job.Job;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entry.JobEntryCopy;
+import org.pentaho.di.junit.rules.RestorePDIEngineEnvironment;
 
 import static junit.framework.Assert.assertTrue;
 import static org.junit.Assert.assertEquals;
@@ -57,6 +60,7 @@ import static org.mockito.Mockito.verify;
  */
 
 public class JobEntryColumnsExistTest {
+  @ClassRule public static RestorePDIEngineEnvironment env = new RestorePDIEngineEnvironment();
 
   private static final String TABLENAME = "TABLE";
   private static final String SCHEMANAME = "SCHEMA";
@@ -70,8 +74,13 @@ public class JobEntryColumnsExistTest {
     KettleEnvironment.init( false );
   }
 
+  @AfterClass
+  public static void tearDown() {
+    KettleEnvironment.reset();
+  }
+
   @Before
-  public void setUp() throws KettleException {
+  public void setUp() {
     Job parentJob = new Job( null, new JobMeta() );
     jobEntry = spy( new JobEntryColumnsExist( "" ) );
     parentJob.getJobMeta().addJobEntry( new JobEntryCopy( jobEntry ) );

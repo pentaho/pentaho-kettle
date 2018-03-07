@@ -27,10 +27,13 @@ ing, software
 package org.pentaho.di.trans.steps.memgroupby;
 
 import org.junit.Before;
+import org.junit.ClassRule;
 import org.junit.Test;
 import org.pentaho.di.core.injection.BaseMetadataInjectionTest;
+import org.pentaho.di.junit.rules.RestorePDIEngineEnvironment;
 
 public class MemoryGroupByMetaInjectionTest extends BaseMetadataInjectionTest<MemoryGroupByMeta> {
+  @ClassRule public static RestorePDIEngineEnvironment env = new RestorePDIEngineEnvironment();
   @Before
   public void setup() {
     setup( new MemoryGroupByMeta() );

@@ -21,12 +21,15 @@
  ******************************************************************************/
 package org.pentaho.di.job.entries.addresultfilenames;
 
+import org.junit.ClassRule;
 import org.pentaho.di.job.entry.loadSave.JobEntryLoadSaveTestSupport;
+import org.pentaho.di.junit.rules.RestorePDIEngineEnvironment;
 
 import java.util.Arrays;
 import java.util.List;
 
 public class JobEntryAddResultFilenamesLoadSaveTest extends JobEntryLoadSaveTestSupport<JobEntryAddResultFilenames> {
+  @ClassRule public static RestorePDIEngineEnvironment env = new RestorePDIEngineEnvironment();
   @Override protected Class<JobEntryAddResultFilenames> getJobEntryClass() {
     return JobEntryAddResultFilenames.class;
   }

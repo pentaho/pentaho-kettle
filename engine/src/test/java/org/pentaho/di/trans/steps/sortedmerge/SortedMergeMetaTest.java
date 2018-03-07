@@ -28,8 +28,10 @@ import java.util.List;
 import java.util.Map;
 
 import org.junit.Assert;
+import org.junit.ClassRule;
 import org.junit.Test;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.junit.rules.RestorePDIEngineEnvironment;
 import org.pentaho.di.trans.steps.loadsave.LoadSaveTester;
 import org.pentaho.di.trans.steps.loadsave.validator.ArrayLoadSaveValidator;
 import org.pentaho.di.trans.steps.loadsave.validator.BooleanLoadSaveValidator;
@@ -39,6 +41,7 @@ import org.pentaho.di.trans.steps.loadsave.validator.StringLoadSaveValidator;
 import org.pentaho.di.trans.steps.mock.StepMockHelper;
 
 public class SortedMergeMetaTest {
+  @ClassRule public static RestorePDIEngineEnvironment env = new RestorePDIEngineEnvironment();
 
   @Test
   public void testRoundTrips() throws KettleException {
@@ -71,9 +74,6 @@ public class SortedMergeMetaTest {
 
   @Test
   public void testPDI16559() throws Exception {
-    StepMockHelper<SortedMergeMeta, SortedMergeData> mockHelper =
-        new StepMockHelper<SortedMergeMeta, SortedMergeData>( "sortedMerge", SortedMergeMeta.class, SortedMergeData.class );
-
     SortedMergeMeta sortedMerge = new SortedMergeMeta();
     sortedMerge.setFieldName( new String[] { "field1", "field2", "field3", "field4", "field5" } );
     sortedMerge.setAscending( new boolean[] { false, true } );

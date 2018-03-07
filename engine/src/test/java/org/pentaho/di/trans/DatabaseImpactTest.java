@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -33,7 +33,7 @@ import org.pentaho.di.i18n.BaseMessages;
 
 public class DatabaseImpactTest {
 
-  private static Class<?> PKG = Trans.class;
+  private Class<?> PKG = Trans.class;
 
   @Test
   public void testGetRow() throws KettleValueException {

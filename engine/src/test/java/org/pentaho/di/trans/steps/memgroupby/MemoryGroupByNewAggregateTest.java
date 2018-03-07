@@ -32,6 +32,7 @@ import java.util.List;
 
 import junit.framework.Assert;
 
+import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -70,6 +71,11 @@ public class MemoryGroupByNewAggregateTest {
     statistics = new ArrayList<Integer>();
     statistics.add( MemoryGroupByMeta.TYPE_GROUP_MEDIAN );
     statistics.add( MemoryGroupByMeta.TYPE_GROUP_PERCENTILE );
+  }
+
+  @AfterClass
+  public static void cleanUp() {
+    mockHelper.cleanUp();
   }
 
   @Before

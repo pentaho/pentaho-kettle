@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -661,6 +661,12 @@ public class Props implements Cloneable {
 
   public void setMaxLogLineTimeoutMinutes( int maxLogLineTimeoutMinutes ) {
     properties.setProperty( STRING_MAX_LOG_LINE_TIMEOUT_MINUTES, Integer.toString( maxLogLineTimeoutMinutes ) );
+  }
+
+  public void reset() {
+    props = null;
+    properties.clear();
+    pluginHistory.clear();
   }
 
 }

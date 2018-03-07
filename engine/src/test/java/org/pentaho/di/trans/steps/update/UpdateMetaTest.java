@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,7 +22,14 @@
 
 package org.pentaho.di.trans.steps.update;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
+import static org.junit.Assert.fail;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyBoolean;
 import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -35,8 +42,9 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
-import org.junit.Assert;
+import org.junit.After;
 import org.junit.Before;
+import org.junit.ClassRule;
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.pentaho.di.core.KettleEnvironment;
@@ -48,6 +56,7 @@ import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.plugins.StepPluginType;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.junit.rules.RestorePDIEngineEnvironment;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.trans.Trans;
@@ -63,9 +72,9 @@ import org.pentaho.di.trans.steps.loadsave.validator.StringLoadSaveValidator;
 import org.pentaho.di.trans.steps.mock.StepMockHelper;
 import org.pentaho.metastore.api.IMetaStore;
 
-import junit.framework.TestCase;
 
-public class UpdateMetaTest extends TestCase implements InitializerInterface<StepMetaInterface> {
+public class UpdateMetaTest implements InitializerInterface<StepMetaInterface> {
+  @ClassRule public static RestorePDIEngineEnvironment env = new RestorePDIEngineEnvironment();
 
   private StepMeta stepMeta;
   private Update upd;
@@ -73,6 +82,7 @@ public class UpdateMetaTest extends TestCase implements InitializerInterface<Ste
   private UpdateMeta umi;
   LoadSaveTester loadSaveTester;
   Class<UpdateMeta> testMetaClass = UpdateMeta.class;
+  private StepMockHelper<UpdateMeta, UpdateData> mockHelper;
 
   public static final String databaseXML =
       "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
@@ -81,11 +91,10 @@ public class UpdateMetaTest extends TestCase implements InitializerInterface<Ste
         + "<password></password>" + "</connection>";
 
 
-  @Override
   @Before
-  protected void setUp() throws KettleException {
+  public void setUp() throws KettleException {
     KettleEnvironment.init();
-    PluginRegistry.init( true );
+    PluginRegistry.init( false );
     TransMeta transMeta = new TransMeta();
     transMeta.setName( "delete1" );
 
@@ -102,7 +111,7 @@ public class UpdateMetaTest extends TestCase implements InitializerInterface<Ste
     stepMeta = new StepMeta( deletePid, "delete", umi );
     Trans trans = new Trans( transMeta );
     transMeta.addStep( stepMeta );
-    StepMockHelper<UpdateMeta, UpdateData> mockHelper = new StepMockHelper<>( "Update", UpdateMeta.class, UpdateData.class );
+    mockHelper = new StepMockHelper<>( "Update", UpdateMeta.class, UpdateData.class );
     Mockito.when( mockHelper.logChannelInterfaceFactory.create( Mockito.any(), Mockito.any( LoggingObjectInterface.class ) ) ).thenReturn( mockHelper.logChannelInterface );
 
     upd = new Update( stepMeta, ud, 1, transMeta, trans );
@@ -169,6 +178,11 @@ public class UpdateMetaTest extends TestCase implements InitializerInterface<Ste
             getterMap, setterMap, attrValidatorMap, typeValidatorMap, this );
   }
 
+  @After
+  public void cleanUp() {
+    mockHelper.cleanUp();
+  }
+
   @Test
   public void testCommitCountFixed() {
     umi.setCommitSize( "100" );
@@ -197,13 +211,10 @@ public class UpdateMetaTest extends TestCase implements InitializerInterface<Ste
     String tableName = "tableName";
     String schemaTable = "default.tableName";
 
-    DatabaseMeta databaseMeta = spy( new DatabaseMeta( databaseXML ) {
-      @Override
-      public String getFieldDefinition( ValueMetaInterface v, String tk, String pk, boolean use_autoinc ) {
-        return "someValue";
-      }
-    } );
-    when( databaseMeta.getQuotedSchemaTableCombination( schemaName, tableName ) ).thenReturn( schemaTable );
+    DatabaseMeta databaseMeta = spy( new DatabaseMeta( databaseXML ) );
+    doReturn( "someValue" ).when( databaseMeta )
+      .getFieldDefinition( any( ValueMetaInterface.class ), anyString(), anyString(), anyBoolean() );
+    doReturn( schemaTable ).when( databaseMeta ).getQuotedSchemaTableCombination( schemaName, tableName );
 
     ValueMetaInterface valueMeta = mock( ValueMetaInterface.class );
     when( valueMeta.clone() ).thenReturn( mock( ValueMetaInterface.class ) );
@@ -225,7 +236,7 @@ public class UpdateMetaTest extends TestCase implements InitializerInterface<Ste
             mock( Repository.class ), mock( IMetaStore.class ) );
     String sql = sqlStatement.getSQL();
 
-    Assert.assertTrue( StringUtils.countMatches( sql, schemaTable ) == 2 );
+    assertTrue( StringUtils.countMatches( sql, schemaTable ) == 2 );
   }
 
   // Call the allocate method on the LoadSaveTester meta class
@@ -243,9 +254,6 @@ public class UpdateMetaTest extends TestCase implements InitializerInterface<Ste
 
   @Test
   public void testPDI16559() throws Exception {
-    StepMockHelper<UpdateMeta, UpdateData> mockHelper =
-        new StepMockHelper<UpdateMeta, UpdateData>( "update", UpdateMeta.class, UpdateData.class );
-
     UpdateMeta update = new UpdateMeta();
     update.setKeyStream( new String[] { "field1", "field2", "field3", "field4", "field5" } );
     update.setKeyLookup( new String[] { "lkup1", "lkup2" } );
@@ -257,7 +265,7 @@ public class UpdateMetaTest extends TestCase implements InitializerInterface<Ste
 
     try {
       String badXml = update.getXML();
-      Assert.fail( "Before calling afterInjectionSynchronization, should have thrown an ArrayIndexOOB" );
+      fail( "Before calling afterInjectionSynchronization, should have thrown an ArrayIndexOOB" );
     } catch ( Exception expected ) {
       // Do Nothing
     }
@@ -267,12 +275,12 @@ public class UpdateMetaTest extends TestCase implements InitializerInterface<Ste
 
     int targetSz = update.getKeyStream().length;
 
-    Assert.assertEquals( targetSz, update.getKeyLookup().length );
-    Assert.assertEquals( targetSz, update.getKeyCondition().length );
-    Assert.assertEquals( targetSz, update.getKeyStream2().length );
+    assertEquals( targetSz, update.getKeyLookup().length );
+    assertEquals( targetSz, update.getKeyCondition().length );
+    assertEquals( targetSz, update.getKeyStream2().length );
 
     targetSz = update.getUpdateLookup().length;
-    Assert.assertEquals( targetSz, update.getUpdateStream().length );
+    assertEquals( targetSz, update.getUpdateStream().length );
 
   }
 

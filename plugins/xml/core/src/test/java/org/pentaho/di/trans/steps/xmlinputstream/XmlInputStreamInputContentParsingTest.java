@@ -22,9 +22,12 @@
 
 package org.pentaho.di.trans.steps.xmlinputstream;
 
+import org.junit.ClassRule;
 import org.junit.Test;
+import org.pentaho.di.junit.rules.RestorePDIEngineEnvironment;
 
 public class XmlInputStreamInputContentParsingTest extends BaseXmlInputStreamParsingTest {
+  @ClassRule public static RestorePDIEngineEnvironment env = new RestorePDIEngineEnvironment();
   @Test
   public void testDefaultOptions() throws Exception {
     init( "default.xml" );

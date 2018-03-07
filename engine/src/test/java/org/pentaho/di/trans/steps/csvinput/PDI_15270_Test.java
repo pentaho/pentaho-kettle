@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,15 +22,20 @@
 
 package org.pentaho.di.trans.steps.csvinput;
 
+import org.junit.After;
 import org.junit.Before;
+import org.junit.ClassRule;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.QueueRowSet;
 import org.pentaho.di.core.RowSet;
+import org.pentaho.di.junit.rules.RestorePDIEngineEnvironment;
 import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.steps.StepMockUtil;
 import org.pentaho.di.trans.steps.mock.StepMockHelper;
 import org.pentaho.di.trans.steps.textfileinput.TextFileInputField;
+import org.powermock.modules.junit4.PowerMockRunner;
 
 import java.io.File;
 
@@ -44,6 +49,7 @@ import static org.junit.Assert.assertNull;
  *
  * Created by Yury_Bakhmutski on 10/7/2016.
  */
+@RunWith( PowerMockRunner.class )
 public class PDI_15270_Test extends CsvInputUnitTestBase {
   private CsvInput csvInput;
   private String[] expected;
@@ -51,14 +57,21 @@ public class PDI_15270_Test extends CsvInputUnitTestBase {
   private String delimiter = ",";
   private String enclosure = "\"";
   private String encoding = "utf-8";
+  private StepMockHelper<CsvInputMeta, StepDataInterface> stepMockHelper;
+  @ClassRule public static RestorePDIEngineEnvironment env = new RestorePDIEngineEnvironment();
 
   @Before
   public void setUp() throws Exception {
     System.setProperty( Const.KETTLE_EMPTY_STRING_DIFFERS_FROM_NULL, "Y" );
-    StepMockHelper<CsvInputMeta, StepDataInterface> stepMockHelper = StepMockUtil
+    stepMockHelper = StepMockUtil
         .getStepMockHelper( CsvInputMeta.class, "Pdi15270Test" );
     csvInput = new CsvInput( stepMockHelper.stepMeta, stepMockHelper.stepDataInterface, 0, stepMockHelper.transMeta,
         stepMockHelper.trans );
+  }
+
+  @After
+  public void cleanUp() {
+    stepMockHelper.cleanUp();
   }
 
   @Test

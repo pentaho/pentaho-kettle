@@ -126,7 +126,7 @@ public class KettleLogStore {
    *
    * @param maxSize
    *          the maximum size
-   * @param maxLogTimeoutHours
+   * @param maxLogTimeoutMinutes
    *          The maximum time that a log line times out in hours.
    */
   public static void init( int maxSize, int maxLogTimeoutMinutes ) {
@@ -266,5 +266,16 @@ public class KettleLogStore {
 
   public static boolean isInitialized() {
     return initialized.get();
+  }
+
+  public void reset() {
+    if ( initialized.compareAndSet( true, false ) ) {
+      appender = null;
+      if ( logCleanerTimer != null ) {
+        logCleanerTimer.cancel();
+        logCleanerTimer = null;
+      }
+      store = null;
+    }
   }
 }

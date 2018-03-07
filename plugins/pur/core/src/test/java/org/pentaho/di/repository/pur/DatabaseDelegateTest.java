@@ -19,10 +19,12 @@ package org.pentaho.di.repository.pur;
 
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.ClassRule;
 import org.junit.Test;
 import org.pentaho.di.core.KettleClientEnvironment;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.junit.rules.RestorePDIEnvironment;
 import org.pentaho.platform.api.repository2.unified.IUnifiedRepository;
 import org.pentaho.platform.api.repository2.unified.data.node.DataNode;
 
@@ -35,6 +37,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public class DatabaseDelegateTest {
+  @ClassRule public static RestorePDIEnvironment env = new RestorePDIEnvironment();
   private PurRepository mockPurRepository;
   private DatabaseDelegate dbDelegate;
 

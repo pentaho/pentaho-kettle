@@ -41,11 +41,10 @@ public class KettleVariablesListTest {
   @Test
   public void testInit() throws Exception {
     KettleVariablesList variablesList = KettleVariablesList.getInstance();
-    KettleVariablesList.init();
-    // See PDI-14522
-    boolean expected = false;
+    variablesList.init();
+    //See PDI-14522
     boolean actual = Boolean.valueOf( variablesList.getDefaultValueMap().get( Const.VFS_USER_DIR_IS_ROOT ) );
-    assertEquals( expected, actual );
+    assertEquals( false, actual );
 
     String vfsUserDirIsRootDefaultMessage =
         "Set this variable to true if VFS should treat the user directory"
