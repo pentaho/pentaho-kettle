@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -42,6 +42,7 @@ import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.ResultFile;
 import org.pentaho.di.core.RowMetaAndData;
+import org.pentaho.di.core.annotations.JobEntry;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
@@ -66,6 +67,14 @@ import org.w3c.dom.Node;
  * @author Samatar Hassan
  * @since 06-05-2007
  */
+@JobEntry(
+  id = "ADD_RESULT_FILENAMES",
+  image = "AFN.svg",
+  i18nPackageName = "org.pentaho.di.job.entries.addresultfilenames",
+  name = "JobEntry.AddResultFilenames.TypeDesc",
+  description = "JobEntry.AddResultFilenames.Tooltip",
+  categoryDescription = "i18n:org.pentaho.di.job:JobCategory.Category.FileManagement",
+  documentationUrl = "http://wiki.pentaho.com/display/EAI/Add+filenames+to+result" )
 public class JobEntryAddResultFilenames extends JobEntryBase implements Cloneable, JobEntryInterface {
   private static Class<?> PKG = JobEntryAddResultFilenames.class; // for i18n purposes, needed by Translator2!!
 
