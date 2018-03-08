@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -45,6 +45,10 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
+@Deprecated
+/**
+ * See {@link org.pentaho.di.core.util.serialization.BaseSerializingMeta for an alternative. }
+ */
 public class SerializationHelper {
 
   private static final String INDENT_STRING = "    ";

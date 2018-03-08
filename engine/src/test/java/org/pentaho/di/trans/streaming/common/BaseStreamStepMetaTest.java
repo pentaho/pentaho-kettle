@@ -70,10 +70,6 @@ import static org.mockito.Matchers.any;
 import static org.pentaho.di.core.util.Assert.assertTrue;
 import static org.powermock.api.mockito.PowerMockito.when;
 
-import org.custommonkey.xmlunit.XMLUnit;
-
-import static org.custommonkey.xmlunit.XMLAssert.assertXMLEqual;
-
 @RunWith ( MockitoJUnitRunner.class )
 public class BaseStreamStepMetaTest {
 
@@ -91,7 +87,6 @@ public class BaseStreamStepMetaTest {
     String passwordEncoderPluginID =
       Const.NVL( EnvUtil.getSystemProperty( Const.KETTLE_PASSWORD_ENCODER_PLUGIN ), "Kettle" );
     Encr.init( passwordEncoderPluginID );
-    XMLUnit.setIgnoreWhitespace( true );
   }
 
   @Before
@@ -184,28 +179,15 @@ public class BaseStreamStepMetaTest {
   }
 
   @Test
-  public void testSaveLoadXMLWithInjectionList() throws Exception {
+  public void testBasicRoundTrip() throws Exception {
     meta.setBatchDuration( "1000" );
     meta.setBatchSize( "100" );
     meta.setTransformationPath( "aPath" );
-    String xml = meta.getXML();
-    assertXMLEqual(
-      "<ROOT>" + Const.CR
-        + "<NUM_MESSAGES>100</NUM_MESSAGES>" + Const.CR
-        + "<AUTH_PASSWORD>Encrypted 2be98afc86aa7f2e4cb79ce10ca97bcce</AUTH_PASSWORD>" + Const.CR
-        + "<DURATION>1000</DURATION>" + Const.CR
-        + "<TRANSFORMATION_PATH>aPath</TRANSFORMATION_PATH>" + Const.CR
-        + "<stuffGroup>" + Const.CR
-        + "<stuff>one</stuff>" + Const.CR
-        + "<stuff>two</stuff>" + Const.CR
-        + "</stuffGroup>" + Const.CR
-        + "</ROOT>",
-      "<ROOT>" + xml + "</ROOT>" );
     testRoundTrip( meta );
   }
 
   @Test
-  public void testRoundTripXMLWithInjectionList() {
+  public void testRoundTripInjectionList() {
     StuffStreamMeta startingMeta = new StuffStreamMeta();
     startingMeta.stuff = new ArrayList();
     startingMeta.stuff.add( "foo" );
@@ -222,65 +204,9 @@ public class BaseStreamStepMetaTest {
   @Test
   public void testSaveDefaultEmptyConnection() throws Exception {
     StuffStreamMeta meta = new StuffStreamMeta();
-    String xml = meta.getXML();
-    assertXMLEqual(  "<ROOT>" + Const.CR
-      + "<NUM_MESSAGES>1000</NUM_MESSAGES>" + Const.CR
-      + "<AUTH_PASSWORD>Encrypted 2be98afc86aa7f2e4cb79ce10ca97bcce</AUTH_PASSWORD>" + Const.CR
-      + "<DURATION>1000</DURATION>" + Const.CR
-      + "<TRANSFORMATION_PATH/>" + Const.CR
-      + "<stuffGroup>" + Const.CR
-      + "<stuff>one</stuff>" + Const.CR
-      + "<stuff>two</stuff>" + Const.CR
-      + "</stuffGroup>" + Const.CR
-      + "</ROOT>" + Const.CR,
-      "<ROOT>" + xml + "</ROOT>" );
     testRoundTrip( meta );
   }
 
-  @Test
-  public void testLoadingXML() throws Exception {
-    String inputXml = "  <step>\n"
-      + "    <name>Stuff Stream</name>\n"
-      + "    <type>StuffStream</type>\n"
-      + "    <description />\n"
-      + "    <distribute>Y</distribute>\n"
-      + "    <custom_distribution />\n"
-      + "    <copies>1</copies>\n"
-      + "    <partitioning>\n"
-      + "      <method>none</method>\n"
-      + "      <schema_name />\n"
-      + "    </partitioning>\n"
-      + "    <NUM_MESSAGES>5</NUM_MESSAGES>\n"
-      + "    <AUTH_PASSWORD>Encrypted 2be98afc86aa7f2e4cb79ce10ca97bcce</AUTH_PASSWORD>\n"
-      + "    <DURATION>60000</DURATION>\n"
-      + "    <stuff>one</stuff>\n"
-      + "    <stuff>two</stuff>\n"
-      + "    <TRANSFORMATION_PATH>write-to-log.ktr</TRANSFORMATION_PATH>\n"
-      + "    <cluster_schema />\n"
-      + "    <remotesteps>\n"
-      + "      <input>\n"
-      + "      </input>\n"
-      + "      <output>\n"
-      + "      </output>\n"
-      + "    </remotesteps>\n"
-      + "    <GUI>\n"
-      + "      <xloc>80</xloc>\n"
-      + "      <yloc>64</yloc>\n"
-      + "      <draw>Y</draw>\n"
-      + "    </GUI>\n"
-      + "  </step>\n";
-    Node node = XMLHandler.loadXMLString( inputXml ).getFirstChild();
-    StuffStreamMeta loadedMeta = new StuffStreamMeta();
-    loadedMeta.loadXML( node, Collections.emptyList(), metastore );
-    assertEquals( "5", loadedMeta.getBatchSize() );
-    assertEquals( "60000", loadedMeta.getBatchDuration() );
-    assertEquals( "test", loadedMeta.password );
-    assertEquals( 2, loadedMeta.stuff.size() );
-    assertTrue( loadedMeta.stuff.contains( "one" ) );
-    assertTrue( loadedMeta.stuff.contains( "two" ) );
-    assertEquals( "write-to-log.ktr", loadedMeta.getTransformationPath() );
-    testRoundTrip( loadedMeta );
-  }
 
   @Test
   public void testGetResourceDependencies() {
@@ -341,6 +267,7 @@ public class BaseStreamStepMetaTest {
     StuffStreamMeta metaToRoundTrip = new StuffStreamMeta();
     try {
       Node stepNode = XMLHandler.getSubNode( XMLHandler.loadXMLString( "<step>" + xml + "</step>" ), "step" );
+
       metaToRoundTrip.loadXML( stepNode, Collections.emptyList(), (IMetaStore) null );
     } catch ( KettleXMLException e ) {
       throw new RuntimeException( e );

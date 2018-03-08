@@ -31,6 +31,7 @@ import org.pentaho.di.core.parameters.NamedParams;
 import org.pentaho.di.core.parameters.UnknownParamException;
 import org.pentaho.di.core.util.CurrentDirectoryResolver;
 import org.pentaho.di.core.util.Utils;
+import org.pentaho.di.core.util.serialization.BaseSerializingMeta;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.HasRepositoryDirectories;
@@ -40,7 +41,7 @@ import org.pentaho.di.repository.RepositoryDirectory;
 import org.pentaho.di.repository.RepositoryDirectoryInterface;
 import org.pentaho.di.resource.ResourceDefinition;
 import org.pentaho.di.resource.ResourceNamingInterface;
-import org.pentaho.di.trans.step.BaseStepMeta;
+import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.metastore.api.IMetaStore;
 
 import java.util.Arrays;
@@ -55,7 +56,7 @@ import java.util.Set;
  * @since 02-jan-2017
  * @author Yury Bakhmutski
  */
-public abstract class StepWithMappingMeta extends BaseStepMeta implements HasRepositoryDirectories {
+public abstract class StepWithMappingMeta extends BaseSerializingMeta implements HasRepositoryDirectories, StepMetaInterface {
   //default value
   private static Class<?> PKG = StepWithMappingMeta.class;
 
@@ -147,13 +148,13 @@ public abstract class StepWithMappingMeta extends BaseStepMeta implements HasRep
           // rep is null, let's try loading by filename
           try {
             mappingTransMeta =
-              new TransMeta( realDirectory + "/" + realTransname, metaStore, rep, true, tmpSpace, null );
+              new TransMeta( realDirectory + "/" + realTransname, metaStore, null, true, tmpSpace, null );
           } catch ( KettleException ke ) {
             try {
               // add .ktr extension and try again
               mappingTransMeta =
                 new TransMeta( realDirectory + "/" + realTransname + "." + Const.STRING_TRANS_DEFAULT_EXT, metaStore,
-                  rep, true, tmpSpace, null );
+                  null, true, tmpSpace, null );
             } catch ( KettleException ke2 ) {
               throw new KettleException( BaseMessages.getString( PKG, "StepWithMappingMeta.Exception.UnableToLoadTrans",
                 realTransname ) + realDirectory );
