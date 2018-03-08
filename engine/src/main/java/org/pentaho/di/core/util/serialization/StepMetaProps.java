@@ -1,0 +1,278 @@
+/*
+ * Pentaho Data Integration
+ *
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ *
+ * **************************************************************************
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package org.pentaho.di.core.util.serialization;
+
+import org.pentaho.di.core.RowMetaAndData;
+import org.pentaho.di.core.encryption.Encr;
+import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.injection.Injection;
+import org.pentaho.di.core.injection.bean.BeanInjectionInfo;
+import org.pentaho.di.core.injection.bean.BeanInjector;
+import org.pentaho.di.core.row.value.ValueMetaString;
+import org.pentaho.di.trans.step.StepMetaInterface;
+
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+
+import static java.util.Arrays.stream;
+import static java.util.Collections.singletonList;
+import static java.util.stream.Collectors.groupingBy;
+import static org.pentaho.di.core.util.serialization.StepMetaProps.STEP_TAG;
+
+/**
+ * A slim representation of StepMetaInterface properties, used as a
+ * way to leverage alternative serialization strategies (e.g. {@link MetaXmlSerializer}
+ * <p>
+ * Public methods allow conversion:
+ * {@link #from(StepMetaInterface)} and
+ * {@link #to(StepMetaInterface)}
+ * <p>
+ * <p>
+ * Internally, the StepMetaProps holds a list of {@link PropGroup} elements, each corresponding
+ * to a MetadataInjection group.
+ * <p>
+ * InjectionDeep not yet supported.
+ */
+@XmlRootElement ( name = STEP_TAG )
+public class StepMetaProps {
+
+  static final String STEP_TAG = "step-props";
+
+  @XmlAttribute ( name = "secure" )
+  private List<String> secureFields;
+
+  @SuppressWarnings ( "unused" )
+  private StepMetaProps() {
+  }
+
+  private StepMetaProps( StepMetaInterface smi ) {
+    secureFields = sensitiveFields( smi );
+  }
+
+  @XmlElement ( name = "group" )
+  private List<PropGroup> groups = new ArrayList<>();
+
+  /**
+   * Retuns an instance of this class with stepMeta properties mapped
+   * to a list of {@link PropGroup}
+   */
+  public static StepMetaProps from( StepMetaInterface stepMeta ) {
+    StepMetaProps propMap = new StepMetaProps( stepMeta );
+
+    // use metadata injection to extract properties
+    BeanInjectionInfo info = new BeanInjectionInfo( stepMeta.getClass() );
+    BeanInjector injector = new BeanInjector( info );
+
+    propMap.populateGroups( stepMeta, info, injector );
+
+    return propMap;
+  }
+
+  /**
+   * Sets the properties of this StepMetaProps on {@param stepMetaInterface}
+   * <p>
+   * This method mutates the stepMeta, as opposed to returning a new instance, to match
+   * more cleanly to Kettle's {@link StepMetaInterface#loadXML} design, which loads props into
+   * an instance.
+   */
+  public void to( StepMetaInterface stepMetaInterface ) {
+    BeanInjectionInfo info = new BeanInjectionInfo( stepMetaInterface.getClass() );
+
+    BeanInjector injector = new BeanInjector( info );
+    info.getProperties().values().forEach( property -> assignValueForProp( property, stepMetaInterface, injector ) );
+  }
+
+  private void populateGroups( StepMetaInterface stepMeta, BeanInjectionInfo info,
+                               BeanInjector injector ) {
+    groups = info.getGroups().stream()  // get metadata injection groups
+      .flatMap( group -> group.getGroupProperties().stream() ) // expand to all properties
+      .map( getProp( stepMeta, injector ) ) // map to  property/value
+      .collect( groupingBy( Prop::getGroup ) ).entrySet().stream()  // group by group name
+      .map( entry -> new PropGroup( entry.getKey(), entry.getValue() ) ) // map the set of properties to a group
+      .collect( Collectors.toList() );
+  }
+
+  /**
+   * Collects the list of declared fields with the {@link Sensitive} annotation
+   * for the SMI class.  Values for these fields will be encrypted.
+   */
+  private List<String> sensitiveFields( StepMetaInterface stepMetaInterface ) {
+    return stream( stepMetaInterface.getClass().getDeclaredFields() )
+      .filter( field -> field.getAnnotation( Sensitive.class ) != null )
+      .filter( field -> field.getAnnotation( Injection.class ) != null )
+      .map( field -> field.getAnnotation( Injection.class ).name() )
+      .collect( Collectors.toList() );
+  }
+
+  private Function<BeanInjectionInfo.Property, Prop> getProp( StepMetaInterface stepMeta,
+                                                              BeanInjector injector ) {
+    return prop ->
+      new Prop( prop.getName(),
+        getPropVal( stepMeta, injector, prop ),
+        prop.getGroupName() );
+  }
+
+  @SuppressWarnings ( "unchecked" )
+  private List<Object> getPropVal( StepMetaInterface stepMeta, BeanInjector injector,
+                                   BeanInjectionInfo.Property prop ) {
+    try {
+      List ret;
+      Object o = injector.getObject( stepMeta, prop.getName() );
+      if ( o instanceof List ) {
+        ret = (List<Object>) o;
+      } else {
+        ret = singletonList( o );
+      }
+      return maybeEncrypt( prop.getName(), ret );
+    } catch ( Exception e ) {
+      throw new RuntimeException( e );
+    }
+  }
+
+  private List<Object> maybeEncrypt( String name, List<Object> ret ) {
+    if ( secureFields.contains( name ) ) {
+      return ret.stream()
+        .map( val ->
+          ( val == null ) || ( val.toString().isEmpty() )
+            ? "" : Encr.encryptPasswordIfNotUsingVariables( val.toString() ) )
+        .collect( Collectors.toList() );
+    }
+    return ret;
+  }
+
+  private void assignValueForProp( BeanInjectionInfo.Property beanInfoProp, StepMetaInterface stepMetaInterface,
+                                   BeanInjector injector ) {
+    List<Prop> props = groups.stream()
+      .filter( group -> beanInfoProp.getGroupName().equals( group.name ) )
+      .flatMap( group -> group.props.stream() )
+      .filter( prop -> beanInfoProp.getName().equals( prop.name ) )
+      .collect( Collectors.toList() );
+
+    decryptVals( props );
+    props.forEach( entry -> injectVal( beanInfoProp, entry, stepMetaInterface, injector ) );
+  }
+
+  private void decryptVals( List<Prop> props ) {
+    props.stream()
+      .filter( prop -> secureFields.contains( prop.getName() ) )
+      .forEach( prop -> prop.value = prop.value.stream()
+        .map( Object::toString )
+        .map( Encr::decryptPasswordOptionallyEncrypted )
+        .collect( Collectors.toList() ) );
+  }
+
+  private void injectVal( BeanInjectionInfo.Property beanInfoProp, Prop prop,
+                          StepMetaInterface stepMetaInterface,
+                          BeanInjector injector ) {
+
+    if ( prop.value == null || prop.value.size() == 0 ) {
+      prop.value = singletonList( null );
+    }
+    try {
+      injector.setProperty( stepMetaInterface,
+        beanInfoProp.getName(),
+        prop.value.stream()
+          .map( value -> {
+            RowMetaAndData rmad = new RowMetaAndData();
+            rmad.addValue( new ValueMetaString( prop.getName() ), value );
+            return rmad;
+          } ).collect( Collectors.toList() ),
+        beanInfoProp.getName() );
+    } catch ( KettleException e ) {
+      throw new RuntimeException( e );
+    }
+
+
+  }
+
+  @Override public String toString() {
+    return "StepMetaProps{" + "groups=" + groups + '}';
+  }
+
+  /**
+   * Represents a named grouping of properties, corresponding to a metadata injection group.
+   */
+  private static class PropGroup {
+    @XmlAttribute
+    String name;
+
+    @XmlElement ( name = "property" )
+    List<Prop> props;
+
+    @SuppressWarnings ( "unused" )
+    public PropGroup() {
+    } // needed for deserialization
+
+    PropGroup( String name, List<Prop> propList ) {
+      this.name = name;
+      this.props = propList;
+    }
+
+    @Override public String toString() {
+      return "PropGroup{" + "name='" + name + '\'' + ", props=" + props + '}';
+    }
+  }
+
+  /**
+   * Represents a single property from a StepMetaInterface impl.
+   * Values are captured as a List<Object> to consistently handle both List properties and single items.
+   */
+  private static class Prop {
+    @XmlAttribute
+    String group;
+
+    @XmlAttribute
+    String name;
+
+    @XmlElement ( name = "value" )
+    List<Object> value = new ArrayList<>();
+
+    @SuppressWarnings ( "unused" )
+    public Prop() {
+    } // needed for deserialization
+
+    private Prop( String name, List<Object> value, String group ) {
+      this.group = group;
+      this.name = name;
+      this.value = value;
+    }
+
+    String getName() {
+      return name;
+    }
+
+
+    String getGroup() {
+      return group;
+    }
+
+    @Override public String toString() {
+      return "\n  Prop{" + "group='" + group + '\'' + ", name='" + name + '\'' + ", value=" + value + '}';
+    }
+  }
+
+
+}
