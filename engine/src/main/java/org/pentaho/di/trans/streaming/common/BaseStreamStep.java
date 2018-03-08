@@ -39,7 +39,6 @@ import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.di.trans.step.StepStatus;
-import org.pentaho.di.trans.steps.transexecutor.TransExecutorData;
 import org.pentaho.di.trans.steps.transexecutor.TransExecutorMeta;
 import org.pentaho.di.trans.steps.transexecutor.TransExecutorParameters;
 import org.pentaho.di.trans.streaming.api.StreamSource;
@@ -79,7 +78,7 @@ public class BaseStreamStep extends BaseStep {
           getParentVariableSpace() );
       subtransExecutor = new SubtransExecutor( getStepname(),
         getTrans(), transMeta, true,
-        new TransExecutorData(), new TransExecutorParameters() );
+        new TransExecutorParameters(), environmentSubstitute( stepMeta.getSubStep() ) );
 
     } catch ( KettleException e ) {
       log.logError( e.getLocalizedMessage(), e );

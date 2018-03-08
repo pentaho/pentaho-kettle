@@ -25,8 +25,10 @@ package org.pentaho.di.trans.streaming.common;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.injection.Injection;
 import org.pentaho.di.core.row.RowMetaInterface;
+import org.pentaho.di.core.util.StringUtil;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.i18n.BaseMessages;
@@ -37,6 +39,7 @@ import org.pentaho.di.trans.StepWithMappingMeta;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
+import org.pentaho.di.trans.steps.transexecutor.TransExecutorMeta;
 import org.pentaho.metastore.api.IMetaStore;
 
 import java.util.ArrayList;
@@ -49,6 +52,7 @@ public abstract class BaseStreamStepMeta extends StepWithMappingMeta implements 
   public static final String TRANSFORMATION_PATH = "TRANSFORMATION_PATH";
   public static final String NUM_MESSAGES = "NUM_MESSAGES";
   public static final String DURATION = "DURATION";
+  public static final String SUB_STEP = "SUB_STEP";
 
   @Injection ( name = TRANSFORMATION_PATH )
   protected String transformationPath = "";
@@ -58,6 +62,17 @@ public abstract class BaseStreamStepMeta extends StepWithMappingMeta implements 
 
   @Injection ( name = DURATION )
   protected String batchDuration = "1000";
+
+  @Injection ( name = SUB_STEP )
+  protected String subStep = "";
+
+  public String getSubStep() {
+    return subStep == null ? "" : subStep;
+  }
+
+  public void setSubStep( String subStep ) {
+    this.subStep = subStep;
+  }
 
   public void setTransformationPath( String transformationPath ) {
     this.transformationPath = transformationPath;
@@ -149,5 +164,26 @@ public abstract class BaseStreamStepMeta extends StepWithMappingMeta implements 
   @Override public Object loadReferencedObject( int index, Repository rep, IMetaStore metaStore, VariableSpace space )
     throws KettleException {
     return loadMappingMeta( this, rep, metaStore, space );
+  }
+
+  public void getFields( RowMetaInterface rowMeta, String origin, RowMetaInterface[] info, StepMeta nextStep,
+                         VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
+    try {
+      TransMeta transMeta = TransExecutorMeta
+        .loadMappingMeta( this, repository, metaStore, space );
+      if ( !StringUtil.isEmpty( getSubStep() ) ) {
+        rowMeta.addRowMeta( transMeta.getPrevStepFields( getSubStep() ) );
+        transMeta.getSteps().stream().filter( stepMeta -> stepMeta.getName().equals( getSubStep() ) )
+          .findFirst().ifPresent( stepMeta -> {
+            try {
+              stepMeta.getStepMetaInterface().getFields( rowMeta, origin, info, nextStep, space, repository, metaStore );
+            } catch ( KettleStepException e ) {
+              throw new RuntimeException( e );
+            }
+          } );
+      }
+    } catch ( KettleException e ) {
+      throw new KettleStepException( e );
+    }
   }
 }

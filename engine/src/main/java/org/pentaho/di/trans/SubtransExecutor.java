@@ -26,15 +26,17 @@ import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.step.BaseStepData.StepExecutionStatus;
+import org.pentaho.di.trans.step.RowAdapter;
 import org.pentaho.di.trans.step.StepMetaDataCombi;
 import org.pentaho.di.trans.step.StepStatus;
 import org.pentaho.di.trans.steps.TransStepUtil;
-import org.pentaho.di.trans.steps.transexecutor.TransExecutorData;
 import org.pentaho.di.trans.steps.transexecutor.TransExecutorParameters;
 
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -52,16 +54,18 @@ public class SubtransExecutor {
   private TransMeta subtransMeta;
   private boolean shareVariables;
   private TransExecutorParameters parameters;
+  private String subStep;
   private boolean stopped;
   Set<Trans> running;
 
   public SubtransExecutor( String subTransName, Trans parentTrans, TransMeta subtransMeta, boolean shareVariables,
-                           TransExecutorData transExecutorData, TransExecutorParameters parameters ) {
+                           TransExecutorParameters parameters, String subStep ) {
     this.subTransName = subTransName;
     this.parentTrans = parentTrans;
     this.subtransMeta = subtransMeta;
     this.shareVariables = shareVariables;
     this.parameters = parameters;
+    this.subStep = subStep;
     this.statuses = new LinkedHashMap<>();
     this.running = new ConcurrentHashSet<>();
   }
@@ -83,13 +87,24 @@ public class SubtransExecutor {
     subtrans.setPreviousResult( result );
 
     subtrans.prepareExecution( this.parentTrans.getArguments() );
+    List<RowMetaAndData> rowMetaAndData = new ArrayList<>();
+    subtrans.getSteps().stream()
+      .filter( c -> c.step.getStepname().equalsIgnoreCase( subStep ) )
+      .findFirst()
+      .ifPresent( c -> c.step.addRowListener( new RowAdapter() {
+        @Override public void rowWrittenEvent( RowMetaInterface rowMeta, Object[] row ) {
+          rowMetaAndData.add( new RowMetaAndData( rowMeta, row ) );
+        }
+      } ) );
     subtrans.startThreads();
 
     subtrans.waitUntilFinished();
     updateStatuses( subtrans );
     running.remove( subtrans );
 
-    return Optional.of( subtrans.getResult() );
+    Result subtransResult = subtrans.getResult();
+    subtransResult.setRows( rowMetaAndData  );
+    return Optional.of( subtransResult );
   }
 
   private synchronized void updateStatuses( Trans subtrans ) {
@@ -138,7 +153,7 @@ public class SubtransExecutor {
         int idx = rowMetaAndData.getRowMeta().indexOfValue( fieldName );
         if ( idx < 0 ) {
           throw new KettleException(
-            BaseMessages.getString( PKG, "TransExecutor.Exception.UnableToFindField", new String[] { fieldName } ) );
+            BaseMessages.getString( PKG, "TransExecutor.Exception.UnableToFindField", fieldName ) );
         }
 
         value = rowMetaAndData.getString( idx, "" );

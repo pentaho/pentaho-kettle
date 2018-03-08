@@ -199,8 +199,6 @@ public class BaseStreamStepMetaTest {
     testRoundTrip( startingMeta );
   }
 
-
-
   @Test
   public void testSaveDefaultEmptyConnection() throws Exception {
     StuffStreamMeta meta = new StuffStreamMeta();

@@ -74,12 +74,7 @@ public class FixedTimeStreamWindow<I extends List> implements StreamWindow<I, Re
       .map( objects -> new RowMetaAndData( rowMeta, objects ) )
       .collect( Collectors.toList() );
     Optional<Result> optionalRes = subtransExecutor.execute( rows );
-    Result result = optionalRes.orElse( new Result( ) );
-    // Set rows to the input rows, rather than the transformed rows.
-    // In the future, may want to allow the subtrans result target to be specified.
-    result.setRows( rows );
-
-    return result;
+    return optionalRes.orElse( new Result( ) );
   }
 
 }

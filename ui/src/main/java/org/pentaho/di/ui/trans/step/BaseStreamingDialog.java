@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -53,6 +53,7 @@ import org.pentaho.di.core.plugins.PluginInterface;
 import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.plugins.StepPluginType;
 import org.pentaho.di.core.util.Utils;
+import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.ObjectId;
@@ -60,15 +61,18 @@ import org.pentaho.di.repository.RepositoryDirectoryInterface;
 import org.pentaho.di.repository.RepositoryObject;
 import org.pentaho.di.repository.RepositoryObjectType;
 import org.pentaho.di.shared.SharedObjects;
+import org.pentaho.di.trans.StepWithMappingMeta;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDialogInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.steps.recordsfromstream.RecordsFromStreamMeta;
+import org.pentaho.di.trans.steps.transexecutor.TransExecutorMeta;
 import org.pentaho.di.trans.streaming.common.BaseStreamStepMeta;
 import org.pentaho.di.ui.core.ConstUI;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.gui.GUIResource;
+import org.pentaho.di.ui.core.widget.ComboVar;
 import org.pentaho.di.ui.core.widget.TextVar;
 import org.pentaho.di.ui.repository.dialog.SelectObjectDialog;
 import org.pentaho.di.ui.spoon.MainSpoonPerspective;
@@ -99,6 +103,9 @@ public abstract class BaseStreamingDialog extends BaseStepDialog implements Step
   protected Button wbBrowseTrans;
   protected Button wbCreateSubtrans;
 
+  protected Label wlSubStep;
+  protected ComboVar wSubStep;
+
   protected ObjectId referenceObjectId;
   protected ObjectLocationSpecificationMethod specificationMethod;
 
@@ -111,9 +118,11 @@ public abstract class BaseStreamingDialog extends BaseStepDialog implements Step
   protected CTabFolder wTabFolder;
   protected CTabItem wSetupTab;
   protected CTabItem wBatchTab;
+  protected CTabItem wResultsTab;
 
   protected Composite wSetupComp;
   protected Composite wBatchComp;
+  protected Composite wResultsComp;
 
   public BaseStreamingDialog( Shell parent, Object in, TransMeta tr, String sname ) {
     super( parent, (BaseStepMeta) in, tr, sname );
@@ -233,6 +242,8 @@ public abstract class BaseStreamingDialog extends BaseStepDialog implements Step
       }
     } );
 
+
+
     // Start of tabbed display
     wTabFolder = new CTabFolder( shell, SWT.BORDER );
     props.setLook( wTabFolder, Props.WIDGET_STYLE_TAB );
@@ -271,6 +282,7 @@ public abstract class BaseStreamingDialog extends BaseStepDialog implements Step
 
     buildSetupTab();
     buildBatchTab();
+    buildResultsTab();
     createAdditionalTabs();
 
     lsCancel = e -> cancel();
@@ -491,6 +503,44 @@ public abstract class BaseStreamingDialog extends BaseStepDialog implements Step
     wBatchTab.setControl( wBatchComp );
   }
 
+  private void buildResultsTab() {
+    wResultsTab = new CTabItem( wTabFolder, SWT.NONE );
+    wResultsTab.setText( BaseMessages.getString( PKG, "BaseStreamingDialog.ResultsTab" ) );
+
+    wResultsComp = new Composite( wTabFolder, SWT.NONE );
+    props.setLook( wResultsComp );
+    FormLayout resultsLayout = new FormLayout();
+    resultsLayout.marginHeight = 15;
+    resultsLayout.marginWidth = 15;
+    wResultsComp.setLayout( resultsLayout );
+
+    FormData fdResultsComp = new FormData();
+    fdResultsComp.left = new FormAttachment( 0, 0 );
+    fdResultsComp.top = new FormAttachment( 0, 0 );
+    fdResultsComp.right = new FormAttachment( 100, 0 );
+    fdResultsComp.bottom = new FormAttachment( 100, 0 );
+    wResultsComp.setLayoutData( fdResultsComp );
+
+    wlSubStep = new Label( wResultsComp, SWT.LEFT );
+    props.setLook( wlSubStep );
+    FormData fdlSubTrans = new FormData();
+    fdlSubTrans.left = new FormAttachment( 0, 0 );
+    fdlSubTrans.top = new FormAttachment( 0, 0 );
+    wlSubStep.setLayoutData( fdlSubTrans );
+    wlSubStep.setText( BaseMessages.getString( PKG, "BaseStreaming.Dialog.Transformation.SubTransStep" ) );
+
+    wSubStep = new ComboVar( transMeta, wResultsComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
+    props.setLook( wSubStep );
+    FormData fdSubStep = new FormData();
+    fdSubStep.left = new FormAttachment( 0, 0 );
+    fdSubStep.top = new FormAttachment( wlSubStep, 5 );
+    fdSubStep.width = 250;
+    wSubStep.setLayoutData( fdSubStep );
+
+    wResultsComp.layout();
+    wResultsTab.setControl( wResultsComp );
+  }
+
   protected void getData() {
     if ( meta.getTransformationPath() != null ) {
       wTransPath.setText( meta.getTransformationPath() );
@@ -501,7 +551,24 @@ public abstract class BaseStreamingDialog extends BaseStepDialog implements Step
     if ( meta.getBatchDuration() != null ) {
       wBatchDuration.setText( meta.getBatchDuration() );
     }
+    populateSubSteps();
     specificationMethod = meta.getSpecificationMethod();
+  }
+
+  protected void populateSubSteps() {
+    try {
+      TransMeta transMeta = TransExecutorMeta
+        .loadMappingMeta( (StepWithMappingMeta) stepMeta.getStepMetaInterface(), getRepository(), getMetaStore(),
+          new Variables() );
+      for ( StepMeta stepMeta : transMeta.getSteps() ) {
+        wSubStep.add( stepMeta.getName() );
+      }
+      if ( meta.getSubStep() != null ) {
+        wSubStep.setText( meta.getSubStep() );
+      }
+    } catch ( KettleException e ) {
+      logDebug( e.getMessage(), e );
+    }
   }
 
   private Image getImage() {
@@ -526,6 +593,7 @@ public abstract class BaseStreamingDialog extends BaseStepDialog implements Step
     meta.setBatchSize( wBatchSize.getText() );
     meta.setBatchDuration( wBatchDuration.getText() );
     meta.setSpecificationMethod( specificationMethod );
+    meta.setSubStep( wSubStep.getText() );
     switch ( specificationMethod ) {
       case FILENAME:
         meta.setFileName( wTransPath.getText() );
