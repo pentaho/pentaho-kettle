@@ -1676,8 +1676,16 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     copyTransformation( getActiveTransformation() );
   }
 
-  public void copyTransformationImage() {
-    copyTransformationImage( getActiveTransformation() );
+  public void copyToImage() {
+	    TransMeta transMeta = getActiveTransformation();
+	    if ( transMeta != null ) {
+	    	copyTransformationImage( transMeta );
+	    }
+	    
+	    JobMeta jobMeta = getActiveJob();
+	    if ( jobMeta != null ) {
+	    	copyJobImage( jobMeta );
+	    }
   }
 
   public boolean editTransformationProperties() {
@@ -7091,7 +7099,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
 
     return false;
   }
-
+  
   public void printFile() {
     TransMeta transMeta = getActiveTransformation();
     if ( transMeta != null ) {
@@ -7734,6 +7742,19 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     clipboard.setContents(
       new Object[] { image.getImageData() }, new Transfer[] { ImageTransfer.getInstance() } );
   }
+  
+  public void copyJobImage( JobMeta jobMeta ) {
+	  JobGraph jobGraph = delegates.jobs.findJobGraphOfJob(jobMeta);
+	  if ( jobGraph == null ) {
+	      return;
+	    }
+
+	    Clipboard clipboard = GUIResource.getInstance().getNewClipboard();
+	    
+	    Point area = jobMeta.getMaximum();
+	    Image image = jobGraph.getJobImage(Display.getCurrent(), area.x, area.y, 1.0f);
+	    clipboard.setContents(new Object[] { image.getImageData() }, new Transfer[] { ImageTransfer.getInstance() } );
+	  }
 
   /**
    * @return Either a TransMeta or JobMeta object
