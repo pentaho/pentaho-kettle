@@ -26,17 +26,21 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.pentaho.di.core.Result;
+import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.trans.SubtransExecutor;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
 import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
+import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.when;
 
@@ -52,5 +56,18 @@ public class FixedTimeStreamWindowTest {
     FixedTimeStreamWindow<List> window =
       new FixedTimeStreamWindow<>( subtransExecutor, rowMeta, 0, 2 );
     window.buffer( Observable.fromIterable( singletonList( asList( "v1", "v2" ) ) ) ).forEach( result -> { } );
+  }
+
+  @Test
+  public void resultsComeBackToParent() throws KettleException {
+    RowMetaInterface rowMeta = new RowMeta();
+    rowMeta.addValueMeta( new ValueMetaString( "field" ) );
+    Result mockResult = new Result();
+    mockResult.setRows( Arrays.asList( new RowMetaAndData( rowMeta, "queen" ), new RowMetaAndData( rowMeta, "king" ) ) );
+    when( subtransExecutor.execute( any()  ) ).thenReturn( Optional.of( mockResult ) );
+    FixedTimeStreamWindow<List> window =
+      new FixedTimeStreamWindow<>( subtransExecutor, rowMeta, 0, 2 );
+    window.buffer( Observable.fromIterable( singletonList( asList( "v1", "v2" ) ) ) )
+      .forEach( result -> assertEquals( mockResult, result ) );
   }
 }

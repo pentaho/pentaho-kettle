@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -26,12 +26,8 @@ import org.pentaho.di.core.ObjectLocationSpecificationMethod;
 import org.pentaho.di.core.annotations.Step;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.injection.Injection;
 import org.pentaho.di.core.injection.InjectionSupported;
-import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.row.value.ValueMetaString;
-import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.trans.Trans;
@@ -82,11 +78,6 @@ public class FileStreamMeta extends BaseStreamStepMeta implements StepMetaInterf
     throws KettleException {
     super.saveRep( rep, metaStore, transId, stepId );
     rep.saveStepAttribute( transId, stepId, SOURCE_PATH, sourcePath );
-  }
-
-  public void getFields( RowMetaInterface rowMeta, String origin, RowMetaInterface[] info, StepMeta nextStep,
-                         VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
-    rowMeta.addValueMeta( new ValueMetaString( "line" ) );
   }
 
   public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr, TransMeta tr,
