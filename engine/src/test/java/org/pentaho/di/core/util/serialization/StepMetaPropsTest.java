@@ -25,8 +25,11 @@ import org.junit.Before;
 import org.junit.Test;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.injection.Injection;
 import org.pentaho.di.core.injection.InjectionSupported;
+import org.pentaho.di.core.row.RowMeta;
+import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.StepDataInterface;
@@ -100,6 +103,10 @@ public class StepMetaPropsTest {
       return String
         .format( "FooMeta{%nfield1='%s', %nfield2=%d, %nalist=%s, %nblist=%s, %nilist=%s}",
           field1, field2, alist, blist, ilist );
+    }
+
+    @Override public RowMeta getRowMeta( String origin, VariableSpace space ) throws KettleStepException {
+      return null;
     }
   }
 

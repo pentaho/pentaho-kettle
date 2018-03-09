@@ -27,6 +27,7 @@ import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.injection.Injection;
+import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.util.StringUtil;
 import org.pentaho.di.core.util.Utils;
@@ -166,6 +167,8 @@ public abstract class BaseStreamStepMeta extends StepWithMappingMeta implements 
     return loadMappingMeta( this, rep, metaStore, space );
   }
 
+  public abstract RowMeta getRowMeta( String origin, VariableSpace space ) throws KettleStepException;
+
   public void getFields( RowMetaInterface rowMeta, String origin, RowMetaInterface[] info, StepMeta nextStep,
                          VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
     try {
@@ -183,7 +186,8 @@ public abstract class BaseStreamStepMeta extends StepWithMappingMeta implements 
           } );
       }
     } catch ( KettleException e ) {
-      throw new KettleStepException( e );
+      getLog().logDebug( "could not get fields, probable AEL" );
+      rowMeta.addRowMeta( getRowMeta( origin, space ) );
     }
   }
 }
