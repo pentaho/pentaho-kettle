@@ -126,9 +126,9 @@ public class HelpUtils {
     return helpDlg;
   }
 
-  public static ShowHelpDialog openHelpDialog( Shell shell, String dialogTitle, String url, String header,
+  public static ShowHelpDialog openHelpDialog( Shell shell, String dialogTitle, String url, int headerHeight,
                                                LocationListener locationListener ) {
-    ShowHelpDialog helpDlg = new ShowHelpDialog( shell, dialogTitle, url, header, locationListener );
+    ShowHelpDialog helpDlg = new ShowHelpDialog( shell, dialogTitle, url, headerHeight, locationListener );
     helpDlg.open();
     return helpDlg;
   }

@@ -77,14 +77,11 @@ public class ShowHelpDialog extends Dialog {
     this.url = url;
   }
 
-  public ShowHelpDialog( Shell parent, String dialogTitle, String url, String header,
+  public ShowHelpDialog( Shell parent, String dialogTitle, String url, int headerHeight,
                          LocationListener locationListener ) {
-    super( parent, SWT.NONE );
-    props = PropsUI.getInstance();
-    this.dialogTitle = dialogTitle;
-    this.header = header;
-    this.url = url;
+    this( parent, dialogTitle, url, "" );
     this.locationListener = locationListener;
+    this.headerHeight = headerHeight;
   }
 
   protected Shell createShell( Shell parent ) {
