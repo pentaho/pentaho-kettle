@@ -703,7 +703,7 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
       transMeta = getTransMeta( rep, metaStore, this );
     } catch ( KettleException e ) {
       logError( BaseMessages.getString( PKG, "JobTrans.Exception.UnableToRunJob", parentJobMeta.getName(),
-        StringUtils.trim( e.getMessage() ), getName() ), e );
+        getName(), StringUtils.trim( e.getMessage() ) ), e );
       result.setNrErrors( 1 );
       result.setResult( false );
       return result;

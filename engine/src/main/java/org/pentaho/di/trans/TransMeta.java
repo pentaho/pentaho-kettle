@@ -24,6 +24,7 @@
 package org.pentaho.di.trans;
 
 import com.google.common.annotations.VisibleForTesting;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.commons.vfs2.FileName;
 import org.apache.commons.vfs2.FileObject;
@@ -2769,14 +2770,25 @@ public class TransMeta extends AbstractMeta
   public TransMeta( String fname, IMetaStore metaStore, Repository rep, boolean setInternalVariables,
                     VariableSpace parentVariableSpace, OverwritePrompter prompter )
     throws KettleXMLException, KettleMissingPluginsException {
+    // if fname is not provided, there's not much we can do, throw an exception
+    if ( StringUtils.isBlank( fname ) ) {
+      throw new KettleXMLException( BaseMessages.getString( PKG, "TransMeta.Exception.MissingXMLFilePath" ) );
+    }
     this.metaStore = metaStore;
     this.repository = rep;
 
     // OK, try to load using the VFS stuff...
     Document doc = null;
     try {
-      doc = XMLHandler.loadXMLFile( KettleVFS.getFileObject( fname, parentVariableSpace ) );
-    } catch ( KettleFileException e ) {
+      final FileObject transFile = KettleVFS.getFileObject( fname, parentVariableSpace );
+      if ( !transFile.exists() ) {
+        throw new KettleXMLException( BaseMessages.getString( PKG, "TransMeta.Exception.InvalidXMLPath", fname ) );
+      }
+      doc = XMLHandler.loadXMLFile( transFile );
+    } catch ( KettleXMLException ke ) {
+      // if we have a KettleXMLException, simply re-throw it
+      throw ke;
+    } catch ( KettleException | FileSystemException e ) {
       throw new KettleXMLException( BaseMessages.getString(
         PKG, "TransMeta.Exception.ErrorOpeningOrValidatingTheXMLFile", fname ), e );
     }
