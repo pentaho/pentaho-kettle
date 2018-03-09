@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,12 +22,16 @@
 
 package org.pentaho.di.core;
 
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.RepositoryDirectory;
 import org.pentaho.di.core.util.Utils;
 
 import java.util.Date;
 
 public class LastUsedFile {
+
+  private static Class<?> PKG = LastUsedFile.class;
+
   public static final String FILE_TYPE_TRANSFORMATION = "Trans";
   public static final String FILE_TYPE_JOB = "Job";
   public static final String FILE_TYPE_SCHEMA = "Schema";
@@ -179,6 +183,18 @@ public class LastUsedFile {
    * @return the fileType
    */
   public String getFileType() {
+    return fileType;
+  }
+
+  public String getLongFileType() {
+    String fileType = BaseMessages.getString( PKG, "System.FileType.File" );
+    if ( FILE_TYPE_TRANSFORMATION.equals( getFileType() ) ) {
+      fileType = BaseMessages.getString( PKG, "System.FileType.Transformation" );
+    } else if ( FILE_TYPE_JOB.equals( getFileType() ) ) {
+      fileType = BaseMessages.getString( PKG, "System.FileType.Job" );
+    } else if ( FILE_TYPE_SCHEMA.equals( getFileType() ) ) {
+      fileType = FILE_TYPE_SCHEMA;
+    }
     return fileType;
   }
 
