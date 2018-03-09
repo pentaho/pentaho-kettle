@@ -287,18 +287,9 @@ define([
             i18n.get("file-open-save-plugin.error.unable-to-rename-folder-opened.close.button"));
           break;
         case 16:// Unable to Open Recent file
-          var filename = vm.errorFile.name;
-          var fullMessage = i18n.get("file-open-save-plugin.missing-recent.message", {"filename": filename});
-          // is the full message wider than the max?
-          if (utils.getTextWidth(fullMessage) > _max) {
-            // figure out the width that can be used for the file name and truncate it, account for the ellipsis in
-            // the allowed max width
-            var fullMessageNoFilename = i18n.get("file-open-save-plugin.missing-recent.message", {"filename": ""});
-            var maxFilenameWidth = _max - utils.getTextWidth(fullMessageNoFilename);
-            filename = utils.truncateString(filename, maxFilenameWidth - utils.getTextWidth(_ellipsis)) + _ellipsis;
-            // recreate the fullMessage with the truncated filename
-            fullMessage = i18n.get("file-open-save-plugin.missing-recent.message", {"filename": filename});
-          }
+          // file type values are known, and therefore we do not need to calculate the message width - we know it
+          // will fit within the limit
+          var fullMessage = i18n.get("file-open-save-plugin.missing-recent.message", {"filetype": vm.errorFile.type});
           _setMessage(i18n.get("file-open-save-plugin.missing-recent.title"),
               fullMessage,
               "", "", "", "",

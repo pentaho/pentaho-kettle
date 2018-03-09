@@ -4549,6 +4549,17 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     }
   }
 
+  protected static String getFileType( final File file ) {
+    final String fileExt = file == null ? null : FilenameUtils.getExtension( file.getName() );
+    String fileType = BaseMessages.getString( PKG, "System.FileType.File" );
+    if ( "ktr".equals( fileExt ) ) {
+      fileType = BaseMessages.getString( PKG, "System.FileType.Transformation" );
+    } else if ( "kjb".equals( fileExt ) ) {
+      fileType = BaseMessages.getString( PKG, "System.FileType.Job" );
+    }
+    return fileType;
+  }
+
   public void openFile( String filename, boolean importfile ) {
     // Open the XML and see what's in there.
     // We expect a single <transformation> or <job> root at this time...
@@ -4556,10 +4567,9 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     // does the file exist? If not, show an error dialog
     final File file = new File( filename );
     if ( StringUtils.isBlank( filename ) || !file.exists() ) {
-      final String fileNameNoExt = FilenameUtils.removeExtension( file.getName() );
       final Dialog dlg = new SimpleMessageDialog( shell,
         BaseMessages.getString( PKG, "Spoon.Dialog.MissingRecentFile.Title" ),
-        BaseMessages.getString( PKG, "Spoon.Dialog.MissingRecentFile.Message", Const.NVL( fileNameNoExt, "" ) ),
+        BaseMessages.getString( PKG, "Spoon.Dialog.MissingRecentFile.Message", getFileType( file ).toLowerCase() ),
         BaseMessages.getString( PKG, "System.Button.Close" ), MessageDialog.ERROR );
       dlg.open();
       return;
@@ -8212,7 +8222,8 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
               } else {
                 final Dialog dlg = new SimpleMessageDialog( shell,
                   BaseMessages.getString( PKG, "Spoon.Dialog.MissingRecentFile.Title" ),
-                  BaseMessages.getString( PKG, "Spoon.Dialog.MissingRecentFile.Message", lastUsedFile.getFilename() ),
+                  BaseMessages.getString( PKG, "Spoon.Dialog.MissingRecentFile.Message",
+                    lastUsedFile.getLongFileType().toLowerCase() ),
                   BaseMessages.getString( PKG, "System.Button.Close" ), MessageDialog.ERROR );
                 dlg.open();
               }

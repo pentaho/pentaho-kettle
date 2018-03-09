@@ -26,6 +26,7 @@ import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.*;
 import static junit.framework.Assert.*;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 
@@ -937,5 +938,25 @@ public class SpoonTest {
 
     boolean result = Spoon.isVersionEnabled( repository, jobTransMeta );
     Assert.assertTrue( result );
+  }
+
+  @Test
+  public void textGetFileType() {
+
+    assertEquals( "File", Spoon.getFileType( null ) );;
+    assertEquals( "File", Spoon.getFileType( new File( "" ) ) );
+    assertEquals( "File", Spoon.getFileType( new File( " " ) ) );
+    assertEquals( "File", Spoon.getFileType( new File( "foo" ) ) );
+    assertEquals( "File", Spoon.getFileType( new File( "foo/foe" ) ) );
+    assertEquals( "File", Spoon.getFileType( new File( "ktr" ) ) );
+    assertEquals( "File", Spoon.getFileType( new File( "ktr" ) ) );
+
+    assertEquals( "Transformation", Spoon.getFileType( new File( "foo/foe.ktr" ) ) );
+    assertEquals( "Transformation", Spoon.getFileType( new File( "foe.ktr" ) ) );
+    assertEquals( "Transformation", Spoon.getFileType( new File( ".ktr" ) ) );
+
+    assertEquals( "Job", Spoon.getFileType( new File( "foo/foe.kjb" ) ) );
+    assertEquals( "Job", Spoon.getFileType( new File( "foe.kjb" ) ) );
+    assertEquals( "Job", Spoon.getFileType( new File( ".kjb" ) ) );
   }
 }
