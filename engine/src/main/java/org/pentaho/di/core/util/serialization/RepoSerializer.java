@@ -111,8 +111,8 @@ public class RepoSerializer {
       new RepoSerializer(
         requireNonNull( stepMetaInterface ),
         requireNonNull( repo ),
-        requireNonNull( idTrans ),
-        requireNonNull( idStep ) )
+        idTrans,
+        idStep )
         .serialize();
     }
 
@@ -121,7 +121,7 @@ public class RepoSerializer {
         requireNonNull( stepMetaInterface ),
         requireNonNull( repo ),
         null,
-        requireNonNull( idStep ) )
+        idStep )
         .deserialize();
     }
 
