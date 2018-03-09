@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -163,7 +163,7 @@ public class EnvUtil {
   /**
    * Add a number of internal variables to the Kettle Variables at the root.
    *
-   * @param variables
+   * @param prop
    */
   public static void addInternalVariables( Properties prop ) {
     // Add a bunch of internal variables
@@ -289,16 +289,17 @@ public class EnvUtil {
    * @return java.util.Locale.
    */
   public static Locale createLocale( String localeCode ) {
-    Locale resultLocale = null;
-    if ( !Utils.isEmpty( localeCode ) ) {
-      StringTokenizer parser = new StringTokenizer( localeCode, "_" );
-      if ( parser.countTokens() == 2 ) {
-        resultLocale = new Locale( parser.nextToken(), parser.nextToken() );
-      } else {
-        resultLocale = new Locale( localeCode );
-      }
+    if ( Utils.isEmpty( localeCode ) ) {
+      return null;
     }
-    return resultLocale;
+    StringTokenizer parser = new StringTokenizer( localeCode, "_" );
+    if ( parser.countTokens() == 2 ) {
+      return new Locale( parser.nextToken(), parser.nextToken() );
+    }
+    if ( parser.countTokens() == 3 ) {
+      return new Locale( parser.nextToken(), parser.nextToken(), parser.nextToken() );
+    }
+    return new Locale( localeCode );
   }
 
   public static TimeZone createTimeZone( String timeZoneId ) {

@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -138,43 +138,6 @@ public class LoadSaveTester<T extends StepMetaInterface> extends LoadSaveBase<T>
     if ( usedConnections == null || usedConnections.length <= 0
         || !Arrays.asList( usedConnections ).contains( dbMeta ) ) {
       throw new KettleException( "The step did not report a DatabaseMeta in getUsedDatabaseConnections()" );
-    }
-  }
-
-  @Override
-  protected void validateLoadedMeta( List<String> attributes, Map<String, FieldLoadSaveValidator<?>> validatorMap,
-    T metaSaved, T metaLoaded ) {
-    for ( String attribute : attributes ) {
-      try {
-        Getter<?> getterMethod = manipulator.getGetter( attribute );
-        Object originalValue = getterMethod.get( metaSaved );
-        Object value = getterMethod.get( metaLoaded );
-        FieldLoadSaveValidator<?> validator = validatorMap.get( attribute );
-        Method[] validatorMethods = validator.getClass().getMethods();
-        Method validatorMethod = null;
-        for ( Method method : validatorMethods ) {
-          if ( "validateTestObject".equals( method.getName() ) ) {
-            Class<?>[] types = method.getParameterTypes();
-            if ( types.length == 2 ) {
-              if ( types[1] == Object.class
-                && ( originalValue == null || types[0].isAssignableFrom( originalValue.getClass() ) ) ) {
-                validatorMethod = method;
-                break;
-              }
-            }
-          }
-        }
-        if ( validatorMethod == null ) {
-          throw new RuntimeException( "Couldn't find proper validateTestObject method on "
-            + validator.getClass().getCanonicalName() );
-        }
-        if ( !( (Boolean) validatorMethod.invoke( validator, originalValue, value ) ) ) {
-          throw new KettleException( "Attribute " + attribute + " started with value "
-            + originalValue + " ended with value " + value );
-        }
-      } catch ( Exception e ) {
-        throw new RuntimeException( "Error validating " + attribute, e );
-      }
     }
   }
 
