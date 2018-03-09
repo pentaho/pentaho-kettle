@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2017-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -29,17 +29,20 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * An alternate way of defining step dialogs. Classes annotated with "StepDialog" are automatically recognized and added
- * to the corresponding step's classloader.
+ * An alternate way of defining plugin's dialog. Classes annotated with "PluginDialog" are automatically recognized and added
+ * to the corresponding plugin's classloader.
  *
  */
 @Documented
 @Retention( RetentionPolicy.RUNTIME )
 @Target( ElementType.TYPE )
-public @interface StepDialog {
+public @interface PluginDialog {
 
+  enum PluginType {
+    STEP, JOBENTRY
+  }
   /**
-   * @return The ID of the step.
+   * @return The ID of the plugin.
    */
   String id();
 
@@ -62,4 +65,9 @@ public @interface StepDialog {
    * @return The forum url
    */
   String forumUrl() default "";
+
+  /**
+   * @return The plugin type
+   */
+  PluginType pluginType();
 }

@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -394,7 +394,7 @@ public interface StepMetaInterface {
   /**
    * Get the name of the class that implements the dialog for this job entry JobEntryBase provides a default
    *
-   * @deprecated  As of release 8.1, use annotated-based dialog instead {@see org.pentaho.di.ui.core.annotations.StepDialog}
+   * @deprecated  As of release 8.1, use annotated-based dialog instead {@see org.pentaho.di.core.annotations.PluginDialog}
    */
   @Deprecated
   String getDialogClassName();

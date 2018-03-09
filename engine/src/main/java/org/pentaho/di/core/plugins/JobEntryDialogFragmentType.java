@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2017-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -25,31 +25,31 @@ package org.pentaho.di.core.plugins;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.annotations.PluginDialog;
 import org.pentaho.di.core.exception.KettlePluginException;
-import org.pentaho.di.trans.step.StepDialogInterface;
+import org.pentaho.di.job.entry.JobEntryDialogInterface;
 
 import java.lang.annotation.Annotation;
 import java.net.URL;
 import java.util.List;
 
 /**
- * This class represents the step dialog fragment type.
+ * This class represents the job entry dialog fragment type.
  *
  */
-@PluginMainClassType( StepDialogInterface.class )
+@PluginMainClassType( JobEntryDialogInterface.class )
 @PluginAnnotationType( PluginDialog.class )
-public class StepDialogFragmentType extends BaseFragmentType implements PluginTypeInterface {
+public class JobEntryDialogFragmentType extends BaseFragmentType implements PluginTypeInterface {
 
-  private static StepDialogFragmentType stepDialogFragmentType;
+  private static JobEntryDialogFragmentType jobEntryDialogFragmentType;
 
-  protected StepDialogFragmentType() {
-    super( PluginDialog.class, "STEPDIALOG", "Plugin Step Dialog", StepPluginType.class );
+  protected JobEntryDialogFragmentType() {
+    super( PluginDialog.class, "JOBENTRYDIALOG", "Plugin Job Entry Dialog", JobEntryPluginType.class );
   }
 
-  public static StepDialogFragmentType getInstance() {
-    if ( stepDialogFragmentType == null ) {
-      stepDialogFragmentType = new StepDialogFragmentType();
+  public static JobEntryDialogFragmentType getInstance() {
+    if ( jobEntryDialogFragmentType == null ) {
+      jobEntryDialogFragmentType = new JobEntryDialogFragmentType();
     }
-    return stepDialogFragmentType;
+    return jobEntryDialogFragmentType;
   }
 
   @Override
@@ -80,7 +80,7 @@ public class StepDialogFragmentType extends BaseFragmentType implements PluginTy
   @Override
   public void handlePluginAnnotation( Class<?> clazz, java.lang.annotation.Annotation annotation,
     List<String> libraries, boolean nativePluginType, URL pluginFolder ) throws KettlePluginException {
-    if ( ( (PluginDialog) annotation ).pluginType() == PluginDialog.PluginType.STEP ) {
+    if ( ( (PluginDialog) annotation ).pluginType() == PluginDialog.PluginType.JOBENTRY ) {
       super.handlePluginAnnotation( clazz, annotation, libraries, nativePluginType, pluginFolder );
     }
   }

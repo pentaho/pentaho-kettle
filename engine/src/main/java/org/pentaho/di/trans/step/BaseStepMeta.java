@@ -486,7 +486,7 @@ public class BaseStepMeta implements Cloneable, StepAttributesInterface {
    *
    * @return full class name of the dialog
    *
-   * @deprecated As of release 8.1, use annotated-based dialog instead {@see org.pentaho.di.ui.core.annotations.StepDialog}
+   * @deprecated As of release 8.1, use annotated-based dialog instead {@see org.pentaho.di.core.annotations.PluginDialog}
    */
   @Deprecated
   public String getDialogClassName() {

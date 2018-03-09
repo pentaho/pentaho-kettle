@@ -41,7 +41,7 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.annotations.StepDialog;
+import org.pentaho.di.core.annotations.PluginDialog;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.row.RowMeta;
@@ -58,7 +58,7 @@ import org.pentaho.di.ui.core.widget.LabelComboVar;
 import org.pentaho.di.ui.core.widget.LabelTextVar;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
-@StepDialog( id = "AutoDoc", image = "autodoc.svg",
+@PluginDialog( id = "AutoDoc", image = "autodoc.svg", pluginType = PluginDialog.PluginType.STEP,
   documentationUrl = "http://wiki.pentaho.com/display/EAI/Automatic+Documentation+Output" )
 public class AutoDocDialog extends BaseStepDialog implements StepDialogInterface {
   private static Class<?> PKG = AutoDocDialog.class; // for i18n purposes, needed by Translator2!!

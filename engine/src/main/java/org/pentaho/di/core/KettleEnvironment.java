@@ -33,6 +33,7 @@ import org.pentaho.di.core.logging.LogTablePluginType;
 import org.pentaho.di.core.plugins.CartePluginType;
 import org.pentaho.di.core.plugins.EnginePluginType;
 import org.pentaho.di.core.plugins.ImportRulePluginType;
+import org.pentaho.di.core.plugins.JobEntryDialogFragmentType;
 import org.pentaho.di.core.plugins.JobEntryPluginType;
 import org.pentaho.di.core.plugins.KettleLifecyclePluginType;
 import org.pentaho.di.core.plugins.LifecyclePluginType;
@@ -102,6 +103,7 @@ public class KettleEnvironment {
       StepDialogFragmentType.getInstance(),
       PartitionerPluginType.getInstance(),
       JobEntryPluginType.getInstance(),
+      JobEntryDialogFragmentType.getInstance(),
       LogTablePluginType.getInstance(),
       RepositoryPluginType.getInstance(),
       LifecyclePluginType.getInstance(),
