@@ -290,7 +290,7 @@ public class TransMeta extends AbstractMeta
   protected Map<String, Boolean> loopCache;
 
   /** The previous step cache */
-  protected Map<StepMeta, List<StepMeta>> previousStepCache;
+  protected Map<String, List<StepMeta>> previousStepCache;
 
   /** The log channel interface. */
   protected LogChannelInterface log;
@@ -1382,8 +1382,8 @@ public class TransMeta extends AbstractMeta
    */
   public List<StepMeta> findPreviousSteps( StepMeta stepMeta, boolean info ) {
     List<StepMeta> previousSteps;
-
-    previousSteps = previousStepCache.get( stepMeta );
+    String cacheKey = String.format( "%1$b-%2$s-%3$s", info, stepMeta.getStepID(), stepMeta.toString() ); // Factor in the info or no info...
+    previousSteps = previousStepCache.get( cacheKey );
     if ( previousSteps == null ) {
       previousSteps = new ArrayList<>();
       for ( TransHopMeta hi : hops ) {
@@ -1395,7 +1395,7 @@ public class TransMeta extends AbstractMeta
           }
         }
       }
-      previousStepCache.put( stepMeta, previousSteps );
+      previousStepCache.put( cacheKey, previousSteps );
     }
     return previousSteps;
   }
