@@ -42,6 +42,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.annotations.PluginDialog;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.i18n.BaseMessages;
@@ -63,9 +64,10 @@ import org.pentaho.di.ui.trans.step.BaseStepDialog;
  * @author Samatar
  * @since 12-10-2007
  */
-
+@PluginDialog( id = "CHECK_DB_CONNECTIONS", image = "CDBC.svg", pluginType = PluginDialog.PluginType.JOBENTRY,
+  documentationUrl = "http://wiki.pentaho.com/display/EAI/Check+Db+connections" )
 public class JobEntryCheckDbConnectionsDialog extends JobEntryDialog implements JobEntryDialogInterface {
-  private static Class<?> PKG = JobEntryCheckDbConnections.class; // for i18n purposes, needed by Translator2!!
+  private static Class<?> PKG = JobEntryCheckDbConnectionsDialog.class; // for i18n purposes, needed by Translator2!!
 
   private Label wlName;
 
