@@ -69,4 +69,9 @@ public class EnvUtilTest {
   public void createLocale_DoubleCode() throws Exception {
     assertEquals( Locale.US, EnvUtil.createLocale( "en_US" ) );
   }
+
+  @Test
+  public void createLocale_DoubleCode_Variant() throws Exception {
+    assertEquals( new Locale( "no", "NO", "NY" ), EnvUtil.createLocale( "no_NO_NY" ) );
+  }
 }
