@@ -560,9 +560,7 @@ public abstract class BaseStreamingDialog extends BaseStepDialog implements Step
       TransMeta transMeta = TransExecutorMeta
         .loadMappingMeta( (StepWithMappingMeta) stepMeta.getStepMetaInterface(), getRepository(), getMetaStore(),
           new Variables() );
-      for ( StepMeta stepMeta : transMeta.getSteps() ) {
-        wSubStep.add( stepMeta.getName() );
-      }
+      transMeta.getSteps().stream().map( StepMeta::getName ).sorted().forEach( wSubStep::add );
       if ( meta.getSubStep() != null ) {
         wSubStep.setText( meta.getSubStep() );
       }
