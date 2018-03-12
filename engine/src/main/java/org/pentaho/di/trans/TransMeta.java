@@ -1380,9 +1380,8 @@ public class TransMeta extends AbstractMeta
    * @return The list of the preceding steps
    */
   public List<StepMeta> findPreviousSteps( StepMeta stepMeta, boolean info ) {
-    List<StepMeta> previousSteps;
-    String cacheKey = String.format( "%1$b-%2$s-%3$s", info, stepMeta.getStepID(), stepMeta.toString() ); // Factor in the info or no info...
-    previousSteps = previousStepCache.get( cacheKey );
+    String cacheKey = getStepMetaCacheKey( stepMeta );
+    List<StepMeta> previousSteps = previousStepCache.get( cacheKey );
     if ( previousSteps == null ) {
       previousSteps = new ArrayList<>();
       for ( TransHopMeta hi : hops ) {
@@ -1547,8 +1546,7 @@ public class TransMeta extends AbstractMeta
    * @return An array containing the preceding steps.
    */
   public StepMeta[] getPrevSteps( StepMeta stepMeta ) {
-    List<StepMeta> prevSteps;
-    prevSteps = previousStepCache.get(  stepMeta );
+    List<StepMeta> prevSteps = previousStepCache.get( getStepMetaCacheKey( stepMeta ) );
     if ( prevSteps == null ) {
       prevSteps = new ArrayList<>();
       for ( int i = 0; i < nrTransHops(); i++ ) { // Look at all the hops;
@@ -6336,4 +6334,7 @@ public class TransMeta extends AbstractMeta
     return namedClusterEmbedManager;
   }
 
+  private static String getStepMetaCacheKey( StepMeta stepMeta ) {
+    return String.format( "%1$s-%2$s", stepMeta.getStepID(), stepMeta.toString() );
+  }
 }
