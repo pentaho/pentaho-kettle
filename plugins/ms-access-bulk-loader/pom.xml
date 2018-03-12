@@ -19,7 +19,9 @@
   <url>http://www.pentaho.com/</url>
 
   <modules>
-    <module>core</module>
+    <module>bulk-loader</module>
+    <module>impl</module>
+    <module>ui</module>
     <module>assemblies</module>
   </modules>
 
@@ -35,7 +37,7 @@
   <properties>
     <org.eclipse.swt.version>4.6</org.eclipse.swt.version>
     <jface.version>3.3.0-I20070606-0010</jface.version>
-    <junit.version>4.7</junit.version>
+    <junit.version>4.11</junit.version>
     <pdi.version>8.1.0.0-SNAPSHOT</pdi.version>
   </properties>
 
@@ -59,6 +61,7 @@
         <version>${pdi.version}</version>
         <scope>provided</scope>
       </dependency>
+
       <!-- SWT is required to compile,inorder to work with architecture -->
       <dependency>
         <groupId>org.eclipse.swt</groupId>
@@ -84,7 +87,22 @@
           </exclusion>
         </exclusions>
       </dependency>
-      <!--test dependency-->
+      <!--test dependencies-->
+      <dependency>
+       <groupId>pentaho-kettle</groupId>
+       <artifactId>kettle-core</artifactId>
+       <version>${pdi.version}</version>
+       <classifier>tests</classifier>
+       <scope>test</scope>
+     </dependency>
+      <dependency>
+         <groupId>pentaho-kettle</groupId>
+         <artifactId>kettle-engine</artifactId>
+         <version>${pdi.version}</version>
+         <classifier>tests</classifier>
+         <scope>test</scope>
+       </dependency>
+
       <dependency>
         <groupId>junit</groupId>
         <artifactId>junit</artifactId>
@@ -95,7 +113,7 @@
         <groupId>com.healthmarketscience.jackcess</groupId>
         <artifactId>jackcess</artifactId>
         <version>1.2.6</version>
-        <scope>provided</scope>
+        <scope>compile</scope>
       </dependency>
     </dependencies>
   </dependencyManagement>
