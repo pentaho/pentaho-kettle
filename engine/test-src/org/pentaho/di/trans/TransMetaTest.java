@@ -52,6 +52,7 @@ import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaChangeListenerInterface;
 import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.di.trans.steps.datagrid.DataGridMeta;
+import org.pentaho.di.trans.steps.streamlookup.StreamLookupMeta;
 import org.pentaho.di.trans.steps.textfileoutput.TextFileOutputMeta;
 import org.pentaho.di.trans.steps.userdefinedjavaclass.StepDefinition;
 import org.pentaho.di.trans.steps.userdefinedjavaclass.UserDefinedJavaClassDef;
@@ -71,6 +72,7 @@ import static org.mockito.Matchers.same;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.anyString;
 import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
@@ -545,6 +547,49 @@ public class TransMetaTest {
     assertEquals( "name", row.getValueMeta( 1 ).getName() );
     assertEquals( ValueMetaInterface.TYPE_INTEGER, row.getValueMeta( 0 ).getType() );
     assertEquals( ValueMetaInterface.TYPE_STRING, row.getValueMeta( 1 ).getType() );
+  }
+
+  @Test
+  public void testGetPreviousStepsWhenStreamLookupStepPassedShouldClearCacheAndCallFindPreviousStepsWithFalseParam() {
+    TransMeta transMeta = mock( TransMeta.class );
+    StepMeta stepMeta = new StepMeta( "stream_lookup_id", "stream_lookup_name", new StreamLookupMeta() );
+
+    List<StepMeta> expectedResult = new ArrayList<>(  );
+    List<StepMeta> invalidResult = new ArrayList<>(  );
+    expectedResult.add( new StepMeta( "correct_mock", "correct_mock", new TextFileOutputMeta() ) );
+    invalidResult.add( new StepMeta( "incorrect_mock", "incorrect_mock", new TextFileOutputMeta() ) );
+
+    doNothing().when( transMeta ).clearPreviousStepCache();
+    when( transMeta.findPreviousSteps( any( StepMeta.class ), eq( false ) ) ).thenReturn( expectedResult );
+    when( transMeta.findPreviousSteps( any( StepMeta.class ), eq( true ) ) ).thenReturn( invalidResult );
+    when( transMeta.getPreviousSteps( any() ) ).thenCallRealMethod();
+
+    List<StepMeta> actualResult = transMeta.getPreviousSteps( stepMeta );
+
+    verify( transMeta, times( 1 ) ).clearPreviousStepCache();
+    assertEquals( expectedResult, actualResult );
+  }
+
+  @Test
+  public void testGetPreviousStepsWhenNotStreamLookupStepPassedShouldCallFindPreviousStepsWithTrueParam() {
+    TransMeta transMeta = mock( TransMeta.class );
+    StepMeta stepMeta = new StepMeta( "not_stream_lookup_id", "not_stream_lookup_name", new TextFileOutputMeta() );
+
+    List<StepMeta> expectedResult = new ArrayList<>(  );
+    List<StepMeta> invalidResult = new ArrayList<>(  );
+    expectedResult.add( new StepMeta( "correct_mock", "correct_mock", new TextFileOutputMeta() ) );
+    invalidResult.add( new StepMeta( "incorrect_mock", "incorrect_mock", new TextFileOutputMeta() ) );
+
+    doNothing().when( transMeta ).clearPreviousStepCache();
+    when( transMeta.getPreviousSteps( any() ) ).thenCallRealMethod();
+    when( transMeta.findPreviousSteps( any( StepMeta.class ) ) ).thenCallRealMethod();
+    when( transMeta.findPreviousSteps( any( StepMeta.class ), eq( true ) ) ).thenReturn( expectedResult );
+    when( transMeta.findPreviousSteps( any( StepMeta.class ), eq( false ) ) ).thenReturn( invalidResult );
+
+    List<StepMeta> actualResult = transMeta.getPreviousSteps( stepMeta );
+
+    verify( transMeta, times( 0 ) ).clearPreviousStepCache();
+    assertEquals( expectedResult, actualResult );
   }
 
   private StepMeta createStepMeta( String name ) {
