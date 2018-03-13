@@ -439,4 +439,35 @@ public class TransExecutorUnitTest {
     //All other parent parameters need to get copied into the child parameters  (when the 'Inherit all variables from the transformation?' option is checked)
     Assert.assertEquals( childValue, internalTrans.getVariable( childParam ) );
   }
+
+  @Test
+  public void testSafeStop() throws Exception {
+    prepareOneRowForExecutor();
+    meta.setGroupSize( "1" );
+    data.groupSize = 1;
+
+    internalResult.setSafeStop( true );
+
+    executor.init( meta, data );
+    executor.setInputRowMeta( new RowMeta() );
+    assertTrue( executor.processRow( meta, data ) );
+    verify( executor.getTrans() ).safeStop();
+    verify( executor.getTrans(), never() ).stopAll();
+  }
+
+  @Test
+  public void testAbortWithError() throws Exception {
+    prepareOneRowForExecutor();
+    meta.setGroupSize( "1" );
+    data.groupSize = 1;
+
+    internalResult.setSafeStop( false );
+    internalResult.setNrErrors( 1 );
+
+    executor.init( meta, data );
+    executor.setInputRowMeta( new RowMeta() );
+    assertTrue( executor.processRow( meta, data ) );
+    verify( executor.getTrans(), never() ).safeStop();
+    verify( executor.getTrans() ).stopAll();
+  }
 }
