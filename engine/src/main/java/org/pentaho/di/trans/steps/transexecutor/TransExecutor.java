@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -227,6 +227,12 @@ public class TransExecutor extends BaseStep implements StepInterface {
       log.logError( "An error occurred executing the transformation: ", e );
       result.setResult( false );
       result.setNrErrors( 1 );
+    }
+
+    if ( result.isSafeStop() ) {
+      getTrans().safeStop();
+    } else if ( result.getNrErrors() > 0 ) {
+      getTrans().stopAll();
     }
 
     collectTransResults( result );
