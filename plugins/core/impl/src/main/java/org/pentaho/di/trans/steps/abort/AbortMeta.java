@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -47,6 +47,8 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Node;
 
+import static org.pentaho.di.core.util.StringUtil.isEmpty;
+
 /**
  * Meta data for the abort step.
  */
@@ -55,6 +57,12 @@ import org.w3c.dom.Node;
   categoryDescription = "i18n:org.pentaho.di.trans.step:BaseStep.Category.Flow" )
 public class AbortMeta extends BaseStepMeta implements StepMetaInterface {
   private static Class<?> PKG = AbortMeta.class; // for i18n purposes, needed by Translator2!!
+
+  public enum AbortOption {
+    ABORT,
+    ABORT_WITH_ERROR,
+    SAFE_STOP
+  }
 
   /**
    * Threshold to abort.
@@ -71,7 +79,7 @@ public class AbortMeta extends BaseStepMeta implements StepMetaInterface {
    */
   private boolean alwaysLogRows;
 
-  private boolean abortWithError;
+  private AbortOption abortOption;
 
   public void getFields( RowMetaInterface inputRowMeta, String name, RowMetaInterface[] info, StepMeta nextStep,
     VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
@@ -107,7 +115,7 @@ public class AbortMeta extends BaseStepMeta implements StepMetaInterface {
     rowThreshold = "0";
     message = "";
     alwaysLogRows = true;
-    abortWithError = false;
+    abortOption = AbortOption.ABORT;
   }
 
   public String getXML() {
@@ -116,7 +124,7 @@ public class AbortMeta extends BaseStepMeta implements StepMetaInterface {
     retval.append( "      " ).append( XMLHandler.addTagValue( "row_threshold", rowThreshold ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "message", message ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "always_log_rows", alwaysLogRows ) );
-    retval.append( "      " ).append( XMLHandler.addTagValue( "abort_with_error", abortWithError ) );
+    retval.append( "      " ).append( XMLHandler.addTagValue( "abort_option", abortOption.toString() ) );
 
     return retval.toString();
   }
@@ -126,11 +134,17 @@ public class AbortMeta extends BaseStepMeta implements StepMetaInterface {
       rowThreshold = XMLHandler.getTagValue( stepnode, "row_threshold" );
       message = XMLHandler.getTagValue( stepnode, "message" );
       alwaysLogRows = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "always_log_rows" ) );
-      String awe = XMLHandler.getTagValue( stepnode, "abort_with_error" );
-      if ( awe == null ) {
-        awe = "Y"; // existing transformations will have to maintain backward compatibility with yes
+      String abortOptionString = XMLHandler.getTagValue( stepnode, "abort_option" );
+      if ( !isEmpty( abortOptionString ) ) {
+        abortOption = AbortOption.valueOf( abortOptionString );
+      } else {
+        // Backwards compatibility
+        String awe = XMLHandler.getTagValue( stepnode, "abort_with_error" );
+        if ( awe == null ) {
+          awe = "Y"; // existing transformations will have to maintain backward compatibility with yes
+        }
+        abortOption = "Y".equalsIgnoreCase( awe ) ? AbortOption.ABORT_WITH_ERROR : AbortOption.ABORT;
       }
-      abortWithError = "Y".equalsIgnoreCase( awe );
     } catch ( Exception e ) {
       throw new KettleXMLException( BaseMessages.getString(
         PKG, "AbortMeta.Exception.UnexpectedErrorInReadingStepInfoFromRepository" ), e );
@@ -142,8 +156,16 @@ public class AbortMeta extends BaseStepMeta implements StepMetaInterface {
       rowThreshold = rep.getStepAttributeString( id_step, "row_threshold" );
       message = rep.getStepAttributeString( id_step, "message" );
       alwaysLogRows = rep.getStepAttributeBoolean( id_step, "always_log_rows" );
-      // existing transformations will have to maintain backward compatibility with yes
-      abortWithError = rep.getStepAttributeBoolean( id_step, 0, "abort_with_error", true );
+
+      String abortOptionString = rep.getStepAttributeString( id_step, 0, "abort_option" );
+      if ( !isEmpty( abortOptionString ) ) {
+        abortOption = AbortOption.valueOf( abortOptionString );
+      } else {
+        // Backward compatibility
+        // existing transformations will have to maintain backward compatibility with yes
+        boolean abortWithError = rep.getStepAttributeBoolean( id_step, 0, "abort_with_error", true );
+        abortOption = abortWithError ? AbortOption.ABORT_WITH_ERROR : AbortOption.ABORT;
+      }
     } catch ( Exception e ) {
       throw new KettleException( BaseMessages.getString(
         PKG, "AbortMeta.Exception.UnexpectedErrorInReadingStepInfoFromRepository" ), e );
@@ -155,7 +177,7 @@ public class AbortMeta extends BaseStepMeta implements StepMetaInterface {
       rep.saveStepAttribute( id_transformation, id_step, "row_threshold", rowThreshold );
       rep.saveStepAttribute( id_transformation, id_step, "message", message );
       rep.saveStepAttribute( id_transformation, id_step, "always_log_rows", alwaysLogRows );
-      rep.saveStepAttribute( id_transformation, id_step, "abort_with_error", abortWithError );
+      rep.saveStepAttribute( id_transformation, id_step, "abort_option", abortOption.toString() );
     } catch ( Exception e ) {
       throw new KettleException( BaseMessages.getString(
         PKG, "AbortMeta.Exception.UnableToSaveStepInfoToRepository" )
@@ -187,11 +209,23 @@ public class AbortMeta extends BaseStepMeta implements StepMetaInterface {
     this.alwaysLogRows = alwaysLogRows;
   }
 
-  public boolean isAbortWithError() {
-    return abortWithError;
+  public AbortOption getAbortOption() {
+    return abortOption;
   }
 
-  public void setAbortWithError( boolean abortWithError ) {
-    this.abortWithError = abortWithError;
+  public void setAbortOption( AbortOption abortOption ) {
+    this.abortOption = abortOption;
+  }
+
+  public boolean isAbortWithError() {
+    return abortOption == AbortOption.ABORT_WITH_ERROR;
+  }
+
+  public boolean isAbort() {
+    return abortOption == AbortOption.ABORT;
+  }
+
+  public boolean isSafeStop() {
+    return abortOption == AbortOption.SAFE_STOP;
   }
 }

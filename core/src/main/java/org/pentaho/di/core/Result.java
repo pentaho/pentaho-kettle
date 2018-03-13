@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -127,6 +127,11 @@ public class Result implements Cloneable {
 
   /** The log text. */
   private String logText;
+
+  /**
+   * safe stop.
+   */
+  private boolean safeStop;
 
   /**
    * Instantiates a new Result object, setting default values for all members
@@ -857,5 +862,23 @@ public class Result implements Cloneable {
    */
   public void setLogText( String logText ) {
     this.logText = logText;
+  }
+
+  /**
+   * Sets flag for safe stopping a transformation
+   *
+   * @return the safe stop flag
+   */
+  public boolean isSafeStop() {
+    return safeStop;
+  }
+
+  /**
+   * Returns the flag for safe stopping a transformation
+   *
+   * @param safeStop the safe stop flag
+   */
+  public void setSafeStop( boolean safeStop ) {
+    this.safeStop = safeStop;
   }
 }

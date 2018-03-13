@@ -23,7 +23,9 @@
 package org.pentaho.di.trans;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.doCallRealMethod;
 import static org.mockito.Mockito.doThrow;
@@ -50,6 +52,7 @@ import org.junit.Test;
 import org.mockito.Mockito;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.ProgressMonitorListener;
+import org.pentaho.di.core.Result;
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
@@ -61,6 +64,7 @@ import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.junit.rules.RestorePDIEngineEnvironment;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectoryInterface;
+import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMetaDataCombi;
 
 public class TransTest {
@@ -260,6 +264,24 @@ public class TransTest {
       Thread.sleep( 1 );
     }
     assertEquals( Trans.STRING_FINISHED, trans.getStatus() );
+  }
+
+  @Test
+  public void testSafeStop() {
+    StepInterface step = mock( StepInterface.class );
+    when( step.isSafeStopped() ).thenReturn( false );
+    when( step.getStepname() ).thenReturn( "stepName" );
+
+    StepMetaDataCombi stepMetaDataCombi = new StepMetaDataCombi();
+    stepMetaDataCombi.step = step;
+
+    trans.setSteps( Collections.singletonList( stepMetaDataCombi ) );
+    Result result = trans.getResult();
+    assertFalse( result.isSafeStop() );
+
+    when( step.isSafeStopped() ).thenReturn( true );
+    result = trans.getResult();
+    assertTrue( result.isSafeStop() );
   }
 
   private void startThreads( Runnable one, Runnable two, CountDownLatch start ) throws InterruptedException {
