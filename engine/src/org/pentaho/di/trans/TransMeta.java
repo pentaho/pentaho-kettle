@@ -288,7 +288,7 @@ public class TransMeta extends AbstractMeta
   protected Map<String, Boolean> loopCache;
 
   /** The previous step cache */
-  protected Map<StepMeta, List<StepMeta>> previousStepCache;
+  protected Map<String, List<StepMeta>> previousStepCache;
 
   /** The log channel interface. */
   protected LogChannelInterface log;
@@ -1438,9 +1438,8 @@ public class TransMeta extends AbstractMeta
    * @return The list of the preceding steps
    */
   public List<StepMeta> findPreviousSteps( StepMeta stepMeta, boolean info ) {
-    List<StepMeta> previousSteps;
-
-    previousSteps = previousStepCache.get( stepMeta );
+    String cacheKey = getStepMetaCacheKey( stepMeta );
+    List<StepMeta> previousSteps = previousStepCache.get( cacheKey );
     if ( previousSteps == null ) {
       previousSteps = new ArrayList<>();
       for ( TransHopMeta hi : hops ) {
@@ -1452,7 +1451,7 @@ public class TransMeta extends AbstractMeta
           }
         }
       }
-      previousStepCache.put( stepMeta, previousSteps );
+      previousStepCache.put( cacheKey, previousSteps );
     }
     return previousSteps;
   }
@@ -1605,8 +1604,7 @@ public class TransMeta extends AbstractMeta
    * @return An array containing the preceding steps.
    */
   public StepMeta[] getPrevSteps( StepMeta stepMeta ) {
-    List<StepMeta> prevSteps;
-    prevSteps = previousStepCache.get(  stepMeta );
+    List<StepMeta> prevSteps = previousStepCache.get( getStepMetaCacheKey( stepMeta ) );
     if ( prevSteps == null ) {
       prevSteps = new ArrayList<>();
       for ( int i = 0; i < nrTransHops(); i++ ) { // Look at all the hops;
@@ -6348,5 +6346,9 @@ public class TransMeta extends AbstractMeta
   @Override
   public boolean hasMissingPlugins() {
     return missingTrans != null && !missingTrans.isEmpty();
+  }
+
+  private static String getStepMetaCacheKey( StepMeta stepMeta ) {
+    return String.format( "%1$s-%2$s", stepMeta.getStepID(), stepMeta.toString() );
   }
 }
