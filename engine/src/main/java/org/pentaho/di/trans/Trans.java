@@ -1885,7 +1885,8 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
     if ( steps == null ) {
       return;
     }
-    steps.stream().filter( combi -> combi.step.getInputRowSets().isEmpty() )
+    steps.stream()
+      .filter( combi -> combi.step.getInputRowSets().isEmpty() )
       .forEach( combi -> stopStep( combi, true ) );
 
     notifyStoppedListeners();
@@ -2609,6 +2610,10 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 
       result.setNrErrors( result.getNrErrors() + sid.step.getErrors() );
       result.getResultFiles().putAll( step.getResultFiles() );
+
+      if ( step.isSafeStopped() ) {
+        result.setSafeStop( step.isSafeStopped() );
+      }
 
       if ( step.getStepname().equals( transLogTable.getSubjectString( TransLogTable.ID.LINES_READ ) ) ) {
         result.setNrLinesRead( result.getNrLinesRead() + step.getLinesRead() );

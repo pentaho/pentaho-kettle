@@ -2961,6 +2961,12 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
   public void setSafeStopped( boolean stopped ) {
     this.safeStopped.set( stopped );
   }
+
+  @Override
+  public boolean isSafeStopped() {
+    return safeStopped.get();
+  }
+
   /*
    * (non-Javadoc)
    *

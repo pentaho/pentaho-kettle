@@ -115,7 +115,13 @@ public class BaseStreamStep extends BaseStep {
 
     source.open();
 
-    bufferStream().forEach( result -> putRows( result.getRows() ) );
+    bufferStream().forEach( result -> {
+      if ( result.isSafeStop() ) {
+        getTrans().safeStop();
+      }
+
+      putRows( result.getRows() );
+    } );
     super.setOutputDone();
     source.close();
     return false;

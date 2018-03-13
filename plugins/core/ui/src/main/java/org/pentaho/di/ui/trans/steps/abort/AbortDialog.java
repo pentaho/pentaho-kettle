@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -23,7 +23,6 @@
 package org.pentaho.di.ui.trans.steps.abort;
 
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -34,8 +33,11 @@ import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
@@ -51,6 +53,8 @@ import org.pentaho.di.ui.core.ConstUI;
 import org.pentaho.di.ui.core.widget.TextVar;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 import org.pentaho.di.ui.util.SwtSvgImageUtil;
+
+import static org.pentaho.di.ui.trans.step.BaseStreamingDialog.INPUT_WIDTH;
 
 @StepDialog( id = "Abort", image = "ABR.svg",
   documentationUrl = "Products/Data_Integration/Transformation_Step_Reference/Abort" )
@@ -68,10 +72,14 @@ public class AbortDialog extends BaseStepDialog implements StepDialogInterface {
   private Button wAlwaysLogRows;
   private FormData fdAlwaysLogRows;
 
-  private Button wAbortWithError;
-  private FormData fdAbortWithError;
-
   private AbortMeta input;
+  private ModifyListener lsMod;
+  private SelectionAdapter lsSelMod;
+  private Group wLoggingGroup;
+  private Button wAbortButton;
+  private Button wAbortWithErrorButton;
+  private Button wSafeStopButton;
+  private Group wOptionsGroup;
 
   public AbortDialog( Shell parent, Object in, TransMeta transMeta, String sname ) {
     super( parent, (BaseStepMeta) in, transMeta, sname );
@@ -84,10 +92,12 @@ public class AbortDialog extends BaseStepDialog implements StepDialogInterface {
 
     shell = new Shell( parent, SWT.DIALOG_TRIM | SWT.MIN | SWT.MAX );
     props.setLook( shell );
+    shell.setMinimumSize( 330, 460 );
     setShellImage( shell, input );
 
-    ModifyListener lsMod = new ModifyListener() {
-      public void modifyText( ModifyEvent e ) {
+    lsMod = e -> input.setChanged();
+    lsSelMod = new SelectionAdapter() {
+      public void widgetSelected( SelectionEvent arg0 ) {
         input.setChanged();
       }
     };
@@ -130,80 +140,14 @@ public class AbortDialog extends BaseStepDialog implements StepDialogInterface {
 
     Label spacer = new Label( shell, SWT.HORIZONTAL | SWT.SEPARATOR );
     FormData fdSpacer = new FormData();
-    fdSpacer.height = 1;
+    fdSpacer.height = 2;
     fdSpacer.left = new FormAttachment( 0, 0 );
     fdSpacer.top = new FormAttachment( wStepname, 15 );
     fdSpacer.right = new FormAttachment( 100, 0 );
     spacer.setLayoutData( fdSpacer );
 
-    // RowThreshold line
-    wlRowThreshold = new Label( shell, SWT.RIGHT );
-    wlRowThreshold.setText( BaseMessages.getString( PKG, "AbortDialog.RowThreshold.Label" ) );
-    props.setLook( wlRowThreshold );
-    fdlRowThreshold = new FormData();
-    fdlRowThreshold.left = new FormAttachment( 0, 0 );
-    fdlRowThreshold.top = new FormAttachment( spacer, 20 );
-    wlRowThreshold.setLayoutData( fdlRowThreshold );
-    wRowThreshold = new TextVar( transMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
-    wRowThreshold.setText( "" );
-    props.setLook( wRowThreshold );
-    wRowThreshold.addModifyListener( lsMod );
-    wRowThreshold.setToolTipText( BaseMessages.getString( PKG, "AbortDialog.RowThreshold.Tooltip" ) );
-    wRowThreshold.addModifyListener( lsMod );
-    fdRowThreshold = new FormData();
-    fdRowThreshold.left = new FormAttachment( 0, 0 );
-    fdRowThreshold.top = new FormAttachment( wlRowThreshold, 5 );
-    fdRowThreshold.width = 174;
-    wRowThreshold.setLayoutData( fdRowThreshold );
-
-    // Message line
-    wlMessage = new Label( shell, SWT.RIGHT );
-    wlMessage.setText( BaseMessages.getString( PKG, "AbortDialog.AbortMessage.Label" ) );
-    props.setLook( wlMessage );
-    fdlMessage = new FormData();
-    fdlMessage.left = new FormAttachment( 0, 0 );
-    fdlMessage.top = new FormAttachment( wRowThreshold, 10 );
-    wlMessage.setLayoutData( fdlMessage );
-    wMessage = new TextVar( transMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
-    wMessage.setText( "" );
-    props.setLook( wMessage );
-    wMessage.addModifyListener( lsMod );
-    wMessage.setToolTipText( BaseMessages.getString( PKG, "AbortDialog.AbortMessage.Tooltip" ) );
-    wMessage.addModifyListener( lsMod );
-    fdMessage = new FormData();
-    fdMessage.left = new FormAttachment( 0, 0 );
-    fdMessage.top = new FormAttachment( wlMessage, 5 );
-    fdMessage.right = new FormAttachment( 100, 0 );
-    fdMessage.width = 274;
-    wMessage.setLayoutData( fdMessage );
-
-    wAlwaysLogRows = new Button( shell, SWT.CHECK );
-    wAlwaysLogRows.setText( BaseMessages.getString( PKG, "AbortDialog.AlwaysLogRows.Label" ) );
-    props.setLook( wAlwaysLogRows );
-    wAlwaysLogRows.setToolTipText( BaseMessages.getString( PKG, "AbortDialog.AlwaysLogRows.Tooltip" ) );
-    fdAlwaysLogRows = new FormData();
-    fdAlwaysLogRows.left = new FormAttachment( 0, 0 );
-    fdAlwaysLogRows.top = new FormAttachment( wMessage, 10 );
-    wAlwaysLogRows.setLayoutData( fdAlwaysLogRows );
-    wAlwaysLogRows.addSelectionListener( new SelectionAdapter() {
-      public void widgetSelected( SelectionEvent e ) {
-        input.setChanged();
-      }
-    } );
-
-    wAbortWithError = new Button( shell, SWT.CHECK );
-    wAbortWithError.setText( BaseMessages.getString( PKG, "AbortDialog.AbortWithError.Label" ) );
-    props.setLook( wAbortWithError );
-    wAbortWithError.setToolTipText( BaseMessages.getString( PKG, "AbortDialog.AbortWithError.Tooltip" ) );
-    fdAbortWithError = new FormData();
-    fdAbortWithError.left = new FormAttachment( 0, 0 );
-    fdAbortWithError.top = new FormAttachment( wAlwaysLogRows, 10 );
-    wAbortWithError.setLayoutData( fdAbortWithError );
-    wAbortWithError.addSelectionListener( new SelectionAdapter() {
-      public void widgetSelected( SelectionEvent e ) {
-        input.setChanged();
-      }
-    } );
+    buildOptions( spacer );
+    buildLogging( wOptionsGroup );
 
     // Some buttons
     wCancel = new Button( shell, SWT.PUSH );
@@ -222,9 +166,9 @@ public class AbortDialog extends BaseStepDialog implements StepDialogInterface {
 
     Label hSpacer = new Label( shell, SWT.HORIZONTAL | SWT.SEPARATOR );
     FormData fdhSpacer = new FormData();
-    fdhSpacer.height = 1;
+    fdhSpacer.height = 2;
+    fdhSpacer.top = new FormAttachment( wLoggingGroup, 15 );
     fdhSpacer.left = new FormAttachment( 0, 0 );
-    fdhSpacer.top = new FormAttachment( wAbortWithError, 10 );
     fdhSpacer.bottom = new FormAttachment( wCancel, -15 );
     fdhSpacer.right = new FormAttachment( 100, 0 );
     hSpacer.setLayoutData( fdhSpacer );
@@ -253,7 +197,6 @@ public class AbortDialog extends BaseStepDialog implements StepDialogInterface {
     wStepname.addSelectionListener( lsDef );
     wRowThreshold.addSelectionListener( lsDef );
     wMessage.addSelectionListener( lsDef );
-    wAbortWithError.addSelectionListener( lsDef );
 
     // Detect X or ALT-F4 or something that kills this window...
     shell.addShellListener( new ShellAdapter() {
@@ -277,6 +220,115 @@ public class AbortDialog extends BaseStepDialog implements StepDialogInterface {
     return stepname;
   }
 
+  private void buildOptions( Control widgetAbove ) {
+    wOptionsGroup = new Group( shell, SWT.SHADOW_ETCHED_IN );
+    props.setLook( wOptionsGroup );
+    wOptionsGroup.setText( BaseMessages.getString( PKG, "AbortDialog.Options.Group.Label" ) );
+    FormLayout flOptionsGroup = new FormLayout();
+    flOptionsGroup.marginHeight = 15;
+    flOptionsGroup.marginWidth = 15;
+    wOptionsGroup.setLayout( flOptionsGroup );
+
+    FormData fdOptionsGroup = new FormData();
+    fdOptionsGroup.left = new FormAttachment( 0, 0 );
+    fdOptionsGroup.top = new FormAttachment( widgetAbove, 15 );
+    fdOptionsGroup.right = new FormAttachment( 100, 0 );
+    fdOptionsGroup.width = INPUT_WIDTH;
+    wOptionsGroup.setLayoutData( fdOptionsGroup );
+
+    wAbortButton = new Button( wOptionsGroup, SWT.RADIO );
+    wAbortButton.addSelectionListener( lsSelMod );
+    wAbortButton.setText( BaseMessages.getString( PKG, "AbortDialog.Options.Abort.Label" ) );
+    FormData fdAbort = new FormData();
+    fdAbort.left = new FormAttachment( 0, 0 );
+    fdAbort.top = new FormAttachment( 0, 0 );
+    wAbortButton.setLayoutData( fdAbort );
+    props.setLook( wAbortButton );
+
+    wAbortWithErrorButton = new Button( wOptionsGroup, SWT.RADIO );
+    wAbortWithErrorButton.addSelectionListener( lsSelMod );
+    wAbortWithErrorButton.setText( BaseMessages.getString( PKG, "AbortDialog.Options.AbortWithError.Label" ) );
+    FormData fdAbortWithError = new FormData();
+    fdAbortWithError.left = new FormAttachment( 0, 0 );
+    fdAbortWithError.top = new FormAttachment( wAbortButton, 10 );
+    wAbortWithErrorButton.setLayoutData( fdAbortWithError );
+    props.setLook( wAbortWithErrorButton );
+
+    wSafeStopButton = new Button( wOptionsGroup, SWT.RADIO );
+    wSafeStopButton.addSelectionListener( lsSelMod );
+    wSafeStopButton.setText( BaseMessages.getString( PKG, "AbortDialog.Options.SafeStop.Label" ) );
+    FormData fdSafeStop = new FormData();
+    fdSafeStop.left = new FormAttachment( 0, 0 );
+    fdSafeStop.top = new FormAttachment( wAbortWithErrorButton, 10 );
+    wSafeStopButton.setLayoutData( fdSafeStop );
+    props.setLook( wSafeStopButton );
+
+    wlRowThreshold = new Label( wOptionsGroup, SWT.RIGHT );
+    wlRowThreshold.setText( BaseMessages.getString( PKG, "AbortDialog.Options.RowThreshold.Label" ) );
+    props.setLook( wlRowThreshold );
+    fdlRowThreshold = new FormData();
+    fdlRowThreshold.left = new FormAttachment( 0, 0 );
+    fdlRowThreshold.top = new FormAttachment( wSafeStopButton, 10 );
+    wlRowThreshold.setLayoutData( fdlRowThreshold );
+
+    wRowThreshold = new TextVar( transMeta, wOptionsGroup, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
+    wRowThreshold.setText( "" );
+    props.setLook( wRowThreshold );
+    wRowThreshold.addModifyListener( lsMod );
+    wRowThreshold.setToolTipText( BaseMessages.getString( PKG, "AbortDialog.Options.RowThreshold.Tooltip" ) );
+    fdRowThreshold = new FormData();
+    fdRowThreshold.left = new FormAttachment( 0, 0 );
+    fdRowThreshold.top = new FormAttachment( wlRowThreshold, 5 );
+    fdRowThreshold.width = 174;
+    wRowThreshold.setLayoutData( fdRowThreshold );
+  }
+
+  private void buildLogging( Composite widgetAbove ) {
+    wLoggingGroup = new Group( shell, SWT.SHADOW_ETCHED_IN );
+    props.setLook( wLoggingGroup );
+    wLoggingGroup.setText( BaseMessages.getString( PKG, "AbortDialog.Logging.Group" ) );
+    FormLayout flLoggingGroup = new FormLayout();
+    flLoggingGroup.marginHeight = 15;
+    flLoggingGroup.marginWidth = 15;
+    wLoggingGroup.setLayout( flLoggingGroup );
+
+    FormData fdLoggingGroup = new FormData();
+    fdLoggingGroup.left = new FormAttachment( 0, 0 );
+    fdLoggingGroup.top = new FormAttachment( widgetAbove, 15 );
+    fdLoggingGroup.right = new FormAttachment( 100, 0 );
+    fdLoggingGroup.width = INPUT_WIDTH;
+    wLoggingGroup.setLayoutData( fdLoggingGroup );
+
+    wlMessage = new Label( wLoggingGroup, SWT.RIGHT );
+    wlMessage.setText( BaseMessages.getString( PKG, "AbortDialog.Logging.AbortMessage.Label" ) );
+    props.setLook( wlMessage );
+    fdlMessage = new FormData();
+    fdlMessage.left = new FormAttachment( 0, 0 );
+    fdlMessage.top = new FormAttachment( 0, 0 );
+    wlMessage.setLayoutData( fdlMessage );
+
+    wMessage = new TextVar( transMeta, wLoggingGroup, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
+    wMessage.setText( "" );
+    props.setLook( wMessage );
+    wMessage.addModifyListener( lsMod );
+    wMessage.setToolTipText( BaseMessages.getString( PKG, "AbortDialog.Logging.AbortMessage.Tooltip" ) );
+    fdMessage = new FormData();
+    fdMessage.left = new FormAttachment( 0, 0 );
+    fdMessage.top = new FormAttachment( wlMessage, 5 );
+    fdMessage.right = new FormAttachment( 100, 15 );
+    wMessage.setLayoutData( fdMessage );
+
+    wAlwaysLogRows = new Button( wLoggingGroup, SWT.CHECK );
+    wAlwaysLogRows.setText( BaseMessages.getString( PKG, "AbortDialog.Logging.AlwaysLogRows.Label" ) );
+    props.setLook( wAlwaysLogRows );
+    wAlwaysLogRows.setToolTipText( BaseMessages.getString( PKG, "AbortDialog.Logging.AlwaysLogRows.Tooltip" ) );
+    fdAlwaysLogRows = new FormData();
+    fdAlwaysLogRows.left = new FormAttachment( 0, 0 );
+    fdAlwaysLogRows.top = new FormAttachment( wMessage, 10 );
+    wAlwaysLogRows.setLayoutData( fdAlwaysLogRows );
+    wAlwaysLogRows.addSelectionListener( lsSelMod );
+  }
+
   private Image getImage() {
     return SwtSvgImageUtil.getImage( shell.getDisplay(), getClass().getClassLoader(), "ABR.svg", ConstUI.ICON_SIZE,
         ConstUI.ICON_SIZE );
@@ -293,7 +345,10 @@ public class AbortDialog extends BaseStepDialog implements StepDialogInterface {
       wMessage.setText( input.getMessage() );
     }
     wAlwaysLogRows.setSelection( input.isAlwaysLogRows() );
-    wAbortWithError.setSelection( input.isAbortWithError() );
+
+    wAbortButton.setSelection( input.isAbort() );
+    wAbortWithErrorButton.setSelection( input.isAbortWithError() );
+    wSafeStopButton.setSelection( input.isSafeStop() );
 
     wStepname.selectAll();
     wStepname.setFocus();
@@ -303,7 +358,14 @@ public class AbortDialog extends BaseStepDialog implements StepDialogInterface {
     input.setRowThreshold( wRowThreshold.getText() );
     input.setMessage( wMessage.getText() );
     input.setAlwaysLogRows( wAlwaysLogRows.getSelection() );
-    input.setAbortWithError( wAbortWithError.getSelection() );
+
+    AbortMeta.AbortOption abortOption = AbortMeta.AbortOption.ABORT;
+    if ( wAbortWithErrorButton.getSelection() ) {
+      abortOption = AbortMeta.AbortOption.ABORT_WITH_ERROR;
+    } else if ( wSafeStopButton.getSelection() ) {
+      abortOption = AbortMeta.AbortOption.SAFE_STOP;
+    }
+    input.setAbortOption( abortOption );
   }
 
   /**

@@ -150,7 +150,15 @@ public interface StepInterface extends VariableSpace, HasLogChannelInterface {
    * @param stopped
    *          true if the step needs to be safe stopped
    */
-  public void setSafeStopped( boolean stopped );
+  default void setSafeStopped( boolean stopped ) {
+  }
+
+  /**
+   * @return true if step is safe stopped.
+   */
+  default boolean isSafeStopped() {
+    return false;
+  }
 
   /**
    * @return True if the step is paused
@@ -397,7 +405,7 @@ public interface StepInterface extends VariableSpace, HasLogChannelInterface {
   public void setPartitioned( boolean partitioned );
 
   /**
-   * @param partitioningMethodNone
+   * @param partitioningMethod
    *          The repartitioning method
    */
   public void setRepartitioning( int partitioningMethod );
