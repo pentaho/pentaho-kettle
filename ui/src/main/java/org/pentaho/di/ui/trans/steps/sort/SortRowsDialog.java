@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -66,6 +66,7 @@ import org.pentaho.di.ui.core.widget.ColumnInfo;
 import org.pentaho.di.ui.core.widget.TableView;
 import org.pentaho.di.ui.core.widget.TextVar;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
+import org.pentaho.di.ui.trans.step.ComponentSelectionListener;
 import org.pentaho.di.ui.trans.step.TableItemInsertListener;
 
 public class SortRowsDialog extends BaseStepDialog implements StepDialogInterface {
@@ -302,6 +303,7 @@ public class SortRowsDialog extends BaseStepDialog implements StepDialogInterfac
     fdUniqueRows.top = new FormAttachment( wCompress, margin );
     fdUniqueRows.right = new FormAttachment( 100, 0 );
     wUniqueRows.setLayoutData( fdUniqueRows );
+    wUniqueRows.addSelectionListener( new ComponentSelectionListener( input ) );
 
     wOK = new Button( shell, SWT.PUSH );
     wOK.setText( BaseMessages.getString( PKG, "System.Button.OK" ) );

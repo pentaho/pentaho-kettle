@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -51,6 +51,7 @@ import org.pentaho.di.trans.step.StepDialogInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.steps.closure.ClosureGeneratorMeta;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
+import org.pentaho.di.ui.trans.step.ComponentSelectionListener;
 
 public class ClosureGeneratorDialog extends BaseStepDialog implements StepDialogInterface {
   private static Class<?> PKG = ClosureGeneratorMeta.class; // for i18n purposes, needed by Translator2!!
@@ -203,6 +204,7 @@ public class ClosureGeneratorDialog extends BaseStepDialog implements StepDialog
     fdRootZero.right = new FormAttachment( 100, 0 );
     fdRootZero.top = new FormAttachment( wDistance, margin );
     wRootZero.setLayoutData( fdRootZero );
+    wRootZero.addSelectionListener( new ComponentSelectionListener( input ) );
 
     // Search the fields in the background
     //

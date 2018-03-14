@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -49,6 +49,7 @@ import org.pentaho.di.trans.step.StepDialogInterface;
 import org.pentaho.di.trans.steps.cubeinput.CubeInputMeta;
 import org.pentaho.di.ui.core.widget.TextVar;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
+import org.pentaho.di.ui.trans.step.ComponentSelectionListener;
 
 public class CubeInputDialog extends BaseStepDialog implements StepDialogInterface {
   private static Class<?> PKG = CubeInputMeta.class; // for i18n purposes, needed by Translator2!!
@@ -173,6 +174,7 @@ public class CubeInputDialog extends BaseStepDialog implements StepDialogInterfa
     fdAddResult.left = new FormAttachment( middle, 0 );
     fdAddResult.top = new FormAttachment( wLimit, 2 * margin );
     wAddResult.setLayoutData( fdAddResult );
+    wAddResult.addSelectionListener( new ComponentSelectionListener( input ) );
 
     // Some buttons
     wOK = new Button( shell, SWT.PUSH );
