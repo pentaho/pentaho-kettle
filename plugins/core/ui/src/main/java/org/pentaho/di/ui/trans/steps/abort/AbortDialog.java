@@ -315,7 +315,7 @@ public class AbortDialog extends BaseStepDialog implements StepDialogInterface {
     fdMessage = new FormData();
     fdMessage.left = new FormAttachment( 0, 0 );
     fdMessage.top = new FormAttachment( wlMessage, 5 );
-    fdMessage.right = new FormAttachment( 100, 15 );
+    fdMessage.right = new FormAttachment( 100, 0 );
     wMessage.setLayoutData( fdMessage );
 
     wAlwaysLogRows = new Button( wLoggingGroup, SWT.CHECK );
