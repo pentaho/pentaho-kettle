@@ -16,12 +16,12 @@
       <source>${project.basedir}/src/main/resources/BLKMSACC.svg</source>
     </file>
   </files>
+
   <fileSets>
+    <!-- the staging dir -->
     <fileSet>
-      <outputDirectory>lib</outputDirectory>
-      <excludes>
-        <exclude>*/**</exclude>
-      </excludes>
+      <directory>${project.build.directory}/assembly</directory>
+      <outputDirectory>.</outputDirectory>
     </fileSet>
   </fileSets>
   <dependencySets>
@@ -29,6 +29,8 @@
       <useProjectArtifact>false</useProjectArtifact>
       <includes>
         <include>org.pentaho.di.plugins:ms-access-bulk-loader-plugin-core:jar</include>
+        <include>org.pentaho.di.plugins:access-steps-ui:jar</include>
+        <include>org.pentaho.di.plugins:access-steps-impl:jar</include>
       </includes>
     </dependencySet>
   </dependencySets>
