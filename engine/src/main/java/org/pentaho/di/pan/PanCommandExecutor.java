@@ -72,6 +72,9 @@ public class PanCommandExecutor extends AbstractBaseCommandExecutor {
 
     Trans trans = null;
 
+    // In case we use a repository...
+    Repository repository = null;
+
     try {
 
       if ( getMetaStore() == null ) {
@@ -89,7 +92,11 @@ public class PanCommandExecutor extends AbstractBaseCommandExecutor {
 
           // In case we use a repository...
           // some commands are to load a Trans from the repo; others are merely to print some repo-related information
-          trans = executeRepositoryBasedCommand( repoName, username, password, dirName, transName, listTrans, listDirs, exportRepo );
+          RepositoryMeta repositoryMeta = loadRepositoryConnection( repoName, "Pan.Log.LoadingAvailableRep", "Pan.Error.NoRepsDefined", "Pan.Log.FindingRep" );
+
+          repository = establishRepositoryConnection( repositoryMeta, username, password, RepositoryOperation.EXECUTE_TRANSFORMATION );
+
+          trans = executeRepositoryBasedCommand( repository, repositoryMeta, dirName, transName, listTrans, listDirs, exportRepo );
         }
 
 
@@ -111,6 +118,9 @@ public class PanCommandExecutor extends AbstractBaseCommandExecutor {
 
       System.out.println( BaseMessages.getString( getPkgClazz(), "Pan.Error.ProcessStopError", e.getMessage() ) );
       e.printStackTrace();
+      if ( repository != null ) {
+        repository.disconnect();
+      }
       return CommandExecutorCodes.Pan.ERRORS_DURING_PROCESSING.getCode();
     }
 
@@ -200,6 +210,10 @@ public class PanCommandExecutor extends AbstractBaseCommandExecutor {
 
       return CommandExecutorCodes.Pan.UNEXPECTED_ERROR.getCode();
 
+    } finally {
+      if ( repository != null ) {
+        repository.disconnect();
+      }
     }
   }
 
@@ -208,33 +222,21 @@ public class PanCommandExecutor extends AbstractBaseCommandExecutor {
     return CommandExecutorCodes.Pan.KETTLE_VERSION_PRINT.getCode();
   }
 
-  public Trans executeRepositoryBasedCommand( final String repoName, final String username, final String password, final String dirName,
+  public Trans executeRepositoryBasedCommand( Repository repository, RepositoryMeta repositoryMeta, final String dirName,
                                               final String transName, final String listTrans, final String listDirs, final String exportRepo ) throws Exception {
-
-
-    if ( Utils.isEmpty( repoName ) ) {
-      System.out.println( BaseMessages.getString( getPkgClazz(), "Pan.Error.NoRepProvided" ) );
-      return null;
-    }
-
-    Repository repo = null;
 
     try {
 
-      RepositoryMeta repositoryMeta = loadRepositoryConnection( repoName, "Pan.Log.LoadingAvailableRep", "Pan.Error.NoRepsDefined", "Pan.Log.FindingRep" );
-
-      if ( repositoryMeta != null ) {
+      if ( repository != null && repositoryMeta != null ) {
         // Define and connect to the repository...
         logDebug( "Pan.Log.Allocate&ConnectRep" );
 
-        repo = establishRepositoryConnection( repositoryMeta, username, password, RepositoryOperation.EXECUTE_TRANSFORMATION );
-
         // Default is the root directory
-        RepositoryDirectoryInterface directory = repo.loadRepositoryDirectoryTree();
+        RepositoryDirectoryInterface directory = repository.loadRepositoryDirectoryTree();
 
         // Add the IMetaStore of the repository to our delegation
-        if ( repo.getMetaStore() != null && getMetaStore() != null ) {
-          getMetaStore().addMetaStore( repo.getMetaStore() );
+        if ( repository.getMetaStore() != null && getMetaStore() != null ) {
+          getMetaStore().addMetaStore( repository.getMetaStore() );
         }
 
         // Find the directory name if one is specified...
@@ -250,28 +252,28 @@ public class PanCommandExecutor extends AbstractBaseCommandExecutor {
           if ( !Utils.isEmpty( transName ) ) {
 
             logDebug( "Pan.Log.LoadTransInfo" );
-            TransMeta transMeta = repo.loadTransformation( transName, directory, null, true, null );
+            TransMeta transMeta = repository.loadTransformation( transName, directory, null, true, null );
 
             logDebug( "Pan.Log.AllocateTrans" );
             Trans trans = new Trans( transMeta );
-            trans.setRepository( repo );
+            trans.setRepository( repository );
             trans.setMetaStore( getMetaStore() );
 
             return trans; // return transformation loaded from the repo
 
           } else if ( YES.equalsIgnoreCase( listTrans ) ) {
 
-            printRepositoryStoredTransformations( repo, directory ); // List the transformations in the repository
+            printRepositoryStoredTransformations( repository, directory ); // List the transformations in the repository
 
           } else if ( YES.equalsIgnoreCase( listDirs ) ) {
 
-            printRepositoryDirectories( repo, directory ); // List the directories in the repository
+            printRepositoryDirectories( repository, directory ); // List the directories in the repository
 
           } else if ( !Utils.isEmpty( exportRepo ) ) {
 
             // Export the repository
             System.out.println( BaseMessages.getString( getPkgClazz(), "Pan.Log.ExportingObjectsRepToFile", "" + exportRepo ) );
-            repo.getExporter().exportAllObjects( null, exportRepo, directory, "all" );
+            repository.getExporter().exportAllObjects( null, exportRepo, directory, "all" );
             System.out.println( BaseMessages.getString( getPkgClazz(), "Pan.Log.FinishedExportObjectsRepToFile", "" + exportRepo ) );
 
           } else {
@@ -284,12 +286,8 @@ public class PanCommandExecutor extends AbstractBaseCommandExecutor {
         System.out.println( BaseMessages.getString( getPkgClazz(), "Pan.Error.NoRepProvided" ) );
       }
 
-    } finally {
-
-      if ( repo != null ) {
-        repo.disconnect();
-      }
-
+    } catch ( Exception e ) {
+      getLog().logError( e.getMessage() );
     }
 
     return null;
