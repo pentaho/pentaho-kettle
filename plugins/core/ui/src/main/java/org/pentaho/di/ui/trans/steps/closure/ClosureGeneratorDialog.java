@@ -52,6 +52,7 @@ import org.pentaho.di.trans.step.StepDialogInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.steps.closure.ClosureGeneratorMeta;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
+import org.pentaho.di.ui.trans.step.ComponentSelectionListener;
 
 @PluginDialog( id = "ClosureGenerator", image = "CLG.svg", pluginType = PluginDialog.PluginType.STEP,
   documentationUrl = "http://wiki.pentaho.com/display/EAI/Closure+Generator" )
@@ -206,6 +207,7 @@ public class ClosureGeneratorDialog extends BaseStepDialog implements StepDialog
     fdRootZero.right = new FormAttachment( 100, 0 );
     fdRootZero.top = new FormAttachment( wDistance, margin );
     wRootZero.setLayoutData( fdRootZero );
+    wRootZero.addSelectionListener( new ComponentSelectionListener( input ) );
 
     // Search the fields in the background
     //
