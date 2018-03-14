@@ -3,7 +3,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -3677,7 +3677,11 @@ public class Database implements VariableSpace, LoggingObjectInterface {
   }
 
   public String[] getTablenames( String schemanamein, boolean includeSchema ) throws KettleDatabaseException {
-    Map<String, Collection<String>> tableMap = getTableMap( schemanamein );
+    return getTablenames( schemanamein, includeSchema, null );
+  }
+
+  public String[] getTablenames( String schemanamein, boolean includeSchema, Map<String, String> props ) throws KettleDatabaseException {
+    Map<String, Collection<String>> tableMap = getTableMap( schemanamein, props );
     List<String> res = new ArrayList<String>();
     for ( String schema : tableMap.keySet() ) {
       Collection<String> tables = tableMap.get( schema );
@@ -3697,6 +3701,10 @@ public class Database implements VariableSpace, LoggingObjectInterface {
   }
 
   public Map<String, Collection<String>> getTableMap( String schemanamein ) throws KettleDatabaseException {
+    return getTableMap( schemanamein, null );
+  }
+
+  public Map<String, Collection<String>> getTableMap( String schemanamein, Map<String, String> props ) throws KettleDatabaseException {
     String schemaname = schemanamein;
     if ( schemaname == null ) {
       if ( databaseMeta.useSchemaNameForTableList() ) {
@@ -3740,7 +3748,24 @@ public class Database implements VariableSpace, LoggingObjectInterface {
           log.logRowlevel( toString(), "got table from meta-data: "
             + databaseMeta.getQuotedSchemaTableCombination( schema, table ) );
         }
-        multimapPut( schema, table, tableMap );
+
+        // Check for any extra properties that might require validation
+        if ( props != null && !props.isEmpty() ) {
+          for ( Map.Entry<String, String> prop : props.entrySet() ) {
+            String propName = prop.getKey();
+
+            String tableProperty = alltables.getString( propName );
+            if ( tableProperty != null ) {
+              String propValue = prop.getValue();
+
+              if ( tableProperty.equals( propValue ) ) {
+                multimapPut( schema, table, tableMap );
+              }
+            }
+          }
+        } else {
+          multimapPut( schema, table, tableMap );
+        }
       }
     } catch ( SQLException e ) {
       log.logError( "Error getting tablenames from schema [" + schemaname + "]" );
