@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -35,13 +35,34 @@ import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectoryInterface;
 import org.pentaho.di.trans.step.StepMeta;
 
+/**
+ * This class resolve and update system variables
+ * {@link org.pentaho.di.core.Const#INTERNAL_VARIABLE_ENTRY_CURRENT_DIRECTORY}
+ * {@link org.pentaho.di.core.Const#INTERNAL_VARIABLE_JOB_FILENAME_DIRECTORY}
+ * {@link org.pentaho.di.core.Const#INTERNAL_VARIABLE_TRANSFORMATION_FILENAME_DIRECTORY}
+ * {@link org.pentaho.di.core.Const#INTERNAL_VARIABLE_JOB_FILENAME_NAME}
+ *
+ */
 public class CurrentDirectoryResolver {
 
   public CurrentDirectoryResolver() {
   }
 
-  public VariableSpace resolveCurrentDirectory( VariableSpace parentVariables, RepositoryDirectoryInterface directory,
-      String filename ) {
+  /**
+   * The logic of this method:
+   * 
+   * if we have directory we return the child var space with directory used as system property
+   * if we have not directory we return the child var space with directory extracted from filanme
+   * if we don not have directory and filename we will return the child var space without updates
+   * 
+   * 
+   * @param parentVariables - parent variable space which can be inherited
+   * @param directory - current path which will be used as path for start trans/job
+   * @param filename - is file which we use at this moment
+   * @param inheritParentVar - flag which indicate should we inherit variables from parent var space to child var space
+   * @return new var space if inherit was set false or child var space with updated system variables
+   */
+  public VariableSpace resolveCurrentDirectory( VariableSpace parentVariables, RepositoryDirectoryInterface directory, String filename ) {
     Variables tmpSpace = new Variables();
     tmpSpace.setParentVariableSpace( parentVariables );
     tmpSpace.initializeVariablesFrom( parentVariables );
