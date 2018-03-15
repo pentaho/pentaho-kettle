@@ -597,4 +597,20 @@ public class StringUtil {
         || variable.startsWith( WINDOWS_OPEN ) && variable.endsWith( WINDOWS_CLOSE )
         || variable.startsWith( HEX_OPEN ) && variable.endsWith( HEX_CLOSE );
   }
+
+  /**
+   * Calls the {@link String#toLowerCase()} method on the {@link String} returned by a call to {@code obj.toString()},
+   * guarding against {@link NullPointerException}s.
+   *
+   * @param obj the {@link Object} whose string representation is being turned to lower case
+   * @return a lower case {@link String} representation of the {@link String} returned by a call to {@code obj
+   * .toString()}
+   */
+  public static String safeToLowerCase( final Object obj ) {
+    if ( obj == null || obj.toString() == null ) {
+      return null;
+    } else {
+      return obj.toString().toLowerCase();
+    }
+  }
 }

@@ -162,6 +162,34 @@ public class StringUtilTest extends TestCase {
     assertTrue( StringUtil.isVariable( "$[somename]" ) );
     assertFalse( StringUtil.isVariable( "somename" ) );
     assertFalse( StringUtil.isVariable( null ) );
+  }
 
+  public void testSafeToLowerCase() {
+    assertNull( StringUtil.safeToLowerCase( null ) );
+    assertEquals( "", StringUtil.safeToLowerCase( "" ) );
+    assertEquals( " ", StringUtil.safeToLowerCase( " " ) );
+    assertEquals( "abc123", StringUtil.safeToLowerCase( "abc123" ) );
+    assertEquals( "abc123", StringUtil.safeToLowerCase( "Abc123" ) );
+    assertEquals( "abc123", StringUtil.safeToLowerCase( "ABC123" ) );
+    assertNull( StringUtil.safeToLowerCase( new ToString() ) );
+    assertNull( StringUtil.safeToLowerCase( ( new ToString() ).toString() ) );
+    assertEquals( "abc123", StringUtil.safeToLowerCase( new ToString( "ABC123" ) ) );
+    assertEquals( "abc123", StringUtil.safeToLowerCase( ( new ToString( "ABC123" ) ).toString() ) );
+  }
+
+  class ToString {
+    private String string;
+
+    ToString() {
+    }
+
+    ToString( final String string ) {
+      this.string = string;
+    }
+
+    @Override
+    public String toString() {
+      return string;
+    }
   }
 }
