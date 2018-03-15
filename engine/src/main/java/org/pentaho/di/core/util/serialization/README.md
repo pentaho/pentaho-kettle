@@ -45,5 +45,4 @@ If any properties need to be encrypted, mark them with the @Sensitive annotation
 
 
 TODO:
-* Support for @InjectionDeep
 * Support for database lists / metastore
