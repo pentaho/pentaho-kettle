@@ -3,7 +3,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -2289,6 +2289,13 @@ public abstract class BaseDatabaseMeta implements Cloneable, DatabaseInterfaceEx
 
   @Override
   public void addDefaultOptions() {
+  }
 
+  public void addAttribute( String attributeId, String value ) {
+    attributes.setProperty( attributeId, value );
+  }
+
+  public String getAttribute( String attributeId, String defaultValue ) {
+    return attributes.getProperty( attributeId, defaultValue  );
   }
 }
