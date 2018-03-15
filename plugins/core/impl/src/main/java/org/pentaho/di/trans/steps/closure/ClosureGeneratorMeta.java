@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -26,6 +26,7 @@ import java.util.List;
 
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
+import org.pentaho.di.core.annotations.Step;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
@@ -53,6 +54,10 @@ import org.w3c.dom.Node;
  * Created on 19-Sep-2007
  *
  */
+
+@Step( id = "ClosureGenerator", i18nPackageName = "org.pentaho.di.trans.steps.closure",
+  name = "BaseStep.TypeLongDesc.ClosureGenerator", description = "BaseStep.TypeTooltipDesc.ClosureGenerator",
+  categoryDescription = "i18n:org.pentaho.di.trans.step:BaseStep.Category.Transform" )
 public class ClosureGeneratorMeta extends BaseStepMeta implements StepMetaInterface {
   private boolean rootIdZero;
 
@@ -92,7 +97,7 @@ public class ClosureGeneratorMeta extends BaseStepMeta implements StepMetaInterf
 
   @Override
   public void getFields( RowMetaInterface row, String origin, RowMetaInterface[] info, StepMeta nextStep,
-    VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
+                         VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
     // The output for the closure table is:
     //
     // - parentId
@@ -133,7 +138,8 @@ public class ClosureGeneratorMeta extends BaseStepMeta implements StepMetaInterf
   }
 
   @Override
-  public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases ) throws KettleException {
+  public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases )
+    throws KettleException {
     try {
       parentIdFieldName = rep.getStepAttributeString( id_step, "parent_id_field" );
       childIdFieldName = rep.getStepAttributeString( id_step, "child_id_field" );
@@ -145,7 +151,8 @@ public class ClosureGeneratorMeta extends BaseStepMeta implements StepMetaInterf
   }
 
   @Override
-  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step ) throws KettleException {
+  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step )
+    throws KettleException {
     try {
       rep.saveStepAttribute( id_transformation, id_step, "parent_id_field", parentIdFieldName );
       rep.saveStepAttribute( id_transformation, id_step, "child_id_field", childIdFieldName );
@@ -158,8 +165,8 @@ public class ClosureGeneratorMeta extends BaseStepMeta implements StepMetaInterf
 
   @Override
   public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta,
-    RowMetaInterface prev, String[] input, String[] output, RowMetaInterface info, VariableSpace space,
-    Repository repository, IMetaStore metaStore ) {
+                     RowMetaInterface prev, String[] input, String[] output, RowMetaInterface info, VariableSpace space,
+                     Repository repository, IMetaStore metaStore ) {
     CheckResult cr;
 
     ValueMetaInterface parentValueMeta = prev.searchValueMeta( parentIdFieldName );
@@ -193,7 +200,7 @@ public class ClosureGeneratorMeta extends BaseStepMeta implements StepMetaInterf
 
   @Override
   public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr,
-    TransMeta transMeta, Trans trans ) {
+                                TransMeta transMeta, Trans trans ) {
     return new ClosureGenerator( stepMeta, stepDataInterface, cnr, transMeta, trans );
   }
 
@@ -210,8 +217,7 @@ public class ClosureGeneratorMeta extends BaseStepMeta implements StepMetaInterf
   }
 
   /**
-   * @param rootIdZero
-   *          the rootIdZero to set
+   * @param rootIdZero the rootIdZero to set
    */
   public void setRootIdZero( boolean rootIdZero ) {
     this.rootIdZero = rootIdZero;
@@ -225,8 +231,7 @@ public class ClosureGeneratorMeta extends BaseStepMeta implements StepMetaInterf
   }
 
   /**
-   * @param parentIdFieldName
-   *          the parentIdFieldName to set
+   * @param parentIdFieldName the parentIdFieldName to set
    */
   public void setParentIdFieldName( String parentIdFieldName ) {
     this.parentIdFieldName = parentIdFieldName;
@@ -240,8 +245,7 @@ public class ClosureGeneratorMeta extends BaseStepMeta implements StepMetaInterf
   }
 
   /**
-   * @param childIdFieldName
-   *          the childIdFieldName to set
+   * @param childIdFieldName the childIdFieldName to set
    */
   public void setChildIdFieldName( String childIdFieldName ) {
     this.childIdFieldName = childIdFieldName;
@@ -255,8 +259,7 @@ public class ClosureGeneratorMeta extends BaseStepMeta implements StepMetaInterf
   }
 
   /**
-   * @param distanceFieldName
-   *          the distanceFieldName to set
+   * @param distanceFieldName the distanceFieldName to set
    */
   public void setDistanceFieldName( String distanceFieldName ) {
     this.distanceFieldName = distanceFieldName;
