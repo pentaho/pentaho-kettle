@@ -98,7 +98,11 @@ public class KitchenCommandExecutor extends AbstractBaseCommandExecutor {
 
           // In case we use a repository...
           // some commands are to load a Trans from the repo; others are merely to print some repo-related information
-          job = executeRepositoryBasedCommand( repoName, username, password, dirName, jobName, listJobs, listDirs );
+          RepositoryMeta repositoryMeta = loadRepositoryConnection( repoName, "Kitchen.Log.LoadingRep", "Kitchen.Error.NoRepDefinied", "Kitchen.Log.FindingRep" );
+
+          repository = establishRepositoryConnection( repositoryMeta, username, password, RepositoryOperation.EXECUTE_JOB );
+
+          job = executeRepositoryBasedCommand( repository, repositoryMeta, dirName, jobName, listJobs, listDirs );
         }
 
         // Try to load if from file anyway.
@@ -222,77 +226,56 @@ public class KitchenCommandExecutor extends AbstractBaseCommandExecutor {
     return CommandExecutorCodes.Kitchen.KETTLE_VERSION_PRINT.getCode();
   }
 
-  public Job executeRepositoryBasedCommand( final String repoName, final String username, final String password, final String dirName,
-                                                final String jobName, final String listJobs, final String listDirs ) throws Exception {
+  public Job executeRepositoryBasedCommand( Repository repository, RepositoryMeta repositoryMeta, final String dirName,
+                                            final String jobName, final String listJobs, final String listDirs ) throws Exception {
 
-    if ( !Utils.isEmpty( repoName ) && !Utils.isEmpty( username ) ) {
-      if ( getLog().isDetailed() ) {
-        getLog().logDetailed( BaseMessages.getString( getPkgClazz(), "Kitchen.Log.RepUsernameSupplied" ) );
+    if ( repository != null && repositoryMeta != null  ) {
+      // Define and connect to the repository...
+      logDebug( "Kitchen.Log.Alocate&ConnectRep" );
+
+      RepositoryDirectoryInterface directory = repository.loadRepositoryDirectoryTree(); // Default = root
+
+      // Add the IMetaStore of the repository to our delegation
+      if ( repository.getMetaStore() != null && getMetaStore() != null ) {
+        getMetaStore().addMetaStore( repository.getMetaStore() );
       }
-    }
 
-    Repository repo = null;
+      // Find the directory name if one is specified...
+      if ( !Utils.isEmpty( dirName ) ) {
+        directory = directory.findDirectory( dirName );
+      }
 
-    try {
+      if ( directory != null ) {
 
-      RepositoryMeta repositoryMeta = loadRepositoryConnection( repoName, "Kitchen.Log.LoadingRep", "Kitchen.Error.NoRepDefinied", "Kitchen.Log.FindingRep" );
+        // Check username, password
+        logDebug( "Kitchen.Log.CheckUserPass" );
 
-      if ( repositoryMeta != null ) {
-        // Define and connect to the repository...
-        logDebug( "Kitchen.Log.Alocate&ConnectRep" );
+        // Load a job
+        if ( !Utils.isEmpty( jobName ) ) {
 
-        repo = establishRepositoryConnection( repositoryMeta, username, password, RepositoryOperation.EXECUTE_JOB );
+          logDebug(  "Kitchen.Log.LoadingJobInfo" );
+          blockAndThrow( getKettleInit() );
+          JobMeta jobMeta = repository.loadJob( jobName, directory, null, null ); // reads last version
+          logDebug(  "Kitchen.Log.AllocateJob" );
 
-        RepositoryDirectoryInterface directory = repo.loadRepositoryDirectoryTree(); // Default = root
+          return new Job( repository, jobMeta );
 
-        // Add the IMetaStore of the repository to our delegation
-        if ( repo.getMetaStore() != null && getMetaStore() != null ) {
-          getMetaStore().addMetaStore( repo.getMetaStore() );
-        }
+        } else if ( YES.equalsIgnoreCase( listJobs ) ) {
 
-        // Find the directory name if one is specified...
-        if ( !Utils.isEmpty( dirName ) ) {
-          directory = directory.findDirectory( dirName );
-        }
+          printRepositoryStoredJobs( repository, directory ); // List the jobs in the repository
 
-        if ( directory != null ) {
+        } else if ( YES.equalsIgnoreCase( listDirs ) ) {
 
-          // Check username, password
-          logDebug( "Kitchen.Log.CheckUserPass" );
-
-          // Load a job
-          if ( !Utils.isEmpty( jobName ) ) {
-
-            logDebug(  "Kitchen.Log.LoadingJobInfo" );
-            blockAndThrow( getKettleInit() );
-            JobMeta jobMeta = repo.loadJob( jobName, directory, null, null ); // reads last version
-            logDebug(  "Kitchen.Log.AllocateJob" );
-
-            return new Job( repo, jobMeta );
-
-          } else if ( YES.equalsIgnoreCase( listJobs ) ) {
-
-            printRepositoryStoredJobs( repo, directory ); // List the jobs in the repository
-
-          } else if ( YES.equalsIgnoreCase( listDirs ) ) {
-
-            printRepositoryDirectories( repo, directory ); // List the directories in the repository
-          }
-
-        } else {
-          System.out.println( BaseMessages.getString( getPkgClazz(), "Kitchen.Error.CanNotFindSuppliedDirectory", dirName + "" ) );
-          repositoryMeta = null;
+          printRepositoryDirectories( repository, directory ); // List the directories in the repository
         }
 
       } else {
-        System.out.println( BaseMessages.getString( getPkgClazz(), "Kitchen.Error.NoRepProvided" ) );
+        System.out.println( BaseMessages.getString( getPkgClazz(), "Kitchen.Error.CanNotFindSuppliedDirectory", dirName + "" ) );
+        repositoryMeta = null;
       }
 
-    } finally {
-
-      if ( repo != null ) {
-        repo.disconnect();
-      }
+    } else {
+      System.out.println( BaseMessages.getString( getPkgClazz(), "Kitchen.Error.NoRepProvided" ) );
     }
 
     return null;
