@@ -71,7 +71,7 @@
         <module>lucid-db-streaming-loader</module>
         <module>salesforce</module>
         <module>pur</module>
-        <module>ms-access-bulk-loader</module>
+        <module>ms-access</module>
         <module>xml</module>
       </modules>
     </profile>

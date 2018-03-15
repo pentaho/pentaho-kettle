@@ -33,7 +33,6 @@
     <commons-validator.version>1.3.1</commons-validator.version>
     <edtftpj.version>2.1.0</edtftpj.version>
     <jsendnsca.version>2.0.1</jsendnsca.version>
-    <jackcess.version>1.2.6</jackcess.version>
     <feed4j.version>1.0</feed4j.version>
     <ftp4che.version>0.7.1</ftp4che.version>
     <georss-rome.version>0.9.8</georss-rome.version>
@@ -213,17 +212,6 @@
       <groupId>com.googlecode.jsendnsca</groupId>
       <artifactId>jsendnsca</artifactId>
       <version>${jsendnsca.version}</version>
-      <exclusions>
-        <exclusion>
-          <groupId>*</groupId>
-          <artifactId>*</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-    <dependency>
-      <groupId>com.healthmarketscience.jackcess</groupId>
-      <artifactId>jackcess</artifactId>
-      <version>${jackcess.version}</version>
       <exclusions>
         <exclusion>
           <groupId>*</groupId>
