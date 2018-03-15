@@ -54,8 +54,6 @@ import org.pentaho.di.ui.core.widget.TextVar;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 import org.pentaho.di.ui.util.SwtSvgImageUtil;
 
-import static org.pentaho.di.ui.trans.step.BaseStreamingDialog.INPUT_WIDTH;
-
 @StepDialog( id = "Abort", image = "ABR.svg",
   documentationUrl = "Products/Data_Integration/Transformation_Step_Reference/Abort" )
 public class AbortDialog extends BaseStepDialog implements StepDialogInterface {
@@ -92,7 +90,7 @@ public class AbortDialog extends BaseStepDialog implements StepDialogInterface {
 
     shell = new Shell( parent, SWT.DIALOG_TRIM | SWT.MIN | SWT.MAX );
     props.setLook( shell );
-    shell.setMinimumSize( 330, 460 );
+    shell.setMinimumSize( 330, 520 );
     setShellImage( shell, input );
 
     lsMod = e -> input.setChanged();
@@ -127,13 +125,13 @@ public class AbortDialog extends BaseStepDialog implements StepDialogInterface {
     fdStepname.width = 150;
     fdStepname.left = new FormAttachment( 0, 0 );
     fdStepname.top = new FormAttachment( wlStepname, 5 );
+    fdStepname.width = 250;
     wStepname.setLayoutData( fdStepname );
 
     Label wicon = new Label( shell, SWT.RIGHT );
     wicon.setImage( getImage() );
     FormData fdlicon = new FormData();
     fdlicon.top = new FormAttachment( 0, 0 );
-    fdlicon.left = new FormAttachment( wStepname, 10 );
     fdlicon.right = new FormAttachment( 100, 0 );
     wicon.setLayoutData( fdlicon );
     props.setLook( wicon );
@@ -167,7 +165,6 @@ public class AbortDialog extends BaseStepDialog implements StepDialogInterface {
     Label hSpacer = new Label( shell, SWT.HORIZONTAL | SWT.SEPARATOR );
     FormData fdhSpacer = new FormData();
     fdhSpacer.height = 2;
-    fdhSpacer.top = new FormAttachment( wLoggingGroup, 15 );
     fdhSpacer.left = new FormAttachment( 0, 0 );
     fdhSpacer.bottom = new FormAttachment( wCancel, -15 );
     fdhSpacer.right = new FormAttachment( 100, 0 );
@@ -233,7 +230,6 @@ public class AbortDialog extends BaseStepDialog implements StepDialogInterface {
     fdOptionsGroup.left = new FormAttachment( 0, 0 );
     fdOptionsGroup.top = new FormAttachment( widgetAbove, 15 );
     fdOptionsGroup.right = new FormAttachment( 100, 0 );
-    fdOptionsGroup.width = INPUT_WIDTH;
     wOptionsGroup.setLayoutData( fdOptionsGroup );
 
     wAbortButton = new Button( wOptionsGroup, SWT.RADIO );
@@ -296,7 +292,6 @@ public class AbortDialog extends BaseStepDialog implements StepDialogInterface {
     fdLoggingGroup.left = new FormAttachment( 0, 0 );
     fdLoggingGroup.top = new FormAttachment( widgetAbove, 15 );
     fdLoggingGroup.right = new FormAttachment( 100, 0 );
-    fdLoggingGroup.width = INPUT_WIDTH;
     wLoggingGroup.setLayoutData( fdLoggingGroup );
 
     wlMessage = new Label( wLoggingGroup, SWT.RIGHT );
