@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -387,11 +387,9 @@ public class JsonInputMeta extends
     this.addResultFile = addResultFile;
   }
 
-  /**
-   * @return Returns the input fields.
-   */
+  @Override
   public JsonInputField[] getInputFields() {
-    return inputFields;
+    return super.getInputFields();
   }
 
   /**

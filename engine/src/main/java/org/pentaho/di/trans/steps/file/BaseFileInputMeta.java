@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -59,6 +59,13 @@ public abstract class BaseFileInputMeta<A extends BaseFileInputAdditionalField, 
   /** The fields to import... */
   @InjectionDeep
   public F[] inputFields;
+
+  /**
+   * @return the input fields.
+   */
+  public F[] getInputFields() {
+    return inputFields;
+  }
 
   @InjectionDeep
   public BaseFileErrorHandling errorHandling = new BaseFileErrorHandling();
@@ -118,4 +125,16 @@ public abstract class BaseFileInputMeta<A extends BaseFileInputAdditionalField, 
   }
 
   public abstract String getEncoding();
+
+  public boolean isAcceptingFilenames() {
+    return inputFiles == null ? null : inputFiles.acceptingFilenames;
+  }
+
+  public String getAcceptingStepName() {
+    return inputFiles == null ? null : inputFiles.acceptingStepName;
+  }
+
+  public String getAcceptingField() {
+    return inputFiles == null ? null : inputFiles.acceptingField;
+  }
 }
