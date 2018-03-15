@@ -459,6 +459,10 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
         ExtensionPointHandler.callExtensionPoint( log, KettleExtensionPoint.JobFinish.id, this );
 
         fireJobFinishListeners();
+
+        // release unused vfs connections
+        KettleVFS.freeUnusedResources();
+
       } catch ( KettleException e ) {
         result.setNrErrors( 1 );
         result.setResult( false );

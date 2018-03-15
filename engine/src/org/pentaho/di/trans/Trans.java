@@ -1341,6 +1341,9 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
         if ( transMeta.isUsingUniqueConnections() ) {
           trans.closeUniqueDatabaseConnections( getResult() );
         }
+
+        // release unused vfs connections
+        KettleVFS.freeUnusedResources();
       }
     };
     // This should always be done first so that the other listeners achieve a clean state to start from (setFinished and

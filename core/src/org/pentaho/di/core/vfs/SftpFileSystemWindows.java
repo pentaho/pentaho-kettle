@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -26,9 +26,11 @@ import com.jcraft.jsch.ChannelExec;
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.vfs2.FileObject;
 import org.apache.commons.vfs2.FileSystemException;
 import org.apache.commons.vfs2.FileSystemOptions;
 import org.apache.commons.vfs2.UserAuthenticationData;
+import org.apache.commons.vfs2.provider.AbstractFileName;
 import org.apache.commons.vfs2.provider.GenericFileName;
 import org.apache.commons.vfs2.provider.sftp.SftpClientFactory;
 import org.apache.commons.vfs2.provider.sftp.SftpFileProvider;
@@ -45,7 +47,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class SftpFileSystemWindows extends SftpFileSystem {
+class SftpFileSystemWindows extends SftpFileSystem {
 
   private static final LogChannelInterface log = new LogChannel( "SftpFileSystemWindows" );
   private static final String WHO_AMI_GROUPS_FO_LIST = "Whoami /GROUPS /FO LIST"; //windows command for getting croups for current user
@@ -62,9 +64,28 @@ public class SftpFileSystemWindows extends SftpFileSystem {
   private List<String> userGroups;
   private Boolean windows;
 
-  public SftpFileSystemWindows( GenericFileName rootName, Session session, FileSystemOptions fileSystemOptions ) {
+  SftpFileSystemWindows( GenericFileName rootName, Session session, FileSystemOptions fileSystemOptions ) {
     super( rootName, session, fileSystemOptions );
     this.session = session;
+  }
+
+  @Override
+  protected FileObject createFile( AbstractFileName name ) throws FileSystemException {
+    return new SftpFileObjectWithWindowsSupport( name, this );
+  }
+
+  @Override
+  protected void doCloseCommunicationLink() {
+    if ( this.session != null ) {
+      this.session.disconnect();
+      this.session = null;
+    }
+    super.doCloseCommunicationLink();
+  }
+
+  @Override
+  public boolean isReleaseable() {
+    return !isOpen();
   }
 
   /**
@@ -73,7 +94,7 @@ public class SftpFileSystemWindows extends SftpFileSystem {
    * @throws JSchException
    * @throws IOException
    */
-  public List<String> getUserGroups() throws JSchException, IOException {
+  List<String> getUserGroups() throws JSchException, IOException {
     if ( userGroups == null ) {
       StringBuilder output = new StringBuilder();
       int code = this.executeCommand( WHO_AMI_GROUPS_FO_LIST, output );
@@ -119,7 +140,7 @@ public class SftpFileSystemWindows extends SftpFileSystem {
    * @throws JSchException
    * @throws IOException
    */
-  public String getUser() throws JSchException, IOException {
+  String getUser() throws JSchException, IOException {
     StringBuilder output = new StringBuilder();
     int code = this.executeCommand( WHO_AMI, output );
     if ( code != 0 ) {
@@ -137,7 +158,7 @@ public class SftpFileSystemWindows extends SftpFileSystem {
    * @throws JSchException
    * @throws IOException
    */
-  public Map<String, String> getFilePermission( String path ) throws JSchException, IOException {
+  Map<String, String> getFilePermission( String path ) throws JSchException, IOException {
     String windowsAbsPath;
     if ( path.startsWith( WINDOWS_PATH_DELIMITER ) ) {
       //cut first "/" windows does not have it
@@ -177,7 +198,7 @@ public class SftpFileSystemWindows extends SftpFileSystem {
    * @throws JSchException
    * @throws IOException
    */
-  public boolean isRemoteHostWindows() throws JSchException, IOException {
+  boolean isRemoteHostWindows() throws JSchException, IOException {
     if ( this.windows == null ) {
       StringBuilder output = new StringBuilder();
       int code = this.executeCommand( VER, output );
