@@ -64,8 +64,6 @@
     <dependency>
       <groupId>org.webjars</groupId>
       <artifactId>jquery</artifactId>
-      <version>${jquery.version}</version>
-      <scope>runtime</scope>
     </dependency>
     <dependency>
       <groupId>org.webjars.bower</groupId>

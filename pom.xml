@@ -71,6 +71,7 @@
     <h2.version>1.2.131</h2.version>
     <jaxen.version>1.1.1</jaxen.version>
     <wstx-asl.version>3.2.4</wstx-asl.version>
+    <jquery.version>3.3.1</jquery.version>
 
     <!-- Test dependencies -->
     <mockito-all.version>1.10.19</mockito-all.version>
@@ -214,6 +215,12 @@
         <artifactId>wstx-asl</artifactId>
         <version>${wstx-asl.version}</version>
         <scope>provided</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.webjars</groupId>
+        <artifactId>jquery</artifactId>
+        <version>${jquery.version}</version>
+        <scope>runtime</scope>
       </dependency>
 
       <!-- Test dependencies -->
