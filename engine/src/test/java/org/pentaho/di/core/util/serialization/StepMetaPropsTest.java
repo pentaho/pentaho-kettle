@@ -27,6 +27,7 @@ import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.injection.Injection;
+import org.pentaho.di.core.injection.InjectionDeep;
 import org.pentaho.di.core.injection.InjectionSupported;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.variables.VariableSpace;
@@ -68,6 +69,28 @@ public class StepMetaPropsTest {
     @Injection ( name = "BOOLEANLIST" ) List<Boolean> blist = new ArrayList<>();
     @Injection ( name = "IntList" ) List<Integer> ilist = new ArrayList<>();
 
+    @InjectionDeep SoooDeep deep = new SoooDeep();
+
+    static class SoooDeep {
+      @Injection ( name = "DEEP_FLAG" ) boolean isItDeep = true;
+      @Injection ( name = "DEPTH" ) int howDeep = 1000;
+
+      @Override public boolean equals( Object o ) {
+        if ( this == o ) {
+          return true;
+        }
+        if ( o == null || getClass() != o.getClass() ) {
+          return false;
+        }
+        SoooDeep soooDeep = (SoooDeep) o;
+        return isItDeep == soooDeep.isItDeep && howDeep == soooDeep.howDeep;
+      }
+
+      @Override public int hashCode() {
+        return Objects.hashCode( isItDeep, howDeep );
+      }
+    }
+
 
     @Override
     public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr,
@@ -90,13 +113,16 @@ public class StepMetaPropsTest {
       FooMeta fooMeta = (FooMeta) o;
       return field2 == fooMeta.field2
         && Objects.equal( field1, fooMeta.field1 )
+        && Objects.equal( password, fooMeta.password )
         && Objects.equal( alist, fooMeta.alist )
+        && Objects.equal( securelist, fooMeta.securelist )
         && Objects.equal( blist, fooMeta.blist )
-        && Objects.equal( ilist, fooMeta.ilist );
+        && Objects.equal( ilist, fooMeta.ilist )
+        && Objects.equal( deep, fooMeta.deep );
     }
 
     @Override public int hashCode() {
-      return Objects.hashCode( field1, field2, alist );
+      return Objects.hashCode( field1, field2, password, alist, securelist, blist, ilist, deep );
     }
 
     @Override public String toString() {
@@ -166,6 +192,17 @@ public class StepMetaPropsTest {
     assertThat( asList( "shadow", "substance" ), equalTo( toMeta.securelist ) );
   }
 
+  @Test
+  public void testInjectionDeep() {
+    FooMeta fooMeta = getTestFooMeta();
+    fooMeta.deep.howDeep = 50;
+    fooMeta.deep.isItDeep = false;
+
+    FooMeta toMeta = new FooMeta();
+    StepMetaProps.from( fooMeta ).to( toMeta );
+    assertThat( 50, equalTo( toMeta.deep.howDeep ) );
+    assertThat( false, equalTo( toMeta.deep.isItDeep ) );
+  }
 
   static FooMeta getTestFooMeta() {
     FooMeta foo = new FooMeta();

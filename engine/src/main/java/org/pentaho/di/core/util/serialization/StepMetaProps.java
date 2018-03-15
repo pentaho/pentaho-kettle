@@ -140,7 +140,8 @@ public class StepMetaProps {
                                    BeanInjectionInfo.Property prop ) {
     try {
       List ret;
-      Object o = injector.getObject( stepMeta, prop.getName() );
+
+      Object o = injector.getPropVal( stepMeta, prop.getName() );
       if ( o instanceof List ) {
         ret = (List<Object>) o;
       } else {
