@@ -33,6 +33,7 @@ import org.pentaho.di.ui.core.PropsUI;
 import org.pentaho.di.ui.core.widget.ComboVar;
 import org.pentaho.di.ui.core.widget.TextVar;
 
+import static com.google.common.base.Preconditions.checkNotNull;
 import static org.pentaho.di.i18n.BaseMessages.getString;
 import static org.pentaho.di.trans.step.jms.JmsConstants.PKG;
 
@@ -43,29 +44,37 @@ public class DestinationForm {
   private final TransMeta transMeta;
   private final ModifyListener lsMod;
   private final Composite aboveComposite;
-  ComboVar destinationType;
-  TextVar destinationName;
+  private ComboVar destinationType;
+  private TextVar destinationName;
+  private String destinationTypeValue;
+  private String destinationNameValue;
 
 
   DestinationForm( Composite parentComponent, Composite above, PropsUI props, TransMeta transMeta,
-                   ModifyListener lsMod ) {
+                   ModifyListener lsMod, String destinationType, String destinationName ) {
+    checkNotNull( parentComponent );
+    checkNotNull( above );
+    checkNotNull( props );
+    checkNotNull( transMeta );
+    checkNotNull( lsMod );
+
     this.parentComponent = parentComponent;
     this.props = props;
     this.transMeta = transMeta;
     this.lsMod = lsMod;
     this.aboveComposite = above;
+    destinationTypeValue = destinationType;
+    destinationNameValue = destinationName;
   }
 
   public Composite layoutForm() {
-
     Label lbDestType = new Label( parentComponent, SWT.LEFT );
     props.setLook( lbDestType );
     lbDestType.setText( getString( PKG, "JmsDialog.DestinationType" ) );
-
     FormData fdDest = new FormData();
     fdDest.left = new FormAttachment( 0, 0 );
-    fdDest.top = new FormAttachment( aboveComposite, 20 );
-    fdDest.right = new FormAttachment( 100, 0 );
+    fdDest.top = new FormAttachment( aboveComposite, 15 );
+    fdDest.width = 140;
     lbDestType.setLayoutData( fdDest );
 
     destinationType = new ComboVar( transMeta, parentComponent, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
@@ -73,18 +82,43 @@ public class DestinationForm {
     destinationType.addModifyListener( lsMod );
     FormData fdDestType = new FormData();
     fdDestType.left = new FormAttachment( 0, 0 );
-    fdDestType.top = new FormAttachment( lbDestType, 10 );
-    //fdDestType.bottom = new FormAttachment( 100, 0 );
-    fdDestType.width = 135;
+    fdDestType.top = new FormAttachment( lbDestType, 5 );
+    fdDestType.width = 140;
     destinationType.setLayoutData( fdDestType );
     destinationType.add( getString( PKG, "JmsDialog.Dest.Topic" ) );
     destinationType.add( getString( PKG, "JmsDialog.Dest.Queue" ) );
 
-    //JmsDialog.Dest.Name
+    destinationType.addModifyListener( lsMod );
+    destinationType.setText( destinationTypeValue );
 
-    return destinationType.getCComboWidget();
+    Label lbDestName = new Label( parentComponent, SWT.LEFT );
+    props.setLook( lbDestType );
+    lbDestName.setText( getString( PKG, "JmsDialog.Dest.Name" ) );
+    FormData fdlDestName = new FormData();
+    fdlDestName.left = new FormAttachment( lbDestType, 15 );
+    fdlDestName.top = new FormAttachment( aboveComposite, 15 );
+    fdlDestName.right = new FormAttachment( 100, 0 );
+    lbDestName.setLayoutData( fdlDestName );
 
+    destinationName = new TextVar( transMeta, parentComponent, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
+    props.setLook( destinationName );
+    FormData fdDestName = new FormData();
+    fdDestName.left = new FormAttachment( destinationType, 15 );
+    fdDestName.top = new FormAttachment( lbDestName, 5 );
+    fdDestName.right = new FormAttachment( 100, 0 );
+    destinationName.setLayoutData( fdDestName );
 
+    destinationName.addModifyListener( lsMod );
+    destinationName.setText( destinationNameValue );
+
+    return destinationType;
   }
 
+  public String getDestinationType() {
+    return destinationType.getText();
+  }
+
+  public String getDestinationName() {
+    return destinationName.getText();
+  }
 }

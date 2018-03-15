@@ -23,22 +23,27 @@
 package org.pentaho.di.trans.step.jms.ui;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.layout.FormAttachment;
+import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Group;
+import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
-import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.jms.JmsConsumerMeta;
 import org.pentaho.di.trans.streaming.common.BaseStreamStepMeta;
+import org.pentaho.di.ui.core.widget.TextVar;
 import org.pentaho.di.ui.trans.step.BaseStreamingDialog;
 
+import static org.pentaho.di.i18n.BaseMessages.getString;
 import static org.pentaho.di.trans.step.jms.JmsConstants.PKG;
 
 public class JmsConsumerDialog extends BaseStreamingDialog {
   JmsConsumerMeta jmsMeta;
   private DestinationForm destinationForm;
   private ConnectionForm connectionForm;
+  private TextVar wReceiverTimeout;
 
   public JmsConsumerDialog( Shell parent, Object in, TransMeta tr, String sname ) {
     super( parent, in, tr, sname );
@@ -46,26 +51,42 @@ public class JmsConsumerDialog extends BaseStreamingDialog {
   }
 
   @Override protected String getDialogTitle() {
-    return BaseMessages.getString( PKG, "JMSConsumerDialog.Shell.Title" );
+    return getString( PKG, "JMSConsumerDialog.Shell.Title" );
   }
 
   @Override protected void buildSetup( Composite wSetupComp ) {
-    Composite frame = new Composite( wSetupComp, SWT.NONE );
-    props.setLook( frame );
+    props.setLook( wSetupComp );
     FormLayout setupLayout = new FormLayout();
     setupLayout.marginHeight = 15;
     setupLayout.marginWidth = 15;
     wSetupComp.setLayout( setupLayout );
-    connectionForm = new ConnectionForm( frame, props, transMeta, lsMod );
+    connectionForm = new ConnectionForm( wSetupComp, props, transMeta, lsMod );
     Group group = connectionForm.layoutForm();
 
-    destinationForm = new DestinationForm( frame, group, props, transMeta, lsMod );
-    destinationForm.layoutForm();
+    // TODO add the values for destination type and location
+    destinationForm = new DestinationForm( wSetupComp, group, props, transMeta, lsMod, "", "" );
+    Composite previousComp = destinationForm.layoutForm();
 
+    Label wlReceiveTimeout = new Label( wSetupComp, SWT.LEFT );
+    props.setLook( wlReceiveTimeout );
+    wlReceiveTimeout.setText( getString( PKG, "JmsDialog.ReceiveTimeout" ) );
+    FormData fdlReceiveTimeout = new FormData();
+    fdlReceiveTimeout.left = new FormAttachment( 0, 0 );
+    fdlReceiveTimeout.top = new FormAttachment( previousComp, 15 );
+    wlReceiveTimeout.setLayoutData( fdlReceiveTimeout );
+
+    wReceiverTimeout = new TextVar( transMeta, wSetupComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
+    props.setLook( wReceiverTimeout );
+    FormData fdReceiveTimeout = new FormData();
+    fdReceiveTimeout.left = new FormAttachment( 0, 0 );
+    fdReceiveTimeout.top = new FormAttachment( wlReceiveTimeout, 5 );
+    fdReceiveTimeout.width = 140;
+    wReceiverTimeout.setLayoutData( fdReceiveTimeout );
+    wReceiverTimeout.addModifyListener( lsMod );
   }
 
   @Override protected void additionalOks( BaseStreamStepMeta meta ) {
-    jmsMeta.url = connectionForm.getUrl();
+    jmsMeta.url = connectionForm.getIbmUrl();
     // TODO all other props
   }
 
