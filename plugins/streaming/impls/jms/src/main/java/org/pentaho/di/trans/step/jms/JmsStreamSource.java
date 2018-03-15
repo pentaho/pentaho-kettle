@@ -35,7 +35,6 @@ import static java.util.Collections.singletonList;
 
 public class JmsStreamSource extends BlockingQueueStreamSource<List<Object>> {
 
-
   private final JmsMeta meta;
   private JMSConsumer consumer;
 
@@ -45,9 +44,7 @@ public class JmsStreamSource extends BlockingQueueStreamSource<List<Object>> {
   }
 
   @Override public void open() {
-
-    consumer = meta.getJmsContext()
-      .createConsumer( meta.getDestination() );
+    consumer = meta.getJmsContext().createConsumer( meta.getDestination() );
     consumer.setMessageListener( ( message ) -> {
       try {
         acceptRows( singletonList( of( message.getBody( Object.class ) ) ) );

@@ -25,16 +25,16 @@
 
 
   <bean id="JmsConsumer" class="org.pentaho.di.trans.step.jms.JmsConsumerMeta" scope="prototype">
-    <argument ref="jmsContextProviders"/>
+    <argument ref="jmsProviders"/>
     <pen:di-plugin type="org.pentaho.di.core.plugins.StepPluginType"/>
   </bean>
 
 
-  <reference-list id="jmsContextProviders" interface="org.pentaho.di.trans.step.jms.context.JmsContextProvider"
+  <reference-list id="jmsProviders" interface="org.pentaho.di.trans.step.jms.context.JmsProvider"
                   availability="optional"/>
 
-  <service interface="org.pentaho.di.trans.step.jms.context.JmsContextProvider">
-    <bean class="org.pentaho.di.trans.step.jms.context.WebsphereMQContextProvider" />
+  <service interface="org.pentaho.di.trans.step.jms.context.JmsProvider">
+    <bean class="org.pentaho.di.trans.step.jms.context.WebsphereMQProvider" />
   </service>
 
 </blueprint>

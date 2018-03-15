@@ -24,47 +24,68 @@ package org.pentaho.di.trans.step.jms.context;
 
 
 import com.ibm.mq.jms.MQConnectionFactory;
+import com.ibm.mq.jms.MQQueue;
+import com.ibm.mq.jms.MQQueueConnectionFactory;
+import com.ibm.mq.jms.MQTopic;
+import com.ibm.mq.jms.MQTopicConnectionFactory;
 import com.ibm.msg.client.wmq.WMQConstants;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.variables.Variables;
-import org.pentaho.di.trans.step.jms.JmsConnectionType;
+import org.pentaho.di.trans.step.jms.JmsConstants;
 import org.pentaho.di.trans.step.jms.JmsMeta;
 
+import javax.jms.Destination;
 import javax.jms.JMSContext;
 import javax.jms.JMSException;
-
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static com.google.common.base.Preconditions.checkNotNull;
 import static java.util.regex.Pattern.compile;
-import static org.pentaho.di.trans.step.jms.JmsConnectionType.WEBSPHERE;
+import static org.pentaho.di.i18n.BaseMessages.getString;
+import static org.pentaho.di.trans.step.jms.context.JmsProvider.ConnectionType.WEBSPHERE;
+import static org.pentaho.di.trans.step.jms.context.JmsProvider.DestinationType.QUEUE;
 
-public class WebsphereMQContextProvider implements JmsContextProvider {
+public class WebsphereMQProvider implements JmsProvider {
 
+  @Override public boolean supports( ConnectionType type ) {
+    return type == WEBSPHERE;
+  }
 
-  @Override public JMSContext get( JmsMeta meta ) {
-    if ( JmsConnectionType.valueOf( meta.connectionType ).equals( WEBSPHERE ) ) {
+  @Override public JMSContext getContext( JmsMeta meta ) {
 
-      MQUrlResolver resolver = new MQUrlResolver( meta, new Variables() );
+    MQUrlResolver resolver = new MQUrlResolver( meta, new Variables() );
 
-      MQConnectionFactory mqConnectionFactory = new MQConnectionFactory();
-      mqConnectionFactory.setHostName( resolver.host );
-      try {
-        mqConnectionFactory.setPort( resolver.port );
-        mqConnectionFactory.setBrokerQueueManager( resolver.queueManager );
-        mqConnectionFactory.setQueueManager( "QM1" );
-        mqConnectionFactory.setChannel( resolver.channel );
-        mqConnectionFactory.setTransportType( WMQConstants.WMQ_CM_CLIENT );
-      } catch ( JMSException e ) {
-        e.printStackTrace();
-      }
-      return mqConnectionFactory.createContext( meta.username, meta.password );
+    MQConnectionFactory connFactory = isQueue( meta )
+      ? new MQQueueConnectionFactory() : new MQTopicConnectionFactory();
+
+    connFactory.setHostName( resolver.host );
+    try {
+      connFactory.setPort( resolver.port );
+      connFactory.setQueueManager( resolver.queueManager );
+      connFactory.setChannel( resolver.channel );
+      connFactory.setTransportType( WMQConstants.WMQ_CM_CLIENT );
+    } catch ( JMSException e ) {
+      throw new RuntimeException( e );
     }
-    return null;
+    return connFactory.createContext( meta.username, meta.password );
+  }
+
+  @Override public Destination getDestination( JmsMeta meta ) {
+    checkNotNull( meta.destinationName, getString( JmsConstants.PKG, "JmsWebsphereMQ.DestinationNameRequired" ) );
+    try {
+      return isQueue( meta ) ? new MQQueue( meta.destinationName ) : new MQTopic( meta.destinationName );
+    } catch ( JMSException e ) {
+      throw new RuntimeException( e );
+    }
+  }
+
+  private boolean isQueue( JmsMeta meta ) {
+    return DestinationType.valueOf( meta.destinationType ).equals( QUEUE );
   }
 
 
-  class MQUrlResolver {
+  static class MQUrlResolver {
     private final JmsMeta meta;
     private final Pattern pattern;
 

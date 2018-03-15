@@ -29,7 +29,7 @@ import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
-import org.pentaho.di.trans.step.jms.context.JmsContextProvider;
+import org.pentaho.di.trans.step.jms.context.JmsProvider;
 
 import java.util.List;
 
@@ -38,8 +38,8 @@ import java.util.List;
   description = "", categoryDescription = "Streaming" )
 public class JmsConsumerMeta extends JmsMeta {
 
-  public JmsConsumerMeta( List<JmsContextProvider> jmsContextProviders ) {
-    super( jmsContextProviders );
+  public JmsConsumerMeta( List<JmsProvider> jmsProviders ) {
+    super( jmsProviders );
   }
 
   @SuppressWarnings( "deprecated" )

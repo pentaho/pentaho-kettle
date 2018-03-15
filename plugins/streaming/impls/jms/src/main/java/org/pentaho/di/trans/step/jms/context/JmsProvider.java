@@ -24,8 +24,29 @@ package org.pentaho.di.trans.step.jms.context;
 
 import org.pentaho.di.trans.step.jms.JmsMeta;
 
+import javax.jms.Destination;
 import javax.jms.JMSContext;
 
-public interface JmsContextProvider {
-  JMSContext get( JmsMeta meta );
+
+public interface JmsProvider {
+
+  boolean supports( ConnectionType type );
+
+  JMSContext getContext( JmsMeta meta );
+
+  Destination getDestination( JmsMeta meta );
+
+
+  enum ConnectionType {
+    WEBSPHERE,
+    ACTIVEMQ,
+    JNDI
+  }
+
+  enum DestinationType {
+    QUEUE,
+    TOPIC
+  }
+
 }
+

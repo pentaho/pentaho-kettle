@@ -37,10 +37,8 @@ import javax.jms.JMSConsumer;
 import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.MessageListener;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.assertThat;
@@ -86,16 +84,4 @@ public class JmsStreamSourceTest {
   }
 
 
-  List<String> foo( String s ) {
-    return Arrays.asList( null, "foo" );
-  }
-
-  @Test public void test() {
-    System.out.println( foo( "fo" )
-      .stream()
-      .filter( Objects::nonNull )
-      .findFirst().get() );
-
-
-  }
 }

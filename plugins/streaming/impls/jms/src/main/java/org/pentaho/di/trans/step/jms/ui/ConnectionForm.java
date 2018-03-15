@@ -44,10 +44,10 @@ import java.util.List;
 
 import static com.google.common.collect.ImmutableList.of;
 import static org.pentaho.di.i18n.BaseMessages.getString;
+import static org.pentaho.di.trans.step.jms.JmsConstants.PKG;
 import static org.pentaho.di.ui.trans.step.BaseStreamingDialog.INPUT_WIDTH;
 
 public class ConnectionForm {
-  private static Class<?> PKG = ConnectionForm.class;
 
   private final Composite parentComponent;
   JmsConsumerMeta jmsMeta;

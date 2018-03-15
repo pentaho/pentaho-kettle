@@ -34,9 +34,9 @@ import org.pentaho.di.ui.core.widget.ComboVar;
 import org.pentaho.di.ui.core.widget.TextVar;
 
 import static org.pentaho.di.i18n.BaseMessages.getString;
+import static org.pentaho.di.trans.step.jms.JmsConstants.PKG;
 
 public class DestinationForm {
-  private static Class<?> PKG = DestinationForm.class;
 
   private final Composite parentComponent;
   private final PropsUI props;

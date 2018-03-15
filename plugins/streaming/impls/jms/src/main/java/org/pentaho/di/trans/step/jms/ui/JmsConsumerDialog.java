@@ -33,8 +33,9 @@ import org.pentaho.di.trans.step.jms.JmsConsumerMeta;
 import org.pentaho.di.trans.streaming.common.BaseStreamStepMeta;
 import org.pentaho.di.ui.trans.step.BaseStreamingDialog;
 
+import static org.pentaho.di.trans.step.jms.JmsConstants.PKG;
+
 public class JmsConsumerDialog extends BaseStreamingDialog {
-  private static Class<?> PKG = JmsConsumerDialog.class;
   JmsConsumerMeta jmsMeta;
   private DestinationForm destinationForm;
   private ConnectionForm connectionForm;
