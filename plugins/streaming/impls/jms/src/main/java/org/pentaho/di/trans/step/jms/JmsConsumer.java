@@ -46,13 +46,13 @@ public class JmsConsumer extends BaseStreamStep {
   public boolean init( StepMetaInterface stepMetaInterface, StepDataInterface stepDataInterface ) {
     boolean superStatus = super.init( stepMetaInterface, stepDataInterface );
 
-    JmsMeta meta = (JmsMeta) stepMetaInterface;
+    JmsConsumerMeta meta = (JmsConsumerMeta) stepMetaInterface;
 
     RowMeta rowMeta = new RowMeta();
     rowMeta.addValueMeta( new ValueMetaString( "message" ) );
 
     window = new FixedTimeStreamWindow<>( subtransExecutor, rowMeta, getDuration(), getBatchSize() );
-    source = new JmsStreamSource( this, requireNonNull( meta ) );
+    source = new JmsStreamSource( this, requireNonNull( meta.jmsDelegate ) );
     return superStatus;
   }
 

@@ -25,8 +25,9 @@ package org.pentaho.di.trans.step.jms.ui;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.widgets.Shell;
 import org.pentaho.di.trans.TransMeta;
-import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDialogInterface;
+import org.pentaho.di.trans.step.StepMetaInterface;
+import org.pentaho.di.trans.step.jms.JmsDelegate;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 public class JmsProducerDialog extends BaseStepDialog implements StepDialogInterface {
@@ -34,17 +35,18 @@ public class JmsProducerDialog extends BaseStepDialog implements StepDialogInter
 
   private final ModifyListener lsMod;
   private final Shell parent;
+  private final JmsDelegate jmsDelegate;
 
-  public JmsProducerDialog( Shell parent, BaseStepMeta meta,
+  public JmsProducerDialog( Shell parent, StepMetaInterface meta, JmsDelegate jmsDelegate,
                             TransMeta transMeta, String stepname ) {
     super( parent, meta, transMeta, stepname );
     lsMod = e -> meta.setChanged();
     this.parent = parent;
+    this.jmsDelegate = jmsDelegate;
   }
 
   @Override public String open() {
-
-    new ConnectionForm( parent, props, transMeta, lsMod ).layoutForm();
+    new ConnectionForm( parent, props, transMeta, lsMod, jmsDelegate ).layoutForm();
     return "";
   }
 }

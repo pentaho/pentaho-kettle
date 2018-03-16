@@ -32,7 +32,7 @@ import com.ibm.msg.client.wmq.WMQConstants;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.trans.step.jms.JmsConstants;
-import org.pentaho.di.trans.step.jms.JmsMeta;
+import org.pentaho.di.trans.step.jms.JmsDelegate;
 
 import javax.jms.Destination;
 import javax.jms.JMSContext;
@@ -52,7 +52,7 @@ public class WebsphereMQProvider implements JmsProvider {
     return type == WEBSPHERE;
   }
 
-  @Override public JMSContext getContext( JmsMeta meta ) {
+  @Override public JMSContext getContext( JmsDelegate meta ) {
 
     MQUrlResolver resolver = new MQUrlResolver( meta, new Variables() );
 
@@ -71,7 +71,7 @@ public class WebsphereMQProvider implements JmsProvider {
     return connFactory.createContext( meta.username, meta.password );
   }
 
-  @Override public Destination getDestination( JmsMeta meta ) {
+  @Override public Destination getDestination( JmsDelegate meta ) {
     checkNotNull( meta.destinationName, getString( JmsConstants.PKG, "JmsWebsphereMQ.DestinationNameRequired" ) );
     try {
       return isQueue( meta ) ? new MQQueue( meta.destinationName ) : new MQTopic( meta.destinationName );
@@ -80,13 +80,13 @@ public class WebsphereMQProvider implements JmsProvider {
     }
   }
 
-  private boolean isQueue( JmsMeta meta ) {
+  private boolean isQueue( JmsDelegate meta ) {
     return DestinationType.valueOf( meta.destinationType ).equals( QUEUE );
   }
 
 
   static class MQUrlResolver {
-    private final JmsMeta meta;
+    private final JmsDelegate meta;
     private final Pattern pattern;
 
     private String host = null;
@@ -95,14 +95,14 @@ public class WebsphereMQProvider implements JmsProvider {
     private String channel = "SYSTEM.DEF.SVRCONN"; // IBM default
 
 
-    public MQUrlResolver( JmsMeta meta, VariableSpace space ) {
+    MQUrlResolver( JmsDelegate meta, VariableSpace space ) {
       this.pattern = compile(
         "mq://([\\p{Alnum}\\x2D\\x2E]*)(:(\\p{Digit}*))?/([\\p{Alnum}\\x2E]*)(\\x3F(channel=([^\\s=\\x26]*)))?" );
       this.meta = meta;
       resolve( space );
     }
 
-    protected void resolve( VariableSpace space ) {
+    void resolve( VariableSpace space ) {
       Matcher matcher = pattern.matcher( space.environmentSubstitute( meta.url ) );
       if ( matcher.matches() ) {
         String value;

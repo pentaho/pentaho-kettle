@@ -24,11 +24,15 @@
              http://www.pentaho.com/xml/schemas/pentaho-blueprint http://www.pentaho.com/xml/schemas/pentaho-blueprint.xsd">
 
 
+  <!-- JmsConsumer contains a delegate, which will handle interaction with whichever jms provider is appropriate -->
   <bean id="JmsConsumer" class="org.pentaho.di.trans.step.jms.JmsConsumerMeta" scope="prototype">
-    <argument ref="jmsProviders"/>
+    <argument ref="jmsDelegate"/>
     <pen:di-plugin type="org.pentaho.di.core.plugins.StepPluginType"/>
   </bean>
 
+  <bean id="jmsDelegate" class="org.pentaho.di.trans.step.jms.JmsDelegate" scope="prototype">
+    <argument ref="jmsProviders"/>
+  </bean>
 
   <reference-list id="jmsProviders" interface="org.pentaho.di.trans.step.jms.context.JmsProvider"
                   availability="optional"/>

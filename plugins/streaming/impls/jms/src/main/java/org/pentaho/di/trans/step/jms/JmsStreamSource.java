@@ -35,21 +35,21 @@ import static java.util.Collections.singletonList;
 
 public class JmsStreamSource extends BlockingQueueStreamSource<List<Object>> {
 
-  private final JmsMeta meta;
+  private final JmsDelegate jmsDelegate;
   private JMSConsumer consumer;
 
-  protected JmsStreamSource( BaseStreamStep streamStep, JmsMeta meta ) {
+  JmsStreamSource( BaseStreamStep streamStep, JmsDelegate jmsDelegate ) {
     super( streamStep );
-    this.meta = meta;
+    this.jmsDelegate = jmsDelegate;
   }
 
   @Override public void open() {
-    consumer = meta.getJmsContext().createConsumer( meta.getDestination() );
+    consumer = jmsDelegate.getJmsContext().createConsumer( jmsDelegate.getDestination() );
     consumer.setMessageListener( ( message ) -> {
       try {
         acceptRows( singletonList( of( message.getBody( Object.class ) ) ) );
       } catch ( JMSException e ) {
-        throw new RuntimeException( "FIXME" ); // TODO
+        throw new RuntimeException( e );
       }
     } );
   }

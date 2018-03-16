@@ -49,15 +49,15 @@ import static org.mockito.Mockito.when;
 public class JmsStreamSourceTest {
 
   @Mock private JmsContext context;
-  @Mock private JmsMeta meta;
+  @Mock private JmsDelegate meta;
   @Mock private JMSConsumer consumer;
   @Mock private JmsConsumer consumerStep;
   @Mock private Destination destination;
   @Mock private Message message;
 
-  @Captor ArgumentCaptor<MessageListener> listener;
+  @Captor private ArgumentCaptor<MessageListener> listener;
 
-  @InjectMocks JmsStreamSource source;
+  @InjectMocks private JmsStreamSource source;
 
   @Before
   public void before() throws JMSException {

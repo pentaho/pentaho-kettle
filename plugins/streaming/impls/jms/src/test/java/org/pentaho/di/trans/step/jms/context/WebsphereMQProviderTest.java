@@ -27,7 +27,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
-import org.pentaho.di.trans.step.jms.JmsConsumerMeta;
+import org.pentaho.di.trans.step.jms.JmsDelegate;
 
 import javax.jms.Destination;
 import javax.jms.Queue;
@@ -45,8 +45,8 @@ import static org.pentaho.di.trans.step.jms.context.JmsProvider.DestinationType.
 @RunWith ( MockitoJUnitRunner.class )
 public class WebsphereMQProviderTest {
 
-  JmsProvider jmsProvider = new WebsphereMQProvider();
-  @Mock JmsConsumerMeta meta;
+  private JmsProvider jmsProvider = new WebsphereMQProvider();
+  @Mock private JmsDelegate jmsDelegate;
 
 
   @Test
@@ -58,27 +58,27 @@ public class WebsphereMQProviderTest {
 
   @Test
   public void getQueueDestination() {
-    meta.destinationType = QUEUE.name();
-    meta.destinationName = "somename";
-    Destination dest = jmsProvider.getDestination( meta );
+    jmsDelegate.destinationType = QUEUE.name();
+    jmsDelegate.destinationName = "somename";
+    Destination dest = jmsProvider.getDestination( jmsDelegate );
     assertTrue( dest instanceof Queue );
   }
 
   @Test
   public void getTopicDestination() {
-    meta.destinationType = TOPIC.name();
-    meta.destinationName = "somename";
-    Destination dest = jmsProvider.getDestination( meta );
+    jmsDelegate.destinationType = TOPIC.name();
+    jmsDelegate.destinationName = "somename";
+    Destination dest = jmsProvider.getDestination( jmsDelegate );
     assertTrue( dest instanceof Topic );
   }
 
   @Test
   public void noDestinationNameSetCausesError() {
-    meta.destinationType = QUEUE.name();
-    meta.destinationName = null;
+    jmsDelegate.destinationType = QUEUE.name();
+    jmsDelegate.destinationName = null;
 
     try {
-      jmsProvider.getDestination( meta );
+      jmsProvider.getDestination( jmsDelegate );
       fail();
     } catch ( Exception e ) {
       assertTrue( e.getMessage().contains( "Destination name must be set." ) );

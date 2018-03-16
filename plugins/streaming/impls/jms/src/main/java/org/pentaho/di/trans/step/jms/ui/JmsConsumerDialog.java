@@ -32,6 +32,7 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.jms.JmsConsumerMeta;
+import org.pentaho.di.trans.step.jms.JmsDelegate;
 import org.pentaho.di.trans.streaming.common.BaseStreamStepMeta;
 import org.pentaho.di.ui.core.widget.TextVar;
 import org.pentaho.di.ui.trans.step.BaseStreamingDialog;
@@ -40,14 +41,17 @@ import static org.pentaho.di.i18n.BaseMessages.getString;
 import static org.pentaho.di.trans.step.jms.JmsConstants.PKG;
 
 public class JmsConsumerDialog extends BaseStreamingDialog {
-  JmsConsumerMeta jmsMeta;
+  private final JmsDelegate jmsDelegate;
+  private JmsConsumerMeta jmsMeta;
   private DestinationForm destinationForm;
   private ConnectionForm connectionForm;
   private TextVar wReceiverTimeout;
+  private FieldsTab fieldsTab;
 
   public JmsConsumerDialog( Shell parent, Object in, TransMeta tr, String sname ) {
     super( parent, in, tr, sname );
     jmsMeta = (JmsConsumerMeta) in;
+    jmsDelegate = jmsMeta.jmsDelegate;
   }
 
   @Override protected String getDialogTitle() {
@@ -60,11 +64,12 @@ public class JmsConsumerDialog extends BaseStreamingDialog {
     setupLayout.marginHeight = 15;
     setupLayout.marginWidth = 15;
     wSetupComp.setLayout( setupLayout );
-    connectionForm = new ConnectionForm( wSetupComp, props, transMeta, lsMod );
+    connectionForm = new ConnectionForm( wSetupComp, props, transMeta, lsMod, jmsMeta.jmsDelegate );
     Group group = connectionForm.layoutForm();
 
-    // TODO add the values for destination type and location
-    destinationForm = new DestinationForm( wSetupComp, group, props, transMeta, lsMod, "", "" );
+    destinationForm =
+      new DestinationForm( wSetupComp, group, props, transMeta, lsMod, jmsDelegate.destinationType,
+        jmsDelegate.destinationName );
     Composite previousComp = destinationForm.layoutForm();
 
     Label wlReceiveTimeout = new Label( wSetupComp, SWT.LEFT );
@@ -83,18 +88,31 @@ public class JmsConsumerDialog extends BaseStreamingDialog {
     fdReceiveTimeout.width = 140;
     wReceiverTimeout.setLayoutData( fdReceiveTimeout );
     wReceiverTimeout.addModifyListener( lsMod );
+
   }
+
+  @Override protected void createAdditionalTabs() {
+    fieldsTab = new FieldsTab(
+      wTabFolder, props, transMeta, lsMod, "message", "destination" );
+
+    fieldsTab.buildFieldsTab();
+  }
+
 
   @Override protected void additionalOks( BaseStreamStepMeta meta ) {
-    jmsMeta.url = connectionForm.getIbmUrl();
-    // TODO all other props
+    jmsDelegate.url = connectionForm.getUrl();
+    jmsDelegate.username = connectionForm.getUser();
+    jmsDelegate.password = connectionForm.getPassword();
+    jmsDelegate.destinationType = destinationForm.getDestinationType();
+    jmsDelegate.destinationName = destinationForm.getDestinationName();
   }
 
+
   @Override protected int[] getFieldTypes() {
-    return new int[ 0 ];
+    return fieldsTab.getFieldTypes();
   }
 
   @Override protected String[] getFieldNames() {
-    return new String[ 0 ];
+    return fieldsTab.getFieldNames();
   }
 }

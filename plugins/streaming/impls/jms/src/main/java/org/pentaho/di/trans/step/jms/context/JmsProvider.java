@@ -22,25 +22,40 @@
 
 package org.pentaho.di.trans.step.jms.context;
 
-import org.pentaho.di.trans.step.jms.JmsMeta;
+import org.pentaho.di.trans.step.jms.JmsDelegate;
 
 import javax.jms.Destination;
 import javax.jms.JMSContext;
+
+import static org.pentaho.di.i18n.BaseMessages.getString;
+import static org.pentaho.di.trans.step.jms.JmsConstants.PKG;
 
 
 public interface JmsProvider {
 
   boolean supports( ConnectionType type );
 
-  JMSContext getContext( JmsMeta meta );
+  JMSContext getContext( JmsDelegate meta );
 
-  Destination getDestination( JmsMeta meta );
+  Destination getDestination( JmsDelegate meta );
 
 
   enum ConnectionType {
-    WEBSPHERE,
-    ACTIVEMQ,
-    JNDI
+    WEBSPHERE {
+      public String toString() {
+        return getString( PKG, "JmsDialog.IBMMQ" );
+      }
+    },
+    ACTIVEMQ {
+      public String toString() {
+        return getString( PKG, "JmsDialog.ActiveMQ" );
+      }
+    },
+    JNDI {
+      public String toString() {
+        return getString( PKG, "JmsDialog.Generic" );
+      }
+    }
   }
 
   enum DestinationType {

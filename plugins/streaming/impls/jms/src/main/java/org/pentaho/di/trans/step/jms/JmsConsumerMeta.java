@@ -23,23 +23,33 @@
 package org.pentaho.di.trans.step.jms;
 
 import org.pentaho.di.core.annotations.Step;
+import org.pentaho.di.core.exception.KettleStepException;
+import org.pentaho.di.core.injection.InjectionDeep;
 import org.pentaho.di.core.injection.InjectionSupported;
+import org.pentaho.di.core.row.RowMeta;
+import org.pentaho.di.core.row.value.ValueMetaString;
+import org.pentaho.di.core.util.GenericStepData;
+import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
-import org.pentaho.di.trans.step.jms.context.JmsProvider;
+import org.pentaho.di.trans.streaming.common.BaseStreamStepMeta;
 
-import java.util.List;
+import static org.pentaho.di.core.ObjectLocationSpecificationMethod.FILENAME;
 
 @InjectionSupported ( localizationPrefix = "JmsConsumerMeta.Injection." )
-@Step ( id = "JmsConsumer", image = "JmsConsumer.svg", name = "JMS Consumer",
-  description = "", categoryDescription = "Streaming" )
-public class JmsConsumerMeta extends JmsMeta {
+@Step ( id = "JmsConsumer", image = "JMSC.svg", name = "JMS Consumer",
+  description = "JmsConsumerDialog.TypeLongDesc", categoryDescription = "Streaming" )
+public class JmsConsumerMeta extends BaseStreamStepMeta {
 
-  public JmsConsumerMeta( List<JmsProvider> jmsProviders ) {
-    super( jmsProviders );
+  @InjectionDeep
+  public final JmsDelegate jmsDelegate;
+
+  public JmsConsumerMeta( JmsDelegate jmsDelegate ) {
+    setSpecificationMethod( FILENAME );
+    this.jmsDelegate = jmsDelegate;
   }
 
   @SuppressWarnings( "deprecated" )
@@ -47,10 +57,19 @@ public class JmsConsumerMeta extends JmsMeta {
     return "org.pentaho.di.trans.step.jms.ui.JmsConsumerDialog";
   }
 
+  public RowMeta getRowMeta( String s, VariableSpace variableSpace ) {
+    RowMeta rowMeta = new RowMeta();
+    rowMeta.addValueMeta( new ValueMetaString( "message" ) );
+    return rowMeta;
+  }
 
   @Override
   public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta,
                                 Trans trans ) {
     return new JmsConsumer( stepMeta, stepDataInterface, copyNr, transMeta, trans );
+  }
+
+  @Override public StepDataInterface getStepData() {
+    return new GenericStepData();
   }
 }

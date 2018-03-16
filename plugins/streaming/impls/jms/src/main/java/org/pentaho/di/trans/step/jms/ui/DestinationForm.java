@@ -89,7 +89,7 @@ public class DestinationForm {
     destinationType.add( getString( PKG, "JmsDialog.Dest.Queue" ) );
 
     destinationType.addModifyListener( lsMod );
-    destinationType.setText( destinationTypeValue );
+
 
     Label lbDestName = new Label( parentComponent, SWT.LEFT );
     props.setLook( lbDestType );
@@ -109,9 +109,17 @@ public class DestinationForm {
     destinationName.setLayoutData( fdDestName );
 
     destinationName.addModifyListener( lsMod );
-    destinationName.setText( destinationNameValue );
+
+
+    setStartingValues();
 
     return destinationType;
+  }
+
+  private void setStartingValues() {
+    destinationName.setText( destinationNameValue );
+    destinationType.setText( destinationTypeValue );
+
   }
 
   public String getDestinationType() {

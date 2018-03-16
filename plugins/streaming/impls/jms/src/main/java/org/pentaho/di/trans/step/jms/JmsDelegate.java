@@ -23,43 +23,35 @@
 package org.pentaho.di.trans.step.jms;
 
 
-import javax.jms.JMSContext;
-
-import org.pentaho.di.core.ObjectLocationSpecificationMethod;
-import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.injection.Injection;
-import org.pentaho.di.core.injection.InjectionSupported;
-import org.pentaho.di.core.row.RowMeta;
-import org.pentaho.di.core.row.value.ValueMetaString;
-import org.pentaho.di.core.util.GenericStepData;
 import org.pentaho.di.core.util.serialization.Sensitive;
-import org.pentaho.di.core.variables.VariableSpace;
-import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.jms.context.JmsProvider;
-import org.pentaho.di.trans.streaming.common.BaseStreamStepMeta;
 
 import javax.jms.Destination;
+import javax.jms.JMSContext;
 import java.util.List;
-import java.util.Objects;
 
+import static org.pentaho.di.i18n.BaseMessages.getString;
+import static org.pentaho.di.trans.step.jms.JmsConstants.PKG;
 import static org.pentaho.di.trans.step.jms.context.JmsProvider.ConnectionType.WEBSPHERE;
 import static org.pentaho.di.trans.step.jms.context.JmsProvider.DestinationType.QUEUE;
 
 
-@InjectionSupported ( localizationPrefix = "IBMMQConsumerMeta.Injection." )
-public abstract class JmsMeta extends BaseStreamStepMeta {
-
-  //TODO move these props to a container pojo that can be added to both
-  // the consumer and producer metas, since BaseStreamStepMeta is just consumer.
+/**
+ * Handles creation of JMSContext and JMS Destination via the appropriate {@link JmsProvider} implementation.
+ *
+ * JMS related connection info is captured here as @Injection attributes so the same attributes can be shared
+ * by any Meta implementation requiring Jms connection support.
+ */
+public  class JmsDelegate {
 
   @Injection ( name = "DESTINATION" ) public String destinationName = "DEV.QUEUE.1";
 
-  @Injection ( name = "URL" ) public String url = "mq://10.177.178.135:1414/QM1?channel=DEV.APP.SVRCONN";
+  @Injection ( name = "URL" ) public String url = "mq://localhost:1414/QM1?channel=DEV.APP.SVRCONN";
 
-  @Injection ( name = "USERNAME" ) public String username = "devuser";
+  @Injection ( name = "USERNAME" ) public String username = "username";
 
-  @Sensitive
-  @Injection ( name = "PASSWORD" ) public String password = "password";
+  @Sensitive @Injection ( name = "PASSWORD" ) public String password = "password";
 
   @Injection ( name = "JNDI_URL" ) public String jndiUrl = "";
 
@@ -70,22 +62,11 @@ public abstract class JmsMeta extends BaseStreamStepMeta {
   @Injection ( name = "DESTINATION_TYPE" ) public String destinationType = QUEUE.name();
 
 
-  protected final List<JmsProvider> jmsProviders;
+  private final List<JmsProvider> jmsProviders;
 
-  protected JmsMeta( List<JmsProvider> jmsProviders ) {
+  public JmsDelegate( List<JmsProvider> jmsProviders ) {
     super();
     this.jmsProviders = jmsProviders;
-    setSpecificationMethod( ObjectLocationSpecificationMethod.FILENAME );
-  }
-
-  @Override public RowMeta getRowMeta( String s, VariableSpace variableSpace ) throws KettleStepException {
-    RowMeta rowMeta = new RowMeta();
-    rowMeta.addValueMeta( new ValueMetaString( "message" ) );
-    return rowMeta;
-  }
-
-  @Override public StepDataInterface getStepData() {
-    return new GenericStepData();
   }
 
   Destination getDestination() {
@@ -99,8 +80,7 @@ public abstract class JmsMeta extends BaseStreamStepMeta {
   private JmsProvider getJmsProvider() {
     return jmsProviders.stream()
       .filter( prov -> prov.supports( JmsProvider.ConnectionType.valueOf( connectionType ) ) )
-      .filter( Objects::nonNull )
       .findFirst()
-      .orElseThrow( () -> new RuntimeException( "FIXME" ) );
+      .orElseThrow( () -> new RuntimeException( getString( PKG, "JmsDelegate.UnsupportedConnectionType" ) ) );
   }
 }
