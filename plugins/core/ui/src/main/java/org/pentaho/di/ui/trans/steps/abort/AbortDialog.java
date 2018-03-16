@@ -78,6 +78,7 @@ public class AbortDialog extends BaseStepDialog implements StepDialogInterface {
   private Button wAbortWithErrorButton;
   private Button wSafeStopButton;
   private Group wOptionsGroup;
+  private Label hSpacer;
 
   public AbortDialog( Shell parent, Object in, TransMeta transMeta, String sname ) {
     super( parent, (BaseStepMeta) in, transMeta, sname );
@@ -88,9 +89,9 @@ public class AbortDialog extends BaseStepDialog implements StepDialogInterface {
     Shell parent = getParent();
     Display display = parent.getDisplay();
 
-    shell = new Shell( parent, SWT.DIALOG_TRIM | SWT.MIN | SWT.MAX );
+    shell = new Shell( parent, SWT.DIALOG_TRIM | SWT.MIN | SWT.MAX | SWT.RESIZE );
     props.setLook( shell );
-    shell.setMinimumSize( 330, 520 );
+    shell.setMinimumSize( 340, 520 );
     setShellImage( shell, input );
 
     lsMod = e -> input.setChanged();
@@ -128,14 +129,6 @@ public class AbortDialog extends BaseStepDialog implements StepDialogInterface {
     fdStepname.width = 250;
     wStepname.setLayoutData( fdStepname );
 
-    Label wicon = new Label( shell, SWT.RIGHT );
-    wicon.setImage( getImage() );
-    FormData fdlicon = new FormData();
-    fdlicon.top = new FormAttachment( 0, 0 );
-    fdlicon.right = new FormAttachment( 100, 0 );
-    wicon.setLayoutData( fdlicon );
-    props.setLook( wicon );
-
     Label spacer = new Label( shell, SWT.HORIZONTAL | SWT.SEPARATOR );
     FormData fdSpacer = new FormData();
     fdSpacer.height = 2;
@@ -144,8 +137,14 @@ public class AbortDialog extends BaseStepDialog implements StepDialogInterface {
     fdSpacer.right = new FormAttachment( 100, 0 );
     spacer.setLayoutData( fdSpacer );
 
-    buildOptions( spacer );
-    buildLogging( wOptionsGroup );
+    Label wicon = new Label( shell, SWT.RIGHT );
+    wicon.setImage( getImage() );
+    FormData fdlicon = new FormData();
+    fdlicon.top = new FormAttachment( 0, 0 );
+    fdlicon.right = new FormAttachment( 100, 0 );
+    fdlicon.bottom = new FormAttachment( spacer, 0 );
+    wicon.setLayoutData( fdlicon );
+    props.setLook( wicon );
 
     // Some buttons
     wCancel = new Button( shell, SWT.PUSH );
@@ -162,13 +161,17 @@ public class AbortDialog extends BaseStepDialog implements StepDialogInterface {
     fdOk.bottom = new FormAttachment( 100, 0 );
     wOK.setLayoutData( fdOk );
 
-    Label hSpacer = new Label( shell, SWT.HORIZONTAL | SWT.SEPARATOR );
+    hSpacer = new Label( shell, SWT.HORIZONTAL | SWT.SEPARATOR );
     FormData fdhSpacer = new FormData();
     fdhSpacer.height = 2;
     fdhSpacer.left = new FormAttachment( 0, 0 );
     fdhSpacer.bottom = new FormAttachment( wCancel, -15 );
     fdhSpacer.right = new FormAttachment( 100, 0 );
     hSpacer.setLayoutData( fdhSpacer );
+
+
+    buildOptions( spacer );
+    buildLogging( wOptionsGroup );
 
     // Add listeners
     lsCancel = new Listener() {
@@ -292,6 +295,7 @@ public class AbortDialog extends BaseStepDialog implements StepDialogInterface {
     fdLoggingGroup.left = new FormAttachment( 0, 0 );
     fdLoggingGroup.top = new FormAttachment( widgetAbove, 15 );
     fdLoggingGroup.right = new FormAttachment( 100, 0 );
+    fdLoggingGroup.bottom = new FormAttachment( hSpacer, -15 );
     wLoggingGroup.setLayoutData( fdLoggingGroup );
 
     wlMessage = new Label( wLoggingGroup, SWT.RIGHT );
@@ -326,7 +330,7 @@ public class AbortDialog extends BaseStepDialog implements StepDialogInterface {
 
   private Image getImage() {
     return SwtSvgImageUtil.getImage( shell.getDisplay(), getClass().getClassLoader(), "ABR.svg", ConstUI.ICON_SIZE,
-        ConstUI.ICON_SIZE );
+      ConstUI.ICON_SIZE );
   }
 
   /**
