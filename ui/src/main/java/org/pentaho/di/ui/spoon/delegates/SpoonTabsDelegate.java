@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -24,6 +24,7 @@ package org.pentaho.di.ui.spoon.delegates;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import org.apache.commons.vfs2.FileObject;
 import org.eclipse.swt.SWT;
@@ -260,7 +261,7 @@ public class SpoonTabsDelegate extends SpoonDelegate {
     TabSet tabfolder = spoon.tabfolder;
 
     try {
-      // OK, now we have the HTML, create a new browset tab.
+      // OK, now we have the HTML, create a new browser tab.
 
       // See if there already is a tab for this browser
       // If no, add it
@@ -314,31 +315,25 @@ public class SpoonTabsDelegate extends SpoonDelegate {
   }
 
   public TabMapEntry findTabMapEntry( String tabItemText, ObjectType objectType ) {
-    for ( TabMapEntry entry : tabMap ) {
-      if ( !entry.getTabItem().isDisposed() ) {
-        if ( objectType == entry.getObjectType() && entry.getTabItem().getText().equalsIgnoreCase( tabItemText ) ) {
-          return entry;
-        }
-      }
-    }
-    return null;
+    return tabMap.stream()
+      .filter( tabMapEntry -> !tabMapEntry.getTabItem().isDisposed() )
+      .filter( tabMapEntry -> tabMapEntry.getObjectType() == objectType )
+      .filter( tabMapEntry -> tabMapEntry.getTabItem().getText().equalsIgnoreCase( tabItemText ) )
+      .findFirst().orElse( null );
   }
 
   public TabMapEntry findTabMapEntry( Object managedObject ) {
-    for ( TabMapEntry entry : tabMap ) {
-      if ( !entry.getTabItem().isDisposed() ) {
-        Object entryManagedObj = entry.getObject().getManagedObject();
-        // make sure they are the same class before comparing them
-        if ( entryManagedObj != null && managedObject != null ) {
-          if ( entryManagedObj.getClass().equals( managedObject.getClass() ) ) {
-            if ( entryManagedObj.equals( managedObject ) ) {
-              return entry;
-            }
-          }
-        }
-      }
+    if ( managedObject == null ) {
+      return null;
     }
-    return null;
+
+    return tabMap.stream()
+      .filter( tabMapEntry -> !tabMapEntry.getTabItem().isDisposed() )
+      .filter( tabMapEntry -> Objects.nonNull( tabMapEntry.getObject().getManagedObject() ) )
+      // make sure they are the same class before comparing them
+      .filter( tabMapEntry -> tabMapEntry.getObject().getManagedObject().getClass().equals( managedObject.getClass() ) )
+      .filter( tabMapEntry -> tabMapEntry.getObject().getManagedObject().equals( managedObject ) )
+      .findFirst().orElse( null );
   }
 
   /**

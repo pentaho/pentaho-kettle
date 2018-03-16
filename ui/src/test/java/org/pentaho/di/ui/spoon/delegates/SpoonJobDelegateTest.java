@@ -27,11 +27,19 @@ import org.junit.Before;
 import org.junit.Test;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.exception.KettlePluginException;
 import org.pentaho.di.core.logging.JobLogTable;
+import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.logging.LogLevel;
+import org.pentaho.di.core.plugins.ClassLoadingPluginInterface;
+import org.pentaho.di.core.plugins.JobEntryPluginType;
+import org.pentaho.di.core.plugins.PluginInterface;
+import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.job.JobExecutionConfiguration;
 import org.pentaho.di.job.JobMeta;
+import org.pentaho.di.job.entry.JobEntryDialogInterface;
+import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.ui.job.dialog.JobExecutionConfigurationDialog;
 import org.pentaho.di.ui.spoon.Spoon;
 import org.pentaho.di.ui.spoon.job.JobGraph;
@@ -47,7 +55,10 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.doCallRealMethod;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 public class SpoonJobDelegateTest {
   private static final String[] EMPTY_STRING_ARRAY = new String[]{};
@@ -120,8 +131,8 @@ public class SpoonJobDelegateTest {
     doReturn( rowMeta ).when( spoon.variables ).getRowMeta();
     doReturn( EMPTY_STRING_ARRAY ).when( rowMeta ).getFieldNames();
     doReturn( shell ).when( spoon ).getShell();
-    doReturn( jobExecutionConfigurationDialog ).when( delegate ).newJobExecutionConfigurationDialog( shell,
-        jobExecutionConfiguration, jobMeta );
+    doReturn( jobExecutionConfigurationDialog ).when( delegate )
+      .newJobExecutionConfigurationDialog( jobExecutionConfiguration, jobMeta );
     doReturn( activeJobGraph ).when( spoon ).getActiveJobGraph();
     doReturn( MAP_WITH_TEST_VARIABLE ).when( jobExecutionConfiguration ).getVariables();
     doReturn( MAP_WITH_TEST_PARAM ).when( jobExecutionConfiguration ).getParams();
@@ -142,5 +153,55 @@ public class SpoonJobDelegateTest {
     verify( jobMeta ).setClearingLog( TEST_BOOLEAN_PARAM );
     verify( jobMeta ).setSafeModeEnabled( TEST_BOOLEAN_PARAM );
     verify( jobMeta ).setExpandingRemoteJob( TEST_BOOLEAN_PARAM );
+  }
+
+  @Test
+  public void testGetJobEntryDialogClass() throws KettlePluginException {
+    PluginRegistry registry = PluginRegistry.getInstance();
+    PluginMockInterface plugin = mock( PluginMockInterface.class );
+    when( plugin.getIds() ).thenReturn( new String[] { "mockJobPlugin" } );
+    when( plugin.matches( "mockJobPlugin" ) ).thenReturn( true );
+    when( plugin.getName() ).thenReturn( "mockJobPlugin" );
+
+    JobEntryInterface jobEntryInterface = mock( JobEntryInterface.class );
+    when( jobEntryInterface.getDialogClassName() ).thenReturn( String.class.getName() );
+    when( plugin.getClassMap() ).thenReturn( new HashMap<Class<?>, String>() {{
+        put( JobEntryInterface.class, jobEntryInterface.getClass().getName() );
+        put( JobEntryDialogInterface.class, JobEntryDialogInterface.class.getName() );
+      }} );
+
+    registry.registerPlugin( JobEntryPluginType.class, plugin );
+
+    SpoonJobDelegate delegate = mock( SpoonJobDelegate.class );
+    Spoon spoon = mock( Spoon.class );
+    delegate.spoon = spoon;
+    delegate.log = mock( LogChannelInterface.class );
+    when( spoon.getShell() ).thenReturn( mock( Shell.class ) );
+    doCallRealMethod().when( delegate ).getJobEntryDialog( any( JobEntryInterface.class ), any( JobMeta.class ) );
+
+    JobMeta meta = mock( JobMeta.class );
+
+    // verify that dialog class is requested from plugin
+    try {
+      delegate.getJobEntryDialog( jobEntryInterface, meta ); // exception is expected here
+    } catch ( Throwable ignore ) {
+      verify( jobEntryInterface, never() ).getDialogClassName();
+    }
+
+    // verify that the deprecated way is still valid
+    when( plugin.getClassMap() ).thenReturn( new HashMap<Class<?>, String>() {{
+        put( JobEntryInterface.class, jobEntryInterface.getClass().getName() );
+      }} );
+    try {
+      delegate.getJobEntryDialog( jobEntryInterface, meta ); // exception is expected here
+    } catch ( Throwable ignore ) {
+      verify( jobEntryInterface, times( 1 ) ).getDialogClassName();
+    }
+
+    // cleanup
+    registry.removePlugin( JobEntryPluginType.class, plugin );
+  }
+
+  public interface PluginMockInterface extends ClassLoadingPluginInterface, PluginInterface {
   }
 }

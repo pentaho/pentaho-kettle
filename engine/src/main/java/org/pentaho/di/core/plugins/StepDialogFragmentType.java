@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2017-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -23,23 +23,26 @@
 package org.pentaho.di.core.plugins;
 
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.annotations.PluginDialog;
+import org.pentaho.di.core.exception.KettlePluginException;
 import org.pentaho.di.trans.step.StepDialogInterface;
-import org.pentaho.di.core.annotations.StepDialog;
 
 import java.lang.annotation.Annotation;
+import java.net.URL;
+import java.util.List;
 
 /**
  * This class represents the step dialog fragment type.
  *
  */
 @PluginMainClassType( StepDialogInterface.class )
-@PluginAnnotationType( StepDialog.class )
+@PluginAnnotationType( PluginDialog.class )
 public class StepDialogFragmentType extends BaseFragmentType implements PluginTypeInterface {
 
   private static StepDialogFragmentType stepDialogFragmentType;
 
   protected StepDialogFragmentType() {
-    super( StepDialog.class, "STEPDIALOG", "Step Dialog", StepPluginType.class );
+    super( PluginDialog.class, "STEPDIALOG", "Plugin Step Dialog", StepPluginType.class );
   }
 
   public static StepDialogFragmentType getInstance() {
@@ -51,26 +54,34 @@ public class StepDialogFragmentType extends BaseFragmentType implements PluginTy
 
   @Override
   protected String extractID( Annotation annotation ) {
-    return ( (StepDialog) annotation ).id();
+    return ( (PluginDialog) annotation ).id();
   }
 
   @Override
   protected String extractImageFile( Annotation annotation ) {
-    return ( (StepDialog) annotation ).image();
+    return ( (PluginDialog) annotation ).image();
   }
 
   @Override
   protected String extractDocumentationUrl( Annotation annotation ) {
-    return Const.getDocUrl( ( (StepDialog) annotation ).documentationUrl() );
+    return Const.getDocUrl( ( (PluginDialog) annotation ).documentationUrl() );
   }
 
   @Override
   protected String extractCasesUrl( Annotation annotation ) {
-    return ( (StepDialog) annotation ).casesUrl();
+    return ( (PluginDialog) annotation ).casesUrl();
   }
 
   @Override
   protected String extractForumUrl( Annotation annotation ) {
-    return ( (StepDialog) annotation ).forumUrl();
+    return ( (PluginDialog) annotation ).forumUrl();
+  }
+
+  @Override
+  public void handlePluginAnnotation( Class<?> clazz, java.lang.annotation.Annotation annotation,
+    List<String> libraries, boolean nativePluginType, URL pluginFolder ) throws KettlePluginException {
+    if ( ( (PluginDialog) annotation ).pluginType() == PluginDialog.PluginType.STEP ) {
+      super.handlePluginAnnotation( clazz, annotation, libraries, nativePluginType, pluginFolder );
+    }
   }
 }

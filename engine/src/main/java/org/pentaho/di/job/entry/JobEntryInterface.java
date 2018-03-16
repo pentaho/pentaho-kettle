@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -56,7 +56,7 @@ import org.w3c.dom.Node;
  * <br/>
  * The following interface method also falls into the area of maintaining settings:<br/>
  * <br/>
- * <a href="#clone()"><code>public Object clone()</code></a> <br/>
+ * <a href="#clone()"><code>Object clone()</code></a> <br/>
  * This method is called when a job entry is duplicated in Spoon. It needs to return a deep copy of this job entry
  * object. It is essential that the implementing class creates proper deep copies if the job entry configuration is
  * stored in modifiable objects, such as lists or custom helper objects. This interface does not extend Cloneable, but
@@ -65,19 +65,19 @@ import org.w3c.dom.Node;
  * The plugin needs to be able to serialize its settings to both XML and a PDI repository. The interface methods are as
  * follows:<br/>
  * <br/>
- * <a href="#getXML()"><code>public String getXML()</code></a><br/>
+ * <a href="#getXML()"><code>String getXML()</code></a><br/>
  * This method is called by PDI whenever a job entry needs to serialize its settings to XML. It is called when saving a
  * job in Spoon. The method returns an XML string, containing the serialized settings. The string contains a series of
  * XML tags, typically one tag per setting. The helper class org.pentaho.di.core.xml.XMLHandler is typically used to
  * construct the XML string.<br/>
  * <br/>
  * <a href="#loadXML(org.w3c.dom.Node, java.util.List, java.util.List, org.pentaho.di.repository.Repository)">
- * <code>public void loadXML(...)</code></a></br> This method is called by PDI whenever a job entry needs to read its
+ * <code>void loadXML(...)</code></a></br> This method is called by PDI whenever a job entry needs to read its
  * settings from XML. The XML node containing the job entry's settings is passed in as an argument. Again, the helper
  * class org.pentaho.di.core.xml.XMLHandler is typically used to conveniently read the settings from the XML node.<br/>
  * <br/>
  * <a href="#saveRep(org.pentaho.di.repository.Repository, org.pentaho.di.repository.ObjectId)">
- * <code>public void saveRep(...)</code></a><br/>
+ * <code>void saveRep(...)</code></a><br/>
  * This method is called by PDI whenever a job entry needs to save its settings to a PDI repository. The repository
  * object passed in as the first argument provides a convenient set of methods for serializing job entry settings. When
  * calling repository serialization methods, job id and job entry id are required. The job id is passed in to saveRep()
@@ -86,7 +86,7 @@ import org.w3c.dom.Node;
  * <a href=
  * "#loadRep(org.pentaho.di.repository.Repository, org.pentaho.di.repository.ObjectId, java.util.List,
  * java.util.List)">
- * <code>public void loadRep(...)</code></a><br/>
+ * <code>void loadRep(...)</code></a><br/>
  * This method is called by PDI whenever a job entry needs to read its configuration from a PDI repository. The job
  * entry id given in the arguments should be used as the identifier when using the repository's serialization methods.
  * <br/>
@@ -106,18 +106,18 @@ import org.w3c.dom.Node;
  * <br/>
  * The job entry plugin class must implement two methods to indicate to PDI which outgoing hops it supports:<br/>
  * <br/>
- * <a href="#evaluates()"><code>public boolean evaluates()</code></a><br/>
+ * <a href="#evaluates()"><code>boolean evaluates()</code></a><br/>
  * This method must return true if the job entry supports the true/false outgoing hops. If the job entry does not
  * support distinct outcomes, it must return false.<br/>
  * <br/>
- * <a href="#isUnconditional()"><code>public boolean isUnconditional()</code></a><br/>
+ * <a href="#isUnconditional()"><code>boolean isUnconditional()</code></a><br/>
  * This method must return true if the job entry supports the unconditional outgoing hop. If the job entry does not
  * support the unconditional hop, it must return false.</li><br/>
  * <li><b>Execute a job entry task</b><br/>
  * The class implementing JobEntryInterface executes the actual job entry task by implementing the following method:
  * <br/>
  * <br/>
- * <a href="#execute(org.pentaho.di.core.Result, int)"><code>public Result execute(..)</code></a><br/>
+ * <a href="#execute(org.pentaho.di.core.Result, int)"><code>Result execute(..)</code></a><br/>
  * The execute() method is going to be called by PDI when it is time for the job entry to execute its logic. The
  * arguments are a result object, which is passed in from the previously executed job entry and an integer number
  * indicating the distance of the job entry from the start entry of the job.<br/>
@@ -157,7 +157,7 @@ public interface JobEntryInterface {
    * @throws KettleException
    *           if any Kettle exceptions occur
    */
-  public Result execute( Result prev_result, int nr ) throws KettleException;
+  Result execute( Result prev_result, int nr ) throws KettleException;
 
   /**
    * Sets the parent job.
@@ -165,21 +165,21 @@ public interface JobEntryInterface {
    * @param job
    *          the parent job
    */
-  public void setParentJob( Job job );
+  void setParentJob( Job job );
 
   /**
    * Gets the parent job.
    *
    * @return the parent job
    */
-  public Job getParentJob();
+  Job getParentJob();
 
   /**
    * Gets the log channel.
    *
    * @return the log channel
    */
-  public LogChannelInterface getLogChannel();
+  LogChannelInterface getLogChannel();
 
   /**
    * Sets the repository.
@@ -187,7 +187,7 @@ public interface JobEntryInterface {
    * @param repository
    *          the new repository
    */
-  public void setRepository( Repository repository );
+  void setRepository( Repository repository );
 
   /**
    * Sets the MetaStore
@@ -195,19 +195,19 @@ public interface JobEntryInterface {
    * @param metaStore
    *          The new MetaStore to use
    */
-  public void setMetaStore( IMetaStore metaStore );
+  void setMetaStore( IMetaStore metaStore );
 
   /**
    * This method should clear out any variables, objects, etc. used by the job entry.
    */
-  public void clear();
+  void clear();
 
   /**
    * Gets the object id.
    *
    * @return the object id
    */
-  public ObjectId getObjectId();
+  ObjectId getObjectId();
 
   /**
    * Sets the object id.
@@ -215,14 +215,14 @@ public interface JobEntryInterface {
    * @param id
    *          the new object id
    */
-  public void setObjectId( ObjectId id );
+  void setObjectId( ObjectId id );
 
   /**
    * Gets the name of this job entry.
    *
    * @return the name
    */
-  public String getName();
+  String getName();
 
   /**
    * Sets the name for this job entry.
@@ -230,7 +230,7 @@ public interface JobEntryInterface {
    * @param name
    *          the new name
    */
-  public void setName( String name );
+  void setName( String name );
 
   /**
    * Gets the plugin ID
@@ -240,14 +240,14 @@ public interface JobEntryInterface {
    * @see JobEntryInterface#getPluginId()
    */
   @Deprecated
-  public String getTypeId();
+  String getTypeId();
 
   /**
    * Gets the plugin id.
    *
    * @return the plugin id
    */
-  public String getPluginId();
+  String getPluginId();
 
   /**
    * Sets the plugin id.
@@ -255,14 +255,14 @@ public interface JobEntryInterface {
    * @param pluginId
    *          the new plugin id
    */
-  public void setPluginId( String pluginId );
+  void setPluginId( String pluginId );
 
   /**
    * Gets the description of this job entry
    *
    * @return the description
    */
-  public String getDescription();
+  String getDescription();
 
   /**
    * Sets the description of this job entry
@@ -270,12 +270,12 @@ public interface JobEntryInterface {
    * @param description
    *          the new description
    */
-  public void setDescription( String description );
+  void setDescription( String description );
 
   /**
    * Sets whether the job entry has changed
    */
-  public void setChanged();
+  void setChanged();
 
   /**
    * Sets whether the job entry has changed
@@ -283,14 +283,14 @@ public interface JobEntryInterface {
    * @param ch
    *          true if the job entry has changed, false otherwise
    */
-  public void setChanged( boolean ch );
+  void setChanged( boolean ch );
 
   /**
    * Checks whether the job entry has changed
    *
    * @return true if whether the job entry has changed
    */
-  public boolean hasChanged();
+  boolean hasChanged();
 
   /**
    * This method is called by PDI whenever a job entry needs to read its settings from XML. The XML node containing the
@@ -311,7 +311,7 @@ public interface JobEntryInterface {
    *           if any errors occur during the loading of the XML
    */
   @Deprecated
-  public void loadXML( Node entrynode, List<DatabaseMeta> databases, List<SlaveServer> slaveServers, Repository rep ) throws KettleXMLException;
+  void loadXML( Node entrynode, List<DatabaseMeta> databases, List<SlaveServer> slaveServers, Repository rep ) throws KettleXMLException;
 
   /**
    * This method is called by PDI whenever a job entry needs to read its settings from XML. The XML node containing the
@@ -331,7 +331,7 @@ public interface JobEntryInterface {
    * @throws KettleXMLException
    *           if any errors occur during the loading of the XML
    */
-  public void loadXML( Node entrynode, List<DatabaseMeta> databases, List<SlaveServer> slaveServers,
+  void loadXML( Node entrynode, List<DatabaseMeta> databases, List<SlaveServer> slaveServers,
     Repository rep, IMetaStore metaStore ) throws KettleXMLException;
 
   /**
@@ -342,7 +342,7 @@ public interface JobEntryInterface {
    *
    * @return the xml representation of the job entry
    */
-  public String getXML();
+  String getXML();
 
   /**
    * This method is called by PDI whenever a job entry needs to save its settings to a PDI repository. The repository
@@ -361,7 +361,7 @@ public interface JobEntryInterface {
    *           if any errors occur during the save
    */
   @Deprecated
-  public void saveRep( Repository rep, ObjectId id_job ) throws KettleException;
+  void saveRep( Repository rep, ObjectId id_job ) throws KettleException;
 
   /**
    * This method is called by PDI whenever a job entry needs to save its settings to a PDI repository. The repository
@@ -379,7 +379,7 @@ public interface JobEntryInterface {
    * @throws KettleException
    *           if any errors occur during the save
    */
-  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_job ) throws KettleException;
+  void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_job ) throws KettleException;
 
   /**
    * This method is called by PDI whenever a job entry needs to read its configuration from a PDI repository. The job
@@ -399,7 +399,7 @@ public interface JobEntryInterface {
    *           if any errors occur during the load
    */
   @Deprecated
-  public void loadRep( Repository rep, ObjectId id_jobentry, List<DatabaseMeta> databases,
+  void loadRep( Repository rep, ObjectId id_jobentry, List<DatabaseMeta> databases,
     List<SlaveServer> slaveServers ) throws KettleException;
 
   /**
@@ -419,7 +419,7 @@ public interface JobEntryInterface {
    * @throws KettleException
    *           if any errors occur during the load
    */
-  public void loadRep( Repository rep, IMetaStore metaStore, ObjectId id_jobentry, List<DatabaseMeta> databases,
+  void loadRep( Repository rep, IMetaStore metaStore, ObjectId id_jobentry, List<DatabaseMeta> databases,
     List<SlaveServer> slaveServers ) throws KettleException;
 
   /**
@@ -427,14 +427,14 @@ public interface JobEntryInterface {
    *
    * @return true if started, false otherwise
    */
-  public boolean isStart();
+  boolean isStart();
 
   /**
    * Checks if this job entry is a dummy entry
    *
    * @return true if this job entry is a dummy entry, false otherwise
    */
-  public boolean isDummy();
+  boolean isDummy();
 
   /**
    * This method is called when a job entry is duplicated in Spoon. It needs to return a deep copy of this job entry
@@ -443,14 +443,14 @@ public interface JobEntryInterface {
    *
    * @return a clone of the object
    */
-  public Object clone();
+  Object clone();
 
   /**
    * Checks whether a reset of the number of errors is required before execution.
    *
    * @return true if a reset of the number of errors is required before execution, false otherwise
    */
-  public boolean resetErrorsBeforeExecution();
+  boolean resetErrorsBeforeExecution();
 
   /**
    * This method must return true if the job entry supports the true/false outgoing hops. If the job entry does not
@@ -458,7 +458,7 @@ public interface JobEntryInterface {
    *
    * @return true if the job entry supports the true/false outgoing hops, false otherwise
    */
-  public boolean evaluates();
+  boolean evaluates();
 
   /**
    * This method must return true if the job entry supports the unconditional outgoing hop. If the job entry does not
@@ -466,49 +466,49 @@ public interface JobEntryInterface {
    *
    * @return true if the job entry supports the unconditional outgoing hop, false otherwise
    */
-  public boolean isUnconditional();
+  boolean isUnconditional();
 
   /**
    * Checks if the job entry is an evaluation
    *
    * @return true if the job entry is an evaluation, false otherwise
    */
-  public boolean isEvaluation();
+  boolean isEvaluation();
 
   /**
    * Checks if this job entry executes a transformation
    *
    * @return true if this job entry executes a transformation, false otherwise
    */
-  public boolean isTransformation();
+  boolean isTransformation();
 
   /**
    * Checks if the job entry executes a job
    *
    * @return true if the job entry executes a job, false otherwise
    */
-  public boolean isJob();
+  boolean isJob();
 
   /**
    * Checks if the job entry executes a shell program
    *
    * @return true if the job entry executes a shell program, false otherwise
    */
-  public boolean isShell();
+  boolean isShell();
 
   /**
    * Checks if the job entry sends email
    *
    * @return true if the job entry sends email, false otherwise
    */
-  public boolean isMail();
+  boolean isMail();
 
   /**
    * Checks if the job entry is of a special type (Start, Dummy, etc.)
    *
    * @return true if the job entry is of a special type, false otherwise
    */
-  public boolean isSpecial();
+  boolean isSpecial();
 
   /**
    * Gets the SQL statements needed by this job entry to execute successfully.
@@ -522,7 +522,7 @@ public interface JobEntryInterface {
    *           if any errors occur during the generation of SQL statements
    */
   @Deprecated
-  public List<SQLStatement> getSQLStatements( Repository repository ) throws KettleException;
+  List<SQLStatement> getSQLStatements( Repository repository ) throws KettleException;
 
   /**
    * Gets the SQL statements needed by this job entry to execute successfully, given a set of variables.
@@ -538,7 +538,7 @@ public interface JobEntryInterface {
    *           if any errors occur during the generation of SQL statements
    */
   @Deprecated
-  public List<SQLStatement> getSQLStatements( Repository repository, VariableSpace space ) throws KettleException;
+  List<SQLStatement> getSQLStatements( Repository repository, VariableSpace space ) throws KettleException;
 
   /**
    * Gets the SQL statements needed by this job entry to execute successfully, given a set of variables.
@@ -553,14 +553,17 @@ public interface JobEntryInterface {
    * @throws KettleException
    *           if any errors occur during the generation of SQL statements
    */
-  public List<SQLStatement> getSQLStatements( Repository repository, IMetaStore metaStore, VariableSpace space ) throws KettleException;
+  List<SQLStatement> getSQLStatements( Repository repository, IMetaStore metaStore, VariableSpace space ) throws KettleException;
 
   /**
    * Get the name of the class that implements the dialog for the job entry JobEntryBase provides a default
    *
    * @return the name of the class implementing the dialog for the job entry
+   *
+   * @deprecated  As of release 8.1, use annotated-based dialog instead {@see org.pentaho.di.core.annotations.PluginDialog}
    */
-  public String getDialogClassName();
+  @Deprecated
+  String getDialogClassName();
 
   /**
    * Gets the filename of the job entry. This method is used by job entries and transformations that call or refer to
@@ -568,21 +571,21 @@ public interface JobEntryInterface {
    *
    * @return the filename
    */
-  public String getFilename();
+  String getFilename();
 
   /**
    * Gets the real filename of the job entry, by substituting any environment variables present in the filename.
    *
    * @return the real (resolved) filename for the job entry
    */
-  public String getRealFilename();
+  String getRealFilename();
 
   /**
    * This method returns all the database connections that are used by the job entry.
    *
    * @return an array of database connections meta-data, which is empty if no connections are used.
    */
-  public DatabaseMeta[] getUsedDatabaseConnections();
+  DatabaseMeta[] getUsedDatabaseConnections();
 
   /**
    * Allows JobEntry objects to check themselves for consistency
@@ -594,7 +597,7 @@ public interface JobEntryInterface {
    * @deprecated use {@link #check(List, JobMeta, VariableSpace, Repository, IMetaStore)}
    */
   @Deprecated
-  public void check( List<CheckResultInterface> remarks, JobMeta jobMeta );
+  void check( List<CheckResultInterface> remarks, JobMeta jobMeta );
 
   /**
    * Allows JobEntry objects to check themselves for consistency
@@ -610,7 +613,7 @@ public interface JobEntryInterface {
    * @param metaStore
    *          the MetaStore to load common elements from
    */
-  public void check( List<CheckResultInterface> remarks, JobMeta jobMeta, VariableSpace space,
+  void check( List<CheckResultInterface> remarks, JobMeta jobMeta, VariableSpace space,
     Repository repository, IMetaStore metaStore );
 
   /**
@@ -618,7 +621,7 @@ public interface JobEntryInterface {
    *
    * @return a list of all the resource dependencies that the step is depending on
    */
-  public List<ResourceReference> getResourceDependencies( JobMeta jobMeta );
+  List<ResourceReference> getResourceDependencies( JobMeta jobMeta );
 
   /**
    * Exports the object to a flat-file system, adding content with filename keys to a set of definitions. The supplied
@@ -640,7 +643,7 @@ public interface JobEntryInterface {
    * @deprecated use {@link #exportResources(VariableSpace, Map, ResourceNamingInterface, Repository, IMetaStore)}
    */
   @Deprecated
-  public String exportResources( VariableSpace space, Map<String, ResourceDefinition> definitions,
+  String exportResources( VariableSpace space, Map<String, ResourceDefinition> definitions,
     ResourceNamingInterface namingInterface, Repository repository ) throws KettleException;
 
   /**
@@ -663,7 +666,7 @@ public interface JobEntryInterface {
    * @throws KettleException
    *           in case something goes wrong during the export
    */
-  public String exportResources( VariableSpace space, Map<String, ResourceDefinition> definitions,
+  String exportResources( VariableSpace space, Map<String, ResourceDefinition> definitions,
     ResourceNamingInterface namingInterface, Repository repository, IMetaStore metaStore ) throws KettleException;
 
   /**
@@ -671,7 +674,7 @@ public interface JobEntryInterface {
    *
    * @return true if the job entry defines one or more references to a repository object, false otherwise
    */
-  public boolean hasRepositoryReferences();
+  boolean hasRepositoryReferences();
 
   /**
    * Look up the references after import
@@ -681,17 +684,17 @@ public interface JobEntryInterface {
    * @throws KettleException
    *           if any errors occur during the lookup
    */
-  public void lookupRepositoryReferences( Repository repository ) throws KettleException;
+  void lookupRepositoryReferences( Repository repository ) throws KettleException;
 
   /**
    * @return The objects referenced in the step, like a a transformation, a job, a mapper, a reducer, a combiner, ...
    */
-  public String[] getReferencedObjectDescriptions();
+  String[] getReferencedObjectDescriptions();
 
   /**
    * @return true for each referenced object that is enabled or has a valid reference definition.
    */
-  public boolean[] isReferencedObjectEnabled();
+  boolean[] isReferencedObjectEnabled();
 
   /**
    * Load the referenced object
@@ -707,7 +710,7 @@ public interface JobEntryInterface {
    * @deprecated use {@link #loadReferencedObject(int, Repository, IMetaStore, VariableSpace)}
    */
   @Deprecated
-  public Object loadReferencedObject( int index, Repository rep, VariableSpace space ) throws KettleException;
+  Object loadReferencedObject( int index, Repository rep, VariableSpace space ) throws KettleException;
 
   /**
    * Load the referenced object
@@ -723,7 +726,7 @@ public interface JobEntryInterface {
    * @return the referenced object once loaded
    * @throws KettleException
    */
-  public Object loadReferencedObject( int index, Repository rep, IMetaStore metaStore, VariableSpace space ) throws KettleException;
+  Object loadReferencedObject( int index, Repository rep, IMetaStore metaStore, VariableSpace space ) throws KettleException;
 
   /**
    * At save and run time, the system will attempt to set the jobMeta so that it can be accessed by the jobEntries

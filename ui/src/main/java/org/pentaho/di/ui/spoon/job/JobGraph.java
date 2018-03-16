@@ -1839,7 +1839,7 @@ public class JobGraph extends AbstractGraph implements XulEventHandler, Redrawab
       }
     }
 
-    spoon.delegates.jobs.copyJobEntries( jobMeta, entries );
+    spoon.delegates.jobs.copyJobEntries( entries );
   }
 
   private boolean canDup( JobEntryCopy entry ) {

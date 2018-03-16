@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -969,7 +969,10 @@ public class JobEntryBase implements Cloneable, VariableSpace, CheckResultSource
    * appropriate class name
    *
    * @return full class name of the dialog
+   *
+   * @deprecated As of release 8.1, use annotated-based dialog instead {@see org.pentaho.di.core.annotations.PluginDialog}
    */
+  @Deprecated
   public String getDialogClassName() {
     String className = getClass().getCanonicalName();
     className = className.replaceFirst( "\\.di\\.", ".di.ui." );

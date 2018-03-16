@@ -29,7 +29,7 @@
     <kettle5-log4j-plugin.version>${project.version}</kettle5-log4j-plugin.version>
     <pdi-google-analytics-plugin.version>${project.version}</pdi-google-analytics-plugin.version>
     <pdi-salesforce-plugin.version>${project.version}</pdi-salesforce-plugin.version>
-    <ms-access-bulk-loader-plugin.version>${project.version}</ms-access-bulk-loader-plugin.version>
+    <ms-access-plugin.version>${project.version}</ms-access-plugin.version>
     <lucid-db-streaming-loader-plugin.version>${project.version}</lucid-db-streaming-loader-plugin.version>
     <gp-bulk-loader-plugin.version>${project.version}</gp-bulk-loader-plugin.version>
     <pentaho-googledrive-vfs-plugin.version>${project.version}</pentaho-googledrive-vfs-plugin.version>
@@ -205,8 +205,8 @@
     </dependency>
     <dependency>
       <groupId>org.pentaho.di.plugins</groupId>
-      <artifactId>ms-access-bulk-loader-plugin</artifactId>
-      <version>${ms-access-bulk-loader-plugin.version}</version>
+      <artifactId>ms-access-plugins</artifactId>
+      <version>${ms-access-plugin.version}</version>
       <type>zip</type>
       <exclusions>
         <exclusion>

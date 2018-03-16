@@ -60,11 +60,9 @@ import org.w3c.dom.Node;
  */
 @JobEntry( id = "CHECK_DB_CONNECTIONS",
   i18nPackageName = "org.pentaho.di.job.entries.checkdbconnection",
-  image = "CDBC.svg",
   name = "JobEntryCheckDbConnections.Name",
   description = "JobEntryCheckDbConnections.TypeDesc",
-  categoryDescription = "JobEntryCheckDbConnections.Category",
-  documentationUrl = "http://wiki.pentaho.com/display/EAI/Check+Db+connections" )
+  categoryDescription = "i18n:org.pentaho.di.job:JobCategory.Category.Conditions" )
 public class JobEntryCheckDbConnections extends JobEntryBase implements Cloneable, JobEntryInterface {
   private static Class<?> PKG = JobEntryCheckDbConnections.class; // for i18n purposes, needed by Translator2!!
 

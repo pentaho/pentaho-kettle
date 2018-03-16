@@ -1468,7 +1468,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
         return;
       }
 
-      delegates.jobs.copyJobEntries( jobMeta, jobMeta.getSelectedEntries() );
+      delegates.jobs.copyJobEntries( jobMeta.getSelectedEntries() );
     }
   }
 

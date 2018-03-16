@@ -45,6 +45,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.annotations.PluginDialog;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.JobMeta;
@@ -66,7 +67,8 @@ import org.pentaho.di.ui.trans.step.BaseStepDialog;
  * @author Samatar Hassan
  * @since 06-05-2007
  */
-
+@PluginDialog( id = "ADD_RESULT_FILENAMES", image = "AFN.svg", pluginType = PluginDialog.PluginType.JOBENTRY,
+  documentationUrl = "http://wiki.pentaho.com/display/EAI/Add+filenames+to+result" )
 public class JobEntryAddResultFilenamesDialog extends JobEntryDialog implements JobEntryDialogInterface {
   private static Class<?> PKG = JobEntryAddResultFilenamesDialog.class; // for i18n purposes, needed by Translator2!!
 

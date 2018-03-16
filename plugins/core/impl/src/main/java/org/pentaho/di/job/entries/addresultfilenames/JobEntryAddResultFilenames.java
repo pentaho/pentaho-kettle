@@ -69,12 +69,10 @@ import org.w3c.dom.Node;
  */
 @JobEntry(
   id = "ADD_RESULT_FILENAMES",
-  image = "AFN.svg",
   i18nPackageName = "org.pentaho.di.job.entries.addresultfilenames",
   name = "JobEntry.AddResultFilenames.TypeDesc",
   description = "JobEntry.AddResultFilenames.Tooltip",
-  categoryDescription = "i18n:org.pentaho.di.job:JobCategory.Category.FileManagement",
-  documentationUrl = "http://wiki.pentaho.com/display/EAI/Add+filenames+to+result" )
+  categoryDescription = "i18n:org.pentaho.di.job:JobCategory.Category.FileManagement" )
 public class JobEntryAddResultFilenames extends JobEntryBase implements Cloneable, JobEntryInterface {
   private static Class<?> PKG = JobEntryAddResultFilenames.class; // for i18n purposes, needed by Translator2!!
 

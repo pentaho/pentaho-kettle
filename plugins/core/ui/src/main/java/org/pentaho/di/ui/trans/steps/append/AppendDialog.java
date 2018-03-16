@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -43,7 +43,7 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.annotations.StepDialog;
+import org.pentaho.di.core.annotations.PluginDialog;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.TransMeta;
@@ -58,7 +58,7 @@ import org.pentaho.di.ui.trans.step.BaseStepDialog;
  *
  * @author Sven Boden
  */
-@StepDialog( id = "Append", image = "APP.svg",
+@PluginDialog( id = "Append", image = "APP.svg", pluginType = PluginDialog.PluginType.STEP,
   documentationUrl = "http://wiki.pentaho.com/display/EAI/Append+streams" )
 public class AppendDialog extends BaseStepDialog implements StepDialogInterface {
   private static Class<?> PKG = AppendDialog.class; // for i18n purposes, needed by Translator2!!
