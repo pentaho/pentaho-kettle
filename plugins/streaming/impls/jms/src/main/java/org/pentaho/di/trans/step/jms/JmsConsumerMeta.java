@@ -23,7 +23,6 @@
 package org.pentaho.di.trans.step.jms;
 
 import org.pentaho.di.core.annotations.Step;
-import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.injection.InjectionDeep;
 import org.pentaho.di.core.injection.InjectionSupported;
 import org.pentaho.di.core.row.RowMeta;

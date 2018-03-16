@@ -68,7 +68,7 @@ public class JmsStreamSourceTest {
   }
 
 
-  @Test ( timeout = 500 )
+  @Test ( timeout = 5000 )
   public void testReceiveMessage() {
     source.open();
 
