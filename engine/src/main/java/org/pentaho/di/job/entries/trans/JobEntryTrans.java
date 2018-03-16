@@ -1260,6 +1260,9 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
         case FILENAME:
           String realFilename = tmpSpace.environmentSubstitute( getFilename() );
           if ( rep != null ) {
+            if ( StringUtils.isBlank( realFilename ) ) {
+              throw new KettleException( BaseMessages.getString( PKG, "JobTrans.Exception.MissingTransFileName" ) );
+            }
             realFilename = r.normalizeSlashes( realFilename );
             // need to try to load from the repository
             try {
