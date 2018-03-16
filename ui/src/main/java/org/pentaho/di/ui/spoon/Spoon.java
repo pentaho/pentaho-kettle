@@ -517,6 +517,8 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
 
   public static final String EDIT_SELECTION_EXTENSION = "EDIT_SELECTION_EXTENSION";
 
+  private static final int MISSING_RECENT_DLG_WIDTH = 465;
+
   private Composite tabComp;
 
   private Tree selectionTree;
@@ -4570,7 +4572,8 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
       final Dialog dlg = new SimpleMessageDialog( shell,
         BaseMessages.getString( PKG, "Spoon.Dialog.MissingRecentFile.Title" ),
         BaseMessages.getString( PKG, "Spoon.Dialog.MissingRecentFile.Message", getFileType( file ).toLowerCase() ),
-        BaseMessages.getString( PKG, "System.Button.Close" ), MessageDialog.ERROR );
+        MessageDialog.ERROR, BaseMessages.getString( PKG, "System.Button.Close" ),
+        MISSING_RECENT_DLG_WIDTH, SimpleMessageDialog.BUTTON_WIDTH );
       dlg.open();
       return;
     }
@@ -8223,8 +8226,9 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
                 final Dialog dlg = new SimpleMessageDialog( shell,
                   BaseMessages.getString( PKG, "Spoon.Dialog.MissingRecentFile.Title" ),
                   BaseMessages.getString( PKG, "Spoon.Dialog.MissingRecentFile.Message",
-                    lastUsedFile.getLongFileType().toLowerCase() ),
-                  BaseMessages.getString( PKG, "System.Button.Close" ), MessageDialog.ERROR );
+                    lastUsedFile.getLongFileType().toLowerCase() ), MessageDialog.ERROR,
+                  BaseMessages.getString( PKG, "System.Button.Close" ),
+                  MISSING_RECENT_DLG_WIDTH, SimpleMessageDialog.BUTTON_WIDTH );
                 dlg.open();
               }
             } else {

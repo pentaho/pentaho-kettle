@@ -42,6 +42,7 @@ public class SimpleMessageDialog extends MessageDialog {
   public static final int DEFULT_WIDTH = 450;
 
   private int width;
+  private int buttonWidth;
 
   /**
    * Creates a new dialog with the button label set to "Ok", dialog width set to {@link #DEFULT_WIDTH} and button width
@@ -60,19 +61,19 @@ public class SimpleMessageDialog extends MessageDialog {
   }
 
   /**
-   * Creates a new dialog with the button label set to {@code closeButtonLabel}, dialog width set to
-   * {@link #DEFULT_WIDTH} and button width set to {@link #BUTTON_WIDTH}
+   * Creates a new dialog with the button label set to {@code closeButtonLabel}, dialog width set to {@link
+   * #DEFULT_WIDTH} and button width set to {@link #BUTTON_WIDTH}
    *
    * @param parentShell the parent {@link Shell}
    * @param title       the dialog title
-   * @param message       the dialog message
-   * @param closeButtonLabel     the label for the close dialog
+   * @param message     the dialog message
    * @param dialogType  the dialog type ({@link MessageDialog#INFORMATION}, {@link MessageDialog#WARNING}, {@link
    *                    MessageDialog#ERROR} etc...)
+   * @param buttonLabel the label for the close dialog
    */
   public SimpleMessageDialog( final Shell parentShell, final String title, final String message,
-                              final String closeButtonLabel, final int dialogType ) {
-    this( parentShell, title, message, dialogType, closeButtonLabel, DEFULT_WIDTH, BUTTON_WIDTH );
+                              final int dialogType, final String buttonLabel ) {
+    this( parentShell, title, message, dialogType, buttonLabel, DEFULT_WIDTH, BUTTON_WIDTH );
   }
 
   /**
@@ -91,6 +92,7 @@ public class SimpleMessageDialog extends MessageDialog {
                               final String buttonLabel, final int width, final int buttonWidth ) {
     super( parentShell, title, null, message, dialogType, new String[] { buttonLabel }, 0 );
     this.width = width;
+    this.buttonWidth = buttonWidth;
   }
 
   /**
@@ -131,8 +133,7 @@ public class SimpleMessageDialog extends MessageDialog {
   public void create() {
     super.create();
     final Button button = getButton( 0 );
-    final int newWidth = BUTTON_WIDTH;
-    final int newX = button.getBounds().x + button.getBounds().width - newWidth;
-    button.setBounds( newX, button.getBounds().y, newWidth, button.getBounds().height );
+    final int newX = button.getBounds().x + button.getBounds().width - buttonWidth;
+    button.setBounds( newX, button.getBounds().y, buttonWidth, button.getBounds().height );
   }
 }
