@@ -793,4 +793,15 @@ public class DatabaseUnitTest {
     verify( connection, never() ).close();
   }
 
+  @Test
+  public void testGetTablenames() throws SQLException, KettleDatabaseException {
+    when( resultSetMock.next() ).thenReturn( true, false );
+    when( resultSetMock.getString( "TABLE_NAME" ) ).thenReturn( EXISTING_TABLE_NAME );
+    when( dbMetaDataMock.getTables( any(), anyString(), anyString(), any() ) ).thenReturn( resultSetMock );
+    Database db = new Database( mockLogger(), dbMetaMock );
+    db.setConnection( mockConnection( dbMetaDataMock ) );
+
+    String[] tableNames = db.getTablenames();
+    assertEquals( tableNames.length, 1 );
+  }
 }
