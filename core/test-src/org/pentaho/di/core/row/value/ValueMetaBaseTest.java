@@ -579,6 +579,61 @@ public class ValueMetaBaseTest {
   }
 
   @Test
+  public void testCompareDateWithStorageMask() throws KettleValueException {
+    ValueMetaBase storageMeta = new ValueMetaBase( "string", ValueMetaInterface.TYPE_STRING );
+    storageMeta.setStorageType( ValueMetaInterface.STORAGE_TYPE_NORMAL );
+    storageMeta.setConversionMask( "MM/dd/yyyy HH:mm" );
+
+    ValueMetaBase dateMeta = new ValueMetaBase( "date", ValueMetaInterface.TYPE_DATE );
+    dateMeta.setStorageType( ValueMetaInterface.STORAGE_TYPE_BINARY_STRING );
+    dateMeta.setStorageMetadata( storageMeta );
+    dateMeta.setConversionMask( "yyyy-MM-dd" );
+
+    ValueMetaBase targetDateMeta = new ValueMetaBase( "date", ValueMetaInterface.TYPE_DATE );
+    targetDateMeta.setConversionMask( "yyyy-MM-dd" );
+    targetDateMeta.setStorageType( ValueMetaInterface.STORAGE_TYPE_NORMAL );
+
+    String date = "2/24/2017 0:00";
+
+    Date equalDate = new GregorianCalendar( 2017, Calendar.FEBRUARY, 24 ).getTime();
+    assertEquals( 0, dateMeta.compare( date.getBytes(), targetDateMeta, equalDate ) );
+
+    Date pastDate = new GregorianCalendar( 2017, Calendar.JANUARY, 24 ).getTime();
+    assertEquals( 1, dateMeta.compare( date.getBytes(), targetDateMeta, pastDate ) );
+
+    Date futureDate = new GregorianCalendar( 2017, Calendar.MARCH, 24 ).getTime();
+    assertEquals( -1, dateMeta.compare( date.getBytes(), targetDateMeta, futureDate ) );
+  }
+
+  @Test
+  public void testCompareDateNoStorageMask() throws KettleValueException {
+    ValueMetaBase storageMeta = new ValueMetaBase( "string", ValueMetaInterface.TYPE_STRING );
+    storageMeta.setStorageType( ValueMetaInterface.STORAGE_TYPE_NORMAL );
+    storageMeta.setConversionMask( null ); // explicit set to null, to make sure test condition are met
+
+    ValueMetaBase dateMeta = new ValueMetaBase( "date", ValueMetaInterface.TYPE_DATE );
+    dateMeta.setStorageType( ValueMetaInterface.STORAGE_TYPE_BINARY_STRING );
+    dateMeta.setStorageMetadata( storageMeta );
+    dateMeta.setConversionMask( "yyyy-MM-dd" );
+
+    ValueMetaBase targetDateMeta = new ValueMetaBase( "date", ValueMetaInterface.TYPE_DATE );
+    //targetDateMeta.setConversionMask( "yyyy-MM-dd" ); by not setting a maks, the default one is used
+    //and since this is a date of normal storage it should work
+    targetDateMeta.setStorageType( ValueMetaInterface.STORAGE_TYPE_NORMAL );
+
+    String date = "2017/02/24 00:00:00.000";
+
+    Date equalDate = new GregorianCalendar( 2017, Calendar.FEBRUARY, 24 ).getTime();
+    assertEquals( 0, dateMeta.compare( date.getBytes(), targetDateMeta, equalDate ) );
+
+    Date pastDate = new GregorianCalendar( 2017, Calendar.JANUARY, 24 ).getTime();
+    assertEquals( 1, dateMeta.compare( date.getBytes(), targetDateMeta, pastDate ) );
+
+    Date futureDate = new GregorianCalendar( 2017, Calendar.MARCH, 24 ).getTime();
+    assertEquals( -1, dateMeta.compare( date.getBytes(), targetDateMeta, futureDate ) );
+  }
+
+  @Test
   public void testDateParsing8601() throws Exception {
     ValueMetaBase dateMeta = new ValueMetaBase( "date", ValueMetaInterface.TYPE_DATE );
     dateMeta.setDateFormatLenient( false );
