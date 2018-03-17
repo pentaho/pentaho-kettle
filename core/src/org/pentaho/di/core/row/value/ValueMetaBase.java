@@ -23,6 +23,32 @@
 
 package org.pentaho.di.core.row.value;
 
+import org.pentaho.di.compatibility.Value;
+import org.pentaho.di.core.Const;
+import org.pentaho.di.core.database.DatabaseInterface;
+import org.pentaho.di.core.database.DatabaseMeta;
+import org.pentaho.di.core.database.GreenplumDatabaseMeta;
+import org.pentaho.di.core.database.NetezzaDatabaseMeta;
+import org.pentaho.di.core.database.OracleDatabaseMeta;
+import org.pentaho.di.core.database.PostgreSQLDatabaseMeta;
+import org.pentaho.di.core.database.SQLiteDatabaseMeta;
+import org.pentaho.di.core.database.TeradataDatabaseMeta;
+import org.pentaho.di.core.exception.KettleDatabaseException;
+import org.pentaho.di.core.exception.KettleEOFException;
+import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.exception.KettleFileException;
+import org.pentaho.di.core.exception.KettleValueException;
+import org.pentaho.di.core.gui.PrimitiveGCInterface;
+import org.pentaho.di.core.logging.KettleLogStore;
+import org.pentaho.di.core.logging.LogChannelInterface;
+import org.pentaho.di.core.row.ValueDataUtil;
+import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.util.EnvUtil;
+import org.pentaho.di.core.util.Utils;
+import org.pentaho.di.core.xml.XMLHandler;
+import org.pentaho.di.i18n.BaseMessages;
+import org.w3c.dom.Node;
+
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.EOFException;
@@ -51,32 +77,6 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 import java.util.TimeZone;
-
-import org.pentaho.di.compatibility.Value;
-import org.pentaho.di.core.Const;
-import org.pentaho.di.core.util.Utils;
-import org.pentaho.di.core.database.DatabaseInterface;
-import org.pentaho.di.core.database.DatabaseMeta;
-import org.pentaho.di.core.database.GreenplumDatabaseMeta;
-import org.pentaho.di.core.database.NetezzaDatabaseMeta;
-import org.pentaho.di.core.database.OracleDatabaseMeta;
-import org.pentaho.di.core.database.PostgreSQLDatabaseMeta;
-import org.pentaho.di.core.database.SQLiteDatabaseMeta;
-import org.pentaho.di.core.database.TeradataDatabaseMeta;
-import org.pentaho.di.core.exception.KettleDatabaseException;
-import org.pentaho.di.core.exception.KettleEOFException;
-import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.exception.KettleFileException;
-import org.pentaho.di.core.exception.KettleValueException;
-import org.pentaho.di.core.gui.PrimitiveGCInterface;
-import org.pentaho.di.core.logging.KettleLogStore;
-import org.pentaho.di.core.logging.LogChannelInterface;
-import org.pentaho.di.core.row.ValueDataUtil;
-import org.pentaho.di.core.row.ValueMetaInterface;
-import org.pentaho.di.core.util.EnvUtil;
-import org.pentaho.di.core.xml.XMLHandler;
-import org.pentaho.di.i18n.BaseMessages;
-import org.w3c.dom.Node;
 
 public class ValueMetaBase implements ValueMetaInterface {
 
@@ -3736,8 +3736,16 @@ public class ValueMetaBase implements ValueMetaInterface {
             return compare( data1, meta2.convertToNormalStorageType( data2 ) );
 
           case STORAGE_TYPE_BINARY_STRING:
-            return compare( data1, meta2.convertToBinaryStringStorageType( data2 ) );
-
+            if ( storageMetadata != null && storageMetadata.getConversionMask() != null ) {
+              // BACKLOG-18754 - if there is a storage conversion mask, we should use
+              // it as the mask for meta2 (meta2 can have specific storage type and type, so
+              // it can't be used directly to convert data2 to binary string)
+              ValueMetaInterface meta2StorageMask = meta2.clone();
+              meta2StorageMask.setConversionMask( storageMetadata.getConversionMask() );
+              return compare( data1, meta2StorageMask.convertToBinaryStringStorageType( data2 ) );
+            } else {
+              return compare( data1, meta2.convertToBinaryStringStorageType( data2 ) );
+            }
           case STORAGE_TYPE_INDEXED:
             switch ( meta2.getStorageType() ) {
               case STORAGE_TYPE_INDEXED:
