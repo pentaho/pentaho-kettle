@@ -27,6 +27,11 @@
       <artifactId>pentaho-streaming-jms-plugin</artifactId>
       <version>${project.version}</version>
     </dependency>
+    <dependency>
+      <groupId>org.pentaho.di.plugins</groupId>
+      <artifactId>pentaho-streaming-mqtt-plugin</artifactId>
+      <version>${project.version}</version>
+    </dependency>
   </dependencies>
 
   <build>

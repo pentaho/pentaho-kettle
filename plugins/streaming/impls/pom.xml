@@ -18,6 +18,7 @@
 
   <modules>
     <module>jms</module>
+    <module>mqtt</module>
   </modules>
 
 </project>
