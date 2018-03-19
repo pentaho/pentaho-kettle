@@ -24,6 +24,9 @@ package org.pentaho.di.trans.step.jms;
 
 
 import org.pentaho.di.core.injection.Injection;
+import org.pentaho.di.core.row.RowMeta;
+import org.pentaho.di.core.row.RowMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.core.util.serialization.Sensitive;
 import org.pentaho.di.trans.step.jms.context.JmsProvider;
 
@@ -61,8 +64,15 @@ public  class JmsDelegate {
 
   @Injection ( name = "DESTINATION_TYPE" ) public String destinationType = QUEUE.name();
 
+  @Injection ( name = "RECEIVE_TIMEOUT" ) public int receiveTimeout = 0;
+
+  @Injection ( name = "MESSAGE_FIELD_NAME" ) public String messageField = "message";
+
+  @Injection ( name = "DESTINATION_FIELD_NAME" ) public String destinationField = "destination";
+
 
   private final List<JmsProvider> jmsProviders;
+
 
   public JmsDelegate( List<JmsProvider> jmsProviders ) {
     super();
@@ -82,5 +92,15 @@ public  class JmsDelegate {
       .filter( prov -> prov.supports( JmsProvider.ConnectionType.valueOf( connectionType ) ) )
       .findFirst()
       .orElseThrow( () -> new RuntimeException( getString( PKG, "JmsDelegate.UnsupportedConnectionType" ) ) );
+  }
+
+  /**
+   * Creates a rowMeta for output field names
+   */
+  RowMetaInterface getRowMeta() {
+    RowMeta rowMeta = new RowMeta();
+    rowMeta.addValueMeta( new ValueMetaString( messageField ) );
+    rowMeta.addValueMeta( new ValueMetaString( destinationField ) );
+    return rowMeta;
   }
 }

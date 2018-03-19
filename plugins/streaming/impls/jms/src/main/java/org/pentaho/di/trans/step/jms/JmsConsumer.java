@@ -22,8 +22,6 @@
 
 package org.pentaho.di.trans.step.jms;
 
-import org.pentaho.di.core.row.RowMeta;
-import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.StepDataInterface;
@@ -48,10 +46,8 @@ public class JmsConsumer extends BaseStreamStep {
 
     JmsConsumerMeta meta = (JmsConsumerMeta) stepMetaInterface;
 
-    RowMeta rowMeta = new RowMeta();
-    rowMeta.addValueMeta( new ValueMetaString( "message" ) );
-
-    window = new FixedTimeStreamWindow<>( subtransExecutor, rowMeta, getDuration(), getBatchSize() );
+    window = new FixedTimeStreamWindow<>(
+      subtransExecutor, meta.jmsDelegate.getRowMeta(), getDuration(), getBatchSize() );
     source = new JmsStreamSource( this, requireNonNull( meta.jmsDelegate ) );
     return superStatus;
   }

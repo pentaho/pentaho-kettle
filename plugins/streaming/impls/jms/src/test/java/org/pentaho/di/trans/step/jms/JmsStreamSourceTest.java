@@ -26,8 +26,6 @@ import com.ibm.msg.client.jms.JmsContext;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
@@ -35,13 +33,16 @@ import org.mockito.runners.MockitoJUnitRunner;
 import javax.jms.Destination;
 import javax.jms.JMSConsumer;
 import javax.jms.JMSException;
+import javax.jms.JMSRuntimeException;
 import javax.jms.Message;
-import javax.jms.MessageListener;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -49,22 +50,31 @@ import static org.mockito.Mockito.when;
 public class JmsStreamSourceTest {
 
   @Mock private JmsContext context;
-  @Mock private JmsDelegate meta;
+  @Mock private JmsDelegate delegate;
   @Mock private JMSConsumer consumer;
   @Mock private JmsConsumer consumerStep;
   @Mock private Destination destination;
   @Mock private Message message;
 
-  @Captor private ArgumentCaptor<MessageListener> listener;
-
   @InjectMocks private JmsStreamSource source;
 
   @Before
   public void before() throws JMSException {
-    when( meta.getJmsContext() ).thenReturn( context );
-    when( meta.getDestination() ).thenReturn( destination );
+    when( delegate.getJmsContext() ).thenReturn( context );
+    when( delegate.getDestination() ).thenReturn( destination );
     when( context.createConsumer( destination ) ).thenReturn( consumer );
     when( message.getBody( Object.class ) ).thenReturn( "message" );
+
+    delegate.destinationName = "dest";
+
+    AtomicBoolean first = new AtomicBoolean( true );
+    when( consumer.receive( 0 ) ).thenAnswer( ans -> {
+      if ( first.getAndSet( false ) ) {
+        return message;
+      } else {
+        return null;
+      }
+    } );
   }
 
 
@@ -72,15 +82,29 @@ public class JmsStreamSourceTest {
   public void testReceiveMessage() {
     source.open();
 
-    verify( meta ).getJmsContext();
-    verify( meta ).getDestination();
-    verify( consumer ).setMessageListener( listener.capture() );
+    verify( delegate ).getJmsContext();
+    verify( delegate ).getDestination();
 
-    listener.getValue().onMessage( message );
     List<Object> sentMessage = source.observable().firstElement().blockingGet( Collections.emptyList() );
 
-    assertThat( sentMessage.size(), equalTo( 1 ) );
+    assertThat( sentMessage.size(), equalTo( 2 ) );
     assertThat( sentMessage.get( 0 ), equalTo( "message" ) );
+    assertThat( sentMessage.get( 1 ), equalTo( "dest" ) );
+  }
+
+
+  @Test ( timeout = 5000 )
+  public void handlesJmsRuntimeException() {
+    when( consumer.receive( 0 ) ).thenThrow( new JMSRuntimeException( "exception" ) );
+    source.open();
+    verify( delegate ).getJmsContext();
+    verify( delegate ).getDestination();
+    try {
+      source.observable().firstElement().blockingGet( Collections.emptyList() );
+      fail( "Expected exception " );
+    } catch ( Exception e ) {
+      assertTrue( e instanceof JMSRuntimeException );
+    }
   }
 
 
