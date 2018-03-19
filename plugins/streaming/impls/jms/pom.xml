@@ -42,6 +42,7 @@
     <ibmmq.version>9.0.4.0</ibmmq.version>
     <jms.version>2.0.1</jms.version>
     <pdi.version>8.1.0.0-SNAPSHOT</pdi.version>
+    <rxjava.version>2.0.4</rxjava.version>
   </properties>
 
   <dependencies>
@@ -73,6 +74,12 @@
       <artifactId>com.ibm.mq.allclient</artifactId>
       <version>${ibmmq.version}</version>
       <scope>provided</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>io.reactivex.rxjava2</groupId>
+      <artifactId>rxjava</artifactId>
+      <version>${rxjava.version}</version>
     </dependency>
 
     <dependency>

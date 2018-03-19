@@ -23,14 +23,18 @@
 
 package org.pentaho.di.trans.step.jms;
 
+import io.reactivex.Observable;
+import io.reactivex.ObservableOnSubscribe;
 import org.pentaho.di.trans.streaming.common.BaseStreamStep;
 import org.pentaho.di.trans.streaming.common.BlockingQueueStreamSource;
 
 import javax.jms.JMSConsumer;
-import javax.jms.JMSException;
+import javax.jms.JMSRuntimeException;
+import javax.jms.Message;
 import java.util.List;
 
 import static com.google.common.collect.ImmutableList.of;
+import static io.reactivex.schedulers.Schedulers.io;
 import static java.util.Collections.singletonList;
 
 public class JmsStreamSource extends BlockingQueueStreamSource<List<Object>> {
@@ -45,13 +49,30 @@ public class JmsStreamSource extends BlockingQueueStreamSource<List<Object>> {
 
   @Override public void open() {
     consumer = jmsDelegate.getJmsContext().createConsumer( jmsDelegate.getDestination() );
-    consumer.setMessageListener( ( message ) -> {
+    Observable.create( receiveLoop() )
+      .subscribeOn( io() )
+      .observeOn( io() )
+      .doOnError( this::error ) // propogate the error
+      .forEach( message -> acceptRows( singletonList( of( message, jmsDelegate.destinationName ) ) ) );
+  }
+
+  /**
+   * Will receive messages from consumer.  If timeout is hit, consumer.receive(timeout)
+   * will return null, and the observable will be completed.
+   */
+  private ObservableOnSubscribe<Object> receiveLoop() {
+    return emitter -> {
+      Message message;
       try {
-        acceptRows( singletonList( of( message.getBody( Object.class ) ) ) );
-      } catch ( JMSException e ) {
-        throw new RuntimeException( e );
+        while ( ( message = consumer.receive( jmsDelegate.receiveTimeout ) ) != null ) {
+          streamStep.logDebug( message.toString() );
+          emitter.onNext( message.getBody( Object.class ) );
+        }
+      } catch ( JMSRuntimeException jmsException ) {
+        emitter.onError( jmsException );
       }
-    } );
+      emitter.onComplete();
+    };
   }
 
   @Override public void close() {

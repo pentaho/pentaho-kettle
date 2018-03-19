@@ -88,12 +88,13 @@ public class JmsConsumerDialog extends BaseStreamingDialog {
     fdReceiveTimeout.width = 140;
     wReceiverTimeout.setLayoutData( fdReceiveTimeout );
     wReceiverTimeout.addModifyListener( lsMod );
+    wReceiverTimeout.setText( Integer.toString( jmsDelegate.receiveTimeout ) );
 
   }
 
   @Override protected void createAdditionalTabs() {
     fieldsTab = new FieldsTab(
-      wTabFolder, props, transMeta, lsMod, "message", "destination" );
+      wTabFolder, props, transMeta, lsMod, jmsDelegate.messageField, jmsDelegate.destinationField );
 
     fieldsTab.buildFieldsTab();
   }
@@ -105,6 +106,8 @@ public class JmsConsumerDialog extends BaseStreamingDialog {
     jmsDelegate.password = connectionForm.getPassword();
     jmsDelegate.destinationType = destinationForm.getDestinationType();
     jmsDelegate.destinationName = destinationForm.getDestinationName();
+    jmsDelegate.messageField = fieldsTab.getFieldNames()[0];
+    jmsDelegate.destinationField = fieldsTab.getFieldNames()[1];
   }
 
 
