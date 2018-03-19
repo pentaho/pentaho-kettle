@@ -25,6 +25,7 @@ package org.pentaho.di.trans.steps.s3csvinput;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.amazonaws.auth.DefaultAWSCredentialsProviderChain;
 import org.jets3t.service.S3Service;
 import org.jets3t.service.S3ServiceException;
 import org.jets3t.service.impl.rest.httpclient.RestS3Service;
@@ -122,6 +123,9 @@ public class S3CsvInputMeta extends BaseStepMeta implements StepMetaInterface, I
   @Injection( name = "AWS_SECRET_KEY" )
   private String awsSecretKey;
 
+  @Injection( name = "USE_AWS_DEFAULT_CREDENTIALS" )
+  private boolean useAwsDefaultCredentials;
+
   public S3CsvInputMeta() {
     super(); // allocate BaseStepMeta
     allocate( 0 );
@@ -163,6 +167,12 @@ public class S3CsvInputMeta extends BaseStepMeta implements StepMetaInterface, I
       headerPresent = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "header" ) );
       lazyConversionActive = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "lazy_conversion" ) );
       runningInParallel = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "parallel" ) );
+      String awsDefaultCredentials = XMLHandler.getTagValue( stepnode, "use_aws_default_credentials" );
+      if ( awsDefaultCredentials == null || awsDefaultCredentials.equalsIgnoreCase( "N" ) ) {
+        this.useAwsDefaultCredentials = false;
+      } else {
+        this.useAwsDefaultCredentials = true;
+      }
 
       Node fields = XMLHandler.getSubNode( stepnode, "fields" );
       int nrfields = XMLHandler.countNodes( fields, "field" );
@@ -212,6 +222,7 @@ public class S3CsvInputMeta extends BaseStepMeta implements StepMetaInterface, I
     retval.append( "    " ).append( XMLHandler.addTagValue( "max_line_size", maxLineSize ) );
     retval.append( "    " ).append( XMLHandler.addTagValue( "lazy_conversion", lazyConversionActive ) );
     retval.append( "    " ).append( XMLHandler.addTagValue( "parallel", runningInParallel ) );
+    retval.append( "    " ).append( XMLHandler.addTagValue( "use_aws_default_credentials", useAwsDefaultCredentials ) );
 
     retval.append( "    <fields>" ).append( Const.CR );
     for ( int i = 0; i < inputFields.length; i++ ) {
@@ -253,6 +264,12 @@ public class S3CsvInputMeta extends BaseStepMeta implements StepMetaInterface, I
       maxLineSize = rep.getStepAttributeString( id_step, "max_line_size" );
       lazyConversionActive = rep.getStepAttributeBoolean( id_step, "lazy_conversion" );
       runningInParallel = rep.getStepAttributeBoolean( id_step, "parallel" );
+      String awsDefaultCredentials = rep.getStepAttributeString( id_step, "use_aws_default_credentials" );
+      if ( awsDefaultCredentials == null || awsDefaultCredentials.equalsIgnoreCase( "N" ) ) {
+        this.useAwsDefaultCredentials = false;
+      } else {
+        this.useAwsDefaultCredentials = true;
+      }
 
       int nrfields = rep.countNrStepAttributes( id_step, "field_name" );
 
@@ -296,6 +313,7 @@ public class S3CsvInputMeta extends BaseStepMeta implements StepMetaInterface, I
       rep.saveStepAttribute( id_transformation, id_step, "header", headerPresent );
       rep.saveStepAttribute( id_transformation, id_step, "lazy_conversion", lazyConversionActive );
       rep.saveStepAttribute( id_transformation, id_step, "parallel", runningInParallel );
+      rep.saveStepAttribute( id_transformation, id_step, "use_aws_default_credentials", useAwsDefaultCredentials );
 
       for ( int i = 0; i < inputFields.length; i++ ) {
         TextFileInputField field = inputFields[i];
@@ -678,6 +696,21 @@ public class S3CsvInputMeta extends BaseStepMeta implements StepMetaInterface, I
   }
 
   /**
+   * @return the useAwsDefaultCredentials
+   */
+  public boolean getUseAwsDefaultCredentials() {
+    return this.useAwsDefaultCredentials;
+  }
+
+  /**
+   * @param useAwsDefaultCredentials
+   *          the useAwsDefaultCredentials to set
+   */
+  public void setUseAwsDefaultCredentials( boolean useAwsDefaultCredentials ) {
+    this.useAwsDefaultCredentials = useAwsDefaultCredentials;
+  }
+
+  /**
    * @return the bucket
    */
   public String getBucket() {
@@ -723,14 +756,18 @@ public class S3CsvInputMeta extends BaseStepMeta implements StepMetaInterface, I
   }
 
   public S3Service getS3Service( VariableSpace space ) throws S3ServiceException {
-
-    // Try to connect to S3 first
-    //
     String accessKey = Encr.decryptPasswordOptionallyEncrypted( space.environmentSubstitute( awsAccessKey ) );
     String secretKey = Encr.decryptPasswordOptionallyEncrypted( space.environmentSubstitute( awsSecretKey ) );
-    AWSCredentials awsCredentials = new AWSCredentials( accessKey, secretKey );
+    AWSCredentials credentials = null;
 
-    S3Service s3service = new RestS3Service( awsCredentials );
+    if ( getUseAwsDefaultCredentials() ) {
+      com.amazonaws.auth.AWSCredentials defaultCredentials = DefaultAWSCredentialsProviderChain.getInstance().getCredentials();
+      credentials = new AWSCredentials( defaultCredentials.getAWSAccessKeyId(), defaultCredentials.getAWSSecretKey() );
+    } else {
+      credentials = new AWSCredentials( accessKey, secretKey );
+    }
+
+    S3Service s3service = new RestS3Service( credentials );
     return s3service;
   }
 }
