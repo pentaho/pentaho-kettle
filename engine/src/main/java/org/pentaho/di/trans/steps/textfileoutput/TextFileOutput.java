@@ -30,7 +30,6 @@ import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.commons.vfs2.FileObject;
 import org.pentaho.di.core.Const;
@@ -121,140 +120,6 @@ public class TextFileOutput extends BaseStep implements StepInterface {
     return compressionProvider;
   }
 
-  public TextFileOutputData.FileStreamsValue getFileStreams( String filename ) throws KettleException {
-    BufferedOutputStream bufferedOutputStream;
-    OutputStream fileOutputStream;
-    CompressionOutputStream compressionOutputStream;
-    TextFileOutputData.FileStreamsValue fileStreams;
-
-    try {
-      fileStreams = data.fileWriterMap.get( filename );
-
-      boolean fileExists = fileStreams != null || isFileExists( filename );
-      boolean createParentDirIfNotExists = meta.isCreateParentFolder();
-      boolean appendToExistingFile = meta.isFileAppended();
-
-      if ( fileStreams == null ) { // Opening file for first time
-        CompressionProvider compressionProvider = getCompressionProvider();
-        boolean isZipFile = compressionProvider instanceof ZIPCompressionProvider;
-
-        if ( appendToExistingFile && isZipFile && fileExists ) {
-          throw new KettleException( "Can not append to an existing zip file : " + filename );
-        }
-
-        int numOpenFiles = 0;
-        TextFileOutputData.FileStreamsValue oldestOpenStream = null;
-        String oldestOpenFileName = null;
-        for ( Map.Entry<TextFileOutputData.FileStreamsKey, TextFileOutputData.FileStreamsValue> mapEntry : data.fileWriterMap.entrySet() ) {
-          TextFileOutputData.FileStreamsValue existingStream = mapEntry.getValue();
-          if ( existingStream.getBufferedOutputStream() != null ) {
-            numOpenFiles++;
-            if ( oldestOpenStream == null ) {
-              oldestOpenStream = existingStream;
-              oldestOpenFileName = mapEntry.getKey().getFileName();
-            }
-          }
-        }
-
-        int maxOpenFiles = getMaxOpenFiles();
-        if ( ( maxOpenFiles > 0 ) && ( numOpenFiles >= maxOpenFiles ) ) {
-          oldestOpenStream.flush();
-          oldestOpenStream.close();
-
-          // If the file we just closed is a zip file. We're going to remove it from the map of files
-          // that have been opened. We do this because it is not possible to reopen a
-          // zip file for append. By removing it from the list, if the same file is referenced later, it will look
-          // like we're opening the file for the first time, which will cause it to automatically be opened in
-          // overwrite mode.
-          if ( isZipFile ) {
-            data.fileWriterMap.remove( oldestOpenFileName );
-          }
-        }
-
-        if ( createParentDirIfNotExists ) {
-          createParentFolder( filename );
-        }
-        if ( log.isDetailed() ) {
-          logDetailed( "Opening output stream using provider: " + compressionProvider.getName() );
-        }
-
-        fileOutputStream = getOutputStream( filename, getTransMeta(), !isZipFile && appendToExistingFile );
-        compressionOutputStream = compressionProvider.createOutputStream( fileOutputStream );
-
-        // The compression output stream may also archive entries. For this we create the filename
-        // (with appropriate extension) and add it as an entry to the output stream. For providers
-        // that do not archive entries, they should use the default no-op implementation.
-        compressionOutputStream.addEntry( filename, environmentSubstitute( meta.getExtension() ) );
-
-        if ( log.isDetailed() ) {
-          if ( !Utils.isEmpty( meta.getEncoding() ) ) {
-            logDetailed( "Opening output stream in encoding: " + meta.getEncoding() );
-          } else {
-            logDetailed( "Opening output stream in default encoding" );
-          }
-        }
-
-        bufferedOutputStream = new BufferedOutputStream( compressionOutputStream, 5000 );
-
-        fileStreams = data.new FileStreamsValue( fileOutputStream, compressionOutputStream, bufferedOutputStream );
-        fileStreams.setNewFile( !fileExists );
-
-        data.fileWriterMap.put( filename, fileStreams );
-
-        if ( log.isDetailed() ) {
-          logDetailed( "Opened new file with name [" + KettleVFS.getFriendlyURI( filename ) + "]" );
-        }
-      } else if ( fileStreams.getBufferedOutputStream() == null ) { // File was previously opened and now needs to be reopened.
-        int numOpenFiles = 0;
-        TextFileOutputData.FileStreamsValue openStreamWithLongestIdleTime = null;
-        for ( TextFileOutputData.FileStreamsValue existingStream : data.fileWriterMap.values() ) {
-          if ( existingStream.getBufferedOutputStream() != null ) {
-            numOpenFiles++;
-            if ( openStreamWithLongestIdleTime == null ) {
-              openStreamWithLongestIdleTime = existingStream;
-            }
-          }
-        }
-
-        int maxOpenFiles = getMaxOpenFiles();
-        if ( ( maxOpenFiles > 0 ) && ( numOpenFiles >= maxOpenFiles ) ) {
-          openStreamWithLongestIdleTime.flush();
-          openStreamWithLongestIdleTime.close();
-        }
-
-        fileOutputStream = getOutputStream( filename, getTransMeta(), true );
-        CompressionProvider compressionProvider = getCompressionProvider();
-        compressionOutputStream = compressionProvider.createOutputStream( fileOutputStream );
-        compressionOutputStream.addEntry( filename, environmentSubstitute( meta.getExtension() ) );
-        bufferedOutputStream = new BufferedOutputStream( compressionOutputStream, 5000 );
-
-        fileStreams.setFileOutputStream( fileOutputStream );
-        fileStreams.setCompressedOutputStream( compressionOutputStream );
-        fileStreams.setBufferedOutputStream( bufferedOutputStream );
-      }
-
-      if ( !fileExists ) {
-        if ( meta.isAddToResultFiles() ) {
-          // Add this to the result file names...
-          ResultFile resultFile = new ResultFile( ResultFile.FILE_TYPE_GENERAL, getFileObject( filename, getTransMeta() ), getTransMeta().getName(), getStepname() );
-          if ( resultFile != null ) {
-            resultFile.setComment( BaseMessages.getString( PKG, "TextFileOutput.AddResultFile" ) );
-            addResultFile( resultFile );
-          }
-        }
-      }
-    } catch ( Exception e ) {
-      if ( !( e instanceof KettleException ) ) {
-        throw new KettleException( "Error opening new file : " + e.toString() );
-      } else {
-        throw (KettleException) e;
-      }
-    }
-
-    fileStreams.setDirty( true );
-    return fileStreams;
-  }
-
   private void initServletStreamWriter(  ) throws KettleException {
     data.writer = null;
     try {
@@ -305,7 +170,111 @@ public class TextFileOutput extends BaseStep implements StepInterface {
   public void initFileStreamWriter( String filename ) throws KettleException {
     data.writer = null;
     try {
-      TextFileOutputData.FileStreamsValue fileStreams = getFileStreams( filename );
+      BufferedOutputStream bufferedOutputStream;
+      OutputStream fileOutputStream;
+      CompressionOutputStream compressionOutputStream;
+      TextFileOutputData.FileStream fileStreams = null;
+
+      try {
+        if ( meta.getSplitEvery() > 0 ) {
+          if ( filename.equals( data.getFileStreamsCollection().getLastFileName() ) ) {
+            fileStreams = data.getFileStreamsCollection().getLastStream( );
+          }
+        } else {
+          fileStreams = data.getFileStreamsCollection().getStream( filename );
+        }
+
+        boolean writingToFileForFirstTime = fileStreams != null;
+        boolean createParentDirIfNotExists = meta.isCreateParentFolder();
+        boolean appendToExistingFile = meta.isFileAppended();
+
+        if ( fileStreams == null ) { // Opening file for first time
+          CompressionProvider compressionProvider = getCompressionProvider();
+          boolean isZipFile = compressionProvider instanceof ZIPCompressionProvider;
+
+          if ( appendToExistingFile && isZipFile && isFileExists( filename ) ) {
+            throw new KettleException( "Can not append to an existing zip file : " + filename );
+          }
+
+          int maxOpenFiles = getMaxOpenFiles();
+          if ( ( maxOpenFiles > 0 ) && ( data.getFileStreamsCollection().getNumOpenFiles() >= maxOpenFiles ) ) {
+            // If the file we're going to close is a zip file,  going to remove it from the collection of files
+            // that have been opened. We do this because it is not possible to reopen a
+            // zip file for append. By removing it from the collection, if the same file is referenced later, it will look
+            // like we're opening the file for the first time, and if we're set up to append to existing files it will cause and
+            // exception to be thrown, which is the desired result.
+            data.getFileStreamsCollection().closeOldestOpenFile( isZipFile );
+          }
+
+          if ( createParentDirIfNotExists && ( ( ( meta.getSplitEvery( ) > 0 ) && ( data.getFileStreamsCollection().size( ) == 0 ) ) || meta.isFileNameInField( ) ) ) {
+            createParentFolder( filename );
+          }
+          if ( log.isDetailed() ) {
+            logDetailed( "Opening output stream using provider: " + compressionProvider.getName() );
+          }
+
+          fileOutputStream = getOutputStream( filename, getTransMeta(), !isZipFile && appendToExistingFile );
+          compressionOutputStream = compressionProvider.createOutputStream( fileOutputStream );
+
+          // The compression output stream may also archive entries. For this we create the filename
+          // (with appropriate extension) and add it as an entry to the output stream. For providers
+          // that do not archive entries, they should use the default no-op implementation.
+          compressionOutputStream.addEntry( filename, environmentSubstitute( meta.getExtension() ) );
+
+          if ( log.isDetailed() ) {
+            if ( !Utils.isEmpty( meta.getEncoding() ) ) {
+              logDetailed( "Opening output stream in encoding: " + meta.getEncoding() );
+            } else {
+              logDetailed( "Opening output stream in default encoding" );
+            }
+          }
+
+          bufferedOutputStream = new BufferedOutputStream( compressionOutputStream, 5000 );
+
+          fileStreams = data.new FileStream( fileOutputStream, compressionOutputStream, bufferedOutputStream );
+
+          data.getFileStreamsCollection().add( filename, fileStreams );
+
+          if ( log.isDetailed() ) {
+            logDetailed( "Opened new file with name [" + KettleVFS.getFriendlyURI( filename ) + "]" );
+          }
+        } else if ( fileStreams.getBufferedOutputStream() == null ) { // File was previously opened and now needs to be reopened.
+          int maxOpenFiles = getMaxOpenFiles();
+          if ( ( maxOpenFiles > 0 ) && ( data.getFileStreamsCollection().getNumOpenFiles() >= maxOpenFiles ) ) {
+            data.getFileStreamsCollection().closeOldestOpenFile( false );
+          }
+
+          fileOutputStream = getOutputStream( filename, getTransMeta(), true );
+          CompressionProvider compressionProvider = getCompressionProvider();
+          compressionOutputStream = compressionProvider.createOutputStream( fileOutputStream );
+          compressionOutputStream.addEntry( filename, environmentSubstitute( meta.getExtension() ) );
+          bufferedOutputStream = new BufferedOutputStream( compressionOutputStream, 5000 );
+
+          fileStreams.setFileOutputStream( fileOutputStream );
+          fileStreams.setCompressedOutputStream( compressionOutputStream );
+          fileStreams.setBufferedOutputStream( bufferedOutputStream );
+        }
+
+        if ( writingToFileForFirstTime ) {
+          if ( meta.isAddToResultFiles() ) {
+            // Add this to the result file names...
+            ResultFile resultFile = new ResultFile( ResultFile.FILE_TYPE_GENERAL, getFileObject( filename, getTransMeta() ), getTransMeta().getName(), getStepname() );
+            if ( resultFile != null ) {
+              resultFile.setComment( BaseMessages.getString( PKG, "TextFileOutput.AddResultFile" ) );
+              addResultFile( resultFile );
+            }
+          }
+        }
+      } catch ( Exception e ) {
+        if ( !( e instanceof KettleException ) ) {
+          throw new KettleException( "Error opening new file : " + e.toString() );
+        } else {
+          throw (KettleException) e;
+        }
+      }
+
+      fileStreams.setDirty( true );
+
       data.fos = fileStreams.getFileOutputStream();
       data.out = fileStreams.getCompressedOutputStream();
       data.writer = fileStreams.getBufferedOutputStream();
@@ -320,7 +289,7 @@ public class TextFileOutput extends BaseStep implements StepInterface {
     String filename = null;
     if ( row == null ) {
       if ( data.writer != null ) {
-        filename = data.fileWriterMap.lastKey().getFileName( );
+        filename = data.getFileStreamsCollection().getLastFileName( );
       } else {
         filename = meta.getFileName();
         if ( filename == null ) {
@@ -356,21 +325,6 @@ public class TextFileOutput extends BaseStep implements StepInterface {
       }
     }
     return flushInterval;
-  }
-
-  public void flushOpenFiles( boolean closeAfterFlush  )  {
-    for ( TextFileOutputData.FileStreamsValue outputStream : data.fileWriterMap.values() ) {
-      if ( outputStream.isDirty() ) {
-        try {
-          outputStream.flush();
-          if ( closeAfterFlush ) {
-            outputStream.close();
-          }
-        } catch ( IOException e ) {
-          e.printStackTrace();
-        }
-      }
-    }
   }
 
   public int getMaxOpenFiles(  )  {
@@ -437,21 +391,32 @@ public class TextFileOutput extends BaseStep implements StepInterface {
     }
   }
 
+  // Warning!!!
+  // We need to be very particular about how we go about determining whether or not to write a file header before writing the row data.
+  // There are two performance issues in play. 1: Don't hit the file system unneccesarily. 2: Don't search the collection of
+  // file streams unneccessarily. Messing around with this method could have serious performance impacts.
+  public boolean isWriteHeader( String filename ) throws KettleException {
+    boolean writingToFileForFirstTime = first;
+    boolean isWriteHeader = meta.isHeaderEnabled();
+    if ( isWriteHeader ) {
+      if ( meta.getSplitEvery() > 0 ) {
+        writingToFileForFirstTime |= !filename.equals( data.getFileStreamsCollection().getLastFileName( ) );
+      } else {
+        writingToFileForFirstTime |= data.getFileStreamsCollection().getStream( filename ) == null;
+      }
+    }
+    isWriteHeader &= writingToFileForFirstTime && ( !meta.isFileAppended() || ( !COMPATIBILITY_APPEND_NO_HEADER && !isFileExists( filename ) ) );
+    return isWriteHeader;
+  }
+
   private boolean writeRowToFile( Object[] row ) throws KettleException {
     if ( row != null ) {
       String filename = getOutputFileName( meta.isFileNameInField() ? row : null );
-      TextFileOutputData.FileStreamsValue fileStreams = data.fileWriterMap.get( filename );
-      boolean writingToFileForFirstTime = first || ( fileStreams == null );
-
+      boolean isWriteHeader = isWriteHeader( filename );
       initFileStreamWriter( filename );
-
-      if ( fileStreams == null ) {
-        fileStreams = data.fileWriterMap.get( filename );
-      }
 
       first = false;
 
-      boolean isWriteHeader = meta.isHeaderEnabled() && writingToFileForFirstTime && ( !meta.isFileAppended() || ( fileStreams.isNewFile() && !COMPATIBILITY_APPEND_NO_HEADER ) );
       if ( isWriteHeader ) {
         writeHeader();
       }
@@ -471,11 +436,8 @@ public class TextFileOutput extends BaseStep implements StepInterface {
         data.out = null;
         data.writer = null;
         filename = getOutputFileName( null );
+        isWriteHeader = isWriteHeader( filename );
         initFileStreamWriter( filename );
-        fileStreams = data.fileWriterMap.get( filename );
-
-
-        isWriteHeader = meta.isHeaderEnabled() && ( !meta.isFileAppended() || ( fileStreams.isNewFile && !COMPATIBILITY_APPEND_NO_HEADER ) );
         if ( isWriteHeader ) {
           writeHeader();
         }
@@ -494,7 +456,11 @@ public class TextFileOutput extends BaseStep implements StepInterface {
         if ( data.lastFileFlushTime == 0 ) {
           data.lastFileFlushTime = currentTime;
         } else if ( data.lastFileFlushTime - currentTime > flushInterval ) {
-          flushOpenFiles( false );
+          try {
+            data.getFileStreamsCollection().flushOpenFiles( false );
+          } catch ( IOException e ) {
+            throw new KettleException( "Unable to flush open files", e );
+          }
           data.lastFileFlushTime = new Date().getTime();
         }
       }
@@ -512,12 +478,19 @@ public class TextFileOutput extends BaseStep implements StepInterface {
       if ( data.writer != null ) {
         writeEndedLine();
       }
-      flushOpenFiles( true );
+      try {
+        flushOpenFiles( true );
+      } catch ( IOException e ) {
+        throw new KettleException( "Unable to flush open files", e );
+      }
       setOutputDone();
       return false;
     }
   }
 
+  public void flushOpenFiles( boolean closeAfterFlush ) throws IOException {
+    data.getFileStreamsCollection().flushOpenFiles( true );
+  }
 
   public synchronized boolean processRow( StepMetaInterface smi, StepDataInterface sdi ) throws KettleException {
     meta = (TextFileOutputMeta) smi;
@@ -920,16 +893,12 @@ public class TextFileOutput extends BaseStep implements StepInterface {
   }
 
   protected boolean closeFile( String filename ) {
-    TextFileOutputData.FileStreamsValue outputStreams = data.fileWriterMap.get( filename );
-    if ( outputStreams != null ) {
-      try {
-        outputStreams.flush();
-        outputStreams.close();
-      } catch ( Exception e ) {
-        logError( "Exception trying to close file: " + e.toString() );
-        setErrors( 1 );
-        return false;
-      }
+    try {
+      data.getFileStreamsCollection().closeFile( filename );
+    } catch ( Exception e ) {
+      logError( "Exception trying to close file: " + e.toString() );
+      setErrors( 1 );
+      return false;
     }
     return true;
   }
@@ -939,18 +908,13 @@ public class TextFileOutput extends BaseStep implements StepInterface {
 
     try {
       if ( data.writer != null ) {
-        data.writer.flush();
+        data.getFileStreamsCollection().closeStream( data.writer );
       }
       data.writer = null;
+      data.out = null;
+      data.fos = null;
       if ( log.isDebug() ) {
         logDebug( "Closing normal file ..." );
-      }
-      if ( data.out != null ) {
-        data.out.close();
-      }
-      if ( data.fos != null ) {
-        data.fos.close();
-        data.fos = null;
       }
       retval = true;
     } catch ( Exception e ) {
@@ -1067,7 +1031,7 @@ public class TextFileOutput extends BaseStep implements StepInterface {
       if ( meta.isFileAsCommand() ) {
         closeCommand();
       } else if ( !meta.isServletOutput() ) {
-        flushOpenFiles( true );
+        data.getFileStreamsCollection().flushOpenFiles( true );
       }
     } catch ( Exception e ) {
       logError( "Unexpected error closing file", e );
