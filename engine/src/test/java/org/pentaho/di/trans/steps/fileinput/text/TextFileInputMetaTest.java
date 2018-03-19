@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,6 +22,7 @@
 
 package org.pentaho.di.trans.steps.fileinput.text;
 
+import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.doReturn;
@@ -36,7 +37,10 @@ import org.junit.Test;
 import org.pentaho.di.core.util.StringUtil;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.resource.ResourceNamingInterface;
+import org.pentaho.di.trans.TransMeta;
+import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.steps.file.BaseFileInputFiles;
+import org.pentaho.di.trans.steps.named.cluster.NamedClusterEmbedManager;
 
 public class TextFileInputMetaTest {
   private static final String FILE_NAME_NULL = null;
@@ -48,7 +52,16 @@ public class TextFileInputMetaTest {
 
   @Before
   public void setUp() throws Exception {
+    NamedClusterEmbedManager  manager = mock( NamedClusterEmbedManager.class );
+
+    TransMeta parentTransMeta = mock( TransMeta.class );
+    doReturn( manager ).when( parentTransMeta ).getNamedClusterEmbedManager();
+
+    StepMeta parentStepMeta = mock( StepMeta.class );
+    doReturn( parentTransMeta ).when( parentStepMeta ).getParentTransMeta();
+
     inputMeta = new TextFileInputMeta();
+    inputMeta.setParentStepMeta( parentStepMeta );
     inputMeta = spy( inputMeta );
     variableSpace = mock( VariableSpace.class );
 
@@ -70,6 +83,19 @@ public class TextFileInputMetaTest {
     verify( inputMeta ).getFileObject( FILE_NAME_VALID_PATH, variableSpace );
     verify( inputMeta, never() ).getFileObject( FILE_NAME_NULL, variableSpace );
     verify( inputMeta, never() ).getFileObject( FILE_NAME_EMPTY, variableSpace );
+  }
+
+  @Test
+  public void testGetXmlWorksIfWeUpdateOnlyPartOfInputFilesInformation() throws Exception {
+    inputMeta.inputFiles = new BaseFileInputFiles();
+    inputMeta.inputFiles.fileName = new String[] { FILE_NAME_VALID_PATH };
+
+    inputMeta.getXML();
+
+    assertEquals( inputMeta.inputFiles.fileName.length, inputMeta.inputFiles.fileMask.length );
+    assertEquals( inputMeta.inputFiles.fileName.length, inputMeta.inputFiles.excludeFileMask.length );
+    assertEquals( inputMeta.inputFiles.fileName.length, inputMeta.inputFiles.fileRequired.length );
+    assertEquals( inputMeta.inputFiles.fileName.length, inputMeta.inputFiles.includeSubFolders.length );
   }
 
 }
