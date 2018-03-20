@@ -1,7 +1,7 @@
 # jenkins-pipelines
 Jenkins Pipeline Build Files and YAML Build Data Files
 
-### These piplelines are dependent on the installation of the [Jenkins Shared Libraries](https://github.com/pentaho/jenkins-shared-libraries) in your Jenkins configuration.**
+### These piplelines are dependent on the installation of the [Jenkins Shared Libraries](https://github.com/pentaho/jenkins-shared-libraries) in your Jenkins configuration.
 
 **How to do that:**
 1. Click Jenkins/Manage Jenkins
