@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -465,4 +465,8 @@ public class DB2DatabaseMeta extends BaseDatabaseMeta implements DatabaseInterfa
     return "insert into " + schemaTable + "(" + versionField + ") values (1)";
   }
 
+  @Override
+  public boolean supportsOptionsInURL() {
+    return false;
+  }
 }
