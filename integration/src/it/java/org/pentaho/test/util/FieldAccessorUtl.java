@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -83,7 +83,7 @@ public class FieldAccessorUtl {
       throw new RuntimeException( e );
     }
     Assert.assertEquals( "ValueMetaBase.EMPTY_STRING_AND_NULL_ARE_DIFFERENT", newValue,
-        ValueMetaBase.EMPTY_STRING_AND_NULL_ARE_DIFFERENT );
+        ValueMetaBase.EMPTY_STRING_AND_NULL_ARE_DIFFERENT.booleanValue() );
     Assert.assertEquals( "ValueMeta.EMPTY_STRING_AND_NULL_ARE_DIFFERENT", newValue,
         ValueMeta.EMPTY_STRING_AND_NULL_ARE_DIFFERENT );
   }

@@ -70,14 +70,8 @@
     </dependency>
 
     <dependency>
-      <groupId>pentaho-kettle</groupId>
-      <artifactId>kettle-gpload-plugin</artifactId>
-      <version>${project.version}</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>pentaho-kettle</groupId>
-      <artifactId>kettle-xml-plugin</artifactId>
+      <groupId>org.pentaho.di.plugins</groupId>
+      <artifactId>kettle-gpload-plugin-core</artifactId>
       <version>${project.version}</version>
       <scope>test</scope>
     </dependency>
