@@ -1,0 +1,73 @@
+# Optional (unless used in your yaml data below) - can be overridden by upstream properties using the same name
+# These properties have two uses:
+#  1. To handle tokenized replacement for common data in the job item field definitions below (i.e DEFAULT_BRANCH=master)
+#  2. As default build parameters to control the build's overall behavior (i.e.
+buildProperties:
+        # global build control defaults
+        # These are understood by the shared pipeline libraries:
+        BUILD_PLAN_ID                  : Jibberish Build Test
+        MAVEN_DEFAULT_DIRECTIVES       : clean install
+        ANT_DEFAULT_DIRECTIVES         : clean-all resolve publish
+        GRADLE_DEFAULT_DIRECTIVES      : -q
+# job item field defaults
+# These are arbitrary properties for doing replacements in this data file
+        SCM_HOST_ROOT                  : https://github.com/
+        PENTAHO_SCM_ROOT               : https://github.com/pentaho/
+        WEBDETAILS_SCM_ROOT            : https://github.com/webdetails/
+        DEFAULT_BRANCH                 : master
+
+
+# required
+jobGroups:
+
+  1:
+       # required
+     - jobID             :  parent-poms
+       # required
+       scmUrl            :  ${PENTAHO_SCM_ROOT}maven-parent-poms.git
+       # optional (but strongly recommended) - defaults to master
+       scmBranch         :  ${DEFAULT_BRANCH}
+       # optional (but recommended) - if pom discovered maven assumed. If no pom discovered and build.xml is found, subfloor assumed
+       buildFramework    :  maven
+       # optional - defaults to none
+       directives   :
+       # optional - defaults to pom.xml for maven and build.xml for subfloor
+       buildFile         :  pom.xml
+       # optional - defaults to project root
+       root :
+       # optional: defaults to auto (one of: AUTO, FORCE, or NOOP)
+       executionType:  FORCE
+
+  2:
+     - jobID             :  database-model
+       scmUrl            :  ${PENTAHO_SCM_ROOT}pentaho-commons-database.git
+       scmBranch         :  ${DEFAULT_BRANCH}
+       directives        :  + -pl .,model
+       root              :  
+
+     - jobID             :  versionchecker
+       scmUrl            :  ${PENTAHO_SCM_ROOT}pentaho-versionchecker.git
+       scmBranch         :  ${DEFAULT_BRANCH}
+       buildFramework    :  maven
+       directives        :
+       root              :
+
+  3:
+     - jobID             :  sparkl-plugin
+       scmUrl            :  ${WEBDETAILS_SCM_ROOT}sparkl.git
+       scmBranch         :  ${DEFAULT_BRANCH}
+
+     - jobID             :  cgg-plugin
+       scmUrl            :  ${WEBDETAILS_SCM_ROOT}cgg.git
+       scmBranch         :  ${DEFAULT_BRANCH}
+
+     - jobID             :  data-refinery
+       scmUrl            :  ${PENTAHO_SCM_ROOT}pentaho-data-refinery.git
+       scmBranch         :  ${DEFAULT_BRANCH}
+
+     - jobID             :  pdi-plugins
+       scmUrl            :  ${PENTAHO_SCM_ROOT}pentaho-ee.git
+       scmBranch         :  ${DEFAULT_BRANCH}
+       root              :  data-integration/plugins
+
+
