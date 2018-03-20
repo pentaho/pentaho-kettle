@@ -31,6 +31,8 @@ import org.pentaho.di.trans.streaming.common.BaseStreamStep;
 import org.pentaho.di.trans.streaming.common.FixedTimeStreamWindow;
 
 import static java.util.Objects.requireNonNull;
+import static org.pentaho.di.i18n.BaseMessages.getString;
+import static org.pentaho.di.trans.step.jms.JmsConstants.PKG;
 
 public class JmsConsumer extends BaseStreamStep {
 
@@ -46,10 +48,28 @@ public class JmsConsumer extends BaseStreamStep {
 
     JmsConsumerMeta meta = (JmsConsumerMeta) stepMetaInterface;
 
+    if ( !validateParams( meta ) ) {
+      return false;
+    }
+
+
     window = new FixedTimeStreamWindow<>(
       subtransExecutor, meta.jmsDelegate.getRowMeta(), getDuration(), getBatchSize() );
-    source = new JmsStreamSource( this, requireNonNull( meta.jmsDelegate ) );
+    source = new JmsStreamSource( this, requireNonNull( meta.jmsDelegate ), getReceiverTimeout( meta ) );
     return superStatus;
+  }
+
+  public int getReceiverTimeout( JmsConsumerMeta meta ) {
+    try {
+      return Integer.parseInt( this.environmentSubstitute( meta.jmsDelegate.receiveTimeout ) );
+    } catch ( NumberFormatException nfe ) {
+      logError( getString( PKG, "JmsConsumer.ReceiveTimeoutInvalid" ) );
+    }
+    return -1;
+  }
+
+  public boolean validateParams( JmsConsumerMeta meta ) {
+    return getReceiverTimeout( meta ) > -1;
   }
 
 }

@@ -30,7 +30,6 @@ import com.ibm.mq.jms.MQTopic;
 import com.ibm.mq.jms.MQTopicConnectionFactory;
 import com.ibm.msg.client.wmq.WMQConstants;
 import org.pentaho.di.core.variables.VariableSpace;
-import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.trans.step.jms.JmsConstants;
 import org.pentaho.di.trans.step.jms.JmsDelegate;
 
@@ -52,11 +51,11 @@ public class WebsphereMQProvider implements JmsProvider {
     return type == WEBSPHERE;
   }
 
-  @Override public JMSContext getContext( JmsDelegate meta ) {
+  @Override public JMSContext getContext( JmsDelegate meta, VariableSpace variableSpace ) {
 
-    MQUrlResolver resolver = new MQUrlResolver( meta, new Variables() );
+    MQUrlResolver resolver = new MQUrlResolver( meta, variableSpace );
 
-    MQConnectionFactory connFactory = isQueue( meta )
+    MQConnectionFactory connFactory = isQueue( meta, variableSpace )
       ? new MQQueueConnectionFactory() : new MQTopicConnectionFactory();
 
     connFactory.setHostName( resolver.host );
@@ -68,20 +67,28 @@ public class WebsphereMQProvider implements JmsProvider {
     } catch ( JMSException e ) {
       throw new RuntimeException( e );
     }
-    return connFactory.createContext( meta.username, meta.password );
+    return connFactory.createContext(
+      variableSpace.environmentSubstitute( meta.username ),
+      variableSpace.environmentSubstitute( meta.password ) );
+
   }
 
-  @Override public Destination getDestination( JmsDelegate meta ) {
+  @Override public Destination getDestination( JmsDelegate meta,
+                                               VariableSpace variableSpace ) {
     checkNotNull( meta.destinationName, getString( JmsConstants.PKG, "JmsWebsphereMQ.DestinationNameRequired" ) );
     try {
-      return isQueue( meta ) ? new MQQueue( meta.destinationName ) : new MQTopic( meta.destinationName );
+      String destName = variableSpace.environmentSubstitute( meta.destinationName );
+      return isQueue( meta, variableSpace )
+        ? new MQQueue( destName )
+        : new MQTopic( destName );
     } catch ( JMSException e ) {
       throw new RuntimeException( e );
     }
   }
 
-  private boolean isQueue( JmsDelegate meta ) {
-    return DestinationType.valueOf( meta.destinationType ).equals( QUEUE );
+  private boolean isQueue( JmsDelegate meta, VariableSpace variableSpace ) {
+    return DestinationType.valueOf(
+      variableSpace.environmentSubstitute( meta.destinationType ) ).equals( QUEUE );
   }
 
 

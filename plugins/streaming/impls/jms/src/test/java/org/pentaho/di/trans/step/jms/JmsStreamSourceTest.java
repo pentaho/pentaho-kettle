@@ -26,7 +26,6 @@ import com.ibm.msg.client.jms.JmsContext;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
@@ -56,12 +55,13 @@ public class JmsStreamSourceTest {
   @Mock private Destination destination;
   @Mock private Message message;
 
-  @InjectMocks private JmsStreamSource source;
+  private JmsStreamSource source;
 
   @Before
   public void before() throws JMSException {
-    when( delegate.getJmsContext() ).thenReturn( context );
-    when( delegate.getDestination() ).thenReturn( destination );
+    source = new JmsStreamSource( consumerStep, delegate, 0 );
+    when( delegate.getJmsContext( consumerStep ) ).thenReturn( context );
+    when( delegate.getDestination( consumerStep ) ).thenReturn( destination );
     when( context.createConsumer( destination ) ).thenReturn( consumer );
     when( message.getBody( Object.class ) ).thenReturn( "message" );
 
@@ -82,8 +82,8 @@ public class JmsStreamSourceTest {
   public void testReceiveMessage() {
     source.open();
 
-    verify( delegate ).getJmsContext();
-    verify( delegate ).getDestination();
+    verify( delegate ).getJmsContext( consumerStep );
+    verify( delegate ).getDestination( consumerStep );
 
     List<Object> sentMessage = source.observable().firstElement().blockingGet( Collections.emptyList() );
 
@@ -97,8 +97,8 @@ public class JmsStreamSourceTest {
   public void handlesJmsRuntimeException() {
     when( consumer.receive( 0 ) ).thenThrow( new JMSRuntimeException( "exception" ) );
     source.open();
-    verify( delegate ).getJmsContext();
-    verify( delegate ).getDestination();
+    verify( delegate ).getJmsContext( consumerStep );
+    verify( delegate ).getDestination( consumerStep );
     try {
       source.observable().firstElement().blockingGet( Collections.emptyList() );
       fail( "Expected exception " );

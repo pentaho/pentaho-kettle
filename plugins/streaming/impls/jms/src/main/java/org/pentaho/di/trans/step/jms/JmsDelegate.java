@@ -28,6 +28,7 @@ import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.core.util.serialization.Sensitive;
+import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.trans.step.jms.context.JmsProvider;
 
 import javax.jms.Destination;
@@ -64,7 +65,7 @@ public  class JmsDelegate {
 
   @Injection ( name = "DESTINATION_TYPE" ) public String destinationType = QUEUE.name();
 
-  @Injection ( name = "RECEIVE_TIMEOUT" ) public int receiveTimeout = 0;
+  @Injection ( name = "RECEIVE_TIMEOUT" ) public String receiveTimeout = "0";
 
   @Injection ( name = "MESSAGE_FIELD_NAME" ) public String messageField = "message";
 
@@ -79,12 +80,12 @@ public  class JmsDelegate {
     this.jmsProviders = jmsProviders;
   }
 
-  Destination getDestination() {
-    return getJmsProvider().getDestination( this );
+  Destination getDestination( VariableSpace variableSpace ) {
+    return getJmsProvider().getDestination( this, variableSpace );
   }
 
-  JMSContext getJmsContext() {
-    return getJmsProvider().getContext( this );
+  JMSContext getJmsContext( VariableSpace variableSpace ) {
+    return getJmsProvider().getContext( this, variableSpace );
   }
 
   private JmsProvider getJmsProvider() {
@@ -103,4 +104,6 @@ public  class JmsDelegate {
     rowMeta.addValueMeta( new ValueMetaString( destinationField ) );
     return rowMeta;
   }
+
+
 }

@@ -32,28 +32,39 @@ import javax.jms.JMSConsumer;
 import javax.jms.JMSRuntimeException;
 import javax.jms.Message;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import static com.google.common.collect.ImmutableList.of;
 import static io.reactivex.schedulers.Schedulers.io;
 import static java.util.Collections.singletonList;
+import static org.pentaho.di.i18n.BaseMessages.getString;
+import static org.pentaho.di.trans.step.jms.JmsConstants.PKG;
 
 public class JmsStreamSource extends BlockingQueueStreamSource<List<Object>> {
 
   private final JmsDelegate jmsDelegate;
+  private final int receiverTimeout;
   private JMSConsumer consumer;
+  private AtomicBoolean closed = new AtomicBoolean( false );
 
-  JmsStreamSource( BaseStreamStep streamStep, JmsDelegate jmsDelegate ) {
+  JmsStreamSource( BaseStreamStep streamStep, JmsDelegate jmsDelegate, int receiverTimeout ) {
     super( streamStep );
     this.jmsDelegate = jmsDelegate;
+    this.receiverTimeout = receiverTimeout;
   }
 
   @Override public void open() {
-    consumer = jmsDelegate.getJmsContext().createConsumer( jmsDelegate.getDestination() );
-    Observable.create( receiveLoop() )
-      .subscribeOn( io() )
+    consumer = jmsDelegate.getJmsContext( streamStep )
+      .createConsumer( jmsDelegate.getDestination( streamStep ) );
+    Observable
+      .create( receiveLoop() )  // jms loop
+      .subscribeOn( io() )   // subscribe and observe on new io threads
       .observeOn( io() )
-      .doOnError( this::error ) // propogate the error
-      .forEach( message -> acceptRows( singletonList( of( message, jmsDelegate.destinationName ) ) ) );
+      .doOnNext( message -> acceptRows( singletonList( of( message, jmsDelegate.destinationName ) ) ) )
+      .doOnComplete( this::close )
+      .doOnError( this::error )
+      .publish() // publish/connect will "start" the receive loop
+      .connect();
   }
 
   /**
@@ -64,12 +75,15 @@ public class JmsStreamSource extends BlockingQueueStreamSource<List<Object>> {
     return emitter -> {
       Message message;
       try {
-        while ( ( message = consumer.receive( jmsDelegate.receiveTimeout ) ) != null ) {
+        while ( ( message = consumer.receive( receiverTimeout ) ) != null ) {
           streamStep.logDebug( message.toString() );
           emitter.onNext( message.getBody( Object.class ) );
         }
       } catch ( JMSRuntimeException jmsException ) {
         emitter.onError( jmsException );
+      }
+      if ( !closed.get() ) {
+        streamStep.logBasic( getString( PKG, "JmsStreamSource.HitReceiveTimeout" ) );
       }
       emitter.onComplete();
     };
@@ -77,6 +91,7 @@ public class JmsStreamSource extends BlockingQueueStreamSource<List<Object>> {
 
   @Override public void close() {
     super.close();
+    closed.set( true );
     if ( consumer != null ) {
       consumer.close();
     }
