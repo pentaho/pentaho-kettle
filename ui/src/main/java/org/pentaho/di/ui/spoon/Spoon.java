@@ -63,6 +63,7 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.output.TeeOutputStream;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.vfs2.FileObject;
+import org.apache.commons.vfs2.FileSystemException;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.dialogs.Dialog;
@@ -153,6 +154,7 @@ import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.encryption.Encr;
 import org.pentaho.di.core.exception.KettleAuthException;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.exception.KettleFileException;
 import org.pentaho.di.core.exception.KettleMissingPluginsException;
 import org.pentaho.di.core.exception.KettleRowException;
 import org.pentaho.di.core.exception.KettleValueException;
@@ -4551,8 +4553,8 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     }
   }
 
-  protected static String getFileType( final File file ) {
-    final String fileExt = file == null ? null : FilenameUtils.getExtension( file.getName() );
+  protected static String getFileType( final String fineName ) {
+    final String fileExt = fineName == null ? null : FilenameUtils.getExtension( fineName );
     String fileType = BaseMessages.getString( PKG, "System.FileType.File" );
     if ( "ktr".equals( fileExt ) ) {
       fileType = BaseMessages.getString( PKG, "System.FileType.Transformation" );
@@ -4567,11 +4569,17 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     // We expect a single <transformation> or <job> root at this time...
 
     // does the file exist? If not, show an error dialog
-    final File file = new File( filename );
-    if ( StringUtils.isBlank( filename ) || !file.exists() ) {
+    boolean fileExists = false;
+    try {
+      final FileObject file = KettleVFS.getFileObject( filename );
+      fileExists = file.exists();
+    } catch ( final KettleFileException | FileSystemException e ) {
+      // nothing to do, null fileObject will be handled below
+    }
+    if ( StringUtils.isBlank( filename ) || !fileExists ) {
       final Dialog dlg = new SimpleMessageDialog( shell,
         BaseMessages.getString( PKG, "Spoon.Dialog.MissingRecentFile.Title" ),
-        BaseMessages.getString( PKG, "Spoon.Dialog.MissingRecentFile.Message", getFileType( file ).toLowerCase() ),
+        BaseMessages.getString( PKG, "Spoon.Dialog.MissingRecentFile.Message", getFileType( filename ).toLowerCase() ),
         MessageDialog.ERROR, BaseMessages.getString( PKG, "System.Button.Close" ),
         MISSING_RECENT_DLG_WIDTH, SimpleMessageDialog.BUTTON_WIDTH );
       dlg.open();

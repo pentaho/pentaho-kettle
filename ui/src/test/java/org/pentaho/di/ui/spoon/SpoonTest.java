@@ -943,20 +943,20 @@ public class SpoonTest {
   @Test
   public void textGetFileType() {
 
-    assertEquals( "File", Spoon.getFileType( null ) );;
-    assertEquals( "File", Spoon.getFileType( new File( "" ) ) );
-    assertEquals( "File", Spoon.getFileType( new File( " " ) ) );
-    assertEquals( "File", Spoon.getFileType( new File( "foo" ) ) );
-    assertEquals( "File", Spoon.getFileType( new File( "foo/foe" ) ) );
-    assertEquals( "File", Spoon.getFileType( new File( "ktr" ) ) );
-    assertEquals( "File", Spoon.getFileType( new File( "ktr" ) ) );
+    assertEquals( "File", Spoon.getFileType( null ) );
+    assertEquals( "File", Spoon.getFileType( "" ) );
+    assertEquals( "File", Spoon.getFileType( " " ) );
+    assertEquals( "File", Spoon.getFileType( "foo" ) );
+    assertEquals( "File", Spoon.getFileType( "foo/foe" ) );
+    assertEquals( "File", Spoon.getFileType( "ktr" ) );
+    assertEquals( "File", Spoon.getFileType( "ktr" ) );
 
-    assertEquals( "Transformation", Spoon.getFileType( new File( "foo/foe.ktr" ) ) );
-    assertEquals( "Transformation", Spoon.getFileType( new File( "foe.ktr" ) ) );
-    assertEquals( "Transformation", Spoon.getFileType( new File( ".ktr" ) ) );
+    assertEquals( "Transformation", Spoon.getFileType( "foo/foe.ktr" ) );
+    assertEquals( "Transformation", Spoon.getFileType( "foe.ktr" ) );
+    assertEquals( "Transformation", Spoon.getFileType( ".ktr" ) );
 
-    assertEquals( "Job", Spoon.getFileType( new File( "foo/foe.kjb" ) ) );
-    assertEquals( "Job", Spoon.getFileType( new File( "foe.kjb" ) ) );
-    assertEquals( "Job", Spoon.getFileType( new File( ".kjb" ) ) );
+    assertEquals( "Job", Spoon.getFileType( "foo/foe.kjb" ) );
+    assertEquals( "Job", Spoon.getFileType( "foe.kjb" ) );
+    assertEquals( "Job", Spoon.getFileType( ".kjb" ) );
   }
 }
