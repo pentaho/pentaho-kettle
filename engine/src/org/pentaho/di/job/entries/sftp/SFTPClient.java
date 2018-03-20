@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -437,6 +437,11 @@ public class SFTPClient {
   public String getCompression() {
     if ( this.compression == null ) {
       return null;
+    }
+    if ( this.compression.equals( "zlib" ) ) {
+      // compatibility with OpenSSH implementation of delayed compression
+      // https://www.openssh.com/txt/draft-miller-secsh-compression-delayed-00.txt
+      return "zlib@openssh.com,zlib";
     }
     if ( this.compression.equals( "none" ) ) {
       return null;
