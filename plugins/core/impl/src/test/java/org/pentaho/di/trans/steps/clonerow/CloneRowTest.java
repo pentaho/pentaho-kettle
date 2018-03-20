@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -32,6 +32,7 @@ import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.trans.steps.mock.StepMockHelper;
 
 import java.util.Collections;
+
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyInt;
 import static org.mockito.Mockito.when;
@@ -68,7 +69,7 @@ public class CloneRowTest {
     RowMetaInterface inputRowMeta = mock( RowMetaInterface.class );
     when( inputRowMeta.getInteger( any( Object[].class ), anyInt() ) ).thenReturn( null );
 
-    RowSet inputRowSet = stepMockHelper.getMockInputRowSet( new Integer[]{ null } );
+    RowSet inputRowSet = stepMockHelper.getMockInputRowSet( new Integer[] { null } );
     when( inputRowSet.getRowMeta() ).thenReturn( inputRowMeta );
     step.setInputRowSets( Collections.singletonList( inputRowSet ) );
 

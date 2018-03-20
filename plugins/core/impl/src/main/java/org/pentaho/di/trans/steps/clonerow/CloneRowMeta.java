@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -26,6 +26,7 @@ import java.util.List;
 
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
+import org.pentaho.di.core.annotations.Step;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
@@ -54,18 +55,28 @@ import org.w3c.dom.Node;
  * Created on 27-06-2008
  *
  */
+@Step( id = "CloneRow", name = "BaseStep.TypeLongDesc.CloneRow",
+  categoryDescription = "i18n:org.pentaho.di.trans.step:BaseStep.Category.Utility",
+  description = "BaseStep.TypeTooltipDesc.CloneRow",
+  i18nPackageName = "org.pentaho.di.trans.steps.clonerow" )
 
 public class CloneRowMeta extends BaseStepMeta implements StepMetaInterface {
   private static Class<?> PKG = CloneRowMeta.class; // for i18n purposes, needed by Translator2!!
 
-  /** nr of clone rows */
+  /**
+   * nr of clone rows
+   */
   private String nrclones;
 
-  /** Flag: add clone flag */
+  /**
+   * Flag: add clone flag
+   */
 
   private boolean addcloneflag;
 
-  /** clone flag field */
+  /**
+   * clone flag field
+   */
   private String cloneflagfield;
 
   private boolean nrcloneinfield;
@@ -184,7 +195,8 @@ public class CloneRowMeta extends BaseStepMeta implements StepMetaInterface {
     clonenumfield = null;
   }
 
-  public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases ) throws KettleException {
+  public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases )
+    throws KettleException {
     try {
       nrclones = rep.getStepAttributeString( id_step, "nrclones" );
       addcloneflag = rep.getStepAttributeBoolean( id_step, "addcloneflag" );
@@ -201,7 +213,8 @@ public class CloneRowMeta extends BaseStepMeta implements StepMetaInterface {
     }
   }
 
-  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step ) throws KettleException {
+  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step )
+    throws KettleException {
     try {
       rep.saveStepAttribute( id_transformation, id_step, "nrclones", nrclones );
       rep.saveStepAttribute( id_transformation, id_step, "addcloneflag", addcloneflag );
@@ -219,7 +232,7 @@ public class CloneRowMeta extends BaseStepMeta implements StepMetaInterface {
   }
 
   public void getFields( RowMetaInterface rowMeta, String origin, RowMetaInterface[] info, StepMeta nextStep,
-    VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
+                         VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
     // Output field (boolean) ?
     if ( addcloneflag ) {
       String realfieldValue = space.environmentSubstitute( cloneflagfield );
@@ -241,8 +254,8 @@ public class CloneRowMeta extends BaseStepMeta implements StepMetaInterface {
   }
 
   public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta,
-    RowMetaInterface prev, String[] input, String[] output, RowMetaInterface info, VariableSpace space,
-    Repository repository, IMetaStore metaStore ) {
+                     RowMetaInterface prev, String[] input, String[] output, RowMetaInterface info, VariableSpace space,
+                     Repository repository, IMetaStore metaStore ) {
     CheckResult cr;
     String error_message = "";
 
@@ -311,7 +324,7 @@ public class CloneRowMeta extends BaseStepMeta implements StepMetaInterface {
   }
 
   public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr, TransMeta tr,
-    Trans trans ) {
+                                Trans trans ) {
     return new CloneRow( stepMeta, stepDataInterface, cnr, tr, trans );
   }
 

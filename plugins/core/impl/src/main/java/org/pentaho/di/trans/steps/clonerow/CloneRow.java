@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -48,7 +48,7 @@ public class CloneRow extends BaseStep implements StepInterface {
   private CloneRowData data;
 
   public CloneRow( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta,
-    Trans trans ) {
+                   Trans trans ) {
     super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
   }
 
@@ -121,12 +121,12 @@ public class CloneRow extends BaseStep implements StepInterface {
       int rowIndex = data.NrPrevFields;
       if ( meta.isAddCloneFlag() ) {
         // This row is not a clone but the original row
-        outputRowData[rowIndex] = false;
+        outputRowData[ rowIndex ] = false;
         rowIndex++;
       }
       if ( meta.isAddCloneNum() ) {
         // This row is the original so let's identify it as the first one (zero)
-        outputRowData[rowIndex] = 0L;
+        outputRowData[ rowIndex ] = 0L;
       }
     }
 
@@ -152,14 +152,14 @@ public class CloneRow extends BaseStep implements StepInterface {
         int rowIndex = data.NrPrevFields;
         if ( meta.isAddCloneFlag() ) {
           // This row is a clone row
-          outputRowData[rowIndex] = true;
+          outputRowData[ rowIndex ] = true;
           rowIndex++;
         }
         if ( meta.isAddCloneNum() ) {
           // Let's add to clone number
           // Clone starts at number 1 (0 is for the original row)
           Long clonenum = new Long( i + 1 );
-          outputRowData[rowIndex] = clonenum;
+          outputRowData[ rowIndex ] = clonenum;
         }
       }
       putRow( data.outputRowMeta, outputRowData ); // copy row to output rowset(s);
