@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -41,6 +41,7 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.annotations.PluginDialog;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowMetaInterface;
@@ -52,8 +53,10 @@ import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.steps.closure.ClosureGeneratorMeta;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
+@PluginDialog( id = "ClosureGenerator", image = "CLG.svg", pluginType = PluginDialog.PluginType.STEP,
+  documentationUrl = "http://wiki.pentaho.com/display/EAI/Closure+Generator" )
 public class ClosureGeneratorDialog extends BaseStepDialog implements StepDialogInterface {
-  private static Class<?> PKG = ClosureGeneratorMeta.class; // for i18n purposes, needed by Translator2!!
+  private static Class<?> PKG = ClosureGeneratorDialog.class; // for i18n purposes, needed by Translator2!!
 
   private Label wlRootZero;
   private Button wRootZero;

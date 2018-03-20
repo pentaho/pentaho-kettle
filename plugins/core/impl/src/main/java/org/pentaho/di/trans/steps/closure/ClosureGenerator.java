@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -48,7 +48,7 @@ public class ClosureGenerator extends BaseStep implements StepInterface {
   private ClosureGeneratorData data;
 
   public ClosureGenerator( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr,
-    TransMeta transMeta, Trans trans ) {
+                           TransMeta transMeta, Trans trans ) {
     super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
   }
 
@@ -86,8 +86,8 @@ public class ClosureGenerator extends BaseStep implements StepInterface {
 
         // add values to the buffer...
         //
-        Object parentId = rowData[data.parentIndex];
-        Object childId = rowData[data.childIndex];
+        Object parentId = rowData[ data.parentIndex ];
+        Object childId = rowData[ data.childIndex ];
         data.map.put( childId, parentId );
       }
     } else {
@@ -103,9 +103,9 @@ public class ClosureGenerator extends BaseStep implements StepInterface {
         recurseParents( current, 1 );
         for ( Object parent : data.parents.keySet() ) {
           Object[] outputRow = RowDataUtil.allocateRowData( data.outputRowMeta.size() );
-          outputRow[0] = parent;
-          outputRow[1] = current;
-          outputRow[2] = data.parents.get( parent );
+          outputRow[ 0 ] = parent;
+          outputRow[ 1 ] = current;
+          outputRow[ 2 ] = data.parents.get( parent );
           putRow( data.outputRowMeta, outputRow );
         }
       }
