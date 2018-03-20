@@ -71,4 +71,5 @@ public class JmsConsumerMeta extends BaseStreamStepMeta {
   @Override public StepDataInterface getStepData() {
     return new GenericStepData();
   }
+
 }

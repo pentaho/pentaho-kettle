@@ -93,7 +93,7 @@ public class DestinationForm {
 
 
     Label lbDestName = new Label( parentComponent, SWT.LEFT );
-    props.setLook( lbDestType );
+    props.setLook( lbDestName );
     lbDestName.setText( getString( PKG, "JmsDialog.Dest.Name" ) );
     FormData fdlDestName = new FormData();
     fdlDestName.left = new FormAttachment( lbDestType, 15 );

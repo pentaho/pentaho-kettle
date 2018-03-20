@@ -24,6 +24,7 @@ package org.pentaho.di.trans.step.jms.context;
 
 import com.google.common.base.Supplier;
 import com.google.common.base.Suppliers;
+import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.trans.step.jms.JmsDelegate;
 
 import javax.jms.Destination;
@@ -58,11 +59,12 @@ public class WrappedWebsphereMQProvider implements JmsProvider {
     return prov.get().supports( type );
   }
 
-  @Override public JMSContext getContext( JmsDelegate meta ) {
-    return prov.get().getContext( meta );
+  @Override public JMSContext getContext( JmsDelegate meta, VariableSpace variableSpace ) {
+    return prov.get().getContext( meta, variableSpace );
   }
 
-  @Override public Destination getDestination( JmsDelegate meta ) {
-    return prov.get().getDestination( meta );
+  @Override public Destination getDestination( JmsDelegate meta,
+                                               VariableSpace variableSpace ) {
+    return prov.get().getDestination( meta, variableSpace );
   }
 }
