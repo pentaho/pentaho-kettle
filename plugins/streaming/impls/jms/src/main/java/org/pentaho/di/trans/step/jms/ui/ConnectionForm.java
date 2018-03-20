@@ -53,6 +53,7 @@ public class ConnectionForm {
 
   private final Composite parentComponent;
   private final JmsDelegate jmsDelegate;
+  private final JmsProvider.ConnectionType currentConnType;
 
   private TextVar wUrl;
   private TextVar wUser;
@@ -77,6 +78,7 @@ public class ConnectionForm {
     this.transMeta = transMeta;
     this.lsMod = lsMod;
     this.jmsDelegate = jmsDelegate;
+    this.currentConnType = JmsProvider.ConnectionType.valueOf( jmsDelegate.connectionType );
   }
 
 
@@ -175,6 +177,7 @@ public class ConnectionForm {
     wlJmsUrl.setLayoutData( fdlIbmJmsUrl );
 
     wUrl = new TextVar( transMeta, wConnectionGroup, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
+    wUrl.setToolTipText( currentConnType.getUrlHint() );
     props.setLook( wUrl );
     wUrl.addModifyListener( lsMod );
     FormData fdJmsUrl = new FormData();

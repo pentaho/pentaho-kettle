@@ -43,19 +43,50 @@ public interface JmsProvider {
   enum ConnectionType {
     WEBSPHERE {
       public String toString() {
-        return getString( PKG, "JmsDialog.IBMMQ" );
+        return getString( PKG, "JmsProvider.IBMMQ" );
+      }
+
+      public String getUrlHint() {
+        return getString( PKG, "JmsProvider.WSUrlHint" );
+
+      }
+
+      public String getDestinationHint() {
+        return getString( PKG, "JmsProvider.WSDestinationHint" );
       }
     },
     ACTIVEMQ {
       public String toString() {
-        return getString( PKG, "JmsDialog.ActiveMQ" );
+        return getString( PKG, "JmsProvider.ActiveMQ" );
+      }
+
+      public String getUrlHint() {
+        return getString( PKG, "JmsProvider.ActiveMQUrlHint" );
+
+      }
+
+      public String getDestinationHint() {
+        return getString( PKG, "JmsProvider.ActiveMQDestinationHint" );
       }
     },
     JNDI {
       public String toString() {
-        return getString( PKG, "JmsDialog.Generic" );
+        return getString( PKG, "JmsProvider.Generic" );
       }
-    }
+
+      public String getUrlHint() {
+        return getString( PKG, "JmsProvider.JndiUrlHint" );
+
+      }
+
+      public String getDestinationHint() {
+        return getString( PKG, "JmsProvider.JndiDestinationHint" );
+      }
+    };
+
+    public abstract String getUrlHint();
+
+    public abstract String getDestinationHint();
   }
 
   enum DestinationType {
