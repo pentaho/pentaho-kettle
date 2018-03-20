@@ -48,13 +48,13 @@ import static org.pentaho.di.trans.step.jms.context.JmsProvider.DestinationType.
  */
 public  class JmsDelegate {
 
-  @Injection ( name = "DESTINATION" ) public String destinationName = "DEV.QUEUE.1";
+  @Injection ( name = "DESTINATION" ) public String destinationName = "";
 
-  @Injection ( name = "URL" ) public String url = "mq://localhost:1414/QM1?channel=DEV.APP.SVRCONN";
+  @Injection ( name = "URL" ) public String url = "";
 
-  @Injection ( name = "USERNAME" ) public String username = "username";
+  @Injection ( name = "USERNAME" ) public String username = "";
 
-  @Sensitive @Injection ( name = "PASSWORD" ) public String password = "password";
+  @Sensitive @Injection ( name = "PASSWORD" ) public String password = "";
 
   @Injection ( name = "JNDI_URL" ) public String jndiUrl = "";
 
