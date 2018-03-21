@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -43,26 +43,34 @@ import static org.mockito.Mockito.when;
 import java.lang.reflect.Field;
 import java.sql.*;
 import java.util.List;
+import java.util.Properties;
 
+import javax.naming.Context;
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
+import javax.naming.spi.InitialContextFactoryBuilder;
+import javax.naming.spi.NamingManager;
 import javax.sql.DataSource;
 
+import org.junit.After;
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.mockito.Mockito;
 import org.pentaho.di.core.KettleClientEnvironment;
 import org.pentaho.di.core.database.DataSourceProviderInterface.DatasourceType;
 import org.pentaho.di.core.exception.KettleDatabaseBatchException;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.logging.LogLevel;
 import org.pentaho.di.core.logging.LoggingObjectInterface;
-import org.pentaho.di.core.logging.LoggingObjectType;
-import org.pentaho.di.core.logging.SimpleLoggingObject;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.row.value.ValueMetaNumber;
 import org.pentaho.di.core.variables.VariableSpace;
+import org.springframework.mock.jndi.SimpleNamingContextBuilder;
 
-public class DatabaseUnitTest {
+@SuppressWarnings( "deprecation" )
+public class DatabaseTest {
+
   private static final String TEST_NAME_OF_DB_CONNECTION = "TEST_CONNECTION";
   private static final String SQL_MOCK_EXCEPTION_MESSAGE = "SQL mock exception";
   private static final SQLException SQL_EXCEPTION = new SQLException( SQL_MOCK_EXCEPTION_MESSAGE );
@@ -70,36 +78,78 @@ public class DatabaseUnitTest {
   private static final String NOT_EXISTING_TABLE_NAME = "NOT_EXISTING_TABLE";
   private static final String SCHEMA_TO_CHECK = "schemaPattern";
   private static final String[] TABLE_TYPES_TO_GET = { "TABLE", "VIEW" };
-  private ResultSet resultSetMock = mock( ResultSet.class );
+
+  //common fields
+  private String sql = "select * from employees";
+  private String columnName = "salary";
+  private String fullJndiName = "jdbc/testJNDIName";
+  private ResultSet rs = mock( ResultSet.class );
   private DatabaseMeta dbMetaMock = mock( DatabaseMeta.class );
   private DatabaseMetaData dbMetaDataMock = mock( DatabaseMetaData.class );
-  static LoggingObjectInterface log = new SimpleLoggingObject( "junit", LoggingObjectType.GENERAL, null );
+  private LoggingObjectInterface log = mock( LoggingObjectInterface.class );
+  private DatabaseInterface databaseInterface = mock( DatabaseInterface.class );
+
+  private DatabaseMeta meta = mock( DatabaseMeta.class );
+  private PreparedStatement ps = mock( PreparedStatement.class );
+  private DatabaseMetaData dbMetaData = mock( DatabaseMetaData.class );
+  private ResultSetMetaData rsMetaData = mock( ResultSetMetaData.class );
+  private Connection conn;
+  //end common fields
 
   @BeforeClass
-  public static void setUp() throws Exception {
+  public static void setUpClass() throws Exception {
     KettleClientEnvironment.init();
+  }
+
+  @Before
+  public void setUp() throws Exception {
+    conn = mockConnection( mock( DatabaseMetaData.class ) );
+    when( log.getLogLevel() ).thenReturn( LogLevel.NOTHING );
+    if ( !NamingManager.hasInitialContextFactoryBuilder() ) {
+      // If JNDI is not initialized, use simpleJNDI
+      System.setProperty( Context.INITIAL_CONTEXT_FACTORY, "org.osjava.sj.memory.MemoryContextFactory" ); // pentaho#simple-jndi;1.0.0
+      System.setProperty( "org.osjava.sj.jndi.shared", "true" );
+      InitialContextFactoryBuilder simpleBuilder = new SimpleNamingContextBuilder();
+      NamingManager.setInitialContextFactoryBuilder( simpleBuilder );
+    }
+  }
+
+  @After
+  public void tearDown() throws NamingException {
+    InitialContext ctx = new InitialContext();
+    ctx.unbind( fullJndiName );
+  }
+
+  @Test
+  public void testConnectJNDI() throws SQLException, NamingException, KettleDatabaseException {
+    InitialContext ctx = new InitialContext();
+    String jndiName = "testJNDIName";
+    when( meta.getName() ).thenReturn( "testName" );
+    when( meta.getDatabaseName() ).thenReturn( jndiName );
+    when( meta.getDisplayName() ).thenReturn( "testDisplayName" );
+    when( meta.getAccessType() ).thenReturn( DatabaseMeta.TYPE_ACCESS_JNDI );
+    when( meta.environmentSubstitute( jndiName ) ).thenReturn( jndiName );
+
+    DataSource ds = mock( DataSource.class );
+    when( ds.getConnection() ).thenReturn( conn );
+    ctx.bind( fullJndiName, ds );
+
+    Database db = new Database( log, meta );
+    db.connect();
+    assertEquals( conn, db.getConnection() );
   }
 
   @Test
   public void testGetQueryFieldsFromPreparedStatement() throws Exception {
-    String sql = "select * from employees";
-    String columnName = "salary";
-
-    DatabaseMeta meta = Mockito.mock( DatabaseMeta.class );
-    PreparedStatement ps = Mockito.mock( PreparedStatement.class );
-    Connection conn = mockConnection( mock( DatabaseMetaData.class ) );
-    ResultSetMetaData rsMetaData = mock( ResultSetMetaData.class );
-
     when( rsMetaData.getColumnCount() ).thenReturn( 1 );
     when( rsMetaData.getColumnName( 1 ) ).thenReturn( columnName );
     when( rsMetaData.getColumnLabel( 1 ) ).thenReturn( columnName );
     when( rsMetaData.getColumnType( 1 ) ).thenReturn( Types.DECIMAL );
 
-    Mockito.when( meta.stripCR( anyString() ) ).thenReturn( sql );
-    Mockito.when( meta.getDatabaseInterface() ).thenReturn( new MySQLDatabaseMeta() );
-    Mockito.when( conn.prepareStatement( sql, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY ) )
-        .thenReturn( ps );
-    Mockito.when( ps.getMetaData() ).thenReturn( rsMetaData );
+    when( meta.stripCR( anyString() ) ).thenReturn( sql );
+    when( meta.getDatabaseInterface() ).thenReturn( new MySQLDatabaseMeta() );
+    when( conn.prepareStatement( sql, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY ) ).thenReturn( ps );
+    when( ps.getMetaData() ).thenReturn( rsMetaData );
 
     Database db = new Database( log, meta );
     db.setConnection( conn );
@@ -112,19 +162,19 @@ public class DatabaseUnitTest {
 
   @Test
   public void testGetQueryFieldsFromDatabaseMetaData() throws Exception {
-    DatabaseMeta meta = Mockito.mock( DatabaseMeta.class );
+    DatabaseMeta meta = mock( DatabaseMeta.class );
     DatabaseMetaData dbMetaData = mock( DatabaseMetaData.class );
     Connection conn = mockConnection( dbMetaData );
-    ResultSet columns = mock( ResultSet.class );
+    ResultSet rs = mock( ResultSet.class );
     String columnName = "year";
     String columnType = "Integer";
     int columnSize = 15;
 
-    Mockito.when( dbMetaData.getColumns( anyString(), anyString(), anyString(), anyString() ) ).thenReturn( columns );
-    Mockito.when( columns.next() ).thenReturn( true ).thenReturn( false );
-    Mockito.when( columns.getString( "COLUMN_NAME" ) ).thenReturn( columnName );
-    Mockito.when( columns.getString( "SOURCE_DATA_TYPE" ) ).thenReturn( columnType );
-    Mockito.when( columns.getInt( "COLUMN_SIZE" ) ).thenReturn( columnSize );
+    when( dbMetaData.getColumns( anyString(), anyString(), anyString(), anyString() ) ).thenReturn( rs );
+    when( rs.next() ).thenReturn( true ).thenReturn( false );
+    when( rs.getString( "COLUMN_NAME" ) ).thenReturn( columnName );
+    when( rs.getString( "SOURCE_DATA_TYPE" ) ).thenReturn( columnType );
+    when( rs.getInt( "COLUMN_SIZE" ) ).thenReturn( columnSize );
 
     Database db = new Database( log, meta );
     db.setConnection( conn );
@@ -138,25 +188,16 @@ public class DatabaseUnitTest {
 
   @Test
   public void testGetQueryFieldsFallback() throws Exception {
-    String sql = "select * from employees";
-    String columnName = "salary";
-
-    DatabaseMeta meta = Mockito.mock( DatabaseMeta.class );
-    PreparedStatement ps = Mockito.mock( PreparedStatement.class );
-    Connection conn = mockConnection( mock( DatabaseMetaData.class ) );
-    ResultSetMetaData rsMetaData = mock( ResultSetMetaData.class );
-    ResultSet rs = Mockito.mock( ResultSet.class );
-
     when( rsMetaData.getColumnCount() ).thenReturn( 1 );
     when( rsMetaData.getColumnName( 1 ) ).thenReturn( columnName );
     when( rsMetaData.getColumnLabel( 1 ) ).thenReturn( columnName );
     when( rsMetaData.getColumnType( 1 ) ).thenReturn( Types.DECIMAL );
     when( ps.executeQuery() ).thenReturn( rs );
 
-    Mockito.when( meta.stripCR( anyString() ) ).thenReturn( sql );
-    Mockito.when( meta.getDatabaseInterface() ).thenReturn( new MySQLDatabaseMeta() );
-    Mockito.when( conn.prepareStatement( sql ) ).thenReturn( ps );
-    Mockito.when( rs.getMetaData() ).thenReturn( rsMetaData );
+    when( meta.stripCR( anyString() ) ).thenReturn( sql );
+    when( meta.getDatabaseInterface() ).thenReturn( new MySQLDatabaseMeta() );
+    when( conn.prepareStatement( sql ) ).thenReturn( ps );
+    when( rs.getMetaData() ).thenReturn( rsMetaData );
 
     Database db = new Database( log, meta );
     db.setConnection( conn );
@@ -180,33 +221,23 @@ public class DatabaseUnitTest {
    */
   @Test
   public void testGetLookupMetaCalls() throws KettleDatabaseException, SQLException {
-    DatabaseMeta meta = Mockito.mock( DatabaseMeta.class );
-    Mockito.when( meta.getQuotedSchemaTableCombination( Mockito.anyString(), Mockito.anyString() ) ).thenReturn( "a" );
-    Mockito.when( meta.quoteField( Mockito.anyString() ) ).thenReturn( "a" );
-
-    PreparedStatement ps = Mockito.mock( PreparedStatement.class );
-    ResultSet rs = Mockito.mock( ResultSet.class );
-    Mockito.when( ps.executeQuery() ).thenReturn( rs );
-
-    ResultSetMetaData rmeta = Mockito.mock( ResultSetMetaData.class );
-    Mockito.when( rs.getMetaData() ).thenReturn( rmeta );
-
-    Mockito.when( rmeta.getColumnCount() ).thenReturn( 0 );
-    Mockito.when( ps.getMetaData() ).thenReturn( rmeta );
-
+    when( meta.getQuotedSchemaTableCombination( anyString(), anyString() ) ).thenReturn( "a" );
+    when( meta.quoteField( anyString() ) ).thenReturn( "a" );
+    when( ps.executeQuery() ).thenReturn( rs );
+    when( rs.getMetaData() ).thenReturn( rsMetaData );
+    when( rsMetaData.getColumnCount() ).thenReturn( 0 );
+    when( ps.getMetaData() ).thenReturn( rsMetaData );
     Database db = new Database( log, meta );
-
-    Connection conn = Mockito.mock( Connection.class );
-    Mockito.when( conn.prepareStatement( Mockito.anyString() ) ).thenReturn( ps );
+    Connection conn = mock( Connection.class );
+    when( conn.prepareStatement( anyString() ) ).thenReturn( ps );
 
     db.setConnection( conn );
     String[] name = new String[] { "a" };
     db.setLookup( "a", name, name, name, name, "a" );
-
     for ( int i = 0; i < 10; i++ ) {
       db.getLookup();
     }
-    Mockito.verify( rmeta, Mockito.times( 1 ) ).getColumnCount();
+    verify( rsMetaData, times( 1 ) ).getColumnCount();
   }
 
   /**
@@ -217,22 +248,14 @@ public class DatabaseUnitTest {
    */
   @Test
   public void testGetLookupCallPSpassed() throws SQLException, KettleDatabaseException {
-    DatabaseMeta meta = Mockito.mock( DatabaseMeta.class );
-
-    PreparedStatement ps = Mockito.mock( PreparedStatement.class );
-    ResultSet rs = Mockito.mock( ResultSet.class );
-    Mockito.when( ps.executeQuery() ).thenReturn( rs );
-
-    ResultSetMetaData rmeta = Mockito.mock( ResultSetMetaData.class );
-    Mockito.when( rs.getMetaData() ).thenReturn( rmeta );
-
-    Mockito.when( rmeta.getColumnCount() ).thenReturn( 0 );
-    Mockito.when( ps.getMetaData() ).thenReturn( rmeta );
+    when( ps.executeQuery() ).thenReturn( rs );
+    when( rs.getMetaData() ).thenReturn( rsMetaData );
+    when( rsMetaData.getColumnCount() ).thenReturn( 0 );
+    when( ps.getMetaData() ).thenReturn( rsMetaData );
 
     Database db = new Database( log, meta );
-
     db.getLookup( ps );
-    Mockito.verify( rmeta, Mockito.times( 1 ) ).getColumnCount();
+    verify( rsMetaData, times( 1 ) ).getColumnCount();
   }
 
   @Test
@@ -242,8 +265,7 @@ public class DatabaseUnitTest {
 
   @Test
   public void testCreateKettleDatabaseBatchExceptionNotUpdatesWhenBatchUpdateException() {
-    assertNotNull(
-      Database.createKettleDatabaseBatchException( "", new BatchUpdateException( new int[ 0 ] ) ).getUpdateCounts() );
+    assertNotNull( Database.createKettleDatabaseBatchException( "", new BatchUpdateException( new int[ 0 ] ) ).getUpdateCounts() );
   }
 
   @Test
@@ -261,36 +283,25 @@ public class DatabaseUnitTest {
 
   @Test( expected = KettleDatabaseBatchException.class )
   public void testInsertRowWithBatchAlwaysThrowsKettleBatchException() throws KettleDatabaseException, SQLException {
-    DatabaseMeta mockDatabaseMeta = mock( DatabaseMeta.class );
-    when( mockDatabaseMeta.supportsBatchUpdates() ).thenReturn( true );
-
-    DatabaseMetaData mockDatabaseMetaData = mock( DatabaseMetaData.class );
-    when( mockDatabaseMetaData.supportsBatchUpdates() ).thenReturn( true );
-    Connection mockConnection = mockConnection( mockDatabaseMetaData );
-
-    PreparedStatement ps = mock( PreparedStatement.class );
+    when( meta.supportsBatchUpdates() ).thenReturn( true );
+    when( dbMetaData.supportsBatchUpdates() ).thenReturn( true );
+    Connection conn = mockConnection( dbMetaData );
     when( ps.executeBatch() ).thenThrow( new SQLException() );
 
-    Database database = new Database( mockLogger(), mockDatabaseMeta );
+    Database database = new Database( log, meta );
     database.setCommit( 1 );
-    database.setConnection( mockConnection );
+    database.setConnection( conn );
     database.insertRow( ps, true, true );
   }
 
   @Test( expected = KettleDatabaseException.class )
   public void testInsertRowWithoutBatchDoesntThrowKettleBatchException() throws KettleDatabaseException, SQLException {
-    DatabaseMeta mockDatabaseMeta = mock( DatabaseMeta.class );
-    when( mockDatabaseMeta.supportsBatchUpdates() ).thenReturn( true );
-
-    DatabaseMetaData mockDatabaseMetaData = mock( DatabaseMetaData.class );
-    when( mockDatabaseMetaData.supportsBatchUpdates() ).thenReturn( true );
-    Connection mockConnection = mockConnection( mockDatabaseMetaData );
-
-    PreparedStatement ps = mock( PreparedStatement.class );
+    when( meta.supportsBatchUpdates() ).thenReturn( true );
+    when( dbMetaData.supportsBatchUpdates() ).thenReturn( true );
     when( ps.executeUpdate() ).thenThrow( new SQLException() );
 
-    Database database = new Database( mockLogger(), mockDatabaseMeta );
-    database.setConnection( mockConnection );
+    Database database = new Database( log, meta );
+    database.setConnection( conn );
     try {
       database.insertRow( ps, true, true );
     } catch ( KettleDatabaseBatchException e ) {
@@ -299,38 +310,26 @@ public class DatabaseUnitTest {
   }
 
   @Test( expected = KettleDatabaseBatchException.class )
-  public void testEmptyAndCommitWithBatchAlwaysThrowsKettleBatchException() throws KettleDatabaseException,
-    SQLException {
-    DatabaseMeta mockDatabaseMeta = mock( DatabaseMeta.class );
-    when( mockDatabaseMeta.supportsBatchUpdates() ).thenReturn( true );
-
-    DatabaseMetaData mockDatabaseMetaData = mock( DatabaseMetaData.class );
-    when( mockDatabaseMetaData.supportsBatchUpdates() ).thenReturn( true );
-    Connection mockConnection = mockConnection( mockDatabaseMetaData );
-
-    PreparedStatement ps = mock( PreparedStatement.class );
+  public void testEmptyAndCommitWithBatchAlwaysThrowsKettleBatchException() throws KettleDatabaseException, SQLException {
+    when( meta.supportsBatchUpdates() ).thenReturn( true );
+    when( dbMetaData.supportsBatchUpdates() ).thenReturn( true );
+    Connection mockConnection = mockConnection( dbMetaData );
     when( ps.executeBatch() ).thenThrow( new SQLException() );
 
-    Database database = new Database( mockLogger(), mockDatabaseMeta );
+    Database database = new Database( log, meta );
     database.setCommit( 1 );
     database.setConnection( mockConnection );
     database.emptyAndCommit( ps, true, 1 );
   }
 
   @Test( expected = KettleDatabaseException.class )
-  public void testEmptyAndCommitWithoutBatchDoesntThrowKettleBatchException()
-    throws KettleDatabaseException, SQLException {
-    DatabaseMeta mockDatabaseMeta = mock( DatabaseMeta.class );
-    when( mockDatabaseMeta.supportsBatchUpdates() ).thenReturn( true );
-
-    DatabaseMetaData mockDatabaseMetaData = mock( DatabaseMetaData.class );
-    when( mockDatabaseMetaData.supportsBatchUpdates() ).thenReturn( true );
-    Connection mockConnection = mockConnection( mockDatabaseMetaData );
-
-    PreparedStatement ps = mock( PreparedStatement.class );
+  public void testEmptyAndCommitWithoutBatchDoesntThrowKettleBatchException() throws KettleDatabaseException, SQLException {
+    when( meta.supportsBatchUpdates() ).thenReturn( true );
+    when( dbMetaData.supportsBatchUpdates() ).thenReturn( true );
+    Connection mockConnection = mockConnection( dbMetaData );
     doThrow( new SQLException() ).when( ps ).close();
 
-    Database database = new Database( mockLogger(), mockDatabaseMeta );
+    Database database = new Database( log, meta );
     database.setConnection( mockConnection );
     try {
       database.emptyAndCommit( ps, true, 1 );
@@ -339,41 +338,27 @@ public class DatabaseUnitTest {
     }
   }
 
-  @SuppressWarnings( "deprecation" )
   @Test( expected = KettleDatabaseBatchException.class )
-  public void testInsertFinishedWithBatchAlwaysThrowsKettleBatchException() throws KettleDatabaseException,
-    SQLException {
-    DatabaseMeta mockDatabaseMeta = mock( DatabaseMeta.class );
-    when( mockDatabaseMeta.supportsBatchUpdates() ).thenReturn( true );
-
-    DatabaseMetaData mockDatabaseMetaData = mock( DatabaseMetaData.class );
-    when( mockDatabaseMetaData.supportsBatchUpdates() ).thenReturn( true );
-    Connection mockConnection = mockConnection( mockDatabaseMetaData );
-
-    PreparedStatement ps = mock( PreparedStatement.class );
+  public void testInsertFinishedWithBatchAlwaysThrowsKettleBatchException() throws KettleDatabaseException, SQLException {
+    when( meta.supportsBatchUpdates() ).thenReturn( true );
+    when( dbMetaData.supportsBatchUpdates() ).thenReturn( true );
+    Connection mockConnection = mockConnection( dbMetaData );
     when( ps.executeBatch() ).thenThrow( new SQLException() );
 
-    Database database = new Database( mockLogger(), mockDatabaseMeta );
+    Database database = new Database( log, meta );
     database.setCommit( 1 );
     database.setConnection( mockConnection );
     database.insertFinished( ps, true );
   }
 
-  @SuppressWarnings( "deprecation" )
   @Test( expected = KettleDatabaseException.class )
-  public void testInsertFinishedWithoutBatchDoesntThrowKettleBatchException()
-    throws KettleDatabaseException, SQLException {
-    DatabaseMeta mockDatabaseMeta = mock( DatabaseMeta.class );
-    when( mockDatabaseMeta.supportsBatchUpdates() ).thenReturn( true );
-
-    DatabaseMetaData mockDatabaseMetaData = mock( DatabaseMetaData.class );
-    when( mockDatabaseMetaData.supportsBatchUpdates() ).thenReturn( true );
-    Connection mockConnection = mockConnection( mockDatabaseMetaData );
-
-    PreparedStatement ps = mock( PreparedStatement.class );
+  public void testInsertFinishedWithoutBatchDoesntThrowKettleBatchException() throws KettleDatabaseException, SQLException {
+    when( meta.supportsBatchUpdates() ).thenReturn( true );
+    when( dbMetaData.supportsBatchUpdates() ).thenReturn( true );
+    Connection mockConnection = mockConnection( dbMetaData );
     doThrow( new SQLException() ).when( ps ).close();
 
-    Database database = new Database( mockLogger(), mockDatabaseMeta );
+    Database database = new Database( log, meta );
     database.setConnection( mockConnection );
     try {
       database.insertFinished( ps, true );
@@ -384,18 +369,12 @@ public class DatabaseUnitTest {
 
   @Test
   public void insertRowAndExecuteBatchCauseNoErrors() throws Exception {
-    DatabaseMeta dbMeta = mock( DatabaseMeta.class );
-    when( dbMeta.supportsBatchUpdates() ).thenReturn( true );
-
-    DatabaseMetaData dbMetaData = mock( DatabaseMetaData.class );
+    when( meta.supportsBatchUpdates() ).thenReturn( true );
     when( dbMetaData.supportsBatchUpdates() ).thenReturn( true );
 
-    Database db = new Database( mockLogger(), dbMeta );
+    Database db = new Database( log, meta );
     db.setConnection( mockConnection( dbMetaData ) );
     db.setCommit( 1 );
-
-    PreparedStatement ps = mock( PreparedStatement.class );
-
     db.insertRow( ps, true, false );
     verify( ps ).addBatch();
 
@@ -406,18 +385,12 @@ public class DatabaseUnitTest {
 
   @Test
   public void insertRowWhenDbDoNotSupportBatchLeadsToCommit() throws Exception {
-    DatabaseMeta dbMeta = mock( DatabaseMeta.class );
-    when( dbMeta.supportsBatchUpdates() ).thenReturn( false );
-
-    DatabaseMetaData dbMetaData = mock( DatabaseMetaData.class );
+    when( meta.supportsBatchUpdates() ).thenReturn( false );
     when( dbMetaData.supportsBatchUpdates() ).thenReturn( false );
 
-    Database db = new Database( mockLogger(), dbMeta );
+    Database db = new Database( log, meta );
     db.setConnection( mockConnection( dbMetaData ) );
     db.setCommit( 1 );
-
-    PreparedStatement ps = mock( PreparedStatement.class );
-
     db.insertRow( ps, true, false );
     verify( ps, never() ).addBatch();
     verify( ps ).executeUpdate();
@@ -425,31 +398,22 @@ public class DatabaseUnitTest {
 
   @Test
   public void testGetCreateSequenceStatement() throws Exception {
-    DatabaseMeta dbMeta = mock( DatabaseMeta.class );
-    when( dbMeta.supportsSequences() ).thenReturn( true );
-    when( dbMeta.supportsSequenceNoMaxValueOption() ).thenReturn( true );
+    when( meta.supportsSequences() ).thenReturn( true );
+    when( meta.supportsSequenceNoMaxValueOption() ).thenReturn( true );
+    doReturn( databaseInterface ).when( meta ).getDatabaseInterface();
 
-    DatabaseMetaData dbMetaData = mock( DatabaseMetaData.class );
-    DatabaseInterface databaseInterface = mock( DatabaseInterface.class );
-    doReturn( databaseInterface ).when( dbMeta ).getDatabaseInterface();
-
-    Database db = new Database( mockLogger(), dbMeta );
+    Database db = new Database( log, meta );
     db.setConnection( mockConnection( dbMetaData ) );
     db.setCommit( 1 );
-
     db.getCreateSequenceStatement( "schemaName", "seq", "10", "1", "-1", false );
     verify( databaseInterface, times( 1 ) ).getSequenceNoMaxValueOption();
   }
 
   @Test
   public void testPrepareSQL() throws Exception {
-    DatabaseMeta dbMeta = mock( DatabaseMeta.class );
-    DatabaseInterface databaseInterface = mock( DatabaseInterface.class );
-    doReturn( databaseInterface ).when( dbMeta ).getDatabaseInterface();
+    doReturn( databaseInterface ).when( meta ).getDatabaseInterface();
 
-    DatabaseMetaData dbMetaData = mock( DatabaseMetaData.class );
-
-    Database db = new Database( mockLogger(), dbMeta );
+    Database db = new Database( log, meta );
     db.setConnection( mockConnection( dbMetaData ) );
     db.setCommit( 1 );
     db.prepareSQL( "SELECT * FROM DUMMY" );
@@ -461,18 +425,11 @@ public class DatabaseUnitTest {
   @Test
   public void testGetCreateTableStatement() throws Exception {
     ValueMetaInterface v = mock( ValueMetaInterface.class );
-
-    DatabaseMeta dbMeta = mock( DatabaseMeta.class );
-
-    DatabaseInterface databaseInterface = mock( DatabaseInterface.class );
-    doReturn( " " ).when( databaseInterface ).getDataTablespaceDDL( any( VariableSpace.class ), eq( dbMeta ) );
+    doReturn( " " ).when( databaseInterface ).getDataTablespaceDDL( any( VariableSpace.class ), eq( meta ) );
     doReturn( "CREATE TABLE " ).when( databaseInterface ).getCreateTableStatement();
 
-    doReturn( databaseInterface ).when( dbMeta ).getDatabaseInterface();
-
-    DatabaseMetaData dbMetaData = mock( DatabaseMetaData.class );
-
-    Database db = new Database( mockLogger(), dbMeta );
+    doReturn( databaseInterface ).when( meta ).getDatabaseInterface();
+    Database db = new Database( log, meta );
     db.setConnection( mockConnection( dbMetaData ) );
     db.setCommit( 1 );
 
@@ -482,39 +439,34 @@ public class DatabaseUnitTest {
     doReturn( v ).when( fields ).getValueMeta( 0 );
     boolean useAutoInc = true, semiColon = true;
 
-    doReturn( "double foo" ).when( dbMeta ).getFieldDefinition( v, tk, pk, useAutoInc );
-
-    doReturn( true ).when( dbMeta ).requiresCreateTablePrimaryKeyAppend();
-
+    doReturn( "double foo" ).when( meta ).getFieldDefinition( v, tk, pk, useAutoInc );
+    doReturn( true ).when( meta ).requiresCreateTablePrimaryKeyAppend();
     String statement = db.getCreateTableStatement( tableName, fields, tk, useAutoInc, pk, semiColon );
-
     String expectedStatRegexp = concatWordsForRegexp(
-      "CREATE TABLE DUMMY", "\\(",
-      "double foo", ",",
-      "PRIMARY KEY \\(tKey\\)", ",",
-      "PRIMARY KEY \\(pKey\\)",
-      "\\)", ";" );
+            "CREATE TABLE DUMMY", "\\(",
+            "double foo", ",",
+            "PRIMARY KEY \\(tKey\\)", ",",
+            "PRIMARY KEY \\(pKey\\)",
+            "\\)", ";" );
     assertTrue( statement.matches( expectedStatRegexp ) );
-
     doReturn( "CREATE COLUMN TABLE " ).when( databaseInterface ).getCreateTableStatement();
-
     statement = db.getCreateTableStatement( tableName, fields, tk, useAutoInc, pk, semiColon );
 
     expectedStatRegexp = concatWordsForRegexp(
-      "CREATE COLUMN TABLE DUMMY", "\\(",
-      "double foo", ",",
-      "PRIMARY KEY \\(tKey\\)", ",",
-      "PRIMARY KEY \\(pKey\\)",
-      "\\)", ";" );
+            "CREATE COLUMN TABLE DUMMY", "\\(",
+            "double foo", ",",
+            "PRIMARY KEY \\(tKey\\)", ",",
+            "PRIMARY KEY \\(pKey\\)",
+            "\\)", ";" );
     assertTrue( statement.matches( expectedStatRegexp ) );
   }
 
   @Test
   public void testCheckTableExistsByDbMeta_Success() throws Exception {
-    when( resultSetMock.next() ).thenReturn( true, false );
-    when( resultSetMock.getString( "TABLE_NAME" ) ).thenReturn( EXISTING_TABLE_NAME );
-    when( dbMetaDataMock.getTables( any(), anyString(), anyString(), aryEq( TABLE_TYPES_TO_GET ) ) ).thenReturn( resultSetMock );
-    Database db = new Database( mockLogger(), dbMetaMock );
+    when( rs.next() ).thenReturn( true, false );
+    when( rs.getString( "TABLE_NAME" ) ).thenReturn( EXISTING_TABLE_NAME );
+    when( dbMetaDataMock.getTables( any(), anyString(), anyString(), aryEq( TABLE_TYPES_TO_GET ) ) ).thenReturn( rs );
+    Database db = new Database( log, dbMetaMock );
     db.setConnection( mockConnection( dbMetaDataMock ) );
 
     assertTrue( "The table " + EXISTING_TABLE_NAME + " is not in db meta data but should be here", db.checkTableExistsByDbMeta( SCHEMA_TO_CHECK, EXISTING_TABLE_NAME ) );
@@ -522,10 +474,10 @@ public class DatabaseUnitTest {
 
   @Test
   public void testCheckTableNotExistsByDbMeta() throws Exception {
-    when( resultSetMock.next() ).thenReturn( true, false );
-    when( resultSetMock.getString( "TABLE_NAME" ) ).thenReturn( EXISTING_TABLE_NAME );
-    when( dbMetaDataMock.getTables( any(), anyString(), anyString(), aryEq( TABLE_TYPES_TO_GET ) ) ).thenReturn( resultSetMock );
-    Database db = new Database( mockLogger(), dbMetaMock );
+    when( rs.next() ).thenReturn( true, false );
+    when( rs.getString( "TABLE_NAME" ) ).thenReturn( EXISTING_TABLE_NAME );
+    when( dbMetaDataMock.getTables( any(), anyString(), anyString(), aryEq( TABLE_TYPES_TO_GET ) ) ).thenReturn( rs );
+    Database db = new Database( log, dbMetaMock );
     db.setConnection( mockConnection( dbMetaDataMock ) );
 
     assertFalse( "The table " + NOT_EXISTING_TABLE_NAME + " is in db meta data but should not be here", db.checkTableExistsByDbMeta( SCHEMA_TO_CHECK, NOT_EXISTING_TABLE_NAME ) );
@@ -534,15 +486,14 @@ public class DatabaseUnitTest {
   @Test
   public void testCheckTableExistsByDbMetaThrowsKettleDatabaseException() {
     KettleDatabaseException kettleDatabaseException =
-        new KettleDatabaseException( "Unable to check if table [" + EXISTING_TABLE_NAME + "] exists on connection [" + TEST_NAME_OF_DB_CONNECTION + "].", SQL_EXCEPTION );
+            new KettleDatabaseException( "Unable to check if table [" + EXISTING_TABLE_NAME + "] exists on connection [" + TEST_NAME_OF_DB_CONNECTION + "].", SQL_EXCEPTION );
     try {
       when( dbMetaMock.getName() ).thenReturn( TEST_NAME_OF_DB_CONNECTION );
-      when( resultSetMock.next() ).thenReturn( true, false );
-      when( resultSetMock.getString( "TABLE_NAME" ) ).thenThrow( SQL_EXCEPTION );
-      when( dbMetaDataMock.getTables( any(), anyString(), anyString(), aryEq( TABLE_TYPES_TO_GET ) ) ).thenReturn( resultSetMock );
-      Database db = new Database( mockLogger(), dbMetaMock );
+      when( rs.next() ).thenReturn( true, false );
+      when( rs.getString( "TABLE_NAME" ) ).thenThrow( SQL_EXCEPTION );
+      when( dbMetaDataMock.getTables( any(), anyString(), anyString(), aryEq( TABLE_TYPES_TO_GET ) ) ).thenReturn( rs );
+      Database db = new Database( log, dbMetaMock );
       db.setConnection( mockConnection( dbMetaDataMock ) );
-
       db.checkTableExistsByDbMeta( SCHEMA_TO_CHECK, EXISTING_TABLE_NAME );
       fail( "There should be thrown KettleDatabaseException but was not." );
     } catch ( KettleDatabaseException e ) {
@@ -557,11 +508,10 @@ public class DatabaseUnitTest {
   public void testCheckTableExistsByDbMetaThrowsKettleDatabaseException_WhenDbMetaNull() {
     KettleDatabaseException kettleDatabaseException = new KettleDatabaseException( "Unable to get database meta-data from the database." );
     try {
-      when( resultSetMock.next() ).thenReturn( true, false );
-      when( dbMetaDataMock.getTables( any(), anyString(), anyString(), aryEq( TABLE_TYPES_TO_GET ) ) ).thenReturn( resultSetMock );
-      Database db = new Database( mockLogger(), dbMetaMock );
+      when( rs.next() ).thenReturn( true, false );
+      when( dbMetaDataMock.getTables( any(), anyString(), anyString(), aryEq( TABLE_TYPES_TO_GET ) ) ).thenReturn( rs );
+      Database db = new Database( log, dbMetaMock );
       db.setConnection( mockConnection( null ) );
-
       db.checkTableExistsByDbMeta( SCHEMA_TO_CHECK, EXISTING_TABLE_NAME );
       fail( "There should be thrown KettleDatabaseException but was not." );
     } catch ( KettleDatabaseException e ) {
@@ -576,11 +526,10 @@ public class DatabaseUnitTest {
   public void testCheckTableExistsByDbMetaThrowsKettleDatabaseException_WhenUnableToGetTableNames() {
     KettleDatabaseException kettleDatabaseException = new KettleDatabaseException( "Unable to get table-names from the database meta-data.", SQL_EXCEPTION );
     try {
-      when( resultSetMock.next() ).thenReturn( true, false );
+      when( rs.next() ).thenReturn( true, false );
       when( dbMetaDataMock.getTables( any(), anyString(), anyString(), aryEq( TABLE_TYPES_TO_GET ) ) ).thenThrow( SQL_EXCEPTION );
-      Database db = new Database( mockLogger(), dbMetaMock );
+      Database db = new Database( log, dbMetaMock );
       db.setConnection( mockConnection( dbMetaDataMock ) );
-
       db.checkTableExistsByDbMeta( SCHEMA_TO_CHECK, EXISTING_TABLE_NAME );
       fail( "There should be thrown KettleDatabaseException but was not." );
     } catch ( KettleDatabaseException e ) {
@@ -595,11 +544,10 @@ public class DatabaseUnitTest {
   public void testCheckTableExistsByDbMetaThrowsKettleDatabaseException_WhenResultSetNull() {
     KettleDatabaseException kettleDatabaseException = new KettleDatabaseException( "Unable to get table-names from the database meta-data." );
     try {
-      when( resultSetMock.next() ).thenReturn( true, false );
+      when( rs.next() ).thenReturn( true, false );
       when( dbMetaDataMock.getTables( any(), anyString(), anyString(), aryEq( TABLE_TYPES_TO_GET ) ) ).thenReturn( null );
-      Database db = new Database( mockLogger(), dbMetaMock );
+      Database db = new Database( log, dbMetaMock );
       db.setConnection( mockConnection( dbMetaDataMock ) );
-
       db.checkTableExistsByDbMeta( SCHEMA_TO_CHECK, EXISTING_TABLE_NAME );
       fail( "There should be thrown KettleDatabaseException but was not." );
     } catch ( KettleDatabaseException e ) {
@@ -617,31 +565,24 @@ public class DatabaseUnitTest {
     when( rsMeta.getColumnLabel( 1 ) ).thenReturn( "column" );
     when( rsMeta.getColumnName( 1 ) ).thenReturn( "column" );
     when( rsMeta.getColumnType( 1 ) ).thenReturn( java.sql.Types.VARBINARY );
-
-    ResultSet rs = mock( ResultSet.class );
     when( rs.getMetaData() ).thenReturn( rsMeta );
-
-    PreparedStatement ps = mock( PreparedStatement.class );
     when( ps.executeQuery() ).thenReturn( rs );
 
     DatabaseMeta meta = new DatabaseMeta();
     meta.setDatabaseInterface( new MySQLDatabaseMeta() );
 
-    DatabaseMetaData dbMetaData = mock( DatabaseMetaData.class );
-
     Database db = new Database( log, meta );
     db.setConnection( mockConnection( dbMetaData ) );
-
     db.getLookup( ps, false );
 
     RowMetaInterface rowMeta = db.getReturnRowMeta();
-    assertEquals( 1, rowMeta.size() );
+    assertEquals( 1, db.getReturnRowMeta().size() );
 
     ValueMetaInterface valueMeta = rowMeta.getValueMeta( 0 );
     assertEquals( ValueMetaInterface.TYPE_BINARY, valueMeta.getType() );
   }
 
-  private static String concatWordsForRegexp( String... words ) {
+  private String concatWordsForRegexp( String... words ) {
     String emptySpace = "\\s*";
     StringBuilder sb = new StringBuilder( emptySpace );
     for ( String word : words ) {
@@ -650,18 +591,11 @@ public class DatabaseUnitTest {
     return sb.toString();
   }
 
-  private static LoggingObjectInterface mockLogger() {
-    LoggingObjectInterface logger = mock( LoggingObjectInterface.class );
-    when( logger.getLogLevel() ).thenReturn( LogLevel.NOTHING );
-    return logger;
+  private Connection mockConnection( DatabaseMetaData dbMetaData ) throws SQLException {
+    Connection conn = mock( Connection.class );
+    when( conn.getMetaData() ).thenReturn( dbMetaData );
+    return conn;
   }
-
-  private static Connection mockConnection( DatabaseMetaData dbMetaData ) throws SQLException {
-    Connection connection = mock( Connection.class );
-    when( connection.getMetaData() ).thenReturn( dbMetaData );
-    return connection;
-  }
-
 
   @Test
   public void usesCustomDsProviderIfSet_Pooling() throws Exception {
@@ -682,26 +616,20 @@ public class DatabaseUnitTest {
     DataSource ds = mock( DataSource.class );
     when( ds.getConnection() ).thenReturn( connection );
     when( ds.getConnection( anyString(), anyString() ) ).thenReturn( connection );
-
     DataSourceProviderInterface provider = mock( DataSourceProviderInterface.class );
-    when( provider.getNamedDataSource( anyString(), any( DataSourceProviderInterface.DatasourceType.class ) ) )
-      .thenReturn( ds );
+    when( provider.getNamedDataSource( anyString(), any( DataSourceProviderInterface.DatasourceType.class ) ) ).thenReturn( ds );
 
     Database db = new Database( log, meta );
-
-    final DataSourceProviderInterface existing =
-      DataSourceProviderFactory.getDataSourceProviderInterface();
+    final DataSourceProviderInterface existing = DataSourceProviderFactory.getDataSourceProviderInterface();
     try {
       DataSourceProviderFactory.setDataSourceProviderInterface( provider );
       db.normalConnect( null );
     } finally {
       DataSourceProviderFactory.setDataSourceProviderInterface( existing );
     }
-
     assertEquals( connection, db.getConnection() );
     return provider;
   }
-
 
   @Test
   public void jndiAccessTypePrevailsPooled() throws Exception {
@@ -717,76 +645,87 @@ public class DatabaseUnitTest {
   }
 
   @Test
-  public void testDisconnectPstmCloseFail()
-    throws SQLException, KettleDatabaseException, NoSuchFieldException, IllegalAccessException {
+  public void testNormalConnect_WhenTheProviderDoesNotReturnDataSourceWithPool() throws Exception {
+    Driver driver = mock( Driver.class );
+    when( driver.acceptsURL( anyString() ) ).thenReturn( true );
+    when( driver.connect( anyString(), any( Properties.class ) ) ).thenReturn( conn );
+    DriverManager.registerDriver( driver );
 
-    DatabaseMeta dbMeta = mock( DatabaseMeta.class );
-    DatabaseMetaData dbMetaData = mock( DatabaseMetaData.class );
+    when( meta.isUsingConnectionPool() ).thenReturn( true );
+    when( meta.getDriverClass() ).thenReturn( driver.getClass().getName() );
+    when( meta.getURL( anyString() ) ).thenReturn( "mockUrl" );
+    when( meta.getInitialPoolSize() ).thenReturn( 1 );
+    when( meta.getMaximumPoolSize() ).thenReturn( 1 );
 
-    Database db = new Database( mockLogger(), dbMeta );
+    DataSourceProviderInterface provider = mock( DataSourceProviderInterface.class );
+    Database db = new Database( log, meta );
+    final DataSourceProviderInterface existing = DataSourceProviderFactory.getDataSourceProviderInterface();
+    try {
+      DataSourceProviderFactory.setDataSourceProviderInterface( provider );
+      db.normalConnect( "ConnectThatDoesNotExistInProvider" );
+    } finally {
+      DataSourceProviderFactory.setDataSourceProviderInterface( existing );
+    }
+    //we will check only it not null since it will be wrapped by pool and its not eqal with conn from driver
+    assertNotNull( db.getConnection() );
+
+    DriverManager.deregisterDriver( driver );
+  }
+
+  @Test
+  public void testDisconnectPstmCloseFail() throws SQLException, KettleDatabaseException, NoSuchFieldException, IllegalAccessException {
+    Database db = new Database( log, meta );
     Connection connection = mockConnection( dbMetaData );
     db.setConnection( connection );
     db.setCommit( 1 );
-
-    PreparedStatement ps = mock( PreparedStatement.class );
-
     Class<Database> databaseClass = Database.class;
     Field fieldPstmt = databaseClass.getDeclaredField( "pstmt" );
     fieldPstmt.setAccessible( true );
     fieldPstmt.set( db, ps );
-
-    Mockito.doThrow( new SQLException( "Test SQL exception" ) ).when( ps ).close();
+    doThrow( new SQLException( "Test SQL exception" ) ).when( ps ).close();
 
     db.disconnect();
     verify( connection, times( 1 ) ).close();
-
   }
 
 
   @Test
   public void testDisconnectCommitFail() throws SQLException, NoSuchFieldException, IllegalAccessException {
-
-    DatabaseMeta dbMeta = mock( DatabaseMeta.class );
-    when( dbMeta.supportsEmptyTransactions() ).thenReturn( true );
-
-    DatabaseMetaData dbMetaData = mock( DatabaseMetaData.class );
+    when( meta.supportsEmptyTransactions() ).thenReturn( true );
     when( dbMetaData.supportsTransactions() ).thenReturn( true );
 
-    Database db = new Database( mockLogger(), dbMeta );
-    Connection connection = mockConnection( dbMetaData );
-    db.setConnection( connection );
+    Database db = new Database( log, meta );
+    db.setConnection( conn );
     db.setCommit( 1 );
 
-    PreparedStatement ps = mock( PreparedStatement.class );
-
-    Class<Database> databaseClass = Database.class;
-    Field fieldPstmt = databaseClass.getDeclaredField( "pstmt" );
+    Field fieldPstmt = Database.class.getDeclaredField( "pstmt" );
     fieldPstmt.setAccessible( true );
     fieldPstmt.set( db, ps );
 
-    Mockito.doThrow( new SQLException( "Test SQL exception" ) ).when( connection ).commit();
-
+    doThrow( new SQLException( "Test SQL exception" ) ).when( conn ).commit();
     db.disconnect();
-
-    verify( connection, times( 1 ) ).close();
-
+    verify( conn, times( 1 ) ).close();
   }
 
 
   @Test
   public void testDisconnectConnectionGroup() throws SQLException {
-
-    DatabaseMeta dbMeta = mock( DatabaseMeta.class );
-    DatabaseMetaData dbMetaData = mock( DatabaseMetaData.class );
-
-    Database db = new Database( mockLogger(), dbMeta );
-    Connection connection = mockConnection( dbMetaData );
-    db.setConnection( connection );
-
+    Database db = new Database( log, meta );
+    db.setConnection( conn );
     db.setConnectionGroup( "1" );
     db.disconnect();
-
-    verify( connection, never() ).close();
+    verify( conn, never() ).close();
   }
 
+  @Test
+  public void testGetTablenames() throws SQLException, KettleDatabaseException {
+    when( rs.next() ).thenReturn( true, false );
+    when( rs.getString( "TABLE_NAME" ) ).thenReturn( EXISTING_TABLE_NAME );
+    when( dbMetaDataMock.getTables( any(), anyString(), anyString(), any() ) ).thenReturn( rs );
+    Database db = new Database( log, dbMetaMock );
+    db.setConnection( mockConnection( dbMetaDataMock ) );
+
+    String[] tableNames = db.getTablenames();
+    assertEquals( tableNames.length, 1 );
+  }
 }
