@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -44,6 +44,7 @@ import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.annotations.PluginDialog;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
@@ -60,8 +61,10 @@ import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.widget.TextVar;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
+@PluginDialog( id = "ColumnExists", image = "CEX.svg", pluginType = PluginDialog.PluginType.STEP,
+    documentationUrl = "https://wiki.pentaho.com/display/EAI/Check+if+a+column+exists" )
 public class ColumnExistsDialog extends BaseStepDialog implements StepDialogInterface {
-  private static Class<?> PKG = ColumnExistsMeta.class; // for i18n purposes, needed by Translator2!!
+  private static Class<?> PKG = ColumnExistsDialog.class; // for i18n purposes, needed by Translator2!!
 
   private CCombo wConnection;
 
@@ -230,8 +233,7 @@ public class ColumnExistsDialog extends BaseStepDialog implements StepDialogInte
     fdlTablenameInField.right = new FormAttachment( middle, -margin );
     wlTablenameInField.setLayoutData( fdlTablenameInField );
     wTablenameInField = new Button( shell, SWT.CHECK );
-    wTablenameInField
-      .setToolTipText( BaseMessages.getString( PKG, "ColumnExistsDialog.TablenameInfield.Tooltip" ) );
+    wTablenameInField.setToolTipText( BaseMessages.getString( PKG, "ColumnExistsDialog.TablenameInfield.Tooltip" ) );
     props.setLook( wTablenameInField );
     fdTablenameInField = new FormData();
     fdTablenameInField.left = new FormAttachment( middle, 0 );
@@ -333,7 +335,8 @@ public class ColumnExistsDialog extends BaseStepDialog implements StepDialogInte
     wCancel = new Button( shell, SWT.PUSH );
     wCancel.setText( BaseMessages.getString( PKG, "System.Button.Cancel" ) );
 
-    setButtonPositions( new Button[] { wOK, wCancel }, margin, wResult );
+    setButtonPositions( new Button[] {
+      wOK, wCancel }, margin, wResult );
 
     // Add listeners
     lsOK = new Listener() {
@@ -473,9 +476,8 @@ public class ColumnExistsDialog extends BaseStepDialog implements StepDialogInte
       wColumnName.setText( columnName );
       wTableName.setText( tableName );
     } catch ( KettleException ke ) {
-      new ErrorDialog(
-        shell, BaseMessages.getString( PKG, "ColumnExistsDialog.FailedToGetFields.DialogTitle" ), BaseMessages
-          .getString( PKG, "ColumnExistsDialog.FailedToGetFields.DialogMessage" ), ke );
+      new ErrorDialog( shell, BaseMessages.getString( PKG, "ColumnExistsDialog.FailedToGetFields.DialogTitle" ),
+          BaseMessages.getString( PKG, "ColumnExistsDialog.FailedToGetFields.DialogMessage" ), ke );
     }
 
   }
@@ -516,9 +518,9 @@ public class ColumnExistsDialog extends BaseStepDialog implements StepDialogInte
         if ( null != schemas && schemas.length > 0 ) {
           schemas = Const.sortStrings( schemas );
           EnterSelectionDialog dialog =
-            new EnterSelectionDialog( shell, schemas,
-              BaseMessages.getString( PKG, "System.Dialog.AvailableSchemas.Title", wConnection.getText() ),
-              BaseMessages.getString( PKG, "System.Dialog.AvailableSchemas.Message" ) );
+              new EnterSelectionDialog( shell, schemas,
+                  BaseMessages.getString( PKG, "System.Dialog.AvailableSchemas.Title", wConnection.getText() ),
+                  BaseMessages.getString( PKG, "System.Dialog.AvailableSchemas.Message" ) );
           String d = dialog.open();
           if ( d != null ) {
             wSchemaname.setText( Const.NVL( d.toString(), "" ) );
@@ -531,8 +533,8 @@ public class ColumnExistsDialog extends BaseStepDialog implements StepDialogInte
           mb.open();
         }
       } catch ( Exception e ) {
-        new ErrorDialog( shell, BaseMessages.getString( PKG, "System.Dialog.Error.Title" ), BaseMessages
-          .getString( PKG, "System.Dialog.AvailableSchemas.ConnectionError" ), e );
+        new ErrorDialog( shell, BaseMessages.getString( PKG, "System.Dialog.Error.Title" ),
+            BaseMessages.getString( PKG, "System.Dialog.AvailableSchemas.ConnectionError" ), e );
       } finally {
         if ( database != null ) {
           database.disconnect();
