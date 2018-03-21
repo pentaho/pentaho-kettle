@@ -61,7 +61,7 @@ public class CombinationLookupTest {
     combinationLookupMeta = mock( CombinationLookupMeta.class );
     doReturn( databaseMeta ).when( combinationLookupMeta ).getDatabaseMeta();
     doReturn( "sasas" ).when( combinationLookupMeta ).getTechnicalKeyField();
-    doReturn( new String[] { } ).when( combinationLookupMeta ).getKeyLookup();
+    doReturn( new String[] {} ).when( combinationLookupMeta ).getKeyLookup();
 
     stepMeta = mock( StepMeta.class );
     doReturn( "step" ).when( stepMeta ).getName();
@@ -73,7 +73,7 @@ public class CombinationLookupTest {
 
     combinationLookupData = mock( CombinationLookupData.class );
     combinationLookupData.db = db;
-    combinationLookupData.keynrs = new int[] { };
+    combinationLookupData.keynrs = new int[] {};
 
     TransMeta transMeta = mock( TransMeta.class );
     doReturn( stepMeta ).when( transMeta ).findStep( anyString() );
