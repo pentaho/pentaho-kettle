@@ -41,7 +41,7 @@ pipeline {
     booleanParam(defaultValue: true, description: 'Archive the artifacts', name: 'ARCHIVE_ARTIFACTS')
     booleanParam(defaultValue: false, description: 'No op build (test the build config)', name: 'NOOP')
     booleanParam(defaultValue: false, description: 'Distributes source checkouts on remote nodes ' +
-      '(otherwise assume workspace is shared on all', name: 'USE_DISTRIBUTED_SOURCE_CACHING')
+      '(Otherwise assume workspace is shared on all). Not yet fully implmented--do not use.', name: 'USE_DISTRIBUTED_SOURCE_CACHING')
   }
 
   environment {
@@ -60,7 +60,7 @@ pipeline {
       }
       steps {
         dir( "${LIB_CACHE_ROOT_PATH}" ) {
-          println "Add cross-platform custom removal method here"
+          println "Add cross-platform custom removal method here--implement me!"
         }
       }
     }
@@ -68,7 +68,7 @@ pipeline {
     stage('Clean Caches') {
       when {
         expression {
-          return params.CLEAN_DEPENDENCY_CACHES
+          return params.CLEAN_ALL_CACHES
         }
       }
       steps {
