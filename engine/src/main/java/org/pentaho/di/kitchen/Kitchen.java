@@ -115,7 +115,7 @@ public class Kitchen {
     RepositoryMeta repositoryMeta = null;
     Job job = null;
 
-    StringBuilder optionRepname, optionUsername, optionPassword, optionJobname, optionDirname, initialDir;
+    StringBuilder optionRepname, optionUsername, optionTrustUser, optionPassword, optionJobname, optionDirname, initialDir;
     StringBuilder optionFilename, optionLoglevel, optionLogfile, optionLogfileOld, optionListdir;
     StringBuilder optionListjobs, optionListrep, optionNorep, optionVersion, optionListParam, optionExport;
     NamedParams optionParams = new NamedParamsDefault();
@@ -134,6 +134,9 @@ public class Kitchen {
           new StringBuilder() ),
         new CommandLineOption(
           "user", BaseMessages.getString( PKG, "Kitchen.CmdLine.RepUsername" ), optionUsername =
+          new StringBuilder() ),
+        new CommandLineOption(
+          "trustuser", BaseMessages.getString( PKG, "Kitchen.ComdLine.RepUsername" ), optionTrustUser =
           new StringBuilder() ),
         new CommandLineOption(
           "pass", BaseMessages.getString( PKG, "Kitchen.CmdLine.RepPassword" ), optionPassword =
@@ -254,7 +257,7 @@ public class Kitchen {
       }
 
       returnCode = getCommandExecutor().execute( optionRepname.toString(), optionNorep.toString(), optionUsername.toString(),
-            optionPassword.toString(), optionDirname.toString(), optionFilename.toString(), optionJobname.toString(), optionListjobs.toString(),
+            optionTrustUser.toString(), optionPassword.toString(), optionDirname.toString(), optionFilename.toString(), optionJobname.toString(), optionListjobs.toString(),
             optionListdir.toString(), optionExport.toString(), initialDir.toString(), optionListrep.toString(), optionListParam.toString(),
             optionParams, customOptions, args.toArray( new String[ args.size() ] ) );
 

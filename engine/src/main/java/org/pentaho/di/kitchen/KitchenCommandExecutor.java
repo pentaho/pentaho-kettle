@@ -68,7 +68,7 @@ public class KitchenCommandExecutor extends AbstractBaseCommandExecutor {
     setKettleInit( kettleInit );
   }
 
-  public int execute( String repoName, String noRepo, String username, String password, String dirName, String filename,
+  public int execute( String repoName, String noRepo, String username, String trustUser, String password, String dirName, String filename,
                       String jobName, String listJobs, String listDirs, String exportRepo, String initialDir,
                       String listRepos, String listParams, NamedParams params, NamedParams customParams, String[] arguments ) throws Throwable {
 
@@ -95,6 +95,16 @@ public class KitchenCommandExecutor extends AbstractBaseCommandExecutor {
         logDebug( "Kitchen.Log.ParsingCommandLine" );
 
         if ( !Utils.isEmpty( repoName ) && !YES.equalsIgnoreCase( noRepo ) ) {
+
+          /**
+           * if set, _trust_user_ needs to be considered. See pur-plugin's:
+           *
+           * @link https://github.com/pentaho/pentaho-kettle/blob/8.0.0.0-R/plugins/pur/core/src/main/java/org/pentaho/di/repository/pur/PurRepositoryConnector.java#L97-L101
+           * @link https://github.com/pentaho/pentaho-kettle/blob/8.0.0.0-R/plugins/pur/core/src/main/java/org/pentaho/di/repository/pur/WebServiceManager.java#L130-L133
+           */
+          if ( YES.equalsIgnoreCase( trustUser ) ) {
+            System.setProperty( "pentaho.repository.client.attemptTrust", YES );
+          }
 
           // In case we use a repository...
           // some commands are to load a Trans from the repo; others are merely to print some repo-related information
@@ -203,6 +213,9 @@ public class KitchenCommandExecutor extends AbstractBaseCommandExecutor {
     } finally {
       if ( repository != null ) {
         repository.disconnect();
+      }
+      if ( YES.equalsIgnoreCase( trustUser ) ) {
+        System.clearProperty( "pentaho.repository.client.attemptTrust" ); // we set it, now we sanitize it
       }
     }
 
