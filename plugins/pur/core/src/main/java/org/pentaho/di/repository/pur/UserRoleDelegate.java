@@ -1,5 +1,5 @@
 /*!
- * Copyright 2010 - 2017 Hitachi Vantara.  All rights reserved.
+ * Copyright 2010 - 2018 Hitachi Vantara.  All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@ package org.pentaho.di.repository.pur;
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.api.client.filter.HTTPBasicAuthFilter;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -41,6 +42,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class UserRoleDelegate implements java.io.Serializable {
+
+  /**
+   * Header name must match that specified in ProxyTrustingFilter. Note that an header has the following form: initial
+   * capital letter followed by all lowercase letters.
+   */
+  private static final String TRUST_USER = "_trust_user_"; //$NON-NLS-1$
 
   private static final long serialVersionUID = 1295309456550391059L; /* EESOURCE: UPDATE SERIALVERUID */
   private UserRoleListChangeListenerCollection userRoleListChangeListeners;
@@ -95,8 +102,18 @@ public class UserRoleDelegate implements java.io.Serializable {
     HTTPBasicAuthFilter authFilter = new HTTPBasicAuthFilter( userInfo.getLogin(), userInfo.getPassword() );
     Client client = new Client();
     client.addFilter( authFilter );
-    WebResource resource = client.resource( webService );
-    String response = resource.accept( MediaType.APPLICATION_JSON_TYPE ).get( String.class );
+
+    WebResource.Builder resource = client.resource( webService ).accept( MediaType.APPLICATION_JSON_TYPE );
+    /**
+     * if set, _trust_user_ needs to be considered. See other places in pur-plugin's:
+     *
+     * @link https://github.com/pentaho/pentaho-kettle/blob/8.0.0.0-R/plugins/pur/core/src/main/java/org/pentaho/di/repository/pur/PurRepositoryConnector.java#L97-L101
+     * @link https://github.com/pentaho/pentaho-kettle/blob/8.0.0.0-R/plugins/pur/core/src/main/java/org/pentaho/di/repository/pur/WebServiceManager.java#L130-L133
+     */
+    if ( StringUtils.isNotBlank( System.getProperty( "pentaho.repository.client.attemptTrust" ) ) ) {
+      resource = resource.header( TRUST_USER, userInfo.getLogin() );
+    }
+    String response = resource.get( String.class );
     String provider = new JSONObject( response ).getString( "authenticationType" );
     managed = "jackrabbit".equals( provider );
   }
