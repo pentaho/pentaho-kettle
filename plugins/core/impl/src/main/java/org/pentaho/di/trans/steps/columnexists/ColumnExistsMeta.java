@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -26,6 +26,7 @@ import java.util.List;
 
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
+import org.pentaho.di.core.annotations.Step;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
@@ -55,6 +56,9 @@ import org.w3c.dom.Node;
  *
  */
 
+@Step( id = "ColumnExists", i18nPackageName = "org.pentaho.di.trans.steps.columnexists", name = "ColumnExists.Name",
+    description = "ColumnExists.Description",
+    categoryDescription = "i18n:org.pentaho.di.trans.step:BaseStep.Category.Lookup" )
 public class ColumnExistsMeta extends BaseStepMeta implements StepMetaInterface {
   private static Class<?> PKG = ColumnExistsMeta.class; // for i18n purposes, needed by Translator2!!
 
@@ -201,11 +205,11 @@ public class ColumnExistsMeta extends BaseStepMeta implements StepMetaInterface 
   }
 
   public void getFields( RowMetaInterface inputRowMeta, String name, RowMetaInterface[] info, StepMeta nextStep,
-    VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
+      VariableSpace space, Repository repository, IMetaStore metaStore )
+    throws KettleStepException {
     // Output field (String)
     if ( !Utils.isEmpty( resultfieldname ) ) {
-      ValueMetaInterface v =
-        new ValueMetaBoolean( space.environmentSubstitute( resultfieldname ) );
+      ValueMetaInterface v = new ValueMetaBoolean( space.environmentSubstitute( resultfieldname ) );
       v.setOrigin( name );
       inputRowMeta.addValueMeta( v );
     }
@@ -234,12 +238,13 @@ public class ColumnExistsMeta extends BaseStepMeta implements StepMetaInterface 
       columnnamefield = XMLHandler.getTagValue( stepnode, "columnnamefield" );
       resultfieldname = XMLHandler.getTagValue( stepnode, "resultfieldname" ); // Optional, can be null
     } catch ( Exception e ) {
-      throw new KettleXMLException( BaseMessages
-        .getString( PKG, "ColumnExistsMeta.Exception.UnableToReadStepInfo" ), e );
+      throw new KettleXMLException( BaseMessages.getString( PKG, "ColumnExistsMeta.Exception.UnableToReadStepInfo" ),
+          e );
     }
   }
 
-  public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases ) throws KettleException {
+  public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases )
+    throws KettleException {
     try {
       database = rep.loadDatabaseMetaFromStepAttribute( id_step, "id_connection", databases );
       tablename = rep.getStepAttributeString( id_step, "tablename" );
@@ -249,12 +254,13 @@ public class ColumnExistsMeta extends BaseStepMeta implements StepMetaInterface 
       columnnamefield = rep.getStepAttributeString( id_step, "columnnamefield" );
       resultfieldname = rep.getStepAttributeString( id_step, "resultfieldname" );
     } catch ( Exception e ) {
-      throw new KettleException( BaseMessages.getString(
-        PKG, "ColumnExistsMeta.Exception.UnexpectedErrorReadingStepInfo" ), e );
+      throw new KettleException(
+          BaseMessages.getString( PKG, "ColumnExistsMeta.Exception.UnexpectedErrorReadingStepInfo" ), e );
     }
   }
 
-  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step ) throws KettleException {
+  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step )
+    throws KettleException {
     try {
       rep.saveDatabaseMetaStepAttribute( id_transformation, id_step, "id_connection", database );
       rep.saveStepAttribute( id_transformation, id_step, "tablename", tablename );
@@ -269,14 +275,14 @@ public class ColumnExistsMeta extends BaseStepMeta implements StepMetaInterface 
         rep.insertStepDatabase( id_transformation, id_step, database.getObjectId() );
       }
     } catch ( Exception e ) {
-      throw new KettleException( BaseMessages.getString( PKG, "ColumnExistsMeta.Exception.UnableToSaveStepInfo" )
-        + id_step, e );
+      throw new KettleException(
+          BaseMessages.getString( PKG, "ColumnExistsMeta.Exception.UnableToSaveStepInfo" ) + id_step, e );
     }
   }
 
-  public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta,
-    RowMetaInterface prev, String[] input, String[] output, RowMetaInterface info, VariableSpace space,
-    Repository repository, IMetaStore metaStore ) {
+  public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev,
+      String[] input, String[] output, RowMetaInterface info, VariableSpace space, Repository repository,
+      IMetaStore metaStore ) {
     CheckResult cr;
     String error_message = "";
 
@@ -325,18 +331,18 @@ public class ColumnExistsMeta extends BaseStepMeta implements StepMetaInterface 
     // See if we have input streams leading to this step!
     if ( input.length > 0 ) {
       cr =
-        new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
-          PKG, "ColumnExistsMeta.CheckResult.ReceivingInfoFromOtherSteps" ), stepMeta );
+          new CheckResult( CheckResult.TYPE_RESULT_OK,
+              BaseMessages.getString( PKG, "ColumnExistsMeta.CheckResult.ReceivingInfoFromOtherSteps" ), stepMeta );
     } else {
       cr =
-        new CheckResult( CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(
-          PKG, "ColumnExistsMeta.CheckResult.NoInpuReceived" ), stepMeta );
+          new CheckResult( CheckResult.TYPE_RESULT_ERROR,
+              BaseMessages.getString( PKG, "ColumnExistsMeta.CheckResult.NoInpuReceived" ), stepMeta );
     }
     remarks.add( cr );
   }
 
-  public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr,
-    TransMeta transMeta, Trans trans ) {
+  public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr, TransMeta transMeta,
+      Trans trans ) {
     return new ColumnExists( stepMeta, stepDataInterface, cnr, transMeta, trans );
   }
 
@@ -346,7 +352,8 @@ public class ColumnExistsMeta extends BaseStepMeta implements StepMetaInterface 
 
   public DatabaseMeta[] getUsedDatabaseConnections() {
     if ( database != null ) {
-      return new DatabaseMeta[] { database };
+      return new DatabaseMeta[] {
+        database };
     } else {
       return super.getUsedDatabaseConnections();
     }
