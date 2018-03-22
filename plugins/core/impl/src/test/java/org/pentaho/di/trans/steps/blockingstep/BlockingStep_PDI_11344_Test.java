@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -49,10 +49,11 @@ public class BlockingStep_PDI_11344_Test {
 
   @Before
   public void setUp() {
-    mockHelper = new StepMockHelper<BlockingStepMeta, BlockingStepData>( "BlockingStep", BlockingStepMeta.class,
-        BlockingStepData.class );
+    mockHelper =
+        new StepMockHelper<BlockingStepMeta, BlockingStepData>( "BlockingStep", BlockingStepMeta.class,
+            BlockingStepData.class );
     when( mockHelper.logChannelInterfaceFactory.create( any(), any( LoggingObjectInterface.class ) ) )
-      .thenReturn( mockHelper.logChannelInterface );
+        .thenReturn( mockHelper.logChannelInterface );
     when( mockHelper.trans.isRunning() ).thenReturn( true );
   }
 
@@ -64,12 +65,9 @@ public class BlockingStep_PDI_11344_Test {
   private static RowMetaInterface createRowMetaInterface() {
     RowMetaInterface rm = new RowMeta();
 
-    ValueMetaInterface[] valuesMeta =
-    {
-      new ValueMetaString( "field1" ), new ValueMetaInteger( "field2" ),
-      new ValueMetaNumber( "field3" ), new ValueMetaDate( "field4" ),
-      new ValueMetaBoolean( "field5" ),
-      new ValueMetaBigNumber( "field6" ),
+    ValueMetaInterface[] valuesMeta = {
+      new ValueMetaString( "field1" ), new ValueMetaInteger( "field2" ), new ValueMetaNumber( "field3" ),
+      new ValueMetaDate( "field4" ), new ValueMetaBoolean( "field5" ), new ValueMetaBigNumber( "field6" ),
       new ValueMetaBigNumber( "field7" ) };
 
     for ( ValueMetaInterface aValuesMeta : valuesMeta ) {
@@ -82,21 +80,21 @@ public class BlockingStep_PDI_11344_Test {
   @Test
   public void outputRowMetaIsCreateOnce() throws Exception {
     BlockingStep step =
-      new BlockingStep( mockHelper.stepMeta, mockHelper.stepDataInterface, 0, mockHelper.transMeta,
-        mockHelper.trans );
+        new BlockingStep( mockHelper.stepMeta, mockHelper.stepDataInterface, 0, mockHelper.transMeta,
+            mockHelper.trans );
     step = spy( step );
 
     BlockingStepData data = new BlockingStepData();
     step.init( mockHelper.processRowsStepMetaInterface, data );
     step.setInputRowMeta( createRowMetaInterface() );
 
-    doReturn( new Object[ 0 ] ).when( step ).getRow();
+    doReturn( new Object[0] ).when( step ).getRow();
     step.processRow( mockHelper.processRowsStepMetaInterface, data );
 
     RowMetaInterface outputRowMeta = data.outputRowMeta;
     assertNotNull( outputRowMeta );
 
-    doReturn( new Object[ 0 ] ).when( step ).getRow();
+    doReturn( new Object[0] ).when( step ).getRow();
     step.processRow( mockHelper.processRowsStepMetaInterface, data );
     assertTrue( data.outputRowMeta == outputRowMeta );
   }

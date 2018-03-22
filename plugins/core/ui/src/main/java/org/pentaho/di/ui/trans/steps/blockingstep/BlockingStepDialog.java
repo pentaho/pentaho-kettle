@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -40,6 +40,7 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
+import org.pentaho.di.core.annotations.PluginDialog;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.i18n.BaseMessages;
@@ -50,8 +51,10 @@ import org.pentaho.di.trans.steps.blockingstep.BlockingStepMeta;
 import org.pentaho.di.ui.core.widget.TextVar;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
+@PluginDialog( id = "BlockingStep", image = "BLK.svg", pluginType = PluginDialog.PluginType.STEP,
+    documentationUrl = "http://wiki.pentaho.com/display/EAI/Blocking+step" )
 public class BlockingStepDialog extends BaseStepDialog implements StepDialogInterface {
-  private static Class<?> PKG = BlockingStepMeta.class; // for i18n purposes, needed by Translator2!!
+  private static Class<?> PKG = BlockingStepDialog.class; // for i18n purposes, needed by Translator2!!
 
   private BlockingStepMeta input;
 
@@ -258,7 +261,8 @@ public class BlockingStepDialog extends BaseStepDialog implements StepDialogInte
     wCancel = new Button( shell, SWT.PUSH );
     wCancel.setText( BaseMessages.getString( PKG, "System.Button.Cancel" ) );
 
-    setButtonPositions( new Button[] { wOK, wCancel }, margin, wCompress );
+    setButtonPositions( new Button[] {
+      wOK, wCancel }, margin, wCompress );
 
     // Add listeners
     lsCancel = new Listener() {
