@@ -34,6 +34,7 @@ import java.util.SortedMap;
 import java.util.SortedSet;
 import java.util.TreeMap;
 import java.util.TreeSet;
+import java.util.Collections;
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.swt.widgets.Display;
 import org.pentaho.di.core.Const;
@@ -249,6 +250,7 @@ public class DataHandler extends AbstractXulEventHandler {
     for ( DatabaseInterface dialect : dialectMetas ) {
       databaseDialects.add( dialect.getPluginName() );
     }
+    Collections.sort( databaseDialects );
   }
 
   public void loadConnectionData() {
