@@ -54,7 +54,6 @@
     <!-- jackson-databind depends on jackson-core and jackson-annotations
     so that this artifacts have the same version to prevent compile errors -->
     <fasterxml.jackson.core.version>2.9.2</fasterxml.jackson.core.version>
-    <jackson-xc.version>1.9.3</jackson-xc.version>
     <jersey-multipart.version>1.19.1</jersey-multipart.version>
     <mimepull.version>1.9.3</mimepull.version>
     <jsr311-api.version>1.1.1</jsr311-api.version>
@@ -654,17 +653,6 @@
       <groupId>com.fasterxml.jackson.core</groupId>
       <artifactId>jackson-databind</artifactId>
       <version>${fasterxml.jackson.core.version}</version>
-      <exclusions>
-        <exclusion>
-          <groupId>*</groupId>
-          <artifactId>*</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-    <dependency>
-      <groupId>org.codehaus.jackson</groupId>
-      <artifactId>jackson-xc</artifactId>
-      <version>${jackson-xc.version}</version>
       <exclusions>
         <exclusion>
           <groupId>*</groupId>
