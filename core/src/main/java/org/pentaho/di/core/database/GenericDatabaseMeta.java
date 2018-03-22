@@ -28,7 +28,6 @@ import org.pentaho.di.core.row.ValueMetaInterface;
 
 import java.sql.SQLException;
 import java.util.Map;
-import java.util.Properties;
 
 /**
  * Contains Generic Database Connection information through static final members
@@ -921,21 +920,5 @@ public class GenericDatabaseMeta extends BaseDatabaseMeta implements DatabaseInt
       return databaseDialect.getExtraOptionsHelpText();
     }
     return super.getExtraOptionsHelpText();
-  }
-
-  @Override
-  public Properties getAttributes() {
-    if ( databaseDialect != null ) {
-      return databaseDialect.getAttributes();
-    }
-    return super.getAttributes();
-  }
-
-  @Override
-  public void setAttributes( Properties attributes ) {
-    if ( databaseDialect != null ) {
-      databaseDialect.setAttributes( attributes );
-    }
-    super.setAttributes( attributes );
   }
 }
