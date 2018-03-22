@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -36,12 +36,17 @@ public class ChangedFlag implements ChangedFlagInterface {
     if ( o == null ) {
       throw new NullPointerException();
     }
+
+    validateAdd( o );
+  }
+
+  private synchronized void validateAdd( PDIObserver o ) {
     if ( !obs.contains( o ) ) {
       obs.add( o );
     }
   }
 
-  public synchronized void deleteObserver( PDIObserver o ) {
+  public void deleteObserver( PDIObserver o ) {
     obs.remove( o );
   }
 
@@ -89,7 +94,7 @@ public class ChangedFlag implements ChangedFlagInterface {
    *
    * @return true if the this has changed, false otherwise
    */
-  public synchronized boolean hasChanged() {
+  public boolean hasChanged() {
     return changed.get();
   }
 
