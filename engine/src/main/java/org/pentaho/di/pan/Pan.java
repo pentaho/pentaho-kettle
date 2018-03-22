@@ -69,7 +69,7 @@ public class Pan {
     Trans trans = null;
 
     // The options:
-    StringBuilder optionRepname, optionUsername, optionPassword, optionTransname, optionDirname;
+    StringBuilder optionRepname, optionUsername, optionTrustUser,  optionPassword, optionTransname, optionDirname;
     StringBuilder optionFilename, optionLoglevel, optionLogfile, optionLogfileOld, optionListdir;
     StringBuilder optionListtrans, optionListrep, optionExprep, optionNorep, optionSafemode;
     StringBuilder optionVersion, optionJarFilename, optionListParam, optionMetrics, initialDir;
@@ -89,6 +89,9 @@ public class Pan {
           new StringBuilder() ),
         new CommandLineOption(
           "user", BaseMessages.getString( PKG, "Pan.ComdLine.RepUsername" ), optionUsername =
+          new StringBuilder() ),
+        new CommandLineOption(
+          "trustuser", BaseMessages.getString( PKG, "Pan.ComdLine.RepUsername" ), optionTrustUser =
           new StringBuilder() ),
         new CommandLineOption(
           "pass", BaseMessages.getString( PKG, "Pan.ComdLine.RepPassword" ), optionPassword =
@@ -225,7 +228,7 @@ public class Pan {
       }
 
       int returnCode = getCommandExecutor().execute( optionRepname.toString(), optionNorep.toString(), optionUsername.toString(),
-              optionPassword.toString(), optionDirname.toString(), optionFilename.toString(), optionJarFilename.toString(),
+              optionTrustUser.toString(), optionPassword.toString(), optionDirname.toString(), optionFilename.toString(), optionJarFilename.toString(),
               optionTransname.toString(), optionListtrans.toString(), optionListdir.toString(), optionExprep.toString(),
               initialDir.toString(), optionListrep.toString(), optionSafemode.toString(), optionMetrics.toString(),
               optionListParam.toString(), optionParams, args.toArray( new String[ args.size() ] ) );
