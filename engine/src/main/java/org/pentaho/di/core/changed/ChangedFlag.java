@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,13 +22,13 @@
 
 package org.pentaho.di.core.changed;
 
-import java.util.ArrayList;
 import java.util.Collections;
-import java.util.List;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class ChangedFlag implements ChangedFlagInterface {
-  private List<PDIObserver> obs = Collections.synchronizedList( new ArrayList<PDIObserver>() );
+  private Set<PDIObserver> obs = Collections.newSetFromMap( new ConcurrentHashMap<PDIObserver, Boolean>( ) );
 
   private AtomicBoolean changed = new AtomicBoolean();
 
@@ -41,20 +41,18 @@ public class ChangedFlag implements ChangedFlagInterface {
     }
   }
 
-  public synchronized void deleteObserver( PDIObserver o ) {
+  public void deleteObserver( PDIObserver o ) {
     obs.remove( o );
   }
 
   public void notifyObservers( Object arg ) {
 
     PDIObserver[] lobs;
-    synchronized ( this ) {
-      if ( !changed.get() ) {
-        return;
-      }
-      lobs = obs.toArray( new PDIObserver[obs.size()] );
-      clearChanged();
+    if ( !changed.get() ) {
+      return;
     }
+    lobs = obs.toArray( new PDIObserver[obs.size()] );
+    clearChanged();
     for ( int i = lobs.length - 1; i >= 0; i-- ) {
       lobs[i].update( this, arg );
     }
@@ -89,7 +87,7 @@ public class ChangedFlag implements ChangedFlagInterface {
    *
    * @return true if the this has changed, false otherwise
    */
-  public synchronized boolean hasChanged() {
+  public boolean hasChanged() {
     return changed.get();
   }
 
