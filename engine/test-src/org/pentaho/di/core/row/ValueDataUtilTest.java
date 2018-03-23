@@ -827,14 +827,14 @@ public class ValueDataUtilTest {
   }
 
   private Object calculate( String string_dataA, String string_dataB, String string_dataC, int valueMetaInterfaceTypeABC,
-                            int calculatorMetaFunction ) {
+      int calculatorMetaFunction ) {
     return calculate( string_dataA, string_dataB, string_dataC,
       valueMetaInterfaceTypeABC, valueMetaInterfaceTypeABC, valueMetaInterfaceTypeABC, calculatorMetaFunction );
   }
 
   private Object calculate( String string_dataA, String string_dataB, String string_dataC,
-                            int valueMetaInterfaceTypeA, int valueMetaInterfaceTypeB, int valueMetaInterfaceTypeC,
-                            int calculatorMetaFunction ) {
+      int valueMetaInterfaceTypeA, int valueMetaInterfaceTypeB, int valueMetaInterfaceTypeC,
+      int calculatorMetaFunction ) {
 
     try {
 
@@ -849,7 +849,6 @@ public class ValueDataUtilTest {
       Object dataA = createObject( string_dataA, valueMetaInterfaceTypeA, parameterValueMeta );
       Object dataB = createObject( string_dataB, valueMetaInterfaceTypeB, parameterValueMeta );
       Object dataC = createObject( string_dataC, valueMetaInterfaceTypeC, parameterValueMeta );
-
 
       if ( calculatorMetaFunction == CalculatorMetaFunction.CALC_ADD ) {
         return ValueDataUtil.plus( valueMetaA, dataA, valueMetaB, dataB );

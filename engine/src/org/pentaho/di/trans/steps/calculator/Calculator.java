@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -586,7 +586,14 @@ public class Calculator extends BaseStep implements StepInterface {
             resultType = CalculatorMetaFunction.calcDefaultResultType[calcType];
             break;
           case CalculatorMetaFunction.CALC_REMAINDER:
+            if ( targetMeta.getType() != metaA.getType() || targetMeta.getType() != metaB.getType() ) {
+              dataA = targetMeta.convertData( metaA, dataA );
+              metaA = targetMeta.clone();
+              dataB = targetMeta.convertData( metaB, dataB );
+              metaB = targetMeta.clone();
+            }
             calcData[index] = ValueDataUtil.remainder( metaA, dataA, metaB, dataB );
+            resultType = targetMeta.getType();
             break;
           default:
             throw new KettleValueException( BaseMessages.getString( PKG, "Calculator.Log.UnknownCalculationType" )
