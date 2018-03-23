@@ -137,7 +137,7 @@ pipeline {
     stage('Archive Test Results') {
       when {
         expression {
-          return params.RUN_UNIT_TESTS
+          return (params.ARCHIVE_ARTIFACTS && !params.NOOP)
         }
       }
       steps {
@@ -148,13 +148,12 @@ pipeline {
     stage('Archive Build Artifacts') {
       when {
         expression {
-          return params.ARCHIVE_ARTIFACTS
+          return (params.ARCHIVE_ARTIFACTS && !params.NOOP)
         }
       }
       steps {
         archiveArtifacts artifacts: '**/target/**/*.gz, **/target/**/*.tar.gz, **/target/**/*.zip', fingerprint: false
       }
     }
-
   }
 }
