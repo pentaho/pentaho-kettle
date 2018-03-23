@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<features xmlns="http://karaf.apache.org/xmlns/features/v1.2.1" name="pentaho-streaming-feature">
+    <feature name="pentaho-streaming-feature" version="8.1.0.0-SNAPSHOT" description="Pentaho Streaming Plugin Feature">
+
+        <details>Streaming feature</details>
+        <feature>artemis-jms-client</feature>
+        <bundle>mvn:org.pentaho.di.plugins/pentaho-streaming-jms-plugin/${project.version}</bundle>
+        <bundle>mvn:com.google.guava/guava/17.0</bundle>
+        <bundle>mvn:io.reactivex.rxjava2/rxjava/2.0.4</bundle>
+        <bundle>mvn:javax.jms/javax.jms-api/2.0.1</bundle>
+        <bundle>mvn:org.pentaho.di.plugins/pentaho-streaming-mqtt-plugin/${project.version}</bundle>
+        <bundle>mvn:org.eclipse.paho/org.eclipse.paho.client.mqttv3/1.2.0</bundle>
+    </feature>
+</features>

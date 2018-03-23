@@ -101,9 +101,20 @@ public class JmsConsumerDialog extends BaseStreamingDialog {
 
 
   @Override protected void additionalOks( BaseStreamStepMeta meta ) {
-    jmsDelegate.url = connectionForm.getUrl();
-    jmsDelegate.username = connectionForm.getUser();
-    jmsDelegate.password = connectionForm.getPassword();
+    jmsDelegate.connectionType = connectionForm.getConnectionType();
+
+    jmsDelegate.ibmUrl = connectionForm.getIbmUrl();
+    jmsDelegate.ibmUsername = connectionForm.getIbmUser();
+    jmsDelegate.ibmPassword = connectionForm.getIbmPassword();
+
+    jmsDelegate.amqUrl = connectionForm.getActiveUrl();
+    jmsDelegate.amqUsername = connectionForm.getActiveUser();
+    jmsDelegate.amqPassword = connectionForm.getActivePassword();
+
+    jmsDelegate.jndiUrl = connectionForm.getGenericUrl();
+
+    jmsDelegate.connectionType = connectionForm.getConnectionType();
+
     jmsDelegate.destinationType = destinationForm.getDestinationType();
     jmsDelegate.destinationName = destinationForm.getDestinationName();
     jmsDelegate.messageField = fieldsTab.getFieldNames()[ 0 ];

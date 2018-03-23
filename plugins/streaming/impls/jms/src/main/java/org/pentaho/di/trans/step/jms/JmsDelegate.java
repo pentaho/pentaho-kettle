@@ -37,7 +37,7 @@ import java.util.List;
 
 import static org.pentaho.di.i18n.BaseMessages.getString;
 import static org.pentaho.di.trans.step.jms.JmsConstants.PKG;
-import static org.pentaho.di.trans.step.jms.context.JmsProvider.ConnectionType.WEBSPHERE;
+import static org.pentaho.di.trans.step.jms.context.JmsProvider.ConnectionType.ACTIVEMQ;
 import static org.pentaho.di.trans.step.jms.context.JmsProvider.DestinationType.QUEUE;
 
 
@@ -51,17 +51,23 @@ public  class JmsDelegate {
 
   @Injection ( name = "DESTINATION" ) public String destinationName = "";
 
-  @Injection ( name = "URL" ) public String url = "";
+  @Injection ( name = "IBMMQ_URL" ) public String ibmUrl = "";
 
-  @Injection ( name = "USERNAME" ) public String username = "";
+  @Injection ( name = "IBMMQ_USERNAME" ) public String ibmUsername = "";
 
-  @Sensitive @Injection ( name = "PASSWORD" ) public String password = "";
+  @Sensitive @Injection ( name = "IBMMQ_PASSWORD" ) public String ibmPassword = "";
+
+  @Injection ( name = "AMQ_URL" ) public String amqUrl = "";
+
+  @Injection ( name = "AMQ_USERNAME" ) public String amqUsername = "";
+
+  @Sensitive @Injection ( name = "AMQ_PASSWORD" ) public String amqPassword = "";
 
   @Injection ( name = "JNDI_URL" ) public String jndiUrl = "";
 
   @Injection ( name = "USE_JNDI" ) public boolean useJndi = false;
 
-  @Injection ( name = "CONNECTION_TYPE" ) public String connectionType = WEBSPHERE.name();
+  @Injection( name = "CONNECTION_TYPE" ) public String connectionType = ACTIVEMQ.name();
 
   @Injection ( name = "DESTINATION_TYPE" ) public String destinationType = QUEUE.name();
 

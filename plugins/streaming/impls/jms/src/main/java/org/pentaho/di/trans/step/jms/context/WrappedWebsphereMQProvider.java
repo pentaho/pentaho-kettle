@@ -32,6 +32,7 @@ import javax.jms.JMSContext;
 
 import static org.pentaho.di.i18n.BaseMessages.getString;
 import static org.pentaho.di.trans.step.jms.JmsConstants.PKG;
+import static org.pentaho.di.trans.step.jms.context.JmsProvider.ConnectionType.WEBSPHERE;
 
 /**
  * This class is used to prevent blueprint from failing with
@@ -56,7 +57,7 @@ public class WrappedWebsphereMQProvider implements JmsProvider {
   }
 
   @Override public boolean supports( ConnectionType type ) {
-    return prov.get().supports( type );
+    return type == WEBSPHERE;
   }
 
   @Override public JMSContext getContext( JmsDelegate meta, VariableSpace variableSpace ) {
