@@ -1,8 +1,7 @@
 @Library ('jenkins-shared-libraries') _
 
-import org.hvbuilders.MappedBuildData
-
-MappedBuildData mbd = new MappedBuildData()
+// We need a global mapped build data object to pass down through the stages of the build
+def mappedBuildData
 
 
 pipeline {
@@ -97,7 +96,7 @@ pipeline {
         script{
           String dataFilePath = "${WORKSPACE}/resources/builders/${params.BUILD_DATA_FILE}"
           println "doBuild: Loading build data from ${dataFilePath}"
-          mbd.createMappedData( dataFilePath )
+          mappedBuildData = doConfig(dataFilePath)
         }
       }
     }
@@ -108,7 +107,7 @@ pipeline {
         }
       }
       steps {
-        doCheckouts(mbd)
+        doCheckouts(mappedBuildData)
       }
     }
 
@@ -119,7 +118,7 @@ pipeline {
         }
       }
       steps {
-        doBuilds(mbd)
+        doBuilds(mappedBuildData)
       }
     }
 
@@ -130,7 +129,7 @@ pipeline {
         }
       }
       steps {
-        doUnitTests(mbd)
+        doUnitTests(mappedBuildData)
       }
     }
 
@@ -155,5 +154,6 @@ pipeline {
         archiveArtifacts artifacts: '**/target/**/*.gz, **/target/**/*.tar.gz, **/target/**/*.zip', fingerprint: false
       }
     }
+
   }
 }
