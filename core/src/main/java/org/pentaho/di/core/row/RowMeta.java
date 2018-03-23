@@ -1083,7 +1083,7 @@ public class RowMeta implements RowMetaInterface {
    */
   @Override
   public int hashCode( Object[] rowData ) throws KettleValueException {
-    return Arrays.hashCode( rowData );
+    return Arrays.deepHashCode( rowData );
   }
 
   /**
