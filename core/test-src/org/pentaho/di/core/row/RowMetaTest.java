@@ -40,11 +40,7 @@ import org.pentaho.di.core.xml.XMLHandler;
 import org.w3c.dom.Document;
 
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -492,6 +488,18 @@ public class RowMetaTest {
     assertEquals( "sample", names[0] );
     for ( int i = 1; i < names.length; i++ ) {
       assertEquals( "", names[i] );
+    }
+  }
+
+  @Test
+  public void testHashCode() {
+    rowMeta.clear();
+    byte[] byteArray = new byte[] {49, 50, 51};
+    Object[] objArray = new Object[] {byteArray};
+    try {
+      assertEquals( 78512, rowMeta.hashCode( objArray ) );
+    } catch ( KettleValueException e ) {
+      e.printStackTrace();
     }
   }
 
