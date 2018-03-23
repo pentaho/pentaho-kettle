@@ -1739,17 +1739,40 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
         }
       };
 
+      // create callback functions for welcome
+      Runnable openFileFunction = new Runnable() {
+        public void run() {
+          Spoon.this.openFile();
+        }
+      };
+      Runnable newTransFunction = new Runnable() {
+        public void run() {
+          Spoon.this.newTransFile();
+        }
+      };
+      Runnable newJobFunction = new Runnable() {
+        public void run() {
+          Spoon.this.newJobFile();
+        }
+      };
+
+      HashMap<String, Runnable> functions = new HashMap<String, Runnable>();
+      functions.put( "openFileFunction", openFileFunction );
+      functions.put( "newTransFunction", newTransFunction );
+      functions.put( "newJobFunction", newJobFunction );
+
       // see if we are in webstart mode
       String webstartRoot = System.getProperty( "spoon.webstartroot" );
       if ( webstartRoot != null ) {
         URL url = new URL( webstartRoot + '/' + FILE_WELCOME_PAGE );
-        addSpoonBrowser( STRING_WELCOME_TAB_NAME, url.toString(), listener ); // ./docs/English/tips/index.htm
+        // ./docs/English/tips/index.htm
+        addSpoonBrowser( STRING_WELCOME_TAB_NAME, url.toString(), true, listener, functions, true );
       } else {
         // see if we can find the welcome file on the file system
         File file = new File( FILE_WELCOME_PAGE );
         if ( file.exists() ) {
           // ./docs/English/tips/index.htm
-          addSpoonBrowser( STRING_WELCOME_TAB_NAME, file.toURI().toURL().toString(), listener );
+          addSpoonBrowser( STRING_WELCOME_TAB_NAME, file.toURI().toURL().toString(), true, listener, functions, true );
         }
       }
     } catch ( MalformedURLException e1 ) {
@@ -8836,6 +8859,10 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
   @Override
   public void addJobGraph( JobMeta jobMeta ) {
     delegates.jobs.addJobGraph( jobMeta );
+  }
+
+  public boolean addSpoonBrowser( String name, String urlString, boolean isURL, LocationListener locationListener, Map<String, Runnable> functions, boolean showControls ) {
+    return delegates.tabs.addSpoonBrowser( name, urlString, isURL, locationListener, functions, showControls );
   }
 
   public boolean addSpoonBrowser( String name, String urlString, LocationListener locationListener, boolean showControls ) {
