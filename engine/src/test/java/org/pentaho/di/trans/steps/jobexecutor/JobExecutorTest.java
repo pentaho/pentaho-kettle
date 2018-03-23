@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,6 +22,7 @@
 
 package org.pentaho.di.trans.steps.jobexecutor;
 
+import org.apache.commons.lang.ArrayUtils;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -63,8 +64,10 @@ public class JobExecutorTest {
 
     meta = new JobExecutorMeta();
     data = new JobExecutorData();
-    doReturn( mock( Job.class ) ).when( executor ).createJob( any( Repository.class ), any( JobMeta.class ),
+    Job job = mock( Job.class );
+    doReturn( job ).when( executor ).createJob( any( Repository.class ), any( JobMeta.class ),
       any( LoggingObjectInterface.class ) );
+    doReturn( ArrayUtils.EMPTY_STRING_ARRAY ).when( job ).listParameters();
 
     data.groupBuffer = new ArrayList<>();
     data.groupSize = -1;
