@@ -4,7 +4,7 @@
   ~
   ~  Pentaho Data Integration
   ~
-  ~  Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
+  ~  Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
   ~
   ~  *******************************************************************************
   ~  Licensed under the Apache License, Version 2.0 (the "License"); you may not use
@@ -38,6 +38,11 @@
   <version>7.1-SNAPSHOT</version>
   <packaging>bundle</packaging>
 
+  <properties>
+    <mockito.version>1.10.19</mockito.version>
+    <powermock.version>1.6.3</powermock.version>
+  </properties>
+
   <dependencies>
     <dependency>
       <groupId>pentaho-kettle</groupId>
@@ -68,6 +73,36 @@
       <artifactId>pdi-engine-configuration-impl</artifactId>
       <version>${dependency.pentaho-kettle.version}</version>
       <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.mockito</groupId>
+      <artifactId>mockito-all</artifactId>
+      <version>${mockito.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.mockito</groupId>
+      <artifactId>mockito-core</artifactId>
+      <version>${mockito.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.powermock</groupId>
+      <artifactId>powermock-module-junit4</artifactId>
+      <version>${powermock.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.powermock</groupId>
+      <artifactId>powermock-api-mockito</artifactId>
+      <version>${powermock.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.powermock</groupId>
+      <artifactId>powermock-module-testng</artifactId>
+      <version>${powermock.version}</version>
+      <scope>test</scope>
     </dependency>
   </dependencies>
 
