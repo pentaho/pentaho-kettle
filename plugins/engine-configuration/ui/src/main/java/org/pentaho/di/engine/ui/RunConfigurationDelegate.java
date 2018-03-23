@@ -3,7 +3,7 @@
  *
  *  Pentaho Data Integration
  *
- *  Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ *  Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *  *******************************************************************************
  *  Licensed under the Apache License, Version 2.0 (the "License"); you may not use
@@ -25,10 +25,16 @@
 package org.pentaho.di.engine.ui;
 
 import org.eclipse.swt.SWT;
+import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.extension.ExtensionPointHandler;
+import org.pentaho.di.core.extension.KettleExtensionPoint;
 import org.pentaho.di.engine.configuration.api.RunConfiguration;
 import org.pentaho.di.engine.configuration.api.RunConfigurationService;
 import org.pentaho.di.engine.configuration.impl.pentaho.DefaultRunConfiguration;
 import org.pentaho.di.i18n.BaseMessages;
+import org.pentaho.di.job.JobMeta;
+import org.pentaho.di.job.entries.trans.JobEntryTrans;
+import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.ui.spoon.Spoon;
 
 import java.util.List;
@@ -59,6 +65,34 @@ public class RunConfigurationDelegate {
       configurationManager.delete( key );
       configurationManager.save( savedRunConfiguration );
       spoonSupplier.get().refreshTree();
+
+      updateLoadedJobs( key, savedRunConfiguration );
+    }
+  }
+
+  protected void updateLoadedJobs( String key, RunConfiguration runConfig ) {
+    for ( JobMeta job : spoonSupplier.get().getLoadedJobs() ) {
+      for ( int i = 0; i < job.nrJobEntries(); i++ ) {
+        JobEntryInterface entry = job.getJobEntry( i ).getEntry();
+
+        if ( entry instanceof JobEntryTrans ) {
+          JobEntryTrans jet = (JobEntryTrans) entry;
+
+          if ( jet.getRunConfiguration().equals( key ) ) {
+            try {
+              ExtensionPointHandler.callExtensionPoint( job.getLogChannel(), KettleExtensionPoint.JobEntryTransSave.id,
+                new Object[] { job, runConfig.getName() } );
+            } catch ( KettleException e ) {
+              spoonSupplier.get().getLog().logBasic( "Unable to set run configuration in job " + job.getName() );
+            }
+
+            jet.setRunConfiguration( runConfig.getName() );
+            jet.setRemoteSlaveServerName( ( (DefaultRunConfiguration) runConfig ).getServer() );
+            jet.setLoggingRemoteWork( ( (DefaultRunConfiguration) runConfig ).isLogRemoteExecutionLocally() );
+            jet.setChanged();
+          }
+        }
+      }
     }
   }
 
