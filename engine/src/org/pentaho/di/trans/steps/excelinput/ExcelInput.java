@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,6 +22,8 @@
 
 package org.pentaho.di.trans.steps.excelinput;
 
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -70,6 +72,8 @@ public class ExcelInput extends BaseStep implements StepInterface {
   private ExcelInputMeta meta;
 
   private ExcelInputData data;
+
+  private FileInputStream fpis;
 
   public ExcelInput( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta,
     Trans trans ) {
@@ -550,7 +554,8 @@ public class ExcelInput extends BaseStep implements StepInterface {
             + data.filenr + " : " + data.filename ) );
         }
 
-        data.workbook = WorkbookFactory.getWorkbook( meta.getSpreadSheetType(), data.filename, meta.getEncoding() );
+        fpis = new FileInputStream( data.filename );
+        data.workbook = WorkbookFactory.getWorkbook( meta.getSpreadSheetType(), fpis, meta.getEncoding() );
 
         data.errorHandler.handleFile( data.file );
         // Start at the first sheet again...
@@ -821,7 +826,11 @@ public class ExcelInput extends BaseStep implements StepInterface {
         logDebug( Const.getStackTracker( e ) );
       }
     }
-
+    try {
+      fpis.close();
+    } catch ( IOException e ) {
+      logDebug( Const.getStackTracker( e ) );
+    }
     super.dispose( smi, sdi );
   }
 
