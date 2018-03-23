@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -94,9 +94,12 @@ public class MappingOutputMeta extends BaseStepMeta implements StepMetaInterface
     //
     if ( outputValueRenames != null ) {
       for ( MappingValueRename valueRename : outputValueRenames ) {
-        ValueMetaInterface valueMeta = r.searchValueMeta( valueRename.getSourceValueName() );
-        if ( valueMeta != null ) {
-          valueMeta.setName( valueRename.getTargetValueName() );
+        int valueMetaRenameIndex = r.indexOfValue( valueRename.getSourceValueName() );
+        if ( valueMetaRenameIndex >= 0  ) {
+          ValueMetaInterface valueMetaRename = r.getValueMeta( valueMetaRenameIndex ).clone();
+          valueMetaRename.setName( valueRename.getTargetValueName() );
+          r.addValueMeta( valueMetaRename );
+          r.removeValueMeta( valueMetaRenameIndex );
         }
       }
     }
