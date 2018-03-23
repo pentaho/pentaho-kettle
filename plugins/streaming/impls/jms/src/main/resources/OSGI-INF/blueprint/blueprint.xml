@@ -23,6 +23,11 @@
              http://www.osgi.org/xmlns/blueprint/v1.0.0 http://www.osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd
              http://www.pentaho.com/xml/schemas/pentaho-blueprint http://www.pentaho.com/xml/schemas/pentaho-blueprint.xsd">
 
+<!-- JmsProducer contains a delegate, which will handle interaction with whichever jms provider is appropriate -->
+  <bean id="JmsProducer2" class="org.pentaho.di.trans.step.jms.JmsProducerMeta" scope="prototype">
+    <argument ref="jmsDelegate"/>
+    <pen:di-plugin type="org.pentaho.di.core.plugins.StepPluginType"/>
+  </bean>
 
   <!-- JmsConsumer contains a delegate, which will handle interaction with whichever jms provider is appropriate -->
   <bean id="JmsConsumer" class="org.pentaho.di.trans.step.jms.JmsConsumerMeta" scope="prototype">
