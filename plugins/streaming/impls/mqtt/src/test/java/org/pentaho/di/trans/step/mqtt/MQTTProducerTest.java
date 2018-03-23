@@ -69,12 +69,6 @@ public class MQTTProducerTest {
   @BeforeClass
   public static void setupClass() throws Exception {
 
-//    KettleClientEnvironment.init();
-//    PluginRegistry.addPluginType( StepPluginType.getInstance() );
-//    PluginRegistry.init();
-//    if ( !Props.isInitialized() ) {
-//      Props.init( 0 );
-//    }
     StepPluginType.getInstance().handlePluginAnnotation(
       MQTTProducerMeta.class,
       MQTTProducerMeta.class.getAnnotation( org.pentaho.di.core.annotations.Step.class ),
@@ -190,5 +184,23 @@ public class MQTTProducerTest {
     trans.waitUntilFinished();
 
     verify( logChannel ).logError( "There was an error connecting" );
+  }
+
+  @Test
+  public void testErrorOnPublishStopsAll() throws Exception {
+    MqttException mqttException = mock( MqttException.class );
+    when( mqttException.getMessage() ).thenReturn( "publish failed" );
+    when( mqttClient.isConnected() ).thenReturn( true, false );
+    doThrow( mqttException ).when( mqttClient ).publish( any(), any() );
+
+    trans.startThreads();
+    trans.waitUntilFinished();
+
+    verify( mqttClient ).disconnect();
+    verify( logChannel ).logError(
+      "MQTT Producer - Recieved an exception publishing the message."
+      + "  Check that Quality of Service level ${qos} is supported by your MQTT Broker" );
+    verify( logChannel ).logError( "publish failed", mqttException );
+    assertEquals( 0, trans.getSteps().get( 1 ).step.getLinesOutput() );
   }
 }

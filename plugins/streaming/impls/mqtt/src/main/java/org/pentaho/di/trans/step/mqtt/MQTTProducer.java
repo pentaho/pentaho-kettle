@@ -158,9 +158,24 @@ public class MQTTProducer extends BaseStep implements StepInterface {
         }
       }
     } catch ( MqttException e ) {
+      logError( BaseMessages.getString( PKG, "MQTTProducer.Error.QOSNotSupported", meta.getQOS() )  );
       logError( e.getMessage(), e );
+      setErrors( 1 );
+      stopAll();
     }
 
     return true;
+  }
+
+  @Override public void stopRunning( StepMetaInterface stepMetaInterface, StepDataInterface stepDataInterface )
+    throws KettleException {
+    try {
+      if ( data.mqttClient.isConnected() ) {
+        data.mqttClient.disconnect();
+      }
+    } catch ( MqttException e ) {
+      throw new KettleException( e );
+    }
+    super.stopRunning( stepMetaInterface, stepDataInterface );
   }
 }
