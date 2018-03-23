@@ -626,7 +626,6 @@ public class AbstractMetaTest {
 
   @Test
   public void testAddDeleteModifyObserver() throws Exception {
-    meta.deleteObserver( null );
     PDIObserver observer = mock( PDIObserver.class );
     meta.addObserver( observer );
     Object event = new Object();
