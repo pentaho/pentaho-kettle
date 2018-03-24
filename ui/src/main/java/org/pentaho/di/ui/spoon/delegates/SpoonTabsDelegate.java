@@ -24,10 +24,12 @@ package org.pentaho.di.ui.spoon.delegates;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 import org.apache.commons.vfs2.FileObject;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.browser.BrowserFunction;
 import org.eclipse.swt.browser.LocationListener;
 import org.eclipse.swt.browser.OpenWindowListener;
 import org.eclipse.swt.browser.WindowEvent;
@@ -245,8 +247,7 @@ public class SpoonTabsDelegate extends SpoonDelegate {
   }
 
   public boolean addSpoonBrowser( String name, String urlString, LocationListener listener ) {
-    boolean ok = addSpoonBrowser( name, urlString, true, listener, true );
-    return ok;
+    return addSpoonBrowser( name, urlString, true, listener, true );
   }
 
   public boolean addSpoonBrowser( String name, String urlString, LocationListener listener, boolean showControls ) {
@@ -258,6 +259,10 @@ public class SpoonTabsDelegate extends SpoonDelegate {
   }
 
   public boolean addSpoonBrowser( String name, String urlString, boolean isURL, LocationListener listener, boolean showControls ) {
+    return addSpoonBrowser( name, urlString, isURL, listener, null, showControls );
+  }
+
+  public boolean addSpoonBrowser( String name, String urlString, boolean isURL, LocationListener listener, Map<String, Runnable> functions, boolean showControls ) {
     TabSet tabfolder = spoon.tabfolder;
 
     try {
@@ -281,6 +286,28 @@ public class SpoonTabsDelegate extends SpoonDelegate {
             }
           }
         } );
+
+        if ( functions != null ) {
+          for ( String functionName : functions.keySet() ) {
+            new BrowserFunction( browser.getBrowser(), functionName ) {
+              public Object function( Object[] arguments ) {
+                functions.get( functionName ).run();
+                return null;
+              }
+            };
+          }
+        }
+
+        new BrowserFunction( browser.getBrowser(), "genericFunction" ) {
+          public Object function( Object[] arguments ) {
+            try {
+              ExtensionPointHandler.callExtensionPoint( log, KettleExtensionPoint.SpoonBrowserFunction.id, arguments );
+            } catch ( KettleException ignored ) {
+            }
+            return null;
+          }
+        };
+
         PropsUI props = PropsUI.getInstance();
         TabItem tabItem = new TabItem( tabfolder, name, name, props.getSashWeights() );
         tabItem.setImage( GUIResource.getInstance().getImageLogoSmall() );
