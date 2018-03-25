@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -63,6 +63,7 @@ public class DragAndDropContainer implements XMLInterface {
   private static final String XML_TAG = "DragAndDrop";
 
   private int type;
+  private String id;
   private String data;
 
   /**
@@ -74,8 +75,23 @@ public class DragAndDropContainer implements XMLInterface {
    *          The data in the form of a String
    */
   public DragAndDropContainer( int type, String data ) {
+    this( type, data, null );
+  }
+
+  /**
+   * Create a new DragAndDropContainer
+   *
+   * @param type
+   *          The type of drag&drop to perform
+   * @param data
+   *          The data in the form of a String
+   * @param id
+   *          The id of the step in the form of a String
+   */
+  public DragAndDropContainer( int type, String data, String id ) {
     this.type = type;
     this.data = data;
+    this.id = id;
   }
 
   public int getType() {
@@ -92,6 +108,14 @@ public class DragAndDropContainer implements XMLInterface {
 
   public void setData( String data ) {
     this.data = data;
+  }
+
+  public String getId() {
+    return id;
+  }
+
+  public void setId( String id ) {
+    this.id = id;
   }
 
   public String getTypeCode() {
@@ -116,8 +140,11 @@ public class DragAndDropContainer implements XMLInterface {
       StringBuilder xml = new StringBuilder( 100 );
 
       xml.append( XMLHandler.getXMLHeader() ); // UFT-8 XML header
-
       xml.append( XMLHandler.openTag( XML_TAG ) ).append( Const.CR );
+
+      if ( id != null ) {
+        xml.append( "  " ).append( XMLHandler.addTagValue( "ID", id ) );
+      }
       xml.append( "  " ).append( XMLHandler.addTagValue( "DragType", getTypeCode() ) );
       xml.append( "  " ).append(
         XMLHandler
@@ -141,6 +168,7 @@ public class DragAndDropContainer implements XMLInterface {
       Document doc = XMLHandler.loadXMLString( xml );
       Node dnd = XMLHandler.getSubNode( doc, XML_TAG );
 
+      id = XMLHandler.getTagValue( dnd, "ID" );
       type = getType( XMLHandler.getTagValue( dnd, "DragType" ) );
       data =
         new String( Base64.decodeBase64( XMLHandler.getTagValue( dnd, "Data" ).getBytes() ), Const.XML_ENCODING );
