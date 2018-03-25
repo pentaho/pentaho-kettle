@@ -32,12 +32,15 @@ pipeline {
     string(defaultValue: 'maven3-auto', description: 'Use this Jenkins Maven label for builds',
       name: 'JENKINS_MAVEN_FOR_BUILDS')
 
-    booleanParam(defaultValue: false, description: 'Clean all build dependency caches', name: 'CLEAN_ALL_CACHES')
-    booleanParam(defaultValue: false, description: 'Clean build scm workspaces', name: 'CLEAN_SCM_WORKSPACES')
     booleanParam(defaultValue: true, description: 'Run the scm checkouts', name: 'RUN_CHECKOUTS')
     booleanParam(defaultValue: true, description: 'Run the code builds', name: 'RUN_BUILDS')
     booleanParam(defaultValue: true, description: 'Run the code tests', name: 'RUN_UNIT_TESTS')
     booleanParam(defaultValue: true, description: 'Archive the artifacts', name: 'ARCHIVE_ARTIFACTS')
+
+    booleanParam(defaultValue: false, description: 'Clean all build dependency caches', name: 'CLEAN_ALL_CACHES')
+    booleanParam(defaultValue: false, description: 'Clean build scm workspaces', name: 'CLEAN_SCM_WORKSPACES')
+    booleanParam(defaultValue: false, description: 'Clean build buuild workspace (this happens post build)', name: 'CLEAN_BUILD_WORKSPACE')
+
     booleanParam(defaultValue: false, description: 'No op build (test the build config)', name: 'NOOP')
     booleanParam(defaultValue: false, description: 'Distributes source checkouts on remote nodes ' +
       '(Otherwise assume workspace is shared on all). Not yet fully implmented--do not use.', name: 'USE_DISTRIBUTED_SOURCE_CACHING')
@@ -94,12 +97,11 @@ pipeline {
     stage('Configure'){
       steps {
         script{
-          String dataFilePath = "${WORKSPACE}/resources/builders/${params.BUILD_DATA_FILE}"
-          println "doBuild: Loading build data from ${dataFilePath}"
-          mappedBuildData = doConfig(dataFilePath)
+          mappedBuildData = doConfig("${WORKSPACE}/resources/builders/${params.BUILD_DATA_FILE}")
         }
       }
     }
+
     stage('Checkouts'){
       when {
         expression {
@@ -144,7 +146,7 @@ pipeline {
       }
     }
 
-    stage('Archive Build Artifacts') {
+    stage('Archive Artifacts') {
       when {
         expression {
           return (params.ARCHIVE_ARTIFACTS && !params.NOOP)
@@ -155,5 +157,34 @@ pipeline {
       }
     }
 
+    stage('Clean Workspace') {
+      when {
+        expression {
+          return params.CLEAN_BUILD_WORKSPACE
+        }
+      }
+      steps {
+        deleteDir() /* clean up our workspace */
+      }
+    }
+  }
+
+// @TODO Put some notification stuff in here..chatops or whatever
+  post {
+    always {
+      echo 'One way or another, I have finished'
+    }
+    success {
+      echo 'I succeeeded!'
+    }
+    unstable {
+      echo 'I am unstable :/'
+    }
+    failure {
+      echo 'I failed :('
+    }
+    changed {
+      echo 'Things were different before...'
+    }
   }
 }

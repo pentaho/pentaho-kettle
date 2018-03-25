@@ -65,9 +65,3 @@ jobGroups:
        scmUrl            :  ${PENTAHO_SCM_ROOT}pentaho-data-refinery.git
        scmBranch         :  ${DEFAULT_BRANCH}
 
-     - jobID             :  pdi-plugins
-       scmUrl            :  ${PENTAHO_SCM_ROOT}pentaho-ee.git
-       scmBranch         :  ${DEFAULT_BRANCH}
-       root              :  data-integration/plugins
-
-
