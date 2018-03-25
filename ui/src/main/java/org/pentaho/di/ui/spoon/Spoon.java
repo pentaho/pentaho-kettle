@@ -2334,7 +2334,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
           if ( !filterMatch( pluginName ) && !filterMatch( pluginDescription ) ) {
             continue;
           }
-          createTreeItem( item, pluginName, stepImage );
+          createTreeItem( item, pluginName, stepImage, p.getIds()[ 0 ] );
           coreStepToolTipMap.put( pluginName, pluginDescription );
         }
       }
@@ -6302,9 +6302,17 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
   }
 
   @VisibleForTesting TreeItem createTreeItem( TreeItem parent, String text, Image image ) {
+    return createTreeItem( parent, text, image, null );
+  }
+
+  @VisibleForTesting TreeItem createTreeItem( TreeItem parent, String text, Image image, String id ) {
     TreeItem item = new TreeItem( parent, SWT.NONE );
     item.setText( text );
     item.setImage( image );
+
+    if ( id != null ) {
+      item.setData( "StepId", id );
+    }
     return item;
   }
 
@@ -6634,6 +6642,27 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
    *
    */
   public StepMeta newStep( TransMeta transMeta, String name, String description, boolean openit, boolean rename ) {
+    return newStep( transMeta, null, name, description, openit, rename );
+  }
+
+    /**
+     * Allocate new step, optionally open and rename it.
+     *
+     * @param id
+     *          Id of the new step
+     * @param name
+     *          Name of the new step
+     * @param description
+     *          Description of the type of step
+     * @param openit
+     *          Open the dialog for this step?
+     * @param rename
+     *          Rename this step?
+     *
+     * @return The newly created StepMeta object.
+     *
+     */
+  public StepMeta newStep( TransMeta transMeta, String id, String name, String description, boolean openit, boolean rename ) {
     StepMeta inf = null;
 
     // See if we need to rename the step to avoid doubles!
@@ -6648,10 +6677,10 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     }
 
     PluginRegistry registry = PluginRegistry.getInstance();
-    PluginInterface stepPlugin = null;
+    PluginInterface stepPlugin = id != null ? registry.findPluginWithId( StepPluginType.class, id )
+      : registry.findPluginWithName( StepPluginType.class, description );
 
     try {
-      stepPlugin = registry.findPluginWithName( StepPluginType.class, description );
       if ( stepPlugin != null ) {
         StepMetaInterface info = (StepMetaInterface) registry.loadClass( stepPlugin );
 
