@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,8 +22,13 @@
 
 package org.pentaho.di.trans.steps.excelinput.staxpoi;
 
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.fail;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import java.io.InputStream;
 import java.util.Collections;
@@ -79,6 +84,29 @@ public class StaxPoiSheetTest {
       + " </sheetData>" );
 
   private static final String SHEET_EMPTY = String.format( BP_SHEET, "<dimension ref=\"A1\"/><sheetData/>" );
+
+  private static final String SHEET_INLINE_STRINGS = String.format( BP_SHEET,
+    "<dimension ref=\"A1:B3\"/>"
+    + "<sheetViews>"
+    +   "<sheetView tabSelected=\"1\" workbookViewId=\"0\" rightToLeft=\"false\">"
+    +     "<selection activeCell=\"C5\" sqref=\"C5\"/>"
+    +   "</sheetView>"
+    + "</sheetViews>"
+    + "<sheetFormatPr defaultRowHeight=\"15\"/>"
+    + "<sheetData>"
+    +   "<row outlineLevel=\"0\" r=\"1\">"
+    +     "<c r=\"A1\" s=\"0\" t=\"inlineStr\"><is><t>Test1</t></is></c>"
+    +     "<c r=\"B1\" s=\"0\" t=\"inlineStr\"><is><t>Test2</t></is></c>"
+    +   "</row>"
+    +   "<row outlineLevel=\"0\" r=\"2\">"
+    +     "<c r=\"A2\" s=\"0\" t=\"inlineStr\"><is><t>value 1 1</t></is></c>"
+    +     "<c r=\"B2\" s=\"0\" t=\"inlineStr\"><is><t>value 2 1</t></is></c>"
+    +   "</row>"
+    +   "<row outlineLevel=\"0\" r=\"3\">"
+    +     "<c r=\"A3\" s=\"0\" t=\"inlineStr\"><is><t>value 1 2</t></is></c>"
+    +     "<c r=\"B3\" s=\"0\" t=\"inlineStr\"><is><t>value 2 2</t></is></c>"
+    +   "</row>"
+    + "</sheetData>" );
 
   @Test
   public void testNullDateCell() throws Exception {
@@ -254,6 +282,31 @@ public class StaxPoiSheetTest {
       sst.addEntry( st );
     }
     return sst;
+  }
+
+  @Test
+  public void testInlineString() throws Exception {
+    final String sheetId = "1";
+    final String sheetName = "Sheet 1";
+    XSSFReader reader = mockXSSFReader( sheetId, SHEET_INLINE_STRINGS,
+      mock( SharedStringsTable.class ),
+      mock( StylesTable.class ) );
+    StaxPoiSheet spSheet = new StaxPoiSheet( reader, sheetName, sheetId );
+    KCell[] rowCells = spSheet.getRow( 0 );
+    assertEquals( "Test1", rowCells[0].getValue() );
+    assertEquals( KCellType.STRING_FORMULA, rowCells[0].getType() );
+    assertEquals( "Test2", rowCells[1].getValue() );
+    assertEquals( KCellType.STRING_FORMULA, rowCells[1].getType() );
+    rowCells = spSheet.getRow( 1 );
+    assertEquals( "value 1 1", rowCells[0].getValue() );
+    assertEquals( KCellType.STRING_FORMULA, rowCells[0].getType() );
+    assertEquals( "value 2 1", rowCells[1].getValue() );
+    assertEquals( KCellType.STRING_FORMULA, rowCells[1].getType() );
+    rowCells = spSheet.getRow( 2 );
+    assertEquals( "value 1 2", rowCells[0].getValue() );
+    assertEquals( KCellType.STRING_FORMULA, rowCells[0].getType() );
+    assertEquals( "value 2 2", rowCells[1].getValue() );
+    assertEquals( KCellType.STRING_FORMULA, rowCells[1].getType() );
   }
 
 }
