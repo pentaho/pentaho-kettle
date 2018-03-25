@@ -28,6 +28,7 @@ import org.eclipse.swt.SWT;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.extension.ExtensionPointHandler;
 import org.pentaho.di.core.extension.KettleExtensionPoint;
+import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.engine.configuration.api.RunConfiguration;
 import org.pentaho.di.engine.configuration.api.RunConfigurationService;
 import org.pentaho.di.engine.configuration.impl.pentaho.DefaultRunConfiguration;
@@ -80,7 +81,7 @@ public class RunConfigurationDelegate {
 
           if ( jet.getRunConfiguration().equals( key ) ) {
             try {
-              ExtensionPointHandler.callExtensionPoint( job.getLogChannel(), KettleExtensionPoint.JobEntryTransSave.id,
+              ExtensionPointHandler.callExtensionPoint( LogChannel.GENERAL, KettleExtensionPoint.JobEntryTransSave.id,
                 new Object[] { job, runConfig.getName() } );
             } catch ( KettleException e ) {
               spoonSupplier.get().getLog().logBasic( "Unable to set run configuration in job " + job.getName() );
