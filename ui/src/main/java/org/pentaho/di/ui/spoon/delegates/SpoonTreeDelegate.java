@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -256,10 +256,13 @@ public class SpoonTreeDelegate extends SpoonDelegate {
             }
 
             if ( spoon.showTrans ) {
-              // Steps
-              object =
-                new TreeSelection( path[1], PluginRegistry.getInstance().findPluginWithName(
-                  StepPluginType.class, path[1] ) );
+              String stepId = (String) treeItem.getData( "StepId" );
+
+              if ( stepId != null ) {
+                object = new TreeSelection( path[1], PluginRegistry.getInstance().findPluginWithId( StepPluginType.class, stepId ) );
+              } else {
+                object = new TreeSelection( path[1], PluginRegistry.getInstance().findPluginWithName( StepPluginType.class, path[1] ) );
+              }
             }
             break;
           default:
@@ -313,6 +316,7 @@ public class SpoonTreeDelegate extends SpoonDelegate {
         }
 
         int type = 0;
+        String id = null;
         String data = null;
 
         TreeSelection treeObject = treeObjects[0];
@@ -327,6 +331,7 @@ public class SpoonTreeDelegate extends SpoonDelegate {
           Class<? extends PluginTypeInterface> pluginType = plugin.getPluginType();
           if ( Const.classIsOrExtends( pluginType, StepPluginType.class ) ) {
             type = DragAndDropContainer.TYPE_BASE_STEP_TYPE;
+            id = plugin.getIds()[ 0 ];
             data = plugin.getName(); // Step type name
           } else {
             type = DragAndDropContainer.TYPE_BASE_JOB_ENTRY;
@@ -354,7 +359,7 @@ public class SpoonTreeDelegate extends SpoonDelegate {
           return; // ignore anything else you drag.
         }
 
-        event.data = new DragAndDropContainer( type, data );
+        event.data = new DragAndDropContainer( type, data, id );
       }
 
       public void dragFinished( DragSourceEvent event ) {
