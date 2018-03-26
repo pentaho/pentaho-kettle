@@ -23,6 +23,8 @@ pipeline {
     string(defaultValue: '10', description: 'Maximum parallel source checkout chunk size',
       name: 'PARALLEL_CHECKOUT_CHUNKSIZE')
     string(defaultValue: '20', description: 'Shallow clone depth (leave blank for infinite)', name: 'CHECKOUT_DEPTH')
+    string(defaultValue: '60', description: 'Build timeout in minutes', name: 'BUILD_TIMEOUT')
+    string(defaultValue: '2', description: 'Build retry count', name: 'BUILD_RETRIES')
     string(defaultValue: 'http://nexus.pentaho.org/content/groups/omni',
       description: 'Maven resolve repo global mirror', name: 'MAVEN_RESOLVE_REPO_URL')
     string(defaultValue: 'github-buildguy', description: 'Use this Jenkins credential for checkouts',
@@ -119,8 +121,13 @@ pipeline {
           return params.RUN_BUILDS
         }
       }
+      failFast true
       steps {
-        doBuilds(mappedBuildData)
+        timeout(time: Integer.valueOf(params.BUILD_TIMEOUT), unit: 'MINUTES') {
+          retry(Integer.valueOf(params.BUILD_RETRIES)) {
+            doBuilds(mappedBuildData)
+          }
+        }
       }
     }
 
@@ -130,8 +137,11 @@ pipeline {
           return params.RUN_UNIT_TESTS
         }
       }
+      failFast true
       steps {
-        doUnitTests(mappedBuildData)
+        timeout(time: 90, unit: 'MINUTES') {
+          doUnitTests(mappedBuildData)
+        }
       }
     }
 
