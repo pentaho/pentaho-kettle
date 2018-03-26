@@ -3,7 +3,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -95,6 +95,7 @@ import org.pentaho.di.ui.core.widget.TableView;
 import org.pentaho.di.ui.core.widget.TextVar;
 import org.pentaho.di.ui.trans.dialog.TransPreviewProgressDialog;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
+import org.pentaho.di.ui.trans.step.ComponentSelectionListener;
 import org.pentaho.di.ui.trans.steps.textfileinput.DirectoryDialogButtonListenerFactory;
 import org.pentaho.di.ui.trans.steps.textfileinput.VariableButtonListenerFactory;
 
@@ -550,6 +551,7 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
       @Override
       public void widgetSelected( SelectionEvent arg0 ) {
         setFlags();
+        input.setChanged();
       }
     } );
 
@@ -772,6 +774,7 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
       @Override
       public void widgetSelected( SelectionEvent arg0 ) {
         setFlags();
+        input.setChanged();
       }
     } );
 
@@ -791,6 +794,7 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
     fdNoempty.top = new FormAttachment( wHeader, margin );
     fdNoempty.right = new FormAttachment( 100, 0 );
     wNoempty.setLayoutData( fdNoempty );
+    wNoempty.addSelectionListener( new ComponentSelectionListener( input ) );
 
     wlStoponempty = new Label( wContentComp, SWT.RIGHT );
     wlStoponempty.setText( BaseMessages.getString( PKG, "ExcelInputDialog.StopOnEmpty.Label" ) );
@@ -808,6 +812,7 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
     fdStoponempty.top = new FormAttachment( wNoempty, margin );
     fdStoponempty.right = new FormAttachment( 100, 0 );
     wStoponempty.setLayoutData( fdStoponempty );
+    wStoponempty.addSelectionListener( new ComponentSelectionListener( input ) );
 
     wlLimit = new Label( wContentComp, SWT.RIGHT );
     wlLimit.setText( BaseMessages.getString( PKG, "ExcelInputDialog.Limit.Label" ) );
@@ -885,6 +890,7 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
     fdAddResult.left = new FormAttachment( middle, 0 );
     fdAddResult.top = new FormAttachment( wEncoding, margin );
     wAddResult.setLayoutData( fdAddResult );
+    wAddResult.addSelectionListener( new ComponentSelectionListener( input ) );
 
     fdAddFileResult = new FormData();
     fdAddFileResult.left = new FormAttachment( 0, margin );
@@ -1582,6 +1588,7 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
     fdStrictTypes.top = new FormAttachment( 0, margin );
     wStrictTypes.setLayoutData( fdStrictTypes );
     Control previous = wStrictTypes;
+    wStrictTypes.addSelectionListener( new ComponentSelectionListener( input ) );
 
     // ErrorIgnored?
     wlErrorIgnored = new Label( wErrorComp, SWT.RIGHT );
@@ -1604,6 +1611,7 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
       @Override
       public void widgetSelected( SelectionEvent arg0 ) {
         setFlags();
+        input.setChanged();
       }
     } );
 
@@ -1623,6 +1631,7 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
     fdSkipErrorLines.left = new FormAttachment( middle, 0 );
     fdSkipErrorLines.top = new FormAttachment( previous, margin );
     wSkipErrorLines.setLayoutData( fdSkipErrorLines );
+    wSkipErrorLines.addSelectionListener( new ComponentSelectionListener( input ) );
 
     previous = wSkipErrorLines;
 
