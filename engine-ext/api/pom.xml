@@ -18,6 +18,7 @@
 
   <properties>
     <reactive-streams.version>1.0.0</reactive-streams.version>
+    <pdi-version>$(project.version}</pdi-version>
   </properties>
 
   <dependencies>
@@ -29,6 +30,10 @@
     <dependency>
       <groupId>com.google.guava</groupId>
       <artifactId>guava</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>commons-codec</groupId>
+      <artifactId>commons-codec</artifactId>
     </dependency>
     <dependency>
       <groupId>org.reactivestreams</groupId>
