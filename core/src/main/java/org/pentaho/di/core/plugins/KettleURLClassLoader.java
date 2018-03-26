@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -103,6 +103,9 @@ public class KettleURLClassLoader extends URLClassLoader {
       // ignore
     } catch ( NoClassDefFoundError e ) {
       // ignore
+    } catch ( SecurityException e ) {
+      System.err.println( BaseMessages.getString( PKG, "KettleURLClassLoader.Exception.UnableToLoadClass",
+              e.toString() ) );
     }
 
     return loadClassFromParent( arg0, arg1 );
