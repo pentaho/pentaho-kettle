@@ -22,6 +22,7 @@
 
 package org.pentaho.di.trans.step.jms;
 
+import com.google.common.annotations.VisibleForTesting;
 import org.pentaho.di.core.annotations.Step;
 import org.pentaho.di.core.injection.Injection;
 import org.pentaho.di.core.injection.InjectionDeep;
@@ -34,10 +35,19 @@ import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
+import org.pentaho.di.trans.step.jms.context.ActiveMQProvider;
+
+import static java.util.Collections.singletonList;
+
 @InjectionSupported ( localizationPrefix = "JmsProducerMeta.Injection." )
 @Step ( id = "Jms2Producer", image = "JMSP.svg", name = "JMS Producer",
   description = "JmsProducerDialog.TypeLongDesc", categoryDescription = "Streaming" )
 public class JmsProducerMeta extends BaseSerializingMeta implements StepMetaInterface, Cloneable {
+
+  @VisibleForTesting
+  public JmsProducerMeta() {
+    this( new JmsDelegate( singletonList( new ActiveMQProvider() ) ) );
+  }
 
   static final String FIELD_TO_SEND = "FIELD_TO_SEND";
 

@@ -43,7 +43,6 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import static java.util.regex.Pattern.compile;
 import static org.pentaho.di.i18n.BaseMessages.getString;
 import static org.pentaho.di.trans.step.jms.context.JmsProvider.ConnectionType.WEBSPHERE;
-import static org.pentaho.di.trans.step.jms.context.JmsProvider.DestinationType.QUEUE;
 
 public class WebsphereMQProvider implements JmsProvider {
 
@@ -68,8 +67,8 @@ public class WebsphereMQProvider implements JmsProvider {
       throw new RuntimeException( e );
     }
     return connFactory.createContext(
-      variableSpace.environmentSubstitute( meta.username ),
-      variableSpace.environmentSubstitute( meta.password ) );
+      variableSpace.environmentSubstitute( meta.ibmUsername ),
+      variableSpace.environmentSubstitute( meta.ibmPassword ) );
 
   }
 
@@ -85,12 +84,6 @@ public class WebsphereMQProvider implements JmsProvider {
       throw new RuntimeException( e );
     }
   }
-
-  private boolean isQueue( JmsDelegate meta, VariableSpace variableSpace ) {
-    return DestinationType.valueOf(
-      variableSpace.environmentSubstitute( meta.destinationType ) ).equals( QUEUE );
-  }
-
 
   static class MQUrlResolver {
     private final JmsDelegate meta;
@@ -110,7 +103,7 @@ public class WebsphereMQProvider implements JmsProvider {
     }
 
     void resolve( VariableSpace space ) {
-      Matcher matcher = pattern.matcher( space.environmentSubstitute( meta.url ) );
+      Matcher matcher = pattern.matcher( space.environmentSubstitute( meta.ibmUrl ) );
       if ( matcher.matches() ) {
         String value;
 

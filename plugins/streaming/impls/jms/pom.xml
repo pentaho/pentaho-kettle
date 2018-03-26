@@ -43,6 +43,7 @@
     <jms.version>2.0.1</jms.version>
     <pdi.version>8.1.0.0-SNAPSHOT</pdi.version>
     <rxjava.version>2.0.4</rxjava.version>
+    <artemis.version>2.5.0</artemis.version>
   </properties>
 
   <dependencies>
@@ -77,6 +78,24 @@
     </dependency>
 
     <dependency>
+      <groupId>org.apache.activemq</groupId>
+      <artifactId>artemis-jms-client</artifactId>
+      <scope>provided</scope>
+      <version>${artemis.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.activemq</groupId>
+      <artifactId>artemis-core-client</artifactId>
+      <scope>provided</scope>
+      <version>${artemis.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.activemq</groupId>
+      <artifactId>artemis-commons</artifactId>
+      <scope>provided</scope>
+      <version>${artemis.version}</version>
+    </dependency>
+    <dependency>
       <groupId>io.reactivex.rxjava2</groupId>
       <artifactId>rxjava</artifactId>
       <version>${rxjava.version}</version>
@@ -88,6 +107,7 @@
       <version>${jms.version}</version>
     </dependency>
 
+
     <dependency>
       <groupId>org.mockito</groupId>
       <artifactId>mockito-all</artifactId>
@@ -98,6 +118,13 @@
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
       <version>${junit.version}</version>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.apache.activemq</groupId>
+      <artifactId>artemis-junit</artifactId>
+      <version>${artemis.version}</version>
       <scope>test</scope>
     </dependency>
   </dependencies>
@@ -116,7 +143,7 @@
             <Bundle-Version>${project.version}</Bundle-Version>
             <Export-Package>org.pentaho.di.trans.step.jms.*;version=${project.version}</Export-Package>
             <Import-Package>
-              com.ibm.msg.client.wmq;resolution:=optional,com.ibm.mq.jms;resolution:=optional,org.eclipse.swt*;resolution:=optional,org.pentaho.di.osgi,org.pentaho.di.core.plugins,*
+              javax.jms,javax.naming,com.ibm.msg.client.wmq;resolution:=optional,com.ibm.mq.jms;resolution:=optional,org.eclipse.swt*;resolution:=optional,org.pentaho.di.osgi,org.pentaho.di.core.plugins,*
             </Import-Package>
           </instructions>
         </configuration>

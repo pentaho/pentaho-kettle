@@ -22,6 +22,7 @@
 
 package org.pentaho.di.trans.step.jms;
 
+import com.google.common.annotations.VisibleForTesting;
 import org.pentaho.di.core.annotations.Step;
 import org.pentaho.di.core.injection.InjectionDeep;
 import org.pentaho.di.core.injection.InjectionSupported;
@@ -34,8 +35,10 @@ import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
+import org.pentaho.di.trans.step.jms.context.ActiveMQProvider;
 import org.pentaho.di.trans.streaming.common.BaseStreamStepMeta;
 
+import static java.util.Collections.singletonList;
 import static org.pentaho.di.core.ObjectLocationSpecificationMethod.FILENAME;
 
 @InjectionSupported ( localizationPrefix = "JmsConsumerMeta.Injection." )
@@ -45,6 +48,11 @@ public class JmsConsumerMeta extends BaseStreamStepMeta {
 
   @InjectionDeep
   public final JmsDelegate jmsDelegate;
+
+  @VisibleForTesting
+  public JmsConsumerMeta() {
+    this( new JmsDelegate( singletonList( new ActiveMQProvider() ) ) );
+  }
 
   public JmsConsumerMeta( JmsDelegate jmsDelegate ) {
     setSpecificationMethod( FILENAME );
