@@ -148,7 +148,7 @@ pipeline {
     stage('Archive Test Results') {
       when {
         expression {
-          return (params.ARCHIVE_ARTIFACTS && !params.NOOP)
+          return (params.RUN_UNIT_TESTS && !params.NOOP)
         }
       }
       steps {
