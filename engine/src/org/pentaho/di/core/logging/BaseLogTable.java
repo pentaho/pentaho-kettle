@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -132,6 +132,8 @@ public abstract class BaseLogTable {
   }
 
   public void loadFromRepository( RepositoryAttributeInterface attributeInterface ) throws KettleException {
+    connectionName = schemaName = tableName = null;
+
     String connectionNameFromRepository =
       attributeInterface.getAttributeString( getLogTableCode() + PROP_LOG_TABLE_CONNECTION_NAME );
     if ( connectionNameFromRepository != null ) {
