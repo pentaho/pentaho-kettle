@@ -65,3 +65,9 @@ jobGroups:
        scmUrl            :  ${PENTAHO_SCM_ROOT}pentaho-data-refinery.git
        scmBranch         :  ${DEFAULT_BRANCH}
 
+  4:
+     - jobID             :  parent-poms-ee
+       scmUrl            :  ${PENTAHO_SCM_ROOT}maven-parent-poms-ee.git
+       scmBranch         :  ${DEFAULT_BRANCH}
+
+
