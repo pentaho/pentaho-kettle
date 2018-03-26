@@ -3,7 +3,7 @@
  *
  *  Pentaho Data Integration
  *
- *  Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ *  Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  * ******************************************************************************
  *
@@ -30,17 +30,26 @@ import javax.websocket.EndpointConfig;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
-import java.util.Base64;
 
 /**
+ * A WebSocket decoder that converts gziped strings transported across the wire in WebSockets calls into AEL
+ * Message objects.
+ *
+ * This class will be used by WebSockets endpoint when recieving webSocket messages.
+ *
  * Created by ccaspanello on 7/20/17.
  */
 public class MessageDecoder implements Decoder.Text<Message> {
-
+  /**
+   * Decode the given String into an AEL Message object.
+   *
+   * @param string string to be decoded.
+   * @return the decoded message as an Message object.
+   */
   @Override
   public Message decode( String string ) throws DecodeException {
     try {
-      byte[] data = Base64.getDecoder().decode( string );
+      byte[] data = EncodeUtil.decodeBase64Zipped( string );
       InputStream is = new ByteArrayInputStream( data );
       ObjectInputStream ois = new ObjectInputStream( is );
       Object o = ois.readObject();
@@ -65,4 +74,5 @@ public class MessageDecoder implements Decoder.Text<Message> {
   public void destroy() {
     // Do Nothing
   }
+
 }
