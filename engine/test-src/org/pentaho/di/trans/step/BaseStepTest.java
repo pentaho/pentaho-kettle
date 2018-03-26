@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -65,6 +65,7 @@ import org.pentaho.di.core.row.value.ValueMetaBase;
 import org.pentaho.di.core.row.value.ValueMetaInteger;
 import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.trans.BasePartitioner;
+import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.steps.mock.StepMockHelper;
 import org.pentaho.di.www.SocketRepository;
 
@@ -445,5 +446,27 @@ public class BaseStepTest {
     };
   }
 
+  @Test
+  public void testGetRowSafeModeEnabled() throws KettleException {
+    Trans transMock = mock( Trans.class );
+    when( transMock.isSafeModeEnabled() ).thenReturn( true );
+    BaseStep baseStepSpy =
+      spy( new BaseStep( mockHelper.stepMeta, mockHelper.stepDataInterface,
+        0, mockHelper.transMeta, transMock ) );
+    doNothing().when( baseStepSpy ).waitUntilTransformationIsStarted();
+    doNothing().when( baseStepSpy ).openRemoteInputStepSocketsOnce();
 
+    BlockingRowSet rowSet = new BlockingRowSet( 1 );
+    List<ValueMetaInterface> valueMetaList = Arrays.asList( new ValueMetaInteger( "x" ), new ValueMetaString( "a" ) );
+    RowMeta rowMeta = new RowMeta();
+    rowMeta.setValueMetaList( valueMetaList );
+    final Object[] row = new Object[] {};
+    rowSet.putRow( rowMeta, row );
+
+    baseStepSpy.setInputRowSets( Arrays.asList( rowSet ) );
+    doReturn( rowSet ).when( baseStepSpy ).currentInputStream();
+
+    baseStepSpy.getRow();
+    verify( mockHelper.transMeta, times( 1 ) ).checkRowMixingStatically( any( StepMeta.class ), anyObject() );
+  }
 }
