@@ -1,8 +1,7 @@
 @Library ('jenkins-shared-libraries') _
 
-import org.hvbuilders.MappedBuildData
-
-MappedBuildData mbd = new MappedBuildData()
+// We need a global mapped build data object to pass down through the stages of the build
+def mappedBuildData
 
 
 pipeline {
@@ -24,6 +23,8 @@ pipeline {
     string(defaultValue: '10', description: 'Maximum parallel source checkout chunk size',
       name: 'PARALLEL_CHECKOUT_CHUNKSIZE')
     string(defaultValue: '20', description: 'Shallow clone depth (leave blank for infinite)', name: 'CHECKOUT_DEPTH')
+    string(defaultValue: '60', description: 'Build timeout in minutes', name: 'BUILD_TIMEOUT')
+    string(defaultValue: '2', description: 'Build retry count', name: 'BUILD_RETRIES')
     string(defaultValue: 'http://nexus.pentaho.org/content/groups/omni',
       description: 'Maven resolve repo global mirror', name: 'MAVEN_RESOLVE_REPO_URL')
     string(defaultValue: 'github-buildguy', description: 'Use this Jenkins credential for checkouts',
@@ -33,12 +34,15 @@ pipeline {
     string(defaultValue: 'maven3-auto', description: 'Use this Jenkins Maven label for builds',
       name: 'JENKINS_MAVEN_FOR_BUILDS')
 
-    booleanParam(defaultValue: false, description: 'Clean all build dependency caches', name: 'CLEAN_ALL_CACHES')
-    booleanParam(defaultValue: false, description: 'Clean build scm workspaces', name: 'CLEAN_SCM_WORKSPACES')
     booleanParam(defaultValue: true, description: 'Run the scm checkouts', name: 'RUN_CHECKOUTS')
     booleanParam(defaultValue: true, description: 'Run the code builds', name: 'RUN_BUILDS')
     booleanParam(defaultValue: true, description: 'Run the code tests', name: 'RUN_UNIT_TESTS')
     booleanParam(defaultValue: true, description: 'Archive the artifacts', name: 'ARCHIVE_ARTIFACTS')
+
+    booleanParam(defaultValue: false, description: 'Clean all build dependency caches', name: 'CLEAN_ALL_CACHES')
+    booleanParam(defaultValue: false, description: 'Clean build scm workspaces', name: 'CLEAN_SCM_WORKSPACES')
+    booleanParam(defaultValue: false, description: 'Clean build buuild workspace (this happens post build)', name: 'CLEAN_BUILD_WORKSPACE')
+
     booleanParam(defaultValue: false, description: 'No op build (test the build config)', name: 'NOOP')
     booleanParam(defaultValue: false, description: 'Distributes source checkouts on remote nodes ' +
       '(Otherwise assume workspace is shared on all). Not yet fully implmented--do not use.', name: 'USE_DISTRIBUTED_SOURCE_CACHING')
@@ -95,12 +99,11 @@ pipeline {
     stage('Configure'){
       steps {
         script{
-          String dataFilePath = "${WORKSPACE}/resources/builders/${params.BUILD_DATA_FILE}"
-          println "doBuild: Loading build data from ${dataFilePath}"
-          mbd.createMappedData( dataFilePath )
+          mappedBuildData = doConfig("${WORKSPACE}/resources/builders/${params.BUILD_DATA_FILE}")
         }
       }
     }
+
     stage('Checkouts'){
       when {
         expression {
@@ -108,7 +111,7 @@ pipeline {
         }
       }
       steps {
-        doCheckouts(mbd)
+        doCheckouts(mappedBuildData)
       }
     }
 
@@ -118,8 +121,13 @@ pipeline {
           return params.RUN_BUILDS
         }
       }
+      failFast true
       steps {
-        doBuilds(mbd)
+        timeout(time: Integer.valueOf(params.BUILD_TIMEOUT), unit: 'MINUTES') {
+          retry(Integer.valueOf(params.BUILD_RETRIES)) {
+            doBuilds(mappedBuildData)
+          }
+        }
       }
     }
 
@@ -129,15 +137,18 @@ pipeline {
           return params.RUN_UNIT_TESTS
         }
       }
+      failFast true
       steps {
-        doUnitTests(mbd)
+        timeout(time: 90, unit: 'MINUTES') {
+          doUnitTests(mappedBuildData)
+        }
       }
     }
 
     stage('Archive Test Results') {
       when {
         expression {
-          return params.RUN_UNIT_TESTS
+          return (params.RUN_UNIT_TESTS && !params.NOOP)
         }
       }
       steps {
@@ -145,10 +156,10 @@ pipeline {
       }
     }
 
-    stage('Archive Build Artifacts') {
+    stage('Archive Artifacts') {
       when {
         expression {
-          return params.ARCHIVE_ARTIFACTS
+          return (params.ARCHIVE_ARTIFACTS && !params.NOOP)
         }
       }
       steps {
@@ -156,5 +167,34 @@ pipeline {
       }
     }
 
+    stage('Clean Workspace') {
+      when {
+        expression {
+          return params.CLEAN_BUILD_WORKSPACE
+        }
+      }
+      steps {
+        deleteDir() /* clean up our workspace */
+      }
+    }
+  }
+
+// @TODO Put some notification stuff in here..chatops or whatever
+  post {
+    always {
+      echo 'One way or another, I have finished'
+    }
+    success {
+      echo 'I succeeeded!'
+    }
+    unstable {
+      echo 'I am unstable :/'
+    }
+    failure {
+      echo 'I failed :('
+    }
+    changed {
+      echo 'Things were different before...'
+    }
   }
 }
