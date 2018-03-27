@@ -1,8 +1,8 @@
-<div id="searchBox">
+<div id="searchBox" ng-class="{searching: vm.searching}">
   <input type="text"
       id="searchBoxId"
       placeholder="{{vm.placeholder}}"
-      ng-keyup="vm.onSearch({searchValue:vm.searchValue})"
+      ng-keyup="vm.doSearch($event)"
       ng-model="vm.searchValue"
       ng-blur="vm.blur()"
       ng-focus="vm.focus()"/>

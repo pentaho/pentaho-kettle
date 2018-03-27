@@ -1,4 +1,5 @@
-<div id="filesWrapper" class="filesWrapper" selected-file="vm.selectedFile" search-value="vm.search" resize-files="vm.folder.path">
+<loading ng-show="vm.loading" show-text="false"></loading>
+<div id="filesWrapper" class="filesWrapper" selected-file="vm.selectedFile" search-value="vm.search">
   <div id="headerWrapper" class="headerWrapper">
     <table class="headerTable">
       <thead>
@@ -37,11 +38,10 @@
       </thead>
     </table>
   </div>
-
-  <div id="bodyWrapper" class="bodyWrapper">
+  <div ng-hide="vm.loading" id="bodyWrapper" class="bodyWrapper">
     <table id="filesTableBody" ng-class="{searchTable: vm.search}">
       <tbody>
-      <tr ng-repeat="file in vm.getFiles(vm.folder.children) | orderBy: file: vm.sortReverse: vm.compareFiles "
+      <tr ng-repeat="file in vm.files | orderBy: file: vm.sortReverse: vm.compareFiles "
           ng-click="vm.selectFile(file)"
           ng-dblclick="vm.commitFile(file); $event.stopPropagation();"
           ng-class="{selected: vm.selectedFile === file}"

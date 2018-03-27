@@ -37,6 +37,7 @@ define([
 
   var options = {
     bindings: {
+      searching: '<',
       searchValue: '<',
       autofill: '<',
       placeholder: '<',
@@ -62,8 +63,15 @@ define([
     vm.clearSearch = clearSearch;
     vm.selectAutofill = selectAutofill;
     vm.showAutofill = showAutofill;
+    vm.doSearch = doSearch;
     vm.blur = blur;
     vm.focus = focus;
+
+    function doSearch(e) {
+      if (e.keyCode === 13) {
+        vm.onSearch({searchValue:vm.searchValue});
+      }
+    }
 
     /**
      * Clears the search value

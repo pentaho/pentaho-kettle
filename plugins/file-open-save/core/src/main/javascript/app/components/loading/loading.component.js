@@ -37,6 +37,9 @@ define([
 
   var options = {
     bindings: {
+      showText: '<',
+      title: '<',
+      message: '<'
     },
     controllerAs: "vm",
     template: template,
@@ -48,17 +51,6 @@ define([
    */
   function loadingController() {
     var vm = this;
-    vm.$onInit = onInit;
-
-    /**
-     * The $onInit hook of components lifecycle which is called on each controller
-     * after all the controllers on an element have been constructed and had their
-     * bindings initialized. We use this hook to put initialization code for our controller.
-     */
-    function onInit() {
-      vm.loadingTitle = i18n.get("file-open-save-plugin.loading.title");
-      vm.loadingMessage = i18n.get("file-open-save-plugin.loading.message");
-    }
   }
 
   return {
