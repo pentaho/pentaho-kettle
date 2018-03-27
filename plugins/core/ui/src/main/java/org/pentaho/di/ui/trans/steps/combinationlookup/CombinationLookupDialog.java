@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -55,6 +55,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.annotations.PluginDialog;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.SQLStatement;
 import org.pentaho.di.core.database.Database;
@@ -78,8 +79,10 @@ import org.pentaho.di.ui.core.widget.TextVar;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 import org.pentaho.di.ui.trans.step.TableItemInsertListener;
 
+@PluginDialog( id = "CombinationLookup", pluginType = PluginDialog.PluginType.STEP, image = "CMB.svg",
+  documentationUrl = "http://wiki.pentaho.com/display/EAI/Combination+lookup-update" )
 public class CombinationLookupDialog extends BaseStepDialog implements StepDialogInterface {
-  private static Class<?> PKG = CombinationLookupMeta.class; // for i18n purposes, needed by Translator2!!
+  private static Class<?> PKG = CombinationLookupDialog.class; // for i18n purposes, needed by Translator2!!
 
   private CCombo wConnection;
 
@@ -352,16 +355,16 @@ public class CombinationLookupDialog extends BaseStepDialog implements StepDialo
     int nrKeyCols = 2;
     int nrKeyRows = ( input.getKeyField() != null ? input.getKeyField().length : 1 );
 
-    ciKey = new ColumnInfo[nrKeyCols];
-    ciKey[0] =
+    ciKey = new ColumnInfo[ nrKeyCols ];
+    ciKey[ 0 ] =
       new ColumnInfo(
         BaseMessages.getString( PKG, "CombinationLookupDialog.ColumnInfo.DimensionField" ),
         ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false );
-    ciKey[1] =
+    ciKey[ 1 ] =
       new ColumnInfo(
         BaseMessages.getString( PKG, "CombinationLookupDialog.ColumnInfo.FieldInStream" ),
         ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false );
-    tableFieldColumns.add( ciKey[0] );
+    tableFieldColumns.add( ciKey[ 0 ] );
     wKey =
       new TableView(
         transMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL, ciKey,
@@ -477,7 +480,7 @@ public class CombinationLookupDialog extends BaseStepDialog implements StepDialo
     GridData gdTableMax = new GridData();
     wTableMax.setLayoutData( gdTableMax );
     wTableMax.setToolTipText( BaseMessages.getString(
-        PKG, "CombinationLookupDialog.TableMaximum.Tooltip", Const.CR ) );
+      PKG, "CombinationLookupDialog.TableMaximum.Tooltip", Const.CR ) );
     wlTableMax = new Label( gTechGroup, SWT.LEFT );
     wlTableMax.setText( BaseMessages.getString( PKG, "CombinationLookupDialog.TableMaximum.Label" ) );
     props.setLook( wlTableMax );
@@ -524,7 +527,7 @@ public class CombinationLookupDialog extends BaseStepDialog implements StepDialo
     GridData gdAutoinc = new GridData();
     wAutoinc.setLayoutData( gdAutoinc );
     wAutoinc.setToolTipText( BaseMessages.getString(
-        PKG, "CombinationLookupDialog.AutoincButton.Tooltip", Const.CR ) );
+      PKG, "CombinationLookupDialog.AutoincButton.Tooltip", Const.CR ) );
     wlAutoinc = new Label( gTechGroup, SWT.LEFT );
     wlAutoinc.setText( BaseMessages.getString( PKG, "CombinationLookupDialog.Autoincrement.Label" ) );
     props.setLook( wlAutoinc );
@@ -672,10 +675,10 @@ public class CombinationLookupDialog extends BaseStepDialog implements StepDialo
     Set<String> keySet = fields.keySet();
     List<String> entries = new ArrayList<String>( keySet );
 
-    String[] fieldNames = entries.toArray( new String[entries.size()] );
+    String[] fieldNames = entries.toArray( new String[ entries.size() ] );
     Const.sortStrings( fieldNames );
     // Key fields
-    ciKey[1].setComboValues( fieldNames );
+    ciKey[ 1 ].setComboValues( fieldNames );
   }
 
   public void enableFields() {
@@ -689,7 +692,7 @@ public class CombinationLookupDialog extends BaseStepDialog implements StepDialo
       public void run() {
         if ( !wTable.isDisposed() && !wConnection.isDisposed() && !wSchema.isDisposed() ) {
           final String tableName = wTable.getText(), connectionName = wConnection.getText(), schemaName =
-              wSchema.getText();
+            wSchema.getText();
 
           // clear
           for ( ColumnInfo colInfo : tableFieldColumns ) {
@@ -703,7 +706,7 @@ public class CombinationLookupDialog extends BaseStepDialog implements StepDialo
                 db.connect();
 
                 String schemaTable =
-                    ci.getQuotedSchemaTableCombination( transMeta.environmentSubstitute( schemaName ), transMeta
+                  ci.getQuotedSchemaTableCombination( transMeta.environmentSubstitute( schemaName ), transMeta
                     .environmentSubstitute( tableName ) );
                 RowMetaInterface r = db.getTableFields( schemaTable );
                 if ( null != r ) {
@@ -776,11 +779,11 @@ public class CombinationLookupDialog extends BaseStepDialog implements StepDialo
     if ( input.getKeyField() != null ) {
       for ( int i = 0; i < input.getKeyField().length; i++ ) {
         TableItem item = wKey.table.getItem( i );
-        if ( input.getKeyLookup()[i] != null ) {
-          item.setText( 1, input.getKeyLookup()[i] );
+        if ( input.getKeyLookup()[ i ] != null ) {
+          item.setText( 1, input.getKeyLookup()[ i ] );
         }
-        if ( input.getKeyField()[i] != null ) {
-          item.setText( 2, input.getKeyField()[i] );
+        if ( input.getKeyField()[ i ] != null ) {
+          item.setText( 2, input.getKeyField()[ i ] );
         }
       }
     }
@@ -900,8 +903,8 @@ public class CombinationLookupDialog extends BaseStepDialog implements StepDialo
     for ( int i = 0; i < nrkeys; i++ ) {
       TableItem item = wKey.getNonEmpty( i );
       //CHECKSTYLE:Indentation:OFF
-      in.getKeyLookup()[i] = item.getText( 1 );
-      in.getKeyField()[i] = item.getText( 2 );
+      in.getKeyLookup()[ i ] = item.getText( 1 );
+      in.getKeyField()[ i ] = item.getText( 2 );
     }
 
     in.setPreloadCache( wPreloadCache.getSelection() );

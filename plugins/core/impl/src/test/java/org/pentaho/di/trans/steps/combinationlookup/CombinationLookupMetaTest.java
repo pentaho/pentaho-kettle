@@ -60,9 +60,9 @@ public class CombinationLookupMetaTest implements InitializerInterface<StepMetaI
   public void setUpLoadSave() throws Exception {
     KettleEnvironment.init();
     List<String> attributes =
-        Arrays.asList( "schemaName", "tableName", "databaseMeta", "replaceFields", "keyField", "keyLookup",
-            "useHash", "hashField", "technicalKeyField", "sequenceFrom", "commitSize", "preloadCache", "cacheSize",
-            "useAutoinc", "techKeyCreation", "lastUpdateField" );
+      Arrays.asList( "schemaName", "tableName", "databaseMeta", "replaceFields", "keyField", "keyLookup",
+        "useHash", "hashField", "technicalKeyField", "sequenceFrom", "commitSize", "preloadCache", "cacheSize",
+        "useAutoinc", "techKeyCreation", "lastUpdateField" );
 
     Map<String, String> getterMap = new HashMap<String, String>() {
       {
@@ -76,7 +76,7 @@ public class CombinationLookupMetaTest implements InitializerInterface<StepMetaI
       }
     };
     FieldLoadSaveValidator<String[]> stringArrayLoadSaveValidator =
-        new ArrayLoadSaveValidator<String>( new StringLoadSaveValidator(), 5 );
+      new ArrayLoadSaveValidator<String>( new StringLoadSaveValidator(), 5 );
 
 
     Map<String, FieldLoadSaveValidator<?>> attrValidatorMap = new HashMap<String, FieldLoadSaveValidator<?>>();
@@ -87,8 +87,8 @@ public class CombinationLookupMetaTest implements InitializerInterface<StepMetaI
     Map<String, FieldLoadSaveValidator<?>> typeValidatorMap = new HashMap<String, FieldLoadSaveValidator<?>>();
 
     loadSaveTester =
-        new LoadSaveTester( testMetaClass, attributes, new ArrayList<String>(), new ArrayList<String>(),
-            getterMap, setterMap, attrValidatorMap, typeValidatorMap, this );
+      new LoadSaveTester( testMetaClass, attributes, new ArrayList<String>(), new ArrayList<String>(),
+        getterMap, setterMap, attrValidatorMap, typeValidatorMap, this );
   }
 
   // Call the allocate method on the LoadSaveTester meta class
@@ -158,7 +158,7 @@ public class CombinationLookupMetaTest implements InitializerInterface<StepMetaI
     //run without a exception
     String ktrXml = combinationLookup.getXML();
 
-    Assert.assertEquals( combinationLookup.getKeyField().length, combinationLookup.getKeyLookup().length );
+    assertEquals( combinationLookup.getKeyField().length, combinationLookup.getKeyLookup().length );
 
   }
 

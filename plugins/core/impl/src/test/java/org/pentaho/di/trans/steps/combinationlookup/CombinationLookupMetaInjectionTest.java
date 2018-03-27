@@ -55,12 +55,12 @@ public class CombinationLookupMetaInjectionTest extends BaseMetadataInjectionTes
     } );
     check( "KEY_FIELDS", new StringGetter() {
       public String get() {
-        return meta.getKeyField()[0];
+        return meta.getKeyField()[ 0 ];
       }
     } );
     check( "KEY_LOOKUP", new StringGetter() {
       public String get() {
-        return meta.getKeyLookup()[0];
+        return meta.getKeyLookup()[ 0 ];
       }
     } );
     check( "USE_HASH", new BooleanGetter() {
