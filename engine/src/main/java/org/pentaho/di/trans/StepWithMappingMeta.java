@@ -194,8 +194,10 @@ public abstract class StepWithMappingMeta extends BaseSerializingMeta implements
     Map<String, String> parameters = new HashMap<>();
     Set<String> subTransParameters = new HashSet<>( Arrays.asList( listParameters ) );
 
-    for ( int i = 0; i < mappingVariables.length; i++ ) {
-      parameters.put( mappingVariables[ i ], parent.environmentSubstitute( inputFields[ i ] ) );
+    if ( mappingVariables != null ) {
+      for ( int i = 0; i < mappingVariables.length; i++ ) {
+        parameters.put( mappingVariables[ i ], parent.environmentSubstitute( inputFields[ i ] ) );
+      }
     }
 
     for ( String variableName : parent.listVariables() ) {
