@@ -105,10 +105,15 @@ define(
          *
          * @param {String} path - The path to which to save file
          * @param {String} name - The file name
+         * @param {String} fileName - Possible dupe file name...needed to verify possible dupe on back end
+         * @param {String} override - true to override, false to not
          * @return {Promise} - a promise resolved once data is returned
          */
-        function saveFile(path, name) {
-          return _httpGet([baseUrl, "saveFile", encodeURIComponent(path), name].join("/"));
+        function saveFile(path, name, fileName, override) {
+          if (fileName === null) {
+            return _httpGet([baseUrl, "saveFile", encodeURIComponent(path), name, override].join("/"));
+          }
+          return _httpGet([baseUrl, "saveFile", encodeURIComponent(path), name, fileName, override].join("/"));
         }
 
         /**
@@ -116,10 +121,17 @@ define(
          *
          * @param {String} path - The path to which to save file
          * @param {String} name - The file name
+         * @param {String} fileName - Possible dupe file name...needed to verify possible dupe on back end
+         * @param {String} override - true to override, false to not
          * @return {Promise} - a promise resolved once data is returned
          */
-        function checkForSecurityOrDupeIssues(path, name) {
-          return _httpGet([baseUrl, "checkForSecurityOrDupeIssues", encodeURIComponent(path), name].join("/"));
+        function checkForSecurityOrDupeIssues(path, name, fileName, override) {
+          if (fileName === null) {
+            return _httpGet([baseUrl, "checkForSecurityOrDupeIssues",
+              encodeURIComponent(path), name, override].join("/"));
+          }
+          return _httpGet([baseUrl, "checkForSecurityOrDupeIssues",
+            encodeURIComponent(path), name, fileName, override].join("/"));
         }
 
         /**

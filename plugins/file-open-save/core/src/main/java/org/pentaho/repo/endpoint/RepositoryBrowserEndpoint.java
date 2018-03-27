@@ -98,19 +98,46 @@ public class RepositoryBrowserEndpoint {
   }
 
   @GET
-  @Path( "/saveFile/{path}/{name}" )
-  public Response saveFile( @PathParam( "path" ) String path, @PathParam( "name" ) String name ) {
-    if ( repositoryBrowserController.saveFile( path, name ) ) {
+  @Path( "/saveFile/{path}/{name}/{fileName}/{override}" )
+  public Response saveFile( @PathParam( "path" ) String path, @PathParam( "name" ) String name,
+                            @PathParam( "fileName" ) String fileName,
+                            @PathParam( "override" ) String override ) {
+    boolean overwrite = override != null && override.toLowerCase().equals( "true" );
+    if ( repositoryBrowserController.saveFile( path, name, fileName, overwrite ) ) {
       return Response.ok().build();
     }
-
     return Response.noContent().build();
   }
 
   @GET
-  @Path( "/checkForSecurityOrDupeIssues/{path}/{name}" )
-  public Response checkForSecurityOrDupeIssues( @PathParam( "path" ) String path, @PathParam( "name" ) String name ) {
-    if ( repositoryBrowserController.checkForSecurityOrDupeIssues( path, name ) ) {
+  @Path( "/saveFile/{path}/{name}/{override}" )
+  public Response saveFile( @PathParam( "path" ) String path, @PathParam( "name" ) String name,
+                            @PathParam( "override" ) String override ) {
+    boolean overwrite = override != null && override.toLowerCase().equals( "true" );
+    if ( repositoryBrowserController.saveFile( path, name, "", overwrite ) ) {
+      return Response.ok().build();
+    }
+    return Response.noContent().build();
+  }
+
+  @GET
+  @Path( "/checkForSecurityOrDupeIssues/{path}/{name}/{fileName}/{override}" )
+  public Response checkForSecurityOrDupeIssues( @PathParam( "path" ) String path, @PathParam( "name" ) String name,
+                                                @PathParam( "fileName" ) String fileName,
+                                                @PathParam( "override" ) String override ) {
+    boolean overwrite = override != null && override.toLowerCase().equals( "true" );
+    if ( repositoryBrowserController.checkForSecurityOrDupeIssues( path, name, fileName, overwrite ) ) {
+      return Response.ok().build();
+    }
+    return Response.noContent().build();
+  }
+
+  @GET
+  @Path( "/checkForSecurityOrDupeIssues/{path}/{name}/{override}" )
+  public Response checkForSecurityOrDupeIssues( @PathParam( "path" ) String path, @PathParam( "name" ) String name,
+                                                @PathParam( "override" ) String override ) {
+    boolean overwrite = override != null && override.toLowerCase().equals( "true" );
+    if ( repositoryBrowserController.checkForSecurityOrDupeIssues( path, name, "", overwrite ) ) {
       return Response.ok().build();
     }
     return Response.noContent().build();

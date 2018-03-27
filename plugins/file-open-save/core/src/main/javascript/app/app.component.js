@@ -429,23 +429,25 @@ define([
      * @private
      */
     function _save(override) {
-      if (!_isDuplicate() || override) {
+      if (override || !_isDuplicate()) {
         try {
-          dt.checkForSecurityOrDupeIssues(vm.folder.path, vm.fileToSave).then(function(response) {
-            if (response.status === 200) {
-              select("", vm.fileToSave, vm.folder.path, "");
-            } else {
-              _triggerError(3);
-            }
-          });
+          dt.checkForSecurityOrDupeIssues(vm.folder.path, vm.fileToSave, vm.file === null ? null : vm.file.name,
+            override).then(function(response) {
+              if (response.status === 200) {
+                select("", vm.fileToSave, vm.folder.path, "");
+              } else {
+                _triggerError(3);
+              }
+            });
         } catch (e) {
-          dt.saveFile(vm.folder.path, vm.fileToSave).then(function(response) {
-            if (response.status === 200) {
-              _closeBrowser();
-            } else {
-              _triggerError(3);
-            }
-          });
+          dt.saveFile(vm.folder.path, vm.fileToSave, vm.file === null ? null : vm.file.name, override)
+            .then(function(response) {
+              if (response.status === 200) {
+                _closeBrowser();
+              } else {
+                _triggerError(3);
+              }
+            });
         }
       } else {
         _triggerError(1);
