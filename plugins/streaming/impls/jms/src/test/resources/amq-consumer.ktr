@@ -440,7 +440,7 @@
   </order>
   <step>
     <name>JMS Consumer</name>
-    <type>JmsConsumer</type>
+    <type>Jms2Consumer</type>
     <description />
     <distribute>Y</distribute>
     <custom_distribution />
