@@ -127,7 +127,7 @@ public class CsvInputEnclosureTest extends CsvInputUnitTestBase {
       CsvInputData data = new CsvInputData();
       csvInput.init( meta, data );
 
-      csvInput.getOutputRowSets().add( output );
+      csvInput.addRowSetToOutputRowSets( output );
 
       try {
         csvInput.processRow( meta, data );

@@ -469,4 +469,12 @@ public interface StepInterface extends VariableSpace, HasLogChannelInterface {
     return Collections.emptyList();
   }
 
+  default void addRowSetToInputRowSets( RowSet rowSet ) {
+    getInputRowSets().add( rowSet );
+  }
+
+  default void addRowSetToOutputRowSets( RowSet rowSet ) {
+    getOutputRowSets().add( rowSet );
+  }
+
 }

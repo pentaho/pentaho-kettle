@@ -34,7 +34,6 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Hashtable;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -165,7 +164,7 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
 
   private Trans trans;
 
-  private Object statusCountersLock = new Object();
+  private final Object statusCountersLock = new Object();
 
   /**
    * nr of lines read from previous step(s)
@@ -242,10 +241,14 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
    */
   private List<RowSet> inputRowSets;
 
+  private final Object inputRowSetsLock = new Object();
+
   /**
    * the rowsets on the output, size() == nr of target steps
    */
   private List<RowSet> outputRowSets;
+
+  private final Object outputRowSetsLock = new Object();
 
   /**
    * The remote input steps.
@@ -1310,44 +1313,42 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
       }
     }
 
-    if ( outputRowSets.isEmpty() ) {
-      // No more output rowsets!
-      // Still update the nr of lines written.
+    synchronized ( outputRowSetsLock ) {
+      if ( outputRowSets.isEmpty() ) {
+        // No more output rowsets!
+        // Still update the nr of lines written.
+        //
+        incrementLinesWritten();
+
+        return; // we're done here!
+      }
+
+      // Repartitioning happens when the current step is not partitioned, but the next one is.
+      // That means we need to look up the partitioning information in the next step..
+      // If there are multiple steps, we need to look at the first (they should be all the same)
       //
-      incrementLinesWritten();
+      switch ( repartitioning ) {
+        case StepPartitioningMeta.PARTITIONING_METHOD_NONE:
+          noPartitioning( rowMeta, row );
+          break;
 
-      return; // we're done here!
-    }
-
-    // Repartitioning happens when the current step is not partitioned, but the next one is.
-    // That means we need to look up the partitioning information in the next step..
-    // If there are multiple steps, we need to look at the first (they should be all the same)
-    //
-    switch ( repartitioning ) {
-      case StepPartitioningMeta.PARTITIONING_METHOD_NONE:
-        noPartitioning( rowMeta, row );
-        break;
-
-      case StepPartitioningMeta.PARTITIONING_METHOD_SPECIAL:
-        specialPartitioning( rowMeta, row );
-        break;
-      case StepPartitioningMeta.PARTITIONING_METHOD_MIRROR:
-        mirrorPartitioning( rowMeta, row );
-        break;
-      default:
-        throw new KettleStepException( "Internal error: invalid repartitioning type: " + repartitioning );
+        case StepPartitioningMeta.PARTITIONING_METHOD_SPECIAL:
+          specialPartitioning( rowMeta, row );
+          break;
+        case StepPartitioningMeta.PARTITIONING_METHOD_MIRROR:
+          mirrorPartitioning( rowMeta, row );
+          break;
+        default:
+          throw new KettleStepException( "Internal error: invalid repartitioning type: " + repartitioning );
+      }
     }
   }
 
   /**
    * Copy always to all target steps/copies
-   *
-   * @param rowMeta
-   * @param row
    */
   private void mirrorPartitioning( RowMetaInterface rowMeta, Object[] row ) {
-    for ( int r = 0; r < outputRowSets.size(); r++ ) {
-      RowSet rowSet = outputRowSets.get( r );
+    for ( RowSet rowSet : outputRowSets ) {
       putRowToRowSet( rowSet, rowMeta, row );
     }
   }
@@ -1750,33 +1751,33 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
    */
   @VisibleForTesting
   RowSet currentInputStream() {
-    return inputRowSets.get( currentInputRowSetNr );
+    synchronized ( inputRowSetsLock ) {
+      return inputRowSets.get( currentInputRowSetNr );
+    }
   }
 
   /**
    * Find the next not-finished input-stream... in_handling says which one...
    */
   private void nextInputStream() {
-    synchronized ( inputRowSets ) {
-      blockPointer = 0;
+    blockPointer = 0;
 
-      int streams = inputRowSets.size();
+    int streams = inputRowSets.size();
 
-      // No more streams left: exit!
-      if ( streams == 0 ) {
-        return;
-      }
+    // No more streams left: exit!
+    if ( streams == 0 ) {
+      return;
+    }
 
-      // Just the one rowSet (common case)
-      if ( streams == 1 ) {
-        currentInputRowSetNr = 0;
-      }
+    // Just the one rowSet (common case)
+    if ( streams == 1 ) {
+      currentInputRowSetNr = 0;
+    }
 
-      // If we have some left: take the next!
-      currentInputRowSetNr++;
-      if ( currentInputRowSetNr >= inputRowSets.size() ) {
-        currentInputRowSetNr = 0;
-      }
+    // If we have some left: take the next!
+    currentInputRowSetNr++;
+    if ( currentInputRowSetNr >= streams ) {
+      currentInputRowSetNr = 0;
     }
   }
 
@@ -1839,106 +1840,109 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
     //
     openRemoteInputStepSocketsOnce();
 
-    // If everything is finished, we can stop immediately!
-    //
-    if ( inputRowSets.isEmpty() ) {
-      return null;
-    }
-
     RowSet inputRowSet = null;
     Object[] row = null;
 
-    // Do we need to switch to the next input stream?
-    if ( blockPointer >= NR_OF_ROWS_IN_BLOCK ) {
+    synchronized ( inputRowSetsLock ) {
 
-      // Take a peek at the next input stream.
-      // If there is no data, process another NR_OF_ROWS_IN_BLOCK on the next
-      // input stream.
-      //
-      for ( int r = 0; r < inputRowSets.size() && row == null; r++ ) {
-        nextInputStream();
-        inputRowSet = currentInputStream();
-        row = inputRowSet.getRowImmediate();
-      }
-      if ( row != null ) {
-        incrementLinesRead();
-      }
-    } else {
-      // What's the current input stream?
-      inputRowSet = currentInputStream();
-    }
-
-    // To reduce stress on the locking system we are going to allow
-    // The buffer to grow beyond "a few" entries.
-    // We'll only do that if the previous step has not ended...
-    //
-    if ( isUsingThreadPriorityManagment()
-      && !inputRowSet.isDone() && inputRowSet.size() <= lowerBufferBoundary && !isStopped() ) {
-      try {
-        Thread.sleep( 0, 1 );
-      } catch ( InterruptedException e ) {
-        // Ignore sleep interruption exception
-      }
-    }
-
-    // See if this step is receiving partitioned data...
-    // In that case it might be the case that one input row set is receiving
-    // all data and
-    // the other rowsets nothing. (repartitioning on the same key would do
-    // that)
-    //
-    // We never guaranteed that the input rows would be read one by one
-    // alternatively.
-    // So in THIS particular case it is safe to just read 100 rows from one
-    // rowset, then switch to another etc.
-    // We can use timeouts to switch from one to another...
-    //
-    while ( row == null && !isStopped() ) {
-      // Get a row from the input in row set ...
-      // Timeout immediately if nothing is there to read.
-      // We will then switch to the next row set to read from...
-      //
-      row = inputRowSet.getRowWait( 1, TimeUnit.MILLISECONDS );
-      if ( row != null ) {
-        incrementLinesRead();
-        blockPointer++;
-      } else {
-        // Try once more...
-        // If row is still empty and the row set is done, we remove the row
-        // set from
-        // the input stream and move on to the next one...
-        //
-        if ( inputRowSet.isDone() ) {
-          row = inputRowSet.getRowWait( 1, TimeUnit.MILLISECONDS );
-          if ( row == null ) {
-            inputRowSets.remove( currentInputRowSetNr );
-            if ( inputRowSets.isEmpty() ) {
-              return null; // We're completely done.
-            }
-          } else {
-            incrementLinesRead();
-          }
-        }
-        nextInputStream();
-        inputRowSet = currentInputStream();
-      }
-    }
-
-    // This rowSet is perhaps no longer giving back rows?
-    //
-    while ( row == null && !stopped.get() ) {
-      // Try the next input row set(s) until we find a row set that still has
-      // rows...
-      // The getRowFrom() method removes row sets from the input row sets
-      // list.
+      // If everything is finished, we can stop immediately!
       //
       if ( inputRowSets.isEmpty() ) {
-        return null; // We're done.
+        return null;
       }
 
-      nextInputStream();
-      inputRowSet = currentInputStream();
-      row = getRowFrom( inputRowSet );
+      // Do we need to switch to the next input stream?
+      if ( blockPointer >= NR_OF_ROWS_IN_BLOCK ) {
+
+        // Take a peek at the next input stream.
+        // If there is no data, process another NR_OF_ROWS_IN_BLOCK on the next
+        // input stream.
+        //
+        for ( int r = 0; r < inputRowSets.size() && row == null; r++ ) {
+          nextInputStream();
+          inputRowSet = currentInputStream();
+          row = inputRowSet.getRowImmediate();
+        }
+        if ( row != null ) {
+          incrementLinesRead();
+        }
+      } else {
+        // What's the current input stream?
+        inputRowSet = currentInputStream();
+      }
+
+      // To reduce stress on the locking system we are going to allow
+      // The buffer to grow beyond "a few" entries.
+      // We'll only do that if the previous step has not ended...
+      //
+      if ( isUsingThreadPriorityManagment()
+        && !inputRowSet.isDone() && inputRowSet.size() <= lowerBufferBoundary && !isStopped() ) {
+        try {
+          Thread.sleep( 0, 1 );
+        } catch ( InterruptedException e ) {
+          // Ignore sleep interruption exception
+        }
+      }
+
+      // See if this step is receiving partitioned data...
+      // In that case it might be the case that one input row set is receiving
+      // all data and
+      // the other rowsets nothing. (repartitioning on the same key would do
+      // that)
+      //
+      // We never guaranteed that the input rows would be read one by one
+      // alternatively.
+      // So in THIS particular case it is safe to just read 100 rows from one
+      // rowset, then switch to another etc.
+      // We can use timeouts to switch from one to another...
+      //
+      while ( row == null && !isStopped() ) {
+        // Get a row from the input in row set ...
+        // Timeout immediately if nothing is there to read.
+        // We will then switch to the next row set to read from...
+        //
+        row = inputRowSet.getRowWait( 1, TimeUnit.MILLISECONDS );
+        if ( row != null ) {
+          incrementLinesRead();
+          blockPointer++;
+        } else {
+          // Try once more...
+          // If row is still empty and the row set is done, we remove the row
+          // set from
+          // the input stream and move on to the next one...
+          //
+          if ( inputRowSet.isDone() ) {
+            row = inputRowSet.getRowWait( 1, TimeUnit.MILLISECONDS );
+            if ( row == null ) {
+              inputRowSets.remove( currentInputRowSetNr );
+              if ( inputRowSets.isEmpty() ) {
+                return null; // We're completely done.
+              }
+            } else {
+              incrementLinesRead();
+            }
+          }
+          nextInputStream();
+          inputRowSet = currentInputStream();
+        }
+      }
+
+      // This rowSet is perhaps no longer giving back rows?
+      //
+      while ( row == null && !stopped.get() ) {
+        // Try the next input row set(s) until we find a row set that still has
+        // rows...
+        // The getRowFrom() method removes row sets from the input row sets
+        // list.
+        //
+        if ( inputRowSets.isEmpty() ) {
+          return null; // We're done.
+        }
+
+        nextInputStream();
+        inputRowSet = currentInputStream();
+        row = getRowFrom( inputRowSet );
+      }
     }
 
     // Also set the meta data on the first occurrence.
@@ -1998,12 +2002,14 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
         // Just be careful in case we're dealing with a partitioned clustered step.
         // A partitioned clustered step has only one. (see dispatch())
         //
-        for ( RemoteStep remoteStep : remoteInputSteps ) {
-          try {
-            BlockingRowSet rowSet = remoteStep.openReaderSocket( this );
-            inputRowSets.add( rowSet );
-          } catch ( Exception e ) {
-            throw new KettleStepException( "Error opening reader socket to remote step '" + remoteStep + "'", e );
+        synchronized ( inputRowSetsLock ) {
+          for ( RemoteStep remoteStep : remoteInputSteps ) {
+            try {
+              BlockingRowSet rowSet = remoteStep.openReaderSocket( this );
+              inputRowSets.add( rowSet );
+            } catch ( Exception e ) {
+              throw new KettleStepException( "Error opening reader socket to remote step '" + remoteStep + "'", e );
+            }
           }
         }
         remoteInputStepsInitialized = true;
@@ -2023,33 +2029,34 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
     if ( !remoteOutputSteps.isEmpty() ) {
       if ( !remoteOutputStepsInitialized ) {
 
-        // Set the current slave target name on all the current output steps (local)
-        //
-        for ( int c = 0; c < outputRowSets.size(); c++ ) {
-          RowSet rowSet = outputRowSets.get( c );
-          rowSet.setRemoteSlaveServerName( getVariable( Const.INTERNAL_VARIABLE_SLAVE_SERVER_NAME ) );
-          if ( getVariable( Const.INTERNAL_VARIABLE_SLAVE_SERVER_NAME ) == null ) {
-            throw new KettleStepException( "Variable '"
-              + Const.INTERNAL_VARIABLE_SLAVE_SERVER_NAME + "' is not defined." );
+        synchronized ( outputRowSetsLock ) {
+          // Set the current slave target name on all the current output steps (local)
+          //
+          for ( int c = 0; c < outputRowSets.size(); c++ ) {
+            RowSet rowSet = outputRowSets.get( c );
+            rowSet.setRemoteSlaveServerName( getVariable( Const.INTERNAL_VARIABLE_SLAVE_SERVER_NAME ) );
+            if ( getVariable( Const.INTERNAL_VARIABLE_SLAVE_SERVER_NAME ) == null ) {
+              throw new KettleStepException( "Variable '"
+                + Const.INTERNAL_VARIABLE_SLAVE_SERVER_NAME + "' is not defined." );
+            }
           }
-        }
 
-        // Start threads: one per remote step to funnel the data through...
-        //
-        for ( int i = 0; i < remoteOutputSteps.size(); i++ ) {
-          RemoteStep remoteStep = remoteOutputSteps.get( i );
-          try {
-            if ( remoteStep.getTargetSlaveServerName() == null ) {
-              throw new KettleStepException(
-                "The target slave server name is not defined for remote output step: " + remoteStep );
+          // Start threads: one per remote step to funnel the data through...
+          //
+          for ( RemoteStep remoteStep : remoteOutputSteps ) {
+            try {
+              if ( remoteStep.getTargetSlaveServerName() == null ) {
+                throw new KettleStepException(
+                  "The target slave server name is not defined for remote output step: " + remoteStep );
+              }
+              BlockingRowSet rowSet = remoteStep.openWriterSocket();
+              if ( log.isDetailed() ) {
+                logDetailed( BaseMessages.getString( PKG, "BaseStep.Log.OpenedWriterSocketToRemoteStep", remoteStep ) );
+              }
+              outputRowSets.add( rowSet );
+            } catch ( IOException e ) {
+              throw new KettleStepException( "Error opening writer socket to remote step '" + remoteStep + "'", e );
             }
-            BlockingRowSet rowSet = remoteStep.openWriterSocket();
-            if ( log.isDetailed() ) {
-              logDetailed( BaseMessages.getString( PKG, "BaseStep.Log.OpenedWriterSocketToRemoteStep", remoteStep ) );
-            }
-            outputRowSets.add( rowSet );
-          } catch ( IOException e ) {
-            throw new KettleStepException( "Error opening writer socket to remote step '" + remoteStep + "'", e );
           }
         }
 
@@ -2096,15 +2103,16 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
   public void identifyErrorOutput() {
     if ( stepMeta.isDoingErrorHandling() ) {
       StepErrorMeta stepErrorMeta = stepMeta.getStepErrorMeta();
-      boolean stop = false;
-      for ( int rowsetNr = 0; rowsetNr < outputRowSets.size() && !stop; rowsetNr++ ) {
-        RowSet outputRowSet = outputRowSets.get( rowsetNr );
-        if ( outputRowSet.getDestinationStepName().equalsIgnoreCase( stepErrorMeta.getTargetStep().getName() ) ) {
-          // This is the rowset to move!
-          //
-          errorRowSet = outputRowSet;
-          outputRowSets.remove( rowsetNr );
-          stop = true;
+      synchronized ( outputRowSetsLock ) {
+        for ( int rowsetNr = 0; rowsetNr < outputRowSets.size(); rowsetNr++ ) {
+          RowSet outputRowSet = outputRowSets.get( rowsetNr );
+          if ( outputRowSet.getDestinationStepName().equalsIgnoreCase( stepErrorMeta.getTargetStep().getName() ) ) {
+            // This is the rowset to move!
+            //
+            errorRowSet = outputRowSet;
+            outputRowSets.remove( rowsetNr );
+            return;
+          }
         }
       }
     }
@@ -2240,8 +2248,10 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
       //
       rowData = rowSet.getRow();
       if ( rowData == null ) {
-        inputRowSets.remove( rowSet );
-        return null;
+        synchronized ( inputRowSetsLock ) {
+          inputRowSets.remove( rowSet );
+          return null;
+        }
       }
     }
     incrementLinesRead();
@@ -2267,14 +2277,11 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
   protected void verifyInputDeadLock() throws KettleStepException {
     RowSet inputFull = null;
     RowSet inputEmpty = null;
-    synchronized ( getInputRowSets() ) {
-      for ( Iterator<RowSet> iterator = getInputRowSets().iterator(); iterator.hasNext(); ) {
-        RowSet rowSet = iterator.next();
-        if ( rowSet.size() == transMeta.getSizeRowset() ) {
-          inputFull = rowSet;
-        } else if ( rowSet.size() == 0 ) {
-          inputEmpty = rowSet;
-        }
+    for ( RowSet rowSet : getInputRowSets() ) {
+      if ( rowSet.size() == transMeta.getSizeRowset() ) {
+        inputFull = rowSet;
+      } else if ( rowSet.size() == 0 ) {
+        inputEmpty = rowSet;
       }
     }
     if ( inputFull != null && inputEmpty != null ) {
@@ -2284,24 +2291,21 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
       // - one output is empty
       for ( StepMetaDataCombi combi : trans.getSteps() ) {
         int inputSize = 0;
-        int totalSize = combi.step.getInputRowSets().size() * transMeta.getSizeRowset();
-        synchronized ( combi.step.getInputRowSets() ) {
-          for ( Iterator<RowSet> iterator = getInputRowSets().iterator(); iterator.hasNext(); ) {
-            RowSet rowSet = iterator.next();
-            inputSize += rowSet.size();
-          }
+        List<RowSet> combiInputRowSets = combi.step.getInputRowSets();
+        int totalSize = combiInputRowSets.size() * transMeta.getSizeRowset();
+        for ( RowSet rowSet : combiInputRowSets ) {
+          inputSize += rowSet.size();
         }
         // All full probably means a stalled step.
-        if ( inputSize > 0 && inputSize == totalSize && combi.step.getOutputRowSets().size() > 1 ) {
+        List<RowSet> combiOutputRowSets = combi.step.getOutputRowSets();
+        if ( inputSize > 0 && inputSize == totalSize && combiOutputRowSets.size() > 1 ) {
           RowSet outputFull = null;
           RowSet outputEmpty = null;
-          synchronized ( combi.step.getOutputRowSets() ) {
-            for ( RowSet rowSet : combi.step.getOutputRowSets() ) {
-              if ( rowSet.size() == transMeta.getSizeRowset() ) {
-                outputFull = rowSet;
-              } else if ( rowSet.size() == 0 ) {
-                outputEmpty = rowSet;
-              }
+          for ( RowSet rowSet : combiOutputRowSets ) {
+            if ( rowSet.size() == transMeta.getSizeRowset() ) {
+              outputFull = rowSet;
+            } else if ( rowSet.size() == 0 ) {
+              outputEmpty = rowSet;
             }
           }
           if ( outputFull != null && outputEmpty != null ) {
@@ -2354,11 +2358,13 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
    * @return the row set
    */
   public RowSet findInputRowSet( String from, int fromcopy, String to, int tocopy ) {
-    for ( RowSet rs : inputRowSets ) {
-      if ( rs.getOriginStepName().equalsIgnoreCase( from )
-        && rs.getDestinationStepName().equalsIgnoreCase( to ) && rs.getOriginStepCopy() == fromcopy
-        && rs.getDestinationStepCopy() == tocopy ) {
-        return rs;
+    synchronized ( inputRowSetsLock ) {
+      for ( RowSet rs : inputRowSets ) {
+        if ( rs.getOriginStepName().equalsIgnoreCase( from )
+          && rs.getDestinationStepName().equalsIgnoreCase( to ) && rs.getOriginStepCopy() == fromcopy
+          && rs.getDestinationStepCopy() == tocopy ) {
+          return rs;
+        }
       }
     }
 
@@ -2435,11 +2441,13 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
    * @return The rowset or null if none is found.
    */
   public RowSet findOutputRowSet( String from, int fromcopy, String to, int tocopy ) {
-    for ( RowSet rs : outputRowSets ) {
-      if ( rs.getOriginStepName().equalsIgnoreCase( from )
-        && rs.getDestinationStepName().equalsIgnoreCase( to ) && rs.getOriginStepCopy() == fromcopy
-        && rs.getDestinationStepCopy() == tocopy ) {
-        return rs;
+    synchronized ( outputRowSetsLock ) {
+      for ( RowSet rs : outputRowSets ) {
+        if ( rs.getOriginStepName().equalsIgnoreCase( from )
+          && rs.getDestinationStepName().equalsIgnoreCase( to ) && rs.getOriginStepCopy() == fromcopy
+          && rs.getDestinationStepCopy() == tocopy ) {
+          return rs;
+        }
       }
     }
 
@@ -2491,12 +2499,11 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
    */
   @Override
   public void setOutputDone() {
-    if ( log.isDebug() ) {
-      logDebug( BaseMessages.getString( PKG, "BaseStep.Log.OutputDone", String.valueOf( outputRowSets.size() ) ) );
-    }
-    synchronized ( outputRowSets ) {
-      for ( int i = 0; i < outputRowSets.size(); i++ ) {
-        RowSet rs = outputRowSets.get( i );
+    synchronized ( outputRowSetsLock ) {
+      if ( log.isDebug() ) {
+        logDebug( BaseMessages.getString( PKG, "BaseStep.Log.OutputDone", String.valueOf( outputRowSets.size() ) ) );
+      }
+      for ( RowSet rs : outputRowSets ) {
         rs.setDone();
       }
       if ( errorRowSet != null ) {
@@ -2538,183 +2545,188 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
     int nrInput = previousSteps.size();
     int nrOutput = succeedingSteps.size();
 
-    inputRowSets = new ArrayList<RowSet>();
-    outputRowSets = new ArrayList<RowSet>();
-    errorRowSet = null;
-    prevSteps = new StepMeta[ nrInput ];
-    nextSteps = new StepMeta[ nrOutput ];
+    synchronized ( inputRowSetsLock ) {
+      synchronized ( outputRowSetsLock ) {
+        inputRowSets = new ArrayList<>();
+        outputRowSets = new ArrayList<>();
 
-    currentInputRowSetNr = 0; // we start with input[0];
+        errorRowSet = null;
+        prevSteps = new StepMeta[ nrInput ];
+        nextSteps = new StepMeta[ nrOutput ];
 
-    if ( log.isDetailed() ) {
-      logDetailed( BaseMessages.getString( PKG, "BaseStep.Log.StepInfo", String.valueOf( nrInput ), String
-        .valueOf( nrOutput ) ) );
-    }
-    // populate input rowsets.
-    for ( int i = 0; i < previousSteps.size(); i++ ) {
-      prevSteps[ i ] = previousSteps.get( i );
-      if ( log.isDetailed() ) {
-        logDetailed( BaseMessages.getString(
-          PKG, "BaseStep.Log.GotPreviousStep", stepname, String.valueOf( i ), prevSteps[ i ].getName() ) );
-      }
+        currentInputRowSetNr = 0; // we start with input[0];
 
-      // Looking at the previous step, you can have either 1 rowset to look at or more then one.
-      int prevCopies = prevSteps[ i ].getCopies();
-      int nextCopies = stepMeta.getCopies();
-      if ( log.isDetailed() ) {
-        logDetailed( BaseMessages.getString(
-          PKG, "BaseStep.Log.InputRowInfo", String.valueOf( prevCopies ), String.valueOf( nextCopies ) ) );
-      }
-
-      int nrCopies;
-      int dispatchType;
-      boolean repartitioning;
-      if ( prevSteps[ i ].isPartitioned() ) {
-        repartitioning = !prevSteps[ i ].getStepPartitioningMeta()
-          .equals( stepMeta.getStepPartitioningMeta() );
-      } else {
-        repartitioning = stepMeta.isPartitioned();
-      }
-
-      if ( prevCopies == 1 && nextCopies == 1 ) {
-        // normal hop
-        dispatchType = Trans.TYPE_DISP_1_1;
-        nrCopies = 1;
-      } else if ( prevCopies == 1 && nextCopies > 1 ) {
-        // one to many hop
-        dispatchType = Trans.TYPE_DISP_1_N;
-        nrCopies = 1;
-      } else if ( prevCopies > 1 && nextCopies == 1 ) {
-        // from many to one hop
-        dispatchType = Trans.TYPE_DISP_N_1;
-        nrCopies = prevCopies;
-      } else if ( prevCopies == nextCopies && !repartitioning ) {
-        // this may be many-to-many or swim-lanes hop
-        dispatchType = Trans.TYPE_DISP_N_N;
-        nrCopies = 1;
-      } else { // > 1!
-        dispatchType = Trans.TYPE_DISP_N_M;
-        nrCopies = prevCopies;
-      }
-
-      for ( int c = 0; c < nrCopies; c++ ) {
-        RowSet rowSet = null;
-        switch ( dispatchType ) {
-          case Trans.TYPE_DISP_1_1:
-            rowSet = trans.findRowSet( prevSteps[ i ].getName(), 0, stepname, 0 );
-            break;
-          case Trans.TYPE_DISP_1_N:
-            rowSet = trans.findRowSet( prevSteps[ i ].getName(), 0, stepname, getCopy() );
-            break;
-          case Trans.TYPE_DISP_N_1:
-            rowSet = trans.findRowSet( prevSteps[ i ].getName(), c, stepname, 0 );
-            break;
-          case Trans.TYPE_DISP_N_N:
-            rowSet = trans.findRowSet( prevSteps[ i ].getName(), getCopy(), stepname, getCopy() );
-            break;
-          case Trans.TYPE_DISP_N_M:
-            rowSet = trans.findRowSet( prevSteps[ i ].getName(), c, stepname, getCopy() );
-            break;
-          default:
-            break;
+        if ( log.isDetailed() ) {
+          logDetailed( BaseMessages.getString( PKG, "BaseStep.Log.StepInfo", String.valueOf( nrInput ), String
+            .valueOf( nrOutput ) ) );
         }
-        if ( rowSet != null ) {
-          inputRowSets.add( rowSet );
+        // populate input rowsets.
+        for ( int i = 0; i < previousSteps.size(); i++ ) {
+          prevSteps[ i ] = previousSteps.get( i );
           if ( log.isDetailed() ) {
-            logDetailed( BaseMessages.getString( PKG, "BaseStep.Log.FoundInputRowset", rowSet.getName() ) );
+            logDetailed( BaseMessages.getString(
+              PKG, "BaseStep.Log.GotPreviousStep", stepname, String.valueOf( i ), prevSteps[ i ].getName() ) );
           }
-        } else {
-          if ( !prevSteps[ i ].isMapping() && !stepMeta.isMapping() ) {
-            logError( BaseMessages.getString( PKG, "BaseStep.Log.UnableToFindInputRowset" ) );
-            setErrors( 1 );
-            stopAll();
-            return;
+
+          // Looking at the previous step, you can have either 1 rowset to look at or more then one.
+          int prevCopies = prevSteps[ i ].getCopies();
+          int nextCopies = stepMeta.getCopies();
+          if ( log.isDetailed() ) {
+            logDetailed( BaseMessages.getString(
+              PKG, "BaseStep.Log.InputRowInfo", String.valueOf( prevCopies ), String.valueOf( nextCopies ) ) );
+          }
+
+          int nrCopies;
+          int dispatchType;
+          boolean repartitioning;
+          if ( prevSteps[ i ].isPartitioned() ) {
+            repartitioning = !prevSteps[ i ].getStepPartitioningMeta()
+              .equals( stepMeta.getStepPartitioningMeta() );
+          } else {
+            repartitioning = stepMeta.isPartitioned();
+          }
+
+          if ( prevCopies == 1 && nextCopies == 1 ) {
+            // normal hop
+            dispatchType = Trans.TYPE_DISP_1_1;
+            nrCopies = 1;
+          } else if ( prevCopies == 1 && nextCopies > 1 ) {
+            // one to many hop
+            dispatchType = Trans.TYPE_DISP_1_N;
+            nrCopies = 1;
+          } else if ( prevCopies > 1 && nextCopies == 1 ) {
+            // from many to one hop
+            dispatchType = Trans.TYPE_DISP_N_1;
+            nrCopies = prevCopies;
+          } else if ( prevCopies == nextCopies && !repartitioning ) {
+            // this may be many-to-many or swim-lanes hop
+            dispatchType = Trans.TYPE_DISP_N_N;
+            nrCopies = 1;
+          } else { // > 1!
+            dispatchType = Trans.TYPE_DISP_N_M;
+            nrCopies = prevCopies;
+          }
+
+          for ( int c = 0; c < nrCopies; c++ ) {
+            RowSet rowSet = null;
+            switch ( dispatchType ) {
+              case Trans.TYPE_DISP_1_1:
+                rowSet = trans.findRowSet( prevSteps[ i ].getName(), 0, stepname, 0 );
+                break;
+              case Trans.TYPE_DISP_1_N:
+                rowSet = trans.findRowSet( prevSteps[ i ].getName(), 0, stepname, getCopy() );
+                break;
+              case Trans.TYPE_DISP_N_1:
+                rowSet = trans.findRowSet( prevSteps[ i ].getName(), c, stepname, 0 );
+                break;
+              case Trans.TYPE_DISP_N_N:
+                rowSet = trans.findRowSet( prevSteps[ i ].getName(), getCopy(), stepname, getCopy() );
+                break;
+              case Trans.TYPE_DISP_N_M:
+                rowSet = trans.findRowSet( prevSteps[ i ].getName(), c, stepname, getCopy() );
+                break;
+              default:
+                break;
+            }
+            if ( rowSet != null ) {
+              inputRowSets.add( rowSet );
+              if ( log.isDetailed() ) {
+                logDetailed( BaseMessages.getString( PKG, "BaseStep.Log.FoundInputRowset", rowSet.getName() ) );
+              }
+            } else {
+              if ( !prevSteps[ i ].isMapping() && !stepMeta.isMapping() ) {
+                logError( BaseMessages.getString( PKG, "BaseStep.Log.UnableToFindInputRowset" ) );
+                setErrors( 1 );
+                stopAll();
+                return;
+              }
+            }
+          }
+        }
+        // And now the output part!
+        for ( int i = 0; i < nrOutput; i++ ) {
+          nextSteps[ i ] = succeedingSteps.get( i );
+
+          int prevCopies = stepMeta.getCopies();
+          int nextCopies = nextSteps[ i ].getCopies();
+
+          if ( log.isDetailed() ) {
+            logDetailed( BaseMessages.getString(
+              PKG, "BaseStep.Log.OutputRowInfo", String.valueOf( prevCopies ), String.valueOf( nextCopies ) ) );
+          }
+
+          int nrCopies;
+          int dispatchType;
+          boolean repartitioning;
+          if ( stepMeta.isPartitioned() ) {
+            repartitioning = !stepMeta.getStepPartitioningMeta()
+              .equals( nextSteps[ i ].getStepPartitioningMeta() );
+          } else {
+            repartitioning = nextSteps[ i ].isPartitioned();
+          }
+
+          if ( prevCopies == 1 && nextCopies == 1 ) {
+            dispatchType = Trans.TYPE_DISP_1_1;
+            nrCopies = 1;
+          } else if ( prevCopies == 1 && nextCopies > 1 ) {
+            dispatchType = Trans.TYPE_DISP_1_N;
+            nrCopies = nextCopies;
+          } else if ( prevCopies > 1 && nextCopies == 1 ) {
+            dispatchType = Trans.TYPE_DISP_N_1;
+            nrCopies = 1;
+          } else if ( prevCopies == nextCopies && !repartitioning ) {
+            dispatchType = Trans.TYPE_DISP_N_N;
+            nrCopies = 1;
+          } else { // > 1!
+            dispatchType = Trans.TYPE_DISP_N_M;
+            nrCopies = nextCopies;
+          }
+
+          for ( int c = 0; c < nrCopies; c++ ) {
+            RowSet rowSet = null;
+            switch ( dispatchType ) {
+              case Trans.TYPE_DISP_1_1:
+                rowSet = trans.findRowSet( stepname, 0, nextSteps[ i ].getName(), 0 );
+                break;
+              case Trans.TYPE_DISP_1_N:
+                rowSet = trans.findRowSet( stepname, 0, nextSteps[ i ].getName(), c );
+                break;
+              case Trans.TYPE_DISP_N_1:
+                rowSet = trans.findRowSet( stepname, getCopy(), nextSteps[ i ].getName(), 0 );
+                break;
+              case Trans.TYPE_DISP_N_N:
+                rowSet = trans.findRowSet( stepname, getCopy(), nextSteps[ i ].getName(), getCopy() );
+                break;
+              case Trans.TYPE_DISP_N_M:
+                rowSet = trans.findRowSet( stepname, getCopy(), nextSteps[ i ].getName(), c );
+                break;
+              default:
+                break;
+            }
+            if ( rowSet != null ) {
+              outputRowSets.add( rowSet );
+              if ( log.isDetailed() ) {
+                logDetailed( BaseMessages.getString( PKG, "BaseStep.Log.FoundOutputRowset", rowSet.getName() ) );
+              }
+            } else {
+              if ( !stepMeta.isMapping() && !nextSteps[ i ].isMapping() ) {
+                logError( BaseMessages.getString( PKG, "BaseStep.Log.UnableToFindOutputRowset" ) );
+                setErrors( 1 );
+                stopAll();
+                return;
+              }
+            }
           }
         }
       }
-    }
-    // And now the output part!
-    for ( int i = 0; i < nrOutput; i++ ) {
-      nextSteps[ i ] = succeedingSteps.get( i );
 
-      int prevCopies = stepMeta.getCopies();
-      int nextCopies = nextSteps[ i ].getCopies();
+      if ( stepMeta.getTargetStepPartitioningMeta() != null ) {
+        nextStepPartitioningMeta = stepMeta.getTargetStepPartitioningMeta();
+      }
 
       if ( log.isDetailed() ) {
-        logDetailed( BaseMessages.getString(
-          PKG, "BaseStep.Log.OutputRowInfo", String.valueOf( prevCopies ), String.valueOf( nextCopies ) ) );
+        logDetailed( BaseMessages.getString( PKG, "BaseStep.Log.FinishedDispatching" ) );
       }
-
-      int nrCopies;
-      int dispatchType;
-      boolean repartitioning;
-      if ( stepMeta.isPartitioned() ) {
-        repartitioning = !stepMeta.getStepPartitioningMeta()
-          .equals( nextSteps[ i ].getStepPartitioningMeta() );
-      } else {
-        repartitioning = nextSteps[ i ].isPartitioned();
-      }
-
-      if ( prevCopies == 1 && nextCopies == 1 ) {
-        dispatchType = Trans.TYPE_DISP_1_1;
-        nrCopies = 1;
-      } else if ( prevCopies == 1 && nextCopies > 1 ) {
-        dispatchType = Trans.TYPE_DISP_1_N;
-        nrCopies = nextCopies;
-      } else if ( prevCopies > 1 && nextCopies == 1 ) {
-        dispatchType = Trans.TYPE_DISP_N_1;
-        nrCopies = 1;
-      } else if ( prevCopies == nextCopies && !repartitioning ) {
-        dispatchType = Trans.TYPE_DISP_N_N;
-        nrCopies = 1;
-      } else { // > 1!
-        dispatchType = Trans.TYPE_DISP_N_M;
-        nrCopies = nextCopies;
-      }
-
-      for ( int c = 0; c < nrCopies; c++ ) {
-        RowSet rowSet = null;
-        switch ( dispatchType ) {
-          case Trans.TYPE_DISP_1_1:
-            rowSet = trans.findRowSet( stepname, 0, nextSteps[ i ].getName(), 0 );
-            break;
-          case Trans.TYPE_DISP_1_N:
-            rowSet = trans.findRowSet( stepname, 0, nextSteps[ i ].getName(), c );
-            break;
-          case Trans.TYPE_DISP_N_1:
-            rowSet = trans.findRowSet( stepname, getCopy(), nextSteps[ i ].getName(), 0 );
-            break;
-          case Trans.TYPE_DISP_N_N:
-            rowSet = trans.findRowSet( stepname, getCopy(), nextSteps[ i ].getName(), getCopy() );
-            break;
-          case Trans.TYPE_DISP_N_M:
-            rowSet = trans.findRowSet( stepname, getCopy(), nextSteps[ i ].getName(), c );
-            break;
-          default:
-            break;
-        }
-        if ( rowSet != null ) {
-          outputRowSets.add( rowSet );
-          if ( log.isDetailed() ) {
-            logDetailed( BaseMessages.getString( PKG, "BaseStep.Log.FoundOutputRowset", rowSet.getName() ) );
-          }
-        } else {
-          if ( !stepMeta.isMapping() && !nextSteps[ i ].isMapping() ) {
-            logError( BaseMessages.getString( PKG, "BaseStep.Log.UnableToFindOutputRowset" ) );
-            setErrors( 1 );
-            stopAll();
-            return;
-          }
-        }
-      }
-    }
-
-    if ( stepMeta.getTargetStepPartitioningMeta() != null ) {
-      nextStepPartitioningMeta = stepMeta.getTargetStepPartitioningMeta();
-    }
-
-    if ( log.isDetailed() ) {
-      logDetailed( BaseMessages.getString( PKG, "BaseStep.Log.FinishedDispatching" ) );
     }
   }
 
@@ -2898,12 +2910,14 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
   public boolean outputIsDone() {
     int nrstopped = 0;
 
-    for ( RowSet rs : outputRowSets ) {
-      if ( rs.isDone() ) {
-        nrstopped++;
+    synchronized ( outputRowSetsLock ) {
+      for ( RowSet rs : outputRowSets ) {
+        if ( rs.isDone() ) {
+          nrstopped++;
+        }
       }
+      return nrstopped >= outputRowSets.size();
     }
-    return nrstopped >= outputRowSets.size();
   }
 
   /*
@@ -3233,9 +3247,11 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
   @Override
   public int rowsetOutputSize() {
     int size = 0;
-    int i;
-    for ( i = 0; i < outputRowSets.size(); i++ ) {
-      size += outputRowSets.get( i ).size();
+
+    synchronized ( outputRowSetsLock ) {
+      for ( RowSet outputRowSet : outputRowSets ) {
+        size += outputRowSet.size();
+      }
     }
 
     return size;
@@ -3249,9 +3265,11 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
   @Override
   public int rowsetInputSize() {
     int size = 0;
-    int i;
-    for ( i = 0; i < inputRowSets.size(); i++ ) {
-      size += inputRowSets.get( i ).size();
+
+    synchronized ( inputRowSetsLock ) {
+      for ( RowSet inputRowSet : inputRowSets ) {
+        size += inputRowSet.size();
+      }
     }
 
     return size;
@@ -3320,14 +3338,52 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
    */
   @Override
   public List<RowSet> getInputRowSets() {
-    return inputRowSets;
+    synchronized ( inputRowSetsLock ) {
+      return new ArrayList<>( inputRowSets );
+    }
+  }
+
+  @Override
+  public void addRowSetToInputRowSets( RowSet rowSet ) {
+    synchronized ( inputRowSetsLock ) {
+      inputRowSets.add( rowSet );
+    }
+  }
+
+  protected RowSet getFirstInputRowSet() {
+    synchronized ( inputRowSetsLock ) {
+      return inputRowSets.get( 0 );
+    }
+  }
+
+  protected void clearInputRowSets() {
+    synchronized ( inputRowSetsLock ) {
+      inputRowSets.clear();
+    }
+  }
+
+  protected void swapFirstInputRowSetIfExists( String stepName ) {
+    synchronized ( inputRowSetsLock ) {
+      for ( int i = 0; i < inputRowSets.size(); i++ ) {
+        BlockingRowSet rs = (BlockingRowSet) inputRowSets.get( i );
+        if ( rs.getOriginStepName().equalsIgnoreCase( stepName ) ) {
+          // swap this one and position 0...that means, the main stream is always stream 0 --> easy!
+          //
+          BlockingRowSet zero = (BlockingRowSet) inputRowSets.get( 0 );
+          inputRowSets.set( 0, rs );
+          inputRowSets.set( i, zero );
+        }
+      }
+    }
   }
 
   /**
    * @param inputRowSets The inputRowSets to set.
    */
   public void setInputRowSets( List<RowSet> inputRowSets ) {
-    this.inputRowSets = inputRowSets;
+    synchronized ( inputRowSetsLock ) {
+      this.inputRowSets = inputRowSets;
+    }
   }
 
   /**
@@ -3335,14 +3391,31 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
    */
   @Override
   public List<RowSet> getOutputRowSets() {
-    return outputRowSets;
+    synchronized ( outputRowSetsLock ) {
+      return new ArrayList<>( outputRowSets );
+    }
+  }
+
+  @Override
+  public void addRowSetToOutputRowSets( RowSet rowSet ) {
+    synchronized ( outputRowSetsLock ) {
+      outputRowSets.add( rowSet );
+    }
+  }
+
+  protected void clearOutputRowSets() {
+    synchronized ( outputRowSetsLock ) {
+      outputRowSets.clear();
+    }
   }
 
   /**
    * @param outputRowSets The outputRowSets to set.
    */
   public void setOutputRowSets( List<RowSet> outputRowSets ) {
-    this.outputRowSets = outputRowSets;
+    synchronized ( outputRowSetsLock ) {
+      this.outputRowSets = outputRowSets;
+    }
   }
 
   /**
@@ -3864,26 +3937,28 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
    */
   @Override
   public boolean canProcessOneRow() {
-    switch ( inputRowSets.size() ) {
-      case 0:
-        return false;
-      case 1:
-        RowSet set = inputRowSets.get( 0 );
-        if ( set.isDone() ) {
+    synchronized ( inputRowSetsLock ) {
+      switch ( inputRowSets.size() ) {
+        case 0:
           return false;
-        }
-        return set.size() > 0;
-      default:
-        boolean allDone = true;
-        for ( RowSet rowSet : inputRowSets ) {
-          if ( !rowSet.isDone() ) {
-            allDone = false;
+        case 1:
+          RowSet set = inputRowSets.get( 0 );
+          if ( set.isDone() ) {
+            return false;
           }
-          if ( rowSet.size() > 0 ) {
-            return true;
+          return set.size() > 0;
+        default:
+          boolean allDone = true;
+          for ( RowSet rowSet : inputRowSets ) {
+            if ( !rowSet.isDone() ) {
+              allDone = false;
+            }
+            if ( rowSet.size() > 0 ) {
+              return true;
+            }
           }
-        }
-        return !allDone;
+          return !allDone;
+      }
     }
   }
 

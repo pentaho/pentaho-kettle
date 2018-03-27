@@ -44,8 +44,7 @@ public class AbortTest {
 
   @Before
   public void setup() {
-    stepMockHelper =
-      new StepMockHelper<AbortMeta, StepDataInterface>( "ABORT TEST", AbortMeta.class, StepDataInterface.class );
+    stepMockHelper = new StepMockHelper<>( "ABORT TEST", AbortMeta.class, StepDataInterface.class );
     when( stepMockHelper.logChannelInterfaceFactory.create( any(), any( LoggingObjectInterface.class ) ) )
       .thenReturn( stepMockHelper.logChannelInterface );
     when( stepMockHelper.trans.isRunning() ).thenReturn( true );
@@ -63,7 +62,7 @@ public class AbortTest {
         stepMockHelper.stepMeta, stepMockHelper.stepDataInterface, 0, stepMockHelper.transMeta,
         stepMockHelper.trans );
     abort.init( stepMockHelper.initStepMetaInterface, stepMockHelper.initStepDataInterface );
-    abort.getInputRowSets().add( stepMockHelper.getMockInputRowSet() );
+    abort.addRowSetToInputRowSets( stepMockHelper.getMockInputRowSet() );
     assertFalse( abort.isStopped() );
     abort.processRow( stepMockHelper.processRowsStepMetaInterface, stepMockHelper.processRowsStepDataInterface );
     verify( stepMockHelper.trans, never() ).stopAll();
@@ -77,7 +76,7 @@ public class AbortTest {
         stepMockHelper.stepMeta, stepMockHelper.stepDataInterface, 0, stepMockHelper.transMeta,
         stepMockHelper.trans );
     abort.init( stepMockHelper.initStepMetaInterface, stepMockHelper.initStepDataInterface );
-    abort.getInputRowSets().add( stepMockHelper.getMockInputRowSet( new Object[] {} ) );
+    abort.addRowSetToInputRowSets( stepMockHelper.getMockInputRowSet( new Object[] {} ) );
     assertFalse( abort.isStopped() );
     abort.processRow( stepMockHelper.processRowsStepMetaInterface, stepMockHelper.processRowsStepDataInterface );
     verify( stepMockHelper.trans, times( 1 ) ).stopAll();
@@ -92,7 +91,7 @@ public class AbortTest {
         stepMockHelper.trans );
     when( stepMockHelper.processRowsStepMetaInterface.isSafeStop() ).thenReturn( true );
     abort.init( stepMockHelper.initStepMetaInterface, stepMockHelper.initStepDataInterface );
-    abort.getInputRowSets().add( stepMockHelper.getMockInputRowSet( new Object[] {} ) );
+    abort.addRowSetToInputRowSets( stepMockHelper.getMockInputRowSet( new Object[] {} ) );
     abort.processRow( stepMockHelper.processRowsStepMetaInterface, stepMockHelper.processRowsStepDataInterface );
     verify( stepMockHelper.trans ).safeStop();
   }
@@ -106,7 +105,7 @@ public class AbortTest {
     when( stepMockHelper.processRowsStepMetaInterface.isSafeStop() ).thenReturn( false );
     when( stepMockHelper.processRowsStepMetaInterface.isAbortWithError() ).thenReturn( true );
     abort.init( stepMockHelper.initStepMetaInterface, stepMockHelper.initStepDataInterface );
-    abort.getInputRowSets().add( stepMockHelper.getMockInputRowSet( new Object[] {} ) );
+    abort.addRowSetToInputRowSets( stepMockHelper.getMockInputRowSet( new Object[] {} ) );
     abort.processRow( stepMockHelper.processRowsStepMetaInterface, stepMockHelper.processRowsStepDataInterface );
     assertEquals( 1L, abort.getErrors() );
     verify( stepMockHelper.trans ).stopAll();

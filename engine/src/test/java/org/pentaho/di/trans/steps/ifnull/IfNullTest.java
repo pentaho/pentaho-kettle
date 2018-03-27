@@ -139,8 +139,8 @@ public class IfNullTest {
     final Object[] inputRow = new Object[] { "value1", null, "", "    ", "value5" };
     final Object[] expectedRow = new Object[] { "value1", "replace-value", "replace-value", "    ", "value5" };
 
-    step.getInputRowSets().add( buildInputRowSet( inputRow ) );
-    step.getOutputRowSets().add( new QueueRowSet() );
+    step.addRowSetToInputRowSets( buildInputRowSet( inputRow ) );
+    step.addRowSetToOutputRowSets( new QueueRowSet() );
 
     boolean hasMoreRows;
     do {
@@ -173,8 +173,8 @@ public class IfNullTest {
     final Object[] inputRow = new Object[] { "value1", null, "", "    ", "value5" };
     final Object[] expectedRow = new Object[] { "value1", "replace-value", "", "    ", "value5" };
 
-    step.getInputRowSets().add( buildInputRowSet( inputRow ) );
-    step.getOutputRowSets().add( new QueueRowSet() );
+    step.addRowSetToInputRowSets( buildInputRowSet( inputRow ) );
+    step.addRowSetToOutputRowSets( new QueueRowSet() );
 
     boolean hasMoreRows;
     do {

@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -129,8 +129,8 @@ public class FuzzyMatchTest {
         new FuzzyMatchHandler( mockHelper.stepMeta, mockHelper.stepDataInterface, 0, mockHelper.transMeta,
             mockHelper.trans );
     fuzzyMatch.init( mockHelper.initStepMetaInterface, mockHelper.initStepDataInterface );
-    fuzzyMatch.getInputRowSets().add( mockHelper.getMockInputRowSet( rows ) );
-    fuzzyMatch.getInputRowSets().add( mockHelper.getMockInputRowSet( lookupRows ) );
+    fuzzyMatch.addRowSetToInputRowSets( mockHelper.getMockInputRowSet( rows ) );
+    fuzzyMatch.addRowSetToInputRowSets( mockHelper.getMockInputRowSet( lookupRows ) );
 
     when( mockHelper.processRowsStepMetaInterface.getAlgorithmType() ).thenReturn( 8 );
     mockHelper.processRowsStepDataInterface.look = mock( HashSet.class );
@@ -155,8 +155,8 @@ public class FuzzyMatchTest {
 
     fuzzyMatch.init( meta, data );
     RowSet lookupRowSet = mockHelper.getMockInputRowSet( binaryLookupRows );
-    fuzzyMatch.getInputRowSets().add( mockHelper.getMockInputRowSet( binaryRows ) );
-    fuzzyMatch.getInputRowSets().add( lookupRowSet );
+    fuzzyMatch.addRowSetToInputRowSets( mockHelper.getMockInputRowSet( binaryRows ) );
+    fuzzyMatch.addRowSetToInputRowSets( lookupRowSet );
     fuzzyMatch.rowset = lookupRowSet;
 
     RowMetaInterface rowMetaInterface = new RowMeta();
@@ -197,8 +197,8 @@ public class FuzzyMatchTest {
     data.indexOfMainField = 1;
     Object[] inputRow = { "test input", null };
     RowSet lookupRowSet = mockHelper.getMockInputRowSet( new Object[]{ "test lookup" } );
-    fuzzyMatch.getInputRowSets().add( mockHelper.getMockInputRowSet( inputRow ) );
-    fuzzyMatch.getInputRowSets().add( lookupRowSet );
+    fuzzyMatch.addRowSetToInputRowSets( mockHelper.getMockInputRowSet( inputRow ) );
+    fuzzyMatch.addRowSetToInputRowSets( lookupRowSet );
     fuzzyMatch.rowset = lookupRowSet;
 
     RowMetaInterface rowMetaInterface = new RowMeta();

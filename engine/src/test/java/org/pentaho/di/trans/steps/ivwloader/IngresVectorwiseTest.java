@@ -253,7 +253,7 @@ public class IngresVectorwiseTest {
     when( defMeta.getQuotedSchemaTableCombination( anyString(), anyString() ) ).thenReturn( "test_table" );
     ivwLoader.init( stepMockHelper.processRowsStepMetaInterface, ivwData );
     RowSet rowSet = stepMockHelper.getMockInputRowSet( rows );
-    ivwLoader.getInputRowSets().add( rowSet );
+    ivwLoader.addRowSetToInputRowSets( rowSet );
 
     when( stepMockHelper.processRowsStepMetaInterface.isUsingVwload() ).thenReturn( true );
     when( stepMockHelper.processRowsStepMetaInterface.getBufferSize() ).thenReturn( "5000" );

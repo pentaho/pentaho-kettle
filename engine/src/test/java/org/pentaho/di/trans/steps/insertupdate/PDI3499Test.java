@@ -97,7 +97,7 @@ public class PDI3499Test {
 
     InsertUpdate step = new InsertUpdate( smh.stepMeta, smh.stepDataInterface, 0, smh.transMeta, smh.trans );
     step.setInputRowMeta( inputRowMeta );
-    step.getInputRowSets().add( smh.getMockInputRowSet( new Object[] { "2013-12-20".getBytes() } ) );
+    step.addRowSetToInputRowSets( smh.getMockInputRowSet( new Object[] { "2013-12-20".getBytes() } ) );
     step.init( smh.initStepMetaInterface, smh.initStepDataInterface );
     step.first = false;
     step.processRow( stepMeta, stepData );
