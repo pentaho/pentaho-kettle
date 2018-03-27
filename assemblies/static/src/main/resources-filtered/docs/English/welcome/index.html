@@ -6,6 +6,7 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Welcome!</title>
     <link rel="stylesheet" href="css/bootstrap.css">
+    <link rel="stylesheet" href="fonts/opensans/style.css">
     <link rel="shortcut icon" href="favicon.ico">
 
     <style>
@@ -33,7 +34,7 @@
         }
         
         body {
-            font-family: 'Open Sans', sans-serif;
+            font-family: 'OpenSansRegular', sans-serif;
             margin: 0;
             padding: 34px 0;
             border-top: 4px solid #005DA6;
@@ -72,7 +73,7 @@
         }
         
         h2 {
-            font-weight: 300;
+            font-family: 'OpenSansLight', sans-serif;
             text-align: center;
             font-size: 28px;
             margin-top: 20px;
@@ -115,6 +116,7 @@
         
         .card-title {
             display: block;
+            font-family: 'OpenSansLight', sans-serif;
             color: #414141;
             font-size: 1.75em;
             font-weight: 300;
@@ -143,7 +145,7 @@
         /* EXTRAS BAR */
         
         .h-extras-bar {
-            display: flex;
+            /* display: flex; */
             border-bottom: 1px solid #ccc;
             border-top: 1px solid #ccc;
             padding: 30px 0 25px;
@@ -158,7 +160,7 @@
         
         .h-extras-bar,
         .p-extras-bar {
-            margin-bottom: 20px;
+            margin: 3em 0 0;
         }
         
         .h-extras-bar .extras-container a {
@@ -178,7 +180,6 @@
         
         .h-extras-bar .extras-container {
             display: inline-block;
-            flex: 1;
         }
         
         .h-extras-bar .extras-container .extras {
@@ -217,7 +218,7 @@
                     <div class="card-title">Learn</div>
                     <hr/>
                     <a href="https://help.pentaho.com" target="_blank" class="card-link">Documentation</a>
-                    <a href="https://pentaho.com/access-evaluation-path" target="_blank" class="card-link">Watch tutorials</a>
+                    <a href="http://www.pentaho.com/evaluation-path#data-integration" target="_blank" class="card-link">Watch tutorials</a>
                     <a href="https://help.pentaho.com/Documentation/8.1/Whats_New" target="_blank" class="card-link">Release notes</a>
                 </div>
             </div>
@@ -226,7 +227,7 @@
                     <img alt="Learn" class="internal" src="assets/extend.svg">
                     <div class="card-title">Extend</div>
                     <hr/>
-                    <a href="#"  onclick="javascript:genericFunction('openMarketplace'); return false;" class="card-link">Marketplace</a>
+                    <a href="#" onclick="javascript:genericFunction('openMarketplace'); return false;" class="card-link">Marketplace</a>
                     <a href="https://help.pentaho.com/Documentation/8.1/Developer_Center/PDI/Extend" target="_blank" class="card-link">Build plugins</a>
                 </div>
             </div>
@@ -242,22 +243,22 @@
     </div>
 
     <footer class="container">
-        <div class="h-extras-bar">
-            <div class="extras-container">
+        <div class="row h-extras-bar">
+            <div class="col-xs-4 extras-container">
                 <div class="extras">
                     <img class="internal" alt="Community" src="assets/community_small.svg">
                     <span>Community</span>
                     <a href="https://community.hds.com/community/products-and-solutions/pentaho/pages/home" target="_blank" class="arrow">Join the discussion</a>
                 </div>
             </div>
-            <div class="extras-container">
+            <div class="col-xs-4 extras-container">
                 <div class="extras">
                     <img class="internal" alt="Pentaho Forums" src="assets/forums_small.svg">
                     <span>Pentaho Forums</span>
                     <a href="https://community.hds.com/community/products-and-solutions/pentaho/content" target="_blank" class="arrow">Join the discussion</a>
                 </div>
             </div>
-            <div class="extras-container">
+            <div class="col-xs-4 extras-container">
                 <div class="extras">
                     <img class="internal" alt="Pentaho.com" src="assets/pentahosite_small.svg">
                     <span>Pentaho.com</span>
