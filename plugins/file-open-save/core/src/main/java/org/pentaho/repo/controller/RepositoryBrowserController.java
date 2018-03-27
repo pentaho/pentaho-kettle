@@ -340,8 +340,8 @@ public class RepositoryBrowserController {
     return false;
   }
 
-  public boolean saveFile( String path, String name ) {
-    boolean result = checkForSecurityOrDupeIssues( path, name );
+  public boolean saveFile( String path, String name, String fileName, boolean override ) {
+    boolean result = checkForSecurityOrDupeIssues( path, name, fileName, override );
     if ( result ) {
       try {
         RepositoryDirectoryInterface repositoryDirectoryInterface = findDirectory( path );
@@ -363,24 +363,26 @@ public class RepositoryBrowserController {
     return result;
   }
 
-  public boolean checkForSecurityOrDupeIssues( String path, String name ) {
-    return checkSecurity() && !hasDupeFile( path, name );
+  public boolean checkForSecurityOrDupeIssues( String path, String name, String fileName, boolean override ) {
+    return checkSecurity() && !hasDupeFile( path, name, fileName, override );
   }
 
   /**
    * Checks if there is a duplicate file in a given directory (i.e. hidden file)
    * @param path - Path to directory in which we are saving
    * @param name - Name of file to save
+   * @param fileName - Possible duplicate file name
+   * @param override - True is user wants override file, false otherwise
    * @return - true if a duplicate file is found, false otherwise
    */
-  private boolean hasDupeFile( String path, String name ) {
+  private boolean hasDupeFile( String path, String name, String fileName, boolean override ) {
     try {
       RepositoryDirectoryInterface repositoryDirectoryInterface = getRepository().findDirectory( path );
       EngineMetaInterface meta = getSpoon().getActiveMeta();
       RepositoryObjectType type = "Trans".equals( meta.getFileType() )
         ? RepositoryObjectType.TRANSFORMATION : RepositoryObjectType.JOB;
       if ( getRepository().exists( name, repositoryDirectoryInterface, type ) ) {
-        return true;
+        return !override || !name.equals( fileName );
       }
     } catch ( Exception e ) {
       System.out.println( e );
