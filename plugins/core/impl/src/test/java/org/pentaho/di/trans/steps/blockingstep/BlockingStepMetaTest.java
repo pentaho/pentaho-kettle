@@ -34,16 +34,12 @@ import org.pentaho.di.junit.rules.RestorePDIEngineEnvironment;
 import org.pentaho.di.trans.steps.loadsave.LoadSaveTester;
 
 public class BlockingStepMetaTest {
-  @ClassRule public static RestorePDIEngineEnvironment env = new RestorePDIEngineEnvironment();
+  @ClassRule
+  public static RestorePDIEngineEnvironment env = new RestorePDIEngineEnvironment();
 
   @Test
   public void testRoundTrip() throws KettleException {
-    List<String> attributes = Arrays.asList(
-      "pass_all_rows",
-      "directory",
-      "prefix",
-      "cache_size",
-      "compress" );
+    List<String> attributes = Arrays.asList( "pass_all_rows", "directory", "prefix", "cache_size", "compress" );
 
     Map<String, String> getterMap = new HashMap<String, String>();
     getterMap.put( "pass_all_rows", "isPassAllRows" );

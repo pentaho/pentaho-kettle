@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -61,7 +61,7 @@ public class BlockingStep extends BaseStep implements StepInterface {
   private Object[] lastRow;
 
   public BlockingStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta,
-    Trans trans ) {
+      Trans trans ) {
     super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
   }
 
@@ -72,7 +72,7 @@ public class BlockingStep extends BaseStep implements StepInterface {
 
     // Time to write to disk: buffer in core is full!
     if ( data.buffer.size() == meta.getCacheSize() // Buffer is full: dump to disk
-      || ( data.files.size() > 0 && r == null && data.buffer.size() > 0 ) // No more records: join from disk
+        || ( data.files.size() > 0 && r == null && data.buffer.size() > 0 ) // No more records: join from disk
     ) {
       // Then write them to disk...
       DataOutputStream dos;
@@ -81,8 +81,8 @@ public class BlockingStep extends BaseStep implements StepInterface {
 
       try {
         FileObject fileObject =
-          KettleVFS.createTempFile(
-            meta.getPrefix(), ".tmp", environmentSubstitute( meta.getDirectory() ), getTransMeta() );
+            KettleVFS.createTempFile( meta.getPrefix(), ".tmp", environmentSubstitute( meta.getDirectory() ),
+              getTransMeta() );
 
         data.files.add( fileObject ); // Remember the files!
         OutputStream outputStream = KettleVFS.getOutputStream( fileObject, false );
@@ -131,8 +131,8 @@ public class BlockingStep extends BaseStep implements StepInterface {
         FileObject fileObject = data.files.get( 0 );
         String filename = KettleVFS.getFilename( fileObject );
         if ( log.isDetailed() ) {
-          logDetailed( BaseMessages.getString( PKG, "BlockingStep.Log.Openfilename1" )
-            + filename + BaseMessages.getString( PKG, "BlockingStep.Log.Openfilename2" ) );
+          logDetailed( BaseMessages.getString( PKG, "BlockingStep.Log.Openfilename1" ) + filename
+              + BaseMessages.getString( PKG, "BlockingStep.Log.Openfilename2" ) );
         }
         InputStream fi = KettleVFS.getInputStream( fileObject );
         DataInputStream di;
@@ -150,9 +150,9 @@ public class BlockingStep extends BaseStep implements StepInterface {
         int buffersize = di.readInt();
 
         if ( log.isDetailed() ) {
-          logDetailed( BaseMessages.getString( PKG, "BlockingStep.Log.BufferSize1" )
-            + filename + BaseMessages.getString( PKG, "BlockingStep.Log.BufferSize2" ) + buffersize + " "
-            + BaseMessages.getString( PKG, "BlockingStep.Log.BufferSize3" ) );
+          logDetailed( BaseMessages.getString( PKG, "BlockingStep.Log.BufferSize1" ) + filename
+              + BaseMessages.getString( PKG, "BlockingStep.Log.BufferSize2" ) + buffersize + " "
+              + BaseMessages.getString( PKG, "BlockingStep.Log.BufferSize3" ) );
         }
 
         if ( buffersize > 0 ) {
@@ -246,10 +246,10 @@ public class BlockingStep extends BaseStep implements StepInterface {
     data = (BlockingStepData) sdi;
 
     if ( super.init( smi, sdi ) ) {
-      //Set Embedded NamedCluter MetatStore Provider Key so that it can be passed to VFS
+      // Set Embedded NamedCluter MetatStore Provider Key so that it can be passed to VFS
       if ( getTransMeta().getNamedClusterEmbedManager() != null ) {
-        getTransMeta().getNamedClusterEmbedManager()
-          .passEmbeddedMetastoreKey( getTransMeta(), getTransMeta().getEmbeddedMetastoreProviderKey() );
+        getTransMeta().getNamedClusterEmbedManager().passEmbeddedMetastoreKey( getTransMeta(),
+          getTransMeta().getEmbeddedMetastoreProviderKey() );
       }
       // Add init code here.
       return true;
