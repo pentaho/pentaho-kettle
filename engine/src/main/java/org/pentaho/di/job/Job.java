@@ -3,7 +3,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -460,6 +460,10 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
         jobMeta.disposeEmbeddedMetastoreProvider();
 
         fireJobFinishListeners();
+
+        // release unused vfs connections
+        KettleVFS.freeUnusedResources();
+
       } catch ( KettleException e ) {
         result.setNrErrors( 1 );
         result.setResult( false );

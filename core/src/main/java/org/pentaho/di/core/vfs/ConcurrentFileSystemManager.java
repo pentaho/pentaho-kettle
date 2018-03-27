@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -51,7 +51,7 @@ public class ConcurrentFileSystemManager extends StandardFileSystemManager {
   private final ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
 
   public ConcurrentFileSystemManager() {
-    setConfiguration( StandardFileSystemManager.class.getResource( CONFIG_RESOURCE ) );
+    setConfiguration( this.getClass().getResource( CONFIG_RESOURCE ) );
   }
 
   @Override
