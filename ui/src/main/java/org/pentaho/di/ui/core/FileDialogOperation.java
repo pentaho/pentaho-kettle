@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Hitachi Vantara. All rights reserved.
+ * Copyright 2017-2018 Hitachi Vantara. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,6 +28,8 @@ public class FileDialogOperation {
   public static String SAVE = "save";
   public static String ORIGIN_SPOON = "spoon";
   public static String ORIGIN_OTHER = "other";
+  public static String TRANSFORMATION = "transformation";
+  public static String JOB = "job";
 
   private Repository repository;
   private String command;
@@ -37,6 +39,7 @@ public class FileDialogOperation {
   private String startDir;
   private String title;
   private String filename;
+  private String fileType;
 
   public FileDialogOperation( String command ) {
     this.command = command;
@@ -109,5 +112,13 @@ public class FileDialogOperation {
 
   public void setFilename( String filename ) {
     this.filename = filename;
+  }
+
+  public String getFileType() {
+    return fileType;
+  }
+
+  public void setFileType( String fileType ) {
+    this.fileType = fileType;
   }
 }
