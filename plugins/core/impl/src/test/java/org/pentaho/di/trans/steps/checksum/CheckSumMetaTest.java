@@ -19,6 +19,7 @@
  * limitations under the License.
  *
  ******************************************************************************/
+
 package org.pentaho.di.trans.steps.checksum;
 
 import static org.junit.Assert.assertEquals;
