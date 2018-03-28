@@ -1766,13 +1766,13 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
       if ( webstartRoot != null ) {
         URL url = new URL( webstartRoot + '/' + FILE_WELCOME_PAGE );
         // ./docs/English/tips/index.htm
-        addSpoonBrowser( STRING_WELCOME_TAB_NAME, url.toString(), true, listener, functions, true );
+        addSpoonBrowser( STRING_WELCOME_TAB_NAME, url.toString(), true, listener, functions, false );
       } else {
         // see if we can find the welcome file on the file system
         File file = new File( FILE_WELCOME_PAGE );
         if ( file.exists() ) {
           // ./docs/English/tips/index.htm
-          addSpoonBrowser( STRING_WELCOME_TAB_NAME, file.toURI().toURL().toString(), true, listener, functions, true );
+          addSpoonBrowser( STRING_WELCOME_TAB_NAME, file.toURI().toURL().toString(), true, listener, functions, false );
         }
       }
     } catch ( MalformedURLException e1 ) {

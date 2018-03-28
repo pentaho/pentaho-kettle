@@ -34,6 +34,7 @@ import org.eclipse.swt.browser.LocationListener;
 import org.eclipse.swt.browser.OpenWindowListener;
 import org.eclipse.swt.browser.WindowEvent;
 import org.eclipse.swt.custom.CTabFolder;
+import org.eclipse.swt.program.Program;
 import org.eclipse.swt.widgets.Composite;
 import org.pentaho.di.base.AbstractMeta;
 import org.pentaho.di.cluster.SlaveServer;
@@ -304,6 +305,13 @@ public class SpoonTabsDelegate extends SpoonDelegate {
               ExtensionPointHandler.callExtensionPoint( log, KettleExtensionPoint.SpoonBrowserFunction.id, arguments );
             } catch ( KettleException ignored ) {
             }
+            return null;
+          }
+        };
+
+        new BrowserFunction( browser.getBrowser(), "openURL" ) {
+          public Object function( Object[] arguments ) {
+            Program.launch( arguments[0].toString() );
             return null;
           }
         };
