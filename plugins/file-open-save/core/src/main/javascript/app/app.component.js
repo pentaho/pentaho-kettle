@@ -126,6 +126,7 @@ define([
       _resetFileAreaMessage();
 
       vm.filename = $location.search().filename;
+      vm.fileType = $location.search().fileType;
       vm.origin = $location.search().origin;
       $timeout(function() {
         if ($state.is('open')) {
@@ -883,7 +884,7 @@ define([
     function _isDuplicate() {
       if (vm.folder && vm.folder.children) {
         for (var i = 0; i < vm.folder.children.length; i++) {
-          if (vm.fileToSave === vm.folder.children[i].name) {
+          if (vm.fileToSave === vm.folder.children[i].name && vm.fileType === vm.folder.children[i].type) {
             vm.file = vm.folder.children[i];
             return true;
           }

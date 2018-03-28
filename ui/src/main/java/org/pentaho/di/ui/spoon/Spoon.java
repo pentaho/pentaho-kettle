@@ -5175,8 +5175,11 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
 
       if ( ask_name ) {
         try {
+          String fileType = meta.getFileType().equals( LastUsedFile.FILE_TYPE_TRANSFORMATION )
+            ? FileDialogOperation.TRANSFORMATION : FileDialogOperation.JOB;
           FileDialogOperation fileDialogOperation = new FileDialogOperation( FileDialogOperation.SAVE,
             FileDialogOperation.ORIGIN_SPOON );
+          fileDialogOperation.setFileType( fileType );
           fileDialogOperation.setStartDir( meta.getRepositoryDirectory().getPath() );
           //Set the filename so it can be used as the default filename in the save dialog
           fileDialogOperation.setFilename( meta.getFilename() );

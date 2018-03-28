@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Hitachi Vantara. All rights reserved.
+ * Copyright 2017-2018 Hitachi Vantara. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -75,7 +75,7 @@ public class RepositoryOpenSaveExtensionPoint implements ExtensionPointInterface
       new RepositoryOpenSaveDialog( spoonSupplier.get().getShell(), WIDTH, HEIGHT );
     repositoryOpenSaveDialog.open( fileDialogOperation.getRepository(), startingDir, fileDialogOperation.getCommand(),
       fileDialogOperation.getTitle(), fileDialogOperation.getFilter(), fileDialogOperation.getOrigin(),
-      fileDialogOperation.getFilename() );
+      fileDialogOperation.getFilename(), fileDialogOperation.getFileType() );
 
     if ( !Utils.isEmpty( repositoryOpenSaveDialog.getObjectName() ) ) {
       RepositoryObject repositoryObject = new RepositoryObject();
