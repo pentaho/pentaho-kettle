@@ -36,7 +36,6 @@ import org.pentaho.di.ui.core.widget.TextVar;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static org.pentaho.di.i18n.BaseMessages.getString;
 import static org.pentaho.di.trans.step.jms.JmsConstants.PKG;
-import static org.pentaho.di.trans.step.jms.context.JmsProvider.ConnectionType.WEBSPHERE;
 
 public class DestinationForm {
 
@@ -120,9 +119,7 @@ public class DestinationForm {
   private void setStartingValues() {
     destinationName.setText( destinationNameValue );
     destinationType.setText( destinationTypeValue );
-    // this will need to be made dynamic when activemq and jndi support is added.
-    destinationName.setToolTipText( WEBSPHERE.getDestinationHint() );
-
+    destinationName.setToolTipText( getString( PKG, "JmsProvider.DestinationHint" ) );
   }
 
   public String getDestinationType() {

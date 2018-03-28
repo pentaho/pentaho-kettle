@@ -201,7 +201,7 @@ public class ConnectionForm {
     wlIbmUrl.setLayoutData( fdlJmsUrl );
 
     wIbmUrl = new TextVar( transMeta, wConnectionGroup, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
-    wIbmUrl.setToolTipText( currentConnType.getUrlHint() );
+    wIbmUrl.setToolTipText( JmsProvider.ConnectionType.WEBSPHERE.getUrlHint() );
     props.setLook( wIbmUrl );
     wIbmUrl.addModifyListener( lsMod );
     FormData fdUrl = new FormData();
@@ -255,7 +255,7 @@ public class ConnectionForm {
     wlActiveUrl.setLayoutData( fdlJmsUrl );
 
     wActiveUrl = new TextVar( transMeta, wConnectionGroup, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
-    wActiveUrl.setToolTipText( currentConnType.getUrlHint() );
+    wActiveUrl.setToolTipText( JmsProvider.ConnectionType.ACTIVEMQ.getUrlHint() );
     props.setLook( wActiveUrl );
     wActiveUrl.addModifyListener( lsMod );
     FormData fdJmsUrl = new FormData();
@@ -309,7 +309,7 @@ public class ConnectionForm {
     wlGenericUrl.setLayoutData( fdlJmsUrl );
 
     wGenericUrl = new TextVar( transMeta, wConnectionGroup, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
-    wGenericUrl.setToolTipText( currentConnType.getUrlHint() );
+    wGenericUrl.setToolTipText( JmsProvider.ConnectionType.JNDI.getUrlHint() );
     props.setLook( wGenericUrl );
     wGenericUrl.addModifyListener( lsMod );
     FormData fdJmsUrl = new FormData();
