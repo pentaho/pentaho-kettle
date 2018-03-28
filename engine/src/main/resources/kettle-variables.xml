@@ -488,5 +488,16 @@
     <default-value>0</default-value>
   </kettle-variable>
 
+  <kettle-variable>
+    <description>This environment variable is used by the streaming data services. It defines the default limit in rows for the streaming window.</description>
+    <variable>KETTLE_STREAMING_ROW_LIMIT</variable>
+    <default-value>5000</default-value>
+  </kettle-variable>
+
+  <kettle-variable>
+    <description>This environment variable is used by the streaming data services. It defines the default limit in time for the streaming window.</description>
+    <variable>KETTLE_STREAMING_TIME_LIMIT</variable>
+    <default-value>10000</default-value>
+  </kettle-variable>
 </kettle-variables>
 
