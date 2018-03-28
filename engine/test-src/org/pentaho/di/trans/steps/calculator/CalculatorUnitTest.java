@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -744,6 +744,75 @@ public class CalculatorUnitTest {
       }
     } else {
       Assert.assertEquals( msg, expected, actual );
+    }
+  }
+
+  @Test
+  public void calculatorReminder() throws Exception {
+    assertCalculatorReminder( new Double( "0.10000000000000053" ), new Object[]{ new Long( "10" ), new Double( "3.3" ) },
+      new int[]{ ValueMetaInterface.TYPE_INTEGER, ValueMetaInterface.TYPE_NUMBER } );
+    assertCalculatorReminder( new Double( "1.0" ), new Object[]{ new Long( "10" ), new Double( "4.5" ) },
+      new int[]{ ValueMetaInterface.TYPE_INTEGER, ValueMetaInterface.TYPE_NUMBER } );
+    assertCalculatorReminder( new Double( "4.0" ), new Object[]{ new Double( "12.5" ), new Double( "4.25" ) },
+      new int[]{ ValueMetaInterface.TYPE_NUMBER, ValueMetaInterface.TYPE_NUMBER } );
+    assertCalculatorReminder( new Double( "2.6000000000000005" ), new Object[]{ new Double( "12.5" ), new Double( "3.3" ) },
+      new int[]{ ValueMetaInterface.TYPE_NUMBER, ValueMetaInterface.TYPE_NUMBER } );
+  }
+
+  private void assertCalculatorReminder( final Object expectedResult, final Object[] values, final int[] types ) throws Exception {
+    RowMeta inputRowMeta = new RowMeta();
+    for ( int i = 0; i < types.length; i++ ) {
+      switch ( types[i] ) {
+        case ValueMetaInterface.TYPE_BIGNUMBER:
+          inputRowMeta.addValueMeta( new ValueMetaBigNumber( "f" + i ) );
+          break;
+        case ValueMetaInterface.TYPE_NUMBER:
+          inputRowMeta.addValueMeta( new ValueMetaNumber( "f" + i ) );
+          break;
+        case ValueMetaInterface.TYPE_INTEGER:
+          inputRowMeta.addValueMeta( new ValueMetaInteger( "f" + i ) );
+          break;
+        default:
+          throw new IllegalArgumentException( "Unexpected value dataType: " + types[i]
+            + ". Long, Double or BigDecimal expected." );
+      }
+    }
+
+    RowSet inputRowSet = null;
+    try {
+      inputRowSet = smh.getMockInputRowSet( new Object[][] {
+        { values[0], values[1] } } );
+    } catch ( Exception pe ) {
+      pe.printStackTrace();
+      fail();
+    }
+    inputRowSet.setRowMeta( inputRowMeta );
+
+    Calculator calculator = new Calculator( smh.stepMeta, smh.stepDataInterface, 0, smh.transMeta, smh.trans );
+    calculator.getInputRowSets().add( inputRowSet );
+    calculator.setInputRowMeta( inputRowMeta );
+    calculator.init( smh.initStepMetaInterface, smh.initStepDataInterface );
+
+    CalculatorMeta meta = new CalculatorMeta();
+    meta.setCalculation( new CalculatorMetaFunction[] {
+      new CalculatorMetaFunction( "res", CalculatorMetaFunction.CALC_REMAINDER, "f0", "f1", null,
+        ValueMetaInterface.TYPE_NUMBER, 0, 0, false, "", "", "", "" ) } );
+
+    //Verify output
+    try {
+      calculator.addRowListener( new RowAdapter() {
+        @Override public void rowWrittenEvent( RowMetaInterface rowMeta, Object[] row ) throws KettleStepException {
+          try {
+            assertEquals( expectedResult, row[ 2 ] );
+          } catch ( Exception pe ) {
+            throw new KettleStepException( pe );
+          }
+        }
+      } );
+      calculator.processRow( meta, new CalculatorData() );
+    } catch ( KettleException ke ) {
+      ke.printStackTrace();
+      fail();
     }
   }
 }

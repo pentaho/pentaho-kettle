@@ -1106,7 +1106,7 @@ public class ValueDataUtil {
 
     switch ( metaA.getType() ) {
       case ValueMetaInterface.TYPE_NUMBER:
-        return new Double( Math.IEEEremainder( metaA.getNumber( dataA ).doubleValue(), metaB.getNumber( dataB ).doubleValue() ) );
+        return new Double( metaA.getNumber( dataA ).doubleValue() % metaB.getNumber( dataB ).doubleValue() );
       case ValueMetaInterface.TYPE_INTEGER:
         return new Long( metaA.getInteger( dataA ) % metaB.getInteger( dataB ) );
       case ValueMetaInterface.TYPE_BIGNUMBER:
