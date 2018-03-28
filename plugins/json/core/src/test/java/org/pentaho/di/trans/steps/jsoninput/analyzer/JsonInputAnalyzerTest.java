@@ -153,10 +153,14 @@ public class JsonInputAnalyzerTest {
     assertTrue( types.contains( JsonInputMeta.class ) );
   }
 
-
   @Test
-  public void testTextFileInputExternalResourceConsumer() throws Exception {
-    JsonInputExternalResourceConsumer consumer = new JsonInputExternalResourceConsumer();
+  public void testJsonInputExternalResourceConsumer() throws Exception {
+    JsonInputExternalResourceConsumer consumer = new JsonInputExternalResourceConsumer() {
+      @Override
+      protected boolean resolveExternalResources() {
+        return true;
+      }
+    };
 
     StepMeta spyMeta = spy( new StepMeta( "test", meta ) );
 
@@ -170,16 +174,16 @@ public class JsonInputAnalyzerTest {
     when( meta.getFileInputList( Mockito.any( VariableSpace.class ) ) ).thenReturn( inputFiles );
 
     assertFalse( consumer.isDataDriven( meta ) );
+
     Collection<IExternalResourceInfo> resources = consumer.getResourcesFromMeta( meta );
     assertFalse( resources.isEmpty() );
     assertEquals( 2, resources.size() );
 
-
     when( meta.isAcceptingFilenames() ).thenReturn( true );
     assertTrue( consumer.isDataDriven( meta ) );
     assertTrue( consumer.getResourcesFromMeta( meta ).isEmpty() );
-    when( mockRowMetaInterface.getString( Mockito.any( Object[].class ), Mockito.anyString(), Mockito.anyString() ) )
-      .thenReturn( "/path/to/row/file" );
+    when( mockJsonInput.environmentSubstitute( Mockito.any( String.class ) ) ).thenReturn( "/path/to/row/file" );
+
     when( mockJsonInput.getStepMetaInterface() ).thenReturn( meta );
     resources = consumer.getResourcesFromRow( mockJsonInput, mockRowMetaInterface, new String[] { "id", "name" } );
     assertFalse( resources.isEmpty() );
