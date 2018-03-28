@@ -57,10 +57,6 @@ public interface JmsProvider {
         return getString( PKG, "JmsProvider.ActiveMQUrlHint" );
 
       }
-
-      public String getDestinationHint() {
-        return getString( PKG, "JmsProvider.ActiveMQDestinationHint" );
-      }
     },
     WEBSPHERE {
       public String toString() {
@@ -70,10 +66,6 @@ public interface JmsProvider {
       public String getUrlHint() {
         return getString( PKG, "JmsProvider.WSUrlHint" );
 
-      }
-
-      public String getDestinationHint() {
-        return getString( PKG, "JmsProvider.WSDestinationHint" );
       }
     },
     JNDI {
@@ -85,15 +77,9 @@ public interface JmsProvider {
         return getString( PKG, "JmsProvider.JndiUrlHint" );
 
       }
-
-      public String getDestinationHint() {
-        return getString( PKG, "JmsProvider.JndiDestinationHint" );
-      }
     };
 
     public abstract String getUrlHint();
-
-    public abstract String getDestinationHint();
   }
 
   enum DestinationType {
