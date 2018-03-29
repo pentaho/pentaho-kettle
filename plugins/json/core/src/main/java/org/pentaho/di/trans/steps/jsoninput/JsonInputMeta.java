@@ -234,10 +234,26 @@ public class JsonInputMeta extends
   @Injection( name = "REMOVE_SOURCE_FIELDS" )
   private boolean removeSourceField;
 
+  private boolean defaultPathLeafToNull;
+
   public JsonInputMeta() {
     additionalOutputFields = new JsonInputMeta.AdditionalFileOutputFields();
     inputFiles = new JsonInputMeta.InputFiles();
     inputFields = new JsonInputField[0];
+  }
+
+  /**Returns the defaultPathLeafToNull.
+   * @return defaultPathLeafToNull
+   */
+  public boolean isDefaultPathLeafToNull() {
+    return defaultPathLeafToNull;
+  }
+
+  /**Set the defaultPathLeafToNull
+   * @param defaultPathLeafToNull the defaultPathLeafToNull to set.
+   */
+  public void setDefaultPathLeafToNull( boolean defaultPathLeafToNull ) {
+    this.defaultPathLeafToNull = defaultPathLeafToNull;
   }
 
   /**
@@ -608,6 +624,7 @@ public class JsonInputMeta extends
     retval.append( "    " + XMLHandler.addTagValue( "IsIgnoreEmptyFile", isIgnoreEmptyFile ) );
     retval.append( "    " + XMLHandler.addTagValue( "doNotFailIfNoFile", doNotFailIfNoFile ) );
     retval.append( "    " + XMLHandler.addTagValue( "ignoreMissingPath", ignoreMissingPath ) );
+    retval.append( "    " + XMLHandler.addTagValue( "defaultPathLeafToNull", defaultPathLeafToNull ) );
     retval.append( "    " ).append( XMLHandler.addTagValue( "rownum_field", rowNumberField ) );
 
     retval.append( "    <file>" ).append( Const.CR );
@@ -666,7 +683,7 @@ public class JsonInputMeta extends
       removeSourceField = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "removeSourceField" ) );
       isIgnoreEmptyFile = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "IsIgnoreEmptyFile" ) );
       ignoreMissingPath = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "ignoreMissingPath" ) );
-
+      defaultPathLeafToNull = getDefaultPathLeafToNull( stepnode );
       doNotFailIfNoFile = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "doNotFailIfNoFile" ) );
       includeRowNumber = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "rownum" ) );
       rowNumberField = XMLHandler.getTagValue( stepnode, "rownum_field" );
@@ -717,6 +734,17 @@ public class JsonInputMeta extends
     }
   }
 
+  // For backward compatibility: if "defaultPathLeafToNull" tag is absent in the step node at all, then we set
+  // defaultPathLeafToNull as default true.
+  private static boolean getDefaultPathLeafToNull( Node stepnode ) {
+    boolean result = true;
+    List<Node> nodes = XMLHandler.getNodes( stepnode, "defaultPathLeafToNull" );
+    if ( nodes != null && nodes.size() > 0 ) {
+      result = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "defaultPathLeafToNull" ) );
+    }
+    return result;
+  }
+
   @Deprecated //?needs to be public?
   public void allocate( int nrFiles, int nrFields ) {
     initArrayFields( nrFiles, nrFields );
@@ -734,6 +762,7 @@ public class JsonInputMeta extends
 
     isIgnoreEmptyFile = false;
     ignoreMissingPath = true;
+    defaultPathLeafToNull = true;
     doNotFailIfNoFile = true;
     includeFilename = false;
     filenameField = "";
@@ -816,6 +845,7 @@ public class JsonInputMeta extends
 
       isIgnoreEmptyFile = rep.getStepAttributeBoolean( id_step, "IsIgnoreEmptyFile" );
       ignoreMissingPath = rep.getStepAttributeBoolean( id_step, "ignoreMissingPath" );
+      defaultPathLeafToNull = rep.getStepAttributeBoolean( id_step, 0, "defaultPathLeafToNull", true );
 
       doNotFailIfNoFile = rep.getStepAttributeBoolean( id_step, "doNotFailIfNoFile" );
 
@@ -886,6 +916,7 @@ public class JsonInputMeta extends
 
       rep.saveStepAttribute( id_transformation, id_step, "IsIgnoreEmptyFile", isIgnoreEmptyFile );
       rep.saveStepAttribute( id_transformation, id_step, "ignoreMissingPath", ignoreMissingPath );
+      rep.saveStepAttribute( id_transformation, id_step, "defaultPathLeafToNull", defaultPathLeafToNull );
 
       rep.saveStepAttribute( id_transformation, id_step, "doNotFailIfNoFile", doNotFailIfNoFile );
 
