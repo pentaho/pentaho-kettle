@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,6 +22,7 @@
 
 package org.pentaho.di.job.entries.abort;
 
+import org.pentaho.di.core.annotations.JobEntry;
 import org.pentaho.di.job.entry.validator.JobEntryValidatorUtils;
 
 import java.util.List;
@@ -50,6 +51,11 @@ import org.w3c.dom.Node;
  * @author Samatar
  * @since 12-02-2007
  */
+@JobEntry( id = "ABORT",
+  i18nPackageName = "org.pentaho.di.job.entries.abort",
+  name = "JobEntryAbort.Name",
+  description = "JobEntryAbort.Description",
+  categoryDescription = "i18n:org.pentaho.di.job:JobCategory.Category.Utility" )
 public class JobEntryAbort extends JobEntryBase implements Cloneable, JobEntryInterface {
   private static Class<?> PKG = JobEntryAbort.class; // for i18n purposes, needed by Translator2!!
 
