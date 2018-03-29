@@ -43,7 +43,7 @@ define([
             $timeout(function() {
               setScrollTableClass();
               setWidths();
-            });
+            }, 1);
           }
         });
 

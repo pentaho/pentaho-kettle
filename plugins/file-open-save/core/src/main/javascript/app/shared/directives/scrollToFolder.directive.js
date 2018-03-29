@@ -23,26 +23,24 @@ define([
    * @param {Function} $timeout - Angular wrapper for window.setTimeout.
    * @return {{restrict: string, scope: {model: string}, link: link}} - scrollToFolder directive
    */
-  function scrollToFolder($timeout) {
+  function scrollToFolder($timeout, $state) {
     return {
       restrict: "A",
       scope: {model: "<ngModel", delete: "=didDelete"},
       link: function(scope, element, attrs) {
-        var watch = scope.$watch("model", function(value) {
-          if (value === "" || value === "Recents") {
+        scope.$watch("model", function(folder) {
+          if (folder.path === "" || folder.path === "Recents") {
             return;
           }
-
           $timeout(function() {
-            scrollToSelectedFolder(value);
-            watch();
+            scrollToSelectedFolder(folder.path);
           });
         });
 
         scope.$watch("delete", function(newVal) {
           if (newVal) {
             $timeout(function() {
-              scrollToSelectedFolder(scope.model, newVal);
+              scrollToSelectedFolder(scope.model.path, newVal);
               scope.delete = false;
             });
           }

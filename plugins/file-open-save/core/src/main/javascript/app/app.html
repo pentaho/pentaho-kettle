@@ -40,7 +40,7 @@
     </div>
   </div>
   <div id="middle" class="middle">
-    <div id="directoryTreeArea" class="directoryTreeArea noselect" ng-model="vm.folder.path"  did-delete="vm.didDeleteFolder">
+    <div id="directoryTreeArea" class="directoryTreeArea noselect" ng-model="vm.folder" scroll-to-folder did-delete="vm.didDeleteFolder">
       <folder auto-expand="vm.autoExpand"
               on-select="vm.selectFolder(selectedFolder)"
               show-recents="vm.showRecents"
@@ -65,6 +65,7 @@
             resize-cards="vm.showRecents"></card>
       <files search="vm.searchString"
              ng-show="!vm.showMessage && !vm.showRecents"
+             folder="vm.folder"
              files="vm.getFiles()"
              selected-file="vm.file"
              on-click="vm.selectFile(file)"
