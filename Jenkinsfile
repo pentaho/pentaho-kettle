@@ -163,7 +163,7 @@ pipeline {
         }
       }
       steps {
-        archiveArtifacts artifacts: '**/target/**/*.gz, **/target/**/*.tar.gz, **/target/**/*.zip', fingerprint: false
+        archiveArtifacts artifacts: '**/target/*.gz, **/target/*.tar.gz, **/target/*.zip', fingerprint: false
       }
     }
 
