@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -41,7 +41,6 @@ import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.annotations.PluginDialog;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.JobMeta;
@@ -61,10 +60,8 @@ import org.pentaho.di.ui.trans.step.BaseStepDialog;
  * @author Samatar
  * @since 10-03-2007
  */
-@PluginDialog( id = "ABORT", image = "ABR.svg", pluginType = PluginDialog.PluginType.JOBENTRY,
-  documentationUrl = "http://wiki.pentaho.com/display/EAI/Abort+Job" )
 public class JobEntryAbortDialog extends JobEntryDialog implements JobEntryDialogInterface {
-  private static Class<?> PKG = JobEntryAbortDialog.class; // for i18n purposes, needed by Translator2!!
+  private static Class<?> PKG = JobEntryAbort.class; // for i18n purposes, needed by Translator2!!
 
   private Text wName;
 
