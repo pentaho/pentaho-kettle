@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -958,9 +958,18 @@ public class SlaveServer extends ChangedFlag implements Cloneable, SharedObjectI
 
   public SlaveServerTransStatus getTransStatus( String transName, String carteObjectId, int startLogLineNr )
     throws Exception {
-    String xml =
-      execService( GetTransStatusServlet.CONTEXT_PATH + "/?name=" + URLEncoder.encode( transName, "UTF-8" ) + "&id="
-        + Const.NVL( carteObjectId, "" ) + "&xml=Y&from=" + startLogLineNr, true );
+    return getTransStatus( transName, carteObjectId, startLogLineNr, false );
+  }
+
+  public SlaveServerTransStatus getTransStatus( String transName, String carteObjectId, int startLogLineNr,
+                                                boolean sendResultXmlWithStatus )
+    throws Exception {
+    String query = GetTransStatusServlet.CONTEXT_PATH + "/?name=" + URLEncoder.encode( transName, "UTF-8" ) + "&id="
+      + Const.NVL( carteObjectId, "" ) + "&xml=Y&from=" + startLogLineNr;
+    if ( sendResultXmlWithStatus ) {
+      query = query + "&" + GetTransStatusServlet.SEND_RESULT + "=Y";
+    }
+    String xml = execService( query, true );
     return SlaveServerTransStatus.fromXML( xml );
   }
 

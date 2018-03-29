@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -56,6 +56,8 @@ public class GetTransStatusServlet extends BaseHttpServlet implements CartePlugi
   private static final long serialVersionUID = 3634806745372015720L;
 
   public static final String CONTEXT_PATH = "/kettle/transStatus";
+
+  public static final String SEND_RESULT = "sendResult";
 
   private static final byte[] XML_HEADER =
     XMLHandler.getXMLHeader( Const.XML_ENCODING ).getBytes( Charset.forName( Const.XML_ENCODING ) );
@@ -251,7 +253,9 @@ public class GetTransStatusServlet extends BaseHttpServlet implements CartePlugi
           byte[] data = null;
           String logId = trans.getLogChannelId();
           boolean finishedOrStopped = trans.isFinishedOrStopped();
-          if ( finishedOrStopped && ( data = cache.get( logId, startLineNr ) ) != null ) {
+          boolean sendResultXmlWithStatus = "Y".equalsIgnoreCase( request.getParameter( SEND_RESULT ) );
+          boolean dontUseCache = sendResultXmlWithStatus;
+          if ( finishedOrStopped && ( data = cache.get( logId, startLineNr ) ) != null && !dontUseCache ) {
             response.setContentLength( XML_HEADER.length + data.length );
             out = response.getOutputStream();
             out.write( XML_HEADER );
@@ -296,14 +300,14 @@ public class GetTransStatusServlet extends BaseHttpServlet implements CartePlugi
 
             // Send the result back as XML
             //
-            String xml = transStatus.getXML();
+            String xml = transStatus.getXML( sendResultXmlWithStatus );
             data = xml.getBytes( Charset.forName( Const.XML_ENCODING ) );
             out = response.getOutputStream();
             response.setContentLength( XML_HEADER.length + data.length );
             out.write( XML_HEADER );
             out.write( data );
             out.flush();
-            if ( finishedOrStopped && logId != null ) {
+            if ( finishedOrStopped && logId != null && !dontUseCache ) {
               cache.put( logId, xml, startLineNr );
             }
           }
