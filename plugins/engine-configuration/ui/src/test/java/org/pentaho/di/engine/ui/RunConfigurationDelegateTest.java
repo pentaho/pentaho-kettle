@@ -45,6 +45,7 @@ import org.pentaho.di.core.extension.ExtensionPointHandler;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.engine.configuration.api.RunConfigurationService;
 import org.pentaho.di.engine.configuration.impl.pentaho.DefaultRunConfiguration;
+import org.pentaho.di.engine.configuration.impl.spark.SparkRunConfiguration;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entries.trans.JobEntryTrans;
 import org.pentaho.di.job.entry.JobEntryCopy;
@@ -151,6 +152,25 @@ public class RunConfigurationDelegateTest {
   public void testLoad() {
     delegate.load();
     verify( service, times( 1 ) ).load();
+  }
+
+  @Test
+  public void testUpdateLoadedJobs_Spark() {
+    JobEntryTrans trans = new JobEntryTrans();
+    trans.setRunConfiguration( "key" );
+
+    JobMeta meta = new JobMeta();
+    meta.addJobEntry( new JobEntryCopy( trans ) );
+
+    JobMeta[] jobs = new JobMeta[] { meta };
+    doReturn( jobs ).when( spoon ).getLoadedJobs();
+
+    SparkRunConfiguration config = new SparkRunConfiguration();
+    config.setName( "Test" );
+
+    delegate.updateLoadedJobs( "key", config );
+
+    assertEquals( "Test", trans.getRunConfiguration() );
   }
 
   @Test
