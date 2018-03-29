@@ -39,7 +39,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.commons.vfs2.FileName;
@@ -146,29 +145,19 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
    */
   protected Job parentJob;
 
-  /**
-   * The parent transformation
-   */
+  /** The parent transformation */
   protected Trans parentTrans;
 
   /** The parent logging interface to reference */
   private LoggingObjectInterface parentLoggingObject;
 
-  /**
-   * Keep a list of the job entries that were executed. org.pentaho.di.core.logging.CentralLogStore.getInstance()
-   */
+  /** Keep a list of the job entries that were executed. org.pentaho.di.core.logging.CentralLogStore.getInstance() */
   private JobTracker jobTracker;
 
-  /**
-   * A flat list of results in THIS job, in the order of execution of job entries
-   */
+  /** A flat list of results in THIS job, in the order of execution of job entries */
   private final LinkedList<JobEntryResult> jobEntryResults = new LinkedList<JobEntryResult>();
 
   private Date startDate, endDate, currentDate, logDate, depDate;
-
-  private AtomicBoolean active;
-
-  private AtomicBoolean stopped;
 
   private long batchId;
 
@@ -184,12 +173,8 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
    */
   private List<RowMetaAndData> sourceRows;
 
-  /**
-   * The result of the job, after execution.
-   */
+  /** The result of the job, after execution. */
   private Result result;
-
-  private AtomicBoolean initialized;
 
   private boolean interactive;
 
@@ -203,12 +188,8 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
 
   private Map<JobEntryCopy, JobEntryJob> activeJobEntryJobs;
 
-  /**
-   * Parameters of the job.
-   */
+  /** Parameters of the job. */
   private NamedParams namedParams = new NamedParamsDefault();
-
-  private AtomicBoolean finished;
 
   private SocketRepository socketRepository;
 
@@ -228,16 +209,25 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
   /** The command line arguments for the job. */
   protected String[] arguments;
 
+  /** Int value for storage job statuses */
+  private AtomicInteger status;
+
   /**
-   * Instantiates a new job.
-   *
-   * @param name
-   *          the name
-   * @param file
-   *          the file
-   * @param args
-   *          the args
+   * <p>
+   * This enum stores bit masks which are used to manipulate with statuses over field {@link Job#status}
    */
+  enum BitMaskStatus {
+    ACTIVE( 1 ), INITIALIZED( 2 ), STOPPED( 4 ), FINISHED( 8 );
+
+    private final int mask;
+    // the sum of status masks
+    public static final int BIT_STATUS_SUM = 63;
+
+    BitMaskStatus( int mask ) {
+      this.mask = mask;
+    }
+  }
+
   public Job( String name, String file, String[] args ) {
     this();
     jobMeta = new JobMeta();
@@ -253,10 +243,9 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
     this.log = new LogChannel( this );
   }
 
-  /**
-   * Initializes the Job.
-   */
   public void init() {
+    status = new AtomicInteger();
+
     jobListeners = new ArrayList<JobListener>();
     jobEntryListeners = new ArrayList<JobEntryListener>();
     delegationListeners = new ArrayList<DelegationListener>();
@@ -266,14 +255,10 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
 
     extensionDataMap = new HashMap<String, Object>();
 
-    active = new AtomicBoolean( false );
-    stopped = new AtomicBoolean( false );
     jobTracker = new JobTracker( jobMeta );
     synchronized ( jobEntryResults ) {
       jobEntryResults.clear();
     }
-    initialized = new AtomicBoolean( false );
-    finished = new AtomicBoolean( false );
     errors = new AtomicInteger( 0 );
     batchId = -1;
     passedBatchId = -1;
@@ -286,9 +271,6 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
     this.setDefaultLogCommitSize();
   }
 
-  /**
-   * Sets the default log commit size.
-   */
   private void setDefaultLogCommitSize() {
     String propLogCommitSize = this.getVariable( "pentaho.log.commit.size" );
     if ( propLogCommitSize != null ) {
@@ -301,28 +283,10 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
     }
   }
 
-  /**
-   * Instantiates a new job.
-   *
-   * @param repository
-   *          the repository
-   * @param jobMeta
-   *          the job meta
-   */
   public Job( Repository repository, JobMeta jobMeta ) {
     this( repository, jobMeta, null );
   }
 
-  /**
-   * Instantiates a new job.
-   *
-   * @param repository
-   *          the repository
-   * @param jobMeta
-   *          the job meta
-   * @param parentLogging
-   *          the parent logging
-   */
   public Job( Repository repository, JobMeta jobMeta, LoggingObjectInterface parentLogging ) {
     this.rep = repository;
     this.jobMeta = jobMeta;
@@ -337,9 +301,6 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
     this.containerObjectId = log.getContainerObjectId();
   }
 
-  /**
-   * Empty constructor, for Class.newInstance()
-   */
   public Job() {
     init();
     this.log = new LogChannel( this );
@@ -360,13 +321,6 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
     }
   }
 
-  /**
-   * Creates the job with new class loader.
-   *
-   * @return the job
-   * @throws KettleException
-   *           the kettle exception
-   */
   public static final Job createJobWithNewClassLoader() throws KettleException {
     try {
       // Load the class.
@@ -384,25 +338,13 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
     }
   }
 
-  /**
-   * Gets the jobname.
-   *
-   * @return the jobname
-   */
   public String getJobname() {
     if ( jobMeta == null ) {
       return null;
     }
-
     return jobMeta.getName();
   }
 
-  /**
-   * Sets the repository.
-   *
-   * @param rep
-   *          the new repository
-   */
   public void setRepository( Repository rep ) {
     this.rep = rep;
   }
@@ -415,9 +357,9 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
     ExecutorService heartbeat = null; // this job's heartbeat scheduled executor
 
     try {
-      stopped = new AtomicBoolean( false );
-      finished = new AtomicBoolean( false );
-      initialized = new AtomicBoolean( true );
+      setStopped( false );
+      setFinished( false );
+      setInitialized( true );
 
       // Create a new variable name space as we want jobs to have their own set of variables.
       // initialize from parentJob or null
@@ -448,12 +390,11 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
 
       emergencyWriteJobTracker( result );
 
-      active.set( false );
-      finished.set( true );
-      stopped.set( false );
+      setActive( false );
+      setFinished( true );
+      setStopped( false );
     } finally {
       try {
-
         shutdownHeartbeat( heartbeat );
 
         ExtensionPointHandler.callExtensionPoint( log, KettleExtensionPoint.JobFinish.id, this );
@@ -495,8 +436,8 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
     try {
       log.snap( Metrics.METRIC_JOB_START );
 
-      finished.set( false );
-      stopped.set( false );
+      setFinished( false );
+      setStopped( false );
       KettleEnvironment.setExecutionInformation( this, rep );
 
       log.logMinimal( BaseMessages.getString( PKG, "Job.Comment.JobStarted" ) );
@@ -509,8 +450,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
               .getString( PKG, "Job.Reason.Started" ), null, 0, null );
       jobTracker.addJobTracker( new JobTracker( jobMeta, jerStart ) );
 
-      active.set( true );
-
+      setActive( true );
       // Where do we start?
       JobEntryCopy startpoint;
 
@@ -571,9 +511,8 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
       jobTracker.addJobTracker( new JobTracker( jobMeta, jerEnd ) );
       log.logMinimal( BaseMessages.getString( PKG, "Job.Comment.JobFinished" ) );
 
-      active.set( false );
-      finished.set( true );
-
+      setActive( false );
+      setFinished( true );
       return res;
     } finally {
       log.snap( Metrics.METRIC_JOB_STOP );
@@ -593,9 +532,9 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
    * @throws KettleJobException
    */
   public Result execute( int nr, Result result ) throws KettleException {
-    finished.set( false );
-    active.set( true );
-    initialized.set( true );
+    setFinished( false );
+    setActive( true );
+    setInitialized( true );
     KettleEnvironment.setExecutionInformation( this, rep );
 
     // Where do we start?
@@ -612,8 +551,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
     }
 
     Result res = execute( nr, result, startpoint, null, BaseMessages.getString( PKG, "Job.Reason.StartOfJobentry" ) );
-
-    active.set( false );
+    setActive( false );
 
     return res;
   }
@@ -660,7 +598,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
       String reason ) throws KettleException {
     Result res = null;
 
-    if ( stopped.get() ) {
+    if ( isStopped() ) {
       res = new Result( nr );
       res.stopped = true;
       return res;
@@ -681,8 +619,8 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
 
     jobMeta.disposeEmbeddedMetastoreProvider();
     if ( jobMeta.getMetastoreLocatorOsgi() != null ) {
-      jobMeta.setEmbeddedMetastoreProviderKey(
-        jobMeta.getMetastoreLocatorOsgi().setEmbeddedMetastore( jobMeta.getEmbeddedMetaStore() ) );
+      jobMeta.setEmbeddedMetastoreProviderKey( jobMeta.getMetastoreLocatorOsgi().setEmbeddedMetastore( jobMeta
+          .getEmbeddedMetaStore() ) );
     }
 
     if ( extension.result != null ) {
@@ -1200,12 +1138,10 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
   }
 
   /**
-   *  Writes information to Job Log table.
-   *  Cleans old records, in case job is finished.
-   *
+   * Writes information to Job Log table. Cleans old records, in case job is finished.
    */
-  protected void writeLogTableInformation( JobLogTable jobLogTable, LogStatus status )
-    throws KettleJobException, KettleDatabaseException {
+  protected void writeLogTableInformation( JobLogTable jobLogTable, LogStatus status ) throws KettleJobException,
+    KettleDatabaseException {
     boolean cleanLogRecords = status.equals( LogStatus.END );
     String tableName = jobLogTable.getActualTableName();
     DatabaseMeta logcon = jobLogTable.getDatabaseMeta();
@@ -1231,6 +1167,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
       ldb.disconnect();
     }
   }
+
   /**
    * Write log channel information.
    *
@@ -1299,7 +1236,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
       db.cleanupLogRecords( jobEntryLogTable );
     } catch ( Exception e ) {
       throw new KettleException( BaseMessages.getString( PKG, "Job.Exception.UnableToJobEntryInformationToLogTable" ),
-        e );
+          e );
     } finally {
       if ( !db.isAutoCommit() ) {
         db.commitLog( true, jobEntryLogTable );
@@ -1312,64 +1249,60 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
     return new Database( this, databaseMeta );
   }
 
-  /**
-   * Checks if is active.
-   *
-   * @return true, if is active
-   */
+  public boolean isInitialized() {
+    int exist = status.get() & BitMaskStatus.INITIALIZED.mask;
+    return exist != 0;
+  }
+
+  protected void setInitialized( boolean initialized ) {
+    status.updateAndGet( v -> initialized ? v | BitMaskStatus.INITIALIZED.mask : ( BitMaskStatus.BIT_STATUS_SUM
+        ^ BitMaskStatus.INITIALIZED.mask ) & v );
+  }
+
   public boolean isActive() {
-    return active.get();
+    int exist = status.get() & BitMaskStatus.ACTIVE.mask;
+    return exist != 0;
   }
 
-  /**
-   * Stop all activity by setting the stopped property to true.
-   */
-  public void stopAll() {
-    stopped.set( true );
+  protected void setActive( boolean active ) {
+    status.updateAndGet( v -> active ? v | BitMaskStatus.ACTIVE.mask : ( BitMaskStatus.BIT_STATUS_SUM
+        ^ BitMaskStatus.ACTIVE.mask ) & v );
   }
 
-  /**
-   * Sets the stopped.
-   *
-   * @param stopped
-   *          the new stopped
-   */
-  public void setStopped( boolean stopped ) {
-    this.stopped.set( stopped );
-  }
-
-  /**
-   * Gets the stopped status of this Job.
-   *
-   * @return Returns the stopped status of this Job
-   */
   public boolean isStopped() {
-    return stopped.get();
+    int exist = status.get() & BitMaskStatus.STOPPED.mask;
+    return exist != 0;
   }
 
-  /**
-   * Gets the start date.
-   *
-   * @return Returns the startDate
-   */
+  /** Stop all activity by setting the stopped property to true. */
+  public void stopAll() {
+    setStopped( true );
+  }
+
+  /** Sets the stopped. */
+  public void setStopped( boolean stopped ) {
+    status.updateAndGet( v -> stopped ? v | BitMaskStatus.STOPPED.mask : ( BitMaskStatus.BIT_STATUS_SUM
+        ^ BitMaskStatus.STOPPED.mask ) & v );
+  }
+
+  public boolean isFinished() {
+    int exist = status.get() & BitMaskStatus.FINISHED.mask;
+    return exist != 0;
+  }
+
+  public void setFinished( boolean finished ) {
+    status.updateAndGet( v -> finished ? v | BitMaskStatus.FINISHED.mask : ( BitMaskStatus.BIT_STATUS_SUM
+        ^ BitMaskStatus.FINISHED.mask ) & v );
+  }
+
   public Date getStartDate() {
     return startDate;
   }
 
-  /**
-   * Gets the end date.
-   *
-   * @return Returns the endDate
-   */
   public Date getEndDate() {
     return endDate;
   }
 
-  /**
-   * Gets the current date.
-   *
-   * @return Returns the currentDate
-   */
   public Date getCurrentDate() {
     return currentDate;
   }
@@ -1383,67 +1316,30 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
     return depDate;
   }
 
-  /**
-   * Gets the log date.
-   *
-   * @return Returns the logDate
-   */
   public Date getLogDate() {
     return logDate;
   }
 
-  /**
-   * Gets the job meta.
-   *
-   * @return Returns the JobMeta
-   */
   public JobMeta getJobMeta() {
     return jobMeta;
   }
 
-  /**
-   * Gets the rep (repository).
-   *
-   * @return Returns the rep
-   */
   public Repository getRep() {
     return rep;
   }
 
-  /**
-   * Gets the thread.
-   *
-   * @return the thread
-   */
   public Thread getThread() {
     return this;
   }
 
-  /**
-   * Gets the job tracker.
-   *
-   * @return Returns the jobTracker
-   */
   public JobTracker getJobTracker() {
     return jobTracker;
   }
 
-  /**
-   * Sets the job tracker.
-   *
-   * @param jobTracker
-   *          The jobTracker to set
-   */
   public void setJobTracker( JobTracker jobTracker ) {
     this.jobTracker = jobTracker;
   }
 
-  /**
-   * Sets the source rows.
-   *
-   * @param sourceRows
-   *          the new source rows
-   */
   public void setSourceRows( List<RowMetaAndData> sourceRows ) {
     this.sourceRows = sourceRows;
   }
@@ -1479,68 +1375,26 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
     this.parentJob = parentJob;
   }
 
-  /**
-   * Gets the result.
-   *
-   * @return the result
-   */
   public Result getResult() {
     return result;
   }
 
-  /**
-   * Sets the result.
-   *
-   * @param result
-   *          the new result
-   */
   public void setResult( Result result ) {
     this.result = result;
   }
 
-  /**
-   * Gets the boolean value of initialized.
-   *
-   * @return Returns the initialized
-   */
-  public boolean isInitialized() {
-    return initialized.get();
-  }
-
-  /**
-   * Gets the batchId.
-   *
-   * @return Returns the batchId
-   */
   public long getBatchId() {
     return batchId;
   }
 
-  /**
-   * Sets the batchId.
-   *
-   * @param batchId
-   *          The batchId to set
-   */
   public void setBatchId( long batchId ) {
     this.batchId = batchId;
   }
 
-  /**
-   * Gets the passedBatchId.
-   *
-   * @return the passedBatchId
-   */
   public long getPassedBatchId() {
     return passedBatchId;
   }
 
-  /**
-   * Sets the passedBatchId.
-   *
-   * @param jobBatchId
-   *          the jobBatchId to set
-   */
   public void setPassedBatchId( long jobBatchId ) {
     this.passedBatchId = jobBatchId;
   }
@@ -1732,33 +1586,27 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
     variables.injectVariables( prop );
   }
 
-  /**
-   * Gets the status.
-   *
-   * @return the status
-   */
   public String getStatus() {
     String message;
 
-    if ( !initialized.get() ) {
-      message = Trans.STRING_WAITING;
-    } else {
-      if ( active.get() ) {
-        if ( stopped.get() ) {
-          message = Trans.STRING_HALTING;
-        } else {
-          message = Trans.STRING_RUNNING;
-        }
+    if ( isActive() ) {
+      if ( isStopped() ) {
+        message = Trans.STRING_HALTING;
       } else {
-        if ( stopped.get() ) {
-          message = Trans.STRING_STOPPED;
-        } else {
-          message = Trans.STRING_FINISHED;
-        }
-        if ( result != null && result.getNrErrors() > 0 ) {
-          message += " (with errors)";
-        }
+        message = Trans.STRING_RUNNING;
       }
+    } else if ( isFinished() ) {
+      message = Trans.STRING_FINISHED;
+      if ( getResult().getNrErrors() > 0 ) {
+        message += " (with errors)";
+      }
+    } else if ( isStopped() ) {
+      message = Trans.STRING_STOPPED;
+      if ( getResult().getNrErrors() > 0 ) {
+        message += " (with errors)";
+      }
+    } else {
+      message = Trans.STRING_WAITING;
     }
 
     return message;
@@ -1815,10 +1663,9 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
                 metaStore, executionConfiguration.getXML(), CONFIGURATION_IN_EXPORT_FILENAME );
 
         // Send the zip file over to the slave server...
-        String result = slaveServer.sendExport(
-            topLevelResource.getArchiveName(),
-            RegisterPackageServlet.TYPE_JOB,
-            topLevelResource.getBaseResourceName() );
+        String result =
+            slaveServer.sendExport( topLevelResource.getArchiveName(), RegisterPackageServlet.TYPE_JOB, topLevelResource
+                .getBaseResourceName() );
         WebResult webResult = WebResult.fromXMLString( result );
         if ( !webResult.getResult().equalsIgnoreCase( WebResult.STRING_OK ) ) {
           throw new KettleException( "There was an error passing the exported job to the remote server: " + Const.CR
@@ -1855,87 +1702,34 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
     }
   }
 
-  /**
-   * Add a job listener to the job
-   *
-   * @param jobListener
-   *          the job listener to add
-   */
   public void addJobListener( JobListener jobListener ) {
     synchronized ( jobListeners ) {
       jobListeners.add( jobListener );
     }
   }
 
-  /**
-   * Adds the job entry listener.
-   *
-   * @param jobEntryListener
-   *          the job entry listener
-   */
   public void addJobEntryListener( JobEntryListener jobEntryListener ) {
     jobEntryListeners.add( jobEntryListener );
   }
 
-  /**
-   * Remove a job listener from the job
-   *
-   * @param jobListener
-   *          the job listener to remove
-   */
   public void removeJobListener( JobListener jobListener ) {
     synchronized ( jobListeners ) {
       jobListeners.remove( jobListener );
     }
   }
 
-  /**
-   * Remove a job entry listener from the job
-   *
-   * @param jobListener
-   *          the job entry listener to remove
-   */
   public void removeJobEntryListener( JobEntryListener jobEntryListener ) {
     jobEntryListeners.remove( jobEntryListener );
   }
 
-  /**
-   * Gets the job entry listeners.
-   *
-   * @return the job entry listeners
-   */
   public List<JobEntryListener> getJobEntryListeners() {
     return jobEntryListeners;
   }
 
-  /**
-   * Gets the job listeners.
-   *
-   * @return the job listeners
-   */
   public List<JobListener> getJobListeners() {
     synchronized ( jobListeners ) {
       return new ArrayList<JobListener>( jobListeners );
     }
-  }
-
-  /**
-   * Gets the boolean value of finished.
-   *
-   * @return the finished
-   */
-  public boolean isFinished() {
-    return finished.get();
-  }
-
-  /**
-   * Sets the value of finished.
-   *
-   * @param finished
-   *          the finished to set
-   */
-  public void setFinished( boolean finished ) {
-    this.finished.set( finished );
   }
 
   /*
@@ -2053,7 +1847,8 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
   /*
    * (non-Javadoc)
    *
-   * @see org.pentaho.di.core.parameters.NamedParams#mergeParametersWith(org.pentaho.di.core.parameters.NamedParams, boolean replace)
+   * @see org.pentaho.di.core.parameters.NamedParams#mergeParametersWith(org.pentaho.di.core.parameters.NamedParams,
+   * boolean replace)
    */
   @Override
   public void mergeParametersWith( NamedParams params, boolean replace ) {
