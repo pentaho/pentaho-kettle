@@ -77,19 +77,22 @@ public class RunConfigurationDelegate {
 
         if ( entry instanceof JobEntryTrans ) {
           JobEntryTrans jet = (JobEntryTrans) entry;
+          if ( jet.getRunConfiguration() != null ) {
+            if ( jet.getRunConfiguration().equals( key ) ) {
+              try {
+                ExtensionPointHandler.callExtensionPoint( job.getLogChannel(), KettleExtensionPoint.JobEntryTransSave.id,
+                  new Object[] { job, runConfig.getName() } );
+              } catch ( KettleException e ) {
+                spoonSupplier.get().getLog().logBasic( "Unable to set run configuration in job " + job.getName() );
+              }
 
-          if ( jet.getRunConfiguration().equals( key ) ) {
-            try {
-              ExtensionPointHandler.callExtensionPoint( job.getLogChannel(), KettleExtensionPoint.JobEntryTransSave.id,
-                new Object[] { job, runConfig.getName() } );
-            } catch ( KettleException e ) {
-              spoonSupplier.get().getLog().logBasic( "Unable to set run configuration in job " + job.getName() );
+              jet.setRunConfiguration( runConfig.getName() );
+              if ( runConfig instanceof DefaultRunConfiguration ) {
+                jet.setRemoteSlaveServerName( ( (DefaultRunConfiguration) runConfig ).getServer() );
+                jet.setLoggingRemoteWork( ( (DefaultRunConfiguration) runConfig ).isLogRemoteExecutionLocally() );
+              }
+              jet.setChanged();
             }
-
-            jet.setRunConfiguration( runConfig.getName() );
-            jet.setRemoteSlaveServerName( ( (DefaultRunConfiguration) runConfig ).getServer() );
-            jet.setLoggingRemoteWork( ( (DefaultRunConfiguration) runConfig ).isLogRemoteExecutionLocally() );
-            jet.setChanged();
           }
         }
       }
