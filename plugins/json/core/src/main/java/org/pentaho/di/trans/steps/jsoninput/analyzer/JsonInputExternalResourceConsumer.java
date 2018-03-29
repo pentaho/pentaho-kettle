@@ -22,19 +22,13 @@
 
 package org.pentaho.di.trans.steps.jsoninput.analyzer;
 
-import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.trans.steps.jsoninput.JsonInput;
 import org.pentaho.di.trans.steps.jsoninput.JsonInputMeta;
-import org.pentaho.metaverse.api.IAnalysisContext;
-import org.pentaho.metaverse.api.analyzer.kettle.KettleAnalyzerUtil;
+import org.pentaho.metaverse.api.IMetaverseConfig;
 import org.pentaho.metaverse.api.analyzer.kettle.step.BaseStepExternalResourceConsumer;
-import org.pentaho.metaverse.api.model.IExternalResourceInfo;
+import org.pentaho.platform.engine.core.system.PentahoSystem;
 
-import java.util.Collection;
-import java.util.Collections;
-
-public class JsonInputExternalResourceConsumer
-  extends BaseStepExternalResourceConsumer<JsonInput, JsonInputMeta> {
+public class JsonInputExternalResourceConsumer extends BaseStepExternalResourceConsumer<JsonInput, JsonInputMeta> {
 
   @Override
   public Class<JsonInputMeta> getMetaClass() {
@@ -47,22 +41,8 @@ public class JsonInputExternalResourceConsumer
   }
 
   @Override
-  public Collection<IExternalResourceInfo> getResourcesFromMeta(
-    final JsonInputMeta meta, final IAnalysisContext context ) {
-    Collection<IExternalResourceInfo> resources = Collections.emptyList();
-
-    // We only need to collect these resources if we're not data-driven and there are no used variables in the
-    // metadata relating to external files.
-    if ( !isDataDriven( meta ) ) {
-      resources = KettleAnalyzerUtil.getResourcesFromMeta( meta, context );
-    }
-    return resources;
-  }
-
-  @Override
-  public Collection<IExternalResourceInfo> getResourcesFromRow(
-    final JsonInput step, final RowMetaInterface rowMeta, final Object[] row ) {
-
-    return KettleAnalyzerUtil.getResourcesFromRow( step, rowMeta, row );
+  protected boolean resolveExternalResources() {
+    final IMetaverseConfig config = PentahoSystem.get( IMetaverseConfig.class );
+    return config == null ? false : config.getResolveExternalResources();
   }
 }

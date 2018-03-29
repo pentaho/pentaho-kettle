@@ -22,6 +22,7 @@
     <sshd-sftp.version>0.11.0</sshd-sftp.version>
     <ftpserver-core.version>1.0.6</ftpserver-core.version>
     <bcprov-jdk14.version>1.51</bcprov-jdk14.version>
+    <pdi.version>${project.version}</pdi.version>
   </properties>
 
   <dependencies>
@@ -121,6 +122,18 @@
     <dependency>
       <groupId>org.mockito</groupId>
       <artifactId>mockito-all</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.pentaho.di.plugins</groupId>
+      <artifactId>pdi-xml-plugin-core</artifactId>
+      <version>${pdi.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.pentaho.di.plugins</groupId>
+      <artifactId>pdi-core-plugins-impl</artifactId>
+      <version>${pdi.version}</version>
+      <scope>test</scope>
     </dependency>
   </dependencies>
 
