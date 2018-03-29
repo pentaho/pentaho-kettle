@@ -352,7 +352,7 @@ define([
     }
 
     function _setSearchState() {
-      if (isPentahoRepo() && vm.searchString === "" && vm.selectedFolder === "") {
+      if (isPentahoRepo() && vm.searchString === "" && vm.selectedFolder === "/") {
         vm.showRecents = true;
         vm.folder = {name: "Recents", path: "Recents"};
         vm.selectedFolder = vm.folder.name;
