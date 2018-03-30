@@ -100,6 +100,7 @@ public class S3CsvInputDialog extends BaseStepDialog implements StepDialogInterf
 
   private boolean isReceivingInput;
   private Button wRunningInParallel;
+  private Button wUseAwsDefaultCredentials;
 
   public S3CsvInputDialog( Shell parent, Object in, TransMeta tr, String sname ) {
     super( parent, (BaseStepMeta) in, tr, sname );
@@ -194,6 +195,26 @@ public class S3CsvInputDialog extends BaseStepDialog implements StepDialogInterf
     fdSecretKey.right = new FormAttachment( 100, 0 );
     wSecretKey.setLayoutData( fdSecretKey );
     lastControl = wSecretKey;
+
+    // Get credentials at runtime?
+    //
+    Label wlUseAwsDefaultCredentials = new Label( shell, SWT.RIGHT );
+    wlUseAwsDefaultCredentials.setText( Messages.getString( "S3CsvInputDialog.GetCredentialsAtRuntime.Label" ) ); //$NON-NLS-1$
+    props.setLook( wlUseAwsDefaultCredentials );
+    FormData fdlUseAwsDefaultCredentials = new FormData();
+    fdlUseAwsDefaultCredentials.top = new FormAttachment( lastControl, margin );
+    fdlUseAwsDefaultCredentials.left = new FormAttachment( 0, 0 );
+    fdlUseAwsDefaultCredentials.right = new FormAttachment( middle, -margin );
+    wlUseAwsDefaultCredentials.setLayoutData( fdlUseAwsDefaultCredentials );
+    wUseAwsDefaultCredentials = new Button( shell, SWT.CHECK );
+    props.setLook( wUseAwsDefaultCredentials );
+    wUseAwsDefaultCredentials
+      .setToolTipText( Messages.getString( "S3CsvInputDialog.GetCredentialsAtRuntime.Tooltip" ) );
+    FormData fdUseAwsDefaultCredentials = new FormData();
+    fdUseAwsDefaultCredentials.top = new FormAttachment( lastControl, margin );
+    fdUseAwsDefaultCredentials.left = new FormAttachment( middle, 0 );
+    wUseAwsDefaultCredentials.setLayoutData( fdUseAwsDefaultCredentials );
+    lastControl = wUseAwsDefaultCredentials;
 
     // Bucket name
     Label wlBucket = new Label( shell, SWT.RIGHT );
@@ -670,6 +691,7 @@ public class S3CsvInputDialog extends BaseStepDialog implements StepDialogInterf
     wStepname.setText( stepname );
     wAccessKey.setText( Const.NVL( inputMeta.getAwsAccessKey(), "" ) );
     wSecretKey.setText( Const.NVL( inputMeta.getAwsSecretKey(), "" ) );
+    wUseAwsDefaultCredentials.setSelection( inputMeta.getUseAwsDefaultCredentials() );
     wBucket.setText( Const.NVL( inputMeta.getBucket(), "" ) );
 
     if ( isReceivingInput ) {
@@ -718,6 +740,7 @@ public class S3CsvInputDialog extends BaseStepDialog implements StepDialogInterf
 
     inputMeta.setAwsAccessKey( wAccessKey.getText() );
     inputMeta.setAwsSecretKey( wSecretKey.getText() );
+    inputMeta.setUseAwsDefaultCredentials( wUseAwsDefaultCredentials.getSelection() );
     inputMeta.setBucket( wBucket.getText() );
 
     if ( isReceivingInput ) {

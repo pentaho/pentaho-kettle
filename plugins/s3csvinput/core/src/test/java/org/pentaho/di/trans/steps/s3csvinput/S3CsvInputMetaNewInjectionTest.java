@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -46,6 +46,11 @@ public class S3CsvInputMetaNewInjectionTest extends BaseMetadataInjectionTest<S3
     check( "AWS_SECRET_KEY", new StringGetter() {
       public String get() {
         return meta.getAwsSecretKey();
+      }
+    } );
+    check( "USE_AWS_DEFAULT_CREDENTIALS", new BooleanGetter() {
+      public boolean get() {
+        return meta.getUseAwsDefaultCredentials();
       }
     } );
     check( "BUCKET", new StringGetter() {
