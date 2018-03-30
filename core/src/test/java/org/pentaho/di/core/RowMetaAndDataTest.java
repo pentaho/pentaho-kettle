@@ -67,8 +67,17 @@ public class RowMetaAndDataTest {
   @Test
   public void testMergeRowAndMetaData() {
     row = new RowMetaAndData( rowsMeta, "text", true, 1 );
-    RowMetaAndData addRow = new RowMetaAndData( rowsMeta, "text1", false, 3 );
+    RowMeta addRowMeta = new RowMeta();
+    ValueMetaInterface valueMetaString = new ValueMetaString( "str" );
+    addRowMeta.addValueMeta( valueMetaString );
+
+    RowMetaAndData addRow = new RowMetaAndData( addRowMeta, "text1" );
     row.mergeRowMetaAndData( addRow, "originName" );
+
+    assertEquals( 4, row.size() );
+    assertEquals( "text", row.getData()[0] );
+    assertEquals( "text1", row.getData()[3] );
+    assertEquals( "originName", row.getValueMeta( 3 ).getOrigin() );
   }
 
   @Test
