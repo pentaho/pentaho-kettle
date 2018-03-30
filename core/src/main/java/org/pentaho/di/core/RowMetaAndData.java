@@ -442,4 +442,10 @@ public class RowMetaAndData implements Cloneable {
     rowMeta.removeValueMeta( index );
     data = RowDataUtil.removeItem( data, index );
   }
+
+  public void mergeRowMetaAndData( RowMetaAndData rowMetaAndData, String originStepName ) {
+    int originalMetaSize = rowMeta.size();
+    rowMeta.mergeRowMeta( rowMetaAndData.getRowMeta(), originStepName );
+    data = RowDataUtil.addRowData( data, originalMetaSize, rowMetaAndData.getData() );
+  }
 }
