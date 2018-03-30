@@ -24,9 +24,7 @@ package org.pentaho.di.trans.steps.jsoninput.analyzer;
 
 import org.pentaho.di.trans.steps.jsoninput.JsonInput;
 import org.pentaho.di.trans.steps.jsoninput.JsonInputMeta;
-import org.pentaho.metaverse.api.IMetaverseConfig;
 import org.pentaho.metaverse.api.analyzer.kettle.step.BaseStepExternalResourceConsumer;
-import org.pentaho.platform.engine.core.system.PentahoSystem;
 
 public class JsonInputExternalResourceConsumer extends BaseStepExternalResourceConsumer<JsonInput, JsonInputMeta> {
 
@@ -38,11 +36,5 @@ public class JsonInputExternalResourceConsumer extends BaseStepExternalResourceC
   @Override
   public boolean isDataDriven( final JsonInputMeta meta ) {
     return meta.isAcceptingFilenames();
-  }
-
-  @Override
-  protected boolean resolveExternalResources() {
-    final IMetaverseConfig config = PentahoSystem.get( IMetaverseConfig.class );
-    return config == null ? false : config.getResolveExternalResources();
   }
 }
