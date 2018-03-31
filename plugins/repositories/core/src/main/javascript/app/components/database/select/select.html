@@ -1,0 +1,55 @@
+<div class="main_div" ng-if="vm.databases.length>0">
+  <div class="title_text margin_bottom_30">{{::vm.selectLabel}}</div>
+  <div class="middle_div">
+    <div id="dbDiv" class="margin_bottom_20 text_left">
+      <div ng-repeat="database in vm.databases" class="db_list_items" ng-class="{active : database.name == vm.connection.databaseConnection}" ng-click="vm.selectDatabase(database)">{{database.name}}</div>
+    </div>
+    <div>
+      <button id="delete" class="right margin_left_10 secondary" ng-class="{visible : vm.connection.databaseConnection}"
+          type="button" ng-click="vm.deleteConnection()">
+        <span>
+          {{::vm.deleteLabel}}
+        </span>
+      </button>
+      <button id="edit" class="right margin_left_10 secondary" ng-class="{visible : vm.connection.databaseConnection}"
+          type="button" ng-click="vm.editConnection()">
+        <span>
+          {{::vm.editLabel}}
+        </span>
+      </button>
+      <button id="new" class="right secondary" type="button" ng-click="vm.createNewConnection()">
+        <span>
+          {{::vm.newLabel}}
+        </span>
+      </button>
+    </div>
+  </div>
+</div>
+<div class="main_div" ng-if="vm.databases.length==0">
+  <div class="title_text margin_bottom_30">{{::vm.databaseSelectLabel}}</div>
+  <div class="middle_div">
+    <div class="margin_bottom_20">
+      <textarea id="no_conn" class="text_center" readonly="readonly">{{::vm.databaseNoneLabel}}</textarea>
+    </div>
+    <div>
+      <button class="same_width standard" type="button" ng-click="vm.createNewConnection()">
+        <span>
+          {{::vm.createLabel}}
+        </span>
+      </button>
+    </div>
+  </div>
+</div>
+<div class="bottom">
+  <div class="margin_bottom_20">
+    <hr />
+  </div>
+  <div>
+    <help></help>
+    <button class="right standard" type="button" ng-click="vm.back()">
+      <span>
+        {{::vm.backLabel}}
+      </span>
+    </button>
+  </div>
+</div>

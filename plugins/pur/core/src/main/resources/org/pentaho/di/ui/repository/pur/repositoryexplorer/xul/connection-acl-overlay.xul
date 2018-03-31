@@ -1,0 +1,121 @@
+<?xml version="1.0"?>
+<!--===========================================================================
+HITACHI VANTARA PROPRIETARY AND CONFIDENTIAL
+
+Copyright 2002 - 2017 Hitachi Vantara. All rights reserved.
+
+NOTICE: All information including source code contained herein is, and
+remains the sole property of Hitachi Vantara and its licensors. The intellectual
+and technical concepts contained herein are proprietary and confidential
+to, and are trade secrets of Hitachi Vantara and may be covered by U.S. and foreign
+patents, or patents in process, and are protected by trade secret and
+copyright laws. The receipt or possession of this source code and/or related
+information does not convey or imply any rights to reproduce, disclose or
+distribute its contents, or to manufacture, use, or sell anything that it
+may describe, in whole or in part. Any reproduction, modification, distribution,
+or public display of this information without the express written authorization
+from Hitachi Vantara is strictly prohibited and in violation of applicable laws and
+international treaties. Access to the source code contained herein is strictly
+prohibited to anyone except those individuals and entities who have executed
+confidentiality and non-disclosure agreements or other agreements with Hitachi Vantara,
+explicitly covering such access.
+============================================================================-->
+<overlay xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul" xmlns:pen="http://www.pentaho.org/2008/xul">
+	<vbox id="conn-addl-info-box" visible="true" flex="1">
+		<vbox>
+			<hbox flex="1">
+				<label flex="1" id="conn-name" />
+			</hbox>
+		</vbox>
+  		<hbox flex="1">
+  			<vbox flex="2">
+  				<hbox>
+  					<label value="${AclTab.UserRoleLabel}"/>
+  					<label id="spacer-label" flex="1" />
+					<button id="conn-add-acl-button" image="${New_image}" pen:disabledimage="${Disabled_New_image}" onclick="connectionPermissionsController.showManageAclsDialog()" disabled="true"/>
+					<button id="conn-remove-acl-button" image="${Delete_image}" pen:disabledimage="${Disabled_Delete_image}" onclick="connectionPermissionsController.removeAcl()" disabled="true"/>					    
+  				</hbox>
+  				<listbox id="conn-user-role-list" pen:binding="recipientName" disabled="false" flex="1"  seltype="multi"/>
+  			</vbox>
+  			<groupbox id="permissions-groupbox" flex="4">
+				<caption label="${AclTab.Permissions}"/>
+				<hbox id="permissions-hbox" flex="1">
+				    <vbox id="permission-column-1" flex="1">
+						<checkbox id="conn-read-checkbox" command="connectionPermissionsController.updatePermission()" flex="1" label="${AclTab.Read}" disabled="true"/>
+						<checkbox id="conn-write-checkbox" command="connectionPermissionsController.updatePermission()" flex="1" label="${AclTab.Write}" disabled="true"/>
+					</vbox>																																								
+					<vbox id="permission-column-2" flex="1"> 
+						<checkbox id="conn-delete-checkbox" command="connectionPermissionsController.updatePermission()" flex="1" label="${AclTab.Delete}" disabled="true"/>
+						<checkbox id="conn-manage-checkbox" command="connectionPermissionsController.updatePermission()" flex="1" label="${AclTab.ManageAcl}" disabled="true"/>
+					</vbox>
+				</hbox>
+  			</groupbox>												
+  		</hbox>
+
+		<hbox>
+		<!--
+			<checkbox id="inherit-from-parent-permission-checkbox" command="connectionPermissionsController.updateInheritFromParentPermission()" flex="1" label="${AclTab.InheritFromParent}"/>
+			-->
+			<label id="spacer-label" flex="1" />
+			<button id="conn-apply-acl" label="${Dialog.Apply}" onclick="connectionPermissionsController.apply()"/>												
+		</hbox>
+	</vbox>
+	
+		<dialog id="repository-explorer-dialog"> 
+		<!--  ###############################################################################   -->
+	    <!--     MANAGE ACLS DIALOG: Dialog to manage acls                                      -->
+	    <!--  ###############################################################################   -->    
+		
+		<dialog id="conn-manage-acls-dialog" buttonlabelaccept="${Dialog.Ok}" buttonlabelcancel="${Dialog.Cancel}"
+		    		ondialogaccept="connectionPermissionsController.updateAcls()"
+		    		ondialogcancel="connectionPermissionsController.closeManageAclsDialog()" 
+		    		buttons="accept, cancel" buttonalign="right" title="${ManageAclsDialog.Title}"
+		    		appicon="ui/images/spoon.ico" 
+		    		resizable="true"
+		    		height="500" width="400">
+		    	<vbox flex="1">
+            <!-- height hard-coded due to PDI-5155 -->
+			    	<groupbox id="user-section" flex="1" height="175">
+			    		<caption label="${ManageAclsDialog.UserLabel}" />
+			    		<hbox flex="1">
+				    		<vbox flex="2">
+								<label value="${ManageAclsDialog.Available}"/>
+								<listbox id="conn-available-user-list" disabled="false" flex="1" seltype="multi"/>					
+				    		</vbox>
+						    <vbox>
+						    	<label id="spacer-label" flex="1" />
+								<button id="conn-assign-user" image="${AddSingle16_image}" onclick="connectionPermissionsController.assignUsers()" disabled="true"/>
+								<button id="conn-unassign-user" image="${RemoveSingle16_image}" onclick="connectionPermissionsController.unassignUsers()" disabled="true"/>
+								<label id="spacer-label" flex="1" />					    
+							</vbox>
+				    		<vbox flex="2">
+								<label value="${ManageAclsDialog.Selected}"/>
+								<listbox id="conn-selected-user-list" pen:binding="recipientName" disabled="false" flex="1" seltype="multi"/>					
+				    		</vbox>	    		
+			    		</hbox>
+			    	</groupbox>
+			    	<groupbox id="role-section" flex="1">
+			    		<caption label="${ManageAclsDialog.RoleLabel}" />
+			    		<hbox flex="1">
+				    		<vbox flex="2">
+								<label value="${ManageAclsDialog.Available}"/>
+								<listbox id="conn-available-role-list" disabled="false" flex="1" seltype="multi"/>					
+				    		</vbox>
+						    <vbox>
+						    	<label id="spacer-label" flex="1" />
+								<button id="conn-assign-role" image="${AddSingle16_image}" onclick="connectionPermissionsController.assignRoles()" disabled="true"/>
+								<button id="conn-unassign-role" image="${RemoveSingle16_image}" onclick="connectionPermissionsController.unassignRoles()" disabled="true"/>
+								<label id="spacer-label" flex="1" />					    
+							</vbox>
+				    		<vbox flex="2">
+								<label value="${ManageAclsDialog.Selected}"/>
+								<listbox id="conn-selected-role-list" pen:binding="recipientName" disabled="false" flex="1" seltype="multi"/>					
+				    		</vbox>	    		
+			    		</hbox>
+			    	</groupbox>	    	
+		    	</vbox>
+		</dialog>
+  </dialog>  
+	
+</overlay>
+										

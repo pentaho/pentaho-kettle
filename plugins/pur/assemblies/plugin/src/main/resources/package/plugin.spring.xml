@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:pen="http://www.pentaho.com/schema/pentaho-system"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+                            http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+                            http://www.springframework.org/schema/context
+                            http://www.springframework.org/schema/context/spring-context-2.5.xsd
+                            http://www.pentaho.com/schema/pentaho-system
+                            http://www.pentaho.com/schema/pentaho-system.xsd"
+       default-lazy-init="true">
+
+  <context:annotation-config/>
+
+  <bean id="api" class="org.pentaho.platform.web.servlet.JAXRSPluginServlet"/>
+  <bean class="com.pentaho.di.revision.RevisionResource">
+    <constructor-arg>
+      <pen:bean class="org.pentaho.platform.api.repository2.unified.IUnifiedRepository"/>
+    </constructor-arg>
+  </bean>
+  <bean class="com.pentaho.di.purge.PurgeResource">
+    <constructor-arg>
+      <pen:bean class="org.pentaho.platform.api.repository2.unified.IUnifiedRepository"/>
+    </constructor-arg>
+  </bean>
+  <bean class="org.pentaho.platform.engine.core.system.objfac.spring.ApplicationContextPentahoSystemRegisterer"
+        scope="singleton"/>
+  <bean id="IPdiContentProvider" class="com.pentaho.repository.importexport.PdiContentProvider" scope="prototype"/>
+  <bean id="PDITransformationStreamConverter"
+        class="com.pentaho.repository.importexport.StreamToTransNodeConverter">
+    <constructor-arg>
+      <pen:bean class="org.pentaho.platform.api.repository2.unified.IUnifiedRepository"/>
+    </constructor-arg>
+    <pen:publish as-type="INTERFACES">
+      <pen:attributes>
+        <pen:attr key="name" value="PDITransformationStreamConverter"/>
+      </pen:attributes>
+    </pen:publish>
+  </bean>
+  <bean id="PDIJobStreamConverter"
+        class="com.pentaho.repository.importexport.StreamToJobNodeConverter">
+    <constructor-arg>
+      <pen:bean class="org.pentaho.platform.api.repository2.unified.IUnifiedRepository"/>
+    </constructor-arg>
+    <pen:publish as-type="INTERFACES">
+      <pen:attributes>
+        <pen:attr key="name" value="PDIJobStreamConverter"/>
+      </pen:attributes>
+    </pen:publish>
+  </bean>
+</beans>

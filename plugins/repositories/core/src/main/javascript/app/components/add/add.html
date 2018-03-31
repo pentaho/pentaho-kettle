@@ -1,0 +1,33 @@
+<div class="main_div">
+  <div class="add_container">
+    <div class="header margin_bottom_30">{{::vm.pentahoRepositoryLabel}}</div>
+    <div class="primary_text">
+      <div class="margin_bottom_10">{{::vm.pentahoDescriptionLabel}}</div>
+      <div class="margin_bottom_30">{{::vm.pentahoClickStartedLabel}}</div>
+    </div>
+    <div class="margin_bottom_30">
+      <div class="pentaho_repo"></div>
+    </div>
+  </div>
+  <div class="margin_bottom_30">
+    <a href="" ng-click="vm.other()">{{::vm.othersLabel}}</a>
+  </div>
+  <div class="bottom">
+    <div class="margin_bottom_20">
+      <hr />
+    </div>
+    <div>
+      <help></help>
+      <button id="btnClose" class="right margin_left_10 secondary" ng-click="vm.close()">
+        <span>
+          {{::vm.closeLabel}}
+        </span>
+      </button>
+      <button id="btnGetStarted" class="right standard" ng-click="vm.getStarted()">
+        <span>
+          {{::vm.getStartedLabel}}
+        </span>
+      </button>
+    </div>
+  </div>
+</div>

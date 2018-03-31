@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document>
+  <!-- This is a test comment -->
+  <user>
+    <name gender="Female">Erin</name>
+    <age>25</age>
+  </user>
+</document>

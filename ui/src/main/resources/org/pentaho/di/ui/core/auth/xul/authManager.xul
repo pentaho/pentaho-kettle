@@ -1,0 +1,79 @@
+<?xml version="1.0"?>
+<?xml-stylesheet href="chrome://global/skin/" type="text/css"?>
+<!--
+  ~ This library is free software; you can redistribute it and/or
+  ~ modify it under the terms of the GNU Lesser General Public
+  ~ License as published by the Free Software Foundation; either
+  ~ version 2.1 of the License, or (at your option) any later version.
+  ~
+  ~ This library is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+  ~ Lesser General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU Lesser General Public
+  ~ License along with this library; if not, write to the Free Software
+  ~ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+  ~
+  ~ Copyright 2009 - 2017 Hitachi Vantara.  All rights reserved.
+  -->
+
+<dialog xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+        xmlns:pen="http://www.pentaho.org/2008/xul"
+        resizable="true"
+        buttonlabelcancel="${dialog.cancel}"
+        buttonlabelaccept="${dialog.ok}"
+        buttons="accept,cancel"
+        id="main_dialog"
+        width="700"
+        height="300"
+        buttonalign="right"
+        title="${dialog.title}"
+        ondialogaccept="handler.onAccept()"
+        ondialogcancel="handler.onCancel()"
+        onload="handler.init()"
+        >
+
+    <hbox flex="1" id="outer_container">
+        <vbox flex="1">
+
+            <hbox>
+                <spacer flex="1"/>
+                <button id="add_button" image="org/pentaho/di/ui/core/auth/resources/Add.png" onclick="handler.addNew()"/>
+                <button id="remove_button" pen:disabledimage="org/pentaho/di/ui/core/auth/resources/dRemove.png" image="org/pentaho/di/ui/core/auth/resources/Remove.png" onclick="handler.remove()"/>
+            </hbox>
+
+            <listbox flex="2" id="auth_list"  disabled="false" seltype="single" pen:binding="name">
+            </listbox>
+
+        </vbox>
+
+        <vbox flex="4">
+            <grid id="method_grid">
+                <columns>
+                    <column/>
+                    <column flex="1"/>
+                </columns>
+                <rows>
+                    <row>
+                        <label value="${dialog.name}"/>
+                        <textbox flex="1" id="name"/>
+                    </row>
+                    <row>
+                        <label value="${dialog.method}"/>
+
+                        <menulist label="method" id="method_list">
+                            <menupopup>
+                            </menupopup>
+                        </menulist>
+                    </row>
+                </rows>
+            </grid>
+
+            <hbox id="overlay_real_estate" flex="1">
+            </hbox>
+        </vbox>
+
+    </hbox>
+
+</dialog>

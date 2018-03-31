@@ -1,0 +1,14 @@
+xml_row_number;xml_data_type_numeric;xml_data_type_description;xml_location_line;xml_location_column;xml_element_id;xml_parent_element_id;xml_element_level;xml_path;xml_parent_path;xml_data_name;xml_data_value
+1;7;START_DOCUMENT;1;1;0;;0;;;;
+2;1;START_ELEMENT;2;1;1;0;1;/document;;document;
+3;1;START_ELEMENT;4;3;2;1;2;/document/user;/document;user;
+4;1;START_ELEMENT;5;5;3;2;3;/document/user/name;/document/user;name;
+5;10;ATTRIBUTE;5;5;3;2;3;/document/user/name;/document/user;gender;Female
+6;4;CHARACTERS;5;27;3;2;3;/document/user/name;/document/user;name;Erin
+7;2;END_ELEMENT;5;31;3;2;3;/document/user/name;/document/user;name;
+8;1;START_ELEMENT;6;5;4;2;3;/document/user/age;/document/user;age;
+9;4;CHARACTERS;6;10;4;2;3;/document/user/age;/document/user;age;25
+10;2;END_ELEMENT;6;12;4;2;3;/document/user/age;/document/user;age;
+11;2;END_ELEMENT;7;3;2;1;2;/document/user;/document;user;
+12;2;END_ELEMENT;8;1;1;0;1;/document;;document;
+13;8;END_DOCUMENT;8;12;0;;0;;;;

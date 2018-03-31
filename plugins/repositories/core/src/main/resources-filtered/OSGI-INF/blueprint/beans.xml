@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
+           xmlns:pen="http://www.pentaho.com/xml/schemas/pentaho-blueprint"
+           xmlns:jaxrs="http://cxf.apache.org/blueprint/jaxrs" default-timeout="20000">
+
+  <bean id="repositoryConnectController" scope="singleton"
+        class="org.pentaho.di.ui.repo.controller.RepositoryConnectController">
+  </bean>
+
+  <bean id="repositoriesSpoonPlugin" class="org.pentaho.di.ui.repo.plugin.RepositorySpoonPlugin"
+        scope="singleton" destroy-method="removeFromContainer">
+    <argument ref="repositoryConnectController"/>
+  </bean>
+
+  <bean id="repositorySpoonStartExtensionPoint" scope="singleton"
+        class="org.pentaho.di.ui.repo.extension.RepositorySpoonStartExtensionPoint">
+    <argument ref="repositoryConnectController"/>
+    <pen:di-plugin type="org.pentaho.di.core.extension.ExtensionPointPluginType"/>
+  </bean>
+
+  <bean id="repositoryOpenRecentExtensionPoint" scope="singleton"
+        class="org.pentaho.di.ui.repo.extension.RepositoryOpenRecentFileExtensionPoint">
+    <argument ref="repositoryConnectController"/>
+    <pen:di-plugin type="org.pentaho.di.core.extension.ExtensionPointPluginType"/>
+  </bean>
+
+  <bean id="requestLoginToRepositoryExtensionPoint" scope="singleton"
+        class="org.pentaho.di.ui.repo.extension.RequestLoginToRepositoryExtensionPoint">
+    <argument ref="repositoryConnectController"/>
+    <pen:di-plugin type="org.pentaho.di.core.extension.ExtensionPointPluginType"/>
+  </bean>
+
+  <!-- Actual Plugin Class PluginInterface, references the Spoon Plugin above -->
+  <bean id="repositoriesPlugin" class="org.pentaho.di.osgi.OSGIPlugin">
+    <property name="mainType" value="org.pentaho.di.ui.spoon.SpoonPluginInterface"/>
+    <property name="name" value="RepoSpoonPlugin"/>
+    <property name="ID" value="RepoSpoonPlugin"/>
+    <property name="description" value="The Repositories Plugin"/>
+    <property name="pluginTypeInterface" value="org.pentaho.di.ui.spoon.SpoonPluginType"/>
+    <property name="category" value="spoon"/>
+    <property name="classToBeanMap">
+      <map>
+        <entry key="org.pentaho.di.ui.spoon.SpoonPluginInterface" value="repositoriesSpoonPlugin"/>
+      </map>
+    </property>
+  </bean>
+
+  <reference interface="org.osgi.service.http.HttpService" id="http"/>
+
+  <!-- Register plugin with the Service Registry -->
+  <service id="repositoriesPluginService" interface="org.pentaho.di.core.plugins.PluginInterface" ref="repositoriesPlugin">
+    <service-properties>
+      <entry key="PluginType" value="org.pentaho.di.ui.spoon.SpoonPluginType"/>
+    </service-properties>
+  </service>
+
+  <bean id="repositoriesHttpContext"
+        class="org.pentaho.di.ui.repo.RepositoryHttpContext">
+  </bean>
+
+  <service id="repositoriesHttpContextService"
+           interface="org.osgi.service.http.HttpContext"
+           ref="repositoriesHttpContext">
+    <service-properties>
+      <entry key="contextId" value="repoContextId"/>
+    </service-properties>
+  </service>
+
+  <service id="repositoryConnectControllerService"
+           interface="org.pentaho.di.ui.repo.IConnectedRepositoryInstance"
+           ref="repositoryConnectController">
+  </service>
+
+  <!--  HttpService Whiteboard registration of web assets -->
+  <service interface="org.ops4j.pax.web.extender.whiteboard.ResourceMapping">
+    <bean class="org.ops4j.pax.web.extender.whiteboard.runtime.DefaultResourceMapping">
+      <property name="alias" value="/${project.artifactId}/${project.version}"/>
+      <property name="path" value="/app"/>
+   </bean>
+  </service>
+
+  <bean id="jsonProvider" class="com.fasterxml.jackson.jaxrs.json.JacksonJaxbJsonProvider">
+  </bean>
+
+  <bean id="repositoryEndpoint" class="org.pentaho.di.ui.repo.endpoints.RepositoryEndpoint">
+    <argument ref="repositoryConnectController" />
+  </bean>
+
+  <jaxrs:server address="/repositories" id="repositories-endpoint">
+    <jaxrs:serviceBeans>
+      <ref component-id="repositoryEndpoint"/>
+    </jaxrs:serviceBeans>
+
+    <jaxrs:extensionMappings>
+      <entry key="json" value="application/json"/>
+    </jaxrs:extensionMappings>
+
+    <jaxrs:providers>
+      <ref component-id="jsonProvider"/>
+    </jaxrs:providers>
+
+  </jaxrs:server>
+
+
+</blueprint>

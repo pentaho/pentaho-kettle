@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
+           xmlns:pen="http://www.pentaho.com/xml/schemas/pentaho-blueprint"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0 http://www.osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd
+  http://www.pentaho.com/xml/schemas/pentaho-blueprint http://www.pentaho.com/xml/schemas/pentaho-blueprint.xsd">
+
+  <bean id="metaInjectMeta" class="org.pentaho.di.trans.steps.metainject.MetaInjectMeta" scope="prototype"/>
+  <bean id="metaInjectPlugin" class="org.pentaho.di.osgi.OSGIPlugin" scope="prototype">
+    <property name="mainType" value="org.pentaho.di.trans.step.StepMetaInterface"/>
+    <property name="name" value="ETL Metadata Injection"/>
+    <property name="ID" value="MetaInject"/>
+    <property name="documentationUrl" value="Products/Data_Integration/Transformation_Step_Reference/ETL_Metadata_Injection"/>
+    <property name="imageFile" value="org/pentaho/di/ui/trans/steps/metainject/img/GenericTransform.svg"/>
+    <property name="description" value="i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.MetaInject"/>
+    <property name="pluginTypeInterface" value="org.pentaho.di.core.plugins.StepPluginType"/>
+    <property name="category" value="Flow"/>
+    <property name="classToBeanMap">
+      <map>
+        <entry key="org.pentaho.di.trans.step.StepMetaInterface" value="metaInjectMeta"/>
+      </map>
+    </property>
+  </bean>
+
+  <service id="metaInjectPluginService" interface="org.pentaho.di.core.plugins.PluginInterface" ref="metaInjectPlugin">
+    <service-properties>
+      <entry key="PluginType" value="org.pentaho.di.core.plugins.StepPluginType"/>
+    </service-properties>
+  </service>
+
+  <bean id="RepositoryImporterPatchTransStep"
+        class="org.pentaho.di.trans.steps.metainject.RepositoryImporterExtension"
+        scope="singleton">
+    <pen:di-plugin type="org.pentaho.di.core.extension.ExtensionPointPluginType"/>
+  </bean>
+
+  <bean id="RepositoryExporterPatchTransStep"
+        class="org.pentaho.di.trans.steps.metainject.RepositoryExporterExtension"
+        scope="singleton">
+    <pen:di-plugin type="org.pentaho.di.core.extension.ExtensionPointPluginType"/>
+  </bean>
+
+  <bean id="OpenMappingExtension"
+        class="org.pentaho.di.trans.steps.metainject.OpenMappingExtension"
+        scope="singleton">
+    <pen:di-plugin type="org.pentaho.di.core.extension.ExtensionPointPluginType"/>
+  </bean>
+
+</blueprint>

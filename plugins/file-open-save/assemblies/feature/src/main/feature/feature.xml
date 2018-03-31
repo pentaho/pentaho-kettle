@@ -1,0 +1,23 @@
+<features name="${project.artifactId}-repo" xmlns="http://karaf.apache.org/xmlns/features/v1.2.1">
+
+  <feature name="${project.artifactId}" version="${project.version}">
+
+    <feature version="${cxf.karaf.version}">cxf-jaxrs</feature>
+    <feature>pentaho-requirejs-osgi-manager</feature>
+    <feature>pentaho-deployers</feature>
+
+    <feature>pentaho-i18n</feature>
+    <bundle>mvn:pentaho/pentaho-i18n-webservice-bundle/${pentaho-osgi-bundles.version}</bundle>
+
+    <!-- START client side dependencies -->
+    <bundle>pentaho-webjars:mvn:org.webjars.bower/angular/${angular.version}</bundle>
+    <bundle>pentaho-webjars:mvn:org.webjars.bower/angular-i18n/${angular-i18n.version}</bundle>
+    <bundle>pentaho-webjars:mvn:org.webjars.bower/angular-ui-router/${angular-ui-router.version}</bundle>
+    <bundle>pentaho-webjars:mvn:org.webjars.bower/require-css/${require-css.version}</bundle>
+    <bundle>pentaho-webjars:mvn:org.webjars.bower/requirejs-text/${requirejs-text.version}</bundle>
+    <bundle>pentaho-webjars:mvn:org.webjars.bower/dojo/${dojo.version}</bundle>
+
+    <!-- END -->
+  </feature>
+
+</features>

@@ -1,0 +1,54 @@
+<?xml version="1.0"?>
+<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>org.pentaho.di.plugins</groupId>
+    <artifactId>elasticsearch-bulk-insert-assemblies</artifactId>
+    <version>8.1.0.0-SNAPSHOT</version>
+  </parent>
+
+  <artifactId>elasticsearch-bulk-insert-plugin</artifactId>
+  <version>8.1.0.0-SNAPSHOT</version>
+  <packaging>pom</packaging>
+
+  <name>PDI Elasticsearch Bulk Insert Plugin Distribution</name>
+  <description>Elasticsearch Bulk Insert</description>
+
+  <properties>
+    <project.revision>8.1.0.0-SNAPSHOT</project.revision>
+  </properties>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.pentaho.di.plugins</groupId>
+      <artifactId>elasticsearch-bulk-insert-core</artifactId>
+      <version>${project.revision}</version>
+      <scope>runtime</scope>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <plugins>
+      <plugin>
+        <artifactId>maven-assembly-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>create-archive</id>
+            <phase>package</phase>
+            <goals>
+              <goal>single</goal>
+            </goals>
+            <configuration>
+              <descriptors>
+                <descriptor>assembly/assembly.xml</descriptor>
+              </descriptors>
+              <appendAssemblyId>false</appendAssemblyId>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+</project>

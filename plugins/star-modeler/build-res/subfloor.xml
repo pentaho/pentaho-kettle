@@ -1,5 +1,5 @@
 <!--===========================================================================
-Copyright (c) 2008-2009, Pentaho Engineering Team
+Copyright (c) 2008-2017, Hitachi Vantara Engineering Team
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -9,11 +9,11 @@ modification, are permitted provided that the following conditions are met:
     * Redistributions in binary form must reproduce the above copyright
       notice, this list of conditions and the following disclaimer in the
       documentation and/or other materials provided with the distribution.
-    * Neither the name of the Pentaho Corporation nor the
+    * Neither the name of the Hitachi Vantara nor the
       names of its contributors may be used to endorse or promote products
       derived from this software without specific prior written permission.
 
-THIS SOFTWARE IS PROVIDED BY Pentaho Engineering Team ''AS IS'' AND ANY
+THIS SOFTWARE IS PROVIDED BY Hitachi Vantara Engineering Team ''AS IS'' AND ANY
 EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
 WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
 DISCLAIMED. IN NO EVENT SHALL <copyright holder> BE LIABLE FOR ANY
@@ -129,8 +129,11 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
        Any of these properties can be overridden in either build.properties or override.properties
        =================================================================================-->
 
+  <!-- Pentaho Artifact Repository (Nexus/Artifactory) -->
+  <property name="artifact.repo.root.url" value="http://nexus.pentaho.org/content/groups/omni"/>
+	   
   <!-- Project meta properties -->
-  <property name="impl.vendor" value="Pentaho Corporation" description="Jar file metadata describing the jar's vendor"/>
+  <property name="impl.vendor" value="Hitachi Vantara" description="Jar file metadata describing the jar's vendor"/>
   <property name="impl.productID"
             value=""
             description="Jar file metadata indicating the product ID (this is not the revision)"/>
@@ -155,8 +158,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
   <property name="javac.deprecation"
             value="true"
             description="Indicates whether source should be compiled with deprecation information"/>
-  <property name="javac.source" value="7" description="Provide source compatibility with specified release"/>
-  <property name="javac.target" value="7" description="Generate class files for specific VM version"/>
+  <property name="javac.source" value="8" description="Provide source compatibility with specified release"/>
+  <property name="javac.target" value="8" description="Generate class files for specific VM version"/>
   <property name="javac.maxmemory" value="256M" description="Max memory alloted to java compile"/>
   <property name="javac.xlint" value="-Xlint:all"/>
 
@@ -177,7 +180,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
             value="true"
             description="Prefer SVNKit binding over the command line client for native svn support (defaults to true)"/>
   <property name="ivy.url"
-            value="http://nexus.pentaho.org/content/groups/omni/org/apache/ivy/ivy/2.4.0/ivy-2.4.0.jar"
+            value="${artifact.repo.root.url}/org/apache/ivy/ivy/2.4.0-patched/ivy-2.4.0-patched.jar"
             description="The URL to the current release of Apache IVY"/>
 
   <!-- Enunciate properties -->
@@ -228,7 +231,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
               value="${inttestbin.dir}/classes"
               description="Classes compiled from project test code are placed here"/>
     <property name="inttestreports.dir"
-              value="${bin.dir}/reports/integration-test"
+              value="${testreports.dir}"
               description="Base directory that holds all integration test report files"/>
     <property name="inttestreports.xml.dir"
               value="${inttestreports.dir}/xml"
@@ -242,7 +245,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
             value="${testbin.dir}/instrumented-classes"
             description="Directory where instrumented project classes are placed for use by code coverage utility"/>
   <property name="jacoco.version"
-            value="0.7.4.201502262128"
+            value="0.7.6.201602180812"
             description="The version of jacoco to use for code coverage"/>
   <property name="cobertura.version"
             value="2.1.1"
@@ -326,9 +329,9 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
   <!-- Sonar properties -->
 
-  <property name="sonar-ant-task-version" value="2.2"/>
+  <property name="sonar-ant-task-version" value="2.4"/>
   <property name="sonar.classname" value="org.sonar.ant.SonarTask"/>
-  <property name="sonar.hostname" value="10.177.176.23"/>
+  <property name="sonar.hostname" value="sonar.pentaho.com"/>
   <property name="sonar.port" value="9000"/>
   <property name="sonar.host.url" value="http://${sonar.hostname}:${sonar.port}"/>
   <property name="sonar.jdbc.username" value="sonar"/>
@@ -366,7 +369,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
             value="6.12"
             description="The version of CheckStyle to use for coding standards"/>
   <property name="pentaho.coding.standards.version"
-			value="1.0.2"/>
+			value="1.0.5"/>
   <property name="checkstyle.dir"
             value="${basedir}/checkstyle"/>
   <property name="checkstyle.lib.dir"
@@ -374,11 +377,11 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
   <property name="checkstyle.reports.dir"
             value="${checkstyle.dir}/reports"/>
   <property name="checkstyle.config.url"
-            value="http://nexus.pentaho.org/content/groups/omni/com/pentaho/pentaho-coding-standards/pentaho-checkstyle/${pentaho.coding.standards.version}/pentaho-checkstyle-${pentaho.coding.standards.version}.xml"/>
+            value="${artifact.repo.root.url}/com/pentaho/pentaho-coding-standards/pentaho-checkstyle/${pentaho.coding.standards.version}/pentaho-checkstyle-${pentaho.coding.standards.version}.xml"/>
   <property name="checkstyle.suppressions.url"
-            value="http://nexus.pentaho.org/content/groups/omni/com/pentaho/pentaho-coding-standards/pentaho-checkstyle-suppressions/${pentaho.coding.standards.version}/pentaho-checkstyle-suppressions-${pentaho.coding.standards.version}.xml"/>
+            value="${artifact.repo.root.url}/com/pentaho/pentaho-coding-standards/pentaho-checkstyle-suppressions/${pentaho.coding.standards.version}/pentaho-checkstyle-suppressions-${pentaho.coding.standards.version}.xml"/>
   <property name="checkstyle.stylesheet.url"
-            value="http://nexus.pentaho.org/content/groups/omni/com/pentaho/pentaho-coding-standards/pentaho-checkstyle-stylesheet/${pentaho.coding.standards.version}/pentaho-checkstyle-stylesheet-${pentaho.coding.standards.version}.xsl"/>
+            value="${artifact.repo.root.url}/com/pentaho/pentaho-coding-standards/pentaho-checkstyle-stylesheet/${pentaho.coding.standards.version}/pentaho-checkstyle-stylesheet-${pentaho.coding.standards.version}.xsl"/>
   <property name="checkstyle.config.file"
             value="${checkstyle.dir}/pentaho-checkstyle-${pentaho.coding.standards.version}.xml"/>
   <property name="checkstyle.suppressions.file"
@@ -665,22 +668,11 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       Fetches ant-contrib from sourceforge
       ====================================================================-->
   <target name="antcontrib.download" unless="antcontrib.available">
-    <mkdir dir="${subfloor.tmp.dir}"/>
-    <get src="http://downloads.sourceforge.net/ant-contrib/ant-contrib-1.0b3-bin.zip"
-         dest="${subfloor.tmp.dir}/antcontrib.zip"
+    <mkdir dir="${antcontrib.build.cache.dir}"/>
+    <get src="${artifact.repo.root.url}/ant-contrib/ant-contrib/1.0b3/ant-contrib-1.0b3.jar"
+         dest="${antcontrib.build.cache.dir}"
          usetimestamp="true"/>
-    <unzip src="${subfloor.tmp.dir}/antcontrib.zip" dest="${subfloor.tmp.dir}">
-      <patternset>
-        <include name="**/*.jar"/>
-      </patternset>
-    </unzip>
-    <copy todir="${antcontrib.build.cache.dir}">
-      <fileset dir="${subfloor.tmp.dir}/ant-contrib">
-        <include name="**/*.jar"/>
-      </fileset>
-    </copy>
   </target>
-
 
   <!--=======================================================================
       init
@@ -737,6 +729,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
         svn-revision
 
         Prints and sets the SVN revision for the repository at the current dir (if svn.revision is not set)
+		
+		DEPRECATED TARGET
         ====================================================================-->
   <target name="svn-revision" depends="install-svnant">
 
@@ -752,6 +746,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
         Sets a property build.id to the either "development" or the svn revision
         if in release mode
+		
+		DEPRECATED TARGET
         ====================================================================-->
   <target name="set-build.id" unless="build.id" depends="install-antcontrib">
     <if>
@@ -771,7 +767,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
        a package or packages should run this target.  Projects that produce
        jars only should NOT.
    ===================================================================================-->
-  <target name="version-properties" depends="set-build.id">
+  <target name="version-properties">
     <tstamp>
       <format property="build.time" pattern="yyyy/MM/dd hh:mm aa"/>
     </tstamp>
@@ -782,10 +778,9 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       <entry key="release.candidate.token" value="${release.candidate.token}"/>
       <entry key="impl.vendor" value="${impl.vendor}"/>
       <entry key="impl.version"
-             value="${release.major.number}.${release.minor.number}.${release.milestone.number}.${build.id}"/>
+             value="${release.major.number}.${release.minor.number}.${release.milestone.number}"/>
       <entry key="impl.title" value="${impl.title}"/>
       <entry key="buildDate" value="${build.time}"/>
-      <entry key="svn.revision" value="${build.id}"/>
       <entry key="release.build.number" default="0" type="int" operation="+" value="1" pattern="0000"/>
     </propertyfile>
     <property file="${basedir}/version.properties"/>
@@ -1669,7 +1664,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
   </target>
 
   <target name="jar.main"
-          depends="compile,set-build.id,generate.manifest">
+          depends="compile,generate.manifest">
     <jar destfile="${dist.dir}/${ivy.artifact.id}-${project.revision}.jar" manifest="${dist.manifest.file}">
       <fileset dir="${classes.dir}"/>
     </jar>
@@ -1681,14 +1676,14 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       Creates a new manifest file if one is not specified, or updates
       an existing manifest file if one is specified.
       ====================================================================-->
-  <target name="generate.manifest" depends="init,set-build.id">
+  <target name="generate.manifest" depends="init">
     <delete file="${dist.manifest.file}"/>
     <touch file="${dist.manifest.file}"/>
     <copy file="${manifest.file}" tofile="${dist.manifest.file}" overwrite="true" failonerror="false"/>
 
     <manifest file="${dist.manifest.file}" mode="update">
       <attribute name="Implementation-Title" value="${impl.title}"/>
-      <attribute name="Implementation-Version" value="${project.revision}.${build.id}"/>
+      <attribute name="Implementation-Version" value="${project.revision}"/>
       <attribute name="Implementation-Vendor" value="${impl.vendor}"/>
       <attribute name="Implementation-ProductID" value="${impl.productID}"/>
     </manifest>
@@ -1846,18 +1841,24 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
     init-test-reports
 
     Prepare directories for JUnit test reports
+
+    Do not chain the clean-test-reports target because running unit tests
+    followed by integration tests is resulting in missing unit test reports.
+    These directories will be cleaned by a top level "clean" call or a user
+    can call "clean-test-reports" directly if desired.
     ====================================================================-->
-  <target name="init-test-reports" depends="clean-test-reports">
+  <target name="init-test-reports" >
     <mkdir dir="${testreports.xml.dir}"/>
     <mkdir dir="${testreports.html.dir}"/>
   </target>
+
 
   <!--=======================================================================
         integration-test
 
         Compiles and runs all the integration tests for the project
         ====================================================================-->
-    <target name="integration-test" depends="compile,compile-tests, init-integration-test-reports" description="Compiles and runs unit tests">
+    <target name="integration-test" depends="compile,compile-tests, init-test-reports" description="Compiles and runs unit tests">
         <junit maxmemory="${junit.maxmemory}"
                dir="${junit.base.dir}"
                fork="yes"
@@ -1950,7 +1951,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
   <target name="javadoc" depends="javadoc.init, compile">
     <javadoc destdir="${javadoc.dir}/docs/api"
              access="public"
-             source="7"
+             source="${javac.source}"
              use="true"
              notree="false"
              nonavbar="false"
@@ -2189,7 +2190,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
       Compiles and runs all the tests for the project
       ====================================================================-->
-  <target name="jacoco-integration" depends="install-jacoco,compile,compile-tests,init-integration-test-reports"
+  <target name="jacoco-integration" depends="install-jacoco,compile,compile-tests,init-test-reports"
           description="Compiles and runs integration tests with Jacoco code coverage.">
 
     <mkdir dir = "${jacoco.integration.report.dir}" />

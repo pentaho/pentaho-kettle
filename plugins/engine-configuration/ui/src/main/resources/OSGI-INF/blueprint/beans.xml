@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ ******************************************************************************
+  ~
+  ~  Pentaho Data Integration
+  ~
+  ~  Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
+  ~
+  ~  *******************************************************************************
+  ~  Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+  ~  this file except in compliance with the License. You may obtain a copy of the
+  ~  License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~  Unless required by applicable law or agreed to in writing, software
+  ~  distributed under the License is distributed on an "AS IS" BASIS,
+  ~  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~  See the License for the specific language governing permissions and
+  ~  limitations under the License.
+  ~
+  ~ ******************************************************************************
+  ~
+  -->
+
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
+           xmlns:pen="http://www.pentaho.com/xml/schemas/pentaho-blueprint"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0 http://www.osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd"
+    default-timeout="20000" default-activation="eager">
+
+  <reference id="executionConfigurationManager" interface="org.pentaho.di.engine.configuration.api.RunConfigurationService"
+             availability="optional"/>
+
+  <bean id="runConfigurationDelegate" scope="singleton"
+        class="org.pentaho.di.engine.ui.RunConfigurationDelegate">
+    <argument ref="executionConfigurationManager" />
+  </bean>
+
+  <bean id="exectionEnviromentViewTree" scope="singleton"
+        class="org.pentaho.di.engine.ui.RunConfigurationViewTreeExtension">
+    <argument ref="runConfigurationDelegate" />
+    <pen:di-plugin type="org.pentaho.di.core.extension.ExtensionPointPluginType" />
+  </bean>
+
+  <bean id="exectionEnviromentTreeDelegate" scope="singleton"
+        class="org.pentaho.di.engine.ui.RunConfigurationTreeDelegateExtension">
+    <argument ref="executionConfigurationManager" />
+    <pen:di-plugin type="org.pentaho.di.core.extension.ExtensionPointPluginType" />
+  </bean>
+
+  <bean id="exectionEnviromentPopupMenu" scope="singleton"
+        class="org.pentaho.di.engine.ui.RunConfigurationPopupMenuExtension">
+    <argument ref="runConfigurationDelegate" />
+    <pen:di-plugin type="org.pentaho.di.core.extension.ExtensionPointPluginType" />
+  </bean>
+
+</blueprint>

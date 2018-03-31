@@ -1,0 +1,30 @@
+<div class="breadcrumbItem" ng-if="vm.extras.length > 0">
+  <div class="breadcrumbFolder extra">
+    <div id="breadcrumbEllipsis"
+         ng-click="vm.showExtras = !vm.showExtras"
+         on-hide-extras="vm.showExtras = false"
+         breadcrumb-extras>
+      &hellip;
+    </div>
+    <div class="breadcrumbExtra" ng-show="vm.showExtras">
+      <div class="breadcrumbExtraItem"
+           ng-repeat="part in vm.extras"
+           ng-click="vm.select(part.path)"
+           title="{{part.part}}">
+        {{part.part}}
+      </div>
+    </div>
+  </div>
+  <div class="breadcrumbNext"></div>
+</div>
+<resize-breadcrumb folder-parts="vm.parts"/>
+<div class="breadcrumbItem breadcrumbFolders" ng-repeat="part in vm.parts">
+  <div class="breadcrumbFolder"
+       ng-class="{last: $last === true}"
+       ng-click="vm.select(part.path)"
+       title="{{vm.titles[$index]}}"
+       ng-style="{'max-width': vm.maxWidths[$index] + 'px' }">
+    {{part.part}}
+  </div>
+  <div class="breadcrumbNext" ng-class="{last: $last === true}"></div>
+</div>

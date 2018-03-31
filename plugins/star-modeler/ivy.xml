@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ivy-module version="2.0" xmlns:m="http://ant.apache.org/ivy/maven">
-  <info organisation="${ivy.artifact.group}" module="${ivy.artifact.id}" revision="${dependency.kettle.revision}" status="integration" publication="20130405165027"/>
+  <info organisation="${ivy.artifact.group}" module="${ivy.artifact.id}" revision="${pdi.version}" status="integration" publication="20130405165027"/>
 
   <configurations>
     <conf name="default"/>
@@ -18,13 +18,13 @@
   </publications>
 
   <dependencies defaultconf="dev->default">
-    <dependency org="pentaho-kettle" name="kettle-core" rev="${dependency.kettle.revision}" changing="true"/>
-    <dependency org="pentaho-kettle" name="kettle-engine" rev="${dependency.kettle.revision}" changing="true"/>
-    <dependency org="pentaho-kettle" name="kettle-ui-swt" rev="${dependency.kettle.revision}" changing="true"/>  
+    <dependency org="pentaho-kettle" name="kettle-core" rev="${pdi.version}" changing="true"/>
+    <dependency org="pentaho-kettle" name="kettle-engine" rev="${pdi.version}" changing="true"/>
+    <dependency org="pentaho-kettle" name="kettle-ui-swt" rev="${pdi.version}" changing="true"/>  
     <dependency org="org.apache.commons" name="commons-vfs2" rev="2.1-20150824" transitive="false"/>
-    <dependency org="pentaho" name="pentaho-xul-core" rev="${dependency.kettle.revision}" changing="true"/>
-    <dependency org="pentaho" name="pentaho-xul-swt" rev="${dependency.kettle.revision}" changing="true"/>
-    <dependency org="pentaho" name="pentaho-metadata" rev="${dependency.pentaho-metadata.revision}" changing="true"/>
+    <dependency org="org.pentaho" name="commons-xul-core" rev="${pdi.version}" changing="true"/>
+    <dependency org="org.pentaho" name="commons-xul-swt" rev="${pdi.version}" changing="true"/>
+    <dependency org="org.pentaho" name="pentaho-metadata" rev="${pentaho-metadata.version}" changing="true"/>
     
     <dependency org="junit" name="junit" rev="4.7" conf="test->default"/>
             
