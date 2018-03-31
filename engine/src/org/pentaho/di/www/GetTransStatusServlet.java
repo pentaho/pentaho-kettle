@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -23,13 +23,16 @@
 package org.pentaho.di.www;
 
 import java.io.IOException;
+import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.net.URLEncoder;
+import java.nio.charset.Charset;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.google.common.annotations.VisibleForTesting;
 import org.owasp.encoder.Encode;
 import org.pentaho.di.cluster.HttpUtil;
 import org.pentaho.di.core.Const;
@@ -43,6 +46,7 @@ import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.step.BaseStepData.StepExecutionStatus;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepStatus;
+import org.pentaho.di.www.cache.CarteStatusCache;
 
 
 public class GetTransStatusServlet extends BaseHttpServlet implements CartePluginInterface {
@@ -50,6 +54,14 @@ public class GetTransStatusServlet extends BaseHttpServlet implements CartePlugi
 
   private static final long serialVersionUID = 3634806745372015720L;
   public static final String CONTEXT_PATH = "/kettle/transStatus";
+
+  public static final String SEND_RESULT = "sendResult";
+
+  private static final byte[] XML_HEADER =
+    XMLHandler.getXMLHeader( Const.XML_ENCODING ).getBytes( Charset.forName( Const.XML_ENCODING ) );
+
+  @VisibleForTesting
+  CarteStatusCache cache = CarteStatusCache.getInstance();
 
   public GetTransStatusServlet() {
   }
@@ -187,6 +199,7 @@ public class GetTransStatusServlet extends BaseHttpServlet implements CartePlugi
     */
   public void doGet( HttpServletRequest request, HttpServletResponse response ) throws ServletException,
     IOException {
+
     if ( isJettyMode() && !request.getContextPath().startsWith( CONTEXT_PATH ) ) {
       return;
     }
@@ -211,8 +224,6 @@ public class GetTransStatusServlet extends BaseHttpServlet implements CartePlugi
 
     }
 
-    PrintWriter out = response.getWriter();
-
     // ID is optional...
     //
     Trans trans;
@@ -235,51 +246,80 @@ public class GetTransStatusServlet extends BaseHttpServlet implements CartePlugi
     }
 
     if ( trans != null ) {
-      String status = trans.getStatus();
-      int lastLineNr = KettleLogStore.getLastBufferLineNr();
-      String logText =
-        KettleLogStore.getAppender().getBuffer(
-          trans.getLogChannel().getLogChannelId(), false, startLineNr, lastLineNr ).toString();
-
       if ( useXML ) {
-        response.setContentType( "text/xml" );
-        response.setCharacterEncoding( Const.XML_ENCODING );
-        out.print( XMLHandler.getXMLHeader( Const.XML_ENCODING ) );
-
-        SlaveServerTransStatus transStatus = new SlaveServerTransStatus( transName, entry.getId(), status );
-        transStatus.setFirstLoggingLineNr( startLineNr );
-        transStatus.setLastLoggingLineNr( lastLineNr );
-        transStatus.setLogDate( trans.getLogDate() );
-
-        for ( int i = 0; i < trans.nrSteps(); i++ ) {
-          StepInterface baseStep = trans.getRunThread( i );
-          if ( ( baseStep.isRunning() ) || baseStep.getStatus() != StepExecutionStatus.STATUS_EMPTY ) {
-            StepStatus stepStatus = new StepStatus( baseStep );
-            transStatus.getStepStatusList().add( stepStatus );
-          }
-        }
-
-        // The log can be quite large at times, we are going to put a base64 encoding around a compressed stream
-        // of bytes to handle this one.
-        String loggingString = HttpUtil.encodeBase64ZippedString( logText );
-        transStatus.setLoggingString( loggingString );
-
-        // Also set the result object...
-        //
-        transStatus.setResult( trans.getResult() );
-
-        // Is the transformation paused?
-        //
-        transStatus.setPaused( trans.isPaused() );
-
-        // Send the result back as XML
-        //
         try {
-          out.println( transStatus.getXML() );
+          OutputStream out = null;
+          byte[] data = null;
+          String logId = trans.getLogChannelId();
+          boolean finishedOrStopped = trans.isFinishedOrStopped();
+          boolean sendResultXmlWithStatus = "Y".equalsIgnoreCase( request.getParameter( SEND_RESULT ) );
+          boolean dontUseCache = sendResultXmlWithStatus;
+          if ( finishedOrStopped && ( data = cache.get( logId, startLineNr ) ) != null && !dontUseCache ) {
+            response.setContentLength( XML_HEADER.length + data.length );
+            out = response.getOutputStream();
+            out.write( XML_HEADER );
+            out.write( data );
+            out.flush();
+          } else {
+            int lastLineNr = KettleLogStore.getLastBufferLineNr();
+
+            String logText = getLogText( trans, startLineNr, lastLineNr );
+
+            response.setContentType( "text/xml" );
+            response.setCharacterEncoding( Const.XML_ENCODING );
+
+            SlaveServerTransStatus transStatus =
+              new SlaveServerTransStatus( transName, entry.getId(), trans.getStatus() );
+            transStatus.setFirstLoggingLineNr( startLineNr );
+            transStatus.setLastLoggingLineNr( lastLineNr );
+            transStatus.setLogDate( trans.getLogDate() );
+
+            for ( int i = 0; i < trans.nrSteps(); i++ ) {
+              StepInterface baseStep = trans.getRunThread( i );
+              if ( ( baseStep.isRunning() ) || baseStep.getStatus() != StepExecutionStatus.STATUS_EMPTY ) {
+                StepStatus stepStatus = new StepStatus( baseStep );
+                transStatus.getStepStatusList().add( stepStatus );
+              }
+            }
+
+            // The log can be quite large at times, we are going to putIfAbsent a base64 encoding around a compressed
+            // stream
+            // of bytes to handle this one.
+            String loggingString = HttpUtil.encodeBase64ZippedString( logText );
+            transStatus.setLoggingString( loggingString );
+            //        transStatus.setLoggingUncompressedSize( logText.length() );
+
+            // Also set the result object...
+            //
+            transStatus.setResult( trans.getResult() );
+
+            // Is the transformation paused?
+            //
+            transStatus.setPaused( trans.isPaused() );
+
+            // Send the result back as XML
+            //
+            String xml = transStatus.getXML( sendResultXmlWithStatus );
+            data = xml.getBytes( Charset.forName( Const.XML_ENCODING ) );
+            out = response.getOutputStream();
+            response.setContentLength( XML_HEADER.length + data.length );
+            out.write( XML_HEADER );
+            out.write( data );
+            out.flush();
+            if ( finishedOrStopped && logId != null && !dontUseCache ) {
+              cache.put( logId, xml, startLineNr );
+            }
+          }
+          response.flushBuffer();
         } catch ( KettleException e ) {
           throw new ServletException( "Unable to get the transformation status in XML format", e );
         }
+
       } else {
+        PrintWriter out = response.getWriter();
+
+        int lastLineNr = KettleLogStore.getLastBufferLineNr();
+
         response.setContentType( "text/html;charset=UTF-8" );
 
         out.println( "<HTML>" );
@@ -306,7 +346,7 @@ public class GetTransStatusServlet extends BaseHttpServlet implements CartePlugi
           out.print( "<tr>" );
           out.print( "<td>" + Encode.forHtml( transName ) + "</td>" );
           out.print( "<td>" + Encode.forHtml( id ) + "</td>" );
-          out.print( "<td>" + Encode.forHtml( status ) + "</td>" );
+          out.print( "<td>" + Encode.forHtml( trans.getStatus() ) + "</td>" );
           out.print( "</tr>" );
           out.print( "</table>" );
 
@@ -346,7 +386,11 @@ public class GetTransStatusServlet extends BaseHttpServlet implements CartePlugi
             out.print( "<a href=\""
               + convertContextPath( StopTransServlet.CONTEXT_PATH ) + "?name="
               + URLEncoder.encode( transName, "UTF-8" ) + "&id=" + URLEncoder.encode( id, "UTF-8" ) + "\">"
-              + BaseMessages.getString( PKG, "TransStatusServlet.StopTrans" ) + "</a>" );
+              + BaseMessages.getString( PKG, "TransStatusServlet.StopTrans" ) + "</a><br>" );
+            out.print( "<a href=\""
+              + convertContextPath( StopTransServlet.CONTEXT_PATH ) + "?name="
+              + URLEncoder.encode( transName, "UTF-8" ) + "&id=" + URLEncoder.encode( id, "UTF-8" ) + "&inputOnly=Y" + "\">"
+              + BaseMessages.getString( PKG, "TransStatusServlet.SafeStopTrans" ) + "</a>" );
             out.print( "<p>" );
           }
           out.print( "<a href=\""
@@ -412,7 +456,7 @@ public class GetTransStatusServlet extends BaseHttpServlet implements CartePlugi
           out
             .println( "<textarea id=\"translog\" cols=\"120\" rows=\"20\" "
               + "wrap=\"off\" name=\"Transformation log\" readonly=\"readonly\">"
-              + Encode.forHtml( logText ) + "</textarea>" );
+              + Encode.forHtml( getLogText( trans, startLineNr, lastLineNr ) ) + "</textarea>" );
 
           out.println( "<script type=\"text/javascript\"> " );
           out.println( "  translog.scrollTop=translog.scrollHeight; " );
@@ -430,13 +474,14 @@ public class GetTransStatusServlet extends BaseHttpServlet implements CartePlugi
         out.println( "</HTML>" );
       }
     } else {
+      PrintWriter out = response.getWriter();
       if ( useXML ) {
         out.println( new WebResult( WebResult.STRING_ERROR, BaseMessages.getString(
           PKG, "TransStatusServlet.Log.CoundNotFindSpecTrans", transName ) ) );
       } else {
         out.println( "<H1>"
           + Encode.forHtml( BaseMessages.getString(
-            PKG, "TransStatusServlet.Log.CoundNotFindTrans", transName ) ) + "</H1>" );
+          PKG, "TransStatusServlet.Log.CoundNotFindTrans", transName ) ) + "</H1>" );
         out.println( "<a href=\""
           + convertContextPath( GetStatusServlet.CONTEXT_PATH ) + "\">"
           + BaseMessages.getString( PKG, "TransStatusServlet.BackToStatusPage" ) + "</a><p>" );
@@ -454,6 +499,15 @@ public class GetTransStatusServlet extends BaseHttpServlet implements CartePlugi
 
   public String getContextPath() {
     return CONTEXT_PATH;
+  }
+
+  private String getLogText( Trans trans, int startLineNr, int lastLineNr ) throws KettleException {
+    try {
+      return KettleLogStore.getAppender().getBuffer(
+        trans.getLogChannel().getLogChannelId(), false, startLineNr, lastLineNr ).toString();
+    } catch ( OutOfMemoryError error ) {
+      throw new KettleException( "Log string is too long", error );
+    }
   }
 
 }

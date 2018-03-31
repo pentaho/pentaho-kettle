@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -83,6 +83,10 @@ public class SlaveServerTransStatus {
   public String getXML() throws KettleException {
     // See PDI-15781
     boolean sendResultXmlWithStatus = EnvUtil.getSystemProperty( "KETTLE_COMPATIBILITY_SEND_RESULT_XML_WITH_FULL_STATUS", "N" ).equalsIgnoreCase( "Y" );
+    return getXML( sendResultXmlWithStatus );
+  }
+
+  public String getXML( boolean sendResultXmlWithStatus ) throws KettleException {
     StringBuilder xml = new StringBuilder();
 
     xml.append( XMLHandler.openTag( XML_TAG ) ).append( Const.CR );

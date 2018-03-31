@@ -1034,6 +1034,8 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
               if ( !transStatus.isRunning() ) {
                 // The transformation is finished, get the result...
                 //
+                //get the status with the result ( we don't do it above because of changing PDI-15781)
+                transStatus = remoteSlaveServer.getTransStatus( transMeta.getName(), carteObjectId, 0, true );
                 Result remoteResult = transStatus.getResult();
                 result.clear();
                 result.add( remoteResult );
