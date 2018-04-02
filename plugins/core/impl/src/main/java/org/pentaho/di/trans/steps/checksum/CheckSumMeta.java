@@ -132,7 +132,7 @@ public class CheckSumMeta extends BaseStepMeta implements StepMetaInterface {
   }
 
   public String[] getChecksumtypeDescs() {
-    return checksumtypeCodes;
+    return checksumtypeDescs;
   }
 
   public String[] getResultTypeDescs() {
