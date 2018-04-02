@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,12 +22,12 @@
 
 package org.pentaho.di.trans.steps.checksum;
 
-import java.util.Arrays;
 import java.util.List;
 
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.annotations.Step;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
@@ -58,6 +58,9 @@ import org.w3c.dom.Node;
  *
  * @author Samatar Hassan
  */
+@Step( id = "CheckSum", i18nPackageName = "org.pentaho.di.trans.steps.checksum", name = "CheckSum.Name",
+    description = "CheckSum.Description",
+    categoryDescription = "i18n:org.pentaho.di.trans.step:BaseStep.Category.Transform" )
 public class CheckSumMeta extends BaseStepMeta implements StepMetaInterface {
   private static Class<?> PKG = CheckSumMeta.class; // for i18n purposes, needed by Translator2!!
 
@@ -69,24 +72,24 @@ public class CheckSumMeta extends BaseStepMeta implements StepMetaInterface {
 
   public static String[] checksumtypeCodes = { TYPE_CRC32, TYPE_ADLER32, TYPE_MD5, TYPE_SHA1, TYPE_SHA256 };
   public static String[] checksumtypeDescs = {
-    BaseMessages.getString( PKG, "CheckSumDialog.Type.CRC32" ),
-    BaseMessages.getString( PKG, "CheckSumDialog.Type.ADLER32" ),
-    BaseMessages.getString( PKG, "CheckSumDialog.Type.MD5" ),
-    BaseMessages.getString( PKG, "CheckSumDialog.Type.SHA1" ),
-    BaseMessages.getString( PKG, "CheckSumDialog.Type.SHA256" ) };
+    BaseMessages.getString( PKG, "CheckSumMeta.Type.CRC32" ),
+    BaseMessages.getString( PKG, "CheckSumMeta.Type.ADLER32" ),
+    BaseMessages.getString( PKG, "CheckSumMeta.Type.MD5" ),
+    BaseMessages.getString( PKG, "CheckSumMeta.Type.SHA1" ),
+    BaseMessages.getString( PKG, "CheckSumMeta.Type.SHA256" ) };
 
   /**
    * The result type description
    */
-  public static final String[] resultTypeDesc = {
-    BaseMessages.getString( PKG, "CheckSumDialog.ResultType.String" ),
-    BaseMessages.getString( PKG, "CheckSumDialog.ResultType.Hexadecimal" ),
-    BaseMessages.getString( PKG, "CheckSumDialog.ResultType.Binary" ) };
+  private static final String[] resultTypeDesc = {
+    BaseMessages.getString( PKG, "CheckSumMeta.ResultType.String" ),
+    BaseMessages.getString( PKG, "CheckSumMeta.ResultType.Hexadecimal" ),
+    BaseMessages.getString( PKG, "CheckSumMeta.ResultType.Binary" ) };
 
   /**
    * The result type codes
    */
-  public static final String[] resultTypeCode = { "string", "hexadecimal", "binay" };
+  public static final String[] resultTypeCode = { "string", "hexadecimal", "binary" };
   public static final int result_TYPE_STRING = 0;
   public static final int result_TYPE_HEXADECIMAL = 1;
   public static final int result_TYPE_BINARY = 2;
@@ -108,17 +111,8 @@ public class CheckSumMeta extends BaseStepMeta implements StepMetaInterface {
     super(); // allocate BaseStepMeta
   }
 
-  // TODO Deprecate one of these setCheckSumType methods
   public void setCheckSumType( int i ) {
     checksumtype = checksumtypeCodes[i];
-  }
-
-  public void setCheckSumType( String type ) {
-    if ( Arrays.asList( checksumtypeCodes ).contains( type ) ) {
-      checksumtype = type;
-    } else {
-      checksumtype = checksumtypeCodes[0];
-    }
   }
 
   public int getTypeByDesc() {
@@ -137,18 +131,26 @@ public class CheckSumMeta extends BaseStepMeta implements StepMetaInterface {
     return checksumtype;
   }
 
+  public String[] getChecksumtypeDescs() {
+    return checksumtypeCodes;
+  }
+
+  public String[] getResultTypeDescs() {
+    return resultTypeDesc;
+  }
+
   public int getResultType() {
     return resultType;
   }
 
-  public static String getResultTypeDesc( int i ) {
+  public String getResultTypeDesc( int i ) {
     if ( i < 0 || i >= resultTypeDesc.length ) {
       return resultTypeDesc[0];
     }
     return resultTypeDesc[i];
   }
 
-  public static int getResultTypeByDesc( String tt ) {
+  public int getResultTypeByDesc( String tt ) {
     if ( tt == null ) {
       return 0;
     }
@@ -162,7 +164,7 @@ public class CheckSumMeta extends BaseStepMeta implements StepMetaInterface {
     return getResultTypeByCode( tt );
   }
 
-  private static int getResultTypeByCode( String tt ) {
+  private int getResultTypeByCode( String tt ) {
     if ( tt == null ) {
       return 0;
     }
@@ -187,7 +189,7 @@ public class CheckSumMeta extends BaseStepMeta implements StepMetaInterface {
   }
 
   /**
-   * @param resultName
+   * @param resultfieldName
    *          The resultfieldName to set.
    */
   public void setResultFieldName( String resultfieldName ) {
