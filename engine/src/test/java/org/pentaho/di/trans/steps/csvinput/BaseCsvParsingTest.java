@@ -43,7 +43,8 @@ public abstract class BaseCsvParsingTest extends BaseParsingTest<CsvInputMeta, C
   public void before() {
     meta = new CsvInputMeta();
     meta.setDefault();
-
+    // these tests assume lazy is active
+    meta.setLazyConversionActive( true );
     data = new CsvInputData();
     data.outputRowMeta = new RowMeta();
   }
