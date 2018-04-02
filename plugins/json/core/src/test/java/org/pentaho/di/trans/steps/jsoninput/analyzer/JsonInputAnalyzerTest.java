@@ -155,12 +155,7 @@ public class JsonInputAnalyzerTest {
 
   @Test
   public void testJsonInputExternalResourceConsumer() throws Exception {
-    JsonInputExternalResourceConsumer consumer = new JsonInputExternalResourceConsumer() {
-      @Override
-      protected boolean resolveExternalResources() {
-        return true;
-      }
-    };
+    JsonInputExternalResourceConsumer consumer = new JsonInputExternalResourceConsumer();
 
     StepMeta spyMeta = spy( new StepMeta( "test", meta ) );
 
