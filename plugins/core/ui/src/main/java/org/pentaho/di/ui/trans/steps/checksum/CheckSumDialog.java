@@ -163,8 +163,8 @@ public class CheckSumDialog extends BaseStepDialog implements StepDialogInterfac
     fdlType.top = new FormAttachment( wStepname, margin );
     wlType.setLayoutData( fdlType );
     wType = new CCombo( shell, SWT.SINGLE | SWT.READ_ONLY | SWT.BORDER );
-    for ( int i = 0; i < CheckSumMeta.checksumtypeDescs.length; i++ ) {
-      wType.add( CheckSumMeta.checksumtypeDescs[i] );
+    for ( int i = 0; i < input.getChecksumtypeDescs().length; i++ ) {
+      wType.add( input.getChecksumtypeDescs()[i] );
     }
     wType.select( 0 );
     props.setLook( wType );
@@ -191,7 +191,7 @@ public class CheckSumDialog extends BaseStepDialog implements StepDialogInterfac
     fdlResultType.top = new FormAttachment( wType, 2 * margin );
     wlResultType.setLayoutData( fdlResultType );
     wResultType = new CCombo( shell, SWT.SINGLE | SWT.READ_ONLY | SWT.BORDER );
-    wResultType.setItems( CheckSumMeta.resultTypeDesc );
+    wResultType.setItems( input.getResultTypeDescs() );
     wResultType.select( 0 );
     props.setLook( wResultType );
     fdResultType = new FormData();
@@ -447,7 +447,7 @@ public class CheckSumDialog extends BaseStepDialog implements StepDialogInterfac
     if ( input.getResultFieldName() != null ) {
       wResult.setText( input.getResultFieldName() );
     }
-    wResultType.setText( CheckSumMeta.getResultTypeDesc( input.getResultType() ) );
+    wResultType.setText( input.getResultTypeDesc( input.getResultType() ) );
     wCompatibility.setSelection( input.isCompatibilityMode() );
     wOldChecksumBehaviour.setSelection( input.isOldChecksumBehaviour() );
 
@@ -487,7 +487,7 @@ public class CheckSumDialog extends BaseStepDialog implements StepDialogInterfac
     }
 
     input.setResultFieldName( wResult.getText() );
-    input.setResultType( CheckSumMeta.getResultTypeByDesc( wResultType.getText() ) );
+    input.setResultType( input.getResultTypeByDesc( wResultType.getText() ) );
 
     input.setCompatibilityMode( wCompatibility.getSelection() );
     input.setOldChecksumBehaviour( wOldChecksumBehaviour.getSelection() );
@@ -504,7 +504,7 @@ public class CheckSumDialog extends BaseStepDialog implements StepDialogInterfac
 
   private void activeHexa() {
     boolean activate =
-      ( CheckSumMeta.getResultTypeByDesc( wResultType.getText() ) == CheckSumMeta.result_TYPE_HEXADECIMAL );
+      ( input.getResultTypeByDesc( wResultType.getText() ) == input.getResultTypeByDesc( "hexadecimal" ) );
     wlCompatibility.setEnabled( activate );
     wCompatibility.setEnabled( activate );
   }
