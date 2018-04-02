@@ -1268,13 +1268,15 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
             realFilename = r.normalizeSlashes( realFilename );
             // need to try to load from the repository
             try {
-              String dirStr = realFilename.substring( 0, realFilename.lastIndexOf( "/" ) );
-              String tmpFilename = realFilename.substring( realFilename.lastIndexOf( "/" ) + 1 );
-              RepositoryDirectoryInterface dir = rep.findDirectory( dirStr );
-              transMeta = rep.loadTransformation( tmpFilename, dir, null, true, null );
+              if ( realFilename.indexOf( "/" ) > -1 ) {
+                String dirStr = realFilename.substring( 0, realFilename.lastIndexOf( "/" ) );
+                String tmpFilename = realFilename.substring( realFilename.lastIndexOf( "/" ) + 1 );
+                RepositoryDirectoryInterface dir = rep.findDirectory( dirStr );
+                transMeta = rep.loadTransformation( tmpFilename, dir, null, true, null );
+              }
             } catch ( KettleException ke ) {
               // try without extension
-              if ( realFilename.endsWith( Const.STRING_TRANS_DEFAULT_EXT ) ) {
+              if ( realFilename.endsWith( Const.STRING_TRANS_DEFAULT_EXT ) && realFilename.lastIndexOf( "/" ) > -1 ) {
                 try {
                   String tmpFilename = realFilename.substring( realFilename.lastIndexOf( "/" ) + 1,
                       realFilename.indexOf( "." + Const.STRING_TRANS_DEFAULT_EXT ) );
