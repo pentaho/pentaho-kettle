@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,13 +22,7 @@
 
 package org.pentaho.di.trans.steps.userdefinedjavaclass;
 
-import java.io.IOException;
-import java.io.StringReader;
-import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
+import com.google.common.annotations.VisibleForTesting;
 import org.codehaus.janino.ClassBodyEvaluator;
 import org.codehaus.janino.CompileException;
 import org.codehaus.janino.Parser.ParseException;
@@ -45,6 +39,7 @@ import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.value.ValueMetaFactory;
 import org.pentaho.di.core.variables.VariableSpace;
+import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.ObjectId;
@@ -60,6 +55,15 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.di.trans.steps.userdefinedjavaclass.UserDefinedJavaClassDef.ClassType;
 import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Node;
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
+
+import java.io.IOException;
+import java.io.StringReader;
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 public class UserDefinedJavaClassMeta extends BaseStepMeta implements StepMetaInterface {
   private static Class<?> PKG = UserDefinedJavaClassMeta.class; // for i18n purposes, needed by Translator2!!
@@ -79,6 +83,7 @@ public class UserDefinedJavaClassMeta extends BaseStepMeta implements StepMetaIn
   private List<UserDefinedJavaClassDef> definitions = new ArrayList<UserDefinedJavaClassDef>();
   public Class<TransformClassBase> cookedTransformClass;
   public List<Exception> cookErrors = new ArrayList<Exception>( 0 );
+  private static final Cache<String, Class<?>> classCache;
 
   private boolean clearingResultFields;
 
@@ -88,6 +93,20 @@ public class UserDefinedJavaClassMeta extends BaseStepMeta implements StepMetaIn
   private List<StepDefinition> targetStepDefinitions;
 
   private List<UsageParameter> usageParameters;
+
+  static {
+    VariableSpace vs = new Variables();
+    vs.initializeVariablesFrom( null ); // sets up the default variables
+    String maxSizeStr = vs.getVariable( UserDefinedJavaClass.KETTLE_DEFAULT_CLASS_CACHE_SIZE, "100" );
+    int maxCacheSize = -1;
+    try {
+      maxCacheSize = Integer.parseInt( maxSizeStr );
+    } catch ( Exception ignored ) {
+      maxCacheSize = 100; // default to 100 if property not set
+    }
+    // Initialize Class Cache
+    classCache = CacheBuilder.newBuilder().maximumSize( maxCacheSize ).build();
+  }
 
   public static class FieldInfo implements Cloneable {
     public final String name;
@@ -116,8 +135,14 @@ public class UserDefinedJavaClassMeta extends BaseStepMeta implements StepMetaIn
     usageParameters = new ArrayList<UsageParameter>();
   }
 
-  private Class<?> cookClass( UserDefinedJavaClassDef def ) throws CompileException, ParseException,
-    ScanException, IOException, RuntimeException, KettleStepException {
+  @VisibleForTesting
+  Class<?> cookClass( UserDefinedJavaClassDef def ) throws CompileException, ParseException, ScanException, IOException, RuntimeException, KettleStepException {
+
+    String checksum = def.getChecksum();
+    Class<?> rtn = UserDefinedJavaClassMeta.classCache.getIfPresent( checksum );
+    if ( rtn != null ) {
+      return rtn;
+    }
 
     if ( Thread.currentThread().getContextClassLoader() == null ) {
       Thread.currentThread().setContextClassLoader( this.getClass().getClassLoader() );
@@ -140,8 +165,9 @@ public class UserDefinedJavaClassMeta extends BaseStepMeta implements StepMetaIn
       "org.pentaho.di.core.row.*", "org.pentaho.di.core.*", "org.pentaho.di.core.exception.*" } );
 
     cbe.cook( new Scanner( null, sr ) );
-
-    return cbe.getClazz();
+    rtn = cbe.getClazz();
+    UserDefinedJavaClassMeta.classCache.put( checksum, rtn );
+    return rtn;
   }
 
   @SuppressWarnings( "unchecked" )
@@ -164,17 +190,13 @@ public class UserDefinedJavaClassMeta extends BaseStepMeta implements StepMetaIn
     changed = false;
   }
 
-  public TransformClassBase newChildInstance( UserDefinedJavaClass parent, UserDefinedJavaClassMeta meta,
-    UserDefinedJavaClassData data ) {
+  public TransformClassBase newChildInstance( UserDefinedJavaClass parent, UserDefinedJavaClassMeta meta, UserDefinedJavaClassData data ) {
     if ( !checkClassCookings( getLog() ) ) {
       return null;
     }
 
     try {
-      return cookedTransformClass
-        .getConstructor(
-          UserDefinedJavaClass.class, UserDefinedJavaClassMeta.class, UserDefinedJavaClassData.class )
-        .newInstance( parent, meta, data );
+      return cookedTransformClass.getConstructor( UserDefinedJavaClass.class, UserDefinedJavaClassMeta.class, UserDefinedJavaClassData.class ).newInstance( parent, meta, data );
     } catch ( Exception e ) {
       if ( log.isDebug() ) {
         log.logError( "Full debugging stacktrace of UserDefinedJavaClass instanciation exception:", e.getCause() );
