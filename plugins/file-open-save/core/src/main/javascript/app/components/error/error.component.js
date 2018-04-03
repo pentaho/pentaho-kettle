@@ -50,15 +50,18 @@ define([
     controller: errorController
   };
 
+  errorController.$inject = ["$scope", "$timeout"];
+
   /**
-   * The Error Controller.
-   *
-   * This provides the controller for the error component.
+   * The Error Controller. This provides the controller for the error component.
+   * @param {Object} $scope - Application model
+   * @param {Object} $timeout - Angular wrapper around window.setTimeout
    */
-  function errorController() {
+  function errorController($scope, $timeout) {
     var _buffer = 25;
     var _max = 1440 - _buffer; // maximum width of 4 lines at 360px each minus a small buffer
     var _ellipsis = "...";
+    var _maxHeight = 73; // is actually 72, but IE adds an extra px for some reason.
     var vm = this;
     vm.$onInit = onInit;
     vm.$onChanges = onChanges;
@@ -153,21 +156,14 @@ define([
           vm.breakAll = true;
           break;
         case 2:// Folder Exists
-          var folderExistsBefore = i18n.get("file-open-save-plugin.error.folder-exists.top.message") + " ";
-          var folderExistsFoldernameMaxWidth = _max - utils.getTextWidth(folderExistsBefore + " ." + _ellipsis);
-          var folderExistsFoldername = vm.errorFolder.newName;
-          if (utils.getTextWidth(folderExistsFoldername) > folderExistsFoldernameMaxWidth) {
-            folderExistsFoldername = utils.truncateString(folderExistsFoldername, folderExistsFoldernameMaxWidth) +
-              _ellipsis + " ";
-          }
           _setMessage(i18n.get("file-open-save-plugin.error.folder-exists.title"),
-            folderExistsBefore,
-            folderExistsFoldername + ".",
+            i18n.get("file-open-save-plugin.error.folder-exists.top.message") + " ",
+            vm.errorFolder.newName + ".",
             "",
             i18n.get("file-open-save-plugin.error.folder-exists.bottom.message"),
             "",
             i18n.get("file-open-save-plugin.error.folder-exists.close.button"));
-          vm.breakAll = true;
+          _handleLongMessages(".");
           break;
         case 3:// Unable to Save
           _setMessage(i18n.get("file-open-save-plugin.error.unable-to-save.title"),
@@ -318,6 +314,30 @@ define([
       vm.errorMessageBottom = bottom;
       vm.errorConfirmButton = confirm;
       vm.errorCancelButton = cancel;
+    }
+
+    /**
+     * Handles long messages and truncates them (adding ellipsis and the ending).
+     * Is message height more than max? If so, break all words and recheck, then truncate accordingly.
+     * @param {String} ending - Ending punctuation of message
+     * @private
+     */
+    function _handleLongMessages(ending) {
+      var errorMiddle = document.getElementById("errorMiddle");
+      $timeout(function() {
+        if (errorMiddle.scrollHeight > _maxHeight) {
+          vm.breakAll = true;
+          $scope.$digest();
+          if (errorMiddle.scrollHeight > _maxHeight) {
+            while (errorMiddle.scrollHeight > _maxHeight) {
+              vm.errorMessageTopBefore = vm.errorMessageTopBefore.substring(0, vm.errorMessageTopBefore.length - 1);
+              $scope.$digest();
+            }
+            vm.errorMessageTopBefore = vm.errorMessageTopBefore
+                .substring(0, vm.errorMessageTopBefore.length - 5) + _ellipsis + ending;
+          }
+        }
+      });
     }
   }
 
