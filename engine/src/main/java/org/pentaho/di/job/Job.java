@@ -34,6 +34,7 @@ import java.util.Queue;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -257,8 +258,9 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
    * Initializes the Job.
    */
   public void init() {
-    jobListeners = new ArrayList<JobListener>();
-    jobEntryListeners = new ArrayList<JobEntryListener>();
+    //we need copy on write to allow to delete listeners themselves  
+    jobListeners = new CopyOnWriteArrayList<JobListener>();
+    jobEntryListeners = new CopyOnWriteArrayList<JobEntryListener>();
     delegationListeners = new ArrayList<DelegationListener>();
 
     activeJobEntryTransformations = new HashMap<JobEntryCopy, JobEntryTrans>();
