@@ -20,7 +20,7 @@
  *
  ******************************************************************************/
 
-package org.pentaho.di.trans.step.mqtt;
+package org.pentaho.di.core.util.serialization;
 
 import com.google.common.collect.ImmutableMap;
 import org.junit.Test;
@@ -30,9 +30,9 @@ import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
-import static org.pentaho.di.trans.step.mqtt.SslConfigHelper.conf;
+import static org.pentaho.di.core.util.serialization.ConfigHelper.conf;
 
-public class SslConfigHelperTest {
+public class ConfigHelperTest {
 
   @Test
   public void testMapToListsAndBack() {
