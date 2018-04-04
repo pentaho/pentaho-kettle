@@ -22,19 +22,10 @@
 
 package org.pentaho.di.ui.repo.controller;
 
-import java.lang.reflect.Proxy;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Future;
-import java.util.function.Supplier;
-
+import com.google.common.annotations.VisibleForTesting;
 import org.apache.commons.lang.ClassUtils;
 import org.eclipse.swt.widgets.DirectoryDialog;
+import org.eclipse.swt.widgets.Shell;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.pentaho.di.core.Const;
@@ -61,7 +52,16 @@ import org.pentaho.di.ui.repo.timeout.RepositorySessionTimeoutHandler;
 import org.pentaho.di.ui.spoon.Spoon;
 import org.pentaho.di.ui.util.HelpUtils;
 
-import com.google.common.annotations.VisibleForTesting;
+import java.lang.reflect.Proxy;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Future;
+import java.util.function.Supplier;
 
 /**
  * Created by bmorrise on 4/18/16.
@@ -113,9 +113,12 @@ public class RepositoryConnectController implements IConnectedRepositoryInstance
   }
 
   public boolean help() {
-    spoonSupplier.get().getShell().getDisplay().asyncExec( () -> HelpUtils
-      .openHelpDialog( spoonSupplier.get().getShell(), BaseMessages.getString( PKG, "RepositoryDialog.Dialog.Tile" ),
-        HELP_URL, BaseMessages.getString( PKG, "RepositoryDialog.Dialog.Header" ) ) );
+    spoonSupplier.get().getShell().getDisplay().asyncExec( () -> {
+      Shell[] shells = spoonSupplier.get().getShell().getShells();
+      HelpUtils
+        .openHelpDialog( shells[ shells.length - 1 ], BaseMessages.getString( PKG, "RepositoryDialog.Dialog.Tile" ),
+          HELP_URL, BaseMessages.getString( PKG, "RepositoryDialog.Dialog.Header" ) );
+    } );
     return true;
   }
 
