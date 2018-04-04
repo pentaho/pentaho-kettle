@@ -33,6 +33,7 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 
 import javax.jms.Destination;
 import javax.jms.JMSProducer;
+import java.util.Map;
 
 public class JmsProducer extends BaseStep implements StepInterface {
 
@@ -70,6 +71,11 @@ public class JmsProducer extends BaseStep implements StepInterface {
       producer = meta.jmsDelegate.getJmsContext( this ).createProducer();
       destination = meta.jmsDelegate.getDestination( this );
       messageIndex = getInputRowMeta().indexOfValue( environmentSubstitute( meta.getFieldToSend() ) );
+
+      for ( Map.Entry<String, String> entry : meta.getPropertyValuesByName().entrySet() ) {
+        producer.setProperty( entry.getKey(), entry.getValue() );
+      }
+
       first = false;
     }
 

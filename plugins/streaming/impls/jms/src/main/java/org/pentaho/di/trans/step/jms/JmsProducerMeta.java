@@ -37,9 +37,14 @@ import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.di.trans.step.jms.context.ActiveMQProvider;
 
-import static java.util.Collections.singletonList;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
-@InjectionSupported ( localizationPrefix = "JmsProducerMeta.Injection." )
+import static java.util.Collections.singletonList;
+import static org.pentaho.di.core.util.serialization.ConfigHelper.conf;
+
+@InjectionSupported ( localizationPrefix = "JmsProducerMeta.Injection.", groups = { "PROPERTIES" } )
 @Step ( id = "Jms2Producer", image = "JMSP.svg", name = "JMS Producer",
   description = "JmsProducerDialog.TypeLongDesc", categoryDescription = "Streaming" )
 public class JmsProducerMeta extends BaseSerializingMeta implements StepMetaInterface, Cloneable {
@@ -50,12 +55,21 @@ public class JmsProducerMeta extends BaseSerializingMeta implements StepMetaInte
   }
 
   static final String FIELD_TO_SEND = "FIELD_TO_SEND";
+  static final String PROPERTIES = "PROPERTIES";
+  static final String PROPERTY_NAMES = "PROPERTY_NAMES";
+  static final String PROPERTY_VALUES = "PROPERTY_VALUES";
 
   @InjectionDeep
   public final JmsDelegate jmsDelegate;
 
   @Injection( name = FIELD_TO_SEND )
   private String fieldToSend = "";
+
+  @Injection ( name = PROPERTY_NAMES, group = PROPERTIES )
+  private List<String> propertyNames = new ArrayList<>();
+
+  @Injection ( name = PROPERTY_VALUES, group = PROPERTIES )
+  private List<String> propertyValues = new ArrayList<>();
 
   public JmsProducerMeta( JmsDelegate jmsDelegate ) {
     this.jmsDelegate = jmsDelegate;
@@ -86,5 +100,14 @@ public class JmsProducerMeta extends BaseSerializingMeta implements StepMetaInte
 
   public void setFieldToSend( String fieldToSend ) {
     this.fieldToSend = fieldToSend;
+  }
+
+  public void setPropertyValuesByName( Map<String, String> propertyValuesByName ) {
+    this.propertyNames = conf( propertyValuesByName ).keys();
+    this.propertyValues = conf( propertyValuesByName ).vals();
+  }
+
+  public Map<String, String> getPropertyValuesByName() {
+    return conf( propertyNames, propertyValues ).asMap();
   }
 }

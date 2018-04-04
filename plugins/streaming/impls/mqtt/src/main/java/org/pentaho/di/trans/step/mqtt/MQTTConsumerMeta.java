@@ -70,7 +70,7 @@ import static org.pentaho.di.trans.step.mqtt.MQTTConstants.TOPICS;
 import static org.pentaho.di.trans.step.mqtt.MQTTConstants.TOPIC_OUTPUT_NAME;
 import static org.pentaho.di.trans.step.mqtt.MQTTConstants.USERNAME;
 import static org.pentaho.di.trans.step.mqtt.MQTTConstants.USE_SSL;
-import static org.pentaho.di.trans.step.mqtt.SslConfigHelper.conf;
+import static org.pentaho.di.core.util.serialization.ConfigHelper.conf;
 
 @Step ( id = "MQTTConsumer", image = "MQTTConsumer.svg",
   i18nPackageName = "org.pentaho.di.trans.step.mqtt",

@@ -67,7 +67,7 @@ import static org.pentaho.di.trans.step.mqtt.MQTTConstants.STORAGE_LEVEL;
 import static org.pentaho.di.trans.step.mqtt.MQTTConstants.TOPIC;
 import static org.pentaho.di.trans.step.mqtt.MQTTConstants.USERNAME;
 import static org.pentaho.di.trans.step.mqtt.MQTTConstants.USE_SSL;
-import static org.pentaho.di.trans.step.mqtt.SslConfigHelper.conf;
+import static org.pentaho.di.core.util.serialization.ConfigHelper.conf;
 
 @Step ( id = "MQTTProducer", image = "MQTTProducer.svg",
   i18nPackageName = "org.pentaho.di.trans.step.mqtt",
