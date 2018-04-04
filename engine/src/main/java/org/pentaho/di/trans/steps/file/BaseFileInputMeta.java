@@ -30,9 +30,7 @@ import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.resource.ResourceReference;
 import org.pentaho.di.trans.TransMeta;
-import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepMeta;
-import org.pentaho.di.trans.step.StepMetaInterface;
 
 /**
  * Base meta for file-based input steps.
@@ -40,7 +38,7 @@ import org.pentaho.di.trans.step.StepMetaInterface;
  * @author Alexander Buloichik
  */
 public abstract class BaseFileInputMeta<A extends BaseFileInputAdditionalField, I extends BaseFileInputFiles, F extends BaseFileField>
-    extends BaseStepMeta implements StepMetaInterface {
+    extends BaseFileMeta {
   private static Class<?> PKG = BaseFileInputMeta.class; // for i18n purposes, needed by Translator2!!
 
   public static final String[] RequiredFilesCode = new String[] { "N", "Y" };
@@ -83,8 +81,7 @@ public abstract class BaseFileInputMeta<A extends BaseFileInputAdditionalField, 
   }
 
   /**
-   * @param fileRequired
-   *          The fileRequired to set.
+   * @param fileRequiredin The fileRequired to set.
    */
   public void inputFiles_fileRequired( String[] fileRequiredin ) {
     for ( int i = 0; i < fileRequiredin.length; i++ ) {
@@ -136,5 +133,20 @@ public abstract class BaseFileInputMeta<A extends BaseFileInputAdditionalField, 
 
   public String getAcceptingField() {
     return inputFiles == null ? null : inputFiles.acceptingField;
+  }
+
+  @Override
+  public String[] getFilePaths( final boolean showSamples ) {
+    final StepMeta parentStepMeta = getParentStepMeta();
+    if ( parentStepMeta != null ) {
+      final TransMeta parentTransMeta = parentStepMeta.getParentTransMeta();
+      if ( parentTransMeta != null ) {
+        final FileInputList inputList = getFileInputList( parentTransMeta );
+        if ( inputList != null ) {
+          return inputList.getFileStrings();
+        }
+      }
+    }
+    return new String[]{};
   }
 }
