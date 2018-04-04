@@ -24,6 +24,7 @@ define([
 
   var options = {
     bindings: {
+      connection: "<",
       onConnect: "&",
       onManage: "&",
       onClose: "&"
