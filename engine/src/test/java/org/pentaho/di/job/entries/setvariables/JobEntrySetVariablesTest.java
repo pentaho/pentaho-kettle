@@ -89,21 +89,4 @@ public class JobEntrySetVariablesTest {
     assertEquals( "English", entry.getVariable( "English" ) );
     assertEquals( "中文", entry.getVariable( "Chinese" ) );
   }
-
-  @Test
-  //PDI-16387
-  public void testVariableTypeCurrentJob() throws Exception {
-    entry.setFilename( "src/test/resources/org/pentaho/di/job/entries/setvariables/UTF8Text.properties" );
-    entry.setVariableName( new String[] {} );
-    entry.setReplaceVars( true );
-    entry.setFileVariableType( JobEntrySetVariables.VARIABLE_TYPE_CURRENT_JOB );
-    Result result = entry.execute( new Result(), 0 );
-    for ( JobEntryListener  jobEntryListener : job.getJobEntryListeners() ) {
-      jobEntryListener.beforeExecution( job, null, entry );
-    }
-    Assert.assertTrue( result.getResult() );
-    Assert.assertNull( entry.getVariable( "Japanese" ) );
-    Assert.assertNull( entry.getVariable( "English" ) );
-    Assert.assertNull( entry.getVariable( "Chinese" ) );
-  }
 }
