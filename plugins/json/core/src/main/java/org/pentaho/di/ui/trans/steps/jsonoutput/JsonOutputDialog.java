@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -629,7 +629,7 @@ public class JsonOutputDialog extends BaseStepDialog implements StepDialogInterf
       public void widgetSelected( SelectionEvent e ) {
         JsonOutputMeta tfoi = new JsonOutputMeta();
         getInfo( tfoi );
-        String[] files = tfoi.getFiles( transMeta.environmentSubstitute( wFilename.getText() ) );
+        String[] files = tfoi.getFiles( transMeta );
         if ( files != null && files.length > 0 ) {
           EnterSelectionDialog esd =
               new EnterSelectionDialog( shell, files, BaseMessages.getString( PKG,

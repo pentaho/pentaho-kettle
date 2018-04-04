@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,8 +22,6 @@
 
 package org.pentaho.di.trans.steps.jsonoutput;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.List;
 
 import org.pentaho.di.core.CheckResult;
@@ -45,12 +43,11 @@ import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
-import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
-import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.di.trans.step.StepMetaInjectionInterface;
+import org.pentaho.di.trans.steps.file.BaseFileOutputMeta;
 import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Node;
 
@@ -63,7 +60,7 @@ import org.w3c.dom.Node;
 @Step( id = "JsonOutput", image = "JSO.svg", i18nPackageName = "org.pentaho.di.trans.steps.jsonoutput",
     name = "JsonOutput.name", description = "JsonOutput.description",
     documentationUrl = "http://wiki.pentaho.com/display/EAI/JSON+output", categoryDescription = "JsonOutput.category" )
-public class JsonOutputMeta extends BaseStepMeta implements StepMetaInterface {
+public class JsonOutputMeta extends BaseFileOutputMeta {
   private static Class<?> PKG = JsonOutputMeta.class; // for i18n purposes, needed by Translator2!!
 
   /** Operations type */
@@ -106,32 +103,11 @@ public class JsonOutputMeta extends BaseStepMeta implements StepMetaInterface {
 
   private boolean AddToResult;
 
-  /** Whether to push the output into the output of a servlet with the executeTrans Carte/DI-Server servlet */
-  private boolean servletOutput;
-
-  /** The base name of the output file */
-  private String fileName;
-
-  /** The file extention in case of a generated filename */
-  private String extension;
-
   /** Flag to indicate the we want to append to the end of an existing file (if it exists) */
   private boolean fileAppended;
 
   /** Flag to indicate whether or not to create JSON structures compatible with pre PDI-4.3.0 */
   private boolean compatibilityMode;
-
-  /** Flag: add the stepnr in the filename */
-  private boolean stepNrInFilename;
-
-  /** Flag: add the partition number in the filename */
-  private boolean partNrInFilename;
-
-  /** Flag: add the date in the filename */
-  private boolean dateInFilename;
-
-  /** Flag: add the time in the filename */
-  private boolean timeInFilename;
 
   /** Flag: create parent folder if needed */
   private boolean createparentfolder;
@@ -166,21 +142,6 @@ public class JsonOutputMeta extends BaseStepMeta implements StepMetaInterface {
   }
 
   /**
-   * @return Returns the extension.
-   */
-  public String getExtension() {
-    return extension;
-  }
-
-  /**
-   * @param extension
-   *          The extension to set.
-   */
-  public void setExtension( String extension ) {
-    this.extension = extension;
-  }
-
-  /**
    * @return Returns the fileAppended.
    */
   public boolean isFileAppended() {
@@ -193,27 +154,6 @@ public class JsonOutputMeta extends BaseStepMeta implements StepMetaInterface {
    */
   public void setFileAppended( boolean fileAppended ) {
     this.fileAppended = fileAppended;
-  }
-
-  /**
-   * @return Returns the fileName.
-   */
-  public String getFileName() {
-    return fileName;
-  }
-
-  /**
-   * @return Returns the timeInFilename.
-   */
-  public boolean isTimeInFilename() {
-    return timeInFilename;
-  }
-
-  /**
-   * @return Returns the dateInFilename.
-   */
-  public boolean isDateInFilename() {
-    return dateInFilename;
   }
 
   /**
@@ -230,14 +170,6 @@ public class JsonOutputMeta extends BaseStepMeta implements StepMetaInterface {
    */
   public void setTimeInFilename( boolean timeInFilename ) {
     this.timeInFilename = timeInFilename;
-  }
-
-  /**
-   * @param fileName
-   *          The fileName to set.
-   */
-  public void setFileName( String fileName ) {
-    this.fileName = fileName;
   }
 
   /**
@@ -517,71 +449,6 @@ public class JsonOutputMeta extends BaseStepMeta implements StepMetaInterface {
     }
   }
 
-  public String[] getFiles( String fileName ) {
-    int copies = 1;
-    int splits = 1;
-    int parts = 1;
-
-    if ( stepNrInFilename ) {
-      copies = 3;
-    }
-
-    if ( partNrInFilename ) {
-      parts = 3;
-    }
-
-    int nr = copies * parts * splits;
-    if ( nr > 1 ) {
-      nr++;
-    }
-
-    String[] retval = new String[nr];
-
-    int i = 0;
-    for ( int copy = 0; copy < copies; copy++ ) {
-      for ( int part = 0; part < parts; part++ ) {
-        for ( int split = 0; split < splits; split++ ) {
-          retval[i] = buildFilename( fileName, copy, split );
-          i++;
-        }
-      }
-    }
-    if ( i < nr ) {
-      retval[i] = "...";
-    }
-
-    return retval;
-  }
-
-  public String buildFilename( String fileName, int stepnr, int splitnr ) {
-    SimpleDateFormat daf = new SimpleDateFormat();
-
-    // Replace possible environment variables...
-    String retval = fileName;
-
-    Date now = new Date();
-
-    if ( dateInFilename ) {
-      daf.applyPattern( "yyyMMdd" );
-      String d = daf.format( now );
-      retval += "_" + d;
-    }
-    if ( timeInFilename ) {
-      daf.applyPattern( "HHmmss.SSS" );
-      String t = daf.format( now );
-      retval += "_" + t;
-    }
-    if ( stepNrInFilename ) {
-      retval += "_" + stepnr;
-    }
-
-    if ( extension != null && extension.length() != 0 ) {
-      retval += "." + extension;
-    }
-
-    return retval;
-  }
-
   public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev,
       String[] input, String[] output, RowMetaInterface info, VariableSpace space, Repository repository,
       IMetaStore metaStore ) {
@@ -698,6 +565,18 @@ public class JsonOutputMeta extends BaseStepMeta implements StepMetaInterface {
     this.nrRowsInBloc = nrRowsInBloc;
   }
 
+  public int getSplitEvery() {
+    try {
+      return Integer.parseInt( getNrRowsInBloc() );
+    } catch ( final Exception e ) {
+      return 1;
+    }
+  }
+
+  public void setSplitEvery( int splitEvery ) {
+    setNrRowsInBloc( splitEvery + "" );
+  }
+
   public String getOutputValue() {
     return outputValue;
   }
@@ -726,11 +605,10 @@ public class JsonOutputMeta extends BaseStepMeta implements StepMetaInterface {
     return new JsonOutputMetaInjection( this );
   }
 
-  /**
-   * {@inheritDoc}
-   */
   @Override
-  public boolean passDataToServletOutput() {
-    return servletOutput;
+  public boolean writesToFile() {
+    return super.writesToFile()
+      && ( getOperationType() == JsonOutputMeta.OPERATION_TYPE_WRITE_TO_FILE
+      || getOperationType() == JsonOutputMeta.OPERATION_TYPE_BOTH );
   }
 }
