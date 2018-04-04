@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -107,16 +107,24 @@ public class JobFileListenerTest {
     assertEquals( ObjectLocationSpecificationMethod.REPOSITORY_BY_NAME, resultExecMeta.getSpecificationMethod() );
     assertEquals( "/path/to", resultExecMeta.getDirectory() );
     assertEquals( "Transformation2", resultExecMeta.getTransname() );
-
   }
 
   @Test
-  public void testProcessLinkedTransWithNoFilename() {
+  public void testProcessLinkedTransWithNoFilenameMethodFileName() {
+    testProcessLinkedTransWithNoFilename( ObjectLocationSpecificationMethod.FILENAME );
+  }
+
+  @Test
+  public void testProcessLinkedTransWithNoFilenameMethodRepoByName() {
+    testProcessLinkedTransWithNoFilename( ObjectLocationSpecificationMethod.REPOSITORY_BY_NAME );
+  }
+
+  private void testProcessLinkedTransWithNoFilename( final ObjectLocationSpecificationMethod method ) {
     JobEntryTrans jobTransExecutor = spy( new JobEntryTrans() );
     jobTransExecutor.setFileName( null );
     jobTransExecutor.setDirectory( "/path/to" );
     jobTransExecutor.setTransname( "Transformation2" );
-    jobTransExecutor.setSpecificationMethod( ObjectLocationSpecificationMethod.REPOSITORY_BY_NAME );
+    jobTransExecutor.setSpecificationMethod( method );
     JobEntryCopy jobEntry = mock( JobEntryCopy.class );
     when( jobEntry.getEntry() ).thenReturn( jobTransExecutor );
 
@@ -132,7 +140,6 @@ public class JobFileListenerTest {
     assertEquals( ObjectLocationSpecificationMethod.REPOSITORY_BY_NAME, resultExecMeta.getSpecificationMethod() );
     assertEquals( "/path/to", resultExecMeta.getDirectory() );
     assertEquals( "Transformation2", resultExecMeta.getTransname() );
-
   }
 
   @Test
@@ -155,16 +162,24 @@ public class JobFileListenerTest {
     assertEquals( ObjectLocationSpecificationMethod.REPOSITORY_BY_NAME, resultExecMeta.getSpecificationMethod() );
     assertEquals( resultExecMeta.getDirectory(), "/path/to" );
     assertEquals( resultExecMeta.getJobName(), "Job1" );
-
   }
 
   @Test
-  public void testProcessLinkedJobsWithNoFilename() {
+  public void testProcessLinkedJobsWithNoFilenameMethodFilename() {
+    testProcessLinkedJobsWithNoFilename( ObjectLocationSpecificationMethod.FILENAME );
+  }
+
+  @Test
+  public void testProcessLinkedJobsWithNoFilenameMethodRepoByName() {
+    testProcessLinkedJobsWithNoFilename( ObjectLocationSpecificationMethod.REPOSITORY_BY_NAME );
+  }
+
+  private void testProcessLinkedJobsWithNoFilename( final ObjectLocationSpecificationMethod method ) {
     JobEntryJob jobJobExecutor = spy( new JobEntryJob() );
     jobJobExecutor.setFileName( null );
     jobJobExecutor.setDirectory( "/path/to" );
     jobJobExecutor.setJobName( "Job1" );
-    jobJobExecutor.setSpecificationMethod( ObjectLocationSpecificationMethod.REPOSITORY_BY_NAME );
+    jobJobExecutor.setSpecificationMethod( method );
     JobEntryCopy jobEntry = mock( JobEntryCopy.class );
     when( jobEntry.getEntry() ).thenReturn( jobJobExecutor );
 

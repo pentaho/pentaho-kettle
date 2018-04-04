@@ -112,13 +112,15 @@ public class JobFileListener implements FileListener {
           // if the filename is a missing variable name, it will not contain a slash - we don't want to fail
           // ungracefully in this case, simply set the job name to the whole filename value and let the run-time
           // handle any exceptions that arise from this
-          if ( filename.indexOf( "/" ) > -1 ) {
-            String jobname = filename.substring( filename.lastIndexOf( "/" ) + 1, filename.lastIndexOf( '.' ) );
-            String directory = filename.substring( 0, filename.lastIndexOf( "/" ) );
-            jej.setJobName( jobname );
-            jej.setDirectory( directory );
-          } else {
-            jej.setJobName( filename );
+          if ( filename != null ) {
+            if ( filename.indexOf( "/" ) > -1 ) {
+              String jobname = filename.substring( filename.lastIndexOf( "/" ) + 1, filename.lastIndexOf( '.' ) );
+              String directory = filename.substring( 0, filename.lastIndexOf( "/" ) );
+              jej.setJobName( jobname );
+              jej.setDirectory( directory );
+            } else {
+              jej.setJobName( filename );
+            }
           }
           jobMeta.setJobEntry( i, jec );
         }
@@ -140,13 +142,15 @@ public class JobFileListener implements FileListener {
           // if the filename is a missing variable name, it will not contain a slash - we don't want to fail
           // ungracefully in this case, simply set the trans name to the whole filename value and let the run-time
           // handle any exceptions that arise from this
-          if ( filename.indexOf( "/" ) > -1 ) {
-            String jobname = filename.substring( filename.lastIndexOf( "/" ) + 1, filename.lastIndexOf( '.' ) );
-            String directory = filename.substring( 0, filename.lastIndexOf( "/" ) );
-            jet.setTransname( jobname );
-            jet.setDirectory( directory );
-          } else {
-            jet.setTransname( filename );
+          if ( filename != null ) {
+            if ( filename.indexOf( "/" ) > -1 ) {
+              String jobname = filename.substring( filename.lastIndexOf( "/" ) + 1, filename.lastIndexOf( '.' ) );
+              String directory = filename.substring( 0, filename.lastIndexOf( "/" ) );
+              jet.setTransname( jobname );
+              jet.setDirectory( directory );
+            } else {
+              jet.setTransname( filename );
+            }
           }
           jobMeta.setJobEntry( i, jec );
         }
