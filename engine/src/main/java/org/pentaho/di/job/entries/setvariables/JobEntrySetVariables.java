@@ -22,8 +22,7 @@
 
 package org.pentaho.di.job.entries.setvariables;
 
-import org.pentaho.di.job.JobEntryListener;
-import org.pentaho.di.job.entry.JobEntryCopy;
+import org.pentaho.di.job.JobListener;
 import org.pentaho.di.job.entry.validator.AbstractFileValidator;
 import org.pentaho.di.job.entry.validator.AndValidator;
 import org.pentaho.di.job.entry.validator.JobEntryValidatorUtils;
@@ -54,6 +53,7 @@ import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.Job;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entry.JobEntryBase;
+import org.pentaho.di.job.entry.JobEntryCopy;
 import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.job.entry.validator.ValidatorContext;
 import org.pentaho.di.repository.ObjectId;
@@ -84,7 +84,7 @@ public class JobEntrySetVariables extends JobEntryBase implements Cloneable, Job
   public String filename;
 
   // we need to recovery changed values of variables if we use VARIABLE_TYPE_CURRENT_JOB
-  private Map<String, String> changedInitialVariables = new HashMap<>();
+  private Map<String, String> varForReset = new HashMap<>();
 
   public int fileVariableType;
 
@@ -110,22 +110,38 @@ public class JobEntrySetVariables extends JobEntryBase implements Cloneable, Job
   @Override
   public void setParentJob( Job parentJob ) {
     super.setParentJob( parentJob );
+
     // PDI-16387 Add a listener for recovering changed values of variables
-    JobEntryListener jobListener = new JobEntryListener() {
+    // we need to keep the value during job execution so we need to restore the vars only when job finished
+    JobListener jobListner = new JobListener() {
       @Override
-      public void beforeExecution( Job job, JobEntryCopy jobEntryCopy, JobEntryInterface jobEntryInterface ) {
-        for ( String key : changedInitialVariables.keySet() ) {
-          setVariable( key, changedInitialVariables.get( key ) );
-          parentJob.setVariable( key, changedInitialVariables.get( key ) );
-        }
-        changedInitialVariables.clear();
+      public void jobStarted( Job job ) throws KettleException {
       }
+
       @Override
-      public void afterExecution( Job job, JobEntryCopy jobEntryCopy, JobEntryInterface jobEntryInterface,
-                                  Result result ) {
+      public void jobFinished( Job job ) throws KettleException {
+        for ( String key : getVarForReset().keySet() ) {
+          job.setVariable( key, getVarForReset().get( key ) );
+          for ( JobEntryCopy entry : job.getJobMeta().getJobCopies() ) {
+            if ( entry.getEntry() instanceof VariableSpace ) {
+              ( (VariableSpace) entry.getEntry() ).setVariable( key, getVarForReset().get( key ) );
+            }
+          }
+        }
+        getVarForReset().clear();
+        job.removeJobListener( this );
       }
     };
-    parentJob.addJobEntryListener( jobListener );
+    getParentJob().addJobListener( jobListner );
+  }
+
+  public Map<String, String> getVarForReset() {
+    return varForReset;
+  }
+
+  @Override
+  public Job getParentJob() {
+    return parentJob;
   }
 
   public JobEntrySetVariables() {
@@ -300,7 +316,7 @@ public class JobEntrySetVariables extends JobEntryBase implements Cloneable, Job
           case VARIABLE_TYPE_JVM:
             System.setProperty( varname, value );
             setVariable( varname, value );
-            Job parentJobTraverse = parentJob;
+            Job parentJobTraverse = getParentJob();
             while ( parentJobTraverse != null ) {
               parentJobTraverse.setVariable( varname, value );
               parentJobTraverse = parentJobTraverse.getParentJob();
@@ -310,7 +326,7 @@ public class JobEntrySetVariables extends JobEntryBase implements Cloneable, Job
           case VARIABLE_TYPE_ROOT_JOB:
             // set variable in this job entry
             setVariable( varname, value );
-            Job rootJob = parentJob;
+            Job rootJob = getParentJob();
             while ( rootJob != null ) {
               rootJob.setVariable( varname, value );
               rootJob = rootJob.getParentJob();
@@ -318,10 +334,10 @@ public class JobEntrySetVariables extends JobEntryBase implements Cloneable, Job
             break;
 
           case VARIABLE_TYPE_CURRENT_JOB:
-            changedInitialVariables.put( varname, getVariable( varname ) );
+            getVarForReset().put( varname, getVariable( varname ) );
             setVariable( varname, value );
-            if ( parentJob != null ) {
-              parentJob.setVariable( varname, value );
+            if ( getParentJob() != null ) {
+              getParentJob().setVariable( varname, value );
             } else {
               throw new KettleJobException( BaseMessages.getString(
                 PKG, "JobEntrySetVariables.Error.UnableSetVariableCurrentJob", varname ) );
@@ -331,9 +347,9 @@ public class JobEntrySetVariables extends JobEntryBase implements Cloneable, Job
           case VARIABLE_TYPE_PARENT_JOB:
             setVariable( varname, value );
 
-            if ( parentJob != null ) {
-              parentJob.setVariable( varname, value );
-              Job gpJob = parentJob.getParentJob();
+            if ( getParentJob() != null ) {
+              getParentJob().setVariable( varname, value );
+              Job gpJob = getParentJob().getParentJob();
               if ( gpJob != null ) {
                 gpJob.setVariable( varname, value );
               } else {
@@ -479,32 +495,18 @@ public class JobEntrySetVariables extends JobEntryBase implements Cloneable, Job
     return references;
   }
 
-  /**
-   * @return the filename
-   */
   public String getFilename() {
     return filename;
   }
 
-  /**
-   * @param filename
-   *          the filename to set
-   */
   public void setFilename( String filename ) {
     this.filename = filename;
   }
 
-  /**
-   * @return the fileVariableType
-   */
   public int getFileVariableType() {
     return fileVariableType;
   }
 
-  /**
-   * @param fileVariableType
-   *          the fileVariableType to set
-   */
   public void setFileVariableType( int fileVariableType ) {
     this.fileVariableType = fileVariableType;
   }
