@@ -37,9 +37,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.logging.KettleLogStore;
-import org.pentaho.di.core.util.Assert;
 import org.pentaho.di.job.Job;
-import org.pentaho.di.job.JobEntryListener;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entry.JobEntryCopy;
 
@@ -118,21 +116,5 @@ public class JobEntrySetVariablesTest {
         fos.close();
       }
     }
-  }
-
-  @Test
-  public void testVariableTypeCurrentJob() throws Exception {
-    entry.setFilename( "src/test/resources/org/pentaho/di/job/entries/setvariables/UTF8Text.properties" );
-    entry.setVariableName( new String[] {} );
-    entry.setReplaceVars( true );
-    entry.setFileVariableType( JobEntrySetVariables.VARIABLE_TYPE_CURRENT_JOB );
-    Result result = entry.execute( new Result(), 0 );
-    for ( JobEntryListener  jobEntryListener : job.getJobEntryListeners() ) {
-      jobEntryListener.beforeExecution( job, null, entry );
-    }
-    Assert.assertTrue( result.getResult() );
-    Assert.assertNull( entry.getVariable( "Japanese" ) );
-    Assert.assertNull( entry.getVariable( "English" ) );
-    Assert.assertNull( entry.getVariable( "Chinese" ) );
   }
 }

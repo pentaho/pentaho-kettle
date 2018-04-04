@@ -22,16 +22,12 @@
 
 package org.pentaho.di.job.entries.setvariables;
 
-import org.pentaho.di.job.JobEntryListener;
-import org.pentaho.di.job.entry.JobEntryCopy;
 import org.pentaho.di.job.entry.validator.AbstractFileValidator;
 import org.pentaho.di.job.entry.validator.AndValidator;
 import org.pentaho.di.job.entry.validator.JobEntryValidatorUtils;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Properties;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -83,9 +79,6 @@ public class JobEntrySetVariables extends JobEntryBase implements Cloneable, Job
 
   public String filename;
 
-  // we need to recovery changed values of variables if we use VARIABLE_TYPE_CURRENT_JOB
-  private Map<String, String> changedInitialVariables = new HashMap<>();
-
   public int fileVariableType;
 
   public static final int VARIABLE_TYPE_JVM = 0;
@@ -105,27 +98,6 @@ public class JobEntrySetVariables extends JobEntryBase implements Cloneable, Job
     replaceVars = true;
     variableName = null;
     variableValue = null;
-  }
-
-  @Override
-  public void setParentJob( Job parentJob ) {
-    super.setParentJob( parentJob );
-    // PDI-16387 Add a listener for recovering changed values of variables
-    JobEntryListener jobListener = new JobEntryListener() {
-      @Override
-      public void beforeExecution( Job job, JobEntryCopy jobEntryCopy, JobEntryInterface jobEntryInterface ) {
-        for ( String key : changedInitialVariables.keySet() ) {
-          setVariable( key, changedInitialVariables.get( key ) );
-          parentJob.setVariable( key, changedInitialVariables.get( key ) );
-        }
-        changedInitialVariables.clear();
-      }
-      @Override
-      public void afterExecution( Job job, JobEntryCopy jobEntryCopy, JobEntryInterface jobEntryInterface,
-                                  Result result ) {
-      }
-    };
-    parentJob.addJobEntryListener( jobListener );
   }
 
   public JobEntrySetVariables() {
@@ -318,7 +290,6 @@ public class JobEntrySetVariables extends JobEntryBase implements Cloneable, Job
             break;
 
           case VARIABLE_TYPE_CURRENT_JOB:
-            changedInitialVariables.put( varname, getVariable( varname ) );
             setVariable( varname, value );
             if ( parentJob != null ) {
               parentJob.setVariable( varname, value );
