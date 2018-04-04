@@ -545,6 +545,12 @@
           <value xsi:type="xs:string">message</value>
         </property>
       </group>
+      <group name="PROPERTIES">
+        <property group="PROPERTIES" name="PROPERTY_NAMES">
+        </property>
+          <property group="PROPERTIES" name="PROPERTY_VALUES">
+        </property>
+      </group>
     </step-props>
     <cluster_schema />
     <remotesteps>

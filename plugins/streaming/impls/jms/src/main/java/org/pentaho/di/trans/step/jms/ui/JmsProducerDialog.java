@@ -22,6 +22,7 @@
 
 package org.pentaho.di.trans.step.jms.ui;
 
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.custom.CTabItem;
@@ -37,6 +38,8 @@ import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.Table;
+import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Props;
 import org.pentaho.di.core.exception.KettleStepException;
@@ -53,10 +56,15 @@ import org.pentaho.di.trans.step.jms.JmsDelegate;
 import org.pentaho.di.trans.step.jms.JmsProducerMeta;
 import org.pentaho.di.ui.core.ConstUI;
 import org.pentaho.di.ui.core.gui.GUIResource;
+import org.pentaho.di.ui.core.widget.ColumnInfo;
 import org.pentaho.di.ui.core.widget.ComboVar;
+import org.pentaho.di.ui.core.widget.TableView;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
+import java.util.Arrays;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import static com.google.common.base.Strings.nullToEmpty;
 import static org.pentaho.di.i18n.BaseMessages.getString;
@@ -72,10 +80,13 @@ public class JmsProducerDialog extends BaseStepDialog implements StepDialogInter
   private final JmsProducerMeta meta;
   private CTabFolder wTabFolder;
   private CTabItem wSetupTab;
+  private CTabItem wPropertiesTab;
   private Composite wSetupComp;
+  private Composite wPropertiesComp;
   private ConnectionForm connectionForm;
   private DestinationForm destinationForm;
   private ComboVar wMessageField;
+  private TableView propertiesTable;
 
   public JmsProducerDialog( Shell parent, Object meta,
                             TransMeta transMeta, String stepname ) {
@@ -246,6 +257,8 @@ public class JmsProducerDialog extends BaseStepDialog implements StepDialogInter
     //get data for message field, other fields data is loaded by the forms
     wMessageField.setText( nullToEmpty( meta.getFieldToSend() ) );
 
+    buildProperiesTab();
+
     setSize();
 
     meta.setChanged( changed );
@@ -258,6 +271,108 @@ public class JmsProducerDialog extends BaseStepDialog implements StepDialogInter
     }
 
     return stepname;
+  }
+
+  private void buildProperiesTab() {
+    wPropertiesTab = new CTabItem( wTabFolder, SWT.NONE );
+    wPropertiesTab.setText( BaseMessages.getString( PKG, "JmsProducerDialog.Properties.Tab" ) );
+    wPropertiesComp = new Composite( wTabFolder, SWT.NONE );
+    props.setLook( wPropertiesComp );
+    FormLayout fieldsLayout = new FormLayout();
+    fieldsLayout.marginHeight = 15;
+    fieldsLayout.marginWidth = 15;
+    wPropertiesComp.setLayout( fieldsLayout );
+
+    FormData propertiesFormData = new FormData();
+    propertiesFormData.left = new FormAttachment( 0, 0 );
+    propertiesFormData.top = new FormAttachment( wPropertiesComp, 0 );
+    propertiesFormData.right = new FormAttachment( 100, 0 );
+    propertiesFormData.bottom = new FormAttachment( 100, 0 );
+    wPropertiesComp.setLayoutData( propertiesFormData );
+
+    buildPropertiesTable( wPropertiesComp );
+
+    wPropertiesComp.layout();
+    wPropertiesTab.setControl( wPropertiesComp );
+  }
+
+  private void buildPropertiesTable( Composite parentWidget ) {
+    ColumnInfo[] columns = getPropertiesColumns();
+
+    int fieldCount = meta.getPropertyValuesByName().size();
+
+    propertiesTable = new TableView(
+      transMeta,
+      parentWidget,
+      SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI,
+      columns,
+      fieldCount,
+      false,
+      lsMod,
+      props,
+      false
+    );
+
+    propertiesTable.setSortable( false );
+    propertiesTable.getTable().addListener( SWT.Resize, event -> {
+      Table table = (Table) event.widget;
+      table.getColumn( 1 ).setWidth( 215 );
+      table.getColumn( 2 ).setWidth( 215 );
+    } );
+
+    populateProperties();
+
+    FormData fdData = new FormData();
+    fdData.left = new FormAttachment( 0, 0 );
+    fdData.top = new FormAttachment( 0, 0 );
+    fdData.right = new FormAttachment( 100, 0 );
+    fdData.bottom = new FormAttachment( 100, 0 );
+
+    // resize the columns to fit the data in them
+    Arrays.stream( propertiesTable.getTable().getColumns() ).forEach( column -> {
+      if ( column.getWidth() > 0 ) {
+        // don't pack anything with a 0 width, it will resize it to make it visible (like the index column)
+        column.setWidth( 120 );
+      }
+    } );
+
+    propertiesTable.setLayoutData( fdData );
+  }
+
+  private ColumnInfo[] getPropertiesColumns() {
+
+    ColumnInfo propertyName = new ColumnInfo( BaseMessages.getString( PKG, "JmsProducerDialog.Properties.Column.Name" ),
+      ColumnInfo.COLUMN_TYPE_TEXT, false, false );
+
+    ColumnInfo propertyValue = new ColumnInfo( BaseMessages.getString( PKG, "JmsProducerDialog.Properties.Column.Value" ),
+      ColumnInfo.COLUMN_TYPE_TEXT, false, false );
+    propertyValue.setUsingVariables( true );
+
+    return new ColumnInfo[]{ propertyName, propertyValue };
+  }
+
+  public static Map<String, String> getMapFromTableView( TableView table ) {
+    int itemCount = table.getItemCount();
+    Map<String, String> propertyValuesByName = new LinkedHashMap<>();
+
+    for ( int rowIndex = 0; rowIndex < itemCount; rowIndex++ ) {
+      TableItem row = table.getTable().getItem( rowIndex );
+      String propertyName = row.getText( 1 );
+      String propertyValue = row.getText( 2 );
+      if ( !StringUtils.isBlank( propertyName ) && !propertyValuesByName.containsKey( propertyName ) ) {
+        propertyValuesByName.put( propertyName, propertyValue );
+      }
+    }
+    return propertyValuesByName;
+  }
+
+  private void populateProperties() {
+    int rowIndex = 0;
+    for ( Map.Entry<String, String> entry : meta.getPropertyValuesByName().entrySet() ) {
+      TableItem key = propertiesTable.getTable().getItem( rowIndex++ );
+      key.setText( 1, entry.getKey() );
+      key.setText( 2, entry.getValue() );
+    }
   }
 
   private void ok() {
@@ -277,6 +392,7 @@ public class JmsProducerDialog extends BaseStepDialog implements StepDialogInter
     jmsDelegate.destinationType = destinationForm.getDestinationType();
     jmsDelegate.destinationName = destinationForm.getDestinationName();
     meta.setFieldToSend( wMessageField.getText() );
+    meta.setPropertyValuesByName( getMapFromTableView( propertiesTable ) );
     dispose();
   }
 

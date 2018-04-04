@@ -20,7 +20,7 @@
  *
  ******************************************************************************/
 
-package org.pentaho.di.trans.step.mqtt;
+package org.pentaho.di.core.util.serialization;
 
 import com.google.common.collect.Maps;
 
@@ -33,43 +33,43 @@ import static com.google.common.collect.Lists.newArrayList;
 import static java.util.stream.Collectors.toList;
 
 /**
- * Helper class for converting SslConfig info between maps <=> lists
+ * Helper class for converting Config info between maps <=> lists
  */
-public class SslConfigHelper {
+public class ConfigHelper {
 
-  private List<String> sslKeys;
-  private List<String> sslValues;
+  private List<String> keys;
+  private List<String> values;
 
-  static SslConfigHelper conf( List<String> sslKeys, List<String> sslValues ) {
-    SslConfigHelper helper = new SslConfigHelper();
-    helper.sslKeys = sslKeys;
-    helper.sslValues = sslValues;
+  public static ConfigHelper conf( List<String> keys, List<String> values ) {
+    ConfigHelper helper = new ConfigHelper();
+    helper.keys = keys;
+    helper.values = values;
     return helper;
   }
 
-  static SslConfigHelper conf( Map<String, String> sslConfig ) {
-    checkNotNull( sslConfig );
-    SslConfigHelper helper = new SslConfigHelper();
-    helper.sslKeys = newArrayList(
-      sslConfig.keySet().stream().sorted().collect( toList() ) );
-    helper.sslValues = helper.sslKeys.stream()
-      .map( sslConfig::get )
+  public static ConfigHelper conf( Map<String, String> config ) {
+    checkNotNull( config );
+    ConfigHelper helper = new ConfigHelper();
+    helper.keys = newArrayList(
+      config.keySet().stream().sorted().collect( toList() ) );
+    helper.values = helper.keys.stream()
+      .map( config::get )
       .collect( toList() );
     return helper;
   }
 
   public Map<String, String> asMap() {
-    checkState( sslKeys != null
-      && sslValues != null
-      && sslKeys.size() == sslValues.size() );
-    return Maps.toMap( sslKeys, key -> sslValues.get( sslKeys.indexOf( key ) ) );
+    checkState( keys != null
+      && values != null
+      && keys.size() == values.size() );
+    return Maps.toMap( keys, key -> values.get( keys.indexOf( key ) ) );
   }
 
   public List<String> keys() {
-    return sslKeys;
+    return keys;
   }
 
   public List<String> vals() {
-    return sslValues;
+    return values;
   }
 }
