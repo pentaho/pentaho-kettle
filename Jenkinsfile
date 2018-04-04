@@ -1,4 +1,4 @@
-@Library ('jenkins-shared-libraries') _
+@Library('jenkins-shared-libraries') _
 
 // We need a global mapped build data object to pass down through the stages of the build
 def mappedBuildData
@@ -12,9 +12,9 @@ pipeline {
 
   parameters {
 
-    string(defaultValue: 'thinBuildControlDataTest.yaml', description: 'The build data yaml file to run',
+    string(defaultValue: 'buildControlData.yaml', description: 'The build data yaml file to run',
       name: 'BUILD_DATA_FILE')
-    string(defaultValue: '', description: 'Clean build dependency caches with regex', name: 'CLEAN_REGEX_CACHES')
+    string(defaultValue: '.*-SNAPSHOT.*', description: 'Clean build dependency caches with regex', name: 'CLEAN_CACHES_REGEX')
     string(defaultValue: '-B -e', description: 'Force base maven command options',
       name: 'MAVEN_DEFAULT_COMMAND_OPTIONS')
     string(defaultValue: '-Xms512m', description: 'Typically the JVM opts for maven', name: 'MAVEN_OPTS')
@@ -56,27 +56,28 @@ pipeline {
 
 
   stages {
-    stage('Clean Regex Caches') {
+
+    stage('Clean Regex Lib Caches') {
       when {
         expression {
-          return (params.CLEAN_REGEX_CACHES != null && !params.CLEAN_REGEX_CACHES.isEmpty() )
+          return (params.CLEAN_CACHES_REGEX && !params.CLEAN_ALL_CACHES)
         }
       }
       steps {
-        dir( "${LIB_CACHE_ROOT_PATH}" ) {
-          println "Add cross-platform custom removal method here--implement me!"
+        dir("${LIB_CACHE_ROOT_PATH}") {
+          doRegexCacheClean()
         }
       }
     }
 
-    stage('Clean Caches') {
+    stage('Clean All Lib Caches') {
       when {
         expression {
           return params.CLEAN_ALL_CACHES
         }
       }
       steps {
-        dir( "${LIB_CACHE_ROOT_PATH}" ) {
+        dir("${LIB_CACHE_ROOT_PATH}") {
           deleteDir()
         }
       }
@@ -89,22 +90,22 @@ pipeline {
         }
       }
       steps {
-        dir( "${BUILDS_ROOT_PATH}" ) {
+        dir("${BUILDS_ROOT_PATH}") {
           deleteDir()
         }
       }
     }
 
 
-    stage('Configure'){
+    stage('Configure Pipeline') {
       steps {
-        script{
+        script {
           mappedBuildData = doConfig("${WORKSPACE}/resources/builders/${params.BUILD_DATA_FILE}")
         }
       }
     }
 
-    stage('Checkouts'){
+    stage('Checkouts') {
       when {
         expression {
           return params.RUN_CHECKOUTS
@@ -115,7 +116,7 @@ pipeline {
       }
     }
 
-    stage('Build'){
+    stage('Build') {
       when {
         expression {
           return params.RUN_BUILDS
@@ -131,7 +132,7 @@ pipeline {
       }
     }
 
-    stage('Unit Test'){
+    stage('Unit Test') {
       when {
         expression {
           return params.RUN_UNIT_TESTS
