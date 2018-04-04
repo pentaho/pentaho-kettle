@@ -30,7 +30,7 @@
         <bundle dependency="true">mvn:commons-collections/commons-collections/3.2.2</bundle>
         <bundle dependency="true">mvn:org.jboss.logging/jboss-logging/3.3.1.Final</bundle>
         <bundle dependency="true">mvn:org.jgroups/jgroups/3.6.13.Final</bundle>
-        <bundle dependency="true">mvn:org.apache.servicemix.specs/org.apache.servicemix.specs.json-api-1.1/2.9.0</bundle>
+        <bundle>mvn:org.glassfish/javax.json/1.0.4</bundle>
         <bundle>mvn:org.apache.johnzon/johnzon-core/0.9.5</bundle>
     </feature>
     <feature name="artemis-jms-client" version="2.5.0" description="ActiveMQ Artemis JMS Client libraries">
