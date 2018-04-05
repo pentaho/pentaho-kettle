@@ -38,6 +38,7 @@ import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
@@ -52,8 +53,9 @@ import org.pentaho.di.core.gui.Point;
 import org.pentaho.di.core.plugins.PluginInterface;
 import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.plugins.StepPluginType;
+import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.util.Utils;
-import org.pentaho.di.core.variables.Variables;
+import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.ObjectId;
@@ -61,10 +63,12 @@ import org.pentaho.di.repository.RepositoryDirectoryInterface;
 import org.pentaho.di.repository.RepositoryObject;
 import org.pentaho.di.repository.RepositoryObjectType;
 import org.pentaho.di.shared.SharedObjects;
-import org.pentaho.di.trans.StepWithMappingMeta;
+import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStepMeta;
+import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepDialogInterface;
+import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.steps.recordsfromstream.RecordsFromStreamMeta;
 import org.pentaho.di.trans.steps.transexecutor.TransExecutorMeta;
@@ -536,6 +540,8 @@ public abstract class BaseStreamingDialog extends BaseStepDialog implements Step
     fdSubStep.top = new FormAttachment( wlSubStep, 5 );
     fdSubStep.width = 250;
     wSubStep.setLayoutData( fdSubStep );
+    wSubStep.getCComboWidget().addListener( SWT.FocusIn, this::populateSubSteps );
+
 
     wResultsComp.layout();
     wResultsTab.setControl( wResultsComp );
@@ -551,19 +557,43 @@ public abstract class BaseStreamingDialog extends BaseStepDialog implements Step
     if ( meta.getBatchDuration() != null ) {
       wBatchDuration.setText( meta.getBatchDuration() );
     }
-    populateSubSteps();
+    if ( this.meta.getSubStep() != null ) {
+      wSubStep.setText( this.meta.getSubStep() );
+    }
     specificationMethod = meta.getSpecificationMethod();
   }
 
-  protected void populateSubSteps() {
+  protected void populateSubSteps( Event event ) {
     try {
-      TransMeta transMeta = TransExecutorMeta
-        .loadMappingMeta( (StepWithMappingMeta) stepMeta.getStepMetaInterface(), getRepository(), getMetaStore(),
-          new Variables() );
-      transMeta.getSteps().stream().map( StepMeta::getName ).sorted().forEach( wSubStep::add );
-      if ( meta.getSubStep() != null ) {
-        wSubStep.setText( meta.getSubStep() );
-      }
+      BaseStreamStepMeta baseMeta = new BaseStreamStepMeta() {
+        @Override
+        public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr,
+                                      TransMeta transMeta,
+                                      Trans trans ) {
+          throw new UnsupportedOperationException();
+        }
+
+        @Override public StepDataInterface getStepData() {
+          throw new UnsupportedOperationException();
+        }
+
+        @Override public RowMeta getRowMeta( String origin, VariableSpace space ) {
+          throw new UnsupportedOperationException();
+        }
+      };
+      baseMeta.setFileName( transMeta.environmentSubstitute( wTransPath.getText() ) );
+      baseMeta.setSpecificationMethod( specificationMethod );
+
+      TransMeta subTransMeta = TransExecutorMeta
+        .loadMappingMeta( baseMeta, getRepository(), getMetaStore(), transMeta );
+      String current = wSubStep.getText();
+      wSubStep.removeAll();
+      subTransMeta.getSteps().stream().map( StepMeta::getName ).sorted().forEach( wSubStep::add );
+
+      //I don't know why but just calling setText does not work when the text is not one of the items in the list.
+      //Instead the first item in the list is selected.  asyncExec solves it.  If you have a better solution, by all
+      //means go ahead and implement
+      Display.getDefault().asyncExec( () -> wSubStep.setText( current ) );
     } catch ( KettleException e ) {
       logDebug( e.getMessage(), e );
     }
