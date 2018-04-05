@@ -89,7 +89,7 @@ public class StopTransServlet extends BaseHttpServlet implements CartePluginInte
       </tr>
       <tr>
       <td>inputOnly</td>
-      <td>Boolean flag indicates which steps to stop.  Use <code>Y</code> to stop Input steps only</td>
+      <td>Boolean flag indicates which steps to stop.  Use <code>Y</code> to Stop input processing</td>
       <td>boolean, optional</td>
       </tr>
       </tbody>
