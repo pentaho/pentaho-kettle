@@ -198,7 +198,7 @@ public class MQTTProducerTest {
 
     verify( mqttClient ).disconnect();
     verify( logChannel ).logError(
-      "MQTT Producer - Recieved an exception publishing the message."
+      "MQTT Producer - Received an exception publishing the message."
       + "  Check that Quality of Service level ${qos} is supported by your MQTT Broker" );
     verify( logChannel ).logError( "publish failed", mqttException );
     assertEquals( 0, trans.getSteps().get( 1 ).step.getLinesOutput() );
