@@ -176,7 +176,8 @@ public class KitchenTest {
       System.setErr( new PrintStream( sysErrContent ) );
 
       Kitchen.setCommandExecutor( testPanCommandExecutor );
-      Kitchen.main( new String[] { "/listdir:Y", "/rep:test-repo", "/level:Basic" } );
+      // (case-insensitive) should accept either 'Y' (default) or 'true'
+      Kitchen.main( new String[] { "/listdir:true", "/rep:test-repo", "/level:Basic" } );
 
     } catch ( SecurityException e ) {
       // All OK / expected: SecurityException is purposely thrown when Pan triggers System.exitJVM()
@@ -219,6 +220,7 @@ public class KitchenTest {
       System.setErr( new PrintStream( sysErrContent ) );
 
       Kitchen.setCommandExecutor( testPanCommandExecutor );
+      // (case-insensitive) should accept either 'Y' (default) or 'true'
       Kitchen.main( new String[] { "/listjobs:Y", "/rep:test-repo", "/level:Basic" } );
 
     } catch ( SecurityException e ) {

@@ -94,7 +94,7 @@ public class KitchenCommandExecutor extends AbstractBaseCommandExecutor {
 
         logDebug( "Kitchen.Log.ParsingCommandLine" );
 
-        if ( !Utils.isEmpty( repoName ) && !YES.equalsIgnoreCase( noRepo ) ) {
+        if ( !Utils.isEmpty( repoName ) && !isEnabled( noRepo ) ) {
 
           /**
            * if set, _trust_user_ needs to be considered. See pur-plugin's:
@@ -102,7 +102,7 @@ public class KitchenCommandExecutor extends AbstractBaseCommandExecutor {
            * @link https://github.com/pentaho/pentaho-kettle/blob/8.0.0.0-R/plugins/pur/core/src/main/java/org/pentaho/di/repository/pur/PurRepositoryConnector.java#L97-L101
            * @link https://github.com/pentaho/pentaho-kettle/blob/8.0.0.0-R/plugins/pur/core/src/main/java/org/pentaho/di/repository/pur/WebServiceManager.java#L130-L133
            */
-          if ( YES.equalsIgnoreCase( trustUser ) ) {
+          if ( isEnabled( trustUser ) ) {
             System.setProperty( "pentaho.repository.client.attemptTrust", YES );
           }
 
@@ -122,7 +122,7 @@ public class KitchenCommandExecutor extends AbstractBaseCommandExecutor {
           job = executeFilesystemBasedCommand( initialDir, filename );
         }
 
-      } else if ( YES.equalsIgnoreCase( listRepos ) ) {
+      } else if ( isEnabled( listRepos ) ) {
 
         printRepositories( loadRepositoryInfo( "Kitchen.Log.ListRep", "Kitchen.Error.NoRepDefinied" ) ); // list the repositories placed at repositories.xml
 
@@ -136,7 +136,7 @@ public class KitchenCommandExecutor extends AbstractBaseCommandExecutor {
     }
 
     if ( job == null ) {
-      if ( !YES.equalsIgnoreCase( listJobs ) && !YES.equalsIgnoreCase( listDirs ) && !YES.equalsIgnoreCase( listRepos ) ) {
+      if ( !isEnabled( listJobs ) && !isEnabled( listDirs ) && !isEnabled( listRepos ) ) {
         System.out.println( BaseMessages.getString( getPkgClazz(), "Kitchen.Error.canNotLoadJob" ) );
       }
 
@@ -199,7 +199,7 @@ public class KitchenCommandExecutor extends AbstractBaseCommandExecutor {
       }
 
       // List the parameters defined in this job, then simply exit...
-      if ( YES.equalsIgnoreCase( listParams ) ) {
+      if ( isEnabled( listParams ) ) {
 
         printJobParameters( job );
 
@@ -214,7 +214,7 @@ public class KitchenCommandExecutor extends AbstractBaseCommandExecutor {
       if ( repository != null ) {
         repository.disconnect();
       }
-      if ( YES.equalsIgnoreCase( trustUser ) ) {
+      if ( isEnabled( trustUser ) ) {
         System.clearProperty( "pentaho.repository.client.attemptTrust" ); // we set it, now we sanitize it
       }
     }
@@ -273,11 +273,11 @@ public class KitchenCommandExecutor extends AbstractBaseCommandExecutor {
 
           return new Job( repository, jobMeta );
 
-        } else if ( YES.equalsIgnoreCase( listJobs ) ) {
+        } else if ( isEnabled( listJobs ) ) {
 
           printRepositoryStoredJobs( repository, directory ); // List the jobs in the repository
 
-        } else if ( YES.equalsIgnoreCase( listDirs ) ) {
+        } else if ( isEnabled( listDirs ) ) {
 
           printRepositoryDirectories( repository, directory ); // List the directories in the repository
         }
