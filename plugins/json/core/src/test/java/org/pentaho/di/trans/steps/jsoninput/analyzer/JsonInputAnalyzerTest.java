@@ -163,14 +163,15 @@ public class JsonInputAnalyzerTest {
     when( spyMeta.getParentTransMeta() ).thenReturn( transMeta );
     when( meta.getFileName() ).thenReturn( null );
     when( meta.isAcceptingFilenames() ).thenReturn( false );
-    FileInputList inputFiles = new FileInputList();
-    inputFiles.addFile( KettleVFS.getFileObject( "/path/to/file1" ) );
-    inputFiles.addFile( KettleVFS.getFileObject( "/another/path/to/file2" ) );
-    when( meta.getFileInputList( Mockito.any( VariableSpace.class ) ) ).thenReturn( inputFiles );
+    when( meta.getFilePaths( false ) ).thenReturn( new String[]{ "/path/to/file1" , "/another/path/to/file2" } );
 
     assertFalse( consumer.isDataDriven( meta ) );
 
     Collection<IExternalResourceInfo> resources = consumer.getResourcesFromMeta( meta );
+    assertTrue( resources.isEmpty() );
+
+    when( meta.writesToFile() ).thenReturn( true );
+    resources = consumer.getResourcesFromMeta( meta );
     assertFalse( resources.isEmpty() );
     assertEquals( 2, resources.size() );
 
