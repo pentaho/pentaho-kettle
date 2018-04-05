@@ -103,7 +103,7 @@ public class WebsphereMQProvider implements JmsProvider {
     }
 
     void resolve( VariableSpace space ) {
-      Matcher matcher = pattern.matcher( space.environmentSubstitute( meta.ibmUrl ) );
+      Matcher matcher = pattern.matcher( space.environmentSubstitute( meta.ibmUrl ).trim() );
       if ( matcher.matches() ) {
         String value;
 
