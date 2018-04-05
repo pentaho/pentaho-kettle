@@ -39,6 +39,7 @@ public class RepositoryModel {
   private String databaseConnection;
   private Boolean edit;
   private Boolean modify;
+  private Boolean connected;
 
   public String getId() {
     return id;
@@ -142,5 +143,13 @@ public class RepositoryModel {
 
   public void setModify( Boolean modify ) {
     this.modify = modify;
+  }
+
+  public Boolean getConnected() {
+    return connected;
+  }
+
+  public void setConnected( Boolean connected ) {
+    this.connected = connected;
   }
 }

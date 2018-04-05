@@ -275,10 +275,19 @@ public class RepositoryConnectController implements IConnectedRepositoryInstance
 
   @SuppressWarnings( "unchecked" )
   public String getRepositories() {
+    String connected = null;
+    if ( spoonSupplier.get() != null && spoonSupplier.get().rep != null ) {
+      connected = spoonSupplier.get().rep.getName();
+    }
     List<JSONObject> list = new ArrayList<>();
     if ( repositoriesMeta != null ) {
       for ( int i = 0; i < repositoriesMeta.nrRepositories(); i++ ) {
-        list.add( repositoriesMeta.getRepository( i ).toJSONObject() );
+        RepositoryMeta repositoryMeta = repositoriesMeta.getRepository( i );
+        JSONObject repoJson = repositoryMeta.toJSONObject();
+        if ( connected != null && repositoryMeta.getName().equals( connected ) ) {
+          repoJson.put( "connected", true );
+        }
+        list.add( repoJson );
       }
     }
     return list.toString();
