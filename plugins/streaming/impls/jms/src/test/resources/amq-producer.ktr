@@ -512,7 +512,7 @@
           <value xsi:type="xs:string" />
         </property>
         <property group="" name="AMQ_URL">
-          <value xsi:type="xs:string">vm://0</value>
+          <value xsi:type="xs:string">vm://0  </value>
         </property>
         <property group="" name="AMQ_USERNAME">
           <value xsi:type="xs:string" />
