@@ -67,6 +67,13 @@ public abstract class BaseStreamStepMeta extends StepWithMappingMeta implements 
   @Injection ( name = SUB_STEP )
   protected String subStep = "";
 
+  MappingMetaRetriever mappingMetaRetriever = TransExecutorMeta::loadMappingMeta;
+
+  @FunctionalInterface interface MappingMetaRetriever {
+    TransMeta get( StepWithMappingMeta mappingMeta, Repository rep, IMetaStore metaStore, VariableSpace space )
+      throws KettleException;
+  }
+
   public String getSubStep() {
     return subStep == null ? "" : subStep;
   }
@@ -169,17 +176,21 @@ public abstract class BaseStreamStepMeta extends StepWithMappingMeta implements 
 
   public abstract RowMeta getRowMeta( String origin, VariableSpace space ) throws KettleStepException;
 
-  public void getFields( RowMetaInterface rowMeta, String origin, RowMetaInterface[] info, StepMeta nextStep,
-                         VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
+  @Override public void getFields( RowMetaInterface rowMeta, String origin, RowMetaInterface[] info, StepMeta nextStep,
+                                   VariableSpace space, Repository repository, IMetaStore metaStore )
+    throws KettleStepException {
     try {
-      TransMeta transMeta = TransExecutorMeta
-        .loadMappingMeta( this, repository, metaStore, space );
+      TransMeta transMeta = mappingMetaRetriever.get( this, repository, metaStore, space );
       if ( !StringUtil.isEmpty( getSubStep() ) ) {
-        rowMeta.addRowMeta( transMeta.getPrevStepFields( getSubStep() ) );
-        transMeta.getSteps().stream().filter( stepMeta -> stepMeta.getName().equals( getSubStep() ) )
-          .findFirst().ifPresent( stepMeta -> {
+        String realSubStepName = space.environmentSubstitute( getSubStep() );
+        rowMeta.addRowMeta( transMeta.getPrevStepFields( realSubStepName ) );
+        transMeta.getSteps().stream().filter( stepMeta -> stepMeta.getName().equals( realSubStepName ) )
+          .findFirst()
+          .ifPresent( stepMeta ->
+          {
             try {
-              stepMeta.getStepMetaInterface().getFields( rowMeta, origin, info, nextStep, space, repository, metaStore );
+              stepMeta.getStepMetaInterface()
+                .getFields( rowMeta, origin, info, nextStep, space, repository, metaStore );
             } catch ( KettleStepException e ) {
               throw new RuntimeException( e );
             }
