@@ -103,8 +103,8 @@ public class JmsProducerMeta extends BaseSerializingMeta implements StepMetaInte
   }
 
   public void setPropertyValuesByName( Map<String, String> propertyValuesByName ) {
-    this.propertyNames = conf( propertyValuesByName ).keys();
-    this.propertyValues = conf( propertyValuesByName ).vals();
+    this.propertyNames = new ArrayList<>( propertyValuesByName.keySet() );
+    this.propertyValues = new ArrayList<>( propertyValuesByName.values() );
   }
 
   public Map<String, String> getPropertyValuesByName() {
