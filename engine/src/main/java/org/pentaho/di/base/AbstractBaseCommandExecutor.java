@@ -183,6 +183,10 @@ public abstract class AbstractBaseCommandExecutor {
     }
   }
 
+  public boolean isEnabled( final String value ) {
+    return YES.equalsIgnoreCase( value ) || Boolean.parseBoolean( value ); // both are NPE safe, both are case-insensitive
+  }
+
   public LogChannelInterface getLog() {
     return log;
   }

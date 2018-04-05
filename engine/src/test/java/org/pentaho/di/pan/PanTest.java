@@ -194,7 +194,8 @@ public class PanTest {
       System.setErr( new PrintStream( sysErrContent ) );
 
       Pan.setCommandExecutor( testPanCommandExecutor );
-      Pan.main( new String[] { "/listdir:Y", "/rep:test-repo", "/level:Basic" } );
+      // (case-insensitive) should accept either 'Y' (default) or 'true'
+      Pan.main( new String[] { "/listdir:true", "/rep:test-repo", "/level:Basic" } );
 
     } catch ( SecurityException e ) {
       // All OK / expected: SecurityException is purposely thrown when Pan triggers System.exitJVM()
@@ -237,6 +238,7 @@ public class PanTest {
       System.setErr( new PrintStream( sysErrContent ) );
 
       Pan.setCommandExecutor( testPanCommandExecutor );
+      // (case-insensitive) should accept either 'Y' (default) or 'true'
       Pan.main( new String[] { "/listtrans:Y", "/rep:test-repo", "/level:Basic" } );
 
     } catch ( SecurityException e ) {

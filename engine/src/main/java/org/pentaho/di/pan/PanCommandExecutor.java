@@ -88,7 +88,7 @@ public class PanCommandExecutor extends AbstractBaseCommandExecutor {
 
         logDebug( "Pan.Log.ParsingCommandline" );
 
-        if ( !Utils.isEmpty( repoName ) && !YES.equalsIgnoreCase( noRepo ) ) {
+        if ( !Utils.isEmpty( repoName ) && !isEnabled( noRepo ) ) {
 
           /**
            * if set, _trust_user_ needs to be considered. See pur-plugin's:
@@ -96,7 +96,7 @@ public class PanCommandExecutor extends AbstractBaseCommandExecutor {
            * @link https://github.com/pentaho/pentaho-kettle/blob/8.0.0.0-R/plugins/pur/core/src/main/java/org/pentaho/di/repository/pur/PurRepositoryConnector.java#L97-L101
            * @link https://github.com/pentaho/pentaho-kettle/blob/8.0.0.0-R/plugins/pur/core/src/main/java/org/pentaho/di/repository/pur/WebServiceManager.java#L130-L133
            */
-          if ( YES.equalsIgnoreCase( trustUser ) ) {
+          if ( isEnabled( trustUser ) ) {
             System.setProperty( "pentaho.repository.client.attemptTrust", YES );
           }
 
@@ -118,7 +118,7 @@ public class PanCommandExecutor extends AbstractBaseCommandExecutor {
 
       }
 
-      if ( YES.equalsIgnoreCase( listRepos ) ) {
+      if ( isEnabled( listRepos ) ) {
         printRepositories( loadRepositoryInfo( "Pan.Log.LoadingAvailableRep", "Pan.Error.NoRepsDefined" ) ); // list the repositories placed at repositories.xml
       }
 
@@ -136,8 +136,7 @@ public class PanCommandExecutor extends AbstractBaseCommandExecutor {
 
     if ( trans == null ) {
 
-      if ( !YES.equalsIgnoreCase( listTrans ) && !YES.equalsIgnoreCase( listDirs )
-              && !YES.equalsIgnoreCase( listRepos ) && Utils.isEmpty( exportRepo ) ) {
+      if ( !isEnabled( listTrans ) && !isEnabled( listDirs ) && !isEnabled( listRepos ) && Utils.isEmpty( exportRepo ) ) {
 
         System.out.println( BaseMessages.getString( getPkgClazz(), "Pan.Error.CanNotLoadTrans" ) );
         return CommandExecutorCodes.Pan.COULD_NOT_LOAD_TRANS.getCode();
@@ -151,11 +150,11 @@ public class PanCommandExecutor extends AbstractBaseCommandExecutor {
       trans.setLogLevel( getLog().getLogLevel() );
       configureParameters( trans, params, trans.getTransMeta() );
 
-      trans.setSafeModeEnabled( YES.equalsIgnoreCase( safemode ) ); // run in safe mode if requested
-      trans.setGatheringMetrics( YES.equalsIgnoreCase( metrics ) ); // enable kettle metric gathering if requested
+      trans.setSafeModeEnabled( isEnabled( safemode ) ); // run in safe mode if requested
+      trans.setGatheringMetrics( isEnabled( metrics ) ); // enable kettle metric gathering if requested
 
       // List the parameters defined in this transformation, and then simply exit
-      if ( YES.equalsIgnoreCase( listParams ) ) {
+      if ( isEnabled( listParams ) ) {
 
         printTransformationParameters( trans );
 
@@ -224,7 +223,7 @@ public class PanCommandExecutor extends AbstractBaseCommandExecutor {
       if ( repository != null ) {
         repository.disconnect();
       }
-      if ( YES.equalsIgnoreCase( trustUser ) ) {
+      if ( isEnabled( trustUser ) ) {
         System.clearProperty( "pentaho.repository.client.attemptTrust" ); // we set it, now we sanitize it
       }
     }
@@ -274,11 +273,11 @@ public class PanCommandExecutor extends AbstractBaseCommandExecutor {
 
             return trans; // return transformation loaded from the repo
 
-          } else if ( YES.equalsIgnoreCase( listTrans ) ) {
+          } else if ( isEnabled( listTrans ) ) {
 
             printRepositoryStoredTransformations( repository, directory ); // List the transformations in the repository
 
-          } else if ( YES.equalsIgnoreCase( listDirs ) ) {
+          } else if ( isEnabled( listDirs ) ) {
 
             printRepositoryDirectories( repository, directory ); // List the directories in the repository
 
