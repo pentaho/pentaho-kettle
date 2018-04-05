@@ -415,6 +415,8 @@ public class TransGridDelegate extends SpoonDelegate implements XulEventHandler 
           // Error lines should appear in red:
           if ( baseStep.getErrors() > 0 ) {
             ti.setBackground( GUIResource.getInstance().getColorRed() );
+          } else {
+            ti.setBackground( GUIResource.getInstance().getColorWhite() );
           }
           nr++;
 
