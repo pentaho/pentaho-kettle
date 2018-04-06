@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -41,14 +41,14 @@ public class ConcatFieldsOutputStream extends OutputStream {
   @Override
   public void write( byte[] b ) throws IOException {
     if ( streamdata == null ) {
-      streamdata = new byte[b.length];
+      streamdata = new byte[ b.length ];
       System.arraycopy( b, 0, streamdata, 0, b.length );
     } else {
-      byte[] tmp = new byte[streamdata.length + b.length];
+      byte[] tmp = new byte[ streamdata.length + b.length ];
       System.arraycopy( streamdata, 0, tmp, 0, streamdata.length );
       System.arraycopy( b, 0, tmp, streamdata.length, b.length );
       // now copy tmp back to streamdata
-      streamdata = new byte[tmp.length];
+      streamdata = new byte[ tmp.length ];
       System.arraycopy( tmp, 0, streamdata, 0, tmp.length );
     }
   }
@@ -58,7 +58,7 @@ public class ConcatFieldsOutputStream extends OutputStream {
     if ( streamdata == null ) {
       return null;
     }
-    byte[] tmp = new byte[streamdata.length];
+    byte[] tmp = new byte[ streamdata.length ];
     System.arraycopy( streamdata, 0, tmp, 0, streamdata.length );
     streamdata = null;
     return tmp;
@@ -67,14 +67,14 @@ public class ConcatFieldsOutputStream extends OutputStream {
   @Override
   public void write( int b ) throws IOException {
     if ( streamdata == null ) {
-      streamdata = new byte[1];
-      streamdata[0] = (byte) b;
+      streamdata = new byte[ 1 ];
+      streamdata[ 0 ] = (byte) b;
     } else {
-      byte[] tmp = new byte[streamdata.length + 1];
+      byte[] tmp = new byte[ streamdata.length + 1 ];
       System.arraycopy( streamdata, 0, tmp, 0, streamdata.length );
-      tmp[tmp.length - 1] = (byte) b;
+      tmp[ tmp.length - 1 ] = (byte) b;
       // now copy tmp back to streamdata
-      streamdata = new byte[tmp.length];
+      streamdata = new byte[ tmp.length ];
       System.arraycopy( tmp, 0, streamdata, 0, tmp.length );
     }
   }

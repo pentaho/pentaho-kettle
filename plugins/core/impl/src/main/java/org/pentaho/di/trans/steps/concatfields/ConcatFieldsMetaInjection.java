@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -45,35 +45,35 @@ public class ConcatFieldsMetaInjection implements StepMetaInjectionInterface {
   private enum Entry {
 
     TARGET_FIELDNAME( ValueMetaInterface.TYPE_STRING, "The target field name" ),
-      TARGET_LENGTH( ValueMetaInterface.TYPE_STRING, "The length of the target field" ),
-      SEPARATOR( ValueMetaInterface.TYPE_STRING, "The separator" ),
-      ENCLOSURE( ValueMetaInterface.TYPE_STRING, "The enclosure" ),
+    TARGET_LENGTH( ValueMetaInterface.TYPE_STRING, "The length of the target field" ),
+    SEPARATOR( ValueMetaInterface.TYPE_STRING, "The separator" ),
+    ENCLOSURE( ValueMetaInterface.TYPE_STRING, "The enclosure" ),
 
-      REMOVE_FIELDS( ValueMetaInterface.TYPE_STRING, "Remove selected fields? (Y/N)" ),
-      FORCE_ENCLOSURE( ValueMetaInterface.TYPE_STRING, "Force the enclosure around fields? (Y/N)" ),
-      DISABLE_ENCLOSURE_FIX( ValueMetaInterface.TYPE_STRING, "Disable the enclosure fix? (Y/N)" ),
-      HEADER( ValueMetaInterface.TYPE_STRING, "Include header row? (Y/N)" ),
-      FOOTER( ValueMetaInterface.TYPE_STRING, "Include footer row? (Y/N)" ),
-      ENCODING( ValueMetaInterface.TYPE_STRING,
-        "Encoding type (for allowed values see: http://wiki.pentaho.com/display/EAI/Concat+Fields)" ),
-      RIGHT_PAD_FIELDS( ValueMetaInterface.TYPE_STRING, "Right pad fields? (Y/N)" ),
-      FAST_DATA_DUMP( ValueMetaInterface.TYPE_STRING, "Fast data dump? (Y/N)" ),
-      SPLIT_EVERY( ValueMetaInterface.TYPE_STRING, "Split every ... rows" ),
-      ADD_ENDING_LINE( ValueMetaInterface.TYPE_STRING, "Add ending line after last row" ),
+    REMOVE_FIELDS( ValueMetaInterface.TYPE_STRING, "Remove selected fields? (Y/N)" ),
+    FORCE_ENCLOSURE( ValueMetaInterface.TYPE_STRING, "Force the enclosure around fields? (Y/N)" ),
+    DISABLE_ENCLOSURE_FIX( ValueMetaInterface.TYPE_STRING, "Disable the enclosure fix? (Y/N)" ),
+    HEADER( ValueMetaInterface.TYPE_STRING, "Include header row? (Y/N)" ),
+    FOOTER( ValueMetaInterface.TYPE_STRING, "Include footer row? (Y/N)" ),
+    ENCODING( ValueMetaInterface.TYPE_STRING,
+      "Encoding type (for allowed values see: http://wiki.pentaho.com/display/EAI/Concat+Fields)" ),
+    RIGHT_PAD_FIELDS( ValueMetaInterface.TYPE_STRING, "Right pad fields? (Y/N)" ),
+    FAST_DATA_DUMP( ValueMetaInterface.TYPE_STRING, "Fast data dump? (Y/N)" ),
+    SPLIT_EVERY( ValueMetaInterface.TYPE_STRING, "Split every ... rows" ),
+    ADD_ENDING_LINE( ValueMetaInterface.TYPE_STRING, "Add ending line after last row" ),
 
-      CONCAT_FIELDS( ValueMetaInterface.TYPE_NONE, "The fields to concatenate" ),
-      CONCAT_FIELD( ValueMetaInterface.TYPE_NONE, "One field to concatenate" ),
-      CONCAT_FIELDNAME( ValueMetaInterface.TYPE_STRING, "Field to concatenate" ),
-      CONCAT_TYPE( ValueMetaInterface.TYPE_STRING,
-        "Field type (for allowed values see: http://wiki.pentaho.com/display/EAI/Concat+Fields)" ),
-      CONCAT_FORMAT( ValueMetaInterface.TYPE_STRING, "Field format" ),
-      CONCAT_LENGTH( ValueMetaInterface.TYPE_STRING, "Field length" ),
-      CONCAT_PRECISION( ValueMetaInterface.TYPE_STRING, "Field precision" ),
-      CONCAT_CURRENCY( ValueMetaInterface.TYPE_STRING, "Field currency symbol" ),
-      CONCAT_DECIMAL( ValueMetaInterface.TYPE_STRING, "Field decimal symbol" ),
-      CONCAT_GROUP( ValueMetaInterface.TYPE_STRING, "Field grouping symbol" ),
-      CONCAT_TRIM( ValueMetaInterface.TYPE_STRING, "Field trim type (none,left,both,right)" ),
-      CONCAT_NULL( ValueMetaInterface.TYPE_STRING, "Value to replace nulls with" );
+    CONCAT_FIELDS( ValueMetaInterface.TYPE_NONE, "The fields to concatenate" ),
+    CONCAT_FIELD( ValueMetaInterface.TYPE_NONE, "One field to concatenate" ),
+    CONCAT_FIELDNAME( ValueMetaInterface.TYPE_STRING, "Field to concatenate" ),
+    CONCAT_TYPE( ValueMetaInterface.TYPE_STRING,
+      "Field type (for allowed values see: http://wiki.pentaho.com/display/EAI/Concat+Fields)" ),
+    CONCAT_FORMAT( ValueMetaInterface.TYPE_STRING, "Field format" ),
+    CONCAT_LENGTH( ValueMetaInterface.TYPE_STRING, "Field length" ),
+    CONCAT_PRECISION( ValueMetaInterface.TYPE_STRING, "Field precision" ),
+    CONCAT_CURRENCY( ValueMetaInterface.TYPE_STRING, "Field currency symbol" ),
+    CONCAT_DECIMAL( ValueMetaInterface.TYPE_STRING, "Field decimal symbol" ),
+    CONCAT_GROUP( ValueMetaInterface.TYPE_STRING, "Field grouping symbol" ),
+    CONCAT_TRIM( ValueMetaInterface.TYPE_STRING, "Field trim type (none,left,both,right)" ),
+    CONCAT_NULL( ValueMetaInterface.TYPE_STRING, "Value to replace nulls with" );
 
     private int valueType;
     private String description;
@@ -290,7 +290,7 @@ public class ConcatFieldsMetaInjection implements StepMetaInjectionInterface {
     // Pass the grid to the step metadata
     //
     if ( concatFields.size() > 0 ) {
-      TextFileField[] tff = new TextFileField[concatFields.size()];
+      TextFileField[] tff = new TextFileField[ concatFields.size() ];
       Iterator<String> iConcatFields = concatFields.iterator();
       Iterator<String> iConcatTypes = concatTypes.iterator();
       Iterator<String> iConcatLengths = concatLengths.iterator();
@@ -315,7 +315,7 @@ public class ConcatFieldsMetaInjection implements StepMetaInjectionInterface {
         field.setGroupingSymbol( iConcatGroups.next() );
         field.setNullString( iConcatNulls.next() );
         field.setTrimType( ValueMetaBase.getTrimTypeByDesc( iConcatTrims.next() ) );
-        tff[i] = field;
+        tff[ i ] = field;
         i++;
       }
       meta.setOutputFields( tff );

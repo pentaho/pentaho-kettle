@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -55,6 +55,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.annotations.PluginDialog;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.Props;
 import org.pentaho.di.core.exception.KettleException;
@@ -85,8 +86,10 @@ import org.pentaho.di.ui.trans.step.TableItemInsertListener;
  * @since 2012-08-31
  *
  */
+@PluginDialog( id = "ConcatFields", pluginType = PluginDialog.PluginType.STEP, image = "ConcatFields.svg",
+  documentationUrl = "http://wiki.pentaho.com/display/EAI/Concat+Fields" )
 public class ConcatFieldsDialog extends BaseStepDialog implements StepDialogInterface {
-  private static Class<?> PKG = ConcatFieldsMeta.class; // for i18n purposes, needed by Translator2!!
+  private static Class<?> PKG = ConcatFieldsDialog.class; // for i18n purposes, needed by Translator2!!
 
   private CTabFolder wTabFolder;
   private FormData fdTabFolder;
@@ -347,52 +350,52 @@ public class ConcatFieldsDialog extends BaseStepDialog implements StepDialogInte
     String[] dats = Const.getDateFormats();
     String[] nums = Const.getNumberFormats();
     int totsize = dats.length + nums.length;
-    String[] formats = new String[totsize];
+    String[] formats = new String[ totsize ];
     for ( int x = 0; x < dats.length; x++ ) {
-      formats[x] = dats[x];
+      formats[ x ] = dats[ x ];
     }
     for ( int x = 0; x < nums.length; x++ ) {
-      formats[dats.length + x] = nums[x];
+      formats[ dats.length + x ] = nums[ x ];
     }
 
-    colinf = new ColumnInfo[FieldsCols];
-    colinf[0] =
+    colinf = new ColumnInfo[ FieldsCols ];
+    colinf[ 0 ] =
       new ColumnInfo(
         BaseMessages.getString( PKG, "ConcatFieldsDialog.NameColumn.Column" ), ColumnInfo.COLUMN_TYPE_CCOMBO,
         new String[] { "" }, false );
-    colinf[1] =
+    colinf[ 1 ] =
       new ColumnInfo(
         BaseMessages.getString( PKG, "ConcatFieldsDialog.TypeColumn.Column" ), ColumnInfo.COLUMN_TYPE_CCOMBO,
         ValueMetaFactory.getValueMetaNames() );
-    colinf[2] =
+    colinf[ 2 ] =
       new ColumnInfo(
         BaseMessages.getString( PKG, "ConcatFieldsDialog.FormatColumn.Column" ),
         ColumnInfo.COLUMN_TYPE_CCOMBO, formats );
-    colinf[3] =
+    colinf[ 3 ] =
       new ColumnInfo(
         BaseMessages.getString( PKG, "ConcatFieldsDialog.LengthColumn.Column" ), ColumnInfo.COLUMN_TYPE_TEXT,
         false );
-    colinf[4] =
+    colinf[ 4 ] =
       new ColumnInfo(
         BaseMessages.getString( PKG, "ConcatFieldsDialog.PrecisionColumn.Column" ),
         ColumnInfo.COLUMN_TYPE_TEXT, false );
-    colinf[5] =
+    colinf[ 5 ] =
       new ColumnInfo(
         BaseMessages.getString( PKG, "ConcatFieldsDialog.CurrencyColumn.Column" ),
         ColumnInfo.COLUMN_TYPE_TEXT, false );
-    colinf[6] =
+    colinf[ 6 ] =
       new ColumnInfo(
         BaseMessages.getString( PKG, "ConcatFieldsDialog.DecimalColumn.Column" ), ColumnInfo.COLUMN_TYPE_TEXT,
         false );
-    colinf[7] =
+    colinf[ 7 ] =
       new ColumnInfo(
         BaseMessages.getString( PKG, "ConcatFieldsDialog.GroupColumn.Column" ), ColumnInfo.COLUMN_TYPE_TEXT,
         false );
-    colinf[8] =
+    colinf[ 8 ] =
       new ColumnInfo(
         BaseMessages.getString( PKG, "ConcatFieldsDialog.TrimTypeColumn.Column" ),
         ColumnInfo.COLUMN_TYPE_CCOMBO, ValueMetaString.trimTypeDesc, true );
-    colinf[9] =
+    colinf[ 9 ] =
       new ColumnInfo(
         BaseMessages.getString( PKG, "ConcatFieldsDialog.NullColumn.Column" ), ColumnInfo.COLUMN_TYPE_TEXT,
         false );
@@ -817,10 +820,10 @@ public class ConcatFieldsDialog extends BaseStepDialog implements StepDialogInte
     Set<String> keySet = fields.keySet();
     List<String> entries = new ArrayList<String>( keySet );
 
-    String[] fieldNames = entries.toArray( new String[entries.size()] );
+    String[] fieldNames = entries.toArray( new String[ entries.size() ] );
 
     Const.sortStrings( fieldNames );
-    colinf[0].setComboValues( fieldNames );
+    colinf[ 0 ].setComboValues( fieldNames );
   }
 
   protected void setFlags() {
@@ -892,7 +895,7 @@ public class ConcatFieldsDialog extends BaseStepDialog implements StepDialogInte
     logDebug( "getting fields info..." );
 
     for ( int i = 0; i < input.getOutputFields().length; i++ ) {
-      TextFileField field = input.getOutputFields()[i];
+      TextFileField field = input.getOutputFields()[ i ];
 
       TableItem item = wFields.table.getItem( i );
       if ( field.getName() != null ) {
@@ -982,7 +985,7 @@ public class ConcatFieldsDialog extends BaseStepDialog implements StepDialogInte
       field.setTrimType( ValueMetaString.getTrimTypeByDesc( item.getText( 9 ) ) );
       field.setNullString( item.getText( 10 ) );
       //CHECKSTYLE:Indentation:OFF
-      tfoi.getOutputFields()[i] = field;
+      tfoi.getOutputFields()[ i ] = field;
     }
   }
 
@@ -1041,7 +1044,6 @@ public class ConcatFieldsDialog extends BaseStepDialog implements StepDialogInte
 
   /**
    * Sets the output width to minimal width...
-   *
    */
   public void setMinimalWidth() {
     int nrNonEmptyFields = wFields.nrNonEmpty();
@@ -1071,7 +1073,7 @@ public class ConcatFieldsDialog extends BaseStepDialog implements StepDialogInte
     }
 
     for ( int i = 0; i < input.getOutputFields().length; i++ ) {
-      input.getOutputFields()[i].setTrimType( ValueMetaInterface.TRIM_TYPE_BOTH );
+      input.getOutputFields()[ i ].setTrimType( ValueMetaInterface.TRIM_TYPE_BOTH );
     }
 
     wFields.optWidth( true );

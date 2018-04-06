@@ -50,7 +50,8 @@ public class ConcatFields extends TextFileOutput implements StepInterface {
   public ConcatFieldsMeta meta;
   public ConcatFieldsData data;
 
-  public ConcatFields( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta, Trans trans ) {
+  public ConcatFields( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta,
+                       Trans trans ) {
     super( stepMeta, stepDataInterface, copyNr, transMeta, trans ); // allocate TextFileOutput
   }
 
@@ -82,12 +83,12 @@ public class ConcatFields extends TextFileOutput implements StepInterface {
           PKG, "ConcatFields.Error.TargetFieldNotFoundOutputStream", "" + meta.getTargetFieldName() ) );
       }
 
-      data.fieldnrs = new int[meta.getOutputFields().length];
+      data.fieldnrs = new int[ meta.getOutputFields().length ];
       for ( int i = 0; i < meta.getOutputFields().length; i++ ) {
-        data.fieldnrs[i] = data.inputRowMetaModified.indexOfValue( meta.getOutputFields()[i].getName() );
-        if ( data.fieldnrs[i] < 0 ) {
+        data.fieldnrs[ i ] = data.inputRowMetaModified.indexOfValue( meta.getOutputFields()[ i ].getName() );
+        if ( data.fieldnrs[ i ] < 0 ) {
           throw new KettleStepException( BaseMessages.getString(
-            PKG, "ConcatFields.Error.FieldNotFoundInputStream", "" + meta.getOutputFields()[i].getName() ) );
+            PKG, "ConcatFields.Error.FieldNotFoundInputStream", "" + meta.getOutputFields()[ i ].getName() ) );
         }
       }
 
@@ -106,13 +107,13 @@ public class ConcatFields extends TextFileOutput implements StepInterface {
     }
 
     if ( ( r == null && data.outputRowMeta != null && meta.isFooterEnabled() )
-        || ( r != null && getLinesWritten() > 0 && meta.getSplitEvery() > 0
-            && ( ( getLinesWritten() + 1 ) % meta.getSplitEvery() ) == 0 ) ) {
+      || ( r != null && getLinesWritten() > 0 && meta.getSplitEvery() > 0
+      && ( ( getLinesWritten() + 1 ) % meta.getSplitEvery() ) == 0 ) ) {
       if ( data.outputRowMeta != null ) {
         if ( meta.isFooterEnabled() ) {
           writeHeader();
           // add an empty line for the header
-          Object[] row = new Object[data.outputRowMeta.size()];
+          Object[] row = new Object[ data.outputRowMeta.size() ];
           putRowFromStream( row );
         }
       }
@@ -168,7 +169,7 @@ public class ConcatFields extends TextFileOutput implements StepInterface {
       if ( !meta.isFileNameInField() && meta.isHeaderEnabled() && data.outputRowMeta != null ) {
         writeHeader();
         // add an empty line for the header
-        Object[] row = new Object[data.outputRowMeta.size()];
+        Object[] row = new Object[ data.outputRowMeta.size() ];
         putRowFromStream( row );
       }
     }
@@ -177,14 +178,14 @@ public class ConcatFields extends TextFileOutput implements StepInterface {
   void prepareForReMap() throws KettleStepException {
     // prepare for re-map when removeSelectedFields
     if ( meta.isRemoveSelectedFields() ) {
-      data.remainingFieldsInputOutputMapping = new int[data.outputRowMeta.size() - 1]; // -1: don't need the new
-                                                                                       // target field
+      data.remainingFieldsInputOutputMapping = new int[ data.outputRowMeta.size() - 1 ]; // -1: don't need the new
+      // target field
       String[] fieldNames = data.outputRowMeta.getFieldNames();
       for ( int i = 0; i < fieldNames.length - 1; i++ ) { // -1: don't search the new target field
-        data.remainingFieldsInputOutputMapping[i] = data.inputRowMetaModified.indexOfValue( fieldNames[i] );
-        if ( data.remainingFieldsInputOutputMapping[i] < 0 ) {
+        data.remainingFieldsInputOutputMapping[ i ] = data.inputRowMetaModified.indexOfValue( fieldNames[ i ] );
+        if ( data.remainingFieldsInputOutputMapping[ i ] < 0 ) {
           throw new KettleStepException( BaseMessages.getString( PKG,
-              "ConcatFields.Error.RemainingFieldNotFoundInputStream", "" + fieldNames[i] ) );
+            "ConcatFields.Error.RemainingFieldNotFoundInputStream", "" + fieldNames[ i ] ) );
         }
       }
     }
@@ -202,21 +203,21 @@ public class ConcatFields extends TextFileOutput implements StepInterface {
 
     // add target field
     if ( outputRowData == null ) { // special condition of header/footer/split
-      outputRowData = new Object[data.outputRowMeta.size()];
+      outputRowData = new Object[ data.outputRowMeta.size() ];
     }
     if ( targetBinary != null ) {
       if ( !data.hasEncoding ) {
-        outputRowData[data.posTargetField] = new String( targetBinary );
+        outputRowData[ data.posTargetField ] = new String( targetBinary );
       } else { // handle encoding
         try {
-          outputRowData[data.posTargetField] = new String( targetBinary, meta.getEncoding() );
+          outputRowData[ data.posTargetField ] = new String( targetBinary, meta.getEncoding() );
         } catch ( UnsupportedEncodingException e ) {
           throw new KettleStepException( BaseMessages.getString( PKG, "ConcatFields.Error.UnsupportedEncoding", ""
             + meta.getEncoding() ) );
         }
       }
     } else {
-      outputRowData[data.posTargetField] = null;
+      outputRowData[ data.posTargetField ] = null;
     }
 
     putRow( data.outputRowMeta, outputRowData );
@@ -237,18 +238,18 @@ public class ConcatFields extends TextFileOutput implements StepInterface {
         if ( i > 0 ) {
           targetString.append( data.stringSeparator );
         }
-        concatFieldFastDataDump( targetString, r[i], "" ); // "": no specific null value defined
+        concatFieldFastDataDump( targetString, r[ i ], "" ); // "": no specific null value defined
       }
     } else {
       for ( int i = 0; i < data.fieldnrs.length; i++ ) {
         if ( i > 0 ) {
           targetString.append( data.stringSeparator );
         }
-        concatFieldFastDataDump( targetString, r[data.fieldnrs[i]], data.stringNullValue[i] );
+        concatFieldFastDataDump( targetString, r[ data.fieldnrs[ i ] ], data.stringNullValue[ i ] );
       }
     }
 
-    outputRowData[data.posTargetField] = new String( targetString );
+    outputRowData[ data.posTargetField ] = new String( targetString );
 
     putRow( data.outputRowMeta, outputRowData );
     return outputRowData;
@@ -277,12 +278,12 @@ public class ConcatFields extends TextFileOutput implements StepInterface {
       outputRowData = RowDataUtil.resizeArray( r, data.outputRowMeta.size() );
     } else {
       // reserve room for the target field and re-map the fields
-      outputRowData = new Object[data.outputRowMeta.size() + RowDataUtil.OVER_ALLOCATE_SIZE];
+      outputRowData = new Object[ data.outputRowMeta.size() + RowDataUtil.OVER_ALLOCATE_SIZE ];
       if ( r != null ) {
         // re-map the fields
         for ( int i = 0; i < data.remainingFieldsInputOutputMapping.length; i++ ) { // BTW: the new target field is not
-                                                                                    // here
-          outputRowData[i] = r[data.remainingFieldsInputOutputMapping[i]];
+          // here
+          outputRowData[ i ] = r[ data.remainingFieldsInputOutputMapping[ i ] ];
         }
       }
     }
@@ -318,12 +319,12 @@ public class ConcatFields extends TextFileOutput implements StepInterface {
       data.stringEnclosure = environmentSubstitute( meta.getEnclosure() );
     }
 
-    data.stringNullValue = new String[meta.getOutputFields().length];
+    data.stringNullValue = new String[ meta.getOutputFields().length ];
     for ( int i = 0; i < meta.getOutputFields().length; i++ ) {
-      data.stringNullValue[i] = "";
-      String nullString = meta.getOutputFields()[i].getNullString();
+      data.stringNullValue[ i ] = "";
+      String nullString = meta.getOutputFields()[ i ].getNullString();
       if ( !Utils.isEmpty( nullString ) ) {
-        data.stringNullValue[i] = nullString;
+        data.stringNullValue[ i ] = nullString;
       }
     }
   }

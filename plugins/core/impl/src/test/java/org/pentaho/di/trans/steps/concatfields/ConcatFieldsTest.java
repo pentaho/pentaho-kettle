@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -51,7 +51,7 @@ public class ConcatFieldsTest {
     private Object[] row;
 
     public ConcatFieldsHandler( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr,
-        TransMeta transMeta, Trans trans ) {
+                                TransMeta transMeta, Trans trans ) {
       super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
     }
 
@@ -92,10 +92,10 @@ public class ConcatFieldsTest {
   @Before
   public void setUp() throws Exception {
     stepMockHelper =
-        new StepMockHelper<ConcatFieldsMeta, ConcatFieldsData>( "CONCAT FIELDS TEST", ConcatFieldsMeta.class,
-            ConcatFieldsData.class );
+      new StepMockHelper<ConcatFieldsMeta, ConcatFieldsData>( "CONCAT FIELDS TEST", ConcatFieldsMeta.class,
+        ConcatFieldsData.class );
     when( stepMockHelper.logChannelInterfaceFactory.create( any(), any( LoggingObjectInterface.class ) ) ).thenReturn(
-        stepMockHelper.logChannelInterface );
+      stepMockHelper.logChannelInterface );
     when( stepMockHelper.trans.isRunning() ).thenReturn( true );
   }
 
@@ -107,8 +107,8 @@ public class ConcatFieldsTest {
   @Test
   public void testPrepareOutputRow() throws Exception {
     ConcatFieldsHandler concatFields =
-        new ConcatFieldsHandler( stepMockHelper.stepMeta, stepMockHelper.stepDataInterface, 0,
-            stepMockHelper.transMeta, stepMockHelper.trans );
+      new ConcatFieldsHandler( stepMockHelper.stepMeta, stepMockHelper.stepDataInterface, 0,
+        stepMockHelper.transMeta, stepMockHelper.trans );
     Object[] row = new Object[] { "one", "two" };
     String[] fieldNames = new String[] { "one", "two" };
     concatFields.setRow( row );
@@ -125,7 +125,7 @@ public class ConcatFieldsTest {
     concatFields.setInputRowMeta( inputRowMeta );
     try {
       concatFields.processRow( stepMockHelper.processRowsStepMetaInterface,
-              stepMockHelper.processRowsStepDataInterface );
+        stepMockHelper.processRowsStepDataInterface );
       concatFields.prepareOutputRow( row );
     } catch ( NullPointerException npe ) {
       fail( "NullPointerException issue PDI-8870 still reproduced " );

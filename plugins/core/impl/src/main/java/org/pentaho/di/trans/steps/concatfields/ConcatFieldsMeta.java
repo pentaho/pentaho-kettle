@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -27,6 +27,7 @@ import java.util.List;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.annotations.Step;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
@@ -59,6 +60,9 @@ import org.w3c.dom.Node;
  * @since 2012-08-31
  *
  */
+@Step( id = "ConcatFields", name = "BaseStep.TypeLongDesc.ConcatFields",
+  categoryDescription = "BaseStep.Category.Transform", description = "BaseStep.TypeTooltipDesc.ConcatFields",
+  i18nPackageName = "org.pentaho.di.trans.step" )
 public class ConcatFieldsMeta extends TextFileOutputMeta implements StepMetaInterface {
 
   private static Class<?> PKG = ConcatFieldsMeta.class; // for i18n purposes, needed by Translator2!!
@@ -111,19 +115,20 @@ public class ConcatFieldsMeta extends TextFileOutputMeta implements StepMetaInte
 
   @Deprecated
   public void getFieldsModifyInput( RowMetaInterface row, String name, RowMetaInterface[] info, StepMeta nextStep,
-    VariableSpace space ) throws KettleStepException {
+                                    VariableSpace space ) throws KettleStepException {
     getFieldsModifyInput( row, name, info, nextStep, space, null, null );
   }
 
   public void getFieldsModifyInput( RowMetaInterface row, String name, RowMetaInterface[] info, StepMeta nextStep,
-    VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
+                                    VariableSpace space, Repository repository, IMetaStore metaStore )
+    throws KettleStepException {
     // the field precisions and lengths are altered! see TextFileOutputMeta.getFields().
     super.getFields( row, name, info, nextStep, space, repository, metaStore );
   }
 
   @Override
   public void getFields( RowMetaInterface row, String name, RowMetaInterface[] info, StepMeta nextStep,
-    VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
+                         VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
     // do not call the super class from TextFileOutputMeta since it modifies the source meta data
     // see getFieldsModifyInput() instead
 
@@ -131,7 +136,7 @@ public class ConcatFieldsMeta extends TextFileOutputMeta implements StepMetaInte
     if ( removeSelectedFields ) {
       if ( getOutputFields().length > 0 ) {
         for ( int i = 0; i < getOutputFields().length; i++ ) {
-          TextFileField field = getOutputFields()[i];
+          TextFileField field = getOutputFields()[ i ];
           try {
             row.removeValueMeta( field.getName() );
           } catch ( KettleValueException e ) {
@@ -182,7 +187,8 @@ public class ConcatFieldsMeta extends TextFileOutputMeta implements StepMetaInte
   }
 
   @Override
-  public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases ) throws KettleException {
+  public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases )
+    throws KettleException {
     super.readRep( rep, metaStore, id_step, databases );
     targetFieldName = rep.getStepAttributeString( id_step, ConcatFieldsNodeNameSpace + "targetFieldName" );
     targetFieldLength =
@@ -192,7 +198,8 @@ public class ConcatFieldsMeta extends TextFileOutputMeta implements StepMetaInte
   }
 
   @Override
-  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step ) throws KettleException {
+  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step )
+    throws KettleException {
     super.saveRep( rep, metaStore, id_transformation, id_step );
     rep.saveStepAttribute(
       id_transformation, id_step, ConcatFieldsNodeNameSpace + "targetFieldName", targetFieldName );
@@ -204,8 +211,8 @@ public class ConcatFieldsMeta extends TextFileOutputMeta implements StepMetaInte
 
   @Override
   public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta,
-    RowMetaInterface prev, String[] input, String[] output, RowMetaInterface info, VariableSpace space,
-    Repository repository, IMetaStore metaStore ) {
+                     RowMetaInterface prev, String[] input, String[] output, RowMetaInterface info, VariableSpace space,
+                     Repository repository, IMetaStore metaStore ) {
     CheckResult cr;
 
     // Check Target Field Name
@@ -236,9 +243,9 @@ public class ConcatFieldsMeta extends TextFileOutputMeta implements StepMetaInte
 
       // Starting from selected fields in ...
       for ( int i = 0; i < getOutputFields().length; i++ ) {
-        int idx = prev.indexOfValue( getOutputFields()[i].getName() );
+        int idx = prev.indexOfValue( getOutputFields()[ i ].getName() );
         if ( idx < 0 ) {
-          error_message += "\t\t" + getOutputFields()[i].getName() + Const.CR;
+          error_message += "\t\t" + getOutputFields()[ i ].getName() + Const.CR;
           error_found = true;
         }
       }
@@ -258,7 +265,7 @@ public class ConcatFieldsMeta extends TextFileOutputMeta implements StepMetaInte
 
   @Override
   public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr,
-    TransMeta transMeta, Trans trans ) {
+                                TransMeta transMeta, Trans trans ) {
     return new ConcatFields( stepMeta, stepDataInterface, cnr, transMeta, trans );
   }
 
