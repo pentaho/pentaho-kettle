@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,6 +22,7 @@
 
 package org.pentaho.di.ui.job.entries.job;
 
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -393,7 +394,9 @@ public class JobEntryJobDialog extends JobEntryBaseDialog implements JobEntryDia
         wPath.setText( Const.NVL( jobEntry.getFilename(), "" ) );
         break;
       case REPOSITORY_BY_NAME:
-        String fullPath = Const.NVL( jobEntry.getDirectory(), "" ) + "/" + Const.NVL( jobEntry.getJobName(), "" );
+        String dirPath = Const.NVL( jobEntry.getDirectory(), "" );
+        String transPath = Const.NVL( jobEntry.getJobName(), "" );
+        String fullPath = ( StringUtils.isBlank( dirPath ) ? "" : dirPath + "/" ) + transPath;
         wPath.setText( fullPath );
         break;
       case REPOSITORY_BY_REFERENCE:
