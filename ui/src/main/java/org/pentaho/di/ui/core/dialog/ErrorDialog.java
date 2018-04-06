@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -26,6 +26,7 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.lang.reflect.InvocationTargetException;
 
+import com.google.common.annotations.VisibleForTesting;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.DisposeEvent;
 import org.eclipse.swt.events.DisposeListener;
@@ -145,47 +146,7 @@ public class ErrorDialog extends Dialog {
     final StringBuilder details = new StringBuilder();
 
     if ( exception != null ) {
-      if ( exception instanceof KettleException ) {
-        // Normal error
-        KettleException ke = (KettleException) exception;
-        Throwable cause = ke.getCause();
-        if ( cause != null ) {
-          text.append( ke.getCause().getMessage() );
-        } else {
-          text.append( ke.getMessage() );
-        }
-
-      } else if ( exception instanceof InvocationTargetException ) {
-        // Error from somewhere else, what is the cause?
-        Throwable cause = exception.getCause();
-        if ( cause instanceof KettleException ) {
-          KettleException ke = (KettleException) cause;
-          text.append( ke.getMessage() );
-        } else {
-          text.append( Const.NVL( cause.getMessage(), cause.toString() ) );
-          while ( text.length() == 0 && cause != null ) {
-            cause = cause.getCause();
-            if ( cause != null ) {
-              text.append( Const.NVL( cause.getMessage(), cause.toString() ) );
-            }
-          }
-        }
-      } else {
-        // Error from somewhere else...
-
-        if ( exception.getMessage() == null ) {
-          text.append( message );
-        } else {
-          text.append( exception.getMessage() );
-        }
-      }
-
-      StringWriter sw = new StringWriter();
-      PrintWriter pw = new PrintWriter( sw );
-      exception.printStackTrace( pw );
-
-      details.append( sw.getBuffer() );
-
+      handleException( message, exception, text, details );
       wDesc.setText( text.toString() );
     } else {
       text.append( message );
@@ -267,6 +228,50 @@ public class ErrorDialog extends Dialog {
         display.sleep();
       }
     }
+  }
+
+  @VisibleForTesting
+  protected void handleException( String message, Exception exception, StringBuilder text, StringBuilder details ) {
+    if ( exception instanceof KettleException ) {
+      // Normal error
+      KettleException ke = (KettleException) exception;
+      Throwable cause = ke.getCause();
+      if ( cause != null && cause.getMessage() != null ) {
+        text.append( cause.getMessage() );
+      } else {
+        text.append( ke.getMessage() );
+      }
+
+    } else if ( exception instanceof InvocationTargetException ) {
+      // Error from somewhere else, what is the cause?
+      Throwable cause = exception.getCause();
+      if ( cause instanceof KettleException ) {
+        KettleException ke = (KettleException) cause;
+        text.append( ke.getMessage() );
+      } else {
+        text.append( Const.NVL( cause.getMessage(), cause.toString() ) );
+        while ( text.length() == 0 && cause != null ) {
+          cause = cause.getCause();
+          if ( cause != null ) {
+            text.append( Const.NVL( cause.getMessage(), cause.toString() ) );
+          }
+        }
+      }
+    } else {
+      // Error from somewhere else...
+
+      if ( exception.getMessage() == null ) {
+        text.append( message );
+      } else {
+        text.append( exception.getMessage() );
+      }
+    }
+
+    StringWriter sw = new StringWriter();
+    PrintWriter pw = new PrintWriter( sw );
+    exception.printStackTrace( pw );
+
+    details.append( sw.getBuffer() );
   }
 
   protected void showDetails( String details ) {

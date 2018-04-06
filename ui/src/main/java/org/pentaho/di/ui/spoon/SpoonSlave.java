@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -29,6 +29,7 @@ import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import com.google.common.annotations.VisibleForTesting;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.events.DisposeEvent;
@@ -894,7 +895,7 @@ public class SpoonSlave extends Composite implements TabItemInterface {
       if ( log.isDebug() ) {
         log.logDebug( slaveServerStatus.getErrorDescription() );
       }
-      wText.setText( e.getMessage() );
+      wText.setText( setExceptionMessage( e ) );
     }
 
     List<SlaveServerTransStatus> transStatusList = slaveServerStatus.getTransStatusList();
@@ -922,6 +923,16 @@ public class SpoonSlave extends Composite implements TabItemInterface {
     TreeMemory.setExpandedFromMemory( wTree, STRING_SLAVE_LOG_TREE_NAME + slaveServer.toString() );
     TreeUtil.setOptimalWidthOnColumns( wTree );
     refreshBusy = false;
+  }
+
+  @VisibleForTesting
+  protected String setExceptionMessage( Exception e ) {
+    Throwable cause = e.getCause();
+    if ( cause != null && cause.getMessage() != null ) {
+      return e.getCause().getMessage();
+    } else {
+      return e.getMessage();
+    }
   }
 
   public void showErrors() {

@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -380,7 +380,7 @@ public class SlaveServerDialog extends Dialog {
     fd.left = new FormAttachment( 0, 0 );
     fd.right = new FormAttachment( middle, -margin );
     wlSSL.setLayoutData( fd );
-    wlSSL.setVisible( false ); // future functional
+    wlSSL.setVisible( true );
 
     wSSL = new Button( wServiceComp, SWT.CHECK );
     props.setLook( wSSL );
@@ -389,7 +389,7 @@ public class SlaveServerDialog extends Dialog {
     bfd.left = new FormAttachment( middle, 0 );
     bfd.right = new FormAttachment( 95, 0 );
     wSSL.setLayoutData( bfd );
-    wSSL.setVisible( false ); // future functional
+    wSSL.setVisible( true );
 
     fdServiceComp = new FormData();
     fdServiceComp.left = new FormAttachment( 0, 0 );
