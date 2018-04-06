@@ -71,10 +71,6 @@ define([
 
       if ($stateParams.credentials) {
         vm.credentials = $stateParams.credentials;
-      } else {
-        connectService.getCurrentUser().then(function(res) {
-          vm.credentials.username = res.data.username;
-        });
       }
     }
 
