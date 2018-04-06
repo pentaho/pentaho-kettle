@@ -73,6 +73,7 @@ public class JmsProducer extends BaseStep implements StepInterface {
       messageIndex = getInputRowMeta().indexOfValue( environmentSubstitute( meta.getFieldToSend() ) );
 
       for ( Map.Entry<String, String> entry : meta.getPropertyValuesByName().entrySet() ) {
+        logDebug( "Setting Jms Property Name: " + entry.getKey() + " Value: " + entry.getValue() );
         producer.setProperty( entry.getKey(), entry.getValue() );
       }
 
