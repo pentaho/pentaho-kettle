@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -36,7 +36,7 @@ public class ConcatFieldsData extends TextFileOutputData implements StepDataInte
   public int posTargetField;
   public int[] remainingFieldsInputOutputMapping;
   public RowMetaInterface inputRowMetaModified; // the field precisions and lengths are altered! see
-                                                // TextFileOutputMeta.getFields().
+  // TextFileOutputMeta.getFields().
   public String stringSeparator;
   public String stringEnclosure;
   public String[] stringNullValue;
