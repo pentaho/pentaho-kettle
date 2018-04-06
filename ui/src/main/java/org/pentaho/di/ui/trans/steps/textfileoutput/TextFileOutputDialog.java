@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -29,6 +29,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.vfs2.FileObject;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.custom.CTabFolder;
@@ -49,7 +50,6 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
-import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.MessageBox;
@@ -65,6 +65,7 @@ import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.row.value.ValueMetaFactory;
 import org.pentaho.di.core.row.value.ValueMetaString;
+import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStepMeta;
@@ -78,8 +79,10 @@ import org.pentaho.di.ui.core.widget.ColumnInfo;
 import org.pentaho.di.ui.core.widget.ComboVar;
 import org.pentaho.di.ui.core.widget.TableView;
 import org.pentaho.di.ui.core.widget.TextVar;
+import org.pentaho.di.ui.spoon.Spoon;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 import org.pentaho.di.ui.trans.step.TableItemInsertListener;
+import org.pentaho.vfs.ui.VfsFileChooserDialog;
 
 public class TextFileOutputDialog extends BaseStepDialog implements StepDialogInterface {
   private static Class<?> PKG = TextFileOutputMeta.class; // for i18n purposes, needed by Translator2!!
@@ -1225,29 +1228,34 @@ public class TextFileOutputDialog extends BaseStepDialog implements StepDialogIn
 
     wbFilename.addSelectionListener( new SelectionAdapter() {
       public void widgetSelected( SelectionEvent e ) {
-        FileDialog dialog = new FileDialog( shell, SWT.SAVE );
-        dialog.setFilterExtensions( new String[] { "*.txt", "*.csv", "*" } );
+        VfsFileChooserDialog fileChooserDialog = Spoon.getInstance().getVfsFileChooserDialog( null, null );
         if ( wFilename.getText() != null ) {
-          dialog.setFileName( transMeta.environmentSubstitute( wFilename.getText() ) );
-        }
-        dialog.setFilterNames( new String[] {
-          BaseMessages.getString( PKG, "System.FileType.TextFiles" ),
-          BaseMessages.getString( PKG, "System.FileType.CSVFiles" ),
-          BaseMessages.getString( PKG, "System.FileType.AllFiles" ) } );
-        if ( dialog.open() != null ) {
-          String extension = wExtension.getText();
-          if ( extension != null
-            && dialog.getFileName() != null && dialog.getFileName().endsWith( "." + extension ) ) {
-            // The extension is filled in and matches the end
-            // of the selected file => Strip off the extension.
-            String fileName = dialog.getFileName();
-            wFilename.setText( dialog.getFilterPath()
-              + System.getProperty( "file.separator" )
-              + fileName.substring( 0, fileName.length() - ( extension.length() + 1 ) ) );
-          } else {
-            wFilename.setText( dialog.getFilterPath()
-              + System.getProperty( "file.separator" ) + dialog.getFileName() );
+          try {
+            fileChooserDialog.initialFile =
+                KettleVFS.getFileObject( transMeta.environmentSubstitute( wFilename.getText() ) );
+          } catch ( KettleException ex ) {
+            fileChooserDialog.initialFile = null;
           }
+        }
+        FileObject
+            selectedFile =
+            fileChooserDialog
+                .open( shell, new String[] { "file" }, "file", true, null, new String[] { "*.txt", "*.csv", "*" },
+                    new String[] { BaseMessages.getString( PKG, "System.FileType.TextFiles" ),
+                        BaseMessages.getString( PKG, "System.FileType.CSVFiles" ),
+                        BaseMessages.getString( PKG, "System.FileType.AllFiles" ) }, true,
+                    VfsFileChooserDialog.VFS_DIALOG_OPEN_FILE_OR_DIRECTORY, false, false );
+        if ( selectedFile != null ) {
+          String file = selectedFile.getName().getURI();
+          if ( file.startsWith( "file:///" ) ) {
+            file = file.substring( 8 );
+          }
+          if ( !file.contains( System.getProperty( "file.separator" ) ) ) {
+            if ( !System.getProperty( "file.separator" ).equals( "/" ) ) {
+              file = file.replace( "/", System.getProperty( "file.separator" ) );
+            }
+          }
+          wFilename.setText( file );
         }
       }
     } );
