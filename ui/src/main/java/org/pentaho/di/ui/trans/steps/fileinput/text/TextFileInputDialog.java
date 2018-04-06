@@ -3,7 +3,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -57,10 +57,8 @@ import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.DirectoryDialog;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
-import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
@@ -104,8 +102,10 @@ import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.core.widget.ColumnInfo;
 import org.pentaho.di.ui.core.widget.TableView;
 import org.pentaho.di.ui.core.widget.TextVar;
+import org.pentaho.di.ui.spoon.Spoon;
 import org.pentaho.di.ui.trans.dialog.TransPreviewProgressDialog;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
+import org.pentaho.vfs.ui.VfsFileChooserDialog;
 
 public class TextFileInputDialog extends BaseStepDialog implements StepDialogInterface {
   private static Class<?> PKG = TextFileInputMeta.class; // for i18n purposes, needed by Translator2!!
@@ -664,51 +664,34 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
     // Listen to the Browse... button
     wbbFilename.addSelectionListener( new SelectionAdapter() {
       public void widgetSelected( SelectionEvent e ) {
-        if ( wFilemask.getText() != null && wFilemask.getText().length() > 0 ) { // A mask: a directory!
-          DirectoryDialog dialog = new DirectoryDialog( shell, SWT.OPEN );
-          if ( wFilename.getText() != null ) {
-            String fpath = transMeta.environmentSubstitute( wFilename.getText() );
-            dialog.setFilterPath( fpath );
+        VfsFileChooserDialog fileChooserDialog = Spoon.getInstance().getVfsFileChooserDialog( null, null );
+        if ( wFilename.getText() != null ) {
+          try {
+            fileChooserDialog.initialFile =
+                KettleVFS.getFileObject( transMeta.environmentSubstitute( wFilename.getText() ) );
+          } catch ( KettleException ex ) {
+            fileChooserDialog.initialFile = null;
           }
-
-          if ( dialog.open() != null ) {
-            String str = dialog.getFilterPath();
-            wFilename.setText( str );
+        }
+        FileObject
+            selectedFile =
+            fileChooserDialog
+                .open( shell, new String[] { "file" }, "file", true, null, new String[] { "*.txt", "*.csv", "*" },
+                    new String[] { BaseMessages.getString( PKG, "System.FileType.TextFiles" ),
+                        BaseMessages.getString( PKG, "System.FileType.CSVFiles" ),
+                        BaseMessages.getString( PKG, "System.FileType.AllFiles" ) }, true,
+                    VfsFileChooserDialog.VFS_DIALOG_OPEN_FILE_OR_DIRECTORY, false, false );
+        if ( selectedFile != null ) {
+          String file = selectedFile.getName().getURI();
+          if ( file.startsWith( "file:///" ) ) {
+            file = file.substring( 8 );
           }
-        } else {
-          FileDialog dialog = new FileDialog( shell, SWT.OPEN );
-          CompressionProvider provider =
-              CompressionProviderFactory.getInstance().getCompressionProviderByName( wCompression.getText() );
-
-          List<String> filterExtensions = new ArrayList<>();
-          List<String> filterNames = new ArrayList<>();
-
-          if ( !Utils.isEmpty( provider.getDefaultExtension() ) && !Utils.isEmpty( provider.getName() ) ) {
-            filterExtensions.add( "*." + provider.getDefaultExtension() );
-            filterNames.add( provider.getName() + " files" );
+          if ( !file.contains( System.getProperty( "file.separator" ) ) ) {
+            if ( !System.getProperty( "file.separator" ).equals( "/" ) ) {
+              file = file.replace( "/", System.getProperty( "file.separator" ) );
+            }
           }
-
-          filterExtensions.add( "*.txt;*.csv" );
-          filterNames.add( BaseMessages.getString( PKG, "TextFileInputDialog.FileType.TextAndCSVFiles" ) );
-          filterExtensions.add( "*.csv" );
-          filterNames.add( BaseMessages.getString( PKG, "System.FileType.CSVFiles" ) );
-          filterExtensions.add( "*.txt" );
-          filterNames.add( BaseMessages.getString( PKG, "System.FileType.TextFiles" ) );
-          filterExtensions.add( "*" );
-          filterNames.add( BaseMessages.getString( PKG, "System.FileType.AllFiles" ) );
-          dialog.setFilterExtensions( filterExtensions.toArray( new String[filterExtensions.size()] ) );
-
-          if ( wFilename.getText() != null ) {
-            String fname = transMeta.environmentSubstitute( wFilename.getText() );
-            dialog.setFileName( fname );
-          }
-
-          dialog.setFilterNames( filterNames.toArray( new String[filterNames.size()] ) );
-
-          if ( dialog.open() != null ) {
-            String str = dialog.getFilterPath() + System.getProperty( "file.separator" ) + dialog.getFileName();
-            wFilename.setText( str );
-          }
+          wFilename.setText( file );
         }
       }
     } );
