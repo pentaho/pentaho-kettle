@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -1357,8 +1357,19 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
           }
           break;
         case REPOSITORY_BY_NAME:
-          String realDirectory = tmpSpace.environmentSubstitute( getDirectory() );
-          String realJobName = tmpSpace.environmentSubstitute( getJobName() );
+          String realJobName = getJobName();
+          String realDirectory = "";
+          if ( realJobName.startsWith( "${" ) && realJobName.endsWith( "}" ) ) {
+            String transPath = tmpSpace.environmentSubstitute( realJobName );
+            int index = transPath.lastIndexOf( "/" );
+            if ( index != -1 ) {
+              realJobName = transPath.substring( index + 1 );
+              realDirectory = index == 0 ? "/" : transPath.substring( 0, index );
+            }
+          } else {
+            realJobName = tmpSpace.environmentSubstitute( getJobName() );
+            realDirectory = tmpSpace.environmentSubstitute( getDirectory() );
+          }
 
           if ( rep != null ) {
             realDirectory = r.normalizeSlashes( realDirectory );

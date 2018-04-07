@@ -1295,8 +1295,19 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
           }
           break;
         case REPOSITORY_BY_NAME:
-          String transname = tmpSpace.environmentSubstitute( getTransname() );
-          String realDirectory = tmpSpace.environmentSubstitute( getDirectory() );
+          String transname = getTransname();
+          String realDirectory = "";
+          if ( transname.startsWith( "${" ) && transname.endsWith( "}" ) ) {
+            String transPath = tmpSpace.environmentSubstitute( transname );
+            int index = transPath.lastIndexOf( "/" );
+            if ( index != -1 ) {
+              transname = transPath.substring( index + 1 );
+              realDirectory = index == 0 ? "/" : transPath.substring( 0, index );
+            }
+          } else {
+            transname = tmpSpace.environmentSubstitute( getTransname() );
+            realDirectory = tmpSpace.environmentSubstitute( getDirectory() );
+          }
 
           logBasic( BaseMessages.getString( PKG, "JobTrans.Log.LoadingTransRepDirec", transname, realDirectory ) );
 
