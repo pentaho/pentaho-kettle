@@ -569,20 +569,47 @@ public class TransMetaTest {
     dgm1Data.add( Collections.singletonList( "2" ) );
     dgm.setDataLines( dgm1Data );
 
+    DataGridMeta dgm2 = new DataGridMeta();
+    dgm2.allocate( 2 );
+    dgm2.setFieldName( new String[]{ "foo" } );
+    dgm2.setFieldType( new String[]{ ValueMetaFactory.getValueMetaName( ValueMetaInterface.TYPE_STRING ) } );
+    List<List<String>> dgm1Data2 = new ArrayList<>();
+    dgm1Data2.add( Collections.singletonList( "3" ) );
+    dgm1Data2.add( Collections.singletonList( "4" ) );
+    dgm2.setDataLines( dgm1Data2 );
+
     StepMeta dg = new StepMeta( "input1", dgm );
+    StepMeta dg2 = new StepMeta( "input2", dgm2 );
     TextFileOutputMeta textFileOutputMeta = new TextFileOutputMeta();
     StepMeta textFileOutputStep = new StepMeta( "BACKLOG-21039", textFileOutputMeta );
 
     TransHopMeta hop = new TransHopMeta( dg, textFileOutputStep, true );
+    TransHopMeta hop2 = new TransHopMeta( dg2, textFileOutputStep, true );
     transMeta.addStep( dg );
+    transMeta.addStep( dg2 );
     transMeta.addStep( textFileOutputStep );
     transMeta.addTransHop( hop );
+    transMeta.addTransHop( hop2 );
 
-    RowMetaInterface row = transMeta.getPrevStepFields( textFileOutputStep );
-    assertNotNull( row );
-    assertEquals( 1, row.size() );
-    assertEquals( "id", row.getValueMeta( 0 ).getName() );
-    assertEquals( ValueMetaInterface.TYPE_INTEGER, row.getValueMeta( 0 ).getType() );
+    RowMetaInterface allRows = transMeta.getPrevStepFields( textFileOutputStep, null, null );
+    assertNotNull( allRows );
+    assertEquals( 2, allRows.size() );
+    assertEquals( "id", allRows.getValueMeta( 0 ).getName() );
+    assertEquals( "foo", allRows.getValueMeta( 1 ).getName() );
+    assertEquals( ValueMetaInterface.TYPE_INTEGER, allRows.getValueMeta( 0 ).getType() );
+    assertEquals( ValueMetaInterface.TYPE_STRING, allRows.getValueMeta( 1 ).getType() );
+
+    RowMetaInterface rows1 = transMeta.getPrevStepFields( textFileOutputStep, "input1", null );
+    assertNotNull( rows1 );
+    assertEquals( 1, rows1.size() );
+    assertEquals( "id", rows1.getValueMeta( 0 ).getName() );
+    assertEquals( ValueMetaInterface.TYPE_INTEGER, rows1.getValueMeta( 0 ).getType() );
+
+    RowMetaInterface rows2 = transMeta.getPrevStepFields( textFileOutputStep, "input2", null );
+    assertNotNull( rows2 );
+    assertEquals( 1, rows2.size() );
+    assertEquals( "foo", rows2.getValueMeta( 0 ).getName() );
+    assertEquals( ValueMetaInterface.TYPE_STRING, rows2.getValueMeta( 0 ).getType() );
 
     dgm.setFieldName( new String[]{ "id", "name" } );
     dgm.setFieldType( new String[]{
@@ -590,13 +617,23 @@ public class TransMetaTest {
       ValueMetaFactory.getValueMetaName( ValueMetaInterface.TYPE_STRING ),
     } );
 
-    row = transMeta.getPrevStepFields( textFileOutputStep );
-    assertNotNull( row );
-    assertEquals( 2, row.size() );
-    assertEquals( "id", row.getValueMeta( 0 ).getName() );
-    assertEquals( "name", row.getValueMeta( 1 ).getName() );
-    assertEquals( ValueMetaInterface.TYPE_INTEGER, row.getValueMeta( 0 ).getType() );
-    assertEquals( ValueMetaInterface.TYPE_STRING, row.getValueMeta( 1 ).getType() );
+    allRows = transMeta.getPrevStepFields( textFileOutputStep, null, null );
+    assertNotNull( allRows );
+    assertEquals( 3, allRows.size() );
+    assertEquals( "id", allRows.getValueMeta( 0 ).getName() );
+    assertEquals( "name", allRows.getValueMeta( 1 ).getName() );
+    assertEquals( "foo", allRows.getValueMeta( 2 ).getName() );
+    assertEquals( ValueMetaInterface.TYPE_INTEGER, allRows.getValueMeta( 0 ).getType() );
+    assertEquals( ValueMetaInterface.TYPE_STRING, allRows.getValueMeta( 1 ).getType() );
+    assertEquals( ValueMetaInterface.TYPE_STRING, allRows.getValueMeta( 2 ).getType() );
+
+    rows1 = transMeta.getPrevStepFields( textFileOutputStep, "input1", null );
+    assertNotNull( rows1 );
+    assertEquals( 2, rows1.size() );
+    assertEquals( "id", rows1.getValueMeta( 0 ).getName() );
+    assertEquals( "name", rows1.getValueMeta( 1 ).getName() );
+    assertEquals( ValueMetaInterface.TYPE_INTEGER, rows1.getValueMeta( 0 ).getType() );
+    assertEquals( ValueMetaInterface.TYPE_STRING, rows1.getValueMeta( 1 ).getType() );
   }
 
   @Test

@@ -1922,7 +1922,15 @@ public class TransMeta extends AbstractMeta
    * @throws KettleStepException
    *           the kettle step exception
    */
+
+
   public RowMetaInterface getPrevStepFields( StepMeta stepMeta, ProgressMonitorListener monitor ) throws KettleStepException {
+    return getPrevStepFields( stepMeta, null, monitor );
+  }
+
+  public RowMetaInterface getPrevStepFields(
+    StepMeta stepMeta, final String stepName, ProgressMonitorListener  monitor )
+    throws KettleStepException {
     clearStepFieldsCachce();
     RowMetaInterface row = new RowMeta();
 
@@ -1938,6 +1946,9 @@ public class TransMeta extends AbstractMeta
     StepMeta prevStepMeta = null;
     for ( int i = 0; i < nrPrevSteps; i++ ) {
       prevStepMeta = prevSteps.get( i );
+      if  ( stepName != null && !stepName.equalsIgnoreCase( prevStepMeta.getName() ) ) {
+        continue;
+      }
 
       if ( monitor != null ) {
         monitor.subTask(
