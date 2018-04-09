@@ -55,6 +55,7 @@ import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDialogInterface;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
+import org.pentaho.di.trans.steps.changefileencoding.ChangeFileEncodingMeta;
 import org.pentaho.di.ui.core.widget.ComboVar;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 import org.pentaho.di.ui.trans.step.ComponentSelectionListener;
