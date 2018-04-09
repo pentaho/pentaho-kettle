@@ -77,8 +77,10 @@ public class JmsProducer extends BaseStep implements StepInterface {
       setOptions( producer );
 
       for ( Map.Entry<String, String> entry : meta.getPropertyValuesByName().entrySet() ) {
-        logDebug( "Setting Jms Property Name: " + entry.getKey() + " Value: " + entry.getValue() );
-        producer.setProperty( entry.getKey(), entry.getValue() );
+        String keySubstitute = environmentSubstitute( entry.getKey() );
+        String valueSubstitute = environmentSubstitute( entry.getValue() );
+        logDebug( "Setting Jms Property Name: " + keySubstitute + ", Value: " + valueSubstitute );
+        producer.setProperty( keySubstitute, valueSubstitute );
       }
 
       first = false;
