@@ -29,6 +29,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.vfs2.FileObject;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CCombo;
@@ -1247,8 +1248,8 @@ public class TextFileOutputDialog extends BaseStepDialog implements StepDialogIn
                     VfsFileChooserDialog.VFS_DIALOG_OPEN_FILE_OR_DIRECTORY, false, false );
         if ( selectedFile != null ) {
           String file = selectedFile.getName().getURI();
-          if ( file.startsWith( "file:///" ) ) {
-            file = file.substring( 8 );
+          if ( !StringUtils.isBlank( file ) ) {
+            file = file.replace( "file://", "" ).replace( "/C:", "C:" );
           }
           if ( !file.contains( System.getProperty( "file.separator" ) ) ) {
             if ( !System.getProperty( "file.separator" ).equals( "/" ) ) {
