@@ -33,6 +33,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Vector;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.vfs2.FileObject;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.jface.wizard.WizardDialog;
@@ -683,8 +684,8 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
                     VfsFileChooserDialog.VFS_DIALOG_OPEN_FILE_OR_DIRECTORY, false, false );
         if ( selectedFile != null ) {
           String file = selectedFile.getName().getURI();
-          if ( file.startsWith( "file:///" ) ) {
-            file = file.substring( 8 );
+          if ( !StringUtils.isBlank( file ) ) {
+            file = file.replace( "file://", "" ).replace( "/C:", "C:" );
           }
           if ( !file.contains( System.getProperty( "file.separator" ) ) ) {
             if ( !System.getProperty( "file.separator" ).equals( "/" ) ) {
