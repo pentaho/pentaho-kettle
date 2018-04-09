@@ -39,7 +39,6 @@ import static junit.framework.TestCase.assertFalse;
 import static junit.framework.TestCase.assertTrue;
 import static org.junit.Assert.fail;
 import static org.pentaho.di.trans.step.jms.context.JmsProvider.ConnectionType.ACTIVEMQ;
-import static org.pentaho.di.trans.step.jms.context.JmsProvider.ConnectionType.JNDI;
 import static org.pentaho.di.trans.step.jms.context.JmsProvider.ConnectionType.WEBSPHERE;
 import static org.pentaho.di.trans.step.jms.context.JmsProvider.DestinationType.QUEUE;
 import static org.pentaho.di.trans.step.jms.context.JmsProvider.DestinationType.TOPIC;
@@ -57,7 +56,6 @@ public class WebsphereMQProviderTest {
   public void onlySupportsWebsphere() {
     assertTrue( jmsProvider.supports( WEBSPHERE ) );
     assertFalse( jmsProvider.supports( ACTIVEMQ ) );
-    assertFalse( jmsProvider.supports( JNDI ) );
   }
 
   @Test

@@ -67,16 +67,6 @@ public interface JmsProvider {
         return getString( PKG, "JmsProvider.WSUrlHint" );
 
       }
-    },
-    JNDI {
-      public String toString() {
-        return getString( PKG, "JmsProvider.Generic" );
-      }
-
-      public String getUrlHint() {
-        return getString( PKG, "JmsProvider.JndiUrlHint" );
-
-      }
     };
 
     public abstract String getUrlHint();

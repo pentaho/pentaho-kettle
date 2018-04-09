@@ -32,6 +32,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Table;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.TransMeta;
+import org.pentaho.di.trans.step.StepOption;
 import org.pentaho.di.ui.core.PropsUI;
 import org.pentaho.di.ui.core.widget.ColumnInfo;
 import org.pentaho.di.ui.core.widget.TableView;
@@ -53,13 +54,13 @@ public class MqttDialogOptionsLayout {
   private final CTabFolder wTabFolder;
   private final ModifyListener lsMod;
   private final TransMeta transMeta;
-  private final List<MqttOption> options;
+  private final List<StepOption> options;
 
   private TableView optionsTable;
 
   MqttDialogOptionsLayout(
     PropsUI props, CTabFolder wTabFolder, ModifyListener lsMod, TransMeta transMeta,
-    List<MqttOption> options ) {
+    List<StepOption> options ) {
     checkNotNull( props );
     checkNotNull( wTabFolder );
     checkNotNull( lsMod );
@@ -154,7 +155,7 @@ public class MqttDialogOptionsLayout {
     optionsTable.remove( 0 );
   }
 
-  List<MqttOption> retrieveOptions() {
+  List<StepOption> retrieveOptions() {
     IntStream.range( 0, optionsTable.getItemCount() )
       .mapToObj( i -> optionsTable.getItem( i ) )
       .forEach( item -> {

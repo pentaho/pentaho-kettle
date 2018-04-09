@@ -22,7 +22,9 @@
 
 package org.pentaho.di.trans.step.jms;
 
+import org.apache.commons.lang.BooleanUtils;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.util.StringUtil;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStep;
@@ -72,6 +74,8 @@ public class JmsProducer extends BaseStep implements StepInterface {
       destination = meta.jmsDelegate.getDestination( this );
       messageIndex = getInputRowMeta().indexOfValue( environmentSubstitute( meta.getFieldToSend() ) );
 
+      setOptions( producer );
+
       for ( Map.Entry<String, String> entry : meta.getPropertyValuesByName().entrySet() ) {
         logDebug( "Setting Jms Property Name: " + entry.getKey() + " Value: " + entry.getValue() );
         producer.setProperty( entry.getKey(), entry.getValue() );
@@ -86,5 +90,55 @@ public class JmsProducer extends BaseStep implements StepInterface {
     // send to next steps
     putRow( getInputRowMeta(), row );
     return true;
+  }
+
+  private void setOptions( JMSProducer producer ) {
+    String optionValue = variables.environmentSubstitute( meta.getDisableMessageId() );
+    getLogChannel().logDebug( "Disable Message ID is set to " + optionValue );
+    if ( !StringUtil.isEmpty( optionValue ) ) {
+      producer.setDisableMessageID( BooleanUtils.toBoolean( optionValue ) );
+    }
+
+    optionValue = variables.environmentSubstitute( meta.getDisableMessageTimestamp() );
+    getLogChannel().logDebug( "Disable Message Timestamp is set to " + optionValue );
+    if ( !StringUtil.isEmpty( optionValue ) ) {
+      producer.setDisableMessageTimestamp( BooleanUtils.toBoolean( optionValue ) );
+    }
+
+    optionValue = variables.environmentSubstitute( meta.getDeliveryMode() );
+    getLogChannel().logDebug( "Delivery Mode is set to " + optionValue );
+    if ( !StringUtil.isEmpty( optionValue ) ) {
+      producer.setDeliveryMode( Integer.parseInt( optionValue ) );
+    }
+
+    optionValue = variables.environmentSubstitute( meta.getPriority() );
+    getLogChannel().logDebug( "Priority is set to " + optionValue );
+    if ( !StringUtil.isEmpty( optionValue ) ) {
+      producer.setPriority( Integer.parseInt( optionValue ) );
+    }
+
+    optionValue = variables.environmentSubstitute( meta.getTimeToLive() );
+    getLogChannel().logDebug( "Time to Live is set to " + optionValue );
+    if ( !StringUtil.isEmpty( optionValue ) ) {
+      producer.setTimeToLive( Long.parseLong( optionValue ) );
+    }
+
+    optionValue = variables.environmentSubstitute( meta.getDeliveryDelay() );
+    getLogChannel().logDebug( "Delivery Delay is set to " + optionValue );
+    if ( !StringUtil.isEmpty( optionValue ) ) {
+      producer.setDeliveryDelay( Long.parseLong( optionValue ) );
+    }
+
+    optionValue = variables.environmentSubstitute( meta.getJmsCorrelationId() );
+    getLogChannel().logDebug( "JMS Correlation ID is set to " + optionValue );
+    if ( !StringUtil.isEmpty( optionValue ) ) {
+      producer.setJMSCorrelationID( optionValue );
+    }
+
+    optionValue = variables.environmentSubstitute( meta.getJmsType() );
+    getLogChannel().logDebug( "JMS Type is set to " + optionValue );
+    if ( !StringUtil.isEmpty( optionValue ) ) {
+      producer.setJMSType( optionValue );
+    }
   }
 }

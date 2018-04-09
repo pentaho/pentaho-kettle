@@ -111,8 +111,6 @@ public class JmsConsumerDialog extends BaseStreamingDialog {
     jmsDelegate.amqUsername = connectionForm.getActiveUser();
     jmsDelegate.amqPassword = connectionForm.getActivePassword();
 
-    jmsDelegate.jndiUrl = connectionForm.getGenericUrl();
-
     jmsDelegate.connectionType = connectionForm.getConnectionType();
 
     jmsDelegate.destinationType = destinationForm.getDestinationType();

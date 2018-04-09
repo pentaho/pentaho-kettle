@@ -35,6 +35,7 @@ import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.StringObjectId;
+import org.pentaho.di.trans.step.StepOption;
 import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
@@ -207,9 +208,9 @@ public class MQTTProducerMetaTest {
 
     MQTTProducerMeta meta = new MQTTProducerMeta();
     meta.setDefault();
-    List<MqttOption> options = meta.retrieveOptions();
+    List<StepOption> options = meta.retrieveOptions();
     assertEquals( 8, options.size() );
-    for ( MqttOption option : options ) {
+    for ( StepOption option : options ) {
       assertEquals( "", option.getValue() );
       assertNotNull( option.getText() );
       assertTrue( keys.contains( option.getKey() ) );
@@ -259,31 +260,18 @@ public class MQTTProducerMetaTest {
     meta.check( remarks, null, null, null, null, null, null, new Variables(), null, null );
 
     assertEquals( 6, remarks.size() );
-    assertEquals( BaseMessages
-        .getString( PKG, "MQTTMeta.CheckResult.NotANumber",
-          BaseMessages.getString( PKG, "MQTTDialog.Options." + KEEP_ALIVE_INTERVAL ) ),
-      remarks.get( 0 ).getText() );
-    assertEquals( BaseMessages
-        .getString( PKG, "MQTTMeta.CheckResult.NotANumber",
-          BaseMessages.getString( PKG, "MQTTDialog.Options." + MAX_INFLIGHT ) ),
-      remarks.get( 1 ).getText() );
-    assertEquals( BaseMessages
-        .getString( PKG, "MQTTMeta.CheckResult.NotANumber",
-          BaseMessages.getString( PKG, "MQTTDialog.Options." + CONNECTION_TIMEOUT ) ),
-      remarks.get( 2 ).getText() );
-    assertEquals( BaseMessages
-        .getString( PKG, "MQTTMeta.CheckResult.NotABoolean",
-          BaseMessages.getString( PKG, "MQTTDialog.Options." + CLEAN_SESSION ) ),
-      remarks.get( 3 ).getText() );
-    assertEquals( BaseMessages
-        .getString( PKG, "MQTTMeta.CheckResult.NotCorrectVersion",
-          BaseMessages.getString( PKG, "MQTTDialog.Options." + MQTT_VERSION ) ),
-      remarks.get( 4 ).getText() );
-    assertEquals(
-      BaseMessages
-        .getString( PKG, "MQTTMeta.CheckResult.NotABoolean",
-          BaseMessages.getString( PKG, "MQTTDialog.Options." + AUTOMATIC_RECONNECT ) ),
-      remarks.get( 5 ).getText() );
+    assertTrue( remarks.get( 0 ).getText()
+      .contains( BaseMessages.getString( PKG, "MQTTDialog.Options." + KEEP_ALIVE_INTERVAL ) ) );
+    assertTrue(
+      remarks.get( 1 ).getText().contains( BaseMessages.getString( PKG, "MQTTDialog.Options." + MAX_INFLIGHT ) ) );
+    assertTrue( remarks.get( 2 ).getText()
+      .contains( BaseMessages.getString( PKG, "MQTTDialog.Options." + CONNECTION_TIMEOUT ) ) );
+    assertTrue(
+      remarks.get( 3 ).getText().contains( BaseMessages.getString( PKG, "MQTTDialog.Options." + CLEAN_SESSION ) ) );
+    assertTrue(
+      remarks.get( 4 ).getText().contains( BaseMessages.getString( PKG, "MQTTDialog.Options." + MQTT_VERSION ) ) );
+    assertTrue( remarks.get( 5 ).getText()
+      .contains( BaseMessages.getString( PKG, "MQTTDialog.Options." + AUTOMATIC_RECONNECT ) ) );
   }
 
   public static MQTTProducerMeta fromXml( String metaXml ) {
