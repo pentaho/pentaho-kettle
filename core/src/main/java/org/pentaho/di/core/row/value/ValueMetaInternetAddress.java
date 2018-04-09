@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -524,6 +524,11 @@ public class ValueMetaInternetAddress extends ValueMetaDate {
     }
 
     return retval;
+  }
+
+  @Override
+  public Object getNativeDataType( Object object ) throws KettleValueException {
+    return getInternetAddress( object );
   }
 
   @Override
