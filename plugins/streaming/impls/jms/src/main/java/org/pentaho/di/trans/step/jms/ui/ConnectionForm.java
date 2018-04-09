@@ -76,9 +76,6 @@ public class ConnectionForm {
   private TextVar wActiveUser;
   private TextVar wActivePassword;
 
-  private Label wlGenericUrl;
-  private TextVar wGenericUrl;
-
   ConnectionForm( Composite parentComponent, PropsUI props, TransMeta transMeta,
                   ModifyListener lsMod, JmsDelegate jmsDelegate ) {
     checkNotNull( parentComponent );
@@ -134,8 +131,6 @@ public class ConnectionForm {
     wActiveUser.setText( jmsDelegate.amqUsername );
     wActivePassword.setText( jmsDelegate.amqPassword );
 
-    wGenericUrl.setText( jmsDelegate.jndiUrl );
-
     JmsProvider.ConnectionType connectionType = JmsProvider.ConnectionType.valueOf( jmsDelegate.connectionType );
     typesToButtons.get( connectionType )
       .setSelection( true );
@@ -188,7 +183,6 @@ public class ConnectionForm {
 
     layoutIbmMqConnectionFields( environmentSeparator );
     layoutActiveMqConnectionFields( environmentSeparator );
-    layoutGenericConnectionFields( environmentSeparator );
   }
 
   private void layoutIbmMqConnectionFields( Control leftOf ) {
@@ -299,26 +293,6 @@ public class ConnectionForm {
     wActivePassword.setLayoutData( fdPassword );
   }
 
-  private void layoutGenericConnectionFields( Control leftOf ) {
-    wlGenericUrl = new Label( wConnectionGroup, SWT.LEFT );
-    props.setLook( wlGenericUrl );
-    wlGenericUrl.setText( getString( PKG, "JmsDialog.JmsUrl" ) );
-    FormData fdlJmsUrl = new FormData();
-    fdlJmsUrl.left = new FormAttachment( leftOf, 15 );
-    fdlJmsUrl.top = new FormAttachment( 0, 0 );
-    wlGenericUrl.setLayoutData( fdlJmsUrl );
-
-    wGenericUrl = new TextVar( transMeta, wConnectionGroup, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
-    wGenericUrl.setToolTipText( JmsProvider.ConnectionType.JNDI.getUrlHint() );
-    props.setLook( wGenericUrl );
-    wGenericUrl.addModifyListener( lsMod );
-    FormData fdJmsUrl = new FormData();
-    fdJmsUrl.left = new FormAttachment( leftOf, 15 );
-    fdJmsUrl.top = new FormAttachment( wlGenericUrl, 5 );
-    fdJmsUrl.right = new FormAttachment( 100, 0 );
-    wGenericUrl.setLayoutData( fdJmsUrl );
-  }
-
   public String getIbmUrl() {
     return wIbmUrl.getText();
   }
@@ -343,10 +317,6 @@ public class ConnectionForm {
     return wActivePassword.getText();
   }
 
-  public String getGenericUrl() {
-    return wGenericUrl.getText();
-  }
-
   public String getConnectionType() {
     return typesToButtons.entrySet().stream()
       .filter( entry -> entry.getValue().getSelection() )
@@ -359,18 +329,11 @@ public class ConnectionForm {
     switch ( type ) {
       case WEBSPHERE:
         setActiveMqVisibility( false );
-        setGenericVisibility( false );
         setIbmMqVisibility( true );
         break;
       case ACTIVEMQ:
-        setGenericVisibility( false );
         setIbmMqVisibility( false );
         setActiveMqVisibility( true );
-        break;
-      case JNDI:
-        setIbmMqVisibility( false );
-        setActiveMqVisibility( false );
-        setGenericVisibility( true );
         break;
     }
   }
@@ -391,10 +354,5 @@ public class ConnectionForm {
     wActiveUrl.setVisible( isVisible );
     wActiveUser.setVisible( isVisible );
     wActivePassword.setVisible( isVisible );
-  }
-
-  private void setGenericVisibility( boolean isVisible ) {
-    wlGenericUrl.setVisible( isVisible );
-    wGenericUrl.setVisible( isVisible );
   }
 }

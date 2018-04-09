@@ -52,6 +52,7 @@ import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDialogInterface;
+import org.pentaho.di.trans.step.StepOption;
 import org.pentaho.di.trans.step.jms.JmsDelegate;
 import org.pentaho.di.trans.step.jms.JmsProducerMeta;
 import org.pentaho.di.ui.core.ConstUI;
@@ -65,10 +66,21 @@ import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.IntStream;
 
 import static com.google.common.base.Strings.nullToEmpty;
+import static java.util.Arrays.stream;
 import static org.pentaho.di.i18n.BaseMessages.getString;
 import static org.pentaho.di.trans.step.jms.JmsConstants.PKG;
+import static org.pentaho.di.trans.step.jms.JmsProducerMeta.DELIVERY_DELAY;
+import static org.pentaho.di.trans.step.jms.JmsProducerMeta.DELIVERY_MODE;
+import static org.pentaho.di.trans.step.jms.JmsProducerMeta.DISABLE_MESSAGE_ID;
+import static org.pentaho.di.trans.step.jms.JmsProducerMeta.DISABLE_MESSAGE_TIMESTAMP;
+import static org.pentaho.di.trans.step.jms.JmsProducerMeta.JMS_CORRELATION_ID;
+import static org.pentaho.di.trans.step.jms.JmsProducerMeta.JMS_TYPE;
+import static org.pentaho.di.trans.step.jms.JmsProducerMeta.PRIORITY;
+import static org.pentaho.di.trans.step.jms.JmsProducerMeta.TIME_TO_LIVE;
+import static org.pentaho.di.ui.trans.step.BaseStreamingDialog.INPUT_WIDTH;
 
 
 public class JmsProducerDialog extends BaseStepDialog implements StepDialogInterface {
@@ -87,12 +99,16 @@ public class JmsProducerDialog extends BaseStepDialog implements StepDialogInter
   private DestinationForm destinationForm;
   private ComboVar wMessageField;
   private TableView propertiesTable;
+  private TableView optionsTable;
+
+  private List<StepOption> options;
 
   public JmsProducerDialog( Shell parent, Object meta,
                             TransMeta transMeta, String stepname ) {
     super( parent, (BaseStepMeta) meta, transMeta, stepname );
     this.meta = (JmsProducerMeta) meta;
     this.jmsDelegate = this.meta.jmsDelegate;
+    options = this.meta.retriveOptions();
     lsMod = e -> this.meta.setChanged();
     lsOK = e -> ok();
     lsCancel = e -> cancel();
@@ -257,6 +273,7 @@ public class JmsProducerDialog extends BaseStepDialog implements StepDialogInter
     //get data for message field, other fields data is loaded by the forms
     wMessageField.setText( nullToEmpty( meta.getFieldToSend() ) );
 
+    buildOptionsTab();
     buildProperiesTab();
 
     setSize();
@@ -375,6 +392,88 @@ public class JmsProducerDialog extends BaseStepDialog implements StepDialogInter
     }
   }
 
+  private void buildOptionsTab() {
+    CTabItem wOptionsTab = new CTabItem( wTabFolder, SWT.NONE );
+    wOptionsTab.setText( BaseMessages.getString( PKG, "JmsDialog.Options.Tab" ) );
+
+    Composite wOptionsComp = new Composite( wTabFolder, SWT.NONE );
+    props.setLook( wOptionsComp );
+    FormLayout optionsLayout = new FormLayout();
+    optionsLayout.marginHeight = 15;
+    optionsLayout.marginWidth = 15;
+    wOptionsComp.setLayout( optionsLayout );
+
+    FormData fdOptionsComp = new FormData();
+    fdOptionsComp.left = new FormAttachment( 0, 0 );
+    fdOptionsComp.top = new FormAttachment( 0, 0 );
+    fdOptionsComp.right = new FormAttachment( 100, 0 );
+    wOptionsComp.setLayoutData( fdOptionsComp );
+
+    ColumnInfo[] columns = getOptionsColumns();
+
+    int fieldCount = 1;
+
+    optionsTable = new TableView(
+      transMeta,
+      wOptionsComp,
+      SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI,
+      columns,
+      fieldCount,
+      false,
+      lsMod,
+      props,
+      false
+    );
+
+    optionsTable.setSortable( false );
+    optionsTable.getTable().addListener( SWT.Resize, event -> {
+      Table table = (Table) event.widget;
+      table.getColumn( 1 ).setWidth( 215 );
+      table.getColumn( 2 ).setWidth( 215 );
+    } );
+
+    populateOptionsTable();
+
+    FormData fdData = new FormData();
+    fdData.left = new FormAttachment( 0, 0 );
+    fdData.top = new FormAttachment( 0, 0 );
+    fdData.right = new FormAttachment( 100, 0 );
+    fdData.bottom = new FormAttachment( 100, 0 );
+    fdData.width = INPUT_WIDTH + 10;
+
+    // resize the columns to fit the data in them
+    stream( optionsTable.getTable().getColumns() ).forEach( column -> {
+      if ( column.getWidth() > 0 ) {
+        // don't pack anything with a 0 width, it will resize it to make it visible (like the index column)
+        column.setWidth( 120 );
+      }
+    } );
+
+    // don't let any rows get deleted or added (this does not affect the read-only state of the cells)
+    optionsTable.setReadonly( true );
+    optionsTable.setLayoutData( fdData );
+
+    wOptionsComp.layout();
+    wOptionsTab.setControl( wOptionsComp );
+  }
+
+  private ColumnInfo[] getOptionsColumns() {
+    ColumnInfo optionName = new ColumnInfo( BaseMessages.getString( PKG, "JmsDialog.Options.Column.Name" ),
+      ColumnInfo.COLUMN_TYPE_TEXT, false, true );
+    ColumnInfo optionValue = new ColumnInfo( BaseMessages.getString( PKG, "JmsDialog.Options.Column.Value" ),
+      ColumnInfo.COLUMN_TYPE_TEXT, false, false );
+    optionValue.setUsingVariables( true );
+
+    return new ColumnInfo[] { optionName, optionValue };
+  }
+
+  private void populateOptionsTable() {
+    optionsTable.clearAll();
+    options.stream()
+      .forEach( option -> optionsTable.add( option.getText(), option.getValue() ) );
+    optionsTable.remove( 0 );
+  }
+
   private void ok() {
     stepname = wStepname.getText();
 
@@ -387,13 +486,52 @@ public class JmsProducerDialog extends BaseStepDialog implements StepDialogInter
     jmsDelegate.amqUsername = connectionForm.getActiveUser();
     jmsDelegate.amqPassword = connectionForm.getActivePassword();
 
-    jmsDelegate.jndiUrl = connectionForm.getGenericUrl();
-
     jmsDelegate.destinationType = destinationForm.getDestinationType();
     jmsDelegate.destinationName = destinationForm.getDestinationName();
     meta.setFieldToSend( wMessageField.getText() );
     meta.setPropertyValuesByName( getMapFromTableView( propertiesTable ) );
+
+    saveOptions();
+
     dispose();
+  }
+
+  private List<StepOption> saveOptions() {
+    IntStream.range( 0, optionsTable.getItemCount() )
+      .mapToObj( i -> optionsTable.getItem( i ) )
+      .forEach( item -> {
+        options.stream().forEach( option -> {
+          if ( option.getText().equals( item[ 0 ] ) ) {
+            switch ( option.getKey() ) {
+              case DISABLE_MESSAGE_ID:
+                meta.setDisableMessageId( item[ 1 ] );
+                break;
+              case DISABLE_MESSAGE_TIMESTAMP:
+                meta.setDisableMessageTimestamp( item[ 1 ] );
+                break;
+              case DELIVERY_MODE:
+                meta.setDeliveryMode( item[ 1 ] );
+                break;
+              case PRIORITY:
+                meta.setPriority( item[ 1 ] );
+                break;
+              case TIME_TO_LIVE:
+                meta.setTimeToLive( item[ 1 ] );
+                break;
+              case DELIVERY_DELAY:
+                meta.setDeliveryDelay( item[ 1 ] );
+                break;
+              case JMS_CORRELATION_ID:
+                meta.setJmsCorrelationId( item[ 1 ] );
+                break;
+              case JMS_TYPE:
+                meta.setJmsType( item[ 1 ] );
+                break;
+            }
+          }
+        } );
+      } );
+    return options;
   }
 
   @Override

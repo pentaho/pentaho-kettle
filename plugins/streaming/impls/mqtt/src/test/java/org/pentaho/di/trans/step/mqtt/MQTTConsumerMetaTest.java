@@ -43,6 +43,7 @@ import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.StringObjectId;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.StepMeta;
+import org.pentaho.di.trans.step.StepOption;
 import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
@@ -231,9 +232,9 @@ public class MQTTConsumerMetaTest {
 
     MQTTConsumerMeta meta = new MQTTConsumerMeta();
     meta.setDefault();
-    List<MqttOption> options = meta.retrieveOptions();
+    List<StepOption> options = meta.retrieveOptions();
     assertEquals( 8, options.size() );
-    for ( MqttOption option : options ) {
+    for ( StepOption option : options ) {
       assertEquals( "", option.getValue() );
       assertNotNull( option.getText() );
       Assert.assertTrue( keys.contains( option.getKey() ) );

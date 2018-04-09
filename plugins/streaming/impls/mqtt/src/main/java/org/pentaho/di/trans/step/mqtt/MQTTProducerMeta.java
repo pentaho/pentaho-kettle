@@ -31,7 +31,6 @@ import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.util.serialization.BaseSerializingMeta;
 import org.pentaho.di.core.util.serialization.Sensitive;
 import org.pentaho.di.core.variables.VariableSpace;
-import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
@@ -39,6 +38,7 @@ import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
+import org.pentaho.di.trans.step.StepOption;
 import org.pentaho.metastore.api.IMetaStore;
 
 import java.util.ArrayList;
@@ -47,7 +47,9 @@ import java.util.List;
 import java.util.Map;
 
 import static java.util.stream.Collectors.toList;
+import static org.pentaho.di.i18n.BaseMessages.getString;
 import static org.pentaho.di.trans.step.mqtt.MQTTClientBuilder.DEFAULT_SSL_OPTS;
+import static org.pentaho.di.trans.step.mqtt.MQTTClientBuilder.checkVersion;
 import static org.pentaho.di.trans.step.mqtt.MQTTConstants.AUTOMATIC_RECONNECT;
 import static org.pentaho.di.trans.step.mqtt.MQTTConstants.CLEAN_SESSION;
 import static org.pentaho.di.trans.step.mqtt.MQTTConstants.CLIENT_ID;
@@ -183,28 +185,33 @@ public class MQTTProducerMeta extends BaseSerializingMeta implements StepMetaInt
                      IMetaStore metaStore ) {
     super.check( remarks, transMeta, stepMeta, prev, input, output, info, space, repository, metaStore );
 
-    MqttOption.checkInteger( remarks, stepMeta, space, KEEP_ALIVE_INTERVAL, keepAliveInterval );
-    MqttOption.checkInteger( remarks, stepMeta, space, MAX_INFLIGHT, maxInflight );
-    MqttOption.checkInteger( remarks, stepMeta, space, CONNECTION_TIMEOUT, connectionTimeout );
-    MqttOption.checkBoolean( remarks, stepMeta, space, CLEAN_SESSION, cleanSession );
-    MqttOption.checkVersion( remarks, stepMeta, space, mqttVersion );
-    MqttOption.checkBoolean( remarks, stepMeta, space, AUTOMATIC_RECONNECT, automaticReconnect );
+    StepOption.checkInteger( remarks, stepMeta, space, getString( PKG, "MQTTDialog.Options.KEEP_ALIVE_INTERVAL" ),
+      keepAliveInterval );
+    StepOption
+      .checkInteger( remarks, stepMeta, space, getString( PKG, "MQTTDialog.Options.MAX_INFLIGHT" ), maxInflight );
+    StepOption.checkInteger( remarks, stepMeta, space, getString( PKG, "MQTTDialog.Options.CONNECTION_TIMEOUT" ),
+      connectionTimeout );
+    StepOption
+      .checkBoolean( remarks, stepMeta, space, getString( PKG, "MQTTDialog.Options.CLEAN_SESSION" ), cleanSession );
+    checkVersion( remarks, stepMeta, space, mqttVersion );
+    StepOption.checkBoolean( remarks, stepMeta, space, getString( PKG, "MQTTDialog.Options.AUTOMATIC_RECONNECT" ),
+      automaticReconnect );
   }
 
-  public List<MqttOption> retrieveOptions() {
+  public List<StepOption> retrieveOptions() {
     return Arrays.asList(
-      new MqttOption( KEEP_ALIVE_INTERVAL, BaseMessages.getString( PKG, "MQTTDialog.Options." + KEEP_ALIVE_INTERVAL ),
+      new StepOption( KEEP_ALIVE_INTERVAL, getString( PKG, "MQTTDialog.Options.KEEP_ALIVE_INTERVAL" ),
         keepAliveInterval ),
-      new MqttOption( MAX_INFLIGHT, BaseMessages.getString( PKG, "MQTTDialog.Options." + MAX_INFLIGHT ), maxInflight ),
-      new MqttOption( CONNECTION_TIMEOUT, BaseMessages.getString( PKG, "MQTTDialog.Options." + CONNECTION_TIMEOUT ),
+      new StepOption( MAX_INFLIGHT, getString( PKG, "MQTTDialog.Options.MAX_INFLIGHT" ), maxInflight ),
+      new StepOption( CONNECTION_TIMEOUT, getString( PKG, "MQTTDialog.Options.CONNECTION_TIMEOUT" ),
         connectionTimeout ),
-      new MqttOption( CLEAN_SESSION, BaseMessages.getString( PKG, "MQTTDialog.Options." + CLEAN_SESSION ),
+      new StepOption( CLEAN_SESSION, getString( PKG, "MQTTDialog.Options.CLEAN_SESSION" ),
         cleanSession ),
-      new MqttOption( STORAGE_LEVEL, BaseMessages.getString( PKG, "MQTTDialog.Options." + STORAGE_LEVEL ),
+      new StepOption( STORAGE_LEVEL, getString( PKG, "MQTTDialog.Options.STORAGE_LEVEL" ),
         storageLevel ),
-      new MqttOption( SERVER_URIS, BaseMessages.getString( PKG, "MQTTDialog.Options." + SERVER_URIS ), serverUris ),
-      new MqttOption( MQTT_VERSION, BaseMessages.getString( PKG, "MQTTDialog.Options." + MQTT_VERSION ), mqttVersion ),
-      new MqttOption( AUTOMATIC_RECONNECT, BaseMessages.getString( PKG, "MQTTDialog.Options." + AUTOMATIC_RECONNECT ),
+      new StepOption( SERVER_URIS, getString( PKG, "MQTTDialog.Options.SERVER_URIS" ), serverUris ),
+      new StepOption( MQTT_VERSION, getString( PKG, "MQTTDialog.Options.MQTT_VERSION" ), mqttVersion ),
+      new StepOption( AUTOMATIC_RECONNECT, getString( PKG, "MQTTDialog.Options.AUTOMATIC_RECONNECT" ),
         automaticReconnect )
     );
   }
@@ -410,5 +417,4 @@ public class MQTTProducerMeta extends BaseSerializingMeta implements StepMetaInt
   public void setAutomaticReconnect( String automaticReconnect ) {
     this.automaticReconnect = automaticReconnect;
   }
-
 }

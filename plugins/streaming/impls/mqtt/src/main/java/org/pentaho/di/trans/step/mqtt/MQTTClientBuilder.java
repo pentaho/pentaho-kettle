@@ -33,10 +33,13 @@ import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
 import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
 import org.eclipse.paho.client.mqttv3.persist.MqttDefaultFilePersistence;
+import org.pentaho.di.core.CheckResult;
+import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.util.StringUtil;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.trans.step.StepInterface;
+import org.pentaho.di.trans.step.StepMeta;
 
 import java.util.Arrays;
 import java.util.List;
@@ -49,6 +52,7 @@ import java.util.stream.IntStream;
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Strings.isNullOrEmpty;
 import static org.pentaho.di.i18n.BaseMessages.getString;
+import static org.pentaho.di.trans.step.mqtt.MQTTConstants.MQTT_VERSION;
 
 public final class MQTTClientBuilder {
   private static final Class<?> PKG = MQTTClientBuilder.class;
@@ -356,5 +360,21 @@ public final class MQTTClientBuilder {
         .collect( Collectors.toMap( e -> SSL_PROP_PREFIX + e.getKey(),
           Map.Entry::getValue ) ) );
     options.setSSLProperties( props );
+  }
+
+  public static void checkVersion( List<CheckResultInterface> remarks, StepMeta stepMeta, VariableSpace space,
+                                   String value ) {
+    String version = space.environmentSubstitute( value );
+    if ( !StringUtil.isEmpty( version ) ) {
+      try {
+        ( new MqttConnectOptions() ).setMqttVersion( Integer.parseInt( version ) );
+      } catch ( Exception e ) {
+        remarks.add( new CheckResult(
+          CheckResultInterface.TYPE_RESULT_ERROR,
+          getString( PKG, "MQTTMeta.CheckResult.NotCorrectVersion",
+            getString( PKG, "MQTTDialog.Options." + MQTT_VERSION ), version ),
+          stepMeta ) );
+      }
+    }
   }
 }
