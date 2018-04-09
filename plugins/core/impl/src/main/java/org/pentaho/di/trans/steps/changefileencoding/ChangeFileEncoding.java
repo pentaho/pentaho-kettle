@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -57,8 +57,8 @@ public class ChangeFileEncoding extends BaseStep implements StepInterface {
   private ChangeFileEncodingMeta meta;
   private ChangeFileEncodingData data;
 
-  public ChangeFileEncoding( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr,
-    TransMeta transMeta, Trans trans ) {
+  public ChangeFileEncoding( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta,
+      Trans trans ) {
     super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
   }
 
@@ -86,27 +86,27 @@ public class ChangeFileEncoding extends BaseStep implements StepInterface {
 
       // Check is target filename field is provided
       if ( Utils.isEmpty( meta.getTargetFilenameField() ) ) {
-        throw new KettleException( BaseMessages.getString(
-          PKG, "ChangeFileEncoding.Error.TargetFilenameFieldMissing" ) );
+        throw new KettleException(
+            BaseMessages.getString( PKG, "ChangeFileEncoding.Error.TargetFilenameFieldMissing" ) );
       }
 
       // cache the position of the field
       data.indexOfFileename = data.inputRowMeta.indexOfValue( meta.getDynamicFilenameField() );
       if ( data.indexOfFileename < 0 ) {
         // The field is unreachable !
-        logError( BaseMessages.getString( PKG, "ChangeFileEncoding.Exception.CouldnotFindField" )
-          + "[" + meta.getDynamicFilenameField() + "]" );
-        throw new KettleException( BaseMessages.getString(
-          PKG, "ChangeFileEncoding.Exception.CouldnotFindField", meta.getDynamicFilenameField() ) );
+        logError( BaseMessages.getString( PKG, "ChangeFileEncoding.Exception.CouldnotFindField" ) + "["
+            + meta.getDynamicFilenameField() + "]" );
+        throw new KettleException( BaseMessages.getString( PKG, "ChangeFileEncoding.Exception.CouldnotFindField",
+          meta.getDynamicFilenameField() ) );
       }
       // cache the position of the field
       data.indexOfTargetFileename = data.inputRowMeta.indexOfValue( meta.getTargetFilenameField() );
       if ( data.indexOfTargetFileename < 0 ) {
         // The field is unreachable !
-        logError( BaseMessages.getString( PKG, "ChangeFileEncoding.Exception.CouldnotFindField" )
-          + "[" + meta.getTargetFilenameField() + "]" );
-        throw new KettleException( BaseMessages.getString(
-          PKG, "ChangeFileEncoding.Exception.CouldnotFindField", meta.getTargetFilenameField() ) );
+        logError( BaseMessages.getString( PKG, "ChangeFileEncoding.Exception.CouldnotFindField" ) + "["
+            + meta.getTargetFilenameField() + "]" );
+        throw new KettleException( BaseMessages.getString( PKG, "ChangeFileEncoding.Exception.CouldnotFindField",
+          meta.getTargetFilenameField() ) );
       }
 
       // Check source encoding
@@ -119,8 +119,7 @@ public class ChangeFileEncoding extends BaseStep implements StepInterface {
       data.targetEncoding = environmentSubstitute( meta.getTargetEncoding() );
 
       if ( Utils.isEmpty( data.targetEncoding ) ) {
-        throw new KettleException( BaseMessages
-          .getString( PKG, "ChangeFileEncoding.Exception.TargetEncodingEmpty" ) );
+        throw new KettleException( BaseMessages.getString( PKG, "ChangeFileEncoding.Exception.TargetEncodingEmpty" ) );
       }
 
       // End If first
@@ -130,29 +129,29 @@ public class ChangeFileEncoding extends BaseStep implements StepInterface {
       // get source filename
       String sourceFilename = data.inputRowMeta.getString( outputRow, data.indexOfFileename );
       if ( Utils.isEmpty( sourceFilename ) ) {
-        throw new KettleException( BaseMessages.getString( PKG, "ChangeFileEncoding.Error.SourceFileIsEmpty", meta
-          .getDynamicFilenameField() ) );
+        throw new KettleException( BaseMessages.getString( PKG, "ChangeFileEncoding.Error.SourceFileIsEmpty",
+          meta.getDynamicFilenameField() ) );
       }
 
       // get target filename
       String targetFilename = data.inputRowMeta.getString( outputRow, data.indexOfTargetFileename );
       if ( Utils.isEmpty( targetFilename ) ) {
-        throw new KettleException( BaseMessages.getString( PKG, "ChangeFileEncoding.Error.TargetFileIsEmpty", meta
-          .getTargetFilenameField() ) );
+        throw new KettleException( BaseMessages.getString( PKG, "ChangeFileEncoding.Error.TargetFileIsEmpty",
+          meta.getTargetFilenameField() ) );
       }
 
       data.sourceFile = KettleVFS.getFileObject( sourceFilename );
 
       // Check if source file exists
       if ( !data.sourceFile.exists() ) {
-        throw new KettleException( BaseMessages.getString(
-          PKG, "ChangeFileEncoding.Error.SourceFileNotExists", sourceFilename ) );
+        throw new KettleException(
+            BaseMessages.getString( PKG, "ChangeFileEncoding.Error.SourceFileNotExists", sourceFilename ) );
       }
 
       // Check if source file is a file
       if ( data.sourceFile.getType() != FileType.FILE ) {
-        throw new KettleException( BaseMessages.getString(
-          PKG, "ChangeFileEncoding.Error.SourceFileNotAFile", sourceFilename ) );
+        throw new KettleException(
+            BaseMessages.getString( PKG, "ChangeFileEncoding.Error.SourceFileNotAFile", sourceFilename ) );
       }
 
       // create directory only if not exists
@@ -160,8 +159,8 @@ public class ChangeFileEncoding extends BaseStep implements StepInterface {
         if ( meta.isCreateParentFolder() ) {
           data.sourceFile.getParent().createFolder();
         } else {
-          throw new KettleException( BaseMessages.getString(
-            PKG, "ChangeFileEncoding.Error.ParentFolderNotExist", data.sourceFile.getParent().toString() ) );
+          throw new KettleException( BaseMessages.getString( PKG, "ChangeFileEncoding.Error.ParentFolderNotExist",
+            data.sourceFile.getParent().toString() ) );
         }
       }
 
@@ -171,8 +170,8 @@ public class ChangeFileEncoding extends BaseStep implements StepInterface {
       putRow( data.inputRowMeta, outputRow ); // copy row to output rowset(s);
 
       if ( isDetailed() ) {
-        logDetailed( BaseMessages.getString( PKG, "ChangeFileEncoding.LineNumber", getLinesRead()
-          + " : " + getInputRowMeta().getString( outputRow ) ) );
+        logDetailed( BaseMessages.getString( PKG, "ChangeFileEncoding.LineNumber",
+          getLinesRead() + " : " + getInputRowMeta().getString( outputRow ) ) );
       }
     } catch ( Exception e ) {
       boolean sendToErrorRow = false;
@@ -190,8 +189,8 @@ public class ChangeFileEncoding extends BaseStep implements StepInterface {
       }
       if ( sendToErrorRow ) {
         // Simply add this row to the error row
-        putError(
-          getInputRowMeta(), outputRow, 1, errorMessage, meta.getDynamicFilenameField(), "ChangeFileEncoding001" );
+        putError( getInputRowMeta(), outputRow, 1, errorMessage, meta.getDynamicFilenameField(),
+          "ChangeFileEncoding001" );
       }
     }
 
@@ -205,13 +204,13 @@ public class ChangeFileEncoding extends BaseStep implements StepInterface {
 
     try {
       buffWriter =
-        new BufferedWriter( new OutputStreamWriter(
-          new FileOutputStream( targetFilename, false ), data.targetEncoding ) );
+          new BufferedWriter(
+              new OutputStreamWriter( new FileOutputStream( targetFilename, false ), data.targetEncoding ) );
       if ( Utils.isEmpty( data.sourceEncoding ) ) {
         buffReader = new BufferedReader( new InputStreamReader( new FileInputStream( sourceFilename ) ) );
       } else {
         buffReader =
-          new BufferedReader( new InputStreamReader( new FileInputStream( sourceFilename ), data.sourceEncoding ) );
+            new BufferedReader( new InputStreamReader( new FileInputStream( sourceFilename ), data.sourceEncoding ) );
       }
 
       char[] cBuf = new char[8192];
@@ -224,22 +223,21 @@ public class ChangeFileEncoding extends BaseStep implements StepInterface {
       if ( meta.addSourceResultFilenames() ) {
         // Add this to the result file names...
         ResultFile resultFile =
-          new ResultFile( ResultFile.FILE_TYPE_GENERAL, data.sourceFile, getTransMeta().getName(), getStepname() );
+            new ResultFile( ResultFile.FILE_TYPE_GENERAL, data.sourceFile, getTransMeta().getName(), getStepname() );
         resultFile.setComment( BaseMessages.getString( PKG, "ChangeFileEncoding.Log.FileAddedResult" ) );
         addResultFile( resultFile );
 
         if ( isDetailed() ) {
-          logDetailed( BaseMessages.getString( PKG, "ChangeFileEncoding.Log.FilenameAddResult", data.sourceFile
-            .toString() ) );
+          logDetailed(
+            BaseMessages.getString( PKG, "ChangeFileEncoding.Log.FilenameAddResult", data.sourceFile.toString() ) );
         }
       }
       // add filename to result filenames?
       if ( meta.addTargetResultFilenames() ) {
         // Add this to the result file names...
         ResultFile resultFile =
-          new ResultFile(
-            ResultFile.FILE_TYPE_GENERAL, KettleVFS.getFileObject( targetFilename ), getTransMeta().getName(),
-            getStepname() );
+            new ResultFile( ResultFile.FILE_TYPE_GENERAL, KettleVFS.getFileObject( targetFilename ),
+                getTransMeta().getName(), getStepname() );
         resultFile.setComment( BaseMessages.getString( PKG, "ChangeFileEncoding.Log.FileAddedResult" ) );
         addResultFile( resultFile );
 
