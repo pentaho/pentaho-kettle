@@ -6,7 +6,7 @@ buildProperties:
         # global build control defaults
         # These are understood by the shared pipeline libraries:
         BUILD_PLAN_ID                  : Jibberish Build Test
-        MAVEN_DEFAULT_DIRECTIVES       : clean install
+        MAVEN_DEFAULT_DIRECTIVES       : -B -q clean install
         ANT_DEFAULT_DIRECTIVES         : clean-all resolve publish
         GRADLE_DEFAULT_DIRECTIVES      : -q
 # job item field defaults
@@ -43,7 +43,7 @@ jobGroups:
        scmUrl            :  ${PENTAHO_SCM_ROOT}pentaho-commons-database.git
        scmBranch         :  ${DEFAULT_BRANCH}
        directives        :  + -pl .,model
-       root              :  
+       root              :
 
      - jobID             :  versionchecker
        scmUrl            :  ${PENTAHO_SCM_ROOT}pentaho-versionchecker.git
@@ -66,5 +66,3 @@ jobGroups:
      - jobID             :  parent-poms-ee
        scmUrl            :  ${PENTAHO_SCM_ROOT}maven-parent-poms-ee.git
        scmBranch         :  ${DEFAULT_BRANCH}
-
-

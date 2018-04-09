@@ -41,11 +41,16 @@ pipeline {
 
     booleanParam(defaultValue: false, description: 'Clean all build dependency caches', name: 'CLEAN_ALL_CACHES')
     booleanParam(defaultValue: false, description: 'Clean build scm workspaces', name: 'CLEAN_SCM_WORKSPACES')
-    booleanParam(defaultValue: false, description: 'Clean build buuild workspace (this happens post build)', name: 'CLEAN_BUILD_WORKSPACE')
+    booleanParam(defaultValue: false, description: 'Clean build build workspace (this happens post build)', name: 'CLEAN_BUILD_WORKSPACE')
 
     booleanParam(defaultValue: false, description: 'No op build (test the build config)', name: 'NOOP')
     booleanParam(defaultValue: false, description: 'Distributes source checkouts on remote nodes ' +
       '(Otherwise assume workspace is shared on all). Not yet fully implmented--do not use.', name: 'USE_DISTRIBUTED_SOURCE_CACHING')
+
+  }
+
+  options {
+    timestamps()
   }
 
   environment {
@@ -140,7 +145,7 @@ pipeline {
       }
       failFast true
       steps {
-        timeout(time: 90, unit: 'MINUTES') {
+        timeout(time: Integer.valueOf(params.BUILD_TIMEOUT), unit: 'MINUTES') {
           doUnitTests(mappedBuildData)
         }
       }
@@ -180,18 +185,20 @@ pipeline {
     }
   }
 
-// @TODO Put some notification stuff in here..chatops or whatever
   post {
     always {
       echo 'One way or another, I have finished'
     }
     success {
+      //slackSend channel: "buildteam-alerts", color: 'good', message: "Build Succeeded: ${env.JOB_NAME} #${env.BUILD_NUMBER} (<${env.BUILD_URL}|Open>)"
       echo 'I succeeeded!'
     }
     unstable {
+      //slackSend channel: "buildteam-alerts", color: 'warning', message: "Build Unstable: ${env.JOB_NAME} #${env.BUILD_NUMBER} (<${env.BUILD_URL}|Open>)"
       echo 'I am unstable :/'
     }
     failure {
+      //slackSend channel: "buildteam-alerts", color: 'danger', message: "Build Failed: ${env.JOB_NAME} #${env.BUILD_NUMBER} (<${env.BUILD_URL}|Open>)"
       echo 'I failed :('
     }
     changed {
