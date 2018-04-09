@@ -51,13 +51,13 @@ import org.pentaho.di.repository.ObjectRevision;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectory;
 import org.pentaho.di.repository.RepositoryDirectoryInterface;
-import org.pentaho.di.trans.step.StepMeta;
-import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.di.trans.step.StepIOMeta;
+import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaChangeListenerInterface;
+import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.di.trans.step.StepPartitioningMeta;
 import org.pentaho.di.trans.steps.datagrid.DataGridMeta;
-import org.pentaho.di.trans.steps.streamlookup.StreamLookupMeta;
+import org.pentaho.di.trans.steps.dummytrans.DummyTransMeta;
 import org.pentaho.di.trans.steps.textfileoutput.TextFileOutputMeta;
 import org.pentaho.di.trans.steps.userdefinedjavaclass.StepDefinition;
 import org.pentaho.di.trans.steps.userdefinedjavaclass.UserDefinedJavaClassDef;
@@ -68,26 +68,40 @@ import org.powermock.modules.junit4.PowerMockRunner;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.HashMap;
-import java.util.Arrays;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
+import static java.util.Arrays.asList;
+import static java.util.Collections.emptyList;
+import static java.util.Collections.singletonList;
+import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.same;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.anyString;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.when;
 
-@RunWith( PowerMockRunner.class )
+@RunWith ( PowerMockRunner.class )
 public class TransMetaTest {
   public static final String STEP_NAME = "Any step name";
+
 
   @BeforeClass
   public static void initKettle() throws Exception {
@@ -138,9 +152,10 @@ public class TransMetaTest {
         rmi.clear();
         rmi.addValueMeta( new ValueMetaString( overriddenValue ) );
         return null;
-      } } ).when( smi ).getFields(
-        any( RowMetaInterface.class ), anyString(), any( RowMetaInterface[].class ), eq( nextStep ),
-        any( VariableSpace.class ), any( Repository.class ), any( IMetaStore.class ) );
+      }
+    } ).when( smi ).getFields(
+      any( RowMetaInterface.class ), anyString(), any( RowMetaInterface[].class ), eq( nextStep ),
+      any( VariableSpace.class ), any( Repository.class ), any( IMetaStore.class ) );
 
     StepMeta thisStep = mockStepMeta( "thisStep" );
     when( thisStep.getStepMetaInterface() ).thenReturn( smi );
@@ -307,36 +322,38 @@ public class TransMetaTest {
     assertEquals( step3, allTransHopFrom.get( 0 ).getToStep() );
     assertEquals( step4, allTransHopFrom.get( 1 ).getToStep() );
   }
+
   @Test
   public void testGetPrevInfoFields() throws KettleStepException {
     DataGridMeta dgm1 = new DataGridMeta();
-    dgm1.setFieldName( new String[]{ "id", "colA" } );
+    dgm1.setFieldName( new String[] { "id", "colA" } );
     dgm1.allocate( 2 );
-    dgm1.setFieldType( new String[]{
+    dgm1.setFieldType( new String[] {
       ValueMetaFactory.getValueMetaName( ValueMetaInterface.TYPE_INTEGER ),
       ValueMetaFactory.getValueMetaName( ValueMetaInterface.TYPE_STRING ) } );
     List<List<String>> dgm1Data = new ArrayList<>();
-    dgm1Data.add( Arrays.asList( "1", "A" ) );
-    dgm1Data.add( Arrays.asList( "2", "B" ) );
+    dgm1Data.add( asList( "1", "A" ) );
+    dgm1Data.add( asList( "2", "B" ) );
     dgm1.setDataLines( dgm1Data );
 
     DataGridMeta dgm2 = new DataGridMeta();
     dgm2.allocate( 1 );
-    dgm2.setFieldName( new String[]{ "moreData" } );
-    dgm2.setFieldType( new String[]{
+    dgm2.setFieldName( new String[] { "moreData" } );
+    dgm2.setFieldType( new String[] {
       ValueMetaFactory.getValueMetaName( ValueMetaInterface.TYPE_STRING ) } );
     List<List<String>> dgm2Data = new ArrayList<>();
-    dgm2Data.add( Arrays.asList( "Some Informational Data" ) );
+    dgm2Data.add( asList( "Some Informational Data" ) );
     dgm2.setDataLines( dgm2Data );
 
     StepMeta dg1 = new StepMeta( "input1", dgm1 );
     StepMeta dg2 = new StepMeta( "input2", dgm2 );
 
     final String UDJC_METHOD =
-      "public boolean processRow( StepMetaInterface smi, StepDataInterface sdi ) throws KettleException { return false; }";
+      "public boolean processRow( StepMetaInterface smi, StepDataInterface sdi ) throws KettleException { return "
+        + "false; }";
     UserDefinedJavaClassMeta udjcMeta = new UserDefinedJavaClassMeta();
     udjcMeta.getInfoStepDefinitions().add( new StepDefinition( dg2.getName(), dg2.getName(), dg2, "info_data" ) );
-    udjcMeta.replaceDefinitions( Collections.singletonList(
+    udjcMeta.replaceDefinitions( singletonList(
       new UserDefinedJavaClassDef( UserDefinedJavaClassDef.ClassType.TRANSFORM_CLASS, "MainClass", UDJC_METHOD ) ) );
 
     StepMeta udjc = new StepMeta( "PDI-14910", udjcMeta );
@@ -376,7 +393,7 @@ public class TransMetaTest {
 
   @Test
   public void testIsAnySelectedStepUsedInTransHopsNothingSelectedCase() {
-    List<StepMeta> selectedSteps = Arrays.asList( new StepMeta(), new StepMeta(), new StepMeta() );
+    List<StepMeta> selectedSteps = asList( new StepMeta(), new StepMeta(), new StepMeta() );
     transMeta.getSteps().addAll( selectedSteps );
 
     assertFalse( transMeta.isAnySelectedStepUsedInTransHops() );
@@ -388,7 +405,7 @@ public class TransMetaTest {
     stepMeta.setName( STEP_NAME );
     TransHopMeta transHopMeta = new TransHopMeta();
     stepMeta.setSelected( true );
-    List<StepMeta> selectedSteps = Arrays.asList( new StepMeta(), stepMeta, new StepMeta() );
+    List<StepMeta> selectedSteps = asList( new StepMeta(), stepMeta, new StepMeta() );
 
     transHopMeta.setToStep( stepMeta );
     transHopMeta.setFromStep( stepMeta );
@@ -412,7 +429,8 @@ public class TransMetaTest {
     return meta;
   }
 
-  public abstract static class StepMetaChangeListenerInterfaceMock implements StepMetaInterface, StepMetaChangeListenerInterface {
+  public abstract static class StepMetaChangeListenerInterfaceMock
+    implements StepMetaInterface, StepMetaChangeListenerInterface {
     @Override
     public abstract Object clone();
   }
@@ -422,7 +440,8 @@ public class TransMetaTest {
     String directory = "/home/admin";
     Node jobNode = Mockito.mock( Node.class );
     NodeList nodeList = new NodeList() {
-      ArrayList<Node> nodes = new ArrayList<>(  );
+      ArrayList<Node> nodes = new ArrayList<>();
+
       {
 
         Node nodeInfo = Mockito.mock( Node.class );
@@ -458,13 +477,14 @@ public class TransMetaTest {
     TransMeta meta = new TransMeta();
 
     VariableSpace variableSpace = Mockito.mock( VariableSpace.class );
-    Mockito.when( variableSpace.listVariables() ).thenReturn( new String[0] );
+    Mockito.when( variableSpace.listVariables() ).thenReturn( new String[ 0 ] );
 
     meta.loadXML( jobNode, null, Mockito.mock( IMetaStore.class ), rep, false, variableSpace,
       Mockito.mock( OverwritePrompter.class ) );
     meta.setInternalKettleVariables( null );
 
-    assertEquals( repDirectory.getPath(), meta.getVariable( Const.INTERNAL_VARIABLE_TRANSFORMATION_REPOSITORY_DIRECTORY ) );
+    assertEquals( repDirectory.getPath(),
+      meta.getVariable( Const.INTERNAL_VARIABLE_TRANSFORMATION_REPOSITORY_DIRECTORY ) );
   }
 
   @Test
@@ -562,20 +582,20 @@ public class TransMetaTest {
   public void testGetPrevStepFields() throws KettleStepException {
     DataGridMeta dgm = new DataGridMeta();
     dgm.allocate( 2 );
-    dgm.setFieldName( new String[]{ "id" } );
-    dgm.setFieldType( new String[]{ ValueMetaFactory.getValueMetaName( ValueMetaInterface.TYPE_INTEGER ) } );
+    dgm.setFieldName( new String[] { "id" } );
+    dgm.setFieldType( new String[] { ValueMetaFactory.getValueMetaName( ValueMetaInterface.TYPE_INTEGER ) } );
     List<List<String>> dgm1Data = new ArrayList<>();
-    dgm1Data.add( Collections.singletonList( "1" ) );
-    dgm1Data.add( Collections.singletonList( "2" ) );
+    dgm1Data.add( singletonList( "1" ) );
+    dgm1Data.add( singletonList( "2" ) );
     dgm.setDataLines( dgm1Data );
 
     DataGridMeta dgm2 = new DataGridMeta();
     dgm2.allocate( 2 );
-    dgm2.setFieldName( new String[]{ "foo" } );
-    dgm2.setFieldType( new String[]{ ValueMetaFactory.getValueMetaName( ValueMetaInterface.TYPE_STRING ) } );
+    dgm2.setFieldName( new String[] { "foo" } );
+    dgm2.setFieldType( new String[] { ValueMetaFactory.getValueMetaName( ValueMetaInterface.TYPE_STRING ) } );
     List<List<String>> dgm1Data2 = new ArrayList<>();
-    dgm1Data2.add( Collections.singletonList( "3" ) );
-    dgm1Data2.add( Collections.singletonList( "4" ) );
+    dgm1Data2.add( singletonList( "3" ) );
+    dgm1Data2.add( singletonList( "4" ) );
     dgm2.setDataLines( dgm1Data2 );
 
     StepMeta dg = new StepMeta( "input1", dgm );
@@ -611,8 +631,8 @@ public class TransMetaTest {
     assertEquals( "foo", rows2.getValueMeta( 0 ).getName() );
     assertEquals( ValueMetaInterface.TYPE_STRING, rows2.getValueMeta( 0 ).getType() );
 
-    dgm.setFieldName( new String[]{ "id", "name" } );
-    dgm.setFieldType( new String[]{
+    dgm.setFieldName( new String[] { "id", "name" } );
+    dgm.setFieldType( new String[] {
       ValueMetaFactory.getValueMetaName( ValueMetaInterface.TYPE_INTEGER ),
       ValueMetaFactory.getValueMetaName( ValueMetaInterface.TYPE_STRING ),
     } );
@@ -681,48 +701,93 @@ public class TransMetaTest {
     assertFalse( transMetaSpy.hasLoop( stepMetaMain ) );
   }
 
+
   @Test
-  public void testGetPreviousStepsWhenStreamLookupStepPassedShouldClearCacheAndCallFindPreviousStepsWithFalseParam() {
-    TransMeta transMeta = mock( TransMeta.class );
-    StepMeta stepMeta = new StepMeta( "stream_lookup_id", "stream_lookup_name", new StreamLookupMeta() );
+  public void infoStepFieldsAreNotIncludedInGetStepFields() throws KettleStepException {
+    // validates that the fields from info steps are not included in the resulting step fields for a stepMeta.
+    //  This is important with steps like StreamLookup and Append, where the previous steps may or may not
+    //  have their fields included in the current step.
 
-    List<StepMeta> expectedResult = new ArrayList<>(  );
-    List<StepMeta> invalidResult = new ArrayList<>(  );
-    expectedResult.add( new StepMeta( "correct_mock", "correct_mock", new TextFileOutputMeta() ) );
-    invalidResult.add( new StepMeta( "incorrect_mock", "incorrect_mock", new TextFileOutputMeta() ) );
+    TransMeta transMeta = new TransMeta( new Variables() );
+    StepMeta toBeAppended1 = testStep( "toBeAppended1",
+      emptyList(),  // no info steps
+      asList( "field1", "field2" )  // names of fields from this step
+    );
+    StepMeta toBeAppended2 = testStep( "toBeAppended2", emptyList(), asList( "field1", "field2" ) );
 
-    doNothing().when( transMeta ).clearPreviousStepCache();
-    when( transMeta.findPreviousSteps( any( StepMeta.class ), eq( false ) ) ).thenReturn( expectedResult );
-    when( transMeta.findPreviousSteps( any( StepMeta.class ), eq( true ) ) ).thenReturn( invalidResult );
-    when( transMeta.getPreviousSteps( any() ) ).thenCallRealMethod();
+    StepMeta append = testStep( "append",
+      asList( "toBeAppended1", "toBeAppended2" ),  // info step names
+      singletonList( "outputField" )   // output field of this step
+    );
+    StepMeta after = new StepMeta( "after", new DummyTransMeta() );
 
-    List<StepMeta> actualResult = transMeta.getPreviousSteps( stepMeta );
+    wireUpTestTransMeta( transMeta, toBeAppended1, toBeAppended2, append, after );
 
-    verify( transMeta, times( 1 ) ).clearPreviousStepCache();
-    assertEquals( expectedResult, actualResult );
+    RowMetaInterface results = transMeta.getStepFields( append, after, mock( ProgressMonitorListener.class ) );
+
+    assertThat( 1, equalTo( results.size() ) );
+    assertThat( "outputField", equalTo( results.getFieldNames()[ 0 ] ) );
   }
 
   @Test
-  public void testGetPreviousStepsWhenNotStreamLookupStepPassedShouldCallFindPreviousStepsWithTrueParam() {
-    TransMeta transMeta = mock( TransMeta.class );
-    StepMeta stepMeta = new StepMeta( "not_stream_lookup_id", "not_stream_lookup_name", new TextFileOutputMeta() );
+  public void prevStepFieldsAreIncludedInGetStepFields() throws KettleStepException {
 
-    List<StepMeta> expectedResult = new ArrayList<>(  );
-    List<StepMeta> invalidResult = new ArrayList<>(  );
-    expectedResult.add( new StepMeta( "correct_mock", "correct_mock", new TextFileOutputMeta() ) );
-    invalidResult.add( new StepMeta( "incorrect_mock", "incorrect_mock", new TextFileOutputMeta() ) );
+    TransMeta transMeta = new TransMeta( new Variables() );
+    StepMeta prevStep1 = testStep( "prevStep1", emptyList(), asList( "field1", "field2" ) );
+    StepMeta prevStep2 = testStep( "prevStep2", emptyList(), asList( "field3", "field4", "field5" ) );
 
-    doNothing().when( transMeta ).clearPreviousStepCache();
-    when( transMeta.getPreviousSteps( any() ) ).thenCallRealMethod();
-    when( transMeta.findPreviousSteps( any( StepMeta.class ) ) ).thenCallRealMethod();
-    when( transMeta.findPreviousSteps( any( StepMeta.class ), eq( true ) ) ).thenReturn( expectedResult );
-    when( transMeta.findPreviousSteps( any( StepMeta.class ), eq( false ) ) ).thenReturn( invalidResult );
+    StepMeta someStep = testStep( "step", asList( "prevStep1" ), asList( "outputField" ) );
 
-    List<StepMeta> actualResult = transMeta.getPreviousSteps( stepMeta );
+    StepMeta after = new StepMeta( "after", new DummyTransMeta() );
 
-    verify( transMeta, times( 0 ) ).clearPreviousStepCache();
-    assertEquals( expectedResult, actualResult );
+    wireUpTestTransMeta( transMeta, prevStep1, prevStep2, someStep, after );
+
+    RowMetaInterface results = transMeta.getStepFields( someStep, after, mock( ProgressMonitorListener.class ) );
+
+    assertThat( 4, equalTo( results.size() ) );
+    assertThat( new String[] { "field3", "field4", "field5", "outputField" }, equalTo( results.getFieldNames() ) );
   }
+
+  private void wireUpTestTransMeta( TransMeta transMeta, StepMeta toBeAppended1, StepMeta toBeAppended2,
+                                    StepMeta append, StepMeta after ) {
+    transMeta.addStep( append );
+    transMeta.addStep( after );
+    transMeta.addStep( toBeAppended1 );
+    transMeta.addStep( toBeAppended2 );
+
+    transMeta.addTransHop( new TransHopMeta( toBeAppended1, append ) );
+    transMeta.addTransHop( new TransHopMeta( toBeAppended2, append ) );
+    transMeta.addTransHop( new TransHopMeta( append, after ) );
+  }
+
+
+  private StepMeta testStep( String name, List<String> infoStepnames, List<String> fieldNames )
+    throws KettleStepException {
+    StepMetaInterface smi = stepMetaInterfaceWithFields( new DummyTransMeta(), infoStepnames, fieldNames );
+    return new StepMeta( name, smi );
+  }
+
+  private StepMetaInterface stepMetaInterfaceWithFields(
+    StepMetaInterface smi, List<String> infoStepnames, List<String> fieldNames )
+    throws KettleStepException {
+    RowMeta rowMetaWithFields = new RowMeta();
+    StepIOMeta stepIOMeta = mock( StepIOMeta.class );
+    when( stepIOMeta.getInfoStepnames() ).thenReturn( infoStepnames.toArray( new String[ 0 ] ) );
+    fieldNames.stream()
+      .forEach( field -> rowMetaWithFields.addValueMeta( new ValueMetaString( field ) ) );
+    StepMetaInterface newSmi = spy( smi );
+    when( newSmi.getStepIOMeta() ).thenReturn( stepIOMeta );
+
+    doAnswer( (Answer<Void>) invocationOnMock -> {
+      RowMetaInterface passedRmi = (RowMetaInterface) invocationOnMock.getArguments()[ 0 ];
+      passedRmi.addRowMeta( rowMetaWithFields );
+      return null;
+    } ).when( newSmi )
+      .getFields( any(), any(), any(), any(), any(), any(), any() );
+
+    return newSmi;
+  }
+
 
   private StepMeta createStepMeta( String name ) {
     StepMeta stepMeta = mock( StepMeta.class );
