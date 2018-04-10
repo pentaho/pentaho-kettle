@@ -720,6 +720,18 @@ define([
       }
     }
 
+    function _findFolderByTraverse(children, path) {
+      for (var i = 0; i < children.length; i++) {
+        if (children[i].path === path) {
+          return children[i];
+        }
+        if (children[i].children.length > 0) {
+          return _findFolderByTraverse(children[i].children, path);
+        }
+      }
+      return null;
+    }
+
     function _findFolderByPath(path) {
       path = path === "/" ? "" : path;
       var parts = path.split("/");
@@ -755,7 +767,7 @@ define([
       if (vm.file === null) {// delete folder from directory tree panel
         dt.remove(vm.folder.objectId ? vm.folder.objectId.id : "", vm.folder.name, vm.folder.path, vm.folder.type)
           .then(function() {
-            var parentFolder = _findFolderByPath(vm.folder.parent);
+            var parentFolder = _findFolderByTraverse(vm.tree.children, vm.folder.parent);
             var index = parentFolder.children.indexOf(vm.folder);
             parentFolder.children.splice(index, 1);
             selectFolder(parentFolder);

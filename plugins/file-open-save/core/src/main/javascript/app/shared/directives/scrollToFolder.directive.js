@@ -48,6 +48,9 @@ define([
 
         function scrollToSelectedFolder(value, didDeleteFolder) {
           var scrollToElem = document.getElementById(value);
+          if (scrollToElem === null) {
+            return;
+          }
           var aScrollToElem = angular.element(scrollToElem);
           var topPos = aScrollToElem[0].offsetTop;
           var needsScroll = $state.is("open") && topPos > 444 || $state.is("save") && topPos > 368;
