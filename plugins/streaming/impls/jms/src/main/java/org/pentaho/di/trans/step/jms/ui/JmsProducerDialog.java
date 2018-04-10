@@ -360,6 +360,7 @@ public class JmsProducerDialog extends BaseStepDialog implements StepDialogInter
 
     ColumnInfo propertyName = new ColumnInfo( BaseMessages.getString( PKG, "JmsProducerDialog.Properties.Column.Name" ),
       ColumnInfo.COLUMN_TYPE_TEXT, false, false );
+    propertyName.setUsingVariables( true );
 
     ColumnInfo propertyValue = new ColumnInfo( BaseMessages.getString( PKG, "JmsProducerDialog.Properties.Column.Value" ),
       ColumnInfo.COLUMN_TYPE_TEXT, false, false );
