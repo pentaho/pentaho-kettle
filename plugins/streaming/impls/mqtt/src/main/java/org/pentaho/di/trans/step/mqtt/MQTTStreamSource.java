@@ -98,7 +98,8 @@ public class MQTTStreamSource extends BlockingQueueStreamSource<List<Object>> {
   @Override public void close() {
     super.close();
     try {
-      if ( mqttClient != null ) {
+      // Check if connected so subsequent calls does not produce an already stopped exception
+      if ( mqttClient != null && mqttClient.isConnected() ) {
         mqttClient.disconnect();
         mqttClient.close();
       }
