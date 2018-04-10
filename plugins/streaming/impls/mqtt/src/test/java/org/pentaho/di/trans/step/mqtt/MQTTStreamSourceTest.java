@@ -66,6 +66,7 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -200,6 +201,17 @@ public class MQTTStreamSourceTest {
 
     verify( mqttConsumer ).stopAll();
     verify( mqttConsumer ).logError( "There is an error connecting" );
+  }
+
+  @Test
+  public void testMqttOnlyStopsOnce() {
+    MQTTStreamSource source = new MQTTStreamSource( consumerMeta, mqttConsumer );
+    source.open();
+
+    source.close();
+    source.close();
+
+    verify( mqttConsumer, never() ).logError( anyString() );
   }
 
   private Future<List<List<Object>>> iterateSource( Iterator<List<Object>> iter, int numRowsExpected ) {

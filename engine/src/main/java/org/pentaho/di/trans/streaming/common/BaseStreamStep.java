@@ -123,6 +123,8 @@ public class BaseStreamStep extends BaseStep {
       putRows( result.getRows() );
     } );
     super.setOutputDone();
+
+    // Needed for when an Abort Step is used.
     source.close();
     return false;
   }
