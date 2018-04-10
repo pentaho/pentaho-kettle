@@ -91,48 +91,48 @@ file-open-save-app .addDelete {
   float: right;
 }
 
-file-open-save-app .addDelete button {
+file-open-save-app .addDelete input[type="button"] {
   margin: 0;
   padding: 0;
   border: 0;
   border-radius: 0;
 }
 
-file-open-save-app .addDelete button:disabled {
+file-open-save-app .addDelete input[type="button"]:disabled {
   cursor: default;
 }
 
-file-open-save-app .addFolder {
+file-open-save-app input.addFolder {
   background: url("./img/add_folder.svg") no-repeat center center;
   height: 19px;
   width: 23px;
   cursor: pointer;
 }
 
-file-open-save-app .deleteFolder {
+file-open-save-app input.deleteFolder {
   background: url("./img/delete_folder_file.svg") no-repeat center center;
   height: 18px;
   width: 14px;
   cursor: pointer;
 }
 
-file-open-save-app .addFolder[disabled],
-file-open-save-app .deleteFolder[disabled],
-file-open-save-app .addFolder[disabled]:hover,
-file-open-save-app .deleteFolder[disabled]:hover {
+file-open-save-app input.addFolder[disabled],
+file-open-save-app input.deleteFolder[disabled],
+file-open-save-app input.addFolder[disabled]:hover,
+file-open-save-app input.deleteFolder[disabled]:hover {
   background-position: left center;
 }
 
-file-open-save-app .addFolder:hover,
-file-open-save-app .deleteFolder:hover {
+file-open-save-app input.addFolder:hover,
+file-open-save-app input.deleteFolder:hover {
   background-position: right center;
 }
 
-file-open-save-app .addDelete .addFolder {
+file-open-save-app .addDelete input.addFolder {
   float: left;
 }
 
-file-open-save-app .addDelete .deleteFolder {
+file-open-save-app .addDelete input.deleteFolder {
   float: right;
   margin-left: 15px;
 }
@@ -212,7 +212,8 @@ file-open-save-app .fileNameEntryTextBox {
 }
 
 /* BUTTONS */
-file-open-save-app button {
+file-open-save-app button,
+file-open-save-app input[type="button"] {
   filter: none;
   font-size: 14px;
   line-height: 16px;
