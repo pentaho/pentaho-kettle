@@ -20,10 +20,12 @@
 
 package org.pentaho.di.core.util.serialization;
 
+import com.google.common.annotations.VisibleForTesting;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.encryption.Encr;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.injection.Injection;
+import org.pentaho.di.core.injection.InjectionDeep;
 import org.pentaho.di.core.injection.bean.BeanInjectionInfo;
 import org.pentaho.di.core.injection.bean.BeanInjector;
 import org.pentaho.di.core.row.value.ValueMetaString;
@@ -32,14 +34,18 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static java.util.Arrays.stream;
 import static java.util.Collections.singletonList;
 import static java.util.stream.Collectors.groupingBy;
+import static java.util.stream.Stream.concat;
 import static org.pentaho.di.core.util.serialization.StepMetaProps.STEP_TAG;
 
 /**
@@ -69,7 +75,7 @@ public class StepMetaProps {
   }
 
   private StepMetaProps( StepMetaInterface smi ) {
-    secureFields = sensitiveFields( smi );
+    secureFields = sensitiveFields( smi.getClass() );
   }
 
   @XmlElement ( name = "group" )
@@ -117,14 +123,36 @@ public class StepMetaProps {
 
   /**
    * Collects the list of declared fields with the {@link Sensitive} annotation
-   * for the SMI class.  Values for these fields will be encrypted.
+   * for the class.  Values for these fields will be encrypted.
+   *
+   * Checks the top level fields of clazz, and recurses into
+   * {@link InjectionDeep} classes.
    */
-  private List<String> sensitiveFields( StepMetaInterface stepMetaInterface ) {
-    return stream( stepMetaInterface.getClass().getDeclaredFields() )
+  @VisibleForTesting
+  static List<String> sensitiveFields( Class clazz ) {
+    Field[] declaredFields = clazz.getDeclaredFields();
+
+    return concat( stream( declaredFields ), recurseDeep( declaredFields ) )
       .filter( field -> field.getAnnotation( Sensitive.class ) != null )
       .filter( field -> field.getAnnotation( Injection.class ) != null )
       .map( field -> field.getAnnotation( Injection.class ).name() )
       .collect( Collectors.toList() );
+  }
+
+  private static Stream<Field> recurseDeep( Field[] topLevelFields ) {
+    Stream<Field> deepInjectionFields = Stream.empty();
+    if ( stream( topLevelFields ).anyMatch( isInjectionDeep() ) ) {
+      deepInjectionFields = stream( topLevelFields )
+        .filter( isInjectionDeep() )
+        .flatMap( field -> stream( field.getType().getDeclaredFields() ) );
+      List<Field> deepFields = deepInjectionFields.collect( Collectors.toList() );
+      return concat( deepFields.stream(), recurseDeep( deepFields.toArray( new Field[ 0 ] ) ) );
+    }
+    return deepInjectionFields;
+  }
+
+  private static Predicate<Field> isInjectionDeep() {
+    return field -> field.getAnnotation( InjectionDeep.class ) != null;
   }
 
   private Function<BeanInjectionInfo.Property, Prop> getProp( StepMetaInterface stepMeta,

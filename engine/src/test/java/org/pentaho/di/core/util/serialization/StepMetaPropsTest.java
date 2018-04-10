@@ -25,7 +25,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.injection.Injection;
 import org.pentaho.di.core.injection.InjectionDeep;
 import org.pentaho.di.core.injection.InjectionSupported;
@@ -42,6 +41,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static java.util.Arrays.asList;
+import static java.util.Collections.singletonList;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.not;
@@ -74,6 +74,9 @@ public class StepMetaPropsTest {
     static class SoooDeep {
       @Injection ( name = "DEEP_FLAG" ) boolean isItDeep = true;
       @Injection ( name = "DEPTH" ) int howDeep = 1000;
+
+      @Sensitive
+      @Injection ( name = "DEEP_PASSWORD" ) String password = "p@ssword";
 
       @Override public boolean equals( Object o ) {
         if ( this == o ) {
@@ -131,7 +134,7 @@ public class StepMetaPropsTest {
           field1, field2, alist, blist, ilist );
     }
 
-    @Override public RowMeta getRowMeta( String origin, VariableSpace space ) throws KettleStepException {
+    @Override public RowMeta getRowMeta( String origin, VariableSpace space ) {
       return null;
     }
   }
@@ -202,6 +205,25 @@ public class StepMetaPropsTest {
     StepMetaProps.from( fooMeta ).to( toMeta );
     assertThat( 50, equalTo( toMeta.deep.howDeep ) );
     assertThat( false, equalTo( toMeta.deep.isItDeep ) );
+  }
+
+
+  @Test
+  public void sensitiveFieldsCheckedAtMultipleLevels() {
+    // verifies that fields below the top level can be correctly identified as Sensitive.
+    class DeeperContainer {
+      @Sensitive @Injection ( name = "Sensitive" ) String sensitive = "very sensitive";
+      @Injection ( name = "NotSensitive" ) String notSensitive = "cold and unfeeling";
+    }
+    class DeepContainer {
+      @InjectionDeep DeeperContainer deeperObj = new DeeperContainer();
+    }
+    Object topLevelObject = new Object() {
+      @InjectionDeep DeepContainer deepObj = new DeepContainer();
+    };
+    List<String> sensitiveFields = StepMetaProps.sensitiveFields( topLevelObject.getClass() );
+
+    assertThat( sensitiveFields, equalTo( singletonList( "Sensitive" ) ) );
   }
 
   static FooMeta getTestFooMeta() {
