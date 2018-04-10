@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<step>
+	<name>JSON Input</name>
+	<type>JsonInput</type>
+	<description/>
+	<distribute>Y</distribute>
+	<custom_distribution/>
+	<copies>1</copies>
+	<partitioning>
+		<method>none</method>
+		<schema_name/>
+	</partitioning>
+	<include>N</include>
+	<include_field/>
+	<rownum>N</rownum>
+	<addresultfile>N</addresultfile>
+	<readurl>N</readurl>
+	<removeSourceField>N</removeSourceField>
+	<IsIgnoreEmptyFile>N</IsIgnoreEmptyFile>
+	<doNotFailIfNoFile>Y</doNotFailIfNoFile>
+	<ignoreMissingPath>Y</ignoreMissingPath>
+	<rownum_field/>
+	<file>
+	</file>
+	<fields>
+	</fields>
+	<limit>0</limit>
+	<IsInFields>N</IsInFields>
+	<IsAFile>N</IsAFile>
+	<valueField/>
+	<shortFileFieldName/>
+	<pathFieldName/>
+	<hiddenFieldName/>
+	<lastModificationTimeFieldName/>
+	<uriNameFieldName/>
+	<rootUriNameFieldName/>
+	<extensionFieldName/>
+	<sizeFieldName/>
+	<cluster_schema/>
+	<remotesteps>
+		<input>
+		</input>
+		<output>
+		</output>
+	</remotesteps>
+	<GUI>
+		<xloc>144</xloc>
+		<yloc>112</yloc>
+		<draw>Y</draw>
+	</GUI>
+</step>
