@@ -58,7 +58,9 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.doNothing;
@@ -148,11 +150,10 @@ public class JmsProducerTest {
     when( inputRowMeta.getFieldNames() ).thenReturn( fieldNames );
     when( inputRowMeta.indexOfValue( any() ) ).thenReturn( 0 );
     step.setInputRowMeta( inputRowMeta );
-
-    step.init( meta, data );
   }
 
   @Test public void testProperties() throws InterruptedException, KettleException {
+    step.init( meta, data );
     Map<String, String> propertyValuesByName = new LinkedHashMap<>();
     propertyValuesByName.put( PROPERTY_NAME_ONE, "property1Value" );
     propertyValuesByName.put( PROPERTY_NAME_TWO, "property2Value" );
@@ -183,6 +184,8 @@ public class JmsProducerTest {
 
   @Test
   public void testSetOptions() throws KettleException {
+    step.init( meta, data );
+
     //Defaults
     step.processRow( meta, data );
 
@@ -216,5 +219,28 @@ public class JmsProducerTest {
     assertEquals( 4, producer.getDeliveryDelay() );
     assertEquals( "ASDF", producer.getJMSCorrelationID() );
     assertEquals( "JMSType", producer.getJMSType() );
+  }
+
+  @Test
+  public void testInit() {
+    meta.setDisableMessageId( "true" );
+    meta.setDisableMessageTimestamp( "false" );
+    meta.setDeliveryMode( "1" );
+    meta.setPriority( "2" );
+    meta.setTimeToLive( "3" );
+    meta.setDeliveryDelay( "4" );
+    meta.setJmsCorrelationId( "ASDF" );
+    meta.setJmsType( "JMSType" );
+
+    assertTrue( step.init( meta, data ) );
+
+    meta.setDisableMessageTimestamp( "asdf" );
+    meta.setDisableMessageId( "asdf" );
+    meta.setDeliveryMode( "asdf" );
+    meta.setPriority( "asdf" );
+    meta.setPriority( "asdf" );
+    meta.setTimeToLive( "asdf" );
+
+    assertFalse( step.init( meta, data ) );
   }
 }

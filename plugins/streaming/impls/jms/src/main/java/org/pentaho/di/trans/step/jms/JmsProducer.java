@@ -23,6 +23,7 @@
 package org.pentaho.di.trans.step.jms;
 
 import org.apache.commons.lang.BooleanUtils;
+import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.util.StringUtil;
 import org.pentaho.di.trans.Trans;
@@ -35,6 +36,8 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 
 import javax.jms.Destination;
 import javax.jms.JMSProducer;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 public class JmsProducer extends BaseStep implements StepInterface {
@@ -54,6 +57,19 @@ public class JmsProducer extends BaseStep implements StepInterface {
   public boolean init( StepMetaInterface stepMetaInterface, StepDataInterface stepDataInterface ) {
     boolean isInitalized = super.init( stepMetaInterface, stepDataInterface );
     meta = ( (JmsProducerMeta) stepMetaInterface );
+
+    List<CheckResultInterface> remarks = new ArrayList<>();
+    meta.check(
+      remarks, getTransMeta(), meta.getParentStepMeta(),
+      null, null, null, null, //these parameters are not used inside the method
+      variables, getRepository(), getMetaStore() );
+    boolean errorsPresent =
+      remarks.stream().filter( result -> result.getType() == CheckResultInterface.TYPE_RESULT_ERROR )
+        .peek( result -> logError( result.getText() ) )
+        .count() > 0;
+    if ( errorsPresent ) {
+      return false;
+    }
 
     return isInitalized;
   }
