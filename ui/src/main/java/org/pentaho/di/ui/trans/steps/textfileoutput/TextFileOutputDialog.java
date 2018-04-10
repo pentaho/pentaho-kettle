@@ -1241,11 +1241,11 @@ public class TextFileOutputDialog extends BaseStepDialog implements StepDialogIn
         FileObject
             selectedFile =
             fileChooserDialog
-                .open( shell, new String[] { "file" }, "file", true, null, new String[] { "*.txt", "*.csv", "*" },
+                .open( shell, null, "file", new String[] { "*.txt", "*.csv", "*" },
                     new String[] { BaseMessages.getString( PKG, "System.FileType.TextFiles" ),
                         BaseMessages.getString( PKG, "System.FileType.CSVFiles" ),
-                        BaseMessages.getString( PKG, "System.FileType.AllFiles" ) }, true,
-                    VfsFileChooserDialog.VFS_DIALOG_OPEN_FILE_OR_DIRECTORY, false, false );
+                        BaseMessages.getString( PKG, "System.FileType.AllFiles" ) },
+                    VfsFileChooserDialog.VFS_DIALOG_OPEN_FILE_OR_DIRECTORY );
         if ( selectedFile != null ) {
           String file = selectedFile.getName().getURI();
           if ( !StringUtils.isBlank( file ) ) {
