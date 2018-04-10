@@ -46,7 +46,24 @@ public class RepositoryDirectory extends RepositoryObject {
     repositoryDirectory.setName( repositoryDirectoryInterface.getName() );
     repositoryDirectory.setPath( repositoryDirectoryInterface.getPath() );
     repositoryDirectory.setObjectId( repositoryDirectoryInterface.getObjectId() );
+    repositoryDirectory.setHidden( !repositoryDirectoryInterface.isVisible() );
 
     return repositoryDirectory;
   }
+
+  public static RepositoryDirectory build( String parentPath,
+                                           org.pentaho.platform.api.repository2.unified.RepositoryFile repositoryFile
+  ) {
+    RepositoryDirectory repositoryDirectory = new RepositoryDirectory();
+    repositoryDirectory.setParent( parentPath );
+    repositoryDirectory.setName( repositoryFile.getName() );
+    repositoryDirectory.setPath( repositoryFile.getPath() );
+    repositoryDirectory.setObjectId( () -> (String) repositoryFile.getId() );
+    repositoryDirectory.setHidden( repositoryFile.isHidden() );
+    repositoryDirectory.setDate( repositoryFile.getLastModifiedDate() != null ? repositoryFile.getLastModifiedDate()
+      : repositoryFile.getCreatedDate() );
+
+    return repositoryDirectory;
+  }
+
 }

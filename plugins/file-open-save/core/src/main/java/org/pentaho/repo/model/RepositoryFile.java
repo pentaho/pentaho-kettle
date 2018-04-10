@@ -27,6 +27,10 @@ package org.pentaho.repo.model;
  */
 public class RepositoryFile extends RepositoryObject {
 
+  public static final String TRANSFORMATION = "transformation";
+  public static final String JOB = "job";
+  public static final String KTR = ".ktr";
+  public static final String KJB = ".kjb";
   private String username;
 
   @Override public String getType() {
@@ -52,9 +56,31 @@ public class RepositoryFile extends RepositoryObject {
     repositoryFile.setType( repositoryObject.getObjectType().getTypeDescription() );
     repositoryFile.setExtension( repositoryObject.getObjectType().getExtension() );
     repositoryFile.setDate( repositoryObject.getModifiedDate() );
-    repositoryFile.setObjectId( repositoryObject.getObjectId() );
     repositoryFile.setPath( repositoryObject.getRepositoryDirectory().getPath() );
 
     return repositoryFile;
+  }
+
+  public static RepositoryFile build( org.pentaho.platform.api.repository2.unified.RepositoryFile repositoryFile ) {
+    RepositoryFile repositoryFile1 = new RepositoryFile();
+    repositoryFile1.setObjectId( () -> (String) repositoryFile.getId() );
+    repositoryFile1.setName( repositoryFile.getName() );
+    repositoryFile1.setType( getType( repositoryFile.getName() ) );
+    repositoryFile1.setExtension( ".ktr" );
+    repositoryFile1.setDate( repositoryFile.getLastModifiedDate() );
+    repositoryFile1.setPath( repositoryFile.getPath() );
+    repositoryFile1.setHidden( repositoryFile.isHidden() );
+
+    return repositoryFile1;
+  }
+
+  public static String getType( String filename ) {
+    if ( filename.endsWith( KTR ) ) {
+      return TRANSFORMATION;
+    }
+    if ( filename.endsWith( KJB ) ) {
+      return JOB;
+    }
+    return "";
   }
 }

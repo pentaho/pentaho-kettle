@@ -40,6 +40,7 @@ public abstract class RepositoryObject {
   private Date date;
   protected String type;
   private String repository;
+  private boolean hidden = false;
 
   private List<RepositoryObject> children = new ArrayList<>();
 
@@ -115,5 +116,13 @@ public abstract class RepositoryObject {
 
   public void setRepository( String repository ) {
     this.repository = repository;
+  }
+
+  public boolean isHidden() {
+    return hidden;
+  }
+
+  public void setHidden( boolean hidden ) {
+    this.hidden = hidden;
   }
 }
