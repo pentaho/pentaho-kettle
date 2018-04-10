@@ -52,10 +52,10 @@ public class RepositoryBrowserEndpoint {
   public Response loadDirectoryTree( @PathParam( "filter" ) String filter ) {
     RepositoryTree repositoryTree;
     if ( filter.equals( "false" ) ) {
-      repositoryTree = repositoryBrowserController.loadDirectoryTree( null );
+      repositoryTree = repositoryBrowserController.loadDirectoryTree();
     } else {
       repositoryTree = Utils.isEmpty( filter ) ? repositoryBrowserController.loadDirectoryTree()
-        : repositoryBrowserController.loadDirectoryTree( filter );
+        : repositoryBrowserController.loadDirectoryTree();
     }
 
     if ( repositoryTree != null ) {

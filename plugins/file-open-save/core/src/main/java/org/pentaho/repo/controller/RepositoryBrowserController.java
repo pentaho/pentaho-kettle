@@ -38,6 +38,8 @@ import org.pentaho.di.repository.RepositoryObjectType;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.ui.core.PropsUI;
 import org.pentaho.di.ui.spoon.Spoon;
+import org.pentaho.platform.api.repository2.unified.RepositoryFileTree;
+import org.pentaho.platform.api.repository2.unified.RepositoryRequest;
 import org.pentaho.repo.model.RepositoryDirectory;
 import org.pentaho.repo.model.RepositoryFile;
 import org.pentaho.repo.model.RepositoryName;
@@ -325,9 +327,11 @@ public class RepositoryBrowserController {
     }
   }
 
-  /**Checks if there is a duplicate folder in a given directory (i.e. hidden folder)
+  /**
+   * Checks if there is a duplicate folder in a given directory (i.e. hidden folder)
+   *
    * @param parent - Parent directory
-   * @param name - Name of folder
+   * @param name   - Name of folder
    * @return - true if the parent directory has a folder equal to name, false otherwise
    */
   private boolean hasDupeFolder( String parent, String name ) {
@@ -369,8 +373,9 @@ public class RepositoryBrowserController {
 
   /**
    * Checks if there is a duplicate file in a given directory (i.e. hidden file)
-   * @param path - Path to directory in which we are saving
-   * @param name - Name of file to save
+   *
+   * @param path     - Path to directory in which we are saving
+   * @param name     - Name of file to save
    * @param fileName - Possible duplicate file name
    * @param override - True is user wants override file, false otherwise
    * @return - true if a duplicate file is found, false otherwise
@@ -396,10 +401,6 @@ public class RepositoryBrowserController {
   }
 
   public RepositoryTree loadDirectoryTree() {
-    return loadDirectoryTree( FILTER );
-  }
-
-  public RepositoryTree loadDirectoryTree( String filter ) {
     if ( getRepository() != null ) {
       try {
         if ( getRepository() instanceof RepositoryExtended ) {
@@ -437,17 +438,6 @@ public class RepositoryBrowserController {
     return Collections.emptyList();
   }
 
-  private void populateFolders( RepositoryDirectory repositoryDirectory,
-                                RepositoryDirectoryInterface repositoryDirectoryInterface ) {
-    List<RepositoryDirectoryInterface> children = repositoryDirectoryInterface.getChildren();
-    repositoryDirectory.setHasChildren( !Utils.isEmpty( children ) );
-    if ( !Utils.isEmpty( children ) ) {
-      for ( RepositoryDirectoryInterface child : children ) {
-        repositoryDirectory.addChild( RepositoryDirectory.build( repositoryDirectory.getPath(), child ) );
-      }
-    }
-  }
-
   public boolean openRecentFile( String repo, String id ) {
     // does the file exist?
     if ( getSpoon().recentRepoFileExists( repo, id ) ) {
@@ -460,22 +450,72 @@ public class RepositoryBrowserController {
     }
   }
 
+  private void populateFolders( RepositoryDirectory repositoryDirectory,
+                                RepositoryDirectoryInterface repositoryDirectoryInterface ) {
+    if ( getRepository() instanceof RepositoryExtended ) {
+      populateFoldersLazy( repositoryDirectory );
+    } else {
+      List<RepositoryDirectoryInterface> children = repositoryDirectoryInterface.getChildren();
+      repositoryDirectory.setHasChildren( !Utils.isEmpty( children ) );
+      if ( !Utils.isEmpty( children ) ) {
+        for ( RepositoryDirectoryInterface child : children ) {
+          repositoryDirectory.addChild( RepositoryDirectory.build( repositoryDirectory.getPath(), child ) );
+        }
+      }
+    }
+  }
+
   private void populateFiles( RepositoryDirectory repositoryDirectory,
                               RepositoryDirectoryInterface repositoryDirectoryInterface, String filter )
     throws KettleException {
-    Date latestDate = null;
-    for ( RepositoryObjectInterface repositoryObject : getRepositoryElements( repositoryDirectoryInterface ) ) {
-      org.pentaho.di.repository.RepositoryObject ro = (org.pentaho.di.repository.RepositoryObject) repositoryObject;
-      String extension = ro.getObjectType().getExtension();
-      if ( !Util.isFiltered( extension, filter ) ) {
-        RepositoryFile repositoryFile = RepositoryFile.build( ro );
-        repositoryDirectory.addChild( repositoryFile );
+    if ( getRepository() instanceof RepositoryExtended && !repositoryDirectory.getPath().equals( "/" ) ) {
+      populateFilesLazy( repositoryDirectory, filter );
+    } else {
+      Date latestDate = null;
+      for ( RepositoryObjectInterface repositoryObject : getRepositoryElements( repositoryDirectoryInterface ) ) {
+        org.pentaho.di.repository.RepositoryObject ro = (org.pentaho.di.repository.RepositoryObject) repositoryObject;
+        String extension = ro.getObjectType().getExtension();
+        if ( !Util.isFiltered( extension, filter ) ) {
+          RepositoryFile repositoryFile = RepositoryFile.build( ro );
+          repositoryDirectory.addChild( repositoryFile );
+        }
+        if ( latestDate == null || ro.getModifiedDate().after( latestDate ) ) {
+          latestDate = ro.getModifiedDate();
+        }
       }
-      if ( latestDate == null || ro.getModifiedDate().after( latestDate ) ) {
-        latestDate = ro.getModifiedDate();
-      }
+      repositoryDirectory.setDate( latestDate );
     }
-    repositoryDirectory.setDate( latestDate );
+  }
+
+  public void populateFoldersLazy( RepositoryDirectory repositoryDirectory ) {
+    RepositoryRequest repositoryRequest = new RepositoryRequest( repositoryDirectory.getPath(), true, 1, null );
+    repositoryRequest.setTypes( RepositoryRequest.FILES_TYPE_FILTER.FOLDERS );
+    repositoryRequest.setIncludeSystemFolders( false );
+
+    RepositoryFileTree tree = getRepository().getUnderlyingRepository().getTree( repositoryRequest );
+
+    for ( RepositoryFileTree repositoryFileTree : tree.getChildren() ) {
+      org.pentaho.platform.api.repository2.unified.RepositoryFile repositoryFile = repositoryFileTree.getFile();
+      RepositoryDirectory repositoryDirectory1 = RepositoryDirectory.build( repositoryDirectory.getPath(), repositoryFile );
+      repositoryDirectory.addChild( repositoryDirectory1 );
+    }
+  }
+
+  public void populateFilesLazy( RepositoryDirectory repositoryDirectory, String filter ) {
+    RepositoryRequest repositoryRequest = new RepositoryRequest();
+    repositoryRequest.setPath( repositoryDirectory.getPath() );
+    repositoryRequest.setDepth( 1 );
+    repositoryRequest.setShowHidden( true );
+    repositoryRequest.setTypes( RepositoryRequest.FILES_TYPE_FILTER.FILES );
+    repositoryRequest.setChildNodeFilter( filter );
+
+    RepositoryFileTree tree = getRepository().getUnderlyingRepository().getTree( repositoryRequest );
+
+    for ( RepositoryFileTree repositoryFileTree : tree.getChildren() ) {
+      org.pentaho.platform.api.repository2.unified.RepositoryFile repositoryFile = repositoryFileTree.getFile();
+      RepositoryFile repositoryFile1 = RepositoryFile.build( repositoryFile );
+      repositoryDirectory.addChild( repositoryFile1 );
+    }
   }
 
   public RepositoryDirectory loadFolders( String path ) {
@@ -507,7 +547,6 @@ public class RepositoryBrowserController {
     } catch ( KettleException ke ) {
       ke.printStackTrace();
     }
-
     return repositoryDirectory;
   }
 
