@@ -41,7 +41,7 @@ public class ChangedFlag implements ChangedFlagInterface {
     }
   }
 
-  public synchronized void deleteObserver( PDIObserver o ) {
+  public void deleteObserver( PDIObserver o ) {
     obs.remove( o );
   }
 
@@ -89,7 +89,7 @@ public class ChangedFlag implements ChangedFlagInterface {
    *
    * @return true if the this has changed, false otherwise
    */
-  public synchronized boolean hasChanged() {
+  public boolean hasChanged() {
     return changed.get();
   }
 
