@@ -60,7 +60,6 @@ import static junit.framework.TestCase.assertTrue;
 import static junit.framework.TestCase.fail;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.core.IsInstanceOf.instanceOf;
 import static org.hamcrest.core.IsNot.not;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
@@ -95,6 +94,7 @@ public class MQTTStreamSourceTest {
     brokerService.start();
     brokerService.waitUntilStarted();
     when( consumerMeta.getQos() ).thenReturn( "2" );
+    when( consumerMeta.withVariables( any() ) ).thenReturn( consumerMeta );
     when( consumerMeta.getMqttServer() ).thenReturn( "127.0.0.1:" + port );
     when( consumerMeta.getTopics() ).thenReturn( singletonList( "mytopic" ) );
     when( mqttConsumer.environmentSubstitute( anyString() ) )

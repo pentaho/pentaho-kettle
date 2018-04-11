@@ -39,7 +39,6 @@ import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.util.StringUtil;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.variables.Variables;
-import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 
@@ -56,7 +55,6 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -84,15 +82,10 @@ public class MQTTClientBuilderTest {
     when( step.getLogChannel() ).thenReturn( logger );
     when( step.getStepMeta() ).thenReturn( meta );
     when( step.getStepMeta().getName() ).thenReturn( "Step Name" );
-    when( step.environmentSubstitute( anyString() ) ).thenAnswer( ( answer -> answer.getArguments()[ 0 ] ) );
-    when( step.environmentSubstitute( any( String[].class ) ) )
-      .thenAnswer( ( answer -> answer.getArguments()[ 0 ] ) );
-
     builder
       .withBroker( "127.0.0.1:101010" )
       .withStep( step );
     builder.clientFactory = factory;
-
   }
 
   @Test
@@ -131,38 +124,6 @@ public class MQTTClientBuilderTest {
     assertArrayEquals( opts.getServerURIs(), new String[] { "ssl://127.0.0.1:3000" } );
     assertEquals( opts.getMqttVersion(), 3 );
     assertEquals( opts.isAutomaticReconnect(), false );
-  }
-
-  @Test
-  public void testEnvironmentSubstitute() throws MqttException {
-    builder
-      .withQos( "2" )
-      .withUsername( "user" )
-      .withPassword( "pass" )
-      .withIsSecure( true )
-      .withTopics( Collections.singletonList( "SomeTopic" ) )
-      .withSslConfig( ImmutableMap.of( "ssl.trustStore", "/some/path" ) )
-      .withCallback( callback )
-      .withKeepAliveInterval( "1000" )
-      .withMaxInflight( "2000" )
-      .withConnectionTimeout( "3000" )
-      .withCleanSession( "true" )
-      .withStorageLevel( "/Users/NoName/Temp" )
-      .withServerUris( "127.0.0.1:3000" )
-      .withMqttVersion( "3" )
-      .withAutomaticReconnect( "false" )
-      .buildAndConnect();
-
-    verify( step, times( 2 ) ).environmentSubstitute( "127.0.0.1:101010" );
-    verify( step, times( 3 ) ).environmentSubstitute( "2" );
-    verify( step, times( 2 ) ).environmentSubstitute( "1000" );
-    verify( step, times( 3 ) ).environmentSubstitute( "2000" );
-    verify( step, times( 2 ) ).environmentSubstitute( "3000" );
-    verify( step, times( 2 ) ).environmentSubstitute( "true" );
-    verify( step, times( 3 ) ).environmentSubstitute( "127.0.0.1:3000" );
-    verify( step, times( 2 ) ).environmentSubstitute( "3" );
-    verify( step, times( 3 ) ).environmentSubstitute( "false" );
-    verify( step ).environmentSubstitute( "/Users/NoName/Temp" );
   }
 
   @Test

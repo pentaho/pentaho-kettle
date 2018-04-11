@@ -27,6 +27,7 @@ import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
+import org.pentaho.di.core.util.serialization.BaseSerializingMeta;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
@@ -68,7 +69,8 @@ public class MQTTProducer extends BaseStep implements StepInterface {
   @Override
   public boolean init( StepMetaInterface stepMetaInterface, StepDataInterface stepDataInterface ) {
     boolean isInitalized = super.init( stepMetaInterface, stepDataInterface );
-    meta = ( (MQTTProducerMeta) stepMetaInterface );
+    BaseSerializingMeta serializingMeta = (BaseSerializingMeta) stepMetaInterface;
+    meta = (MQTTProducerMeta) serializingMeta.withVariables( this ); // handle variable substitution up-front
     data = ( (MQTTProducerData) stepDataInterface );
 
     List<CheckResultInterface> remarks = new ArrayList<>();
@@ -150,7 +152,7 @@ public class MQTTProducer extends BaseStep implements StepInterface {
         }
       }
     } catch ( MqttException e ) {
-      logError( BaseMessages.getString( PKG, "MQTTProducer.Error.QOSNotSupported", meta.getQOS() )  );
+      logError( BaseMessages.getString( PKG, "MQTTProducer.Error.QOSNotSupported", meta.getQOS() ) );
       logError( e.getMessage(), e );
       setErrors( 1 );
       stopAll();

@@ -95,7 +95,6 @@ public final class MQTTClientBuilder {
   private String automaticReconnect;
   private MqttCallback callback;
   private String clientId = MqttAsyncClient.generateClientId();  // default
-  private VariableSpace variableSpace;
   private LogChannelInterface logChannel;
   private String stepName;
 
@@ -155,24 +154,8 @@ public final class MQTTClientBuilder {
   }
 
   public MQTTClientBuilder withStep( StepInterface step ) {
-    this.variableSpace = step;
     this.logChannel = step.getLogChannel();
     this.stepName = step.getStepMeta().getName();
-    return this;
-  }
-
-  public MQTTClientBuilder withVariables( VariableSpace step ) {
-    this.variableSpace = step;
-    return this;
-  }
-
-  public MQTTClientBuilder withLogChannel( LogChannelInterface logChannel ) {
-    this.logChannel = logChannel;
-    return this;
-  }
-
-  public MQTTClientBuilder withStepName( String stepName ) {
-    this.stepName = stepName;
     return this;
   }
 
@@ -224,14 +207,13 @@ public final class MQTTClientBuilder {
   public MqttClient buildAndConnect() throws MqttException {
     validateArgs();
 
-    String broker = getProtocol() + getBroker();
+    String broker = getProtocol() + this.broker;
     MqttClientPersistence persistence = new MemoryPersistence();
-    String storageLevelOption = variableSpace.environmentSubstitute( storageLevel );
-    if ( StringUtil.isEmpty( storageLevelOption ) ) {
+    if ( StringUtil.isEmpty( storageLevel ) ) {
       logChannel.logDebug( "Using Memory Storage Level" );
     } else {
-      logChannel.logDebug( "Using File Storage Level to " + storageLevelOption );
-      persistence = new MqttDefaultFilePersistence( storageLevelOption );
+      logChannel.logDebug( "Using File Storage Level to " + storageLevel );
+      persistence = new MqttDefaultFilePersistence( storageLevel );
     }
 
     if ( StringUtil.isEmpty( clientId ) ) {
@@ -242,25 +224,20 @@ public final class MQTTClientBuilder {
 
     client.setCallback( callback );
 
-    logChannel.logDebug( "Subscribing to topics with a quality of service level of "
-      + variableSpace.environmentSubstitute( qos ) );
-    logChannel.logDebug( "Server URIs is set to " + variableSpace.environmentSubstitute( serverUris ) );
-    logChannel.logDebug( "Max Inflight is set to " + variableSpace.environmentSubstitute( maxInflight ) );
-    logChannel.logDebug( "Automatic Reconnect is set to " + variableSpace.environmentSubstitute( automaticReconnect ) );
+    logChannel.logDebug( "Subscribing to topics with a quality of service level of " + qos );
+    logChannel.logDebug( "Server URIs is set to " + serverUris );
+    logChannel.logDebug( "Max Inflight is set to " + maxInflight );
+    logChannel.logDebug( "Automatic Reconnect is set to " + automaticReconnect );
     logChannel.logDebug( loggableOptions().toString() );
 
     client.connect( getOptions() );
     if ( topics != null && topics.size() > 0 ) {
       client.subscribe(
-        variableSpace.environmentSubstitute( topics.toArray( new String[ topics.size() ] ) ),
-        initializedIntAray( Integer.parseInt( variableSpace.environmentSubstitute( this.qos ) ) )
+        topics.toArray( new String[ topics.size() ] ),
+        initializedIntAray( Integer.parseInt( this.qos ) )
       );
     }
     return client;
-  }
-
-  private String getBroker() {
-    return variableSpace.environmentSubstitute( this.broker );
   }
 
   private String getProtocol() {
@@ -269,15 +246,13 @@ public final class MQTTClientBuilder {
 
   private void validateArgs() {
     // expectation that the broker will contain the server:port.
-    checkArgument( getBroker().matches( "^[^ :/]+:\\d+" ),
+    checkArgument( this.broker.matches( "^[^ :/]+:\\d+" ),
       getString( PKG, "MQTTInput.Error.ConnectionURL" ) );
     try {
-      int qosVal = Integer.parseInt( variableSpace.environmentSubstitute( this.qos ) );
+      int qosVal = Integer.parseInt( this.qos );
       checkArgument( qosVal >= 0 && qosVal <= 2 );
     } catch ( Exception e ) {
-      String errorMsg = getString( PKG, "MQTTClientBuilder.Error.QOS",
-        stepName, variableSpace.environmentSubstitute( qos ) );
-      throw new IllegalArgumentException( errorMsg );
+      throw new IllegalArgumentException( getString( PKG, "MQTTClientBuilder.Error.QOS", stepName, qos ) );
     }
   }
 
@@ -292,46 +267,39 @@ public final class MQTTClientBuilder {
       setSSLProps( options );
     }
     if ( !StringUtil.isEmpty( username ) ) {
-      options.setUserName( variableSpace.environmentSubstitute( username ) );
+      options.setUserName( username );
     }
     if ( !StringUtil.isEmpty( password ) ) {
-      options.setPassword( variableSpace.environmentSubstitute( password ).toCharArray() );
+      options.setPassword( password.toCharArray() );
     }
 
-    String optionValue = variableSpace.environmentSubstitute( keepAliveInterval );
-    if ( !StringUtil.isEmpty( optionValue ) ) {
-      options.setKeepAliveInterval( Integer.parseInt( optionValue ) );
+    if ( !StringUtil.isEmpty( keepAliveInterval ) ) {
+      options.setKeepAliveInterval( Integer.parseInt( keepAliveInterval ) );
     }
 
-    optionValue = variableSpace.environmentSubstitute( maxInflight );
-    if ( !StringUtil.isEmpty( optionValue ) ) {
-      options.setMaxInflight( Integer.parseInt( optionValue ) );
+    if ( !StringUtil.isEmpty( maxInflight ) ) {
+      options.setMaxInflight( Integer.parseInt( maxInflight ) );
     }
 
-    optionValue = variableSpace.environmentSubstitute( connectionTimeout );
-    if ( !StringUtil.isEmpty( optionValue ) ) {
-      options.setConnectionTimeout( Integer.parseInt( optionValue ) );
+    if ( !StringUtil.isEmpty( connectionTimeout ) ) {
+      options.setConnectionTimeout( Integer.parseInt( connectionTimeout ) );
     }
 
-    optionValue = variableSpace.environmentSubstitute( cleanSession );
-    if ( !StringUtil.isEmpty( optionValue ) ) {
-      options.setCleanSession( BooleanUtils.toBoolean( optionValue ) );
+    if ( !StringUtil.isEmpty( cleanSession ) ) {
+      options.setCleanSession( BooleanUtils.toBoolean( cleanSession ) );
     }
 
-    optionValue = variableSpace.environmentSubstitute( serverUris );
-    if ( !StringUtil.isEmpty( optionValue ) ) {
+    if ( !StringUtil.isEmpty( serverUris ) ) {
       options.setServerURIs(
-        Arrays.stream( optionValue.split( ";" ) ).map( uri -> getProtocol() + uri ).toArray( String[]::new ) );
+        Arrays.stream( serverUris.split( ";" ) ).map( uri -> getProtocol() + uri ).toArray( String[]::new ) );
     }
 
-    optionValue = variableSpace.environmentSubstitute( mqttVersion );
-    if ( !StringUtil.isEmpty( optionValue ) ) {
-      options.setMqttVersion( Integer.parseInt( optionValue ) );
+    if ( !StringUtil.isEmpty( mqttVersion ) ) {
+      options.setMqttVersion( Integer.parseInt( mqttVersion ) );
     }
 
-    optionValue = variableSpace.environmentSubstitute( automaticReconnect );
-    if ( !StringUtil.isEmpty( optionValue ) ) {
-      options.setAutomaticReconnect( BooleanUtils.toBoolean( optionValue ) );
+    if ( !StringUtil.isEmpty( automaticReconnect ) ) {
+      options.setAutomaticReconnect( BooleanUtils.toBoolean( automaticReconnect ) );
     }
 
     return options;

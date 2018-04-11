@@ -30,6 +30,7 @@ import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
+import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
@@ -78,7 +79,7 @@ public class MQTTProducerMetaTest {
   }
 
   @Test
-  public void testLoadAndSave() throws KettleException {
+  public void testLoadAndSave() {
     MQTTProducerMeta fromMeta = testMeta();
     MQTTProducerMeta toMeta = fromXml( fromMeta.getXML() );
 
@@ -103,7 +104,7 @@ public class MQTTProducerMetaTest {
 
 
   @Test
-  public void testFieldsArePreserved() throws KettleException {
+  public void testFieldsArePreserved() {
     MQTTProducerMeta meta = new MQTTProducerMeta();
     meta.setMqttServer( "mqtthost:1883" );
     meta.setClientId( "client1" );
@@ -118,7 +119,7 @@ public class MQTTProducerMetaTest {
   }
 
   @Test
-  public void testRoundTripWithSSLStuff() throws KettleException {
+  public void testRoundTripWithSSLStuff() {
     MQTTProducerMeta meta = new MQTTProducerMeta();
     meta.setMqttServer( "mqtthost:1883" );
     meta.setTopic( "test-topic" );
@@ -274,8 +275,31 @@ public class MQTTProducerMetaTest {
       .contains( BaseMessages.getString( PKG, "MQTTDialog.Options." + AUTOMATIC_RECONNECT ) ) );
   }
 
+  @Test
+  public void testVarSubstitution() {
+    MQTTProducerMeta mqttProducerMeta = new MQTTProducerMeta();
+    mqttProducerMeta.setMqttServer( "${server}" );
+    mqttProducerMeta.setMessageField( "${message}" );
+    mqttProducerMeta.setTopic( "${topic}" );
+    mqttProducerMeta.setSslConfig( of( "key1", "${val1}", "key2", "${val2}" ) );
+
+    VariableSpace variables = new Variables();
+    variables.setVariable( "server", "myserver" );
+    variables.setVariable( "message", "mymessage" );
+    variables.setVariable( "topic", "mytopic" );
+    variables.setVariable( "val1", "sslVal1" );
+    variables.setVariable( "val2", "sslVal2" );
+
+    MQTTProducerMeta substitutedMeta = (MQTTProducerMeta) mqttProducerMeta.withVariables( variables );
+
+    assertThat( "myserver", equalTo( substitutedMeta.getMqttServer() ) );
+    assertThat( "mymessage", equalTo( substitutedMeta.getMessageField() ) );
+    assertThat( "mytopic", equalTo( substitutedMeta.getTopic() ) );
+    assertThat( "sslVal1", equalTo( substitutedMeta.getSslConfig().get( "key1" ) ) );
+    assertThat( "sslVal2", equalTo( substitutedMeta.getSslConfig().get( "key2" ) ) );
+  }
+
   public static MQTTProducerMeta fromXml( String metaXml ) {
-    Document doc;
     try {
       Node stepNode = getNode( metaXml );
       MQTTProducerMeta mqttProducerMeta = new MQTTProducerMeta();
