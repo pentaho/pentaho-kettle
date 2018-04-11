@@ -57,7 +57,6 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.util.StringUtil;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.Props;
 import org.pentaho.di.core.exception.KettleException;
@@ -1119,12 +1118,7 @@ public class XMLOutputDialog extends BaseStepDialog implements StepDialogInterfa
       if ( field.getFieldName().equals( field.getElementName() ) ) {
         field.setElementName( "" );
       }
-
-      String contentType = item.getText( index++ );
-      if ( !StringUtil.isEmpty( contentType ) ) {
-        field.setContentType( ContentType.valueOf( contentType ) );
-      }
-
+      field.setContentType( ContentType.valueOf( item.getText( index++ ) ) );
       field.setType( item.getText( index++ ) );
       field.setFormat( item.getText( index++ ) );
       field.setLength( Const.toInt( item.getText( index++ ), -1 ) );
@@ -1157,6 +1151,7 @@ public class XMLOutputDialog extends BaseStepDialog implements StepDialogInterfa
       if ( r != null && !r.isEmpty() ) {
         TableItemInsertListener listener = new TableItemInsertListener() {
           public boolean tableItemInserted( TableItem tableItem, ValueMetaInterface v ) {
+            tableItem.setText( 3, ContentType.Element.name() );
             if ( v.isNumber() ) {
               if ( v.getLength() > 0 ) {
                 int le = v.getLength();
