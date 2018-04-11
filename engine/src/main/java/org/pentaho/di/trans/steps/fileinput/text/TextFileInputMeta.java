@@ -438,27 +438,16 @@ public class TextFileInputMeta extends BaseFileInputMeta<BaseFileInputAdditional
   @Override
   public Object clone() {
     TextFileInputMeta retval = (TextFileInputMeta) super.clone();
-
-    int nrfiles = inputFiles.fileName.length;
-    int nrfields = inputFields.length;
-    int nrfilters = filter.length;
-
-    retval.allocate( nrfiles, nrfields, nrfilters );
-
-    System.arraycopy( inputFiles.fileName, 0, retval.inputFiles.fileName, 0, nrfiles );
-    System.arraycopy( inputFiles.fileMask, 0, retval.inputFiles.fileMask, 0, nrfiles );
-    System.arraycopy( inputFiles.excludeFileMask, 0, retval.inputFiles.excludeFileMask, 0, nrfiles );
-    System.arraycopy( inputFiles.fileRequired, 0, retval.inputFiles.fileRequired, 0, nrfiles );
-    System.arraycopy( inputFiles.includeSubFolders, 0, retval.inputFiles.includeSubFolders, 0, nrfiles );
-
-    for ( int i = 0; i < nrfields; i++ ) {
+    retval.inputFiles = (BaseFileInputFiles) inputFiles.clone();
+    retval.inputFields = new BaseFileField[inputFields.length];
+    for ( int i = 0; i < inputFields.length; i++ ) {
       retval.inputFields[i] = (BaseFileField) inputFields[i].clone();
     }
 
-    for ( int i = 0; i < nrfilters; i++ ) {
+    retval.filter = new TextFileFilter[filter.length];
+    for ( int i = 0; i < filter.length; i++ ) {
       retval.filter[i] = (TextFileFilter) filter[i].clone();
     }
-
     return retval;
   }
 
@@ -1029,6 +1018,9 @@ public class TextFileInputMeta extends BaseFileInputMeta<BaseFileInputAdditional
 
       rep.saveStepAttribute( id_transformation, id_step, "limit", content.rowLimit );
 
+      //we need the equals by size arrays for inputFiles.fileName[i], inputFiles.fileMask[i], inputFiles.fileRequired[i], inputFiles.includeSubFolders[i]
+      //to prevent the ArrayIndexOutOfBoundsException
+      inputFiles.normalizeAllocation( inputFiles.fileName.length );
       for ( int i = 0; i < inputFiles.fileName.length; i++ ) {
         saveSourceRep( rep, id_transformation, id_step, i, inputFiles.fileName[i] );
         rep.saveStepAttribute( id_transformation, id_step, i, "file_mask", inputFiles.fileMask[i] );

@@ -23,6 +23,7 @@
 package org.pentaho.di.trans.steps.fileinput.text;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.doReturn;
@@ -96,6 +97,25 @@ public class TextFileInputMetaTest {
     assertEquals( inputMeta.inputFiles.fileName.length, inputMeta.inputFiles.excludeFileMask.length );
     assertEquals( inputMeta.inputFiles.fileName.length, inputMeta.inputFiles.fileRequired.length );
     assertEquals( inputMeta.inputFiles.fileName.length, inputMeta.inputFiles.includeSubFolders.length );
+  }
+
+  @Test
+  public void testClonelWorksIfWeUpdateOnlyPartOfInputFilesInformation() throws Exception {
+    inputMeta.inputFiles = new BaseFileInputFiles();
+    inputMeta.inputFiles.fileName = new String[] { FILE_NAME_VALID_PATH };
+
+    TextFileInputMeta cloned = (TextFileInputMeta) inputMeta.clone();
+
+    //since the equals was not override it should be other object
+    assertNotEquals( inputMeta, cloned );
+    assertEquals( cloned.inputFiles.fileName.length, inputMeta.inputFiles.fileName.length );
+    assertEquals( cloned.inputFiles.fileMask.length, inputMeta.inputFiles.fileMask.length );
+    assertEquals( cloned.inputFiles.excludeFileMask.length, inputMeta.inputFiles.excludeFileMask.length );
+    assertEquals( cloned.inputFiles.fileRequired.length, inputMeta.inputFiles.fileRequired.length );
+    assertEquals( cloned.inputFiles.includeSubFolders.length, inputMeta.inputFiles.includeSubFolders.length );
+
+    assertEquals( cloned.inputFields.length, inputMeta.inputFields.length );
+    assertEquals( cloned.getFilter().length, inputMeta.getFilter().length );
   }
 
 }
