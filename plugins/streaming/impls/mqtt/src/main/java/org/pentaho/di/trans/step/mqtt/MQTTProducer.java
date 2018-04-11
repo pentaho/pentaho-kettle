@@ -93,15 +93,7 @@ public class MQTTProducer extends BaseStep implements StepInterface {
 
     if ( null == row ) {
       setOutputDone();
-      if ( null != data.mqttClient ) {
-        try {
-          data.mqttClient.disconnect();
-          data.mqttClient.close();
-        } catch ( MqttException e ) {
-          logError( e.getMessage(), e );
-        }
-      }
-
+      stopMqttClient();
       return false;
     }
 
@@ -128,7 +120,7 @@ public class MQTTProducer extends BaseStep implements StepInterface {
           .withMqttVersion( meta.getMqttVersion() )
           .withAutomaticReconnect( meta.getAutomaticReconnect() )
           .buildAndConnect();
-      } catch ( MqttException e ) {
+      } catch ( Exception e ) {
         stopAll();
         logError( e.toString() );
         return false;
@@ -169,13 +161,19 @@ public class MQTTProducer extends BaseStep implements StepInterface {
 
   @Override public void stopRunning( StepMetaInterface stepMetaInterface, StepDataInterface stepDataInterface )
     throws KettleException {
+    stopMqttClient();
+    super.stopRunning( stepMetaInterface, stepDataInterface );
+  }
+
+  private void stopMqttClient() {
     try {
-      if ( data.mqttClient.isConnected() ) {
+      // Check if connected so subsequent calls does not produce an already stopped exception
+      if ( null != data.mqttClient && data.mqttClient.isConnected() ) {
         data.mqttClient.disconnect();
+        data.mqttClient.close();
       }
     } catch ( MqttException e ) {
-      throw new KettleException( e );
+      logError( e.getMessage() );
     }
-    super.stopRunning( stepMetaInterface, stepDataInterface );
   }
 }

@@ -277,7 +277,6 @@ public final class MQTTClientBuilder {
     } catch ( Exception e ) {
       String errorMsg = getString( PKG, "MQTTClientBuilder.Error.QOS",
         stepName, variableSpace.environmentSubstitute( qos ) );
-      logChannel.logError( errorMsg );
       throw new IllegalArgumentException( errorMsg );
     }
   }

@@ -30,6 +30,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.pentaho.di.core.KettleEnvironment;
+import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.logging.KettleLogStore;
 import org.pentaho.di.core.logging.LogChannelInterface;
@@ -90,17 +91,12 @@ public class MQTTProducerTest {
     trans.setVariable( "messageField", "message" );
     trans.setVariable( "qos", "0" );
     trans.prepareExecution( new String[] {} );
-
-    StepMetaDataCombi combi = trans.getSteps().get( 1 );
-    MQTTProducer step = (MQTTProducer) combi.step;
-    MQTTProducerData data = (MQTTProducerData) combi.data;
-
-    data.mqttClient = mqttClient;
-    step.first = false;
   }
 
   @Test
   public void testSendRowToProducer() throws Exception {
+    when( mqttClient.isConnected() ).thenReturn( true );
+    handleAsSecondRow();
     doAnswer( invocation -> {
       String topic = (String) invocation.getArguments()[ 0 ];
       MqttMessage message = (MqttMessage) invocation.getArguments()[ 1 ];
@@ -137,10 +133,6 @@ public class MQTTProducerTest {
 
   @Test
   public void testProcessFirstRow() throws Exception {
-    StepMetaDataCombi combi = trans.getSteps().get( 1 );
-    MQTTProducer step = (MQTTProducer) combi.step;
-    step.first = true;
-
     PowerMockito.mockStatic( MQTTClientBuilder.class );
     MQTTClientBuilder clientBuilder = spy( MQTTClientBuilder.class );
     MqttClient mqttClient = mock( MqttClient.class );
@@ -150,11 +142,16 @@ public class MQTTProducerTest {
     trans.startThreads();
     trans.waitUntilFinished();
 
+    StepMetaDataCombi combi = trans.getSteps().get( 1 );
+    MQTTProducer step = (MQTTProducer) combi.step;
+
     assertFalse( step.first );
   }
 
   @Test
   public void testFeedbackSize() throws Exception {
+    handleAsSecondRow();
+
     StepMetaDataCombi combi = trans.getSteps().get( 1 );
     MQTTProducer step = (MQTTProducer) combi.step;
 
@@ -168,11 +165,7 @@ public class MQTTProducerTest {
   }
 
   @Test
-  public void testMQTTConnectException() throws Exception {
-    StepMetaDataCombi combi = trans.getSteps().get( 1 );
-    MQTTProducer step = (MQTTProducer) combi.step;
-    step.first = true;
-
+  public void testMqttConnectException() throws Exception {
     PowerMockito.mockStatic( MQTTClientBuilder.class );
     MQTTClientBuilder clientBuilder = spy( MQTTClientBuilder.class );
     MqttException mqttException = mock( MqttException.class );
@@ -188,6 +181,8 @@ public class MQTTProducerTest {
 
   @Test
   public void testErrorOnPublishStopsAll() throws Exception {
+    handleAsSecondRow();
+
     MqttException mqttException = mock( MqttException.class );
     when( mqttException.getMessage() ).thenReturn( "publish failed" );
     when( mqttClient.isConnected() ).thenReturn( true, false );
@@ -202,5 +197,13 @@ public class MQTTProducerTest {
       + "  Check that Quality of Service level ${qos} is supported by your MQTT Broker" );
     verify( logChannel ).logError( "publish failed", mqttException );
     assertEquals( 0, trans.getSteps().get( 1 ).step.getLinesOutput() );
+  }
+
+  private void handleAsSecondRow() {
+    StepMetaDataCombi combi = trans.getSteps().get( 1 );
+    MQTTProducer step = (MQTTProducer) combi.step;
+    MQTTProducerData data = (MQTTProducerData) combi.data;
+    data.mqttClient = mqttClient;
+    step.first = false;
   }
 }

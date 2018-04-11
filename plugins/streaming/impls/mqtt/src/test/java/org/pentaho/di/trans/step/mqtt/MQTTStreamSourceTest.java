@@ -161,12 +161,10 @@ public class MQTTStreamSourceTest {
 
     when( consumerMeta.getMqttServer() ).thenReturn( "tcp:/127.0.0.1:" + port );
     //invalid tcp://server/port
-    try {
-      source.open();
-      fail( "Expected exception." );
-    } catch ( Exception e ) {
-      assertThat( e, instanceOf( IllegalArgumentException.class ) );
-    }
+    source.open();
+    verify( mqttConsumer ).stopAll();
+    verify( mqttConsumer )
+      .logError( "java.lang.IllegalArgumentException: MQTT Connection should be specified as servername:port" );
   }
 
   @Test
