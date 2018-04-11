@@ -161,18 +161,20 @@ pipeline {
     }
   }
 
-// @TODO Put some notification stuff in here..chatops or whatever
   post {
     always {
       echo 'One way or another, I have finished'
     }
     success {
+      //slackSend channel: "buildteam-alerts", color: 'good', message: "Build Succeeded: ${env.JOB_NAME} #${env.BUILD_NUMBER} (<${env.BUILD_URL}|Open>)"
       echo 'I succeeeded!'
     }
     unstable {
+      //slackSend channel: "buildteam-alerts", color: 'warning', message: "Build Unstable: ${env.JOB_NAME} #${env.BUILD_NUMBER} (<${env.BUILD_URL}|Open>)"
       echo 'I am unstable :/'
     }
     failure {
+      //slackSend channel: "buildteam-alerts", color: 'danger', message: "Build Failed: ${env.JOB_NAME} #${env.BUILD_NUMBER} (<${env.BUILD_URL}|Open>)"
       echo 'I failed :('
     }
     changed {
