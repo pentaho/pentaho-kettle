@@ -30,6 +30,7 @@ import org.pentaho.di.core.injection.InjectionDeep;
 import org.pentaho.di.core.injection.InjectionSupported;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.variables.VariableSpace;
+import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.StepDataInterface;
@@ -74,6 +75,7 @@ public class StepMetaPropsTest {
     static class SoooDeep {
       @Injection ( name = "DEEP_FLAG" ) boolean isItDeep = true;
       @Injection ( name = "DEPTH" ) int howDeep = 1000;
+      @Injection ( name = "DEEP_LIST " ) List<String> deepList = new ArrayList<>();
 
       @Sensitive
       @Injection ( name = "DEEP_PASSWORD" ) String password = "p@ssword";
@@ -225,6 +227,41 @@ public class StepMetaPropsTest {
 
     assertThat( sensitiveFields, equalTo( singletonList( "Sensitive" ) ) );
   }
+
+  @Test
+  public void variableSubstitutionHappens() {
+    // Tests that the .withVariables method allows creation of a copy of
+    // the step meta with all variables substituted, both in lists and field strings,
+    // and in deep meta injection
+    FooMeta fooMeta = getTestFooMeta();
+
+    fooMeta.field1 = "${field1Sub}";
+    fooMeta.alist = asList( "noSub", "${listEntrySub}", "${listEntrySub2}", "noSubAgain" );
+    fooMeta.password = "${encryptedSub}";
+    fooMeta.deep.deepList = asList( "deepNotSubbed", "${deepListSub}" );
+
+    FooMeta newFoo = new FooMeta();
+
+    VariableSpace variables = new Variables();
+    variables.setVariable( "field1Sub", "my substituted value" );
+    variables.setVariable( "listEntrySub", "list sub" );
+    variables.setVariable( "listEntrySub2", "list sub 2" );
+    variables.setVariable( "encryptedSub", "encrypted sub" );
+    variables.setVariable( "deepListSub", "deep list sub" );
+
+    StepMetaProps
+      .from( fooMeta )
+      .withVariables( variables )
+      .to( newFoo );
+
+    assertThat( "my substituted value", equalTo( newFoo.field1 ) );
+    assertThat( "list sub", equalTo( newFoo.alist.get( 1 ) ) );
+    assertThat( "list sub 2", equalTo( newFoo.alist.get( 2 ) ) );
+    assertThat( "encrypted sub", equalTo( newFoo.password ) );
+    assertThat( "deep list sub", equalTo( newFoo.deep.deepList.get( 1 ) ) );
+    assertThat( "noSub", equalTo( newFoo.alist.get( 0 ) ) );
+  }
+
 
   static FooMeta getTestFooMeta() {
     FooMeta foo = new FooMeta();

@@ -30,7 +30,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.pentaho.di.core.KettleEnvironment;
-import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.logging.KettleLogStore;
 import org.pentaho.di.core.logging.LogChannelInterface;
@@ -194,7 +193,7 @@ public class MQTTProducerTest {
     verify( mqttClient ).disconnect();
     verify( logChannel ).logError(
       "MQTT Producer - Received an exception publishing the message."
-      + "  Check that Quality of Service level ${qos} is supported by your MQTT Broker" );
+      + "  Check that Quality of Service level 0 is supported by your MQTT Broker" );
     verify( logChannel ).logError( "publish failed", mqttException );
     assertEquals( 0, trans.getSteps().get( 1 ).step.getLinesOutput() );
   }

@@ -29,6 +29,8 @@ import org.pentaho.di.core.injection.InjectionDeep;
 import org.pentaho.di.core.injection.bean.BeanInjectionInfo;
 import org.pentaho.di.core.injection.bean.BeanInjector;
 import org.pentaho.di.core.row.value.ValueMetaString;
+import org.pentaho.di.core.variables.VariableSpace;
+import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.trans.step.StepMetaInterface;
 
 import javax.xml.bind.annotation.XmlAttribute;
@@ -70,6 +72,9 @@ public class StepMetaProps {
   @XmlAttribute ( name = "secure" )
   private List<String> secureFields;
 
+  private StepMetaInterface stepMeta;
+  private VariableSpace variableSpace = new Variables();
+
   @SuppressWarnings ( "unused" )
   private StepMetaProps() {
   }
@@ -87,6 +92,7 @@ public class StepMetaProps {
    */
   public static StepMetaProps from( StepMetaInterface stepMeta ) {
     StepMetaProps propMap = new StepMetaProps( stepMeta );
+    propMap.stepMeta = stepMeta;
 
     // use metadata injection to extract properties
     BeanInjectionInfo info = new BeanInjectionInfo( stepMeta.getClass() );
@@ -104,11 +110,22 @@ public class StepMetaProps {
    * more cleanly to Kettle's {@link StepMetaInterface#loadXML} design, which loads props into
    * an instance.
    */
-  public void to( StepMetaInterface stepMetaInterface ) {
+  public StepMetaInterface to( StepMetaInterface stepMetaInterface ) {
     BeanInjectionInfo info = new BeanInjectionInfo( stepMetaInterface.getClass() );
 
     BeanInjector injector = new BeanInjector( info );
     info.getProperties().values().forEach( property -> assignValueForProp( property, stepMetaInterface, injector ) );
+    return stepMetaInterface;
+  }
+
+  /**
+   * Allows specifying a variable space to be used when applying property values to
+   * a stepMeta.
+   */
+  public StepMetaProps withVariables( VariableSpace space ) {
+    StepMetaProps propCopy = from( this.stepMeta );
+    propCopy.variableSpace = space;
+    return propCopy;
   }
 
   private void populateGroups( StepMetaInterface stepMeta, BeanInjectionInfo info,
@@ -124,7 +141,7 @@ public class StepMetaProps {
   /**
    * Collects the list of declared fields with the {@link Sensitive} annotation
    * for the class.  Values for these fields will be encrypted.
-   *
+   * <p>
    * Checks the top level fields of clazz, and recurses into
    * {@link InjectionDeep} classes.
    */
@@ -226,15 +243,20 @@ public class StepMetaProps {
         prop.value.stream()
           .map( value -> {
             RowMetaAndData rmad = new RowMetaAndData();
-            rmad.addValue( new ValueMetaString( prop.getName() ), value );
+            rmad.addValue( new ValueMetaString( prop.getName() ), envSubs( value ) );
             return rmad;
           } ).collect( Collectors.toList() ),
         beanInfoProp.getName() );
     } catch ( KettleException e ) {
       throw new RuntimeException( e );
     }
+  }
 
-
+  private Object envSubs( Object value ) {
+    if ( value instanceof String ) {
+      return variableSpace.environmentSubstitute( value.toString() );
+    }
+    return value;
   }
 
   @Override public String toString() {
