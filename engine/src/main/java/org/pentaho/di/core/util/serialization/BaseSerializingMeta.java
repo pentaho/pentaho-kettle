@@ -25,6 +25,7 @@ package org.pentaho.di.core.util.serialization;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
+import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.trans.step.BaseStepMeta;
@@ -40,7 +41,7 @@ import static org.pentaho.di.core.util.serialization.StepMetaProps.from;
 
 /**
  * Handles serialization of meta by implementing getXML/loadXML, readRep/saveRep.
- *
+ * <p>
  * Uses {@link MetaXmlSerializer} amd {@link RepoSerializer} for generically
  * handling child classes meta.
  */
@@ -73,5 +74,15 @@ public abstract class BaseSerializingMeta extends BaseStepMeta implements StepMe
       .stepId( stepId )
       .transId( transId )
       .serialize();
+  }
+
+  /**
+   * Creates a copy of this stepMeta with variables globally substituted.
+   */
+  public StepMetaInterface withVariables( VariableSpace variables ) {
+    return StepMetaProps
+      .from( this )
+      .withVariables( variables )
+      .to( (StepMetaInterface) this.clone() );
   }
 }
