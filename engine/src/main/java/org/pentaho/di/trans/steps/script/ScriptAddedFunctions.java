@@ -2434,7 +2434,7 @@ public class ScriptAddedFunctions {
         switch ( level.intValue() ) {
         // MONTHS
           case 5:
-            cal.set( Calendar.MONTH, 1 );
+            cal.set( Calendar.MONTH, 0 );
             // DAYS
           case 4:
             cal.set( Calendar.DAY_OF_MONTH, 1 );
