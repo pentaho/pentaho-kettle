@@ -176,8 +176,6 @@ public class MQTTClientBuilderTest {
       // Initialization failed because QOS level isn't 0, 1 or 2
       assertTrue( e instanceof IllegalArgumentException );
     }
-    verify( logger )
-      .logError( BaseMessages.getString( MQTTConsumer.class, "MQTTClientBuilder.Error.QOS", "Step Name", "hello" ) );
   }
 
   @Test
@@ -191,8 +189,6 @@ public class MQTTClientBuilderTest {
       // Initialization failed because QOS level isn't 0, 1 or 2
       assertTrue( e instanceof IllegalArgumentException );
     }
-    verify( logger )
-      .logError( BaseMessages.getString( MQTTConsumer.class, "MQTTClientBuilder.Error.QOS", "Step Name", "72" ) );
   }
 
   @Test

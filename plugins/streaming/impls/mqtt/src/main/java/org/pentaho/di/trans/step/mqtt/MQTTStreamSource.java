@@ -89,7 +89,7 @@ public class MQTTStreamSource extends BlockingQueueStreamSource<List<Object>> {
         .withMqttVersion( mqttConsumerMeta.getMqttVersion() )
         .withAutomaticReconnect( mqttConsumerMeta.getAutomaticReconnect() )
         .buildAndConnect();
-    } catch ( MqttException e ) {
+    } catch ( Exception e ) {
       mqttConsumer.stopAll();
       mqttConsumer.logError( e.toString() );
     }
