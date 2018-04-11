@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -51,7 +51,7 @@ public class TextFileOutputMetaTest {
   public static List<String> getMetaAttributes() {
     return Arrays.asList( "separator", "enclosure", "enclosure_forced", "enclosure_fix_disabled", "header", "footer",
       "format", "compression", "encoding", "endedLine", "fileNameInField", "fileNameField",
-      "create_parent_folder", "fileName", "is_command", "servlet_output", "do_not_open_new_file_init",
+      "create_parent_folder", "fileName", "servlet_output", "do_not_open_new_file_init",
       "extention", "append", "split", "haspartno", "add_date", "add_time", "SpecifyFormat", "date_time_format",
       "add_to_result_filenames", "pad", "fast_dump", "splitevery", "OutputFields" );
   }
@@ -72,7 +72,6 @@ public class TextFileOutputMetaTest {
     getterMap.put( "fileNameField", "getFileNameField" );
     getterMap.put( "create_parent_folder", "isCreateParentFolder" );
     getterMap.put( "fileName", "getFileName" );
-    getterMap.put( "is_command", "isFileAsCommand" );
     getterMap.put( "servlet_output", "isServletOutput" );
     getterMap.put( "do_not_open_new_file_init", "isDoNotOpenNewFileInit" );
     getterMap.put( "extention", "getExtension" );
@@ -107,7 +106,6 @@ public class TextFileOutputMetaTest {
     setterMap.put( "fileNameField", "setFileNameField" );
     setterMap.put( "create_parent_folder", "setCreateParentFolder" );
     setterMap.put( "fileName", "setFilename" );
-    setterMap.put( "is_command", "setFileAsCommand" );
     setterMap.put( "servlet_output", "setServletOutput" );
     setterMap.put( "do_not_open_new_file_init", "setDoNotOpenNewFileInit" );
     setterMap.put( "extention", "setExtension" );

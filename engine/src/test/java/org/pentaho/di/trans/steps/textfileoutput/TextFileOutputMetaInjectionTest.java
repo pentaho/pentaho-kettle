@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -44,11 +44,6 @@ public class TextFileOutputMetaInjectionTest extends BaseMetadataInjectionTest<T
     check( "FILENAME", new StringGetter() {
       public String get() {
         return meta.getFileName();
-      }
-    } );
-    check( "RUN_AS_COMMAND", new BooleanGetter() {
-      public boolean get() {
-        return meta.isFileAsCommand();
       }
     } );
     check( "PASS_TO_SERVLET", new BooleanGetter() {
