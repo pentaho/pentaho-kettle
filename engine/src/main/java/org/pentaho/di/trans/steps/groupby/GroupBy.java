@@ -34,6 +34,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
+import org.apache.commons.math.stat.descriptive.moment.StandardDeviation;
 import org.apache.commons.math.stat.descriptive.rank.Percentile;
 import org.apache.commons.vfs2.FileObject;
 import org.pentaho.di.core.Const;
@@ -443,18 +444,9 @@ public class GroupBy extends BaseStep implements StepInterface {
         case GroupByMeta.TYPE_GROUP_STANDARD_DEVIATION:
           if ( !subjMeta.isNull( subj ) ) {
             data.counts[ i ]++;
-            double n = data.counts[ i ];
             double x = subjMeta.getNumber( subj );
-            // for standard deviation null is exact 0
-            double sum = value == null ? new Double( 0 ) : (Double) value;
-            double mean = data.mean[ i ];
-
-            double delta = x - mean;
-            mean = mean + ( delta / n );
-            sum = sum + delta * ( x - mean );
-
-            data.mean[ i ] = mean;
-            data.agg[ i ] = sum;
+            // store the values in the aggregate list - we will calculate standard vediation once we have all the values
+            ( (List<Double>) data.agg[ i ] ).add( x );
           }
           break;
         case GroupByMeta.TYPE_GROUP_COUNT_DISTINCT:
@@ -608,6 +600,7 @@ public class GroupBy extends BaseStep implements StepInterface {
           break;
         case GroupByMeta.TYPE_GROUP_STANDARD_DEVIATION:
           vMeta = new ValueMetaNumber( meta.getAggregateField()[ i ] );
+          v = new ArrayList<Double>();
           break;
         case GroupByMeta.TYPE_GROUP_COUNT_DISTINCT:
         case GroupByMeta.TYPE_GROUP_COUNT_ANY:
@@ -734,8 +727,12 @@ public class GroupBy extends BaseStep implements StepInterface {
             // PMD-1037 - when all input data is null ag is null, npe on access ag
             break;
           }
-          double sum = (Double) ag / data.counts[ i ];
-          ag = Double.valueOf( Math.sqrt( sum ) );
+          // aggregate list contains individual values
+          valuesList = (List<Double>) data.agg[ i ];
+          if ( valuesList != null && !valuesList.isEmpty() ) {
+            final StandardDeviation stdDev = new StandardDeviation();
+            ag = stdDev.evaluate( valuesList.stream().mapToDouble( ( Double d ) -> d.doubleValue() ).toArray() );
+          }
           break;
         case GroupByMeta.TYPE_GROUP_CONCAT_COMMA:
         case GroupByMeta.TYPE_GROUP_CONCAT_STRING:

@@ -71,6 +71,7 @@ public class GroupByNewAggregateTest {
     statistics = new ArrayList<Integer>();
     statistics.add( GroupByMeta.TYPE_GROUP_MEDIAN );
     statistics.add( GroupByMeta.TYPE_GROUP_PERCENTILE );
+    statistics.add( GroupByMeta.TYPE_GROUP_STANDARD_DEVIATION );
   }
 
   @AfterClass
