@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,19 +22,17 @@
 
 package org.pentaho.di.ui.repository.repositoryexplorer.model;
 
-import java.util.Date;
-import java.util.Iterator;
-import java.util.List;
-
-import org.apache.commons.lang.BooleanUtils;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectory;
 import org.pentaho.di.repository.RepositoryDirectoryInterface;
 import org.pentaho.di.repository.RepositoryElementMetaInterface;
-import org.pentaho.di.repository.RepositoryExtended;
 import org.pentaho.di.repository.RepositoryObjectType;
+
+import java.util.Date;
+import java.util.Iterator;
+import java.util.List;
 
 public class UIRepositoryDirectory extends UIRepositoryObject {
 
@@ -45,6 +43,7 @@ public class UIRepositoryDirectory extends UIRepositoryObject {
   private UIRepositoryDirectories kidDirectoryCache = null;
   private UIRepositoryObjects kidElementCache = null;
   private boolean expanded = false;
+  private boolean populated = false;
 
   public UIRepositoryDirectory() {
     super();
@@ -61,15 +60,22 @@ public class UIRepositoryDirectory extends UIRepositoryObject {
   }
 
   public UIRepositoryDirectories getChildren() {
-    // We've been here before.. use the cache
-    if ( kidDirectoryCache != null ) {
-      return kidDirectoryCache;
-    }
     if ( kidDirectoryCache == null ) {
       kidDirectoryCache = new UIRepositoryDirectories();
+
+      if ( getParent() != null ) {
+        RepositoryDirectory repositoryDirectory = new RepositoryDirectory();
+        repositoryDirectory.setObjectId( null );
+        UIRepositoryDirectory uiRepositoryDirectory = new UIRepositoryDirectory( repositoryDirectory, null, null );
+        kidDirectoryCache.add( uiRepositoryDirectory );
+      }
     }
-    if ( rd.getChildren() == null ) {
-      return kidDirectoryCache;
+    return kidDirectoryCache;
+  }
+
+  public void populateChildren() {
+    if ( kidDirectoryCache == null || !populated ) {
+      kidDirectoryCache = new UIRepositoryDirectories();
     }
 
     for ( RepositoryDirectoryInterface child : rd.getChildren() ) {
@@ -79,7 +85,21 @@ public class UIRepositoryDirectory extends UIRepositoryObject {
         kidDirectoryCache.add( new UIRepositoryDirectory( child, this, rep ) );
       }
     }
-    return kidDirectoryCache;
+    populated = true;
+  }
+
+  public boolean isPopulated() {
+    return populated;
+  }
+
+  public void setPopulated( boolean populated ) {
+    this.populated = populated;
+  }
+
+  public void cleanup() {
+    if ( !populated ) {
+      kidDirectoryCache = new UIRepositoryDirectories();
+    }
   }
 
   public void setChildren( UIRepositoryDirectories children ) {
@@ -90,6 +110,9 @@ public class UIRepositoryDirectory extends UIRepositoryObject {
   // TODO: We will need a way to reset this cache when a directory or element changes
   public UIRepositoryObjects getRepositoryObjects() throws KettleException {
     // We've been here before.. use the cache
+    if ( getObjectId() == null ) {
+      return new UIRepositoryObjects();
+    }
 
     if ( kidElementCache != null ) {
       return kidElementCache;
@@ -113,6 +136,10 @@ public class UIRepositoryDirectory extends UIRepositoryObject {
           }
         }
       };
+    }
+
+    if ( !populated ) {
+      populateChildren();
     }
     for ( UIRepositoryObject child : getChildren() ) {
       kidElementCache.add( child );
@@ -155,7 +182,7 @@ public class UIRepositoryDirectory extends UIRepositoryObject {
     rep.renameRepositoryDirectory( getDirectory().getObjectId(), null, name );
     // Update the object reference so the new name is displayed
     obj = rep.findDirectory( getObjectId() );
-    refresh();
+    getParent().refresh();
   }
 
   public String getDescription() {
@@ -268,7 +295,9 @@ public class UIRepositoryDirectory extends UIRepositoryObject {
     kidDirectoryCache.fireCollectionChanged();
     try {
       getRepositoryObjects(); // prime cache before firing event
-      kidElementCache.fireCollectionChanged();
+      if ( kidElementCache != null ) {
+        kidElementCache.fireCollectionChanged();
+      }
     } catch ( KettleException ignored ) {
       // Ignore errors
     }
@@ -305,31 +334,22 @@ public class UIRepositoryDirectory extends UIRepositoryObject {
 
   /**
    * Synchronize this folder with the back-end
-   * 
-   * 
+   *
+   *
    */
   public void refresh() {
+    kidElementCache = null;
+    kidDirectoryCache = null;
+    rd.clear();
+    populateChildren();
     try {
-      kidElementCache = null;
-      kidDirectoryCache = null;
-      if ( this == getRootDirectory() ) {
-        RepositoryDirectoryInterface localRoot;
-        if ( rep instanceof RepositoryExtended ) {
-          localRoot = ( (RepositoryExtended) rep ).loadRepositoryDirectoryTree( "/", "*.ktr|*.kjb", -1,
-            BooleanUtils.isTrue( rep.getUserInfo().isAdmin() ), true, true ).findDirectory( rd.getObjectId() );
-        } else {
-          localRoot = rep.findDirectory( rd.getObjectId() );
-        }
-        rd = localRoot;
-        // Rebuild caches
-        fireCollectionChanged();
-      } else {
-        getRootDirectory().refresh();
+      if ( obj != null ) {
+        getRepositoryObjects();
       }
-    } catch ( Exception e ) {
-      // TODO: Better error handling
-      e.printStackTrace();
+    } catch ( KettleException ignored ) {
+      // Ignored
     }
+    fireCollectionChanged();
   }
 
   @Override

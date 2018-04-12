@@ -3,19 +3,19 @@
 <window id="repository-explorer-window" title="Dev Repository Window" orient="vertical"
   height="600" width="800"
   xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
-  xmlns:pen="http://www.pentaho.org/2008/xul" 
+  xmlns:pen="http://www.pentaho.org/2008/xul"
   onload="mainController.init()">
 
-	<dialog id="repository-explorer-dialog" 
+	<dialog id="repository-explorer-dialog"
 		title="${RepositoryExplorerDialog.Title}"
 		resizable="true"
 	    height="600" width="800"
 		appicon="ui/images/spoon.ico"
 		buttons="accept"
-		buttonalign="end" 
-		buttonlabelaccept="${Dialog.Close}" 
+		buttonalign="end"
+		buttonlabelaccept="${Dialog.Close}"
 		ondialogaccept="mainController.closeDialog()">
-	
+
 		<menupopup id="folderContextMenu">
 			<menuitem id="folder-context-create" label="${RepositoryExplorerDialog.ContextMenu.NewFolder}" command="browseController.createFolder()"/>
 			<menuitem id="folder-context-open" label="${RepositoryExplorerDialog.ContextMenu.Open}" command="browseController.openContent()"/>
@@ -35,9 +35,9 @@
 			<menuitem id="file-context-locknotes" label="${RepositoryExplorerDialog.ContextMenu.LockNotes}" command="browseController.viewLockNote()"/>
 			-->
 		</menupopup>
-	
+
 		<tabbox id="repositoryExplorerTabs" flex="1">
-	
+
 			<tabs id="repository-tab-set">
 				<tab id="browse-tab" label="${RepositoryExplorerDialog.Tabs.Browse}" />
 				<tab id="connections-tab" label="${RepositoryExplorerDialog.Tabs.Connections}" onclick="connectionsController.tabClicked()" />
@@ -45,9 +45,9 @@
 				<tab id="partitions-tab" label="${RepositoryExplorerDialog.Tabs.Partitions}" onclick="partitionsController.tabClicked()" />
 				<tab id="clusters-tab" label="${RepositoryExplorerDialog.Tabs.Clusters}" onclick="clustersController.tabClicked()" />
 			</tabs>
-	
+
 			<tabpanels id="repository-panels-set" flex="1">
-	
+
 				<!--
 					###############################################################################
 				-->
@@ -57,10 +57,10 @@
 				<!--
 					###############################################################################
 				-->
-	
+
 				<tabpanel id="browse-tab">
-							<splitter flex="1" orient="HORIZONTAL">  
-								<vbox flex="1"> 
+							<splitter flex="1" orient="HORIZONTAL">
+								<vbox flex="1">
 									<hbox>
 										<label id="folder-label" value="${RepositoryExplorerDialog.BrowseTab.Label}" />
 										<label id="spacer-label" flex="1" />
@@ -68,10 +68,11 @@
 											context="folderContextMenu" />
 										<button id="folder-collapse-all" image="${CollapseAll16_image}"  onclick="browseController.collapseAllFolders()" />
 									</hbox>
-		
-									<tree flex="1" id="folder-tree" istree="true" context="folderContextMenu" 
-									ondrag="browseController.onDragFromGlobalTree()" ondrop="browseController.onDrop()" 
-									pen:drageffect="move" pen:preserveexpandedstate="true" pen:preserveselection="true" command="browseController.onDoubleClick()">
+
+									<tree flex="1" id="folder-tree" istree="true" context="folderContextMenu"
+									ondrag="browseController.onDragFromGlobalTree()" ondrop="browseController.onDrop()"
+									pen:drageffect="move" pen:preserveexpandedstate="true" pen:preserveselection="true" command="browseController.onDoubleClick()"
+                  toggle="browseController.onToggle()">
 										<treecols>
 											<treecol flex="1" label="" primary="true" pen:binding="name"
 												pen:childrenbinding="children" pen:imagebinding="image" expandedbinding="expanded" />
@@ -89,15 +90,15 @@
 								<vbox flex="4">
                   <deck id="browse-tab-right-panel-deck" flex="1">
   									<splitter flex="1" orient="VERTICAL">
-                                      <vbox flex="4"> 
-										<hbox id="file-table-tools"/>  
+                                      <vbox flex="4">
+										<hbox id="file-table-tools"/>
   										<tree id="file-table" flex="1" hidecolumnpicker="true"
-  											enableColumnDrag="true" context="fileContextMenu" 
-  											ondrag="browseController.onDragFromLocalTable()" ondrop="browseController.onDrop()" 
+  											enableColumnDrag="true" context="fileContextMenu"
+  											ondrag="browseController.onDragFromLocalTable()" ondrop="browseController.onDrop()"
   											pen:drageffect="move" sortable="true" treeLines="false"  command="browseController.onDoubleClick()">
   											<treecols>
   												<treecol id="name-col" flex="1" label="${RepositoryExplorerDialog.Tab.TableColumn.Name}"
-  													pen:binding="name" pen:childrenbinding="children" pen:imagebinding="image" 
+  													pen:binding="name" pen:childrenbinding="children" pen:imagebinding="image"
   													pen:comparatorbinding="comparator"/>
   												<treecol id="type-col" flex="1" label="${RepositoryExplorerDialog.Tab.TableColumn.Type}"
   													pen:binding="type" />
@@ -110,8 +111,8 @@
   										<vbox flex="3" id="revision-box" visible="false"/>
   								  </splitter>
                   </deck>
-						 		</vbox>  
-                            </splitter>  
+						 		</vbox>
+                            </splitter>
 				</tabpanel>
 				<!--
 					###############################################################################
@@ -122,7 +123,7 @@
 				<!--
 					###############################################################################
 				-->
-	
+
 				<!--
 					###############################################################################
 				-->
@@ -132,7 +133,7 @@
 				<!--
 					###############################################################################
 				-->
-				
+
 				<tabpanel id="connections">
 					<hbox flex="1">
 						<vbox flex="1">
@@ -161,7 +162,7 @@
 						</vbox>
 					</hbox>
 				</tabpanel>
-				
+
 				<!--
 					###############################################################################
 				-->
@@ -171,7 +172,7 @@
 				<!--
 					###############################################################################
 				-->
-				
+
 				<!--
 					###############################################################################
 				-->
@@ -181,7 +182,7 @@
 				<!--
 					###############################################################################
 				-->
-	
+
 				<tabpanel id="slaves">
 					<hbox flex="1">
 						<vbox flex="1">
@@ -206,7 +207,7 @@
 						</vbox>
 					</hbox>
 				</tabpanel>
-				
+
 				<!--
 					###############################################################################
 				-->
@@ -216,7 +217,7 @@
 				<!--
 					###############################################################################
 				-->
-	
+
 				<!--
 					###############################################################################
 				-->
@@ -256,8 +257,8 @@
 				<!--
 					###############################################################################
 				-->
-					
-	
+
+
 				<!--
 					###############################################################################
 				-->
@@ -298,19 +299,19 @@
 				<!--
 					###############################################################################
 				-->
-	
+
 			</tabpanels>
-	
+
 		</tabbox>
-	
+
   <!--  ###############################################################################   -->
   <!--     ADD USER DIALOG: Dialog to add/edit/manage user                                -->
-  <!--  ###############################################################################   -->    
+  <!--  ###############################################################################   -->
     <dialog id="add-user-dialog" buttonlabelaccept="${Dialog.Ok}" buttonlabelcancel="${Dialog.Cancel}"
     		ondialogaccept="iSecurityController.saveUser()"
-    		ondialogcancel="iSecurityController.cancelAddUserDialog()" 
+    		ondialogcancel="iSecurityController.cancelAddUserDialog()"
     		buttons="accept, cancel" buttonalign="right" title="${AddUserDialog.Title}"
-    		appicon="ui/images/spoon.ico" 
+    		appicon="ui/images/spoon.ico"
     		resizable="true"
     		height="260" width="350">
        <vbox>
@@ -323,19 +324,19 @@
 				<textbox id="user-password" flex="1" type="password" multiline="false"/>
 			</hbox>
 			<label value="${AddUserDialog.Description}"/>
-			<hbox id="user-description-box"> 
+			<hbox id="user-description-box">
 				<textbox id="user-description" flex="1" multiline="false"/>
 			</hbox>
       </vbox>
       <vbox id="role-to-user-box" flex="1"/>
   </dialog>
-  
+
   <dialog id="wait-dialog" title="${LazilyInitializedController.Wait.Title}" width="220" height="40">
     <hbox>
       <label id="wait-dialog" value="${LazilyInitializedController.Wait.Message}"/>
     </hbox>
   </dialog>
-  
+
 	</dialog>
 
-</window>  
+</window>
