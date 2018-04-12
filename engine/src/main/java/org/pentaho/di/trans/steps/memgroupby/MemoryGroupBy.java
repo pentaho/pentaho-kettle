@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
+import org.apache.commons.math.stat.descriptive.moment.StandardDeviation;
 import org.apache.commons.math.stat.descriptive.rank.Percentile;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.util.Utils;
@@ -285,22 +286,12 @@ public class MemoryGroupBy extends BaseStep implements StepInterface {
           }
           break;
         case MemoryGroupByMeta.TYPE_GROUP_STANDARD_DEVIATION:
-          if ( aggregate.mean == null ) {
-            aggregate.mean = new double[meta.getSubjectField().length];
+          if ( !subjMeta.isNull( subj ) ) {
+            aggregate.counts[ i ]++;
+            double x = subjMeta.getNumber( subj );
+            // store the values in the aggregate list - we will calculate standard vediation once we have all the values
+            ( (List<Double>) aggregate.agg[ i ] ).add( x );
           }
-          aggregate.counts[i]++;
-          double n = aggregate.counts[i];
-          double x = subjMeta.getNumber( subj );
-          // for standard deviation null is exact 0
-          double sum = value == null ? new Double( 0 ) : (Double) value;
-          double mean = aggregate.mean[i];
-
-          double delta = x - mean;
-          mean = mean + ( delta / n );
-          sum = sum + delta * ( x - mean );
-
-          aggregate.mean[i] = mean;
-          aggregate.agg[i] = sum;
           break;
         case MemoryGroupByMeta.TYPE_GROUP_COUNT_DISTINCT:
           if ( aggregate.distinctObjs == null ) {
@@ -428,6 +419,7 @@ public class MemoryGroupBy extends BaseStep implements StepInterface {
           break;
         case MemoryGroupByMeta.TYPE_GROUP_STANDARD_DEVIATION:
           vMeta = new ValueMetaNumber( meta.getAggregateField()[i] );
+          v = new ArrayList<Double>();
           break;
         case MemoryGroupByMeta.TYPE_GROUP_COUNT_DISTINCT:
         case MemoryGroupByMeta.TYPE_GROUP_COUNT_ANY:
@@ -535,8 +527,12 @@ public class MemoryGroupBy extends BaseStep implements StepInterface {
           case MemoryGroupByMeta.TYPE_GROUP_MAX:
             break;
           case MemoryGroupByMeta.TYPE_GROUP_STANDARD_DEVIATION:
-            double sum = (Double) ag / aggregate.counts[i];
-            ag = Double.valueOf( Math.sqrt( sum ) );
+            // aggregate list contains individual values
+            valuesList = (List<Double>) aggregate.agg[ i ];
+            if ( valuesList != null && !valuesList.isEmpty() ) {
+              final StandardDeviation stdDev = new StandardDeviation();
+              ag = stdDev.evaluate( valuesList.stream().mapToDouble( ( Double d ) -> d.doubleValue() ).toArray() );
+            }
             break;
           case MemoryGroupByMeta.TYPE_GROUP_CONCAT_COMMA:
           case MemoryGroupByMeta.TYPE_GROUP_CONCAT_STRING:

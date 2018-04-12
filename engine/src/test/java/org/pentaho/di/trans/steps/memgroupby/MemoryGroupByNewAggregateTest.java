@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -71,6 +71,7 @@ public class MemoryGroupByNewAggregateTest {
     statistics = new ArrayList<Integer>();
     statistics.add( MemoryGroupByMeta.TYPE_GROUP_MEDIAN );
     statistics.add( MemoryGroupByMeta.TYPE_GROUP_PERCENTILE );
+    statistics.add( MemoryGroupByMeta.TYPE_GROUP_STANDARD_DEVIATION );
   }
 
   @AfterClass

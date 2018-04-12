@@ -37,6 +37,7 @@ import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.trans.steps.mock.StepMockHelper;
 
 import java.util.Arrays;
+import java.util.List;
 
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.when;
@@ -107,7 +108,7 @@ public class GroupByNullInputTest {
    */
   @Test
   public void testNullInputDataForStandardDeviation() throws KettleValueException {
-    setAggregationTypesAndInitData( new int[] { 15 } );
+    setAggregationTypesAndInitData( new int[] { GroupByMeta.TYPE_GROUP_STANDARD_DEVIATION } );
     ValueMetaInterface vmi = new ValueMetaInteger();
     when( rowMetaInterfaceMock.getValueMeta( Mockito.anyInt() ) ).thenReturn( vmi );
     Object[] row1 = new Object[ NUMBER_OF_COLUMNS ];
@@ -115,7 +116,8 @@ public class GroupByNullInputTest {
     step.newAggregate( row1 );
     step.calcAggregate( row1 );
     Object[] aggregateResult = step.getAggregateResult();
-    Assert.assertNull( "Returns null if aggregation is null", aggregateResult[0] );
+    Assert.assertNotNull( "Returns an empty list if aggregation is null", aggregateResult[0] );
+    Assert.assertEquals( "Returns an empty list if aggregation is null", 0, ( (List) aggregateResult[0] ).size() );
   }
 
   @Test
