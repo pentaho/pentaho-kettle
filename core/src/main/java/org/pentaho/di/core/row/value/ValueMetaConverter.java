@@ -44,6 +44,16 @@ public class ValueMetaConverter implements Serializable, IValueMetaConverter {
   private final String DEFAULT_DATE_FORMAT = ValueMetaBase.DEFAULT_DATE_FORMAT_MASK;
   private SimpleDateFormat datePattern = new SimpleDateFormat( DEFAULT_DATE_FORMAT );
 
+  public SimpleDateFormat getDatePattern() {
+    return datePattern;
+  }
+
+  public void setDatePattern( SimpleDateFormat datePattern ) {
+    if ( datePattern != null ) {
+      this.datePattern = datePattern;
+    }
+  }
+
   @Override
   public Object convertFromSourceToTargetDataType( int sourceValueMetaType, int targetValueMetaType, Object value )
     throws ValueMetaConversionException {
@@ -65,6 +75,7 @@ public class ValueMetaConverter implements Serializable, IValueMetaConverter {
       case ValueMetaInterface.TYPE_TIMESTAMP:
         return convertFromTimestampMetaInterface( targetValueMetaType, value );
       case ValueMetaInterface.TYPE_DATE:
+
         return convertFromDateMetaInterface( targetValueMetaType, value );
       case ValueMetaInterface.TYPE_BOOLEAN:
         return convertFromBooleanMetaInterface( targetValueMetaType, value );
