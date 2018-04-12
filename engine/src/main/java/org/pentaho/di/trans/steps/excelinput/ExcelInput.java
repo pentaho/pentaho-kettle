@@ -832,8 +832,8 @@ public class ExcelInput extends BaseStep implements StepInterface {
       }
     } catch ( IOException e ) {
       logDebug( Const.getStackTracker( e ) );
-	  } catch ( Exception e ) {
-	    // Ignore other close errors
+    } catch ( Exception e ) {
+      // Ignore other close errors
     }
     super.dispose( smi, sdi );
   }
