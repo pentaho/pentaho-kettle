@@ -61,14 +61,14 @@ public class RepositoryFile extends RepositoryObject {
     return repositoryFile;
   }
 
-  public static RepositoryFile build( org.pentaho.platform.api.repository2.unified.RepositoryFile repositoryFile ) {
+  public static RepositoryFile build( String parentPath, org.pentaho.platform.api.repository2.unified.RepositoryFile repositoryFile ) {
     RepositoryFile repositoryFile1 = new RepositoryFile();
     repositoryFile1.setObjectId( () -> (String) repositoryFile.getId() );
     repositoryFile1.setName( repositoryFile.getName() );
     repositoryFile1.setType( getType( repositoryFile.getName() ) );
     repositoryFile1.setExtension( ".ktr" );
     repositoryFile1.setDate( repositoryFile.getLastModifiedDate() );
-    repositoryFile1.setPath( repositoryFile.getPath() );
+    repositoryFile1.setPath( parentPath );
     repositoryFile1.setHidden( repositoryFile.isHidden() );
 
     return repositoryFile1;
