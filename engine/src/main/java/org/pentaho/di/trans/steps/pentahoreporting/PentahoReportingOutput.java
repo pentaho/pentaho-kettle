@@ -22,12 +22,6 @@
 
 package org.pentaho.di.trans.steps.pentahoreporting;
 
-import java.awt.GraphicsEnvironment;
-import java.io.OutputStream;
-import java.math.BigDecimal;
-import java.net.URL;
-import java.util.Date;
-
 import org.apache.commons.vfs2.FileObject;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.ResultFile;
@@ -75,10 +69,15 @@ import org.pentaho.reporting.libraries.base.util.ObjectUtilities;
 import org.pentaho.reporting.libraries.fonts.LibFontBoot;
 import org.pentaho.reporting.libraries.repository.ContentLocation;
 import org.pentaho.reporting.libraries.repository.DefaultNameGenerator;
-import org.pentaho.reporting.libraries.repository.file.FileRepository;
 import org.pentaho.reporting.libraries.resourceloader.LibLoaderBoot;
 import org.pentaho.reporting.libraries.resourceloader.Resource;
 import org.pentaho.reporting.libraries.resourceloader.ResourceManager;
+
+import java.awt.*;
+import java.io.OutputStream;
+import java.math.BigDecimal;
+import java.net.URL;
+import java.util.Date;
 
 /**
  * Outputs a stream/series of rows to a file, effectively building a sort of (compressed) microcube.
