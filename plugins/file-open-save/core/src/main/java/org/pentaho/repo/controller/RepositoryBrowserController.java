@@ -513,7 +513,7 @@ public class RepositoryBrowserController {
 
     for ( RepositoryFileTree repositoryFileTree : tree.getChildren() ) {
       org.pentaho.platform.api.repository2.unified.RepositoryFile repositoryFile = repositoryFileTree.getFile();
-      RepositoryFile repositoryFile1 = RepositoryFile.build( repositoryFile );
+      RepositoryFile repositoryFile1 = RepositoryFile.build( repositoryDirectory.getPath(), repositoryFile );
       repositoryDirectory.addChild( repositoryFile1 );
     }
   }
