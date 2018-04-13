@@ -1088,7 +1088,7 @@ public class Const {
   /**
    * Variable that is responsible for checking empty field names and types.
    */
-  public static final String ALLOW_EMPTY_FIELD_NAMES_AND_TYPES = "ALLOW_EMPTY_FIELD_NAMES_AND_TYPES";
+  public static final String KETTLE_ALLOW_EMPTY_FIELD_NAMES_AND_TYPES = "KETTLE_ALLOW_EMPTY_FIELD_NAMES_AND_TYPES";
 
   /**
    * Set this variable to false to preserve global log variables defined in transformation / job Properties -> Log panel.

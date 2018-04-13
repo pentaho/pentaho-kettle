@@ -453,7 +453,7 @@
 
   <kettle-variable>
     <description>Set this variable to TRUE to allow your transformation to pass 'null' fields and/or empty types.</description>
-    <variable>ALLOW_EMPTY_FIELD_NAMES_AND_TYPES</variable>
+    <variable>KETTLE_ALLOW_EMPTY_FIELD_NAMES_AND_TYPES</variable>
     <default-value>false</default-value>
   </kettle-variable>
 
