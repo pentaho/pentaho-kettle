@@ -81,6 +81,7 @@ public class RepositoryOpenSaveDialog extends ThinDialog {
     clientPath.append( !Utils.isEmpty( origin ) ? "origin=" + origin : "" );
     clientPath.append( !Utils.isEmpty( origin ) ? "&" : "" );
     clientPath.append( null != filename ? "filename=" + filename : "" );
+    clientPath.append( null != filename ? "&" : "" );
     clientPath.append( null != fileType ? "fileType=" + fileType : "" );
     super.createDialog( title != null ? title : StringUtils.capitalize( state ), getRepoURL( clientPath.toString() ),
       OPTIONS, LOGO );
