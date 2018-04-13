@@ -3885,6 +3885,8 @@ public class ValueMetaBase implements ValueMetaInterface {
         return getBoolean( data );
       case TYPE_BINARY:
         return getBinary( data );
+      case TYPE_TIMESTAMP:
+        return getDate( data );
       default:
         throw new KettleValueException( toString() + " : I can't convert the specified value to data type : "
             + conversionMetadata.getType() );
