@@ -420,6 +420,11 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
   private long minRowsForMaxErrorPercent = -1L;
 
   /**
+   * set this flag to true to allow empty field names and types to output
+   */
+  private boolean allowEmptyFieldNamesAndTypes = false;
+
+  /**
    * Keeps track of the number of rows read for input deadlock verification.
    */
   protected long deadLockCounter;
@@ -668,6 +673,10 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
     setVariable( Const.INTERNAL_VARIABLE_STEP_UNIQUE_NUMBER, Integer.toString( uniqueStepNrAcrossSlaves ) );
     setVariable( Const.INTERNAL_VARIABLE_STEP_UNIQUE_COUNT, Integer.toString( uniqueStepCountAcrossSlaves ) );
     setVariable( Const.INTERNAL_VARIABLE_STEP_COPYNR, Integer.toString( stepcopy ) );
+
+    // BACKLOG-18004
+    allowEmptyFieldNamesAndTypes = Boolean.parseBoolean( System.getProperties().getProperty(
+      Const.KETTLE_ALLOW_EMPTY_FIELD_NAMES_AND_TYPES, "false" ) );
 
     // Now that these things have been done, we also need to start a number of server sockets.
     // One for each of the remote output steps that we're going to write to.
@@ -1244,9 +1253,7 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
   @Override
   public void putRow( RowMetaInterface rowMeta, Object[] row ) throws KettleStepException {
     if ( rowMeta != null ) {
-      String property = System.getProperties().getProperty( Const.ALLOW_EMPTY_FIELD_NAMES_AND_TYPES, "false" );
-      boolean allowEmpty = Boolean.parseBoolean( property );
-      if ( !allowEmpty ) {
+      if ( !allowEmptyFieldNamesAndTypes ) {
         // check row meta for empty field name (BACKLOG-18004)
         for ( ValueMetaInterface vmi : rowMeta.getValueMetaList() ) {
           if ( StringUtils.isBlank( vmi.getName() ) ) {
