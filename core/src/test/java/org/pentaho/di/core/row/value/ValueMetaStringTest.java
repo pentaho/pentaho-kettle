@@ -504,6 +504,65 @@ public class ValueMetaStringTest {
     assertSignum( 0, meta.compare( "1 ", " 1 " ) ); // "1" == "1"
     assertSignum( 0, meta.compare( "1 ", "1" ) ); // "1" == "1"
     assertSignum( 0, meta.compare( "1 ", "1 " ) ); // "1" == "1"
+
+    meta.setTrimType( ValueMetaInterface.TRIM_TYPE_NONE );
+    meta.setIgnoreWhitespace( true );
+
+    assertSignum( 0, meta.compare( null, null ) ); // null == null
+    assertSignum( -1, meta.compare( null, "" ) ); // null < ""
+    assertSignum( -1, meta.compare( null, " " ) ); // null < ""
+    assertSignum( -1, meta.compare( null, " 1" ) ); // null < "1"
+    assertSignum( -1, meta.compare( null, " 1 " ) ); // null < "1"
+    assertSignum( -1, meta.compare( null, "1" ) ); // null < "1"
+    assertSignum( -1, meta.compare( null, "1 " ) ); // null < "1"
+
+    assertSignum( 1, meta.compare( "", null ) ); // "" > null
+    assertSignum( 0, meta.compare( "", "" ) ); // "" == ""
+    assertSignum( 0, meta.compare( "", " " ) ); // "" == ""
+    assertSignum( -1, meta.compare( "", " 1" ) ); // "" < "1"
+    assertSignum( -1, meta.compare( "", " 1 " ) ); // "" < "1"
+    assertSignum( -1, meta.compare( "", "1" ) ); // "" < "1"
+    assertSignum( -1, meta.compare( "", "1 " ) ); // "" < "1"
+
+    assertSignum( 1, meta.compare( " ", null ) ); // "" > null
+    assertSignum( 0, meta.compare( " ", "" ) ); // "" == ""
+    assertSignum( 0, meta.compare( " ", " " ) ); // "" == ""
+    assertSignum( -1, meta.compare( " ", " 1" ) ); // "" < "1"
+    assertSignum( -1, meta.compare( " ", " 1 " ) ); // "" < "1"
+    assertSignum( -1, meta.compare( " ", "1" ) ); // "" < "1"
+    assertSignum( -1, meta.compare( " ", "1 " ) ); // "" < "1"
+
+    assertSignum( 1, meta.compare( " 1", null ) ); // "1" > null
+    assertSignum( 1, meta.compare( " 1", "" ) ); // "1" > ""
+    assertSignum( 1, meta.compare( " 1", " " ) ); // "1" > ""
+    assertSignum( 0, meta.compare( " 1", " 1" ) ); // "1" == "1"
+    assertSignum( 0, meta.compare( " 1", " 1 " ) ); // "1" == "1"
+    assertSignum( 0, meta.compare( " 1", "1" ) ); // "1" == "1"
+    assertSignum( 0, meta.compare( " 1", "1 " ) ); // "1" == "1"
+
+    assertSignum( 1, meta.compare( " 1 ", null ) ); // "1" > null
+    assertSignum( 1, meta.compare( " 1 ", "" ) ); // "1" > ""
+    assertSignum( 1, meta.compare( " 1 ", " " ) ); // "1" > ""
+    assertSignum( 0, meta.compare( " 1 ", " 1" ) ); // "1" == "1"
+    assertSignum( 0, meta.compare( " 1 ", " 1 " ) ); // "1" == "1"
+    assertSignum( 0, meta.compare( " 1 ", "1" ) ); // "1" == "1"
+    assertSignum( 0, meta.compare( " 1 ", "1 " ) ); // "1" == "1"
+
+    assertSignum( 1, meta.compare( "1", null ) ); // "1" > null
+    assertSignum( 1, meta.compare( "1", "" ) ); // "1" > ""
+    assertSignum( 1, meta.compare( "1", " " ) ); // "1" > ""
+    assertSignum( 0, meta.compare( "1", " 1" ) ); // "1" == "1"
+    assertSignum( 0, meta.compare( "1", " 1 " ) ); // "1" == "1"
+    assertSignum( 0, meta.compare( "1", "1" ) ); // "1" == "1"
+    assertSignum( 0, meta.compare( "1", "1 " ) ); // "1" == "1"
+
+    assertSignum( 1, meta.compare( "1 ", null ) ); // "1" > null
+    assertSignum( 1, meta.compare( "1 ", "" ) ); // "1" > ""
+    assertSignum( 1, meta.compare( "1 ", " " ) ); // "1" > ""
+    assertSignum( 0, meta.compare( "1 ", " 1" ) ); // "1" == "1"
+    assertSignum( 0, meta.compare( "1 ", " 1 " ) ); // "1" == "1"
+    assertSignum( 0, meta.compare( "1 ", "1" ) ); // "1" == "1"
+    assertSignum( 0, meta.compare( "1 ", "1 " ) ); // "1" == "1"
   }
 
   @Test
@@ -753,7 +812,64 @@ public class ValueMetaStringTest {
     assertSignum( 0, meta.compare( "1 ", "1" ) ); // "1" == "1"
     assertSignum( 0, meta.compare( "1 ", "1 " ) ); // "1" == "1"
 
+    meta.setTrimType( ValueMetaInterface.TRIM_TYPE_NONE );
+    meta.setIgnoreWhitespace( true );
 
+    assertSignum( 0, meta.compare( null, null ) ); // null == null
+    assertSignum( 0, meta.compare( null, "" ) ); // null == null
+    assertSignum( -1, meta.compare( null, " " ) ); // null < null //TODO: Is it correct?
+    assertSignum( -1, meta.compare( null, " 1" ) ); // null < "1"
+    assertSignum( -1, meta.compare( null, " 1 " ) ); // null < "1"
+    assertSignum( -1, meta.compare( null, "1" ) ); // null < "1"
+    assertSignum( -1, meta.compare( null, "1 " ) ); // null < "1"
+
+    assertSignum( 0, meta.compare( "", null ) ); // null == null
+    assertSignum( 0, meta.compare( "", "" ) ); // null == null
+    assertSignum( -1, meta.compare( "", " " ) ); // null < null //TODO: Is it correct?
+    assertSignum( -1, meta.compare( "", " 1" ) ); // null < "1"
+    assertSignum( -1, meta.compare( "", " 1 " ) ); // null < "1"
+    assertSignum( -1, meta.compare( "", "1" ) ); // null < "1"
+    assertSignum( -1, meta.compare( "", "1 " ) ); // null < "1"
+
+    assertSignum( 1, meta.compare( " ", null ) ); // null > null //TODO: Is it correct?
+    assertSignum( 1, meta.compare( " ", "" ) ); // null > null //TODO: Is it correct?
+    assertSignum( 0, meta.compare( " ", " " ) ); // null == null
+    assertSignum( -1, meta.compare( " ", " 1" ) ); // null < "1"
+    assertSignum( -1, meta.compare( " ", " 1 " ) ); // null < "1"
+    assertSignum( -1, meta.compare( " ", "1" ) ); // null < "1"
+    assertSignum( -1, meta.compare( " ", "1 " ) ); // null < "1"
+
+    assertSignum( 1, meta.compare( " 1", null ) ); // "1" > null
+    assertSignum( 1, meta.compare( " 1", "" ) ); // "1" > null
+    assertSignum( 1, meta.compare( " 1", " " ) ); // "1" > null
+    assertSignum( 0, meta.compare( " 1", " 1" ) ); // "1" == "1"
+    assertSignum( 0, meta.compare( " 1", " 1 " ) ); // "1" == "1"
+    assertSignum( 0, meta.compare( " 1", "1" ) ); // "1" == "1"
+    assertSignum( 0, meta.compare( " 1", "1 " ) ); // "1" == "1"
+
+    assertSignum( 1, meta.compare( " 1 ", null ) ); // "1" > null
+    assertSignum( 1, meta.compare( " 1 ", "" ) ); // "1" > null
+    assertSignum( 1, meta.compare( " 1 ", " " ) ); // "1" > null
+    assertSignum( 0, meta.compare( " 1 ", " 1" ) ); // "1" == "1"
+    assertSignum( 0, meta.compare( " 1 ", " 1 " ) ); // "1" == "1"
+    assertSignum( 0, meta.compare( " 1 ", "1" ) ); // "1" == "1"
+    assertSignum( 0, meta.compare( " 1 ", "1 " ) ); // "1" == "1"
+
+    assertSignum( 1, meta.compare( "1", null ) ); // "1" > null
+    assertSignum( 1, meta.compare( "1", "" ) ); // "1" > null
+    assertSignum( 1, meta.compare( "1", " " ) ); // "1" > null
+    assertSignum( 0, meta.compare( "1", " 1" ) ); // "1" == "1"
+    assertSignum( 0, meta.compare( "1", " 1 " ) ); // "1" == "1"
+    assertSignum( 0, meta.compare( "1", "1" ) ); // "1" == "1"
+    assertSignum( 0, meta.compare( "1", "1 " ) ); // "1" == "1"
+
+    assertSignum( 1, meta.compare( "1 ", null ) ); // "1" > null
+    assertSignum( 1, meta.compare( "1 ", "" ) ); // "1" > null
+    assertSignum( 1, meta.compare( "1 ", " " ) ); // "1" > null
+    assertSignum( 0, meta.compare( "1 ", " 1" ) ); // "1" == "1"
+    assertSignum( 0, meta.compare( "1 ", " 1 " ) ); // "1" == "1"
+    assertSignum( 0, meta.compare( "1 ", "1" ) ); // "1" == "1"
+    assertSignum( 0, meta.compare( "1 ", "1 " ) ); // "1" == "1"
   }
 
   @Test

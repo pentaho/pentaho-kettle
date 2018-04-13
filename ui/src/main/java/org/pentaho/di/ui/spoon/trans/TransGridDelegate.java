@@ -23,7 +23,6 @@
 package org.pentaho.di.ui.spoon.trans;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -45,6 +44,8 @@ import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.ToolBar;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Props;
+import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.i18n.GlobalMessages;
 import org.pentaho.di.trans.step.BaseStepData.StepExecutionStatus;
@@ -69,6 +70,10 @@ public class TransGridDelegate extends SpoonDelegate implements XulEventHandler 
   private static Class<?> PKG = Spoon.class; // for i18n purposes, needed by Translator2!!
 
   private static final String XUL_FILE_TRANS_GRID_TOOLBAR = "ui/trans-grid-toolbar.xul";
+
+  private static final int STEP_NUMBER_COLUMN = 0;
+
+  private static final int STEP_NAME_COLUMN = 1;
 
   public static final long REFRESH_TIME = 100L;
 
@@ -153,11 +158,18 @@ public class TransGridDelegate extends SpoonDelegate implements XulEventHandler 
 
     toolbarControl.setParent( transGridComposite );
 
+    //ignore whitespace for stepname column valueMeta, causing sorting to ignore whitespace
+    String stepNameColumnName = BaseMessages.getString( PKG, "TransLog.Column.Stepname" );
+    ValueMetaInterface valueMeta = new ValueMetaString( stepNameColumnName );
+    valueMeta.setIgnoreWhitespace( true );
+    ColumnInfo stepNameColumnInfo =
+      new ColumnInfo( stepNameColumnName, ColumnInfo.COLUMN_TYPE_TEXT, false,
+        true );
+    stepNameColumnInfo.setValueMeta( valueMeta );
+
     ColumnInfo[] colinf =
       new ColumnInfo[] {
-        new ColumnInfo(
-          BaseMessages.getString( PKG, "TransLog.Column.Stepname" ), ColumnInfo.COLUMN_TYPE_TEXT, false,
-          true ),
+        stepNameColumnInfo,
         new ColumnInfo(
           BaseMessages.getString( PKG, "TransLog.Column.Copynr" ), ColumnInfo.COLUMN_TYPE_TEXT, false, true ),
         new ColumnInfo(
@@ -295,9 +307,9 @@ public class TransGridDelegate extends SpoonDelegate implements XulEventHandler 
   }
 
   private void refreshView() {
-    boolean insert = true;
-    int nrSteps = -1;
-    int totalSteps = -1;
+    boolean tableCleared = false;
+    int numberStepsToDisplay = -1;
+    int baseStepCount = -1;
 
     if ( transGridView == null || transGridView.isDisposed() ) {
       return;
@@ -322,119 +334,121 @@ public class TransGridDelegate extends SpoonDelegate implements XulEventHandler 
     if ( transGraph.trans != null && !transGraph.trans.isPreparing() && msSinceLastUpdate > UPDATE_TIME_VIEW ) {
       lastUpdateView = time;
 
-      nrSteps = transGraph.trans.nrSteps();
-      totalSteps = nrSteps;
+      baseStepCount = transGraph.trans.nrSteps();
       if ( hideInactiveSteps ) {
-        nrSteps = transGraph.trans.nrActiveSteps();
+        numberStepsToDisplay = transGraph.trans.nrActiveSteps();
+      } else {
+        numberStepsToDisplay = baseStepCount;
       }
 
       StepExecutionStatus[] stepStatusLookup = transGraph.trans.getTransStepExecutionStatusLookup();
       boolean[] isRunningLookup = transGraph.trans.getTransStepIsRunningLookup();
 
-      int sortColumn = transGridView.getSortField();
-      boolean sortDescending = transGridView.isSortingDescending();
-      int[] selectedItems = transGridView.getSelectionIndices();
-
-      if ( table.getItemCount() != nrSteps ) {
-        table.removeAll();
-      } else {
-        insert = false;
+      // Count sub steps
+      for ( int i = 0; i < baseStepCount; i++ ) {
+        // if inactive steps are hidden, only count sub steps of active base steps
+        if ( !hideInactiveSteps || ( isRunningLookup[ i ]
+          || stepStatusLookup[ i ] != StepExecutionStatus.STATUS_FINISHED ) ) {
+          StepInterface baseStep = transGraph.trans.getRunThread( i );
+          numberStepsToDisplay += baseStep.subStatuses().size();
+        }
       }
 
-      if ( nrSteps == 0 && table.getItemCount() == 0 ) {
+      if ( table.getItemCount() != numberStepsToDisplay ) {
+        table.removeAll();
+        tableCleared = true;
+      }
+
+      if ( numberStepsToDisplay == 0 && table.getItemCount() == 0 ) {
         new TableItem( table, SWT.NONE );
         refresh_busy = false;
         return;
       }
 
-      int nr = 0;
+      if ( tableCleared ) {
+        // iterate over the base steps and add into table
+        for ( int i = 0; i < baseStepCount; i++ ) {
+          StepInterface baseStep = transGraph.trans.getRunThread( i );
 
-      for ( int i = 0; i < totalSteps; i++ ) {
-        StepInterface baseStep = transGraph.trans.getRunThread( i );
+          // if the step should be displayed
+          if ( showSelected( selectedSteps, baseStep )
+            && ( hideInactiveSteps && ( isRunningLookup[ i ]
+            || stepStatusLookup[ i ] != StepExecutionStatus.STATUS_FINISHED ) )
+            || ( !hideInactiveSteps && stepStatusLookup[ i ] != StepExecutionStatus.STATUS_EMPTY ) ) {
 
-        // See if the step is selected & in need of display
-        //
-        boolean showSelected;
-        if ( showSelectedSteps ) {
-          if ( selectedSteps.size() == 0 ) {
-            showSelected = true;
-          } else {
-            showSelected = false;
-            for ( StepMeta stepMeta : selectedSteps ) {
-              if ( baseStep.getStepMeta().equals( stepMeta ) ) {
-                showSelected = true;
-                break;
+            // write base step to table
+            TableItem ti = new TableItem( table, SWT.NONE );
+            String baseStepNumber = "" + ( i + 1 );
+            ti.setText( STEP_NUMBER_COLUMN, baseStepNumber );
+            updateRowFromBaseStep( baseStep, ti );
+
+            // write sub steps to table
+            int subStepIndex = 1;
+            for ( StepStatus subStepStatus : baseStep.subStatuses() ) {
+              String[] subFields = subStepStatus.getTransLogFields( baseStep.getStatus().getDescription() );
+              subFields[ STEP_NAME_COLUMN ] = "     " + subFields[ STEP_NAME_COLUMN ];
+              TableItem subItem = new TableItem( table, SWT.NONE );
+              subItem.setText( STEP_NUMBER_COLUMN, baseStepNumber + "." + subStepIndex++ );
+              for ( int f = 1; f < subFields.length; f++ ) {
+                subItem.setText( f, subFields[ f ] );
               }
             }
           }
-        } else {
-          showSelected = true;
         }
-
-        // when "Hide active" steps is enabled show only alive steps
-        // otherwise only those that have not STATUS_EMPTY
-        //
-        if ( showSelected
-          && ( hideInactiveSteps && ( isRunningLookup[i]
-          || stepStatusLookup[i] != StepExecutionStatus.STATUS_FINISHED ) )
-          || ( !hideInactiveSteps && stepStatusLookup[i] != StepExecutionStatus.STATUS_EMPTY ) ) {
-          TableItem ti = null;
-          if ( insert ) {
-            ti = new TableItem( table, SWT.NONE );
-          } else {
-            ti = table.getItem( nr );
-          }
+      } else {
+        // iterate over and update the existing rows in the table
+        for ( int rowIndex = 0; rowIndex < numberStepsToDisplay; rowIndex++ ) {
+          TableItem ti = table.getItem( rowIndex );
 
           if ( ti == null ) {
             continue;
           }
 
-          String num = "" + ( i + 1 );
-          if ( ti.getText( 0 ).length() < 1 ) {
-            ti.setText( 0, num );
+          String tableStepNumber = ti.getText( STEP_NUMBER_COLUMN );
+          String[] tableStepNumberSplit = tableStepNumber.split( "\\." );
+          String tableBaseStepNumber = tableStepNumberSplit[ 0 ];
+          boolean isBaseStep = true;
+
+          if ( tableStepNumberSplit.length > 1 ) {
+            isBaseStep = false;
           }
 
-          if ( ti.getText( 0 ).length() > 0 ) {
-            Integer tIndex = Integer.parseInt( ti.getText( 0 ) );
-            tIndex--;
-            baseStep = transGraph.trans.getRunThread( tIndex );
-          }
+          // step numbers displayed on table start at 1 and step number indexes begin at 0
+          int baseStepNumber = Integer.parseInt( tableBaseStepNumber ) - 1;
 
-          StepStatus stepStatus = new StepStatus( baseStep );
+          StepInterface baseStep = transGraph.trans.getRunThread( baseStepNumber );
 
-          String[] fields = stepStatus.getTransLogFields();
+          // if the step should be displayed
+          if ( showSelected( selectedSteps, baseStep )
+            && ( hideInactiveSteps && ( isRunningLookup[ baseStepNumber ]
+            || stepStatusLookup[ baseStepNumber ] != StepExecutionStatus.STATUS_FINISHED ) )
+            || ( !hideInactiveSteps && stepStatusLookup[ baseStepNumber ] != StepExecutionStatus.STATUS_EMPTY ) ) {
 
-          // Anti-flicker: if nothing has changed, don't change it on the
-          // screen!
-          for ( int f = 1; f < fields.length; f++ ) {
-            if ( !fields[f].equalsIgnoreCase( ti.getText( f ) ) ) {
-              ti.setText( f, fields[f] );
-            }
-          }
-
-          // Error lines should appear in red:
-          if ( baseStep.getErrors() > 0 ) {
-            ti.setBackground( GUIResource.getInstance().getColorRed() );
-          } else {
-            ti.setBackground( GUIResource.getInstance().getColorWhite() );
-          }
-          nr++;
-
-          Collection<StepStatus> stepStatuses = baseStep.subStatuses();
-          int subIndex = 1;
-          for ( StepStatus status : stepStatuses ) {
-            String[] subFields = status.getTransLogFields( baseStep.getStatus().getDescription() );
-            subFields[1] = "     " + subFields[1];
-            TableItem subItem = new TableItem( table, SWT.NONE );
-            subItem.setText( 0, num + "." + subIndex++ );
-
-            for ( int f = 1; f < subFields.length; f++ ) {
-              subItem.setText( f, subFields[f] );
+            if ( isBaseStep ) {
+              updateRowFromBaseStep( baseStep, ti );
+            } else {
+              // loop through sub steps and update the one that matches the sub step name from the table
+              String tableSubStepName = ti.getText( STEP_NAME_COLUMN );
+              for ( StepStatus subStepStatus : baseStep.subStatuses() ) {
+                String[] subFields = subStepStatus.getTransLogFields( baseStep.getStatus().getDescription() );
+                subFields[ STEP_NAME_COLUMN ] = "     " + subFields[ STEP_NAME_COLUMN ];
+                if ( (subFields[ STEP_NAME_COLUMN ]).equals( tableSubStepName ) ) {
+                  updateCellsIfChanged( subFields, ti );
+                }
+              }
             }
           }
         }
       }
 
+      int sortColumn = transGridView.getSortField();
+      boolean sortDescending = transGridView.isSortingDescending();
+      // Only need to re-sort if the output has been sorted differently to the default
+      if ( table.getItemCount() > 0 && ( sortColumn != 0 || sortDescending ) ) {
+        transGridView.sortTable( transGridView.getSortField(), sortDescending );
+      }
+
+      // Alternate row background color
       for ( int i = 0; i < table.getItems().length; i++ ) {
         TableItem item = table.getItem( i );
         item.setForeground( GUIResource.getInstance().getColorBlack() );
@@ -446,14 +460,10 @@ public class TransGridDelegate extends SpoonDelegate implements XulEventHandler 
         }
       }
 
-      // Only need to resort if the output has been sorted differently to the
-      // default
-      if ( table.getItemCount() > 0 && ( sortColumn != 0 || !sortDescending ) ) {
-        transGridView.sortTable( sortColumn, sortDescending, false );
-      }
-
       // if (updateRowNumbers) { transGridView.setRowNums(); }
       transGridView.optWidth( true );
+
+      int[] selectedItems = transGridView.getSelectionIndices();
 
       if ( selectedItems != null && selectedItems.length > 0 ) {
         transGridView.setSelection( selectedItems );
@@ -470,6 +480,56 @@ public class TransGridDelegate extends SpoonDelegate implements XulEventHandler 
     }
 
     refresh_busy = false;
+  }
+
+  private void updateRowFromBaseStep( StepInterface baseStep, TableItem row ) {
+    StepStatus stepStatus = new StepStatus( baseStep );
+
+    String[] fields = stepStatus.getTransLogFields();
+
+    updateCellsIfChanged( fields, row );
+
+    // Error lines should appear in red:
+    if ( baseStep.getErrors() > 0 ) {
+      row.setBackground( GUIResource.getInstance().getColorRed() );
+    } else {
+      row.setBackground( GUIResource.getInstance().getColorWhite() );
+    }
+  }
+
+  private boolean showSelected( List<StepMeta> selectedSteps, StepInterface baseStep ) {
+    // See if the step is selected & in need of display
+    boolean showSelected;
+    if ( showSelectedSteps ) {
+      if ( selectedSteps.size() == 0 ) {
+        showSelected = true;
+      } else {
+        showSelected = false;
+        for ( StepMeta stepMeta : selectedSteps ) {
+          if ( baseStep.getStepMeta().equals( stepMeta ) ) {
+            showSelected = true;
+            break;
+          }
+        }
+      }
+    } else {
+      showSelected = true;
+    }
+    return showSelected;
+  }
+
+  /**
+   * Anti-flicker: if nothing has changed, don't change it on the screen!
+   *
+   * @param fields
+   * @param row
+   */
+  private void updateCellsIfChanged( String[] fields, TableItem row ) {
+    for ( int f = 1; f < fields.length; f++ ) {
+      if ( !fields[ f ].equalsIgnoreCase( row.getText( f ) ) ) {
+        row.setText( f, fields[ f ] );
+      }
+    }
   }
 
   public CTabItem getTransGridTab() {

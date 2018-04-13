@@ -177,6 +177,8 @@ public class ValueMetaBase implements ValueMetaInterface {
   protected int originalNullable;
   protected boolean originalSigned;
 
+  protected boolean ignoreWhitespace;
+
   private static final LogChannelInterface log = KettleLogStore.getLogChannelInterfaceFactory().create( "ValueMetaBase" );
 
   /**
@@ -3631,6 +3633,11 @@ public class ValueMetaBase implements ValueMetaInterface {
         String one = getString( data1 );
         String two = getString( data2 );
 
+        if ( ignoreWhitespace ) {
+          one = one.trim();
+          two = two.trim();
+        }
+
         if ( collatorDisabled ) {
           if ( caseInsensitive ) {
             cmp = one.compareToIgnoreCase( two );
@@ -4598,6 +4605,16 @@ public class ValueMetaBase implements ValueMetaInterface {
   public void setDateFormatTimeZone( TimeZone dateFormatTimeZone ) {
     this.dateFormatTimeZone = dateFormatTimeZone;
     dateFormatChanged = true;
+  }
+
+  @Override
+  public boolean isIgnoreWhitespace() {
+    return ignoreWhitespace;
+  }
+
+  @Override
+  public void setIgnoreWhitespace( boolean ignoreWhitespace ) {
+    this.ignoreWhitespace = ignoreWhitespace;
   }
 
   @Override

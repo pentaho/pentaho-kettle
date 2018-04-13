@@ -159,7 +159,6 @@ public class TableView extends Composite {
   private boolean sortable;
   private int lastRowCount;
   private boolean fieldChanged;
-  private boolean insertImage;
 
   private Menu mRow;
 
@@ -1316,9 +1315,6 @@ public class TableView extends Composite {
   }
 
   public void sortTable( int sortField, boolean sortingDescending ) {
-    sortTable( sortField, sortingDescending, true );
-  }
-  public void sortTable( int sortField, boolean sortingDescending, boolean resetRowNums ) {
     boolean shouldRefresh = false;
     if ( this.sortfieldLast == -1 && this.sortingDescendingLast == null ) {
       // first time through, so update
@@ -1482,9 +1478,6 @@ public class TableView extends Composite {
       table.setSortDirection( sortingDescending ? SWT.DOWN : SWT.UP );
 
       lastRowCount = table.getItemCount();
-      if ( resetRowNums ) {
-        setRowNums();
-      }
     } catch ( Exception e ) {
       new ErrorDialog( this.getShell(), BaseMessages.getString( PKG, "TableView.ErrorDialog.title" ), BaseMessages
         .getString( PKG, "TableView.ErrorDialog.description" ), e );
