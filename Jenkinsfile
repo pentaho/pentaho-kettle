@@ -22,6 +22,8 @@ pipeline {
     booleanParam(defaultValue: true, description: 'Run the scm checkouts', name: 'RUN_CHECKOUTS')
     booleanParam(defaultValue: true, description: 'Run the code builds', name: 'RUN_BUILDS')
     booleanParam(defaultValue: true, description: 'Run the code tests', name: 'RUN_UNIT_TESTS')
+    booleanParam(defaultValue: true, description: 'Archive the artifacts', name: 'ARCHIVE_ARTIFACTS')
+
 
     booleanParam(defaultValue: false, description: 'Clean all build dependency caches', name: 'CLEAN_ALL_CACHES')
     booleanParam(defaultValue: false, description: 'Clean build scm workspaces', name: 'CLEAN_SCM_WORKSPACES')
