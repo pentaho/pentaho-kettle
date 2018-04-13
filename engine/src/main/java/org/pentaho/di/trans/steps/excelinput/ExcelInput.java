@@ -827,9 +827,13 @@ public class ExcelInput extends BaseStep implements StepInterface {
       }
     }
     try {
-      fpis.close();
+      if ( fpis != null ) {
+        fpis.close();
+      }
     } catch ( IOException e ) {
       logDebug( Const.getStackTracker( e ) );
+    } catch ( Exception e ) {
+      // Ignore other close errors
     }
     super.dispose( smi, sdi );
   }
