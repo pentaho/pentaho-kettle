@@ -33,6 +33,7 @@ import java.util.Map;
 import java.util.Queue;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -250,8 +251,9 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
     jobEntryListeners = new ArrayList<JobEntryListener>();
     delegationListeners = new ArrayList<DelegationListener>();
 
-    activeJobEntryTransformations = new HashMap<JobEntryCopy, JobEntryTrans>();
-    activeJobEntryJobs = new HashMap<JobEntryCopy, JobEntryJob>();
+    // these 2 maps are being modified concurrently and must be thread-safe
+    activeJobEntryTransformations = new ConcurrentHashMap<JobEntryCopy, JobEntryTrans>();
+    activeJobEntryJobs = new ConcurrentHashMap<JobEntryCopy, JobEntryJob>();
 
     extensionDataMap = new HashMap<String, Object>();
 
