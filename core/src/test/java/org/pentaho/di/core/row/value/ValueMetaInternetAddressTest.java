@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -90,5 +90,15 @@ public class ValueMetaInternetAddressTest {
     } catch ( ArrayIndexOutOfBoundsException e ) {
       // expected
     }
+  }
+
+  @Test
+  public void testGetNativeDataType() throws UnknownHostException, KettleValueException {
+    ValueMetaInterface vmi = new ValueMetaInternetAddress( "Test" );
+    InetAddress expected = InetAddress.getByAddress( new byte[] { (byte) 192, (byte) 168, 1, 1 } );
+
+    assertEquals( ValueMetaInterface.TYPE_INET, vmi.getType() );
+    assertEquals( ValueMetaInterface.STORAGE_TYPE_NORMAL, vmi.getStorageType() );
+    assertSame( expected, vmi.getNativeDataType( expected ) );
   }
 }
