@@ -5146,8 +5146,10 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
         BaseMessages.getString( PKG, "Spoon.Dialog.ErrorSavingDatabaseCache.Message" ), e );
     }
 
-    delegates.tabs.renameTabs(); // filename or name of transformation might
-    // have changed.
+    // rename the tab only if the meta was successfully saved
+    if ( saved ) {
+      delegates.tabs.renameTabs(); // filename or name of transformation might have changed.
+    }
     refreshTree();
 
     // Update menu status for the newly saved object
@@ -5160,11 +5162,16 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     return saveToRepository( meta, meta.getObjectId() == null );
   }
 
+  @VisibleForTesting
+  FileDialogOperation getFileDialogOperation(  String command, String origin ) {
+    return new FileDialogOperation( command, origin );
+  }
+
   public boolean saveToRepository( EngineMetaInterface meta, boolean ask_name ) throws KettleException {
-    if ( log.isDetailed() ) {
+    if ( getLog().isDetailed() ) {
       // "Save to repository..."
       //
-      log.logDetailed( BaseMessages.getString( PKG, "Spoon.Log.SaveToRepository" ) );
+      getLog().logDetailed( BaseMessages.getString( PKG, "Spoon.Log.SaveToRepository" ) );
     }
     if ( rep != null ) {
 
@@ -5177,20 +5184,30 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
         try {
           String fileType = meta.getFileType().equals( LastUsedFile.FILE_TYPE_TRANSFORMATION )
             ? FileDialogOperation.TRANSFORMATION : FileDialogOperation.JOB;
-          FileDialogOperation fileDialogOperation = new FileDialogOperation( FileDialogOperation.SAVE,
+          FileDialogOperation fileDialogOperation = getFileDialogOperation( FileDialogOperation.SAVE,
             FileDialogOperation.ORIGIN_SPOON );
           fileDialogOperation.setFileType( fileType );
           fileDialogOperation.setStartDir( meta.getRepositoryDirectory().getPath() );
           //Set the filename so it can be used as the default filename in the save dialog
           fileDialogOperation.setFilename( meta.getFilename() );
-          ExtensionPointHandler.callExtensionPoint( log, KettleExtensionPoint.SpoonOpenSaveRepository.id,
+          ExtensionPointHandler.callExtensionPoint( getLog(), KettleExtensionPoint.SpoonOpenSaveRepository.id,
             fileDialogOperation );
           if ( fileDialogOperation.getRepositoryObject() != null ) {
             RepositoryObject repositoryObject = (RepositoryObject) fileDialogOperation.getRepositoryObject();
+            final RepositoryDirectoryInterface oldDir = meta.getRepositoryDirectory();
+            final String oldName = meta.getName();
             meta.setRepositoryDirectory( repositoryObject.getRepositoryDirectory() );
             meta.setName( repositoryObject.getName() );
-            delegates.tabs.renameTabs();
-            return saveToRepositoryConfirmed( meta );
+            final boolean saved = saveToRepositoryConfirmed( meta );
+            // rename the tab only if the meta object was successfully saved
+            if ( saved ) {
+              delegates.tabs.renameTabs();
+            } else {
+              // if the object wasn't successfully saved, set the name and directory back to their original values
+              meta.setRepositoryDirectory( oldDir );
+              meta.setName( oldName );
+            }
+            return saved;
           }
         } catch ( KettleException ke ) {
           //Ignore
@@ -5413,8 +5430,10 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
       saved = saveXMLFile( meta, false );
     }
 
-    delegates.tabs.renameTabs(); // filename or name of transformation might
-    // have changed.
+    // rename the tab only if the meta was successfully saved
+    if ( saved ) {
+      delegates.tabs.renameTabs(); // filename or name of transformation might have changed.
+    }
     refreshTree();
     if ( saved && ( meta instanceof TransMeta || meta instanceof JobMeta ) ) {
       TabMapEntry tabEntry = delegates.tabs.findTabMapEntry( meta );
@@ -5993,9 +6012,12 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
       String sync = BasePropertyHandler.getProperty( SYNC_TRANS );
       if ( Boolean.parseBoolean( sync ) ) {
         listener.syncMetaName( meta, Const.createName( filename ) );
-        delegates.tabs.renameTabs();
       }
       saved = listener.save( meta, filename, export );
+      if ( Boolean.parseBoolean( sync ) && saved ) {
+        // rename the tab only if the meta was successfully saved
+        delegates.tabs.renameTabs();
+      }
     }
 
     return saved;
