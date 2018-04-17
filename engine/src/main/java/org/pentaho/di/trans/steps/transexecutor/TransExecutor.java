@@ -277,7 +277,23 @@ public class TransExecutor extends BaseStep implements StepInterface {
     TransExecutorParameters parameters = meta.getParameters();
 
     Trans internalTrans = getData().getExecutorTrans();
-
+    for ( int i = 0; i < parameters.getVariable().length; i++ ) {
+      String fieldName = parameters.getField()[ i ];
+      String inputValue = parameters.getInput()[ i ];
+      String value;
+      // Take the value from an input row or from a static value?
+      if ( fieldName != null && !"".equals( fieldName ) ) {
+        int idx = getInputRowMeta().indexOfValue( fieldName );
+        if ( idx < 0 ) {
+          throw new KettleException( BaseMessages.getString(
+            PKG, "TransExecutor.Exception.UnableToFindField", fieldName ) );
+        }
+        value = getData().groupBuffer.get( 0 ).getString( idx, "" );
+      } else {
+        value = environmentSubstitute( inputValue );
+      }
+      parameters.getInput()[ i ] = value;
+    }
     StepWithMappingMeta.activateParams( internalTrans, internalTrans, this, internalTrans.listParameters(),
       parameters.getVariable(), parameters.getInput() );
 

@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -684,7 +684,9 @@ public class TransExecutorDialog extends BaseStepDialog implements StepDialogInt
 
         TableItem item = new TableItem( wTransExecutorParameters.table, SWT.NONE );
         item.setText( 1, Const.NVL( name, "" ) );
-        item.setText( 3, Const.NVL( desc, "" ) );
+        String str = inputTransMeta.getParameterDefault( name );
+        str = ( str != null ? str : ( desc != null ? desc : "" ) );
+        item.setText( 3, Const.NVL( str, "" ) );
       }
       wTransExecutorParameters.removeEmptyRows();
       wTransExecutorParameters.setRowNums();
