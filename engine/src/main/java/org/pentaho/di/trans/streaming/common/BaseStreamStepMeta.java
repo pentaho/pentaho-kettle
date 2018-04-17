@@ -111,6 +111,11 @@ public abstract class BaseStreamStepMeta extends StepWithMappingMeta implements 
     return batchDuration;
   }
 
+  @Override public void setFileName( String fileName ) {
+    super.setFileName( fileName );
+    setTransformationPath( fileName );
+  }
+
   public void check( List<CheckResultInterface> remarks, TransMeta transMeta,
                      StepMeta stepMeta, RowMetaInterface prev, String[] input, String[] output,
                      RowMetaInterface info, VariableSpace space, Repository repository,
