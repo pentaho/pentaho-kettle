@@ -7,7 +7,7 @@
     </div>
     <div class="margin_bottom_15">
       <label for="url" class="margin_bottom_5 block text_left">{{::vm.pentahoUrlLabel}}</label>
-      <input id="url" class="block" type="text" size="50" ng-model="vm.connection.url" />
+      <input id="url" class="block" type="text" size="50" ng-model="vm.connection.url" ng-disabled="vm.connection.connected" />
     </div>
     <div class="margin_bottom_20">
       <label for="description" class="margin_bottom_5 block text_left">{{::vm.descriptionLabel}}</label>

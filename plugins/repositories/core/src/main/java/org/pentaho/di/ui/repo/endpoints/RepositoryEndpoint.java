@@ -115,7 +115,7 @@ public class RepositoryEndpoint {
   @Path( "/add" )
   @Consumes( { APPLICATION_JSON } )
   public Response add( RepositoryModel model ) {
-    if ( controller.createRepository( model.getId(), controller.modelToMap( model ) ) ) {
+    if ( controller.createRepository( model.getId(), controller.modelToMap( model ) ) != null ) {
       return Response.ok().build();
     } else {
       return Response.serverError()
