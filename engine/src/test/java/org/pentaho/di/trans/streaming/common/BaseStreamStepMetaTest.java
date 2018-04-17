@@ -301,6 +301,13 @@ public class BaseStreamStepMetaTest {
       .getFields( rowMeta, "origin", null, nextStepMeta, space, repo, null );
   }
 
+  @Test
+  public void settingFileNameAlsoSetsTransformationPath() {
+    StuffStreamMeta stuffStreamMeta = new StuffStreamMeta();
+    stuffStreamMeta.setFileName( "someName" );
+    assertEquals( "someName", stuffStreamMeta.getTransformationPath() );
+  }
+
   // Checks that a serialization->deserialization does not alter meta fields
   private void testRoundTrip( BaseStreamStepMeta thisMeta ) {
     StuffStreamMeta startingMeta = (StuffStreamMeta) thisMeta;

@@ -352,7 +352,7 @@ public abstract class StepWithMappingMeta extends BaseSerializingMeta implements
 
       // change it in the job entry
       //
-      fileName = newFilename;
+      setFileName( newFilename );
 
       setSpecificationMethod( ObjectLocationSpecificationMethod.FILENAME );
 
