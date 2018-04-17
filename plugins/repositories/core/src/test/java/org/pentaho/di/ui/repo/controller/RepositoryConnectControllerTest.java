@@ -58,9 +58,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 
 /**
@@ -146,21 +144,21 @@ public class RepositoryConnectControllerTest {
 
     when( repository.test() ).thenReturn( true );
 
-    boolean result = controller.createRepository( id, items );
+    RepositoryMeta result = controller.createRepository( id, items );
 
-    assertEquals( true, result );
+    assertNotEquals( null, result );
 
     when( repository.test() ).thenReturn( false );
 
     result = controller.createRepository( id, items );
 
-    assertEquals( false, result );
+    assertEquals( null, result );
 
     when( repository.test() ).thenReturn( true );
     doThrow( new KettleException( "forced exception" ) ).when( repositoriesMeta ).writeData();
 
     result = controller.createRepository( id, items );
-    assertEquals( false, result );
+    assertEquals( null, result );
   }
 
   @Test
@@ -285,10 +283,10 @@ public class RepositoryConnectControllerTest {
     when( repository.test() ).thenReturn( true );
 
     Map<String, Object> items = new HashMap<>();
-    boolean result = controller.createRepository( ID, items );
+    RepositoryMeta result = controller.createRepository( ID, items );
     controller.setCurrentRepository( repositoryMeta );
 
-    assertEquals( true, result );
+    assertNotEquals( null, result );
     assertNull( controller.getConnectedRepository() );
 
     controller.connectToRepository();
@@ -298,43 +296,22 @@ public class RepositoryConnectControllerTest {
   @Test
   public void testEditConnectedRepository() throws Exception {
     RepositoryMeta before = new TestRepositoryMeta( ID, "name1", PLUGIN_DESCRIPTION, "same" );
-    RepositoryMeta edited = new TestRepositoryMeta( ID, "name2", PLUGIN_DESCRIPTION, "same" );
 
-    when( pluginRegistry.loadClass( RepositoryPluginType.class, ID, Repository.class ) )
-      .thenReturn( repository );
-    when( pluginRegistry.loadClass( RepositoryPluginType.class, ID, RepositoryMeta.class ) )
-      .thenReturn( edited );
+    doReturn( repository ).when( pluginRegistry ).loadClass( RepositoryPluginType.class, ID, Repository.class );
 
     when( repositoriesMeta.nrRepositories() ).thenReturn( 1 );
-    when( repositoriesMeta.getRepository( 0 ) ).thenReturn( before );
+    when( repositoriesMeta.findRepository( anyString() ) ).thenReturn( before );
 
-    controller.setConnectedRepository( before.clone() );
+    controller.setConnectedRepository( before );
     controller.setCurrentRepository( before );
 
-    when( repositoriesMeta.findRepository( anyString() ) ).thenReturn( edited );
+    Map<String, Object> map = new HashMap<>();
+    map.put( RepositoryConnectController.DISPLAY_NAME, "name2" );
+    map.put( RepositoryConnectController.IS_DEFAULT, true );
+    map.put( RepositoryConnectController.DESCRIPTION, PLUGIN_DESCRIPTION );
 
-    controller.updateRepository( ID, new HashMap<>() );
-    assertEquals( edited, controller.getConnectedRepository() );
-  }
-
-  @Test
-  public void testEditConnectedRepositoryIncomaptible() throws Exception {
-    RepositoryMeta before = new TestRepositoryMeta( ID, "name1", PLUGIN_DESCRIPTION, "inner1" );
-    RepositoryMeta edited = new TestRepositoryMeta( ID, "name2", PLUGIN_DESCRIPTION, "something completely different" );
-
-    when( pluginRegistry.loadClass( RepositoryPluginType.class, ID, Repository.class ) )
-      .thenReturn( repository );
-    when( pluginRegistry.loadClass( RepositoryPluginType.class, ID, RepositoryMeta.class ) )
-      .thenReturn( edited );
-
-    when( repositoriesMeta.nrRepositories() ).thenReturn( 1 );
-    when( repositoriesMeta.getRepository( 0 ) ).thenReturn( before );
-
-    controller.setConnectedRepository( before.clone() );
-    controller.setCurrentRepository( before );
-
-    controller.updateRepository( ID, new HashMap<>() );
-    assertNotEquals( edited, controller.getConnectedRepository() );
+    controller.updateRepository( ID, map );
+    assertEquals( "name2", controller.getConnectedRepository().getName() );
   }
 
   @Test

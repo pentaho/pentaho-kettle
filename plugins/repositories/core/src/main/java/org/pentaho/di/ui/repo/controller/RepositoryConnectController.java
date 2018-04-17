@@ -225,19 +225,31 @@ public class RepositoryConnectController implements IConnectedRepositoryInstance
 
   public boolean updateRepository( String id, Map<String, Object> items ) {
     RepositoryMeta repositoryMeta = repositoriesMeta.findRepository( (String) items.get( ORIGINAL_NAME ) );
-    if ( repositoryMeta != null ) {
-      repositoriesMeta.removeRepository( repositoriesMeta.indexOfRepository( repositoryMeta ) );
-    }
-    if ( currentRepository != null && isCompatibleRepositoryEdit( repositoryMeta ) ) {
-      setConnectedRepository( repositoryMeta );
+    boolean isConnected = repositoryMeta == connectedRepository;
+    repositoryMeta.setName( (String) items.get( DISPLAY_NAME ) );
+    repositoryMeta.setDescription( (String) items.get( DESCRIPTION ) );
+    repositoryMeta.setDefault( (Boolean) items.get( IS_DEFAULT ) );
+    save();
+    if ( isConnected ) {
+      Spoon spoon = spoonSupplier.get();
+      Runnable execute = () -> {
+        spoon.setRepositoryName( repositoryMeta.getName() );
+        fireListeners();
+      };
+      if ( spoon.getShell() != null ) {
+        spoon.getShell().getDisplay().asyncExec( execute );
+      } else {
+        execute.run();
+      }
     }
     currentRepository = repositoryMeta;
-    return createRepository( id, items );
+    return true;
   }
 
-  public boolean createRepository( String id, Map<String, Object> items ) {
+  public RepositoryMeta createRepository( String id, Map<String, Object> items ) {
+    RepositoryMeta repositoryMeta;
     try {
-      RepositoryMeta repositoryMeta = pluginRegistry.loadClass( RepositoryPluginType.class, id, RepositoryMeta.class );
+      repositoryMeta = pluginRegistry.loadClass( RepositoryPluginType.class, id, RepositoryMeta.class );
       repositoryMeta.populate( items, repositoriesMeta );
 
       if ( repositoryMeta.getName() != null ) {
@@ -246,30 +258,17 @@ public class RepositoryConnectController implements IConnectedRepositoryInstance
         repository.init( repositoryMeta );
         repositoriesMeta.addRepository( repositoryMeta );
         repositoriesMeta.writeData();
+        currentRepository = repositoryMeta;
         if ( !testRepository( repository ) ) {
-          return false;
+          return null;
         }
         ( (AbstractRepository) repository ).create();
       }
     } catch ( KettleException ke ) {
       log.logError( "Unable to load repository type", ke );
-      return false;
+      return null;
     }
-    return true;
-  }
-
-  private boolean isCompatibleRepositoryEdit( RepositoryMeta repositoryMeta ) {
-    if ( repositoryMeta != null && repositoriesMeta.indexOfRepository( currentRepository ) >= 0
-        && connectedRepository != null
-        && repositoryEquals( connectedRepository, currentRepository ) ) {
-      // only name / description / default changed ?
-      RepositoryMeta clone = repositoryMeta.clone();
-      clone.setName( connectedRepository.getName() );
-      clone.setDescription( connectedRepository.getDescription() );
-      clone.setDefault( connectedRepository.isDefault() );
-      return repositoryEquals( connectedRepository, clone );
-    }
-    return false;
+    return repositoryMeta;
   }
 
   private boolean repositoryEquals( RepositoryMeta repo1, RepositoryMeta repo2 ) {
