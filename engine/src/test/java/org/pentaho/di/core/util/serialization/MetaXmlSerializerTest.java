@@ -22,9 +22,11 @@ package org.pentaho.di.core.util.serialization;
 
 
 import org.junit.Before;
+import org.junit.ClassRule;
 import org.junit.Test;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.junit.rules.RestorePDIEngineEnvironment;
 
 import java.util.Collections;
 
@@ -33,6 +35,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.IsEqual.equalTo;
 
 public class MetaXmlSerializerTest {
+  @ClassRule public static RestorePDIEngineEnvironment env = new RestorePDIEngineEnvironment();
 
   @Before public void before() throws KettleException {
     KettleEnvironment.init();

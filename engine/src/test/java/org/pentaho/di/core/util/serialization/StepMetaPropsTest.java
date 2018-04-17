@@ -22,6 +22,7 @@ package org.pentaho.di.core.util.serialization;
 
 import com.google.common.base.Objects;
 import org.junit.Before;
+import org.junit.ClassRule;
 import org.junit.Test;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.exception.KettleException;
@@ -31,6 +32,7 @@ import org.pentaho.di.core.injection.InjectionSupported;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.variables.Variables;
+import org.pentaho.di.junit.rules.RestorePDIEngineEnvironment;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.StepDataInterface;
@@ -49,6 +51,7 @@ import static org.hamcrest.CoreMatchers.not;
 import static org.junit.Assert.assertThat;
 
 public class StepMetaPropsTest {
+  @ClassRule public static RestorePDIEngineEnvironment env = new RestorePDIEngineEnvironment();
 
 
   @InjectionSupported ( localizationPrefix = "stuff", groups = { "stuffGroup" } ) static class FooMeta
