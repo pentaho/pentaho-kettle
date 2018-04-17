@@ -38,6 +38,7 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Table;
+import org.eclipse.swt.widgets.TableItem;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.ui.core.PropsUI;
@@ -287,7 +288,9 @@ class MqttDialogSecurityLayout {
   }
 
   private void populateSSLData() {
-    sslTable.clearAll();
+    sslTable.getTable().removeAll();
+    new TableItem( sslTable.getTable(), SWT.NONE );
+
     checkNotNull( sslTable.getItem( 0 ) );
     checkState( sslTable.getItem( 0 ).length == 2 );
 
