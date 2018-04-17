@@ -51,15 +51,13 @@ public class RepositoryDirectory extends RepositoryObject {
     return repositoryDirectory;
   }
 
-  public static RepositoryDirectory build( String parentPath,
-                                           org.pentaho.platform.api.repository2.unified.RepositoryFile repositoryFile
-  ) {
+  public static RepositoryDirectory build( String parentPath, org.pentaho.platform.api.repository2.unified.RepositoryFile repositoryFile, Boolean isAdmin ) {
     RepositoryDirectory repositoryDirectory = new RepositoryDirectory();
     repositoryDirectory.setParent( parentPath );
     repositoryDirectory.setName( repositoryFile.getName() );
     repositoryDirectory.setPath( repositoryFile.getPath() );
     repositoryDirectory.setObjectId( () -> (String) repositoryFile.getId() );
-    repositoryDirectory.setHidden( repositoryFile.isHidden() );
+    repositoryDirectory.setHidden( repositoryFile.isHidden() && !isAdmin );
     repositoryDirectory.setDate( repositoryFile.getLastModifiedDate() != null ? repositoryFile.getLastModifiedDate()
       : repositoryFile.getCreatedDate() );
 
