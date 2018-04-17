@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -68,6 +68,9 @@ public abstract class UIRepositoryObject extends AbstractModelNode<UIRepositoryO
   }
 
   public ObjectId getObjectId() {
+    if ( obj == null ) {
+      return null;
+    }
     return obj.getObjectId();
   }
 

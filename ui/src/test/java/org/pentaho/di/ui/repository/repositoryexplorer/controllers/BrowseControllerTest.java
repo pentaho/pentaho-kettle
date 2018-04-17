@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -158,34 +158,5 @@ public class BrowseControllerTest {
       }
       return 0;
     }
-  }
-
-  //PDI-16258
-  @Test
-  public void testInit() throws Exception {
-
-    RepositoryExtended repository = Mockito.mock( RepositoryExtended.class );
-
-    UserInfo userInfo = new UserInfo( "user", "password", "user", "test user", true );
-    userInfo.setAdmin( true );
-    Mockito.doReturn( userInfo ).when( repository ).getUserInfo();
-    Mockito.doReturn( Mockito.mock( RepositoryDirectoryInterface.class ) ).when( repository ).
-            loadRepositoryDirectoryTree( anyString(), anyString(), anyInt(), anyBoolean(), anyBoolean(), anyBoolean() );
-
-    BrowseController browseController = Mockito.spy( controller );
-
-    doNothing().when( browseController ).createBindings();
-    browseController.init( repository );
-    Mockito.verify( repository  ).loadRepositoryDirectoryTree( "/", "*.ktr|*.kjb", -1, true, true, true );
-
-
-    userInfo.setAdmin( false );
-    browseController.init( repository );
-    Mockito.verify( repository ).loadRepositoryDirectoryTree( "/", "*.ktr|*.kjb", -1, false, true, true );
-
-
-    userInfo.setAdmin( null );
-    browseController.init( repository );
-    Mockito.verify( repository, Mockito.times( 2 ) ).loadRepositoryDirectoryTree( "/", "*.ktr|*.kjb", -1, false, true, true );
   }
 }

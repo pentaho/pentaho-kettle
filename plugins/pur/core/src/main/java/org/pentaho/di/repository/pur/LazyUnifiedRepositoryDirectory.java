@@ -170,8 +170,7 @@ public class LazyUnifiedRepositoryDirectory extends RepositoryDirectory {
 
   @Override public List<RepositoryElementMetaInterface> getRepositoryObjects() {
     if ( fileChildren == null ) {
-
-      fileChildren = new ArrayList<RepositoryElementMetaInterface>();
+      fileChildren = new ArrayList<>();
       synchronized ( fileChildren ) {
 
         UnifiedRepositoryLockService lockService =
@@ -208,6 +207,7 @@ public class LazyUnifiedRepositoryDirectory extends RepositoryDirectory {
   @Override public void setRepositoryObjects( List<RepositoryElementMetaInterface> list ) {
     synchronized ( fileChildren ) {
       fileChildren.clear();
+      fileChildren = new ArrayList<>();
       fileChildren.addAll( list );
     }
   }
@@ -274,11 +274,13 @@ public class LazyUnifiedRepositoryDirectory extends RepositoryDirectory {
     if ( this.fileChildren != null ) {
       synchronized ( fileChildren ) {
         this.fileChildren.clear();
+        this.fileChildren = null;
       }
     }
     if ( this.subdirectories != null ) {
       synchronized ( subdirectories ) {
         this.subdirectories.clear();
+        this.subdirectories = null;
       }
     }
   }
