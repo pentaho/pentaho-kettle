@@ -36,6 +36,7 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.TimeZone;
 
+import com.vividsolutions.jts.geom.Geometry;
 import org.pentaho.di.compatibility.Value;
 import org.pentaho.di.core.database.DatabaseInterface;
 import org.pentaho.di.core.database.DatabaseMeta;
@@ -44,6 +45,7 @@ import org.pentaho.di.core.exception.KettleEOFException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleFileException;
 import org.pentaho.di.core.exception.KettleValueException;
+import org.pentaho.di.core.geospatial.SRS;
 import org.pentaho.di.core.gui.PrimitiveGCInterface;
 import org.w3c.dom.Node;
 
@@ -168,10 +170,14 @@ public interface ValueMetaInterface extends Cloneable {
   /** Value type indicating that the value contains a Internet address */
   int TYPE_INET = 10;
 
+  // -- Begin GeoKettle modification --
+  /** Value type indicating that the value contains a geometry */
+  public static final int TYPE_GEOMETRY    = 11;
+
   /** The Constant typeCodes. */
   String[] typeCodes = new String[] {
     "-", "Number", "String", "Date", "Boolean", "Integer", "BigNumber", "Serializable", "Binary", "Timestamp",
-    "Internet Address", };
+    "Internet Address", "Geometry"};
 
   /** The storage type is the same as the indicated value type */
   int STORAGE_TYPE_NORMAL = 0;
@@ -227,6 +233,13 @@ public interface ValueMetaInterface extends Cloneable {
       return "unknown/illegal";
     }
   }
+
+
+  SRS getGeometrySRS();
+  void setGeometrySRS(SRS s);
+
+  boolean isGeometry();
+  Geometry getGeometry(Object object) throws KettleValueException;
 
   /**
    * Gets the name.
