@@ -25,17 +25,10 @@ package org.pentaho.di.core.row;
 import java.math.BigDecimal;
 import java.util.Date;
 
+import com.vividsolutions.jts.geom.Geometry;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleValueException;
-import org.pentaho.di.core.row.value.ValueMetaBase;
-import org.pentaho.di.core.row.value.ValueMetaBigNumber;
-import org.pentaho.di.core.row.value.ValueMetaBinary;
-import org.pentaho.di.core.row.value.ValueMetaBoolean;
-import org.pentaho.di.core.row.value.ValueMetaDate;
-import org.pentaho.di.core.row.value.ValueMetaInteger;
-import org.pentaho.di.core.row.value.ValueMetaNumber;
-import org.pentaho.di.core.row.value.ValueMetaSerializable;
-import org.pentaho.di.core.row.value.ValueMetaString;
+import org.pentaho.di.core.row.value.*;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.w3c.dom.Node;
 
@@ -73,7 +66,9 @@ public class ValueMetaAndData {
       this.valueMeta = new ValueMetaBoolean( valueName );
     } else if ( valueData instanceof byte[] ) {
       this.valueMeta = new ValueMetaBinary( valueName );
-    } else {
+    } else if (valueData instanceof Geometry) {
+      this.valueMeta = new ValueMetaGeometry(valueName);
+    }else {
       this.valueMeta = new ValueMetaSerializable( valueName );
     }
   }

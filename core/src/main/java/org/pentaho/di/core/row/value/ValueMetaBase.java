@@ -25,17 +25,11 @@ package org.pentaho.di.core.row.value;
 
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.io.WKBReader;
+import com.vividsolutions.jts.io.WKBWriter;
 import com.vividsolutions.jts.io.WKTReader;
 import org.pentaho.di.compatibility.Value;
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.database.DatabaseInterface;
-import org.pentaho.di.core.database.DatabaseMeta;
-import org.pentaho.di.core.database.GreenplumDatabaseMeta;
-import org.pentaho.di.core.database.NetezzaDatabaseMeta;
-import org.pentaho.di.core.database.OracleDatabaseMeta;
-import org.pentaho.di.core.database.PostgreSQLDatabaseMeta;
-import org.pentaho.di.core.database.SQLiteDatabaseMeta;
-import org.pentaho.di.core.database.TeradataDatabaseMeta;
+import org.pentaho.di.core.database.*;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleEOFException;
 import org.pentaho.di.core.exception.KettleException;
@@ -437,7 +431,9 @@ public class ValueMetaBase implements ValueMetaInterface {
             if (conversionMetadata != null) {
                 valueMeta.conversionMetadata = conversionMetadata.clone();
             }
-
+            if (geometrySRS!=null) {
+                valueMeta.geometrySRS = (SRS) geometrySRS.clone();
+            }
             valueMeta.compareStorageAndActualFormat();
 
             return valueMeta;
@@ -573,16 +569,7 @@ public class ValueMetaBase implements ValueMetaInterface {
         }
     }
 
-    private Geometry convertBinaryToGeometry(byte[] binary) {
-        Geometry geom = null;
-        try {
-            geom = new WKBReader().read(binary);
-        } catch (com.vividsolutions.jts.io.ParseException e) {
-            // TODO: log error
-            // e.printStackTrace();
-        }
-        return geom;
-    }
+
 
     private Geometry convertStringToGeometry(String s) {
         if (s == null) return null;
@@ -642,7 +629,9 @@ public class ValueMetaBase implements ValueMetaInterface {
         if (isString() || isBoolean()) {
             return -1;
         }
-
+        if (isGeometry()) {
+            return -1;
+        }
         return precision;
     }
 
@@ -1709,7 +1698,8 @@ public class ValueMetaBase implements ValueMetaInterface {
                     // Let's not create a copy but simply return the same value.
                     //
                     return object;
-
+                case ValueMetaInterface.TYPE_GEOMETRY:
+                    return ((Geometry)object).clone();
                 default:
                     throw new KettleValueException(toString() + ": unable to make copy of value type: " + getType());
             }
@@ -1938,7 +1928,17 @@ public class ValueMetaBase implements ValueMetaInterface {
                             throw new KettleValueException(toString() + " : Unknown storage type " + storageType + " specified.");
                     }
                     break;
-
+                case TYPE_GEOMETRY:
+                    switch(storageType)
+                    {
+                        case STORAGE_TYPE_NORMAL:         string = convertGeometryToString((Geometry)object); break;
+                        case STORAGE_TYPE_BINARY_STRING:  string = convertGeometryToString((Geometry)convertBinaryStringToNativeType((byte[])object)); break; // TODO: check if this is OK
+                        case STORAGE_TYPE_INDEXED:        string = object==null ? null : convertGeometryToString((Geometry) index[((Integer)object).intValue()]);  break;
+                        default: throw new KettleValueException(toString()+" : Unknown storage type "+storageType+" specified.");
+                    }
+                    if ( string != null )
+                        string = trim(string);
+                    break;
                 default:
                     throw new KettleValueException(toString() + " : Unknown type " + type + " specified.");
             }
@@ -1972,6 +1972,34 @@ public class ValueMetaBase implements ValueMetaInterface {
                 break;
         }
         return string;
+    }
+
+    private String convertGeometryToString(Geometry geom)
+    {
+        if (geom==null) return null;
+        return geom.toText();
+    }
+
+
+    // GEOMETRY + BINARY
+
+    private byte[] convertGeometryToBinary(Geometry geom)
+    {
+        if (geom==null) return null;
+        // defaults to big endian, 2-dimension representation:
+        WKBWriter wkbWriter = new WKBWriter();
+        return wkbWriter.write(geom);
+    }
+
+    private Geometry convertBinaryToGeometry(byte[] binary) {
+        Geometry geom = null;
+        try {
+            geom = new WKBReader().read(binary);
+        } catch (com.vividsolutions.jts.io.ParseException e) {
+            // TODO: log error
+            // e.printStackTrace();
+        }
+        return geom;
     }
 
     @Override
@@ -2051,6 +2079,8 @@ public class ValueMetaBase implements ValueMetaInterface {
                     throw new KettleValueException(toString() + " : I don't know how to convert binary values to numbers.");
                 case TYPE_SERIALIZABLE:
                     throw new KettleValueException(toString() + " : I don't know how to convert serializable values to numbers.");
+                case TYPE_GEOMETRY:
+                    throw new KettleValueException(toString()+" : I don't know how to convert geometry values to numbers.");
                 default:
                     throw new KettleValueException(toString() + " : Unknown type " + type + " specified.");
             }
@@ -2139,6 +2169,8 @@ public class ValueMetaBase implements ValueMetaInterface {
                 case TYPE_SERIALIZABLE:
                     throw new KettleValueException(toString()
                             + " : I don't know how to convert serializable values to integers.");
+                case TYPE_GEOMETRY:
+                    throw new KettleValueException(toString()+" : I don't know how to convert geometry values to numbers.");
                 default:
                     throw new KettleValueException(toString() + " : Unknown type " + type + " specified.");
             }
@@ -2225,6 +2257,8 @@ public class ValueMetaBase implements ValueMetaInterface {
                     throw new KettleValueException(toString() + " : I don't know how to convert binary values to BigDecimals.");
                 case TYPE_SERIALIZABLE:
                     throw new KettleValueException(toString() + " : I don't know how to convert serializable values to BigDecimals.");
+                case TYPE_GEOMETRY:
+                    throw new KettleValueException(toString()+" : I don't know how to convert geometry values to numbers.");
                 default:
                     throw new KettleValueException(toString() + " : Unknown type " + type + " specified.");
             }
@@ -2301,6 +2335,8 @@ public class ValueMetaBase implements ValueMetaInterface {
                 throw new KettleValueException(toString() + " : I don't know how to convert binary values to booleans.");
             case TYPE_SERIALIZABLE:
                 throw new KettleValueException(toString() + " : I don't know how to convert serializable values to booleans.");
+            case TYPE_GEOMETRY:
+                throw new KettleValueException(toString()+" : I don't know how to convert geometry values to numbers.");
             default:
                 throw new KettleValueException(toString() + " : Unknown type " + type + " specified.");
         }
@@ -2373,6 +2409,8 @@ public class ValueMetaBase implements ValueMetaInterface {
                 throw new KettleValueException(toString() + " : I don't know how to convert a binary value to date.");
             case TYPE_SERIALIZABLE:
                 throw new KettleValueException(toString() + " : I don't know how to convert a serializable value to date.");
+            case TYPE_GEOMETRY:
+                throw new KettleValueException(toString()+" : I don't know how to convert geometry values to numbers.");
 
             default:
                 throw new KettleValueException(toString() + " : Unknown type " + type + " specified.");
@@ -2419,7 +2457,14 @@ public class ValueMetaBase implements ValueMetaInterface {
                 throw new KettleValueException(toString() + " : I don't know how to convert a boolean to binary.");
             case TYPE_SERIALIZABLE:
                 throw new KettleValueException(toString() + " : I don't know how to convert a serializable to binary.");
-
+            case TYPE_GEOMETRY:
+                switch(storageType)
+                {
+                    case STORAGE_TYPE_NORMAL:         return convertGeometryToBinary( (Geometry)object );
+                    case STORAGE_TYPE_BINARY_STRING:  return convertGeometryToBinary( (Geometry)object );
+                    case STORAGE_TYPE_INDEXED:        return convertGeometryToBinary( (Geometry) index[((Integer)object).intValue()] );
+                    default: throw new KettleValueException(toString()+" : Unknown storage type "+storageType+" specified.");
+                }
             default:
                 throw new KettleValueException(toString() + " : Unknown type " + type + " specified.");
         }
@@ -2545,7 +2590,14 @@ public class ValueMetaBase implements ValueMetaInterface {
                         default:
                             throw new KettleValueException(toString() + " : Unknown storage type " + storageType + " specified.");
                     }
-
+                case TYPE_GEOMETRY:
+                    switch(storageType)
+                    {
+                        case STORAGE_TYPE_NORMAL:         return convertStringToBinaryString( convertGeometryToString((Geometry)object) );
+                        case STORAGE_TYPE_BINARY_STRING:  return convertStringToBinaryString( convertGeometryToString((Geometry)convertBinaryStringToNativeType((byte[])object)) ); // TODO: check if this is OK
+                        case STORAGE_TYPE_INDEXED:        return convertStringToBinaryString( convertGeometryToString((Geometry) index[((Integer)object).intValue()]) );
+                        default: throw new KettleValueException(toString()+" : Unknown storage type "+storageType+" specified.");
+                    }
                 default:
                     throw new KettleValueException(toString() + " : Unknown type " + type + " specified.");
             }
@@ -2555,6 +2607,7 @@ public class ValueMetaBase implements ValueMetaInterface {
                     + toStringMeta() + "]");
         }
     }
+
 
     /**
      * Checks whether or not the value is a String.

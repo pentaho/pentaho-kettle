@@ -22,8 +22,24 @@
 
 package org.pentaho.di.core.database;
 
+import com.vividsolutions.jts.geom.Geometry;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.exception.KettleStepException;
+import org.pentaho.di.core.geospatial.SRS;
 import org.pentaho.di.core.row.ValueMetaInterface;
+
+import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.GeometryFactory;
+import com.vividsolutions.jts.geom.PrecisionModel;
+import com.vividsolutions.jts.io.ParseException;
+import com.vividsolutions.jts.io.WKTReader;
+import org.postgis.PGgeometry;
+
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.HashMap;
 
 /**
  * Contains PostgreSQL specific information through static final members
@@ -32,7 +48,11 @@ import org.pentaho.di.core.row.ValueMetaInterface;
  * @since 11-mrt-2005
  */
 
-public class PostgreSQLDatabaseMeta extends BaseDatabaseMeta implements DatabaseInterface {
+public class PostgreSQLDatabaseMeta extends BaseDatabaseMeta implements DatabaseInterface, GeodatabaseInterface {
+
+  private final HashMap<Integer, Integer> wkt_to_srid_cache = new HashMap<Integer, Integer>(10);
+  private final HashMap<Integer, SRS> srid_to_srs_cache = new HashMap<Integer, SRS>(10);
+
   /**
    * @return The extra option separator in database URL for this platform
    */
@@ -357,6 +377,9 @@ public class PostgreSQLDatabaseMeta extends BaseDatabaseMeta implements Database
           retval += "VARCHAR(" + length + ")";
         }
         break;
+      case ValueMetaInterface.TYPE_GEOMETRY:
+        retval+="geometry";
+        break;
       default:
         retval += " UNKNOWN";
         break;
@@ -458,7 +481,8 @@ public class PostgreSQLDatabaseMeta extends BaseDatabaseMeta implements Database
       "USAGE", "USER", "USER_DEFINED_TYPE_CATALOG", "USER_DEFINED_TYPE_CODE", "USER_DEFINED_TYPE_NAME",
       "USER_DEFINED_TYPE_SCHEMA", "USING", "VACUUM", "VALID", "VALIDATOR", "VALUE", "VALUES", "VARCHAR", "VARIABLE",
       "VARYING", "VAR_POP", "VAR_SAMP", "VERBOSE", "VIEW", "VOLATILE", "WHEN", "WHENEVER", "WHERE", "WIDTH_BUCKET",
-      "WINDOW", "WITH", "WITHIN", "WITHOUT", "WORK", "WRITE", "YEAR", "ZONE" };
+      "WINDOW", "WITH", "WITHIN", "WITHOUT", "WORK", "WRITE", "YEAR", "ZONE","GEOMETRY"
+    };
   }
 
   /**
@@ -557,4 +581,154 @@ public class PostgreSQLDatabaseMeta extends BaseDatabaseMeta implements Database
   public boolean useSafePoints() {
     return true;
   }
+
+
+
+  @Override
+  public Geometry convertToJTSGeometry(ValueMetaInterface vmi, Object obj, Database db) {
+    if (obj instanceof PGgeometry) {
+      PGgeometry postgisGeom = (PGgeometry) obj;
+
+      // Map PostgreSQL's SRID with the EPSG-SRID or take a custom SRS from WKT
+      int postgis_srid = postgisGeom.getGeometry().getSrid();
+
+      SRS epsg_srid = convertToEPSG_SRID(postgis_srid, db.getConnection());
+      vmi.setGeometrySRS(epsg_srid);
+
+      WKTReader wktReader = new WKTReader(new GeometryFactory(new PrecisionModel(), epsg_srid.getSRID()));
+
+      // PostGIS geometry delivers a WKT similar to "SRID=2000;Point(...)".
+      // The SRID must be manually extracted. PGgeometry#splitSRID(..) is a utility.
+      String wkt;
+      try {
+        wkt = PGgeometry.splitSRID(postgisGeom.toString())[1];
+      } catch (SQLException e) {
+        // No SRID found by splitSRID(..), so the string is already valid WKT
+        wkt = postgisGeom.toString();
+      }
+
+      Geometry jtsGeom;
+      try {
+        jtsGeom = wktReader.read(wkt);
+      } catch (ParseException e) {
+        jtsGeom = null;
+      }
+      return jtsGeom;
+    } else {
+      return null;
+    }
+  }
+
+  @Override
+  public Object convertToObject(ValueMetaInterface vmi, Geometry geom, Database db) {
+    PGgeometry postgisGeom;
+    try {
+      // Map the EPSG- (or custom-) SRID with PostgreSQL's SRID.
+      int postgis_srid = convertToDBMS_SRID(vmi.getGeometrySRS(), db.getConnection());
+
+      String wkt = PGgeometry.SRIDPREFIX + postgis_srid + ";" + geom.toText();
+      postgisGeom = new PGgeometry(PGgeometry.geomFromString(wkt));
+    } catch (SQLException e) {
+      postgisGeom = null;
+    }
+    return postgisGeom;
+  }
+
+  @Override
+  public int convertToDBMS_SRID(SRS epsg_srid, Connection conn) {
+    if (epsg_srid.is_custom) {
+      // Try locating an already existing spatial reference system in the
+      // spatial_ref_sys table (comapring the WKT-representation).
+      try {
+        Integer cached_srid = wkt_to_srid_cache.get(epsg_srid.hashCode());
+        return (cached_srid == null) ? lookupDBMSSRID(epsg_srid.getCRS().toWKT(), conn) : cached_srid;
+      } catch (Exception e) {
+      }
+
+//			// If the looked-up SRID is unknown, add new SRS to the spatial_ref_sys table
+//			if (result_srid == SRS.UNKNOWN_SRID) {
+//				result_srid = addNewSRStoDBMS(epsg_srid, conn);
+//			}
+
+    }
+
+    return epsg_srid.getSRID();
+  }
+
+  @Override
+  public SRS convertToEPSG_SRID(int dbms_srid, Connection conn) {
+    if (dbms_srid == SRS.UNKNOWN_SRID) {
+      // Return a valid EPSG SRS
+      return SRS.UNKNOWN;
+    } else {
+      // Try to find the SRS in the cache
+      SRS cached_srs = srid_to_srs_cache.get(dbms_srid);
+      if (cached_srs != null) {
+        return cached_srs;
+      } else {
+        String wkt = "";
+        try {
+          // Lookup the SRS in spatial_ref_sys table and create a new SRS from the WKT.
+          String sql = "SELECT srtext FROM spatial_ref_sys WHERE srid = " + dbms_srid;
+          Statement statement = conn.createStatement();
+          try {
+            ResultSet result = statement.executeQuery(sql);
+            if (result.next())
+              wkt = result.getString(1);
+          }
+          finally {
+            statement.close();
+          }
+        }
+        catch (SQLException e) {
+          return SRS.UNKNOWN;
+        }
+        if (!Const.isEmpty(wkt)) {
+          try {
+            SRS wktSRS = new SRS(wkt);
+
+            // cache the result
+            wkt_to_srid_cache.put(wktSRS.hashCode(), dbms_srid);
+            srid_to_srs_cache.put(dbms_srid, wktSRS);
+
+            return wktSRS;
+          } catch (KettleStepException e) {
+            return SRS.UNKNOWN;
+          }
+        } else {
+          return SRS.UNKNOWN;
+        }
+      }
+    }
+  }
+
+  private int lookupDBMSSRID(String wkt, Connection conn) {
+    // allocate all necessary db connections ressources
+    String sql = "SELECT srid FROM spatial_ref_sys WHERE srtext = '"+ wkt +"'";
+
+    int srid;
+    try {
+      Statement statement = conn.createStatement();
+      try {
+        ResultSet result = statement.executeQuery(sql);
+        srid = result.next() ? result.getInt(1) : SRS.UNKNOWN_SRID;
+        result.close();
+      }
+      finally {
+        statement.close();
+      }
+    } catch (SQLException e) {
+      srid = SRS.UNKNOWN_SRID;
+    }
+
+    // cache the result
+    try {
+      SRS wktSRS = new SRS(wkt);
+      wkt_to_srid_cache.put(wktSRS.hashCode(), srid);
+      srid_to_srs_cache.put(srid, wktSRS);
+    } catch (KettleStepException e) { }
+
+    return srid;
+  }
+
 }

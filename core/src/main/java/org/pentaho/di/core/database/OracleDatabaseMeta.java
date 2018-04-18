@@ -22,9 +22,12 @@
 
 package org.pentaho.di.core.database;
 
+import java.sql.Connection;
 import java.sql.ResultSet;
 
+import com.vividsolutions.jts.geom.Geometry;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.geospatial.SRS;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.row.ValueMetaInterface;
@@ -37,7 +40,7 @@ import org.pentaho.di.core.variables.VariableSpace;
  * @since 11-mrt-2005
  */
 
-public class OracleDatabaseMeta extends BaseDatabaseMeta implements DatabaseInterface {
+public class OracleDatabaseMeta extends BaseDatabaseMeta implements DatabaseInterface ,GeodatabaseInterface{
 
   private static final String STRICT_BIGNUMBER_INTERPRETATION = "STRICT_NUMBER_38_INTERPRETATION";
 
@@ -677,5 +680,25 @@ public class OracleDatabaseMeta extends BaseDatabaseMeta implements DatabaseInte
    */
   public void setStrictBigNumberInterpretation( boolean strictBigNumberInterpretation ) {
     getAttributes().setProperty( STRICT_BIGNUMBER_INTERPRETATION, strictBigNumberInterpretation ? "Y" : "N" );
+  }
+
+  @Override
+  public Geometry convertToJTSGeometry(ValueMetaInterface vmi, Object o, Database db) {
+    return null;
+  }
+
+  @Override
+  public Object convertToObject(ValueMetaInterface vmi, Geometry geom, Database db) {
+    return null;
+  }
+
+  @Override
+  public int convertToDBMS_SRID(SRS epsg_srid, Connection conn) {
+    return 0;
+  }
+
+  @Override
+  public SRS convertToEPSG_SRID(int dbms_srid, Connection conn) {
+    return null;
   }
 }

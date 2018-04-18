@@ -3023,4 +3023,13 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
   protected DatabaseInterface getDbInterface( String typeCode ) throws KettleDatabaseException {
     return getDatabaseInterface( typeCode );
   }
+
+  /**
+   * geo 判断
+   * @return
+   */
+  public boolean supportsGeometries() {
+    return databaseInterface instanceof GeodatabaseInterface;
+  }
+
 }

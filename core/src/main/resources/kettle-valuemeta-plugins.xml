@@ -54,5 +54,8 @@
     <description>Internet Address</description> 
     <classname>org.pentaho.di.core.row.value.ValueMetaInternetAddress</classname> 
   </valuemeta-plugin>
-  
+  <valuemeta-plugin id="11">
+    <description>Geometry</description>
+    <classname>org.pentaho.di.core.row.value.ValueMetaGeometry</classname>
+  </valuemeta-plugin>
 </valuemeta-plugins>

@@ -2298,4 +2298,6 @@ public abstract class BaseDatabaseMeta implements Cloneable, DatabaseInterfaceEx
   public String getAttribute( String attributeId, String defaultValue ) {
     return attributes.getProperty( attributeId, defaultValue  );
   }
+
+
 }

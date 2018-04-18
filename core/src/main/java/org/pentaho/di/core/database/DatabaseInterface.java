@@ -1186,4 +1186,6 @@ public interface DatabaseInterface extends Cloneable {
     return new SqlScriptParser( true );
   }
 
+
+
 }

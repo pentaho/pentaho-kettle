@@ -2528,8 +2528,20 @@ public class Database implements VariableSpace, LoggingObjectInterface {
             if (rs.next()) {
                 for (int i = 0; i < nrcols; i++) {
                     ValueMetaInterface val = rowInfo.getValueMeta(i);
+                    //geo begin
+                    if(ValueMetaInterface.TYPE_GEOMETRY == val.getType()){
+                        if(databaseMeta.supportsGeometries()){
+                            Object o = rs.getObject(i + 1);
+                            GeodatabaseInterface geodb = (GeodatabaseInterface) databaseMeta.getDatabaseInterface();
+                            data[i] = geodb.convertToJTSGeometry(val, o, this);
+                        }else {
+                            data[i] = null;
+                        }
+                        //geo end
+                    }else {
+                        data[i] = databaseMeta.getValueFromResultSet(rs, val, i);
+                    }
 
-                    data[i] = databaseMeta.getValueFromResultSet(rs, val, i);
                 }
             } else {
                 data = null;

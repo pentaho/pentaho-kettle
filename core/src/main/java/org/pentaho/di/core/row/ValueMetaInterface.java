@@ -172,7 +172,7 @@ public interface ValueMetaInterface extends Cloneable {
 
   // -- Begin GeoKettle modification --
   /** Value type indicating that the value contains a geometry */
-  public static final int TYPE_GEOMETRY    = 11;
+  int TYPE_GEOMETRY    = 11;
 
   /** The Constant typeCodes. */
   String[] typeCodes = new String[] {

@@ -50,6 +50,7 @@
     <httpclient.version>4.5.3</httpclient.version>
     <httpccore.version>4.4.6</httpccore.version>
     <xmlunit.version>1.5</xmlunit.version>
+    <postgresql.version>42.1.1</postgresql.version>
   </properties>
 
   <dependencies>
@@ -568,6 +569,13 @@
       <artifactId>gdal</artifactId>
       <version>1.11.2</version>
     </dependency>
+    <dependency>
+      <groupId>com.postgis</groupId>
+      <artifactId>postgis</artifactId>
+      <version>1.3.6</version>
+      <scope>system</scope>
+      <systemPath>C:/Users/Administrator/Desktop/jar/postgis_1.3.6.jar</systemPath>
+    </dependency>
 
     <!-- https://mvnrepository.com/artifact/commons-httpclient/commons-httpclient -->
     <dependency>
@@ -580,7 +588,17 @@
       <artifactId>javax.servlet-api</artifactId>
       <version>RELEASE</version>
     </dependency>
-
+    <dependency>
+      <groupId>org.postgresql</groupId>
+      <artifactId>postgresql</artifactId>
+      <version>${postgresql.version}</version>
+      <exclusions>
+        <exclusion>
+          <groupId>*</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
 
   </dependencies>
 
