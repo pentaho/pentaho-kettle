@@ -22,7 +22,11 @@
 
 package org.pentaho.di.trans.steps.transexecutor;
 
+import java.util.List;
 import java.util.ArrayList;
+import java.util.Map;
+import java.util.HashMap;
+import java.util.Arrays;
 
 import com.google.common.annotations.VisibleForTesting;
 import org.pentaho.di.core.Const;
@@ -84,10 +88,19 @@ public class TransExecutor extends BaseStep implements StepInterface {
       TransExecutorData transExecutorData = getData();
       // Wait for a row...
       Object[] row = getRow();
+
       if ( row == null ) {
-        executeTransformation();
+        executeTransformation( null );
         setOutputDone();
         return false;
+      }
+
+      List<String> incomingFieldValues = new ArrayList<String>();
+      if (  getInputRowMeta() != null ) {
+        for ( int i = 0; i < getInputRowMeta().size(); i++ ) {
+          String fieldvalue = getInputRowMeta().getString( row, i );
+          incomingFieldValues.add( fieldvalue );
+        }
       }
 
       if ( first ) {
@@ -106,14 +119,14 @@ public class TransExecutor extends BaseStep implements StepInterface {
           Object groupFieldData = row[ transExecutorData.groupFieldIndex ];
           if ( transExecutorData.prevGroupFieldData != null ) {
             if ( transExecutorData.groupFieldMeta.compare( transExecutorData.prevGroupFieldData, groupFieldData ) != 0 ) {
-              executeTransformation();
+              executeTransformation( incomingFieldValues );
             }
           }
           transExecutorData.prevGroupFieldData = groupFieldData;
         } else if ( transExecutorData.groupTime > 0 ) { // grouping by execution time
           long now = System.currentTimeMillis();
           if ( now - transExecutorData.groupTimeStart >= transExecutorData.groupTime ) {
-            executeTransformation();
+            executeTransformation( incomingFieldValues );
           }
         }
       }
@@ -126,7 +139,7 @@ public class TransExecutor extends BaseStep implements StepInterface {
       // If group buffer size exceeds specified limit, then execute transformation and flush group buffer.
       if ( transExecutorData.groupSize > 0 ) {
         if ( transExecutorData.groupBuffer.size() >= transExecutorData.groupSize ) {
-          executeTransformation();
+          executeTransformation( incomingFieldValues );
         }
       }
 
@@ -181,7 +194,7 @@ public class TransExecutor extends BaseStep implements StepInterface {
     }
   }
 
-  private void executeTransformation() throws KettleException {
+  private void executeTransformation( List<String> incomingFieldValues ) throws KettleException {
     TransExecutorData transExecutorData = getData();
     // If we got 0 rows on input we don't really want to execute the transformation
     if ( transExecutorData.groupBuffer.isEmpty() ) {
@@ -197,7 +210,7 @@ public class TransExecutor extends BaseStep implements StepInterface {
     transExecutorData.setExecutorTrans( executorTrans );
 
     // Pass parameter values
-    passParametersToTrans();
+    passParametersToTrans( incomingFieldValues );
 
     // keep track for drill down in Spoon...
     getTrans().addActiveSubTransformation( getStepname(), executorTrans );
@@ -272,31 +285,98 @@ public class TransExecutor extends BaseStep implements StepInterface {
   }
 
   @VisibleForTesting
-  void passParametersToTrans() throws KettleException {
+  void passParametersToTrans( List<String> incomingFieldValues ) throws KettleException {
+    //The values of the incoming fields from the previous step.
+    if ( incomingFieldValues == null ) {
+      incomingFieldValues = new ArrayList<String>();
+    }
+
     // Set parameters, when fields are used take the first row in the set.
     TransExecutorParameters parameters = meta.getParameters();
 
-    Trans internalTrans = getData().getExecutorTrans();
+    // A map where the final parameters and values are stored.
+    Map<String, String> resolvingValuesMap = new HashMap<String, String>();
     for ( int i = 0; i < parameters.getVariable().length; i++ ) {
-      String fieldName = parameters.getField()[ i ];
-      String inputValue = parameters.getInput()[ i ];
-      String value;
-      // Take the value from an input row or from a static value?
-      if ( fieldName != null && !"".equals( fieldName ) ) {
-        int idx = getInputRowMeta().indexOfValue( fieldName );
-        if ( idx < 0 ) {
-          throw new KettleException( BaseMessages.getString(
-            PKG, "TransExecutor.Exception.UnableToFindField", fieldName ) );
-        }
-        value = getData().groupBuffer.get( 0 ).getString( idx, "" );
-      } else {
-        value = environmentSubstitute( inputValue );
-      }
-      parameters.getInput()[ i ] = value;
+      resolvingValuesMap.put( parameters.getVariable()[i], null );
     }
-    StepWithMappingMeta.activateParams( internalTrans, internalTrans, this, internalTrans.listParameters(),
-      parameters.getVariable(), parameters.getInput() );
 
+    //The names of the "Fields to use".
+    List<String> fieldsToUse = new ArrayList<String>();
+    if ( parameters.getField() != null ) {
+      fieldsToUse = Arrays.asList( parameters.getField() );
+    }
+
+    //The names of the incoming fields from the previous step.
+    List<String> incomingFields = new ArrayList<String>();
+    if ( data.getInputRowMeta() != null ) {
+      incomingFields = Arrays.asList( data.getInputRowMeta().getFieldNames() );
+    }
+
+    //The values of the "Static input value".
+    List<String> staticInputs = Arrays.asList( parameters.getInput() );
+
+    /////////////////////////////////////////////
+    //If "Fields to use" ARE provided.
+    for ( int i = 0; i < fieldsToUse.size(); i++ ) {
+      try {
+        String value = null;
+        if ( incomingFields.contains( fieldsToUse.get( i ) )
+            && ( value = incomingFieldValues.get( incomingFields.indexOf( fieldsToUse.get( i ) ) ) ) != null ) {
+          //Set the value to the first parameter in the resolvingValuesMap.
+          resolvingValuesMap.put( (String) resolvingValuesMap.keySet().toArray()[i], value );
+        } else {
+          //Set the value to the first parameter in the resolvingValuesMap.
+          resolvingValuesMap.put( (String) resolvingValuesMap.keySet().toArray()[i], staticInputs.get( i ) );
+        }
+      } catch ( Exception e ) {
+        //Set the value to the first parameter in the resolvingValuesMap.
+        resolvingValuesMap.put( (String) resolvingValuesMap.keySet().toArray()[i], null );
+      }
+    }
+    /////////////////////////////////////////////
+
+    /////////////////////////////////////////////
+    //If "Fields to use" ARE NOT provided and "Inherit all variables from transformation" IS checked.
+    boolean isFieldsToUseEmpty = true;
+    for ( int i = 0; i < fieldsToUse.size(); i++ ) {
+      if ( fieldsToUse.get( i ) != null ) {
+        isFieldsToUseEmpty = false;
+        break;
+      }
+    }
+    if ( parameters.isInheritingAllVariables() && isFieldsToUseEmpty ) {
+      //Check for parameter matches in the TRANSFORMATION TO EXECUTE parameters.
+      if ( getExecutorTrans().listParameters() != null ) {
+        List<String> transformationToExecuteParameters = Arrays.asList( getExecutorTrans().listParameters() );
+        for ( int i = 0; i < parameters.getVariable().length; i++ ) {
+          if ( transformationToExecuteParameters.contains( parameters.getVariable()[i] ) ) {
+            resolvingValuesMap.put( parameters.getVariable()[i],
+                getExecutorTrans().getParameterDefault( parameters.getVariable()[i] ) );
+          }
+        }
+      }
+      //Check for parameter matches in THIS transformation parameters.
+      if ( getTrans().listParameters() != null ) {
+        List<String> transformationParameters = Arrays.asList( getTrans().listParameters() );
+        for ( int i = 0; i < parameters.getVariable().length; i++ ) {
+          if ( transformationParameters.contains( parameters.getVariable()[i] ) ) {
+            resolvingValuesMap
+                .put( parameters.getVariable()[i], getTrans().getParameterValue( parameters.getVariable()[i] ) );
+          }
+        }
+      }
+    }
+    /////////////////////////////////////////////
+
+    //Transform the values of the resolvingValuesMap into a String array "inputFieldValues" to be passed as parameter..
+    String[] inputFieldValues = new String[parameters.getVariable().length];
+    for ( int i = 0; i < parameters.getVariable().length; i++ ) {
+      inputFieldValues[i] = resolvingValuesMap.get( parameters.getVariable()[i] );
+    }
+
+    Trans trans = getExecutorTrans();
+    StepWithMappingMeta
+        .activateParams( trans, trans, this, trans.listParameters(), parameters.getVariable(), inputFieldValues );
   }
 
   @VisibleForTesting
