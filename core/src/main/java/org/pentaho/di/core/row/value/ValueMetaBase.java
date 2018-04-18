@@ -1047,8 +1047,13 @@ public class ValueMetaBase implements ValueMetaInterface {
       // Do we have a locale?
       //
       if ( dateFormatLocale == null || dateFormatLocale.equals( Locale.getDefault() ) ) {
-        dateFormat = new SimpleDateFormat( mask );
+        if ( mask != null ) {
+          dateFormat = new SimpleDateFormat( mask );
+        }
       } else {
+        if ( mask == null ) {
+          mask = dateFormat.toPattern();
+        }
         dateFormat = new SimpleDateFormat( mask, dateFormatLocale );
       }
 
