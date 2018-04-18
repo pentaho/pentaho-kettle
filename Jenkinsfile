@@ -25,7 +25,7 @@ pipeline {
 
     booleanParam(defaultValue: false, description: 'Clean all build dependency caches', name: 'CLEAN_ALL_CACHES')
     booleanParam(defaultValue: false, description: 'Clean build scm workspaces', name: 'CLEAN_SCM_WORKSPACES')
-    booleanParam(defaultValue: false, description: 'Clean build build workspace (this happens post build)', name: 'CLEAN_BUILD_WORKSPACE')
+    booleanParam(defaultValue: false, description: 'Clean build workspace (this happens post build)', name: 'CLEAN_BUILD_WORKSPACE')
 
     booleanParam(defaultValue: false, description: 'No op build (test the build config)', name: 'NOOP')
     booleanParam(defaultValue: false, description: 'Distributes source checkouts on remote nodes ' +

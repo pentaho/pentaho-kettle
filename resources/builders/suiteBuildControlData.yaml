@@ -35,7 +35,7 @@ jobGroups:
      - jobID           :  parent-poms
        executeFlag     :  true
        scmUrl          :  ${PENTAHO_SCM_ROOT}/maven-parent-poms.git
-       scmBranch       :  ${EMARTIN_FORK_BRANCH}
+       scmBranch       :  ${DEFAULT_BRANCH}
        versionProperty :  pentaho.version
 
   400:
