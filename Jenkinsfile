@@ -28,7 +28,13 @@ pipeline {
     booleanParam(defaultValue: false, description: 'Clean build build workspace (this happens post build)', name: 'CLEAN_BUILD_WORKSPACE')
 
     booleanParam(defaultValue: false, description: 'No op build (test the build config)', name: 'NOOP')
+    booleanParam(defaultValue: false, description: 'Distributes source checkouts on remote nodes ' +
+      '(Otherwise assume workspace is shared on all). Not yet fully implemented--do not use.', name: 'USE_DISTRIBUTED_SOURCE_CACHING')
 
+  }
+
+  options {
+    timestamps()
   }
 
   environment {
