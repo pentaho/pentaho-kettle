@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -23,6 +23,8 @@ package org.pentaho.di.core.plugins;
 
 import org.pentaho.di.core.row.value.ValueMetaConversionException;
 
+import java.text.SimpleDateFormat;
+
 /**
  * Created by tkafalas on 12/4/2017.
  */
@@ -36,5 +38,8 @@ public interface IValueMetaConverter {
    */
   public Object convertFromSourceToTargetDataType( int sourceValueMetaType, int targetValueMetaType, Object value )
     throws ValueMetaConversionException;
+
+  public void setDatePattern( SimpleDateFormat datePattern );
+
 
 }
