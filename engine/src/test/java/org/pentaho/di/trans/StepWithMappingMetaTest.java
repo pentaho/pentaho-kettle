@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -35,6 +35,8 @@ import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectoryInterface;
+import org.pentaho.di.trans.step.StepDataInterface;
+import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
@@ -46,6 +48,10 @@ import static org.mockito.Mockito.anyBoolean;
 import static org.mockito.Mockito.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+
+import java.nio.file.Path;
+import java.nio.file.Paths;
+
 import static org.mockito.Mockito.anyMap;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
@@ -108,10 +114,26 @@ public class StepWithMappingMetaTest {
     StepWithMappingMeta.loadMappingMeta( mappingMetaMock, rep, null, variables, true );
   }
 
+  @SuppressWarnings( "unchecked" )
   @Test
   @PrepareForTest( StepWithMappingMeta.class )
   public void testExportResources() throws Exception {
-    StepWithMappingMeta stepWithMappingMeta = spy( StepWithMappingMeta.class );
+    StepWithMappingMeta stepWithMappingMeta = spy( new StepWithMappingMeta() {
+
+      @Override
+      public void setDefault() {
+      }
+
+      @Override
+      public StepDataInterface getStepData() {
+        return null;
+      }
+      
+      @Override
+      public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta, Trans trans ) {
+        return null;
+      }
+    } );
     String testName = "test";
     PowerMockito.mockStatic( StepWithMappingMeta.class );
     when( StepWithMappingMeta.loadMappingMeta( any(), any(), any(), any() ) ).thenReturn( transMeta );
@@ -120,7 +142,6 @@ public class StepWithMappingMetaTest {
     stepWithMappingMeta.exportResources( null, null, null, null, null );
     verify( transMeta ).setFilename( "${" + Const.INTERNAL_VARIABLE_ENTRY_CURRENT_DIRECTORY + "}/" + testName );
     verify( stepWithMappingMeta ).setSpecificationMethod( ObjectLocationSpecificationMethod.FILENAME );
-
   }
 
   @Test
@@ -178,6 +199,41 @@ public class StepWithMappingMetaTest {
     Assert.assertEquals( parentValue, transMeta.getVariable( parentParam ) );
   }
 
+  @Test
+  @PrepareForTest( StepWithMappingMeta.class )
+  public void loadMappingMetaTest_PathShouldBeTakenFromParentTrans() throws Exception {
+
+    String fileName = "subtrans-executor-sub.ktr";
+    Path parentFolder = Paths.get( getClass().getResource( "subtrans-executor-sub.ktr" ).toURI() ).getParent();
+
+    //we have transformation
+    VariableSpace variables = new Variables();
+    variables.setVariable( Const.INTERNAL_VARIABLE_ENTRY_CURRENT_DIRECTORY, parentFolder.toString() );
+    TransMeta parentTransMeta = new TransMeta( variables );
+
+    //we have step in this transformation
+    StepMeta stepMeta = new StepMeta();
+    stepMeta.setParentTransMeta( parentTransMeta );
+
+    //attach the executor to step which was described above
+    StepWithMappingMeta mappingMetaMock = mock( StepWithMappingMeta.class );
+    when( mappingMetaMock.getSpecificationMethod() ).thenReturn( ObjectLocationSpecificationMethod.FILENAME );
+    when( mappingMetaMock.getFileName() ).thenReturn( "${" + Const.INTERNAL_VARIABLE_ENTRY_CURRENT_DIRECTORY + "}/" + fileName );
+    when( mappingMetaMock.getParentStepMeta() ).thenReturn( stepMeta );
+
+    //we will try to load the subtras which was linked at the step metas
+    TransMeta transMeta = StepWithMappingMeta.loadMappingMeta( mappingMetaMock, null, null, variables, true );
+
+    StringBuilder expected = new StringBuilder( parentFolder.toUri().toString() );
+    /**
+     * we need to remove "/" at the end of expected string because during load the trans from file 
+     * internal variables will be replaced by uri from kettle vfs
+     * check the follow points
+     * {@link org.pentaho.di.trans.TransMeta#setInternalFilenameKettleVariables(VariableSpace)}
+     * 
+     */
+    Assert.assertEquals( expected.deleteCharAt( expected.length() - 1 ).toString(), transMeta.getVariable( Const.INTERNAL_VARIABLE_ENTRY_CURRENT_DIRECTORY ) );
+  }
 
 
   @Test
