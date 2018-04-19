@@ -302,9 +302,9 @@ public class BaseStreamStepMetaTest {
   }
 
   @Test
-  public void settingFileNameAlsoSetsTransformationPath() {
+  public void replacingFileNameAlsoSetsTransformationPath() {
     StuffStreamMeta stuffStreamMeta = new StuffStreamMeta();
-    stuffStreamMeta.setFileName( "someName" );
+    stuffStreamMeta.replaceFileName( "someName" );
     assertEquals( "someName", stuffStreamMeta.getTransformationPath() );
   }
 

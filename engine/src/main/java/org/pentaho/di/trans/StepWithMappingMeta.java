@@ -301,6 +301,12 @@ public abstract class StepWithMappingMeta extends BaseSerializingMeta implements
   public void setFileName( String fileName ) {
     this.fileName = fileName;
   }
+  /**
+   * @param fileName the fileName to set
+   */
+  public void replaceFileName( String fileName ) {
+    this.fileName = fileName;
+  }
 
   /**
    * @return the transName
@@ -368,7 +374,7 @@ public abstract class StepWithMappingMeta extends BaseSerializingMeta implements
 
       // change it in the job entry
       //
-      setFileName( newFilename );
+      replaceFileName( newFilename );
 
       setSpecificationMethod( ObjectLocationSpecificationMethod.FILENAME );
 
