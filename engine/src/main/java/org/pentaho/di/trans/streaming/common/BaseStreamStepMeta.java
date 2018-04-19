@@ -111,8 +111,8 @@ public abstract class BaseStreamStepMeta extends StepWithMappingMeta implements 
     return batchDuration;
   }
 
-  @Override public void setFileName( String fileName ) {
-    super.setFileName( fileName );
+  @Override public void replaceFileName( String fileName ) {
+    super.replaceFileName( fileName );
     setTransformationPath( fileName );
   }
 
