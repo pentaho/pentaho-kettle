@@ -29,11 +29,14 @@ import org.junit.ClassRule;
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.pentaho.di.core.KettleEnvironment;
+import org.pentaho.di.core.RowSet;
 import org.pentaho.di.core.exception.KettleFileException;
 import org.pentaho.di.core.fileinput.FileInputList;
 import org.pentaho.di.core.playlist.FilePlayListAll;
 import org.pentaho.di.core.row.RowMeta;
+import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.value.ValueMetaString;
+import org.pentaho.di.core.util.Assert;
 import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.junit.rules.RestorePDIEngineEnvironment;
@@ -54,6 +57,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
@@ -249,6 +253,48 @@ public class TextFileInputTest {
 
     assertEquals( 1, data.rejectedFiles.size() );
     assertEquals( 0, textFileInput.getErrors() );
+  }
+
+  @Test
+  public void test_PDI17117() throws Exception {
+    final String virtualFile = createVirtualFile( "pdi-14832.txt", "1,\n" );
+
+    BaseFileField col2 = field( "col2" );
+    col2.setIfNullValue( "DEFAULT" );
+
+    TextFileInputMeta meta = createMetaObject( field( "col1" ), col2 );
+
+    meta.inputFiles.passingThruFields = true;
+    meta.inputFiles.acceptingFilenames = true;
+    TextFileInputData data = createDataObject( virtualFile, ",", "col1", "col2" );
+
+    TextFileInput input = Mockito.spy( StepMockUtil.getStep( TextFileInput.class, TextFileInputMeta.class, "test" ) );
+
+    RowSet rowset = Mockito.mock( RowSet.class );
+    RowMetaInterface rwi = Mockito.mock( RowMetaInterface.class );
+    Object[] obj1 = new Object[2];
+    Object[] obj2 = new Object[2];
+    Mockito.doReturn( rowset ).when( input ).findInputRowSet( null );
+    Mockito.doReturn( null ).when( input ).getRowFrom( rowset );
+    Mockito.when( input.getRowFrom( rowset ) ).thenReturn( obj1, obj2, null );
+    Mockito.doReturn( rwi ).when( rowset ).getRowMeta();
+    Mockito.when( rwi.getString( obj2, 0 ) ).thenReturn( "filename1", "filename2" );
+    List<Object[]> output = TransTestingUtil.execute( input, meta, data, 0, false );
+    List<String> passThroughKeys = new ArrayList<>( data.passThruFields.keySet() );
+    Assert.assertNotNull( passThroughKeys );
+    // set order is not guaranteed - order alphabetically
+    passThroughKeys.sort( String.CASE_INSENSITIVE_ORDER );
+    assertEquals( 2, passThroughKeys.size() );
+
+    Assert.assertNotNull( passThroughKeys.get( 0 ) );
+    Assert.assertTrue( passThroughKeys.get( 0 ).startsWith( "0_file" ) );
+    Assert.assertTrue( passThroughKeys.get( 0 ).endsWith( "filename1" ) );
+
+    Assert.assertNotNull( passThroughKeys.get( 1 ) );
+    Assert.assertTrue( passThroughKeys.get( 1 ).startsWith( "1_file" ) );
+    Assert.assertTrue( passThroughKeys.get( 1 ).endsWith( "filename2" ) );
+
+    deleteVfsFile( virtualFile );
   }
 
   private TextFileInputMeta createMetaObject( BaseFileField... fields ) {
