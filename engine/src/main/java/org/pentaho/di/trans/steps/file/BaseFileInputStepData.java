@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2017-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -54,7 +54,7 @@ public class BaseFileInputStepData extends BaseStepData {
 
   public RowMetaInterface outputRowMeta;
 
-  public HashMap<FileObject, Object[]> passThruFields;
+  public HashMap<String, Object[]> passThruFields;
 
   public Object[] currentPassThruFieldsRow;
 
