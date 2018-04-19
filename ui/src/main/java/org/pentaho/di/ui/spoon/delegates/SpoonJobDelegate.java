@@ -230,13 +230,6 @@ public class SpoonJobDelegate extends SpoonDelegate {
 
       JobEntryInterface jei = je.getEntry();
 
-      if ( jei.isSpecial() ) {
-        JobEntrySpecial special = (JobEntrySpecial) jei;
-        if ( special.isDummy() ) {
-          return;
-        }
-      }
-
       JobEntryDialogInterface d = getJobEntryDialog( jei, jobMeta );
       if ( d != null ) {
         if ( d.open() != null ) {
