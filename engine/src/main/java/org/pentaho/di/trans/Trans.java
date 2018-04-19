@@ -4243,9 +4243,13 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
         //
         FileObject tempFile = KettleVFS.createTempFile( "transExport", KettleVFS.Suffix.ZIP, transMeta );
 
+        //the executionConfiguration should not include a repository here because all the resources should be
+        //retrieved from the exported zip file
+        TransExecutionConfiguration clonedConfiguration = (TransExecutionConfiguration) executionConfiguration.clone();
+        clonedConfiguration.setRepository( null );
         TopLevelResource topLevelResource =
             ResourceUtil.serializeResourceExportInterface( tempFile.getName().toString(), transMeta, transMeta,
-                repository, metaStore, executionConfiguration.getXML(), CONFIGURATION_IN_EXPORT_FILENAME );
+                repository, metaStore, clonedConfiguration.getXML(), CONFIGURATION_IN_EXPORT_FILENAME );
 
         // Send the zip file over to the slave server...
         //
