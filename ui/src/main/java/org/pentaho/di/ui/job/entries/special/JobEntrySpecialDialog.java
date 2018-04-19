@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -43,6 +43,7 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Spinner;
+import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.JobMeta;
@@ -97,6 +98,12 @@ public class JobEntrySpecialDialog extends JobEntryDialog implements JobEntryDia
 
   private Spinner wDayOfMonth;
 
+  private Label wlName;
+
+  private Text wName;
+
+  private FormData fdlName, fdName;
+
   public JobEntrySpecialDialog( Shell parent, JobEntryInterface jobEntryInt, Repository rep, JobMeta jobMeta ) {
     super( parent, jobEntryInt, rep, jobMeta );
     jobEntry = (JobEntrySpecial) jobEntryInt;
@@ -123,76 +130,104 @@ public class JobEntrySpecialDialog extends JobEntryDialog implements JobEntryDia
     formLayout.marginHeight = Const.FORM_MARGIN;
 
     shell.setLayout( formLayout );
-    shell.setText( BaseMessages.getString( PKG, "JobSpecial.Scheduling.Label" ) );
+    shell.setText( BaseMessages.getString( PKG, "JobSpecial.Dummy.Label" ) );
 
     int margin = Const.MARGIN;
 
-    wRepeat = new Button( shell, SWT.CHECK );
-    wRepeat.addListener( SWT.Selection, new Listener() {
-      public void handleEvent( Event arg0 ) {
-        enableDisableControls();
-      }
-    } );
-    placeControl( shell, BaseMessages.getString( PKG, "JobSpecial.Repeat.Label" ), wRepeat, null );
+    int middle = props.getMiddlePct();
+    wlName = new Label( shell, SWT.RIGHT );
+    wlName.setText( BaseMessages.getString( PKG, "JobSpecial.Jobname.Label" ) );
+    props.setLook( wlName );
+    fdlName = new FormData();
+    fdlName.left = new FormAttachment( 0, 0 );
+    fdlName.right = new FormAttachment( middle, -margin );
+    fdlName.top = new FormAttachment( 0, margin );
+    wlName.setLayoutData( fdlName );
+    wName = new Text( shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
+    props.setLook( wName );
+    wName.addModifyListener( lsMod );
+    fdName = new FormData();
+    fdName.left = new FormAttachment( middle, 0 );
+    fdName.top = new FormAttachment( 0, margin );
+    fdName.right = new FormAttachment( 100, 0 );
+    wName.setLayoutData( fdName );
+    BaseStepDialog.setSize( shell, 350, 120, true );
+    if ( !this.jobEntry.isDummy() ) {
+      shell.setText( BaseMessages.getString( PKG, "JobSpecial.Scheduling.Label" ) );
+      wRepeat = new Button( shell, SWT.CHECK );
+      wRepeat.addListener( SWT.Selection, new Listener() {
+        public void handleEvent( Event arg0 ) {
+          enableDisableControls();
+        }
+      } );
+      placeControl( shell, BaseMessages.getString( PKG, "JobSpecial.Repeat.Label" ), wRepeat, wName );
 
-    wType = new CCombo( shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
-    wType.addModifyListener( lsMod );
-    wType.addListener( SWT.Selection, new Listener() {
-      public void handleEvent( Event arg0 ) {
-        enableDisableControls();
-      }
-    } );
-    wType.add( NOSCHEDULING );
-    wType.add( INTERVAL );
-    wType.add( DAILY );
-    wType.add( WEEKLY );
-    wType.add( MONTHLY );
-    wType.setEditable( false );
-    wType.setVisibleItemCount( wType.getItemCount() );
-    placeControl( shell, BaseMessages.getString( PKG, "JobSpecial.Type.Label" ), wType, wRepeat );
+      wType = new CCombo( shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
+      wType.addModifyListener( lsMod );
+      wType.addListener( SWT.Selection, new Listener() {
+        public void handleEvent( Event arg0 ) {
+          enableDisableControls();
+        }
+      } );
+      wType.add( NOSCHEDULING );
+      wType.add( INTERVAL );
+      wType.add( DAILY );
+      wType.add( WEEKLY );
+      wType.add( MONTHLY );
+      wType.setEditable( false );
+      wType.setVisibleItemCount( wType.getItemCount() );
+      placeControl( shell, BaseMessages.getString( PKG, "JobSpecial.Type.Label" ), wType, wRepeat );
 
-    wIntervalSeconds = new Spinner( shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
-    wIntervalSeconds.setMinimum( 0 );
-    wIntervalSeconds.setMaximum( Integer.MAX_VALUE );
-    placeControl(
-      shell, BaseMessages.getString( PKG, "JobSpecial.IntervalSeconds.Label" ), wIntervalSeconds, wType );
+      wIntervalSeconds = new Spinner( shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
+      wIntervalSeconds.setMinimum( 0 );
+      wIntervalSeconds.setMaximum( Integer.MAX_VALUE );
+      placeControl(
+        shell, BaseMessages.getString( PKG, "JobSpecial.IntervalSeconds.Label" ), wIntervalSeconds, wType );
 
-    wIntervalMinutes = new Spinner( shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
-    wIntervalMinutes.setMinimum( 0 );
-    wIntervalMinutes.setMaximum( Integer.MAX_VALUE );
-    placeControl(
-      shell, BaseMessages.getString( PKG, "JobSpecial.IntervalMinutes.Label" ), wIntervalMinutes,
-      wIntervalSeconds );
+      wIntervalMinutes = new Spinner( shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
+      wIntervalMinutes.setMinimum( 0 );
+      wIntervalMinutes.setMaximum( Integer.MAX_VALUE );
+      placeControl(
+        shell, BaseMessages.getString( PKG, "JobSpecial.IntervalMinutes.Label" ), wIntervalMinutes,
+        wIntervalSeconds );
 
-    Composite time = new Composite( shell, SWT.NONE );
-    time.setLayout( new FillLayout() );
-    wHour = new Spinner( time, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
-    wHour.setMinimum( 0 );
-    wHour.setMaximum( 23 );
-    wMinutes = new Spinner( time, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
-    wMinutes.setMinimum( 0 );
-    wMinutes.setMaximum( 59 );
-    placeControl( shell, BaseMessages.getString( PKG, "JobSpecial.TimeOfDay.Label" ), time, wIntervalMinutes );
+      Composite time = new Composite( shell, SWT.NONE );
+      time.setLayout( new FillLayout() );
+      wHour = new Spinner( time, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
+      wHour.setMinimum( 0 );
+      wHour.setMaximum( 23 );
+      wMinutes = new Spinner( time, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
+      wMinutes.setMinimum( 0 );
+      wMinutes.setMaximum( 59 );
+      placeControl( shell, BaseMessages.getString( PKG, "JobSpecial.TimeOfDay.Label" ), time, wIntervalMinutes );
 
-    wDayOfWeek = new CCombo( shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
-    wDayOfWeek.addModifyListener( lsMod );
-    wDayOfWeek.add( BaseMessages.getString( PKG, "JobSpecial.DayOfWeek.Sunday" ) );
-    wDayOfWeek.add( BaseMessages.getString( PKG, "JobSpecial.DayOfWeek.Monday" ) );
-    wDayOfWeek.add( BaseMessages.getString( PKG, "JobSpecial.DayOfWeek.Tuesday" ) );
-    wDayOfWeek.add( BaseMessages.getString( PKG, "JobSpecial.DayOfWeek.Wednesday" ) );
-    wDayOfWeek.add( BaseMessages.getString( PKG, "JobSpecial.DayOfWeek.Thursday" ) );
-    wDayOfWeek.add( BaseMessages.getString( PKG, "JobSpecial.DayOfWeek.Friday" ) );
-    wDayOfWeek.add( BaseMessages.getString( PKG, "JobSpecial.DayOfWeek.Saturday" ) );
-    wDayOfWeek.setEditable( false );
-    wDayOfWeek.setVisibleItemCount( wDayOfWeek.getItemCount() );
-    placeControl( shell, BaseMessages.getString( PKG, "JobSpecial.DayOfWeek.Label" ), wDayOfWeek, time );
+      wDayOfWeek = new CCombo( shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
+      wDayOfWeek.addModifyListener( lsMod );
+      wDayOfWeek.add( BaseMessages.getString( PKG, "JobSpecial.DayOfWeek.Sunday" ) );
+      wDayOfWeek.add( BaseMessages.getString( PKG, "JobSpecial.DayOfWeek.Monday" ) );
+      wDayOfWeek.add( BaseMessages.getString( PKG, "JobSpecial.DayOfWeek.Tuesday" ) );
+      wDayOfWeek.add( BaseMessages.getString( PKG, "JobSpecial.DayOfWeek.Wednesday" ) );
+      wDayOfWeek.add( BaseMessages.getString( PKG, "JobSpecial.DayOfWeek.Thursday" ) );
+      wDayOfWeek.add( BaseMessages.getString( PKG, "JobSpecial.DayOfWeek.Friday" ) );
+      wDayOfWeek.add( BaseMessages.getString( PKG, "JobSpecial.DayOfWeek.Saturday" ) );
+      wDayOfWeek.setEditable( false );
+      wDayOfWeek.setVisibleItemCount( wDayOfWeek.getItemCount() );
+      placeControl( shell, BaseMessages.getString( PKG, "JobSpecial.DayOfWeek.Label" ), wDayOfWeek, time );
 
-    wDayOfMonth = new Spinner( shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
-    wDayOfMonth.addModifyListener( lsMod );
-    wDayOfMonth.setMinimum( 1 );
-    wDayOfMonth.setMaximum( 30 );
-    placeControl( shell, BaseMessages.getString( PKG, "JobSpecial.DayOfMonth.Label" ), wDayOfMonth, wDayOfWeek );
+      wDayOfMonth = new Spinner( shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
+      wDayOfMonth.addModifyListener( lsMod );
+      wDayOfMonth.setMinimum( 1 );
+      wDayOfMonth.setMaximum( 30 );
+      placeControl( shell, BaseMessages.getString( PKG, "JobSpecial.DayOfMonth.Label" ), wDayOfMonth, wDayOfWeek );
 
+      lsDef = new SelectionAdapter() {
+        public void widgetDefaultSelected( SelectionEvent e ) {
+          ok();
+        }
+      };
+      wType.addSelectionListener( lsDef );
+      BaseStepDialog.setSize( shell, 370, 285, true );
+    }
     // Some buttons
     wOK = new Button( shell, SWT.PUSH );
     wOK.setText( BaseMessages.getString( PKG, "System.Button.OK" ) );
@@ -216,12 +251,7 @@ public class JobEntrySpecialDialog extends JobEntryDialog implements JobEntryDia
     wOK.addListener( SWT.Selection, lsOK );
     wCancel.addListener( SWT.Selection, lsCancel );
 
-    lsDef = new SelectionAdapter() {
-      public void widgetDefaultSelected( SelectionEvent e ) {
-        ok();
-      }
-    };
-    wType.addSelectionListener( lsDef );
+
 
     // Detect [X] or ALT-F4 or something that kills this window...
     shell.addShellListener( new ShellAdapter() {
@@ -232,8 +262,6 @@ public class JobEntrySpecialDialog extends JobEntryDialog implements JobEntryDia
 
     getData();
     enableDisableControls();
-
-    BaseStepDialog.setSize( shell, 350, 200, true );
 
     shell.open();
     props.setDialogSize( shell, "JobSpecialDialogSize" );
@@ -246,21 +274,25 @@ public class JobEntrySpecialDialog extends JobEntryDialog implements JobEntryDia
   }
 
   public void dispose() {
+    shell.setSize( 350, 120 );
     WindowProperty winprop = new WindowProperty( shell );
     props.setScreen( winprop );
     shell.dispose();
   }
 
   public void getData() {
-    wRepeat.setSelection( jobEntry.isRepeat() );
-    wType.select( jobEntry.getSchedulerType() );
-    wIntervalSeconds.setSelection( jobEntry.getIntervalSeconds() );
-    wIntervalMinutes.setSelection( jobEntry.getIntervalMinutes() );
-    wHour.setSelection( jobEntry.getHour() );
-    wMinutes.setSelection( jobEntry.getMinutes() );
-    wDayOfWeek.select( jobEntry.getWeekDay() );
-    wDayOfMonth.setSelection( jobEntry.getDayOfMonth() );
-    wType.addSelectionListener( lsDef );
+    if ( !jobEntry.isDummy() ) {
+      wRepeat.setSelection( jobEntry.isRepeat() );
+      wType.select( jobEntry.getSchedulerType() );
+      wIntervalSeconds.setSelection( jobEntry.getIntervalSeconds() );
+      wIntervalMinutes.setSelection( jobEntry.getIntervalMinutes() );
+      wHour.setSelection( jobEntry.getHour() );
+      wMinutes.setSelection( jobEntry.getMinutes() );
+      wDayOfWeek.select( jobEntry.getWeekDay() );
+      wDayOfMonth.setSelection( jobEntry.getDayOfMonth() );
+      wType.addSelectionListener( lsDef );
+    }
+    wName.setText( jobEntry.getName() );
   }
 
   private void cancel() {
@@ -271,14 +303,17 @@ public class JobEntrySpecialDialog extends JobEntryDialog implements JobEntryDia
   }
 
   private void ok() {
-    jobEntry.setRepeat( wRepeat.getSelection() );
-    jobEntry.setSchedulerType( wType.getSelectionIndex() );
-    jobEntry.setIntervalSeconds( wIntervalSeconds.getSelection() );
-    jobEntry.setIntervalMinutes( wIntervalMinutes.getSelection() );
-    jobEntry.setHour( wHour.getSelection() );
-    jobEntry.setMinutes( wMinutes.getSelection() );
-    jobEntry.setWeekDay( wDayOfWeek.getSelectionIndex() );
-    jobEntry.setDayOfMonth( wDayOfMonth.getSelection() );
+    if ( !jobEntry.isDummy() ) {
+      jobEntry.setRepeat( wRepeat.getSelection() );
+      jobEntry.setSchedulerType( wType.getSelectionIndex() );
+      jobEntry.setIntervalSeconds( wIntervalSeconds.getSelection() );
+      jobEntry.setIntervalMinutes( wIntervalMinutes.getSelection() );
+      jobEntry.setHour( wHour.getSelection() );
+      jobEntry.setMinutes( wMinutes.getSelection() );
+      jobEntry.setWeekDay( wDayOfWeek.getSelectionIndex() );
+      jobEntry.setDayOfMonth( wDayOfMonth.getSelection() );
+    }
+    jobEntry.setName( wName.getText() );
     dispose();
   }
 
@@ -311,51 +346,53 @@ public class JobEntrySpecialDialog extends JobEntryDialog implements JobEntryDia
   }
 
   private void enableDisableControls() {
-    // if(wRepeat.getSelection()) {
-    wType.setEnabled( true );
-    if ( NOSCHEDULING.equals( wType.getText() ) ) {
-      wIntervalSeconds.setEnabled( false );
-      wIntervalMinutes.setEnabled( false );
-      wDayOfWeek.setEnabled( false );
-      wDayOfMonth.setEnabled( false );
-      wHour.setEnabled( false );
-      wMinutes.setEnabled( false );
-    } else if ( INTERVAL.equals( wType.getText() ) ) {
-      wIntervalSeconds.setEnabled( true );
-      wIntervalMinutes.setEnabled( true );
-      wDayOfWeek.setEnabled( false );
-      wDayOfMonth.setEnabled( false );
-      wHour.setEnabled( false );
-      wMinutes.setEnabled( false );
-    } else if ( DAILY.equals( wType.getText() ) ) {
-      wIntervalSeconds.setEnabled( false );
-      wIntervalMinutes.setEnabled( false );
-      wDayOfWeek.setEnabled( false );
-      wDayOfMonth.setEnabled( false );
-      wHour.setEnabled( true );
-      wMinutes.setEnabled( true );
-    } else if ( WEEKLY.equals( wType.getText() ) ) {
-      wIntervalSeconds.setEnabled( false );
-      wIntervalMinutes.setEnabled( false );
-      wDayOfWeek.setEnabled( true );
-      wDayOfMonth.setEnabled( false );
-      wHour.setEnabled( true );
-      wMinutes.setEnabled( true );
-    } else if ( MONTHLY.equals( wType.getText() ) ) {
-      wIntervalSeconds.setEnabled( false );
-      wIntervalMinutes.setEnabled( false );
-      wDayOfWeek.setEnabled( false );
-      wDayOfMonth.setEnabled( true );
-      wHour.setEnabled( true );
-      wMinutes.setEnabled( true );
+    if ( !jobEntry.isDummy() ) {
+      // if(wRepeat.getSelection()) {
+      wType.setEnabled( true );
+      if ( NOSCHEDULING.equals( wType.getText() ) ) {
+        wIntervalSeconds.setEnabled( false );
+        wIntervalMinutes.setEnabled( false );
+        wDayOfWeek.setEnabled( false );
+        wDayOfMonth.setEnabled( false );
+        wHour.setEnabled( false );
+        wMinutes.setEnabled( false );
+      } else if ( INTERVAL.equals( wType.getText() ) ) {
+        wIntervalSeconds.setEnabled( true );
+        wIntervalMinutes.setEnabled( true );
+        wDayOfWeek.setEnabled( false );
+        wDayOfMonth.setEnabled( false );
+        wHour.setEnabled( false );
+        wMinutes.setEnabled( false );
+      } else if ( DAILY.equals( wType.getText() ) ) {
+        wIntervalSeconds.setEnabled( false );
+        wIntervalMinutes.setEnabled( false );
+        wDayOfWeek.setEnabled( false );
+        wDayOfMonth.setEnabled( false );
+        wHour.setEnabled( true );
+        wMinutes.setEnabled( true );
+      } else if ( WEEKLY.equals( wType.getText() ) ) {
+        wIntervalSeconds.setEnabled( false );
+        wIntervalMinutes.setEnabled( false );
+        wDayOfWeek.setEnabled( true );
+        wDayOfMonth.setEnabled( false );
+        wHour.setEnabled( true );
+        wMinutes.setEnabled( true );
+      } else if ( MONTHLY.equals( wType.getText() ) ) {
+        wIntervalSeconds.setEnabled( false );
+        wIntervalMinutes.setEnabled( false );
+        wDayOfWeek.setEnabled( false );
+        wDayOfMonth.setEnabled( true );
+        wHour.setEnabled( true );
+        wMinutes.setEnabled( true );
+      }
+      // } else {
+      // wType.setEnabled( false );
+      // wInterval.setEnabled( false );
+      // wDayOfWeek.setEnabled( false );
+      // wDayOfMonth.setEnabled( false );
+      // wHour.setEnabled( false );
+      // wMinutes.setEnabled( false );
     }
-    // } else {
-    // wType.setEnabled(false);
-    // wInterval.setEnabled(false);
-    // wDayOfWeek.setEnabled(false);
-    // wDayOfMonth.setEnabled(false);
-    // wHour.setEnabled(false);
-    // wMinutes.setEnabled(false);
   }
 
 }
