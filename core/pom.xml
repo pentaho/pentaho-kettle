@@ -545,6 +545,14 @@
       <artifactId>gt-shapefile</artifactId>
       <version>2.7.3</version>
     </dependency>
+    <!-- https://mvnrepository.com/artifact/org.geotools/gt-render -->
+    <dependency>
+      <groupId>org.geotools</groupId>
+      <artifactId>gt-render</artifactId>
+      <version>2.7.3</version>
+    </dependency>
+
+
     <dependency>
       <groupId>com.vividsolutions</groupId>
       <artifactId>jts</artifactId>
