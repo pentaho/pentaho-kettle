@@ -115,7 +115,7 @@ define([
       vm.removeText = i18n.get("file-open-save-plugin.app.delete.button");
       vm.loadingTitle = i18n.get("file-open-save-plugin.loading.title");
       vm.loadingMessage = i18n.get("file-open-save-plugin.loading.message");
-      vm.showRecents = true;
+      vm.showRecents = false;
       vm.folder = {name: "Recents", path: "Recents"};
       vm.selectedFolder = vm.folder.name;
       vm.file = null;
@@ -168,6 +168,7 @@ define([
             selectFolderByPath("/");
           }
         }
+        vm.showRecents = true;
       }
       dt.getCurrentRepo().then(function(response) {
         vm.currentRepo = response.data.name;

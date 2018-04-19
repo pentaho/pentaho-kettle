@@ -61,9 +61,6 @@ define([
    */
   function folderController(dt, $timeout, $state) {
     var vm = this;
-    var _iconsWidth = 58;
-    var _paddingLeft = 27;
-    vm.$onInit = onInit;
     vm.$onChanges = onChanges;
     vm.openFolder = openFolder;
     vm.selectFolder = selectFolder;
@@ -72,15 +69,6 @@ define([
     vm.getTree = getTree;
     vm.width = 0;
     vm.state = $state;
-
-    /**
-     * The $onInit hook of components lifecycle which is called on each controller
-     * after all the controllers on an element have been constructed and had their
-     * bindings initialized. We use this hook to put initialization code for our controller.
-     */
-    function onInit() {
-
-    }
 
     /**
      * Called whenever one-way bindings are updated.
@@ -100,6 +88,7 @@ define([
             _selectFolderByPath(selectedFolder.path);
           }
         }
+        _setWidth();
       }
     }
 
@@ -125,11 +114,14 @@ define([
           var loadedFolder = response.data;
           folder.children = loadedFolder.children;
           folder.loading = false;
-          _setWidth();
           if (callback) {
             callback();
+          } else {
+            _setWidth();
           }
         });
+      } else {
+        _setWidth();
       }
     }
 
@@ -139,7 +131,6 @@ define([
       if (folder.open === false) {
         folder.loading = false;
       }
-      _setWidth();
     }
 
     /**
@@ -184,7 +175,6 @@ define([
           _selectFolderByPath(path);
         }
       });
-      _setWidth();
     }
 
     function _findAndOpenFolder(children, index, parts, callback) {
@@ -213,7 +203,6 @@ define([
      */
     function _selectFolderByPath(path) {
       selectFolder(_findFolderByPath(path));
-      _setWidth();
     }
 
     function _findFolderByPath(path) {
@@ -267,6 +256,7 @@ define([
      * @private
      */
     function _setWidth() {
+      vm.width = 0;
       $timeout(function() {
         vm.width = document.getElementById("directoryTreeArea").scrollWidth;
       }, 0);
