@@ -1054,8 +1054,30 @@ public class Database implements VariableSpace, LoggingObjectInterface {
 
     public void setValue(PreparedStatement ps, ValueMetaInterface v, Object object, int pos)
             throws KettleDatabaseException {
+        if(v.getType() == ValueMetaInterface.TYPE_GEOMETRY){
+            try {
+                if (!v.isNull(object)) {
+                    GeodatabaseInterface geodb = (GeodatabaseInterface) databaseMeta.getDatabaseInterface();
+                    // convert from JTS Geometry to the spatial DBMS' native geometry object:
+                    ps.setObject(pos, geodb.convertToObject(v, v.getGeometry(object), this));
 
-        v.setPreparedStatementValue(databaseMeta, ps, pos, object);
+                    // NOTE: we may have to do something else for other DBMS, depending
+                    // if it's handled differently by their JDBC wrappers (e.g. Oracle sdoapi ?)
+                    // (not sure... will have to check)
+                } else {
+                    // TODO: validate this
+                    ps.setNull(pos, java.sql.Types.OTHER);
+                }
+            } catch( Exception e) {
+                throw new KettleDatabaseException("Error setting value #" + pos + " ["
+                        + "] on prepared statement", e);
+            }
+
+
+        }else{
+            v.setPreparedStatementValue(databaseMeta, ps, pos, object);
+        }
+
 
     }
 

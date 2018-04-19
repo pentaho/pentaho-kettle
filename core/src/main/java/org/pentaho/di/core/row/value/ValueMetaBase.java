@@ -5220,6 +5220,9 @@ public class ValueMetaBase implements ValueMetaInterface {
                         preparedStatement.setNull(index, java.sql.Types.BINARY);
                     }
                     break;
+
+
+
                 default:
                     // placeholder
                     preparedStatement.setNull(index, java.sql.Types.VARCHAR);
