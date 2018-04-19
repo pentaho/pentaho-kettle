@@ -53,9 +53,7 @@ import org.pentaho.di.core.gui.Point;
 import org.pentaho.di.core.plugins.PluginInterface;
 import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.plugins.StepPluginType;
-import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.util.Utils;
-import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.ObjectId;
@@ -63,15 +61,11 @@ import org.pentaho.di.repository.RepositoryDirectoryInterface;
 import org.pentaho.di.repository.RepositoryObject;
 import org.pentaho.di.repository.RepositoryObjectType;
 import org.pentaho.di.shared.SharedObjects;
-import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStepMeta;
-import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepDialogInterface;
-import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.steps.recordsfromstream.RecordsFromStreamMeta;
-import org.pentaho.di.trans.steps.transexecutor.TransExecutorMeta;
 import org.pentaho.di.trans.streaming.common.BaseStreamStepMeta;
 import org.pentaho.di.ui.core.ConstUI;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
@@ -91,7 +85,10 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.Optional;
 
-@SuppressWarnings( { "FieldCanBeLocal", "unused", "WeakerAccess" } )
+import static java.util.Optional.ofNullable;
+import static org.pentaho.di.trans.StepWithMappingMeta.loadMappingMeta;
+
+@SuppressWarnings ( { "FieldCanBeLocal", "unused", "WeakerAccess" } )
 public abstract class BaseStreamingDialog extends BaseStepDialog implements StepDialogInterface {
 
   public static final int INPUT_WIDTH = 350;
@@ -565,30 +562,17 @@ public abstract class BaseStreamingDialog extends BaseStepDialog implements Step
 
   protected void populateSubSteps( Event event ) {
     try {
-      BaseStreamStepMeta baseMeta = new BaseStreamStepMeta() {
-        @Override
-        public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr,
-                                      TransMeta transMeta,
-                                      Trans trans ) {
-          throw new UnsupportedOperationException();
-        }
-
-        @Override public StepDataInterface getStepData() {
-          throw new UnsupportedOperationException();
-        }
-
-        @Override public RowMeta getRowMeta( String origin, VariableSpace space ) {
-          throw new UnsupportedOperationException();
-        }
-      };
-      baseMeta.setFileName( transMeta.environmentSubstitute( wTransPath.getText() ) );
-      baseMeta.setSpecificationMethod( specificationMethod );
-
-      TransMeta subTransMeta = TransExecutorMeta
-        .loadMappingMeta( baseMeta, getRepository(), getMetaStore(), transMeta );
       String current = wSubStep.getText();
       wSubStep.removeAll();
-      subTransMeta.getSteps().stream().map( StepMeta::getName ).sorted().forEach( wSubStep::add );
+
+      ofNullable( getMappingMeta() )
+        .ifPresent( transMeta ->
+          transMeta
+            .getSteps()
+            .stream()
+            .map( StepMeta::getName )
+            .sorted()
+            .forEach( wSubStep::add ) );
 
       //I don't know why but just calling setText does not work when the text is not one of the items in the list.
       //Instead the first item in the list is selected.  asyncExec solves it.  If you have a better solution, by all
@@ -597,6 +581,12 @@ public abstract class BaseStreamingDialog extends BaseStepDialog implements Step
     } catch ( KettleException e ) {
       logDebug( e.getMessage(), e );
     }
+  }
+
+  private TransMeta getMappingMeta() throws KettleException {
+    BaseStreamStepMeta baseMeta = (BaseStreamStepMeta) meta.clone();
+    updateMeta( baseMeta );
+    return  loadMappingMeta( baseMeta, getRepository(), getMetaStore(), transMeta );
   }
 
   private Image getImage() {
@@ -617,17 +607,25 @@ public abstract class BaseStreamingDialog extends BaseStepDialog implements Step
 
   private void ok() {
     stepname = wStepname.getText();
-    meta.setTransformationPath( wTransPath.getText() );
-    meta.setBatchSize( wBatchSize.getText() );
-    meta.setBatchDuration( wBatchDuration.getText() );
-    meta.setSpecificationMethod( specificationMethod );
-    meta.setSubStep( wSubStep.getText() );
+    updateMeta( meta );
+    dispose();
+  }
+
+  /**
+   * populates streamMeta based on current values of form
+   */
+  private void updateMeta( BaseStreamStepMeta streamMeta ) {
+    streamMeta.setTransformationPath( wTransPath.getText() );
+    streamMeta.setBatchSize( wBatchSize.getText() );
+    streamMeta.setBatchDuration( wBatchDuration.getText() );
+    streamMeta.setSpecificationMethod( specificationMethod );
+    streamMeta.setSubStep( wSubStep.getText() );
     switch ( specificationMethod ) {
       case FILENAME:
-        meta.setFileName( wTransPath.getText() );
-        meta.setDirectoryPath( null );
-        meta.setTransName( null );
-        meta.setTransObjectId( null );
+        streamMeta.setFileName( wTransPath.getText() );
+        streamMeta.setDirectoryPath( null );
+        streamMeta.setTransName( null );
+        streamMeta.setTransObjectId( null );
         break;
       case REPOSITORY_BY_NAME:
         String transPath = wTransPath.getText();
@@ -638,17 +636,15 @@ public abstract class BaseStreamingDialog extends BaseStepDialog implements Step
           transName = transPath.substring( index + 1 );
           directory = transPath.substring( 0, index );
         }
-        meta.setDirectoryPath( directory );
-        meta.setTransName( transName );
-        meta.setFileName( null );
-        meta.setTransObjectId( null );
+        streamMeta.setDirectoryPath( directory );
+        streamMeta.setTransName( transName );
+        streamMeta.setFileName( null );
+        streamMeta.setTransObjectId( null );
         break;
       default:
         break;
     }
-    additionalOks( meta );
-
-    dispose();
+    additionalOks( streamMeta );
   }
 
   protected void additionalOks( BaseStreamStepMeta meta ) {
