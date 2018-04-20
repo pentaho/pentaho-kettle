@@ -57,6 +57,7 @@ import org.pentaho.di.job.JobExecutionConfiguration;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entry.JobEntryBase;
 import org.pentaho.di.job.entry.JobEntryInterface;
+import org.pentaho.di.job.entry.JobEntryRunConfigurableInterface;
 import org.pentaho.di.job.entry.validator.AndValidator;
 import org.pentaho.di.job.entry.validator.JobEntryValidatorUtils;
 import org.pentaho.di.repository.HasRepositoryDirectories;
@@ -93,7 +94,7 @@ import java.util.UUID;
  * @since 01-10-2003, Rewritten on 18-06-2004
  *
  */
-public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInterface, HasRepositoryDirectories {
+public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInterface, HasRepositoryDirectories, JobEntryRunConfigurableInterface {
   private static Class<?> PKG = JobEntryJob.class; // for i18n purposes, needed by Translator2!!
 
   private String filename;
@@ -1590,6 +1591,10 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
    */
   public void setFollowingAbortRemotely( boolean followingAbortRemotely ) {
     this.followingAbortRemotely = followingAbortRemotely;
+  }
+
+  public void setLoggingRemoteWork( boolean loggingRemoteWork ) {
+    // do nothing. for compatibility with JobEntryRunConfigurableInterface
   }
 
   /**
