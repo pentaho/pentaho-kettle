@@ -551,6 +551,12 @@
       <artifactId>gt-render</artifactId>
       <version>2.7.3</version>
     </dependency>
+    <!-- https://mvnrepository.com/artifact/org.geotools/gt-epsg-hsql -->
+    <dependency>
+      <groupId>org.geotools</groupId>
+      <artifactId>gt-epsg-hsql</artifactId>
+      <version>2.7.3</version>
+    </dependency>
 
 
     <dependency>
@@ -607,7 +613,13 @@
         </exclusion>
       </exclusions>
     </dependency>
-
+    <dependency>
+      <groupId>com.hsqldb</groupId>
+      <artifactId>hsqldb</artifactId>
+      <version>1.0</version>
+      <scope>system</scope>
+      <systemPath>C:/Users/Administrator/Desktop/jar/hsqldb.jar</systemPath>
+    </dependency>
   </dependencies>
 
   <build>

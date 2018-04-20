@@ -4,9 +4,39 @@
  <step id="GISFileInput">
   <description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.GISFileInput</description>
   <classname>org.pentaho.di.trans.steps.gisfileinput.GISFileInputMeta</classname>
-  <category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Flow</category>
+  <category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Input</category>
   <tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.GISFileInput</tooltip>
-  <iconfile>ui/images/DUM.svg</iconfile>
+  <iconfile>ui/images/GISInput.png</iconfile>
+  <documentation_url>http://wiki.pentaho.com/display/EAI/Dummy+%28do+nothing%29</documentation_url>
+  <cases_url/>
+  <forum_url/>
+ </step>
+ <step id="GISFileOutput">
+  <description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.GISFileOutput</description>
+  <classname>org.pentaho.di.trans.steps.gisfileoutput.GISFileOutputMeta</classname>
+  <category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Output</category>
+  <tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.GISFileOutput</tooltip>
+  <iconfile>ui/images/GISOutput.png</iconfile>
+  <documentation_url>http://wiki.pentaho.com/display/EAI/Dummy+%28do+nothing%29</documentation_url>
+  <cases_url/>
+  <forum_url/>
+ </step>
+ <step id="SetSRS">
+  <description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.SetSRS</description>
+  <classname>org.pentaho.di.trans.steps.setsrs.SetSRSMeta</classname>
+  <category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Transform</category>
+  <tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.SetSRS</tooltip>
+  <iconfile>ui/images/setSRS.png</iconfile>
+  <documentation_url>http://wiki.pentaho.com/display/EAI/Dummy+%28do+nothing%29</documentation_url>
+  <cases_url/>
+  <forum_url/>
+ </step>
+ <step id="SRSTransformation">
+  <description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.SRSTransformation</description>
+  <classname>org.pentaho.di.trans.steps.srstransformation.SRSTransformationMeta</classname>
+  <category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Transform</category>
+  <tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.SRSTransformation</tooltip>
+  <iconfile>ui/images/SRStransform.png</iconfile>
   <documentation_url>http://wiki.pentaho.com/display/EAI/Dummy+%28do+nothing%29</documentation_url>
   <cases_url/>
   <forum_url/>

@@ -440,17 +440,17 @@
         </exclusion>
       </exclusions>
     </dependency>
-    <dependency>
-      <groupId>org.hsqldb</groupId>
-      <artifactId>hsqldb</artifactId>
-      <version>${hsqldb.version}</version>
-      <exclusions>
-        <exclusion>
-          <groupId>*</groupId>
-          <artifactId>*</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
+    <!--<dependency>-->
+      <!--<groupId>org.hsqldb</groupId>-->
+      <!--<artifactId>hsqldb</artifactId>-->
+      <!--<version>${hsqldb.version}</version>-->
+      <!--<exclusions>-->
+        <!--<exclusion>-->
+          <!--<groupId>*</groupId>-->
+          <!--<artifactId>*</artifactId>-->
+        <!--</exclusion>-->
+      <!--</exclusions>-->
+    <!--</dependency>-->
     <dependency>
       <groupId>org.firebirdsql.jdbc</groupId>
       <artifactId>jaybird</artifactId>
