@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -60,5 +60,41 @@ public class UserDefinedJavaClassMetaTest {
 
     userDefinedJavaClassMetaSpy.cookClasses();
     Assert.assertEquals( 1, userDefinedJavaClassMeta.cookErrors.size() );
+  }
+
+  @Test
+  public void cookClassesCachingTest() throws Exception {
+    String codeBlock1 = "public boolean processRow() {\n"
+        + "    return true;\n"
+        + "}\n\n";
+    String codeBlock2 = "public boolean processRow() {\n"
+        + "    // Random comment\n"
+        + "    return true;\n"
+        + "}\n\n";
+    UserDefinedJavaClassMeta userDefinedJavaClassMeta1 = new UserDefinedJavaClassMeta();
+
+    UserDefinedJavaClassDef userDefinedJavaClassDef1 = new UserDefinedJavaClassDef( UserDefinedJavaClassDef.ClassType.NORMAL_CLASS, "MainClass", codeBlock1 );
+
+    StepMeta stepMeta = Mockito.mock( StepMeta.class );
+    Mockito.when( stepMeta.getName() ).thenReturn( "User Defined Java Class" );
+    userDefinedJavaClassMeta1.setParentStepMeta( stepMeta );
+
+    UserDefinedJavaClassMeta userDefinedJavaClassMetaSpy = Mockito.spy( userDefinedJavaClassMeta1 );
+
+    Class<?> clazz1 = userDefinedJavaClassMetaSpy.cookClass( userDefinedJavaClassDef1 );
+    Class<?> clazz2 = userDefinedJavaClassMetaSpy.cookClass( userDefinedJavaClassDef1 );
+    Assert.assertTrue( clazz1 == clazz2 ); // Caching should work here and return exact same class
+
+    UserDefinedJavaClassMeta userDefinedJavaClassMeta2 = new UserDefinedJavaClassMeta();
+    UserDefinedJavaClassDef userDefinedJavaClassDef2 = new UserDefinedJavaClassDef( UserDefinedJavaClassDef.ClassType.NORMAL_CLASS, "AnotherClass", codeBlock2 );
+
+    StepMeta stepMeta2 = Mockito.mock( StepMeta.class );
+    Mockito.when( stepMeta2.getName() ).thenReturn( "Another UDJC" );
+    userDefinedJavaClassMeta2.setParentStepMeta( stepMeta2 );
+    UserDefinedJavaClassMeta userDefinedJavaClassMeta2Spy = Mockito.spy( userDefinedJavaClassMeta2 );
+
+    Class<?> clazz3 = userDefinedJavaClassMeta2Spy.cookClass( userDefinedJavaClassDef2 );
+
+    Assert.assertTrue( clazz3 != clazz1 ); // They should not be the exact same class
   }
 }
