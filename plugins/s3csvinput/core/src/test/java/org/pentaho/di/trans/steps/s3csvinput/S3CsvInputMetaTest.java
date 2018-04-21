@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -21,17 +21,12 @@
  ******************************************************************************/
 package org.pentaho.di.trans.steps.s3csvinput;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.fail;
 
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.jets3t.service.S3Service;
-import org.jets3t.service.S3ServiceException;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.pentaho.di.core.Const;
@@ -40,7 +35,6 @@ import org.pentaho.di.core.encryption.TwoWayPasswordEncoderPluginType;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.util.EnvUtil;
-import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.trans.steps.loadsave.LoadSaveTester;
 import org.pentaho.di.trans.steps.loadsave.validator.ArrayLoadSaveValidator;
 import org.pentaho.di.trans.steps.loadsave.validator.FieldLoadSaveValidator;
@@ -70,7 +64,7 @@ public class S3CsvInputMetaTest {
 
   @Test
   public void testSerialization() throws KettleException {
-    List<String> attributes = Arrays.asList( "AwsAccessKey", "AwsSecretKey", "Bucket", "Filename", "FilenameField",
+    List<String> attributes = Arrays.asList( "Bucket", "Filename", "FilenameField",
       "RowNumField", "IncludingFilename", "Delimiter", "Enclosure", "HeaderPresent", "MaxLineSize",
       "LazyConversionActive", "RunningInParallel", "InputFields" );
 
@@ -82,38 +76,6 @@ public class S3CsvInputMetaTest {
     LoadSaveTester<S3CsvInputMeta> tester = new LoadSaveTester<>( S3CsvInputMeta.class, attributes,
       getterMap, setterMap, new HashMap<String, FieldLoadSaveValidator<?>>(), typeMap );
     tester.testSerialization();
-  }
-
-  @Test
-  public void testGetS3Service_notEncryptedKeys() {
-    S3CsvInputMeta s3CvsInput = new S3CsvInputMeta();
-    s3CvsInput.setAwsAccessKey( TEST_ACCESS_KEY );
-    s3CvsInput.setAwsSecretKey( TEST_AWS_SECRET_KEY );
-
-    try {
-      S3Service s3Service = s3CvsInput.getS3Service( new Variables() );
-      assertNotNull( s3Service );
-      assertEquals( TEST_ACCESS_KEY, s3Service.getProviderCredentials().getAccessKey() );
-      assertEquals( TEST_AWS_SECRET_KEY, s3Service.getProviderCredentials().getSecretKey() );
-    } catch ( S3ServiceException e ) {
-      fail( "No exception should be thrown. But it was:" + e.getLocalizedMessage() );
-    }
-  }
-
-  @Test
-  public void testGetS3Service_WithEncryptedKeys() {
-    S3CsvInputMeta s3CvsInput = new S3CsvInputMeta();
-    s3CvsInput.setAwsAccessKey( TEST_ACCESS_KEY_ENCRYPTED );
-    s3CvsInput.setAwsSecretKey( TEST_AWS_SECRET_KEY_ENCRYPTED );
-
-    try {
-      S3Service s3Service = s3CvsInput.getS3Service( new Variables() );
-      assertNotNull( s3Service );
-      assertEquals( TEST_ACCESS_KEY, s3Service.getProviderCredentials().getAccessKey() );
-      assertEquals( TEST_AWS_SECRET_KEY, s3Service.getProviderCredentials().getSecretKey() );
-    } catch ( S3ServiceException e ) {
-      fail( "No exception should be thrown. But it was:" + e.getLocalizedMessage() );
-    }
   }
 
 }
