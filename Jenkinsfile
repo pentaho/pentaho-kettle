@@ -11,18 +11,32 @@ pipeline {
 
   parameters {
 
-    string(defaultValue: 'buildControlData.yaml', description: 'The build data yaml file to run',
+    string(defaultValue: 'suiteBuildControlData.yaml', description: 'The build data yaml file to run',
       name: 'BUILD_DATA_FILE')
     string(defaultValue: '.*-SNAPSHOT.*', description: 'Clean build dependency caches with regex', name: 'CLEAN_CACHES_REGEX')
+    string(defaultValue: '-B -e', description: 'Force base maven command options',
+      name: 'MAVEN_DEFAULT_COMMAND_OPTIONS')
+    string(defaultValue: '-Xms512m', description: 'Typically the JVM opts for maven', name: 'MAVEN_OPTS')
+    string(defaultValue: '-DsurefireArgLine=-Xmx1g', description: 'Typically, some extra for Maven Surefire',
+      name: 'MAVEN_TEST_OPTS')
+    string(defaultValue: '10', description: 'Maximum parallel source checkout chunk size',
+      name: 'PARALLEL_CHECKOUT_CHUNKSIZE')
+    string(defaultValue: '20', description: 'Shallow clone depth (leave blank for infinite)', name: 'CHECKOUT_DEPTH')
+    string(defaultValue: '360', description: 'Build timeout in minutes', name: 'BUILD_TIMEOUT')
+    string(defaultValue: '1', description: 'Build retry count', name: 'BUILD_RETRIES')
     string(defaultValue: 'http://nexus.pentaho.org/content/groups/omni',
       description: 'Maven resolve repo global mirror', name: 'MAVEN_RESOLVE_REPO_URL')
-    string(defaultValue: '60', description: 'Build timeout in minutes', name: 'BUILD_TIMEOUT')
+    string(defaultValue: 'github-buildguy', description: 'Use this Jenkins credential for checkouts',
+      name: 'CHECKOUT_CREDENTIALS_ID')
+    string(defaultValue: 'Java8_auto', description: 'Use this Jenkins JDK label for builds',
+      name: 'JENKINS_JDK_FOR_BUILDS')
+    string(defaultValue: 'maven3-auto', description: 'Use this Jenkins Maven label for builds',
+      name: 'JENKINS_MAVEN_FOR_BUILDS')
 
     booleanParam(defaultValue: true, description: 'Run the scm checkouts', name: 'RUN_CHECKOUTS')
     booleanParam(defaultValue: true, description: 'Run the code builds', name: 'RUN_BUILDS')
     booleanParam(defaultValue: true, description: 'Run the code tests', name: 'RUN_UNIT_TESTS')
     booleanParam(defaultValue: true, description: 'Archive the artifacts', name: 'ARCHIVE_ARTIFACTS')
-
 
     booleanParam(defaultValue: false, description: 'Clean all build dependency caches', name: 'CLEAN_ALL_CACHES')
     booleanParam(defaultValue: false, description: 'Clean build scm workspaces', name: 'CLEAN_SCM_WORKSPACES')
@@ -30,7 +44,7 @@ pipeline {
 
     booleanParam(defaultValue: false, description: 'No op build (test the build config)', name: 'NOOP')
     booleanParam(defaultValue: false, description: 'Distributes source checkouts on remote nodes ' +
-      '(Otherwise assume workspace is shared on all). Not yet fully implemented--do not use.', name: 'USE_DISTRIBUTED_SOURCE_CACHING')
+      '(Otherwise assume workspace is shared on all). Not yet fully implmented--do not use.', name: 'USE_DISTRIBUTED_SOURCE_CACHING')
 
   }
 
