@@ -6,7 +6,7 @@ buildProperties:
         # global build control defaults
         # These are understood by the shared pipeline libraries:
         BUILD_PLAN_ID                  : Jibberish Build Test
-        MAVEN_DEFAULT_DIRECTIVES       : -B -q clean install
+        MAVEN_DEFAULT_DIRECTIVES       : clean install
         ANT_DEFAULT_DIRECTIVES         : clean-all resolve publish
         GRADLE_DEFAULT_DIRECTIVES      : -q
 # job item field defaults
