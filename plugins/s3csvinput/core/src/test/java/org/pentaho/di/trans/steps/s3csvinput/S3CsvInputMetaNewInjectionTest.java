@@ -38,21 +38,6 @@ public class S3CsvInputMetaNewInjectionTest extends BaseMetadataInjectionTest<S3
 
   @Test
   public void test() throws Exception {
-    check( "AWS_ACCESS_KEY", new StringGetter() {
-      public String get() {
-        return meta.getAwsAccessKey();
-      }
-    } );
-    check( "AWS_SECRET_KEY", new StringGetter() {
-      public String get() {
-        return meta.getAwsSecretKey();
-      }
-    } );
-    check( "USE_AWS_DEFAULT_CREDENTIALS", new BooleanGetter() {
-      public boolean get() {
-        return meta.getUseAwsDefaultCredentials();
-      }
-    } );
     check( "BUCKET", new StringGetter() {
       public String get() {
         return meta.getBucket();
