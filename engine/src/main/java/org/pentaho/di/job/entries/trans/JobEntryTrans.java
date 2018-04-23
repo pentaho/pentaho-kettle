@@ -61,6 +61,7 @@ import org.pentaho.di.job.Job;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entry.JobEntryBase;
 import org.pentaho.di.job.entry.JobEntryInterface;
+import org.pentaho.di.job.entry.JobEntryRunConfigurableInterface;
 import org.pentaho.di.job.entry.validator.AndValidator;
 import org.pentaho.di.job.entry.validator.JobEntryValidatorUtils;
 import org.pentaho.di.repository.HasRepositoryDirectories;
@@ -94,7 +95,7 @@ import org.w3c.dom.Node;
  * @author Matt Casters
  * @since 1-Oct-2003, rewritten on 18-June-2004
  */
-public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryInterface, HasRepositoryDirectories {
+public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryInterface, HasRepositoryDirectories, JobEntryRunConfigurableInterface {
   private static Class<?> PKG = JobEntryTrans.class; // for i18n purposes, needed by Translator2!!
 
   private String transname;
