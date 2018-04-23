@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -21,9 +21,6 @@
  ******************************************************************************/
 
 package org.pentaho.di.trans.steps.userdefinedjavaclass;
-
-import java.util.List;
-import java.util.Map;
 
 import org.pentaho.di.core.BlockingRowSet;
 import org.pentaho.di.core.ResultFile;
@@ -44,10 +41,14 @@ import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.di.www.SocketRepository;
 
+import java.util.List;
+import java.util.Map;
+
 public class UserDefinedJavaClass extends BaseStep implements StepInterface {
   private TransformClassBase child;
   protected final UserDefinedJavaClassMeta meta;
   protected final UserDefinedJavaClassData data;
+  public static final String KETTLE_DEFAULT_CLASS_CACHE_SIZE = "KETTLE_DEFAULT_CLASS_CACHE_SIZE";
 
   public UserDefinedJavaClass( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr,
     TransMeta transMeta, Trans trans ) {

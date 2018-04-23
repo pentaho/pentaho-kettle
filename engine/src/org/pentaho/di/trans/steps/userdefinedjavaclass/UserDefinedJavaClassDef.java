@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,7 +22,11 @@
 
 package org.pentaho.di.trans.steps.userdefinedjavaclass;
 
+import org.apache.commons.codec.binary.Hex;
 import org.pentaho.di.core.exception.KettleStepException;
+
+import java.security.MessageDigest;
+import java.util.Objects;
 
 public class UserDefinedJavaClassDef implements Cloneable {
   public enum ClassType {
@@ -40,6 +44,21 @@ public class UserDefinedJavaClassDef implements Cloneable {
     this.className = className;
     this.source = source;
     classActive = true;
+  }
+
+  public int hashCode() {
+    return Objects.hash( className, source );
+  }
+
+  public String getChecksum() throws KettleStepException {
+    String ck = this.className + this.source;
+    try {
+      byte[] b = MessageDigest.getInstance( "MD5" ).digest( ck.getBytes() );
+      return Hex.encodeHexString( b );
+    } catch ( Exception ex ) {
+      // Can't get MD5 hashcode ?
+      throw new KettleStepException( "Unable to obtain checksum of UDJC - " + this.className );
+    }
   }
 
   public ClassType getClassType() {

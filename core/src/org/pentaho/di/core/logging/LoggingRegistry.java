@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,19 +22,20 @@
 
 package org.pentaho.di.core.logging;
 
+import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.EnvUtil;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
-
-import org.pentaho.di.core.Const;
-import org.pentaho.di.core.util.EnvUtil;
 
 public class LoggingRegistry {
   private static LoggingRegistry registry = new LoggingRegistry();
@@ -45,7 +46,7 @@ public class LoggingRegistry {
   private int maxSize;
   private final int DEFAULT_MAX_SIZE = 10000;
 
-  private Object syncObject = new Object();
+  private final Object syncObject = new Object();
 
   private LoggingRegistry() {
     this.map = new ConcurrentHashMap<String, LoggingObjectInterface>();
@@ -63,23 +64,26 @@ public class LoggingRegistry {
   public String registerLoggingSource( Object object ) {
     synchronized ( this.syncObject ) {
 
-      this.maxSize = Const.toInt( EnvUtil.getSystemProperty( "KETTLE_MAX_LOGGING_REGISTRY_SIZE" ), 10000 );
-
       LoggingObject loggingSource = new LoggingObject( object );
 
       LoggingObjectInterface found = findExistingLoggingSource( loggingSource );
       if ( found != null ) {
         LoggingObjectInterface foundParent = found.getParent();
         LoggingObjectInterface loggingSourceParent = loggingSource.getParent();
+        String foundLogChannelId = found.getLogChannelId();
         if ( foundParent != null && loggingSourceParent != null ) {
           String foundParentLogChannelId = foundParent.getLogChannelId();
           String sourceParentLogChannelId = loggingSourceParent.getLogChannelId();
           if ( foundParentLogChannelId != null && sourceParentLogChannelId != null
             && foundParentLogChannelId.equals( sourceParentLogChannelId ) ) {
-            String foundLogChannelId = found.getLogChannelId();
             if ( foundLogChannelId != null ) {
               return foundLogChannelId;
             }
+          }
+        }
+        if ( foundParent == null && loggingSourceParent == null ) {
+          if ( foundLogChannelId != null ) {
+            return foundLogChannelId;
           }
         }
       }
@@ -92,11 +96,8 @@ public class LoggingRegistry {
       if ( loggingSource.getParent() != null ) {
         String parentLogChannelId = loggingSource.getParent().getLogChannelId();
         if ( parentLogChannelId != null ) {
-          List<String> parentChildren = this.childrenMap.get( parentLogChannelId );
-          if ( parentChildren == null ) {
-            parentChildren = new ArrayList<String>();
-            this.childrenMap.put( parentLogChannelId, parentChildren );
-          }
+          List<String> parentChildren =
+            this.childrenMap.computeIfAbsent( parentLogChannelId, k -> new ArrayList<String>() );
           parentChildren.add( logChannelId );
         }
       }
@@ -131,7 +132,7 @@ public class LoggingRegistry {
           }
         } );
         int cutCount = this.maxSize < 1000 ? this.maxSize : 1000;
-        List<String> channelsNotToRemove = getLogChannelFileWriterBufferIds();
+        Set<String> channelsNotToRemove = getLogChannelFileWriterBufferIds();
         for ( int i = 0; i < cutCount; i++ ) {
           LoggingObjectInterface toRemove = all.get( i );
           if ( !channelsNotToRemove.contains( toRemove.getLogChannelId() ) ) {
@@ -267,10 +268,12 @@ public class LoggingRegistry {
     return null;
   }
 
-  protected List<String> getLogChannelFileWriterBufferIds() {
+  protected Set<String> getLogChannelFileWriterBufferIds() {
     Set<String> bufferIds = this.fileWriterBuffers.keySet();
 
-    List<String> ids = new ArrayList<>();
+    // Changed to a set as a band-aid for PDI-16658. This stuff really should be done
+    // using a proper LRU cache.
+    Set<String> ids = new HashSet<>();
     for ( String id : bufferIds ) {
       ids.addAll( getLogChannelChildren( id ) );
     }
@@ -286,6 +289,14 @@ public class LoggingRegistry {
       if ( getLogChannelChildren( id ).contains( bufferId ) ) {
         this.fileWriterBuffers.remove( bufferId );
       }
+    }
+  }
+
+  public void reset() {
+    synchronized ( this.syncObject ) {
+      map.clear();
+      childrenMap.clear();
+      fileWriterBuffers.clear();
     }
   }
 }
