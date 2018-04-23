@@ -36,6 +36,11 @@ public class ChangedFlag implements ChangedFlagInterface {
     if ( o == null ) {
       throw new NullPointerException();
     }
+
+    validateAdd( o );
+  }
+
+  private synchronized void validateAdd( PDIObserver o ) {
     if ( !obs.contains( o ) ) {
       obs.add( o );
     }
