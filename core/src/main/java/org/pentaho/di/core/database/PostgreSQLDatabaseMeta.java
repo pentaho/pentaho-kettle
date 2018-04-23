@@ -625,8 +625,8 @@ public class PostgreSQLDatabaseMeta extends BaseDatabaseMeta implements Database
     try {
       // Map the EPSG- (or custom-) SRID with PostgreSQL's SRID.
       int postgis_srid = convertToDBMS_SRID(vmi.getGeometrySRS(), db.getConnection());
-
-      String wkt = PGgeometry.SRIDPREFIX + postgis_srid + ";" + geom.toText();
+      //todo  此处暂时这么改动 setSrs步骤 sird从geom中直接取值
+      String wkt = PGgeometry.SRIDPREFIX + geom.getSRID() + ";" + geom.toText();
       postgisGeom = new PGgeometry(PGgeometry.geomFromString(wkt));
     } catch (SQLException e) {
       postgisGeom = null;
