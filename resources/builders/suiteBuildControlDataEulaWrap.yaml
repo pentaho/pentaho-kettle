@@ -314,6 +314,7 @@ jobGroups:
        executeFlag     :  true
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-schema-workbench-ee.git
        scmBranch       :  ${DEFAULT_BRANCH}
+       directives      :  + -Deula-wrap
        versionProperty :  mondrian.version
 
      - jobID           :  reporting-engine
@@ -599,6 +600,7 @@ jobGroups:
        executeFlag     :  true
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-analyzer.git
        scmBranch       :  ${DEFAULT_BRANCH}
+       directives      :  + -Deula-wrap
        versionProperty :  analyzer-plugin.version
 
   3500:
@@ -679,6 +681,7 @@ jobGroups:
        executeFlag     :  true
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-platform-plugin-interactive-reporting.git
        scmBranch       :  ${DEFAULT_BRANCH}
+       directives      :  + -Deula-wrap
        versionProperty :  pir-plugin.version
 
      - jobID           :  pdi-scheduler-plugin
@@ -703,6 +706,7 @@ jobGroups:
        executeFlag     :  true
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pdi-sdk-plugins.git
        scmBranch       :  ${DEFAULT_BRANCH}
+       directives      :  + -Deula-wrap
        versionProperty :  pdi-sdk-plugins.version
 
      - jobID           :  pdi-r-plugin
@@ -715,6 +719,7 @@ jobGroups:
        executeFlag     :  true
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pdi-sap-hana-bulk-loader-plugin.git
        scmBranch       :  ${DEFAULT_BRANCH}
+       directives      :  + -Deula-wrap
        versionProperty :  pdi-sap-hana-bulk-loader-plugin.version
 
   3800:
@@ -747,6 +752,7 @@ jobGroups:
        executeFlag     :  true
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-reportdesigner-ee.git
        scmBranch       :  ${DEFAULT_BRANCH}
+       directives      :  + -Deula-wrap
        versionProperty :  pentaho-reporting.version
 
      - jobID           :  pdi-pur-plugin-ee
@@ -779,6 +785,7 @@ jobGroups:
        executeFlag     :  true
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-ee.git
        scmBranch       :  ${DEFAULT_BRANCH}
+       directives      :  + -Deula-wrap
        versionProperty :  pdi.version
        root            :  data-integration
        testable        :  false
@@ -820,7 +827,7 @@ jobGroups:
        executeFlag     :  true
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-platform-ee.git
        scmBranch       :  ${DEFAULT_BRANCH}
-       directives      :  + -DskipDefault -P platform-ee-assemble
+       directives      :  + -DskipDefault -P platform-ee-assemble -Deula-wrap
        versionProperty :  platform.version
        testable        :  false
 
@@ -828,12 +835,14 @@ jobGroups:
        executeFlag     :  true
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-metadata-editor-ee.git
        scmBranch       :  ${DEFAULT_BRANCH}
+       directives      :  + -Deula-wrap
        versionProperty :  pentaho-metadata.version
 
      - jobID           :  pad-assembly-ee
        executeFlag     :  true
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-aggdesigner-ee.git
        scmBranch       :  ${DEFAULT_BRANCH}
+       directives      :  + -Deula-wrap
        versionProperty :  aggdesigner.version
        testable        :  false
 
@@ -841,6 +850,7 @@ jobGroups:
        executeFlag     :  true
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-sdk.git
        scmBranch       :  ${DEFAULT_BRANCH}
+       directives      :  + -Deula-wrap
        versionProperty :  pdi-sdk-plugins.version
 
   4600:
