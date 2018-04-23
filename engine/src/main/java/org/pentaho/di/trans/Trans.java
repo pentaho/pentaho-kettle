@@ -1611,6 +1611,11 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
       boolean wait = true;
       while ( wait ) {
         wait = transFinishedBlockingQueue.poll( 1, TimeUnit.DAYS ) == null;
+        if ( wait ) {
+          // poll returns immediately - this was hammering the CPU with poll checks. Added
+          // a sleep to let the CPU breathe
+          Thread.sleep( 1 );
+        }
       }
     } catch ( InterruptedException e ) {
       throw new RuntimeException( "Waiting for transformation to be finished interrupted!", e );
