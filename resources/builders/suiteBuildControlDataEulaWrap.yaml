@@ -600,7 +600,7 @@ jobGroups:
        executeFlag     :  true
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-analyzer.git
        scmBranch       :  ${DEFAULT_BRANCH}
-       directives      :  + -Deula-wrap
+       directives      :  + -Dagilebi -Deula-wrap
        versionProperty :  analyzer-plugin.version
 
   3500:
