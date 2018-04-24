@@ -13,9 +13,9 @@ buildProperties:
 
         # job item field defaults
         # These are arbitrary properties for doing replacements in this data file
-        SCM_HOST_ROOT                  : git@github.com
-        PENTAHO_SCM_ROOT               : git@github.com:pentaho
-        WEBDETAILS_SCM_ROOT            : git@github.com:webdetails
+        SCM_HOST_ROOT                  : https://github.com
+        PENTAHO_SCM_ROOT               : https://github.com/pentaho
+        WEBDETAILS_SCM_ROOT            : https://github.com/webdetails
         DEFAULT_BRANCH                 : master
 
 jobGroups:
