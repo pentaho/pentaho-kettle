@@ -464,7 +464,7 @@
 
       <!--
         TODO: a case exists to handle these integration tests
-        see: http://jira.pentaho.com/browse/BACKLOG-17551
+        see: https://jira.pentaho.com/browse/BACKLOG-17551
         -->
       <plugin>
         <artifactId>maven-failsafe-plugin</artifactId>
