@@ -24,10 +24,8 @@ package org.pentaho.di.trans.steps.userdefinedjavaclass;
 
 import com.google.common.annotations.VisibleForTesting;
 import org.codehaus.janino.ClassBodyEvaluator;
-import org.codehaus.janino.CompileException;
-import org.codehaus.janino.Parser.ParseException;
+import org.codehaus.commons.compiler.CompileException;
 import org.codehaus.janino.Scanner;
-import org.codehaus.janino.Scanner.ScanException;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
@@ -136,7 +134,7 @@ public class UserDefinedJavaClassMeta extends BaseStepMeta implements StepMetaIn
   }
 
   @VisibleForTesting
-  Class<?> cookClass( UserDefinedJavaClassDef def ) throws CompileException, ParseException, ScanException, IOException, RuntimeException, KettleStepException {
+  Class<?> cookClass( UserDefinedJavaClassDef def ) throws CompileException, IOException, RuntimeException, KettleStepException {
 
     String checksum = def.getChecksum();
     Class<?> rtn = UserDefinedJavaClassMeta.classCache.getIfPresent( checksum );
@@ -154,7 +152,7 @@ public class UserDefinedJavaClassMeta extends BaseStepMeta implements StepMetaIn
 
     StringReader sr;
     if ( def.isTransformClass() ) {
-      cbe.setExtendedType( TransformClassBase.class );
+      cbe.setExtendedClass( TransformClassBase.class );
       sr = new StringReader( def.getTransformedSource() );
     } else {
       sr = new StringReader( def.getSource() );
