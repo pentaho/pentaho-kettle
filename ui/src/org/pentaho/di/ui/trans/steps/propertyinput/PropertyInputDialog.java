@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -84,6 +84,7 @@ import org.pentaho.di.ui.core.widget.TableView;
 import org.pentaho.di.ui.core.widget.TextVar;
 import org.pentaho.di.ui.trans.dialog.TransPreviewProgressDialog;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
+import org.pentaho.di.ui.trans.step.ComponentSelectionListener;
 
 public class PropertyInputDialog extends BaseStepDialog implements StepDialogInterface {
   private static Class<?> PKG = PropertyInputMeta.class; // for i18n purposes, needed by Translator2!!
@@ -699,7 +700,7 @@ public class PropertyInputDialog extends BaseStepDialog implements StepDialogInt
     fdresolveValueVariable.left = new FormAttachment( middle, 0 );
     fdresolveValueVariable.top = new FormAttachment( wLimit, margin );
     wresolveValueVariable.setLayoutData( fdresolveValueVariable );
-
+    wresolveValueVariable.addSelectionListener( new ComponentSelectionListener( input ) );
     fdSettingsGroup = new FormData();
     fdSettingsGroup.left = new FormAttachment( 0, margin );
     fdSettingsGroup.top = new FormAttachment( wresolveValueVariable, margin );
@@ -738,7 +739,7 @@ public class PropertyInputDialog extends BaseStepDialog implements StepDialogInt
     fdInclFilename.left = new FormAttachment( middle, 0 );
     fdInclFilename.top = new FormAttachment( wSettingsGroup, margin );
     wInclFilename.setLayoutData( fdInclFilename );
-
+    wInclFilename.addSelectionListener( new ComponentSelectionListener( input ) );
     wlInclFilenameField = new Label( wAdditionalGroup, SWT.LEFT );
     wlInclFilenameField.setText( BaseMessages.getString( PKG, "PropertyInputDialog.InclFilenameField.Label" ) );
     props.setLook( wlInclFilenameField );
@@ -770,7 +771,7 @@ public class PropertyInputDialog extends BaseStepDialog implements StepDialogInt
     fdRownum.left = new FormAttachment( middle, 0 );
     fdRownum.top = new FormAttachment( wInclFilenameField, margin );
     wInclRownum.setLayoutData( fdRownum );
-
+    wInclRownum.addSelectionListener( new ComponentSelectionListener( input ) );
     wlInclRownumField = new Label( wAdditionalGroup, SWT.RIGHT );
     wlInclRownumField.setText( BaseMessages.getString( PKG, "PropertyInputDialog.InclRownumField.Label" ) );
     props.setLook( wlInclRownumField );
@@ -801,7 +802,7 @@ public class PropertyInputDialog extends BaseStepDialog implements StepDialogInt
     fdRownum.left = new FormAttachment( wlResetRownum, margin );
     fdRownum.top = new FormAttachment( wInclRownumField, margin );
     wResetRownum.setLayoutData( fdRownum );
-
+    wResetRownum.addSelectionListener( new ComponentSelectionListener( input ) );
     wlInclINIsection = new Label( wAdditionalGroup, SWT.RIGHT );
     wlInclINIsection.setText( BaseMessages.getString( PKG, "PropertyInputDialog.InclINIsection.Label" ) );
     props.setLook( wlInclINIsection );
@@ -817,7 +818,7 @@ public class PropertyInputDialog extends BaseStepDialog implements StepDialogInt
     fdRownum.left = new FormAttachment( middle, 0 );
     fdRownum.top = new FormAttachment( wResetRownum, margin );
     wInclINIsection.setLayoutData( fdRownum );
-
+    wInclINIsection.addSelectionListener( new ComponentSelectionListener( input ) );
     wlInclINIsectionField = new Label( wAdditionalGroup, SWT.RIGHT );
     wlInclINIsectionField.setText( BaseMessages.getString( PKG, "PropertyInputDialog.InclINIsectionField.Label" ) );
     props.setLook( wlInclINIsectionField );
@@ -872,7 +873,7 @@ public class PropertyInputDialog extends BaseStepDialog implements StepDialogInt
     fdAddResult.left = new FormAttachment( middle, 0 );
     fdAddResult.top = new FormAttachment( wAdditionalGroup, margin );
     wAddResult.setLayoutData( fdAddResult );
-
+    wAddResult.addSelectionListener( new ComponentSelectionListener( input ) );
     fdAddFileResult = new FormData();
     fdAddFileResult.left = new FormAttachment( 0, margin );
     fdAddFileResult.top = new FormAttachment( wAdditionalGroup, margin );

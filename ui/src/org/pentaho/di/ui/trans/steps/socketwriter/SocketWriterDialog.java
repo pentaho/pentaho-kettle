@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -48,6 +48,7 @@ import org.pentaho.di.trans.step.StepDialogInterface;
 import org.pentaho.di.trans.steps.socketwriter.SocketWriterMeta;
 import org.pentaho.di.ui.core.widget.TextVar;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
+import org.pentaho.di.ui.trans.step.ComponentSelectionListener;
 
 public class SocketWriterDialog extends BaseStepDialog implements StepDialogInterface {
   private static Class<?> PKG = SocketWriterMeta.class; // for i18n purposes, needed by Translator2!!
@@ -180,7 +181,7 @@ public class SocketWriterDialog extends BaseStepDialog implements StepDialogInte
     fdCompressed.left = new FormAttachment( middle, margin ); // To the right of the label
     fdCompressed.right = new FormAttachment( 95, 0 );
     wCompressed.setLayoutData( fdCompressed );
-
+    wCompressed.addSelectionListener( new ComponentSelectionListener( input ) );
     // Some buttons
     wOK = new Button( shell, SWT.PUSH );
     wOK.setText( BaseMessages.getString( PKG, "System.Button.OK" ) );

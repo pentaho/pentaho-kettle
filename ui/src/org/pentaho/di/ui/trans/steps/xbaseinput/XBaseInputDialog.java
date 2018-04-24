@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -223,6 +223,7 @@ public class XBaseInputDialog extends BaseStepDialog implements StepDialogInterf
     wAccFilenames.addSelectionListener( new SelectionAdapter() {
       public void widgetSelected( SelectionEvent arg0 ) {
         setFlags();
+        input.setChanged();
       }
     } );
 

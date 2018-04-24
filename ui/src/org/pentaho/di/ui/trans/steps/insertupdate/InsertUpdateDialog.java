@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -76,6 +76,7 @@ import org.pentaho.di.ui.core.widget.ColumnInfo;
 import org.pentaho.di.ui.core.widget.TableView;
 import org.pentaho.di.ui.core.widget.TextVar;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
+import org.pentaho.di.ui.trans.step.ComponentSelectionListener;
 import org.pentaho.di.ui.trans.step.TableItemInsertListener;
 
 public class InsertUpdateDialog extends BaseStepDialog implements StepDialogInterface {
@@ -288,7 +289,7 @@ public class InsertUpdateDialog extends BaseStepDialog implements StepDialogInte
     fdUpdateBypassed.top = new FormAttachment( wCommit, margin );
     fdUpdateBypassed.right = new FormAttachment( 100, 0 );
     wUpdateBypassed.setLayoutData( fdUpdateBypassed );
-
+    wUpdateBypassed.addSelectionListener( new ComponentSelectionListener( input ) );
     wlKey = new Label( shell, SWT.NONE );
     wlKey.setText( BaseMessages.getString( PKG, "InsertUpdateDialog.Keys.Label" ) );
     props.setLook( wlKey );

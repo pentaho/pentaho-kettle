@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -64,6 +64,7 @@ import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.core.widget.ColumnInfo;
 import org.pentaho.di.ui.core.widget.TableView;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
+import org.pentaho.di.ui.trans.step.ComponentSelectionListener;
 import org.pentaho.di.ui.trans.step.TableItemInsertListener;
 
 public class SetVariableDialog extends BaseStepDialog implements StepDialogInterface {
@@ -154,7 +155,7 @@ public class SetVariableDialog extends BaseStepDialog implements StepDialogInter
     fdFormat.left = new FormAttachment( middle, 0 );
     fdFormat.top = new FormAttachment( wStepname, margin );
     wFormat.setLayoutData( fdFormat );
-
+    wFormat.addSelectionListener( new ComponentSelectionListener( input ) );
     wlFields = new Label( shell, SWT.NONE );
     wlFields.setText( BaseMessages.getString( PKG, "SetVariableDialog.Fields.Label" ) );
     props.setLook( wlFields );

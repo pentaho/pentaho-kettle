@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -266,6 +266,7 @@ public class OlapInputDialog extends BaseStepDialog implements StepDialogInterfa
     wVariables.addSelectionListener( new SelectionAdapter() {
       public void widgetSelected( SelectionEvent arg0 ) {
         setSQLToolTip();
+        input.setChanged();
       }
     } );
 

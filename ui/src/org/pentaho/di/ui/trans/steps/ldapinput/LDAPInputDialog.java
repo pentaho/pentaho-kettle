@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -81,6 +81,7 @@ import org.pentaho.di.ui.core.widget.TableView;
 import org.pentaho.di.ui.core.widget.TextVar;
 import org.pentaho.di.ui.trans.dialog.TransPreviewProgressDialog;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
+import org.pentaho.di.ui.trans.step.ComponentSelectionListener;
 
 public class LDAPInputDialog extends BaseStepDialog implements StepDialogInterface {
   private static Class<?> PKG = LDAPInputMeta.class; // for i18n purposes, needed by Translator2!!
@@ -411,6 +412,7 @@ public class LDAPInputDialog extends BaseStepDialog implements StepDialogInterfa
     wusingAuthentication.addSelectionListener( new SelectionAdapter() {
       public void widgetSelected( SelectionEvent e ) {
         useAuthentication();
+        input.setChanged();
       }
     } );
 
@@ -865,7 +867,7 @@ public class LDAPInputDialog extends BaseStepDialog implements StepDialogInterfa
     fdRownum.left = new FormAttachment( middle, 0 );
     fdRownum.top = new FormAttachment( 0, margin );
     wInclRownum.setLayoutData( fdRownum );
-
+    wInclRownum.addSelectionListener( new ComponentSelectionListener( input ) );
     wlInclRownumField = new Label( wAdditionalGroup, SWT.RIGHT );
     wlInclRownumField.setText( BaseMessages.getString( PKG, "LDAPInputDialog.InclRownumField.Label" ) );
     props.setLook( wlInclRownumField );
@@ -968,6 +970,7 @@ public class LDAPInputDialog extends BaseStepDialog implements StepDialogInterfa
     wsetPaging.addSelectionListener( new SelectionAdapter() {
       public void widgetSelected( SelectionEvent e ) {
         setPaging();
+        input.setChanged();
       }
     } );
     wlPageSize = new Label( wContentComp, SWT.RIGHT );
