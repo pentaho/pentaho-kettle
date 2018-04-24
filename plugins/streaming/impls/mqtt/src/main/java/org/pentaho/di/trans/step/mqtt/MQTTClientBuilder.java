@@ -133,7 +133,7 @@ public final class MQTTClientBuilder {
     return this;
   }
 
-  MQTTClientBuilder withIsSecure( boolean isSecure ) {
+  public MQTTClientBuilder withIsSecure( boolean isSecure ) {
     this.isSecure = isSecure;
     return this;
   }
@@ -159,7 +159,7 @@ public final class MQTTClientBuilder {
     return this;
   }
 
-  MQTTClientBuilder withSslConfig( Map<String, String> sslConfig ) {
+  public MQTTClientBuilder withSslConfig( Map<String, String> sslConfig ) {
     this.sslConfig = sslConfig;
     return this;
   }
