@@ -91,7 +91,7 @@ public class AbortDialog extends BaseStepDialog implements StepDialogInterface {
 
     shell = new Shell( parent, SWT.DIALOG_TRIM | SWT.MIN | SWT.MAX | SWT.RESIZE );
     props.setLook( shell );
-    shell.setMinimumSize( 340, 520 );
+    shell.setMinimumSize( 400, 520 );
     setShellImage( shell, input );
 
     lsMod = e -> input.setChanged();
@@ -329,8 +329,8 @@ public class AbortDialog extends BaseStepDialog implements StepDialogInterface {
   }
 
   private Image getImage() {
-    return SwtSvgImageUtil.getImage( shell.getDisplay(), getClass().getClassLoader(), "ABR.svg", ConstUI.ICON_SIZE,
-      ConstUI.ICON_SIZE );
+    return SwtSvgImageUtil.getImage( shell.getDisplay(), getClass().getClassLoader(), "ABR.svg", ConstUI.LARGE_ICON_SIZE,
+      ConstUI.LARGE_ICON_SIZE );
   }
 
   /**

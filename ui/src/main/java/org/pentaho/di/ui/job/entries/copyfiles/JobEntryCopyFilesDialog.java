@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -175,7 +175,7 @@ public class JobEntryCopyFilesDialog extends JobEntryDialog implements JobEntryD
 
     Label lTopSeparator = new Label( shell, SWT.HORIZONTAL | SWT.SEPARATOR );
     FormData fdTopSeparator = new FormData();
-    fdTopSeparator.top = new FormAttachment( wName, margin * 3 );
+    fdTopSeparator.top = new FormAttachment( wlIcon, margin );
     fdTopSeparator.left = new FormAttachment( 0, 0 );
     fdTopSeparator.right = new FormAttachment( 100, 0 );
     lTopSeparator.setLayoutData( fdTopSeparator );
@@ -649,7 +649,7 @@ public class JobEntryCopyFilesDialog extends JobEntryDialog implements JobEntryD
   }
 
   protected Image getImage() {
-    return GUIResource.getInstance().getImage( "ui/images/CPY.svg", ConstUI.ICON_SIZE, ConstUI.ICON_SIZE );
+    return GUIResource.getInstance().getImage( "ui/images/CPY.svg", ConstUI.LARGE_ICON_SIZE, ConstUI.LARGE_ICON_SIZE );
   }
 
   public boolean showFileButtons() {
