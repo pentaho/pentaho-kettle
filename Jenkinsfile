@@ -11,10 +11,10 @@ pipeline {
 
   parameters {
 
-    string(defaultValue: 'suiteBuildControlData.yaml', description: 'The build data yaml file to run',
+    string(defaultValue: 'buildControlData.yaml', description: 'The build data yaml file to run',
       name: 'BUILD_DATA_FILE')
     string(defaultValue: '.*-SNAPSHOT.*', description: 'Clean build dependency caches with regex', name: 'CLEAN_CACHES_REGEX')
-    string(defaultValue: '-B -e', description: 'Force base maven command options',
+    string(defaultValue: '-B -e q', description: 'Force base maven command options',
       name: 'MAVEN_DEFAULT_COMMAND_OPTIONS')
     string(defaultValue: '-Xms512m', description: 'Typically the JVM opts for maven', name: 'MAVEN_OPTS')
     string(defaultValue: '-DsurefireArgLine=-Xmx1g', description: 'Typically, some extra for Maven Surefire',
