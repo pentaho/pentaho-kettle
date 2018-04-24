@@ -43,5 +43,5 @@ jobGroups:
        versionProperty :  archetypes.version
 
      - jobID           :  parent-poms-ee
-       scmUrl          :  ${PENTAHO_SCM_ROOT}maven-parent-poms-ee.git
+       scmUrl          :  ${PENTAHO_SCM_ROOT}/maven-parent-poms-ee.git
        scmBranch       :  ${DEFAULT_BRANCH}
