@@ -591,7 +591,6 @@ jobGroups:
        executeFlag     :  true
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-platform-plugin-geo.git
        scmBranch       :  ${DEFAULT_BRANCH}
-       directives      :  + -Dmaven-dependency-plugin.version=3.1.0
        versionProperty :  pentaho-geo-plugin.version
 
   3400:
