@@ -13,6 +13,11 @@ pipeline {
 
     string(defaultValue: 'buildControlData.yaml', description: 'The build data yaml file to run',
       name: 'BUILD_DATA_FILE')
+    string(defaultValue: '', description: 'The first job in the yaml file to build (empty = first yaml item)',
+      name: 'FIRST_JOB')
+    string(defaultValue: '', description: 'The last job in the yaml file to build (empty = last yaml item)',
+      name: 'LAST_JOB')
+
     string(defaultValue: '.*-SNAPSHOT.*', description: 'Clean build dependency caches with regex', name: 'CLEAN_CACHES_REGEX')
     string(defaultValue: '-B -e -q', description: 'Force base maven command options',
       name: 'MAVEN_DEFAULT_COMMAND_OPTIONS')
