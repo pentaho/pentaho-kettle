@@ -24,7 +24,6 @@ jobGroups:
   200:
 
      - jobID           :  coding-standards
-       executeFlag     :  true
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-coding-standards.git
        scmBranch       :  ${DEFAULT_BRANCH}
        versionProperty :  coding-standards.version
@@ -33,7 +32,6 @@ jobGroups:
   300:
 
      - jobID           :  parent-poms
-       executeFlag     :  true
        scmUrl          :  ${PENTAHO_SCM_ROOT}/maven-parent-poms.git
        scmBranch       :  ${DEFAULT_BRANCH}
        versionProperty :  pentaho.version
@@ -41,7 +39,6 @@ jobGroups:
   400:
 
      - jobID           :  parent-poms-ee
-       executeFlag     :  true
        scmUrl          :  ${PENTAHO_SCM_ROOT}/maven-parent-poms-ee.git
        scmBranch       :  ${DEFAULT_BRANCH}
        directives      :  + -Dobfuscate-version-for-license-phase=none
@@ -50,13 +47,11 @@ jobGroups:
   500:
 
      - jobID           :  archetypes
-       executeFlag     :  true
        scmUrl          :  ${PENTAHO_SCM_ROOT}/maven-project-archetypes.git
        scmBranch       :  ${DEFAULT_BRANCH}
        versionProperty :  archetypes.version
 
      - jobID           :  metastore
-       executeFlag     :  true
        scmUrl          :  ${PENTAHO_SCM_ROOT}/metastore.git
        scmBranch       :  ${DEFAULT_BRANCH}
        versionProperty :  metastore.version
@@ -64,33 +59,28 @@ jobGroups:
   600:
 
      - jobID           :  osgi-bundles-lowdeps
-       executeFlag     :  true
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-osgi-bundles.git
        scmBranch       :  ${DEFAULT_BRANCH}
        directives      :  + -P lowdeps -DskipDefault
        versionProperty :  pentaho-osgi-bundles.version
 
      - jobID           :  oss-license-assembly
-       executeFlag     :  true
        scmUrl          :  ${PENTAHO_SCM_ROOT}/oss-licenses.git
        scmBranch       :  ${DEFAULT_BRANCH}
        versionProperty :  oss-licenses.version
 
      - jobID           :  database-model
-       executeFlag     :  true
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-commons-database.git
        scmBranch       :  ${DEFAULT_BRANCH}
        directives      :  + -pl .,model
        versionProperty :  commons-database.version
 
      - jobID           :  mongo-utils
-       executeFlag     :  true
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-mongo-utils.git
        scmBranch       :  ${DEFAULT_BRANCH}
        versionProperty :  pentaho-mongo-utils.version
 
      - jobID           :  eula-wrap-config
-       executeFlag     :  true
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-eula-wrap-config.git
        scmBranch       :  ${DEFAULT_BRANCH}
        versionProperty :  pentaho-eula-wrap-config.version
@@ -98,56 +88,47 @@ jobGroups:
   700:
 
      - jobID           :  reporting-libraries
-       executeFlag     :  true
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-reporting.git
        scmBranch       :  ${DEFAULT_BRANCH}
        directives      :  + -Dlibraries
        versionProperty :  pentaho-reporting.version
 
      - jobID           :  gwt-widgets
-       executeFlag     :  true
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-commons-gwt-modules.git
        scmBranch       :  ${DEFAULT_BRANCH}
        versionProperty :  commons-gwt.version
 
      - jobID           :  connections
-       executeFlag     :  true
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-connections.git
        scmBranch       :  ${DEFAULT_BRANCH}
        versionProperty :  pentaho-connections.version
 
      - jobID           :  commons-json
-       executeFlag     :  true
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-commons-json.git
        scmBranch       :  ${DEFAULT_BRANCH}
        versionProperty :  pentaho-json.version
 
      - jobID           :  application-launcher
-       executeFlag     :  true
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-application-launcher.git
        scmBranch       :  ${DEFAULT_BRANCH}
        versionProperty :  pentaho-launcher.version
 
      - jobID           :  version-checker
-       executeFlag     :  true
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-versionchecker.git
        scmBranch       :  ${DEFAULT_BRANCH}
        versionProperty :  pentaho-versionchecker.version
 
      - jobID           :  hdfs-vfs
-       executeFlag     :  true
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-hdfs-vfs.git
        scmBranch       :  ${DEFAULT_BRANCH}
        versionProperty :  pentaho-hdfs-vfs.version
 
      - jobID           :  s3-vfs
-       executeFlag     :  true
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-s3-vfs.git
        scmBranch       :  ${DEFAULT_BRANCH}
        versionProperty :  pentaho-s3-vfs.version
 
      - jobID           :  apache-vfs-browser
-       executeFlag     :  true
        scmUrl          :  ${PENTAHO_SCM_ROOT}/apache-vfs-browser.git
        scmBranch       :  ${DEFAULT_BRANCH}
        versionProperty :  pentaho-vfs-browser.version
@@ -155,13 +136,11 @@ jobGroups:
   800:
 
      - jobID           :  xul
-       executeFlag     :  true
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-commons-xul.git
        scmBranch       :  ${DEFAULT_BRANCH}
        versionProperty :  commons-xul.version
 
      - jobID           :  actionsequence-dom
-       executeFlag     :  true
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-actionsequence-dom.git
        scmBranch       :  ${DEFAULT_BRANCH}
        versionProperty :  pentaho-actionsequence-dom.version
@@ -169,7 +148,6 @@ jobGroups:
   900:
 
      - jobID           :  metadata-registry
-       executeFlag     :  true
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-registry.git
        scmBranch       :  ${DEFAULT_BRANCH}
        versionProperty :  pentaho-registry.version
@@ -177,14 +155,12 @@ jobGroups:
   1000:
 
      - jobID           :  mondrian-jar
-       executeFlag     :  true
        scmUrl          :  ${PENTAHO_SCM_ROOT}/mondrian.git
        scmBranch       :  ${DEFAULT_BRANCH}
        directives      :  + -P !workbench -P !assemblies
        versionProperty :  mondrian.version
 
      - jobID           :  platform-api
-       executeFlag     :  true
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-platform.git
        scmBranch       :  ${DEFAULT_BRANCH}
        directives      :  + -DskipDefault -P platform-api
@@ -193,7 +169,6 @@ jobGroups:
   1100:
 
      - jobID           :  pdi-engine-core
-       executeFlag     :  true
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-kettle.git
        scmBranch       :  ${DEFAULT_BRANCH}
        directives      :  + -DskipDefault -P base,plugins,lowdeps
@@ -202,7 +177,6 @@ jobGroups:
   1200:
 
      - jobID           :  metadata
-       executeFlag     :  true
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-metadata.git
        scmBranch       :  ${DEFAULT_BRANCH}
        versionProperty :  pentaho-metadata.version
@@ -210,39 +184,33 @@ jobGroups:
   1300:
 
      - jobID           :  database-gwt
-       executeFlag     :  true
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-commons-database.git
        scmBranch       :  ${DEFAULT_BRANCH}
        directives      :  + -pl gwt
        versionProperty :  commons-database.version
 
      - jobID           :  vertica-bulkloader
-       executeFlag     :  true
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-vertica-bulkloader.git
        scmBranch       :  ${DEFAULT_BRANCH}
 
        versionProperty :  vertica-bulkloader-plugin.version
 
      - jobID           :  pdi-teradata-tpt-plugin
-       executeFlag     :  true
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pdi-teradata-tpt-plugin.git
        scmBranch       :  ${DEFAULT_BRANCH}
        versionProperty :  pdi-teradata-tpt-plugin.version
 
      - jobID           :  chartbeans
-       executeFlag     :  true
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-chartbeans.git
        scmBranch       :  ${DEFAULT_BRANCH}
        versionProperty :  pentaho-chartbeans.version
 
      - jobID           :  license-ee
-       executeFlag     :  true
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-ee-license.git
        scmBranch       :  ${DEFAULT_BRANCH}
        versionProperty :  pentaho-ee-dsc.version
 
      - jobID           :  pdi-dataservice-plugin
-       executeFlag     :  true
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pdi-dataservice-plugin.git
        scmBranch       :  ${DEFAULT_BRANCH}
        versionProperty :  pdi-dataservice-client-plugin.version
@@ -250,13 +218,11 @@ jobGroups:
   1400:
 
      - jobID           :  archetypes-ee
-       executeFlag     :  true
        scmUrl          :  ${PENTAHO_SCM_ROOT}/maven-project-archetypes-ee.git
        scmBranch       :  ${DEFAULT_BRANCH}
        versionProperty :  archetypes.version
 
      - jobID           :  big-data-hadoop-shims
-       executeFlag     :  true
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-hadoop-shims.git
        scmBranch       :  ${DEFAULT_BRANCH}
        directives      :  + -DskipDefault -P api,shims,all
@@ -265,19 +231,16 @@ jobGroups:
   1500:
 
      - jobID           :  big-data-splunk-plugin
-       executeFlag     :  true
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-splunk-plugin.git
        scmBranch       :  ${DEFAULT_BRANCH}
        versionProperty :  pentaho-splunk-plugin.version
 
      - jobID           :  big-data-mongodb-plugin
-       executeFlag     :  true
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-mongodb-plugin.git
        scmBranch       :  ${DEFAULT_BRANCH}
        versionProperty :  pentaho-mongodb-plugin.version
 
      - jobID           :  big-data-cassandra-plugin
-       executeFlag     :  true
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-cassandra-plugin.git
        scmBranch       :  ${DEFAULT_BRANCH}
        versionProperty :  pentaho-cassandra-plugin.version
@@ -285,7 +248,6 @@ jobGroups:
   1600:
 
      - jobID           :  mondrian-workbench
-       executeFlag     :  true
        scmUrl          :  ${PENTAHO_SCM_ROOT}/mondrian.git
        scmBranch       :  ${DEFAULT_BRANCH}
        directives      :  + -P !mondrian -P !assemblies
@@ -294,7 +256,6 @@ jobGroups:
   1700:
 
      - jobID           :  mondrian-schema-workbench-plugins
-       executeFlag     :  true
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-mondrianschemaworkbench-plugins.git
        scmBranch       :  ${DEFAULT_BRANCH}
        versionProperty :  mondrian-schemaworkbench-plugins.version
@@ -302,7 +263,6 @@ jobGroups:
   1800:
 
      - jobID           :  psw-assembly
-       executeFlag     :  true
        scmUrl          :  ${PENTAHO_SCM_ROOT}/mondrian.git
        scmBranch       :  ${DEFAULT_BRANCH}
        directives      :  + -P !mondrian -P !workbench
@@ -311,13 +271,11 @@ jobGroups:
   1900:
 
      - jobID           :  psw-assembly-ee
-       executeFlag     :  true
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-schema-workbench-ee.git
        scmBranch       :  ${DEFAULT_BRANCH}
        versionProperty :  mondrian.version
 
      - jobID           :  reporting-engine
-       executeFlag     :  true
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-reporting.git
        scmBranch       :  ${DEFAULT_BRANCH}
        directives      :  + -Dengine
@@ -326,7 +284,6 @@ jobGroups:
   2000:
 
      - jobID           :  reportwizard-core
-       executeFlag     :  true
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-reportwizard-core.git
        scmBranch       :  ${DEFAULT_BRANCH}
 
@@ -335,7 +292,6 @@ jobGroups:
   2100:
 
      - jobID           :  platform-base
-       executeFlag     :  true
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-platform.git
        scmBranch       :  ${DEFAULT_BRANCH}
        directives      :  + -DskipDefault -P platform-base
@@ -344,20 +300,17 @@ jobGroups:
   2200:
 
      - jobID           :  osgi-bundles-highdeps
-       executeFlag     :  true
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-osgi-bundles.git
        scmBranch       :  ${DEFAULT_BRANCH}
        directives      :  + -P highdeps -DskipDefault
        versionProperty :  pentaho-osgi-bundles.version
 
      - jobID           :  mql-editor
-       executeFlag     :  true
        scmUrl          :  ${PENTAHO_SCM_ROOT}/mql-editor.git
        scmBranch       :  ${DEFAULT_BRANCH}
        versionProperty :  pentaho-mql-editor.version
 
      - jobID           :  pdi-palo-plugin
-       executeFlag     :  true
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pdi-palo-core.git
        scmBranch       :  ${DEFAULT_BRANCH}
        versionProperty :  pentaho-palo-core.version
@@ -365,14 +318,12 @@ jobGroups:
   2300:
 
      - jobID           :  pdi-osgi-bridge
-       executeFlag     :  true
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pdi-osgi-bridge.git
        scmBranch       :  ${DEFAULT_BRANCH}
        directives      :  + -P modules
        versionProperty :  pdi-osgi-bridge.version
 
      - jobID           :  metaverse-plugin
-       executeFlag     :  true
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-metaverse.git
        scmBranch       :  ${DEFAULT_BRANCH}
        versionProperty :  pentaho-metaverse.version
@@ -380,32 +331,27 @@ jobGroups:
   2400:
 
      - jobID           :  pdi-core-plugins
-       executeFlag     :  true
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-kettle.git
        scmBranch       :  ${DEFAULT_BRANCH}
        directives      :  + -DskipDefault -P plugins,highdeps
        versionProperty :  pdi.version
 
      - jobID           :  pdi-monitoring-plugin
-       executeFlag     :  true
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pdi-monitoring-plugin.git
        scmBranch       :  ${DEFAULT_BRANCH}
        versionProperty :  pdi-monitoring-plugin.version
 
      - jobID           :  modeler
-       executeFlag     :  true
        scmUrl          :  ${PENTAHO_SCM_ROOT}/modeler.git
        scmBranch       :  ${DEFAULT_BRANCH}
        versionProperty :  pentaho-modeler.version
 
      - jobID           :  cpf-plugin
-       executeFlag     :  true
        scmUrl          :  ${WEBDETAILS_SCM_ROOT}/cpf.git
        scmBranch       :  ${DEFAULT_BRANCH}
        versionProperty :  pentaho-cpf-plugin.version
 
      - jobID           :  ccc-plugin
-       executeFlag     :  true
        scmUrl          :  ${WEBDETAILS_SCM_ROOT}/ccc.git
        scmBranch       :  ${DEFAULT_BRANCH}
        versionProperty :  pentaho-ccc-plugin.version
@@ -413,52 +359,44 @@ jobGroups:
   2500:
 
      - jobID           :  pdi-plugins-ee
-       executeFlag     :  true
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-ee.git
        scmBranch       :  ${DEFAULT_BRANCH}
        versionProperty :  pdi-plugins-ee.version
        root            :  data-integration/plugins
 
      - jobID           :  camel-components
-       executeFlag     :  true
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-camel-components.git
        scmBranch       :  ${DEFAULT_BRANCH}
        versionProperty :  pentaho-camel.version
 
      - jobID           :  pdi-dataservice-server-plugin
-       executeFlag     :  true
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pdi-dataservice-server-plugin.git
        scmBranch       :  ${DEFAULT_BRANCH}
        versionProperty :  pdi-dataservice-plugin.version
 
      - jobID           :  reporting-specials
-       executeFlag     :  true
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-reporting.git
        scmBranch       :  ${DEFAULT_BRANCH}
        directives      :  + -Dspecials
        versionProperty :  pentaho-reporting.version
 
      - jobID           :  pdi-platform-plugin
-       executeFlag     :  true
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pdi-platform-plugin.git
        scmBranch       :  ${DEFAULT_BRANCH}
        versionProperty :  pentaho-pdi-plugin.version
        testable        :  false
 
      - jobID           :  pdi-platform-utils-plugin
-       executeFlag     :  true
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pdi-platform-utils-plugin.git
        scmBranch       :  ${DEFAULT_BRANCH}
        versionProperty :  pdi-platform-utils-plugin.version
 
      - jobID           :  platform-plugin-jpivot
-       executeFlag     :  true
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-platform-plugin-jpivot.git
        scmBranch       :  ${DEFAULT_BRANCH}
        versionProperty :  pentaho-jpivot-plugin.version
 
      - jobID           :  cdf-plugin
-       executeFlag     :  true
        scmUrl          :  ${WEBDETAILS_SCM_ROOT}/cdf.git
        scmBranch       :  ${DEFAULT_BRANCH}
        versionProperty :  pentaho-cdf-plugin.version
@@ -466,7 +404,6 @@ jobGroups:
   2600:
 
      - jobID           :  common-ui
-       executeFlag     :  true
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-platform-plugin-common-ui.git
        scmBranch       :  ${DEFAULT_BRANCH}
        versionProperty :  common-ui.version
@@ -474,33 +411,28 @@ jobGroups:
   2700:
 
      - jobID           :  data-access-plugin
-       executeFlag     :  true
        scmUrl          :  ${PENTAHO_SCM_ROOT}/data-access.git
        scmBranch       :  ${DEFAULT_BRANCH}
        versionProperty :  pentaho-data-access.version
 
      - jobID           :  marketplace-plugin
-       executeFlag     :  true
        scmUrl          :  ${PENTAHO_SCM_ROOT}/marketplace.git
        scmBranch       :  ${DEFAULT_BRANCH}
        versionProperty :  pentaho-marketplace-modules.version
 
      - jobID           :  platform-user-console
-       executeFlag     :  true
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-platform.git
        scmBranch       :  ${DEFAULT_BRANCH}
        directives      :  + -DskipDefault -P platform-user-console
        versionProperty :  platform.version
 
      - jobID           :  big-data-plugin-features
-       executeFlag     :  true
        scmUrl          :  ${PENTAHO_SCM_ROOT}/big-data-plugin.git
        scmBranch       :  ${DEFAULT_BRANCH}
        directives      :  + -DfeaturesOnly
        versionProperty :  big-data-plugin.version
 
      - jobID           :  pdi-data-refinery-plugin
-       executeFlag     :  true
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-data-refinery.git
        scmBranch       :  ${DEFAULT_BRANCH}
        versionProperty :  pdi-data-refinery-plugin.version
@@ -508,26 +440,22 @@ jobGroups:
   2800:
 
      - jobID           :  pdi-daemon
-       executeFlag     :  true
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-ee.git
        scmBranch       :  ${DEFAULT_BRANCH}
        versionProperty :  ael.version
        root            :  adaptive-execution
 
      - jobID           :  cde-plugin
-       executeFlag     :  true
        scmUrl          :  ${WEBDETAILS_SCM_ROOT}/cde.git
        scmBranch       :  ${DEFAULT_BRANCH}
        versionProperty :  pentaho-cde-plugin.version
 
      - jobID           :  cpk-plugin
-       executeFlag     :  true
        scmUrl          :  ${WEBDETAILS_SCM_ROOT}/cpk.git
        scmBranch       :  ${DEFAULT_BRANCH}
        versionProperty :  pentaho-cpk-plugin.version
 
      - jobID           :  cgg-plugin
-       executeFlag     :  true
        scmUrl          :  ${WEBDETAILS_SCM_ROOT}/cgg.git
        scmBranch       :  ${DEFAULT_BRANCH}
        versionProperty :  pentaho-cgg-plugin.version
@@ -535,13 +463,11 @@ jobGroups:
   2900:
 
      - jobID           :  sparkl-plugin
-       executeFlag     :  true
        scmUrl          :  ${WEBDETAILS_SCM_ROOT}/sparkl.git
        scmBranch       :  ${DEFAULT_BRANCH}
        versionProperty :  pentaho-sparkl-plugin.version
 
      - jobID           :  platform-reporting-plugin
-       executeFlag     :  true
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-platform-plugin-reporting.git
        scmBranch       :  ${DEFAULT_BRANCH}
        versionProperty :  pentaho-reporting-plugin.version
@@ -549,14 +475,12 @@ jobGroups:
   3000:
 
      - jobID           :  big-data-hadoop-shims-ee
-       executeFlag     :  true
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-big-data-ee.git
        scmBranch       :  ${DEFAULT_BRANCH}
        directives      :  + -DskipDefault -P base,all
        versionProperty :  pentaho-hadoop-shims.version
 
      - jobID           :  cda-plugin
-       executeFlag     :  true
        scmUrl          :  ${WEBDETAILS_SCM_ROOT}/cda.git
        scmBranch       :  ${DEFAULT_BRANCH}
        versionProperty :  pentaho-cda-plugin.version
@@ -564,13 +488,11 @@ jobGroups:
   3100:
 
      - jobID           :  jdbc-distribution-utility
-       executeFlag     :  true
        scmUrl          :  ${PENTAHO_SCM_ROOT}/jdbc-distribution-utility.git
        scmBranch       :  ${DEFAULT_BRANCH}
        versionProperty :  jdbc-distribution-utility.version
 
      - jobID           :  dashboards-chart-editor-plugin
-       executeFlag     :  true
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-dashboard-chart-editor.git
        scmBranch       :  ${DEFAULT_BRANCH}
        versionProperty :  pentaho-dashboard-chart-editor.version
@@ -578,7 +500,6 @@ jobGroups:
   3200:
 
      - jobID           :  platform-ee
-       executeFlag     :  true
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-platform-ee.git
        scmBranch       :  ${DEFAULT_BRANCH}
        directives      :  + -DskipDefault -P platform-ee
@@ -587,7 +508,6 @@ jobGroups:
   3300:
 
      - jobID           :  geo-plugin
-       executeFlag     :  true
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-platform-plugin-geo.git
        scmBranch       :  ${DEFAULT_BRANCH}
        versionProperty :  pentaho-geo-plugin.version
@@ -595,7 +515,6 @@ jobGroups:
   3400:
 
      - jobID           :  analyzer-plugin
-       executeFlag     :  true
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-analyzer.git
        scmBranch       :  ${DEFAULT_BRANCH}
        directives      :  + -Dagilebi
@@ -604,25 +523,21 @@ jobGroups:
   3500:
 
      - jobID           :  platform-chart-plugin-ee
-       executeFlag     :  true
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-ee-chart-plugin.git
        scmBranch       :  ${DEFAULT_BRANCH}
        versionProperty :  pentaho-ee-chart-plugin.version
 
      - jobID           :  analysis-plugin-ee
-       executeFlag     :  true
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-analysis-ee.git
        scmBranch       :  ${DEFAULT_BRANCH}
        versionProperty :  analysis-ee-plugin.version
 
      - jobID           :  pdi-yarn-plugin
-       executeFlag     :  true
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-yarn-kettle-plugin.git
        scmBranch       :  ${DEFAULT_BRANCH}
        versionProperty :  pentaho-kettle-yarn-plugin.version
 
      - jobID           :  data-exploration
-       executeFlag     :  true
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-det.git
        scmBranch       :  ${DEFAULT_BRANCH}
        versionProperty :  pentaho-det.version
@@ -630,31 +545,26 @@ jobGroups:
   3600:
 
      - jobID           :  data-exploration-ee
-       executeFlag     :  true
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-det-ee.git
        scmBranch       :  ${DEFAULT_BRANCH}
        versionProperty :  pentaho-det.version
 
      - jobID           :  karaf-assembly
-       executeFlag     :  true
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-karaf-assembly.git
        scmBranch       :  ${DEFAULT_BRANCH}
        versionProperty :  pentaho-karaf.version
 
      - jobID           :  dashboards-plugin
-       executeFlag     :  true
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-platform-plugin-dashboards.git
        scmBranch       :  ${DEFAULT_BRANCH}
        versionProperty :  dashboard-plugin.version
 
      - jobID           :  pdi-weka-plugins
-       executeFlag     :  true
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-data-mining.git
        scmBranch       :  ${DEFAULT_BRANCH}
        versionProperty :  pentaho-data-mining.version
 
      - jobID           :  platform-plugins-ee
-       executeFlag     :  true
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-ee.git
        scmBranch       :  ${DEFAULT_BRANCH}
        versionProperty :  platform.version
@@ -663,56 +573,47 @@ jobGroups:
   3700:
 
      - jobID           :  pdi-weka-plugins-ee
-       executeFlag     :  true
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-data-mining-ee.git
        scmBranch       :  ${DEFAULT_BRANCH}
        versionProperty :  pentaho-data-mining.version
 
      - jobID           :  big-data-plugin-assembly
-       executeFlag     :  true
        scmUrl          :  ${PENTAHO_SCM_ROOT}/big-data-plugin.git
        scmBranch       :  ${DEFAULT_BRANCH}
        versionProperty :  big-data-plugin.version
        root            :  assemblies
 
      - jobID           :  pir-plugin
-       executeFlag     :  true
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-platform-plugin-interactive-reporting.git
        scmBranch       :  ${DEFAULT_BRANCH}
        versionProperty :  pir-plugin.version
 
      - jobID           :  pdi-scheduler-plugin
-       executeFlag     :  true
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pdi-scheduler-plugin.git
        scmBranch       :  ${DEFAULT_BRANCH}
        versionProperty :  pdi-scheduler-plugin.version
 
      - jobID           :  pdi-google-docs-plugin
-       executeFlag     :  true
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pdi-google-docs-plugin.git
        scmBranch       :  ${DEFAULT_BRANCH}
        versionProperty :  pdi-google-docs-plugin.version
 
      - jobID           :  pdi-jms-plugin
-       executeFlag     :  true
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pdi-jms-plugin.git
        scmBranch       :  ${DEFAULT_BRANCH}
        versionProperty :  pdi-jms-plugin.version
 
      - jobID           :  pdi-sdk-plugins
-       executeFlag     :  true
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pdi-sdk-plugins.git
        scmBranch       :  ${DEFAULT_BRANCH}
        versionProperty :  pdi-sdk-plugins.version
 
      - jobID           :  pdi-r-plugin
-       executeFlag     :  true
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-r-plugin.git
        scmBranch       :  ${DEFAULT_BRANCH}
        versionProperty :  pdi-r-plugin.version
 
      - jobID           :  pdi-sap-hana-bulk-loader-plugin
-       executeFlag     :  true
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pdi-sap-hana-bulk-loader-plugin.git
        scmBranch       :  ${DEFAULT_BRANCH}
        versionProperty :  pdi-sap-hana-bulk-loader-plugin.version
@@ -720,7 +621,6 @@ jobGroups:
   3800:
 
      - jobID           :  karaf-assembly-ee
-       executeFlag     :  true
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-karaf-ee-assembly.git
        scmBranch       :  ${DEFAULT_BRANCH}
        versionProperty :  pentaho-karaf.version
@@ -728,14 +628,12 @@ jobGroups:
   3900:
 
      - jobID           :  big-data-plugin-assembly-ee
-       executeFlag     :  true
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-big-data-ee.git
        scmBranch       :  ${DEFAULT_BRANCH}
        directives      :  + -DskipDefault -P assemblies,pack
        versionProperty :  big-data-plugin.version
 
      - jobID           :  prd-assembly
-       executeFlag     :  true
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-reporting.git
        scmBranch       :  ${DEFAULT_BRANCH}
        directives      :  + -Ddesigner -Dmaven.test.failure.ignore=true
@@ -744,13 +642,11 @@ jobGroups:
   4000:
 
      - jobID           :  prd-assembly-ee
-       executeFlag     :  true
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-reportdesigner-ee.git
        scmBranch       :  ${DEFAULT_BRANCH}
        versionProperty :  pentaho-reporting.version
 
      - jobID           :  pdi-pur-plugin-ee
-       executeFlag     :  true
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pdi-ee-plugin.git
        scmBranch       :  ${DEFAULT_BRANCH}
        versionProperty :  pdi-pur-plugin.version
@@ -758,7 +654,6 @@ jobGroups:
   4100:
 
      - jobID           :  pdi-operations-mart-ee
-       executeFlag     :  true
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pdi-operations-mart.git
        scmBranch       :  ${DEFAULT_BRANCH}
        versionProperty :  pentaho-operations-mart.version
@@ -766,7 +661,6 @@ jobGroups:
   4200:
 
      - jobID           :  pdi-client-assembly
-       executeFlag     :  true
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-kettle.git
        scmBranch       :  ${DEFAULT_BRANCH}
        directives      :  + -DskipDefault -P assemblies
@@ -776,7 +670,6 @@ jobGroups:
   4300:
 
      - jobID           :  pdi-client-assembly-ee
-       executeFlag     :  true
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-ee.git
        scmBranch       :  ${DEFAULT_BRANCH}
        versionProperty :  pdi.version
@@ -786,13 +679,11 @@ jobGroups:
   4400:
 
      - jobID           :  metadata-editor
-       executeFlag     :  true
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-metadata-editor.git
        scmBranch       :  ${DEFAULT_BRANCH}
        versionProperty :  pentaho-metadata.version
 
      - jobID           :  platform-server-assembly
-       executeFlag     :  true
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-platform.git
        scmBranch       :  ${DEFAULT_BRANCH}
        directives      :  + -DskipDefault -P platform-assemble
@@ -800,7 +691,6 @@ jobGroups:
        testable        :  false
 
      - jobID           :  pad
-       executeFlag     :  true
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-aggdesigner.git
        scmBranch       :  ${DEFAULT_BRANCH}
        versionProperty :  aggdesigner.version
@@ -808,7 +698,6 @@ jobGroups:
   4500:
 
      - jobID           :  foundry-workers-ee
-       executeFlag     :  true
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-ee.git
        scmBranch       :  ${DEFAULT_BRANCH}
        directives      :  clean package
@@ -817,7 +706,6 @@ jobGroups:
        testable        :  false
 
      - jobID           :  platform-server-assembly-ee
-       executeFlag     :  true
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-platform-ee.git
        scmBranch       :  ${DEFAULT_BRANCH}
        directives      :  + -DskipDefault -P platform-ee-assemble
@@ -825,20 +713,17 @@ jobGroups:
        testable        :  false
 
      - jobID           :  metadata-editor-ee
-       executeFlag     :  true
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-metadata-editor-ee.git
        scmBranch       :  ${DEFAULT_BRANCH}
        versionProperty :  pentaho-metadata.version
 
      - jobID           :  pad-assembly-ee
-       executeFlag     :  true
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-aggdesigner-ee.git
        scmBranch       :  ${DEFAULT_BRANCH}
        versionProperty :  aggdesigner.version
        testable        :  false
 
      - jobID           :  platform-sdk
-       executeFlag     :  true
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-sdk.git
        scmBranch       :  ${DEFAULT_BRANCH}
        versionProperty :  pdi-sdk-plugins.version
@@ -846,7 +731,6 @@ jobGroups:
   4600:
 
      - jobID           :  foundry-scale-ee
-       executeFlag     :  true
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-ee.git
        scmBranch       :  ${DEFAULT_BRANCH}
        directives      :  + -Dpentaho-scale

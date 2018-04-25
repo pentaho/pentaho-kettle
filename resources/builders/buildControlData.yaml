@@ -20,7 +20,6 @@ jobGroups:
   100:
 
      - jobID           :  coding-standards
-       executeFlag     :  true
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-coding-standards.git
        scmBranch       :  ${DEFAULT_BRANCH}
        versionProperty :  coding-standards.version
@@ -29,7 +28,6 @@ jobGroups:
   200:
 
      - jobID           :  parent-poms
-       executeFlag     :  true
        scmUrl          :  ${PENTAHO_SCM_ROOT}/maven-parent-poms.git
        scmBranch       :  ${DEFAULT_BRANCH}
        versionProperty :  pentaho.version
@@ -38,7 +36,6 @@ jobGroups:
   300:
 
      - jobID           :  archetypes
-       executeFlag     :  true
        scmUrl          :  ${PENTAHO_SCM_ROOT}/maven-project-archetypes.git
        scmBranch       :  ${DEFAULT_BRANCH}
        versionProperty :  archetypes.version
