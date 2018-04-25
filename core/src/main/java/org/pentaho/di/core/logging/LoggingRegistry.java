@@ -70,15 +70,20 @@ public class LoggingRegistry {
       if ( found != null ) {
         LoggingObjectInterface foundParent = found.getParent();
         LoggingObjectInterface loggingSourceParent = loggingSource.getParent();
+        String foundLogChannelId = found.getLogChannelId();
         if ( foundParent != null && loggingSourceParent != null ) {
           String foundParentLogChannelId = foundParent.getLogChannelId();
           String sourceParentLogChannelId = loggingSourceParent.getLogChannelId();
           if ( foundParentLogChannelId != null && sourceParentLogChannelId != null
             && foundParentLogChannelId.equals( sourceParentLogChannelId ) ) {
-            String foundLogChannelId = found.getLogChannelId();
             if ( foundLogChannelId != null ) {
               return foundLogChannelId;
             }
+          }
+        }
+        if ( foundParent == null && loggingSourceParent == null ) {
+          if ( foundLogChannelId != null ) {
+            return foundLogChannelId;
           }
         }
       }
@@ -91,11 +96,8 @@ public class LoggingRegistry {
       if ( loggingSource.getParent() != null ) {
         String parentLogChannelId = loggingSource.getParent().getLogChannelId();
         if ( parentLogChannelId != null ) {
-          List<String> parentChildren = this.childrenMap.get( parentLogChannelId );
-          if ( parentChildren == null ) {
-            parentChildren = new ArrayList<String>();
-            this.childrenMap.put( parentLogChannelId, parentChildren );
-          }
+          List<String> parentChildren =
+            this.childrenMap.computeIfAbsent( parentLogChannelId, k -> new ArrayList<String>() );
           parentChildren.add( logChannelId );
         }
       }
