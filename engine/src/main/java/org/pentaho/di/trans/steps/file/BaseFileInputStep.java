@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -152,7 +152,9 @@ public abstract class BaseFileInputStep<M extends BaseFileInputMeta<?, ?, ?>, D 
 
       fillFileAdditionalFields( data, data.file );
       if ( meta.inputFiles.passingThruFields ) {
-        data.currentPassThruFieldsRow = data.passThruFields.get( data.file );
+        StringBuilder sb = new StringBuilder();
+        sb.append( data.currentFileIndex ).append( "_" ).append( data.file );
+        data.currentPassThruFieldsRow = data.passThruFields.get( sb.toString() );
       }
 
       // Add this files to the result of this transformation.
@@ -305,7 +307,7 @@ public abstract class BaseFileInputStep<M extends BaseFileInputMeta<?, ?, ?>, D 
       RowMetaInterface prevInfoFields = rowSet.getRowMeta();
       if ( idx < 0 ) {
         if ( meta.inputFiles.passingThruFields ) {
-          data.passThruFields = new HashMap<FileObject, Object[]>();
+          data.passThruFields = new HashMap<String, Object[]>();
           infoStep = new RowMetaInterface[] { prevInfoFields };
           data.nrPassThruFields = prevInfoFields.size();
         }
@@ -323,7 +325,9 @@ public abstract class BaseFileInputStep<M extends BaseFileInputMeta<?, ?, ?>, D 
         FileObject fileObject = KettleVFS.getFileObject( fileValue, getTransMeta() );
         data.files.addFile( fileObject );
         if ( meta.inputFiles.passingThruFields ) {
-          data.passThruFields.put( fileObject, fileRow );
+          StringBuilder sb = new StringBuilder();
+          sb.append( data.files.nrOfFiles() > 0 ? data.files.nrOfFiles() - 1 : 0 ).append( "_" ).append( fileObject.toString() );
+          data.passThruFields.put( sb.toString(), fileRow );
         }
       } catch ( KettleFileException e ) {
         logError( BaseMessages.getString( PKG, "TextFileInput.Log.Error.UnableToCreateFileObject", fileValue ), e );
