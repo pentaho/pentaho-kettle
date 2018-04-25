@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -36,6 +36,7 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 
 
@@ -43,7 +44,18 @@ public class CarteStatusCache implements Cache {
 
   public static final String CARTE_STATUS_CACHE = "CARTE_CACHE";
 
-  private final ScheduledExecutorService removeService = Executors.newSingleThreadScheduledExecutor();
+  /**
+   * Switching the thread launched to be daemon otherwise it blocks the pentaho server shutdown
+   */
+  private final ScheduledExecutorService removeService = Executors.newSingleThreadScheduledExecutor(
+    new ThreadFactory() {
+      public Thread newThread( Runnable r ) {
+        Thread t = Executors.defaultThreadFactory().newThread( r );
+        t.setDaemon( true );
+        t.setName( CarteStatusCache.class.getSimpleName() );
+        return t;
+      }
+    } );
 
   private final Map<String, CachedItem> cachedMap = new ConcurrentHashMap<>();
 
@@ -52,7 +64,6 @@ public class CarteStatusCache implements Cache {
   private int period = 0;
 
   private TimeUnit timeUnit = null;
-
 
   public static synchronized CarteStatusCache getInstance() {
     if ( instance == null ) {
@@ -64,6 +75,7 @@ public class CarteStatusCache implements Cache {
   private CarteStatusCache() {
     period = Integer.parseInt( Const.getEnvironmentVariable( "CARTE_CLEAR_PERIOD", "1" ) );
     timeUnit = TimeUnit.valueOf( Const.getEnvironmentVariable( "CARTE_CLEAR_TIMEUNIT", "DAYS" ) );
+
     removeService.scheduleAtFixedRate( this::clear, 1, 1, TimeUnit.DAYS );
   }
 
