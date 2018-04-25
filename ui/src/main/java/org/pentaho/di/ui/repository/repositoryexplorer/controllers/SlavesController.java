@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -117,23 +117,15 @@ public class SlavesController extends LazilyInitializedController implements IUI
   public void refreshSlaves() {
     if ( repository != null ) {
       final List<UISlave> tmpList = new ArrayList<UISlave>();
-      Runnable r = new Runnable() {
-        public void run() {
-          try {
-            ObjectId[] slaveIdList = repository.getSlaveIDs( false );
-
-            for ( ObjectId slaveId : slaveIdList ) {
-              SlaveServer slave = repository.loadSlaveServer( slaveId, null );
-              // Add the database slave to the list
-              tmpList.add( new UISlave( slave ) );
-            }
-          } catch ( KettleException e ) {
-            if ( mainController == null || !mainController.handleLostRepository( e ) ) {
-              // convert to runtime exception so it bubbles up through the UI
-              throw new RuntimeException( e );
-            }
+      Runnable r = () -> {
+        try {
+          List<SlaveServer> slaveServers = repository.getSlaveServers();
+          slaveServers.forEach( slaveServer -> tmpList.add( new UISlave( slaveServer ) ) );
+        } catch ( KettleException e ) {
+          if ( mainController == null || !mainController.handleLostRepository( e ) ) {
+            // convert to runtime exception so it bubbles up through the UI
+            throw new RuntimeException( e );
           }
-
         }
       };
       doWithBusyIndicator( r );
