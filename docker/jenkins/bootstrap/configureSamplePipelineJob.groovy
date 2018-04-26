@@ -17,7 +17,8 @@ import org.jenkinsci.plugins.workflow.job.WorkflowJob
 
 
 def jenkins = Jenkins.getInstance()
-def jobName = 'sample pipeline'
+// workdir names with spaces causes problems in javascript builds
+def jobName = 'sample_pipeline'
 def env = System.getenv()
 
 if (!jenkins.isQuietingDown()) {

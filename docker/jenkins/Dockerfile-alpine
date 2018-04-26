@@ -3,24 +3,15 @@ FROM jenkins/jenkins:lts-alpine
 
 USER root
 
-ENV GLIBC_VERSION=2.27-r0
-ENV CREDENTIALS_ID=github-buildguy
+ENV CREDENTIALS_ID github-buildguy
 ENV JAVA_OPTS -Djenkins.install.runSetupWizard=false
 
 # maven-surefire-plugin fails on Docker and Alpine, the version 2.20.1 changed how the plugin interacts with processes
-# workarounds are to downgrade to 2.20 or install procps
+# workaround is to install procps
+RUN apk --no-cache add --update procps fontconfig
 
-RUN apk --no-cache add --update ca-certificates procps && \
-    wget -q -O /etc/apk/keys/sgerrand.rsa.pub https://raw.githubusercontent.com/sgerrand/alpine-pkg-glibc/master/sgerrand.rsa.pub && \
-    wget -q https://github.com/sgerrand/alpine-pkg-glibc/releases/download/${GLIBC_VERSION}/glibc-${GLIBC_VERSION}.apk && \
-    wget -q https://github.com/sgerrand/alpine-pkg-glibc/releases/download/${GLIBC_VERSION}/glibc-bin-${GLIBC_VERSION}.apk && \
-    wget -q https://github.com/sgerrand/alpine-pkg-glibc/releases/download/${GLIBC_VERSION}/glibc-i18n-${GLIBC_VERSION}.apk && \
-    apk add glibc-${GLIBC_VERSION}.apk glibc-bin-${GLIBC_VERSION}.apk glibc-i18n-${GLIBC_VERSION}.apk && \
-    /usr/glibc-compat/bin/localedef -i en_US -f UTF-8 en_US.UTF-8 && \
-    echo "export LANG=en_US.UTF-8" > /etc/profile.d/locale.sh && \
-    # cleaning caches
-    rm -rf *.apk \
-    /var/cache/apk/*
+# adding dynamic ELFs required by PhantomJS, and other glibc dependent apps like java
+ADD alpine/tools/dockerized-phantomjs.tgz /
 
 USER jenkins
 

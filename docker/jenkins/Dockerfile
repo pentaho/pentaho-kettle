@@ -1,7 +1,7 @@
 # https://github.com/jenkinsci/docker/blob/master/README.md
 FROM jenkins/jenkins:lts
 
-ENV CREDENTIALS_ID=github-buildguy
+ENV CREDENTIALS_ID github-buildguy
 
 ENV JAVA_OPTS -Djenkins.install.runSetupWizard=false
 
