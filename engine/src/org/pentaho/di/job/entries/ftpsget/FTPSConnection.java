@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -39,6 +39,8 @@ import org.ftp4che.event.FTPEvent;
 import org.ftp4che.event.FTPListener;
 import org.ftp4che.util.ftpfile.FTPFile;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.logging.LogChannel;
+import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.i18n.BaseMessages;
@@ -46,6 +48,7 @@ import org.pentaho.di.i18n.BaseMessages;
 public class FTPSConnection implements FTPListener {
 
   private static Class<?> PKG = JobEntryFTPSGet.class; // for i18n purposes, needed by Translator2!!
+  private LogChannelInterface logger;
 
   public static final String HOME_FOLDER = "/";
   public static final String COMMAND_SUCCESSUL = "COMMAND SUCCESSFUL";
@@ -95,6 +98,7 @@ public class FTPSConnection implements FTPListener {
     this.passWord = password;
     this.connectionType = connectionType;
     this.passiveMode = false;
+    this.logger = new LogChannel( this );
   }
 
   /**
@@ -453,7 +457,8 @@ public class FTPSConnection implements FTPListener {
         try {
           file.close();
         } catch ( Exception e ) {
-          // Ignore close errors
+           //we do not able to close file will log it
+          logger.logDetailed( "Unable to close file file", e );
         }
       }
     }

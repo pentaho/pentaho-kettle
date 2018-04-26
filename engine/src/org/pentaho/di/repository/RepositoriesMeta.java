@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -192,8 +192,7 @@ public class RepositoriesMeta {
     File file = new File( getKettleLocalRepositoriesFile() );
     if ( !file.exists() || !file.isFile() ) {
       if ( log.isDetailed() ) {
-        log.logDetailed( BaseMessages.getString( PKG, "RepositoryMeta.Log.NoRepositoryFileInLocalDirectory", file
-          .getAbsolutePath() ) );
+        log.logDetailed( BaseMessages.getString( PKG, "RepositoryMeta.Log.NoRepositoryFileInLocalDirectory", file.getAbsolutePath() ) );
       }
       file = new File( getKettleUserRepositoriesFile() );
       if ( !file.exists() || !file.isFile() ) {
@@ -213,13 +212,12 @@ public class RepositoriesMeta {
       try {
         doc = db.parse( file );
       } catch ( FileNotFoundException ef ) {
-        InputStream is = getClass().getResourceAsStream( "/org/pentaho/di/repository/repositories.xml" );
-        if ( is != null ) {
-          doc = db.parse( is );
-        } else {
-          throw new KettleException( BaseMessages.getString( PKG, "RepositoryMeta.Error.OpeningFile", file
-            .getAbsoluteFile() ), ef );
-
+        try ( InputStream is = getClass().getResourceAsStream( "/org/pentaho/di/repository/repositories.xml" ) ) {
+          if ( is != null ) {
+            doc = db.parse( is );
+          } else {
+            throw new KettleException( BaseMessages.getString( PKG, "RepositoryMeta.Error.OpeningFile", file.getAbsoluteFile() ), ef );
+          }
         }
       }
       parseRepositoriesDoc( doc );
