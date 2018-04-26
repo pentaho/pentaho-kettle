@@ -121,7 +121,7 @@ public class TransWebSocketEngineAdapter extends Trans {
     this.ssl = ssl;
   }
 
-  private DaemonMessagesClientEndpoint getDaemonEndpoint() throws KettleException {
+  DaemonMessagesClientEndpoint getDaemonEndpoint() throws KettleException {
     try {
       if ( daemonMessagesClientEndpoint == null ) {
         daemonMessagesClientEndpoint = new DaemonMessagesClientEndpoint( host, port, ssl, messageEventService );
@@ -154,6 +154,27 @@ public class TransWebSocketEngineAdapter extends Trans {
       getLogChannel().logDebug( e.getMessage() );
     } finally {
       cancelling = false;
+    }
+  }
+
+  @Override public void safeStop() {
+    try {
+      getDaemonEndpoint().sendMessage(
+        StopMessage.builder()
+          .reasonPhrase( "User Request" )
+          .safeStop( true )
+          .build() );
+
+      //stopped but still running will yield status Halting
+      getSteps().stream().map( stepMetaDataCombi -> stepMetaDataCombi.step )
+        .filter( stepInterface -> stepInterface.getInputRowSets().isEmpty() )
+        .forEach( step -> step.setStopped( true ) );
+      Executors.newSingleThreadExecutor().submit( () -> {
+        waitUntilFinished();
+        finishProcess( true );
+      } );
+    } catch ( KettleException e ) {
+      getLogChannel().logDebug( e.getMessage(), e );
     }
   }
 
@@ -366,7 +387,7 @@ public class TransWebSocketEngineAdapter extends Trans {
     return new ArrayList<>( operationToCombi.values() );
   }
 
-  @SuppressWarnings( "unchecked" )
+  @SuppressWarnings ( "unchecked" )
   private List<StepMetaDataCombi> getSubSteps( Transformation transformation, StepMetaDataCombi combi ) {
     HashMap<String, Transformation> config =
       ( (Optional<HashMap<String, Transformation>>) transformation

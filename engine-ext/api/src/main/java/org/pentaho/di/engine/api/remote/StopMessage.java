@@ -36,6 +36,7 @@ package org.pentaho.di.engine.api.remote;
  * Created by ccaspanello on
  * 7/25/17.
  */
+@SuppressWarnings ( "unused" )
 public class StopMessage implements Message {
 
   public enum Status {
@@ -48,6 +49,8 @@ public class StopMessage implements Message {
   private String reasonPhrase;
   private String requestUUID;
   private Status result;
+  private final boolean safeStop;
+
 
   /**
    * Constructor used by the clients when sending the stop request for the daemon server
@@ -55,8 +58,7 @@ public class StopMessage implements Message {
    * @param reasonPhrase reason for the Stop request
    */
   public StopMessage( String reasonPhrase ) {
-    this.reasonPhrase = reasonPhrase;
-    this.result = Status.SUCCESS;
+    this( null, reasonPhrase, Status.SUCCESS, false );
   }
 
   /**
@@ -66,9 +68,7 @@ public class StopMessage implements Message {
    * @param reasonPhrase reason for the Stop request
    */
   public StopMessage( String requestUUID, String reasonPhrase ) {
-    this.requestUUID = requestUUID;
-    this.reasonPhrase = reasonPhrase;
-    this.result = Status.SUCCESS;
+    this( requestUUID, reasonPhrase, Status.SUCCESS, false );
   }
 
   /**
@@ -78,8 +78,7 @@ public class StopMessage implements Message {
    * @param result       stop operation result: SUCCESS, FAILED, SESSION_KILLED;
    */
   public StopMessage( String reasonPhrase, Status result ) {
-    this.reasonPhrase = reasonPhrase;
-    this.result = result;
+    this( null, reasonPhrase, result, false );
   }
 
   /**
@@ -90,9 +89,14 @@ public class StopMessage implements Message {
    * @param result       stop operation result: SUCCESS, FAILED, SESSION_KILLED;
    */
   public StopMessage( String requestUUID, String reasonPhrase, Status result ) {
+    this( requestUUID, reasonPhrase, result, false );
+  }
+
+  private StopMessage( String requestUUID, String reasonPhrase, Status result, boolean safeStop ) {
     this.requestUUID = requestUUID;
     this.reasonPhrase = reasonPhrase;
     this.result = result;
+    this.safeStop = safeStop;
   }
 
   /**
@@ -148,4 +152,49 @@ public class StopMessage implements Message {
   public boolean sessionWasKilled() {
     return this.result == Status.SESSION_KILLED;
   }
+
+
+  /**
+   * True if the stop should be "graceful".  I.e. should finish any work currently
+   * in progress.
+   */
+  public boolean isSafeStop() {
+    return safeStop;
+  }
+
+  public static Builder builder() {
+    return new Builder();
+  }
+
+  public static class Builder {
+    private String reasonPhrase;
+    private String requestUUID;
+    private Status result;
+    private boolean safeStop = false;
+
+    public Builder reasonPhrase( String reasonPhrase ) {
+      this.reasonPhrase = reasonPhrase;
+      return this;
+    }
+
+    public Builder requestUUID( String requestUUID ) {
+      this.requestUUID = requestUUID;
+      return this;
+    }
+
+    public Builder result( Status result ) {
+      this.result = result;
+      return this;
+    }
+
+    public Builder safeStop( boolean safeStop ) {
+      this.safeStop = safeStop;
+      return this;
+    }
+
+    public StopMessage build() {
+      return new StopMessage( requestUUID, reasonPhrase, result, safeStop );
+    }
+  }
+
 }
