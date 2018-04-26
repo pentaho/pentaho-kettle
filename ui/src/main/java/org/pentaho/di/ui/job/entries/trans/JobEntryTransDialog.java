@@ -233,8 +233,8 @@ public class JobEntryTransDialog extends JobEntryBaseDialog implements JobEntryD
 
   protected Image getImage() {
     return SwtSvgImageUtil
-      .getImage( shell.getDisplay(), getClass().getClassLoader(), "TRN.svg", ConstUI.ICON_SIZE,
-        ConstUI.ICON_SIZE );
+      .getImage( shell.getDisplay(), getClass().getClassLoader(), "TRN.svg", ConstUI.LARGE_ICON_SIZE,
+        ConstUI.LARGE_ICON_SIZE );
   }
 
   protected boolean getArgFromPrev() {

@@ -350,8 +350,8 @@ public class TransExecutorDialog extends BaseStepDialog implements StepDialogInt
 
   protected Image getImage() {
     return SwtSvgImageUtil
-      .getImage( shell.getDisplay(), getClass().getClassLoader(), "TRNEx.svg", ConstUI.ICON_SIZE,
-        ConstUI.ICON_SIZE );
+      .getImage( shell.getDisplay(), getClass().getClassLoader(), "TRNEx.svg", ConstUI.LARGE_ICON_SIZE,
+        ConstUI.LARGE_ICON_SIZE );
   }
 
   private void selectRepositoryTrans() {

@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -508,8 +508,8 @@ public class SingleThreaderDialog extends BaseStepDialog implements StepDialogIn
 
   protected Image getImage() {
     return SwtSvgImageUtil
-      .getImage( shell.getDisplay(), getClass().getClassLoader(), "MAP.svg", ConstUI.ICON_SIZE,
-        ConstUI.ICON_SIZE );
+      .getImage( shell.getDisplay(), getClass().getClassLoader(), "MAP.svg", ConstUI.LARGE_ICON_SIZE,
+        ConstUI.LARGE_ICON_SIZE );
   }
 
   private void selectRepositoryTrans() {
