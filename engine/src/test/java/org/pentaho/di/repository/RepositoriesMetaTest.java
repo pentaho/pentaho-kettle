@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -36,11 +36,14 @@ import org.pentaho.test.util.XXEUtils;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.InputStream;
+import java.io.RandomAccessFile;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertNull;
 import static org.mockito.Mockito.mock;
@@ -69,6 +72,30 @@ public class RepositoriesMetaTest {
   public void testToString() throws Exception {
     RepositoriesMeta repositoriesMeta = new RepositoriesMeta();
     assertEquals( "RepositoriesMeta", repositoriesMeta.toString() );
+  }
+
+  @Test
+  public void testReadData_closeInput() throws Exception {
+    String repositoriesFile = getClass().getResource( "repositories.xml" ).getPath();
+
+    LogChannel log = mock( LogChannel.class );
+    when( repoMeta.getKettleUserRepositoriesFile() ).thenReturn( repositoriesFile );
+    when( repoMeta.newLogChannel() ).thenReturn( log );
+    repoMeta.readData();
+
+    RandomAccessFile fos = null;
+    try {
+      File file = new File( repositoriesFile );
+      if ( file.exists() ) {
+        fos = new RandomAccessFile( file, "rw" );
+      }
+    } catch ( FileNotFoundException | SecurityException e ) {
+      fail( "the file with properties should be unallocated" );
+    } finally {
+      if ( fos != null ) {
+        fos.close();
+      }
+    }
   }
 
   @Test

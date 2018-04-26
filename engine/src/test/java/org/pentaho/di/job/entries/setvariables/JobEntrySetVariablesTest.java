@@ -24,6 +24,11 @@ package org.pentaho.di.job.entries.setvariables;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.RandomAccessFile;
 
 import org.junit.After;
 import org.junit.AfterClass;
@@ -32,9 +37,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.logging.KettleLogStore;
-import org.pentaho.di.core.util.Assert;
 import org.pentaho.di.job.Job;
-import org.pentaho.di.job.JobEntryListener;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entry.JobEntryCopy;
 
@@ -88,5 +91,30 @@ public class JobEntrySetVariablesTest {
     assertEquals( "日本語", entry.getVariable( "Japanese" ) );
     assertEquals( "English", entry.getVariable( "English" ) );
     assertEquals( "中文", entry.getVariable( "Chinese" ) );
+  }
+
+  @Test
+  public void testInputStreamClosed() throws Exception {
+    // properties files without native2ascii
+    String propertiesFilename = "src/test/resources/org/pentaho/di/job/entries/setvariables/UTF8Text.properties";
+    entry.setFilename( propertiesFilename );
+    entry.setVariableName( new String[] {} ); // For absence of null check in execute method
+    entry.setReplaceVars( true );
+    Result result = entry.execute( new Result(), 0 );
+    assertTrue( "Result should be true", result.getResult() );
+
+    RandomAccessFile fos = null;
+    try {
+      File file = new File( propertiesFilename );
+      if ( file.exists() ) {
+        fos = new RandomAccessFile( file, "rw" );
+      }
+    } catch ( FileNotFoundException | SecurityException e ) {
+      fail( "the file with properties should be unallocated" );
+    } finally {
+      if ( fos != null ) {
+        fos.close();
+      }
+    }
   }
 }
