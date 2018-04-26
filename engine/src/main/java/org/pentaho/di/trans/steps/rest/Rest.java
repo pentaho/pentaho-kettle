@@ -153,14 +153,14 @@ public class Rest extends BaseStep implements StepInterface {
       }
       WebResource.Builder builder = webResource.getRequestBuilder();
       String contentType = null; // media type override, if not null
-      if (data.useHeaders) {
+      if ( data.useHeaders ) {
         // Add headers
-        for (int i = 0; i < data.nrheader; i++) {
-          String value = data.inputRowMeta.getString(rowData, data.indexOfHeaderFields[i]);
+        for ( int i = 0; i < data.nrheader; i++ ) {
+          String value = data.inputRowMeta.getString( rowData, data.indexOfHeaderFields[i] );
 
           // unsure if an already set header will be returned to builder
-          builder = builder.header(data.headerNames[i], value);
-          if ("Content-Type".equals(data.headerNames[i])) {
+          builder = builder.header( data.headerNames[i], value );
+          if ( "Content-Type".equals( data.headerNames[i] ) ) {
             contentType = value;
           }
           if ( isDebug() ) {
@@ -179,41 +179,41 @@ public class Rest extends BaseStep implements StepInterface {
         }
       }
       try {
-        if (data.method.equals(RestMeta.HTTP_METHOD_GET)) {
-          response = builder.get(ClientResponse.class);
-        } else if (data.method.equals(RestMeta.HTTP_METHOD_POST)) {
-          if (null != contentType) {
-            response = builder.type(contentType).post(ClientResponse.class, entityString);
+        if ( data.method.equals( RestMeta.HTTP_METHOD_GET ) ) {
+          response = builder.get( ClientResponse.class );
+        } else if ( data.method.equals( RestMeta.HTTP_METHOD_POST ) ) {
+          if ( null != contentType ) {
+            response = builder.type( contentType ).post( ClientResponse.class, entityString );
           } else {
-            response = builder.type(data.mediaType).post(ClientResponse.class, entityString);
+            response = builder.type( data.mediaType ).post( ClientResponse.class, entityString );
           }
-        } else if (data.method.equals(RestMeta.HTTP_METHOD_PUT)) {
-          if (null != contentType) {
-            response = builder.type(contentType).put(ClientResponse.class, entityString);
+        } else if ( data.method.equals( RestMeta.HTTP_METHOD_PUT ) ) {
+          if ( null != contentType ) {
+            response = builder.type( contentType ).put( ClientResponse.class, entityString );
           } else {
-            response = builder.type(data.mediaType).put(ClientResponse.class, entityString);
+            response = builder.type( data.mediaType ).put( ClientResponse.class, entityString );
           }
-        } else if (data.method.equals(RestMeta.HTTP_METHOD_DELETE)) {
-          if (null != contentType) {
-            response = builder.type(contentType).delete(ClientResponse.class, entityString);
+        } else if ( data.method.equals( RestMeta.HTTP_METHOD_DELETE ) ) {
+          if ( null != contentType ) {
+            response = builder.type( contentType ).delete( ClientResponse.class, entityString );
           } else {
-            response = builder.type(data.mediaType).delete(ClientResponse.class, entityString);
+            response = builder.type( data.mediaType ).delete( ClientResponse.class, entityString );
           }
-        } else if (data.method.equals(RestMeta.HTTP_METHOD_HEAD)) {
+        } else if ( data.method.equals( RestMeta.HTTP_METHOD_HEAD ) ) {
           response = builder.head();
-        } else if (data.method.equals(RestMeta.HTTP_METHOD_OPTIONS)) {
-          response = builder.options(ClientResponse.class);
-        } else if (data.method.equals(RestMeta.HTTP_METHOD_PATCH)) {
-          if (null != contentType) {
-            response = builder.type(contentType).method(RestMeta.HTTP_METHOD_PATCH, ClientResponse.class, entityString);
+        } else if ( data.method.equals( RestMeta.HTTP_METHOD_OPTIONS ) ) {
+          response = builder.options( ClientResponse.class );
+        } else if ( data.method.equals( RestMeta.HTTP_METHOD_PATCH ) ) {
+          if ( null != contentType ) {
+            response = builder.type( contentType ).method( RestMeta.HTTP_METHOD_PATCH, ClientResponse.class, entityString );
           } else {
-            response = builder.type(data.mediaType).method(RestMeta.HTTP_METHOD_PATCH, ClientResponse.class,
-                entityString);
+            response = builder.type( data.mediaType ).method( RestMeta.HTTP_METHOD_PATCH, ClientResponse.class,
+                entityString );
           }
         } else {
-          throw new KettleException(BaseMessages.getString(PKG, "Rest.Error.UnknownMethod", data.method));
+          throw new KettleException( BaseMessages.getString( PKG, "Rest.Error.UnknownMethod", data.method ) );
         }
-      } catch (UniformInterfaceException u) {
+      } catch ( UniformInterfaceException u ) {
         response = u.getResponse();
       }
       // Get response time
