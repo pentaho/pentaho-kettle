@@ -57,7 +57,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
-import java.util.Iterator;
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
@@ -280,13 +280,20 @@ public class TextFileInputTest {
     Mockito.doReturn( rwi ).when( rowset ).getRowMeta();
     Mockito.when( rwi.getString( obj2, 0 ) ).thenReturn( "filename1", "filename2" );
     List<Object[]> output = TransTestingUtil.execute( input, meta, data, 0, false );
-    Iterator iterator = data.passThruFields.keySet().iterator();
-    String s = (String) iterator.next();
-    Assert.assertTrue( s.startsWith( "0_file" ) );
-    Assert.assertTrue( s.endsWith( "filename1" ) );
-    s = (String) iterator.next();
-    Assert.assertTrue( s.startsWith( "1_file" ) );
-    Assert.assertTrue( s.endsWith( "filename2" ) );
+
+    List<String> passThroughKeys = new ArrayList<>( data.passThruFields.keySet() );
+    Assert.assertNotNull( passThroughKeys );
+    // set order is not guaranteed - order alphabetically
+    passThroughKeys.sort( String.CASE_INSENSITIVE_ORDER );
+    assertEquals( 2, passThroughKeys.size() );
+
+    Assert.assertNotNull( passThroughKeys.get( 0 ) );
+    Assert.assertTrue( passThroughKeys.get( 0 ).startsWith( "0_file" ) );
+    Assert.assertTrue( passThroughKeys.get( 0 ).endsWith( "filename1" ) );
+
+    Assert.assertNotNull( passThroughKeys.get( 1 ) );
+    Assert.assertTrue( passThroughKeys.get( 1 ).startsWith( "1_file" ) );
+    Assert.assertTrue( passThroughKeys.get( 1 ).endsWith( "filename2" ) );
 
     deleteVfsFile( virtualFile );
   }
