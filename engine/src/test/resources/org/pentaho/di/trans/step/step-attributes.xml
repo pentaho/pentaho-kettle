@@ -1,0 +1,16 @@
+  <attributes>
+    <group>
+      <name>METASTORE.pentaho</name>
+      <attribute>
+        <key>Default Run Configuration</key>
+        <value>{"namespace":"pentaho","id":"Default Run Configuration","name":"Default Run Configuration","description":"Defines a default run configuration","metaStoreName":null}</value>
+      </attribute>
+    </group>
+    <group>
+      <name>{"_":"Embedded MetaStore Elements","namespace":"pentaho","type":"Default Run Configuration"}</name>
+      <attribute>
+        <key>${Slave_RunConfig}</key>
+        <value>{"children":[{"children":[],"id":"server","value":"${YourSlaveServer}"},{"children":[],"id":"clustered","value":"N"},{"children":[],"id":"name","value":"${Slave_RunConfig}"},{"children":[],"id":"description","value":null},{"children":[],"id":"readOnly","value":"N"},{"children":[],"id":"sendResources","value":"N"},{"children":[],"id":"logRemoteExecutionLocally","value":"N"},{"children":[],"id":"remote","value":"Y"},{"children":[],"id":"local","value":"N"},{"children":[],"id":"showTransformations","value":"N"}],"id":"${Slave_RunConfig}","value":null,"name":"${Slave_RunConfig}","owner":null,"ownerPermissionsList":[]}</value>
+      </attribute>
+    </group>
+  </attributes>
