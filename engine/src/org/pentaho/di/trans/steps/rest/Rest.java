@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -103,22 +103,21 @@ public class Rest extends BaseStep implements StepInterface {
         throw new KettleException( BaseMessages.getString( PKG, "Rest.Error.MethodMissing" ) );
       }
     }
-
     WebResource webResource = null;
-
     Client client = null;
     Object[] newRow = null;
     if ( rowData != null ) {
       newRow = rowData.clone();
     }
-
     try {
       if ( isDetailed() ) {
         logDetailed( BaseMessages.getString( PKG, "Rest.Log.ConnectingToURL", data.realUrl ) );
       }
-
       // create an instance of the com.sun.jersey.api.client.Client class
-      client = getClient();
+      client = ApacheHttpClient.create( data.config );
+      if ( data.basicAuthentication != null ) {
+        client.addFilter( data.basicAuthentication );
+      }
       // create a WebResource object, which encapsulates a web resource for the client
       webResource = client.resource( data.realUrl );
 
@@ -145,15 +144,12 @@ public class Rest extends BaseStep implements StepInterface {
           if ( isDebug() ) {
             logDebug( BaseMessages.getString( PKG, "Rest.Log.queryParameterValue", data.paramNames[i], value ) );
           }
-          webResource = webResource.queryParams(
-            createMultivalueMap( data.paramNames[i], value ) );
+          webResource = webResource.queryParams( createMultivalueMap( data.paramNames[i], value ) );
         }
       }
-
       if ( isDebug() ) {
         logDebug( BaseMessages.getString( PKG, "Rest.Log.ConnectingToURL", webResource.getURI() ) );
       }
-
       WebResource.Builder builder = webResource.getRequestBuilder();
       if ( data.useHeaders ) {
         // Add headers
@@ -198,12 +194,10 @@ public class Rest extends BaseStep implements StepInterface {
       } catch ( UniformInterfaceException u ) {
         response = u.getResponse();
       }
-
       // Get response time
       long responseTime = System.currentTimeMillis() - startTime;
       if ( isDetailed() ) {
-        logDetailed( BaseMessages
-            .getString( PKG, "Rest.Log.ResponseTime", String.valueOf( responseTime ), data.realUrl ) );
+        logDetailed( BaseMessages.getString( PKG, "Rest.Log.ResponseTime", String.valueOf( responseTime ), data.realUrl ) );
       }
 
       // Get status
@@ -259,7 +253,6 @@ public class Rest extends BaseStep implements StepInterface {
       }
     } catch ( Exception e ) {
       throw new KettleException( BaseMessages.getString( PKG, "Rest.Error.CanNotReadURL", data.realUrl ), e );
-
     } finally {
       if ( webResource != null ) {
         webResource = null;
@@ -268,32 +261,18 @@ public class Rest extends BaseStep implements StepInterface {
         client.destroy();
       }
     }
-
     return newRow;
   }
 
-  private Client getClient() {
-
-    Client c = ApacheHttpClient.create( data.config );
-    if ( data.basicAuthentication != null ) {
-      c.addFilter( data.basicAuthentication );
-    }
-    return c;
-  }
-
   private void setConfig() throws KettleException {
-
     if ( data.config == null ) {
       // Use ApacheHttpClient for supporting proxy authentication.
       data.config = new DefaultApacheHttpClientConfig();
-
       if ( !Utils.isEmpty( data.realProxyHost ) ) {
         // PROXY CONFIGURATION
-        data.config.getProperties().put( DefaultApacheHttpClientConfig.PROPERTY_PROXY_URI,
-            "http://" + data.realProxyHost + ":" + data.realProxyPort );
+        data.config.getProperties().put( DefaultApacheHttpClientConfig.PROPERTY_PROXY_URI, "http://" + data.realProxyHost + ":" + data.realProxyPort );
         if ( !Utils.isEmpty( data.realHttpLogin ) && !Utils.isEmpty( data.realHttpPassword ) ) {
-          data.config.getState().setProxyCredentials( AuthScope.ANY_REALM, data.realProxyHost, data.realProxyPort,
-              data.realHttpLogin, data.realHttpPassword );
+          data.config.getState().setProxyCredentials( AuthScope.ANY_REALM, data.realProxyHost, data.realProxyPort, data.realHttpLogin, data.realHttpPassword );
         }
       } else {
         if ( !Utils.isEmpty( data.realHttpLogin ) ) {
@@ -304,13 +283,11 @@ public class Rest extends BaseStep implements StepInterface {
       if ( meta.isPreemptive() ) {
         data.config.getProperties().put( ApacheHttpClientConfig.PROPERTY_PREEMPTIVE_AUTHENTICATION, true );
       }
-
       // SSL TRUST STORE CONFIGURATION
       if ( !Utils.isEmpty( data.trustStoreFile ) ) {
-
-        try {
+        try ( FileInputStream trustFileStream = new FileInputStream( data.trustStoreFile ) ) {
           KeyStore trustStore = KeyStore.getInstance( "JKS" );
-          trustStore.load( new FileInputStream( data.trustStoreFile ), data.trustStorePassword.toCharArray() );
+          trustStore.load( trustFileStream, data.trustStorePassword.toCharArray() );
           TrustManagerFactory tmf = TrustManagerFactory.getInstance( "SunX509" );
           tmf.init( trustStore );
 
@@ -325,9 +302,7 @@ public class Rest extends BaseStep implements StepInterface {
               return true;
             }
           };
-
           data.config.getProperties().put( HTTPSProperties.PROPERTY_HTTPS_PROPERTIES, new HTTPSProperties( hv, ctx ) );
-
         } catch ( NoSuchAlgorithmException e ) {
           throw new KettleException( BaseMessages.getString( PKG, "Rest.Error.NoSuchAlgorithm" ), e );
         } catch ( KeyStoreException e ) {
@@ -342,14 +317,13 @@ public class Rest extends BaseStep implements StepInterface {
           throw new KettleException( BaseMessages.getString( PKG, "Rest.Error.KeyManagementException" ), e );
         }
       }
-
     }
   }
-
 
   protected MultivaluedMap<String, String> searchForHeaders( ClientResponse response ) {
     return response.getHeaders();
   }
+
   public boolean processRow( StepMetaInterface smi, StepDataInterface sdi ) throws KettleException {
     meta = (RestMeta) smi;
     data = (RestData) sdi;
@@ -363,7 +337,6 @@ public class Rest extends BaseStep implements StepInterface {
     }
     if ( first ) {
       first = false;
-
       data.inputRowMeta = getInputRowMeta();
       data.outputRowMeta = data.inputRowMeta.clone();
       meta.getFields( data.outputRowMeta, getStepname(), null, null, this, repository, metaStore );
@@ -374,22 +347,19 @@ public class Rest extends BaseStep implements StepInterface {
           logError( BaseMessages.getString( PKG, "Rest.Log.NoField" ) );
           throw new KettleException( BaseMessages.getString( PKG, "Rest.Log.NoField" ) );
         }
-
         // cache the position of the field
         if ( data.indexOfUrlField < 0 ) {
           String realUrlfieldName = environmentSubstitute( meta.getUrlField() );
           data.indexOfUrlField = data.inputRowMeta.indexOfValue( realUrlfieldName );
           if ( data.indexOfUrlField < 0 ) {
             // The field is unreachable !
-            throw new KettleException( BaseMessages.getString( PKG, "Rest.Exception.ErrorFindingField",
-                realUrlfieldName ) );
+            throw new KettleException( BaseMessages.getString( PKG, "Rest.Exception.ErrorFindingField", realUrlfieldName ) );
           }
         }
       } else {
         // Static URL
         data.realUrl = environmentSubstitute( meta.getUrl() );
       }
-
       // Check Method
       if ( meta.isDynamicMethod() ) {
         String field = environmentSubstitute( meta.getMethodFieldName() );
@@ -402,7 +372,6 @@ public class Rest extends BaseStep implements StepInterface {
           throw new KettleException( BaseMessages.getString( PKG, "Rest.Exception.ErrorFindingField", field ) );
         }
       }
-
       // set Headers
       int nrargs = meta.getHeaderName() == null ? 0 : meta.getHeaderName().length;
       if ( nrargs > 0 ) {
@@ -413,7 +382,6 @@ public class Rest extends BaseStep implements StepInterface {
           // split into body / header
           data.headerNames[i] = environmentSubstitute( meta.getHeaderName()[i] );
           String field = environmentSubstitute( meta.getHeaderField()[i] );
-
           if ( Utils.isEmpty( field ) ) {
             throw new KettleException( BaseMessages.getString( PKG, "Rest.Exception.HeaderFieldEmpty" ) );
           }
@@ -422,10 +390,8 @@ public class Rest extends BaseStep implements StepInterface {
             throw new KettleException( BaseMessages.getString( PKG, "Rest.Exception.ErrorFindingField", field ) );
           }
         }
-
         data.useHeaders = true;
       }
-
       if ( RestMeta.isActiveParameters( meta.getMethod() ) ) {
         // Parameters
         int nrparams = meta.getParameterField() == null ? 0 : meta.getParameterField().length;
@@ -446,7 +412,6 @@ public class Rest extends BaseStep implements StepInterface {
           }
           data.useParams = true;
         }
-
         int nrmatrixparams = meta.getMatrixParameterField() == null ? 0 : meta.getMatrixParameterField().length;
         if ( nrmatrixparams > 0 ) {
           data.nrMatrixParams = nrmatrixparams;
@@ -479,13 +444,9 @@ public class Rest extends BaseStep implements StepInterface {
         }
       }
     } // end if first
-
     try {
-
       Object[] outputRowData = callRest( r );
-
       putRow( data.outputRowMeta, outputRowData ); // copy row to output rowset(s);
-
       if ( checkFeedback( getLinesRead() ) ) {
         if ( isDetailed() ) {
           logDetailed( BaseMessages.getString( PKG, "Rest.LineNumber" ) + getLinesRead() );
@@ -494,7 +455,6 @@ public class Rest extends BaseStep implements StepInterface {
     } catch ( KettleException e ) {
       boolean sendToErrorRow = false;
       String errorMessage = null;
-
       if ( getStepMeta().isDoingErrorHandling() ) {
         sendToErrorRow = true;
         errorMessage = e.toString();
@@ -506,14 +466,11 @@ public class Rest extends BaseStep implements StepInterface {
         setOutputDone(); // signal end to receiver(s)
         return false;
       }
-
       if ( sendToErrorRow ) {
         // Simply add this row to the error row
         putError( getInputRowMeta(), r, 1, errorMessage, null, "Rest001" );
       }
-
     }
-
     return true;
   }
 
@@ -522,7 +479,6 @@ public class Rest extends BaseStep implements StepInterface {
     data = (RestData) sdi;
 
     if ( super.init( smi, sdi ) ) {
-
       data.resultFieldName = environmentSubstitute( meta.getFieldName() );
       data.resultCodeFieldName = environmentSubstitute( meta.getResultCodeFieldName() );
       data.resultResponseFieldName = environmentSubstitute( meta.getResponseTimeFieldName() );
@@ -532,8 +488,7 @@ public class Rest extends BaseStep implements StepInterface {
       data.realProxyHost = environmentSubstitute( meta.getProxyHost() );
       data.realProxyPort = Const.toInt( environmentSubstitute( meta.getProxyPort() ), 8080 );
       data.realHttpLogin = environmentSubstitute( meta.getHttpLogin() );
-      data.realHttpPassword =
-              Encr.decryptPasswordOptionallyEncrypted( environmentSubstitute( meta.getHttpPassword() ) );
+      data.realHttpPassword = Encr.decryptPasswordOptionallyEncrypted( environmentSubstitute( meta.getHttpPassword() ) );
 
       if ( !meta.isDynamicMethod() ) {
         data.method = environmentSubstitute( meta.getMethod() );
@@ -566,14 +521,12 @@ public class Rest extends BaseStep implements StepInterface {
       } else {
         data.mediaType = MediaType.TEXT_PLAIN_TYPE;
       }
-
       try {
         setConfig();
       } catch ( Exception e ) {
         logError( BaseMessages.getString( PKG, "Rest.Error.Config" ), e );
         return false;
       }
-
       return true;
     }
     return false;
@@ -587,7 +540,6 @@ public class Rest extends BaseStep implements StepInterface {
     data.headerNames = null;
     data.indexOfHeaderFields = null;
     data.paramNames = null;
-
     super.dispose( smi, sdi );
   }
 

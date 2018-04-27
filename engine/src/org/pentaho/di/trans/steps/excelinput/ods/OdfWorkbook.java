@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -64,7 +64,9 @@ public class OdfWorkbook implements KWorkbook {
   }
 
   public void close() {
-    // not needed here
+    if ( document != null ) {
+      document.close();
+    }
   }
 
   @Override

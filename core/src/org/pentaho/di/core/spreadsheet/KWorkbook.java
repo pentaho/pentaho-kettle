@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,7 +22,7 @@
 
 package org.pentaho.di.core.spreadsheet;
 
-public interface KWorkbook {
+public interface KWorkbook extends AutoCloseable {
   /**
    * Get a sheet with a certain name in a workbook.
    *

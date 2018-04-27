@@ -20,45 +20,60 @@
  *
  ******************************************************************************/
 
-package org.pentaho.di.core.util;
+package org.pentaho.di.trans.steps.propertyoutput;
 
-import org.junit.Test;
-import org.pentaho.di.core.Const;
-import org.pentaho.di.core.KettleVariablesList;
-
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.RandomAccessFile;
+import java.net.URI;
 
-/**
- * Created by Yury_Bakhmutski on 11/4/2015.
- */
-public class KettleVariablesListTest {
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+import org.pentaho.di.core.KettleClientEnvironment;
+import org.pentaho.di.core.Props;
+import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.plugins.PluginRegistry;
+import org.pentaho.di.core.plugins.StepPluginType;
+import org.pentaho.di.trans.Trans;
+import org.pentaho.di.trans.TransMeta;
 
-  @Test
-  public void testInit() throws Exception {
-    KettleVariablesList variablesList = KettleVariablesList.getInstance();
-    KettleVariablesList.init();
-    // See PDI-14522
-    boolean expected = false;
-    boolean actual = Boolean.valueOf( variablesList.getDefaultValueMap().get( Const.VFS_USER_DIR_IS_ROOT ) );
-    assertEquals( expected, actual );
+public class PropertyOutputIT {
 
-    String vfsUserDirIsRootDefaultMessage =
-        "Set this variable to true if VFS should treat the user directory"
-            + " as the root directory when connecting via ftp. Defaults to false.";
-    assertEquals( variablesList.getDescriptionMap().get( Const.VFS_USER_DIR_IS_ROOT ), vfsUserDirIsRootDefaultMessage );
+  @Before
+  public void setUp() throws Exception {
+    KettleClientEnvironment.init();
+    PluginRegistry.addPluginType( StepPluginType.getInstance() );
+    PluginRegistry.init();
+    if ( !Props.isInitialized() ) {
+      Props.init( 0 );
+    }
+  }
+
+  @After
+  public void tearDown() throws Exception {
+
   }
 
   @Test
-  public void testInit_closeInputStream() throws Exception {
-    KettleVariablesList.init();
+  public void testExecute() throws KettleException, IOException {
+    TransMeta meta = new TransMeta( getClass().getResource( "propertyOutput.ktr" ).getPath() );
+    Trans trans = new Trans( meta );
+    trans.execute( new String[] {} );
+    trans.waitUntilFinished();
+
+    //check that trans is finished
+    assertTrue( trans.isFinished() );
+
+    PropertyOutputData dataStep = (PropertyOutputData) trans.getSteps().get( 1 ).data;
+
     RandomAccessFile fos = null;
     try {
-      File file = new File( Const.KETTLE_VARIABLES_FILE );
+      File file = new File( URI.create( dataStep.filename.replace( "\\", "/" ) ).getPath() );
       if ( file.exists() ) {
         fos = new RandomAccessFile( file, "rw" );
       }
@@ -70,4 +85,5 @@ public class KettleVariablesListTest {
       }
     }
   }
+
 }
