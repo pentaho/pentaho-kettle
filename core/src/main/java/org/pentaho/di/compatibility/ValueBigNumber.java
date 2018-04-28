@@ -22,6 +22,8 @@
 
 package org.pentaho.di.compatibility;
 
+import com.vividsolutions.jts.geom.Geometry;
+
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
@@ -190,6 +192,16 @@ public class ValueBigNumber implements ValueInterface, Cloneable {
   @Override
   public byte[] getBytes() {
     return null;
+  }
+
+  @Override
+  public Geometry getGeometry() {
+    return null;
+  }
+
+  @Override
+  public void setGeometry(Geometry g) {
+
   }
 
   @Override

@@ -22,6 +22,8 @@
 
 package org.pentaho.di.compatibility;
 
+import com.vividsolutions.jts.geom.Geometry;
+
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
@@ -54,6 +56,13 @@ public interface ValueInterface {
 
   public byte[] getBytes();
 
+  // -- Begin GeoKettle modification --
+  public Geometry getGeometry();
+  // -- End GeoKettle modification --
+
+  // -- Begin GeoKettle modification --
+  public void       setGeometry(Geometry g);
+  // -- End GeoKettle modification --
   public void setString( String string );
 
   public void setNumber( double number );

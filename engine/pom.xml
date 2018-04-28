@@ -471,16 +471,21 @@
         </exclusion>
       </exclusions>
     </dependency>
+    <!--<dependency>-->
+      <!--<groupId>org.postgresql</groupId>-->
+      <!--<artifactId>postgresql</artifactId>-->
+      <!--<version>${postgresql.version}</version>-->
+      <!--<exclusions>-->
+        <!--<exclusion>-->
+          <!--<groupId>*</groupId>-->
+          <!--<artifactId>*</artifactId>-->
+        <!--</exclusion>-->
+      <!--</exclusions>-->
+    <!--</dependency>-->
     <dependency>
-      <groupId>org.postgresql</groupId>
-      <artifactId>postgresql</artifactId>
-      <version>${postgresql.version}</version>
-      <exclusions>
-        <exclusion>
-          <groupId>*</groupId>
-          <artifactId>*</artifactId>
-        </exclusion>
-      </exclusions>
+      <groupId>com.postgres</groupId>
+      <artifactId>postgres</artifactId>
+      <version>8.3</version>
     </dependency>
     <dependency>
       <groupId>rome</groupId>

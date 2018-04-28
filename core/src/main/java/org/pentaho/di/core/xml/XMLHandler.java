@@ -53,6 +53,7 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
+import com.vividsolutions.jts.geom.Geometry;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.vfs2.FileObject;
 import org.owasp.encoder.Encode;
@@ -849,6 +850,40 @@ public class XMLHandler {
   public static String addTagValue( String tag, boolean bool ) {
     return addTagValue( tag, bool, true );
   }
+
+  public static final String addTagValue(String tag, Geometry val)
+  {
+    return addTagValue(tag, val, true);
+  }
+
+  public static final String addTagValue(String tag, Geometry val, boolean cr)
+  {
+    String string;
+    if (val==null)
+    {
+      string=null;
+    }
+    else
+    {
+      // TODO: write WKT or GML ??
+      string=null;
+
+    }
+    return addTagValue(tag, string, true);
+  }
+
+  // -- Begin GeoKettle modification --
+  /**
+   * Convert a XML encoded geometry string back to Geometry format
+   * @param string the (WKT?) encoded string
+   * @return the decoded Geometry object
+   */
+  public static byte[] stringToGeometry(String string) {
+    // TODO: implement me
+    // WKT decoding?
+    return null;
+  }
+  // -- End GeoKettle modification --
 
   /**
    * Build an XML string for a certain tag boolean value

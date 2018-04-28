@@ -2992,19 +2992,28 @@ public class Database implements VariableSpace, LoggingObjectInterface {
     public String getCreateTableStatement(String tableName, RowMetaInterface fields, String tk,
                                           boolean use_autoinc, String pk, boolean semicolon) {
         StringBuilder retval = new StringBuilder();
+        int geometryFieldIndex = -1;
         DatabaseInterface databaseInterface = databaseMeta.getDatabaseInterface();
         retval.append(databaseInterface.getCreateTableStatement());
 
         retval.append(tableName + Const.CR);
         retval.append("(").append(Const.CR);
         for (int i = 0; i < fields.size(); i++) {
-            if (i > 0) {
+
+            ValueMetaInterface v = fields.getValueMeta(i);
+            if ((v.getType() == ValueMetaInterface.TYPE_GEOMETRY) && (databaseMeta.getDatabaseInterface() instanceof PostgreSQLDatabaseMeta)) {
+                geometryFieldIndex = i;
+                continue;
+            }
+
+            if (i > 1) {
                 retval.append(", ");
-            } else {
+            } else if((i == 1) && (geometryFieldIndex == -1)){
+                retval.append(", ");
+            }else {
                 retval.append("  ");
             }
 
-            ValueMetaInterface v = fields.getValueMeta(i);
             retval.append(databaseMeta.getFieldDefinition(v, tk, pk, use_autoinc));
         }
         // At the end, before the closing of the statement, we might need to add
@@ -3031,9 +3040,25 @@ public class Database implements VariableSpace, LoggingObjectInterface {
             // there, otherwise you get an error
         }
 
+
+
         if (semicolon) {
             retval.append(";");
         }
+
+        if ((geometryFieldIndex != -1) && (databaseMeta.getDatabaseInterface() instanceof PostgreSQLDatabaseMeta)) {
+            ValueMetaInterface v = fields.getValueMeta(geometryFieldIndex);
+            retval.append(Const.CR);
+            //TODO : Find a way to retrieve the actual geometry type (POINT, LINESTRING, POLYGON, etc.) and the geometry dimension.
+            int pointIndex = tableName.lastIndexOf(".");
+            if (pointIndex == -1)
+                retval.append("SELECT AddGeometryColumn('" + tableName.replaceAll("\"", "").toLowerCase() + "','" + v.getName() + "'," + v.getGeometrySRS().getSRID() + ",'" + "GEOMETRY" + "',2);");
+            else
+                retval.append("SELECT AddGeometryColumn('" + tableName.substring(0, pointIndex).replaceAll("\"", "").toLowerCase() + "','" + tableName.substring(pointIndex + 1).replaceAll("\"", "").toLowerCase() + "','" + v.getName() + "'," + v.getGeometrySRS().getSRID() + ",'" + "GEOMETRY" + "',2);");
+            retval.append(Const.CR);
+        }
+
+
 
         return retval.toString();
     }
@@ -4604,6 +4629,16 @@ public class Database implements VariableSpace, LoggingObjectInterface {
                                 }
                             }
                             break;
+                        // -- Begin GeoKettle modification --
+                        case ValueMetaInterface.TYPE_GEOMETRY:
+                            if (databaseMeta.getDatabaseInterface() instanceof PostgreSQLDatabaseMeta) {
+                                //ins.append("'" +  fields.getString(r,i)+ "'") ;
+                                ins.append("ST_GeomFromText('" + fields.getString(r, i) + "'," + fields.getValueMeta(i).getGeometrySRS().getSRID() + ")");
+                            } else {
+                                ins.append(fields.getString(r, i));
+                            }
+                            break;
+                        // -- End GeoKettle modification --
                         default:
                             ins.append(fields.getString(r, i));
                             break;

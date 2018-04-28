@@ -1337,5 +1337,150 @@ public interface ValueMetaInterface extends Cloneable {
    */
   String getDatabaseColumnTypeDefinition( DatabaseInterface databaseInterface, String tk, String pk,
     boolean use_autoinc, boolean add_fieldname, boolean add_cr );
+// -- Begin GeoKettle modification --
 
+  /**
+   * Tests "intersects" topological predicate: returns true if geometries are intersecting
+   * @param data 1st Geometry object
+   * @param meta2 2nd metadata
+   * @param data2 2nd Geometry object
+   * @return evaluation of spatial predicate
+   * @throws KettleValueException
+   */
+  public boolean SpatialIntersects(Object data, ValueMetaInterface meta2, Object data2) throws KettleValueException;
+
+  /**
+   * Tests "equals" topological predicate: returns true if geometries are equal
+   * @param data 1st Geometry object
+   * @param meta2 2nd metadata
+   * @param data2 2nd Geometry object
+   * @return evaluation of spatial predicate
+   * @throws KettleValueException
+   */
+  public boolean SpatialEquals(Object data, ValueMetaInterface meta2, Object data2) throws KettleValueException;
+
+  /**
+   * Tests "contains" topological predicate: returns true if 2nd geometry is contained in 1st
+   * @param data 1st Geometry object
+   * @param meta2 2nd metadata
+   * @param data2 2nd Geometry object
+   * @return evaluation of spatial predicate
+   * @throws KettleValueException
+   */
+  public boolean SpatialContains(Object data, ValueMetaInterface meta2, Object data2)	throws KettleValueException;
+
+  /**
+   * Tests "intersects" topological predicate: returns true if geometries are crossing
+   * @param data 1st Geometry object
+   * @param meta2 2nd metadata
+   * @param data2 2nd Geometry object
+   * @return evaluation of spatial predicate
+   * @throws KettleValueException
+   */
+  public boolean SpatialCrosses(Object data, ValueMetaInterface meta2, Object data2) throws KettleValueException;
+
+  /**
+   * Tests "disjoint" topological predicate: returns true if geometries are disjoint
+   * @param data 1st Geometry object
+   * @param meta2 2nd metadata
+   * @param data2 2nd Geometry object
+   * @return evaluation of spatial predicate
+   * @throws KettleValueException
+   */
+  public boolean SpatialDisjoint(Object data, ValueMetaInterface meta2, Object data2)	throws KettleValueException;
+
+  /**
+   * Tests "within" topological predicate: returns true if 1st geometry is within 2nd
+   * @param data 1st Geometry object
+   * @param meta2 2nd metadata
+   * @param data2 2nd Geometry object
+   * @return evaluation of spatial predicate
+   * @throws KettleValueException
+   */
+  public boolean SpatialWithin(Object data, ValueMetaInterface meta2, Object data2) throws KettleValueException;
+
+  /**
+   * Tests "overlaps" topological predicate: returns true if geometries are overlapping
+   * @param data 1st Geometry object
+   * @param meta2 2nd metadata
+   * @param data2 2nd Geometry object
+   * @return evaluation of spatial predicate
+   * @throws KettleValueException
+   */
+  public boolean SpatialOverlaps(Object data, ValueMetaInterface meta2, Object data2)	throws KettleValueException;
+
+  /**
+   * Tests "touches" topological predicate: returns true if geometries are touching
+   * @param data 1st Geometry object
+   * @param meta2 2nd metadata
+   * @param data2 2nd Geometry object
+   * @return evaluation of spatial predicate
+   * @throws KettleValueException
+   */
+  public boolean SpatialTouches(Object data, ValueMetaInterface meta2, Object data2) throws KettleValueException;
+
+  /**
+   * Tests "isValid" unary predicate: returns true if geometry is valid
+   * @param data Geometry object
+   * @return evaluation of unary predicate
+   * @throws KettleValueException
+   */
+  public boolean SpatialIsValid(Object data) throws KettleValueException;
+
+  /**
+   * Tests geometry type: returns true if geometry is POINT
+   * @param data Geometry object
+   * @return evaluation of geometry type
+   * @throws KettleValueException
+   */
+  public boolean SpatialIsPoint(Object data) throws KettleValueException;
+
+  /**
+   * Tests geometry type: returns true if geometry is LINESTRING
+   * @param data Geometry object
+   * @return evaluation of geometry type
+   * @throws KettleValueException
+   */
+  public boolean SpatialIsLineString(Object data) throws KettleValueException;
+
+  /**
+   * Tests geometry type: returns true if geometry is POLYGON
+   * @param data Geometry object
+   * @return evaluation of geometry type
+   * @throws KettleValueException
+   */
+  public boolean SpatialIsPolygon(Object data) throws KettleValueException;
+
+  /**
+   * Tests geometry type: returns true if geometry is GEOMETRYCOLLECTION
+   * @param data Geometry object
+   * @return evaluation of geometry type
+   * @throws KettleValueException
+   */
+  public boolean SpatialIsGeometryCollection(Object data) throws KettleValueException;
+
+  /**
+   * Tests geometry type: returns true if geometry is MULTIPOINT
+   * @param data Geometry object
+   * @return evaluation of geometry type
+   * @throws KettleValueException
+   */
+  public boolean SpatialIsMultiPoint(Object data) throws KettleValueException;
+
+  /**
+   * Tests geometry type: returns true if geometry is MULTILINESTRING
+   * @param data Geometry object
+   * @return evaluation of geometry type
+   * @throws KettleValueException
+   */
+  public boolean SpatialIsMultiLineString(Object data) throws KettleValueException;
+
+  /**
+   * Tests geometry type: returns true if geometry is MULTIPOLYGON
+   * @param data Geometry object
+   * @return evaluation of geometry type
+   * @throws KettleValueException
+   */
+  public boolean SpatialIsMultiPolygon(Object data) throws KettleValueException;
+  // -- End GeoKettle modification --
 }

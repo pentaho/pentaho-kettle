@@ -23,7 +23,8 @@
 
 package org.pentaho.di.core.row.value;
 
-import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.*;
+import com.vividsolutions.jts.geom.prep.PreparedGeometryFactory;
 import com.vividsolutions.jts.io.WKBReader;
 import com.vividsolutions.jts.io.WKBWriter;
 import com.vividsolutions.jts.io.WKTReader;
@@ -117,6 +118,8 @@ public class ValueMetaBase implements ValueMetaInterface {
 
     public static final Boolean EMPTY_STRING_AND_NULL_ARE_DIFFERENT = convertStringToBoolean(
             Const.NVL(System.getProperty(Const.KETTLE_EMPTY_STRING_DIFFERS_FROM_NULL, "N"), "N"));
+
+    private final PreparedGeometryFactory pgf = new PreparedGeometryFactory();
 
     protected String name;
     protected int length;
@@ -513,7 +516,7 @@ public class ValueMetaBase implements ValueMetaInterface {
 
     @Override
     public void setGeometrySRS(SRS s) {
-        this.geometrySRS = (geometrySRS != null) ? geometrySRS : SRS.UNKNOWN;
+        this.geometrySRS = (s != null) ? s : SRS.UNKNOWN;
     }
 
     @Override
@@ -2819,6 +2822,9 @@ public class ValueMetaBase implements ValueMetaInterface {
                             case TYPE_INET:
                                 writeBinary(outputStream, ((InetAddress) object).getAddress());
                                 break;
+                            // -- Begin GeoKettle modification --
+                            case TYPE_GEOMETRY   : writeGeometry(outputStream, (Geometry)object); break;
+                            // -- End GeoKettle modification --
                             default:
                                 throw new KettleFileException(toString() + " : Unable to serialize data type " + getType());
                         }
@@ -2851,6 +2857,27 @@ public class ValueMetaBase implements ValueMetaInterface {
         }
 
     }
+
+    // -- Begin GeoKettle modification --
+    private void writeGeometry(DataOutputStream outputStream, Geometry geom) throws IOException
+    {
+        // serialize to WKB
+        byte[] binary = convertGeometryToBinary(geom);
+        outputStream.writeInt(binary.length);
+        outputStream.write(binary);
+    }
+
+    private Geometry readGeometry(DataInputStream inputStream) throws IOException
+    {
+        // deserialize from WKB
+        int size = inputStream.readInt();
+        byte[] buffer = new byte[size];
+        inputStream.readFully(buffer);
+
+        return convertBinaryToGeometry(buffer);
+    }
+    // -- End GeoKettle modification --
+
 
     @Override
     public Object readData(DataInputStream inputStream) throws KettleFileException, KettleEOFException,
@@ -3071,6 +3098,9 @@ public class ValueMetaBase implements ValueMetaInterface {
                                     case TYPE_BINARY:
                                         writeBinary(outputStream, (byte[]) index[i]);
                                         break;
+                                    // -- Begin GeoKettle modification --
+                                    case TYPE_GEOMETRY:  writeGeometry(outputStream, (Geometry)index[i]); break;
+                                    // -- End GeoKettle modification --
                                     default:
                                         throw new KettleFileException(toString()
                                                 + " : Unable to serialize indexe storage type for data type " + getType());
@@ -3332,6 +3362,9 @@ public class ValueMetaBase implements ValueMetaInterface {
                                 case TYPE_BINARY:
                                     xml.append(XMLHandler.addTagValue("value", (byte[]) index[i]));
                                     break;
+                                // -- Begin GeoKettle modification --
+                                case TYPE_GEOMETRY:  xml.append( XMLHandler.addTagValue( "value", (Geometry)index[i]) ); break;
+                                // -- End GeoKettle modification --
                                 default:
                                     throw new IOException(toString() + " : Unable to serialize index storage type to XML for data type "
                                             + getType());
@@ -3427,6 +3460,7 @@ public class ValueMetaBase implements ValueMetaInterface {
                             case TYPE_INET:
                                 string = ((InetAddress) object).toString();
                                 break;
+                            case TYPE_GEOMETRY   : string = ((Geometry)object).toString(); break;
                             default:
                                 throw new IOException(toString() + " : Unable to serialize data type to XML " + getType());
                         }
@@ -3506,6 +3540,7 @@ public class ValueMetaBase implements ValueMetaInterface {
                         return "Y".equalsIgnoreCase(valueString);
                     case TYPE_BINARY:
                         return XMLHandler.stringToBinary(XMLHandler.getTagValue(node, "binary-value"));
+                    case TYPE_GEOMETRY:  return XMLHandler.stringToGeometry( valueString );
                     default:
                         throw new KettleException(toString() + " : Unable to de-serialize '" + valueString
                                 + "' from XML for data type " + getType());
@@ -3792,6 +3827,20 @@ public class ValueMetaBase implements ValueMetaInterface {
                 }
 
                 break;
+            case TYPE_GEOMETRY:
+            {
+                // TODO: compare the JTS geometries
+                // how to do this? does it even makes any sense?
+                // geom1 == geom2  OK
+                // geom1 > geom2 or geom1 < geom2 ???
+                // polygon: compare area? line: compare length? point: ???
+
+                // for now we convert the geometry to WKT and compare as String
+                String wkt1 = data1.toString();
+                String wkt2 = data2.toString();
+                cmp = wkt1.compareTo(wkt2);
+            }
+            break;
             default:
                 throw new KettleValueException(toString() + " : Comparing values can not be done with data type : "
                         + getType());
@@ -3902,6 +3951,7 @@ public class ValueMetaBase implements ValueMetaInterface {
                 return meta2.getBoolean(data2);
             case TYPE_BINARY:
                 return meta2.getBinary(data2);
+            case TYPE_GEOMETRY  : return meta2.getGeometry(data2);
             default:
                 throw new KettleValueException(toString() + " : I can't convert the specified value to data type : "
                         + getType());
@@ -3934,6 +3984,7 @@ public class ValueMetaBase implements ValueMetaInterface {
                 return meta2.getBoolean(data2);
             case TYPE_BINARY:
                 return meta2.getBinary(data2);
+            case TYPE_GEOMETRY  : return meta2.getGeometry(data2);
             default:
                 throw new KettleValueException(toString() + " : I can't convert the specified value to data type : "
                         + getType());
@@ -3979,6 +4030,7 @@ public class ValueMetaBase implements ValueMetaInterface {
                 return getBinary(data);
             case TYPE_TIMESTAMP:
                 return getDate(data);
+            case TYPE_GEOMETRY  : return getGeometry(data);
             default:
                 throw new KettleValueException(toString() + " : I can't convert the specified value to data type : "
                         + conversionMetadata.getType());
@@ -4030,6 +4082,9 @@ public class ValueMetaBase implements ValueMetaInterface {
                     break;
                 case ValueMetaInterface.TYPE_BINARY:
                     null_value = Const.NULL_BINARY;
+                    break;
+                case Value.VALUE_TYPE_GEOMETRY:
+                    null_value = Const.NULL_GEOMETRY;
                     break;
                 default:
                     null_value = Const.NULL_NONE;
@@ -4161,6 +4216,7 @@ public class ValueMetaBase implements ValueMetaInterface {
                     break;
                 case TYPE_NONE:
                     break;
+                case TYPE_GEOMETRY  : hash^=64; break;
                 default:
                     break;
             }
@@ -4184,6 +4240,7 @@ public class ValueMetaBase implements ValueMetaInterface {
                 case TYPE_BIGNUMBER:
                     hash ^= getBigNumber(object).hashCode();
                     break;
+                case TYPE_GEOMETRY  : hash^=getGeometry(object).hashCode(); break;
                 case TYPE_NONE:
                     break;
                 default:
@@ -4231,6 +4288,7 @@ public class ValueMetaBase implements ValueMetaInterface {
                 case TYPE_BINARY:
                     value.setValue(getBinary(data));
                     break;
+                case TYPE_GEOMETRY     : value.setValue( getGeometry(data) ); break;
                 default:
                     throw new KettleValueException(toString() + " : We can't convert data type " + getTypeDesc()
                             + " to an original (V2) Value");
@@ -4274,6 +4332,10 @@ public class ValueMetaBase implements ValueMetaInterface {
                 return value.getBigNumber();
             case ValueMetaInterface.TYPE_BINARY:
                 return value.getBytes();
+            // -- Begin GeoKettle modification --
+            case ValueMetaInterface.TYPE_GEOMETRY     :
+                return value.getGeometry();
+            // -- End GeoKettle modification --
             default:
                 throw new KettleValueException(toString() + " : We can't convert original data type " + value.getTypeDesc()
                         + " to a primitive data type");
@@ -5273,4 +5335,151 @@ public class ValueMetaBase implements ValueMetaInterface {
         // Not implemented for base class
         throw new KettleValueException(getTypeDesc() + " does not implement this method");
     }
+
+    public boolean SpatialIntersects(Object data, ValueMetaInterface meta2, Object data2)
+            throws KettleValueException
+    {
+        // topological predicates only make sense for geometry types
+        if( (getType() == TYPE_GEOMETRY) && (meta2.getType() == TYPE_GEOMETRY) )
+            return (pgf.create(getGeometry(data))).intersects(meta2.getGeometry(data2));
+
+        return false;
+    }
+
+    public boolean SpatialEquals(Object data, ValueMetaInterface meta2, Object data2)
+            throws KettleValueException
+    {
+        // topological predicates only make sense for geometry types
+        if( (getType() == TYPE_GEOMETRY) && (meta2.getType() == TYPE_GEOMETRY) )
+            return (pgf.create(getGeometry(data))).equals(meta2.getGeometry(data2));
+
+        return false;
+    }
+
+    public boolean SpatialContains(Object data, ValueMetaInterface meta2, Object data2)
+            throws KettleValueException
+    {
+        // topological predicates only make sense for geometry types
+        if( (getType() == TYPE_GEOMETRY) && (meta2.getType() == TYPE_GEOMETRY) )
+            return (pgf.create(getGeometry(data))).contains(meta2.getGeometry(data2));
+
+        return false;
+    }
+
+    public boolean SpatialCrosses(Object data, ValueMetaInterface meta2, Object data2)
+            throws KettleValueException
+    {
+        // topological predicates only make sense for geometry types
+        if( (getType() == TYPE_GEOMETRY) && (meta2.getType() == TYPE_GEOMETRY) )
+            return (pgf.create(getGeometry(data))).crosses(meta2.getGeometry(data2));
+
+        return false;
+    }
+
+    public boolean SpatialDisjoint(Object data, ValueMetaInterface meta2, Object data2)
+            throws KettleValueException
+    {
+        // topological predicates only make sense for geometry types
+        if( (getType() == TYPE_GEOMETRY) && (meta2.getType() == TYPE_GEOMETRY) )
+            return (pgf.create(getGeometry(data))).disjoint(meta2.getGeometry(data2));
+
+        return false;
+    }
+
+    public boolean SpatialWithin(Object data, ValueMetaInterface meta2, Object data2)
+            throws KettleValueException
+    {
+        // topological predicates only make sense for geometry types
+        if( (getType() == TYPE_GEOMETRY) && (meta2.getType() == TYPE_GEOMETRY) )
+            return (pgf.create(getGeometry(data))).within(meta2.getGeometry(data2));
+
+        return false;
+    }
+
+    public boolean SpatialOverlaps(Object data, ValueMetaInterface meta2, Object data2)
+            throws KettleValueException
+    {
+        // topological predicates only make sense for geometry types
+        if( (getType() == TYPE_GEOMETRY) && (meta2.getType() == TYPE_GEOMETRY) )
+            return (pgf.create(getGeometry(data))).overlaps(meta2.getGeometry(data2));
+
+        return false;
+    }
+
+    public boolean SpatialTouches(Object data, ValueMetaInterface meta2, Object data2)
+            throws KettleValueException
+    {
+        // topological predicates only make sense for geometry types
+        if( (getType() == TYPE_GEOMETRY) && (meta2.getType() == TYPE_GEOMETRY) )
+            return (pgf.create(getGeometry(data))).touches(meta2.getGeometry(data2));
+
+        return false;
+    }
+
+    // unary predicates:
+
+    public boolean SpatialIsValid(Object data)
+            throws KettleValueException
+    {
+        // topological predicates only make sense for geometry types
+        if( getType() == TYPE_GEOMETRY )
+            return getGeometry(data).isValid();
+
+        return false;
+    }
+
+    @Override
+    public boolean SpatialIsPoint(Object data) throws KettleValueException {
+        if( getType() == TYPE_GEOMETRY )
+            return getGeometry(data) instanceof Point;
+        return false;
+    }
+
+    @Override
+    public boolean SpatialIsLineString(Object data) throws KettleValueException {
+        if( getType() == TYPE_GEOMETRY )
+            return getGeometry(data) instanceof LineString;
+        return false;
+    }
+
+    @Override
+    public boolean SpatialIsPolygon(Object data) throws KettleValueException {
+        if( getType() == TYPE_GEOMETRY )
+            return getGeometry(data) instanceof Polygon;
+        return false;
+    }
+
+    @Override
+    public boolean SpatialIsGeometryCollection(Object data)
+            throws KettleValueException {
+        if( getType() == TYPE_GEOMETRY ){
+            Geometry g = getGeometry(data);
+            return g instanceof GeometryCollection && !(g instanceof MultiPoint) && !(g instanceof MultiLineString) && !(g instanceof MultiPolygon);
+        }
+        return false;
+    }
+
+    @Override
+    public boolean SpatialIsMultiPoint(Object data) throws KettleValueException {
+        if( getType() == TYPE_GEOMETRY )
+            return getGeometry(data) instanceof MultiPoint;
+        return false;
+    }
+
+    @Override
+    public boolean SpatialIsMultiLineString(Object data)
+            throws KettleValueException {
+        if( getType() == TYPE_GEOMETRY )
+            return getGeometry(data) instanceof MultiLineString;
+        return false;
+    }
+
+    @Override
+    public boolean SpatialIsMultiPolygon(Object data)
+            throws KettleValueException {
+        if( getType() == TYPE_GEOMETRY )
+            return getGeometry(data) instanceof MultiPolygon;
+        return false;
+    }
+
 }
