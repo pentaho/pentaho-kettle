@@ -602,21 +602,16 @@
       <artifactId>javax.servlet-api</artifactId>
       <version>RELEASE</version>
     </dependency>
-    <!--<dependency>-->
-      <!--<groupId>org.postgresql</groupId>-->
-      <!--<artifactId>postgresql</artifactId>-->
-      <!--<version>${postgresql.version}</version>-->
-      <!--<exclusions>-->
-        <!--<exclusion>-->
-          <!--<groupId>*</groupId>-->
-          <!--<artifactId>*</artifactId>-->
-        <!--</exclusion>-->
-      <!--</exclusions>-->
-    <!--</dependency>-->
     <dependency>
-      <groupId>com.postgres</groupId>
-      <artifactId>postgres</artifactId>
-      <version>8.3</version>
+      <groupId>org.postgresql</groupId>
+      <artifactId>postgresql</artifactId>
+      <version>${postgresql.version}</version>
+      <exclusions>
+        <exclusion>
+          <groupId>*</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>com.hsqldb</groupId>
