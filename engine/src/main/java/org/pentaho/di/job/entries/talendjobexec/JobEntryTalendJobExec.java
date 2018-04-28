@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -29,9 +29,9 @@ import java.io.File;
 import java.lang.reflect.Method;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.commons.vfs2.AllFileSelector;
 import org.apache.commons.vfs2.FileObject;
@@ -73,7 +73,7 @@ import org.w3c.dom.Node;
 public class JobEntryTalendJobExec extends JobEntryBase implements Cloneable, JobEntryInterface {
   private static Class<?> PKG = JobEntryTalendJobExec.class; // for i18n
 
-  private static Map<String, ClassLoader> classLoaderCache = new HashMap<String, ClassLoader>();
+  private static Map<String, ClassLoader> classLoaderCache = new ConcurrentHashMap<>();
 
   private String filename;
   private String className;
