@@ -3,7 +3,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -23,41 +23,7 @@
 
 package org.pentaho.di.trans.steps.scriptvalues_mod;
 
-import java.io.BufferedReader;
-import java.io.DataOutputStream;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.Reader;
-import java.net.InetAddress;
-import java.nio.ByteBuffer;
-import java.nio.CharBuffer;
-import java.nio.charset.Charset;
-import java.nio.charset.CharsetDecoder;
-import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
-import java.text.DateFormat;
-import java.text.DecimalFormat;
-import java.text.DecimalFormatSymbols;
-import java.text.Format;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.List;
-import java.util.Locale;
-import java.util.Properties;
-import java.util.TimeZone;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import javax.mail.Message;
-import javax.mail.Session;
-import javax.mail.Transport;
-import javax.mail.internet.InternetAddress;
-import javax.mail.internet.MimeMessage;
-
+import com.google.common.annotations.VisibleForTesting;
 import org.apache.commons.vfs2.FileObject;
 import org.apache.commons.vfs2.FileType;
 import org.apache.commons.vfs2.FileUtil;
@@ -82,6 +48,41 @@ import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.steps.loadfileinput.LoadFileInput;
+
+import javax.mail.Message;
+import javax.mail.Session;
+import javax.mail.Transport;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeMessage;
+import java.io.BufferedReader;
+import java.io.DataOutputStream;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.net.InetAddress;
+import java.nio.ByteBuffer;
+import java.nio.CharBuffer;
+import java.nio.charset.Charset;
+import java.nio.charset.CharsetDecoder;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.text.DateFormat;
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
+import java.text.Format;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
+import java.util.Locale;
+import java.util.Properties;
+import java.util.TimeZone;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class ScriptValuesAddedFunctions extends ScriptableObject {
 
@@ -2476,59 +2477,63 @@ public class ScriptValuesAddedFunctions extends ScriptableObject {
   }
 
   @SuppressWarnings( "fallthrough" )
-  public static Object truncDate( Context actualContext, Scriptable actualObject, Object[] ArgList,
-    Function FunctionContext ) {
-    try {
+  public static Object truncDate( Context actualContext, Scriptable actualObject, Object[] ArgList, Function FunctionContext ) {
       // 2 arguments: truncation of dates to a certain precision
       //
-      if ( ArgList.length == 2 ) {
-        if ( isNull( ArgList[0] ) ) {
-          return null;
-        } else if ( isUndefined( ArgList[0] ) ) {
-          return Context.getUndefinedValue();
-        }
-
-        // This is the truncation of a date...
-        // The second argument specifies the level: ms, s, min, hour, day, month, year
-        //
-        java.util.Date dArg1 = (java.util.Date) Context.jsToJava( ArgList[0], java.util.Date.class );
-        Calendar cal = Calendar.getInstance();
-        cal.setTime( dArg1 );
-
-        Integer level = (Integer) Context.jsToJava( ArgList[1], Integer.class );
-
-        switch ( level.intValue() ) {
-        // MONTHS
-          case 5:
-            cal.set( Calendar.MONTH, 1 );
-            // DAYS
-          case 4:
-            cal.set( Calendar.DAY_OF_MONTH, 1 );
-            // HOURS
-          case 3:
-            cal.set( Calendar.HOUR_OF_DAY, 0 );
-            // MINUTES
-          case 2:
-            cal.set( Calendar.MINUTE, 0 );
-            // SECONDS
-          case 1:
-            cal.set( Calendar.SECOND, 0 );
-            // MILI-SECONDS
-          case 0:
-            cal.set( Calendar.MILLISECOND, 0 );
-            break;
-          default:
-            throw Context.reportRuntimeError( "Argument of TRUNC of date has to be between 0 and 5" );
-        }
-
-        return cal.getTime();
-      } else {
-        throw Context
-          .reportRuntimeError( "The function call truncDate requires 2 arguments: a date and a level (int)" );
+    if ( ArgList.length == 2 ) {
+      if ( isNull( ArgList[0] ) ) {
+        return null;
+      } else if ( isUndefined( ArgList[0] ) ) {
+        return Context.getUndefinedValue();
       }
-    } catch ( Exception e ) {
-      throw Context.reportRuntimeError( e.toString() );
+
+      // This is the truncation of a date...
+      // The second argument specifies the level: ms, s, min, hour, day, month, year
+      //
+      Date dArg1 = null;
+      Integer level = null;
+      try {
+        dArg1 = (java.util.Date) Context.jsToJava( ArgList[0], java.util.Date.class );
+        level = (Integer) Context.jsToJava( ArgList[1], Integer.class );
+      } catch ( Exception e ) {
+        throw Context.reportRuntimeError( e.toString() );
+      }
+      return truncDate( dArg1, level );
+    } else {
+      throw Context
+        .reportRuntimeError( "The function call truncDate requires 2 arguments: a date and a level (int)" );
     }
+  }
+
+  @VisibleForTesting
+  static Date truncDate( Date dArg1, Integer level ) {
+    Calendar cal = Calendar.getInstance();
+    cal.setTime( dArg1 );
+
+    switch ( level.intValue() ) {
+      // MONTHS
+      case 5:
+        cal.set( Calendar.MONTH, 0 );
+        // DAYS
+      case 4:
+        cal.set( Calendar.DAY_OF_MONTH, 1 );
+        // HOURS
+      case 3:
+        cal.set( Calendar.HOUR_OF_DAY, 0 );
+        // MINUTES
+      case 2:
+        cal.set( Calendar.MINUTE, 0 );
+        // SECONDS
+      case 1:
+        cal.set( Calendar.SECOND, 0 );
+        // MILI-SECONDS
+      case 0:
+        cal.set( Calendar.MILLISECOND, 0 );
+        break;
+      default:
+        throw Context.reportRuntimeError( "Argument of TRUNC of date has to be between 0 and 5" );
+    }
+    return cal.getTime();
   }
 
   public static void moveFile( Context actualContext, Scriptable actualObject, Object[] ArgList,
