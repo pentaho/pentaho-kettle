@@ -50,6 +50,8 @@ public class ConstUI {
 
   public static final int MEDIUM_ICON_SIZE = 24;
 
+  public static final int DOCUMENTATION_ICON_SIZE = 14;
+
   /**
    * Default checkbox width
    */

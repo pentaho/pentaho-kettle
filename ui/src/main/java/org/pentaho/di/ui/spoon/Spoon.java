@@ -496,7 +496,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
       .safeAppendDirectory( BasePropertyHandler.getProperty( "documentationDirBase", "docs/" ),
           BaseMessages.getString( PKG, "Spoon.Title.STRING_DOCUMENT_WELCOME" ) );
 
-  private static final String DOCUMENTATION_URL = Const
+  public static final String DOCUMENTATION_URL = Const
       .getDocUrl( BasePropertyHandler.getProperty( "documentationUrl" ) );
 
   private static final String UNDO_MENU_ITEM = "edit-undo";
@@ -1782,24 +1782,8 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
 
   public void showDocumentMap() {
     try {
-      LocationListener listener = new LocationListener() {
-        @Override
-        public void changing( LocationEvent event ) {
-          if ( event.location.endsWith( ".pdf" ) ) {
-            Program.launch( event.location );
-            event.doit = false;
-          }
-        }
-
-        @Override
-        public void changed( LocationEvent event ) {
-          System.out.println( "Changed to: " + event.location );
-        }
-      };
-
       URL url = new URL( DOCUMENTATION_URL );
-      HelpUtils.openHelpDialog( shell, STRING_DOCUMENT_TAB_NAME, url.toString(), listener );
-
+      HelpUtils.openHelpDialog( shell, STRING_DOCUMENT_TAB_NAME, url.toString() );
     } catch ( MalformedURLException e1 ) {
       log.logError( Const.getStackTracker( e1 ) );
     }
