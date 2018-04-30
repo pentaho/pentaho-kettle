@@ -43,7 +43,8 @@ import static org.pentaho.di.core.ObjectLocationSpecificationMethod.FILENAME;
 
 @InjectionSupported ( localizationPrefix = "JmsConsumerMeta.Injection." )
 @Step ( id = "Jms2Consumer", image = "JMSC.svg", name = "JMS Consumer",
-  description = "JmsConsumerDialog.TypeLongDesc", categoryDescription = "Streaming" )
+  description = "JmsConsumerDialog.TypeLongDesc", categoryDescription = "Streaming",
+  documentationUrl = "Products/Data_Integration/Transformation_Step_Reference/JMS_Consumer" )
 public class JmsConsumerMeta extends BaseStreamStepMeta {
 
   @InjectionDeep
