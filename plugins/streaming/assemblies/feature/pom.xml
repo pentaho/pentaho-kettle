@@ -54,6 +54,12 @@
           <startLevel>80</startLevel>
           <aggregateFeatures>true</aggregateFeatures>
           <ignoreScopeProvided>true</ignoreScopeProvided>
+          <excludedArtifactIds>
+            <artifact>artemis-commons</artifact>
+            <artifact>artemis-core-client</artifact>
+            <artifact>artemis-jms-client</artifact>
+            <artifact>artemis-selector</artifact>
+          </excludedArtifactIds>
         </configuration>
       </plugin>
     </plugins>
