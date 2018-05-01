@@ -115,7 +115,7 @@ public class ShowHelpDialog extends Dialog {
     this( parent, dialogTitle, url, "" );
   }
 
-  private Shell createShell( Shell parent ) {
+  protected Shell createShell( Shell parent ) {
     return new Shell( parent, SWT.RESIZE | SWT.MAX | SWT.MIN | SWT.DIALOG_TRIM );
   }
 
