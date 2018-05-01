@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -182,8 +182,6 @@ public class EnterOptionsDialog extends Dialog {
   private Button wClearCustom;
 
   private Combo wDefaultLocale;
-
-  private Combo wFailoverLocale;
 
   private Button wOK, wCancel;
 
@@ -954,30 +952,6 @@ public class EnterOptionsDialog extends Dialog {
       wDefaultLocale.select( idxDefault );
     }
 
-    // FailoverLocale line
-    Label wlFailoverLocale = new Label( wLookComp, SWT.RIGHT );
-    wlFailoverLocale.setText( BaseMessages.getString( PKG, "EnterOptionsDialog.FailoverLocale.Label" ) );
-    props.setLook( wlFailoverLocale );
-    FormData fdlFailoverLocale = new FormData();
-    fdlFailoverLocale.left = new FormAttachment( 0, 0 );
-    fdlFailoverLocale.right = new FormAttachment( middle, -margin );
-    fdlFailoverLocale.top = new FormAttachment( wDefaultLocale, margin );
-    wlFailoverLocale.setLayoutData( fdlFailoverLocale );
-    wFailoverLocale = new Combo( wLookComp, SWT.SINGLE | SWT.READ_ONLY | SWT.LEFT | SWT.BORDER );
-    wFailoverLocale.setItems( GlobalMessages.localeDescr );
-    props.setLook( wFailoverLocale );
-    FormData fdFailoverLocale = new FormData();
-    fdFailoverLocale.left = new FormAttachment( middle, 0 );
-    fdFailoverLocale.right = new FormAttachment( 100, -margin );
-    fdFailoverLocale.top = new FormAttachment( wDefaultLocale, margin );
-    wFailoverLocale.setLayoutData( fdFailoverLocale );
-    int idxFailover =
-      Const.indexOfString(
-        LanguageChoice.getInstance().getFailoverLocale().toString(), GlobalMessages.localeCodes );
-    if ( idxFailover >= 0 ) {
-      wFailoverLocale.select( idxFailover );
-    }
-
     fdLookComp = new FormData();
     fdLookComp.left = new FormAttachment( 0, 0 );
     fdLookComp.right = new FormAttachment( 100, 0 );
@@ -1651,16 +1625,9 @@ public class EnterOptionsDialog extends Dialog {
       // use the first language as default (should be English)
       defaultLocaleIndex = 0;
     }
-    int failoverLocaleIndex = wFailoverLocale.getSelectionIndex();
-    if ( failoverLocaleIndex < 0 || failoverLocaleIndex >= GlobalMessages.localeCodes.length ) {
-      failoverLocaleIndex = 0;
-    }
 
     String defaultLocale = GlobalMessages.localeCodes[defaultLocaleIndex];
     LanguageChoice.getInstance().setDefaultLocale( EnvUtil.createLocale( defaultLocale ) );
-
-    String failoverLocale = GlobalMessages.localeCodes[failoverLocaleIndex];
-    LanguageChoice.getInstance().setFailoverLocale( EnvUtil.createLocale( failoverLocale ) );
 
     LanguageChoice.getInstance().saveSettings();
 

@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,6 +22,16 @@
 package org.pentaho.ui.database;
 
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mockito;
+import org.pentaho.di.i18n.LanguageChoice;
+import org.powermock.api.mockito.PowerMockito;
+import org.powermock.core.classloader.annotations.PrepareForTest;
+import org.powermock.modules.junit4.PowerMockRunner;
+import org.powermock.reflect.Whitebox;
+
+import java.util.Locale;
+import java.util.ResourceBundle;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -30,6 +40,8 @@ import static org.junit.Assert.assertNotNull;
 /**
  * Unit tests for Messages.
  */
+@RunWith(PowerMockRunner.class)
+@PrepareForTest({ Messages.class })
 public class MessagesTest {
 
   @Test
@@ -67,5 +79,55 @@ public class MessagesTest {
       Messages.getString( "Not.A.Message", "Unused1", "Unused2", "Unused3", "Unused4" ) );
     assertEquals( "!null!", Messages.getString( null, null, null, null, null ) );
 
+  }
+
+  @Test
+  public void getStringLocalized() throws Exception {
+
+    PowerMockito.mockStatic( Messages.class );
+    PowerMockito.when( Messages.getString( Mockito.anyString() ) ).thenCallRealMethod();
+    PowerMockito.when( Messages.getBundle() ).thenCallRealMethod();
+
+    final String msgKey = "DatabaseDialog.column.Parameter";
+
+    LanguageChoice.getInstance().setDefaultLocale( Locale.FRENCH );
+    // force the recreation of the bundle after setting the preferred language
+    Whitebox.setInternalState( Messages.class, "RESOURCE_BUNDLE", (ResourceBundle) null );
+    assertEquals( "Parameter", Messages.getString( msgKey ) );
+
+    LanguageChoice.getInstance().setDefaultLocale( Locale.FRANCE );
+    // force the recreation of the bundle after setting the preferred language
+    Whitebox.setInternalState( Messages.class, "RESOURCE_BUNDLE", (ResourceBundle) null );
+    assertEquals( "Parameter", Messages.getString( msgKey) );
+
+    LanguageChoice.getInstance().setDefaultLocale( Locale.ENGLISH );
+    // force the recreation of the bundle after setting the preferred language
+    Whitebox.setInternalState( Messages.class, "RESOURCE_BUNDLE", (ResourceBundle) null );
+    assertEquals( "Parameter", Messages.getString( msgKey) );
+
+    LanguageChoice.getInstance().setDefaultLocale( Locale.US );
+    // force the recreation of the bundle after setting the preferred language
+    Whitebox.setInternalState( Messages.class, "RESOURCE_BUNDLE", (ResourceBundle) null );
+    assertEquals( "Parameter", Messages.getString( msgKey) );
+
+    LanguageChoice.getInstance().setDefaultLocale( Locale.JAPANESE );
+    // force the recreation of the bundle after setting the preferred language
+    Whitebox.setInternalState( Messages.class, "RESOURCE_BUNDLE", (ResourceBundle) null );
+    assertEquals( "パラメータ", Messages.getString( msgKey ) );
+
+    LanguageChoice.getInstance().setDefaultLocale( Locale.JAPAN );
+    // force the recreation of the bundle after setting the preferred language
+    Whitebox.setInternalState( Messages.class, "RESOURCE_BUNDLE", (ResourceBundle) null );
+    assertEquals( "パラメータ", Messages.getString( msgKey ) );
+
+    LanguageChoice.getInstance().setDefaultLocale( Locale.SIMPLIFIED_CHINESE );
+    // force the recreation of the bundle after setting the preferred language
+    Whitebox.setInternalState( Messages.class, "RESOURCE_BUNDLE", (ResourceBundle) null );
+    assertEquals( "命名参数", Messages.getString( msgKey ) );
+
+    LanguageChoice.getInstance().setDefaultLocale( Locale.CHINESE );
+    // force the recreation of the bundle after setting the preferred language
+    Whitebox.setInternalState( Messages.class, "RESOURCE_BUNDLE", (ResourceBundle) null );
+    assertEquals( "Parameter", Messages.getString( msgKey ) );
   }
 }

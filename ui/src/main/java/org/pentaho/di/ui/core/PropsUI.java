@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -33,6 +33,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.PropertyResourceBundle;
 import java.util.ResourceBundle;
 
 import org.eclipse.swt.SWT;
@@ -239,7 +240,7 @@ public class PropsUI extends Props {
       String prop =
           BasePropertyHandler.getProperty( "Default_UI_Properties_Resource", "org.pentaho.di.ui.core.default" );
       try {
-        ResourceBundle bundle = ResourceBundle.getBundle( prop );
+        ResourceBundle bundle = PropertyResourceBundle.getBundle( prop );
         if ( bundle != null ) {
           Enumeration<String> enumer = bundle.getKeys();
           String theKey;

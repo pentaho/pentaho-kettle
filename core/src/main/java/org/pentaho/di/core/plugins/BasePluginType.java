@@ -36,6 +36,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -55,7 +56,7 @@ import org.pentaho.di.core.logging.LogLevel;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
-import org.pentaho.di.i18n.LanguageChoice;
+import org.pentaho.di.i18n.GlobalMessageUtil;
 import org.scannotation.AnnotationDB;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
@@ -586,15 +587,11 @@ public abstract class BasePluginType implements PluginTypeInterface {
     if ( input.startsWith( "i18n" ) ) {
       return getCodedTranslation( input );
     } else {
-      String defLocale = LanguageChoice.getInstance().getDefaultLocale().toString().toLowerCase();
-      String alt = localizedMap.get( defLocale );
-      if ( !Utils.isEmpty( alt ) ) {
-        return alt;
-      }
-      String failoverLocale = LanguageChoice.getInstance().getFailoverLocale().toString().toLowerCase();
-      alt = localizedMap.get( failoverLocale );
-      if ( !Utils.isEmpty( alt ) ) {
-        return alt;
+      for ( final Locale locale : GlobalMessageUtil.getActiveLocales() ) {
+        String alt = localizedMap.get( locale.toString().toLowerCase() );
+        if ( !Utils.isEmpty( alt ) ) {
+          return alt;
+        }
       }
       // Nothing found?
       // Return the original!

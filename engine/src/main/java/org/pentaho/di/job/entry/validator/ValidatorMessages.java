@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,8 +22,9 @@
 
 package org.pentaho.di.job.entry.validator;
 
+import org.pentaho.di.i18n.GlobalMessageUtil;
+
 import java.text.MessageFormat;
-import java.util.Locale;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 
@@ -43,7 +44,7 @@ public class ValidatorMessages {
   public static String getStringFromBundle( final String bundleName, final String key, final Object... params ) {
     ResourceBundle bundle = null;
     try {
-      bundle = ResourceBundle.getBundle( bundleName, Locale.getDefault() );
+      bundle = GlobalMessageUtil.getBundle( bundleName, ValidatorMessages.class );
     } catch ( MissingResourceException e ) {
       return "??? missing resource ???";
     } catch ( NullPointerException e ) {
