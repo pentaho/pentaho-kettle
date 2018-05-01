@@ -36,6 +36,7 @@ import org.pentaho.di.core.Const;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.annotations.Step;
 import org.pentaho.di.core.database.DatabaseMeta;
+import org.pentaho.di.core.encryption.Encr;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleXMLException;
@@ -75,8 +76,8 @@ import org.w3c.dom.Node;
  */
 
 @Step( id = "S3CSVINPUT", image = "S3I.svg", i18nPackageName = "org.pentaho.di.trans.steps.s3csvinput",
-       name = "S3CsvInput.Step.Name", description = "S3CsvInput.Step.Description", categoryDescription = "Input",
-       documentationUrl = "http://wiki.pentaho.com/display/EAI/S3+CSV+Input" )
+    name = "S3CsvInput.Step.Name", description = "S3CsvInput.Step.Description", categoryDescription = "Input",
+    documentationUrl = "http://wiki.pentaho.com/display/EAI/S3+CSV+Input" )
 @InjectionSupported( localizationPrefix = "S3CsvInput.Injection.", groups = { "INPUT_FIELDS" } )
 public class S3CsvInputMeta extends BaseStepMeta implements StepMetaInterface, InputFileMetaInterface {
 
@@ -116,6 +117,10 @@ public class S3CsvInputMeta extends BaseStepMeta implements StepMetaInterface, I
   @Injection( name = "RUNNING_IN_PARALLEL" )
   private boolean runningInParallel;
 
+  private String awsAccessKey;
+
+  private String awsSecretKey;
+
   public S3CsvInputMeta() {
     super(); // allocate BaseStepMeta
     allocate( 0 );
@@ -123,7 +128,7 @@ public class S3CsvInputMeta extends BaseStepMeta implements StepMetaInterface, I
 
   @Override
   public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore )
-    throws KettleXMLException {
+      throws KettleXMLException {
     readData( stepnode );
   }
 
@@ -144,6 +149,8 @@ public class S3CsvInputMeta extends BaseStepMeta implements StepMetaInterface, I
 
   private void readData( Node stepnode ) throws KettleXMLException {
     try {
+      awsAccessKey = Encr.decryptPasswordOptionallyEncrypted( XMLHandler.getTagValue( stepnode, "aws_access_key" ) );
+      awsSecretKey = Encr.decryptPasswordOptionallyEncrypted( XMLHandler.getTagValue( stepnode, "aws_secret_key" ) );
       bucket = XMLHandler.getTagValue( stepnode, "bucket" );
       filename = XMLHandler.getTagValue( stepnode, "filename" );
       filenameField = XMLHandler.getTagValue( stepnode, "filename_field" );
@@ -188,6 +195,10 @@ public class S3CsvInputMeta extends BaseStepMeta implements StepMetaInterface, I
   public String getXML() {
     StringBuffer retval = new StringBuffer( 500 );
 
+    retval.append( "    " ).append( XMLHandler.addTagValue( "aws_access_key", Encr.encryptPasswordIfNotUsingVariables(
+        awsAccessKey ) ) );
+    retval.append( "    " ).append( XMLHandler.addTagValue( "aws_secret_key", Encr.encryptPasswordIfNotUsingVariables(
+        awsSecretKey ) ) );
     retval.append( "    " ).append( XMLHandler.addTagValue( "bucket", bucket ) );
     retval.append( "    " ).append( XMLHandler.addTagValue( "filename", filename ) );
     retval.append( "    " ).append( XMLHandler.addTagValue( "filename_field", filenameField ) );
@@ -225,8 +236,10 @@ public class S3CsvInputMeta extends BaseStepMeta implements StepMetaInterface, I
 
   @Override
   public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases )
-    throws KettleException {
+      throws KettleException {
     try {
+      awsAccessKey = Encr.decryptPasswordOptionallyEncrypted( rep.getStepAttributeString( id_step, "aws_access_key" ) );
+      awsSecretKey = Encr.decryptPasswordOptionallyEncrypted( rep.getStepAttributeString( id_step, "aws_secret_key" ) );
       bucket = rep.getStepAttributeString( id_step, "bucket" );
       filename = rep.getStepAttributeString( id_step, "filename" );
       filenameField = rep.getStepAttributeString( id_step, "filename_field" );
@@ -238,7 +251,6 @@ public class S3CsvInputMeta extends BaseStepMeta implements StepMetaInterface, I
       maxLineSize = rep.getStepAttributeString( id_step, "max_line_size" );
       lazyConversionActive = rep.getStepAttributeBoolean( id_step, "lazy_conversion" );
       runningInParallel = rep.getStepAttributeBoolean( id_step, "parallel" );
-      String awsDefaultCredentials = rep.getStepAttributeString( id_step, "use_aws_default_credentials" );
       int nrfields = rep.countNrStepAttributes( id_step, "field_name" );
 
       allocate( nrfields );
@@ -266,6 +278,10 @@ public class S3CsvInputMeta extends BaseStepMeta implements StepMetaInterface, I
   public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step )
       throws KettleException {
     try {
+      rep.saveStepAttribute( id_transformation, id_step, "aws_secret_key", Encr.encryptPasswordIfNotUsingVariables(
+          awsSecretKey ) );
+      rep.saveStepAttribute( id_transformation, id_step, "aws_access_key", Encr.encryptPasswordIfNotUsingVariables(
+          awsAccessKey ) );
       rep.saveStepAttribute( id_transformation, id_step, "bucket", bucket );
       rep.saveStepAttribute( id_transformation, id_step, "filename", filename );
       rep.saveStepAttribute( id_transformation, id_step, "filename_field", filenameField );
@@ -673,11 +689,51 @@ public class S3CsvInputMeta extends BaseStepMeta implements StepMetaInterface, I
     this.bucket = bucket;
   }
 
+  /**
+   * @return the awsAccessKey
+   */
+  public String getAwsAccessKey() {
+    return awsAccessKey;
+  }
+
+  /**
+   * @param awsAccessKey
+   *          the awsAccessKey to set
+   */
+  public void setAwsAccessKey( String awsAccessKey ) {
+    this.awsAccessKey = awsAccessKey;
+  }
+
+  /**
+   * @return the awsSecretKey
+   */
+  public String getAwsSecretKey() {
+    return awsSecretKey;
+  }
+
+  /**
+   * @param awsSecretKey
+   *          the awsSecretKey to set
+   */
+  public void setAwsSecretKey( String awsSecretKey ) {
+    this.awsSecretKey = awsSecretKey;
+  }
 
   public S3Service getS3Service( VariableSpace space ) throws S3ServiceException {
-    com.amazonaws.auth.AWSCredentials defaultCredentials = DefaultAWSCredentialsProviderChain.getInstance().getCredentials();
-    AWSCredentials credentials = new AWSCredentials( defaultCredentials.getAWSAccessKeyId(), defaultCredentials.getAWSSecretKey() );
-    S3Service s3service = new RestS3Service( credentials );
-    return s3service;
+    String accessKey = Encr.decryptPasswordOptionallyEncrypted( space.environmentSubstitute( awsAccessKey ) );
+    String secretKey = Encr.decryptPasswordOptionallyEncrypted( space.environmentSubstitute( awsSecretKey ) );
+    AWSCredentials credentials = null;
+
+    if ( isEmpty( accessKey ) && isEmpty( secretKey ) ) {
+      com.amazonaws.auth.AWSCredentials defaultCredentials = DefaultAWSCredentialsProviderChain.getInstance().getCredentials();
+      credentials = new AWSCredentials( defaultCredentials.getAWSAccessKeyId(), defaultCredentials.getAWSSecretKey() );
+    } else {
+      credentials = new AWSCredentials( accessKey, secretKey );
+    }
+    return new RestS3Service( credentials );
+  }
+
+  private boolean isEmpty( String value ) {
+    return value == null || value.length() <= 0;
   }
 }
