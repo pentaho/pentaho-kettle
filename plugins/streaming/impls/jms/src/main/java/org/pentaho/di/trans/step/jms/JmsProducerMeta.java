@@ -54,7 +54,8 @@ import static org.pentaho.di.i18n.BaseMessages.getString;
 
 @InjectionSupported ( localizationPrefix = "JmsProducerMeta.Injection.", groups = { "PROPERTIES" } )
 @Step ( id = "Jms2Producer", image = "JMSP.svg", name = "JMS Producer",
-  description = "JmsProducerDialog.TypeLongDesc", categoryDescription = "Streaming" )
+  description = "JmsProducerDialog.TypeLongDesc", categoryDescription = "Streaming",
+  documentationUrl = "Products/Data_Integration/Transformation_Step_Reference/JMS_Producer" )
 public class JmsProducerMeta extends BaseSerializingMeta implements StepMetaInterface, Cloneable {
   static final Class<?> PKG = JmsProducerMeta.class;
 
