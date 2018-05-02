@@ -27,6 +27,11 @@ pipeline {
         description: 'The last job in the yaml file to build (empty = last yaml item)'
     )
     string(
+        name: 'RELEASE_BUILD_NUMBER',
+        defaultValue: '',
+        description: 'Override the build number. Leave this blank to use the actual build number',
+    )
+    string(
         name: 'CLEAN_CACHES_REGEX',
         defaultValue: '.*-SNAPSHOT.*',
         description: 'Clean build dependency caches with regex'
@@ -234,6 +239,12 @@ pipeline {
       }
       steps {
         doCheckouts(mappedBuildData)
+      }
+    }
+
+    stage('Version') {
+      steps {
+        doVersioning(mappedBuildData)
       }
     }
 
