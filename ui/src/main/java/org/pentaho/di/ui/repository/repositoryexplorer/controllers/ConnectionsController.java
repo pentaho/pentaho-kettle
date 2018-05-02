@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -36,6 +36,7 @@ import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryElementMetaInterface;
+import org.pentaho.di.repository.RepositoryExtended;
 import org.pentaho.di.repository.RepositoryObjectType;
 import org.pentaho.di.ui.core.database.dialog.DatabaseDialog;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
@@ -191,34 +192,46 @@ public class ConnectionsController extends LazilyInitializedController implement
     return isRepReadOnly;
   }
 
+  private UIDatabaseConnection createUIConnection( DatabaseMeta dbMeta ) {
+    UIDatabaseConnection conn = null;
+    try {
+      conn = UIObjectRegistry.getInstance().constructUIDatabaseConnection( dbMeta, repository );
+    } catch ( UIObjectCreationException uoe ) {
+      conn = new UIDatabaseConnection( dbMeta, repository );
+    }
+    return conn;
+  }
+
   // package-local visibility for testing purposes
   void refreshConnectionList() {
-    final List<UIDatabaseConnection> tmpList = new ArrayList<UIDatabaseConnection>();
-    Runnable r = new Runnable() {
-      @Override
-      public void run() {
-        try {
+    final List<UIDatabaseConnection> tmpList = new ArrayList<>();
+    Runnable r = () -> {
+      try {
+        if ( repository instanceof RepositoryExtended ) {
+          List<DatabaseMeta> databaseMetas = ((RepositoryExtended) repository).getConnections( false );
+          databaseMetas.forEach( dbMeta -> {
+            UIDatabaseConnection conn = createUIConnection( dbMeta );
+            if ( conn != null ) {
+              tmpList.add( conn );
+            }
+          } );
+        } else {
           ObjectId[] dbIdList = repository.getDatabaseIDs( false );
           for ( ObjectId dbId : dbIdList ) {
             DatabaseMeta dbMeta = repository.loadDatabaseMeta( dbId, null );
             RepositoryElementMetaInterface repoMeta =
               repository.getObjectInformation( dbId, RepositoryObjectType.DATABASE );
-            UIDatabaseConnection conn = null;
-            try {
-              conn = UIObjectRegistry.getInstance().constructUIDatabaseConnection( dbMeta, repository );
-            } catch ( UIObjectCreationException uoe ) {
-              conn = new UIDatabaseConnection( dbMeta, repository );
-            }
+            UIDatabaseConnection conn = createUIConnection( dbMeta );
             if ( conn != null ) {
               conn.setRepositoryElementMetaInterface( repoMeta );
               tmpList.add( conn );
             }
           }
-        } catch ( KettleException e ) {
-          if ( mainController == null || !mainController.handleLostRepository( e ) ) {
-            // convert to runtime exception so it bubbles up through the UI
-            throw new RuntimeException( e );
-          }
+        }
+      } catch ( KettleException e ) {
+        if ( mainController == null || !mainController.handleLostRepository( e ) ) {
+          // convert to runtime exception so it bubbles up through the UI
+          throw new RuntimeException( e );
         }
       }
     };

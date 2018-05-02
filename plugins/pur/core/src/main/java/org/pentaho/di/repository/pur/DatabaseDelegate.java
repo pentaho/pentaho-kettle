@@ -1,5 +1,5 @@
 /*!
- * Copyright 2010 - 2017 Hitachi Vantara.  All rights reserved.
+ * Copyright 2010 - 2018 Hitachi Vantara.  All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -158,6 +158,7 @@ public class DatabaseDelegate extends AbstractDelegate implements ITransformer, 
     if ( fileName.endsWith( ".kdb" ) ) {
       fileName = fileName.substring( 0, fileName.length() - 4 );
     }
+    databaseMeta.setChangedDate( file.getLastModifiedDate() );
     databaseMeta.setName( fileName );
     databaseMeta.setDisplayName( file.getTitle() );
     databaseMeta.setObjectId( new StringObjectId( file.getId().toString() ) );

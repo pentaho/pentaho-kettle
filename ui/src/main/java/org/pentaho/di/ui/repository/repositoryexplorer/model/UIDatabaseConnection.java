@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -23,6 +23,7 @@
 package org.pentaho.di.ui.repository.repositoryexplorer.model;
 
 import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.repository.Repository;
@@ -68,12 +69,18 @@ public class UIDatabaseConnection extends XulEventSourceAdapter {
   }
 
   public String getDateModified() {
-    if ( repoElementMeta == null || ( repoElementMeta.getModifiedDate() == null ) ) {
+    Date dbDate = null;
+    if ( repoElementMeta != null && repoElementMeta.getModifiedDate() != null ) {
+      dbDate = repoElementMeta.getModifiedDate();
+    }
+    if ( dbMeta != null && dbMeta.getChangedDate() != null ) {
+      dbDate = dbMeta.getChangedDate();
+    }
+    if ( dbDate == null ) {
       return null;
     }
     SimpleDateFormat sdf = new SimpleDateFormat( "d MMM yyyy HH:mm:ss z" );
-    String str = sdf.format( repoElementMeta.getModifiedDate() );
-    return str;
+    return sdf.format( dbDate );
   }
 
   public void setRepositoryElementMetaInterface( RepositoryElementMetaInterface repoElementMeta ) {
