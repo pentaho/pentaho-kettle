@@ -74,4 +74,19 @@ public class EnvUtilTest {
   public void createLocale_DoubleCode_Variant() throws Exception {
     assertEquals( new Locale( "no", "NO", "NY" ), EnvUtil.createLocale( "no_NO_NY" ) );
   }
+
+  @Test
+  public void testClearProperty() {
+    String dummyPropertyTest = "KETTLE_CORE_JUNIT_DUMMY_PROPERTY_TEST_"+Math.random();
+    try {
+      assertNull( EnvUtil.getSystemProperty( dummyPropertyTest ) );
+      System.setProperty( dummyPropertyTest, "dummyValue" );
+      assertEquals( "dummyValue", EnvUtil.getSystemProperty( dummyPropertyTest ) );
+      assertEquals( "dummyValue", EnvUtil.clearSystemProperty( dummyPropertyTest ) );
+      assertNull( EnvUtil.getSystemProperty( dummyPropertyTest ) );
+    } finally {
+      //assures that the test property is removed from the System
+      System.clearProperty( dummyPropertyTest );
+    }
+  }
 }

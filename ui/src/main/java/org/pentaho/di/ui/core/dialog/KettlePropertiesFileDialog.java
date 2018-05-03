@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,16 +22,6 @@
 
 package org.pentaho.di.ui.core.dialog;
 
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ShellAdapter;
 import org.eclipse.swt.events.ShellEvent;
@@ -47,10 +37,10 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TableItem;
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.KettleVariablesList;
 import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.util.EnvUtil;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.ui.core.PropsUI;
@@ -60,6 +50,19 @@ import org.pentaho.di.ui.core.widget.ColumnInfo;
 import org.pentaho.di.ui.core.widget.FieldDisabledListener;
 import org.pentaho.di.ui.core.widget.TableView;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
+
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+import java.util.Set;
 
 /**
  * Allows the user to edit the kettle.properties file.
@@ -81,6 +84,8 @@ public class KettlePropertiesFileDialog extends Dialog {
   private PropsUI props;
 
   private Map<String, String> kettleProperties;
+
+  private Set<String> previousKettlePropertiesKeys;
 
   /**
    * Constructs a new dialog
@@ -256,6 +261,11 @@ public class KettlePropertiesFileDialog extends Dialog {
       wFields.removeEmptyRows();
       wFields.setRowNums();
       wFields.optWidth( true );
+
+      //saves the properties keys at the moment this method was called
+      previousKettlePropertiesKeys = new HashSet<>();
+      previousKettlePropertiesKeys.addAll( Arrays.asList( properties.keySet().toArray( new String[ 0 ] ) ) );
+
     } catch ( Exception e ) {
       new ErrorDialog( shell,
         BaseMessages.getString( PKG, "KettlePropertiesFileDialog.Exception.ErrorLoadingData.Title" ),
@@ -306,6 +316,14 @@ public class KettlePropertiesFileDialog extends Dialog {
         LogChannel.GENERAL.logError( BaseMessages.getString(
           PKG, "KettlePropertiesFileDialog.Exception.ErrorSavingData.Message", Const.KETTLE_PROPERTIES,
           getKettlePropertiesFilename() ), e );
+      }
+    }
+
+    if ( previousKettlePropertiesKeys != null ) {
+      for ( String originalKey : previousKettlePropertiesKeys ) {
+        if ( !kettleProperties.containsKey( originalKey ) ) {
+          EnvUtil.clearSystemProperty( originalKey );
+        }
       }
     }
 
