@@ -938,4 +938,14 @@ public class ValueMetaBaseTest {
     valueMetaBase.getValue( XMLHandler.loadXMLString( "<value-data>not empty</value-data>" ).getFirstChild() );
   }
 
+  @Test
+  public void testConvertStringToTimestampType() throws KettleValueException {
+    String timestampStringRepresentation = "2018/04/11 16:45:15.000000000";
+    Timestamp expectedTimestamp = Timestamp.valueOf( "2018-04-11 16:45:15.000000000" );
+
+    ValueMetaBase base = new ValueMetaString( "ValueMetaStringColumn" );
+    base.setConversionMetadata( new ValueMetaTimestamp( "ValueMetaTimestamp" ) );
+    Timestamp timestamp = (Timestamp) base.convertDataUsingConversionMetaData( timestampStringRepresentation );
+    assertEquals( expectedTimestamp, timestamp );
+  }
 }
