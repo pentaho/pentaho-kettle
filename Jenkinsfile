@@ -1,4 +1,4 @@
-@Library('jenkins-shared-libraries@node-label-trials') _
+@Library('jenkins-shared-libraries') _
 
 // We need a global mapped build data object to pass down through the stages of the build
 def mappedBuildData
