@@ -17,9 +17,9 @@ import org.apache.commons.io.FileUtils
 
 import java.util.logging.Logger
 
-Logger logger = Logger.getLogger('configureGitCredentials.groovy')
+Logger logger = Logger.getLogger('configureGitCredentials')
 
-def jenkins = Jenkins.getInstance()
+def jenkins = Jenkins.get()
 def env = System.getenv()
 
 def getCredentials = { ->

@@ -18,8 +18,8 @@ import hudson.tools.ToolInstaller
 import jenkins.model.Jenkins
 import java.util.logging.Logger
 
-Logger logger = Logger.getLogger('configureGlobalTools.groovy')
-def jenkins = Jenkins.getInstance()
+Logger logger = Logger.getLogger('configureGlobalTools')
+def jenkins = Jenkins.get()
 
 def mavenName = 'maven3-auto'
 def mavenVersion = '3.5.3'
@@ -29,25 +29,25 @@ def antName = 'ANT'
 def antVersion = '1.10.3'
 
 def installTool = { params ->
-    Class<BuildStepDescriptor> tool = params['tool']
-    Class<ToolInstallation> toolInstallation = params['toolInstallation']
-    Class<ToolInstaller> toolInstaller = params['toolInstaller']
-    String name = params['name']
-    String version = params['version']
-    String command = params['command']
+  Class<BuildStepDescriptor> tool = params['tool']
+  Class<ToolInstallation> toolInstallation = params['toolInstallation']
+  Class<ToolInstaller> toolInstaller = params['toolInstaller']
+  String name = params['name']
+  String version = params['version']
+  String command = params['command']
 
-    def toolPlugin = jenkins.getExtensionList(tool)[0]
+  def toolPlugin = jenkins.getExtensionList(tool)[0]
 
-    if (!toolPlugin.installations.any { it.name == name }) {
-        toolPlugin.installations += toolInstallation.newInstance(name, '', [new InstallSourceProperty(
-                [command ? toolInstaller.newInstance('', command, '.') : toolInstaller.newInstance(version)])
-        ])
-        toolPlugin.save()
-    }
+  if (!toolPlugin.installations.any { it.name == name }) {
+    toolPlugin.installations += toolInstallation.newInstance(name, '', [new InstallSourceProperty(
+        [command ? toolInstaller.newInstance('', command, '.') : toolInstaller.newInstance(version)])
+    ])
+    toolPlugin.save()
+  }
 }
 
 if (!jenkins.isQuietingDown()) {
-    def cmd = """\
+  def cmd = """\
 MAVEN_VERSION=$mavenVersion
 TAKARI_VERSION=$takariVersion
 if [ ! -f ".installedFrom" ]; then
@@ -59,23 +59,23 @@ if [ ! -f ".installedFrom" ]; then
 fi
 """
 
-    // Install maven tool
-    installTool([
-            'tool': Maven.DescriptorImpl,
-            'toolInstallation': Maven.MavenInstallation,
-            'toolInstaller': CommandInstaller,
-            'name': mavenName,
-            'version': mavenVersion,
-            'command': cmd
-    ])
-    logger.info 'Configured Maven install'
+  // Install maven tool
+  installTool([
+      'tool'            : Maven.DescriptorImpl,
+      'toolInstallation': Maven.MavenInstallation,
+      'toolInstaller'   : CommandInstaller,
+      'name'            : mavenName,
+      'version'         : mavenVersion,
+      'command'         : cmd
+  ])
+  logger.info 'Configured Maven install'
 
-    // Install ant tool
-    installTool(['tool':Ant.DescriptorImpl, 'toolInstallation':Ant.AntInstallation, 'toolInstaller':Ant.AntInstaller, 'name':antName, 'version':antVersion])
-    logger.info 'Configured Ant install'
+  // Install ant tool
+  installTool(['tool': Ant.DescriptorImpl, 'toolInstallation': Ant.AntInstallation, 'toolInstaller': Ant.AntInstaller, 'name': antName, 'version': antVersion])
+  logger.info 'Configured Ant install'
 
-    jenkins.save()
+  jenkins.save()
 
 } else {
-    logger.info 'Shutdown mode enabled.  Tools configuration skipped.'
+  logger.info 'Shutdown mode enabled.  Tools configuration skipped.'
 }

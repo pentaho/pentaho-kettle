@@ -2,6 +2,12 @@
 FROM jenkins/jenkins:lts
 
 ENV CREDENTIALS_ID github-buildguy
+ENV SAMPLE_PIPELINE_NAME sample-pipeline
+ENV SAMPLE_PIPELINE_REPO https://github.com/pentaho/jenkins-pipelines.git
+ENV SAMPLE_PIPELINE_BRANCH master
+ENV SHARED_LIBRARIES_NAME jenkins-shared-libraries
+ENV SHARED_LIBRARIES_REPO https://github.com/pentaho/jenkins-shared-libraries.git
+ENV SHARED_LIBRARIES_BRANCH master
 
 ENV JAVA_OPTS -Djenkins.install.runSetupWizard=false
 

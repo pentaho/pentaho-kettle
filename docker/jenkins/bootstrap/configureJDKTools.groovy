@@ -14,8 +14,8 @@ import jenkins.model.Jenkins
 
 import java.util.logging.Logger
 
-Logger logger = Logger.getLogger('configureJDKTools.groovy')
-def jenkins = Jenkins.getInstance()
+Logger logger = Logger.getLogger('configureJDKTools')
+def jenkins = Jenkins.get()
 def env = System.getenv()
 
 def versions = [

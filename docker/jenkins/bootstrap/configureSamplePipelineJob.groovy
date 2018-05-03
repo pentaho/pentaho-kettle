@@ -7,7 +7,6 @@
  *
  */
 
-
 import hudson.plugins.git.BranchSpec
 import hudson.plugins.git.GitSCM
 import hudson.plugins.git.UserRemoteConfig
@@ -15,25 +14,33 @@ import jenkins.model.Jenkins
 import org.jenkinsci.plugins.workflow.cps.CpsScmFlowDefinition
 import org.jenkinsci.plugins.workflow.job.WorkflowJob
 
+import java.util.logging.Logger
 
-def jenkins = Jenkins.getInstance()
-// workdir names with spaces causes problems in javascript builds
-def jobName = 'sample-pipeline'
+
+Logger logger = Logger.getLogger('configureSamplePipelineJob')
+
+def jenkins = Jenkins.get()
 def env = System.getenv()
+def jobName = env['SAMPLE_PIPELINE_NAME']
 
 if (!jenkins.isQuietingDown()) {
-    if (!jenkins.items.any { it.name == jobName }) {
-        def scm = new GitSCM('')
-        scm.userRemoteConfigs = [new UserRemoteConfig( env['SAMPLE_PIPELINE']?:'https://github.com/pentaho/jenkins-pipelines.git', '', '', env['CREDENTIALS_ID'])]
-        scm.branches = [new BranchSpec("*/${env['SAMPLE_PIPELINE_BRANCH']?:'master'}")]
+  if (!jenkins.items.any { it.name == jobName }) {
+    def scm = new GitSCM('')
+    scm.userRemoteConfigs = [new UserRemoteConfig(
+        env['SAMPLE_PIPELINE_REPO'],
+        '',
+        '',
+        env['CREDENTIALS_ID']
+    )]
+    scm.branches = [new BranchSpec("*/${env['SAMPLE_PIPELINE_BRANCH']}")]
 
-        def flowDefinition = new CpsScmFlowDefinition(scm, "Jenkinsfile")
+    def flowDefinition = new CpsScmFlowDefinition(scm, "Jenkinsfile")
 
-        def job = new WorkflowJob(jenkins, jobName)
-        job.definition = flowDefinition
+    def job = new WorkflowJob(jenkins, jobName)
+    job.definition = flowDefinition
 
-        jenkins.reload()
-    }
+    jenkins.reload()
+  }
 } else {
-    logger.info 'Shutdown mode enabled.  Sample pipeline job creation skipped.'
+  logger.info 'Shutdown mode enabled.  Sample pipeline job creation skipped.'
 }
