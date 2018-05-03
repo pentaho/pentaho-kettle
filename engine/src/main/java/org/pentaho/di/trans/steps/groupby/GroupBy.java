@@ -441,6 +441,7 @@ public class GroupBy extends BaseStep implements StepInterface {
           }
           break;
         case GroupByMeta.TYPE_GROUP_STANDARD_DEVIATION:
+        case GroupByMeta.TYPE_GROUP_STANDARD_DEVIATION_SAMPLE:
           if ( !subjMeta.isNull( subj ) ) {
             data.counts[ i ]++;
             double n = data.counts[ i ];
@@ -607,6 +608,7 @@ public class GroupBy extends BaseStep implements StepInterface {
           v = new ArrayList<Double>();
           break;
         case GroupByMeta.TYPE_GROUP_STANDARD_DEVIATION:
+        case GroupByMeta.TYPE_GROUP_STANDARD_DEVIATION_SAMPLE:
           vMeta = new ValueMetaNumber( meta.getAggregateField()[ i ] );
           break;
         case GroupByMeta.TYPE_GROUP_COUNT_DISTINCT:
@@ -729,14 +731,23 @@ public class GroupBy extends BaseStep implements StepInterface {
           break;
         case GroupByMeta.TYPE_GROUP_MAX:
           break;
-        case GroupByMeta.TYPE_GROUP_STANDARD_DEVIATION:
+        case GroupByMeta.TYPE_GROUP_STANDARD_DEVIATION: {
           if ( ag == null ) {
             // PMD-1037 - when all input data is null ag is null, npe on access ag
             break;
           }
           double sum = (Double) ag / data.counts[ i ];
-          ag = Double.valueOf( Math.sqrt( sum ) );
+          ag = Math.sqrt( sum );
           break;
+        }
+        case GroupByMeta.TYPE_GROUP_STANDARD_DEVIATION_SAMPLE: {
+          if ( ag == null ) {
+            break;
+          }
+          double sum = (Double) ag / ( data.counts[ i ] - 1 );
+          ag = Math.sqrt( sum );
+          break;
+        }
         case GroupByMeta.TYPE_GROUP_CONCAT_COMMA:
         case GroupByMeta.TYPE_GROUP_CONCAT_STRING:
           ag = ( (StringBuilder) ag ).toString();
