@@ -3,7 +3,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -23,6 +23,30 @@
 
 package org.pentaho.di.trans.steps.script;
 
+import com.google.common.annotations.VisibleForTesting;
+import org.apache.commons.vfs2.FileObject;
+import org.apache.commons.vfs2.FileType;
+import org.apache.commons.vfs2.FileUtil;
+import org.pentaho.di.core.Const;
+import org.pentaho.di.core.database.Database;
+import org.pentaho.di.core.database.DatabaseMeta;
+import org.pentaho.di.core.exception.KettleFileException;
+import org.pentaho.di.core.gui.SpoonFactory;
+import org.pentaho.di.core.gui.SpoonInterface;
+import org.pentaho.di.core.row.RowDataUtil;
+import org.pentaho.di.core.row.RowMetaInterface;
+import org.pentaho.di.core.util.EnvUtil;
+import org.pentaho.di.core.variables.VariableSpace;
+import org.pentaho.di.core.vfs.KettleVFS;
+
+import javax.mail.Message;
+import javax.mail.Session;
+import javax.mail.Transport;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeMessage;
+import javax.script.Bindings;
+import javax.script.ScriptEngine;
+import javax.script.ScriptException;
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -43,36 +67,13 @@ import java.text.Format;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Properties;
 import java.util.TimeZone;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import javax.mail.Message;
-import javax.mail.Session;
-import javax.mail.Transport;
-import javax.mail.internet.InternetAddress;
-import javax.mail.internet.MimeMessage;
-import javax.script.Bindings;
-import javax.script.ScriptEngine;
-import javax.script.ScriptException;
-
-import org.apache.commons.vfs2.FileObject;
-import org.apache.commons.vfs2.FileType;
-import org.apache.commons.vfs2.FileUtil;
-import org.pentaho.di.core.Const;
-import org.pentaho.di.core.database.Database;
-import org.pentaho.di.core.database.DatabaseMeta;
-import org.pentaho.di.core.exception.KettleFileException;
-import org.pentaho.di.core.gui.SpoonFactory;
-import org.pentaho.di.core.gui.SpoonInterface;
-import org.pentaho.di.core.row.RowDataUtil;
-import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.util.EnvUtil;
-import org.pentaho.di.core.variables.VariableSpace;
-import org.pentaho.di.core.vfs.KettleVFS;
 
 public class ScriptAddedFunctions {
 
@@ -2412,57 +2413,62 @@ public class ScriptAddedFunctions {
   @SuppressWarnings( "fallthrough" )
   public static Object truncDate( ScriptEngine actualContext, Bindings actualObject, Object[] ArgList,
     Object FunctionContext ) {
-    try {
-      // 2 arguments: truncation of dates to a certain precision
-      //
-      if ( ArgList.length == 2 ) {
-        if ( isNull( ArgList[0] ) ) {
-          return null;
-        } else if ( isUndefined( ArgList[0] ) ) {
-          return undefinedValue;
-        }
-
-        // This is the truncation of a date...
-        // The second argument specifies the level: ms, s, min, hour, day, month, year
-        //
-        java.util.Date dArg1 = (java.util.Date) ArgList[0];
-        Calendar cal = Calendar.getInstance();
-        cal.setTime( dArg1 );
-
-        Integer level = (Integer) ArgList[1];
-
-        switch ( level.intValue() ) {
-        // MONTHS
-          case 5:
-            cal.set( Calendar.MONTH, 1 );
-            // DAYS
-          case 4:
-            cal.set( Calendar.DAY_OF_MONTH, 1 );
-            // HOURS
-          case 3:
-            cal.set( Calendar.HOUR_OF_DAY, 0 );
-            // MINUTES
-          case 2:
-            cal.set( Calendar.MINUTE, 0 );
-            // SECONDS
-          case 1:
-            cal.set( Calendar.SECOND, 0 );
-            // MILI-SECONDS
-          case 0:
-            cal.set( Calendar.MILLISECOND, 0 );
-            break;
-          default:
-            throw new RuntimeException( "Argument of TRUNC of date has to be between 0 and 5" );
-        }
-
-        return cal.getTime();
-      } else {
-        throw new RuntimeException( "The function call truncDate requires 2 arguments: a date and a level (int)" );
+    // 2 arguments: truncation of dates to a certain precision
+    //
+    if ( ArgList.length == 2 ) {
+      if ( isNull( ArgList[0] ) ) {
+        return null;
+      } else if ( isUndefined( ArgList[0] ) ) {
+        return undefinedValue;
       }
-    } catch ( Exception e ) {
-      throw new RuntimeException( e.toString() );
+
+      // This is the truncation of a date...
+      // The second argument specifies the level: ms, s, min, hour, day, month, year
+      //
+      java.util.Date dArg1 = null;
+      Integer level = null;
+      try {
+        dArg1 = (java.util.Date) ArgList[0];
+        level = (Integer) ArgList[1];
+      } catch ( Exception e ) {
+        throw new RuntimeException( e.toString() );
+      }
+      return ScriptAddedFunctions.truncDate( dArg1, level );
+    } else {
+      throw new RuntimeException( "The function call truncDate requires 2 arguments: a date and a level (int)" );
     }
   }
+
+  @VisibleForTesting
+  static Date truncDate( Date dArg1, Integer level ) {
+    Calendar cal = Calendar.getInstance();
+    cal.setTime( dArg1 );
+    switch ( level.intValue() ) {
+      // MONTHS
+      case 5:
+        cal.set( Calendar.MONTH, 0 );
+        // DAYS
+      case 4:
+        cal.set( Calendar.DAY_OF_MONTH, 1 );
+        // HOURS
+      case 3:
+        cal.set( Calendar.HOUR_OF_DAY, 0 );
+        // MINUTES
+      case 2:
+        cal.set( Calendar.MINUTE, 0 );
+        // SECONDS
+      case 1:
+        cal.set( Calendar.SECOND, 0 );
+        // MILI-SECONDS
+      case 0:
+        cal.set( Calendar.MILLISECOND, 0 );
+        break;
+      default:
+        throw new RuntimeException( "Argument of TRUNC of date has to be between 0 and 5" );
+    }
+    return cal.getTime();
+  }
+
 
   public static void moveFile( ScriptEngine actualContext, Bindings actualObject, Object[] ArgList,
     Object FunctionContext ) {
