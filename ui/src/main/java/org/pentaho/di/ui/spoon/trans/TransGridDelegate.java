@@ -222,6 +222,11 @@ public class TransGridDelegate extends SpoonDelegate implements XulEventHandler 
     fdView.bottom = new FormAttachment( 100, 0 );
     transGridView.setLayoutData( fdView );
 
+    //change the number column ValueMetaNumber to ValueMetaString to be compatible with sub trans numbering
+    ColumnInfo numberColumn = transGridView.getNumberColumn();
+    ValueMetaInterface numberColumnValueMeta = new ValueMetaString( "#" );
+    numberColumn.setValueMeta( numberColumnValueMeta );
+
     // Add a timer to update this view every couple of seconds...
     //
     final Timer tim = new Timer( "TransGraph: " + transGraph.getMeta().getName() );
