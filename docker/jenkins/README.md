@@ -17,14 +17,29 @@ Edit `secrets/credentials` file with the necessary credentials, and run the `go.
 ./go.sh
 ```
 
-This will build/start a fully configured jenkins container.
+This will build/start a fully configured jenkins container.\
+You can now point your browser to [0.0.0.0:8080](http://0.0.0.0:8080) and start using.
+
 Alternatively you can build the ***alpine*** version.
 
 ```
 ./go.sh -v alpine
 ```
 
-NOTE: This script automatically creates a *jenkins_pipeline* volume on docker host, that will survive container start/stop/deletion. 
+NOTE: This script automatically creates a *jenkins_pipeline* volume on docker host, that will survive container start/stop/deletion.
+
+```
+./go.sh -h
+usage:  [options]
+  options:
+    -h, --help              This help message
+    -v, --variant string    Sets the variant of the jenkins container.
+        --debug             Enable debug mode, this will only print the commands that will be run.
+    -q, --quiet             Enable quiet mode.
+    -d, --daemon            Run in daemon mode.
+    -n, --no-build          Skip the building part.
+    -f, --force             Force building from the start.
+``` 
 
 # Manual usage
 
