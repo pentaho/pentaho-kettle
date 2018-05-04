@@ -41,6 +41,27 @@ usage:  [options]
     -f, --force             Force building from the start.
 ``` 
 
+# Environment Variables
+
+These are the available environment variables and their defaults.
+
+```
+SAMPLE_PIPELINE_NAME=sample-pipeline
+SAMPLE_PIPELINE_REPO=https://github.com/pentaho/jenkins-pipelines.git
+SAMPLE_PIPELINE_BRANCH=master
+
+SHARED_LIBRARIES_NAME=jenkins-shared-libraries
+SHARED_LIBRARIES_REPO=https://github.com/pentaho/jenkins-shared-libraries.git
+SHARED_LIBRARIES_BRANCH=master
+
+JENKINS_USER=admin
+JENKINS_PASS=password
+ORACLE_USER=
+ORACLE_PASS=
+GIT_USER=
+GIT_PASS=
+```
+
 # Manual usage
 
 ```
@@ -60,6 +81,20 @@ docker run -p 8080:8080 \
   -e GIT_PASS=<git_token> \
   pentaho/jenkins:lts-alpine
 ``` 
+
+If you want to point to a local shared libraries and/or pipeline repo when developing you have to map those volumes into the image. The path var is then available through environment variables or you can change it on the jenkins UI. 
+
+```
+docker run -p 8080:8080 \
+  -v jenkins_pipeline:/var/jenkins_home \
+  -v <credentials-absolute-path>:/usr/share/jenkins/secrets/credentials \
+  -v <jenkins-pipelines-local-path>:/jenkins-pipelines \
+  -v <jenkins-shared-libraries-local-path>:/jenkins-shared-libraries \
+  -e SAMPLE_PIPELINE_REPO=/jenkins-pipelines \
+  -e SHARED_LIBRARIES_REPO=/jenkins-shared-libraries \
+  pentaho/jenkins:lts
+```
+
 
 For more information, check the official jenkins docker image: [https://github.com/jenkinsci/docker](https://github.com/jenkinsci/docker#official-jenkins-docker-image)
 

@@ -30,9 +30,9 @@ import org.apache.commons.io.FileUtils
 
 import java.util.logging.Logger
 
-Logger logger = Logger.getLogger('configureGlobalSettings.groovy')
+Logger logger = Logger.getLogger('configureGlobalSettings')
 
-def jenkins = Jenkins.getInstance()
+def jenkins = Jenkins.get()
 def masterLabels = 'non-master'
 /*
     Disable all JNLP protocols except for JNLP4.  JNLP4 is the most secure agent
@@ -41,59 +41,59 @@ def masterLabels = 'non-master'
 Set<String> agentProtocolsList = ['JNLP4-connect', 'Ping']
 
 if (!jenkins.isQuietingDown()) {
-    File f = new File(jenkins.getRootDir(), 'jenkins.bootstrap.settings.state')
+  File f = new File(jenkins.getRootDir(), 'jenkins.bootstrap.settings.state')
 
-    if (!f.exists()) {
+  if (!f.exists()) {
 
-        if (jenkins.labelString != masterLabels) {
-            jenkins.labelString = masterLabels
-        }
-
-        /*
-             Disable submitting usage statistics
-         */
-        if (jenkins.isUsageStatisticsCollected()) {
-            jenkins.setNoUsageStatistics(true)
-            logger.info 'Disabled submitting usage stats to Jenkins project.'
-        }
-
-        if (!agentProtocolsList.containsAll(jenkins.getAgentProtocols())) {
-            jenkins.setAgentProtocols(agentProtocolsList)
-            logger.info 'Configured Agent Protocols'
-        }
-
-        /*
-            Enable Agent Master Access Control
-         */
-        jenkins.getInjector().getInstance(AdminWhitelistRule.class).setMasterKillSwitch(false)
-        logger.info 'Configured Master Access Control'
-
-        /*
-            Prevent Cross Site Request Forgery exploits
-         */
-        jenkins.crumbIssuer = new DefaultCrumbIssuer(true)
-        logger.info 'Configured CSRF Protection'
-
-        /*
-            Configure Markup Formatter to use Safe HTML
-         */
-        if (jenkins.markupFormatter.class != RawHtmlMarkupFormatter) {
-            jenkins.markupFormatter = new RawHtmlMarkupFormatter(false)
-            logger.info 'Configured Markup Formatter'
-        }
-
-        jenkins.projectNamingStrategy =
-            new ProjectNamingStrategy.PatternProjectNamingStrategy('[a-z0-9-\\.]{3,50}',"", true)
-
-        jenkins.save()
-
-        CLI.get().setEnabled(false)
-        logger.info 'Disabled CLI remote'
-
-        FileUtils.writeStringToFile(f, jenkins.VERSION)
-    } else {
-        logger.info 'Skipping global settings configuration.'
+    if (jenkins.labelString != masterLabels) {
+      jenkins.labelString = masterLabels
     }
+
+    /*
+         Disable submitting usage statistics
+     */
+    if (jenkins.isUsageStatisticsCollected()) {
+      jenkins.setNoUsageStatistics(true)
+      logger.info 'Disabled submitting usage stats to Jenkins project.'
+    }
+
+    if (!agentProtocolsList.containsAll(jenkins.getAgentProtocols())) {
+      jenkins.setAgentProtocols(agentProtocolsList)
+      logger.info 'Configured Agent Protocols'
+    }
+
+    /*
+        Enable Agent Master Access Control
+     */
+    jenkins.getInjector().getInstance(AdminWhitelistRule.class).setMasterKillSwitch(false)
+    logger.info 'Configured Master Access Control'
+
+    /*
+        Prevent Cross Site Request Forgery exploits
+     */
+    jenkins.crumbIssuer = new DefaultCrumbIssuer(true)
+    logger.info 'Configured CSRF Protection'
+
+    /*
+        Configure Markup Formatter to use Safe HTML
+     */
+    if (jenkins.markupFormatter.class != RawHtmlMarkupFormatter) {
+      jenkins.markupFormatter = new RawHtmlMarkupFormatter(false)
+      logger.info 'Configured Markup Formatter'
+    }
+
+    jenkins.projectNamingStrategy =
+        new ProjectNamingStrategy.PatternProjectNamingStrategy('[a-z0-9-\\.]{3,50}',"", true)
+
+    jenkins.save()
+
+    CLI.get().setEnabled(false)
+    logger.info 'Disabled CLI remote'
+
+    FileUtils.writeStringToFile(f, jenkins.VERSION)
+  } else {
+    logger.info 'Skipping global settings configuration.'
+  }
 } else {
-    logger.info 'Shutdown mode enabled.  Global configuration skipped.'
+  logger.info 'Shutdown mode enabled.  Global configuration skipped.'
 }

@@ -11,54 +11,143 @@ pipeline {
 
   parameters {
 
-    string(defaultValue: 'buildControlData.yaml', description: 'The build data yaml file to run',
-      name: 'BUILD_DATA_FILE')
-    string(defaultValue: '', description: 'The first job in the yaml file to build (empty = first yaml item)',
-      name: 'FIRST_JOB')
-    string(defaultValue: '', description: 'The last job in the yaml file to build (empty = last yaml item)',
-      name: 'LAST_JOB')
+    string(
+        name: 'BUILD_DATA_FILE',
+        defaultValue: 'buildControlData.yaml',
+        description: 'The build data yaml file to run'
+    )
+    string(
+        name: 'FIRST_JOB',
+        defaultValue: '',
+        description: 'The first job in the yaml file to build (empty = first yaml item)'
+    )
+    string(
+        name: 'LAST_JOB',
+        defaultValue: '',
+        description: 'The last job in the yaml file to build (empty = last yaml item)'
+    )
+    string(
+        name: 'CLEAN_CACHES_REGEX',
+        defaultValue: '.*-SNAPSHOT.*',
+        description: 'Clean build dependency caches with regex'
+    )
+    string(
+        name: 'MAVEN_DEFAULT_COMMAND_OPTIONS',
+        defaultValue: '-B -e -q',
+        description: 'Force base maven command options'
+    )
+    string(
+        name: 'ANT_DEFAULT_COMMAND_OPTIONS',
+        defaultValue: 'clean-all resolve dist',
+        description: 'Force base ant command options'
+    )
+    string(
+        name: 'ANT_TEST_TARGETS',
+        defaultValue: 'test jacoco',
+        description: 'Ant test targets'
+    )
+    string(
+        name: 'MAVEN_OPTS',
+        defaultValue: '-Xms512m',
+        description: 'Typically the JVM opts for maven'
+    )
+    string(
+        name: 'MAVEN_TEST_OPTS',
+        defaultValue: '-DsurefireArgLine=-Xmx1g',
+        description: 'Typically, some extra for Maven Surefire'
+    )
+    string(
+        name: 'PARALLEL_CHECKOUT_CHUNKSIZE',
+        defaultValue: '10',
+        description: 'Maximum parallel source checkout chunk size'
+    )
+    string(
+        name: 'CHECKOUT_DEPTH',
+        defaultValue: '20',
+        description: 'Shallow clone depth (leave blank for infinite)'
+    )
+    string(
+        name: 'BUILD_TIMEOUT',
+        defaultValue: '360',
+        description: 'Build timeout in minutes'
+    )
+    string(
+        name: 'BUILD_RETRIES',
+        defaultValue: '1',
+        description: 'Build retry count'
+    )
+    string(
+        name: 'MAVEN_RESOLVE_REPO_URL',
+        defaultValue: 'http://nexus.pentaho.org/content/groups/omni',
+        description: 'Maven resolve repo global mirror'
+    )
+    string(
+        name: 'CHECKOUT_CREDENTIALS_ID',
+        defaultValue: 'github-buildguy',
+        description: 'Use this Jenkins credential for checkouts'
+    )
+    string(
+        name: 'JENKINS_JDK_FOR_BUILDS',
+        defaultValue: 'Java8_auto',
+        description: 'Use this Jenkins JDK label for builds'
+    )
+    string(
+        name: 'JENKINS_MAVEN_FOR_BUILDS',
+        defaultValue: 'maven3-auto',
+        description: 'Use this Jenkins Maven label for builds',
+    )
+    string(
+        name: 'JENKINS_ANT_FOR_BUILDS',
+        defaultValue: 'ant-auto',
+        description: 'Use this Jenkins Ant label for builds',
+    )
 
-    string(defaultValue: '.*-SNAPSHOT.*', description: 'Clean build dependency caches with regex', name: 'CLEAN_CACHES_REGEX')
-
-    string(defaultValue: '-B -e -q', description: 'Force base maven command options',
-      name: 'MAVEN_DEFAULT_COMMAND_OPTIONS')
-    string(defaultValue: 'clean-all resolve dist', description: 'Force base ant command options',
-          name: 'ANT_DEFAULT_COMMAND_OPTIONS')
-    string(defaultValue: 'test jacoco', description: 'Ant test targets', name: 'ANT_TEST_TARGETS')
-
-    string(defaultValue: '-Xms512m', description: 'Typically the JVM opts for maven', name: 'MAVEN_OPTS')
-    string(defaultValue: '-DsurefireArgLine=-Xmx1g', description: 'Typically, some extra for Maven Surefire',
-      name: 'MAVEN_TEST_OPTS')
-    string(defaultValue: '10', description: 'Maximum parallel source checkout chunk size',
-      name: 'PARALLEL_CHECKOUT_CHUNKSIZE')
-    string(defaultValue: '20', description: 'Shallow clone depth (leave blank for infinite)', name: 'CHECKOUT_DEPTH')
-    string(defaultValue: '360', description: 'Build timeout in minutes', name: 'BUILD_TIMEOUT')
-    string(defaultValue: '1', description: 'Build retry count', name: 'BUILD_RETRIES')
-    string(defaultValue: 'http://nexus.pentaho.org/content/groups/omni',
-      description: 'Maven resolve repo global mirror', name: 'MAVEN_RESOLVE_REPO_URL')
-    string(defaultValue: 'github-buildguy', description: 'Use this Jenkins credential for checkouts',
-      name: 'CHECKOUT_CREDENTIALS_ID')
-    string(defaultValue: 'Java8_auto', description: 'Use this Jenkins JDK label for builds',
-      name: 'JENKINS_JDK_FOR_BUILDS')
-
-    string(defaultValue: 'maven3-auto', description: 'Use this Jenkins Maven label for builds',
-      name: 'JENKINS_MAVEN_FOR_BUILDS')
-    string(defaultValue: 'ant-auto', description: 'Use this Jenkins Ant label for builds',
-          name: 'JENKINS_ANT_FOR_BUILDS')
-
-
-    booleanParam(defaultValue: true, description: 'Run the scm checkouts', name: 'RUN_CHECKOUTS')
-    booleanParam(defaultValue: true, description: 'Run the code builds', name: 'RUN_BUILDS')
-    booleanParam(defaultValue: true, description: 'Run the code tests', name: 'RUN_UNIT_TESTS')
-    booleanParam(defaultValue: true, description: 'Archive the artifacts', name: 'ARCHIVE_ARTIFACTS')
-
-    booleanParam(defaultValue: false, description: 'Clean all build dependency caches', name: 'CLEAN_ALL_CACHES')
-    booleanParam(defaultValue: false, description: 'Clean build scm workspaces', name: 'CLEAN_SCM_WORKSPACES')
-    booleanParam(defaultValue: false, description: 'Clean build workspace (this happens post build)', name: 'CLEAN_BUILD_WORKSPACE')
-
-    booleanParam(defaultValue: false, description: 'No op build (test the build config)', name: 'NOOP')
-    booleanParam(defaultValue: false, description: 'Distributes source checkouts on remote nodes ' +
-      '(Otherwise assume workspace is shared on all). Not yet fully implemented--do not use.', name: 'USE_DISTRIBUTED_SOURCE_CACHING')
+    booleanParam(
+        name: 'RUN_CHECKOUTS',
+        defaultValue: true,
+        description: 'Run the scm checkouts'
+    )
+    booleanParam(
+        name: 'RUN_BUILDS',
+        defaultValue: true,
+        description: 'Run the code builds'
+    )
+    booleanParam(
+        name: 'RUN_UNIT_TESTS',
+        defaultValue: true,
+        description: 'Run the code tests'
+    )
+    booleanParam(
+        name: 'ARCHIVE_ARTIFACTS',
+        defaultValue: true,
+        description: 'Archive the artifacts'
+    )
+    booleanParam(
+        name: 'CLEAN_ALL_CACHES',
+        defaultValue: false,
+        description: 'Clean all build dependency caches'
+    )
+    booleanParam(
+        name: 'CLEAN_SCM_WORKSPACES',
+        defaultValue: false,
+        description: 'Clean build scm workspaces'
+    )
+    booleanParam(
+        name: 'CLEAN_BUILD_WORKSPACE',
+        defaultValue: false,
+        description: 'Clean build workspace (this happens post build)'
+    )
+    booleanParam(
+        name: 'NOOP',
+        defaultValue: false,
+        description: 'No op build (test the build config)'
+    )
+    booleanParam(
+        name: 'USE_DISTRIBUTED_SOURCE_CACHING',
+        defaultValue: false,
+        description: 'Distributes source checkouts on remote nodes ' +
+            '(Otherwise assume workspace is shared on all). Not yet fully implemented--do not use.'
+    )
 
   }
 
