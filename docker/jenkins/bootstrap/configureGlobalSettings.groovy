@@ -18,11 +18,13 @@
      - CSRF Protection
      - Disable CLI remoting
      - Markup Formatter
+     - Project name restrictions
  */
 import hudson.markup.RawHtmlMarkupFormatter
 import hudson.security.csrf.DefaultCrumbIssuer
 import jenkins.CLI
 import jenkins.model.Jenkins
+import jenkins.model.ProjectNamingStrategy
 import jenkins.security.s2m.AdminWhitelistRule
 import org.apache.commons.io.FileUtils
 
@@ -69,7 +71,7 @@ if (!jenkins.isQuietingDown()) {
         /*
             Prevent Cross Site Request Forgery exploits
          */
-        jenkins.setCrumbIssuer(new DefaultCrumbIssuer(true))
+        jenkins.crumbIssuer = new DefaultCrumbIssuer(true)
         logger.info 'Configured CSRF Protection'
 
         /*
@@ -79,6 +81,9 @@ if (!jenkins.isQuietingDown()) {
             jenkins.markupFormatter = new RawHtmlMarkupFormatter(false)
             logger.info 'Configured Markup Formatter'
         }
+
+        jenkins.projectNamingStrategy =
+            new ProjectNamingStrategy.PatternProjectNamingStrategy('[a-z0-9-\\.]{3,50}',"", true)
 
         jenkins.save()
 

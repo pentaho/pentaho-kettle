@@ -114,8 +114,7 @@ while [[ $# -gt 0 ]]; do
       export force="ok"
       ;;
     * )
-      echo "Unknown option: $opt"
-      exit 1
+      die "Unknown option: $opt"
       ;;
   esac
   shift;
