@@ -281,6 +281,16 @@ public class EnvUtil {
   }
 
   /**
+   * @param key
+   *          The key, the name of the environment variable to clear
+   * @return The value of a System environment variable in the java virtual machine. If the key is not present, the
+   *         variable is not defined and null returned.
+   */
+  public static final String clearSystemProperty( String key ) {
+    return System.clearProperty( key );
+  }
+
+  /**
    * Returns an available java.util.Locale object for the given localeCode.
    *
    * The localeCode code can be case insensitive, if it is available the method will find it and return it.
