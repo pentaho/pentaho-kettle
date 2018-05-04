@@ -19,8 +19,13 @@ pipeline {
       name: 'LAST_JOB')
 
     string(defaultValue: '.*-SNAPSHOT.*', description: 'Clean build dependency caches with regex', name: 'CLEAN_CACHES_REGEX')
+
     string(defaultValue: '-B -e -q', description: 'Force base maven command options',
       name: 'MAVEN_DEFAULT_COMMAND_OPTIONS')
+    string(defaultValue: 'clean-all resolve dist', description: 'Force base ant command options',
+          name: 'ANT_DEFAULT_COMMAND_OPTIONS')
+    string(defaultValue: 'test jacoco', description: 'Ant test targets', name: 'ANT_TEST_TARGETS')
+
     string(defaultValue: '-Xms512m', description: 'Typically the JVM opts for maven', name: 'MAVEN_OPTS')
     string(defaultValue: '-DsurefireArgLine=-Xmx1g', description: 'Typically, some extra for Maven Surefire',
       name: 'MAVEN_TEST_OPTS')
@@ -35,8 +40,12 @@ pipeline {
       name: 'CHECKOUT_CREDENTIALS_ID')
     string(defaultValue: 'Java8_auto', description: 'Use this Jenkins JDK label for builds',
       name: 'JENKINS_JDK_FOR_BUILDS')
+
     string(defaultValue: 'maven3-auto', description: 'Use this Jenkins Maven label for builds',
       name: 'JENKINS_MAVEN_FOR_BUILDS')
+    string(defaultValue: 'ant-auto', description: 'Use this Jenkins Ant label for builds',
+          name: 'JENKINS_ANT_FOR_BUILDS')
+
 
     booleanParam(defaultValue: true, description: 'Run the scm checkouts', name: 'RUN_CHECKOUTS')
     booleanParam(defaultValue: true, description: 'Run the code builds', name: 'RUN_BUILDS')
@@ -49,7 +58,7 @@ pipeline {
 
     booleanParam(defaultValue: false, description: 'No op build (test the build config)', name: 'NOOP')
     booleanParam(defaultValue: false, description: 'Distributes source checkouts on remote nodes ' +
-      '(Otherwise assume workspace is shared on all). Not yet fully implmented--do not use.', name: 'USE_DISTRIBUTED_SOURCE_CACHING')
+      '(Otherwise assume workspace is shared on all). Not yet fully implemented--do not use.', name: 'USE_DISTRIBUTED_SOURCE_CACHING')
 
   }
 
@@ -68,6 +77,8 @@ pipeline {
     RESOLVE_REPO_MIRROR = "${params.MAVEN_RESOLVE_REPO_URL}"
     LIB_CACHE_ROOT_PATH = "${WORKSPACE}/caches"
     BUILDS_ROOT_PATH = "${WORKSPACE}/builds"
+    MAVEN_HOME = tool('maven3-auto')
+    PATH = "$MAVEN_HOME/bin:$PATH"
   }
 
 
@@ -167,7 +178,7 @@ pipeline {
         }
       }
       steps {
-        junit allowEmptyResults: true, testResults: '**/target/**/TEST*.xml'
+        junit allowEmptyResults: true, testResults: '**/bin/**/TEST*.xml **/target/**/TEST*.xml'
       }
     }
 
@@ -178,7 +189,7 @@ pipeline {
         }
       }
       steps {
-        archiveArtifacts artifacts: '**/target/*.gz, **/target/*.tar.gz, **/target/*.zip', fingerprint: false
+        archiveArtifacts artifacts: '**/dist/*.jar, **/dist/*.gz, **/dist/*.tar.gz, **/dist/*.zip, **/target/*.jar, **/target/*.gz, **/target/*.tar.gz, **/target/*.zip', fingerprint: false
       }
     }
 
