@@ -40,6 +40,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 
+import com.vividsolutions.jts.geom.Geometry;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.exception.KettleEOFException;
@@ -99,11 +100,13 @@ public class Value implements Cloneable, XMLInterface, Serializable {
    */
   public static final int VALUE_TYPE_BINARY = 8;
 
+  public static final int VALUE_TYPE_GEOMETRY    = 11;
+
   /**
    * The descriptions of the value types.
    */
   private static final String[] valueTypeCode = { "-",
-    "Number", "String", "Date", "Boolean", "Integer", "BigNumber", "Serializable", "Binary"
+    "Number", "String", "Date", "Boolean", "Integer", "BigNumber", "Serializable", "Binary","Geometry"
   };
 
   private ValueInterface value;
@@ -174,6 +177,8 @@ public class Value implements Cloneable, XMLInterface, Serializable {
       case VALUE_TYPE_BINARY:
         value = new ValueBinary();
         break;
+      case VALUE_TYPE_GEOMETRY : value = new ValueGeometry();
+        break;
       default:
         value = null;
     }
@@ -210,11 +215,16 @@ public class Value implements Cloneable, XMLInterface, Serializable {
         case VALUE_TYPE_BINARY:
           value = new ValueBinary( value.getBytes() );
           break;
+        case VALUE_TYPE_GEOMETRY:
+          value = new ValueGeometry(value.getGeometry());
+        break;
         default:
           value = null;
       }
     }
   }
+
+
 
   /**
    * Constructs a new Value with a name, a type, length and precision.
@@ -245,6 +255,29 @@ public class Value implements Cloneable, XMLInterface, Serializable {
     // clearValue();
     setValue( bignum );
     setName( name );
+  }
+
+  public Value(String name, Geometry g)
+  {
+    clearValue();
+    setValue(g);
+    setName(name);
+  }
+
+  // -- Begin GeoKettle modification --
+  /**
+   * Sets the Value to a geometry
+   * @param b The geometry...
+   */
+  public void setValue(Geometry g)
+  {
+    if (value==null || value.getType()!=VALUE_TYPE_GEOMETRY)  value = new ValueGeometry(g);
+    else value.setGeometry(g);
+
+    if ( g == null )
+      setNull(true);
+    else
+      setNull(false);
   }
 
   /**
@@ -670,6 +703,15 @@ public class Value implements Cloneable, XMLInterface, Serializable {
     return value.getBigNumber();
   }
 
+  private String toStringGeometry(boolean pad)
+  {
+    if (value != null) {
+      return isNull() || value.getGeometry() == null ? Const.NULL_BINARY : new String(value.getString());
+    } else {
+      return null;
+    }
+  }
+
   /**
    * Get the double precision floating point number of this Value. If the value is not of type NUMBER, a conversion is
    * done first.
@@ -778,6 +820,33 @@ public class Value implements Cloneable, XMLInterface, Serializable {
     }
     return value.getBytes();
   }
+
+
+  // -- Begin GeoKettle modification --
+  /**
+   * Get the Geometry representation of this value
+   */
+  public Geometry getGeometry()
+  {
+    if (value==null || isNull()) return null;
+    return value.getGeometry();
+  }
+  // -- End GeoKettle modification
+
+  // -- Begin GeoKettle modification --
+  /**
+   * Checks whether or not this value is of type Geometry
+   * @return true if this value has type Geometry
+   */
+  public boolean isGeometry() {
+    // Serializable is not included here as it used for
+    // internal purposes only.
+    if(value == null) {
+      return false;
+    }
+    return value.getType() == VALUE_TYPE_GEOMETRY;
+  }
+  // -- End GeoKettle modification --
 
   /**
    * Set the type of this Value
@@ -1495,6 +1564,7 @@ public class Value implements Cloneable, XMLInterface, Serializable {
     // Handle Content -- only when not NULL
     if ( !isNull() ) {
       switch ( type ) {
+        case VALUE_TYPE_GEOMETRY:
         case VALUE_TYPE_STRING:
           if ( getString() == null ) {
             dos.writeInt( -1 ); // -1 == null string
@@ -1581,6 +1651,7 @@ public class Value implements Cloneable, XMLInterface, Serializable {
     // Read the values
     if ( !isNull() ) {
       switch ( getType() ) {
+        case VALUE_TYPE_GEOMETRY:
         case VALUE_TYPE_STRING:
           // read the length
           int stringLength = dis.readInt();
@@ -1665,6 +1736,7 @@ public class Value implements Cloneable, XMLInterface, Serializable {
       // Handle Content -- only when not NULL
       if ( !isNull() ) {
         switch ( getType() ) {
+          case VALUE_TYPE_GEOMETRY :
           case VALUE_TYPE_STRING:
             if ( getString() == null ) {
               dos.writeInt( -1 ); // -1 == null string
@@ -1867,12 +1939,116 @@ public class Value implements Cloneable, XMLInterface, Serializable {
       case VALUE_TYPE_BIGNUMBER: {
         return getBigNumber().compareTo( v.getBigNumber() );
       }
+      case VALUE_TYPE_GEOMETRY:
+      {
+        // TODO ...
+        // We must define the meaning of <, > and = for geometries,
+        // and implement a compare method for this type.
+        return 0;
+      }
       default:
         break;
     }
 
     // Still here? Not possible! But hey, give back 0, mkay?
     return 0;
+  }
+
+
+  public boolean SpatialIntersects(Value v)
+  {
+    // topological predicates only make sense for geometry types
+    if( (getType() == VALUE_TYPE_GEOMETRY) && (v.getType() == VALUE_TYPE_GEOMETRY) )
+      return getGeometry().intersects(v.getGeometry());
+
+    return false;
+  }
+
+  public boolean SpatialEquals(Value v)
+  {
+    // topological predicates only make sense for geometry types
+    if( (getType() == VALUE_TYPE_GEOMETRY) && (v.getType() == VALUE_TYPE_GEOMETRY) )
+      return getGeometry().equals(v.getGeometry());
+
+    return false;
+  }
+
+  public boolean SpatialContains(Value v)
+  {
+    // topological predicates only make sense for geometry types
+    if( (getType() == VALUE_TYPE_GEOMETRY) && (v.getType() == VALUE_TYPE_GEOMETRY) )
+      return getGeometry().contains(v.getGeometry());
+
+    return false;
+  }
+
+  public boolean SpatialCrosses(Value v)
+  {
+    // topological predicates only make sense for geometry types
+    if( (getType() == VALUE_TYPE_GEOMETRY) && (v.getType() == VALUE_TYPE_GEOMETRY) )
+      return getGeometry().crosses(v.getGeometry());
+
+    return false;
+  }
+
+  public boolean SpatialDisjoint(Value v)
+  {
+    // topological predicates only make sense for geometry types
+    if( (getType() == VALUE_TYPE_GEOMETRY) && (v.getType() == VALUE_TYPE_GEOMETRY) )
+      return getGeometry().disjoint(v.getGeometry());
+
+    return false;
+  }
+
+  public boolean SpatialWithin(Value v)
+  {
+    // topological predicates only make sense for geometry types
+    if( (getType() == VALUE_TYPE_GEOMETRY) && (v.getType() == VALUE_TYPE_GEOMETRY) )
+      return getGeometry().within(v.getGeometry());
+
+    return false;
+  }
+
+  public boolean SpatialOverlaps(Value v)
+  {
+    // topological predicates only make sense for geometry types
+    if( (getType() == VALUE_TYPE_GEOMETRY) && (v.getType() == VALUE_TYPE_GEOMETRY) )
+      return getGeometry().overlaps(v.getGeometry());
+
+    return false;
+  }
+
+  public boolean SpatialTouches(Value v)
+  {
+    // topological predicates only make sense for geometry types
+    if( (getType() == VALUE_TYPE_GEOMETRY) && (v.getType() == VALUE_TYPE_GEOMETRY) )
+      return getGeometry().touches(v.getGeometry());
+
+    return false;
+  }
+
+  // unary predicates:
+
+  public boolean SpatialIsValid()
+  {
+    // topological predicates only make sense for geometry types
+    if( getType() == VALUE_TYPE_GEOMETRY )
+      return getGeometry().isValid();
+
+    return false;
+  }
+
+  public boolean isEqualTo(Geometry geom)
+  {
+    if( getType() == VALUE_TYPE_GEOMETRY )
+    {
+      Geometry g = value.getGeometry();
+      return ( g != null ? g.equalsExact(geom) : false ) ;
+    }
+    else
+    {
+      return false;
+    }
   }
 
   @Override

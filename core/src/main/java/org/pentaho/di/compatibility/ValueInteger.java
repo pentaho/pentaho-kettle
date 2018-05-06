@@ -26,6 +26,7 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
 
+import com.vividsolutions.jts.geom.Geometry;
 import org.pentaho.di.core.Const;
 
 /**
@@ -167,6 +168,16 @@ public class ValueInteger implements ValueInterface, Cloneable {
   @Override
   public byte[] getBytes() {
     return null;
+  }
+
+  @Override
+  public Geometry getGeometry() {
+    return null;
+  }
+
+  @Override
+  public void setGeometry(Geometry g) {
+
   }
 
   @Override

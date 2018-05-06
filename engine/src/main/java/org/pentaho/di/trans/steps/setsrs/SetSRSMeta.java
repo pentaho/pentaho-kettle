@@ -20,6 +20,7 @@ import org.pentaho.di.repository.Repository;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.*;
+import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Node;
 
 import java.util.List;
@@ -80,16 +81,10 @@ public class SetSRSMeta extends BaseStepMeta implements StepMetaInterface {
 	public void setActualPath(String path){
 		this.actualPath = path;
 	}
-	
-	/*
-	 * (non-Javadoc)
-	 * @see org.pentaho.di.trans.step.BaseStepMeta#getFields(org.pentaho.di.core.row.RowMetaInterface, java.lang.String, org.pentaho.di.core.row.RowMetaInterface[], org.pentaho.di.trans.step.StepMeta, org.pentaho.di.core.variables.VariableSpace)
-	 */
-	public void getFields(RowMetaInterface inputRowMeta, String name,
-                          RowMetaInterface info[], StepMeta nextStep, VariableSpace space)
-			throws KettleStepException {
-		// Set the SRS in ValueMeta, if it has changed or leave everything at is
-		// is, if there are no changes to make.
+
+
+	@Override
+	public void getFields(RowMetaInterface inputRowMeta, String name, RowMetaInterface[] info, StepMeta nextStep, VariableSpace space, Repository repository, IMetaStore metaStore) throws KettleStepException {
 		if (!selectedSRS.equals(SRS.UNKNOWN) && !Const.isEmpty(fieldName)) {
 			int idx = inputRowMeta.indexOfValue(fieldName);
 			// Value found
@@ -104,6 +99,30 @@ public class SetSRSMeta extends BaseStepMeta implements StepMetaInterface {
 			}
 		}
 	}
+
+//	/*
+//         * (non-Javadoc)
+//         * @see org.pentaho.di.trans.step.BaseStepMeta#getFields(org.pentaho.di.core.row.RowMetaInterface, java.lang.String, org.pentaho.di.core.row.RowMetaInterface[], org.pentaho.di.trans.step.StepMeta, org.pentaho.di.core.variables.VariableSpace)
+//         */
+//	public void getFields(RowMetaInterface inputRowMeta, String name,
+//                          RowMetaInterface info[], StepMeta nextStep, VariableSpace space)
+//			throws KettleStepException {
+//		// Set the SRS in ValueMeta, if it has changed or leave everything at is
+//		// is, if there are no changes to make.
+//		if (!selectedSRS.equals(SRS.UNKNOWN) && !Const.isEmpty(fieldName)) {
+//			int idx = inputRowMeta.indexOfValue(fieldName);
+//			// Value found
+//			if (idx >= 0) {
+//				// This is the value we need to change:
+//				ValueMetaInterface v = inputRowMeta.getValueMeta(idx);
+//				// Do we need to set the SRID?
+//				// if (v.getGeometrySRS().equals(SRS.UNKNOWN)) {
+//				v.setGeometrySRS(selectedSRS);
+//				v.setOrigin(name);
+//				// }
+//			}
+//		}
+//	}
 
 	/*
 	 * (non-Javadoc)

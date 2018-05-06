@@ -146,6 +146,7 @@ public class Const {
    */
   public static final int SORT_SIZE = 5000;
 
+  public static final String NULL_GEOMETRY = "";
   /**
    * job/trans heartbeat scheduled executor periodic interval ( in seconds )
    */

@@ -29,6 +29,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import com.vividsolutions.jts.geom.Geometry;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.util.Utils;
 
@@ -208,6 +209,16 @@ public class ValueString implements ValueInterface, Cloneable {
     }
     return retByte;
   }
+
+  // -- Begin GeoKettle modification --
+  public Geometry getGeometry() {
+    return ValueGeometry.GeometryFromWKT(string);
+  }
+
+  public void setGeometry(Geometry b) {
+    string = ValueGeometry.WKTFromGeometry(b);
+  }
+  // -- End GeoKettle modification --
 
   @Override
   public void setBytes( byte[] b ) {
