@@ -471,16 +471,23 @@
         </exclusion>
       </exclusions>
     </dependency>
+    <!--<dependency>-->
+      <!--<groupId>org.postgresql</groupId>-->
+      <!--<artifactId>postgresql</artifactId>-->
+      <!--<version>${postgresql.version}</version>-->
+      <!--<exclusions>-->
+        <!--<exclusion>-->
+          <!--<groupId>*</groupId>-->
+          <!--<artifactId>*</artifactId>-->
+        <!--</exclusion>-->
+      <!--</exclusions>-->
+    <!--</dependency>-->
     <dependency>
-      <groupId>org.postgresql</groupId>
+      <groupId>com.postgresql</groupId>
       <artifactId>postgresql</artifactId>
-      <version>${postgresql.version}</version>
-      <exclusions>
-        <exclusion>
-          <groupId>*</groupId>
-          <artifactId>*</artifactId>
-        </exclusion>
-      </exclusions>
+      <version>8.3-604.jdbc3</version>
+      <scope>system</scope>
+      <systemPath>D:/filestore/jar/postgresql-8.3-604.jdbc3.jar</systemPath>
     </dependency>
     <dependency>
       <groupId>rome</groupId>

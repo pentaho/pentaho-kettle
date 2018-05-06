@@ -570,7 +570,7 @@
       <artifactId>deegree</artifactId>
       <version>2.0</version>
       <scope>system</scope>
-      <systemPath>C:/Users/Administrator/Desktop/jar/deegree2.jar</systemPath>
+      <systemPath>D:/filestore/jar/deegree2.jar</systemPath>
     </dependency>
     <dependency>
       <groupId>de.micromata.jak</groupId>
@@ -588,7 +588,14 @@
       <artifactId>postgis</artifactId>
       <version>1.3.6</version>
       <scope>system</scope>
-      <systemPath>C:/Users/Administrator/Desktop/jar/postgis_1.3.6.jar</systemPath>
+      <systemPath>D:/filestore/jar/postgis_1.3.6.jar</systemPath>
+    </dependency>
+    <dependency>
+      <groupId>com.postgresql</groupId>
+      <artifactId>postgresql</artifactId>
+      <version>8.3-604.jdbc3</version>
+      <scope>system</scope>
+      <systemPath>D:/filestore/jar/postgresql-8.3-604.jdbc3.jar</systemPath>
     </dependency>
 
     <!-- https://mvnrepository.com/artifact/commons-httpclient/commons-httpclient -->
@@ -602,24 +609,24 @@
       <artifactId>javax.servlet-api</artifactId>
       <version>RELEASE</version>
     </dependency>
-    <dependency>
-      <groupId>org.postgresql</groupId>
-      <artifactId>postgresql</artifactId>
-      <version>${postgresql.version}</version>
-      <exclusions>
-        <exclusion>
-          <groupId>*</groupId>
-          <artifactId>*</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-    <dependency>
-      <groupId>com.hsqldb</groupId>
-      <artifactId>hsqldb</artifactId>
-      <version>1.0</version>
-      <scope>system</scope>
-      <systemPath>C:/Users/Administrator/Desktop/jar/hsqldb.jar</systemPath>
-    </dependency>
+    <!--<dependency>-->
+      <!--<groupId>org.postgresql</groupId>-->
+      <!--<artifactId>postgresql</artifactId>-->
+      <!--<version>${postgresql.version}</version>-->
+      <!--<exclusions>-->
+        <!--<exclusion>-->
+          <!--<groupId>*</groupId>-->
+          <!--<artifactId>*</artifactId>-->
+        <!--</exclusion>-->
+      <!--</exclusions>-->
+    <!--</dependency>-->
+    <!--<dependency>-->
+      <!--<groupId>com.hsqldb</groupId>-->
+      <!--<artifactId>hsqldb</artifactId>-->
+      <!--<version>1.0</version>-->
+      <!--<scope>system</scope>-->
+      <!--<systemPath>D:/filestore/jar/hsqldb.jar</systemPath>-->
+    <!--</dependency>-->
   </dependencies>
 
   <build>
