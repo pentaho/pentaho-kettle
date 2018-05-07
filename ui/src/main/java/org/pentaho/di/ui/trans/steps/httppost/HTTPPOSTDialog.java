@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -73,6 +73,7 @@ import org.pentaho.di.ui.core.widget.PasswordTextVar;
 import org.pentaho.di.ui.core.widget.TableView;
 import org.pentaho.di.ui.core.widget.TextVar;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
+import org.pentaho.di.ui.trans.step.ComponentSelectionListener;
 import org.pentaho.di.ui.trans.step.TableItemInsertListener;
 
 public class HTTPPOSTDialog extends BaseStepDialog implements StepDialogInterface {
@@ -406,6 +407,7 @@ public class HTTPPOSTDialog extends BaseStepDialog implements StepDialogInterfac
     fdPostAFile.top = new FormAttachment( wrequestEntity, margin );
     fdPostAFile.right = new FormAttachment( 100, 0 );
     wPostAFile.setLayoutData( fdPostAFile );
+    wPostAFile.addSelectionListener( new ComponentSelectionListener( input ) );
 
     wlConnectionTimeOut = new Label( gSettings, SWT.RIGHT );
     wlConnectionTimeOut.setText( BaseMessages.getString( PKG, "HTTPPOSTDialog.ConnectionTimeOut.Label" ) );

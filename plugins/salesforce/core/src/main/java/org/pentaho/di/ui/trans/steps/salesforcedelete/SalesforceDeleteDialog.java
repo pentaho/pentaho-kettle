@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -60,6 +60,7 @@ import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.widget.ComboVar;
 import org.pentaho.di.ui.core.widget.LabelTextVar;
 import org.pentaho.di.ui.core.widget.TextVar;
+import org.pentaho.di.ui.trans.step.ComponentSelectionListener;
 import org.pentaho.di.ui.trans.steps.salesforce.SalesforceStepDialog;
 
 public class SalesforceDeleteDialog extends SalesforceStepDialog {
@@ -318,6 +319,7 @@ public class SalesforceDeleteDialog extends SalesforceStepDialog {
     fdUseCompression.left = new FormAttachment( middle, 0 );
     fdUseCompression.top = new FormAttachment( wTimeOut, margin );
     wUseCompression.setLayoutData( fdUseCompression );
+    wUseCompression.addSelectionListener( new ComponentSelectionListener( input ) );
 
     // Rollback all changes on error?
     wlRollbackAllChangesOnError = new Label( wSettingsGroup, SWT.RIGHT );
@@ -337,6 +339,7 @@ public class SalesforceDeleteDialog extends SalesforceStepDialog {
     fdRollbackAllChangesOnError.left = new FormAttachment( middle, 0 );
     fdRollbackAllChangesOnError.top = new FormAttachment( wUseCompression, margin );
     wRollbackAllChangesOnError.setLayoutData( fdRollbackAllChangesOnError );
+    wRollbackAllChangesOnError.addSelectionListener( new ComponentSelectionListener( input ) );
 
     // BatchSize value
     wlBatchSize = new Label( wSettingsGroup, SWT.RIGHT );

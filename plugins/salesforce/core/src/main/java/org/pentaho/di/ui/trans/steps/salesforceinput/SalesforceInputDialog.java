@@ -89,6 +89,7 @@ import org.pentaho.di.ui.core.widget.StyledTextComp;
 import org.pentaho.di.ui.core.widget.TableView;
 import org.pentaho.di.ui.core.widget.TextVar;
 import org.pentaho.di.ui.trans.dialog.TransPreviewProgressDialog;
+import org.pentaho.di.ui.trans.step.ComponentSelectionListener;
 import org.pentaho.di.ui.trans.steps.salesforce.SalesforceStepDialog;
 
 import com.sforce.soap.partner.Field;
@@ -371,6 +372,7 @@ public class SalesforceInputDialog extends SalesforceStepDialog {
       @Override
       public void widgetSelected( SelectionEvent e ) {
         setEnableQuery();
+        input.setChanged();
       }
     } );
 
@@ -655,6 +657,7 @@ public class SalesforceInputDialog extends SalesforceStepDialog {
     fdQueryAll.left = new FormAttachment( middle, 0 );
     fdQueryAll.top = new FormAttachment( wRecordsFilter, margin );
     wQueryAll.setLayoutData( fdQueryAll );
+    wQueryAll.addSelectionListener( new ComponentSelectionListener( input ) );
 
     open = new Button( wAdvancedGroup, SWT.PUSH );
     open.setImage( GUIResource.getInstance().getImageCalendar() );
@@ -822,6 +825,7 @@ public class SalesforceInputDialog extends SalesforceStepDialog {
       @Override
       public void widgetSelected( SelectionEvent e ) {
         setEnableInclTargetURL();
+        input.setChanged();
       }
     } );
 
@@ -863,6 +867,7 @@ public class SalesforceInputDialog extends SalesforceStepDialog {
       @Override
       public void widgetSelected( SelectionEvent e ) {
         setEnableInclModule();
+        input.setChanged();
       }
     } );
 
@@ -903,6 +908,7 @@ public class SalesforceInputDialog extends SalesforceStepDialog {
       @Override
       public void widgetSelected( SelectionEvent e ) {
         setEnableInclSQL();
+        input.setChanged();
       }
     } );
 
@@ -943,6 +949,7 @@ public class SalesforceInputDialog extends SalesforceStepDialog {
       @Override
       public void widgetSelected( SelectionEvent e ) {
         setEnableInclTimestamp();
+        input.setChanged();
       }
     } );
 
@@ -984,6 +991,7 @@ public class SalesforceInputDialog extends SalesforceStepDialog {
       @Override
       public void widgetSelected( SelectionEvent e ) {
         setEnableInclRownum();
+        input.setChanged();
       }
     } );
 
@@ -1026,6 +1034,7 @@ public class SalesforceInputDialog extends SalesforceStepDialog {
       @Override
       public void widgetSelected( SelectionEvent e ) {
         setEnableInclDeletionDate();
+        input.setChanged();
       }
     } );
 
@@ -1091,6 +1100,7 @@ public class SalesforceInputDialog extends SalesforceStepDialog {
     fdUseCompression.left = new FormAttachment( middle, 0 );
     fdUseCompression.top = new FormAttachment( wTimeOut, margin );
     wUseCompression.setLayoutData( fdUseCompression );
+    wUseCompression.addSelectionListener( new ComponentSelectionListener( input ) );
 
     // Limit rows
     wlLimit = new Label( wContentComp, SWT.RIGHT );

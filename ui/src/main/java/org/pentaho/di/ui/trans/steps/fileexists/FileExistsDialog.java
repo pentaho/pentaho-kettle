@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -55,6 +55,7 @@ import org.pentaho.di.trans.steps.fileexists.FileExistsMeta;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.widget.TextVar;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
+import org.pentaho.di.ui.trans.step.ComponentSelectionListener;
 
 public class FileExistsDialog extends BaseStepDialog implements StepDialogInterface {
   private static Class<?> PKG = FileExistsMeta.class; // for i18n purposes, needed by Translator2!!
@@ -197,6 +198,7 @@ public class FileExistsDialog extends BaseStepDialog implements StepDialogInterf
     fdAddResult.left = new FormAttachment( middle, 0 );
     fdAddResult.top = new FormAttachment( wResult, margin );
     wAddResult.setLayoutData( fdAddResult );
+    wAddResult.addSelectionListener( new ComponentSelectionListener( input ) );
 
     // ///////////////////////////////
     // START OF Additional Fields GROUP //
@@ -227,6 +229,7 @@ public class FileExistsDialog extends BaseStepDialog implements StepDialogInterf
     fdInclFileType.left = new FormAttachment( middle, 0 );
     fdInclFileType.top = new FormAttachment( wResult, margin );
     wInclFileType.setLayoutData( fdInclFileType );
+    wInclFileType.addSelectionListener( new ComponentSelectionListener( input ) );
 
     // Enable/disable the right fields to allow a filename to be added to each row...
     wInclFileType.addSelectionListener( new SelectionAdapter() {
