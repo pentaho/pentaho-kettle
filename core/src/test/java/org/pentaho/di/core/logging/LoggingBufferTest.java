@@ -159,4 +159,31 @@ public class LoggingBufferTest {
     Assert.assertEquals( 20, loggingBuffer.size() );
   }
 
+  @Test
+  public void testRemoveChannelFromBuffer() {
+    String logChannelId = "1";
+    String otherLogChannelId = "2";
+    LoggingBuffer loggingBuffer = new LoggingBuffer( 20 );
+    for ( int i = 0; i < 10; i++ ) {
+      KettleLoggingEvent event = new KettleLoggingEvent();
+      event.setMessage( new LogMessage( "testWithLogChannelId", logChannelId, LogLevel.BASIC ) );
+      event.setTimeStamp( i );
+      loggingBuffer.addLogggingEvent( event );
+    }
+    for ( int i = 10; i < 17; i++ ) {
+      KettleLoggingEvent event = new KettleLoggingEvent();
+      event.setMessage( new LogMessage( "testWithNoLogChannelId",  LogLevel.BASIC ) );
+      event.setTimeStamp( i );
+      loggingBuffer.addLogggingEvent( event );
+    }
+    for ( int i = 17; i < 20; i++ ) {
+      KettleLoggingEvent event = new KettleLoggingEvent();
+      event.setMessage( new LogMessage( "testWithOtherLogChannelId", otherLogChannelId, LogLevel.BASIC ) );
+      event.setTimeStamp( i );
+      loggingBuffer.addLogggingEvent( event );
+    }
+    loggingBuffer.removeChannelFromBuffer( logChannelId );
+    Assert.assertEquals( 10, loggingBuffer.size() );
+  }
+
 }
