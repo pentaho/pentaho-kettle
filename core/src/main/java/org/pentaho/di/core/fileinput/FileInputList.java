@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -35,15 +35,12 @@ import org.apache.commons.vfs2.AllFileSelector;
 import org.apache.commons.vfs2.FileObject;
 import org.apache.commons.vfs2.FileSelectInfo;
 import org.apache.commons.vfs2.FileType;
-import org.apache.commons.vfs2.provider.sftp.SftpFileObject;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.vfs.KettleVFS;
-import org.pentaho.di.core.vfs.SftpFileObjectWithWindowsSupport;
-import org.pentaho.di.core.vfs.SftpFileSystemWindowsProvider;
 
 public class FileInputList {
   private List<FileObject> files = new ArrayList<FileObject>();
@@ -234,10 +231,6 @@ public class FileInputList {
               if ( fileObjects != null ) {
                 for ( int j = 0; j < fileObjects.length; j++ ) {
                   FileObject fileObject = fileObjects[ j ];
-                  if ( fileObject instanceof SftpFileObject ) {
-                    fileObject = new SftpFileObjectWithWindowsSupport( (SftpFileObject) fileObject,
-                      SftpFileSystemWindowsProvider.getSftpFileSystemWindows( (SftpFileObject) fileObject ) );
-                  }
                   if ( fileObject.exists() ) {
                     fileInputList.addFile( fileObject );
                   }

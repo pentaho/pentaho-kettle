@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -30,8 +30,8 @@ import org.apache.commons.vfs2.FileSystemManager;
 import org.apache.commons.vfs2.FileSystemOptions;
 import org.apache.commons.vfs2.cache.WeakRefFilesCache;
 import org.apache.commons.vfs2.impl.DefaultFileSystemManager;
+import org.apache.commons.vfs2.impl.StandardFileSystemManager;
 import org.apache.commons.vfs2.provider.local.LocalFile;
-import org.apache.commons.vfs2.provider.sftp.SftpFileObject;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleFileException;
 import org.pentaho.di.core.util.UUIDUtil;
@@ -148,20 +148,11 @@ public class KettleVFS {
         }
       }
 
-      FileObject fileObject = null;
-
       if ( fsOptions != null ) {
-        fileObject = fsManager.resolveFile( filename, fsOptions );
+        return fsManager.resolveFile( filename, fsOptions );
       } else {
-        fileObject = fsManager.resolveFile( filename );
+        return fsManager.resolveFile( filename );
       }
-
-      if ( fileObject instanceof SftpFileObject ) {
-        fileObject = new SftpFileObjectWithWindowsSupport( (SftpFileObject) fileObject,
-                SftpFileSystemWindowsProvider.getSftpFileSystemWindows( (SftpFileObject) fileObject ) );
-      }
-
-      return fileObject;
     } catch ( IOException e ) {
       throw new KettleFileException( "Unable to get VFS File object for filename '"
         + cleanseFilename( vfsFilename ) + "' : " + e.getMessage(), e );
@@ -510,6 +501,13 @@ public class KettleVFS {
       ( (ConcurrentFileSystemManager) getInstance().getFileSystemManager() )
         .closeEmbeddedFileSystem( embeddedMetastoreKey );
     }
+  }
+
+  /**
+   * @see StandardFileSystemManager#freeUnusedResources()
+   */
+  public static void freeUnusedResources() {
+    ( (StandardFileSystemManager) getInstance().getFileSystemManager() ).freeUnusedResources();
   }
 
   public enum Suffix {

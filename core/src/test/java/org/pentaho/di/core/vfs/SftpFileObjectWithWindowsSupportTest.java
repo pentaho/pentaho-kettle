@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,100 +22,124 @@
 
 package org.pentaho.di.core.vfs;
 
-import org.apache.commons.vfs2.FileName;
-import org.apache.commons.vfs2.provider.sftp.SftpFileObject;
-import org.junit.Assert;
+import org.apache.commons.vfs2.FileObject;
+import org.apache.commons.vfs2.FileType;
+import org.apache.commons.vfs2.provider.GenericFileName;
+import org.apache.commons.vfs2.util.PosixPermissions;
 import org.junit.Test;
-import org.mockito.Mockito;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
+
 public class SftpFileObjectWithWindowsSupportTest {
 
-  @Test
-  public void isReadableNormalCase() throws Exception {
+  private static final String PATH = "C/Test";
+  private static final String USERS = "Users";
+  private static final String PERMISSION_READ = "(R)";
+  private static final String PERMISSION_WRITE = "(W)";
 
-    SftpFileObject baseFileObject = Mockito.mock( SftpFileObject.class );
-    FileName fileName = Mockito.mock( FileName.class );
-    Mockito.doReturn( "C/Test" ).when( fileName ).getPath();
-    Mockito.doReturn( fileName ).when( baseFileObject ).getName();
-    SftpFileSystemWindows sftpFileSystemWindows  = Mockito.mock( SftpFileSystemWindows.class );
-    Mockito.doReturn( false ).when( sftpFileSystemWindows ).isRemoteHostWindows();
-    SftpFileObjectWithWindowsSupport fileObject = new SftpFileObjectWithWindowsSupport( baseFileObject, sftpFileSystemWindows );
-    fileObject.isReadable();
-    Mockito.verify( baseFileObject, Mockito.times( 1 ) ).isReadable();
+  @Test
+  public void isReadableLinuxCase() throws Exception {
+    FileObject fileObjectReadable = getLinuxFileObject( true, false );
+    FileObject fileObjectNotReadable = getLinuxFileObject( false, false );
+
+    assertTrue( fileObjectReadable.isReadable() );
+    assertFalse( fileObjectNotReadable.isReadable() );
   }
 
   @Test
   public void isReadableWindowsCase() throws Exception {
+    FileObject fileObjectReadable = getWindowsFileObject( true, false );
+    FileObject fileObjectNotReadable = getWindowsFileObject( false, false );
 
-    SftpFileObject baseFileObject = Mockito.mock( SftpFileObject.class );
-    FileName fileName = Mockito.mock( FileName.class );
-    String path = "C/Test";
-    Mockito.doReturn( path ).when( fileName ).getPath();
-    Mockito.doReturn( fileName ).when( baseFileObject ).getName();
-    Mockito.doReturn( true ).when( baseFileObject ).exists();
-    SftpFileSystemWindows sftpFileSystemWindows  = Mockito.mock( SftpFileSystemWindows.class );
-    Mockito.doReturn( true ).when( sftpFileSystemWindows ).isRemoteHostWindows();
-
-    List<String> groups = new ArrayList<>();
-    String administrators = "Users";
-    groups.add( administrators );
-    Mockito.doReturn( groups ).when( sftpFileSystemWindows ).getUserGroups();
-
-    HashMap<String, String> permissions = new HashMap<>();
-    permissions.put( administrators, "(R)" );
-    Mockito.doReturn( permissions ).when( sftpFileSystemWindows ).getFilePermission( path );
-
-    SftpFileObjectWithWindowsSupport fileObject = new SftpFileObjectWithWindowsSupport( baseFileObject, sftpFileSystemWindows );
-    boolean readable = fileObject.isReadable();
-    Mockito.verify( baseFileObject, Mockito.never() ).isReadable();
-    Assert.assertTrue( readable );
+    assertTrue( fileObjectReadable.isReadable() );
+    assertFalse( fileObjectNotReadable.isReadable() );
   }
 
-
   @Test
-  public void isWriteableNormalCase() throws Exception {
-    SftpFileObject baseFileObject = Mockito.mock( SftpFileObject.class );
-    FileName fileName = Mockito.mock( FileName.class );
-    Mockito.doReturn( "C/Test" ).when( fileName ).getPath();
-    Mockito.doReturn( fileName ).when( baseFileObject ).getName();
-    SftpFileSystemWindows sftpFileSystemWindows  = Mockito.mock( SftpFileSystemWindows.class );
-    Mockito.doReturn( false ).when( sftpFileSystemWindows ).isRemoteHostWindows();
-    SftpFileObjectWithWindowsSupport fileObject = new SftpFileObjectWithWindowsSupport( baseFileObject, sftpFileSystemWindows );
-    fileObject.isWriteable();
-    Mockito.verify( baseFileObject, Mockito.times( 1 ) ).isWriteable();
+  public void isWritableLinuxCase() throws Exception {
+    FileObject fileObjectWritable = getLinuxFileObject( true, true );
+    FileObject fileObjectNotWritable = getLinuxFileObject( true, false );
+
+    assertTrue( fileObjectWritable.isWriteable() );
+    assertFalse( fileObjectNotWritable.isWriteable() );
   }
 
-
-
   @Test
-  public void isWriteableWindowsCase() throws Exception {
+  public void isWritableWindowsCase() throws Exception {
+    FileObject fileObjectWritable = getWindowsFileObject( true, true );
+    FileObject fileObjectNotWritable = getWindowsFileObject( true, false );
 
-    SftpFileObject baseFileObject = Mockito.mock( SftpFileObject.class );
-    FileName fileName = Mockito.mock( FileName.class );
-    String path = "C/Test";
-    Mockito.doReturn( path ).when( fileName ).getPath();
-    Mockito.doReturn( fileName ).when( baseFileObject ).getName();
-    Mockito.doReturn( true ).when( baseFileObject ).exists();
-    SftpFileSystemWindows sftpFileSystemWindows  = Mockito.mock( SftpFileSystemWindows.class );
-    Mockito.doReturn( true ).when( sftpFileSystemWindows ).isRemoteHostWindows();
+    assertTrue( fileObjectWritable.isWriteable() );
+    assertFalse( fileObjectNotWritable.isWriteable() );
+  }
+
+  private static FileObject getLinuxFileObject( boolean posixReadable, boolean posixWritable ) throws Exception {
+    GenericFileName fileName = mock( GenericFileName.class );
+    doReturn( PATH ).when( fileName ).getPath();
+    SftpFileSystemWindows sftpFileSystem = spy( new SftpFileSystemWindows( fileName, null, null ) );
+    doReturn( false ).when( sftpFileSystem ).isRemoteHostWindows();
+
+    int permissions = 0;
+    if ( posixReadable ) {
+      permissions += 256;
+    }
+    if ( posixWritable ) {
+      permissions += 128;
+    }
+
+    PosixPermissions posixPermissions = new PosixPermissions( permissions, true, true );
+    return new SftpFileObjectWithWindowsSupport( fileName, sftpFileSystem ) {
+      @Override
+      public PosixPermissions getPermissions( boolean checkIds ) {
+        return posixPermissions;
+      }
+      @Override
+      public FileType getType() {
+        return FileType.FILE;
+      }
+    };
+  }
+
+  private static FileObject getWindowsFileObject( boolean windowsReadable, boolean windowsWritable )
+      throws Exception {
+    GenericFileName fileName = mock( GenericFileName.class );
+    doReturn( PATH ).when( fileName ).getPath();
+    SftpFileSystemWindows sftpFileSystem = spy( new SftpFileSystemWindows( fileName, null, null ) );
+    doReturn( true ).when( sftpFileSystem ).isRemoteHostWindows();
 
     List<String> groups = new ArrayList<>();
-    String administrators = "Users";
-    groups.add( administrators );
-    Mockito.doReturn( groups ).when( sftpFileSystemWindows ).getUserGroups();
+    groups.add( USERS );
+    doReturn( groups ).when( sftpFileSystem ).getUserGroups();
 
     HashMap<String, String> permissions = new HashMap<>();
-    permissions.put( administrators, "(W)" );
-    Mockito.doReturn( permissions ).when( sftpFileSystemWindows ).getFilePermission( path );
+    doReturn( permissions ).when( sftpFileSystem ).getFilePermission( PATH );
 
-    SftpFileObjectWithWindowsSupport fileObject = new SftpFileObjectWithWindowsSupport( baseFileObject, sftpFileSystemWindows );
-    boolean isWriteable = fileObject.isWriteable();
-    Mockito.verify( baseFileObject, Mockito.never() ).isWriteable();
-    Assert.assertTrue( isWriteable );
+    if ( windowsReadable ) {
+      permissions.put( USERS, PERMISSION_READ );
+    }
+    if ( windowsWritable ) {
+      permissions.put( USERS, PERMISSION_WRITE );
+    }
+
+    PosixPermissions posixPermissions = new PosixPermissions( 0, true, true );
+    return new SftpFileObjectWithWindowsSupport( fileName, sftpFileSystem ) {
+      @Override
+      public PosixPermissions getPermissions( boolean checkIds ) {
+        return posixPermissions;
+      }
+      @Override
+      public FileType getType() {
+        return FileType.FILE;
+      }
+    };
   }
 
 }
