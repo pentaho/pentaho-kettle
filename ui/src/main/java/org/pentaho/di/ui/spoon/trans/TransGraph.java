@@ -648,8 +648,9 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
             // Create a new step
             case DragAndDropContainer.TYPE_BASE_STEP_TYPE:
               // Not an existing step: data refers to the type of step to create
-              String steptype = container.getData();
-              stepMeta = spoon.newStep( transMeta, steptype, steptype, false, true );
+              String id = container.getId();
+              String name = container.getData();
+              stepMeta = spoon.newStep( transMeta, id, name, name, false, true );
               if ( stepMeta != null ) {
                 newstep = true;
               } else {
@@ -5001,7 +5002,7 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
 
     // Which is the new step?
 
-    StepMeta newStep = spoon.newStep( transMeta, stepPlugin.getName(), stepPlugin.getName(), false, true );
+    StepMeta newStep = spoon.newStep( transMeta, stepPlugin.getIds()[ 0 ], stepPlugin.getName(), stepPlugin.getName(), false, true );
     if ( newStep == null ) {
       return;
     }
