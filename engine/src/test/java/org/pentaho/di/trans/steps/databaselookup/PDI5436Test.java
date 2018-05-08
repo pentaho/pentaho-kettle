@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -141,10 +141,10 @@ public class PDI5436Test {
 
     doReturn( mockDatabase() ).when( stepSpy ).getDatabase( any( DatabaseMeta.class ) );
 
-    stepSpy.getInputRowSets().add( mockInputRowSet() );
+    stepSpy.addRowSetToInputRowSets( mockInputRowSet() );
     stepSpy.setInputRowMeta( mockInputRowMeta() );
     RowSet outputRowSet = new QueueRowSet();
-    stepSpy.getOutputRowSets().add( outputRowSet );
+    stepSpy.addRowSetToOutputRowSets( outputRowSet );
 
     StepMetaInterface meta = mockStepMeta();
     StepDataInterface data = smh.initStepDataInterface;

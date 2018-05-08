@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -87,15 +87,16 @@ public class Mapping extends BaseStep implements StepInterface {
 
           // Before we start, let's see if there are loose ends to tie up...
           //
-          if ( !getInputRowSets().isEmpty() ) {
-            for ( RowSet rowSet : new ArrayList<>( getInputRowSets() ) ) {
+          List<RowSet> inputRowSets = getInputRowSets();
+          if ( !inputRowSets.isEmpty() ) {
+            for ( RowSet rowSet : inputRowSets ) {
               // Pass this rowset down to a mapping input step in the
               // sub-transformation...
               //
               if ( mappingInputs.length == 1 ) {
                 // Simple case: only one input mapping. Move the RowSet over
                 //
-                mappingInputs[0].getInputRowSets().add( rowSet );
+                mappingInputs[0].addRowSetToInputRowSets( rowSet );
               } else {
                 // Difficult to see what's going on here.
                 // TODO: figure out where this RowSet needs to go and where it
@@ -106,7 +107,7 @@ public class Mapping extends BaseStep implements StepInterface {
                         + "To solve it, insert a dummy step before the mapping step." );
               }
             }
-            getInputRowSets().clear();
+            clearInputRowSets();
           }
 
           // Do the same thing for remote input steps...
@@ -142,15 +143,16 @@ public class Mapping extends BaseStep implements StepInterface {
 
           // Do the same thing for output row sets
           //
-          if ( !getOutputRowSets().isEmpty() ) {
-            for ( RowSet rowSet : new ArrayList<>( getOutputRowSets() ) ) {
+          List<RowSet> outputRowSets = getOutputRowSets();
+          if ( !outputRowSets.isEmpty() ) {
+            for ( RowSet rowSet : outputRowSets ) {
               // Pass this rowset down to a mapping input step in the
               // sub-transformation...
               //
               if ( mappingOutputs.length == 1 ) {
                 // Simple case: only one output mapping. Move the RowSet over
                 //
-                mappingOutputs[0].getOutputRowSets().add( rowSet );
+                mappingOutputs[0].addRowSetToOutputRowSets( rowSet );
               } else {
                 // Difficult to see what's going on here.
                 // TODO: figure out where this RowSet needs to go and where it
@@ -161,7 +163,7 @@ public class Mapping extends BaseStep implements StepInterface {
                         + "To solve it, insert a dummy step after the mapping step." );
               }
             }
-            getOutputRowSets().clear();
+            clearOutputRowSets();
           }
 
           // Do the same thing for remote output steps...
@@ -240,9 +242,10 @@ public class Mapping extends BaseStep implements StepInterface {
           // }
 
           if ( ( log != null ) && log.isDebug() ) {
-            log.logDebug( "# of input buffers: " + mappingInputs[0].getInputRowSets().size() );
-            if ( mappingInputs[0].getInputRowSets().size() > 0 ) {
-              log.logDebug( "Input buffer 0 size: " + mappingInputs[0].getInputRowSets().get( 0 ).size() );
+            List<RowSet> mappingInputRowSets = mappingInputs[0].getInputRowSets();
+            log.logDebug( "# of input buffers: " + mappingInputRowSets.size() );
+            if ( mappingInputRowSets.size() > 0 ) {
+              log.logDebug( "Input buffer 0 size: " + mappingInputRowSets.get( 0 ).size() );
             }
           }
 

@@ -273,7 +273,7 @@ public class XMLInputStreamTest {
             stepMockHelper.trans );
     xmlInputStream.setInputRowMeta( rm );
     xmlInputStream.getInputRowMeta().addValueMeta( ms );
-    xmlInputStream.getInputRowSets().add( rs );
+    xmlInputStream.addRowSetToInputRowSets( rs );
     xmlInputStream.setOutputRowSets( new ArrayList<>() );
 
     xmlInputStream.init( xmlInputStreamMeta, xmlInputStreamData );
@@ -307,7 +307,7 @@ public class XMLInputStreamTest {
     assertEquals( INCORRECT_XML_DATA_TYPE_DESCRIPTION_MESSAGE, "END_ELEMENT", rl.getWritten().get(
         expectedRowNum )[typeDescriptionPos + 1] );
     assertEquals( INCORRECT_XML_PATH_MESSAGE, "/ProductGroup", rl.getWritten().get( expectedRowNum )[pathPos + 1] );
-    assertEquals( INCORRECT_XML_DATA_NAME_MESSAGE, "ProductGroup", rl.getWritten().get( expectedRowNum )[dataNamePos +1] );
+    assertEquals( INCORRECT_XML_DATA_NAME_MESSAGE, "ProductGroup", rl.getWritten().get( expectedRowNum )[dataNamePos + 1] );
   }
 
   @Test
@@ -320,12 +320,12 @@ public class XMLInputStreamTest {
     testCorrectFileSelected( "filename", 1 );
   }
 
-  @Test(expected = KettleException.class)
+  @Test( expected = KettleException.class )
   public void testNotValidFilePathAndFileField() throws Exception {
     testCorrectFileSelected( "notPathNorValidFieldName", 0 );
   }
 
-  @Test(expected = KettleException.class)
+  @Test( expected = KettleException.class )
   public void testEmptyFileField() throws Exception {
     testCorrectFileSelected( StringUtils.EMPTY, 0 );
   }
@@ -349,7 +349,7 @@ public class XMLInputStreamTest {
                     stepMockHelper.trans );
     xmlInputStream.setInputRowMeta( rm );
     xmlInputStream.getInputRowMeta().addValueMeta( ms );
-    xmlInputStream.getInputRowSets().add( rs );
+    xmlInputStream.addRowSetToInputRowSets( rs );
     xmlInputStream.setOutputRowSets( new ArrayList<>() );
 
     xmlInputStream.init( xmlInputStreamMeta, xmlInputStreamData );

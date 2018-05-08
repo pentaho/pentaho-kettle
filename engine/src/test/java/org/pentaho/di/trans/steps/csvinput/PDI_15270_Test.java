@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -122,7 +122,7 @@ public class PDI_15270_Test extends CsvInputUnitTestBase {
       CsvInputData data = new CsvInputData();
       csvInput.init( meta, data );
 
-      csvInput.getOutputRowSets().add( output );
+      csvInput.addRowSetToOutputRowSets( output );
 
       try {
         csvInput.processRow( meta, data );

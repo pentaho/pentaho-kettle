@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -244,7 +244,7 @@ public class IngresVectorwiseTest {
     when( defMeta.getQuotedSchemaTableCombination( anyString(), anyString() ) ).thenReturn( "test_table" );
     ivwLoader.init( stepMockHelper.processRowsStepMetaInterface, ivwData );
     RowSet rowSet = stepMockHelper.getMockInputRowSet( rows );
-    ivwLoader.getInputRowSets().add( rowSet );
+    ivwLoader.addRowSetToInputRowSets( rowSet );
 
     when( stepMockHelper.processRowsStepMetaInterface.isUsingVwload() ).thenReturn( true );
     when( stepMockHelper.processRowsStepMetaInterface.getBufferSize() ).thenReturn( "5000" );

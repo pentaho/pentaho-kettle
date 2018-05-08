@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -145,8 +145,8 @@ public class MappingInputFieldsTest {
     in.putRow( rm, new Object[] { "str_1", new Integer( 200501 ), new Integer( 200502 ), new Integer( 200503 ),
       new Integer( 200500 ), new Integer( 200504 ), new Integer( 200505 ) } );
 
-    step.getInputRowSets().add( in );
-    step.getOutputRowSets().add( out );
+    step.addRowSetToInputRowSets( in );
+    step.addRowSetToOutputRowSets( out );
 
     assertTrue( step.init( meta, sdi ) );
 
@@ -267,8 +267,8 @@ public class MappingInputFieldsTest {
     in.putRow( rm, new Object[] { "str_1", new Integer( 200501 ), new Integer( 200502 ), new Integer( 200503 ),
       new Integer( 200500 ), new Integer( 200504 ), new Integer( 200505 ) } );
 
-    step.getInputRowSets().add( in );
-    step.getOutputRowSets().add( out );
+    step.addRowSetToInputRowSets( in );
+    step.addRowSetToOutputRowSets( out );
 
     assertTrue( step.init( meta, sdi ) );
 

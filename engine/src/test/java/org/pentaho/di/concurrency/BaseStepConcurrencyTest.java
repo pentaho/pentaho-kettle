@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -23,6 +23,7 @@
 package org.pentaho.di.concurrency;
 
 import org.junit.Test;
+import org.pentaho.di.core.RowSet;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
@@ -64,36 +65,103 @@ public class BaseStepConcurrencyTest {
 
         AtomicBoolean condition = new AtomicBoolean( true );
 
-        List<Modifier> modifiers = new ArrayList<>();
+        List<RowListenersModifier> rowListenersModifiers = new ArrayList<>();
         for ( int i = 0; i < modifiersAmount; i++ ) {
-            modifiers.add( new Modifier( condition ) );
+            rowListenersModifiers.add( new RowListenersModifier( condition ) );
         }
-        List<Traverser> traversers = new ArrayList<>();
+        List<RowListenersTraverser> rowListenersTraversers = new ArrayList<>();
         for ( int i = 0; i < traversersAmount; i++ ) {
-            traversers.add( new Traverser( condition ) );
+            rowListenersTraversers.add( new RowListenersTraverser( condition ) );
         }
 
         ConcurrencyTestRunner<?, ?> runner =
-                new ConcurrencyTestRunner<Object, Object>( modifiers, traversers, condition );
+                new ConcurrencyTestRunner<Object, Object>(rowListenersModifiers, rowListenersTraversers, condition );
         runner.runConcurrentTest();
 
         runner.checkNoExceptionRaised();
     }
 
-    private class Modifier extends StopOnErrorCallable<BaseStep> {
-        Modifier( AtomicBoolean condition ) {
+    /**
+     * Row sets collection modifiers are exposed out of BaseStep class,
+     * whereas the collection traversal is happening on every row being processed.
+     *
+     * We should be sure that modification of the collection will not throw a concurrent modification exception.
+     */
+    @Test
+    public void testInputOutputRowSets() throws Exception {
+        int modifiersAmount = 100;
+        int traversersAmount = 100;
+
+        StepMeta stepMeta = mock( StepMeta.class);
+        TransMeta transMeta = mock( TransMeta.class);
+        when( stepMeta.getName() ).thenReturn( STEP_META );
+        when( transMeta.findStep( STEP_META ) ).thenReturn( stepMeta );
+        when( stepMeta.getTargetStepPartitioningMeta() ).thenReturn( mock( StepPartitioningMeta.class ) );
+
+        baseStep = new BaseStep( stepMeta, null, 0, transMeta, mock( Trans.class ) );
+
+        AtomicBoolean condition = new AtomicBoolean( true );
+
+        List<RowSetsModifier> rowSetsModifiers = new ArrayList<>();
+        for ( int i = 0; i < modifiersAmount; i++ ) {
+            rowSetsModifiers.add( new RowSetsModifier( condition ) );
+        }
+        List<RowSetsTraverser> rowSetsTraversers = new ArrayList<>();
+        for ( int i = 0; i < traversersAmount; i++ ) {
+            rowSetsTraversers.add( new RowSetsTraverser( condition ) );
+        }
+
+        ConcurrencyTestRunner<?, ?> runner =
+                new ConcurrencyTestRunner<Object, Object>(rowSetsModifiers, rowSetsTraversers, condition );
+        runner.runConcurrentTest();
+
+        runner.checkNoExceptionRaised();
+    }
+
+    private class RowSetsModifier extends StopOnErrorCallable<BaseStep> {
+        RowSetsModifier( AtomicBoolean condition ) {
             super( condition );
         }
 
         @Override
-        BaseStep doCall() throws Exception {
+        BaseStep doCall() {
+            baseStep.addRowSetToInputRowSets( mock( RowSet.class ) );
+            baseStep.addRowSetToOutputRowSets( mock( RowSet.class ) );
+            return null;
+        }
+    }
+
+    private class RowSetsTraverser extends StopOnErrorCallable<BaseStep> {
+        RowSetsTraverser( AtomicBoolean condition ) {
+            super( condition );
+        }
+
+        @Override
+        BaseStep doCall() {
+            for ( RowSet rowSet : baseStep.getInputRowSets() ) {
+                rowSet.setRowMeta( mock( RowMetaInterface.class ) );
+            }
+            for ( RowSet rowSet : baseStep.getOutputRowSets() ) {
+                rowSet.setRowMeta( mock( RowMetaInterface.class ) );
+            }
+            return null;
+        }
+    }
+
+    private class RowListenersModifier extends StopOnErrorCallable<BaseStep> {
+        RowListenersModifier( AtomicBoolean condition ) {
+            super( condition );
+        }
+
+        @Override
+        BaseStep doCall() {
             baseStep.addRowListener( mock( RowListener.class ) );
             return null;
         }
     }
 
-    private class Traverser extends StopOnErrorCallable<BaseStep> {
-        Traverser( AtomicBoolean condition ) {
+    private class RowListenersTraverser extends StopOnErrorCallable<BaseStep> {
+        RowListenersTraverser( AtomicBoolean condition ) {
             super( condition );
         }
 

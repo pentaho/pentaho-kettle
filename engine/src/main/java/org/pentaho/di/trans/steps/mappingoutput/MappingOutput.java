@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -138,7 +138,7 @@ public class MappingOutput extends BaseStep implements StepInterface {
 
       // Make sure to connect it to both sides...
       //
-      getOutputRowSets().add( rowSet );
+      addRowSetToOutputRowSets( rowSet );
 
       // Add the row set to the target step as input.
       // This will appropriately drain the buffer as data comes in.
@@ -150,7 +150,7 @@ public class MappingOutput extends BaseStep implements StepInterface {
       // As such, we'll simply grab the remaining row sets at the Mapping#processRow() level and assign them to a
       // Mapping Input step.
       //
-      targetSteps[i].getInputRowSets().add( rowSet );
+      targetSteps[i].addRowSetToInputRowSets( rowSet );
     }
 
     data.inputValueRenames = inputValueRenames;

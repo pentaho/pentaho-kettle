@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -115,10 +115,10 @@ public class StringOperationsTest {
   @Test
   public void testProcessBinaryInput() throws KettleException {
     StringOperations step = new StringOperations( smh.stepMeta, smh.stepDataInterface, 0, smh.transMeta, smh.trans );
-    step.getInputRowSets().add( mockInputRowSet() );
+    step.addRowSetToInputRowSets( mockInputRowSet() );
 
     RowSet outputRowSet = new QueueRowSet();
-    step.getOutputRowSets().add( outputRowSet );
+    step.addRowSetToOutputRowSets( outputRowSet );
 
     StringOperationsMeta meta = mockStepMeta();
     StringOperationsData data = mockStepData();

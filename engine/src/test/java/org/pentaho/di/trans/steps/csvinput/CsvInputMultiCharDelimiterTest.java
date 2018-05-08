@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2016-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2016-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -89,7 +89,7 @@ public class CsvInputMultiCharDelimiterTest extends CsvInputUnitTestBase {
       CsvInputData data = new CsvInputData();
       csvInput.init( meta, data );
 
-      csvInput.getOutputRowSets().add( output );
+      csvInput.addRowSetToOutputRowSets( output );
 
       try {
         csvInput.processRow( meta, data );

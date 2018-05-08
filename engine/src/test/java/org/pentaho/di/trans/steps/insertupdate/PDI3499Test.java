@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -91,7 +91,7 @@ public class PDI3499Test {
 
     InsertUpdate step = new InsertUpdate( smh.stepMeta, smh.stepDataInterface, 0, smh.transMeta, smh.trans );
     step.setInputRowMeta( inputRowMeta );
-    step.getInputRowSets().add( smh.getMockInputRowSet( new Object[] { "2013-12-20".getBytes() } ) );
+    step.addRowSetToInputRowSets( smh.getMockInputRowSet( new Object[] { "2013-12-20".getBytes() } ) );
     step.init( smh.initStepMetaInterface, smh.initStepDataInterface );
     step.first = false;
     step.processRow( stepMeta, stepData );
