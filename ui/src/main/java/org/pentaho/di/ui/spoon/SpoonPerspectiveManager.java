@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -37,6 +37,7 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.i18n.BaseMessages;
+import org.pentaho.di.i18n.GlobalMessageUtil;
 import org.pentaho.di.i18n.LanguageChoice;
 import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.ui.xul.XulComponent;
@@ -303,13 +304,14 @@ public class SpoonPerspectiveManager {
           ResourceBundle res = null;
           if ( overlay.getResourceBundleUri() != null ) {
             try {
-              res = ResourceBundle.getBundle( overlay.getResourceBundleUri() );
+              res = GlobalMessageUtil.getBundle( overlay.getResourceBundleUri(), SpoonPerspectiveManager.class );
             } catch ( MissingResourceException ignored ) {
               // Ignore errors
             }
           } else {
             try {
-              res = ResourceBundle.getBundle( overlay.getOverlayUri().replace( ".xul", ".properties" ) );
+              res = GlobalMessageUtil.getBundle( overlay.getOverlayUri().replace( ".xul", ".properties" ),
+                SpoonPerspectiveManager.class );
             } catch ( MissingResourceException ignored ) {
               // Ignore errors
             }

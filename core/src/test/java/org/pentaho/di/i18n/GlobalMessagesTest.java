@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -29,7 +29,13 @@ import java.util.ResourceBundle;
 import java.util.UUID;
 
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.powermock.core.classloader.annotations.PrepareForTest;
+import org.powermock.modules.junit4.PowerMockRunner;
+import sun.misc.resources.Messages;
 
+@RunWith(PowerMockRunner.class)
+@PrepareForTest({ Messages.class })
 public class GlobalMessagesTest {
   /*
    * https://github.com/pentaho/pentaho-kettle/pull/620
@@ -42,14 +48,43 @@ public class GlobalMessagesTest {
    */
   @Test
   public void testGetBundleOldASCII() throws Exception {
-    res = GlobalMessages.getBundle( Locale.JAPAN, "org/pentaho/di/i18n/messages/test_ascii_messages" );
-    assertEquals( "環境変数の選択", res.getString( "System.Dialog.SelectEnvironmentVar.Title" ) );
+    final String pkgName = "org/pentaho/di/i18n/messages/test_ascii_messages";
+    final String msgKey = "System.Dialog.SelectEnvironmentVar.Title";
 
-    res = GlobalMessages.getBundle( Locale.CHINA, "org/pentaho/di/i18n/messages/test_ascii_messages" );
-    assertEquals( "选择一个环境变量", res.getString( "System.Dialog.SelectEnvironmentVar.Title" ) );
+    res = GlobalMessages.getBundle( Locale.JAPAN, pkgName );
+    assertEquals( "環境変数の選択", res.getString( msgKey ) );
 
-    res = GlobalMessages.getBundle( Locale.US, "org/pentaho/di/i18n/messages/test_ascii_messages" );
-    assertEquals( "Select an Environment Variable", res.getString( "System.Dialog.SelectEnvironmentVar.Title" ) );
+    res = GlobalMessages.getBundle( Locale.CHINA, pkgName );
+    assertEquals( "选择一个环境变量", res.getString( msgKey ) );
+
+    res = GlobalMessages.getBundle( Locale.US, pkgName );
+    assertEquals( "Select an Environment Variable", res.getString( msgKey ) );
+
+    // make sure the selected language is used correctly
+    LanguageChoice.getInstance().setDefaultLocale( Locale.FRENCH ); // "fr" - fall back to en_US
+    res = GlobalMessages.getBundle( pkgName );
+    assertEquals( "Select an Environment Variable", res.getString( msgKey ) );
+
+    LanguageChoice.getInstance().setDefaultLocale( Locale.FRANCE ); // "fr", "FR" - fall back to en_US
+    res = GlobalMessages.getBundle( pkgName );
+    assertEquals( "Select an Environment Variable", res.getString( msgKey ) );
+
+    LanguageChoice.getInstance().setDefaultLocale( Locale.JAPANESE ); // "jp"
+    res = GlobalMessages.getBundle( pkgName );
+    assertEquals( "環境変数の選択 (jp)", res.getString( msgKey ) );
+
+    LanguageChoice.getInstance().setDefaultLocale( Locale.JAPAN ); // "jp", "JP"
+    res = GlobalMessages.getBundle( pkgName );
+    assertEquals( "環境変数の選択", res.getString( msgKey ) );
+
+    LanguageChoice.getInstance().setDefaultLocale( Locale.CHINESE ); // "zh" - fall back on english
+    res = GlobalMessages.getBundle( pkgName );
+    assertEquals( "Select an Environment Variable", res.getString( msgKey ) );
+
+    LanguageChoice.getInstance().setDefaultLocale( Locale.CHINA ); // "zh", "CN"
+    res = GlobalMessages.getBundle( pkgName );
+    assertEquals( "选择一个环境变量", res.getString( msgKey ) );
+
   }
 
   /*
@@ -57,11 +92,39 @@ public class GlobalMessagesTest {
    */
   @Test
   public void testGetBundleNewUTF8() throws Exception {
-    res = GlobalMessages.getBundle( Locale.JAPAN, "org/pentaho/di/i18n/messages/test_utf8_messages" );
-    assertEquals( "環境変数の選択", res.getString( "System.Dialog.SelectEnvironmentVar.Title" ) );
+    final String pkgName = "org/pentaho/di/i18n/messages/test_utf8_messages";
+    final String msgKey = "System.Dialog.SelectEnvironmentVar.Title";
 
-    res = GlobalMessages.getBundle( Locale.CHINA, "org/pentaho/di/i18n/messages/test_utf8_messages" );
-    assertEquals( "选择一个环境变量", res.getString( "System.Dialog.SelectEnvironmentVar.Title" ) );
+    res = GlobalMessages.getBundle( Locale.JAPAN, pkgName );
+    assertEquals( "環境変数の選択", res.getString( msgKey ) );
+
+    res = GlobalMessages.getBundle( Locale.CHINA, pkgName );
+    assertEquals( "选择一个环境变量", res.getString( msgKey ) );
+
+    // make sure the selected language is used correctly
+    LanguageChoice.getInstance().setDefaultLocale( Locale.FRENCH ); // "fr" - fall back to default
+    res = GlobalMessages.getBundle( pkgName );
+    assertEquals( "Select an Environment Variable (default)", res.getString( msgKey ) );
+
+    LanguageChoice.getInstance().setDefaultLocale( Locale.FRANCE ); // "fr", "FR" - fall back to default
+    res = GlobalMessages.getBundle( pkgName );
+    assertEquals( "Select an Environment Variable (default)", res.getString( msgKey ) );
+
+    LanguageChoice.getInstance().setDefaultLocale( Locale.JAPANESE ); // "jp" - fall back to default
+    res = GlobalMessages.getBundle( pkgName );
+    assertEquals( "Select an Environment Variable (default)", res.getString( msgKey ) );
+
+    LanguageChoice.getInstance().setDefaultLocale( Locale.JAPAN ); // "jp", "JP"
+    res = GlobalMessages.getBundle( pkgName );
+    assertEquals( "環境変数の選択", res.getString( msgKey ) );
+
+    LanguageChoice.getInstance().setDefaultLocale( Locale.GERMANY ); // "de", "DE" - fall back on de
+    res = GlobalMessages.getBundle( pkgName );
+    assertEquals( "Wählen Sie eine Umgebungsvariable aus", res.getString( msgKey ) );
+
+    LanguageChoice.getInstance().setDefaultLocale( Locale.GERMAN ); // "de"
+    res = GlobalMessages.getBundle( pkgName );
+    assertEquals( "Wählen Sie eine Umgebungsvariable aus", res.getString( msgKey ) );
   }
 
   /*

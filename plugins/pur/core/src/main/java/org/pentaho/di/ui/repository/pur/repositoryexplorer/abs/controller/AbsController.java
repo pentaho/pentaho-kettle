@@ -1,5 +1,5 @@
 /*!
- * Copyright 2010 - 2017 Hitachi Vantara.  All rights reserved.
+ * Copyright 2010 - 2018 Hitachi Vantara.  All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,8 +25,7 @@ import java.util.ResourceBundle;
 
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.i18n.BaseMessages;
-import org.pentaho.di.i18n.GlobalMessages;
-import org.pentaho.di.i18n.LanguageChoice;
+import org.pentaho.di.i18n.GlobalMessageUtil;
 import org.pentaho.di.repository.RepositorySecurityManager;
 import org.pentaho.di.ui.repository.pur.repositoryexplorer.IUIRole;
 import org.pentaho.di.ui.repository.pur.repositoryexplorer.abs.IUIAbsRole;
@@ -102,13 +101,9 @@ public class AbsController extends EESecurityController implements java.io.Seria
         service = (RepositorySecurityManager) repository.getService( IAbsSecurityManager.class );
         String localeValue = null;
         try {
-          localeValue = GlobalMessages.getLocale().getDisplayName();
+          localeValue = GlobalMessageUtil.getLocale().getDisplayName();
         } catch ( MissingResourceException e ) {
-          try {
-            localeValue = LanguageChoice.getInstance().getFailoverLocale().getDisplayName();
-          } catch ( MissingResourceException e2 ) {
-            localeValue = "en_US"; //$NON-NLS-1$
-          }
+          localeValue = GlobalMessageUtil.FAILOVER_LOCALE.toString();
         }
         ( (IAbsSecurityManager) service ).initialize( localeValue );
       } else {
@@ -323,7 +318,7 @@ public class AbsController extends EESecurityController implements java.io.Seria
   private void initializeLogicalRolesUI() {
     try {
       Map<String, String> logicalRoles =
-          ( (IAbsSecurityManager) service ).getAllLogicalRoles( GlobalMessages.getLocale().getDisplayName() );
+          ( (IAbsSecurityManager) service ).getAllLogicalRoles( GlobalMessageUtil.getLocale().getDisplayName() );
       for ( Entry<String, String> logicalRole : logicalRoles.entrySet() ) {
         XulCheckbox logicalRoleCheckbox;
         logicalRoleCheckbox = (XulCheckbox) document.createElement( "checkbox" );//$NON-NLS-1$
@@ -350,7 +345,7 @@ public class AbsController extends EESecurityController implements java.io.Seria
   private void initializeLogicalSystemRolesUI() {
     try {
       Map<String, String> logicalRoles =
-          ( (IAbsSecurityManager) service ).getAllLogicalRoles( GlobalMessages.getLocale().getDisplayName() );
+          ( (IAbsSecurityManager) service ).getAllLogicalRoles( GlobalMessageUtil.getLocale().getDisplayName() );
       for ( Entry<String, String> logicalRole : logicalRoles.entrySet() ) {
         XulCheckbox logicalSystemRoleCheckbox;
         logicalSystemRoleCheckbox = (XulCheckbox) document.createElement( "checkbox" );//$NON-NLS-1$

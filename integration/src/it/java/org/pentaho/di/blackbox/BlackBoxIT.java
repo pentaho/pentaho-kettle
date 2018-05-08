@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -52,7 +52,7 @@ import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.logging.LogLevel;
 import org.pentaho.di.core.util.EnvUtil;
 import org.pentaho.di.core.variables.Variables;
-import org.pentaho.di.i18n.GlobalMessages;
+import org.pentaho.di.i18n.GlobalMessageUtil;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 
@@ -75,7 +75,7 @@ public class BlackBoxIT {
     Locale.setDefault( Locale.US );
 
     // set the locale to English so that log file comparisons work
-    GlobalMessages.setLocale( EnvUtil.createLocale( "en-US" ) );
+    GlobalMessageUtil.setLocale( EnvUtil.createLocale( "en-US" ) );
 
     // Keep all log rows for at least 60 minutes as per BaseCluster.java
     KettleLogStore.init( 0, 60 );

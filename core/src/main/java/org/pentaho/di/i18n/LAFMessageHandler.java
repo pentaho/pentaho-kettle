@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,10 +22,6 @@
 
 package org.pentaho.di.i18n;
 
-import java.util.MissingResourceException;
-
-import org.pentaho.di.core.Const;
-import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.laf.BasePropertyHandler;
 
 /**
@@ -78,75 +74,23 @@ public class LAFMessageHandler extends GlobalMessages {
         offset = replace.length();
       }
     }
-    return new String( replaceWith + packageName.substring( offset ) );
-  }
-
-  private String internalCalc( String packageName, String global, String key, Object[] parameters,
-    Class<?> resourceClass ) {
-    String string = null;
-
-    // Then try the original package
-    try {
-      string = findString( packageName, langChoice.getDefaultLocale(), key, parameters, resourceClass );
-    } catch ( MissingResourceException e ) { /* Ignore */
+    if ( replaceWith != null ) {
+      return new String( replaceWith + packageName.substring( offset ) );
     }
-    if ( string != null ) {
-      // System.out.println("found: "+key+"/"+string+" in "+packageName+" lang "+langChoice.getDefaultLocale());
-      return string;
-    }
-
-    // Then try to find it in the i18n package, in the system messages of the preferred language.
-    try {
-      string = findString( global, langChoice.getDefaultLocale(), key, parameters, resourceClass );
-    } catch ( MissingResourceException e ) { /* Ignore */
-    }
-    if ( string != null ) {
-      // System.out.println("found: "+key+"/"+string+" in "+global+" lang "+langChoice.getDefaultLocale());
-      return string;
-    }
-
-    // Then try the failover locale, in the local package
-    try {
-      string = findString( packageName, langChoice.getFailoverLocale(), key, parameters, resourceClass );
-    } catch ( MissingResourceException e ) { /* Ignore */
-    }
-    if ( string != null ) {
-      // System.out.println("found: "+key+"/"+string+" in "+packageName+" lang "+langChoice.getFailoverLocale());
-      return string;
-    }
-
-    // Then try to find it in the i18n package, in the system messages of the failover language.
-    try {
-      string = findString( global, langChoice.getFailoverLocale(), key, parameters, resourceClass );
-    } catch ( MissingResourceException e ) { /* Ignore */
-    }
-    // System.out.println("found: "+key+"/"+string+" in "+global+" lang "+langChoice.getFailoverLocale());
-    return string;
+    return packageName;
   }
 
   @Override
   protected String calculateString( String packageName, String key, Object[] parameters, Class<?> resourceClass ) {
-    String string = null;
     if ( replaceWith != null ) {
-      string = internalCalc( replacePackage( packageName ), replaceSysBundle, key, parameters, resourceClass );
-      if ( string != null ) {
+      final String[] pkgNames = new String[] { replacePackage( packageName ), replaceSysBundle };
+      final String string = super.calculateString( pkgNames, key, parameters, resourceClass );
+      if ( !GlobalMessageUtil.isMissingKey( string ) ) {
         return string;
       }
     }
 
-    string = internalCalc( packageName, SYSTEM_BUNDLE_PACKAGE, key, parameters, resourceClass );
-    if ( string != null ) {
-      return string;
-    }
-
-    string = "!" + key + "!";
-    if ( log.isDetailed() ) {
-      String message =
-        "Message not found in the preferred and failover locale: key=[" + key + "], package=" + packageName;
-      log.logDetailed( Const.getStackTracker( new KettleException( message ) ) );
-    }
-
-    return super.calculateString( packageName, key, parameters, resourceClass );
+    final String[] pkgNames = new String[] { packageName, SYSTEM_BUNDLE_PACKAGE };
+    return GlobalMessageUtil.calculateString( pkgNames, key, parameters, resourceClass, BUNDLE_NAME, false );
   }
-
 }

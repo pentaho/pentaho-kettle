@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,31 +22,21 @@
 
 package org.pentaho.di.i18n;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.text.MessageFormat;
+import com.google.common.annotations.VisibleForTesting;
+import org.pentaho.di.core.logging.LogChannel;
+import org.pentaho.di.core.logging.LogChannelInterface;
+
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.MissingResourceException;
-import java.util.PropertyResourceBundle;
 import java.util.ResourceBundle;
-import java.io.InputStreamReader;
-
-import org.pentaho.di.core.Const;
-import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.logging.LogChannel;
-import org.pentaho.di.core.logging.LogChannelInterface;
 
 public class GlobalMessages extends AbstractMessageHandler {
-  private static String packageNM = GlobalMessages.class.getPackage().getName();
+  protected static Class<?> PKG = GlobalMessages.class;
 
-  protected static final ThreadLocal<Locale> threadLocales = new ThreadLocal<Locale>();
-
-  protected static final LanguageChoice langChoice = LanguageChoice.getInstance();
-
-  protected static final String SYSTEM_BUNDLE_PACKAGE = GlobalMessages.class.getPackage().getName();
+  protected static final String SYSTEM_BUNDLE_PACKAGE = PKG.getPackage().getName();
 
   protected static final String BUNDLE_NAME = "messages.messages";
 
@@ -83,33 +73,6 @@ public class GlobalMessages extends AbstractMessageHandler {
     return locales;
   }
 
-  public static synchronized Locale getLocale() {
-    Locale rtn = threadLocales.get();
-    if ( rtn != null ) {
-      return rtn;
-    }
-
-    setLocale( langChoice.getDefaultLocale() );
-    return langChoice.getDefaultLocale();
-  }
-
-  public static synchronized void setLocale( Locale newLocale ) {
-    threadLocales.set( newLocale );
-  }
-
-  protected static String getLocaleString( Locale locale ) {
-    String locString = locale.toString();
-    if ( locString.length() == 5 && locString.charAt( 2 ) == '_' ) { // Force upper-lowercase format
-      locString = locString.substring( 0, 2 ).toLowerCase() + "_" + locString.substring( 3 ).toUpperCase();
-      // System.out.println("locString="+locString);
-    }
-    return locString;
-  }
-
-  protected static String buildHashKey( Locale locale, String packageName ) {
-    return packageName + "_" + getLocaleString( locale );
-  }
-
   protected static String buildBundleName( String packageName ) {
     return packageName + "." + BUNDLE_NAME;
   }
@@ -117,168 +80,85 @@ public class GlobalMessages extends AbstractMessageHandler {
   /**
    * Retrieve a resource bundle of the default or fail-over locale.
    *
-   * @param packageName
-   *          The package to search in
+   * @param packageName The package to search in
    * @return The resource bundle
-   * @throws MissingResourceException
-   *           in case both resource bundles couldn't be found.
+   * @throws MissingResourceException in case both resource bundles couldn't be found.
    */
   public static ResourceBundle getBundle( String packageName ) throws MissingResourceException {
-    return getBundle( packageName, GlobalMessages.getInstance().getClass() );
+    return GlobalMessageUtil.getBundle( packageName, PKG );
   }
 
   /**
-   * Retrieve a resource bundle of the default or fail-over locale.
+   * Returns the localized string for the given {@code key} and {@code parameters} in a bundle defined by the the
+   * concatenation of {@code packageName} and {@link #BUNDLE_NAME}, using the {@link GlobalMessages} class loader.
    *
-   * @param packageName
-   *          The package to search in
-   * @param resourceClass
-   *          the class to use to resolve the bundle
-   * @return The resource bundle
-   * @throws MissingResourceException
-   *           in case both resource bundles couldn't be found.
+   * @param packageName the package containing the localized messages
+   * @param key         the message key being looked up
+   * @param parameters  parameters within the looked up message
+   * @return the localized string for the given {@code key} and {@code parameters} in a bundle defined by the the
+   * concatenation of {@code packageName} and {@link #BUNDLE_NAME}, using the {@link GlobalMessages} class loader.
    */
-  public static ResourceBundle getBundle( String packageName, Class<?> resourceClass ) throws MissingResourceException {
-    ResourceBundle bundle;
-    try {
-      // First try to load the bundle in the default locale
-      //
-      bundle = getBundle( LanguageChoice.getInstance().getDefaultLocale(), packageName, resourceClass );
-      return bundle;
-    } catch ( MissingResourceException e ) {
-      try {
-        // Now retry the fail-over locale (en_US etc)
-        //
-        bundle = getBundle( LanguageChoice.getInstance().getFailoverLocale(), packageName, resourceClass );
-        return bundle;
-      } catch ( MissingResourceException e2 ) {
-        // If nothing usable could be found throw an exception...
-        //
-        throw new MissingResourceException( "Unable to find properties file in the default '"
-          + LanguageChoice.getInstance().getDefaultLocale() + "' nor the failore locale '"
-          + LanguageChoice.getInstance().getFailoverLocale() + "'", packageName, packageName );
-      }
-    }
-  }
-
-  public static ResourceBundle getBundle( Locale locale, String packageName ) throws MissingResourceException {
-    return getBundle( locale, packageName, GlobalMessages.getInstance().getClass() );
-  }
-
-  public static ResourceBundle getBundle( Locale locale, String packageName, Class<?> resourceClass ) throws MissingResourceException {
-    String filename = buildHashKey( locale, packageName );
-    filename = "/" + filename.replace( '.', '/' ) + ".properties";
-    InputStream inputStream = null;
-    try {
-      ResourceBundle bundle = locales.get( filename );
-      if ( bundle == null ) {
-        inputStream = resourceClass.getResourceAsStream( filename );
-        if ( inputStream == null ) {
-          // Retry with the system class loader, just in case we are dealing with a messy plug-in.
-          //
-          inputStream = ClassLoader.getSystemResourceAsStream( filename );
-        }
-        // Now get the bundle from the messages files input stream
-        //
-        if ( inputStream != null ) {
-          bundle = new PropertyResourceBundle( new InputStreamReader( inputStream, "UTF-8" ) );
-          locales.put( filename, bundle );
-        } else {
-          throw new MissingResourceException( "Unable to find properties file [" + filename + "]", locale
-            .toString(), packageName );
-        }
-      }
-      return bundle;
-    } catch ( IOException e ) {
-      throw new MissingResourceException(
-        "Unable to find properties file [" + filename + "] : " + e.toString(), locale.toString(), packageName );
-    } finally {
-      if ( inputStream != null ) {
-        try {
-          inputStream.close();
-        } catch ( Exception e ) {
-          // ignore this
-        }
-      }
-    }
-  }
-
-  protected String findString( String packageName, Locale locale, String key, Object[] parameters ) throws MissingResourceException {
-    return findString( packageName, locale, key, parameters, GlobalMessages.getInstance().getClass() );
-  }
-
-  protected String findString( String packageName, Locale locale, String key, Object[] parameters,
-    Class<?> resourceClass ) throws MissingResourceException {
-    try {
-      ResourceBundle bundle = getBundle( locale, packageName + "." + BUNDLE_NAME, resourceClass );
-      String unformattedString = bundle.getString( key );
-      String string = MessageFormat.format( unformattedString, parameters );
-      return string;
-    } catch ( IllegalArgumentException e ) {
-      String message =
-        "Format problem with key=["
-          + key + "], locale=[" + locale + "], package=" + packageName + " : " + e.toString();
-      log.logError( message );
-      log.logError( Const.getStackTracker( e ) );
-      throw new MissingResourceException( message, packageName, key );
-    }
-  }
-
   protected String calculateString( String packageName, String key, Object[] parameters ) {
-    return calculateString( packageName, key, parameters, GlobalMessages.getInstance().getClass() );
+    return calculateString( packageName, key, parameters, PKG );
   }
 
+  /**
+   * Returns the localized string for the given {@code key} and {@code parameters} in a bundle defined by the the
+   * concatenation of {@code packageName} and {@link #BUNDLE_NAME}, using the provided {@code resourceClass}'s class
+   * loader.
+   *
+   * @param packageName   the package containing the localized messages
+   * @param key           the message key being looked up
+   * @param parameters    parameters within the looked up message
+   * @param resourceClass the class whose class loader is used to getch the resource bundle
+   * @return the localized string for the given {@code key} and {@code parameters} in a bundle defined by the the
+   * concatenation of {@code packageName} and {@link #BUNDLE_NAME}, using the provided {@code resourceClass}'s class
+   * loader.
+   */
   protected String calculateString( String packageName, String key, Object[] parameters, Class<?> resourceClass ) {
-    String string = null;
+    final String[] pkgNames = new String[] { packageName, SYSTEM_BUNDLE_PACKAGE };
+    return calculateString( pkgNames, key, parameters, resourceClass );
+  }
 
-    // First try the standard locale, in the local package
-    try {
-      string = findString( packageName, langChoice.getDefaultLocale(), key, parameters, resourceClass );
-    } catch ( MissingResourceException e ) { /* Ignore */
-    }
-    if ( string != null ) {
-      return string;
-    }
+  /**
+   * Returns the localized string for the given {@code key} and {@code parameters} in a bundle defined by the the
+   * concatenation of the package names defined in {@code packageName} and {@link #BUNDLE_NAME} (the first valid
+   * combination of {@code packageName} + {@link #BUNDLE_NAME} wins), sing the provided {@code resourceClass}'s class
+   * loader.
+   *
+   * @param pkgNames      an array of packages potentially containing the localized messages the first one found to
+   *                      contain the messages is the one that is used to localize the message
+   * @param key           the message key being looked up
+   * @param parameters    parameters within the looked up message
+   * @param resourceClass the class whose class loader is used to getch the resource bundle
+   * @return the localized string for the given {@code key} and {@code parameters} in a bundle defined by the the
+   * concatenation of the package names defined in {@code packageName} and {@link #BUNDLE_NAME} (the first valid
+   * combination of {@code packageName} + {@link #BUNDLE_NAME} wins), sing the provided {@code resourceClass}'s class
+   * loader
+   */
+  protected String calculateString( String[] pkgNames, String key, Object[] parameters, Class<?> resourceClass ) {
+    return GlobalMessageUtil.calculateString( pkgNames, key, parameters, resourceClass, BUNDLE_NAME );
+  }
 
-    // Then try to find it in the i18n package, in the system messages of the preferred language.
-    try {
-      string = findString( SYSTEM_BUNDLE_PACKAGE, langChoice.getDefaultLocale(), key, parameters, resourceClass );
-    } catch ( MissingResourceException e ) { /* Ignore */
-    }
-    if ( string != null ) {
-      return string;
-    }
-
-    // Then try the failover locale, in the local package
-    try {
-      string = findString( packageName, langChoice.getFailoverLocale(), key, parameters, resourceClass );
-    } catch ( MissingResourceException e ) { /* Ignore */
-    }
-    if ( string != null ) {
-      return string;
-    }
-
-    // Then try to find it in the i18n package, in the system messages of the failover language.
-    try {
-      string = findString( SYSTEM_BUNDLE_PACKAGE, langChoice.getFailoverLocale(), key, parameters, resourceClass );
-    } catch ( MissingResourceException e ) { /* Ignore */
-    }
-    if ( string != null ) {
-      return string;
-    }
-
-    string = "!" + key + "!";
-    String message =
-      "Message not found in the preferred and failover locale: key=[" + key + "], package=" + packageName;
-    log.logDetailed( Const.getStackTracker( new KettleException( message ) ) );
-
-    return string;
+  /**
+   * Returns a {@link ResourceBundle} for the given {@link Locale} and {@code packagePath}, using the {@link
+   * GlobalMessages} class loader.
+   *
+   * @param locale      the {@link Locale} for which the {@link ResourceBundle} is being retrieved
+   * @param packagePath the full path to the localized message file without the {@code .properties} extension
+   * @return a {@link ResourceBundle} for the given {@link Locale} and {@code packagePath}, using the {@link
+   * GlobalMessages} class loader
+   * @throws MissingResourceException when the {@link ResourceBundle} cannot be found
+   */
+  @VisibleForTesting
+  static ResourceBundle getBundle( final Locale locale, final String packagePath ) throws MissingResourceException {
+    return GlobalMessageUtil.getBundle( locale, packagePath, PKG );
   }
 
   @Override
   public String getString( String key ) {
     Object[] parameters = null;
-    return calculateString( packageNM, key, parameters );
+    return calculateString( SYSTEM_BUNDLE_PACKAGE, key, parameters );
   }
 
   @Override
@@ -296,5 +176,4 @@ public class GlobalMessages extends AbstractMessageHandler {
   public String getString( String packageName, String key, Class<?> resourceClass, String... parameters ) {
     return calculateString( packageName, key, parameters, resourceClass );
   }
-
 }
