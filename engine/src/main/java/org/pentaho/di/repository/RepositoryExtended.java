@@ -22,7 +22,11 @@
 
 package org.pentaho.di.repository;
 
+import org.pentaho.di.cluster.ClusterSchema;
+import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.database.DatabaseMeta;
+import org.pentaho.di.partition.PartitionSchema;
 
 import java.util.List;
 
@@ -98,4 +102,12 @@ public interface RepositoryExtended extends Repository {
           throws KettleException;
 
   List<RepositoryObjectInterface> getChildren( String path, String filter );
+
+  List<DatabaseMeta> getConnections( boolean cached ) throws KettleException;
+
+  List<SlaveServer> getSlaveServers( boolean cached ) throws KettleException;
+
+  List<PartitionSchema> getPartitions( boolean cached ) throws KettleException;
+
+  List<ClusterSchema> getClusters( boolean cached ) throws KettleException;
 }

@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -34,6 +34,7 @@ import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.ObjectId;
+import org.pentaho.di.repository.RepositoryExtended;
 import org.pentaho.di.ui.cluster.dialog.ClusterSchemaDialog;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.repository.dialog.RepositoryExplorerDialog;
@@ -249,20 +250,22 @@ public class ClustersController extends LazilyInitializedController implements I
   public void refreshClusters() {
     if ( repository != null ) {
       final List<UICluster> tmpList = new ArrayList<UICluster>();
-      Runnable r = new Runnable() {
-        public void run() {
-          try {
+      Runnable r = () -> {
+        try {
+          if ( repository instanceof RepositoryExtended ) {
+            List<ClusterSchema> clusterSchemas = ((RepositoryExtended) repository).getClusters( false );
+            clusterSchemas.forEach( clusterSchema -> tmpList.add( new UICluster( clusterSchema ) ) );
+          } else {
             ObjectId[] clusterIdList = repository.getClusterIDs( false );
-
             for ( ObjectId clusterId : clusterIdList ) {
               ClusterSchema cluster = repository.loadClusterSchema( clusterId, repository.getSlaveServers(), null );
               // Add the cluster schema to the list
               tmpList.add( new UICluster( cluster ) );
             }
-          } catch ( KettleException e ) {
-            // convert to runtime exception so it bubbles up through the UI
-            throw new RuntimeException( e );
           }
+        } catch ( KettleException e ) {
+          // convert to runtime exception so it bubbles up through the UI
+          throw new RuntimeException( e );
         }
       };
       doWithBusyIndicator( r );

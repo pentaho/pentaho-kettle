@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018  by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,10 +22,6 @@
 
 package org.pentaho.di.ui.repository.repositoryexplorer.controllers;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
@@ -37,6 +33,7 @@ import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.partition.PartitionSchema;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.Repository;
+import org.pentaho.di.repository.RepositoryExtended;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.partition.dialog.PartitionSchemaDialog;
 import org.pentaho.di.ui.repository.dialog.RepositoryExplorerDialog;
@@ -52,6 +49,10 @@ import org.pentaho.ui.xul.components.XulButton;
 import org.pentaho.ui.xul.containers.XulTree;
 import org.pentaho.ui.xul.swt.SwtBindingFactory;
 import org.pentaho.ui.xul.swt.tags.SwtDialog;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 public class PartitionsController extends LazilyInitializedController implements IUISupportController {
 
@@ -267,23 +268,24 @@ public class PartitionsController extends LazilyInitializedController implements
   public void refreshPartitions() {
     if ( repository != null ) {
       final List<UIPartition> tmpList = new ArrayList<UIPartition>();
-      Runnable r = new Runnable() {
-        public void run() {
-          try {
+      Runnable r = () -> {
+        try {
+          if ( repository instanceof RepositoryExtended ) {
+            List<PartitionSchema> partitionSchemas = ((RepositoryExtended) repository).getPartitions( false );
+            partitionSchemas.forEach( partitionSchema -> tmpList.add( new UIPartition( partitionSchema ) ) );
+          } else {
             ObjectId[] partitionIdList = repository.getPartitionSchemaIDs( false );
-
             for ( ObjectId partitionId : partitionIdList ) {
               PartitionSchema partition = repository.loadPartitionSchema( partitionId, null );
               // Add the partition schema to the list
               tmpList.add( new UIPartition( partition ) );
             }
-          } catch ( KettleException e ) {
-            if ( mainController == null || !mainController.handleLostRepository( e ) ) {
-              // convert to runtime exception so it bubbles up through the UI
-              throw new RuntimeException( e );
-            }
           }
-
+        } catch ( KettleException e ) {
+          if ( mainController == null || !mainController.handleLostRepository( e ) ) {
+            // convert to runtime exception so it bubbles up through the UI
+            throw new RuntimeException( e );
+          }
         }
       };
       doWithBusyIndicator( r );

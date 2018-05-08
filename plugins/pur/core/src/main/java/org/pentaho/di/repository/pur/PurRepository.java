@@ -1507,6 +1507,41 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
     return (List<SlaveServer>) loadAndCacheSharedObjects( true ).get( RepositoryObjectType.SLAVE_SERVER );
   }
 
+  @Override
+  @SuppressWarnings( "unchecked" )
+  public List<DatabaseMeta> getConnections( boolean cached ) throws KettleException {
+    return (List<DatabaseMeta>) getRepositoryObjects( RepositoryObjectType.DATABASE, cached );
+  }
+
+  @Override
+  @SuppressWarnings( "unchecked" )
+  public List<SlaveServer> getSlaveServers( boolean cached ) throws KettleException {
+    return (List<SlaveServer>) getRepositoryObjects( RepositoryObjectType.SLAVE_SERVER, cached );
+  }
+
+  @Override
+  @SuppressWarnings( "unchecked" )
+  public List<PartitionSchema> getPartitions( boolean cached ) throws KettleException {
+    return (List<PartitionSchema>) getRepositoryObjects( RepositoryObjectType.PARTITION_SCHEMA, cached );
+  }
+
+  @Override
+  @SuppressWarnings( "unchecked" )
+  public List<ClusterSchema> getClusters( boolean cached ) throws KettleException {
+    return (List<ClusterSchema>) getRepositoryObjects( RepositoryObjectType.CLUSTER_SCHEMA, cached );
+  }
+
+  protected List<?> getRepositoryObjects( RepositoryObjectType repositoryObjectType, boolean cached ) throws KettleException {
+    if ( cached ) {
+      return loadAndCacheSharedObjects( true ).get( repositoryObjectType );
+    } else {
+      Map<RepositoryObjectType, List<? extends SharedObjectInterface>> sharedObjects = new EnumMap<>(
+              RepositoryObjectType.class );
+      readSharedObjects( sharedObjects, repositoryObjectType );
+      return deepCopy( sharedObjects ).get( repositoryObjectType );
+    }
+  }
+
   public SlaveDelegate getSlaveTransformer() {
     return slaveTransformer;
   }
@@ -1761,6 +1796,7 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
         if ( obj instanceof DatabaseMeta ) {
           DatabaseMeta databaseMeta = (DatabaseMeta) ( (DatabaseMeta) obj ).clone();
           databaseMeta.setObjectId( ( (DatabaseMeta) obj ).getObjectId() );
+          databaseMeta.setChangedDate( obj.getChangedDate() );
           databaseMeta.clearChanged();
           newValueItem = databaseMeta;
         } else if ( obj instanceof SlaveServer ) {

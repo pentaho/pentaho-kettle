@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -35,6 +35,7 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.Repository;
+import org.pentaho.di.repository.RepositoryExtended;
 import org.pentaho.di.ui.cluster.dialog.SlaveServerDialog;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.repository.dialog.RepositoryExplorerDialog;
@@ -117,23 +118,22 @@ public class SlavesController extends LazilyInitializedController implements IUI
   public void refreshSlaves() {
     if ( repository != null ) {
       final List<UISlave> tmpList = new ArrayList<UISlave>();
-      Runnable r = new Runnable() {
-        public void run() {
-          try {
-            ObjectId[] slaveIdList = repository.getSlaveIDs( false );
-
-            for ( ObjectId slaveId : slaveIdList ) {
-              SlaveServer slave = repository.loadSlaveServer( slaveId, null );
-              // Add the database slave to the list
-              tmpList.add( new UISlave( slave ) );
-            }
-          } catch ( KettleException e ) {
-            if ( mainController == null || !mainController.handleLostRepository( e ) ) {
-              // convert to runtime exception so it bubbles up through the UI
-              throw new RuntimeException( e );
-            }
+      Runnable r = () -> {
+        try {
+          List<SlaveServer> slaveServers;
+          if ( repository instanceof RepositoryExtended ) {
+            slaveServers = ((RepositoryExtended) repository).getSlaveServers( false );
+          } else {
+            slaveServers = repository.getSlaveServers();
           }
-
+          if ( slaveServers != null ) {
+            slaveServers.forEach( slaveServer -> tmpList.add( new UISlave( slaveServer ) ) );
+          }
+        } catch ( KettleException e ) {
+          if ( mainController == null || !mainController.handleLostRepository( e ) ) {
+            // convert to runtime exception so it bubbles up through the UI
+            throw new RuntimeException( e );
+          }
         }
       };
       doWithBusyIndicator( r );
