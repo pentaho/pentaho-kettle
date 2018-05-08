@@ -12,10 +12,10 @@ buildProperties:
         GRADLE_DEFAULT_DIRECTIVES      : -q
 
         # Version based control properties
-        UPDATE_VERSIONS                : true
-        RELEASE_VERSION                : 8.2.0.0
-        SUITE_RELEASE_VERSION          : 8.2-QAT
-        RELEASE_MODE                   : true
+        UPDATE_VERSIONS                : false
+        RELEASE_VERSION                : 8.2.0.0-SNAPSHOT
+        SUITE_RELEASE_VERSION          : 8.2.0.0-SNAPSHOT
+        RELEASE_MODE                   : false
         ADD_BUILD_ID_VERSION_TAIL      : true
 
         # job item field defaults
