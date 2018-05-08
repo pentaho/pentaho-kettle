@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -569,7 +569,14 @@ public class ElasticSearchBulkDialog extends BaseStepDialog implements StepDialo
 
     wStopOnError = new Button( wSettingsGroup, SWT.CHECK | SWT.RIGHT );
     wStopOnError.setToolTipText( BaseMessages.getString( PKG, "ElasticSearchBulkDialog.StopOnError.Tooltip" ) );
-
+    wStopOnError.addSelectionListener( new SelectionListener() {
+      public void widgetDefaultSelected( SelectionEvent arg0 ) {
+        widgetSelected( arg0 );
+      }
+      public void widgetSelected( SelectionEvent arg0 ) {
+        model.setChanged();
+      }
+    } );
     // ID input
     wIdInField =
       new LabelComboVar( transMeta, wSettingsGroup,
@@ -593,7 +600,14 @@ public class ElasticSearchBulkDialog extends BaseStepDialog implements StepDialo
 
     wIsOverwrite = new Button( wSettingsGroup, SWT.CHECK | SWT.RIGHT );
     wIsOverwrite.setToolTipText( BaseMessages.getString( PKG, "ElasticSearchBulkDialog.Overwrite.Tooltip" ) );
-
+    wIsOverwrite.addSelectionListener( new SelectionListener() {
+      public void widgetDefaultSelected( SelectionEvent arg0 ) {
+        widgetSelected( arg0 );
+      }
+      public void widgetSelected( SelectionEvent arg0 ) {
+        model.setChanged();
+      }
+    } );
     // Output rows
     wlUseOutput = new Label( wSettingsGroup, SWT.RIGHT );
     wlUseOutput.setText( BaseMessages.getString( PKG, "ElasticSearchBulkDialog.UseOutput.Label" ) );
@@ -609,6 +623,7 @@ public class ElasticSearchBulkDialog extends BaseStepDialog implements StepDialo
 
       public void widgetSelected( SelectionEvent arg0 ) {
         wIdOutField.setEnabled( wUseOutput.getSelection() );
+        model.setChanged();
       }
 
     } );
@@ -639,6 +654,7 @@ public class ElasticSearchBulkDialog extends BaseStepDialog implements StepDialo
         wFields.setEnabled( !wIsJson.getSelection() );
         wFields.setVisible( !wIsJson.getSelection() );
         wGet.setEnabled( !wIsJson.getSelection() );
+        model.setChanged();
       }
     } );
 

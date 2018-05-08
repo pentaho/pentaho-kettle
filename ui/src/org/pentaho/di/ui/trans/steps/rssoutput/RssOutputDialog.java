@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -360,6 +360,7 @@ public class RssOutputDialog extends BaseStepDialog implements StepDialogInterfa
     wCustomRss.addSelectionListener( new SelectionAdapter() {
       public void widgetSelected( SelectionEvent e ) {
         setCustomRSS();
+        input.setChanged();
       }
     } );
 
@@ -383,6 +384,7 @@ public class RssOutputDialog extends BaseStepDialog implements StepDialogInterfa
 
     wDisplayItem.addSelectionListener( new SelectionAdapter() {
       public void widgetSelected( SelectionEvent e ) {
+        input.setChanged();
       }
     } );
 
@@ -1265,6 +1267,7 @@ public class RssOutputDialog extends BaseStepDialog implements StepDialogInterfa
     wFileNameInField.addSelectionListener( new SelectionAdapter() {
       public void widgetSelected( SelectionEvent e ) {
         setFieldFilename();
+        input.setChanged();
       }
     } );
 

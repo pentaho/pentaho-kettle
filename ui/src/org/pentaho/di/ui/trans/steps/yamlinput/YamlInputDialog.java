@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -79,6 +79,7 @@ import org.pentaho.di.ui.core.widget.TableView;
 import org.pentaho.di.ui.core.widget.TextVar;
 import org.pentaho.di.ui.trans.dialog.TransPreviewProgressDialog;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
+import org.pentaho.di.ui.trans.step.ComponentSelectionListener;
 
 public class YamlInputDialog extends BaseStepDialog implements StepDialogInterface {
   private static Class<?> PKG = YamlInputMeta.class; // for i18n purposes, needed by Translator2!!
@@ -517,7 +518,7 @@ public class YamlInputDialog extends BaseStepDialog implements StepDialogInterfa
     fdIgnoreEmptyFile.left = new FormAttachment( middle, 0 );
     fdIgnoreEmptyFile.top = new FormAttachment( 0, margin );
     wIgnoreEmptyFile.setLayoutData( fdIgnoreEmptyFile );
-
+    wIgnoreEmptyFile.addSelectionListener( new ComponentSelectionListener( input ) );
     // do not fail if no files?
     wldoNotFailIfNoFile = new Label( wXmlConf, SWT.RIGHT );
     wldoNotFailIfNoFile.setText( BaseMessages.getString( PKG, "YamlInputDialog.doNotFailIfNoFile.Label" ) );
@@ -534,7 +535,7 @@ public class YamlInputDialog extends BaseStepDialog implements StepDialogInterfa
     fddoNotFailIfNoFile.left = new FormAttachment( middle, 0 );
     fddoNotFailIfNoFile.top = new FormAttachment( wIgnoreEmptyFile, margin );
     wdoNotFailIfNoFile.setLayoutData( fddoNotFailIfNoFile );
-
+    wdoNotFailIfNoFile.addSelectionListener( new ComponentSelectionListener( input ) );
     wlLimit = new Label( wXmlConf, SWT.RIGHT );
     wlLimit.setText( BaseMessages.getString( PKG, "YamlInputDialog.Limit.Label" ) );
     props.setLook( wlLimit );
@@ -590,7 +591,7 @@ public class YamlInputDialog extends BaseStepDialog implements StepDialogInterfa
     fdInclFilename.left = new FormAttachment( middle, 0 );
     fdInclFilename.top = new FormAttachment( wXmlConf, 4 * margin );
     wInclFilename.setLayoutData( fdInclFilename );
-
+    wInclFilename.addSelectionListener( new ComponentSelectionListener( input ) );
     wlInclFilenameField = new Label( wAdditionalFields, SWT.LEFT );
     wlInclFilenameField.setText( BaseMessages.getString( PKG, "YamlInputDialog.InclFilenameField.Label" ) );
     props.setLook( wlInclFilenameField );
@@ -622,7 +623,7 @@ public class YamlInputDialog extends BaseStepDialog implements StepDialogInterfa
     fdRownum.left = new FormAttachment( middle, 0 );
     fdRownum.top = new FormAttachment( wInclFilenameField, margin );
     wInclRownum.setLayoutData( fdRownum );
-
+    wInclRownum.addSelectionListener( new ComponentSelectionListener( input ) );
     wlInclRownumField = new Label( wAdditionalFields, SWT.RIGHT );
     wlInclRownumField.setText( BaseMessages.getString( PKG, "YamlInputDialog.InclRownumField.Label" ) );
     props.setLook( wlInclRownumField );
@@ -677,7 +678,7 @@ public class YamlInputDialog extends BaseStepDialog implements StepDialogInterfa
     fdAddResult.left = new FormAttachment( middle, 0 );
     fdAddResult.top = new FormAttachment( wAdditionalFields, margin );
     wAddResult.setLayoutData( fdAddResult );
-
+    wAddResult.addSelectionListener( new ComponentSelectionListener( input ) );
     fdAddFileResult = new FormData();
     fdAddFileResult.left = new FormAttachment( 0, margin );
     fdAddFileResult.top = new FormAttachment( wAdditionalFields, margin );

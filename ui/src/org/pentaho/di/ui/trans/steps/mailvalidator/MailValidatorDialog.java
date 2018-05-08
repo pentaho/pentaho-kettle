@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -235,6 +235,7 @@ public class MailValidatorDialog extends BaseStepDialog implements StepDialogInt
     wSMTPCheck.addSelectionListener( new SelectionAdapter() {
       public void widgetSelected( SelectionEvent e ) {
         activeSMTPCheck();
+        input.setChanged();
       }
     } );
 
@@ -318,6 +319,7 @@ public class MailValidatorDialog extends BaseStepDialog implements StepDialogInt
     wdynamicDefaultSMTP.addSelectionListener( new SelectionAdapter() {
       public void widgetSelected( SelectionEvent e ) {
         activedynamicDefaultSMTP();
+        input.setChanged();
       }
     } );
 
@@ -414,6 +416,7 @@ public class MailValidatorDialog extends BaseStepDialog implements StepDialogInt
     wResultAsString.addSelectionListener( new SelectionAdapter() {
       public void widgetSelected( SelectionEvent e ) {
         activeResultAsString();
+        input.setChanged();
       }
     } );
 

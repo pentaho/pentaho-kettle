@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -83,6 +83,7 @@ import org.pentaho.di.ui.core.widget.TextVar;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 import org.pentaho.di.ui.trans.step.TableItemInsertListener;
 import org.pentaho.di.ui.trans.steps.salesforce.SalesforceStepDialog;
+import org.pentaho.di.ui.trans.step.ComponentSelectionListener;
 
 public class SalesforceUpsertDialog extends SalesforceStepDialog {
 
@@ -375,7 +376,7 @@ public class SalesforceUpsertDialog extends SalesforceStepDialog {
     fdUseCompression.left = new FormAttachment( middle, 0 );
     fdUseCompression.top = new FormAttachment( wTimeOut, margin );
     wUseCompression.setLayoutData( fdUseCompression );
-
+    wUseCompression.addSelectionListener( new ComponentSelectionListener( input ) );
     // Rollback all changes on error?
     wlRollbackAllChangesOnError = new Label( wSettingsGroup, SWT.RIGHT );
     wlRollbackAllChangesOnError.setText( BaseMessages.getString(
@@ -387,6 +388,7 @@ public class SalesforceUpsertDialog extends SalesforceStepDialog {
     fdlRollbackAllChangesOnError.right = new FormAttachment( middle, -margin );
     wlRollbackAllChangesOnError.setLayoutData( fdlRollbackAllChangesOnError );
     wRollbackAllChangesOnError = new Button( wSettingsGroup, SWT.CHECK );
+    wRollbackAllChangesOnError.addSelectionListener( new ComponentSelectionListener( input ) );
     props.setLook( wRollbackAllChangesOnError );
     wRollbackAllChangesOnError.setToolTipText( BaseMessages.getString(
       PKG, "SalesforceUpsertDialog.RollbackAllChangesOnError.Tooltip" ) );

@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -52,6 +52,7 @@ import org.pentaho.di.trans.steps.splitfieldtorows.SplitFieldToRowsMeta;
 import org.pentaho.di.ui.core.widget.ComboVar;
 import org.pentaho.di.ui.core.widget.TextVar;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
+import org.pentaho.di.ui.trans.step.ComponentSelectionListener;
 
 public class SplitFieldToRowsDialog extends BaseStepDialog implements StepDialogInterface {
   private static Class<?> PKG = SplitFieldToRowsMeta.class; // for i18n purposes, needed by Translator2!!
@@ -262,6 +263,7 @@ public class SplitFieldToRowsDialog extends BaseStepDialog implements StepDialog
     wInclRownum.addSelectionListener( new SelectionAdapter() {
       public void widgetSelected( SelectionEvent e ) {
         setIncludeRownum();
+        input.setChanged();
       }
     } );
 
@@ -295,7 +297,7 @@ public class SplitFieldToRowsDialog extends BaseStepDialog implements StepDialog
     fdRownum.left = new FormAttachment( wlResetRownum, margin );
     fdRownum.top = new FormAttachment( wInclRownumField, margin );
     wResetRownum.setLayoutData( fdRownum );
-
+    wResetRownum.addSelectionListener( new ComponentSelectionListener( input ) );
     fdAdditionalFields = new FormData();
     fdAdditionalFields.left = new FormAttachment( 0, margin );
     fdAdditionalFields.top = new FormAttachment( wValName, margin );

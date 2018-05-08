@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -71,6 +71,7 @@ import org.pentaho.di.ui.core.widget.TableView;
 import org.pentaho.di.ui.core.widget.TextVar;
 import org.pentaho.di.ui.trans.dialog.TransPreviewProgressDialog;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
+import org.pentaho.di.ui.trans.step.ComponentSelectionListener;
 
 public class RssInputDialog extends BaseStepDialog implements StepDialogInterface {
   private static Class<?> PKG = RssInputMeta.class; // for i18n purposes, needed by Translator2!!
@@ -392,7 +393,7 @@ public class RssInputDialog extends BaseStepDialog implements StepDialogInterfac
     fdUrl.left = new FormAttachment( middle, 0 );
     fdUrl.top = new FormAttachment( wLimit, margin );
     wInclUrl.setLayoutData( fdUrl );
-
+    wInclUrl.addSelectionListener( new ComponentSelectionListener( input ) );
     // Url fieldname
     wlInclUrlField = new Label( wAdditional, SWT.RIGHT );
     wlInclUrlField.setText( BaseMessages.getString( PKG, "RssInputDialog.InclUrlField.Label" ) );
@@ -426,7 +427,7 @@ public class RssInputDialog extends BaseStepDialog implements StepDialogInterfac
     fdRownum.left = new FormAttachment( middle, 0 );
     fdRownum.top = new FormAttachment( wInclUrl, margin );
     wInclRownum.setLayoutData( fdRownum );
-
+    wInclRownum.addSelectionListener( new ComponentSelectionListener( input ) );
     // Rownum fieldname
     wlInclRownumField = new Label( wAdditional, SWT.RIGHT );
     wlInclRownumField.setText( BaseMessages.getString( PKG, "RssInputDialog.InclRownumField.Label" ) );

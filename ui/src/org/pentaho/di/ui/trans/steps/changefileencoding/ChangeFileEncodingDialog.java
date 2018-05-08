@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -58,6 +58,7 @@ import org.pentaho.di.trans.steps.changefileencoding.ChangeFileEncodingMeta;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.widget.ComboVar;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
+import org.pentaho.di.ui.trans.step.ComponentSelectionListener;
 
 public class ChangeFileEncodingDialog extends BaseStepDialog implements StepDialogInterface {
   private static Class<?> PKG = ChangeFileEncoding.class; // for i18n purposes, needed by Translator2!!
@@ -236,7 +237,7 @@ public class ChangeFileEncodingDialog extends BaseStepDialog implements StepDial
     fdSourceAddResult.left = new FormAttachment( middle, 0 );
     fdSourceAddResult.top = new FormAttachment( wSourceEncoding, margin );
     wSourceAddResult.setLayoutData( fdSourceAddResult );
-
+    wSourceAddResult.addSelectionListener( new ComponentSelectionListener( input ) );
     fdSourceFileGroup = new FormData();
     fdSourceFileGroup.left = new FormAttachment( 0, margin );
     fdSourceFileGroup.top = new FormAttachment( wStepname, margin );
@@ -307,7 +308,7 @@ public class ChangeFileEncodingDialog extends BaseStepDialog implements StepDial
     fdCreateParentFolder.left = new FormAttachment( middle, 0 );
     fdCreateParentFolder.top = new FormAttachment( wTargetFileName, margin );
     wCreateParentFolder.setLayoutData( fdCreateParentFolder );
-
+    wCreateParentFolder.addSelectionListener( new ComponentSelectionListener( input ) );
     wlTargetEncoding = new Label( wTargetFileGroup, SWT.RIGHT );
     wlTargetEncoding.setText( BaseMessages.getString( PKG, "ChangeFileEncodingDialog.TargetEncoding.Label" ) );
     props.setLook( wlTargetEncoding );
@@ -350,7 +351,7 @@ public class ChangeFileEncodingDialog extends BaseStepDialog implements StepDial
     fdTargetAddResult.left = new FormAttachment( middle, 0 );
     fdTargetAddResult.top = new FormAttachment( wTargetEncoding, margin );
     wTargetAddResult.setLayoutData( fdTargetAddResult );
-
+    wTargetAddResult.addSelectionListener( new ComponentSelectionListener( input ) );
     fdTargetFileGroup = new FormData();
     fdTargetFileGroup.left = new FormAttachment( 0, margin );
     fdTargetFileGroup.top = new FormAttachment( wSourceFileGroup, margin );
