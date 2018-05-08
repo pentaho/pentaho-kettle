@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -99,11 +99,13 @@ public class GroupByMeta extends BaseStepMeta implements StepMetaInterface {
 
   public static final int TYPE_GROUP_COUNT_ANY = 18;
 
+  public static final int TYPE_GROUP_STANDARD_DEVIATION_SAMPLE = 19;
+
   public static final String[] typeGroupCode = /* WARNING: DO NOT TRANSLATE THIS. WE ARE SERIOUS, DON'T TRANSLATE! */
   {
     "-", "SUM", "AVERAGE", "MEDIAN", "PERCENTILE", "MIN", "MAX", "COUNT_ALL", "CONCAT_COMMA", "FIRST", "LAST",
     "FIRST_INCL_NULL", "LAST_INCL_NULL", "CUM_SUM", "CUM_AVG", "STD_DEV", "CONCAT_STRING", "COUNT_DISTINCT",
-    "COUNT_ANY", };
+    "COUNT_ANY", "STD_DEV_SAMPLE" };
 
   public static final String[] typeGroupLongDesc = {
     "-", BaseMessages.getString( PKG, "GroupByMeta.TypeGroupLongDesc.SUM" ),
@@ -123,7 +125,9 @@ public class GroupByMeta extends BaseStepMeta implements StepMetaInterface {
     BaseMessages.getString( PKG, "GroupByMeta.TypeGroupLongDesc.STANDARD_DEVIATION" ),
     BaseMessages.getString( PKG, "GroupByMeta.TypeGroupLongDesc.CONCAT_STRING" ),
     BaseMessages.getString( PKG, "GroupByMeta.TypeGroupLongDesc.COUNT_DISTINCT" ),
-    BaseMessages.getString( PKG, "GroupByMeta.TypeGroupLongDesc.COUNT_ANY" ), };
+    BaseMessages.getString( PKG, "GroupByMeta.TypeGroupLongDesc.COUNT_ANY" ),
+    BaseMessages.getString( PKG, "GroupByMeta.TypeGroupLongDesc.STANDARD_DEVIATION_SAMPLE" ),
+  };
 
   /**
    * All rows need to pass, adding an extra row at the end of each group/block.
@@ -492,6 +496,7 @@ public class GroupByMeta extends BaseStepMeta implements StepMetaInterface {
           case TYPE_GROUP_STANDARD_DEVIATION:
           case TYPE_GROUP_MEDIAN:
           case TYPE_GROUP_PERCENTILE:
+          case TYPE_GROUP_STANDARD_DEVIATION_SAMPLE:
             valueType = ValueMetaInterface.TYPE_NUMBER;
             break;
           case TYPE_GROUP_CONCAT_STRING:
