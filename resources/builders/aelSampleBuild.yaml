@@ -6,14 +6,14 @@ buildProperties:
         MAVEN_DEFAULT_DIRECTIVES       : clean install
         ANT_DEFAULT_DIRECTIVES         : clean-all resolve publish
         GRADLE_DEFAULT_DIRECTIVES      : -q
-        
+
         # job item field defaults
         # These are arbitrary properties for doing replacements in this data file
         SCM_HOST_ROOT                  : https://github.com
         PENTAHO_SCM_ROOT               : https://github.com/pentaho
         WEBDETAILS_SCM_ROOT            : https://github.com/webdetails
         DEFAULT_BRANCH                 : master
-        
+
 jobGroups:
   # Always required
 
@@ -22,7 +22,7 @@ jobGroups:
      - jobID           :  kettle-engine-core
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-kettle.git
        scmBranch       :  ${DEFAULT_BRANCH}
-       directives      :  + -pl .,engine-ext,core,engine
+       directives      :  += -pl .,engine-ext,core,engine
        root            :
 
   200:
@@ -30,7 +30,7 @@ jobGroups:
      - jobID           :  karaf-ce-assembly
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-karaf-assembly.git
        scmBranch       :  ${DEFAULT_BRANCH}
-       directives      : + -pl .,pentaho-karaf-features,pentaho-karaf-assembly
+       directives      : += -pl .,pentaho-karaf-features,pentaho-karaf-assembly
 
   300:
 
@@ -45,5 +45,4 @@ jobGroups:
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-kettle.git
        scmBranch       :  ${DEFAULT_BRANCH}
        root            :  assemblies
-       directives      :  + -pl .,client
-       
+       directives      :  += -pl .,client
