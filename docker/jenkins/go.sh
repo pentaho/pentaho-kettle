@@ -1,19 +1,34 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 set -eo pipefail
 
 [[ -t 3 ]] || exec 3>&1 # Open file descriptor 3, writing to wherever stdout currently writes
 [[ -t 4 ]] || exec 4>&2 # Open file descriptor 4, writing to wherever stderr currently writes
 
+PROGNAME=$(basename "$0")
 
 REPOSITORY=pentaho/jenkins
 JENKINS_HOME=/var/jenkins_home
-DOCKER_VOLUME=${VOLUME_NAME:-jenkins_pipeline}:${JENKINS_HOME}
-SECRETS=`pwd`/secrets/credentials:/usr/share/jenkins/secrets/credentials
+CREDENTIALS_PATH=/usr/share/jenkins/secrets/credentials
+DOCKER_VOLUME=${VOLUME_NAME:=jenkins_pipeline}:${JENKINS_HOME}
+SECRETS=${CREDENTIALS:=`pwd`/secrets/credentials}:${CREDENTIALS_PATH}
 
 RED='\033[0;31m'
 GREEN='\033[0;32m'
 NC='\033[0m'
+
+realpath() {
+  OURPWD=${PWD}
+  cd "$(dirname "${1}")"
+  LINK=$(readlink "$(basename "${1}")")
+  while [ "${LINK}" ]; do
+    cd "$(dirname "${LINK}")"
+    LINK=$(readlink "$(basename "${1}")")
+  done
+  REALPATH="${PWD}/$(basename "${1}")"
+  cd "${OURPWD}"
+  echo "${REALPATH}"
+}
 
 die() {
   echo -e "${RED}$1${NC}" >&4
@@ -52,6 +67,7 @@ build() {
 }
 
 start() {
+  [[ -n "${build}" ]] && return 0
   local version=$1
   local variant=$2
   local tag="${version}${variant}"
@@ -68,6 +84,10 @@ build_libs_for_alpine() {
   [[ -n "${build_libs}" ]] && . alpine/tools/build.sh || return 0
 }
 
+setSecrets() {
+  SECRETS=${CREDENTIALS}:${CREDENTIALS_PATH}
+}
+
 printHelp() {
   echo "usage: ${PROGNAME} [options]"
   echo "  options:"
@@ -77,7 +97,9 @@ printHelp() {
   echo -e "    -q, --quiet \t\t Enable quiet mode."
   echo -e "    -d, --daemon \t\t Run in daemon mode."
   echo -e "    -n, --no-build \t\t Skip the building part."
+  echo -e "    -b, --build \t\t Skip the run part."
   echo -e "    -f, --force \t\t Force building from the start."
+  echo -e "    -c, --credentials path \t Use this file as credentials."
 }
 
 while [[ $# -gt 0 ]]; do
@@ -109,9 +131,19 @@ while [[ $# -gt 0 ]]; do
     -n|--no-build )
       export skip="ok"
       ;;
+    -b|--build )
+      export build="ok"
+      ;;
     -f|--force )
       build_opts=(--no-cache --pull --rm)
       export force="ok"
+      ;;
+    -c|--credentials )
+      [[ -z $2 || $2 == -* ]] && die "$opt requires an argument"
+      CREDENTIALS=$(realpath $2)
+      [[ -f ${CREDENTIALS} ]] || die "$2: No such file or directory"
+      setSecrets
+      shift
       ;;
     * )
       die "Unknown option: $opt"
