@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -44,11 +44,13 @@ import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
+import org.pentaho.di.trans.steps.fileinput.text.BOMDetector;
 import org.pentaho.di.trans.steps.textfileinput.EncodingType;
 
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.io.BufferedInputStream;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
@@ -331,8 +333,13 @@ public class CsvInput extends BaseStep implements StepInterface {
       if ( meta.isLazyConversionActive() ) {
         data.binaryFilename = data.filenames[ data.filenr ].getBytes();
       }
+      BOMDetector bom = new BOMDetector( new BufferedInputStream( new FileInputStream( KettleVFS.getFilename( fileObject ) ) ) );
 
       data.fis = new FileInputStream( KettleVFS.getFilename( fileObject ) );
+      if ( bom.bomExist() ) {
+        data.fis.skip( bom.getBomSize() );
+      }
+
       data.fc = data.fis.getChannel();
       data.bb = ByteBuffer.allocateDirect( data.preferredBufferSize );
 
