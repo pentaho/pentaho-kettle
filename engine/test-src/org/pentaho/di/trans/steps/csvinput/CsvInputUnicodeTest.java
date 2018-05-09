@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -21,6 +21,8 @@
  ******************************************************************************/
 
 package org.pentaho.di.trans.steps.csvinput;
+
+import java.nio.charset.StandardCharsets;
 
 import org.junit.Assert;
 import org.mockito.Matchers;
@@ -50,11 +52,17 @@ public class CsvInputUnicodeTest extends CsvInputUnitTestBase {
   private static final String ONE_CHAR_DELIM = "\t";
   private static final String MULTI_CHAR_DELIM = "|||";
   private static final String TEXT = "Header1%1$sHeader2\nValue%1$sValue\nValue%1$sValue\n";
+  private static final String TEXTHEADER = "Header1%1$sHeader2\n";
+  private static final String TEXTBODY = "Value%1$sValue\nValue%1$sValue\n";
   private static final String TEXT_WITH_ENCLOSURES = "Header1%1$sHeader2\n\"Value\"%1$s\"Value\"\n\"Value\"%1$s\"Value\"\n";
   private static final String TEST_DATA = String.format( TEXT, ONE_CHAR_DELIM );
   private static final String TEST_DATA1 = String.format( TEXT, MULTI_CHAR_DELIM );
   private static final String TEST_DATA2 = String.format( TEXT_WITH_ENCLOSURES, ONE_CHAR_DELIM );
   private static final String TEST_DATA3 = String.format( TEXT_WITH_ENCLOSURES, MULTI_CHAR_DELIM );
+
+  private static final byte[] UTF8_BOM = { (byte) 0xEF, (byte) 0xBB, (byte) 0xBF };
+  private static final String TEST_DATA_NOHEADER_UTF8_BOM =
+    String.format( new String( UTF8_BOM, StandardCharsets.UTF_8 ) + TEXTBODY, ONE_CHAR_DELIM );
 
   private static StepMockHelper<?, ?> stepMockHelper;
 
@@ -69,69 +77,74 @@ public class CsvInputUnicodeTest extends CsvInputUnitTestBase {
 
   @Test
   public void testUTF16LE() throws Exception {
-    doTest( UTF16LE, UTF16LE, TEST_DATA, ONE_CHAR_DELIM );
+    doTest( UTF16LE, UTF16LE, TEST_DATA, ONE_CHAR_DELIM, true );
   }
 
   @Test
   public void testUTF16BE() throws Exception {
-    doTest( UTF16BE, UTF16BE, TEST_DATA, ONE_CHAR_DELIM );
+    doTest( UTF16BE, UTF16BE, TEST_DATA, ONE_CHAR_DELIM, true );
   }
 
   @Test
   public void testUTF16BE_multiDelim() throws Exception {
-    doTest( UTF16BE, UTF16BE, TEST_DATA1, MULTI_CHAR_DELIM );
+    doTest( UTF16BE, UTF16BE, TEST_DATA1, MULTI_CHAR_DELIM, true );
   }
 
   @Test
   public void testUTF16LEBOM() throws Exception {
-    doTest( UTF16LEBOM, UTF16LE, TEST_DATA, ONE_CHAR_DELIM );
+    doTest( UTF16LEBOM, UTF16LE, TEST_DATA, ONE_CHAR_DELIM, true );
   }
 
   @Test
   public void testUTF8() throws Exception {
-    doTest( UTF8, UTF8, TEST_DATA, ONE_CHAR_DELIM );
+    doTest( UTF8, UTF8, TEST_DATA, ONE_CHAR_DELIM, true );
   }
 
   @Test
   public void testUTF8_multiDelim() throws Exception {
-    doTest( UTF8, UTF8, TEST_DATA1, MULTI_CHAR_DELIM );
+    doTest( UTF8, UTF8, TEST_DATA1, MULTI_CHAR_DELIM, true );
+  }
+
+  @Test
+  public void testUTF8_withoutHeaderWithBOM() throws Exception {
+    doTest( UTF8, UTF8, TEST_DATA_NOHEADER_UTF8_BOM, ONE_CHAR_DELIM, false );
   }
 
   @Test
   public void testUTF16LEDataWithEnclosures() throws Exception {
-    doTest( UTF16LE, UTF16LE, TEST_DATA2, ONE_CHAR_DELIM );
+    doTest( UTF16LE, UTF16LE, TEST_DATA2, ONE_CHAR_DELIM, true );
   }
 
   @Test
   public void testUTF16BEDataWithEnclosures() throws Exception {
-    doTest( UTF16BE, UTF16BE, TEST_DATA2, ONE_CHAR_DELIM );
+    doTest( UTF16BE, UTF16BE, TEST_DATA2, ONE_CHAR_DELIM, true );
   }
 
   @Test
   public void testUTF16LEBOMDataWithEnclosures() throws Exception {
-    doTest( UTF16LEBOM, UTF16LE, TEST_DATA2, ONE_CHAR_DELIM );
+    doTest( UTF16LEBOM, UTF16LE, TEST_DATA2, ONE_CHAR_DELIM, true );
   }
 
   @Test
   public void testUTF16BE_multiDelim_DataWithEnclosures() throws Exception {
-    doTest( UTF16BE, UTF16BE, TEST_DATA3, MULTI_CHAR_DELIM );
+    doTest( UTF16BE, UTF16BE, TEST_DATA3, MULTI_CHAR_DELIM, true );
   }
 
   @Test
   public void testUTF16LE_multiDelim_DataWithEnclosures() throws Exception {
-    doTest( UTF16LE, UTF16LE, TEST_DATA3, MULTI_CHAR_DELIM );
+    doTest( UTF16LE, UTF16LE, TEST_DATA3, MULTI_CHAR_DELIM, true );
   }
 
   @Test
   public void testUTF8_multiDelim_DataWithEnclosures() throws Exception {
-    doTest( UTF8, UTF8, TEST_DATA3, MULTI_CHAR_DELIM );
+    doTest( UTF8, UTF8, TEST_DATA3, MULTI_CHAR_DELIM, true );
   }
 
   private void doTest( final String fileEncoding, final String stepEncoding, final String testData,
-    final String delimiter ) throws Exception {
+    final String delimiter, final boolean useHeader ) throws Exception {
     String testFilePath = createTestFile( fileEncoding, testData ).getAbsolutePath();
 
-    CsvInputMeta meta = createStepMeta( testFilePath, stepEncoding, delimiter );
+    CsvInputMeta meta = createStepMeta( testFilePath, stepEncoding, delimiter, useHeader );
     CsvInputData data = new CsvInputData();
 
     CsvInput csvInput =
@@ -158,7 +171,7 @@ public class CsvInputUnicodeTest extends CsvInputUnitTestBase {
     Assert.assertEquals( 2, csvInput.getLinesWritten() );
   }
 
-  private CsvInputMeta createStepMeta( final String testFilePath, final String encoding, final String delimiter ) {
+  private CsvInputMeta createStepMeta( final String testFilePath, final String encoding, final String delimiter, final boolean useHeader ) {
     final CsvInputMeta meta = new CsvInputMeta();
     meta.setFilename( testFilePath );
     meta.setDelimiter( delimiter );
@@ -166,7 +179,7 @@ public class CsvInputUnicodeTest extends CsvInputUnitTestBase {
     meta.setEnclosure( "\"" );
     meta.setBufferSize( "50000" );
     meta.setInputFields( getInputFileFields() );
-    meta.setHeaderPresent( true );
+    meta.setHeaderPresent( useHeader );
     return meta;
   }
 
