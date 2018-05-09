@@ -62,6 +62,11 @@ pipeline {
         description: 'Maximum parallel source checkout chunk size'
     )
     string(
+        name: 'PARALLEL_UNIT_TESTS_CHUNKSIZE', 
+        defaultValue: '10', 
+        description: 'Maximum parallel unit tests chunk size'
+    )
+    string(
         name: 'CHECKOUT_DEPTH',
         defaultValue: '20',
         description: 'Shallow clone depth (leave blank for infinite)'
