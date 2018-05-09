@@ -111,6 +111,11 @@ pipeline {
         defaultValue: 'ant-auto',
         description: 'Use this Jenkins Ant label for builds',
     )
+    string(
+        name: 'CHECKOUT_TIMESTAMP',
+        defaultValue: 'CURRENT_TIME',
+        description: 'Determines the timestamp to use as the limit for version control commits. Any commits after the timestamp will not be used. Override format: YYYY-MM-DD HH:MM:SS',
+    )
 
     text(
         name: 'OVERRIDE_JOB_PARAMS',
