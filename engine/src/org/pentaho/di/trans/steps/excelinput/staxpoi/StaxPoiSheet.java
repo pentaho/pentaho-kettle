@@ -37,6 +37,7 @@ import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
+import com.google.common.annotations.VisibleForTesting;
 import org.apache.commons.lang.StringUtils;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.usermodel.DateUtil;
@@ -299,13 +300,14 @@ public class StaxPoiSheet implements KSheet {
     }
   }
 
-  private boolean isDateCell( String cellStyle ) {
+  @VisibleForTesting
+  protected boolean isDateCell( String cellStyle ) {
     if ( cellStyle != null ) {
       int styleIdx = Integer.parseInt( cellStyle );
       CTXf cellXf = styles.getCellXfAt( styleIdx );
       if ( cellXf != null ) {
         // need id for builtin types, format if custom
-        int formatId = (int) cellXf.getNumFmtId();
+        short formatId = (short) cellXf.getNumFmtId();
         String format = styles.getNumberFormatAt( formatId );
         return DateUtil.isADateFormat( formatId, format );
       }

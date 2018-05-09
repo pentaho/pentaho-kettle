@@ -27,7 +27,9 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.fail;
 import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
 
 import java.io.InputStream;
@@ -118,7 +120,8 @@ public class StaxPoiSheetTest {
         mockStylesTable(
           Collections.singletonMap( 2, 165 ),
           Collections.singletonMap( 165, "M/D/YYYY" ) ) );
-    StaxPoiSheet spSheet = new StaxPoiSheet( reader, sheetName, sheetId );
+    StaxPoiSheet spSheet = spy( new StaxPoiSheet( reader, sheetName, sheetId ) );
+    doReturn( true ).when( spSheet ).isDateCell( any() );
     KCell cell = spSheet.getRow( 1 )[0];
     assertNotNull( cell );
     assertEquals( KCellType.DATE, cell.getType() );
@@ -253,7 +256,7 @@ public class StaxPoiSheetTest {
 
   private StylesTable mockStylesTable( final Map<Integer, Integer> styleToNumFmtId, final Map<Integer, String> numFmts ) {
     StylesTable styles = mock( StylesTable.class );
-    when( styles.getCellXfAt( any( Integer.class ) ) ).then( new Answer<CTXf>() {
+    when( styles.getCellXfAt( any( Short.class ) ) ).then( new Answer<CTXf>() {
       public CTXf answer( InvocationOnMock invocation ) throws Throwable {
         int style = (int) invocation.getArguments()[0];
         Integer numFmtId = styleToNumFmtId.get( style );
@@ -266,9 +269,9 @@ public class StaxPoiSheetTest {
         }
       }
     } );
-    when( styles.getNumberFormatAt( any( Integer.class ) ) ).then( new Answer<String>() {
+    when( styles.getNumberFormatAt( any( Short.class ) ) ).then( new Answer<String>() {
       public String answer( InvocationOnMock invocation ) throws Throwable {
-        return numFmts.get( (Integer) invocation.getArguments()[0] );
+        return numFmts.get( (Short) invocation.getArguments()[0] );
       }
     } );
     return styles;
