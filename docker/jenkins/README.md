@@ -11,7 +11,7 @@ for steps on how to create one.
 
 # Usage
 The simplier way to get started is to use the provided startup script `go.sh`.  
-Edit `secrets/credentials` file with the necessary credentials, and run the `go.sh` shell script.
+Copy the file `secrets/credentials.template` to `secrets/credentials` and edit with the necessary credentials, then run the shell script.
 
 ```
 ./go.sh
@@ -30,7 +30,7 @@ NOTE: This script automatically creates a *jenkins_pipeline* volume on docker ho
 
 ```
 ./go.sh -h
-usage:  [options]
+usage: go.sh [options]
   options:
     -h, --help              This help message
     -v, --variant string    Sets the variant of the jenkins container.
@@ -38,12 +38,14 @@ usage:  [options]
     -q, --quiet             Enable quiet mode.
     -d, --daemon            Run in daemon mode.
     -n, --no-build          Skip the building part.
+    -b, --build             Skip the run part.
     -f, --force             Force building from the start.
+    -c, --credentials path  Use this file as credentials.
 ``` 
 
-# Environment Variables
+# Container Environment Variables
 
-These are the available environment variables and their defaults.
+These are the container's available environment variables and their defaults.
 
 ```
 SAMPLE_PIPELINE_NAME=sample-pipeline
