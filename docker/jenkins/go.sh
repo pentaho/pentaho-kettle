@@ -40,9 +40,10 @@ info() {
 }
 
 call() {
-  local cmd=$@
+  [[ -z ${quiet} ]] && info "\n"
   if [[ -n "${debug}" ]]; then
-    echo "${cmd}" >&5
+    local cmd=$(echo -n "${@/%/$'\n'}" | sed 's/$/ \\/')
+    echo -e "${cmd%?}\n" >&5
     return 0
   else
     $@ >&4 >&2
@@ -54,15 +55,14 @@ build() {
   local version=$1
   local variant=$2
   local tag="${version}${variant}"
-  #local build_opts=(--no-cache --squash --pull --rm)
-  local opts=("${build_opts[@]:---pull --rm}")
+  build_opts+=(--pull --rm)
 
   build_libs_for_alpine
 
   info "Building Jenkins ${tag}"
-  call docker build --file "Dockerfile$variant" \
-    "${opts[@]+"${opts[@]}"}" \
-    --tag "${REPOSITORY}:${tag}" . && \
+  call "docker build" "--file Dockerfile$variant" \
+    "${build_opts[@]+"${build_opts[@]}"}" \
+    "--tag ${REPOSITORY}:${tag}" . && \
     info " [done]\n" || die " [fail]"
 }
 
@@ -71,12 +71,14 @@ start() {
   local version=$1
   local variant=$2
   local tag="${version}${variant}"
-  local opts=("${run_opts[@]:--it --rm -v ${DOCKER_VOLUME} -v ${SECRETS}}")
+  run_opts+=(-it --rm)
+  volumes+=("-v ${DOCKER_VOLUME}" "-v ${SECRETS}")
 
   info "Starting Jenkins\n"
-  call docker run \
-    "${opts[@]+"${opts[@]}"}" \
-    -p 8080:8080 \
+  call "docker run" \
+    "${run_opts[@]+"${run_opts[@]}"}" \
+    "${volumes[@]+"${volumes[@]}"}" \
+    "-p 8080:8080" \
     "${REPOSITORY}:${tag}"
 }
 
@@ -93,13 +95,16 @@ printHelp() {
   echo "  options:"
   echo -e "    -h, --help\t\t\t This help message"
   echo -e "    -v, --variant string\t Sets the variant of the jenkins container."
-  echo -e "        --debug \t\t Enable debug mode, this will only print the commands that will be run."
+  echo -e "        --debug \t\t Enable debug mode, this will only print the commands that will be issued."
   echo -e "    -q, --quiet \t\t Enable quiet mode."
   echo -e "    -d, --daemon \t\t Run in daemon mode."
   echo -e "    -n, --no-build \t\t Skip the building part."
   echo -e "    -b, --build \t\t Skip the run part."
   echo -e "    -f, --force \t\t Force building from the start."
-  echo -e "    -c, --credentials path \t Use this file as credentials."
+  echo -e "    -c, --credentials file \t Use this file as credentials."
+  echo -e "        --env-file file \t Use this file to set the container's environment variables."
+  echo -e "        --bind-mount string \t Mount a file or directory into the container."
+  echo -e "                            \t example: <host-file>:<destination>"
 }
 
 while [[ $# -gt 0 ]]; do
@@ -126,7 +131,7 @@ while [[ $# -gt 0 ]]; do
       export debug="ok"
       ;;
     -d|--daemon )
-      run_opts=(-d --rm -v ${DOCKER_VOLUME} -v ${SECRETS})
+      run_opts+=(-d)
       ;;
     -n|--no-build )
       export skip="ok"
@@ -135,7 +140,7 @@ while [[ $# -gt 0 ]]; do
       export build="ok"
       ;;
     -f|--force )
-      build_opts=(--no-cache --pull --rm)
+      build_opts+=(--no-cache)
       export force="ok"
       ;;
     -c|--credentials )
@@ -143,6 +148,22 @@ while [[ $# -gt 0 ]]; do
       CREDENTIALS=$(realpath $2)
       [[ -f ${CREDENTIALS} ]] || die "$2: No such file or directory"
       setSecrets
+      shift
+      ;;
+    --env-file )
+      [[ -z $2 || $2 == -* ]] && die "$opt requires an argument"
+      env_list=$(realpath $2)
+      [[ -f ${env_list} ]] || die "$2: No such file or directory"
+      run_opts+=("--env-file ${env_list}")
+      shift
+      ;;
+    --bind-mount )
+      [[ -z $2 || $2 == -* ]] && die "$opt requires an argument"
+      IFS=':' read -ra mount <<< "${2}"
+      [[ "${#mount[@]}" -ge 2 ]] || die "Invalid mount point ${mount[*]}.\nUsage is <src>:<dst>"
+      mount[0]=$(realpath ${mount[0]})
+      printf -v var "%s:" "${mount[@]}"
+      volumes+=("-v ${var%?}")
       shift
       ;;
     * )

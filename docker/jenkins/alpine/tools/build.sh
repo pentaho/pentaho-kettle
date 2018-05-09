@@ -20,10 +20,10 @@ FILENAME="dockerized-phantomjs.tgz"
 
 build() {
   info "Building phantomjs shared libs"
-  call docker build --rm -t phantomjslibs --file ${DOCKERNAME} . || die " [fail]"
-  call docker run --name phantomjslibs -e PHANTOMJS_VERSION=2.1.1 phantomjslibs || die " [fail]"
-  call docker cp phantomjslibs:/dockerized-phantomjs.tgz ./${FILENAME} || die " [fail]"
-  call docker rm phantomjslibs || die " [fail]"
+  call "docker build" --rm "-t phantomjslibs" "--file ${DOCKERNAME}" . || die " [fail]"
+  call "docker run" "--name phantomjslibs" "-e PHANTOMJS_VERSION=2.1.1" phantomjslibs || die " [fail]"
+  call "docker cp phantomjslibs:/dockerized-phantomjs.tgz ./${FILENAME}" || die " [fail]"
+  call "docker rm phantomjslibs" || die " [fail]"
   info " [done]\n"
 }
 
@@ -37,10 +37,10 @@ info() {
 }
 
 call() {
-  local cmd=$@
   [[ -z ${quiet} ]] && info "\n"
   if [[ -n "${debug}" ]]; then
-    echo "${cmd}" >&5
+    local cmd=$(echo -n "${@/%/$'\n'}" | sed 's/$/ \\/')
+    echo -e "${cmd%?}\n" >&5
     return 0
   else
     $@ >&4 >&2
