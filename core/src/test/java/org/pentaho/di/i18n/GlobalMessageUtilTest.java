@@ -26,7 +26,6 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import java.util.Locale;
-import java.util.MissingResourceException;
 
 public class GlobalMessageUtilTest {
 
@@ -38,19 +37,6 @@ public class GlobalMessageUtilTest {
     Assert.assertEquals( "en_US", GlobalMessageUtil.getLocaleString( Locale.US ) );
     Assert.assertEquals( "en", GlobalMessageUtil.getLocaleString( new Locale( "EN" ) ) );
     Assert.assertEquals( "en_US", GlobalMessageUtil.getLocaleString( new Locale( "EN", "us" ) ) );
-  }
-
-  @Test
-  public void testBuildHashKey() {
-    Assert.assertEquals( "", GlobalMessageUtil.buildHashKey( null, null ) );
-    Assert.assertEquals( "", GlobalMessageUtil.buildHashKey( null, "" ) );
-    Assert.assertEquals( "foo", GlobalMessageUtil.buildHashKey( null, "foo" ) );
-    Assert.assertEquals( "", GlobalMessageUtil.buildHashKey( new Locale( "" ), null ) );
-    Assert.assertEquals( "en", GlobalMessageUtil.buildHashKey( Locale.ENGLISH, null ) );
-    Assert.assertEquals( "en", GlobalMessageUtil.buildHashKey( Locale.ENGLISH, "" ) );
-    Assert.assertEquals( "en_US", GlobalMessageUtil.buildHashKey( Locale.US, null ) );
-    Assert.assertEquals( "en_US", GlobalMessageUtil.buildHashKey( Locale.US, "" ) );
-    Assert.assertEquals( "foo_en_US", GlobalMessageUtil.buildHashKey( new Locale( "EN", "us" ), "foo" ) );
   }
 
   @Test
@@ -76,25 +62,19 @@ public class GlobalMessageUtilTest {
       GlobalMessages.SYSTEM_BUNDLE_PACKAGE, Locale.FRANCE, "someKey", new String[] { "foo" }, GlobalMessages.PKG,
       GlobalMessages.BUNDLE_NAME ) );
 
-    // "fr" - should fail
-    try {
-      GlobalMessageUtil.calculateString( GlobalMessages.SYSTEM_BUNDLE_PACKAGE,
-        Locale.FRENCH, "someKey", new String[] { "foo" }, GlobalMessages.PKG, GlobalMessages.BUNDLE_NAME );
-      Assert.fail( "French locale does not exist" );
-    } catch ( final MissingResourceException mre ) {
-    }
+    // "fr" - should fall back on default bundle
+    String str = GlobalMessageUtil.calculateString( GlobalMessages.SYSTEM_BUNDLE_PACKAGE,
+      Locale.FRENCH, "someKey", new String[] { "foo" }, GlobalMessages.PKG, GlobalMessages.BUNDLE_NAME );
+    Assert.assertEquals( "Some Value foo", str );
 
     // "jp"
     Assert.assertEquals( "何らかの値 foo", GlobalMessageUtil.calculateString( GlobalMessages.SYSTEM_BUNDLE_PACKAGE,
       Locale.JAPANESE, "someKey", new String[] { "foo" }, GlobalMessages.PKG, GlobalMessages.BUNDLE_NAME ) );
 
-    // "jp", "JP" - should fail
-    try {
-      GlobalMessageUtil.calculateString( GlobalMessages.SYSTEM_BUNDLE_PACKAGE, Locale.JAPAN, "someKey", new String[]
-        { "foo" }, GlobalMessages.PKG, GlobalMessages.BUNDLE_NAME );
-      Assert.fail( "French locale does not exist" );
-    } catch ( final MissingResourceException mre2 ) {
-    }
+    // "jp", "JP" - should fall back on "jp"
+    str = GlobalMessageUtil.calculateString( GlobalMessages.SYSTEM_BUNDLE_PACKAGE, Locale.JAPAN, "someKey", new String[]
+      { "foo" }, GlobalMessages.PKG, GlobalMessages.BUNDLE_NAME );
+    Assert.assertEquals( "何らかの値 foo", str );
 
     // try with multiple packages
     // make sure the selected language is used correctly

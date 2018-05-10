@@ -32,18 +32,18 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.net.URL;
+import java.net.URLConnection;
+import java.nio.charset.StandardCharsets;
 import java.text.MessageFormat;
 import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 import java.util.MissingResourceException;
 import java.util.PropertyResourceBundle;
 import java.util.ResourceBundle;
-import java.util.stream.Collectors;
+import java.util.Set;
 
 public class GlobalMessageUtil {
 
@@ -56,23 +56,21 @@ public class GlobalMessageUtil {
 
   protected static final LanguageChoice langChoice = LanguageChoice.getInstance();
 
-  protected static final ThreadLocal<Locale> threadLocales = new ThreadLocal<Locale>();
-
-  protected static final Map<String, ResourceBundle> locales = Collections
-    .synchronizedMap( new HashMap<String, ResourceBundle>() );
-
+  protected static final ThreadLocal<Locale> threadLocales = new ThreadLocal();
 
   public static String formatErrorMessage( String key, String msg ) {
     String s2 = key.substring( 0, key.indexOf( '.' ) + "ERROR_0000".length() + 1 );
     return BaseMessages.getString( "MESSUTIL.ERROR_FORMAT_MASK", s2, msg );
   }
 
+  private static String decorateMissingKey( final String key ) {
+    final StringBuilder keyBuilder = new StringBuilder();
+    keyBuilder.append( '!' ).append( key ).append( '!' );
+    return keyBuilder.toString();
+  }
+
   public static String getString( ResourceBundle bundle, String key ) throws MissingResourceException {
-    // try {
     return MessageFormat.format( bundle.getString( key ), new Object[] {} );
-    // } catch (Exception e) {
-    // return '!' + key + '!';
-    // }
   }
 
   public static String getErrorString( ResourceBundle bundle, String key ) {
@@ -84,7 +82,7 @@ public class GlobalMessageUtil {
       Object[] args = { param1 };
       return MessageFormat.format( bundle.getString( key ), args );
     } catch ( Exception e ) {
-      return '!' + key + '!';
+      return decorateMissingKey( key );
     }
   }
 
@@ -97,7 +95,7 @@ public class GlobalMessageUtil {
       Object[] args = { param1, param2 };
       return MessageFormat.format( bundle.getString( key ), args );
     } catch ( Exception e ) {
-      return '!' + key + '!';
+      return decorateMissingKey( key );
     }
   }
 
@@ -110,7 +108,7 @@ public class GlobalMessageUtil {
       Object[] args = { param1, param2, param3 };
       return MessageFormat.format( bundle.getString( key ), args );
     } catch ( Exception e ) {
-      return '!' + key + '!';
+      return decorateMissingKey( key );
     }
   }
 
@@ -125,7 +123,7 @@ public class GlobalMessageUtil {
       Object[] args = { param1, param2, param3, param4 };
       return MessageFormat.format( bundle.getString( key ), args );
     } catch ( Exception e ) {
-      return '!' + key + '!';
+      return decorateMissingKey( key );
     }
   }
 
@@ -135,7 +133,7 @@ public class GlobalMessageUtil {
       Object[] args = { param1, param2, param3, param4, param5 };
       return MessageFormat.format( bundle.getString( key ), args );
     } catch ( Exception e ) {
-      return '!' + key + '!';
+      return decorateMissingKey( key );
     }
   }
 
@@ -145,7 +143,7 @@ public class GlobalMessageUtil {
       Object[] args = { param1, param2, param3, param4, param5, param6 };
       return MessageFormat.format( bundle.getString( key ), args );
     } catch ( Exception e ) {
-      return '!' + key + '!';
+      return decorateMissingKey( key );
     }
   }
 
@@ -154,11 +152,11 @@ public class GlobalMessageUtil {
     return formatErrorMessage( key, getString( bundle, key, param1, param2, param3, param4 ) );
   }
 
-  public static synchronized void setLocale( Locale newLocale ) {
+  public static void setLocale( Locale newLocale ) {
     threadLocales.set( newLocale );
   }
 
-  public static synchronized Locale getLocale() {
+  public static Locale getLocale() {
     Locale rtn = threadLocales.get();
     if ( rtn != null ) {
       return rtn;
@@ -169,31 +167,21 @@ public class GlobalMessageUtil {
   }
 
   /**
-   * Returns a {@link LinkedHashSet} of locales for consideration when translating text. The {@link LinkedHashSet}
-   * contains the user selected preferred locale, the failover locale (english) and the "empty" locale, as well as
-   * their language-only (no country qualifier) equivalents.
+   * Returns a {@link LinkedHashSet} of {@link Locale}s for consideration when localizing text. The
+   * {@link LinkedHashSet} contains the user selected preferred {@link Locale}, the failover {@link Locale}
+   * ({@link Locale#ENGLISH}) and the {@link Locale#ROOT}.
    *
-   * @return Returns a {@link LinkedHashSet} of locales for consideration when translating text
+   * @return Returns a {@link LinkedHashSet} of {@link Locale}s for consideration when translating text
    */
   public static LinkedHashSet<Locale> getActiveLocales() {
-    // Example: messages_fr_FR.properties
-    final Locale defaultLocale = langChoice.getDefaultLocale();
-    // Example: messages_fr.properties
-    final Locale defaultLocaleLangOnly = new Locale( defaultLocale.getLanguage() );
-    // Example: messages_en_US.properties
-    final Locale failoverLocale = FAILOVER_LOCALE;
-    // Example: messages_en.properties
-    final Locale failoverLocaleLangOnly = new Locale( failoverLocale.getLanguage() );
-    // Example: messages.properties)
-    final Locale noLangLocale = new Locale( "" );
-
     // Use a LinkedHashSet to maintain order
     final LinkedHashSet<Locale> activeLocales = new LinkedHashSet<>();
-    activeLocales.add( defaultLocale );
-    activeLocales.add( defaultLocaleLangOnly );
-    activeLocales.add( failoverLocale );
-    activeLocales.add( failoverLocaleLangOnly );
-    activeLocales.add( noLangLocale );
+    // Example: messages_fr_FR.properties
+    activeLocales.add( langChoice.getDefaultLocale() );
+    // Example: messages_en_US.properties
+    activeLocales.add( FAILOVER_LOCALE );
+    // Example: messages.properties
+    activeLocales.add( Locale.ROOT );
     return activeLocales;
   }
 
@@ -202,11 +190,17 @@ public class GlobalMessageUtil {
    * logNotFoundError} parameter set to {@code true} to ensure proper error logging when the localized string cannot be
    * found.
    */
-  public static String calculateString(
-    String[] pkgNames, String key, Object[] parameters, Class<?> resourceClass, final String bundleName ) {
-    return calculateString( pkgNames, key, parameters, resourceClass, bundleName, true );
+
+  public static String calculateString( final String[] pkgNames, final String key, final Object[] parameters,
+                                        final Class<?> resourceClass, final String bundleName ) {
+    return calculateString( pkgNames, key, parameters, resourceClass, bundleName, false, false );
   }
 
+  public static String calculateString( final String[] pkgNames, final String key, Object[] parameters,
+                                        final Class<?> resourceClass, final String bundleName,
+                                        final boolean fallbackOnRoot ) {
+    return calculateString( pkgNames, key, parameters, resourceClass, bundleName, false, fallbackOnRoot );
+  }
 
   /**
    * Returns the localized string for the given {@code key} and {@code parameters} in a bundle defined by the the
@@ -223,116 +217,73 @@ public class GlobalMessageUtil {
    * @param logNotFoundError determines whether an error is logged when the localized string cannot be found - it can be
    *                         used to suppress the log in cases where it is known that various combinations of parameters
    *                         will be tried to fetch the message, to avoid unnecessary error logging.
+   * @param fallbackOnRoot   if true, and a {@link ResourceBundle} cannot be found for a given {@link Locale},
+   *                         falls back on the ROOT {@link Locale}
    * @return the localized string for the given {@code key} and {@code parameters} in a bundle defined by the the
    * concatenation of the package names defined in {@code packageName} and @code bundleName} (the first valid
    * combination of {@code packageName} + @code bundleName} wins), sing the provided {@code resourceClass}'s class
    * loader
    */
-  public static String calculateString(
-    String[] pkgNames, String key, Object[] parameters, Class<?> resourceClass, final String bundleName,
-    final boolean logNotFoundError ) {
+  public static String calculateString( final String[] pkgNames, final String key, final Object[] parameters,
+                                        final Class<?> resourceClass, final String bundleName,
+                                        final boolean logNotFoundError, final boolean fallbackOnRoot ) {
 
-    final Map<Locale, String> potentialMatches = new HashMap<>();
-    for ( final String pkgName : pkgNames ) {
-      final Map<Locale, String> strings = calculateString( pkgName, getActiveLocales(), key, parameters,
-        resourceClass, bundleName );
-      //if ( !isMissingKey( string ) ) {
-      //  return string;
-      //}
-      potentialMatches.putAll( strings );
+    final Set<Locale> activeLocales = getActiveLocales();
+    for ( final Locale locale : activeLocales ) {
+      final String string =
+        calculateString( pkgNames, locale, key, parameters, resourceClass, bundleName, fallbackOnRoot );
+      if ( !isMissingKey( string ) ) {
+        return string;
+      }
     }
-    if ( potentialMatches.isEmpty() && logNotFoundError ) {
-    //final String string = "!" + key + "!";
-    //if ( logNotFoundError ) {
-      String message =
-        "Message not found in the preferred and failover locale: key=[" + key + "], package=" + Arrays
-          .asList( pkgNames );
-      log.error( Const.getStackTracker( new KettleException( message ) ) );
+    if ( logNotFoundError ) {
+      final StringBuilder msg = new StringBuilder();
+      msg.append( "Message not found in the preferred and failover locale: key=[" ).append( key ).append(
+        "], package=" ).append( Arrays.asList( pkgNames ) );
+      log.error( Const.getStackTracker( new KettleException( msg.toString() ) ) );
     }
-    //return string;
-    return getBestMatch( key, getActiveLocales(), potentialMatches );
+    return decorateMissingKey( key );
   }
 
-  @VisibleForTesting
-  static Map<Locale, String> calculateString( String packageName, LinkedHashSet<Locale> locales, String key, Object[] parameters,
-                                 Class<?> resourceClass, final String bundleName ) {
-    final Map<Locale, String> potentialMatches = new HashMap<>();
-    for ( final Locale locale : locales ) {
+  private static String calculateString( final String[] pkgNames, final Locale locale, final String key,
+                                         final Object[] parameters, final Class<?> resourceClass,
+                                         final String bundleName, final boolean fallbackOnRoot ) {
+    for ( final String packageName : pkgNames ) {
       try {
-        final String string = calculateString( packageName, locale, key, parameters, resourceClass, bundleName );
+        final String string =
+          calculateString( packageName, locale, key, parameters, resourceClass, bundleName, fallbackOnRoot );
         if ( !isMissingKey( string ) ) {
-          potentialMatches.put( locale, string );
+          return string;
         }
       } catch ( final MissingResourceException e ) {
         // do nothing
       }
     }
-    return potentialMatches;
+    return decorateMissingKey( key );
   }
 
-  /**
-   * Of all the matches found, returns the one that is most preferable, according to the order of the locale set,
-   * which is expected to be ordered.
-   *
-   * @param key
-   * @param locales
-   * @param potentialMatches
-   * @return the string with the most preferred locale, of all the available locales.
-   */
-  private static String getBestMatch( final String key, final LinkedHashSet<Locale> locales, final Map<Locale, String>
-    potentialMatches ) {
-    if ( potentialMatches != null && !potentialMatches.isEmpty() ) {
-      for ( final Locale locale : locales ) {
-        final String string = potentialMatches.get( locale );
-        if ( string != null ) {
-          return string;
-        }
-      }
-    }
-    return "!" + key + "!";
+  static String calculateString( final String packageName, final Locale locale, final String key, Object[] parameters,
+                                 final Class<?> resourceClass, final String bundleName ) {
+    return calculateString( packageName, locale, key, parameters, resourceClass, bundleName, true );
   }
 
   @VisibleForTesting
-  static String calculateString( String packageName, Locale locale, String key, Object[] parameters,
-                                         Class<?> resourceClass, final String bundleName )
-    throws MissingResourceException {
+  static String calculateString( final String packageName, final Locale locale, final String key,
+                                 final Object[] parameters, final Class<?> resourceClass, final String bundleName,
+                                 final boolean fallbackOnRoot ) throws MissingResourceException {
     try {
-      ResourceBundle bundle = getBundle( locale, packageName + "." + bundleName, resourceClass );
+      ResourceBundle bundle = getBundle( locale, packageName + "." + bundleName, resourceClass, fallbackOnRoot );
       String unformattedString = bundle.getString( key );
       String string = MessageFormat.format( unformattedString, parameters );
       return string;
     } catch ( IllegalArgumentException e ) {
-      String message =
-        "Format problem with key=["
-          + key + "], locale=[" + locale + "], package=" + packageName + " : " + e.toString();
-      log.error( message );
+      final StringBuilder msg = new StringBuilder();
+      msg.append( "Format problem with key=[" ).append( key ).append( "], locale=[" ).append( locale ).append(
+        "], package=" ).append( packageName ).append( " : " ).append( e.toString() );
+      log.error( msg.toString() );
       log.error( Const.getStackTracker( e ) );
-      throw new MissingResourceException( message, packageName, key );
+      throw new MissingResourceException( msg.toString(), packageName, key );
     }
-  }
-
-  /**
-   * Returns a {@link ResourceBundle}
-   *
-   * @param packageName
-   * @param loader
-   * @return
-   * @throws MissingResourceException
-   */
-  public static ResourceBundle getBundle( final String packageName, final ClassLoader loader )
-    throws MissingResourceException {
-
-    for ( final Locale locale : getActiveLocales() ) {
-      try {
-        return ResourceBundle.getBundle( packageName, locale, loader );
-      } catch ( MissingResourceException e ) {
-        // nothing to do, an exception will be thrown if no bundle if sound
-      }
-    }
-    final List<String> localeNames = Arrays.asList( getActiveLocales() ).stream().map(
-      locale -> locale.toString() ).collect( Collectors.toList() );
-    throw new MissingResourceException( String.format( "Unable to find properties file in the available locales: %s",
-      localeNames ), packageName, packageName );
   }
 
   /**
@@ -343,60 +294,58 @@ public class GlobalMessageUtil {
    * @return The resource bundle
    * @throws MissingResourceException in case both resource bundles couldn't be found.
    */
-  public static ResourceBundle getBundle( String packagePath, Class<?> resourceClass ) throws MissingResourceException {
-    for ( final Locale locale : getActiveLocales() ) {
+  public static ResourceBundle getBundle( final String packagePath, final Class<?> resourceClass )
+    throws MissingResourceException {
+    final Set<Locale> activeLocales = getActiveLocales();
+    for ( final Locale locale : activeLocales ) {
       try {
         return getBundle( locale, packagePath, resourceClass );
       } catch ( MissingResourceException e ) {
-        // nothing to do, an exception will be thrown if no bundle if sound
-        log.warn( String.format( "Unable to find properties file for package '%s' and class "
-          + "'%s' in the available locales: %s", packagePath, resourceClass, locale ) );
+        final StringBuilder msg = new StringBuilder();
+        msg.append( "Unable to find properties file for package '" ).append( packagePath ).append( "' and class '" )
+          .append( resourceClass.getName() ).append( "' in the available locales: " ).append( locale );
+        // nothing to do, an exception will be thrown if no bundle is found
+        log.warn( msg.toString() );
       }
     }
-    final List<String> localeNames = Arrays.asList( getActiveLocales() ).stream().map(
-      locale -> locale.toString() ).collect( Collectors.toList() );
-    throw new MissingResourceException( String.format( "Unable to find properties file for package '%s' and class "
-      + "'%s' in the available locales: %s", packagePath, resourceClass, localeNames ), resourceClass.getName(),
+    final StringBuilder msg = new StringBuilder();
+    msg.append( "Unable to find properties file for package '" ).append( packagePath ).append( "' and class '" )
+      .append( resourceClass.getName() ).append( "' in the available locales: " ).append(
+      Arrays.asList( activeLocales ) );
+    throw new MissingResourceException( msg.toString(), resourceClass.getName(),
       packagePath );
   }
 
-  public static ResourceBundle getBundle( Locale locale, String packagePath, Class<?> resourceClass ) throws
-    MissingResourceException {
-    String filename = buildHashKey( locale, packagePath );
-    filename = "/" + filename.replace( '.', '/' ) + ".properties";
-    InputStream inputStream = null;
+  public static ResourceBundle getBundle( Locale locale, String packagePath, Class<?> resourceClass ) {
+    return getBundle( locale, packagePath, resourceClass, true );
+  }
+
+  /**
+   * Returns a {@link ResourceBundle} corresponding to the given {@link Locale} package and resource class. Falls-back
+   * on the ROOT {@link Locale}, if the {@code fallbackOnRoot} flag is true and the requested Locale is not available.
+   *
+   * @param locale         the {@link Locale} for which the {@link ResourceBundle} is being requested
+   * @param packagePath
+   * @param resourceClass
+   * @param fallbackOnRoot if true, and a {@link ResourceBundle} cannot be found for the requested {@link Locale}, falls
+   *                       back on the ROOT {@link Locale}
+   * @return a {@link ResourceBundle} corresponding to the given {@link Locale} package and resource class
+   */
+  public static ResourceBundle getBundle( final Locale locale, final String packagePath, final Class<?> resourceClass,
+                                          final boolean fallbackOnRoot ) {
+    final GlobalMessageControl control = new GlobalMessageControl( fallbackOnRoot );
+    final String resourceName = control.toResourceName( control.toBundleName( packagePath, locale ), "properties" );
+
+    ResourceBundle bundle;
     try {
-      ResourceBundle bundle = locales.get( filename );
-      if ( bundle == null ) {
-        inputStream = resourceClass.getResourceAsStream( filename );
-        if ( inputStream == null ) {
-          // Retry with the system class loader, just in case we are dealing with a messy plug-in.
-          //
-          inputStream = ClassLoader.getSystemResourceAsStream( filename );
-        }
-        // Now get the bundle from the messages files input stream
-        //
-        if ( inputStream != null ) {
-          bundle = new PropertyResourceBundle( new InputStreamReader( inputStream, "UTF-8" ) );
-          locales.put( filename, bundle );
-        } else {
-          throw new MissingResourceException( String.format( "Unable to find properties file '%s'", filename ),
-            resourceClass.getName(), packagePath );
-        }
-      }
-      return bundle;
-    } catch ( IOException e ) {
-      throw new MissingResourceException( String.format( "Unable to find properties file '%s': %s",
-        filename, e.toString() ), resourceClass.getName(), packagePath );
-    } finally {
-      if ( inputStream != null ) {
-        try {
-          inputStream.close();
-        } catch ( Exception e ) {
-          // ignore this
-        }
-      }
+      bundle = ResourceBundle.getBundle( packagePath, locale, resourceClass.getClassLoader(),
+        new GlobalMessageControl( fallbackOnRoot ) );
+    } catch ( final MissingResourceException e ) {
+      final StringBuilder msg = new StringBuilder();
+      msg.append( "Unable to find properties file '" ).append( resourceName ).append( "': " ).append( e.toString() );
+      throw new MissingResourceException( msg.toString(), resourceClass.getName(), packagePath );
     }
+    return bundle;
   }
 
   /**
@@ -406,37 +355,18 @@ public class GlobalMessageUtil {
    * @return a string corresponding to the locale (Example: "en", "en_US").
    */
   protected static String getLocaleString( Locale locale ) {
-    String localeString = "";
+    final StringBuilder localeString = new StringBuilder();
     if ( locale != null && !StringUtils.isBlank( locale.getLanguage() ) ) {
       if ( !StringUtils.isBlank( locale.getCountry() ) ) {
         // force language to be lower case and country to be upper case
-        localeString = String.format( "%s_%s", locale.getLanguage().toLowerCase(), locale.getCountry().toUpperCase() );
+        localeString.append( locale.getLanguage().toLowerCase() ).append( '_' ).append(
+          locale.getCountry().toUpperCase() );
       } else {
         // force language to be lower case
-        localeString = String.format( "%s", locale.getLanguage().toLowerCase() );
+        localeString.append( locale.getLanguage().toLowerCase() );
       }
     }
-    return localeString;
-  }
-
-  /**
-   * Returns the full path to the message bundle defned by the {@code packagePath} and {@link Locale}.
-   *
-   * @param locale      the {@link Locale} used to contruct the key
-   * @param packagePath the full path to the message file without the extension
-   * @return the full path to the message bundle defned by the {@code packagePath} and {@link Locale}
-   */
-  protected static String buildHashKey( Locale locale, String packagePath ) {
-    final String localeString = getLocaleString( locale );
-    if ( StringUtils.isBlank( localeString ) ) {
-      return Const.NVL( packagePath, "" );
-    } else {
-      if ( StringUtils.isBlank( packagePath ) ) {
-        return localeString;
-      } else {
-        return String.format( "%s_%s", packagePath, localeString );
-      }
-    }
+    return localeString.toString();
   }
 
   /**
@@ -450,24 +380,70 @@ public class GlobalMessageUtil {
       && !string.trim().equals( "!" ) );
   }
 
-  /*
-   * public static String formatMessage(String pattern) { try { Object[] args = {}; return MessageFormat.format(pattern,
-   * args); } catch (Exception e) { return '!' + pattern + '!'; } }
-   *
-   * public static String formatMessage(String pattern, String param1) { try { Object[] args = {param1}; return
-   * MessageFormat.format(pattern, args); } catch (Exception e) { return '!' + pattern + '!'; } }
-   *
-   * public static String formatMessage(String pattern, String param1, String param2) { try { Object[] args = {param1,
-   * param2}; return MessageFormat.format(pattern, args); } catch (Exception e) { return '!' + pattern + '!'; }
-   *
-   * }
-   *
-   * public static String formatMessage(String pattern, String param1, String param2, String param3) { try { Object[]
-   * args = {param1, param2, param3}; return MessageFormat.format(pattern, args); } catch (Exception e) { return '!' +
-   * pattern + '!'; } }
-   *
-   * public static String formatMessage(String pattern, String param1, String param2, String param3, String param4) {
-   * try { Object[] args = {param1, param2, param3, param4}; return MessageFormat.format(pattern, args); } catch
-   * (Exception e) { return '!' + pattern + '!'; } }
+  /**
+   * A custom {@link ResourceBundle.Control} implementation that provides the desired fall-back mechanism.
    */
+  static class GlobalMessageControl extends ResourceBundle.Control {
+
+    private boolean fallbackOnRoot;
+
+    GlobalMessageControl( final boolean fallbackOnRoot ) {
+      this.fallbackOnRoot = fallbackOnRoot;
+    }
+
+    @Override
+    public Locale getFallbackLocale( final String baseName, final Locale locale ) {
+      // we have our own fall-back mechanism
+      return null;
+    }
+
+    @Override
+    public List<Locale> getCandidateLocales( final String baseName, final Locale locale ) {
+      // we have our own fall-back mechanism
+      final List<Locale> locales = super.getCandidateLocales( baseName, locale );
+      // remove the root locale, as we want to handle it ourselves, unless the locale itself is root
+      if ( !fallbackOnRoot && !locale.equals( Locale.ROOT ) ) {
+        locales.remove( Locale.ROOT );
+      }
+      return locales;
+    }
+
+    @Override
+    public ResourceBundle newBundle( final String baseName, final Locale locale, final String format,
+                                     final ClassLoader loader, final boolean reload )
+      throws IllegalAccessException, InstantiationException, IOException {
+      final String resourceName = toResourceName( toBundleName( baseName, locale ), "properties" );
+      ResourceBundle bundle;
+      InputStream stream = null;
+      if ( reload ) {
+        final URL url = loader.getResource( resourceName );
+        if ( url != null ) {
+          final URLConnection connection = url.openConnection();
+          if ( connection != null ) {
+            connection.setUseCaches( false );
+            stream = connection.getInputStream();
+          }
+        }
+      } else {
+        stream = loader.getResourceAsStream( resourceName );
+      }
+      if ( stream == null ) {
+        // Retry with the system class loader, just in case we are dealing with a messy plug-in.
+        stream = ClassLoader.getSystemResourceAsStream( resourceName );
+      }
+      if ( stream != null ) {
+        try {
+          // use UTF-8 encoding
+          bundle = new PropertyResourceBundle( new InputStreamReader( stream, StandardCharsets.UTF_8.name() ) );
+        } finally {
+          stream.close();
+        }
+      } else {
+        final StringBuilder msg = new StringBuilder();
+        msg.append( "Unable to find properties file '" ).append( resourceName ).append( "'" );
+        throw new MissingResourceException( msg.toString(), loader.getClass().getName(), baseName );
+      }
+      return bundle;
+    }
+  }
 }
