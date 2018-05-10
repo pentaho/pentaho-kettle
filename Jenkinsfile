@@ -112,6 +112,12 @@ pipeline {
         description: 'Use this Jenkins Ant label for builds',
     )
 
+    text(
+        name: 'OVERRIDE_JOB_PARAMS',
+        defaultValue: '',
+        description: 'Override job parameters. Syntax: "jobID: param1=value1; param2=value2". One job per line.'
+    )
+
     booleanParam(
         name: 'RUN_CHECKOUTS',
         defaultValue: true,
