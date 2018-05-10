@@ -25,11 +25,12 @@ package org.pentaho.di.trans.steps.s3csvinput;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.amazonaws.auth.DefaultAWSCredentialsProviderChain;
-import org.jets3t.service.S3Service;
-import org.jets3t.service.S3ServiceException;
-import org.jets3t.service.impl.rest.httpclient.RestS3Service;
-import org.jets3t.service.security.AWSCredentials;
+import com.amazonaws.SdkClientException;
+import com.amazonaws.auth.AWSCredentials;
+import com.amazonaws.auth.AWSStaticCredentialsProvider;
+import com.amazonaws.auth.BasicAWSCredentials;
+import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
@@ -719,18 +720,21 @@ public class S3CsvInputMeta extends BaseStepMeta implements StepMetaInterface, I
     this.awsSecretKey = awsSecretKey;
   }
 
-  public S3Service getS3Service( VariableSpace space ) throws S3ServiceException {
+  public AmazonS3 getS3Client( VariableSpace space ) throws SdkClientException {
     String accessKey = Encr.decryptPasswordOptionallyEncrypted( space.environmentSubstitute( awsAccessKey ) );
     String secretKey = Encr.decryptPasswordOptionallyEncrypted( space.environmentSubstitute( awsSecretKey ) );
     AWSCredentials credentials = null;
 
-    if ( isEmpty( accessKey ) && isEmpty( secretKey ) ) {
-      com.amazonaws.auth.AWSCredentials defaultCredentials = DefaultAWSCredentialsProviderChain.getInstance().getCredentials();
-      credentials = new AWSCredentials( defaultCredentials.getAWSAccessKeyId(), defaultCredentials.getAWSSecretKey() );
+    if ( !isEmpty( accessKey ) && !isEmpty( secretKey ) ) {
+      // Handle legacy credentials ( embedded in the step )
+      BasicAWSCredentials awsCreds = new BasicAWSCredentials( accessKey, secretKey );
+      return AmazonS3ClientBuilder.standard()
+        .withCredentials( new AWSStaticCredentialsProvider( awsCreds ) )
+        .build();
     } else {
-      credentials = new AWSCredentials( accessKey, secretKey );
+      // Get Credentials the new way
+      return AmazonS3ClientBuilder.defaultClient();
     }
-    return new RestS3Service( credentials );
   }
 
   private boolean isEmpty( String value ) {
