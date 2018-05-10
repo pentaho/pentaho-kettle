@@ -22,6 +22,7 @@
 
 package org.pentaho.di.trans.steps.abort;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
@@ -80,34 +81,6 @@ public class AbortTest {
     abort.processRow( stepMockHelper.processRowsStepMetaInterface, stepMockHelper.processRowsStepDataInterface );
     verify( stepMockHelper.trans, times( 1 ) ).stopAll();
     assertTrue( abort.isStopped() );
-  }
-
-  @Test
-  public void testSafeStop() throws KettleException {
-    Abort abort =
-      new Abort(
-        stepMockHelper.stepMeta, stepMockHelper.stepDataInterface, 0, stepMockHelper.transMeta,
-        stepMockHelper.trans );
-    when( stepMockHelper.processRowsStepMetaInterface.isSafeStop() ).thenReturn( true );
-    abort.init( stepMockHelper.initStepMetaInterface, stepMockHelper.initStepDataInterface );
-    abort.addRowSetToInputRowSets( stepMockHelper.getMockInputRowSet( new Object[] {} ) );
-    abort.processRow( stepMockHelper.processRowsStepMetaInterface, stepMockHelper.processRowsStepDataInterface );
-    verify( stepMockHelper.trans ).safeStop();
-  }
-
-  @Test
-  public void testAbortWithError() throws KettleException {
-    Abort abort =
-      new Abort(
-        stepMockHelper.stepMeta, stepMockHelper.stepDataInterface, 0, stepMockHelper.transMeta,
-        stepMockHelper.trans );
-    when( stepMockHelper.processRowsStepMetaInterface.isSafeStop() ).thenReturn( false );
-    when( stepMockHelper.processRowsStepMetaInterface.isAbortWithError() ).thenReturn( true );
-    abort.init( stepMockHelper.initStepMetaInterface, stepMockHelper.initStepDataInterface );
-    abort.addRowSetToInputRowSets( stepMockHelper.getMockInputRowSet( new Object[] {} ) );
-    abort.processRow( stepMockHelper.processRowsStepMetaInterface, stepMockHelper.processRowsStepDataInterface );
-    assertEquals( 1L, abort.getErrors() );
-    verify( stepMockHelper.trans ).stopAll();
   }
 }
 
