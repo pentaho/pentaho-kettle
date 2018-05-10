@@ -127,6 +127,7 @@ public class GroupByMeta extends BaseStepMeta implements StepMetaInterface {
     BaseMessages.getString( PKG, "GroupByMeta.TypeGroupLongDesc.STANDARD_DEVIATION" ),
     BaseMessages.getString( PKG, "GroupByMeta.TypeGroupLongDesc.CONCAT_STRING" ),
     BaseMessages.getString( PKG, "GroupByMeta.TypeGroupLongDesc.COUNT_DISTINCT" ),
+    BaseMessages.getString( PKG, "GroupByMeta.TypeGroupLongDesc.COUNT_ANY" ),
     BaseMessages.getString( PKG, "GroupByMeta.TypeGroupLongDesc.STANDARD_DEVIATION_SAMPLE" ),
     BaseMessages.getString( PKG, "GroupByMeta.TypeGroupLongDesc.PERCENTILE_NEAREST_RANK" )
   };
