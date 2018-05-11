@@ -74,6 +74,7 @@ import java.text.ParseException;
 import java.text.ParsePosition;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.Locale;
 import java.util.TimeZone;
@@ -179,6 +180,8 @@ public class ValueMetaBase implements ValueMetaInterface {
 
   protected boolean ignoreWhitespace;
 
+  protected final Comparator<Object> comparator;
+
   private static final LogChannelInterface log = KettleLogStore.getLogChannelInterfaceFactory().create( "ValueMetaBase" );
 
   /**
@@ -208,7 +211,15 @@ public class ValueMetaBase implements ValueMetaInterface {
     this( name, type, -1, -1 );
   }
 
+  public ValueMetaBase( String name, int type, Comparator<Object> comparator ) {
+    this( name, type, -1, -1, comparator );
+  }
+
   public ValueMetaBase( String name, int type, int length, int precision ) {
+    this( name, type, length, precision, null );
+  }
+
+  public ValueMetaBase( String name, int type, int length, int precision, Comparator<Object> comparator ) {
     this.name = name;
     this.type = type;
     this.length = length;
@@ -232,6 +243,8 @@ public class ValueMetaBase implements ValueMetaInterface {
     this.ignoreTimezone =
       convertStringToBoolean( Const.NVL( System.getProperty( Const.KETTLE_COMPATIBILITY_DB_IGNORE_TIMEZONE, "N" ),
         "N" ) );
+
+    this.comparator = comparator;
 
     determineSingleByteEncoding();
     setDefaultConversionMask();
@@ -3630,6 +3643,23 @@ public class ValueMetaBase implements ValueMetaInterface {
     }
 
     int cmp = 0;
+
+    //If a comparator is not provided, default to the type comparisons
+    if ( comparator == null ) {
+      cmp = typeCompare( data1, data2 );
+    } else {
+      cmp = comparator.compare( data1, data2 );
+    }
+
+    if ( isSortedDescending() ) {
+      return -cmp;
+    } else {
+      return cmp;
+    }
+  }
+
+  private int typeCompare( Object data1, Object data2 ) throws KettleValueException {
+    int cmp = 0;
     switch ( getType() ) {
       case TYPE_STRING:
         // if (isStorageBinaryString() && identicalFormat &&
@@ -3702,14 +3732,10 @@ public class ValueMetaBase implements ValueMetaInterface {
         break;
       default:
         throw new KettleValueException( toString() + " : Comparing values can not be done with data type : "
-            + getType() );
+          + getType() );
     }
+    return cmp;
 
-    if ( isSortedDescending() ) {
-      return -cmp;
-    } else {
-      return cmp;
-    }
   }
 
   /**

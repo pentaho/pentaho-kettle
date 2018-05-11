@@ -222,9 +222,8 @@ public class TransGridDelegate extends SpoonDelegate implements XulEventHandler 
     fdView.bottom = new FormAttachment( 100, 0 );
     transGridView.setLayoutData( fdView );
 
-    //change the number column ValueMetaNumber to ValueMetaString to be compatible with sub trans numbering
     ColumnInfo numberColumn = transGridView.getNumberColumn();
-    ValueMetaInterface numberColumnValueMeta = new ValueMetaString( "#" );
+    ValueMetaInterface numberColumnValueMeta = new ValueMetaString( "#", TransGridDelegate::subStepCompare );
     numberColumn.setValueMeta( numberColumnValueMeta );
 
     // Add a timer to update this view every couple of seconds...
@@ -558,6 +557,37 @@ public class TransGridDelegate extends SpoonDelegate implements XulEventHandler 
    */
   public String getName() {
     return "transgrid";
+  }
+
+
+  /**
+   * Sub Step Compare
+   *
+   * Note - nulls must be handled outside of this method
+   *
+   * @param o1 - First object to compare
+   * @param o2 - Second object to compare
+   * @return 0 if equal, integer greater than 0 if o1 > o2, integer less than 0 if o2 > o1
+   */
+  static int subStepCompare( Object o1, Object o2 ) {
+    final String[] string1 = o1.toString().split( "\\." );
+    final String[] string2 = o2.toString().split( "\\." );
+
+    //Compare the base step first
+    int cmp = Integer.compare( Integer.parseInt( string1[ 0 ] ), Integer.parseInt( string2[ 0 ] ) );
+
+    //if the base step numbers are equal, then we need to compare the sub step numbers
+    if ( cmp == 0 ) {
+      if ( string1.length == 2 && string2.length == 2 ) {
+        //compare the sub step numbers
+        cmp = Integer.compare( Integer.parseInt( string1[ 1 ] ), Integer.parseInt( string2[ 1 ] ) );
+      } else if ( string1.length < string2.length ) {
+        cmp = -1;
+      } else if ( string2.length < string1.length ) {
+        cmp = 1;
+      }
+    }
+    return cmp;
   }
 
   /*
