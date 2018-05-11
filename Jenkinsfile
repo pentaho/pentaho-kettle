@@ -159,6 +159,13 @@ pipeline {
         description: 'No op build (test the build config)'
     )
     booleanParam(
+       name: 'PUSH_CHANGES',
+        defaultValue: false,
+        description: 'Push changes in the projects back to the remote origin of the project.<br>'+
+      'We would typically use this to update versions and push them to a branch<br>This parameter will get passed to all jobs,'+
+      ' and from them to the managed scripts that handle the git push.  (It will override any tagging options set for this job.)',
+    )
+    booleanParam(
         name: 'USE_DISTRIBUTED_SOURCE_CACHING',
         defaultValue: false,
         description: 'Distributes source checkouts on remote nodes ' +
@@ -290,6 +297,30 @@ pipeline {
       }
       steps {
         junit allowEmptyResults: true, testResults: '**/bin/**/TEST*.xml **/target/**/TEST*.xml'
+      }
+    }
+
+    stage('Push Changes') {
+      when {
+        expression {
+          return (params.PUSH_CHANGES && !params.NOOP)
+        }
+      }
+      failFast true
+      steps {
+          doPushChanges(mappedBuildData)
+      }
+    }
+
+    stage('Tag') {
+      when {
+        expression {
+          return (!params.PUSH_CHANGES && !params.NOOP)
+        }
+      }
+      failFast true
+      steps {
+          doTag(mappedBuildData)
       }
     }
 

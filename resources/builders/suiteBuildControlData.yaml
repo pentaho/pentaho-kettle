@@ -13,10 +13,13 @@ buildProperties:
 
         # Version based control properties
         UPDATE_VERSIONS                : false
-        RELEASE_VERSION                : 8.2.0.0-SNAPSHOT
-        SUITE_RELEASE_VERSION          : 8.2.0.0-SNAPSHOT
+        RELEASE_VERSION                : 8.2.0.0
+        SUITE_RELEASE_VERSION          : 8.2.0.0
         RELEASE_MODE                   : false
         ADD_BUILD_ID_VERSION_TAIL      : true
+        # Options: SUFFIX, NONE, PREFIX, FULL
+        TAG_NAME_TYPE                  : SUFFIX
+        TAG_NAME                       : -RC
 
         # job item field defaults
         # These are arbitrary properties for doing replacements in this data file
