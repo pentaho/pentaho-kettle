@@ -29,6 +29,8 @@ import com.amazonaws.SdkClientException;
 import com.amazonaws.auth.AWSCredentials;
 import com.amazonaws.auth.AWSStaticCredentialsProvider;
 import com.amazonaws.auth.BasicAWSCredentials;
+import com.amazonaws.client.builder.AwsClientBuilder;
+import com.amazonaws.regions.Regions;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import org.pentaho.di.core.CheckResult;
@@ -726,14 +728,19 @@ public class S3CsvInputMeta extends BaseStepMeta implements StepMetaInterface, I
     AWSCredentials credentials = null;
 
     if ( !isEmpty( accessKey ) && !isEmpty( secretKey ) ) {
-      // Handle legacy credentials ( embedded in the step )
+      // Handle legacy credentials ( embedded in the step ).  We'll force a region since it not specified and
+      // then turn on GlobalBucketAccess so if the files accessed are elsewhere it won't matter.
       BasicAWSCredentials awsCreds = new BasicAWSCredentials( accessKey, secretKey );
       return AmazonS3ClientBuilder.standard()
         .withCredentials( new AWSStaticCredentialsProvider( awsCreds ) )
+        .enableForceGlobalBucketAccess()
+        .withRegion( Regions.US_EAST_1 )
         .build();
     } else {
       // Get Credentials the new way
-      return AmazonS3ClientBuilder.defaultClient();
+      return AmazonS3ClientBuilder.standard()
+        .enableForceGlobalBucketAccess()
+        .build();
     }
   }
 
