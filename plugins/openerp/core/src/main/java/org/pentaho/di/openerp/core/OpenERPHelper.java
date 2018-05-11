@@ -24,6 +24,7 @@ import java.util.Collections;
 import org.apache.xmlrpc.XmlRpcException;
 import org.pentaho.di.core.database.DatabaseFactoryInterface;
 import org.pentaho.di.core.database.DatabaseMeta;
+import org.pentaho.di.core.database.DatabaseTestResults;
 import org.pentaho.di.core.row.ValueMetaInterface;
 
 import com.debortoliwines.openerp.api.FilterCollection;
@@ -265,5 +266,9 @@ public class OpenERPHelper implements DatabaseFactoryInterface {
 
     return mappings;
 
+  }
+
+  public DatabaseTestResults getConnectionTestResults( DatabaseMeta databaseMeta ) {
+    return null;
   }
 }

@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -25,6 +25,7 @@ package org.pentaho.di.trans.steps.sapinput.mock;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.database.DatabaseFactoryInterface;
 import org.pentaho.di.core.database.DatabaseMeta;
+import org.pentaho.di.core.database.DatabaseTestResults;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.trans.steps.sapinput.sap.SAPConnection;
 import org.pentaho.di.trans.steps.sapinput.sap.SAPException;
@@ -63,5 +64,9 @@ public class SAPConnectionFactoryMock implements DatabaseFactoryInterface {
     }
 
     return report.toString();
+  }
+
+  public DatabaseTestResults getConnectionTestResults( DatabaseMeta databaseMeta ) {
+    return null;
   }
 }

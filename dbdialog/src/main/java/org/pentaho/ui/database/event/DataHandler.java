@@ -42,6 +42,7 @@ import org.pentaho.di.core.database.BaseDatabaseMeta;
 import org.pentaho.di.core.database.DatabaseConnectionPoolParameter;
 import org.pentaho.di.core.database.DatabaseInterface;
 import org.pentaho.di.core.database.DatabaseMeta;
+import org.pentaho.di.core.database.DatabaseTestResults;
 import org.pentaho.di.core.database.GenericDatabaseMeta;
 import org.pentaho.di.core.database.MSSQLServerNativeDatabaseMeta;
 import org.pentaho.di.core.database.OracleDatabaseMeta;
@@ -615,10 +616,10 @@ public class DataHandler extends AbstractXulEventHandler {
       for ( int i = 0; i < remarks.length; i++ ) {
         message = message.concat( "* " ).concat( remarks[i] ).concat( System.getProperty( "line.separator" ) );
       }
+      showMessage( message, message.length() > 300 );
     } else {
-      message = database.testConnection();
+      showMessage( database.testConnectionSuccess() );
     }
-    showMessage( message, message.length() > 300 );
   }
 
   protected void getInfo( DatabaseMeta meta ) {
@@ -1535,6 +1536,9 @@ public class DataHandler extends AbstractXulEventHandler {
     } catch ( XulException e ) {
       System.out.println( "Error creating messagebox " + e.getMessage() );
     }
+  }
+
+  protected void showMessage( DatabaseTestResults databaseTestResults ) {
   }
 
   public void handleUseSecurityCheckbox() {
