@@ -115,7 +115,7 @@ pipeline {
     text(
         name: 'OVERRIDE_JOB_PARAMS',
         defaultValue: '',
-        description: 'Override job parameters. Syntax: "jobID: param1=value1; param2=value2". One job per line.'
+        description: 'Override job parameters. Syntax: "jobID | param1 > value1; param2 > value2". One job per line.'
     )
 
     booleanParam(
