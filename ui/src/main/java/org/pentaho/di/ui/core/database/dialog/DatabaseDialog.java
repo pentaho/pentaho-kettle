@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -31,9 +31,10 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.database.DatabaseMeta;
+import org.pentaho.di.core.database.DatabaseTestResults;
 import org.pentaho.di.core.util.StringUtil;
 import org.pentaho.di.i18n.BaseMessages;
-import org.pentaho.di.ui.core.dialog.EnterTextDialog;
+import org.pentaho.di.ui.core.dialog.ShowMessageDialog;
 
 /**
  *
@@ -106,17 +107,21 @@ public class DatabaseDialog extends XulDatabaseDialog {
     String[] remarks = dbinfo.checkParameters();
     if ( remarks.length == 0 ) {
       // Get a "test" report from this database
-      //
-      String reportMessage = dbinfo.testConnection();
-
-      EnterTextDialog dialog =
-        new EnterTextDialog(
-          shell, BaseMessages.getString( PKG, "DatabaseDialog.ConnectionReport.title" ), BaseMessages
-            .getString( PKG, "DatabaseDialog.ConnectionReport.description" ), reportMessage.toString() );
-      dialog.setReadOnly();
-      dialog.setFixed( true );
-      dialog.setModal();
-      dialog.open();
+      DatabaseTestResults databaseTestResults = dbinfo.testConnectionSuccess();
+      String message = databaseTestResults.getMessage();
+      boolean success = databaseTestResults.isSuccess();
+      String title = success ? BaseMessages.getString( PKG, "DatabaseDialog.DatabaseConnectionTestSuccess.title" )
+        : BaseMessages.getString( PKG, "DatabaseDialog.DatabaseConnectionTest.title" );
+      if ( success && message.contains( Const.CR ) ) {
+        message = message.substring( 0, message.indexOf( Const.CR ) )
+          + Const.CR + message.substring( message.indexOf( Const.CR ) );
+        message = message.substring( 0, message.lastIndexOf( Const.CR ) );
+      }
+      ShowMessageDialog msgDialog = new ShowMessageDialog( shell, SWT.ICON_INFORMATION | SWT.OK,
+        title, message, message.length() > 300 );
+      msgDialog.setType( success ? Const.SHOW_MESSAGE_DIALOG_DB_TEST_SUCCESS
+        : Const.SHOW_MESSAGE_DIALOG_DB_TEST_DEFAULT );
+      msgDialog.open();
     } else {
       String message = "";
       for ( int i = 0; i < remarks.length; i++ ) {

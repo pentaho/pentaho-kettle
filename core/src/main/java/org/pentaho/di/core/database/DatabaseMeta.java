@@ -2799,6 +2799,35 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
     return report.toString();
   }
 
+  public DatabaseTestResults testConnectionSuccess() {
+
+    StringBuilder report = new StringBuilder();
+    DatabaseTestResults databaseTestResults = new DatabaseTestResults();
+
+    // If the plug-in needs to provide connection information, we ask the DatabaseInterface...
+    //
+    try {
+      DatabaseFactoryInterface factory = getDatabaseFactory();
+      databaseTestResults = factory.getConnectionTestResults( this );
+    } catch ( ClassNotFoundException e ) {
+      report
+        .append( BaseMessages.getString( PKG, "BaseDatabaseMeta.TestConnectionReportNotImplemented.Message" ) )
+        .append( Const.CR );
+      report.append( BaseMessages.getString( PKG, "DatabaseMeta.report.ConnectionError", getName() )
+        + e.toString() + Const.CR );
+      report.append( Const.getStackTracker( e ) + Const.CR );
+      databaseTestResults.setMessage( report.toString() );
+      databaseTestResults.setSuccess( false );
+    } catch ( Exception e ) {
+      report.append( BaseMessages.getString( PKG, "DatabaseMeta.report.ConnectionError", getName() )
+        + e.toString() + Const.CR );
+      report.append( Const.getStackTracker( e ) + Const.CR );
+      databaseTestResults.setMessage( report.toString() );
+      databaseTestResults.setSuccess( false );
+    }
+    return databaseTestResults;
+  }
+
   public DatabaseFactoryInterface getDatabaseFactory() throws Exception {
     PluginRegistry registry = PluginRegistry.getInstance();
     PluginInterface plugin = registry.getPlugin( DatabasePluginType.class, databaseInterface.getPluginId() );

@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -214,7 +214,7 @@ public class BaseStepDialog extends Dialog {
   /**
    * A constant indicating a right button alignment.
    */
-  protected static final int BUTTON_ALIGNMENT_RIGHT = 2;
+  public static final int BUTTON_ALIGNMENT_RIGHT = 2;
 
   /**
    * The button alignment (defaults to center).
@@ -344,7 +344,7 @@ public class BaseStepDialog extends Dialog {
     positionBottomButtons( composite, buttons, margin, BUTTON_ALIGNMENT_RIGHT, lastControl );
   }
 
-  private static final void positionBottomButtons( Composite composite, Button[] buttons, int margin, int alignment,
+  public static final void positionBottomButtons( Composite composite, Button[] buttons, int margin, int alignment,
                                                    Control lastControl ) {
     // Determine the largest button in the array
     Rectangle largest = null;

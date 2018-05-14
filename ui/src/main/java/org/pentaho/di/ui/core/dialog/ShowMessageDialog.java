@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -63,10 +63,12 @@ public class ShowMessageDialog extends Dialog {
 
   private int flags;
   private int returnValue;
+  private int type;
 
   private Shell parent;
 
   private boolean scroll;
+  private boolean hasIcon;
 
   /** Timeout of dialog in seconds */
   private int timeOut;
@@ -74,6 +76,13 @@ public class ShowMessageDialog extends Dialog {
   private List<Button> buttons;
 
   private List<SelectionAdapter> adapters;
+
+  private FormLayout formLayout;
+  private FormData fdlDesc;
+
+  private Label wIcon;
+
+  private Text wlDesc;
 
   /**
    * Dialog to allow someone to show a text with an icon in front
@@ -87,8 +96,6 @@ public class ShowMessageDialog extends Dialog {
    *          The dialog title
    * @param message
    *          The message to display
-   * @param text
-   *          The text to display or edit
    */
   public ShowMessageDialog( Shell parent, int flags, String title, String message ) {
     this( parent, flags, title, message, false );
@@ -106,8 +113,6 @@ public class ShowMessageDialog extends Dialog {
    *          The dialog title
    * @param message
    *          The message to display
-   * @param text
-   *          The text to display or edit
    * @param scroll
    *          Set the dialog to a default size and enable scrolling
    */
@@ -130,18 +135,13 @@ public class ShowMessageDialog extends Dialog {
     props.setLook( shell );
     shell.setImage( GUIResource.getInstance().getImageSpoon() );
 
-    FormLayout formLayout = new FormLayout();
-    formLayout.marginWidth = Const.FORM_MARGIN;
-    formLayout.marginHeight = Const.FORM_MARGIN;
+    formLayout = new FormLayout();
     shell.setLayout( formLayout );
 
     shell.setText( title );
 
-    int margin = Const.MARGIN;
-    boolean hasIcon =
-      ( flags & SWT.ICON_WARNING ) != 0
-        || ( flags & SWT.ICON_INFORMATION ) != 0 || ( flags & SWT.ICON_QUESTION ) != 0
-        || ( flags & SWT.ICON_ERROR ) != 0 || ( flags & SWT.ICON_WORKING ) != 0;
+    hasIcon = ( flags & SWT.ICON_WARNING ) != 0 || ( flags & SWT.ICON_INFORMATION ) != 0
+      || ( flags & SWT.ICON_QUESTION ) != 0 || ( flags & SWT.ICON_ERROR ) != 0 || ( flags & SWT.ICON_WORKING ) != 0;
 
     Image image = null;
     if ( ( flags & SWT.ICON_WARNING ) != 0 ) {
@@ -161,9 +161,9 @@ public class ShowMessageDialog extends Dialog {
     }
 
     hasIcon = hasIcon && image != null;
-    Label wIcon = null;
+    wIcon = null;
 
-    if ( hasIcon && image != null ) {
+    if ( hasIcon ) {
       wIcon = new Label( shell, SWT.NONE );
       props.setLook( wIcon );
       wIcon.setImage( image );
@@ -176,8 +176,7 @@ public class ShowMessageDialog extends Dialog {
     }
 
     // The message
-    Text wlDesc;
-    FormData fdlDesc = new FormData();
+    fdlDesc = new FormData();
 
     if ( scroll ) {
       wlDesc = new Text( shell, SWT.MULTI | SWT.READ_ONLY | SWT.V_SCROLL | SWT.H_SCROLL );
@@ -191,14 +190,6 @@ public class ShowMessageDialog extends Dialog {
 
     wlDesc.setText( message );
     props.setLook( wlDesc );
-
-    if ( hasIcon ) {
-      fdlDesc.left = new FormAttachment( wIcon, margin * 2 );
-      fdlDesc.top = new FormAttachment( 0, margin );
-    } else {
-      fdlDesc.left = new FormAttachment( 0, 0 );
-      fdlDesc.top = new FormAttachment( 0, margin );
-    }
 
     wlDesc.setLayoutData( fdlDesc );
 
@@ -255,7 +246,7 @@ public class ShowMessageDialog extends Dialog {
       buttons.add( button );
     }
 
-    BaseStepDialog.positionBottomButtons( shell, buttons.toArray( new Button[buttons.size()] ), margin, wlDesc );
+    setLayoutAccordingToType();
 
     // Detect [X] or ALT-F4 or something that kills this window...
     shell.addShellListener( new ShellAdapter() {
@@ -312,6 +303,38 @@ public class ShowMessageDialog extends Dialog {
   }
 
   /**
+   * Handles any variances in the UI from the default.
+   */
+  private void setLayoutAccordingToType() {
+    int margin = Const.MARGIN;
+    switch ( type ) {
+      case Const.SHOW_MESSAGE_DIALOG_DB_TEST_SUCCESS:
+        formLayout.marginWidth = 15;
+        formLayout.marginHeight = 15;
+        setFdlDesc( margin * 3, 0, 0, margin );
+        BaseStepDialog.positionBottomButtons( shell, buttons.toArray( new Button[buttons.size()] ), 0,
+          BaseStepDialog.BUTTON_ALIGNMENT_RIGHT, wlDesc );
+        break;
+      default:
+        formLayout.marginWidth = Const.FORM_MARGIN;
+        formLayout.marginHeight = Const.FORM_MARGIN;
+        setFdlDesc( margin * 2, margin, 0, margin );
+        BaseStepDialog.positionBottomButtons( shell, buttons.toArray( new Button[buttons.size()] ), margin, wlDesc );
+        break;
+    }
+  }
+
+  private void setFdlDesc( int leftOffsetHasIcon, int topOffsetHasIcon, int leftOffsetNoIcon, int topOffsetNoIcon ) {
+    if ( hasIcon ) {
+      fdlDesc.left = new FormAttachment( wIcon, leftOffsetHasIcon );
+      fdlDesc.top = new FormAttachment( 0, topOffsetHasIcon );
+    } else {
+      fdlDesc.left = new FormAttachment( 0, leftOffsetNoIcon );
+      fdlDesc.top = new FormAttachment( 0, topOffsetNoIcon );
+    }
+  }
+
+  /**
    * @return the timeOut
    */
   public int getTimeOut() {
@@ -326,4 +349,7 @@ public class ShowMessageDialog extends Dialog {
     this.timeOut = timeOut;
   }
 
+  public void setType( int type ) {
+    this.type = type;
+  }
 }

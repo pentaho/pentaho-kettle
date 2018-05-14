@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -28,8 +28,10 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
+import org.pentaho.di.core.Const;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.database.DatabaseMeta;
+import org.pentaho.di.core.database.DatabaseTestResults;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.ui.core.database.dialog.tags.ExtTextbox;
@@ -183,4 +185,22 @@ public class DataOverrideHandler extends DataHandler {
     msgDialog.open();
   }
 
+  @Override
+  protected void showMessage( DatabaseTestResults databaseTestResults ) {
+    Shell parent = getShell();
+    String message = databaseTestResults.getMessage();
+    boolean success = databaseTestResults.isSuccess();
+    String title = success ? BaseMessages.getString( PKG, "DatabaseDialog.DatabaseConnectionTestSuccess.title" )
+      : BaseMessages.getString( PKG, "DatabaseDialog.DatabaseConnectionTest.title" );
+    if ( success && message.contains( Const.CR ) ) {
+      message = message.substring( 0, message.indexOf( Const.CR ) )
+        + Const.CR + message.substring( message.indexOf( Const.CR ) );
+      message = message.substring( 0, message.lastIndexOf( Const.CR ) );
+    }
+    ShowMessageDialog msgDialog = new ShowMessageDialog( parent, SWT.ICON_INFORMATION | SWT.OK,
+      title, message, message.length() > 300 );
+    msgDialog.setType( success ? Const.SHOW_MESSAGE_DIALOG_DB_TEST_SUCCESS
+      : Const.SHOW_MESSAGE_DIALOG_DB_TEST_DEFAULT );
+    msgDialog.open();
+  }
 }

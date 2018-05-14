@@ -571,6 +571,10 @@ public class Const {
   /** UI-agnostic flag for warnings */
   public static final int INFO = 3;
 
+  public static final int SHOW_MESSAGE_DIALOG_DB_TEST_DEFAULT = 0;
+
+  public static final int SHOW_MESSAGE_DIALOG_DB_TEST_SUCCESS = 1;
+
   /**
    * The margin between the text of a note and its border.
    */
