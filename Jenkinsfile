@@ -181,8 +181,7 @@ pipeline {
   triggers {
     // Would like conditional polling not available yet.
     // https://issues.jenkins-ci.org/browse/JENKINS-42643
-    // You should enable polling for multi-branch until/unless call back hook triggering is done
-    pollSCM("")
+    pollSCM("H/60 * * * *")
   }
 
   environment {
