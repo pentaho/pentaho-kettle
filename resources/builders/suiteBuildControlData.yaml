@@ -18,7 +18,7 @@ buildProperties:
         RELEASE_MODE                   : false
         ADD_BUILD_ID_VERSION_TAIL      : true
         # Options: SUFFIX, NONE, PREFIX, FULL
-        TAG_NAME_TYPE                  : SUFFIX
+        TAG_NAME_TYPE                  : NONE
         TAG_NAME                       : -RC
 
         # job item field defaults
