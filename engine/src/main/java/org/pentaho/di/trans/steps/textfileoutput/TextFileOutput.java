@@ -141,7 +141,7 @@ public class TextFileOutput extends BaseStep implements StepInterface {
       TextFileOutputData.FileStream fileStreams = null;
 
       try {
-        if ( meta.getSplitEvery() > 0 ) {
+        if ( data.splitEvery > 0 ) {
           if ( filename.equals( data.getFileStreamsCollection().getLastFileName() ) ) {
             fileStreams = data.getFileStreamsCollection().getLastStream( );
           }
@@ -321,7 +321,7 @@ public class TextFileOutput extends BaseStep implements StepInterface {
 
       return true;
     } else {
-      if ( ( data.writer == null ) && !Utils.isEmpty( meta.getEndedLine() ) ) {
+      if ( ( data.writer == null ) && !Utils.isEmpty( environmentSubstitute( meta.getEndedLine() ) ) ) {
         initServletStreamWriter( );
         initBinaryDataFields();
       }
@@ -340,7 +340,7 @@ public class TextFileOutput extends BaseStep implements StepInterface {
     boolean writingToFileForFirstTime = first;
     boolean isWriteHeader = meta.isHeaderEnabled();
     if ( isWriteHeader ) {
-      if ( meta.getSplitEvery() > 0 ) {
+      if ( data.splitEvery > 0 ) {
         writingToFileForFirstTime |= !filename.equals( data.getFileStreamsCollection().getLastFileName( ) );
       } else {
         writingToFileForFirstTime |= data.getFileStreamsCollection().getStream( filename ) == null;
@@ -363,8 +363,10 @@ public class TextFileOutput extends BaseStep implements StepInterface {
       }
 
       // If file has reached max user defined size. Close current file and open a new file.
-      if ( !meta.isFileNameInField() && ( getLinesOutput() > 0 ) && ( meta.getSplitEvery() > 0 ) && ( ( getLinesOutput() + meta.getFooterShift() ) % meta.getSplitEvery() ) == 0 ) {
-
+      if ( !meta.isFileNameInField()
+          && ( getLinesOutput() > 0 )
+          && ( data.splitEvery > 0 )
+          && ( ( getLinesOutput() + meta.getFooterShift() ) % data.splitEvery ) == 0 ) {
         // If needed write footer to file before closing it.
         if ( meta.isFooterEnabled() ) {
           writeHeader();
@@ -411,7 +413,7 @@ public class TextFileOutput extends BaseStep implements StepInterface {
         if ( data.outputRowMeta != null && meta.isFooterEnabled() ) {
           writeHeader();
         }
-      } else if ( !Utils.isEmpty( meta.getEndedLine() ) && !meta.isFileNameInField() ) {
+      } else if ( !Utils.isEmpty( environmentSubstitute( meta.getEndedLine() ) ) && !meta.isFileNameInField() ) {
         String filename = getOutputFileName( null );
         initFileStreamWriter( filename );
         initBinaryDataFields();
@@ -695,7 +697,7 @@ public class TextFileOutput extends BaseStep implements StepInterface {
   protected boolean writeEndedLine() {
     boolean retval = false;
     try {
-      String sLine = meta.getEndedLine();
+      String sLine = environmentSubstitute( meta.getEndedLine() );
       if ( sLine != null ) {
         if ( sLine.trim().length() > 0 ) {
           data.writer.write( getBinaryString( sLine ) );
@@ -906,6 +908,7 @@ public class TextFileOutput extends BaseStep implements StepInterface {
           }
         }
       }
+      data.splitEvery = meta.getSplitEvery( variables );
     } catch ( Exception e ) {
       throw new KettleException( "Unexpected error while encoding binary fields", e );
     }

@@ -22,6 +22,8 @@
 
 package org.pentaho.di.trans.steps.textfileoutput;
 
+import static org.junit.Assert.assertEquals;
+
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -35,6 +37,8 @@ import org.junit.Test;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.value.ValueMetaFactory;
+import org.pentaho.di.core.variables.VariableSpace;
+import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.junit.rules.RestorePDIEngineEnvironment;
 import org.pentaho.di.trans.steps.loadsave.LoadSaveTester;
 import org.pentaho.di.trans.steps.loadsave.validator.ArrayLoadSaveValidator;
@@ -143,6 +147,21 @@ public class TextFileOutputMetaTest {
         getGetterMap(), getSetterMap(), getAttributeValidators(), getTypeValidators() );
 
     loadSaveTester.testSerialization();
+  }
+
+  @Test
+  public void testVarReplaceSplit() throws Exception {
+    TextFileOutputMeta meta = new TextFileOutputMeta();
+    meta.setDefault();
+    meta.setSplitEveryRows( "${splitVar}" );
+    VariableSpace varSpace = new Variables();
+    assertEquals( 0, meta.getSplitEvery( varSpace ) );
+    String fileName = meta.buildFilename( "file", "txt", varSpace, 0, null, 3, false, meta );
+    assertEquals( "file.txt", fileName );
+    varSpace.setVariable( "splitVar", "2" );
+    assertEquals( 2, meta.getSplitEvery( varSpace ) );
+    fileName = meta.buildFilename( "file", "txt", varSpace, 0, null, 3, false, meta );
+    assertEquals( "file_3.txt", fileName );
   }
 
   public static class TextFileFieldLoadSaveValidator implements FieldLoadSaveValidator<TextFileField> {

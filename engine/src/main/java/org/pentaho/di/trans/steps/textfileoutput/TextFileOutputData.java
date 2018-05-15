@@ -420,6 +420,8 @@ public class TextFileOutputData extends BaseStepData implements StepDataInterfac
 
   public String fileName;
 
+  public int splitEvery;
+
   public TextFileOutputData() {
     super();
 
