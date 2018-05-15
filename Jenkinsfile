@@ -177,6 +177,7 @@ pipeline {
 
   options {
     timestamps()
+    disableConcurrentBuilds()
   }
 
   triggers {
