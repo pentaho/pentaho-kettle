@@ -3829,6 +3829,7 @@ public class ValueMetaBase implements ValueMetaInterface {
   @Override
   public Object convertData( ValueMetaInterface meta2, Object data2 ) throws KettleValueException {
     switch ( getType() ) {
+      case TYPE_NONE:
       case TYPE_STRING:
         return meta2.getString( data2 );
       case TYPE_NUMBER:
