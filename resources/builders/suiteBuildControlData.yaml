@@ -13,8 +13,8 @@ buildProperties:
 
         # Version based control properties
         UPDATE_VERSIONS                : false
-        RELEASE_VERSION                : 8.2.0.0
-        SUITE_RELEASE_VERSION          : 8.2.0.0
+        RELEASE_VERSION                : 9.0.0.0
+        SUITE_RELEASE_VERSION          : 9.0.0.0
         RELEASE_MODE                   : false
         ADD_BUILD_ID_VERSION_TAIL      : true
         # Options: SUFFIX, NONE, PREFIX, FULL
@@ -51,7 +51,7 @@ jobGroups:
      - jobID           :  parent-poms-ee
        scmUrl          :  ${PENTAHO_SCM_ROOT}/maven-parent-poms-ee.git
        scmBranch       :  ${DEFAULT_BRANCH}
-       directives      :  + -Dobfuscate-version-for-license-phase=none
+       directives      :  += -Dobfuscate-version-for-license-phase=none
        versionProperty :  pentaho.version
 
   500:
@@ -71,7 +71,7 @@ jobGroups:
      - jobID           :  osgi-bundles-lowdeps
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-osgi-bundles.git
        scmBranch       :  ${DEFAULT_BRANCH}
-       directives      :  + -P lowdeps -DskipDefault
+       directives      :  += -P lowdeps -DskipDefault
        versionProperty :  pentaho-osgi-bundles.version
 
      - jobID           :  oss-license-assembly
@@ -82,7 +82,7 @@ jobGroups:
      - jobID           :  database-model
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-commons-database.git
        scmBranch       :  ${DEFAULT_BRANCH}
-       directives      :  + -pl .,model
+       directives      :  += -pl .,model
        versionProperty :  commons-database.version
 
      - jobID           :  mongo-utils
@@ -100,7 +100,7 @@ jobGroups:
      - jobID           :  reporting-libraries
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-reporting.git
        scmBranch       :  ${DEFAULT_BRANCH}
-       directives      :  + -Dlibraries
+       directives      :  += -Dlibraries
        versionProperty :  pentaho-reporting.version
 
      - jobID           :  gwt-widgets
@@ -167,13 +167,13 @@ jobGroups:
      - jobID           :  mondrian-jar
        scmUrl          :  ${PENTAHO_SCM_ROOT}/mondrian.git
        scmBranch       :  ${DEFAULT_BRANCH}
-       directives      :  + -P !workbench -P !assemblies
+       directives      :  += -P !workbench -P !assemblies
        versionProperty :  mondrian.version
 
      - jobID           :  platform-api
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-platform.git
        scmBranch       :  ${DEFAULT_BRANCH}
-       directives      :  + -DskipDefault -P platform-api
+       directives      :  += -DskipDefault -P platform-api
        versionProperty :  platform.version
 
   1100:
@@ -181,7 +181,7 @@ jobGroups:
      - jobID           :  pdi-engine-core
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-kettle.git
        scmBranch       :  ${DEFAULT_BRANCH}
-       directives      :  + -DskipDefault -P base,plugins,lowdeps
+       directives      :  += -DskipDefault -P base,plugins,lowdeps
        versionProperty :  pdi.version
 
   1200:
@@ -196,7 +196,7 @@ jobGroups:
      - jobID           :  database-gwt
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-commons-database.git
        scmBranch       :  ${DEFAULT_BRANCH}
-       directives      :  + -pl gwt
+       directives      :  += -pl gwt
        versionProperty :  commons-database.version
 
      - jobID           :  vertica-bulkloader
@@ -235,7 +235,7 @@ jobGroups:
      - jobID           :  big-data-hadoop-shims
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-hadoop-shims.git
        scmBranch       :  ${DEFAULT_BRANCH}
-       directives      :  + -DskipDefault -P api,shims,all
+       directives      :  += -DskipDefault -P api,shims,all
        versionProperty :  pentaho-hadoop-shims.version
 
   1500:
@@ -260,7 +260,7 @@ jobGroups:
      - jobID           :  mondrian-workbench
        scmUrl          :  ${PENTAHO_SCM_ROOT}/mondrian.git
        scmBranch       :  ${DEFAULT_BRANCH}
-       directives      :  + -P !mondrian -P !assemblies
+       directives      :  += -P !mondrian -P !assemblies
        versionProperty :  mondrian.version
 
   1700:
@@ -275,7 +275,7 @@ jobGroups:
      - jobID           :  psw-assembly
        scmUrl          :  ${PENTAHO_SCM_ROOT}/mondrian.git
        scmBranch       :  ${DEFAULT_BRANCH}
-       directives      :  + -P !mondrian -P !workbench
+       directives      :  += -P !mondrian -P !workbench
        versionProperty :  mondrian.version
 
   1900:
@@ -288,7 +288,7 @@ jobGroups:
      - jobID           :  reporting-engine
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-reporting.git
        scmBranch       :  ${DEFAULT_BRANCH}
-       directives      :  + -Dengine
+       directives      :  += -Dengine
        versionProperty :  pentaho-reporting.version
 
   2000:
@@ -304,7 +304,7 @@ jobGroups:
      - jobID           :  platform-base
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-platform.git
        scmBranch       :  ${DEFAULT_BRANCH}
-       directives      :  + -DskipDefault -P platform-base
+       directives      :  += -DskipDefault -P platform-base
        versionProperty :  platform.version
 
   2200:
@@ -312,7 +312,7 @@ jobGroups:
      - jobID           :  osgi-bundles-highdeps
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-osgi-bundles.git
        scmBranch       :  ${DEFAULT_BRANCH}
-       directives      :  + -P highdeps -DskipDefault
+       directives      :  += -P highdeps -DskipDefault
        versionProperty :  pentaho-osgi-bundles.version
 
      - jobID           :  mql-editor
@@ -330,7 +330,7 @@ jobGroups:
      - jobID           :  pdi-osgi-bridge
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pdi-osgi-bridge.git
        scmBranch       :  ${DEFAULT_BRANCH}
-       directives      :  + -P modules
+       directives      :  += -P modules
        versionProperty :  pdi-osgi-bridge.version
 
      - jobID           :  metaverse-plugin
@@ -343,7 +343,7 @@ jobGroups:
      - jobID           :  pdi-core-plugins
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-kettle.git
        scmBranch       :  ${DEFAULT_BRANCH}
-       directives      :  + -DskipDefault -P plugins,highdeps
+       directives      :  += -DskipDefault -P plugins,highdeps
        versionProperty :  pdi.version
 
      - jobID           :  pdi-monitoring-plugin
@@ -387,7 +387,7 @@ jobGroups:
      - jobID           :  reporting-specials
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-reporting.git
        scmBranch       :  ${DEFAULT_BRANCH}
-       directives      :  + -Dspecials
+       directives      :  += -Dspecials
        versionProperty :  pentaho-reporting.version
 
      - jobID           :  pdi-platform-plugin
@@ -433,13 +433,13 @@ jobGroups:
      - jobID           :  platform-user-console
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-platform.git
        scmBranch       :  ${DEFAULT_BRANCH}
-       directives      :  + -DskipDefault -P platform-user-console
+       directives      :  += -DskipDefault -P platform-user-console
        versionProperty :  platform.version
 
      - jobID           :  big-data-plugin-features
        scmUrl          :  ${PENTAHO_SCM_ROOT}/big-data-plugin.git
        scmBranch       :  ${DEFAULT_BRANCH}
-       directives      :  + -DfeaturesOnly
+       directives      :  += -DfeaturesOnly
        versionProperty :  big-data-plugin.version
 
      - jobID           :  pdi-data-refinery-plugin
@@ -487,7 +487,7 @@ jobGroups:
      - jobID           :  big-data-hadoop-shims-ee
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-big-data-ee.git
        scmBranch       :  ${DEFAULT_BRANCH}
-       directives      :  + -DskipDefault -P base,all
+       directives      :  += -DskipDefault -P base,all
        versionProperty :  pentaho-hadoop-shims.version
 
      - jobID           :  cda-plugin
@@ -512,7 +512,7 @@ jobGroups:
      - jobID           :  platform-ee
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-platform-ee.git
        scmBranch       :  ${DEFAULT_BRANCH}
-       directives      :  + -DskipDefault -P platform-ee
+       directives      :  += -DskipDefault -P platform-ee
        versionProperty :  platform.version
 
   3300:
@@ -527,7 +527,7 @@ jobGroups:
      - jobID           :  analyzer-plugin
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-analyzer.git
        scmBranch       :  ${DEFAULT_BRANCH}
-       directives      :  + -Dagilebi
+       directives      :  += -Dagilebi
        versionProperty :  analyzer-plugin.version
 
   3500:
@@ -640,13 +640,13 @@ jobGroups:
      - jobID           :  big-data-plugin-assembly-ee
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-big-data-ee.git
        scmBranch       :  ${DEFAULT_BRANCH}
-       directives      :  + -DskipDefault -P assemblies,pack
+       directives      :  += -DskipDefault -P assemblies,pack
        versionProperty :  big-data-plugin.version
 
      - jobID           :  prd-assembly
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-reporting.git
        scmBranch       :  ${DEFAULT_BRANCH}
-       directives      :  + -Ddesigner -Dmaven.test.failure.ignore=true
+       directives      :  += -Ddesigner -Dmaven.test.failure.ignore=true
        versionProperty :  pentaho-reporting.version
 
   4000:
@@ -673,7 +673,7 @@ jobGroups:
      - jobID           :  pdi-client-assembly
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-kettle.git
        scmBranch       :  ${DEFAULT_BRANCH}
-       directives      :  + -DskipDefault -P assemblies
+       directives      :  += -DskipDefault -P assemblies
        versionProperty :  pdi.version
        testable        :  false
 
@@ -696,7 +696,7 @@ jobGroups:
      - jobID           :  platform-server-assembly
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-platform.git
        scmBranch       :  ${DEFAULT_BRANCH}
-       directives      :  + -DskipDefault -P platform-assemble
+       directives      :  += -DskipDefault -P platform-assemble
        versionProperty :  platform.version
        testable        :  false
 
@@ -718,7 +718,7 @@ jobGroups:
      - jobID           :  platform-server-assembly-ee
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-platform-ee.git
        scmBranch       :  ${DEFAULT_BRANCH}
-       directives      :  + -DskipDefault -P platform-ee-assemble
+       directives      :  += -DskipDefault -P platform-ee-assemble
        versionProperty :  platform.version
        testable        :  false
 
@@ -743,7 +743,7 @@ jobGroups:
      - jobID           :  foundry-scale-ee
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-ee.git
        scmBranch       :  ${DEFAULT_BRANCH}
-       directives      :  + -Dpentaho-scale
+       directives      :  += -Dpentaho-scale
        versionProperty :  worker-nodes.version
        root            :  foundry
        testable        :  false

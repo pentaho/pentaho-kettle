@@ -20,7 +20,7 @@ jobGroups:
       scmBranch         :  ${DEFAULT_BRANCH}
       buildFramework    :  maven
       buildFile         :  pom.xml
-      directives        :  + -DskipDefault -P base,plugins,lowdeps
+      directives        :  += -DskipDefault -P base,plugins,lowdeps
 
   plugins:
     - jobID             :  pdi-core-plugins
@@ -28,7 +28,7 @@ jobGroups:
       scmBranch         :  ${DEFAULT_BRANCH}
       buildFramework    :  maven
       buildFile         :  pom.xml
-      directives        :  + -DskipDefault -P plugins,highdeps
+      directives        :  += -DskipDefault -P plugins,highdeps
 
     - jobID             :  pdi-teradata-tpt-plugin
       scmUrl            :  ${PENTAHO_SCM_ROOT}pdi-teradata-tpt-plugin.git
@@ -80,6 +80,6 @@ jobGroups:
       scmBranch         :  ${DEFAULT_BRANCH}
       buildFramework    :  maven
       buildFile         :  pom.xml
-      directives        :  + -DskipTests -DskipDefault -P assemblies
+      directives        :  += -DskipTests -DskipDefault -P assemblies
 
 
