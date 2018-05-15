@@ -128,7 +128,7 @@ public class StepWithMappingMetaTest {
       public StepDataInterface getStepData() {
         return null;
       }
-      
+
       @Override
       public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta, Trans trans ) {
         return null;
@@ -256,5 +256,42 @@ public class StepWithMappingMetaTest {
 
     Assert.assertEquals( childValue, childVariableSpace.getVariable( childParam ) );
     Assert.assertEquals( parentValue, childVariableSpace.getVariable( paramOverwrite ) );
+  }
+
+  @Test
+  @PrepareForTest( StepWithMappingMeta.class )
+  public void testFileNameAsVariable() throws Exception {
+
+    String transName = "test.ktr";
+    String transDirectory = "/admin";
+
+    String transNameVar = "transName";
+    String transDirectoryVar = "transDirectory";
+
+    VariableSpace parent = new Variables();
+    parent.setVariable( transNameVar, transName );
+    parent.setVariable( transDirectoryVar, transDirectory );
+
+    StepMeta stepMeta = new StepMeta();
+    TransMeta parentTransMeta = new TransMeta();
+    stepMeta.setParentTransMeta( parentTransMeta );
+
+    StepWithMappingMeta mappingMetaMock = mock( StepWithMappingMeta.class );
+    Mockito.when( mappingMetaMock.getSpecificationMethod() ).thenReturn( ObjectLocationSpecificationMethod.FILENAME );
+    Mockito.when( mappingMetaMock.getFileName() ).thenReturn( "${" + transDirectoryVar + "}/${" + transNameVar + "}" );
+    Mockito.when( mappingMetaMock.getParentStepMeta() ).thenReturn( stepMeta );
+
+    Repository rep = mock( Repository.class );
+    RepositoryDirectoryInterface directoryInterface = Mockito.mock( RepositoryDirectoryInterface.class );
+    Mockito.doReturn( directoryInterface ).when( rep ).findDirectory( anyString() );
+    Mockito.doReturn( new TransMeta() ).when( rep )
+      .loadTransformation( anyString(), any(), any(), anyBoolean(), any() );
+
+    TransMeta transMeta = StepWithMappingMeta.loadMappingMeta( mappingMetaMock, rep, null, parent, true );
+
+    Assert.assertNotNull( transMeta );
+    Mockito.verify( rep, Mockito.times( 1 ) ).findDirectory( Mockito.eq( transDirectory ) );
+    Mockito.verify( rep, Mockito.times( 1 ) ).loadTransformation( Mockito.eq( transName ),
+      Mockito.eq( directoryInterface ), Mockito.eq( null ), Mockito.eq( true ), Mockito.eq( null ) );
   }
 }

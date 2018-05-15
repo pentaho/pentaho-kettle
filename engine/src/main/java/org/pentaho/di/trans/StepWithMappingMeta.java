@@ -109,6 +109,10 @@ public abstract class StepWithMappingMeta extends BaseSerializingMeta implements
     switch ( executorMeta.getSpecificationMethod() ) {
       case FILENAME:
         String realFilename = tmpSpace.environmentSubstitute( executorMeta.getFileName() );
+        if ( space != null ) {
+          // This is a parent transformation and parent variable should work here. A child file name can be resolved via parent space.
+          realFilename = space.environmentSubstitute( realFilename );
+        }
         try {
           // OK, load the meta-data from file...
           // Don't set internal variables: they belong to the parent thread!
@@ -146,6 +150,12 @@ public abstract class StepWithMappingMeta extends BaseSerializingMeta implements
       case REPOSITORY_BY_NAME:
         String realTransname = tmpSpace.environmentSubstitute( executorMeta.getTransName() );
         String realDirectory = tmpSpace.environmentSubstitute( executorMeta.getDirectoryPath() );
+
+        if ( space != null ) {
+          // This is a parent transformation and parent variable should work here. A child file name can be resolved via parent space.
+          realTransname = space.environmentSubstitute( realTransname );
+          realDirectory = space.environmentSubstitute( realDirectory );
+        }
 
         if ( rep != null ) {
           if ( !Utils.isEmpty( realTransname ) && !Utils.isEmpty( realDirectory ) ) {
