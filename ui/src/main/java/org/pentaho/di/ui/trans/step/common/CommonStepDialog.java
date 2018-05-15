@@ -57,6 +57,7 @@ import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.di.ui.core.ConstUI;
 import org.pentaho.di.ui.core.FormDataBuilder;
+import org.pentaho.di.ui.core.dialog.BaseDialog;
 import org.pentaho.di.ui.core.dialog.EnterNumberDialog;
 import org.pentaho.di.ui.core.dialog.PreviewRowsDialog;
 import org.pentaho.di.ui.core.dialog.SimpleMessageDialog;
@@ -74,16 +75,8 @@ import java.util.List;
 public abstract class CommonStepDialog<StepMetaType extends CommonStepMeta> extends BaseStepDialog implements
   StepDialogInterface {
 
-  protected static final int MARGIN_SIZE = 15;
-  protected static final int LABEL_SPACING = 5;
-  protected static final int ELEMENT_SPACING = 10;
-  protected static final int MEDIUM_FIELD = 250;
-  protected static final int MEDIUM_SMALL_FIELD = 150;
-  protected static final int SMALL_FIELD = 50;
-  protected static final int SHELL_WIDTH_OFFSET = 16;
-  protected static final int VAR_ICON_WIDTH = GUIResource.getInstance().getImageVariable().getBounds().width;
-  protected static final int VAR_ICON_HEIGHT = GUIResource.getInstance().getImageVariable().getBounds().height;
   private static final int SHELL_WIDTH = 610;
+
   private static Class<?> PKG = StepInterface.class;
 
   protected final StepMetaType meta;
@@ -169,8 +162,8 @@ public abstract class CommonStepDialog<StepMetaType extends CommonStepMeta> exte
     changed = meta.hasChanged();
 
     final FormLayout formLayout = new FormLayout();
-    formLayout.marginWidth = MARGIN_SIZE;
-    formLayout.marginHeight = MARGIN_SIZE;
+    formLayout.marginWidth = BaseDialog.MARGIN_SIZE;
+    formLayout.marginHeight = BaseDialog.MARGIN_SIZE;
 
     shell.setLayout( formLayout );
     shell.setText( getTitle() );
@@ -196,8 +189,8 @@ public abstract class CommonStepDialog<StepMetaType extends CommonStepMeta> exte
     final int height = shell.computeSize( SHELL_WIDTH, SWT.DEFAULT ).y;
     // for some reason the actual width and minimum width are smaller than what is requested - add the
     // SHELL_WIDTH_OFFSET to get the desired size
-    shell.setMinimumSize( SHELL_WIDTH + SHELL_WIDTH_OFFSET, height );
-    shell.setSize( SHELL_WIDTH + SHELL_WIDTH_OFFSET, height );
+    shell.setMinimumSize( SHELL_WIDTH + BaseDialog.SHELL_WIDTH_OFFSET, height );
+    shell.setSize( SHELL_WIDTH + BaseDialog.SHELL_WIDTH_OFFSET, height );
 
     getData( meta );
     meta.setChanged( changed );
@@ -217,14 +210,14 @@ public abstract class CommonStepDialog<StepMetaType extends CommonStepMeta> exte
     // Step icon
     final Label wicon = new Label( shell, SWT.RIGHT );
     wicon.setImage( getImage() );
-    wicon.setLayoutData( new FormDataBuilder().top( 0, -LABEL_SPACING ).right( 100, 0 ).result() );
+    wicon.setLayoutData( new FormDataBuilder().top( 0, -BaseDialog.LABEL_SPACING ).right( 100, 0 ).result() );
     props.setLook( wicon );
 
     // Step name label
     wlStepname = new Label( shell, SWT.RIGHT );
     wlStepname.setText( BaseMessages.getString( PKG, "CommonStepDialog.Stepname.Label" ) ); //$NON-NLS-1$
     props.setLook( wlStepname );
-    fdlStepname = new FormDataBuilder().left( 0, 0 ).top( 0, -LABEL_SPACING ).result();
+    fdlStepname = new FormDataBuilder().left( 0, 0 ).top( 0, -BaseDialog.LABEL_SPACING ).result();
     wlStepname.setLayoutData( fdlStepname );
 
     // Step name field
@@ -233,14 +226,15 @@ public abstract class CommonStepDialog<StepMetaType extends CommonStepMeta> exte
     props.setLook( wStepname );
     wStepname.addModifyListener( lsMod );
     wStepname.addSelectionListener( lsDef );
-    fdStepname = new FormDataBuilder().width( MEDIUM_FIELD ).left( 0, 0 ).top( wlStepname, LABEL_SPACING ).result();
+    fdStepname = new FormDataBuilder().width( BaseDialog.MEDIUM_FIELD ).left( 0, 0 ).top(
+      wlStepname, BaseDialog.LABEL_SPACING ).result();
     wStepname.setLayoutData( fdStepname );
 
     // horizontal separator between step name and tabs
     headerSpacer = new Label( shell, SWT.HORIZONTAL | SWT.SEPARATOR );
     props.setLook( headerSpacer );
-    headerSpacer.setLayoutData( new FormDataBuilder().left().right( 100, 0 ).top( wStepname, MARGIN_SIZE ).width(
-      SHELL_WIDTH - 2 * ( MARGIN_SIZE ) ).result() );
+    headerSpacer.setLayoutData( new FormDataBuilder().left().right( 100, 0 ).top(
+      wStepname, BaseDialog.MARGIN_SIZE ).width( SHELL_WIDTH - 2 * ( BaseDialog.MARGIN_SIZE ) ).result() );
 
     buildPostHeader();
   }
@@ -269,7 +263,8 @@ public abstract class CommonStepDialog<StepMetaType extends CommonStepMeta> exte
     buildOkButton();
 
     footerSpacer = new Label( shell, SWT.HORIZONTAL | SWT.SEPARATOR );
-    footerSpacer.setLayoutData( new FormDataBuilder().left().bottom( wCancel, -MARGIN_SIZE ).right( 100, 0 ).result() );
+    footerSpacer.setLayoutData( new FormDataBuilder().left().bottom(
+      wCancel, -BaseDialog.MARGIN_SIZE ).right( 100, 0 ).result() );
 
     buildPostFooter();
   }
@@ -324,7 +319,8 @@ public abstract class CommonStepDialog<StepMetaType extends CommonStepMeta> exte
 
     wOK = new Button( shell, SWT.PUSH );
     wOK.setText( BaseMessages.getString( PKG, "System.Button.OK" ) ); //$NON-NLS-1$
-    wOK.setLayoutData( new FormDataBuilder().bottom().right( wCancel, Const.isOSX() ? 0 : -LABEL_SPACING ).result() );
+    wOK.setLayoutData( new FormDataBuilder().bottom().right(
+      wCancel, Const.isOSX() ? 0 : -BaseDialog.LABEL_SPACING ).result() );
     wOK.addListener( SWT.Selection, lsOK );
     return wOK;
   }
@@ -461,8 +457,9 @@ public abstract class CommonStepDialog<StepMetaType extends CommonStepMeta> exte
 
   protected void layoutTabFolder() {
     m_wTabFolder.setSelection( 0 );
-    m_wTabFolder.setLayoutData( new FormDataBuilder().left().top( headerSpacer, MARGIN_SIZE ).right( 100, 0 ).bottom(
-      new FormAttachment( footerSpacer, -MARGIN_SIZE ) ).result() );
+    m_wTabFolder.setLayoutData( new FormDataBuilder().left().top(
+      headerSpacer, BaseDialog.MARGIN_SIZE ).right( 100, 0 ).bottom( new FormAttachment(
+        footerSpacer, -BaseDialog.MARGIN_SIZE ) ).result() );
   }
 
   protected void openDialog( final String title, final String message, final int dialogType ) {

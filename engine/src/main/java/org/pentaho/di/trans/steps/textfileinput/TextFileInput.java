@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -630,13 +630,27 @@ public class TextFileInput extends BaseStep implements StepInterface {
         addRootUri, shortFilename, path, hidden, modificationDateTime, uri, rooturi, extension, size );
   }
 
+
+  public static Object[] convertLineToRow( LogChannelInterface log, TextFileLine textFileLine,
+                                           InputFileMetaInterface info, Object[] passThruFields, int nrPassThruFields, RowMetaInterface outputRowMeta,
+                                           RowMetaInterface convertRowMeta, String fname, long rowNr, String delimiter, String enclosure,
+                                           String escapeCharacter, FileErrorHandler errorHandler, boolean addShortFilename, boolean addExtension,
+                                           boolean addPath, boolean addSize, boolean addIsHidden, boolean addLastModificationDate, boolean addUri,
+                                           boolean addRootUri, String shortFilename, String path, boolean hidden, Date modificationDateTime, String uri,
+                                           String rooturi, String extension, long size ) throws KettleException {
+    return convertLineToRow( log, textFileLine, info, passThruFields, nrPassThruFields, outputRowMeta, convertRowMeta,
+      fname, rowNr, delimiter, enclosure, escapeCharacter, errorHandler, addShortFilename, addExtension, addPath,
+      addSize, addIsHidden, addLastModificationDate, addUri, addRootUri, shortFilename, path, hidden,
+      modificationDateTime, uri, rooturi, extension, size, true );
+  }
+
   public static Object[] convertLineToRow( LogChannelInterface log, TextFileLine textFileLine,
       InputFileMetaInterface info, Object[] passThruFields, int nrPassThruFields, RowMetaInterface outputRowMeta,
       RowMetaInterface convertRowMeta, String fname, long rowNr, String delimiter, String enclosure,
       String escapeCharacter, FileErrorHandler errorHandler, boolean addShortFilename, boolean addExtension,
       boolean addPath, boolean addSize, boolean addIsHidden, boolean addLastModificationDate, boolean addUri,
       boolean addRootUri, String shortFilename, String path, boolean hidden, Date modificationDateTime, String uri,
-      String rooturi, String extension, long size ) throws KettleException {
+      String rooturi, String extension, long size, final boolean failOnParseError ) throws KettleException {
     if ( textFileLine == null || textFileLine.line == null ) {
       return null;
     }
@@ -670,7 +684,7 @@ public class TextFileInput extends BaseStep implements StepInterface {
         ValueMetaInterface valueMeta = outputRowMeta.getValueMeta( valuenr );
         ValueMetaInterface convertMeta = convertRowMeta.getValueMeta( valuenr );
 
-        Object value;
+        Object value = null;
 
         String nullif = fieldnr < nrfields ? f.getNullString() : "";
         String ifnull = fieldnr < nrfields ? f.getIfNullValue() : "";
@@ -684,45 +698,51 @@ public class TextFileInput extends BaseStep implements StepInterface {
             }
             value = valueMeta.convertDataFromString( pol, convertMeta, nullif, ifnull, trim_type );
           } catch ( Exception e ) {
-            // OK, give some feedback!
-            String message =
+            // when getting fields, failOnParseError will be set to false, as we do not want one mis-configured field
+            // to prevent us from analyzing other fields, we simply leave the string value as is
+            if ( failOnParseError ) {
+              // OK, give some feedback!
+              String message =
                 BaseMessages.getString( PKG, "TextFileInput.Log.CoundNotParseField", valueMeta.toStringMeta(),
-                    "" + pol, valueMeta.getConversionMask(), "" + rowNr );
+                  "" + pol, valueMeta.getConversionMask(), "" + rowNr );
 
-            if ( info.isErrorIgnored() ) {
-              log.logDetailed( fname, BaseMessages.getString( PKG, "TextFileInput.Log.Warning" ) + ": " + message
+              if ( info.isErrorIgnored() ) {
+                log.logDetailed( fname, BaseMessages.getString( PKG, "TextFileInput.Log.Warning" ) + ": " + message
                   + " : " + e.getMessage() );
 
-              value = null;
+                value = null;
 
-              if ( errorCount != null ) {
-                errorCount = new Long( errorCount.longValue() + 1L );
-              }
-              if ( errorFields != null ) {
-                StringBuilder sb = new StringBuilder( errorFields );
-                if ( sb.length() > 0 ) {
-                  sb.append( "\t" ); // TODO document this change
+                if ( errorCount != null ) {
+                  errorCount = new Long( errorCount.longValue() + 1L );
                 }
-                sb.append( valueMeta.getName() );
-                errorFields = sb.toString();
-              }
-              if ( errorText != null ) {
-                StringBuilder sb = new StringBuilder( errorText );
-                if ( sb.length() > 0 ) {
-                  sb.append( Const.CR );
+                if ( errorFields != null ) {
+                  StringBuilder sb = new StringBuilder( errorFields );
+                  if ( sb.length() > 0 ) {
+                    sb.append( "\t" ); // TODO document this change
+                  }
+                  sb.append( valueMeta.getName() );
+                  errorFields = sb.toString();
                 }
-                sb.append( message );
-                errorText = sb.toString();
-              }
-              if ( errorHandler != null ) {
-                errorHandler.handleLineError( textFileLine.lineNumber, AbstractFileErrorHandler.NO_PARTS );
-              }
+                if ( errorText != null ) {
+                  StringBuilder sb = new StringBuilder( errorText );
+                  if ( sb.length() > 0 ) {
+                    sb.append( Const.CR );
+                  }
+                  sb.append( message );
+                  errorText = sb.toString();
+                }
+                if ( errorHandler != null ) {
+                  errorHandler.handleLineError( textFileLine.lineNumber, AbstractFileErrorHandler.NO_PARTS );
+                }
 
-              if ( info.isErrorLineSkipped() ) {
-                r = null; // compensates for stmt: r.setIgnore();
+                if ( info.isErrorLineSkipped() ) {
+                  r = null; // compensates for stmt: r.setIgnore();
+                }
+              } else {
+                throw new KettleException( message, e );
               }
             } else {
-              throw new KettleException( message, e );
+              value = pol;
             }
           }
         } else {

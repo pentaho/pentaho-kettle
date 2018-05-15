@@ -3309,4 +3309,7 @@ public class TableView extends Composite {
     this.tableViewModifyListener = tableViewModifyListener;
   }
 
+  public boolean hasIndexColumn() {
+    return this.addIndexColumn;
+  }
 }

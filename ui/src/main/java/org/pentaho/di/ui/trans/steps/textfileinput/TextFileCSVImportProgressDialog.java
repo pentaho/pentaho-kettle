@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -113,10 +113,22 @@ public class TextFileCSVImportProgressDialog {
   }
 
   public String open() {
+    return open( true );
+  }
+
+  /**
+   *
+   * @param failOnParseError if set to true, parsing failure on any line will cause parsing to be terminated; when
+   *                         set to false, parsing failure on a givne line will not prevent remaining lines from
+   *                         being parsed - this allows us to analyze fields, even is some field is mis-configured
+   *                         and causes a parsing value for the values of that field.
+   * @return
+   */
+  public String open( final boolean failOnParseError ) {
     IRunnableWithProgress op = new IRunnableWithProgress() {
       public void run( IProgressMonitor monitor ) throws InvocationTargetException, InterruptedException {
         try {
-          message = doScan( monitor );
+          message = doScan( monitor, failOnParseError );
         } catch ( Exception e ) {
           e.printStackTrace();
           throw new InvocationTargetException( e,
@@ -143,6 +155,10 @@ public class TextFileCSVImportProgressDialog {
   }
 
   private String doScan( IProgressMonitor monitor ) throws KettleException {
+    return doScan( monitor, true );
+  }
+
+  private String doScan( IProgressMonitor monitor, final boolean failOnParseError ) throws KettleException {
     if ( samples > 0 ) {
       monitor.beginTask(
         BaseMessages.getString( PKG, "TextFileCSVImportProgressDialog.Task.ScanningFile" ), samples + 1 );
@@ -258,10 +274,9 @@ public class TextFileCSVImportProgressDialog {
 
     line = TextFileInput.getLine( log, reader, encodingType, fileFormatType, lineBuffer );
     fileLineNumber++;
-    int skipped = 1;
 
     if ( meta.hasHeader() ) {
-
+      int skipped = 0;
       while ( line != null && skipped < meta.getNrHeaderLines() ) {
         line = TextFileInput.getLine( log, reader, encodingType, fileFormatType, lineBuffer );
         skipped++;
@@ -304,7 +319,7 @@ public class TextFileCSVImportProgressDialog {
           log, new TextFileLine( line, fileLineNumber, null ), strinfo, null, 0, outputRowMeta,
           convertRowMeta, meta.getFilePaths( transMeta )[0], rownumber, delimiter, enclosure, escapeCharacter,
           null, false, false, false, false, false, false, false, false, null, null, false, null, null, null,
-          null, 0 );
+          null, 0, false );
 
       if ( r == null ) {
         errorFound = true;
