@@ -28,16 +28,6 @@
     </fileSet>
   </fileSets>
   <dependencySets>
-    <!-- get the basic files from pdi-static-base -->
-    <dependencySet>
-      <includes>
-        <include>org.pentaho.di:pdi-static-base</include>
-      </includes>
-      <unpack>true</unpack>
-      <outputDirectory>.</outputDirectory>
-      <useTransitiveDependencies>false</useTransitiveDependencies>
-      <useProjectArtifact>false</useProjectArtifact>
-    </dependencySet>
     <!-- get the laf.properties file -->
     <dependencySet>
       <includes>
