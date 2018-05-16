@@ -24,6 +24,8 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.browser.Browser;
 import org.eclipse.swt.browser.LocationEvent;
 import org.eclipse.swt.browser.LocationListener;
+import org.eclipse.swt.browser.ProgressEvent;
+import org.eclipse.swt.browser.ProgressListener;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.events.ShellAdapter;
@@ -55,16 +57,15 @@ public class ShowHelpDialog extends Dialog {
   private static Class<?> PKG = Spoon.class;
 
   private static final String DOC_URL = Spoon.DOCUMENTATION_URL;
-  private static final String PREFIX = "https://";
-  private static final String PRINT_PREFIX = "https://f1.";
+  private static final String PREFIX = "https://help";
+  private static final String PRINT_PREFIX = "https://f1.help";
+  private static final String PRINT_SCRIPT = "javascript:window.print();";
   private static final int TOOLBAR_HEIGHT = 25;
   private static final int TOOL_ITEM_WIDTH = 47;
   private static final int TOOL_ITEM_SPACING = 4;
   private static final int MARGIN = 5;
 
-  private boolean fromBackOrForward;
   private boolean fromPrint;
-  private boolean loading;
 
   private String dialogTitle;
   private String url;
@@ -105,8 +106,7 @@ public class ShowHelpDialog extends Dialog {
     this.dialogTitle = BaseMessages.getString( PKG, "Spoon.Documentation.Pentaho.Title" );
     this.url = url;
     try {
-      URL docURL = new URL( DOC_URL );
-      this.homeURL = docURL.toString();
+      this.homeURL = new URL( DOC_URL ).toString();
     } catch ( MalformedURLException e ) {
     }
   }
@@ -268,7 +268,7 @@ public class ShowHelpDialog extends Dialog {
 
   private void setUpListeners() {
     setUpSelectionListeners();
-    addLocationListener();
+    addProgressAndLocationListener();
     addShellListener();
   }
 
@@ -334,7 +334,21 @@ public class ShowHelpDialog extends Dialog {
     tltmPrint.addSelectionListener( selectionListenerPrint );
   }
 
-  private void addLocationListener() {
+  private void addProgressAndLocationListener() {
+    ProgressListener progressListener = new ProgressListener() {
+      @Override
+      public void changed( ProgressEvent event ) {
+      }
+      @Override
+      public void completed( ProgressEvent event ) {
+        if ( fromPrint ) {
+          wBrowser.execute( PRINT_SCRIPT );
+          fromPrint = false;
+        }
+        setForwardBackEnable();
+      }
+    };
+
     LocationListener listener = new LocationListener() {
       @Override
       public void changing( LocationEvent event ) {
@@ -346,16 +360,10 @@ public class ShowHelpDialog extends Dialog {
 
       @Override
       public void changed( LocationEvent event ) {
-        if ( !fromBackOrForward && !fromPrint ) {
-          setForwardBackEnable();
-        } else if ( fromPrint ) {
-          wBrowser.execute( "javascript:window.print();" );
-        }
-        fromPrint = fromBackOrForward = false;
         textURL.setText( event.location );
-        loading = false;
       }
     };
+    wBrowser.addProgressListener( progressListener );
     wBrowser.addLocationListener( listener );
   }
 
@@ -369,50 +377,35 @@ public class ShowHelpDialog extends Dialog {
   }
 
   private void back() {
-    fromBackOrForward = true;
     wBrowser.back();
-    setForwardBackEnable( wBrowser.isBackEnabled(), true );
   }
 
   private void forward() {
-    fromBackOrForward = true;
     wBrowser.forward();
-    setForwardBackEnable( true, wBrowser.isForwardEnabled() );
   }
 
   private void refresh() {
     wBrowser.refresh();
   }
 
-  private void print() {
-    String currentURL = wBrowser.getUrl();
-    boolean currentBackEnabled = tltmBack.isEnabled();
-    boolean currentForwardEnabled = tltmForward.isEnabled();
-    String f1URL = currentURL.replace( PREFIX, PRINT_PREFIX );
-    fromPrint = true;
-    wBrowser.setUrl( f1URL );
-    loading = true;
-    while ( loading ) {
-      if ( !display.readAndDispatch() ) {
-        display.sleep();
-      }
-    }
-    wBrowser.setUrl( currentURL );
-    setForwardBackEnable( currentBackEnabled, currentForwardEnabled );
-  }
-
   private void home() {
     wBrowser.setUrl( homeURL != null ? homeURL : url );
-    setForwardBackEnable( tltmBack.isEnabled(), false );
+  }
+
+  private void print() {
+    String printURL = wBrowser.getUrl();
+    if ( printURL.startsWith( PREFIX ) ) {
+      printURL = printURL.replace( PREFIX, PRINT_PREFIX );
+      fromPrint = true;
+      wBrowser.setUrl( printURL );
+    } else {
+      wBrowser.execute( PRINT_SCRIPT );
+    }
   }
 
   private void setForwardBackEnable() {
-    setForwardBackEnable( wBrowser.isBackEnabled(), wBrowser.isForwardEnabled() );
-  }
-
-  private void setForwardBackEnable( boolean enableBack, boolean enableForward ) {
-    setBackEnable( enableBack );
-    setForwardEnable( enableForward );
+    setBackEnable( wBrowser.isBackEnabled() );
+    setForwardEnable( wBrowser.isForwardEnabled() );
   }
 
   private void setBackEnable( boolean enable ) {
