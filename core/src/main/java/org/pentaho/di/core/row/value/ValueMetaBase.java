@@ -988,7 +988,8 @@ public class ValueMetaBase implements ValueMetaInterface {
     }
 
     try {
-      return getDecimalFormat( false ).format( number );
+      DecimalFormat format = getDecimalFormat( false );
+      return format.format( number );
     } catch ( Exception e ) {
       throw new KettleValueException( toString() + " : couldn't convert Number to String ", e );
     }
@@ -1012,6 +1013,7 @@ public class ValueMetaBase implements ValueMetaInterface {
 
     try {
       DecimalFormat format = getDecimalFormat( false );
+      format.setMaximumFractionDigits( 50 );
       Number number;
       if ( lenientStringToNumber ) {
         number = format.parse( string );
@@ -3829,6 +3831,7 @@ public class ValueMetaBase implements ValueMetaInterface {
   @Override
   public Object convertData( ValueMetaInterface meta2, Object data2 ) throws KettleValueException {
     switch ( getType() ) {
+      case TYPE_NONE:
       case TYPE_STRING:
         return meta2.getString( data2 );
       case TYPE_NUMBER:
