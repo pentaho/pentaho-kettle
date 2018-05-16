@@ -1176,6 +1176,11 @@ public class Const {
   public static final String S3VFS_USE_TEMPORARY_FILE_ON_UPLOAD_DATA = "s3.vfs.useTempFileOnUploadData";
 
   /**
+   * A variable to configure Tab size"
+   */
+  public static final String KETTLE_MAX_TAB_LENGTH = "KETTLE_MAX_TAB_LENGTH";
+
+  /**
    * A variable to configure VFS USER_DIR_IS_ROOT option: should be "true" or "false"
    * {@linkplain org.apache.commons.vfs2.provider.sftp.SftpFileSystemConfigBuilder#USER_DIR_IS_ROOT}
    */

@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,6 +22,7 @@
 
 package org.pentaho.di.ui.spoon.delegates;
 
+import org.pentaho.di.core.Const;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.logging.LoggingObjectInterface;
 import org.pentaho.di.core.logging.LoggingObjectType;
@@ -38,5 +39,9 @@ public abstract class SpoonDelegate {
   protected SpoonDelegate( Spoon spoon ) {
     this.spoon = spoon;
     this.log = spoon.getLog();
+  }
+
+  protected static int getMaxTabLength() {
+    return Const.toInt( System.getProperty( Const.KETTLE_MAX_TAB_LENGTH ), 17 );
   }
 }

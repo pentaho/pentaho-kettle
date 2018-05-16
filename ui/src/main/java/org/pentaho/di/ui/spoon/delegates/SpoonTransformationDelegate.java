@@ -158,6 +158,7 @@ public class SpoonTransformationDelegate extends SpoonDelegate {
       boolean showLocation = false;
       boolean addTab = true;
       String tabName = spoon.delegates.tabs.makeTabName( transMeta, showLocation );
+
       TabMapEntry tabEntry = spoon.delegates.tabs.findTabMapEntry( tabName, ObjectType.TRANSFORMATION_GRAPH );
       if ( tabEntry != null ) {
         // We change the already loaded transformation to also show the location.
@@ -167,6 +168,7 @@ public class SpoonTransformationDelegate extends SpoonDelegate {
         // Try again, including the location of the object...
         //
         tabName = spoon.delegates.tabs.makeTabName( transMeta, showLocation );
+
         TabMapEntry exactSameEntry = spoon.delegates.tabs.findTabMapEntry( tabName, ObjectType.TRANSFORMATION_GRAPH );
         if ( exactSameEntry != null ) {
           // Already loaded, simply select the tab item in question...
@@ -185,6 +187,9 @@ public class SpoonTransformationDelegate extends SpoonDelegate {
       if ( addTab ) {
         transGraph = new TransGraph( spoon.tabfolder.getSwtTabset(), spoon, transMeta );
         PropsUI props = PropsUI.getInstance();
+        if ( tabName.length() >= getMaxTabLength() ) {
+          tabName = new StringBuilder().append( tabName.substring( 0, getMaxTabLength() ) ).append( "\u2026" ).toString();
+        }
         TabItem tabItem = new TabItem( spoon.tabfolder, tabName, tabName, props.getSashWeights() );
         String toolTipText =
             BaseMessages.getString( PKG, "Spoon.TabTrans.Tooltip", spoon.delegates.tabs.makeTabName( transMeta,

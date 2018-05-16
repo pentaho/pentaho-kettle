@@ -499,5 +499,11 @@
     <variable>KETTLE_STREAMING_TIME_LIMIT</variable>
     <default-value>10000</default-value>
   </kettle-variable>
+
+  <kettle-variable>
+    <description>A variable to configure Tab size</description>
+    <variable>KETTLE_MAX_TAB_LENGTH</variable>
+    <default-value>17</default-value>
+  </kettle-variable>
 </kettle-variables>
 
