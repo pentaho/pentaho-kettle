@@ -75,6 +75,16 @@ import java.util.List;
 public abstract class CommonStepDialog<StepMetaType extends CommonStepMeta> extends BaseStepDialog implements
   StepDialogInterface {
 
+  protected static final int MARGIN_SIZE = BaseDialog.MARGIN_SIZE;
+  protected static final int LABEL_SPACING = BaseDialog.LABEL_SPACING;
+  protected static final int ELEMENT_SPACING = BaseDialog.ELEMENT_SPACING;
+  protected static final int MEDIUM_FIELD = BaseDialog.MEDIUM_FIELD;
+  protected static final int MEDIUM_SMALL_FIELD = BaseDialog.MEDIUM_SMALL_FIELD;
+  protected static final int SMALL_FIELD = BaseDialog.SMALL_FIELD;
+  protected static final int SHELL_WIDTH_OFFSET = BaseDialog.SHELL_WIDTH_OFFSET;
+  protected static final int VAR_ICON_WIDTH = BaseDialog.VAR_ICON_WIDTH;
+  protected static final int VAR_ICON_HEIGHT = BaseDialog.VAR_ICON_HEIGHT;
+
   private static final int SHELL_WIDTH = 610;
 
   private static Class<?> PKG = StepInterface.class;
