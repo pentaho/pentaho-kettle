@@ -515,6 +515,9 @@ public class BrowseController extends AbstractXulEventHandler implements IUISupp
         if ( selectedFolder == null ) {
           selectedFolder = repositoryDirectory;
         }
+        if ( newName.equals( "." ) || newName.equals( ".." ) ) {
+          throw new Exception( BaseMessages.getString( PKG, "BrowserController.InvalidFolderName" ) );
+        }
         //Do an explicit check here to see if the folder already exists in the ui
         //This is to prevent a double message being sent in case the folder does
         //not exist in the ui but does exist in the repo (PDI-5202)
