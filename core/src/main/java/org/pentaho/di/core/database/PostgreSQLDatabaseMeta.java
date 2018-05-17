@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -33,6 +33,8 @@ import org.pentaho.di.core.row.ValueMetaInterface;
  */
 
 public class PostgreSQLDatabaseMeta extends BaseDatabaseMeta implements DatabaseInterface {
+  private static final int GB_LIMIT = 1_073_741_824;
+
   /**
    * @return The extra option separator in database URL for this platform
    */
@@ -301,6 +303,9 @@ public class PostgreSQLDatabaseMeta extends BaseDatabaseMeta implements Database
     String retval = "";
 
     String fieldname = v.getName();
+    if ( v.getLength() == DatabaseMeta.CLOB_LENGTH ) {
+      v.setLength( getMaxTextFieldLength() );
+    }
     int length = v.getLength();
     int precision = v.getPrecision();
 
@@ -556,5 +561,15 @@ public class PostgreSQLDatabaseMeta extends BaseDatabaseMeta implements Database
   @Override
   public boolean useSafePoints() {
     return true;
+  }
+
+  @Override
+  public int getMaxVARCHARLength() {
+    return GB_LIMIT;
+  }
+
+  @Override
+  public int getMaxTextFieldLength() {
+    return GB_LIMIT;
   }
 }
