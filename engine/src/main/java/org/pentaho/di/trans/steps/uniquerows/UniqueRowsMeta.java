@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -202,7 +202,7 @@ public class UniqueRowsMeta extends BaseStepMeta implements StepMetaInterface {
   public void setDefault() {
     countRows = false;
     countField = "";
-    rejectDuplicateRow = false;
+    rejectDuplicateRow = true;
     errorDescription = null;
 
     int nrfields = 0;
