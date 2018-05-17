@@ -42,6 +42,8 @@ public class GetFieldsSampleDataDialog extends EnterNumberDialog {
 
   private static final int SAMPLE_SIZE = 100;
 
+  private static final int SHELL_WIDTH = 300;
+
   private GetFieldsCapableStepDialog parentDialog;
   private boolean reloadAllFields;
 
@@ -50,7 +52,7 @@ public class GetFieldsSampleDataDialog extends EnterNumberDialog {
     super( parentShell, SAMPLE_SIZE,
       BaseMessages.getString( PKG, "System.GetFields.SampleSize.Dialog.Title" ),
       BaseMessages.getString( PKG, "System.GetFields.SampleSize.Dialog.Message" ),
-      BaseMessages.getString( PKG, "System.GetFields.SampleSize.Dialog.ShowSample.Message" ) );
+      BaseMessages.getString( PKG, "System.GetFields.SampleSize.Dialog.ShowSample.Message" ), SHELL_WIDTH );
     this.parentDialog = parentDialog;
     this.reloadAllFields = reloadAllFields;
   }
