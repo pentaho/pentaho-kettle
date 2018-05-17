@@ -136,7 +136,7 @@ public class TextFileOutputMeta extends BaseStepMeta implements StepMetaInterfac
 
   /** if this value is larger then 0, the text file is split up into parts of this number of lines */
   @Injection( name = "SPLIT_EVERY" )
-  private int splitEvery;
+  private String splitEveryRows;
 
   /** Flag to indicate the we want to append to the end of an existing file (if it exists) */
   @Injection( name = "APPEND" )
@@ -491,10 +491,33 @@ public class TextFileOutputMeta extends BaseStepMeta implements StepMetaInterfac
   }
 
   /**
+   * @deprecated use {@link #getSplitEvery(VariableSpace)} or {@link #getSplitEveryRows()}
    * @return Returns the splitEvery.
    */
   public int getSplitEvery() {
-    return splitEvery;
+    return Const.toInt( splitEveryRows, 0 );
+  }
+
+  /**
+   * @param varSpace for variable substitution
+   * @return At how many rows to split into another file.
+   */
+  public int getSplitEvery( VariableSpace varSpace ) {
+    return Const.toInt( varSpace.environmentSubstitute( splitEveryRows ), 0 );
+  }
+
+  /**
+   * @return At how many rows to split into a new file.
+   */
+  public String getSplitEveryRows() {
+    return splitEveryRows;
+  }
+
+  /**
+   * @param value At how many rows to split into a new file.
+   */
+  public void setSplitEveryRows( String value ) {
+    splitEveryRows = value;
   }
 
   /**
@@ -505,11 +528,12 @@ public class TextFileOutputMeta extends BaseStepMeta implements StepMetaInterfac
   }
 
   /**
+   * @deprecated use {@link #setSplitEveryRows(String)}
    * @param splitEvery
    *          The splitEvery to set.
    */
   public void setSplitEvery( int splitEvery ) {
-    this.splitEvery = splitEvery;
+    splitEveryRows = Integer.toString( splitEvery );
   }
 
   /**
@@ -738,7 +762,7 @@ public class TextFileOutputMeta extends BaseStepMeta implements StepMetaInterfac
 
       padded = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "file", "pad" ) );
       fastDump = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "file", "fast_dump" ) );
-      splitEvery = Const.toInt( XMLHandler.getTagValue( stepnode, "file", "splitevery" ), 0 );
+      splitEveryRows = XMLHandler.getTagValue( stepnode, "file", "splitevery" );
 
       newline = getNewLine( fileFormat );
 
@@ -816,7 +840,6 @@ public class TextFileOutputMeta extends BaseStepMeta implements StepMetaInterfac
     padded = false;
     fastDump = false;
     addToResultFilenames = true;
-    splitEvery = 0;
 
     newline = getNewLine( fileFormat );
 
@@ -853,7 +876,7 @@ public class TextFileOutputMeta extends BaseStepMeta implements StepMetaInterfac
       parts = 3;
     }
 
-    if ( splitEvery != 0 ) {
+    if ( !Utils.isEmpty( splitEveryRows ) ) {
       splits = 3;
     }
 
@@ -916,7 +939,7 @@ public class TextFileOutputMeta extends BaseStepMeta implements StepMetaInterfac
     if ( meta.isPartNrInFilename() ) {
       retval += "_" + partnr;
     }
-    if ( meta.getSplitEvery() > 0 ) {
+    if ( meta.getSplitEvery( space ) > 0 ) {
       retval += "_" + splitnr;
     }
 
@@ -1040,7 +1063,7 @@ public class TextFileOutputMeta extends BaseStepMeta implements StepMetaInterfac
     retval.append( "      " ).append( XMLHandler.addTagValue( "add_to_result_filenames", addToResultFilenames ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "pad", padded ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "fast_dump", fastDump ) );
-    retval.append( "      " ).append( XMLHandler.addTagValue( "splitevery", splitEvery ) );
+    retval.append( "      " ).append( XMLHandler.addTagValue( "splitevery", splitEveryRows ) );
   }
 
   @Override
@@ -1072,7 +1095,16 @@ public class TextFileOutputMeta extends BaseStepMeta implements StepMetaInterfac
       doNotOpenNewFileInit = rep.getStepAttributeBoolean( id_step, "do_not_open_new_file_init" );
       extension = rep.getStepAttributeString( id_step, "file_extention" );
       fileAppended = rep.getStepAttributeBoolean( id_step, "file_append" );
-      splitEvery = (int) rep.getStepAttributeInteger( id_step, "file_split" );
+
+      splitEveryRows = rep.getStepAttributeString( id_step, "file_split_rows" );
+      if ( Utils.isEmpty( splitEveryRows ) ) {
+        // test for legacy
+        long splitEvery = rep.getStepAttributeInteger( id_step, "file_split" );
+        if ( splitEvery > 0 ) {
+          splitEveryRows = Long.toString( splitEvery );
+        }
+      }
+
       stepNrInFilename = rep.getStepAttributeBoolean( id_step, "file_add_stepnr" );
       partNrInFilename = rep.getStepAttributeBoolean( id_step, "file_add_partnr" );
       dateInFilename = rep.getStepAttributeBoolean( id_step, "file_add_date" );
@@ -1136,7 +1168,7 @@ public class TextFileOutputMeta extends BaseStepMeta implements StepMetaInterfac
       rep.saveStepAttribute( id_transformation, id_step, "do_not_open_new_file_init", doNotOpenNewFileInit );
       rep.saveStepAttribute( id_transformation, id_step, "file_extention", extension );
       rep.saveStepAttribute( id_transformation, id_step, "file_append", fileAppended );
-      rep.saveStepAttribute( id_transformation, id_step, "file_split", splitEvery );
+      rep.saveStepAttribute( id_transformation, id_step, "file_split_rows", splitEveryRows );
       rep.saveStepAttribute( id_transformation, id_step, "file_add_stepnr", stepNrInFilename );
       rep.saveStepAttribute( id_transformation, id_step, "file_add_partnr", partNrInFilename );
       rep.saveStepAttribute( id_transformation, id_step, "file_add_date", dateInFilename );

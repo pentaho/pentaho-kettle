@@ -22,6 +22,9 @@
 
 package org.pentaho.di.trans.steps.textfileoutput;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
 import java.io.BufferedOutputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -42,7 +45,6 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Test;
-import org.junit.internal.runners.statements.Fail;
 import org.mockito.Mockito;
 import org.pentaho.di.core.RowSet;
 import org.pentaho.di.core.compress.CompressionOutputStream;
@@ -57,6 +59,7 @@ import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.row.value.ValueMetaBase;
 import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.core.variables.VariableSpace;
+import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.junit.rules.RestorePDIEngineEnvironment;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
@@ -444,6 +447,26 @@ public class TextFileOutputTest {
   @Test
   public void containsSeparatorOrEnclosureIsNotUnnecessaryInvoked_AllFieldsFromMeta() {
     assertNotInvokedTwice( null );
+  }
+
+  @Test
+  public void testEndedLineVar() throws Exception {
+    TextFileOutputData data = new TextFileOutputData();
+    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+    data.writer = baos;
+    TextFileOutputMeta meta = new TextFileOutputMeta();
+    meta.setEndedLine( "${endvar}" );
+    meta.setDefault();
+    meta.setEncoding( "UTF-8" );
+    stepMockHelper.stepMeta.setStepMetaInterface( meta );
+    TextFileOutput textFileOutput =
+        new TextFileOutputTestHandler( stepMockHelper.stepMeta, data, 0, stepMockHelper.transMeta,
+            stepMockHelper.trans );
+    textFileOutput.meta = meta;
+    textFileOutput.data = data;
+    textFileOutput.setVariable( "endvar", "this is the end" );
+    textFileOutput.writeEndedLine();
+    assertEquals( "this is the end", baos.toString( "UTF-8" ) );
   }
 
   private void assertNotInvokedTwice( TextFileField field ) {
