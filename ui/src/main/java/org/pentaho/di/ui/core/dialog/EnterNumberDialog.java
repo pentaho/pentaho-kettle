@@ -74,7 +74,7 @@ public class EnterNumberDialog extends Dialog {
   private String checkboxLabel;
   private PropsUI props;
 
-  private static final int SHELL_WIDTH = 270;
+  private int width;
 
   /**
    * @deprecated Use the CT without the <i>Props</i> parameter (at 2nd position)
@@ -90,6 +90,12 @@ public class EnterNumberDialog extends Dialog {
 
   public EnterNumberDialog( Shell parent, int samples, String shellText, String lineText ) {
     this( parent, samples, shellText, lineText, null );
+  }
+
+  public EnterNumberDialog( Shell parent, int samples, String shellText, String lineText, final String checkboxLabel,
+                            final int width ) {
+    this( parent, samples, shellText, lineText, checkboxLabel );
+    this.width = width;
   }
 
   public EnterNumberDialog( Shell parent, int samples, String shellText, String lineText, final String checkboxLabel ) {
@@ -200,13 +206,13 @@ public class EnterNumberDialog extends Dialog {
 
     shell.pack();
 
-    final int height = shell.computeSize( SHELL_WIDTH, SWT.DEFAULT ).y;
-    // for some reason the actual width and minimum width are smaller than what is requested - add the
-    // SHELL_WIDTH_OFFSET to get the desired size
-    shell.setMinimumSize( SHELL_WIDTH + BaseDialog.SHELL_WIDTH_OFFSET, height );
-    shell.setSize( SHELL_WIDTH + BaseDialog.SHELL_WIDTH_OFFSET, height );
-
-    //BaseStepDialog.setSize( shell );
+    if ( this.width > 0 ) {
+      final int height = shell.computeSize( this.width, SWT.DEFAULT ).y;
+      // for some reason the actual width and minimum width are smaller than what is requested - add the
+      // SHELL_WIDTH_OFFSET to get the desired size
+      shell.setMinimumSize( this.width + BaseDialog.SHELL_WIDTH_OFFSET, height );
+      shell.setSize( this.width + BaseDialog.SHELL_WIDTH_OFFSET, height );
+    }
 
     shell.open();
     while ( !shell.isDisposed() ) {
