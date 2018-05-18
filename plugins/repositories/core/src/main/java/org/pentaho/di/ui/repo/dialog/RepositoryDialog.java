@@ -26,7 +26,6 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.browser.BrowserFunction;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Shell;
-import org.pentaho.di.core.Const;
 import org.pentaho.di.core.logging.KettleLogStore;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.i18n.BaseMessages;
@@ -47,9 +46,6 @@ public class RepositoryDialog extends ThinDialog {
     KettleLogStore.getLogChannelInterfaceFactory().create( RepositoryDialog.class );
 
   private static Class<?> PKG = RepositoryDialog.class;
-
-  public static final String HELP_URL =
-      Const.getDocUrl( BaseMessages.getString( PKG, "RepositoryDialog.Dialog.Help" ) );
 
   private static final int WIDTH = 630;
   private static final int HEIGHT = 630;

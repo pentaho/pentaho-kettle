@@ -75,7 +75,8 @@ import static org.pentaho.di.core.util.serialization.ConfigHelper.conf;
   i18nPackageName = "org.pentaho.di.trans.step.mqtt",
   name = "MQTTProducer.TypeLongDesc",
   description = "MQTTProducer.TypeTooltipDesc",
-  categoryDescription = "i18n:org.pentaho.di.trans.step:BaseStep.Category.Streaming" )
+  categoryDescription = "i18n:org.pentaho.di.trans.step:BaseStep.Category.Streaming",
+  documentationUrl = "Products/Data_Integration/Transformation_Step_Reference/MQTT_Producer" )
 @InjectionSupported ( localizationPrefix = "MQTTProducerMeta.Injection.", groups = { "SSL" }  )
 public class MQTTProducerMeta extends BaseSerializingMeta implements StepMetaInterface {
   private static Class<?> PKG = MQTTProducerMeta.class;
