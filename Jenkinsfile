@@ -337,7 +337,7 @@ pipeline {
         }
       }
       steps {
-        archiveArtifacts artifacts: '**/dist/*.jar, **/dist/*.gz, **/dist/*.tar.gz, **/dist/*.zip, **/target/*.jar, **/target/*.gz, **/target/*.tar.gz, **/target/*.zip', fingerprint: false
+        archiveArtifacts artifacts: '**/dist/*.jar, **/dist/*.gz, **/dist/*.tar.gz, **/dist/*.zip, **/target/*.jar, **/target/*.gz, **/target/*.tar.gz, **/target/*.zip', excludes: '**/dist/*-sources.jar, **/target/*-sources.jar', allowEmptyArchive: true, fingerprint: false
       }
     }
 
