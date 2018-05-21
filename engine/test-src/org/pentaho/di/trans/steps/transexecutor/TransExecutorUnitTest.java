@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,6 +22,7 @@
 
 package org.pentaho.di.trans.steps.transexecutor;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import org.junit.After;
 import org.junit.Assert;
@@ -411,10 +412,12 @@ public class TransExecutorUnitTest {
     String parentValue = "parentValue";
 
     meta.getParameters().setVariable( new String[]{ childParam, paramOverwrite } );
+    meta.getParameters().setField( new String[]{ childParam, childParam } );
     meta.getParameters().setInput( new String[]{ childValue, childValue } );
     Trans parent = new Trans();
     Mockito.when( executor.getTrans() ).thenReturn( parent );
-
+    RowMetaInterface rowMeta = Mockito.mock( RowMetaInterface.class );
+    Mockito.when( executor.getInputRowMeta() ).thenReturn( rowMeta );
     executor.init( meta, data );
 
     executor.setVariable( paramOverwrite, parentValue );
@@ -427,6 +430,11 @@ public class TransExecutorUnitTest {
 
     Trans internalTrans = executor.createInternalTrans();
     executor.getData().setExecutorTrans( internalTrans );
+    RowMetaAndData rmad = Mockito.mock( RowMetaAndData.class );
+    java.util.List<RowMetaAndData> lrmad = new ArrayList<RowMetaAndData>();
+    lrmad.add( rmad );
+    Mockito.when( rmad.getString( 0, "" ) ).thenReturn( childValue );
+    executor.getData().groupBuffer = lrmad;
     executor.passParametersToTrans();
 
     //When the child parameter does exist in the parent parameters, overwrite the child parameter by the parent parameter.
