@@ -28,6 +28,8 @@ import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.annotations.Step;
+import org.pentaho.di.core.injection.Injection;
+import org.pentaho.di.core.injection.InjectionSupported;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
@@ -61,6 +63,7 @@ import org.w3c.dom.Node;
 @Step( id = "CheckSum", i18nPackageName = "org.pentaho.di.trans.steps.checksum", name = "CheckSum.Name",
     description = "CheckSum.Description",
     categoryDescription = "i18n:org.pentaho.di.trans.step:BaseStep.Category.Transform" )
+@InjectionSupported( localizationPrefix = "CheckSum.Injection.", groups = { "FIELDS" }  )
 public class CheckSumMeta extends BaseStepMeta implements StepMetaInterface {
   private static Class<?> PKG = CheckSumMeta.class; // for i18n purposes, needed by Translator2!!
 
@@ -95,16 +98,23 @@ public class CheckSumMeta extends BaseStepMeta implements StepMetaInterface {
   public static final int result_TYPE_BINARY = 2;
 
   /** by which fields to display? */
+  @Injection( name = "FIELD_NAME", group = "FIELDS" )
   private String[] fieldName;
 
+  @Injection( name = "RESULT_FIELD"  )
   private String resultfieldName;
 
+  @Injection( name = "TYPE" )
   private String checksumtype;
 
+  @Injection( name = "COMPATIBILITY_MODE" )
   private boolean compatibilityMode;
+
+  @Injection( name = "OLD_CHECKSUM_BEHAVIOR" )
   private boolean oldChecksumBehaviour;
 
   /** result type */
+  @Injection( name = "RESULT_TYPE" )
   private int resultType;
 
   public CheckSumMeta() {
