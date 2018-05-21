@@ -110,6 +110,43 @@ public class StaxPoiSheetTest {
     +   "</row>"
     + "</sheetData>" );
 
+  private static final String SHEET_NO_USED_RANGE_SPECIFIED = String.format( BP_SHEET,
+    "<dimension ref=\"A1\" />"
+    + "<sheetViews>"
+    +  "<sheetView tabSelected=\"1\" workbookViewId=\"0\">"
+    +    "<selection/>"
+    +  "</sheetView>"
+    + "</sheetViews>"
+    + "<sheetFormatPr defaultRowHeight=\"12.750000\" customHeight=\"true\"/>"
+    + "<sheetData>"
+    +  "<row r=\"2\">"
+    +    "<c r=\"A2\" s=\"9\" t=\"s\">"
+    +      "<v>0</v>"
+    +    "</c><c r=\"B2\" s=\"9\" t=\"s\">"
+    +      "<v>0</v>"
+    +    "</c><c r=\"C2\" s=\"9\" t=\"s\">"
+    +      "<v>1</v>"
+    +    "</c><c r=\"D2\" s=\"9\" t=\"s\">"
+    +      "<v>2</v>"
+    +    "</c><c r=\"E2\" s=\"9\" t=\"s\">"
+    +      "<v>3</v>"
+    +  "</c>"
+    +  "</row>"
+    +  "<row r=\"3\">"
+    +    "<c r=\"A3\" s=\"11\" t=\"s\">"
+    +      "<v>4</v>"
+    +    "</c><c r=\"B3\" s=\"11\" t=\"s\">"
+    +      "<v>4</v>"
+    +    "</c><c r=\"C3\" s=\"11\" t=\"s\">"
+    +      "<v>5</v>"
+    +    "</c><c r=\"D3\" s=\"12\">"
+    +      "<v>2623</v>"
+    +    "</c><c r=\"E3\" s=\"11\" t=\"s\">"
+    +      "<v>6</v>"
+    +    "</c>"
+    +  "</row>"
+    + "</sheetData>" );
+
   @Test
   public void testNullDateCell() throws Exception {
     // cell had null value instead of being null
@@ -310,6 +347,38 @@ public class StaxPoiSheetTest {
     assertEquals( KCellType.STRING_FORMULA, rowCells[0].getType() );
     assertEquals( "value 2 2", rowCells[1].getValue() );
     assertEquals( KCellType.STRING_FORMULA, rowCells[1].getType() );
+  }
+
+  // The row and column bounds of all cells in the worksheet are specified in ref attribute of Dimension tag in sheet
+  // xml
+  // But ref can be present as range: <dimension ref="A1:C2"/> or as just one start cell: <dimension ref="A1"/>.
+  // Below tests to validate correct work for such cases
+  @Test
+  public void testNoUsedRangeSpecified() throws Exception {
+    final String sheetId = "1";
+    final String sheetName = "Sheet 1";
+    SharedStringsTable sharedStringsTableMock =
+        mockSharedStringsTable( "Report ID", "Report ID", "Approval Status", "Total Report Amount", "Policy", "ReportIdValue_1", "ReportIdValue_1", "ApprovalStatusValue_1", "PolicyValue_1" );
+    XSSFReader reader = mockXSSFReader( sheetId, SHEET_NO_USED_RANGE_SPECIFIED, sharedStringsTableMock, mock( StylesTable.class ) );
+    StaxPoiSheet spSheet = new StaxPoiSheet( reader, sheetName, sheetId );
+    // The first row is empty - it should have empty rowCells
+    KCell[] rowCells = spSheet.getRow( 0 );
+    assertEquals( 0, rowCells.length );
+    // The second row - is the header - just skip it
+    rowCells = spSheet.getRow( 1 );
+    assertEquals( 0, rowCells.length );
+    // The row3 - is the first row with data - validating it
+    rowCells = spSheet.getRow( 2 );
+    assertEquals( KCellType.LABEL, rowCells[0].getType() );
+    assertEquals( "ReportIdValue_1", rowCells[0].getValue() );
+    assertEquals( KCellType.LABEL, rowCells[1].getType() );
+    assertEquals( "ReportIdValue_1", rowCells[1].getValue() );
+    assertEquals( KCellType.LABEL, rowCells[2].getType() );
+    assertEquals( "ApprovalStatusValue_1", rowCells[2].getValue() );
+    assertEquals( KCellType.NUMBER, rowCells[3].getType() );
+    assertEquals( 2623.0, rowCells[3].getValue() );
+    assertEquals( KCellType.LABEL, rowCells[4].getType() );
+    assertEquals( "PolicyValue_1", rowCells[4].getValue() );
   }
 
 }
