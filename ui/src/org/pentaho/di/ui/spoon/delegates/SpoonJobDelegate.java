@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -248,13 +248,6 @@ public class SpoonJobDelegate extends SpoonDelegate {
       JobEntryCopy before = (JobEntryCopy) je.clone_deep();
 
       JobEntryInterface jei = je.getEntry();
-
-      if ( jei.isSpecial() ) {
-        JobEntrySpecial special = (JobEntrySpecial) jei;
-        if ( special.isDummy() ) {
-          return;
-        }
-      }
 
       JobEntryDialogInterface d = getJobEntryDialog( jei, jobMeta );
       if ( d != null ) {
