@@ -886,10 +886,10 @@ public class CsvInputDialog extends BaseStepDialog implements StepDialogInterfac
    * Returns the {@link InputStreamReader} corresponding to the csv file, or null if the file cannot be read.
    * @return the {@link InputStreamReader} corresponding to the csv file, or null if the file cannot be read
    */
-  private InputStreamReader getReader( final InputStream inputStream ) {
+  private InputStreamReader getReader( final CsvInputMeta meta, final InputStream inputStream ) {
     InputStreamReader reader = null;
     try {
-      String filename = transMeta.environmentSubstitute( inputMeta.getFilename() );
+      String filename = transMeta.environmentSubstitute( meta.getFilename() );
 
       FileObject fileObject = KettleVFS.getFileObject( filename );
       if ( !( fileObject instanceof LocalFile ) ) {
@@ -899,7 +899,7 @@ public class CsvInputDialog extends BaseStepDialog implements StepDialogInterfac
         throw new KettleException( BaseMessages.getString( PKG, "CsvInput.Log.OnlyLocalFilesAreSupported" ) );
       }
 
-      String realEncoding = transMeta.environmentSubstitute( inputMeta.getEncoding() );
+      String realEncoding = transMeta.environmentSubstitute( meta.getEncoding() );
       if ( Utils.isEmpty( realEncoding ) ) {
         reader = new InputStreamReader( inputStream );
       } else {
@@ -939,7 +939,7 @@ public class CsvInputDialog extends BaseStepDialog implements StepDialogInterfac
   @Override
   public String[] getFieldNames( final CsvInputMeta meta ) {
     final InputStream inputStream = getInputStream( meta );
-    final InputStreamReader reader = getReader( inputStream );
+    final InputStreamReader reader = getReader( meta, inputStream );
     String[] fieldNames = new String[]{};
     try {
       fieldNames = getFieldNamesImpl( reader, meta );
@@ -1012,7 +1012,7 @@ public class CsvInputDialog extends BaseStepDialog implements StepDialogInterfac
   public String loadFieldsImpl( final CsvInputMeta meta, final int samples, final boolean reloadAllFields ) {
     InputStream inputStream = getInputStream( meta );
     try {
-      final InputStreamReader reader = getReader( inputStream );
+      final InputStreamReader reader = getReader( meta, inputStream );
       TextFileCSVImportProgressDialog pd =
         new TextFileCSVImportProgressDialog( shell, meta, transMeta, reader, samples, true );
       String message = pd.open( false );
