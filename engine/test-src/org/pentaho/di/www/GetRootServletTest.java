@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -47,6 +47,6 @@ public class GetRootServletTest {
         when( mock( HttpServletRequest.class ).getRequestURI() ).thenReturn( "/wrong_path" ).getMock();
     HttpServletResponse response = mock( HttpServletResponse.class );
     servlet.doGet( request, response );
-    verify( response ).setStatus( HttpServletResponse.SC_NOT_FOUND );
+    verify( response ).sendError( HttpServletResponse.SC_NOT_FOUND );
   }
 }

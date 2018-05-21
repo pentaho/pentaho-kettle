@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -107,7 +107,7 @@ public class GetRootServlet extends BaseHttpServlet implements CartePluginInterf
   public void doGet( HttpServletRequest request, HttpServletResponse response ) throws ServletException,
     IOException {
     if ( isJettyMode() && !request.getRequestURI().equals( CONTEXT_PATH ) ) {
-      response.setStatus( HttpServletResponse.SC_NOT_FOUND );
+      response.sendError( HttpServletResponse.SC_NOT_FOUND );
       return;
     }
 
