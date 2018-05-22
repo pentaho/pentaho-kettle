@@ -18,6 +18,10 @@ buildProperties:
         WEBDETAILS_SCM_ROOT            : https://github.com/webdetails
         DEFAULT_BRANCH                 : master
 
+        # Installer defaults
+        IBUILDER_RESOURCES_ROOT_PATH   : /build2/resources/ibuilder-pentaho-8.0-resources
+        INSTALL_BUILDER_ROOT_DIR       : /build2/resources/installbuilder-15.1.0
+
 jobGroups:
   # Always required
 
@@ -746,3 +750,12 @@ jobGroups:
        versionProperty :  worker-nodes.version
        root            :  foundry
        testable        :  false
+
+   4700:
+
+        - jobID           :  installer
+          scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-installer.git
+          scmBranch       :  ${DEFAULT_BRANCH}
+          directives      :  -Djre.mac.x64.dir=${IBUILDER_RESOURCES_ROOT_PATH}/osx/java -Djre.linux.x64.dir=${IBUILDER_RESOURCES_ROOT_PATH}/nix/java -Djre.windows.x64.dir=${IBUILDER_RESOURCES_ROOT_PATH}/win/java -Dpostgresql.mac.x64.dir=${IBUILDER_RESOURCES_ROOT_PATH}/osx/postgresql -Dpostgresql.linux.x64.dir=${IBUILDER_RESOURCES_ROOT_PATH}/nix/postgresql -Dpostgresql.windows.x64.dir=${IBUILDER_RESOURCES_ROOT_PATH}/win/postgresql -Dcommon.linux.x64.dir=${IBUILDER_RESOURCES_ROOT_PATH}/nix/common -Dcommon.mac.x64.dir=${IBUILDER_RESOURCES_ROOT_PATH}/osx/common -Dcommon.windows.x64.dir=${IBUILDER_RESOURCES_ROOT_PATH}/win/common -Dinstallbuilder.dir=${INSTALL_BUILDER_ROOT_DIR}
+          versionProperty :  pentaho.version
+          testable        :  false
