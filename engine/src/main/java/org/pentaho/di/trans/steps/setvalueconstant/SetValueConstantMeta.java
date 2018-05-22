@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,16 +22,16 @@
 
 package org.pentaho.di.trans.steps.setvalueconstant;
 
-import java.util.List;
-
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
+import org.pentaho.di.core.injection.Injection;
+import org.pentaho.di.core.injection.InjectionSupported;
 import org.pentaho.di.core.row.RowMetaInterface;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
@@ -48,20 +48,34 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Node;
 
+import java.util.List;
+
+@InjectionSupported( localizationPrefix = "SetValueConstant.Injection.", groups = { "FIELDS", "OPTIONS" } )
 public class SetValueConstantMeta extends BaseStepMeta implements StepMetaInterface {
   private static Class<?> PKG = SetValueConstantMeta.class; // for i18n purposes, needed by Translator2!!
 
-  /** which fields to display? */
+  /**
+   * which fields to display?
+   */
+  @Injection( name = "FIELD_NAME", group = "FIELDS" )
   private String[] fieldName;
 
-  /** by which value we replace */
+  /**
+   * by which value we replace
+   */
+  @Injection( name = "REPLACE_VALUE", group = "FIELDS" )
   private String[] replaceValue;
 
+  @Injection( name = "REPLACE_MASK", group = "FIELDS" )
   private String[] replaceMask;
 
-  /** Flag : set empty string **/
+  /**
+   * Flag : set empty string
+   **/
+  @Injection( name = "EMPTY_STRING", group = "FIELDS" )
   private boolean[] setEmptyString;
 
+  @Injection( name = "USE_VARIABLE", group = "OPTIONS" )
   private boolean usevar;
 
   public SetValueConstantMeta() {
