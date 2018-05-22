@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -469,6 +469,9 @@ public class BrowseController extends AbstractXulEventHandler implements IUISupp
       if ( newName != null ) {
         if ( selectedFolder == null ) {
           selectedFolder = repositoryDirectory;
+        }
+        if ( newName.equals( "." ) || newName.equals( ".." ) ) {
+          throw new Exception( BaseMessages.getString( PKG, "BrowserController.InvalidFolderName" ) );
         }
         //Do an explicit check here to see if the folder already exists in the ui
         //This is to prevent a double message being sent in case the folder does
