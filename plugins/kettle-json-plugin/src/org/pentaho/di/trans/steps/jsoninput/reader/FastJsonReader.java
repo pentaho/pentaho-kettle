@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2016-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -24,6 +24,7 @@ package org.pentaho.di.trans.steps.jsoninput.reader;
 
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
@@ -60,6 +61,7 @@ public class FastJsonReader implements IJsonReader {
   private Configuration jsonConfiguration;
 
   private boolean ignoreMissingPath;
+  private boolean defaultPathLeafToNull;
 
   private JsonInputField[] fields;
   private JsonPath[] paths = null;
@@ -70,14 +72,55 @@ public class FastJsonReader implements IJsonReader {
 
   protected FastJsonReader( LogChannelInterface log ) throws KettleException {
     this.ignoreMissingPath = false;
+    this.defaultPathLeafToNull = true;
     this.jsonConfiguration = Configuration.defaultConfiguration().addOptions( DEFAULT_OPTIONS );
     this.log = log;
   }
 
   public FastJsonReader( JsonInputField[] fields, LogChannelInterface log ) throws KettleException {
     this( log );
-    this.fields = fields;
-    this.paths = compilePaths( fields );
+    setFields( fields );
+  }
+
+  public FastJsonReader( JsonInputField[] fields, boolean defaultPathLeafToNull, LogChannelInterface log )
+    throws KettleException {
+    this( fields, log );
+    setDefaultPathLeafToNull( defaultPathLeafToNull );
+  }
+
+  private void setDefaultPathLeafToNull( boolean value ) {
+    if ( value != this.defaultPathLeafToNull ) {
+      this.defaultPathLeafToNull = value;
+      if ( !this.defaultPathLeafToNull ) {
+        this.jsonConfiguration = deleteOptionFromConfiguration( this.jsonConfiguration, Option.DEFAULT_PATH_LEAF_TO_NULL );
+      }
+    }
+  }
+
+  public boolean isDefaultPathLeafToNull() {
+    return defaultPathLeafToNull;
+  }
+
+  private Configuration deleteOptionFromConfiguration( Configuration config, Option option ) {
+    Configuration currentConf = config;
+    if ( currentConf != null ) {
+      EnumSet<Option> currentOptions = EnumSet.noneOf( Option.class );
+      currentOptions.addAll( currentConf.getOptions() );
+      if ( currentOptions.remove( option ) ) {
+        if ( log.isDebug() ) {
+          log.logDebug( BaseMessages.getString( PKG, "JsonReader.Debug.Configuration.Option.Delete", option ) );
+        }
+        currentConf = Configuration.defaultConfiguration().addOptions( currentOptions.toArray( new Option[currentOptions.size()] ) );
+      }
+    }
+    if ( log.isDebug() ) {
+      log.logDebug( BaseMessages.getString( PKG, "JsonReader.Debug.Configuration.Options", currentConf.getOptions() ) );
+    }
+    return currentConf;
+  }
+
+  Configuration getJsonConfiguration() {
+    return jsonConfiguration;
   }
 
   public void setIgnoreMissingPath( boolean value ) {

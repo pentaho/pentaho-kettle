@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -461,7 +461,7 @@ public class JsonInput extends BaseFileInputStep<JsonInputMeta, JsonInputData> i
   }
 
   private void createReader() throws KettleException {
-    data.reader = new FastJsonReader( meta.getInputFields(), log );
+    data.reader = new FastJsonReader( meta.getInputFields(), meta.isDefaultPathLeafToNull(), log );
     data.reader.setIgnoreMissingPath( meta.isIgnoreMissingPath() );
   }
 

@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -161,6 +161,11 @@ public class JsonInputDialog extends BaseStepDialog implements StepDialogInterfa
   private Label wlIgnoreMissingPath;
   private Button wIgnoreMissingPath;
   private FormData fdlIgnoreMissingPath, fdIgnoreMissingPath;
+
+  // default path leaf to null
+  private Label wlDefaultPathLeafToNull;
+  private Button wDefaultPathLeafToNull;
+  private FormData fdlDefaultPathLeafToNull, fdDefaultPathLeafToNull;
 
   // do not fail if no files?
   private Label wldoNotFailIfNoFile;
@@ -639,12 +644,35 @@ public class JsonInputDialog extends BaseStepDialog implements StepDialogInterfa
     fdIgnoreMissingPath.top = new FormAttachment( wdoNotFailIfNoFile, margin );
     wIgnoreMissingPath.setLayoutData( fdIgnoreMissingPath );
 
+    // default path leaf to null
+    wlDefaultPathLeafToNull = new Label( wConf, SWT.RIGHT );
+    wlDefaultPathLeafToNull.setText( BaseMessages.getString( PKG, "JsonInputDialog.DefaultPathLeafToNull.Label" ) );
+    props.setLook( wlDefaultPathLeafToNull );
+    fdlDefaultPathLeafToNull = new FormData();
+    fdlDefaultPathLeafToNull.left = new FormAttachment( 0, 0 );
+    fdlDefaultPathLeafToNull.top = new FormAttachment( wIgnoreMissingPath, margin );
+    fdlDefaultPathLeafToNull.right = new FormAttachment( middle, -margin );
+    wlDefaultPathLeafToNull.setLayoutData( fdlDefaultPathLeafToNull );
+    wDefaultPathLeafToNull = new Button( wConf, SWT.CHECK );
+    props.setLook( wDefaultPathLeafToNull );
+    wDefaultPathLeafToNull.addSelectionListener( new SelectionAdapter() {
+      public void widgetSelected( SelectionEvent e ) {
+        input.setChanged();
+      }
+    } );
+    wDefaultPathLeafToNull.setToolTipText( BaseMessages.getString( PKG, "JsonInputDialog.DefaultPathLeafToNull.Tooltip" ) );
+    fdDefaultPathLeafToNull = new FormData();
+    fdDefaultPathLeafToNull.left = new FormAttachment( middle, 0 );
+    fdDefaultPathLeafToNull.top = new FormAttachment( wIgnoreMissingPath, margin );
+    wDefaultPathLeafToNull.setLayoutData( fdDefaultPathLeafToNull );
+    // default path leaf to null - end
+
     wlLimit = new Label( wConf, SWT.RIGHT );
     wlLimit.setText( BaseMessages.getString( PKG, "JsonInputDialog.Limit.Label" ) );
     props.setLook( wlLimit );
     fdlLimit = new FormData();
     fdlLimit.left = new FormAttachment( 0, 0 );
-    fdlLimit.top = new FormAttachment( wIgnoreMissingPath, margin );
+    fdlLimit.top = new FormAttachment( wDefaultPathLeafToNull, margin );
     fdlLimit.right = new FormAttachment( middle, -margin );
     wlLimit.setLayoutData( fdlLimit );
     wLimit = new Text( wConf, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
@@ -652,7 +680,7 @@ public class JsonInputDialog extends BaseStepDialog implements StepDialogInterfa
     wLimit.addModifyListener( lsMod );
     fdLimit = new FormData();
     fdLimit.left = new FormAttachment( middle, 0 );
-    fdLimit.top = new FormAttachment( wIgnoreMissingPath, margin );
+    fdLimit.top = new FormAttachment( wDefaultPathLeafToNull, margin );
     fdLimit.right = new FormAttachment( 100, 0 );
     wLimit.setLayoutData( fdLimit );
 
@@ -1242,6 +1270,7 @@ public class JsonInputDialog extends BaseStepDialog implements StepDialogInterfa
     wIgnoreEmptyFile.setSelection( in.isIgnoreEmptyFile() );
     wdoNotFailIfNoFile.setSelection( in.isDoNotFailIfNoFile() );
     wIgnoreMissingPath.setSelection( in.isIgnoreMissingPath() );
+    wDefaultPathLeafToNull.setSelection( in.isDefaultPathLeafToNull() );
     wremoveSourceField.setSelection( in.isRemoveSourceField() );
     wSourceStreamField.setSelection( in.isInFields() );
     wSourceIsAFile.setSelection( in.getIsAFile() );
@@ -1383,6 +1412,7 @@ public class JsonInputDialog extends BaseStepDialog implements StepDialogInterfa
     in.setIgnoreEmptyFile( wIgnoreEmptyFile.getSelection() );
     in.setDoNotFailIfNoFile( wdoNotFailIfNoFile.getSelection() );
     in.setIgnoreMissingPath( wIgnoreMissingPath.getSelection() );
+    in.setDefaultPathLeafToNull( wDefaultPathLeafToNull.getSelection() );
     in.setRemoveSourceField( wremoveSourceField.getSelection() );
     in.setInFields( wSourceStreamField.getSelection() );
     in.setIsAFile( wSourceIsAFile.getSelection() );
