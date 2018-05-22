@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -27,6 +27,8 @@ import java.util.List;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.injection.Injection;
+import org.pentaho.di.core.injection.InjectionSupported;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
@@ -48,10 +50,14 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Node;
 
+@InjectionSupported( localizationPrefix = "SetValueField.Injection.", groups = { "FIELDS" } )
 public class SetValueFieldMeta extends BaseStepMeta implements StepMetaInterface {
   private static Class<?> PKG = SetValueFieldMeta.class; // for i18n purposes, needed by Translator2!!
 
+  @Injection( name = "FIELD_NAME", group = "FIELDS" )
   private String[] fieldName;
+
+  @Injection( name = "REPLACE_BY_FIELD_VALUE", group = "FIELDS" )
   private String[] replaceByFieldValue;
 
   public SetValueFieldMeta() {
