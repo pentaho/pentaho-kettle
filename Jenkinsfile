@@ -192,9 +192,11 @@ pipeline {
   }
 
   environment {
+    DEFAULT_BUILD_PROPERTIES = "${WORKSPACE}/resources/config/buildProperties.yaml"
+    BUILD_DATA_ROOT_PATH = "${WORKSPACE}/resources/builders"
     RESOLVE_REPO_MIRROR = "${params.MAVEN_RESOLVE_REPO_URL}"
     LIB_CACHE_ROOT_PATH = "${WORKSPACE}/caches"
-    BUILDS_ROOT_PATH = "${WORKSPACE}/builds"
+    BUILD_ROOT_PATH = "${WORKSPACE}/builds"
     MAVEN_HOME = tool('maven3-auto')
     PATH = "$MAVEN_HOME/bin:$PATH"
   }
@@ -245,7 +247,7 @@ pipeline {
     stage('Configure Pipeline') {
       steps {
         script {
-          mappedBuildData = doConfig("${WORKSPACE}/resources/builders/${params.BUILD_DATA_FILE}")
+          mappedBuildData = doConfig()
         }
       }
     }

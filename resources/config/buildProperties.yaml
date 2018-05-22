@@ -1,0 +1,48 @@
+# Defaults for properties available during build execution
+# These can be overriden in pipeline build data file or in the pipeline run parameters.
+#
+# Property priority resolution order:
+# 1. Jenkins Environment
+# 2. Build Properties Defaults (this file)
+# 3. Build Data File
+# 4. Pipeline Run Parameters
+
+JENKINS_ANT_FOR_BUILDS: ant-auto
+JENKINS_JDK_FOR_BUILDS: Java8_auto
+JENKINS_MAVEN_FOR_BUILDS: maven3-auto
+
+ANT_DEFAULT_COMMAND_OPTIONS: clean-all resolve dist
+ANT_TEST_TARGETS: test jacoco
+ANT_DEFAULT_DIRECTIVES: clean-all resolve publish
+MAVEN_DEFAULT_COMMAND_OPTIONS: -B -e -q
+MAVEN_OPTS: -Xms512m
+MAVEN_RESOLVE_REPO_URL: http://nexus.pentaho.org/content/groups/omni
+MAVEN_TEST_OPTS: -DsurefireArgLine=-Xmx1g
+MAVEN_DEFAULT_DIRECTIVES: clean install
+GRADLE_DEFAULT_DIRECTIVES: -q
+
+NOOP: false
+BUILD_RETRIES: 1
+BUILD_TIMEOUT: 360
+PARALLEL_CHECKOUT_CHUNKSIZE: 10
+PARALLEL_UNIT_TESTS_CHUNKSIZE: 10
+PUSH_CHANGES: false
+RUN_BUILDS: true
+RUN_CHECKOUTS: true
+RUN_UNIT_TESTS: true
+ARCHIVE_ARTIFACTS: true
+USE_DISTRIBUTED_SOURCE_CACHING: false
+
+SCM_HOST_ROOT: https://github.com
+PENTAHO_SCM_ROOT: https://github.com/pentaho
+WEBDETAILS_SCM_ROOT: https://github.com/webdetails
+DEFAULT_BRANCH: master
+
+CHECKOUT_CREDENTIALS_ID: github-buildguy
+CHECKOUT_DEPTH: 20
+CHECKOUT_TIMESTAMP: CURRENT_TIME
+
+CLEAN_ALL_CACHES: false
+CLEAN_BUILD_WORKSPACE: false
+CLEAN_CACHES_REGEX: .*-SNAPSHOT.*
+CLEAN_SCM_WORKSPACES: false
