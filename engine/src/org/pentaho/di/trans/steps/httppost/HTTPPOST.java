@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -24,7 +24,6 @@ package org.pentaho.di.trans.steps.httppost;
 
 
 
-import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStreamReader;
@@ -43,6 +42,7 @@ import org.apache.commons.httpclient.NameValuePair;
 import org.apache.commons.httpclient.UsernamePasswordCredentials;
 import org.apache.commons.httpclient.auth.AuthScope;
 import org.apache.commons.httpclient.methods.InputStreamRequestEntity;
+import org.apache.commons.httpclient.methods.ByteArrayRequestEntity;
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.httpclient.methods.StringRequestEntity;
 import org.json.simple.JSONObject;
@@ -198,7 +198,7 @@ public class HTTPPOST extends BaseStep implements StepInterface {
           } else {
             bytes = tmp.getBytes();
           }
-          post.setRequestEntity( new InputStreamRequestEntity( new ByteArrayInputStream( bytes ), bytes.length ) );
+          post.setRequestEntity( new ByteArrayRequestEntity( bytes ) );
         }
       }
 
