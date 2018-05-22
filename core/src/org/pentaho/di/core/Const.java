@@ -3,7 +3,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -1137,6 +1137,10 @@ public class Const {
    */
   public static final String VFS_USER_DIR_IS_ROOT = "vfs.sftp.userDirIsRoot";
 
+  /**
+   * A variable to configure Tab size"
+   */
+  public static final String KETTLE_MAX_TAB_LENGTH = "KETTLE_MAX_TAB_LENGTH";
   /**
    * rounds double f to any number of places after decimal point Does arithmetic using BigDecimal class to avoid integer
    * overflow while rounding

@@ -925,6 +925,9 @@ public class SpoonJobDelegate extends SpoonDelegate {
         JobGraph jobGraph = new JobGraph( spoon.tabfolder.getSwtTabset(), spoon, jobMeta );
 
         PropsUI props = PropsUI.getInstance();
+        if ( tabName.length() >= getMaxTabLength() ) {
+          tabName = new StringBuilder().append( tabName.substring( 0, getMaxTabLength() ) ).append( "\u2026" ).toString();
+        }
         TabItem tabItem = new TabItem( spoon.tabfolder, tabName, tabName, props.getSashWeights() );
         String toolTipText =
           BaseMessages.getString( PKG, "Spoon.TabJob.Tooltip", spoon.delegates.tabs.makeTabName(

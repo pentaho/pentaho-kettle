@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -185,6 +185,9 @@ public class SpoonTransformationDelegate extends SpoonDelegate {
       if ( addTab ) {
         transGraph = new TransGraph( spoon.tabfolder.getSwtTabset(), spoon, transMeta );
         PropsUI props = PropsUI.getInstance();
+        if ( tabName.length() >= getMaxTabLength() ) {
+          tabName = new StringBuilder().append( tabName.substring( 0, getMaxTabLength() ) ).append( "\u2026" ).toString();
+        }
         TabItem tabItem = new TabItem( spoon.tabfolder, tabName, tabName, props.getSashWeights() );
         String toolTipText =
             BaseMessages.getString( PKG, "Spoon.TabTrans.Tooltip", spoon.delegates.tabs.makeTabName( transMeta,
