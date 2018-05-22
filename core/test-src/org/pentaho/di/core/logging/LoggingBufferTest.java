@@ -1,7 +1,7 @@
 /*
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  * **************************************************************************
  *
@@ -142,5 +142,32 @@ public class LoggingBufferTest {
     while ( it.hasNext() ) {
       Assert.fail( "This should never be reached, as the LogBuffer is empty" );
     }
+  }
+
+  @Test
+  public void testRemoveChannelFromBuffer() {
+    String logChannelId = "1";
+    String otherLogChannelId = "2";
+    LoggingBuffer loggingBuffer = new LoggingBuffer( 20 );
+    for ( int i = 0; i < 10; i++ ) {
+      KettleLoggingEvent event = new KettleLoggingEvent();
+      event.setMessage( new LogMessage( "testWithLogChannelId", logChannelId, LogLevel.BASIC ) );
+      event.setTimeStamp( i );
+      loggingBuffer.addLogggingEvent( event );
+    }
+    for ( int i = 10; i < 17; i++ ) {
+      KettleLoggingEvent event = new KettleLoggingEvent();
+      event.setMessage( new LogMessage( "testWithNoLogChannelId",  LogLevel.BASIC ) );
+      event.setTimeStamp( i );
+      loggingBuffer.addLogggingEvent( event );
+    }
+    for ( int i = 17; i < 20; i++ ) {
+      KettleLoggingEvent event = new KettleLoggingEvent();
+      event.setMessage( new LogMessage( "testWithOtherLogChannelId", otherLogChannelId, LogLevel.BASIC ) );
+      event.setTimeStamp( i );
+      loggingBuffer.addLogggingEvent( event );
+    }
+    loggingBuffer.removeChannelFromBuffer( logChannelId );
+    Assert.assertEquals( 10, loggingBuffer.size() );
   }
 }
