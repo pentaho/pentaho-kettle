@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,16 +22,17 @@
 
 package org.pentaho.di.trans.steps.setvalueconstant;
 
-import java.util.List;
-
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
+import org.pentaho.di.core.injection.Injection;
+import org.pentaho.di.core.injection.InjectionDeep;
+import org.pentaho.di.core.injection.InjectionSupported;
 import org.pentaho.di.core.row.RowMetaInterface;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
@@ -48,20 +49,29 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Node;
 
+import java.util.ArrayList;
+import java.util.List;
+
+@InjectionSupported( localizationPrefix = "SetValueConstant.Injection.", groups = { "FIELDS", "OPTIONS" } )
 public class SetValueConstantMeta extends BaseStepMeta implements StepMetaInterface {
   private static Class<?> PKG = SetValueConstantMeta.class; // for i18n purposes, needed by Translator2!!
 
-  /** which fields to display? */
-  private String[] fieldName;
+  @InjectionDeep
+  private List<Field> fields = new ArrayList<>();
 
-  /** by which value we replace */
-  private String[] replaceValue;
+  public Field getField( int i ) {
+    return fields.get( i );
+  }
 
-  private String[] replaceMask;
+  public List<Field> getFields() {
+    return fields;
+  }
 
-  /** Flag : set empty string **/
-  private boolean[] setEmptyString;
+  public void setFields( List<Field> fields ) {
+    this.fields = fields;
+  }
 
+  @Injection( name = "USE_VARIABLE", group = "OPTIONS" )
   private boolean usevar;
 
   public SetValueConstantMeta() {
@@ -70,92 +80,6 @@ public class SetValueConstantMeta extends BaseStepMeta implements StepMetaInterf
 
   public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore ) throws KettleXMLException {
     readData( stepnode, databases );
-  }
-
-  public Object clone() {
-    SetValueConstantMeta retval = (SetValueConstantMeta) super.clone();
-
-    int nrfields = fieldName.length;
-    retval.allocate( nrfields );
-    System.arraycopy( fieldName, 0, retval.fieldName, 0, nrfields );
-    System.arraycopy( replaceValue, 0, retval.replaceValue, 0, nrfields );
-    System.arraycopy( replaceMask, 0, retval.replaceMask, 0, nrfields );
-    System.arraycopy( setEmptyString, 0, retval.setEmptyString, 0, nrfields );
-
-    return retval;
-  }
-
-  public void allocate( int nrfields ) {
-    fieldName = new String[nrfields];
-    replaceValue = new String[nrfields];
-    replaceMask = new String[nrfields];
-    setEmptyString = new boolean[nrfields];
-  }
-
-  /**
-   * @return Returns the fieldName.
-   */
-  public String[] getFieldName() {
-    return fieldName;
-  }
-
-  /**
-   * @param fieldName
-   *          The fieldName to set.
-   */
-  public void setFieldName( String[] fieldName ) {
-    this.fieldName = fieldName;
-  }
-
-  /**
-   * @return Returns the replaceValue.
-   */
-  public String[] getReplaceValue() {
-    return replaceValue;
-  }
-
-  /**
-   * @param fieldName
-   *          The replaceValue to set.
-   */
-  public void setReplaceValue( String[] replaceValue ) {
-    this.replaceValue = replaceValue;
-  }
-
-  /**
-   * @return Returns the replaceMask.
-   */
-  public String[] getReplaceMask() {
-    return replaceMask;
-  }
-
-  /**
-   * @param replaceMask
-   *          The replaceMask to set.
-   */
-  public void setReplaceMask( String[] replaceMask ) {
-    this.replaceMask = replaceMask;
-  }
-
-  /**
-   * @deprecated use {@link #isEmptyString()} instead
-   * @return the setEmptyString
-   */
-  @Deprecated
-  public boolean[] isSetEmptyString() {
-    return isEmptyString();
-  }
-
-  public boolean[] isEmptyString() {
-    return setEmptyString;
-  }
-
-  /**
-   * @param setEmptyString
-   *          the setEmptyString to set
-   */
-  public void setEmptyString( boolean[] setEmptyString ) {
-    this.setEmptyString = setEmptyString;
   }
 
   public void setUseVars( boolean usevar ) {
@@ -171,16 +95,18 @@ public class SetValueConstantMeta extends BaseStepMeta implements StepMetaInterf
       usevar = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "usevar" ) );
       Node fields = XMLHandler.getSubNode( stepnode, "fields" );
       int nrfields = XMLHandler.countNodes( fields, "field" );
-      allocate( nrfields );
-
+      List<Field> fieldList = new ArrayList<>();
       for ( int i = 0; i < nrfields; i++ ) {
         Node fnode = XMLHandler.getSubNodeByNr( fields, "field", i );
-        fieldName[i] = XMLHandler.getTagValue( fnode, "name" );
-        replaceValue[i] = XMLHandler.getTagValue( fnode, "value" );
-        replaceMask[i] = XMLHandler.getTagValue( fnode, "mask" );
+        Field field = new Field();
+        field.setFieldName( XMLHandler.getTagValue( fnode, "name" ) );
+        field.setReplaceValue( XMLHandler.getTagValue( fnode, "value" ) );
+        field.setReplaceMask( XMLHandler.getTagValue( fnode, "mask" ) );
         String emptyString = XMLHandler.getTagValue( fnode, "set_empty_string" );
-        setEmptyString[i] = !Utils.isEmpty( emptyString ) && "Y".equalsIgnoreCase( emptyString );
+        field.setEmptyString( !Utils.isEmpty( emptyString ) && "Y".equalsIgnoreCase( emptyString ) );
+        fieldList.add( field );
       }
+      setFields( fieldList );
     } catch ( Exception e ) {
       throw new KettleXMLException( "It was not possible to load the metadata for this step from XML", e );
     }
@@ -190,28 +116,20 @@ public class SetValueConstantMeta extends BaseStepMeta implements StepMetaInterf
     StringBuilder retval = new StringBuilder();
     retval.append( "   " + XMLHandler.addTagValue( "usevar", usevar ) );
     retval.append( "    <fields>" + Const.CR );
-    for ( int i = 0; i < fieldName.length; i++ ) {
+    fields.forEach( field -> {
       retval.append( "      <field>" + Const.CR );
-      retval.append( "        " + XMLHandler.addTagValue( "name", fieldName[i] ) );
-      retval.append( "        " + XMLHandler.addTagValue( "value", replaceValue[i] ) );
-      retval.append( "        " + XMLHandler.addTagValue( "mask", replaceMask[i] ) );
-      retval.append( "        " + XMLHandler.addTagValue( "set_empty_string", setEmptyString[i] ) );
+      retval.append( "        " + XMLHandler.addTagValue( "name", field.getFieldName() ) );
+      retval.append( "        " + XMLHandler.addTagValue( "value", field.getReplaceValue() ) );
+      retval.append( "        " + XMLHandler.addTagValue( "mask", field.getReplaceMask() ) );
+      retval.append( "        " + XMLHandler.addTagValue( "set_empty_string", field.isEmptyString() ) );
       retval.append( "        </field>" + Const.CR );
-    }
+    } );
     retval.append( "      </fields>" + Const.CR );
 
     return retval.toString();
   }
 
   public void setDefault() {
-    int nrfields = 0;
-    allocate( nrfields );
-    for ( int i = 0; i < nrfields; i++ ) {
-      fieldName[i] = "field" + i;
-      replaceValue[i] = "value" + i;
-      replaceMask[i] = "mask" + i;
-      setEmptyString[i] = false;
-    }
     usevar = false;
   }
 
@@ -219,14 +137,16 @@ public class SetValueConstantMeta extends BaseStepMeta implements StepMetaInterf
     try {
       usevar = rep.getStepAttributeBoolean( id_step, "usevar" );
       int nrfields = rep.countNrStepAttributes( id_step, "field_name" );
-      allocate( nrfields );
-
+      List<Field> fieldList = new ArrayList<>();
       for ( int i = 0; i < nrfields; i++ ) {
-        fieldName[i] = rep.getStepAttributeString( id_step, i, "field_name" );
-        replaceValue[i] = rep.getStepAttributeString( id_step, i, "replace_value" );
-        replaceMask[i] = rep.getStepAttributeString( id_step, i, "replace_mask" );
-        setEmptyString[i] = rep.getStepAttributeBoolean( id_step, i, "set_empty_string", false );
+        Field field = new Field();
+        field.setFieldName( rep.getStepAttributeString( id_step, i, "field_name" ) );
+        field.setReplaceValue( rep.getStepAttributeString( id_step, i, "replace_value" ) );
+        field.setReplaceMask( rep.getStepAttributeString( id_step, i, "replace_mask" ) );
+        field.setEmptyString( rep.getStepAttributeBoolean( id_step, i, "set_empty_string", false ) );
+        fieldList.add( field );
       }
+      setFields( fieldList );
     } catch ( Exception e ) {
       throw new KettleException( "Unexpected error reading step information from the repository", e );
     }
@@ -235,11 +155,12 @@ public class SetValueConstantMeta extends BaseStepMeta implements StepMetaInterf
   public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step ) throws KettleException {
     try {
       rep.saveStepAttribute( id_transformation, id_step, "usevar", usevar );
-      for ( int i = 0; i < fieldName.length; i++ ) {
-        rep.saveStepAttribute( id_transformation, id_step, i, "field_name", fieldName[i] );
-        rep.saveStepAttribute( id_transformation, id_step, i, "replace_value", replaceValue[i] );
-        rep.saveStepAttribute( id_transformation, id_step, i, "replace_mask", replaceMask[i] );
-        rep.saveStepAttribute( id_transformation, id_step, i, "set_empty_string", setEmptyString[i] );
+      for ( int i = 0; i < fields.size(); i++ ) {
+        Field field = fields.get( i );
+        rep.saveStepAttribute( id_transformation, id_step, i, "field_name", field.getFieldName() );
+        rep.saveStepAttribute( id_transformation, id_step, i, "replace_value", field.getReplaceValue() );
+        rep.saveStepAttribute( id_transformation, id_step, i, "replace_mask", field.getReplaceMask() );
+        rep.saveStepAttribute( id_transformation, id_step, i, "set_empty_string", field.isEmptyString() );
       }
     } catch ( Exception e ) {
       throw new KettleException( "Unable to save step information to the repository for id_step=" + id_step, e );
@@ -265,10 +186,10 @@ public class SetValueConstantMeta extends BaseStepMeta implements StepMetaInterf
       boolean error_found = false;
 
       // Starting from selected fields in ...
-      for ( int i = 0; i < fieldName.length; i++ ) {
-        int idx = prev.indexOfValue( fieldName[i] );
+      for ( int i = 0; i < fields.size(); i++ ) {
+        int idx = prev.indexOfValue( fields.get( i ).getFieldName() );
         if ( idx < 0 ) {
-          error_message += "\t\t" + fieldName[i] + Const.CR;
+          error_message += "\t\t" + fields.get( i ).getFieldName() + Const.CR;
           error_found = true;
         }
       }
@@ -279,14 +200,14 @@ public class SetValueConstantMeta extends BaseStepMeta implements StepMetaInterf
         cr = new CheckResult( CheckResult.TYPE_RESULT_ERROR, error_message, stepMeta );
         remarks.add( cr );
       } else {
-        if ( fieldName.length > 0 ) {
-          cr =
-            new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
-              PKG, "SetValueConstantMeta.CheckResult.AllFieldsFound" ), stepMeta );
-        } else {
+        if ( Utils.isEmpty( fields ) ) {
           cr =
             new CheckResult( CheckResult.TYPE_RESULT_WARNING, BaseMessages.getString(
               PKG, "SetValueConstantMeta.CheckResult.NoFieldsEntered" ), stepMeta );
+        } else {
+          cr =
+            new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
+              PKG, "SetValueConstantMeta.CheckResult.AllFieldsFound" ), stepMeta );
         }
         remarks.add( cr );
       }
@@ -317,5 +238,60 @@ public class SetValueConstantMeta extends BaseStepMeta implements StepMetaInterf
 
   public boolean supportsErrorHandling() {
     return true;
+  }
+
+  public static class Field {
+
+    @Injection( name = "FIELD_NAME", group = "FIELDS" )
+    private String fieldName;
+
+    @Injection( name = "REPLACE_VALUE", group = "FIELDS" )
+    private String replaceValue;
+
+    @Injection( name = "REPLACE_MASK", group = "FIELDS" )
+    private String replaceMask;
+
+    @Injection( name = "EMPTY_STRING", group = "FIELDS" )
+    private boolean setEmptyString;
+
+    public String getFieldName() {
+      return fieldName;
+    }
+
+    public void setFieldName( String fieldName ) {
+      this.fieldName = fieldName;
+    }
+
+    public String getReplaceValue() {
+      return replaceValue;
+    }
+
+    public void setReplaceValue( String replaceValue ) {
+      this.replaceValue = replaceValue;
+    }
+
+    public String getReplaceMask() {
+      return replaceMask;
+    }
+
+    public void setReplaceMask( String replaceMask ) {
+      this.replaceMask = replaceMask;
+    }
+
+    public boolean isEmptyString() {
+      return setEmptyString;
+    }
+
+    public void setEmptyString( boolean setEmptyString ) {
+      this.setEmptyString = setEmptyString;
+    }
+
+    @Override
+    public boolean equals( Object obj ) {
+      return fieldName.equals( ((Field) obj).getFieldName() )
+              && replaceValue.equals( ((Field) obj).getReplaceValue() )
+              && replaceMask.equals( ((Field) obj).getReplaceMask() )
+              && setEmptyString == ((Field) obj).isEmptyString();
+    }
   }
 }
