@@ -39,7 +39,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.commons.vfs2.FileName;
@@ -166,10 +165,6 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
 
   private Date startDate, endDate, currentDate, logDate, depDate;
 
-  private AtomicBoolean active;
-
-  private AtomicBoolean stopped;
-
   private long batchId;
 
   /**
@@ -189,8 +184,6 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
    */
   private Result result;
 
-  private AtomicBoolean initialized;
-
   private boolean interactive;
 
   private List<JobListener> jobListeners;
@@ -207,8 +200,6 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
    * Parameters of the job.
    */
   private NamedParams namedParams = new NamedParamsDefault();
-
-  private AtomicBoolean finished;
 
   private SocketRepository socketRepository;
 
@@ -227,6 +218,27 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
 
   /** The command line arguments for the job. */
   protected String[] arguments;
+
+  /** Int value for storage job statuses */
+  private AtomicInteger status;
+
+  /**
+   * <p>
+   * This enum stores bit masks which are used to manipulate with statuses over field {@link Job#status}
+   */
+
+  enum BitMaskStatus {
+    ACTIVE( 1 ), INITIALIZED( 2 ), STOPPED( 4 ), FINISHED( 8 );
+
+    private final int mask;
+    // the sum of status masks
+    public static final int BIT_STATUS_SUM = 63;
+
+    BitMaskStatus( int mask ) {
+      this.mask = mask;
+    }
+  }
+
 
   /**
    * Instantiates a new job.
@@ -257,6 +269,8 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
    * Initializes the Job.
    */
   public void init() {
+    status = new AtomicInteger();
+
     jobListeners = new ArrayList<JobListener>();
     jobEntryListeners = new ArrayList<JobEntryListener>();
     delegationListeners = new ArrayList<DelegationListener>();
@@ -266,14 +280,11 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
 
     extensionDataMap = new HashMap<String, Object>();
 
-    active = new AtomicBoolean( false );
-    stopped = new AtomicBoolean( false );
     jobTracker = new JobTracker( jobMeta );
     synchronized ( jobEntryResults ) {
       jobEntryResults.clear();
     }
-    initialized = new AtomicBoolean( false );
-    finished = new AtomicBoolean( false );
+
     errors = new AtomicInteger( 0 );
     batchId = -1;
     passedBatchId = -1;
@@ -415,9 +426,9 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
     ExecutorService heartbeat = null; // this job's heartbeat scheduled executor
 
     try {
-      stopped = new AtomicBoolean( false );
-      finished = new AtomicBoolean( false );
-      initialized = new AtomicBoolean( true );
+      setStopped( false );
+      setFinished( false );
+      setInitialized( true );
 
       // Create a new variable name space as we want jobs to have their own set of variables.
       // initialize from parentJob or null
@@ -448,9 +459,9 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
 
       emergencyWriteJobTracker( result );
 
-      active.set( false );
-      finished.set( true );
-      stopped.set( false );
+      setActive( false );
+      setFinished( true );
+      setStopped( false );
     } finally {
       try {
 
@@ -494,8 +505,8 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
     try {
       log.snap( Metrics.METRIC_JOB_START );
 
-      finished.set( false );
-      stopped.set( false );
+      setFinished( false );
+      setStopped( false );
       KettleEnvironment.setExecutionInformation( this, rep );
 
       log.logMinimal( BaseMessages.getString( PKG, "Job.Comment.JobStarted" ) );
@@ -508,7 +519,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
               .getString( PKG, "Job.Reason.Started" ), null, 0, null );
       jobTracker.addJobTracker( new JobTracker( jobMeta, jerStart ) );
 
-      active.set( true );
+      setActive( true );
 
       // Where do we start?
       JobEntryCopy startpoint;
@@ -570,8 +581,8 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
       jobTracker.addJobTracker( new JobTracker( jobMeta, jerEnd ) );
       log.logMinimal( BaseMessages.getString( PKG, "Job.Comment.JobFinished" ) );
 
-      active.set( false );
-      finished.set( true );
+      setActive( false );
+      setFinished( true );
 
       return res;
     } finally {
@@ -592,9 +603,9 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
    * @throws KettleJobException
    */
   public Result execute( int nr, Result result ) throws KettleException {
-    finished.set( false );
-    active.set( true );
-    initialized.set( true );
+    setFinished( false );
+    setActive( true );
+    setInitialized( true );
     KettleEnvironment.setExecutionInformation( this, rep );
 
     // Where do we start?
@@ -612,7 +623,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
 
     Result res = execute( nr, result, startpoint, null, BaseMessages.getString( PKG, "Job.Reason.StartOfJobentry" ) );
 
-    active.set( false );
+    setActive( false );
 
     return res;
   }
@@ -659,7 +670,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
       String reason ) throws KettleException {
     Result res = null;
 
-    if ( stopped.get() ) {
+    if ( isStopped() ) {
       res = new Result( nr );
       res.stopped = true;
       return res;
@@ -1304,20 +1315,41 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
     return new Database( this, databaseMeta );
   }
 
+  public boolean isInitialized() {
+    int exist = status.get() & BitMaskStatus.INITIALIZED.mask;
+    return exist != 0;
+  }
+
+  protected void setInitialized( boolean initialized ) {
+    status.updateAndGet( v -> initialized ? v | BitMaskStatus.INITIALIZED.mask : ( BitMaskStatus.BIT_STATUS_SUM
+      ^ BitMaskStatus.INITIALIZED.mask ) & v );
+  }
+
   /**
    * Checks if is active.
    *
    * @return true, if is active
    */
   public boolean isActive() {
-    return active.get();
+    int exist = status.get() & BitMaskStatus.ACTIVE.mask;
+    return exist != 0;
+  }
+
+  protected void setActive( boolean active ) {
+    status.updateAndGet( v -> active ? v | BitMaskStatus.ACTIVE.mask : ( BitMaskStatus.BIT_STATUS_SUM
+      ^ BitMaskStatus.ACTIVE.mask ) & v );
+  }
+
+  public boolean isStopped() {
+    int exist = status.get() & BitMaskStatus.STOPPED.mask;
+    return exist != 0;
   }
 
   /**
    * Stop all activity by setting the stopped property to true.
    */
   public void stopAll() {
-    stopped.set( true );
+    setStopped( true );
   }
 
   /**
@@ -1327,16 +1359,18 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
    *          the new stopped
    */
   public void setStopped( boolean stopped ) {
-    this.stopped.set( stopped );
+    status.updateAndGet( v -> stopped ? v | BitMaskStatus.STOPPED.mask : ( BitMaskStatus.BIT_STATUS_SUM
+      ^ BitMaskStatus.STOPPED.mask ) & v );
   }
 
-  /**
-   * Gets the stopped status of this Job.
-   *
-   * @return Returns the stopped status of this Job
-   */
-  public boolean isStopped() {
-    return stopped.get();
+  public boolean isFinished() {
+    int exist = status.get() & BitMaskStatus.FINISHED.mask;
+    return exist != 0;
+  }
+
+  public void setFinished( boolean finished ) {
+    status.updateAndGet( v -> finished ? v | BitMaskStatus.FINISHED.mask : ( BitMaskStatus.BIT_STATUS_SUM
+      ^ BitMaskStatus.FINISHED.mask ) & v );
   }
 
   /**
@@ -1488,15 +1522,6 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
    */
   public void setResult( Result result ) {
     this.result = result;
-  }
-
-  /**
-   * Gets the boolean value of initialized.
-   *
-   * @return Returns the initialized
-   */
-  public boolean isInitialized() {
-    return initialized.get();
   }
 
   /**
@@ -1732,25 +1757,24 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
   public String getStatus() {
     String message;
 
-    if ( !initialized.get() ) {
-      message = Trans.STRING_WAITING;
-    } else {
-      if ( active.get() ) {
-        if ( stopped.get() ) {
-          message = Trans.STRING_HALTING;
-        } else {
-          message = Trans.STRING_RUNNING;
-        }
+    if ( isActive() ) {
+      if ( isStopped() ) {
+        message = Trans.STRING_HALTING;
       } else {
-        if ( stopped.get() ) {
-          message = Trans.STRING_STOPPED;
-        } else {
-          message = Trans.STRING_FINISHED;
-        }
-        if ( result != null && result.getNrErrors() > 0 ) {
-          message += " (with errors)";
-        }
+        message = Trans.STRING_RUNNING;
       }
+    } else if ( isFinished() ) {
+      message = Trans.STRING_FINISHED;
+      if ( getResult().getNrErrors() > 0 ) {
+        message += " (with errors)";
+      }
+    } else if ( isStopped() ) {
+      message = Trans.STRING_STOPPED;
+      if ( getResult().getNrErrors() > 0 ) {
+        message += " (with errors)";
+      }
+    } else {
+      message = Trans.STRING_WAITING;
     }
 
     return message;
@@ -1909,25 +1933,6 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
     synchronized ( jobListeners ) {
       return new ArrayList<JobListener>( jobListeners );
     }
-  }
-
-  /**
-   * Gets the boolean value of finished.
-   *
-   * @return the finished
-   */
-  public boolean isFinished() {
-    return finished.get();
-  }
-
-  /**
-   * Sets the value of finished.
-   *
-   * @param finished
-   *          the finished to set
-   */
-  public void setFinished( boolean finished ) {
-    this.finished.set( finished );
   }
 
   /*
