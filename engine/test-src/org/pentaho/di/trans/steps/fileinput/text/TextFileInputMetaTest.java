@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -28,8 +28,12 @@ import org.junit.Test;
 import org.pentaho.di.core.util.StringUtil;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.resource.ResourceNamingInterface;
+import org.pentaho.di.trans.TransMeta;
+import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.steps.fileinput.BaseFileInputStepMeta;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.verify;
@@ -48,6 +52,7 @@ public class TextFileInputMetaTest {
 
   @Before
   public void setUp() throws Exception {
+
     inputMeta = new TextFileInputMeta();
     inputMeta = spy( inputMeta );
     variableSpace = mock( VariableSpace.class );
@@ -70,6 +75,38 @@ public class TextFileInputMetaTest {
     verify( inputMeta ).getFileObject( FILE_NAME_VALID_PATH, variableSpace );
     verify( inputMeta, never() ).getFileObject( FILE_NAME_NULL, variableSpace );
     verify( inputMeta, never() ).getFileObject( FILE_NAME_EMPTY, variableSpace );
+  }
+
+  @Test
+  public void testGetXmlWorksIfWeUpdateOnlyPartOfInputFilesInformation() throws Exception {
+    inputMeta.inputFiles = new BaseFileInputStepMeta.InputFiles<>();
+    inputMeta.inputFiles.fileName = new String[] { FILE_NAME_VALID_PATH };
+
+    inputMeta.getXML();
+
+    assertEquals( inputMeta.inputFiles.fileName.length, inputMeta.inputFiles.fileMask.length );
+    assertEquals( inputMeta.inputFiles.fileName.length, inputMeta.inputFiles.excludeFileMask.length );
+    assertEquals( inputMeta.inputFiles.fileName.length, inputMeta.inputFiles.fileRequired.length );
+    assertEquals( inputMeta.inputFiles.fileName.length, inputMeta.inputFiles.includeSubFolders.length );
+  }
+
+  @Test
+  public void testClonelWorksIfWeUpdateOnlyPartOfInputFilesInformation() throws Exception {
+    inputMeta.inputFiles = new BaseFileInputStepMeta.InputFiles<>();
+    inputMeta.inputFiles.fileName = new String[] { FILE_NAME_VALID_PATH };
+
+    TextFileInputMeta cloned = (TextFileInputMeta) inputMeta.clone();
+
+    //since the equals was not override it should be other object
+    assertNotEquals( inputMeta, cloned );
+    assertEquals( cloned.inputFiles.fileName.length, inputMeta.inputFiles.fileName.length );
+    assertEquals( cloned.inputFiles.fileMask.length, inputMeta.inputFiles.fileMask.length );
+    assertEquals( cloned.inputFiles.excludeFileMask.length, inputMeta.inputFiles.excludeFileMask.length );
+    assertEquals( cloned.inputFiles.fileRequired.length, inputMeta.inputFiles.fileRequired.length );
+    assertEquals( cloned.inputFiles.includeSubFolders.length, inputMeta.inputFiles.includeSubFolders.length );
+
+    assertEquals( cloned.inputFields.length, inputMeta.inputFields.length );
+    assertEquals( cloned.getFilter().length, inputMeta.getFilter().length );
   }
 
 }
