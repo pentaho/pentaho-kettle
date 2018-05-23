@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,7 +22,12 @@
 
 package org.pentaho.di.trans.steps.excelinput.staxpoi;
 
+import org.apache.poi.ss.SpreadsheetVersion;
+
 public class StaxUtil {
+  private static final SpreadsheetVersion DEFAULT_SPREADSHEET_VERSION = SpreadsheetVersion.EXCEL2007;
+  public static final int MAX_ROWS = DEFAULT_SPREADSHEET_VERSION.getMaxRows();
+  public static final int MAX_COLUMNS = DEFAULT_SPREADSHEET_VERSION.getMaxColumns();
 
   public static int extractRowNumber( String position ) {
     int startIndex = 0;
@@ -57,4 +62,5 @@ public class StaxUtil {
 
     return col;
   }
+
 }
