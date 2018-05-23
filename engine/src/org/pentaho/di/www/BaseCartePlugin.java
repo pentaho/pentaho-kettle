@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -122,7 +122,15 @@ public abstract class BaseCartePlugin extends BaseHttpServlet implements CartePl
     }
 
     @Override public CarteResponse respond( int status ) {
-      resp.setStatus( status );
+      if ( status >= 400 ) {
+        try {
+          resp.sendError( status );
+        } catch ( IOException e ) {
+          resp.setStatus( status );
+        }
+      } else {
+        resp.setStatus( status );
+      }
 
       return new CarteResponse() {
         @Override public void with( String contentType, WriterResponse response ) throws IOException {

@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -164,7 +164,7 @@ public class NextSequenceValueServlet extends BaseHttpServlet implements CartePl
         slaveSequence = getTransformationMap().createSlaveSequence( name );
       }
       if ( slaveSequence == null ) {
-        response.setStatus( HttpServletResponse.SC_NOT_FOUND );
+        response.sendError( HttpServletResponse.SC_NOT_FOUND );
         out.println( XMLHandler.addTagValue( XML_TAG_ERROR, "Slave sequence '" + name + "' could not be found." ) );
       } else {
         LoggingObjectInterface loggingObject = new SimpleLoggingObject( "Carte", LoggingObjectType.CARTE, null );
@@ -174,7 +174,7 @@ public class NextSequenceValueServlet extends BaseHttpServlet implements CartePl
       }
 
     } catch ( Exception e ) {
-      response.setStatus( HttpServletResponse.SC_NOT_FOUND );
+      response.sendError( HttpServletResponse.SC_NOT_FOUND );
       out.println( XMLHandler.addTagValue( XML_TAG_ERROR, "Error retrieving next value from slave sequence: "
         + Const.getStackTracker( e ) ) );
     }

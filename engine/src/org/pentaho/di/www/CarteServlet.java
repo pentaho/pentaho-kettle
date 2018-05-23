@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -82,7 +82,7 @@ public class CarteServlet extends HttpServlet {
       if ( log.isDebug() ) {
         log.logDebug( "Unable to find CartePlugin for key: /kettle" + req.getPathInfo() );
       }
-      resp.setStatus( 404 );
+      resp.sendError( 404 );
     }
   }
 
