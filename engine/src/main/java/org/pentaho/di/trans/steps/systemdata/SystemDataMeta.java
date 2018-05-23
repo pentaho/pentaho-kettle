@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -35,6 +35,8 @@ import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleXMLException;
+import org.pentaho.di.core.injection.Injection;
+import org.pentaho.di.core.injection.InjectionSupported;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.row.value.ValueMetaBoolean;
@@ -61,10 +63,14 @@ import org.w3c.dom.Node;
  * Created on 05-aug-2003
  *
  */
-
+@InjectionSupported( localizationPrefix = "SystemDataMeta.Injection." )
 public class SystemDataMeta extends BaseStepMeta implements StepMetaInterface {
   private static Class<?> PKG = SystemDataMeta.class; // for i18n purposes, needed by Translator2!!
+
+  @Injection( name = "FIELD_NAME" )
   private String[] fieldName;
+
+  @Injection( name = "FIELD_TYPE" )
   private SystemDataTypes[] fieldType;
 
   public SystemDataMeta() {
@@ -138,27 +144,11 @@ public class SystemDataMeta extends BaseStepMeta implements StepMetaInterface {
 
         fieldName[i] = XMLHandler.getTagValue( fnode, "name" );
         type = XMLHandler.getTagValue( fnode, "type" );
-        fieldType[i] = getType( type );
+        fieldType[i] = SystemDataTypes.getTypeFromString( type );
       }
     } catch ( Exception e ) {
       throw new KettleXMLException( "Unable to read step information from XML", e );
     }
-  }
-
-  public static final SystemDataTypes getType( String type ) {
-    for ( SystemDataTypes systemType : SystemDataTypes.values() ) {
-      if ( systemType.getCode().equalsIgnoreCase( type ) ) {
-        return systemType;
-      }
-      if ( systemType.getDescription().equalsIgnoreCase( type ) ) {
-        return systemType;
-      }
-    }
-    return SystemDataTypes.TYPE_SYSTEM_INFO_NONE;
-  }
-
-  public static final String getTypeDesc( SystemDataTypes t ) {
-    return t.getDescription();
   }
 
   @Override
@@ -169,7 +159,7 @@ public class SystemDataMeta extends BaseStepMeta implements StepMetaInterface {
 
     for ( int i = 0; i < count; i++ ) {
       fieldName[i] = "field" + i;
-      fieldType[i] = SystemDataTypes.TYPE_SYSTEM_INFO_SYSTEM_DATE;
+      fieldType[i] = SystemDataTypes.SYSTEM_DATE;
     }
   }
 
@@ -180,108 +170,108 @@ public class SystemDataMeta extends BaseStepMeta implements StepMetaInterface {
       ValueMetaInterface v;
 
       switch ( fieldType[i] ) {
-        case TYPE_SYSTEM_INFO_SYSTEM_START: // All date values...
-        case TYPE_SYSTEM_INFO_SYSTEM_DATE:
-        case TYPE_SYSTEM_INFO_TRANS_DATE_FROM:
-        case TYPE_SYSTEM_INFO_TRANS_DATE_TO:
-        case TYPE_SYSTEM_INFO_JOB_DATE_FROM:
-        case TYPE_SYSTEM_INFO_JOB_DATE_TO:
-        case TYPE_SYSTEM_INFO_PREV_DAY_START:
-        case TYPE_SYSTEM_INFO_PREV_DAY_END:
-        case TYPE_SYSTEM_INFO_THIS_DAY_START:
-        case TYPE_SYSTEM_INFO_THIS_DAY_END:
-        case TYPE_SYSTEM_INFO_NEXT_DAY_START:
-        case TYPE_SYSTEM_INFO_NEXT_DAY_END:
-        case TYPE_SYSTEM_INFO_PREV_MONTH_START:
-        case TYPE_SYSTEM_INFO_PREV_MONTH_END:
-        case TYPE_SYSTEM_INFO_THIS_MONTH_START:
-        case TYPE_SYSTEM_INFO_THIS_MONTH_END:
-        case TYPE_SYSTEM_INFO_NEXT_MONTH_START:
-        case TYPE_SYSTEM_INFO_NEXT_MONTH_END:
-        case TYPE_SYSTEM_INFO_MODIFIED_DATE:
-        case TYPE_SYSTEM_INFO_KETTLE_BUILD_DATE:
-        case TYPE_SYSTEM_INFO_PREV_WEEK_START:
-        case TYPE_SYSTEM_INFO_PREV_WEEK_END:
-        case TYPE_SYSTEM_INFO_PREV_WEEK_OPEN_END:
-        case TYPE_SYSTEM_INFO_PREV_WEEK_START_US:
-        case TYPE_SYSTEM_INFO_PREV_WEEK_END_US:
-        case TYPE_SYSTEM_INFO_THIS_WEEK_START:
-        case TYPE_SYSTEM_INFO_THIS_WEEK_END:
-        case TYPE_SYSTEM_INFO_THIS_WEEK_OPEN_END:
-        case TYPE_SYSTEM_INFO_THIS_WEEK_START_US:
-        case TYPE_SYSTEM_INFO_THIS_WEEK_END_US:
-        case TYPE_SYSTEM_INFO_NEXT_WEEK_START:
-        case TYPE_SYSTEM_INFO_NEXT_WEEK_END:
-        case TYPE_SYSTEM_INFO_NEXT_WEEK_OPEN_END:
-        case TYPE_SYSTEM_INFO_NEXT_WEEK_START_US:
-        case TYPE_SYSTEM_INFO_NEXT_WEEK_END_US:
-        case TYPE_SYSTEM_INFO_PREV_QUARTER_START:
-        case TYPE_SYSTEM_INFO_PREV_QUARTER_END:
-        case TYPE_SYSTEM_INFO_THIS_QUARTER_START:
-        case TYPE_SYSTEM_INFO_THIS_QUARTER_END:
-        case TYPE_SYSTEM_INFO_NEXT_QUARTER_START:
-        case TYPE_SYSTEM_INFO_NEXT_QUARTER_END:
-        case TYPE_SYSTEM_INFO_PREV_YEAR_START:
-        case TYPE_SYSTEM_INFO_PREV_YEAR_END:
-        case TYPE_SYSTEM_INFO_THIS_YEAR_START:
-        case TYPE_SYSTEM_INFO_THIS_YEAR_END:
-        case TYPE_SYSTEM_INFO_NEXT_YEAR_START:
-        case TYPE_SYSTEM_INFO_NEXT_YEAR_END:
+        case SYSTEM_START: // All date values...
+        case SYSTEM_DATE:
+        case TRANS_DATE_FROM:
+        case TRANS_DATE_TO:
+        case JOB_DATE_FROM:
+        case JOB_DATE_TO:
+        case PREV_DAY_START:
+        case PREV_DAY_END:
+        case THIS_DAY_START:
+        case THIS_DAY_END:
+        case NEXT_DAY_START:
+        case NEXT_DAY_END:
+        case PREV_MONTH_START:
+        case PREV_MONTH_END:
+        case THIS_MONTH_START:
+        case THIS_MONTH_END:
+        case NEXT_MONTH_START:
+        case NEXT_MONTH_END:
+        case MODIFIED_DATE:
+        case KETTLE_BUILD_DATE:
+        case PREV_WEEK_START:
+        case PREV_WEEK_END:
+        case PREV_WEEK_OPEN_END:
+        case PREV_WEEK_START_US:
+        case PREV_WEEK_END_US:
+        case THIS_WEEK_START:
+        case THIS_WEEK_END:
+        case THIS_WEEK_OPEN_END:
+        case THIS_WEEK_START_US:
+        case THIS_WEEK_END_US:
+        case NEXT_WEEK_START:
+        case NEXT_WEEK_END:
+        case NEXT_WEEK_OPEN_END:
+        case NEXT_WEEK_START_US:
+        case NEXT_WEEK_END_US:
+        case PREV_QUARTER_START:
+        case PREV_QUARTER_END:
+        case THIS_QUARTER_START:
+        case THIS_QUARTER_END:
+        case NEXT_QUARTER_START:
+        case NEXT_QUARTER_END:
+        case PREV_YEAR_START:
+        case PREV_YEAR_END:
+        case THIS_YEAR_START:
+        case THIS_YEAR_END:
+        case NEXT_YEAR_START:
+        case NEXT_YEAR_END:
           v = new ValueMetaDate( fieldName[i] );
           break;
-        case TYPE_SYSTEM_INFO_TRANS_NAME:
-        case TYPE_SYSTEM_INFO_FILENAME:
-        case TYPE_SYSTEM_INFO_ARGUMENT_01:
-        case TYPE_SYSTEM_INFO_ARGUMENT_02:
-        case TYPE_SYSTEM_INFO_ARGUMENT_03:
-        case TYPE_SYSTEM_INFO_ARGUMENT_04:
-        case TYPE_SYSTEM_INFO_ARGUMENT_05:
-        case TYPE_SYSTEM_INFO_ARGUMENT_06:
-        case TYPE_SYSTEM_INFO_ARGUMENT_07:
-        case TYPE_SYSTEM_INFO_ARGUMENT_08:
-        case TYPE_SYSTEM_INFO_ARGUMENT_09:
-        case TYPE_SYSTEM_INFO_ARGUMENT_10:
-        case TYPE_SYSTEM_INFO_MODIFIED_USER:
-        case TYPE_SYSTEM_INFO_HOSTNAME:
-        case TYPE_SYSTEM_INFO_HOSTNAME_REAL:
-        case TYPE_SYSTEM_INFO_IP_ADDRESS:
-        case TYPE_SYSTEM_INFO_KETTLE_VERSION:
-        case TYPE_SYSTEM_INFO_KETTLE_BUILD_VERSION:
-        case TYPE_SYSTEM_INFO_PREVIOUS_RESULT_LOG_TEXT:
+        case TRANS_NAME:
+        case FILENAME:
+        case ARGUMENT_01:
+        case ARGUMENT_02:
+        case ARGUMENT_03:
+        case ARGUMENT_04:
+        case ARGUMENT_05:
+        case ARGUMENT_06:
+        case ARGUMENT_07:
+        case ARGUMENT_08:
+        case ARGUMENT_09:
+        case ARGUMENT_10:
+        case MODIFIED_USER:
+        case HOSTNAME:
+        case HOSTNAME_REAL:
+        case IP_ADDRESS:
+        case KETTLE_VERSION:
+        case KETTLE_BUILD_VERSION:
+        case PREVIOUS_RESULT_LOG_TEXT:
           v = new ValueMetaString( fieldName[i] );
           break;
-        case TYPE_SYSTEM_INFO_COPYNR:
-        case TYPE_SYSTEM_INFO_TRANS_BATCH_ID:
-        case TYPE_SYSTEM_INFO_JOB_BATCH_ID:
-        case TYPE_SYSTEM_INFO_CURRENT_PID:
-        case TYPE_SYSTEM_INFO_JVM_TOTAL_MEMORY:
-        case TYPE_SYSTEM_INFO_JVM_FREE_MEMORY:
-        case TYPE_SYSTEM_INFO_JVM_MAX_MEMORY:
-        case TYPE_SYSTEM_INFO_JVM_AVAILABLE_MEMORY:
-        case TYPE_SYSTEM_INFO_AVAILABLE_PROCESSORS:
-        case TYPE_SYSTEM_INFO_JVM_CPU_TIME:
-        case TYPE_SYSTEM_INFO_TOTAL_PHYSICAL_MEMORY_SIZE:
-        case TYPE_SYSTEM_INFO_TOTAL_SWAP_SPACE_SIZE:
-        case TYPE_SYSTEM_INFO_COMMITTED_VIRTUAL_MEMORY_SIZE:
-        case TYPE_SYSTEM_INFO_FREE_PHYSICAL_MEMORY_SIZE:
-        case TYPE_SYSTEM_INFO_FREE_SWAP_SPACE_SIZE:
-        case TYPE_SYSTEM_INFO_PREVIOUS_RESULT_EXIT_STATUS:
-        case TYPE_SYSTEM_INFO_PREVIOUS_RESULT_ENTRY_NR:
-        case TYPE_SYSTEM_INFO_PREVIOUS_RESULT_NR_ERRORS:
-        case TYPE_SYSTEM_INFO_PREVIOUS_RESULT_NR_FILES:
-        case TYPE_SYSTEM_INFO_PREVIOUS_RESULT_NR_FILES_RETRIEVED:
-        case TYPE_SYSTEM_INFO_PREVIOUS_RESULT_NR_LINES_DELETED:
-        case TYPE_SYSTEM_INFO_PREVIOUS_RESULT_NR_LINES_INPUT:
-        case TYPE_SYSTEM_INFO_PREVIOUS_RESULT_NR_LINES_OUTPUT:
-        case TYPE_SYSTEM_INFO_PREVIOUS_RESULT_NR_LINES_READ:
-        case TYPE_SYSTEM_INFO_PREVIOUS_RESULT_NR_LINES_REJETED:
-        case TYPE_SYSTEM_INFO_PREVIOUS_RESULT_NR_LINES_UPDATED:
-        case TYPE_SYSTEM_INFO_PREVIOUS_RESULT_NR_LINES_WRITTEN:
+        case COPYNR:
+        case TRANS_BATCH_ID:
+        case JOB_BATCH_ID:
+        case CURRENT_PID:
+        case JVM_TOTAL_MEMORY:
+        case JVM_FREE_MEMORY:
+        case JVM_MAX_MEMORY:
+        case JVM_AVAILABLE_MEMORY:
+        case AVAILABLE_PROCESSORS:
+        case JVM_CPU_TIME:
+        case TOTAL_PHYSICAL_MEMORY_SIZE:
+        case TOTAL_SWAP_SPACE_SIZE:
+        case COMMITTED_VIRTUAL_MEMORY_SIZE:
+        case FREE_PHYSICAL_MEMORY_SIZE:
+        case FREE_SWAP_SPACE_SIZE:
+        case PREVIOUS_RESULT_EXIT_STATUS:
+        case PREVIOUS_RESULT_ENTRY_NR:
+        case PREVIOUS_RESULT_NR_ERRORS:
+        case PREVIOUS_RESULT_NR_FILES:
+        case PREVIOUS_RESULT_NR_FILES_RETRIEVED:
+        case PREVIOUS_RESULT_NR_LINES_DELETED:
+        case PREVIOUS_RESULT_NR_LINES_INPUT:
+        case PREVIOUS_RESULT_NR_LINES_OUTPUT:
+        case PREVIOUS_RESULT_NR_LINES_READ:
+        case PREVIOUS_RESULT_NR_LINES_REJECTED:
+        case PREVIOUS_RESULT_NR_LINES_UPDATED:
+        case PREVIOUS_RESULT_NR_LINES_WRITTEN:
           v = new ValueMetaInteger( fieldName[i] );
           v.setLength( ValueMetaInterface.DEFAULT_INTEGER_LENGTH, 0 );
           break;
-        case TYPE_SYSTEM_INFO_PREVIOUS_RESULT_RESULT:
-        case TYPE_SYSTEM_INFO_PREVIOUS_RESULT_IS_STOPPED:
+        case PREVIOUS_RESULT_RESULT:
+        case PREVIOUS_RESULT_IS_STOPPED:
           v = new ValueMetaBoolean( fieldName[i] );
           break;
         default:
@@ -320,7 +310,7 @@ public class SystemDataMeta extends BaseStepMeta implements StepMetaInterface {
 
       for ( int i = 0; i < nrfields; i++ ) {
         fieldName[i] = rep.getStepAttributeString( id_step, i, "field_name" );
-        fieldType[i] = getType( rep.getStepAttributeString( id_step, i, "field_type" ) );
+        fieldType[i] = SystemDataTypes.getTypeFromString( rep.getStepAttributeString( id_step, i, "field_type" ) );
       }
     } catch ( Exception e ) {
       throw new KettleException( "Unexpected error reading step information from the repository", e );
@@ -348,7 +338,7 @@ public class SystemDataMeta extends BaseStepMeta implements StepMetaInterface {
     // See if we have input streams leading to this step!
     int nrRemarks = remarks.size();
     for ( int i = 0; i < fieldName.length; i++ ) {
-      if ( fieldType[i].ordinal() <= SystemDataTypes.TYPE_SYSTEM_INFO_NONE.ordinal() ) {
+      if ( fieldType[i].ordinal() <= SystemDataTypes.NONE.ordinal() ) {
         CheckResult cr =
           new CheckResult( CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(
             PKG, "SystemDataMeta.CheckResult.FieldHasNoType", fieldName[i] ), stepMeta );
@@ -378,7 +368,7 @@ public class SystemDataMeta extends BaseStepMeta implements StepMetaInterface {
     for ( int argNr = 0; argNr < 10; argNr++ ) {
       boolean found = false;
       for ( int i = 0; i < fieldName.length; i++ ) {
-        if ( fieldType[i].ordinal() == SystemDataTypes.TYPE_SYSTEM_INFO_ARGUMENT_01.ordinal() + argNr ) {
+        if ( fieldType[i].ordinal() == SystemDataTypes.ARGUMENT_01.ordinal() + argNr ) {
           found = true;
         }
       }
