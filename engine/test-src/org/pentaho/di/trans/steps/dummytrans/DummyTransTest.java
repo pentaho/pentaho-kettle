@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2015 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -68,9 +68,9 @@ public class DummyTransTest {
     RowSet rowSet = stepMockHelper.getMockInputRowSet();
     RowMetaInterface inputRowMeta = mock( RowMetaInterface.class );
     when( rowSet.getRowMeta() ).thenReturn( inputRowMeta );
-    dummy.getInputRowSets().add( rowSet );
+    dummy.addRowSetToInputRowSets( rowSet );
     RowSet outputRowSet = mock( RowSet.class );
-    dummy.getOutputRowSets().add( outputRowSet );
+    dummy.addRowSetToOutputRowSets( outputRowSet );
     dummy.processRow( stepMockHelper.processRowsStepMetaInterface, stepMockHelper.processRowsStepDataInterface );
     verify( inputRowMeta, never() ).cloneRow( any( Object[].class ) );
     verify( outputRowSet, never() ).putRow( any( RowMetaInterface.class ), any( Object[].class ) );
@@ -88,9 +88,9 @@ public class DummyTransTest {
     RowMetaInterface inputRowMeta = mock( RowMetaInterface.class );
     when( inputRowMeta.clone() ).thenReturn( inputRowMeta );
     when( rowSet.getRowMeta() ).thenReturn( inputRowMeta );
-    dummy.getInputRowSets().add( rowSet );
+    dummy.addRowSetToInputRowSets( rowSet );
     RowSet outputRowSet = mock( RowSet.class );
-    dummy.getOutputRowSets().add( outputRowSet );
+    dummy.addRowSetToOutputRowSets( outputRowSet );
     when( outputRowSet.putRow( inputRowMeta, row ) ).thenReturn( true );
     dummy.processRow( stepMockHelper.processRowsStepMetaInterface, stepMockHelper.processRowsStepDataInterface );
     verify( outputRowSet, times( 1 ) ).putRow( inputRowMeta, row );

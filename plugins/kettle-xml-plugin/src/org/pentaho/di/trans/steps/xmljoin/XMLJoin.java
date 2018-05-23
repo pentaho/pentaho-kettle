@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -35,7 +35,6 @@ import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathFactory;
 
-import org.pentaho.di.core.BlockingRowSet;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.row.RowDataUtil;
@@ -247,16 +246,7 @@ public class XMLJoin extends BaseStep implements StepInterface {
 
       // See if a main step is supplied: in that case move the corresponding rowset to position 0
       //
-      for ( int i = 0; i < getInputRowSets().size(); i++ ) {
-        BlockingRowSet rs = (BlockingRowSet) getInputRowSets().get( i );
-        if ( rs.getOriginStepName().equalsIgnoreCase( meta.getTargetXMLstep() ) ) {
-          // swap this one and position 0...that means, the main stream is always stream 0 --> easy!
-          //
-          BlockingRowSet zero = (BlockingRowSet) getInputRowSets().get( 0 );
-          getInputRowSets().set( 0, rs );
-          getInputRowSets().set( i, zero );
-        }
-      }
+      swapFirstInputRowSetIfExists( meta.getTargetXMLstep() );
     } catch ( Exception e ) {
       log.logError( BaseMessages.getString( PKG, "XMLJoin.Error.Init" ), e );
       return false;

@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -48,7 +48,7 @@ import org.pentaho.di.trans.steps.mock.StepMockHelper;
 
 /**
  * @author Tatsiana_Kasiankova
- * 
+ *
  */
 public class SimpleMappingTest {
 
@@ -111,7 +111,7 @@ public class SimpleMappingTest {
         new SimpleMapping( stepMockHelper.stepMeta, stepMockHelper.stepDataInterface, 0, stepMockHelper.transMeta,
             stepMockHelper.trans );
     smp.init( stepMockHelper.initStepMetaInterface, stepMockHelper.initStepDataInterface );
-    smp.getInputRowSets().add( stepMockHelper.getMockInputRowSet( new Object[] {} ) );
+    smp.addRowSetToInputRowSets( stepMockHelper.getMockInputRowSet( new Object[] {} ) );
     assertTrue( "The step is processing in first", smp.first );
     assertTrue( smp.processRow( stepMockHelper.processRowsStepMetaInterface, simpleMpData ) );
     assertFalse( "The step is processing not in first", smp.first );
@@ -174,8 +174,8 @@ public class SimpleMappingTest {
     smp = new SimpleMapping( stepMockHelper.stepMeta, stepMockHelper.stepDataInterface, 0, stepMockHelper.transMeta,
       stepMockHelper.trans );
     smp.init( stepMockHelper.initStepMetaInterface, simpleMpData );
-    smp.getInputRowSets().add( stepMockHelper.getMockInputRowSet( new Object[] { } ) );
-    smp.getInputRowSets().add( stepMockHelper.getMockInputRowSet( new Object[] { } ) );
+    smp.addRowSetToInputRowSets( stepMockHelper.getMockInputRowSet( new Object[] { } ) );
+    smp.addRowSetToInputRowSets( stepMockHelper.getMockInputRowSet( new Object[] { } ) );
 
     assertTrue(
       smp.processRow( stepMockHelper.processRowsStepMetaInterface, stepMockHelper.processRowsStepDataInterface ) );
