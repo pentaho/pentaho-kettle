@@ -483,11 +483,9 @@
       <!--</exclusions>-->
     <!--</dependency>-->
     <dependency>
-      <groupId>com.postgresql</groupId>
-      <artifactId>postgresql</artifactId>
-      <version>8.3-604.jdbc3</version>
-      <scope>system</scope>
-      <systemPath>D:/filestore/jar/postgresql-8.3-604.jdbc3.jar</systemPath>
+      <groupId>com.postgres</groupId>
+      <artifactId>postgres</artifactId>
+      <version>8.3</version>
     </dependency>
     <dependency>
       <groupId>rome</groupId>
