@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -24,10 +24,13 @@ package org.pentaho.di.trans.steps.scriptvalues_mod;
 
 import java.math.BigDecimal;
 import java.net.URL;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Properties;
 
+import com.google.common.annotations.VisibleForTesting;
+import org.apache.commons.lang.ArrayUtils;
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.ContextFactory;
 import org.mozilla.javascript.JavaScriptException;
@@ -39,6 +42,10 @@ import org.pentaho.di.compatibility.Value;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.annotations.Step;
+import org.pentaho.di.core.injection.Injection;
+import org.pentaho.di.core.injection.InjectionDeep;
+import org.pentaho.di.core.injection.InjectionSupported;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
@@ -69,6 +76,11 @@ import org.w3c.dom.Node;
  * Created on 2-jun-2003
  *
  */
+@Step( id = "ScriptValuesMod", i18nPackageName = "org.pentaho.di.trans.steps.scriptvalues_mod", name =
+  "ScriptValuesMod.Name",
+  description = "ScriptValuesMod.Description",
+  categoryDescription = "i18n:org.pentaho.di.trans.step:BaseStep.Category.Scripting" )
+@InjectionSupported( localizationPrefix = "ScriptValuesMod.Injection.", groups = { "FIELDS", "SCRIPTS" }  )
 public class ScriptValuesMetaMod extends BaseStepMeta implements StepMetaInterface {
   private static Class<?> PKG = ScriptValuesMetaMod.class; // for i18n purposes, needed by Translator2!!
 
@@ -79,16 +91,34 @@ public class ScriptValuesMetaMod extends BaseStepMeta implements StepMetaInterfa
   public static final String OPTIMIZATION_LEVEL_DEFAULT = "9";
 
   private ScriptValuesAddClasses[] additionalClasses;
+
+  @InjectionDeep
   private ScriptValuesScript[] jsScripts;
 
+  @Injection( name = "FIELD_NAME", group = "FIELDS" )
   private String[] fieldname;
+
+  @Injection( name = "FIELD_RENAME_TO", group = "FIELDS" )
   private String[] rename;
+
   private int[] type;
+
+  @Injection( name = "FIELD_TYPE", group = "FIELDS" )
+  private String[] typeStr;
+
+  @Injection( name = "FIELD_LENGTH", group = "FIELDS" )
   private int[] length;
+
+  @Injection( name = "FIELD_PRECISION", group = "FIELDS" )
   private int[] precision;
+
+  @Injection( name = "FIELD_REPLACE", group = "FIELDS" )
   private boolean[] replace; // Replace the specified field.
 
+  @Injection( name = "COMPATIBILITY_MODE" )
   private boolean compatible;
+
+  @Injection( name = "OPTIMIZATION_LEVEL" )
   private String optimizationLevel;
 
   public ScriptValuesMetaMod() {
@@ -164,9 +194,27 @@ public class ScriptValuesMetaMod extends BaseStepMeta implements StepMetaInterfa
    * @return Returns the type.
    */
   public int[] getType() {
+    // if type array is empty, use typeStr instead, it may have been populated by MDI
+    if ( !hasIntTypes() && !ArrayUtils.isEmpty( typeStr ) ) {
+      type = new int[ typeStr.length ];
+      int index = 0;
+      for ( final String currentTypeStr : typeStr ) {
+        type[ index++ ] = ValueMetaFactory.getIdForValueMeta( currentTypeStr );
+      }
+    }
     return type;
   }
 
+  private boolean hasIntTypes() {
+    if ( !ArrayUtils.isEmpty( type ) ) {
+      for ( final int currentType : type ) {
+        if ( currentType > -1 ) {
+          return true;
+        }
+      }
+    }
+    return false;
+  }
   /**
    * @param type
    *          The type to set.
@@ -208,15 +256,64 @@ public class ScriptValuesMetaMod extends BaseStepMeta implements StepMetaInterfa
     replace = new boolean[nrfields];
   }
 
+  /**
+   * Extends all field related arrays so that they are the same size.
+   * @param nrfields
+   */
+  @VisibleForTesting
+  void extend( int nrfields ) {
+    fieldname = extend( fieldname, nrfields );
+    rename = extend( rename, nrfields );
+    type = extend( type, nrfields );
+    length = extend( length, nrfields );
+    precision = extend( precision, nrfields );
+    replace = extend( replace, nrfields );
+  }
+
+  private String[] extend( final String[] array, final int nrfields ) {
+    if ( array == null ) {
+      return new String[ nrfields ];
+    } else if ( array.length < nrfields ) {
+      return Arrays.copyOf( array, nrfields );
+    } else {
+      return array;
+    }
+  }
+
+  private int[] extend( final int[] array, final int nrfields ) {
+    if ( array == null || array.length < nrfields ) {
+      int originalLength = array == null ? 0 : array.length;
+      final int[] newArray = array == null ? new int[ nrfields ] : Arrays.copyOf( array, nrfields );
+      for ( int i = originalLength; i < nrfields; i++ ) {
+        newArray[ i ] = -1;
+      }
+      return newArray;
+    } else {
+      return array;
+    }
+  }
+
+  private boolean[] extend( final boolean[] array, final int nrfields ) {
+    if ( array == null ) {
+      return new boolean[ nrfields ];
+    } else if ( array.length < nrfields ) {
+      return Arrays.copyOf( array, nrfields );
+    } else {
+      return array;
+    }
+  }
+
   public Object clone() {
     ScriptValuesMetaMod retval = (ScriptValuesMetaMod) super.clone();
 
     int nrfields = fieldname.length;
 
     retval.allocate( nrfields );
+    extend( nrfields );
+
     System.arraycopy( fieldname, 0, retval.fieldname, 0, nrfields );
     System.arraycopy( rename, 0, retval.rename, 0, nrfields );
-    System.arraycopy( type, 0, retval.type, 0, nrfields );
+    System.arraycopy( getType(), 0, retval.type, 0, nrfields );
     System.arraycopy( length, 0, retval.length, 0, nrfields );
     System.arraycopy( precision, 0, retval.precision, 0, nrfields );
     System.arraycopy( replace, 0, retval.replace, 0, nrfields );
@@ -305,6 +402,7 @@ public class ScriptValuesMetaMod extends BaseStepMeta implements StepMetaInterfa
   public void getFields( RowMetaInterface row, String originStepname, RowMetaInterface[] info, StepMeta nextStep,
     VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
     try {
+      extend( fieldname.length );
       for ( int i = 0; i < fieldname.length; i++ ) {
         if ( !Utils.isEmpty( fieldname[i] ) ) {
           int valueIndex = -1;
@@ -334,13 +432,13 @@ public class ScriptValuesMetaMod extends BaseStepMeta implements StepMetaInterfa
             // Change the data type to match what's specified...
             //
             ValueMetaInterface source = row.getValueMeta( valueIndex );
-            v = ValueMetaFactory.cloneValueMeta( source, type[i] );
+            v = ValueMetaFactory.cloneValueMeta( source, getType()[i] );
             row.setValueMeta( valueIndex, v );
           } else {
             if ( !Utils.isEmpty( rename[i] ) ) {
-              v = ValueMetaFactory.createValueMeta( rename[i], type[i] );
+              v = ValueMetaFactory.createValueMeta( rename[i], getType()[i] );
             } else {
-              v = ValueMetaFactory.createValueMeta( fieldname[i], type[i] );
+              v = ValueMetaFactory.createValueMeta( fieldname[i], getType()[i] );
             }
           }
           v.setLength( length[i] );
@@ -375,12 +473,14 @@ public class ScriptValuesMetaMod extends BaseStepMeta implements StepMetaInterfa
     retval.append( "    </jsScripts>" );
 
     retval.append( "    <fields>" );
+
+    extend( fieldname.length );
     for ( int i = 0; i < fieldname.length; i++ ) {
       retval.append( "      <field>" );
       retval.append( "        " ).append( XMLHandler.addTagValue( "name", fieldname[i] ) );
       retval.append( "        " ).append( XMLHandler.addTagValue( "rename", rename[i] ) );
       retval.append( "        " ).append( XMLHandler.addTagValue( "type",
-        ValueMetaFactory.getValueMetaName( type[i] ) ) );
+        ValueMetaFactory.getValueMetaName( getType()[i] ) ) );
       retval.append( "        " ).append( XMLHandler.addTagValue( "length", length[i] ) );
       retval.append( "        " ).append( XMLHandler.addTagValue( "precision", precision[i] ) );
       retval.append( "        " ).append( XMLHandler.addTagValue( "replace", replace[i] ) );
@@ -441,11 +541,12 @@ public class ScriptValuesMetaMod extends BaseStepMeta implements StepMetaInterfa
         rep.saveStepAttribute( id_transformation, id_step, i, JSSCRIPT_TAG_TYPE, jsScripts[i].getScriptType() );
       }
 
+      extend( fieldname.length );
       for ( int i = 0; i < fieldname.length; i++ ) {
         rep.saveStepAttribute( id_transformation, id_step, i, "field_name", fieldname[i] );
         rep.saveStepAttribute( id_transformation, id_step, i, "field_rename", rename[i] );
         rep.saveStepAttribute( id_transformation, id_step, i, "field_type",
-          ValueMetaFactory.getValueMetaName( type[i] ) );
+          ValueMetaFactory.getValueMetaName( getType()[i] ) );
         rep.saveStepAttribute( id_transformation, id_step, i, "field_length", length[i] );
         rep.saveStepAttribute( id_transformation, id_step, i, "field_precision", precision[i] );
         rep.saveStepAttribute( id_transformation, id_step, i, "field_replace", replace[i] );
@@ -752,7 +853,7 @@ public class ScriptValuesMetaMod extends BaseStepMeta implements StepMetaInterfa
 
     if ( fieldname[i] != null && fieldname[i].length() > 0 ) {
       res.setName( rename[i] );
-      res.setType( type[i] );
+      res.setType( getType()[i] );
 
       try {
 
@@ -761,7 +862,7 @@ public class ScriptValuesMetaMod extends BaseStepMeta implements StepMetaInterfa
 
           String classname = result.getClass().getName();
 
-          switch ( type[i] ) {
+          switch ( getType()[i] ) {
             case ValueMetaInterface.TYPE_NUMBER:
               if ( classname.equalsIgnoreCase( "org.mozilla.javascript.Undefined" ) ) {
                 res.setNull();
