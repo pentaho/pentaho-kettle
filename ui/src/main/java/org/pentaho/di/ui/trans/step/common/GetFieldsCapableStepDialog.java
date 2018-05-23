@@ -24,6 +24,7 @@ package org.pentaho.di.ui.trans.step.common;
 
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TableItem;
 import org.pentaho.di.core.logging.LogChannel;
@@ -34,10 +35,14 @@ import org.pentaho.di.ui.core.dialog.BaseMessageDialog;
 import org.pentaho.di.ui.core.widget.TableView;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * An interface providing functionality for any step dialog that has the "get fields" capability.
@@ -63,6 +68,7 @@ public interface GetFieldsCapableStepDialog<StepMetaType extends BaseStepMeta> {
 
   /**
    * Returns an array of incoming field names, or an empty array, if fields cannot be fetched, for some reason.
+   *
    * @param meta the {@link StepMetaType}
    * @return an array of incoming field names, or an empty array, if fields cannot be fetched, for some reason.
    */
@@ -85,31 +91,57 @@ public interface GetFieldsCapableStepDialog<StepMetaType extends BaseStepMeta> {
     return null;
   }
 
+  default List<String> getNewFieldNames( final String[] incomingFieldNames ) {
+    // get names of all the fields within the fields table, in lower case for a case-insensitive comparison
+    final Set<String> fieldNamesInTableLowerCase = new HashSet();
+    for ( int i = 0; i < getFieldsTable().table.getItemCount(); i++ ) {
+      final TableItem item = getFieldsTable().table.getItem( i );
+      int fieldNameIndex = getFieldsTable().hasIndexColumn() ? 1 : 0;
+      fieldNamesInTableLowerCase.add( item.getText( fieldNameIndex ).toLowerCase() );
+    }
+    final List<String> newFieldNames = Arrays.asList( incomingFieldNames ).stream().filter(
+      fieldName -> !fieldNamesInTableLowerCase.contains( fieldName.toLowerCase() ) ).collect( Collectors.toList() );
+    return newFieldNames;
+  }
+
   default void getFields( final StepMetaType meta ) {
 
-    // Split the string, header or data into parts...
-    //
-    final String[] fieldNames = getFieldNames( meta );
+    final String[] incomingFieldNames = getFieldNames( meta );
+    final List<String> newFieldNames = getNewFieldNames( incomingFieldNames );
 
-    // are there any incoming fields?
-    if ( fieldNames != null && fieldNames.length > 0 ) {
+    if ( newFieldNames != null && newFieldNames.size() > 0 ) {
+      // we have new incoming fields
       final int nrNonEmptyFields = getFieldsTable().nrNonEmpty();
       // are any fields already populated in the fields table?
       if ( nrNonEmptyFields > 0 ) {
-        final FieldSelectionDialog fieldSelectDialog = new FieldSelectionDialog( this, fieldNames.length );
+        final FieldSelectionDialog fieldSelectDialog = new FieldSelectionDialog( this, newFieldNames.size() );
         fieldSelectDialog.open();
       } else {
         // no fields are populated yet, go straight to "sample data" dialog
-        final GetFieldsSampleDataDialog dlg = new GetFieldsSampleDataDialog( getShell(), this, true );
-        dlg.open();
+        openGetFieldsSampleDataDialog();
       }
     } else {
-      // no incoming fields - show dialog
+      // we have no new fields
       final BaseDialog errorDlg = new BaseMessageDialog( getShell(),
         BaseMessages.getString( PKG, "System.GetFields.NoNewFields.Title" ),
         BaseMessages.getString( PKG, "System.GetFields.NoNewFields.Message" ) );
+      // if there are no incoming fields at all, we leave the OK button handler as-is and simply dispose the dialog;
+      // if there are some incoming fields, we overwrite the OK button handler to show the GetFieldsSampleDataDialog
+      if ( incomingFieldNames != null && incomingFieldNames.length > 0 ) {
+        final Map<String, Listener> buttons = new HashMap();
+        buttons.put( BaseMessages.getString( PKG, "System.Button.OK" ), event -> {
+          errorDlg.dispose();
+          openGetFieldsSampleDataDialog();
+        } );
+        errorDlg.setButtons( buttons );
+      }
       errorDlg.open();
     }
+  }
+
+  default void openGetFieldsSampleDataDialog() {
+    final GetFieldsSampleDataDialog dlg = new GetFieldsSampleDataDialog( getShell(), this, true );
+    dlg.open();
   }
 
   String loadFieldsImpl( final StepMetaType meta, final int samples, final boolean reloadAllFields );
@@ -135,7 +167,7 @@ public interface GetFieldsCapableStepDialog<StepMetaType extends BaseStepMeta> {
 
   default List<String> repopulateFields( final StepMetaType meta, final Map<String, List<String>> previousFieldValues,
                                          final boolean reloadAllFields ) {
-    final List<String> newFieldNames = new ArrayList();
+    final List<String> userDefinedFields = new ArrayList();
     final String[] fieldNames = getFieldNames( meta );
     for ( final String fieldName : fieldNames ) {
       final TableItem item = new TableItem( getFieldsTable().table, SWT.NONE );
@@ -149,11 +181,11 @@ public interface GetFieldsCapableStepDialog<StepMetaType extends BaseStepMeta> {
           item.setText( columnIndex++ + columnIndexOffset, value );
         }
       } else {
-        newFieldNames.add( fieldName );
+        userDefinedFields.add( fieldName );
         item.setText( columnIndexOffset, fieldName );
       }
     }
-    return newFieldNames;
+    return userDefinedFields;
   }
 
   default void loadRemainingFields( final Map<String, List<String>> previousFieldValues ) {
@@ -181,8 +213,8 @@ public interface GetFieldsCapableStepDialog<StepMetaType extends BaseStepMeta> {
     // clear the table
     getFieldsTable().removeAll();
 
-    // ...and reorder the table items, keeping track of new fields
-    final List<String> newFieldNames = repopulateFields( meta, fieldValues, reloadAllFields );
+    // ...and reorder the table items, keeping track of user defined fields
+    final List<String> userDefinedFields = repopulateFields( meta, fieldValues, reloadAllFields );
 
     // are there any other fields left that the user may have entered manually? If we are not clearing and reloading,
     // we should preserve those
@@ -197,7 +229,7 @@ public interface GetFieldsCapableStepDialog<StepMetaType extends BaseStepMeta> {
         getFieldsTable().removeAll();
       }
       // OK, what's the result of our search?
-      getData( meta, false, reloadAllFields, newFieldNames );
+      getData( meta, false, reloadAllFields, userDefinedFields );
       getFieldsTable().removeEmptyRows();
       getFieldsTable().setRowNums();
       getFieldsTable().optWidth( true );

@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -128,12 +128,6 @@ public class CsvInputMeta extends BaseStepMeta implements StepMetaInterface, Inp
     lazyConversionActive = true;
     isaddresult = false;
     bufferSize = "50000";
-
-    TextFileInputField field = new TextFileInputField();
-    field.setName( "field" );
-    field.setType( ValueMetaInterface.TYPE_STRING );
-
-    inputFields = new TextFileInputField[] { field, };
   }
 
   private void readData( Node stepnode ) throws KettleXMLException {

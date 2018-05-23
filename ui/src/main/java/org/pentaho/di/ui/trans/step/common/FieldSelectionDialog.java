@@ -45,10 +45,10 @@ public class FieldSelectionDialog extends BaseDialog {
 
   private static final int WIDTH = 360;
 
-  public FieldSelectionDialog( final GetFieldsCapableStepDialog parentDialog, final int numFields ) {
+  public FieldSelectionDialog( final GetFieldsCapableStepDialog parentDialog, final int numNewFields ) {
     super( parentDialog.getParent(), BaseMessages.getString( PKG, "System.GetFields.NewFieldsFound.Title" ), WIDTH );
     this.parentDialog = parentDialog;
-    this.numFields = numFields;
+    this.numFields = numNewFields;
 
     // Define buttons
     this.buttons.put( BaseMessages.getString( PKG, "System.Button.Cancel" ), event -> {

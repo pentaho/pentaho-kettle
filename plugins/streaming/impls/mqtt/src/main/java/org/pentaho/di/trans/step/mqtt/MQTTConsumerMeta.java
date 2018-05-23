@@ -78,7 +78,8 @@ import static org.pentaho.di.core.util.serialization.ConfigHelper.conf;
   i18nPackageName = "org.pentaho.di.trans.step.mqtt",
   name = "MQTTConsumer.TypeLongDesc",
   description = "MQTTConsumer.TypeTooltipDesc",
-  categoryDescription = "i18n:org.pentaho.di.trans.step:BaseStep.Category.Streaming" )
+  categoryDescription = "i18n:org.pentaho.di.trans.step:BaseStep.Category.Streaming",
+  documentationUrl = "Products/Data_Integration/Transformation_Step_Reference/MQTT_Consumer" )
 @InjectionSupported ( localizationPrefix = "MQTTConsumerMeta.Injection.", groups = { "SSL" } )
 public class MQTTConsumerMeta extends BaseStreamStepMeta implements StepMetaInterface {
   private static Class<?> PKG = MQTTConsumerMeta.class;

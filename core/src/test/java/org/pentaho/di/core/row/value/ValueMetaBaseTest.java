@@ -29,13 +29,17 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Test;
+import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.mockito.Spy;
 import org.owasp.encoder.Encode;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.database.BaseDatabaseMeta;
 import org.pentaho.di.core.database.DatabaseInterface;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.database.MySQLDatabaseMeta;
 import org.pentaho.di.core.database.NetezzaDatabaseMeta;
+import org.pentaho.di.core.database.PostgreSQLDatabaseMeta;
 import org.pentaho.di.core.database.Vertica5DatabaseMeta;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
@@ -83,6 +87,10 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertArrayEquals;
+import static org.mockito.Matchers.anyInt;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
 
 public class ValueMetaBaseTest {
   @ClassRule public static RestorePDIEnvironment env = new RestorePDIEnvironment();
@@ -94,6 +102,10 @@ public class ValueMetaBaseTest {
   // Get PKG from class under test
   private Class<?> PKG = ValueMetaBase.PKG;
   private StoreLoggingEventListener listener;
+
+  @Spy
+  private DatabaseMeta databaseMetaSpy = new DatabaseMeta();
+  private PreparedStatement preparedStatementMock = mock( PreparedStatement.class );
 
   @BeforeClass
   public static void setUpBeforeClass() throws KettleException {
@@ -159,8 +171,8 @@ public class ValueMetaBaseTest {
   public void testGetValueFromSqlTypeNetezza() throws Exception {
     ValueMetaBase obj = new ValueMetaBase();
     DatabaseInterface databaseInterface = new NetezzaDatabaseMeta();
-    ResultSet resultSet = Mockito.mock( ResultSet.class );
-    ResultSetMetaData metaData = Mockito.mock( ResultSetMetaData.class );
+    ResultSet resultSet = mock( ResultSet.class );
+    ResultSetMetaData metaData = mock( ResultSetMetaData.class );
     Mockito.when( resultSet.getMetaData() ).thenReturn( metaData );
 
     Mockito.when( metaData.getColumnType( 1 ) ).thenReturn( Types.DATE );
@@ -245,8 +257,8 @@ public class ValueMetaBaseTest {
     DatabaseInterface databaseInterface = new Vertica5DatabaseMeta();
     dbMeta.setDatabaseInterface( databaseInterface );
 
-    ResultSet resultSet = Mockito.mock( ResultSet.class );
-    ResultSetMetaData metaData = Mockito.mock( ResultSetMetaData.class );
+    ResultSet resultSet = mock( ResultSet.class );
+    ResultSetMetaData metaData = mock( ResultSetMetaData.class );
 
     Mockito.when( resultSet.getMetaData() ).thenReturn( metaData );
     Mockito.when( metaData.getColumnType( binaryColumnIndex ) ).thenReturn( Types.BINARY );
@@ -283,11 +295,11 @@ public class ValueMetaBaseTest {
 
     ValueMetaBase valueMetaBase = new ValueMetaBase(),
       valueMetaBaseSpy = Mockito.spy( valueMetaBase );
-    DatabaseMeta dbMeta = Mockito.mock( DatabaseMeta.class );
-    DatabaseInterface databaseInterface = Mockito.mock( DatabaseInterface.class );
+    DatabaseMeta dbMeta = mock( DatabaseMeta.class );
+    DatabaseInterface databaseInterface = mock( DatabaseInterface.class );
     Mockito.doReturn( databaseInterface ).when( dbMeta ).getDatabaseInterface();
 
-    ResultSetMetaData metaData = Mockito.mock( ResultSetMetaData.class );
+    ResultSetMetaData metaData = mock( ResultSetMetaData.class );
     valueMetaBaseSpy.getValueFromSQLType( dbMeta, TEST_NAME, metaData, varbinaryColumnIndex, false, false );
 
     Mockito.verify( databaseInterface, Mockito.times( 1 ) ).customizeValueFromSQLType( Mockito.any( ValueMetaInterface.class ),
@@ -297,9 +309,9 @@ public class ValueMetaBaseTest {
   @Test
   public void testVerticaTimeType() throws Exception {
     // PDI-12244
-    ResultSet resultSet = Mockito.mock( ResultSet.class );
-    ResultSetMetaData metaData = Mockito.mock( ResultSetMetaData.class );
-    ValueMetaInterface valueMetaInterface = Mockito.mock( ValueMetaInternetAddress.class );
+    ResultSet resultSet = mock( ResultSet.class );
+    ResultSetMetaData metaData = mock( ResultSetMetaData.class );
+    ValueMetaInterface valueMetaInterface = mock( ValueMetaInternetAddress.class );
 
     Mockito.when( resultSet.getMetaData() ).thenReturn( metaData );
     Mockito.when( metaData.getColumnType( 1 ) ).thenReturn( Types.TIME );
@@ -676,8 +688,8 @@ public class ValueMetaBaseTest {
   public void testSetPreparedStatementStringValueDontLogTruncated() throws KettleDatabaseException {
     ValueMetaBase valueMetaString = new ValueMetaBase( "LOG_FIELD", ValueMetaInterface.TYPE_STRING,  LOG_FIELD.length(), 0 );
 
-    DatabaseMeta databaseMeta = Mockito.mock( DatabaseMeta.class );
-    PreparedStatement preparedStatement = Mockito.mock( PreparedStatement.class );
+    DatabaseMeta databaseMeta = mock( DatabaseMeta.class );
+    PreparedStatement preparedStatement = mock( PreparedStatement.class );
     Mockito.when( databaseMeta.getMaxTextFieldLength() ).thenReturn( LOG_FIELD.length() );
     List<KettleLoggingEvent> events = listener.getEvents();
     assertEquals( 0, events.size() );
@@ -692,8 +704,8 @@ public class ValueMetaBaseTest {
   public void testSetPreparedStatementStringValueLogTruncated() throws KettleDatabaseException {
     ValueMetaBase valueMetaString = new ValueMetaBase( "LOG_FIELD", ValueMetaInterface.TYPE_STRING,  LOG_FIELD.length(), 0 );
 
-    DatabaseMeta databaseMeta = Mockito.mock( DatabaseMeta.class );
-    PreparedStatement preparedStatement = Mockito.mock( PreparedStatement.class );
+    DatabaseMeta databaseMeta = mock( DatabaseMeta.class );
+    PreparedStatement preparedStatement = mock( PreparedStatement.class );
     Mockito.when( databaseMeta.getMaxTextFieldLength() ).thenReturn( MAX_TEXT_FIELD_LEN );
     List<KettleLoggingEvent> events = listener.getEvents();
     assertEquals( 0, events.size() );
@@ -878,8 +890,8 @@ public class ValueMetaBaseTest {
     DatabaseInterface databaseInterface = new MySQLDatabaseMeta();
     dbMeta.setDatabaseInterface( databaseInterface );
 
-    ResultSet resultSet = Mockito.mock( ResultSet.class );
-    ResultSetMetaData metaData = Mockito.mock( ResultSetMetaData.class );
+    ResultSet resultSet = mock( ResultSet.class );
+    ResultSetMetaData metaData = mock( ResultSetMetaData.class );
 
     Mockito.when( resultSet.getMetaData() ).thenReturn( metaData );
     Mockito.when( metaData.getColumnType( binaryColumnIndex ) ).thenReturn( Types.LONGVARBINARY );
@@ -951,4 +963,35 @@ public class ValueMetaBaseTest {
     Timestamp timestamp = ( Timestamp ) base.convertDataUsingConversionMetaData( timestampStringRepresentation );
     assertEquals( expectedTimestamp, timestamp );
   }
+
+  /**
+   * The only limitation for MySQLDatabaseMeta.getMaxTextFieldLength is a diapason of returned type: int.
+   * So that there is only one test case for MySQL and two for Postgres
+   *
+   * @throws Exception
+   */
+  @Test
+  public void test_Pdi_17126_postgres() throws Exception {
+    initValueMeta( new PostgreSQLDatabaseMeta(), 10_336_013 );
+    Mockito.verify( preparedStatementMock, times( 1 ) ).setString( anyInt(), anyString() );
+  }
+
+  @Test
+  public void test_Pdi_17126_postgres_truncate() throws Exception {
+    initValueMeta( new PostgreSQLDatabaseMeta(), 1_073_741_825 );
+    Mockito.verify( preparedStatementMock, Mockito.never() ).setString( anyInt(), anyString() );
+  }
+
+  @Test
+  public void test_Pdi_17126_mysql() throws Exception {
+    initValueMeta( new MySQLDatabaseMeta(), 1_073_741_825 );
+    Mockito.verify( preparedStatementMock, times( 1 ) ).setString( anyInt(), anyString() );
+  }
+
+  private void initValueMeta( BaseDatabaseMeta dbMeta, int fileSize ) throws KettleDatabaseException {
+    ValueMetaBase valueMetaString = new ValueMetaBase( LOG_FIELD, ValueMetaInterface.TYPE_STRING, fileSize, 0 );
+    databaseMetaSpy.setDatabaseInterface( dbMeta );
+    valueMetaString.setPreparedStatementValue( databaseMetaSpy, preparedStatementMock, 0, LOG_FIELD );
+  }
+
 }

@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -89,7 +89,10 @@ public class SetValueField extends BaseStep implements StepInterface {
           throw new KettleStepException( BaseMessages.getString(
             PKG, "SetValueField.Log.CouldNotFindFieldInRow", meta.getFieldName()[i] ) );
         }
-        String sourceField = environmentSubstitute( meta.getReplaceByFieldValue()[i] );
+        String sourceField = environmentSubstitute(
+          meta.getReplaceByFieldValue() != null && meta.getReplaceByFieldValue().length > 0
+            ? meta.getReplaceByFieldValue()[i] : null
+        );
         if ( Utils.isEmpty( sourceField ) ) {
           throw new KettleStepException( BaseMessages.getString(
             PKG, "SetValueField.Log.ReplaceByValueFieldMissing", "" + i ) );

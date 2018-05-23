@@ -78,7 +78,7 @@ public abstract class BaseDialog extends Dialog {
   }
 
   /**
-   * Returns a {@link SelectionAdapter} that is used to "submit" the dialog.
+   * Returns a {@link org.eclipse.swt.events.SelectionAdapter} that is used to "submit" the dialog.
    */
   private Display prepareLayout() {
 
@@ -182,8 +182,12 @@ public abstract class BaseDialog extends Dialog {
     this.footerTopPadding = footerTopPadding;
   }
 
-  protected void dispose() {
+  public void dispose() {
     props.setScreen( new WindowProperty( shell ) );
     shell.dispose();
+  }
+
+  public void setButtons( final  Map<String, Listener> buttons ) {
+    this.buttons = buttons;
   }
 }
