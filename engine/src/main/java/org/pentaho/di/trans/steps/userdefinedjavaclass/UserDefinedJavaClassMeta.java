@@ -23,7 +23,6 @@
 package org.pentaho.di.trans.steps.userdefinedjavaclass;
 
 import com.google.common.annotations.VisibleForTesting;
-// Fixes https://jira.pentaho.com/browse/BACKLOG-23304
 import org.codehaus.janino.ClassBodyEvaluator;
 import org.codehaus.commons.compiler.CompileException;
 import org.codehaus.janino.Scanner;
@@ -63,7 +62,6 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-// Fixes https://jira.pentaho.com/browse/BACKLOG-23304
 import java.util.stream.Collectors;
 
 public class UserDefinedJavaClassMeta extends BaseStepMeta implements StepMetaInterface {
@@ -136,7 +134,6 @@ public class UserDefinedJavaClassMeta extends BaseStepMeta implements StepMetaIn
     usageParameters = new ArrayList<UsageParameter>();
   }
 
-  // Fixes https://jira.pentaho.com/browse/BACKLOG-23304 and https://jira.pentaho.com/browse/PDI-4413
   @VisibleForTesting
   Class<?> cookClass( UserDefinedJavaClassDef def, ClassLoader clsloader ) throws CompileException, IOException, RuntimeException, KettleStepException {
 
@@ -151,7 +148,7 @@ public class UserDefinedJavaClassMeta extends BaseStepMeta implements StepMetaIn
     }
 
     ClassBodyEvaluator cbe = new ClassBodyEvaluator();
-    if (clsloader == null) {
+    if ( clsloader == null ) {
       cbe.setParentClassLoader( Thread.currentThread().getContextClassLoader() );
     } else {
       cbe.setParentClassLoader( clsloader );
@@ -180,8 +177,6 @@ public class UserDefinedJavaClassMeta extends BaseStepMeta implements StepMetaIn
   @SuppressWarnings( "unchecked" )
   public void cookClasses() {
     cookErrors.clear();
-    // Fixes https://jira.pentaho.com/browse/BACKLOG-23304 and https://jira.pentaho.com/browse/PDI-4413
-    // by fixing the clsLoader hierarchy for extra classes.
     ClassLoader clsloader = null;
     for ( UserDefinedJavaClassDef def : getDefinitions() ) {
       if ( def.isActive() ) {
@@ -236,7 +231,7 @@ public class UserDefinedJavaClassMeta extends BaseStepMeta implements StepMetaIn
   /**
    * This method oders the classes by sorting all the normal classes by alphabetic order and then sorting
    * all the transaction classes by alphabetical order. This makes the resolution of classes deterministic by type and
-   * then by class name. See backlog: https://jira.pentaho.com/browse/BACKLOG-23304 and https://jira.pentaho.com/browse/PDI-4413
+   * then by class name.
    * @param definitions - Unorder list of user defined classes
    * @return - Ordered list of user defined classes
    */
@@ -246,16 +241,16 @@ public class UserDefinedJavaClassMeta extends BaseStepMeta implements StepMetaIn
     List<UserDefinedJavaClassDef> transactions =
       definitions.stream()
         .filter( def -> def.isTransformClass() && def.isActive() )
-        .sorted( (p1, p2) -> p1.getClassName().compareTo(p2.getClassName() ))
+        .sorted( ( p1, p2 ) -> p1.getClassName().compareTo( p2.getClassName() ) )
         .collect( Collectors.toList() );
 
     List<UserDefinedJavaClassDef> normalClasses =
       definitions.stream()
         .filter( def -> !def.isTransformClass() )
-        .sorted( (p1, p2) -> p1.getClassName().compareTo(p2.getClassName() ) )
+        .sorted( ( p1, p2 ) -> p1.getClassName().compareTo( p2.getClassName() ) )
         .collect( Collectors.toList() );
 
-    orderedDefinitions.addAll( normalClasses);
+    orderedDefinitions.addAll( normalClasses );
     orderedDefinitions.addAll( transactions );
     return orderedDefinitions;
   }
@@ -337,7 +332,6 @@ public class UserDefinedJavaClassMeta extends BaseStepMeta implements StepMetaIn
           XMLHandler.getTagValue( fnode, ElementNames.class_name.name() ),
           XMLHandler.getTagValue( fnode, ElementNames.class_source.name() ) ) );
       }
-      // Fixes https://jira.pentaho.com/browse/BACKLOG-23304 and https://jira.pentaho.com/browse/PDI-4413
       definitions = orderDefinitions( definitions );
 
       Node fieldsNode = XMLHandler.getSubNode( stepnode, ElementNames.fields.name() );
@@ -558,7 +552,6 @@ public class UserDefinedJavaClassMeta extends BaseStepMeta implements StepMetaIn
 
       }
 
-      // Fixes https://jira.pentaho.com/browse/BACKLOG-23304 and https://jira.pentaho.com/browse/PDI-4413
       definitions = orderDefinitions( definitions );
 
       int nrfields = rep.countNrStepAttributes( id_step, ElementNames.field_name.name() );

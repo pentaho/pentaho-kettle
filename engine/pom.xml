@@ -274,7 +274,6 @@
         </exclusion>
       </exclusions>
     </dependency>
-    <!-- https://jira.pentaho.com/browse/PDI-44134 update janino to latest -->
     <dependency>
       <groupId>org.codehaus.janino</groupId>
       <artifactId>commons-compiler</artifactId>

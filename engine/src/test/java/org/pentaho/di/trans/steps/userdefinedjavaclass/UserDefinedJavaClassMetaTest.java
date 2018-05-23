@@ -101,7 +101,6 @@ public class UserDefinedJavaClassMetaTest {
     Assert.assertTrue( clazz3 != clazz1 ); // They should not be the exact same class
   }
 
-  // See backlog: https://jira.pentaho.com/browse/BACKLOG-2330 and https://jira.pentaho.com/browse/PDI-44134
   @Test
   public void oderDefinitionTest() throws Exception {
     String codeBlock1 = "public boolean processRow() {\n"
