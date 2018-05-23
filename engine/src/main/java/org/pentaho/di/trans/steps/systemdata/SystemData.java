@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -634,7 +634,7 @@ public class SystemData extends BaseStep implements StepInterface {
           }
           row[index] = value;
           break;
-        case TYPE_SYSTEM_INFO_PREVIOUS_RESULT_NR_LINES_REJETED:
+        case TYPE_SYSTEM_INFO_PREVIOUS_RESULT_NR_LINES_REJECTED:
           previousResult = getTrans().getPreviousResult();
           value = 0;
           if ( previousResult != null ) {

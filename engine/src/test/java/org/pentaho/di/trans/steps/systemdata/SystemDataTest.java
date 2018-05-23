@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -120,8 +120,8 @@ public class SystemDataTest {
     SystemDataTypes[] types = systemDataMeta.getFieldType();
     names[0] = "hostname";
     names[1] = "hostname_real";
-    types[0] = SystemDataMeta.getType( SystemDataMeta.getTypeDesc( SystemDataTypes.TYPE_SYSTEM_INFO_HOSTNAME ) );
-    types[1] = SystemDataMeta.getType( SystemDataMeta.getTypeDesc( SystemDataTypes.TYPE_SYSTEM_INFO_HOSTNAME_REAL ) );
+    types[0] = SystemDataTypes.getTypeFromString( SystemDataTypes.TYPE_SYSTEM_INFO_HOSTNAME.getDescription() );
+    types[1] = SystemDataTypes.getTypeFromString( SystemDataTypes.TYPE_SYSTEM_INFO_HOSTNAME_REAL.getDescription() );
     SystemDataHandler systemData =
       new SystemDataHandler( stepMockHelper.stepMeta, stepMockHelper.stepDataInterface, 0, stepMockHelper.transMeta,
         stepMockHelper.trans );
