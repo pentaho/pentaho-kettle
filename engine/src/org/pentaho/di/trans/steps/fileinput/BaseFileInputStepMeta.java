@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -307,6 +307,13 @@ public abstract class BaseFileInputStepMeta<A extends BaseFileInputStepMeta.Addi
       includeSubFolderBoolean[i] = YES.equalsIgnoreCase( inputFiles.includeSubFolders[i] );
     }
     return includeSubFolderBoolean;
+  }
+
+  protected void normalizeAllocation( int length ) {
+    inputFiles.fileMask = normalizeAllocation( inputFiles.fileMask, length );
+    inputFiles.excludeFileMask = normalizeAllocation( inputFiles.excludeFileMask, length );
+    inputFiles.fileRequired = normalizeAllocation( inputFiles.fileRequired, length );
+    inputFiles.includeSubFolders = normalizeAllocation( inputFiles.includeSubFolders, length );
   }
 
   private String[] normalizeAllocation( String[] oldAllocation, int length ) {
