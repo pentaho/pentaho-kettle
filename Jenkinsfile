@@ -67,8 +67,8 @@ pipeline {
         description: 'Maximum parallel source checkout chunk size'
     )
     string(
-        name: 'PARALLEL_UNIT_TESTS_CHUNKSIZE', 
-        defaultValue: '10', 
+        name: 'PARALLEL_UNIT_TESTS_CHUNKSIZE',
+        defaultValue: '10',
         description: 'Maximum parallel unit tests chunk size'
     )
     string(
@@ -340,7 +340,7 @@ pipeline {
         }
       }
       steps {
-        archiveArtifacts artifacts: '**/dist/*.jar, **/dist/*.gz, **/dist/*.tar.gz, **/dist/*.zip, **/target/*.jar, **/target/*.gz, **/target/*.tar.gz, **/target/*.zip', excludes: '**/dist/*-sources.jar, **/target/*-sources.jar', allowEmptyArchive: true, fingerprint: false
+        archiveArtifacts artifacts: '**/dist/*.gz, **/dist/*.tar.gz, **/dist/*.zip, **/target/*.gz, **/target/*.tar.gz, **/target/*.zip', excludes: '', allowEmptyArchive: true, fingerprint: false
       }
     }
 
