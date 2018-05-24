@@ -2,121 +2,45 @@
 <project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <modelVersion>4.0.0</modelVersion>
-  
   <parent>
     <groupId>org.pentaho</groupId>
     <artifactId>repositories-plugin-modules</artifactId>
-    <version>7.1-SNAPSHOT</version>
+    <version>7.1.0.12-132</version>
   </parent>
-  
   <artifactId>repositories-plugin-core</artifactId>
-  <version>7.1-SNAPSHOT</version>
+  <version>7.1.0.12-132</version>
   <packaging>bundle</packaging>
-  
   <name>Pentaho Community Edition Project: ${project.artifactId}</name>
   <description>a Pentaho open source project</description>
   <url>http://www.pentaho.com</url>
-  
   <properties>
-    <dependency.pentaho-kettle.version>${project.version}</dependency.pentaho-kettle.version>
-    <dependency.karaf.version>3.0.3</dependency.karaf.version>
-    <dependency.mockito-all.version>1.9.5</dependency.mockito-all.version>
-    <dependency.junit.version>4.11</dependency.junit.version>
-    <dependency.json-simple.version>1.1</dependency.json-simple.version>
-    <dependency.guava.version>17.0</dependency.guava.version>
-    <dependency.javax.servlet-api.version>3.0.1</dependency.javax.servlet-api.version>
-    <dependency.osgi.version>4.3.1</dependency.osgi.version>
-    <dependency.pax-web-spi.version>3.1.4</dependency.pax-web-spi.version>
-    <dependency.jackson.version>1.9.2</dependency.jackson.version>
-    <dependency.xercesImpl.version>2.9.1</dependency.xercesImpl.version>
-    <dependency.angular-translate.version>2.12.1</dependency.angular-translate.version>
-    <dependency.fasterxml.jackson.version>2.5.4</dependency.fasterxml.jackson.version>
-    <dependency.jackson-mapper-asl.version>1.9.2</dependency.jackson-mapper-asl.version>
     <dependency.javax.ws.rs-api.version>2.0</dependency.javax.ws.rs-api.version>
-    <dependency.eclipse.version>3.6.0</dependency.eclipse.version>
+    <dependency.guava.version>17.0</dependency.guava.version>
+    <dependency.xercesImpl.version>2.9.1</dependency.xercesImpl.version>
+    <dependency.pentaho-kettle.version>7.1.0.12-132</dependency.pentaho-kettle.version>
+    <dependency.jackson-mapper-asl.version>1.9.2</dependency.jackson-mapper-asl.version>
+    <dependency.mockito-all.version>1.9.5</dependency.mockito-all.version>
+    <dependency.karaf.version>3.0.3</dependency.karaf.version>
+    <dependency.osgi.version>4.3.1</dependency.osgi.version>
+    <dependency.fasterxml.jackson.version>2.5.4</dependency.fasterxml.jackson.version>
+    <dependency.json-simple.version>1.1</dependency.json-simple.version>
+    <dependency.angular-translate.version>2.12.1</dependency.angular-translate.version>
+    <dependency.javax.servlet-api.version>3.0.1</dependency.javax.servlet-api.version>
+    <dependency.jackson.version>1.9.2</dependency.jackson.version>
     <dependency.commons-vfs2.version>2.1-20150824</dependency.commons-vfs2.version>
+    <dependency.eclipse.version>3.6.0</dependency.eclipse.version>
+    <dependency.pax-web-spi.version>3.1.4</dependency.pax-web-spi.version>
+    <dependency.junit.version>4.11</dependency.junit.version>
   </properties>
-  
-  <build>
-  
-    <resources>
-      <resource>
-        <directory>src/main/resources</directory>
-        <filtering>false</filtering>
-        <includes>
-          <include>**/*</include>
-        </includes>
-        <excludes>
-          <exclude>META-INF/**/*</exclude>
-          <exclude>OSGI-INF/**/*</exclude>
-          <exclude>web/*.html</exclude>
-        </excludes>
-      </resource>
-
-      <resource>
-        <directory>src/main/resources</directory>
-        <filtering>true</filtering>
-        <includes>
-          <include>META-INF/**/*</include>
-          <include>OSGI-INF/**/*</include>
-          <include>web/*.html</include>
-        </includes>
-      </resource>
-    </resources>
-
-
-    <plugins>
-    
-      <plugin>
-        <artifactId>maven-remote-resources-plugin</artifactId>
-        <version>1.5</version>
-        <executions>
-          <execution>
-            <goals>
-              <goal>bundle</goal>
-            </goals>
-          </execution>
-        </executions>
-        <configuration>
-          <includes>
-            <include>**/*</include>
-          </includes>
-        </configuration>
-      </plugin>
-      
-      <plugin>
-        <groupId>org.apache.felix</groupId>
-        <artifactId>maven-bundle-plugin</artifactId>
-        <version>2.4.0</version>
-        <extensions>true</extensions>
-        <configuration>
-          <instructions>
-            <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
-            <Bundle-Version>${project.version}</Bundle-Version>
-            <Export-Package>org.pentaho.di.ui.repo,
-              org.pentaho.di.ui.repo.endpoints,
-              org.pentaho.di.ui.repo.model
-            </Export-Package>
-            <Import-Package>org.json.simple; version="[1.1.0,1.1.1)", *</Import-Package>
-          </instructions>
-        </configuration>
-      </plugin>
-      
-    </plugins>
-    
-  </build>
-  
   <dependencies>
-
-    <!-- ######################### COMPILE ######################### -->
     <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>
       <artifactId>jackson-core</artifactId>
       <version>${dependency.fasterxml.jackson.version}</version>
       <exclusions>
         <exclusion>
-          <groupId>*</groupId>
           <artifactId>*</artifactId>
+          <groupId>*</groupId>
         </exclusion>
       </exclusions>
     </dependency>
@@ -126,8 +50,8 @@
       <version>${dependency.fasterxml.jackson.version}</version>
       <exclusions>
         <exclusion>
-          <groupId>*</groupId>
           <artifactId>*</artifactId>
+          <groupId>*</groupId>
         </exclusion>
       </exclusions>
     </dependency>
@@ -137,8 +61,8 @@
       <version>${dependency.fasterxml.jackson.version}</version>
       <exclusions>
         <exclusion>
-          <groupId>*</groupId>
           <artifactId>*</artifactId>
+          <groupId>*</groupId>
         </exclusion>
       </exclusions>
     </dependency>
@@ -148,8 +72,8 @@
       <version>${dependency.fasterxml.jackson.version}</version>
       <exclusions>
         <exclusion>
-          <groupId>*</groupId>
           <artifactId>*</artifactId>
+          <groupId>*</groupId>
         </exclusion>
       </exclusions>
     </dependency>
@@ -159,13 +83,11 @@
       <version>${dependency.fasterxml.jackson.version}</version>
       <exclusions>
         <exclusion>
-          <groupId>*</groupId>
           <artifactId>*</artifactId>
+          <groupId>*</groupId>
         </exclusion>
       </exclusions>
     </dependency>
-
-    <!-- ######################### RUNTIME ######################### -->
     <dependency>
       <groupId>org.webjars</groupId>
       <artifactId>jquery</artifactId>
@@ -202,8 +124,6 @@
       <version>${dependency.angular-animate.version}</version>
       <scope>runtime</scope>
     </dependency>
-
-    <!-- ######################### PROVIDED #########################-->
     <dependency>
       <groupId>pentaho-kettle</groupId>
       <artifactId>kettle-engine</artifactId>
@@ -282,8 +202,6 @@
         </exclusion>
       </exclusions>
     </dependency>
-
-    <!-- ######################### TEST ######################### -->
     <dependency>
       <groupId>org.mockito</groupId>
       <artifactId>mockito-all</artifactId>
@@ -320,7 +238,64 @@
       <version>${dependency.eclipse.version}</version>
       <scope>test</scope>
     </dependency>
-
   </dependencies>
-
+  <build>
+    <resources>
+      <resource>
+        <filtering>false</filtering>
+        <directory>src/main/resources</directory>
+        <includes>
+          <include>**/*</include>
+        </includes>
+        <excludes>
+          <exclude>META-INF/**/*</exclude>
+          <exclude>OSGI-INF/**/*</exclude>
+          <exclude>web/*.html</exclude>
+        </excludes>
+      </resource>
+      <resource>
+        <filtering>true</filtering>
+        <directory>src/main/resources</directory>
+        <includes>
+          <include>META-INF/**/*</include>
+          <include>OSGI-INF/**/*</include>
+          <include>web/*.html</include>
+        </includes>
+      </resource>
+    </resources>
+    <plugins>
+      <plugin>
+        <artifactId>maven-remote-resources-plugin</artifactId>
+        <version>1.5</version>
+        <executions>
+          <execution>
+            <goals>
+              <goal>bundle</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <includes>
+            <include>**/*</include>
+          </includes>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.felix</groupId>
+        <artifactId>maven-bundle-plugin</artifactId>
+        <version>2.4.0</version>
+        <extensions>true</extensions>
+        <configuration>
+          <instructions>
+            <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
+            <Bundle-Version>${project.version}</Bundle-Version>
+            <Export-Package>org.pentaho.di.ui.repo,
+              org.pentaho.di.ui.repo.endpoints,
+              org.pentaho.di.ui.repo.model</Export-Package>
+            <Import-Package>org.json.simple; version="[1.1.0,1.1.1)", *</Import-Package>
+          </instructions>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
 </project>
