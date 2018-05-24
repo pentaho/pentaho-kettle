@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -29,12 +29,14 @@ import java.util.Map;
 import java.util.Random;
 import java.util.UUID;
 
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.plugins.PluginRegistry;
+import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.junit.rules.RestorePDIEngineEnvironment;
 import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.di.trans.steps.loadsave.LoadSaveTester;
@@ -46,6 +48,7 @@ import org.pentaho.di.trans.steps.loadsave.validator.IntLoadSaveValidator;
 import org.pentaho.di.trans.steps.loadsave.validator.PrimitiveBooleanArrayLoadSaveValidator;
 import org.pentaho.di.trans.steps.loadsave.validator.PrimitiveIntArrayLoadSaveValidator;
 import org.pentaho.di.trans.steps.loadsave.validator.StringLoadSaveValidator;
+import org.powermock.reflect.Whitebox;
 
 public class ScriptValuesMetaModTest implements InitializerInterface<StepMetaInterface> {
   @ClassRule public static RestorePDIEngineEnvironment env = new RestorePDIEngineEnvironment();
@@ -142,4 +145,61 @@ public class ScriptValuesMetaModTest implements InitializerInterface<StepMetaInt
     }
   }
 
+  @Test
+  public void testExtend() {
+    ScriptValuesMetaMod meta = new ScriptValuesMetaMod();
+    int size = 1;
+    meta.extend( size );
+
+    Assert.assertEquals( size, meta.getFieldname().length );
+    Assert.assertNull( meta.getFieldname()[ 0 ] );
+    Assert.assertEquals( size, meta.getRename().length );
+    Assert.assertNull( meta.getRename()[ 0 ] );
+    Assert.assertEquals( size, meta.getType().length );
+    Assert.assertEquals( -1, meta.getType()[ 0 ] );
+    Assert.assertEquals( size, meta.getLength().length );
+    Assert.assertEquals( -1, meta.getLength()[ 0 ] );
+    Assert.assertEquals( size, meta.getPrecision().length );
+    Assert.assertEquals( -1, meta.getPrecision()[ 0 ] );
+    Assert.assertEquals( size, meta.getReplace().length );
+    Assert.assertFalse( meta.getReplace()[ 0 ] );
+
+    meta = new ScriptValuesMetaMod();
+    // set some values, uneven lengths
+    Whitebox.setInternalState( meta, "fieldname", new String[] { "Field 1", "Field 2", "Field 3" } );
+    Whitebox.setInternalState( meta, "rename", new String[] { "Field 1 - new" } );
+    Whitebox.setInternalState( meta, "type", new int[] { ValueMetaInterface.TYPE_STRING, ValueMetaInterface
+      .TYPE_INTEGER, ValueMetaInterface.TYPE_NUMBER } );
+
+    meta.extend( 3 );
+    validateExtended( meta );
+  }
+
+  private void validateExtended( final ScriptValuesMetaMod meta ) {
+
+    Assert.assertEquals( 3, meta.getFieldname().length );
+    Assert.assertEquals( "Field 1", meta.getFieldname()[ 0 ] );
+    Assert.assertEquals( "Field 2", meta.getFieldname()[ 1 ] );
+    Assert.assertEquals( "Field 3", meta.getFieldname()[ 2 ] );
+    Assert.assertEquals( 3, meta.getRename().length );
+    Assert.assertEquals( "Field 1 - new", meta.getRename()[ 0 ] );
+    Assert.assertNull( meta.getRename()[ 1 ] );
+    Assert.assertNull( meta.getRename()[ 2 ] );
+    Assert.assertEquals( 3, meta.getType().length );
+    Assert.assertEquals( ValueMetaInterface.TYPE_STRING, meta.getType()[ 0 ] );
+    Assert.assertEquals( ValueMetaInterface.TYPE_INTEGER, meta.getType()[ 1 ] );
+    Assert.assertEquals( ValueMetaInterface.TYPE_NUMBER, meta.getType()[ 2 ] );
+    Assert.assertEquals( 3, meta.getLength().length );
+    Assert.assertEquals( -1, meta.getLength()[ 0 ] );
+    Assert.assertEquals( -1, meta.getLength()[ 1 ] );
+    Assert.assertEquals( -1, meta.getLength()[ 2 ] );
+    Assert.assertEquals( 3, meta.getPrecision().length );
+    Assert.assertEquals( -1, meta.getPrecision()[ 0 ] );
+    Assert.assertEquals( -1, meta.getPrecision()[ 1 ] );
+    Assert.assertEquals( -1, meta.getPrecision()[ 2 ] );
+    Assert.assertEquals( 3, meta.getReplace().length );
+    Assert.assertFalse( meta.getReplace()[ 0 ] );
+    Assert.assertFalse( meta.getReplace()[ 1 ] );
+    Assert.assertFalse( meta.getReplace()[ 2 ] );
+  }
 }
