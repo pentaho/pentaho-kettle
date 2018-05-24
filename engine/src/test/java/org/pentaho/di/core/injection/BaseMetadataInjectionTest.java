@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -72,8 +72,10 @@ public abstract class BaseMetadataInjectionTest<T> {
     RowMeta rowsMeta = new RowMeta();
     rowsMeta.addValueMeta( valueMeta );
     List<RowMetaAndData> rows = new ArrayList<>();
-    for ( Object v : values ) {
-      rows.add( new RowMetaAndData( rowsMeta, v ) );
+    if ( values != null ) {
+      for ( Object v : values ) {
+        rows.add( new RowMetaAndData( rowsMeta, v ) );
+      }
     }
     return rows;
   }
