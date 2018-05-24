@@ -75,7 +75,7 @@
     <powermock-module-junit4.version>1.6.6</powermock-module-junit4.version>
     <powermock-api-mockito.version>1.6.6</powermock-api-mockito.version>
     <java-hamcrest.version>2.0.0.0</java-hamcrest.version>
-    <mockito-all.version>1.9.5</mockito-all.version>
+    <mockito-all.version>2.0.2-beta</mockito-all.version>
   </properties>
 
   <dependencyManagement>

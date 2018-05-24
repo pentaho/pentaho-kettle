@@ -92,10 +92,6 @@
     <provider class-name="org.apache.commons.vfs2.provider.ram.RamFileProvider">
         <scheme name="ram"/>
     </provider>
-    <provider class-name="org.apache.commons.vfs2.provider.hdfs.HdfsFileProvider">
-        <scheme name="hdfs"/>
-        <if-available class-name="org.apache.hadoop.fs.FileSystem"/>
-    </provider>
 
     <extension-map extension="zip" scheme="zip"/>
     <extension-map extension="tar" scheme="tar"/>
