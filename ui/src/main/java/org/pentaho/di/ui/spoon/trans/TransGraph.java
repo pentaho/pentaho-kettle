@@ -4154,7 +4154,13 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
   }
 
   public void stop() {
-    if ( ( running && !halting ) || safeStopping ) {
+    if ( safeStopping ) {
+      MessageBox messageBox = new MessageBox( shell, SWT.ICON_ERROR | SWT.OK );
+      messageBox.setMessage( BaseMessages.getString( PKG, "TransLog.Log.SafeStopAlreadyStarted" ) );
+      messageBox.open();
+      return;
+    }
+    if ( ( running && !halting ) ) {
       halting = true;
       trans.stopAll();
       log.logMinimal( BaseMessages.getString( PKG, "TransLog.Log.ProcessingOfTransformationStopped" ) );
@@ -4163,7 +4169,6 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
       initialized = false;
       halted = false;
       halting = false;
-      safeStopping = false;
 
       setControlStates();
 
