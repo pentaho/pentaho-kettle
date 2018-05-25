@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -61,7 +61,7 @@ import org.w3c.dom.Node;
     description = "SalesforceInput.TypeTooltipDesc.SalesforceInput",
     categoryDescription = "i18n:org.pentaho.di.trans.step:BaseStep.Category.Input",
     image = "SFI.svg",
-    documentationUrl = "http://wiki.pentaho.com/display/EAI/SalesForce+Input" )
+    documentationUrl = "Products/Data_Integration/Transformation_Step_Reference/Salesforce_Input" )
 public class SalesforceInputMeta extends SalesforceStepMeta {
   public static String DATE_TIME_FORMAT = "yyyy-MM-dd HH:mm:ss";
 
