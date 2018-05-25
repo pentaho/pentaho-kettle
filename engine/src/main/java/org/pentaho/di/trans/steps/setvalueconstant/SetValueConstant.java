@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -34,6 +34,8 @@ import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
+
+import java.util.List;
 
 /**
  * Replace Field value by a constant value.
@@ -79,37 +81,38 @@ public class SetValueConstant extends BaseStep implements StepInterface {
       data.setConvertRowMeta( data.getOutputRowMeta().cloneToType( ValueMetaInterface.TYPE_STRING ) );
 
       // Consider only selected fields
-      if ( meta.getFieldName() != null && meta.getFieldName().length > 0 ) {
-        data.setFieldnrs( new int[meta.getFieldName().length] );
-        data.setRealReplaceByValues( new String[meta.getReplaceValue().length] );
-        for ( int i = 0; i < meta.getFieldName().length; i++ ) {
+      List<SetValueConstantMeta.Field> fields = meta.getFields();
+      int size = fields.size();
+      if ( !Utils.isEmpty( fields ) ) {
+        data.setFieldnrs( new int[size] );
+        data.setRealReplaceByValues( new String[size] );
+        for ( int i = 0; i < size; i++ ) {
           // Check if this field was specified only one time
-          for ( int j = 0; j < meta.getFieldName().length; j++ ) {
-            if ( meta.getFieldName()[j].equals( meta.getFieldName()[i] ) ) {
-              if ( j != i ) {
-                throw new KettleException( BaseMessages.getString( PKG,
-                  "SetValueConstant.Log.FieldSpecifiedMoreThatOne", meta.getFieldName()[i], "" + i, "" + j ) );
-              }
+          final SetValueConstantMeta.Field check = fields.get( i );
+          for ( SetValueConstantMeta.Field field : fields ) {
+            if ( field.getFieldName() != null && field != check && field.getFieldName().equalsIgnoreCase( check.getFieldName() ) ) {
+              throw new KettleException( BaseMessages.getString( PKG, "SetValueConstant.Log"
+                      + ".FieldSpecifiedMoreThatOne", check.getFieldName() ) );
             }
           }
 
-          data.getFieldnrs()[i] = data.getOutputRowMeta().indexOfValue( meta.getFieldName()[i] );
+          data.getFieldnrs()[i] = data.getOutputRowMeta().indexOfValue( meta.getField( i ).getFieldName() );
 
           if ( data.getFieldnrs()[i] < 0 ) {
-            logError( BaseMessages.getString( PKG, "SetValueConstant.Log.CanNotFindField", meta.getFieldName()[i] ) );
+            logError( BaseMessages.getString( PKG, "SetValueConstant.Log.CanNotFindField", meta.getField( i ).getFieldName() ) );
             throw new KettleException( BaseMessages.getString( PKG, "SetValueConstant.Log.CanNotFindField", meta
-              .getFieldName()[i] ) );
+              .getField( i ).getFieldName() ) );
           }
 
-          if ( meta.isSetEmptyString()[i] ) {
+          if ( meta.getField( i ).isEmptyString() ) {
             // Just set empty string
             data.getRealReplaceByValues()[i] = StringUtil.EMPTY_STRING;
           } else {
             // set specified value
             if ( meta.isUseVars() ) {
-              data.getRealReplaceByValues()[i] = environmentSubstitute( meta.getReplaceValue()[i] );
+              data.getRealReplaceByValues()[i] = environmentSubstitute( meta.getField( i ).getReplaceValue() );
             } else {
-              data.getRealReplaceByValues()[i] = meta.getReplaceValue()[i];
+              data.getRealReplaceByValues()[i] = meta.getField( i ).getReplaceValue();
             }
           }
         }
@@ -147,8 +150,8 @@ public class SetValueConstant extends BaseStep implements StepInterface {
       ValueMetaInterface targetValueMeta = data.getOutputRowMeta().getValueMeta( data.getFieldnrs()[i] );
       ValueMetaInterface sourceValueMeta = data.getConvertRowMeta().getValueMeta( data.getFieldnrs()[i] );
 
-      if ( !Utils.isEmpty( meta.getReplaceMask()[i] ) ) {
-        sourceValueMeta.setConversionMask( meta.getReplaceMask()[i] );
+      if ( !Utils.isEmpty( meta.getField( i ).getReplaceMask() ) ) {
+        sourceValueMeta.setConversionMask( meta.getField( i ).getReplaceMask() );
       }
 
       sourceValueMeta.setStorageType( ValueMetaInterface.STORAGE_TYPE_NORMAL );
