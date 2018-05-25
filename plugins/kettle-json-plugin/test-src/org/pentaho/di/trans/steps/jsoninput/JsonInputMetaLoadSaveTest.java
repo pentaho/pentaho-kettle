@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -47,7 +47,7 @@ public class JsonInputMetaLoadSaveTest implements InitializerInterface<StepMetaI
   @Test
   public void testLoadSave() throws KettleException {
     List<String> attributes = Arrays.asList( "includeFilename", "filenameField", "includeRowNumber", "addResultFile",
-      "ReadUrl", "removeSourceField", "IgnoreEmptyFile", "doNotFailIfNoFile", "ignoreMissingPath", "rowNumberField",
+      "ReadUrl", "removeSourceField", "IgnoreEmptyFile", "doNotFailIfNoFile", "ignoreMissingPath", "defaultPathLeafToNull", "rowNumberField",
       "FileName", "FileMask", "ExcludeFileMask", "FileRequired", "IncludeSubFolders", "InputFields", "rowLimit",
       "inFields", "isAFile", "FieldValue", "ShortFileNameField", "PathField", "HiddenField",
       "LastModificationDateField", "UriField", "UriField", "ExtensionField", "SizeField" );
@@ -106,6 +106,5 @@ public class JsonInputMetaLoadSaveTest implements InitializerInterface<StepMetaI
       }
       return ( (JsonInputField) actual ).getXML().equals( testObject.getXML() );
     }
-
   }
 }

@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,63 +22,45 @@
 
 package org.pentaho.di.trans.steps.jsoninput;
 
-import junit.framework.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.database.DatabaseMeta;
+import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.variables.VariableSpace;
+import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.metastore.api.IMetaStore;
+import org.w3c.dom.Document;
+import org.w3c.dom.Node;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.util.Collections;
+import java.util.List;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 /**
  * Created by bmorrise on 3/22/16.
  */
 @RunWith( MockitoJUnitRunner.class )
 public class JsonInputMetaTest {
-
+  private static final List<DatabaseMeta> DATABASES_LIST = Collections.emptyList();
   public static final String DATA = "data";
   public static final String NAME = "name";
-
-  private String TEST_XML = "    <include>Y</include>" + Const.CR
-    + "    <include_field>filename</include_field>" + Const.CR
-    + "    <rownum>N</rownum>" + Const.CR
-    + "    <addresultfile>N</addresultfile>" + Const.CR
-    + "    <readurl>Y</readurl>" + Const.CR
-    + "    <removeSourceField>Y</removeSourceField>" + Const.CR
-    + "    <IsIgnoreEmptyFile>N</IsIgnoreEmptyFile>" + Const.CR
-    + "    <doNotFailIfNoFile>N</doNotFailIfNoFile>" + Const.CR
-    + "    <ignoreMissingPath>N</ignoreMissingPath>" + Const.CR
-    + "    <rownum_field/>" + Const.CR
-    + "    <file>" + Const.CR
-    + "      <name>file.json</name>" + Const.CR
-    + "      <filemask/>" + Const.CR
-    + "      <exclude_filemask/>" + Const.CR
-    + "      <file_required>N</file_required>" + Const.CR
-    + "      <include_subfolders>N</include_subfolders>" + Const.CR
-    + "    </file>" + Const.CR
-    + "    <fields>" + Const.CR
-    + "null    </fields>" + Const.CR
-    + "    <limit>0</limit>" + Const.CR
-    + "    <IsInFields>N</IsInFields>" + Const.CR
-    + "    <IsAFile>N</IsAFile>" + Const.CR
-    + "    <valueField/>" + Const.CR
-    + "    <shortFileFieldName/>" + Const.CR
-    + "    <pathFieldName/>" + Const.CR
-    + "    <hiddenFieldName/>" + Const.CR
-    + "    <lastModificationTimeFieldName/>" + Const.CR
-    + "    <uriNameFieldName/>" + Const.CR
-    + "    <rootUriNameFieldName/>" + Const.CR
-    + "    <extensionFieldName/>" + Const.CR
-    + "    <sizeFieldName/>" + Const.CR;
+  private static final Pattern CLEAN_NODES = Pattern.compile( "(<step>)[\\r|\\n]+|</step>" );
 
   JsonInputMeta jsonInputMeta;
 
@@ -111,21 +93,6 @@ public class JsonInputMetaTest {
     jsonInputMeta = new JsonInputMeta();
     jsonInputMeta.setInputFiles( inputFiles );
     jsonInputMeta.setInputFields( new JsonInputField[] { inputField } );
-
-
-    inputFiles.fileRequired = new String[] { " " };
-    inputFiles.includeSubFolders = new String[] { " " };
-
-    jsonInputMeta.setFileName( new String[] { "file.json" } );
-    jsonInputMeta.setFileMask( new String[] { "" } );
-    jsonInputMeta.setExcludeFileMask( new String[] { "" } );
-    jsonInputMeta.setFileRequired( new String[] { "" } );
-    jsonInputMeta.setIncludeSubFolders( new String[] { "" } );
-
-    jsonInputMeta.setIncludeFilename( true );
-    jsonInputMeta.setFilenameField( "filename" );
-    jsonInputMeta.setReadUrl( true );
-    jsonInputMeta.setRemoveSourceField( true );
   }
 
   @Test
@@ -149,13 +116,64 @@ public class JsonInputMetaTest {
     ObjectId objectId = () -> "id";
     when( repository.getStepAttributeBoolean( objectId, "IsInFields" ) ).thenReturn( true );
     jsonInputMeta.readRep( repository, null, objectId, null );
-    Assert.assertTrue( jsonInputMeta.isInFields() );
-    Assert.assertTrue( jsonInputMeta.inputFiles.acceptingFilenames );
+    assertTrue( jsonInputMeta.isInFields() );
+    assertTrue( jsonInputMeta.inputFiles.acceptingFilenames );
   }
 
   @Test
-  public void testGetXml() {
+  public void testGetXmlOfDefaultMeta_defaultPathLeafToNull_Y() throws Exception {
+    jsonInputMeta = new JsonInputMeta();
+    jsonInputMeta.setDefault();
     String xml = jsonInputMeta.getXML();
-    Assert.assertEquals( xml, TEST_XML );
+    assertEquals( expectedMeta( "step_default.xml" ), xml );
+  }
+
+  @Test
+  public void testGetXmlOfMeta_defaultPathLeafToNull_N() throws Exception {
+    jsonInputMeta = new JsonInputMeta();
+    jsonInputMeta.setDefault();
+    jsonInputMeta.setDefaultPathLeafToNull( false );
+    String xml = jsonInputMeta.getXML();
+    assertEquals( expectedMeta( "step_defaultPathLeafToNull_N.xml" ), xml );
+  }
+
+  // Loading step meta from the step xml where DefaultPathLeafToNull=N
+  @Test
+  public void testMetaLoad_DefaultPathLeafToNull_Is_N() throws KettleXMLException {
+    jsonInputMeta = new JsonInputMeta();
+    jsonInputMeta.loadXML( loadStep( "step_defaultPathLeafToNull_N.xml" ), DATABASES_LIST, metaStore );
+    assertEquals( "Option.DEFAULT_PATH_LEAF_TO_NULL ", false, jsonInputMeta.isDefaultPathLeafToNull() );
+  }
+
+  // Loading step meta from default step xml. In this case DefaultPathLeafToNull=Y in xml.
+  @Test
+  public void testDefaultMetaLoad_DefaultPathLeafToNull_Is_Y() throws KettleXMLException {
+    jsonInputMeta = new JsonInputMeta();
+    jsonInputMeta.loadXML( loadStep( "step_default.xml" ), DATABASES_LIST, metaStore );
+    assertEquals( "Option.DEFAULT_PATH_LEAF_TO_NULL ", true, jsonInputMeta.isDefaultPathLeafToNull() );
+  }
+
+  // Loading step meta from the step xml that was created before PDI-17060 fix. In this case xml contains no
+  // DefaultPathLeafToNull node at all.
+  // For backward compatibility in this case we think that the option is set to default value - Y.
+  @Test
+  public void testMetaLoadAsDefault_NoDefaultPathLeafToNull_In_Xml() throws KettleXMLException {
+    jsonInputMeta = new JsonInputMeta();
+    jsonInputMeta.loadXML( loadStep( "step_no_defaultPathLeafToNull_node.xml" ), DATABASES_LIST, metaStore );
+    assertEquals( "Option.DEFAULT_PATH_LEAF_TO_NULL ", true, jsonInputMeta.isDefaultPathLeafToNull() );
+  }
+
+  private Node loadStep( String step ) throws KettleXMLException {
+    Document document = XMLHandler.loadXMLFile( this.getClass().getResourceAsStream( step ) );
+    Node stepNode = (Node) document.getDocumentElement();
+    return stepNode;
+  }
+
+  private String expectedMeta( String step ) throws Exception {
+    try ( BufferedReader reader = new BufferedReader( new InputStreamReader( this.getClass().getResourceAsStream( step ) ) ) ) {
+      String xml = reader.lines().collect( Collectors.joining( Const.CR ) );
+      xml = CLEAN_NODES.matcher( xml ).replaceAll( "" );
+      return xml;
+    }
   }
 }
