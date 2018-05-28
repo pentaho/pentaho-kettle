@@ -6,11 +6,11 @@
   <parent>
     <groupId>org.pentaho.di.plugins</groupId>
     <artifactId>pdi-plugins</artifactId>
-    <version>8.0-SNAPSHOT</version>
+    <version>8.0.0.6-352</version>
   </parent>
 
   <artifactId>file-open-save</artifactId>
-  <version>8.0-SNAPSHOT</version>
+  <version>8.0.0.6-352</version>
   <packaging>pom</packaging>
 
   <name>PDI File Open and Save Plugin</name>
@@ -21,15 +21,15 @@
   </modules>
 
   <properties>
-    <dependency.pentaho-kettle.version>${project.version}</dependency.pentaho-kettle.version>
+    <dependency.pentaho-kettle.version>8.0.0.6-352</dependency.pentaho-kettle.version>
     <dependency.karaf.version>3.0.3</dependency.karaf.version>
     <dependency.osgi.version>4.3.1</dependency.osgi.version>
     <version.for.license>${project.version}</version.for.license>
     <js.project.list>requirejs,requirejs-text,angular,require-css,angular-i18n</js.project.list>
     <angular.version>1.5.8</angular.version>
-    <dependency.pentaho-osgi-bundles.revision>8.0-SNAPSHOT</dependency.pentaho-osgi-bundles.revision>
+    <dependency.pentaho-osgi-bundles.revision>8.0.0.6-352</dependency.pentaho-osgi-bundles.revision>
     <karaf-maven-plugin.version>3.0.3</karaf-maven-plugin.version>
-    <dependency.kettle.ui.swt.revision>8.0-SNAPSHOT</dependency.kettle.ui.swt.revision>
+    <dependency.kettle.ui.swt.revision>8.0.0.6-352</dependency.kettle.ui.swt.revision>
     <cxf.karaf.version>3.0.13</cxf.karaf.version>
     <requirejs-text.version>2.0.10</requirejs-text.version>
     <require-css.version>0.1.8</require-css.version>

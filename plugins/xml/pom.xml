@@ -6,11 +6,11 @@
   <parent>
     <groupId>org.pentaho.di.plugins</groupId>
     <artifactId>pdi-plugins</artifactId>
-    <version>8.0-SNAPSHOT</version>
+    <version>8.0.0.6-352</version>
   </parent>
 
   <artifactId>xml</artifactId>
-  <version>8.0-SNAPSHOT</version>
+  <version>8.0.0.6-352</version>
   <packaging>pom</packaging>
 
   <name>PDI XML Plugin</name>
@@ -35,7 +35,7 @@
     <jface.version>3.3.0-I20070606-0010</jface.version>
     <junit.version>4.7</junit.version>
     <commons-vfs2.version>2.1-20150824</commons-vfs2.version>
-    <kettle.version>${project.version}</kettle.version>
+    <kettle.version>8.0.0.6-352</kettle.version>
     <mockito.version>1.9.5</mockito.version>
     <saxon.version>8.7</saxon.version>
     <poi.version>3.17</poi.version>
