@@ -6,7 +6,7 @@
 
   <groupId>pentaho-kettle</groupId>
   <artifactId>kettle-engine</artifactId>
-  <version>8.0-SNAPSHOT</version>
+  <version>8.0.0.7-353</version>
   <packaging>jar</packaging>
 
   <name>PDI Engine</name>
@@ -14,7 +14,7 @@
   <parent>
     <groupId>org.pentaho.di</groupId>
     <artifactId>pdi</artifactId>
-    <version>8.0-SNAPSHOT</version>
+    <version>8.0.0.7-353</version>
   </parent>
 
   <properties>
@@ -23,10 +23,10 @@
     <maven-failsafe-plugin.reuseForks>false</maven-failsafe-plugin.reuseForks>
 
     <!-- Pentaho dependencies -->
-    <pentaho-reporting.version>${project.version}</pentaho-reporting.version>
-    <pentaho-registry.version>${project.version}</pentaho-registry.version>
-    <pentaho-connections.version>${project.version}</pentaho-connections.version>
-    <mondrian.version>8.0-SNAPSHOT</mondrian.version>
+    <pentaho-reporting.version>8.0.0.7-353</pentaho-reporting.version>
+    <pentaho-registry.version>8.0.0.7-353</pentaho-registry.version>
+    <pentaho-connections.version>8.0.0.7-353</pentaho-connections.version>
+    <mondrian.version>8.0.0.7-353</mondrian.version>
 
     <!-- Third-party dependencies -->
     <antlr-complete.version>3.5.2</antlr-complete.version>
