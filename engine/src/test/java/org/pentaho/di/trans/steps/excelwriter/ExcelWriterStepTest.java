@@ -30,7 +30,9 @@ import org.junit.Before;
 import org.junit.Test;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.LoggingObjectInterface;
+import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaInteger;
 import org.pentaho.di.trans.step.StepInjectionMetaEntry;
 import org.pentaho.di.trans.steps.mock.StepMockHelper;
 import org.pentaho.di.utils.TestUtils;
@@ -46,8 +48,13 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyInt;
+import static org.mockito.Matchers.anyObject;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 public class ExcelWriterStepTest {
@@ -257,6 +264,45 @@ public class ExcelWriterStepTest {
     dataMock.realTemplateFileName = getClass().getResource( "template_test.xlsx" ).getFile();
     dataMock.realSheetname = "Sheet1";
     step.prepareNextOutputFile();
+  }
+
+  @Test
+  public void testWriteUsingTemplateWithFormatting() throws Exception {
+    assertTrue( step.init( metaMock, dataMock ) );
+    String path = Files.createTempDir().getAbsolutePath() + File.separator + "formatted.xlsx";
+
+    dataMock.fieldnrs = new int[] { 0 };
+    dataMock.linkfieldnrs = new int[] { -1 };
+    dataMock.commentfieldnrs = new int[] { -1 };
+    dataMock.createNewFile = true;
+    dataMock.realTemplateFileName = getClass().getResource( "template_with_formatting.xlsx" ).getFile();
+    dataMock.realSheetname = "TicketData";
+    dataMock.inputRowMeta = mock( RowMetaInterface.class );
+
+    ExcelWriterStepField field = new ExcelWriterStepField();
+    ValueMetaInterface vmi = mock( ValueMetaInteger.class );
+    doReturn( ValueMetaInterface.TYPE_INTEGER ).when( vmi ).getType();
+    doReturn( "name" ).when( vmi ).getName();
+    doReturn( 12.0 ).when( vmi ).getNumber( anyObject() );
+
+    doReturn( path ).when( step ).buildFilename( 0 );
+    doReturn( true ).when( metaMock ).isTemplateEnabled();
+    doReturn( true ).when( metaMock ).isStreamingData();
+    doReturn( false ).when( metaMock ).isHeaderEnabled();
+    doReturn( "xlsx" ).when( metaMock ).getExtension();
+    doReturn( new ExcelWriterStepField[] { field } ).when( metaMock ).getOutputFields();
+
+    doReturn( 10 ).when( dataMock.inputRowMeta ).size();
+    doReturn( vmi ).when( dataMock.inputRowMeta ).getValueMeta( anyInt() );
+
+    step.prepareNextOutputFile();
+
+    dataMock.posY = 1;
+    dataMock.sheet = spy( dataMock.sheet );
+    step.writeNextLine( new Object[] { 12 } );
+
+    // without the fix for PDI-17146, createRow would generate an exception
+    verify( dataMock.sheet, times( 1 ) ).createRow( anyInt() );
   }
 
   private HSSFWorkbook createWorkbook( FileObject file ) throws Exception {
