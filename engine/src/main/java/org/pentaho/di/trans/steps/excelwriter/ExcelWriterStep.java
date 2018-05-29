@@ -760,8 +760,17 @@ public class ExcelWriterStep extends BaseStep implements StepInterface {
         writeHeader();
       }
       if ( meta.isStreamingData() && meta.isTemplateEnabled() ) {
-        data.wb = new SXSSFWorkbook( (XSSFWorkbook) data.wb, 100 );
-        data.sheet = data.wb.getSheet( data.realSheetname );
+        Sheet templateSheet = ((XSSFWorkbook) data.wb).getSheet( data.realSheetname );
+        int currentRowNum = templateSheet.getLastRowNum();
+        SXSSFWorkbook sxssfWorkbook = new SXSSFWorkbook( (XSSFWorkbook) data.wb, 100 );
+        Sheet aNewSheet = sxssfWorkbook.getSheet( data.realSheetname );
+        int aNewSheetRowCount = aNewSheet.getLastRowNum();
+        while ( currentRowNum > aNewSheetRowCount ) {
+          templateSheet.removeRow( templateSheet.getRow( currentRowNum ) );
+          currentRowNum--;
+        }
+        data.wb = sxssfWorkbook;
+        data.sheet = sxssfWorkbook.getSheet( data.realSheetname );
       }
       if ( log.isDebug() ) {
         logDebug( BaseMessages.getString( PKG, "ExcelWriterStep.Log.FileOpened", buildFilename ) );
