@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -35,6 +35,8 @@ import org.pentaho.ui.xul.dom.Document;
 import static org.junit.Assert.*;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -119,7 +121,8 @@ public class FragmentHandlerTest {
     XulComponent firstChild = mock( XulComponent.class );
     when( mockDoc.getFirstChild() ).thenReturn( firstChild );
     when( fragmentContainer.getDocumentRoot() ).thenReturn( mockDoc );
-    when( xulDomContainer.loadFragment( anyString(), any( Object.class ) ) ).thenReturn( fragmentContainer );
+    String inputString = null;
+    when( xulDomContainer.loadFragment( eq( inputString ), any( Object.class ) ) ).thenReturn( fragmentContainer );
     fragmentHandler.loadDatabaseOptionsFragment( null );
   }
 
@@ -129,7 +132,8 @@ public class FragmentHandlerTest {
     XulComponent parent = mock( XulComponent.class );
     when( component.getParent() ).thenReturn( parent );
     when( document.getElementById( "database-options-box" ) ).thenReturn( component );
-    when( xulDomContainer.loadFragment( anyString(), any( Object.class ) ) ).thenThrow( new XulException() );
+    String inputString = null;
+    when( xulDomContainer.loadFragment( eq( inputString ), any( Object.class ) ) ).thenThrow( new XulException() );
     fragmentHandler.loadDatabaseOptionsFragment( null );
   }
 
