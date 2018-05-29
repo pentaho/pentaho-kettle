@@ -70,7 +70,7 @@
     <wsdl4j.version>1.6.2</wsdl4j.version>
     <wsdl4j-qname.version>1.6.1</wsdl4j-qname.version>
     <ehcache-core.version>2.5.1</ehcache-core.version>
-    <jackson.version>2.9.4</jackson.version>
+    <jackson.version>2.9.5</jackson.version>
     <jackson-jaxrs.version>1.9.2</jackson-jaxrs.version>
     <hibernate-core.version>3.6.9.Final</hibernate-core.version>
     <hibernate-c3p0.version>3.6.9.Final</hibernate-c3p0.version>
