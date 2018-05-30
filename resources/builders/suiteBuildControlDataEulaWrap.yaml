@@ -751,11 +751,11 @@ jobGroups:
        root            :  foundry
        testable        :  false
 
-   4700:
+  4700:
 
-        - jobID           :  installer
-          scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-installer.git
-          scmBranch       :  ${DEFAULT_BRANCH}
-          directives      :  -Djre.mac.x64.dir=${IBUILDER_RESOURCES_ROOT_PATH}/osx/java -Djre.linux.x64.dir=${IBUILDER_RESOURCES_ROOT_PATH}/nix/java -Djre.windows.x64.dir=${IBUILDER_RESOURCES_ROOT_PATH}/win/java -Dpostgresql.mac.x64.dir=${IBUILDER_RESOURCES_ROOT_PATH}/osx/postgresql -Dpostgresql.linux.x64.dir=${IBUILDER_RESOURCES_ROOT_PATH}/nix/postgresql -Dpostgresql.windows.x64.dir=${IBUILDER_RESOURCES_ROOT_PATH}/win/postgresql -Dcommon.linux.x64.dir=${IBUILDER_RESOURCES_ROOT_PATH}/nix/common -Dcommon.mac.x64.dir=${IBUILDER_RESOURCES_ROOT_PATH}/osx/common -Dcommon.windows.x64.dir=${IBUILDER_RESOURCES_ROOT_PATH}/win/common -Dinstallbuilder.dir=${INSTALL_BUILDER_ROOT_DIR}
-          versionProperty :  pentaho.version
-          testable        :  false
+     - jobID           :  installer
+       scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-installer.git
+       scmBranch       :  ${DEFAULT_BRANCH}
+       directives      :  -Djre.mac.x64.dir=${IBUILDER_RESOURCES_ROOT_PATH}/osx/java -Djre.linux.x64.dir=${IBUILDER_RESOURCES_ROOT_PATH}/nix/java -Djre.windows.x64.dir=${IBUILDER_RESOURCES_ROOT_PATH}/win/java -Dpostgresql.mac.x64.dir=${IBUILDER_RESOURCES_ROOT_PATH}/osx/postgresql -Dpostgresql.linux.x64.dir=${IBUILDER_RESOURCES_ROOT_PATH}/nix/postgresql -Dpostgresql.windows.x64.dir=${IBUILDER_RESOURCES_ROOT_PATH}/win/postgresql -Dcommon.linux.x64.dir=${IBUILDER_RESOURCES_ROOT_PATH}/nix/common -Dcommon.mac.x64.dir=${IBUILDER_RESOURCES_ROOT_PATH}/osx/common -Dcommon.windows.x64.dir=${IBUILDER_RESOURCES_ROOT_PATH}/win/common -Dinstallbuilder.dir=${INSTALL_BUILDER_ROOT_DIR}
+       versionProperty :  pentaho.version
+       testable        :  false
