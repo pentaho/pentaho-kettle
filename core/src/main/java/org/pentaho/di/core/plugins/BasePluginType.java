@@ -517,6 +517,7 @@ public abstract class BasePluginType implements PluginTypeInterface {
       Map<String, String> localDescriptions =
         readPluginLocale( pluginNode, "localized_description", "description" );
       description = getAlternativeTranslation( description, localDescriptions );
+      description += addDeprecation( category );
 
       Map<String, String> localizedTooltips = readPluginLocale( pluginNode, "localized_tooltip", "tooltip" );
       tooltip = getAlternativeTranslation( tooltip, localizedTooltips );
@@ -758,6 +759,8 @@ public abstract class BasePluginType implements PluginTypeInterface {
     String forumUrl = extractForumUrl( annotation );
     String classLoaderGroup = extractClassLoaderGroup( annotation );
 
+    name += addDeprecation( category );
+
     Map<Class<?>, String> classMap = new HashMap<>();
 
     PluginMainClassType mainType = getClass().getAnnotation( PluginMainClassType.class );
@@ -792,4 +795,12 @@ public abstract class BasePluginType implements PluginTypeInterface {
    * @param annotation
    */
   protected abstract void addExtraClasses( Map<Class<?>, String> classMap, Class<?> clazz, Annotation annotation );
+
+  private String addDeprecation( String category ) {
+    String deprecated = BaseMessages.getString( PKG, "PluginRegistry.Category.Deprecated" );
+    if ( deprecated.equals( category )  ) {
+      return " (" + deprecated.toLowerCase() + ")";
+    }
+    return "";
+  }
 }
