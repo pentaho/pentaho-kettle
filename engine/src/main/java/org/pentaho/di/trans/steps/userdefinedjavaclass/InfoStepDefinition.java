@@ -23,17 +23,26 @@
 package org.pentaho.di.trans.steps.userdefinedjavaclass;
 
 import org.pentaho.di.core.injection.Injection;
+import org.pentaho.di.trans.step.StepMeta;
 
-public class UsageParameter implements Cloneable {
-  @Injection( name = "TAG", group = "PARAMETERS" )
-  public String tag;
-  @Injection( name = "VALUE", group = "PARAMETERS" )
-  public String value;
-  @Injection( name = "DESCRIPTION", group = "PARAMETERS" )
-  public String description;
+public class InfoStepDefinition extends StepDefinition {
+  @Injection( name = "INFO_TAG", group = "INFO_STEPS" )
+  public String tag = super.tag;
+  @Injection( name = "INFO_STEP_NAME", group = "INFO_STEPS" )
+  public String stepName = super.stepName;
+  public StepMeta stepMeta = super.stepMeta;
+  @Injection( name = "INFO_DESCRIPTION", group = "INFO_STEPS" )
+  public String description = super.description;
+
+  public InfoStepDefinition() {
+    super();
+  }
+
+  public InfoStepDefinition( String tag, String stepName, StepMeta stepMeta, String description ) {
+    super( tag, stepName, stepMeta, description );
+  }
 
   public Object clone() throws CloneNotSupportedException {
     return super.clone();
   }
-
 }

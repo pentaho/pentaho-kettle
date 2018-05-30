@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -99,9 +99,10 @@ import org.pentaho.di.trans.step.StepDialogInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.steps.rowgenerator.RowGeneratorMeta;
 import org.pentaho.di.trans.steps.userdefinedjavaclass.FieldHelper;
-import org.pentaho.di.trans.steps.userdefinedjavaclass.StepDefinition;
-import org.pentaho.di.trans.steps.userdefinedjavaclass.UsageParameter;
+import org.pentaho.di.trans.steps.userdefinedjavaclass.InfoStepDefinition;
+import org.pentaho.di.trans.steps.userdefinedjavaclass.TargetStepDefinition;
 import org.pentaho.di.trans.steps.userdefinedjavaclass.UserDefinedJavaClassDef;
+import org.pentaho.di.trans.steps.userdefinedjavaclass.UsageParameter;
 import org.pentaho.di.trans.steps.userdefinedjavaclass.UserDefinedJavaClassDef.ClassType;
 import org.pentaho.di.trans.steps.userdefinedjavaclass.UserDefinedJavaClassMeta;
 import org.pentaho.di.trans.steps.userdefinedjavaclass.UserDefinedJavaClassMeta.FieldInfo;
@@ -1112,8 +1113,9 @@ public class UserDefinedJavaClassDialog extends BaseStepDialog implements StepDi
 
     wFields.setRowNums();
     wFields.optWidth( true );
+
     int rowNr = 0;
-    for ( StepDefinition stepDefinition : input.getInfoStepDefinitions() ) {
+    for ( InfoStepDefinition stepDefinition : input.getInfoStepDefinitions() ) {
       TableItem item = wInfoSteps.table.getItem( rowNr++ );
       int colNr = 1;
       item.setText( colNr++, Const.NVL( stepDefinition.tag, "" ) );
@@ -1124,7 +1126,7 @@ public class UserDefinedJavaClassDialog extends BaseStepDialog implements StepDi
     wInfoSteps.optWidth( true );
 
     rowNr = 0;
-    for ( StepDefinition stepDefinition : input.getTargetStepDefinitions() ) {
+    for ( TargetStepDefinition stepDefinition : input.getTargetStepDefinitions() ) {
       TableItem item = wTargetSteps.table.getItem( rowNr++ );
       int colNr = 1;
       item.setText( colNr++, Const.NVL( stepDefinition.tag, "" ) );
@@ -1208,7 +1210,7 @@ public class UserDefinedJavaClassDialog extends BaseStepDialog implements StepDi
     meta.getInfoStepDefinitions().clear();
     for ( int i = 0; i < nrInfos; i++ ) {
       TableItem item = wInfoSteps.getNonEmpty( i );
-      StepDefinition stepDefinition = new StepDefinition();
+      InfoStepDefinition stepDefinition = new InfoStepDefinition();
       int colNr = 1;
       stepDefinition.tag = item.getText( colNr++ );
       stepDefinition.stepMeta = transMeta.findStep( item.getText( colNr++ ) );
@@ -1220,7 +1222,7 @@ public class UserDefinedJavaClassDialog extends BaseStepDialog implements StepDi
     meta.getTargetStepDefinitions().clear();
     for ( int i = 0; i < nrTargets; i++ ) {
       TableItem item = wTargetSteps.getNonEmpty( i );
-      StepDefinition stepDefinition = new StepDefinition();
+      TargetStepDefinition stepDefinition = new TargetStepDefinition();
       int colNr = 1;
       stepDefinition.tag = item.getText( colNr++ );
       stepDefinition.stepMeta = transMeta.findStep( item.getText( colNr++ ) );

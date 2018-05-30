@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -82,7 +82,7 @@ public abstract class TransformClassBase {
       }
 
       data.infoMap = new HashMap<String, String>();
-      for ( StepDefinition stepDefinition : meta.getInfoStepDefinitions() ) {
+      for ( InfoStepDefinition stepDefinition : meta.getInfoStepDefinitions() ) {
         if ( stepDefinition.tag != null
           && stepDefinition.stepMeta != null && stepDefinition.stepMeta.getName() != null ) {
           data.infoMap.put( stepDefinition.tag, stepDefinition.stepMeta.getName() );
@@ -90,7 +90,7 @@ public abstract class TransformClassBase {
       }
 
       data.targetMap = new HashMap<String, String>();
-      for ( StepDefinition stepDefinition : meta.getTargetStepDefinitions() ) {
+      for ( TargetStepDefinition stepDefinition : meta.getTargetStepDefinitions() ) {
         if ( stepDefinition.tag != null
           && stepDefinition.stepMeta != null && stepDefinition.stepMeta.getName() != null ) {
           data.targetMap.put( stepDefinition.tag, stepDefinition.stepMeta.getName() );
@@ -555,11 +555,11 @@ public abstract class TransformClassBase {
   public static StepIOMetaInterface getStepIOMeta( UserDefinedJavaClassMeta meta ) {
     StepIOMetaInterface ioMeta = new StepIOMeta( true, true, true, false, true, true );
 
-    for ( StepDefinition stepDefinition : meta.getInfoStepDefinitions() ) {
+    for ( InfoStepDefinition stepDefinition : meta.getInfoStepDefinitions() ) {
       ioMeta.addStream( new Stream(
         StreamType.INFO, stepDefinition.stepMeta, stepDefinition.description, StreamIcon.INFO, null ) );
     }
-    for ( StepDefinition stepDefinition : meta.getTargetStepDefinitions() ) {
+    for ( TargetStepDefinition stepDefinition : meta.getTargetStepDefinitions() ) {
       ioMeta.addStream( new Stream(
         StreamType.TARGET, stepDefinition.stepMeta, stepDefinition.description, StreamIcon.TARGET, null ) );
     }
