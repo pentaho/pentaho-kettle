@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -34,6 +34,8 @@ import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleXMLException;
+import org.pentaho.di.core.injection.Injection;
+import org.pentaho.di.core.injection.InjectionSupported;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.variables.VariableSpace;
@@ -59,32 +61,49 @@ import org.w3c.dom.Node;
  * Created on 10-sep-2005
  */
 
+@InjectionSupported( localizationPrefix = "ExecSQLMeta.Injection.", groups = { "PARAMETERS" } )
 public class ExecSQLMeta extends BaseStepMeta implements StepMetaInterface {
   private static Class<?> PKG = ExecSQLMeta.class; // for i18n purposes, needed by Translator2!!
 
   private DatabaseMeta databaseMeta;
 
+  @Injection( name = "SQL" )
   private String sql;
 
+  @Injection( name = "EXECUTE_FOR_EACH_ROW" )
   private boolean executedEachInputRow;
 
+  @Injection( name = "PARAMETER_NAME", group = "PARAMETERS" )
   private String[] arguments;
 
+  @Injection( name = "UPDATE_STATS_FIELD" )
   private String updateField;
 
+  @Injection( name = "INSERT_STATS_FIELD" )
   private String insertField;
 
+  @Injection( name = "DELETE_STATS_FIELD" )
   private String deleteField;
 
+  @Injection( name = "READ_STATS_FIELD" )
   private String readField;
 
+  @Injection( name = "EXECUTE_AS_SINGLE_STATEMENT" )
   private boolean singleStatement;
 
+  @Injection( name = "REPLACE_VARIABLES" )
   private boolean replaceVariables;
 
+  @Injection( name = "QUOTE_STRINGS" )
   private boolean quoteString;
 
+  @Injection( name = "BIND_PARAMETERS" )
   private boolean setParams;
+
+  @Injection( name = "CONNECTIONNAME" )
+  public void setConnection( String connectionName ) {
+    databaseMeta = DatabaseMeta.findDatabase( getParentStepMeta().getParentTransMeta().getDatabases(), connectionName );
+  }
 
   public ExecSQLMeta() {
     super();
