@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -61,10 +61,10 @@ import org.w3c.dom.Node;
  *
  */
 
-@Step( id = "LucidDBStreamingLoader", image = "BLKLS.svg",
-i18nPackageName = "org.pentaho.di.trans.steps.luciddbstreamingloader", name = "LucidDBStreamingLoaderMeta.Name",
-description = "LucidDBStreamingLoaderMeta.Description",
-categoryDescription = "i18n:org.pentaho.di.job:JobCategory.Category.Deprecated" )
+@Step( id = "LucidDBStreamingLoader", image = "deprecated.svg",
+  i18nPackageName = "org.pentaho.di.trans.steps.luciddbstreamingloader", name = "LucidDBStreamingLoaderMeta.Name",
+  description = "LucidDBStreamingLoaderMeta.Description",
+  categoryDescription = "i18n:org.pentaho.di.trans.step:BaseStep.Category.Deprecated" )
 
 public class LucidDBStreamingLoaderMeta extends BaseStepMeta implements StepMetaInterface {
   private static Class<?> PKG = LucidDBStreamingLoaderMeta.class; // for i18n

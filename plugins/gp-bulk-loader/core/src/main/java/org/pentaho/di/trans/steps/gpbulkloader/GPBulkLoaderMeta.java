@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -62,10 +62,10 @@ import org.w3c.dom.Node;
  * @author Sven Boden
  */
 
-@Step( id = "GPBulkLoader", image = "BLKGPL.svg",
+@Step( id = "GPBulkLoader", image = "deprecated.svg",
   i18nPackageName = "org.pentaho.di.trans.steps.gpbulkloader", name = "GPBulkLoaderMeta.Name",
   description = "GPBulkLoaderMeta.Description",
-  categoryDescription = "i18n:org.pentaho.di.job:JobCategory.Category.Deprecated",
+  categoryDescription = "i18n:org.pentaho.di.trans.step:BaseStep.Category.Deprecated",
   documentationUrl = "http://wiki.pentaho.com/display/PMOPEN/GreenPlum+bulk+loader" )
 
 public class GPBulkLoaderMeta extends BaseStepMeta implements StepMetaInterface,
