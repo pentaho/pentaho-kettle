@@ -41,7 +41,7 @@ if (!jenkins.isQuietingDown()) {
         env['CREDENTIALS_ID'],
         'Git credentials',
         credentials['GIT_USER'],
-        credentials['GIT_PASS']
+        credentials['GIT_TOKEN']
     )
     SystemCredentialsProvider.getInstance().getStore().addCredentials(Domain.global(), c)
 
