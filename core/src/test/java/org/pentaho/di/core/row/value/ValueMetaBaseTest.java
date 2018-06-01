@@ -29,7 +29,6 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Test;
-import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.Spy;
 import org.owasp.encoder.Encode;
@@ -960,7 +959,7 @@ public class ValueMetaBaseTest {
 
     ValueMetaBase base = new ValueMetaString( "ValueMetaStringColumn" );
     base.setConversionMetadata( new ValueMetaTimestamp( "ValueMetaTimestamp" ) );
-    Timestamp timestamp = ( Timestamp ) base.convertDataUsingConversionMetaData( timestampStringRepresentation );
+    Timestamp timestamp = (Timestamp) base.convertDataUsingConversionMetaData( timestampStringRepresentation );
     assertEquals( expectedTimestamp, timestamp );
   }
 
@@ -994,4 +993,18 @@ public class ValueMetaBaseTest {
     valueMetaString.setPreparedStatementValue( databaseMetaSpy, preparedStatementMock, 0, LOG_FIELD );
   }
 
+  @Test
+  public void testConvertNumberToString() throws KettleValueException {
+    String expectedStringRepresentation = "123.0123456789";
+    Number numberToTest = Double.valueOf( "123.0123456789" );
+
+    ValueMetaBase base = new ValueMetaNumber( "ValueMetaNumber" );
+    base.setStorageType( ValueMetaInterface.STORAGE_TYPE_NORMAL );
+
+    ValueMetaString valueMetaString = new ValueMetaString( "ValueMetaString" );
+    base.setConversionMetadata( valueMetaString );
+
+    String convertedNumber = base.convertNumberToString( (Double) numberToTest );
+    assertEquals( expectedStringRepresentation,  convertedNumber );
+  }
 }
