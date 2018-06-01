@@ -76,7 +76,7 @@ docker run -p 8080:8080 \
   -e JENKINS_USER=<jenkins_user> \
   -e JENKINS_PASS=<jenkins_pass> \
   -e GIT_USER=<git_user> \
-  -e GIT_PASS=<git_token> \
+  -e GIT_TOKEN=<git_token> \
   pentaho/jenkins:lts
 ``` 
 
