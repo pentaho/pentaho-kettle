@@ -22,7 +22,6 @@
 
   <modules>
     <module>static</module>
-    <module>static-base</module>
     <module>samples</module>
     <module>lib</module>
     <module>plugins</module>
