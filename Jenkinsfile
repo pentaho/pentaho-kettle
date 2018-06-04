@@ -79,7 +79,7 @@ pipeline {
     )
     string(
         name: 'CHECKOUT_TIMESTAMP',
-        defaultValue: 'CURRENT_TIME',
+        defaultValue: '',
         description: 'Determines the timestamp to use as the limit for version control commits. Any commits after the timestamp will not be used. Override format: YYYY-MM-DD HH:MM:SS',
     )
 
