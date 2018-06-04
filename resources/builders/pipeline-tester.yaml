@@ -1,0 +1,37 @@
+# optional (unless used in your yaml data below) - can be overridden by upstream properties using the same name
+buildProperties:
+        # global build control defaults -- see others you can override in resources/config/buildProperties.yaml
+        # These are understood by the shared pipeline libraries:
+        BUILD_PLAN_ID                  : Sample Build
+
+# required
+jobGroups:
+
+  100:
+
+     - jobID           :  coding-standards
+       scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-coding-standards.git
+       scmBranch       :  ${DEFAULT_BRANCH}
+       versionProperty :  coding-standards.version
+       testable        :  false
+
+  200:
+
+     - jobID           :  parent-poms
+       scmUrl          :  ${PENTAHO_SCM_ROOT}/maven-parent-poms.git
+       scmBranch       :  ${DEFAULT_BRANCH}
+       versionProperty :  pentaho.version
+       testable        :  false
+
+  300:
+
+     - jobID           :  archetypes
+       scmUrl          :  ${PENTAHO_SCM_ROOT}/maven-project-archetypes.git
+       scmBranch       :  ${DEFAULT_BRANCH}
+       versionProperty :  archetypes.version
+       testable        :  false
+
+     - jobID           :  parent-poms-ee
+       scmUrl          :  ${PENTAHO_SCM_ROOT}/maven-parent-poms-ee.git
+       scmBranch       :  ${DEFAULT_BRANCH}
+       testable        :  false
