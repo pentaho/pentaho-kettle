@@ -1,6 +1,6 @@
 # optional (unless used in your yaml data below) - can be overridden by upstream properties using the same name
 buildProperties:
-        # global build control defaults
+        # global build control defaults -- see others you can override in resources/config/buildProperties.yaml
         # These are understood by the shared pipeline libraries:
         BUILD_PLAN_ID                  : Sample Build
 
