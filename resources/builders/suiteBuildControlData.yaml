@@ -7,9 +7,6 @@ buildProperties:
         # global build control defaults
         # These are understood by the shared pipeline libraries:
         BUILD_PLAN_ID                  : Master Suite Build
-        MAVEN_DEFAULT_DIRECTIVES       : clean install
-        ANT_DEFAULT_DIRECTIVES         : clean-all resolve publish
-        GRADLE_DEFAULT_DIRECTIVES      : -q
 
         # Version based control properties
         UPDATE_VERSIONS                : false
@@ -20,13 +17,6 @@ buildProperties:
         # Options: SUFFIX, NONE, PREFIX, FULL
         TAG_NAME_TYPE                  : NONE
         TAG_NAME                       : -RC
-
-        # job item field defaults
-        # These are arbitrary properties for doing replacements in this data file
-        SCM_HOST_ROOT                  : https://github.com
-        PENTAHO_SCM_ROOT               : https://github.com/pentaho
-        WEBDETAILS_SCM_ROOT            : https://github.com/webdetails
-        DEFAULT_BRANCH                 : master
 
         # Installer defaults
         IBUILDER_RESOURCES_ROOT_PATH   : /build2/resources/ibuilder-pentaho-8.0-resources

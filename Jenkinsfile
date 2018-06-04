@@ -38,41 +38,6 @@ pipeline {
         description: 'Clean build dependency caches with regex'
     )
     string(
-        name: 'MAVEN_DEFAULT_COMMAND_OPTIONS',
-        defaultValue: '-B -e -q',
-        description: 'Force base maven command options'
-    )
-    string(
-        name: 'ANT_DEFAULT_COMMAND_OPTIONS',
-        defaultValue: 'clean-all resolve dist',
-        description: 'Force base ant command options'
-    )
-    string(
-        name: 'ANT_TEST_TARGETS',
-        defaultValue: 'test jacoco',
-        description: 'Ant test targets'
-    )
-    string(
-        name: 'MAVEN_OPTS',
-        defaultValue: '-Xms512m',
-        description: 'Typically the JVM opts for maven'
-    )
-    string(
-        name: 'MAVEN_TEST_OPTS',
-        defaultValue: '-DsurefireArgLine=-Xmx1g',
-        description: 'Typically, some extra for Maven Surefire'
-    )
-    string(
-        name: 'PARALLEL_CHECKOUT_CHUNKSIZE',
-        defaultValue: '10',
-        description: 'Maximum parallel source checkout chunk size'
-    )
-    string(
-        name: 'PARALLEL_UNIT_TESTS_CHUNKSIZE',
-        defaultValue: '10',
-        description: 'Maximum parallel unit tests chunk size'
-    )
-    string(
         name: 'CHECKOUT_DEPTH',
         defaultValue: '20',
         description: 'Shallow clone depth (leave blank for infinite)'
@@ -164,19 +129,6 @@ pipeline {
         name: 'NOOP',
         defaultValue: false,
         description: 'No op build (test the build config)'
-    )
-    booleanParam(
-       name: 'PUSH_CHANGES',
-        defaultValue: false,
-        description: 'Push changes in the projects back to the remote origin of the project.<br>'+
-      'We would typically use this to update versions and push them to a branch<br>This parameter will get passed to all jobs,'+
-      ' and from them to the managed scripts that handle the git push.  (It will override any tagging options set for this job.)',
-    )
-    booleanParam(
-        name: 'USE_DISTRIBUTED_SOURCE_CACHING',
-        defaultValue: false,
-        description: 'Distributes source checkouts on remote nodes ' +
-            '(Otherwise assume workspace is shared on all). Not yet fully implemented--do not use.'
     )
 
   }
@@ -311,7 +263,7 @@ pipeline {
     stage('Push Changes') {
       when {
         expression {
-          return (params.PUSH_CHANGES && !params.NOOP)
+          return (buildData.buildProperties['PUSH_CHANGES'] && !params.NOOP)
         }
       }
       failFast true
@@ -323,7 +275,7 @@ pipeline {
     stage('Tag') {
       when {
         expression {
-          return (!params.PUSH_CHANGES && !params.NOOP)
+          return (!buildData.buildProperties['PUSH_CHANGES'] && !params.NOOP)
         }
       }
       failFast true

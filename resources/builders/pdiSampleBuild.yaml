@@ -3,14 +3,6 @@ buildProperties:
         # global build control defaults
         # These are understood by the shared pipeline libraries:
         BUILD_PLAN_ID                  : PDI Build Test
-        MAVEN_DEFAULT_DIRECTIVES       : clean install
-
-        # job item field defaults
-        # These are arbitrary properties for doing replacements in this data file
-        SCM_HOST_ROOT                  : https://github.com/
-        PENTAHO_SCM_ROOT               : https://github.com/pentaho/
-        DEFAULT_BRANCH                 : master
-
 
 # required
 jobGroups:
@@ -24,44 +16,44 @@ jobGroups:
 
   plugins:
     - jobID             :  pdi-core-plugins
-      scmUrl            :  ${PENTAHO_SCM_ROOT}pentaho-kettle.git
+      scmUrl            :  ${PENTAHO_SCM_ROOT}/pentaho-kettle.git
       scmBranch         :  ${DEFAULT_BRANCH}
       buildFramework    :  maven
       buildFile         :  pom.xml
       directives        :  += -DskipDefault -P plugins,highdeps
 
     - jobID             :  pdi-teradata-tpt-plugin
-      scmUrl            :  ${PENTAHO_SCM_ROOT}pdi-teradata-tpt-plugin.git
+      scmUrl            :  ${PENTAHO_SCM_ROOT}/pdi-teradata-tpt-plugin.git
       scmBranch         :  ${DEFAULT_BRANCH}
       buildFramework    :  maven
       buildFile         :  pom.xml
 
     - jobID             :  pdi-dataservice-plugin
-      scmUrl            :  ${PENTAHO_SCM_ROOT}pdi-dataservice-plugin.git
+      scmUrl            :  ${PENTAHO_SCM_ROOT}/pdi-dataservice-plugin.git
       scmBranch         :  ${DEFAULT_BRANCH}
       buildFramework    :  maven
       buildFile         :  pom.xml
 
     - jobID             :  pdi-dataservice-server-plugin
-      scmUrl            :  ${PENTAHO_SCM_ROOT}pdi-dataservice-server-plugin.git
+      scmUrl            :  ${PENTAHO_SCM_ROOT}/pdi-dataservice-server-plugin.git
       scmBranch         :  ${DEFAULT_BRANCH}
       buildFramework    :  maven
       buildFile         :  pom.xml
 
     - jobID             :  pdi-platform-plugin
-      scmUrl            :  ${PENTAHO_SCM_ROOT}pdi-platform-plugin.git
+      scmUrl            :  ${PENTAHO_SCM_ROOT}/pdi-platform-plugin.git
       scmBranch         :  ${DEFAULT_BRANCH}
       buildFramework    :  maven
       buildFile         :  pom.xml
 
     - jobID             :  pdi-platform-utils-plugin
-      scmUrl            :  ${PENTAHO_SCM_ROOT}pdi-platform-utils-plugin.git
+      scmUrl            :  ${PENTAHO_SCM_ROOT}/pdi-platform-utils-plugin.git
       scmBranch         :  ${DEFAULT_BRANCH}
       buildFramework    :  maven
       buildFile         :  pom.xml
 
     - jobID             :  pdi-weka-plugins
-      scmUrl            :  ${PENTAHO_SCM_ROOT}pentaho-data-mining.git
+      scmUrl            :  ${PENTAHO_SCM_ROOT}/pentaho-data-mining.git
       scmBranch         :  ${DEFAULT_BRANCH}
       buildFramework    :  maven
       buildFile         :  pom.xml
@@ -69,14 +61,14 @@ jobGroups:
 
   karaf:
     - jobID             :  karaf-assembly
-      scmUrl            :  ${PENTAHO_SCM_ROOT}pentaho-karaf-assembly.git
+      scmUrl            :  ${PENTAHO_SCM_ROOT}/pentaho-karaf-assembly.git
       scmBranch         :  ${DEFAULT_BRANCH}
       buildFramework    :  maven
       buildFile         :  pom.xml
 
   assembly:
     - jobID             :  pdi-client-assembly
-      scmUrl            :  ${PENTAHO_SCM_ROOT}pentaho-kettle.git
+      scmUrl            :  ${PENTAHO_SCM_ROOT}/pentaho-kettle.git
       scmBranch         :  ${DEFAULT_BRANCH}
       buildFramework    :  maven
       buildFile         :  pom.xml
