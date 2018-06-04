@@ -1,7 +1,8 @@
 @Library('jenkins-shared-libraries') _
 
-// We need a global mapped build data object to pass down through the stages of the build
-def mappedBuildData
+// Global BuildData object containing all the configuration
+// needed to pass down through the stages of the build
+def buildData
 
 pipeline {
 
@@ -13,7 +14,7 @@ pipeline {
 
     string(
         name: 'BUILD_DATA_FILE',
-        defaultValue: 'buildControlData.yaml',
+        defaultValue: jobNameBuildFile(),
         description: 'The build data yaml file to run'
     )
     string(
@@ -204,6 +205,13 @@ pipeline {
 
 
   stages {
+    stage('Configure Pipeline') {
+      steps {
+        script {
+          buildData = doConfig()
+        }
+      }
+    }
 
     stage('Clean Regex Lib Caches') {
       when {
@@ -244,15 +252,6 @@ pipeline {
       }
     }
 
-
-    stage('Configure Pipeline') {
-      steps {
-        script {
-          mappedBuildData = doConfig()
-        }
-      }
-    }
-
     stage('Checkouts') {
       when {
         expression {
@@ -260,13 +259,13 @@ pipeline {
         }
       }
       steps {
-        doCheckouts(mappedBuildData)
+        doCheckouts(buildData)
       }
     }
 
     stage('Version') {
       steps {
-        doVersioning(mappedBuildData)
+        doVersioning(buildData)
       }
     }
 
@@ -279,7 +278,7 @@ pipeline {
       failFast true
       steps {
         timeout(time: Integer.valueOf(params.BUILD_TIMEOUT), unit: 'MINUTES') {
-          doBuilds(mappedBuildData)
+          doBuilds(buildData)
         }
       }
     }
@@ -293,7 +292,7 @@ pipeline {
       failFast true
       steps {
         timeout(time: Integer.valueOf(params.BUILD_TIMEOUT), unit: 'MINUTES') {
-          doUnitTests(mappedBuildData)
+          doUnitTests(buildData)
         }
       }
     }
@@ -317,7 +316,7 @@ pipeline {
       }
       failFast true
       steps {
-          doPushChanges(mappedBuildData)
+          doPushChanges(buildData)
       }
     }
 
@@ -329,7 +328,7 @@ pipeline {
       }
       failFast true
       steps {
-          doTag(mappedBuildData)
+          doTag(buildData)
       }
     }
 
