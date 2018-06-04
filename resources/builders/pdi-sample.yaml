@@ -8,7 +8,7 @@ buildProperties:
 jobGroups:
   core:
     - jobID             :  pdi-engine-core
-      scmUrl            :  ${PENTAHO_SCM_ROOT}pentaho-kettle.git
+      scmUrl            :  ${PENTAHO_SCM_ROOT}/pentaho-kettle.git
       scmBranch         :  ${DEFAULT_BRANCH}
       buildFramework    :  maven
       buildFile         :  pom.xml
