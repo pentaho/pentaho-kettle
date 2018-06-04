@@ -2,7 +2,7 @@
 buildProperties:
         # global build control defaults
         # These are understood by the shared pipeline libraries:
-        BUILD_PLAN_ID                  : AEL Trial Build
+        BUILD_PLAN_ID                  : AEL Master Branch Build
 
 jobGroups:
   # Always required
@@ -20,7 +20,8 @@ jobGroups:
      - jobID           :  karaf-ce-assembly
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-karaf-assembly.git
        scmBranch       :  ${DEFAULT_BRANCH}
-       directives      : += -pl .,pentaho-karaf-features,pentaho-karaf-assembly
+       directives      :  += -pl .,pentaho-karaf-features,pentaho-karaf-assembly
+       testable        :  false
 
   300:
 
@@ -36,3 +37,4 @@ jobGroups:
        scmBranch       :  ${DEFAULT_BRANCH}
        root            :  assemblies
        directives      :  += -pl .,client
+       testable        :  false
