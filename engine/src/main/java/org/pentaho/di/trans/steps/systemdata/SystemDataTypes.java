@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -135,8 +135,8 @@ public enum SystemDataTypes {
             "PreviousResultNrLinesWritten" ),
     TYPE_SYSTEM_INFO_PREVIOUS_RESULT_NR_LINES_DELETED( "previous result nr lines deleted",
             "PreviousResultNrLinesDeleted" ),
-    TYPE_SYSTEM_INFO_PREVIOUS_RESULT_NR_LINES_REJETED( "previous result nr lines rejeted",
-            "PreviousResultNrLinesRejeted" ),
+    TYPE_SYSTEM_INFO_PREVIOUS_RESULT_NR_LINES_REJECTED( "previous result nr lines rejected",
+            "PreviousResultNrLinesRejected" ),
     TYPE_SYSTEM_INFO_PREVIOUS_RESULT_NR_ROWS( "previous result nr rows", "PreviousResultNrLinesNrRows" ),
     TYPE_SYSTEM_INFO_PREVIOUS_RESULT_IS_STOPPED( "previous result is stopped", "PreviousResultIsStopped" ),
     TYPE_SYSTEM_INFO_PREVIOUS_RESULT_NR_FILES( "previous result nr files", "PreviousResultNrFiles" ),
@@ -154,6 +154,23 @@ public enum SystemDataTypes {
 
   public String getDescription() {
     return description;
+  }
+
+  public static SystemDataTypes getTypeFromString( String typeStr ) {
+    for ( SystemDataTypes type : SystemDataTypes.values() ) {
+      // attempting to purge this typo from KTRs
+      if ( "previous result nr lines rejeted".equalsIgnoreCase( typeStr ) ) {
+        typeStr = "previous result nr lines rejected";
+      }
+
+      if ( type.toString().equals( typeStr )
+          || type.code.equalsIgnoreCase( typeStr )
+          || type.description.equalsIgnoreCase( typeStr ) ) {
+        return type;
+      }
+    }
+
+    return TYPE_SYSTEM_INFO_NONE;
   }
 
   private static String getDescription( String name ) {

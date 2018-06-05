@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -249,7 +249,7 @@ public class SystemDataDialog extends BaseStepDialog implements StepDialogInterf
     for ( int i = 0; i < input.getFieldName().length; i++ ) {
       TableItem item = wFields.table.getItem( i );
       String name = input.getFieldName()[i];
-      String type = SystemDataMeta.getTypeDesc( input.getFieldType()[i] );
+      String type = input.getFieldType()[i].getDescription();
 
       if ( name != null ) {
         item.setText( 1, name );
@@ -297,7 +297,7 @@ public class SystemDataDialog extends BaseStepDialog implements StepDialogInterf
     for ( int i = 0; i < count; i++ ) {
       TableItem item = wFields.getNonEmpty( i );
       in.getFieldName()[i] = item.getText( 1 );
-      in.getFieldType()[i] = SystemDataMeta.getType( item.getText( 2 ) );
+      in.getFieldType()[i] = SystemDataTypes.getTypeFromString( item.getText( 2 ) );
     }
   }
 
