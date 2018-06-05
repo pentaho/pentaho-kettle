@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -31,6 +31,7 @@ import java.net.SocketTimeoutException;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -438,6 +439,34 @@ public class ValueMetaTimestamp extends ValueMetaDate {
     Timestamp clone = new Timestamp( timestamp.getTime() );
     clone.setNanos( timestamp.getNanos() );
     return clone;
+  }
+
+  @Override
+  public ValueMetaInterface getMetadataPreview( DatabaseMeta databaseMeta, ResultSet rs )
+    throws KettleDatabaseException {
+
+    try {
+      if ( java.sql.Types.TIMESTAMP == rs.getInt( "COLUMN_TYPE" ) ) {
+        ValueMetaInterface vmi = super.getMetadataPreview( databaseMeta, rs );
+        ValueMetaInterface valueMeta;
+        if ( databaseMeta.supportsTimestampDataType() ) {
+          valueMeta = new ValueMetaTimestamp( name );
+        } else {
+          valueMeta = new ValueMetaDate( name );
+        }
+        valueMeta.setLength( vmi.getLength() );
+        valueMeta.setOriginalColumnType( vmi.getOriginalColumnType() );
+        valueMeta.setOriginalColumnTypeName( vmi.getOriginalColumnTypeName() );
+        valueMeta.setOriginalNullable( vmi.getOriginalNullable() );
+        valueMeta.setOriginalPrecision( vmi.getOriginalPrecision() );
+        valueMeta.setOriginalScale( vmi.getOriginalScale() );
+        valueMeta.setOriginalSigned( vmi.getOriginalSigned() );
+        return valueMeta;
+      }
+    } catch ( SQLException e ) {
+      throw new KettleDatabaseException( e );
+    }
+    return null;
   }
 
   @Override

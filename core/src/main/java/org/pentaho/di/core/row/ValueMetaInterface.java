@@ -724,6 +724,20 @@ public interface ValueMetaInterface extends Cloneable {
   int getOriginalScale();
 
   /**
+   * Gets the original nullable.
+   *
+   * @return the original nullable
+   */
+  int getOriginalNullable();
+
+  /**
+   * Gets the original signed.
+   *
+   * @return the original signed
+   */
+  boolean getOriginalSigned();
+
+  /**
    * Sets the original scale.
    *
    * @param originalScale
@@ -1253,6 +1267,25 @@ public interface ValueMetaInterface extends Cloneable {
    */
   ValueMetaInterface getValueFromSQLType( DatabaseMeta databaseMeta, String name, ResultSetMetaData rm,
     int index, boolean ignoreLength, boolean lazyConversion ) throws KettleDatabaseException;
+
+  /**
+   * This is a similar method to getValueFromSQLType, but it uses a
+   * ResultSet from a call to DatabaseMetaData#getColumns(String, String, String, String)
+   * The ResultSet must be positioned correctly on the row to read.
+   *
+   * <p>Note that the ValueMeta returned by this RowMeta may not contain
+   * actual values. This is a lightweight call using only JDBC metadata and does
+   * not make use of SQL statements.
+   *
+   * @param databaseMeta
+   *          the database metadata to reference capabilities and so on.
+   * @param lazyConversion
+   *          use lazy conversion
+   * @param rs
+   *          A ResultSet from getColumns, positioned correctly on a column to read.
+   */
+  ValueMetaInterface getMetadataPreview( DatabaseMeta databaseMeta, ResultSet rs )
+    throws KettleDatabaseException;
 
   /**
    * Get a value from a result set column based on the current value metadata

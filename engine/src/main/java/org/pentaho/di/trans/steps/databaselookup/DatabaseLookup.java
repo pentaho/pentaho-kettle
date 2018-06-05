@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -213,11 +213,10 @@ public class DatabaseLookup extends BaseStep implements StepInterface {
     final String[] keyFields = meta.getTableKeyField();
     data.keytypes = new int[ keyFields.length ];
 
-    String schemaTable =
-      meta.getDatabaseMeta().getQuotedSchemaTableCombination(
-        environmentSubstitute( meta.getSchemaName() ), environmentSubstitute( meta.getTablename() ) );
-
-    RowMetaInterface fields = data.db.getTableFields( schemaTable );
+    RowMetaInterface fields =
+      data.db.getTableFieldsMeta(
+        environmentSubstitute( meta.getSchemaName() ),
+        environmentSubstitute( meta.getTableName() ) );
     if ( fields != null ) {
       // Fill in the types...
       for ( int i = 0; i < keyFields.length; i++ ) {
@@ -246,6 +245,9 @@ public class DatabaseLookup extends BaseStep implements StepInterface {
         }
       }
     } else {
+      String schemaTable =
+        meta.getDatabaseMeta().getQuotedSchemaTableCombination(
+          environmentSubstitute( meta.getSchemaName() ), environmentSubstitute( meta.getTablename() ) );
       throw new KettleStepException( BaseMessages.getString(
         PKG, "DatabaseLookup.ERROR0002.UnableToDetermineFieldsOfTable" )
         + schemaTable + "]" );
