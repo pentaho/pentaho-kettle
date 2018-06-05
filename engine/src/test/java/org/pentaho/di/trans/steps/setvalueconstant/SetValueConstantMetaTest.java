@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -21,12 +21,6 @@
  ******************************************************************************/
 package org.pentaho.di.trans.steps.setvalueconstant;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
@@ -37,11 +31,16 @@ import org.pentaho.di.junit.rules.RestorePDIEngineEnvironment;
 import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.di.trans.steps.loadsave.LoadSaveTester;
 import org.pentaho.di.trans.steps.loadsave.initializer.InitializerInterface;
-import org.pentaho.di.trans.steps.loadsave.validator.ArrayLoadSaveValidator;
-import org.pentaho.di.trans.steps.loadsave.validator.BooleanLoadSaveValidator;
 import org.pentaho.di.trans.steps.loadsave.validator.FieldLoadSaveValidator;
-import org.pentaho.di.trans.steps.loadsave.validator.PrimitiveBooleanArrayLoadSaveValidator;
-import org.pentaho.di.trans.steps.loadsave.validator.StringLoadSaveValidator;
+import org.pentaho.di.trans.steps.loadsave.validator.ListLoadSaveValidator;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
+import java.util.UUID;
 
 public class SetValueConstantMetaTest implements InitializerInterface<StepMetaInterface> {
   @ClassRule public static RestorePDIEngineEnvironment env = new RestorePDIEngineEnvironment();
@@ -53,38 +52,23 @@ public class SetValueConstantMetaTest implements InitializerInterface<StepMetaIn
     KettleEnvironment.init();
     PluginRegistry.init( false );
     List<String> attributes =
-        Arrays.asList( "fieldName", "replaceValue", "replaceMask", "setEmptyString", "usevar" );
+        Arrays.asList( "fields", "usevar" );
 
     Map<String, String> getterMap = new HashMap<String, String>() {
       {
-        put( "fieldName", "getFieldName" );
-        put( "replaceValue", "getReplaceValue" );
-        put( "replaceMask", "getReplaceMask" );
-        put( "setEmptyString", "isSetEmptyString" );
+        put( "fields", "getFields" );
         put( "usevar", "isUseVars" );
       }
     };
     Map<String, String> setterMap = new HashMap<String, String>() {
       {
-        put( "fieldName", "setFieldName" );
-        put( "replaceValue", "setReplaceValue" );
-        put( "replaceMask", "setReplaceMask" );
-        put( "setEmptyString", "setEmptyString" );
+        put( "fields", "setFields" );
         put( "usevar", "setUseVars" );
       }
     };
-    FieldLoadSaveValidator<String[]> stringArrayLoadSaveValidator =
-        new ArrayLoadSaveValidator<String>( new StringLoadSaveValidator(), 5 );
-
 
     Map<String, FieldLoadSaveValidator<?>> attrValidatorMap = new HashMap<String, FieldLoadSaveValidator<?>>();
-    attrValidatorMap.put( "fieldName", stringArrayLoadSaveValidator );
-    attrValidatorMap.put( "replaceValue", stringArrayLoadSaveValidator );
-    attrValidatorMap.put( "replaceMask", stringArrayLoadSaveValidator );
-    attrValidatorMap.put( "setEmptyString",
-        new PrimitiveBooleanArrayLoadSaveValidator( new BooleanLoadSaveValidator(), 5 ) );
-
-
+    attrValidatorMap.put( "fields", new ListLoadSaveValidator<>( new SetValueConstantMetaFieldLoadSaveValidator(), 5 )  );
     Map<String, FieldLoadSaveValidator<?>> typeValidatorMap = new HashMap<String, FieldLoadSaveValidator<?>>();
 
     loadSaveTester =
@@ -92,15 +76,35 @@ public class SetValueConstantMetaTest implements InitializerInterface<StepMetaIn
             getterMap, setterMap, attrValidatorMap, typeValidatorMap, this );
   }
 
-  // Call the allocate method on the LoadSaveTester meta class
+  @Override
   public void modify( StepMetaInterface someMeta ) {
-    if ( someMeta instanceof SetValueConstantMeta ) {
-      ( (SetValueConstantMeta) someMeta ).allocate( 5 );
-    }
   }
 
   @Test
   public void testSerialization() throws KettleException {
     loadSaveTester.testSerialization();
   }
+
+  public class SetValueConstantMetaFieldLoadSaveValidator implements FieldLoadSaveValidator<SetValueConstantMeta.Field> {
+    final Random rand = new Random();
+    @Override
+    public SetValueConstantMeta.Field getTestObject() {
+      SetValueConstantMeta.Field field = new SetValueConstantMeta.Field();
+      field.setReplaceMask( UUID.randomUUID().toString() );
+      field.setReplaceValue( UUID.randomUUID().toString() );
+      field.setEmptyString( rand.nextBoolean() );
+      field.setFieldName( UUID.randomUUID().toString() );
+      return field;
+    }
+
+    @Override
+    public boolean validateTestObject( SetValueConstantMeta.Field testObject, Object actual ) {
+      if ( !( actual instanceof SetValueConstantMeta.Field) ) {
+        return false;
+      }
+      SetValueConstantMeta.Field actualInput = (SetValueConstantMeta.Field) actual;
+      return ( actualInput.equals( testObject ) );
+    }
+  }
+
 }

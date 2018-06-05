@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,14 +22,7 @@
 
 package org.pentaho.di.trans.steps.setvalueconstant;
 
-import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.when;
-
-import java.lang.reflect.Method;
-
 import junit.framework.Assert;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -38,6 +31,14 @@ import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.trans.steps.mock.StepMockHelper;
+
+import java.lang.reflect.Method;
+import java.util.Arrays;
+import java.util.Collections;
+
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.when;
 
 /**
  * Tests for "Set field value to a constant" step
@@ -72,7 +73,14 @@ public class SetValueConstantTest {
     RowMeta rowMeta = new RowMeta();
     rowMeta.addValueMeta( valueMeta );
 
-    doReturn( new String[] { null } ).when( smh.initStepMetaInterface ).getReplaceMask();
+    SetValueConstantMeta.Field field = new SetValueConstantMeta.Field();
+    field.setFieldName( "Field Name" );
+    field.setEmptyString( true );
+    field.setReplaceMask( "Replace Mask" );
+    field.setReplaceValue( "Replace Value" );
+
+    doReturn( Collections.singletonList( field ) ).when( smh.initStepMetaInterface ).getFields();
+    doReturn( field ).when( smh.initStepMetaInterface ).getField( 0 );
     doReturn( rowMeta ).when( smh.initStepDataInterface ).getConvertRowMeta();
     doReturn( rowMeta ).when( smh.initStepDataInterface ).getOutputRowMeta();
     doReturn( 1 ).when( smh.initStepDataInterface ).getFieldnr();
