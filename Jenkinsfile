@@ -3,6 +3,7 @@
 // Global BuildData object containing all the configuration
 // needed to pass down through the stages of the build
 def buildData
+Map buildProperties
 
 pipeline {
 
@@ -158,47 +159,34 @@ pipeline {
 
   stages {
     stage('Configure Pipeline') {
+      // After this stage all properties will be available in the buildProperties Map
       steps {
         script {
           buildData = doConfig()
+          buildProperties = buildData.buildProperties
         }
       }
     }
 
-    stage('Clean Regex Lib Caches') {
+    stage('Clean Caches') {
       when {
         expression {
-          return (params.CLEAN_CACHES_REGEX && !params.CLEAN_ALL_CACHES)
+          buildProperties.CLEAN_CACHES_REGEX || buildProperties.CLEAN_ALL_CACHES
         }
       }
       steps {
-        dir("${LIB_CACHE_ROOT_PATH}") {
-          doRegexCacheClean()
-        }
+        doCacheClean(buildData)
       }
     }
 
-    stage('Clean All Lib Caches') {
+    stage('Clean Project Workspaces') {
       when {
         expression {
-          return params.CLEAN_ALL_CACHES
+          buildProperties.CLEAN_SCM_WORKSPACES
         }
       }
       steps {
-        dir("${LIB_CACHE_ROOT_PATH}") {
-          deleteDir()
-        }
-      }
-    }
-
-    stage('Clean Workspaces') {
-      when {
-        expression {
-          return params.CLEAN_SCM_WORKSPACES
-        }
-      }
-      steps {
-        dir("${BUILDS_ROOT_PATH}") {
+        dir(buildProperties.BUILDS_ROOT_PATH) {
           deleteDir()
         }
       }
@@ -207,7 +195,7 @@ pipeline {
     stage('Checkouts') {
       when {
         expression {
-          return params.RUN_CHECKOUTS
+          buildProperties.RUN_CHECKOUTS
         }
       }
       steps {
@@ -224,12 +212,12 @@ pipeline {
     stage('Build') {
       when {
         expression {
-          return params.RUN_BUILDS
+          buildProperties.RUN_BUILDS
         }
       }
       failFast true
       steps {
-        timeout(time: Integer.valueOf(params.BUILD_TIMEOUT), unit: 'MINUTES') {
+        timeout(time: Integer.valueOf(buildProperties.BUILD_TIMEOUT), unit: 'MINUTES') {
           doBuilds(buildData)
         }
       }
@@ -238,12 +226,12 @@ pipeline {
     stage('Unit Test') {
       when {
         expression {
-          return params.RUN_UNIT_TESTS
+          buildProperties.RUN_UNIT_TESTS
         }
       }
       failFast true
       steps {
-        timeout(time: Integer.valueOf(params.BUILD_TIMEOUT), unit: 'MINUTES') {
+        timeout(time: Integer.valueOf(buildProperties.BUILD_TIMEOUT), unit: 'MINUTES') {
           doUnitTests(buildData)
         }
       }
@@ -252,7 +240,7 @@ pipeline {
     stage('Archive Test Results') {
       when {
         expression {
-          return (params.RUN_UNIT_TESTS && !params.NOOP)
+          buildProperties.RUN_UNIT_TESTS && !buildProperties.NOOP
         }
       }
       steps {
@@ -263,7 +251,7 @@ pipeline {
     stage('Push Changes') {
       when {
         expression {
-          return (buildData.buildProperties['PUSH_CHANGES'] && !params.NOOP)
+          buildProperties.PUSH_CHANGES && !buildProperties.NOOP
         }
       }
       failFast true
@@ -275,7 +263,7 @@ pipeline {
     stage('Tag') {
       when {
         expression {
-          return (!buildData.buildProperties['PUSH_CHANGES'] && !params.NOOP)
+          !buildProperties.PUSH_CHANGES && !buildProperties.NOOP
         }
       }
       failFast true
@@ -287,18 +275,23 @@ pipeline {
     stage('Archive Artifacts') {
       when {
         expression {
-          return (params.ARCHIVE_ARTIFACTS && !params.NOOP)
+          buildProperties.ARCHIVE_ARTIFACTS && !buildProperties.NOOP
         }
       }
       steps {
-        archiveArtifacts artifacts: '**/dist/*.gz, **/dist/*.tar.gz, **/dist/*.zip, **/target/*.gz, **/target/*.tar.gz, **/target/*.zip', excludes: '', allowEmptyArchive: true, fingerprint: false
+        archiveArtifacts(
+            artifacts: '**/dist/*.gz, **/dist/*.tar.gz, **/dist/*.zip, **/target/*.gz, **/target/*.tar.gz, **/target/*.zip',
+            excludes: '',
+            allowEmptyArchive: true,
+            fingerprint: false
+        )
       }
     }
 
     stage('Clean Workspace') {
       when {
         expression {
-          return params.CLEAN_BUILD_WORKSPACE
+          buildProperties.CLEAN_BUILD_WORKSPACE
         }
       }
       steps {
