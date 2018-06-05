@@ -4,6 +4,8 @@ buildProperties:
         # These are understood by the shared pipeline libraries:
         BUILD_PLAN_ID                  : Master Suite Build
 
+        MAVEN_DEFAULT_COMMAND_OPTIONS  : -B -e -q
+
         # Version based control properties
         UPDATE_VERSIONS                : false
         RELEASE_VERSION                : 9.0.0.0
