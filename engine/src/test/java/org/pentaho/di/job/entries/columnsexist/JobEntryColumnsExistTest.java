@@ -124,7 +124,7 @@ public class JobEntryColumnsExistTest {
   public void jobFail_tableNotExist() throws KettleException {
     when( jobEntry.getNewDatabaseFromMeta() ).thenReturn( db );
     doNothing().when( db ).connect( anyString(), any() );
-    doReturn( false ).when( db ).checkTableExistsByDbMeta( anyString(), anyString() );
+    doReturn( false ).when( db ).checkTableExists( anyString(), anyString() );
 
     final Result result = jobEntry.execute( new Result(), 0 );
     assertEquals( "Should be error", 1, result.getNrErrors() );
@@ -136,8 +136,8 @@ public class JobEntryColumnsExistTest {
   public void jobFail_columnNotExist() throws KettleException {
     doReturn( db ).when( jobEntry ).getNewDatabaseFromMeta();
     doNothing().when( db ).connect( anyString(), anyString() );
-    doReturn( true ).when( db ).checkTableExists( anyString() );
-    doReturn( false ).when( db ).checkColumnExists( anyString(), anyString() );
+    doReturn( true ).when( db ).checkTableExists( anyString(), anyString() );
+    doReturn( false ).when( db ).checkColumnExists( anyString(), anyString(), anyString() );
     final Result result = jobEntry.execute( new Result(), 0 );
     assertEquals( "Should be some errors", 1, result.getNrErrors() );
     assertFalse( "Result should be false", result.getResult() );
@@ -148,8 +148,8 @@ public class JobEntryColumnsExistTest {
   public void jobSuccess() throws KettleException {
     doReturn( db ).when( jobEntry ).getNewDatabaseFromMeta();
     doNothing().when( db ).connect( anyString(), anyString() );
-    doReturn( true ).when( db ).checkColumnExists( anyString(), anyString() );
-    doReturn( true ).when( db ).checkTableExistsByDbMeta( anyString(), anyString() );
+    doReturn( true ).when( db ).checkColumnExists( anyString(), anyString(), anyString() );
+    doReturn( true ).when( db ).checkTableExists( anyString(), anyString() );
     final Result result = jobEntry.execute( new Result(), 0 );
     assertEquals( "Should be no error", 0, result.getNrErrors() );
     assertTrue( "Result should be true", result.getResult() );

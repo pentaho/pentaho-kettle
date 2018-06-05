@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -233,11 +233,8 @@ public class KettleDatabaseRepositoryConnectionDelegate extends KettleDatabaseRe
       // However, since we don't have point versions in here, we'll have to look
       // at the column in question...
       //
-      String tableName =
-        databaseMeta.getQuotedSchemaTableCombination(
-          null, KettleDatabaseRepository.TABLE_R_TRANS_PARTITION_SCHEMA );
       String errorColumn = "TRANSFORMATION";
-      RowMetaInterface tableFields = callRead( () -> database.getTableFields( tableName ) );
+      RowMetaInterface tableFields = callRead( () -> database.getTableFieldsMeta( null, KettleDatabaseRepository.TABLE_R_TRANS_PARTITION_SCHEMA ) );
       if ( tableFields.indexOfValue( errorColumn ) >= 0 ) {
         throw new KettleException( BaseMessages.getString( PKG, "Repository.FixFor300Required.Message" ) );
       }

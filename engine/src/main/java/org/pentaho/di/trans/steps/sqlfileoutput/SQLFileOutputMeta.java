@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -602,13 +602,13 @@ public class SQLFileOutputMeta extends BaseStepMeta implements StepMetaInterface
         if ( !Utils.isEmpty( tablename ) ) {
           String schemaTable = databaseMeta.getQuotedSchemaTableCombination( schemaName, tablename );
           // Check if this table exists...
-          if ( db.checkTableExists( schemaTable ) ) {
+          if ( db.checkTableExists( schemaName, tablename ) ) {
             cr =
               new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
                 PKG, "SQLFileOutputMeta.CheckResult.TableAccessible", schemaTable ), stepMeta );
             remarks.add( cr );
 
-            RowMetaInterface r = db.getTableFields( schemaTable );
+            RowMetaInterface r = db.getTableFieldsMeta( schemaName, tablename );
             if ( r != null ) {
               cr =
                 new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
@@ -806,11 +806,9 @@ public class SQLFileOutputMeta extends BaseStepMeta implements StepMetaInterface
         db.connect();
 
         if ( !Utils.isEmpty( realTableName ) ) {
-          String schemaTable = databaseMeta.getQuotedSchemaTableCombination( realSchemaName, realTableName );
-
           // Check if this table exists...
-          if ( db.checkTableExists( schemaTable ) ) {
-            return db.getTableFields( schemaTable );
+          if ( db.checkTableExists( realSchemaName, realTableName ) ) {
+            return db.getTableFieldsMeta( realSchemaName, realTableName );
           } else {
             throw new KettleException( BaseMessages.getString( PKG, "SQLFileOutputMeta.Exception.TableNotFound" ) );
           }

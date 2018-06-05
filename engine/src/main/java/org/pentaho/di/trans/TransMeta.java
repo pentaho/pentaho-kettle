@@ -4663,7 +4663,7 @@ public class TransMeta extends AbstractMeta
             remarks.add( cr );
 
             if ( transLogTable.getTableName() != null ) {
-              if ( logdb.checkTableExists( transLogTable.getTableName() ) ) {
+              if ( logdb.checkTableExists( transLogTable.getSchemaName(), transLogTable.getTableName() ) ) {
                 cr =
                     new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages
                         .getString( PKG, "TransMeta.CheckResult.TypeResultOK.LoggingTableExists.Description",

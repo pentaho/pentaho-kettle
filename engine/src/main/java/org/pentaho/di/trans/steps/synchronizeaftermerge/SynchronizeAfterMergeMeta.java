@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -662,8 +662,7 @@ public class SynchronizeAfterMergeMeta extends BaseStepMeta implements StepMetaI
           error_message = "";
 
           // Check fields in table
-          String schemaTable = databaseMeta.getQuotedSchemaTableCombination( schemaName, tableName );
-          RowMetaInterface r = db.getTableFields( schemaTable );
+          RowMetaInterface r = db.getTableFieldsMeta( schemaName, tableName );
           if ( r != null ) {
             cr =
               new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
@@ -816,7 +815,7 @@ public class SynchronizeAfterMergeMeta extends BaseStepMeta implements StepMetaI
           boolean errorDiffField = false;
 
           RowMetaInterface r =
-            db.getTableFields( databaseMeta.getQuotedSchemaTableCombination( schemaName, tableName ) );
+            db.getTableFieldsMeta( schemaName, tableName );
           if ( r != null ) {
             for ( int i = 0; i < updateStream.length; i++ ) {
               String lufieldstream = updateStream[i];
@@ -1047,11 +1046,9 @@ public class SynchronizeAfterMergeMeta extends BaseStepMeta implements StepMetaI
         db.connect();
 
         if ( !Utils.isEmpty( realTableName ) ) {
-          String schemaTable = databaseMeta.getQuotedSchemaTableCombination( realSchemaName, realTableName );
-
           // Check if this table exists...
-          if ( db.checkTableExists( schemaTable ) ) {
-            return db.getTableFields( schemaTable );
+          if ( db.checkTableExists( realSchemaName, realTableName ) ) {
+            return db.getTableFieldsMeta( realSchemaName, realTableName );
           } else {
             throw new KettleException( BaseMessages.getString(
               PKG, "SynchronizeAfterMergeMeta.Exception.TableNotFound" ) );

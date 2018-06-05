@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -264,8 +264,8 @@ public class TableCompare extends BaseStep implements StepInterface {
     }
 
     try {
-      RowMetaInterface refFields = data.referenceDb.getTableFields( refSchemaTable );
-      RowMetaInterface cmpFields = data.compareDb.getTableFields( cmpSchemaTable );
+      RowMetaInterface refFields = data.referenceDb.getTableFieldsMeta( referenceSchema, referenceTable );
+      RowMetaInterface cmpFields = data.compareDb.getTableFieldsMeta( referenceSchema, referenceTable );
 
       // Remove the excluded fields from these fields...
       //

@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -32,7 +32,6 @@ import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
-import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
@@ -173,16 +172,8 @@ public class JobEntryTableExists extends JobEntryBase implements Cloneable, JobE
         db.connect( parentJob.getTransactionId(), null );
         String realTablename = environmentSubstitute( tablename );
         String realSchemaname = environmentSubstitute( schemaname );
-        if ( !Utils.isEmpty( realSchemaname ) ) {
-          realTablename = db.getDatabaseMeta().getQuotedSchemaTableCombination( realSchemaname, realTablename );
-          if ( log.isDetailed() ) {
-            logDetailed( BaseMessages.getString( PKG, "TableExists.Log.SchemaTable", realTablename ) );
-          }
-        } else {
-          realTablename = db.getDatabaseMeta().quoteField( realTablename );
-        }
 
-        if ( db.checkTableExists( realTablename ) ) {
+        if ( db.checkTableExists( realSchemaname, realTablename ) ) {
           if ( log.isDetailed() ) {
             logDetailed( BaseMessages.getString( PKG, "TableExists.Log.TableExists", realTablename ) );
           }

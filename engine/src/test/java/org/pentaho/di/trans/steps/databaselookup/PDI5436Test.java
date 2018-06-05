@@ -147,6 +147,7 @@ public class PDI5436Test {
     databaseRowMeta.addValueMeta( new ValueMetaString( "id" ) );
     databaseRowMeta.addValueMeta( new ValueMetaString( "value" ) );
     doReturn( databaseRowMeta ).when( databaseMock ).getTableFields( anyString() );
+    doReturn( databaseRowMeta ).when( databaseMock ).getTableFieldsMeta( anyString(), anyString() );
     doReturn( Arrays.asList( new Object[][] { { "1", "value" } } ) ).when( databaseMock ).getRows( anyString(),
         anyInt() );
     doReturn( databaseRowMeta ).when( databaseMock ).getReturnRowMeta();
