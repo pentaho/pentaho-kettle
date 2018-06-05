@@ -131,7 +131,11 @@ public class GoogleBigQueryDatabaseMeta extends BaseDatabaseMeta implements Data
   }
 
   @Override public String getSQLQueryFields( String tableName ) {
-    return "SELECT * FROM " + tableName + " LIMIT 0";
+    return "SELECT * FROM " + tableName + " WHERE (1=0)";
+  }
+
+  @Override public boolean supportsPreparedStatementMetadataRetrieval() {
+    return false;
   }
 
   @Override public String getSQLTableExists( String tablename ) {
@@ -143,7 +147,7 @@ public class GoogleBigQueryDatabaseMeta extends BaseDatabaseMeta implements Data
   }
 
   public String getSQLQueryColumnFields( String columnname, String tableName ) {
-    return "SELECT " + columnname + " FROM " + tableName + " LIMIT 0";
+    return "SELECT " + columnname + " FROM " + tableName + " WHERE (1=0)";
   }
 
   @Override public boolean supportsAutoInc() {

@@ -1855,6 +1855,7 @@ public class Database implements VariableSpace, LoggingObjectInterface {
    *          This is supposed to be the properly quoted name of the table or the complete schema-table name
    *          combination.
    * @return true if the table exists, false if it doesn't.
+   * @deprecated Deprecated in favor of {@link #checkTableExists(String, String)}
    */
   public boolean checkTableExists( String tablename ) throws KettleDatabaseException {
     try {
@@ -1875,6 +1876,39 @@ public class Database implements VariableSpace, LoggingObjectInterface {
   }
 
   /**
+   * See if the table specified exists.
+   *
+   * <p>This is a smarter implementation of {@link #checkTableExists(String)} where
+   * metadata is used first and we only use statements when absolutely necessary.
+   *
+   * <p>Contrary to previous versions of similar duplicated methods, this implementation
+   * does not require quoted identifiers.
+   *
+   * @param tablename
+   *          The unquoted name of the table to check.<br>
+   *          This is NOT the properly quoted name of the table or the complete schema-table name
+   *          combination.
+   * @param schema
+   *          The unquoted name of the schema.
+   * @return true if the table exists, false if it doesn't.
+   */
+  public boolean checkTableExists( String schema, String tablename ) throws KettleDatabaseException {
+    // Try with metadata first.
+    try {
+      boolean exists = checkTableExistsByDbMeta( schema, tablename );
+      return exists;
+    } catch ( KettleDatabaseException e ) {
+      // That's fine. We will do this old school.
+      if ( log.isDebug() ) {
+        log.logDebug( "Failed to load metadata for " + schema + "." + tablename );
+      }
+    }
+
+    // Metadata didn't work. Let use a statement
+    return checkTableExists( databaseMeta.getQuotedSchemaTableCombination( schema, tablename ) );
+  }
+
+  /**
    * See if the table specified exists by getting db metadata.
    *
    * @param tablename
@@ -1882,14 +1916,15 @@ public class Database implements VariableSpace, LoggingObjectInterface {
    *          This is supposed to be the properly quoted name of the table or the complete schema-table name
    *          combination.
    * @return true if the table exists, false if it doesn't.
+   * @deprecated Deprecated in favor of {@link #checkTableExists(String, String)}
    * @throws KettleDatabaseException
    */
-  public boolean checkTableExistsByDbMeta( String shema, String tablename ) throws KettleDatabaseException {
+  public boolean checkTableExistsByDbMeta( String schema, String tablename ) throws KettleDatabaseException {
     boolean isTableExist = false;
     if ( log.isDebug() ) {
       log.logDebug( BaseMessages.getString( PKG, "Database.Info.CheckingIfTableExistsInDbMetaData", tablename ) );
     }
-    try ( ResultSet resTables = getTableMetaData( shema, tablename ) ) {
+    try ( ResultSet resTables = getTableMetaData( schema, tablename ) ) {
       while ( resTables.next() ) {
         String resTableName = resTables.getString( TABLES_META_DATA_TABLE_NAME );
         if ( tablename.equalsIgnoreCase( resTableName ) ) {
@@ -1934,12 +1969,81 @@ public class Database implements VariableSpace, LoggingObjectInterface {
   }
 
   /**
+   * Retrieves the columns metadata matching the schema and table name.
+   *
+   * @param shema
+   *          the schema name pattern
+   * @param table
+   *          the table name pattern
+   * @return columns description row set
+   * @throws KettleDatabaseException
+   *           if DatabaseMetaData is null or some database error occurs
+   */
+  private ResultSet getColumnsMetaData( String schema, String table ) throws KettleDatabaseException {
+    ResultSet columns = null;
+    if ( getDatabaseMetaData() == null ) {
+      throw new KettleDatabaseException( BaseMessages.getString( PKG, "Database.Error.UnableToGetDbMeta" ) );
+    }
+    try {
+      columns = getDatabaseMetaData().getColumns( null, schema, table, null );
+    } catch ( SQLException e ) {
+      throw new KettleDatabaseException( BaseMessages.getString( PKG, "Database.Error.UnableToGetTableNames" ), e );
+    }
+    if ( columns == null ) {
+      throw new KettleDatabaseException( BaseMessages.getString( PKG, "Database.Error.UnableToGetTableNames" ) );
+    }
+    return columns;
+  }
+
+  /**
+   * See if the column specified exists by reading the metadata first, execution last.
+   *
+   * <p>This is a smarter implementation of {@link #checkTableExists(String)} where
+   * metadata is used first and we only use statements when absolutely necessary.
+   *
+   * <p>Contrary to previous versions of similar duplicated methods, this implementation
+   * does not require quoted identifiers.
+   *
+   * @param schema  The name of the schema to check.
+   * @param tablename  The name of the table to check.
+   * @param columnname The name of the column to check.
+   * @return true if the table exists, false if it doesn't.
+   */
+  public boolean checkColumnExists( String schemaname, String tablename, String columnname ) throws KettleDatabaseException {
+    if ( log.isDebug() ) {
+      log.logDebug( "Checking if column [" + columnname + "] exists in table [" + tablename + "] !" );
+    }
+
+    // First try the metadata
+    try {
+      ResultSet columns = getColumnsMetaData( schemaname, tablename );
+      while ( columns.next() ) {
+        if ( columnname.equals( columns.getString( "COLUMN_NAME" ) ) ) {
+          return true;
+        }
+      }
+      return false;
+    } catch ( KettleDatabaseException | SQLException e ) {
+      // That's ok. We will use a prepared statement.
+      if ( log.isDebug() ) {
+        log.logDebug( "Metadata check failed. Fallback to statement check." );
+      }
+    }
+
+    // Failed. Just do this old school.
+    return checkColumnExists(
+      databaseMeta.quoteField( columnname ),
+      databaseMeta.getQuotedSchemaTableCombination( schemaname, tablename ) );
+  }
+
+  /**
    * See if the column specified exists by reading
    *
    * @param columnname The name of the column to check.
    * @param tablename  The name of the table to check.<br> This is supposed to be the properly quoted name of the table
    *                   or the complete schema-table name combination.
    * @return true if the table exists, false if it doesn't.
+   * @deprecated Deprecated in favor of the smarter {@link #checkColumnExists(String, String, String)}
    */
   public boolean checkColumnExists( String columnname, String tablename ) throws KettleDatabaseException {
     try {
