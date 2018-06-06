@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -602,7 +602,7 @@ public class SQLFileOutputMeta extends BaseStepMeta implements StepMetaInterface
         if ( !Utils.isEmpty( tablename ) ) {
           String schemaTable = databaseMeta.getQuotedSchemaTableCombination( schemaName, tablename );
           // Check if this table exists...
-          if ( db.checkTableExists( schemaTable ) ) {
+          if ( db.checkTableExists( schemaName, tablename ) ) {
             cr =
               new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
                 PKG, "SQLFileOutputMeta.CheckResult.TableAccessible", schemaTable ), stepMeta );
@@ -809,7 +809,7 @@ public class SQLFileOutputMeta extends BaseStepMeta implements StepMetaInterface
           String schemaTable = databaseMeta.getQuotedSchemaTableCombination( realSchemaName, realTableName );
 
           // Check if this table exists...
-          if ( db.checkTableExists( schemaTable ) ) {
+          if ( db.checkTableExists( realSchemaName, realTableName ) ) {
             return db.getTableFields( schemaTable );
           } else {
             throw new KettleException( BaseMessages.getString( PKG, "SQLFileOutputMeta.Exception.TableNotFound" ) );
