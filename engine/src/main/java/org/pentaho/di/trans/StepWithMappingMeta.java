@@ -32,6 +32,7 @@ import org.pentaho.di.core.Const;
 import org.pentaho.di.core.ObjectLocationSpecificationMethod;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.LogChannel;
+import org.pentaho.di.core.parameters.DuplicateParamException;
 import org.pentaho.di.core.parameters.NamedParams;
 import org.pentaho.di.core.parameters.UnknownParamException;
 import org.pentaho.di.core.util.CurrentDirectoryResolver;
@@ -248,6 +249,15 @@ public abstract class StepWithMappingMeta extends BaseSerializingMeta implements
           // this is explicitly checked for up front
         }
       } else {
+        try {
+          childNamedParams.addParameterDefinition( key, "", "" );
+          childNamedParams.setParameterValue( key, value );
+        } catch ( DuplicateParamException e ) {
+          // this was explicitly checked before
+        } catch ( UnknownParamException e ) {
+          // this is explicitly checked for up front
+        }
+
         childVariableSpace.setVariable( key, value );
       }
     }
