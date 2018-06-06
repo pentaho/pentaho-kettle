@@ -6,6 +6,20 @@ buildProperties:
 
         MAVEN_DEFAULT_COMMAND_OPTIONS  : -B -e -q
 
+        # Version based control properties
+        UPDATE_VERSIONS                : false
+        RELEASE_VERSION                : 9.0.0.0
+        SUITE_RELEASE_VERSION          : 9.0.0.0
+        RELEASE_MODE                   : false
+        ADD_BUILD_ID_VERSION_TAIL      : true
+        # Options: SUFFIX, NONE, PREFIX, FULL
+        TAG_NAME_TYPE                  : NONE
+        TAG_NAME                       : -RC
+
+        # Installer defaults
+        IBUILDER_RESOURCES_ROOT_PATH   : /build2/resources/ibuilder-pentaho-8.0-resources
+        INSTALL_BUILDER_ROOT_DIR       : /build2/resources/installbuilder-15.1.0
+
 jobGroups:
   # Always required
 

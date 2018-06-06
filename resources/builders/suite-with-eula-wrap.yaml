@@ -6,6 +6,9 @@ buildProperties:
 
         MAVEN_DEFAULT_COMMAND_OPTIONS  : -B -e -q
 
+        # Installer defaults
+        IBUILDER_RESOURCES_ROOT_PATH   : /build2/resources/ibuilder-pentaho-8.0-resources
+        INSTALL_BUILDER_ROOT_DIR       : /build2/resources/installbuilder-15.1.0
 
 jobGroups:
   # Always required
