@@ -215,6 +215,11 @@
     <classname>org.pentaho.di.core.database.Vertica5DatabaseMeta</classname>
   </database-type>
 
+  <database-type id="XUGU">
+    <description>Xugu</description>
+    <classname>org.pentaho.di.core.database.XuguDatabaseMeta</classname>
+  </database-type>                                                            
+
   <database-type id="GOOGLEBIGQUERY">
     <description>Google BigQuery</description>
     <classname>org.pentaho.di.core.database.GoogleBigQueryDatabaseMeta</classname>

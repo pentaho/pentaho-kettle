@@ -433,6 +433,14 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
   public static final int TYPE_DATABASE_INFOBRIGHT = 37;
 
   /**
+   * Connection to a Xugu database
+   *
+   * @deprecated
+   */
+  @Deprecated
+  public static final int TYPE_DATABASE_XUGU = 38;
+
+  /**
    * Connect natively through JDBC thin driver to the database.
    */
   public static final int TYPE_ACCESS_NATIVE = 0;

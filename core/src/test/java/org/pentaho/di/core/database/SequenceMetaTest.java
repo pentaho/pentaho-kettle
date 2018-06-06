@@ -49,7 +49,7 @@ public class SequenceMetaTest {
       new PostgreSQLDatabaseMeta(),
       new RedshiftDatabaseMeta(),
       new VerticaDatabaseMeta(),
-      new Vertica5DatabaseMeta(),
+      new Vertica5DatabaseMeta()
     };
 
     DatabaseInterface[] doNotSupport = new DatabaseInterface[] {
@@ -81,7 +81,8 @@ public class SequenceMetaTest {
       new SybaseIQDatabaseMeta(),
       new TeradataDatabaseMeta(),
       new UniVerseDatabaseMeta(),
-      new VectorWiseDatabaseMeta()
+      new VectorWiseDatabaseMeta(),
+      new XuguDatabaseMeta()
     };
 
     for ( DatabaseInterface db : support ) {
