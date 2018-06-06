@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <artifactId>pdi-core-ce</artifactId>
+    <packaging>pom</packaging>
+
+    <name>PDI Core Client Community Edition</name>
+
+    <parent>
+        <groupId>org.pentaho.di</groupId>
+        <artifactId>pdi-assemblies</artifactId>
+        <version>9.0.0.0-SNAPSHOT</version>
+    </parent>
+
+    <properties>
+        <pdi-dataservice-driver-bundle.version>${project.version}</pdi-dataservice-driver-bundle.version>
+        <ael.version>9.0.0.0-SNAPSHOT</ael.version>
+
+        <pentaho-karaf.version>9.0.0.0-SNAPSHOT</pentaho-karaf.version>
+        <pentaho-launcher.version>9.0.0.0-SNAPSHOT</pentaho-launcher.version>
+        <oss-licenses.version>9.0.0.0-SNAPSHOT</oss-licenses.version>
+    </properties>
+
+    <dependencies>
+        <!-- PDI Assemblies -->
+        <dependency>
+            <groupId>org.pentaho.di</groupId>
+            <artifactId>pdi-core-static</artifactId>
+            <version>${project.version}</version>
+            <type>zip</type>
+            <exclusions>
+                <exclusion>
+                    <groupId>*</groupId>
+                    <artifactId>*</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.pentaho.di</groupId>
+            <artifactId>pdi-core-libs</artifactId>
+            <version>${project.version}</version>
+            <type>zip</type>
+            <exclusions>
+                <exclusion>
+                    <groupId>*</groupId>
+                    <artifactId>*</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>pentaho</groupId>
+            <artifactId>pentaho-karaf-assembly</artifactId>
+            <version>${pentaho-karaf.version}</version>
+            <classifier>client</classifier>
+            <type>zip</type>
+            <exclusions>
+                <exclusion>
+                    <groupId>*</groupId>
+                    <artifactId>*</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>pentaho</groupId>
+            <artifactId>pdi-dataservice-driver-bundle</artifactId>
+            <version>${pdi-dataservice-driver-bundle.version}</version>
+            <type>zip</type>
+            <exclusions>
+                <exclusion>
+                    <groupId>*</groupId>
+                    <artifactId>*</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.pentaho.adaptive</groupId>
+            <artifactId>pdi-websocket-daemon-assembly</artifactId>
+            <version>${ael.version}</version>
+            <type>zip</type>
+            <exclusions>
+                <exclusion>
+                    <groupId>*</groupId>
+                    <artifactId>*</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>pentaho</groupId>
+            <artifactId>pentaho-application-launcher</artifactId>
+            <version>${pentaho-launcher.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>*</groupId>
+                    <artifactId>*</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>pentaho</groupId>
+            <artifactId>oss-licenses</artifactId>
+            <version>${oss-licenses.version}</version>
+            <type>zip</type>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>add-karaf</id>
+                        <phase>generate-resources</phase>
+                        <goals>
+                            <goal>unpack</goal>
+                        </goals>
+                        <configuration>
+                            <artifactItems>
+                                <artifactItem>
+                                    <groupId>pentaho</groupId>
+                                    <artifactId>pentaho-karaf-assembly</artifactId>
+                                    <classifier>client</classifier>
+                                    <type>zip</type>
+                                </artifactItem>
+                            </artifactItems>
+                            <outputDirectory>${assembly.dir}/system</outputDirectory>
+                            <excludes>**/etc-pan/*.cfg,**/etc-kitchen/*.cfg</excludes>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>add-pdi-daemon</id>
+                        <phase>generate-resources</phase>
+                        <goals>
+                            <goal>unpack</goal>
+                        </goals>
+                        <configuration>
+                            <artifactItems>
+                                <artifactItem>
+                                    <groupId>org.pentaho.adaptive</groupId>
+                                    <artifactId>pdi-websocket-daemon-assembly</artifactId>
+                                    <type>zip</type>
+                                </artifactItem>
+                            </artifactItems>
+                            <outputDirectory>${assembly.dir}</outputDirectory>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <!-- post processing -->
+            <plugin>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>rename-unpacked-dependencies</id>
+                        <phase>process-resources</phase>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                        <configuration>
+                            <target>
+                                <echo message="Moving unpacked dependencies to the right place..."/>
+                                <move file="${assembly.dir}/system/pentaho-karaf-assembly" tofile="${assembly.dir}/system/karaf" failonerror="false"/>
+                                <move file="${assembly.dir}/pdi-websocket-daemon" tofile="${assembly.dir}/adaptive-execution" failonerror="false"/>
+                            </target>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+
+</project>
