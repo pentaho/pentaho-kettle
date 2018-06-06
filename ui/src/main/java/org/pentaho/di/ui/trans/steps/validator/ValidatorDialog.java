@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -960,6 +960,10 @@ public class ValidatorDialog extends BaseStepDialog implements StepDialogInterfa
           selectedField = null;
           wValidationsList.remove( index );
           enableFields();
+
+          if ( selectionList.size() > 0 ) {
+            wValidationsList.select( selectionList.size() - 1 );
+          }
         }
       }
     } );
