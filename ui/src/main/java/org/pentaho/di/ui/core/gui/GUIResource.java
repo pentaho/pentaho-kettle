@@ -325,6 +325,8 @@ public class GUIResource {
 
   private Image imageVersionBrowser;
 
+  private Image imageDeprecated;
+
   private Image imageNew;
 
   private SwtUniversalImage imageEdit;
@@ -632,6 +634,7 @@ public class GUIResource {
       imageWarning.dispose();
       imageVersionBrowser.dispose();
       imageClearText.dispose();
+      imageDeprecated.dispose();
       imageClearTextDisabled.dispose();
       imageExpandAll.dispose();
       imageSearchSmall.dispose();
@@ -1073,6 +1076,10 @@ public class GUIResource {
 
     // "ui/images/warning.png;
     imageWarning = SwtSvgImageUtil.getImageAsResource( display, BasePropertyHandler.getProperty( "Warning_image" ) );
+
+    // "ui/images/deprecated.svg
+    imageDeprecated = loadAsResource( display, BasePropertyHandler.getProperty( "Deprecated_image" ),
+      ConstUI.LARGE_ICON_SIZE );
 
     // "ui/images/version-history.png;
     imageVersionBrowser =
@@ -2356,6 +2363,10 @@ public class GUIResource {
 
   public Image getImageVersionBrowser() {
     return imageVersionBrowser;
+  }
+
+  public Image getImageDeprecated() {
+    return imageDeprecated;
   }
 
   public Image getImageNew() {
