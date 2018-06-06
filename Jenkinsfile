@@ -39,44 +39,9 @@ pipeline {
         description: 'Clean build dependency caches with regex'
     )
     string(
-        name: 'CHECKOUT_DEPTH',
-        defaultValue: '20',
-        description: 'Shallow clone depth (leave blank for infinite)'
-    )
-    string(
-        name: 'BUILD_TIMEOUT',
-        defaultValue: '360',
-        description: 'Build timeout in minutes'
-    )
-    string(
-        name: 'BUILD_RETRIES',
-        defaultValue: '1',
-        description: 'Build retry count'
-    )
-    string(
         name: 'MAVEN_RESOLVE_REPO_URL',
         defaultValue: 'http://nexus.pentaho.org/content/groups/omni',
         description: 'Maven resolve repo global mirror'
-    )
-    string(
-        name: 'CHECKOUT_CREDENTIALS_ID',
-        defaultValue: 'github-buildguy',
-        description: 'Use this Jenkins credential for checkouts'
-    )
-    string(
-        name: 'JENKINS_JDK_FOR_BUILDS',
-        defaultValue: 'Java8_auto',
-        description: 'Use this Jenkins JDK label for builds'
-    )
-    string(
-        name: 'JENKINS_MAVEN_FOR_BUILDS',
-        defaultValue: 'maven3-auto',
-        description: 'Use this Jenkins Maven label for builds',
-    )
-    string(
-        name: 'JENKINS_ANT_FOR_BUILDS',
-        defaultValue: 'ant-auto',
-        description: 'Use this Jenkins Ant label for builds',
     )
     string(
         name: 'CHECKOUT_TIMESTAMP',
