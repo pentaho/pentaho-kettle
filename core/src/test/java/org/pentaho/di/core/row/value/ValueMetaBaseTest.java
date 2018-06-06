@@ -29,7 +29,6 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Test;
-import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.Spy;
 import org.owasp.encoder.Encode;
@@ -702,16 +701,10 @@ public class ValueMetaBaseTest {
 
   @Test
   public void testSetPreparedStatementStringValueLogTruncated() throws KettleDatabaseException {
-    ValueMetaBase valueMetaString = new ValueMetaBase( "LOG_FIELD", ValueMetaInterface.TYPE_STRING,  LOG_FIELD.length(), 0 );
-
-    DatabaseMeta databaseMeta = mock( DatabaseMeta.class );
-    PreparedStatement preparedStatement = mock( PreparedStatement.class );
-    Mockito.when( databaseMeta.getMaxTextFieldLength() ).thenReturn( MAX_TEXT_FIELD_LEN );
     List<KettleLoggingEvent> events = listener.getEvents();
     assertEquals( 0, events.size() );
-
-    valueMetaString.setPreparedStatementValue( databaseMeta, preparedStatement, 0, LOG_FIELD );
-
+    BaseDatabaseMeta databaseMeta = mock( BaseDatabaseMeta.class );
+    initValueMeta( databaseMeta, MAX_TEXT_FIELD_LEN );
     //check that truncated string was logged
     assertEquals( 1, events.size() );
   }
@@ -960,7 +953,7 @@ public class ValueMetaBaseTest {
 
     ValueMetaBase base = new ValueMetaString( "ValueMetaStringColumn" );
     base.setConversionMetadata( new ValueMetaTimestamp( "ValueMetaTimestamp" ) );
-    Timestamp timestamp = ( Timestamp ) base.convertDataUsingConversionMetaData( timestampStringRepresentation );
+    Timestamp timestamp = (Timestamp) base.convertDataUsingConversionMetaData( timestampStringRepresentation );
     assertEquals( expectedTimestamp, timestamp );
   }
 
@@ -970,21 +963,22 @@ public class ValueMetaBaseTest {
    *
    * @throws Exception
    */
+
   @Test
   public void test_Pdi_17126_postgres() throws Exception {
-    initValueMeta( new PostgreSQLDatabaseMeta(), 10_336_013 );
+    initValueMeta( new PostgreSQLDatabaseMeta(), DatabaseMeta.CLOB_LENGTH );
     Mockito.verify( preparedStatementMock, times( 1 ) ).setString( anyInt(), anyString() );
   }
 
   @Test
   public void test_Pdi_17126_postgres_truncate() throws Exception {
-    initValueMeta( new PostgreSQLDatabaseMeta(), 1_073_741_825 );
+    initValueMeta( new PostgreSQLDatabaseMeta(), MAX_TEXT_FIELD_LEN );
     Mockito.verify( preparedStatementMock, Mockito.never() ).setString( anyInt(), anyString() );
   }
 
   @Test
   public void test_Pdi_17126_mysql() throws Exception {
-    initValueMeta( new MySQLDatabaseMeta(), 1_073_741_825 );
+    initValueMeta( new MySQLDatabaseMeta(), DatabaseMeta.CLOB_LENGTH );
     Mockito.verify( preparedStatementMock, times( 1 ) ).setString( anyInt(), anyString() );
   }
 
