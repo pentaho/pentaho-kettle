@@ -22,8 +22,6 @@
 
 package org.pentaho.di.trans.steps.multimerge;
 
-import java.util.List;
-
 import org.apache.commons.lang.ArrayUtils;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
@@ -44,6 +42,7 @@ import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDataInterface;
+import org.pentaho.di.trans.step.StepIOMetaInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
@@ -52,6 +51,8 @@ import org.pentaho.di.trans.step.errorhandling.StreamIcon;
 import org.pentaho.di.trans.step.errorhandling.StreamInterface.StreamType;
 import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Node;
+
+import java.util.List;
 
 /**
  * @author Biswapesh
@@ -237,11 +238,12 @@ public class MultiMergeJoinMeta extends BaseStepMeta implements StepMetaInterfac
 
   @Override
   public void searchInfoAndTargetSteps( List<StepMeta> steps ) {
-    getStepIOMeta().getInfoStreams().clear();
+    StepIOMetaInterface ioMeta = getStepIOMeta();
+    ioMeta.getInfoStreams().clear();
     for ( int i = 0; i < inputSteps.length; i++ ) {
       String inputStepName = inputSteps[i];
-      if ( i >= getStepIOMeta().getInfoStreams().size() ) {
-        getStepIOMeta().addStream(
+      if ( i >= ioMeta.getInfoStreams().size() ) {
+        ioMeta.addStream(
           new Stream( StreamType.INFO, StepMeta.findStep( steps, inputStepName ),
               BaseMessages.getString( PKG, "MultiMergeJoin.InfoStream.Description" ), StreamIcon.INFO, inputStepName ) );
       }

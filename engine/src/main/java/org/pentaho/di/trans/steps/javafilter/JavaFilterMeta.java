@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,17 +22,14 @@
 
 package org.pentaho.di.trans.steps.javafilter;
 
-import java.util.List;
-import java.util.Objects;
-
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.row.RowMetaInterface;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
@@ -53,6 +50,9 @@ import org.pentaho.di.trans.step.errorhandling.StreamInterface;
 import org.pentaho.di.trans.step.errorhandling.StreamInterface.StreamType;
 import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Node;
+
+import java.util.List;
+import java.util.Objects;
 
 /**
  * Contains the meta-data for the java filter step: calculates conditions using Janino
@@ -135,7 +135,8 @@ public class JavaFilterMeta extends BaseStepMeta implements StepMetaInterface {
 
   @Override
   public void searchInfoAndTargetSteps( List<StepMeta> steps ) {
-    for ( StreamInterface stream : getStepIOMeta().getTargetStreams() ) {
+    List<StreamInterface> targetStreams = getStepIOMeta().getTargetStreams();
+    for ( StreamInterface stream : targetStreams ) {
       stream.setStepMeta( StepMeta.findStep( steps, (String) stream.getSubject() ) );
     }
   }
@@ -253,6 +254,7 @@ public class JavaFilterMeta extends BaseStepMeta implements StepMetaInterface {
    * Returns the Input/Output metadata for this step.
    */
   public StepIOMetaInterface getStepIOMeta() {
+    StepIOMetaInterface ioMeta = super.getStepIOMeta( false );
     if ( ioMeta == null ) {
 
       ioMeta = new StepIOMeta( true, true, false, false, false, false );
@@ -261,6 +263,7 @@ public class JavaFilterMeta extends BaseStepMeta implements StepMetaInterface {
         PKG, "JavaFilterMeta.InfoStream.True.Description" ), StreamIcon.TRUE, null ) );
       ioMeta.addStream( new Stream( StreamType.TARGET, null, BaseMessages.getString(
         PKG, "JavaFilterMeta.InfoStream.False.Description" ), StreamIcon.FALSE, null ) );
+      setStepIOMeta( ioMeta );
     }
 
     return ioMeta;

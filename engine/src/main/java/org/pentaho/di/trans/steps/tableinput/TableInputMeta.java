@@ -459,7 +459,8 @@ public class TableInputMeta extends BaseStepMeta implements StepMetaInterface {
    *          optionally search the info step in a list of steps
    */
   public void searchInfoAndTargetSteps( List<StepMeta> steps ) {
-    for ( StreamInterface stream : getStepIOMeta().getInfoStreams() ) {
+    List<StreamInterface> infoStreams = getStepIOMeta().getInfoStreams();
+    for ( StreamInterface stream : infoStreams ) {
       stream.setStepMeta( StepMeta.findStep( steps, (String) stream.getSubject() ) );
     }
   }
@@ -543,6 +544,7 @@ public class TableInputMeta extends BaseStepMeta implements StepMetaInterface {
    * Returns the Input/Output metadata for this step. The generator step only produces output, does not accept input!
    */
   public StepIOMetaInterface getStepIOMeta() {
+    StepIOMetaInterface ioMeta = super.getStepIOMeta( false );
     if ( ioMeta == null ) {
 
       ioMeta = new StepIOMeta( true, true, false, false, false, false );
@@ -552,6 +554,7 @@ public class TableInputMeta extends BaseStepMeta implements StepMetaInterface {
           StreamType.INFO, null, BaseMessages.getString( PKG, "TableInputMeta.InfoStream.Description" ),
           StreamIcon.INFO, null );
       ioMeta.addStream( stream );
+      setStepIOMeta( ioMeta );
     }
 
     return ioMeta;
