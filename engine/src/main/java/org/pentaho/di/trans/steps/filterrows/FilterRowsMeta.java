@@ -217,7 +217,8 @@ public class FilterRowsMeta extends BaseStepMeta implements StepMetaInterface {
 
   @Override
   public void searchInfoAndTargetSteps( List<StepMeta> steps ) {
-    for ( StreamInterface stream : getStepIOMeta().getTargetStreams() ) {
+    List<StreamInterface> targetStreams = getStepIOMeta().getTargetStreams();
+    for ( StreamInterface stream : targetStreams ) {
       stream.setStepMeta( StepMeta.findStep( steps, (String) stream.getSubject() ) );
     }
   }
@@ -341,6 +342,7 @@ public class FilterRowsMeta extends BaseStepMeta implements StepMetaInterface {
    * Returns the Input/Output metadata for this step.
    */
   public StepIOMetaInterface getStepIOMeta() {
+    StepIOMetaInterface ioMeta = super.getStepIOMeta( false );
     if ( ioMeta == null ) {
 
       ioMeta = new StepIOMeta( true, true, false, false, false, false );
@@ -349,6 +351,7 @@ public class FilterRowsMeta extends BaseStepMeta implements StepMetaInterface {
         PKG, "FilterRowsMeta.InfoStream.True.Description" ), StreamIcon.TRUE, null ) );
       ioMeta.addStream( new Stream( StreamType.TARGET, null, BaseMessages.getString(
         PKG, "FilterRowsMeta.InfoStream.False.Description" ), StreamIcon.FALSE, null ) );
+      setStepIOMeta( ioMeta );
     }
 
     return ioMeta;
