@@ -38,17 +38,13 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Props;
 import org.pentaho.di.core.annotations.PluginDialog;
-import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.plugins.PluginInterface;
 import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.plugins.StepPluginType;
-import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.row.value.ValueMetaBase;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStepMeta;
@@ -59,8 +55,6 @@ import org.pentaho.di.ui.core.widget.ComboVar;
 import org.pentaho.di.ui.core.widget.TextVar;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
-import java.util.List;
-
 import static com.google.common.base.Strings.nullToEmpty;
 import static org.pentaho.di.trans.step.mqtt.MQTTConstants.AUTOMATIC_RECONNECT;
 import static org.pentaho.di.trans.step.mqtt.MQTTConstants.CLEAN_SESSION;
@@ -70,6 +64,8 @@ import static org.pentaho.di.trans.step.mqtt.MQTTConstants.MAX_INFLIGHT;
 import static org.pentaho.di.trans.step.mqtt.MQTTConstants.MQTT_VERSION;
 import static org.pentaho.di.trans.step.mqtt.MQTTConstants.SERVER_URIS;
 import static org.pentaho.di.trans.step.mqtt.MQTTConstants.STORAGE_LEVEL;
+import static org.pentaho.di.ui.core.WidgetUtils.formDataBelow;
+import static org.pentaho.di.ui.core.WidgetUtils.createFieldDropDown;
 
 @SuppressWarnings ( "unused" )
 @PluginDialog ( id = "MQTTProducer", image = "MQTTProducer.svg", pluginType = PluginDialog.PluginType.STEP )
@@ -84,7 +80,8 @@ public class MQTTProducerDialog extends BaseStepDialog implements StepDialogInte
   private ModifyListener lsMod;
   private TextVar wMqttServer;
   private TextVar wClientId;
-  private TextVar wTopic;
+  private ComboVar wTopic;
+  private TextVar wTopicText;
   private ComboVar wQOS;
   private ComboVar wMessageField;
   private CTabFolder wTabFolder;
@@ -204,8 +201,8 @@ public class MQTTProducerDialog extends BaseStepDialog implements StepDialogInte
     buildSetupTab();
 
     securityLayout = new MqttDialogSecurityLayout(
-      props, wTabFolder, meta.getUsername(), meta.getPassword(), lsMod, transMeta,
-      meta.getSslConfig(), meta.isUseSsl() );
+      props, wTabFolder, meta.username, meta.password, lsMod, transMeta,
+      meta.getSslConfig(), meta.useSsl );
     securityLayout.buildSecurityTab();
 
     optionsLayout = new MqttDialogOptionsLayout( props, wTabFolder, lsMod, transMeta,
@@ -271,11 +268,8 @@ public class MQTTProducerDialog extends BaseStepDialog implements StepDialogInte
     wClientId = new TextVar( transMeta, wSetupComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
     props.setLook( wClientId );
     wClientId.addModifyListener( lsMod );
-    FormData fdClientId = new FormData();
-    fdClientId.left = new FormAttachment( 0, 0 );
-    fdClientId.top = new FormAttachment( wlClientId, 5 );
-    fdClientId.right = new FormAttachment( 0, INPUT_WIDTH );
-    wClientId.setLayoutData( fdClientId );
+    FormData o = formDataBelow( wlClientId, INPUT_WIDTH, 5 );
+    wClientId.setLayoutData( o );
 
     Label wlTopic = new Label( wSetupComp, SWT.LEFT );
     props.setLook( wlTopic );
@@ -286,14 +280,23 @@ public class MQTTProducerDialog extends BaseStepDialog implements StepDialogInte
     fdlTopic.width = 200;
     wlTopic.setLayoutData( fdlTopic );
 
-    wTopic = new TextVar( transMeta, wSetupComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
-    props.setLook( wTopic );
-    wTopic.addModifyListener( lsMod );
-    FormData fdTopic = new FormData();
-    fdTopic.left = new FormAttachment( 0, 0 );
-    fdTopic.top = new FormAttachment( wlTopic, 5 );
-    fdTopic.width = 200;
-    wTopic.setLayoutData( fdTopic );
+    Button topicComesFromField = new Button( wSetupComp, SWT.CHECK );
+    topicComesFromField.setText( "Topic comes from step field" );
+    topicComesFromField.setLayoutData( formDataBelow( wlTopic, 30, 15 ) );
+    topicComesFromField.addSelectionListener( new SelectionAdapter() {
+      @Override public void widgetSelected( SelectionEvent selectionEvent ) {
+        super.widgetSelected( selectionEvent );
+        setTopicWidgetVisibility( topicComesFromField );
+      }
+    } );
+
+    FormData formData = formDataBelow( topicComesFromField, INPUT_WIDTH, 5 );
+
+    wTopic = createFieldDropDown( wSetupComp, props, meta, formData );
+    wTopicText = new TextVar( transMeta, wSetupComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
+    wTopicText.setLayoutData( formData );
+
+    setTopicWidgetVisibility( topicComesFromField );
 
     Label wlQOS = new Label( wSetupComp, SWT.LEFT );
     props.setLook( wlQOS );
@@ -325,30 +328,7 @@ public class MQTTProducerDialog extends BaseStepDialog implements StepDialogInte
     fdlMessageField.right = new FormAttachment( 50, 0 );
     wlMessageField.setLayoutData( fdlMessageField );
 
-    wMessageField = new ComboVar( transMeta, wSetupComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
-    props.setLook( wMessageField );
-    wMessageField.addModifyListener( lsMod );
-    FormData fdMessageField = new FormData();
-    fdMessageField.left = new FormAttachment( 0, 0 );
-    fdMessageField.top = new FormAttachment( wlMessageField, 5 );
-    fdMessageField.right = new FormAttachment( 0, INPUT_WIDTH );
-    wMessageField.setLayoutData( fdMessageField );
-    Listener lsMessageFocus = e -> {
-      String current = wMessageField.getText();
-      wMessageField.getCComboWidget().removeAll();
-      wMessageField.setText( current );
-      try {
-        RowMetaInterface rmi = transMeta.getPrevStepFields( meta.getParentStepMeta().getName() );
-        List ls = rmi.getValueMetaList();
-        for ( Object l : ls ) {
-          ValueMetaBase vmb = (ValueMetaBase) l;
-          wMessageField.add( vmb.getName() );
-        }
-      } catch ( KettleStepException ex ) {
-        // do nothing
-      }
-    };
-    wMessageField.getCComboWidget().addListener( SWT.FocusIn, lsMessageFocus );
+    wMessageField = createFieldDropDown( wSetupComp, props, meta, formDataBelow( wlMessageField, INPUT_WIDTH, 5 ) );
 
     FormData fdSetupComp = new FormData();
     fdSetupComp.left = new FormAttachment( 0, 0 );
@@ -360,19 +340,24 @@ public class MQTTProducerDialog extends BaseStepDialog implements StepDialogInte
     wSetupTab.setControl( wSetupComp );
   }
 
+  private void setTopicWidgetVisibility( Button topicComesFromField ) {
+    wTopic.setVisible( topicComesFromField.getSelection() );
+    wTopicText.setVisible( !topicComesFromField.getSelection() );
+  }
+
   @Override
   public void setSize() {
     setSize( shell );  // sets shell location and preferred size
-    shell.setMinimumSize( SHELL_MIN_WIDTH, SHELL_MIN_HEIGHT  );
-    shell.setSize(  SHELL_MIN_WIDTH, SHELL_MIN_HEIGHT   ); // force initial size
+    shell.setMinimumSize( SHELL_MIN_WIDTH, SHELL_MIN_HEIGHT );
+    shell.setSize( SHELL_MIN_WIDTH, SHELL_MIN_HEIGHT ); // force initial size
   }
 
   private void getData() {
-    wMqttServer.setText( nullToEmpty( meta.getMqttServer() ) );
-    wClientId.setText( nullToEmpty( meta.getClientId() ) );
-    wTopic.setText( nullToEmpty( meta.getTopic() ) );
-    wQOS.setText( nullToEmpty( meta.getQOS() ) );
-    wMessageField.setText( nullToEmpty( meta.getMessageField() ) );
+    wMqttServer.setText( nullToEmpty( meta.mqttServer ) );
+    wClientId.setText( nullToEmpty( meta.clientId ) );
+    wTopic.setText( nullToEmpty( meta.topic ) );
+    wQOS.setText( nullToEmpty( meta.qos ) );
+    wMessageField.setText( nullToEmpty( meta.messageField ) );
     securityLayout.setUIText();
   }
 
@@ -383,42 +368,42 @@ public class MQTTProducerDialog extends BaseStepDialog implements StepDialogInte
 
   private void ok() {
     stepname = wStepname.getText();
-    meta.setMqttServer( wMqttServer.getText() );
-    meta.setClientId( wClientId.getText() );
-    meta.setTopic( wTopic.getText() );
-    meta.setQOS( wQOS.getText() );
-    meta.setMessageField( wMessageField.getText() );
-    meta.setUsername( securityLayout.username() );
-    meta.setPassword( securityLayout.password() );
-    meta.setUseSsl( securityLayout.useSsl() );
+    meta.mqttServer = wMqttServer.getText();
+    meta.clientId = wClientId.getText();
+    meta.topic = wTopic.getText();
+    meta.qos = wQOS.getText();
+    meta.messageField = wMessageField.getText();
+    meta.username = securityLayout.username();
+    meta.password = securityLayout.password();
+    meta.useSsl = securityLayout.useSsl();
     meta.setSslConfig( securityLayout.sslConfig() );
 
-    optionsLayout.retrieveOptions().stream()
+    optionsLayout.retrieveOptions()
       .forEach( option -> {
         switch ( option.getKey() ) {
           case KEEP_ALIVE_INTERVAL:
-            meta.setKeepAliveInterval( option.getValue() );
+            meta.keepAliveInterval = option.getValue();
             break;
           case MAX_INFLIGHT:
-            meta.setMaxInflight( option.getValue() );
+            meta.maxInflight = option.getValue();
             break;
           case CONNECTION_TIMEOUT:
-            meta.setConnectionTimeout( option.getValue() );
+            meta.connectionTimeout = option.getValue();
             break;
           case CLEAN_SESSION:
-            meta.setCleanSession( option.getValue() );
+            meta.cleanSession = option.getValue();
             break;
           case STORAGE_LEVEL:
-            meta.setStorageLevel( option.getValue() );
+            meta.storageLevel = option.getValue();
             break;
           case SERVER_URIS:
-            meta.setServerUris( option.getValue() );
+            meta.serverUris = option.getValue();
             break;
           case MQTT_VERSION:
-            meta.setMqttVersion( option.getValue() );
+            meta.mqttVersion = option.getValue();
             break;
           case AUTOMATIC_RECONNECT:
-            meta.setAutomaticReconnect( option.getValue() );
+            meta.automaticReconnect = option.getValue();
             break;
         }
       } );

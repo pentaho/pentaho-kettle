@@ -28,6 +28,7 @@ import org.pentaho.di.core.annotations.Step;
 import org.pentaho.di.core.injection.Injection;
 import org.pentaho.di.core.injection.InjectionSupported;
 import org.pentaho.di.core.row.RowMetaInterface;
+import org.pentaho.di.core.util.GenericStepData;
 import org.pentaho.di.core.util.serialization.BaseSerializingMeta;
 import org.pentaho.di.core.util.serialization.Sensitive;
 import org.pentaho.di.core.variables.VariableSpace;
@@ -67,6 +68,7 @@ import static org.pentaho.di.trans.step.mqtt.MQTTConstants.SSL_KEYS;
 import static org.pentaho.di.trans.step.mqtt.MQTTConstants.SSL_VALUES;
 import static org.pentaho.di.trans.step.mqtt.MQTTConstants.STORAGE_LEVEL;
 import static org.pentaho.di.trans.step.mqtt.MQTTConstants.TOPIC;
+import static org.pentaho.di.trans.step.mqtt.MQTTConstants.TOPIC_IN_FIELD;
 import static org.pentaho.di.trans.step.mqtt.MQTTConstants.USERNAME;
 import static org.pentaho.di.trans.step.mqtt.MQTTConstants.USE_SSL;
 import static org.pentaho.di.core.util.serialization.ConfigHelper.conf;
@@ -82,60 +84,63 @@ public class MQTTProducerMeta extends BaseSerializingMeta implements StepMetaInt
   private static Class<?> PKG = MQTTProducerMeta.class;
 
   @Injection ( name = MQTT_SERVER )
-  private String mqttServer;
+   public String mqttServer;
 
   @Injection ( name = CLIENT_ID )
-  private String clientId;
+  public String clientId;
 
   @Injection ( name = TOPIC )
-  private String topic;
+  public String topic;
+
+  @Injection ( name = TOPIC_IN_FIELD )
+  public Boolean topicInField = false;
 
   @Injection ( name = QOS )
-  private String qos;
+  public String qos;
 
   @Injection ( name = MESSAGE_FIELD )
-  private String messageField;
+  public String messageField;
 
   @Injection ( name = USERNAME )
-  private String username;
+  public String username;
 
   @Sensitive
   @Injection ( name = PASSWORD )
-  private String password;
+  public  String password;
 
   @Injection ( name = USE_SSL, group = SSL_GROUP )
-  private Boolean useSsl = false;
+  public  Boolean useSsl = false;
 
   @Injection ( name = SSL_KEYS, group = SSL_GROUP )
-  private List<String> sslKeys = new ArrayList<>();
+  public List<String> sslKeys = new ArrayList<>();
 
   @Sensitive
   @Injection ( name = SSL_VALUES, group = SSL_GROUP )
-  private List<String> sslValues = new ArrayList<>();
+  public List<String> sslValues = new ArrayList<>();
 
   @Injection( name = KEEP_ALIVE_INTERVAL )
-  private String keepAliveInterval;
+  public  String keepAliveInterval;
 
   @Injection( name = MAX_INFLIGHT )
-  private String maxInflight;
+  public  String maxInflight;
 
   @Injection( name = CONNECTION_TIMEOUT )
-  private String connectionTimeout;
+  public  String connectionTimeout;
 
   @Injection( name = CLEAN_SESSION )
-  private String cleanSession;
+  public  String cleanSession;
 
   @Injection( name = STORAGE_LEVEL )
-  private String storageLevel;
+  public String storageLevel;
 
   @Injection( name = SERVER_URIS )
-  private String serverUris;
+  public  String serverUris;
 
   @Injection( name = MQTT_VERSION )
-  private String mqttVersion;
+  public String mqttVersion;
 
   @Injection( name = AUTOMATIC_RECONNECT )
-  private String automaticReconnect;
+  public String automaticReconnect;
 
   public MQTTProducerMeta() {
     super();
@@ -175,7 +180,7 @@ public class MQTTProducerMeta extends BaseSerializingMeta implements StepMetaInt
 
   @Override
   public StepDataInterface getStepData() {
-    return new MQTTProducerData();
+    return new GenericStepData();
   }
 
 
@@ -224,137 +229,14 @@ public class MQTTProducerMeta extends BaseSerializingMeta implements StepMetaInt
     return "org.pentaho.di.trans.step.mqtt.MQTTProducerDialog";
   }
 
-  public String getMqttServer() {
-    return mqttServer;
-  }
 
-  public void setMqttServer( String mqttServer ) {
-    this.mqttServer = mqttServer;
-  }
-
-  public String getClientId() {
-    return clientId;
-  }
-
-  public void setClientId( String clientId ) {
-    this.clientId = clientId;
-  }
-
-  public String getTopic() {
-    return topic;
-  }
-
-  public void setTopic( String topic ) {
-    this.topic = topic;
-  }
-
-  public String getQOS() {
-    return qos;
-  }
-
-  public void setQOS( String qos ) {
-    this.qos = qos;
-  }
-
-  public String getMessageField() {
-    return messageField;
-  }
-
-  public void setMessageField( String messageField ) {
-    this.messageField = messageField;
-  }
-
-  public String getUsername() {
-    return username;
-  }
-
-  public void setUsername( String username ) {
-    this.username = username;
-  }
-
-  public String getPassword() {
-    return password;
-  }
-
-  public void setPassword( String password ) {
-    this.password = password;
-  }
-
-  public Map<String, String> getSslConfig() {
+  Map<String, String> getSslConfig() {
     return conf( sslKeys, sslValues ).asMap();
   }
 
-  public void setSslConfig( Map<String, String> sslConfig ) {
+  void setSslConfig( Map<String, String> sslConfig ) {
     sslKeys = conf( sslConfig ).keys();
     sslValues = conf( sslConfig ).vals();
-  }
-
-  public boolean isUseSsl() {
-    return useSsl;
-  }
-
-  public void setUseSsl( boolean useSsl ) {
-    this.useSsl = useSsl;
-  }
-
-  public String getKeepAliveInterval() {
-    return keepAliveInterval;
-  }
-
-  public void setKeepAliveInterval( String keepAliveInterval ) {
-    this.keepAliveInterval = keepAliveInterval;
-  }
-
-  public String getMaxInflight() {
-    return maxInflight;
-  }
-
-  public void setMaxInflight( String maxInflight ) {
-    this.maxInflight = maxInflight;
-  }
-
-  public String getConnectionTimeout() {
-    return connectionTimeout;
-  }
-
-  public void setConnectionTimeout( String connectionTimeout ) {
-    this.connectionTimeout = connectionTimeout;
-  }
-
-  public String getCleanSession() {
-    return cleanSession;
-  }
-
-  public void setCleanSession( String cleanSession ) {
-    this.cleanSession = cleanSession;
-  }
-
-  public String getStorageLevel() {
-    return storageLevel;
-  }
-
-  public void setStorageLevel( String storageLevel ) {
-    this.storageLevel = storageLevel;
-  }
-
-  public String getServerUris() {
-    return serverUris;
-  }
-
-  public void setServerUris( String serverUris ) {
-    this.serverUris = serverUris;
-  }
-
-  public String getMqttVersion() {
-    return mqttVersion;
-  }
-
-  public void setMqttVersion( String mqttVersion ) {
-    this.mqttVersion = mqttVersion;
-  }
-
-  public String getAutomaticReconnect() {
-    return automaticReconnect;
   }
 
   @Override public boolean equals( Object o ) {
@@ -415,7 +297,4 @@ public class MQTTProducerMeta extends BaseSerializingMeta implements StepMetaInt
       .toString();
   }
 
-  public void setAutomaticReconnect( String automaticReconnect ) {
-    this.automaticReconnect = automaticReconnect;
-  }
 }
