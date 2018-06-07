@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -21,8 +21,6 @@
  ******************************************************************************/
 
 package org.pentaho.di.trans.steps.streamlookup;
-
-import java.util.List;
 
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
@@ -57,6 +55,8 @@ import org.pentaho.di.trans.step.errorhandling.StreamInterface;
 import org.pentaho.di.trans.step.errorhandling.StreamInterface.StreamType;
 import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Node;
+
+import java.util.List;
 
 @InjectionSupported( localizationPrefix = "StreamLookupMeta.Injection." )
 public class StreamLookupMeta extends BaseStepMeta implements StepMetaInterface {
@@ -123,21 +123,19 @@ public class StreamLookupMeta extends BaseStepMeta implements StepMetaInterface 
   @Override
   public Object clone() {
     StreamLookupMeta retval = (StreamLookupMeta) super.clone();
-
-    if ( getStepIOMeta() != null
-        && getStepIOMeta().getInfoStreams() != null
-        && retval.getStepIOMeta() != null
-        && getStepIOMeta().getInfoStreams() != null ) {
-      retval.getStepIOMeta().getInfoStreams().get( 0 ).setStreamType(
-        getStepIOMeta().getInfoStreams().get( 0 ).getStreamType() );
-      retval.getStepIOMeta().getInfoStreams().get( 0 ).setStepMeta(
-        getStepIOMeta().getInfoStreams().get( 0 ).getStepMeta() );
-      retval.getStepIOMeta().getInfoStreams().get( 0 ).setDescription(
-        getStepIOMeta().getInfoStreams().get( 0 ).getDescription() );
-      retval.getStepIOMeta().getInfoStreams().get( 0 ).setStreamIcon(
-        getStepIOMeta().getInfoStreams().get( 0 ).getStreamIcon() );
-      retval.getStepIOMeta().getInfoStreams().get( 0 ).setSubject(
-        getStepIOMeta().getInfoStreams().get( 0 ).getSubject() );
+    StepIOMetaInterface thisStepIO = getStepIOMeta();
+    StepIOMetaInterface thatStepIO = retval.getStepIOMeta();
+    if ( thisStepIO != null
+        && thisStepIO.getInfoStreams() != null
+        && thatStepIO != null
+        && thisStepIO.getInfoStreams() != null ) {
+      List<StreamInterface> thisInfoStream = thisStepIO.getInfoStreams();
+      List<StreamInterface> thatInfoStream = thatStepIO.getInfoStreams();
+      thatInfoStream.get( 0 ).setStreamType( thisInfoStream.get( 0 ).getStreamType() );
+      thatInfoStream.get( 0 ).setStepMeta( thisInfoStream.get( 0 ).getStepMeta() );
+      thatInfoStream.get( 0 ).setDescription( thisInfoStream.get( 0 ).getDescription() );
+      thatInfoStream.get( 0 ).setStreamIcon( thisInfoStream.get( 0 ).getStreamIcon() );
+      thatInfoStream.get( 0 ).setSubject( thisInfoStream.get( 0 ).getSubject() );
     }
 
     int nrkeys = keystream.length;
@@ -202,7 +200,8 @@ public class StreamLookupMeta extends BaseStepMeta implements StepMetaInterface 
 
   @Override
   public void searchInfoAndTargetSteps( List<StepMeta> steps ) {
-    for ( StreamInterface stream : getStepIOMeta().getInfoStreams() ) {
+    List<StreamInterface> infoStreams = getStepIOMeta().getInfoStreams();
+    for ( StreamInterface stream : infoStreams ) {
       stream.setStepMeta( StepMeta.findStep( steps, (String) stream.getSubject() ) );
     }
   }
@@ -512,6 +511,7 @@ public class StreamLookupMeta extends BaseStepMeta implements StepMetaInterface 
    */
   @Override
   public StepIOMetaInterface getStepIOMeta() {
+    StepIOMetaInterface ioMeta = super.getStepIOMeta( false );
     if ( ioMeta == null ) {
 
       ioMeta = new StepIOMeta( true, true, false, false, false, false );
@@ -520,6 +520,7 @@ public class StreamLookupMeta extends BaseStepMeta implements StepMetaInterface 
         new Stream( StreamType.INFO, null, BaseMessages.getString(
           PKG, "StreamLookupMeta.InfoStream.Description" ), StreamIcon.INFO, null );
       ioMeta.addStream( stream );
+      setStepIOMeta( ioMeta );
     }
 
     return ioMeta;
