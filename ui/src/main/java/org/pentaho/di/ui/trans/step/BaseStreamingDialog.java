@@ -22,7 +22,6 @@
 
 package org.pentaho.di.ui.trans.step;
 
-import org.apache.commons.vfs2.FileObject;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.custom.CTabItem;
@@ -53,13 +52,9 @@ import org.pentaho.di.core.gui.Point;
 import org.pentaho.di.core.plugins.PluginInterface;
 import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.plugins.StepPluginType;
-import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.ObjectId;
-import org.pentaho.di.repository.RepositoryDirectoryInterface;
-import org.pentaho.di.repository.RepositoryObject;
-import org.pentaho.di.repository.RepositoryObjectType;
 import org.pentaho.di.shared.SharedObjects;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStepMeta;
@@ -72,18 +67,14 @@ import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.core.widget.ComboVar;
 import org.pentaho.di.ui.core.widget.TextVar;
-import org.pentaho.di.ui.repository.dialog.SelectObjectDialog;
+import org.pentaho.di.ui.core.widget.VFSFileSelection;
 import org.pentaho.di.ui.spoon.MainSpoonPerspective;
 import org.pentaho.di.ui.spoon.Spoon;
 import org.pentaho.di.ui.spoon.dialog.NewSubtransDialog;
-import org.pentaho.di.ui.util.DialogUtils;
-import org.pentaho.vfs.ui.VfsFileChooserDialog;
 import org.pentaho.xul.swt.tab.TabItem;
 import org.pentaho.xul.swt.tab.TabSet;
 
-import java.io.IOException;
 import java.util.Arrays;
-import java.util.Optional;
 
 import static java.util.Optional.ofNullable;
 import static org.pentaho.di.trans.StepWithMappingMeta.loadMappingMeta;
@@ -96,12 +87,10 @@ public abstract class BaseStreamingDialog extends BaseStepDialog implements Step
   // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
   protected BaseStreamStepMeta meta;
-  protected TransMeta executorTransMeta = null;
   private Spoon spoonInstance;
 
   protected Label wlTransPath;
-  protected TextVar wTransPath;
-  protected Button wbBrowseTrans;
+  protected VFSFileSelection wFileSection;
   protected Button wbCreateSubtrans;
 
   protected Label wlSubStep;
@@ -195,46 +184,19 @@ public abstract class BaseStreamingDialog extends BaseStepDialog implements Step
     fdlTransPath.right = new FormAttachment( 50, 0 );
     wlTransPath.setLayoutData( fdlTransPath );
 
-    wTransPath = new TextVar( transMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
-    props.setLook( wTransPath );
-    wTransPath.addModifyListener( lsMod );
-    FormData fdTransPath = new FormData();
-    fdTransPath.left = new FormAttachment( 0, 0 );
-    fdTransPath.top = new FormAttachment( wlTransPath, 5 );
-    fdTransPath.width = 275;
-    wTransPath.setLayoutData( fdTransPath );
-
-    wbBrowseTrans = new Button( shell, SWT.PUSH );
-    props.setLook( wbBrowseTrans );
-    wbBrowseTrans.setText( BaseMessages.getString( PKG, "BaseStreaming.Dialog.Transformation.Browse" ) );
-    FormData fdBrowseTrans = new FormData();
-    fdBrowseTrans.left = new FormAttachment( wTransPath, 5 );
-    fdBrowseTrans.top = new FormAttachment( wlTransPath, 5 );
-    wbBrowseTrans.setLayoutData( fdBrowseTrans );
-
-    wbBrowseTrans.addSelectionListener( new SelectionAdapter() {
-      public void widgetSelected( SelectionEvent e ) {
-        if ( repository != null ) {
-          selectRepositoryTrans();
-        } else {
-          Optional<String> fileName = selectFile( BaseStreamingDialog.this.wTransPath, Const.STRING_TRANS_FILTER_EXT );
-          fileName.ifPresent( fn -> {
-            try {
-              loadFileTrans( fn );
-            } catch ( KettleException ex ) {
-              ex.printStackTrace();
-            }
-          } );
-        }
-      }
-    } );
+    wFileSection = new VFSFileSelection( shell, SWT.SINGLE, Const.STRING_TRANS_FILTER_EXT, Const.getTransformationFilterNames(), transMeta, repository  );
+    props.setLook( wFileSection );
+    FormData fdFileSelection = new FormData();
+    fdFileSelection.left = new FormAttachment( 0, 0 );
+    fdFileSelection.top = new FormAttachment( wlTransPath, 5 );
+    wFileSection.setLayoutData( fdFileSelection );
 
     wbCreateSubtrans = new Button( shell, SWT.PUSH );
     props.setLook( wbCreateSubtrans );
     wbCreateSubtrans.setText( BaseMessages.getString( PKG, "BaseStreaming.Dialog.Transformation.CreateSubtrans" ) );
     FormData fdCreateSubtrans = new FormData();
-    fdCreateSubtrans.left = new FormAttachment( wbBrowseTrans, 5 );
-    fdCreateSubtrans.top = new FormAttachment( wbBrowseTrans, 0, SWT.TOP );
+    fdCreateSubtrans.left = new FormAttachment( wFileSection, 5 );
+    fdCreateSubtrans.top = new FormAttachment( wFileSection, 0, SWT.TOP );
     wbCreateSubtrans.setLayoutData( fdCreateSubtrans );
 
     wbCreateSubtrans.addSelectionListener( new SelectionAdapter() {
@@ -276,7 +238,7 @@ public abstract class BaseStreamingDialog extends BaseStepDialog implements Step
 
     FormData fdTabFolder = new FormData();
     fdTabFolder.left = new FormAttachment( 0, 0 );
-    fdTabFolder.top = new FormAttachment( wTransPath, 15 );
+    fdTabFolder.top = new FormAttachment( wFileSection, 15 );
     fdTabFolder.bottom = new FormAttachment( hSpacer, -15 );
     fdTabFolder.right = new FormAttachment( 100, 0 );
     wTabFolder.setLayoutData( fdTabFolder );
@@ -379,7 +341,7 @@ public abstract class BaseStreamingDialog extends BaseStepDialog implements Step
     }
 
     if ( saved && null != path ) {
-      wTransPath.setText( path );
+      wFileSection.wFileName.setText( path );
       createSubtrans( newSubTransMeta );
 
       if ( props.showNewSubtransPopup() ) {
@@ -546,7 +508,7 @@ public abstract class BaseStreamingDialog extends BaseStepDialog implements Step
 
   protected void getData() {
     if ( meta.getTransformationPath() != null ) {
-      wTransPath.setText( meta.getTransformationPath() );
+      wFileSection.wFileName.setText( meta.getTransformationPath() );
     }
     if ( meta.getBatchSize() != null ) {
       wBatchSize.setText( meta.getBatchSize() );
@@ -615,20 +577,20 @@ public abstract class BaseStreamingDialog extends BaseStepDialog implements Step
    * populates streamMeta based on current values of form
    */
   private void updateMeta( BaseStreamStepMeta streamMeta ) {
-    streamMeta.setTransformationPath( wTransPath.getText() );
+    streamMeta.setTransformationPath( wFileSection.wFileName.getText() );
     streamMeta.setBatchSize( wBatchSize.getText() );
     streamMeta.setBatchDuration( wBatchDuration.getText() );
     streamMeta.setSpecificationMethod( specificationMethod );
     streamMeta.setSubStep( wSubStep.getText() );
     switch ( specificationMethod ) {
       case FILENAME:
-        streamMeta.setFileName( wTransPath.getText() );
+        streamMeta.setFileName( wFileSection.wFileName.getText() );
         streamMeta.setDirectoryPath( null );
         streamMeta.setTransName( null );
         streamMeta.setTransObjectId( null );
         break;
       case REPOSITORY_BY_NAME:
-        String transPath = wTransPath.getText();
+        String transPath = wFileSection.wFileName.getText();
         String transName = transPath;
         String directory = "";
         int index = transPath.lastIndexOf( "/" );
@@ -649,24 +611,6 @@ public abstract class BaseStreamingDialog extends BaseStepDialog implements Step
 
   protected void additionalOks( BaseStreamStepMeta meta ) {
 
-  }
-
-  private void selectRepositoryTrans() {
-    try {
-      SelectObjectDialog sod = new SelectObjectDialog( shell, repository );
-      String transName = sod.open();
-      RepositoryDirectoryInterface repdir = sod.getDirectory();
-      if ( transName != null && repdir != null ) {
-        loadRepositoryTrans( transName, repdir );
-        String path = getRepositoryRelativePath( executorTransMeta.getPathAndName() );
-        wTransPath.setText( path );
-        specificationMethod = ObjectLocationSpecificationMethod.REPOSITORY_BY_NAME;
-      }
-    } catch ( KettleException ke ) {
-      new ErrorDialog( shell,
-        BaseMessages.getString( PKG, "TransExecutorDialog.ErrorSelectingObject.DialogTitle" ),
-        BaseMessages.getString( PKG, "TransExecutorDialog.ErrorSelectingObject.DialogMessage" ), ke );
-    }
   }
 
   protected String getRepositoryRelativePath( String path ) {
@@ -693,118 +637,6 @@ public abstract class BaseStreamingDialog extends BaseStepDialog implements Step
     }
 
     return filePath;
-  }
-
-  private void loadRepositoryTrans( String transName, RepositoryDirectoryInterface repdir ) throws KettleException {
-    // Read the transformation...
-    //
-    executorTransMeta =
-      repository.loadTransformation( transMeta.environmentSubstitute( transName ), repdir, null, false, null );
-    executorTransMeta.clearChanged();
-  }
-
-  protected Optional<String> selectFile( TextVar fileWidget, String[] fileFilters ) {
-    String curFile = transMeta.environmentSubstitute( fileWidget.getText() );
-
-    FileObject root = null;
-
-    try {
-      root = KettleVFS.getFileObject( curFile != null ? curFile : Const.getUserHomeDirectory() );
-
-      VfsFileChooserDialog vfsFileChooser = Spoon.getInstance().getVfsFileChooserDialog( root.getParent(), root );
-      FileObject file =
-        vfsFileChooser.open(
-          shell, null, fileFilters, Const.getTransformationFilterNames(),
-          VfsFileChooserDialog.VFS_DIALOG_OPEN_FILE );
-      if ( file == null ) {
-        return Optional.empty();
-      }
-
-      String filePath = getRelativePath( file.getName().toString() );
-      fileWidget.setText( filePath );
-
-      return Optional.ofNullable( filePath );
-    } catch ( IOException | KettleException e ) {
-      new ErrorDialog( shell,
-        BaseMessages.getString( PKG, "TransExecutorDialog.ErrorLoadingTransformation.DialogTitle" ),
-        BaseMessages.getString( PKG, "TransExecutorDialog.ErrorLoadingTransformation.DialogMessage" ), e );
-    }
-    return Optional.empty();
-  }
-
-  private void loadFileTrans( String fname ) throws KettleException {
-    executorTransMeta = new TransMeta( transMeta.environmentSubstitute( fname ), repository );
-    executorTransMeta.clearChanged();
-    specificationMethod = ObjectLocationSpecificationMethod.FILENAME;
-  }
-
-  // Method is defined as package-protected in order to be accessible by unit tests
-  void loadTransformation() throws KettleException {
-    String filename = wTransPath.getText();
-    if ( repository != null ) {
-      specificationMethod = ObjectLocationSpecificationMethod.REPOSITORY_BY_NAME;
-    } else {
-      specificationMethod = ObjectLocationSpecificationMethod.FILENAME;
-    }
-    switch ( specificationMethod ) {
-      case FILENAME:
-        if ( Utils.isEmpty( filename ) ) {
-          return;
-        }
-        if ( !filename.endsWith( ".ktr" ) ) {
-          filename = filename + ".ktr";
-          wTransPath.setText( filename );
-        }
-        loadFileTrans( filename );
-        break;
-      case REPOSITORY_BY_NAME:
-        if ( Utils.isEmpty( filename ) ) {
-          return;
-        }
-        if ( filename.endsWith( ".ktr" ) ) {
-          filename = filename.replace( ".ktr", "" );
-          wTransPath.setText( filename );
-        }
-        String transPath = transMeta.environmentSubstitute( filename );
-        String realTransname = transPath;
-        String realDirectory = "";
-        int index = transPath.lastIndexOf( "/" );
-        if ( index != -1 ) {
-          realTransname = transPath.substring( index + 1 );
-          realDirectory = transPath.substring( 0, index );
-        }
-
-        if ( Utils.isEmpty( realDirectory ) || Utils.isEmpty( realTransname ) ) {
-          throw new KettleException(
-            BaseMessages.getString( PKG, "TransExecutorDialog.Exception.NoValidMappingDetailsFound" ) );
-        }
-        RepositoryDirectoryInterface repdir = repository.findDirectory( realDirectory );
-        if ( repdir == null ) {
-          throw new KettleException( BaseMessages.getString(
-            PKG, "TransExecutorDialog.Exception.UnableToFindRepositoryDirectory" ) );
-        }
-        loadRepositoryTrans( realTransname, repdir );
-        break;
-      default:
-        break;
-    }
-  }
-
-  private void getByReferenceData( ObjectId transObjectId ) {
-    try {
-      RepositoryObject transInf = repository.getObjectInformation( transObjectId, RepositoryObjectType.TRANSFORMATION );
-      String
-              path =
-              DialogUtils
-                      .getPath( transMeta.getRepositoryDirectory().getPath(),
-                              transInf.getRepositoryDirectory().getPath() );
-      String fullPath = Const.NVL( path, "" ) + "/" + Const.NVL( transInf.getName(), "" );
-      wTransPath.setText( fullPath );
-    } catch ( KettleException e ) {
-      new ErrorDialog( shell,
-              BaseMessages.getString( PKG, "JobEntryTransDialog.Exception.UnableToReferenceObjectId.Title" ),
-              BaseMessages.getString( PKG, "JobEntryTransDialog.Exception.UnableToReferenceObjectId.Message" ), e );
-    }
   }
 }
 
