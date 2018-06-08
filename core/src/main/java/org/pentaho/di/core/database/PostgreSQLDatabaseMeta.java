@@ -303,6 +303,9 @@ public class PostgreSQLDatabaseMeta extends BaseDatabaseMeta implements Database
     String retval = "";
 
     String fieldname = v.getName();
+    if ( v.getLength() == DatabaseMeta.CLOB_LENGTH ) {
+      v.setLength( getMaxTextFieldLength() );
+    }
     int length = v.getLength();
     int precision = v.getPrecision();
 
