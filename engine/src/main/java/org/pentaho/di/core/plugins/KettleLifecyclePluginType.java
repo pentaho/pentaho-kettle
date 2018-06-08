@@ -138,6 +138,11 @@ public class KettleLifecyclePluginType extends BasePluginType implements PluginT
   }
 
   @Override
+  protected String extractSuggestedStep( Annotation annotation ) {
+    return null;
+  }
+
+  @Override
   protected String extractClassLoaderGroup( Annotation annotation ) {
     return ( (KettleLifecyclePlugin) annotation ).classLoaderGroup();
   }

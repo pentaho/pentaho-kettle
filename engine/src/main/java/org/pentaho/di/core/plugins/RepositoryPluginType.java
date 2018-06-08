@@ -168,6 +168,11 @@ public class RepositoryPluginType extends BasePluginType implements PluginTypeIn
   }
 
   @Override
+  protected String extractSuggestedStep( Annotation annotation ) {
+    return null;
+  }
+
+  @Override
   protected String extractClassLoaderGroup( Annotation annotation ) {
     return ( (RepositoryPlugin) annotation ).classLoaderGroup();
   }

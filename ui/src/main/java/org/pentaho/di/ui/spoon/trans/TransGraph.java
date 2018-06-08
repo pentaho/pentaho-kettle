@@ -237,6 +237,10 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
 
   public static final String TRANS_GRAPH_ENTRY_AGAIN = "trans-graph-entry-align";
 
+  private static final int TOOLTIP_HIDE_DELAY_SHORT = 5000;
+
+  private static final int TOOLTIP_HIDE_DELAY_LONG = 10000;
+
   private TransMeta transMeta;
 
   public Trans trans;
@@ -508,7 +512,7 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
     toolTip.setRespectMonitorBounds( true );
     toolTip.setRespectDisplayBounds( true );
     toolTip.setPopupDelay( 350 );
-    toolTip.setHideDelay( 5000 );
+    toolTip.setHideDelay( TOOLTIP_HIDE_DELAY_SHORT );
     toolTip.setShift( new org.eclipse.swt.graphics.Point( ConstUI.TOOLTIP_OFFSET, ConstUI.TOOLTIP_OFFSET ) );
 
     helpTip = new CheckBoxToolTip( canvas );
@@ -1268,6 +1272,7 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
     // disable the tooltip
     //
     toolTip.hide();
+    toolTip.setHideDelay( TOOLTIP_HIDE_DELAY_SHORT );
 
     Point real = screen2real( e.x, e.y );
     // Remember the last position of the mouse for paste with keyboard
@@ -1472,8 +1477,10 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
   public void mouseHover( MouseEvent e ) {
 
     boolean tip = true;
+    boolean isDeprecated = false;
 
     toolTip.hide();
+    toolTip.setHideDelay( TOOLTIP_HIDE_DELAY_SHORT );
     Point real = screen2real( e.x, e.y );
 
     AreaOwner areaOwner = getVisibleAreaOwner( real.x, real.y );
@@ -1481,6 +1488,7 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
       switch ( areaOwner.getAreaType() ) {
         case STEP_ICON:
           StepMeta stepMeta = (StepMeta) areaOwner.getOwner();
+          isDeprecated = stepMeta.isDeprecated();
           if ( !stepMeta.isMissing() && !mouseOverSteps.contains( stepMeta ) ) {
             addStepMouseOverDelayTimer( stepMeta );
             redraw();
@@ -1492,12 +1500,9 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
       }
     }
 
-    if ( tip ) {
-      // Show a tool tip upon mouse-over of an object on the canvas
-      //
-      if ( !helpTip.isVisible() ) {
-        setToolTip( real.x, real.y, e.x, e.y );
-      }
+    // Show a tool tip upon mouse-over of an object on the canvas
+    if ( ( tip && !helpTip.isVisible() ) || isDeprecated ) {
+      setToolTip( real.x, real.y, e.x, e.y );
     }
   }
 
@@ -1911,6 +1916,7 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
   protected void hideToolTips() {
     toolTip.hide();
     helpTip.hide();
+    toolTip.setHideDelay( TOOLTIP_HIDE_DELAY_SHORT );
   }
 
   private void showHelpTip( int x, int y, String tipTitle, String tipMessage ) {
@@ -2879,8 +2885,10 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
     //
     StringBuilder tip = new StringBuilder();
     AreaOwner areaOwner = getVisibleAreaOwner( x, y );
+    AreaType areaType = null;
     if ( areaOwner != null && areaOwner.getAreaType() != null ) {
-      switch ( areaOwner.getAreaType() ) {
+      areaType = areaOwner.getAreaType();
+      switch ( areaType ) {
         case REMOTE_INPUT_STEP:
           StepMeta step = (StepMeta) areaOwner.getParent();
           tip.append( "Remote input steps:" ).append( Const.CR ).append( "-----------------------" ).append( Const.CR );
@@ -2998,13 +3006,29 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
           tip.append( BaseMessages.getString( PKG, "TransGraph.ShowMenu.Tooltip" ) );
           tipImage = GUIResource.getInstance().getImageContextMenu();
           break;
+        case STEP_ICON:
+          StepMeta iconStepMeta = (StepMeta) areaOwner.getOwner();
+          tip.append( BaseMessages.getString( PKG, "TransGraph.DeprecatedStep.Tooltip.Title" ) ).append( Const.CR );
+          String tipNext = BaseMessages.getString( PKG, "TransGraph.DeprecatedStep.Tooltip.Message1",
+            iconStepMeta.getName() );
+          int length = tipNext.length() + 5;
+          for ( int i = 0; i < length; i++ ) {
+            tip.append( "-" );
+          }
+          tip.append( Const.CR ).append( tipNext ).append( Const.CR );
+          tip.append( BaseMessages.getString( PKG, "TransGraph.DeprecatedStep.Tooltip.Message2" ) ).append( Const.CR );
+          tip.append( BaseMessages.getString( PKG, "TransGraph.DeprecatedStep.Tooltip.Message3",
+            iconStepMeta.getSuggestedStep() ) ).append( Const.CR );
+          tip.append( BaseMessages.getString( PKG, "TransGraph.DeprecatedStep.Tooltip.Message4" ) );
+          tipImage = GUIResource.getInstance().getImageDeprecated();
+          toolTip.setHideDelay( TOOLTIP_HIDE_DELAY_LONG );
+          break;
         default:
           break;
       }
     }
 
-    if ( hi != null ) { // We clicked on a HOP!
-
+    if ( hi != null && tip.length() == 0 ) { // We clicked on a HOP!
       // Set the tooltip for the hop:
       tip.append( Const.CR ).append( BaseMessages.getString( PKG, "TransGraph.Dialog.HopInfo" ) ).append(
         newTip = hi.toString() ).append( Const.CR );

@@ -163,8 +163,12 @@ public class PartitionerPluginType extends BasePluginType implements PluginTypeI
   }
 
   @Override
+  protected String extractSuggestedStep( Annotation annotation ) {
+    return null;
+  }
+
+  @Override
   protected String extractClassLoaderGroup( Annotation annotation ) {
     return ( (PartitionerPlugin) annotation ).classLoaderGroup();
   }
-
 }

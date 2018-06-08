@@ -169,6 +169,11 @@ public class TwoWayPasswordEncoderPluginType extends BasePluginType implements P
   }
 
   @Override
+  protected String extractSuggestedStep( Annotation annotation ) {
+    return null;
+  }
+
+  @Override
   protected String extractClassLoaderGroup( Annotation annotation ) {
     return ( (TwoWayPasswordEncoderPlugin) annotation ).classLoaderGroup();
   }

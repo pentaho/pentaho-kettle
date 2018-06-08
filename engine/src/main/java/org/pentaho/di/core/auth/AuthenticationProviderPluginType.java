@@ -128,8 +128,12 @@ public class AuthenticationProviderPluginType extends BasePluginType implements 
   }
 
   @Override
+  protected String extractSuggestedStep( Annotation annotation ) {
+    return null;
+  }
+
+  @Override
   protected String extractImageFile( Annotation annotation ) {
     return "";
   }
-
 }
