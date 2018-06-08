@@ -115,6 +115,7 @@ public class MQTTProducer extends BaseStep implements StepInterface {
       logError( e.getMessage(), e );
       setErrors( 1 );
       stopAll();
+      return false;
     } catch ( RuntimeException re ) {
       stopAll();
       logError( re.getMessage(), re );
@@ -146,7 +147,6 @@ public class MQTTProducer extends BaseStep implements StepInterface {
           .withAutomaticReconnect( meta.automaticReconnect )
           .buildAndConnect();
     } catch ( MqttException e ) {
-
       throw new RuntimeException( e );
     }
   }
@@ -164,6 +164,9 @@ public class MQTTProducer extends BaseStep implements StepInterface {
     return mqttMessage;
   }
 
+  /**
+   * Retrieves the topic, either a raw string, or a field value if meta.topicInField==true
+   */
   private String getTopic( Object[] row ) {
     String topic;
     if ( meta.topicInField ) {

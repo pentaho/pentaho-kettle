@@ -79,68 +79,49 @@ import static org.pentaho.di.core.util.serialization.ConfigHelper.conf;
   description = "MQTTProducer.TypeTooltipDesc",
   categoryDescription = "i18n:org.pentaho.di.trans.step:BaseStep.Category.Streaming",
   documentationUrl = "Products/Data_Integration/Transformation_Step_Reference/MQTT_Producer" )
-@InjectionSupported ( localizationPrefix = "MQTTProducerMeta.Injection.", groups = { "SSL" }  )
+@InjectionSupported ( localizationPrefix = "MQTTProducerMeta.Injection.", groups = { "SSL" } )
 public class MQTTProducerMeta extends BaseSerializingMeta implements StepMetaInterface {
   private static Class<?> PKG = MQTTProducerMeta.class;
 
-  @Injection ( name = MQTT_SERVER )
-   public String mqttServer;
+  @Injection ( name = MQTT_SERVER ) String mqttServer;
 
-  @Injection ( name = CLIENT_ID )
-  public String clientId;
+  @Injection ( name = CLIENT_ID ) String clientId;
 
-  @Injection ( name = TOPIC )
-  public String topic;
+  @Injection ( name = TOPIC ) String topic;
 
-  @Injection ( name = TOPIC_IN_FIELD )
-  public Boolean topicInField = false;
+  @Injection ( name = TOPIC_IN_FIELD ) Boolean topicInField = false;
 
-  @Injection ( name = QOS )
-  public String qos;
+  @Injection ( name = QOS ) String qos;
 
-  @Injection ( name = MESSAGE_FIELD )
-  public String messageField;
+  @Injection ( name = MESSAGE_FIELD ) String messageField;
 
-  @Injection ( name = USERNAME )
-  public String username;
+  @Injection ( name = USERNAME ) String username;
 
   @Sensitive
-  @Injection ( name = PASSWORD )
-  public  String password;
+  @Injection ( name = PASSWORD ) String password;
 
-  @Injection ( name = USE_SSL, group = SSL_GROUP )
-  public  Boolean useSsl = false;
+  @Injection ( name = USE_SSL, group = SSL_GROUP ) Boolean useSsl = false;
 
-  @Injection ( name = SSL_KEYS, group = SSL_GROUP )
-  public List<String> sslKeys = new ArrayList<>();
+  @Injection ( name = SSL_KEYS, group = SSL_GROUP ) private List<String> sslKeys = new ArrayList<>();
 
   @Sensitive
-  @Injection ( name = SSL_VALUES, group = SSL_GROUP )
-  public List<String> sslValues = new ArrayList<>();
+  @Injection ( name = SSL_VALUES, group = SSL_GROUP ) private List<String> sslValues = new ArrayList<>();
 
-  @Injection( name = KEEP_ALIVE_INTERVAL )
-  public  String keepAliveInterval;
+  @Injection ( name = KEEP_ALIVE_INTERVAL ) String keepAliveInterval;
 
-  @Injection( name = MAX_INFLIGHT )
-  public  String maxInflight;
+  @Injection ( name = MAX_INFLIGHT ) String maxInflight;
 
-  @Injection( name = CONNECTION_TIMEOUT )
-  public  String connectionTimeout;
+  @Injection ( name = CONNECTION_TIMEOUT ) String connectionTimeout;
 
-  @Injection( name = CLEAN_SESSION )
-  public  String cleanSession;
+  @Injection ( name = CLEAN_SESSION ) String cleanSession;
 
-  @Injection( name = STORAGE_LEVEL )
-  public String storageLevel;
+  @Injection ( name = STORAGE_LEVEL ) String storageLevel;
 
-  @Injection( name = SERVER_URIS )
-  public  String serverUris;
+  @Injection ( name = SERVER_URIS ) String serverUris;
 
-  @Injection( name = MQTT_VERSION )
-  public String mqttVersion;
+  @Injection ( name = MQTT_VERSION ) String mqttVersion;
 
-  @Injection( name = AUTOMATIC_RECONNECT )
-  public String automaticReconnect;
+  @Injection ( name = AUTOMATIC_RECONNECT ) String automaticReconnect;
 
   public MQTTProducerMeta() {
     super();
@@ -190,7 +171,6 @@ public class MQTTProducerMeta extends BaseSerializingMeta implements StepMetaInt
                      RowMetaInterface info, VariableSpace space, Repository repository,
                      IMetaStore metaStore ) {
     super.check( remarks, transMeta, stepMeta, prev, input, output, info, space, repository, metaStore );
-
     StepOption.checkInteger( remarks, stepMeta, space, getString( PKG, "MQTTDialog.Options.KEEP_ALIVE_INTERVAL" ),
       keepAliveInterval );
     StepOption
@@ -204,7 +184,7 @@ public class MQTTProducerMeta extends BaseSerializingMeta implements StepMetaInt
       automaticReconnect );
   }
 
-  public List<StepOption> retrieveOptions() {
+  List<StepOption> retrieveOptions() {
     return Arrays.asList(
       new StepOption( KEEP_ALIVE_INTERVAL, getString( PKG, "MQTTDialog.Options.KEEP_ALIVE_INTERVAL" ),
         keepAliveInterval ),

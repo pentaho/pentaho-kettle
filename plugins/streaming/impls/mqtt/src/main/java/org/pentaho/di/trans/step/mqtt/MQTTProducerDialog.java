@@ -36,7 +36,9 @@ import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
@@ -45,7 +47,6 @@ import org.pentaho.di.core.annotations.PluginDialog;
 import org.pentaho.di.core.plugins.PluginInterface;
 import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.plugins.StepPluginType;
-import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDialogInterface;
@@ -56,6 +57,7 @@ import org.pentaho.di.ui.core.widget.TextVar;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 import static com.google.common.base.Strings.nullToEmpty;
+import static org.pentaho.di.i18n.BaseMessages.getString;
 import static org.pentaho.di.trans.step.mqtt.MQTTConstants.AUTOMATIC_RECONNECT;
 import static org.pentaho.di.trans.step.mqtt.MQTTConstants.CLEAN_SESSION;
 import static org.pentaho.di.trans.step.mqtt.MQTTConstants.CONNECTION_TIMEOUT;
@@ -64,8 +66,8 @@ import static org.pentaho.di.trans.step.mqtt.MQTTConstants.MAX_INFLIGHT;
 import static org.pentaho.di.trans.step.mqtt.MQTTConstants.MQTT_VERSION;
 import static org.pentaho.di.trans.step.mqtt.MQTTConstants.SERVER_URIS;
 import static org.pentaho.di.trans.step.mqtt.MQTTConstants.STORAGE_LEVEL;
-import static org.pentaho.di.ui.core.WidgetUtils.formDataBelow;
 import static org.pentaho.di.ui.core.WidgetUtils.createFieldDropDown;
+import static org.pentaho.di.ui.core.WidgetUtils.formDataBelow;
 
 @SuppressWarnings ( "unused" )
 @PluginDialog ( id = "MQTTProducer", image = "MQTTProducer.svg", pluginType = PluginDialog.PluginType.STEP )
@@ -75,12 +77,13 @@ public class MQTTProducerDialog extends BaseStepDialog implements StepDialogInte
   private static final int INPUT_WIDTH = 350;
 
   private static Class<?> PKG = MQTTProducerDialog.class;
+  private static Label topicEntryType;
 
   private MQTTProducerMeta meta;
   private ModifyListener lsMod;
   private TextVar wMqttServer;
   private TextVar wClientId;
-  private ComboVar wTopic;
+  private ComboVar wTopicFieldname;
   private TextVar wTopicText;
   private ComboVar wQOS;
   private ComboVar wMessageField;
@@ -88,6 +91,7 @@ public class MQTTProducerDialog extends BaseStepDialog implements StepDialogInte
 
   private MqttDialogSecurityLayout securityLayout;
   private MqttDialogOptionsLayout optionsLayout;
+  private Button topicComesFromField;
 
   public MQTTProducerDialog( Shell parent, Object in, TransMeta transMeta, String stepname ) {
     super( parent, (BaseStepMeta) in, transMeta, stepname );
@@ -113,7 +117,7 @@ public class MQTTProducerDialog extends BaseStepDialog implements StepDialogInte
     props.setLook( shell );
     setShellImage( shell, meta );
     shell.setMinimumSize( SHELL_MIN_WIDTH, SHELL_MIN_HEIGHT );
-    shell.setText( BaseMessages.getString( PKG, "MQTTProducerDialog.Shell.Title" ) );
+    shell.setText( getString( PKG, "MQTTProducerDialog.Shell.Title" ) );
 
     Label wicon = new Label( shell, SWT.RIGHT );
     wicon.setImage( getImage() );
@@ -134,7 +138,7 @@ public class MQTTProducerDialog extends BaseStepDialog implements StepDialogInte
     } );
 
     wlStepname = new Label( shell, SWT.RIGHT );
-    wlStepname.setText( BaseMessages.getString( PKG, "MQTTProducerDialog.Stepname.Label" ) );
+    wlStepname.setText( getString( PKG, "MQTTProducerDialog.Stepname.Label" ) );
     props.setLook( wlStepname );
     fdlStepname = new FormData();
     fdlStepname.left = new FormAttachment( 0, 0 );
@@ -167,7 +171,7 @@ public class MQTTProducerDialog extends BaseStepDialog implements StepDialogInte
     wTabFolder.setUnselectedCloseVisible( true );
 
     wCancel = new Button( shell, SWT.PUSH );
-    wCancel.setText( BaseMessages.getString( PKG, "System.Button.Cancel" ) );
+    wCancel.setText( getString( PKG, "System.Button.Cancel" ) );
     FormData fdCancel = new FormData();
     fdCancel.right = new FormAttachment( 100, 0 );
     fdCancel.bottom = new FormAttachment( 100, 0 );
@@ -175,7 +179,7 @@ public class MQTTProducerDialog extends BaseStepDialog implements StepDialogInte
     wCancel.addListener( SWT.Selection, lsCancel );
 
     wOK = new Button( shell, SWT.PUSH );
-    wOK.setText( BaseMessages.getString( PKG, "System.Button.OK" ) );
+    wOK.setText( getString( PKG, "System.Button.OK" ) );
     FormData fdOk = new FormData();
     fdOk.right = new FormAttachment( wCancel, -5 );
     fdOk.bottom = new FormAttachment( 100, 0 );
@@ -229,7 +233,7 @@ public class MQTTProducerDialog extends BaseStepDialog implements StepDialogInte
 
   private void buildSetupTab() {
     CTabItem wSetupTab = new CTabItem( wTabFolder, SWT.NONE );
-    wSetupTab.setText( BaseMessages.getString( PKG, "MQTTProducerDialog.SetupTab" ) );
+    wSetupTab.setText( getString( PKG, "MQTTProducerDialog.SetupTab" ) );
 
     Composite wSetupComp = new Composite( wTabFolder, SWT.NONE );
     props.setLook( wSetupComp );
@@ -240,7 +244,7 @@ public class MQTTProducerDialog extends BaseStepDialog implements StepDialogInte
 
     Label wlMqttServer = new Label( wSetupComp, SWT.LEFT );
     props.setLook( wlMqttServer );
-    wlMqttServer.setText( BaseMessages.getString( PKG, "MQTTProducerDialog.Connection" ) );
+    wlMqttServer.setText( getString( PKG, "MQTTProducerDialog.Connection" ) );
     FormData fdlBootstrapServers = new FormData();
     fdlBootstrapServers.left = new FormAttachment( 0, 0 );
     fdlBootstrapServers.top = new FormAttachment( 0, 0 );
@@ -258,7 +262,7 @@ public class MQTTProducerDialog extends BaseStepDialog implements StepDialogInte
 
     Label wlClientId = new Label( wSetupComp, SWT.LEFT );
     props.setLook( wlClientId );
-    wlClientId.setText( BaseMessages.getString( PKG, "MQTTProducerDialog.ClientId" ) );
+    wlClientId.setText( getString( PKG, "MQTTProducerDialog.ClientId" ) );
     FormData fdlClientId = new FormData();
     fdlClientId.left = new FormAttachment( 0, 0 );
     fdlClientId.top = new FormAttachment( wMqttServer, 10 );
@@ -271,39 +275,14 @@ public class MQTTProducerDialog extends BaseStepDialog implements StepDialogInte
     FormData o = formDataBelow( wlClientId, INPUT_WIDTH, 5 );
     wClientId.setLayoutData( o );
 
-    Label wlTopic = new Label( wSetupComp, SWT.LEFT );
-    props.setLook( wlTopic );
-    wlTopic.setText( BaseMessages.getString( PKG, "MQTTProducerDialog.Topic" ) );
-    FormData fdlTopic = new FormData();
-    fdlTopic.left = new FormAttachment( 0, 0 );
-    fdlTopic.top = new FormAttachment( wClientId, 10 );
-    fdlTopic.width = 200;
-    wlTopic.setLayoutData( fdlTopic );
-
-    Button topicComesFromField = new Button( wSetupComp, SWT.CHECK );
-    topicComesFromField.setText( "Topic comes from step field" );
-    topicComesFromField.setLayoutData( formDataBelow( wlTopic, 30, 15 ) );
-    topicComesFromField.addSelectionListener( new SelectionAdapter() {
-      @Override public void widgetSelected( SelectionEvent selectionEvent ) {
-        super.widgetSelected( selectionEvent );
-        setTopicWidgetVisibility( topicComesFromField );
-      }
-    } );
-
-    FormData formData = formDataBelow( topicComesFromField, INPUT_WIDTH, 5 );
-
-    wTopic = createFieldDropDown( wSetupComp, props, meta, formData );
-    wTopicText = new TextVar( transMeta, wSetupComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
-    wTopicText.setLayoutData( formData );
-
-    setTopicWidgetVisibility( topicComesFromField );
+    Group group = setupTopicSelection( wSetupComp, wClientId );
 
     Label wlQOS = new Label( wSetupComp, SWT.LEFT );
     props.setLook( wlQOS );
-    wlQOS.setText( BaseMessages.getString( PKG, "MQTTProducerDialog.QOS" ) );
+    wlQOS.setText( getString( PKG, "MQTTProducerDialog.QOS" ) );
     FormData fdlQOS = new FormData();
-    fdlQOS.left = new FormAttachment( wlTopic, 15 );
-    fdlQOS.top = new FormAttachment( wClientId, 10 );
+    fdlQOS.left = new FormAttachment( 0, 0 );
+    fdlQOS.top = new FormAttachment( group, 10 );
     fdlQOS.width = 120;
     wlQOS.setLayoutData( fdlQOS );
 
@@ -311,7 +290,7 @@ public class MQTTProducerDialog extends BaseStepDialog implements StepDialogInte
     props.setLook( wQOS );
     wQOS.addModifyListener( lsMod );
     FormData fdQOS = new FormData();
-    fdQOS.left = new FormAttachment( wTopic, 15 );
+    fdQOS.left = new FormAttachment( 0, 0 );
     fdQOS.top = new FormAttachment( wlQOS, 5 );
     fdQOS.width = 135;
     wQOS.setLayoutData( fdQOS );
@@ -321,10 +300,10 @@ public class MQTTProducerDialog extends BaseStepDialog implements StepDialogInte
 
     Label wlMessageField = new Label( wSetupComp, SWT.LEFT );
     props.setLook( wlMessageField );
-    wlMessageField.setText( BaseMessages.getString( PKG, "MQTTProducerDialog.MessageField" ) );
+    wlMessageField.setText( getString( PKG, "MQTTProducerDialog.MessageField" ) );
     FormData fdlMessageField = new FormData();
     fdlMessageField.left = new FormAttachment( 0, 0 );
-    fdlMessageField.top = new FormAttachment( wTopic, 10 );
+    fdlMessageField.top = new FormAttachment( wQOS, 10 );
     fdlMessageField.right = new FormAttachment( 50, 0 );
     wlMessageField.setLayoutData( fdlMessageField );
 
@@ -340,9 +319,83 @@ public class MQTTProducerDialog extends BaseStepDialog implements StepDialogInte
     wSetupTab.setControl( wSetupComp );
   }
 
+  private Group setupTopicSelection( Composite parent, Control controlAbove ) {
+    Group topicGroup = new Group( parent, SWT.SHADOW_ETCHED_IN );
+    props.setLook( topicGroup );
+    topicGroup.setText( "Topics" );
+    FormData fdTopicGroup = formDataBelow( controlAbove, 460, 40 );
+    FormLayout topicGroupLayout = new FormLayout();
+    topicGroupLayout.marginHeight = 4;
+    topicGroupLayout.marginWidth = 4;
+    topicGroup.setLayoutData( fdTopicGroup );
+    topicGroup.setLayout( topicGroupLayout );
+
+    Button specifyTopic = new Button( topicGroup, SWT.RADIO );
+    topicComesFromField = new Button( topicGroup, SWT.RADIO );
+
+    SelectionAdapter selectionListener = new SelectionAdapter() {
+      @Override public void widgetSelected( SelectionEvent selectionEvent ) {
+        super.widgetSelected( selectionEvent );
+        setTopicWidgetVisibility( topicComesFromField );
+      }
+    };
+    topicComesFromField.addSelectionListener( selectionListener );
+    specifyTopic.addSelectionListener( selectionListener );
+
+    topicComesFromField.setSelection( meta.topicInField );
+    specifyTopic.setSelection( !meta.topicInField );
+
+    specifyTopic.setText( getString( PKG, "MQTTProducerDialog.SpecifyTopic" ) );
+    topicComesFromField.setText( getString( PKG, "MQTTProducerDialog.GetDataFromField" ) );
+
+    FormData specifyTopicLayout = new FormData();
+    specifyTopicLayout.left = new FormAttachment( 0, 0 );
+    specifyTopicLayout.top = new FormAttachment( 0, 15 );
+    specifyTopicLayout.width = 100;
+    specifyTopic.setLayoutData( specifyTopicLayout );
+
+
+    topicComesFromField.setLayoutData( formDataBelow( specifyTopic, 150, 5 ) );
+    topicComesFromField.addSelectionListener( selectionListener );
+    specifyTopic.addSelectionListener( selectionListener );
+
+    Label separator = new Label( topicGroup, SWT.SEPARATOR | SWT.VERTICAL );
+    FormData fdSeparator = new FormData();
+    fdSeparator.top = new FormAttachment( 0, 0 );
+    fdSeparator.left = new FormAttachment( 28, 35 );
+    fdSeparator.bottom = new FormAttachment( 100, 0 );
+    separator.setLayoutData( fdSeparator );
+
+    FormData fdTopicEntry = new FormData();
+    fdTopicEntry.top = new FormAttachment( 0, 0 );
+    fdTopicEntry.left = new FormAttachment( separator, 15 );
+    fdTopicEntry.bottom = new FormAttachment( 100, 0 );
+
+    topicEntryType = new Label( topicGroup, SWT.LEFT );
+    topicEntryType.setLayoutData( fdTopicEntry );
+
+    FormData formData = new FormData();
+    formData.top = new FormAttachment( 20, 15 );
+    formData.left = new FormAttachment( separator, 15 );
+    formData.width = 250;
+
+    wTopicText = new TextVar( transMeta, topicGroup, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
+    wTopicFieldname = createFieldDropDown( topicGroup, props, meta, formData );
+    wTopicText.setLayoutData( formData );
+    wTopicFieldname.setLayoutData( formData );
+
+    setTopicWidgetVisibility( topicComesFromField );
+    return topicGroup;
+  }
+
   private void setTopicWidgetVisibility( Button topicComesFromField ) {
-    wTopic.setVisible( topicComesFromField.getSelection() );
+    wTopicFieldname.setVisible( topicComesFromField.getSelection() );
     wTopicText.setVisible( !topicComesFromField.getSelection() );
+    if ( topicComesFromField.getSelection() ) {
+      topicEntryType.setText( getString( PKG, "MQTTProducerDialog.FieldName" ) );
+    } else {
+      topicEntryType.setText( getString( PKG, "MQTTProducerDialog.TopicName" ) );
+    }
   }
 
   @Override
@@ -355,7 +408,8 @@ public class MQTTProducerDialog extends BaseStepDialog implements StepDialogInte
   private void getData() {
     wMqttServer.setText( nullToEmpty( meta.mqttServer ) );
     wClientId.setText( nullToEmpty( meta.clientId ) );
-    wTopic.setText( nullToEmpty( meta.topic ) );
+    wTopicFieldname.setText( nullToEmpty( meta.topic ) );
+    wTopicText.setText( nullToEmpty( meta.topic ) );
     wQOS.setText( nullToEmpty( meta.qos ) );
     wMessageField.setText( nullToEmpty( meta.messageField ) );
     securityLayout.setUIText();
@@ -370,13 +424,20 @@ public class MQTTProducerDialog extends BaseStepDialog implements StepDialogInte
     stepname = wStepname.getText();
     meta.mqttServer = wMqttServer.getText();
     meta.clientId = wClientId.getText();
-    meta.topic = wTopic.getText();
+
     meta.qos = wQOS.getText();
     meta.messageField = wMessageField.getText();
     meta.username = securityLayout.username();
     meta.password = securityLayout.password();
     meta.useSsl = securityLayout.useSsl();
     meta.setSslConfig( securityLayout.sslConfig() );
+    meta.topicInField = topicComesFromField.getSelection();
+
+    if ( meta.topicInField ) {
+      meta.topic = wTopicFieldname.getText();
+    } else {
+      meta.topic = wTopicText.getText();
+    }
 
     optionsLayout.retrieveOptions()
       .forEach( option -> {
