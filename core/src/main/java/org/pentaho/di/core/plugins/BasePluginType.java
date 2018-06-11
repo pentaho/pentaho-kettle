@@ -478,7 +478,7 @@ public abstract class BasePluginType implements PluginTypeInterface {
     PluginInterface stepPlugin =
       new Plugin(
         new String[] { id }, pluginType, mainClassTypesAnnotation.value(), cat, name, desc, image, false,
-        false, classMap, new ArrayList<String>(), null, null, null, null, null, null );
+        false, classMap, new ArrayList<String>(), null, null, null, null, null );
     registry.registerPlugin( pluginType, stepPlugin );
   }
 

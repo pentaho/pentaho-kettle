@@ -81,7 +81,7 @@ public class Plugin implements PluginInterface, Comparable<Plugin> {
                  boolean nativePlugin, Map<Class<?>, String> classMap, List<String> libraries, String errorHelpFile,
                  URL pluginFolder ) {
     this( ids, pluginType, mainType, category, name, description, imageFile, separateClassLoaderNeeded,
-      nativePlugin, classMap, libraries, errorHelpFile, pluginFolder, null, null, null, null );
+      nativePlugin, classMap, libraries, errorHelpFile, pluginFolder, null, null, null );
   }
 
   /**
@@ -99,13 +99,55 @@ public class Plugin implements PluginInterface, Comparable<Plugin> {
   public Plugin( String[] ids, Class<? extends PluginTypeInterface> pluginType, Class<?> mainType,
                  String category, String name, String description, String imageFile, boolean separateClassLoaderNeeded,
                  boolean nativePlugin, Map<Class<?>, String> classMap, List<String> libraries, String errorHelpFile,
-                 URL pluginFolder, String documentationUrl, String casesUrl, String forumUrl, String suggestedStep ) {
+                 URL pluginFolder, String documentationUrl, String casesUrl, String forumUrl ) {
     this( ids, pluginType, mainType, category, name, description, imageFile, separateClassLoaderNeeded, null,
-      nativePlugin, classMap, libraries, errorHelpFile, pluginFolder, documentationUrl, casesUrl, forumUrl,
-      suggestedStep );
+      nativePlugin, classMap, libraries, errorHelpFile, pluginFolder, documentationUrl, casesUrl, forumUrl );
   }
 
   /**
+   * @param ids
+   * @param pluginType
+   * @param mainType
+   * @param category
+   * @param name
+   * @param description
+   * @param imageFile
+   * @param separateClassLoaderNeeded
+   * @param classLoaderGroup
+   * @param nativePlugin
+   * @param classMap
+   * @param libraries
+   * @param errorHelpFile
+   * @param pluginFolder
+   * @param documentationUrl
+   * @param casesUrl
+   * @param forumUrl
+   */
+  public Plugin( String[] ids, Class<? extends PluginTypeInterface> pluginType, Class<?> mainType,
+                 String category, String name, String description, String imageFile, boolean separateClassLoaderNeeded,
+                 String classLoaderGroup, boolean nativePlugin, Map<Class<?>, String> classMap, List<String> libraries,
+                 String errorHelpFile, URL pluginFolder, String documentationUrl, String casesUrl, String forumUrl ) {
+    this.ids = ids;
+    this.pluginType = pluginType;
+    this.mainType = mainType;
+    this.category = category;
+    this.name = name;
+    this.description = description;
+    this.imageFile = imageFile;
+    this.separateClassLoaderNeeded = separateClassLoaderNeeded;
+    this.classLoaderGroup = classLoaderGroup;
+    this.nativePlugin = nativePlugin;
+    this.classMap = classMap;
+    this.libraries = libraries;
+    this.errorHelpFile = errorHelpFile;
+    this.pluginFolder = pluginFolder;
+    this.documentationUrl = Const.getDocUrl( documentationUrl );
+    this.casesUrl = casesUrl;
+    this.forumUrl = forumUrl;
+  }
+
+  /**
+   *
    * @param ids
    * @param pluginType
    * @param mainType
@@ -130,23 +172,38 @@ public class Plugin implements PluginInterface, Comparable<Plugin> {
                  String classLoaderGroup, boolean nativePlugin, Map<Class<?>, String> classMap, List<String> libraries,
                  String errorHelpFile, URL pluginFolder, String documentationUrl, String casesUrl, String forumUrl,
                  String suggestedStep ) {
-    this.ids = ids;
-    this.pluginType = pluginType;
-    this.mainType = mainType;
-    this.category = category;
-    this.name = name;
-    this.description = description;
-    this.imageFile = imageFile;
-    this.separateClassLoaderNeeded = separateClassLoaderNeeded;
-    this.classLoaderGroup = classLoaderGroup;
-    this.nativePlugin = nativePlugin;
-    this.classMap = classMap;
-    this.libraries = libraries;
-    this.errorHelpFile = errorHelpFile;
-    this.pluginFolder = pluginFolder;
-    this.documentationUrl = Const.getDocUrl( documentationUrl );
-    this.casesUrl = casesUrl;
-    this.forumUrl = forumUrl;
+    this( ids, pluginType, mainType, category, name, description, imageFile, separateClassLoaderNeeded,
+      classLoaderGroup, nativePlugin, classMap, libraries, errorHelpFile, pluginFolder, documentationUrl, casesUrl,
+      forumUrl );
+    this.suggestedStep = suggestedStep;
+  }
+
+  /**
+   *
+   * @param ids
+   * @param pluginType
+   * @param mainType
+   * @param category
+   * @param name
+   * @param description
+   * @param imageFile
+   * @param separateClassLoaderNeeded
+   * @param nativePlugin
+   * @param classMap
+   * @param libraries
+   * @param errorHelpFile
+   * @param pluginFolder
+   * @param documentationUrl
+   * @param casesUrl
+   * @param forumUrl
+   * @param suggestedStep
+   */
+  public Plugin( String[] ids, Class<? extends PluginTypeInterface> pluginType, Class<?> mainType,
+                 String category, String name, String description, String imageFile, boolean separateClassLoaderNeeded,
+                 boolean nativePlugin, Map<Class<?>, String> classMap, List<String> libraries, String errorHelpFile,
+                 URL pluginFolder, String documentationUrl, String casesUrl, String forumUrl, String suggestedStep ) {
+    this( ids, pluginType, mainType, category, name, description, imageFile, separateClassLoaderNeeded, null,
+      nativePlugin, classMap, libraries, errorHelpFile, pluginFolder, documentationUrl, casesUrl, forumUrl );
     this.suggestedStep = suggestedStep;
   }
 
