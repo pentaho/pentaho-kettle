@@ -22,14 +22,7 @@
 
 package org.pentaho.di.trans.step;
 
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-
 import org.pentaho.di.core.CheckResultInterface;
-import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.Counter;
 import org.pentaho.di.core.KettleAttribute;
 import org.pentaho.di.core.KettleAttributeInterface;
@@ -48,6 +41,7 @@ import org.pentaho.di.core.logging.SimpleLoggingObject;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.value.ValueMetaFactory;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
@@ -66,6 +60,13 @@ import org.pentaho.di.trans.step.errorhandling.StreamInterface;
 import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
+
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 /**
  * This class is responsible for implementing common functionality regarding step meta, such as logging. All Kettle
@@ -93,7 +94,8 @@ public class BaseStepMeta implements Cloneable, StepAttributesInterface {
 
   protected StepMeta parentStepMeta;
 
-  protected StepIOMetaInterface ioMeta;
+  private volatile StepIOMetaInterface ioMetaVar;
+  ReentrantReadWriteLock lock = new ReentrantReadWriteLock(  );
 
   /**
    * Instantiates a new base step meta.
@@ -122,22 +124,27 @@ public class BaseStepMeta implements Cloneable, StepAttributesInterface {
       // That means than inner step references are copied rather then cloned.
       // If the copy is acquired for another Transformation (e.g. this method is called from Transformation.clone() )
       // then the step references must be corrected.
-      if ( ioMeta != null ) {
-        StepIOMetaInterface stepIOMeta = new StepIOMeta( ioMeta.isInputAcceptor(), ioMeta.isOutputProducer(), ioMeta.isInputOptional(), ioMeta.isSortedDataRequired(), ioMeta.isInputDynamic(), ioMeta.isOutputDynamic() );
+      lock.readLock().lock();
+      try {
+        if ( ioMetaVar != null ) {
+          StepIOMetaInterface stepIOMeta = new StepIOMeta( ioMetaVar.isInputAcceptor(), ioMetaVar.isOutputProducer(), ioMetaVar.isInputOptional(), ioMetaVar.isSortedDataRequired(), ioMetaVar.isInputDynamic(), ioMetaVar.isOutputDynamic() );
 
-        List<StreamInterface> infoStreams = ioMeta.getInfoStreams();
-        for ( StreamInterface infoStream : infoStreams ) {
-          stepIOMeta.addStream( new Stream( infoStream ) );
+          List<StreamInterface> infoStreams = ioMetaVar.getInfoStreams();
+          for ( StreamInterface infoStream : infoStreams ) {
+            stepIOMeta.addStream( new Stream( infoStream ) );
+          }
+
+          List<StreamInterface> targetStreams = ioMetaVar.getTargetStreams();
+          for ( StreamInterface targetStream : targetStreams ) {
+            stepIOMeta.addStream( new Stream( targetStream ) );
+          }
+          lock.readLock().unlock(); // the setter acquires the write lock which would deadlock unless we release
+          retval.setStepIOMeta( stepIOMeta );
+          lock.readLock().lock(); // reacquire read lock
         }
-
-        List<StreamInterface> targetStreams = ioMeta.getTargetStreams();
-        for ( StreamInterface targetStream : targetStreams ) {
-          stepIOMeta.addStream( new Stream( targetStream ) );
-        }
-
-        retval.ioMeta = stepIOMeta;
+      } finally {
+        lock.readLock().unlock();
       }
-
       return retval;
     } catch ( CloneNotSupportedException e ) {
       return null;
@@ -790,14 +797,47 @@ public class BaseStepMeta implements Cloneable, StepAttributesInterface {
     return null;
   }
 
+  public StepIOMetaInterface getStepIOMeta(  ) {
+    return getStepIOMeta( true ); // Default to creating step IO Meta
+  }
+
   /**
    * Returns the Input/Output metadata for this step. By default, each step produces and accepts optional input.
    */
-  public StepIOMetaInterface getStepIOMeta() {
-    if ( ioMeta == null ) {
-      ioMeta = new StepIOMeta( true, true, true, false, false, false );
+  public StepIOMetaInterface getStepIOMeta( boolean createIfAbsent ) {
+    StepIOMetaInterface ioMeta = null;
+    lock.readLock().lock();
+    try {
+      if ( ( ioMetaVar == null ) && ( createIfAbsent ) ) {
+        ioMeta = new StepIOMeta( true, true, true, false, false, false );
+        lock.readLock().unlock();
+        lock.writeLock().lock();
+        try {
+          ioMetaVar = ioMeta;
+          lock.readLock().lock(); // downgrade to read lock before releasing write lock
+        } finally {
+          lock.writeLock().unlock();
+        }
+      } else {
+        ioMeta = ioMetaVar;
+      }
+      return ioMeta;
+    } finally {
+      lock.readLock().unlock();
     }
-    return ioMeta;
+  }
+
+  /**
+   * Sets the Input/Output metadata for this step. By default, each step produces and accepts optional input.
+   * @param value the StepIOMetaInterface to set for this step.
+   */
+  public void setStepIOMeta( StepIOMetaInterface value ) {
+    lock.writeLock().lock();
+    try {
+      ioMetaVar = value;
+    } finally {
+      lock.writeLock().unlock();
+    }
   }
 
   /**
@@ -822,7 +862,12 @@ public class BaseStepMeta implements Cloneable, StepAttributesInterface {
    * Reset step io meta.
    */
   public void resetStepIoMeta() {
-    ioMeta = null;
+    lock.writeLock().lock();
+    try {
+      ioMetaVar = null;
+    } finally {
+      lock.writeLock().unlock();
+    }
   }
 
   /**
