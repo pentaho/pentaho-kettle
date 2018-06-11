@@ -805,7 +805,7 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
     }
   }
 
-  private String getPath( final String name, final RepositoryDirectoryInterface repositoryDirectory,
+  protected String getPath( final String name, final RepositoryDirectoryInterface repositoryDirectory,
                           final RepositoryObjectType objectType ) {
 
     String path = null;
@@ -828,15 +828,6 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
         return getDatabaseMetaParentFolderPath() + RepositoryFile.SEPARATOR + sanitizedName
             + RepositoryObjectType.DATABASE.getExtension();
       }
-      case TRANSFORMATION: {
-        // Check for null path
-        if ( path == null ) {
-          return null;
-        } else {
-          return path + ( path.endsWith( RepositoryFile.SEPARATOR ) ? "" : RepositoryFile.SEPARATOR ) + sanitizedName
-              + RepositoryObjectType.TRANSFORMATION.getExtension();
-        }
-      }
       case PARTITION_SCHEMA: {
         return getPartitionSchemaParentFolderPath() + RepositoryFile.SEPARATOR + sanitizedName
             + RepositoryObjectType.PARTITION_SCHEMA.getExtension();
@@ -849,13 +840,14 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
         return getClusterSchemaParentFolderPath() + RepositoryFile.SEPARATOR + sanitizedName
             + RepositoryObjectType.CLUSTER_SCHEMA.getExtension();
       }
+      case TRANSFORMATION:
       case JOB: {
         // Check for null path
         if ( path == null ) {
           return null;
         } else {
           return path + ( path.endsWith( RepositoryFile.SEPARATOR ) ? "" : RepositoryFile.SEPARATOR ) + sanitizedName
-              + RepositoryObjectType.JOB.getExtension();
+              + ( sanitizedName.endsWith( objectType.getExtension() ) ? "" : objectType.getExtension() );
         }
       }
       default: {

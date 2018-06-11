@@ -1,5 +1,5 @@
 /*!
- * Copyright 2010 - 2017 Hitachi Vantara.  All rights reserved.
+ * Copyright 2010 - 2018 Hitachi Vantara.  All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -75,6 +75,7 @@ import static org.mockito.Matchers.isNull;
 import static org.mockito.Matchers.same;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.doCallRealMethod;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -494,5 +495,45 @@ public class PurRepositoryUnitTest extends RepositoryTestLazySupport {
     purRepository.saveTransOrJob( null, element,
       null, null, false, false, false,
       false, false );
+  }
+
+  @Test
+  public void testGetJobPathWithoutExtension() {
+    PurRepository pur = new PurRepository();
+    RepositoryDirectoryInterface rdi = mock( RepositoryDirectoryInterface.class );
+    doReturn( mock( ObjectId.class ) ).when( rdi ).getObjectId();
+    doReturn( "/home/admin" ).when( rdi ).getPath();
+
+    assertEquals( "/home/admin/job.kjb", pur.getPath( "job", rdi, RepositoryObjectType.JOB ) );
+  }
+
+  @Test
+  public void testGetJobPathWithExtension() {
+    PurRepository pur = new PurRepository();
+    RepositoryDirectoryInterface rdi = mock( RepositoryDirectoryInterface.class );
+    doReturn( mock( ObjectId.class ) ).when( rdi ).getObjectId();
+    doReturn( "/home/admin" ).when( rdi ).getPath();
+
+    assertEquals( "/home/admin/job.kjb", pur.getPath( "job.kjb", rdi, RepositoryObjectType.JOB ) );
+  }
+
+  @Test
+  public void testGetTransPathWithoutExtension() {
+    PurRepository pur = new PurRepository();
+    RepositoryDirectoryInterface rdi = mock( RepositoryDirectoryInterface.class );
+    doReturn( mock( ObjectId.class ) ).when( rdi ).getObjectId();
+    doReturn( "/home/admin" ).when( rdi ).getPath();
+
+    assertEquals( "/home/admin/trans.ktr", pur.getPath( "trans", rdi, RepositoryObjectType.TRANSFORMATION ) );
+  }
+
+  @Test
+  public void testGetTransPathWithExtension() {
+    PurRepository pur = new PurRepository();
+    RepositoryDirectoryInterface rdi = mock( RepositoryDirectoryInterface.class );
+    doReturn( mock( ObjectId.class ) ).when( rdi ).getObjectId();
+    doReturn( "/home/admin" ).when( rdi ).getPath();
+
+    assertEquals( "/home/admin/trans.ktr", pur.getPath( "trans.ktr", rdi, RepositoryObjectType.TRANSFORMATION ) );
   }
 }
