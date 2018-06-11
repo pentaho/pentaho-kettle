@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,13 +22,9 @@
 
 package org.pentaho.di.trans.steps.transexecutor;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.ObjectLocationSpecificationMethod;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
@@ -38,6 +34,7 @@ import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.row.value.ValueMetaFactory;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
@@ -68,6 +65,9 @@ import org.pentaho.di.trans.step.errorhandling.StreamInterface;
 import org.pentaho.di.trans.step.errorhandling.StreamInterface.StreamType;
 import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Node;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Meta-data for the Trans Executor step.
@@ -660,6 +660,7 @@ public class TransExecutorMeta extends StepWithMappingMeta implements StepMetaIn
 
   @Override
   public StepIOMetaInterface getStepIOMeta() {
+    StepIOMetaInterface ioMeta = super.getStepIOMeta( false );
     if ( ioMeta == null ) {
 
       ioMeta = new StepIOMeta( true, true, true, false, true, false );
@@ -672,6 +673,7 @@ public class TransExecutorMeta extends StepWithMappingMeta implements StepMetaIn
           "TransExecutorMeta.ResultFilesStream.Description" ), StreamIcon.TARGET, null ) );
       ioMeta.addStream( new Stream( StreamType.TARGET, executorsOutputStepMeta, BaseMessages.getString( PKG,
           "TransExecutorMeta.ExecutorOutputStream.Description" ), StreamIcon.OUTPUT, null ) );
+      setStepIOMeta( ioMeta );
     }
     return ioMeta;
   }

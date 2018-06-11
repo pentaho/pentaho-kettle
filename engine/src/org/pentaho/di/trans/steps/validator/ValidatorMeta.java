@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -21,9 +21,6 @@
  ******************************************************************************/
 
 package org.pentaho.di.trans.steps.validator;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
@@ -55,6 +52,9 @@ import org.pentaho.di.trans.step.errorhandling.StreamInterface;
 import org.pentaho.di.trans.step.errorhandling.StreamInterface.StreamType;
 import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Node;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Contains the meta-data for the Validator step: calculates predefined formula's
@@ -277,6 +277,7 @@ public class ValidatorMeta extends BaseStepMeta implements StepMetaInterface {
    * Returns the Input/Output metadata for this step.
    */
   public StepIOMetaInterface getStepIOMeta() {
+    StepIOMetaInterface ioMeta = super.getStepIOMeta( false );
     if ( ioMeta == null ) {
 
       ioMeta = new StepIOMeta( true, true, false, false, true, false );
@@ -290,6 +291,7 @@ public class ValidatorMeta extends BaseStepMeta implements StepMetaInterface {
               .getName(), "" ) ), StreamIcon.INFO, validation );
         ioMeta.addStream( stream );
       }
+      setStepIOMeta( ioMeta );
     }
 
     return ioMeta;
@@ -297,7 +299,8 @@ public class ValidatorMeta extends BaseStepMeta implements StepMetaInterface {
 
   @Override
   public void searchInfoAndTargetSteps( List<StepMeta> steps ) {
-    for ( StreamInterface stream : getStepIOMeta().getInfoStreams() ) {
+    List<StreamInterface> infoStreams = getStepIOMeta().getInfoStreams();
+    for ( StreamInterface stream : infoStreams ) {
       Validation validation = (Validation) stream.getSubject();
       StepMeta stepMeta = StepMeta.findStep( steps, validation.getSourcingStepName() );
       validation.setSourcingStep( stepMeta );
