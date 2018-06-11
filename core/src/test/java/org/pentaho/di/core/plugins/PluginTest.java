@@ -53,7 +53,7 @@ public class PluginTest {
       new Plugin(
         new String[] {"plugintest"}, BasePluginType.class, String.class, "", "plugin test", "",
         "", false, null, false, classMap, libraries, null,
-        null, null, null, null, null );
+        null, null, null, null );
 
     PluginInterface fragment =
       new Plugin(
@@ -70,8 +70,7 @@ public class PluginTest {
         null, null,
         "fragment doc url",
         "fragment cases url",
-        "fragment forum url",
-        "fragment suggested step" );
+        "fragment forum url" );
 
     plugin.merge( fragment );
 
@@ -91,7 +90,7 @@ public class PluginTest {
       new Plugin(
         new String[] {"plugintest"}, BasePluginType.class, String.class, "", "plugin test", "",
         "a", false, null, false, new HashMap<>(), Collections.emptyList(), null,
-        null, null, null, null, null );
+        null, null, null, null );
 
     plugin.merge( null );
     assertEquals( "a", plugin.getImageFile() );
