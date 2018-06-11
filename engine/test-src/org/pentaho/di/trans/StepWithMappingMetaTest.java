@@ -200,6 +200,23 @@ public class StepWithMappingMetaTest {
 
   @Test
   @PrepareForTest( StepWithMappingMeta.class )
+  public void activateParamsTestWithNoParameterChild() throws Exception {
+    String newParam = "newParamParent";
+    String parentValue = "parentValue";
+
+    TransMeta parentMeta = new TransMeta();
+    TransMeta childVariableSpace = new TransMeta();
+
+    String[] parameters = childVariableSpace.listParameters();
+
+    StepWithMappingMeta.activateParams( childVariableSpace, childVariableSpace, parentMeta,
+      parameters, new String[] { newParam }, new String[] { parentValue } );
+
+    Assert.assertEquals( parentValue, childVariableSpace.getParameterValue( newParam ) );
+  }
+
+  @Test
+  @PrepareForTest( StepWithMappingMeta.class )
   public void testFileNameAsVariable() throws Exception {
 
     String transName = "test.ktr";
