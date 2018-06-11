@@ -209,7 +209,7 @@ pipeline {
         }
       }
       steps {
-        junit allowEmptyResults: true, testResults: '**/bin/**/TEST*.xml **/target/**/TEST*.xml'
+        junit allowEmptyResults: true, testResults: '**/bin/**/TEST*.xml **/target/**/TEST*.xml **/build/**/*Test.xml'
       }
     }
 
@@ -245,7 +245,7 @@ pipeline {
       }
       steps {
         archiveArtifacts(
-            artifacts: '**/dist/*.gz, **/dist/*.zip, **/target/*.gz, **/target/*.zip',
+            artifacts: '**/dist/*.gz, **/dist/*.zip, **/target/*.gz, **/target/*.zip, **/build/**/*.gz, **/build/**/*.zip, **/build/*.zip',
             excludes: '',
             allowEmptyArchive: true,
             fingerprint: false

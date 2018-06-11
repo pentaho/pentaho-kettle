@@ -1,0 +1,13 @@
+# optional (unless used in your yaml data below) - can be overridden by upstream properties using the same name
+buildProperties:
+        BUILD_PLAN_ID                  : Wingman Master Branch Build
+
+jobGroups:
+  # Always required
+
+  100:
+
+     - jobID           :  wingman
+       scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-wingman.git
+       scmBranch       :  ${DEFAULT_BRANCH}
+       buildFramework  :  gradle
