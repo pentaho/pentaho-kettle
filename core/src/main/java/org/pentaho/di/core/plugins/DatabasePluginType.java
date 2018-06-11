@@ -135,6 +135,11 @@ public class DatabasePluginType extends BasePluginType implements PluginTypeInte
   }
 
   @Override
+  protected String extractSuggestedStep( Annotation annotation ) {
+    return null;
+  }
+
+  @Override
   protected String extractClassLoaderGroup( Annotation annotation ) {
     return ( (DatabaseMetaPlugin) annotation ).classLoaderGroup();
   }

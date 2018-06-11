@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -121,8 +121,12 @@ public class TransDialogPluginType extends BasePluginType implements PluginTypeI
   }
 
   @Override
+  protected String extractSuggestedStep( Annotation annotation ) {
+    return null;
+  }
+
+  @Override
   protected String extractClassLoaderGroup( Annotation annotation ) {
     return ( (TransDialogPlugin) annotation ).classLoaderGroup();
   }
-
 }

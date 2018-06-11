@@ -809,7 +809,7 @@ public class TransPainter extends BasePainter<TransHopMeta, StepMeta> {
 
     // Optionally drawn the mouse-over information
     //
-    if ( mouseOverSteps.contains( stepMeta ) ) {
+    if ( mouseOverSteps.contains( stepMeta ) && !stepMeta.isDeprecated() ) {
       gc.setTransform( translationX, translationY, 0, BasePainter.FACTOR_1_TO_1 );
 
       StepMetaInterface stepMetaInterface = stepMeta.getStepMetaInterface();

@@ -43,6 +43,7 @@ import org.pentaho.di.core.exception.KettlePluginLoaderException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.gui.GUIPositionInterface;
 import org.pentaho.di.core.gui.Point;
+import org.pentaho.di.core.plugins.Plugin;
 import org.pentaho.di.core.plugins.PluginInterface;
 import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.plugins.StepPluginType;
@@ -104,6 +105,8 @@ public class StepMeta extends SharedObjectBase implements Cloneable, Comparable<
   private boolean distributes;
 
   private boolean isDeprecated;
+
+  private String suggestedStep;
 
   private RowDistributionInterface rowDistribution;
 
@@ -179,6 +182,8 @@ public class StepMeta extends SharedObjectBase implements Cloneable, Comparable<
       for ( PluginInterface p : deprecatedSteps ) {
         String[] ids = p.getIds();
         if ( !ArrayUtils.isEmpty( ids ) && ids[0].equals( this.stepid ) ) {
+          this.suggestedStep = ( (Plugin) registry.getPlugin( StepPluginType.class, stepMetaInterface ) )
+            .getSuggestedStep();
           this.isDeprecated = true;
         }
       }
@@ -1159,5 +1164,9 @@ public class StepMeta extends SharedObjectBase implements Cloneable, Comparable<
 
   public boolean isDeprecated() {
     return isDeprecated;
+  }
+
+  public String getSuggestedStep() {
+    return suggestedStep;
   }
 }

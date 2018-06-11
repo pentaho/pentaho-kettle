@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -160,6 +160,10 @@ public interface PluginInterface {
    * Returns null if the plugin does not belong to a group (the default)
    */
   String getClassLoaderGroup();
+
+  void setSuggestedStep( String suggestedStep );
+
+  String getSuggestedStep();
 
   /**
    * @param group The group to which this class loader belongs.  

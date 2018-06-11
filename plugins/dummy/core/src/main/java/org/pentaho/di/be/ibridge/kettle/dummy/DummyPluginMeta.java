@@ -49,7 +49,8 @@ import java.util.*;
       i18nPackageName = "be.ibridge.kettle.dummy",
       name = "DummyPlugin.Step.Name",
       description = "DummyPlugin.Step.Description",
-      categoryDescription = "i18n:org.pentaho.di.trans.step:BaseStep.Category.Deprecated" )
+      categoryDescription = "i18n:org.pentaho.di.trans.step:BaseStep.Category.Deprecated",
+      suggestedStep = "DummyPlugin.Step.SuggestedStep" )
 public class DummyPluginMeta extends BaseStepMeta implements StepMetaInterface {
   private ValueMetaAndData value;
 

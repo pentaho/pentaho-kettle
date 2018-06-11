@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -62,6 +62,7 @@ public class Plugin implements PluginInterface, Comparable<Plugin> {
   private String documentationUrl;
   private String casesUrl;
   private String forumUrl;
+  private String suggestedStep;
 
   /**
    * @param ids
@@ -80,7 +81,7 @@ public class Plugin implements PluginInterface, Comparable<Plugin> {
                  boolean nativePlugin, Map<Class<?>, String> classMap, List<String> libraries, String errorHelpFile,
                  URL pluginFolder ) {
     this( ids, pluginType, mainType, category, name, description, imageFile, separateClassLoaderNeeded,
-      nativePlugin, classMap, libraries, errorHelpFile, pluginFolder, null, null, null );
+      nativePlugin, classMap, libraries, errorHelpFile, pluginFolder, null, null, null, null );
   }
 
   /**
@@ -98,9 +99,10 @@ public class Plugin implements PluginInterface, Comparable<Plugin> {
   public Plugin( String[] ids, Class<? extends PluginTypeInterface> pluginType, Class<?> mainType,
                  String category, String name, String description, String imageFile, boolean separateClassLoaderNeeded,
                  boolean nativePlugin, Map<Class<?>, String> classMap, List<String> libraries, String errorHelpFile,
-                 URL pluginFolder, String documentationUrl, String casesUrl, String forumUrl ) {
+                 URL pluginFolder, String documentationUrl, String casesUrl, String forumUrl, String suggestedStep ) {
     this( ids, pluginType, mainType, category, name, description, imageFile, separateClassLoaderNeeded, null,
-      nativePlugin, classMap, libraries, errorHelpFile, pluginFolder, documentationUrl, casesUrl, forumUrl );
+      nativePlugin, classMap, libraries, errorHelpFile, pluginFolder, documentationUrl, casesUrl, forumUrl,
+      suggestedStep );
   }
 
   /**
@@ -121,11 +123,13 @@ public class Plugin implements PluginInterface, Comparable<Plugin> {
    * @param documentationUrl
    * @param casesUrl
    * @param forumUrl
+   * @param suggestedStep
    */
   public Plugin( String[] ids, Class<? extends PluginTypeInterface> pluginType, Class<?> mainType,
                  String category, String name, String description, String imageFile, boolean separateClassLoaderNeeded,
                  String classLoaderGroup, boolean nativePlugin, Map<Class<?>, String> classMap, List<String> libraries,
-                 String errorHelpFile, URL pluginFolder, String documentationUrl, String casesUrl, String forumUrl ) {
+                 String errorHelpFile, URL pluginFolder, String documentationUrl, String casesUrl, String forumUrl,
+                 String suggestedStep ) {
     this.ids = ids;
     this.pluginType = pluginType;
     this.mainType = mainType;
@@ -143,6 +147,7 @@ public class Plugin implements PluginInterface, Comparable<Plugin> {
     this.documentationUrl = Const.getDocUrl( documentationUrl );
     this.casesUrl = casesUrl;
     this.forumUrl = forumUrl;
+    this.suggestedStep = suggestedStep;
   }
 
   @Override
@@ -416,6 +421,16 @@ public class Plugin implements PluginInterface, Comparable<Plugin> {
   @Override
   public String getClassLoaderGroup() {
     return classLoaderGroup;
+  }
+
+  @Override
+  public void setSuggestedStep( String suggestedStep ) {
+    this.suggestedStep = suggestedStep;
+  }
+
+  @Override
+  public String getSuggestedStep() {
+    return suggestedStep;
   }
 
   @Override

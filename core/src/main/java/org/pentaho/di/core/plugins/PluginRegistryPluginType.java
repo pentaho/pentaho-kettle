@@ -159,4 +159,8 @@ public class PluginRegistryPluginType extends BasePluginType implements PluginTy
     return ( (RegistryPlugin) annotation ).classLoaderGroup();
   }
 
+  @Override
+  protected String extractSuggestedStep( Annotation annotation ) {
+    return null;
+  }
 }

@@ -478,7 +478,7 @@ public abstract class BasePluginType implements PluginTypeInterface {
     PluginInterface stepPlugin =
       new Plugin(
         new String[] { id }, pluginType, mainClassTypesAnnotation.value(), cat, name, desc, image, false,
-        false, classMap, new ArrayList<String>(), null, null, null, null, null );
+        false, classMap, new ArrayList<String>(), null, null, null, null, null, null );
     registry.registerPlugin( pluginType, stepPlugin );
   }
 
@@ -496,6 +496,7 @@ public abstract class BasePluginType implements PluginTypeInterface {
       String documentationUrl = getTagOrAttribute( pluginNode, "documentation_url" );
       String casesUrl = getTagOrAttribute( pluginNode, "cases_url" );
       String forumUrl = getTagOrAttribute( pluginNode, "forum_url" );
+      String suggestedStep = getTagOrAttribute( pluginNode, "suggested_step" );
 
       Node libsnode = XMLHandler.getSubNode( pluginNode, "libraries" );
       int nrlibs = XMLHandler.countNodes( libsnode, "library" );
@@ -518,6 +519,8 @@ public abstract class BasePluginType implements PluginTypeInterface {
         readPluginLocale( pluginNode, "localized_description", "description" );
       description = getAlternativeTranslation( description, localDescriptions );
       description += addDeprecation( category );
+
+      suggestedStep = getAlternativeTranslation( suggestedStep, localDescriptions );
 
       Map<String, String> localizedTooltips = readPluginLocale( pluginNode, "localized_tooltip", "tooltip" );
       tooltip = getAlternativeTranslation( tooltip, localizedTooltips );
@@ -555,7 +558,7 @@ public abstract class BasePluginType implements PluginTypeInterface {
         new Plugin(
           id.split( "," ), pluginType, mainClassTypesAnnotation.value(), category, description, tooltip,
           iconFilename, false, nativePlugin, classMap, jarFiles, errorHelpFileFull, pluginFolder,
-          documentationUrl, casesUrl, forumUrl );
+          documentationUrl, casesUrl, forumUrl, suggestedStep );
       registry.registerPlugin( pluginType, pluginInterface );
 
       return pluginInterface;
@@ -672,6 +675,8 @@ public abstract class BasePluginType implements PluginTypeInterface {
 
   protected abstract String extractDocumentationUrl( java.lang.annotation.Annotation annotation );
 
+  protected abstract String extractSuggestedStep( java.lang.annotation.Annotation annotation );
+
   protected abstract String extractCasesUrl( java.lang.annotation.Annotation annotation );
 
   protected abstract String extractForumUrl( java.lang.annotation.Annotation annotation );
@@ -757,6 +762,7 @@ public abstract class BasePluginType implements PluginTypeInterface {
     String documentationUrl = extractDocumentationUrl( annotation );
     String casesUrl = extractCasesUrl( annotation );
     String forumUrl = extractForumUrl( annotation );
+    String suggestedStep = getTranslation( extractSuggestedStep( annotation ), packageName, altPackageName, clazz );
     String classLoaderGroup = extractClassLoaderGroup( annotation );
 
     name += addDeprecation( category );
@@ -773,7 +779,7 @@ public abstract class BasePluginType implements PluginTypeInterface {
       new Plugin(
         ids, this.getClass(), mainType.value(), category, name, description, imageFile, separateClassLoader,
         classLoaderGroup, nativePluginType, classMap, libraries, null, pluginFolder, documentationUrl,
-        casesUrl, forumUrl );
+        casesUrl, forumUrl, suggestedStep );
 
     ParentFirst parentFirstAnnotation = clazz.getAnnotation( ParentFirst.class );
     if ( parentFirstAnnotation != null ) {
