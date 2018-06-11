@@ -22,14 +22,9 @@
 
 package org.pentaho.di.trans.steps.jobexecutor;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.ObjectLocationSpecificationMethod;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
@@ -45,6 +40,7 @@ import org.pentaho.di.core.row.value.ValueMetaInteger;
 import org.pentaho.di.core.row.value.ValueMetaNone;
 import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.core.util.CurrentDirectoryResolver;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
@@ -81,6 +77,10 @@ import org.pentaho.di.trans.step.errorhandling.StreamInterface;
 import org.pentaho.di.trans.step.errorhandling.StreamInterface.StreamType;
 import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Node;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Meta-data for the Job executor step.
@@ -852,6 +852,7 @@ public class JobExecutorMeta extends BaseStepMeta implements StepMetaInterface, 
 
   @Override
   public StepIOMetaInterface getStepIOMeta() {
+    StepIOMetaInterface ioMeta = super.getStepIOMeta( false );
     if ( ioMeta == null ) {
 
       ioMeta = new StepIOMeta( true, true, true, false, true, false );
@@ -862,6 +863,7 @@ public class JobExecutorMeta extends BaseStepMeta implements StepMetaInterface, 
         PKG, "JobExecutorMeta.ResultRowsStream.Description" ), StreamIcon.TARGET, null ) );
       ioMeta.addStream( new Stream( StreamType.TARGET, resultFilesTargetStepMeta, BaseMessages.getString(
         PKG, "JobExecutorMeta.ResultFilesStream.Description" ), StreamIcon.TARGET, null ) );
+      setStepIOMeta( ioMeta );
     }
     return ioMeta;
   }
