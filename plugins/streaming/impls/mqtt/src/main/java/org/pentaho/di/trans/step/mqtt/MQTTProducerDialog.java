@@ -325,8 +325,8 @@ public class MQTTProducerDialog extends BaseStepDialog implements StepDialogInte
     topicGroup.setText( "Topics" );
     FormData fdTopicGroup = formDataBelow( controlAbove, 460, 40 );
     FormLayout topicGroupLayout = new FormLayout();
-    topicGroupLayout.marginHeight = 4;
-    topicGroupLayout.marginWidth = 4;
+    topicGroupLayout.marginHeight = 15;
+    topicGroupLayout.marginWidth = 15;
     topicGroup.setLayoutData( fdTopicGroup );
     topicGroup.setLayout( topicGroupLayout );
 
@@ -350,7 +350,7 @@ public class MQTTProducerDialog extends BaseStepDialog implements StepDialogInte
 
     FormData specifyTopicLayout = new FormData();
     specifyTopicLayout.left = new FormAttachment( 0, 0 );
-    specifyTopicLayout.top = new FormAttachment( 0, 15 );
+    specifyTopicLayout.top = new FormAttachment( 0, 0 );
     specifyTopicLayout.width = 100;
     specifyTopic.setLayoutData( specifyTopicLayout );
 
@@ -369,13 +369,12 @@ public class MQTTProducerDialog extends BaseStepDialog implements StepDialogInte
     FormData fdTopicEntry = new FormData();
     fdTopicEntry.top = new FormAttachment( 0, 0 );
     fdTopicEntry.left = new FormAttachment( separator, 15 );
-    fdTopicEntry.bottom = new FormAttachment( 100, 0 );
 
     topicEntryType = new Label( topicGroup, SWT.LEFT );
     topicEntryType.setLayoutData( fdTopicEntry );
 
     FormData formData = new FormData();
-    formData.top = new FormAttachment( 20, 15 );
+    formData.top = new FormAttachment( topicEntryType, 5 );
     formData.left = new FormAttachment( separator, 15 );
     formData.width = 250;
 
@@ -385,10 +384,15 @@ public class MQTTProducerDialog extends BaseStepDialog implements StepDialogInte
     wTopicFieldname.setLayoutData( formData );
 
     setTopicWidgetVisibility( topicComesFromField );
+
+    wTopicText.addModifyListener( lsMod );
+    wTopicFieldname.addModifyListener( lsMod );
+
     return topicGroup;
   }
 
   private void setTopicWidgetVisibility( Button topicComesFromField ) {
+    meta.setChanged( meta.hasChanged() ||  meta.topicInField != topicComesFromField.getSelection() );
     wTopicFieldname.setVisible( topicComesFromField.getSelection() );
     wTopicText.setVisible( !topicComesFromField.getSelection() );
     if ( topicComesFromField.getSelection() ) {
