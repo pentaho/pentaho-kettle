@@ -77,16 +77,16 @@ jobGroups:
   2900:
 
      - jobID           :  platform-reporting-plugin
-       scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-platform-plugin-reporting.git
-       scmBranch       :  ${DEFAULT_BRANCH}
+       scmUrl          :  ${DCLEAO_SCM_ROOT}/pentaho-platform-plugin-reporting.git
+       scmBranch       :  BACKLOG-23466
        versionProperty :  pentaho-reporting-plugin.version
 
-#  3300:
-#
-#     - jobID           :  geo-plugin
-#       scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-platform-plugin-geo.git
-#       scmBranch       :  ${DEFAULT_BRANCH}
-#       versionProperty :  pentaho-geo-plugin.version
+  3300:
+
+     - jobID           :  geo-plugin
+       scmUrl          :  ${DCLEAO_SCM_ROOT}/pentaho-platform-plugin-geo.git
+       scmBranch       :  BACKLOG-23472
+       versionProperty :  pentaho-geo-plugin.version
 
   3400:
 
@@ -96,19 +96,19 @@ jobGroups:
        directives      :  += -Dagilebi
        versionProperty :  analyzer-plugin.version
 
-#  3500:
-#
-#     - jobID           :  data-exploration
-#       scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-det.git
-#       scmBranch       :  ${DEFAULT_BRANCH}
-#       versionProperty :  pentaho-det.version
+  3500:
+
+     - jobID           :  data-exploration
+       scmUrl          :  ${DCLEAO_SCM_ROOT}/pentaho-det.git
+       scmBranch       :  BACKLOG-23472
+       versionProperty :  pentaho-det.version
 
   3600:
 
-#     - jobID           :  data-exploration-ee
-#       scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-det-ee.git
-#       scmBranch       :  ${DEFAULT_BRANCH}
-#       versionProperty :  pentaho-det.version
+     - jobID           :  data-exploration-ee
+       scmUrl          :  ${DCLEAO_SCM_ROOT}/pentaho-det-ee.git
+       scmBranch       :  BACKLOG-23472
+       versionProperty :  pentaho-det.version
 
      - jobID           :  karaf-assembly
        scmUrl          :  ${DCLEAO_SCM_ROOT}/pentaho-karaf-assembly.git
@@ -116,15 +116,15 @@ jobGroups:
        versionProperty :  pentaho-karaf.version
 
      - jobID           :  dashboards-plugin
-       scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-platform-plugin-dashboards.git
-       scmBranch       :  ${DEFAULT_BRANCH}
+       scmUrl          :  ${DCLEAO_SCM_ROOT}/pentaho-platform-plugin-dashboards.git
+       scmBranch       :  BACKLOG-23466
        versionProperty :  dashboard-plugin.version
 
   3700:
 
      - jobID           :  pir-plugin
-       scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-platform-plugin-interactive-reporting.git
-       scmBranch       :  ${DEFAULT_BRANCH}
+       scmUrl          :  ${DCLEAO_SCM_ROOT}/pentaho-platform-plugin-interactive-reporting.git
+       scmBranch       :  BACKLOG-23466
        versionProperty :  pir-plugin.version
 
   3800:
@@ -133,6 +133,24 @@ jobGroups:
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-karaf-ee-assembly.git
        scmBranch       :  ${DEFAULT_BRANCH}
        versionProperty :  pentaho-karaf.version
+
+  4200:
+
+     - jobID           :  pdi-client-assembly
+       scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-kettle.git
+       scmBranch       :  ${DEFAULT_BRANCH}
+       directives      :  += -DskipDefault -P assemblies
+       versionProperty :  pdi.version
+       testable        :  false
+
+  4300:
+
+     - jobID           :  pdi-client-assembly-ee
+       scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-ee.git
+       scmBranch       :  ${DEFAULT_BRANCH}
+       versionProperty :  pdi.version
+       root            :  data-integration
+       testable        :  false
 
   4400:
 
