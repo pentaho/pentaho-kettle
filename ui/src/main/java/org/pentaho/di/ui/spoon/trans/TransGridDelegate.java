@@ -29,6 +29,7 @@ import java.util.ResourceBundle;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.atomic.AtomicBoolean;
+import com.google.common.base.Strings;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabItem;
@@ -410,15 +411,33 @@ public class TransGridDelegate extends SpoonDelegate implements XulEventHandler 
 
           String tableStepNumber = ti.getText( STEP_NUMBER_COLUMN );
           String[] tableStepNumberSplit = tableStepNumber.split( "\\." );
-          String tableBaseStepNumber = tableStepNumberSplit[ 0 ];
-          boolean isBaseStep = true;
 
-          if ( tableStepNumberSplit.length > 1 ) {
-            isBaseStep = false;
+          if ( tableStepNumberSplit.length <= 0 ) {
+            log.logError(
+              "Table base.sub step number length less than or equal to 0, skipping update for table row: " + rowIndex );
+            continue;
+          }
+
+          String tableBaseStepNumber = tableStepNumberSplit[ 0 ];
+
+          if ( Strings.isNullOrEmpty( tableBaseStepNumber ) ) {
+            log.logError( "Table base step null or empty, skipping update for table row: " + rowIndex );
+            continue;
+          }
+
+          boolean isBaseStep = tableStepNumberSplit.length == 1;
+
+          int baseStepNumber;
+
+          try {
+            baseStepNumber = Integer.parseInt( tableBaseStepNumber );
+          } catch ( NumberFormatException e ) {
+            log.logError( "Error converting baseStepNumber to int, skipping update for table row: " + rowIndex, e );
+            continue;
           }
 
           // step numbers displayed on table start at 1 and step number indexes begin at 0
-          int baseStepNumber = Integer.parseInt( tableBaseStepNumber ) - 1;
+          baseStepNumber = baseStepNumber - 1;
 
           StepInterface baseStep = transGraph.trans.getRunThread( baseStepNumber );
 
