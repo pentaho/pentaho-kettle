@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -21,8 +21,6 @@
  ******************************************************************************/
 
 package org.pentaho.di.trans.steps.append;
-
-import java.util.List;
 
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
@@ -54,6 +52,8 @@ import org.pentaho.di.trans.step.errorhandling.StreamInterface;
 import org.pentaho.di.trans.step.errorhandling.StreamInterface.StreamType;
 import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Node;
+
+import java.util.List;
 
 /**
  * @author Sven Boden
@@ -135,7 +135,9 @@ public class AppendMeta extends BaseStepMeta implements StepMetaInterface {
 
   @Override
   public void searchInfoAndTargetSteps( List<StepMeta> steps ) {
-    for ( StreamInterface stream : getStepIOMeta().getInfoStreams() ) {
+    StepIOMetaInterface ioMeta = getStepIOMeta();
+    List<StreamInterface> infoStreams = ioMeta.getInfoStreams();
+    for ( StreamInterface stream : infoStreams ) {
       stream.setStepMeta( StepMeta.findStep( steps, (String) stream.getSubject() ) );
     }
   }
@@ -200,6 +202,7 @@ public class AppendMeta extends BaseStepMeta implements StepMetaInterface {
    * Returns the Input/Output metadata for this step.
    */
   public StepIOMetaInterface getStepIOMeta() {
+    StepIOMetaInterface ioMeta = super.getStepIOMeta( false );
     if ( ioMeta == null ) {
 
       ioMeta = new StepIOMeta( true, true, false, false, false, false );
@@ -208,6 +211,7 @@ public class AppendMeta extends BaseStepMeta implements StepMetaInterface {
         PKG, "AppendMeta.InfoStream.FirstStream.Description" ), StreamIcon.INFO, null ) );
       ioMeta.addStream( new Stream( StreamType.INFO, null, BaseMessages.getString(
         PKG, "AppendMeta.InfoStream.SecondStream.Description" ), StreamIcon.INFO, null ) );
+      setStepIOMeta( ioMeta );
     }
 
     return ioMeta;
