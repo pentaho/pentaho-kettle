@@ -323,7 +323,7 @@ public class MQTTProducerDialog extends BaseStepDialog implements StepDialogInte
     Group topicGroup = new Group( parent, SWT.SHADOW_ETCHED_IN );
     props.setLook( topicGroup );
     topicGroup.setText( "Topics" );
-    FormData fdTopicGroup = formDataBelow( controlAbove, 460, 40 );
+    FormData fdTopicGroup = formDataBelow( controlAbove, 445, 15 );
     FormLayout topicGroupLayout = new FormLayout();
     topicGroupLayout.marginHeight = 15;
     topicGroupLayout.marginWidth = 15;
@@ -332,6 +332,9 @@ public class MQTTProducerDialog extends BaseStepDialog implements StepDialogInte
 
     Button specifyTopic = new Button( topicGroup, SWT.RADIO );
     topicComesFromField = new Button( topicGroup, SWT.RADIO );
+    props.setLook( specifyTopic );
+    props.setLook( topicComesFromField );
+
 
     SelectionAdapter selectionListener = new SelectionAdapter() {
       @Override public void widgetSelected( SelectionEvent selectionEvent ) {
@@ -354,16 +357,19 @@ public class MQTTProducerDialog extends BaseStepDialog implements StepDialogInte
     specifyTopicLayout.width = 100;
     specifyTopic.setLayoutData( specifyTopicLayout );
 
+    FormData fdTopicComesFromField = new FormData();
+    fdTopicComesFromField.left = new FormAttachment( 0, 0 );
+    fdTopicComesFromField.top = new FormAttachment( specifyTopic, 5 );
 
-    topicComesFromField.setLayoutData( formDataBelow( specifyTopic, 150, 5 ) );
+    topicComesFromField.setLayoutData( fdTopicComesFromField );
     topicComesFromField.addSelectionListener( selectionListener );
     specifyTopic.addSelectionListener( selectionListener );
 
     Label separator = new Label( topicGroup, SWT.SEPARATOR | SWT.VERTICAL );
     FormData fdSeparator = new FormData();
     fdSeparator.top = new FormAttachment( 0, 0 );
-    fdSeparator.left = new FormAttachment( 28, 35 );
-    fdSeparator.bottom = new FormAttachment( 100, 0 );
+    fdSeparator.left = new FormAttachment( topicComesFromField, 15 );
+    fdSeparator.height = 45;
     separator.setLayoutData( fdSeparator );
 
     FormData fdTopicEntry = new FormData();
@@ -372,11 +378,12 @@ public class MQTTProducerDialog extends BaseStepDialog implements StepDialogInte
 
     topicEntryType = new Label( topicGroup, SWT.LEFT );
     topicEntryType.setLayoutData( fdTopicEntry );
+    props.setLook( topicEntryType );
 
     FormData formData = new FormData();
     formData.top = new FormAttachment( topicEntryType, 5 );
     formData.left = new FormAttachment( separator, 15 );
-    formData.width = 250;
+    formData.right = new FormAttachment( 100, 0 );
 
     wTopicText = new TextVar( transMeta, topicGroup, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
     wTopicFieldname = createFieldDropDown( topicGroup, props, meta, formData );
@@ -392,7 +399,7 @@ public class MQTTProducerDialog extends BaseStepDialog implements StepDialogInte
   }
 
   private void setTopicWidgetVisibility( Button topicComesFromField ) {
-    meta.setChanged( meta.hasChanged() ||  meta.topicInField != topicComesFromField.getSelection() );
+    meta.setChanged( meta.hasChanged() || meta.topicInField != topicComesFromField.getSelection() );
     wTopicFieldname.setVisible( topicComesFromField.getSelection() );
     wTopicText.setVisible( !topicComesFromField.getSelection() );
     if ( topicComesFromField.getSelection() ) {
