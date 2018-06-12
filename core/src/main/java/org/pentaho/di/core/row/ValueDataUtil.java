@@ -23,8 +23,7 @@
 package org.pentaho.di.core.row;
 
 import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.FileInputStream;
+import java.io.InputStream;
 import java.math.BigDecimal;
 import java.math.MathContext;
 import java.security.MessageDigest;
@@ -39,12 +38,14 @@ import org.apache.commons.codec.language.DoubleMetaphone;
 import org.apache.commons.codec.language.Metaphone;
 import org.apache.commons.codec.language.RefinedSoundex;
 import org.apache.commons.codec.language.Soundex;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.commons.vfs2.FileObject;
-import org.apache.commons.vfs2.provider.local.LocalFile;
+import org.apache.commons.vfs2.FileSystemException;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.exception.KettleFileNotFoundException;
 import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.fileinput.CharsetToolkit;
 import org.pentaho.di.core.util.PentahoJaroWinklerDistance;
@@ -112,6 +113,12 @@ public class ValueDataUtil {
           + " instead." );
     }
     return round2Mode;
+  }
+
+  private static void throwsErrorOnFileNotFound( FileObject file ) throws KettleFileNotFoundException, FileSystemException {
+    if ( file == null || !file.exists() ) {
+      throw new KettleFileNotFoundException( "File not found", file.getName().getPath() );
+    }
   }
 
   /**
@@ -365,11 +372,46 @@ public class ValueDataUtil {
     return dataA.toString().length();
   }
 
+  /**
+   * @deprecated Use {@link ValueDataUtil#createChecksum(ValueMetaInterface, Object, String, boolean)} instead
+   */
+  @Deprecated
   public static String createChecksum( ValueMetaInterface metaA, Object dataA, String type ) {
-    String md5Hash = null;
-    FileInputStream in = null;
+    String checksum = null;
     try {
-      in = new FileInputStream( dataA.toString() );
+      checksum = createChecksum( metaA, dataA, type, false );
+    } catch ( KettleFileNotFoundException e ) {
+      // Ignore
+    }
+    return checksum;
+  }
+
+  /**
+   *
+   * @param metaA
+   *   The ValueMetaInterface
+   * @param dataA
+   *   Filename
+   * @param type
+   *   Algorithm to be used when computing the checksum (MD5 or SHA-1)
+   * @param failIfNoFile
+   *   Indicates if the transformation should fail if no file is found
+   * @return File's checksum
+   * @throws KettleFileNotFoundException
+   */
+  public static String createChecksum( ValueMetaInterface metaA, Object dataA, String type, boolean failIfNoFile )
+          throws KettleFileNotFoundException {
+    if ( dataA == null ) {
+      return null;
+    }
+
+    String md5Hash = null;
+    FileObject file = null;
+    InputStream in = null;
+    try {
+      file = KettleVFS.getFileObject( dataA.toString() );
+      throwsErrorOnFileNotFound( file );
+      in = KettleVFS.getInputStream( file );
       int bytes = in.available();
       byte[] buffer = new byte[bytes];
       in.read( buffer );
@@ -383,62 +425,126 @@ public class ValueDataUtil {
 
       md5Hash = md5HashBuff.toString();
 
-    } catch ( Exception e ) {
-      // ignore - should likely log the exception
-    } finally {
-      try {
-        if ( in != null ) {
-          in.close();
-        }
-      } catch ( Exception e ) {
-        // Ignore
+    } catch ( KettleFileNotFoundException e ) {
+      if ( failIfNoFile ) {
+        throw e;
       }
+      log.debug( e.getMessage() );
+    } catch ( Exception e ) {
+      log.debug( e.getMessage() );
+    } finally {
+      IOUtils.closeQuietly( file );
+      IOUtils.closeQuietly( in );
     }
-
     return md5Hash;
   }
 
+  /**
+   * @deprecated Use {@link ValueDataUtil#checksumCRC32(ValueMetaInterface, Object, boolean)} instead
+   */
+  @Deprecated
   public static Long ChecksumCRC32( ValueMetaInterface metaA, Object dataA ) {
     long checksum = 0;
-    FileObject file = null;
     try {
-      file = KettleVFS.getFileObject( dataA.toString() );
-      CheckedInputStream cis = null;
-
-      // Computer CRC32 checksum
-      cis = new CheckedInputStream( ( (LocalFile) file ).getInputStream(), new CRC32() );
-      byte[] buf = new byte[128];
-      int readSize = 0;
-      do {
-        readSize = cis.read( buf );
-      } while ( readSize >= 0 );
-
-      checksum = cis.getChecksum().getValue();
-
-    } catch ( Exception e ) {
-      // ignore - should likely log the exception
-    } finally {
-      if ( file != null ) {
-        try {
-          file.close();
-          file = null;
-        } catch ( Exception e ) {
-          // Ignore
-        }
-      }
+      checksum = checksumCRC32( metaA, dataA, false );
+    } catch ( KettleFileNotFoundException e ) {
+      // Ignore
     }
     return checksum;
   }
 
-  public static Long ChecksumAdler32( ValueMetaInterface metaA, Object dataA ) {
+  /**
+   *
+   * @param metaA
+   *   The ValueMetaInterface
+   * @param dataA
+   *   Filename
+   * @param failIfNoFile
+   *   Indicates if the transformation should fail if no file is found
+   * @return File's CRC32 checksum
+   * @throws KettleFileNotFoundException
+   */
+  public static Long checksumCRC32( ValueMetaInterface metaA, Object dataA, boolean failIfNoFile )
+          throws KettleFileNotFoundException {
     long checksum = 0;
+
+    if ( dataA == null ) {
+      return checksum;
+    }
+
     FileObject file = null;
+    CheckedInputStream cis = null;
     try {
       file = KettleVFS.getFileObject( dataA.toString() );
-      CheckedInputStream cis = null;
+      throwsErrorOnFileNotFound( file );
+      cis = null;
+
+      // Computer CRC32 checksum
+      cis = new CheckedInputStream( KettleVFS.getInputStream( file ), new CRC32() );
+      byte[] buf = new byte[128];
+      int readSize = 0;
+      do {
+        readSize = cis.read( buf );
+      } while ( readSize >= 0 );
+
+      checksum = cis.getChecksum().getValue();
+
+    } catch ( KettleFileNotFoundException e ) {
+      if ( failIfNoFile ) {
+        throw e;
+      }
+      log.debug( e.getMessage() );
+    } catch ( Exception e ) {
+      log.debug( e.getMessage() );
+    } finally {
+      IOUtils.closeQuietly( file );
+      IOUtils.closeQuietly( cis );
+    }
+    return checksum;
+  }
+
+  /**
+   * @deprecated Use {@link ValueDataUtil#checksumAdler32(ValueMetaInterface, Object, boolean)} instead
+   */
+  @Deprecated
+  public static Long ChecksumAdler32( ValueMetaInterface metaA, Object dataA ) {
+    long checksum = 0;
+    try {
+      checksum = checksumAdler32( metaA, dataA, false );
+    } catch ( KettleFileNotFoundException e ) {
+      // Ignore
+    }
+    return checksum;
+  }
+
+  /**
+   *
+   * @param metaA
+   *   The ValueMetaInterface
+   * @param dataA
+   *   Filename
+   * @param failIfNoFile
+   *   Indicates if the transformation should fail if no file is found
+   * @return File's Adler32 checksum
+   * @throws KettleFileNotFoundException
+   */
+  public static Long checksumAdler32( ValueMetaInterface metaA, Object dataA, boolean failIfNoFile )
+          throws KettleFileNotFoundException {
+    long checksum = 0;
+
+    if ( dataA == null ) {
+      return checksum;
+    }
+
+    FileObject file = null;
+    CheckedInputStream cis = null;
+    try {
+      file = KettleVFS.getFileObject( dataA.toString() );
+      throwsErrorOnFileNotFound( file );
+      cis = null;
 
       // Computer Adler-32 checksum
-      cis = new CheckedInputStream( ( (LocalFile) file ).getInputStream(), new Adler32() );
+      cis = new CheckedInputStream( KettleVFS.getInputStream( file ), new Adler32() );
 
       byte[] buf = new byte[128];
       int readSize = 0;
@@ -447,17 +553,16 @@ public class ValueDataUtil {
       } while ( readSize >= 0 );
       checksum = cis.getChecksum().getValue();
 
-    } catch ( Exception e ) {
-      // throw new Exception(e);
-    } finally {
-      if ( file != null ) {
-        try {
-          file.close();
-          file = null;
-        } catch ( Exception e ) {
-          // Ignore
-        }
+    } catch ( KettleFileNotFoundException e ) {
+      if ( failIfNoFile ) {
+        throw e;
       }
+      log.debug( e.getMessage() );
+    } catch ( Exception e ) {
+      log.debug( e.getMessage() );
+    } finally {
+      IOUtils.closeQuietly( file );
+      IOUtils.closeQuietly( cis );
     }
     return checksum;
   }
@@ -561,36 +666,61 @@ public class ValueDataUtil {
     return plus( metaA, dataA, metaB, dataB );
   }
 
+  /**
+   * @deprecated Use {@link ValueDataUtil#loadFileContentInBinary(ValueMetaInterface, Object, boolean)} instead
+   */
+  @Deprecated
   public static Object loadFileContentInBinary( ValueMetaInterface metaA, Object dataA ) throws KettleValueException {
+    Object content = null;
+    try {
+      content = loadFileContentInBinary( metaA, dataA, true );
+    } catch ( KettleFileNotFoundException e ) {
+      throw new KettleValueException();
+    }
+    return content;
+  }
+
+  /**
+   *
+   * @param metaA
+   *   The ValueMetaInterface
+   * @param dataA
+   *   Filename
+   * @param failIfNoFile
+   *   Indicates if the transformation should fail if no file is found
+   * @return File's content in binary
+   * @throws KettleValueException
+   * @throws KettleFileNotFoundException
+   */
+  public static byte[] loadFileContentInBinary( ValueMetaInterface metaA, Object dataA, boolean failIfNoFile )
+          throws KettleValueException, KettleFileNotFoundException {
     if ( dataA == null ) {
       return null;
     }
 
+    byte[] content = null;
     FileObject file = null;
-    FileInputStream fis = null;
+    InputStream is = null;
+
     try {
       file = KettleVFS.getFileObject( dataA.toString() );
-      fis = (FileInputStream) ( (LocalFile) file ).getInputStream();
+      throwsErrorOnFileNotFound( file );
+      is = KettleVFS.getInputStream( file );
       int fileSize = (int) file.getContent().getSize();
-      byte[] content = Const.createByteArray( fileSize );
-      fis.read( content, 0, fileSize );
-      return content;
+      content = Const.createByteArray( fileSize );
+      is.read( content, 0, fileSize );
+    } catch ( KettleFileNotFoundException e ) {
+      if ( failIfNoFile ) {
+        throw e;
+      }
+      log.debug( e.getMessage() );
     } catch ( Exception e ) {
       throw new KettleValueException( e );
     } finally {
-      try {
-        if ( fis != null ) {
-          fis.close();
-        }
-        fis = null;
-        if ( file != null ) {
-          file.close();
-        }
-        file = null;
-      } catch ( Exception e ) {
-        // Ignore
-      }
+      IOUtils.closeQuietly( file );
+      IOUtils.closeQuietly( is );
     }
+    return content;
   }
 
   public static Object minus( ValueMetaInterface metaA, Object dataA, ValueMetaInterface metaB, Object dataB ) throws KettleValueException {
@@ -1813,26 +1943,52 @@ public class ValueDataUtil {
    * @param dataA
    *          The value (filename)
    * @return true if the file is well formed.
+   * @deprecated Use {@link ValueDataUtil#isXMLFileWellFormed(ValueMetaInterface, Object, boolean)} instead
    */
+  @Deprecated
   public static boolean isXMLFileWellFormed( ValueMetaInterface metaA, Object dataA ) {
+    boolean xmlWellFormed = false;
+    try {
+      xmlWellFormed = isXMLFileWellFormed( metaA, dataA, false );
+    } catch ( KettleFileNotFoundException e ) {
+      // Ignore
+    }
+    return xmlWellFormed;
+  }
+
+  /**
+   * Checks an xml file is well formed.
+   *
+   * @param metaA
+   *          The ValueMetaInterface
+   * @param dataA
+   *          The value (filename)
+   * @param failIfNoFile
+   *          Indicates if the transformation should fail if no file is found
+   * @return true if the file is well formed.
+   * @throws KettleFileNotFoundException
+   */
+  public static boolean isXMLFileWellFormed( ValueMetaInterface metaA, Object dataA, boolean failIfNoFile )
+          throws KettleFileNotFoundException {
     if ( dataA == null ) {
       return false;
     }
+
     String filename = dataA.toString();
     FileObject file = null;
     try {
       file = KettleVFS.getFileObject( filename );
+      throwsErrorOnFileNotFound( file );
       return XMLCheck.isXMLFileWellFormed( file );
-    } catch ( Exception e ) {
-      // ignore - we'll return false although would be nice to log it.
-    } finally {
-      if ( file != null ) {
-        try {
-          file.close();
-        } catch ( Exception e ) {
-          // Ignore
-        }
+    } catch ( KettleFileNotFoundException e ) {
+      if ( failIfNoFile ) {
+        throw e;
       }
+      log.debug( e.getMessage() );
+    } catch ( Exception e ) {
+      log.debug( e.getMessage() );
+    } finally {
+      IOUtils.closeQuietly( file );
     }
     return false;
   }
@@ -1853,7 +2009,7 @@ public class ValueDataUtil {
     try {
       return XMLCheck.isXMLWellFormed( new ByteArrayInputStream( metaA.getBinary( dataA ) ) );
     } catch ( Exception e ) {
-      // ignore - we'll return false below
+      log.debug( e.getMessage() );
     }
     return false;
   }
@@ -1866,16 +2022,55 @@ public class ValueDataUtil {
    * @param dataA
    *          The value (filename)
    * @return file encoding.
+   * @deprecated Use {@link ValueDataUtil#getFileEncoding(ValueMetaInterface, Object, boolean)} instead
    */
+  @Deprecated
   public static String getFileEncoding( ValueMetaInterface metaA, Object dataA ) throws KettleValueException {
+    String encoding = null;
+    try {
+      encoding = getFileEncoding( metaA, dataA, true );
+    } catch ( KettleFileNotFoundException e ) {
+      throw new KettleValueException();
+    }
+    return encoding;
+  }
+
+  /**
+   * Get file encoding.
+   *
+   * @param metaA
+   *          The ValueMetaInterface
+   * @param dataA
+   *          The value (filename)
+   * @param failIfNoFile
+   *          Indicates if the transformation should fail if no file is found
+   * @return file encoding.
+   * @throws KettleFileNotFoundException
+   * @throws KettleValueException
+   */
+  public static String getFileEncoding( ValueMetaInterface metaA, Object dataA, boolean failIfNoFile )
+          throws KettleValueException, KettleFileNotFoundException {
     if ( dataA == null ) {
       return null;
     }
+
+    String encoding = null;
+    FileObject file = null;
     try {
-      return CharsetToolkit.guessEncodingName( new File( metaA.getString( dataA ) ) );
+      file = KettleVFS.getFileObject( metaA.getString( dataA ) );
+      throwsErrorOnFileNotFound( file );
+      encoding = CharsetToolkit.guessEncodingName( file );
+    } catch ( KettleFileNotFoundException e ) {
+      if ( failIfNoFile ) {
+        throw e;
+      }
+      log.debug( e.getMessage() );
     } catch ( Exception e ) {
       throw new KettleValueException( e );
+    } finally {
+      IOUtils.closeQuietly( file );
     }
+    return encoding;
   }
 
   /**
