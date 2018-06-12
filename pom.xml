@@ -71,6 +71,7 @@
     <h2.version>1.2.131</h2.version>
     <jaxen.version>1.1.1</jaxen.version>
     <wstx-asl.version>3.2.4</wstx-asl.version>
+    <fasterxml-jackson.version>2.9.5</fasterxml-jackson.version>
 
     <!-- Test dependencies -->
     <mockito-all.version>1.10.19</mockito-all.version>
@@ -214,6 +215,36 @@
         <artifactId>wstx-asl</artifactId>
         <version>${wstx-asl.version}</version>
         <scope>provided</scope>
+      </dependency>
+      <dependency>
+        <groupId>com.fasterxml.jackson.core</groupId>
+        <artifactId>jackson-core</artifactId>
+        <version>${fasterxml-jackson.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.fasterxml.jackson.core</groupId>
+        <artifactId>jackson-databind</artifactId>
+        <version>${fasterxml-jackson.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.fasterxml.jackson.core</groupId>
+        <artifactId>jackson-annotations</artifactId>
+        <version>${fasterxml-jackson.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.fasterxml.jackson.dataformat</groupId>
+        <artifactId>jackson-dataformat-smile</artifactId>
+        <version>${fasterxml-jackson.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.fasterxml.jackson.dataformat</groupId>
+        <artifactId>jackson-dataformat-yaml</artifactId>
+        <version>${fasterxml-jackson.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.fasterxml.jackson.dataformat</groupId>
+        <artifactId>jackson-dataformat-cbor</artifactId>
+        <version>${fasterxml-jackson.version}</version>
       </dependency>
 
       <!-- Test dependencies -->
