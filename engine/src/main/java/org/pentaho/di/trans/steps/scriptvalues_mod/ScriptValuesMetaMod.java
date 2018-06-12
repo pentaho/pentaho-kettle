@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -24,10 +24,12 @@ package org.pentaho.di.trans.steps.scriptvalues_mod;
 
 import java.math.BigDecimal;
 import java.net.URL;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Properties;
 
+import com.google.common.annotations.VisibleForTesting;
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.ContextFactory;
 import org.mozilla.javascript.JavaScriptException;
@@ -39,6 +41,12 @@ import org.pentaho.di.compatibility.Value;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.annotations.Step;
+import org.pentaho.di.core.injection.AfterInjection;
+import org.pentaho.di.core.injection.Injection;
+import org.pentaho.di.core.injection.InjectionDeep;
+import org.pentaho.di.core.injection.InjectionSupported;
+import org.pentaho.di.core.injection.NullNumberConverter;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
@@ -61,6 +69,7 @@ import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
+import org.pentaho.di.trans.steps.fieldsplitter.DataTypeConverter;
 import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
@@ -69,6 +78,10 @@ import org.w3c.dom.Node;
  * Created on 2-jun-2003
  *
  */
+@Step( id = "ScriptValuesMod", i18nPackageName = "org.pentaho.di.trans.steps.scriptvalues_mod",
+  name = "ScriptValuesMod.Name", description = "ScriptValuesMod.Description",
+  categoryDescription = "i18n:org.pentaho.di.trans.step:BaseStep.Category.Scripting" )
+@InjectionSupported( localizationPrefix = "ScriptValuesMod.Injection.", groups = { "FIELDS", "SCRIPTS" }  )
 public class ScriptValuesMetaMod extends BaseStepMeta implements StepMetaInterface {
   private static Class<?> PKG = ScriptValuesMetaMod.class; // for i18n purposes, needed by Translator2!!
 
@@ -79,16 +92,32 @@ public class ScriptValuesMetaMod extends BaseStepMeta implements StepMetaInterfa
   public static final String OPTIMIZATION_LEVEL_DEFAULT = "9";
 
   private ScriptValuesAddClasses[] additionalClasses;
+
+  @InjectionDeep
   private ScriptValuesScript[] jsScripts;
 
+  @Injection( name = "FIELD_NAME", group = "FIELDS" )
   private String[] fieldname;
+
+  @Injection( name = "FIELD_RENAME_TO", group = "FIELDS" )
   private String[] rename;
+
+  @Injection( name = "FIELD_TYPE", group = "FIELDS", convertEmpty = true, converter = DataTypeConverter.class )
   private int[] type;
+
+  @Injection( name = "FIELD_LENGTH", group = "FIELDS", convertEmpty = true, converter = NullNumberConverter.class )
   private int[] length;
+
+  @Injection( name = "FIELD_PRECISION", group = "FIELDS", convertEmpty = true, converter = NullNumberConverter.class )
   private int[] precision;
+
+  @Injection( name = "FIELD_REPLACE", group = "FIELDS" )
   private boolean[] replace; // Replace the specified field.
 
+  @Injection( name = "COMPATIBILITY_MODE" )
   private boolean compatible;
+
+  @Injection( name = "OPTIMIZATION_LEVEL" )
   private String optimizationLevel;
 
   public ScriptValuesMetaMod() {
@@ -164,7 +193,14 @@ public class ScriptValuesMetaMod extends BaseStepMeta implements StepMetaInterfa
    * @return Returns the type.
    */
   public int[] getType() {
-    return type;
+    return this.type;
+  }
+
+  @AfterInjection
+  public void afterInjection() {
+    // extend all fields related arrays to match the length of the fieldname array, as they may all be different
+    // sizes, after meta injection
+    extend( fieldname.length );
   }
 
   /**
@@ -203,9 +239,65 @@ public class ScriptValuesMetaMod extends BaseStepMeta implements StepMetaInterfa
     fieldname = new String[nrfields];
     rename = new String[nrfields];
     type = new int[nrfields];
+    for ( int i = 0; i < nrfields; i++ ) {
+      type[ i ] = -1;
+    }
     length = new int[nrfields];
+    for ( int i = 0; i < nrfields; i++ ) {
+      length[ i ] = -1;
+    }
     precision = new int[nrfields];
+    for ( int i = 0; i < nrfields; i++ ) {
+      precision[ i ] = -1;
+    }
     replace = new boolean[nrfields];
+  }
+
+  /**
+   * Extends all field related arrays so that they are the same size.
+   * @param nrfields
+   */
+  @VisibleForTesting
+  void extend( int nrfields ) {
+    fieldname = extend( fieldname, nrfields );
+    rename = extend( rename, nrfields );
+    type = extend( type, nrfields );
+    length = extend( length, nrfields );
+    precision = extend( precision, nrfields );
+    replace = extend( replace, nrfields );
+  }
+
+  private String[] extend( final String[] array, final int nrfields ) {
+    if ( array == null ) {
+      return new String[ nrfields ];
+    } else if ( array.length < nrfields ) {
+      return Arrays.copyOf( array, nrfields );
+    } else {
+      return array;
+    }
+  }
+
+  private int[] extend( final int[] array, final int nrfields ) {
+    if ( array == null || array.length < nrfields ) {
+      int originalLength = array == null ? 0 : array.length;
+      final int[] newArray = array == null ? new int[ nrfields ] : Arrays.copyOf( array, nrfields );
+      for ( int i = originalLength; i < nrfields; i++ ) {
+        newArray[ i ] = -1;
+      }
+      return newArray;
+    } else {
+      return array;
+    }
+  }
+
+  private boolean[] extend( final boolean[] array, final int nrfields ) {
+    if ( array == null ) {
+      return new boolean[ nrfields ];
+    } else if ( array.length < nrfields ) {
+      return Arrays.copyOf( array, nrfields );
+    } else {
+      return array;
+    }
   }
 
   public Object clone() {
