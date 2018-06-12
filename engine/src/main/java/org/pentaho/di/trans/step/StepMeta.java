@@ -43,7 +43,6 @@ import org.pentaho.di.core.exception.KettlePluginLoaderException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.gui.GUIPositionInterface;
 import org.pentaho.di.core.gui.Point;
-import org.pentaho.di.core.plugins.Plugin;
 import org.pentaho.di.core.plugins.PluginInterface;
 import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.plugins.StepPluginType;
@@ -177,16 +176,7 @@ public class StepMeta extends SharedObjectBase implements Cloneable, Comparable<
     if ( stepMetaInterface != null ) {
       PluginRegistry registry = PluginRegistry.getInstance();
       this.stepid = registry.getPluginId( StepPluginType.class, stepMetaInterface );
-      final List<PluginInterface> deprecatedSteps = registry.getPluginsByCategory( StepPluginType.class,
-        BaseMessages.getString( PKG, "BaseStep.Category.Deprecated" ) );
-      for ( PluginInterface p : deprecatedSteps ) {
-        String[] ids = p.getIds();
-        if ( !ArrayUtils.isEmpty( ids ) && ids[0].equals( this.stepid ) ) {
-          this.suggestedStep = ( (Plugin) registry.getPlugin( StepPluginType.class, stepMetaInterface ) )
-            .getSuggestedStep();
-          this.isDeprecated = true;
-        }
-      }
+      setDeprecationAndSuggestedStep();
     }
     this.name = stepname;
     setStepMetaInterface( stepMetaInterface );
@@ -310,6 +300,7 @@ public class StepMeta extends SharedObjectBase implements Cloneable, Comparable<
     try {
       name = XMLHandler.getTagValue( stepnode, "name" );
       stepid = XMLHandler.getTagValue( stepnode, "type" );
+      setDeprecationAndSuggestedStep();
 
       // Create a new StepMetaInterface object...
       PluginInterface sp = registry.findPluginWithId( StepPluginType.class, stepid );
@@ -1156,6 +1147,19 @@ public class StepMeta extends SharedObjectBase implements Cloneable, Comparable<
       return null;
     }
     return attributes.get( key );
+  }
+
+  private void setDeprecationAndSuggestedStep() {
+    PluginRegistry registry = PluginRegistry.getInstance();
+    final List<PluginInterface> deprecatedSteps = registry.getPluginsByCategory( StepPluginType.class,
+      BaseMessages.getString( PKG, "BaseStep.Category.Deprecated" ) );
+    for ( PluginInterface p : deprecatedSteps ) {
+      String[] ids = p.getIds();
+      if ( !ArrayUtils.isEmpty( ids ) && ids[0].equals( this.stepid ) ) {
+        this.isDeprecated = true;
+      }
+    }
+    this.suggestedStep = registry.findPluginWithId( StepPluginType.class, this.stepid ).getSuggestedStep();
   }
 
   public boolean isMissing() {
