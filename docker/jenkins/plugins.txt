@@ -49,6 +49,7 @@ handlebars:latest
 handy-uri-templates-2-api:latest
 htmlpublisher:latest
 jackson2-api:latest
+jdk-tool:latest
 jenkins-design-language:latest
 jira:latest
 jquery-detached:latest
