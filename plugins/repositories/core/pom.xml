@@ -17,7 +17,6 @@
 
   <properties>
     <pdi.version>9.0.0.0-SNAPSHOT</pdi.version>
-    <fasterxml.jackson.version>2.9.2</fasterxml.jackson.version>
     <javax.ws.rs-api.version>2.0</javax.ws.rs-api.version>
     <mockito-all.version>1.9.5</mockito-all.version>
     <karaf.version>3.0.3</karaf.version>
@@ -33,34 +32,10 @@
 
   <dependencies>
     <dependency>
-      <groupId>com.fasterxml.jackson.core</groupId>
-      <artifactId>jackson-core</artifactId>
-      <version>${fasterxml.jackson.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>com.fasterxml.jackson.core</groupId>
-      <artifactId>jackson-annotations</artifactId>
-      <version>${fasterxml.jackson.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>com.fasterxml.jackson.core</groupId>
-      <artifactId>jackson-databind</artifactId>
-      <version>${fasterxml.jackson.version}</version>
-    </dependency>
-    <dependency>
+      <!-- this is required by OSGi bean declared in src/main/resources-filtered/OSGI-INF/blueprint/beans.xml -->
       <groupId>com.fasterxml.jackson.jaxrs</groupId>
       <artifactId>jackson-jaxrs-json-provider</artifactId>
-      <version>${fasterxml.jackson.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>com.fasterxml.jackson.jaxrs</groupId>
-      <artifactId>jackson-jaxrs-base</artifactId>
-      <version>${fasterxml.jackson.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>com.fasterxml.jackson.module</groupId>
-      <artifactId>jackson-module-jaxb-annotations</artifactId>
-      <version>${fasterxml.jackson.version}</version>
+      <scope>runtime</scope>
     </dependency>
     <dependency>
       <groupId>org.webjars</groupId>
