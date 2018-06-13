@@ -105,7 +105,7 @@ public class StepMeta extends SharedObjectBase implements Cloneable, Comparable<
 
   private boolean isDeprecated;
 
-  private String suggestedStep;
+  private String suggestedStep = "";
 
   private RowDistributionInterface rowDistribution;
 
