@@ -29,7 +29,6 @@
     <timestamp>${maven.build.timestamp}</timestamp>
     <build.description>${project.description}</build.description>
     <maven.build.timestamp.format>yyyy/MM/dd hh:mm</maven.build.timestamp.format>
-    <fasterxml.jackson.core.version>2.9.2</fasterxml.jackson.core.version>
     <slf4j-api.version>1.7.7</slf4j-api.version>
     <slf4j-log4j12.version>1.7.7</slf4j-log4j12.version>
   </properties>
@@ -121,9 +120,8 @@
       </exclusions>
     </dependency>
     <dependency>
-      <artifactId>jackson-core</artifactId>
       <groupId>com.fasterxml.jackson.core</groupId>
-      <version>${fasterxml.jackson.core.version}</version>
+      <artifactId>jackson-core</artifactId>
     </dependency>
     <dependency>
       <groupId>com.google.http-client</groupId>
