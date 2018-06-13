@@ -32,6 +32,7 @@
     <maven.build.timestamp.format>yyyy/MM/dd hh:mm</maven.build.timestamp.format>
     <poi.version>3.17</poi.version>
     <dependency.com.tinkerpop.blueprints.version>2.6.0</dependency.com.tinkerpop.blueprints.version>
+    <jackson.version>2.9.4</jackson.version>
   </properties>
 
   <dependencies>
@@ -136,7 +137,7 @@
      <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>
       <artifactId>jackson-core</artifactId>
-      <version>${fasterxml.jackson.core.version}</version>
+      <version>${jackson.version}</version>
       <exclusions>
         <exclusion>
           <artifactId>*</artifactId>
@@ -147,7 +148,7 @@
     <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>
       <artifactId>jackson-annotations</artifactId>
-      <version>${fasterxml.jackson.core.version}</version>
+      <version>${jackson.version}</version>
       <exclusions>
         <exclusion>
           <artifactId>*</artifactId>
@@ -158,12 +159,12 @@
     <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>
       <artifactId>jackson-databind</artifactId>
-      <version>${fasterxml.jackson.core.version}</version>
+      <version>${jackson.version}</version>
     </dependency>
     <dependency>
       <groupId>com.fasterxml.jackson.jaxrs</groupId>
       <artifactId>jackson-jaxrs-json-provider</artifactId>
-      <version>${fasterxml.jackson.core.version}</version>
+      <version>${jackson.version}</version>
     </dependency>
     <dependency>
       <groupId>org.apache.poi</groupId>
