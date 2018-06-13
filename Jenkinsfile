@@ -245,7 +245,7 @@ pipeline {
       }
       steps {
         archiveArtifacts(
-            artifacts: '**/dist/*.gz, **/dist/*.tar.gz, **/dist/*.zip, **/target/*.gz, **/target/*.tar.gz, **/target/*.zip',
+            artifacts: '**/dist/*.gz, **/dist/*.zip, **/target/*.gz, **/target/*.zip',
             excludes: '',
             allowEmptyArchive: true,
             fingerprint: false
