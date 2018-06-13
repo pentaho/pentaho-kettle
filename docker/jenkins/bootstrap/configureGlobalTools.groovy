@@ -8,6 +8,9 @@
  */
 
 
+import hudson.plugins.gradle.Gradle
+import hudson.plugins.gradle.GradleInstallation
+import hudson.plugins.gradle.GradleInstaller
 import hudson.tasks.Ant
 import hudson.tasks.BuildStepDescriptor
 import hudson.tasks.Maven
@@ -25,8 +28,11 @@ def mavenName = 'maven3-auto'
 def mavenVersion = '3.5.3'
 def takariVersion = '0.12.0'
 
-def antName = 'ANT'
+def antName = 'ant-auto'
 def antVersion = '1.10.3'
+
+def gradleName = 'gradle-auto'
+def gradleVersion = '4.8'
 
 def installTool = { params ->
   Class<BuildStepDescriptor> tool = params['tool']
@@ -73,6 +79,10 @@ fi
   // Install ant tool
   installTool(['tool': Ant.DescriptorImpl, 'toolInstallation': Ant.AntInstallation, 'toolInstaller': Ant.AntInstaller, 'name': antName, 'version': antVersion])
   logger.info 'Configured Ant install'
+
+  // Install gradle tool
+  installTool(['tool': Gradle.DescriptorImpl, 'toolInstallation': GradleInstallation, 'toolInstaller': GradleInstaller, 'name': gradleName, 'version': gradleVersion])
+  logger.info 'Configured Gradle install'
 
   jenkins.save()
 
