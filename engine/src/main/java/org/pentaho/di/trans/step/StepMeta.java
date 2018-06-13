@@ -1159,7 +1159,8 @@ public class StepMeta extends SharedObjectBase implements Cloneable, Comparable<
         this.isDeprecated = true;
       }
     }
-    this.suggestedStep = registry.findPluginWithId( StepPluginType.class, this.stepid ).getSuggestedStep();
+    this.suggestedStep = registry.findPluginWithId( StepPluginType.class, this.stepid ) != null
+      ? registry.findPluginWithId( StepPluginType.class, this.stepid ).getSuggestedStep() : "";
   }
 
   public boolean isMissing() {
