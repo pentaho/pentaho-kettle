@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -23,6 +23,7 @@
 package org.pentaho.di.trans.steps.univariatestats;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
@@ -62,34 +63,26 @@ public class UnivariateStats extends BaseStep implements StepInterface {
   /**
    * Creates a new <code>UnivariateStats</code> instance.
    *
-   * @param stepMeta
-   *          holds the step's meta data
-   * @param stepDataInterface
-   *          holds the step's temporary data
-   * @param copyNr
-   *          the number assigned to the step
-   * @param transMeta
-   *          meta data for the transformation
-   * @param trans
-   *          a <code>Trans</code> value
+   * @param stepMeta          holds the step's meta data
+   * @param stepDataInterface holds the step's temporary data
+   * @param copyNr            the number assigned to the step
+   * @param transMeta         meta data for the transformation
+   * @param trans             a <code>Trans</code> value
    */
   public UnivariateStats( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta,
-    Trans trans ) {
+                          Trans trans ) {
     super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
   }
 
   /**
    * Process an incoming row of data.
    *
-   * @param smi
-   *          a <code>StepMetaInterface</code> value
-   * @param sdi
-   *          a <code>StepDataInterface</code> value
+   * @param smi a <code>StepMetaInterface</code> value
+   * @param sdi a <code>StepDataInterface</code> value
    * @return a <code>boolean</code> value
-   * @exception KettleException
-   *              if an error occurs
+   * @throws KettleException if an error occurs
    */
-  @SuppressWarnings( { "unchecked" } )
+  @SuppressWarnings ( { "unchecked" } )
   public boolean processRow( StepMetaInterface smi, StepDataInterface sdi ) throws KettleException {
 
     m_meta = (UnivariateStatsMeta) smi;
@@ -124,19 +117,19 @@ public class UnivariateStats extends BaseStep implements StepInterface {
       m_meta.getFields( m_data.getOutputRowMeta(), getStepname(), null, null, this, repository, metaStore );
 
       // Set up data cache for calculating median/percentiles
-      m_dataCache = new ArrayList[m_meta.getNumFieldsToProcess()];
+      m_dataCache = new ArrayList[ m_meta.getNumFieldsToProcess() ];
 
       // Initialize the step meta data
-      FieldIndex[] fi = new FieldIndex[m_meta.getNumFieldsToProcess()];
+      FieldIndex[] fi = new FieldIndex[ m_meta.getNumFieldsToProcess() ];
 
       m_data.setFieldIndexes( fi );
 
       // allocate the field indexes in the data class and meta stats functions
       // in the step meta
       for ( int i = 0; i < m_meta.getNumFieldsToProcess(); i++ ) {
-        UnivariateStatsMetaFunction usmf = m_meta.getInputFieldMetaFunctions()[i];
+        UnivariateStatsMetaFunction usmf = m_meta.getInputFieldMetaFunctions()[ i ];
         //CHECKSTYLE:Indentation:OFF
-        m_data.getFieldIndexes()[i] = new FieldIndex();
+        m_data.getFieldIndexes()[ i ] = new FieldIndex();
 
         // check that this univariate stats computation has been
         // defined on an input field
@@ -148,7 +141,7 @@ public class UnivariateStats extends BaseStep implements StepInterface {
               + usmf.getSourceFieldName() + "' for stats calc #" + ( i + 1 ) );
           }
 
-          FieldIndex tempData = m_data.getFieldIndexes()[i];
+          FieldIndex tempData = m_data.getFieldIndexes()[ i ];
 
           tempData.m_columnIndex = fieldIndex;
 
@@ -167,7 +160,7 @@ public class UnivariateStats extends BaseStep implements StepInterface {
           // requested
 
           if ( usmf.getCalcMedian() || usmf.getCalcPercentile() >= 0 ) {
-            m_dataCache[i] = new ArrayList<Number>();
+            m_dataCache[ i ] = new ArrayList<Number>();
           }
         } else {
           throw new KettleException( "There is no input field specified for stats calc #" + ( i + 1 ) );
@@ -177,15 +170,15 @@ public class UnivariateStats extends BaseStep implements StepInterface {
 
     for ( int i = 0; i < m_meta.getNumFieldsToProcess(); i++ ) {
 
-      UnivariateStatsMetaFunction usmf = m_meta.getInputFieldMetaFunctions()[i];
+      UnivariateStatsMetaFunction usmf = m_meta.getInputFieldMetaFunctions()[ i ];
       if ( !Utils.isEmpty( usmf.getSourceFieldName() ) ) {
-        FieldIndex tempData = m_data.getFieldIndexes()[i];
+        FieldIndex tempData = m_data.getFieldIndexes()[ i ];
 
         ValueMetaInterface metaI = getInputRowMeta().getValueMeta( tempData.m_columnIndex );
 
         Number input = null;
         try {
-          input = metaI.getNumber( r[tempData.m_columnIndex] );
+          input = metaI.getNumber( r[ tempData.m_columnIndex ] );
         } catch ( Exception ex ) {
           // quietly ignore -- assume missing for anything not
           // parsable as a number
@@ -194,7 +187,7 @@ public class UnivariateStats extends BaseStep implements StepInterface {
 
           // add to the cache?
           if ( usmf.getCalcMedian() || usmf.getCalcPercentile() >= 0 ) {
-            m_dataCache[i].add( input );
+            m_dataCache[ i ].add( input );
           }
 
           // update stats
@@ -214,7 +207,7 @@ public class UnivariateStats extends BaseStep implements StepInterface {
     }
 
     if ( log.isRowLevel() ) {
-      logRowlevel( "Read row #" + getLinesRead() + " : " + r );
+      logRowlevel( "Read row #" + getLinesRead() + " : " + Arrays.toString( r ) );
     }
 
     if ( checkFeedback( getLinesRead() ) ) {
@@ -233,23 +226,23 @@ public class UnivariateStats extends BaseStep implements StepInterface {
     int totalNumOutputFields = 0;
 
     for ( int i = 0; i < m_meta.getNumFieldsToProcess(); i++ ) {
-      UnivariateStatsMetaFunction usmf = m_meta.getInputFieldMetaFunctions()[i];
+      UnivariateStatsMetaFunction usmf = m_meta.getInputFieldMetaFunctions()[ i ];
 
       if ( !Utils.isEmpty( usmf.getSourceFieldName() ) ) {
         totalNumOutputFields += usmf.numberOfMetricsRequested();
       }
     }
 
-    Object[] result = new Object[totalNumOutputFields];
+    Object[] result = new Object[ totalNumOutputFields ];
     int index = 0;
     for ( int i = 0; i < m_meta.getNumFieldsToProcess(); i++ ) {
-      UnivariateStatsMetaFunction usmf = m_meta.getInputFieldMetaFunctions()[i];
+      UnivariateStatsMetaFunction usmf = m_meta.getInputFieldMetaFunctions()[ i ];
 
       if ( !Utils.isEmpty( usmf.getSourceFieldName() ) ) {
-        Object[] tempOut = m_data.getFieldIndexes()[i].generateOutputValues( usmf, m_dataCache[i] );
+        Object[] tempOut = m_data.getFieldIndexes()[ i ].generateOutputValues( usmf, m_dataCache[ i ] );
 
         for ( int j = 0; j < tempOut.length; j++ ) {
-          result[index++] = tempOut[j];
+          result[ index++ ] = tempOut[ j ];
         }
       }
     }
@@ -260,10 +253,8 @@ public class UnivariateStats extends BaseStep implements StepInterface {
   /**
    * Initialize the step.
    *
-   * @param smi
-   *          a <code>StepMetaInterface</code> value
-   * @param sdi
-   *          a <code>StepDataInterface</code> value
+   * @param smi a <code>StepMetaInterface</code> value
+   * @param sdi a <code>StepDataInterface</code> value
    * @return a <code>boolean</code> value
    */
   public boolean init( StepMetaInterface smi, StepDataInterface sdi ) {

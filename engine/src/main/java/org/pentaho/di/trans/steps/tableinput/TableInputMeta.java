@@ -244,7 +244,7 @@ public class TableInputMeta extends BaseStepMeta implements StepMetaInterface {
         StreamInterface infoStream = getStepIOMeta().getInfoStreams().get( 0 );
         if ( !Utils.isEmpty( infoStream.getStepname() ) ) {
           param = true;
-          if ( info.length >= 0 && info[0] != null ) {
+          if ( info.length > 0 && info[0] != null ) {
             paramRowMeta = info[0];
             paramData = RowDataUtil.allocateRowData( paramRowMeta.size() );
           }

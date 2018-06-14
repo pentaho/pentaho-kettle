@@ -1739,10 +1739,10 @@ public class ScriptAddedFunctions {
        * Signal.getMessage() + "\")"); } catch (IOException Signal) { new RuntimeException("Error while reading file \""
        * + fileName + "\" (reason: \"" + Signal.getMessage() + "\")" ); }
        */
-      new RuntimeException( "Error while reading file \""
+      throw new RuntimeException( "Error while reading file \""
         + fileName + "\" (reason: \"" + Signal.getMessage() + "\")" );
     } catch ( ScriptException Signal ) {
-      new RuntimeException( "Error while reading file \""
+      throw new RuntimeException( "Error while reading file \""
         + fileName + "\" (reason: \"" + Signal.getMessage() + "\")" );
     } finally {
       try {
@@ -1966,12 +1966,12 @@ public class ScriptAddedFunctions {
           if ( fileObject.exists() ) {
             if ( fileObject.getType() == FileType.FILE ) {
               if ( !fileObject.delete() ) {
-                new RuntimeException( "We can not delete file [" + (String) ArgList[0] + "]!" );
+                throw new RuntimeException( "We can not delete file [" + (String) ArgList[0] + "]!" );
               }
             }
 
           } else {
-            new RuntimeException( "file [" + (String) ArgList[0] + "] can not be found!" );
+            throw new RuntimeException( "file [" + ArgList[0] + "] can not be found!" );
           }
         } catch ( IOException e ) {
           throw new RuntimeException( "The function call deleteFile is not valid." );
@@ -2005,7 +2005,7 @@ public class ScriptAddedFunctions {
           if ( !fileObject.exists() ) {
             fileObject.createFolder();
           } else {
-            new RuntimeException( "folder [" + (String) ArgList[0] + "] already exist!" );
+            throw new RuntimeException( "folder [" + ArgList[0] + "] already exist!" );
           }
         } catch ( IOException e ) {
           throw new RuntimeException( "The function call createFolder is not valid." );
@@ -2057,7 +2057,7 @@ public class ScriptAddedFunctions {
 
             }
           } else {
-            new RuntimeException( "file to copy [" + (String) ArgList[0] + "] can not be found!" );
+            throw new RuntimeException( "file to copy [" + ArgList[0] + "] can not be found!" );
           }
         } catch ( IOException e ) {
           throw new RuntimeException( "The function call copyFile throw an error : " + e.toString() );
@@ -2103,10 +2103,10 @@ public class ScriptAddedFunctions {
             if ( file.getType().equals( FileType.FILE ) ) {
               filesize = file.getContent().getSize();
             } else {
-              new RuntimeException( "[" + (String) ArgList[0] + "] is not a file!" );
+              throw new RuntimeException( "[" + ArgList[0] + "] is not a file!" );
             }
           } else {
-            new RuntimeException( "file [" + (String) ArgList[0] + "] can not be found!" );
+            throw new RuntimeException( "file [" + ArgList[0] + "] can not be found!" );
           }
           return filesize;
         } catch ( IOException e ) {
@@ -2146,10 +2146,10 @@ public class ScriptAddedFunctions {
             if ( file.getType().equals( FileType.FILE ) ) {
               isafile = true;
             } else {
-              new RuntimeException( "[" + (String) ArgList[0] + "] is not a file!" );
+              throw new RuntimeException( "[" + ArgList[0] + "] is not a file!" );
             }
           } else {
-            new RuntimeException( "file [" + (String) ArgList[0] + "] can not be found!" );
+            throw new RuntimeException( "file [" + ArgList[0] + "] can not be found!" );
           }
           return isafile;
         } catch ( IOException e ) {
@@ -2189,10 +2189,10 @@ public class ScriptAddedFunctions {
             if ( file.getType().equals( FileType.FOLDER ) ) {
               isafolder = true;
             } else {
-              new RuntimeException( "[" + (String) ArgList[0] + "] is not a folder!" );
+              throw new RuntimeException( "[" + ArgList[0] + "] is not a folder!" );
             }
           } else {
-            new RuntimeException( "folder [" + (String) ArgList[0] + "] can not be found!" );
+            throw new RuntimeException( "folder [" + ArgList[0] + "] can not be found!" );
           }
           return isafolder;
         } catch ( IOException e ) {
@@ -2229,10 +2229,10 @@ public class ScriptAddedFunctions {
           file = KettleVFS.getFileObject( (String) ArgList[0] );
           String Filename = null;
           if ( file.exists() ) {
-            Filename = file.getName().getBaseName().toString();
+            Filename = file.getName().getBaseName();
 
           } else {
-            new RuntimeException( "file [" + (String) ArgList[0] + "] can not be found!" );
+            throw new RuntimeException( "file [" + ArgList[0] + "] can not be found!" );
           }
 
           return Filename;
@@ -2270,10 +2270,10 @@ public class ScriptAddedFunctions {
           file = KettleVFS.getFileObject( (String) ArgList[0] );
           String Extension = null;
           if ( file.exists() ) {
-            Extension = file.getName().getExtension().toString();
+            Extension = file.getName().getExtension();
 
           } else {
-            new RuntimeException( "file [" + (String) ArgList[0] + "] can not be found!" );
+            throw new RuntimeException( "file [" + ArgList[0] + "] can not be found!" );
           }
 
           return Extension;
@@ -2314,7 +2314,7 @@ public class ScriptAddedFunctions {
             foldername = KettleVFS.getFilename( file.getParent() );
 
           } else {
-            new RuntimeException( "file [" + (String) ArgList[0] + "] can not be found!" );
+            throw new RuntimeException( "file [" + ArgList[0] + "] can not be found!" );
           }
 
           return foldername;
@@ -2361,7 +2361,7 @@ public class ScriptAddedFunctions {
             lastmodifiedtime = dateFormat.format( lastmodifiedtimedate );
 
           } else {
-            new RuntimeException( "file [" + (String) ArgList[0] + "] can not be found!" );
+            throw new RuntimeException( "file [" + ArgList[0] + "] can not be found!" );
           }
 
           return lastmodifiedtime;
@@ -2500,7 +2500,7 @@ public class ScriptAddedFunctions {
 
             }
           } else {
-            new RuntimeException( "file to move [" + (String) ArgList[0] + "] can not be found!" );
+            throw new RuntimeException( "file to move [" + ArgList[0] + "] can not be found!" );
           }
         } catch ( IOException e ) {
           throw new RuntimeException( "The function call moveFile throw an error : " + e.toString() );

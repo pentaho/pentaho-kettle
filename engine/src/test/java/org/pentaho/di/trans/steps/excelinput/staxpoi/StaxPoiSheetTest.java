@@ -53,13 +53,13 @@ import org.pentaho.di.core.spreadsheet.KSheet;
 public class StaxPoiSheetTest {
 
   private static final String BP_SHEET = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n"
-      + "<worksheet xmlns=\"http://schemas.openxmlformats.org/spreadsheetml/2006/main\" "
-      + "xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\">"
-      + "%s"
-      + "</worksheet>";
+    + "<worksheet xmlns=\"http://schemas.openxmlformats.org/spreadsheetml/2006/main\" "
+    + "xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\">"
+    + "%s"
+    + "</worksheet>";
 
   private static final String SHEET_DATE_NO_V = String.format( BP_SHEET,
-      " <dimension ref=\"A1:A3\"/>"
+    " <dimension ref=\"A1:A3\"/>"
       + " <sheetData>"
       + "   <row r=\"1\" spans=\"1:1\">"
       + "     <c r=\"A1\" s=\"1\" t=\"s\"><v>0</v></c>"
@@ -73,7 +73,7 @@ public class StaxPoiSheetTest {
       + " </sheetData>" );
 
   private static final String SHEET_1 = String.format( BP_SHEET,
-      " <dimension ref=\"B2:F5\"/>"
+    " <dimension ref=\"B2:F5\"/>"
       + " <sheetData>"
       + "  <row r=\"2\" spans=\"2:6\"><c r=\"B2\" t=\"s\"><v>0</v></c><c r=\"C2\" t=\"s\"><v>1</v></c>"
       + "    <c r=\"D2\" t=\"s\"><v>2</v></c><c r=\"E2\" t=\"s\"><v>3</v></c><c r=\"F2\" t=\"s\"><v>4</v></c></row>"
@@ -89,87 +89,88 @@ public class StaxPoiSheetTest {
 
   private static final String SHEET_INLINE_STRINGS = String.format( BP_SHEET,
     "<dimension ref=\"A1:B3\"/>"
-    + "<sheetViews>"
-    +   "<sheetView tabSelected=\"1\" workbookViewId=\"0\" rightToLeft=\"false\">"
-    +     "<selection activeCell=\"C5\" sqref=\"C5\"/>"
-    +   "</sheetView>"
-    + "</sheetViews>"
-    + "<sheetFormatPr defaultRowHeight=\"15\"/>"
-    + "<sheetData>"
-    +   "<row outlineLevel=\"0\" r=\"1\">"
-    +     "<c r=\"A1\" s=\"0\" t=\"inlineStr\"><is><t>Test1</t></is></c>"
-    +     "<c r=\"B1\" s=\"0\" t=\"inlineStr\"><is><t>Test2</t></is></c>"
-    +   "</row>"
-    +   "<row outlineLevel=\"0\" r=\"2\">"
-    +     "<c r=\"A2\" s=\"0\" t=\"inlineStr\"><is><t>value 1 1</t></is></c>"
-    +     "<c r=\"B2\" s=\"0\" t=\"inlineStr\"><is><t>value 2 1</t></is></c>"
-    +   "</row>"
-    +   "<row outlineLevel=\"0\" r=\"3\">"
-    +     "<c r=\"A3\" s=\"0\" t=\"inlineStr\"><is><t>value 1 2</t></is></c>"
-    +     "<c r=\"B3\" s=\"0\" t=\"inlineStr\"><is><t>value 2 2</t></is></c>"
-    +   "</row>"
-    + "</sheetData>" );
+      + "<sheetViews>"
+      + "<sheetView tabSelected=\"1\" workbookViewId=\"0\" rightToLeft=\"false\">"
+      + "<selection activeCell=\"C5\" sqref=\"C5\"/>"
+      + "</sheetView>"
+      + "</sheetViews>"
+      + "<sheetFormatPr defaultRowHeight=\"15\"/>"
+      + "<sheetData>"
+      + "<row outlineLevel=\"0\" r=\"1\">"
+      + "<c r=\"A1\" s=\"0\" t=\"inlineStr\"><is><t>Test1</t></is></c>"
+      + "<c r=\"B1\" s=\"0\" t=\"inlineStr\"><is><t>Test2</t></is></c>"
+      + "</row>"
+      + "<row outlineLevel=\"0\" r=\"2\">"
+      + "<c r=\"A2\" s=\"0\" t=\"inlineStr\"><is><t>value 1 1</t></is></c>"
+      + "<c r=\"B2\" s=\"0\" t=\"inlineStr\"><is><t>value 2 1</t></is></c>"
+      + "</row>"
+      + "<row outlineLevel=\"0\" r=\"3\">"
+      + "<c r=\"A3\" s=\"0\" t=\"inlineStr\"><is><t>value 1 2</t></is></c>"
+      + "<c r=\"B3\" s=\"0\" t=\"inlineStr\"><is><t>value 2 2</t></is></c>"
+      + "</row>"
+      + "</sheetData>" );
 
   private static final String SHEET_NO_USED_RANGE_SPECIFIED = String.format( BP_SHEET,
-      "<dimension ref=\"A1\" />"
-          +"<sheetViews>"
-          + "<sheetView tabSelected=\"1\" workbookViewId=\"0\">"
-          +   "<selection/>"
-          + "</sheetView>"
-          +"</sheetViews>"
-          +"<sheetFormatPr defaultRowHeight=\"12.750000\" customHeight=\"true\"/>"
-          +"<sheetData>"
-          + "<row r=\"2\">"
-          +   "<c r=\"A2\" s=\"9\" t=\"s\">"
-          +     "<v>0</v>"
-          +   "</c><c r=\"B2\" s=\"9\" t=\"s\">"
-          +     "<v>0</v>"
-          +   "</c><c r=\"C2\" s=\"9\" t=\"s\">"
-          +     "<v>1</v>"
-          +   "</c><c r=\"D2\" s=\"9\" t=\"s\">"
-          +     "<v>2</v>"
-          +   "</c><c r=\"E2\" s=\"9\" t=\"s\">"
-          +     "<v>3</v>"
-          +   "</c>"
-          + "</row>"
-          + "<row r=\"3\">"
-          +   "<c r=\"A3\" s=\"11\" t=\"s\">"
-          +     "<v>4</v>"
-          +   "</c><c r=\"B3\" s=\"11\" t=\"s\">"
-          +     "<v>4</v>"
-          +   "</c><c r=\"C3\" s=\"11\" t=\"s\">"
-          +     "<v>5</v>"
-          +   "</c><c r=\"D3\" s=\"12\">"
-          +     "<v>2623</v>"
-          +   "</c><c r=\"E3\" s=\"11\" t=\"s\">"
-          +     "<v>6</v>"
-          +   "</c>"
-          + "</row>"
-          +"</sheetData>");
+    "<dimension ref=\"A1\" />"
+      + "<sheetViews>"
+      + "<sheetView tabSelected=\"1\" workbookViewId=\"0\">"
+      + "<selection/>"
+      + "</sheetView>"
+      + "</sheetViews>"
+      + "<sheetFormatPr defaultRowHeight=\"12.750000\" customHeight=\"true\"/>"
+      + "<sheetData>"
+      + "<row r=\"2\">"
+      + "<c r=\"A2\" s=\"9\" t=\"s\">"
+      + "<v>0</v>"
+      + "</c><c r=\"B2\" s=\"9\" t=\"s\">"
+      + "<v>0</v>"
+      + "</c><c r=\"C2\" s=\"9\" t=\"s\">"
+      + "<v>1</v>"
+      + "</c><c r=\"D2\" s=\"9\" t=\"s\">"
+      + "<v>2</v>"
+      + "</c><c r=\"E2\" s=\"9\" t=\"s\">"
+      + "<v>3</v>"
+      + "</c>"
+      + "</row>"
+      + "<row r=\"3\">"
+      + "<c r=\"A3\" s=\"11\" t=\"s\">"
+      + "<v>4</v>"
+      + "</c><c r=\"B3\" s=\"11\" t=\"s\">"
+      + "<v>4</v>"
+      + "</c><c r=\"C3\" s=\"11\" t=\"s\">"
+      + "<v>5</v>"
+      + "</c><c r=\"D3\" s=\"12\">"
+      + "<v>2623</v>"
+      + "</c><c r=\"E3\" s=\"11\" t=\"s\">"
+      + "<v>6</v>"
+      + "</c>"
+      + "</row>"
+      + "</sheetData>" );
+
   @Test
   public void testNullDateCell() throws Exception {
     // cell had null value instead of being null
     final String sheetId = "1";
     final String sheetName = "Sheet 1";
     XSSFReader reader = mockXSSFReader( sheetId, SHEET_DATE_NO_V,
-        mockSharedStringsTable( "Some Date" ),
-        mockStylesTable(
-          Collections.singletonMap( 2, 165 ),
-          Collections.singletonMap( 165, "M/D/YYYY" ) ) );
+      mockSharedStringsTable( "Some Date" ),
+      mockStylesTable(
+        Collections.singletonMap( 2, 165 ),
+        Collections.singletonMap( 165, "M/D/YYYY" ) ) );
     StaxPoiSheet spSheet = spy( new StaxPoiSheet( reader, sheetName, sheetId ) );
     doReturn( true ).when( spSheet ).isDateCell( any() );
-    KCell cell = spSheet.getRow( 1 )[0];
+    KCell cell = spSheet.getRow( 1 )[ 0 ];
     assertNotNull( cell );
     assertEquals( KCellType.DATE, cell.getType() );
-    cell = spSheet.getRow( 2 )[0];
+    cell = spSheet.getRow( 2 )[ 0 ];
     assertNull( "cell must be null", cell );
   }
 
   @Test
   public void testEmptySheet() throws Exception {
     XSSFReader reader = mockXSSFReader( "sheet1", SHEET_EMPTY,
-        mock( SharedStringsTable.class ),
-        mock( StylesTable.class ) );
+      mock( SharedStringsTable.class ),
+      mock( StylesTable.class ) );
     // check no exceptions
     StaxPoiSheet sheet = new StaxPoiSheet( reader, "empty", "sheet1" );
     for ( int j = 0; j < sheet.getRows(); j++ ) {
@@ -181,18 +182,18 @@ public class StaxPoiSheetTest {
   public void testReadSameRow() throws Exception {
     KSheet sheet1 = getSampleSheet();
     KCell[] row = sheet1.getRow( 3 );
-    assertEquals( "Two", row[1].getValue() );
+    assertEquals( "Two", row[ 1 ].getValue() );
     row = sheet1.getRow( 3 );
-    assertEquals( "Two", row[1].getValue() );
+    assertEquals( "Two", row[ 1 ].getValue() );
   }
 
   @Test
   public void testReadRowRA() throws Exception {
     KSheet sheet1 = getSampleSheet();
     KCell[] row = sheet1.getRow( 4 );
-    assertEquals( "Three", row[1].getValue() );
+    assertEquals( "Three", row[ 1 ].getValue() );
     row = sheet1.getRow( 2 );
-    assertEquals( "One", row[1].getValue() );
+    assertEquals( "One", row[ 1 ].getValue() );
   }
 
   @Test
@@ -225,40 +226,40 @@ public class StaxPoiSheetTest {
     assertEquals( 5, sheet1.getRows() );
 
     KCell[] row = sheet1.getRow( 2 );
-    assertEquals( KCellType.LABEL, row[1].getType() );
-    assertEquals( "One", row[1].getValue() );
-    assertEquals( KCellType.DATE, row[2].getType() );
-    assertEquals( new Date( 1283817600000L ), row[2].getValue() );
-    assertEquals( KCellType.NUMBER, row[3].getType() );
-    assertEquals( Double.valueOf( "75" ), row[3].getValue() );
-    assertEquals( KCellType.BOOLEAN, row[4].getType() );
-    assertEquals( Boolean.TRUE, row[4].getValue() );
-    assertEquals( KCellType.NUMBER_FORMULA, row[5].getType() );
-    assertEquals( Double.valueOf( "75" ), row[5].getValue() );
+    assertEquals( KCellType.LABEL, row[ 1 ].getType() );
+    assertEquals( "One", row[ 1 ].getValue() );
+    assertEquals( KCellType.DATE, row[ 2 ].getType() );
+    assertEquals( new Date( 1283817600000L ), row[ 2 ].getValue() );
+    assertEquals( KCellType.NUMBER, row[ 3 ].getType() );
+    assertEquals( Double.valueOf( "75" ), row[ 3 ].getValue() );
+    assertEquals( KCellType.BOOLEAN, row[ 4 ].getType() );
+    assertEquals( Boolean.TRUE, row[ 4 ].getValue() );
+    assertEquals( KCellType.NUMBER_FORMULA, row[ 5 ].getType() );
+    assertEquals( Double.valueOf( "75" ), row[ 5 ].getValue() );
 
     row = sheet1.getRow( 3 );
-    assertEquals( KCellType.LABEL, row[1].getType() );
-    assertEquals( "Two", row[1].getValue() );
-    assertEquals( KCellType.DATE, row[2].getType() );
-    assertEquals( new Date( 1283904000000L ), row[2].getValue() );
-    assertEquals( KCellType.NUMBER, row[3].getType() );
-    assertEquals( Double.valueOf( "42" ), row[3].getValue() );
-    assertEquals( KCellType.BOOLEAN, row[4].getType() );
-    assertEquals( Boolean.FALSE, row[4].getValue() );
-    assertEquals( KCellType.NUMBER_FORMULA, row[5].getType() );
-    assertEquals( Double.valueOf( "117" ), row[5].getValue() );
+    assertEquals( KCellType.LABEL, row[ 1 ].getType() );
+    assertEquals( "Two", row[ 1 ].getValue() );
+    assertEquals( KCellType.DATE, row[ 2 ].getType() );
+    assertEquals( new Date( 1283904000000L ), row[ 2 ].getValue() );
+    assertEquals( KCellType.NUMBER, row[ 3 ].getType() );
+    assertEquals( Double.valueOf( "42" ), row[ 3 ].getValue() );
+    assertEquals( KCellType.BOOLEAN, row[ 4 ].getType() );
+    assertEquals( Boolean.FALSE, row[ 4 ].getValue() );
+    assertEquals( KCellType.NUMBER_FORMULA, row[ 5 ].getType() );
+    assertEquals( Double.valueOf( "117" ), row[ 5 ].getValue() );
 
     row = sheet1.getRow( 4 );
-    assertEquals( KCellType.LABEL, row[1].getType() );
-    assertEquals( "Three", row[1].getValue() );
-    assertEquals( KCellType.DATE, row[2].getType() );
-    assertEquals( new Date( 1283990400000L ), row[2].getValue() );
-    assertEquals( KCellType.NUMBER, row[3].getType() );
-    assertEquals( Double.valueOf( "93" ), row[3].getValue() );
-    assertEquals( KCellType.BOOLEAN, row[4].getType() );
-    assertEquals( Boolean.TRUE, row[4].getValue() );
-    assertEquals( KCellType.NUMBER_FORMULA, row[5].getType() );
-    assertEquals( Double.valueOf( "210" ), row[5].getValue() );
+    assertEquals( KCellType.LABEL, row[ 1 ].getType() );
+    assertEquals( "Three", row[ 1 ].getValue() );
+    assertEquals( KCellType.DATE, row[ 2 ].getType() );
+    assertEquals( new Date( 1283990400000L ), row[ 2 ].getValue() );
+    assertEquals( KCellType.NUMBER, row[ 3 ].getType() );
+    assertEquals( Double.valueOf( "93" ), row[ 3 ].getValue() );
+    assertEquals( KCellType.BOOLEAN, row[ 4 ].getType() );
+    assertEquals( Boolean.TRUE, row[ 4 ].getValue() );
+    assertEquals( KCellType.NUMBER_FORMULA, row[ 5 ].getType() );
+    assertEquals( Double.valueOf( "210" ), row[ 5 ].getValue() );
 
     try {
       row = sheet1.getRow( 5 );
@@ -271,14 +272,15 @@ public class StaxPoiSheetTest {
   private StaxPoiSheet getSampleSheet() throws Exception {
     String sheetId = "sheet1";
     XSSFReader reader = mockXSSFReader( sheetId, SHEET_1,
-        mockSharedStringsTable(
-            "Col1Label", "Col2Date", "Col3Number", "Col4Boolean", "Col5NumFormula", "One", "Two", "Three" ),
-        mockStylesTable( Collections.singletonMap( 1, 14 ), Collections.<Integer, String>emptyMap() ) );
+      mockSharedStringsTable(
+        "Col1Label", "Col2Date", "Col3Number", "Col4Boolean", "Col5NumFormula", "One", "Two", "Three" ),
+      mockStylesTable( Collections.singletonMap( 1, 14 ), Collections.<Integer, String>emptyMap() ) );
     return new StaxPoiSheet( reader, "Sheet 1", sheetId );
   }
 
   private XSSFReader mockXSSFReader( final String sheetId,
-      final String sheetContent, final SharedStringsTable sst, final StylesTable styles ) throws Exception {
+                                     final String sheetContent, final SharedStringsTable sst, final StylesTable styles )
+    throws Exception {
     XSSFReader reader = mock( XSSFReader.class );
     when( reader.getSharedStringsTable() ).thenReturn( sst );
     when( reader.getStylesTable() ).thenReturn( styles );
@@ -290,11 +292,12 @@ public class StaxPoiSheetTest {
     return reader;
   }
 
-  private StylesTable mockStylesTable( final Map<Integer, Integer> styleToNumFmtId, final Map<Integer, String> numFmts ) {
+  private StylesTable mockStylesTable( final Map<Integer, Integer> styleToNumFmtId,
+                                       final Map<Integer, String> numFmts ) {
     StylesTable styles = mock( StylesTable.class );
     when( styles.getCellXfAt( any( Integer.class ) ) ).then( new Answer<CTXf>() {
       public CTXf answer( InvocationOnMock invocation ) throws Throwable {
-        int style = (int) invocation.getArguments()[0];
+        int style = (int) invocation.getArguments()[ 0 ];
         Integer numFmtId = styleToNumFmtId.get( style );
         if ( numFmtId != null ) {
           CTXf ctxf = CTXf.Factory.newInstance();
@@ -307,7 +310,7 @@ public class StaxPoiSheetTest {
     } );
     when( styles.getNumberFormatAt( any( Short.class ) ) ).then( new Answer<String>() {
       public String answer( InvocationOnMock invocation ) throws Throwable {
-        return numFmts.get( (Short) invocation.getArguments()[0] );
+        return numFmts.get( invocation.getArguments()[ 0 ] );
       }
     } );
     return styles;
@@ -332,20 +335,20 @@ public class StaxPoiSheetTest {
       mock( StylesTable.class ) );
     StaxPoiSheet spSheet = new StaxPoiSheet( reader, sheetName, sheetId );
     KCell[] rowCells = spSheet.getRow( 0 );
-    assertEquals( "Test1", rowCells[0].getValue() );
-    assertEquals( KCellType.STRING_FORMULA, rowCells[0].getType() );
-    assertEquals( "Test2", rowCells[1].getValue() );
-    assertEquals( KCellType.STRING_FORMULA, rowCells[1].getType() );
+    assertEquals( "Test1", rowCells[ 0 ].getValue() );
+    assertEquals( KCellType.STRING_FORMULA, rowCells[ 0 ].getType() );
+    assertEquals( "Test2", rowCells[ 1 ].getValue() );
+    assertEquals( KCellType.STRING_FORMULA, rowCells[ 1 ].getType() );
     rowCells = spSheet.getRow( 1 );
-    assertEquals( "value 1 1", rowCells[0].getValue() );
-    assertEquals( KCellType.STRING_FORMULA, rowCells[0].getType() );
-    assertEquals( "value 2 1", rowCells[1].getValue() );
-    assertEquals( KCellType.STRING_FORMULA, rowCells[1].getType() );
+    assertEquals( "value 1 1", rowCells[ 0 ].getValue() );
+    assertEquals( KCellType.STRING_FORMULA, rowCells[ 0 ].getType() );
+    assertEquals( "value 2 1", rowCells[ 1 ].getValue() );
+    assertEquals( KCellType.STRING_FORMULA, rowCells[ 1 ].getType() );
     rowCells = spSheet.getRow( 2 );
-    assertEquals( "value 1 2", rowCells[0].getValue() );
-    assertEquals( KCellType.STRING_FORMULA, rowCells[0].getType() );
-    assertEquals( "value 2 2", rowCells[1].getValue() );
-    assertEquals( KCellType.STRING_FORMULA, rowCells[1].getType() );
+    assertEquals( "value 1 2", rowCells[ 0 ].getValue() );
+    assertEquals( KCellType.STRING_FORMULA, rowCells[ 0 ].getType() );
+    assertEquals( "value 2 2", rowCells[ 1 ].getValue() );
+    assertEquals( KCellType.STRING_FORMULA, rowCells[ 1 ].getType() );
   }
 
   // The row and column bounds of all cells in the worksheet are specified in ref attribute of Dimension tag in sheet
@@ -357,8 +360,10 @@ public class StaxPoiSheetTest {
     final String sheetId = "1";
     final String sheetName = "Sheet 1";
     SharedStringsTable sharedStringsTableMock =
-        mockSharedStringsTable( "Report ID", "Report ID", "Approval Status", "Total Report Amount", "Policy", "ReportIdValue_1", "ReportIdValue_1", "ApprovalStatusValue_1", "PolicyValue_1" );
-    XSSFReader reader = mockXSSFReader( sheetId, SHEET_NO_USED_RANGE_SPECIFIED, sharedStringsTableMock, mock( StylesTable.class ) );
+      mockSharedStringsTable( "Report ID", "Report ID", "Approval Status", "Total Report Amount", "Policy",
+        "ReportIdValue_1", "ReportIdValue_1", "ApprovalStatusValue_1", "PolicyValue_1" );
+    XSSFReader reader =
+      mockXSSFReader( sheetId, SHEET_NO_USED_RANGE_SPECIFIED, sharedStringsTableMock, mock( StylesTable.class ) );
     StaxPoiSheet spSheet = new StaxPoiSheet( reader, sheetName, sheetId );
     // The first row is empty - it should have empty rowCells
     KCell[] rowCells = spSheet.getRow( 0 );
@@ -368,16 +373,16 @@ public class StaxPoiSheetTest {
     assertEquals( 0, rowCells.length );
     // The row3 - is the first row with data - validating it
     rowCells = spSheet.getRow( 2 );
-    assertEquals( KCellType.LABEL, rowCells[0].getType() );
-    assertEquals( "ReportIdValue_1", rowCells[0].getValue() );
-    assertEquals( KCellType.LABEL, rowCells[1].getType() );
-    assertEquals( "ReportIdValue_1", rowCells[1].getValue() );
-    assertEquals( KCellType.LABEL, rowCells[2].getType() );
-    assertEquals( "ApprovalStatusValue_1", rowCells[2].getValue() );
-    assertEquals( KCellType.NUMBER, rowCells[3].getType() );
-    assertEquals( 2623.0, rowCells[3].getValue() );
-    assertEquals( KCellType.LABEL, rowCells[4].getType() );
-    assertEquals( "PolicyValue_1", rowCells[4].getValue() );
+    assertEquals( KCellType.LABEL, rowCells[ 0 ].getType() );
+    assertEquals( "ReportIdValue_1", rowCells[ 0 ].getValue() );
+    assertEquals( KCellType.LABEL, rowCells[ 1 ].getType() );
+    assertEquals( "ReportIdValue_1", rowCells[ 1 ].getValue() );
+    assertEquals( KCellType.LABEL, rowCells[ 2 ].getType() );
+    assertEquals( "ApprovalStatusValue_1", rowCells[ 2 ].getValue() );
+    assertEquals( KCellType.NUMBER, rowCells[ 3 ].getType() );
+    assertEquals( 2623.0, rowCells[ 3 ].getValue() );
+    assertEquals( KCellType.LABEL, rowCells[ 4 ].getType() );
+    assertEquals( "PolicyValue_1", rowCells[ 4 ].getValue() );
   }
 
 }
