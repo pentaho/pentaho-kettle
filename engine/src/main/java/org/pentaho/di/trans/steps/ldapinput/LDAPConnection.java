@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -24,6 +24,7 @@ package org.pentaho.di.trans.steps.ldapinput;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -243,7 +244,7 @@ public class LDAPConnection {
         nrCtl++;
         if ( log.isDebug() ) {
           log.logDebug( BaseMessages
-            .getString( "LDAPInput.Log.SortingKeys", getSortingAttributesKeys().toString() ) );
+            .getString( "LDAPInput.Log.SortingKeys", Arrays.toString( getSortingAttributesKeys() ) ) );
         }
       }
 

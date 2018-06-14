@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -154,7 +154,7 @@ public class GetJobStatusServletTest {
 
     verify( cacheMock, times( 2 ) ).get( logId, 0 );
     verify( cacheMock, times( 1 ) ).put( eq( logId ), anyString(), eq( 0 ) );
-    verify( mockJob.getLogChannel(), times( 1 ) );
+    verify( mockJob, times( 1 ) ).getLogChannel();
 
   }
 }

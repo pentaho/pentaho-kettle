@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -108,6 +108,7 @@ public class OraBulkDataOutput {
     return buf.toString();
   }
 
+  @SuppressWarnings( "ArrayToString" )
   public void writeLine( RowMetaInterface mi, Object[] row ) throws KettleException {
     if ( first ) {
       first = false;
@@ -198,6 +199,7 @@ public class OraBulkDataOutput {
           case ValueMetaInterface.TYPE_BINARY:
             byte[] byt = mi.getBinary( row, number );
             outbuf.append( "<startlob>" );
+            // TODO REVIEW - implicit .toString
             outbuf.append( byt );
             outbuf.append( "<endlob>" );
             break;

@@ -1600,7 +1600,7 @@ public class ScriptValuesAddedFunctions extends ScriptableObject {
         String sArg1 = Context.toString( ArgList[0] );
         // PDI-1276 Function getEnvironmentVar() does not work for user defined variables.
         // check if the system property exists, and if it does not, try getting a Kettle var instead
-        if ( System.getProperties().contains( sArg1 ) ) {
+        if ( System.getProperties().containsValue( sArg1 ) ) {
           sRC = System.getProperty( sArg1, "" );
         } else {
           Object scmo = actualObject.get( "_step_", actualObject );
