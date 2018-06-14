@@ -1539,6 +1539,10 @@ public class DataHandler extends AbstractXulEventHandler {
   }
 
   protected void showMessage( DatabaseTestResults databaseTestResults ) {
+    // BACKLOG-23781 - provide a showMessage implementation for
+    // those that don't override it (PRD case)
+    String message = databaseTestResults.getMessage();
+    showMessage( message, message.length() > 300 );
   }
 
   public void handleUseSecurityCheckbox() {
