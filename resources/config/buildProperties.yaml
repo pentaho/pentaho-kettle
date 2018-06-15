@@ -78,3 +78,6 @@ JOB_ITEM_DEFAULTS:
   directives: ${MAVEN_DEFAULT_DIRECTIVES}
   testable: true
   execType: FORCE
+
+# Build failover settings
+IGNORE_PIPELINE_FAILURE: false
