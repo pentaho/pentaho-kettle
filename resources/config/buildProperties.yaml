@@ -10,6 +10,7 @@
 JENKINS_ANT_FOR_BUILDS: ant-auto
 JENKINS_JDK_FOR_BUILDS: Java8_auto
 JENKINS_MAVEN_FOR_BUILDS: maven3-auto
+JENKINS_GRADLE_FOR_BUILDS: gradle-auto
 
 ANT_DEFAULT_COMMAND_OPTIONS: clean-all resolve dist
 ANT_TEST_TARGETS: test jacoco
@@ -19,7 +20,9 @@ MAVEN_OPTS: -Xms512m
 MAVEN_RESOLVE_REPO_URL: http://nexus.pentaho.org/content/groups/omni
 MAVEN_TEST_OPTS: -DsurefireArgLine=-Xmx1g
 MAVEN_DEFAULT_DIRECTIVES: clean install
-GRADLE_DEFAULT_DIRECTIVES: -q
+GRADLE_DEFAULT_DIRECTIVES: --info --console=plain
+GRADLE_DEFAULT_COMMAND_OPTIONS: clean build
+GRADLE_TEST_TARGETS: test
 
 NOOP: false
 BUILD_RETRIES: 1
