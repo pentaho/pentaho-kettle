@@ -33,6 +33,10 @@ RUN_UNIT_TESTS: true
 ARCHIVE_ARTIFACTS: true
 USE_DISTRIBUTED_SOURCE_CACHING: false
 
+BUILD_DATA_ROOT_PATH: ${WORKSPACE}/resources/builders
+LIB_CACHE_ROOT_PATH: ${WORKSPACE}/caches
+BUILDS_ROOT_PATH: ${WORKSPACE}/builds
+
 SCM_HOST_ROOT: https://github.com
 PENTAHO_SCM_ROOT: https://github.com/pentaho
 WEBDETAILS_SCM_ROOT: https://github.com/webdetails
@@ -61,3 +65,13 @@ TAG_NAME: -RC
 # Installer defaults
 IBUILDER_RESOURCES_ROOT_PATH: /build2/resources/ibuilder-pentaho-8.0-resources
 INSTALL_BUILDER_ROOT_DIR: /build2/resources/installbuilder-15.1.0
+
+# Defaults for Job properties
+JOB_ITEM_DEFAULTS:
+  scmBranch: ${DEFAULT_BRANCH}
+  buildFramework: MAVEN
+  buildFile:
+  root:
+  directives: ${MAVEN_DEFAULT_DIRECTIVES}
+  testable: true
+  execType: FORCE

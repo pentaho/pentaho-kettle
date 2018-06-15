@@ -39,11 +39,6 @@ pipeline {
         description: 'Clean build dependency caches with regex'
     )
     string(
-        name: 'MAVEN_RESOLVE_REPO_URL',
-        defaultValue: 'http://nexus.pentaho.org/content/groups/omni',
-        description: 'Maven resolve repo global mirror'
-    )
-    string(
         name: 'CHECKOUT_TIMESTAMP',
         defaultValue: '',
         description: 'Determines the timestamp to use as the limit for version control commits. Any commits after the timestamp will not be used. Override format: YYYY-MM-DD HH:MM:SS',
@@ -110,15 +105,6 @@ pipeline {
     // https://issues.jenkins-ci.org/browse/JENKINS-42643
     pollSCM("H/60 * * * *")
   }
-
-  environment {
-    DEFAULT_BUILD_PROPERTIES = "${WORKSPACE}/resources/config/buildProperties.yaml"
-    BUILD_DATA_ROOT_PATH = "${WORKSPACE}/resources/builders"
-    RESOLVE_REPO_MIRROR = "${params.MAVEN_RESOLVE_REPO_URL}"
-    LIB_CACHE_ROOT_PATH = "${WORKSPACE}/caches"
-    BUILDS_ROOT_PATH = "${WORKSPACE}/builds"
-  }
-
 
   stages {
     stage('Configure Pipeline') {
