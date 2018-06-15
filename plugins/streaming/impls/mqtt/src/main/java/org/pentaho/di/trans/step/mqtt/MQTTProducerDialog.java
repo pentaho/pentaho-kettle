@@ -354,7 +354,6 @@ public class MQTTProducerDialog extends BaseStepDialog implements StepDialogInte
     FormData specifyTopicLayout = new FormData();
     specifyTopicLayout.left = new FormAttachment( 0, 0 );
     specifyTopicLayout.top = new FormAttachment( 0, 0 );
-    specifyTopicLayout.width = 100;
     specifyTopic.setLayoutData( specifyTopicLayout );
 
     FormData fdTopicComesFromField = new FormData();
