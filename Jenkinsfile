@@ -117,8 +117,6 @@ pipeline {
     RESOLVE_REPO_MIRROR = "${params.MAVEN_RESOLVE_REPO_URL}"
     LIB_CACHE_ROOT_PATH = "${WORKSPACE}/caches"
     BUILDS_ROOT_PATH = "${WORKSPACE}/builds"
-    MAVEN_HOME = tool('maven3-auto')
-    PATH = "$MAVEN_HOME/bin:$PATH"
   }
 
 
