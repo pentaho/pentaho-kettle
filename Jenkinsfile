@@ -106,6 +106,14 @@ pipeline {
     pollSCM("H/60 * * * *")
   }
 
+  environment {
+      DEFAULT_BUILD_PROPERTIES = "${WORKSPACE}/resources/config/buildProperties.yaml"
+      BUILD_DATA_ROOT_PATH = "${WORKSPACE}/resources/builders"
+      RESOLVE_REPO_MIRROR = "${params.MAVEN_RESOLVE_REPO_URL}"
+      LIB_CACHE_ROOT_PATH = "${WORKSPACE}/caches"
+      BUILDS_ROOT_PATH = "${WORKSPACE}/builds"
+  }
+
   stages {
     stage('Configure Pipeline') {
       // After this stage all properties will be available in the buildProperties Map
