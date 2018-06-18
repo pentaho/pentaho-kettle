@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -599,8 +599,7 @@ public class DatabaseLookupDialog extends BaseStepDialog implements StepDialogIn
               try {
                 db.connect();
 
-                String schemaTable = ci.getQuotedSchemaTableCombination( schemaName, tableName );
-                RowMetaInterface r = db.getTableFields( schemaTable );
+                RowMetaInterface r = db.getTableFieldsMeta( schemaName, tableName );
                 if ( null != r ) {
                   String[] fieldNames = r.getFieldNames();
                   if ( null != fieldNames ) {
@@ -843,11 +842,14 @@ public class DatabaseLookupDialog extends BaseStepDialog implements StepDialogIn
         db.connect();
 
         if ( !Utils.isEmpty( wTable.getText() ) ) {
-          String schemaTable =
-            ci.getQuotedSchemaTableCombination( db.environmentSubstitute( wSchema.getText() ), db
-              .environmentSubstitute( wTable.getText() ) );
-          RowMetaInterface r = db.getTableFields( schemaTable );
+          RowMetaInterface r =
+            db.getTableFieldsMeta(
+              db.environmentSubstitute( wSchema.getText() ),
+              db.environmentSubstitute( wTable.getText() ) );
           if ( r != null && !r.isEmpty() ) {
+            String schemaTable =
+              ci.getQuotedSchemaTableCombination( db.environmentSubstitute( wSchema.getText() ), db
+                .environmentSubstitute( wTable.getText() ) );
             logDebug( BaseMessages.getString( PKG, "DatabaseLookupDialog.Log.FoundTableFields" )
               + schemaTable + " --> " + r.toStringMeta() );
             BaseStepDialog

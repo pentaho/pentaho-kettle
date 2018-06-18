@@ -22,13 +22,15 @@
 
 package org.pentaho.di.trans.step.mqtt;
 
+import com.google.common.base.Supplier;
+import com.google.common.base.Suppliers;
+import org.eclipse.paho.client.mqttv3.MqttClient;
 import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.util.serialization.BaseSerializingMeta;
-import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStep;
@@ -38,16 +40,19 @@ import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
+import static com.google.common.base.Preconditions.checkArgument;
 import static java.nio.charset.Charset.defaultCharset;
+import static java.util.Optional.ofNullable;
+import static org.pentaho.di.i18n.BaseMessages.getString;
 
 public class MQTTProducer extends BaseStep implements StepInterface {
   private static Class<?> PKG = MQTTProducer.class;
 
   private MQTTProducerMeta meta;
-  private MQTTProducerData data;
+
+  Supplier<MqttClient> client = Suppliers.memoize( this::connectToClient );
 
   /**
    * This is the base step that forms that basis for all steps. You can derive from this class to implement your own
@@ -71,7 +76,6 @@ public class MQTTProducer extends BaseStep implements StepInterface {
     boolean isInitalized = super.init( stepMetaInterface, stepDataInterface );
     BaseSerializingMeta serializingMeta = (BaseSerializingMeta) stepMetaInterface;
     meta = (MQTTProducerMeta) serializingMeta.withVariables( this ); // handle variable substitution up-front
-    data = ( (MQTTProducerData) stepDataInterface );
 
     List<CheckResultInterface> remarks = new ArrayList<>();
     meta.check(
@@ -82,11 +86,7 @@ public class MQTTProducer extends BaseStep implements StepInterface {
       remarks.stream().filter( result -> result.getType() == CheckResultInterface.TYPE_RESULT_ERROR )
         .peek( result -> logError( result.getText() ) )
         .count() > 0;
-    if ( errorsPresent ) {
-      return false;
-    }
-
-    return isInitalized;
+    return !errorsPresent && isInitalized;
   }
 
   @Override
@@ -98,67 +98,89 @@ public class MQTTProducer extends BaseStep implements StepInterface {
       stopMqttClient();
       return false;
     }
-
-    if ( first ) {
-      logDebug( "Publishing using a quality of service level of " + environmentSubstitute( meta.getQOS() ) );
-      data.messageFieldIndex = getInputRowMeta().indexOfValue( environmentSubstitute( meta.getMessageField() ) );
-      try {
-        data.mqttClient = MQTTClientBuilder.builder()
-          .withBroker( meta.getMqttServer() )
-          .withTopics( Collections.singletonList( meta.getTopic() ) )
-          .withClientId( meta.getClientId() )
-          .withQos( meta.getQOS() )
-          .withStep( this )
-          .withUsername( meta.getUsername() )
-          .withPassword( meta.getPassword() )
-          .withSslConfig( meta.getSslConfig() )
-          .withIsSecure( meta.isUseSsl() )
-          .withKeepAliveInterval( meta.getKeepAliveInterval() )
-          .withMaxInflight( meta.getMaxInflight() )
-          .withConnectionTimeout( meta.getConnectionTimeout() )
-          .withCleanSession( meta.getCleanSession() )
-          .withStorageLevel( meta.getStorageLevel() )
-          .withServerUris( meta.getServerUris() )
-          .withMqttVersion( meta.getMqttVersion() )
-          .withAutomaticReconnect( meta.getAutomaticReconnect() )
-          .buildAndConnect();
-      } catch ( Exception e ) {
-        stopAll();
-        logError( e.toString() );
-        return false;
-      }
-
-      first = false;
-    }
-
-    MqttMessage mqttMessage = new MqttMessage();
     try {
-      mqttMessage.setQos( Integer.parseInt( environmentSubstitute( meta.getQOS() ) ) );
-    } catch ( NumberFormatException e ) {
-      throw new KettleStepException(
-        BaseMessages.getString( PKG, "MQTTProducer.Error.QOS", environmentSubstitute( meta.getQOS() ) ) );
-    }
-    mqttMessage.setPayload( ( row[ data.messageFieldIndex ] ).toString().getBytes( defaultCharset() ) );
-
-    try {
-      data.mqttClient.publish( environmentSubstitute( meta.getTopic() ), mqttMessage );
+      client.get()  // client is memoized, loaded on first use
+        .publish( getTopic( row ), getMessage( row ) );
 
       incrementLinesOutput();
       putRow( getInputRowMeta(), row ); // copy row to possible alternate rowset(s).
 
       if ( checkFeedback( getLinesRead() ) ) {
         if ( log.isBasic() ) {
-          logBasic( BaseMessages.getString( PKG, "MQTTProducer.Log.LineNumber" ) + getLinesRead() );
+          logBasic( getString( PKG, "MQTTProducer.Log.LineNumber" ) + getLinesRead() );
         }
       }
     } catch ( MqttException e ) {
-      logError( BaseMessages.getString( PKG, "MQTTProducer.Error.QOSNotSupported", meta.getQOS() ) );
+      logError( getString( PKG, "MQTTProducer.Error.QOSNotSupported", meta.qos ) );
       logError( e.getMessage(), e );
       setErrors( 1 );
       stopAll();
+      return false;
+    } catch ( RuntimeException re ) {
+      stopAll();
+      logError( re.getMessage(), re );
+      return false;
     }
-
     return true;
+  }
+
+  private MqttClient connectToClient() {
+    logDebug( "Publishing using a quality of service level of " + environmentSubstitute( meta.qos ) );
+    try {
+      return
+        MQTTClientBuilder.builder()
+          .withBroker( this.meta.mqttServer )
+          .withClientId( meta.clientId )
+          .withQos( meta.qos )
+          .withStep( this )
+          .withUsername( meta.username )
+          .withPassword( meta.password )
+          .withSslConfig( meta.getSslConfig() )
+          .withIsSecure( meta.useSsl )
+          .withKeepAliveInterval( meta.keepAliveInterval )
+          .withMaxInflight( meta.maxInflight )
+          .withConnectionTimeout( meta.connectionTimeout )
+          .withCleanSession( meta.cleanSession )
+          .withStorageLevel( meta.storageLevel )
+          .withServerUris( meta.serverUris )
+          .withMqttVersion( meta.mqttVersion )
+          .withAutomaticReconnect( meta.automaticReconnect )
+          .buildAndConnect();
+    } catch ( MqttException e ) {
+      throw new RuntimeException( e );
+    }
+  }
+
+  private MqttMessage getMessage( Object[] row ) throws KettleStepException {
+    MqttMessage mqttMessage = new MqttMessage();
+    try {
+      mqttMessage.setQos( Integer.parseInt( meta.qos ) );
+    } catch ( NumberFormatException e ) {
+      throw new KettleStepException(
+        getString( PKG, "MQTTProducer.Error.QOS", environmentSubstitute( meta.qos ) ) );
+    }
+    String fieldAsString = getFieldAsString( row, meta.messageField );
+    mqttMessage.setPayload( fieldAsString.getBytes( defaultCharset() ) );
+    return mqttMessage;
+  }
+
+  /**
+   * Retrieves the topic, either a raw string, or a field value if meta.topicInField==true
+   */
+  private String getTopic( Object[] row ) {
+    String topic;
+    if ( meta.topicInField ) {
+      topic = getFieldAsString( row, meta.fieldTopic );
+    } else {
+      topic = meta.topic;
+    }
+    return topic;
+  }
+
+  private String getFieldAsString( Object[] row, String field ) {
+    int messageFieldIndex = getInputRowMeta().indexOfValue( field );
+    checkArgument( messageFieldIndex > -1, getString( PKG, "MQTTProducer.Error.FieldNotFound", field ) );
+    return ofNullable( ( row[ messageFieldIndex ] ).toString() ).orElse( "" );
   }
 
   @Override public void stopRunning( StepMetaInterface stepMetaInterface, StepDataInterface stepDataInterface )
@@ -170,9 +192,9 @@ public class MQTTProducer extends BaseStep implements StepInterface {
   private void stopMqttClient() {
     try {
       // Check if connected so subsequent calls does not produce an already stopped exception
-      if ( null != data.mqttClient && data.mqttClient.isConnected() ) {
-        data.mqttClient.disconnect();
-        data.mqttClient.close();
+      if ( null != client.get() && client.get().isConnected() ) {
+        client.get().disconnect();
+        client.get().close();
       }
     } catch ( MqttException e ) {
       logError( e.getMessage() );

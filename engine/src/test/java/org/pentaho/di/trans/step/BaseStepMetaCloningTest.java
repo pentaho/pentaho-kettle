@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,13 +22,13 @@
 
 package org.pentaho.di.trans.step;
 
-import java.util.List;
-
 import org.junit.Test;
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.trans.step.errorhandling.Stream;
 import org.pentaho.di.trans.step.errorhandling.StreamInterface;
+
+import java.util.List;
 
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
@@ -36,8 +36,8 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
 
 public class BaseStepMetaCloningTest {
 
@@ -51,7 +51,8 @@ public class BaseStepMetaCloningTest {
     BaseStepMeta meta = new BaseStepMeta();
     meta.setChanged( true );
     meta.databases = new Database[] { db1, db2 };
-    meta.ioMeta = new StepIOMeta( true, false, false, false, false, false );
+    StepIOMetaInterface ioMeta = new StepIOMeta( true, false, false, false, false, false );
+    meta.setStepIOMeta( ioMeta ); 
     meta.repository = repository;
     meta.parentStepMeta = stepMeta;
 
@@ -65,15 +66,16 @@ public class BaseStepMetaCloningTest {
     assertEquals( meta.repository, clone.repository );
     assertEquals( meta.parentStepMeta, clone.parentStepMeta );
 
-    assertNotNull( clone.ioMeta );
-    assertEquals( meta.ioMeta.isInputAcceptor(), clone.ioMeta.isInputAcceptor() );
-    assertEquals( meta.ioMeta.isInputDynamic(), clone.ioMeta.isInputDynamic() );
-    assertEquals( meta.ioMeta.isInputOptional(), clone.ioMeta.isInputOptional() );
-    assertEquals( meta.ioMeta.isOutputDynamic(), clone.ioMeta.isOutputDynamic() );
-    assertEquals( meta.ioMeta.isOutputProducer(), clone.ioMeta.isOutputProducer() );
-    assertEquals( meta.ioMeta.isSortedDataRequired(), clone.ioMeta.isSortedDataRequired() );
-    assertNotNull( clone.ioMeta.getInfoStreams() );
-    assertEquals( 0, clone.ioMeta.getInfoStreams().size() );
+    StepIOMetaInterface cloneIOMeta = clone.getStepIOMeta();
+    assertNotNull( cloneIOMeta );
+    assertEquals( ioMeta.isInputAcceptor(), cloneIOMeta.isInputAcceptor() );
+    assertEquals( ioMeta.isInputDynamic(), cloneIOMeta.isInputDynamic() );
+    assertEquals( ioMeta.isInputOptional(), cloneIOMeta.isInputOptional() );
+    assertEquals( ioMeta.isOutputDynamic(), cloneIOMeta.isOutputDynamic() );
+    assertEquals( ioMeta.isOutputProducer(), cloneIOMeta.isOutputProducer() );
+    assertEquals( ioMeta.isSortedDataRequired(), cloneIOMeta.isSortedDataRequired() );
+    assertNotNull( cloneIOMeta.getInfoStreams() );
+    assertEquals( 0, cloneIOMeta.getInfoStreams().size() );
   }
 
   @Test
@@ -86,13 +88,14 @@ public class BaseStepMetaCloningTest {
     BaseStepMeta meta = new BaseStepMeta();
     meta.setChanged( true );
     meta.databases = new Database[] { db1, db2 };
-    meta.ioMeta = new StepIOMeta( true, false, false, false, false, false );
+    StepIOMetaInterface ioMeta = new StepIOMeta( true, false, false, false, false, false );
+    meta.setStepIOMeta( ioMeta );
 
     final String refStepName = "referenced step";
     final StepMeta refStepMeta = mock( StepMeta.class );
     doReturn( refStepName ).when( refStepMeta ).getName();
     StreamInterface stream = new Stream( StreamInterface.StreamType.INFO, refStepMeta, null, null, refStepName );
-    meta.ioMeta.addStream( stream );
+    ioMeta.addStream( stream );
     meta.repository = repository;
     meta.parentStepMeta = stepMeta;
 
@@ -106,15 +109,17 @@ public class BaseStepMetaCloningTest {
     assertEquals( meta.repository, clone.repository );
     assertEquals( meta.parentStepMeta, clone.parentStepMeta );
 
-    assertNotNull( clone.ioMeta );
-    assertEquals( meta.ioMeta.isInputAcceptor(), clone.ioMeta.isInputAcceptor() );
-    assertEquals( meta.ioMeta.isInputDynamic(), clone.ioMeta.isInputDynamic() );
-    assertEquals( meta.ioMeta.isInputOptional(), clone.ioMeta.isInputOptional() );
-    assertEquals( meta.ioMeta.isOutputDynamic(), clone.ioMeta.isOutputDynamic() );
-    assertEquals( meta.ioMeta.isOutputProducer(), clone.ioMeta.isOutputProducer() );
-    assertEquals( meta.ioMeta.isSortedDataRequired(), clone.ioMeta.isSortedDataRequired() );
 
-    final List<StreamInterface> clonedInfoStreams = clone.ioMeta.getInfoStreams();
+    StepIOMetaInterface cloneIOMeta = clone.getStepIOMeta();
+    assertNotNull( cloneIOMeta );
+    assertEquals( ioMeta.isInputAcceptor(), cloneIOMeta.isInputAcceptor() );
+    assertEquals( ioMeta.isInputDynamic(), cloneIOMeta.isInputDynamic() );
+    assertEquals( ioMeta.isInputOptional(), cloneIOMeta.isInputOptional() );
+    assertEquals( ioMeta.isOutputDynamic(), cloneIOMeta.isOutputDynamic() );
+    assertEquals( ioMeta.isOutputProducer(), cloneIOMeta.isOutputProducer() );
+    assertEquals( ioMeta.isSortedDataRequired(), cloneIOMeta.isSortedDataRequired() );
+
+    final List<StreamInterface> clonedInfoStreams = cloneIOMeta.getInfoStreams();
     assertNotNull( clonedInfoStreams );
     assertEquals( 1, clonedInfoStreams.size() );
 

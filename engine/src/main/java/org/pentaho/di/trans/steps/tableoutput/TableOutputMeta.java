@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -606,17 +606,18 @@ public class TableOutputMeta extends BaseStepMeta implements StepMetaInterface, 
         remarks.add( cr );
 
         if ( !Utils.isEmpty( tableName ) ) {
+          String realSchemaName = db.environmentSubstitute( schemaName );
+          String realTableName = db.environmentSubstitute( tableName );
           String schemaTable =
-              databaseMeta.getQuotedSchemaTableCombination( db.environmentSubstitute( schemaName ), db
-              .environmentSubstitute( tableName ) );
+              databaseMeta.getQuotedSchemaTableCombination( realSchemaName, realTableName );
           // Check if this table exists...
-          if ( db.checkTableExists( schemaTable ) ) {
+          if ( db.checkTableExists( realSchemaName, realTableName ) ) {
             cr =
               new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
                 PKG, "TableOutputMeta.CheckResult.TableAccessible", schemaTable ), stepMeta );
             remarks.add( cr );
 
-            RowMetaInterface r = db.getTableFields( schemaTable );
+            RowMetaInterface r = db.getTableFieldsMeta( realSchemaName, realTableName );
             if ( r != null ) {
               cr =
                 new CheckResult( CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(
@@ -868,11 +869,9 @@ public class TableOutputMeta extends BaseStepMeta implements StepMetaInterface, 
         db.connect();
 
         if ( !Utils.isEmpty( realTableName ) ) {
-          String schemaTable = databaseMeta.getQuotedSchemaTableCombination( realSchemaName, realTableName );
-
           // Check if this table exists...
-          if ( db.checkTableExists( schemaTable ) ) {
-            return db.getTableFields( schemaTable );
+          if ( db.checkTableExists( realSchemaName, realTableName ) ) {
+            return db.getTableFieldsMeta( realSchemaName, realTableName );
           } else {
             throw new KettleException( BaseMessages.getString( PKG, "TableOutputMeta.Exception.TableNotFound" ) );
           }

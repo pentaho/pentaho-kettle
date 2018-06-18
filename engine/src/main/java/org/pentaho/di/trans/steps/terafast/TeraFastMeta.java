@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -228,21 +228,6 @@ public class TeraFastMeta extends AbstractStepMeta {
   }
 
   /**
-   * @param space
-   *          the variableSpace to be used.
-   * @return the quoted and resolved schema table name.
-   * @throws KettleException
-   *           if no table specified.
-   */
-  public String getQuotedSchemaTableName( final VariableSpace space ) throws KettleException {
-    final String realTableName = space.environmentSubstitute( this.targetTable.getValue() );
-    if ( StringUtils.isEmpty( realTableName ) ) {
-      throw new KettleException( MESSAGES.getString( "TeraFastMeta.Exception.TableNotSpecified" ) );
-    }
-    return this.getDbMeta().getQuotedSchemaTableCombination( StringUtils.EMPTY, realTableName );
-  }
-
-  /**
    * @return the database.
    * @throws KettleException
    *           if an error occurs.
@@ -317,8 +302,10 @@ public class TeraFastMeta extends AbstractStepMeta {
       final Database database = connectToDatabase();
       database.shareVariablesWith( space );
 
-      final String schemaTable = getQuotedSchemaTableName( space );
-      RowMetaInterface fields = database.getTableFields( schemaTable );
+      RowMetaInterface fields =
+        database.getTableFieldsMeta(
+          StringUtils.EMPTY,
+          space.environmentSubstitute( this.targetTable.getValue() ) );
       database.disconnect();
       if ( fields == null ) {
         throw new KettleException( MESSAGES.getString( "TeraFastMeta.Exception.TableNotFound" ) );

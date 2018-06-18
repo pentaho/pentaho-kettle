@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -98,14 +98,8 @@ public class TableExists extends BaseStep implements StepInterface {
       // get tablename
       String tablename = getInputRowMeta().getString( r, data.indexOfTablename );
 
-      if ( data.realSchemaname != null ) {
-        tablename = data.db.getDatabaseMeta().getQuotedSchemaTableCombination( data.realSchemaname, tablename );
-      } else {
-        tablename = data.db.getDatabaseMeta().quoteField( tablename );
-      }
-
       // Check if table exists on the specified connection
-      tablexists = data.db.checkTableExists( tablename );
+      tablexists = data.db.checkTableExists( data.realSchemaname, tablename );
 
       Object[] outputRowData = RowDataUtil.addValueData( r, getInputRowMeta().size(), tablexists );
 

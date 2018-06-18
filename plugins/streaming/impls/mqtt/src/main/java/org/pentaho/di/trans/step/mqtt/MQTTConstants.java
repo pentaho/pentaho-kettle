@@ -26,6 +26,8 @@ class MQTTConstants {
   static final String MQTT_SERVER = "MQTT_SERVER";
   static final String TOPICS = "TOPICS";
   static final String TOPIC = "TOPIC";
+  static final String FIELD_TOPIC = "FIELD_TOPIC";
+  static final String TOPIC_IN_FIELD = "TOPIC_IN_FIELD";
   static final String MSG_OUTPUT_NAME = "MSG_OUTPUT_NAME";
   static final String TOPIC_OUTPUT_NAME = "TOPIC_OUTPUT_NAME";
   static final String QOS = "QOS";

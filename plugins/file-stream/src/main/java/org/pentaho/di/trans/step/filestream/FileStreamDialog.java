@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -23,20 +23,18 @@
 package org.pentaho.di.trans.step.filestream;
 
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
-import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
+import org.pentaho.di.core.Const;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.StepDialogInterface;
 import org.pentaho.di.trans.streaming.common.BaseStreamStepMeta;
-import org.pentaho.di.ui.core.widget.TextVar;
+import org.pentaho.di.ui.core.widget.VFSFileSelection;
 import org.pentaho.di.ui.trans.step.BaseStreamingDialog;
 
 public class FileStreamDialog extends BaseStreamingDialog implements StepDialogInterface {
@@ -45,9 +43,7 @@ public class FileStreamDialog extends BaseStreamingDialog implements StepDialogI
 
   private FileStreamMeta meta;
 
-  protected Label wlSourcePath;
-  protected TextVar wSourcePath;
-  protected Button wbBrowseSource;
+  private VFSFileSelection wFileSelection;
 
   public FileStreamDialog( Shell parent, Object in, TransMeta tr, String sname ) {
     super( parent, in, tr, sname );
@@ -59,7 +55,7 @@ public class FileStreamDialog extends BaseStreamingDialog implements StepDialogI
   }
 
   @Override protected void buildSetup( Composite wSetupComp ) {
-    wlSourcePath = new Label( wSetupComp, SWT.LEFT );
+    Label wlSourcePath = new Label( wSetupComp, SWT.LEFT );
     props.setLook( wlSourcePath );
     wlSourcePath.setText( BaseMessages.getString( PKG, "FileStreamDialog.SourcePath" ) );
     FormData fdlTransPath = new FormData();
@@ -68,32 +64,19 @@ public class FileStreamDialog extends BaseStreamingDialog implements StepDialogI
     fdlTransPath.right = new FormAttachment( 50, 0 );
     wlSourcePath.setLayoutData( fdlTransPath );
 
-    wSourcePath = new TextVar( transMeta, wSetupComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
-    props.setLook( wSourcePath );
-    wSourcePath.addModifyListener( lsMod );
-    FormData fdTransPath = new FormData();
-    fdTransPath.left = new FormAttachment( 0, 0 );
-    fdTransPath.right = new FormAttachment( 75, 0 );
-    fdTransPath.top = new FormAttachment( wlSourcePath, 5 );
-    wSourcePath.setLayoutData( fdTransPath );
-
-    wbBrowseSource = new Button( wSetupComp, SWT.PUSH );
-    props.setLook( wbBrowseSource );
-    wbBrowseSource.setText( BaseMessages.getString( PKG, "FileStreamDialog.SourcePath.Browse" ) );
-    FormData fdBrowseTrans = new FormData();
-    fdBrowseTrans.left = new FormAttachment( wSourcePath, 5 );
-    fdBrowseTrans.top = new FormAttachment( wlSourcePath, 5 );
-    wbBrowseSource.setLayoutData( fdBrowseTrans );
-
-    wbBrowseSource.addSelectionListener( new SelectionAdapter() {
-      public void widgetSelected( SelectionEvent e ) {
-        selectFile( wSourcePath, new String[]{"*"} );
-      }
-    } );
+    wFileSelection = new VFSFileSelection(
+      wSetupComp,
+      SWT.NONE,
+      new String[]{ "*" },
+      new String[] { BaseMessages.getString( Const.class, "Const.FileFilter.All" ) },
+      transMeta );
+    FormData fdFileSelection = new FormData();
+    fdFileSelection.left = new FormAttachment( 0, 0 );
+    fdFileSelection.top = new FormAttachment( wlSourcePath, 5 );
   }
 
   @Override protected void additionalOks( BaseStreamStepMeta meta ) {
-    ( (FileStreamMeta) meta ).setSourcePath( wSourcePath.getText() );
+    ( (FileStreamMeta) meta ).setSourcePath( wFileSelection.wFileName.getText() );
   }
 
   @Override protected void createAdditionalTabs() {
@@ -111,7 +94,7 @@ public class FileStreamDialog extends BaseStreamingDialog implements StepDialogI
   @Override protected void getData() {
     super.getData();
     if ( meta.getSourcePath() != null ) {
-      wSourcePath.setText( meta.getSourcePath() );
+      wFileSelection.wFileName.setText( meta.getSourcePath() );
     }
   }
 }

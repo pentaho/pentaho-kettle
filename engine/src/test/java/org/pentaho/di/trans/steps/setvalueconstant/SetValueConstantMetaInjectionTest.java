@@ -44,10 +44,10 @@ public class SetValueConstantMetaInjectionTest extends BaseMetadataInjectionTest
 
   @Test
   public void test() throws Exception {
-    check( "FIELD_NAME", () -> meta.getFieldName()[0] );
-    check( "REPLACE_VALUE", () -> meta.getReplaceValue()[0] );
-    check( "REPLACE_MASK", () -> meta.getReplaceMask()[0] );
-    check( "EMPTY_STRING", () -> meta.isEmptyString()[0] );
+    check( "FIELD_NAME", () -> meta.getField( 0 ).getFieldName() );
+    check( "REPLACE_VALUE", () -> meta.getField( 0 ).getReplaceValue() );
+    check( "REPLACE_MASK", () -> meta.getField( 0 ).getReplaceMask() );
+    check( "EMPTY_STRING", () -> meta.getField( 0 ).isEmptyString() );
     check( "USE_VARIABLE", () -> meta.isUseVars() );
   }
 }

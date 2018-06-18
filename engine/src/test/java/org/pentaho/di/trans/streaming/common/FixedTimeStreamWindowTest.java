@@ -37,6 +37,7 @@ import org.pentaho.di.trans.SubtransExecutor;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
@@ -46,7 +47,7 @@ import static org.mockito.Mockito.when;
 
 @RunWith( MockitoJUnitRunner.class )
 public class FixedTimeStreamWindowTest {
-  @Mock SubtransExecutor subtransExecutor;
+  @Mock private SubtransExecutor subtransExecutor;
 
   @Test
   public void emptyResultShouldNotThrowException() throws KettleException {
@@ -69,5 +70,20 @@ public class FixedTimeStreamWindowTest {
       new FixedTimeStreamWindow<>( subtransExecutor, rowMeta, 0, 2 );
     window.buffer( Observable.fromIterable( singletonList( asList( "v1", "v2" ) ) ) )
       .forEach( result -> assertEquals( mockResult, result ) );
+  }
+
+  @Test
+  public void supportsPostProcessing() throws KettleException {
+    RowMetaInterface rowMeta = new RowMeta();
+    rowMeta.addValueMeta( new ValueMetaString( "field" ) );
+    Result mockResult = new Result();
+    mockResult.setRows( Arrays.asList( new RowMetaAndData( rowMeta, "queen" ), new RowMetaAndData( rowMeta, "king" ) ) );
+    when( subtransExecutor.execute( any()  ) ).thenReturn( Optional.of( mockResult ) );
+    AtomicInteger count = new AtomicInteger();
+    FixedTimeStreamWindow<List> window =
+      new FixedTimeStreamWindow<>( subtransExecutor, rowMeta, 0, 2, (p) -> count.set( p.getKey().get( 0 ).size() ) );
+    window.buffer( Observable.fromIterable( singletonList( asList( "v1", "v2" ) ) ) )
+      .forEach( result -> assertEquals( mockResult, result ) );
+    assertEquals( 2, count.get() );
   }
 }

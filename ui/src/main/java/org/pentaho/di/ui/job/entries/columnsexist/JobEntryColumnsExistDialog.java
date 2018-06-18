@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -485,11 +485,10 @@ public class JobEntryColumnsExistDialog extends JobEntryDialog implements JobEnt
         database.shareVariablesWith( jobMeta );
         try {
           database.connect();
-          String schemaTable =
-            databaseMeta.getQuotedSchemaTableCombination(
-              jobMeta.environmentSubstitute( wSchemaname.getText() ), jobMeta
-                .environmentSubstitute( wTablename.getText() ) );
-          RowMetaInterface row = database.getTableFields( schemaTable );
+          RowMetaInterface row =
+            database.getTableFieldsMeta(
+              jobMeta.environmentSubstitute( wSchemaname.getText() ),
+              jobMeta.environmentSubstitute( wTablename.getText() ) );
           if ( row != null ) {
             String[] available = row.getFieldNames();
 

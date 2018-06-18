@@ -155,6 +155,11 @@ public class ValueMetaPluginType extends BasePluginType implements PluginTypeInt
   }
 
   @Override
+  protected String extractSuggestedStep( Annotation annotation ) {
+    return ( (ValueMetaPlugin) annotation ).documentationUrl();
+  }
+
+  @Override
   protected String extractCasesUrl( Annotation annotation ) {
     return ( (ValueMetaPlugin) annotation ).casesUrl();
   }

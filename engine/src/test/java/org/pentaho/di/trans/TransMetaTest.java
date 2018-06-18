@@ -59,7 +59,7 @@ import org.pentaho.di.trans.step.StepPartitioningMeta;
 import org.pentaho.di.trans.steps.datagrid.DataGridMeta;
 import org.pentaho.di.trans.steps.dummytrans.DummyTransMeta;
 import org.pentaho.di.trans.steps.textfileoutput.TextFileOutputMeta;
-import org.pentaho.di.trans.steps.userdefinedjavaclass.StepDefinition;
+import org.pentaho.di.trans.steps.userdefinedjavaclass.InfoStepDefinition;
 import org.pentaho.di.trans.steps.userdefinedjavaclass.UserDefinedJavaClassDef;
 import org.pentaho.di.trans.steps.userdefinedjavaclass.UserDefinedJavaClassMeta;
 import org.pentaho.metastore.api.IMetaStore;
@@ -374,7 +374,7 @@ public class TransMetaTest {
       "public boolean processRow( StepMetaInterface smi, StepDataInterface sdi ) throws KettleException { return "
         + "false; }";
     UserDefinedJavaClassMeta udjcMeta = new UserDefinedJavaClassMeta();
-    udjcMeta.getInfoStepDefinitions().add( new StepDefinition( dg2.getName(), dg2.getName(), dg2, "info_data" ) );
+    udjcMeta.getInfoStepDefinitions().add( new InfoStepDefinition( dg2.getName(), dg2.getName(), dg2, "info_data" ) );
     udjcMeta.replaceDefinitions( singletonList(
       new UserDefinedJavaClassDef( UserDefinedJavaClassDef.ClassType.TRANSFORM_CLASS, "MainClass", UDJC_METHOD ) ) );
 

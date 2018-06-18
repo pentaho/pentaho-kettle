@@ -190,7 +190,8 @@ public class SFTPClient {
 
   public void chdir( String dirToChangeTo ) throws KettleJobException {
     try {
-      c.cd( dirToChangeTo );
+      c.cd( dirToChangeTo.replace( "\\\\", "/" ).
+        replace( "\\", "/" ) );
     } catch ( SftpException e ) {
       throw new KettleJobException( e );
     }
@@ -317,10 +318,22 @@ public class SFTPClient {
    * Creates this file as a folder.
    */
   public void createFolder( String foldername ) throws KettleJobException {
-    try {
-      c.mkdir( foldername );
-    } catch ( SftpException e ) {
-      throw new KettleJobException( e );
+    String[] folders = foldername.replace( "\\\\", "/" ).
+      replace( "\\", "/" ).split( "/" );
+
+    for ( String folder : folders ) {
+      if ( folder.length() > 0 ) {
+        try {
+          c.cd( folder );
+        } catch ( SftpException e ) {
+          try {
+            c.mkdir( folder );
+            c.cd( folder );
+          } catch ( SftpException e1 ) {
+            throw new KettleJobException( e1 );
+          }
+        }
+      }
     }
   }
 

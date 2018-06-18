@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -558,6 +558,7 @@ public class TransPainter extends BasePainter<TransHopMeta, StepMeta> {
     if ( stepMeta == null ) {
       return;
     }
+    boolean isDeprecated = stepMeta.isDeprecated();
     int alpha = gc.getAlpha();
 
     StepIOMetaInterface ioMeta = stepMeta.getStepMetaInterface().getStepIOMeta();
@@ -722,11 +723,17 @@ public class TransPainter extends BasePainter<TransHopMeta, StepMeta> {
     gc.drawStepIcon( x, y, stepMeta, magnification );
     if ( stepError || stepMeta.isMissing() ) {
       gc.setForeground( EColor.RED );
+    } else if ( isDeprecated ) {
+      gc.setForeground( 246, 196, 56 );
     } else {
       gc.setForeground( EColor.CRYSTAL );
     }
     if ( stepMeta.isSelected() ) {
-      gc.setForeground( 0, 93, 166 );
+      if ( isDeprecated ) {
+        gc.setForeground( 246, 196, 56 );
+      } else {
+        gc.setForeground( 0, 93, 166 );
+      }
     }
     gc.drawRoundRectangle( x - 1, y - 1, iconsize + 1, iconsize + 1, 8, 8 );
 
@@ -802,7 +809,7 @@ public class TransPainter extends BasePainter<TransHopMeta, StepMeta> {
 
     // Optionally drawn the mouse-over information
     //
-    if ( mouseOverSteps.contains( stepMeta ) ) {
+    if ( mouseOverSteps.contains( stepMeta ) && !stepMeta.isDeprecated() ) {
       gc.setTransform( translationX, translationY, 0, BasePainter.FACTOR_1_TO_1 );
 
       StepMetaInterface stepMetaInterface = stepMeta.getStepMetaInterface();

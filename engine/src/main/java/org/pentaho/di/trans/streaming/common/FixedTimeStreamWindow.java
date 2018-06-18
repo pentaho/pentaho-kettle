@@ -23,7 +23,9 @@
 package org.pentaho.di.trans.streaming.common;
 
 import io.reactivex.Observable;
+import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
+import javafx.util.Pair;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.exception.KettleException;
@@ -47,13 +49,20 @@ public class FixedTimeStreamWindow<I extends List> implements StreamWindow<I, Re
   private final long millis;
   private final int batchSize;
   private SubtransExecutor subtransExecutor;
+  private final Consumer<Pair<List<I>, Result>> postProcessor;
 
   public FixedTimeStreamWindow( SubtransExecutor subtransExecutor, RowMetaInterface rowMeta, long millis,
                                 int batchSize ) {
+    this( subtransExecutor, rowMeta, millis, batchSize, (p) -> { } );
+  }
+
+  public FixedTimeStreamWindow( SubtransExecutor subtransExecutor, RowMetaInterface rowMeta, long millis,
+                                int batchSize, Consumer<Pair<List<I>, Result>> postProcessor ) {
     this.subtransExecutor = subtransExecutor;
     this.rowMeta = rowMeta;
     this.millis = millis;
     this.batchSize = batchSize;
+    this.postProcessor = postProcessor;
   }
 
   @Override public Iterable<Result> buffer( Observable<I> observable ) {
@@ -64,17 +73,19 @@ public class FixedTimeStreamWindow<I extends List> implements StreamWindow<I, Re
       .observeOn( Schedulers.io() )
       .filter( list -> !list.isEmpty() )
       .map( this::sendBufferToSubtrans )
-      .takeWhile( result -> result.getNrErrors() == 0 )
+      .takeWhile( pair -> pair.getValue().getNrErrors() == 0 )
+      .doOnNext( postProcessor )
+      .map( Pair::getValue )
       .blockingIterable();
   }
 
-  private Result sendBufferToSubtrans( List<I> input ) throws KettleException {
+  private Pair<List<I>, Result> sendBufferToSubtrans( List<I> input ) throws KettleException {
     final List<RowMetaAndData> rows = input.stream()
       .map( row -> row.toArray( new Object[ 0 ] ) )
       .map( objects -> new RowMetaAndData( rowMeta, objects ) )
       .collect( Collectors.toList() );
     Optional<Result> optionalRes = subtransExecutor.execute( rows );
-    return optionalRes.orElse( new Result( ) );
+    return optionalRes.map( result -> new Pair<>( input, result ) ).orElse( new Pair<>( input, new Result() ) );
   }
 
 }

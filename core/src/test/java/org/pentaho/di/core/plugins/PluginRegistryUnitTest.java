@@ -163,6 +163,9 @@ public class PluginRegistryUnitTest {
       @Override protected String extractForumUrl( Annotation annotation ) {
         return null;
       }
+      @Override protected String extractSuggestedStep( Annotation annotation ) {
+        return null;
+      }
     };
     assertTrue( fragmentType.isFragment() );
 

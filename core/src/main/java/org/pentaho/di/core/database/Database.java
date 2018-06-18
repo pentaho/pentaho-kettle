@@ -1839,6 +1839,21 @@ public class Database implements VariableSpace, LoggingObjectInterface {
     }
   }
 
+  /**
+   * Returns a RowMeta describing the fields of a table expression.
+   *
+   * <p>Note that this implementation makes use of a SQL statement
+   * in order to populate the ValueMeta object in the RowMeta it returns.
+   * This is sometimes necessary when the caller needs the ValueMeta
+   * values to be properly casted.
+   *
+   * <p>In cases where a simple list of columns is required, it is preferable
+   * to use {@link #getTableFieldsMeta(String, String)}. This other method
+   * will not use a SQL query and will populate whatever information it can
+   * using @link {@link DatabaseMetaData#getColumns(String, String, String, String)}.
+   *
+   * @param tablename This is the properly quoted, and schema prefixed table name.
+   */
   public RowMetaInterface getTableFields( String tablename ) throws KettleDatabaseException {
     return getQueryFields( databaseMeta.getSQLQueryFields( tablename ), false );
   }
@@ -1855,6 +1870,7 @@ public class Database implements VariableSpace, LoggingObjectInterface {
    *          This is supposed to be the properly quoted name of the table or the complete schema-table name
    *          combination.
    * @return true if the table exists, false if it doesn't.
+   * @deprecated Deprecated in favor of {@link #checkTableExists(String, String)}
    */
   public boolean checkTableExists( String tablename ) throws KettleDatabaseException {
     try {
@@ -1875,6 +1891,39 @@ public class Database implements VariableSpace, LoggingObjectInterface {
   }
 
   /**
+   * See if the table specified exists.
+   *
+   * <p>This is a smarter implementation of {@link #checkTableExists(String)} where
+   * metadata is used first and we only use statements when absolutely necessary.
+   *
+   * <p>Contrary to previous versions of similar duplicated methods, this implementation
+   * does not require quoted identifiers.
+   *
+   * @param tablename
+   *          The unquoted name of the table to check.<br>
+   *          This is NOT the properly quoted name of the table or the complete schema-table name
+   *          combination.
+   * @param schema
+   *          The unquoted name of the schema.
+   * @return true if the table exists, false if it doesn't.
+   */
+  public boolean checkTableExists( String schema, String tablename ) throws KettleDatabaseException {
+    // Try with metadata first.
+    try {
+      boolean exists = checkTableExistsByDbMeta( schema, tablename );
+      return exists;
+    } catch ( KettleDatabaseException e ) {
+      // That's fine. We will do this old school.
+      if ( log.isDebug() ) {
+        log.logDebug( "Failed to load metadata for " + schema + "." + tablename );
+      }
+    }
+
+    // Metadata didn't work. Let use a statement
+    return checkTableExists( databaseMeta.getQuotedSchemaTableCombination( schema, tablename ) );
+  }
+
+  /**
    * See if the table specified exists by getting db metadata.
    *
    * @param tablename
@@ -1882,14 +1931,15 @@ public class Database implements VariableSpace, LoggingObjectInterface {
    *          This is supposed to be the properly quoted name of the table or the complete schema-table name
    *          combination.
    * @return true if the table exists, false if it doesn't.
+   * @deprecated Deprecated in favor of {@link #checkTableExists(String, String)}
    * @throws KettleDatabaseException
    */
-  public boolean checkTableExistsByDbMeta( String shema, String tablename ) throws KettleDatabaseException {
+  public boolean checkTableExistsByDbMeta( String schema, String tablename ) throws KettleDatabaseException {
     boolean isTableExist = false;
     if ( log.isDebug() ) {
       log.logDebug( BaseMessages.getString( PKG, "Database.Info.CheckingIfTableExistsInDbMetaData", tablename ) );
     }
-    try ( ResultSet resTables = getTableMetaData( shema, tablename ) ) {
+    try ( ResultSet resTables = getTableMetaData( schema, tablename ) ) {
       while ( resTables.next() ) {
         String resTableName = resTables.getString( TABLES_META_DATA_TABLE_NAME );
         if ( tablename.equalsIgnoreCase( resTableName ) ) {
@@ -1934,12 +1984,81 @@ public class Database implements VariableSpace, LoggingObjectInterface {
   }
 
   /**
+   * Retrieves the columns metadata matching the schema and table name.
+   *
+   * @param shema
+   *          the schema name pattern
+   * @param table
+   *          the table name pattern
+   * @return columns description row set
+   * @throws KettleDatabaseException
+   *           if DatabaseMetaData is null or some database error occurs
+   */
+  private ResultSet getColumnsMetaData( String schema, String table ) throws KettleDatabaseException {
+    ResultSet columns = null;
+    if ( getDatabaseMetaData() == null ) {
+      throw new KettleDatabaseException( BaseMessages.getString( PKG, "Database.Error.UnableToGetDbMeta" ) );
+    }
+    try {
+      columns = getDatabaseMetaData().getColumns( null, schema, table, null );
+    } catch ( SQLException e ) {
+      throw new KettleDatabaseException( BaseMessages.getString( PKG, "Database.Error.UnableToGetTableNames" ), e );
+    }
+    if ( columns == null ) {
+      throw new KettleDatabaseException( BaseMessages.getString( PKG, "Database.Error.UnableToGetTableNames" ) );
+    }
+    return columns;
+  }
+
+  /**
+   * See if the column specified exists by reading the metadata first, execution last.
+   *
+   * <p>This is a smarter implementation of {@link #checkTableExists(String)} where
+   * metadata is used first and we only use statements when absolutely necessary.
+   *
+   * <p>Contrary to previous versions of similar duplicated methods, this implementation
+   * does not require quoted identifiers.
+   *
+   * @param schema  The name of the schema to check.
+   * @param tablename  The name of the table to check.
+   * @param columnname The name of the column to check.
+   * @return true if the table exists, false if it doesn't.
+   */
+  public boolean checkColumnExists( String schemaname, String tablename, String columnname ) throws KettleDatabaseException {
+    if ( log.isDebug() ) {
+      log.logDebug( "Checking if column [" + columnname + "] exists in table [" + tablename + "] !" );
+    }
+
+    // First try the metadata
+    try {
+      ResultSet columns = getColumnsMetaData( schemaname, tablename );
+      while ( columns.next() ) {
+        if ( columnname.equals( columns.getString( "COLUMN_NAME" ) ) ) {
+          return true;
+        }
+      }
+      return false;
+    } catch ( KettleDatabaseException | SQLException e ) {
+      // That's ok. We will use a prepared statement.
+      if ( log.isDebug() ) {
+        log.logDebug( "Metadata check failed. Fallback to statement check." );
+      }
+    }
+
+    // Failed. Just do this old school.
+    return checkColumnExists(
+      databaseMeta.quoteField( columnname ),
+      databaseMeta.getQuotedSchemaTableCombination( schemaname, tablename ) );
+  }
+
+  /**
    * See if the column specified exists by reading
    *
    * @param columnname The name of the column to check.
    * @param tablename  The name of the table to check.<br> This is supposed to be the properly quoted name of the table
    *                   or the complete schema-table name combination.
    * @return true if the table exists, false if it doesn't.
+   * @deprecated Deprecated in favor of the smarter {@link #checkColumnExists(String, String, String)}
    */
   public boolean checkColumnExists( String columnname, String tablename ) throws KettleDatabaseException {
     try {
@@ -2143,6 +2262,106 @@ public class Database implements VariableSpace, LoggingObjectInterface {
     }
 
     return cr_seq;
+  }
+
+  /**
+   * Returns a RowMeta describing the fields of a table.
+   *
+   * <p>This is a lighter implementation of {@link #getTableFields(String)} where
+   * metadata is used first and we only use statements when absolutely necessary.
+   *
+   * <p>Note that the ValueMeta returned here will not contain any actual values
+   * and as such, this method should be used whenever a simple list of columns is
+   * required, and we're not planning on looking at the actual data.
+   *
+   * <p>Contrary to previous versions of similar duplicated methods, this implementation
+   * does not require quoted identifiers.
+   *
+   * @param schemaName The unquoted schema name. Can be null.
+   * @param tableName The unquoted table name. Cannot be null.
+   */
+  public RowMetaInterface getTableFieldsMeta( String schemaName, String tableName )
+    throws KettleDatabaseException {
+    try {
+      // Cleanup a bit. In JDBC metadata, we want null names for
+      // wildcards, not empty strings.
+      if ( "".equals( schemaName ) ) {
+        schemaName = null;
+      }
+      if ( "".equals( tableName ) ) {
+        tableName = null;
+      }
+
+      RowMetaInterface fields = null;
+      DBCache dbcache = DBCache.getInstance();
+      DBCacheEntry entry = null;
+
+      if ( dbcache != null ) {
+        // Cache key must not match the other implementation where
+        // valuemeta is properly casted. We're not caching values here,
+        // just metadata.
+        entry =
+          new DBCacheEntry(
+            databaseMeta.getName(),
+            "LIGHTWEIGHT_SALT"
+              .concat( schemaName == null ? "nullSchema" : schemaName )
+              .concat( tableName == null ? "nullTable" : tableName ) );
+
+        fields = dbcache.get( entry );
+
+        if ( fields != null ) {
+          return fields;
+        }
+      }
+      if ( connection == null ) {
+        return null; // Cache test without connect.
+      }
+
+      // First get the fields through metadata
+      ResultSet rm =
+        connection.getMetaData().getColumns( null, schemaName, tableName, null );
+
+      while ( rm.next() ) {
+
+        ValueMetaInterface valueMeta = null;
+        for ( ValueMetaInterface valueMetaClass : valueMetaPluginClasses ) {
+          try {
+            ValueMetaInterface v =
+              valueMetaClass.getMetadataPreview( databaseMeta, rm );
+            if ( v != null ) {
+              valueMeta = v;
+              break;
+            }
+          } catch ( KettleDatabaseException e ) {
+            // That's ok. The VMI impl doesn't like this data type.
+            if ( log.isDebug() ) {
+              log.logDebug( "Skipping ValueMetaInterface:" + valueMetaClass.getClass().getName(), e );
+            }
+          }
+        }
+
+        if ( fields == null ) {
+          fields = new RowMeta();
+        }
+        fields.addValueMeta( valueMeta );
+      }
+
+      // Store in cache!!
+      if ( dbcache != null && entry != null ) {
+        if ( fields != null ) {
+          dbcache.put( entry, fields );
+        }
+      }
+
+      return fields;
+    } catch ( Exception e ) {
+      if ( log.isDebug() ) {
+        log.logDebug( "Failed to fetch fields from jdbc meta ", e );
+      }
+    }
+
+    // Something went wrong. Use the old code path.
+    return getQueryFields( databaseMeta.getQuotedSchemaTableCombination( schemaName, tableName ), false );
   }
 
   public RowMetaInterface getQueryFields( String sql, boolean param, RowMetaInterface inform, Object[] data )
@@ -3435,7 +3654,7 @@ public class Database implements VariableSpace, LoggingObjectInterface {
       pstmt = connection.prepareStatement( databaseMeta.stripCR( sql ) );
 
       RowMetaInterface r = new RowMeta();
-      r.addValueMeta( new ValueMetaString( "TRANSNAME" ) );
+      r.addValueMeta( new ValueMetaString( "TRANSNAME", 255, -1 ) );
       setValues( r, new Object[] { name } );
 
       ResultSet res = pstmt.executeQuery();

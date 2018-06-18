@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -62,6 +62,7 @@ public class Plugin implements PluginInterface, Comparable<Plugin> {
   private String documentationUrl;
   private String casesUrl;
   private String forumUrl;
+  private String suggestedStep;
 
   /**
    * @param ids
@@ -143,6 +144,67 @@ public class Plugin implements PluginInterface, Comparable<Plugin> {
     this.documentationUrl = Const.getDocUrl( documentationUrl );
     this.casesUrl = casesUrl;
     this.forumUrl = forumUrl;
+  }
+
+  /**
+   *
+   * @param ids
+   * @param pluginType
+   * @param mainType
+   * @param category
+   * @param name
+   * @param description
+   * @param imageFile
+   * @param separateClassLoaderNeeded
+   * @param classLoaderGroup
+   * @param nativePlugin
+   * @param classMap
+   * @param libraries
+   * @param errorHelpFile
+   * @param pluginFolder
+   * @param documentationUrl
+   * @param casesUrl
+   * @param forumUrl
+   * @param suggestedStep
+   */
+  public Plugin( String[] ids, Class<? extends PluginTypeInterface> pluginType, Class<?> mainType,
+                 String category, String name, String description, String imageFile, boolean separateClassLoaderNeeded,
+                 String classLoaderGroup, boolean nativePlugin, Map<Class<?>, String> classMap, List<String> libraries,
+                 String errorHelpFile, URL pluginFolder, String documentationUrl, String casesUrl, String forumUrl,
+                 String suggestedStep ) {
+    this( ids, pluginType, mainType, category, name, description, imageFile, separateClassLoaderNeeded,
+      classLoaderGroup, nativePlugin, classMap, libraries, errorHelpFile, pluginFolder, documentationUrl, casesUrl,
+      forumUrl );
+    this.suggestedStep = suggestedStep;
+  }
+
+  /**
+   *
+   * @param ids
+   * @param pluginType
+   * @param mainType
+   * @param category
+   * @param name
+   * @param description
+   * @param imageFile
+   * @param separateClassLoaderNeeded
+   * @param nativePlugin
+   * @param classMap
+   * @param libraries
+   * @param errorHelpFile
+   * @param pluginFolder
+   * @param documentationUrl
+   * @param casesUrl
+   * @param forumUrl
+   * @param suggestedStep
+   */
+  public Plugin( String[] ids, Class<? extends PluginTypeInterface> pluginType, Class<?> mainType,
+                 String category, String name, String description, String imageFile, boolean separateClassLoaderNeeded,
+                 boolean nativePlugin, Map<Class<?>, String> classMap, List<String> libraries, String errorHelpFile,
+                 URL pluginFolder, String documentationUrl, String casesUrl, String forumUrl, String suggestedStep ) {
+    this( ids, pluginType, mainType, category, name, description, imageFile, separateClassLoaderNeeded, null,
+      nativePlugin, classMap, libraries, errorHelpFile, pluginFolder, documentationUrl, casesUrl, forumUrl );
+    this.suggestedStep = suggestedStep;
   }
 
   @Override
@@ -416,6 +478,16 @@ public class Plugin implements PluginInterface, Comparable<Plugin> {
   @Override
   public String getClassLoaderGroup() {
     return classLoaderGroup;
+  }
+
+  @Override
+  public void setSuggestedStep( String suggestedStep ) {
+    this.suggestedStep = suggestedStep;
+  }
+
+  @Override
+  public String getSuggestedStep() {
+    return suggestedStep;
   }
 
   @Override

@@ -28,6 +28,7 @@ import org.pentaho.di.core.annotations.Step;
 import org.pentaho.di.core.injection.Injection;
 import org.pentaho.di.core.injection.InjectionSupported;
 import org.pentaho.di.core.row.RowMetaInterface;
+import org.pentaho.di.core.util.GenericStepData;
 import org.pentaho.di.core.util.serialization.BaseSerializingMeta;
 import org.pentaho.di.core.util.serialization.Sensitive;
 import org.pentaho.di.core.variables.VariableSpace;
@@ -67,8 +68,10 @@ import static org.pentaho.di.trans.step.mqtt.MQTTConstants.SSL_KEYS;
 import static org.pentaho.di.trans.step.mqtt.MQTTConstants.SSL_VALUES;
 import static org.pentaho.di.trans.step.mqtt.MQTTConstants.STORAGE_LEVEL;
 import static org.pentaho.di.trans.step.mqtt.MQTTConstants.TOPIC;
+import static org.pentaho.di.trans.step.mqtt.MQTTConstants.TOPIC_IN_FIELD;
 import static org.pentaho.di.trans.step.mqtt.MQTTConstants.USERNAME;
 import static org.pentaho.di.trans.step.mqtt.MQTTConstants.USE_SSL;
+import static org.pentaho.di.trans.step.mqtt.MQTTConstants.FIELD_TOPIC;
 import static org.pentaho.di.core.util.serialization.ConfigHelper.conf;
 
 @Step ( id = "MQTTProducer", image = "MQTTProducer.svg",
@@ -77,65 +80,51 @@ import static org.pentaho.di.core.util.serialization.ConfigHelper.conf;
   description = "MQTTProducer.TypeTooltipDesc",
   categoryDescription = "i18n:org.pentaho.di.trans.step:BaseStep.Category.Streaming",
   documentationUrl = "Products/Data_Integration/Transformation_Step_Reference/MQTT_Producer" )
-@InjectionSupported ( localizationPrefix = "MQTTProducerMeta.Injection.", groups = { "SSL" }  )
+@InjectionSupported ( localizationPrefix = "MQTTProducerMeta.Injection.", groups = { "SSL" } )
 public class MQTTProducerMeta extends BaseSerializingMeta implements StepMetaInterface {
   private static Class<?> PKG = MQTTProducerMeta.class;
 
-  @Injection ( name = MQTT_SERVER )
-  private String mqttServer;
+  @Injection ( name = MQTT_SERVER ) String mqttServer;
 
-  @Injection ( name = CLIENT_ID )
-  private String clientId;
+  @Injection ( name = CLIENT_ID ) String clientId;
 
-  @Injection ( name = TOPIC )
-  private String topic;
+  @Injection ( name = TOPIC ) String topic;
 
-  @Injection ( name = QOS )
-  private String qos;
+  @Injection ( name = FIELD_TOPIC ) String fieldTopic;
 
-  @Injection ( name = MESSAGE_FIELD )
-  private String messageField;
+  @Injection ( name = TOPIC_IN_FIELD ) Boolean topicInField = false;
 
-  @Injection ( name = USERNAME )
-  private String username;
+  @Injection ( name = QOS ) String qos;
+
+  @Injection ( name = MESSAGE_FIELD ) String messageField;
+
+  @Injection ( name = USERNAME ) String username;
 
   @Sensitive
-  @Injection ( name = PASSWORD )
-  private String password;
+  @Injection ( name = PASSWORD ) String password;
 
-  @Injection ( name = USE_SSL, group = SSL_GROUP )
-  private Boolean useSsl = false;
+  @Injection ( name = USE_SSL, group = SSL_GROUP ) Boolean useSsl = false;
 
-  @Injection ( name = SSL_KEYS, group = SSL_GROUP )
-  private List<String> sslKeys = new ArrayList<>();
+  @Injection ( name = SSL_KEYS, group = SSL_GROUP ) private List<String> sslKeys = new ArrayList<>();
 
   @Sensitive
-  @Injection ( name = SSL_VALUES, group = SSL_GROUP )
-  private List<String> sslValues = new ArrayList<>();
+  @Injection ( name = SSL_VALUES, group = SSL_GROUP ) private List<String> sslValues = new ArrayList<>();
 
-  @Injection( name = KEEP_ALIVE_INTERVAL )
-  private String keepAliveInterval;
+  @Injection ( name = KEEP_ALIVE_INTERVAL ) String keepAliveInterval;
 
-  @Injection( name = MAX_INFLIGHT )
-  private String maxInflight;
+  @Injection ( name = MAX_INFLIGHT ) String maxInflight;
 
-  @Injection( name = CONNECTION_TIMEOUT )
-  private String connectionTimeout;
+  @Injection ( name = CONNECTION_TIMEOUT ) String connectionTimeout;
 
-  @Injection( name = CLEAN_SESSION )
-  private String cleanSession;
+  @Injection ( name = CLEAN_SESSION ) String cleanSession;
 
-  @Injection( name = STORAGE_LEVEL )
-  private String storageLevel;
+  @Injection ( name = STORAGE_LEVEL ) String storageLevel;
 
-  @Injection( name = SERVER_URIS )
-  private String serverUris;
+  @Injection ( name = SERVER_URIS ) String serverUris;
 
-  @Injection( name = MQTT_VERSION )
-  private String mqttVersion;
+  @Injection ( name = MQTT_VERSION ) String mqttVersion;
 
-  @Injection( name = AUTOMATIC_RECONNECT )
-  private String automaticReconnect;
+  @Injection ( name = AUTOMATIC_RECONNECT ) String automaticReconnect;
 
   public MQTTProducerMeta() {
     super();
@@ -145,6 +134,7 @@ public class MQTTProducerMeta extends BaseSerializingMeta implements StepMetaInt
   public void setDefault() {
     mqttServer = "";
     topic = "";
+    fieldTopic = "";
     qos = "0";
     username = "";
     password = "";
@@ -175,7 +165,7 @@ public class MQTTProducerMeta extends BaseSerializingMeta implements StepMetaInt
 
   @Override
   public StepDataInterface getStepData() {
-    return new MQTTProducerData();
+    return new GenericStepData();
   }
 
 
@@ -185,7 +175,6 @@ public class MQTTProducerMeta extends BaseSerializingMeta implements StepMetaInt
                      RowMetaInterface info, VariableSpace space, Repository repository,
                      IMetaStore metaStore ) {
     super.check( remarks, transMeta, stepMeta, prev, input, output, info, space, repository, metaStore );
-
     StepOption.checkInteger( remarks, stepMeta, space, getString( PKG, "MQTTDialog.Options.KEEP_ALIVE_INTERVAL" ),
       keepAliveInterval );
     StepOption
@@ -199,7 +188,7 @@ public class MQTTProducerMeta extends BaseSerializingMeta implements StepMetaInt
       automaticReconnect );
   }
 
-  public List<StepOption> retrieveOptions() {
+  List<StepOption> retrieveOptions() {
     return Arrays.asList(
       new StepOption( KEEP_ALIVE_INTERVAL, getString( PKG, "MQTTDialog.Options.KEEP_ALIVE_INTERVAL" ),
         keepAliveInterval ),
@@ -224,137 +213,14 @@ public class MQTTProducerMeta extends BaseSerializingMeta implements StepMetaInt
     return "org.pentaho.di.trans.step.mqtt.MQTTProducerDialog";
   }
 
-  public String getMqttServer() {
-    return mqttServer;
-  }
 
-  public void setMqttServer( String mqttServer ) {
-    this.mqttServer = mqttServer;
-  }
-
-  public String getClientId() {
-    return clientId;
-  }
-
-  public void setClientId( String clientId ) {
-    this.clientId = clientId;
-  }
-
-  public String getTopic() {
-    return topic;
-  }
-
-  public void setTopic( String topic ) {
-    this.topic = topic;
-  }
-
-  public String getQOS() {
-    return qos;
-  }
-
-  public void setQOS( String qos ) {
-    this.qos = qos;
-  }
-
-  public String getMessageField() {
-    return messageField;
-  }
-
-  public void setMessageField( String messageField ) {
-    this.messageField = messageField;
-  }
-
-  public String getUsername() {
-    return username;
-  }
-
-  public void setUsername( String username ) {
-    this.username = username;
-  }
-
-  public String getPassword() {
-    return password;
-  }
-
-  public void setPassword( String password ) {
-    this.password = password;
-  }
-
-  public Map<String, String> getSslConfig() {
+  Map<String, String> getSslConfig() {
     return conf( sslKeys, sslValues ).asMap();
   }
 
-  public void setSslConfig( Map<String, String> sslConfig ) {
+  void setSslConfig( Map<String, String> sslConfig ) {
     sslKeys = conf( sslConfig ).keys();
     sslValues = conf( sslConfig ).vals();
-  }
-
-  public boolean isUseSsl() {
-    return useSsl;
-  }
-
-  public void setUseSsl( boolean useSsl ) {
-    this.useSsl = useSsl;
-  }
-
-  public String getKeepAliveInterval() {
-    return keepAliveInterval;
-  }
-
-  public void setKeepAliveInterval( String keepAliveInterval ) {
-    this.keepAliveInterval = keepAliveInterval;
-  }
-
-  public String getMaxInflight() {
-    return maxInflight;
-  }
-
-  public void setMaxInflight( String maxInflight ) {
-    this.maxInflight = maxInflight;
-  }
-
-  public String getConnectionTimeout() {
-    return connectionTimeout;
-  }
-
-  public void setConnectionTimeout( String connectionTimeout ) {
-    this.connectionTimeout = connectionTimeout;
-  }
-
-  public String getCleanSession() {
-    return cleanSession;
-  }
-
-  public void setCleanSession( String cleanSession ) {
-    this.cleanSession = cleanSession;
-  }
-
-  public String getStorageLevel() {
-    return storageLevel;
-  }
-
-  public void setStorageLevel( String storageLevel ) {
-    this.storageLevel = storageLevel;
-  }
-
-  public String getServerUris() {
-    return serverUris;
-  }
-
-  public void setServerUris( String serverUris ) {
-    this.serverUris = serverUris;
-  }
-
-  public String getMqttVersion() {
-    return mqttVersion;
-  }
-
-  public void setMqttVersion( String mqttVersion ) {
-    this.mqttVersion = mqttVersion;
-  }
-
-  public String getAutomaticReconnect() {
-    return automaticReconnect;
   }
 
   @Override public boolean equals( Object o ) {
@@ -368,6 +234,7 @@ public class MQTTProducerMeta extends BaseSerializingMeta implements StepMetaInt
     return Objects.equal( mqttServer, that.mqttServer )
       && Objects.equal( clientId, that.clientId )
       && Objects.equal( topic, that.topic )
+      && Objects.equal( fieldTopic, that.fieldTopic )
       && Objects.equal( qos, that.qos )
       && Objects.equal( messageField, that.messageField )
       && Objects.equal( username, that.username )
@@ -387,7 +254,7 @@ public class MQTTProducerMeta extends BaseSerializingMeta implements StepMetaInt
 
   @Override public int hashCode() {
     return Objects
-      .hashCode( mqttServer, clientId, topic, qos, messageField, username, password, useSsl, sslKeys, sslValues,
+      .hashCode( mqttServer, clientId, topic, fieldTopic, qos, messageField, username, password, useSsl, sslKeys, sslValues,
         keepAliveInterval, maxInflight, connectionTimeout, cleanSession, storageLevel, serverUris, mqttVersion,
         automaticReconnect );
   }
@@ -397,6 +264,7 @@ public class MQTTProducerMeta extends BaseSerializingMeta implements StepMetaInt
       .add( "mqttServer", mqttServer )
       .add( "clientId", clientId )
       .add( "topic", topic )
+      .add( "fieldTopic", fieldTopic )
       .add( "qos", qos )
       .add( "messageField", messageField )
       .add( "username", username )
@@ -415,7 +283,4 @@ public class MQTTProducerMeta extends BaseSerializingMeta implements StepMetaInt
       .toString();
   }
 
-  public void setAutomaticReconnect( String automaticReconnect ) {
-    this.automaticReconnect = automaticReconnect;
-  }
 }

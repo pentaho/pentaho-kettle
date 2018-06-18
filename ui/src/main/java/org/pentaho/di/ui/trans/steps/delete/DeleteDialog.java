@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -486,10 +486,10 @@ public class DeleteDialog extends BaseStepDialog implements StepDialogInterface 
               try {
                 db.connect();
 
-                String schemaTable =
-                  ci.getQuotedSchemaTableCombination( transMeta.environmentSubstitute( schemaName ), transMeta
-                    .environmentSubstitute( tableName ) );
-                RowMetaInterface r = db.getTableFields( schemaTable );
+                RowMetaInterface r =
+                  db.getTableFieldsMeta(
+                    transMeta.environmentSubstitute( schemaName ),
+                    transMeta.environmentSubstitute( tableName ) );
                 if ( null != r ) {
                   String[] fieldNames = r.getFieldNames();
                   if ( null != fieldNames ) {

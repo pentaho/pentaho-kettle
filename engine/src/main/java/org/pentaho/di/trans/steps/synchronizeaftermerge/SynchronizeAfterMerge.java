@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -109,7 +109,7 @@ public class SynchronizeAfterMerge extends BaseStep implements StepInterface {
          */
 
         if ( log.isRowLevel() ) {
-          logRowlevel( BaseMessages.getString( PKG, "SynchronizeAfterMerge.InsertRow", row.toString() ) );
+          logRowlevel( BaseMessages.getString( PKG, "SynchronizeAfterMerge.InsertRow", Arrays.toString( row ) ) );
         }
 
         // The values to insert are those in the update section

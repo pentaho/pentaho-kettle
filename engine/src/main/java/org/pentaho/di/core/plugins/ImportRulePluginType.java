@@ -136,6 +136,11 @@ public class ImportRulePluginType extends BasePluginType implements PluginTypeIn
   }
 
   @Override
+  protected String extractSuggestedStep( Annotation annotation ) {
+    return null;
+  }
+
+  @Override
   protected String extractClassLoaderGroup( Annotation annotation ) {
     return ( (ImportRulePlugin) annotation ).classLoaderGroup();
   }

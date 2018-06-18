@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -227,6 +227,7 @@ public class TeraFast extends AbstractStep implements StepInterface {
    * @throws KettleException
    *           ...
    */
+  @SuppressWarnings( "ArrayToString" )
   public void writeToDataFile( RowMetaInterface rowMetaInterface, Object[] row ) throws KettleException {
     // Write the data to the output
     ValueMetaInterface valueMeta = null;
@@ -268,6 +269,7 @@ public class TeraFast extends AbstractStep implements StepInterface {
             break;
           case ValueMetaInterface.TYPE_BINARY:
             byte[] byt = rowMetaInterface.getBinary( row, i );
+            // REVIEW - this does an implicit byt.toString, which can't be what was intended.
             dataFilePrintStream.print( byt );
             break;
           default:

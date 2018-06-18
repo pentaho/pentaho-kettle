@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,10 +22,14 @@
 
 package org.pentaho.di.trans.steps.userdefinedjavaclass;
 
-public class UsageParameter implements Cloneable {
+import org.pentaho.di.core.injection.Injection;
 
+public class UsageParameter implements Cloneable {
+  @Injection( name = "TAG", group = "PARAMETERS" )
   public String tag;
+  @Injection( name = "VALUE", group = "PARAMETERS" )
   public String value;
+  @Injection( name = "DESCRIPTION", group = "PARAMETERS" )
   public String description;
 
   public Object clone() throws CloneNotSupportedException {

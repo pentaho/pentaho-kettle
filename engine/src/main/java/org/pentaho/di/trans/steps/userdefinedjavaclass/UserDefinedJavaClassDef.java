@@ -24,6 +24,7 @@ package org.pentaho.di.trans.steps.userdefinedjavaclass;
 
 import org.apache.commons.codec.binary.Hex;
 import org.pentaho.di.core.exception.KettleStepException;
+import org.pentaho.di.core.injection.Injection;
 
 import java.security.MessageDigest;
 import java.util.Objects;
@@ -35,7 +36,11 @@ public class UserDefinedJavaClassDef implements Cloneable {
 
   private ClassType classType;
   private boolean classActive;
+
+  @Injection( name = "CLASS_NAME", group = "JAVA_CLASSES" )
   private String className;
+
+  @Injection( name = "CLASS_SOURCE", group = "JAVA_CLASSES" )
   private String source;
 
   public UserDefinedJavaClassDef( ClassType classType, String className, String source ) {

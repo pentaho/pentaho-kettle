@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -27,6 +27,8 @@ import java.util.List;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.injection.Injection;
+import org.pentaho.di.core.injection.InjectionSupported;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.RowMetaAndData;
@@ -58,28 +60,47 @@ import org.w3c.dom.Node;
  *
  * Created on 10-sep-2008
  */
-
+@InjectionSupported( localizationPrefix = "ExecSQLRowMeta.Injection.", groups = "OUTPUT_FIELDS" )
 public class ExecSQLRowMeta extends BaseStepMeta implements StepMetaInterface {
   private static Class<?> PKG = ExecSQLRowMeta.class; // for i18n purposes, needed by Translator2!!
 
+  private List<? extends SharedObjectInterface> databasesList;
+
   private DatabaseMeta databaseMeta;
+
+  @Injection( name = "SQL_FIELD_NAME" )
   private String sqlField;
 
+  @Injection( name = "UPDATE_STATS", group = "OUTPUT_FIELDS" )
   private String updateField;
+
+  @Injection( name = "INSERT_STATS", group = "OUTPUT_FIELDS" )
   private String insertField;
+
+  @Injection( name = "DELETE_STATS", group = "OUTPUT_FIELDS" )
   private String deleteField;
+
+  @Injection( name = "READ_STATS", group = "OUTPUT_FIELDS" )
   private String readField;
 
   /** Commit size for inserts/updates */
+  @Injection( name = "COMMIT_SIZE" )
   private int commitSize;
 
+  @Injection( name = "READ_SQL_FROM_FILE" )
   private boolean sqlFromfile;
 
   /** Send SQL as single statement **/
+  @Injection( name = "SEND_SINGLE_STATEMENT" )
   private boolean sendOneStatement;
 
   public ExecSQLRowMeta() {
     super();
+  }
+
+  @Injection( name = "CONNECTION_NAME" )
+  public void setConnection( String connectionName ) {
+    databaseMeta = DatabaseMeta.findDatabase( getDatabasesList(), connectionName );
   }
 
   /**
@@ -209,6 +230,14 @@ public class ExecSQLRowMeta extends BaseStepMeta implements StepMetaInterface {
     return updateField;
   }
 
+  public List<? extends SharedObjectInterface> getDatabasesList() {
+    return databasesList;
+  }
+
+  public void setDatabasesList( List<? extends SharedObjectInterface> dbList ) {
+    this.databasesList = dbList;
+  }
+
   /**
    * @param updateField
    *          The updateField to set.
@@ -227,6 +256,7 @@ public class ExecSQLRowMeta extends BaseStepMeta implements StepMetaInterface {
   }
 
   private void readData( Node stepnode, List<? extends SharedObjectInterface> databases ) throws KettleXMLException {
+    this.databasesList = databases;
     try {
       String csize;
       String con = XMLHandler.getTagValue( stepnode, "connection" );
@@ -283,6 +313,7 @@ public class ExecSQLRowMeta extends BaseStepMeta implements StepMetaInterface {
   }
 
   public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases ) throws KettleException {
+    this.databasesList = databases;
     try {
       databaseMeta = rep.loadDatabaseMetaFromStepAttribute( id_step, "id_connection", databases );
       commitSize = (int) rep.getStepAttributeInteger( id_step, "commit" );

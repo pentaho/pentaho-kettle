@@ -623,8 +623,6 @@ public class ExcelOutput extends BaseStep implements StepInterface {
       for ( int currentRowNumber = 0; currentRowNumber < templateWorkbookSheetRows; currentRowNumber++ ) {
         Cell[] templateWorkbookSheetRow = templateWorkbookSheet.getRow( currentRowNumber );
         Cell[] targetWorkbookSheetRow = targetWorkbookSheet.getRow( currentRowNumber );
-        templateWorkbookSheetRow.toString();
-        targetWorkbookSheetRow.toString();
         if ( templateWorkbookSheetRow.length > targetWorkbookSheetRow.length ) {
           return false;
         }

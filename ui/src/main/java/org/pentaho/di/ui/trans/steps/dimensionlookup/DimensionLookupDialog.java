@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -1590,10 +1590,10 @@ public class DimensionLookupDialog extends BaseStepDialog implements StepDialogI
               try {
                 db.connect();
 
-                String schemaTable =
-                  ci.getQuotedSchemaTableCombination( transMeta.environmentSubstitute( schemaName ), transMeta
-                    .environmentSubstitute( tableName ) );
-                RowMetaInterface r = db.getTableFields( schemaTable );
+                RowMetaInterface r =
+                  db.getTableFieldsMeta(
+                    transMeta.environmentSubstitute( schemaName ),
+                    transMeta.environmentSubstitute( tableName ) );
                 if ( null != r ) {
                   String[] fieldNames = r.getFieldNames();
                   if ( null != fieldNames ) {
@@ -1638,8 +1638,7 @@ public class DimensionLookupDialog extends BaseStepDialog implements StepDialogI
       db.shareVariablesWith( transMeta );
       try {
         db.connect();
-        String schemaTable = databaseMeta.getQuotedSchemaTableCombination( wSchema.getText(), wTable.getText() );
-        RowMetaInterface r = db.getTableFields( schemaTable );
+        RowMetaInterface r = db.getTableFieldsMeta( wSchema.getText(), wTable.getText() );
         if ( r != null && !r.isEmpty() ) {
           BaseStepDialog.getFieldsFromPrevious(
             r, wUpIns, 2, new int[] { 1, 2 }, new int[] { 3 }, -1, -1, new TableItemInsertListener() {
@@ -1694,11 +1693,10 @@ public class DimensionLookupDialog extends BaseStepDialog implements StepDialogI
           Database db = new Database( loggingObject, ci );
           try {
             db.connect();
-            String schemaTable =
-              ci.getQuotedSchemaTableCombination(
-                transMeta.environmentSubstitute( wSchema.getText() ), transMeta.environmentSubstitute( wTable
-                  .getText() ) );
-            RowMetaInterface r = db.getTableFields( schemaTable );
+            RowMetaInterface r =
+              db.getTableFieldsMeta(
+                transMeta.environmentSubstitute( wSchema.getText() ),
+                transMeta.environmentSubstitute( wTable.getText() ) );
             if ( null != r ) {
               String[] fieldNames = r.getFieldNames();
               if ( null != fieldNames ) {

@@ -30,7 +30,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.pentaho.di.core.KettleEnvironment;
-import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.logging.KettleLogStore;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.logging.LogChannelInterfaceFactory;
@@ -45,7 +44,6 @@ import org.powermock.modules.junit4.PowerMockRunner;
 import java.util.Collections;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.doAnswer;
@@ -57,8 +55,8 @@ import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-@RunWith( PowerMockRunner.class )
-@PrepareForTest( MQTTClientBuilder.class )
+@RunWith ( PowerMockRunner.class )
+@PrepareForTest ( MQTTClientBuilder.class )
 public class MQTTProducerTest {
   @Mock MqttClient mqttClient;
   @Mock LogChannelInterfaceFactory logChannelFactory;
@@ -126,12 +124,14 @@ public class MQTTProducerTest {
     trans.startThreads();
     trans.waitUntilFinished();
 
-    verify( logChannel ).logError( eq( "Unexpected error" ), any( KettleStepException.class ) );
+    verify( logChannel )
+      .logError( eq( "MQTT Producer - Quality of Service level hello is invalid. Please set a level of 0, 1, or 2" ),
+        any( IllegalArgumentException.class ) );
     verify( mqttClient, never() ).publish( any(), any() );
   }
 
   @Test
-  public void testProcessFirstRow() throws Exception {
+  public void testMqttClientIsMemoized() throws Exception {
     PowerMockito.mockStatic( MQTTClientBuilder.class );
     MQTTClientBuilder clientBuilder = spy( MQTTClientBuilder.class );
     MqttClient mqttClient = mock( MqttClient.class );
@@ -144,7 +144,8 @@ public class MQTTProducerTest {
     StepMetaDataCombi combi = trans.getSteps().get( 1 );
     MQTTProducer step = (MQTTProducer) combi.step;
 
-    assertFalse( step.first );
+    // verify repeated retrieval of client returns the *same* client.
+    assertEquals( step.client.get(), step.client.get() );
   }
 
   @Test
@@ -175,7 +176,7 @@ public class MQTTProducerTest {
     trans.startThreads();
     trans.waitUntilFinished();
 
-    verify( logChannel ).logError( "There was an error connecting" );
+    verify( logChannel ).logError( eq("There was an error connecting"), any( RuntimeException.class ) );
   }
 
   @Test
@@ -193,7 +194,7 @@ public class MQTTProducerTest {
     verify( mqttClient ).disconnect();
     verify( logChannel ).logError(
       "MQTT Producer - Received an exception publishing the message."
-      + "  Check that Quality of Service level 0 is supported by your MQTT Broker" );
+        + "  Check that Quality of Service level 0 is supported by your MQTT Broker" );
     verify( logChannel ).logError( "publish failed", mqttException );
     assertEquals( 0, trans.getSteps().get( 1 ).step.getLinesOutput() );
   }
@@ -201,8 +202,7 @@ public class MQTTProducerTest {
   private void handleAsSecondRow() {
     StepMetaDataCombi combi = trans.getSteps().get( 1 );
     MQTTProducer step = (MQTTProducer) combi.step;
-    MQTTProducerData data = (MQTTProducerData) combi.data;
-    data.mqttClient = mqttClient;
+    step.client = () -> mqttClient;
     step.first = false;
   }
 }

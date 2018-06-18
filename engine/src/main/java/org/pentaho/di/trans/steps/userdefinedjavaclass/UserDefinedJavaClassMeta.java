@@ -24,10 +24,8 @@ package org.pentaho.di.trans.steps.userdefinedjavaclass;
 
 import com.google.common.annotations.VisibleForTesting;
 import org.codehaus.janino.ClassBodyEvaluator;
-import org.codehaus.janino.CompileException;
-import org.codehaus.janino.Parser.ParseException;
+import org.codehaus.commons.compiler.CompileException;
 import org.codehaus.janino.Scanner;
-import org.codehaus.janino.Scanner.ScanException;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
@@ -35,8 +33,13 @@ import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleXMLException;
+import org.pentaho.di.core.injection.Injection;
+import org.pentaho.di.core.injection.InjectionDeep;
+import org.pentaho.di.core.injection.InjectionSupported;
+import org.pentaho.di.core.injection.NullNumberConverter;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.row.RowMetaInterface;
+import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.row.value.ValueMetaFactory;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.variables.Variables;
@@ -52,6 +55,7 @@ import org.pentaho.di.trans.step.StepIOMetaInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
+import org.pentaho.di.trans.steps.fieldsplitter.DataTypeConverter;
 import org.pentaho.di.trans.steps.userdefinedjavaclass.UserDefinedJavaClassDef.ClassType;
 import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Node;
@@ -64,7 +68,10 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
+@InjectionSupported( localizationPrefix = "UserDefinedJavaClass.Injection.", groups = {
+  "PARAMETERS", "TARGET_STEPS", "INFO_STEPS", "JAVA_CLASSES", "FIELD_INFO" } )
 public class UserDefinedJavaClassMeta extends BaseStepMeta implements StepMetaInterface {
   private static Class<?> PKG = UserDefinedJavaClassMeta.class; // for i18n purposes, needed by Translator2!!
 
@@ -79,19 +86,25 @@ public class UserDefinedJavaClassMeta extends BaseStepMeta implements StepMetaIn
       usage_parameters, usage_parameter, parameter_tag, parameter_value, parameter_description,
   }
 
+  @InjectionDeep
   private List<FieldInfo> fields = new ArrayList<FieldInfo>();
+
+  @InjectionDeep
   private List<UserDefinedJavaClassDef> definitions = new ArrayList<UserDefinedJavaClassDef>();
   public Class<TransformClassBase> cookedTransformClass;
   public List<Exception> cookErrors = new ArrayList<Exception>( 0 );
   private static final Cache<String, Class<?>> classCache;
 
+  @Injection( name = "CLEAR_RESULT_FIELDS" )
   private boolean clearingResultFields;
 
   private boolean changed;
 
-  private List<StepDefinition> infoStepDefinitions;
-  private List<StepDefinition> targetStepDefinitions;
-
+  @InjectionDeep
+  private List<InfoStepDefinition> infoStepDefinitions;
+  @InjectionDeep
+  private List<TargetStepDefinition> targetStepDefinitions;
+  @InjectionDeep
   private List<UsageParameter> usageParameters;
 
   static {
@@ -109,10 +122,18 @@ public class UserDefinedJavaClassMeta extends BaseStepMeta implements StepMetaIn
   }
 
   public static class FieldInfo implements Cloneable {
+    @Injection( name = "FIELD_NAME", group = "FIELD_INFO" )
     public final String name;
+    @Injection( name = "FIELD_TYPE", group = "FIELD_INFO", convertEmpty = true, converter = DataTypeConverter.class )
     public final int type;
+    @Injection( name = "FIELD_LENGTH", group = "FIELD_INFO", convertEmpty = true, converter = NullNumberConverter.class )
     public final int length;
+    @Injection( name = "FIELD_PRECISION", group = "FIELD_INFO", convertEmpty = true, converter = NullNumberConverter.class )
     public final int precision;
+
+    public FieldInfo() {
+      this( null, ValueMetaInterface.TYPE_STRING, -1, -1 );
+    }
 
     public FieldInfo( String name, int type, int length, int precision ) {
       super();
@@ -130,13 +151,13 @@ public class UserDefinedJavaClassMeta extends BaseStepMeta implements StepMetaIn
   public UserDefinedJavaClassMeta() {
     super();
     changed = true;
-    infoStepDefinitions = new ArrayList<StepDefinition>();
-    targetStepDefinitions = new ArrayList<StepDefinition>();
-    usageParameters = new ArrayList<UsageParameter>();
+    infoStepDefinitions = new ArrayList<>();
+    targetStepDefinitions = new ArrayList<>();
+    usageParameters = new ArrayList<>();
   }
 
   @VisibleForTesting
-  Class<?> cookClass( UserDefinedJavaClassDef def ) throws CompileException, ParseException, ScanException, IOException, RuntimeException, KettleStepException {
+  Class<?> cookClass( UserDefinedJavaClassDef def, ClassLoader clsloader ) throws CompileException, IOException, RuntimeException, KettleStepException {
 
     String checksum = def.getChecksum();
     Class<?> rtn = UserDefinedJavaClassMeta.classCache.getIfPresent( checksum );
@@ -149,7 +170,12 @@ public class UserDefinedJavaClassMeta extends BaseStepMeta implements StepMetaIn
     }
 
     ClassBodyEvaluator cbe = new ClassBodyEvaluator();
-    cbe.setParentClassLoader( Thread.currentThread().getContextClassLoader() );
+    if ( clsloader == null ) {
+      cbe.setParentClassLoader( Thread.currentThread().getContextClassLoader() );
+    } else {
+      cbe.setParentClassLoader( clsloader );
+    }
+
     cbe.setClassName( def.getClassName() );
 
     StringReader sr;
@@ -173,13 +199,16 @@ public class UserDefinedJavaClassMeta extends BaseStepMeta implements StepMetaIn
   @SuppressWarnings( "unchecked" )
   public void cookClasses() {
     cookErrors.clear();
+    ClassLoader clsloader = null;
     for ( UserDefinedJavaClassDef def : getDefinitions() ) {
       if ( def.isActive() ) {
         try {
-          Class<?> cookedClass = cookClass( def );
+          Class<?> cookedClass = cookClass( def, clsloader );
+          clsloader = cookedClass.getClassLoader();
           if ( def.isTransformClass() ) {
             cookedTransformClass = (Class<TransformClassBase>) cookedClass;
           }
+
         } catch ( Throwable e ) {
           CompileException exception = new CompileException( e.getMessage(), null );
           exception.setStackTrace( new StackTraceElement[] {} );
@@ -212,6 +241,10 @@ public class UserDefinedJavaClassMeta extends BaseStepMeta implements StepMetaIn
     return Collections.unmodifiableList( fields );
   }
 
+  public void setFieldInfo( List<FieldInfo> fields ) {
+    replaceFields( fields );
+  }
+
   public void replaceFields( List<FieldInfo> fields ) {
     this.fields = fields;
     changed = true;
@@ -221,9 +254,36 @@ public class UserDefinedJavaClassMeta extends BaseStepMeta implements StepMetaIn
     return Collections.unmodifiableList( definitions );
   }
 
+  /**
+   * This method oders the classes by sorting all the normal classes by alphabetic order and then sorting
+   * all the transaction classes by alphabetical order. This makes the resolution of classes deterministic by type and
+   * then by class name.
+   * @param definitions - Unorder list of user defined classes
+   * @return - Ordered list of user defined classes
+   */
+  @VisibleForTesting
+  protected List<UserDefinedJavaClassDef> orderDefinitions( List<UserDefinedJavaClassDef> definitions ) {
+    List<UserDefinedJavaClassDef> orderedDefinitions = new ArrayList<>( definitions.size() );
+    List<UserDefinedJavaClassDef> transactions =
+      definitions.stream()
+        .filter( def -> def.isTransformClass() && def.isActive() )
+        .sorted( ( p1, p2 ) -> p1.getClassName().compareTo( p2.getClassName() ) )
+        .collect( Collectors.toList() );
+
+    List<UserDefinedJavaClassDef> normalClasses =
+      definitions.stream()
+        .filter( def -> !def.isTransformClass() )
+        .sorted( ( p1, p2 ) -> p1.getClassName().compareTo( p2.getClassName() ) )
+        .collect( Collectors.toList() );
+
+    orderedDefinitions.addAll( normalClasses );
+    orderedDefinitions.addAll( transactions );
+    return orderedDefinitions;
+  }
+
   public void replaceDefinitions( List<UserDefinedJavaClassDef> definitions ) {
     this.definitions.clear();
-    this.definitions.addAll( definitions );
+    this.definitions = orderDefinitions( definitions );
     changed = true;
   }
 
@@ -256,17 +316,17 @@ public class UserDefinedJavaClassMeta extends BaseStepMeta implements StepMetaIn
       retval.cookErrors = new ArrayList<Exception>( 0 );
 
       if ( infoStepDefinitions != null ) {
-        List<StepDefinition> newInfoStepDefinitions = new ArrayList<StepDefinition>();
-        for ( StepDefinition step : infoStepDefinitions ) {
-          newInfoStepDefinitions.add( (StepDefinition) step.clone() );
+        List<InfoStepDefinition> newInfoStepDefinitions = new ArrayList<>();
+        for ( InfoStepDefinition step : infoStepDefinitions ) {
+          newInfoStepDefinitions.add( (InfoStepDefinition) step.clone() );
         }
         retval.infoStepDefinitions = newInfoStepDefinitions;
       }
 
       if ( targetStepDefinitions != null ) {
-        List<StepDefinition> newTargetStepDefinitions = new ArrayList<StepDefinition>();
-        for ( StepDefinition step : targetStepDefinitions ) {
-          newTargetStepDefinitions.add( (StepDefinition) step.clone() );
+        List<TargetStepDefinition> newTargetStepDefinitions = new ArrayList<>();
+        for ( TargetStepDefinition step : targetStepDefinitions ) {
+          newTargetStepDefinitions.add( (TargetStepDefinition) step.clone() );
         }
         retval.targetStepDefinitions = newTargetStepDefinitions;
       }
@@ -298,6 +358,7 @@ public class UserDefinedJavaClassMeta extends BaseStepMeta implements StepMetaIn
           XMLHandler.getTagValue( fnode, ElementNames.class_name.name() ),
           XMLHandler.getTagValue( fnode, ElementNames.class_source.name() ) ) );
       }
+      definitions = orderDefinitions( definitions );
 
       Node fieldsNode = XMLHandler.getSubNode( stepnode, ElementNames.fields.name() );
       int nrfields = XMLHandler.countNodes( fieldsNode, ElementNames.field.name() );
@@ -319,7 +380,7 @@ public class UserDefinedJavaClassMeta extends BaseStepMeta implements StepMetaIn
       int nrInfos = XMLHandler.countNodes( infosNode, ElementNames.info_step.name() );
       for ( int i = 0; i < nrInfos; i++ ) {
         Node infoNode = XMLHandler.getSubNodeByNr( infosNode, ElementNames.info_step.name(), i );
-        StepDefinition stepDefinition = new StepDefinition();
+        InfoStepDefinition stepDefinition = new InfoStepDefinition();
         stepDefinition.tag = XMLHandler.getTagValue( infoNode, ElementNames.step_tag.name() );
         stepDefinition.stepName = XMLHandler.getTagValue( infoNode, ElementNames.step_name.name() );
         stepDefinition.description = XMLHandler.getTagValue( infoNode, ElementNames.step_description.name() );
@@ -331,7 +392,7 @@ public class UserDefinedJavaClassMeta extends BaseStepMeta implements StepMetaIn
       int nrTargets = XMLHandler.countNodes( targetsNode, ElementNames.target_step.name() );
       for ( int i = 0; i < nrTargets; i++ ) {
         Node targetNode = XMLHandler.getSubNodeByNr( targetsNode, ElementNames.target_step.name(), i );
-        StepDefinition stepDefinition = new StepDefinition();
+        TargetStepDefinition stepDefinition = new TargetStepDefinition();
         stepDefinition.tag = XMLHandler.getTagValue( targetNode, ElementNames.step_tag.name() );
         stepDefinition.stepName = XMLHandler.getTagValue( targetNode, ElementNames.step_name.name() );
         stepDefinition.description = XMLHandler.getTagValue( targetNode, ElementNames.step_description.name() );
@@ -404,10 +465,10 @@ public class UserDefinedJavaClassMeta extends BaseStepMeta implements StepMetaIn
 
   @Override
   public void searchInfoAndTargetSteps( List<StepMeta> steps ) {
-    for ( StepDefinition stepDefinition : infoStepDefinitions ) {
+    for ( InfoStepDefinition stepDefinition : infoStepDefinitions ) {
       stepDefinition.stepMeta = StepMeta.findStep( steps, stepDefinition.stepName );
     }
-    for ( StepDefinition stepDefinition : targetStepDefinitions ) {
+    for ( TargetStepDefinition stepDefinition : targetStepDefinitions ) {
       stepDefinition.stepMeta = StepMeta.findStep( steps, stepDefinition.stepName );
     }
   }
@@ -468,7 +529,7 @@ public class UserDefinedJavaClassMeta extends BaseStepMeta implements StepMetaIn
     // Add the XML for the info step definitions...
     //
     retval.append( XMLHandler.openTag( ElementNames.info_steps.name() ) );
-    for ( StepDefinition stepDefinition : infoStepDefinitions ) {
+    for ( InfoStepDefinition stepDefinition : infoStepDefinitions ) {
       retval.append( XMLHandler.openTag( ElementNames.info_step.name() ) );
       retval.append( XMLHandler.addTagValue( ElementNames.step_tag.name(), stepDefinition.tag ) );
       retval.append( XMLHandler.addTagValue( ElementNames.step_name.name(), stepDefinition.stepMeta != null
@@ -481,7 +542,7 @@ public class UserDefinedJavaClassMeta extends BaseStepMeta implements StepMetaIn
     // Add the XML for the target step definitions...
     //
     retval.append( XMLHandler.openTag( ElementNames.target_steps.name() ) );
-    for ( StepDefinition stepDefinition : targetStepDefinitions ) {
+    for ( TargetStepDefinition stepDefinition : targetStepDefinitions ) {
       retval.append( XMLHandler.openTag( ElementNames.target_step.name() ) );
       retval.append( XMLHandler.addTagValue( ElementNames.step_tag.name(), stepDefinition.tag ) );
       retval.append( XMLHandler.addTagValue( ElementNames.step_name.name(), stepDefinition.stepMeta != null
@@ -517,6 +578,8 @@ public class UserDefinedJavaClassMeta extends BaseStepMeta implements StepMetaIn
 
       }
 
+      definitions = orderDefinitions( definitions );
+
       int nrfields = rep.countNrStepAttributes( id_step, ElementNames.field_name.name() );
       for ( int i = 0; i < nrfields; i++ ) {
         fields.add( new FieldInfo(
@@ -531,7 +594,7 @@ public class UserDefinedJavaClassMeta extends BaseStepMeta implements StepMetaIn
 
       int nrInfos = rep.countNrStepAttributes( id_step, ElementNames.info_.name() + ElementNames.step_name.name() );
       for ( int i = 0; i < nrInfos; i++ ) {
-        StepDefinition stepDefinition = new StepDefinition();
+        InfoStepDefinition stepDefinition = new InfoStepDefinition();
         stepDefinition.tag =
           rep.getStepAttributeString( id_step, i, ElementNames.info_.name() + ElementNames.step_tag.name() );
         stepDefinition.stepName =
@@ -544,7 +607,7 @@ public class UserDefinedJavaClassMeta extends BaseStepMeta implements StepMetaIn
       int nrTargets =
         rep.countNrStepAttributes( id_step, ElementNames.target_.name() + ElementNames.step_name.name() );
       for ( int i = 0; i < nrTargets; i++ ) {
-        StepDefinition stepDefinition = new StepDefinition();
+        TargetStepDefinition stepDefinition = new TargetStepDefinition();
         stepDefinition.tag =
           rep.getStepAttributeString( id_step, i, ElementNames.target_.name() + ElementNames.step_tag.name() );
         stepDefinition.stepName =
@@ -594,7 +657,7 @@ public class UserDefinedJavaClassMeta extends BaseStepMeta implements StepMetaIn
         id_transformation, id_step, ElementNames.clear_result_fields.name(), clearingResultFields );
 
       for ( int i = 0; i < infoStepDefinitions.size(); i++ ) {
-        StepDefinition stepDefinition = infoStepDefinitions.get( i );
+        InfoStepDefinition stepDefinition = infoStepDefinitions.get( i );
         rep.saveStepAttribute( id_transformation, id_step, i, ElementNames.info_.name()
           + ElementNames.step_tag.name(), stepDefinition.tag );
         rep.saveStepAttribute( id_transformation, id_step, i, ElementNames.info_.name()
@@ -604,7 +667,7 @@ public class UserDefinedJavaClassMeta extends BaseStepMeta implements StepMetaIn
           + ElementNames.step_description.name(), stepDefinition.description );
       }
       for ( int i = 0; i < targetStepDefinitions.size(); i++ ) {
-        StepDefinition stepDefinition = targetStepDefinitions.get( i );
+        TargetStepDefinition stepDefinition = targetStepDefinitions.get( i );
         rep.saveStepAttribute( id_transformation, id_step, i, ElementNames.target_.name()
           + ElementNames.step_tag.name(), stepDefinition.tag );
         rep.saveStepAttribute( id_transformation, id_step, i, ElementNames.target_.name()
@@ -686,7 +749,7 @@ public class UserDefinedJavaClassMeta extends BaseStepMeta implements StepMetaIn
   /**
    * @return the infoStepDefinitions
    */
-  public List<StepDefinition> getInfoStepDefinitions() {
+  public List<InfoStepDefinition> getInfoStepDefinitions() {
     return infoStepDefinitions;
   }
 
@@ -694,14 +757,14 @@ public class UserDefinedJavaClassMeta extends BaseStepMeta implements StepMetaIn
    * @param infoStepDefinitions
    *          the infoStepDefinitions to set
    */
-  public void setInfoStepDefinitions( List<StepDefinition> infoStepDefinitions ) {
+  public void setInfoStepDefinitions( List<InfoStepDefinition> infoStepDefinitions ) {
     this.infoStepDefinitions = infoStepDefinitions;
   }
 
   /**
    * @return the targetStepDefinitions
    */
-  public List<StepDefinition> getTargetStepDefinitions() {
+  public List<TargetStepDefinition> getTargetStepDefinitions() {
     return targetStepDefinitions;
   }
 
@@ -709,7 +772,7 @@ public class UserDefinedJavaClassMeta extends BaseStepMeta implements StepMetaIn
    * @param targetStepDefinitions
    *          the targetStepDefinitions to set
    */
-  public void setTargetStepDefinitions( List<StepDefinition> targetStepDefinitions ) {
+  public void setTargetStepDefinitions( List<TargetStepDefinition> targetStepDefinitions ) {
     this.targetStepDefinitions = targetStepDefinitions;
   }
 

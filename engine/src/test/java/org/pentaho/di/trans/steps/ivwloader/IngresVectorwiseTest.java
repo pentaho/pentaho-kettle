@@ -37,6 +37,7 @@ import java.util.List;
 
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.util.Utils;
@@ -206,7 +207,8 @@ public class IngresVectorwiseTest {
     }
   }
 
-  // @Test
+  @Test
+  @Ignore
   public void testVWLoadMocker() {
     String cmd =
       "java -cp . -Duser.dir=" + VWLoadMocker.class.getProtectionDomain().getCodeSource().getLocation().getPath()

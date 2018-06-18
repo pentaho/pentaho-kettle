@@ -1,5 +1,5 @@
 /*!
- * Copyright 2010 - 2017 Hitachi Vantara.  All rights reserved.
+ * Copyright 2010 - 2018 Hitachi Vantara.  All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,6 +27,8 @@ import org.pentaho.platform.security.userrole.ws.IUserRoleListWebService;
 
 public class UserRoleListDelegate implements java.io.Serializable {
 
+  private static final Class PKG = UserRoleListDelegate.class;
+
   private static final long serialVersionUID = -2895663865550206386L; /* EESOURCE: UPDATE SERIALVERUID */
   IUserRoleListWebService userDetailsRoleListWebService;
   UserRoleInfo userRoleInfo;
@@ -44,8 +46,8 @@ public class UserRoleListDelegate implements java.io.Serializable {
           serviceManager.createService( userInfo.getLogin(), userInfo.getPassword(), IUserRoleListWebService.class );
       updateUserRoleList();
     } catch ( Exception e ) {
-      this.logger.error( BaseMessages
-          .getString( "UserRoleListDelegate.ERROR_0001_UNABLE_TO_INITIALIZE_USER_ROLE_LIST_WEBSVC" ), e ); //$NON-NLS-1$
+      this.logger.error( BaseMessages.getString( PKG,
+        "UserRoleListDelegate.ERROR_0001_UNABLE_TO_INITIALIZE_USER_ROLE_LIST_WEBSVC" ), e ); //$NON-NLS-1$
     }
 
   }

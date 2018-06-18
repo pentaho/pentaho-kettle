@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -35,6 +35,8 @@ import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleXMLException;
+import org.pentaho.di.core.injection.Injection;
+import org.pentaho.di.core.injection.InjectionSupported;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.row.value.ValueMetaBoolean;
@@ -61,10 +63,14 @@ import org.w3c.dom.Node;
  * Created on 05-aug-2003
  *
  */
-
+@InjectionSupported( localizationPrefix = "SystemDataMeta.Injection." )
 public class SystemDataMeta extends BaseStepMeta implements StepMetaInterface {
   private static Class<?> PKG = SystemDataMeta.class; // for i18n purposes, needed by Translator2!!
+
+  @Injection( name = "FIELD_NAME" )
   private String[] fieldName;
+
+  @Injection( name = "FIELD_TYPE", converter = SystemDataMetaInjectionTypeConverter.class )
   private SystemDataTypes[] fieldType;
 
   public SystemDataMeta() {
@@ -138,27 +144,11 @@ public class SystemDataMeta extends BaseStepMeta implements StepMetaInterface {
 
         fieldName[i] = XMLHandler.getTagValue( fnode, "name" );
         type = XMLHandler.getTagValue( fnode, "type" );
-        fieldType[i] = getType( type );
+        fieldType[i] = SystemDataTypes.getTypeFromString( type );
       }
     } catch ( Exception e ) {
       throw new KettleXMLException( "Unable to read step information from XML", e );
     }
-  }
-
-  public static final SystemDataTypes getType( String type ) {
-    for ( SystemDataTypes systemType : SystemDataTypes.values() ) {
-      if ( systemType.getCode().equalsIgnoreCase( type ) ) {
-        return systemType;
-      }
-      if ( systemType.getDescription().equalsIgnoreCase( type ) ) {
-        return systemType;
-      }
-    }
-    return SystemDataTypes.TYPE_SYSTEM_INFO_NONE;
-  }
-
-  public static final String getTypeDesc( SystemDataTypes t ) {
-    return t.getDescription();
   }
 
   @Override
@@ -274,7 +264,7 @@ public class SystemDataMeta extends BaseStepMeta implements StepMetaInterface {
         case TYPE_SYSTEM_INFO_PREVIOUS_RESULT_NR_LINES_INPUT:
         case TYPE_SYSTEM_INFO_PREVIOUS_RESULT_NR_LINES_OUTPUT:
         case TYPE_SYSTEM_INFO_PREVIOUS_RESULT_NR_LINES_READ:
-        case TYPE_SYSTEM_INFO_PREVIOUS_RESULT_NR_LINES_REJETED:
+        case TYPE_SYSTEM_INFO_PREVIOUS_RESULT_NR_LINES_REJECTED:
         case TYPE_SYSTEM_INFO_PREVIOUS_RESULT_NR_LINES_UPDATED:
         case TYPE_SYSTEM_INFO_PREVIOUS_RESULT_NR_LINES_WRITTEN:
           v = new ValueMetaInteger( fieldName[i] );
@@ -320,7 +310,7 @@ public class SystemDataMeta extends BaseStepMeta implements StepMetaInterface {
 
       for ( int i = 0; i < nrfields; i++ ) {
         fieldName[i] = rep.getStepAttributeString( id_step, i, "field_name" );
-        fieldType[i] = getType( rep.getStepAttributeString( id_step, i, "field_type" ) );
+        fieldType[i] = SystemDataTypes.getTypeFromString( rep.getStepAttributeString( id_step, i, "field_type" ) );
       }
     } catch ( Exception e ) {
       throw new KettleException( "Unexpected error reading step information from the repository", e );

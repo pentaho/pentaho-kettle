@@ -632,10 +632,10 @@ public class UpdateDialog extends BaseStepDialog implements StepDialogInterface 
               try {
                 db.connect();
 
-                String schemaTable =
-                  ci.getQuotedSchemaTableCombination( transMeta.environmentSubstitute( schemaName ), transMeta
-                    .environmentSubstitute( tableName ) );
-                RowMetaInterface r = db.getTableFields( schemaTable );
+                RowMetaInterface r =
+                  db.getTableFieldsMeta(
+                    transMeta.environmentSubstitute( schemaName ),
+                    transMeta.environmentSubstitute( tableName ) );
                 if ( null != r ) {
                   String[] fieldNames = r.getFieldNames();
                   if ( null != fieldNames ) {

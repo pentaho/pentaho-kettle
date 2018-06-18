@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -411,6 +411,8 @@ public class SWTGC implements GCInterface {
     Image im = null;
     if ( stepMeta.isMissing() ) {
       im = GUIResource.getInstance().getImageMissing();
+    } else if ( stepMeta.isDeprecated() ) {
+      im = GUIResource.getInstance().getImageDeprecated();
     } else {
       im =
           images.get( steptype ).getAsBitmapForSize( gc.getDevice(), Math.round( iconsize * magnification ),

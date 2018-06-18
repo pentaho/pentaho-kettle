@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -20,18 +20,32 @@
  *
  ******************************************************************************/
 
-package org.pentaho.di.trans.step.mqtt;
+package org.pentaho.di.trans.steps.systemdata;
 
-import com.google.common.annotations.VisibleForTesting;
-import org.eclipse.paho.client.mqttv3.MqttClient;
-import org.pentaho.di.trans.step.BaseStepData;
-import org.pentaho.di.trans.step.StepDataInterface;
+import org.junit.Before;
+import org.junit.Test;
+import org.pentaho.di.core.injection.BaseMetadataInjectionTest;
 
-public class MQTTProducerData extends BaseStepData implements StepDataInterface {
-  int messageFieldIndex;
-  @VisibleForTesting MqttClient mqttClient;
+public class SystemDataMetaInjectionTest extends BaseMetadataInjectionTest<SystemDataMeta> {
 
-  public MQTTProducerData() {
-    super();
+  @Before
+  public void setup() {
+    setup( new SystemDataMeta() );
+  }
+
+  @Test
+  public void test() throws Exception {
+    check( "FIELD_NAME", new StringGetter() {
+      @Override
+      public String get() {
+        return meta.getFieldName()[ 0 ];
+      }
+    } );
+    check( "FIELD_TYPE", new EnumGetter() {
+      @Override
+      public Enum<?> get() {
+        return meta.getFieldType()[ 0 ];
+      }
+    }, SystemDataTypes.class );
   }
 }

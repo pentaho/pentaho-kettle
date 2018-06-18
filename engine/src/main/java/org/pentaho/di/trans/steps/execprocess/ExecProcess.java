@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -26,6 +26,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.pentaho.di.core.Const;
@@ -233,9 +234,9 @@ public class ExecProcess extends BaseStep implements StepInterface {
         processresult.setExistStatus( p.exitValue() );
       }
     } catch ( IOException ioe ) {
-      throw new KettleException( "IO exception while running the process " + process + "!", ioe );
+      throw new KettleException( "IO exception while running the process " + Arrays.toString( process ) + "!", ioe );
     } catch ( InterruptedException ie ) {
-      throw new KettleException( "Interrupted exception while running the process " + process + "!", ie );
+      throw new KettleException( "Interrupted exception while running the process " + Arrays.toString( process ) + "!", ie );
     } catch ( Exception e ) {
       throw new KettleException( e );
     } finally {

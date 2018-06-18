@@ -83,21 +83,22 @@ public class MQTTProducerMetaTest {
     MQTTProducerMeta fromMeta = testMeta();
     MQTTProducerMeta toMeta = fromXml( fromMeta.getXML() );
 
-    assertEquals( "mqtthost:1883", toMeta.getMqttServer() );
-    assertEquals( "client1", toMeta.getClientId() );
-    assertEquals( "test-topic", toMeta.getTopic() );
-    assertEquals( "1", toMeta.getQOS() );
-    assertEquals( "tempvalue", toMeta.getMessageField() );
-    assertEquals( "testuser", toMeta.getUsername() );
-    assertEquals( "test", toMeta.getPassword() );
-    assertEquals( "1000", toMeta.getKeepAliveInterval() );
-    assertEquals( "2000", toMeta.getMaxInflight() );
-    assertEquals( "3000", toMeta.getConnectionTimeout() );
-    assertEquals( "true", toMeta.getCleanSession() );
-    assertEquals( "/Users/noname/temp", toMeta.getStorageLevel() );
-    assertEquals( "mqttHost2:1883", toMeta.getServerUris() );
-    assertEquals( "3", toMeta.getMqttVersion() );
-    assertEquals( "true", toMeta.getAutomaticReconnect() );
+    assertEquals( "mqtthost:1883", toMeta.mqttServer );
+    assertEquals( "client1", toMeta.clientId );
+    assertEquals( "test-topic", toMeta.topic );
+    assertEquals( "field-topic", toMeta.fieldTopic );
+    assertEquals( "1", toMeta.qos );
+    assertEquals( "tempvalue", toMeta.messageField );
+    assertEquals( "testuser", toMeta.username );
+    assertEquals( "test", toMeta.password );
+    assertEquals( "1000", toMeta.keepAliveInterval );
+    assertEquals( "2000", toMeta.maxInflight );
+    assertEquals( "3000", toMeta.connectionTimeout );
+    assertEquals( "true", toMeta.cleanSession );
+    assertEquals( "/Users/noname/temp", toMeta.storageLevel );
+    assertEquals( "mqttHost2:1883", toMeta.serverUris );
+    assertEquals( "3", toMeta.mqttVersion );
+    assertEquals( "true", toMeta.automaticReconnect );
 
     assertThat( toMeta, equalTo( fromMeta ) );
   }
@@ -106,13 +107,14 @@ public class MQTTProducerMetaTest {
   @Test
   public void testFieldsArePreserved() {
     MQTTProducerMeta meta = new MQTTProducerMeta();
-    meta.setMqttServer( "mqtthost:1883" );
-    meta.setClientId( "client1" );
-    meta.setTopic( "test-topic" );
-    meta.setQOS( "2" );
-    meta.setMessageField( "temp-message" );
-    meta.setUsername( "testuser" );
-    meta.setPassword( "test" );
+    meta.mqttServer = "mqtthost:1883";
+    meta.clientId = "client1";
+    meta.topic = "test-topic";
+    meta.fieldTopic = "field-topic";
+    meta.qos = "2";
+    meta.messageField = "temp-message";
+    meta.username = "testuser";
+    meta.password = "test";
     MQTTProducerMeta toMeta = fromXml( meta.getXML() );
 
     assertThat( toMeta, equalTo( meta ) );
@@ -121,20 +123,20 @@ public class MQTTProducerMetaTest {
   @Test
   public void testRoundTripWithSSLStuff() {
     MQTTProducerMeta meta = new MQTTProducerMeta();
-    meta.setMqttServer( "mqtthost:1883" );
-    meta.setTopic( "test-topic" );
-    meta.setQOS( "2" );
-    meta.setMessageField( "temp-message" );
+    meta.mqttServer = "mqtthost:1883";
+    meta.topic = "test-topic";
+    meta.qos = "2";
+    meta.messageField = "temp-message";
     meta.setSslConfig( of(
       "sslKey", "sslVal",
       "sslKey2", "sslVal2",
       "sslKey3", "sslVal3"
     ) );
-    meta.setUseSsl( true );
+    meta.useSsl = true;
 
     MQTTProducerMeta rehydrated = fromXml( meta.getXML() );
 
-    assertThat( true, is( rehydrated.isUseSsl() ) );
+    assertThat( true, is( rehydrated.useSsl ) );
     meta.getSslConfig().keySet().forEach( key ->
       assertThat( meta.getSslConfig().get( key ), is( rehydrated.getSslConfig().get( key ) ) ) );
 
@@ -143,9 +145,9 @@ public class MQTTProducerMetaTest {
   @Test
   public void testReadFromRepository() throws Exception {
     MQTTProducerMeta testMeta = testMeta();
-    testMeta.setAutomaticReconnect( "true" );
-    testMeta.setServerUris( "mqttHost2:1883" );
-    testMeta.setMqttServer( "mqttserver:1883" );
+    testMeta.automaticReconnect = "true";
+    testMeta.serverUris = "mqttHost2:1883";
+    testMeta.mqttServer = "mqttserver:1883";
     StringObjectId stepId = new StringObjectId( "stepId" );
 
     String xml = testMeta.getXML();
@@ -155,21 +157,21 @@ public class MQTTProducerMetaTest {
     meta.readRep( rep, metaStore, stepId, emptyList() );
 
     meta.readRep( rep, metaStore, stepId, Collections.emptyList() );
-    assertEquals( "mqttserver:1883", meta.getMqttServer() );
-    assertEquals( "client1", meta.getClientId() );
-    assertEquals( "test-topic", meta.getTopic() );
-    assertEquals( "1", meta.getQOS() );
-    assertEquals( "tempvalue", meta.getMessageField() );
-    assertEquals( "testuser", meta.getUsername() );
-    assertEquals( "test", meta.getPassword() );
-    assertEquals( "1000", meta.getKeepAliveInterval() );
-    assertEquals( "2000", meta.getMaxInflight() );
-    assertEquals( "3000", meta.getConnectionTimeout() );
-    assertEquals( "true", meta.getCleanSession() );
-    assertEquals( "/Users/noname/temp", meta.getStorageLevel() );
-    assertEquals( "mqttHost2:1883", meta.getServerUris() );
-    assertEquals( "3", meta.getMqttVersion() );
-    assertEquals( "true", meta.getAutomaticReconnect() );
+    assertEquals( "mqttserver:1883", meta.mqttServer );
+    assertEquals( "client1", meta.clientId );
+    assertEquals( "test-topic", meta.topic );
+    assertEquals( "1", meta.qos );
+    assertEquals( "tempvalue", meta.messageField );
+    assertEquals( "testuser", meta.username );
+    assertEquals( "test", meta.password );
+    assertEquals( "1000", meta.keepAliveInterval );
+    assertEquals( "2000", meta.maxInflight );
+    assertEquals( "3000", meta.connectionTimeout );
+    assertEquals( "true", meta.cleanSession );
+    assertEquals( "/Users/noname/temp", meta.storageLevel );
+    assertEquals( "mqttHost2:1883", meta.serverUris );
+    assertEquals( "3", meta.mqttVersion );
+    assertEquals( "true", meta.automaticReconnect );
   }
 
   @Test
@@ -179,7 +181,7 @@ public class MQTTProducerMetaTest {
     StringObjectId transId = new StringObjectId( "trans1" );
 
     MQTTProducerMeta localMeta = testMeta();
-    localMeta.setTopic( "weather" );
+    localMeta.topic = "weather";
 
     localMeta.saveRep( rep, metaStore, transId, stepId );
 
@@ -193,12 +195,12 @@ public class MQTTProducerMetaTest {
     defaultMeta.setDefault();
 
     MQTTProducerMeta toMeta = new MQTTProducerMeta();
-    toMeta.setMqttServer( "something that's not default" );
+    toMeta.mqttServer = "something that's not default";
 
     // loadXML into toMeta should overwrite the non-default val.
     toMeta.loadXML( getNode( defaultMeta.getXML() ), emptyList(), metaStore );
     assertEquals( toMeta, defaultMeta );
-    assertThat( toMeta.getMqttServer(), is( "" ) );
+    assertThat( toMeta.mqttServer, is( "" ) );
   }
 
   @Test
@@ -222,21 +224,21 @@ public class MQTTProducerMetaTest {
   public void testCheckOptions() {
     List<CheckResultInterface> remarks = new ArrayList<>();
     MQTTProducerMeta meta = new MQTTProducerMeta();
-    meta.setMqttServer( "theserver:1883" );
-    meta.setClientId( "client100" );
-    meta.setTopic( "newtopic" );
-    meta.setQOS( "2" );
-    meta.setMessageField( "Messages" );
-    meta.setUsername( "testuser" );
-    meta.setPassword( "test" );
-    meta.setKeepAliveInterval( "1000" );
-    meta.setMaxInflight( "2000" );
-    meta.setConnectionTimeout( "3000" );
-    meta.setCleanSession( "true" );
-    meta.setStorageLevel( "/Users/noname/temp" );
-    meta.setServerUris( "mqttHost2:1883" );
-    meta.setMqttVersion( "3" );
-    meta.setAutomaticReconnect( "true" );
+    meta.mqttServer = "theserver:1883";
+    meta.clientId = "client100";
+    meta.topic = "newtopic";
+    meta.qos = "2";
+    meta.messageField = "Messages";
+    meta.username = "testuser";
+    meta.password = "test";
+    meta.keepAliveInterval = "1000";
+    meta.maxInflight = "2000";
+    meta.connectionTimeout = "3000";
+    meta.cleanSession = "true";
+    meta.storageLevel = "/Users/noname/temp";
+    meta.serverUris = "mqttHost2:1883";
+    meta.mqttVersion = "3";
+    meta.automaticReconnect = "true";
     meta.check( remarks, null, null, null, null, null, null, new Variables(), null, null );
 
     assertEquals( 0, remarks.size() );
@@ -246,18 +248,18 @@ public class MQTTProducerMetaTest {
   public void testCheckOptionsFail() {
     List<CheckResultInterface> remarks = new ArrayList<>();
     MQTTProducerMeta meta = new MQTTProducerMeta();
-    meta.setMqttServer( "theserver:1883" );
-    meta.setClientId( "client100" );
-    meta.setTopic( "newtopic" );
-    meta.setQOS( "2" );
-    meta.setMessageField( "Messages" );
-    meta.setUsername( "testuser" );
-    meta.setKeepAliveInterval( "asdf" );
-    meta.setMaxInflight( "asdf" );
-    meta.setConnectionTimeout( "asdf" );
-    meta.setCleanSession( "asdf" );
-    meta.setAutomaticReconnect( "adsf" );
-    meta.setMqttVersion( "asdf" );
+    meta.mqttServer = "theserver:1883";
+    meta.clientId = "client100";
+    meta.topic = "newtopic";
+    meta.qos = "2";
+    meta.messageField = "Messages";
+    meta.username = "testuser";
+    meta.keepAliveInterval = "asdf";
+    meta.maxInflight = "asdf";
+    meta.connectionTimeout = "asdf";
+    meta.cleanSession = "asdf";
+    meta.automaticReconnect = "adsf";
+    meta.mqttVersion = "asdf";
     meta.check( remarks, null, null, null, null, null, null, new Variables(), null, null );
 
     assertEquals( 6, remarks.size() );
@@ -278,23 +280,26 @@ public class MQTTProducerMetaTest {
   @Test
   public void testVarSubstitution() {
     MQTTProducerMeta mqttProducerMeta = new MQTTProducerMeta();
-    mqttProducerMeta.setMqttServer( "${server}" );
-    mqttProducerMeta.setMessageField( "${message}" );
-    mqttProducerMeta.setTopic( "${topic}" );
+    mqttProducerMeta.mqttServer = "${server}";
+    mqttProducerMeta.messageField = "${message}";
+    mqttProducerMeta.topic = "${topic}";
+    mqttProducerMeta.fieldTopic = "${fieldTopic}";
     mqttProducerMeta.setSslConfig( of( "key1", "${val1}", "key2", "${val2}" ) );
 
     VariableSpace variables = new Variables();
     variables.setVariable( "server", "myserver" );
     variables.setVariable( "message", "mymessage" );
     variables.setVariable( "topic", "mytopic" );
+    variables.setVariable( "fieldTopic", "myfieldtopic" );
     variables.setVariable( "val1", "sslVal1" );
     variables.setVariable( "val2", "sslVal2" );
 
     MQTTProducerMeta substitutedMeta = (MQTTProducerMeta) mqttProducerMeta.withVariables( variables );
 
-    assertThat( "myserver", equalTo( substitutedMeta.getMqttServer() ) );
-    assertThat( "mymessage", equalTo( substitutedMeta.getMessageField() ) );
-    assertThat( "mytopic", equalTo( substitutedMeta.getTopic() ) );
+    assertThat( "myserver", equalTo( substitutedMeta.mqttServer ) );
+    assertThat( "mymessage", equalTo( substitutedMeta.messageField ) );
+    assertThat( "mytopic", equalTo( substitutedMeta.topic ) );
+    assertThat( "myfieldtopic", equalTo( substitutedMeta.fieldTopic ) );
     assertThat( "sslVal1", equalTo( substitutedMeta.getSslConfig().get( "key1" ) ) );
     assertThat( "sslVal2", equalTo( substitutedMeta.getSslConfig().get( "key2" ) ) );
   }
@@ -318,21 +323,22 @@ public class MQTTProducerMetaTest {
 
   private MQTTProducerMeta testMeta() {
     MQTTProducerMeta meta = new MQTTProducerMeta();
-    meta.setMqttServer( "mqtthost:1883" );
-    meta.setClientId( "client1" );
-    meta.setTopic( "test-topic" );
-    meta.setQOS( "1" );
-    meta.setMessageField( "tempvalue" );
-    meta.setUsername( "testuser" );
-    meta.setPassword( "test" );
-    meta.setKeepAliveInterval( "1000" );
-    meta.setMaxInflight( "2000" );
-    meta.setConnectionTimeout( "3000" );
-    meta.setCleanSession( "true" );
-    meta.setStorageLevel( "/Users/noname/temp" );
-    meta.setServerUris( "mqttHost2:1883" );
-    meta.setMqttVersion( "3" );
-    meta.setAutomaticReconnect( "true" );
+    meta.mqttServer = "mqtthost:1883";
+    meta.clientId = "client1";
+    meta.topic = "test-topic";
+    meta.fieldTopic = "field-topic";
+    meta.qos = "1";
+    meta.messageField = "tempvalue";
+    meta.username = "testuser";
+    meta.password = "test";
+    meta.keepAliveInterval = "1000";
+    meta.maxInflight = "2000";
+    meta.connectionTimeout = "3000";
+    meta.cleanSession = "true";
+    meta.storageLevel = "/Users/noname/temp";
+    meta.serverUris = "mqttHost2:1883";
+    meta.mqttVersion = "3";
+    meta.automaticReconnect = "true";
     return meta;
   }
 

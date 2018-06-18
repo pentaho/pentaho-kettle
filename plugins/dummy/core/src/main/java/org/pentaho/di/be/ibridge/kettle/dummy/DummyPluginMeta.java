@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -45,11 +45,12 @@ import java.util.*;
  */
 
 @Step( id = "DummyStep",
-      image = "DPL.svg",
+      image = "deprecated.svg",
       i18nPackageName = "be.ibridge.kettle.dummy",
       name = "DummyPlugin.Step.Name",
       description = "DummyPlugin.Step.Description",
-      categoryDescription = "Deprecated" )
+      categoryDescription = "i18n:org.pentaho.di.trans.step:BaseStep.Category.Deprecated",
+      suggestedStep = "DummyPlugin.Step.SuggestedStep" )
 public class DummyPluginMeta extends BaseStepMeta implements StepMetaInterface {
   private ValueMetaAndData value;
 

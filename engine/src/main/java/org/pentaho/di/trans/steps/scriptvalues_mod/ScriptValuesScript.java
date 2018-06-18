@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,6 +22,8 @@
 
 package org.pentaho.di.trans.steps.scriptvalues_mod;
 
+import org.pentaho.di.core.injection.Injection;
+
 public class ScriptValuesScript {
 
   public static final int NORMAL_SCRIPT = -1;
@@ -31,8 +33,14 @@ public class ScriptValuesScript {
 
   private int iScriptType;
   private boolean bScriptActive;
+
+  @Injection( name = "SCRIPT_NAME", group = "SCRIPTS" )
   private String sScriptName;
+
+  @Injection( name = "SCRIPT", group = "SCRIPTS" )
   private String sScript;
+
+  public ScriptValuesScript() { }
 
   // private Date dModDate;
   // private Date dFirstDate;
