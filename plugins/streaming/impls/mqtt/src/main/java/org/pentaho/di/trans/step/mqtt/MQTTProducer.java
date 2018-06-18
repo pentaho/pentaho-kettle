@@ -170,7 +170,7 @@ public class MQTTProducer extends BaseStep implements StepInterface {
   private String getTopic( Object[] row ) {
     String topic;
     if ( meta.topicInField ) {
-      topic = getFieldAsString( row, meta.topic );
+      topic = getFieldAsString( row, meta.fieldTopic );
     } else {
       topic = meta.topic;
     }

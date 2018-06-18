@@ -86,6 +86,7 @@ public class MQTTProducerMetaTest {
     assertEquals( "mqtthost:1883", toMeta.mqttServer );
     assertEquals( "client1", toMeta.clientId );
     assertEquals( "test-topic", toMeta.topic );
+    assertEquals( "field-topic", toMeta.fieldTopic );
     assertEquals( "1", toMeta.qos );
     assertEquals( "tempvalue", toMeta.messageField );
     assertEquals( "testuser", toMeta.username );
@@ -109,6 +110,7 @@ public class MQTTProducerMetaTest {
     meta.mqttServer = "mqtthost:1883";
     meta.clientId = "client1";
     meta.topic = "test-topic";
+    meta.fieldTopic = "field-topic";
     meta.qos = "2";
     meta.messageField = "temp-message";
     meta.username = "testuser";
@@ -281,12 +283,14 @@ public class MQTTProducerMetaTest {
     mqttProducerMeta.mqttServer = "${server}";
     mqttProducerMeta.messageField = "${message}";
     mqttProducerMeta.topic = "${topic}";
+    mqttProducerMeta.fieldTopic = "${fieldTopic}";
     mqttProducerMeta.setSslConfig( of( "key1", "${val1}", "key2", "${val2}" ) );
 
     VariableSpace variables = new Variables();
     variables.setVariable( "server", "myserver" );
     variables.setVariable( "message", "mymessage" );
     variables.setVariable( "topic", "mytopic" );
+    variables.setVariable( "fieldTopic", "myfieldtopic" );
     variables.setVariable( "val1", "sslVal1" );
     variables.setVariable( "val2", "sslVal2" );
 
@@ -295,6 +299,7 @@ public class MQTTProducerMetaTest {
     assertThat( "myserver", equalTo( substitutedMeta.mqttServer ) );
     assertThat( "mymessage", equalTo( substitutedMeta.messageField ) );
     assertThat( "mytopic", equalTo( substitutedMeta.topic ) );
+    assertThat( "myfieldtopic", equalTo( substitutedMeta.fieldTopic ) );
     assertThat( "sslVal1", equalTo( substitutedMeta.getSslConfig().get( "key1" ) ) );
     assertThat( "sslVal2", equalTo( substitutedMeta.getSslConfig().get( "key2" ) ) );
   }
@@ -321,6 +326,7 @@ public class MQTTProducerMetaTest {
     meta.mqttServer = "mqtthost:1883";
     meta.clientId = "client1";
     meta.topic = "test-topic";
+    meta.fieldTopic = "field-topic";
     meta.qos = "1";
     meta.messageField = "tempvalue";
     meta.username = "testuser";
