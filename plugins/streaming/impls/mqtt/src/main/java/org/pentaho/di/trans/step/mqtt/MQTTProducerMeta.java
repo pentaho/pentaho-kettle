@@ -71,6 +71,7 @@ import static org.pentaho.di.trans.step.mqtt.MQTTConstants.TOPIC;
 import static org.pentaho.di.trans.step.mqtt.MQTTConstants.TOPIC_IN_FIELD;
 import static org.pentaho.di.trans.step.mqtt.MQTTConstants.USERNAME;
 import static org.pentaho.di.trans.step.mqtt.MQTTConstants.USE_SSL;
+import static org.pentaho.di.trans.step.mqtt.MQTTConstants.FIELD_TOPIC;
 import static org.pentaho.di.core.util.serialization.ConfigHelper.conf;
 
 @Step ( id = "MQTTProducer", image = "MQTTProducer.svg",
@@ -88,6 +89,8 @@ public class MQTTProducerMeta extends BaseSerializingMeta implements StepMetaInt
   @Injection ( name = CLIENT_ID ) String clientId;
 
   @Injection ( name = TOPIC ) String topic;
+
+  @Injection ( name = FIELD_TOPIC ) String fieldTopic;
 
   @Injection ( name = TOPIC_IN_FIELD ) Boolean topicInField = false;
 
@@ -131,6 +134,7 @@ public class MQTTProducerMeta extends BaseSerializingMeta implements StepMetaInt
   public void setDefault() {
     mqttServer = "";
     topic = "";
+    fieldTopic = "";
     qos = "0";
     username = "";
     password = "";
@@ -230,6 +234,7 @@ public class MQTTProducerMeta extends BaseSerializingMeta implements StepMetaInt
     return Objects.equal( mqttServer, that.mqttServer )
       && Objects.equal( clientId, that.clientId )
       && Objects.equal( topic, that.topic )
+      && Objects.equal( fieldTopic, that.fieldTopic )
       && Objects.equal( qos, that.qos )
       && Objects.equal( messageField, that.messageField )
       && Objects.equal( username, that.username )
@@ -249,7 +254,7 @@ public class MQTTProducerMeta extends BaseSerializingMeta implements StepMetaInt
 
   @Override public int hashCode() {
     return Objects
-      .hashCode( mqttServer, clientId, topic, qos, messageField, username, password, useSsl, sslKeys, sslValues,
+      .hashCode( mqttServer, clientId, topic, fieldTopic, qos, messageField, username, password, useSsl, sslKeys, sslValues,
         keepAliveInterval, maxInflight, connectionTimeout, cleanSession, storageLevel, serverUris, mqttVersion,
         automaticReconnect );
   }
@@ -259,6 +264,7 @@ public class MQTTProducerMeta extends BaseSerializingMeta implements StepMetaInt
       .add( "mqttServer", mqttServer )
       .add( "clientId", clientId )
       .add( "topic", topic )
+      .add( "fieldTopic", fieldTopic )
       .add( "qos", qos )
       .add( "messageField", messageField )
       .add( "username", username )
