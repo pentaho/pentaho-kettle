@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -23,8 +23,10 @@
 package org.pentaho.di.core;
 
 public enum ObjectLocationSpecificationMethod {
-  FILENAME( "filename", "Filename" ), REPOSITORY_BY_NAME( "rep_name", "Specify by name in repository" ),
-    REPOSITORY_BY_REFERENCE( "rep_ref", "Specify by reference in repository" );
+  FILENAME( "filename", "Filename" ),
+  REPOSITORY_BY_NAME( "rep_name", "Specify by name in repository" ),
+  @Deprecated // this is no longer supported in the UI, only in code with jobs/transformations created prior to 7.0
+  REPOSITORY_BY_REFERENCE( "rep_ref", "Specify by reference in repository" );
 
   private String code;
   private String description;

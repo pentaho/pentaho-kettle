@@ -613,4 +613,47 @@ public class StringUtil {
       return obj.toString().toLowerCase();
     }
   }
+
+  /**
+   * Removes all instances of the specified character from the start of the given {@link String}.
+   *
+   * @param source the {@link String} to trim
+   * @param c the character to remove from the {@link String}
+   * @return a new string with all instances of the specified character removed from the start
+   */
+  public static String trimStart( final String source, char c ) {
+    if ( source == null ) {
+      return null;
+    }
+
+    int length = source.length();
+    int index = 0;
+
+    while ( index < length && source.charAt( index ) == c ) {
+      index++;
+    }
+
+    return source.substring( index );
+  }
+
+  /**
+   * Removes all instances of the specified character from the end of the given {@link String}.
+   *
+   * @param source the {@link String} to trim
+   * @param c the character to remove from the {@link String}
+   * @return a new string with all instances of the specified character removed from the end
+   */
+  public static String trimEnd( final String source, char c ) {
+    if ( source == null ) {
+      return null;
+    }
+
+    int index = source.length();
+
+    while ( index > 0 && source.charAt( index - 1 ) == c ) {
+      index--;
+    }
+
+    return source.substring( 0, index );
+  }
 }
