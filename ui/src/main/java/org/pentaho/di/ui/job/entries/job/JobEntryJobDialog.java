@@ -22,6 +22,7 @@
 
 package org.pentaho.di.ui.job.entries.job;
 
+import com.google.common.annotations.VisibleForTesting;
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -305,7 +306,7 @@ public class JobEntryJobDialog extends JobEntryBaseDialog implements JobEntryDia
     FileDialog dialog = new FileDialog( shell, SWT.OPEN );
     dialog.setFilterExtensions( Const.STRING_JOB_FILTER_EXT );
     dialog.setFilterNames( Const.getJobFilterNames() );
-    String prevName = jobMeta.environmentSubstitute( wPath.getText() );
+    String prevName = jobMeta.environmentSubstitute( getPath() );
     String parentFolder = null;
     try {
       parentFolder =
@@ -321,7 +322,7 @@ public class JobEntryJobDialog extends JobEntryBaseDialog implements JobEntryDia
         } else {
 
           if ( !prevName.endsWith( ".kjb" ) ) {
-            prevName = getEntryName( Const.trim( wPath.getText() ) + ".kjb" );
+            prevName = getEntryName( Const.trim( getPath() ) + ".kjb" );
           }
           if ( KettleVFS.fileExists( prevName ) ) {
             wPath.setText( prevName );
@@ -505,23 +506,19 @@ public class JobEntryJobDialog extends JobEntryBaseDialog implements JobEntryDia
     dispose();
   }
 
-  private void getInfo( JobEntryJob jej ) {
-    jej.setName( wName.getText() );
-    if ( rep != null ) {
-      specificationMethod = ObjectLocationSpecificationMethod.REPOSITORY_BY_NAME;
-    } else {
-      specificationMethod = ObjectLocationSpecificationMethod.FILENAME;
-    }
-    jej.setSpecificationMethod( specificationMethod );
+  @VisibleForTesting
+  protected void getInfo( JobEntryJob jej ) {
+    String jobPath = getPath();
+    jej.setName( getName() );
     switch ( specificationMethod ) {
       case FILENAME:
-        jej.setFileName( wPath.getText() );
+        jej.setFileName( jobPath );
         jej.setDirectory( null );
         jej.setJobName( null );
         jej.setJobObjectId( null );
         break;
       case REPOSITORY_BY_NAME:
-        String jobPath = wPath.getText();
+        jobPath = getPath();
         String jobName = jobPath;
         String directory = "";
         int index = jobPath.lastIndexOf( "/" );
@@ -636,14 +633,37 @@ public class JobEntryJobDialog extends JobEntryBaseDialog implements JobEntryDia
   }
 
   public void ok() {
-    if ( Utils.isEmpty( wName.getText() ) ) {
+    if ( Utils.isEmpty( getName() ) ) {
       MessageBox mb = new MessageBox( shell, SWT.OK | SWT.ICON_ERROR );
       mb.setText( BaseMessages.getString( PKG, "System.StepJobEntryNameMissing.Title" ) );
       mb.setMessage( BaseMessages.getString( PKG, "System.JobEntryNameMissing.Msg" ) );
       mb.open();
       return;
     }
+    getSpecificationPath( jobEntry );
     getInfo( jobEntry );
+    jobEntry.setChanged();
     dispose();
+  }
+
+  @VisibleForTesting
+  protected String getName() {
+    return wName.getText();
+  }
+
+  @VisibleForTesting
+  protected String getPath() {
+    return wPath.getText();
+  }
+
+  @VisibleForTesting
+  protected void getSpecificationPath( JobEntryJob jej ) {
+    String jobPath = getPath();
+    if ( rep == null || jobPath.startsWith( "file://" ) || jobPath.startsWith( "zip:file://" ) || jobPath.startsWith( "hdfs://" ) ) {
+      specificationMethod = ObjectLocationSpecificationMethod.FILENAME;
+    } else {
+      specificationMethod = ObjectLocationSpecificationMethod.REPOSITORY_BY_NAME;
+    }
+    jej.setSpecificationMethod( specificationMethod );
   }
 }

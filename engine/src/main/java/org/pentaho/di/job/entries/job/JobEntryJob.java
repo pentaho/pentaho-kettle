@@ -45,6 +45,7 @@ import org.pentaho.di.core.parameters.DuplicateParamException;
 import org.pentaho.di.core.parameters.NamedParams;
 import org.pentaho.di.core.parameters.NamedParamsDefault;
 import org.pentaho.di.core.util.CurrentDirectoryResolver;
+import org.pentaho.di.core.util.StringUtil;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.variables.Variables;
@@ -76,6 +77,7 @@ import org.pentaho.di.resource.ResourceNamingInterface;
 import org.pentaho.di.resource.ResourceReference;
 import org.pentaho.di.www.SlaveServerJobStatus;
 import org.pentaho.metastore.api.IMetaStore;
+import org.pentaho.platform.api.repository2.unified.RepositoryFile;
 import org.w3c.dom.Node;
 
 import java.io.OutputStream;
@@ -118,7 +120,6 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
   public LogLevel logFileLevel;
 
   public boolean parallel;
-  private String directoryPath;
   public boolean setAppendLogfile;
   public boolean createParentFolder;
 
@@ -272,7 +273,7 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
 
     retval.append( super.getXML() );
 
-    // specificationMethod
+    // specificationMethod - export as is, we may be importing it later. in runtime we'll find the actual spec method
     //
     retval.append( "      " ).append(
       XMLHandler.addTagValue( "specification_method", specificationMethod == null ? null : specificationMethod
@@ -299,12 +300,8 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
 
     retval.append( "      " ).append( XMLHandler.addTagValue( "filename", filename ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "jobname", jobname ) );
+    retval.append( "      " ).append( XMLHandler.addTagValue( "directory", directory ) );
 
-    if ( directory != null ) {
-      retval.append( "      " ).append( XMLHandler.addTagValue( "directory", directory ) );
-    } else if ( directoryPath != null ) {
-      retval.append( "      " ).append( XMLHandler.addTagValue( "directory", directoryPath ) );
-    }
     retval.append( "      " ).append( XMLHandler.addTagValue( "arg_from_previous", argFromPrevious ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "params_from_previous", paramsFromPrevious ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "exec_per_row", execPerRow ) );
@@ -354,24 +351,6 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
     return retval.toString();
   }
 
-  private void checkObjectLocationSpecificationMethod() {
-    if ( specificationMethod == null ) {
-      // Backward compatibility
-      //
-      // Default = Filename
-      //
-      specificationMethod = ObjectLocationSpecificationMethod.FILENAME;
-
-      if ( !Utils.isEmpty( filename ) ) {
-        specificationMethod = ObjectLocationSpecificationMethod.FILENAME;
-      } else if ( jobObjectId != null ) {
-        specificationMethod = ObjectLocationSpecificationMethod.REPOSITORY_BY_REFERENCE;
-      } else if ( !Utils.isEmpty( jobname ) ) {
-        specificationMethod = ObjectLocationSpecificationMethod.REPOSITORY_BY_NAME;
-      }
-    }
-  }
-
   @Override
   public void loadXML( Node entrynode, List<DatabaseMeta> databases, List<SlaveServer> slaveServers,
     Repository rep, IMetaStore metaStore ) throws KettleXMLException {
@@ -385,14 +364,31 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
       jobObjectId = Utils.isEmpty( jobId ) ? null : new StringObjectId( jobId );
       filename = XMLHandler.getTagValue( entrynode, "filename" );
       jobname = XMLHandler.getTagValue( entrynode, "jobname" );
+      directory = XMLHandler.getTagValue( entrynode, "directory" );
 
-      if ( rep != null && rep.isConnected() && !Utils.isEmpty( jobname ) ) {
-        specificationMethod = ObjectLocationSpecificationMethod.REPOSITORY_BY_NAME;
+      /*
+       * if we're connected to a repository and jobname is present use REPOSITORY_BY_NAME
+       * if we're connected to a repository and jobobjectid is present use REPOSITORY_BY_REFERENCE
+       * if we're connected to a repository and filename is present use FILENAME
+       * if we're connected and no other data is present, default to REPOSITORY_BY_NAME
+       * if we're not connected to a repository, always use FILENAME
+       *
+       * no other options are supported
+       */
+
+      if ( rep != null && rep.isConnected() ) {
+        if ( !Utils.isEmpty( jobname ) ) {
+          specificationMethod = ObjectLocationSpecificationMethod.REPOSITORY_BY_NAME;
+        } else if ( jobObjectId != null ) {
+          specificationMethod = ObjectLocationSpecificationMethod.REPOSITORY_BY_REFERENCE;
+        } else if ( !Utils.isEmpty( filename ) ) {
+          specificationMethod = ObjectLocationSpecificationMethod.FILENAME;
+        } else {
+          specificationMethod = ObjectLocationSpecificationMethod.REPOSITORY_BY_NAME;
+        }
+      } else {
+        specificationMethod = ObjectLocationSpecificationMethod.FILENAME;
       }
-
-      // Backward compatibility check for object specification
-      //
-      checkObjectLocationSpecificationMethod();
 
       argFromPrevious = "Y".equalsIgnoreCase( XMLHandler.getTagValue( entrynode, "arg_from_previous" ) );
       paramsFromPrevious = "Y".equalsIgnoreCase( XMLHandler.getTagValue( entrynode, "params_from_previous" ) );
@@ -406,7 +402,6 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
       setAppendLogfile = "Y".equalsIgnoreCase( XMLHandler.getTagValue( entrynode, "set_append_logfile" ) );
       remoteSlaveServerName = XMLHandler.getTagValue( entrynode, "slave_server_name" );
       passingExport = "Y".equalsIgnoreCase( XMLHandler.getTagValue( entrynode, "pass_export" ) );
-      directory = XMLHandler.getTagValue( entrynode, "directory" );
       createParentFolder = "Y".equalsIgnoreCase( XMLHandler.getTagValue( entrynode, "create_parent_folder" ) );
       runConfiguration = XMLHandler.getTagValue( entrynode, "run_configuration" );
 
@@ -468,9 +463,24 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
       directory = rep.getJobEntryAttributeString( id_jobentry, "dir_path" );
       filename = rep.getJobEntryAttributeString( id_jobentry, "file_name" );
 
-      // Backward compatibility check for object specification
-      //
-      checkObjectLocationSpecificationMethod();
+      /*
+       * when loaded from a repository and jobname is present use REPOSITORY_BY_NAME
+       * if filename is not present and jobObjectId use REPOSITORY_BY_REFERENCE for backwards compatibility
+       * if filename is present use FILENAME
+       * if nothing else, default to REPOSITORY_BY_NAME
+       *
+       * no other options are supported
+       */
+
+      if ( !Utils.isEmpty( jobname ) ) {
+        specificationMethod = ObjectLocationSpecificationMethod.REPOSITORY_BY_NAME;
+      } else if ( jobObjectId != null ) {
+        specificationMethod = ObjectLocationSpecificationMethod.REPOSITORY_BY_REFERENCE;
+      } else if ( !Utils.isEmpty( filename ) ) {
+        specificationMethod = ObjectLocationSpecificationMethod.FILENAME;
+      } else {
+        specificationMethod = ObjectLocationSpecificationMethod.REPOSITORY_BY_NAME;
+      }
 
       argFromPrevious = rep.getJobEntryAttributeBoolean( id_jobentry, "arg_from_previous" );
       paramsFromPrevious = rep.getJobEntryAttributeBoolean( id_jobentry, "params_from_previous" );
@@ -1325,77 +1335,37 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
     JobMeta jobMeta = null;
     try {
       CurrentDirectoryResolver r = new CurrentDirectoryResolver();
-      VariableSpace tmpSpace = r.resolveCurrentDirectory(
-          specificationMethod, space, rep, parentJob, getFilename() );
+      VariableSpace tmpSpace = r.resolveCurrentDirectory( specificationMethod, space, rep, parentJob, getFilename() );
+
       switch ( specificationMethod ) {
         case FILENAME:
           String realFilename = tmpSpace.environmentSubstitute( getFilename() );
-          if ( rep != null ) {
-            // need to try to load from the repository
-            realFilename = r.normalizeSlashes( realFilename );
-            try {
-              String dirStr = realFilename.substring( 0, realFilename.lastIndexOf( "/" ) );
-              String tmpFilename = realFilename.substring( realFilename.lastIndexOf( "/" ) + 1 );
-              RepositoryDirectoryInterface dir = rep.findDirectory( dirStr );
-              jobMeta = rep.loadJob( tmpFilename, dir, null, null );
-            } catch ( KettleException ke ) {
-              // try without extension
-              if ( realFilename.endsWith( Const.STRING_JOB_DEFAULT_EXT ) ) {
-                try {
-                  String tmpFilename = realFilename.substring( realFilename.lastIndexOf( "/" ) + 1,
-                      realFilename.indexOf( "." + Const.STRING_JOB_DEFAULT_EXT ) );
-                  String dirStr = realFilename.substring( 0, realFilename.lastIndexOf( "/" ) );
-                  RepositoryDirectoryInterface dir = rep.findDirectory( dirStr );
-                  jobMeta = rep.loadJob( tmpFilename, dir, null, null );
-                } catch ( KettleException ke2 ) {
-                  // fall back to try loading from file system (mappingJobMeta is going to be null)
-                }
-              }
-            }
-          }
-          if ( jobMeta == null ) {
-            jobMeta = new JobMeta( tmpSpace, realFilename, rep, metaStore, null );
-          }
+          jobMeta = new JobMeta( tmpSpace, realFilename, rep, metaStore, null );
           break;
         case REPOSITORY_BY_NAME:
-          String realJobName = getJobName();
-          String realDirectory = "";
-          if ( realJobName.startsWith( "${" ) && realJobName.endsWith( "}" ) ) {
-            String transPath = tmpSpace.environmentSubstitute( realJobName );
-            int index = transPath.lastIndexOf( "/" );
+          String realDirectory = tmpSpace.environmentSubstitute( getDirectory() != null ? getDirectory() : "" );
+          String realJobName = tmpSpace.environmentSubstitute( getJobName() );
+
+          String transPath = StringUtil.trimEnd( realDirectory, '/' ) + RepositoryFile.SEPARATOR + StringUtil.trimStart( realJobName, '/' );
+
+          if ( transPath.startsWith( "file://" ) || transPath.startsWith( "zip:file://" ) || transPath.startsWith( "hdfs://" ) ) {
+            if ( !transPath.endsWith( RepositoryObjectType.JOB.getExtension() ) ) {
+              transPath = transPath + RepositoryObjectType.JOB.getExtension();
+            }
+            jobMeta = new JobMeta( tmpSpace, transPath, rep, metaStore, null );
+          } else {
+            int index = transPath.lastIndexOf( RepositoryFile.SEPARATOR );
             if ( index != -1 ) {
               realJobName = transPath.substring( index + 1 );
-              realDirectory = index == 0 ? "/" : transPath.substring( 0, index );
+              realDirectory = index == 0 ? RepositoryFile.SEPARATOR : transPath.substring( 0, index );
             }
-          } else {
-            realJobName = tmpSpace.environmentSubstitute( getJobName() );
-            realDirectory = tmpSpace.environmentSubstitute( getDirectory() );
-          }
 
-          if ( rep != null ) {
             realDirectory = r.normalizeSlashes( realDirectory );
-            RepositoryDirectoryInterface repositoryDirectory =
-              rep.loadRepositoryDirectoryTree().findDirectory( realDirectory );
+            RepositoryDirectoryInterface repositoryDirectory = rep.loadRepositoryDirectoryTree().findDirectory( realDirectory );
             if ( repositoryDirectory == null ) {
-              throw new KettleException( "Unable to find repository directory ["
-                + Const.NVL( realDirectory, "" ) + "]" );
+              throw new KettleException( "Unable to find repository directory [" + Const.NVL( realDirectory, "" ) + "]" );
             }
             jobMeta = rep.loadJob( realJobName, repositoryDirectory, null, null ); // reads
-          } else {
-            // rep is null, let's try loading by filename
-            try {
-              jobMeta = new JobMeta( tmpSpace, realDirectory + "/" + realJobName, rep, metaStore, null );
-            } catch ( KettleException ke ) {
-              try {
-                // add .kjb extension and try again
-                jobMeta = new JobMeta( tmpSpace,
-                    realDirectory + "/" + realJobName + "." + Const.STRING_JOB_DEFAULT_EXT, rep, metaStore, null );
-              } catch ( KettleException ke2 ) {
-                ke2.printStackTrace();
-                throw new KettleException(
-                    "Could not execute job specified in a repository since we're not connected to one" );
-              }
-            }
           }
           break;
         case REPOSITORY_BY_REFERENCE:
