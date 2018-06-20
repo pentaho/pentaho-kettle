@@ -5,6 +5,7 @@ buildProperties:
         BUILD_PLAN_ID                  : Master Suite Build
 
         MAVEN_DEFAULT_COMMAND_OPTIONS  : -B -e -q
+        IGNORE_PIPELINE_FAILURE        : true
 
 jobGroups:
   # Always required
