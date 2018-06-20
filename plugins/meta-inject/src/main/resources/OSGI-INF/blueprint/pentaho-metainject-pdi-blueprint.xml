@@ -8,7 +8,7 @@
   <bean id="metaInjectMeta" class="org.pentaho.di.trans.steps.metainject.MetaInjectMeta" scope="prototype"/>
   <bean id="metaInjectPlugin" class="org.pentaho.di.osgi.OSGIPlugin" scope="prototype">
     <property name="mainType" value="org.pentaho.di.trans.step.StepMetaInterface"/>
-    <property name="name" value="ETL Metadata Injection"/>
+    <property name="name" value="ETL metadata injection"/>
     <property name="ID" value="MetaInject"/>
     <property name="documentationUrl" value="Products/Data_Integration/Transformation_Step_Reference/ETL_Metadata_Injection"/>
     <property name="imageFile" value="org/pentaho/di/ui/trans/steps/metainject/img/GenericTransform.svg"/>

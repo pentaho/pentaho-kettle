@@ -30,6 +30,8 @@ import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.ShellAdapter;
+import org.eclipse.swt.events.ShellEvent;
 import org.eclipse.swt.events.TraverseEvent;
 import org.eclipse.swt.events.TraverseListener;
 import org.eclipse.swt.graphics.Rectangle;
@@ -271,6 +273,7 @@ public class BaseStepDialog extends Dialog {
     this.props = PropsUI.getInstance();
   }
 
+
   /**
    * Instantiates a new base step dialog.
    *
@@ -290,9 +293,36 @@ public class BaseStepDialog extends Dialog {
    * @param stepMetaInterface the step meta interface (because of the legacy code)
    */
   public void setShellImage( Shell shell, StepMetaInterface stepMetaInterface ) {
+
     setShellImage( shell );
+
+    if ( stepMeta.isDeprecated() ) {
+
+      addDeprecation();
+    }
   }
 
+  private void addDeprecation() {
+
+    if ( shell == null ) {
+
+      return;
+    }
+    shell.addShellListener( new ShellAdapter() {
+
+      private boolean deprecation = false;
+
+      @Override public void shellActivated( ShellEvent shellEvent ) {
+        super.shellActivated( shellEvent );
+        if ( !stepMeta.isDeprecated() || deprecation ) {
+          return;
+        }
+        String deprecated = BaseMessages.getString( PKG, "BaseStep.Category.Deprecated" ).toLowerCase();
+        shell.setText( shell.getText() + " (" + deprecated + ")" );
+        deprecation = true;
+      }
+    } );
+  }
   /**
    * Dispose this dialog.
    */

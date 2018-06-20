@@ -22,9 +22,6 @@
 
 package org.pentaho.di.ui.trans.steps.ivwloader;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CCombo;
@@ -72,6 +69,9 @@ import org.pentaho.di.ui.core.widget.ColumnInfo;
 import org.pentaho.di.ui.core.widget.TableView;
 import org.pentaho.di.ui.core.widget.TextVar;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Dialog box for the VectorWise loader.
@@ -154,7 +154,7 @@ public class IngresVectorwiseLoaderDialog extends BaseStepDialog implements Step
     formLayout.marginHeight = Const.FORM_MARGIN;
 
     shell.setLayout( formLayout );
-    shell.setText( "Ingres VectorWise Loader" );
+    shell.setText( BaseMessages.getString( PKG, "IngresVectorwiseLoaderDialog.Shell.Title" ));
 
     middle = props.getMiddlePct();
     margin = Const.MARGIN;
