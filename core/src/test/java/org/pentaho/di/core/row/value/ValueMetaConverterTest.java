@@ -63,7 +63,7 @@ public class ValueMetaConverterTest {
     Object[][] tests = new Object[][] {
       { ValueMetaInterface.TYPE_NUMBER, ValueMetaInterface.TYPE_NONE, 1234.56d, null },
       { ValueMetaInterface.TYPE_NUMBER, ValueMetaInterface.TYPE_STRING, 1234.56d, "1234.56" },
-      { ValueMetaInterface.TYPE_NUMBER, ValueMetaInterface.TYPE_NUMBER, 1234.56d, 1234.56d },
+      { ValueMetaInterface.TYPE_NUMBER, ValueMetaInterface.TYPE_NUMBER, 1234.568d, 1234.57d, null, 2 },
       { ValueMetaInterface.TYPE_NUMBER, ValueMetaInterface.TYPE_INTEGER, 1234.56d, 1234L },
       { ValueMetaInterface.TYPE_NUMBER, ValueMetaInterface.TYPE_BIGNUMBER, 1234.56d, new BigDecimal( 1234.56 ) },
 
@@ -74,15 +74,15 @@ public class ValueMetaConverterTest {
       { ValueMetaInterface.TYPE_STRING, ValueMetaInterface.TYPE_NUMBER, "1234.56", 1234.56 },
       { ValueMetaInterface.TYPE_STRING, ValueMetaInterface.TYPE_BIGNUMBER, "123456789.123456789",
         new BigDecimal( "123456789.123456789" ) },
-      { ValueMetaInterface.TYPE_STRING, ValueMetaInterface.TYPE_TIMESTAMP, "2001/11/01 20:30:15.123", timeStamp1 },
-      { ValueMetaInterface.TYPE_STRING, ValueMetaInterface.TYPE_DATE, "1999/12/31 00:00:00.000", date1 },
+      { ValueMetaInterface.TYPE_STRING, ValueMetaInterface.TYPE_TIMESTAMP, "2001/11/01 20:30:15.123", timeStamp1, ValueMetaBase.DEFAULT_DATE_PARSE_MASK },
+      { ValueMetaInterface.TYPE_STRING, ValueMetaInterface.TYPE_DATE, "1999-12-31", date1, "yyyy-MM-dd" },
       { ValueMetaInterface.TYPE_STRING, ValueMetaInterface.TYPE_BOOLEAN, "true", true },
       { ValueMetaInterface.TYPE_STRING, ValueMetaInterface.TYPE_BINARY, "foobar", "foobar".getBytes() },
 
       { ValueMetaInterface.TYPE_DATE, ValueMetaInterface.TYPE_NONE, date1, null },
       { ValueMetaInterface.TYPE_DATE, ValueMetaInterface.TYPE_DATE, date1, date1 },
       { ValueMetaInterface.TYPE_DATE, ValueMetaInterface.TYPE_INTEGER, date1, date1.getTime() },
-      { ValueMetaInterface.TYPE_DATE, ValueMetaInterface.TYPE_STRING, date1, "1999/12/31 00:00:00.000" },
+      { ValueMetaInterface.TYPE_DATE, ValueMetaInterface.TYPE_STRING, date1, "1999-12-31", "yyyy-MM-dd" },
       { ValueMetaInterface.TYPE_DATE, ValueMetaInterface.TYPE_TIMESTAMP, date1, new Timestamp( date1.getTime() ) },
 
       { ValueMetaInterface.TYPE_BOOLEAN, ValueMetaInterface.TYPE_NONE, true, null },
@@ -112,7 +112,7 @@ public class ValueMetaConverterTest {
       { ValueMetaInterface.TYPE_BINARY, ValueMetaInterface.TYPE_BINARY, "foobar".getBytes(), "foobar".getBytes() },
 
       { ValueMetaInterface.TYPE_TIMESTAMP, ValueMetaInterface.TYPE_NONE, timeStamp1, null },
-      { ValueMetaInterface.TYPE_TIMESTAMP, ValueMetaInterface.TYPE_STRING, timeStamp1, "2001/11/01 20:30:15.123" },
+      { ValueMetaInterface.TYPE_TIMESTAMP, ValueMetaInterface.TYPE_STRING, timeStamp1, "2001/11/01 20:30:15.123", ValueMetaBase.DEFAULT_DATE_PARSE_MASK },
       { ValueMetaInterface.TYPE_TIMESTAMP, ValueMetaInterface.TYPE_INTEGER, timeStamp1, timeStamp1.getTime() },
       { ValueMetaInterface.TYPE_TIMESTAMP, ValueMetaInterface.TYPE_TIMESTAMP, timeStamp1, timeStamp1 },
       { ValueMetaInterface.TYPE_TIMESTAMP, ValueMetaInterface.TYPE_DATE, timeStamp1, new Date( timeStamp1.getTime() ) },
@@ -134,6 +134,17 @@ public class ValueMetaConverterTest {
       for ( int targetType = startTarget; targetType <= endTarget; targetType++ ) {
         Object[] testSpec = testMap.get( getKey( sourceType, targetType ) );
         if ( testSpec != null ) {
+          if ( ( testSpec.length >= 5 ) && ( testSpec[4] != null ) ) {
+            converter.setDatePattern( new SimpleDateFormat( testSpec[ 4 ].toString() ) );
+          } else {
+            converter.setDatePattern( new SimpleDateFormat( ValueMetaBase.DEFAULT_DATE_PARSE_MASK ) );
+          }
+          if ( ( testSpec.length >= 6 ) && ( testSpec[5] != null ) ) {
+            converter.setPrecision( (int)testSpec[5] );
+          } else {
+            converter.setPrecision( 0 );
+          }
+
           Object targetValue = converter.convertFromSourceToTargetDataType( sourceType, targetType, testSpec[ 2 ] );
           if ( IS_VERBOSE ) {
             System.out.println(
