@@ -449,10 +449,6 @@ public class TransExecutorDialog extends BaseStepDialog implements StepDialogInt
         if ( Utils.isEmpty( filename ) ) {
           return;
         }
-        if ( filename.endsWith( ".ktr" ) ) {
-          filename = filename.replace( ".ktr", "" );
-          wPath.setText( filename );
-        }
         String transPath = transMeta.environmentSubstitute( filename );
         String realTransname = transPath;
         String realDirectory = "";
