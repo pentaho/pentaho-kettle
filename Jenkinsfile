@@ -220,7 +220,7 @@ pipeline {
     stage('Tag') {
       when {
         expression {
-          !buildProperties.PUSH_CHANGES && !buildProperties.NOOP
+          !buildProperties.PUSH_CHANGES && !buildProperties.NOOP && buildProperties.TAG_NAME_TYPE != 'NONE'
         }
       }
       failFast true
