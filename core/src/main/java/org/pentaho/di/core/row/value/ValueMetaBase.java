@@ -5332,7 +5332,7 @@ public class ValueMetaBase implements ValueMetaInterface {
             }
             String string = getString( data );
             int len = string.length();
-            int maxlen = getLength();
+            int maxlen = isLengthInvalidOrZero() ? 0 : getLength();
             if ( len < maxlen ) {
               preparedStatement.setString( index, string );
             } else {
