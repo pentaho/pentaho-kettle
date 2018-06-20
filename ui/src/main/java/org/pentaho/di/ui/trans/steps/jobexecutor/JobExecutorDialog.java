@@ -448,10 +448,6 @@ public class JobExecutorDialog extends BaseStepDialog implements StepDialogInter
         if ( Utils.isEmpty( filename ) ) {
           return;
         }
-        if ( filename.endsWith( ".kjb" ) ) {
-          filename = filename.replace( ".kjb", "" );
-          wPath.setText( filename );
-        }
         String transPath = transMeta.environmentSubstitute( filename );
         String realJobname = transPath;
         String realDirectory = "";
