@@ -52,12 +52,12 @@ public class TopicSelection extends Composite {
   private final String textTopicRadioLabel;
   private final String fieldTopicRadioLabel;
 
-  private Group topicGroup;
-  private Button topicComesFromField;
-  private Label topicEntryType;
+  private Group wTopicGroup;
+  private Button wTopicFromField;
+  private Button wTopicFromText;
+  private Label wlTopic;
   private TextVar wTopicText;
   private ComboVar wTopicField;
-
 
   private TopicSelection( final Builder builder ) {
     super( builder.composite, builder.style );
@@ -79,60 +79,60 @@ public class TopicSelection extends Composite {
     FormLayout topicSelectionLayout = new FormLayout();
     this.setLayout( topicSelectionLayout );
 
-    topicGroup = new Group( this, SWT.SHADOW_ETCHED_IN );
-    props.setLook( topicGroup );
-    topicGroup.setText( topicGroupLabel );
+    wTopicGroup = new Group( this, SWT.SHADOW_ETCHED_IN );
+    props.setLook( wTopicGroup );
+    wTopicGroup.setText( topicGroupLabel );
 
     FormLayout topicGroupLayout = new FormLayout();
     topicGroupLayout.marginHeight = 15;
     topicGroupLayout.marginWidth = 15;
-    topicGroup.setLayout( topicGroupLayout );
+    wTopicGroup.setLayout( topicGroupLayout );
 
     FormData fdTopicGroup = new FormData();
     fdTopicGroup.left = new FormAttachment( 0, 0 );
     fdTopicGroup.top = new FormAttachment( 0, 10 );
     fdTopicGroup.right = new FormAttachment( 100, 0 );
-    topicGroup.setLayoutData( fdTopicGroup );
+    wTopicGroup.setLayoutData( fdTopicGroup );
 
-    Button specifyTopic = new Button( topicGroup, SWT.RADIO );
-    topicComesFromField = new Button( topicGroup, SWT.RADIO );
-    props.setLook( specifyTopic );
-    props.setLook( topicComesFromField );
+    wTopicFromText = new Button( wTopicGroup, SWT.RADIO );
+    wTopicFromField = new Button( wTopicGroup, SWT.RADIO );
+    props.setLook( wTopicFromText );
+    props.setLook( wTopicFromField );
 
     SelectionAdapter selectionListener = new SelectionAdapter() {
       @Override
       public void widgetSelected( SelectionEvent selectionEvent ) {
         super.widgetSelected( selectionEvent );
-        setTopicWidgetVisibility( topicComesFromField );
+        setTopicWidgetVisibility( wTopicFromField );
       }
     };
 
-    topicComesFromField.addSelectionListener( selectionListener );
-    specifyTopic.addSelectionListener( selectionListener );
+    wTopicFromField.addSelectionListener( selectionListener );
+    wTopicFromText.addSelectionListener( selectionListener );
 
-    topicComesFromField.setSelection( topicInField );
-    specifyTopic.setSelection( !topicInField );
+    wTopicFromField.setSelection( topicInField );
+    wTopicFromText.setSelection( !topicInField );
 
-    specifyTopic.setText( textTopicRadioLabel );
-    topicComesFromField.setText( fieldTopicRadioLabel );
+    wTopicFromText.setText( textTopicRadioLabel );
+    wTopicFromField.setText( fieldTopicRadioLabel );
 
     FormData specifyTopicLayout = new FormData();
     specifyTopicLayout.left = new FormAttachment( 0, 0 );
     specifyTopicLayout.top = new FormAttachment( 0, 0 );
-    specifyTopic.setLayoutData( specifyTopicLayout );
+    wTopicFromText.setLayoutData( specifyTopicLayout );
 
     FormData fdTopicComesFromField = new FormData();
     fdTopicComesFromField.left = new FormAttachment( 0, 0 );
-    fdTopicComesFromField.top = new FormAttachment( specifyTopic, 5 );
+    fdTopicComesFromField.top = new FormAttachment( wTopicFromText, 5 );
 
-    topicComesFromField.setLayoutData( fdTopicComesFromField );
-    topicComesFromField.addSelectionListener( selectionListener );
-    specifyTopic.addSelectionListener( selectionListener );
+    wTopicFromField.setLayoutData( fdTopicComesFromField );
+    wTopicFromField.addSelectionListener( selectionListener );
+    wTopicFromText.addSelectionListener( selectionListener );
 
-    Label separator = new Label( topicGroup, SWT.SEPARATOR | SWT.VERTICAL );
+    Label separator = new Label( wTopicGroup, SWT.SEPARATOR | SWT.VERTICAL );
     FormData fdSeparator = new FormData();
     fdSeparator.top = new FormAttachment( 0, 0 );
-    fdSeparator.left = new FormAttachment( topicComesFromField, 15 );
+    fdSeparator.left = new FormAttachment( wTopicFromField, 15 );
     fdSeparator.bottom = new FormAttachment( 100, 0 );
     separator.setLayoutData( fdSeparator );
 
@@ -141,21 +141,21 @@ public class TopicSelection extends Composite {
     fdTopicEntry.left = new FormAttachment( separator, 15 );
     fdTopicEntry.right = new FormAttachment( 100, 0 );
 
-    topicEntryType = new Label( topicGroup, SWT.LEFT );
-    topicEntryType.setLayoutData( fdTopicEntry );
-    props.setLook( topicEntryType );
+    wlTopic = new Label( wTopicGroup, SWT.LEFT );
+    wlTopic.setLayoutData( fdTopicEntry );
+    props.setLook( wlTopic );
 
     FormData formData = new FormData();
-    formData.top = new FormAttachment( topicEntryType, 5 );
+    formData.top = new FormAttachment( wlTopic, 5 );
     formData.left = new FormAttachment( separator, 15 );
     formData.right = new FormAttachment( 100, 0 );
 
-    wTopicText = new TextVar( transMeta, topicGroup, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
-    wTopicField = createFieldDropDown( topicGroup, props, stepMeta, formData );
+    wTopicText = new TextVar( transMeta, wTopicGroup, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
+    wTopicField = createFieldDropDown( wTopicGroup, props, stepMeta, formData );
     wTopicText.setLayoutData( formData );
     wTopicField.setLayoutData( formData );
 
-    setTopicWidgetVisibility( topicComesFromField );
+    setTopicWidgetVisibility( wTopicFromField );
 
     wTopicText.addModifyListener( lsMod );
     wTopicField.addModifyListener( lsMod );
@@ -166,9 +166,9 @@ public class TopicSelection extends Composite {
     wTopicField.setVisible( topicComesFromField.getSelection() );
     wTopicText.setVisible( !topicComesFromField.getSelection() );
     if ( topicComesFromField.getSelection() ) {
-      topicEntryType.setText( fieldTopicLabel );
+      wlTopic.setText( fieldTopicLabel );
     } else {
-      topicEntryType.setText( textTopicLabel );
+      wlTopic.setText( textTopicLabel );
     }
   }
 
@@ -188,16 +188,28 @@ public class TopicSelection extends Composite {
     wTopicText.setText( topicText );
   }
 
+  public void setTopicInField( boolean topicInField ) {
+    wTopicFromField.setSelection( topicInField );
+    wTopicFromText.setSelection( !topicInField );
+
+    setTopicWidgetVisibility( wTopicFromField );
+  }
+
   public boolean isTopicInField() {
-    return topicComesFromField.getSelection();
+    return wTopicFromField.getSelection();
   }
 
   public void setEnabled( boolean enabled ) {
-    topicGroup.setEnabled( enabled );
-    topicComesFromField.setEnabled( enabled );
-    topicEntryType.setEnabled( enabled );
+    wTopicGroup.setEnabled( enabled );
+
+    wTopicFromField.setEnabled( enabled );
+    wTopicFromText.setEnabled( enabled );
+
+    wlTopic.setEnabled( enabled );
+
     wTopicText.setEnabled( enabled );
     wTopicText.setEditable( enabled );
+
     wTopicField.setEnabled( enabled );
     wTopicField.setEditable( enabled );
   }
