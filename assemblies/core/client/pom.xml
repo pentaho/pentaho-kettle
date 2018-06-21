@@ -127,7 +127,7 @@
                                 </artifactItem>
                             </artifactItems>
                             <outputDirectory>${assembly.dir}/system</outputDirectory>
-                            <excludes>**/etc-pan/*.cfg,**/etc-kitchen/*.cfg</excludes>
+                            <excludes>**/etc-pan/*.cfg,**/etc-kitchen/*.cfg,**/etc-scale/*.cfg</excludes>
                         </configuration>
                     </execution>
                     <execution>
