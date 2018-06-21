@@ -988,7 +988,9 @@ public class ValueMetaBase implements ValueMetaInterface {
     }
 
     try {
-      return getDecimalFormat( false ).format( number );
+      DecimalFormat format = getDecimalFormat( false );
+      format.setMaximumFractionDigits( 50 );
+      return format.format( number );
     } catch ( Exception e ) {
       throw new KettleValueException( toString() + " : couldn't convert Number to String ", e );
     }

@@ -29,7 +29,6 @@ import java.util.TimeZone;
 
 import org.junit.ClassRule;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.plugins.PluginRegistry;
 
@@ -388,7 +387,7 @@ public class ValueMetaTest {
     target.setGroupingSymbol( "'" );
 
     String string = (String) source.convertData( target, d );
-    assertEquals( "123'456'789.01", string );
+    assertEquals( "123'456'789.012", string );
   }
 
   /**
