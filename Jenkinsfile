@@ -231,22 +231,6 @@ pipeline {
       }
     }
 
-    stage('Archive Artifacts') {
-      when {
-        expression {
-          buildProperties.ARCHIVE_ARTIFACTS && !buildProperties.NOOP
-        }
-      }
-      steps {
-        archiveArtifacts(
-            artifacts: '**/dist/*.gz, **/dist/*.zip, **/target/*.gz, **/target/*.zip, **/build/**/*.gz, **/build/**/*.zip, **/build/*.zip',
-            excludes: '',
-            allowEmptyArchive: true,
-            fingerprint: false
-        )
-      }
-    }
-
     stage('Clean Workspace') {
       when {
         expression {

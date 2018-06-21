@@ -7,7 +7,7 @@ jobGroups:
 
   100:
 
-     - jobID           :  wingman
-       scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-wingman.git
-       scmBranch       :  ${DEFAULT_BRANCH}
-       buildFramework  :  gradle
+     - jobID                  :  wingman
+       scmUrl                 :  ${PENTAHO_SCM_ROOT}/pentaho-wingman.git
+       scmBranch              :  ${DEFAULT_BRANCH}
+       buildFramework         :  gradle
