@@ -84,5 +84,5 @@ public @interface Step {
    */
   String forumUrl() default "";
 
-  String suggestedStep() default "";
+  String suggestion() default "";
 }

@@ -177,8 +177,8 @@ public class JobEntryPluginType extends BasePluginType implements PluginTypeInte
   }
 
   @Override
-  protected String extractSuggestedStep( Annotation annotation ) {
-    return null;
+  protected String extractSuggestion( Annotation annotation ) {
+    return ( (JobEntry) annotation ).suggestion();
   }
 
   @Override

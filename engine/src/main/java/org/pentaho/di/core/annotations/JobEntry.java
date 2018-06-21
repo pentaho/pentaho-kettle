@@ -66,4 +66,6 @@ public @interface JobEntry {
 
   String classLoaderGroup() default "";
 
+  String suggestion() default "";
+
 }

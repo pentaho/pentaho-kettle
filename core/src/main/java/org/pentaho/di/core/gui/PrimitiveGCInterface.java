@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -27,7 +27,8 @@ import java.awt.image.BufferedImage;
 public interface PrimitiveGCInterface {
 
   public enum EColor {
-    BACKGROUND, BLACK, WHITE, RED, YELLOW, ORANGE, GREEN, BLUE, MAGENTA, GRAY, LIGHTGRAY, DARKGRAY, LIGHTBLUE, CRYSTAL, HOP_DEFAULT, HOP_OK
+    BACKGROUND, BLACK, WHITE, RED, YELLOW, ORANGE, GREEN, BLUE, MAGENTA, GRAY, LIGHTGRAY, DARKGRAY, LIGHTBLUE, CRYSTAL,
+    HOP_DEFAULT, HOP_OK, DEPRECATED
   }
 
   public enum EFont {
@@ -39,9 +40,9 @@ public interface PrimitiveGCInterface {
   }
 
   public enum EImage {
-    LOCK, STEP_ERROR, STEP_ERROR_RED, EDIT, CONTEXT_MENU, TRUE, FALSE, ERROR, INFO, TARGET, INPUT, OUTPUT, ARROW, COPY_ROWS,
-      UNCONDITIONAL, PARALLEL, BUSY, INJECT, LOAD_BALANCE, CHECKPOINT, DB,
-    ARROW_DEFAULT, ARROW_OK, ARROW_ERROR, ARROW_DISABLED, ARROW_CANDIDATE
+    LOCK, STEP_ERROR, STEP_ERROR_RED, EDIT, CONTEXT_MENU, TRUE, FALSE, ERROR, INFO, TARGET, INPUT, OUTPUT, ARROW,
+    COPY_ROWS, UNCONDITIONAL, PARALLEL, BUSY, INJECT, LOAD_BALANCE, CHECKPOINT, DB, ARROW_DEFAULT, ARROW_OK,
+    ARROW_ERROR, ARROW_DISABLED, ARROW_CANDIDATE
   }
 
   public void setLineWidth( int width );

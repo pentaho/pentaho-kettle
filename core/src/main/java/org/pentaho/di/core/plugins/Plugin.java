@@ -62,7 +62,7 @@ public class Plugin implements PluginInterface, Comparable<Plugin> {
   private String documentationUrl;
   private String casesUrl;
   private String forumUrl;
-  private String suggestedStep;
+  private String suggestion;
 
   /**
    * @param ids
@@ -165,17 +165,17 @@ public class Plugin implements PluginInterface, Comparable<Plugin> {
    * @param documentationUrl
    * @param casesUrl
    * @param forumUrl
-   * @param suggestedStep
+   * @param suggestion
    */
   public Plugin( String[] ids, Class<? extends PluginTypeInterface> pluginType, Class<?> mainType,
                  String category, String name, String description, String imageFile, boolean separateClassLoaderNeeded,
                  String classLoaderGroup, boolean nativePlugin, Map<Class<?>, String> classMap, List<String> libraries,
                  String errorHelpFile, URL pluginFolder, String documentationUrl, String casesUrl, String forumUrl,
-                 String suggestedStep ) {
+                 String suggestion ) {
     this( ids, pluginType, mainType, category, name, description, imageFile, separateClassLoaderNeeded,
       classLoaderGroup, nativePlugin, classMap, libraries, errorHelpFile, pluginFolder, documentationUrl, casesUrl,
       forumUrl );
-    this.suggestedStep = suggestedStep;
+    this.suggestion = suggestion;
   }
 
   /**
@@ -196,15 +196,15 @@ public class Plugin implements PluginInterface, Comparable<Plugin> {
    * @param documentationUrl
    * @param casesUrl
    * @param forumUrl
-   * @param suggestedStep
+   * @param suggestion
    */
   public Plugin( String[] ids, Class<? extends PluginTypeInterface> pluginType, Class<?> mainType,
                  String category, String name, String description, String imageFile, boolean separateClassLoaderNeeded,
                  boolean nativePlugin, Map<Class<?>, String> classMap, List<String> libraries, String errorHelpFile,
-                 URL pluginFolder, String documentationUrl, String casesUrl, String forumUrl, String suggestedStep ) {
+                 URL pluginFolder, String documentationUrl, String casesUrl, String forumUrl, String suggestion ) {
     this( ids, pluginType, mainType, category, name, description, imageFile, separateClassLoaderNeeded, null,
       nativePlugin, classMap, libraries, errorHelpFile, pluginFolder, documentationUrl, casesUrl, forumUrl );
-    this.suggestedStep = suggestedStep;
+    this.suggestion = suggestion;
   }
 
   @Override
@@ -481,13 +481,13 @@ public class Plugin implements PluginInterface, Comparable<Plugin> {
   }
 
   @Override
-  public void setSuggestedStep( String suggestedStep ) {
-    this.suggestedStep = suggestedStep;
+  public void setSuggestion( String suggestion ) {
+    this.suggestion = suggestion;
   }
 
   @Override
-  public String getSuggestedStep() {
-    return suggestedStep;
+  public String getSuggestion() {
+    return suggestion;
   }
 
   @Override

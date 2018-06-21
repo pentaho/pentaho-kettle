@@ -116,7 +116,7 @@ public class SpoonPluginType extends BasePluginType implements PluginTypeInterfa
   }
 
   @Override
-  protected String extractSuggestedStep( Annotation annotation ) {
+  protected String extractSuggestion( Annotation annotation ) {
     return null;
   }
 

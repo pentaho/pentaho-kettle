@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -26,6 +26,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang.ArrayUtils;
 import org.pentaho.di.base.BaseMeta;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.AttributesInterface;
@@ -41,6 +42,7 @@ import org.pentaho.di.core.plugins.PluginInterface;
 import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.core.xml.XMLInterface;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entries.missing.MissingEntry;
 import org.pentaho.di.repository.ObjectId;
@@ -63,9 +65,13 @@ public class JobEntryCopy implements Cloneable, XMLInterface, GUIPositionInterfa
 
   private JobEntryInterface entry;
 
+  private String suggestion = "";
+
   private int nr; // Copy nr. 0 is the base copy...
 
   private boolean selected;
+
+  private boolean isDeprecated;
 
   private Point location;
 
@@ -156,6 +162,7 @@ public class JobEntryCopy implements Cloneable, XMLInterface, GUIPositionInterfa
         setLocation( x, y );
 
         attributesMap = AttributesUtil.loadAttributes( XMLHandler.getSubNode( entrynode, AttributesUtil.XML_TAG ) );
+        setDeprecationAndSuggestedJobEntry();
       }
     } catch ( Throwable e ) {
       String message = "Unable to read Job Entry copy info from XML node : " + e.toString();
@@ -246,6 +253,7 @@ public class JobEntryCopy implements Cloneable, XMLInterface, GUIPositionInterfa
       if ( entry.getPluginId() == null ) {
         entry.setPluginId( PluginRegistry.getInstance().getPluginId( JobEntryPluginType.class, entry ) );
       }
+      setDeprecationAndSuggestedJobEntry();
     }
   }
 
@@ -466,4 +474,27 @@ public class JobEntryCopy implements Cloneable, XMLInterface, GUIPositionInterfa
     return attributes.get( key );
   }
 
+  public boolean isDeprecated() {
+    return isDeprecated;
+  }
+
+  public String getSuggestion() {
+    return suggestion;
+  }
+
+  private void setDeprecationAndSuggestedJobEntry() {
+    PluginRegistry registry = PluginRegistry.getInstance();
+    final List<PluginInterface> deprecatedJobEntries = registry.getPluginsByCategory( JobEntryPluginType.class,
+      BaseMessages.getString( JobMeta.class, "JobCategory.Category.Deprecated" ) );
+    for ( PluginInterface p : deprecatedJobEntries ) {
+      String[] ids = p.getIds();
+      if ( !ArrayUtils.isEmpty( ids ) && ids[0].equals( this.entry != null ? this.entry.getPluginId() : "" ) ) {
+        this.isDeprecated = true;
+        this.suggestion = registry.findPluginWithId( JobEntryPluginType.class, this.entry.getPluginId() ) != null
+          ? registry.findPluginWithId( JobEntryPluginType.class, this.entry.getPluginId() ).getSuggestion() : "";
+        break;
+      }
+    }
+
+  }
 }

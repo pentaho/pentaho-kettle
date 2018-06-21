@@ -163,7 +163,7 @@ public class PluginRegistryUnitTest {
       @Override protected String extractForumUrl( Annotation annotation ) {
         return null;
       }
-      @Override protected String extractSuggestedStep( Annotation annotation ) {
+      @Override protected String extractSuggestion( Annotation annotation ) {
         return null;
       }
     };

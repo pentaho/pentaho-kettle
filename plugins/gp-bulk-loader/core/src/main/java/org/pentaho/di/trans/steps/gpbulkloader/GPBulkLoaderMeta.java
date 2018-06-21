@@ -67,7 +67,7 @@ import org.w3c.dom.Node;
   description = "GPBulkLoaderMeta.Description",
   categoryDescription = "i18n:org.pentaho.di.trans.step:BaseStep.Category.Deprecated",
   documentationUrl = "http://wiki.pentaho.com/display/PMOPEN/GreenPlum+bulk+loader",
-  suggestedStep = "GPBulkLoaderMeta.SuggestedStep" )
+  suggestion = "GPBulkLoaderMeta.SuggestedStep" )
 
 public class GPBulkLoaderMeta extends BaseStepMeta implements StepMetaInterface,
   ProvidesDatabaseConnectionInformation {

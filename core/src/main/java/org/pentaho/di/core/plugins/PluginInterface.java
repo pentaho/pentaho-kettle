@@ -161,9 +161,9 @@ public interface PluginInterface {
    */
   String getClassLoaderGroup();
 
-  void setSuggestedStep( String suggestedStep );
+  void setSuggestion( String suggestion );
 
-  String getSuggestedStep();
+  String getSuggestion();
 
   /**
    * @param group The group to which this class loader belongs.  

@@ -136,7 +136,7 @@ public class CompressionPluginType extends BasePluginType implements PluginTypeI
   }
 
   @Override
-  protected String extractSuggestedStep( Annotation annotation ) {
+  protected String extractSuggestion( Annotation annotation ) {
     return null;
   }
 

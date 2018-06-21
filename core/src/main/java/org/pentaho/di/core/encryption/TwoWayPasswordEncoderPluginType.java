@@ -169,7 +169,7 @@ public class TwoWayPasswordEncoderPluginType extends BasePluginType implements P
   }
 
   @Override
-  protected String extractSuggestedStep( Annotation annotation ) {
+  protected String extractSuggestion( Annotation annotation ) {
     return null;
   }
 

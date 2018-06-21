@@ -78,7 +78,7 @@ public class JobEntryDialogFragmentType extends BaseFragmentType implements Plug
   }
 
   @Override
-  protected String extractSuggestedStep( Annotation annotation ) {
+  protected String extractSuggestion( Annotation annotation ) {
     return null;
   }
 

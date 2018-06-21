@@ -65,7 +65,7 @@ import org.w3c.dom.Node;
   i18nPackageName = "org.pentaho.di.trans.steps.luciddbstreamingloader", name = "LucidDBStreamingLoaderMeta.Name",
   description = "LucidDBStreamingLoaderMeta.Description",
   categoryDescription = "i18n:org.pentaho.di.trans.step:BaseStep.Category.Deprecated",
-  suggestedStep = "LucidDBStreamingLoaderMeta.SuggestedStep" )
+  suggestion = "LucidDBStreamingLoaderMeta.SuggestedStep" )
 
 public class LucidDBStreamingLoaderMeta extends BaseStepMeta implements StepMetaInterface {
   private static Class<?> PKG = LucidDBStreamingLoaderMeta.class; // for i18n
