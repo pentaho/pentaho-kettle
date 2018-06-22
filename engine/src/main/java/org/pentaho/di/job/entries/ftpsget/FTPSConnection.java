@@ -37,6 +37,7 @@ import org.ftp4che.FTPConnection;
 import org.ftp4che.FTPConnectionFactory;
 import org.ftp4che.event.FTPEvent;
 import org.ftp4che.event.FTPListener;
+import org.ftp4che.exception.ConfigurationException;
 import org.ftp4che.util.ftpfile.FTPFile;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.LogChannel;
@@ -46,6 +47,9 @@ import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.i18n.BaseMessages;
+import org.pentaho.di.job.entries.ftpsget.ftp4che.SecureDataFTPConnection;
+
+import com.google.common.annotations.VisibleForTesting;
 
 public class FTPSConnection implements FTPListener {
 
@@ -169,12 +173,23 @@ public class FTPSConnection implements FTPListener {
       connection =
         FTPConnectionFactory.getInstance( getProperties(
           hostName, portNumber, userName, passWord, connectionType, timeOut, passiveMode ) );
+      if ( connection.getConnectionType() == FTPConnection.IMPLICIT_SSL_WITH_CRYPTED_DATA_FTP_CONNECTION
+          || connection.getConnectionType() == FTPConnection.IMPLICIT_TLS_WITH_CRYPTED_DATA_FTP_CONNECTION ) {
+        // need to upgrade to our custom connection to force crypted data channel
+        connection = getSecureDataFTPConnection( connection, passWord, timeOut );
+      }
       connection.addFTPStatusListener( this );
       connection.connect();
     } catch ( Exception e ) {
       connection = null;
       throw new KettleException( BaseMessages.getString( PKG, "JobFTPS.Error.Connecting", hostName ), e );
     }
+  }
+
+  @VisibleForTesting
+  protected FTPConnection getSecureDataFTPConnection( FTPConnection connection, String password, int timeout )
+    throws ConfigurationException {
+    return new SecureDataFTPConnection( connection, password, timeout );
   }
 
   private Properties getProperties( String hostname, int port, String username, String password,
