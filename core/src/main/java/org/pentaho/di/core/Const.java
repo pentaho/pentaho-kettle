@@ -1117,6 +1117,9 @@ public class Const {
   // See PDI-16388 for details
   public static final String KETTLE_COMPATIBILITY_SELECT_VALUES_TYPE_CHANGE_USES_TYPE_DEFAULTS = "KETTLE_COMPATIBILITY_SELECT_VALUES_TYPE_CHANGE_USES_TYPE_DEFAULTS";
 
+  // See PDI-17203 for details
+  public static final String KETTLE_COMPATIBILITY_XML_OUTPUT_NULL_VALUES = "KETTLE_COMPATIBILITY_XML_OUTPUT_NULL_VALUES";
+
   /**
    * The XML file that contains the list of native import rules
    */
