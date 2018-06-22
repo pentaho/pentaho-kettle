@@ -105,7 +105,7 @@ public class StepMeta extends SharedObjectBase implements Cloneable, Comparable<
 
   private boolean isDeprecated;
 
-  private String suggestedStep = "";
+  private String suggestion = "";
 
   private RowDistributionInterface rowDistribution;
 
@@ -1157,10 +1157,11 @@ public class StepMeta extends SharedObjectBase implements Cloneable, Comparable<
       String[] ids = p.getIds();
       if ( !ArrayUtils.isEmpty( ids ) && ids[0].equals( this.stepid ) ) {
         this.isDeprecated = true;
+        this.suggestion = registry.findPluginWithId( StepPluginType.class, this.stepid ) != null
+          ? registry.findPluginWithId( StepPluginType.class, this.stepid ).getSuggestion() : "";
+        break;
       }
     }
-    this.suggestedStep = registry.findPluginWithId( StepPluginType.class, this.stepid ) != null
-      ? registry.findPluginWithId( StepPluginType.class, this.stepid ).getSuggestedStep() : "";
   }
 
   public boolean isMissing() {
@@ -1171,7 +1172,7 @@ public class StepMeta extends SharedObjectBase implements Cloneable, Comparable<
     return isDeprecated;
   }
 
-  public String getSuggestedStep() {
-    return suggestedStep;
+  public String getSuggestion() {
+    return suggestion;
   }
 }

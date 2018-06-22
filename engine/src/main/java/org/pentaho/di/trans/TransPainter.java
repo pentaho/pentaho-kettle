@@ -724,13 +724,13 @@ public class TransPainter extends BasePainter<TransHopMeta, StepMeta> {
     if ( stepError || stepMeta.isMissing() ) {
       gc.setForeground( EColor.RED );
     } else if ( isDeprecated ) {
-      gc.setForeground( 246, 196, 56 );
+      gc.setForeground( EColor.DEPRECATED );
     } else {
       gc.setForeground( EColor.CRYSTAL );
     }
     if ( stepMeta.isSelected() ) {
       if ( isDeprecated ) {
-        gc.setForeground( 246, 196, 56 );
+        gc.setForeground( EColor.DEPRECATED );
       } else {
         gc.setForeground( 0, 93, 166 );
       }

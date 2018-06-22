@@ -124,7 +124,7 @@ public class RowDistributionPluginType extends BasePluginType implements PluginT
   }
 
   @Override
-  protected String extractSuggestedStep( Annotation annotation ) {
+  protected String extractSuggestion( Annotation annotation ) {
     return null;
   }
 

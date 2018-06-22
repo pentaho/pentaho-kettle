@@ -135,7 +135,7 @@ public class DatabasePluginType extends BasePluginType implements PluginTypeInte
   }
 
   @Override
-  protected String extractSuggestedStep( Annotation annotation ) {
+  protected String extractSuggestion( Annotation annotation ) {
     return null;
   }
 

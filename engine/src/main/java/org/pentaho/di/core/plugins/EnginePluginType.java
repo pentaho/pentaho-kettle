@@ -134,7 +134,7 @@ public class EnginePluginType extends BasePluginType implements PluginTypeInterf
   }
 
   @Override
-  protected String extractSuggestedStep( Annotation annotation ) {
+  protected String extractSuggestion( Annotation annotation ) {
     return null;
   }
 

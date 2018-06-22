@@ -171,7 +171,7 @@ public class LoggingPluginType extends BasePluginType implements PluginTypeInter
   }
 
   @Override
-  protected String extractSuggestedStep( Annotation annotation ) {
+  protected String extractSuggestion( Annotation annotation ) {
     return null;
   }
 }

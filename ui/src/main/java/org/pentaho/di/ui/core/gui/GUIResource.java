@@ -131,6 +131,8 @@ public class GUIResource {
 
   private ManagedColor colorHopOK;
 
+  private ManagedColor colorDeprecated;
+
   /* * * Fonts * * */
   private ManagedFont fontGraph;
 
@@ -528,6 +530,7 @@ public class GUIResource {
 
     colorHopOK = new ManagedColor( display, 12, 178, 15 );
 
+    colorDeprecated = new ManagedColor( display, 246, 196, 56 );
     // Load all images from files...
     loadFonts();
     loadCommonImages();
@@ -2089,6 +2092,13 @@ public class GUIResource {
    */
   public Color getColorHopOK() {
     return colorHopOK.getColor();
+  }
+
+  /**
+   * @return the default color the deprecated condition
+   */
+  public Color getColorDeprecated() {
+    return colorDeprecated.getColor();
   }
 
   public void drawPentahoGradient( Display display, GC gc, Rectangle rect, boolean vertical ) {

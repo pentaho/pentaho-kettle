@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -241,7 +241,13 @@ public class JobPainter extends BasePainter<JobHopMeta, JobEntryCopy> {
           .add( new AreaOwner( AreaType.JOB_ENTRY_ICON, x, y, iconsize, iconsize, offset, subject, jobEntryCopy ) );
     }
 
-    gc.setForeground( jobEntryCopy.isMissing() ? EColor.RED : EColor.CRYSTAL );
+    if ( jobEntryCopy.isMissing() ) {
+      gc.setForeground( EColor.RED );
+    } else if ( jobEntryCopy.isDeprecated() ) {
+      gc.setForeground( EColor.DEPRECATED );
+    } else {
+      gc.setForeground( EColor.CRYSTAL );
+    }
     gc.drawRoundRectangle( x - 1, y - 1, iconsize + 1, iconsize + 1, 7, 7 );
     gc.setForeground( EColor.CRYSTAL );
     Point textsize = new Point( gc.textExtent( "" + name ).x, gc.textExtent( "" + name ).y );
@@ -292,7 +298,7 @@ public class JobPainter extends BasePainter<JobHopMeta, JobEntryCopy> {
 
     // Optionally drawn the mouse-over information
     //
-    if ( mouseOverEntries.contains( jobEntryCopy ) ) {
+    if ( mouseOverEntries.contains( jobEntryCopy ) && !jobEntryCopy.isDeprecated() ) {
       gc.setTransform( translationX, translationY, 0, BasePainter.FACTOR_1_TO_1 );
 
       EImage[] miniIcons = new EImage[] { EImage.INPUT, EImage.EDIT, EImage.CONTEXT_MENU, EImage.OUTPUT, };

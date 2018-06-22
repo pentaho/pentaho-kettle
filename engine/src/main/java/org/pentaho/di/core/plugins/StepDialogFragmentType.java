@@ -78,7 +78,7 @@ public class StepDialogFragmentType extends BaseFragmentType implements PluginTy
   }
 
   @Override
-  protected String extractSuggestedStep( Annotation annotation ) {
+  protected String extractSuggestion( Annotation annotation ) {
     return null;
   }
 
