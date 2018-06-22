@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -35,6 +35,7 @@ import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.ShellAdapter;
 import org.eclipse.swt.events.ShellEvent;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
@@ -58,10 +59,12 @@ import org.pentaho.di.trans.step.StepDialogInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.steps.calculator.CalculatorMeta;
 import org.pentaho.di.trans.steps.calculator.CalculatorMetaFunction;
+import org.pentaho.di.ui.core.ConstUI;
 import org.pentaho.di.ui.core.dialog.EnterSelectionDialog;
 import org.pentaho.di.ui.core.widget.ColumnInfo;
 import org.pentaho.di.ui.core.widget.TableView;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
+import org.pentaho.di.ui.util.SwtSvgImageUtil;
 
 public class CalculatorDialog extends BaseStepDialog implements StepDialogInterface {
   private static Class<?> PKG = CalculatorMeta.class; // for i18n purposes, needed by Translator2!!
@@ -69,6 +72,10 @@ public class CalculatorDialog extends BaseStepDialog implements StepDialogInterf
   private Label wlStepname;
   private Text wStepname;
   private FormData fdlStepname, fdStepname;
+
+  private Label wlFailIfNoFile;
+  private Button wFailIfNoFile;
+  private FormData fdlFailIfNoFile, fdFailIfNoFile;
 
   private Label wlFields;
   private TableView wFields;
@@ -107,40 +114,75 @@ public class CalculatorDialog extends BaseStepDialog implements StepDialogInterf
     changed = currentMeta.hasChanged();
 
     FormLayout formLayout = new FormLayout();
-    formLayout.marginWidth = Const.FORM_MARGIN;
-    formLayout.marginHeight = Const.FORM_MARGIN;
+    int formMargin = 15;
+    formLayout.marginWidth = formMargin;
+    formLayout.marginHeight = formMargin;
 
     shell.setLayout( formLayout );
     shell.setText( BaseMessages.getString( PKG, "CalculatorDialog.DialogTitle" ) );
 
     int middle = props.getMiddlePct();
     int margin = Const.MARGIN;
+    int fdMargin = 15;
 
     // Stepname line
-    wlStepname = new Label( shell, SWT.RIGHT );
+    wlStepname = new Label( shell, SWT.LEFT );
     wlStepname.setText( BaseMessages.getString( PKG, "System.Label.StepName" ) );
     props.setLook( wlStepname );
     fdlStepname = new FormData();
     fdlStepname.left = new FormAttachment( 0, 0 );
-    fdlStepname.right = new FormAttachment( middle, -margin );
-    fdlStepname.top = new FormAttachment( 0, margin );
+    fdlStepname.top = new FormAttachment( 0, 0 );
     wlStepname.setLayoutData( fdlStepname );
     wStepname = new Text( shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
     wStepname.setText( stepname );
     props.setLook( wStepname );
     wStepname.addModifyListener( lsMod );
     fdStepname = new FormData();
-    fdStepname.left = new FormAttachment( middle, 0 );
-    fdStepname.top = new FormAttachment( 0, margin );
-    fdStepname.right = new FormAttachment( 100, 0 );
+    fdStepname.left = new FormAttachment( 0, 0 );
+    fdStepname.top = new FormAttachment( wlStepname, margin );
+    fdStepname.right = new FormAttachment( middle, 0 );
     wStepname.setLayoutData( fdStepname );
+
+    //Image
+    Label wIcon = new Label( shell, SWT.RIGHT );
+    wIcon.setImage( getImage() );
+    FormData fdlIcon = new FormData();
+    fdlIcon.top = new FormAttachment( 0, 0 );
+    fdlIcon.right = new FormAttachment( 100, 0 );
+    wIcon.setLayoutData( fdlIcon );
+    props.setLook( wIcon );
+
+    // Draw line separator
+    Label separator = new Label( shell, SWT.HORIZONTAL | SWT.SEPARATOR );
+    FormData fdSeparator = new FormData();
+    fdSeparator.left = new FormAttachment( 0, 0 );
+    fdSeparator.top = new FormAttachment( wStepname, fdMargin );
+    fdSeparator.right = new FormAttachment( 100, 0 );
+    separator.setLayoutData( fdSeparator );
+
+    // Fail if no File line
+    wFailIfNoFile = new Button( shell, SWT.CHECK );
+    props.setLook( wFailIfNoFile );
+    wFailIfNoFile.setToolTipText( BaseMessages.getString( PKG, "CalculatorDialog.FailIfNoFileTooltip" ) );
+    fdFailIfNoFile = new FormData();
+    fdFailIfNoFile.left = new FormAttachment( 0, 0 );
+    fdFailIfNoFile.top = new FormAttachment( separator, fdMargin );
+    wFailIfNoFile.setLayoutData( fdFailIfNoFile );
+    wlFailIfNoFile = new Label( shell, SWT.LEFT );
+    wlFailIfNoFile.setText( BaseMessages.getString( PKG, "CalculatorDialog.FailIfNoFile" ) );
+    props.setLook( wlFailIfNoFile );
+    fdlFailIfNoFile = new FormData();
+    fdlFailIfNoFile.left = new FormAttachment( wFailIfNoFile, margin );
+    fdlFailIfNoFile.top = new FormAttachment( separator, fdMargin );
+    //fdlFailIfNoFile.right = new FormAttachment( 0, -margin );
+    wlFailIfNoFile.setLayoutData( fdlFailIfNoFile );
 
     wlFields = new Label( shell, SWT.NONE );
     wlFields.setText( BaseMessages.getString( PKG, "CalculatorDialog.Fields.Label" ) );
     props.setLook( wlFields );
     fdlFields = new FormData();
     fdlFields.left = new FormAttachment( 0, 0 );
-    fdlFields.top = new FormAttachment( wStepname, margin );
+    fdlFields.top = new FormAttachment( wFailIfNoFile, fdMargin );
     wlFields.setLayoutData( fdlFields );
 
     final int FieldsRows = currentMeta.getCalculation() != null ? currentMeta.getCalculation().length : 1;
@@ -205,6 +247,31 @@ public class CalculatorDialog extends BaseStepDialog implements StepDialogInterf
       }
     } );
 
+    wCancel = new Button( shell, SWT.PUSH );
+    wCancel.setText( BaseMessages.getString( PKG, "System.Button.Cancel" ) );
+    FormData fdCancel = new FormData();
+    fdCancel.right = new FormAttachment( 100, 0 );
+    fdCancel.bottom = new FormAttachment( 100, 0 );
+    wCancel.setLayoutData( fdCancel );
+
+    wOK = new Button( shell, SWT.PUSH );
+    wOK.setText( BaseMessages.getString( PKG, "System.Button.OK" ) );
+    FormData fdOk = new FormData();
+    fdOk.right = new FormAttachment( wCancel, -margin );
+    fdOk.bottom = new FormAttachment( 100, 0 );
+    wOK.setLayoutData( fdOk );
+    wOK.setLayoutData( fdOk );
+
+    //positionBottomRightButtons( shell, new Button[] { wOK, wCancel }, fdMargin, null );
+
+    // Draw line separator
+    Label hSeparator = new Label( shell, SWT.HORIZONTAL | SWT.SEPARATOR );
+    FormData fdhSeparator = new FormData();
+    fdhSeparator.left = new FormAttachment( 0, 0 );
+    fdhSeparator.right = new FormAttachment( 100, 0 );
+    fdhSeparator.bottom = new FormAttachment( wCancel, -fdMargin );
+    hSeparator.setLayoutData( fdhSeparator );
+
     wFields =
       new TableView(
         transMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf, FieldsRows, lsMod, props );
@@ -213,7 +280,7 @@ public class CalculatorDialog extends BaseStepDialog implements StepDialogInterf
     fdFields.left = new FormAttachment( 0, 0 );
     fdFields.top = new FormAttachment( wlFields, margin );
     fdFields.right = new FormAttachment( 100, 0 );
-    fdFields.bottom = new FormAttachment( 100, -50 );
+    fdFields.bottom = new FormAttachment( hSeparator, -fdMargin );
     wFields.setLayoutData( fdFields );
 
     //
@@ -255,14 +322,6 @@ public class CalculatorDialog extends BaseStepDialog implements StepDialogInterf
 
       }
     } );
-
-    // Some buttons
-    wOK = new Button( shell, SWT.PUSH );
-    wOK.setText( BaseMessages.getString( PKG, "System.Button.OK" ) );
-    wCancel = new Button( shell, SWT.PUSH );
-    wCancel.setText( BaseMessages.getString( PKG, "System.Button.Cancel" ) );
-
-    setButtonPositions( new Button[] { wOK, wCancel }, margin, null );
 
     // Add listeners
     lsCancel = new Listener() {
@@ -377,6 +436,8 @@ public class CalculatorDialog extends BaseStepDialog implements StepDialogInterf
       }
     }
 
+    wFailIfNoFile.setSelection( currentMeta.isFailIfNoFile() );
+
     wFields.setRowNums();
     wFields.optWidth( true );
 
@@ -396,6 +457,8 @@ public class CalculatorDialog extends BaseStepDialog implements StepDialogInterf
     }
 
     stepname = wStepname.getText(); // return value
+
+    currentMeta.setFailIfNoFile( wFailIfNoFile.getSelection() );
 
     int nrNonEmptyFields = wFields.nrNonEmpty();
     currentMeta.allocate( nrNonEmptyFields );
@@ -429,5 +492,11 @@ public class CalculatorDialog extends BaseStepDialog implements StepDialogInterf
     }
 
     dispose();
+  }
+
+  protected Image getImage() {
+    return SwtSvgImageUtil
+            .getImage( shell.getDisplay(), getClass().getClassLoader(), "CLC.svg", ConstUI.LARGE_ICON_SIZE,
+                    ConstUI.LARGE_ICON_SIZE );
   }
 }

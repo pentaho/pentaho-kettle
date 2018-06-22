@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.exception.KettleFileNotFoundException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.row.RowDataUtil;
@@ -171,13 +172,15 @@ public class Calculator extends BaseStep implements StepInterface {
           logBasic( BaseMessages.getString( PKG, "Calculator.Log.Linenr", "" + getLinesRead() ) );
         }
       }
-    } catch ( KettleException e ) {
-      if ( getStepMeta().isDoingErrorHandling() ) {
-        putError( getInputRowMeta(), r, 1, e.toString(), null, "CALC001" );
-      } else {
-        logError( BaseMessages.getString( PKG, "Calculator.ErrorInStepRunning" + " : " + e.getMessage() ) );
-        throw new KettleStepException( BaseMessages.getString( PKG, "Calculator.ErrorInStepRunning" ), e );
+    } catch ( KettleFileNotFoundException e ) {
+      if ( meta.isFailIfNoFile() ) {
+        logError( BaseMessages.getString( PKG, "Calculator.Log.NoFile" ) + " : " + e.getFilepath() );
+        setErrors( getErrors() + 1 );
+        return false;
       }
+    } catch ( KettleException e ) {
+      logError( BaseMessages.getString( PKG, "Calculator.ErrorInStepRunning" + " : " + e.getMessage() ) );
+      throw new KettleStepException( BaseMessages.getString( PKG, "Calculator.ErrorInStepRunning" ), e );
     }
     return true;
   }
@@ -191,7 +194,8 @@ public class Calculator extends BaseStep implements StepInterface {
    * @throws KettleValueException
    *           in case there is a calculation error.
    */
-  private Object[] calcFields( RowMetaInterface inputRowMeta, Object[] r ) throws KettleValueException {
+  private Object[] calcFields( RowMetaInterface inputRowMeta, Object[] r ) throws KettleValueException,
+          KettleFileNotFoundException {
     // First copy the input data to the new result...
     Object[] calcData = RowDataUtil.resizeArray( r, data.getCalcRowMeta().size() );
 
@@ -386,19 +390,19 @@ public class Calculator extends BaseStep implements StepInterface {
             resultType = CalculatorMetaFunction.calcDefaultResultType[calcType];
             break;
           case CalculatorMetaFunction.CALC_CRC32: // CRC32
-            calcData[index] = ValueDataUtil.ChecksumCRC32( metaA, dataA );
+            calcData[index] = ValueDataUtil.checksumCRC32( metaA, dataA, meta.isFailIfNoFile() );
             resultType = CalculatorMetaFunction.calcDefaultResultType[calcType];
             break;
           case CalculatorMetaFunction.CALC_ADLER32: // ADLER32
-            calcData[index] = ValueDataUtil.ChecksumAdler32( metaA, dataA );
+            calcData[index] = ValueDataUtil.checksumAdler32( metaA, dataA, meta.isFailIfNoFile() );
             resultType = CalculatorMetaFunction.calcDefaultResultType[calcType];
             break;
           case CalculatorMetaFunction.CALC_MD5: // MD5
-            calcData[index] = ValueDataUtil.createChecksum( metaA, dataA, "MD5" );
+            calcData[index] = ValueDataUtil.createChecksum( metaA, dataA, "MD5", meta.isFailIfNoFile() );
             resultType = CalculatorMetaFunction.calcDefaultResultType[calcType];
             break;
           case CalculatorMetaFunction.CALC_SHA1: // SHA-1
-            calcData[index] = ValueDataUtil.createChecksum( metaA, dataA, "SHA-1" );
+            calcData[index] = ValueDataUtil.createChecksum( metaA, dataA, "SHA-1", meta.isFailIfNoFile() );
             resultType = CalculatorMetaFunction.calcDefaultResultType[calcType];
             break;
           case CalculatorMetaFunction.CALC_LEVENSHTEIN_DISTANCE: // LEVENSHTEIN DISTANCE
@@ -478,7 +482,7 @@ public class Calculator extends BaseStep implements StepInterface {
             resultType = CalculatorMetaFunction.calcDefaultResultType[calcType];
             break;
           case CalculatorMetaFunction.CALC_LOAD_FILE_CONTENT_BINARY: // LOAD CONTENT OF A FILE A IN A BLOB
-            calcData[index] = ValueDataUtil.loadFileContentInBinary( metaA, dataA );
+            calcData[index] = ValueDataUtil.loadFileContentInBinary( metaA, dataA, meta.isFailIfNoFile() );
             resultType = CalculatorMetaFunction.calcDefaultResultType[calcType];
             break;
           case CalculatorMetaFunction.CALC_ADD_TIME_TO_DATE: // Add time B to a date A
@@ -518,7 +522,7 @@ public class Calculator extends BaseStep implements StepInterface {
             resultType = CalculatorMetaFunction.calcDefaultResultType[calcType];
             break;
           case CalculatorMetaFunction.CALC_CHECK_XML_FILE_WELL_FORMED: // Check if file A is well formed
-            calcData[index] = ValueDataUtil.isXMLFileWellFormed( metaA, dataA );
+            calcData[index] = ValueDataUtil.isXMLFileWellFormed( metaA, dataA, meta.isFailIfNoFile() );
             resultType = CalculatorMetaFunction.calcDefaultResultType[calcType];
             break;
           case CalculatorMetaFunction.CALC_CHECK_XML_WELL_FORMED: // Check if xml A is well formed
@@ -526,7 +530,7 @@ public class Calculator extends BaseStep implements StepInterface {
             resultType = CalculatorMetaFunction.calcDefaultResultType[calcType];
             break;
           case CalculatorMetaFunction.CALC_GET_FILE_ENCODING: // Get file encoding from a file A
-            calcData[index] = ValueDataUtil.getFileEncoding( metaA, dataA );
+            calcData[index] = ValueDataUtil.getFileEncoding( metaA, dataA, meta.isFailIfNoFile() );
             resultType = CalculatorMetaFunction.calcDefaultResultType[calcType];
             break;
           case CalculatorMetaFunction.CALC_DAMERAU_LEVENSHTEIN: // DAMERAULEVENSHTEIN DISTANCE
