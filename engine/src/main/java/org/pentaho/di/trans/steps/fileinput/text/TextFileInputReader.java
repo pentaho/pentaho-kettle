@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -375,6 +375,9 @@ public class TextFileInputReader implements IBaseFileInputReader {
     try {
       // Close previous file!
       if ( data.filename != null ) {
+        // Clear any remaining rows that have already been read
+        data.lineBuffer.clear();
+
         // Increment the lines updated to reflect another file has been finished.
         // This allows us to give a state of progress in the run time metrics
         step.incrementLinesUpdated();
@@ -468,5 +471,4 @@ public class TextFileInputReader implements IBaseFileInputReader {
 
     return filterOK;
   }
-
 }
