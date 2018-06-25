@@ -683,6 +683,8 @@ jobGroups:
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-aggdesigner.git
        scmBranch       :  ${DEFAULT_BRANCH}
        versionProperty :  aggdesigner.version
+       # Disabled testing on this project due to foodmart db offline and connection problems
+       testable         : false
 
   4500:
 
