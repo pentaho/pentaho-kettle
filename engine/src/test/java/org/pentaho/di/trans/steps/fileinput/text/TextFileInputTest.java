@@ -23,6 +23,7 @@
 package org.pentaho.di.trans.steps.fileinput.text;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.vfs2.FileContent;
 import org.apache.commons.vfs2.FileObject;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
@@ -32,6 +33,7 @@ import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.RowSet;
 import org.pentaho.di.core.exception.KettleFileException;
 import org.pentaho.di.core.fileinput.FileInputList;
+import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.playlist.FilePlayListAll;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
@@ -50,10 +52,12 @@ import org.pentaho.di.trans.step.errorhandling.FileErrorHandler;
 import org.pentaho.di.trans.steps.StepMockUtil;
 import org.pentaho.di.trans.steps.file.BaseFileField;
 import org.pentaho.di.trans.steps.file.IBaseFileInputReader;
+import org.pentaho.di.trans.steps.file.IBaseFileInputStepControl;
 import org.pentaho.di.utils.TestUtils;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
@@ -61,7 +65,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.when;
 
 public class TextFileInputTest {
   @ClassRule public static RestorePDIEngineEnvironment env = new RestorePDIEngineEnvironment();
@@ -296,6 +303,33 @@ public class TextFileInputTest {
     Assert.assertTrue( passThroughKeys.get( 1 ).endsWith( "filename2" ) );
 
     deleteVfsFile( virtualFile );
+  }
+
+  @Test
+  public void testClose() throws Exception {
+
+    TextFileInputMeta mockTFIM = createMetaObject( null );
+    String virtualFile = createVirtualFile( "pdi-17267.txt", null );
+    TextFileInputData mockTFID = createDataObject( virtualFile, ";", null );
+    mockTFID.lineBuffer = new ArrayList<>();
+    mockTFID.lineBuffer.add( new TextFileLine( null, 0l, null ) );
+    mockTFID.lineBuffer.add( new TextFileLine( null, 0l, null ) );
+    mockTFID.lineBuffer.add( new TextFileLine( null, 0l, null ) );
+    mockTFID.filename = "";
+
+    FileContent mockFileContent = mock( FileContent.class );
+    InputStream mockInputStream = mock( InputStream.class );
+    when( mockFileContent.getInputStream() ).thenReturn( mockInputStream );
+    FileObject mockFO = mock( FileObject.class );
+    when( mockFO.getContent() ).thenReturn( mockFileContent );
+
+    TextFileInputReader tFIR = new TextFileInputReader( mock( IBaseFileInputStepControl.class ),
+      mockTFIM, mockTFID, mockFO, mock( LogChannelInterface.class ) );
+
+    assertEquals( 3, mockTFID.lineBuffer.size() );
+    tFIR.close();
+    // After closing the file, the buffer must be empty!
+    assertEquals( 0, mockTFID.lineBuffer.size() );
   }
 
   private TextFileInputMeta createMetaObject( BaseFileField... fields ) {
