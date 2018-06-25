@@ -36,6 +36,7 @@ import org.pentaho.di.core.extension.ExtensionPointHandler;
 import org.pentaho.di.core.extension.KettleExtensionPoint;
 import org.pentaho.di.core.listeners.CurrentDirectoryChangedListener;
 import org.pentaho.di.core.listeners.impl.EntryCurrentDirectoryChangedListener;
+import org.pentaho.di.core.parameters.UnknownParamException;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.ObjectLocationSpecificationMethod;
 import org.pentaho.di.core.Result;
@@ -884,6 +885,9 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
         //
         transMeta.clearParameters();
         String[] parameterNames = transMeta.listParameters();
+
+        prepareFieldNamesParameters( parameterNames, parameterFieldNames, namedParam, this );
+
         StepWithMappingMeta.activateParams( transMeta, transMeta, this, parameterNames,
           parameters, parameterValues );
         boolean doFallback = true;
@@ -1692,6 +1696,20 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
       variables.setParentVariableSpace( parentJobMeta );
     } else if ( previous != null ) {
       previous.removeCurrentDirectoryChangedListener( currentDirListener );
+    }
+  }
+
+  public void prepareFieldNamesParameters( String[] parameterNames, String[] parameterFieldNames,
+                                                    NamedParams namedParam, JobEntryTrans jobEntryTrans )
+    throws UnknownParamException {
+    for ( int idx = 0; idx < parameterNames.length; idx++ ) {
+      // Grab the parameter value set in the Trans job entry
+      //
+      String thisValue = namedParam.getParameterValue( parameterNames[ idx ] );
+
+      if ( !Utils.isEmpty( thisValue ) && !Utils.isEmpty( Const.trim( parameterFieldNames[ idx ] ) ) ) {
+        jobEntryTrans.setVariable( parameterNames[ idx ], thisValue );
+      }
     }
   }
 

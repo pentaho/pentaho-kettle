@@ -54,6 +54,9 @@ import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.logging.LogLevel;
+import org.pentaho.di.core.parameters.NamedParams;
+import org.pentaho.di.core.parameters.NamedParamsDefault;
+import org.pentaho.di.core.parameters.UnknownParamException;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.job.Job;
@@ -223,6 +226,29 @@ public class JobEntryTransTest {
 
     verify( transMeta ).setFilename( "${" + Const.INTERNAL_VARIABLE_ENTRY_CURRENT_DIRECTORY + "}/" + testName );
     verify( jobEntryTrans ).setSpecificationMethod( ObjectLocationSpecificationMethod.FILENAME );
+  }
+
+  @Test
+  public void testPrepareFieldNamesParameters() throws UnknownParamException {
+    // array of params
+    String[] parameterNames = new String[1];
+    parameterNames[0] = "param1";
+
+    // array of fieldNames params
+    String[] parameterFieldNames = new String[1];
+    parameterFieldNames[0] = "StreamParam1";
+
+    JobEntryTrans jet = new JobEntryTrans();
+    VariableSpace variableSpace = new Variables();
+    jet.copyVariablesFrom( variableSpace );
+
+    //at this point StreamColumnNameParams are already inserted in namedParams
+    NamedParams namedParam = Mockito.mock( NamedParamsDefault.class );
+    Mockito.doReturn( "value1" ).when( namedParam ).getParameterValue(  Mockito.anyObject() );
+
+    jet.prepareFieldNamesParameters( parameterNames, parameterFieldNames, namedParam, jet );
+
+    Assert.assertEquals( "value1", jet.getVariable( "param1" ) );
   }
 
   @Test
