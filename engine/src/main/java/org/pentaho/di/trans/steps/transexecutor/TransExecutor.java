@@ -22,10 +22,10 @@
 
 package org.pentaho.di.trans.steps.transexecutor;
 
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Map;
-import java.util.HashMap;
 import java.util.Arrays;
 
 import com.google.common.annotations.VisibleForTesting;
@@ -295,7 +295,7 @@ public class TransExecutor extends BaseStep implements StepInterface {
     TransExecutorParameters parameters = meta.getParameters();
 
     // A map where the final parameters and values are stored.
-    Map<String, String> resolvingValuesMap = new HashMap<String, String>();
+    Map<String, String> resolvingValuesMap = new LinkedHashMap<String, String>();
     for ( int i = 0; i < parameters.getVariable().length; i++ ) {
       resolvingValuesMap.put( parameters.getVariable()[i], null );
     }
