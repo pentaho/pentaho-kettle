@@ -25,7 +25,6 @@ package org.pentaho.di.trans.streaming.common;
 import io.reactivex.Observable;
 import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
-import javafx.util.Pair;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.exception.KettleException;
@@ -33,7 +32,9 @@ import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.trans.SubtransExecutor;
 import org.pentaho.di.trans.streaming.api.StreamWindow;
 
+import java.util.AbstractMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -49,7 +50,7 @@ public class FixedTimeStreamWindow<I extends List> implements StreamWindow<I, Re
   private final long millis;
   private final int batchSize;
   private SubtransExecutor subtransExecutor;
-  private final Consumer<Pair<List<I>, Result>> postProcessor;
+  private final Consumer<Map.Entry<List<I>, Result>> postProcessor;
 
   public FixedTimeStreamWindow( SubtransExecutor subtransExecutor, RowMetaInterface rowMeta, long millis,
                                 int batchSize ) {
@@ -57,7 +58,7 @@ public class FixedTimeStreamWindow<I extends List> implements StreamWindow<I, Re
   }
 
   public FixedTimeStreamWindow( SubtransExecutor subtransExecutor, RowMetaInterface rowMeta, long millis,
-                                int batchSize, Consumer<Pair<List<I>, Result>> postProcessor ) {
+                                int batchSize, Consumer<Map.Entry<List<I>, Result>> postProcessor ) {
     this.subtransExecutor = subtransExecutor;
     this.rowMeta = rowMeta;
     this.millis = millis;
@@ -75,17 +76,18 @@ public class FixedTimeStreamWindow<I extends List> implements StreamWindow<I, Re
       .map( this::sendBufferToSubtrans )
       .takeWhile( pair -> pair.getValue().getNrErrors() == 0 )
       .doOnNext( postProcessor )
-      .map( Pair::getValue )
+      .map( Map.Entry::getValue )
       .blockingIterable();
   }
 
-  private Pair<List<I>, Result> sendBufferToSubtrans( List<I> input ) throws KettleException {
+  private Map.Entry<List<I>, Result> sendBufferToSubtrans( List<I> input ) throws KettleException {
     final List<RowMetaAndData> rows = input.stream()
       .map( row -> row.toArray( new Object[ 0 ] ) )
       .map( objects -> new RowMetaAndData( rowMeta, objects ) )
       .collect( Collectors.toList() );
     Optional<Result> optionalRes = subtransExecutor.execute( rows );
-    return optionalRes.map( result -> new Pair<>( input, result ) ).orElse( new Pair<>( input, new Result() ) );
+    return optionalRes.map( result -> new AbstractMap.SimpleImmutableEntry<>( input, result ) )
+      .orElse( new AbstractMap.SimpleImmutableEntry<>( input, new Result() ) );
   }
 
 }
