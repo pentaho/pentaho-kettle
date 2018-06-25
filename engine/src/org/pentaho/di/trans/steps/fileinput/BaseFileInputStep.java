@@ -62,9 +62,7 @@ import org.pentaho.di.trans.step.errorhandling.FileErrorHandlerMissingFiles;
  */
 public abstract class BaseFileInputStep<M extends BaseFileInputStepMeta, D extends BaseFileInputStepData> extends
     BaseStep implements IBaseFileInputStepControl {
-  private static Class<?> PKG = BaseFileInputStep.class; // for i18n purposes, needed by Translator2!! TODO: is
-  // it right for
-  // base class ???
+  private static Class<?> PKG = BaseFileInputStep.class; // for i18n purposes, needed by Translator2!!
 
   protected M meta;
 
@@ -111,7 +109,7 @@ public abstract class BaseFileInputStep<M extends BaseFileInputStepMeta, D exten
 
     if ( ( previousResult == null || resultFiles == null || resultFiles.size() == 0 ) && data.files
         .nrOfMissingFiles() > 0 && !meta.inputFiles.acceptingFilenames && !meta.errorHandling.errorIgnored ) {
-      logError( BaseMessages.getString( PKG, "TextFileInput.Log.Error.NoFilesSpecified" ) );
+      logError( BaseMessages.getString( PKG, "BaseFileInputStep.Log.Error.NoFilesSpecified" ) );
       return false;
     }
 
@@ -306,7 +304,7 @@ public abstract class BaseFileInputStep<M extends BaseFileInputStepMeta, D exten
         }
         idx = prevInfoFields.indexOfValue( meta.inputFiles.acceptingField );
         if ( idx < 0 ) {
-          logError( BaseMessages.getString( PKG, "TextFileInput.Log.Error.UnableToFindFilenameField",
+          logError( BaseMessages.getString( PKG, "BaseFileInputStep.Log.Error.UnableToFindFilenameField",
               meta.inputFiles.acceptingField ) );
           setErrors( getErrors() + 1 );
           stopAll();
@@ -321,7 +319,7 @@ public abstract class BaseFileInputStep<M extends BaseFileInputStepMeta, D exten
           data.passThruFields.put( fileObject, fileRow );
         }
       } catch ( KettleFileException e ) {
-        logError( BaseMessages.getString( PKG, "TextFileInput.Log.Error.UnableToCreateFileObject", fileValue ), e );
+        logError( BaseMessages.getString( PKG, "BaseFileInputStep.Log.Error.UnableToCreateFileObject", fileValue ), e );
       }
 
       // Grab another row
@@ -330,7 +328,7 @@ public abstract class BaseFileInputStep<M extends BaseFileInputStepMeta, D exten
 
     if ( data.files.nrOfFiles() == 0 ) {
       if ( log.isDetailed() ) {
-        logDetailed( BaseMessages.getString( PKG, "TextFileInput.Log.Error.NoFilesSpecified" ) );
+        logDetailed( BaseMessages.getString( PKG, "BaseFileInputStep.Log.Error.NoFilesSpecified" ) );
       }
       return null;
     }
