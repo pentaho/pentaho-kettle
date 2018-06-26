@@ -1197,4 +1197,22 @@ public class TransExecutorMeta extends StepWithMappingMeta implements StepMetaIn
     return true;
 
   }
+
+  @Override
+  public boolean cleanAfterHopFromRemove( String toStepName ) {
+    if ( getExecutionResultTargetStepMeta() != null && getExecutionResultTargetStepMeta().getName() != null
+      && getExecutionResultTargetStepMeta().getName().equals( toStepName ) ) {
+      setExecutionResultTargetStepMeta( null );
+    } else if ( getOutputRowsSourceStepMeta() != null && getOutputRowsSourceStepMeta().getName() != null
+      && getOutputRowsSourceStepMeta().getName().equals( toStepName ) ) {
+      setOutputRowsSourceStepMeta( null );
+    } else if ( getResultFilesTargetStepMeta() != null && getResultFilesTargetStepMeta().getName() != null
+      && getResultFilesTargetStepMeta().getName().equals( toStepName ) ) {
+      setResultFilesTargetStepMeta( null );
+    } else if ( getExecutorsOutputStepMeta() != null && getExecutorsOutputStepMeta().getName() != null
+      && getExecutorsOutputStepMeta().getName().equals( toStepName ) ) {
+      setExecutorsOutputStepMeta( null );
+    }
+    return true;
+  }
 }

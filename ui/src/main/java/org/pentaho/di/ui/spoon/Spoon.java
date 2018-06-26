@@ -3657,7 +3657,8 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     StepMeta before = (StepMeta) fromStepMeta.clone();
     index = transMeta.indexOfStep( fromStepMeta );
 
-    boolean stepFromNeedAddUndoChange = fromStepMeta.getStepMetaInterface().cleanAfterHopFromRemove();
+    boolean stepFromNeedAddUndoChange = fromStepMeta.getStepMetaInterface()
+      .cleanAfterHopFromRemove( transHopMeta.getToStep().getName() );
     // If this is an error handling hop, disable it
     //
     if ( transHopMeta.getFromStep().isDoingErrorHandling() ) {
