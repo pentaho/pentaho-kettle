@@ -770,6 +770,15 @@ public class TransMetaTest {
     assertThat( new String[] { "field3", "field4", "field5", "outputField" }, equalTo( results.getFieldNames() ) );
   }
 
+  @Test
+  public void findPreviousStepsNullMeta( ) {
+    TransMeta transMeta = new TransMeta( new Variables() );
+    List<StepMeta> result = transMeta.findPreviousSteps( null, false );
+
+    assertThat( 0, equalTo( result.size() ) );
+    assertThat( result, equalTo( new ArrayList<>() ) );
+  }
+
   private void wireUpTestTransMeta( TransMeta transMeta, StepMeta toBeAppended1, StepMeta toBeAppended2,
                                     StepMeta append, StepMeta after ) {
     transMeta.addStep( append );

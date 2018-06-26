@@ -1470,6 +1470,7 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
   }
 
   private void getInfo( ExcelInputMeta meta ) {
+    StepMeta currentStepMeta = transMeta.findStep( stepname );
     stepname = wStepname.getText(); // return value
 
     // copy info to Meta class (input)
@@ -1490,7 +1491,7 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
     meta.setAcceptingFilenames( wAccFilenames.getSelection() );
     meta.setAcceptingField( wAccField.getText() );
     meta.setAcceptingStepName( wAccStep.getText() );
-    meta.searchInfoAndTargetSteps( transMeta.findPreviousSteps( transMeta.findStep( stepname ) ) );
+    meta.searchInfoAndTargetSteps( transMeta.findPreviousSteps( currentStepMeta ) );
 
     int nrfiles = wFilenameList.nrNonEmpty();
     int nrsheets = wSheetnameList.nrNonEmpty();
