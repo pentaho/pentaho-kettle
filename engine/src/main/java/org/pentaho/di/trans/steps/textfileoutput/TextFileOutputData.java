@@ -86,7 +86,10 @@ public class TextFileOutputData extends BaseStepData implements StepDataInterfac
 
     @Override
     public int compareTo( FileStreamsKey o ) {
-      return fileName.compareTo( o.getFileName() );
+      if ( o.fileName.equals( fileName ) ) {
+        return 0;
+      }
+      return Long.compare( index, o.index );
     }
 
     @Override
