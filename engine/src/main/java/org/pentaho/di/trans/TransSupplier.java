@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -28,10 +28,9 @@ import org.pentaho.di.core.plugins.PluginInterface;
 import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.variables.Variables;
+import org.pentaho.di.trans.ael.adapters.DataflowEngineAdapter;
 import org.pentaho.di.trans.ael.websocket.TransWebSocketEngineAdapter;
 
-import java.util.Arrays;
-import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 public class TransSupplier implements Supplier<Trans> {
@@ -63,21 +62,18 @@ public class TransSupplier implements Supplier<Trans> {
     String protocol = transMeta.getVariable( "engine.protocol" );
     String host = transMeta.getVariable( "engine.host" );
     String port = transMeta.getVariable( "engine.port" );
-    //default value for ssl for now false
-    boolean ssl = "https".equalsIgnoreCase( protocol ) || "wss".equalsIgnoreCase( protocol );
-    return new TransWebSocketEngineAdapter( transMeta, host, port, ssl );
-  }
 
-  /**
-   * Uses a trans variable called "engine" to determine which engine to use.
-   */
-  private Predicate<PluginInterface> useThisEngine() {
-    return plugin -> Arrays.stream( plugin.getIds() )
-      .filter( id -> id.equals( ( transMeta.getVariable( "engine" ) ) ) )
-      .findAny()
-      .isPresent();
-  }
+    // TODO This should point to an OSGi Service for the plugable Engine Implementation
+    String remoteEngine = transMeta.getVariable( "engine.remote" );
+    if ( remoteEngine.equalsIgnoreCase( "spark" ) ) {
+      //default value for ssl for now false
+      boolean ssl = "https".equalsIgnoreCase( protocol ) || "wss".equalsIgnoreCase( protocol );
+      return new TransWebSocketEngineAdapter( transMeta, host, port, ssl );
 
+    } else {
+      return new DataflowEngineAdapter( transMeta );
+    }
+  }
 
   private Object loadPlugin( PluginInterface plugin ) {
     try {

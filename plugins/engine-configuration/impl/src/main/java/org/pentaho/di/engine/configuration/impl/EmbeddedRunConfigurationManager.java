@@ -3,7 +3,7 @@
  *
  *  Pentaho Data Integration
  *
- *  Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ *  Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *  *******************************************************************************
  *  Licensed under the Apache License, Version 2.0 (the "License"); you may not use
@@ -29,6 +29,7 @@ import java.util.List;
 
 import org.pentaho.di.core.attributes.metastore.EmbeddedMetaStore;
 import org.pentaho.di.engine.configuration.api.RunConfigurationProvider;
+import org.pentaho.di.engine.configuration.impl.dataflow.DataflowRunConfigurationProvider;
 import org.pentaho.di.engine.configuration.impl.pentaho.DefaultRunConfigurationProvider;
 import org.pentaho.di.engine.configuration.impl.spark.SparkRunConfigurationProvider;
 import org.pentaho.metastore.api.IMetaStore;
@@ -43,9 +44,12 @@ public class EmbeddedRunConfigurationManager {
       new DefaultRunConfigurationProvider( createMetastoreLocator( embeddedMetaStore ), null );
     SparkRunConfigurationProvider sparkRunConfigurationProvider =
       new SparkRunConfigurationProvider( createMetastoreLocator( embeddedMetaStore ), null );
+    DataflowRunConfigurationProvider dataflowRunConfigurationProvider =
+      new DataflowRunConfigurationProvider( createMetastoreLocator( embeddedMetaStore ), null );
 
     List<RunConfigurationProvider> runConfigurationProviders = new ArrayList<>();
     runConfigurationProviders.add( defaultRunConfigurationProvider );
+    runConfigurationProviders.add( dataflowRunConfigurationProvider );
     runConfigurationProviders.add( sparkRunConfigurationProvider );
 
     return new RunConfigurationManager( runConfigurationProviders );

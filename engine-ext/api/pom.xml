@@ -52,7 +52,7 @@
         <configuration>
           <instructions>
             <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
-            <Export-Package>org.pentaho.di.engine.api.*,org.pentaho.di.engine.model</Export-Package>
+            <Export-Package>org.pentaho.di.org.pentaho.dataflow.engine.api.*,org.pentaho.di.engine.model</Export-Package>
           </instructions>
         </configuration>
       </plugin>

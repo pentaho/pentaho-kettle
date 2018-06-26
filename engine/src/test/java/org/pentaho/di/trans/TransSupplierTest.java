@@ -24,10 +24,12 @@ package org.pentaho.di.trans;
 
 import org.junit.Before;
 import org.junit.ClassRule;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.junit.rules.RestorePDIEngineEnvironment;
+import org.pentaho.di.trans.ael.adapters.DataflowEngineAdapter;
 import org.pentaho.di.trans.ael.websocket.TransWebSocketEngineAdapter;
 
 import java.util.Properties;
@@ -70,7 +72,8 @@ public class TransSupplierTest {
   @Test
   public void testWebsocketVersion() throws KettleException {
     props.setProperty( "KETTLE_AEL_PDI_DAEMON_VERSION", "2.0" );
-    when( meta.getVariable( "engine" ) ).thenReturn( "spark" );
+    when( meta.getVariable( "engine" ) ).thenReturn( "remote" );
+    when( meta.getVariable( "engine.remote" ) ).thenReturn( "spark" );
     when( meta.getVariable( "engine.host" ) ).thenReturn( "hostname" );
     when( meta.getVariable( "engine.port" ) ).thenReturn( "8080" );
     when( meta.nrTransHops() ).thenReturn( 0 );
@@ -82,6 +85,22 @@ public class TransSupplierTest {
     Trans transRet = transSupplier.get();
 
     assertTrue( transRet instanceof TransWebSocketEngineAdapter );
+  }
+
+  @Test
+  public void testDataflow() throws KettleException {
+    props.setProperty( "KETTLE_AEL_PDI_DAEMON_VERSION", "2.0" );
+    when( meta.getVariable( "engine" ) ).thenReturn( "local" );
+    when( meta.getVariable( "engine.remote" ) ).thenReturn( "dataflow" );
+    when( meta.nrTransHops() ).thenReturn( 0 );
+    when( meta.getTransHop( 0 ) ).thenReturn( transHopMeta );
+    when( meta.realClone( false ) ).thenReturn( meta );
+    when( transHopMeta.isEnabled() ).thenReturn( false );
+
+    transSupplier = new TransSupplier( meta, log, fallbackSupplier );
+    Trans transRet = transSupplier.get();
+
+    assertTrue( transRet instanceof DataflowEngineAdapter );
   }
 
   @Test( expected = RuntimeException.class )

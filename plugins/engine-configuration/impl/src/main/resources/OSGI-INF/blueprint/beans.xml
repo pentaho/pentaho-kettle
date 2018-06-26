@@ -81,6 +81,12 @@
     <argument ref="sparkRunConfigurationExecutor"/>
   </bean>
 
+  <bean id="dataflowRunConfigurationProvider" scope="singleton"
+        class="org.pentaho.di.engine.configuration.impl.dataflow.DataflowRunConfigurationProvider">
+    <argument ref="metastoreLocator"/>
+    <argument ref="dataflowRunConfigurationExecutor"/>
+  </bean>
+
   <service ref="runConfigurationManager" interface="org.pentaho.di.engine.configuration.api.RunConfigurationService"/>
 
   <reference id="configAdmin" interface="org.osgi.service.cm.ConfigurationAdmin" availability="optional"/>
@@ -88,11 +94,19 @@
   <service ref="sparkRunConfigurationProvider"
            interface="org.pentaho.di.engine.configuration.api.RunConfigurationProvider"/>
 
+  <service ref="dataflowRunConfigurationProvider"
+           interface="org.pentaho.di.engine.configuration.api.RunConfigurationProvider"/>
+
   <reference-list id="runConfigurationProviders"
                   interface="org.pentaho.di.engine.configuration.api.RunConfigurationProvider" availability="optional"/>
 
   <bean id="sparkRunConfigurationExecutor" scope="singleton"
         class="org.pentaho.di.engine.configuration.impl.spark.SparkRunConfigurationExecutor">
+    <argument ref="configAdmin"/>
+  </bean>
+
+  <bean id="dataflowRunConfigurationExecutor" scope="singleton"
+        class="org.pentaho.di.engine.configuration.impl.dataflow.DataflowRunConfigurationExecutor">
     <argument ref="configAdmin"/>
   </bean>
 
