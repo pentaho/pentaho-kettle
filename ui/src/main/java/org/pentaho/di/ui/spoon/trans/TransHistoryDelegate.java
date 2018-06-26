@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -411,14 +411,14 @@ public class TransHistoryDelegate extends SpoonDelegate implements XulEventHandl
         if ( nameField != null ) {
           if ( transMeta.isUsingAClusterSchema() ) {
             sql.append( " WHERE " ).append( logConnection.quoteField( nameField.getFieldName() ) ).append( " LIKE ?" );
-            params.addValue( new ValueMetaString( "transname_literal" ), transMeta.getName() );
+            params.addValue( new ValueMetaString( "transname_literal", 255, -1 ), transMeta.getName() );
 
             sql.append( " OR    " ).append( logConnection.quoteField( nameField.getFieldName() ) ).append( " LIKE ?" );
-            params.addValue( new ValueMetaString( "transname_cluster" ), transMeta.getName()
+            params.addValue( new ValueMetaString( "transname_cluster", 255, -1 ), transMeta.getName()
               + " (%" );
           } else {
             sql.append( " WHERE " ).append( logConnection.quoteField( nameField.getFieldName() ) ).append( " = ?" );
-            params.addValue( new ValueMetaString( "transname_literal" ), transMeta.getName() );
+            params.addValue( new ValueMetaString( "transname_literal", 255, -1 ), transMeta.getName() );
           }
         }
 

@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -524,7 +524,7 @@ public class JobHistoryDelegate extends SpoonDelegate implements XulEventHandler
             .append( " WHERE " ).append( logConnection.quoteField( nameField.getFieldName() ) ).append(
               " LIKE ?" );
           params
-            .addValue( new ValueMetaString( "transname_literal" ), jobMeta.getName() );
+            .addValue( new ValueMetaString( "transname_literal", 255, -1 ), jobMeta.getName() );
         }
 
         if ( keyField != null && keyField.isEnabled() ) {

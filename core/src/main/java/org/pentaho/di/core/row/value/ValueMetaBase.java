@@ -5053,19 +5053,16 @@ public class ValueMetaBase implements ValueMetaInterface {
           }
           break;
         case ValueMetaInterface.TYPE_STRING:
-          if ( getLength() < databaseMeta.getMaxTextFieldLength() ) {
-            if ( !isNull( data ) ) {
-              preparedStatement.setString( index, getString( data ) );
-            } else {
-              preparedStatement.setNull( index, java.sql.Types.VARCHAR );
+          if ( !isNull( data ) ) {
+            if ( getLength() == DatabaseMeta.CLOB_LENGTH ) {
+              setLength( databaseMeta.getMaxTextFieldLength() );
             }
-          } else {
-            if ( !isNull( data ) ) {
-              String string = getString( data );
-
-              int maxlen = databaseMeta.getMaxTextFieldLength();
-              int len = string.length();
-
+            String string = getString( data );
+            int len = string.length();
+            int maxlen = isLengthInvalidOrZero() ? 0 : getLength();
+            if ( len < maxlen ) {
+              preparedStatement.setString( index, string );
+            } else {
               // Take the last maxlen characters of the string...
               int begin = Math.max( len - maxlen, 0 );
               if ( begin > 0 ) {
@@ -5073,16 +5070,15 @@ public class ValueMetaBase implements ValueMetaInterface {
                 log.logMinimal( String.format( "Truncating %d symbols of original message in '%s' field", begin, getName() ) );
                 string = string.substring( begin );
               }
-
               if ( databaseMeta.supportsSetCharacterStream() ) {
                 StringReader sr = new StringReader( string );
                 preparedStatement.setCharacterStream( index, sr, string.length() );
               } else {
                 preparedStatement.setString( index, string );
               }
-            } else {
-              preparedStatement.setNull( index, java.sql.Types.VARCHAR );
             }
+          } else {
+            preparedStatement.setNull( index, java.sql.Types.VARCHAR );
           }
           break;
         case ValueMetaInterface.TYPE_DATE:

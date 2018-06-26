@@ -3435,7 +3435,7 @@ public class Database implements VariableSpace, LoggingObjectInterface {
       pstmt = connection.prepareStatement( databaseMeta.stripCR( sql ) );
 
       RowMetaInterface r = new RowMeta();
-      r.addValueMeta( new ValueMetaString( "TRANSNAME" ) );
+      r.addValueMeta( new ValueMetaString( "TRANSNAME", 255, -1 ) );
       setValues( r, new Object[] { name } );
 
       ResultSet res = pstmt.executeQuery();

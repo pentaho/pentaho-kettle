@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -24,8 +24,8 @@ package org.pentaho.di.core.database;
 
 import com.google.common.collect.Sets;
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.util.Utils;
 
 import java.util.Set;
 
@@ -37,6 +37,8 @@ import java.util.Set;
  */
 
 public class MySQLDatabaseMeta extends BaseDatabaseMeta implements DatabaseInterface {
+
+  private static final int VARCHAR_LIMIT = 65_535;
 
   private static final Set<String>
     SHORT_MESSAGE_EXCEPTIONS =
@@ -201,6 +203,9 @@ public class MySQLDatabaseMeta extends BaseDatabaseMeta implements DatabaseInter
     String retval = "";
 
     String fieldname = v.getName();
+    if ( v.getLength() == DatabaseMeta.CLOB_LENGTH ) {
+      v.setLength( getMaxTextFieldLength() );
+    }
     int length = v.getLength();
     int precision = v.getPrecision();
 
@@ -464,5 +469,15 @@ public class MySQLDatabaseMeta extends BaseDatabaseMeta implements DatabaseInter
   public void addDefaultOptions() {
     addExtraOption( getPluginId(), "defaultFetchSize", "500" );
     addExtraOption( getPluginId(), "useCursorFetch", "true" );
+  }
+
+  @Override
+  public int getMaxVARCHARLength() {
+    return VARCHAR_LIMIT;
+  }
+
+  @Override
+  public int getMaxTextFieldLength() {
+    return Integer.MAX_VALUE;
   }
 }
