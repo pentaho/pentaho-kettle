@@ -214,6 +214,7 @@ import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.vfs.KettleVfsDelegatingResolver;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
+import org.pentaho.di.i18n.LanguageChoice;
 import org.pentaho.di.imp.ImportRules;
 import org.pentaho.di.job.Job;
 import org.pentaho.di.job.JobExecutionConfiguration;
@@ -2304,6 +2305,26 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
 
   public boolean showJob;
 
+  private void addStepItem( final TreeItem categoryItem, final PluginInterface step ) {
+    final Image stepImage =
+      GUIResource.getInstance().getImagesStepsSmall().get( step.getIds()[ 0 ] );
+    String pluginName = step.getName();
+    String pluginDescription = step.getDescription();
+    if ( filterMatch( pluginName ) || filterMatch( pluginDescription ) ) {
+      createTreeItem( categoryItem, pluginName, stepImage, step.getIds()[ 0 ] );
+      coreStepToolTipMap.put( pluginName, pluginDescription );
+    }
+  }
+
+  private void addLineToBuilder( final StringBuilder builder, final Object...strings ) {
+    if ( builder != null && strings.length > 0 ) {
+      for ( final Object string : strings ) {
+        builder.append( string );
+      }
+      builder.append( System.getProperty( "line.separator" ) );
+    }
+  }
+
   public void refreshCoreObjects() {
     if ( shell.isDisposed() ) {
       return;
@@ -2337,31 +2358,53 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
       // TRANSFORMATIONS
       // ////////////////////////////////////////////////////////////////////////////////////////////////
 
+      // for convenience in debugging and validation, keep track of the step/category hierarchy and the step count for
+      // each category
+      final StringBuilder stepTree = new StringBuilder();
+      addLineToBuilder( stepTree, LanguageChoice.getInstance().getDefaultLocale() );
+      final StringBuilder stepCountPerCategory = new StringBuilder();
+      addLineToBuilder( stepCountPerCategory, LanguageChoice.getInstance().getDefaultLocale() );
+
       PluginRegistry registry = PluginRegistry.getInstance();
 
       final List<PluginInterface> baseSteps = registry.getPlugins( StepPluginType.class );
       final List<String> baseCategories = registry.getCategories( StepPluginType.class );
+      addLineToBuilder( stepCountPerCategory, "> total steps: ", baseSteps.size() );
+      addLineToBuilder( stepCountPerCategory, "> total categories: ", baseCategories.size() );
 
       for ( String baseCategory : baseCategories ) {
         TreeItem item = new TreeItem( coreObjectsTree, SWT.NONE );
         item.setText( baseCategory );
         item.setImage( GUIResource.getInstance().getImageFolder() );
+        addLineToBuilder( stepTree, "- ", baseCategory );
 
         List<PluginInterface> sortedCat = baseSteps.stream()
           .filter( baseStep -> baseStep.getCategory().equalsIgnoreCase( baseCategory ) )
           .sorted( Comparator.comparing( PluginInterface::getName ) )
           .collect( Collectors.toList() );
+        addLineToBuilder( stepCountPerCategory, "- ", baseCategory, ": ", sortedCat.size() );
 
         for ( PluginInterface p : sortedCat ) {
-          final Image stepImage =
-            GUIResource.getInstance().getImagesStepsSmall().get( p.getIds()[ 0 ] );
-          String pluginName = p.getName();
-          String pluginDescription = p.getDescription();
-          if ( !filterMatch( pluginName ) && !filterMatch( pluginDescription ) ) {
-            continue;
-          }
-          createTreeItem( item, pluginName, stepImage, p.getIds()[ 0 ] );
-          coreStepToolTipMap.put( pluginName, pluginDescription );
+          addLineToBuilder( stepTree, "--- ", p.getName() );
+          addStepItem( item, p );
+          // remove any step that was added to the 'sortedCat' list from 'baseSteps', that way, once all steps have been
+          // sorted into their respective categories, all we have left in 'baseSteps' is mis-categorized steps, which
+          // can be placed in the "Other" category
+          baseSteps.remove( p );
+        }
+      }
+
+      // whatever is left in the 'baseSteps' list is steps that are mis-categorized
+      if ( baseSteps.size() > 0 ) {
+        TreeItem item = new TreeItem( coreObjectsTree, SWT.NONE );
+        final String otherCat = BaseMessages.getString( PKG, "Spoon.Other" );
+        item.setText( otherCat );
+        item.setImage( GUIResource.getInstance().getImageFolder() );
+        addLineToBuilder( stepTree, "- ", otherCat );
+        addLineToBuilder( stepCountPerCategory, "- ", otherCat, ": ", baseSteps.size() );
+        for ( PluginInterface uncategorizedStep : baseSteps ) {
+          addStepItem( item, uncategorizedStep );
+          addLineToBuilder( stepTree, "--- ", uncategorizedStep.getName() );
         }
       }
 
@@ -2400,6 +2443,8 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
           coreStepToolTipMap.put( stepPlugin.getDescription(), pluginDescription + " (" + usage.getNrUses() + ")" );
         }
       }
+      log.logDebug( stepCountPerCategory.toString() );
+      log.logDebug( stepTree.toString() );
     }
 
     if ( showJob ) {

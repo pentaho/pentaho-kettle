@@ -122,7 +122,7 @@ public class JobDialogPluginType extends BasePluginType implements PluginTypeInt
   }
 
   @Override
-  protected String extractSuggestedStep( Annotation annotation ) {
+  protected String extractSuggestion( Annotation annotation ) {
     return null;
   }
 

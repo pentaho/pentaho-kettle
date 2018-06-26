@@ -68,6 +68,7 @@ public class SWTGC implements GCInterface {
   protected Color crystal;
   protected Color hopDefault;
   protected Color hopOK;
+  protected Color deprecated;
 
   private GC gc;
 
@@ -114,6 +115,7 @@ public class SWTGC implements GCInterface {
     this.crystal = GUIResource.getInstance().getColorCrystalTextPentaho();
     this.hopDefault = GUIResource.getInstance().getColorHopDefault();
     this.hopOK = GUIResource.getInstance().getColorHopOK();
+    this.deprecated = GUIResource.getInstance().getColorDeprecated();
   }
 
   public void dispose() {
@@ -337,6 +339,8 @@ public class SWTGC implements GCInterface {
         return hopDefault;
       case HOP_OK:
         return hopOK;
+      case DEPRECATED:
+        return deprecated;
       default:
         break;
     }

@@ -22,13 +22,16 @@
 
 package org.pentaho.di.trans.steps.calculator;
 
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.fail;
 import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.argThat;
 import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.when;
+import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.times;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -42,6 +45,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Test;
+import org.mockito.ArgumentMatcher;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.RowSet;
@@ -56,6 +60,7 @@ import org.pentaho.di.core.row.value.ValueMetaBigNumber;
 import org.pentaho.di.core.row.value.ValueMetaInteger;
 import org.pentaho.di.core.row.value.ValueMetaNumber;
 import org.pentaho.di.core.row.value.ValueMetaString;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.junit.rules.RestorePDIEngineEnvironment;
 import org.pentaho.di.trans.step.RowAdapter;
 import org.pentaho.di.trans.steps.mock.StepMockHelper;
@@ -69,6 +74,7 @@ import junit.framework.Assert;
  * @see Calculator
  */
 public class CalculatorUnitTest {
+  private static Class<?> PKG = CalculatorUnitTest.class; // for i18n purposes, needed by Translator2!!
   private StepMockHelper<CalculatorMeta, CalculatorData> smh;
 
   @ClassRule public static RestorePDIEngineEnvironment env = new RestorePDIEngineEnvironment();
@@ -91,6 +97,39 @@ public class CalculatorUnitTest {
   @After
   public void cleanUp() {
     smh.cleanUp();
+  }
+
+  @Test
+  public void testMissingFile() throws KettleException {
+    RowMeta inputRowMeta = new RowMeta();
+    ValueMetaString pathMeta = new ValueMetaString( "Path" );
+    inputRowMeta.addValueMeta( pathMeta );
+
+    String filepath = "missingFile";
+    Object[] rows = new Object[] { filepath };
+    RowSet inputRowSet = smh.getMockInputRowSet( rows );
+    inputRowSet.setRowMeta( inputRowMeta );
+
+    Calculator calculator = spy( new Calculator( smh.stepMeta, smh.stepDataInterface, 0, smh.transMeta, smh.trans ) );
+    calculator.addRowSetToInputRowSets( inputRowSet );
+    calculator.setInputRowMeta( inputRowMeta );
+    calculator.init( smh.initStepMetaInterface, smh.initStepDataInterface );
+
+    CalculatorMeta meta = new CalculatorMeta();
+    CalculatorMetaFunction[] calculations = new CalculatorMetaFunction[] {
+      new CalculatorMetaFunction( "result", CalculatorMetaFunction.CALC_MD5, "Path", null, null,
+        ValueMetaInterface.TYPE_STRING, 0, 0, false, "", "", "", "" ) };
+    meta.setCalculation( calculations );
+    meta.setFailIfNoFile( true );
+
+    boolean processed = calculator.processRow( meta, new CalculatorData() );
+    verify( calculator, times( 1 ) ).logError( argThat( new ArgumentMatcher<String>() {
+      @Override
+      public boolean matches( Object o ) {
+        return ((String) o ).contains( BaseMessages.getString( PKG, "Calculator.Log.NoFile" ) );
+      }
+    } ) );
+    assertFalse( processed );
   }
 
   @Test

@@ -26,48 +26,42 @@ import com.jcraft.jsch.ChannelSftp;
 import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
-import com.jcraft.jsch.SftpException;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
-import org.mockito.Mockito;
+import org.pentaho.di.core.exception.KettleJobException;
 import org.pentaho.di.junit.rules.RestorePDIEngineEnvironment;
 
 import java.net.InetAddress;
 
 import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 public class SFTPClientTest {
-  @ClassRule public static RestorePDIEngineEnvironment env = new RestorePDIEngineEnvironment();
-  private int serverPort;
-  private String userName;
-  private String password;
-  private Session session;
-  private ChannelSftp channel;
-  private InetAddress server;
-  private JSch jSch;
+  @ClassRule
+  public static RestorePDIEngineEnvironment env = new RestorePDIEngineEnvironment();
+
+  private int port = 22;
+  private String username = "admin";
+  private String password = "password";
+  private Session session = mock( Session.class );
+  private ChannelSftp channel = mock( ChannelSftp.class );
+  private InetAddress server = mock( InetAddress.class );
+  private JSch jSch = mock( JSch.class );
 
   @Before
   public void setUp() throws JSchException {
     System.clearProperty( SFTPClient.ENV_PARAM_USERAUTH_GSSAPI );
 
-    String serverIp = "serverIp";
-    serverPort = 1;
-    userName = "userName";
-    password = "password";
-    session = mock( Session.class );
-    server = mock( InetAddress.class );
-    channel = mock( ChannelSftp.class );
-    when( server.getHostAddress() ).thenReturn( serverIp );
-    jSch = mock( JSch.class );
-    when( jSch.getSession( userName, serverIp, serverPort ) ).thenReturn( session );
-
-
+    when( server.getHostAddress() ).thenReturn( "localhost" );
+    when( jSch.getSession( username, "localhost", port ) ).thenReturn( session );
+    when( session.openChannel( "sftp" ) ).thenReturn( channel );
   }
 
   @After
@@ -83,7 +77,7 @@ public class SFTPClientTest {
    */
   @Test
   public void shouldExcludeGssapiFromPreferredAuthenticationsByDefault() throws Exception {
-    new SFTPClient( server, serverPort, userName ) {
+    new SFTPClient( server, port, username ) {
       @Override
       JSch createJSch() {
         return jSch;
@@ -105,7 +99,7 @@ public class SFTPClientTest {
   public void shouldIncludeGssapiToPreferredAuthenticationsIfSpecified() throws Exception {
     System.setProperty( SFTPClient.ENV_PARAM_USERAUTH_GSSAPI, "true" );
 
-    new SFTPClient( server, serverPort, userName ) {
+    new SFTPClient( server, port, username ) {
       @Override
       JSch createJSch() {
         return jSch;
@@ -127,7 +121,7 @@ public class SFTPClientTest {
   public void shouldIncludeGssapiToPreferredAuthenticationsIfOnlySpecifiedCorrectly() throws Exception {
     System.setProperty( SFTPClient.ENV_PARAM_USERAUTH_GSSAPI, "yes" );
 
-    new SFTPClient( server, serverPort, userName ) {
+    new SFTPClient( server, port, username ) {
       @Override
       JSch createJSch() {
         return jSch;
@@ -138,11 +132,13 @@ public class SFTPClientTest {
       .setConfig( "PreferredAuthentications", "publickey,keyboard-interactive,password" );
   }
 
-  private SFTPClient setupFolderCreationTest() throws Exception {
-    when( session.openChannel( "sftp" ) ).thenReturn( channel );
-
+  /**
+   * Can't create root folder. An exception is expected.
+   */
+  @Test( expected = KettleJobException.class )
+  public void folderCreationEmptyTest() throws Exception {
     System.setProperty( SFTPClient.ENV_PARAM_USERAUTH_GSSAPI, "yes" );
-    SFTPClient client = new SFTPClient( server, serverPort, userName ) {
+    SFTPClient client = new SFTPClient( server, port, username ) {
       @Override
       JSch createJSch() {
         return jSch;
@@ -150,36 +146,124 @@ public class SFTPClientTest {
     };
 
     client.login( password );
-    return client;
-  }
-
-  @Test
-  public void folderCreationEmptyTest() throws Exception {
-    SFTPClient client = setupFolderCreationTest();
-    Mockito.doNothing().when( channel ).cd( anyString() );
-
     client.createFolder( "//" );
-    verify( channel, times( 0 ) ).cd( anyString() );
   }
 
+  /**
+   * Create a folder under the current user's home.
+   */
   @Test
-  public void folderCreationSimpleTest() throws Exception {
-    SFTPClient client = setupFolderCreationTest();
+  public void folderCreation_Relative_Simple() throws Exception {
+    System.setProperty( SFTPClient.ENV_PARAM_USERAUTH_GSSAPI, "yes" );
+    SFTPClient client = spy( new SFTPClient( server, port, username ) {
+      @Override
+      JSch createJSch() {
+        return jSch;
+      }
+    } );
 
-    Mockito.doThrow( new SftpException( 1, "Exception" ) ).doNothing().when( channel ).cd( anyString() );
-    Mockito.doNothing().when( channel ).mkdir( anyString() );
+    doReturn( "/home/admin" ).when( client ).pwd();
 
-    client.createFolder( "/test1/" );
-    verify( channel, times( 2 ) ).cd( anyString() );
+    client.login( password );
+    client.createFolder( "myfolder" );
+
     verify( channel, times( 1 ) ).mkdir( anyString() );
+    verify( channel, times( 1 ) ).mkdir( "/home/admin/myfolder" );
   }
 
+  /**
+   * Create a folder with nested folders under the current user's home.
+   */
   @Test
-  public void folderCreationComplexTest() throws Exception {
-    SFTPClient client = setupFolderCreationTest();
-    Mockito.doNothing().when( channel ).cd( anyString() );
+  public void folderCreation_Relative_Nested() throws Exception {
+    System.setProperty( SFTPClient.ENV_PARAM_USERAUTH_GSSAPI, "yes" );
+    SFTPClient client = spy( new SFTPClient( server, port, username ) {
+      @Override
+      JSch createJSch() {
+        return jSch;
+      }
+    } );
 
-    client.createFolder( "/test1/test2\\test3\\\\test4/" );
-    verify( channel, times( 4 ) ).cd( anyString() );
+    doReturn( "/home/admin" ).when( client ).pwd();
+
+    client.login( password );
+    client.createFolder( "myfolder/subfolder/finalfolder" );
+
+    verify( channel, times( 3 ) ).mkdir( anyString() );
+    verify( channel, times( 1 ) ).mkdir( "/home/admin/myfolder" );
+    verify( channel, times( 1 ) ).mkdir( "/home/admin/myfolder/subfolder" );
+    verify( channel, times( 1 ) ).mkdir( "/home/admin/myfolder/subfolder/finalfolder" );
+  }
+
+  /**
+   * Create a folder under an existing folder given an absolute path.
+   */
+  @Test
+  public void folderCreation_Absolute_Simple() throws Exception {
+    System.setProperty( SFTPClient.ENV_PARAM_USERAUTH_GSSAPI, "yes" );
+    SFTPClient client = spy( new SFTPClient( server, port, username ) {
+      @Override
+      JSch createJSch() {
+        return jSch;
+      }
+    } );
+
+    doReturn( true ).when( client ).folderExists( "/var" );
+    doReturn( true ).when( client ).folderExists( "/var/ftproot" );
+
+    client.login( password );
+    client.createFolder( "/var/ftproot/myfolder" );
+
+    verify( channel, times( 1 ) ).mkdir( anyString() );
+    verify( channel, times( 1 ) ).mkdir( "/var/ftproot/myfolder" );
+  }
+
+  /**
+   * Create a folder under an existing folder given an absolute path.
+   * The specified folder ends with a slash.
+   */
+  @Test
+  public void folderCreation_Absolute_TrailingSlash() throws Exception {
+    System.setProperty( SFTPClient.ENV_PARAM_USERAUTH_GSSAPI, "yes" );
+    SFTPClient client = spy( new SFTPClient( server, port, username ) {
+      @Override
+      JSch createJSch() {
+        return jSch;
+      }
+    } );
+
+    doReturn( true ).when( client ).folderExists( "/var" );
+    doReturn( true ).when( client ).folderExists( "/var/ftproot" );
+
+    client.login( password );
+    client.createFolder( "/var/ftproot/myfolder/" );
+
+    verify( channel, times( 1 ) ).mkdir( anyString() );
+    verify( channel, times( 1 ) ).mkdir( "/var/ftproot/myfolder" );
+  }
+
+  /**
+   * Create a folder with nested folders under an existing folder given an absolute path.
+   */
+  @Test
+  public void folderCreation_Absolute_Nested() throws Exception {
+    System.setProperty( SFTPClient.ENV_PARAM_USERAUTH_GSSAPI, "yes" );
+    SFTPClient client = spy( new SFTPClient( server, port, username ) {
+      @Override
+      JSch createJSch() {
+        return jSch;
+      }
+    } );
+
+    doReturn( true ).when( client ).folderExists( "/var" );
+    doReturn( true ).when( client ).folderExists( "/var/ftproot" );
+
+    client.login( password );
+    client.createFolder( "/var/ftproot/myfolder/subfolder/finalfolder" );
+
+    verify( channel, times( 3 ) ).mkdir( anyString() );
+    verify( channel, times( 1 ) ).mkdir( "/var/ftproot/myfolder" );
+    verify( channel, times( 1 ) ).mkdir( "/var/ftproot/myfolder/subfolder" );
+    verify( channel, times( 1 ) ).mkdir( "/var/ftproot/myfolder/subfolder/finalfolder" );
   }
 }

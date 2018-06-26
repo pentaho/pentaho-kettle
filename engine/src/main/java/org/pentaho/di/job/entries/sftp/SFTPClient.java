@@ -315,25 +315,27 @@ public class SFTPClient {
   }
 
   /**
-   * Creates this file as a folder.
+   * Creates the given folder. The {@param path} can be either absolute or relative.
+   * Allows creation of nested folders.
    */
-  public void createFolder( String foldername ) throws KettleJobException {
-    String[] folders = foldername.replace( "\\\\", "/" ).
-      replace( "\\", "/" ).split( "/" );
+  public void createFolder( String path ) throws KettleJobException {
+    try {
+      String[] folders = path.split( "/" );
+      folders[ 0 ] = ( path.charAt( 0 ) != '/' ? pwd() + "/" : "" ) + folders[ 0 ];
 
-    for ( String folder : folders ) {
-      if ( folder.length() > 0 ) {
-        try {
-          c.cd( folder );
-        } catch ( SftpException e ) {
-          try {
-            c.mkdir( folder );
-            c.cd( folder );
-          } catch ( SftpException e1 ) {
-            throw new KettleJobException( e1 );
-          }
+      for ( int i = 1; i < folders.length; i++ ) {
+        folders[ i ] = folders[ i - 1 ] + "/" + folders[ i ];
+      }
+
+      for ( String f : folders ) {
+        if ( f.length() != 0 && !folderExists( f ) ) {
+          c.mkdir( f );
         }
       }
+    } catch ( ArrayIndexOutOfBoundsException e ) {
+      throw new KettleJobException( e );
+    } catch ( SftpException e ) {
+      throw new KettleJobException( e );
     }
   }
 

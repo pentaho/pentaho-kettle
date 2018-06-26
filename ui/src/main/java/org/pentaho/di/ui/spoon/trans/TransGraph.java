@@ -3008,20 +3008,20 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
           break;
         case STEP_ICON:
           StepMeta iconStepMeta = (StepMeta) areaOwner.getOwner();
-          tip.append( BaseMessages.getString( PKG, "TransGraph.DeprecatedStep.Tooltip.Title" ) ).append( Const.CR );
-          String tipNext = BaseMessages.getString( PKG, "TransGraph.DeprecatedStep.Tooltip.Message1",
-            iconStepMeta.getName() );
-          int length = tipNext.length() + 5;
-          for ( int i = 0; i < length; i++ ) {
-            tip.append( "-" );
+          if ( iconStepMeta.isDeprecated() ) { // only need tooltip if step is deprecated
+            tip.append( BaseMessages.getString( PKG, "TransGraph.DeprecatedStep.Tooltip.Title" ) ).append( Const.CR );
+            String tipNext = BaseMessages.getString( PKG, "TransGraph.DeprecatedStep.Tooltip.Message1",
+              iconStepMeta.getName() );
+            int length = tipNext.length() + 5;
+            for ( int i = 0; i < length; i++ ) {
+              tip.append( "-" );
+            }
+            tip.append( Const.CR ).append( tipNext ).append( Const.CR );
+            tip.append( BaseMessages.getString( PKG, "TransGraph.DeprecatedStep.Tooltip.Message2",
+              iconStepMeta.getSuggestion() ) );
+            tipImage = GUIResource.getInstance().getImageDeprecated();
+            toolTip.setHideDelay( TOOLTIP_HIDE_DELAY_LONG );
           }
-          tip.append( Const.CR ).append( tipNext ).append( Const.CR );
-          tip.append( BaseMessages.getString( PKG, "TransGraph.DeprecatedStep.Tooltip.Message2" ) ).append( Const.CR );
-          tip.append( BaseMessages.getString( PKG, "TransGraph.DeprecatedStep.Tooltip.Message3",
-            iconStepMeta.getSuggestedStep() ) ).append( Const.CR );
-          tip.append( BaseMessages.getString( PKG, "TransGraph.DeprecatedStep.Tooltip.Message4" ) );
-          tipImage = GUIResource.getInstance().getImageDeprecated();
-          toolTip.setHideDelay( TOOLTIP_HIDE_DELAY_LONG );
           break;
         default:
           break;
