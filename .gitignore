@@ -2,3 +2,4 @@
 *.iml
 out
 gdsl
+*.project
