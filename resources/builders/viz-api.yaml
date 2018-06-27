@@ -18,6 +18,7 @@ jobGroups:
        scmBranch       :  BACKLOG-23466
        directives      :  += -DskipDefault -P platform-api
        versionProperty :  platform.version
+       archiveMatcher  :  NONE
 
   2100:
 
@@ -26,6 +27,7 @@ jobGroups:
        scmBranch       :  BACKLOG-23466
        directives      :  += -DskipDefault -P platform-base
        versionProperty :  platform.version
+       archiveMatcher  :  NONE
 
   2200:
 
@@ -34,6 +36,7 @@ jobGroups:
        scmBranch       :  BACKLOG-23466
        directives      :  += -P highdeps -DskipDefault
        versionProperty :  pentaho-osgi-bundles.version
+       archiveMatcher  :  NONE
 
   2500:
 
@@ -55,12 +58,14 @@ jobGroups:
        scmUrl          :  ${PENTAHO_SCM_ROOT}/marketplace.git
        scmBranch       :  ${DEFAULT_BRANCH}
        versionProperty :  pentaho-marketplace-modules.version
+       archiveMatcher  :  NONE
 
      - jobID           :  platform-user-console
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-platform.git
        scmBranch       :  ${DEFAULT_BRANCH}
        directives      :  += -DskipDefault -P platform-user-console
        versionProperty :  platform.version
+       archiveMatcher  :  NONE
 
   2800:
 
@@ -102,6 +107,7 @@ jobGroups:
        scmUrl          :  ${DCLEAO_SCM_ROOT}/pentaho-det.git
        scmBranch       :  BACKLOG-23472
        versionProperty :  pentaho-det.version
+       archiveMatcher  :  NONE
 
   3600:
 
@@ -109,6 +115,7 @@ jobGroups:
        scmUrl          :  ${DCLEAO_SCM_ROOT}/pentaho-det-ee.git
        scmBranch       :  BACKLOG-23472
        versionProperty :  pentaho-det.version
+       archiveMatcher  :  NONE
 
      - jobID           :  karaf-assembly
        scmUrl          :  ${DCLEAO_SCM_ROOT}/pentaho-karaf-assembly.git

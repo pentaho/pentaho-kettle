@@ -34,6 +34,7 @@ RUN_BUILDS: true
 RUN_CHECKOUTS: true
 RUN_UNIT_TESTS: true
 ARCHIVE_ARTIFACTS: true
+ARCHIVE_ARTIFACTS_PATTERN: '**/dist/*.gz, **/dist/*.zip, **/target/*.gz, **/target/*.zip, **/build/**/*.gz, **/build/**/*.zip, **/build/*.zip'
 USE_DISTRIBUTED_SOURCE_CACHING: false
 
 #BUILD_DATA_ROOT_PATH: ${WORKSPACE}/resources/builders
@@ -78,6 +79,7 @@ JOB_ITEM_DEFAULTS:
   directives: ${MAVEN_DEFAULT_DIRECTIVES}
   testable: true
   execType: FORCE
+  archiveMatcher: ${ARCHIVE_ARTIFACTS_PATTERN}
 
 # Build failover settings
 IGNORE_PIPELINE_FAILURE: false
