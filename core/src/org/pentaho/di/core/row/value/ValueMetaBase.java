@@ -973,7 +973,14 @@ public class ValueMetaBase implements ValueMetaInterface {
     }
 
     try {
-      return getDecimalFormat( false ).format( number );
+      DecimalFormat format = getDecimalFormat( false );
+
+      // When conversion masks are different, we must ensure the number precision is not lost
+      if ( this.conversionMask != null && storageMetadata != null
+              && !this.conversionMask.equals( storageMetadata.getConversionMask() ) ) {
+        format.setMaximumFractionDigits( 50 );
+      }
+      return format.format( number );
     } catch ( Exception e ) {
       throw new KettleValueException( toString() + " : couldn't convert Number to String ", e );
     }
@@ -3736,7 +3743,7 @@ public class ValueMetaBase implements ValueMetaInterface {
             return compare( data1, meta2.convertToNormalStorageType( data2 ) );
 
           case STORAGE_TYPE_BINARY_STRING:
-            if ( storageMetadata != null && storageMetadata.getConversionMask() != null ) {
+            if ( storageMetadata != null && storageMetadata.getConversionMask() != null && !meta2.isNumber() ) {
               // BACKLOG-18754 - if there is a storage conversion mask, we should use
               // it as the mask for meta2 (meta2 can have specific storage type and type, so
               // it can't be used directly to convert data2 to binary string)
