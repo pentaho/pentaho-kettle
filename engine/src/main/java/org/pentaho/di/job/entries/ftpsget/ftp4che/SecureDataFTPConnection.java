@@ -23,6 +23,7 @@
 package org.pentaho.di.job.entries.ftpsget.ftp4che;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
 
 import org.ftp4che.FTPConnection;
@@ -55,7 +56,37 @@ public class SecureDataFTPConnection extends SecureFTPConnection {
    */
   public List<FTPFile> getDirectoryListing( String directory )
       throws IOException, FtpWorkflowException, FtpIOException {
-    // enable PROT P for cases missing in super 
+    setDataProtIfImplicit();
+    return super.getDirectoryListing( directory );
+  }
+
+  /**
+   * Also sends a PROT P command for the implicit modes with crypted data.<br>
+   * {@inheritDoc}
+   */
+  @Override
+  public void uploadFile( FTPFile fromFile, FTPFile toFile ) throws IOException, FtpWorkflowException, FtpIOException {
+    setDataProtIfImplicit();
+    super.uploadFile( fromFile, toFile );
+  }
+
+  /**
+   * Also sends a PROT P command for the implicit modes with crypted data.<br>
+   * {@inheritDoc}
+   */
+  @Override
+  public void uploadStream( InputStream upStream, FTPFile toFile )
+    throws IOException, FtpWorkflowException, FtpIOException {
+    setDataProtIfImplicit();
+    super.uploadStream( upStream, toFile );
+  }
+
+  /**
+   * Send a PROT P command if on implicit modes with crypted data.<br>
+   * @throws IOException
+   */
+  protected void setDataProtIfImplicit() throws IOException {
+    // enable PROT P for cases missing in super
     int connectionType = getConnectionType();
     if ( connectionType == FTPConnection.IMPLICIT_SSL_WITH_CRYPTED_DATA_FTP_CONNECTION
         || connectionType == FTPConnection.IMPLICIT_TLS_WITH_CRYPTED_DATA_FTP_CONNECTION ) {
@@ -68,7 +99,5 @@ public class SecureDataFTPConnection extends SecureFTPConnection {
       setConnectionStatus( FTPConnection.IDLE );
       setConnectionStatusLock( CSL_DIRECT_CALL );
     }
-    return super.getDirectoryListing( directory );
   }
-
 }
