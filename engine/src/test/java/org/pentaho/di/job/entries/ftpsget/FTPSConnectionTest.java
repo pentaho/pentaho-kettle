@@ -22,8 +22,11 @@
 
 package org.pentaho.di.job.entries.ftpsget;
 
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.when;
 
 import java.io.IOException;
 import java.net.Socket;
@@ -34,6 +37,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import org.apache.commons.vfs2.FileObject;
 import org.ftp4che.FTPConnection;
 import org.ftp4che.commands.Command;
 import org.ftp4che.exception.AuthenticationNotSupportedException;
@@ -46,6 +50,7 @@ import org.ftp4che.reply.Reply;
 import org.ftp4che.util.ftpfile.FTPFileFactory;
 import org.junit.Test;
 import org.pentaho.di.core.variables.VariableSpace;
+import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.job.entries.ftpsget.ftp4che.SecureDataFTPConnection;
 
 public class FTPSConnectionTest {
@@ -61,6 +66,25 @@ public class FTPSConnectionTest {
     connection.getFileNames();
     assertEquals( "buffer not set", "PBSZ 0\r\n", connection.commands.get( 1 ).toString() );
     assertEquals( "data privacy not set", "PROT P\r\n", connection.commands.get( 2 ).toString() );
+  }
+
+  @Test
+  public void testEnforceProtPOnPut() throws Exception {
+    FileObject file = KettleVFS.createTempFile( "FTPSConnectionTest_testEnforceProtPOnPut", KettleVFS.Suffix.TMP);
+    file.createFile();
+    try {
+      FTPSTestConnection connection = spy(
+        new FTPSTestConnection(
+          FTPSConnection.CONNECTION_TYPE_FTP_IMPLICIT_TLS_WITH_CRYPTED,
+          "the.perfect.host", 2010, "warwickw", "julia", null ) );
+      connection.replies.put( "PWD", new Reply( Arrays.asList( "257 \"/la\" is current directory" ) ) );
+      connection.connect();
+      connection.uploadFile( file.getPublicURIString(), "uploaded-file" );
+      assertEquals( "buffer not set", "PBSZ 0\r\n", connection.commands.get( 0 ).toString() );
+      assertEquals( "data privacy not set", "PROT P\r\n", connection.commands.get( 1 ).toString() );
+    } finally {
+      file.delete();
+    }
   }
 
   static class FTPSTestConnection extends FTPSConnection {
