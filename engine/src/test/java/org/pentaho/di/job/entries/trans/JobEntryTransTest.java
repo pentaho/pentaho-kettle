@@ -231,12 +231,18 @@ public class JobEntryTransTest {
   @Test
   public void testPrepareFieldNamesParameters() throws UnknownParamException {
     // array of params
-    String[] parameterNames = new String[1];
+    String[] parameterNames = new String[2];
     parameterNames[0] = "param1";
+    parameterNames[1] = "param2";
 
     // array of fieldNames params
     String[] parameterFieldNames = new String[1];
     parameterFieldNames[0] = "StreamParam1";
+
+    // array of parameterValues params
+    String[] parameterValues = new String[2];
+    parameterValues[1] = "ValueParam2";
+
 
     JobEntryTrans jet = new JobEntryTrans();
     VariableSpace variableSpace = new Variables();
@@ -244,11 +250,13 @@ public class JobEntryTransTest {
 
     //at this point StreamColumnNameParams are already inserted in namedParams
     NamedParams namedParam = Mockito.mock( NamedParamsDefault.class );
-    Mockito.doReturn( "value1" ).when( namedParam ).getParameterValue(  Mockito.anyObject() );
+    Mockito.doReturn( "value1" ).when( namedParam ).getParameterValue(  "param1" );
+    Mockito.doReturn( "value2" ).when( namedParam ).getParameterValue(  "param2" );
 
-    jet.prepareFieldNamesParameters( parameterNames, parameterFieldNames, namedParam, jet );
+    jet.prepareFieldNamesParameters( parameterNames, parameterFieldNames, parameterValues, namedParam, jet );
 
     Assert.assertEquals( "value1", jet.getVariable( "param1" ) );
+    Assert.assertEquals( null, jet.getVariable( "param2" ) );
   }
 
   @Test
