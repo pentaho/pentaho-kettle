@@ -32,6 +32,7 @@ import javax.xml.stream.XMLStreamException;
 
 import org.apache.commons.vfs2.FileObject;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.row.value.ValueMetaBase;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.ResultFile;
 import org.pentaho.di.core.exception.KettleException;
@@ -233,9 +234,25 @@ public class XMLOutput extends BaseStep implements StepInterface {
           elementName = xmlField.getFieldName();
         }
 
-        data.writer.writeAttribute( elementName, valueMeta.getString( valueData ) );
+        if ( valueData != null ) {
+
+          data.writer.writeAttribute( elementName, valueMeta.getString( valueData ) );
+        } else if ( isNullValueAllowed( valueMeta.getType() ) ) {
+
+          data.writer.writeAttribute( elementName, "null" );
+        }
       }
     }
+  }
+
+  private boolean isNullValueAllowed( int valueMetaType ) {
+
+    //Check if retro compatibility is set or not, to guaranty compatibility with older versions.
+    //In 6.1 null values were written with string "null". Since then the attribute is not written.
+
+    String val = getVariable( Const.KETTLE_COMPATIBILITY_XML_OUTPUT_NULL_VALUES, "N" );
+
+    return ValueMetaBase.convertStringToBoolean( Const.NVL( val, "N" ) ) && valueMetaType == ValueMetaInterface.TYPE_STRING;
   }
 
   private void writeField( ValueMetaInterface valueMeta, Object valueData, String element ) throws KettleStepException {
