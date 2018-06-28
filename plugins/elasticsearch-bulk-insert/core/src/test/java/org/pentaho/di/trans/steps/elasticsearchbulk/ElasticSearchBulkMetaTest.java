@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -35,7 +35,7 @@ import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
-import org.elasticsearch.common.transport.InetSocketTransportAddress;
+import org.elasticsearch.common.transport.TransportAddress;
 import org.junit.Test;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleValueException;
@@ -230,9 +230,9 @@ public class ElasticSearchBulkMetaTest {
   }
 
   public class InetSocketTransportAddressFieldLoadSaveValidator implements
-      FieldLoadSaveValidator<InetSocketTransportAddress> {
+      FieldLoadSaveValidator<TransportAddress> {
     @Override
-    public InetSocketTransportAddress getTestObject() {
+    public TransportAddress getTestObject() {
       byte[] randomIP;
       // Test IPv4 and IPv6 addresses
       if ( new Random().nextBoolean() ) {
@@ -242,15 +242,15 @@ public class ElasticSearchBulkMetaTest {
       }
       new Random().nextBytes( randomIP );
       try {
-        return new InetSocketTransportAddress( InetAddress.getByAddress( randomIP ), new Random().nextInt( 65536 ) );
+        return new TransportAddress( InetAddress.getByAddress( randomIP ), new Random().nextInt( 65536 ) );
       } catch ( UnknownHostException e ) {
-        return new InetSocketTransportAddress( InetAddress.getLoopbackAddress(), new Random().nextInt( 65536 ) );
+        return new TransportAddress( InetAddress.getLoopbackAddress(), new Random().nextInt( 65536 ) );
       }
     }
 
     @Override
-    public boolean validateTestObject( InetSocketTransportAddress testObject, Object actual ) {
-      return testObject.equals( (InetSocketTransportAddress) actual );
+    public boolean validateTestObject( TransportAddress testObject, Object actual ) {
+      return testObject.equals( (TransportAddress) actual );
     }
   }
 

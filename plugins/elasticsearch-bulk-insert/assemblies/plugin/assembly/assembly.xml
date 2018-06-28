@@ -26,40 +26,9 @@
       <outputDirectory>elasticsearch-bulk-insert-plugin/lib</outputDirectory>
       <scope>runtime</scope>
       <useTransitiveDependencies>true</useTransitiveDependencies>
-      <includes>
-        <include>com.wcohen:com.wcohen.secondstring:jar</include>
-        <include>commons-cli:commons-cli:jar</include>
-        <include>com.ning:compress-lzf:jar</include>
-        <include>org.elasticsearch:elasticsearch:jar</include>
-        <include>com.google.guava:guava:jar</include>
-        <include>org.hdrhistogram:HdrHistogram:jar</include>
-        <include>com.carrotsearch:hppc:jar</include>
-        <include>com.fasterxml.jackson.dataformat:jackson-dataformat-cbor:jar</include>
-        <include>com.fasterxml.jackson.dataformat:jackson-dataformat-smile:jar</include>
-        <include>com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:jar</include>
-        <include>org.joda:joda-convert:jar</include>
-        <include>joda-time:joda-time:jar</include>
-        <include>com.twitter:jsr166e:jar</include>
-        <include>org.apache.lucene:lucene-analyzers-common:jar</include>
-        <include>org.apache.lucene:lucene-backward-codecs:jar</include>
-        <include>org.apache.lucene:lucene-core:jar</include>
-        <include>org.apache.lucene:lucene-grouping:jar</include>
-        <include>org.apache.lucene:lucene-highlighter:jar</include>
-        <include>org.apache.lucene:lucene-join:jar</include>
-        <include>org.apache.lucene:lucene-memory:jar</include>
-        <include>org.apache.lucene:lucene-misc:jar</include>
-        <include>org.apache.lucene:lucene-queries:jar</include>
-        <include>org.apache.lucene:lucene-queryparser:jar</include>
-        <include>org.apache.lucene:lucene-sandbox:jar</include>
-        <include>org.apache.lucene:lucene-spatial3d:jar</include>
-        <include>org.apache.lucene:lucene-spatial:jar</include>
-        <include>org.apache.lucene:lucene-suggest:jar</include>
-        <include>io.netty:netty:jar</include>
-        <include>org.elasticsearch:securesm:jar</include>
-        <include>org.yaml:snakeyaml:jar</include>
-        <include>com.spatial4j:spatial4j:jar</include>
-        <include>com.tdunning:t-digest:jar</include>
-      </includes>
+      <excludes>
+        <exclude>org.pentaho.di.plugins:elasticsearch-bulk-insert-core:jar</exclude>
+      </excludes>
     </dependencySet>
   </dependencySets>
 </assembly>
