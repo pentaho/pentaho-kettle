@@ -22,34 +22,16 @@
 
 package org.pentaho.di.trans;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.doCallRealMethod;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.net.URISyntaxException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.concurrent.CountDownLatch;
-
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.vfs2.FileObject;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.mockito.runners.MockitoJUnitRunner;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.ProgressMonitorListener;
 import org.pentaho.di.core.Result;
@@ -64,15 +46,48 @@ import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.junit.rules.RestorePDIEngineEnvironment;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectoryInterface;
+import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepInterface;
+import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaDataCombi;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.concurrent.CountDownLatch;
+
+import static com.google.common.collect.ImmutableList.of;
+import static java.util.Collections.emptyList;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.doCallRealMethod;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+@RunWith ( MockitoJUnitRunner.class )
 public class TransTest {
   @ClassRule public static RestorePDIEngineEnvironment env = new RestorePDIEngineEnvironment();
+  @Mock private StepInterface stepMock, stepMock2;
+  @Mock private StepDataInterface data, data2;
+  @Mock private StepMeta stepMeta, stepMeta2;
+  @Mock private TransMeta transMeta;
+
 
   int count = 10000;
   Trans trans;
   TransMeta meta;
+
 
   @BeforeClass
   public static void beforeClass() throws KettleException {
@@ -91,7 +106,7 @@ public class TransTest {
   /**
    * PDI-14948 - Execution of trans with no steps never ends
    */
-  @Test( timeout = 1000 )
+  @Test ( timeout = 1000 )
   public void transWithNoStepsIsNotEndless() throws Exception {
     Trans transWithNoSteps = new Trans( new TransMeta() );
     transWithNoSteps = spy( transWithNoSteps );
@@ -108,12 +123,12 @@ public class TransTest {
   @Test
   public void testFindDatabaseWithEncodedConnectionName() {
     DatabaseMeta dbMeta1 =
-        new DatabaseMeta( "encoded_DBConnection", "Oracle", "localhost", "access", "test", "111", "test", "test" );
+      new DatabaseMeta( "encoded_DBConnection", "Oracle", "localhost", "access", "test", "111", "test", "test" );
     dbMeta1.setDisplayName( "encoded.DBConnection" );
     meta.addDatabase( dbMeta1 );
 
     DatabaseMeta dbMeta2 =
-        new DatabaseMeta( "normalDBConnection", "Oracle", "localhost", "access", "test", "111", "test", "test" );
+      new DatabaseMeta( "normalDBConnection", "Oracle", "localhost", "access", "test", "111", "test", "test" );
     dbMeta2.setDisplayName( "normalDBConnection" );
     meta.addDatabase( dbMeta2 );
 
@@ -132,7 +147,7 @@ public class TransTest {
     meta.clear();
     String actual = meta.log.getLogChannelId();
     assertEquals( "Use same logChannel for empty constructors, or assign General level for clear() calls",
-        expected, actual );
+      expected, actual );
   }
 
   /**
@@ -143,19 +158,19 @@ public class TransTest {
     Repository rep = Mockito.mock( Repository.class );
     RepositoryDirectoryInterface repInt = Mockito.mock( RepositoryDirectoryInterface.class );
     Mockito.when(
-        rep.loadTransformation( Mockito.anyString(), Mockito.any( RepositoryDirectoryInterface.class ), Mockito
-            .any( ProgressMonitorListener.class ), Mockito.anyBoolean(), Mockito.anyString() ) ).thenReturn( meta );
+      rep.loadTransformation( Mockito.anyString(), Mockito.any( RepositoryDirectoryInterface.class ), Mockito
+        .any( ProgressMonitorListener.class ), Mockito.anyBoolean(), Mockito.anyString() ) ).thenReturn( meta );
     Mockito.when( rep.findDirectory( Mockito.anyString() ) ).thenReturn( repInt );
 
     Trans trans = new Trans( meta, rep, "junit", "junitDir", "fileName" );
     assertEquals( "Log channel General assigned", LogChannel.GENERAL.getLogChannelId(), trans.log
-        .getLogChannelId() );
+      .getLogChannelId() );
   }
 
   /**
    * PDI-5229 - ConcurrentModificationException when restarting transformation Test that listeners can be accessed
    * concurrently during transformation finish
-   * 
+   *
    * @throws KettleException
    * @throws InterruptedException
    */
@@ -171,7 +186,7 @@ public class TransTest {
 
   /**
    * Test that listeners can be accessed concurrently during transformation start
-   * 
+   *
    * @throws InterruptedException
    */
   @Test
@@ -186,7 +201,7 @@ public class TransTest {
 
   /**
    * Test that transformation stop listeners can be accessed concurrently
-   * 
+   *
    * @throws InterruptedException
    */
   @Test
@@ -221,15 +236,16 @@ public class TransTest {
     Database mockedDataBase = mock( Database.class );
     Trans trans = mock( Trans.class );
 
-    StepLogTable stepLogTable = StepLogTable.getDefault( mock( VariableSpace.class ), mock( HasDatabasesInterface.class )  );
+    StepLogTable stepLogTable =
+      StepLogTable.getDefault( mock( VariableSpace.class ), mock( HasDatabasesInterface.class ) );
     stepLogTable.setConnectionName( "connection" );
 
-    TransMeta transMeta = new TransMeta(  );
+    TransMeta transMeta = new TransMeta();
     transMeta.setStepLogTable( stepLogTable );
 
     when( trans.getTransMeta() ).thenReturn( transMeta );
     when( trans.createDataBase( any( DatabaseMeta.class ) ) ).thenReturn( mockedDataBase );
-    when( trans.getSteps() ).thenReturn( new ArrayList<StepMetaDataCombi>() );
+    when( trans.getSteps() ).thenReturn( new ArrayList<>() );
 
     doCallRealMethod().when( trans ).writeStepLogInformation();
     trans.writeStepLogInformation();
@@ -248,7 +264,7 @@ public class TransTest {
     verify( mockListener ).transFinished( trans );
   }
 
-  @Test( expected = KettleException.class )
+  @Test ( expected = KettleException.class )
   public void testFireTransFinishedListenersExceptionOnTransFinished() throws Exception {
     Trans trans = new Trans();
     TransListener mockListener = mock( TransListener.class );
@@ -268,20 +284,57 @@ public class TransTest {
 
   @Test
   public void testSafeStop() {
-    StepInterface step = mock( StepInterface.class );
-    when( step.isSafeStopped() ).thenReturn( false );
-    when( step.getStepname() ).thenReturn( "stepName" );
+    when( stepMock.isSafeStopped() ).thenReturn( false );
+    when( stepMock.getStepname() ).thenReturn( "stepName" );
 
-    StepMetaDataCombi stepMetaDataCombi = new StepMetaDataCombi();
-    stepMetaDataCombi.step = step;
-
-    trans.setSteps( Collections.singletonList( stepMetaDataCombi ) );
+    trans.setSteps( of( combi( stepMock, data, stepMeta ) ) );
     Result result = trans.getResult();
     assertFalse( result.isSafeStop() );
 
-    when( step.isSafeStopped() ).thenReturn( true );
+    when( stepMock.isSafeStopped() ).thenReturn( true );
     result = trans.getResult();
     assertTrue( result.isSafeStop() );
+  }
+
+  @Test
+  public void safeStopStopsInputStepsRightAway() throws KettleException {
+    trans.setSteps( of( combi( stepMock, data, stepMeta ) ) );
+    when( transMeta.findPreviousSteps( stepMeta, true ) ).thenReturn( emptyList() );
+    trans.transMeta = transMeta;
+    trans.safeStop();
+    verifyStopped( stepMock, 1 );
+  }
+
+  @Test
+  public void safeLetsNonInputStepsKeepRunning() throws KettleException {
+    trans.setSteps( of(
+      combi( stepMock, data, stepMeta ),
+      combi( stepMock2, data2, stepMeta2 ) ) );
+
+    when( transMeta.findPreviousSteps( stepMeta, true ) ).thenReturn( emptyList() );
+    // stepMeta2 will have stepMeta as previous, so is not an input step
+    when( transMeta.findPreviousSteps( stepMeta2, true ) ).thenReturn( of( stepMeta ) );
+    trans.transMeta = transMeta;
+
+    trans.safeStop();
+    verifyStopped( stepMock, 1 );
+    // non input step shouldn't have stop called
+    verifyStopped( stepMock2, 0 );
+  }
+
+  private void verifyStopped( StepInterface step, int numberTimesCalled ) throws KettleException {
+    verify( step, times( numberTimesCalled ) ).setStopped( true );
+    verify( step, times( numberTimesCalled ) ).setSafeStopped( true );
+    verify( step, times( numberTimesCalled ) ).resumeRunning();
+    verify( step, times( numberTimesCalled ) ).stopRunning( any(), any() );
+  }
+
+  private StepMetaDataCombi combi( StepInterface step, StepDataInterface data, StepMeta stepMeta ) {
+    StepMetaDataCombi stepMetaDataCombi = new StepMetaDataCombi();
+    stepMetaDataCombi.step = step;
+    stepMetaDataCombi.data = data;
+    stepMetaDataCombi.stepMeta = stepMeta;
+    return stepMetaDataCombi;
   }
 
   private void startThreads( Runnable one, Runnable two, CountDownLatch start ) throws InterruptedException {
