@@ -41,7 +41,7 @@ jobGroups:
   2500:
 
      - jobID           :  cdf-plugin
-       scmUrl          :  ${PENTAHO_SCM_ROOT}/cdf.git
+       scmUrl          :  ${WEBDETAILS_SCM_ROOT}/cdf.git
        scmBranch       :  ${DEFAULT_BRANCH} # BACKLOG-23474
        versionProperty :  pentaho-cdf-plugin.version
 
@@ -70,12 +70,12 @@ jobGroups:
   2800:
 
      - jobID           :  cde-plugin
-       scmUrl          :  ${PENTAHO_SCM_ROOT}/cde.git
+       scmUrl          :  ${WEBDETAILS_SCM_ROOT}/cde.git
        scmBranch       :  ${DEFAULT_BRANCH} # BACKLOG-23474
        versionProperty :  pentaho-cde-plugin.version
 
      - jobID           :  cgg-plugin
-       scmUrl          :  ${PENTAHO_SCM_ROOT}/cgg.git
+       scmUrl          :  ${WEBDETAILS_SCM_ROOT}/cgg.git
        scmBranch       :  ${DEFAULT_BRANCH} # BACKLOG-23471
        versionProperty :  pentaho-cgg-plugin.version
 
