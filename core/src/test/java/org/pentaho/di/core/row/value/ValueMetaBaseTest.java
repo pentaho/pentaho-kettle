@@ -988,4 +988,19 @@ public class ValueMetaBaseTest {
     valueMetaString.setPreparedStatementValue( databaseMetaSpy, preparedStatementMock, 0, LOG_FIELD );
   }
 
+  @Test
+  public void testConvertNumberToString() throws KettleValueException {
+    String expectedStringRepresentation = "123.123";
+    Number numberToTest = Double.valueOf( "123.123" );
+
+    ValueMetaBase base = new ValueMetaNumber( "ValueMetaNumber" );
+    base.setStorageType( ValueMetaInterface.STORAGE_TYPE_NORMAL );
+
+    ValueMetaString valueMetaString = new ValueMetaString( "ValueMetaString" );
+    base.setConversionMetadata( valueMetaString );
+
+    String convertedNumber = base.convertNumberToString( (Double) numberToTest );
+    assertEquals( expectedStringRepresentation,  convertedNumber );
+  }
+
 }
