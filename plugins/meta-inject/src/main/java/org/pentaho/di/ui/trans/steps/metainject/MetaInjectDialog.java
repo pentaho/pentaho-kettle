@@ -543,7 +543,7 @@ public class MetaInjectDialog extends BaseStepDialog implements StepDialogInterf
     wNoExecution.setText( BaseMessages.getString( PKG, "MetaInjectDialog.NoExecution.Label" ) );
     props.setLook( wNoExecution );
     FormData fdNoExecution = new FormData();
-    fdNoExecution.width = 250;
+    fdNoExecution.width = 350;
     fdNoExecution.left = new FormAttachment( 0, 0 );
     fdNoExecution.top = new FormAttachment( wStreamingTargetStep, 10 );
     wNoExecution.setLayoutData( fdNoExecution );
