@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,8 +22,6 @@
 
 package org.pentaho.di.trans.steps.elasticsearchbulk;
 
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -32,7 +30,6 @@ import java.util.TreeMap;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang.StringUtils;
-import org.elasticsearch.common.transport.InetSocketTransportAddress;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
@@ -45,8 +42,8 @@ import org.pentaho.di.core.injection.Injection;
 import org.pentaho.di.core.injection.InjectionDeep;
 import org.pentaho.di.core.injection.InjectionSupported;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
@@ -386,8 +383,7 @@ public class ElasticSearchBulkMeta extends BaseStepMeta implements StepMetaInter
   public void getFields( RowMetaInterface r, String name, RowMetaInterface[] info, StepMeta nextStep,
       VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
     if ( StringUtils.isNotBlank( this.getIdOutField() ) ) {
-      ValueMetaInterface valueMeta =
-          new ValueMeta( space.environmentSubstitute( this.getIdOutField() ), ValueMetaInterface.TYPE_STRING );
+      ValueMetaInterface valueMeta = new ValueMetaString( space.environmentSubstitute( this.getIdOutField() ) );
       valueMeta.setOrigin( name );
       // add if doesn't exist
       if ( !r.exists( valueMeta ) ) {
@@ -768,7 +764,7 @@ public class ElasticSearchBulkMeta extends BaseStepMeta implements StepMetaInter
 
   public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr, TransMeta transMeta,
       Trans trans ) {
-    return new ElasticSearchBulk( stepMeta, stepDataInterface, cnr, transMeta, trans );
+      return new ElasticSearchBulk( stepMeta, stepDataInterface, cnr, transMeta, trans );
   }
 
   public StepDataInterface getStepData() {
@@ -785,9 +781,14 @@ public class ElasticSearchBulkMeta extends BaseStepMeta implements StepMetaInter
     @Injection( name = "PORT" )
     public int port;
 
-    public InetSocketTransportAddress getAddr() throws UnknownHostException {
-      return new InetSocketTransportAddress( InetAddress.getByName( address ), port );
+    public String getAddress() {
+      return address;
     }
+    
+    public int getPort() {
+      return port;
+    }
+    
   }
 
   public static class Field {

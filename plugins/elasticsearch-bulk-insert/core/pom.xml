@@ -21,54 +21,70 @@
     <timestamp>${maven.build.timestamp}</timestamp>
     <build.description>${project.description}</build.description>
     <maven.build.timestamp.format>yyyy/MM/dd hh:mm</maven.build.timestamp.format>
+    <elasticsearch.version>6.3.0</elasticsearch.version>
   </properties>
   
   <dependencies>
     <dependency>
-      <groupId>org.elasticsearch</groupId>
-      <artifactId>elasticsearch</artifactId>
-      <version>2.2.0</version>
+	    <groupId>org.elasticsearch</groupId>
+	    <artifactId>elasticsearch</artifactId>
+	    <version>${elasticsearch.version}</version>
+	    <scope>compile</scope>
+    </dependency>
+    <dependency>
+        <groupId>org.elasticsearch.client</groupId>
+        <artifactId>transport</artifactId>
+        <version>${elasticsearch.version}</version>
+        <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>pentaho-kettle</groupId>
       <artifactId>kettle-engine</artifactId>
       <version>${pdi.version}</version>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>pentaho-kettle</groupId>
       <artifactId>kettle-core</artifactId>
       <version>${pdi.version}</version>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>pentaho-kettle</groupId>
       <artifactId>kettle-ui-swt</artifactId>
       <version>${pdi.version}</version>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.eclipse.swt</groupId>
       <artifactId>org.eclipse.swt.gtk.linux.x86_64</artifactId>
       <version>4.6</version>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.eclipse</groupId>
       <artifactId>jface</artifactId>
       <version>3.3.0-I20070606-0010</version>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
       <version>4.11</version>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.mockito</groupId>
       <artifactId>mockito-all</artifactId>
       <version>1.9.5</version>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>pentaho-kettle</groupId>
       <artifactId>kettle-engine</artifactId>
       <classifier>tests</classifier>
       <version>${pdi.version}</version>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>pentaho-kettle</groupId>

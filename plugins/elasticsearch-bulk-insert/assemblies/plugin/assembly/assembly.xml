@@ -26,11 +26,13 @@
       <outputDirectory>elasticsearch-bulk-insert-plugin/lib</outputDirectory>
       <scope>runtime</scope>
       <useTransitiveDependencies>true</useTransitiveDependencies>
+      <!-- 
       <includes>
         <include>com.wcohen:com.wcohen.secondstring:jar</include>
         <include>commons-cli:commons-cli:jar</include>
         <include>com.ning:compress-lzf:jar</include>
         <include>org.elasticsearch:elasticsearch:jar</include>
+        <include>org.elasticsearch.client:transport:jar</include>
         <include>com.google.guava:guava:jar</include>
         <include>org.hdrhistogram:HdrHistogram:jar</include>
         <include>com.carrotsearch:hppc:jar</include>
@@ -60,6 +62,11 @@
         <include>com.spatial4j:spatial4j:jar</include>
         <include>com.tdunning:t-digest:jar</include>
       </includes>
+       -->
+       
+       <excludes>
+          <exclude>org.pentaho.di.plugins:elasticsearch-bulk-insert-core:jar</exclude>
+       </excludes>
     </dependencySet>
   </dependencySets>
 </assembly>
