@@ -475,8 +475,9 @@ public class UniqueRowsDialog extends BaseStepDialog implements StepDialogInterf
       IntStream.range( 0, hops.size() )
         .filter( hopInd -> {
           TransHopMeta hop = hops.get( hopInd );
-          return ( hop.isErrorHop() &&
-            hop.getFromStep().getStepID().equals( this.input.getParentStepMeta().getStepID() ) );
+          return (
+            hop.isErrorHop()
+            && hop.getFromStep().getStepID().equals( this.input.getParentStepMeta().getStepID() ) );
         } )
         .forEach( hopInd -> this.transMeta.removeTransHop( hopInd ) );
     }
