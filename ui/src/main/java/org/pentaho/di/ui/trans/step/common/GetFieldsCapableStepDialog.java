@@ -29,6 +29,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TableItem;
 import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.i18n.BaseMessages;
+import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.ui.core.dialog.BaseDialog;
 import org.pentaho.di.ui.core.dialog.BaseMessageDialog;
@@ -104,6 +105,13 @@ public interface GetFieldsCapableStepDialog<StepMetaType extends BaseStepMeta> {
     return newFieldNames;
   }
 
+  /**
+   * This can be called by the "Get fields" button handler to inherit the common "get fields" behavior.
+   */
+  default void getFields() {
+    getFields( getPopulatedMeta() );
+  }
+
   default void getFields( final StepMetaType meta ) {
 
     final String[] incomingFieldNames = getFieldNames( meta );
@@ -144,7 +152,7 @@ public interface GetFieldsCapableStepDialog<StepMetaType extends BaseStepMeta> {
     dlg.open();
   }
 
-  String loadFieldsImpl( final StepMetaType meta, final int samples, final boolean reloadAllFields );
+  String loadFieldsImpl( final StepMetaType meta, final int samples );
 
   default Map<String, List<String>> getFieldValues() {
     getFieldsTable().nrNonEmpty();
@@ -165,27 +173,36 @@ public interface GetFieldsCapableStepDialog<StepMetaType extends BaseStepMeta> {
     return rowValues;
   }
 
-  default List<String> repopulateFields( final StepMetaType meta, final Map<String, List<String>> previousFieldValues,
-                                         final boolean reloadAllFields ) {
-    final List<String> userDefinedFields = new ArrayList();
-    final String[] fieldNames = getFieldNames( meta );
-    for ( final String fieldName : fieldNames ) {
+  default Set<String> repopulateFields( final StepMetaType meta, final Map<String, List<String>> previousFieldValues,
+                                        final boolean reloadAllFields ) {
+    // incoming field names
+    final String[] incomingFieldNames = getFieldNames( meta );
+    final Set<String> newFieldNames = new HashSet();
+    for ( final String incomingFieldName : incomingFieldNames ) {
       final TableItem item = new TableItem( getFieldsTable().table, SWT.NONE );
-      // remove the corresponding item, that way, all that remains is fields that are not incoming, but rather may
-      // have been entered manually by the user
-      final List<String> values = previousFieldValues.remove( fieldName );
       int columnIndexOffset = getFieldsTable().hasIndexColumn() ? 1 : 0;
-      int columnIndex = 0;
-      if ( !reloadAllFields && values != null ) {
-        for ( final String value : values ) {
-          item.setText( columnIndex++ + columnIndexOffset, value );
+      item.setText( columnIndexOffset, incomingFieldName );
+      if ( previousFieldValues.containsKey( incomingFieldName ) ) {
+        // remove the values corresponding to this field from previousFieldValues, that way, all that remains in the
+        // previousFieldValues map is field names that are not incoming from other steps, but rather may have been
+        // entered manually by the user
+        final List<String> values = previousFieldValues.remove( incomingFieldName );
+        int columnIndex = 0;
+        if ( !reloadAllFields && values != null ) {
+          for ( final String value : values ) {
+            item.setText( columnIndex++ + columnIndexOffset, value );
+          }
         }
       } else {
-        userDefinedFields.add( fieldName );
-        item.setText( columnIndexOffset, fieldName );
+        newFieldNames.add( incomingFieldName );
       }
     }
-    return userDefinedFields;
+    // whatever is left in previousFieldValues represents user defined fields that may have been entered manually. If
+    // we are not clearing and reloading, we should preserve these fields
+    if ( !reloadAllFields ) {
+      loadRemainingFields( previousFieldValues );
+    }
+    return newFieldNames;
   }
 
   default void loadRemainingFields( final Map<String, List<String>> previousFieldValues ) {
@@ -210,26 +227,23 @@ public interface GetFieldsCapableStepDialog<StepMetaType extends BaseStepMeta> {
     // cache the fields currently present in the fields table
     final Map<String, List<String>> fieldValues = getFieldValues();
 
-    // clear the table
+    // clear the table so that we can re-add the fields in the correct order
     getFieldsTable().removeAll();
+    getFieldsTable().removeEmptyRows();
+    getFieldsTable().setRowNums();
+    getFieldsTable().optWidth( true );
 
-    // ...and reorder the table items, keeping track of user defined fields
-    final List<String> userDefinedFields = repopulateFields( meta, fieldValues, reloadAllFields );
-
-    // are there any other fields left that the user may have entered manually? If we are not clearing and reloading,
-    // we should preserve those
-    if ( !reloadAllFields ) {
-      loadRemainingFields( fieldValues );
-    }
+    // ...repopulate the field values in the correct order, keeping track of new incoming fields
+    final Set<String> newFieldNames = repopulateFields( meta, fieldValues, reloadAllFields );
 
     populateMeta( meta );
-    final String message = loadFieldsImpl( meta, samples, reloadAllFields );
+    final String message = loadFieldsImpl( meta, samples );
     if ( message != null ) {
       if ( reloadAllFields ) {
         getFieldsTable().removeAll();
       }
       // OK, what's the result of our search?
-      getData( meta, false, reloadAllFields, userDefinedFields );
+      getData( meta, false, reloadAllFields, newFieldNames );
       getFieldsTable().removeEmptyRows();
       getFieldsTable().setRowNums();
       getFieldsTable().optWidth( true );
@@ -237,8 +251,19 @@ public interface GetFieldsCapableStepDialog<StepMetaType extends BaseStepMeta> {
     return message;
   }
 
+  default TableItem getTableItem( final String fieldName ) {
+    // try to find a table item corresponding to the current field name
+    TableItem item = findTableItem( fieldName );
+    // if one doesn't exist, create a new one;
+    if ( item == null ) {
+      item = new TableItem( getFieldsTable().table, SWT.NONE );
+    }
+    return item;
+  }
+
+
   void getData( final StepMetaType inputMeta, final boolean copyStepname, final boolean reloadAllFields,
-                final List<String> newFieldNames );
+                final Set<String> newFieldNames );
 
   default StepMetaType getPopulatedMeta() {
     final StepMetaType newMeta = getNewMetaInstance();
@@ -249,4 +274,6 @@ public interface GetFieldsCapableStepDialog<StepMetaType extends BaseStepMeta> {
   void populateMeta( final StepMetaType meta );
 
   StepMetaType getNewMetaInstance();
+
+  TransMeta getTransMeta();
 }

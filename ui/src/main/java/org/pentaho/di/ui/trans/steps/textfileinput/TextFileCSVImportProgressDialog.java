@@ -55,6 +55,7 @@ import org.pentaho.di.trans.steps.textfileinput.TextFileInputField;
 import org.pentaho.di.trans.steps.textfileinput.TextFileInputMeta;
 import org.pentaho.di.trans.steps.textfileinput.TextFileLine;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
+import org.pentaho.di.ui.trans.step.common.CsvInputAwareImportProgressDialog;
 
 /**
  * Takes care of displaying a dialog that will handle the wait while we're finding out what tables, views etc we can
@@ -64,7 +65,7 @@ import org.pentaho.di.ui.core.dialog.ErrorDialog;
  * @since 07-apr-2005
  * @deprecated replaced by implementation in the ...steps.fileinput.text package
  */
-public class TextFileCSVImportProgressDialog {
+public class TextFileCSVImportProgressDialog implements CsvInputAwareImportProgressDialog {
   private static Class<?> PKG = TextFileInputMeta.class; // for i18n purposes, needed by Translator2!!
 
   private Shell shell;
@@ -117,13 +118,12 @@ public class TextFileCSVImportProgressDialog {
   }
 
   /**
-   *
    * @param failOnParseError if set to true, parsing failure on any line will cause parsing to be terminated; when
-   *                         set to false, parsing failure on a givne line will not prevent remaining lines from
-   *                         being parsed - this allows us to analyze fields, even is some field is mis-configured
-   *                         and causes a parsing value for the values of that field.
-   * @return
+   *                         set to false, parsing failure on a given line will not prevent remaining lines from
+   *                         being parsed - this allows us to analyze fields, even if some field is mis-configured
+   *                         and causes a parsing error for the values of that field.
    */
+  @Override
   public String open( final boolean failOnParseError ) {
     IRunnableWithProgress op = new IRunnableWithProgress() {
       public void run( IProgressMonitor monitor ) throws InvocationTargetException, InterruptedException {
@@ -319,7 +319,7 @@ public class TextFileCSVImportProgressDialog {
           log, new TextFileLine( line, fileLineNumber, null ), strinfo, null, 0, outputRowMeta,
           convertRowMeta, meta.getFilePaths( transMeta )[0], rownumber, delimiter, enclosure, escapeCharacter,
           null, false, false, false, false, false, false, false, false, null, null, false, null, null, null,
-          null, 0, false );
+          null, 0, failOnParseError );
 
       if ( r == null ) {
         errorFound = true;

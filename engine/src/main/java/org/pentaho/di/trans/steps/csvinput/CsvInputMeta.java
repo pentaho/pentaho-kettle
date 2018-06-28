@@ -30,6 +30,7 @@ import org.apache.commons.vfs2.FileObject;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.exception.KettleFileException;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.KettleAttributeInterface;
 import org.pentaho.di.core.database.DatabaseMeta;
@@ -61,6 +62,7 @@ import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInjectionInterface;
 import org.pentaho.di.trans.step.StepMetaInterface;
+import org.pentaho.di.trans.steps.common.CsvInputAwareMeta;
 import org.pentaho.di.trans.steps.textfileinput.InputFileMetaInterface;
 import org.pentaho.di.trans.steps.textfileinput.TextFileInputField;
 import org.pentaho.di.trans.steps.textfileinput.TextFileInputMeta;
@@ -74,7 +76,7 @@ import org.w3c.dom.Node;
  */
 
 public class CsvInputMeta extends BaseStepMeta implements StepMetaInterface, InputFileMetaInterface,
-  StepMetaInjectionInterface {
+  StepMetaInjectionInterface, CsvInputAwareMeta {
   private static Class<?> PKG = CsvInput.class; // for i18n purposes, needed by Translator2!!
 
   private String filename;
@@ -879,6 +881,16 @@ public class CsvInputMeta extends BaseStepMeta implements StepMetaInterface, Inp
    */
   public void setNewlinePossibleInFields( boolean newlinePossibleInFields ) {
     this.newlinePossibleInFields = newlinePossibleInFields;
+  }
+
+  @Override
+  public FileObject getHeaderFileObject( final TransMeta transMeta ) {
+    final String filename = transMeta.environmentSubstitute( getFilename() );
+    try {
+      return KettleVFS.getFileObject( filename );
+    } catch ( final KettleFileException e ) {
+      return null;
+    }
   }
 
 }

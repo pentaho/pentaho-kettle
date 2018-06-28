@@ -65,6 +65,7 @@ import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
+import org.pentaho.di.trans.steps.common.CsvInputAwareMeta;
 import org.pentaho.di.trans.steps.file.BaseFileField;
 import org.pentaho.di.trans.steps.file.BaseFileInputAdditionalField;
 import org.pentaho.di.trans.steps.file.BaseFileInputFiles;
@@ -78,7 +79,7 @@ import com.google.common.annotations.VisibleForTesting;
 @SuppressWarnings( "deprecation" )
 @InjectionSupported( localizationPrefix = "TextFileInput.Injection.", groups = { "FILENAME_LINES", "FIELDS", "FILTERS" } )
 public class TextFileInputMeta extends BaseFileInputMeta<BaseFileInputAdditionalField, BaseFileInputFiles, BaseFileField>
-    implements StepMetaInterface, ResolvableResource {
+    implements StepMetaInterface, ResolvableResource, CsvInputAwareMeta {
   private static Class<?> PKG = TextFileInputMeta.class; // for i18n purposes, needed by Translator2!! TODO: check i18n
                                                          // for base
 
@@ -1378,5 +1379,31 @@ public class TextFileInputMeta extends BaseFileInputMeta<BaseFileInputAdditional
         }
       }
     }
+  }
+
+  @Override
+  public boolean hasHeader() {
+    return content == null ? false : content.header;
+  }
+
+  @Override
+  public String getEscapeCharacter() {
+    return content == null ? null : content.escapeCharacter;
+  }
+
+  @Override
+  public String getDelimiter() {
+    return content == null ? null : content.separator;
+  }
+
+  @Override
+  public String getEnclosure() {
+    return content == null ? null : content.enclosure;
+  }
+
+  @Override
+  public FileObject getHeaderFileObject( final TransMeta transMeta ) {
+    final FileInputList fileList = getFileInputList( transMeta );
+    return fileList.nrOfFiles() == 0 ? null : fileList.getFile( 0 );
   }
 }
