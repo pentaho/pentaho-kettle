@@ -335,39 +335,6 @@ public class TransExecutor extends BaseStep implements StepInterface {
     }
     /////////////////////////////////////////////
 
-    /////////////////////////////////////////////
-    //If "Fields to use" ARE NOT provided and "Inherit all variables from transformation" IS checked.
-    boolean isFieldsToUseEmpty = true;
-    for ( int i = 0; i < fieldsToUse.size(); i++ ) {
-      if ( fieldsToUse.get( i ) != null ) {
-        isFieldsToUseEmpty = false;
-        break;
-      }
-    }
-    if ( parameters.isInheritingAllVariables() && isFieldsToUseEmpty ) {
-      //Check for parameter matches in the TRANSFORMATION TO EXECUTE parameters.
-      if ( getExecutorTrans().listParameters() != null ) {
-        List<String> transformationToExecuteParameters = Arrays.asList( getExecutorTrans().listParameters() );
-        for ( int i = 0; i < parameters.getVariable().length; i++ ) {
-          if ( transformationToExecuteParameters.contains( parameters.getVariable()[i] ) ) {
-            resolvingValuesMap.put( parameters.getVariable()[i],
-                getExecutorTrans().getParameterDefault( parameters.getVariable()[i] ) );
-          }
-        }
-      }
-      //Check for parameter matches in THIS transformation parameters.
-      if ( getTrans().listParameters() != null ) {
-        List<String> transformationParameters = Arrays.asList( getTrans().listParameters() );
-        for ( int i = 0; i < parameters.getVariable().length; i++ ) {
-          if ( transformationParameters.contains( parameters.getVariable()[i] ) ) {
-            resolvingValuesMap
-                .put( parameters.getVariable()[i], getTrans().getParameterValue( parameters.getVariable()[i] ) );
-          }
-        }
-      }
-    }
-    /////////////////////////////////////////////
-
     //Transform the values of the resolvingValuesMap into a String array "inputFieldValues" to be passed as parameter..
     String[] inputFieldValues = new String[parameters.getVariable().length];
     for ( int i = 0; i < parameters.getVariable().length; i++ ) {
