@@ -2044,9 +2044,10 @@ public class TransMeta extends AbstractMeta
     // Go get the fields...
     //
     RowMetaInterface before = row.clone();
-    compatibleGetStepFields( stepint, row, name, inform, nextStep, this );
+    RowMetaInterface[] clonedInfo = cloneRowMetaInterfaces( inform );
+    compatibleGetStepFields( stepint, row, name, clonedInfo, nextStep, this );
     if ( !isSomethingDifferentInRow( before, row ) ) {
-      stepint.getFields( before, name, inform, nextStep, this, repository, metaStore );
+      stepint.getFields( before, name, clonedInfo, nextStep, this, repository, metaStore );
       // pass the clone object to prevent from spoiling data by other steps
       row = before;
     }
@@ -6403,5 +6404,15 @@ public class TransMeta extends AbstractMeta
 
   private static String getStepMetaCacheKey( StepMeta stepMeta, boolean info ) {
     return String.format( "%1$b-%2$s-%3$s", info, stepMeta.getStepID(), stepMeta.toString() );
+  }
+
+  private static RowMetaInterface[] cloneRowMetaInterfaces( RowMetaInterface[] inform ) {
+    RowMetaInterface[] cloned = inform.clone();
+    for ( int i = 0; i < cloned.length; i++ ) {
+      if ( cloned[i] != null ) {
+        cloned[i] = cloned[i].clone();
+      }
+    }
+    return cloned;
   }
 }
