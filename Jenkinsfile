@@ -194,17 +194,6 @@ pipeline {
       }
     }
 
-    stage('Archive Test Results') {
-      when {
-        expression {
-          buildProperties.RUN_UNIT_TESTS && !buildProperties.NOOP
-        }
-      }
-      steps {
-        junit allowEmptyResults: true, testResults: '**/bin/**/TEST*.xml **/target/**/TEST*.xml **/build/**/*Test.xml'
-      }
-    }
-
     stage('Push Changes') {
       when {
         expression {

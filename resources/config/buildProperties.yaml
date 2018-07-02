@@ -36,6 +36,7 @@ RUN_UNIT_TESTS: true
 ARCHIVE_ARTIFACTS: true
 ARCHIVE_ARTIFACTS_PATTERN: '**/dist/*.gz, **/dist/*.zip, **/target/*.gz, **/target/*.zip, **/build/**/*.gz, **/build/**/*.zip, **/build/*.zip'
 USE_DISTRIBUTED_SOURCE_CACHING: false
+ARCHIVE_TESTS_PATTERN: '**/bin/**/TEST*.xml, **/target/**/TEST*.xml, **/build/**/*Test.xml'
 
 #BUILD_DATA_ROOT_PATH: ${WORKSPACE}/resources/builders
 #LIB_CACHE_ROOT_PATH: ${WORKSPACE}/caches
@@ -80,6 +81,7 @@ JOB_ITEM_DEFAULTS:
   root:
   directives: ${MAVEN_DEFAULT_DIRECTIVES}
   testable: true
+  testsArchivePattern: ${ARCHIVE_TESTS_PATTERN}
   execType: FORCE
   archiveMatcher: ${ARCHIVE_ARTIFACTS_PATTERN}
 
