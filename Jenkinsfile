@@ -156,9 +156,7 @@ pipeline {
         }
       }
       steps {
-        timeout(time: buildData.buildTimeout, unit: 'MINUTES') {
           doCheckouts(buildData)
-        }
       }
     }
 
