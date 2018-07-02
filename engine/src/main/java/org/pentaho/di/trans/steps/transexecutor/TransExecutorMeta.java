@@ -1199,20 +1199,31 @@ public class TransExecutorMeta extends StepWithMappingMeta implements StepMetaIn
   }
 
   @Override
-  public boolean cleanAfterHopFromRemove( String toStepName ) {
-    if ( getExecutionResultTargetStepMeta() != null && getExecutionResultTargetStepMeta().getName() != null
-      && getExecutionResultTargetStepMeta().getName().equals( toStepName ) ) {
-      setExecutionResultTargetStepMeta( null );
-    } else if ( getOutputRowsSourceStepMeta() != null && getOutputRowsSourceStepMeta().getName() != null
-      && getOutputRowsSourceStepMeta().getName().equals( toStepName ) ) {
-      setOutputRowsSourceStepMeta( null );
-    } else if ( getResultFilesTargetStepMeta() != null && getResultFilesTargetStepMeta().getName() != null
-      && getResultFilesTargetStepMeta().getName().equals( toStepName ) ) {
-      setResultFilesTargetStepMeta( null );
-    } else if ( getExecutorsOutputStepMeta() != null && getExecutorsOutputStepMeta().getName() != null
-      && getExecutorsOutputStepMeta().getName().equals( toStepName ) ) {
-      setExecutorsOutputStepMeta( null );
+  public boolean cleanAfterHopFromRemove( StepMeta toStep ) {
+    if ( null == toStep || null == toStep.getName() ) {
+      return false;
     }
-    return true;
+
+    boolean hasChanged = false;
+    String toStepName = toStep.getName();
+
+    if ( getExecutionResultTargetStepMeta() != null
+      && toStepName.equals( getExecutionResultTargetStepMeta().getName() ) ) {
+      setExecutionResultTargetStepMeta( null );
+      hasChanged = true;
+    } else if ( getOutputRowsSourceStepMeta() != null
+      && toStepName.equals( getOutputRowsSourceStepMeta().getName() ) ) {
+      setOutputRowsSourceStepMeta( null );
+      hasChanged = true;
+    } else if ( getResultFilesTargetStepMeta() != null
+      && toStepName.equals( getResultFilesTargetStepMeta().getName() ) ) {
+      setResultFilesTargetStepMeta( null );
+      hasChanged = true;
+    } else if ( getExecutorsOutputStepMeta() != null
+      && toStepName.equals( getExecutorsOutputStepMeta().getName() ) ) {
+      setExecutorsOutputStepMeta( null );
+      hasChanged = true;
+    }
+    return hasChanged;
   }
 }

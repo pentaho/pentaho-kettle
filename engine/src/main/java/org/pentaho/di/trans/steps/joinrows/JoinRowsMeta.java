@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -392,4 +392,18 @@ public class JoinRowsMeta extends BaseStepMeta implements StepMetaInterface {
     return true;
   }
 
+  @Override
+  public boolean cleanAfterHopToRemove( StepMeta fromStep ) {
+    boolean hasChanged = false;
+
+    // If the hop we're removing comes from a Step that is being used as the main step for the Join, we have to clear
+    // that reference
+    if ( null != fromStep && fromStep.equals( getMainStep() ) ) {
+      setMainStep( null );
+      setMainStepname( null );
+      hasChanged = true;
+    }
+
+    return hasChanged;
+  }
 }
