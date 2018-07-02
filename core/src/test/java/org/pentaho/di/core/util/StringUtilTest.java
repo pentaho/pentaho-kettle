@@ -26,6 +26,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import junit.framework.TestCase;
+import org.junit.Test;
 
 /**
  * Test class for the basic functionality of StringUtil.
@@ -191,5 +192,35 @@ public class StringUtilTest extends TestCase {
     public String toString() {
       return string;
     }
+  }
+
+  @Test
+  public void testTrimStart_Single() {
+    assertEquals( "file/path/", StringUtil.trimStart( "/file/path/", '/' ) );
+  }
+
+  @Test
+  public void testTrimStart_Many() {
+    assertEquals( "file/path/", StringUtil.trimStart( "////file/path/", '/' ) );
+  }
+
+  @Test
+  public void testTrimStart_None() {
+    assertEquals( "file/path/", StringUtil.trimStart( "file/path/", '/' ) );
+  }
+
+  @Test
+  public void testTrimEnd_Single() {
+    assertEquals( "/file/path", StringUtil.trimEnd( "/file/path/", '/' ) );
+  }
+
+  @Test
+  public void testTrimEnd_Many() {
+    assertEquals( "/file/path", StringUtil.trimEnd( "/file/path///", '/' ) );
+  }
+
+  @Test
+  public void testTrimEnd_None() {
+    assertEquals( "/file/path", StringUtil.trimEnd( "/file/path", '/' ) );
   }
 }
