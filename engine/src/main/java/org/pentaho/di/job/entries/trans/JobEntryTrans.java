@@ -36,6 +36,7 @@ import org.pentaho.di.core.extension.ExtensionPointHandler;
 import org.pentaho.di.core.extension.KettleExtensionPoint;
 import org.pentaho.di.core.listeners.CurrentDirectoryChangedListener;
 import org.pentaho.di.core.listeners.impl.EntryCurrentDirectoryChangedListener;
+import org.pentaho.di.core.parameters.UnknownParamException;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.ObjectLocationSpecificationMethod;
 import org.pentaho.di.core.Result;
@@ -884,6 +885,9 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
         //
         transMeta.clearParameters();
         String[] parameterNames = transMeta.listParameters();
+
+        prepareFieldNamesParameters( parameters, parameterFieldNames, parameterValues, namedParam, this );
+
         StepWithMappingMeta.activateParams( transMeta, transMeta, this, parameterNames,
           parameters, parameterValues );
         boolean doFallback = true;
@@ -1692,6 +1696,34 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
       variables.setParentVariableSpace( parentJobMeta );
     } else if ( previous != null ) {
       previous.removeCurrentDirectoryChangedListener( currentDirListener );
+    }
+  }
+
+  public void prepareFieldNamesParameters( String[] parameters, String[] parameterFieldNames, String[] parameterValues,
+                                                    NamedParams namedParam, JobEntryTrans jobEntryTrans )
+    throws UnknownParamException {
+    for ( int idx = 0; idx < parameters.length; idx++ ) {
+      // Grab the parameter value set in the Trans job entry
+      // Set fieldNameParameter only if exists and if it is not declared any staticValue( parameterValues array )
+      //
+      String thisValue = namedParam.getParameterValue( parameters[ idx ] );
+      // Set value only if is not empty at namedParam and exists in parameterFieldNames
+      if ( !Utils.isEmpty( thisValue ) && idx < parameterFieldNames.length ) {
+        // If exists then ask if is not empty
+        if ( !Utils.isEmpty( Const.trim( parameterFieldNames[ idx ] ) ) ) {
+          // If is not empty then we have to ask if it exists too in parameterValues array, since the values in
+          // parameterValues prevail over parameterFieldNames
+          if ( idx < parameterValues.length ) {
+            // If is empty at parameterValues array, then we can finally add that variable with that value
+            if ( Utils.isEmpty( Const.trim( parameterValues[ idx ] ) ) ) {
+              jobEntryTrans.setVariable( parameters[ idx ], thisValue );
+            }
+          } else {
+            // Or if not in parameterValues then we can add that variable with that value too
+            jobEntryTrans.setVariable( parameters[ idx ], thisValue );
+          }
+        }
+      }
     }
   }
 
