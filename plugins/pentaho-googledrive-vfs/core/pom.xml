@@ -52,12 +52,6 @@
             <groupId>com.google.http-client</groupId>
             <artifactId>google-http-client-jackson2</artifactId>
             <version>${project.http.version}</version>
-                <exclusions>
-                    <exclusion>
-                    <artifactId>jackson-core</artifactId>
-                    <groupId>com.fasterxml.jackson.core</groupId>
-                </exclusion>
-           </exclusions>
         </dependency>
         <dependency>
             <groupId>com.google.oauth-client</groupId>
