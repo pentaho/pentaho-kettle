@@ -92,7 +92,6 @@ public class JobEntrySetVariablesTest {
     assertEquals( "English", entry.getVariable( "English" ) );
     assertEquals( "中文", entry.getVariable( "Chinese" ) );
   }
-  
   @Test
   public void testInputStreamClosed() throws Exception {
     // properties files without native2ascii
@@ -102,7 +101,6 @@ public class JobEntrySetVariablesTest {
     entry.setReplaceVars( true );
     Result result = entry.execute( new Result(), 0 );
     assertTrue( "Result should be true", result.getResult() );
-    
     RandomAccessFile fos = null;
     try {
       File file = new File( propertiesFilename );
@@ -116,5 +114,54 @@ public class JobEntrySetVariablesTest {
         fos.close();
       }
     }
+  }
+
+  @Test
+  public void testParentJobVariablesExecutingFilePropertiesThatChangesVariablesAndParameters() throws Exception {
+    entry.setVariableName( new String[] {} ); // For absence of null check in execute method
+    entry.setReplaceVars( true );
+    entry.setFileVariableType( 1 );
+
+    Job parentJob = entry.getParentJob();
+
+    parentJob.addParameterDefinition( "parentParam", "", "" );
+    parentJob.setParameterValue( "parentParam", "parentValue" );
+    parentJob.setVariable( "parentParam", "parentValue" );
+
+    entry.setFilename( "src/test/resources/org/pentaho/di/job/entries/setvariables/configurationA.properties" );
+    Result result = entry.execute( new Result(), 0 );
+    assertTrue( "Result should be true", result.getResult() );
+    assertEquals( "a", parentJob.getVariable( "propertyFile" ) );
+    assertEquals( "a", parentJob.getVariable( "dynamicProperty" ) );
+    assertEquals( "parentValue", parentJob.getVariable( "parentParam" ) );
+
+
+    entry.setFilename( "src/test/resources/org/pentaho/di/job/entries/setvariables/configurationB.properties" );
+    result = entry.execute( new Result(), 0 );
+    assertTrue( "Result should be true", result.getResult() );
+    assertEquals( "b", parentJob.getVariable( "propertyFile" ) );
+    assertEquals( "new", parentJob.getVariable( "newProperty" ) );
+    assertEquals( "haha", parentJob.getVariable( "parentParam" ) );
+    assertEquals( "static", parentJob.getVariable( "staticProperty" ) );
+    assertEquals( "", parentJob.getVariable( "dynamicProperty" ) );
+
+    entry.setFilename( "src/test/resources/org/pentaho/di/job/entries/setvariables/configurationA.properties" );
+    result = entry.execute( new Result(), 0 );
+    assertTrue( "Result should be true", result.getResult() );
+    assertEquals( "a", parentJob.getVariable( "propertyFile" ) );
+    assertEquals( "", parentJob.getVariable( "newProperty" ) );
+    assertEquals( "parentValue", parentJob.getVariable( "parentParam" ) );
+    assertEquals( "", parentJob.getVariable( "staticProperty" ) );
+    assertEquals( "a", parentJob.getVariable( "dynamicProperty" ) );
+
+
+    entry.setFilename( "src/test/resources/org/pentaho/di/job/entries/setvariables/configurationB.properties" );
+    result = entry.execute( new Result(), 0 );
+    assertTrue( "Result should be true", result.getResult() );
+    assertEquals( "b", parentJob.getVariable( "propertyFile" ) );
+    assertEquals( "new", parentJob.getVariable( "newProperty" ) );
+    assertEquals( "haha", parentJob.getVariable( "parentParam" ) );
+    assertEquals( "static", parentJob.getVariable( "staticProperty" ) );
+    assertEquals( "", parentJob.getVariable( "dynamicProperty" ) );
   }
 }

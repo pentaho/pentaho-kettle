@@ -27,6 +27,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.AttributesInterface;
@@ -100,6 +101,9 @@ public class JobEntryBase implements Cloneable, VariableSpace, CheckResultSource
 
   /** The variable bindings for the job entry */
   protected VariableSpace variables = new Variables();
+
+  /** The map for setVariablesStep bindings for the job entry */
+  protected Map<String, String> entryStepSetVariablesMap = new ConcurrentHashMap<>();
 
   /** The repository */
   protected Repository rep;
@@ -1519,5 +1523,29 @@ public class JobEntryBase implements Cloneable, VariableSpace, CheckResultSource
    */
   public void setParentJobMeta( JobMeta parentJobMeta ) {
     this.parentJobMeta = parentJobMeta;
+  }
+
+  /**
+   * Gets a Map of variables set in EntryStepSetVariables
+   *
+   * @return a map of variable names and values
+   */
+  protected Map<String, String> getEntryStepSetVariablesMap() {
+    return entryStepSetVariablesMap;
+  }
+  /**
+   * Sets the value of the specified EntryStepSetVariable
+   *
+   */
+  public void setEntryStepSetVariable( String variableName, String variableValue ) {
+    entryStepSetVariablesMap.put( variableName, variableValue );
+  }
+
+  /**
+   * Gets the value of the specified EntryStepSetVariable
+   *
+   */
+  public String getEntryStepSetVariable( String variableName ) {
+    return entryStepSetVariablesMap.get( variableName );
   }
 }
