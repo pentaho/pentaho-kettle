@@ -22,6 +22,8 @@
 
 package org.pentaho.di.core.row.value;
 
+import java.math.BigDecimal;
+import java.net.Inet6Address;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
@@ -29,7 +31,14 @@ import org.junit.Test;
 import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.row.ValueMetaInterface;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.fail;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 public class ValueMetaInternetAddressTest {
 
@@ -38,6 +47,7 @@ public class ValueMetaInternetAddressTest {
     ValueMetaInternetAddress vm = new ValueMetaInternetAddress();
     InetAddress smaller = InetAddress.getByName( "127.0.0.1" );
     InetAddress larger = InetAddress.getByName( "127.0.1.1" );
+
     assertTrue( vm.isSortedAscending() );
     assertFalse( vm.isSortedDescending() );
     assertEquals( 0, vm.compare( null, null ) );
@@ -56,6 +66,91 @@ public class ValueMetaInternetAddressTest {
     assertEquals( 0, vm.compare( smaller, smaller ) );
     assertEquals( 1, vm.compare( smaller, larger ) );
     assertEquals( -1, vm.compare( larger, smaller ) );
+  }
+
+  @Test
+  public void testCompare_PDI17270() throws UnknownHostException, KettleValueException {
+    ValueMetaInternetAddress vm = new ValueMetaInternetAddress();
+
+    InetAddress smaller = InetAddress.getByName( "0.0.0.0" );
+    InetAddress larger = InetAddress.getByName( "255.250.200.128" );
+
+    assertEquals( -1, vm.compare( smaller, larger ) );
+    assertEquals( 1, vm.compare( larger, smaller ) );
+
+    smaller = InetAddress.getByName( "0.0.0.0" );
+    larger = InetAddress.getByName( "192.168.10.0" );
+
+    assertEquals( -1, vm.compare( smaller, larger ) );
+    assertEquals( 1, vm.compare( larger, smaller ) );
+
+    smaller = InetAddress.getByName( "192.168.10.0" );
+    larger = InetAddress.getByName( "255.250.200.128" );
+
+    assertEquals( -1, vm.compare( smaller, larger ) );
+    assertEquals( 1, vm.compare( larger, smaller ) );
+  }
+
+  @Test
+  public void testCompare_Representations() throws UnknownHostException, KettleValueException {
+    ValueMetaInternetAddress vm = new ValueMetaInternetAddress();
+
+    InetAddress extended = InetAddress.getByName( "1080:0:0:0:8:800:200C:417A" );
+    InetAddress condensed = InetAddress.getByName( "1080::8:800:200C:417A" );
+
+    assertEquals( 0, vm.compare( extended, condensed ) );
+    assertEquals( 0, vm.compare( condensed, extended ) );
+
+    extended = InetAddress.getByName( "0:0:0:0:0:0:0:1" );
+    condensed = InetAddress.getByName( "::1" );
+
+    assertEquals( 0, vm.compare( extended, condensed ) );
+    assertEquals( 0, vm.compare( condensed, extended ) );
+
+    extended = InetAddress.getByName( "0:0:0:0:0:0:0:0" );
+    condensed = InetAddress.getByName( "::0" );
+
+    assertEquals( 0, vm.compare( extended, condensed ) );
+    assertEquals( 0, vm.compare( condensed, extended ) );
+  }
+
+  @Test
+  public void testGetBigNumber_NullParameter() throws UnknownHostException, KettleValueException {
+    ValueMetaInternetAddress vm = new ValueMetaInternetAddress();
+
+    assertNull( vm.getBigNumber( null ) );
+  }
+
+  @Test
+  public void testGetBigNumber_Success() throws UnknownHostException, KettleValueException {
+    ValueMetaInternetAddress vm = new ValueMetaInternetAddress();
+    String[] addresses = {
+      // Some IPv6 addresses
+      "1080:0:0:0:8:800:200C:417A", "1080::8:800:200C:417A",
+      "::1", "0:0:0:0:0:0:0:1",
+      "::", "0:0:0:0:0:0:0:0",
+      "::d",
+      // Some IPv4-mapped IPv6 addresses
+      "::ffff:0:0",
+      "::ffff:d",
+      "::ffff:127.0.0.1",
+      // Some IPv4-compatible IPv6 addresses
+      "::0.0.0.0",
+      "::255.255.0.10",
+      // Some IPv4 addresses
+      "192.168.10.0",
+      "0.0.0.1",
+      "0.0.0.0",
+      "127.0.0.1",
+      "255.255.0.10",
+      "192.0.2.235"
+    };
+
+    // No exception should be thrown in any of the following calls
+    for ( String address : addresses ) {
+      InetAddress addr = InetAddress.getByName( address );
+      vm.getBigNumber( addr );
+    }
   }
 
   @Test

@@ -1279,8 +1279,6 @@ public interface ValueMetaInterface extends Cloneable {
    *
    * @param databaseMeta
    *          the database metadata to reference capabilities and so on.
-   * @param lazyConversion
-   *          use lazy conversion
    * @param rs
    *          A ResultSet from getColumns, positioned correctly on a column to read.
    */
