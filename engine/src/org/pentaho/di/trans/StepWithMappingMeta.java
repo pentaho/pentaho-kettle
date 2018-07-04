@@ -207,6 +207,10 @@ public abstract class StepWithMappingMeta extends BaseStepMeta implements HasRep
     if ( mappingVariables != null ) {
       for ( int i = 0; i < mappingVariables.length; i++ ) {
         parameters.put( mappingVariables[ i ], parent.environmentSubstitute( inputFields[ i ] ) );
+        //If inputField value is not empty then create it in variableSpace of step(Parent)
+        if ( !Utils.isEmpty( Const.trim( parent.environmentSubstitute( inputFields[ i ] ) ) ) ) {
+          parent.setVariable( mappingVariables[ i ], parent.environmentSubstitute( inputFields[ i ] ) );
+        }
       }
     }
 
