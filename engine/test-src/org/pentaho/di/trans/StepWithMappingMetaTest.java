@@ -194,6 +194,7 @@ public class StepWithMappingMetaTest {
     String childValue = "childValue";
     String paramOverwrite = "paramOverwrite";
     String parentValue = "parentValue";
+    String stepValue= "stepValue";
 
     VariableSpace parent = new Variables();
     parent.setVariable( paramOverwrite, parentValue );
@@ -203,10 +204,11 @@ public class StepWithMappingMetaTest {
 
     String[] parameters = childVariableSpace.listParameters();
     StepWithMappingMeta.activateParams( childVariableSpace, childVariableSpace, parent,
-      parameters, new String[] { childParam, paramOverwrite }, new String[] { childValue, childValue } );
+      parameters, new String[] { childParam, paramOverwrite }, new String[] { childValue, stepValue } );
 
     Assert.assertEquals( childValue, childVariableSpace.getVariable( childParam ) );
-    Assert.assertEquals( parentValue, childVariableSpace.getVariable( paramOverwrite ) );
+    // the step parameter prevails
+    Assert.assertEquals( stepValue, childVariableSpace.getVariable( paramOverwrite ) );
   }
 
   @Test
