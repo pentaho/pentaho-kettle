@@ -364,6 +364,22 @@ public class JobExecutor extends BaseStep implements StepInterface {
     // Set parameters, when fields are used take the first row in the set.
     //
     JobExecutorParameters parameters = meta.getParameters();
+
+    String value;
+
+    for ( int i = 0; i < parameters.getVariable().length; i++ ) {
+      String fieldName = parameters.getField()[i];
+      if ( !Utils.isEmpty( fieldName ) ) {
+        int idx = getInputRowMeta().indexOfValue( fieldName );
+        if ( idx < 0 ) {
+          throw new KettleException( BaseMessages.getString(
+            PKG, "JobExecutor.Exception.UnableToFindField", fieldName ) );
+        }
+        value = data.groupBuffer.get( 0 ).getString( i, "" );
+        this.setVariable( parameters.getVariable()[ i ], value );
+      }
+    }
+
     StepWithMappingMeta.activateParams( data.executorJob, data.executorJob, this, data.executorJob.listParameters(),
       parameters.getVariable(), parameters.getInput() );
   }
