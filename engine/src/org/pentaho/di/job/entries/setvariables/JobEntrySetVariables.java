@@ -257,6 +257,22 @@ public class JobEntrySetVariables extends JobEntryBase implements Cloneable, Job
         variableTypes.add( variableType[i] );
       }
 
+      // if parentJob exists - clear/reset all entrySetVariables before applying the actual ones
+      if ( parentJob != null ) {
+        for ( String key : getEntryStepSetVariablesMap().keySet() ) {
+          String parameterValue = parentJob.getParameterValue( key );
+          // if variable is not a namedParameter then it is a EntryStepSetVariable - reset value to ""
+          if ( parameterValue == null ) {
+            parentJob.setVariable( key, "" );
+            setVariable( key, "" );
+          } else {
+            // if it is a parameter, then get the initial saved value of parent -  saved in entryStepSetVariables Map
+            parentJob.setVariable( key, getEntryStepSetVariable( key ) );
+            setVariable( key, getEntryStepSetVariable( key ) );
+          }
+        }
+      }
+
       for ( int i = 0; i < variables.size(); i++ ) {
         String varname = variables.get( i );
         String value = variableValues.get( i );
@@ -291,8 +307,20 @@ public class JobEntrySetVariables extends JobEntryBase implements Cloneable, Job
 
           case VARIABLE_TYPE_CURRENT_JOB:
             setVariable( varname, value );
+
             if ( parentJob != null ) {
+              String parameterValue = parentJob.getParameterValue( varname );
+              // if not a parameter, set the value
+              if ( parameterValue == null  ) {
+                setEntryStepSetVariable( varname, value );
+              } else {
+                //if parameter, save the initial parameter value for use in reset/clear variables in future calls
+                if ( parameterValue != null && parameterValue != value && !entryStepSetVariablesMap.containsKey( varname ) ) {
+                  setEntryStepSetVariable( varname, parameterValue );
+                }
+              }
               parentJob.setVariable( varname, value );
+
             } else {
               throw new KettleJobException( BaseMessages.getString(
                 PKG, "JobEntrySetVariables.Error.UnableSetVariableCurrentJob", varname ) );
