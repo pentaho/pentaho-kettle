@@ -300,7 +300,6 @@ public class TransGridDelegate extends SpoonDelegate implements XulEventHandler 
   private void refreshView() {
     refreshViewLock.lock();
     try {
-      boolean tableCleared = false;
       int numberStepsToDisplay = -1;
       int baseStepCount = -1;
 
@@ -338,19 +337,22 @@ public class TransGridDelegate extends SpoonDelegate implements XulEventHandler 
           }
         }
 
-        if ( table.getItemCount() != numberStepsToDisplay ) {
-          table.removeAll();
-          tableCleared = true;
-        }
-
         if ( numberStepsToDisplay == 0 && table.getItemCount() == 0 ) {
           // We need at least one table-item in a table
           new TableItem( table, SWT.NONE );
           return;
         }
 
-        if ( tableCleared ) {
-          // iterate over the base steps and add into table
+        //account for the empty tableItem which is added to an empty table
+        int offsetTableItemCount = table.getItemCount();
+        if ( offsetTableItemCount == 1 && Strings.isNullOrEmpty( table.getItem( 0 ).getText( STEP_NUMBER_COLUMN ) ) ) {
+          offsetTableItemCount = 0;
+        }
+
+        if ( offsetTableItemCount != numberStepsToDisplay ) {
+          table.removeAll();
+
+          // Fill table: iterate over the base steps and add into table
           for ( int i = 0; i < baseStepCount; i++ ) {
             StepInterface baseStep = transGraph.trans.getRunThread( i );
 
@@ -390,9 +392,8 @@ public class TransGridDelegate extends SpoonDelegate implements XulEventHandler 
 
             String tableStepNumber = ti.getText( STEP_NUMBER_COLUMN );
 
-            //The first row step number may be empty if the table was just cleared
-            if ( rowIndex == 0 && Strings.isNullOrEmpty( tableStepNumber ) ) {
-              log.logDebug( "Table step number null or empty for row 0" );
+            if ( Strings.isNullOrEmpty( tableStepNumber ) ) {
+              log.logError( "Table step number null or empty for row " + rowIndex );
               continue;
             }
 
