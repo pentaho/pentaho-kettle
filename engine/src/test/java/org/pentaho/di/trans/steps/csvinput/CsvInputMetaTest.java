@@ -27,6 +27,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
@@ -97,4 +98,25 @@ public class CsvInputMetaTest implements InitializerInterface<StepMetaInterface>
     loadSaveTester.testSerialization();
   }
 
+  @Test
+  public void testClone() {
+    final CsvInputMeta original = new CsvInputMeta();
+    original.setDelimiter( ";" );
+    original.setEnclosure( "'" );
+    final TextFileInputField[] originalFields = new TextFileInputField[ 1 ];
+    final TextFileInputField originalField = new TextFileInputField();
+    originalField.setName( "field" );
+    originalFields[ 0 ] = originalField;
+    original.setInputFields( originalFields );
+
+    final CsvInputMeta clone = (CsvInputMeta) original.clone();
+    // verify that the clone and its input fields are "equal" to the originals, but not the same objects
+    Assert.assertNotSame( original, clone );
+    Assert.assertEquals( original.getDelimiter(), clone.getDelimiter() );
+    Assert.assertEquals( original.getEnclosure(), clone.getEnclosure() );
+
+    Assert.assertNotSame( original.getInputFields(), clone.getInputFields() );
+    Assert.assertNotSame( original.getInputFields()[ 0 ], clone.getInputFields()[ 0 ] );
+    Assert.assertEquals( original.getInputFields()[ 0 ].getName(), clone.getInputFields()[ 0 ].getName() );
+  }
 }

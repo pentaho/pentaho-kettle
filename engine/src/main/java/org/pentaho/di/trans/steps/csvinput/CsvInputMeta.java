@@ -118,7 +118,11 @@ public class CsvInputMeta extends BaseStepMeta implements StepMetaInterface, Inp
 
   @Override
   public Object clone() {
-    Object retval = super.clone();
+    final CsvInputMeta retval = (CsvInputMeta) super.clone();
+    retval.inputFields = new TextFileInputField[ inputFields.length ];
+    for ( int i = 0; i < inputFields.length; i++ ) {
+      retval.inputFields[ i ] = (TextFileInputField) inputFields[ i ].clone();
+    }
     return retval;
   }
 
