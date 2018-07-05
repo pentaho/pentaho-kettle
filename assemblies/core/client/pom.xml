@@ -22,6 +22,13 @@
         <pentaho-karaf.version>9.0.0.0-SNAPSHOT</pentaho-karaf.version>
         <pentaho-launcher.version>9.0.0.0-SNAPSHOT</pentaho-launcher.version>
         <oss-licenses.version>9.0.0.0-SNAPSHOT</oss-licenses.version>
+
+        <!-- swt -->
+        <org.eclipse.swt.gtk.linux.x86.version>4.3.2</org.eclipse.swt.gtk.linux.x86.version>
+        <org.eclipse.swt.gtk.linux.x86_64.version>4.3.2</org.eclipse.swt.gtk.linux.x86_64.version>
+        <org.eclipse.swt.win32.win32.x86.version>4.6</org.eclipse.swt.win32.win32.x86.version>
+        <org.eclipse.swt.win32.win32.x86_64.version>4.6</org.eclipse.swt.win32.win32.x86_64.version>
+        <org.eclipse.swt.cocoa.macosx.x86_64.version>4.6</org.eclipse.swt.cocoa.macosx.x86_64.version>
     </properties>
 
     <dependencies>
@@ -76,18 +83,6 @@
             </exclusions>
         </dependency>
         <dependency>
-            <groupId>org.pentaho.adaptive</groupId>
-            <artifactId>pdi-websocket-daemon-assembly</artifactId>
-            <version>${ael.version}</version>
-            <type>zip</type>
-            <exclusions>
-                <exclusion>
-                    <groupId>*</groupId>
-                    <artifactId>*</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <dependency>
             <groupId>pentaho</groupId>
             <artifactId>pentaho-application-launcher</artifactId>
             <version>${pentaho-launcher.version}</version>
@@ -103,6 +98,32 @@
             <artifactId>oss-licenses</artifactId>
             <version>${oss-licenses.version}</version>
             <type>zip</type>
+        </dependency>
+        <!-- swt -->
+        <dependency>
+          <groupId>org.eclipse.swt</groupId>
+          <artifactId>org.eclipse.swt.gtk.linux.x86</artifactId>
+          <version>${org.eclipse.swt.gtk.linux.x86.version}</version>
+        </dependency>
+        <dependency>
+          <groupId>org.eclipse.swt</groupId>
+          <artifactId>org.eclipse.swt.gtk.linux.x86_64</artifactId>
+          <version>${org.eclipse.swt.gtk.linux.x86_64.version}</version>
+        </dependency>
+        <dependency>
+          <groupId>org.eclipse.swt</groupId>
+          <artifactId>org.eclipse.swt.win32.win32.x86</artifactId>
+          <version>${org.eclipse.swt.win32.win32.x86.version}</version>
+        </dependency>
+        <dependency>
+          <groupId>org.eclipse.swt</groupId>
+          <artifactId>org.eclipse.swt.win32.win32.x86_64</artifactId>
+          <version>${org.eclipse.swt.win32.win32.x86_64.version}</version>
+        </dependency>
+        <dependency>
+          <groupId>org.eclipse.swt</groupId>
+          <artifactId>org.eclipse.swt.cocoa.macosx.x86_64</artifactId>
+          <version>${org.eclipse.swt.cocoa.macosx.x86_64.version}</version>
         </dependency>
     </dependencies>
 
@@ -130,23 +151,6 @@
                             <excludes>**/etc-pan/*.cfg,**/etc-kitchen/*.cfg,**/etc-scale/*.cfg</excludes>
                         </configuration>
                     </execution>
-                    <execution>
-                        <id>add-pdi-daemon</id>
-                        <phase>generate-resources</phase>
-                        <goals>
-                            <goal>unpack</goal>
-                        </goals>
-                        <configuration>
-                            <artifactItems>
-                                <artifactItem>
-                                    <groupId>org.pentaho.adaptive</groupId>
-                                    <artifactId>pdi-websocket-daemon-assembly</artifactId>
-                                    <type>zip</type>
-                                </artifactItem>
-                            </artifactItems>
-                            <outputDirectory>${assembly.dir}</outputDirectory>
-                        </configuration>
-                    </execution>
                 </executions>
             </plugin>
             <!-- post processing -->
@@ -163,7 +167,6 @@
                             <target>
                                 <echo message="Moving unpacked dependencies to the right place..."/>
                                 <move file="${assembly.dir}/system/pentaho-karaf-assembly" tofile="${assembly.dir}/system/karaf" failonerror="false"/>
-                                <move file="${assembly.dir}/pdi-websocket-daemon" tofile="${assembly.dir}/adaptive-execution" failonerror="false"/>
                             </target>
                         </configuration>
                     </execution>
