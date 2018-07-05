@@ -308,6 +308,21 @@ public class BaseStreamStepMetaTest {
     assertEquals( "someName", stuffStreamMeta.getTransformationPath() );
   }
 
+  @Test
+  public void testGetFileName() {
+    meta = new StuffStreamMeta();
+    String testPathName = "transformationPathName";
+    String testFileName = "testFileName";
+
+    // verify that when the fileName is not set, we get the transformation path
+    meta.setTransformationPath( testPathName );
+    assertThat( meta.getFileName(), equalTo( testPathName ) );
+
+    // verify that when the fileName is set, we get it
+    meta.setFileName( testFileName );
+    assertThat( meta.getFileName(), equalTo( testFileName ) );
+  }
+
   // Checks that a serialization->deserialization does not alter meta fields
   private void testRoundTrip( BaseStreamStepMeta thisMeta ) {
     StuffStreamMeta startingMeta = (StuffStreamMeta) thisMeta;

@@ -22,6 +22,7 @@
 
 package org.pentaho.di.trans.streaming.common;
 
+import com.google.common.base.Strings;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.exception.KettleException;
@@ -146,6 +147,11 @@ public abstract class BaseStreamStepMeta extends StepWithMappingMeta implements 
         BaseMessages.getString( PKG, "BaseStreamStepMeta.CheckResult.NoBatchDefined" ),
         stepMeta ) );
     }
+  }
+
+  @Override
+  public String getFileName() {
+    return ( Strings.isNullOrEmpty( this.fileName ) ? this.getTransformationPath() : this.fileName );
   }
 
   @Override
