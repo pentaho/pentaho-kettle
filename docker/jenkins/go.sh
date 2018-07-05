@@ -7,25 +7,31 @@ set -eo pipefail
 
 PROGNAME=$(basename "$0")
 
+unameOut="$(uname -s)"
+case "${unameOut}" in
+    MINGW*)    pwdcmd="pwd -W";;
+    *)         pwdcmd="pwd";;
+esac
+
 REPOSITORY=pentaho/jenkins
 JENKINS_HOME=/var/jenkins_home
 CREDENTIALS_PATH=/usr/share/jenkins/secrets/credentials
 DOCKER_VOLUME=${VOLUME_NAME:=jenkins_pipeline}:${JENKINS_HOME}
-SECRETS=${CREDENTIALS:=`pwd`/secrets/credentials}:${CREDENTIALS_PATH}
+SECRETS=${CREDENTIALS:=`${pwdcmd}`/secrets/credentials}:${CREDENTIALS_PATH}
 
 RED='\033[0;31m'
 GREEN='\033[0;32m'
 NC='\033[0m'
 
 realpath() {
-  OURPWD=${PWD}
+  OURPWD=`${pwdcmd}`
   cd "$(dirname "${1}")"
   LINK=$(readlink "$(basename "${1}")")
   while [ "${LINK}" ]; do
     cd "$(dirname "${LINK}")"
     LINK=$(readlink "$(basename "${1}")")
   done
-  REALPATH="${PWD}/$(basename "${1}")"
+  REALPATH="`${pwdcmd}`/$(basename "${1}")"
   cd "${OURPWD}"
   echo "${REALPATH}"
 }
@@ -71,7 +77,7 @@ start() {
   local version=$1
   local variant=$2
   local tag="${version}${variant}"
-  run_opts+=(-it --rm)
+  run_opts+=(-i --rm)
   volumes+=("-v ${DOCKER_VOLUME}" "-v ${SECRETS}")
 
   info "Starting Jenkins\n"
