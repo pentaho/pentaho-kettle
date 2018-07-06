@@ -83,7 +83,8 @@ JOB_ITEM_DEFAULTS:
   testable: true
   testsArchivePattern: ${ARCHIVE_TESTS_PATTERN}
   execType: FORCE
-  archiveMatcher: ${ARCHIVE_ARTIFACTS_PATTERN}
+  archivable: true
+  artifactsArchivePattern: ${ARCHIVE_ARTIFACTS_PATTERN}
 
 # Build failover settings
 IGNORE_PIPELINE_FAILURE: false

@@ -14,7 +14,7 @@ jobGroups:
        scmBranch       :  ${DEFAULT_BRANCH}
        directives      :  += -P lowdeps -DskipDefault
        versionProperty :  pentaho-osgi-bundles.version
-       archiveMatcher  :  NONE
+       archivable      :  false
 
   big-data-hadoop-shims-api:
 
@@ -23,7 +23,7 @@ jobGroups:
        scmBranch       :  ${DEFAULT_BRANCH}
        directives      :  += -DskipDefault -P api,shims
        versionProperty :  pentaho-hadoop-shims.version
-       archiveMatcher  :  NONE
+       archivable      :  false
 
   big-data-hadoop-shims:
 
@@ -32,63 +32,63 @@ jobGroups:
        scmBranch       :  ${DEFAULT_BRANCH}
        directives      :  += --projects shims/hdp25
        versionProperty :  pentaho-hadoop-shims.version
-       archiveMatcher  :  NONE
+       archivable      :  false
 
      - jobID           :  big-data-hadoop-shims-hdp26
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-hadoop-shims.git
        scmBranch       :  ${DEFAULT_BRANCH}
        directives      :  += --projects shims/hdp26
        versionProperty :  pentaho-hadoop-shims.version
-       archiveMatcher  :  NONE
+       archivable      :  false
 
      - jobID           :  big-data-hadoop-shims-cdh512
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-hadoop-shims.git
        scmBranch       :  ${DEFAULT_BRANCH}
        directives      :  += --projects shims/cdh512
        versionProperty :  pentaho-hadoop-shims.version
-       archiveMatcher  :  NONE
+       archivable      :  false
 
      - jobID           :  big-data-hadoop-shims-cdh513
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-hadoop-shims.git
        scmBranch       :  ${DEFAULT_BRANCH}
        directives      :  += --projects shims/cdh513
        versionProperty :  pentaho-hadoop-shims.version
-       archiveMatcher  :  NONE
+       archivable      :  false
 
      - jobID           :  big-data-hadoop-shims-mapr520
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-hadoop-shims.git
        scmBranch       :  ${DEFAULT_BRANCH}
        directives      :  += --projects shims/mapr520
        versionProperty :  pentaho-hadoop-shims.version
-       archiveMatcher  :  NONE
+       archivable      :  false
 
      - jobID           :  big-data-hadoop-shims-mapr60
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-hadoop-shims.git
        scmBranch       :  ${DEFAULT_BRANCH}
        directives      :  += --projects shims/mapr60
        versionProperty :  pentaho-hadoop-shims.version
-       archiveMatcher  :  NONE
+       archivable      :  false
 
      - jobID           :  big-data-hadoop-shims-emr59
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-hadoop-shims.git
        scmBranch       :  ${DEFAULT_BRANCH}
        directives      :  += --projects shims/emr59
        versionProperty :  pentaho-hadoop-shims.version
-       archiveMatcher  :  NONE
+       archivable      :  false
 
      - jobID           :  big-data-hadoop-shims-emr511
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-hadoop-shims.git
        scmBranch       :  ${DEFAULT_BRANCH}
        directives      :  += --projects shims/emr511
        versionProperty :  pentaho-hadoop-shims.version
-       archiveMatcher  :  NONE
+       archivable      :  false
 
      - jobID           :  big-data-hadoop-shims-hdi35
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-hadoop-shims.git
        scmBranch       :  ${DEFAULT_BRANCH}
        directives      :  += --projects shims/hdi35
        versionProperty :  pentaho-hadoop-shims.version
-       archiveMatcher  :  NONE
+       archivable      :  false
 
   osgi-bundles-highdeps:
 
@@ -97,7 +97,7 @@ jobGroups:
        scmBranch       :  ${DEFAULT_BRANCH}
        directives      :  += -P highdeps -DskipDefault
        versionProperty :  pentaho-osgi-bundles.version
-       archiveMatcher  :  NONE
+       archivable      :  false
 
   big-data-plugin-features:
 
@@ -106,7 +106,7 @@ jobGroups:
        scmBranch       :  ${DEFAULT_BRANCH}
        directives      :  += -DfeaturesOnly
        versionProperty :  big-data-plugin.version
-       archiveMatcher  :  NONE
+       archivable      :  false
 
   big-data-hadoop-shims-ee:
 
@@ -122,7 +122,7 @@ jobGroups:
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-yarn-kettle-plugin.git
        scmBranch       :  ${DEFAULT_BRANCH}
        versionProperty :  pentaho-kettle-yarn-plugin.version
-       archiveMatcher  :  NONE
+       archivable      :  false
 
   karaf-assembly:
 

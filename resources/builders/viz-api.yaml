@@ -18,7 +18,7 @@ jobGroups:
        scmBranch       :  ${DEFAULT_BRANCH} # BACKLOG-23466
        directives      :  += -DskipDefault -P platform-api
        versionProperty :  platform.version
-       archiveMatcher  :  NONE
+       archivable      :  false
 
   2100:
 
@@ -27,7 +27,7 @@ jobGroups:
        scmBranch       :  ${DEFAULT_BRANCH} # BACKLOG-23466
        directives      :  += -DskipDefault -P platform-base
        versionProperty :  platform.version
-       archiveMatcher  :  NONE
+       archivable      :  false
 
   2200:
 
@@ -36,7 +36,7 @@ jobGroups:
        scmBranch       :  ${DEFAULT_BRANCH} # BACKLOG-23466
        directives      :  += -P highdeps -DskipDefault
        versionProperty :  pentaho-osgi-bundles.version
-       archiveMatcher  :  NONE
+       archivable      :  false
 
   2500:
 
@@ -58,14 +58,14 @@ jobGroups:
        scmUrl          :  ${PENTAHO_SCM_ROOT}/marketplace.git
        scmBranch       :  ${DEFAULT_BRANCH}
        versionProperty :  pentaho-marketplace-modules.version
-       archiveMatcher  :  NONE
+       archivable      :  false
 
      - jobID           :  platform-user-console
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-platform.git
        scmBranch       :  ${DEFAULT_BRANCH}
        directives      :  += -DskipDefault -P platform-user-console
        versionProperty :  platform.version
-       archiveMatcher  :  NONE
+       archivable      :  false
 
   2800:
 
@@ -107,7 +107,7 @@ jobGroups:
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-det.git
        scmBranch       :  ${DEFAULT_BRANCH} # BACKLOG-23472
        versionProperty :  pentaho-det.version
-       archiveMatcher  :  NONE
+       archivable      :  false
 
   3600:
 
@@ -115,7 +115,7 @@ jobGroups:
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-det-ee.git
        scmBranch       :  ${DEFAULT_BRANCH} # BACKLOG-23472
        versionProperty :  pentaho-det.version
-       archiveMatcher  :  NONE
+       archivable      :  false
 
      - jobID           :  karaf-assembly
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-karaf-assembly.git

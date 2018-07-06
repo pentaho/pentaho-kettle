@@ -24,7 +24,7 @@ jobGroups:
        scmUrl          :  ${PENTAHO_SCM_ROOT}/maven-parent-poms.git
        scmBranch       :  ${DEFAULT_BRANCH}
        versionProperty :  pentaho.version
-       archiveMatcher  :  NONE
+       archivable      :  false
 
   400:
 
@@ -33,7 +33,7 @@ jobGroups:
        scmBranch       :  ${DEFAULT_BRANCH}
        directives      :  += -Dobfuscate-version-for-license-phase=none
        versionProperty :  pentaho.version
-       archiveMatcher  :  NONE
+       archivable      :  false
 
   500:
 
@@ -41,13 +41,13 @@ jobGroups:
        scmUrl          :  ${PENTAHO_SCM_ROOT}/maven-project-archetypes.git
        scmBranch       :  ${DEFAULT_BRANCH}
        versionProperty :  archetypes.version
-       archiveMatcher  :  NONE
+       archivable      :  false
 
      - jobID           :  metastore
        scmUrl          :  ${PENTAHO_SCM_ROOT}/metastore.git
        scmBranch       :  ${DEFAULT_BRANCH}
        versionProperty :  metastore.version
-       archiveMatcher  :  NONE
+       archivable      :  false
 
   600:
 
@@ -56,7 +56,7 @@ jobGroups:
        scmBranch       :  ${DEFAULT_BRANCH}
        directives      :  += -P lowdeps -DskipDefault
        versionProperty :  pentaho-osgi-bundles.version
-       archiveMatcher  :  NONE
+       archivable      :  false
 
      - jobID           :  oss-license-assembly
        scmUrl          :  ${PENTAHO_SCM_ROOT}/oss-licenses.git
@@ -68,19 +68,19 @@ jobGroups:
        scmBranch       :  ${DEFAULT_BRANCH}
        directives      :  += -pl .,model
        versionProperty :  commons-database.version
-       archiveMatcher  :  NONE
+       archivable      :  false
 
      - jobID           :  mongo-utils
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-mongo-utils.git
        scmBranch       :  ${DEFAULT_BRANCH}
        versionProperty :  pentaho-mongo-utils.version
-       archiveMatcher  :  NONE
+       archivable      :  false
 
      - jobID           :  eula-wrap-config
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-eula-wrap-config.git
        scmBranch       :  ${DEFAULT_BRANCH}
        versionProperty :  pentaho-eula-wrap-config.version
-       archiveMatcher  :  NONE
+       archivable      :  false
 
   700:
 
@@ -89,55 +89,55 @@ jobGroups:
        scmBranch       :  ${DEFAULT_BRANCH}
        directives      :  += -Dlibraries
        versionProperty :  pentaho-reporting.version
-       archiveMatcher  :  NONE
+       archivable      :  false
 
      - jobID           :  gwt-widgets
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-commons-gwt-modules.git
        scmBranch       :  ${DEFAULT_BRANCH}
        versionProperty :  commons-gwt.version
-       archiveMatcher  :  NONE
+       archivable      :  false
 
      - jobID           :  connections
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-connections.git
        scmBranch       :  ${DEFAULT_BRANCH}
        versionProperty :  pentaho-connections.version
-       archiveMatcher  :  NONE
+       archivable      :  false
 
      - jobID           :  commons-json
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-commons-json.git
        scmBranch       :  ${DEFAULT_BRANCH}
        versionProperty :  pentaho-json.version
-       archiveMatcher  :  NONE
+       archivable      :  false
 
      - jobID           :  application-launcher
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-application-launcher.git
        scmBranch       :  ${DEFAULT_BRANCH}
        versionProperty :  pentaho-launcher.version
-       archiveMatcher  :  NONE
+       archivable      :  false
 
      - jobID           :  version-checker
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-versionchecker.git
        scmBranch       :  ${DEFAULT_BRANCH}
        versionProperty :  pentaho-versionchecker.version
-       archiveMatcher  :  NONE
+       archivable      :  false
 
      - jobID           :  hdfs-vfs
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-hdfs-vfs.git
        scmBranch       :  ${DEFAULT_BRANCH}
        versionProperty :  pentaho-hdfs-vfs.version
-       archiveMatcher  :  NONE
+       archivable      :  false
 
      - jobID           :  s3-vfs
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-s3-vfs.git
        scmBranch       :  ${DEFAULT_BRANCH}
        versionProperty :  pentaho-s3-vfs.version
-       archiveMatcher  :  NONE
+       archivable      :  false
 
      - jobID           :  apache-vfs-browser
        scmUrl          :  ${PENTAHO_SCM_ROOT}/apache-vfs-browser.git
        scmBranch       :  ${DEFAULT_BRANCH}
        versionProperty :  pentaho-vfs-browser.version
-       archiveMatcher  :  NONE
+       archivable      :  false
 
   800:
 
@@ -145,13 +145,13 @@ jobGroups:
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-commons-xul.git
        scmBranch       :  ${DEFAULT_BRANCH}
        versionProperty :  commons-xul.version
-       archiveMatcher  :  NONE
+       archivable      :  false
 
      - jobID           :  actionsequence-dom
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-actionsequence-dom.git
        scmBranch       :  ${DEFAULT_BRANCH}
        versionProperty :  pentaho-actionsequence-dom.version
-       archiveMatcher  :  NONE
+       archivable      :  false
 
   900:
 
@@ -159,7 +159,7 @@ jobGroups:
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-registry.git
        scmBranch       :  ${DEFAULT_BRANCH}
        versionProperty :  pentaho-registry.version
-       archiveMatcher  :  NONE
+       archivable      :  false
 
   1000:
 
@@ -168,13 +168,14 @@ jobGroups:
        scmBranch       :  ${DEFAULT_BRANCH}
        directives      :  += -P !workbench -P !assemblies
        versionProperty :  mondrian.version
-       archiveMatcher  :  NONE
+       archivable      :  false
 
      - jobID           :  platform-api
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-platform.git
        scmBranch       :  ${DEFAULT_BRANCH}
        directives      :  += -DskipDefault -P platform-api
        versionProperty :  platform.version
+       archivable      :  false
 
   1100:
 
@@ -190,7 +191,7 @@ jobGroups:
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-metadata.git
        scmBranch       :  ${DEFAULT_BRANCH}
        versionProperty :  pentaho-metadata.version
-       archiveMatcher  :  NONE
+       archivable      :  false
 
   1300:
 
@@ -199,7 +200,7 @@ jobGroups:
        scmBranch       :  ${DEFAULT_BRANCH}
        directives      :  += -pl gwt
        versionProperty :  commons-database.version
-       archiveMatcher  :  NONE
+       archivable      :  false
 
      - jobID           :  vertica-bulkloader
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-vertica-bulkloader.git
@@ -215,7 +216,7 @@ jobGroups:
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-chartbeans.git
        scmBranch       :  ${DEFAULT_BRANCH}
        versionProperty :  pentaho-chartbeans.version
-       archiveMatcher  :  NONE
+       archivable      :  false
 
      - jobID           :  license-ee
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-ee-license.git
@@ -226,7 +227,7 @@ jobGroups:
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pdi-dataservice-plugin.git
        scmBranch       :  ${DEFAULT_BRANCH}
        versionProperty :  pdi-dataservice-client-plugin.version
-       archiveMatcher  :  NONE
+       archivable      :  false
 
   1400:
 
@@ -234,14 +235,14 @@ jobGroups:
        scmUrl          :  ${PENTAHO_SCM_ROOT}/maven-project-archetypes-ee.git
        scmBranch       :  ${DEFAULT_BRANCH}
        versionProperty :  archetypes.version
-       archiveMatcher  :  NONE
+       archivable      :  false
 
      - jobID           :  big-data-hadoop-shims
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-hadoop-shims.git
        scmBranch       :  ${DEFAULT_BRANCH}
        directives      :  += -DskipDefault -P api,shims,all
        versionProperty :  pentaho-hadoop-shims.version
-       archiveMatcher  :  NONE
+       archivable      :  false
 
   1500:
 
@@ -249,13 +250,13 @@ jobGroups:
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-splunk-plugin.git
        scmBranch       :  ${DEFAULT_BRANCH}
        versionProperty :  pentaho-splunk-plugin.version
-       archiveMatcher  :  NONE
+       archivable      :  false
 
      - jobID           :  big-data-mongodb-plugin
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-mongodb-plugin.git
        scmBranch       :  ${DEFAULT_BRANCH}
        versionProperty :  pentaho-mongodb-plugin.version
-       archiveMatcher  :  NONE
+       archivable      :  false
 
      - jobID           :  big-data-cassandra-plugin
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-cassandra-plugin.git
@@ -269,7 +270,7 @@ jobGroups:
        scmBranch       :  ${DEFAULT_BRANCH}
        directives      :  += -P !mondrian -P !assemblies
        versionProperty :  mondrian.version
-       archiveMatcher  :  NONE
+       archivable      :  false
 
   1700:
 
@@ -277,7 +278,7 @@ jobGroups:
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-mondrianschemaworkbench-plugins.git
        scmBranch       :  ${DEFAULT_BRANCH}
        versionProperty :  mondrian-schemaworkbench-plugins.version
-       archiveMatcher  :  NONE
+       archivable      :  false
 
   1800:
 
@@ -299,14 +300,14 @@ jobGroups:
        scmBranch       :  ${DEFAULT_BRANCH}
        directives      :  += -Dengine
        versionProperty :  pentaho-reporting.version
-       archiveMatcher  :  NONE
+       archivable      :  false
 
   2000:
 
      - jobID           :  reportwizard-core
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-reportwizard-core.git
        scmBranch       :  ${DEFAULT_BRANCH}
-       archiveMatcher  :  NONE
+       archivable      :  false
        versionProperty :  pentaho-report-wizard-core.version
 
   2100:
@@ -316,6 +317,7 @@ jobGroups:
        scmBranch       :  ${DEFAULT_BRANCH}
        directives      :  += -DskipDefault -P platform-base
        versionProperty :  platform.version
+       archivable      :  false
 
   2200:
 
@@ -324,19 +326,19 @@ jobGroups:
        scmBranch       :  ${DEFAULT_BRANCH}
        directives      :  += -P highdeps -DskipDefault
        versionProperty :  pentaho-osgi-bundles.version
-       archiveMatcher  :  NONE
+       archivable      :  false
 
      - jobID           :  mql-editor
        scmUrl          :  ${PENTAHO_SCM_ROOT}/mql-editor.git
        scmBranch       :  ${DEFAULT_BRANCH}
        versionProperty :  pentaho-mql-editor.version
-       archiveMatcher  :  NONE
+       archivable      :  false
 
      - jobID           :  pdi-palo-plugin
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pdi-palo-core.git
        scmBranch       :  ${DEFAULT_BRANCH}
        versionProperty :  pentaho-palo-core.version
-       archiveMatcher  :  NONE
+       archivable      :  false
 
   2300:
 
@@ -345,13 +347,13 @@ jobGroups:
        scmBranch       :  ${DEFAULT_BRANCH}
        directives      :  += -P modules
        versionProperty :  pdi-osgi-bridge.version
-       archiveMatcher  :  NONE
+       archivable      :  false
 
      - jobID           :  metaverse-plugin
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-metaverse.git
        scmBranch       :  ${DEFAULT_BRANCH}
        versionProperty :  pentaho-metaverse.version
-       archiveMatcher  :  NONE
+       archivable      :  false
 
   2400:
 
@@ -370,13 +372,13 @@ jobGroups:
        scmUrl          :  ${PENTAHO_SCM_ROOT}/modeler.git
        scmBranch       :  ${DEFAULT_BRANCH}
        versionProperty :  pentaho-modeler.version
-       archiveMatcher  :  NONE
+       archivable      :  false
 
      - jobID           :  cpf-plugin
        scmUrl          :  ${WEBDETAILS_SCM_ROOT}/cpf.git
        scmBranch       :  ${DEFAULT_BRANCH}
        versionProperty :  pentaho-cpf-plugin.version
-       archiveMatcher  :  NONE
+       archivable      :  false
 
      - jobID           :  ccc-plugin
        scmUrl          :  ${WEBDETAILS_SCM_ROOT}/ccc.git
@@ -395,20 +397,20 @@ jobGroups:
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-camel-components.git
        scmBranch       :  ${DEFAULT_BRANCH}
        versionProperty :  pentaho-camel.version
-       archiveMatcher  :  NONE
+       archivable      :  false
 
      - jobID           :  pdi-dataservice-server-plugin
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pdi-dataservice-server-plugin.git
        scmBranch       :  ${DEFAULT_BRANCH}
        versionProperty :  pdi-dataservice-plugin.version
-       archiveMatcher  :  NONE
+       archivable      :  false
 
      - jobID           :  reporting-specials
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-reporting.git
        scmBranch       :  ${DEFAULT_BRANCH}
        directives      :  += -Dspecials
        versionProperty :  pentaho-reporting.version
-       archiveMatcher  :  NONE
+       archivable      :  false
 
      - jobID           :  pdi-platform-plugin
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pdi-platform-plugin.git
@@ -449,7 +451,7 @@ jobGroups:
        scmUrl          :  ${PENTAHO_SCM_ROOT}/marketplace.git
        scmBranch       :  ${DEFAULT_BRANCH}
        versionProperty :  pentaho-marketplace-modules.version
-       archiveMatcher  :  NONE
+       archivable      :  false
 
      - jobID           :  platform-user-console
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-platform.git
@@ -462,13 +464,13 @@ jobGroups:
        scmBranch       :  ${DEFAULT_BRANCH}
        directives      :  += -DfeaturesOnly
        versionProperty :  big-data-plugin.version
-       archiveMatcher  :  NONE
+       archivable      :  false
 
      - jobID           :  pdi-data-refinery-plugin
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-data-refinery.git
        scmBranch       :  ${DEFAULT_BRANCH}
        versionProperty :  pdi-data-refinery-plugin.version
-       archiveMatcher  :  NONE
+       archivable      :  false
 
   2800:
 
@@ -487,7 +489,7 @@ jobGroups:
        scmUrl          :  ${WEBDETAILS_SCM_ROOT}/cpk.git
        scmBranch       :  ${DEFAULT_BRANCH}
        versionProperty :  pentaho-cpk-plugin.version
-       archiveMatcher  :  NONE
+       archivable      :  false
 
      - jobID           :  cgg-plugin
        scmUrl          :  ${WEBDETAILS_SCM_ROOT}/cgg.git
@@ -513,7 +515,7 @@ jobGroups:
        scmBranch       :  ${DEFAULT_BRANCH}
        directives      :  += -DskipDefault -P base,all
        versionProperty :  pentaho-hadoop-shims.version
-       archiveMatcher  :  NONE
+       archivable      :  false
 
      - jobID           :  cda-plugin
        scmUrl          :  ${WEBDETAILS_SCM_ROOT}/cda.git
@@ -531,7 +533,7 @@ jobGroups:
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-dashboard-chart-editor.git
        scmBranch       :  ${DEFAULT_BRANCH}
        versionProperty :  pentaho-dashboard-chart-editor.version
-       archiveMatcher  :  NONE
+       archivable      :  false
 
   3200:
 
@@ -540,7 +542,7 @@ jobGroups:
        scmBranch       :  ${DEFAULT_BRANCH}
        directives      :  += -DskipDefault -P platform-ee
        versionProperty :  platform.version
-       archiveMatcher  :  NONE
+       archivable      :  false
 
   3300:
 
@@ -573,13 +575,13 @@ jobGroups:
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-yarn-kettle-plugin.git
        scmBranch       :  ${DEFAULT_BRANCH}
        versionProperty :  pentaho-kettle-yarn-plugin.version
-       archiveMatcher  :  NONE
+       archivable      :  false
 
      - jobID           :  data-exploration
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-det.git
        scmBranch       :  ${DEFAULT_BRANCH}
        versionProperty :  pentaho-det.version
-       archiveMatcher  :  NONE
+       archivable      :  false
 
   3600:
 
@@ -587,7 +589,7 @@ jobGroups:
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-det-ee.git
        scmBranch       :  ${DEFAULT_BRANCH}
        versionProperty :  pentaho-det.version
-       archiveMatcher  :  NONE
+       archivable      :  false
 
      - jobID           :  karaf-assembly
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-karaf-assembly.git
@@ -616,7 +618,7 @@ jobGroups:
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-data-mining-ee.git
        scmBranch       :  ${DEFAULT_BRANCH}
        versionProperty :  pentaho-data-mining.version
-       archiveMatcher  :  NONE
+       archivable      :  false
 
      - jobID           :  big-data-plugin-assembly
        scmUrl          :  ${PENTAHO_SCM_ROOT}/big-data-plugin.git
@@ -673,7 +675,7 @@ jobGroups:
        scmBranch       :  ${DEFAULT_BRANCH}
        directives      :  += -DskipDefault -P assemblies,pack
        versionProperty :  big-data-plugin.version
-       archiveMatcher  :  NONE
+       archivable      :  false
 
      - jobID           :  prd-assembly
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-reporting.git
