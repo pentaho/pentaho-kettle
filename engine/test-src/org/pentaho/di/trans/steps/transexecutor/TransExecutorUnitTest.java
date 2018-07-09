@@ -408,12 +408,16 @@ public class TransExecutorUnitTest {
 
     String childParam = "childParam";
     String childValue = "childValue";
+    String parentParam = "parentParam";
     String paramOverwrite = "paramOverwrite";
     String parentValue = "parentValue";
+    String stepParam = "stepParam";
+    String stepStaticValue = "stepStaticValue";
+    String stepStreamValue = "stepStreamValue";
 
-    meta.getParameters().setVariable( new String[]{ childParam, paramOverwrite } );
-    meta.getParameters().setField( new String[]{ childParam, childParam } );
-    meta.getParameters().setInput( new String[]{ childValue, childValue } );
+    meta.getParameters().setVariable( new String[]{ stepParam, paramOverwrite } );
+    meta.getParameters().setField( new String[ 2 ] );
+    meta.getParameters().setInput( new String[]{ stepStaticValue, stepStaticValue } );
     Trans parent = new Trans();
     Mockito.when( executor.getTrans() ).thenReturn( parent );
     RowMetaInterface rowMeta = Mockito.mock( RowMetaInterface.class );
@@ -429,18 +433,23 @@ public class TransExecutorUnitTest {
     Mockito.when(  executor.getData().getExecutorTransMeta().listParameters() ).thenReturn( new String[0] /*{parentParam}*/ );
 
     Trans internalTrans = executor.createInternalTrans();
+
     executor.getData().setExecutorTrans( internalTrans );
     RowMetaAndData rmad = Mockito.mock( RowMetaAndData.class );
     java.util.List<RowMetaAndData> lrmad = new ArrayList<RowMetaAndData>();
     lrmad.add( rmad );
-    Mockito.when( rmad.getString( 0, "" ) ).thenReturn( childValue );
+    Mockito.when( rmad.getString( 0, "" ) ).thenReturn( stepStaticValue );
     executor.getData().groupBuffer = lrmad;
+
+    internalTrans.setVariable( childParam, childValue  );
+
     executor.passParametersToTrans();
 
-    //When the child parameter does exist in the parent parameters, overwrite the child parameter by the parent parameter.
-    Assert.assertEquals( parentValue, internalTrans.getVariable( paramOverwrite ) );
+    //When the child parameter does exist in the step parameters, overwrite the child parameter by the step parameter.
+    Assert.assertEquals( stepStaticValue, internalTrans.getVariable( paramOverwrite ) );
 
-    //All other parent parameters need to get copied into the child parameters  (when the 'Inherit all variables from the transformation?' option is checked)
+    //All unique child parameters are preserved if not in step or parent
     Assert.assertEquals( childValue, internalTrans.getVariable( childParam ) );
   }
+
 }
