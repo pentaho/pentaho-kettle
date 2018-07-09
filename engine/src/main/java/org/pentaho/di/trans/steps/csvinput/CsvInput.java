@@ -399,9 +399,11 @@ public class CsvInput extends BaseStep implements StepInterface {
         if ( !data.parallel || data.bytesToSkipInFirstFile <= 0 ) {
           readOneRow( true, false ); // skip this row.
           logBasic( BaseMessages.getString( PKG, "CsvInput.Log.HeaderRowSkipped", data.filenames[ data.filenr - 1 ] ) );
+          if ( data.fieldsMapping.size() == 0 ) {
+            return false;
+          }
         }
       }
-
       // Reset the row number pointer...
       //
       data.rowNumber = 1L;
@@ -473,15 +475,19 @@ public class CsvInput extends BaseStep implements StepInterface {
   }
 
   static void trimFieldNames( String[] strings ) {
-    for ( int i = 0; i < strings.length; i++ ) {
-      strings[i] = strings[i].trim();
+    if ( strings != null ) {
+      for ( int i = 0; i < strings.length; i++ ) {
+        strings[ i ] = strings[ i ].trim();
+      }
     }
   }
 
   static void removeEnclosure( String[] fields, String enclosure ) {
-    for ( int i = 0; i < fields.length; i++ ) {
-      if ( fields[i].startsWith( enclosure ) && fields[i].endsWith( enclosure ) && fields[i].length() > 1 ) {
-        fields[i] = fields[i].substring( 1, fields[i].length() - 1 );
+    if ( fields != null ) {
+      for ( int i = 0; i < fields.length; i++ ) {
+        if ( fields[ i ].startsWith( enclosure ) && fields[ i ].endsWith( enclosure ) && fields[ i ].length() > 1 ) {
+          fields[ i ] = fields[ i ].substring( 1, fields[ i ].length() - 1 );
+        }
       }
     }
   }
