@@ -35,6 +35,7 @@ RUN_CHECKOUTS: true
 RUN_UNIT_TESTS: true
 ARCHIVE_ARTIFACTS: true
 ARCHIVE_ARTIFACTS_PATTERN: '**/dist/*.gz, **/dist/*.zip, **/target/*.gz, **/target/*.zip, **/build/**/*.gz, **/build/**/*.zip, **/build/*.zip'
+INSTALLER_ARTIFACTS_PATTERN: 'bi-suite/target/pentaho-business-analytics-*.*, upgrade-utility/target/pentaho-upgrade-utility-*.zip'
 USE_DISTRIBUTED_SOURCE_CACHING: false
 ARCHIVE_TESTS_PATTERN: '**/bin/**/TEST*.xml, **/target/**/TEST*.xml, **/build/**/*Test.xml'
 
