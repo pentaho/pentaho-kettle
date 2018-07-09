@@ -64,7 +64,7 @@ public class RunConfigurationDelegate {
     if ( savedRunConfiguration != null ) {
       configurationManager.delete( key );
       configurationManager.save( savedRunConfiguration );
-      spoonSupplier.get().refreshTree();
+      refreshTree();
 
       updateLoadedJobs( key, savedRunConfiguration );
     }
@@ -104,7 +104,7 @@ public class RunConfigurationDelegate {
     int response = deleteDialog.open();
     if ( response == SWT.YES ) {
       configurationManager.delete( runConfiguration.getName() );
-      spoonSupplier.get().refreshTree();
+      refreshTree();
     }
   }
 
@@ -125,12 +125,20 @@ public class RunConfigurationDelegate {
 
     if ( savedRunConfiguration != null ) {
       configurationManager.save( savedRunConfiguration );
-      spoonSupplier.get().refreshTree();
+      refreshTree();
     }
   }
 
   public List<RunConfiguration> load() {
     return configurationManager.load();
+  }
+
+  public RunConfiguration load( String name ) {
+    return configurationManager.load( name );
+  }
+
+  private void refreshTree() {
+    spoonSupplier.get().refreshTree( RunConfigurationFolderProvider.STRING_RUN_CONFIGURATIONS );
   }
 
 }

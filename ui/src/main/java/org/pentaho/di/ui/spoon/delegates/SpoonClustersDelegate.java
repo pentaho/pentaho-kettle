@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -32,6 +32,7 @@ import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.ui.cluster.dialog.ClusterSchemaDialog;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.spoon.Spoon;
+import org.pentaho.di.ui.spoon.tree.provider.ClustersFolderProvider;
 
 public class SpoonClustersDelegate extends SpoonSharedObjectDelegate {
 
@@ -74,7 +75,7 @@ public class SpoonClustersDelegate extends SpoonSharedObjectDelegate {
         }
       }
 
-      spoon.refreshTree();
+      refreshTree();
     }
   }
 
@@ -96,7 +97,7 @@ public class SpoonClustersDelegate extends SpoonSharedObjectDelegate {
         }
       }
       sharedObjectSyncUtil.synchronizeClusterSchemas( clusterSchema );
-      spoon.refreshTree();
+      refreshTree();
     }
   }
 
@@ -114,11 +115,15 @@ public class SpoonClustersDelegate extends SpoonSharedObjectDelegate {
         }
       }
 
-      spoon.refreshTree();
+      refreshTree();
     } catch ( KettleException e ) {
       new ErrorDialog(
         spoon.getShell(), BaseMessages.getString( PKG, "Spoon.Dialog.ErrorDeletingPartitionSchema.Title" ), BaseMessages
           .getString( PKG, "Spoon.Dialog.ErrorDeletingPartitionSchema.Message" ), e );
     }
+  }
+
+  private void refreshTree() {
+    spoon.refreshTree( ClustersFolderProvider.STRING_CLUSTERS );
   }
 }

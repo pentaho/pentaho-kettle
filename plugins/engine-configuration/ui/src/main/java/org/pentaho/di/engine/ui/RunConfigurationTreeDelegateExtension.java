@@ -3,7 +3,7 @@
  *
  *  Pentaho Data Integration
  *
- *  Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ *  Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *  *******************************************************************************
  *  Licensed under the Apache License, Version 2.0 (the "License"); you may not use
@@ -31,6 +31,7 @@ import org.pentaho.di.core.extension.ExtensionPointInterface;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.engine.configuration.api.RunConfiguration;
 import org.pentaho.di.engine.configuration.api.RunConfigurationService;
+import org.pentaho.di.engine.configuration.impl.pentaho.DefaultRunConfigurationProvider;
 import org.pentaho.di.ui.spoon.TreeSelection;
 import org.pentaho.di.ui.spoon.delegates.SpoonTreeDelegateExtension;
 
@@ -66,9 +67,9 @@ public class RunConfigurationTreeDelegateExtension implements ExtensionPointInte
           break;
         case 4:
           try {
-            RunConfiguration runConfiguration = runConfigurationManager.load( path[3] );
-            if ( !runConfiguration.isReadOnly() ) {
-              object = new TreeSelection( path[ 3 ], runConfiguration, meta );
+            final String name = path[ 3 ];
+            if ( !name.equalsIgnoreCase( DefaultRunConfigurationProvider.DEFAULT_CONFIG_NAME ) ) {
+              object = new TreeSelection( path[ 3 ], path[ 3 ], meta );
             }
           } catch ( Exception e ) {
             // Do Nothing
