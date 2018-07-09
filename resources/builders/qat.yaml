@@ -2,10 +2,27 @@
 buildProperties:
         # global build control defaults -- see others you can override in resources/config/buildProperties.yaml
         # These are understood by the shared pipeline libraries:
-        BUILD_PLAN_ID                  : Master Suite Build
+        BUILD_PLAN_ID                  : 9.0 QAT Build
 
         MAVEN_DEFAULT_COMMAND_OPTIONS  : -B -e -q
         ARCHIVE_ARTIFACTS_PATTERN      : '**/target/*.gz, **/target/*.zip'
+
+        # TODO: Change this to clean deploy when ready to deploy
+        MAVEN_DEFAULT_DIRECTIVES       : clean install
+
+        # Version based control properties
+        UPDATE_VERSIONS                : true
+        RELEASE_VERSION                : 9.0.0.0
+        SUITE_RELEASE_VERSION          : 9.0-QAT
+        RELEASE_MODE                   : true
+
+        # TODO: Change this to SUFFIX when we start wanting to tag
+        TAG_NAME_TYPE                  : NONE
+        TAG_NAME                       : -RC
+
+        # Don't run unit tests on QATs
+        JOB_ITEM_DEFAULTS:
+            testable: false
 
 jobGroups:
   # Always required
@@ -16,7 +33,6 @@ jobGroups:
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-coding-standards.git
        scmBranch       :  ${DEFAULT_BRANCH}
        versionProperty :  coding-standards.version
-       testable        :  false
 
   300:
 
@@ -87,7 +103,7 @@ jobGroups:
      - jobID           :  reporting-libraries
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-reporting.git
        scmBranch       :  ${DEFAULT_BRANCH}
-       directives      :  += -Dlibraries
+       directives      :  += -Dlibraries -Djavadoc
        versionProperty :  pentaho-reporting.version
        archivable      :  false
 
@@ -166,23 +182,22 @@ jobGroups:
      - jobID           :  mondrian-jar
        scmUrl          :  ${PENTAHO_SCM_ROOT}/mondrian.git
        scmBranch       :  ${DEFAULT_BRANCH}
-       directives      :  += -P !workbench -P !assemblies
+       directives      :  += -P !workbench -P !assemblies -Djavadoc
        versionProperty :  mondrian.version
        archivable      :  false
 
      - jobID           :  platform-api
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-platform.git
        scmBranch       :  ${DEFAULT_BRANCH}
-       directives      :  += -DskipDefault -P platform-api
+       directives      :  += -DskipDefault -P platform-api -Djavadoc
        versionProperty :  platform.version
-       archivable      :  false
 
   1100:
 
      - jobID           :  pdi-engine-core
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-kettle.git
        scmBranch       :  ${DEFAULT_BRANCH}
-       directives      :  += -DskipDefault -P base,plugins,lowdeps
+       directives      :  += -DskipDefault -P base,plugins,lowdeps -Djavadoc
        versionProperty :  pdi.version
 
   1200:
@@ -240,7 +255,7 @@ jobGroups:
      - jobID           :  big-data-hadoop-shims
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-hadoop-shims.git
        scmBranch       :  ${DEFAULT_BRANCH}
-       directives      :  += -DskipDefault -P api,shims,all
+       directives      :  += -DskipDefault -Deula-wrap -P api,shims,all
        versionProperty :  pentaho-hadoop-shims.version
        archivable      :  false
 
@@ -293,12 +308,13 @@ jobGroups:
      - jobID           :  psw-assembly-ee
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-schema-workbench-ee.git
        scmBranch       :  ${DEFAULT_BRANCH}
+       directives      :  += -Deula-wrap
        versionProperty :  mondrian.version
 
      - jobID           :  reporting-engine
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-reporting.git
        scmBranch       :  ${DEFAULT_BRANCH}
-       directives      :  += -Dengine
+       directives      :  += -Dengine -Djavadoc
        versionProperty :  pentaho-reporting.version
        archivable      :  false
 
@@ -307,17 +323,16 @@ jobGroups:
      - jobID           :  reportwizard-core
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-reportwizard-core.git
        scmBranch       :  ${DEFAULT_BRANCH}
-       archivable      :  false
        versionProperty :  pentaho-report-wizard-core.version
+       archivable      :  false
 
   2100:
 
      - jobID           :  platform-base
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-platform.git
        scmBranch       :  ${DEFAULT_BRANCH}
-       directives      :  += -DskipDefault -P platform-base
+       directives      :  += -DskipDefault -P platform-base -Djavadoc
        versionProperty :  platform.version
-       archivable      :  false
 
   2200:
 
@@ -366,6 +381,7 @@ jobGroups:
      - jobID           :  pdi-monitoring-plugin
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pdi-monitoring-plugin.git
        scmBranch       :  ${DEFAULT_BRANCH}
+       directives      :  += -Deula-wrap
        versionProperty :  pdi-monitoring-plugin.version
 
      - jobID           :  modeler
@@ -416,7 +432,6 @@ jobGroups:
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pdi-platform-plugin.git
        scmBranch       :  ${DEFAULT_BRANCH}
        versionProperty :  pentaho-pdi-plugin.version
-       testable        :  false
 
      - jobID           :  pdi-platform-utils-plugin
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pdi-platform-utils-plugin.git
@@ -456,7 +471,7 @@ jobGroups:
      - jobID           :  platform-user-console
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-platform.git
        scmBranch       :  ${DEFAULT_BRANCH}
-       directives      :  += -DskipDefault -P platform-user-console
+       directives      :  += -DskipDefault -P platform-user-console -Djavadoc
        versionProperty :  platform.version
 
      - jobID           :  big-data-plugin-features
@@ -513,7 +528,7 @@ jobGroups:
      - jobID           :  big-data-hadoop-shims-ee
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-big-data-ee.git
        scmBranch       :  ${DEFAULT_BRANCH}
-       directives      :  += -DskipDefault -P base,all
+       directives      :  += -DskipDefault -P base,all -Deula-wrap
        versionProperty :  pentaho-hadoop-shims.version
        archivable      :  false
 
@@ -549,6 +564,7 @@ jobGroups:
      - jobID           :  geo-plugin
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-platform-plugin-geo.git
        scmBranch       :  ${DEFAULT_BRANCH}
+       directives      :  += -Deula-wrap
        versionProperty :  pentaho-geo-plugin.version
 
   3400:
@@ -556,7 +572,7 @@ jobGroups:
      - jobID           :  analyzer-plugin
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-analyzer.git
        scmBranch       :  ${DEFAULT_BRANCH}
-       directives      :  += -Dagilebi
+       directives      :  += -Dagilebi -Deula-wrap
        versionProperty :  analyzer-plugin.version
 
   3500:
@@ -569,6 +585,7 @@ jobGroups:
      - jobID           :  analysis-plugin-ee
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-analysis-ee.git
        scmBranch       :  ${DEFAULT_BRANCH}
+       directives      :  += -Deula-wrap
        versionProperty :  analysis-ee-plugin.version
 
      - jobID           :  pdi-yarn-plugin
@@ -599,11 +616,13 @@ jobGroups:
      - jobID           :  dashboards-plugin
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-platform-plugin-dashboards.git
        scmBranch       :  ${DEFAULT_BRANCH}
+       directives      :  += -Deula-wrap
        versionProperty :  dashboard-plugin.version
 
      - jobID           :  pdi-weka-plugins
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-data-mining.git
        scmBranch       :  ${DEFAULT_BRANCH}
+       directives      :  += -Djavadoc
        versionProperty :  pentaho-data-mining.version
 
      - jobID           :  platform-plugins-ee
@@ -617,6 +636,7 @@ jobGroups:
      - jobID           :  pdi-weka-plugins-ee
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-data-mining-ee.git
        scmBranch       :  ${DEFAULT_BRANCH}
+       directives      :  += -Djavadoc
        versionProperty :  pentaho-data-mining.version
        archivable      :  false
 
@@ -629,6 +649,7 @@ jobGroups:
      - jobID           :  pir-plugin
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-platform-plugin-interactive-reporting.git
        scmBranch       :  ${DEFAULT_BRANCH}
+       directives      :  += -Deula-wrap
        versionProperty :  pir-plugin.version
 
      - jobID           :  pdi-scheduler-plugin
@@ -649,6 +670,7 @@ jobGroups:
      - jobID           :  pdi-sdk-plugins
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pdi-sdk-plugins.git
        scmBranch       :  ${DEFAULT_BRANCH}
+       directives      :  += -Deula-wrap
        versionProperty :  pdi-sdk-plugins.version
 
      - jobID           :  pdi-r-plugin
@@ -659,6 +681,7 @@ jobGroups:
      - jobID           :  pdi-sap-hana-bulk-loader-plugin
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pdi-sap-hana-bulk-loader-plugin.git
        scmBranch       :  ${DEFAULT_BRANCH}
+       directives      :  += -Deula-wrap
        versionProperty :  pdi-sap-hana-bulk-loader-plugin.version
 
   3800:
@@ -680,7 +703,7 @@ jobGroups:
      - jobID           :  prd-assembly
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-reporting.git
        scmBranch       :  ${DEFAULT_BRANCH}
-       directives      :  += -Ddesigner -Dmaven.test.failure.ignore=true
+       directives      :  += -Ddesigner -Djavadoc -Dmaven.test.failure.ignore=true
        versionProperty :  pentaho-reporting.version
 
   4000:
@@ -688,6 +711,7 @@ jobGroups:
      - jobID           :  prd-assembly-ee
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-reportdesigner-ee.git
        scmBranch       :  ${DEFAULT_BRANCH}
+       directives      :  += -Deula-wrap
        versionProperty :  pentaho-reporting.version
 
      - jobID           :  pdi-pur-plugin-ee
@@ -700,6 +724,7 @@ jobGroups:
      - jobID           :  pdi-operations-mart-ee
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pdi-operations-mart.git
        scmBranch       :  ${DEFAULT_BRANCH}
+       directives      :  += -Deula-wrap
        versionProperty :  pentaho-operations-mart.version
 
   4200:
@@ -709,16 +734,15 @@ jobGroups:
        scmBranch       :  ${DEFAULT_BRANCH}
        directives      :  += -DskipDefault -P assemblies
        versionProperty :  pdi.version
-       testable        :  false
 
   4300:
 
      - jobID           :  pdi-client-assembly-ee
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-ee.git
        scmBranch       :  ${DEFAULT_BRANCH}
+       directives      :  += -Deula-wrap
        versionProperty :  pdi.version
        root            :  data-integration
-       testable        :  false
 
   4400:
 
@@ -732,7 +756,6 @@ jobGroups:
        scmBranch       :  ${DEFAULT_BRANCH}
        directives      :  += -DskipDefault -P platform-assemble
        versionProperty :  platform.version
-       testable        :  false
 
      - jobID           :  pad
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-aggdesigner.git
@@ -744,32 +767,32 @@ jobGroups:
      - jobID           :  foundry-workers-ee
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-ee.git
        scmBranch       :  ${DEFAULT_BRANCH}
-       directives      :  clean package
+       directives      :  += -Deula-wrap
        versionProperty :  worker-nodes.version
        root            :  foundry
-       testable        :  false
 
      - jobID           :  platform-server-assembly-ee
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-platform-ee.git
        scmBranch       :  ${DEFAULT_BRANCH}
-       directives      :  += -DskipDefault -P platform-ee-assemble
+       directives      :  += -DskipDefault -P platform-ee-assemble -Deula-wrap
        versionProperty :  platform.version
-       testable        :  false
 
      - jobID           :  metadata-editor-ee
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-metadata-editor-ee.git
        scmBranch       :  ${DEFAULT_BRANCH}
+       directives      :  += -Deula-wrap
        versionProperty :  pentaho-metadata.version
 
      - jobID           :  pad-assembly-ee
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-aggdesigner-ee.git
        scmBranch       :  ${DEFAULT_BRANCH}
+       directives      :  += -Deula-wrap
        versionProperty :  aggdesigner.version
-       testable        :  false
 
      - jobID           :  platform-sdk
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-sdk.git
        scmBranch       :  ${DEFAULT_BRANCH}
+       directives      :  += -Deula-wrap
        versionProperty :  pdi-sdk-plugins.version
 
   4600:
@@ -780,13 +803,11 @@ jobGroups:
        directives      :  += -Dpentaho-scale
        versionProperty :  worker-nodes.version
        root            :  foundry
-       testable        :  false
 
   4700:
 
      - jobID           :  installer
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-installer.git
        scmBranch       :  ${DEFAULT_BRANCH}
-       directives      :  -Djre.mac.x64.dir=${IBUILDER_RESOURCES_ROOT_PATH}/osx/java -Djre.linux.x64.dir=${IBUILDER_RESOURCES_ROOT_PATH}/nix/java -Djre.windows.x64.dir=${IBUILDER_RESOURCES_ROOT_PATH}/win/java -Dpostgresql.mac.x64.dir=${IBUILDER_RESOURCES_ROOT_PATH}/osx/postgresql -Dpostgresql.linux.x64.dir=${IBUILDER_RESOURCES_ROOT_PATH}/nix/postgresql -Dpostgresql.windows.x64.dir=${IBUILDER_RESOURCES_ROOT_PATH}/win/postgresql -Dcommon.linux.x64.dir=${IBUILDER_RESOURCES_ROOT_PATH}/nix/common -Dcommon.mac.x64.dir=${IBUILDER_RESOURCES_ROOT_PATH}/osx/common -Dcommon.windows.x64.dir=${IBUILDER_RESOURCES_ROOT_PATH}/win/common -Dinstallbuilder.dir=${INSTALL_BUILDER_ROOT_DIR}
+       directives      :  += -Djre.mac.x64.dir=${IBUILDER_RESOURCES_ROOT_PATH}/osx/java -Djre.linux.x64.dir=${IBUILDER_RESOURCES_ROOT_PATH}/nix/java -Djre.windows.x64.dir=${IBUILDER_RESOURCES_ROOT_PATH}/win/java -Dpostgresql.mac.x64.dir=${IBUILDER_RESOURCES_ROOT_PATH}/osx/postgresql -Dpostgresql.linux.x64.dir=${IBUILDER_RESOURCES_ROOT_PATH}/nix/postgresql -Dpostgresql.windows.x64.dir=${IBUILDER_RESOURCES_ROOT_PATH}/win/postgresql -Dcommon.linux.x64.dir=${IBUILDER_RESOURCES_ROOT_PATH}/nix/common -Dcommon.mac.x64.dir=${IBUILDER_RESOURCES_ROOT_PATH}/osx/common -Dcommon.windows.x64.dir=${IBUILDER_RESOURCES_ROOT_PATH}/win/common -Dinstallbuilder.dir=${INSTALL_BUILDER_ROOT_DIR}
        versionProperty :  pentaho.version
-       testable        :  false
