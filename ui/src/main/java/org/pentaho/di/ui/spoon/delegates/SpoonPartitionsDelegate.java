@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -32,6 +32,7 @@ import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.partition.dialog.PartitionSchemaDialog;
 import org.pentaho.di.ui.spoon.Spoon;
+import org.pentaho.di.ui.spoon.tree.provider.PartitionsFolderProvider;
 
 public class SpoonPartitionsDelegate extends SpoonSharedObjectDelegate {
   public SpoonPartitionsDelegate( Spoon spoon ) {
@@ -72,7 +73,7 @@ public class SpoonPartitionsDelegate extends SpoonSharedObjectDelegate {
         }
       }
 
-      spoon.refreshTree();
+      refreshTree();
     }
   }
 
@@ -92,7 +93,7 @@ public class SpoonPartitionsDelegate extends SpoonSharedObjectDelegate {
           showSaveErrorDialog( partitionSchema, e );
         }
       }
-      spoon.refreshTree();
+      refreshTree();
     }
   }
 
@@ -108,7 +109,7 @@ public class SpoonPartitionsDelegate extends SpoonSharedObjectDelegate {
           sharedObjectSyncUtil.deletePartitionSchema( partitionSchema );
         }
       }
-      spoon.refreshTree();
+      refreshTree();
     } catch ( KettleException e ) {
       new ErrorDialog(
         spoon.getShell(), BaseMessages.getString( PKG, "Spoon.Dialog.ErrorDeletingClusterSchema.Title" ), BaseMessages
@@ -119,5 +120,9 @@ public class SpoonPartitionsDelegate extends SpoonSharedObjectDelegate {
   private void showSaveErrorDialog( PartitionSchema partitionSchema, KettleException e ) {
     new ErrorDialog( spoon.getShell(), BaseMessages.getString( PKG, "Spoon.Dialog.ErrorSavingPartition.Title" ),
         BaseMessages.getString( PKG, "Spoon.Dialog.ErrorSavingPartition.Message", partitionSchema.getName() ), e );
+  }
+
+  private void refreshTree() {
+    spoon.refreshTree( PartitionsFolderProvider.STRING_PARTITIONS );
   }
 }

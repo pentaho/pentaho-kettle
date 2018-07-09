@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -63,6 +63,7 @@ import org.pentaho.di.ui.spoon.SharedObjectSyncUtil;
 import org.pentaho.di.ui.spoon.Spoon;
 import org.pentaho.di.ui.spoon.dialog.GetJobSQLProgressDialog;
 import org.pentaho.di.ui.spoon.dialog.GetSQLProgressDialog;
+import org.pentaho.di.ui.spoon.tree.provider.DBConnectionFolderProvider;
 
 public class SpoonDBDelegate extends SpoonDelegate {
   private static Class<?> PKG = Spoon.class; // for i18n purposes, needed by Translator2!!
@@ -117,7 +118,7 @@ public class SpoonDBDelegate extends SpoonDelegate {
         sharedObjectSyncUtil.synchronizeConnections( databaseMeta, originalName );
       }
 
-      spoon.refreshTree();
+      refreshTree();
     }
     spoon.setShellText();
   }
@@ -149,7 +150,7 @@ public class SpoonDBDelegate extends SpoonDelegate {
           (UndoInterface) hasDatabasesInterface, new DatabaseMeta[] { (DatabaseMeta) databaseMetaCopy.clone() },
           new int[] { pos + 1 } );
         saveConnection( databaseMetaCopy, Const.VERSION_COMMENT_EDIT_VERSION );
-        spoon.refreshTree();
+        refreshTree();
       }
     }
   }
@@ -197,7 +198,7 @@ public class SpoonDBDelegate extends SpoonDelegate {
       DBCache.getInstance().clear( db.getName() ); // remove this from the cache as well.
     }
 
-    spoon.refreshTree();
+    refreshTree();
     spoon.setShellText();
   }
 
@@ -425,7 +426,7 @@ public class SpoonDBDelegate extends SpoonDelegate {
         spoon.delegates.trans.addTransGraph( meta );
 
         spoon.refreshGraph();
-        spoon.refreshTree();
+        refreshTree();
       } finally {
         sourceDB.disconnect();
       }
@@ -517,10 +518,14 @@ public class SpoonDBDelegate extends SpoonDelegate {
                     BaseMessages.getString( PKG, "Spoon.Dialog.ErrorSavingConnection.Message", databaseMeta.getName() ), e );
           }
         }
-        spoon.refreshTree();
+        refreshTree();
       } else {
         DatabaseDialog.showDatabaseExistsDialog( spoon.getShell(), databaseMeta );
       }
     }
+  }
+
+  private void refreshTree() {
+    spoon.refreshTree( DBConnectionFolderProvider.STRING_CONNECTIONS );
   }
 }
