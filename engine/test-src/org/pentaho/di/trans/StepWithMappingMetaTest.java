@@ -194,7 +194,7 @@ public class StepWithMappingMetaTest {
     String childValue = "childValue";
     String paramOverwrite = "paramOverwrite";
     String parentValue = "parentValue";
-    String stepValue= "stepValue";
+    String stepValue = "stepValue";
 
     VariableSpace parent = new Variables();
     parent.setVariable( paramOverwrite, parentValue );
