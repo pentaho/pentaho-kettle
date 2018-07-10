@@ -100,18 +100,18 @@ pipeline {
     buildDiscarder(logRotator(numToKeepStr: '180', daysToKeepStr: '90', artifactDaysToKeepStr: '7', artifactNumToKeepStr: '14'))
   }
 
-  triggers {
-    // Would like conditional polling not available yet.
-    // https://issues.jenkins-ci.org/browse/JENKINS-42643
-    pollSCM("H/60 * * * *")
-  }
-
   environment {
       DEFAULT_BUILD_PROPERTIES = "${WORKSPACE}/resources/config/buildProperties.yaml"
       BUILD_DATA_ROOT_PATH = "${WORKSPACE}/resources/builders"
       RESOLVE_REPO_MIRROR = "${params.MAVEN_RESOLVE_REPO_URL}"
       LIB_CACHE_ROOT_PATH = "${WORKSPACE}/caches"
       BUILDS_ROOT_PATH = "${WORKSPACE}/builds"
+  }
+
+  triggers {
+    // Would like conditional polling not available yet.
+    // https://issues.jenkins-ci.org/browse/JENKINS-42643
+    pollSCM(doPollScm())
   }
 
   stages {
