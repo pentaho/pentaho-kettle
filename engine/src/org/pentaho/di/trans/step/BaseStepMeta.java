@@ -93,7 +93,13 @@ public class BaseStepMeta implements Cloneable, StepAttributesInterface {
 
   protected StepMeta parentStepMeta;
 
-  private volatile StepIOMetaInterface ioMetaVar;
+
+  /**
+  * @deprecated - use the getter/setter for IOMeta
+  **/
+  @Deprecated
+  protected volatile StepIOMetaInterface ioMeta;
+
   ReentrantReadWriteLock lock = new ReentrantReadWriteLock(  );
 
   /**
@@ -125,15 +131,15 @@ public class BaseStepMeta implements Cloneable, StepAttributesInterface {
       // then the step references must be corrected.
       lock.readLock().lock();
       try {
-        if ( ioMetaVar != null ) {
-          StepIOMetaInterface stepIOMeta = new StepIOMeta( ioMetaVar.isInputAcceptor(), ioMetaVar.isOutputProducer(), ioMetaVar.isInputOptional(), ioMetaVar.isSortedDataRequired(), ioMetaVar.isInputDynamic(), ioMetaVar.isOutputDynamic() );
+        if ( this.ioMeta != null ) {
+          StepIOMetaInterface stepIOMeta = new StepIOMeta( this.ioMeta.isInputAcceptor(), this.ioMeta.isOutputProducer(), this.ioMeta.isInputOptional(), this.ioMeta.isSortedDataRequired(), this.ioMeta.isInputDynamic(), this.ioMeta.isOutputDynamic() );
 
-          List<StreamInterface> infoStreams = ioMetaVar.getInfoStreams();
+          List<StreamInterface> infoStreams = this.ioMeta.getInfoStreams();
           for ( StreamInterface infoStream : infoStreams ) {
             stepIOMeta.addStream( new Stream( infoStream ) );
           }
 
-          List<StreamInterface> targetStreams = ioMetaVar.getTargetStreams();
+          List<StreamInterface> targetStreams = this.ioMeta.getTargetStreams();
           for ( StreamInterface targetStream : targetStreams ) {
             stepIOMeta.addStream( new Stream( targetStream ) );
           }
@@ -810,18 +816,18 @@ public class BaseStepMeta implements Cloneable, StepAttributesInterface {
     StepIOMetaInterface ioMeta = null;
     lock.readLock().lock();
     try {
-      if ( ( ioMetaVar == null ) && ( createIfAbsent ) ) {
+      if ( ( this.ioMeta == null ) && ( createIfAbsent ) ) {
         ioMeta = new StepIOMeta( true, true, true, false, false, false );
         lock.readLock().unlock();
         lock.writeLock().lock();
         try {
-          ioMetaVar = ioMeta;
+          this.ioMeta = ioMeta;
           lock.readLock().lock(); // downgrade to read lock before releasing write lock
         } finally {
           lock.writeLock().unlock();
         }
       } else {
-        ioMeta = ioMetaVar;
+        ioMeta = this.ioMeta;
       }
       return ioMeta;
     } finally {
@@ -836,7 +842,7 @@ public class BaseStepMeta implements Cloneable, StepAttributesInterface {
   public void setStepIOMeta( StepIOMetaInterface value ) {
     lock.writeLock().lock();
     try {
-      ioMetaVar = value;
+      this.ioMeta = value;
     } finally {
       lock.writeLock().unlock();
     }
@@ -866,7 +872,7 @@ public class BaseStepMeta implements Cloneable, StepAttributesInterface {
   public void resetStepIoMeta() {
     lock.writeLock().lock();
     try {
-      ioMetaVar = null;
+      this.ioMeta = null;
     } finally {
       lock.writeLock().unlock();
     }
