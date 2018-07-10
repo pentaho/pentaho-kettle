@@ -52,7 +52,14 @@
   <bean id="exectionEnviromentPopupMenu" scope="singleton"
         class="org.pentaho.di.engine.ui.RunConfigurationPopupMenuExtension">
     <argument ref="runConfigurationDelegate" />
+    <argument ref="executionConfigurationManager" />
     <pen:di-plugin type="org.pentaho.di.core.extension.ExtensionPointPluginType" />
+  </bean>
+
+  <bean id="RunConfigurationLifecycleListener"
+        class="org.pentaho.di.engine.ui.RunConfigurationLifecycleListener">
+    <argument ref="runConfigurationDelegate" />
+    <pen:di-plugin type="org.pentaho.di.core.plugins.LifecyclePluginType" />
   </bean>
 
 </blueprint>

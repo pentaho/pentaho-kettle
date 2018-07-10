@@ -3,7 +3,7 @@
  *
  *  Pentaho Data Integration
  *
- *  Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ *  Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *  *******************************************************************************
  *  Licensed under the Apache License, Version 2.0 (the "License"); you may not use
@@ -63,6 +63,10 @@ public class RunConfigurationViewTreeExtension implements ExtensionPointInterfac
       if ( selectionTreeExtension.getSelection() instanceof RunConfiguration ) {
         RunConfiguration runConfiguration = (RunConfiguration) selectionTreeExtension.getSelection();
         runConfigurationDelegate.edit( runConfiguration );
+      }
+      if ( selectionTreeExtension.getSelection() instanceof String ) {
+        runConfigurationDelegate.edit( runConfigurationDelegate.load( (String) selectionTreeExtension.getSelection()
+        ) );
       }
     }
   }
