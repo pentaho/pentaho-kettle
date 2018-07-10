@@ -219,6 +219,11 @@ public abstract class StepWithMappingMeta extends BaseSerializingMeta implements
 
   public static void activateParams( VariableSpace childVariableSpace, NamedParams childNamedParams, VariableSpace parent, String[] listParameters,
                                      String[] mappingVariables, String[] inputFields ) {
+    activateParams(  childVariableSpace,  childNamedParams,  parent, listParameters, mappingVariables,  inputFields, true );
+  }
+
+  public static void activateParams( VariableSpace childVariableSpace, NamedParams childNamedParams, VariableSpace parent, String[] listParameters,
+                                     String[] mappingVariables, String[] inputFields, boolean isPassingAllParameters ) {
     Map<String, String> parameters = new HashMap<>();
     Set<String> subTransParameters = new HashSet<>( Arrays.asList( listParameters ) );
 
@@ -237,7 +242,9 @@ public abstract class StepWithMappingMeta extends BaseSerializingMeta implements
       // parent parameter.
       if ( parameters.containsKey( variableName ) ) {
         parameters.put( variableName, parent.getVariable( variableName ) );
-      } else if ( ArrayUtils.contains( listParameters, variableName ) ) {
+        // added  isPassingAllParameters check since we don't need to overwrite the child value if the
+        // isPassingAllParameters is not checked
+      } else if ( ArrayUtils.contains( listParameters, variableName ) && isPassingAllParameters ) {
         // there is a definition only in Transformation properties - params tab
         parameters.put( variableName, parent.getVariable( variableName ) );
       }
@@ -268,6 +275,7 @@ public abstract class StepWithMappingMeta extends BaseSerializingMeta implements
 
     childNamedParams.activateParameters();
   }
+
 
   /**
    * @return the specificationMethod
