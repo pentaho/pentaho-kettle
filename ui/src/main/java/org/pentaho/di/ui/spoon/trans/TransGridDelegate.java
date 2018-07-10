@@ -393,7 +393,6 @@ public class TransGridDelegate extends SpoonDelegate implements XulEventHandler 
             String tableStepNumber = ti.getText( STEP_NUMBER_COLUMN );
 
             if ( Strings.isNullOrEmpty( tableStepNumber ) ) {
-              log.logError( "Table step number null or empty for row " + rowIndex );
               continue;
             }
 
