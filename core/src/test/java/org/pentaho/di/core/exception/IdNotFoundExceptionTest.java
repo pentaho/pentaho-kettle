@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,14 +22,20 @@
 
 package org.pentaho.di.core.exception;
 
-import junit.framework.TestCase;
+import org.junit.ClassRule;
+import org.junit.Test;
+import org.pentaho.di.junit.rules.RestorePDIEnvironment;
 import org.pentaho.di.repository.RepositoryObjectType;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 /**
  * @author Yury Bakhmutski
  * @since 02-10-2015
  */
-public class IdNotFoundExceptionTest extends TestCase {
+public class IdNotFoundExceptionTest {
+  @ClassRule public static RestorePDIEnvironment env = new RestorePDIEnvironment();
 
   private String message = "messageStub";
   String expectedNullMessage = System.lineSeparator() + "null" + System.lineSeparator();
@@ -39,6 +45,7 @@ public class IdNotFoundExceptionTest extends TestCase {
   private String pathToObject = "/pathToTrans/";
   private RepositoryObjectType objectType = RepositoryObjectType.TRANSFORMATION;
 
+  @Test
   public void testConstructor1() {
     try {
       throw new IdNotFoundException( objectName, pathToObject, objectType );
@@ -51,6 +58,7 @@ public class IdNotFoundExceptionTest extends TestCase {
     }
   }
 
+  @Test
   public void testConstructor2() {
     try {
       throw new IdNotFoundException( message, objectName, pathToObject, objectType );
@@ -63,6 +71,7 @@ public class IdNotFoundExceptionTest extends TestCase {
     }
   }
 
+  @Test
   public void testConstructor3() {
     try {
       throw new IdNotFoundException( cause, objectName, pathToObject, objectType );
@@ -76,6 +85,7 @@ public class IdNotFoundExceptionTest extends TestCase {
     }
   }
 
+  @Test
   public void testConstructor4() {
     try {
       throw new IdNotFoundException( message, cause, objectName, pathToObject, objectType );

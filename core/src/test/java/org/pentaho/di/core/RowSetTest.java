@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,19 +22,26 @@
 
 package org.pentaho.di.core;
 
-import junit.framework.TestCase;
 
+import org.junit.ClassRule;
+import org.junit.Test;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.row.value.ValueMetaInteger;
+import org.pentaho.di.junit.rules.RestorePDIEnvironment;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Test class for the basic functionality of RowSet.
  *
  * @author Sven Boden
  */
-public class RowSetTest extends TestCase {
+public class RowSetTest {
+  @ClassRule public static RestorePDIEnvironment env = new RestorePDIEnvironment();
+
   public RowMetaInterface createRowMetaInterface() {
     RowMetaInterface rm = new RowMeta();
 
@@ -50,6 +57,7 @@ public class RowSetTest extends TestCase {
   /**
    * The basic stuff.
    */
+  @Test
   public void testBasicCreation() {
     RowSet set = new BlockingRowSet( 10 );
 
@@ -62,6 +70,7 @@ public class RowSetTest extends TestCase {
   /**
    * Functionality test.
    */
+  @Test
   public void testFuntionality1() {
     RowSet set = new BlockingRowSet( 3 );
 
@@ -164,6 +173,7 @@ public class RowSetTest extends TestCase {
   /**
    * Names test. Just for completeness.
    */
+  @Test
   public void testNames() {
     RowSet set = new BlockingRowSet( 3 );
 

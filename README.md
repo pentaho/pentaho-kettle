@@ -107,8 +107,24 @@ __IntelliJ__
 1. Submit a pull request, referencing the relevant [Jira case](https://jira.pentaho.com/secure/Dashboard.jspa)
 2. Attach a Git patch file to the relevant [Jira case](https://jira.pentaho.com/secure/Dashboard.jspa)
 
-Use of the Pentaho checkstyle format (via `mvn site` and reviewing the report) and developing working 
+Use of the Pentaho checkstyle format (via `mvn checkstyle:check` and reviewing the report) and developing working 
 Unit Tests helps to ensure that pull requests for bugs and improvements are processed quickly.
+
+When writing unit tests, you have at your disposal a couple of ClassRules that can be used to maintain a healthy
+test environment. Use [RestorePDIEnvironment](core/src/test/java/org/pentaho/di/junit/rules/RestorePDIEnvironment.java)
+and [RestorePDIEngineEnvironment](engine/src/test/java/org/pentaho/di/junit/rules/RestorePDIEngineEnvironment.java)
+for core and engine tests respectively.
+
+pex.:
+```java
+public class MyTest {
+  @ClassRule public static RestorePDIEnvironment env = new RestorePDIEnvironment();
+  #setUp()...
+  @Test public void testSomething() { 
+    assertTrue( myMethod() ); 
+  }
+}
+```  
 
 ### Asking for help
 Please go to https://community.pentaho.com to ask questions and get help.

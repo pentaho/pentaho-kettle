@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -28,29 +28,39 @@ import java.text.ParsePosition;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import org.pentaho.di.core.Const;
+import org.junit.ClassRule;
+import org.junit.Test;
 import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.row.ValueMetaInterface;
 
-import junit.framework.TestCase;
+import org.pentaho.di.junit.rules.RestorePDIEnvironment;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 /**
  * Test class for the basic functionality of Value.
  *
  * @author Sven Boden
  */
-public class ValueTest extends TestCase {
+public class ValueTest {
+  @ClassRule public static RestorePDIEnvironment env = new RestorePDIEnvironment();
+
   /**
    * Constructor test 1.
    */
+  @Test
   public void testConstructor1() {
     Value vs = new Value();
 
     // Set by clearValue()
     assertFalse( vs.isNull() ); // historical probably
     assertTrue( vs.isEmpty() ); // historical probably
-    assertEquals( null, vs.getName() );
-    assertEquals( null, vs.getOrigin() );
+    assertNull( vs.getName() );
+    assertNull( vs.getOrigin() );
     assertEquals( Value.VALUE_TYPE_NONE, vs.getType() );
     assertFalse( vs.isString() );
     assertFalse( vs.isDate() );
@@ -66,13 +76,14 @@ public class ValueTest extends TestCase {
     assertFalse( vs1.isNull() ); // historical probably
     assertTrue( vs1.isEmpty() ); // historical probably
     assertEquals( "Name", vs1.getName() );
-    assertEquals( null, vs1.getOrigin() );
+    assertNull( vs1.getOrigin() );
     assertEquals( Value.VALUE_TYPE_NONE, vs1.getType() );
   }
 
   /**
    * Constructor test 2.
    */
+  @Test
   public void testConstructor2() {
     Value vs = new Value( "Name", Value.VALUE_TYPE_NUMBER );
     assertFalse( vs.isNull() );
@@ -126,6 +137,7 @@ public class ValueTest extends TestCase {
   /**
    * Constructors using Values
    */
+  @Test
   public void testConstructor3() {
     Value vs = new Value( "Name", Value.VALUE_TYPE_NUMBER );
     vs.setValue( 10.0D );
@@ -174,6 +186,7 @@ public class ValueTest extends TestCase {
   /**
    * Constructors using Values
    */
+  @Test
   public void testConstructor4() {
     Value vs = new Value( "Name", new StringBuffer( "buffer" ) );
     assertEquals( Value.VALUE_TYPE_STRING, vs.getType() );
@@ -183,6 +196,7 @@ public class ValueTest extends TestCase {
   /**
    * Constructors using Values
    */
+  @Test
   public void testConstructor5() {
     Value vs = new Value( "Name", 10.0D );
     assertEquals( Value.VALUE_TYPE_NUMBER, vs.getType() );
@@ -198,6 +212,7 @@ public class ValueTest extends TestCase {
   /**
    * Test of string representation of String Value.
    */
+  @Test
   public void testToStringString() {
     String result = null;
 
@@ -250,6 +265,7 @@ public class ValueTest extends TestCase {
   /**
    * Test of string representation of Number Value.
    */
+  @Test
   public void testToStringNumber() {
     Value vs1 = new Value( "Name", Value.VALUE_TYPE_NUMBER );
     DecimalFormatSymbols symbols = DecimalFormatSymbols.getInstance();
@@ -333,6 +349,7 @@ public class ValueTest extends TestCase {
   /**
    * Test of string representation of Integer Value.
    */
+  @Test
   public void testToIntegerNumber() {
     Value vs1 = new Value( "Name", Value.VALUE_TYPE_INTEGER );
     assertEquals( " 0", vs1.toString( true ) );
@@ -415,6 +432,7 @@ public class ValueTest extends TestCase {
   /**
    * Test of boolean representation of Value.
    */
+  @Test
   public void testToStringBoolean() {
     String result = null;
 
@@ -474,6 +492,7 @@ public class ValueTest extends TestCase {
   /**
    * Test of boolean representation of Value.
    */
+  @Test
   public void testToStringDate() {
     String result = null;
 
@@ -507,6 +526,7 @@ public class ValueTest extends TestCase {
     assertEquals( "", result );
   }
 
+  @Test
   public void testToStringMeta() {
     String result = null;
 
@@ -643,6 +663,7 @@ public class ValueTest extends TestCase {
   /**
    * Constructors using Values.
    */
+  @Test
   public void testClone1() {
     Value vs = new Value( "Name", Value.VALUE_TYPE_NUMBER );
     vs.setValue( 10.0D );
@@ -692,6 +713,7 @@ public class ValueTest extends TestCase {
    * Test of getStringLength().
    *
    */
+  @Test
   public void testGetStringLength() {
     int result = 0;
 
@@ -710,6 +732,7 @@ public class ValueTest extends TestCase {
     assertEquals( 12, result );
   }
 
+  @Test
   public void testGetXML() {
     String result = null;
 
@@ -773,6 +796,7 @@ public class ValueTest extends TestCase {
   /**
    * Test of setValue()
    */
+  @Test
   public void testSetValue() {
     Value vs = new Value( "Name", Value.VALUE_TYPE_INTEGER );
     vs.setValue( 100L );
@@ -817,6 +841,7 @@ public class ValueTest extends TestCase {
   /**
    * Test for isNumeric().
    */
+  @Test
   public void testIsNumeric() {
     assertEquals( false, Value.isNumeric( Value.VALUE_TYPE_NONE ) );
     assertEquals( true, Value.isNumeric( Value.VALUE_TYPE_NUMBER ) );
@@ -828,6 +853,7 @@ public class ValueTest extends TestCase {
     assertEquals( false, Value.isNumeric( Value.VALUE_TYPE_SERIALIZABLE ) );
   }
 
+  @Test
   public void testIsEqualTo() {
     Value vs1 = new Value( "Name", Value.VALUE_TYPE_STRING );
     vs1.setValue( "test" );
@@ -870,6 +896,7 @@ public class ValueTest extends TestCase {
   /**
    * Test boolean operators.
    */
+  @Test
   public void testBooleanOperators() {
     Value vs1 = new Value( "Name", Value.VALUE_TYPE_BOOLEAN );
     Value vs2 = new Value( "Name", Value.VALUE_TYPE_BOOLEAN );
@@ -946,6 +973,7 @@ public class ValueTest extends TestCase {
   /**
    * Test boolean operators.
    */
+  @Test
   public void testBooleanOperators1() {
     Value vs1 = new Value( "Name", Value.VALUE_TYPE_INTEGER );
     Value vs2 = new Value( "Name", Value.VALUE_TYPE_INTEGER );
@@ -1014,6 +1042,7 @@ public class ValueTest extends TestCase {
   /**
    * Test comparators.
    */
+  @Test
   public void testComparators() {
     Value vs1 = new Value( "Name", Value.VALUE_TYPE_INTEGER );
     Value vs2 = new Value( "Name", Value.VALUE_TYPE_INTEGER );
@@ -1049,6 +1078,7 @@ public class ValueTest extends TestCase {
   /**
    * Test trim, ltrim, rtrim.
    */
+  @Test
   public void testTrim() {
     Value vs1 = new Value( "Name1", Value.VALUE_TYPE_INTEGER );
     Value vs2 = new Value( "Name2", Value.VALUE_TYPE_STRING );
@@ -1083,6 +1113,7 @@ public class ValueTest extends TestCase {
   /**
    * Test hexToByteDecode.
    */
+  @Test
   public void testHexToByteDecode() throws KettleValueException {
     Value vs1 = new Value( "Name1", Value.VALUE_TYPE_INTEGER );
 
@@ -1114,6 +1145,7 @@ public class ValueTest extends TestCase {
   /**
    * Test hexEncode.
    */
+  @Test
   public void testByteToHexEncode() {
     Value vs1 = new Value( "Name1", Value.VALUE_TYPE_INTEGER );
 
@@ -1133,6 +1165,7 @@ public class ValueTest extends TestCase {
   /**
    * Regression test for bug: hexdecode/encode would not work for some UTF8 strings.
    */
+  @Test
   public void testHexByteRegression() throws KettleValueException {
     Value vs1 = new Value( "Name1", Value.VALUE_TYPE_INTEGER );
 
@@ -1165,6 +1198,7 @@ public class ValueTest extends TestCase {
   /**
    * Test for Hex to Char decoding and vica versa.
    */
+  @Test
   public void testHexCharTest() throws KettleValueException {
     Value vs1 = new Value( "Name1", Value.VALUE_TYPE_INTEGER );
 
@@ -1187,6 +1221,7 @@ public class ValueTest extends TestCase {
   /**
    * Test like.
    */
+  @Test
   public void testLike() {
     Value vs1 = new Value( "Name1", Value.VALUE_TYPE_STRING );
     Value vs2 = new Value( "Name2", Value.VALUE_TYPE_STRING );
@@ -1205,6 +1240,7 @@ public class ValueTest extends TestCase {
   /**
    * Stuff which we didn't get in other checks.
    */
+  @Test
   public void testLooseEnds() {
     assertEquals( Value.VALUE_TYPE_NONE, Value.getType( "INVALID_TYPE" ) );
     assertEquals( "String", Value.getTypeDesc( Value.VALUE_TYPE_STRING ) );
@@ -1213,6 +1249,7 @@ public class ValueTest extends TestCase {
   /**
    * Constructors using Values.
    */
+  @Test
   public void testClone2() {
     Value vs = new Value( "Name", Value.VALUE_TYPE_NUMBER );
     vs.setValue( 10.0D );
@@ -1258,6 +1295,7 @@ public class ValueTest extends TestCase {
     assertNull( vs2.getOrigin() );
   }
 
+  @Test
   public void testValueMetaInterfaceEquality() {
     assertEquals( ValueMetaInterface.TYPE_NONE, Value.VALUE_TYPE_NONE );
     assertEquals( ValueMetaInterface.TYPE_NUMBER, Value.VALUE_TYPE_NUMBER );
