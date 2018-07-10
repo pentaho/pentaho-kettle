@@ -209,7 +209,7 @@ public class PGBulkLoader extends BaseStep implements StepInterface {
 
         // Close the output stream...
         // will be null if no records (empty stream)
-        if ( data != null ) {
+        if ( data != null && pgCopyOut != null ) {
           pgCopyOut.flush();
           pgCopyOut.endCopy();
 
