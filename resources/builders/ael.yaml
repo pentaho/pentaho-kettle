@@ -17,20 +17,12 @@ jobGroups:
 
   200:
 
-     - jobID           :  karaf-ce-assembly
-       scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-karaf-assembly.git
-       scmBranch       :  ${DEFAULT_BRANCH}
-       directives      :  += -pl .,pentaho-karaf-features,pentaho-karaf-assembly
-       testable        :  false
-
-  300:
-
-     - jobID           :  ael-goodies
+     - jobID           :  pdi-daemon
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-ee.git
        scmBranch       :  ${DEFAULT_BRANCH}
        root            :  adaptive-execution
 
-  400:
+  300:
 
      - jobID           :  kettle-ce-assembly
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-kettle.git
