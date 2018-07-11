@@ -286,13 +286,21 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
   }
 
   public Job( Repository repository, JobMeta jobMeta ) {
-    this( repository, jobMeta, null );
+    this( repository, jobMeta, null, null );
   }
 
   public Job( Repository repository, JobMeta jobMeta, LoggingObjectInterface parentLogging ) {
+    this( repository, jobMeta, parentLogging, null );
+  }
+
+  private Job( Repository repository, JobMeta jobMeta, LoggingObjectInterface parentLogging, String containerObjectId ) {
     this.rep = repository;
     this.jobMeta = jobMeta;
     this.parentLoggingObject = parentLogging;
+
+    if ( containerObjectId != null ) {
+      this.containerObjectId = containerObjectId;
+    }
 
     init();
 
@@ -300,7 +308,17 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
 
     this.log = new LogChannel( this, parentLogging );
     this.logLevel = log.getLogLevel();
-    this.containerObjectId = log.getContainerObjectId();
+
+    if ( containerObjectId == null ) {
+      this.containerObjectId = log.getContainerObjectId();
+    }
+  }
+
+  /**
+   * Create a new Job instance with a given container Id, which can be the Carte object Id.
+   */
+  public Job( Repository repository, JobMeta jobMeta, String containerObjectId ) {
+    this( repository, jobMeta, null, containerObjectId );
   }
 
   public Job() {
