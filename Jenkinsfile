@@ -155,6 +155,7 @@ pipeline {
           buildProperties.RUN_CHECKOUTS
         }
       }
+      failFast true
       steps {
           doCheckouts(buildData)
       }
@@ -215,6 +216,18 @@ pipeline {
       failFast true
       steps {
           doTag(buildData)
+      }
+    }
+
+    stage('Archive Artifacts') {
+      when {
+        expression {
+          buildProperties.ARCHIVE_ARTIFACTS && !buildProperties.NOOP
+        }
+      }
+      failFast true
+      steps {
+        doArtifactArchiving(buildData)
       }
     }
 
