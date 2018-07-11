@@ -73,6 +73,7 @@ import java.text.NumberFormat;
 import java.text.ParseException;
 import java.text.ParsePosition;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Comparator;
 import java.util.Date;
@@ -4120,6 +4121,15 @@ public class ValueMetaBase implements ValueMetaInterface {
         case TYPE_BIGNUMBER:
           hash ^= 32;
           break;
+        case TYPE_BINARY:
+          hash ^= 64;
+          break;
+        case TYPE_TIMESTAMP:
+          hash ^= 128;
+          break;
+        case TYPE_INET:
+          hash ^= 256;
+          break;
         case TYPE_NONE:
           break;
         default:
@@ -4144,6 +4154,15 @@ public class ValueMetaBase implements ValueMetaInterface {
           break;
         case TYPE_BIGNUMBER:
           hash ^= getBigNumber( object ).hashCode();
+          break;
+        case TYPE_BINARY:
+          hash ^= Arrays.hashCode( (byte[]) object );
+          break;
+        case TYPE_TIMESTAMP:
+          hash ^= ((Timestamp) object ).hashCode();
+          break;
+        case TYPE_INET:
+          hash ^= ((InetAddress) object ).hashCode();
           break;
         case TYPE_NONE:
           break;
