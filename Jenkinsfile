@@ -97,7 +97,7 @@ pipeline {
   options {
     timestamps()
     disableConcurrentBuilds()
-    buildDiscarder(logRotator(numToKeepStr: '180', daysToKeepStr: '90', artifactDaysToKeepStr: '7', artifactNumToKeepStr: '14'))
+    buildDiscarder(logRotator(numToKeepStr: '45', artifactNumToKeepStr: '3'))
   }
 
   environment {
