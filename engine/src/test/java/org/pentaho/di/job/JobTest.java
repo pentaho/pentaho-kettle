@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -32,10 +32,14 @@ import org.pentaho.di.core.logging.JobLogTable;
 import org.pentaho.di.core.logging.LogStatus;
 import org.pentaho.di.core.logging.LogTableField;
 import org.pentaho.di.core.variables.VariableSpace;
+import org.pentaho.di.repository.Repository;
 import org.pentaho.di.trans.HasDatabasesInterface;
 
 import java.util.ArrayList;
+import java.util.UUID;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.doCallRealMethod;
 import static org.mockito.Mockito.mock;
@@ -97,4 +101,46 @@ public class JobTest {
     table.setFields( new ArrayList<LogTableField>() );
   }
 
+  @Test
+  public void testNewJobWithContainerObjectId() {
+    Repository repository = mock( Repository.class );
+    JobMeta meta = mock( JobMeta.class );
+
+    String carteId = UUID.randomUUID().toString();
+    Job job = new Job( repository, meta, carteId );
+
+    assertEquals( carteId, job.getContainerObjectId() );
+  }
+
+  /**
+   * This test demonstrates the issue fixed in PDI-17398.
+   * When a job is scheduled twice, it gets the same log channel Id and both logs get merged
+   */
+  @Test
+  public void testTwoJobsGetSameLogChannelId() {
+    Repository repository = mock( Repository.class );
+    JobMeta meta = mock( JobMeta.class );
+
+    Job job1 = new Job( repository, meta );
+    Job job2 = new Job( repository, meta );
+
+    assertEquals( job1.getLogChannelId(), job2.getLogChannelId() );
+  }
+
+  /**
+   * This test demonstrates the fix for PDI-17398.
+   * Two schedules -> two Carte object Ids -> two log channel Ids
+   */
+  @Test
+  public void testTwoJobsGetDifferentLogChannelIdWithDifferentCarteId() {
+    Repository repository = mock( Repository.class );
+    JobMeta meta = mock( JobMeta.class );
+
+    // third parameter is the Carte object Id
+    Job job1 = new Job( repository, meta, UUID.randomUUID().toString() );
+    Job job2 = new Job( repository, meta, UUID.randomUUID().toString() );
+
+    assertNotEquals( job1.getContainerObjectId(), job2.getContainerObjectId() );
+    assertNotEquals( job1.getLogChannelId(), job2.getLogChannelId() );
+  }
 }
