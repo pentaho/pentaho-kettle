@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,15 +22,20 @@
 
 package org.pentaho.di.core;
 
-import junit.framework.TestCase;
+import org.junit.ClassRule;
 import org.junit.Test;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaAndData;
 import org.pentaho.di.core.row.value.ValueMetaInteger;
 import org.pentaho.di.core.row.value.ValueMetaNumber;
+import org.pentaho.di.junit.rules.RestorePDIEnvironment;
 
-public class ConditionTest extends TestCase {
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
+public class ConditionTest {
+  @ClassRule public static RestorePDIEnvironment env = new RestorePDIEnvironment();
 
   @Test
   public void testNegatedTrueFuncEvaluatesAsFalse() throws Exception {

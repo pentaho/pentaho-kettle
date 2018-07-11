@@ -30,12 +30,9 @@ import java.util.UUID;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
-import sun.misc.resources.Messages;
 
-@RunWith(PowerMockRunner.class)
-@PrepareForTest({ Messages.class })
+@RunWith( PowerMockRunner.class )
 public class GlobalMessagesTest {
   /*
    * https://github.com/pentaho/pentaho-kettle/pull/620

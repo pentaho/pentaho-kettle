@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -30,6 +30,8 @@ import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import org.junit.ClassRule;
+import org.junit.Test;
 import org.pentaho.di.core.exception.KettleEOFException;
 import org.pentaho.di.core.exception.KettleFileException;
 import org.pentaho.di.core.row.value.ValueMetaBigNumber;
@@ -40,9 +42,15 @@ import org.pentaho.di.core.row.value.ValueMetaNumber;
 import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.core.row.value.ValueMetaTimestamp;
 
-import junit.framework.TestCase;
+import org.pentaho.di.junit.rules.RestorePDIEnvironment;
 
-public class RowTest extends TestCase {
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
+public class RowTest {
+  @ClassRule public static RestorePDIEnvironment env = new RestorePDIEnvironment();
+
+  @Test
   public void testNormalStringConversion() throws Exception {
     SimpleDateFormat fmt = new SimpleDateFormat( "yyyy/MM/dd HH:mm:ss.SSS" );
     Object[] rowData1 =
@@ -71,6 +79,7 @@ public class RowTest extends TestCase {
     assertEquals( "false", rowMeta2.getString( rowData2, 5 ) );
   }
 
+  @Test
   public void testIndexedStringConversion() throws Exception {
     String[] colors = new String[] { "Green", "Red", "Blue", "Yellow", null, };
 
@@ -104,6 +113,7 @@ public class RowTest extends TestCase {
     assertEquals( "2007/05/07 13:04:13.203", rowMeta.getString( rowData5, 1 ) );
   }
 
+  @Test
   public void testExtractDataWithTimestampConversion() throws Exception {
     RowMetaInterface rowMeta = createTestRowMetaNormalTimestampConversion();
     Timestamp constTimestamp = Timestamp.valueOf( "2012-04-05 04:03:02.123456" );

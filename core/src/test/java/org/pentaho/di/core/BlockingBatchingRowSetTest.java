@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -25,19 +25,28 @@ package org.pentaho.di.core;
 import java.util.ArrayList;
 import java.util.List;
 
-import junit.framework.TestCase;
-
+import org.junit.ClassRule;
+import org.junit.Test;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.row.value.ValueMetaInteger;
+import org.pentaho.di.junit.rules.RestorePDIEnvironment;
+
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Test class for the basic functionality of the blocking & batching row set.
  *
  * @author Matt Casters
  */
-public class BlockingBatchingRowSetTest extends TestCase {
+public class BlockingBatchingRowSetTest {
+  @ClassRule public static RestorePDIEnvironment env = new RestorePDIEnvironment();
+
   public RowMetaInterface createRowMetaInterface() {
     RowMetaInterface rm = new RowMeta();
 
@@ -53,6 +62,7 @@ public class BlockingBatchingRowSetTest extends TestCase {
   /**
    * The basic stuff.
    */
+  @Test
   public void testBasicCreation() {
     RowSet set = new BlockingBatchingRowSet( 10 );
 
@@ -63,6 +73,7 @@ public class BlockingBatchingRowSetTest extends TestCase {
   /**
    * Functionality test.
    */
+  @Test
   public void testFuntionality1() {
     BlockingBatchingRowSet set = new BlockingBatchingRowSet( 10 );
 
@@ -100,18 +111,18 @@ public class BlockingBatchingRowSetTest extends TestCase {
     //
     r = set.getRow();
     assertNotNull( r );
-    assertEquals( rows.get( 0 ), r );
+    assertArrayEquals( rows.get( 0 ), r );
 
     // Get a row back...
     //
     r = set.getRow();
     assertNotNull( r );
-    assertEquals( rows.get( 1 ), r );
+    assertArrayEquals( rows.get( 1 ), r );
 
     // Get a row back...
     //
     r = set.getRow();
     assertNotNull( r );
-    assertEquals( rows.get( 2 ), r );
+    assertArrayEquals( rows.get( 2 ), r );
   }
 }
