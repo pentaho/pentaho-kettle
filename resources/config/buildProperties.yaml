@@ -89,3 +89,9 @@ JOB_ITEM_DEFAULTS:
 
 # Build failover settings
 IGNORE_PIPELINE_FAILURE: false
+
+# Slack Integration
+SLACK_INTEGRATION: false
+SLACK_CHANNEL: 'slack-channel-name'
+SLACK_TEAM_DOMAIN: 'hitachivantara-eng'
+SLACK_CREDENTIALS_ID: 'slack-token'
