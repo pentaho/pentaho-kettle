@@ -155,7 +155,6 @@ pipeline {
           buildProperties.RUN_CHECKOUTS
         }
       }
-      failFast true
       steps {
           doCheckouts(buildData)
       }
@@ -173,7 +172,6 @@ pipeline {
           buildProperties.RUN_BUILDS
         }
       }
-      failFast true
       steps {
         timeout(time: buildData.buildTimeout, unit: 'MINUTES') {
           doBuilds(buildData)
@@ -187,7 +185,6 @@ pipeline {
           buildProperties.RUN_UNIT_TESTS
         }
       }
-      failFast true
       steps {
         timeout(time: buildData.buildTimeout, unit: 'MINUTES') {
           doUnitTests(buildData)
@@ -201,7 +198,6 @@ pipeline {
           buildProperties.PUSH_CHANGES && !buildProperties.NOOP
         }
       }
-      failFast true
       steps {
           doPushChanges(buildData)
       }
@@ -213,7 +209,6 @@ pipeline {
           !buildProperties.PUSH_CHANGES && !buildProperties.NOOP && buildProperties.TAG_NAME_TYPE != 'NONE'
         }
       }
-      failFast true
       steps {
           doTag(buildData)
       }
@@ -225,7 +220,6 @@ pipeline {
           buildProperties.ARCHIVE_ARTIFACTS && !buildProperties.NOOP
         }
       }
-      failFast true
       steps {
         doArtifactArchiving(buildData)
       }
