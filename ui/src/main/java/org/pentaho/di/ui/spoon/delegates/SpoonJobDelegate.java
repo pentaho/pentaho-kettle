@@ -110,7 +110,7 @@ public class SpoonJobDelegate extends SpoonDelegate {
       jobPlugin = PluginRegistry.getInstance().findPluginWithName( JobEntryPluginType.class, type_desc );
       if ( jobPlugin == null ) {
         // Check if it's not START or DUMMY
-        if ( JobMeta.STRING_SPECIAL_START.equals( type_desc ) || JobMeta.STRING_SPECIAL_DUMMY.equals( type_desc ) ) {
+        if ( JobMeta.STRING_SPECIAL_START.equalsIgnoreCase( type_desc ) || JobMeta.STRING_SPECIAL_DUMMY.equalsIgnoreCase( type_desc ) ) {
           jobPlugin = registry.findPluginWithId( JobEntryPluginType.class, JobMeta.STRING_SPECIAL );
         }
       }
@@ -134,18 +134,16 @@ public class SpoonJobDelegate extends SpoonDelegate {
         jei.setName( entry_name );
 
         if ( jei.isSpecial() ) {
-          if ( JobMeta.STRING_SPECIAL_START.equals( type_desc ) ) {
+          if ( JobMeta.STRING_SPECIAL_START.equalsIgnoreCase( type_desc ) ) {
             // Check if start is already on the canvas...
             if ( jobMeta.findStart() != null ) {
               JobGraph.showOnlyStartOnceMessage( spoon.getShell() );
               return null;
             }
             ( (JobEntrySpecial) jei ).setStart( true );
-            jei.setName( JobMeta.STRING_SPECIAL_START );
           }
-          if ( JobMeta.STRING_SPECIAL_DUMMY.equals( type_desc ) ) {
+          if ( JobMeta.STRING_SPECIAL_DUMMY.equalsIgnoreCase( type_desc ) ) {
             ( (JobEntrySpecial) jei ).setDummy( true );
-            // jei.setName(JobMeta.STRING_SPECIAL_DUMMY); // Don't overwrite the name
           }
         }
 
