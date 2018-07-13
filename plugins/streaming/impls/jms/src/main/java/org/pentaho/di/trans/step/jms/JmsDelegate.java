@@ -73,6 +73,26 @@ public class JmsDelegate {
 
   @Injection ( name = "DESTINATION_FIELD_NAME" ) public String destinationField = "destination";
 
+  @Injection ( name = "SSL_ENABLED" ) public boolean sslEnabled = false;
+
+  @Injection ( name = "SSL_KEYSTORE_PATH" ) public String sslKeystorePath = "";
+
+  @Injection ( name = "SSL_KEYSTORE_TYPE" ) public String sslKeystoreType = "";
+
+  @Injection ( name = "SSL_KEYSTORE_PASSWORD" ) public String sslKeystorePassword = "";
+
+  @Injection ( name = "SSL_TRUSTSTORE_PATH" ) public String sslTruststorePath = "";
+
+  @Injection ( name = "SSL_TRUSTSTORE_TYPE" ) public String sslTruststoreType = "";
+
+  @Injection ( name = "SSL_TRUSTSTORE_PASSWORD" ) public String sslTruststorePassword = "";
+
+  @Injection ( name = "SSL_CONTEXT_ALGORITHM" ) public String sslContextAlgorithm = "";
+
+  @Injection ( name = "IBM_SSL_CIPHERSUITE" ) public String ibmSslCipherSuite = "";
+
+  @Injection ( name = "IBM_SSL_FIPSREQUIRED" ) public String ibmSslFipsRequired = "";
+
   private final List<JmsProvider> jmsProviders;
 
   public JmsDelegate( List<JmsProvider> jmsProviders ) {

@@ -85,7 +85,7 @@ import static org.pentaho.di.ui.trans.step.BaseStreamingDialog.INPUT_WIDTH;
 
 public class JmsProducerDialog extends BaseStepDialog implements StepDialogInterface {
   private static final int SHELL_MIN_WIDTH = 528;
-  private static final int SHELL_MIN_HEIGHT = 601;
+  private static final int SHELL_MIN_HEIGHT = 670;
 
   private ModifyListener lsMod;
   private final JmsDelegate jmsDelegate;
@@ -100,6 +100,8 @@ public class JmsProducerDialog extends BaseStepDialog implements StepDialogInter
   private ComboVar wMessageField;
   private TableView propertiesTable;
   private TableView optionsTable;
+
+  private JmsDialogSecurityLayout jmsDialogSecurityLayout;
 
   private List<StepOption> options;
 
@@ -215,7 +217,11 @@ public class JmsProducerDialog extends BaseStepDialog implements StepDialogInter
     setupLayout.marginWidth = 15;
     wSetupComp.setLayout( setupLayout );
 
-    connectionForm = new ConnectionForm( wSetupComp, props, transMeta, lsMod, jmsDelegate );
+    jmsDialogSecurityLayout = new JmsDialogSecurityLayout(
+      props, wTabFolder, lsMod, transMeta, jmsDelegate.sslEnabled, jmsDelegate );
+    jmsDialogSecurityLayout.buildSecurityTab();
+
+    connectionForm = new ConnectionForm( wSetupComp, props, transMeta, lsMod, jmsDelegate, jmsDialogSecurityLayout );
     Group group = connectionForm.layoutForm();
     destinationForm = new DestinationForm(
       wSetupComp, group, props, transMeta, lsMod, jmsDelegate.destinationType, jmsDelegate.destinationName );
@@ -492,6 +498,7 @@ public class JmsProducerDialog extends BaseStepDialog implements StepDialogInter
     meta.setFieldToSend( wMessageField.getText() );
     meta.setPropertyValuesByName( getMapFromTableView( propertiesTable ) );
 
+    jmsDialogSecurityLayout.saveTableValues();
     saveOptions();
 
     dispose();
