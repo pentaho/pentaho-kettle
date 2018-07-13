@@ -38,7 +38,6 @@ import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.jms.JmsDelegate;
 import org.pentaho.di.trans.step.jms.context.JmsProvider;
 import org.pentaho.di.ui.core.PropsUI;
-import org.pentaho.di.ui.core.widget.PasswordTextVar;
 import org.pentaho.di.ui.core.widget.TextVar;
 
 import java.util.HashMap;
@@ -54,6 +53,7 @@ public class ConnectionForm {
   private final Composite parentComponent;
   private final JmsDelegate jmsDelegate;
   private final JmsProvider.ConnectionType currentConnType;
+  private final JmsDialogSecurityLayout jmsDialogSecurityLayout;
 
   private PropsUI props;
   private TransMeta transMeta;
@@ -63,21 +63,13 @@ public class ConnectionForm {
   private Group wConnectionGroup;
 
   private Label wlIbmUrl;
-  private Label wlIbmUser;
-  private Label wlIbmPassword;
   private TextVar wIbmUrl;
-  private TextVar wIbmUser;
-  private TextVar wIbmPassword;
 
   private Label wlActiveUrl;
-  private Label wlActiveUser;
-  private Label wlActivePassword;
   private TextVar wActiveUrl;
-  private TextVar wActiveUser;
-  private TextVar wActivePassword;
 
   ConnectionForm( Composite parentComponent, PropsUI props, TransMeta transMeta,
-                  ModifyListener lsMod, JmsDelegate jmsDelegate ) {
+                  ModifyListener lsMod, JmsDelegate jmsDelegate, JmsDialogSecurityLayout jmsDialogSecurityLayout ) {
     checkNotNull( parentComponent );
     checkNotNull( props );
     checkNotNull( transMeta );
@@ -89,6 +81,7 @@ public class ConnectionForm {
     this.lsMod = lsMod;
     this.jmsDelegate = jmsDelegate;
     this.currentConnType = JmsProvider.ConnectionType.valueOf( jmsDelegate.connectionType );
+    this.jmsDialogSecurityLayout = jmsDialogSecurityLayout;
   }
 
 
@@ -124,17 +117,11 @@ public class ConnectionForm {
 
   private void setStartingsVals() {
     wIbmUrl.setText( jmsDelegate.ibmUrl );
-    wIbmUser.setText( jmsDelegate.ibmUsername );
-    wIbmPassword.setText( jmsDelegate.ibmPassword );
-
     wActiveUrl.setText( jmsDelegate.amqUrl );
-    wActiveUser.setText( jmsDelegate.amqUsername );
-    wActivePassword.setText( jmsDelegate.amqPassword );
 
     JmsProvider.ConnectionType connectionType = JmsProvider.ConnectionType.valueOf( jmsDelegate.connectionType );
     typesToButtons.get( connectionType )
       .setSelection( true );
-    toggleVisibility( connectionType );
   }
 
   private void displayConnTypes( Group wConnectionGroup ) {
@@ -161,7 +148,7 @@ public class ConnectionForm {
       connectionButton.addSelectionListener( new SelectionListener() {
         @Override public void widgetSelected( final SelectionEvent selectionEvent ) {
           lsMod.modifyText( null );
-          toggleVisibility( type );
+          jmsDialogSecurityLayout.toggleVisibility( type );
         }
 
         @Override public void widgetDefaultSelected( final SelectionEvent selectionEvent ) {
@@ -203,40 +190,6 @@ public class ConnectionForm {
     fdUrl.top = new FormAttachment( wlIbmUrl, 5 );
     fdUrl.right = new FormAttachment( 100, 0 );
     wIbmUrl.setLayoutData( fdUrl );
-
-    wlIbmUser = new Label( wConnectionGroup, SWT.LEFT );
-    props.setLook( wlIbmUser );
-    wlIbmUser.setText( getString( PKG, "JmsDialog.JmsUser" ) );
-    FormData fdlUser = new FormData();
-    fdlUser.left = new FormAttachment( leftOf, 15 );
-    fdlUser.top = new FormAttachment( wIbmUrl, 10 );
-    wlIbmUser.setLayoutData( fdlUser );
-
-    wIbmUser = new TextVar( transMeta, wConnectionGroup, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
-    props.setLook( wIbmUser );
-    wIbmUser.addModifyListener( lsMod );
-    FormData fdUser = new FormData();
-    fdUser.left = new FormAttachment( leftOf, 15 );
-    fdUser.top = new FormAttachment( wlIbmUser, 5 );
-    fdUser.right = new FormAttachment( 100, 0 );
-    wIbmUser.setLayoutData( fdUser );
-
-    wlIbmPassword = new Label( wConnectionGroup, SWT.LEFT );
-    props.setLook( wlIbmPassword );
-    wlIbmPassword.setText( getString( PKG, "JmsDialog.JmsPassword" ) );
-    FormData fdlPassword = new FormData();
-    fdlPassword.left = new FormAttachment( leftOf, 15 );
-    fdlPassword.top = new FormAttachment( wIbmUser, 10 );
-    wlIbmPassword.setLayoutData( fdlPassword );
-
-    wIbmPassword = new PasswordTextVar( transMeta, wConnectionGroup, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
-    props.setLook( wIbmPassword );
-    wIbmPassword.addModifyListener( lsMod );
-    FormData fdPassword = new FormData();
-    fdPassword.left = new FormAttachment( leftOf, 15 );
-    fdPassword.top = new FormAttachment( wlIbmPassword, 5 );
-    fdPassword.right = new FormAttachment( 100, 0 );
-    wIbmPassword.setLayoutData( fdPassword );
   }
 
   private void layoutActiveMqConnectionFields( Control leftOf ) {
@@ -257,40 +210,6 @@ public class ConnectionForm {
     fdJmsUrl.top = new FormAttachment( wlActiveUrl, 5 );
     fdJmsUrl.right = new FormAttachment( 100, 0 );
     wActiveUrl.setLayoutData( fdJmsUrl );
-
-    wlActiveUser = new Label( wConnectionGroup, SWT.LEFT );
-    props.setLook( wlActiveUser );
-    wlActiveUser.setText( getString( PKG, "JmsDialog.JmsUser" ) );
-    FormData fdlUser = new FormData();
-    fdlUser.left = new FormAttachment( leftOf, 15 );
-    fdlUser.top = new FormAttachment( wActiveUrl, 10 );
-    wlActiveUser.setLayoutData( fdlUser );
-
-    wActiveUser = new TextVar( transMeta, wConnectionGroup, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
-    props.setLook( wActiveUser );
-    wActiveUser.addModifyListener( lsMod );
-    FormData fdUser = new FormData();
-    fdUser.left = new FormAttachment( leftOf, 15 );
-    fdUser.top = new FormAttachment( wlActiveUser, 5 );
-    fdUser.right = new FormAttachment( 100, 0 );
-    wActiveUser.setLayoutData( fdUser );
-
-    wlActivePassword = new Label( wConnectionGroup, SWT.LEFT );
-    props.setLook( wlActivePassword );
-    wlActivePassword.setText( getString( PKG, "JmsDialog.JmsPassword" ) );
-    FormData fdlPassword = new FormData();
-    fdlPassword.left = new FormAttachment( leftOf, 15 );
-    fdlPassword.top = new FormAttachment( wActiveUser, 10 );
-    wlActivePassword.setLayoutData( fdlPassword );
-
-    wActivePassword = new PasswordTextVar( transMeta, wConnectionGroup, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
-    props.setLook( wActivePassword );
-    wActivePassword.addModifyListener( lsMod );
-    FormData fdPassword = new FormData();
-    fdPassword.left = new FormAttachment( leftOf, 15 );
-    fdPassword.top = new FormAttachment( wlActivePassword, 5 );
-    fdPassword.right = new FormAttachment( 100, 0 );
-    wActivePassword.setLayoutData( fdPassword );
   }
 
   public String getIbmUrl() {
@@ -298,11 +217,11 @@ public class ConnectionForm {
   }
 
   public String getIbmUser() {
-    return wIbmUser.getText();
+    return jmsDialogSecurityLayout.getIbmUser();
   }
 
   public String getIbmPassword() {
-    return wIbmPassword.getText();
+    return jmsDialogSecurityLayout.getIbmPassword();
   }
 
   public String getActiveUrl() {
@@ -310,11 +229,11 @@ public class ConnectionForm {
   }
 
   public String getActiveUser() {
-    return wActiveUser.getText();
+    return jmsDialogSecurityLayout.getActiveUser();
   }
 
   public String getActivePassword() {
-    return wActivePassword.getText();
+    return jmsDialogSecurityLayout.getActivePassword();
   }
 
   public String getConnectionType() {
@@ -328,31 +247,11 @@ public class ConnectionForm {
   private void toggleVisibility( JmsProvider.ConnectionType type ) {
     switch ( type ) {
       case WEBSPHERE:
-        setActiveMqVisibility( false );
-        setIbmMqVisibility( true );
+        jmsDialogSecurityLayout.toggleVisibility( type );
         break;
       case ACTIVEMQ:
-        setIbmMqVisibility( false );
-        setActiveMqVisibility( true );
+        jmsDialogSecurityLayout.toggleVisibility( type );
         break;
     }
-  }
-
-  private void setIbmMqVisibility( boolean isVisible ) {
-    wlIbmUrl.setVisible( isVisible );
-    wlIbmUser.setVisible( isVisible );
-    wlIbmPassword.setVisible( isVisible );
-    wIbmUrl.setVisible( isVisible );
-    wIbmUser.setVisible( isVisible );
-    wIbmPassword.setVisible( isVisible );
-  }
-
-  private void setActiveMqVisibility( boolean isVisible ) {
-    wlActiveUrl.setVisible( isVisible );
-    wlActiveUser.setVisible( isVisible );
-    wlActivePassword.setVisible( isVisible );
-    wActiveUrl.setVisible( isVisible );
-    wActiveUser.setVisible( isVisible );
-    wActivePassword.setVisible( isVisible );
   }
 }
