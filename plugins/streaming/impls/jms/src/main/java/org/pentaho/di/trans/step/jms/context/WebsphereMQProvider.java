@@ -23,6 +23,7 @@
 package org.pentaho.di.trans.step.jms.context;
 
 
+import com.google.common.base.Strings;
 import com.ibm.mq.jms.MQConnectionFactory;
 import com.ibm.mq.jms.MQQueue;
 import com.ibm.mq.jms.MQQueueConnectionFactory;
@@ -36,6 +37,15 @@ import org.pentaho.di.trans.step.jms.JmsDelegate;
 import javax.jms.Destination;
 import javax.jms.JMSContext;
 import javax.jms.JMSException;
+import javax.net.ssl.KeyManagerFactory;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLSocketFactory;
+import javax.net.ssl.TrustManagerFactory;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.security.GeneralSecurityException;
+import java.security.KeyStore;
+import java.security.SecureRandom;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -58,6 +68,44 @@ public class WebsphereMQProvider implements JmsProvider {
       ? new MQQueueConnectionFactory() : new MQTopicConnectionFactory();
 
     connFactory.setHostName( resolver.host );
+
+    if ( meta.sslEnabled ) {
+      // try to configure SSL settings
+      try {
+        KeyStore trustStore = KeyStore.getInstance( meta.sslTruststoreType );
+        trustStore.load( new FileInputStream( meta.sslTruststorePath ), null );
+
+        TrustManagerFactory trustManagerFactory =
+          TrustManagerFactory.getInstance( TrustManagerFactory.getDefaultAlgorithm() );
+
+        trustManagerFactory.init( trustStore );
+
+        KeyManagerFactory keyManagerFactory = null;
+        // the keystore is optional; use if client authentication is desired
+        if ( !Strings.isNullOrEmpty( meta.sslKeystorePath ) ) {
+          KeyStore keyStore = KeyStore.getInstance( meta.sslKeystoreType );
+          keyStore.load( new FileInputStream( meta.sslKeystorePath ), meta.sslKeystorePassword.toCharArray() );
+
+          keyManagerFactory = KeyManagerFactory.getInstance( KeyManagerFactory.getDefaultAlgorithm() );
+          keyManagerFactory.init( keyStore, meta.sslKeystorePassword.toCharArray() );
+        }
+
+        SSLContext sslContext = SSLContext.getInstance( meta.sslContextAlgorithm );
+        sslContext.init( ( null == keyManagerFactory ? null : keyManagerFactory.getKeyManagers() ),
+          trustManagerFactory.getTrustManagers(), new SecureRandom() );
+
+        SSLSocketFactory sslSocketFactory = sslContext.getSocketFactory();
+
+        connFactory.setSSLFipsRequired( meta.ibmSslFipsRequired.toLowerCase().startsWith( "t" )
+          || meta.ibmSslFipsRequired.toLowerCase().startsWith( "y" ) );
+        connFactory.setSSLSocketFactory( sslSocketFactory );
+        connFactory.setSSLCipherSuite( meta.ibmSslCipherSuite );
+
+      } catch ( GeneralSecurityException | IOException e ) {
+        throw new RuntimeException( e );
+      }
+    }
+
     try {
       connFactory.setPort( resolver.port );
       connFactory.setQueueManager( resolver.queueManager );
