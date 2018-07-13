@@ -238,14 +238,14 @@ public class SpoonTreeDelegate extends SpoonDelegate {
               // Retry for Start
               //
               if ( plugin == null ) {
-                if ( path[1].equals( JobMeta.STRING_SPECIAL_START ) ) {
+                if ( path[1].equalsIgnoreCase( JobMeta.STRING_SPECIAL_START ) ) {
                   plugin = registry.findPluginWithId( pluginType, JobMeta.STRING_SPECIAL );
                 }
               }
               // Retry for Dummy
               //
               if ( plugin == null ) {
-                if ( path[1].equals( JobMeta.STRING_SPECIAL_DUMMY ) ) {
+                if ( path[1].equalsIgnoreCase( JobMeta.STRING_SPECIAL_DUMMY ) ) {
                   plugin = registry.findPluginWithId( pluginType, JobMeta.STRING_SPECIAL );
                 }
               }

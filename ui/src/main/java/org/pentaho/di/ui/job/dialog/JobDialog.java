@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -50,7 +50,6 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.DBCache;
 import org.pentaho.di.core.Props;
 import org.pentaho.di.core.database.Database;
@@ -69,6 +68,7 @@ import org.pentaho.di.core.plugins.JobEntryPluginType;
 import org.pentaho.di.core.plugins.PluginInterface;
 import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.row.RowMetaInterface;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entry.JobEntryInterface;
@@ -103,6 +103,7 @@ import java.util.ArrayList;
  */
 public class JobDialog extends Dialog {
   private static Class<?> PKG = JobDialog.class; // for i18n purposes, needed by Translator2!!
+  private static Class<?> PKGBASE = JobMeta.class;
 
   private CTabFolder wTabFolder;
 
@@ -1639,6 +1640,11 @@ public class JobDialog extends Dialog {
     try {
       final PluginInterface plugin = getPlugin( jobEntryInterface );
 
+      if ( plugin.getCategory().equals( BaseMessages.getString( PKGBASE, "JobCategory.Category.Deprecated" ) ) ) {
+
+        addDeprecation( shell );
+      }
+
       helpButton = HelpUtils.createHelpButton( shell, HelpUtils.getHelpDialogTitle( plugin ), plugin );
 
       shell.setImage( getImage( shell, plugin ) );
@@ -1647,6 +1653,28 @@ public class JobDialog extends Dialog {
       // Ignore unexpected errors, not worth it
     }
     return helpButton;
+  }
+
+  private static void addDeprecation( Shell shell ) {
+
+    if ( shell == null ) {
+
+      return;
+    }
+    shell.addShellListener( new ShellAdapter() {
+
+      private boolean deprecation = false;
+
+      @Override public void shellActivated( ShellEvent shellEvent ) {
+        super.shellActivated( shellEvent );
+        if ( deprecation ) {
+          return;
+        }
+        String deprecated = BaseMessages.getString( PKGBASE, "JobCategory.Category.Deprecated" ).toLowerCase();
+        shell.setText( shell.getText() + " (" + deprecated + ")" );
+        deprecation = true;
+      }
+    } );
   }
 
   public static PluginInterface getPlugin( JobEntryInterface jobEntryInterface ) {
