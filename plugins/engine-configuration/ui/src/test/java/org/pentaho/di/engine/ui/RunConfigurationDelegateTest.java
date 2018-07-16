@@ -108,7 +108,7 @@ public class RunConfigurationDelegateTest {
     delegate.create();
 
     verify( service, times( 1 ) ).save( config );
-    verify( spoon, times( 1 ) ).refreshTree();
+    verify( spoon, times( 1 ) ).refreshTree( RunConfigurationFolderProvider.STRING_RUN_CONFIGURATIONS );
   }
 
   @Test
@@ -125,7 +125,7 @@ public class RunConfigurationDelegateTest {
     delegate.delete( config );
 
     verify( service, times( 1 ) ).delete( "Test" );
-    verify( spoon, times( 1 ) ).refreshTree();
+    verify( spoon, times( 1 ) ).refreshTree( RunConfigurationFolderProvider.STRING_RUN_CONFIGURATIONS );
   }
 
   @Test
@@ -145,7 +145,7 @@ public class RunConfigurationDelegateTest {
     verify( delegate, times( 1 ) ).updateLoadedJobs( "Test", config );
     verify( service, times( 1 ) ).delete( "Test" );
     verify( service, times( 1 ) ).save( config );
-    verify( spoon, times( 1 ) ).refreshTree();
+    verify( spoon, times( 1 ) ).refreshTree( RunConfigurationFolderProvider.STRING_RUN_CONFIGURATIONS );
   }
 
   @Test
