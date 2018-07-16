@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,74 +22,68 @@
 
 package org.pentaho.di.ui.spoon;
 
-import org.eclipse.swt.graphics.Image;
-import org.eclipse.swt.widgets.TreeItem;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.pentaho.di.trans.TransHopMeta;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.ui.core.gui.GUIResource;
+import org.pentaho.di.ui.core.widget.tree.TreeNode;
+import org.pentaho.di.ui.spoon.tree.provider.HopsFolderProvider;
 
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.*;
-import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.when;
 
 /**
  * @author Andrey Khayrutdinov
  */
 public class SpoonRefreshHopsSubtreeTest {
 
-  private Spoon spoon;
+  private HopsFolderProvider hopsFolderProvider;
+  private TreeNode treeNode;
 
   @Before
   public void setUp() throws Exception {
-    spoon = mock( Spoon.class );
-
-    TreeItem mockItem = mock( TreeItem.class );
-    when( spoon.createTreeItem( any( TreeItem.class ), anyString(), any( Image.class ) ) ).thenReturn( mockItem );
-
-    doCallRealMethod().when( spoon )
-      .refreshHopsSubtree( any( TreeItem.class ), any( TransMeta.class ), any( GUIResource.class ) );
+    GUIResource guiResource = mock( GUIResource.class );
+    hopsFolderProvider = new HopsFolderProvider( guiResource );
+    treeNode = new TreeNode();
   }
 
-
-  private void callRefreshWith( TransMeta meta ) {
-    spoon.refreshHopsSubtree( mock( TreeItem.class ), meta, mock( GUIResource.class ) );
+  private void callRefreshWith( TransMeta meta, String filter ) {
+    hopsFolderProvider.refresh( meta, treeNode, filter );
   }
 
   private void verifyNumberOfNodesCreated( int times ) {
-    verify( spoon, times( times ) ).createTreeItem( any( TreeItem.class ), anyString(), any( Image.class ) );
+    Assert.assertEquals( times, treeNode.getChildren().size() );
   }
-
 
   @Test
   public void noHopsExist() {
     TransMeta meta = mock( TransMeta.class );
     when( meta.nrTransHops() ).thenReturn( 0 );
 
-    callRefreshWith( meta );
-    verifyNumberOfNodesCreated( 1 );
+    callRefreshWith( meta, null );
+    verifyNumberOfNodesCreated( 0 );
   }
 
   @Test
   public void severalHopsExist() {
-    when( spoon.filterMatch( anyString() ) ).thenReturn( true );
     TransMeta meta = prepareMetaWithThreeHops();
 
-    callRefreshWith( meta );
-    verifyNumberOfNodesCreated( 4 );
+    callRefreshWith( meta, null );
+    verifyNumberOfNodesCreated( 3 );
   }
 
   @Test
   public void onlyOneMatchesFiltering() {
-    when( spoon.filterMatch( eq( "2" ) ) ).thenReturn( true );
     TransMeta meta = prepareMetaWithThreeHops();
 
-    callRefreshWith( meta );
-    verifyNumberOfNodesCreated( 2 );
+    callRefreshWith( meta, "2" );
+    verifyNumberOfNodesCreated( 1 );
   }
-
 
   private static TransMeta prepareMetaWithThreeHops() {
     TransMeta meta = mock( TransMeta.class );
