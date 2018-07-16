@@ -92,6 +92,7 @@ public class TopicSelection extends Composite {
     fdTopicGroup.left = new FormAttachment( 0, 0 );
     fdTopicGroup.top = new FormAttachment( 0, 10 );
     fdTopicGroup.right = new FormAttachment( 100, 0 );
+    fdTopicGroup.bottom = new FormAttachment( 100, 0 );
     wTopicGroup.setLayoutData( fdTopicGroup );
 
     wTopicFromText = new Button( wTopicGroup, SWT.RADIO );
