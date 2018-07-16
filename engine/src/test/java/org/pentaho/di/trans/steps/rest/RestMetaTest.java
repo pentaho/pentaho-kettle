@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,6 +22,7 @@
 
 package org.pentaho.di.trans.steps.rest;
 
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
@@ -134,5 +135,17 @@ public class RestMetaTest {
     return remarks.stream()
       .filter( p -> p.getType() == CheckResultInterface.TYPE_RESULT_ERROR )
       .collect( Collectors.toList() ).size();
+  }
+
+  @Test
+  public void testEntityEnclosingMethods() {
+    assertTrue( RestMeta.isActiveBody( RestMeta.HTTP_METHOD_POST ) );
+    assertTrue( RestMeta.isActiveBody( RestMeta.HTTP_METHOD_PUT ) );
+    assertTrue( RestMeta.isActiveBody( RestMeta.HTTP_METHOD_PATCH ) );
+
+    assertFalse( RestMeta.isActiveBody( RestMeta.HTTP_METHOD_GET ) );
+    assertFalse( RestMeta.isActiveBody( RestMeta.HTTP_METHOD_DELETE ) );
+    assertFalse( RestMeta.isActiveBody( RestMeta.HTTP_METHOD_HEAD ) );
+    assertFalse( RestMeta.isActiveBody( RestMeta.HTTP_METHOD_OPTIONS ) );
   }
 }
