@@ -1003,4 +1003,86 @@ public class ValueMetaBaseTest {
     String convertedNumber = base.convertNumberToString( (Double) numberToTest );
     assertEquals( expectedStringRepresentation,  convertedNumber );
   }
+
+  @Test
+  public void testNullHashCodes() throws Exception {
+    ValueMetaBase valueMetaString = new ValueMetaBase( );
+
+    valueMetaString.type = ValueMetaInterface.TYPE_BOOLEAN;
+    assertEquals( valueMetaString.hashCode( null ),  0 ^ 1 );
+
+    valueMetaString.type = ValueMetaInterface.TYPE_DATE;
+    assertEquals( valueMetaString.hashCode( null ),  0 ^ 2 );
+
+    valueMetaString.type = ValueMetaInterface.TYPE_NUMBER;
+    assertEquals( valueMetaString.hashCode( null ),  0 ^ 4 );
+
+    valueMetaString.type = ValueMetaInterface.TYPE_STRING;
+    assertEquals( valueMetaString.hashCode( null ),  0 ^ 8 );
+
+    valueMetaString.type = ValueMetaInterface.TYPE_INTEGER;
+    assertEquals( valueMetaString.hashCode( null ),  0 ^ 16 );
+
+    valueMetaString.type = ValueMetaInterface.TYPE_BIGNUMBER;
+    assertEquals( valueMetaString.hashCode( null ),  0 ^ 32 );
+
+    valueMetaString.type = ValueMetaInterface.TYPE_BINARY;
+    assertEquals( valueMetaString.hashCode( null ),  0 ^ 64 );
+
+    valueMetaString.type = ValueMetaInterface.TYPE_TIMESTAMP;
+    assertEquals( valueMetaString.hashCode( null ),  0 ^ 128 );
+
+    valueMetaString.type = ValueMetaInterface.TYPE_INET;
+    assertEquals( valueMetaString.hashCode( null ),  0 ^ 256 );
+
+    valueMetaString.type = ValueMetaInterface.TYPE_NONE;
+    assertEquals( valueMetaString.hashCode( null ),  0 );
+  }
+
+  @Test
+  public void testHashCodes() throws Exception {
+    ValueMetaBase valueMetaString = new ValueMetaBase( );
+
+    valueMetaString.type = ValueMetaInterface.TYPE_BOOLEAN;
+    assertEquals( valueMetaString.hashCode( true ),  1231 );
+
+    SimpleDateFormat sdf = new SimpleDateFormat( "dd/M/yyyy" );
+    String dateInString = "1/1/2018";
+    Date dateObj = sdf.parse( dateInString );
+    valueMetaString.type = ValueMetaInterface.TYPE_DATE;
+    assertEquals( valueMetaString.hashCode( dateObj ),  -1358655136 );
+
+    Double numberObj = Double.valueOf( 5.1 );
+    valueMetaString.type = ValueMetaInterface.TYPE_NUMBER;
+    assertEquals( valueMetaString.hashCode( numberObj ),  645005312 );
+
+    valueMetaString.type = ValueMetaInterface.TYPE_STRING;
+    assertEquals( valueMetaString.hashCode( "test" ),  3556498 );
+
+    Long longObj = 123L;
+    valueMetaString.type = ValueMetaInterface.TYPE_INTEGER;
+    assertEquals( valueMetaString.hashCode( longObj ), 123 );
+
+    BigDecimal bDecimalObj = new BigDecimal( 123.1 );
+    valueMetaString.type = ValueMetaInterface.TYPE_BIGNUMBER;
+    assertEquals( valueMetaString.hashCode( bDecimalObj ),  465045870 );
+
+    byte[] bBinary = new byte[2];
+    bBinary[0] = 1;
+    bBinary[1] = 0;
+    valueMetaString.type = ValueMetaInterface.TYPE_BINARY;
+    assertEquals( valueMetaString.hashCode( bBinary ),  992 );
+
+    Timestamp timestampObj = Timestamp.valueOf( "2018-01-01 10:10:10.000000000" );
+    valueMetaString.type = ValueMetaInterface.TYPE_TIMESTAMP;
+    assertEquals( valueMetaString.hashCode( timestampObj ),  -1322045776 );
+
+    byte[] ipAddr = new byte[]{127, 0, 0, 1};
+    InetAddress addrObj = InetAddress.getByAddress( ipAddr );
+    valueMetaString.type = ValueMetaInterface.TYPE_INET;
+    assertEquals( valueMetaString.hashCode( addrObj ),  2130706433 );
+
+    valueMetaString.type = ValueMetaInterface.TYPE_NONE;
+    assertEquals( valueMetaString.hashCode( "any" ),  0 );
+  }
 }
