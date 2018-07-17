@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -51,13 +51,15 @@ class RowKey {
   }
 
   private int calculateHashCode( Object[] keyFields ) {
-    return Arrays.hashCode( keyFields );
+    // deep used because Binary type is a native byte[]
+    return Arrays.deepHashCode( keyFields );
   }
 
   @Override
   public boolean equals( Object obj ) {
     if ( storeValues ) {
-      return Arrays.equals( storedFieldValues, ( (RowKey) obj ).storedFieldValues );
+      // deep used because Binary type is a native byte[]
+      return Arrays.deepEquals( storedFieldValues, ( (RowKey) obj ).storedFieldValues );
     } else {
       return true;
     }
