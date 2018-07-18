@@ -232,6 +232,11 @@ public class TextFileOutputMetaInjectionTest extends BaseMetadataInjectionTest<T
         return meta.getOutputFields()[0].getNullString();
       }
     } );
+    check( "RUN_AS_COMMAND", new BooleanGetter() {
+      public boolean get() {
+        return meta.isFileAsCommand();
+      }
+    } );
 
     ValueMetaInterface mftt = new ValueMetaString( "f" );
     injector.setProperty( meta, "OUTPUT_TRIM", setValue( mftt, "left" ), "f" );

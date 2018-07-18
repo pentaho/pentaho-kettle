@@ -22,7 +22,6 @@
 
 package org.pentaho.di.trans.steps.textfileoutput;
 
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -54,12 +53,12 @@ import org.pentaho.di.resource.ResourceDefinition;
 import org.pentaho.di.resource.ResourceNamingInterface;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
-import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepInjectionMetaEntry;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
+import org.pentaho.di.trans.steps.file.BaseFileOutputMeta;
 import org.pentaho.di.workarounds.ResolvableResource;
 import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Node;
@@ -69,7 +68,7 @@ import org.w3c.dom.Node;
  *
  */
 @InjectionSupported( localizationPrefix = "TextFileOutput.Injection.", groups = { "OUTPUT_FIELDS" } )
-public class TextFileOutputMeta extends BaseStepMeta implements StepMetaInterface, ResolvableResource {
+public class TextFileOutputMeta extends BaseFileOutputMeta implements StepMetaInterface, ResolvableResource {
   private static Class<?> PKG = TextFileOutputMeta.class; // for i18n purposes, needed by Translator2!!
 
   protected static final int FILE_COMPRESSION_TYPE_NONE = 0;
@@ -80,10 +79,6 @@ public class TextFileOutputMeta extends BaseStepMeta implements StepMetaInterfac
 
   public static final String[] formatMapperLineTerminator = new String[] { "DOS", "UNIX", "CR", "None" };
 
-  /** The base name of the output file */
-  @Injection( name = "FILENAME" )
-  private String fileName;
-
   /** Whether to push the output into the output of a servlet with the executeTrans Carte/DI-Server servlet */
   @Injection( name = "PASS_TO_SERVLET" )
   private boolean servletOutput;
@@ -91,10 +86,6 @@ public class TextFileOutputMeta extends BaseStepMeta implements StepMetaInterfac
   /** Flag: create parent folder, default to true */
   @Injection( name = "CREATE_PARENT_FOLDER" )
   private boolean createparentfolder = true;
-
-  /** The file extention in case of a generated filename */
-  @Injection( name = "EXTENSION" )
-  private String extension;
 
   /** The separator to choose for the CSV file */
   @Injection( name = "SEPARATOR" )
@@ -130,10 +121,6 @@ public class TextFileOutputMeta extends BaseStepMeta implements StepMetaInterfac
    */
   private String fileFormat;
 
-  /** The file compression: None, Zip or Gzip */
-  @Injection( name = "COMPRESSION" )
-  private String fileCompression;
-
   /** if this value is larger then 0, the text file is split up into parts of this number of lines */
   @Injection( name = "SPLIT_EVERY" )
   private String splitEveryRows;
@@ -141,22 +128,6 @@ public class TextFileOutputMeta extends BaseStepMeta implements StepMetaInterfac
   /** Flag to indicate the we want to append to the end of an existing file (if it exists) */
   @Injection( name = "APPEND" )
   private boolean fileAppended;
-
-  /** Flag: add the stepnr in the filename */
-  @Injection( name = "INC_STEPNR_IN_FILENAME" )
-  private boolean stepNrInFilename;
-
-  /** Flag: add the partition number in the filename */
-  @Injection( name = "INC_PARTNR_IN_FILENAME" )
-  private boolean partNrInFilename;
-
-  /** Flag: add the date in the filename */
-  @Injection( name = "INC_DATE_IN_FILENAME" )
-  private boolean dateInFilename;
-
-  /** Flag: add the time in the filename */
-  @Injection( name = "INC_TIME_IN_FILENAME" )
-  private boolean timeInFilename;
 
   /** Flag: pad fields to their specified length */
   @Injection( name = "RIGHT_PAD_FIELDS" )
@@ -200,12 +171,6 @@ public class TextFileOutputMeta extends BaseStepMeta implements StepMetaInterfac
   @Injection( name = "DO_NOT_CREATE_FILE_AT_STARTUP" )
   private boolean doNotOpenNewFileInit;
 
-  @Injection( name = "SPECIFY_DATE_FORMAT" )
-  private boolean specifyingFormat;
-
-  @Injection( name = "DATE_FORMAT" )
-  private String dateTimeFormat;
-
   public TextFileOutputMeta() {
     super(); // allocate BaseStepMeta
   }
@@ -231,13 +196,6 @@ public class TextFileOutputMeta extends BaseStepMeta implements StepMetaInterfac
    */
   public boolean isCreateParentFolder() {
     return createparentfolder;
-  }
-
-  /**
-   * @return Returns the dateInFilename.
-   */
-  public boolean isDateInFilename() {
-    return dateInFilename;
   }
 
   /**
@@ -286,26 +244,11 @@ public class TextFileOutputMeta extends BaseStepMeta implements StepMetaInterfac
   }
 
   /**
-   * @param enclosureFixDisabled
+   * @param disableEnclosureFix
    *          The enclosureFixDisabled to set.
    */
   public void setEnclosureFixDisabled( boolean disableEnclosureFix ) {
     this.disableEnclosureFix = disableEnclosureFix;
-  }
-
-  /**
-   * @return Returns the extension.
-   */
-  public String getExtension() {
-    return extension;
-  }
-
-  /**
-   * @param extension
-   *          The extension to set.
-   */
-  public void setExtension( String extension ) {
-    this.extension = extension;
   }
 
   /**
@@ -353,36 +296,6 @@ public class TextFileOutputMeta extends BaseStepMeta implements StepMetaInterfac
   public void setFileFormat( String fileFormat ) {
     this.fileFormat = fileFormat;
     this.newline = getNewLine( fileFormat );
-  }
-
-  /**
-   * @return Returns the fileCompression.
-   */
-  public String getFileCompression() {
-    return fileCompression;
-  }
-
-  /**
-   * @param fileCompression
-   *          The fileCompression to set.
-   */
-  public void setFileCompression( String fileCompression ) {
-    this.fileCompression = fileCompression;
-  }
-
-  /**
-   * @return Returns the fileName.
-   */
-  public String getFileName() {
-    return fileName;
-  }
-
-  /**
-   * @param fileName
-   *          The fileName to set.
-   */
-  public void setFileName( String fileName ) {
-    this.fileName = fileName;
   }
 
   /**
@@ -494,6 +407,7 @@ public class TextFileOutputMeta extends BaseStepMeta implements StepMetaInterfac
    * @deprecated use {@link #getSplitEvery(VariableSpace)} or {@link #getSplitEveryRows()}
    * @return Returns the splitEvery.
    */
+  @Override
   public int getSplitEvery() {
     return Const.toInt( splitEveryRows, 0 );
   }
@@ -502,8 +416,9 @@ public class TextFileOutputMeta extends BaseStepMeta implements StepMetaInterfac
    * @param varSpace for variable substitution
    * @return At how many rows to split into another file.
    */
+  @Override
   public int getSplitEvery( VariableSpace varSpace ) {
-    return Const.toInt( varSpace.environmentSubstitute( splitEveryRows ), 0 );
+    return Const.toInt( varSpace == null ? splitEveryRows : varSpace.environmentSubstitute( splitEveryRows ), 0 );
   }
 
   /**
@@ -537,25 +452,11 @@ public class TextFileOutputMeta extends BaseStepMeta implements StepMetaInterfac
   }
 
   /**
-   * @return Returns the stepNrInFilename.
-   */
-  public boolean isStepNrInFilename() {
-    return stepNrInFilename;
-  }
-
-  /**
    * @param stepNrInFilename
    *          The stepNrInFilename to set.
    */
   public void setStepNrInFilename( boolean stepNrInFilename ) {
     this.stepNrInFilename = stepNrInFilename;
-  }
-
-  /**
-   * @return Returns the partNrInFilename.
-   */
-  public boolean isPartNrInFilename() {
-    return partNrInFilename;
   }
 
   /**
@@ -567,34 +468,11 @@ public class TextFileOutputMeta extends BaseStepMeta implements StepMetaInterfac
   }
 
   /**
-   * @return Returns the timeInFilename.
-   */
-  public boolean isTimeInFilename() {
-    return timeInFilename;
-  }
-
-  /**
    * @param timeInFilename
    *          The timeInFilename to set.
    */
   public void setTimeInFilename( boolean timeInFilename ) {
     this.timeInFilename = timeInFilename;
-  }
-
-  public boolean isSpecifyingFormat() {
-    return specifyingFormat;
-  }
-
-  public void setSpecifyingFormat( boolean specifyingFormat ) {
-    this.specifyingFormat = specifyingFormat;
-  }
-
-  public String getDateTimeFormat() {
-    return dateTimeFormat;
-  }
-
-  public void setDateTimeFormat( String dateTimeFormat ) {
-    this.dateTimeFormat = dateTimeFormat;
   }
 
   /**
@@ -725,12 +603,12 @@ public class TextFileOutputMeta extends BaseStepMeta implements StepMetaInterfac
       headerEnabled = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "header" ) );
       footerEnabled = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "footer" ) );
       fileFormat = XMLHandler.getTagValue( stepnode, "format" );
-      fileCompression = XMLHandler.getTagValue( stepnode, "compression" );
-      if ( fileCompression == null ) {
+      setFileCompression( XMLHandler.getTagValue( stepnode, "compression" ) );
+      if ( getFileCompression() == null ) {
         if ( "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "file", "zipped" ) ) ) {
-          fileCompression = fileCompressionTypeCodes[FILE_COMPRESSION_TYPE_ZIP];
+          setFileCompression(  fileCompressionTypeCodes[FILE_COMPRESSION_TYPE_ZIP] );
         } else {
-          fileCompression = fileCompressionTypeCodes[FILE_COMPRESSION_TYPE_NONE];
+          setFileCompression( fileCompressionTypeCodes[FILE_COMPRESSION_TYPE_NONE] );
         }
       }
       encoding = XMLHandler.getTagValue( stepnode, "encoding" );
@@ -750,8 +628,8 @@ public class TextFileOutputMeta extends BaseStepMeta implements StepMetaInterfac
       partNrInFilename = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "file", "haspartno" ) );
       dateInFilename = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "file", "add_date" ) );
       timeInFilename = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "file", "add_time" ) );
-      specifyingFormat = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "file", "SpecifyFormat" ) );
-      dateTimeFormat = XMLHandler.getTagValue( stepnode, "file", "date_time_format" );
+      setSpecifyingFormat( "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "file", "SpecifyFormat" ) ) );
+      setDateTimeFormat( XMLHandler.getTagValue( stepnode, "file", "date_time_format" ) );
 
       String AddToResultFiles = XMLHandler.getTagValue( stepnode, "file", "add_to_result_filenames" );
       if ( Utils.isEmpty( AddToResultFiles ) ) {
@@ -821,14 +699,14 @@ public class TextFileOutputMeta extends BaseStepMeta implements StepMetaInterfac
     createparentfolder = true; // Default createparentfolder to true
     separator = ";";
     enclosure = "\"";
-    specifyingFormat = false;
-    dateTimeFormat = null;
+    setSpecifyingFormat( false );
+    setDateTimeFormat( null );
     enclosureForced = false;
     disableEnclosureFix = false;
     headerEnabled = true;
     footerEnabled = false;
     fileFormat = "DOS";
-    fileCompression = fileCompressionTypeCodes[FILE_COMPRESSION_TYPE_NONE];
+    setFileCompression( fileCompressionTypeCodes[FILE_COMPRESSION_TYPE_NONE] );
     fileName = "file";
     servletOutput = false;
     doNotOpenNewFileInit = false;
@@ -863,103 +741,17 @@ public class TextFileOutputMeta extends BaseStepMeta implements StepMetaInterfac
     fileAppended = false;
   }
 
-  public String[] getFiles( VariableSpace space ) {
-    int copies = 1;
-    int splits = 1;
-    int parts = 1;
-
-    if ( stepNrInFilename ) {
-      copies = 3;
-    }
-
-    if ( partNrInFilename ) {
-      parts = 3;
-    }
-
-    if ( !Utils.isEmpty( splitEveryRows ) ) {
-      splits = 3;
-    }
-
-    int nr = copies * parts * splits;
-    if ( nr > 1 ) {
-      nr++;
-    }
-
-    String[] retval = new String[nr];
-
-    int i = 0;
-    for ( int copy = 0; copy < copies; copy++ ) {
-      for ( int part = 0; part < parts; part++ ) {
-        for ( int split = 0; split < splits; split++ ) {
-          retval[i] = buildFilename( space, copy, "P" + part, split, false );
-          i++;
-        }
-      }
-    }
-    if ( i < nr ) {
-      retval[i] = "...";
-    }
-
-    return retval;
-  }
-
   public String buildFilename( VariableSpace space, int stepnr, String partnr, int splitnr, boolean ziparchive ) {
-    return buildFilename( fileName, extension, space, stepnr, partnr, splitnr, ziparchive, this );
+    return super.buildFilename( space, Integer.toString( stepnr ), partnr, Integer.toString( splitnr ), ziparchive );
   }
 
   public String buildFilename( String filename, String extension, VariableSpace space, int stepnr, String partnr,
-      int splitnr, boolean ziparchive, TextFileOutputMeta meta ) {
-    SimpleDateFormat daf = new SimpleDateFormat();
+                               int splitnr, boolean ziparchive, TextFileOutputMeta meta ) {
 
-    // Replace possible environment variables...
-    String retval = space.environmentSubstitute( filename );
-    String realextension = space.environmentSubstitute( extension );
-
-    Date now = new Date();
-
-    if ( meta.isSpecifyingFormat() && !Utils.isEmpty( meta.getDateTimeFormat() ) ) {
-      daf.applyPattern( meta.getDateTimeFormat() );
-      String dt = daf.format( now );
-      retval += dt;
-    } else {
-      if ( meta.isDateInFilename() ) {
-        daf.applyPattern( "yyyMMdd" );
-        String d = daf.format( now );
-        retval += "_" + d;
-      }
-      if ( meta.isTimeInFilename() ) {
-        daf.applyPattern( "HHmmss" );
-        String t = daf.format( now );
-        retval += "_" + t;
-      }
-    }
-    if ( meta.isStepNrInFilename() ) {
-      retval += "_" + stepnr;
-    }
-    if ( meta.isPartNrInFilename() ) {
-      retval += "_" + partnr;
-    }
-    if ( meta.getSplitEvery( space ) > 0 ) {
-      retval += "_" + splitnr;
-    }
-
-    if ( meta.getFileCompression().equals( "Zip" ) ) {
-      if ( ziparchive ) {
-        retval += ".zip";
-      } else {
-        if ( realextension != null && realextension.length() != 0 ) {
-          retval += "." + realextension;
-        }
-      }
-    } else {
-      if ( realextension != null && realextension.length() != 0 ) {
-        retval += "." + realextension;
-      }
-      if ( meta.getFileCompression().equals( "GZip" ) ) {
-        retval += ".gz";
-      }
-    }
-    return retval;
+    final String realFileName = space.environmentSubstitute( fileName );
+    final String realExtension = space.environmentSubstitute( extension );
+    return super.buildFilename( space, realFileName, realExtension, Integer.toString( stepnr ), partnr, Integer
+      .toString( splitnr ), new Date(), ziparchive, true, meta );
   }
 
   @Override
@@ -1010,7 +802,7 @@ public class TextFileOutputMeta extends BaseStepMeta implements StepMetaInterfac
     retval.append( "    " ).append( XMLHandler.addTagValue( "header", headerEnabled ) );
     retval.append( "    " ).append( XMLHandler.addTagValue( "footer", footerEnabled ) );
     retval.append( "    " ).append( XMLHandler.addTagValue( "format", fileFormat ) );
-    retval.append( "    " ).append( XMLHandler.addTagValue( "compression", fileCompression ) );
+    retval.append( "    " ).append( XMLHandler.addTagValue( "compression", getFileCompression() ) );
     retval.append( "    " ).append( XMLHandler.addTagValue( "encoding", encoding ) );
     retval.append( "    " ).append( XMLHandler.addTagValue( "endedLine", endedLine ) );
     retval.append( "    " + XMLHandler.addTagValue( "fileNameInField", fileNameInField ) );
@@ -1057,8 +849,8 @@ public class TextFileOutputMeta extends BaseStepMeta implements StepMetaInterfac
     retval.append( "      " ).append( XMLHandler.addTagValue( "haspartno", partNrInFilename ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "add_date", dateInFilename ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "add_time", timeInFilename ) );
-    retval.append( "      " ).append( XMLHandler.addTagValue( "SpecifyFormat", specifyingFormat ) );
-    retval.append( "      " ).append( XMLHandler.addTagValue( "date_time_format", dateTimeFormat ) );
+    retval.append( "      " ).append( XMLHandler.addTagValue( "SpecifyFormat", isSpecifyingFormat() ) );
+    retval.append( "      " ).append( XMLHandler.addTagValue( "date_time_format", getDateTimeFormat() ) );
 
     retval.append( "      " ).append( XMLHandler.addTagValue( "add_to_result_filenames", addToResultFilenames ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "pad", padded ) );
@@ -1078,14 +870,14 @@ public class TextFileOutputMeta extends BaseStepMeta implements StepMetaInterfac
       headerEnabled = rep.getStepAttributeBoolean( id_step, "header" );
       footerEnabled = rep.getStepAttributeBoolean( id_step, "footer" );
       fileFormat = rep.getStepAttributeString( id_step, "format" );
-      fileCompression = rep.getStepAttributeString( id_step, "compression" );
+      setFileCompression( rep.getStepAttributeString( id_step, "compression" ) );
       fileNameInField = rep.getStepAttributeBoolean( id_step, "fileNameInField" );
       fileNameField = rep.getStepAttributeString( id_step, "fileNameField" );
-      if ( fileCompression == null ) {
+      if ( getFileCompression() == null ) {
         if ( rep.getStepAttributeBoolean( id_step, "zipped" ) ) {
-          fileCompression = fileCompressionTypeCodes[FILE_COMPRESSION_TYPE_ZIP];
+          setFileCompression( fileCompressionTypeCodes[FILE_COMPRESSION_TYPE_ZIP] );
         } else {
-          fileCompression = fileCompressionTypeCodes[FILE_COMPRESSION_TYPE_NONE];
+          setFileCompression( fileCompressionTypeCodes[FILE_COMPRESSION_TYPE_NONE] );
         }
       }
       encoding = rep.getStepAttributeString( id_step, "encoding" );
@@ -1109,8 +901,8 @@ public class TextFileOutputMeta extends BaseStepMeta implements StepMetaInterfac
       partNrInFilename = rep.getStepAttributeBoolean( id_step, "file_add_partnr" );
       dateInFilename = rep.getStepAttributeBoolean( id_step, "file_add_date" );
       timeInFilename = rep.getStepAttributeBoolean( id_step, "file_add_time" );
-      specifyingFormat = rep.getStepAttributeBoolean( id_step, "SpecifyFormat" );
-      dateTimeFormat = rep.getStepAttributeString( id_step, "date_time_format" );
+      setSpecifyingFormat( rep.getStepAttributeBoolean( id_step, "SpecifyFormat" ) );
+      setDateTimeFormat( rep.getStepAttributeString( id_step, "date_time_format" ) );
 
       String AddToResultFiles = rep.getStepAttributeString( id_step, "add_to_result_filenames" );
       if ( Utils.isEmpty( AddToResultFiles ) ) {
@@ -1161,7 +953,7 @@ public class TextFileOutputMeta extends BaseStepMeta implements StepMetaInterfac
       rep.saveStepAttribute( id_transformation, id_step, "header", headerEnabled );
       rep.saveStepAttribute( id_transformation, id_step, "footer", footerEnabled );
       rep.saveStepAttribute( id_transformation, id_step, "format", fileFormat );
-      rep.saveStepAttribute( id_transformation, id_step, "compression", fileCompression );
+      rep.saveStepAttribute( id_transformation, id_step, "compression", getFileCompression() );
       rep.saveStepAttribute( id_transformation, id_step, "encoding", encoding );
       saveSourceRep( rep, id_transformation, id_step, fileName );
       rep.saveStepAttribute( id_transformation, id_step, "file_servlet_output", servletOutput );
@@ -1172,9 +964,9 @@ public class TextFileOutputMeta extends BaseStepMeta implements StepMetaInterfac
       rep.saveStepAttribute( id_transformation, id_step, "file_add_stepnr", stepNrInFilename );
       rep.saveStepAttribute( id_transformation, id_step, "file_add_partnr", partNrInFilename );
       rep.saveStepAttribute( id_transformation, id_step, "file_add_date", dateInFilename );
-      rep.saveStepAttribute( id_transformation, id_step, "date_time_format", dateTimeFormat );
+      rep.saveStepAttribute( id_transformation, id_step, "date_time_format", getDateTimeFormat() );
       rep.saveStepAttribute( id_transformation, id_step, "create_parent_folder", createparentfolder );
-      rep.saveStepAttribute( id_transformation, id_step, "SpecifyFormat", specifyingFormat );
+      rep.saveStepAttribute( id_transformation, id_step, "SpecifyFormat", isSpecifyingFormat() );
 
       rep.saveStepAttribute( id_transformation, id_step, "add_to_result_filenames", addToResultFilenames );
       rep.saveStepAttribute( id_transformation, id_step, "file_add_time", timeInFilename );
