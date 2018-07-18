@@ -159,7 +159,6 @@ class JmsDialogSecurityLayout {
     props.setLook( wAuthenticationGroup );
 
     wSslGroup = new Group( wSecurityComp, SWT.SHADOW_ETCHED_IN );
-    //wSslGroup.setText( getString( PKG, "JmsDialog.Connection" ) );
 
     FormLayout flSsl = new FormLayout();
     flSsl.marginHeight = 15;
