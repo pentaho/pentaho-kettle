@@ -30,6 +30,7 @@ import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Group;
 import org.pentaho.di.ui.core.PropsUI;
 
@@ -120,5 +121,13 @@ public class RadioTab  extends Composite {
       }
     }
     return -1;
+  }
+
+  public void setSelectedIndex( int index ) {
+    for ( Control control : radioGroup.getChildren() ) {
+      ( (Button) control ).setSelection( false );
+    }
+    ( (Button) radioGroup.getChildren()[ index ] ).setSelection( true );
+    radioGroup.getChildren()[index].notifyListeners( SWT.Selection, new Event() );
   }
 }
