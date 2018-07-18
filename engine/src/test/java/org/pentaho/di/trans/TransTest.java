@@ -58,16 +58,20 @@ import java.io.OutputStream;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.UUID;
 import java.util.concurrent.CountDownLatch;
 
 import static com.google.common.collect.ImmutableList.of;
 import static java.util.Collections.emptyList;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.doCallRealMethod;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
@@ -487,4 +491,78 @@ public class TransTest {
     }
 
   };
+
+  @Test
+  public void testNewTransformationsWithContainerObjectId() throws Exception {
+    TransMeta meta = mock( TransMeta.class );
+    doReturn( new String[] { "X", "Y", "Z" } ).when( meta ).listVariables();
+    doReturn( new String[] { "A", "B", "C" } ).when( meta ).listParameters();
+    doReturn( "XYZ" ).when( meta ).getVariable( anyString() );
+    doReturn( "" ).when( meta ).getParameterDescription( anyString() );
+    doReturn( "" ).when( meta ).getParameterDefault( anyString() );
+    doReturn( "ABC" ).when( meta ).getParameterValue( anyString() );
+
+    String carteId = UUID.randomUUID().toString();
+    doReturn( carteId ).when( meta ).getContainerObjectId();
+
+    Trans trans = new Trans( meta );
+
+    assertEquals( carteId, trans.getContainerObjectId() );
+  }
+
+  /**
+   * This test demonstrates the issue fixed in PDI-17436.
+   * When a job is scheduled twice, it gets the same log channel Id and both logs get merged
+   */
+  @Test
+  public void testTwoTransformationsGetSameLogChannelId() throws Exception {
+    TransMeta meta = mock( TransMeta.class );
+    doReturn( new String[] { "X", "Y", "Z" } ).when( meta ).listVariables();
+    doReturn( new String[] { "A", "B", "C" } ).when( meta ).listParameters();
+    doReturn( "XYZ" ).when( meta ).getVariable( anyString() );
+    doReturn( "" ).when( meta ).getParameterDescription( anyString() );
+    doReturn( "" ).when( meta ).getParameterDefault( anyString() );
+    doReturn( "ABC" ).when( meta ).getParameterValue( anyString() );
+
+    Trans trans1 = new Trans( meta );
+    Trans trans2 = new Trans( meta );
+
+    assertEquals( trans1.getLogChannelId(), trans2.getLogChannelId() );
+  }
+
+  /**
+   * This test demonstrates the fix for PDI-17436.
+   * Two schedules -> two Carte object Ids -> two log channel Ids
+   */
+  @Test
+  public void testTwoTransformationsGetDifferentLogChannelIdWithDifferentCarteId() throws Exception {
+    TransMeta meta1 = mock( TransMeta.class );
+    doReturn( new String[] { "X", "Y", "Z" } ).when( meta1 ).listVariables();
+    doReturn( new String[] { "A", "B", "C" } ).when( meta1 ).listParameters();
+    doReturn( "XYZ" ).when( meta1 ).getVariable( anyString() );
+    doReturn( "" ).when( meta1 ).getParameterDescription( anyString() );
+    doReturn( "" ).when( meta1 ).getParameterDefault( anyString() );
+    doReturn( "ABC" ).when( meta1 ).getParameterValue( anyString() );
+
+    TransMeta meta2 = mock( TransMeta.class );
+    doReturn( new String[] { "X", "Y", "Z" } ).when( meta2 ).listVariables();
+    doReturn( new String[] { "A", "B", "C" } ).when( meta2 ).listParameters();
+    doReturn( "XYZ" ).when( meta2 ).getVariable( anyString() );
+    doReturn( "" ).when( meta2 ).getParameterDescription( anyString() );
+    doReturn( "" ).when( meta2 ).getParameterDefault( anyString() );
+    doReturn( "ABC" ).when( meta2 ).getParameterValue( anyString() );
+
+
+    String carteId1 = UUID.randomUUID().toString();
+    String carteId2 = UUID.randomUUID().toString();
+
+    doReturn( carteId1 ).when( meta1 ).getContainerObjectId();
+    doReturn( carteId2 ).when( meta2 ).getContainerObjectId();
+
+    Trans trans1 = new Trans( meta1 );
+    Trans trans2 = new Trans( meta2 );
+
+    assertNotEquals( trans1.getContainerObjectId(), trans2.getContainerObjectId() );
+    assertNotEquals( trans1.getLogChannelId(), trans2.getLogChannelId() );
+  }
 }
