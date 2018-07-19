@@ -42,6 +42,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.doCallRealMethod;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -107,7 +108,9 @@ public class JobTest {
     JobMeta meta = mock( JobMeta.class );
 
     String carteId = UUID.randomUUID().toString();
-    Job job = new Job( repository, meta, carteId );
+    doReturn( carteId ).when( meta ).getContainerObjectId();
+
+    Job job = new Job( repository, meta );
 
     assertEquals( carteId, job.getContainerObjectId() );
   }
@@ -134,11 +137,17 @@ public class JobTest {
   @Test
   public void testTwoJobsGetDifferentLogChannelIdWithDifferentCarteId() {
     Repository repository = mock( Repository.class );
-    JobMeta meta = mock( JobMeta.class );
+    JobMeta meta1 = mock( JobMeta.class );
+    JobMeta meta2 = mock( JobMeta.class );
 
-    // third parameter is the Carte object Id
-    Job job1 = new Job( repository, meta, UUID.randomUUID().toString() );
-    Job job2 = new Job( repository, meta, UUID.randomUUID().toString() );
+    String carteId1 = UUID.randomUUID().toString();
+    String carteId2 = UUID.randomUUID().toString();
+
+    doReturn( carteId1 ).when( meta1 ).getContainerObjectId();
+    doReturn( carteId2 ).when( meta2 ).getContainerObjectId();
+
+    Job job1 = new Job( repository, meta1 );
+    Job job2 = new Job( repository, meta2 );
 
     assertNotEquals( job1.getContainerObjectId(), job2.getContainerObjectId() );
     assertNotEquals( job1.getLogChannelId(), job2.getLogChannelId() );

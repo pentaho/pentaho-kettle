@@ -476,6 +476,8 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
   public Trans( TransMeta transMeta, LoggingObjectInterface parent ) {
     this();
     this.transMeta = transMeta;
+    this.containerObjectId = transMeta.getContainerObjectId();
+
     setParent( parent );
 
     initializeVariablesFrom( transMeta );
@@ -498,7 +500,10 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 
     this.log = new LogChannel( this, parent );
     this.logLevel = log.getLogLevel();
-    this.containerObjectId = log.getContainerObjectId();
+
+    if ( this.containerObjectId == null ) {
+      this.containerObjectId = log.getContainerObjectId();
+    }
 
     if ( log.isDetailed() ) {
       log.logDetailed( BaseMessages.getString( PKG, "Trans.Log.TransformationIsPreloaded" ) );
