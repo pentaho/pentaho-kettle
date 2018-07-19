@@ -38,7 +38,6 @@ import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.jms.JmsDelegate;
 import org.pentaho.di.trans.step.jms.context.JmsProvider;
 import org.pentaho.di.ui.core.PropsUI;
-import org.pentaho.di.ui.core.widget.PasswordTextVar;
 import org.pentaho.di.ui.core.widget.TextVar;
 
 import java.util.HashMap;
