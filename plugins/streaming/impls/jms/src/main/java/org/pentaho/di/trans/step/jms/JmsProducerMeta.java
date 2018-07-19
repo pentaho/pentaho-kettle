@@ -52,7 +52,7 @@ import static java.util.Collections.singletonList;
 import static org.pentaho.di.core.util.serialization.ConfigHelper.conf;
 import static org.pentaho.di.i18n.BaseMessages.getString;
 
-@InjectionSupported ( localizationPrefix = "JmsProducerMeta.Injection.", groups = { "PROPERTIES" } )
+@InjectionSupported ( localizationPrefix = "JmsProducerMeta.Injection.", groups = { "PROPERTIES", "SSL_GROUP" } )
 @Step ( id = "Jms2Producer", image = "JMSP.svg",
   i18nPackageName = "org.pentaho.di.trans.step.jms",
   name = "JmsProducer.TypeLongDesc",

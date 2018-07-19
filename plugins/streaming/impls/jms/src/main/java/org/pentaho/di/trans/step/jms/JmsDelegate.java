@@ -73,6 +73,28 @@ public class JmsDelegate {
 
   @Injection ( name = "DESTINATION_FIELD_NAME" ) public String destinationField = "destination";
 
+  @Injection ( name = "SSL_ENABLED", group = "SSL_GROUP" ) public boolean sslEnabled = false;
+
+  @Injection ( name = "SSL_KEYSTORE_PATH", group = "SSL_GROUP" ) public String sslKeystorePath = "";
+
+  @Injection ( name = "SSL_KEYSTORE_TYPE", group = "SSL_GROUP" ) public String sslKeystoreType = "";
+
+  @Sensitive
+  @Injection ( name = "SSL_KEYSTORE_PASSWORD", group = "SSL_GROUP" ) public String sslKeystorePassword = "";
+
+  @Injection ( name = "SSL_TRUSTSTORE_PATH", group = "SSL_GROUP" ) public String sslTruststorePath = "";
+
+  @Injection ( name = "SSL_TRUSTSTORE_TYPE", group = "SSL_GROUP" ) public String sslTruststoreType = "";
+
+  @Sensitive
+  @Injection ( name = "SSL_TRUSTSTORE_PASSWORD", group = "SSL_GROUP" ) public String sslTruststorePassword = "";
+
+  @Injection ( name = "SSL_CONTEXT_ALGORITHM", group = "SSL_GROUP" ) public String sslContextAlgorithm = "";
+
+  @Injection ( name = "IBM_SSL_CIPHERSUITE", group = "SSL_GROUP" ) public String ibmSslCipherSuite = "";
+
+  @Injection ( name = "IBM_SSL_FIPSREQUIRED", group = "SSL_GROUP" ) public String ibmSslFipsRequired = "";
+
   private final List<JmsProvider> jmsProviders;
 
   public JmsDelegate( List<JmsProvider> jmsProviders ) {
