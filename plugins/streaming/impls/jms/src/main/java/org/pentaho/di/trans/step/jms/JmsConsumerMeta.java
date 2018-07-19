@@ -41,7 +41,7 @@ import org.pentaho.di.trans.streaming.common.BaseStreamStepMeta;
 import static java.util.Collections.singletonList;
 import static org.pentaho.di.core.ObjectLocationSpecificationMethod.FILENAME;
 
-@InjectionSupported ( localizationPrefix = "JmsConsumerMeta.Injection." )
+@InjectionSupported ( localizationPrefix = "JmsConsumerMeta.Injection.", groups = { "SSL_GROUP" } )
 @Step ( id = "Jms2Consumer", image = "JMSC.svg",
   i18nPackageName = "org.pentaho.di.trans.step.jms",
   name = "JmsConsumer.TypeLongDesc",
