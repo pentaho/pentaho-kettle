@@ -193,7 +193,7 @@ public class CheckBoxTableCombo extends Composite {
   private ColumnInfo[] getSSLColumns() {
     ColumnInfo optionName = new ColumnInfo( columnOneName, ColumnInfo.COLUMN_TYPE_TEXT, false, true );
 
-    ColumnInfo value = new ColumnInfo( columnTwoName,ColumnInfo.COLUMN_TYPE_TEXT, false, false, 200 );
+    ColumnInfo value = new ColumnInfo( columnTwoName, ColumnInfo.COLUMN_TYPE_TEXT, false, false, 200 );
     value.setUsingVariables( true );
 
     return new ColumnInfo[] { optionName, value };
