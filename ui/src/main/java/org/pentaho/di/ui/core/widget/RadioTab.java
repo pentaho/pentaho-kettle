@@ -46,10 +46,6 @@ public class RadioTab  extends Composite {
     this.props = props;
     props.setLook( this );
     noMarginLayout = new FormLayout();
-    noMarginLayout.marginWidth = 0;
-    noMarginLayout.marginHeight = 0;
-    noMarginLayout.marginTop = 0;
-    noMarginLayout.marginBottom = 0;
     this.setLayout( noMarginLayout );
 
     fdMaximize = new FormData();
