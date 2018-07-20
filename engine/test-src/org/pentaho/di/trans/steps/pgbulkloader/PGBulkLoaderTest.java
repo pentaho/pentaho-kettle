@@ -142,6 +142,15 @@ public class PGBulkLoaderTest {
     assertEquals( CONNECTION_DB_PASSWORD, database.getDatabaseMeta().getPassword() );
   }
 
+  @Test
+  public void testProcessRow_StreamIsNull() throws Exception {
+    PGBulkLoader pgBulkLoaderStreamIsNull = mock( PGBulkLoader.class );
+    doReturn( null ).when( pgBulkLoaderStreamIsNull ).getRow();
+    PGBulkLoaderMeta meta = mock( PGBulkLoaderMeta.class );
+    PGBulkLoaderData data = mock( PGBulkLoaderData.class );
+    assertEquals( false, pgBulkLoaderStreamIsNull.processRow( meta, data ) );
+  }
+
   private static PGBulkLoaderMeta getPgBulkLoaderMock( String DbNameOverride ) throws KettleXMLException {
     PGBulkLoaderMeta pgBulkLoaderMetaMock = mock( PGBulkLoaderMeta.class );
     when( pgBulkLoaderMetaMock.getDbNameOverride() ).thenReturn( DbNameOverride );
