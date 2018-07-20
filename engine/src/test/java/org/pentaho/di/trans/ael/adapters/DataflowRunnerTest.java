@@ -27,6 +27,7 @@ import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.File;
+import java.util.HashMap;
 
 /**
  * TODO Create a better integration test for this
@@ -39,9 +40,9 @@ public class DataflowRunnerTest {
   @Test
   public void test(){
     String runner = "DirectRunner";
-    File applicationJar = new File("/Users/ccaspanello/Desktop/kettle-flow/dataflow-engine/target","dataflow-engine-bundled-1.0-SNAPSHOT.jar");
+    File applicationJar = new File("/Users/ccaspanello/git/ccaspanello/pentaho/pentaho-ee/adaptive-execution/beam/assemblies/direct-assembly/target","direct-assembly-bundled-9.0.0.0-SNAPSHOT.jar");
     DataflowRunner dataflowRunner = new DataflowRunner(new TestLogger(), runner, applicationJar);
       //runner.setDebug();
-      dataflowRunner.run("/Users/ccaspanello/Desktop/Dataflow.ktr");
+      dataflowRunner.run("/Users/ccaspanello/Desktop/Dataflow.ktr", new HashMap<>(), new HashMap<>());
   }
 }

@@ -24,6 +24,7 @@
 package org.pentaho.di.trans.ael.adapters;
 
 import com.google.common.base.Stopwatch;
+import org.json.simple.JSONObject;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,6 +34,9 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -52,15 +56,14 @@ public class DataflowRunner {
     this.applicationJar = applicationJar;
   }
 
-  public void run( String transformation ) {
+  public void run( String ktrFile, Map<String, String> env, Map<String, String> params ) {
     try {
       Stopwatch sw = Stopwatch.createStarted();
-
       checkApplicationExists();
 
-      ProcessBuilder processBuilder = new ProcessBuilder( "java", "-jar",
-        applicationJar.getName(),
-        "--transformation=" + transformation, "--runner=" + runner );
+      List<String> commands = buildCommands( ktrFile, env, params );
+
+      ProcessBuilder processBuilder = new ProcessBuilder( commands );
       processBuilder.directory( applicationJar.getParentFile() );
 
       Process proc = processBuilder.start();
@@ -71,10 +74,37 @@ public class DataflowRunner {
       proc.waitFor();
       sw.stop();
 
+      logger.logBasic( "Elapsed Time: " +  sw.toString() );
+
     } catch ( Exception e ) {
       // TODO Investigate why throwing an error does no good
       logger.logError( "Unexpected error running transformation.", e );
     }
+  }
+
+  private List<String> buildCommands( String ktrFile, Map<String, String> env, Map<String, String> params ) {
+    // Create Command
+    List<String> commands = new ArrayList<>();
+    commands.add( "java" );
+    commands.add( "-jar" );
+    commands.add( applicationJar.getName() );
+    commands.add( "--transformation=" + ktrFile );
+    commands.add( "--runner=" + runner );
+
+    // Add Environment Variables
+    if ( !env.isEmpty() ) {
+      JSONObject jsonObject = new JSONObject();
+      env.keySet().stream().forEach( key -> jsonObject.put( key, env.get( key ) ) );
+      commands.add( "--environment=" + jsonObject.toJSONString() );
+    }
+
+    // Add Parameters
+    if ( !params.isEmpty() ) {
+      JSONObject jsonObject = new JSONObject();
+      params.keySet().stream().forEach( key -> jsonObject.put( key, params.get( key ) ) );
+      commands.add( "--parameters=" + jsonObject.toJSONString() );
+    }
+    return commands;
   }
 
   private void checkApplicationExists() {
