@@ -28,7 +28,6 @@ import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.core.util.serialization.Sensitive;
-import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.trans.step.jms.context.JmsProvider;
 
 import javax.jms.Destination;
@@ -102,12 +101,12 @@ public class JmsDelegate {
     this.jmsProviders = jmsProviders;
   }
 
-  Destination getDestination( VariableSpace variableSpace ) {
-    return getJmsProvider().getDestination( this, variableSpace );
+  Destination getDestination( ) {
+    return getJmsProvider().getDestination( this );
   }
 
-  JMSContext getJmsContext( VariableSpace variableSpace ) {
-    return getJmsProvider().getContext( this, variableSpace );
+  JMSContext getJmsContext() {
+    return getJmsProvider().getContext( this );
   }
 
   private JmsProvider getJmsProvider() {

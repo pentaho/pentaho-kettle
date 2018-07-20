@@ -25,7 +25,6 @@ package org.pentaho.di.trans.step.jms.context;
 import org.apache.activemq.artemis.jms.client.ActiveMQConnectionFactory;
 import org.apache.activemq.artemis.jms.client.ActiveMQQueue;
 import org.apache.activemq.artemis.jms.client.ActiveMQTopic;
-import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.trans.step.jms.JmsConstants;
 import org.pentaho.di.trans.step.jms.JmsDelegate;
 
@@ -42,20 +41,17 @@ public class ActiveMQProvider implements JmsProvider {
     return type == ACTIVEMQ;
   }
 
-  @Override public JMSContext getContext( JmsDelegate delegate, VariableSpace variableSpace ) {
-    ConnectionFactory factory = new ActiveMQConnectionFactory(
-      variableSpace.environmentSubstitute( delegate.amqUrl ).trim() );
+  @Override public JMSContext getContext( JmsDelegate delegate ) {
+    ConnectionFactory factory = new ActiveMQConnectionFactory( delegate.amqUrl.trim() );
 
-    return factory.createContext(
-      variableSpace.environmentSubstitute( delegate.amqUsername ),
-      variableSpace.environmentSubstitute( delegate.amqPassword ) );
+    return factory.createContext( delegate.amqUsername, delegate.amqPassword );
 
   }
 
-  @Override public Destination getDestination( JmsDelegate delegate, VariableSpace variableSpace ) {
+  @Override public Destination getDestination( JmsDelegate delegate ) {
     checkNotNull( delegate.destinationName, getString( JmsConstants.PKG, "JmsWebsphereMQ.DestinationNameRequired" ) );
-    String destName = variableSpace.environmentSubstitute( delegate.destinationName );
-    return isQueue( delegate, variableSpace )
+    String destName = delegate.destinationName;
+    return isQueue( delegate )
       ? new ActiveMQQueue( destName )
       : new ActiveMQTopic( destName );
   }

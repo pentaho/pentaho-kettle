@@ -54,8 +54,8 @@ public class JmsStreamSource extends BlockingQueueStreamSource<List<Object>> {
   }
 
   @Override public void open() {
-    consumer = jmsDelegate.getJmsContext( streamStep )
-      .createConsumer( jmsDelegate.getDestination( streamStep ) );
+    consumer = jmsDelegate.getJmsContext()
+      .createConsumer( jmsDelegate.getDestination() );
     Observable
       .create( receiveLoop() )  // jms loop
       .subscribeOn( io() )   // subscribe and observe on new io threads

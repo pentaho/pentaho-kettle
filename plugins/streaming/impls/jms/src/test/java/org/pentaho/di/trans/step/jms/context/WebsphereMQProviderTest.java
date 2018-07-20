@@ -27,8 +27,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
-import org.pentaho.di.core.variables.VariableSpace;
-import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.trans.step.jms.JmsDelegate;
 
 import javax.jms.Destination;
@@ -49,9 +47,6 @@ public class WebsphereMQProviderTest {
   private JmsProvider jmsProvider = new WebsphereMQProvider();
   @Mock private JmsDelegate jmsDelegate;
 
-  VariableSpace variableSpace = new Variables();
-
-
   @Test
   public void onlySupportsWebsphere() {
     assertTrue( jmsProvider.supports( WEBSPHERE ) );
@@ -62,7 +57,7 @@ public class WebsphereMQProviderTest {
   public void getQueueDestination() {
     jmsDelegate.destinationType = QUEUE.name();
     jmsDelegate.destinationName = "somename";
-    Destination dest = jmsProvider.getDestination( jmsDelegate, variableSpace );
+    Destination dest = jmsProvider.getDestination( jmsDelegate );
     assertTrue( dest instanceof Queue );
   }
 
@@ -70,7 +65,7 @@ public class WebsphereMQProviderTest {
   public void getTopicDestination() {
     jmsDelegate.destinationType = TOPIC.name();
     jmsDelegate.destinationName = "somename";
-    Destination dest = jmsProvider.getDestination( jmsDelegate, variableSpace );
+    Destination dest = jmsProvider.getDestination( jmsDelegate );
     assertTrue( dest instanceof Topic );
   }
 
@@ -80,7 +75,7 @@ public class WebsphereMQProviderTest {
     jmsDelegate.destinationName = null;
 
     try {
-      jmsProvider.getDestination( jmsDelegate, variableSpace );
+      jmsProvider.getDestination( jmsDelegate );
       fail();
     } catch ( Exception e ) {
       assertTrue( e.getMessage().contains( "Destination name must be set." ) );

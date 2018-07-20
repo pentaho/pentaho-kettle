@@ -22,7 +22,6 @@
 
 package org.pentaho.di.trans.step.mqtt;
 
-import com.google.common.base.Preconditions;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
@@ -48,8 +47,7 @@ public class MQTTConsumer extends BaseStreamStep implements StepInterface {
 
   public boolean init( StepMetaInterface stepMetaInterface, StepDataInterface stepDataInterface ) {
     boolean init = super.init( stepMetaInterface, stepDataInterface );
-    Preconditions.checkNotNull( stepMetaInterface );
-    MQTTConsumerMeta mqttConsumerMeta = (MQTTConsumerMeta) stepMetaInterface;
+    MQTTConsumerMeta mqttConsumerMeta = (MQTTConsumerMeta) this.variablizedStepMeta;
 
     try {
       RowMeta rowMeta = mqttConsumerMeta.getRowMeta( getStepname(), this );

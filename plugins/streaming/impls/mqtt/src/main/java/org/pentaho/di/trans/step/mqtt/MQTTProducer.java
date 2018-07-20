@@ -125,7 +125,7 @@ public class MQTTProducer extends BaseStep implements StepInterface {
   }
 
   private MqttClient connectToClient() {
-    logDebug( "Publishing using a quality of service level of " + environmentSubstitute( meta.qos ) );
+    logDebug( "Publishing using a quality of service level of " + meta.qos );
     try {
       return
         MQTTClientBuilder.builder()
@@ -157,7 +157,7 @@ public class MQTTProducer extends BaseStep implements StepInterface {
       mqttMessage.setQos( Integer.parseInt( meta.qos ) );
     } catch ( NumberFormatException e ) {
       throw new KettleStepException(
-        getString( PKG, "MQTTProducer.Error.QOS", environmentSubstitute( meta.qos ) ) );
+        getString( PKG, "MQTTProducer.Error.QOS", meta.qos ) );
     }
     String fieldAsString = getFieldAsString( row, meta.messageField );
     mqttMessage.setPayload( fieldAsString.getBytes( defaultCharset() ) );

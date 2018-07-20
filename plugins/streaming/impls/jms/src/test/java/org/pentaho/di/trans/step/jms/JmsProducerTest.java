@@ -129,7 +129,7 @@ public class JmsProducerTest {
       step.environmentSubstitute( jmsDelegate.amqPassword ) ) );
 
     //Return the real context when JmsProvider.getContext(...) is called
-    doReturn( jmsContext ).when( activeMQProvider ).getContext( any(), any() );
+    doReturn( jmsContext ).when( activeMQProvider ).getContext( any() );
 
     //Create a real JMSProducer
     producer = jmsContext.createProducer();
@@ -153,11 +153,12 @@ public class JmsProducerTest {
   }
 
   @Test public void testProperties() throws InterruptedException, KettleException {
-    step.init( meta, data );
     Map<String, String> propertyValuesByName = new LinkedHashMap<>();
     propertyValuesByName.put( PROPERTY_NAME_ONE, "property1Value" );
     propertyValuesByName.put( PROPERTY_NAME_TWO, "property2Value" );
     meta.setPropertyValuesByName( propertyValuesByName );
+
+    step.init( meta, data );
 
     trans.prepareExecution( new String[] {} );
     trans.startThreads();
@@ -197,7 +198,10 @@ public class JmsProducerTest {
     assertEquals( 0, producer.getDeliveryDelay() );
     assertNull( producer.getJMSCorrelationID() );
     assertNull( producer.getJMSType() );
+  }
 
+  @Test
+  public void testUserDrivenSetOptions() throws KettleException {
     //User driven
     meta.setDisableMessageId( "true" );
     meta.setDisableMessageTimestamp( "false" );
@@ -209,6 +213,9 @@ public class JmsProducerTest {
     meta.setJmsType( "JMSType" );
 
     step.first = true;
+
+    step.init( meta, data );
+
     step.processRow( meta, data );
 
     assertEquals( true, producer.getDisableMessageID() );

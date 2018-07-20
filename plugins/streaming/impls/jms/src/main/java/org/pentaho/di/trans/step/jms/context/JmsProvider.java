@@ -22,7 +22,6 @@
 
 package org.pentaho.di.trans.step.jms.context;
 
-import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.trans.step.jms.JmsDelegate;
 
 import javax.jms.Destination;
@@ -37,13 +36,12 @@ public interface JmsProvider {
 
   boolean supports( ConnectionType type );
 
-  JMSContext getContext( JmsDelegate meta, VariableSpace variableSpace );
+  JMSContext getContext( JmsDelegate meta );
 
-  Destination getDestination( JmsDelegate meta, VariableSpace variableSpace );
+  Destination getDestination( JmsDelegate meta );
 
-  default boolean isQueue( JmsDelegate meta, VariableSpace variableSpace ) {
-    return DestinationType.valueOf(
-      variableSpace.environmentSubstitute( meta.destinationType ) ).equals( QUEUE );
+  default boolean isQueue( JmsDelegate meta ) {
+    return DestinationType.valueOf( meta.destinationType ).equals( QUEUE );
   }
 
 

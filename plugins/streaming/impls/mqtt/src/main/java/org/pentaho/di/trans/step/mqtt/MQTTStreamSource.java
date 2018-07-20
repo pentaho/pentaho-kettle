@@ -65,7 +65,7 @@ public class MQTTStreamSource extends BlockingQueueStreamSource<List<Object>> {
   MQTTStreamSource( MQTTConsumerMeta mqttConsumerMeta, MQTTConsumer mqttConsumer ) {
     super( mqttConsumer );
     this.mqttConsumer = mqttConsumer;
-    this.mqttConsumerMeta = (MQTTConsumerMeta) mqttConsumerMeta.withVariables( mqttConsumer );
+    this.mqttConsumerMeta = mqttConsumerMeta;
   }
 
   @Override public void open() {
