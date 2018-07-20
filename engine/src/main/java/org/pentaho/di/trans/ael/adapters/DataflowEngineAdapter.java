@@ -30,9 +30,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.function.Function;
+
+import static java.util.stream.Collectors.toMap;
 
 /**
  * Dataflow Engine Adapter
@@ -64,10 +70,14 @@ public class DataflowEngineAdapter extends Trans {
       ExecutorService executor = Executors.newSingleThreadExecutor();
       executor.submit( () -> {
 
+        Map<String, String> environment = Arrays.stream( transMeta.listVariables() )
+          .collect( toMap( Function.identity(), transMeta::getVariable ) );
+        Map<String, String> parameters = new HashMap<>();
+
         String runner = transMeta.getVariable( "engine.runner" );
         File applicaitonJar = new File( transMeta.getVariable( "engine.application.jar" ) );
         DataflowRunner dataflowRunner = new DataflowRunner( log, runner, applicaitonJar );
-        dataflowRunner.run( transMeta.getFilename() );
+        dataflowRunner.run( transMeta.getFilename(), environment, parameters );
 
         finishProcess( true );
       } );
