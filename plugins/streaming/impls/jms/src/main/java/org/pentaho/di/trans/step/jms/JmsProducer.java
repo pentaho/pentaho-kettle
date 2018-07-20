@@ -26,6 +26,7 @@ import org.apache.commons.lang.BooleanUtils;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.util.StringUtil;
+import org.pentaho.di.core.util.serialization.BaseSerializingMeta;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStep;
@@ -56,7 +57,7 @@ public class JmsProducer extends BaseStep implements StepInterface {
   @Override
   public boolean init( StepMetaInterface stepMetaInterface, StepDataInterface stepDataInterface ) {
     boolean isInitalized = super.init( stepMetaInterface, stepDataInterface );
-    meta = ( (JmsProducerMeta) stepMetaInterface );
+    meta = ( (JmsProducerMeta) ( (BaseSerializingMeta) stepMetaInterface ).withVariables( this ) );
 
     List<CheckResultInterface> remarks = new ArrayList<>();
     meta.check(
@@ -76,7 +77,6 @@ public class JmsProducer extends BaseStep implements StepInterface {
 
   @Override
   public boolean processRow( StepMetaInterface smi, StepDataInterface sdi ) throws KettleException {
-    meta = ( (JmsProducerMeta) smi );
     Object[] row = getRow();
 
     if ( null == row ) {
@@ -86,17 +86,17 @@ public class JmsProducer extends BaseStep implements StepInterface {
 
     if ( first ) {
       // init connections
-      producer = meta.jmsDelegate.getJmsContext( this ).createProducer();
-      destination = meta.jmsDelegate.getDestination( this );
-      messageIndex = getInputRowMeta().indexOfValue( environmentSubstitute( meta.getFieldToSend() ) );
+      producer = meta.jmsDelegate.getJmsContext().createProducer();
+      destination = meta.jmsDelegate.getDestination();
+      messageIndex = getInputRowMeta().indexOfValue( meta.getFieldToSend() );
 
       setOptions( producer );
 
       for ( Map.Entry<String, String> entry : meta.getPropertyValuesByName().entrySet() ) {
-        String keySubstitute = environmentSubstitute( entry.getKey() );
-        String valueSubstitute = environmentSubstitute( entry.getValue() );
-        logDebug( "Setting Jms Property Name: " + keySubstitute + ", Value: " + valueSubstitute );
-        producer.setProperty( keySubstitute, valueSubstitute );
+        String key = entry.getKey();
+        String value = entry.getValue();
+        logDebug( "Setting Jms Property Name: " + key + ", Value: " + value );
+        producer.setProperty( key, value );
       }
 
       first = false;
@@ -111,49 +111,49 @@ public class JmsProducer extends BaseStep implements StepInterface {
   }
 
   private void setOptions( JMSProducer producer ) {
-    String optionValue = variables.environmentSubstitute( meta.getDisableMessageId() );
+    String optionValue = meta.getDisableMessageId();
     getLogChannel().logDebug( "Disable Message ID is set to " + optionValue );
     if ( !StringUtil.isEmpty( optionValue ) ) {
       producer.setDisableMessageID( BooleanUtils.toBoolean( optionValue ) );
     }
 
-    optionValue = variables.environmentSubstitute( meta.getDisableMessageTimestamp() );
+    optionValue = meta.getDisableMessageTimestamp();
     getLogChannel().logDebug( "Disable Message Timestamp is set to " + optionValue );
     if ( !StringUtil.isEmpty( optionValue ) ) {
       producer.setDisableMessageTimestamp( BooleanUtils.toBoolean( optionValue ) );
     }
 
-    optionValue = variables.environmentSubstitute( meta.getDeliveryMode() );
+    optionValue = meta.getDeliveryMode();
     getLogChannel().logDebug( "Delivery Mode is set to " + optionValue );
     if ( !StringUtil.isEmpty( optionValue ) ) {
       producer.setDeliveryMode( Integer.parseInt( optionValue ) );
     }
 
-    optionValue = variables.environmentSubstitute( meta.getPriority() );
+    optionValue = meta.getPriority();
     getLogChannel().logDebug( "Priority is set to " + optionValue );
     if ( !StringUtil.isEmpty( optionValue ) ) {
       producer.setPriority( Integer.parseInt( optionValue ) );
     }
 
-    optionValue = variables.environmentSubstitute( meta.getTimeToLive() );
+    optionValue = meta.getTimeToLive();
     getLogChannel().logDebug( "Time to Live is set to " + optionValue );
     if ( !StringUtil.isEmpty( optionValue ) ) {
       producer.setTimeToLive( Long.parseLong( optionValue ) );
     }
 
-    optionValue = variables.environmentSubstitute( meta.getDeliveryDelay() );
+    optionValue = meta.getDeliveryDelay();
     getLogChannel().logDebug( "Delivery Delay is set to " + optionValue );
     if ( !StringUtil.isEmpty( optionValue ) ) {
       producer.setDeliveryDelay( Long.parseLong( optionValue ) );
     }
 
-    optionValue = variables.environmentSubstitute( meta.getJmsCorrelationId() );
+    optionValue = meta.getJmsCorrelationId();
     getLogChannel().logDebug( "JMS Correlation ID is set to " + optionValue );
     if ( !StringUtil.isEmpty( optionValue ) ) {
       producer.setJMSCorrelationID( optionValue );
     }
 
-    optionValue = variables.environmentSubstitute( meta.getJmsType() );
+    optionValue = meta.getJmsType();
     getLogChannel().logDebug( "JMS Type is set to " + optionValue );
     if ( !StringUtil.isEmpty( optionValue ) ) {
       producer.setJMSType( optionValue );

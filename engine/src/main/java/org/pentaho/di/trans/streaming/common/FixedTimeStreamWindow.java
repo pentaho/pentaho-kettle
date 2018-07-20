@@ -33,6 +33,7 @@ import org.pentaho.di.trans.SubtransExecutor;
 import org.pentaho.di.trans.streaming.api.StreamWindow;
 
 import java.util.AbstractMap;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -68,7 +69,8 @@ public class FixedTimeStreamWindow<I extends List> implements StreamWindow<I, Re
 
   @Override public Iterable<Result> buffer( Observable<I> observable ) {
     Observable<List<I>> buffer = millis > 0
-      ? batchSize > 0 ? observable.buffer( millis, MILLISECONDS, batchSize ) : observable.buffer( millis, MILLISECONDS )
+      ? batchSize > 0 ? observable.buffer( millis, MILLISECONDS, Schedulers.io(), batchSize, ArrayList::new, true )
+      : observable.buffer( millis, MILLISECONDS )
       : observable.buffer( batchSize );
     return buffer
       .observeOn( Schedulers.io() )

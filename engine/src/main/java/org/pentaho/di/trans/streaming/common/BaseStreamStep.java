@@ -30,6 +30,7 @@ import org.pentaho.di.core.Result;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
+import org.pentaho.di.core.util.serialization.BaseSerializingMeta;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.SubtransExecutor;
 import org.pentaho.di.trans.Trans;
@@ -52,7 +53,7 @@ import java.util.List;
 public class BaseStreamStep extends BaseStep {
 
   private static final Class<?> PKG = BaseStreamStep.class;
-  private BaseStreamStepMeta stepMeta;
+  protected BaseStreamStepMeta variablizedStepMeta;
 
   protected SubtransExecutor subtransExecutor;
   protected StreamWindow<List<Object>, Result> window;
@@ -65,20 +66,20 @@ public class BaseStreamStep extends BaseStep {
 
   public boolean init( StepMetaInterface stepMetaInterface, StepDataInterface stepDataInterface ) {
     Preconditions.checkNotNull( stepMetaInterface );
-    stepMeta = (BaseStreamStepMeta) stepMetaInterface;
-    stepMeta.setParentStepMeta( getStepMeta() );
-    stepMeta.setFileName( stepMeta.getTransformationPath() );
+    variablizedStepMeta = ( (BaseStreamStepMeta) ( (BaseSerializingMeta) stepMetaInterface ).withVariables( this ) );
+    variablizedStepMeta.setParentStepMeta( getStepMeta() );
+    variablizedStepMeta.setFileName( variablizedStepMeta.getTransformationPath() );
 
 
     boolean superInit = super.init( stepMetaInterface, stepDataInterface );
 
     try {
       TransMeta transMeta = TransExecutorMeta
-        .loadMappingMeta( stepMeta, getTransMeta().getRepository(), getTransMeta().getMetaStore(),
+        .loadMappingMeta( variablizedStepMeta, getTransMeta().getRepository(), getTransMeta().getMetaStore(),
           getParentVariableSpace() );
       subtransExecutor = new SubtransExecutor( getStepname(),
         getTrans(), transMeta, true,
-        new TransExecutorParameters(), environmentSubstitute( stepMeta.getSubStep() ) );
+        new TransExecutorParameters(), variablizedStepMeta.getSubStep() );
 
     } catch ( KettleException e ) {
       log.logError( e.getLocalizedMessage(), e );
@@ -86,8 +87,8 @@ public class BaseStreamStep extends BaseStep {
     }
 
     List<CheckResultInterface> remarks = new ArrayList<>();
-    stepMeta.check(
-      remarks, getTransMeta(), stepMeta.getParentStepMeta(),
+    variablizedStepMeta.check(
+      remarks, getTransMeta(), variablizedStepMeta.getParentStepMeta(),
       null, null, null, null, //these parameters are not used inside the method
       variables, getRepository(), getMetaStore() );
     boolean errorsPresent =
@@ -174,7 +175,7 @@ public class BaseStreamStep extends BaseStep {
 
   protected int getBatchSize() {
     try {
-      return Integer.parseInt( stepMeta.getBatchSize() );
+      return Integer.parseInt( variablizedStepMeta.getBatchSize() );
     } catch ( NumberFormatException nfe ) {
       return 50;
     }
@@ -182,7 +183,7 @@ public class BaseStreamStep extends BaseStep {
 
   protected long getDuration() {
     try {
-      return Long.parseLong( stepMeta.getBatchDuration() );
+      return Long.parseLong( variablizedStepMeta.getBatchDuration() );
     } catch ( NumberFormatException nfe ) {
       return 5000L;
     }

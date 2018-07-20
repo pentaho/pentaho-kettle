@@ -46,22 +46,21 @@ public class JmsConsumer extends BaseStreamStep {
   public boolean init( StepMetaInterface stepMetaInterface, StepDataInterface stepDataInterface ) {
     boolean superStatus = super.init( stepMetaInterface, stepDataInterface );
 
-    JmsConsumerMeta meta = (JmsConsumerMeta) stepMetaInterface;
+    JmsConsumerMeta jmsConsumerMeta = (JmsConsumerMeta) this.variablizedStepMeta;
 
-    if ( !validateParams( meta ) ) {
+    if ( !validateParams( jmsConsumerMeta ) ) {
       return false;
     }
 
-
     window = new FixedTimeStreamWindow<>(
-      subtransExecutor, meta.jmsDelegate.getRowMeta(), getDuration(), getBatchSize() );
-    source = new JmsStreamSource( this, requireNonNull( meta.jmsDelegate ), getReceiverTimeout( meta ) );
+      subtransExecutor, jmsConsumerMeta.jmsDelegate.getRowMeta(), getDuration(), getBatchSize() );
+    source = new JmsStreamSource( this, requireNonNull( jmsConsumerMeta.jmsDelegate ), getReceiverTimeout( jmsConsumerMeta ) );
     return superStatus;
   }
 
   public int getReceiverTimeout( JmsConsumerMeta meta ) {
     try {
-      return Integer.parseInt( this.environmentSubstitute( meta.jmsDelegate.receiveTimeout ) );
+      return Integer.parseInt( meta.jmsDelegate.receiveTimeout );
     } catch ( NumberFormatException nfe ) {
       logError( getString( PKG, "JmsConsumer.ReceiveTimeoutInvalid" ) );
     }
