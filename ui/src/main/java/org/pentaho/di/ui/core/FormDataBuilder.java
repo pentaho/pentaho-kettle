@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -35,6 +35,11 @@ public class FormDataBuilder implements Cloneable {
 
   public FormDataBuilder width( int width ) {
     fd.width = width;
+    return this;
+  }
+
+  public FormDataBuilder height( int height ) {
+    fd.height = height;
     return this;
   }
 

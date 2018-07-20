@@ -47,6 +47,7 @@ import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Group;
@@ -982,6 +983,11 @@ public class PropsUI extends Props {
 
   public void setLook( Control widget ) {
     setLook( widget, WIDGET_STYLE_DEFAULT );
+    if ( widget instanceof Composite ) {
+      for ( Control child : ( (Composite) widget ).getChildren() ) {
+        setLook( child );
+      }
+    }
   }
 
   public void setLook( final Control control, int style ) {
