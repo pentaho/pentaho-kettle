@@ -877,7 +877,7 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
         prepareFieldNamesParameters( parameters, parameterFieldNames, parameterValues, namedParam, this );
 
         StepWithMappingMeta.activateParams( transMeta, transMeta, this, parameterNames,
-          parameters, parameterValues );
+          parameters, parameterValues, isPassingAllParameters() );
         boolean doFallback = true;
         SlaveServer remoteSlaveServer = null;
         TransExecutionConfiguration executionConfiguration = new TransExecutionConfiguration();

@@ -200,6 +200,7 @@ public class StepWithMappingMetaTest {
     parent.setVariable( paramOverwrite, parentValue );
 
     TransMeta childVariableSpace = new TransMeta();
+    childVariableSpace.addParameterDefinition( childParam, "", "" );
     childVariableSpace.setParameterValue( childParam, childValue );
 
     String[] parameters = childVariableSpace.listParameters();
@@ -264,4 +265,70 @@ public class StepWithMappingMetaTest {
     Mockito.verify( rep, Mockito.times( 1 ) ).loadTransformation( Mockito.eq( transName ),
       Mockito.eq( directoryInterface ), Mockito.eq( null ), Mockito.eq( true ), Mockito.eq( null ) );
   }
+
+  @Test
+  @PrepareForTest( StepWithMappingMeta.class )
+  public void activateParamsWithFalsePassParametersFlagTest() throws Exception {
+    String childParam = "childParam";
+    String childValue = "childValue";
+    String paramOverwrite = "paramOverwrite";
+    String parentValue = "parentValue";
+    String stepValue = "stepValue";
+    String parentAndChildParameter = "parentAndChildParameter";
+
+    VariableSpace parent = new Variables();
+    parent.setVariable( paramOverwrite, parentValue );
+    parent.setVariable( parentAndChildParameter, parentValue );
+
+    TransMeta childVariableSpace = new TransMeta();
+    childVariableSpace.addParameterDefinition( childParam, "", "" );
+    childVariableSpace.setParameterValue( childParam, childValue );
+    childVariableSpace.addParameterDefinition( parentAndChildParameter, "", "" );
+    childVariableSpace.setParameterValue( parentAndChildParameter, childValue );
+
+    String[] parameters = childVariableSpace.listParameters();
+    StepWithMappingMeta.activateParams( childVariableSpace, childVariableSpace, parent,
+      parameters, new String[] { childParam, paramOverwrite }, new String[] { childValue, stepValue }, false );
+
+    Assert.assertEquals( childValue, childVariableSpace.getVariable( childParam ) );
+    // the step parameter prevails
+    Assert.assertEquals( stepValue, childVariableSpace.getVariable( paramOverwrite ) );
+
+    Assert.assertEquals( childValue, childVariableSpace.getVariable( parentAndChildParameter ) );
+  }
+
+  @Test
+  @PrepareForTest( StepWithMappingMeta.class )
+  public void activateParamsWithTruePassParametersFlagTest() throws Exception {
+    String childParam = "childParam";
+    String childValue = "childValue";
+    String paramOverwrite = "paramOverwrite";
+    String parentValue = "parentValue";
+    String stepValue = "stepValue";
+    String parentAndChildParameter = "parentAndChildParameter";
+
+    VariableSpace parent = new Variables();
+    parent.setVariable( paramOverwrite, parentValue );
+    parent.setVariable( parentAndChildParameter, parentValue );
+
+    TransMeta childVariableSpace = new TransMeta();
+    childVariableSpace.addParameterDefinition( childParam, "", "" );
+    childVariableSpace.setParameterValue( childParam, childValue );
+    childVariableSpace.addParameterDefinition( parentAndChildParameter, "", "" );
+    childVariableSpace.setParameterValue( parentAndChildParameter, childValue );
+
+    String[] parameters = childVariableSpace.listParameters();
+
+    StepWithMappingMeta.activateParams( childVariableSpace, childVariableSpace, parent,
+      parameters, new String[] { childParam, paramOverwrite }, new String[] { childValue, stepValue }, true );
+
+    //childVariableSpace.setVariable( parentAndChildParameter, parentValue);
+
+    Assert.assertEquals( childValue, childVariableSpace.getVariable( childParam ) );
+    // the step parameter prevails
+    Assert.assertEquals( stepValue, childVariableSpace.getVariable( paramOverwrite ) );
+
+    Assert.assertEquals( parentValue, childVariableSpace.getVariable( parentAndChildParameter ) );
+  }
+
 }
