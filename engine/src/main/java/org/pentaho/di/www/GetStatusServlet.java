@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,6 +22,9 @@
 
 package org.pentaho.di.www;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.lang.management.OperatingSystemMXBean;
@@ -36,6 +39,8 @@ import java.util.List;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
@@ -43,6 +48,7 @@ import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.Job;
 import org.pentaho.di.trans.Trans;
+import org.w3c.dom.Document;
 
 public class GetStatusServlet extends BaseHttpServlet implements CartePluginInterface {
   private static Class<?> PKG = GetStatusServlet.class; // for i18n purposes, needed by Translator2!!
@@ -59,130 +65,130 @@ public class GetStatusServlet extends BaseHttpServlet implements CartePluginInte
   }
 
   /**
-  <div id="mindtouch">
-      <h1>/kettle/status</h1>
-      <a name="GET"></a>
-      <h2>GET</h2>
-      <p>Retrieve server status. The status contains information about the server itself (OS, memory, etc)
-      and information about jobs and transformations present on the server.</p>
+   <div id="mindtouch">
+   <h1>/kettle/status</h1>
+   <a name="GET"></a>
+   <h2>GET</h2>
+   <p>Retrieve server status. The status contains information about the server itself (OS, memory, etc)
+   and information about jobs and transformations present on the server.</p>
 
-      <p><b>Example Request:</b><br />
-      <pre function="syntax.xml">
-      GET /kettle/status/?xml=Y
-      </pre>
+   <p><b>Example Request:</b><br />
+   <pre function="syntax.xml">
+   GET /kettle/status/?xml=Y
+   </pre>
 
-      </p>
-      <h3>Parameters</h3>
-      <table class="pentaho-table">
-      <tbody>
-      <tr>
-        <th>name</th>
-        <th>description</th>
-        <th>type</th>
-      </tr>
-      <tr>
-      <td>xml</td>
-      <td>Boolean flag which defines output format <code>Y</code> forces XML output to be generated.
-    HTML is returned otherwise.</td>
-      <td>boolean, optional</td>
-      </tr>
-      </tbody>
-      </table>
+   </p>
+   <h3>Parameters</h3>
+   <table class="pentaho-table">
+   <tbody>
+   <tr>
+   <th>name</th>
+   <th>description</th>
+   <th>type</th>
+   </tr>
+   <tr>
+   <td>xml</td>
+   <td>Boolean flag which defines output format <code>Y</code> forces XML output to be generated.
+   HTML is returned otherwise.</td>
+   <td>boolean, optional</td>
+   </tr>
+   </tbody>
+   </table>
 
-    <h3>Response Body</h3>
+   <h3>Response Body</h3>
 
-    <table class="pentaho-table">
-      <tbody>
-        <tr>
-          <td align="right">element:</td>
-          <td>(custom)</td>
-        </tr>
-        <tr>
-          <td align="right">media types:</td>
-          <td>text/xml, text/html</td>
-        </tr>
-      </tbody>
-    </table>
-      <p>Response XML or HTML response containing details about the transformation specified.
-    If an error occurs during method invocation <code>result</code> field of the response
-    will contain <code>ERROR</code> status.</p>
+   <table class="pentaho-table">
+   <tbody>
+   <tr>
+   <td align="right">element:</td>
+   <td>(custom)</td>
+   </tr>
+   <tr>
+   <td align="right">media types:</td>
+   <td>text/xml, text/html</td>
+   </tr>
+   </tbody>
+   </table>
+   <p>Response XML or HTML response containing details about the transformation specified.
+   If an error occurs during method invocation <code>result</code> field of the response
+   will contain <code>ERROR</code> status.</p>
 
-      <p><b>Example Response:</b></p>
-      <pre function="syntax.xml">
-      <?xml version="1.0" encoding="UTF-8"?>
-      <serverstatus>
-        <statusdesc>Online</statusdesc>
-        <memory_free>229093440</memory_free>
-        <memory_total>285736960</memory_total>
-        <cpu_cores>4</cpu_cores>
-        <cpu_process_time>7534848300</cpu_process_time>
-        <uptime>68818403</uptime>
-        <thread_count>45</thread_count>
-        <load_avg>-1.0</load_avg>
-        <os_name>Windows 7</os_name>
-        <os_version>6.1</os_version>
-        <os_arch>amd64</os_arch>
-        <transstatuslist>
-          <transstatus>
-            <transname>Row generator test</transname>
-            <id>56c93d4e-96c1-4fae-92d9-d864b0779845</id>
-            <status_desc>Waiting</status_desc>
-            <error_desc/>
-            <paused>N</paused>
-            <stepstatuslist>
-            </stepstatuslist>
-            <first_log_line_nr>0</first_log_line_nr>
-            <last_log_line_nr>0</last_log_line_nr>
-            <logging_string>&#x3c;&#x21;&#x5b;CDATA&#x5b;&#x5d;&#x5d;&#x3e;</logging_string>
-          </transstatus>
-          <transstatus>
-            <transname>dummy-trans</transname>
-            <id>c56961b2-c848-49b8-abde-76c8015e29b0</id>
-            <status_desc>Stopped</status_desc>
-            <error_desc/>
-            <paused>N</paused>
-            <stepstatuslist>
-            </stepstatuslist>
-            <first_log_line_nr>0</first_log_line_nr>
-            <last_log_line_nr>0</last_log_line_nr>
-            <logging_string>&#x3c;&#x21;&#x5b;CDATA&#x5b;&#x5d;&#x5d;&#x3e;</logging_string>
-          </transstatus>
-        </transstatuslist>
-        <jobstatuslist>
-          <jobstatus>
-            <jobname>dummy_job</jobname>
-            <id>abd61143-8174-4f27-9037-6b22fbd3e229</id>
-            <status_desc>Stopped</status_desc>
-            <error_desc/>
-            <logging_string>&#x3c;&#x21;&#x5b;CDATA&#x5b;&#x5d;&#x5d;&#x3e;</logging_string>
-            <first_log_line_nr>0</first_log_line_nr>
-            <last_log_line_nr>0</last_log_line_nr>
-          </jobstatus>
-        </jobstatuslist>
-      </serverstatus>
-      </pre>
+   <p><b>Example Response:</b></p>
+   <pre function="syntax.xml">
+   <?xml version="1.0" encoding="UTF-8"?>
+   <serverstatus>
+   <statusdesc>Online</statusdesc>
+   <memory_free>229093440</memory_free>
+   <memory_total>285736960</memory_total>
+   <cpu_cores>4</cpu_cores>
+   <cpu_process_time>7534848300</cpu_process_time>
+   <uptime>68818403</uptime>
+   <thread_count>45</thread_count>
+   <load_avg>-1.0</load_avg>
+   <os_name>Windows 7</os_name>
+   <os_version>6.1</os_version>
+   <os_arch>amd64</os_arch>
+   <transstatuslist>
+   <transstatus>
+   <transname>Row generator test</transname>
+   <id>56c93d4e-96c1-4fae-92d9-d864b0779845</id>
+   <status_desc>Waiting</status_desc>
+   <error_desc/>
+   <paused>N</paused>
+   <stepstatuslist>
+   </stepstatuslist>
+   <first_log_line_nr>0</first_log_line_nr>
+   <last_log_line_nr>0</last_log_line_nr>
+   <logging_string>&#x3c;&#x21;&#x5b;CDATA&#x5b;&#x5d;&#x5d;&#x3e;</logging_string>
+   </transstatus>
+   <transstatus>
+   <transname>dummy-trans</transname>
+   <id>c56961b2-c848-49b8-abde-76c8015e29b0</id>
+   <status_desc>Stopped</status_desc>
+   <error_desc/>
+   <paused>N</paused>
+   <stepstatuslist>
+   </stepstatuslist>
+   <first_log_line_nr>0</first_log_line_nr>
+   <last_log_line_nr>0</last_log_line_nr>
+   <logging_string>&#x3c;&#x21;&#x5b;CDATA&#x5b;&#x5d;&#x5d;&#x3e;</logging_string>
+   </transstatus>
+   </transstatuslist>
+   <jobstatuslist>
+   <jobstatus>
+   <jobname>dummy_job</jobname>
+   <id>abd61143-8174-4f27-9037-6b22fbd3e229</id>
+   <status_desc>Stopped</status_desc>
+   <error_desc/>
+   <logging_string>&#x3c;&#x21;&#x5b;CDATA&#x5b;&#x5d;&#x5d;&#x3e;</logging_string>
+   <first_log_line_nr>0</first_log_line_nr>
+   <last_log_line_nr>0</last_log_line_nr>
+   </jobstatus>
+   </jobstatuslist>
+   </serverstatus>
+   </pre>
 
-      <h3>Status Codes</h3>
-      <table class="pentaho-table">
-    <tbody>
-      <tr>
-        <th>code</th>
-        <th>description</th>
-      </tr>
-      <tr>
-        <td>200</td>
-        <td>Request was processed.</td>
-      </tr>
-      <tr>
-        <td>500</td>
-        <td>Internal server error occurs during request processing.</td>
-      </tr>
-    </tbody>
-  </table>
-  </div>
-    */
+   <h3>Status Codes</h3>
+   <table class="pentaho-table">
+   <tbody>
+   <tr>
+   <th>code</th>
+   <th>description</th>
+   </tr>
+   <tr>
+   <td>200</td>
+   <td>Request was processed.</td>
+   </tr>
+   <tr>
+   <td>500</td>
+   <td>Internal server error occurs during request processing.</td>
+   </tr>
+   </tbody>
+   </table>
+   </div>
+   */
   public void doGet( HttpServletRequest request, HttpServletResponse response ) throws ServletException,
-    IOException {
+      IOException {
     if ( isJettyMode() && !request.getContextPath().startsWith( CONTEXT_PATH ) ) {
       return;
     }
@@ -193,6 +199,7 @@ public class GetStatusServlet extends BaseHttpServlet implements CartePluginInte
     response.setStatus( HttpServletResponse.SC_OK );
 
     boolean useXML = "Y".equalsIgnoreCase( request.getParameter( "xml" ) );
+    boolean usePentahoTheme = "Y".equalsIgnoreCase( request.getParameter( "usePentahoTheme" ) );
 
     if ( useXML ) {
       response.setContentType( "text/xml" );
@@ -239,20 +246,88 @@ public class GetStatusServlet extends BaseHttpServlet implements CartePluginInte
     } else {
       out.println( "<HTML>" );
       out.println( "<HEAD><TITLE>"
-        + BaseMessages.getString( PKG, "GetStatusServlet.KettleSlaveServerStatus" ) + "</TITLE>" );
+          + BaseMessages.getString( PKG, "GetStatusServlet.KettleSlaveServerStatus" ) + "</TITLE>" );
       out.println( "<META http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\">" );
+
+      int tableBorder = 1;
+      if ( usePentahoTheme ) {
+        try {
+          // Read in currently set theme from pentaho.xml file
+          File f = new File( "..\\..\\pentaho-solutions\\system\\pentaho.xml" );
+          DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+          DocumentBuilder db = dbFactory.newDocumentBuilder();
+          Document doc = db.parse( f );
+          String themeName = doc.getElementsByTagName( "default-theme" ).item( 0 ).getTextContent();
+
+          // Get theme CSS file
+          String themePath = "..\\..\\pentaho-solutions\\system\\common-ui\\resources\\themes\\" + themeName + "\\";
+          File themeDir = new File( themePath );
+          for ( File fName : themeDir.listFiles() ) {
+            if ( fName.getName().contains( ".css" ) ) {
+              themePath += fName.getName();
+              break;
+            }
+          }
+
+          // Get mantle theme CSS file
+          String mantlePath = "..\\webapps\\pentaho\\mantle\\themes\\" + themeName + "\\";
+          File mantleDir = new File( mantlePath );
+          for ( File fName : mantleDir.listFiles() ) {
+            if ( fName.getName().contains( ".css" ) ) {
+              mantlePath += fName.getName();
+              break;
+            }
+          }
+
+          BufferedReader styleBr = new BufferedReader( new FileReader( themePath ) ); // themePath with appended CSS filename
+          StringBuilder sb = new StringBuilder();
+
+          // Start to read in CSS and write HTML
+          out.println( "<STYLE>" );
+
+          String line = styleBr.readLine();
+          while ( line != null ) {
+            sb.append( line );
+            line = styleBr.readLine();
+          }
+
+          out.println( sb.toString() );
+          out.println( "</STYLE>" );
+          out.println( "<STYLE>" );
+
+          BufferedReader mantleBr = new BufferedReader( new FileReader( mantlePath ) );
+          sb.delete( 0, sb.length() ); // clear builder
+          line = mantleBr.readLine();
+          while ( line != null ) {
+            sb.append( line );
+            line = mantleBr.readLine();
+          }
+
+          styleBr.close();
+          out.println( sb.toString() );
+          out.println( "</STYLE>" );
+          tableBorder = 0;
+        } catch ( Exception ex ) {
+          // log here
+        }
+      }
+
       out.println( "</HEAD>" );
-      out.println( "<BODY>" );
-      out.println( "<H1>" + BaseMessages.getString( PKG, "GetStatusServlet.TopStatus" ) + "</H1>" );
+      out.println( "<BODY class=\"pentaho-page-background\">" );
+      out.println( "<div class=\"row\" id=\"pucHeader\">" );
+      out.println( "<h1>" + BaseMessages.getString( PKG, "GetStatusServlet.TopStatus" ) + "</h1>" );
+      out.println( "</div>" );
 
       try {
-        out.println( "<table border=\"1\">" );
-        out.print( "<tr> <th>"
-          + BaseMessages.getString( PKG, "GetStatusServlet.TransName" ) + "</th> <th>"
-          + BaseMessages.getString( PKG, "GetStatusServlet.CarteId" ) + "</th> <th>"
-          + BaseMessages.getString( PKG, "GetStatusServlet.Status" ) + "</th> <th>"
-          + BaseMessages.getString( PKG, "GetStatusServlet.LastLogDate" ) + "</th> <th>"
-          + BaseMessages.getString( PKG, "GetStatusServlet.Remove" ) + "</th> </tr>" );
+        out.println( "<div class=\"row\">" );
+        out.println( "<h2>Transformations</h2>" );
+        out.println( "<table class=\"pentaho-table\" border=\"" + tableBorder + "\">" );
+        out.print( "<tr> <th class=\"cellTableHeader\">"
+            + BaseMessages.getString( PKG, "GetStatusServlet.TransName" ) + "</th> <th class=\"cellTableHeader\">"
+            + BaseMessages.getString( PKG, "GetStatusServlet.CarteId" ) + "</th> <th class=\"cellTableHeader\">"
+            + BaseMessages.getString( PKG, "GetStatusServlet.Status" ) + "</th> <th class=\"cellTableHeader\">"
+            + BaseMessages.getString( PKG, "GetStatusServlet.LastLogDate" ) + "</th> <th class=\"cellTableHeader\">"
+            + BaseMessages.getString( PKG, "GetStatusServlet.Remove" ) + "</th> </tr>" );
 
         Comparator<CarteObjectEntry> transComparator = new Comparator<CarteObjectEntry>() {
           @Override
@@ -274,41 +349,51 @@ public class GetStatusServlet extends BaseHttpServlet implements CartePluginInte
 
         Collections.sort( transEntries, transComparator );
 
-        for ( CarteObjectEntry entry : transEntries ) {
-          String name = entry.getName();
-          String id = entry.getId();
-          Trans trans = getTransformationMap().getTransformation( entry );
+        boolean evenRow = true;
+        for ( int i = 0; i < transEntries.size(); i++ ) {
+          String name = transEntries.get( i ).getName();
+          String id = transEntries.get( i ).getId();
+          Trans trans = getTransformationMap().getTransformation( transEntries.get( i ) );
           String status = trans.getStatus();
           String removeText = "";
           // Finished, Stopped, Waiting : allow the user to remove the transformation
           //
           if ( trans.isFinished() || trans.isStopped() || ( !trans.isInitializing() && !trans.isRunning() ) ) {
             removeText =
-              "<a href=\""
-                + convertContextPath( RemoveTransServlet.CONTEXT_PATH ) + "?name="
-                + URLEncoder.encode( name, "UTF-8" ) + "&id=" + id + "\"> Remove </a>";
+                "<a href=\""
+                    + convertContextPath( RemoveTransServlet.CONTEXT_PATH ) + "?name="
+                    + URLEncoder.encode( name, "UTF-8" ) + "&id=" + id + "\"> Remove </a>";
           }
 
-          out.print( "<tr>" );
-          out.print( "<td><a href=\""
-            + convertContextPath( GetTransStatusServlet.CONTEXT_PATH ) + "?name="
-            + URLEncoder.encode( name, "UTF-8" ) + "&id=" + id + "\">" + name + "</a></td>" );
-          out.print( "<td>" + id + "</td>" );
-          out.print( "<td>" + status + "</td>" );
-          out.print( "<td>"
-            + ( trans.getLogDate() == null ? "-" : XMLHandler.date2string( trans.getLogDate() ) ) + "</td>" );
-          out.print( "<td>" + removeText + "</td>" );
+          String trClass = evenRow ? "cellTableEvenRow" : "cellTableOddRow"; // alternating row color
+          String tdClass = evenRow ? "cellTableEvenRowCell" : "cellTableOddRowCell";
+          evenRow = !evenRow; // flip
+          String firstColumn = i == 0 ? "cellTableFirstColumn" : "";
+          String lastColumn = i == transEntries.size() - 1 ? "cellTableLastColumn" : "";
+          out.print( "<tr class=\"cellTableCell " + trClass + "\">" );
+          out.print( "<td class=\"cellTableCell cellTableFirstColumn " + tdClass + "\"><a href=\""
+              + convertContextPath( GetTransStatusServlet.CONTEXT_PATH ) + "?name="
+              + URLEncoder.encode( name, "UTF-8" ) + "&id=" + id + "\">" + name + "</a></td>" );
+          out.print( "<td class=\"cellTableCell " + tdClass + "\">" + id + "</td>" );
+          out.print( "<td class=\"cellTableCell " + tdClass + "\">" + status + "</td>" );
+          out.print( "<td class=\"cellTableCell " + tdClass + "\">"
+              + ( trans.getLogDate() == null ? "-" : XMLHandler.date2string( trans.getLogDate() ) ) + "</td>" );
+          out.print( "<td class=\"cellTableCell cellTableLastColumn " + tdClass + "\">" + removeText + "</td>" );
           out.print( "</tr>" );
         }
-        out.print( "</table><p>" );
+        out.print( "</table>" );
+        out.print( "</div>" ); // end div
+        out.print( "<br>" );
 
-        out.println( "<table border=\"1\">" );
-        out.print( "<tr> <th>"
-          + BaseMessages.getString( PKG, "GetStatusServlet.JobName" ) + "</th> <th>"
-          + BaseMessages.getString( PKG, "GetStatusServlet.CarteId" ) + "</th> <th>"
-          + BaseMessages.getString( PKG, "GetStatusServlet.Status" ) + "</th> <th>"
-          + BaseMessages.getString( PKG, "GetStatusServlet.LastLogDate" ) + "</th> <th>"
-          + BaseMessages.getString( PKG, "GetStatusServlet.Remove" ) + "</th> </tr>" );
+        out.println( "<div class=\"row\">" );
+        out.println( "<h2>Jobs</h2>" );
+        out.println( "<table class=\"pentaho-table\" border=\"" + tableBorder + "\">" );
+        out.print( "<tr> <th class=\"cellTableHeader\">"
+            + BaseMessages.getString( PKG, "GetStatusServlet.JobName" ) + "</th> <th class=\"cellTableHeader\">"
+            + BaseMessages.getString( PKG, "GetStatusServlet.CarteId" ) + "</th> <th class=\"cellTableHeader\">"
+            + BaseMessages.getString( PKG, "GetStatusServlet.Status" ) + "</th> <th class=\"cellTableHeader\">"
+            + BaseMessages.getString( PKG, "GetStatusServlet.LastLogDate" ) + "</th> <th class=\"cellTableHeader\">"
+            + BaseMessages.getString( PKG, "GetStatusServlet.Remove" ) + "</th> </tr>" );
 
         Comparator<CarteObjectEntry> jobComparator = new Comparator<CarteObjectEntry>() {
           @Override
@@ -330,49 +415,54 @@ public class GetStatusServlet extends BaseHttpServlet implements CartePluginInte
 
         Collections.sort( jobEntries, jobComparator );
 
-        for ( CarteObjectEntry entry : jobEntries ) {
-          String name = entry.getName();
-          String id = entry.getId();
-          Job job = getJobMap().getJob( entry );
+        evenRow = true;
+        for ( int i = 0; i < jobEntries.size(); i++ ) {
+          String name = jobEntries.get( i ).getName();
+          String id = jobEntries.get( i ).getId();
+          Job job = getJobMap().getJob( jobEntries.get( i ) );
           String status = job.getStatus();
 
           String removeText;
           if ( job.isFinished() || job.isStopped() ) {
             removeText =
-              "<a href=\""
-                + convertContextPath( RemoveJobServlet.CONTEXT_PATH ) + "?name="
-                + URLEncoder.encode( name, "UTF-8" ) + "&id=" + id + "\"> Remove </a>";
+                "<a href=\""
+                    + convertContextPath( RemoveJobServlet.CONTEXT_PATH ) + "?name="
+                    + URLEncoder.encode( name, "UTF-8" ) + "&id=" + id + "\"> Remove </a>";
           } else {
             removeText = "";
           }
 
-          out.print( "<tr>" );
-          out.print( "<td><a href=\""
-            + convertContextPath( GetJobStatusServlet.CONTEXT_PATH ) + "?name="
-            + URLEncoder.encode( name, "UTF-8" ) + "&id=" + id + "\">" + name + "</a></td>" );
-          out.print( "<td>" + id + "</td>" );
-          out.print( "<td>" + status + "</td>" );
-          out.print( "<td>"
-            + ( job.getLogDate() == null ? "-" : XMLHandler.date2string( job.getLogDate() ) ) + "</td>" );
-          out.print( "<td>" + removeText + "</td>" );
+          String trClass = evenRow ? "cellTableEvenRow" : "cellTableOddRow"; // alternating row color
+          String tdClass = evenRow ? "cellTableEvenRowCell" : "cellTableOddRowCell";
+          evenRow = !evenRow; // flip
+          out.print( "<tr class=\"cellTableCell " + trClass + "\">" );
+          out.print( "<td class=\"cellTableCell cellTableFirstColumn " + tdClass + "\"><a href=\""
+              + convertContextPath( GetJobStatusServlet.CONTEXT_PATH ) + "?name="
+              + URLEncoder.encode( name, "UTF-8" ) + "&id=" + id + "\">" + name + "</a></td>" );
+          out.print( "<td class=\"cellTableCell " + tdClass +  "\">" + id + "</td>" );
+          out.print( "<td class=\"cellTableCell " + tdClass + "\">" + status + "</td>" );
+          out.print( "<td class=\"cellTableCell " + tdClass +  "\">"
+              + ( job.getLogDate() == null ? "-" : XMLHandler.date2string( job.getLogDate() ) ) + "</td>" );
+          out.print( "<td class=\"cellTableCell cellTableLastColumn " + tdClass + "\">" + removeText + "</td>" );
           out.print( "</tr>" );
         }
-        out.print( "</table>" );
+        out.print( "</table></div>" ); // end div
 
       } catch ( Exception ex ) {
-        out.println( "<p>" );
+        out.println( "<br>" );
         out.println( "<pre>" );
         ex.printStackTrace( out );
         out.println( "</pre>" );
       }
 
-      out.println( "<p>" );
-      out.println( "<H1>"
-        + BaseMessages.getString( PKG, "GetStatusServlet.ConfigurationDetails.Title" ) + "</H1><p>" );
-      out.println( "<table border=\"1\">" );
-      out.print( "<tr> <th>"
-        + BaseMessages.getString( PKG, "GetStatusServlet.Parameter.Title" ) + "</th> <th>"
-        + BaseMessages.getString( PKG, "GetStatusServlet.Value.Title" ) + "</th> </tr>" );
+      out.println( "<br>" );
+      out.println( "<div class=\"row\">" );
+      out.println( "<div><h3>"
+          + BaseMessages.getString( PKG, "GetStatusServlet.ConfigurationDetails.Title" ) + "</h3></div>" );
+      out.println( "<table class=\"pentaho-table\" border=\"" + tableBorder + "\">" );
+      out.print( "<tr> <th class=\"cellTableHeader\">"
+          + BaseMessages.getString( PKG, "GetStatusServlet.Parameter.Title" ) + "</th> <th class=\"cellTableHeader\">"
+          + BaseMessages.getString( PKG, "GetStatusServlet.Value.Title" ) + "</th> </tr>" );
 
       // The max number of log lines in the back-end
       //
@@ -384,9 +474,9 @@ public class GetStatusServlet extends BaseHttpServlet implements CartePluginInte
         } else {
           maxLines = serverConfig.getMaxLogLines() + BaseMessages.getString( PKG, "GetStatusServlet.Lines" );
         }
-        out.print( "<tr> <td>"
-          + BaseMessages.getString( PKG, "GetStatusServlet.Parameter.MaxLogLines" ) + "</td> <td>" + maxLines
-          + "</td> </tr>" );
+        out.print( "<tr> <td class=\"cellTableCell cellTableEvenRowCell cellTableFirstColumn\">"
+            + BaseMessages.getString( PKG, "GetStatusServlet.Parameter.MaxLogLines" ) + "</td> <td class=\"cellTableCell cellTableEvenRowCell cellTableLastColumn\">" + maxLines
+            + "</td> </tr>" );
 
         // The max age of log lines
         //
@@ -396,9 +486,9 @@ public class GetStatusServlet extends BaseHttpServlet implements CartePluginInte
         } else {
           maxAge = serverConfig.getMaxLogTimeoutMinutes() + BaseMessages.getString( PKG, "GetStatusServlet.Minutes" );
         }
-        out.print( "<tr> <td>"
-          + BaseMessages.getString( PKG, "GetStatusServlet.Parameter.MaxLogLinesAge" ) + "</td> <td>" + maxAge
-          + "</td> </tr>" );
+        out.print( "<tr> <td class=\"cellTableCell cellTableEvenRowCell cellTableFirstColumn\">"
+            + BaseMessages.getString( PKG, "GetStatusServlet.Parameter.MaxLogLinesAge" ) + "</td> <td class=\"cellTableCell cellTableEvenRowCell cellTableLastColumn\">" + maxAge
+            + "</td> </tr>" );
 
         // The max age of stale objects
         //
@@ -408,9 +498,9 @@ public class GetStatusServlet extends BaseHttpServlet implements CartePluginInte
         } else {
           maxObjAge = serverConfig.getObjectTimeoutMinutes() + BaseMessages.getString( PKG, "GetStatusServlet.Minutes" );
         }
-        out.print( "<tr> <td>"
-          + BaseMessages.getString( PKG, "GetStatusServlet.Parameter.MaxObjectsAge" ) + "</td> <td>" + maxObjAge
-          + "</td> </tr>" );
+        out.print( "<tr> <td class=\"cellTableCell cellTableEvenRowCell cellTableFirstColumn\">"
+            + BaseMessages.getString( PKG, "GetStatusServlet.Parameter.MaxObjectsAge" ) + "</td> <td class=\"cellTableCell cellTableEvenRowCell cellTableLastColumn\">" + maxObjAge
+            + "</td> </tr>" );
 
         // The name of the specified repository
         //
@@ -423,9 +513,9 @@ public class GetStatusServlet extends BaseHttpServlet implements CartePluginInte
           repositoryName = BaseMessages.getString( PKG, "GetStatusServlet.Parameter.RepositoryName.UnableToConnect",
               serverConfig.getRepositoryId() );
         }
-        out.print( "<tr> <td>"
-          + BaseMessages.getString( PKG, "GetStatusServlet.Parameter.RepositoryName" ) + "</td> <td>"
-          + repositoryName + "</td> </tr>" );
+        out.print( "<tr> <td class=\"cellTableCell cellTableEvenRowCell cellTableFirstColumn\">"
+            + BaseMessages.getString( PKG, "GetStatusServlet.Parameter.RepositoryName" ) + "</td> <td class=\"cellTableCell cellTableEvenRowCell cellTableLastColumn\">"
+            + repositoryName + "</td> </tr>" );
 
         out.print( "</table>" );
 
@@ -433,10 +523,14 @@ public class GetStatusServlet extends BaseHttpServlet implements CartePluginInte
         if ( filename == null ) {
           filename = BaseMessages.getString( PKG, "GetStatusServlet.ConfigurationDetails.UsingDefaults" );
         }
+        out.println( "</div>" ); // end div
+        out.print( "<br>" );
+        out.print( "<div class=\"row\">" );
         out
-          .println( "<i>"
-            + BaseMessages.getString( PKG, "GetStatusServlet.ConfigurationDetails.Advice", filename )
-            + "</i><br>" );
+            .println( "<i>"
+                + BaseMessages.getString( PKG, "GetStatusServlet.ConfigurationDetails.Advice", filename )
+                + "</i>" );
+        out.print( "</div>" );
       }
       out.println( "</BODY>" );
       out.println( "</HTML>" );
@@ -445,7 +539,7 @@ public class GetStatusServlet extends BaseHttpServlet implements CartePluginInte
 
   private static void getSystemInfo( SlaveServerStatus serverStatus ) {
     OperatingSystemMXBean operatingSystemMXBean =
-      java.lang.management.ManagementFactory.getOperatingSystemMXBean();
+        java.lang.management.ManagementFactory.getOperatingSystemMXBean();
     ThreadMXBean threadMXBean = java.lang.management.ManagementFactory.getThreadMXBean();
     RuntimeMXBean runtimeMXBean = java.lang.management.ManagementFactory.getRuntimeMXBean();
 

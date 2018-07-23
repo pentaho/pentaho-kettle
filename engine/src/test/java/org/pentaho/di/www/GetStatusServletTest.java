@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -69,7 +69,7 @@ public class GetStatusServletTest {
     when( mockHttpServletResponse.getWriter() ).thenReturn( printWriter );
 
     getStatusServlet.doGet( mockHttpServletRequest, mockHttpServletResponse );
-    assertFalse( ServletTestUtils.hasBadText( ServletTestUtils.getInsideOfTag( "H1", out.toString() ) ) );
+    assertFalse( ServletTestUtils.hasBadText( ServletTestUtils.getInsideOfTag( "h1", out.toString() ) ) );
   }
 
   @Test
