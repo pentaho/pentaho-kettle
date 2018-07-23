@@ -5,6 +5,8 @@ The Jenkins Continuous Integration and Delivery server.
 This image is provided to you with a minimal set of plugins to run pipelines, and 
 it comes pre-configured with the [Jenkins Shared Libraries](https://github.com/pentaho/jenkins-shared-libraries).
 
+Video tutorial (~30 mins) of setup & usage available [here](https://pentaho.app.box.com/file/306724225188).
+
 NOTE: For jenkins to be able to clone the Shared Libraries, you must provide it with your git credentials. If you haven't created a personal access token yet, 
 see [Creating a personal access token](https://help.github.com/articles/creating-a-personal-access-token-for-the-command-line/)
 for steps on how to create one.
