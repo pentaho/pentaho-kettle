@@ -337,6 +337,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
   public Job( Repository repository, JobMeta jobMeta, LoggingObjectInterface parentLogging ) {
     this.rep = repository;
     this.jobMeta = jobMeta;
+    this.containerObjectId = jobMeta.getContainerObjectId();
     this.parentLoggingObject = parentLogging;
 
     init();
@@ -345,7 +346,10 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
 
     this.log = new LogChannel( this, parentLogging );
     this.logLevel = log.getLogLevel();
-    this.containerObjectId = log.getContainerObjectId();
+
+    if ( this.containerObjectId == null ) {
+      this.containerObjectId = log.getContainerObjectId();
+    }
   }
 
   /**
