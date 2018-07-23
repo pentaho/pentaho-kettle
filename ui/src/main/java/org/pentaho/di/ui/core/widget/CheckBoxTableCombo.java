@@ -29,7 +29,6 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
-import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
@@ -50,7 +49,7 @@ import static java.util.Arrays.stream;
 import static java.util.Collections.sort;
 import static org.pentaho.di.ui.trans.step.BaseStreamingDialog.INPUT_WIDTH;
 
-public class CheckBoxTableCombo extends Composite {
+public class CheckBoxTableCombo {
 
   private final PropsUI props;
   private final ModifyListener lsMod;
@@ -69,7 +68,6 @@ public class CheckBoxTableCombo extends Composite {
   public CheckBoxTableCombo( Composite parentComposite, PropsUI props, ModifyListener lsMod, TransMeta transMeta,
                              Map<String, String> dataMap, String buttonName, String tableName,
                              String columnOneName, String columnTwoName, boolean isEnabled ) {
-    super( parentComposite, parentComposite.getStyle() );
     checkNotNull( props );
     checkNotNull( parentComposite );
     checkNotNull( lsMod );
@@ -105,7 +103,7 @@ public class CheckBoxTableCombo extends Composite {
 
   private void buildWidget() {
 
-    this.setLayout( new FormLayout() );
+    //this.setLayout( new FormLayout() );
     wCheckBox = new Button( parentComposite, SWT.CHECK );
     wCheckBox.setText( buttonName );
     props.setLook( wCheckBox );
