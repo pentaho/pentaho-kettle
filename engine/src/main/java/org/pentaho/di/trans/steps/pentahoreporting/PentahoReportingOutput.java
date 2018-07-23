@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -26,6 +26,8 @@ import java.awt.GraphicsEnvironment;
 import java.io.OutputStream;
 import java.math.BigDecimal;
 import java.net.URL;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Date;
 
 import org.apache.commons.vfs2.FileObject;
@@ -75,7 +77,6 @@ import org.pentaho.reporting.libraries.base.util.ObjectUtilities;
 import org.pentaho.reporting.libraries.fonts.LibFontBoot;
 import org.pentaho.reporting.libraries.repository.ContentLocation;
 import org.pentaho.reporting.libraries.repository.DefaultNameGenerator;
-import org.pentaho.reporting.libraries.repository.file.FileRepository;
 import org.pentaho.reporting.libraries.resourceloader.LibLoaderBoot;
 import org.pentaho.reporting.libraries.resourceloader.Resource;
 import org.pentaho.reporting.libraries.resourceloader.ResourceManager;
@@ -358,7 +359,8 @@ public class PentahoReportingOutput extends BaseStep implements StepInterface {
               FileObjectRepository targetRepository = new FileObjectRepository( targetDirectory );
               targetRoot = targetRepository.getRoot();
               suffix = getSuffix( targetPath );
-              filename = IOUtils.getInstance().stripFileExtension( targetFile.getName().toString() );
+              Path p = Paths.get( targetFile.getName().getPath() );
+              filename = IOUtils.getInstance().stripFileExtension( p.getFileName().toString() );
 
               ReportProcessor reportProcessor = createReportProcessor( null );
               try {
