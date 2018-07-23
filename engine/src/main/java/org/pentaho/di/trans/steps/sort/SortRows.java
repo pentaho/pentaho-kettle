@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -507,7 +507,7 @@ public class SortRows extends BaseStep implements StepInterface {
 
     while ( r != null && !isStopped() ) {
       if ( log.isRowLevel() ) {
-        logRowlevel( BaseMessages.getString( PKG, "SortRows.RowLevel.ReadRow", getInputRowMeta().getString( r ) ) );
+        logRowlevel( BaseMessages.getString( PKG, "SortRows.RowLevel.ReadRow", data.outputRowMeta.getString( r ) ) );
       }
 
       // Do another verification pass for unique rows...
