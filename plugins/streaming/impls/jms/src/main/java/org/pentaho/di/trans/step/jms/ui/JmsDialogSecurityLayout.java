@@ -75,7 +75,7 @@ class JmsDialogSecurityLayout {
 
   private CheckBoxTableCombo checkBoxTableCombo;
   private Group wAuthenticationGroup;
-  private Group wSslGroup;
+  private Composite wSslGroup;
 
   private Label wlIbmUser;
   private Label wlIbmPassword;
@@ -158,17 +158,18 @@ class JmsDialogSecurityLayout {
 
     props.setLook( wAuthenticationGroup );
 
-    wSslGroup = new Group( wSecurityComp, SWT.SHADOW_ETCHED_IN );
+    wSslGroup = new Composite( wSecurityComp, SWT.NONE );
 
     FormLayout flSsl = new FormLayout();
-    flSsl.marginHeight = 15;
-    flSsl.marginWidth = 15;
+    flSsl.marginHeight = 0;
+    flSsl.marginWidth = 0;
     wSslGroup.setLayout( flSsl );
 
     FormData fdSslGroup = new FormData();
     fdSslGroup.left = new FormAttachment( 0, 0 );
     fdSslGroup.top = new FormAttachment( wAuthenticationGroup, 5 );
     fdSslGroup.right = new FormAttachment( 100, 0 );
+    fdSslGroup.bottom = new FormAttachment( 100, 0 );
     fdSslGroup.width = INPUT_WIDTH;
     wSslGroup.setLayoutData( fdSslGroup );
 
@@ -189,7 +190,6 @@ class JmsDialogSecurityLayout {
     FormData fdSecurityComp = new FormData();
     wSecurityComp.setLayoutData( fdSecurityComp );
 
-    wSecurityComp.layout();
     wSecurityTab.setControl( wSecurityComp );
     layoutIbmMqConnectionFields();
     layoutActiveMqConnectionFields();
@@ -252,7 +252,7 @@ class JmsDialogSecurityLayout {
     props.setLook( wlIbmUser );
     wlIbmUser.setText( getString( PKG, "JmsDialog.JmsUser" ) );
     FormData fdlUser = new FormData();
-    //fdlUser.left = new FormAttachment( leftOf, 15 );
+    fdlUser.left = new FormAttachment( 0, 0 );
     fdlUser.top = new FormAttachment( 0, 0 );
     wlIbmUser.setLayoutData( fdlUser );
 
@@ -260,16 +260,16 @@ class JmsDialogSecurityLayout {
     props.setLook( wIbmUser );
     wIbmUser.addModifyListener( lsMod );
     FormData fdUser = new FormData();
-    fdUser.left = new FormAttachment( 0, 15 );
+    fdUser.left = new FormAttachment( 0, 0 );
     fdUser.top = new FormAttachment( wlIbmUser, 5 );
-    fdUser.right = new FormAttachment( 100, 0 );
+    fdUser.right = new FormAttachment( 0, INPUT_WIDTH );
     wIbmUser.setLayoutData( fdUser );
 
     wlIbmPassword = new Label( wAuthenticationGroup, SWT.LEFT );
     props.setLook( wlIbmPassword );
     wlIbmPassword.setText( getString( PKG, "JmsDialog.JmsPassword" ) );
     FormData fdlPassword = new FormData();
-    fdlPassword.left = new FormAttachment( 0, 15 );
+    fdlPassword.left = new FormAttachment( 0, 0 );
     fdlPassword.top = new FormAttachment( wIbmUser, 10 );
     wlIbmPassword.setLayoutData( fdlPassword );
 
@@ -277,9 +277,9 @@ class JmsDialogSecurityLayout {
     props.setLook( wIbmPassword );
     wIbmPassword.addModifyListener( lsMod );
     FormData fdPassword = new FormData();
-    fdPassword.left = new FormAttachment( 0, 15 );
+    fdPassword.left = new FormAttachment( 0, 0 );
     fdPassword.top = new FormAttachment( wlIbmPassword, 5 );
-    fdPassword.right = new FormAttachment( 100, 0 );
+    fdPassword.right = new FormAttachment( 0, INPUT_WIDTH );
     wIbmPassword.setLayoutData( fdPassword );
   }
 
@@ -288,7 +288,7 @@ class JmsDialogSecurityLayout {
     props.setLook( wlActiveUser );
     wlActiveUser.setText( getString( PKG, "JmsDialog.JmsUser" ) );
     FormData fdlUser = new FormData();
-    //fdlUser.left = new FormAttachment( leftOf, 15 );
+    fdlUser.left = new FormAttachment( 0, 0 );
     fdlUser.top = new FormAttachment( 0, 10 );
     wlActiveUser.setLayoutData( fdlUser );
 
@@ -296,16 +296,16 @@ class JmsDialogSecurityLayout {
     props.setLook( wActiveUser );
     wActiveUser.addModifyListener( lsMod );
     FormData fdUser = new FormData();
-    fdUser.left = new FormAttachment( 0, 15 );
+    fdUser.left = new FormAttachment( 0, 0 );
     fdUser.top = new FormAttachment( wlActiveUser, 5 );
-    fdUser.right = new FormAttachment( 100, 0 );
+    fdUser.right = new FormAttachment( 0, INPUT_WIDTH );
     wActiveUser.setLayoutData( fdUser );
 
     wlActivePassword = new Label( wAuthenticationGroup, SWT.LEFT );
     props.setLook( wlActivePassword );
     wlActivePassword.setText( getString( PKG, "JmsDialog.JmsPassword" ) );
     FormData fdlPassword = new FormData();
-    fdlPassword.left = new FormAttachment( 0, 15 );
+    fdlPassword.left = new FormAttachment( 0, 0 );
     fdlPassword.top = new FormAttachment( wActiveUser, 10 );
     wlActivePassword.setLayoutData( fdlPassword );
 
@@ -313,9 +313,9 @@ class JmsDialogSecurityLayout {
     props.setLook( wActivePassword );
     wActivePassword.addModifyListener( lsMod );
     FormData fdPassword = new FormData();
-    fdPassword.left = new FormAttachment( 0, 15 );
+    fdPassword.left = new FormAttachment( 0, 0 );
     fdPassword.top = new FormAttachment( wlActivePassword, 5 );
-    fdPassword.right = new FormAttachment( 100, 0 );
+    fdPassword.right = new FormAttachment( 0, INPUT_WIDTH );
     wActivePassword.setLayoutData( fdPassword );
   }
 
