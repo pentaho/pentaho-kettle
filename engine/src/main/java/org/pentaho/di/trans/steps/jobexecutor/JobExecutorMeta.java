@@ -1546,4 +1546,19 @@ public class JobExecutorMeta extends BaseStepMeta implements StepMetaInterface, 
     return true;
   }
 
+  @Override
+  public boolean cleanAfterHopFromRemove( String toStepName ) {
+    if ( getExecutionResultTargetStepMeta() != null && getExecutionResultTargetStepMeta().getName() != null
+      && getExecutionResultTargetStepMeta().getName().equals( toStepName ) ) {
+      setExecutionResultTargetStepMeta( null );
+    } else if ( getResultRowsTargetStepMeta() != null && getResultRowsTargetStepMeta().getName() != null
+      && getResultRowsTargetStepMeta().getName().equals( toStepName ) ) {
+      setResultRowsTargetStepMeta( null );
+    } else if ( getResultFilesTargetStepMeta() != null && getResultFilesTargetStepMeta().getName() != null
+      && getResultFilesTargetStepMeta().getName().equals( toStepName ) ) {
+      setResultFilesTargetStepMeta( null );
+    }
+    return true;
+  }
+
 }
