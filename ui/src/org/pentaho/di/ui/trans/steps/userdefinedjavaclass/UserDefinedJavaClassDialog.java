@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -1499,7 +1499,7 @@ public class UserDefinedJavaClassDialog extends BaseStepDialog implements StepDi
             itemField.setText( itemName );
             itemField.setData( itemData );
             TreeItem itemFieldGet = new TreeItem( itemField, SWT.NULL );
-            itemFieldGet.setText( String.format( "get%s()", v.getTypeDesc() ) );
+            itemFieldGet.setText( String.format( "get%s()", FieldHelper.getNativeDataTypeSimpleName( v ) ) );
             itemFieldGet.setData( FieldHelper.getGetSignature( itemData, v ) );
             TreeItem itemFieldSet = new TreeItem( itemField, SWT.NULL );
             itemFieldSet.setText( "setValue()" );
@@ -1516,7 +1516,7 @@ public class UserDefinedJavaClassDialog extends BaseStepDialog implements StepDi
             itemField.setText( itemName );
             itemField.setData( itemData );
             TreeItem itemFieldGet = new TreeItem( itemField, SWT.NULL );
-            itemFieldGet.setText( String.format( "get%s()", v.getTypeDesc() ) );
+            itemFieldGet.setText( String.format( "get%s()", FieldHelper.getNativeDataTypeSimpleName( v ) ) );
             itemFieldGet.setData( FieldHelper.getGetSignature( itemData, v ) );
             TreeItem itemFieldSet = new TreeItem( itemField, SWT.NULL );
             itemFieldSet.setText( "setValue()" );
@@ -1533,7 +1533,7 @@ public class UserDefinedJavaClassDialog extends BaseStepDialog implements StepDi
             itemField.setText( itemName );
             itemField.setData( itemData );
             TreeItem itemFieldGet = new TreeItem( itemField, SWT.NULL );
-            itemFieldGet.setText( String.format( "get%s()", v.getTypeDesc() ) );
+            itemFieldGet.setText( String.format( "get%s()", FieldHelper.getNativeDataTypeSimpleName( v ) ) );
             itemFieldGet.setData( FieldHelper.getGetSignature( itemData, v ) );
             TreeItem itemFieldSet = new TreeItem( itemField, SWT.NULL );
             itemFieldSet.setText( "setValue()" );
