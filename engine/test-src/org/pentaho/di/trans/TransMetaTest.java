@@ -76,6 +76,7 @@ import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -148,6 +149,27 @@ public class TransMetaTest {
 
     assertEquals( 1, thisStepsFields.size() );
     assertEquals( overriddenValue, thisStepsFields.getValueMeta( 0 ).getName() );
+  }
+
+  @Test
+  public void getThisStepFieldsPassesClonedInfoRowMeta() throws Exception {
+    // given
+    StepMetaInterface smi = mock( StepMetaInterface.class );
+    StepIOMeta ioMeta = mock( StepIOMeta.class );
+    when( smi.getStepIOMeta() ).thenReturn( ioMeta );
+
+    StepMeta thisStep = mockStepMeta( "thisStep" );
+    StepMeta nextStep = mockStepMeta( "nextStep" );
+    when( thisStep.getStepMetaInterface() ).thenReturn( smi );
+
+    RowMeta row = new RowMeta();
+    when( smi.getTableFields() ).thenReturn( row );
+
+    // when
+    transMeta.getThisStepFields( thisStep, nextStep, row );
+
+    // then
+    verify( smi, never() ).getFields( any(), any(), eq( new RowMetaInterface[] { row } ), any(), any(), any(), any() );
   }
 
   @Test
