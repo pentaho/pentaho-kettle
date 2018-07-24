@@ -167,7 +167,7 @@ class JmsDialogSecurityLayout {
 
     FormData fdSslGroup = new FormData();
     fdSslGroup.left = new FormAttachment( 0, 0 );
-    fdSslGroup.top = new FormAttachment( wAuthenticationGroup, 5 );
+    fdSslGroup.top = new FormAttachment( wAuthenticationGroup, 15 );
     fdSslGroup.right = new FormAttachment( 100, 0 );
     fdSslGroup.bottom = new FormAttachment( 100, 0 );
     fdSslGroup.width = INPUT_WIDTH;
@@ -289,7 +289,7 @@ class JmsDialogSecurityLayout {
     wlActiveUser.setText( getString( PKG, "JmsDialog.JmsUser" ) );
     FormData fdlUser = new FormData();
     fdlUser.left = new FormAttachment( 0, 0 );
-    fdlUser.top = new FormAttachment( 0, 10 );
+    fdlUser.top = new FormAttachment( 0, 0 );
     wlActiveUser.setLayoutData( fdlUser );
 
     wActiveUser = new TextVar( transMeta, wAuthenticationGroup, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
