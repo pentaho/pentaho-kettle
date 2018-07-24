@@ -1640,11 +1640,6 @@ public class JobDialog extends Dialog {
     try {
       final PluginInterface plugin = getPlugin( jobEntryInterface );
 
-      if ( plugin.getCategory().equals( BaseMessages.getString( PKGBASE, "JobCategory.Category.Deprecated" ) ) ) {
-
-        addDeprecation( shell );
-      }
-
       helpButton = HelpUtils.createHelpButton( shell, HelpUtils.getHelpDialogTitle( plugin ), plugin );
 
       shell.setImage( getImage( shell, plugin ) );
@@ -1653,28 +1648,6 @@ public class JobDialog extends Dialog {
       // Ignore unexpected errors, not worth it
     }
     return helpButton;
-  }
-
-  private static void addDeprecation( Shell shell ) {
-
-    if ( shell == null ) {
-
-      return;
-    }
-    shell.addShellListener( new ShellAdapter() {
-
-      private boolean deprecation = false;
-
-      @Override public void shellActivated( ShellEvent shellEvent ) {
-        super.shellActivated( shellEvent );
-        if ( deprecation ) {
-          return;
-        }
-        String deprecated = BaseMessages.getString( PKGBASE, "JobCategory.Category.Deprecated" ).toLowerCase();
-        shell.setText( shell.getText() + " (" + deprecated + ")" );
-        deprecation = true;
-      }
-    } );
   }
 
   public static PluginInterface getPlugin( JobEntryInterface jobEntryInterface ) {
