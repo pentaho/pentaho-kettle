@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,17 +22,30 @@
 
 package org.pentaho.di.ui.trans.steps.tableoutput;
 
+import org.eclipse.swt.custom.CCombo;
 import org.junit.Before;
 import org.junit.Test;
 
+import org.pentaho.di.core.database.DatabaseInterface;
+import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.value.ValueMetaString;
+import org.pentaho.di.trans.TransMeta;
+import org.pentaho.di.ui.core.widget.TextVar;
 
 import java.lang.reflect.Method;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.doCallRealMethod;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static org.powermock.reflect.Whitebox.setInternalState;
 
 public class TableOutputDialogTest {
 
@@ -65,5 +78,42 @@ public class TableOutputDialogTest {
       result.addValueMeta( new ValueMetaString( s ) );
     }
     return result;
+  }
+
+  private void isConnectionSupportedTest( boolean supported ) {
+    TableOutputDialog dialog = mock( TableOutputDialog.class );
+
+    TransMeta transMeta = mock( TransMeta.class );
+    DatabaseMeta dbMeta = mock( DatabaseMeta.class );
+    TextVar text = mock( TextVar.class );
+    CCombo combo = mock( CCombo.class );
+    DatabaseInterface dbInterface = mock( DatabaseInterface.class );
+
+    setInternalState( dialog, "wTable", text );
+    setInternalState( dialog, "wConnection", combo );
+    setInternalState( dialog, "transMeta", transMeta );
+
+    when( text.getText() ).thenReturn( "someTable" );
+    when( combo.getText() ).thenReturn( "someConnection" );
+    when( transMeta.findDatabase( anyString() ) ).thenReturn( dbMeta );
+    when( dbMeta.getDatabaseInterface() ).thenReturn( dbInterface );
+
+    doNothing().when( dialog ).showUnsupportedConnectionMessageBox( dbInterface );
+    doCallRealMethod().when( dialog ).isConnectionSupported();
+
+    //Check that if the db interface does not support standard output then showUnsupportedConnection is called
+    when( dbInterface.supportsStandardTableOutput() ).thenReturn( supported );
+    dialog.isConnectionSupported();
+    verify( dialog, times( !supported ? 1 : 0 ) ).showUnsupportedConnectionMessageBox( dbInterface );
+  }
+
+  @Test
+  public void isConnectionSupportedValidTest() {
+    isConnectionSupportedTest( true );
+  }
+
+  @Test
+  public void isConnectionSupportedInvalidTest() {
+    isConnectionSupportedTest( false );
   }
 }
