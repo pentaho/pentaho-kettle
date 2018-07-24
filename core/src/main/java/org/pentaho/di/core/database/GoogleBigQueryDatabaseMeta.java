@@ -24,8 +24,11 @@ package org.pentaho.di.core.database;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.util.StringUtil;
+import org.pentaho.di.i18n.BaseMessages;
 
 public class GoogleBigQueryDatabaseMeta extends BaseDatabaseMeta implements DatabaseInterface {
+
+  private static Class<?> PKG = GoogleBigQueryDatabaseMeta.class; // for i18n purposes
 
   @Override public int[] getAccessTypeList() {
     return new int[] { DatabaseMeta.TYPE_ACCESS_NATIVE, DatabaseMeta.TYPE_ACCESS_JNDI };
@@ -204,5 +207,13 @@ public class GoogleBigQueryDatabaseMeta extends BaseDatabaseMeta implements Data
       "PRECEDING", "PROTO", "RANGE", "RECURSIVE", "RESPECT", "RIGHT", "ROLLUP", "ROWS", "SELECT", "SET", "SOME",
       "STRUCT", "TABLESAMPLE", "THEN", "TO", "TREAT", "TRUE", "UNBOUNDED", "UNION", "UNNEST", "USING", "WHEN",
       "WHERE", "WINDOW", "WITH", "WITHIN", "BY", "CASE", "CAST" };
+  }
+
+  @Override public boolean supportsStandardTableOutput() {
+    return false;
+  }
+
+  @Override public String getUnsupportedTableOutputMessage() {
+    return BaseMessages.getString( PKG, "GoogleBigQueryDatabaseMeta.UnsupportedTableOutputMessage" );
   }
 }

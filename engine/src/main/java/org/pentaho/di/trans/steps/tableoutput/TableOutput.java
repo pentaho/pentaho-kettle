@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -259,8 +259,7 @@ public class TableOutput extends BaseStep implements StepInterface {
         data.savepoint = data.db.setSavepoint();
       }
       data.db.setValues( data.insertRowMeta, insertRowData, insertStatement );
-      data.db.insertRow( insertStatement, data.batchMode, false ); // false: no commit, it is handled in this step
-                                                                   // different
+      data.db.insertRow( insertStatement, data.batchMode, false ); // false: no commit, it is handled in this step differently
       if ( isRowLevel() ) {
         logRowlevel( "Written row: " + data.insertRowMeta.getString( insertRowData ) );
       }
@@ -518,6 +517,11 @@ public class TableOutput extends BaseStep implements StepInterface {
           logError( BaseMessages.getString( PKG, "TableOutput.Init.ConnectionMissing", getStepname() ) );
           return false;
         }
+
+        if ( !dbInterface.supportsStandardTableOutput() ) {
+          throw new KettleException( dbInterface.getUnsupportedTableOutputMessage() );
+        }
+
         data.db = new Database( this, meta.getDatabaseMeta() );
         data.db.shareVariablesWith( this );
 

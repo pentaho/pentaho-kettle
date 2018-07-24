@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -1184,6 +1184,20 @@ public interface DatabaseInterface extends Cloneable {
    */
   default SqlScriptParser createSqlScriptParser() {
     return new SqlScriptParser( true );
+  }
+
+  /**
+   * @return true if database supports the standard table output step
+   */
+  default boolean supportsStandardTableOutput() {
+    return true;
+  }
+
+  /**
+   * @return the unsupported message if database does not support standard table output step
+   */
+  default String getUnsupportedTableOutputMessage() {
+    return "";
   }
 
 }

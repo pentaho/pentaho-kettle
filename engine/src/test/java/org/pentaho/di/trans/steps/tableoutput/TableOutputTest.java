@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -25,7 +25,9 @@ package org.pentaho.di.trans.steps.tableoutput;
 import org.junit.Before;
 import org.junit.Test;
 import org.pentaho.di.core.database.Database;
+import org.pentaho.di.core.database.DatabaseInterface;
 import org.pentaho.di.core.database.DatabaseMeta;
+import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
@@ -175,5 +177,31 @@ public class TableOutputTest {
 
     assertTrue( result );
     verify( tableOutputSpy, never() ).truncateTable();
+  }
+
+  @Test
+  public void testInit_unsupportedConnection() {
+
+    TableOutputMeta meta =  mock( TableOutputMeta.class );
+    TableOutputData data = mock( TableOutputData.class );
+
+    DatabaseInterface dbInterface = mock( DatabaseInterface.class );
+
+    doNothing().when( tableOutputSpy ).logError( anyString() );
+
+    when( meta.getCommitSize() ).thenReturn( "1" );
+    when( meta.getDatabaseMeta() ).thenReturn( databaseMeta );
+    when( databaseMeta.getDatabaseInterface() ).thenReturn( dbInterface );
+
+    String unsupportedTableOutputMessage = "unsupported exception";
+    when( dbInterface.getUnsupportedTableOutputMessage() ).thenReturn( unsupportedTableOutputMessage );
+
+    //Will cause the Kettle Exception
+    when( dbInterface.supportsStandardTableOutput() ).thenReturn( false );
+
+    tableOutputSpy.init( meta, data );
+
+    KettleException ke = new KettleException( unsupportedTableOutputMessage );
+    verify( tableOutputSpy, times( 1 ) ).logError( "An error occurred intialising this step: " + ke.getMessage() );
   }
 }
