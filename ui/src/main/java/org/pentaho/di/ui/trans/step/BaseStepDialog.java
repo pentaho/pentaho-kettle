@@ -293,36 +293,9 @@ public class BaseStepDialog extends Dialog {
    * @param stepMetaInterface the step meta interface (because of the legacy code)
    */
   public void setShellImage( Shell shell, StepMetaInterface stepMetaInterface ) {
-
     setShellImage( shell );
-
-    if ( stepMeta.isDeprecated() ) {
-
-      addDeprecation();
-    }
   }
 
-  private void addDeprecation() {
-
-    if ( shell == null ) {
-
-      return;
-    }
-    shell.addShellListener( new ShellAdapter() {
-
-      private boolean deprecation = false;
-
-      @Override public void shellActivated( ShellEvent shellEvent ) {
-        super.shellActivated( shellEvent );
-        if ( !stepMeta.isDeprecated() || deprecation ) {
-          return;
-        }
-        String deprecated = BaseMessages.getString( PKG, "BaseStep.Category.Deprecated" ).toLowerCase();
-        shell.setText( shell.getText() + " (" + deprecated + ")" );
-        deprecation = true;
-      }
-    } );
-  }
   /**
    * Dispose this dialog.
    */
