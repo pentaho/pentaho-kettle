@@ -59,7 +59,7 @@ public class TransMetaTest {
 
   @Test
   public void testAddOrReplaceStep() throws Exception {
-    StepMeta stepMeta = mockStepMeta( "ETL Metadata Injection" );
+    StepMeta stepMeta = mockStepMeta( "ETL metadata injection" );
     MetaInjectMeta stepMetaInterfaceMock = mock( MetaInjectMeta.class );
     when( stepMeta.getStepMetaInterface() ).thenReturn( stepMetaInterfaceMock );
     transMeta.addOrReplaceStep( stepMeta );
