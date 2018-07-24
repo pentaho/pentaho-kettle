@@ -26,9 +26,6 @@
  */
 package org.pentaho.di.ui.shapefilereader;
 
-import java.util.Enumeration;
-import java.util.Properties;
-
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
@@ -49,16 +46,22 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.shapefilereader.ShapeFileReaderMeta;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDialogInterface;
-import org.pentaho.di.ui.core.dialog.EnterSelectionDialog;
 import org.pentaho.di.ui.core.ConstUI;
-import org.pentaho.di.ui.util.SwtSvgImageUtil;
+import org.pentaho.di.ui.core.dialog.EnterSelectionDialog;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
+import org.pentaho.di.ui.util.SwtSvgImageUtil;
+
+import java.util.Enumeration;
+import java.util.Properties;
 
 public class ShapeFileReaderDialog extends BaseStepDialog implements StepDialogInterface {
+  private static Class<?> PKG = ShapeFileReaderMeta.class; // for i18n purposes, needed by Translator2!!
+
   private Label wlShape;
   private Button wbShape;
   private Button wbcShape;
@@ -99,7 +102,7 @@ public class ShapeFileReaderDialog extends BaseStepDialog implements StepDialogI
     formLayout.marginHeight = Const.FORM_MARGIN;
 
     shell.setLayout( formLayout );
-    shell.setText( "ESRI Shapefile Reader" );
+    shell.setText( BaseMessages.getString( PKG, "ShapeFileReader.Step.Name" ) );
 
     int middle = props.getMiddlePct();
     int margin = Const.MARGIN;

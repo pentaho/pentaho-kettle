@@ -262,7 +262,7 @@ public class JobMeta extends AbstractMeta
    * @return the job entry copy
    */
   public static final JobEntryCopy createStartEntry() {
-    JobEntrySpecial jobEntrySpecial = new JobEntrySpecial( STRING_SPECIAL_START, true, false );
+    JobEntrySpecial jobEntrySpecial = new JobEntrySpecial( BaseMessages.getString( PKG, "JobMeta.StartJobEntry.Name" ), true, false );
     JobEntryCopy jobEntry = new JobEntryCopy();
     jobEntry.setObjectId( null );
     jobEntry.setEntry( jobEntrySpecial );
@@ -279,7 +279,7 @@ public class JobMeta extends AbstractMeta
    * @return the job entry copy
    */
   public static final JobEntryCopy createDummyEntry() {
-    JobEntrySpecial jobEntrySpecial = new JobEntrySpecial( STRING_SPECIAL_DUMMY, false, true );
+    JobEntrySpecial jobEntrySpecial = new JobEntrySpecial( BaseMessages.getString( PKG, "JobMeta.DummyJobEntry.Name" ), false, true );
     JobEntryCopy jobEntry = new JobEntryCopy();
     jobEntry.setObjectId( null );
     jobEntry.setEntry( jobEntrySpecial );
