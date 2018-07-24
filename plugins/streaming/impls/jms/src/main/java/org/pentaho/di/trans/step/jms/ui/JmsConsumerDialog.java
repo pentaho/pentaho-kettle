@@ -71,6 +71,8 @@ public class JmsConsumerDialog extends BaseStreamingDialog {
     wSetupComp.setLayout( setupLayout );
     jmsDialogSecurityLayout = new JmsDialogSecurityLayout(
       props, wTabFolder, lsMod, transMeta, jmsDelegate.sslEnabled, jmsDelegate );
+    jmsDialogSecurityLayout.buildSecurityTab();
+
     connectionForm = new ConnectionForm( wSetupComp, props, transMeta, lsMod, jmsMeta.jmsDelegate,
       jmsDialogSecurityLayout );
     Group group = connectionForm.layoutForm();
@@ -105,8 +107,6 @@ public class JmsConsumerDialog extends BaseStreamingDialog {
       wTabFolder, props, transMeta, lsMod, jmsDelegate.messageField, jmsDelegate.destinationField );
 
     fieldsTab.buildFieldsTab();
-
-    jmsDialogSecurityLayout.buildSecurityTab();
   }
 
 

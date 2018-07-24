@@ -122,6 +122,7 @@ public class ConnectionForm {
     JmsProvider.ConnectionType connectionType = JmsProvider.ConnectionType.valueOf( jmsDelegate.connectionType );
     typesToButtons.get( connectionType )
       .setSelection( true );
+    toggleVisibility( connectionType );
   }
 
   private void displayConnTypes( Group wConnectionGroup ) {
@@ -148,7 +149,8 @@ public class ConnectionForm {
       connectionButton.addSelectionListener( new SelectionListener() {
         @Override public void widgetSelected( final SelectionEvent selectionEvent ) {
           lsMod.modifyText( null );
-          jmsDialogSecurityLayout.toggleVisibility( type );
+          toggleVisibility( type );
+          //jmsDialogSecurityLayout.toggleVisibility( type );
         }
 
         @Override public void widgetDefaultSelected( final SelectionEvent selectionEvent ) {
@@ -248,10 +250,25 @@ public class ConnectionForm {
     switch ( type ) {
       case WEBSPHERE:
         jmsDialogSecurityLayout.toggleVisibility( type );
+        setIbmMqVisibility( true );
+        setActiveMqVisibility( false );
+
         break;
       case ACTIVEMQ:
         jmsDialogSecurityLayout.toggleVisibility( type );
+        setIbmMqVisibility( false );
+        setActiveMqVisibility( true );
         break;
     }
+  }
+
+  private void setIbmMqVisibility( boolean isVisible ) {
+    wlIbmUrl.setVisible( isVisible );
+    wIbmUrl.setVisible( isVisible );
+  }
+
+  private void setActiveMqVisibility( boolean isVisible ) {
+    wlActiveUrl.setVisible( isVisible );
+    wActiveUrl.setVisible( isVisible );
   }
 }
