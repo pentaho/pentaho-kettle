@@ -115,6 +115,10 @@ public abstract class BaseFileOutputMeta extends BaseFileMeta {
 
   public abstract int getSplitEvery();
 
+  public int getSplitEvery( VariableSpace space ) {
+    return getSplitEvery();
+  }
+
   public abstract void setSplitEvery( int splitEvery );
 
   public boolean isFileAsCommand() {
@@ -251,24 +255,40 @@ public abstract class BaseFileOutputMeta extends BaseFileMeta {
     final String realFileName, final String realExtension, final String stepnr, final String partnr,
     final String splitnr,
     final Date date, final boolean ziparchive, final boolean showSamples ) {
+    return buildFilename( realFileName, realExtension, stepnr, partnr, splitnr, date, ziparchive, showSamples, this );
+  }
+
+
+  protected String buildFilename(
+    final String realFileName, final String realExtension, final String stepnr, final String partnr,
+    final String splitnr, final Date date, final boolean ziparchive, final boolean showSamples,
+    final BaseFileOutputMeta meta ) {
+    return buildFilename( null, realFileName, realExtension, stepnr, partnr, splitnr, date, ziparchive, showSamples,
+      meta );
+  }
+
+  protected String buildFilename(
+    final VariableSpace space, final String realFileName, final String realExtension, final String stepnr,
+    final String partnr, final String splitnr, final Date date, final boolean ziparchive, final boolean showSamples,
+    final BaseFileOutputMeta meta ) {
 
     SimpleDateFormat daf = new SimpleDateFormat();
 
     // Replace possible environment variables...
     String retval = realFileName;
 
-    if ( isFileAsCommand() ) {
+    if ( meta.isFileAsCommand() ) {
       return retval;
     }
 
     Date now = date == null ? new Date() : date;
 
-    if ( isSpecifyingFormat() && !Utils.isEmpty( getDateTimeFormat() ) ) {
-      daf.applyPattern( getDateTimeFormat() );
+    if ( meta.isSpecifyingFormat() && !Utils.isEmpty( meta.getDateTimeFormat() ) ) {
+      daf.applyPattern( meta.getDateTimeFormat() );
       String dt = daf.format( now );
       retval += dt;
     } else {
-      if ( isDateInFilename() ) {
+      if ( meta.isDateInFilename() ) {
         if ( showSamples ) {
           daf.applyPattern( "yyyMMdd" );
           String d = daf.format( now );
@@ -277,7 +297,7 @@ public abstract class BaseFileOutputMeta extends BaseFileMeta {
           retval += "_<yyyMMdd>";
         }
       }
-      if ( isTimeInFilename() ) {
+      if ( meta.isTimeInFilename() ) {
         if ( showSamples ) {
           daf.applyPattern( "HHmmss" );
           String t = daf.format( now );
@@ -287,17 +307,17 @@ public abstract class BaseFileOutputMeta extends BaseFileMeta {
         }
       }
     }
-    if ( isStepNrInFilename() ) {
+    if ( meta.isStepNrInFilename() ) {
       retval += "_" + stepnr;
     }
-    if ( isPartNrInFilename() ) {
+    if ( meta.isPartNrInFilename() ) {
       retval += "_" + partnr;
     }
-    if ( getSplitEvery() > 0 ) {
+    if ( meta.getSplitEvery( space ) > 0 ) {
       retval += "_" + splitnr;
     }
 
-    if ( "Zip".equals( getFileCompression() ) ) {
+    if ( "Zip".equals( meta.getFileCompression() ) ) {
       if ( ziparchive ) {
         retval += ".zip";
       } else {
@@ -309,7 +329,7 @@ public abstract class BaseFileOutputMeta extends BaseFileMeta {
       if ( realExtension != null && realExtension.length() != 0 ) {
         retval += "." + realExtension;
       }
-      if ( "GZip".equals( getFileCompression() ) ) {
+      if ( "GZip".equals( meta.getFileCompression() ) ) {
         retval += ".gz";
       }
     }
