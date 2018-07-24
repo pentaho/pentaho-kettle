@@ -723,6 +723,15 @@ public interface StepMetaInterface {
   }
 
   /**
+   * Action remove hop from this step
+   * @param toStepName - String of step name of the "to" step of the hop
+   * @return step was changed
+   */
+  default boolean cleanAfterHopFromRemove( String toStepName ) {
+    return false;
+  }
+
+  /**
    * True if the step passes it's result data straight to the servlet output. See exposing Kettle data over a web service
    * <a href="http://wiki.pentaho.com/display/EAI/PDI+data+over+web+services">http://wiki.pentaho.com/display/EAI/PDI+data+over+web+services</a>
    *
