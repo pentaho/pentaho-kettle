@@ -553,7 +553,9 @@ public class TransExecutorDialog extends BaseStepDialog implements StepDialogInt
     tiExecutionLogChannelIdField
       .setText( FIELD_NAME, Const.NVL( transExecutorMeta.getExecutionLogChannelIdField(), "" ) );
 
-    executorOutputStep = transExecutorMeta.getExecutorsOutputStep();
+    if ( transExecutorMeta.getExecutorsOutputStepMeta() != null ) {
+      executorOutputStep = transExecutorMeta.getExecutorsOutputStepMeta().getName();
+    }
 
     // result files
     //

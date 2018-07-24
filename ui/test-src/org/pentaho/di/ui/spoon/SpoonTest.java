@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -395,15 +395,18 @@ public class SpoonTest {
 
     StepMetaInterface stepMetaInterface = Mockito.mock( StepMetaInterface.class );
     StepMeta step = new StepMeta();
+    StepMeta toStep = new StepMeta();
     step.setStepMetaInterface( stepMetaInterface );
+    toStep.setStepMetaInterface( stepMetaInterface );
 
     TransHopMeta transHopMeta = new TransHopMeta();
     transHopMeta.setFromStep( step );
+    transHopMeta.setToStep( toStep );
 
     TransMeta transMeta = Mockito.mock( TransMeta.class );
 
     spoon.delHop( transMeta, transHopMeta );
-    Mockito.verify( stepMetaInterface, times( 1 ) ).cleanAfterHopFromRemove( );
+    Mockito.verify( stepMetaInterface, times( 1 ) ).cleanAfterHopFromRemove( transHopMeta.getToStep().getName() );
 
   }
 
