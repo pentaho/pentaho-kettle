@@ -42,7 +42,7 @@ import static java.util.Collections.singletonList;
 import static org.pentaho.di.core.ObjectLocationSpecificationMethod.FILENAME;
 
 @InjectionSupported ( localizationPrefix = "JmsConsumerMeta.Injection." )
-@Step ( id = "Jms2Consumer", image = "JMSC.svg", name = "JMS Consumer",
+@Step ( id = "Jms2Consumer", image = "JMSC.svg", name = "JMS consumer",
   description = "JmsConsumerDialog.TypeLongDesc", categoryDescription = "Streaming",
   documentationUrl = "Products/Data_Integration/Transformation_Step_Reference/JMS_Consumer" )
 public class JmsConsumerMeta extends BaseStreamStepMeta {

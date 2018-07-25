@@ -3,7 +3,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -463,7 +463,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
     formLayout.marginHeight = Const.FORM_MARGIN;
 
     shell.setLayout( formLayout );
-    shell.setText( BaseMessages.getString( PKG, "TextFileInputDialog.DialogTitle" ) );
+    shell.setText( BaseMessages.getString( PKG, "TextFileInputDialogDeprecated.DialogTitle" ) );
 
     middle = props.getMiddlePct();
     margin = Const.MARGIN;
