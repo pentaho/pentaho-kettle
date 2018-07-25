@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -31,9 +31,15 @@ import org.junit.Test;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.plugins.PluginRegistry;
+import org.pentaho.di.trans.step.StepMeta;
+import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.di.trans.steps.loadsave.LoadSaveTester;
 import org.pentaho.di.trans.steps.loadsave.validator.ConditionLoadSaveValidator;
 import org.pentaho.di.trans.steps.loadsave.validator.FieldLoadSaveValidator;
+
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertNull;
+import static org.mockito.Mockito.mock;
 
 public class JoinRowsMetaTest {
   LoadSaveTester loadSaveTester;
@@ -61,5 +67,51 @@ public class JoinRowsMetaTest {
   @Test
   public void testSerialization() throws KettleException {
     loadSaveTester.testSerialization();
+  }
+
+  @Test
+  public void testCleanAfterHopToRemove_NullParameter() {
+    JoinRowsMeta joinRowsMeta = new JoinRowsMeta();
+    StepMeta stepMeta1 = new StepMeta( "Step1", mock( StepMetaInterface.class ) );
+    joinRowsMeta.setMainStep( stepMeta1 );
+    joinRowsMeta.setMainStepname( stepMeta1.getName() );
+
+    // This call must not throw an exception
+    joinRowsMeta.cleanAfterHopToRemove( null );
+
+    // And no change to the step should be made
+    assertEquals( stepMeta1, joinRowsMeta.getMainStep() );
+    assertEquals( stepMeta1.getName(), joinRowsMeta.getMainStepname() );
+  }
+
+  @Test
+  public void testCleanAfterHopToRemove_UnknownStep() {
+    JoinRowsMeta joinRowsMeta = new JoinRowsMeta();
+
+    StepMeta stepMeta1 = new StepMeta( "Step1", mock( StepMetaInterface.class ) );
+    StepMeta stepMeta2 = new StepMeta( "Step2", mock( StepMetaInterface.class ) );
+    joinRowsMeta.setMainStep( stepMeta1 );
+    joinRowsMeta.setMainStepname( stepMeta1.getName() );
+
+    joinRowsMeta.cleanAfterHopToRemove( stepMeta2 );
+
+    // No change to the step should be made
+    assertEquals( stepMeta1, joinRowsMeta.getMainStep() );
+    assertEquals( stepMeta1.getName(), joinRowsMeta.getMainStepname() );
+  }
+
+  @Test
+  public void testCleanAfterHopToRemove_ReferredStep() {
+    JoinRowsMeta joinRowsMeta = new JoinRowsMeta();
+
+    StepMeta stepMeta1 = new StepMeta( "Step1", mock( StepMetaInterface.class ) );
+    joinRowsMeta.setMainStep( stepMeta1 );
+    joinRowsMeta.setMainStepname( stepMeta1.getName() );
+
+    joinRowsMeta.cleanAfterHopToRemove( stepMeta1 );
+
+    // No change to the step should be made
+    assertNull( joinRowsMeta.getMainStep() );
+    assertNull( joinRowsMeta.getMainStepname() );
   }
 }
