@@ -69,7 +69,7 @@ public class GetStatusServletTest {
     when( mockHttpServletResponse.getWriter() ).thenReturn( printWriter );
 
     getStatusServlet.doGet( mockHttpServletRequest, mockHttpServletResponse );
-    assertFalse( ServletTestUtils.hasBadText( ServletTestUtils.getInsideOfTag( "h1", out.toString() ) ) );
+    assertFalse( ServletTestUtils.hasBadText( ServletTestUtils.getInsideOfTag( "TITLE", out.toString() ) ) ); // title will more reliably be plain text
   }
 
   @Test
