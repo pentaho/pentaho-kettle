@@ -486,12 +486,8 @@ public class JmsProducerDialog extends BaseStepDialog implements StepDialogInter
 
     jmsDelegate.connectionType = connectionForm.getConnectionType();
     jmsDelegate.ibmUrl = connectionForm.getIbmUrl();
-    jmsDelegate.ibmUsername = connectionForm.getIbmUser();
-    jmsDelegate.ibmPassword = connectionForm.getIbmPassword();
 
     jmsDelegate.amqUrl = connectionForm.getActiveUrl();
-    jmsDelegate.amqUsername = connectionForm.getActiveUser();
-    jmsDelegate.amqPassword = connectionForm.getActivePassword();
 
     jmsDelegate.destinationType = destinationForm.getDestinationType();
     jmsDelegate.destinationName = destinationForm.getDestinationName();
@@ -499,6 +495,7 @@ public class JmsProducerDialog extends BaseStepDialog implements StepDialogInter
     meta.setPropertyValuesByName( getMapFromTableView( propertiesTable ) );
 
     jmsDialogSecurityLayout.saveTableValues();
+    jmsDialogSecurityLayout.saveAuthentication();
     saveOptions();
 
     dispose();

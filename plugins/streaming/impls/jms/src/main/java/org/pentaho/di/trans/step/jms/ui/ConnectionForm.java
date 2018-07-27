@@ -218,24 +218,8 @@ public class ConnectionForm {
     return wIbmUrl.getText();
   }
 
-  public String getIbmUser() {
-    return jmsDialogSecurityLayout.getIbmUser();
-  }
-
-  public String getIbmPassword() {
-    return jmsDialogSecurityLayout.getIbmPassword();
-  }
-
   public String getActiveUrl() {
     return wActiveUrl.getText();
-  }
-
-  public String getActiveUser() {
-    return jmsDialogSecurityLayout.getActiveUser();
-  }
-
-  public String getActivePassword() {
-    return jmsDialogSecurityLayout.getActivePassword();
   }
 
   public String getConnectionType() {

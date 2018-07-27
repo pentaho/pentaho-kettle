@@ -114,12 +114,7 @@ public class JmsConsumerDialog extends BaseStreamingDialog {
     jmsDelegate.connectionType = connectionForm.getConnectionType();
 
     jmsDelegate.ibmUrl = connectionForm.getIbmUrl();
-    jmsDelegate.ibmUsername = connectionForm.getIbmUser();
-    jmsDelegate.ibmPassword = connectionForm.getIbmPassword();
-
     jmsDelegate.amqUrl = connectionForm.getActiveUrl();
-    jmsDelegate.amqUsername = connectionForm.getActiveUser();
-    jmsDelegate.amqPassword = connectionForm.getActivePassword();
 
     jmsDelegate.connectionType = connectionForm.getConnectionType();
 
@@ -129,6 +124,7 @@ public class JmsConsumerDialog extends BaseStreamingDialog {
     jmsDelegate.destinationField = fieldsTab.getFieldNames()[ 1 ];
     jmsDelegate.receiveTimeout = wReceiverTimeout.getText();
 
+    jmsDialogSecurityLayout.saveAuthentication();
     jmsDialogSecurityLayout.saveTableValues();
   }
 
