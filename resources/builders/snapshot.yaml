@@ -790,7 +790,7 @@ jobGroups:
        directives      :  += -DskipDefault -P windows -Djre.windows.x64.dir=${IBUILDER_RESOURCES_ROOT_PATH}/win/java -Dpostgresql.windows.x64.dir=${IBUILDER_RESOURCES_ROOT_PATH}/win/postgresql -Dcommon.windows.x64.dir=${IBUILDER_RESOURCES_ROOT_PATH}/win/common -Dinstallbuilder.dir=${INSTALL_BUILDER_ROOT_DIR}
        versionProperty :  pentaho.version
        archivable      :  true
-       artifactsArchivePattern: ${INSTALLER_ARTIFACTS_PATTERN}
+       artifactsArchivePattern: ${INSTALLER_ARTIFACTS_PATTERN_WINDOWS}
        testable        :  false
        
      - jobID           :  installer-mac
@@ -799,7 +799,7 @@ jobGroups:
        directives      :  += -DskipDefault -P mac -Djre.mac.x64.dir=${IBUILDER_RESOURCES_ROOT_PATH}/osx/java -Dpostgresql.mac.x64.dir=${IBUILDER_RESOURCES_ROOT_PATH}/osx/postgresql -Dcommon.mac.x64.dir=${IBUILDER_RESOURCES_ROOT_PATH}/osx/common -Dinstallbuilder.dir=${INSTALL_BUILDER_ROOT_DIR}
        versionProperty :  pentaho.version
        archivable      :  true
-       artifactsArchivePattern: ${INSTALLER_ARTIFACTS_PATTERN}
+       artifactsArchivePattern: ${INSTALLER_ARTIFACTS_PATTERN_MAC}
        testable        :  false
 
      - jobID           :  installer-linux
@@ -808,5 +808,5 @@ jobGroups:
        directives      :  += -DskipDefault -P linux,upgrade -Djre.linux.x64.dir=${IBUILDER_RESOURCES_ROOT_PATH}/nix/java -Dpostgresql.linux.x64.dir=${IBUILDER_RESOURCES_ROOT_PATH}/nix/postgresql -Dcommon.linux.x64.dir=${IBUILDER_RESOURCES_ROOT_PATH}/nix/common -Dinstallbuilder.dir=${INSTALL_BUILDER_ROOT_DIR}
        versionProperty :  pentaho.version
        archivable      :  true
-       artifactsArchivePattern: ${INSTALLER_ARTIFACTS_PATTERN}
+       artifactsArchivePattern: ${INSTALLER_ARTIFACTS_PATTERN_LINUX}
        testable        :  false
