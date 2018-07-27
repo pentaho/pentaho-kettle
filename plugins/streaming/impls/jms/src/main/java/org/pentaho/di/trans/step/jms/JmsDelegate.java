@@ -90,9 +90,15 @@ public class JmsDelegate {
 
   @Injection ( name = "SSL_CONTEXT_ALGORITHM", group = "SSL_GROUP" ) public String sslContextAlgorithm = "";
 
-  @Injection ( name = "IBM_SSL_CIPHERSUITE", group = "SSL_GROUP" ) public String ibmSslCipherSuite = "";
+  @Injection ( name = "SSL_CIPHERSUITE", group = "SSL_GROUP" ) public String sslCipherSuite = "";
 
   @Injection ( name = "IBM_SSL_FIPSREQUIRED", group = "SSL_GROUP" ) public String ibmSslFipsRequired = "";
+
+  @Injection ( name = "AMQ_SSL_PROVIDER", group = "SSL_GROUP" ) public String amqSslProvider = "";
+
+  @Injection ( name = "AMQ_SSL_VERIFY_HOST", group = "SSL_GROUP" ) public String amqSslVerifyHost = "";
+
+  @Injection ( name = "AMQ_SSL_TRUST_ALL", group = "SSL_GROUP" ) public String amqSslTrustAll = "";
 
   private final List<JmsProvider> jmsProviders;
 

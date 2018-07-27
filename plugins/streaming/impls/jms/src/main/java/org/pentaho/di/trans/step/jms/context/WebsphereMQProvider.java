@@ -72,7 +72,7 @@ public class WebsphereMQProvider implements JmsProvider {
       // try to configure SSL settings
       try {
         KeyStore trustStore = KeyStore.getInstance( meta.sslTruststoreType );
-        trustStore.load( new FileInputStream( meta.sslTruststorePath ), null );
+        trustStore.load( new FileInputStream( meta.sslTruststorePath ), meta.sslTruststorePassword.toCharArray() );
 
         TrustManagerFactory trustManagerFactory =
           TrustManagerFactory.getInstance( TrustManagerFactory.getDefaultAlgorithm() );
@@ -98,7 +98,7 @@ public class WebsphereMQProvider implements JmsProvider {
         connFactory.setSSLFipsRequired( meta.ibmSslFipsRequired.toLowerCase().startsWith( "t" )
           || meta.ibmSslFipsRequired.toLowerCase().startsWith( "y" ) );
         connFactory.setSSLSocketFactory( sslSocketFactory );
-        connFactory.setSSLCipherSuite( meta.ibmSslCipherSuite );
+        connFactory.setSSLCipherSuite( meta.sslCipherSuite );
 
       } catch ( GeneralSecurityException | IOException e ) {
         throw new RuntimeException( e );
