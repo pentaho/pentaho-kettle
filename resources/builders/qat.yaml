@@ -824,7 +824,7 @@ jobGroups:
        testable        :  false
 
      - jobID           :  installer-linux
-       scmUrl          :  ${PENTAHO_SCM_ROOT}/jmcrfp/pentaho-installer.git
+       scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-installer.git
        scmBranch       :  ${DEFAULT_BRANCH}
        directives      :  += -DskipDefault -P linux,upgrade -Djre.linux.x64.dir=${IBUILDER_RESOURCES_ROOT_PATH}/nix/java -Dpostgresql.linux.x64.dir=${IBUILDER_RESOURCES_ROOT_PATH}/nix/postgresql -Dcommon.linux.x64.dir=${IBUILDER_RESOURCES_ROOT_PATH}/nix/common -Dinstallbuilder.dir=${INSTALL_BUILDER_ROOT_DIR}
        versionProperty :  pentaho.version
