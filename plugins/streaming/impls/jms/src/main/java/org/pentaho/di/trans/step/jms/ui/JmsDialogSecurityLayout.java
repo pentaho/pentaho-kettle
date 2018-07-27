@@ -30,16 +30,14 @@ import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Group;
-import org.eclipse.swt.widgets.Label;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.jms.JmsDelegate;
 import org.pentaho.di.trans.step.jms.context.JmsProvider;
+import org.pentaho.di.ui.core.FormDataBuilder;
 import org.pentaho.di.ui.core.PropsUI;
+import org.pentaho.di.ui.core.widget.AuthComposite;
 import org.pentaho.di.ui.core.widget.CheckBoxTableCombo;
-import org.pentaho.di.ui.core.widget.PasswordTextVar;
-import org.pentaho.di.ui.core.widget.TextVar;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -74,18 +72,9 @@ class JmsDialogSecurityLayout {
   private final String SSL_IBM_FIPS_REQUIRED;
 
   private CheckBoxTableCombo checkBoxTableCombo;
-  private Group wAuthenticationGroup;
+  private AuthComposite activeMqAuthComposite;
+  private AuthComposite ibmMqAuthComposite;
   private Composite wSslGroup;
-
-  private Label wlIbmUser;
-  private Label wlIbmPassword;
-  private TextVar wIbmUser;
-  private TextVar wIbmPassword;
-
-  private Label wlActiveUser;
-  private Label wlActivePassword;
-  private TextVar wActiveUser;
-  private TextVar wActivePassword;
 
   JmsDialogSecurityLayout(
     PropsUI props, CTabFolder wTabFolder, ModifyListener lsMod, TransMeta transMeta,
@@ -114,22 +103,6 @@ class JmsDialogSecurityLayout {
     SSL_IBM_FIPS_REQUIRED = getString( PKG, "JmsDialog.Security.SSL_IBM_FIPS_REQUIRED" );
   }
 
-  public String getIbmUser() {
-    return wIbmUser.getText();
-  }
-
-  public String getIbmPassword() {
-    return wIbmPassword.getText();
-  }
-
-  public String getActiveUser() {
-    return wActiveUser.getText();
-  }
-
-  public String getActivePassword() {
-    return wActivePassword.getText();
-  }
-
   protected void buildSecurityTab() {
     CTabItem wSecurityTab = new CTabItem( wTabFolder, SWT.NONE, 1 );
     wSecurityTab.setText( BaseMessages.getString( PKG, "JmsDialog.Security.Tab" ) );
@@ -141,22 +114,17 @@ class JmsDialogSecurityLayout {
     securityLayout.marginWidth = 15;
     wSecurityComp.setLayout( securityLayout );
 
-    wAuthenticationGroup = new Group( wSecurityComp, SWT.SHADOW_ETCHED_IN );
-    wAuthenticationGroup.setText( getString( PKG, "JmsDialog.Authentication" ) );
+    FormData fdAuthComposite = new FormDataBuilder().fullWidth().result();
 
-    FormLayout flAuthentication = new FormLayout();
-    flAuthentication.marginHeight = 15;
-    flAuthentication.marginWidth = 15;
-    wAuthenticationGroup.setLayout( flAuthentication );
+    ibmMqAuthComposite = new AuthComposite( wSecurityComp, SWT.NONE, props, lsMod, transMeta,
+      getString( PKG, "JmsDialog.Authentication" ), getString( PKG, "JmsDialog.JmsUser" ),
+      getString( PKG, "JmsDialog.JmsPassword" ) );
+    ibmMqAuthComposite.setLayoutData( fdAuthComposite );
 
-    FormData fdAuthenticationGroup = new FormData();
-    fdAuthenticationGroup.left = new FormAttachment( 0, 0 );
-    fdAuthenticationGroup.top = new FormAttachment( 0, 0 );
-    fdAuthenticationGroup.right = new FormAttachment( 100, 0 );
-    fdAuthenticationGroup.width = INPUT_WIDTH;
-    wAuthenticationGroup.setLayoutData( fdAuthenticationGroup );
-
-    props.setLook( wAuthenticationGroup );
+    activeMqAuthComposite = new AuthComposite( wSecurityComp, SWT.NONE, props, lsMod, transMeta,
+      getString( PKG, "JmsDialog.Authentication" ), getString( PKG, "JmsDialog.JmsUser" ),
+      getString( PKG, "JmsDialog.JmsPassword" ) );
+    activeMqAuthComposite.setLayoutData( fdAuthComposite );
 
     wSslGroup = new Composite( wSecurityComp, SWT.NONE );
 
@@ -167,7 +135,7 @@ class JmsDialogSecurityLayout {
 
     FormData fdSslGroup = new FormData();
     fdSslGroup.left = new FormAttachment( 0, 0 );
-    fdSslGroup.top = new FormAttachment( wAuthenticationGroup, 15 );
+    fdSslGroup.top = new FormAttachment( activeMqAuthComposite, 15 );
     fdSslGroup.right = new FormAttachment( 100, 0 );
     fdSslGroup.bottom = new FormAttachment( 100, 0 );
     fdSslGroup.width = INPUT_WIDTH;
@@ -191,14 +159,10 @@ class JmsDialogSecurityLayout {
     wSecurityComp.setLayoutData( fdSecurityComp );
 
     wSecurityTab.setControl( wSecurityComp );
-    layoutIbmMqConnectionFields();
-    layoutActiveMqConnectionFields();
-
-    wIbmUser.setText( jmsDelegate.ibmUsername );
-    wIbmPassword.setText( jmsDelegate.ibmPassword );
-
-    wActiveUser.setText( jmsDelegate.amqUsername );
-    wActivePassword.setText( jmsDelegate.amqPassword );
+    activeMqAuthComposite.setUsername( jmsDelegate.amqUsername );
+    activeMqAuthComposite.setPassword( jmsDelegate.amqPassword );
+    ibmMqAuthComposite.setUsername( jmsDelegate.ibmUsername );
+    ibmMqAuthComposite.setPassword( jmsDelegate.ibmPassword );
 
     toggleVisibility( JmsProvider.ConnectionType.valueOf( this.jmsDelegate.connectionType ) );
   }
@@ -215,6 +179,13 @@ class JmsDialogSecurityLayout {
     jmsDelegate.sslContextAlgorithm = tableValues.get( SSL_CONTEXT_ALGORITHM );
     jmsDelegate.ibmSslCipherSuite = tableValues.get( SSL_IBM_CIPHER_SUITE );
     jmsDelegate.ibmSslFipsRequired = tableValues.get( SSL_IBM_FIPS_REQUIRED );
+  }
+
+  protected void saveAuthentication() {
+    jmsDelegate.amqUsername = activeMqAuthComposite.getUsername();
+    jmsDelegate.amqPassword = activeMqAuthComposite.getPassword();
+    jmsDelegate.ibmUsername = ibmMqAuthComposite.getUsername();
+    jmsDelegate.ibmPassword = ibmMqAuthComposite.getPassword();
   }
 
   protected void populateTableIbm() {
@@ -247,108 +218,18 @@ class JmsDialogSecurityLayout {
     this.checkBoxTableCombo.updateDataMap( this.sslConfig );
   }
 
-  private void layoutIbmMqConnectionFields( ) {
-    wlIbmUser = new Label( wAuthenticationGroup, SWT.LEFT );
-    props.setLook( wlIbmUser );
-    wlIbmUser.setText( getString( PKG, "JmsDialog.JmsUser" ) );
-    FormData fdlUser = new FormData();
-    fdlUser.left = new FormAttachment( 0, 0 );
-    fdlUser.top = new FormAttachment( 0, 0 );
-    wlIbmUser.setLayoutData( fdlUser );
-
-    wIbmUser = new TextVar( transMeta, wAuthenticationGroup, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
-    props.setLook( wIbmUser );
-    wIbmUser.addModifyListener( lsMod );
-    FormData fdUser = new FormData();
-    fdUser.left = new FormAttachment( 0, 0 );
-    fdUser.top = new FormAttachment( wlIbmUser, 5 );
-    fdUser.right = new FormAttachment( 0, INPUT_WIDTH );
-    wIbmUser.setLayoutData( fdUser );
-
-    wlIbmPassword = new Label( wAuthenticationGroup, SWT.LEFT );
-    props.setLook( wlIbmPassword );
-    wlIbmPassword.setText( getString( PKG, "JmsDialog.JmsPassword" ) );
-    FormData fdlPassword = new FormData();
-    fdlPassword.left = new FormAttachment( 0, 0 );
-    fdlPassword.top = new FormAttachment( wIbmUser, 10 );
-    wlIbmPassword.setLayoutData( fdlPassword );
-
-    wIbmPassword = new PasswordTextVar( transMeta, wAuthenticationGroup, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
-    props.setLook( wIbmPassword );
-    wIbmPassword.addModifyListener( lsMod );
-    FormData fdPassword = new FormData();
-    fdPassword.left = new FormAttachment( 0, 0 );
-    fdPassword.top = new FormAttachment( wlIbmPassword, 5 );
-    fdPassword.right = new FormAttachment( 0, INPUT_WIDTH );
-    wIbmPassword.setLayoutData( fdPassword );
-  }
-
-  private void layoutActiveMqConnectionFields(  ) {
-    wlActiveUser = new Label( wAuthenticationGroup, SWT.LEFT );
-    props.setLook( wlActiveUser );
-    wlActiveUser.setText( getString( PKG, "JmsDialog.JmsUser" ) );
-    FormData fdlUser = new FormData();
-    fdlUser.left = new FormAttachment( 0, 0 );
-    fdlUser.top = new FormAttachment( 0, 0 );
-    wlActiveUser.setLayoutData( fdlUser );
-
-    wActiveUser = new TextVar( transMeta, wAuthenticationGroup, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
-    props.setLook( wActiveUser );
-    wActiveUser.addModifyListener( lsMod );
-    FormData fdUser = new FormData();
-    fdUser.left = new FormAttachment( 0, 0 );
-    fdUser.top = new FormAttachment( wlActiveUser, 5 );
-    fdUser.right = new FormAttachment( 0, INPUT_WIDTH );
-    wActiveUser.setLayoutData( fdUser );
-
-    wlActivePassword = new Label( wAuthenticationGroup, SWT.LEFT );
-    props.setLook( wlActivePassword );
-    wlActivePassword.setText( getString( PKG, "JmsDialog.JmsPassword" ) );
-    FormData fdlPassword = new FormData();
-    fdlPassword.left = new FormAttachment( 0, 0 );
-    fdlPassword.top = new FormAttachment( wActiveUser, 10 );
-    wlActivePassword.setLayoutData( fdlPassword );
-
-    wActivePassword = new PasswordTextVar( transMeta, wAuthenticationGroup, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
-    props.setLook( wActivePassword );
-    wActivePassword.addModifyListener( lsMod );
-    FormData fdPassword = new FormData();
-    fdPassword.left = new FormAttachment( 0, 0 );
-    fdPassword.top = new FormAttachment( wlActivePassword, 5 );
-    fdPassword.right = new FormAttachment( 0, INPUT_WIDTH );
-    wActivePassword.setLayoutData( fdPassword );
-  }
-
   protected void toggleVisibility( JmsProvider.ConnectionType type ) {
     switch ( type ) {
       case WEBSPHERE:
-        setActiveMqVisibility( false );
-        setIbmMqVisibility( true );
+        activeMqAuthComposite.setVisible( false );
+        ibmMqAuthComposite.setVisible( true );
         populateTableIbm();
         break;
       case ACTIVEMQ:
-        setIbmMqVisibility( false );
-        setActiveMqVisibility( true );
+        ibmMqAuthComposite.setVisible( false );
+        activeMqAuthComposite.setVisible( true );
         populateTableActiveMq();
         break;
     }
-  }
-
-  private void setIbmMqVisibility( boolean isVisible ) {
-
-    wlIbmUser.setVisible( isVisible );
-    wlIbmPassword.setVisible( isVisible );
-
-    wIbmUser.setVisible( isVisible );
-    wIbmPassword.setVisible( isVisible );
-  }
-
-  private void setActiveMqVisibility( boolean isVisible ) {
-
-    wlActiveUser.setVisible( isVisible );
-    wlActivePassword.setVisible( isVisible );
-
-    wActiveUser.setVisible( isVisible );
-    wActivePassword.setVisible( isVisible );
   }
 }

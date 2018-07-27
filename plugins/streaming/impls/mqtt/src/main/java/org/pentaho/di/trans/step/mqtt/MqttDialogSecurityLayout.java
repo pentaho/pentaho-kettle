@@ -35,17 +35,16 @@ import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableItem;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.TransMeta;
+import org.pentaho.di.ui.core.FormDataBuilder;
 import org.pentaho.di.ui.core.PropsUI;
+import org.pentaho.di.ui.core.widget.AuthComposite;
 import org.pentaho.di.ui.core.widget.ColumnInfo;
-import org.pentaho.di.ui.core.widget.PasswordTextVar;
 import org.pentaho.di.ui.core.widget.TableView;
-import org.pentaho.di.ui.core.widget.TextVar;
 
 import java.util.List;
 import java.util.Map;
@@ -55,10 +54,10 @@ import java.util.stream.IntStream;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Preconditions.checkState;
-import static com.google.common.base.Strings.nullToEmpty;
 import static java.util.Arrays.stream;
 import static java.util.Collections.emptyMap;
 import static java.util.Collections.sort;
+import static org.pentaho.di.i18n.BaseMessages.getString;
 import static org.pentaho.di.ui.trans.step.BaseStreamingDialog.INPUT_WIDTH;
 
 /**
@@ -72,20 +71,16 @@ class MqttDialogSecurityLayout {
   private final CTabFolder wTabFolder;
   private final ModifyListener lsMod;
   private final TransMeta transMeta;
-  private final String password;
   private final Map<String, String> sslConfig;
   private final boolean sslEnabled;
 
+  private AuthComposite authComposite;
+
   private TableView sslTable;
   private Button wUseSSL;
-  private TextVar wUsername;
-  private PasswordTextVar wPassword;
-  private String username;
 
-  MqttDialogSecurityLayout(
-    PropsUI props, CTabFolder wTabFolder, String username,
-    String password, ModifyListener lsMod, TransMeta transMeta,
-    Map<String, String> sslConfig, boolean sslEnabled ) {
+  MqttDialogSecurityLayout( PropsUI props, CTabFolder wTabFolder, ModifyListener lsMod, TransMeta transMeta,
+                            Map<String, String> sslConfig, boolean sslEnabled ) {
     checkNotNull( props );
     checkNotNull( wTabFolder );
     checkNotNull( lsMod );
@@ -97,16 +92,6 @@ class MqttDialogSecurityLayout {
     this.transMeta = transMeta;
     this.sslEnabled = sslEnabled;
     this.sslConfig = Optional.ofNullable( sslConfig ).orElse( emptyMap() );
-    this.username = nullToEmpty( username );
-    this.password = nullToEmpty( password );
-  }
-
-  String username() {
-    return wUsername.getText();
-  }
-
-  String password() {
-    return wPassword.getText();
   }
 
   Map<String, String> sslConfig() {
@@ -128,64 +113,16 @@ class MqttDialogSecurityLayout {
     securityLayout.marginWidth = 15;
     wSecurityComp.setLayout( securityLayout );
 
-    // Authentication group
-    Group wAuthenticationGroup = new Group( wSecurityComp, SWT.SHADOW_ETCHED_IN );
-    props.setLook( wAuthenticationGroup );
-    wAuthenticationGroup.setText( BaseMessages.getString( PKG, "MQTTDialog.Security.Authentication" ) );
-    FormLayout flAuthentication = new FormLayout();
-    flAuthentication.marginHeight = 15;
-    flAuthentication.marginWidth = 15;
-    wAuthenticationGroup.setLayout( flAuthentication );
-
-    FormData fdAuthenticationGroup = new FormData();
-    fdAuthenticationGroup.left = new FormAttachment( 0, 0 );
-    fdAuthenticationGroup.top = new FormAttachment( 0, 0 );
-    fdAuthenticationGroup.right = new FormAttachment( 100, 0 );
-    fdAuthenticationGroup.width = INPUT_WIDTH;
-    wAuthenticationGroup.setLayoutData( fdAuthenticationGroup );
-
-    Label wlUsername = new Label( wAuthenticationGroup, SWT.LEFT );
-    props.setLook( wlUsername );
-    wlUsername.setText( BaseMessages.getString( PKG, "MQTTDialog.Security.Username" ) );
-    FormData fdlUsername = new FormData();
-    fdlUsername.left = new FormAttachment( 0, 0 );
-    fdlUsername.top = new FormAttachment( 0, 0 );
-    fdlUsername.right = new FormAttachment( 0, INPUT_WIDTH );
-    wlUsername.setLayoutData( fdlUsername );
-
-    wUsername = new TextVar( transMeta, wAuthenticationGroup, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
-
-    props.setLook( wUsername );
-    wUsername.addModifyListener( lsMod );
-    FormData fdUsername = new FormData();
-    fdUsername.left = new FormAttachment( 0, 0 );
-    fdUsername.top = new FormAttachment( wlUsername, 5 );
-    fdUsername.right = new FormAttachment( 0, INPUT_WIDTH );
-    wUsername.setLayoutData( fdUsername );
-
-    Label wlPassword = new Label( wAuthenticationGroup, SWT.LEFT );
-    props.setLook( wlPassword );
-    wlPassword.setText( BaseMessages.getString( PKG, "MQTTDialog.Security.Password" ) );
-    FormData fdlPassword = new FormData();
-    fdlPassword.left = new FormAttachment( 0, 0 );
-    fdlPassword.top = new FormAttachment( wUsername, 10 );
-    fdlPassword.right = new FormAttachment( 0, INPUT_WIDTH );
-    wlPassword.setLayoutData( fdlPassword );
-
-    wPassword = new PasswordTextVar( transMeta, wAuthenticationGroup, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
-    props.setLook( wPassword );
-    wPassword.addModifyListener( lsMod );
-    FormData fdPassword = new FormData();
-    fdPassword.left = new FormAttachment( 0, 0 );
-    fdPassword.top = new FormAttachment( wlPassword, 5 );
-    fdPassword.right = new FormAttachment( 0, INPUT_WIDTH );
-    wPassword.setLayoutData( fdPassword );
+    authComposite = new AuthComposite( wSecurityComp, SWT.NONE, props, lsMod, transMeta,
+      getString( PKG, "MQTTDialog.Security.Authentication" ), getString( PKG, "MQTTDialog.Security.Username" ),
+      getString( PKG, "MQTTDialog.Security.Password" ) );
+    authComposite.setLayoutData( new FormDataBuilder().fullWidth().result() );
 
     wUseSSL = new Button( wSecurityComp, SWT.CHECK );
     wUseSSL.setText( BaseMessages.getString( PKG, "MQTTDialog.Security.UseSSL" ) );
     props.setLook( wUseSSL );
     FormData fdUseSSL = new FormData();
-    fdUseSSL.top = new FormAttachment( wAuthenticationGroup, 15 );
+    fdUseSSL.top = new FormAttachment( authComposite, 15 );
     fdUseSSL.left = new FormAttachment( 0, 0 );
     wUseSSL.setLayoutData( fdUseSSL );
     wUseSSL.addSelectionListener( new SelectionListener() {
@@ -230,9 +167,6 @@ class MqttDialogSecurityLayout {
 
     sslTable.table.select( 0 );
     sslTable.table.showSelection();
-
-    wUsername.setText( username );
-    wPassword.setText( password );
   }
 
   private void buildSSLTable( Composite parentWidget, Control relativePosition ) {
@@ -309,5 +243,21 @@ class MqttDialogSecurityLayout {
     return IntStream.range( 0, table.getItemCount() )
       .mapToObj( table::getItem )
       .collect( Collectors.toMap( strArray -> strArray[ 0 ], strArray -> strArray[ 1 ] ) );
+  }
+
+  public void setUsername( String username ) {
+    this.authComposite.setUsername( username );
+  }
+
+  public String getUsername() {
+    return this.authComposite.getUsername();
+  }
+
+  public void setPassword( String password ) {
+    this.authComposite.setPassword( password );
+  }
+
+  public String getPassword() {
+    return this.authComposite.getPassword();
   }
 }

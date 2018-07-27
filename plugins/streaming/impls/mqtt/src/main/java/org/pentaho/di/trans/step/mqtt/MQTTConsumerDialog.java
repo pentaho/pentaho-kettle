@@ -86,9 +86,10 @@ public class MQTTConsumerDialog extends BaseStreamingDialog implements StepDialo
     populateTopicsData();
     wQOS.setText( mqttMeta.getQos() );
 
+    securityLayout.setUsername( mqttMeta.getUsername() );
+    securityLayout.setPassword( mqttMeta.getPassword() );
+
     securityLayout.setUIText();
-
-
   }
 
   private void populateTopicsData() {
@@ -219,9 +220,7 @@ public class MQTTConsumerDialog extends BaseStreamingDialog implements StepDialo
   @Override protected void createAdditionalTabs() {
     // Set the height so the topics table has approximately 5 rows
     shell.setMinimumSize( 527, 600 );
-    securityLayout = new MqttDialogSecurityLayout(
-      props, wTabFolder, mqttMeta.getUsername(), mqttMeta.getPassword(), lsMod, transMeta,
-      mqttMeta.getSslConfig(), mqttMeta.isUseSsl() );
+    securityLayout = new MqttDialogSecurityLayout( props, wTabFolder, lsMod, transMeta, mqttMeta.getSslConfig(), mqttMeta.isUseSsl() );
     securityLayout.buildSecurityTab();
     buildFieldsTab();
     optionsLayout = new MqttDialogOptionsLayout( props, wTabFolder, lsMod, transMeta,
@@ -342,8 +341,8 @@ public class MQTTConsumerDialog extends BaseStreamingDialog implements StepDialo
     mqttMeta.setMsgOutputName( fieldsTable.getTable().getItem( 0 ).getText( 2 ) );
     mqttMeta.setTopicOutputName( fieldsTable.getTable().getItem( 1 ).getText( 2 ) );
     mqttMeta.setQos( wQOS.getText() );
-    mqttMeta.setUsername( securityLayout.username() );
-    mqttMeta.setPassword( securityLayout.password() );
+    mqttMeta.setUsername( securityLayout.getUsername() );
+    mqttMeta.setPassword( securityLayout.getPassword() );
     mqttMeta.setUseSsl( securityLayout.useSsl() );
     mqttMeta.setSslConfig( securityLayout.sslConfig() );
 

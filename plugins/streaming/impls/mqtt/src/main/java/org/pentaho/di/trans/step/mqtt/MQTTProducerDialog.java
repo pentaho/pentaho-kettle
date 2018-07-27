@@ -201,9 +201,7 @@ public class MQTTProducerDialog extends BaseStepDialog implements StepDialogInte
 
     buildSetupTab();
 
-    securityLayout = new MqttDialogSecurityLayout(
-      props, wTabFolder, meta.username, meta.password, lsMod, transMeta,
-      meta.getSslConfig(), meta.useSsl );
+    securityLayout = new MqttDialogSecurityLayout( props, wTabFolder, lsMod, transMeta, meta.getSslConfig(), meta.useSsl );
     securityLayout.buildSecurityTab();
 
     optionsLayout = new MqttDialogOptionsLayout( props, wTabFolder, lsMod, transMeta,
@@ -350,6 +348,8 @@ public class MQTTProducerDialog extends BaseStepDialog implements StepDialogInte
     topicSelection.setTopicText( nullToEmpty( meta.topic ) );
     wQOS.setText( nullToEmpty( meta.qos ) );
     wMessageField.setText( nullToEmpty( meta.messageField ) );
+    securityLayout.setPassword( meta.password );
+    securityLayout.setUsername( meta.username );
     securityLayout.setUIText();
   }
 
@@ -365,8 +365,8 @@ public class MQTTProducerDialog extends BaseStepDialog implements StepDialogInte
 
     meta.qos = wQOS.getText();
     meta.messageField = wMessageField.getText();
-    meta.username = securityLayout.username();
-    meta.password = securityLayout.password();
+    meta.username = securityLayout.getUsername();
+    meta.password = securityLayout.getPassword();
     meta.useSsl = securityLayout.useSsl();
     meta.setSslConfig( securityLayout.sslConfig() );
 
