@@ -97,7 +97,9 @@ SLACK_CREDENTIALS_ID: 'slack-token'
 
 #Specific archiving patterns
 #EE
-INSTALLER_ARTIFACTS_PATTERN: 'bi-suite/target/**/pentaho-business-analytics-*.*, upgrade-utility/target/pentaho-upgrade-utility-*.zip'
+INSTALLER_ARTIFACTS_PATTERN_WINDOWS: 'bi-suite/target/windows/pentaho-business-analytics-*.*'
+INSTALLER_ARTIFACTS_PATTERN_MAC: 'bi-suite/target/mac/pentaho-business-analytics-*.*'
+INSTALLER_ARTIFACTS_PATTERN_LINUX: 'bi-suite/target/linux/pentaho-business-analytics-*.*, upgrade-utility/target/pentaho-upgrade-utility-*.zip'
 PAD_ASSEMBLY_EE_PATTERN: 'target/pad-ee-*.zip'
 PDI_ASSEMBLY_EE_PATTERN: 'assemblies/client/target/pdi-ee-client-*.zip'
 ANALYSIS_PLUGIN_EE_PATTERN: 'assemblies/plugin/target/pentaho-analysis-ee-*.zip'
