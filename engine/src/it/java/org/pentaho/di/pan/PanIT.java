@@ -24,21 +24,25 @@ package org.pentaho.di.pan;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.pentaho.di.base.CommandExecutorCodes;
 import org.pentaho.di.core.KettleEnvironment;
+import org.pentaho.di.core.Result;
 import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.util.FileUtil;
 import org.pentaho.di.core.util.Utils;
 
-import java.io.*;
-import java.net.URL;
+import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.InputStreamReader;
+import java.io.PrintStream;
 import java.security.Permission;
-import java.util.Enumeration;
-import java.util.Random;
 import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 public class PanIT {
@@ -107,6 +111,10 @@ public class PanIT {
 
       assertTrue( !logFileContent.contains( FAILED_TO_INITIALIZE_ERROR_PATTERN ) &&  errorCount == 0 );
 
+      Result result = Pan.getCommandExecutor().getResult();
+      assertNotNull( result );
+      assertEquals( result.getExitStatus(), CommandExecutorCodes.Pan.SUCCESS.getCode() );
+
     } finally {
       // sanitize
       File f = new File( logFileFullPath );
@@ -140,6 +148,10 @@ public class PanIT {
       int errorCount = parseErrorCount( logFileContent );
 
       assertTrue( !logFileContent.contains( FAILED_TO_INITIALIZE_ERROR_PATTERN ) &&  errorCount == 0 );
+
+      Result result = Pan.getCommandExecutor().getResult();
+      assertNotNull( result );
+      assertEquals( result.getExitStatus(), CommandExecutorCodes.Pan.SUCCESS.getCode() );
 
     } finally {
       // sanitize
@@ -177,6 +189,10 @@ public class PanIT {
 
         assertTrue( logFileContent.contains( FAILED_TO_INITIALIZE_ERROR_PATTERN ) ||  errorCount > 0 );
 
+        Result result = Pan.getCommandExecutor().getResult();
+        assertNotNull( result );
+        assertEquals( result.getExitStatus(), CommandExecutorCodes.Pan.ERRORS_DURING_PROCESSING.getCode() );
+
       } finally {
         // sanitize
         File f = new File( logFileFullPath );
@@ -213,6 +229,10 @@ public class PanIT {
         int errorCount = parseErrorCount( logFileContent );
 
         assertTrue( !logFileContent.contains( FAILED_TO_INITIALIZE_ERROR_PATTERN ) &&  errorCount == 0 );
+
+        Result result = Pan.getCommandExecutor().getResult();
+        assertNotNull( result );
+        assertEquals( result.getExitStatus(), CommandExecutorCodes.Pan.SUCCESS.getCode() );
 
       } finally {
         // sanitize
@@ -263,6 +283,10 @@ public class PanIT {
 
       assertTrue( !logFileContent.contains( FAILED_TO_INITIALIZE_ERROR_PATTERN ) && errorCount == 0 );
       assertTrue( logFileContent.contains( EXPECTED_OUTPUT ) );
+
+      Result result = Pan.getCommandExecutor().getResult();
+      assertNotNull( result );
+      assertEquals( result.getExitStatus(), CommandExecutorCodes.Pan.SUCCESS.getCode() );
 
     } finally {
       // sanitize

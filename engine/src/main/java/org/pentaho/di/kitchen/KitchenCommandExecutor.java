@@ -68,9 +68,9 @@ public class KitchenCommandExecutor extends AbstractBaseCommandExecutor {
     setKettleInit( kettleInit );
   }
 
-  public int execute( String repoName, String noRepo, String username, String trustUser, String password, String dirName, String filename,
-                      String jobName, String listJobs, String listDirs, String exportRepo, String initialDir,
-                      String listRepos, String listParams, NamedParams params, NamedParams customParams, String[] arguments ) throws Throwable {
+  public Result execute( String repoName, String noRepo, String username, String trustUser, String password, String dirName,
+                         String filename, String jobName, String listJobs, String listDirs, String exportRepo, String initialDir,
+                         String listRepos, String listParams, NamedParams params, NamedParams customParams, String[] arguments ) throws Throwable {
 
     getLog().logMinimal( BaseMessages.getString( getPkgClazz(), "Kitchen.Log.Starting" ) );
 
@@ -140,7 +140,7 @@ public class KitchenCommandExecutor extends AbstractBaseCommandExecutor {
         System.out.println( BaseMessages.getString( getPkgClazz(), "Kitchen.Error.canNotLoadJob" ) );
       }
 
-      return CommandExecutorCodes.Kitchen.COULD_NOT_LOAD_JOB.getCode();
+      return exitWithStatus( CommandExecutorCodes.Kitchen.COULD_NOT_LOAD_JOB.getCode() );
     }
 
     if ( !Utils.isEmpty( exportRepo ) ) {
@@ -157,11 +157,9 @@ public class KitchenCommandExecutor extends AbstractBaseCommandExecutor {
         listParams = YES;
       } catch ( Exception e ) {
         System.out.println( Const.getStackTracker( e ) );
-        return CommandExecutorCodes.Kitchen.UNEXPECTED_ERROR.getCode();
+        return exitWithStatus( CommandExecutorCodes.Kitchen.UNEXPECTED_ERROR.getCode() );
       }
     }
-
-    Result result = null;
 
     int returnCode = CommandExecutorCodes.Kitchen.SUCCESS.getCode();
 
@@ -204,12 +202,12 @@ public class KitchenCommandExecutor extends AbstractBaseCommandExecutor {
         printJobParameters( job );
 
         // stop right here...
-        return CommandExecutorCodes.Kitchen.COULD_NOT_LOAD_JOB.getCode(); // same as the other list options
+        return exitWithStatus( CommandExecutorCodes.Kitchen.COULD_NOT_LOAD_JOB.getCode() ); // same as the other list options
       }
 
-      job.start();
+      job.start(); // Execute the selected job.
       job.waitUntilFinished();
-      result = job.getResult(); // Execute the selected job.
+      setResult( job.getResult() ); // get the execution result
     } finally {
       if ( repository != null ) {
         repository.disconnect();
@@ -221,7 +219,7 @@ public class KitchenCommandExecutor extends AbstractBaseCommandExecutor {
 
     getLog().logMinimal( BaseMessages.getString( getPkgClazz(), "Kitchen.Log.Finished" ) );
 
-    if ( result != null && result.getNrErrors() != 0 ) {
+    if ( getResult().getNrErrors() != 0 ) {
       getLog().logError( BaseMessages.getString( getPkgClazz(), "Kitchen.Error.FinishedWithErrors" ) );
       returnCode = CommandExecutorCodes.Kitchen.ERRORS_DURING_PROCESSING.getCode();
     }
@@ -231,7 +229,7 @@ public class KitchenCommandExecutor extends AbstractBaseCommandExecutor {
     calculateAndPrintElapsedTime( start, stop, "Kitchen.Log.StartStop", "Kitchen.Log.ProcessEndAfter", "Kitchen.Log.ProcessEndAfterLong",
             "Kitchen.Log.ProcessEndAfterLonger", "Kitchen.Log.ProcessEndAfterLongest" );
 
-    return returnCode;
+    return exitWithStatus( returnCode );
   }
 
   public int printVersion() {

@@ -27,7 +27,9 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Test;
+import org.pentaho.di.base.CommandExecutorCodes;
 import org.pentaho.di.core.KettleEnvironment;
+import org.pentaho.di.core.Result;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleSecurityException;
 import org.pentaho.di.core.parameters.NamedParams;
@@ -47,6 +49,7 @@ import java.security.Permission;
 
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.mockito.Matchers.anyBoolean;
 import static org.mockito.Matchers.anyObject;
 import static org.mockito.Mockito.mock;
@@ -160,6 +163,10 @@ public class PanTest {
       assertTrue( sysOutContent.toString().contains( TEST_REPO_DUMMY_NAME ) );
       assertTrue( sysOutContent.toString().contains( TEST_REPO_DUMMY_DESC ) );
 
+      Result result = Pan.getCommandExecutor().getResult();
+      assertNotNull( result );
+      assertEquals( result.getExitStatus(), CommandExecutorCodes.Pan.SUCCESS.getCode() );
+
     } finally {
       // sanitize
 
@@ -205,6 +212,10 @@ public class PanTest {
       assertTrue( sysOutContent.toString().contains( DUMMY_DIR_1 ) );
       assertTrue( sysOutContent.toString().contains( DUMMY_DIR_2 ) );
 
+      Result result = Pan.getCommandExecutor().getResult();
+      assertNotNull( result );
+      assertEquals( result.getExitStatus(), CommandExecutorCodes.Pan.SUCCESS.getCode() );
+
     } finally {
       // sanitize
 
@@ -248,6 +259,10 @@ public class PanTest {
 
       assertTrue( sysOutContent.toString().contains( DUMMY_TRANS_1 ) );
       assertTrue( sysOutContent.toString().contains( DUMMY_TRANS_2 ) );
+
+      Result result = Pan.getCommandExecutor().getResult();
+      assertNotNull( result );
+      assertEquals( result.getExitStatus(), CommandExecutorCodes.Pan.SUCCESS.getCode() );
 
     } finally {
       // sanitize

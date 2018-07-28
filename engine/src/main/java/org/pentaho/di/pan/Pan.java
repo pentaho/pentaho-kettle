@@ -27,6 +27,7 @@ import java.util.List;
 
 import org.pentaho.di.base.CommandExecutorCodes;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.Result;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.KettleClientEnvironment;
 import org.pentaho.di.core.KettleEnvironment;
@@ -227,13 +228,13 @@ public class Pan {
         }
       }
 
-      int returnCode = getCommandExecutor().execute( optionRepname.toString(), optionNorep.toString(), optionUsername.toString(),
+      Result result = getCommandExecutor().execute( optionRepname.toString(), optionNorep.toString(), optionUsername.toString(),
               optionTrustUser.toString(), optionPassword.toString(), optionDirname.toString(), optionFilename.toString(), optionJarFilename.toString(),
               optionTransname.toString(), optionListtrans.toString(), optionListdir.toString(), optionExprep.toString(),
               initialDir.toString(), optionListrep.toString(), optionSafemode.toString(), optionMetrics.toString(),
               optionListParam.toString(), optionParams, args.toArray( new String[ args.size() ] ) );
 
-      exitJVM( returnCode );
+      exitJVM( result.getExitStatus() );
 
     } catch ( Throwable t ) {
       t.printStackTrace();
