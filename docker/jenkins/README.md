@@ -1,25 +1,24 @@
-# Pentaho Jenkins Docker image
+# Jenkins Docker image
 
-The Jenkins Continuous Integration and Delivery server.
+The Jenkins Continuous Integration and Delivery server built on top of [Docker](https://www.docker.com/).
 
-This image is provided to you with a minimal set of plugins to run pipelines, and 
-it comes pre-configured with the [Jenkins Shared Libraries](https://github.com/pentaho/jenkins-shared-libraries).
+This image is provided to you with a minimal set of plugins to run pipelines. It comes pre-configured with the [Jenkins Shared Libraries](https://github.com/pentaho/jenkins-shared-libraries), a library to assist in the process of build parameters and data.
 
 Video tutorial (~30 mins) of setup & usage available [here](https://pentaho.app.box.com/file/306724225188).
 
-NOTE: For jenkins to be able to clone the Shared Libraries, you must provide it with your git credentials. If you haven't created a personal access token yet, 
+NOTE: For Jenkins to be able to clone the Shared Libraries, you must provide it with your git credentials. If you haven't created a personal access token yet,
 see [Creating a personal access token](https://help.github.com/articles/creating-a-personal-access-token-for-the-command-line/)
 for steps on how to create one.
 
 ## Usage
-The simplier way to get started is to use the provided startup script `go.sh`.  
+The simplest way to get started is to use the provided startup script `go.sh`.  
 Copy the file `secrets/credentials.template` to `secrets/credentials` and edit with the necessary credentials, then run the shell script.
 
 ```console
 ./go.sh
 ```
 
-This will build/start a fully configured jenkins container.\
+This will build/start a fully configured Jenkins container.\
 You can now point your browser to [0.0.0.0:8080](http://0.0.0.0:8080) and start using.
 
 Alternatively you can build the ***alpine*** version.
@@ -28,7 +27,7 @@ Alternatively you can build the ***alpine*** version.
 ./go.sh -v alpine
 ```
 
-NOTE: This script automatically creates a *jenkins_pipeline* volume on docker host, that will survive container start/stop/deletion.
+NOTE: This script automatically creates a *jenkins_pipeline* volume on the Docker host, that will survive container start/stop/deletion.
 
 ```
 ./go.sh -h
@@ -46,7 +45,7 @@ usage: go.sh [options]
         --env-file file         Use this file to set the container's environment variables.
         --bind-mount string     Mount a file or directory into the container.
                                 example: <host-file>:<destination>
-``` 
+```
 
 #### Available Container's Environment Variables
 
@@ -64,6 +63,8 @@ SHARED_LIBRARIES_BRANCH=master
 
 ## Manual usage
 
+If you wish to manually create the docker container, you can simply run this:
+
 ```console
 docker run -p 8080:8080 \
   -v jenkins_pipeline:/var/jenkins_home \
@@ -80,12 +81,12 @@ docker run -p 8080:8080 \
   -e GIT_USER=<git_user> \
   -e GIT_TOKEN=<git_token> \
   pentaho/jenkins:lts
-``` 
+```
 
 ### Testing your local Shared Libraries
 
-If you want to point to a local shared libraries and/or pipeline repo when developing you have to map those volumes into the container. 
-The path var is then available through environment variables or you can change it on the jenkins UI. 
+If you want to point to a local shared libraries and/or pipeline repo when developing you have to map those volumes into the container.
+The path var is then available through environment variables or you can change it on the jenkins UI.
 
 The `go.sh` script can help you here too.
 Start by creating a file named *env.list* and copy the environment variables that you need into it.
@@ -131,7 +132,7 @@ docker run \
 
 ---
 
-#### What is going on behind the scenes 
+#### What is going on behind the scenes
 
 If you are curious about what the script is doing, you can add the `--debug` parameter
 to the script. This will instruct it to print out the commands it will call. This is useful
