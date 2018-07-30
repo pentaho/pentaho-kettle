@@ -375,7 +375,7 @@ public class JobExecutor extends BaseStep implements StepInterface {
           throw new KettleException( BaseMessages.getString(
             PKG, "JobExecutor.Exception.UnableToFindField", fieldName ) );
         }
-        value = data.groupBuffer.get( 0 ).getString( i, "" );
+        value = data.groupBuffer.get( 0 ).getString( idx, "" );
         this.setVariable( parameters.getVariable()[ i ], value );
       }
     }
