@@ -25,6 +25,7 @@ package org.pentaho.di.pan;
 import org.pentaho.di.base.AbstractBaseCommandExecutor;
 import org.pentaho.di.base.CommandExecutorCodes;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.Result;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.logging.LogChannelInterface;
@@ -59,10 +60,10 @@ public class PanCommandExecutor extends AbstractBaseCommandExecutor {
     setLog( log );
   }
 
-  public int execute( String repoName, String noRepo, String username, String trustUser, String password, String dirName, String filename,
-                      String jarFile, String transName, String listTrans, String listDirs, String exportRepo,
-                      String initialDir, String listRepos, String safemode, String metrics, String listParams,
-                      NamedParams params, String[] arguments ) throws Throwable {
+  public Result execute( String repoName, String noRepo, String username, String trustUser, String password, String dirName,
+                         String filename, String jarFile, String transName, String listTrans, String listDirs, String exportRepo,
+                         String initialDir, String listRepos, String safemode, String metrics, String listParams, NamedParams params,
+                         String[] arguments ) throws Throwable {
 
     getLog().logMinimal( BaseMessages.getString( getPkgClazz(), "Pan.Log.StartingToRun" ) );
 
@@ -131,7 +132,7 @@ public class PanCommandExecutor extends AbstractBaseCommandExecutor {
       if ( repository != null ) {
         repository.disconnect();
       }
-      return CommandExecutorCodes.Pan.ERRORS_DURING_PROCESSING.getCode();
+      return exitWithStatus( CommandExecutorCodes.Pan.ERRORS_DURING_PROCESSING.getCode() );
     }
 
     if ( trans == null ) {
@@ -139,9 +140,9 @@ public class PanCommandExecutor extends AbstractBaseCommandExecutor {
       if ( !isEnabled( listTrans ) && !isEnabled( listDirs ) && !isEnabled( listRepos ) && Utils.isEmpty( exportRepo ) ) {
 
         System.out.println( BaseMessages.getString( getPkgClazz(), "Pan.Error.CanNotLoadTrans" ) );
-        return CommandExecutorCodes.Pan.COULD_NOT_LOAD_TRANS.getCode();
+        return exitWithStatus( CommandExecutorCodes.Pan.COULD_NOT_LOAD_TRANS.getCode() );
       } else {
-        return CommandExecutorCodes.Pan.SUCCESS.getCode();
+        return exitWithStatus( CommandExecutorCodes.Pan.SUCCESS.getCode() );
       }
     }
 
@@ -159,7 +160,7 @@ public class PanCommandExecutor extends AbstractBaseCommandExecutor {
         printTransformationParameters( trans );
 
         // stop right here...
-        return CommandExecutorCodes.Pan.COULD_NOT_LOAD_TRANS.getCode(); // same as the other list options
+        return exitWithStatus( CommandExecutorCodes.Pan.COULD_NOT_LOAD_TRANS.getCode() ); // same as the other list options
       }
 
       // allocate & run the required sub-threads
@@ -169,7 +170,7 @@ public class PanCommandExecutor extends AbstractBaseCommandExecutor {
       } catch ( KettleException ke ) {
         logDebug( ke.getLocalizedMessage() );
         System.out.println( BaseMessages.getString( getPkgClazz(), "Pan.Error.UnablePrepareInitTrans" ) );
-        return CommandExecutorCodes.Pan.UNABLE_TO_PREP_INIT_TRANS.getCode();
+        return exitWithStatus( CommandExecutorCodes.Pan.UNABLE_TO_PREP_INIT_TRANS.getCode() );
       }
 
       waitUntilFinished( trans, 100 ); // Give the transformation up to 10 seconds to finish execution
@@ -181,13 +182,15 @@ public class PanCommandExecutor extends AbstractBaseCommandExecutor {
       getLog().logMinimal( BaseMessages.getString( getPkgClazz(), "Pan.Log.Finished" ) );
       Date stop = Calendar.getInstance().getTime(); // capture execution stop time
 
+      setResult( trans.getResult() ); // get the execution result
+
       int completionTimeSeconds = calculateAndPrintElapsedTime( start, stop, "Pan.Log.StartStop", "Pan.Log.ProcessingEndAfter",
               "Pan.Log.ProcessingEndAfterLong", "Pan.Log.ProcessingEndAfterLonger", "Pan.Log.ProcessingEndAfterLongest" );
 
-      if ( trans.getResult().getNrErrors() == 0 ) {
+      if ( getResult().getNrErrors() == 0 ) {
 
         trans.printStats( completionTimeSeconds );
-        return CommandExecutorCodes.Pan.SUCCESS.getCode();
+        return exitWithStatus( CommandExecutorCodes.Pan.SUCCESS.getCode() );
 
       } else {
 
@@ -197,18 +200,18 @@ public class PanCommandExecutor extends AbstractBaseCommandExecutor {
         if ( !Utils.isEmpty( transJVMExitCode ) ) {
 
           try {
-            return Integer.parseInt( transJVMExitCode );
+            return exitWithStatus( Integer.parseInt( transJVMExitCode ) );
 
           } catch ( NumberFormatException nfe ) {
             getLog().logError( BaseMessages.getString( getPkgClazz(), "Pan.Error.TransJVMExitCodeInvalid",
                     Const.KETTLE_TRANS_PAN_JVM_EXIT_CODE, transJVMExitCode ) );
             getLog().logError( BaseMessages.getString( getPkgClazz(), "Pan.Log.JVMExitCode", "1" ) );
-            return CommandExecutorCodes.Pan.ERRORS_DURING_PROCESSING.getCode();
+            return exitWithStatus( CommandExecutorCodes.Pan.ERRORS_DURING_PROCESSING.getCode() );
           }
 
         } else {
           // the trans does not have a return code.
-          return CommandExecutorCodes.Pan.ERRORS_DURING_PROCESSING.getCode();
+          return exitWithStatus( CommandExecutorCodes.Pan.ERRORS_DURING_PROCESSING.getCode() );
         }
       }
 
@@ -217,7 +220,7 @@ public class PanCommandExecutor extends AbstractBaseCommandExecutor {
       System.out.println( BaseMessages.getString( getPkgClazz(), "Pan.Log.ErrorOccurred", "" + ke.getMessage() ) );
       getLog().logError( BaseMessages.getString( getPkgClazz(), "Pan.Log.UnexpectedErrorOccurred", "" + ke.getMessage() ) );
 
-      return CommandExecutorCodes.Pan.UNEXPECTED_ERROR.getCode();
+      return exitWithStatus( CommandExecutorCodes.Pan.UNEXPECTED_ERROR.getCode() );
 
     } finally {
       if ( repository != null ) {

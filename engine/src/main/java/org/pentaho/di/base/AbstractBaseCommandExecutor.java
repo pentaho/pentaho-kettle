@@ -26,6 +26,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.Result;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleSecurityException;
@@ -52,6 +53,13 @@ public abstract class AbstractBaseCommandExecutor {
   private LogChannelInterface log;
   private Class<?> pkgClazz;
   DelegatingMetaStore metaStore;
+
+  private Result result = new Result();
+
+  protected Result exitWithStatus( final int exitStatus ) {
+    getResult().setExitStatus( exitStatus );
+    return getResult();
+  }
 
   public DelegatingMetaStore createDefaultMetastore() throws MetaStoreException {
     DelegatingMetaStore metaStore = new DelegatingMetaStore();
@@ -217,5 +225,13 @@ public abstract class AbstractBaseCommandExecutor {
 
   public void setDateFormat( SimpleDateFormat dateFormat ) {
     this.dateFormat = dateFormat;
+  }
+
+  public Result getResult() {
+    return result;
+  }
+
+  public void setResult( Result result ) {
+    this.result = result;
   }
 }

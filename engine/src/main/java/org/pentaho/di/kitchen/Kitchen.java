@@ -33,6 +33,7 @@ import java.util.concurrent.Future;
 
 import org.pentaho.di.base.CommandExecutorCodes;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.Result;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.KettleClientEnvironment;
 import org.pentaho.di.core.KettleEnvironment;
@@ -241,7 +242,7 @@ public class Kitchen {
 
     // Start the action...
     //
-    int returnCode = CommandExecutorCodes.Kitchen.SUCCESS.getCode();
+    Result result = new Result();
 
     try {
 
@@ -256,14 +257,14 @@ public class Kitchen {
         }
       }
 
-      returnCode = getCommandExecutor().execute( optionRepname.toString(), optionNorep.toString(), optionUsername.toString(),
+      result = getCommandExecutor().execute( optionRepname.toString(), optionNorep.toString(), optionUsername.toString(),
             optionTrustUser.toString(), optionPassword.toString(), optionDirname.toString(), optionFilename.toString(), optionJobname.toString(), optionListjobs.toString(),
             optionListdir.toString(), optionExport.toString(), initialDir.toString(), optionListrep.toString(), optionListParam.toString(),
             optionParams, customOptions, args.toArray( new String[ args.size() ] ) );
 
     } catch ( Throwable t ) {
       t.printStackTrace();
-      returnCode = CommandExecutorCodes.Pan.UNEXPECTED_ERROR.getCode();
+      result.setExitStatus( CommandExecutorCodes.Pan.UNEXPECTED_ERROR.getCode() );
 
     } finally {
       if ( fileAppender != null ) {
@@ -272,7 +273,7 @@ public class Kitchen {
       }
     }
 
-    exitJVM( returnCode );
+    exitJVM( result.getExitStatus() );
 
   }
 

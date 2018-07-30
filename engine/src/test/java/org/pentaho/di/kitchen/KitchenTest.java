@@ -25,7 +25,9 @@ package org.pentaho.di.kitchen;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.pentaho.di.base.CommandExecutorCodes;
 import org.pentaho.di.core.KettleEnvironment;
+import org.pentaho.di.core.Result;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleSecurityException;
 import org.pentaho.di.job.Job;
@@ -40,6 +42,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import java.security.Permission;
 
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.anyBoolean;
@@ -142,6 +145,10 @@ public class KitchenTest {
       assertTrue( sysOutContent.toString().contains( TEST_REPO_DUMMY_NAME ) );
       assertTrue( sysOutContent.toString().contains( TEST_REPO_DUMMY_DESC ) );
 
+      Result result = Kitchen.getCommandExecutor().getResult();
+      assertNotNull( result );
+      assertEquals( result.getExitStatus(), CommandExecutorCodes.Kitchen.COULD_NOT_LOAD_JOB.getCode() );
+
     } finally {
       // sanitize
 
@@ -187,6 +194,10 @@ public class KitchenTest {
       assertTrue( sysOutContent.toString().contains( DUMMY_DIR_1 ) );
       assertTrue( sysOutContent.toString().contains( DUMMY_DIR_2 ) );
 
+      Result result = Kitchen.getCommandExecutor().getResult();
+      assertNotNull( result );
+      assertEquals( result.getExitStatus(), CommandExecutorCodes.Kitchen.COULD_NOT_LOAD_JOB.getCode() );
+
     } finally {
       // sanitize
 
@@ -230,6 +241,10 @@ public class KitchenTest {
 
       assertTrue( sysOutContent.toString().contains( DUMMY_JOB_1 ) );
       assertTrue( sysOutContent.toString().contains( DUMMY_JOB_2 ) );
+
+      Result result = Kitchen.getCommandExecutor().getResult();
+      assertNotNull( result );
+      assertEquals( result.getExitStatus(), CommandExecutorCodes.Kitchen.COULD_NOT_LOAD_JOB.getCode() );
 
     } finally {
       // sanitize

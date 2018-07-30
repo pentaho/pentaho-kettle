@@ -24,15 +24,21 @@ package org.pentaho.di.kitchen;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.pentaho.di.pan.Pan;
+import org.pentaho.di.base.CommandExecutorCodes;
+import org.pentaho.di.core.Result;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.InputStreamReader;
+import java.io.PrintStream;
 import java.security.Permission;
 import java.util.UUID;
-import java.util.regex.Pattern;
 
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertEquals;
 
 public class KitchenIT {
 
@@ -53,13 +59,13 @@ public class KitchenIT {
   private static final String EXPECTED_PARAMS_PASSED_ALONG = BASE_PATH + "expected_params_passed_along";
 
   private static final String[] KTRS_EXPECTED_COMPLETE_WITH_SUCCESS = new String[] {
-          "runs_well_hello_world.kjb"
+    "runs_well_hello_world.kjb"
   };
 
   private static final String[] KTRS_EXPECTED_COMPLETE_WITH_FAILURE = new String[] {
-          "fail_on_exec_hello_world.kjb",
-          "fail_on_prep_hello_world.kjb",
-          "missing_referenced_ktr.kjb"
+    "fail_on_exec_hello_world.kjb",
+    "fail_on_prep_hello_world.kjb",
+    "missing_referenced_ktr.kjb"
   };
 
   @Before
@@ -137,6 +143,10 @@ public class KitchenIT {
         assertTrue( logFileContent.contains( JOB_EXEC_RESULT_FALSE ) );
         assertTrue( logFileContent.contains( FAILED_JOB_EXEC_PATTERN ) );
 
+        Result result = Kitchen.getCommandExecutor().getResult();
+        assertNotNull( result );
+        assertEquals( result.getExitStatus(), CommandExecutorCodes.Kitchen.ERRORS_DURING_PROCESSING.getCode() );
+
       } finally {
         // sanitize
         File f = new File( logFileFullPath );
@@ -172,6 +182,10 @@ public class KitchenIT {
         assertTrue( logFileContent.contains( JOB_EXEC_RESULT_TRUE ) );
         assertFalse( logFileContent.contains( FAILED_JOB_EXEC_PATTERN ) );
 
+        Result result = Kitchen.getCommandExecutor().getResult();
+        assertNotNull( result );
+        assertEquals( result.getExitStatus(), CommandExecutorCodes.Kitchen.SUCCESS.getCode() );
+
       } finally {
         // sanitize
         File f = new File( logFileFullPath );
@@ -203,11 +217,11 @@ public class KitchenIT {
     try {
 
       Kitchen.main( new String[] {
-              "/file:" + testKJBFullPath,
-              "/level:Basic",
-              "/logfile:" + logFileFullPath,
-              "/param:" + param1Name + "=" + param1Val,
-              "/param:" + param2Name + "=" + param2Val
+        "/file:" + testKJBFullPath,
+        "/level:Basic",
+        "/logfile:" + logFileFullPath,
+        "/param:" + param1Name + "=" + param1Val,
+        "/param:" + param2Name + "=" + param2Val
       } );
 
     } catch ( SecurityException e ) {
@@ -219,6 +233,10 @@ public class KitchenIT {
       assertTrue( logFileContent.contains( EXPECTED_OUTPUT ) );
       assertTrue( logFileContent.contains( JOB_EXEC_RESULT_TRUE ) );
       assertFalse( logFileContent.contains( FAILED_JOB_EXEC_PATTERN ) );
+
+      Result result = Kitchen.getCommandExecutor().getResult();
+      assertNotNull( result );
+      assertEquals( result.getExitStatus(), CommandExecutorCodes.Kitchen.SUCCESS.getCode() );
 
     } finally {
       // sanitize
