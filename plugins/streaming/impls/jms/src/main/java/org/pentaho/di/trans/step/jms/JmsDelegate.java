@@ -115,7 +115,7 @@ public class JmsDelegate {
     return getJmsProvider().getContext( this );
   }
 
-  private JmsProvider getJmsProvider() {
+  JmsProvider getJmsProvider() {
     return jmsProviders.stream()
       .filter( prov -> prov.supports( JmsProvider.ConnectionType.valueOf( connectionType ) ) )
       .findFirst()

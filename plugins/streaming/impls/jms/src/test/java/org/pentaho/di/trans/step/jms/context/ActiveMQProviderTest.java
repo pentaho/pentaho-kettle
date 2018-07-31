@@ -66,6 +66,9 @@ public class ActiveMQProviderTest {
 
   private static final String AMQ_URL_BASE = "tcp://AMQ_URL_BASE:1234";
 
+  private static final String AMQ_USERNAME_VAL = "AMQ_USERNAME_VAL";
+  private static final String AMQ_PASSWORD_VAL = "AMQ_PASSWORD_VAL";
+  
   private static final String TRUST_STORE_PATH_VAL = "TRUST_STORE_PATH_VAL";
   private static final String TRUST_STORE_PASS_VAL = "TRUST_STORE_PASS_VAL";
   private static final String KEY_STORE_PATH_VAL = "KEY_STORE_PATH_VAL";
@@ -143,6 +146,8 @@ public class ActiveMQProviderTest {
     }
 
     assertFalse( "SSL disabled; should ignore params", urlString.contains( TRUST_STORE_PATH_VAL ) );
+
+    assertTrue( "URL base incorrect", urlString.compareTo( AMQ_URL_BASE ) == 0 );
   }
 
   /**
@@ -169,6 +174,8 @@ public class ActiveMQProviderTest {
     assertTrue( "Missing trust store path", urlString.contains( "trustStorePath=" + TRUST_STORE_PATH_VAL ) );
     assertTrue( "Missing trust store password", urlString.contains( "trustStorePassword=" + TRUST_STORE_PASS_VAL ) );
 
+    assertTrue( "URL base incorrect", urlString.startsWith( AMQ_URL_BASE + "?" ) );
+
     delegate.amqUrl += ";";
 
     urlString = provider.buildUrl( delegate );
@@ -181,6 +188,8 @@ public class ActiveMQProviderTest {
 
     assertTrue( "Missing trust store path", urlString.contains( "trustStorePath=" + TRUST_STORE_PATH_VAL ) );
     assertTrue( "Missing trust store password", urlString.contains( "trustStorePassword=" + TRUST_STORE_PASS_VAL ) );
+
+    assertTrue( "URL base incorrect", urlString.startsWith( AMQ_URL_BASE + "?" ) );
   }
 
   /**
@@ -225,5 +234,59 @@ public class ActiveMQProviderTest {
     assertTrue( "Missing verify host", urlString.contains( "verifyHost=" + VERIFY_HOST_VAL ) );
     assertTrue( "Missing trust all", urlString.contains( "trustAll=" + TRUST_ALL_VAL ) );
     assertTrue( "Missing ssl provider", urlString.contains( "sslProvider=" + SSL_PROVIDER_VAL ) );
+
+    assertTrue( "URL base incorrect", urlString.startsWith( AMQ_URL_BASE + "?" ) );
+  }
+
+  /**
+   * Verifies getConnectionParams works as expected; should return the same URL used to connect.
+   */
+  @Test public void testGetConnectionParams() {
+    ActiveMQProvider provider = new ActiveMQProvider();
+    JmsDelegate delegate = new JmsDelegate( Collections.singletonList( provider ) );
+
+    delegate.amqUrl = AMQ_URL_BASE;
+    delegate.amqUsername = AMQ_USERNAME_VAL;
+    delegate.amqPassword = AMQ_PASSWORD_VAL;
+
+    delegate.sslEnabled = true;
+    delegate.sslTruststorePath = TRUST_STORE_PATH_VAL;
+    delegate.sslTruststorePassword = TRUST_STORE_PASS_VAL;
+
+    delegate.sslKeystorePath = KEY_STORE_PATH_VAL;
+    delegate.sslKeystorePassword = KEY_STORE_PASS_VAL;
+
+    delegate.sslCipherSuite = ENABLED_CIPHER_SUITES_VAL;
+    delegate.sslContextAlgorithm = ENABLED_PROTOCOLS_VAL;
+    delegate.amqSslVerifyHost = VERIFY_HOST_VAL;
+    delegate.amqSslTrustAll = TRUST_ALL_VAL;
+    delegate.amqSslProvider = SSL_PROVIDER_VAL;
+
+    String urlString = provider.buildUrl( delegate );
+    String paramString = provider.getConnectionDetails( delegate );
+
+    try {
+      URI url = new URI( urlString );
+    } catch ( URISyntaxException e ) {
+      fail( e.getMessage() );
+    }
+
+    assertTrue( "Missing trust store path", urlString.contains( "trustStorePath=" + TRUST_STORE_PATH_VAL ) );
+    assertTrue( "Missing trust store password", urlString.contains( "trustStorePassword=" + TRUST_STORE_PASS_VAL ) );
+
+    assertTrue( "Missing key store path", urlString.contains( "keyStorePath=" + KEY_STORE_PATH_VAL ) );
+    assertTrue( "Missing key store password", urlString.contains( "keyStorePassword=" + KEY_STORE_PASS_VAL ) );
+
+    assertTrue( "Missing cipher suite", urlString.contains( "enabledCipherSuites=" + ENABLED_CIPHER_SUITES_VAL ) );
+    assertTrue( "Missing protocols", urlString.contains( "enabledProtocols=" + ENABLED_PROTOCOLS_VAL ) );
+    assertTrue( "Missing verify host", urlString.contains( "verifyHost=" + VERIFY_HOST_VAL ) );
+    assertTrue( "Missing trust all", urlString.contains( "trustAll=" + TRUST_ALL_VAL ) );
+    assertTrue( "Missing ssl provider", urlString.contains( "sslProvider=" + SSL_PROVIDER_VAL ) );
+
+    assertTrue( "URL base incorrect", urlString.startsWith( AMQ_URL_BASE + "?" ) );
+
+    assertTrue( "Connection params missing URL", paramString.contains( "URL: " + urlString ) );
+    assertTrue( "Connection params missing user name", paramString.contains( "User Name: " + AMQ_USERNAME_VAL ) );
+    assertTrue( "Connection params missing password", paramString.contains( "Password: " + AMQ_PASSWORD_VAL ) );
   }
 }

@@ -52,6 +52,9 @@ public class JmsConsumer extends BaseStreamStep {
       return false;
     }
 
+    log.logDebug( "Connection Details: "
+      + jmsConsumerMeta.jmsDelegate.getJmsProvider().getConnectionDetails( jmsConsumerMeta.jmsDelegate ) );
+
     window = new FixedTimeStreamWindow<>(
       subtransExecutor, jmsConsumerMeta.jmsDelegate.getRowMeta(), getDuration(), getBatchSize() );
     source = new JmsStreamSource( this, requireNonNull( jmsConsumerMeta.jmsDelegate ), getReceiverTimeout( jmsConsumerMeta ) );

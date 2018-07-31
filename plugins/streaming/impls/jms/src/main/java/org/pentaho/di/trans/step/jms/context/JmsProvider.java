@@ -44,6 +44,7 @@ public interface JmsProvider {
     return DestinationType.valueOf( meta.destinationType ).equals( QUEUE );
   }
 
+  String getConnectionDetails( JmsDelegate meta );
 
   enum ConnectionType {
     ACTIVEMQ {

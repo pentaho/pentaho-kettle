@@ -44,6 +44,29 @@ import static org.pentaho.di.trans.step.jms.context.JmsProvider.DestinationType.
 @RunWith ( MockitoJUnitRunner.class )
 public class WebsphereMQProviderTest {
 
+
+  private static final String HOST_NAME_VAL = "HOSTNAMEVAL";
+  private static final String PORT_VAL = "1234";
+  private static final String QUEUE_MANAGER_VAL = "QUEUEMANAGERVAL";
+  private static final String CHANNEL_VAL = "CHANNELVAL";
+  private static final String IBM_URL_BASE
+    = "mq://" + HOST_NAME_VAL + ":" + PORT_VAL + "/" + QUEUE_MANAGER_VAL + "?channel=" + CHANNEL_VAL;
+
+  private static final String TRUST_STORE_PATH_VAL = "TRUST_STORE_PATH_VAL";
+  private static final String TRUST_STORE_PASS_VAL = "TRUST_STORE_PASS_VAL";
+  private static final String TRUST_STORE_TYPE_VAL = "TRUST_STORE_TYPE_VAL";
+  private static final String KEY_STORE_PATH_VAL = "KEY_STORE_PATH_VAL";
+  private static final String KEY_STORE_PASS_VAL = "KEY_STORE_PASS_VAL";
+  private static final String KEY_STORE_TYPE_VAL = "KEY_STORE_TPYE_VAL";
+  private static final String ENABLED_CIPHER_SUITES_VAL = "ENABLED_CIPHER_SUITES_VAL";
+  private static final String ENABLED_PROTOCOLS_VAL = "ENABLED_PROTOCOLS_VAL";
+  private static final String VERIFY_HOST_VAL = "VERIFY_HOST_VAL";
+  private static final String TRUST_ALL_VAL = "TRUST_ALL_VAL";
+  private static final String SSL_PROVIDER_VAL= "SSL_PROVIDER_VAL";
+  private static final String FIPS_REQUIRED_VAL = "FIPS_REQUIRED_VAL";
+  private static final String IBM_USERNAME_VAL = "IBM_USERNAME_VAL";
+  private static final String IBM_PASSWORD_VAL = "IBM_PASSWORD_VAL";
+
   private JmsProvider jmsProvider = new WebsphereMQProvider();
   @Mock private JmsDelegate jmsDelegate;
 
@@ -80,6 +103,49 @@ public class WebsphereMQProviderTest {
     } catch ( Exception e ) {
       assertTrue( e.getMessage().contains( "Destination name must be set." ) );
     }
+  }
+
+  @Test
+  public void getConnectionParams() {
+    jmsDelegate.ibmUrl = IBM_URL_BASE;
+    jmsDelegate.ibmUsername = IBM_USERNAME_VAL;
+    jmsDelegate.ibmPassword = IBM_PASSWORD_VAL;
+
+    jmsDelegate.sslEnabled = true;
+
+    jmsDelegate.sslTruststorePath = TRUST_STORE_PATH_VAL;
+    jmsDelegate.sslTruststorePassword = TRUST_STORE_PASS_VAL;
+    jmsDelegate.sslTruststoreType = TRUST_STORE_TYPE_VAL;
+
+    jmsDelegate.sslKeystorePath = KEY_STORE_PATH_VAL;
+    jmsDelegate.sslKeystorePassword = KEY_STORE_PASS_VAL;
+    jmsDelegate.sslKeystoreType = KEY_STORE_TYPE_VAL;
+
+    jmsDelegate.sslCipherSuite = ENABLED_CIPHER_SUITES_VAL;
+    jmsDelegate.sslContextAlgorithm = ENABLED_PROTOCOLS_VAL;
+    jmsDelegate.ibmSslFipsRequired = FIPS_REQUIRED_VAL;
+
+    String debugString = jmsProvider.getConnectionDetails( jmsDelegate );
+
+    assertTrue( "Missing trust store path", debugString.contains( "Trust Store: " + TRUST_STORE_PATH_VAL ) );
+    assertTrue( "Missing trust store password", debugString.contains( "Trust Store Pass: " + TRUST_STORE_PASS_VAL ) );
+    assertTrue( "Missing trust store type", debugString.contains( "Trust Store Type: " + TRUST_STORE_TYPE_VAL ) );
+
+    assertTrue( "Missing key store path", debugString.contains( "Key Store: " + KEY_STORE_PATH_VAL ) );
+    assertTrue( "Missing key store password", debugString.contains( "Key Store Pass: " + KEY_STORE_PASS_VAL ) );
+    assertTrue( "Missing key store type", debugString.contains( "Key Store Type: " + KEY_STORE_TYPE_VAL ) );
+
+    assertTrue( "Missing cipher suite", debugString.contains( "Cipher Suite: " + ENABLED_CIPHER_SUITES_VAL ) );
+    assertTrue( "Missing protocols", debugString.contains( "SSL Context Algorithm: " + ENABLED_PROTOCOLS_VAL ) );
+
+    assertTrue( "Missing host name", debugString.contains( "Hostname: " + HOST_NAME_VAL ) );
+    assertTrue( "Missing port", debugString.contains( "Port: " + PORT_VAL ) );
+    assertTrue( "Missing channel", debugString.contains( "Channel: " + CHANNEL_VAL ) );
+    assertTrue( "Missing queue manager", debugString.contains( "QueueManager: " + QUEUE_MANAGER_VAL ) );
+    assertTrue( "Missing username", debugString.contains( "User Name: " + IBM_USERNAME_VAL ) );
+    assertTrue( "Missing password", debugString.contains( "Password: " + IBM_PASSWORD_VAL ) );
+
 
   }
 }
+
