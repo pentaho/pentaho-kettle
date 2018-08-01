@@ -22,6 +22,8 @@
 
 package org.pentaho.di.base;
 
+import java.util.Arrays;
+
 /**
  * @link https://help.pentaho.com/Documentation/8.0/Products/Data_Integration/Command_Line_Tools
  */
@@ -64,6 +66,19 @@ public class CommandExecutorCodes {
     public void setDescription( String description ) {
       this.description = description;
     }
+
+    public static Pan getByCode( final int code ) {
+      return Arrays.asList( Pan.values() ).stream()
+          .filter( pan -> pan.getCode() == code )
+          .findAny().orElse( null );
+    }
+
+    public static boolean isFailedExecution( final int code ) {
+      return Pan.UNEXPECTED_ERROR.getCode() == code
+          || Pan.UNABLE_TO_PREP_INIT_TRANS.getCode() == code
+          || Pan.COULD_NOT_LOAD_TRANS.getCode() == code
+          || Pan.ERROR_LOADING_STEPS_PLUGINS.getCode() == code;
+    }
   }
 
   /**
@@ -101,6 +116,18 @@ public class CommandExecutorCodes {
 
     public void setDescription( String description ) {
       this.description = description;
+    }
+
+    public static Kitchen getByCode( final int code ) {
+      return Arrays.asList( Kitchen.values() ).stream()
+          .filter( kitchen -> kitchen.getCode() == code )
+          .findAny().orElse( null );
+    }
+
+    public static boolean isFailedExecution( final int code ) {
+      return Kitchen.UNEXPECTED_ERROR.getCode() == code
+          || Kitchen.COULD_NOT_LOAD_JOB.getCode() == code
+          || Kitchen.ERROR_LOADING_STEPS_PLUGINS.getCode() == code;
     }
   }
 }
