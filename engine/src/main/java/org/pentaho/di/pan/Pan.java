@@ -74,6 +74,7 @@ public class Pan {
     StringBuilder optionFilename, optionLoglevel, optionLogfile, optionLogfileOld, optionListdir;
     StringBuilder optionListtrans, optionListrep, optionExprep, optionNorep, optionSafemode;
     StringBuilder optionVersion, optionJarFilename, optionListParam, optionMetrics, initialDir;
+    StringBuilder optionResultSetStepName, optionResultSetCopyNumber;
 
     NamedParams optionParams = new NamedParamsDefault();
 
@@ -146,8 +147,15 @@ public class Pan {
           "initialDir", null, initialDir =
           new StringBuilder(), false, true ),
         new CommandLineOption(
+          "stepname", "ResultSetStepName", optionResultSetStepName =
+          new StringBuilder(), false, true ),
+        new CommandLineOption(
+          "copynum", "ResultSetCopyNumber", optionResultSetCopyNumber =
+          new StringBuilder(), false, true ),
+        new CommandLineOption(
           "metrics", BaseMessages.getString( PKG, "Pan.ComdLine.Metrics" ), optionMetrics =
           new StringBuilder(), true, false ), maxLogLinesOption, maxLogTimeoutOption };
+
 
     if ( args.size() == 2 ) { // 2 internal hidden argument (flag and value)
       CommandLineOption.printUsage( options );
@@ -232,7 +240,8 @@ public class Pan {
               optionTrustUser.toString(), optionPassword.toString(), optionDirname.toString(), optionFilename.toString(), optionJarFilename.toString(),
               optionTransname.toString(), optionListtrans.toString(), optionListdir.toString(), optionExprep.toString(),
               initialDir.toString(), optionListrep.toString(), optionSafemode.toString(), optionMetrics.toString(),
-              optionListParam.toString(), optionParams, args.toArray( new String[ args.size() ] ) );
+              optionListParam.toString(), optionResultSetStepName.toString(), optionResultSetCopyNumber.toString(),
+              optionParams, args.toArray( new String[ args.size() ] ) );
 
       exitJVM( result.getExitStatus() );
 

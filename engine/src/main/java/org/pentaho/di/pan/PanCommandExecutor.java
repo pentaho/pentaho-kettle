@@ -22,15 +22,20 @@
 
 package org.pentaho.di.pan;
 
+import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.math.NumberUtils;
 import org.pentaho.di.base.AbstractBaseCommandExecutor;
 import org.pentaho.di.base.CommandExecutorCodes;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Result;
+import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.parameters.NamedParams;
 import org.pentaho.di.core.parameters.UnknownParamException;
+import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.util.FileUtil;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.xml.XMLHandler;
@@ -43,11 +48,15 @@ import org.pentaho.di.repository.RepositoryOperation;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.i18n.BaseMessages;
+import org.pentaho.di.trans.step.RowAdapter;
+import org.pentaho.di.trans.step.StepInterface;
 import org.w3c.dom.Document;
 
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 
 public class PanCommandExecutor extends AbstractBaseCommandExecutor {
 
@@ -62,8 +71,8 @@ public class PanCommandExecutor extends AbstractBaseCommandExecutor {
 
   public Result execute( String repoName, String noRepo, String username, String trustUser, String password, String dirName,
                          String filename, String jarFile, String transName, String listTrans, String listDirs, String exportRepo,
-                         String initialDir, String listRepos, String safemode, String metrics, String listParams, NamedParams params,
-                         String[] arguments ) throws Throwable {
+                         String initialDir, String listRepos, String safemode, String metrics, String listParams, String resultSetStepName,
+                         String resultSetCopyNumber, NamedParams params, String[] arguments ) throws Throwable {
 
     getLog().logMinimal( BaseMessages.getString( getPkgClazz(), "Pan.Log.StartingToRun" ) );
 
@@ -163,9 +172,30 @@ public class PanCommandExecutor extends AbstractBaseCommandExecutor {
         return exitWithStatus( CommandExecutorCodes.Pan.COULD_NOT_LOAD_TRANS.getCode() ); // same as the other list options
       }
 
+      final List<RowMetaAndData> rows = new ArrayList<RowMetaAndData>(  );
+
       // allocate & run the required sub-threads
       try {
-        trans.execute( arguments );
+        trans.prepareExecution( arguments );
+
+        if ( !StringUtils.isEmpty( resultSetStepName ) ) {
+
+          int copyNr = NumberUtils.isNumber( resultSetCopyNumber ) ? Integer.parseInt( resultSetCopyNumber ) : 0 /* default */;
+
+          logDebug( "Collecting result-set for step '" +  resultSetStepName + "' and copy number " + copyNr );
+
+          StepInterface step = null;
+          if ( ( step = trans.findRunThread( resultSetStepName ) ) != null && step.getCopy() == copyNr ) {
+            step.addRowListener( new RowAdapter() {
+              @Override
+              public void rowWrittenEvent( RowMetaInterface rowMeta, Object[] data ) throws KettleStepException {
+                rows.add( new RowMetaAndData( rowMeta, data ) );
+              }
+            } );
+          }
+        }
+
+        trans.startThreads();
 
       } catch ( KettleException ke ) {
         logDebug( ke.getLocalizedMessage() );
@@ -182,6 +212,7 @@ public class PanCommandExecutor extends AbstractBaseCommandExecutor {
       getLog().logMinimal( BaseMessages.getString( getPkgClazz(), "Pan.Log.Finished" ) );
       Date stop = Calendar.getInstance().getTime(); // capture execution stop time
 
+      trans.setResultRows( rows );
       setResult( trans.getResult() ); // get the execution result
 
       int completionTimeSeconds = calculateAndPrintElapsedTime( start, stop, "Pan.Log.StartStop", "Pan.Log.ProcessingEndAfter",
