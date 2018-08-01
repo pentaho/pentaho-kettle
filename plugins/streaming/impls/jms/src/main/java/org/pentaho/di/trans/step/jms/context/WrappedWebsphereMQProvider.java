@@ -59,6 +59,10 @@ public class WrappedWebsphereMQProvider implements JmsProvider {
     return type == WEBSPHERE;
   }
 
+  @Override public String getConnectionDetails( JmsDelegate meta ) {
+    return prov.get().getConnectionDetails( meta );
+  }
+
   @Override public JMSContext getContext( JmsDelegate meta ) {
     return prov.get().getContext( meta );
   }

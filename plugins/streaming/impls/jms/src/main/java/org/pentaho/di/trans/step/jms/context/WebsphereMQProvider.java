@@ -59,6 +59,32 @@ public class WebsphereMQProvider implements JmsProvider {
     return type == WEBSPHERE;
   }
 
+  @Override public String getConnectionDetails( JmsDelegate meta ) {
+    StringBuilder connDetails = new StringBuilder();
+    MQUrlResolver resolver = new MQUrlResolver( meta );
+    connDetails.append( "Hostname: " ).append( resolver.host );
+    connDetails.append( "\nPort: " ).append( resolver.port );
+    connDetails.append( "\nChannel: " ).append( resolver.channel );
+    connDetails.append( "\nQueueManager: " ).append( resolver.queueManager );
+    connDetails.append( "\nUser Name: " ).append( meta.ibmUsername );
+    connDetails.append( "\nPassword: " ).append( meta.ibmPassword );
+
+    if ( meta.sslEnabled ) {
+      connDetails.append( "\nSSL Enabled: true" );
+      connDetails.append( "\nKey Store: " ).append( meta.sslKeystorePath );
+      connDetails.append( "\nKey Store Pass: " ).append( meta.sslKeystorePassword );
+      connDetails.append( "\nKey Store Type: " ).append( meta.sslKeystoreType );
+      connDetails.append( "\nTrust Store: " ).append( meta.sslTruststorePath );
+      connDetails.append( "\nTrust Store Pass: " ).append( meta.sslTruststorePassword );
+      connDetails.append( "\nTrust Store Type: " ).append( meta.sslTruststoreType );
+      connDetails.append( "\nSSL Context Algorithm: " ).append( meta.sslContextAlgorithm );
+      connDetails.append( "\nCipher Suite: " ).append( meta.sslCipherSuite );
+      connDetails.append( "\nFIPS Required: " ).append( meta.ibmSslFipsRequired );
+    }
+
+    return connDetails.toString();
+  }
+
   @Override public JMSContext getContext( JmsDelegate meta ) {
 
     MQUrlResolver resolver = new MQUrlResolver( meta );
@@ -72,7 +98,8 @@ public class WebsphereMQProvider implements JmsProvider {
       // try to configure SSL settings
       try {
         KeyStore trustStore = KeyStore.getInstance( meta.sslTruststoreType );
-        trustStore.load( new FileInputStream( meta.sslTruststorePath ), meta.sslTruststorePassword.toCharArray() );
+        trustStore.load( new FileInputStream( meta.sslTruststorePath ),
+          Strings.isNullOrEmpty( meta.sslTruststorePassword ) ? null : meta.sslTruststorePassword.toCharArray() );
 
         TrustManagerFactory trustManagerFactory =
           TrustManagerFactory.getInstance( TrustManagerFactory.getDefaultAlgorithm() );

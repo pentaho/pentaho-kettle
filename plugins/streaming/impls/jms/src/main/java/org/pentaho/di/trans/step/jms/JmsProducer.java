@@ -86,6 +86,8 @@ public class JmsProducer extends BaseStep implements StepInterface {
 
     if ( first ) {
       // init connections
+      log.logDebug( "Connection Details: "
+        + meta.jmsDelegate.getJmsProvider().getConnectionDetails( meta.jmsDelegate ) );
       producer = meta.jmsDelegate.getJmsContext().createProducer();
       destination = meta.jmsDelegate.getDestination();
       messageIndex = getInputRowMeta().indexOfValue( meta.getFieldToSend() );
