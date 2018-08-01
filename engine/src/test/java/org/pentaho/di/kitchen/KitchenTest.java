@@ -98,8 +98,8 @@ public class KitchenTest {
     assertNull( CommandExecutorCodes.Kitchen.getByCode( 9999 ) );
     assertNotNull( CommandExecutorCodes.Kitchen.getByCode( 0 ) );
 
-    assertEquals( CommandExecutorCodes.Kitchen.UNEXPECTED_ERROR, CommandExecutorCodes.Pan.getByCode( 2 ) );
-    assertEquals( CommandExecutorCodes.Kitchen.CMD_LINE_PRINT, CommandExecutorCodes.Pan.getByCode( 9 ) );
+    assertEquals( CommandExecutorCodes.Kitchen.UNEXPECTED_ERROR, CommandExecutorCodes.Kitchen.getByCode( 2 ) );
+    assertEquals( CommandExecutorCodes.Kitchen.CMD_LINE_PRINT, CommandExecutorCodes.Kitchen.getByCode( 9 ) );
 
     assertEquals( "The job ran without a problem", CommandExecutorCodes.Kitchen.getByCode( 0 ).getDescription() );
     assertEquals( "The job couldn't be loaded from XML or the Repository", CommandExecutorCodes.Kitchen.getByCode( 7 ).getDescription() );
