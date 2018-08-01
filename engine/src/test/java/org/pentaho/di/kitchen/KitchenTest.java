@@ -42,9 +42,11 @@ import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import java.security.Permission;
 
-import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.mockito.Matchers.anyBoolean;
 import static org.mockito.Matchers.anyObject;
 import static org.mockito.Mockito.mock;
@@ -88,6 +90,24 @@ public class KitchenTest {
     mockRepositoryMeta = null;
     mockRepository = null;
     mockRepositoryDirectory = null;
+  }
+
+  @Test
+  public void testKitchenStatusCodes() throws Exception {
+
+    assertNull( CommandExecutorCodes.Kitchen.getByCode( 9999 ) );
+    assertNotNull( CommandExecutorCodes.Kitchen.getByCode( 0 ) );
+
+    assertEquals( CommandExecutorCodes.Kitchen.UNEXPECTED_ERROR, CommandExecutorCodes.Pan.getByCode( 2 ) );
+    assertEquals( CommandExecutorCodes.Kitchen.CMD_LINE_PRINT, CommandExecutorCodes.Pan.getByCode( 9 ) );
+
+    assertEquals( "The job ran without a problem", CommandExecutorCodes.Kitchen.getByCode( 0 ).getDescription() );
+    assertEquals( "The job couldn't be loaded from XML or the Repository", CommandExecutorCodes.Kitchen.getByCode( 7 ).getDescription() );
+
+    assertTrue( CommandExecutorCodes.Kitchen.isFailedExecution( CommandExecutorCodes.Kitchen.COULD_NOT_LOAD_JOB.getCode() ) );
+    assertTrue( CommandExecutorCodes.Kitchen.isFailedExecution( CommandExecutorCodes.Kitchen.ERROR_LOADING_STEPS_PLUGINS.getCode() ) );
+    assertFalse( CommandExecutorCodes.Kitchen.isFailedExecution( CommandExecutorCodes.Kitchen.SUCCESS.getCode() ) );
+    assertFalse( CommandExecutorCodes.Kitchen.isFailedExecution( CommandExecutorCodes.Kitchen.ERRORS_DURING_PROCESSING.getCode() ) );
   }
 
   @Test

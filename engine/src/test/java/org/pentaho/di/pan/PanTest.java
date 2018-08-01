@@ -47,9 +47,11 @@ import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import java.security.Permission;
 
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.mockito.Matchers.anyBoolean;
 import static org.mockito.Matchers.anyObject;
 import static org.mockito.Mockito.mock;
@@ -98,6 +100,24 @@ public class PanTest {
     mockRepositoryMeta = null;
     mockRepository = null;
     mockRepositoryDirectory = null;
+  }
+
+  @Test
+  public void testPanStatusCodes() throws Exception {
+
+    assertNull( CommandExecutorCodes.Pan.getByCode( 9999 ) );
+    assertNotNull( CommandExecutorCodes.Pan.getByCode( 0 ) );
+
+    assertEquals( CommandExecutorCodes.Pan.UNEXPECTED_ERROR, CommandExecutorCodes.Pan.getByCode( 2 ) );
+    assertEquals( CommandExecutorCodes.Pan.CMD_LINE_PRINT, CommandExecutorCodes.Pan.getByCode( 9 ) );
+
+    assertEquals( "The transformation ran without a problem", CommandExecutorCodes.Pan.getByCode( 0 ).getDescription() );
+    assertEquals( "The transformation couldn't be loaded from XML or the Repository", CommandExecutorCodes.Pan.getByCode( 7 ).getDescription() );
+
+    assertTrue( CommandExecutorCodes.Pan.isFailedExecution( CommandExecutorCodes.Pan.COULD_NOT_LOAD_TRANS.getCode() ) );
+    assertTrue( CommandExecutorCodes.Pan.isFailedExecution( CommandExecutorCodes.Pan.ERROR_LOADING_STEPS_PLUGINS.getCode() ) );
+    assertFalse( CommandExecutorCodes.Pan.isFailedExecution( CommandExecutorCodes.Pan.SUCCESS.getCode() ) );
+    assertFalse( CommandExecutorCodes.Pan.isFailedExecution( CommandExecutorCodes.Pan.ERRORS_DURING_PROCESSING.getCode() ) );
   }
 
   @Test
