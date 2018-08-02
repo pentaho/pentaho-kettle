@@ -9,8 +9,9 @@
     <version>9.0.0.0-SNAPSHOT</version>
   </parent>
 
-  <artifactId>kettle-json-plugin-core</artifactId>
-  <packaging>jar</packaging>
+  <artifactId>json-core</artifactId>
+  <version>9.0.0.0-SNAPSHOT</version>
+  <packaging>bundle</packaging>
 
   <name>PDI Json Plugin Core</name>
 
@@ -92,6 +93,10 @@
     </dependency>
     <dependency>
       <groupId>pentaho</groupId>
+      <artifactId>pentaho-platform-extensions</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>pentaho</groupId>
       <artifactId>pentaho-platform-api</artifactId>
       <version>${platform.version}</version>
       <exclusions>
@@ -117,6 +122,7 @@
       <groupId>org.apache.commons</groupId>
       <artifactId>commons-vfs2</artifactId>
       <version>${commons-vfs2.version}</version>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>commons-io</groupId>
@@ -227,9 +233,63 @@
   <build>
     <resources>
       <resource>
+        <filtering>false</filtering>
+        <directory>src/main/resources</directory>
+        <includes>
+          <include>**/*</include>
+        </includes>
+        <excludes>
+          <exclude>META-INF/**/*</exclude>
+          <exclude>OSGI-INF/**/*</exclude>
+          <exclude>app/index.html</exclude>
+        </excludes>
+      </resource>
+      <resource>
         <filtering>true</filtering>
         <directory>src/main/resources</directory>
+        <includes>
+          <include>META-INF/**/*</include>
+          <include>OSGI-INF/**/*</include>
+          <include>app/index.html</include>
+        </includes>
+      </resource>
+      <resource>
+        <directory>src/main/javascript</directory>
+        <includes>
+          <include>**/*</include>
+        </includes>
       </resource>
     </resources>
+    <plugins>
+      <plugin>
+        <artifactId>maven-remote-resources-plugin</artifactId>
+        <version>1.5</version>
+        <executions>
+          <execution>
+            <goals>
+              <goal>bundle</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <includes>
+            <include>**/*</include>
+          </includes>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.felix</groupId>
+        <artifactId>maven-bundle-plugin</artifactId>
+        <version>2.4.0</version>
+        <extensions>true</extensions>
+        <configuration>
+          <instructions>
+            <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
+            <Bundle-Version>${project.version}</Bundle-Version>
+            <Import-Package>org.pentaho.di.osgi,org.pentaho.di.core.plugins,*</Import-Package>
+          </instructions>
+        </configuration>
+      </plugin>
+    </plugins>
   </build>
 </project>

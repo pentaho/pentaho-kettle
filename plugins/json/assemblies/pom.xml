@@ -15,6 +15,6 @@
   <name>PDI Json Plugin Assemblies</name>
 
   <modules>
-    <module>plugin</module>
+    <module>feature</module>
   </modules>
 </project>
