@@ -300,6 +300,11 @@ public class JsonInputDialog extends BaseStepDialog implements StepDialogInterfa
         ok();
       }
     };
+    lsGet = new Listener() {
+      public void handleEvent( Event e ) {
+        get();
+      }
+    };
     lsPreview = new Listener() {
       public void handleEvent( Event e ) {
         preview();
@@ -312,6 +317,7 @@ public class JsonInputDialog extends BaseStepDialog implements StepDialogInterfa
     };
 
     wOK.addListener( SWT.Selection, lsOK );
+    wGet.addListener( SWT.Selection, lsGet );
     wPreview.addListener( SWT.Selection, lsPreview );
     wCancel.addListener( SWT.Selection, lsCancel );
 
@@ -492,6 +498,15 @@ public class JsonInputDialog extends BaseStepDialog implements StepDialogInterfa
     wFieldsComp.setLayout( fieldsLayout );
     props.setLook( wFieldsComp );
 
+    wGet = new Button( wFieldsComp, SWT.PUSH );
+    wGet.setText( BaseMessages.getString( PKG, "System.Button.GetFields" ) );
+    fdGet = new FormData();
+    fdGet.left = new FormAttachment( 50, 0 );
+    fdGet.bottom = new FormAttachment( 100, 0 );
+    wGet.setLayoutData( fdGet );
+
+    setButtonPositions( new Button[] { wGet }, margin, null );
+
     final int FieldsRows = input.getInputFields().length;
 
     ColumnInfo[] colinf =
@@ -546,7 +561,7 @@ public class JsonInputDialog extends BaseStepDialog implements StepDialogInterfa
     fdFields.left = new FormAttachment( 0, 0 );
     fdFields.top = new FormAttachment( 0, 0 );
     fdFields.right = new FormAttachment( 100, 0 );
-    fdFields.bottom = new FormAttachment( 100, -margin );
+    fdFields.bottom = new FormAttachment( wGet, -margin );
     wFields.setLayoutData( fdFields );
 
     fdFieldsComp = new FormData();
@@ -1455,6 +1470,11 @@ public class JsonInputDialog extends BaseStepDialog implements StepDialogInterfa
     in.setRootUriField( wRootUriName.getText() );
     in.setExtensionField( wExtensionFieldName.getText() );
     in.setSizeField( wSizeFieldName.getText() );
+  }
+
+  private void get() {
+    JsonInputGetFieldsDialog jsonInputGetFieldsDialog = new JsonInputGetFieldsDialog( shell, 450, 588 );
+    jsonInputGetFieldsDialog.open();
   }
 
   // Preview the data
