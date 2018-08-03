@@ -36,7 +36,6 @@
     <google-bigquery-plugin.version>${project.version}</google-bigquery-plugin.version>
     <elasticsearch-bulk-insert-plugin.version>${project.version}</elasticsearch-bulk-insert-plugin.version>
     <pdi-xml-plugin.version>9.0.0.0-SNAPSHOT</pdi-xml-plugin.version>
-    <pdi-json-plugin.version>9.0.0.0-SNAPSHOT</pdi-json-plugin.version>
     <pdi-sap-plugin.version>9.0.0.0-SNAPSHOT</pdi-sap-plugin.version>
     <big-data-plugin.version>9.0.0.0-SNAPSHOT</big-data-plugin.version>
     <pentaho-cassandra-plugin.version>9.0.0.0-SNAPSHOT</pentaho-cassandra-plugin.version>
@@ -279,18 +278,6 @@
       <groupId>org.pentaho.di.plugins</groupId>
       <artifactId>pdi-xml-plugin</artifactId>
       <version>${pdi-xml-plugin.version}</version>
-      <type>zip</type>
-      <exclusions>
-        <exclusion>
-          <groupId>*</groupId>
-          <artifactId>*</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-    <dependency>
-      <groupId>org.pentaho.di.plugins</groupId>
-      <artifactId>kettle-json-plugin</artifactId>
-      <version>${pdi-json-plugin.version}</version>
       <type>zip</type>
       <exclusions>
         <exclusion>
