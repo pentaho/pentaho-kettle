@@ -9,7 +9,7 @@
     <version>9.0.0.0-SNAPSHOT</version>
   </parent>
 
-  <artifactId>json</artifactId>
+  <artifactId>kettle-json-plugin</artifactId>
   <version>9.0.0.0-SNAPSHOT</version>
   <packaging>pom</packaging>
 
