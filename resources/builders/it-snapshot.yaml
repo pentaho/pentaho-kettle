@@ -5,9 +5,8 @@ buildProperties:
         BUILD_PLAN_ID                  : Master Suite Build
         MAVEN_DEFAULT_DIRECTIVES       : clean
         MAVEN_DEFAULT_COMMAND_OPTIONS  : -B -e -q
-        MAVEN_TEST_OPTS                : -DsurefireArgLine=-Xmx1g \verify -DrunITs site sonar:sonar@sonar_publish -Dsonar -Dsonar.branch=${DEFAULT_BRANCH} -Dsonar.host.url=http://sonar.pentaho.com:9000 -Dmaven.test.failure.ignore
+        MAVEN_TEST_OPTS                : -DsurefireArgLine=-Xmx1g \verify -DrunITs -Daudit sonar:sonar@sonar_publish -Dsonar -Dsonar.branch=${DEFAULT_BRANCH} -Dsonar.host.url=http://sonar.pentaho.com:9000 -Dmaven.test.failure.ignore
         IGNORE_PIPELINE_FAILURE        : true
-        ARCHIVE_ARTIFACTS_PATTERN      : '**/target/*.gz, **/target/*.zip'
         JOB_ITEM_DEFAULTS              :
           archivable                   : false
         PARALLEL_UNIT_TESTS_CHUNKSIZE  : 110
@@ -46,7 +45,6 @@ jobGroups:
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-osgi-bundles.git
        scmBranch       :  ${DEFAULT_BRANCH}
        versionProperty :  pentaho-osgi-bundles.version
-       directives      :  -= site
        archiveMatcher  :  NONE
 
      - jobID           :  oss-license-assembly
@@ -154,7 +152,6 @@ jobGroups:
      - jobID           :  platform
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-platform.git
        scmBranch       :  ${DEFAULT_BRANCH}
-       directives      :  -= site
        versionProperty :  platform.version
 
      - jobID           :  pdi
@@ -192,7 +189,6 @@ jobGroups:
      - jobID           :  pdi-dataservice-plugin
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pdi-dataservice-plugin.git
        scmBranch       :  ${DEFAULT_BRANCH}
-       directives      :  -= site
        versionProperty :  pdi-dataservice-client-plugin.version
 
      - jobID           :  archetypes-ee
@@ -265,7 +261,6 @@ jobGroups:
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-metaverse.git
        scmBranch       :  ${DEFAULT_BRANCH}
        versionProperty :  pentaho-metaverse.version
-       directives      :  -= site
        archiveMatcher  :  NONE
 
      - jobID           :  pdi-monitoring-plugin
@@ -336,7 +331,6 @@ jobGroups:
      - jobID           :  data-access-plugin
        scmUrl          :  ${PENTAHO_SCM_ROOT}/data-access.git
        scmBranch       :  ${DEFAULT_BRANCH}
-       directives      :  -= site
        versionProperty :  pentaho-data-access.version
 
      - jobID           :  marketplace-plugin
@@ -420,13 +414,12 @@ jobGroups:
      - jobID           :  geo-plugin
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-platform-plugin-geo.git
        scmBranch       :  ${DEFAULT_BRANCH}
-       directives      :  -= site
        versionProperty :  pentaho-geo-plugin.version
 
      - jobID           :  analyzer-plugin
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-analyzer.git
        scmBranch       :  ${DEFAULT_BRANCH}
-       directives      :  += -Dagilebi -= site
+       directives      :  += -Dagilebi
        versionProperty :  analyzer-plugin.version
 
      - jobID           :  platform-chart-plugin-ee
@@ -442,7 +435,6 @@ jobGroups:
      - jobID           :  pdi-yarn-plugin
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-yarn-kettle-plugin.git
        scmBranch       :  ${DEFAULT_BRANCH}
-       directives      :  -= site
        versionProperty :  pentaho-kettle-yarn-plugin.version
        archiveMatcher  :  NONE
 
@@ -554,7 +546,6 @@ jobGroups:
      - jobID           :  foundry-workers-ee
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-ee.git
        scmBranch       :  ${DEFAULT_BRANCH}
-       directives      :  clean package
        versionProperty :  worker-nodes.version
        root            :  foundry
 
