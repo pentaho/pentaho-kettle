@@ -1,7 +1,32 @@
+/*! ******************************************************************************
+ *
+ * Pentaho Data Integration
+ *
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ *
+ *******************************************************************************
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ ******************************************************************************/
+
 package org.pentaho.di.trans.steps.pentahoreporting;
 
 import java.io.BufferedOutputStream;
 import java.io.OutputStream;
+import java.util.Locale;
+import java.util.MissingResourceException;
+import java.util.ResourceBundle;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -44,9 +69,19 @@ public abstract class ReportExportTask implements Runnable {
 
     this.report = report;
     this.statusListener = swingGuiContext.getStatusListener();
+
+    // Check if the current Locale is supported:
+    // If not, use the default (US) locale.
+    Locale locale = swingGuiContext.getLocale();
+    try {
+      ResourceBundle.getBundle( BASE_RESOURCE_CLASS, swingGuiContext.getLocale() );
+    } catch ( MissingResourceException e ) {
+      locale = Locale.US;
+    }
+
     this.messages =
-        new Messages( swingGuiContext.getLocale(), BASE_RESOURCE_CLASS,
-            ObjectUtilities.getClassLoader( ReportExportTask.class ) );
+        new Messages( locale, BASE_RESOURCE_CLASS,
+                ObjectUtilities.getClassLoader( ReportExportTask.class ) );
 
     this.targetPath = targetPath;
     this.createParentFolder = createParentFolder;
