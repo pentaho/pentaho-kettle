@@ -408,6 +408,7 @@ jobGroups:
      - jobID           :  platform-ee
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-platform-ee.git
        scmBranch       :  ${DEFAULT_BRANCH}
+       directives      :  += -DskipDefault -P platform-ee
        versionProperty :  platform.version
        archiveMatcher  :  NONE
 
@@ -465,12 +466,6 @@ jobGroups:
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-data-mining.git
        scmBranch       :  ${DEFAULT_BRANCH}
        versionProperty :  pentaho-data-mining.version
-
-     - jobID           :  platform-ee
-       scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-ee.git
-       scmBranch       :  ${DEFAULT_BRANCH}
-       versionProperty :  platform.version
-       root            :  platform
 
      - jobID           :  pdi-weka-plugins-ee
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-data-mining-ee.git
