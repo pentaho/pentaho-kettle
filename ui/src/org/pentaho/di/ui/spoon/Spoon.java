@@ -3,7 +3,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -4260,10 +4260,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
         }
       }
 
-      String activePerspectiveId = activePerspective.getId();
-      boolean etlPerspective = activePerspectiveId.equals( MainSpoonPerspective.ID );
-
-      if ( rep == null || importfile || !etlPerspective ) { // Load from XML
+      if ( rep == null || importfile ) { // Load from XML
 
         FileDialog dialog = new FileDialog( shell, SWT.OPEN );
 
