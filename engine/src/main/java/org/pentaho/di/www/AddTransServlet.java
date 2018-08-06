@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -258,7 +258,7 @@ public class AddTransServlet extends BaseHttpServlet implements CartePluginInter
         // are done with this transformation.
         //
         trans.addTransListener( new TransAdapter() {
-          public void transFinished( Trans trans ) {
+          @Override public void transFinished( Trans trans ) {
             repository.disconnect();
           }
         } );

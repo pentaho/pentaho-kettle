@@ -41,6 +41,7 @@ import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.streaming.common.BaseStreamStepMeta;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import static java.util.Arrays.asList;
@@ -52,98 +53,6 @@ import static org.junit.Assert.assertThat;
 
 public class StepMetaPropsTest {
   @ClassRule public static RestorePDIEngineEnvironment env = new RestorePDIEngineEnvironment();
-
-
-  @InjectionSupported ( localizationPrefix = "stuff", groups = { "stuffGroup" } ) static class FooMeta
-    extends BaseStreamStepMeta {
-
-    @Sensitive
-    @Injection ( name = "FIELD1", group = "stuffGroup" ) String field1 = "default";
-    @Injection ( name = "FIELD2", group = "stuffGroup" ) int field2 = 123;
-
-    @Sensitive
-    @Injection ( name = "PassVerd" ) String password = "should.be.encrypted";
-
-
-    @Injection ( name = "ALIST" ) List<String> alist = new ArrayList<>();
-
-    @Sensitive
-    @Injection ( name = "SECURELIST" ) List<String> securelist = new ArrayList<>();
-
-    @Injection ( name = "BOOLEANLIST" ) List<Boolean> blist = new ArrayList<>();
-    @Injection ( name = "IntList" ) List<Integer> ilist = new ArrayList<>();
-
-    @InjectionDeep SoooDeep deep = new SoooDeep();
-
-    static class SoooDeep {
-      @Injection ( name = "DEEP_FLAG" ) boolean isItDeep = true;
-      @Injection ( name = "DEPTH" ) int howDeep = 1000;
-      @Injection ( name = "DEEP_LIST " ) List<String> deepList = new ArrayList<>();
-
-      @Sensitive
-      @Injection ( name = "DEEP_PASSWORD" ) String password = "p@ssword";
-
-      @Override public boolean equals( Object o ) {
-        if ( this == o ) {
-          return true;
-        }
-        if ( o == null || getClass() != o.getClass() ) {
-          return false;
-        }
-        SoooDeep soooDeep = (SoooDeep) o;
-        return isItDeep == soooDeep.isItDeep && howDeep == soooDeep.howDeep;
-      }
-
-      @Override public int hashCode() {
-        return Objects.hashCode( isItDeep, howDeep );
-      }
-    }
-
-
-    @Override
-    public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr,
-                                  TransMeta transMeta,
-                                  Trans trans ) {
-      return null;
-    }
-
-    @Override public StepDataInterface getStepData() {
-      return null;
-    }
-
-    @Override public boolean equals( Object o ) {
-      if ( this == o ) {
-        return true;
-      }
-      if ( o == null || getClass() != o.getClass() ) {
-        return false;
-      }
-      FooMeta fooMeta = (FooMeta) o;
-      return field2 == fooMeta.field2
-        && Objects.equal( field1, fooMeta.field1 )
-        && Objects.equal( password, fooMeta.password )
-        && Objects.equal( alist, fooMeta.alist )
-        && Objects.equal( securelist, fooMeta.securelist )
-        && Objects.equal( blist, fooMeta.blist )
-        && Objects.equal( ilist, fooMeta.ilist )
-        && Objects.equal( deep, fooMeta.deep );
-    }
-
-    @Override public int hashCode() {
-      return Objects.hashCode( field1, field2, password, alist, securelist, blist, ilist, deep );
-    }
-
-    @Override public String toString() {
-      return String
-        .format( "FooMeta{%nfield1='%s', %nfield2=%d, %nalist=%s, %nblist=%s, %nilist=%s}",
-          field1, field2, alist, blist, ilist );
-    }
-
-    @Override public RowMeta getRowMeta( String origin, VariableSpace space ) {
-      return null;
-    }
-  }
-
 
   @Before
   public void before() throws KettleException {
@@ -277,5 +186,173 @@ public class StepMetaPropsTest {
     return foo;
   }
 
+  @InjectionSupported ( localizationPrefix = "stuff", groups = { "stuffGroup" } ) static class FooMeta
+    extends BaseStreamStepMeta {
 
+    @Sensitive
+    @Injection ( name = "FIELD1", group = "stuffGroup" ) String field1 = "default";
+    @Injection ( name = "FIELD2", group = "stuffGroup" ) int field2 = 123;
+
+    @Sensitive
+    @Injection ( name = "PassVerd" ) String password = "should.be.encrypted";
+
+
+    @Injection ( name = "ALIST" ) List<String> alist = new ArrayList<>();
+
+    @Sensitive
+    @Injection ( name = "SECURELIST" ) List<String> securelist = new ArrayList<>();
+
+    @Injection ( name = "BOOLEANLIST" ) List<Boolean> blist = new ArrayList<>();
+    @Injection ( name = "IntList" ) List<Integer> ilist = new ArrayList<>();
+
+    @InjectionDeep SoooDeep deep = new SoooDeep();
+
+    static class SoooDeep {
+      @Injection ( name = "DEEP_FLAG" ) boolean isItDeep = true;
+      @Injection ( name = "DEPTH" ) int howDeep = 1000;
+      @Injection ( name = "DEEP_LIST " ) List<String> deepList = new ArrayList<>();
+
+      @Sensitive
+      @Injection ( name = "DEEP_PASSWORD" ) String password = "p@ssword";
+
+      @Override public boolean equals( Object o ) {
+        if ( this == o ) {
+          return true;
+        }
+        if ( o == null || getClass() != o.getClass() ) {
+          return false;
+        }
+        SoooDeep soooDeep = (SoooDeep) o;
+        return isItDeep == soooDeep.isItDeep && howDeep == soooDeep.howDeep;
+      }
+
+      @Override public int hashCode() {
+        return Objects.hashCode( isItDeep, howDeep );
+      }
+    }
+
+    // list and array of deep injection
+    // these varieties are trickier than lists of @Injection, since each list item
+    // is a composite of meta properties.
+    @InjectionDeep List<DeepListable> deepListables = new ArrayList<>();
+    @InjectionDeep DeepArrayable[] deepArrayable = new DeepArrayable[ 2 ];
+
+    {
+      this.deepListables.add( new DeepListable( "foo", "bar" ) );
+      this.deepListables.add( new DeepListable( "foo2", "bar2" ) );
+      deepArrayable[ 0 ] = new DeepArrayable( "afoo", "abar" );
+      deepArrayable[ 1 ] = new DeepArrayable( "afoo2", "abar2" );
+    }
+
+    static class DeepListable {
+      DeepListable( String item, String item2 ) {
+        this.item = item;
+        this.item2 = item2;
+      }
+
+      @Override public boolean equals( Object o ) {
+        if ( this == o ) {
+          return true;
+        }
+        if ( o == null || getClass() != o.getClass() ) {
+          return false;
+        }
+        DeepListable that = (DeepListable) o;
+        return java.util.Objects.equals( item, that.item )
+          && java.util.Objects.equals( item2, that.item2 );
+      }
+
+      @Override public int hashCode() {
+        return java.util.Objects.hash( item, item2 );
+      }
+
+      @Injection ( name = "ITEM" ) String item;
+      @Injection ( name = "ITEM2" ) String item2;
+    }
+
+    static class DeepArrayable {
+      DeepArrayable( String item, String item2 ) {
+        this.item = item;
+        this.item2 = item2;
+      }
+
+      @Override public boolean equals( Object o ) {
+        if ( this == o ) {
+          return true;
+        }
+        if ( o == null || getClass() != o.getClass() ) {
+          return false;
+        }
+        DeepArrayable that = (DeepArrayable) o;
+        return java.util.Objects.equals( item, that.item )
+          && java.util.Objects.equals( item2, that.item2 );
+      }
+
+      @Override public int hashCode() {
+        return java.util.Objects.hash( item, item2 );
+      }
+
+      @Injection ( name = "AITEM" ) String item;
+      @Injection ( name = "AITEM2" ) String item2;
+    }
+
+
+    @Override
+    public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr,
+                                  TransMeta transMeta,
+                                  Trans trans ) {
+      return null;
+    }
+
+    @Override public StepDataInterface getStepData() {
+      return null;
+    }
+
+    @Override public boolean equals( Object o ) {
+      if ( this == o ) {
+        return true;
+      }
+      if ( o == null || getClass() != o.getClass() ) {
+        return false;
+      }
+      FooMeta fooMeta = (FooMeta) o;
+      return field2 == fooMeta.field2
+        && java.util.Objects.equals( field1, fooMeta.field1 )
+        && java.util.Objects.equals( password, fooMeta.password )
+        && java.util.Objects.equals( alist, fooMeta.alist )
+        && java.util.Objects.equals( securelist, fooMeta.securelist )
+        && java.util.Objects.equals( blist, fooMeta.blist )
+        && java.util.Objects.equals( ilist, fooMeta.ilist )
+        && java.util.Objects.equals( deep, fooMeta.deep )
+        && java.util.Objects.equals( deepListables, fooMeta.deepListables )
+        && Arrays.equals( deepArrayable, fooMeta.deepArrayable );
+    }
+
+    @Override public int hashCode() {
+      int result =
+        java.util.Objects.hash( field1, field2, password, alist, securelist, blist, ilist, deep, deepListables );
+      result = 31 * result + Arrays.hashCode( deepArrayable );
+      return result;
+    }
+
+    @Override public String toString() {
+      final StringBuilder sb = new StringBuilder( "FooMeta{" );
+      sb.append( "field1='" ).append( field1 ).append( '\'' );
+      sb.append( ", \nfield2=" ).append( field2 );
+      sb.append( ", \npassword='" ).append( password ).append( '\'' );
+      sb.append( ", \nalist=" ).append( alist );
+      sb.append( ", \nsecurelist=" ).append( securelist );
+      sb.append( ", \nblist=" ).append( blist );
+      sb.append( ", \nilist=" ).append( ilist );
+      sb.append( ", \ndeep=" ).append( deep );
+      sb.append( ", \ndeepListables=" ).append( deepListables );
+      sb.append( ", \ndeepArrayable=" ).append( Arrays.toString( deepArrayable ) );
+      sb.append( '}' );
+      return sb.toString();
+    }
+
+    @Override public RowMeta getRowMeta( String origin, VariableSpace space ) {
+      return null;
+    }
+  }
 }

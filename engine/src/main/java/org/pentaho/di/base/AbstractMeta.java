@@ -1936,7 +1936,7 @@ public abstract class AbstractMeta implements ChangedFlagInterface, UndoInterfac
     this.privateDatabases = privateDatabases;
   }
 
-  public void saveSharedObjects() throws KettleException {
+  @Override public void saveSharedObjects() throws KettleException {
     try {
       // Load all the shared objects...
       String soFile = environmentSubstitute( sharedObjectsFile );
@@ -2092,7 +2092,7 @@ public abstract class AbstractMeta implements ChangedFlagInterface, UndoInterfac
     return this.versioningEnabled;
   }
 
-  private class RunOptions {
+  private static class RunOptions {
     boolean clearingLog;
     boolean safeModeEnabled;
 

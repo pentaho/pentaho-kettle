@@ -27,6 +27,9 @@ import org.junit.Test;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.junit.rules.RestorePDIEngineEnvironment;
+import org.pentaho.di.trans.steps.file.BaseFileField;
+import org.pentaho.di.trans.steps.file.BaseFileInputFiles;
+import org.pentaho.di.trans.steps.fileinput.text.TextFileInputMeta;
 
 import java.util.Collections;
 
@@ -68,5 +71,27 @@ public class MetaXmlSerializerTest {
     assertThat( deserializedMeta, equalTo( fooMeta ) );
   }
 
+
+  @Test public void testTextFileInputRoundTrip() {
+    // TextFileInputMeta is one of the most complex, including arrays under @InjectionDeep.
+    TextFileInputMeta fileInputMeta = new TextFileInputMeta();
+    fileInputMeta.inputFields = new BaseFileField[] {
+      new BaseFileField( "foo", 0, 10 ),
+      new BaseFileField( "bar", 0, 10 )
+    };
+    fileInputMeta.inputFiles = new BaseFileInputFiles();
+    final String[] fileNames = { "file1.txt", "file2.tsv" };
+    fileInputMeta.inputFiles.fileName = fileNames;
+
+    TextFileInputMeta rehydratedMeta = new TextFileInputMeta();
+
+    StepMetaProps props = StepMetaProps.from( fileInputMeta );
+    MetaXmlSerializer.deserialize( MetaXmlSerializer.serialize( props ) )
+      .to( rehydratedMeta );
+
+    assertThat( rehydratedMeta.inputFields[ 0 ].getName(), equalTo( "foo" ) );
+    assertThat( rehydratedMeta.inputFields[ 1 ].getName(), equalTo( "bar" ) );
+    assertThat( rehydratedMeta.inputFiles.fileName, equalTo( fileNames ) );
+  }
 
 }

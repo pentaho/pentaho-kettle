@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -73,7 +73,7 @@ public class CubeInputMeta extends BaseStepMeta implements StepMetaInterface {
     super(); // allocate BaseStepMeta
   }
 
-  public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore ) throws KettleXMLException {
+  @Override public void loadXML( Node stepnode, List<DatabaseMeta> databases, IMetaStore metaStore ) throws KettleXMLException {
     readData( stepnode );
   }
 
@@ -131,7 +131,7 @@ public class CubeInputMeta extends BaseStepMeta implements StepMetaInterface {
     this.addfilenameresult = addfilenameresult;
   }
 
-  public Object clone() {
+  @Override public Object clone() {
     CubeInputMeta retval = (CubeInputMeta) super.clone();
     return retval;
   }
@@ -148,14 +148,14 @@ public class CubeInputMeta extends BaseStepMeta implements StepMetaInterface {
     }
   }
 
-  public void setDefault() {
+  @Override public void setDefault() {
     filename = "file";
     rowLimit = "0";
     addfilenameresult = false;
   }
 
-  public void getFields( RowMetaInterface r, String name, RowMetaInterface[] info, StepMeta nextStep,
-    VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
+  @Override public void getFields( RowMetaInterface r, String name, RowMetaInterface[] info, StepMeta nextStep,
+                                   VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
     GZIPInputStream fis = null;
     DataInputStream dis = null;
     try {
@@ -189,7 +189,7 @@ public class CubeInputMeta extends BaseStepMeta implements StepMetaInterface {
     }
   }
 
-  public String getXML() {
+  @Override public String getXML() {
     StringBuilder retval = new StringBuilder( 300 );
 
     retval.append( "    <file>" ).append( Const.CR );
@@ -201,7 +201,7 @@ public class CubeInputMeta extends BaseStepMeta implements StepMetaInterface {
     return retval.toString();
   }
 
-  public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases ) throws KettleException {
+  @Override public void readRep( Repository rep, IMetaStore metaStore, ObjectId id_step, List<DatabaseMeta> databases ) throws KettleException {
     try {
       filename = rep.getStepAttributeString( id_step, "file_name" );
       try {
@@ -218,7 +218,7 @@ public class CubeInputMeta extends BaseStepMeta implements StepMetaInterface {
     }
   }
 
-  public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step ) throws KettleException {
+  @Override public void saveRep( Repository rep, IMetaStore metaStore, ObjectId id_transformation, ObjectId id_step ) throws KettleException {
     try {
       rep.saveStepAttribute( id_transformation, id_step, "file_name", filename );
       rep.saveStepAttribute( id_transformation, id_step, "limit", rowLimit );
@@ -230,9 +230,9 @@ public class CubeInputMeta extends BaseStepMeta implements StepMetaInterface {
     }
   }
 
-  public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta,
-    RowMetaInterface prev, String[] input, String[] output, RowMetaInterface info, VariableSpace space,
-    Repository repository, IMetaStore metaStore ) {
+  @Override public void check( List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta,
+                               RowMetaInterface prev, String[] input, String[] output, RowMetaInterface info, VariableSpace space,
+                               Repository repository, IMetaStore metaStore ) {
     CheckResult cr;
 
     cr =
@@ -241,12 +241,12 @@ public class CubeInputMeta extends BaseStepMeta implements StepMetaInterface {
     remarks.add( cr );
   }
 
-  public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr, TransMeta tr,
-    Trans trans ) {
+  @Override public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr, TransMeta tr,
+                                          Trans trans ) {
     return new CubeInput( stepMeta, stepDataInterface, cnr, tr, trans );
   }
 
-  public StepDataInterface getStepData() {
+  @Override public StepDataInterface getStepData() {
     return new CubeInputData();
   }
 
@@ -262,8 +262,8 @@ public class CubeInputMeta extends BaseStepMeta implements StepMetaInterface {
    *
    * @return the filename of the exported resource
    */
-  public String exportResources( VariableSpace space, Map<String, ResourceDefinition> definitions,
-    ResourceNamingInterface resourceNamingInterface, Repository repository, IMetaStore metaStore ) throws KettleException {
+  @Override public String exportResources( VariableSpace space, Map<String, ResourceDefinition> definitions,
+                                           ResourceNamingInterface resourceNamingInterface, Repository repository, IMetaStore metaStore ) throws KettleException {
     try {
       // The object that we're modifying here is a copy of the original!
       // So let's change the filename from relative to absolute by grabbing the file object...

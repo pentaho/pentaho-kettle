@@ -334,7 +334,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
 
       // create the class
       // Try to instantiate this one...
-      Job job = (Job) jobClass.newInstance();
+      Job job = (Job) jobClass.getDeclaredConstructor().newInstance();
 
       // Done!
       return job;
@@ -358,7 +358,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
   /**
    * Threads main loop: called by Thread.start();
    */
-  public void run() {
+  @Override public void run() {
 
     ExecutorService heartbeat = null; // this job's heartbeat scheduled executor
 
@@ -793,7 +793,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
           threadEntries.add( nextEntry );
 
           Runnable runnable = new Runnable() {
-            public void run() {
+            @Override public void run() {
               try {
                 Result threadResult = execute( nr + 1, newResult, nextEntry, jobEntryCopy, nextComment );
                 threadResults.add( threadResult );
@@ -976,7 +976,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
 
       try {
         // See if we have to add a batch id...
-        Long id_batch = new Long( 1 );
+        Long id_batch = 1L;
         if ( jobMeta.getJobLogTable().isBatchIdUsed() ) {
           id_batch = logcon.getNextBatchId( ldb, schemaName, tableName, jobLogTable.getKeyField().getFieldName() );
           setBatchId( id_batch.longValue() );
@@ -1012,7 +1012,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
         if ( intervalInSeconds > 0 ) {
           final Timer timer = new Timer( getName() + " - interval logging timer" );
           TimerTask timerTask = new TimerTask() {
-            public void run() {
+            @Override public void run() {
               try {
                 endProcessing();
               } catch ( Exception e ) {
@@ -1028,7 +1028,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
           timer.schedule( timerTask, intervalInSeconds * 1000, intervalInSeconds * 1000 );
 
           addJobListener( new JobAdapter() {
-            public void jobFinished( Job job ) {
+            @Override public void jobFinished( Job job ) {
               timer.cancel();
             }
           } );
@@ -1038,7 +1038,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
         // log record...
         //
         addJobListener( new JobAdapter() {
-          public void jobFinished( Job job ) throws KettleException {
+          @Override public void jobFinished( Job job ) throws KettleException {
             try {
               endProcessing();
             } catch ( KettleJobException e ) {
@@ -1065,7 +1065,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
     JobEntryLogTable jobEntryLogTable = jobMeta.getJobEntryLogTable();
     if ( jobEntryLogTable.isDefined() ) {
       addJobListener( new JobAdapter() {
-        public void jobFinished( Job job ) throws KettleException {
+        @Override public void jobFinished( Job job ) throws KettleException {
           try {
             writeJobEntryLogInformation();
           } catch ( KettleException e ) {
@@ -1083,7 +1083,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
     if ( channelLogTable.isDefined() ) {
       addJobListener( new JobAdapter() {
 
-        public void jobFinished( Job job ) throws KettleException {
+        @Override public void jobFinished( Job job ) throws KettleException {
           try {
             writeLogChannelInformation();
           } catch ( KettleException e ) {
@@ -1467,7 +1467,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
    *
    * @see org.pentaho.di.core.variables.VariableSpace#copyVariablesFrom(org.pentaho.di.core.variables.VariableSpace)
    */
-  public void copyVariablesFrom( VariableSpace space ) {
+  @Override public void copyVariablesFrom( VariableSpace space ) {
     variables.copyVariablesFrom( space );
   }
 
@@ -1476,7 +1476,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
    *
    * @see org.pentaho.di.core.variables.VariableSpace#environmentSubstitute(java.lang.String)
    */
-  public String environmentSubstitute( String aString ) {
+  @Override public String environmentSubstitute( String aString ) {
     return variables.environmentSubstitute( aString );
   }
 
@@ -1485,11 +1485,11 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
    *
    * @see org.pentaho.di.core.variables.VariableSpace#environmentSubstitute(java.lang.String[])
    */
-  public String[] environmentSubstitute( String[] aString ) {
+  @Override public String[] environmentSubstitute( String[] aString ) {
     return variables.environmentSubstitute( aString );
   }
 
-  public String fieldSubstitute( String aString, RowMetaInterface rowMeta, Object[] rowData )
+  @Override public String fieldSubstitute( String aString, RowMetaInterface rowMeta, Object[] rowData )
     throws KettleValueException {
     return variables.fieldSubstitute( aString, rowMeta, rowData );
   }
@@ -1499,7 +1499,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
    *
    * @see org.pentaho.di.core.variables.VariableSpace#getParentVariableSpace()
    */
-  public VariableSpace getParentVariableSpace() {
+  @Override public VariableSpace getParentVariableSpace() {
     return variables.getParentVariableSpace();
   }
 
@@ -1509,7 +1509,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
    * @see
    * org.pentaho.di.core.variables.VariableSpace#setParentVariableSpace(org.pentaho.di.core.variables.VariableSpace)
    */
-  public void setParentVariableSpace( VariableSpace parent ) {
+  @Override public void setParentVariableSpace( VariableSpace parent ) {
     variables.setParentVariableSpace( parent );
   }
 
@@ -1518,7 +1518,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
    *
    * @see org.pentaho.di.core.variables.VariableSpace#getVariable(java.lang.String, java.lang.String)
    */
-  public String getVariable( String variableName, String defaultValue ) {
+  @Override public String getVariable( String variableName, String defaultValue ) {
     return variables.getVariable( variableName, defaultValue );
   }
 
@@ -1527,7 +1527,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
    *
    * @see org.pentaho.di.core.variables.VariableSpace#getVariable(java.lang.String)
    */
-  public String getVariable( String variableName ) {
+  @Override public String getVariable( String variableName ) {
     return variables.getVariable( variableName );
   }
 
@@ -1536,7 +1536,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
    *
    * @see org.pentaho.di.core.variables.VariableSpace#getBooleanValueOfVariable(java.lang.String, boolean)
    */
-  public boolean getBooleanValueOfVariable( String variableName, boolean defaultValue ) {
+  @Override public boolean getBooleanValueOfVariable( String variableName, boolean defaultValue ) {
     if ( !Utils.isEmpty( variableName ) ) {
       String value = environmentSubstitute( variableName );
       if ( !Utils.isEmpty( value ) ) {
@@ -1552,7 +1552,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
    * @see
    * org.pentaho.di.core.variables.VariableSpace#initializeVariablesFrom(org.pentaho.di.core.variables.VariableSpace)
    */
-  public void initializeVariablesFrom( VariableSpace parent ) {
+  @Override public void initializeVariablesFrom( VariableSpace parent ) {
     variables.initializeVariablesFrom( parent );
   }
 
@@ -1561,7 +1561,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
    *
    * @see org.pentaho.di.core.variables.VariableSpace#listVariables()
    */
-  public String[] listVariables() {
+  @Override public String[] listVariables() {
     return variables.listVariables();
   }
 
@@ -1570,7 +1570,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
    *
    * @see org.pentaho.di.core.variables.VariableSpace#setVariable(java.lang.String, java.lang.String)
    */
-  public void setVariable( String variableName, String variableValue ) {
+  @Override public void setVariable( String variableName, String variableValue ) {
     variables.setVariable( variableName, variableValue );
   }
 
@@ -1579,7 +1579,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
    *
    * @see org.pentaho.di.core.variables.VariableSpace#shareVariablesWith(org.pentaho.di.core.variables.VariableSpace)
    */
-  public void shareVariablesWith( VariableSpace space ) {
+  @Override public void shareVariablesWith( VariableSpace space ) {
     variables = space;
   }
 
@@ -1588,7 +1588,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
    *
    * @see org.pentaho.di.core.variables.VariableSpace#injectVariables(java.util.Map)
    */
-  public void injectVariables( Map<String, String> prop ) {
+  @Override public void injectVariables( Map<String, String> prop ) {
     variables.injectVariables( prop );
   }
 
@@ -1744,7 +1744,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
    * @see org.pentaho.di.core.parameters.NamedParams#addParameterDefinition(java.lang.String, java.lang.String,
    * java.lang.String)
    */
-  public void addParameterDefinition( String key, String defValue, String description ) throws DuplicateParamException {
+  @Override public void addParameterDefinition( String key, String defValue, String description ) throws DuplicateParamException {
     namedParams.addParameterDefinition( key, defValue, description );
   }
 
@@ -1753,7 +1753,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
    *
    * @see org.pentaho.di.core.parameters.NamedParams#getParameterDescription(java.lang.String)
    */
-  public String getParameterDescription( String key ) throws UnknownParamException {
+  @Override public String getParameterDescription( String key ) throws UnknownParamException {
     return namedParams.getParameterDescription( key );
   }
 
@@ -1762,7 +1762,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
    *
    * @see org.pentaho.di.core.parameters.NamedParams#getParameterDefault(java.lang.String)
    */
-  public String getParameterDefault( String key ) throws UnknownParamException {
+  @Override public String getParameterDefault( String key ) throws UnknownParamException {
     return namedParams.getParameterDefault( key );
   }
 
@@ -1771,7 +1771,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
    *
    * @see org.pentaho.di.core.parameters.NamedParams#getParameterValue(java.lang.String)
    */
-  public String getParameterValue( String key ) throws UnknownParamException {
+  @Override public String getParameterValue( String key ) throws UnknownParamException {
     return namedParams.getParameterValue( key );
   }
 
@@ -1780,7 +1780,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
    *
    * @see org.pentaho.di.core.parameters.NamedParams#listParameters()
    */
-  public String[] listParameters() {
+  @Override public String[] listParameters() {
     return namedParams.listParameters();
   }
 
@@ -1789,7 +1789,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
    *
    * @see org.pentaho.di.core.parameters.NamedParams#setParameterValue(java.lang.String, java.lang.String)
    */
-  public void setParameterValue( String key, String value ) throws UnknownParamException {
+  @Override public void setParameterValue( String key, String value ) throws UnknownParamException {
     namedParams.setParameterValue( key, value );
   }
 

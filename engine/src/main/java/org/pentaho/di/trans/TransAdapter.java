@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -32,14 +32,14 @@ import org.pentaho.di.core.exception.KettleException;
  */
 public class TransAdapter implements TransListener {
 
-  public void transStarted( Trans trans ) throws KettleException {
+  @Override public void transStarted( Trans trans ) throws KettleException {
 
   }
 
-  public void transActive( Trans trans ) {
+  @Override public void transActive( Trans trans ) {
   }
 
-  public void transFinished( Trans trans ) throws KettleException {
+  @Override public void transFinished( Trans trans ) throws KettleException {
   }
 
 }

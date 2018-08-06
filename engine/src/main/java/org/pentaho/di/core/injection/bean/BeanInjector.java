@@ -22,17 +22,23 @@
 
 package org.pentaho.di.core.injection.bean;
 
+import org.pentaho.di.core.RowMetaAndData;
+import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.injection.AfterInjection;
+
 import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.Queue;
+import java.util.stream.Collectors;
 
-import org.pentaho.di.core.RowMetaAndData;
-import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.injection.AfterInjection;
+import static com.google.common.collect.Lists.newLinkedList;
+import static java.util.Objects.requireNonNull;
 
 /**
  * Engine for get/set metadata injection properties from bean.
@@ -62,19 +68,40 @@ public class BeanInjector {
    * themselves.
    */
   public Object getPropVal( Object root, String propName ) {
-    List<BeanLevelInfo> beanInfos = Optional.ofNullable( info.getProperties().get( propName ) )
-      .orElseThrow( () -> new RuntimeException( "Property not found" ) )
-      .path;
-    Object obj = root;
-    for ( int i = 1; i < beanInfos.size(); i++ ) {
-      obj = getObjFromBeanInfo( obj,  beanInfos.get( i ) );
-    }
-    return obj;
+    Queue<BeanLevelInfo> beanInfos =
+      newLinkedList( Optional.ofNullable( info.getProperties().get( propName ) )
+        .orElseThrow( () -> new IllegalArgumentException( "Property not found: " + propName ) )
+        .path );
+    beanInfos.remove();  // pop off root
+    return getPropVal( root, propName, beanInfos );
   }
+
+  @SuppressWarnings ( "unchecked" )
+  private Object getPropVal( Object obj, String propName, Queue<BeanLevelInfo> beanInfos ) {
+    BeanLevelInfo info = beanInfos.remove();
+    if ( beanInfos.isEmpty() ) {
+      return getObjFromBeanInfo( obj, info );
+    }
+    obj = getObjFromBeanInfo( obj, info );
+    switch ( info.dim ) {
+      case LIST:
+        return ( (List) requireNonNull( obj ) ).stream()
+          .map( o -> getPropVal( o, propName, newLinkedList( beanInfos ) ) )
+          .collect( Collectors.toList() );
+      case ARRAY:
+        return Arrays.stream( (Object[]) requireNonNull( obj ) )
+          .map( o -> getPropVal( o, propName, newLinkedList( beanInfos ) ) )
+          .toArray( Object[]::new );
+      case NONE:
+        return getPropVal( obj, propName, beanInfos );
+    }
+    throw new IllegalStateException( "Unexpected value of BeanLevelInfo.dim " + info.dim );
+  }
+
 
   private Object getObjFromBeanInfo( Object obj, BeanLevelInfo beanLevelInfo ) {
     try {
-      return beanLevelInfo.field.get( obj );
+      return beanLevelInfo.field == null ? null : beanLevelInfo.field.get( obj );
     } catch ( IllegalAccessException e ) {
       throw new RuntimeException( e );
     }
@@ -96,6 +123,7 @@ public class BeanInjector {
       if ( obj == null ) {
         return null; // some value in path is null - return empty
       }
+
       switch ( s.dim ) {
         case ARRAY:
           int indexArray = extractedIndexes.get( arrIndex++ );
