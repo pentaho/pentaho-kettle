@@ -44,6 +44,7 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static java.util.Arrays.asList;
 import static java.util.Arrays.stream;
 import static java.util.Collections.singletonList;
 import static java.util.stream.Collectors.groupingBy;
@@ -189,6 +190,8 @@ public class StepMetaProps {
       Object o = injector.getPropVal( stepMeta, prop.getName() );
       if ( o instanceof List ) {
         ret = (List<Object>) o;
+      } else if ( o instanceof Object[] ) {
+        ret = asList( (Object[]) o );
       } else {
         ret = singletonList( o );
       }
@@ -267,11 +270,9 @@ public class StepMetaProps {
    * Represents a named grouping of properties, corresponding to a metadata injection group.
    */
   private static class PropGroup {
-    @XmlAttribute
-    String name;
+    @XmlAttribute String name;
 
-    @XmlElement ( name = "property" )
-    List<Prop> props;
+    @XmlElement ( name = "property" ) List<Prop> props;
 
     @SuppressWarnings ( "unused" )
     public PropGroup() {
@@ -292,14 +293,10 @@ public class StepMetaProps {
    * Values are captured as a List<Object> to consistently handle both List properties and single items.
    */
   private static class Prop {
-    @XmlAttribute
-    String group;
+    @XmlAttribute String group;
+    @XmlAttribute String name;
 
-    @XmlAttribute
-    String name;
-
-    @XmlElement ( name = "value" )
-    List<Object> value = new ArrayList<>();
+    @XmlElement ( name = "value" ) List<Object> value = new ArrayList<>();
 
     @SuppressWarnings ( "unused" )
     public Prop() {

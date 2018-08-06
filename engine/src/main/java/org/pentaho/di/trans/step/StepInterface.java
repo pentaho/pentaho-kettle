@@ -350,7 +350,7 @@ public interface StepInterface extends VariableSpace, HasLogChannelInterface {
   /**
    * @return the logging channel for this step
    */
-  public LogChannelInterface getLogChannel();
+  @Override public LogChannelInterface getLogChannel();
 
   /**
    * @param usingThreadPriorityManagment

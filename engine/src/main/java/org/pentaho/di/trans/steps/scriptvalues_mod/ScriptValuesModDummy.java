@@ -268,7 +268,7 @@ public class ScriptValuesModDummy implements StepInterface {
     return null;
   }
 
-  public LogChannelInterface getLogChannel() {
+  @Override public LogChannelInterface getLogChannel() {
     return null;
   }
 

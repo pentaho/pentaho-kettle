@@ -320,10 +320,10 @@ public class TransMeta extends AbstractMeta
         .getString( PKG, "TransMeta.TransformationType.SingleThreaded" ) );
 
     /** The code corresponding to the transformation type. */
-    private String code;
+    private final String code;
 
     /** The description of the transformation type. */
-    private String description;
+    private final String description;
 
     /**
      * Instantiates a new transformation type.
@@ -333,7 +333,7 @@ public class TransMeta extends AbstractMeta
      * @param description
      *          the description
      */
-    private TransformationType( String code, String description ) {
+    TransformationType( String code, String description ) {
       this.code = code;
       this.description = description;
     }
@@ -5554,7 +5554,7 @@ public class TransMeta extends AbstractMeta
     setChanged();
   }
 
-  protected List<SharedObjectInterface> getAllSharedObjects() {
+  @Override protected List<SharedObjectInterface> getAllSharedObjects() {
     List<SharedObjectInterface> shared = super.getAllSharedObjects();
     shared.addAll( steps );
     shared.addAll( partitionSchemas );

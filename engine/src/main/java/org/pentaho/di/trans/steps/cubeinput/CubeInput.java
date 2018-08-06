@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -55,7 +55,7 @@ public class CubeInput extends BaseStep implements StepInterface {
     super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
   }
 
-  public boolean processRow( StepMetaInterface smi, StepDataInterface sdi ) throws KettleException {
+  @Override public boolean processRow( StepMetaInterface smi, StepDataInterface sdi ) throws KettleException {
 
     if ( first ) {
       first = false;
@@ -90,7 +90,7 @@ public class CubeInput extends BaseStep implements StepInterface {
     return true;
   }
 
-  public boolean init( StepMetaInterface smi, StepDataInterface sdi ) {
+  @Override public boolean init( StepMetaInterface smi, StepDataInterface sdi ) {
     meta = (CubeInputMeta) smi;
     data = (CubeInputData) sdi;
 
@@ -126,7 +126,7 @@ public class CubeInput extends BaseStep implements StepInterface {
     return false;
   }
 
-  public void dispose( StepMetaInterface smi, StepDataInterface sdi ) {
+  @Override public void dispose( StepMetaInterface smi, StepDataInterface sdi ) {
     meta = (CubeInputMeta) smi;
     data = (CubeInputData) sdi;
 

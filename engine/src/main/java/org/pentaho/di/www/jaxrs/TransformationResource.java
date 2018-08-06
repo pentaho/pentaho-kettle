@@ -258,7 +258,7 @@ public class TransformationResource {
         // are done with this transformation.
         //
         trans.addTransListener( new TransAdapter() {
-          public void transFinished( Trans trans ) {
+          @Override public void transFinished( Trans trans ) {
             repository.disconnect();
           }
         } );
