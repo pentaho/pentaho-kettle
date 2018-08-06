@@ -22,6 +22,7 @@
 
 package org.pentaho.di.ui.spoon.delegates;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
@@ -45,6 +46,7 @@ import org.pentaho.di.ui.spoon.trans.TransGraph;
 import org.pentaho.di.ui.spoon.trans.TransLogDelegate;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -57,6 +59,13 @@ public class SpoonTransformationDelegateTest {
   private static final Map<String, String> MAP_WITH_TEST_PARAM = new HashMap<String, String>() {
     {
       put( TEST_PARAM_KEY, TEST_PARAM_VALUE );
+    }
+  };
+  private static final String EXEC_PARAM_KEY = "executionVarKey";
+  private static final String EXEC_PARAM_VALUE = "executionVarValue";
+  private static final Map<String, String> MAP_EXEC_TEST_VAR = new HashMap<String, String>() {
+    {
+      put( EXEC_PARAM_KEY, EXEC_PARAM_VALUE );
     }
   };
   private static final LogLevel TEST_LOG_LEVEL = LogLevel.BASIC;
@@ -145,4 +154,35 @@ public class SpoonTransformationDelegateTest {
     verify( transMeta ).setSafeModeEnabled( TEST_BOOLEAN_PARAM );
     verify( transMeta ).setGatheringMetrics( TEST_BOOLEAN_PARAM );
   }
+
+  @Test
+  @SuppressWarnings( "ResultOfMethodCallIgnored" )
+  public void testHaveOnlyTransMetaVariablesInExecuteTransformation() throws KettleException {
+    doCallRealMethod().when( delegate ).executeTransformation( transMeta, true, false, false,
+      false, false, null, false, LogLevel.BASIC );
+
+    // The 3 transMeta variables
+    List<String> transMetaList = Arrays.asList( "TransMetaVar1", "TransMetaVar2", "TransMetaVar3" );
+
+    RowMetaInterface rowMeta = mock( RowMetaInterface.class );
+    TransExecutionConfiguration transExecutionConfiguration = new TransExecutionConfiguration();
+    TransGraph activeTransGraph = mock( TransGraph.class );
+    activeTransGraph.transLogDelegate = mock( TransLogDelegate.class );
+
+    // The other variables from other transformations - defined in MAP_EXEC_TEST_VAR
+    transExecutionConfiguration.setVariables( MAP_EXEC_TEST_VAR );
+
+    doReturn( rowMeta ).when( spoon.variables ).getRowMeta();
+    doReturn( EMPTY_STRING_ARRAY ).when( rowMeta ).getFieldNames();
+    doReturn( transExecutionConfiguration ).when( spoon ).getTransExecutionConfiguration();
+    doReturn( transMetaList ).when( transMeta ).getUsedVariables();
+    doReturn( activeTransGraph ).when( spoon ).getActiveTransGraph();
+
+    delegate.executeTransformation( transMeta, true, false, false, false, false,
+      null, false, LogLevel.BASIC );
+
+    //only the 3 transMeta variables
+    assertEquals( transExecutionConfiguration.getVariables().size(), 3 );
+  }
+
 }

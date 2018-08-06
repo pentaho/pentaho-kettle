@@ -838,7 +838,9 @@ public class SpoonTransformationDelegate extends SpoonDelegate {
     Object[] data = spoon.variables.getData();
     String[] fields = spoon.variables.getRowMeta().getFieldNames();
     Map<String, String> variableMap = new HashMap<String, String>();
-    variableMap.putAll( executionConfiguration.getVariables() ); // the default
+    //removed the executionConfiguration variables to ensure that we only have the current transMeta variableSpace
+    //not all transformationExecution context
+    //variableMap.putAll( executionConfiguration.getVariables() ); // the default
     for ( int idx = 0; idx < fields.length; idx++ ) {
       String value = executionConfiguration.getVariables().get( fields[idx] );
       if ( Utils.isEmpty( value ) ) {
