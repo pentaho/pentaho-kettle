@@ -84,6 +84,7 @@ JOB_ITEM_DEFAULTS:
   testsArchivePattern: ${ARCHIVE_TESTS_PATTERN}
   execType: FORCE
   archivable: false
+  parallelize: false
   artifactsArchivePattern: ${ARCHIVE_ARTIFACTS_PATTERN}
 
 # Build failover settings
