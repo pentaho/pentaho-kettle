@@ -213,12 +213,23 @@ jobGroups:
        scmBranch       :  ${DEFAULT_BRANCH}
        versionProperty :  archetypes.version
 
+     - jobID           :  big-data-hadoop-shims-api
+       scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-hadoop-shims.git
+       scmBranch       :  ${DEFAULT_BRANCH}
+       directives      :  += -DskipDefault -P api,shims
+       versionProperty :  pentaho-hadoop-shims.version
+       archivable      :  false
+
+  1410:
+
      - jobID           :  big-data-hadoop-shims
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-hadoop-shims.git
        scmBranch       :  ${DEFAULT_BRANCH}
-       directives      :  += -DskipDefault -P api,shims,all
+       directives      :  += -DskipDefault -P all
        versionProperty :  pentaho-hadoop-shims.version
        archivable      :  true
+       root            :  shims
+       parallelize     :  true
        artifactsArchivePattern: ${BIG_DATA_HADOOP_SHIMS_PATTERN}
 
   1500:
@@ -243,7 +254,7 @@ jobGroups:
      - jobID           :  mondrian-workbench
        scmUrl          :  ${PENTAHO_SCM_ROOT}/mondrian.git
        scmBranch       :  ${DEFAULT_BRANCH}
-       directives      :  += -P !mondrian -P !assemblies
+       directives      :  += -P workbench
        versionProperty :  mondrian.version
 
   1700:
@@ -258,7 +269,7 @@ jobGroups:
      - jobID           :  psw-assembly
        scmUrl          :  ${PENTAHO_SCM_ROOT}/mondrian.git
        scmBranch       :  ${DEFAULT_BRANCH}
-       directives      :  += -P !mondrian -P !workbench
+       directives      :  += -P assemblies
        versionProperty :  mondrian.version
        archivable      :  true
        artifactsArchivePattern: ${PSW_ASSEMBLY_PATTERN}
@@ -331,7 +342,9 @@ jobGroups:
      - jobID           :  pdi-core-plugins
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-kettle.git
        scmBranch       :  ${DEFAULT_BRANCH}
-       directives      :  += -DskipDefault -P plugins,highdeps
+       directives      :  += -DskipDefault -P highdeps
+       root            :  plugins
+       parallelize     :  true
        versionProperty :  pdi.version
 
      - jobID           :  pdi-monitoring-plugin
@@ -363,6 +376,7 @@ jobGroups:
        scmBranch       :  ${DEFAULT_BRANCH}
        versionProperty :  pdi-plugins-ee.version
        root            :  data-integration/plugins
+       parallelize     :  true
 
      - jobID           :  camel-components
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-camel-components.git
@@ -474,16 +488,26 @@ jobGroups:
 
   3000:
 
-     - jobID           :  big-data-hadoop-shims-ee
+     - jobID           :  big-data-hadoop-shims-ee-api
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-big-data-ee.git
        scmBranch       :  ${DEFAULT_BRANCH}
-       directives      :  += -DskipDefault -P base,all
+       directives      :  += -DskipDefault -P base
        versionProperty :  pentaho-hadoop-shims.version
 
      - jobID           :  cda-plugin
        scmUrl          :  ${WEBDETAILS_SCM_ROOT}/cda.git
        scmBranch       :  ${DEFAULT_BRANCH}
        versionProperty :  pentaho-cda-plugin.version
+
+  3010:
+
+     - jobID           :  big-data-hadoop-shims-ee
+       scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-big-data-ee.git
+       scmBranch       :  ${DEFAULT_BRANCH}
+       directives      :  += -DskipDefault -P all
+       root            :  shims
+       parallelize     :  true
+       versionProperty :  pentaho-hadoop-shims.version
 
   3100:
 
