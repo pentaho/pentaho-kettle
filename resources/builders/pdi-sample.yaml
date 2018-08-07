@@ -21,6 +21,7 @@ jobGroups:
       buildFramework    :  maven
       buildFile         :  pom.xml
       directives        :  += -DskipDefault -P plugins,highdeps
+      parallelize       :  true
 
     - jobID             :  pdi-teradata-tpt-plugin
       scmUrl            :  ${PENTAHO_SCM_ROOT}/pdi-teradata-tpt-plugin.git
