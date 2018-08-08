@@ -1388,7 +1388,23 @@ public class ValueMetaBase implements ValueMetaInterface {
               + ( parsePosition.getIndex() + 1 ) + " for value [" + string + "]" );
         }
       }
+
+      // PDI-17366: Cannot simply cast a number to a BigDecimal,
+      //            If the Number is not a BigDecimal.
+      //
+      if ( number instanceof Double ) {
+        return BigDecimal.valueOf( number.doubleValue() );
+      } else if ( number instanceof Float ) {
+        return BigDecimal.valueOf( number.floatValue() );
+      } else if ( number instanceof Integer ) {
+        return BigDecimal.valueOf( number.intValue() );
+      } else if ( number instanceof Byte ) {
+        return BigDecimal.valueOf( number.byteValue() );
+      } else if ( number instanceof Short ) {
+        return BigDecimal.valueOf( number.shortValue() );
+      }
       return (BigDecimal) number;
+
     } catch ( Exception e ) {
       // We added this workaround for PDI-1824
       //
