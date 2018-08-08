@@ -98,9 +98,8 @@ public class MappingOutputMeta extends BaseStepMeta implements StepMetaInterface
         if ( valueMetaRenameIndex >= 0  ) {
           ValueMetaInterface valueMetaRename = r.getValueMeta( valueMetaRenameIndex ).clone();
           valueMetaRename.setName( valueRename.getTargetValueName() );
-          // must maintain the same columns order. Noticed when implementing the Mapping step in AEL (BACKLOG-23372)
+          r.addValueMeta( valueMetaRename );
           r.removeValueMeta( valueMetaRenameIndex );
-          r.addValueMeta( valueMetaRenameIndex, valueMetaRename );
         }
       }
     }
