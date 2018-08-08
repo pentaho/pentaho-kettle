@@ -92,7 +92,7 @@ public class Rest extends BaseStep implements StepInterface {
     return queryParams;
   }
 
-  protected Object[] callRest( Object[] rowData ) throws KettleException {
+  private Object[] callRest( Object[] rowData ) throws KettleException {
     // get dynamic url ?
     if ( meta.isUrlInField() ) {
       data.realUrl = data.inputRowMeta.getString( rowData, data.indexOfUrlField );
@@ -182,7 +182,7 @@ public class Rest extends BaseStep implements StepInterface {
         } else if ( data.method.equals( RestMeta.HTTP_METHOD_PUT ) ) {
           response = builder.type( data.mediaType ).put( ClientResponse.class, entityString );
         } else if ( data.method.equals( RestMeta.HTTP_METHOD_DELETE ) ) {
-          response = builder.delete( ClientResponse.class );
+          response = builder.type( data.mediaType ).delete( ClientResponse.class, entityString );
         } else if ( data.method.equals( RestMeta.HTTP_METHOD_HEAD ) ) {
           response = builder.head();
         } else if ( data.method.equals( RestMeta.HTTP_METHOD_OPTIONS ) ) {
