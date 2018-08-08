@@ -118,8 +118,13 @@ public class KettleEnvironment {
   }
 
   public static void init( List<PluginTypeInterface> pluginClasses, boolean simpleJndi ) throws KettleException {
+
     SettableFuture<Boolean> ready;
     if ( initialized.compareAndSet( null, ready = SettableFuture.create() ) ) {
+
+      // Swaps out System Properties for a thread safe version.  This is needed so Karaf can spawn multiple instances.
+      // See https://jira.pentaho.com/browse/PDI-17496
+      System.setProperties( ConcurrentMapProperties.convertProperties( System.getProperties() ) );
 
       try {
         // This creates .kettle and kettle.properties...
