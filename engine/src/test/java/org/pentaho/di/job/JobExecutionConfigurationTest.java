@@ -31,6 +31,7 @@ import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.junit.ClassRule;
@@ -249,4 +250,70 @@ public class JobExecutionConfigurationTest {
     executionConfiguration.getUsedArguments( jobMeta, commandLineArguments, metaStore );
     assertEquals( 2, executionConfiguration.getArguments().size() );
   }
+
+  @Test
+  public void testGetUsedVariablesWithNoPreviousExecutionConfigurationVariables() throws KettleException {
+    JobExecutionConfiguration executionConfiguration = new JobExecutionConfiguration();
+    Map<String, String> variables0 =  new HashMap<>();
+
+    executionConfiguration.setVariables( variables0 );
+
+    JobMeta jobMeta0 = mock( JobMeta.class );
+    List<String> list0 =  new ArrayList<String>();
+    list0.add( "var1" );
+    when( jobMeta0.getUsedVariables(  ) ).thenReturn( list0 );
+    // Const.INTERNAL_VARIABLE_PREFIX values
+    when( jobMeta0.getVariable( anyString() ) ).thenReturn( "internalDummyValue" );
+
+    executionConfiguration.getUsedVariables( jobMeta0 );
+
+    // 8 = 7 internalDummyValues + var1 from JobMeta with default value
+    assertEquals( 8, executionConfiguration.getVariables().size() );
+    assertEquals( "", executionConfiguration.getVariables().get( "var1" ) );
+
+  }
+
+  @Test
+  public void testGetUsedVariablesWithSamePreviousExecutionConfigurationVariables() throws KettleException {
+    JobExecutionConfiguration executionConfiguration = new JobExecutionConfiguration();
+    Map<String, String> variables0 =  new HashMap<>();
+    variables0.put( "var1", "valueVar1" );
+    executionConfiguration.setVariables( variables0 );
+
+    JobMeta jobMeta0 = mock( JobMeta.class );
+    List<String> list0 =  new ArrayList<String>();
+    list0.add( "var1" );
+    when( jobMeta0.getUsedVariables(  ) ).thenReturn( list0 );
+    when( jobMeta0.getVariable( anyString() ) ).thenReturn( "internalDummyValue" );
+
+    executionConfiguration.getUsedVariables( jobMeta0 );
+
+    // 8 = 7 internalDummyValues + var1 from JobMeta ( with variables0 value )
+    assertEquals( 8, executionConfiguration.getVariables().size() );
+    assertEquals( "valueVar1", executionConfiguration.getVariables().get( "var1" ) );
+
+  }
+
+  @Test
+  public void testGetUsedVariablesWithDifferentPreviousExecutionConfigurationVariables() throws KettleException {
+    JobExecutionConfiguration executionConfiguration = new JobExecutionConfiguration();
+    Map<String, String> variables0 =  new HashMap<>();
+    variables0.put( "var2", "valueVar2" );
+    executionConfiguration.setVariables( variables0 );
+
+    JobMeta jobMeta0 = mock( JobMeta.class );
+    List<String> list0 =  new ArrayList<String>();
+    list0.add( "var1" );
+    when( jobMeta0.getUsedVariables(  ) ).thenReturn( list0 );
+    when( jobMeta0.getVariable( anyString() ) ).thenReturn( "internalDummyValue" );
+
+    executionConfiguration.getUsedVariables( jobMeta0 );
+
+    // 9 = 7 internalDummyValues + var1 from JobMeta ( with the default value ) + var2 from variables0
+    assertEquals( 9, executionConfiguration.getVariables().size() );
+    assertEquals( "", executionConfiguration.getVariables().get( "var1" ) );
+    assertEquals( "valueVar2", executionConfiguration.getVariables().get( "var2" ) );
+
+  }
+
 }
