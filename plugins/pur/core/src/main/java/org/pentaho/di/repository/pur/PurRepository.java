@@ -371,10 +371,6 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
   public RepositoryDirectoryInterface createRepositoryDirectory( final RepositoryDirectoryInterface parentDirectory,
                                                                  final String directoryPath ) throws KettleException {
     try {
-      if ( parentDirectory.isRoot() ) {
-        throw new IllegalArgumentException();
-      }
-
       RepositoryDirectoryInterface refreshedParentDir = findDirectory( parentDirectory.getPath() );
 
       // update the passed in repository directory with the children recently loaded from the repo
