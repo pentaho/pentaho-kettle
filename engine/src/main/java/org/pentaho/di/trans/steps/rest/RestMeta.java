@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -396,7 +396,23 @@ public class RestMeta extends BaseStepMeta implements StepMetaInterface {
 
   @Override
   public void setDefault() {
-    allocate( 0, 0, 0 );
+    int i;
+    int nrheaders = 0;
+    int nrparameters = 0;
+    int nrmatrixparameters = 0;
+    allocate( nrheaders, nrparameters, nrmatrixparameters );
+    for ( i = 0; i < nrheaders; i++ ) {
+      this.headerField[i] = "header" + i;
+      this.headerName[i] = "header";
+    }
+    for ( i = 0; i < nrparameters; i++ ) {
+      this.parameterField[i] = "param" + i;
+      this.parameterName[i] = "param";
+    }
+    for ( i = 0; i < nrmatrixparameters; i++ ) {
+      this.matrixParameterField[i] = "matrixparam" + i;
+      this.matrixParameterName[i] = "matrixparam";
+    }
 
     this.fieldName = "result";
     this.resultCodeFieldName = "";
@@ -409,6 +425,7 @@ public class RestMeta extends BaseStepMeta implements StepMetaInterface {
     this.trustStoreFile = null;
     this.trustStorePassword = null;
     this.applicationType = APPLICATION_TYPE_TEXT_PLAIN;
+
   }
 
   @Override
@@ -898,7 +915,8 @@ public class RestMeta extends BaseStepMeta implements StepMetaInterface {
     if ( Utils.isEmpty( method ) ) {
       return false;
     }
-    return ( method.equals( HTTP_METHOD_POST ) || method.equals( HTTP_METHOD_PUT ) || method.equals( HTTP_METHOD_PATCH ) );
+    return ( method.equals( HTTP_METHOD_POST ) || method.equals( HTTP_METHOD_PUT )
+      || method.equals( HTTP_METHOD_PATCH ) || method.equals( HTTP_METHOD_DELETE ) );
   }
 
   public static boolean isActiveParameters( String method ) {

@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -1168,14 +1168,12 @@ public class RestDialog extends BaseStepDialog implements StepDialogInterface {
     return stepname;
   }
 
-  protected void setMethod() {
+  private void setMethod() {
     boolean activateBody = RestMeta.isActiveBody( wMethod.getText() );
     boolean activateParams = RestMeta.isActiveParameters( wMethod.getText() );
 
     wlBody.setEnabled( activateBody );
     wBody.setEnabled( activateBody );
-    wApplicationType.setEnabled( activateBody );
-
     wlParameters.setEnabled( activateParams );
     wParameters.setEnabled( activateParams );
     wGet.setEnabled( activateParams );
@@ -1361,17 +1359,20 @@ public class RestDialog extends BaseStepDialog implements StepDialogInterface {
     if ( isDebug() ) {
       logDebug( BaseMessages.getString( PKG, "RestDialog.Log.FoundArguments", String.valueOf( nrheaders ) ) );
     }
+    //CHECKSTYLE:Indentation:OFF
     for ( int i = 0; i < nrheaders; i++ ) {
       TableItem item = wFields.getNonEmpty( i );
       input.getHeaderField()[i] = item.getText( 1 );
       input.getHeaderName()[i] = item.getText( 2 );
     }
+    //CHECKSTYLE:Indentation:OFF
     for ( int i = 0; i < nrparams; i++ ) {
       TableItem item = wParameters.getNonEmpty( i );
       input.getParameterField()[i] = item.getText( 1 );
       input.getParameterName()[i] = item.getText( 2 );
     }
 
+    //CHECKSTYLE:Indentation:OFF
     for ( int i = 0; i < nrmatrixparams; i++ ) {
       TableItem item = wMatrixParameters.getNonEmpty( i );
       input.getMatrixParameterField()[i] = item.getText( 1 );
@@ -1438,5 +1439,6 @@ public class RestDialog extends BaseStepDialog implements StepDialogInterface {
     wMethod.setEnabled( !wMethodInField.getSelection() );
     wlMethodField.setEnabled( wMethodInField.getSelection() );
     wMethodField.setEnabled( wMethodInField.getSelection() );
+
   }
 }
