@@ -1547,27 +1547,18 @@ public class JobExecutorMeta extends BaseStepMeta implements StepMetaInterface, 
   }
 
   @Override
-  public boolean cleanAfterHopFromRemove( StepMeta toStep ) {
-    if ( null == toStep || null == toStep.getName() ) {
-      return false;
-    }
-
-    boolean hasChanged = false;
-    String toStepName = toStep.getName();
-
-    if ( getExecutionResultTargetStepMeta() != null
-      && toStepName.equals( getExecutionResultTargetStepMeta().getName() ) ) {
+  public boolean cleanAfterHopFromRemove( String toStepName ) {
+    if ( getExecutionResultTargetStepMeta() != null && getExecutionResultTargetStepMeta().getName() != null
+      && getExecutionResultTargetStepMeta().getName().equals( toStepName ) ) {
       setExecutionResultTargetStepMeta( null );
-      hasChanged = true;
-    } else if ( getResultRowsTargetStepMeta() != null
-      && toStepName.equals( getResultRowsTargetStepMeta().getName() ) ) {
+    } else if ( getResultRowsTargetStepMeta() != null && getResultRowsTargetStepMeta().getName() != null
+      && getResultRowsTargetStepMeta().getName().equals( toStepName ) ) {
       setResultRowsTargetStepMeta( null );
-      hasChanged = true;
-    } else if ( getResultFilesTargetStepMeta() != null
-      && toStepName.equals( getResultFilesTargetStepMeta().getName() ) ) {
+    } else if ( getResultFilesTargetStepMeta() != null && getResultFilesTargetStepMeta().getName() != null
+      && getResultFilesTargetStepMeta().getName().equals( toStepName ) ) {
       setResultFilesTargetStepMeta( null );
-      hasChanged = true;
     }
-    return hasChanged;
+    return true;
   }
+
 }

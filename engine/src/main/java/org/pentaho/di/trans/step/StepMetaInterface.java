@@ -715,7 +715,7 @@ public interface StepMetaInterface {
   Object loadReferencedObject( int index, Repository rep, IMetaStore metaStore, VariableSpace space ) throws KettleException;
 
   /**
-   * Action remove hop exiting this step
+   * Action remove hop from this step
    * @return step was changed
    */
   default boolean cleanAfterHopFromRemove() {
@@ -723,26 +723,11 @@ public interface StepMetaInterface {
   }
 
   /**
-   * <p>Action remove hop exiting this step</p>
-   *
-   * @param toStep the to-step of the hop being removed
+   * Action remove hop from this step
+   * @param toStepName - String of step name of the "to" step of the hop
    * @return step was changed
    */
-  default boolean cleanAfterHopFromRemove( StepMeta toStep ) {
-    return false;
-  }
-
-  /**
-   * <p>Action remove hop entering this step.</p>
-   * <p>Sometimes, in addition to the hops themselves, a Step has internal
-   * configuration referencing some of the steps that connect to it (to identify the main step or the one to be used for
-   * lookup, for instance). If the hop being deleted comes from one of those steps, the references to them should be
-   * removed.</p>
-   *
-   * @param fromStep the from-step of the hop being removed
-   * @return step was changed
-   */
-  default boolean cleanAfterHopToRemove( StepMeta fromStep ) {
+  default boolean cleanAfterHopFromRemove( String toStepName ) {
     return false;
   }
 

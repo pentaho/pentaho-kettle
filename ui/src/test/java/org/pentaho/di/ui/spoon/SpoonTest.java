@@ -404,23 +404,21 @@ public class SpoonTest {
   @Test
   public void testDelHop() throws Exception {
 
-    StepMetaInterface fromStepMetaInterface = Mockito.mock( StepMetaInterface.class );
-    StepMeta fromStep = new StepMeta();
-    fromStep.setStepMetaInterface( fromStepMetaInterface );
-
-    StepMetaInterface toStepMetaInterface = Mockito.mock( StepMetaInterface.class );
+    StepMetaInterface stepMetaInterface = Mockito.mock( StepMetaInterface.class );
+    StepMeta step = new StepMeta();
     StepMeta toStep = new StepMeta();
-    toStep.setStepMetaInterface( toStepMetaInterface );
+    step.setStepMetaInterface( stepMetaInterface );
+    toStep.setStepMetaInterface( stepMetaInterface );
 
     TransHopMeta transHopMeta = new TransHopMeta();
-    transHopMeta.setFromStep( fromStep );
+    transHopMeta.setFromStep( step );
     transHopMeta.setToStep( toStep );
 
     TransMeta transMeta = Mockito.mock( TransMeta.class );
 
     spoon.delHop( transMeta, transHopMeta );
-    Mockito.verify( fromStepMetaInterface, times( 1 ) ).cleanAfterHopFromRemove( toStep );
-    Mockito.verify( toStepMetaInterface, times( 1 ) ).cleanAfterHopToRemove( fromStep );
+    Mockito.verify( stepMetaInterface, times( 1 ) ).cleanAfterHopFromRemove( transHopMeta.getToStep().getName() );
+
   }
 
   @Test
