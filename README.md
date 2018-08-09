@@ -1,7 +1,7 @@
 # jenkins-pipelines
 Jenkins Pipeline and YAML Build Data Files
 
-This repository is used to quickly build source repositories checked into a Git repository. The source for this repository is built on top of [Jenkins Declarative Pipeline](https://jenkins.io/doc/book/pipeline/syntax/#declarative-pipeline), a DSL with a relatively simple syntax.
+This repository is used to quickly build source repositories checked into a Git repository. The source for this repository is built on top of [Jenkins Declarative Pipeline](https://jenkins.io/doc/book/pipeline/syntax/#declarative-pipeline), a DSL with a relatively simple syntax. For a detailed reference, see the [Wiki](../../wiki).
 
 The [Jenkins Shared Libraries](https://github.com/pentaho/jenkins-shared-libraries) repository is a required companion to this repository. The libraries contain a significant amount of custom code to make it easy to construct complex builds using YAML Build Data Files. The build can that may use single or multiple build technologies (Maven, Gradle, and Ant).
 
@@ -64,4 +64,10 @@ Once Jenkins is setup, it is now time to create the build data for the pipelines
 - buildProperties - Top-level build properties that are unique to this build
 - jobGroups - A structured list of jobs to build as steps in the pipelines.
 
-There is a video tutorial (~15 mins) on how to [Build a Feature Branch Using Jenkins Pipelines](https://pentaho.box.com/s/6qcysk2yccxvh4fpj5a8qkzlys4ipr7a). The tutorial goes into detail on how easy it is to tailor an existing build data file for your own purposes.
+### Video Tutorials
+
+Here are video tutorials that go into detail of how to create or change a pipeline.
+
+- [Building Feature Branches Using Jenkins Pipeline](https://pentaho.box.com/s/6qcysk2yccxvh4fpj5a8qkzlys4ipr7a) (~15 mins) - A workflow video on what is takes to create a pipeline that builds feature branches for a team or a developer.
+
+- [Maven Support in Jenkins Pipeline](https://pentaho.box.com/s/7s73s2shgefts3ka5l3tl78f138s1awy) (~8 mins) - How  [Maven](https://maven.apache.org/) works in the build data files.
