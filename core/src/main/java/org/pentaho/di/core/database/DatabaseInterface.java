@@ -1200,4 +1200,11 @@ public interface DatabaseInterface extends Cloneable {
     return "";
   }
 
+  /**
+   * @return true if database supports the default char length validation
+   */
+  default boolean supportsGetLengthByChar() {
+    return true;
+  }
+
 }

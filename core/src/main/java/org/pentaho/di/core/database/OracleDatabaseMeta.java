@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -677,5 +677,9 @@ public class OracleDatabaseMeta extends BaseDatabaseMeta implements DatabaseInte
    */
   public void setStrictBigNumberInterpretation( boolean strictBigNumberInterpretation ) {
     getAttributes().setProperty( STRICT_BIGNUMBER_INTERPRETATION, strictBigNumberInterpretation ? "Y" : "N" );
+  }
+
+  @Override public boolean supportsGetLengthByChar() {
+    return false;
   }
 }

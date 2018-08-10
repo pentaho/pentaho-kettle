@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -254,6 +254,7 @@ public class StringEvaluator {
       maxLength = value.length();
     }
   }
+
 
   private void evaluatePrecision( String value ) {
     int p = determinePrecision( value );
