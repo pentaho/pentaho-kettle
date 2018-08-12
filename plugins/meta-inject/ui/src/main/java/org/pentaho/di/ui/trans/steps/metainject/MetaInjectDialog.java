@@ -60,6 +60,7 @@ import org.eclipse.swt.widgets.TreeItem;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.ObjectLocationSpecificationMethod;
 import org.pentaho.di.core.Props;
+import org.pentaho.di.core.annotations.PluginDialog;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.injection.bean.BeanInjectionInfo;
 import org.pentaho.di.core.row.RowMetaInterface;
@@ -108,6 +109,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+@PluginDialog(
+    id = "MetaInject",
+    image = "org/pentaho/di/ui/trans/steps/metainject/img/GenericTransform.svg",
+    pluginType = PluginDialog.PluginType.STEP,
+    documentationUrl = "Products/Data_Integration/Transformation_Step_Reference/ETL_Metadata_Injection"
+)
 public class MetaInjectDialog extends BaseStepDialog implements StepDialogInterface {
 
   public static final String CONST_VALUE = "<const>";
