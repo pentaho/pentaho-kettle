@@ -20,10 +20,6 @@ buildProperties:
         TAG_NAME_TYPE                  : NONE
         TAG_NAME                       : -RC
 
-        # Don't run unit tests on QATs
-        JOB_ITEM_DEFAULTS:
-            testable: false
-
 jobGroups:
   # Always required
 
@@ -33,6 +29,7 @@ jobGroups:
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-coding-standards.git
        scmBranch       :  ${DEFAULT_BRANCH}
        versionProperty :  coding-standards.version
+       testable        :  false
 
   300:
 
@@ -401,6 +398,7 @@ jobGroups:
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pdi-platform-plugin.git
        scmBranch       :  ${DEFAULT_BRANCH}
        versionProperty :  pentaho-pdi-plugin.version
+       testable        :  false
 
      - jobID           :  pdi-platform-utils-plugin
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pdi-platform-utils-plugin.git
@@ -717,6 +715,7 @@ jobGroups:
        scmBranch       :  ${DEFAULT_BRANCH}
        directives      :  += -DskipDefault -P assemblies
        versionProperty :  pdi.version
+       testable        :  false
 
   4300:
 
@@ -726,6 +725,7 @@ jobGroups:
        directives      :  += -Deula-wrap
        versionProperty :  pdi.version
        root            :  data-integration
+       testable        :  false
        archivable      :  true
        artifactsArchivePattern: ${PDI_ASSEMBLY_EE_PATTERN}
 
@@ -743,11 +743,14 @@ jobGroups:
        scmBranch       :  ${DEFAULT_BRANCH}
        directives      :  += -DskipDefault -P platform-assemble
        versionProperty :  platform.version
+       testable        :  false
 
      - jobID           :  pad
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-aggdesigner.git
        scmBranch       :  ${DEFAULT_BRANCH}
        versionProperty :  aggdesigner.version
+       # Disabled testing on this project due to foodmart db offline and connection problems
+       testable        :  false
        archivable      :  true
        artifactsArchivePattern: ${PAD_ASSEMBLY_PATTERN}
 
@@ -759,6 +762,7 @@ jobGroups:
        directives      :  += -Deula-wrap
        versionProperty :  worker-nodes.version
        root            :  foundry
+       testable        :  false
        archivable      :  true
        artifactsArchivePattern: ${FOUNDRY_WORKERS_EE_PATTERN}
 
@@ -767,6 +771,7 @@ jobGroups:
        scmBranch       :  ${DEFAULT_BRANCH}
        directives      :  += -DskipDefault -P platform-ee-assemble -Deula-wrap
        versionProperty :  platform.version
+       testable        :  false
        archivable      :  true
        artifactsArchivePattern: ${PLATFORM_SERVER_ASSEMBLY_EE_PATTERN}
 
@@ -783,6 +788,7 @@ jobGroups:
        scmBranch       :  ${DEFAULT_BRANCH}
        directives      :  += -Deula-wrap
        versionProperty :  aggdesigner.version
+       testable        :  false
        archivable      :  true
        artifactsArchivePattern: ${PAD_ASSEMBLY_EE_PATTERN}
 
@@ -802,6 +808,7 @@ jobGroups:
        directives      :  += -Dpentaho-scale -Deula-wrap
        versionProperty :  worker-nodes.version
        root            :  foundry
+       testable        :  false
 
   4700:
 
@@ -813,7 +820,7 @@ jobGroups:
        archivable      :  true
        artifactsArchivePattern: ${INSTALLER_ARTIFACTS_PATTERN_WINDOWS}
        testable        :  false
-       
+
      - jobID           :  installer-mac
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-installer.git
        scmBranch       :  ${DEFAULT_BRANCH}
