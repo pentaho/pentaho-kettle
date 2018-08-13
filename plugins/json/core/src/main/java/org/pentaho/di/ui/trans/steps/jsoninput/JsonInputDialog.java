@@ -1473,8 +1473,7 @@ public class JsonInputDialog extends BaseStepDialog implements StepDialogInterfa
   }
 
   private void get() {
-    JsonInputGetFieldsDialog jsonInputGetFieldsDialog = new JsonInputGetFieldsDialog( shell, 450, 588 );
-    jsonInputGetFieldsDialog.open();
+    // TODO: add call to new dialog
   }
 
   // Preview the data
