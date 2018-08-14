@@ -13,6 +13,26 @@
   </mirrors>
 
   <servers>
+    <server>
+      <id>pentaho.public.release.repo</id>
+      <username>buildguy</username>
+      <password>{xolC8pOE9HEHaUOFXGQhIlS5RcgQTS5fPYFtnZYiBvs=}</password>
+    </server>
+    <server>
+      <id>pentaho.public.snapshot.repo</id>
+      <username>buildguy</username>
+      <password>{xolC8pOE9HEHaUOFXGQhIlS5RcgQTS5fPYFtnZYiBvs=}</password>
+    </server>
+    <server>
+      <id>pentaho.private.release.repo</id>
+      <username>buildguy</username>
+      <password>{xolC8pOE9HEHaUOFXGQhIlS5RcgQTS5fPYFtnZYiBvs=}</password>
+    </server>
+    <server>
+      <id>pentaho.private.snapshot.repo</id>
+      <username>buildguy</username>
+      <password>{xolC8pOE9HEHaUOFXGQhIlS5RcgQTS5fPYFtnZYiBvs=}</password>
+    </server>
   </servers>
 
   <profiles>
@@ -23,6 +43,10 @@
       </activation>
       <properties>
         <maven-surefire-plugin.testFailureIgnore>true</maven-surefire-plugin.testFailureIgnore>
+        <pentaho.public.release.repo>${env.PUBLIC_RELEASE_REPO_URL}</pentaho.public.release.repo>
+        <pentaho.public.snapshot.repo>${env.PUBLIC_SNAPSHOT_REPO_URL}</pentaho.public.snapshot.repo>
+        <pentaho.private.release.repo>${env.PRIVATE_RELEASE_REPO_URL}</pentaho.private.release.repo>
+        <pentaho.private.snapshot.repo>${env.PRIVATE_SNAPSHOT_REPO_URL}</pentaho.private.snapshot.repo>
       </properties>
       <repositories>
         <repository>
