@@ -13,44 +13,11 @@ pipeline {
 
   parameters {
 
-    string(
-        name: 'BUILD_DATA_FILE',
-        defaultValue: jobNameBuildFile(),
-        description: 'The build data yaml file to run'
+    booleanParam(
+        name: 'NOOP',
+        defaultValue: false,
+        description: 'No op build (test the build config)'
     )
-    string(
-        name: 'FIRST_JOB',
-        defaultValue: '',
-        description: 'The first job in the yaml file to build (empty = first yaml item)'
-    )
-    string(
-        name: 'LAST_JOB',
-        defaultValue: '',
-        description: 'The last job in the yaml file to build (empty = last yaml item)'
-    )
-    string(
-        name: 'RELEASE_BUILD_NUMBER',
-        defaultValue: '',
-        description: 'Override the build number. Leave this blank to use the actual build number',
-    )
-    string(
-        name: 'CLEAN_CACHES_REGEX',
-        defaultValue: '.*-SNAPSHOT.*',
-        description: 'Clean build dependency caches with regex'
-    )
-    string(
-        name: 'CHECKOUT_TIMESTAMP',
-        defaultValue: '',
-        description: 'Determines the timestamp to use as the limit for version control commits. Any commits after the timestamp will not be used. Override format: YYYY-MM-DD HH:MM:SS',
-    )
-
-    text(
-        name: 'OVERRIDE_JOB_PARAMS',
-        defaultValue: '',
-        description: 'Override job parameters using the same yaml format as the builders. ' +
-            'Example: "{jobID: job1, param1: value1, param2: value2}".'
-    )
-
     booleanParam(
         name: 'RUN_CHECKOUTS',
         defaultValue: true,
@@ -67,11 +34,6 @@ pipeline {
         description: 'Run the code tests'
     )
     booleanParam(
-        name: 'ARCHIVE_ARTIFACTS',
-        defaultValue: true,
-        description: 'Archive the artifacts'
-    )
-    booleanParam(
         name: 'CLEAN_ALL_CACHES',
         defaultValue: false,
         description: 'Clean all build dependency caches'
@@ -86,11 +48,6 @@ pipeline {
         defaultValue: false,
         description: 'Clean build workspace (this happens post build)'
     )
-    booleanParam(
-        name: 'NOOP',
-        defaultValue: false,
-        description: 'No op build (test the build config)'
-    )
 
   }
 
@@ -103,6 +60,7 @@ pipeline {
   environment {
       DEFAULT_BUILD_PROPERTIES = "${WORKSPACE}/resources/config/buildProperties.yaml"
       BUILD_DATA_ROOT_PATH = "${WORKSPACE}/resources/builders"
+      BUILD_DATA_FILE = jobNameBuildFile()
       RESOLVE_REPO_MIRROR = "${params.MAVEN_RESOLVE_REPO_URL}"
       LIB_CACHE_ROOT_PATH = "${WORKSPACE}/caches"
       BUILDS_ROOT_PATH = "${WORKSPACE}/builds"
