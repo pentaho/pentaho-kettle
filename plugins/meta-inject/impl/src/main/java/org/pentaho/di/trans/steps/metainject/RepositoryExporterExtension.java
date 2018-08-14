@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -36,7 +36,7 @@ import org.pentaho.di.repository.filerep.KettleFileRepository;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.StepMeta;
 
-@ExtensionPoint( 
+@ExtensionPoint(
     id = "RepositoryExporterPatchTransStep",
     description = "Patch the step in a transformation during repository export",
     extensionPointId = "RepositoryExporterPatchTransStep" )
@@ -71,7 +71,7 @@ public class RepositoryExporterExtension implements ExtensionPointInterface {
       }
     }
   }
-  
+
   private String calcRepositoryDirectory( KettleFileRepository fileRep, FileObject fileObject ) throws FileSystemException {
     String path = fileObject.getParent().getName().getPath();
     String baseDirectory = fileRep.getRepositoryMeta().getBaseDirectory();

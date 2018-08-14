@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -35,7 +35,7 @@ import org.pentaho.di.core.util.StringUtil;
 import org.pentaho.di.repository.RepositoryDirectoryInterface;
 import org.pentaho.di.trans.step.StepMeta;
 
-@ExtensionPoint( 
+@ExtensionPoint(
     id = "RepositoryImporterPatchTransStep",
     description = "Patch the step in a transformation during repository import",
     extensionPointId = "RepositoryImporterPatchTransStep" )
@@ -56,15 +56,14 @@ public class RepositoryImporterExtension implements ExtensionPointInterface {
       if ( metaInjectMeta.getSpecificationMethod() == ObjectLocationSpecificationMethod.REPOSITORY_BY_NAME ) {
         if ( transDirOverride != null ) {
           metaInjectMeta.setDirectoryPath( transDirOverride );
-        }
-        else {
+        } else {
           String mappingMetaPath = resolvePath( baseDirectory.getPath(), metaInjectMeta.getDirectoryPath(), needToCheckPathForVariables );
           metaInjectMeta.setDirectoryPath( mappingMetaPath );
         }
       }
-    } 
+    }
   }
-  
+
   String resolvePath( String rootPath, String entryPath, boolean check ) {
     boolean needToCheckPathForVariables = check;
     String extraPath = Const.NVL( entryPath, "/" );
@@ -83,7 +82,7 @@ public class RepositoryImporterExtension implements ExtensionPointInterface {
     }
     return newPath + extraPath;
   }
-  
+
   private static boolean containsVariables( String entryPath ) {
     List<String> variablesList = new ArrayList<String>();
     StringUtil.getUsedVariables( entryPath, variablesList, true );
