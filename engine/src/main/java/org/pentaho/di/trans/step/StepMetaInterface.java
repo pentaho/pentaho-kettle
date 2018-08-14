@@ -755,4 +755,17 @@ public interface StepMetaInterface {
   default boolean passDataToServletOutput() {
     return false;
   }
+
+  /**
+   * Allows for someone to fetch the related TransMeta object. Returns null if not found (or not implemented)
+   * @param stepMeta StepMetaInterface object
+   * @param rep Repository object
+   * @param metastore metastore object
+   * @param space VariableSpace
+   * @return the associated TransMeta object, or null if not found (or not implemented)
+   * @throws KettleException should something go wrong
+   */
+  default TransMeta fetchTransMeta( StepMetaInterface stepMeta, Repository rep, IMetaStore metastore, VariableSpace space ) throws KettleException {
+    return null; // default
+  }
 }

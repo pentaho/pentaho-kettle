@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -491,6 +491,13 @@ public class MetaInjectMeta extends BaseStepMeta implements StepMetaInterface, S
    */
   public void setSpecificationMethod( ObjectLocationSpecificationMethod specificationMethod ) {
     this.specificationMethod = specificationMethod;
+  }
+
+  @Override
+  public TransMeta fetchTransMeta( StepMetaInterface stepMeta, Repository rep, IMetaStore metastore, VariableSpace space ) throws KettleException {
+    return ( stepMeta != null && stepMeta instanceof MetaInjectMeta )
+        ? loadTransformationMeta( (MetaInjectMeta) stepMeta, rep, metastore, space ) : null;
+
   }
 
   @Deprecated
