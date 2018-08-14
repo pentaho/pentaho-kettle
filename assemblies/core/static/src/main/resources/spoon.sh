@@ -140,7 +140,7 @@ case `uname -s` in
             HASWEBKITGTK=`ldconfig -p | grep webkitgtk-1.0`
             export LIBWEBKITGTK="$HASWEBKITGTK"
             export JavaScriptCoreUseJIT=0
-            if [ -z "$HASWEBKITGTK" ]; then
+            if [ -z "$HASWEBKITGTK" ] && [ "1" != "$SKIP_WEBKITGTK_CHECK" ]; then
               echo "#######################################################################"
               echo "WARNING:  no libwebkitgtk-1.0 detected, some features will be unavailable"
               echo "    Consider installing the package with apt-get or yum."
