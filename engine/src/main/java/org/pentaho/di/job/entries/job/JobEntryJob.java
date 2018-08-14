@@ -1331,6 +1331,24 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
     }
   }
 
+  private JobMeta getJobMetaFromRepository( Repository rep, CurrentDirectoryResolver r, String transPath ) throws KettleException {
+    String realJobName = "";
+    String realDirectory = "/";
+
+    int index = transPath.lastIndexOf( RepositoryFile.SEPARATOR );
+    if ( index != -1 ) {
+      realJobName = transPath.substring( index + 1 );
+      realDirectory = index == 0 ? RepositoryFile.SEPARATOR : transPath.substring( 0, index );
+    }
+
+    realDirectory = r.normalizeSlashes( realDirectory );
+    RepositoryDirectoryInterface repositoryDirectory = rep.loadRepositoryDirectoryTree().findDirectory( realDirectory );
+    if ( repositoryDirectory == null ) {
+      throw new KettleException( "Unable to find repository directory [" + Const.NVL( realDirectory, "" ) + "]" );
+    }
+    return rep.loadJob( realJobName, repositoryDirectory, null, null ); // reads
+  }
+
   public JobMeta getJobMeta( Repository rep, IMetaStore metaStore, VariableSpace space ) throws KettleException {
     JobMeta jobMeta = null;
     try {
@@ -1340,7 +1358,13 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
       switch ( specificationMethod ) {
         case FILENAME:
           String realFilename = tmpSpace.environmentSubstitute( getFilename() );
-          jobMeta = new JobMeta( tmpSpace, realFilename, rep, metaStore, null );
+
+          try {
+            jobMeta = new JobMeta( tmpSpace, realFilename, rep, metaStore, null );
+          } catch ( KettleException e ) {
+            // try to load from repository, this job may have been developed locally and later uploaded to the repository
+            jobMeta = getJobMetaFromRepository( rep, r, realFilename );
+          }
           break;
         case REPOSITORY_BY_NAME:
           String realDirectory = tmpSpace.environmentSubstitute( getDirectory() != null ? getDirectory() : "" );
@@ -1354,18 +1378,7 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
             }
             jobMeta = new JobMeta( tmpSpace, transPath, rep, metaStore, null );
           } else {
-            int index = transPath.lastIndexOf( RepositoryFile.SEPARATOR );
-            if ( index != -1 ) {
-              realJobName = transPath.substring( index + 1 );
-              realDirectory = index == 0 ? RepositoryFile.SEPARATOR : transPath.substring( 0, index );
-            }
-
-            realDirectory = r.normalizeSlashes( realDirectory );
-            RepositoryDirectoryInterface repositoryDirectory = rep.loadRepositoryDirectoryTree().findDirectory( realDirectory );
-            if ( repositoryDirectory == null ) {
-              throw new KettleException( "Unable to find repository directory [" + Const.NVL( realDirectory, "" ) + "]" );
-            }
-            jobMeta = rep.loadJob( realJobName, repositoryDirectory, null, null ); // reads
+            jobMeta = getJobMetaFromRepository( rep, r, transPath );
           }
           break;
         case REPOSITORY_BY_REFERENCE:
