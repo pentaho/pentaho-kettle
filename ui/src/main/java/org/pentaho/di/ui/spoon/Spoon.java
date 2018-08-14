@@ -3625,11 +3625,17 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     transMeta.removeTransHop( index );
 
     StepMeta fromStepMeta = transHopMeta.getFromStep();
-    StepMeta before = (StepMeta) fromStepMeta.clone();
-    index = transMeta.indexOfStep( fromStepMeta );
+    StepMeta beforeFrom = (StepMeta) fromStepMeta.clone();
+    int indexFrom = transMeta.indexOfStep( fromStepMeta );
+
+    StepMeta toStepMeta = transHopMeta.getToStep();
+    StepMeta beforeTo = (StepMeta) toStepMeta.clone();
+    int indexTo = transMeta.indexOfStep( toStepMeta );
 
     boolean stepFromNeedAddUndoChange = fromStepMeta.getStepMetaInterface()
-      .cleanAfterHopFromRemove( transHopMeta.getToStep().getName() );
+      .cleanAfterHopFromRemove( transHopMeta.getToStep() );
+    boolean stepToNeedAddUndoChange = toStepMeta.getStepMetaInterface().cleanAfterHopToRemove( fromStepMeta );
+
     // If this is an error handling hop, disable it
     //
     if ( transHopMeta.getFromStep().isDoingErrorHandling() ) {
@@ -3646,8 +3652,13 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
         stepFromNeedAddUndoChange = true;
       }
     }
+
     if ( stepFromNeedAddUndoChange ) {
-      addUndoChange( transMeta, new Object[]{before}, new Object[]{fromStepMeta}, new int[]{index} );
+      addUndoChange( transMeta, new Object[] { beforeFrom }, new Object[] { fromStepMeta }, new int[] { indexFrom } );
+    }
+
+    if ( stepToNeedAddUndoChange ) {
+      addUndoChange( transMeta, new Object[] { beforeTo }, new Object[] { toStepMeta }, new int[] { indexTo } );
     }
 
     refreshTree();
