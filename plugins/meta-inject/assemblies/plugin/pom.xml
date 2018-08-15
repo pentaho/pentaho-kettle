@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <parent>
+    <artifactId>meta-inject-plugin-assemblies</artifactId>
+    <groupId>org.pentaho.di.plugins</groupId>
+    <version>9.0.0.0-SNAPSHOT</version>
+  </parent>
+  <modelVersion>4.0.0</modelVersion>
+
+  <artifactId>meta-inject-plugin</artifactId>
+  <packaging>pom</packaging>
+  <name>PDI Metadata Injection Plugin</name>
+
+  <dependencies>
+
+    <dependency>
+      <groupId>org.pentaho.di.plugins</groupId>
+      <artifactId>meta-inject-plugin-impl</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.pentaho.di.plugins</groupId>
+      <artifactId>meta-inject-plugin-ui</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+
+  </dependencies>
+
+  <build>
+    <plugins>
+      <plugin>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>add-libs</id>
+            <phase>generate-resources</phase>
+            <goals>
+              <goal>copy-dependencies</goal>
+            </goals>
+            <configuration>
+              <outputDirectory>${project.build.directory}/assembly/lib</outputDirectory>
+              <includeScope>compile</includeScope>
+              <excludeArtifactIds>meta-inject-plugin-impl,meta-inject-plugin-ui</excludeArtifactIds>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+
+</project>
