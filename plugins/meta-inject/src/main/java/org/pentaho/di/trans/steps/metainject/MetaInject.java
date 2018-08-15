@@ -65,6 +65,9 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
+
 /**
  * Read a simple CSV file Just output Strings found in the file...
  *
@@ -73,6 +76,9 @@ import java.util.Set;
  */
 public class MetaInject extends BaseStep implements StepInterface {
   private static Class<?> PKG = MetaInject.class; // for i18n purposes, needed by Translator2!!
+
+  //Added for PDI-17530
+  private static final Lock repoSaveLock = new ReentrantLock();
 
   private MetaInjectMeta meta;
   private MetaInjectData data;
@@ -278,39 +284,46 @@ public class MetaInject extends BaseStep implements StepInterface {
    */
   private void writeInjectedKtrToRepo( final String targetFilePath ) throws KettleException {
 
-    // clone the transMeta associated with the data, this is the generated meta injection transformation
-    final TransMeta generatedTrans = (TransMeta) data.transMeta.clone();
-    // the targetFilePath holds the absolute repo path that is the requested destination of this generated
-    // transformation, extract the file name (no extension) and the containing directory and adjust the generated
-    // transformation properties accordingly
-    List<String> targetPath = new ArrayList( Arrays.asList( Const.splitPath( targetFilePath,
-      RepositoryDirectory.DIRECTORY_SEPARATOR  ) ) );
-    final String fileName = targetPath.get( targetPath.size() - 1 ).replace( ".ktr", "" );
-    generatedTrans.setName( fileName );
-    // remove the last targetPath element, so we're left with the target directory path
-    targetPath.remove( targetPath.size() - 1 );
-    if ( targetPath.size() > 0 ) {
-      final String dirPath = String.join( RepositoryDirectory.DIRECTORY_SEPARATOR, targetPath );
-      RepositoryDirectoryInterface directory = getRepository().findDirectory( dirPath );
-      // if the directory does not exist, try to create it
-      if ( directory == null ) {
-        directory = getRepository().createRepositoryDirectory( new RepositoryDirectory( null, "/" ), dirPath );
+    try {
+      repoSaveLock.lock();
+
+      // clone the transMeta associated with the data, this is the generated meta injection transformation
+      final TransMeta generatedTrans = (TransMeta) data.transMeta.clone();
+      // the targetFilePath holds the absolute repo path that is the requested destination of this generated
+      // transformation, extract the file name (no extension) and the containing directory and adjust the generated
+      // transformation properties accordingly
+      List<String> targetPath = new ArrayList( Arrays.asList( Const.splitPath( targetFilePath,
+        RepositoryDirectory.DIRECTORY_SEPARATOR  ) ) );
+      final String fileName = targetPath.get( targetPath.size() - 1 ).replace( ".ktr", "" );
+      generatedTrans.setName( fileName );
+      // remove the last targetPath element, so we're left with the target directory path
+      targetPath.remove( targetPath.size() - 1 );
+      if ( targetPath.size() > 0 ) {
+        final String dirPath = String.join( RepositoryDirectory.DIRECTORY_SEPARATOR, targetPath );
+        RepositoryDirectoryInterface directory = getRepository().findDirectory( dirPath );
+        // if the directory does not exist, try to create it
+        if ( directory == null ) {
+          directory = getRepository().createRepositoryDirectory( new RepositoryDirectory( null, "/" ), dirPath );
+        }
+        generatedTrans.setRepositoryDirectory( directory );
+      } else {
+        // if the directory is null, set it to the directory of the cloned template ktr
+        if ( log.isDebug() ) {
+          log.logDebug( "The target injection ktr file path provided by the user is not a valid fully qualified "
+            + "repository path - will store the generated ktr in the same directory as the template ktr: ",
+            data.transMeta.getRepositoryDirectory() );
+        }
+        generatedTrans.setRepositoryDirectory( data.transMeta.getRepositoryDirectory() );
       }
-      generatedTrans.setRepositoryDirectory( directory );
-    } else {
-      // if the directory is null, set it to the directory of the cloned template ktr
-      if ( log.isDebug() ) {
-        log.logDebug( "The target injection ktr file path provided by the user is not a valid fully qualified "
-          + "repository path - will store the generated ktr in the same directory as the template ktr: ",
-          data.transMeta.getRepositoryDirectory() );
-      }
-      generatedTrans.setRepositoryDirectory( data.transMeta.getRepositoryDirectory() );
+      // set the objectId, in case the injected transformation already exists in the repo, so that is is updated in
+      // the repository - the objectId will remain null, if the transformation is begin generated for the first time,
+      // in which a new ktr will be created in the repo
+      generatedTrans.setObjectId( getRepository().getTransformationID( fileName, generatedTrans.getRepositoryDirectory() ) );
+      getRepository().save( generatedTrans, null, null, true );
+
+    } finally {
+      repoSaveLock.unlock();
     }
-    // set the objectId, in case the injected transformation already exists in the repo, so that is is updated in
-    // the repository - the objectId will remain null, if the transformation is begin generated for the first time,
-    // in which a new ktr will be created in the repo
-    generatedTrans.setObjectId( getRepository().getTransformationID( fileName, generatedTrans.getRepositoryDirectory() ) );
-    getRepository().save( generatedTrans, null, null, true );
   }
 
   /**
