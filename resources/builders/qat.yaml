@@ -840,3 +840,70 @@ jobGroups:
        archivable      :  true
        artifactsArchivePattern: ${INSTALLER_ARTIFACTS_PATTERN_LINUX}
        testable        :  false
+
+ # Uncomment these post harvester jobs when haverster job is implemented and added here.
+ # 
+ # 4900:
+ #
+ #    - jobID                 :  cm-build-order-trigger
+ #      targetJobName         :  pentaho/cm-build-order-trigger
+ #      buildFramework        :  JENKINS_JOB
+ #      testable              :  false
+ #      asynchronous          :  false
+ #      passOnBuildParameters :  true
+ #      properties            :
+ #        JENKINS_FOLDER_NAME           : "9.0"
+ #        BUILD_ARCHIVE_ROOT            : "/build2/artifacts/builds/${MASTER_NAME}"
+ #
+ #    - jobID                 :  github-commits
+ #      targetJobName         :  engops/github-commits
+ #      buildFramework        :  JENKINS_JOB
+ #      testable              :  false
+ #      asynchronous          :  false
+ #      passOnBuildParameters :  true
+ #      properties            :
+ #        SUITE_BUILD_RESOURCES_BRANCH  : "${RELEASE_VERSION}"
+ #        RELEASE_BUILD_NUMBER          : "${BUILD_NUMBER}"
+ #
+ #    - jobID                 :  remote-ip-job-trigger
+ #      targetJobName         :  pentaho/remote-ip-job-trigger
+ #      buildFramework        :  JENKINS_JOB
+ #      testable              :  false
+ #      asynchronous          :  false
+ #      passOnBuildParameters :  true
+ #      properties            :
+ #        BUILD_HOSTING_ROOT	           : "/build2/artifacts/builds/${MASTER_NAME}"
+ #        RELEASE_BUILD_NUMBER          : "${BUILD_NUMBER}"
+ #        SUITE_BUILD_RESOURCES_BRANCH  : "${RELEASE_VERSION}"
+ #
+ #    - jobID                 :  regression-smoketest-job-trigger
+ #      targetJobName         :  pentaho/regression-smoketest-job-trigger
+ #      buildFramework        :  JENKINS_JOB
+ #      testable              :  false
+ #      asynchronous          :  false
+ #      passOnBuildParameters :  true
+ #      properties            :
+ #        RELEASE_BUILD_NUMBER          : "${BUILD_NUMBER}"
+ #        SUITE_BUILD_RESOURCES_BRANCH  : "${RELEASE_VERSION}"
+ #        RELEASE_BUILD_ID              : "${BUILD_TIMESTAMP}"
+ #
+ #    - jobID                 :  snapshot-checker
+ #      targetJobName         :  pentaho/snapshot-checker
+ #      buildFramework        :  JENKINS_JOB
+ #      testable              :  false
+ #      asynchronous          :  false
+ #      passOnBuildParameters :  true
+ #      properties            :
+ #        BUILD_HOSTING_ROOT	   : "/build2/artifacts/builds/${MASTER_NAME}"
+ #        RELEASE_BUILD_NUMBER  : "${BUILD_NUMBER}"
+ #
+ #    - jobID                 :  obfuscation-verifier
+ #      targetJobName         :  pentaho/obfuscation-verifier
+ #      buildFramework        :  JENKINS_JOB
+ #      testable              :  false
+ #      asynchronous          :  true
+ #      passOnBuildParameters :  true
+ #      properties            :
+ #        BUILD_HOSTING_ROOT	           : "/build2/artifacts/builds/${MASTER_NAME}"
+ #        RELEASE_BUILD_NUMBER          : "${BUILD_NUMBER}"
+ #        SUITE_BUILD_RESOURCES_BRANCH  : "${RELEASE_VERSION}"
