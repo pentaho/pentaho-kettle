@@ -115,6 +115,7 @@ public enum KettleExtensionPoint {
     SpoonTreeDelegateExtension( "SpoonTreeDelegateExtension", "During the SpoonTreeDelegate execution" ),
     SpoonOpenSaveRepository( "SpoonOpenSaveRepository", "Open the repository browser" ),
     SpoonBrowserFunction( "SpoonBrowserFunction", "Generic browser function handler" ),
+    GetFieldsExtension( "GetFieldsExtension", "Get Fields dialog" ),
 
     RepositoryImporterPatchTransStep( "RepositoryImporterPatchTransStep", "Patch the step in a transformation during repository import" ),
     RepositoryExporterPatchTransStep( "RepositoryExporterPatchTransStep", "Patch the step in a transformation during repository export" ),

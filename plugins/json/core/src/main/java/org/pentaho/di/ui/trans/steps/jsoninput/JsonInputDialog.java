@@ -50,6 +50,8 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.extension.ExtensionPointHandler;
+import org.pentaho.di.core.extension.KettleExtensionPoint;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.Props;
 import org.pentaho.di.core.exception.KettleException;
@@ -65,6 +67,7 @@ import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDialogInterface;
 import org.pentaho.di.trans.steps.jsoninput.JsonInputField;
 import org.pentaho.di.trans.steps.jsoninput.JsonInputMeta;
+import org.pentaho.di.ui.core.GetFieldsDialogOperation;
 import org.pentaho.di.ui.core.dialog.EnterNumberDialog;
 import org.pentaho.di.ui.core.dialog.EnterSelectionDialog;
 import org.pentaho.di.ui.core.dialog.EnterTextDialog;
@@ -1473,7 +1476,14 @@ public class JsonInputDialog extends BaseStepDialog implements StepDialogInterfa
   }
 
   private void get() {
-    // TODO: add call to new dialog
+    try {
+      // Call new get fields dialog
+      GetFieldsDialogOperation getFieldsDialogOperation = new GetFieldsDialogOperation( shell, stepMeta, 450, 588 );
+      ExtensionPointHandler.callExtensionPoint( null, KettleExtensionPoint.GetFieldsExtension.id,
+        getFieldsDialogOperation );
+    } catch ( Exception e ) {
+      log.logError( e.getMessage() );
+    }
   }
 
   // Preview the data

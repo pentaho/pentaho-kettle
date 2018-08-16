@@ -45,6 +45,7 @@
       <modules>
         <module>core</module>
         <module>file-open-save</module>
+        <module>get-fields</module>
         <module>repositories</module>
         <module>meta-inject</module>
         <module>engine-configuration</module>
