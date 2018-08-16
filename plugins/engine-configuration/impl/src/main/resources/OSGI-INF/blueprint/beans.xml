@@ -35,7 +35,11 @@
 
   <bean id="runConfigurationManager" scope="singleton"
         class="org.pentaho.di.engine.configuration.impl.RunConfigurationManager">
-    <argument ref="runConfigurationProviders"/>
+    <argument>
+        <list>
+            <ref component-id="sparkRunConfigurationProvider"/>
+        </list>
+    </argument>
     <property name="defaultRunConfigurationProvider" ref="defaultRunConfigurationProvider"/>
   </bean>
 
