@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -27,6 +27,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.IntStream;
 
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.MessageDialogWithToggle;
@@ -70,6 +71,7 @@ public class GroupByDialog extends BaseStepDialog implements StepDialogInterface
   private static Class<?> PKG = GroupByMeta.class; // for i18n purposes, needed by Translator2!!
 
   public static final String STRING_SORT_WARNING_PARAMETER = "GroupSortWarning";
+  private static final int AGGREGATION_TABLE_TYPE_INDEX = 3;
 
   private Label wlGroup;
 
@@ -407,6 +409,12 @@ public class GroupByDialog extends BaseStepDialog implements StepDialogInterface
         transMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL, ciReturn,
         UpInsRows, lsMod, props );
 
+    wAgg.addModifyListener( modifyEvent -> {
+      updateAllRowsCheckbox( wAgg, wAllRows );
+      setFlags();
+      input.setChanged();
+    } );
+
     wGetAgg = new Button( shell, SWT.PUSH );
     wGetAgg.setText( BaseMessages.getString( PKG, "GroupByDialog.GetLookupFields.Button" ) );
     fdGetAgg = new FormData();
@@ -591,6 +599,7 @@ public class GroupByDialog extends BaseStepDialog implements StepDialogInterface
     wAgg.optWidth( true );
 
     setFlags();
+    updateAllRowsCheckbox( wAgg, wAllRows );
 
     wStepname.selectAll();
     wStepname.setFocus();
@@ -615,6 +624,7 @@ public class GroupByDialog extends BaseStepDialog implements StepDialogInterface
 
     input.setLineNrInGroupField( wLineNrField.getText() );
     input.setAlwaysGivingBackOneRow( wAlwaysAddResult.getSelection() );
+    input.setPassAllRows( wAllRows.getSelection() );
 
     input.allocate( sizegroup, nrfields );
 
@@ -677,6 +687,25 @@ public class GroupByDialog extends BaseStepDialog implements StepDialogInterface
       new ErrorDialog(
         shell, BaseMessages.getString( PKG, "GroupByDialog.FailedToGetFields.DialogTitle" ), BaseMessages
           .getString( PKG, "GroupByDialog.FailedToGetFields.DialogMessage" ), ke );
+    }
+  }
+
+  /**
+   * Method to update on-the-fly "Include All Rows" checkbox whether "Cumulative sum" or "Cumulative average" values are configured in the Aggregation table.
+   *
+   * @param aggregationTable the aggregation table to check the entries
+   * @param allRowsButton the checkbox to update
+   */
+  void updateAllRowsCheckbox( TableView aggregationTable, Button allRowsButton ) {
+
+    boolean isCumulativeSelected = IntStream.range( 0, aggregationTable.nrNonEmpty() )
+            .map( row -> GroupByMeta.getType( aggregationTable.getNonEmpty( row ).getText( AGGREGATION_TABLE_TYPE_INDEX ) ) )
+            .anyMatch( pred -> pred == GroupByMeta.TYPE_GROUP_CUMULATIVE_SUM || pred == GroupByMeta.TYPE_GROUP_CUMULATIVE_AVERAGE );
+
+    allRowsButton.setEnabled( !isCumulativeSelected );
+
+    if ( isCumulativeSelected ) {
+      allRowsButton.setSelection( true );
     }
   }
 }
