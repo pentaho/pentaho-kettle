@@ -35,7 +35,6 @@
     <pentaho-googledrive-vfs-plugin.version>${project.version}</pentaho-googledrive-vfs-plugin.version>
     <google-bigquery-plugin.version>${project.version}</google-bigquery-plugin.version>
     <elasticsearch-bulk-insert-plugin.version>${project.version}</elasticsearch-bulk-insert-plugin.version>
-    <meta-inject-plugin.version>${project.version}</meta-inject-plugin.version>
     <pdi-xml-plugin.version>9.0.0.0-SNAPSHOT</pdi-xml-plugin.version>
     <pdi-json-plugin.version>9.0.0.0-SNAPSHOT</pdi-json-plugin.version>
     <pdi-sap-plugin.version>9.0.0.0-SNAPSHOT</pdi-sap-plugin.version>
@@ -376,18 +375,6 @@
       <groupId>org.pentaho.di.plugins</groupId>
       <artifactId>pdi-pur-plugin</artifactId>
       <version>${pdi-pur-plugin.version}</version>
-      <type>zip</type>
-      <exclusions>
-        <exclusion>
-          <groupId>*</groupId>
-          <artifactId>*</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-    <dependency>
-      <groupId>org.pentaho.di.plugins</groupId>
-      <artifactId>meta-inject-plugin</artifactId>
-      <version>${meta-inject-plugin.version}</version>
       <type>zip</type>
       <exclusions>
         <exclusion>
