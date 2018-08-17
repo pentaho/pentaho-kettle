@@ -80,7 +80,7 @@ public final class MQTTClientBuilder {
 
   private String broker;
   private List<String> topics;
-  private String qos = "0";
+  private String qos = "1"; // 1 is the default value per Eclipse Paho docs
   private boolean isSecure;
   private String username;
   private String password;
