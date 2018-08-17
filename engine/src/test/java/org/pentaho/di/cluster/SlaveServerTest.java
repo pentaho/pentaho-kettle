@@ -23,11 +23,13 @@
 package org.pentaho.di.cluster;
 
 import org.apache.http.HttpEntity;
+import org.apache.http.HttpHost;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.StatusLine;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.Credentials;
+import org.apache.http.client.AuthCache;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
@@ -58,6 +60,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.mockito.Matchers.any;
@@ -226,6 +230,32 @@ public class SlaveServerTest {
     auth = slaveServer.getAuthContext();
     cred = auth.getCredentialsProvider().getCredentials( new AuthScope( host, port ) );
     assertEquals( user2, cred.getUserPrincipal().getName() );
+  }
+
+  @Test
+  public void testAuthCredentialsSchemeWithSSL() {
+    slaveServer.setUsername( "admin" );
+    slaveServer.setPassword( "password" );
+    slaveServer.setHostname( "localhost" );
+    slaveServer.setPort( "8443" );
+    slaveServer.setSslMode( true );
+
+    AuthCache cache = slaveServer.getAuthContext().getAuthCache();
+    assertNotNull( cache.get( new HttpHost( "localhost", 8443, "https" ) ) );
+    assertNull( cache.get( new HttpHost( "localhost", 8443, "http" ) ) );
+  }
+
+  @Test
+  public void testAuthCredentialsSchemeWithoutSSL() {
+    slaveServer.setUsername( "admin" );
+    slaveServer.setPassword( "password" );
+    slaveServer.setHostname( "localhost" );
+    slaveServer.setPort( "8080" );
+    slaveServer.setSslMode( false );
+
+    AuthCache cache = slaveServer.getAuthContext().getAuthCache();
+    assertNull( cache.get( new HttpHost( "localhost", 8080, "https" ) ) );
+    assertNotNull( cache.get( new HttpHost( "localhost", 8080, "http" ) ) );
   }
 
   @Test

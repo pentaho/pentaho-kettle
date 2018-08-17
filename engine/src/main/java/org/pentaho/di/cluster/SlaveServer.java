@@ -750,7 +750,7 @@ public class SlaveServer extends ChangedFlag implements Cloneable, SharedObjectI
     provider.setCredentials( new AuthScope( host, port ), credentials );
     context.setCredentialsProvider( provider );
     // Generate BASIC scheme object and add it to the local auth cache
-    HttpHost target = new HttpHost( host, port, "http" );
+    HttpHost target = new HttpHost( host, port, isSslMode() ? HTTPS : HTTP );
     AuthCache authCache = new BasicAuthCache();
     BasicScheme basicAuth = new BasicScheme();
     authCache.put( target, basicAuth );
