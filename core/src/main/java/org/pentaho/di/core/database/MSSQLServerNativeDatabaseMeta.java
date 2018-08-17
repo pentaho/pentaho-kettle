@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -42,7 +42,7 @@ public class MSSQLServerNativeDatabaseMeta extends MSSQLServerDatabaseMeta {
     if ( getAccessType() == DatabaseMeta.TYPE_ACCESS_ODBC ) {
       return "jdbc:odbc:" + databaseName;
     } else {
-      String useIntegratedSecurity = null;
+      String useIntegratedSecurity = "false";
       Object value = getAttributes().get( ATTRIBUTE_USE_INTEGRATED_SECURITY );
       if ( value != null && value instanceof String ) {
         useIntegratedSecurity = (String) value;
