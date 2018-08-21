@@ -22,8 +22,6 @@
 
 package org.pentaho.di.www;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -253,74 +251,78 @@ public class GetStatusServlet extends BaseHttpServlet implements CartePluginInte
       if ( usePentahoTheme ) {
         try {
           // Read in currently set theme from pentaho.xml file
-          File f = new File( "..\\..\\pentaho-solutions\\system\\pentaho.xml" );
+          String themeSetting = ".." + File.separator + ".." + File.separator
+              + "pentaho-solutions" + File.separator + "system" + File.separator + "pentaho.xml";
+          File f = new File( themeSetting );
           DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
           DocumentBuilder db = dbFactory.newDocumentBuilder();
           Document doc = db.parse( f );
           String themeName = doc.getElementsByTagName( "default-theme" ).item( 0 ).getTextContent();
 
           // Get theme CSS file
-          String themePath = "..\\..\\pentaho-solutions\\system\\common-ui\\resources\\themes\\" + themeName + "\\";
-          File themeDir = new File( themePath );
+          String themeCss = ".." + File.separator + ".." + File.separator
+              + "pentaho-solutions" + File.separator + "system" + File.separator
+              + "common-ui" + File.separator + "resources" + File.separator
+              + "themes" + File.separator + themeName + File.separator;
+          File themeDir = new File( themeCss );
           for ( File fName : themeDir.listFiles() ) {
             if ( fName.getName().contains( ".css" ) ) {
-              themePath += fName.getName();
+              themeCss = fName.getName();
               break;
             }
           }
 
           // Get mantle theme CSS file
-          String mantlePath = "..\\webapps\\pentaho\\mantle\\themes\\" + themeName + "\\";
-          File mantleDir = new File( mantlePath );
-          for ( File fName : mantleDir.listFiles() ) {
+          String mantleThemeCss = ".." + File.separator + "webapps" + File.separator
+              + "pentaho" + File.separator + "mantle" + File.separator
+              + "themes" + File.separator + themeName + File.separator;
+          File mantleThemeDir = new File( mantleThemeCss );
+          for ( File fName : mantleThemeDir.listFiles() ) {
             if ( fName.getName().contains( ".css" ) ) {
-              mantlePath += fName.getName();
+              mantleThemeCss = fName.getName();
               break;
             }
           }
 
-          BufferedReader styleBr = new BufferedReader( new FileReader( themePath ) ); // themePath with appended CSS filename
-          StringBuilder sb = new StringBuilder();
-
-          // Start to read in CSS and write HTML
-          out.println( "<STYLE>" );
-
-          String line = styleBr.readLine();
-          while ( line != null ) {
-            sb.append( line );
-            line = styleBr.readLine();
-          }
-
-          out.println( sb.toString() );
-          out.println( "</STYLE>" );
-          out.println( "<STYLE>" );
-
-          BufferedReader mantleBr = new BufferedReader( new FileReader( mantlePath ) );
-          sb.delete( 0, sb.length() ); // clear builder
-          line = mantleBr.readLine();
-          while ( line != null ) {
-            sb.append( line );
-            line = mantleBr.readLine();
-          }
-
-          styleBr.close();
-          out.println( sb.toString() );
-          out.println( "</STYLE>" );
+          out.println( "<link rel=\"stylesheet\" type=\"text/css\" href=\"/pentaho/content/common-ui/resources/themes/" + themeName + "/" + themeCss + "\"/>" );
+          out.println( "<link rel=\"stylesheet\" type=\"text/css\" href=\"/pentaho/mantle/themes/" + themeName + "/" + mantleThemeCss + "\"/>" );
+          out.println( "<link rel=\"stylesheet\" type=\"text/css\" href=\"/pentaho/mantle/MantleStyle.css\"/>" );
           tableBorder = 0;
         } catch ( Exception ex ) {
+          usePentahoTheme = false;
           // log here
         }
       }
 
       out.println( "</HEAD>" );
-      out.println( "<BODY class=\"pentaho-page-background\">" );
+      out.println( "<BODY class=\"pentaho-page-background dragdrop-dropTarget dragdrop-boundary\">" );
+
+      // Empty div for containing currently selected item
+      out.println( "<div id=\"selectedTableItem\">" );
+      out.println( "<value></value>" ); //initialize to none
+      out.println( "</div>" );
+
       out.println( "<div class=\"row\" id=\"pucHeader\">" );
-      out.println( "<h1>" + BaseMessages.getString( PKG, "GetStatusServlet.TopStatus" ) + "</h1>" );
+
+      String htmlClass = usePentahoTheme ? "div" : "h1";
+      out.println( "<" + htmlClass + " class=\"workspaceHeading\">" + BaseMessages.getString( PKG, "GetStatusServlet.TopStatus" ) + "</" + htmlClass + ">" );
       out.println( "</div>" );
 
       try {
+        out.println( "<br>" );
+        out.println( "<div class=\"row\" style=\"padding: 0px 0px 0px 20px\">" );
+        htmlClass = usePentahoTheme ? "div" : "h2";
         out.println( "<div class=\"row\">" );
-        out.println( "<h2>Transformations</h2>" );
+        out.println( "<" + htmlClass + " class=\"workspaceHeading\" style=\"padding: 0px 0px 0px 0px;\">Transformations</" + htmlClass + ">" );
+        out.println( "<table cellspacing=\"0\" cellpadding=\"0\"><tbody><tr><td align=\"left\" width=\"100%\" style=\"vertical-align:middle;\">" );
+        out.println( "<table cellspacing=\"0\" cellpadding=\"0\" class=\"toolbar\" style=\"width: 100%; height: 26px; margin-bottom: 5px; border: 0;\">" );
+        out.println( "<tbody><tr>" );
+        out.println( "<td align=\"left\" style=\"vertical-align: middle; width: 100%\"></td>" );
+        out.println( "<td onMouseEnter=\"document.getElementById( 'pause' ).className='toolbar-button toolbar-button-hovering'\" onMouseLeave=\"document.getElementById( 'pause' ).className='toolbar-button'\" align=\"left\" style=\"vertical-align: middle;\"><div class=\"toolbar-button\" id=\"pause\"><a href=\"#\" style=\"\"><img style=\"width: 22px; height: 22px\" src=\"/pentaho/content/common-ui/resources/themes/" + "ruby" + "/images/run.svg\"/></a></div></td>" );
+        out.println( "<td onMouseEnter=\"document.getElementById( 'stop' ).className='toolbar-button toolbar-button-hovering'\" onMouseLeave=\"document.getElementById( 'stop' ).className='toolbar-button'\" align=\"left\" style=\"vertical-align: middle;\"><div class=\"toolbar-button\" id=\"stop\"><a href=\"#\" style=\"\"><img style=\"width: 22px; height: 22px\"src=\"/pentaho/content/common-ui/resources/themes/" + "ruby" + "/images/stop.svg\"/></a></div></td>" );
+        out.println( "<td onMouseEnter=\"document.getElementById( 'view' ).className='toolbar-button toolbar-button-hovering'\" onMouseLeave=\"document.getElementById( 'view' ).className='toolbar-button'\" align=\"left\" style=\"vertical-align: middle;\"><div class=\"toolbar-button\" id=\"view\"><a href=\"#\" style=\"\"><img style=\"width: 22px; height: 22px\" src=\"/pentaho/content/common-ui/resources/themes/" + "ruby" + "/images/view.svg\"/></a></div></td>" );
+        out.println( "<td onMouseEnter=\"document.getElementById( 'close' ).className='toolbar-button toolbar-button-hovering'\" onMouseLeave=\"document.getElementById( 'close' ).className='toolbar-button'\" align=\"left\" style=\"vertical-align: middle;\"><div class=\"toolbar-button\" id=\"close\"><a href=\"#\" style=\"\"><img style=\"width: 22px; height: 22px\" src=\"/pentaho/content/common-ui/resources/themes/" + "ruby" + "/images/close.svg\"/></a></div></td>" );
+        out.println( "</tr></tbody></table>" );
         out.println( "<table class=\"pentaho-table\" border=\"" + tableBorder + "\">" );
         out.print( "<tr> <th class=\"cellTableHeader\">"
             + BaseMessages.getString( PKG, "GetStatusServlet.TransName" ) + "</th> <th class=\"cellTableHeader\">"
@@ -370,23 +372,50 @@ public class GetStatusServlet extends BaseHttpServlet implements CartePluginInte
           evenRow = !evenRow; // flip
           String firstColumn = i == 0 ? "cellTableFirstColumn" : "";
           String lastColumn = i == transEntries.size() - 1 ? "cellTableLastColumn" : "";
-          out.print( "<tr class=\"cellTableCell " + trClass + "\">" );
-          out.print( "<td class=\"cellTableCell cellTableFirstColumn " + tdClass + "\"><a href=\""
+          out.print( "<tr onMouseEnter=\"mouseEnterFunction( this, '" + trClass + "' )\" "
+              + "onMouseLeave=\"mouseLeaveFunction( this, '" + trClass + "' )\" "
+              + "onClick=\"clickFunction( this, '" + trClass + "' )\" "
+              + "id=\"cellTableRow" + i + "\" class=\"" + trClass + "\">" );
+          out.print( "<td onMouseEnter=\"mouseEnterFunction( this, '" + tdClass + "' )\" "
+              + "onMouseLeave=\"mouseLeaveFunction( this, '" + tdClass + "' )\" "
+              + "onClick=\"clickFunction( this, '" + tdClass + "' )\" "
+              + "id=\"cellTableFirstCell" + i + "\" class=\"cellTableCell cellTableFirstColumn " + tdClass + "\"><a href=\""
               + convertContextPath( GetTransStatusServlet.CONTEXT_PATH ) + "?name="
               + URLEncoder.encode( name, "UTF-8" ) + "&id=" + id + "\">" + name + "</a></td>" );
-          out.print( "<td class=\"cellTableCell " + tdClass + "\">" + id + "</td>" );
-          out.print( "<td class=\"cellTableCell " + tdClass + "\">" + status + "</td>" );
-          out.print( "<td class=\"cellTableCell " + tdClass + "\">"
+          out.print( "<td onMouseEnter=\"mouseEnterFunction( this, '" + tdClass + "' )\" "
+              + "onMouseLeave=\"mouseLeaveFunction( this, '" + tdClass + "' )\" "
+              + "onClick=\"clickFunction( this, '" + tdClass + "' )\" "
+              + "id=\"cellTableCell" + i + "\" class=\"cellTableCell " + tdClass + "\">" + id + "</td>" );
+          out.print( "<td onMouseEnter=\"mouseEnterFunction( this, '" + tdClass + "' )\" "
+              + "onMouseLeave=\"mouseLeaveFunction( this, '" + tdClass + "' )\" "
+              + "onClick=\"clickFunction( this, '" + tdClass + "' )\" "
+              + "id=\"cellTableCell" + i + "\" class=\"cellTableCell " + tdClass + "\">" + status + "</td>" );
+          out.print( "<td onMouseEnter=\"mouseEnterFunction( this, '" + tdClass + "' )\" "
+              + "onMouseLeave=\"mouseLeaveFunction( this, '" + tdClass + "' )\" "
+              + "onClick=\"clickFunction( this, '" + tdClass + "' )\" "
+              + "id=\"cellTableCell" + i + "\" class=\"cellTableCell " + tdClass + "\">"
               + ( trans.getLogDate() == null ? "-" : XMLHandler.date2string( trans.getLogDate() ) ) + "</td>" );
-          out.print( "<td class=\"cellTableCell cellTableLastColumn " + tdClass + "\">" + removeText + "</td>" );
+          out.print( "<td onMouseEnter=\"mouseEnterFunction( this, '" + tdClass + "' )\" "
+              + "onMouseLeave=\"mouseLeaveFunction( this, '" + tdClass + "' )\" "
+              + "onClick=\"clickFunction( this, '" + tdClass + "' )\" "
+              + "id=\"cellTableLastCell" + i + "\" class=\"cellTableCell cellTableLastColumn " + tdClass + "\">" + removeText + "</td>" );
           out.print( "</tr>" );
         }
-        out.print( "</table>" );
+        out.print( "</table></table>" );
         out.print( "</div>" ); // end div
         out.print( "<br>" );
 
         out.println( "<div class=\"row\">" );
-        out.println( "<h2>Jobs</h2>" );
+        out.println( "<" + htmlClass + " class=\"workspaceHeading\" style=\"padding: 0px 0px 0px 0px;\">Jobs</" + htmlClass + ">" );
+        out.println( "<table cellspacing=\"0\" cellpadding=\"0\"><tbody><tr><td align=\"left\" width=\"100%\" style=\"vertical-align:middle;\">" );
+        out.println( "<table cellspacing=\"0\" cellpadding=\"0\" class=\"toolbar\" style=\"width: 100%; height: 26px; margin-bottom: 5px; border: 0;\">" );
+        out.println( "<tbody><tr>" );
+        out.println( "<td align=\"left\" style=\"vertical-align: middle; width: 100%\"></td>" );
+        out.println( "<td onMouseEnter=\"document.getElementById( 'j-pause' ).className='toolbar-button toolbar-button-hovering'\" onMouseLeave=\"document.getElementById( 'j-pause' ).className='toolbar-button'\" align=\"left\" style=\"vertical-align: middle;\"><div class=\"toolbar-button\" id=\"j-pause\"><a href=\"#\" style=\"\"><img style=\"width: 22px; height: 22px\" src=\"/pentaho/content/common-ui/resources/themes/" + "ruby" + "/images/run.svg\"/></a></div></td>" );
+        out.println( "<td onMouseEnter=\"document.getElementById( 'j-stop' ).className='toolbar-button toolbar-button-hovering'\" onMouseLeave=\"document.getElementById( 'j-stop' ).className='toolbar-button'\" align=\"left\" style=\"vertical-align: middle;\"><div class=\"toolbar-button\" id=\"j-stop\"><a href=\"#\" style=\"\"><img style=\"width: 22px; height: 22px\"src=\"/pentaho/content/common-ui/resources/themes/" + "ruby" + "/images/stop.svg\"/></a></div></td>" );
+        out.println( "<td onMouseEnter=\"document.getElementById( 'j-view' ).className='toolbar-button toolbar-button-hovering'\" onMouseLeave=\"document.getElementById( 'j-view' ).className='toolbar-button'\" align=\"left\" style=\"vertical-align: middle;\"><div class=\"toolbar-button\" id=\"j-view\"><a href=\"#\" style=\"\"><img style=\"width: 22px; height: 22px\" src=\"/pentaho/content/common-ui/resources/themes/" + "ruby" + "/images/view.svg\"/></a></div></td>" );
+        out.println( "<td onMouseEnter=\"document.getElementById( 'j-close' ).className='toolbar-button toolbar-button-hovering'\" onMouseLeave=\"document.getElementById( 'j-close' ).className='toolbar-button'\" align=\"left\" style=\"vertical-align: middle;\"><div class=\"toolbar-button\" id=\"j-close\"><a href=\"#\" style=\"\"><img style=\"width: 22px; height: 22px\" src=\"/pentaho/content/common-ui/resources/themes/" + "ruby" + "/images/close.svg\"/></a></div></td>" );
+        out.println( "</tr></tbody></table>" );
         out.println( "<table class=\"pentaho-table\" border=\"" + tableBorder + "\">" );
         out.print( "<tr> <th class=\"cellTableHeader\">"
             + BaseMessages.getString( PKG, "GetStatusServlet.JobName" ) + "</th> <th class=\"cellTableHeader\">"
@@ -435,18 +464,37 @@ public class GetStatusServlet extends BaseHttpServlet implements CartePluginInte
           String trClass = evenRow ? "cellTableEvenRow" : "cellTableOddRow"; // alternating row color
           String tdClass = evenRow ? "cellTableEvenRowCell" : "cellTableOddRowCell";
           evenRow = !evenRow; // flip
-          out.print( "<tr class=\"cellTableCell " + trClass + "\">" );
-          out.print( "<td class=\"cellTableCell cellTableFirstColumn " + tdClass + "\"><a href=\""
+          out.print( "<tr onMouseEnter=\"mouseEnterFunction( this, '" + trClass + "' )\" "
+              + "onMouseLeave=\"mouseLeaveFunction( this, '" + trClass + "' )\" "
+              + "onClick=\"clickFunction( this, '" + trClass + "' )\" "
+              + "id=\"j-cellTableRow" + i + "\" class=\"cellTableCell " + trClass + "\">" );
+          out.print( "<td onMouseEnter=\"mouseEnterFunction( this, '" + tdClass + "' )\" "
+              + "onMouseLeave=\"mouseLeaveFunction( this, '" + tdClass + "' )\" "
+              + "onClick=\"clickFunction( this, '" + tdClass + "' )\" "
+              + "id=\"j-cellTableFirstCell" + i + "\" class=\"cellTableCell cellTableFirstColumn " + tdClass + "\"><a href=\""
               + convertContextPath( GetJobStatusServlet.CONTEXT_PATH ) + "?name="
               + URLEncoder.encode( name, "UTF-8" ) + "&id=" + id + "\">" + name + "</a></td>" );
-          out.print( "<td class=\"cellTableCell " + tdClass +  "\">" + id + "</td>" );
-          out.print( "<td class=\"cellTableCell " + tdClass + "\">" + status + "</td>" );
-          out.print( "<td class=\"cellTableCell " + tdClass +  "\">"
+          out.print( "<td onMouseEnter=\"mouseEnterFunction( this, '" + tdClass + "' )\" "
+              + "onMouseLeave=\"mouseLeaveFunction( this, '" + tdClass + "' )\" "
+              + "onClick=\"clickFunction( this, '" + tdClass + "' )\" "
+              + "id=\"j-cellTableCell" + i + "\" class=\"cellTableCell " + tdClass +  "\">" + id + "</td>" );
+          out.print( "<td onMouseEnter=\"mouseEnterFunction( this, '" + tdClass + "' )\" "
+              + "onMouseLeave=\"mouseLeaveFunction( this, '" + tdClass + "' )\" "
+              + "onClick=\"clickFunction( this, '" + tdClass + "' )\" "
+              + "id=\"j-cellTableCell" + i + "\" class=\"cellTableCell " + tdClass + "\">" + status + "</td>" );
+          out.print( "<td onMouseEnter=\"mouseEnterFunction( this, '" + tdClass + "' )\" "
+              + "onMouseLeave=\"mouseLeaveFunction( this, '" + tdClass + "' )\" "
+              + "onClick=\"clickFunction( this, '" + tdClass + "' )\" "
+              + "id=\"j-cellTableCell" + i + "\" class=\"cellTableCell " + tdClass + "\">"
               + ( job.getLogDate() == null ? "-" : XMLHandler.date2string( job.getLogDate() ) ) + "</td>" );
-          out.print( "<td class=\"cellTableCell cellTableLastColumn " + tdClass + "\">" + removeText + "</td>" );
+          out.print( "<td onMouseEnter=\"mouseEnterFunction( this, '" + tdClass + "' )\" "
+              + "onMouseLeave=\"mouseLeaveFunction( this, '" + tdClass + "' )\" "
+              + "onClick=\"clickFunction( this, '" + tdClass + "' )\" "
+              + "id=\"j-cellTableLastCell" + i + "\" class=\"cellTableCell cellTableLastColumn " + tdClass + "\">" + removeText + "</td>" );
           out.print( "</tr>" );
         }
-        out.print( "</table></div>" ); // end div
+        out.print( "</table></table>" );
+        out.print( "</div>" ); // end div
 
       } catch ( Exception ex ) {
         out.println( "<br>" );
@@ -457,8 +505,9 @@ public class GetStatusServlet extends BaseHttpServlet implements CartePluginInte
 
       out.println( "<br>" );
       out.println( "<div class=\"row\">" );
-      out.println( "<div><h3>"
-          + BaseMessages.getString( PKG, "GetStatusServlet.ConfigurationDetails.Title" ) + "</h3></div>" );
+      htmlClass = usePentahoTheme ? "div" : "h3";
+      out.println( "<div><" + htmlClass + " class=\"workspaceHeading\">"
+          + BaseMessages.getString( PKG, "GetStatusServlet.ConfigurationDetails.Title" ) + "</" + htmlClass + "></div>" );
       out.println( "<table class=\"pentaho-table\" border=\"" + tableBorder + "\">" );
       out.print( "<tr> <th class=\"cellTableHeader\">"
           + BaseMessages.getString( PKG, "GetStatusServlet.Parameter.Title" ) + "</th> <th class=\"cellTableHeader\">"
@@ -531,7 +580,82 @@ public class GetStatusServlet extends BaseHttpServlet implements CartePluginInte
                 + BaseMessages.getString( PKG, "GetStatusServlet.ConfigurationDetails.Advice", filename )
                 + "</i>" );
         out.print( "</div>" );
+        out.print( "</div>" );
+        out.print( "</div>" );
       }
+
+      out.println( "<script type=\"text/javascript\">" );
+      out.println( "var selectedTransRowIndex = -1;" ); // currently selected table item
+      out.println( "var selectedJobRowIndex = -1;" ); // currently selected table item
+
+      // OnClick function
+      out.println( "function clickFunction( element, tableClass ) {" );
+      out.println( "var prefix = element.id.startsWith( 'j-' ) ? 'j-' : '';" );
+      out.println( "if( tableClass.endsWith( 'Row' ) ) {" );
+      out.println( "element.className='cellTableRow ' + tableClass + ' cellTableSelectedRow';" );
+      out.println( "} else {" );
+      out.println( "document.getElementById( prefix + 'cellTableFirstCell' + element.id.charAt( element.id.length - 1 ) ).className='cellTableCell cellTableFirstColumn ' + tableClass + ' cellTableSelectedRowCell';" );
+      out.println( "element.className='cellTableCell ' + tableClass + ' cellTableSelectedRowCell';" );
+      out.println( "}" );
+      out.println( "if( element.id.startsWith( 'j-' ) ) {" );
+      out.println( "if( selectedJobRowIndex != -1 && element.id.charAt( element.id.length - 1 ) != selectedJobRowIndex ) {" );
+      out.println( "document.getElementById( prefix + 'cellTableRow' + selectedJobRowIndex ).className='cellTableRow ' + tableClass;" );
+      out.println( "document.getElementById( prefix + 'cellTableFirstCell' + selectedJobRowIndex ).className='cellTableCell cellTableFirstColumn ' + tableClass;" );
+      out.println( "document.getElementById( prefix + 'cellTableCell' + selectedJobRowIndex ).className='cellTableCell ' + tableClass;" );
+      out.println( "document.getElementById( prefix + 'cellTableLastCell' + selectedJobRowIndex ).className='cellTableCell cellTableLastColumn ' + tableClass;" );
+      out.println( "}" );
+      out.println( "selectedJobRowIndex = element.id.charAt( element.id.length - 1 );" );
+      out.println( "} else {" );
+      out.println( "if( selectedTransRowIndex != -1 && element.id.charAt( element.id.length - 1 ) != selectedTransRowIndex ) {" );
+      out.println( "document.getElementById( prefix + 'cellTableRow' + selectedTransRowIndex ).className='cellTableRow ' + tableClass;" );
+      out.println( "document.getElementById( prefix + 'cellTableFirstCell' + selectedTransRowIndex ).className='cellTableCell cellTableFirstColumn ' + tableClass;" );
+      out.println( "document.getElementById( prefix + 'cellTableCell' + selectedTransRowIndex ).className='cellTableCell ' + tableClass;" );
+      out.println( "document.getElementById( prefix + 'cellTableLastCell' + selectedTransRowIndex ).className='cellTableCell cellTableLastColumn ' + tableClass;" );
+      out.println( "}" );
+      out.println( "selectedTransRowIndex = element.id.charAt( element.id.length - 1 );" );
+      out.println( "}" );
+      out.println( "}" );
+
+      // OnMouseEnter function
+      out.println( "function mouseEnterFunction( element, tableClass ) {" );
+      out.println( "var prefix = '';" );
+      out.println( "var selectedIndex = selectedTransRowIndex;" );
+      out.println( "if( element.id.startsWith( 'j-' ) ) {" );
+      out.println( "prefix = 'j-';" );
+      out.println( "selectedIndex = selectedJobRowIndex;" );
+      out.println( "}" );
+      out.println( "if( element.id.charAt( element.id.length - 1 ) != selectedIndex ) {" );
+      out.println( "if( tableClass.endsWith( 'Row' ) ) {" );
+      out.println( "element.className='cellTableRow ' + tableClass + ' cellTableHoveredRow';" );
+      out.println( "} else {" );
+      out.println( "document.getElementById( prefix + 'cellTableFirstCell' + element.id.charAt( element.id.length - 1 ) ).className='cellTableCell cellTableFirstColumn ' + tableClass + ' cellTableHoveredRowCell';" );
+      out.println( "document.getElementById( prefix + 'cellTableCell' + element.id.charAt( element.id.length - 1 ) ).className='cellTableCell ' + tableClass + ' cellTableHoveredRowCell';" );
+      out.println( "document.getElementById( prefix + 'cellTableLastCell' + element.id.charAt( element.id.length - 1 ) ).className='cellTableCell cellTableLastColumn ' + tableClass + ' cellTableHoveredRowCell';" );
+      out.println( "}" );
+      out.println( "}" );
+      out.println( "}" );
+
+      // OnMouseLeave function
+      out.println( "function mouseLeaveFunction( element, tableClass ) {" );
+      out.println( "var prefix = '';" );
+      out.println( "var selectedIndex = selectedTransRowIndex;" );
+      out.println( "if( element.id.startsWith( 'j-' ) ) {" );
+      out.println( "prefix = 'j-';" );
+      out.println( "selectedIndex = selectedJobRowIndex;" );
+      out.println( "}" );
+      out.println( "if( element.id.charAt( element.id.length - 1 ) != selectedIndex ) {" );
+      out.println( "if( tableClass.endsWith( 'Row' ) ) {" );
+      out.println( "element.className='cellTableRow ' + tableClass;" );
+      out.println( "} else {" );
+      out.println( "document.getElementById( prefix + 'cellTableFirstCell' + element.id.charAt( element.id.length - 1 ) ).className='cellTableCell cellTableFirstColumn ' + tableClass;" );
+      out.println( "document.getElementById( prefix + 'cellTableCell' + element.id.charAt( element.id.length - 1 ) ).className='cellTableCell ' + tableClass;" );
+      out.println( "document.getElementById( prefix + 'cellTableLastCell' + element.id.charAt( element.id.length - 1 ) ).className='cellTableCell cellTableLastColumn ' + tableClass;" );
+      out.println( "}" );
+      out.println( "}" );
+      out.println( "}" );
+
+      out.println( "</script>" );
+
       out.println( "</BODY>" );
       out.println( "</HTML>" );
     }
