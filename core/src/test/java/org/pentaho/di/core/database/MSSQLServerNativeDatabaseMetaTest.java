@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -41,14 +41,14 @@ public class MSSQLServerNativeDatabaseMetaTest extends MSSQLServerDatabaseMetaTe
     assertEquals( "sun.jdbc.odbc.JdbcOdbcDriver", localOdbcMeta.getDriverClass() );
     assertEquals( "jdbc:odbc:WIBBLE", localOdbcMeta.getURL( "FOO", "BAR", "WIBBLE" ) );
 
-    assertEquals( "jdbc:sqlserver://FOO:1234;databaseName=WIBBLE;integratedSecurity=null",
-        localNativeMeta.getURL( "FOO", "1234", "WIBBLE" ) ); // Believe this is a bug = it shouldn't be null...
+    assertEquals( "jdbc:sqlserver://FOO:1234;databaseName=WIBBLE;integratedSecurity=false",
+        localNativeMeta.getURL( "FOO", "1234", "WIBBLE" ) );
 
     Properties attrs = new Properties();
     attrs.put( "MSSQLUseIntegratedSecurity", "false" );
     localNativeMeta.setAttributes( attrs );
     assertEquals( "jdbc:sqlserver://FOO:1234;databaseName=WIBBLE;integratedSecurity=false",
-        localNativeMeta.getURL( "FOO", "1234", "WIBBLE" ) ); // Believe this is a bug = it shouldn't be null...
+        localNativeMeta.getURL( "FOO", "1234", "WIBBLE" ) );
     attrs.put( "MSSQLUseIntegratedSecurity", "true" );
     assertEquals( "jdbc:sqlserver://FOO:1234;databaseName=WIBBLE;integratedSecurity=true",
         localNativeMeta.getURL( "FOO", "1234", "WIBBLE" ) );
