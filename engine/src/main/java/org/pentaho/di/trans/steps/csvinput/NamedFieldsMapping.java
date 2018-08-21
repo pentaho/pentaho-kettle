@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -51,7 +51,7 @@ public class NamedFieldsMapping implements FieldsMapping {
   public static NamedFieldsMapping mapping( String[] actualFieldNames, String[] metaFieldNames ) {
     LinkedHashMap<String, List<Integer>> metaNameToIndex = new LinkedHashMap<>();
     List<Integer> unmatchedMetaFields = new ArrayList<>();
-    int[] actualToMetaFieldMapping = new int[actualFieldNames.length];
+    int[] actualToMetaFieldMapping = new int[ actualFieldNames == null ? 0 : actualFieldNames.length];
 
     for ( int i = 0; i < metaFieldNames.length; i++ ) {
       List<Integer> coll = metaNameToIndex.getOrDefault( metaFieldNames[i], new ArrayList<>() );
@@ -59,14 +59,16 @@ public class NamedFieldsMapping implements FieldsMapping {
       metaNameToIndex.put( metaFieldNames[i], coll );
     }
 
-    for ( int i = 0; i < actualFieldNames.length; i++ ) {
-      List<Integer> columnIndexes = metaNameToIndex.get( actualFieldNames[i] );
-      if ( columnIndexes == null || columnIndexes.isEmpty() ) {
-        unmatchedMetaFields.add( i );
-        actualToMetaFieldMapping[i] = FIELD_DOES_NOT_EXIST;
-        continue;
+    if ( actualFieldNames != null ) {
+      for ( int i = 0; i < actualFieldNames.length; i++ ) {
+        List<Integer> columnIndexes = metaNameToIndex.get( actualFieldNames[ i ] );
+        if ( columnIndexes == null || columnIndexes.isEmpty() ) {
+          unmatchedMetaFields.add( i );
+          actualToMetaFieldMapping[ i ] = FIELD_DOES_NOT_EXIST;
+          continue;
+        }
+        actualToMetaFieldMapping[ i ] = columnIndexes.remove( 0 );
       }
-      actualToMetaFieldMapping[i] = columnIndexes.remove( 0 );
     }
 
     Iterator<Integer> remainingMetaIndexes = metaNameToIndex.values().stream()
