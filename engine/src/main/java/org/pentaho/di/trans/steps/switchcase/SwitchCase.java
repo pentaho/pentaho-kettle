@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,6 +22,7 @@
 
 package org.pentaho.di.trans.steps.switchcase;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 
@@ -81,6 +82,9 @@ public class SwitchCase extends BaseStep implements StepInterface {
     // Perhaps there is some conversion needed.
     //
     Object lookupData = data.valueMeta.convertData( data.inputValueMeta, r[data.fieldIndex] );
+
+    // could not use byte[] as key in Maps, so we need to convert it to his specific hashCode for comparisons
+    lookupData = prepareObjectType( lookupData );
 
     // Determine the output set of rowset to use...
     Set<RowSet> rowSetSet = ( data.valueMeta.isNull( lookupData ) ) ? data.nullRowSetSet : data.outputMap.get( lookupData );
@@ -193,6 +197,9 @@ public class SwitchCase extends BaseStep implements StepInterface {
           if ( data.valueMeta.isNull( value ) ) {
             data.nullRowSetSet.add( rowSet );
           } else {
+            // could not use byte[] as key in Maps, so we need to convert it to his specific hashCode for future
+            // comparisons
+            value = prepareObjectType( value );
             data.outputMap.put( value, rowSet );
           }
         } catch ( Exception e ) {
@@ -214,4 +221,9 @@ public class SwitchCase extends BaseStep implements StepInterface {
       throw new KettleException( e );
     }
   }
+
+  protected static Object prepareObjectType( Object o ) {
+    return ( o instanceof byte[] ) ?  Arrays.hashCode( (byte[]) o ) :  o;
+  }
+
 }

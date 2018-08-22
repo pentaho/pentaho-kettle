@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -23,6 +23,7 @@
 package org.pentaho.di.trans.steps.switchcase;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
@@ -255,6 +256,74 @@ public class SwitchCaseTest {
     }
   }
 
+  @Test
+  public void testCreateOutputValueMappingWithBinaryType() throws KettleException, URISyntaxException,
+    ParserConfigurationException, SAXException, IOException {
+    SwitchCaseCustom krasavez = new SwitchCaseCustom( mockHelper );
+
+    // load step info value-case mapping from xml.
+    List<DatabaseMeta> emptyList = new ArrayList<DatabaseMeta>();
+    krasavez.meta.loadXML( loadStepXmlMetadata( "SwitchCaseBinaryTest.xml" ), emptyList, mock( IMetaStore.class ) );
+
+    KeyToRowSetMap expectedNN = new KeyToRowSetMap();
+    Set<RowSet> nulls = new HashSet<RowSet>();
+
+    // create real steps for all targets
+    List<SwitchCaseTarget> list = krasavez.meta.getCaseTargets();
+    for ( SwitchCaseTarget item : list ) {
+      StepMetaInterface smInt = new DummyTransMeta();
+      StepMeta stepMeta = new StepMeta( item.caseTargetStepname, smInt );
+      item.caseTargetStep = stepMeta;
+
+      // create and put row set for this
+      RowSet rw = new QueueRowSet();
+      krasavez.map.put( item.caseTargetStepname, rw );
+
+      // null values goes to null rowset
+      if ( item.caseValue != null ) {
+        expectedNN.put( item.caseValue, rw );
+      } else {
+        nulls.add( rw );
+      }
+    }
+
+    // create default step
+    StepMetaInterface smInt = new DummyTransMeta();
+    StepMeta stepMeta = new StepMeta( krasavez.meta.getDefaultTargetStepname(), smInt );
+    krasavez.meta.setDefaultTargetStep( stepMeta );
+    RowSet rw = new QueueRowSet();
+    krasavez.map.put( krasavez.meta.getDefaultTargetStepname(), rw );
+
+    krasavez.createOutputValueMapping();
+
+    // inspect step output data:
+    Set<RowSet> ones = krasavez.data.outputMap.get( "1" );
+    assertEquals( "Output map for 1 values contains 2 row sets", 2, ones.size() );
+
+    Set<RowSet> zeros = krasavez.data.outputMap.get( "0" );
+    assertEquals( "Output map for 0 values contains 1 row sets", 1, zeros.size() );
+
+    assertEquals( "Null row set contains 0 items: ", 2, krasavez.data.nullRowSetSet.size() );
+    assertEquals( "We have at least one default rowset", 1, krasavez.data.defaultRowSetSet.size() );
+
+    // check that rowsets data is correct:
+    Set<RowSet> rowsets = expectedNN.get( "1" );
+    for ( RowSet rowset : rowsets ) {
+      assertTrue( "Output map for 1 values contains expected row set", ones.contains( rowset ) );
+    }
+    rowsets = expectedNN.get( "0" );
+    for ( RowSet rowset : rowsets ) {
+      assertTrue( "Output map for 0 values contains expected row set", zeros.contains( rowset ) );
+    }
+    for ( RowSet rowset : krasavez.data.nullRowSetSet ) {
+      assertTrue( "Output map for null values contains expected row set", nulls.contains( rowset ) );
+    }
+    // we have already check that there is only one item.
+    for ( RowSet rowset : krasavez.data.defaultRowSetSet ) {
+      assertTrue( "Output map for default case contains expected row set", rowset.equals( rw ) );
+    }
+  }
+
   /**
    * Load local xml data for case-value mapping, step info.
    *
@@ -308,6 +377,39 @@ public class SwitchCaseTest {
     }
 
     assertNull( defaultRowSet.getRow()[0] );
+  }
+
+  @Test
+  public void prepareObjectTypeBinaryTest_Equals() throws Exception {
+    assertEquals(  Arrays.hashCode(  new byte[] { 1, 2, 3 } ), SwitchCase.prepareObjectType( new byte[] { 1, 2, 3 } ) ) ;
+  }
+
+  @Test
+  public void prepareObjectTypeBinaryTest_NotEquals() throws Exception {
+    assertNotEquals(  Arrays.hashCode(  new byte[] { 1, 2, 4 } ), SwitchCase.prepareObjectType( new byte[] { 1, 2, 3 } ) ) ;
+  }
+
+  @Test
+  public void prepareObjectTypeBinaryTest_Null() throws Exception {
+    byte[] given = null;
+    byte[] expected = null;
+
+    assertEquals( expected, SwitchCase.prepareObjectType( given ) ) ;
+  }
+
+  @Test
+  public void prepareObjectTypeTest_Equals() throws Exception {
+    assertEquals(  "2", SwitchCase.prepareObjectType( "2" )  ) ;
+  }
+
+  @Test
+  public void prepareObjectTypeTest_NotEquals() throws Exception {
+    assertNotEquals(  "2", SwitchCase.prepareObjectType( "1" )  ) ;
+  }
+
+  @Test
+  public void prepareObjectTypeTest_Null() throws Exception {
+    assertEquals(  null, SwitchCase.prepareObjectType( null )  ) ;
   }
 
   /**
