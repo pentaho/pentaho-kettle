@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -84,6 +84,7 @@ public class GetXMLDataField implements Cloneable {
 
   private String name;
   private String xpath;
+  private String resolvedXpath;
 
   private int type;
   private int length;
@@ -274,8 +275,16 @@ public class GetXMLDataField implements Cloneable {
     return xpath;
   }
 
+  protected String getResolvedXPath() {
+    return resolvedXpath;
+  }
+
   public void setXPath( String fieldxpath ) {
     this.xpath = fieldxpath;
+  }
+
+  protected void setResolvedXPath( String resolvedXpath ) {
+    this.resolvedXpath = resolvedXpath;
   }
 
   public void setName( String fieldname ) {

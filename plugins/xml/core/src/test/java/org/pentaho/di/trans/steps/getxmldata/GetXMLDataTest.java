@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -444,6 +444,7 @@ public class GetXMLDataTest extends TestCase {
     GetXMLData getXmlData = new GetXMLData( dummyStep1, getXMLDataData, 0, transMeta, trans );
     getXmlData.setVariable( "xml_path", "data/owner" );
     getXmlData.init( gxdm, getXMLDataData );
-    assertEquals( gxdm.getInputFields()[0].getXPath(), "${xml_path}" );
+    assertEquals( "${xml_path}", gxdm.getInputFields()[0].getXPath() );
+    assertEquals( "data/owner", gxdm.getInputFields()[0].getResolvedXPath() );
   }
 }
