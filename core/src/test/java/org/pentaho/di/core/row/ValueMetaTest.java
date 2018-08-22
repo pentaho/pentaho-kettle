@@ -29,7 +29,6 @@ import java.util.TimeZone;
 
 import org.junit.ClassRule;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.plugins.PluginRegistry;
 
@@ -172,7 +171,6 @@ public class ValueMetaTest {
     numValueMeta.setLength( 42, 9 );
     numValueMeta.setDecimalSymbol( "." );
     numValueMeta.setGroupingSymbol( "," );
-
     BigDecimal originalValue = new BigDecimal( "34039423484343123.443489056" );
 
     String string = numValueMeta.getString( originalValue );
@@ -185,6 +183,50 @@ public class ValueMetaTest {
     BigDecimal x = (BigDecimal) strValueMeta.convertDataUsingConversionMetaData( string );
 
     assertEquals( originalValue, x );
+  }
+
+  @Test
+  public void testBigNumberToStringToBigNumberWithoutLengthAndPrecision() throws Exception {
+    ValueMetaInterface numValueMeta = new ValueMeta( "i", ValueMetaInterface.TYPE_BIGNUMBER );
+
+    String[] strings = new String[]{ "67789.135", "-67789.135", "0.00000000000000000001", "-0.00000000000000000001", "34039423484343123.443489056", "-34039423484343123.443489056" };
+    BigDecimal[] values = new BigDecimal[]{ new BigDecimal( "67789.135" ), new BigDecimal( "-67789.135" ), new BigDecimal( "0.00000000000000000001" ), new BigDecimal( "-0.00000000000000000001" ), new BigDecimal( "34039423484343123.443489056" ), new BigDecimal( "-34039423484343123.443489056" ) };
+
+    for ( int i = 0; i < values.length; i++ ) {
+      String bigNumberToString = numValueMeta.getString( values[i] );
+
+      assertEquals( strings[i], bigNumberToString );
+
+      ValueMetaInterface strValueMeta = new ValueMeta( "str", ValueMetaInterface.TYPE_STRING );
+      strValueMeta.setConversionMetadata( numValueMeta );
+
+      BigDecimal stringToBigNumber = (BigDecimal) strValueMeta.convertDataUsingConversionMetaData( strings[i] );
+
+      assertEquals( values[i], stringToBigNumber );
+    }
+  }
+
+  @Test
+  public void testBigNumberToStringToBigNumberWithoutLengthAndPrecisionWithCommaAsDecimalAndDotAsGrouping() throws Exception {
+    ValueMetaInterface numValueMeta = new ValueMeta( "i", ValueMetaInterface.TYPE_BIGNUMBER );
+    numValueMeta.setDecimalSymbol( "," );
+    numValueMeta.setGroupingSymbol( "." );
+
+    String[] strings = new String[]{ "67789,135", "-67789,135", "0,00000000000000000001", "-0,00000000000000000001", "34039423484343123,443489056", "-34039423484343123,443489056" };
+    BigDecimal[] values = new BigDecimal[]{ new BigDecimal( "67789.135" ), new BigDecimal( "-67789.135" ), new BigDecimal( "0.00000000000000000001" ), new BigDecimal( "-0.00000000000000000001" ), new BigDecimal( "34039423484343123.443489056" ), new BigDecimal( "-34039423484343123.443489056" ) };
+
+    for ( int i = 0; i < values.length; i++ ) {
+      String bigNumberToString = numValueMeta.getString( values[i] );
+
+      assertEquals( strings[i], bigNumberToString );
+
+      ValueMetaInterface strValueMeta = new ValueMeta( "str", ValueMetaInterface.TYPE_STRING );
+      strValueMeta.setConversionMetadata( numValueMeta );
+
+      BigDecimal stringToBigNumber = (BigDecimal) strValueMeta.convertDataUsingConversionMetaData( strings[i] );
+
+      assertEquals( values[i], stringToBigNumber );
+    }
   }
 
   @Test
