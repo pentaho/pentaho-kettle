@@ -32,6 +32,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.math.BigDecimal;
+import java.math.MathContext;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
@@ -43,6 +44,7 @@ import org.junit.Test;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.pentaho.di.core.exception.KettleFileNotFoundException;
+import org.pentaho.di.core.row.value.ValueMetaBigNumber;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.exception.KettleException;
@@ -648,6 +650,57 @@ public class ValueDataUtilTest {
   }
 
   @Test
+  public void testMulitplyBigNumbers() throws  Exception {
+    BigDecimal field1 = new BigDecimal( "123456789012345678901.1234567890123456789" );
+    BigDecimal field2 = new BigDecimal( "1.0" );
+    BigDecimal field3 = new BigDecimal( "2.0" );
+
+    BigDecimal expResult1 = new BigDecimal( "123456789012345678901.1234567890123456789" );
+    BigDecimal expResult2 = new BigDecimal( "246913578024691357802.2469135780246913578" );
+
+    BigDecimal expResult3 = new BigDecimal( "123456789012345678901.1200000000000000000" );
+    BigDecimal expResult4 = new BigDecimal( "246913578024691357802" );
+
+    assertEquals( expResult1, ValueDataUtil.multiplyBigDecimals( field1, field2, null ) );
+    assertEquals( expResult2, ValueDataUtil.multiplyBigDecimals( field1, field3, null ) );
+
+    assertEquals( expResult3, ValueDataUtil.multiplyBigDecimals( field1, field2, new MathContext( 23 ) ) );
+    assertEquals( expResult4, ValueDataUtil.multiplyBigDecimals( field1, field3, new MathContext( 21 ) ) );
+  }
+
+  @Test
+  public void testDivisionBigNumbers() throws  Exception {
+    BigDecimal field1 = new BigDecimal( "123456789012345678901.1234567890123456789" );
+    BigDecimal field2 = new BigDecimal( "1.0" );
+    BigDecimal field3 = new BigDecimal( "2.0" );
+
+    BigDecimal expResult1 = new BigDecimal( "123456789012345678901.1234567890123456789" );
+    BigDecimal expResult2 = new BigDecimal( "61728394506172839450.56172839450617283945" );
+
+    BigDecimal expResult3 = new BigDecimal( "123456789012345678901.12" );
+    BigDecimal expResult4 = new BigDecimal( "61728394506172839450.6" );
+
+    assertEquals( expResult1, ValueDataUtil.divideBigDecimals( field1, field2, null ) );
+    assertEquals( expResult2, ValueDataUtil.divideBigDecimals( field1, field3, null ) );
+
+    assertEquals( expResult3, ValueDataUtil.divideBigDecimals( field1, field2, new MathContext( 23 ) ) );
+    assertEquals( expResult4, ValueDataUtil.divideBigDecimals( field1, field3, new MathContext( 21 ) ) );
+  }
+
+  @Test
+  public void testRemainderBigNumbers() throws  Exception {
+    BigDecimal field1 = new BigDecimal( "123456789012345678901.1234567890123456789" );
+    BigDecimal field2 = new BigDecimal( "1.0" );
+    BigDecimal field3 = new BigDecimal( "2.0" );
+
+    BigDecimal expResult1 = new BigDecimal( "0.1234567890123456789" );
+    BigDecimal expResult2 = new BigDecimal( "1.1234567890123456789" );
+
+    assertEquals( expResult1, ValueDataUtil.remainder( new ValueMetaBigNumber( ), field1, new ValueMetaBigNumber( ), field2 ) );
+    assertEquals( expResult2, ValueDataUtil.remainder( new ValueMetaBigNumber( ), field1, new ValueMetaBigNumber( ), field3 ) );
+  }
+
+  @Test
   public void testPercent1() {
 
     // Test Kettle number types
@@ -709,9 +762,9 @@ public class ValueDataUtilTest {
         ValueMetaInterface.TYPE_BIGNUMBER, CalculatorMetaFunction.CALC_PERCENT_2 ) );
     assertEquals( BigDecimal.valueOf( Double.valueOf( "1.96" ) ), calculate( "2", "2",
         ValueMetaInterface.TYPE_BIGNUMBER, CalculatorMetaFunction.CALC_PERCENT_2 ) );
-    assertEquals( new BigDecimal("8.00"), calculate( "10", "20",
+    assertEquals( new BigDecimal( "8.0" ), calculate( "10", "20",
         ValueMetaInterface.TYPE_BIGNUMBER, CalculatorMetaFunction.CALC_PERCENT_2 ) );
-    assertEquals( new BigDecimal("50.00"), calculate( "100", "50",
+    assertEquals( new BigDecimal( "50.0" ), calculate( "100", "50",
         ValueMetaInterface.TYPE_BIGNUMBER, CalculatorMetaFunction.CALC_PERCENT_2 ) );
   }
 
@@ -1060,7 +1113,7 @@ public class ValueDataUtilTest {
     assertEquals( new Double( "4.0" ).doubleValue(),
       calculate( "12.5", "4.25", ValueMetaInterface.TYPE_NUMBER, CalculatorMetaFunction.CALC_REMAINDER ) );
     assertEquals( new Long( "1" ).longValue(),
-      calculate( "10", "3.3",null,
+      calculate( "10", "3.3", null,
         ValueMetaInterface.TYPE_INTEGER, ValueMetaInterface.TYPE_NUMBER, ValueMetaInterface.TYPE_NUMBER, CalculatorMetaFunction.CALC_REMAINDER ) );
   }
 
@@ -1101,14 +1154,14 @@ public class ValueDataUtilTest {
 
   @Test
   public void testJaro() {
-    assertEquals(new Double("0.0"), calculate("abcd", "defg", ValueMetaInterface.TYPE_STRING, CalculatorMetaFunction.CALC_JARO ) );
-    assertEquals(new Double("0.44166666666666665"), calculate("elephant", "hippo", ValueMetaInterface.TYPE_STRING, CalculatorMetaFunction.CALC_JARO ) );
-    assertEquals(new Double("0.8666666666666667"), calculate("hello", "hallo", ValueMetaInterface.TYPE_STRING, CalculatorMetaFunction.CALC_JARO ) );
+    assertEquals( new Double( "0.0" ), calculate( "abcd", "defg", ValueMetaInterface.TYPE_STRING, CalculatorMetaFunction.CALC_JARO ) );
+    assertEquals( new Double( "0.44166666666666665" ), calculate( "elephant", "hippo", ValueMetaInterface.TYPE_STRING, CalculatorMetaFunction.CALC_JARO ) );
+    assertEquals( new Double( "0.8666666666666667" ), calculate( "hello", "hallo", ValueMetaInterface.TYPE_STRING, CalculatorMetaFunction.CALC_JARO ) );
   }
 
   @Test
   public void testJaroWinkler() {
-    assertEquals(new Double("0.0"), calculate("abcd", "defg", ValueMetaInterface.TYPE_STRING, CalculatorMetaFunction.CALC_JARO_WINKLER ) );
+    assertEquals( new Double( "0.0" ), calculate( "abcd", "defg", ValueMetaInterface.TYPE_STRING, CalculatorMetaFunction.CALC_JARO_WINKLER ) );
   }
 
   private Object calculate( String string_dataA, int valueMetaInterfaceType, int calculatorMetaFunction ) {
@@ -1120,7 +1173,7 @@ public class ValueDataUtilTest {
     return calculate( string_dataA, string_dataB, null, valueMetaInterfaceType, calculatorMetaFunction );
   }
 
-  private Object createObject( String string_value, int valueMetaInterfaceType, ValueMetaInterface parameterValueMeta) throws KettleValueException {
+  private Object createObject( String string_value, int valueMetaInterfaceType, ValueMetaInterface parameterValueMeta ) throws KettleValueException {
     if ( valueMetaInterfaceType == ValueMetaInterface.TYPE_NUMBER ) {
       return ( !Utils.isEmpty( string_value ) ? Double.valueOf( string_value ) : null );
     } else if ( valueMetaInterfaceType == ValueMetaInterface.TYPE_INTEGER ) {
@@ -1173,9 +1226,9 @@ public class ValueDataUtilTest {
       ValueMetaInterface valueMetaB = createValueMeta( "data_B", valueMetaInterfaceTypeB );
       ValueMetaInterface valueMetaC = createValueMeta( "data_C", valueMetaInterfaceTypeC );
 
-      Object dataA = createObject( string_dataA, valueMetaInterfaceTypeA, parameterValueMeta);
-      Object dataB = createObject( string_dataB, valueMetaInterfaceTypeB, parameterValueMeta);
-      Object dataC = createObject( string_dataC, valueMetaInterfaceTypeC, parameterValueMeta);
+      Object dataA = createObject( string_dataA, valueMetaInterfaceTypeA, parameterValueMeta );
+      Object dataB = createObject( string_dataB, valueMetaInterfaceTypeB, parameterValueMeta );
+      Object dataC = createObject( string_dataC, valueMetaInterfaceTypeC, parameterValueMeta );
 
       if ( calculatorMetaFunction == CalculatorMetaFunction.CALC_ADD ) {
         return ValueDataUtil.plus( valueMetaA, dataA, valueMetaB, dataB );
@@ -1213,6 +1266,8 @@ public class ValueDataUtilTest {
         return ValueDataUtil.getJaro_Similitude( valueMetaA, dataA, valueMetaB, dataB );
       } else if ( calculatorMetaFunction == CalculatorMetaFunction.CALC_JARO_WINKLER ) {
         return ValueDataUtil.getJaroWinkler_Similitude( valueMetaA, dataA, valueMetaB, dataB );
+      } else if ( calculatorMetaFunction == CalculatorMetaFunction.CALC_MULTIPLY ) {
+        return ValueDataUtil.multiply( valueMetaA, dataA, valueMetaB, dataB );
       } else {
         fail( "Invalid CalculatorMetaFunction specified." );
         return null;
