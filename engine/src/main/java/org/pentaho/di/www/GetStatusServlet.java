@@ -197,7 +197,7 @@ public class GetStatusServlet extends BaseHttpServlet implements CartePluginInte
     response.setStatus( HttpServletResponse.SC_OK );
 
     boolean useXML = "Y".equalsIgnoreCase( request.getParameter( "xml" ) );
-    boolean usePentahoTheme = "Y".equalsIgnoreCase( request.getParameter( "usePentahoTheme" ) );
+    boolean useLightTheme = "Y".equalsIgnoreCase( request.getParameter( "useLightTheme" ) );
 
     if ( useXML ) {
       response.setContentType( "text/xml" );
@@ -248,7 +248,7 @@ public class GetStatusServlet extends BaseHttpServlet implements CartePluginInte
       out.println( "<META http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\">" );
 
       int tableBorder = 1;
-      if ( usePentahoTheme ) {
+      if ( !useLightTheme ) {
         try {
           // Read in currently set theme from pentaho.xml file
           String themeSetting = ".." + File.separator + ".." + File.separator
@@ -289,7 +289,7 @@ public class GetStatusServlet extends BaseHttpServlet implements CartePluginInte
           out.println( "<link rel=\"stylesheet\" type=\"text/css\" href=\"/pentaho/mantle/MantleStyle.css\"/>" );
           tableBorder = 0;
         } catch ( Exception ex ) {
-          usePentahoTheme = false;
+          useLightTheme = true;
           // log here
         }
       }
@@ -304,24 +304,24 @@ public class GetStatusServlet extends BaseHttpServlet implements CartePluginInte
 
       out.println( "<div class=\"row\" id=\"pucHeader\">" );
 
-      String htmlClass = usePentahoTheme ? "div" : "h1";
+      String htmlClass = useLightTheme ? "h1" : "div";
       out.println( "<" + htmlClass + " class=\"workspaceHeading\">" + BaseMessages.getString( PKG, "GetStatusServlet.TopStatus" ) + "</" + htmlClass + ">" );
       out.println( "</div>" );
 
       try {
         out.println( "<br>" );
         out.println( "<div class=\"row\" style=\"padding: 0px 0px 0px 20px\">" );
-        htmlClass = usePentahoTheme ? "div" : "h2";
+        htmlClass = useLightTheme ? "h2" : "div";
         out.println( "<div class=\"row\">" );
         out.println( "<" + htmlClass + " class=\"workspaceHeading\" style=\"padding: 0px 0px 0px 0px;\">Transformations</" + htmlClass + ">" );
         out.println( "<table cellspacing=\"0\" cellpadding=\"0\"><tbody><tr><td align=\"left\" width=\"100%\" style=\"vertical-align:middle;\">" );
         out.println( "<table cellspacing=\"0\" cellpadding=\"0\" class=\"toolbar\" style=\"width: 100%; height: 26px; margin-bottom: 5px; border: 0;\">" );
         out.println( "<tbody><tr>" );
         out.println( "<td align=\"left\" style=\"vertical-align: middle; width: 100%\"></td>" );
-        out.println( "<td onMouseEnter=\"document.getElementById( 'pause' ).className='toolbar-button toolbar-button-hovering'\" onMouseLeave=\"document.getElementById( 'pause' ).className='toolbar-button'\" align=\"left\" style=\"vertical-align: middle;\"><div class=\"toolbar-button\" id=\"pause\"><a href=\"#\" style=\"\"><img style=\"width: 22px; height: 22px\" src=\"/pentaho/content/common-ui/resources/themes/" + "ruby" + "/images/run.svg\"/></a></div></td>" );
-        out.println( "<td onMouseEnter=\"document.getElementById( 'stop' ).className='toolbar-button toolbar-button-hovering'\" onMouseLeave=\"document.getElementById( 'stop' ).className='toolbar-button'\" align=\"left\" style=\"vertical-align: middle;\"><div class=\"toolbar-button\" id=\"stop\"><a href=\"#\" style=\"\"><img style=\"width: 22px; height: 22px\"src=\"/pentaho/content/common-ui/resources/themes/" + "ruby" + "/images/stop.svg\"/></a></div></td>" );
-        out.println( "<td onMouseEnter=\"document.getElementById( 'view' ).className='toolbar-button toolbar-button-hovering'\" onMouseLeave=\"document.getElementById( 'view' ).className='toolbar-button'\" align=\"left\" style=\"vertical-align: middle;\"><div class=\"toolbar-button\" id=\"view\"><a href=\"#\" style=\"\"><img style=\"width: 22px; height: 22px\" src=\"/pentaho/content/common-ui/resources/themes/" + "ruby" + "/images/view.svg\"/></a></div></td>" );
-        out.println( "<td onMouseEnter=\"document.getElementById( 'close' ).className='toolbar-button toolbar-button-hovering'\" onMouseLeave=\"document.getElementById( 'close' ).className='toolbar-button'\" align=\"left\" style=\"vertical-align: middle;\"><div class=\"toolbar-button\" id=\"close\"><a href=\"#\" style=\"\"><img style=\"width: 22px; height: 22px\" src=\"/pentaho/content/common-ui/resources/themes/" + "ruby" + "/images/close.svg\"/></a></div></td>" );
+        out.println( "<td onMouseEnter=\"document.getElementById( 'pause' ).className='toolbar-button toolbar-button-hovering'\" onMouseLeave=\"document.getElementById( 'pause' ).className='toolbar-button'\" align=\"left\" style=\"vertical-align: middle;\"><div class=\"toolbar-button\" id=\"pause\"><a href=\"#\" style=\"\"><img style=\"width: 22px; height: 22px\" src=\"/pentaho/content/common-ui/resources/themes/images/run.svg\"/></a></div></td>" );
+        out.println( "<td onMouseEnter=\"document.getElementById( 'stop' ).className='toolbar-button toolbar-button-hovering'\" onMouseLeave=\"document.getElementById( 'stop' ).className='toolbar-button'\" align=\"left\" style=\"vertical-align: middle;\"><div class=\"toolbar-button\" id=\"stop\"><a href=\"#\" style=\"\"><img style=\"width: 22px; height: 22px\"src=\"/pentaho/content/common-ui/resources/themes/images/stop.svg\"/></a></div></td>" );
+        out.println( "<td onMouseEnter=\"document.getElementById( 'view' ).className='toolbar-button toolbar-button-hovering'\" onMouseLeave=\"document.getElementById( 'view' ).className='toolbar-button'\" align=\"left\" style=\"vertical-align: middle;\"><div class=\"toolbar-button\" id=\"view\"><a href=\"#\" style=\"\"><img style=\"width: 22px; height: 22px\" src=\"/pentaho/content/common-ui/resources/themes/images/view.svg\"/></a></div></td>" );
+        out.println( "<td onMouseEnter=\"document.getElementById( 'close' ).className='toolbar-button toolbar-button-hovering'\" onMouseLeave=\"document.getElementById( 'close' ).className='toolbar-button'\" align=\"left\" style=\"vertical-align: middle;\"><div class=\"toolbar-button\" id=\"close\"><a href=\"#\" style=\"\"><img style=\"width: 22px; height: 22px\" src=\"/pentaho/content/common-ui/resources/themes/images/close.svg\"/></a></div></td>" );
         out.println( "</tr></tbody></table>" );
         out.println( "<table class=\"pentaho-table\" border=\"" + tableBorder + "\">" );
         out.print( "<tr> <th class=\"cellTableHeader\">"
@@ -505,7 +505,7 @@ public class GetStatusServlet extends BaseHttpServlet implements CartePluginInte
 
       out.println( "<br>" );
       out.println( "<div class=\"row\">" );
-      htmlClass = usePentahoTheme ? "div" : "h3";
+      htmlClass = useLightTheme ? "h3" : "div";
       out.println( "<div><" + htmlClass + " class=\"workspaceHeading\">"
           + BaseMessages.getString( PKG, "GetStatusServlet.ConfigurationDetails.Title" ) + "</" + htmlClass + "></div>" );
       out.println( "<table class=\"pentaho-table\" border=\"" + tableBorder + "\">" );
