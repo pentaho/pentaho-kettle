@@ -26,6 +26,7 @@ import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.math.BigDecimal;
 import java.math.MathContext;
+import java.math.RoundingMode;
 import java.security.MessageDigest;
 import java.util.Calendar;
 import java.util.Date;
@@ -776,11 +777,31 @@ public class ValueDataUtil {
     return new Long( a.longValue() * b.longValue() );
   }
 
+  // Get BigNumber size to be considered in mathematical operations
+  private static int getMaxPrecision( BigDecimal a, BigDecimal b ) {
+    return a.precision() >= b.precision() ? a.precision() : b.precision();
+  }
+
+  // Get BigNumber max scale (length of decimal part)
+  private static int getMaxScale( BigDecimal a, BigDecimal b ) {
+    return a.scale() >= b.scale() ? a.scale() : b.scale();
+  }
+
+  // If decimal part has only zeros, remove it. Otherwise scale it to maxScale
+  private static BigDecimal removeTrailingZeroFractionOrScale( BigDecimal a, int maxScale ) {
+    if ( a.remainder( BigDecimal.ONE ).compareTo( BigDecimal.ZERO ) == 0 ) {
+      return a.setScale( 0 );
+    }
+
+    return a.setScale( maxScale, RoundingMode.HALF_EVEN );
+  }
+
   public static BigDecimal multiplyBigDecimals( BigDecimal a, BigDecimal b, MathContext mc ) {
     if ( mc == null ) {
-      mc = MathContext.DECIMAL64;
+      mc = new MathContext( getMaxPrecision( a, b ), RoundingMode.HALF_EVEN );
     }
-    return a.multiply( b, mc );
+
+    return removeTrailingZeroFractionOrScale( a.multiply( b, mc ), getMaxScale( a, b ) );
   }
 
   protected static Object multiplyString( ValueMetaInterface metaA, Object dataA, ValueMetaInterface metaB,
@@ -837,9 +858,11 @@ public class ValueDataUtil {
 
   public static BigDecimal divideBigDecimals( BigDecimal a, BigDecimal b, MathContext mc ) {
     if ( mc == null ) {
-      mc = MathContext.DECIMAL64;
+      mc = new MathContext( getMaxPrecision( a, b ), RoundingMode.HALF_EVEN );
     }
-    return a.divide( b, mc );
+
+    BigDecimal result = a.divide( b, mc );
+    return removeTrailingZeroFractionOrScale( result, result.scale() );
   }
 
   public static Object sqrt( ValueMetaInterface metaA, Object dataA ) throws KettleValueException {
@@ -1240,7 +1263,10 @@ public class ValueDataUtil {
       case ValueMetaInterface.TYPE_INTEGER:
         return new Long( metaA.getInteger( dataA ) % metaB.getInteger( dataB ) );
       case ValueMetaInterface.TYPE_BIGNUMBER:
-        return metaA.getBigNumber( dataA ).remainder( metaB.getBigNumber( dataB ), MathContext.DECIMAL64 );
+        BigDecimal aValue = metaA.getBigNumber( dataA );
+        BigDecimal bValue = metaA.getBigNumber( dataB );
+        BigDecimal result = aValue.remainder( bValue, new MathContext( getMaxPrecision( aValue, bValue ),  RoundingMode.HALF_EVEN ) );
+        return removeTrailingZeroFractionOrScale( result, result.scale() );
       default:
         throw new KettleValueException( "The 'remainder' function only works on numeric data" );
     }
