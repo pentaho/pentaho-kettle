@@ -22,6 +22,7 @@
 
 package org.pentaho.di.trans.step.mqtt;
 
+import com.google.common.base.Charsets;
 import com.google.common.collect.ImmutableList;
 import org.apache.activemq.broker.BrokerService;
 import org.eclipse.paho.client.mqttv3.MqttClient;
@@ -53,7 +54,6 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
 
-import static java.nio.charset.Charset.defaultCharset;
 import static java.util.Collections.singletonList;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static junit.framework.TestCase.assertTrue;
@@ -237,7 +237,7 @@ public class MQTTStreamSourceTest {
         new MemoryPersistence() );
       pub.connect();
       for ( String msg : messages ) {
-        pub.publish( topic, new MqttMessage( msg.getBytes( defaultCharset() ) ) );
+        pub.publish( topic, new MqttMessage( msg.getBytes( Charsets.UTF_8 ) ) );
       }
     } finally {
       assert pub != null;

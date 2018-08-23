@@ -23,6 +23,7 @@
 package org.pentaho.di.trans.step.mqtt;
 
 import com.google.common.annotations.VisibleForTesting;
+import com.google.common.base.Charsets;
 import com.google.common.collect.ImmutableList;
 import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken;
 import org.eclipse.paho.client.mqttv3.MqttCallback;
@@ -33,7 +34,6 @@ import org.pentaho.di.trans.streaming.common.BlockingQueueStreamSource;
 
 import java.util.List;
 
-import static java.nio.charset.Charset.defaultCharset;
 import static java.util.Collections.singletonList;
 
 /**
@@ -54,7 +54,7 @@ public class MQTTStreamSource extends BlockingQueueStreamSource<List<Object>> {
 
     @Override public void messageArrived( String topic, MqttMessage message ) throws Exception {
       acceptRows( singletonList(
-        ImmutableList.of( new String( message.getPayload(), defaultCharset() ), topic ) ) );
+        ImmutableList.of( new String( message.getPayload(), Charsets.UTF_8 ), topic ) ) );
     }
 
     @Override public void deliveryComplete( IMqttDeliveryToken token ) {

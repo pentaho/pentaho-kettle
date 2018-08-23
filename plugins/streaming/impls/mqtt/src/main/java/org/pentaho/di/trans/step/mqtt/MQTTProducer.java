@@ -22,6 +22,7 @@
 
 package org.pentaho.di.trans.step.mqtt;
 
+import com.google.common.base.Charsets;
 import com.google.common.base.Supplier;
 import com.google.common.base.Suppliers;
 import org.eclipse.paho.client.mqttv3.MqttClient;
@@ -43,7 +44,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static com.google.common.base.Preconditions.checkArgument;
-import static java.nio.charset.Charset.defaultCharset;
 import static java.util.Optional.ofNullable;
 import static org.pentaho.di.i18n.BaseMessages.getString;
 
@@ -160,7 +160,7 @@ public class MQTTProducer extends BaseStep implements StepInterface {
         getString( PKG, "MQTTProducer.Error.QOS", meta.qos ) );
     }
     String fieldAsString = getFieldAsString( row, meta.messageField );
-    mqttMessage.setPayload( fieldAsString.getBytes( defaultCharset() ) );
+    mqttMessage.setPayload( fieldAsString.getBytes( Charsets.UTF_8 ) );
     return mqttMessage;
   }
 
