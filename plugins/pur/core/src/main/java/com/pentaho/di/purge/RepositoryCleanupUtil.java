@@ -33,7 +33,7 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.WordUtils;
-import org.pentaho.di.core.encryption.KettleTwoWayPasswordEncoder;
+import org.pentaho.di.core.encryption.Encr;
 import org.pentaho.platform.security.policy.rolebased.actions.AdministerSecurityAction;
 import org.pentaho.platform.util.RepositoryPathEncoder;
 
@@ -358,7 +358,7 @@ public class RepositoryCleanupUtil {
       ClientConfig clientConfig = new DefaultClientConfig();
       clientConfig.getFeatures().put( JSONConfiguration.FEATURE_POJO_MAPPING, Boolean.TRUE );
       client = Client.create( clientConfig );
-      client.addFilter( new HTTPBasicAuthFilter( username, new KettleTwoWayPasswordEncoder().decode( password, true ) ) );
+      client.addFilter( new HTTPBasicAuthFilter( username, Encr.decryptPasswordOptionallyEncrypted( password ) ) );
     }
 
     WebResource resource = client.resource( url + AUTHENTICATION + AdministerSecurityAction.NAME );
