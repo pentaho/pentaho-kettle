@@ -1308,7 +1308,7 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
             }
             transMeta = new TransMeta( transPath, metaStore, null, true, this, null );
           } else {
-            transMeta = getTransMetaFromRepository( rep, r, transPath );
+            transMeta = rep == null ? new TransMeta( transPath, metaStore, null, true, this, null ) : getTransMetaFromRepository( rep, r, transPath );
           }
           break;
         case REPOSITORY_BY_REFERENCE:
