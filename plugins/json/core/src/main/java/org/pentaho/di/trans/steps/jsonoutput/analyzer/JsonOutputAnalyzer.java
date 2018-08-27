@@ -57,7 +57,7 @@ public class JsonOutputAnalyzer extends ExternalResourceStepAnalyzer<JsonOutputM
 
   @Override
   public String getResourceOutputNodeType() {
-    return DictionaryConst.NODE_TYPE_JSON_FIELD;
+    return DictionaryConst.NODE_TYPE_FILE_FIELD;
   }
 
   @Override
@@ -77,7 +77,7 @@ public class JsonOutputAnalyzer extends ExternalResourceStepAnalyzer<JsonOutputM
 
   @Override
   public IMetaverseNode createResourceNode( final IExternalResourceInfo resource ) throws MetaverseException {
-    return createFileNode( resource.getName(), descriptor, DictionaryConst.NODE_TYPE_JSON_FILE );
+    return createFileNode( resource.getName(), descriptor, DictionaryConst.NODE_TYPE_FILE );
   }
 
   @Override

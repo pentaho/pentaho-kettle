@@ -126,7 +126,7 @@ public class JsonInputAnalyzerTest {
 
   @Test
   public void testGetResourceInputNodeType() throws Exception {
-    assertEquals( DictionaryConst.NODE_TYPE_JSON_FIELD, analyzer.getResourceInputNodeType() );
+    assertEquals( DictionaryConst.NODE_TYPE_FILE_FIELD, analyzer.getResourceInputNodeType() );
   }
 
   @Test
