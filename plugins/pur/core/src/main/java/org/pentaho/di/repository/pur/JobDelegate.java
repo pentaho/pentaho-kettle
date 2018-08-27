@@ -1,5 +1,5 @@
 /*!
- * Copyright 2010 - 2017 Hitachi Vantara.  All rights reserved.
+ * Copyright 2010 - 2018 Hitachi Vantara.  All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -58,7 +58,7 @@ public class JobDelegate extends AbstractDelegate implements ISharedObjectsTrans
 
   private static final long serialVersionUID = -1006715561242639895L; /* EESOURCE: UPDATE SERIALVERUID */
 
-  private static Class<?> PKG = JobDelegate.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static final Class<?> PKG = JobDelegate.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
 
   private static final String PROP_SHARED_FILE = "SHARED_FILE";
 
@@ -158,7 +158,8 @@ public class JobDelegate extends AbstractDelegate implements ISharedObjectsTrans
 
   private static final String PROP_LOG_SIZE_LIMIT = "LOG_SIZE_LIMIT";
 
-  // private static Class<?> PKG = JobDelegate.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  public static final String PROP_ATTRIBUTES_JOB_ENTRY_COPY =
+    AttributesMapUtil.NODE_ATTRIBUTE_GROUPS + EXT_JOB_ENTRY_COPY;
 
   // ~ Instance fields =================================================================================================
 
@@ -216,7 +217,6 @@ public class JobDelegate extends AbstractDelegate implements ISharedObjectsTrans
         repo.save( slaveServer, versionComment, null );
       }
     }
-
   }
 
   public RepositoryElementInterface dataNodeToElement( final DataNode rootNode ) throws KettleException {
@@ -238,7 +238,7 @@ public class JobDelegate extends AbstractDelegate implements ISharedObjectsTrans
     // puts all the database names in the PROP_JOB_PRIVATE_DATABASE_NAMES property.
     // BACKLOG-6635
     if ( privateDbsNode != null ) {
-      privateDatabases = new HashSet<String>();
+      privateDatabases = new HashSet<>();
       if ( privateDbsNode.hasProperty( PROP_JOB_PRIVATE_DATABASE_NAMES ) ) {
         for ( String privateDatabaseName : getString( privateDbsNode, PROP_JOB_PRIVATE_DATABASE_NAMES ).split(
             JOB_PRIVATE_DATABASE_DELIMITER ) ) {
@@ -258,7 +258,7 @@ public class JobDelegate extends AbstractDelegate implements ISharedObjectsTrans
 
     // Keep a unique list of job entries to facilitate in the loading.
     //
-    List<JobEntryInterface> jobentries = new ArrayList<JobEntryInterface>();
+    List<JobEntryInterface> jobentries = new ArrayList<>();
 
     // Read the job entry copies
     //
@@ -268,8 +268,6 @@ public class JobDelegate extends AbstractDelegate implements ISharedObjectsTrans
     // read the copies...
     //
     for ( DataNode copyNode : entriesNode.getNodes() ) {
-      // String name = copyNode.getName();
-
       // Read the entry...
       //
       JobEntryInterface jobEntry = readJobEntry( copyNode, jobMeta, jobentries );
@@ -287,12 +285,13 @@ public class JobDelegate extends AbstractDelegate implements ISharedObjectsTrans
       copy.setDrawn( copyNode.getProperty( PROP_GUI_DRAW ).getBoolean() );
       copy.setLaunchingInParallel( copyNode.getProperty( PROP_PARALLEL ).getBoolean() );
 
-      // Also save the step group attributes map
-      //
+      // Read the job entry group attributes map
       if ( jobEntry instanceof JobEntryBase ) {
         AttributesMapUtil.loadAttributesMap( copyNode, (JobEntryBase) jobEntry );
       }
-      AttributesMapUtil.loadAttributesMap( copyNode, copy );
+
+      // And read the job entry copy group attributes map
+      AttributesMapUtil.loadAttributesMap( copyNode, copy, PROP_ATTRIBUTES_JOB_ENTRY_COPY );
 
       jobMeta.getJobCopies().add( copy );
     }
@@ -307,7 +306,6 @@ public class JobDelegate extends AbstractDelegate implements ISharedObjectsTrans
     DataNode notesNode = rootNode.getNode( NODE_NOTES );
     int nrNotes = (int) notesNode.getProperty( PROP_NR_NOTES ).getLong();
     for ( DataNode noteNode : notesNode.getNodes() ) {
-      // String name = noteNode.getName();
       String xml = getString( noteNode, PROP_XML );
       jobMeta
           .addNote( new NotePadMeta( XMLHandler.getSubNode( XMLHandler.loadXMLString( xml ), NotePadMeta.XML_TAG ) ) );
@@ -322,7 +320,6 @@ public class JobDelegate extends AbstractDelegate implements ISharedObjectsTrans
     DataNode hopsNode = rootNode.getNode( NODE_HOPS );
     int nrHops = (int) hopsNode.getProperty( PROP_NR_HOPS ).getLong();
     for ( DataNode hopNode : hopsNode.getNodes() ) {
-      // String name = hopNode.getName();
       String copyFromName = getString( hopNode, JOB_HOP_FROM );
       int copyFromNr = (int) hopNode.getProperty( JOB_HOP_FROM_NR ).getLong();
       String copyToName = getString( hopNode, JOB_HOP_TO );
@@ -413,7 +410,6 @@ public class JobDelegate extends AbstractDelegate implements ISharedObjectsTrans
     } catch ( Exception e ) {
       throw new KettleException( "Error loading job details", e );
     }
-
   }
 
   protected JobEntryInterface readJobEntry( DataNode copyNode, JobMeta jobMeta, List<JobEntryInterface> jobentries )
@@ -464,7 +460,6 @@ public class JobDelegate extends AbstractDelegate implements ISharedObjectsTrans
       List<DatabaseMeta> databases, List<SlaveServer> slaveServers ) throws KettleException {
 
     jobEntry.loadRep( repository, id_jobentry_type, databases, slaveServers );
-
   }
 
   public DataNode elementToDataNode( final RepositoryElementInterface element ) throws KettleException {
@@ -494,7 +489,7 @@ public class JobDelegate extends AbstractDelegate implements ISharedObjectsTrans
     // Save the job entry copies
     //
     if ( log.isDetailed() ) {
-      log.logDetailed( toString(), "Saving " + jobMeta.nrJobEntries() + " Job enty copies to repository..." ); //$NON-NLS-1$ //$NON-NLS-2$
+      log.logDetailed( toString(), "Saving " + jobMeta.nrJobEntries() + " Job entry copies to repository..." ); //$NON-NLS-1$ //$NON-NLS-2$
     }
     DataNode entriesNode = rootNode.addNode( NODE_ENTRIES );
     entriesNode.setProperty( PROP_NR_JOB_ENTRY_COPIES, jobMeta.nrJobEntries() );
@@ -517,12 +512,13 @@ public class JobDelegate extends AbstractDelegate implements ISharedObjectsTrans
       copyNode.setProperty( PROP_GUI_DRAW, copy.isDrawn() );
       copyNode.setProperty( PROP_PARALLEL, copy.isLaunchingInParallel() );
 
-      // Also save the step group attributes map
-      //
+      // Save the job entry group attributes map
       if ( entry instanceof JobEntryBase ) {
         AttributesMapUtil.saveAttributesMap( copyNode, (JobEntryBase) entry );
       }
-      AttributesMapUtil.saveAttributesMap( copyNode, copy );
+
+      // And save the job entry copy group attributes map
+      AttributesMapUtil.saveAttributesMap( copyNode, copy, PROP_ATTRIBUTES_JOB_ENTRY_COPY );
 
       // Save the entry information here as well, for completeness.
       // TODO: since this slightly stores duplicate information, figure out how to store this separately.
@@ -619,7 +615,7 @@ public class JobDelegate extends AbstractDelegate implements ISharedObjectsTrans
   /**
    * Insert all the databases from the repository into the JobMeta object, overwriting optionally
    * 
-   * @param JobMeta
+   * @param jobMeta
    *          The transformation to load into.
    * @param overWriteShared
    *          if an object with the same name exists, overwrite
@@ -642,7 +638,7 @@ public class JobDelegate extends AbstractDelegate implements ISharedObjectsTrans
   /**
    * Add the slave servers in the repository to this job if they are not yet present.
    * 
-   * @param JobMeta
+   * @param jobMeta
    *          The job to load into.
    * @param overWriteShared
    *          if an object with the same name exists, overwrite
@@ -660,5 +656,4 @@ public class JobDelegate extends AbstractDelegate implements ISharedObjectsTrans
       }
     }
   }
-
 }

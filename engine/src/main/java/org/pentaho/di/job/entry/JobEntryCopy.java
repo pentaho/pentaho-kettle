@@ -63,6 +63,8 @@ public class JobEntryCopy implements Cloneable, XMLInterface, GUIPositionInterfa
   AttributesInterface, BaseMeta {
   private static final String XML_TAG = "entry";
 
+  private static final String XML_ATTRIBUTE_JOB_ENTRY_COPY = AttributesUtil.XML_TAG + "_kjc";
+
   private JobEntryInterface entry;
 
   private String suggestion = "";
@@ -110,7 +112,7 @@ public class JobEntryCopy implements Cloneable, XMLInterface, GUIPositionInterfa
     retval.append( "      " ).append( XMLHandler.addTagValue( "xloc", location.x ) );
     retval.append( "      " ).append( XMLHandler.addTagValue( "yloc", location.y ) );
 
-    retval.append( AttributesUtil.getAttributesXml( attributesMap ) );
+    retval.append( AttributesUtil.getAttributesXml( attributesMap, XML_ATTRIBUTE_JOB_ENTRY_COPY ) );
 
     retval.append( "    " ).append( XMLHandler.closeTag( XML_TAG ) ).append( Const.CR );
     return retval.toString();
@@ -144,8 +146,6 @@ public class JobEntryCopy implements Cloneable, XMLInterface, GUIPositionInterfa
       }
       // Get an empty JobEntry of the appropriate class...
       if ( entry != null ) {
-        // System.out.println("New JobEntryInterface built of type:
-        // "+entry.getTypeDesc());
         if ( jobPlugin != null ) {
           entry.setPluginId( jobPlugin.getIds()[0] );
         }
@@ -161,7 +161,18 @@ public class JobEntryCopy implements Cloneable, XMLInterface, GUIPositionInterfa
         int y = Const.toInt( XMLHandler.getTagValue( entrynode, "yloc" ), 0 );
         setLocation( x, y );
 
-        attributesMap = AttributesUtil.loadAttributes( XMLHandler.getSubNode( entrynode, AttributesUtil.XML_TAG ) );
+        Node jobEntryCopyAttributesNode = XMLHandler.getSubNode( entrynode, XML_ATTRIBUTE_JOB_ENTRY_COPY );
+        if ( jobEntryCopyAttributesNode != null ) {
+          attributesMap = AttributesUtil.loadAttributes( jobEntryCopyAttributesNode );
+        } else {
+          // [PDI-17345] If the appropriate attributes node wasn't found, this must be an old file (prior to this fix).
+          // Before this fix it was very probable to exist two attributes groups. While this is not very valid, in some
+          // scenarios the Job worked as expected; so by trying to load the LAST one into the JobEntryCopy, we
+          // simulate that behaviour.
+          attributesMap =
+            AttributesUtil.loadAttributes( XMLHandler.getLastSubNode( entrynode, AttributesUtil.XML_TAG ) );
+        }
+
         setDeprecationAndSuggestedJobEntry();
       }
     } catch ( Throwable e ) {
@@ -191,7 +202,7 @@ public class JobEntryCopy implements Cloneable, XMLInterface, GUIPositionInterfa
     entry = null;
     nr = 0;
     launchingInParallel = false;
-    attributesMap = new HashMap<String, Map<String, String>>();
+    attributesMap = new HashMap<>();
     setObjectId( null );
   }
 
@@ -449,7 +460,7 @@ public class JobEntryCopy implements Cloneable, XMLInterface, GUIPositionInterfa
   public void setAttribute( String groupName, String key, String value ) {
     Map<String, String> attributes = getAttributes( groupName );
     if ( attributes == null ) {
-      attributes = new HashMap<String, String>();
+      attributes = new HashMap<>();
       attributesMap.put( groupName, attributes );
     }
     attributes.put( key, value );
@@ -495,6 +506,5 @@ public class JobEntryCopy implements Cloneable, XMLInterface, GUIPositionInterfa
         break;
       }
     }
-
   }
 }
