@@ -65,11 +65,11 @@
           <url>${env.RESOLVE_REPO_MIRROR}</url>
           <releases>
             <enabled>true</enabled>
-            <updatePolicy>daily</updatePolicy>
+            <updatePolicy>never</updatePolicy>
           </releases>
           <snapshots>
             <enabled>true</enabled>
-            <updatePolicy>daily</updatePolicy>
+            <updatePolicy>never</updatePolicy>
           </snapshots>
         </repository>
       </repositories>
@@ -80,11 +80,11 @@
           <url>${env.RESOLVE_REPO_MIRROR}</url>
           <releases>
             <enabled>true</enabled>
-            <updatePolicy>daily</updatePolicy>
+            <updatePolicy>never</updatePolicy>
           </releases>
           <snapshots>
             <enabled>true</enabled>
-            <updatePolicy>daily</updatePolicy>
+            <updatePolicy>never</updatePolicy>
           </snapshots>
         </pluginRepository>
       </pluginRepositories>
