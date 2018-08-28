@@ -18,6 +18,8 @@ package org.pentaho.di.ui.core;
 import org.eclipse.swt.widgets.Shell;
 import org.pentaho.di.trans.step.StepMeta;
 
+import java.util.List;
+
 /**
  * Created by ddiroma on 8/15/18.
  */
@@ -26,12 +28,15 @@ public class GetFieldsDialogOperation {
   private StepMeta stepMeta;
   private int width;
   private int height;
+  private String filename;
+  private List<String> paths;
 
-  public GetFieldsDialogOperation( Shell shell, StepMeta stepMeta, int width, int height ) {
+  public GetFieldsDialogOperation( Shell shell, StepMeta stepMeta, int width, int height, String filename ) {
     this.shell = shell;
     this.stepMeta = stepMeta;
     this.width = width;
     this.height = height;
+    this.filename = filename;
   }
 
   public Shell getShell() {
@@ -64,5 +69,21 @@ public class GetFieldsDialogOperation {
 
   public void setHeight( int height ) {
     this.height = height;
+  }
+
+  public String getFilename() {
+    return filename;
+  }
+
+  public void setFilename( String filename ) {
+    this.filename = filename;
+  }
+
+  public List<String> getPaths() {
+    return paths;
+  }
+
+  public void setPaths( List<String> paths ) {
+    this.paths = paths;
   }
 }

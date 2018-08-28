@@ -1,11 +1,11 @@
 <div class="loading">
   <div class="icon"></div>
-  <div class="text" ng-if="vm.title || vm.message">
+  <div class="text" ng-if="(vm.title || vm.message) && vm.showText">
     <div class="title">
-      Just a moment
+      {{vm.title}}
     </div>
     <div class="message">
-      We're putting things in place.
+      {{vm.message}}
     </div>
   </div>
 </div>

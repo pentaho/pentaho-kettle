@@ -8,21 +8,23 @@
 </div>
 <div class="middle">
   <div class="fields">
-    <div class="fieldsOutput">
+    <loading ng-if="vm.loading" title="vm.loadingTitle" message="vm.loadingMessage" show-text="vm.longLoading"></loading>
+    <div class="jsonOutput">
+      <tree content="vm.tree"></tree>
     </div>
   </div>
 </div>
 <div class="bottom">
   <div class="clearSelection">
-    Clear Selection
+    <a href ng-click="vm.clearSelection()">Clear Selection</a>
   </div>
   <div class="buttons">
-    <button class="secondary">
+    <button class="secondary" ng-click="vm.cancel()">
       <span>
         Cancel
       </span>
     </button>
-    <button class="primary">
+    <button class="primary" ng-click="vm.ok()">
       <span>
         OK
       </span>

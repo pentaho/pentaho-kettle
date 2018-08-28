@@ -20,39 +20,26 @@
  *
  ******************************************************************************/
 
-package org.pentaho.di.trans.steps.jsoninput.sampler.node;
+package org.pentaho.getfields.types.json.node;
 
 /**
- * A node with just a value with a type
- *
- * Created by bmorrise on 7/27/18.
+ * Created by bmorrise on 8/7/18.
  */
-public class ValueNode<T> implements Node {
-  private T value;
+public abstract class Node {
+  protected String key;
 
-  public ValueNode( T value ) {
-    this.value = value;
+  public Node( String key ) {
+    this.key = key;
   }
 
-  public T getValue() {
-    return value;
+  public String getKey() {
+    return key;
   }
 
-  public void setValue( T value ) {
-    this.value = value;
+  public void setKey( String key ) {
+    this.key = key;
   }
 
-  public String getType() {
-    return value.getClass().getSimpleName();
-  }
-
-  @Override
-  public String output() {
-    return String.valueOf( value );
-  }
-
-  @Override
-  public void dedupe() {
-    // Do nothing
-  }
+  public abstract void dedupe();
+  public abstract String getType();
 }

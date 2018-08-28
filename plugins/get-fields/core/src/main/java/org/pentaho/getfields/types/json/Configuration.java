@@ -20,12 +20,32 @@
  *
  ******************************************************************************/
 
-package org.pentaho.di.trans.steps.jsoninput.sampler.node;
+package org.pentaho.getfields.types.json;
 
 /**
- * Created by bmorrise on 8/7/18.
+ * Configuration options for JsonSampler
+ *
+ * Created by bmorrise on 7/27/18.
  */
-public interface Node {
-  String output();
-  void dedupe();
+public class Configuration {
+
+  public static int DEFAULT_LINES = 100;
+  private int lines = DEFAULT_LINES;
+  private boolean dedupe = true;
+
+  public int getLines() {
+    return lines;
+  }
+
+  public void setLines( int lines ) {
+    this.lines = lines;
+  }
+
+  public boolean isDedupe() {
+    return dedupe;
+  }
+
+  public void setDedupe( boolean dedupe ) {
+    this.dedupe = dedupe;
+  }
 }

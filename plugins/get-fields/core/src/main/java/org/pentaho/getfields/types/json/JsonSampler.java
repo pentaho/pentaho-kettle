@@ -20,17 +20,16 @@
  *
  ******************************************************************************/
 
-package org.pentaho.di.trans.steps.jsoninput.sampler;
-
-import org.pentaho.di.trans.steps.jsoninput.sampler.node.Node;
-import org.pentaho.di.trans.steps.jsoninput.sampler.node.ObjectNode;
-import org.pentaho.di.trans.steps.jsoninput.sampler.node.ArrayNode;
-import org.pentaho.di.trans.steps.jsoninput.sampler.node.ValueNode;
+package org.pentaho.getfields.types.json;
 
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonToken;
 import com.fasterxml.jackson.databind.MappingJsonFactory;
+import org.pentaho.getfields.types.json.node.Node;
+import org.pentaho.getfields.types.json.node.ArrayNode;
+import org.pentaho.getfields.types.json.node.ObjectNode;
+import org.pentaho.getfields.types.json.node.ValueNode;
 
 import java.io.File;
 import java.io.IOException;
@@ -72,11 +71,11 @@ public class JsonSampler {
     Node node = null;
     while ( jsonParser.nextToken() != null ) {
       if ( jsonParser.currentToken() == JsonToken.START_ARRAY ) {
-        node = new ArrayNode();
+        node = new ArrayNode( null );
         sampleArray( jsonParser, (ArrayNode) node );
       }
       if ( jsonParser.currentToken() == JsonToken.START_OBJECT ) {
-        node = new ObjectNode();
+        node = new ObjectNode( null );
         sampleObject( jsonParser, (ObjectNode) node );
       }
       if ( start > configuration.getLines() ) {
@@ -138,8 +137,8 @@ public class JsonSampler {
       if ( start > configuration.getLines() ) {
         return;
       }
-      Node node = getValue( jsonParser );
-      arrayNode.addChild( node );
+      Object node = getValue( jsonParser, null );
+      arrayNode.addChild( (Node) node );
       if ( node instanceof ObjectNode ) {
         sampleObject( jsonParser, (ObjectNode) node );
       }
@@ -168,14 +167,14 @@ public class JsonSampler {
       if ( jsonParser.currentToken() == JsonToken.FIELD_NAME ) {
         String name = jsonParser.getCurrentName();
         jsonParser.nextToken();
-        Node node = getValue( jsonParser );
+        Object node = getValue( jsonParser, name );
         if ( node instanceof ObjectNode ) {
           sampleObject( jsonParser, (ObjectNode) node );
         }
         if ( node instanceof ArrayNode ) {
           sampleArray( jsonParser, (ArrayNode) node );
         }
-        objectNode.addValue( name, node );
+        objectNode.addValue( (Node) node );
       }
     }
   }
@@ -186,24 +185,24 @@ public class JsonSampler {
    * @param jsonParser
    * @return Node - return Node type based on json token
    */
-  private Node getValue( JsonParser jsonParser ) {
+  private Node getValue( JsonParser jsonParser, String key ) {
     try {
       switch ( jsonParser.currentToken() ) {
         case START_OBJECT:
-          return new ObjectNode();
+          return new ObjectNode( key );
         case START_ARRAY:
-          return new ArrayNode();
+          return new ArrayNode( key );
         case VALUE_STRING:
-          return new ValueNode<>( jsonParser.getValueAsString() );
+          return new ValueNode<>( key, jsonParser.getValueAsString() );
         case VALUE_TRUE:
         case VALUE_FALSE:
-          return new ValueNode<>( jsonParser.getValueAsBoolean() );
+          return new ValueNode<>( key, jsonParser.getValueAsBoolean() );
         case VALUE_NULL:
-          return new ValueNode<>( null );
+          return new ValueNode<>( key, null );
         case VALUE_NUMBER_FLOAT:
-          return new ValueNode<>( jsonParser.getValueAsDouble() );
+          return new ValueNode<>( key, jsonParser.getValueAsDouble() );
         case VALUE_NUMBER_INT:
-          return new ValueNode<>( jsonParser.getValueAsInt() );
+          return new ValueNode<>( key, jsonParser.getValueAsInt() );
       }
     } catch ( IOException ioe ) {
       return null;
