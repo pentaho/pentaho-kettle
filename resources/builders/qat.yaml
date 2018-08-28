@@ -10,7 +10,7 @@ buildProperties:
         # TODO: Change this to clean deploy when ready to deploy
         MAVEN_DEFAULT_DIRECTIVES       : clean install
         MAVEN_PUBLIC_RELEASE_REPO_URL  : http://nexus.pentaho.org/content/repositories/public-9.0-qat
-        MAVEN_PRIVATE_RELEASE_REPO_URL : http://nexus.pentaho.org/content/repositories/private-9.0-qat 
+        MAVEN_PRIVATE_RELEASE_REPO_URL : http://nexus.pentaho.org/content/repositories/private-9.0-qat
 
         # Version based control properties
         UPDATE_VERSIONS                : true
@@ -378,6 +378,7 @@ jobGroups:
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-ee.git
        scmBranch       :  ${DEFAULT_BRANCH}
        versionProperty :  pdi-plugins-ee.version
+       testable        :  false
        root            :  data-integration/plugins
 
      - jobID           :  camel-components
@@ -416,6 +417,7 @@ jobGroups:
        scmUrl          :  ${WEBDETAILS_SCM_ROOT}/cdf.git
        scmBranch       :  ${DEFAULT_BRANCH}
        versionProperty :  pentaho-cdf-plugin.version
+       testable        :  false
 
   2600:
 
@@ -842,7 +844,7 @@ jobGroups:
        testable        :  false
 
  # Uncomment these post harvester jobs when haverster job is implemented and added here.
- # 
+ #
  # 4900:
  #
  #    - jobID                 :  cm-build-order-trigger
