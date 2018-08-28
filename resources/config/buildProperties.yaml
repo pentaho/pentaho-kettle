@@ -90,6 +90,7 @@ JOB_ITEM_DEFAULTS:
   archivable: false
   parallelize: false
   artifactsArchivePattern: ${ARCHIVE_ARTIFACTS_PATTERN}
+  buildOnlyChanges: false # flag to control whether the downstreams should be built when SCM changes are detected from a upstream
 
 # Build failover settings
 IGNORE_PIPELINE_FAILURE: false
