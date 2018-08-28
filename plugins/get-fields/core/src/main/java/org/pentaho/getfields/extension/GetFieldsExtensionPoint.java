@@ -20,7 +20,6 @@ import org.pentaho.di.core.extension.ExtensionPoint;
 import org.pentaho.di.core.extension.ExtensionPointInterface;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.ui.core.GetFieldsDialogOperation;
-
 import org.pentaho.getfields.dialog.GetFieldsDialog;
 
 /**
@@ -37,8 +36,10 @@ public class GetFieldsExtensionPoint implements ExtensionPointInterface {
   @Override public void callExtensionPoint( LogChannelInterface logChannelInterface, Object o ) throws KettleException {
     GetFieldsDialogOperation getFieldsDialogOperation = (GetFieldsDialogOperation) o;
     GetFieldsDialog getFieldsDialog = new GetFieldsDialog( getFieldsDialogOperation.getShell(),
-      getFieldsDialogOperation.getWidth(), getFieldsDialogOperation.getHeight() );
+            getFieldsDialogOperation.getWidth(), getFieldsDialogOperation.getHeight(), getFieldsDialogOperation
+            .getFilename() );
     getFieldsDialog.setTitle( getFieldsDialogOperation.getStepMeta().getName() );
     getFieldsDialog.open();
+    getFieldsDialogOperation.setPaths( getFieldsDialog.getPaths() );
   }
 }

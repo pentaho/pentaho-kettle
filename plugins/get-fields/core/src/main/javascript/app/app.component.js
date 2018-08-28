@@ -29,9 +29,10 @@
  * @property {Object} options The JSON object containing the configurations for this component.
  **/
 define([
+  "./services/data.service",
   "text!./app.html",
   "css!./app.css"
-], function(template) {
+], function(dataService, template) {
   "use strict";
 
   var options = {
@@ -41,9 +42,18 @@ define([
     controller: appController
   };
 
-  function appController() {
+  appController.$inject = [dataService.name, "$location", "$scope", "$timeout"];
+
+  function appController(dt, $location, $scope, $timeout) {
     var vm = this;
     vm.$onInit = onInit;
+    vm.clearSelection = clearSelection;
+    vm.ok = ok;
+    vm.cancel = cancel;
+    vm.loading = true;
+    vm.loadingTitle = "Just a moment";
+    vm.loadingMessage = "We're putting things in place.";
+    vm.longLoading = false;
 
     /**
      * The $onInit hook of components lifecycle which is called on each controller
@@ -51,7 +61,32 @@ define([
      * bindings initialized. We use this hook to put initialization code for our controller.
      */
     function onInit() {
+      var path = $location.search().path;
+      $timeout(function() {
+        if (vm.loading) {
+          vm.longLoading = true;
+        }
+      }, 1000);
+      dt.sample(path).then(function(response) {
+        vm.tree = response.data;
+        vm.loading = false;
+      }, function() {
+        console.log("An error has occurred");
+      });
     }
+
+    function clearSelection() {
+      $scope.$broadcast("clearSelection");
+    }
+
+    function ok() {
+      $scope.$broadcast("ok");
+    }
+
+    function cancel() {
+      window.close();
+    }
+
   }
 
   return {

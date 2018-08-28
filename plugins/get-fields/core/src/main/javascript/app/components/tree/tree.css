@@ -1,0 +1,50 @@
+tree {
+    font-size: 14px;
+}
+
+tree .node .item {
+    font-size: 0;
+}
+
+tree .node .item div {
+    display: inline-block;
+    font-size: 14px;
+    line-height: 30px;
+}
+
+tree .node .item .chevron {
+    /*border: 1px solid #000000;*/
+    cursor: pointer;
+    margin-right: 10px;
+    width: 12px;
+    background: url("../../img/chevron_right_tree.svg") no-repeat 3px center;
+}
+
+tree .node .item .chevron.none {
+    background: none;
+}
+
+tree .node .item .chevron.open {
+    background: url("../../img/chevron_down_tree.svg") no-repeat 1px center;
+}
+
+tree .node .item .checkbox {
+    /*border: 1px solid #000000;*/
+    margin-right: 10px;
+}
+
+tree .node .item .key {
+    /*border: 1px solid #000000;*/
+    margin-right: 10px;
+    color: #333;
+}
+
+tree .node .item .value {
+    /*border: 1px solid #000000;*/
+    /*margin-left: 8px;*/
+    color: #ccc;
+}
+
+tree input[type="checkbox"] {
+    margin: 0;
+}

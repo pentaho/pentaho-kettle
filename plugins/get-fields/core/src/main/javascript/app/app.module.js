@@ -23,14 +23,17 @@
 /**
  * The Get Fields Main Module.
  *
- * The main module used for supporting the get fields functionality.
+ * The main module used for supporting the json input get fields functionality.
  **/
 define([
   "angular",
   "./app.component",
   "./components/error/error.component",
-  "./components/loading/loading.component"
-], function(angular, appComponent, errorComponent, loadingComponent) {
+  "./components/loading/loading.component",
+  "./components/tree/tree.component",
+  "./services/data.service",
+  "./filters/output.filter"
+], function(angular, appComponent, errorComponent, loadingComponent, treeComponent, dataService, outputFilter) {
   "use strict";
 
   var module = {
@@ -51,7 +54,10 @@ define([
     angular.module(module.name, [])
       .component(appComponent.name, appComponent.options)
       .component(errorComponent.name, errorComponent.options)
-      .component(loadingComponent.name, loadingComponent.options);
+      .component(loadingComponent.name, loadingComponent.options)
+      .component(treeComponent.name, treeComponent.options)
+      .service(dataService.name, dataService.factory)
+      .filter(outputFilter.name, outputFilter.factory);
   }
 
   /**

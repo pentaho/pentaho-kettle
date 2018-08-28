@@ -17,4 +17,19 @@
     <pen:di-plugin type="org.pentaho.di.core.extension.ExtensionPointPluginType"/>
   </bean>
 
+    <jaxrs:server address="/get-fields" id="browser-endpoint">
+        <jaxrs:serviceBeans>
+            <bean class="org.pentaho.getfields.endpoint.GetFieldsEndpoint"/>
+        </jaxrs:serviceBeans>
+
+        <jaxrs:extensionMappings>
+            <entry key="json" value="application/json"/>
+        </jaxrs:extensionMappings>
+
+        <jaxrs:providers>
+            <bean class="com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider"/>
+        </jaxrs:providers>
+
+    </jaxrs:server>
+
 </blueprint>

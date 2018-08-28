@@ -20,32 +20,42 @@
  *
  ******************************************************************************/
 
-package org.pentaho.di.trans.steps.jsoninput.sampler;
+package org.pentaho.getfields.types.json.node;
 
 /**
- * Configuration options for JsonSampler
- *
- * Created by bmorrise on 7/27/18.
+ * Created by bmorrise on 8/24/18.
  */
-public class Configuration {
+public class ValueNode<T> extends Node {
+  private T value;
 
-  public static int DEFAULT_LINES = 100;
-  private int lines = DEFAULT_LINES;
-  private boolean dedupe = true;
-
-  public int getLines() {
-    return lines;
+  public ValueNode( String key, T value ) {
+    super( key );
+    this.value = value;
   }
 
-  public void setLines( int lines ) {
-    this.lines = lines;
+  public T getValue() {
+    return value;
   }
 
-  public boolean isDedupe() {
-    return dedupe;
+  public void setValue( T value ) {
+    this.value = value;
   }
 
-  public void setDedupe( boolean dedupe ) {
-    this.dedupe = dedupe;
+  public String getType() {
+    if ( value != null ) {
+      return value.getClass().getSimpleName();
+    }
+    return null;
+  }
+
+  @Override
+  public String toString() {
+    String output = value instanceof String ? "" + String.valueOf( value ) + "" : String.valueOf( value );
+    return key + ": " + output + "\n";
+  }
+
+  @Override
+  public void dedupe() {
+    // Do nothing
   }
 }

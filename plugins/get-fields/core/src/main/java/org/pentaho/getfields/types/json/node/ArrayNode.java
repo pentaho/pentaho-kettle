@@ -20,7 +20,7 @@
  *
  ******************************************************************************/
 
-package org.pentaho.di.trans.steps.jsoninput.sampler.node;
+package org.pentaho.getfields.types.json.node;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,9 +30,14 @@ import java.util.List;
  *
  * Created by bmorrise on 8/7/18.
  */
-public class ArrayNode implements Node {
+public class ArrayNode extends Node {
 
+  public static final String TYPE = "Array";
   private List<Node> children = new ArrayList<>();
+
+  public ArrayNode( String key ) {
+    super( key );
+  }
 
   public void addChild( Node child ) {
     children.add( child );
@@ -55,11 +60,12 @@ public class ArrayNode implements Node {
    * Remove duplicate child nodes
    */
   public void dedupe() {
-    ObjectNode objectNode = new ObjectNode();
-    ArrayNode arrayNode = new ArrayNode();
+    ObjectNode objectNode = new ObjectNode( null );
+    ArrayNode arrayNode = new ArrayNode( null );
     for ( int i = 0; i < children.size(); i++ ) {
       Node child = children.get( i );
       if ( child instanceof ObjectNode ) {
+        objectNode.setKey( child.getKey() );
         objectNode.combine( (ObjectNode) child );
       }
       if ( child instanceof ArrayNode ) {
@@ -67,7 +73,7 @@ public class ArrayNode implements Node {
       }
     }
     children.clear();
-    if ( objectNode.getValues().size() > 0 ) {
+    if ( objectNode.getChildren().size() > 0 ) {
       children.add( objectNode );
     }
     if ( arrayNode.getChildren().size() > 0 ) {
@@ -76,11 +82,21 @@ public class ArrayNode implements Node {
   }
 
   @Override
-  public String output() {
-    String output = "[\n";
-    for ( Node child : children ) {
-      output += child.output();
+  public String toString() {
+    String output = "";
+    if ( key != null ) {
+      output += key + ": [\n";
+    } else {
+      output = "[\n";
     }
-    return output + "]";
+    for ( Node child : children ) {
+      output += child.toString();
+    }
+    return output + "],\n";
+  }
+
+  @Override
+  public String getType() {
+    return TYPE;
   }
 }

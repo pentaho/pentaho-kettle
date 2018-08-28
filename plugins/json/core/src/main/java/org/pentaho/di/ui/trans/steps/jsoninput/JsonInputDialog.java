@@ -50,15 +50,15 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.extension.ExtensionPointHandler;
-import org.pentaho.di.core.extension.KettleExtensionPoint;
-import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.Props;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.extension.ExtensionPointHandler;
+import org.pentaho.di.core.extension.KettleExtensionPoint;
 import org.pentaho.di.core.fileinput.FileInputList;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.value.ValueMetaBase;
 import org.pentaho.di.core.row.value.ValueMetaFactory;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
@@ -1478,9 +1478,27 @@ public class JsonInputDialog extends BaseStepDialog implements StepDialogInterfa
   private void get() {
     try {
       // Call new get fields dialog
-      GetFieldsDialogOperation getFieldsDialogOperation = new GetFieldsDialogOperation( shell, stepMeta, 450, 588 );
-      ExtensionPointHandler.callExtensionPoint( null, KettleExtensionPoint.GetFieldsExtension.id,
-        getFieldsDialogOperation );
+      if ( wFilenameList.getItemCount() > 0 ) {
+        String filename = wFilenameList.getItem( 0 )[ 0 ];
+        GetFieldsDialogOperation getFieldsDialogOperation = new GetFieldsDialogOperation( shell, stepMeta, 450, 588,
+                filename );
+        ExtensionPointHandler.callExtensionPoint( null, KettleExtensionPoint.GetFieldsExtension.id,
+                getFieldsDialogOperation );
+
+        int numRows = getFieldsDialogOperation.getPaths().size();
+        wFields.table.setItemCount( numRows );
+        for ( int i = 0; i < numRows; i++ ) {
+          String path = getFieldsDialogOperation.getPaths().get( i );
+          String[] values = path.split( ":" );
+          TableItem item = wFields.table.getItem( i );
+          item.setText( 1, values[0] );
+          item.setText( 2, values[1] );
+          item.setText( 3, values[2] );
+        }
+        wFields.removeEmptyRows();
+        wFields.setRowNums();
+        wFields.optWidth( true );
+      }
     } catch ( Exception e ) {
       log.logError( e.getMessage() );
     }

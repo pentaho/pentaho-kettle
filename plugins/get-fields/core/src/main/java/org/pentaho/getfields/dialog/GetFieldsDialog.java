@@ -16,6 +16,7 @@
 package org.pentaho.getfields.dialog;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.browser.BrowserFunction;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Shell;
 import org.pentaho.di.core.exception.KettleException;
@@ -26,6 +27,8 @@ import org.pentaho.platform.settings.ServerPortRegistry;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
 
 /**
@@ -38,18 +41,53 @@ public class GetFieldsDialog extends ThinDialog {
   private static final String THIN_CLIENT_HOST = "THIN_CLIENT_HOST";
   private static final String THIN_CLIENT_PORT = "THIN_CLIENT_PORT";
   private static final String LOCALHOST = "localhost";
+  private List<String> paths = new ArrayList<>();
 
   private String title = "";
+  private String file;
 
-  public GetFieldsDialog( Shell shell, int width, int height ) {
+  public GetFieldsDialog( Shell shell, int width, int height, String file ) {
     super( shell, width, height );
+    this.file = file;
+  }
+
+  public List<String> getPaths() {
+    return paths;
+  }
+
+  public void setPaths( List<String> paths ) {
+    this.paths = paths;
   }
 
   public void open() {
     StringBuilder clientPath = new StringBuilder();
     clientPath.append( getClientPath() );
-    super.createDialog( title, getRepoURL( clientPath.toString() ), OPTIONS, LOGO );
-    super.dialog.setMinimumSize( 435, 580 );
+    clientPath.append( "#?path=" );
+    clientPath.append( file );
+    createDialog( title, getRepoURL( clientPath.toString() ), OPTIONS, LOGO );
+    dialog.setMinimumSize( 435, 580 );
+
+    new BrowserFunction( browser, "close" ) {
+      @Override public Object function( Object[] arguments ) {
+        browser.dispose();
+        dialog.close();
+        dialog.dispose();
+        return true;
+      }
+    };
+
+    new BrowserFunction( browser, "ok" ) {
+      @Override public Object function( Object[] arguments ) {
+        for ( Object path : (Object[]) arguments[0] ) {
+          paths.add( (String) path );
+        }
+        browser.dispose();
+        dialog.close();
+        dialog.dispose();
+        return true;
+      }
+    };
+
     while ( !dialog.isDisposed() ) {
       if ( !display.readAndDispatch() ) {
         display.sleep();

@@ -20,37 +20,34 @@
  * explicitly covering such access.
  */
 
-/* LOADING */
-loading .loading {
-  margin: auto;
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  -ms-transform: translate(-50%, -50%);
-  -webkit-transform: translate(-50%, -50%);
-}
+define(
+  [],
+  function() {
+    "use strict";
 
-loading .loading .icon {
-  margin: auto;
-  background: url("../../img/busy_thin.gif") no-repeat center center;
-  width: 66px;
-  height: 66px;
-}
+    var module = {
+      name: "output",
+      factory: factory
+    };
 
-loading .text {
-  margin-top: 10px;
-  text-align: center;
-  position: relative;
-}
+    return module;
 
-loading .loading .title {
-  line-height: 32px;
-  font-size: 24px;
-  font-family: OpenSansLight;
-}
-
-loading .loading .message {
-  line-height: 28px;
-  font-size: 14px;
-}
+    function factory() {
+      return function(input) {
+        if (input.type === "Array") {
+          return "[";
+        }
+        if (input.type === "Object") {
+          return "{";
+        }
+        if (input.type === null) {
+          return "null";
+        }
+        if (input.type === "String") {
+          return "\"" + input.value + "\"";
+        }
+        return input.value;
+      }
+    }
+  }
+);
