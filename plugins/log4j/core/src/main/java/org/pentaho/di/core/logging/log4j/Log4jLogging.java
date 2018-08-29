@@ -2,7 +2,7 @@
 *
 * Pentaho Data Integration
 *
-* Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+* Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
 *
 *******************************************************************************
 *
@@ -27,10 +27,13 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.apache.log4j.helpers.LogLog;
 import org.apache.log4j.xml.DOMConfigurator;
+import org.pentaho.di.core.Const;
 import org.pentaho.di.core.logging.KettleLogStore;
 import org.pentaho.di.core.logging.KettleLoggingEvent;
 import org.pentaho.di.core.logging.LoggingPlugin;
 import org.pentaho.di.core.logging.LoggingPluginInterface;
+
+import java.io.File;
 
 @LoggingPlugin(
   id = "Log4jLogging", isSeparateClassLoaderNeeded = true )
@@ -78,7 +81,24 @@ public class Log4jLogging implements LoggingPluginInterface {
     LogLog.setQuietMode( true );
     LogManager.resetConfiguration();
     LogLog.setQuietMode( false );
-    DOMConfigurator.configure( getConfigurationFileName() );
+
+    /**
+     * On DOMConfigurator.doConfigure() no exception is ever propagated; it's caught and its stacktrace is written to System.err.
+     *
+     * @link https://github.com/apache/log4j/blob/v1_2_17_rc3/src/main/java/org/apache/log4j/xml/DOMConfigurator.java#L877-L878
+     *
+     * When the kettle5-log4j-plugin is dropped under ~/.kettle/plugins ( which is also a valid location for classic pdi plugins )
+     * we get a System.err 'FileNotFoundException' stacktrace, as this is attempting to fetch the log4j.xml under a (default path) of
+     * data-integration/plugins/kettle5-log4j-plugin; but in this scenario ( again, a valid one ), kettle5-log4j-plugin is under ~/.kettle/plugins
+     *
+     * With the inability to catch any exception ( as none is ever propagated ), the option left is to infer the starting path of this plugin's jar;
+     * - If it starts with Const.getKettleDirectory(): then we know it to have been dropped in ~/.kettle/plugins ( a.k.a. Const.getKettleDirectory() )
+     * - Otherwise: fallback to default/standard location, which is under <pdi-install-dir>/</>data-integration/plugins
+     */
+    final String properFileName = getClass().getProtectionDomain().getCodeSource().getLocation().getPath().startsWith( Const.getKettleDirectory() )
+        ?  ( Const.getKettleDirectory() + File.separator + PLUGIN_PROPERTIES_FILE ) : getConfigurationFileName();
+
+    DOMConfigurator.configure( properFileName );
   }
 
   /**
