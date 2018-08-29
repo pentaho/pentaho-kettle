@@ -611,6 +611,7 @@ jobGroups:
        scmBranch       :  ${DEFAULT_BRANCH}
        versionProperty :  platform.version
        root            :  platform/plugins/worker-nodes
+       testable        :  false
 
   3700:
 
