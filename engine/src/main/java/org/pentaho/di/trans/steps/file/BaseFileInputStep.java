@@ -184,14 +184,13 @@ public abstract class BaseFileInputStep<M extends BaseFileInputMeta<?, ?, ?>, D 
 
   protected boolean handleOpenFileException( Exception e ) {
     String errorMsg =
-      "Couldn't open file #" + data.currentFileIndex + " : " + data.file.getName().getFriendlyURI() + " --> " + e
-        .toString();
+      "Couldn't open file #" + data.currentFileIndex + " : " + data.file.getName().getFriendlyURI();
     if ( !failAfterBadFile( errorMsg ) ) { // !meta.isSkipBadFiles()) stopAll();
       return true;
     }
     stopAll();
     setErrors( getErrors() + 1 );
-    logError( errorMsg );
+    logError( errorMsg, e );
     return false;
   }
 
