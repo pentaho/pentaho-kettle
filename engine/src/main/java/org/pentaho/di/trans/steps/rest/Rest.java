@@ -152,6 +152,7 @@ public class Rest extends BaseStep implements StepInterface {
         logDebug( BaseMessages.getString( PKG, "Rest.Log.ConnectingToURL", webResource.getURI() ) );
       }
       WebResource.Builder builder = webResource.getRequestBuilder();
+      String contentType = null; // media type override, if not null
       if ( data.useHeaders ) {
         // Add headers
         for ( int i = 0; i < data.nrheader; i++ ) {
@@ -159,6 +160,9 @@ public class Rest extends BaseStep implements StepInterface {
 
           // unsure if an already set header will be returned to builder
           builder = builder.header( data.headerNames[i], value );
+          if ( "Content-Type".equals( data.headerNames[i] ) ) {
+            contentType = value;
+          }
           if ( isDebug() ) {
             logDebug( BaseMessages.getString( PKG, "Rest.Log.HeaderValue", data.headerNames[i], value ) );
           }
@@ -178,9 +182,17 @@ public class Rest extends BaseStep implements StepInterface {
         if ( data.method.equals( RestMeta.HTTP_METHOD_GET ) ) {
           response = builder.get( ClientResponse.class );
         } else if ( data.method.equals( RestMeta.HTTP_METHOD_POST ) ) {
-          response = builder.type( data.mediaType ).post( ClientResponse.class, entityString );
+          if ( null != contentType ) {
+            response = builder.type( contentType ).post( ClientResponse.class, entityString );
+          } else {
+            response = builder.type( data.mediaType ).post( ClientResponse.class, entityString );
+          }
         } else if ( data.method.equals( RestMeta.HTTP_METHOD_PUT ) ) {
-          response = builder.type( data.mediaType ).put( ClientResponse.class, entityString );
+          if ( null != contentType ) {
+            response = builder.type( contentType ).put( ClientResponse.class, entityString );
+          } else {
+            response = builder.type( data.mediaType ).put( ClientResponse.class, entityString );
+          }
         } else if ( data.method.equals( RestMeta.HTTP_METHOD_DELETE ) ) {
           response = builder.delete( ClientResponse.class );
         } else if ( data.method.equals( RestMeta.HTTP_METHOD_HEAD ) ) {
@@ -188,7 +200,11 @@ public class Rest extends BaseStep implements StepInterface {
         } else if ( data.method.equals( RestMeta.HTTP_METHOD_OPTIONS ) ) {
           response = builder.options( ClientResponse.class );
         } else if ( data.method.equals( RestMeta.HTTP_METHOD_PATCH ) ) {
-          response = builder.type( data.mediaType ).method( RestMeta.HTTP_METHOD_PATCH, ClientResponse.class, entityString );
+          if ( null != contentType ) {
+            response = builder.type( contentType ).method( RestMeta.HTTP_METHOD_PATCH, ClientResponse.class, entityString );
+          } else {
+            response = builder.type( data.mediaType ).method( RestMeta.HTTP_METHOD_PATCH, ClientResponse.class, entityString );
+          }
         } else {
           throw new KettleException( BaseMessages.getString( PKG, "Rest.Error.UnknownMethod", data.method ) );
         }
