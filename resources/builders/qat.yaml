@@ -562,6 +562,7 @@ jobGroups:
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-yarn-kettle-plugin.git
        scmBranch       :  ${DEFAULT_BRANCH}
        versionProperty :  pentaho-kettle-yarn-plugin.version
+       testable        :  false
 
      - jobID           :  data-exploration
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-det.git
