@@ -28,7 +28,6 @@ import java.io.PrintWriter;
 import java.lang.management.OperatingSystemMXBean;
 import java.lang.management.RuntimeMXBean;
 import java.lang.management.ThreadMXBean;
-import java.net.URLEncoder;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
@@ -318,18 +317,19 @@ public class GetStatusServlet extends BaseHttpServlet implements CartePluginInte
         out.println( "<table cellspacing=\"0\" cellpadding=\"0\" class=\"toolbar\" style=\"width: 100%; height: 26px; margin-bottom: 5px; border: 0;\">" );
         out.println( "<tbody><tr>" );
         out.println( "<td align=\"left\" style=\"vertical-align: middle; width: 100%\"></td>" );
-        out.println( "<td onMouseEnter=\"document.getElementById( 'pause' ).className='toolbar-button toolbar-button-hovering'\" onMouseLeave=\"document.getElementById( 'pause' ).className='toolbar-button'\" align=\"left\" style=\"vertical-align: middle;\"><div class=\"toolbar-button\" id=\"pause\"><a href=\"#\" style=\"\"><img style=\"width: 22px; height: 22px\" src=\"/pentaho/content/common-ui/resources/themes/images/run.svg\"/></a></div></td>" );
-        out.println( "<td onMouseEnter=\"document.getElementById( 'stop' ).className='toolbar-button toolbar-button-hovering'\" onMouseLeave=\"document.getElementById( 'stop' ).className='toolbar-button'\" align=\"left\" style=\"vertical-align: middle;\"><div class=\"toolbar-button\" id=\"stop\"><a href=\"#\" style=\"\"><img style=\"width: 22px; height: 22px\"src=\"/pentaho/content/common-ui/resources/themes/images/stop.svg\"/></a></div></td>" );
-        out.println( "<td onMouseEnter=\"document.getElementById( 'view' ).className='toolbar-button toolbar-button-hovering'\" onMouseLeave=\"document.getElementById( 'view' ).className='toolbar-button'\" align=\"left\" style=\"vertical-align: middle;\"><div class=\"toolbar-button\" id=\"view\"><a href=\"#\" style=\"\"><img style=\"width: 22px; height: 22px\" src=\"/pentaho/content/common-ui/resources/themes/images/view.svg\"/></a></div></td>" );
-        out.println( "<td onMouseEnter=\"document.getElementById( 'close' ).className='toolbar-button toolbar-button-hovering'\" onMouseLeave=\"document.getElementById( 'close' ).className='toolbar-button'\" align=\"left\" style=\"vertical-align: middle;\"><div class=\"toolbar-button\" id=\"close\"><a href=\"#\" style=\"\"><img style=\"width: 22px; height: 22px\" src=\"/pentaho/content/common-ui/resources/themes/images/close.svg\"/></a></div></td>" );
+        out.println( "<td onMouseEnter=\"document.getElementById( 'pause' ).className='toolbar-button toolbar-button-hovering'\" onMouseLeave=\"document.getElementById( 'pause' ).className='toolbar-button'\" align=\"left\" style=\"vertical-align: middle;\"><div onClick=\"resumeFunction( this )\" class=\"toolbar-button\" id=\"pause\"><img style=\"width: 22px; height: 22px\" src=\"/pentaho/content/common-ui/resources/themes/images/run.svg\"/></div></td>" );
+        out.println( "<td onMouseEnter=\"document.getElementById( 'stop' ).className='toolbar-button toolbar-button-hovering'\" onMouseLeave=\"document.getElementById( 'stop' ).className='toolbar-button'\" align=\"left\" style=\"vertical-align: middle;\"><div onClick=\"stopFunction( this )\" class=\"toolbar-button\" id=\"stop\"><img style=\"width: 22px; height: 22px\"src=\"/pentaho/content/common-ui/resources/themes/images/stop.svg\"/></div></td>" );
+        out.println( "<td onMouseEnter=\"document.getElementById( 'view' ).className='toolbar-button toolbar-button-hovering'\" onMouseLeave=\"document.getElementById( 'view' ).className='toolbar-button'\" align=\"left\" style=\"vertical-align: middle;\"><div onClick=\"viewFunction( this )\" class=\"toolbar-button\" id=\"view\"><img style=\"width: 22px; height: 22px\" src=\"/pentaho/content/common-ui/resources/themes/images/view.svg\"/></div></td>" );
+        out.println( "<td onMouseEnter=\"document.getElementById( 'close' ).className='toolbar-button toolbar-button-hovering'\" onMouseLeave=\"document.getElementById( 'close' ).className='toolbar-button'\" align=\"left\" style=\"vertical-align: middle;\"><div onClick=\"removeFunction( this )\" class=\"toolbar-button\" id=\"close\"><img style=\"width: 22px; height: 22px\" src=\"/pentaho/content/common-ui/resources/themes/images/close.svg\"/></div></td>" );
         out.println( "</tr></tbody></table>" );
+        out.println( "<div id=\"stopActions\" class=\"custom-dropdown-popup\" style=\"visibility: hidden; overflow: visible; position: absolute; left: 3px; top: 76px; z-index: 100;\" onMouseLeave=\"this.style='visibility: hidden; overflow: visible; position: absolute; left: 3px; top: 76px; z-index: 100;'\"><div class=\"popupContent\"><div class=\"gwt-MenuBar gwt-MenuBar-vertical\"><table><tbody><tr><td class=\"gwt-MenuItem\" onClick=\"stopTransSelector( this )\" onMouseEnter=\"this.className='gwt-MenuItem gwt-MenuItem-selected'\" onMouseLeave=\"this.className='gwt-MenuItem'\">Stop transformation</td></tr><tr><td class=\"gwt-MenuItem\" onClick=\"stopTransSelector( this )\" onMouseEnter=\"this.className='gwt-MenuItem gwt-MenuItem-selected'\" onMouseLeave=\"this.className='gwt-MenuItem'\">Stop input processing</td></tr></tbody></table></div></div></div>" );
         out.println( "<table class=\"pentaho-table\" border=\"" + tableBorder + "\">" );
         out.print( "<tr> <th class=\"cellTableHeader\">"
             + BaseMessages.getString( PKG, "GetStatusServlet.TransName" ) + "</th> <th class=\"cellTableHeader\">"
             + BaseMessages.getString( PKG, "GetStatusServlet.CarteId" ) + "</th> <th class=\"cellTableHeader\">"
             + BaseMessages.getString( PKG, "GetStatusServlet.Status" ) + "</th> <th class=\"cellTableHeader\">"
             + BaseMessages.getString( PKG, "GetStatusServlet.LastLogDate" ) + "</th> <th class=\"cellTableHeader\">"
-            + BaseMessages.getString( PKG, "GetStatusServlet.Remove" ) + "</th> </tr>" );
+            + BaseMessages.getString( PKG, "GetStatusServlet.LastLogTime" ) + "</th> </tr>" );
 
         Comparator<CarteObjectEntry> transComparator = new Comparator<CarteObjectEntry>() {
           @Override
@@ -357,16 +357,6 @@ public class GetStatusServlet extends BaseHttpServlet implements CartePluginInte
           String id = transEntries.get( i ).getId();
           Trans trans = getTransformationMap().getTransformation( transEntries.get( i ) );
           String status = trans.getStatus();
-          String removeText = "";
-          // Finished, Stopped, Waiting : allow the user to remove the transformation
-          //
-          if ( trans.isFinished() || trans.isStopped() || ( !trans.isInitializing() && !trans.isRunning() ) ) {
-            removeText =
-                "<a href=\""
-                    + convertContextPath( RemoveTransServlet.CONTEXT_PATH ) + "?name="
-                    + URLEncoder.encode( name, "UTF-8" ) + "&id=" + id + "\"> Remove </a>";
-          }
-
           String trClass = evenRow ? "cellTableEvenRow" : "cellTableOddRow"; // alternating row color
           String tdClass = evenRow ? "cellTableEvenRowCell" : "cellTableOddRowCell";
           evenRow = !evenRow; // flip
@@ -379,9 +369,7 @@ public class GetStatusServlet extends BaseHttpServlet implements CartePluginInte
           out.print( "<td onMouseEnter=\"mouseEnterFunction( this, '" + tdClass + "' )\" "
               + "onMouseLeave=\"mouseLeaveFunction( this, '" + tdClass + "' )\" "
               + "onClick=\"clickFunction( this, '" + tdClass + "' )\" "
-              + "id=\"cellTableFirstCell" + i + "\" class=\"cellTableCell cellTableFirstColumn " + tdClass + "\"><a href=\""
-              + convertContextPath( GetTransStatusServlet.CONTEXT_PATH ) + "?name="
-              + URLEncoder.encode( name, "UTF-8" ) + "&id=" + id + "\">" + name + "</a></td>" );
+              + "id=\"cellTableFirstCell" + i + "\" class=\"cellTableCell cellTableFirstColumn " + tdClass + "\">" + name + "</td>" );
           out.print( "<td onMouseEnter=\"mouseEnterFunction( this, '" + tdClass + "' )\" "
               + "onMouseLeave=\"mouseLeaveFunction( this, '" + tdClass + "' )\" "
               + "onClick=\"clickFunction( this, '" + tdClass + "' )\" "
@@ -389,16 +377,17 @@ public class GetStatusServlet extends BaseHttpServlet implements CartePluginInte
           out.print( "<td onMouseEnter=\"mouseEnterFunction( this, '" + tdClass + "' )\" "
               + "onMouseLeave=\"mouseLeaveFunction( this, '" + tdClass + "' )\" "
               + "onClick=\"clickFunction( this, '" + tdClass + "' )\" "
-              + "id=\"cellTableCell" + i + "\" class=\"cellTableCell " + tdClass + "\">" + status + "</td>" );
+              + "id=\"cellTableCellStatus" + i + "\" class=\"cellTableCell " + tdClass + "\">" + status + "</td>" );
+          String dateStr = XMLHandler.date2string( trans.getLogDate() );
           out.print( "<td onMouseEnter=\"mouseEnterFunction( this, '" + tdClass + "' )\" "
               + "onMouseLeave=\"mouseLeaveFunction( this, '" + tdClass + "' )\" "
               + "onClick=\"clickFunction( this, '" + tdClass + "' )\" "
               + "id=\"cellTableCell" + i + "\" class=\"cellTableCell " + tdClass + "\">"
-              + ( trans.getLogDate() == null ? "-" : XMLHandler.date2string( trans.getLogDate() ) ) + "</td>" );
+              + ( trans.getLogDate() == null ? "-" : dateStr.substring( 0, dateStr.indexOf( ' ' ) ) ) + "</td>" );
           out.print( "<td onMouseEnter=\"mouseEnterFunction( this, '" + tdClass + "' )\" "
               + "onMouseLeave=\"mouseLeaveFunction( this, '" + tdClass + "' )\" "
               + "onClick=\"clickFunction( this, '" + tdClass + "' )\" "
-              + "id=\"cellTableLastCell" + i + "\" class=\"cellTableCell cellTableLastColumn " + tdClass + "\">" + removeText + "</td>" );
+              + "id=\"cellTableLastCell" + i + "\" class=\"cellTableCell cellTableLastColumn " + tdClass + "\">" + dateStr.substring( dateStr.indexOf( ' ' ), dateStr.length() ) + "</td>" );
           out.print( "</tr>" );
         }
         out.print( "</table></table>" );
@@ -411,10 +400,10 @@ public class GetStatusServlet extends BaseHttpServlet implements CartePluginInte
         out.println( "<table cellspacing=\"0\" cellpadding=\"0\" class=\"toolbar\" style=\"width: 100%; height: 26px; margin-bottom: 5px; border: 0;\">" );
         out.println( "<tbody><tr>" );
         out.println( "<td align=\"left\" style=\"vertical-align: middle; width: 100%\"></td>" );
-        out.println( "<td onMouseEnter=\"document.getElementById( 'j-pause' ).className='toolbar-button toolbar-button-hovering'\" onMouseLeave=\"document.getElementById( 'j-pause' ).className='toolbar-button'\" align=\"left\" style=\"vertical-align: middle;\"><div class=\"toolbar-button\" id=\"j-pause\"><a href=\"#\" style=\"\"><img style=\"width: 22px; height: 22px\" src=\"/pentaho/content/common-ui/resources/themes/" + "ruby" + "/images/run.svg\"/></a></div></td>" );
-        out.println( "<td onMouseEnter=\"document.getElementById( 'j-stop' ).className='toolbar-button toolbar-button-hovering'\" onMouseLeave=\"document.getElementById( 'j-stop' ).className='toolbar-button'\" align=\"left\" style=\"vertical-align: middle;\"><div class=\"toolbar-button\" id=\"j-stop\"><a href=\"#\" style=\"\"><img style=\"width: 22px; height: 22px\"src=\"/pentaho/content/common-ui/resources/themes/" + "ruby" + "/images/stop.svg\"/></a></div></td>" );
-        out.println( "<td onMouseEnter=\"document.getElementById( 'j-view' ).className='toolbar-button toolbar-button-hovering'\" onMouseLeave=\"document.getElementById( 'j-view' ).className='toolbar-button'\" align=\"left\" style=\"vertical-align: middle;\"><div class=\"toolbar-button\" id=\"j-view\"><a href=\"#\" style=\"\"><img style=\"width: 22px; height: 22px\" src=\"/pentaho/content/common-ui/resources/themes/" + "ruby" + "/images/view.svg\"/></a></div></td>" );
-        out.println( "<td onMouseEnter=\"document.getElementById( 'j-close' ).className='toolbar-button toolbar-button-hovering'\" onMouseLeave=\"document.getElementById( 'j-close' ).className='toolbar-button'\" align=\"left\" style=\"vertical-align: middle;\"><div class=\"toolbar-button\" id=\"j-close\"><a href=\"#\" style=\"\"><img style=\"width: 22px; height: 22px\" src=\"/pentaho/content/common-ui/resources/themes/" + "ruby" + "/images/close.svg\"/></a></div></td>" );
+        out.println( "<td onMouseEnter=\"document.getElementById( 'j-pause' ).className='toolbar-button toolbar-button-hovering'\" onMouseLeave=\"document.getElementById( 'j-pause' ).className='toolbar-button'\" align=\"left\" style=\"vertical-align: middle;\"><div onClick=\"resumeFunction( this )\" class=\"toolbar-button\" id=\"j-pause\"><img style=\"width: 22px; height: 22px\" src=\"/pentaho/content/common-ui/resources/themes/" + "ruby" + "/images/run.svg\"/></div></td>" );
+        out.println( "<td onMouseEnter=\"document.getElementById( 'j-stop' ).className='toolbar-button toolbar-button-hovering'\" onMouseLeave=\"document.getElementById( 'j-stop' ).className='toolbar-button'\" align=\"left\" style=\"vertical-align: middle;\"><div onClick=\"stopFunction( this )\" class=\"toolbar-button\" id=\"j-stop\"><img style=\"width: 22px; height: 22px\"src=\"/pentaho/content/common-ui/resources/themes/" + "ruby" + "/images/stop.svg\"/></div></td>" );
+        out.println( "<td onMouseEnter=\"document.getElementById( 'j-view' ).className='toolbar-button toolbar-button-hovering'\" onMouseLeave=\"document.getElementById( 'j-view' ).className='toolbar-button'\" align=\"left\" style=\"vertical-align: middle;\"><div onClick=\"viewFunction( this )\" class=\"toolbar-button\" id=\"j-view\"><img style=\"width: 22px; height: 22px\" src=\"/pentaho/content/common-ui/resources/themes/" + "ruby" + "/images/view.svg\"/></div></td>" );
+        out.println( "<td onMouseEnter=\"document.getElementById( 'j-close' ).className='toolbar-button toolbar-button-hovering'\" onMouseLeave=\"document.getElementById( 'j-close' ).className='toolbar-button'\" align=\"left\" style=\"vertical-align: middle;\"><div onClick=\"removeFunction( this )\" class=\"toolbar-button\" id=\"j-close\"><img style=\"width: 22px; height: 22px\" src=\"/pentaho/content/common-ui/resources/themes/" + "ruby" + "/images/close.svg\"/></div></td>" );
         out.println( "</tr></tbody></table>" );
         out.println( "<table class=\"pentaho-table\" border=\"" + tableBorder + "\">" );
         out.print( "<tr> <th class=\"cellTableHeader\">"
@@ -422,7 +411,7 @@ public class GetStatusServlet extends BaseHttpServlet implements CartePluginInte
             + BaseMessages.getString( PKG, "GetStatusServlet.CarteId" ) + "</th> <th class=\"cellTableHeader\">"
             + BaseMessages.getString( PKG, "GetStatusServlet.Status" ) + "</th> <th class=\"cellTableHeader\">"
             + BaseMessages.getString( PKG, "GetStatusServlet.LastLogDate" ) + "</th> <th class=\"cellTableHeader\">"
-            + BaseMessages.getString( PKG, "GetStatusServlet.Remove" ) + "</th> </tr>" );
+            + BaseMessages.getString( PKG, "GetStatusServlet.LastLogTime" ) + "</th> </tr>" );
 
         Comparator<CarteObjectEntry> jobComparator = new Comparator<CarteObjectEntry>() {
           @Override
@@ -450,17 +439,6 @@ public class GetStatusServlet extends BaseHttpServlet implements CartePluginInte
           String id = jobEntries.get( i ).getId();
           Job job = getJobMap().getJob( jobEntries.get( i ) );
           String status = job.getStatus();
-
-          String removeText;
-          if ( job.isFinished() || job.isStopped() ) {
-            removeText =
-                "<a href=\""
-                    + convertContextPath( RemoveJobServlet.CONTEXT_PATH ) + "?name="
-                    + URLEncoder.encode( name, "UTF-8" ) + "&id=" + id + "\"> Remove </a>";
-          } else {
-            removeText = "";
-          }
-
           String trClass = evenRow ? "cellTableEvenRow" : "cellTableOddRow"; // alternating row color
           String tdClass = evenRow ? "cellTableEvenRowCell" : "cellTableOddRowCell";
           evenRow = !evenRow; // flip
@@ -471,9 +449,7 @@ public class GetStatusServlet extends BaseHttpServlet implements CartePluginInte
           out.print( "<td onMouseEnter=\"mouseEnterFunction( this, '" + tdClass + "' )\" "
               + "onMouseLeave=\"mouseLeaveFunction( this, '" + tdClass + "' )\" "
               + "onClick=\"clickFunction( this, '" + tdClass + "' )\" "
-              + "id=\"j-cellTableFirstCell" + i + "\" class=\"cellTableCell cellTableFirstColumn " + tdClass + "\"><a href=\""
-              + convertContextPath( GetJobStatusServlet.CONTEXT_PATH ) + "?name="
-              + URLEncoder.encode( name, "UTF-8" ) + "&id=" + id + "\">" + name + "</a></td>" );
+              + "id=\"j-cellTableFirstCell" + i + "\" class=\"cellTableCell cellTableFirstColumn " + tdClass + "\">" + name + "</a></td>" );
           out.print( "<td onMouseEnter=\"mouseEnterFunction( this, '" + tdClass + "' )\" "
               + "onMouseLeave=\"mouseLeaveFunction( this, '" + tdClass + "' )\" "
               + "onClick=\"clickFunction( this, '" + tdClass + "' )\" "
@@ -482,15 +458,16 @@ public class GetStatusServlet extends BaseHttpServlet implements CartePluginInte
               + "onMouseLeave=\"mouseLeaveFunction( this, '" + tdClass + "' )\" "
               + "onClick=\"clickFunction( this, '" + tdClass + "' )\" "
               + "id=\"j-cellTableCell" + i + "\" class=\"cellTableCell " + tdClass + "\">" + status + "</td>" );
+          String dateStr = XMLHandler.date2string( job.getLogDate() );
           out.print( "<td onMouseEnter=\"mouseEnterFunction( this, '" + tdClass + "' )\" "
               + "onMouseLeave=\"mouseLeaveFunction( this, '" + tdClass + "' )\" "
               + "onClick=\"clickFunction( this, '" + tdClass + "' )\" "
               + "id=\"j-cellTableCell" + i + "\" class=\"cellTableCell " + tdClass + "\">"
-              + ( job.getLogDate() == null ? "-" : XMLHandler.date2string( job.getLogDate() ) ) + "</td>" );
+              + ( job.getLogDate() == null ? "-" : dateStr.substring( 0, dateStr.indexOf( ' ' ) ) ) + "</td>" );
           out.print( "<td onMouseEnter=\"mouseEnterFunction( this, '" + tdClass + "' )\" "
               + "onMouseLeave=\"mouseLeaveFunction( this, '" + tdClass + "' )\" "
               + "onClick=\"clickFunction( this, '" + tdClass + "' )\" "
-              + "id=\"j-cellTableLastCell" + i + "\" class=\"cellTableCell cellTableLastColumn " + tdClass + "\">" + removeText + "</td>" );
+              + "id=\"j-cellTableLastCell" + i + "\" class=\"cellTableCell cellTableLastColumn " + tdClass + "\">" + dateStr.substring( dateStr.indexOf( ' ' ), dateStr.length() ) + "</td>" );
           out.print( "</tr>" );
         }
         out.print( "</table></table>" );
@@ -588,7 +565,81 @@ public class GetStatusServlet extends BaseHttpServlet implements CartePluginInte
       out.println( "var selectedTransRowIndex = -1;" ); // currently selected table item
       out.println( "var selectedJobRowIndex = -1;" ); // currently selected table item
 
-      // OnClick function
+      // Click function for resume button
+      out.println( "function resumeFunction( element ) {" );
+      out.println( "if( element.id.startsWith( 'j-' ) && selectedJobRowIndex != -1 ) {" );
+      out.println( "window.location.replace( '"
+          + convertContextPath( PauseTransServlet.CONTEXT_PATH ) + "'"
+          + " + '?name=' + document.getElementById( 'j-cellTableFirstCell' + selectedJobRowIndex ).innerHTML"
+          + " + '&id=' + document.getElementById( 'j-cellTableCell' + selectedJobRowIndex ).innerHTML );" );
+      out.println( "} else if ( selectedTransRowIndex != -1 ) {" );
+      out.println( "window.location.replace( '"
+          + convertContextPath( PauseTransServlet.CONTEXT_PATH ) + "'"
+          + " + '?name=' + document.getElementById( 'cellTableFirstCell' + selectedTransRowIndex ).innerHTML"
+          + " + '&id=' + document.getElementById( 'cellTableCell' + selectedTransRowIndex ).innerHTML );" );
+      out.println( "}" );
+      out.println( "}" );
+
+      // Click function for stop button
+      out.println( "function stopFunction( element ) {" );
+      out.println( "if( element.id.startsWith( 'j-' ) && selectedJobRowIndex != -1 ) {" );
+      out.println( "window.location.replace( '"
+          + convertContextPath( StopJobServlet.CONTEXT_PATH ) + "'"
+          + " + '?name=' + document.getElementById( 'j-cellTableFirstCell' + selectedJobRowIndex ).innerHTML"
+          + " + '&id=' + document.getElementById( 'j-cellTableCell' + selectedJobRowIndex ).innerHTML );" );
+      out.println( "} else if ( !element.id.startsWith( 'j-' ) && selectedTransRowIndex != -1 ) {" );
+      out.println( "document.getElementById( 'stopActions' ).style = 'visibility: visible; overflow: visible; position: absolute; left: 660px; top: 155px; z-index: 100;';" );
+      out.println( "}" );
+      out.println( "}" );
+
+      // Click function for stop button
+      out.println( "function stopTransSelector( element ) {" );
+      out.println( "if( element.innerHTML == 'Stop transformation' ) {" );
+      out.println( "window.location.replace( '"
+          + convertContextPath( StopTransServlet.CONTEXT_PATH ) + "'"
+          + " + '?name=' + document.getElementById( 'cellTableFirstCell' + selectedTransRowIndex ).innerHTML"
+          + " + '&id=' + document.getElementById( 'cellTableCell' + selectedTransRowIndex ).innerHTML );" );
+      out.println( "} else if( element.innerHTML == 'Stop input processing' ) {" );
+      out.println( "window.location.replace( '"
+          + convertContextPath( StopTransServlet.CONTEXT_PATH ) + "'"
+          + " + '?name=' + document.getElementById( 'cellTableFirstCell' + selectedTransRowIndex ).innerHTML"
+          + " + '&id=' + document.getElementById( 'cellTableCell' + selectedTransRowIndex ).innerHTML"
+          + " + '&inputOnly=Y' );" );
+      out.println( "}" );
+      out.println( "document.getElementById( 'stopActions' ).style = 'visibility: hidden; overflow: visible; position: absolute; left: 660px; top: 155px; z-index: 100;';" );
+      out.println( "}" );
+
+      // Click function for view button
+      out.println( "function viewFunction( element ) {" );
+      out.println( "if( element.id.startsWith( 'j-' ) && selectedJobRowIndex != -1 ) {" );
+      out.println( "window.location.replace( '"
+          + convertContextPath( GetJobStatusServlet.CONTEXT_PATH ) + "'"
+          + " + '?name=' + document.getElementById( 'j-cellTableFirstCell' + selectedJobRowIndex ).innerHTML"
+          + " + '&id=' + document.getElementById( 'j-cellTableCell' + selectedJobRowIndex ).innerHTML );" );
+      out.println( "} else if ( selectedTransRowIndex != -1 ) {" );
+      out.println( "window.location.replace( '"
+          + convertContextPath( GetTransStatusServlet.CONTEXT_PATH ) + "'"
+          + " + '?name=' + document.getElementById( 'cellTableFirstCell' + selectedTransRowIndex ).innerHTML"
+          + " + '&id=' + document.getElementById( 'cellTableCell' + selectedTransRowIndex ).innerHTML );" );
+      out.println( "}" );
+      out.println( "}" );
+
+      // Click function for remove button
+      out.println( "function removeFunction( element ) {" );
+      out.println( "if( element.id.startsWith( 'j-' ) && selectedJobRowIndex != -1 ) {" );
+      out.println( "window.location.replace( '"
+          + convertContextPath( RemoveJobServlet.CONTEXT_PATH ) + "'"
+          + " + '?name=' + document.getElementById( 'j-cellTableFirstCell' + selectedJobRowIndex ).innerHTML"
+          + " + '&id=' + document.getElementById( 'j-cellTableCell' + selectedJobRowIndex ).innerHTML );" );
+      out.println( "} else if ( selectedTransRowIndex != -1 ) {" );
+      out.println( "window.location.replace( '"
+          + convertContextPath( RemoveTransServlet.CONTEXT_PATH ) + "'"
+          + " + '?name=' + document.getElementById( 'cellTableFirstCell' + selectedTransRowIndex ).innerHTML"
+          + " + '&id=' + document.getElementById( 'cellTableCell' + selectedTransRowIndex ).innerHTML );" );
+      out.println( "}" );
+      out.println( "}" );
+
+      // OnClick function for table element
       out.println( "function clickFunction( element, tableClass ) {" );
       out.println( "var prefix = element.id.startsWith( 'j-' ) ? 'j-' : '';" );
       out.println( "if( tableClass.endsWith( 'Row' ) ) {" );
@@ -613,6 +664,11 @@ public class GetStatusServlet extends BaseHttpServlet implements CartePluginInte
       out.println( "document.getElementById( prefix + 'cellTableLastCell' + selectedTransRowIndex ).className='cellTableCell cellTableLastColumn ' + tableClass;" );
       out.println( "}" );
       out.println( "selectedTransRowIndex = element.id.charAt( element.id.length - 1 );" );
+      out.println( "if( document.getElementById( 'cellTableCellStatus' + selectedTransRowIndex ).innerHTML == 'Running' ) {" );
+      out.println( "document.getElementById( 'pause' ).innerHTML = '<img style=\"width: 22px; height: 22px\" src=\"/pentaho/content/common-ui/resources/themes/images/pause.svg\"/>';" );
+      out.println( "} else if( document.getElementById( 'cellTableCellStatus' + selectedTransRowIndex ).innerHTML == 'Paused' ) {" );
+      out.println( "document.getElementById( 'pause' ).innerHTML = '<img style=\"width: 22px; height: 22px\" src=\"/pentaho/content/common-ui/resources/themes/images/run.svg\"/>';" );
+      out.println( "}" );
       out.println( "}" );
       out.println( "}" );
 
