@@ -13,7 +13,7 @@ buildProperties:
         MAVEN_PRIVATE_RELEASE_REPO_URL : http://nexus.pentaho.org/content/repositories/private-9.0-qat
 
         # Version based control properties
-        UPDATE_VERSIONS                : true
+        RUN_VERSIONING                 : true
         RELEASE_VERSION                : 9.0.0.0
         SUITE_RELEASE_VERSION          : 9.0-QAT
         RELEASE_MODE                   : true
