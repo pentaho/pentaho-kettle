@@ -499,54 +499,62 @@ public class ExcelOutput extends BaseStep implements StepInterface {
         logDebug( BaseMessages.getString( PKG, "ExcelOutput.Log.OpeningFile", data.realFilename ) );
       }
 
+      // The Sheet name to be used
+      String sheetName = "Sheet1";
+      if ( !Utils.isEmpty( data.realSheetname ) ) {
+        sheetName = data.realSheetname;
+      }
+
       // Create the workbook
       File targetFile = new File( KettleVFS.getFilename( data.file ) );
       if ( !meta.isTemplateEnabled() ) {
         if ( meta.isAppend() && targetFile.exists() ) {
-          Workbook workbook = Workbook.getWorkbook( targetFile );
-          data.workbook = Workbook.createWorkbook( targetFile, workbook );
-          // and now .. we create the sheet
-          int numberOfSheets = data.workbook.getNumberOfSheets();
-          data.sheet = data.workbook.getSheet( numberOfSheets - 1 );
-          // if file exists and append option is set do not rewrite header
-          // and ignore header option
+          Workbook targetFileWorkbook = Workbook.getWorkbook( targetFile );
+          data.workbook = Workbook.createWorkbook( targetFile, targetFileWorkbook );
+
+          // Do not rewrite header
           meta.setHeaderEnabled( false );
         } else {
           // Create a new Workbook
           data.outputStream = KettleVFS.getOutputStream( data.file, false );
           data.workbook = Workbook.createWorkbook( data.outputStream, data.ws );
+        }
 
-          // Create a sheet?
-          String sheetname = "Sheet1";
-          data.sheet = data.workbook.getSheet( sheetname );
-          if ( data.sheet == null ) {
-            data.sheet = data.workbook.createSheet( sheetname, 0 );
-          }
+        // Check if the sheet already exists
+        data.sheet = data.workbook.getSheet( sheetName );
+        if ( null == data.sheet ) {
+          // It does not, so create it at the end of the workbook
+          data.sheet = data.workbook.createSheet( sheetName, data.workbook.getNumberOfSheets() );
+          // It's a new sheet, so let's add the header
+          meta.setHeaderEnabled( true );
         }
       } else {
-        try (  FileObject templateFile = KettleVFS.getFileObject( environmentSubstitute( meta.getTemplateFileName() ), getTransMeta() ) )  {
+        String templateFilename = environmentSubstitute( meta.getTemplateFileName() );
+        try ( FileObject templateFile = KettleVFS.getFileObject( templateFilename, getTransMeta() ) ) {
           // create the openFile from the template
           Workbook templateWorkbook = Workbook.getWorkbook( KettleVFS.getInputStream( templateFile ), data.ws );
 
           if ( meta.isAppend() && targetFile.exists() && isTemplateContained( templateWorkbook, targetFile ) ) {
-            // do not write header if file has already existed
-            meta.setHeaderEnabled( false );
             Workbook targetFileWorkbook = Workbook.getWorkbook( targetFile );
             data.workbook = Workbook.createWorkbook( targetFile, targetFileWorkbook );
+
+            // Do not rewrite header
+            meta.setHeaderEnabled( false );
           } else {
             data.outputStream = KettleVFS.getOutputStream( data.file, false );
             data.workbook = Workbook.createWorkbook( data.outputStream, templateWorkbook );
           }
-          // use only the first sheet as template
-          data.sheet = data.workbook.getSheet( 0 );
-          // save initial number of columns
-          data.templateColumns = data.sheet.getColumns();
-        }
-      }
 
-      // Rename Sheet
-      if ( !Utils.isEmpty( data.realSheetname ) ) {
-        data.sheet.setName( data.realSheetname );
+          // Check if the sheet already exists
+          data.sheet = data.workbook.getSheet( sheetName );
+          if ( null == data.sheet ) {
+            // Create the sheet at the end of the workbook using the first sheet as template
+            data.workbook.copySheet( 0, sheetName, data.workbook.getNumberOfSheets() );
+            data.sheet = data.workbook.getSheet( sheetName );
+            // It's a new sheet, so let's add the header
+            meta.setHeaderEnabled( true );
+          }
+        }
       }
 
       if ( meta.isSheetProtected() ) {
