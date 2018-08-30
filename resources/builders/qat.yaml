@@ -22,6 +22,10 @@ buildProperties:
         TAG_NAME_TYPE                  : NONE
         TAG_NAME                       : -RC
 
+        # Slack Reporting
+        SLACK_INTEGRATION              : true
+        SLACK_CHANNEL                  : 'buildteam-alerts'
+
 jobGroups:
   # Always required
 
