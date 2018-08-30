@@ -4,7 +4,7 @@ buildProperties:
         # These are understood by the shared pipeline libraries:
         BUILD_PLAN_ID                  : 9.0 QAT Build
 
-        MAVEN_DEFAULT_COMMAND_OPTIONS  : -B -e -q -Drelease
+        MAVEN_DEFAULT_COMMAND_OPTIONS  : -B -e -Drelease
         ARCHIVE_ARTIFACTS_PATTERN      : '**/target/*.gz, **/target/*.zip'
 
         # TODO: Change this to clean deploy when ready to deploy
@@ -371,7 +371,7 @@ jobGroups:
        scmUrl          :  ${WEBDETAILS_SCM_ROOT}/ccc.git
        scmBranch       :  ${DEFAULT_BRANCH}
        versionProperty :  pentaho-ccc-plugin.version
-       
+
      - jobID           :  commons-ee
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-ee.git
        scmBranch       :  ${DEFAULT_BRANCH}
@@ -770,7 +770,7 @@ jobGroups:
      - jobID           :  foundry-workers-ee
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-ee.git
        scmBranch       :  ${DEFAULT_BRANCH}
-       directives      :  += -Deula-wrap
+       directives      :  clean deploy -Deula-wrap
        versionProperty :  worker-nodes.version
        root            :  foundry
        testable        :  false
