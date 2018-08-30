@@ -150,6 +150,10 @@
 
     <!-- Third-party dependencies -->
     <dependency>
+      <groupId>org.dom4j</groupId>
+      <artifactId>dom4j</artifactId>
+    </dependency>
+    <dependency>
       <groupId>commons-codec</groupId>
       <artifactId>commons-codec</artifactId>
     </dependency>
@@ -875,6 +879,7 @@
       <artifactId>h2</artifactId>
       <scope>test</scope>
     </dependency>
+    <!-- required by org.dom4j -->
     <dependency>
       <groupId>jaxen</groupId>
       <artifactId>jaxen</artifactId>
