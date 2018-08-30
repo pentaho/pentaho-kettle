@@ -22,6 +22,7 @@ big-data-plugin.version=9.0.0.0-BUILDTAG
 coding-standards.version=9.0.0.0-BUILDTAG
 common-ui.version=9.0.0.0-BUILDTAG
 commons-database.version=9.0.0.0-BUILDTAG
+commons-ee.version=9.0.0.0-BUILDTAG
 commons-gwt.version=9.0.0.0-BUILDTAG
 commons-xul.version=9.0.0.0-BUILDTAG
 dashboard.version=9.0.0.0-BUILDTAG
