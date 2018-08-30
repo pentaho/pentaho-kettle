@@ -368,6 +368,12 @@ jobGroups:
        scmUrl          :  ${WEBDETAILS_SCM_ROOT}/ccc.git
        scmBranch       :  ${DEFAULT_BRANCH}
        versionProperty :  pentaho-ccc-plugin.version
+       
+     - jobID           :  commons-ee
+       scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-ee.git
+       scmBranch       :  ${DEFAULT_BRANCH}
+       versionProperty :  commons-ee.version
+       root            :  commons
 
   2500:
 
