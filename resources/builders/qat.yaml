@@ -18,9 +18,9 @@ buildProperties:
         SUITE_RELEASE_VERSION          : 9.0-QAT
         RELEASE_MODE                   : true
 
-        # TODO: Change this to SUFFIX when we start wanting to tag
-        TAG_NAME_TYPE                  : NONE
-        TAG_NAME                       : -RC
+        # TODO: Enable when we start wanting to tag
+        CREATE_TAG                     : false
+        TAG_NAME                       : ${RELEASE_VERSION}-RC
 
 jobGroups:
   # Always required

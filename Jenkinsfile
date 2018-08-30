@@ -73,7 +73,7 @@ pipeline {
   }
 
   stages {
-    stage('Configure Pipeline') {
+    stage('Configure') {
       // After this stage all properties will be available in the buildProperties Map
       steps {
         script {
@@ -94,7 +94,7 @@ pipeline {
       }
     }
 
-    stage('Clean Project Workspaces') {
+    stage('Clean Projects') {
       when {
         expression {
           buildProperties.CLEAN_SCM_WORKSPACES
@@ -107,7 +107,7 @@ pipeline {
       }
     }
 
-    stage('Checkouts') {
+    stage('Checkout') {
       when {
         expression {
           buildProperties.RUN_CHECKOUTS
@@ -119,6 +119,11 @@ pipeline {
     }
 
     stage('Version') {
+      when {
+        expression {
+          buildProperties.RUN_VERSIONING
+        }
+      }
       steps {
         doVersioning(buildData)
       }
@@ -137,7 +142,7 @@ pipeline {
       }
     }
 
-    stage('Unit Test') {
+    stage('Test') {
       when {
         expression {
           buildProperties.RUN_UNIT_TESTS
@@ -150,10 +155,10 @@ pipeline {
       }
     }
 
-    stage('Push Changes') {
+    stage('Push') {
       when {
         expression {
-          buildProperties.PUSH_CHANGES && !buildProperties.NOOP
+          buildProperties.PUSH_CHANGES
         }
       }
       steps {
@@ -164,7 +169,7 @@ pipeline {
     stage('Tag') {
       when {
         expression {
-          !buildProperties.PUSH_CHANGES && !buildProperties.NOOP && buildProperties.TAG_NAME_TYPE != 'NONE'
+          buildProperties.CREATE_TAG
         }
       }
       steps {
@@ -172,7 +177,7 @@ pipeline {
       }
     }
 
-    stage('Archive Artifacts') {
+    stage('Archive') {
       when {
         expression {
           buildProperties.ARCHIVE_ARTIFACTS && !buildProperties.NOOP

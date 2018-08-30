@@ -33,10 +33,12 @@ BUILD_RETRIES: 1
 BUILD_TIMEOUT: 360
 PARALLEL_CHECKOUT_CHUNKSIZE: 40
 PARALLEL_UNIT_TESTS_CHUNKSIZE: 10
-PUSH_CHANGES: false
+RUN_VERSIONING: true
 RUN_BUILDS: true
 RUN_CHECKOUTS: true
 RUN_UNIT_TESTS: true
+CREATE_TAG: false
+PUSH_CHANGES: false
 ARCHIVE_ARTIFACTS: true
 ARCHIVE_ARTIFACTS_PATTERN: '**/dist/*.gz, **/dist/*.zip, **/target/*.gz, **/target/*.zip, **/build/**/*.gz, **/build/**/*.zip, **/build/*.zip'
 USE_DISTRIBUTED_SOURCE_CACHING: false
@@ -51,7 +53,7 @@ PENTAHO_SCM_ROOT: https://github.com/pentaho
 WEBDETAILS_SCM_ROOT: https://github.com/webdetails
 DEFAULT_BRANCH: master
 
-CHECKOUT_CREDENTIALS_ID: github-buildguy
+SCM_CREDENTIALS_ID: github-buildguy
 CHECKOUT_DEPTH: 20
 CHECKOUT_TIMESTAMP: CURRENT_TIME
 CHECKOUT_TIMEOUT_MINUTES: 10
@@ -68,10 +70,19 @@ RELEASE_VERSION: 9.0.0.0
 SUITE_RELEASE_VERSION: 9.0.0.0
 RELEASE_MODE: false
 ADD_BUILD_ID_VERSION_TAIL: true
+VERSION_MESSAGE: '[CLEANUP] updated versions via release version merger'
+VERSION_COMMIT_FILES:
+  - build.properties
+  - assembly.properties
+  - manual_assembly.properties
+  - dev_build.properties
+  - publish.properties
+  - pom.xml
 
-# Options: SUFFIX, NONE, PREFIX, FULL
-TAG_NAME_TYPE: NONE
-TAG_NAME: -RC
+# Tagging defaults
+TAG_NAME: ${RELEASE_VERSION}-RC
+TAG_MESSAGE: Tag created by ${JOB_NAME} ${BUILD_NUMBER}
+TAG_SKIP_SNAPSHOT: true
 
 # Installer defaults
 IBUILDER_RESOURCES_ROOT_PATH: /build2/resources/ibuilder-pentaho-8.0-resources
@@ -80,6 +91,7 @@ INSTALL_BUILDER_ROOT_DIR: /build2/resources/installbuilder-15.1.0
 # Defaults for Job properties
 JOB_ITEM_DEFAULTS:
   scmBranch: ${DEFAULT_BRANCH}
+  scmCredentials: ${SCM_CREDENTIALS_ID}
   buildFramework: MAVEN
   buildFile:
   root:
