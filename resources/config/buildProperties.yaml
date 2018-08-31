@@ -6,15 +6,20 @@
 # 2. Build Properties Defaults (this file)
 # 3. Build Data File
 # 4. Pipeline Run Parameters
+# 5. OVERRIDE_PARAMS param
 
+# Build Tools
 JENKINS_ANT_FOR_BUILDS: ant-auto
 JENKINS_JDK_FOR_BUILDS: Java8_auto
 JENKINS_MAVEN_FOR_BUILDS: maven3-auto
 JENKINS_GRADLE_FOR_BUILDS: gradle-auto
 
+# Ant
 ANT_DEFAULT_COMMAND_OPTIONS: clean-all resolve dist
 ANT_TEST_TARGETS: test jacoco
 ANT_DEFAULT_DIRECTIVES: clean-all resolve publish
+
+# Maven
 MAVEN_DEFAULT_COMMAND_OPTIONS: -B -e
 MAVEN_OPTS: -Xms512m
 MAVEN_RESOLVE_REPO_URL: http://nexus.pentaho.org/content/groups/omni
@@ -24,54 +29,74 @@ MAVEN_PRIVATE_RELEASE_REPO_URL:
 MAVEN_PRIVATE_SNAPSHOT_REPO_URL:
 MAVEN_TEST_OPTS: -DsurefireArgLine=-Xmx1g
 MAVEN_DEFAULT_DIRECTIVES: clean install
+
+# Gradle
 GRADLE_DEFAULT_DIRECTIVES: --info --console=plain
 GRADLE_DEFAULT_COMMAND_OPTIONS: clean build
 GRADLE_TEST_TARGETS: test
 
+# Stage execution
+RUN_VERSIONING: false
+RUN_BUILDS: true
+RUN_CHECKOUTS: true
+RUN_UNIT_TESTS: true
+CREATE_TAG: false
+PUSH_CHANGES: false
+ARCHIVE_ARTIFACTS: true
+
+# General
 NOOP: false
 BUILD_RETRIES: 1
 BUILD_TIMEOUT: 360
 PARALLEL_CHECKOUT_CHUNKSIZE: 40
 PARALLEL_UNIT_TESTS_CHUNKSIZE: 10
-PUSH_CHANGES: false
-RUN_BUILDS: true
-RUN_CHECKOUTS: true
-RUN_UNIT_TESTS: true
-ARCHIVE_ARTIFACTS: true
-ARCHIVE_ARTIFACTS_PATTERN: '**/dist/*.gz, **/dist/*.zip, **/target/*.gz, **/target/*.zip, **/build/**/*.gz, **/build/**/*.zip, **/build/*.zip'
 USE_DISTRIBUTED_SOURCE_CACHING: false
-ARCHIVE_TESTS_PATTERN: '**/bin/**/TEST*.xml, **/target/**/TEST*.xml, **/build/**/*Test.xml'
 
 #BUILD_DATA_ROOT_PATH: ${WORKSPACE}/resources/builders
 #LIB_CACHE_ROOT_PATH: ${WORKSPACE}/caches
 #BUILDS_ROOT_PATH: ${WORKSPACE}/builds
 
+# SCM
+SCM_CREDENTIALS_ID: github-buildguy
 SCM_HOST_ROOT: https://github.com
 PENTAHO_SCM_ROOT: https://github.com/pentaho
 WEBDETAILS_SCM_ROOT: https://github.com/webdetails
 DEFAULT_BRANCH: master
 
-CHECKOUT_CREDENTIALS_ID: github-buildguy
+# Checkouts
 CHECKOUT_DEPTH: 20
 CHECKOUT_TIMESTAMP: CURRENT_TIME
 CHECKOUT_TIMEOUT_MINUTES: 10
 CHECKOUT_SLEEP_AVERAGE_SECONDS: 0
 
+# Cleanups
 CLEAN_ALL_CACHES: false
 CLEAN_BUILD_WORKSPACE: false
 CLEAN_CACHES_REGEX: .*-SNAPSHOT.*
 CLEAN_SCM_WORKSPACES: false
 
 # Version based control properties
-UPDATE_VERSIONS: false
 RELEASE_VERSION: 9.0.0.0
 SUITE_RELEASE_VERSION: 9.0.0.0
 RELEASE_MODE: false
 ADD_BUILD_ID_VERSION_TAIL: true
 
-# Options: SUFFIX, NONE, PREFIX, FULL
-TAG_NAME_TYPE: NONE
-TAG_NAME: -RC
+# Commit message and list of files affected by version changes that are eligible for committing
+VERSION_MESSAGE: '[CLEANUP] updated versions via release version merger'
+VERSION_COMMIT_FILES:
+  - build.properties
+  - assembly.properties
+  - manual_assembly.properties
+  - dev_build.properties
+  - publish.properties
+  - pom.xml
+
+# Tagging
+TAG_NAME: ${RELEASE_VERSION}-RC
+TAG_MESSAGE: Tag created by ${JOB_NAME} ${BUILD_NUMBER}
+
+# Skip tagging if the RELEASE_VERSION is a SNAPSHOT
+TAG_SKIP_SNAPSHOT: true
 
 # Installer defaults
 IBUILDER_RESOURCES_ROOT_PATH: /build2/resources/ibuilder-pentaho-8.0-resources
@@ -80,6 +105,7 @@ INSTALL_BUILDER_ROOT_DIR: /build2/resources/installbuilder-15.1.0
 # Defaults for Job properties
 JOB_ITEM_DEFAULTS:
   scmBranch: ${DEFAULT_BRANCH}
+  scmCredentials: ${SCM_CREDENTIALS_ID}
   buildFramework: MAVEN
   buildFile:
   root:
@@ -101,8 +127,12 @@ SLACK_CHANNEL: 'slack-channel-name'
 SLACK_TEAM_DOMAIN: 'hitachivantara-eng'
 SLACK_CREDENTIALS_ID: 'slack-token'
 
-#Specific archiving patterns
-#EE
+# Archiving
+ARCHIVE_ARTIFACTS_PATTERN: '**/dist/*.gz, **/dist/*.zip, **/target/*.gz, **/target/*.zip, **/build/**/*.gz, **/build/**/*.zip, **/build/*.zip'
+ARCHIVE_TESTS_PATTERN: '**/bin/**/TEST*.xml, **/target/**/TEST*.xml, **/build/**/*Test.xml'
+
+# Specific archiving patterns
+# EE artifacts
 INSTALLER_ARTIFACTS_PATTERN_WINDOWS: 'bi-suite/target/windows/pentaho-business-analytics-*.*'
 INSTALLER_ARTIFACTS_PATTERN_MAC: 'bi-suite/target/mac/pentaho-business-analytics-*.*'
 INSTALLER_ARTIFACTS_PATTERN_LINUX: 'bi-suite/target/linux/pentaho-business-analytics-*.*, upgrade-utility/target/pentaho-upgrade-utility-*.zip'
@@ -124,7 +154,8 @@ PIR_PLUGIN_PATTERN: 'assemblies/plugin/target/pir-plugin-ee-*.zip'
 PLATFORM_SERVER_ASSEMBLY_EE_PATTERN: 'assemblies/pentaho-server-ee/target/pentaho-server-ee-*.zip, assemblies/pentaho-server-manual-ee/target/pentaho-server-manual-ee-*.zip'
 BIG_DATA_PLUGIN_ASSEMBLY_EE_PATTERN: 'assemblies/big-data-ee-package/target/pentaho-big-data-ee-package-*.zip, shims/**/assemblies/*-ee-shim/target/pentaho-big-data-ee-*-package-*.zip'
 FOUNDRY_WORKERS_EE_PATTERN: 'assembly/target/pentaho-workernodes-*.zip, assembly/target/pentaho-workernodes-*.tar.gz'
-#CE
+
+# CE artifacts
 PAD_ASSEMBLY_PATTERN: 'assemblies/pad-ce/target/pad-ce-*.zip'
 PDI_ENGINE_CORE_PATTERN: 'assemblies/client/target/pdi-ce-*.zip'
 BIG_DATA_PLUGIN_PATTERN: 'legacy-plugin/target/pentaho-big-data-plugin-*.zip'
