@@ -499,6 +499,7 @@ jobGroups:
        scmBranch       :  ${DEFAULT_BRANCH}
        directives      :  += -DskipDefault -P base
        versionProperty :  pentaho-hadoop-shims.version
+       atomicScmCheckout: true
 
      - jobID           :  cda-plugin
        scmUrl          :  ${WEBDETAILS_SCM_ROOT}/cda.git
@@ -514,6 +515,7 @@ jobGroups:
        root            :  shims
        parallelize     :  true
        versionProperty :  pentaho-hadoop-shims.version
+       atomicScmCheckout: true
 
   3100:
 

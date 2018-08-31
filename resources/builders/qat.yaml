@@ -507,6 +507,7 @@ jobGroups:
        scmBranch       :  ${DEFAULT_BRANCH}
        directives      :  += -DskipDefault -P base,all -Deula-wrap
        versionProperty :  pentaho-hadoop-shims.version
+       atomicScmCheckout: true
 
      - jobID           :  cda-plugin
        scmUrl          :  ${WEBDETAILS_SCM_ROOT}/cda.git
@@ -687,6 +688,7 @@ jobGroups:
        versionProperty :  big-data-plugin.version
        archivable      :  true
        artifactsArchivePattern: ${BIG_DATA_PLUGIN_ASSEMBLY_EE_PATTERN}
+       atomicScmCheckout: true
 
      - jobID           :  prd-assembly
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-reporting.git

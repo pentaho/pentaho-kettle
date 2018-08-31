@@ -117,6 +117,7 @@ jobGroups:
        scmBranch       :  ${DEFAULT_BRANCH}
        directives      :  += -DskipDefault -P base,all
        versionProperty :  pentaho-hadoop-shims.version
+       atomicScmCheckout: true
 
   pdi-yarn-plugin:
 
@@ -155,6 +156,7 @@ jobGroups:
        scmBranch       :  ${DEFAULT_BRANCH}
        directives      :  += -DskipDefault -P assemblies,pack
        versionProperty :  big-data-plugin.version
+       atomicScmCheckout: true
 
      - jobID           :  prd-assembly
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-reporting.git
