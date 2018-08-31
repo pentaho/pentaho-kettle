@@ -4,7 +4,7 @@ buildProperties:
         # These are understood by the shared pipeline libraries:
         BUILD_PLAN_ID                  : Master Suite Build
         MAVEN_DEFAULT_DIRECTIVES       : clean
-        MAVEN_DEFAULT_COMMAND_OPTIONS  : -B -e -q
+        MAVEN_DEFAULT_COMMAND_OPTIONS  : -B -e -q -P spotbugs -Dspotbugs.failOnError=false -Dspotbugs.maxRank=5
         MAVEN_TEST_OPTS                : -DsurefireArgLine=-Xmx1g \verify -DrunITs -Daudit sonar:sonar@sonar_publish -Dsonar -Dsonar.branch=${DEFAULT_BRANCH} -Dsonar.host.url=http://sonar.pentaho.com:9000 -Dmaven.test.failure.ignore
         IGNORE_PIPELINE_FAILURE        : true
         JOB_ITEM_DEFAULTS              :
