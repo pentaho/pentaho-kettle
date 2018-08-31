@@ -39,7 +39,7 @@ import java.io.File;
   id = "Log4jLogging", isSeparateClassLoaderNeeded = true )
 public class Log4jLogging implements LoggingPluginInterface {
 
-  public static final String PLUGIN_PROPERTIES_FILE = "plugins/kettle5-log4j-plugin/log4j.xml";
+  public static final String PLUGIN_PROPERTIES_FILE = "plugins" + File.separator + "kettle5-log4j-plugin" + File.separator + "log4j.xml";
 
   public static final String STRING_PENTAHO_DI_LOGGER_NAME = "org.pentaho.di";
 
@@ -95,10 +95,10 @@ public class Log4jLogging implements LoggingPluginInterface {
      * - If it starts with Const.getKettleDirectory(): then we know it to have been dropped in ~/.kettle/plugins ( a.k.a. Const.getKettleDirectory() )
      * - Otherwise: fallback to default/standard location, which is under <pdi-install-dir>/</>data-integration/plugins
      */
-    final String properFileName = getClass().getProtectionDomain().getCodeSource().getLocation().getPath().startsWith( Const.getKettleDirectory() )
-        ?  ( Const.getKettleDirectory() + File.separator + PLUGIN_PROPERTIES_FILE ) : getConfigurationFileName();
+    final String log4jPath = getPluginPath().startsWith( getKettleDirPath() )
+        ? ( Const.getKettleDirectory() + File.separator + PLUGIN_PROPERTIES_FILE ) : getConfigurationFileName();
 
-    DOMConfigurator.configure( properFileName );
+    DOMConfigurator.configure( log4jPath );
   }
 
   /**
@@ -115,5 +115,13 @@ public class Log4jLogging implements LoggingPluginInterface {
    */
   String getConfigurationFileName() {
     return PLUGIN_PROPERTIES_FILE;
+  }
+
+  private String getPluginPath() {
+    return new File( getClass().getProtectionDomain().getCodeSource().getLocation().getPath() ).getPath();
+  }
+
+  private String getKettleDirPath() {
+    return new File( Const.getKettleDirectory() ).getPath();
   }
 }
