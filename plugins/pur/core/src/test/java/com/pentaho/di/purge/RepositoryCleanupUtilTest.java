@@ -21,8 +21,10 @@ import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.api.client.config.ClientConfig;
 import com.sun.jersey.api.client.filter.HTTPBasicAuthFilter;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.pentaho.di.core.KettleClientEnvironment;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
@@ -42,6 +44,11 @@ import static org.powermock.reflect.Whitebox.setInternalState;
 @RunWith( PowerMockRunner.class )
 @PrepareForTest( Client.class )
 public class RepositoryCleanupUtilTest {
+
+  @Before
+  public void setup() throws Exception {
+    KettleClientEnvironment.init();
+  }
 
   @Test
   public void authenticateLoginCredentials() throws Exception {

@@ -41,7 +41,7 @@ import org.apache.commons.vfs2.FileObject;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.KettleClientEnvironment;
 import org.pentaho.di.core.KettleEnvironment;
-import org.pentaho.di.core.encryption.KettleTwoWayPasswordEncoder;
+import org.pentaho.di.core.encryption.Encr;
 import org.pentaho.di.core.logging.KettleLogStore;
 import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.logging.LogChannelInterface;
@@ -345,7 +345,7 @@ public class Carte {
       clientConfig.getFeatures().put( JSONConfiguration.FEATURE_POJO_MAPPING, Boolean.TRUE );
       Client client = Client.create( clientConfig );
 
-      client.addFilter( new HTTPBasicAuthFilter( username, new KettleTwoWayPasswordEncoder().decode( password, true ) ) );
+      client.addFilter( new HTTPBasicAuthFilter( username, Encr.decryptPasswordOptionallyEncrypted( password ) ) );
 
       // check if the user can access the carte server. Don't really need this call but may want to check it's output at
       // some point
