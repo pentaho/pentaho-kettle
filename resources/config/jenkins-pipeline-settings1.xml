@@ -34,12 +34,12 @@
       <password>{xolC8pOE9HEHaUOFXGQhIlS5RcgQTS5fPYFtnZYiBvs=}</password>
     </server>
     <server>
-      <id>10.177.178.252:8001</id>
+      <id>nexus3.pentaho.com:8001</id>
       <username>buildguy</username>
       <password>{xolC8pOE9HEHaUOFXGQhIlS5RcgQTS5fPYFtnZYiBvs=}</password>
     </server>
     <server>
-      <id>10.177.178.252:8002</id>
+      <id>nexus3.pentaho.com:8002</id>
       <username>buildguy</username>
       <password>{xolC8pOE9HEHaUOFXGQhIlS5RcgQTS5fPYFtnZYiBvs=}</password>
     </server>
