@@ -427,7 +427,6 @@ jobGroups:
        scmUrl          :  ${WEBDETAILS_SCM_ROOT}/cdf.git
        scmBranch       :  ${DEFAULT_BRANCH}
        versionProperty :  pentaho-cdf-plugin.version
-       testable        :  false
 
   2600:
 
