@@ -26,12 +26,13 @@ import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonToken;
 import com.fasterxml.jackson.databind.MappingJsonFactory;
+import org.pentaho.di.core.exception.KettleFileException;
+import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.getfields.types.json.node.Node;
 import org.pentaho.getfields.types.json.node.ArrayNode;
 import org.pentaho.getfields.types.json.node.ObjectNode;
 import org.pentaho.getfields.types.json.node.ValueNode;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -100,17 +101,6 @@ public class JsonSampler {
   }
 
   /**
-   * Sample a json file by File object
-   *
-   * @param file - a File object
-   * @return The sampled Node
-   * @throws IOException
-   */
-  public Node sample( File file ) throws IOException {
-    return sample( jsonFactory.createParser( file ) );
-  }
-
-  /**
    * Sample a json file by name
    *
    * @param file - a file name
@@ -118,7 +108,11 @@ public class JsonSampler {
    * @throws IOException
    */
   public Node sample( String file ) throws IOException {
-    return sample( new File( file ) );
+    try {
+      return sample( KettleVFS.getInputStream( file ) );
+    } catch ( KettleFileException kfe ) {
+      return null;
+    }
   }
 
   /**
