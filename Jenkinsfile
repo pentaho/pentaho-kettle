@@ -59,8 +59,10 @@ pipeline {
 
   environment {
       DEFAULT_BUILD_PROPERTIES = "${WORKSPACE}/resources/config/buildProperties.yaml"
+      BUILD_CONFIG_ROOT_PATH = "${WORKSPACE}/resources/config"
       BUILD_DATA_ROOT_PATH = "${WORKSPACE}/resources/builders"
-      BUILD_DATA_FILE = jobNameBuildFile()
+      BUILD_DATA_FILE = "${utils.jobName()}.yaml"
+      BUILD_VERSIONS_FILE = "${utils.jobName()}.versions"
       RESOLVE_REPO_MIRROR = "${params.MAVEN_RESOLVE_REPO_URL}"
       LIB_CACHE_ROOT_PATH = "${WORKSPACE}/caches"
       BUILDS_ROOT_PATH = "${WORKSPACE}/builds"
