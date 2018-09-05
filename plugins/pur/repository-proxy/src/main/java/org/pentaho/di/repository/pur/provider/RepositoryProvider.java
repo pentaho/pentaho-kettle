@@ -69,7 +69,7 @@ public class RepositoryProvider implements KettleRepositoryProvider {
    * Resets the repository so that next time {@link #getRepository()} is called a new repository is returned.
    * This is called whenever the user or password is changed for this instance of the repository
    */
-  void reconnectToRepository() {
+  public void reconnectToRepository() {
     if ( this.repository == null ) {
       return;
     }
