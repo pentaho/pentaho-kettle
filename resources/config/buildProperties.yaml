@@ -20,7 +20,7 @@ ANT_TEST_TARGETS: test jacoco
 ANT_DEFAULT_DIRECTIVES: clean-all resolve publish
 
 # Maven
-MAVEN_DEFAULT_COMMAND_OPTIONS: -B -e
+MAVEN_DEFAULT_COMMAND_OPTIONS: -B -e -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
 MAVEN_OPTS: -Xms512m
 MAVEN_RESOLVE_REPO_URL: http://nexus.pentaho.org/content/groups/omni
 MAVEN_PUBLIC_RELEASE_REPO_URL:
