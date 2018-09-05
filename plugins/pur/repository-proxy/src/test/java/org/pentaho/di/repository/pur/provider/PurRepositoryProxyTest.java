@@ -65,10 +65,14 @@ public class PurRepositoryProxyTest {
     String someString = "SomeString";
     String returnString;
     RepositoryMeta mockRepositoryMeta = mock( RepositoryMeta.class );
-    // WHY BOTH ????????? If you take the first one the other fails...
+
+    //Both these mocks are needed. If you take the first one the other fails... Probably the first one stubs
+    // something that makes the second one work...?
     doReturn( mockRepositoryMeta ).when( proxy ).createPurRepositoryMetaRepositoryMeta( anyString() );
     when( proxy.createPurRepositoryMetaRepositoryMeta( anyString() ) ).thenReturn( mockRepositoryMeta );
-    // WHY BOTH ????????? If you take the first one the other fails...
+
+    //Both these mocks are needed. If you take the first one the other fails... Probably the first one stubs
+    // something that makes the second one work...?
     doReturn( mockRepository ).when( proxy ).getDelegate();
     when( proxy.getDelegate() ).thenReturn( mockRepository );
 
