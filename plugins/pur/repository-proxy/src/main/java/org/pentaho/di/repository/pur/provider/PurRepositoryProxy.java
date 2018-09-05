@@ -87,11 +87,7 @@ public class PurRepositoryProxy implements Repository {
     return this.delegate = repository;
   }
 
-  /**
-   * @param locationUrl
-   */
   public void setLocationUrl( String locationUrl ) {
-//    this.getDelegate();
     RepositoryMeta repositoryMeta = this.createPurRepositoryMetaRepositoryMeta( locationUrl );
     this.getDelegate().init( repositoryMeta );
     this.locationUrl = locationUrl;
