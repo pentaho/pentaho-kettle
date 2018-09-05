@@ -64,14 +64,6 @@
       <artifactId>pentaho-kettle-repository-locator-api</artifactId>
       <version>${project.version}</version>
     </dependency>
-
-    <!-- Dependency used in blueprint.xml -->
-    <dependency>
-      <groupId>pentaho</groupId>
-      <artifactId>pentaho-kettle-repository-locator-impl-plugin</artifactId>
-      <version>${pentaho-osgi-bundles.version}</version>
-    </dependency>
-
     <dependency>
       <groupId>org.pentaho.di.plugins</groupId>
       <artifactId>pdi-pur-plugin-core</artifactId>
