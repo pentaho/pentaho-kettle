@@ -25,6 +25,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -37,7 +38,7 @@ public class PluginRepositoryProviderTest {
 
   @Before
   public void setUp() {
-    pluginRepositoryProvider = new RepositoryProvider();
+    pluginRepositoryProvider = spy( new RepositoryProvider() );
   }
 
   @Test
@@ -71,7 +72,33 @@ public class PluginRepositoryProviderTest {
   }
 
   @Test
-  public void testResetRepository() {
+  public void testGetRepositoryShouldReconnectRepositoryOnChangePassword() {
+    Repository repository = null;
+    Repository mockRepository = mock( Repository.class );
+    pluginRepositoryProvider.setPassword( "SomePassword" );
+
+    pluginRepositoryProvider.setRepository( mockRepository );
+    repository = pluginRepositoryProvider.getRepository();
+
+    assertNotNull( repository );
+    verify( pluginRepositoryProvider, times( 1 ) ).reconnectToRepository();
+  }
+
+  @Test
+  public void testGetRepositoryShouldReconnectRepositoryOnChangeUsername() {
+    Repository repository = null;
+    Repository mockRepository = mock( Repository.class );
+    pluginRepositoryProvider.setUsername( "SomeUsername" );
+
+    pluginRepositoryProvider.setRepository( mockRepository );
+    repository = pluginRepositoryProvider.getRepository();
+
+    assertNotNull( repository );
+    verify( pluginRepositoryProvider, times( 1 ) ).reconnectToRepository();
+  }
+
+  @Test
+  public void testReconnectRepository() {
     Repository mockRepository = mock( Repository.class );
     pluginRepositoryProvider.setRepository( mockRepository );
     when( mockRepository.isConnected() ).thenReturn( true );

@@ -26,7 +26,7 @@ import org.slf4j.LoggerFactory;
  * Provides a PUR repository in OSGI environment via a proxy.
  * The repository is connected to the first time it is accessed.
  */
-public final class RepositoryProvider implements KettleRepositoryProvider {
+public class RepositoryProvider implements KettleRepositoryProvider {
 
   private static final Logger logger = LoggerFactory.getLogger( RepositoryProvider.class );
   private String username;
@@ -69,7 +69,7 @@ public final class RepositoryProvider implements KettleRepositoryProvider {
    * Resets the repository so that next time {@link #getRepository()} is called a new repository is returned.
    * This is called whenever the user or password is changed for this instance of the repository
    */
-  protected void reconnectToRepository() {
+  void reconnectToRepository() {
     if ( this.repository == null ) {
       return;
     }
