@@ -128,602 +128,602 @@ public class PurRepositoryProxy implements Repository {
   // is auto-generated code, coverage is ignored.
   @Override
   public String getName() {
-    return getDelegate().getName(); // $COVERAGE-IGNORE$
+    return getDelegate().getName();
   }
 
   @Override
   public String getVersion() {
-    return getDelegate().getVersion(); // $COVERAGE-IGNORE$
+    return getDelegate().getVersion();
   }
 
   @Override
   public RepositoryMeta getRepositoryMeta() {
-    return getDelegate().getRepositoryMeta(); // $COVERAGE-IGNORE$
+    return getDelegate().getRepositoryMeta();
   }
 
   @Override
   public IUser getUserInfo() {
-    return getDelegate().getUserInfo(); // $COVERAGE-IGNORE$
+    return getDelegate().getUserInfo();
   }
 
   @Override
   public RepositorySecurityProvider getSecurityProvider() {
-    return getDelegate().getSecurityProvider(); // $COVERAGE-IGNORE$
+    return getDelegate().getSecurityProvider();
   }
 
   @Override
   public RepositorySecurityManager getSecurityManager() {
-    return getDelegate().getSecurityManager(); // $COVERAGE-IGNORE$
+    return getDelegate().getSecurityManager();
   }
 
   @Override
   public LogChannelInterface getLog() {
-    return getDelegate().getLog(); // $COVERAGE-IGNORE$
+    return getDelegate().getLog();
   }
 
   @Override
   public void connect( String s, String s1 ) throws KettleException, KettleSecurityException {
-    getDelegate().connect( s, s1 ); // $COVERAGE-IGNORE$
+    getDelegate().connect( s, s1 );
   }
 
   @Override
   public void disconnect() {
-    getDelegate().disconnect(); // $COVERAGE-IGNORE$
+    getDelegate().disconnect();
   }
 
   @Override
   public boolean isConnected() {
-    return getDelegate().isConnected(); // $COVERAGE-IGNORE$
+    return getDelegate().isConnected();
   }
 
   @Override
   public void init( RepositoryMeta repositoryMeta ) {
-    getDelegate().init( repositoryMeta ); // $COVERAGE-IGNORE$
+    getDelegate().init( repositoryMeta );
   }
 
   @Override
   public boolean exists( String s, RepositoryDirectoryInterface repositoryDirectoryInterface, RepositoryObjectType repositoryObjectType ) throws KettleException {
-    return getDelegate().exists( s, repositoryDirectoryInterface, repositoryObjectType ); // $COVERAGE-IGNORE$
+    return getDelegate().exists( s, repositoryDirectoryInterface, repositoryObjectType );
   }
 
   @Override
   public ObjectId getTransformationID( String s, RepositoryDirectoryInterface repositoryDirectoryInterface ) throws KettleException {
-    return getDelegate().getTransformationID( s, repositoryDirectoryInterface ); // $COVERAGE-IGNORE$
+    return getDelegate().getTransformationID( s, repositoryDirectoryInterface );
   }
 
   @Override
   public ObjectId getJobId( String s, RepositoryDirectoryInterface repositoryDirectoryInterface ) throws KettleException {
-    return getDelegate().getJobId( s, repositoryDirectoryInterface ); // $COVERAGE-IGNORE$
+    return getDelegate().getJobId( s, repositoryDirectoryInterface );
   }
 
   @Override
   public void save( RepositoryElementInterface repositoryElementInterface, String s, ProgressMonitorListener progressMonitorListener ) throws KettleException {
-    getDelegate().save( repositoryElementInterface, s, progressMonitorListener ); // $COVERAGE-IGNORE$
+    getDelegate().save( repositoryElementInterface, s, progressMonitorListener );
   }
 
   @Override
   public void save( RepositoryElementInterface repositoryElementInterface, String s, ProgressMonitorListener progressMonitorListener, boolean b ) throws KettleException {
-    getDelegate().save( repositoryElementInterface, s, progressMonitorListener, b ); // $COVERAGE-IGNORE$
+    getDelegate().save( repositoryElementInterface, s, progressMonitorListener, b );
   }
 
   @Override
   public void save( RepositoryElementInterface repositoryElementInterface, String s, Calendar calendar, ProgressMonitorListener progressMonitorListener, boolean b ) throws KettleException {
-    getDelegate().save( repositoryElementInterface, s, calendar, progressMonitorListener, b ); // $COVERAGE-IGNORE$
+    getDelegate().save( repositoryElementInterface, s, calendar, progressMonitorListener, b );
   }
 
   @Override
   public RepositoryDirectoryInterface getDefaultSaveDirectory( RepositoryElementInterface repositoryElementInterface ) throws KettleException {
-    return getDelegate().getDefaultSaveDirectory( repositoryElementInterface ); // $COVERAGE-IGNORE$
+    return getDelegate().getDefaultSaveDirectory( repositoryElementInterface );
   }
 
   @Override
   public RepositoryDirectoryInterface getUserHomeDirectory() throws KettleException {
-    return getDelegate().getUserHomeDirectory(); // $COVERAGE-IGNORE$
+    return getDelegate().getUserHomeDirectory();
   }
 
   @Override
   public void clearSharedObjectCache() {
-    getDelegate().clearSharedObjectCache(); // $COVERAGE-IGNORE$
+    getDelegate().clearSharedObjectCache();
   }
 
   @Override
   public TransMeta loadTransformation( String s, RepositoryDirectoryInterface repositoryDirectoryInterface, ProgressMonitorListener progressMonitorListener, boolean b, String s1 ) throws KettleException {
-    return getDelegate().loadTransformation( s, repositoryDirectoryInterface, progressMonitorListener, b, s1 ); // $COVERAGE-IGNORE$
+    return getDelegate().loadTransformation( s, repositoryDirectoryInterface, progressMonitorListener, b, s1 );
   }
 
   @Override
   public TransMeta loadTransformation( ObjectId objectId, String s ) throws KettleException {
-    return getDelegate().loadTransformation( objectId, s ); // $COVERAGE-IGNORE$
+    return getDelegate().loadTransformation( objectId, s );
   }
 
   @Override
   public SharedObjects readTransSharedObjects( TransMeta transMeta ) throws KettleException {
-    return getDelegate().readTransSharedObjects( transMeta ); // $COVERAGE-IGNORE$
+    return getDelegate().readTransSharedObjects( transMeta );
   }
 
   @Override
   public ObjectId renameTransformation( ObjectId objectId, RepositoryDirectoryInterface repositoryDirectoryInterface, String s ) throws KettleException {
-    return getDelegate().renameTransformation( objectId, repositoryDirectoryInterface, s ); // $COVERAGE-IGNORE$
+    return getDelegate().renameTransformation( objectId, repositoryDirectoryInterface, s );
   }
 
   @Override
   public ObjectId renameTransformation( ObjectId objectId, String s, RepositoryDirectoryInterface repositoryDirectoryInterface, String s1 ) throws KettleException {
-    return getDelegate().renameTransformation( objectId, s, repositoryDirectoryInterface, s1 ); // $COVERAGE-IGNORE$
+    return getDelegate().renameTransformation( objectId, s, repositoryDirectoryInterface, s1 );
   }
 
   @Override
   public void deleteTransformation( ObjectId objectId ) throws KettleException {
-    getDelegate().deleteTransformation( objectId ); // $COVERAGE-IGNORE$
+    getDelegate().deleteTransformation( objectId );
   }
 
   @Override
   public JobMeta loadJob( String s, RepositoryDirectoryInterface repositoryDirectoryInterface, ProgressMonitorListener progressMonitorListener, String s1 ) throws KettleException {
-    return getDelegate().loadJob( s, repositoryDirectoryInterface, progressMonitorListener, s1 ); // $COVERAGE-IGNORE$
+    return getDelegate().loadJob( s, repositoryDirectoryInterface, progressMonitorListener, s1 );
   }
 
   @Override
   public JobMeta loadJob( ObjectId objectId, String s ) throws KettleException {
-    return getDelegate().loadJob( objectId, s ); // $COVERAGE-IGNORE$
+    return getDelegate().loadJob( objectId, s );
   }
 
   @Override
   public SharedObjects readJobMetaSharedObjects( JobMeta jobMeta ) throws KettleException {
-    return getDelegate().readJobMetaSharedObjects( jobMeta ); // $COVERAGE-IGNORE$
+    return getDelegate().readJobMetaSharedObjects( jobMeta );
   }
 
   @Override
   public ObjectId renameJob( ObjectId objectId, String s, RepositoryDirectoryInterface repositoryDirectoryInterface, String s1 ) throws KettleException {
-    return getDelegate().renameJob( objectId, s, repositoryDirectoryInterface, s1 ); // $COVERAGE-IGNORE$
+    return getDelegate().renameJob( objectId, s, repositoryDirectoryInterface, s1 );
   }
 
   @Override
   public ObjectId renameJob( ObjectId objectId, RepositoryDirectoryInterface repositoryDirectoryInterface, String s ) throws KettleException {
-    return getDelegate().renameJob( objectId, repositoryDirectoryInterface, s ); // $COVERAGE-IGNORE$
+    return getDelegate().renameJob( objectId, repositoryDirectoryInterface, s );
   }
 
   @Override
   public void deleteJob( ObjectId objectId ) throws KettleException {
-    getDelegate().deleteJob( objectId ); // $COVERAGE-IGNORE$
+    getDelegate().deleteJob( objectId );
   }
 
   @Override
   public DatabaseMeta loadDatabaseMeta( ObjectId objectId, String s ) throws KettleException {
-    return getDelegate().loadDatabaseMeta( objectId, s ); // $COVERAGE-IGNORE$
+    return getDelegate().loadDatabaseMeta( objectId, s );
   }
 
   @Override
   public void deleteDatabaseMeta( String s ) throws KettleException {
-    getDelegate().deleteDatabaseMeta( s ); // $COVERAGE-IGNORE$
+    getDelegate().deleteDatabaseMeta( s );
   }
 
   @Override
   public ObjectId[] getDatabaseIDs( boolean b ) throws KettleException {
-    return getDelegate().getDatabaseIDs( b ); // $COVERAGE-IGNORE$
+    return getDelegate().getDatabaseIDs( b );
   }
 
   @Override
   public String[] getDatabaseNames( boolean b ) throws KettleException {
-    return getDelegate().getDatabaseNames( b ); // $COVERAGE-IGNORE$
+    return getDelegate().getDatabaseNames( b );
   }
 
   @Override
   public List<DatabaseMeta> readDatabases() throws KettleException {
-    return getDelegate().readDatabases(); // $COVERAGE-IGNORE$
+    return getDelegate().readDatabases();
   }
 
   @Override
   public ObjectId getDatabaseID( String s ) throws KettleException {
-    return getDelegate().getDatabaseID( s ); // $COVERAGE-IGNORE$
+    return getDelegate().getDatabaseID( s );
   }
 
   @Override
   public ClusterSchema loadClusterSchema( ObjectId objectId, List<SlaveServer> list, String s ) throws KettleException {
-    return getDelegate().loadClusterSchema( objectId, list, s ); // $COVERAGE-IGNORE$
+    return getDelegate().loadClusterSchema( objectId, list, s );
   }
 
   @Override
   public ObjectId[] getClusterIDs( boolean b ) throws KettleException {
-    return getDelegate().getClusterIDs( b ); // $COVERAGE-IGNORE$
+    return getDelegate().getClusterIDs( b );
   }
 
   @Override
   public String[] getClusterNames( boolean b ) throws KettleException {
-    return getDelegate().getClusterNames( b ); // $COVERAGE-IGNORE$
+    return getDelegate().getClusterNames( b );
   }
 
   @Override
   public ObjectId getClusterID( String s ) throws KettleException {
-    return getDelegate().getClusterID( s ); // $COVERAGE-IGNORE$
+    return getDelegate().getClusterID( s );
   }
 
   @Override
   public void deleteClusterSchema( ObjectId objectId ) throws KettleException {
-    getDelegate().deleteClusterSchema( objectId ); // $COVERAGE-IGNORE$
+    getDelegate().deleteClusterSchema( objectId );
   }
 
   @Override
   public SlaveServer loadSlaveServer( ObjectId objectId, String s ) throws KettleException {
-    return getDelegate().loadSlaveServer( objectId, s ); // $COVERAGE-IGNORE$
+    return getDelegate().loadSlaveServer( objectId, s );
   }
 
   @Override
   public ObjectId[] getSlaveIDs( boolean b ) throws KettleException {
-    return getDelegate().getSlaveIDs( b ); // $COVERAGE-IGNORE$
+    return getDelegate().getSlaveIDs( b );
   }
 
   @Override
   public String[] getSlaveNames( boolean b ) throws KettleException {
-    return getDelegate().getSlaveNames( b ); // $COVERAGE-IGNORE$
+    return getDelegate().getSlaveNames( b );
   }
 
   @Override
   public List<SlaveServer> getSlaveServers() throws KettleException {
-    return getDelegate().getSlaveServers(); // $COVERAGE-IGNORE$
+    return getDelegate().getSlaveServers();
   }
 
   @Override
   public ObjectId getSlaveID( String s ) throws KettleException {
-    return getDelegate().getSlaveID( s ); // $COVERAGE-IGNORE$
+    return getDelegate().getSlaveID( s );
   }
 
   @Override
   public void deleteSlave( ObjectId objectId ) throws KettleException {
-    getDelegate().deleteSlave( objectId ); // $COVERAGE-IGNORE$
+    getDelegate().deleteSlave( objectId );
   }
 
   @Override
   public PartitionSchema loadPartitionSchema( ObjectId objectId, String s ) throws KettleException {
-    return getDelegate().loadPartitionSchema( objectId, s ); // $COVERAGE-IGNORE$
+    return getDelegate().loadPartitionSchema( objectId, s );
   }
 
   @Override
   public ObjectId[] getPartitionSchemaIDs( boolean b ) throws KettleException {
-    return getDelegate().getPartitionSchemaIDs( b ); // $COVERAGE-IGNORE$
+    return getDelegate().getPartitionSchemaIDs( b );
   }
 
   @Override
   public String[] getPartitionSchemaNames( boolean b ) throws KettleException {
-    return getDelegate().getPartitionSchemaNames( b ); // $COVERAGE-IGNORE$
+    return getDelegate().getPartitionSchemaNames( b );
   }
 
   @Override
   public ObjectId getPartitionSchemaID( String s ) throws KettleException {
-    return getDelegate().getPartitionSchemaID( s ); // $COVERAGE-IGNORE$
+    return getDelegate().getPartitionSchemaID( s );
   }
 
   @Override
   public void deletePartitionSchema( ObjectId objectId ) throws KettleException {
-    getDelegate().deletePartitionSchema( objectId ); // $COVERAGE-IGNORE$
+    getDelegate().deletePartitionSchema( objectId );
   }
 
   @Override
   public RepositoryDirectoryInterface loadRepositoryDirectoryTree() throws KettleException {
-    return getDelegate().loadRepositoryDirectoryTree(); // $COVERAGE-IGNORE$
+    return getDelegate().loadRepositoryDirectoryTree();
   }
 
   @Override
   public RepositoryDirectoryInterface findDirectory( String s ) throws KettleException {
-    return getDelegate().findDirectory( s ); // $COVERAGE-IGNORE$
+    return getDelegate().findDirectory( s );
   }
 
   @Override
   public RepositoryDirectoryInterface findDirectory( ObjectId objectId ) throws KettleException {
-    return getDelegate().findDirectory( objectId ); // $COVERAGE-IGNORE$
+    return getDelegate().findDirectory( objectId );
   }
 
   @Override
   public void saveRepositoryDirectory( RepositoryDirectoryInterface repositoryDirectoryInterface ) throws KettleException {
-    getDelegate().saveRepositoryDirectory( repositoryDirectoryInterface ); // $COVERAGE-IGNORE$
+    getDelegate().saveRepositoryDirectory( repositoryDirectoryInterface );
   }
 
   @Override
   public void deleteRepositoryDirectory( RepositoryDirectoryInterface repositoryDirectoryInterface ) throws KettleException {
-    getDelegate().deleteRepositoryDirectory( repositoryDirectoryInterface ); // $COVERAGE-IGNORE$
+    getDelegate().deleteRepositoryDirectory( repositoryDirectoryInterface );
   }
 
   @Override
   public ObjectId renameRepositoryDirectory( ObjectId objectId, RepositoryDirectoryInterface repositoryDirectoryInterface, String s ) throws KettleException {
-    return getDelegate().renameRepositoryDirectory( objectId, repositoryDirectoryInterface, s ); // $COVERAGE-IGNORE$
+    return getDelegate().renameRepositoryDirectory( objectId, repositoryDirectoryInterface, s );
   }
 
   @Override
   public RepositoryDirectoryInterface createRepositoryDirectory( RepositoryDirectoryInterface repositoryDirectoryInterface, String s ) throws KettleException {
-    return getDelegate().createRepositoryDirectory( repositoryDirectoryInterface, s ); // $COVERAGE-IGNORE$
+    return getDelegate().createRepositoryDirectory( repositoryDirectoryInterface, s );
   }
 
   @Override
   public String[] getTransformationNames( ObjectId objectId, boolean b ) throws KettleException {
-    return getDelegate().getTransformationNames( objectId, b ); // $COVERAGE-IGNORE$
+    return getDelegate().getTransformationNames( objectId, b );
   }
 
   @Override
   public List<RepositoryElementMetaInterface> getJobObjects( ObjectId objectId, boolean b ) throws KettleException {
-    return getDelegate().getJobObjects( objectId, b ); // $COVERAGE-IGNORE$
+    return getDelegate().getJobObjects( objectId, b );
   }
 
   @Override
   public List<RepositoryElementMetaInterface> getTransformationObjects( ObjectId objectId, boolean b ) throws KettleException {
-    return getDelegate().getTransformationObjects( objectId, b ); // $COVERAGE-IGNORE$
+    return getDelegate().getTransformationObjects( objectId, b );
   }
 
   @Override
   public List<RepositoryElementMetaInterface> getJobAndTransformationObjects( ObjectId objectId, boolean b ) throws KettleException {
-    return getDelegate().getJobAndTransformationObjects( objectId, b ); // $COVERAGE-IGNORE$
+    return getDelegate().getJobAndTransformationObjects( objectId, b );
   }
 
   @Override
   public String[] getJobNames( ObjectId objectId, boolean b ) throws KettleException {
-    return getDelegate().getJobNames( objectId, b ); // $COVERAGE-IGNORE$
+    return getDelegate().getJobNames( objectId, b );
   }
 
   @Override
   public String[] getDirectoryNames( ObjectId objectId ) throws KettleException {
-    return getDelegate().getDirectoryNames( objectId ); // $COVERAGE-IGNORE$
+    return getDelegate().getDirectoryNames( objectId );
   }
 
   @Override
   public ObjectId insertLogEntry( String s ) throws KettleException {
-    return getDelegate().insertLogEntry( s ); // $COVERAGE-IGNORE$
+    return getDelegate().insertLogEntry( s );
   }
 
   @Override
   public void insertStepDatabase( ObjectId objectId, ObjectId objectId1, ObjectId objectId2 ) throws KettleException {
-    getDelegate().insertStepDatabase( objectId, objectId1, objectId2 ); // $COVERAGE-IGNORE$
+    getDelegate().insertStepDatabase( objectId, objectId1, objectId2 );
   }
 
   @Override
   public void insertJobEntryDatabase( ObjectId objectId, ObjectId objectId1, ObjectId objectId2 ) throws KettleException {
-    getDelegate().insertJobEntryDatabase( objectId, objectId1, objectId2 ); // $COVERAGE-IGNORE$
+    getDelegate().insertJobEntryDatabase( objectId, objectId1, objectId2 );
   }
 
   @Override
   public void saveConditionStepAttribute( ObjectId objectId, ObjectId objectId1, String s, Condition condition ) throws KettleException {
-    getDelegate().saveConditionStepAttribute( objectId, objectId1, s, condition ); // $COVERAGE-IGNORE$
+    getDelegate().saveConditionStepAttribute( objectId, objectId1, s, condition );
   }
 
   @Override
   public Condition loadConditionFromStepAttribute( ObjectId objectId, String s ) throws KettleException {
-    return getDelegate().loadConditionFromStepAttribute( objectId, s ); // $COVERAGE-IGNORE$
+    return getDelegate().loadConditionFromStepAttribute( objectId, s );
   }
 
   @Override
   public boolean getStepAttributeBoolean( ObjectId objectId, int i, String s, boolean b ) throws KettleException {
-    return getDelegate().getStepAttributeBoolean( objectId, i, s, b ); // $COVERAGE-IGNORE$
+    return getDelegate().getStepAttributeBoolean( objectId, i, s, b );
   }
 
   @Override
   public boolean getStepAttributeBoolean( ObjectId objectId, int i, String s ) throws KettleException {
-    return getDelegate().getStepAttributeBoolean( objectId, i, s ); // $COVERAGE-IGNORE$
+    return getDelegate().getStepAttributeBoolean( objectId, i, s );
   }
 
   @Override
   public boolean getStepAttributeBoolean( ObjectId objectId, String s ) throws KettleException {
-    return getDelegate().getStepAttributeBoolean( objectId, s ); // $COVERAGE-IGNORE$
+    return getDelegate().getStepAttributeBoolean( objectId, s );
   }
 
   @Override
   public long getStepAttributeInteger( ObjectId objectId, int i, String s ) throws KettleException {
-    return getDelegate().getStepAttributeInteger( objectId, i, s ); // $COVERAGE-IGNORE$
+    return getDelegate().getStepAttributeInteger( objectId, i, s );
   }
 
   @Override
   public long getStepAttributeInteger( ObjectId objectId, String s ) throws KettleException {
-    return getDelegate().getStepAttributeInteger( objectId, s ); // $COVERAGE-IGNORE$
+    return getDelegate().getStepAttributeInteger( objectId, s );
   }
 
   @Override
   public String getStepAttributeString( ObjectId objectId, int i, String s ) throws KettleException {
-    return getDelegate().getStepAttributeString( objectId, i, s ); // $COVERAGE-IGNORE$
+    return getDelegate().getStepAttributeString( objectId, i, s );
   }
 
   @Override
   public String getStepAttributeString( ObjectId objectId, String s ) throws KettleException {
-    return getDelegate().getStepAttributeString( objectId, s ); // $COVERAGE-IGNORE$
+    return getDelegate().getStepAttributeString( objectId, s );
   }
 
   @Override
   public void saveStepAttribute( ObjectId objectId, ObjectId objectId1, int i, String s, String s1 ) throws KettleException {
-    getDelegate().saveStepAttribute( objectId, objectId1, i, s, s1 ); // $COVERAGE-IGNORE$
+    getDelegate().saveStepAttribute( objectId, objectId1, i, s, s1 );
   }
 
   @Override
   public void saveStepAttribute( ObjectId objectId, ObjectId objectId1, String s, String s1 ) throws KettleException {
-    getDelegate().saveStepAttribute( objectId, objectId1, s, s1 ); // $COVERAGE-IGNORE$
+    getDelegate().saveStepAttribute( objectId, objectId1, s, s1 );
   }
 
   @Override
   public void saveStepAttribute( ObjectId objectId, ObjectId objectId1, int i, String s, boolean b ) throws KettleException {
-    getDelegate().saveStepAttribute( objectId, objectId1, i, s, b ); // $COVERAGE-IGNORE$
+    getDelegate().saveStepAttribute( objectId, objectId1, i, s, b );
   }
 
   @Override
   public void saveStepAttribute( ObjectId objectId, ObjectId objectId1, String s, boolean b ) throws KettleException {
-    getDelegate().saveStepAttribute( objectId, objectId1, s, b ); // $COVERAGE-IGNORE$
+    getDelegate().saveStepAttribute( objectId, objectId1, s, b );
   }
 
   @Override
   public void saveStepAttribute( ObjectId objectId, ObjectId objectId1, int i, String s, long l ) throws KettleException {
-    getDelegate().saveStepAttribute( objectId, objectId1, i, s, l ); // $COVERAGE-IGNORE$
+    getDelegate().saveStepAttribute( objectId, objectId1, i, s, l );
   }
 
   @Override
   public void saveStepAttribute( ObjectId objectId, ObjectId objectId1, String s, long l ) throws KettleException {
-    getDelegate().saveStepAttribute( objectId, objectId1, s, l ); // $COVERAGE-IGNORE$
+    getDelegate().saveStepAttribute( objectId, objectId1, s, l );
   }
 
   @Override
   public void saveStepAttribute( ObjectId objectId, ObjectId objectId1, int i, String s, double v ) throws KettleException {
-    getDelegate().saveStepAttribute( objectId, objectId1, i, s, v ); // $COVERAGE-IGNORE$
+    getDelegate().saveStepAttribute( objectId, objectId1, i, s, v );
   }
 
   @Override
   public void saveStepAttribute( ObjectId objectId, ObjectId objectId1, String s, double v ) throws KettleException {
-    getDelegate().saveStepAttribute( objectId, objectId1, s, v ); // $COVERAGE-IGNORE$
+    getDelegate().saveStepAttribute( objectId, objectId1, s, v );
   }
 
   @Override
   public int countNrStepAttributes( ObjectId objectId, String s ) throws KettleException {
-    return getDelegate().countNrStepAttributes( objectId, s ); // $COVERAGE-IGNORE$
+    return getDelegate().countNrStepAttributes( objectId, s );
   }
 
   @Override
   public int countNrJobEntryAttributes( ObjectId objectId, String s ) throws KettleException {
-    return getDelegate().countNrJobEntryAttributes( objectId, s ); // $COVERAGE-IGNORE$
+    return getDelegate().countNrJobEntryAttributes( objectId, s );
   }
 
   @Override
   public boolean getJobEntryAttributeBoolean( ObjectId objectId, String s ) throws KettleException {
-    return getDelegate().getJobEntryAttributeBoolean( objectId, s ); // $COVERAGE-IGNORE$
+    return getDelegate().getJobEntryAttributeBoolean( objectId, s );
   }
 
   @Override
   public boolean getJobEntryAttributeBoolean( ObjectId objectId, int i, String s ) throws KettleException {
-    return getDelegate().getJobEntryAttributeBoolean( objectId, i, s ); // $COVERAGE-IGNORE$
+    return getDelegate().getJobEntryAttributeBoolean( objectId, i, s );
   }
 
   @Override
   public boolean getJobEntryAttributeBoolean( ObjectId objectId, String s, boolean b ) throws KettleException {
-    return getDelegate().getJobEntryAttributeBoolean( objectId, s, b ); // $COVERAGE-IGNORE$
+    return getDelegate().getJobEntryAttributeBoolean( objectId, s, b );
   }
 
   @Override
   public long getJobEntryAttributeInteger( ObjectId objectId, String s ) throws KettleException {
-    return getDelegate().getJobEntryAttributeInteger( objectId, s ); // $COVERAGE-IGNORE$
+    return getDelegate().getJobEntryAttributeInteger( objectId, s );
   }
 
   @Override
   public long getJobEntryAttributeInteger( ObjectId objectId, int i, String s ) throws KettleException {
-    return getDelegate().getJobEntryAttributeInteger( objectId, i, s ); // $COVERAGE-IGNORE$
+    return getDelegate().getJobEntryAttributeInteger( objectId, i, s );
   }
 
   @Override
   public String getJobEntryAttributeString( ObjectId objectId, String s ) throws KettleException {
-    return getDelegate().getJobEntryAttributeString( objectId, s ); // $COVERAGE-IGNORE$
+    return getDelegate().getJobEntryAttributeString( objectId, s );
   }
 
   @Override
   public String getJobEntryAttributeString( ObjectId objectId, int i, String s ) throws KettleException {
-    return getDelegate().getJobEntryAttributeString( objectId, i, s ); // $COVERAGE-IGNORE$
+    return getDelegate().getJobEntryAttributeString( objectId, i, s );
   }
 
   @Override
   public void saveJobEntryAttribute( ObjectId objectId, ObjectId objectId1, int i, String s, String s1 ) throws KettleException {
-    getDelegate().saveJobEntryAttribute( objectId, objectId1, i, s, s1 ); // $COVERAGE-IGNORE$
+    getDelegate().saveJobEntryAttribute( objectId, objectId1, i, s, s1 );
   }
 
   @Override
   public void saveJobEntryAttribute( ObjectId objectId, ObjectId objectId1, String s, String s1 ) throws KettleException {
-    getDelegate().saveJobEntryAttribute( objectId, objectId1, s, s1 ); // $COVERAGE-IGNORE$
+    getDelegate().saveJobEntryAttribute( objectId, objectId1, s, s1 );
   }
 
   @Override
   public void saveJobEntryAttribute( ObjectId objectId, ObjectId objectId1, int i, String s, boolean b ) throws KettleException {
-    getDelegate().saveJobEntryAttribute( objectId, objectId1, i, s, b ); // $COVERAGE-IGNORE$
+    getDelegate().saveJobEntryAttribute( objectId, objectId1, i, s, b );
   }
 
   @Override
   public void saveJobEntryAttribute( ObjectId objectId, ObjectId objectId1, String s, boolean b ) throws KettleException {
-    getDelegate().saveJobEntryAttribute( objectId, objectId1, s, b ); // $COVERAGE-IGNORE$
+    getDelegate().saveJobEntryAttribute( objectId, objectId1, s, b );
   }
 
   @Override
   public void saveJobEntryAttribute( ObjectId objectId, ObjectId objectId1, int i, String s, long l ) throws KettleException {
-    getDelegate().saveJobEntryAttribute( objectId, objectId1, i, s, l ); // $COVERAGE-IGNORE$
+    getDelegate().saveJobEntryAttribute( objectId, objectId1, i, s, l );
   }
 
   @Override
   public void saveJobEntryAttribute( ObjectId objectId, ObjectId objectId1, String s, long l ) throws KettleException {
-    getDelegate().saveJobEntryAttribute( objectId, objectId1, s, l ); // $COVERAGE-IGNORE$
+    getDelegate().saveJobEntryAttribute( objectId, objectId1, s, l );
   }
 
   @Override
   public DatabaseMeta loadDatabaseMetaFromStepAttribute( ObjectId objectId, String s, List<DatabaseMeta> list ) throws KettleException {
-    return getDelegate().loadDatabaseMetaFromStepAttribute( objectId, s, list ); // $COVERAGE-IGNORE$
+    return getDelegate().loadDatabaseMetaFromStepAttribute( objectId, s, list );
   }
 
   @Override
   public void saveDatabaseMetaStepAttribute( ObjectId objectId, ObjectId objectId1, String s, DatabaseMeta databaseMeta ) throws KettleException {
-    getDelegate().saveDatabaseMetaStepAttribute( objectId, objectId1, s, databaseMeta ); // $COVERAGE-IGNORE$
+    getDelegate().saveDatabaseMetaStepAttribute( objectId, objectId1, s, databaseMeta );
   }
 
   @Override
   public DatabaseMeta loadDatabaseMetaFromJobEntryAttribute( ObjectId objectId, String s, String s1, List<DatabaseMeta> list ) throws KettleException {
-    return getDelegate().loadDatabaseMetaFromJobEntryAttribute( objectId, s, s1, list ); // $COVERAGE-IGNORE$
+    return getDelegate().loadDatabaseMetaFromJobEntryAttribute( objectId, s, s1, list );
   }
 
   @Override
   public DatabaseMeta loadDatabaseMetaFromJobEntryAttribute( ObjectId objectId, String s, int i, String s1, List<DatabaseMeta> list ) throws KettleException {
-    return getDelegate().loadDatabaseMetaFromJobEntryAttribute( objectId, s, i, s1, list ); // $COVERAGE-IGNORE$
+    return getDelegate().loadDatabaseMetaFromJobEntryAttribute( objectId, s, i, s1, list );
   }
 
   @Override
   public void saveDatabaseMetaJobEntryAttribute( ObjectId objectId, ObjectId objectId1, String s, String s1, DatabaseMeta databaseMeta ) throws KettleException {
-    getDelegate().saveDatabaseMetaJobEntryAttribute( objectId, objectId1, s, s1, databaseMeta ); // $COVERAGE-IGNORE$
+    getDelegate().saveDatabaseMetaJobEntryAttribute( objectId, objectId1, s, s1, databaseMeta );
   }
 
   @Override
   public void saveDatabaseMetaJobEntryAttribute( ObjectId objectId, ObjectId objectId1, int i, String s, String s1, DatabaseMeta databaseMeta ) throws KettleException {
-    getDelegate().saveDatabaseMetaJobEntryAttribute( objectId, objectId1, i, s, s1, databaseMeta ); // $COVERAGE-IGNORE$
+    getDelegate().saveDatabaseMetaJobEntryAttribute( objectId, objectId1, i, s, s1, databaseMeta );
   }
 
   @Override
   public void undeleteObject( RepositoryElementMetaInterface repositoryElementMetaInterface ) throws KettleException {
-    getDelegate().undeleteObject( repositoryElementMetaInterface ); // $COVERAGE-IGNORE$
+    getDelegate().undeleteObject( repositoryElementMetaInterface );
   }
 
   @Override
   public List<Class<? extends IRepositoryService>> getServiceInterfaces() throws KettleException {
-    return getDelegate().getServiceInterfaces(); // $COVERAGE-IGNORE$
+    return getDelegate().getServiceInterfaces();
   }
 
   @Override
   public IRepositoryService getService( Class<? extends IRepositoryService> aClass ) throws KettleException {
-    return getDelegate().getService( aClass ); // $COVERAGE-IGNORE$
+    return getDelegate().getService( aClass );
   }
 
   @Override
   public boolean hasService( Class<? extends IRepositoryService> aClass ) throws KettleException {
-    return getDelegate().hasService( aClass ); // $COVERAGE-IGNORE$
+    return getDelegate().hasService( aClass );
   }
 
   @Override
   public RepositoryObject getObjectInformation( ObjectId objectId, RepositoryObjectType repositoryObjectType ) throws KettleException {
-    return getDelegate().getObjectInformation( objectId, repositoryObjectType ); // $COVERAGE-IGNORE$
+    return getDelegate().getObjectInformation( objectId, repositoryObjectType );
   }
 
   @Override
   public String getConnectMessage() {
-    return getDelegate().getConnectMessage(); // $COVERAGE-IGNORE$
+    return getDelegate().getConnectMessage();
   }
 
   @Override
   public String[] getJobsUsingDatabase( ObjectId objectId ) throws KettleException {
-    return getDelegate().getJobsUsingDatabase( objectId ); // $COVERAGE-IGNORE$
+    return getDelegate().getJobsUsingDatabase( objectId );
   }
 
   @Override
   public String[] getTransformationsUsingDatabase( ObjectId objectId ) throws KettleException {
-    return getDelegate().getTransformationsUsingDatabase( objectId ); // $COVERAGE-IGNORE$
+    return getDelegate().getTransformationsUsingDatabase( objectId );
   }
 
   @Override
   public IRepositoryImporter getImporter() {
-    return getDelegate().getImporter(); // $COVERAGE-IGNORE$
+    return getDelegate().getImporter();
   }
 
   @Override
   public IRepositoryExporter getExporter() throws KettleException {
-    return getDelegate().getExporter(); // $COVERAGE-IGNORE$
+    return getDelegate().getExporter();
   }
 
   @Override
   public IMetaStore getMetaStore() {
-    return getDelegate().getMetaStore(); // $COVERAGE-IGNORE$
+    return getDelegate().getMetaStore();
   }
 
   @Override
   public IUnifiedRepository getUnderlyingRepository() {
-    return getDelegate().getUnderlyingRepository(); // $COVERAGE-IGNORE$
+    return getDelegate().getUnderlyingRepository();
   }
   //endregion: T
 
