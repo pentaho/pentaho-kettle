@@ -65,7 +65,6 @@
 
     <!-- Spring -->
     <springframework4.version>4.3.2.RELEASE</springframework4.version>
-    <springframework4-security.version>4.1.5.RELEASE</springframework4-security.version>
   </properties>
 
   <dependencies>
@@ -539,7 +538,7 @@
     <dependency>
       <groupId>org.springframework.security</groupId>
       <artifactId>spring-security-core</artifactId>
-      <version>${springframework4-security.version}</version>
+      <version>${spring-security.version}</version>  <!-- see maven-parent-pom -->
     </dependency>
 
     <!-- Other third-party dependencies -->
