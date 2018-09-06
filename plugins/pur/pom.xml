@@ -18,5 +18,6 @@
   <modules>
     <module>core</module>
     <module>assemblies</module>
+    <module>repository-proxy</module>
   </modules>
 </project>
