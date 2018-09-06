@@ -573,10 +573,18 @@ public class GetStatusServlet extends BaseHttpServlet implements CartePluginInte
           + " + '?name=' + document.getElementById( 'j-cellTableFirstCell' + selectedJobRowIndex ).innerHTML"
           + " + '&id=' + document.getElementById( 'j-cellTableCell' + selectedJobRowIndex ).innerHTML );" );
       out.println( "} else if ( selectedTransRowIndex != -1 ) {" );
+      out.println( "if( document.getElementById( 'cellTableCellStatus' + selectedTransRowIndex ).innerHTML == 'Halting' || "
+          + "document.getElementById( 'cellTableCellStatus' + selectedTransRowIndex ).innerHTML == 'Finished' ){" );
+      out.println( "window.location.replace( '"
+          + convertContextPath( StartTransServlet.CONTEXT_PATH ) + "'"
+          + " + '?name=' + document.getElementById( 'cellTableFirstCell' + selectedTransRowIndex ).innerHTML"
+          + " + '&id=' + document.getElementById( 'cellTableCell' + selectedTransRowIndex ).innerHTML );" );
+      out.println( "} else {" );
       out.println( "window.location.replace( '"
           + convertContextPath( PauseTransServlet.CONTEXT_PATH ) + "'"
           + " + '?name=' + document.getElementById( 'cellTableFirstCell' + selectedTransRowIndex ).innerHTML"
           + " + '&id=' + document.getElementById( 'cellTableCell' + selectedTransRowIndex ).innerHTML );" );
+      out.println( "}" );
       out.println( "}" );
       out.println( "}" );
 
