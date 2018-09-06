@@ -10,11 +10,17 @@ FOLDER_PROPERTIES_URL=https://public.nexus.pentaho.org/content/groups/omni/com/m
 WORKFLOW_SCM_STEP_SHA=b9b0d5c4d8eb1a680917475dcd9551a52961c4954d4448a690abbe1755130019
 WORKFLOW_SCM_STEP_URL=https://public.nexus.pentaho.org/content/groups/omni/org/jenkins-ci/plugins/workflow/workflow-scm-step/2.7-pentaho/workflow-scm-step-2.7-pentaho.hpi
 
+PIPELINE_CI_UTILITY_STEPS_SHA=b6b0d52dad44edfdb8891fe8099fe24cdabc693a028795fcd7dd0c3a5b335f38
+PIPELINE_CI_UTILITY_STEPS_URL=http://private.nexus.pentaho.org/content/repositories/private-release/org/hitachivantara/ci/plugins/pipeline-ci-utility-steps/1.0/pipeline-ci-utility-steps-1.0.hpi
+
 curl -fsSL -o ${REF_DIR}/folder-properties.jpi ${FOLDER_PROPERTIES_URL}
 echo "${FOLDER_PROPERTIES_SHA}  ${REF_DIR}/folder-properties.jpi" | sha256sum -c -
 
 curl -fsSL -o ${REF_DIR}/workflow-scm-step.jpi ${WORKFLOW_SCM_STEP_URL}
 echo "${WORKFLOW_SCM_STEP_SHA}  ${REF_DIR}/workflow-scm-step.jpi" | sha256sum -c -
 
+curl -fsSL -o ${REF_DIR}/pipeline-ci-utility-steps.jpi ${PIPELINE_CI_UTILITY_STEPS_URL}
+echo "${PIPELINE_CI_UTILITY_STEPS_SHA}  ${REF_DIR}/pipeline-ci-utility-steps.jpi" | sha256sum -c -
 
-ATTEMPTS=-1 install-plugins.sh folder-properties workflow-scm-step
+
+ATTEMPTS=-1 install-plugins.sh folder-properties workflow-scm-step pipeline-ci-utility-steps
