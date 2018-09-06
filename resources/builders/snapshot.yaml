@@ -2,8 +2,9 @@
 buildProperties:
         # global build control defaults -- see others you can override in resources/config/buildProperties.yaml
         # These are understood by the shared pipeline libraries:
-        BUILD_PLAN_ID                  : Master Suite SNAPSHOT Build
-        IGNORE_PIPELINE_FAILURE        : true
+        BUILD_PLAN_ID                  : Master Suite Build
+
+        MAVEN_DEFAULT_COMMAND_OPTIONS  : -B -e
         ARCHIVE_ARTIFACTS_PATTERN      : '**/target/*.gz, **/target/*.zip'
 
 jobGroups:
