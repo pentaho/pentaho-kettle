@@ -39,7 +39,6 @@
 
     <!-- Test dependencies -->
     <spring.framework.version>3.2.10.RELEASE</spring.framework.version>
-    <spring.security.version>4.1.3.RELEASE</spring.security.version>
     <spring.webflow.version>2.4.4.RELEASE</spring.webflow.version>
     <se-jcr.version>0.9</se-jcr.version>
     <jcr.version>2.0</jcr.version>
@@ -323,13 +322,13 @@
     <dependency>
       <groupId>org.springframework.security</groupId>
       <artifactId>spring-security-config</artifactId>
-      <version>${spring.security.version}</version>
+      <version>${spring-security.version}</version>  <!-- see maven-parent-pom -->
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.springframework.security</groupId>
       <artifactId>spring-security-core</artifactId>
-      <version>${spring.security.version}</version>
+      <version>${spring-security.version}</version>  <!-- see maven-parent-pom -->
       <scope>test</scope>
     </dependency>
     <dependency>
