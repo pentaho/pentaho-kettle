@@ -228,7 +228,7 @@ jobGroups:
        versionProperty :  pentaho-hadoop-shims.version
        archivable      :  true
        root            :  shims
-       parallelize     :  true
+       #parallelize     :  true
        artifactsArchivePattern: ${BIG_DATA_HADOOP_SHIMS_PATTERN}
 
   1500:
@@ -343,7 +343,7 @@ jobGroups:
        scmBranch       :  ${DEFAULT_BRANCH}
        directives      :  += -DskipDefault -P highdeps
        root            :  plugins
-       parallelize     :  true
+       #parallelize     :  true
        versionProperty :  pdi.version
 
      - jobID           :  pdi-monitoring-plugin
@@ -381,7 +381,7 @@ jobGroups:
        scmBranch       :  ${DEFAULT_BRANCH}
        versionProperty :  pdi-plugins-ee.version
        root            :  data-integration/plugins
-       parallelize     :  true
+       #parallelize     :  true
 
      - jobID           :  camel-components
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-camel-components.git
@@ -512,7 +512,7 @@ jobGroups:
        scmBranch       :  ${DEFAULT_BRANCH}
        directives      :  += -DskipDefault -P all
        root            :  shims
-       parallelize     :  true
+       #parallelize     :  true
        versionProperty :  pentaho-hadoop-shims.version
        atomicScmCheckout: true
 
