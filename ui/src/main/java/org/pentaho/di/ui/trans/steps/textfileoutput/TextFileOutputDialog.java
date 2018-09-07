@@ -1228,7 +1228,7 @@ public class TextFileOutputDialog extends BaseStepDialog implements StepDialogIn
             file = file.replace( "file://", "" ).replace( "/C:", "C:" );
           }
           if ( !file.contains( System.getProperty( "file.separator" ) ) ) {
-            if ( !System.getProperty( "file.separator" ).equals( "/" ) ) {
+            if ( !System.getProperty( "file.separator" ).equals( "/" ) && !Const.isWindows() ) {
               file = file.replace( "/", System.getProperty( "file.separator" ) );
             }
           }
