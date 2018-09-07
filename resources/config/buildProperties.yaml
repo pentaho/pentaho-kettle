@@ -101,6 +101,7 @@ TAG_SKIP_SNAPSHOT: true
 # Installer defaults
 IBUILDER_RESOURCES_ROOT_PATH: /build2/resources/ibuilder-pentaho-8.0-resources
 INSTALL_BUILDER_ROOT_DIR: /build2/resources/installbuilder-15.1.0
+BUILD_HOSTING_ROOT: /build2/artifacts/hosted
 
 # Defaults for Job properties
 JOB_ITEM_DEFAULTS:
