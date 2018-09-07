@@ -268,11 +268,11 @@ public class StaxPoiSheet implements KSheet {
       if ( content != null ) {
         KCellType kcType = getCellType( cellType, cellStyle, isFormula );
         setCells( cells, undefinedColIndex, columnIndex, new StaxPoiCell( parseValue( kcType, content ), kcType, currentRow ) );
-        undefinedColIndex = columnIndex + 1;
       } else {
         // else let cell be null
         setCells( cells, undefinedColIndex, columnIndex, null );
       }
+        undefinedColIndex = columnIndex + 1;
     }
     return cells.toArray( new StaxPoiCell[cells.size()] );
   }
