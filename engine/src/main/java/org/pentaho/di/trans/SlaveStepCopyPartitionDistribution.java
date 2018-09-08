@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -27,6 +27,7 @@ import java.util.Collections;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.xml.XMLHandler;
@@ -274,5 +275,22 @@ public class SlaveStepCopyPartitionDistribution {
    */
   public void setOriginalPartitionSchemas( List<PartitionSchema> originalPartitionSchemas ) {
     this.originalPartitionSchemas = originalPartitionSchemas;
+  }
+
+  @Override
+  public boolean equals( Object o ) {
+    if ( this == o ) {
+      return true;
+    }
+    if ( o == null || getClass() != o.getClass() ) {
+      return false;
+    }
+    SlaveStepCopyPartitionDistribution that = (SlaveStepCopyPartitionDistribution) o;
+    return Objects.equals( distribution, that.distribution ) && Objects.equals( originalPartitionSchemas, that.originalPartitionSchemas );
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash( distribution, originalPartitionSchemas );
   }
 }
