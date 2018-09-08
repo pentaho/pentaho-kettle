@@ -293,7 +293,7 @@ public class ValueMetaBase implements ValueMetaInterface {
                 break;
               default:
                 throw new KettleException( toString()
-                  + " : Unable to de-serialize indexe storage type from XML for data type " + getType() );
+                  + " : Unable to de-serialize index storage type from XML for data type " + getType() );
             }
           }
         }
@@ -749,7 +749,7 @@ public class ValueMetaBase implements ValueMetaInterface {
     this.caseInsensitive = caseInsensitive;
   }
 
-   /**
+  /**
    * @return the collatorDisabled
    */
   @Override
@@ -1384,8 +1384,8 @@ public class ValueMetaBase implements ValueMetaInterface {
 
         if ( parsePosition.getIndex() < string.length() ) {
           throw new KettleValueException( toString()
-              + " : couldn't convert String to number : non-numeric character found at position "
-              + ( parsePosition.getIndex() + 1 ) + " for value [" + string + "]" );
+            + " : couldn't convert String to number : non-numeric character found at position "
+            + ( parsePosition.getIndex() + 1 ) + " for value [" + string + "]" );
         }
       }
 
@@ -1394,14 +1394,8 @@ public class ValueMetaBase implements ValueMetaInterface {
       //
       if ( number instanceof Double ) {
         return BigDecimal.valueOf( number.doubleValue() );
-      } else if ( number instanceof Float ) {
-        return BigDecimal.valueOf( number.floatValue() );
-      } else if ( number instanceof Integer ) {
-        return BigDecimal.valueOf( number.intValue() );
-      } else if ( number instanceof Byte ) {
-        return BigDecimal.valueOf( number.byteValue() );
-      } else if ( number instanceof Short ) {
-        return BigDecimal.valueOf( number.shortValue() );
+      } else if ( number instanceof Long ) {
+        return BigDecimal.valueOf( number.longValue() );
       }
       return (BigDecimal) number;
 
