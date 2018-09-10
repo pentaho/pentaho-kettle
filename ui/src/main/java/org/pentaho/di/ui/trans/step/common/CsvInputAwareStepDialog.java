@@ -23,8 +23,6 @@
 package org.pentaho.di.ui.trans.step.common;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.vfs2.FileObject;
-import org.apache.commons.vfs2.provider.local.LocalFile;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.LogChannel;
@@ -132,12 +130,6 @@ public interface CsvInputAwareStepDialog {
   default InputStreamReader getReader( final CsvInputAwareMeta meta, final InputStream inputStream ) {
     InputStreamReader reader = null;
     try {
-      FileObject fileObject = meta.getHeaderFileObject( getTransMeta() );
-      if ( !( fileObject instanceof LocalFile ) ) {
-        // We can only use NIO on local files at the moment, so that's what we limit ourselves to.
-        throw new KettleException( BaseMessages.getString( "Dialog.Log.OnlyLocalFilesAreSupported" ) );
-      }
-
       String realEncoding = getTransMeta().environmentSubstitute( meta.getEncoding() );
       if ( Utils.isEmpty( realEncoding ) ) {
         reader = new InputStreamReader( inputStream );
