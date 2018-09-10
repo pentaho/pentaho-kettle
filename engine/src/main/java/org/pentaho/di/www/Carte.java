@@ -341,6 +341,8 @@ public class Carte {
     throws ParseException, CarteCommandException {
     // get information about the remote connection
     try {
+      KettleClientEnvironment.init();
+
       ClientConfig clientConfig = new DefaultClientConfig();
       clientConfig.getFeatures().put( JSONConfiguration.FEATURE_POJO_MAPPING, Boolean.TRUE );
       Client client = Client.create( clientConfig );

@@ -33,6 +33,7 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.WordUtils;
+import org.pentaho.di.core.KettleClientEnvironment;
 import org.pentaho.di.core.encryption.Encr;
 import org.pentaho.platform.security.policy.rolebased.actions.AdministerSecurityAction;
 import org.pentaho.platform.util.RepositoryPathEncoder;
@@ -353,6 +354,7 @@ public class RepositoryCleanupUtil {
    */
   @VisibleForTesting
   void authenticateLoginCredentials() throws Exception {
+    KettleClientEnvironment.init();
 
     if ( client == null ) {
       ClientConfig clientConfig = new DefaultClientConfig();
