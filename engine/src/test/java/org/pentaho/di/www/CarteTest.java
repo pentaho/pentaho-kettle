@@ -25,7 +25,6 @@ import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.api.client.config.ClientConfig;
 import com.sun.jersey.api.client.filter.HTTPBasicAuthFilter;
-import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -34,7 +33,6 @@ import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.KettleClientEnvironment;
 import org.pentaho.di.junit.rules.RestorePDIEngineEnvironment;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
@@ -60,11 +58,6 @@ import static org.powermock.reflect.Whitebox.getInternalState;
 @PrepareForTest( Client.class )
 public class CarteTest {
   @ClassRule public static RestorePDIEngineEnvironment env = new RestorePDIEngineEnvironment();
-
-  @Before
-  public void setup() throws Exception {
-    KettleClientEnvironment.init();
-  }
 
   // this test isn't consistent/doesn't work.
   @Ignore
