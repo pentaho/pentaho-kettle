@@ -156,12 +156,12 @@ public class TextFileOutputMetaTest {
     meta.setSplitEveryRows( "${splitVar}" );
     VariableSpace varSpace = new Variables();
     assertEquals( 0, meta.getSplitEvery( varSpace ) );
-    String fileName = meta.buildFilename( "file", "txt", varSpace, 0, null, 3, false, meta );
-    assertEquals( "file.txt", fileName );
+    String fileName = meta.buildFilename( "foo", "txt2", varSpace, 0, null, 3, false, meta );
+    assertEquals( "foo.txt2", fileName );
     varSpace.setVariable( "splitVar", "2" );
     assertEquals( 2, meta.getSplitEvery( varSpace ) );
-    fileName = meta.buildFilename( "file", "txt", varSpace, 0, null, 3, false, meta );
-    assertEquals( "file_3.txt", fileName );
+    fileName = meta.buildFilename( "foo", "txt2", varSpace, 0, null, 5, false, meta );
+    assertEquals( "foo_5.txt2", fileName );
   }
 
   public static class TextFileFieldLoadSaveValidator implements FieldLoadSaveValidator<TextFileField> {
