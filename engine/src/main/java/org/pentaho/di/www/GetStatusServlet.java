@@ -304,7 +304,7 @@ public class GetStatusServlet extends BaseHttpServlet implements CartePluginInte
       out.println( "<div class=\"row\" id=\"pucHeader\">" );
 
       String htmlClass = useLightTheme ? "h1" : "div";
-      out.println( "<" + htmlClass + " class=\"workspaceHeading\">" + BaseMessages.getString( PKG, "GetStatusServlet.TopStatus" ) + "</" + htmlClass + ">" );
+      out.println( "<" + htmlClass + " class=\"workspaceHeading\" style=\"padding: 0px 0px 0px 10px;\">" + BaseMessages.getString( PKG, "GetStatusServlet.TopStatus" ) + "</" + htmlClass + ">" );
       out.println( "</div>" );
 
       try {
@@ -313,16 +313,16 @@ public class GetStatusServlet extends BaseHttpServlet implements CartePluginInte
         htmlClass = useLightTheme ? "h2" : "div";
         out.println( "<div class=\"row\">" );
         out.println( "<" + htmlClass + " class=\"workspaceHeading\" style=\"padding: 0px 0px 0px 0px;\">Transformations</" + htmlClass + ">" );
-        out.println( "<table cellspacing=\"0\" cellpadding=\"0\"><tbody><tr><td align=\"left\" width=\"100%\" style=\"vertical-align:middle;\">" );
+        out.println( "<table id=\"trans-table\" cellspacing=\"0\" cellpadding=\"0\"><tbody><tr><td align=\"left\" width=\"100%\" style=\"vertical-align:middle;\">" );
         out.println( "<table cellspacing=\"0\" cellpadding=\"0\" class=\"toolbar\" style=\"width: 100%; height: 26px; margin-bottom: 5px; border: 0;\">" );
         out.println( "<tbody><tr>" );
-        out.println( "<td align=\"left\" style=\"vertical-align: middle; width: 100%\"></td>" );
+        out.println( "<td align=\"left\" style=\"vertical-align: middle; width: 100%\" id=\"trans-align\"></td>" );
         out.println( "<td onMouseEnter=\"document.getElementById( 'pause' ).className='toolbar-button toolbar-button-hovering'\" onMouseLeave=\"document.getElementById( 'pause' ).className='toolbar-button'\" align=\"left\" style=\"vertical-align: middle;\"><div onClick=\"resumeFunction( this )\" class=\"toolbar-button\" id=\"pause\"><img style=\"width: 22px; height: 22px\" src=\"/pentaho/content/common-ui/resources/themes/images/run.svg\"/></div></td>" );
         out.println( "<td onMouseEnter=\"document.getElementById( 'stop' ).className='toolbar-button toolbar-button-hovering'\" onMouseLeave=\"document.getElementById( 'stop' ).className='toolbar-button'\" align=\"left\" style=\"vertical-align: middle;\"><div onClick=\"stopFunction( this )\" class=\"toolbar-button\" id=\"stop\"><img style=\"width: 22px; height: 22px\"src=\"/pentaho/content/common-ui/resources/themes/images/stop.svg\"/></div></td>" );
         out.println( "<td onMouseEnter=\"document.getElementById( 'view' ).className='toolbar-button toolbar-button-hovering'\" onMouseLeave=\"document.getElementById( 'view' ).className='toolbar-button'\" align=\"left\" style=\"vertical-align: middle;\"><div onClick=\"viewFunction( this )\" class=\"toolbar-button\" id=\"view\"><img style=\"width: 22px; height: 22px\" src=\"/pentaho/content/common-ui/resources/themes/images/view.svg\"/></div></td>" );
         out.println( "<td onMouseEnter=\"document.getElementById( 'close' ).className='toolbar-button toolbar-button-hovering'\" onMouseLeave=\"document.getElementById( 'close' ).className='toolbar-button'\" align=\"left\" style=\"vertical-align: middle;\"><div onClick=\"removeFunction( this )\" class=\"toolbar-button\" id=\"close\"><img style=\"width: 22px; height: 22px\" src=\"/pentaho/content/common-ui/resources/themes/images/close.svg\"/></div></td>" );
         out.println( "</tr></tbody></table>" );
-        out.println( "<div id=\"stopActions\" class=\"custom-dropdown-popup\" style=\"visibility: hidden; overflow: visible; position: absolute; left: 3px; top: 76px; z-index: 100;\" onMouseLeave=\"this.style='visibility: hidden; overflow: visible; position: absolute; left: 3px; top: 76px; z-index: 100;'\"><div class=\"popupContent\"><div class=\"gwt-MenuBar gwt-MenuBar-vertical\"><table><tbody><tr><td class=\"gwt-MenuItem\" onClick=\"stopTransSelector( this )\" onMouseEnter=\"this.className='gwt-MenuItem gwt-MenuItem-selected'\" onMouseLeave=\"this.className='gwt-MenuItem'\">Stop transformation</td></tr><tr><td class=\"gwt-MenuItem\" onClick=\"stopTransSelector( this )\" onMouseEnter=\"this.className='gwt-MenuItem gwt-MenuItem-selected'\" onMouseLeave=\"this.className='gwt-MenuItem'\">Stop input processing</td></tr></tbody></table></div></div></div>" );
+        out.println( "<div id=\"stopActions\" class=\"custom-dropdown-popup\" style=\"visibility: hidden; overflow: visible; position: fixed;\" onLoad=\"repositionStopActions( this )\" onMouseLeave=\"this.style='visibility: hidden; overflow: visible; position: fixed;'\"><div class=\"popupContent\"><div class=\"gwt-MenuBar gwt-MenuBar-vertical\"><table><tbody><tr><td class=\"gwt-MenuItem\" onClick=\"stopTransSelector( this )\" onMouseEnter=\"this.className='gwt-MenuItem gwt-MenuItem-selected'\" onMouseLeave=\"this.className='gwt-MenuItem'\">Stop transformation</td></tr><tr><td class=\"gwt-MenuItem\" onClick=\"stopTransSelector( this )\" onMouseEnter=\"this.className='gwt-MenuItem gwt-MenuItem-selected'\" onMouseLeave=\"this.className='gwt-MenuItem'\">Stop input processing</td></tr></tbody></table></div></div></div>" );
         out.println( "<table class=\"pentaho-table\" border=\"" + tableBorder + "\">" );
         out.print( "<tr> <th class=\"cellTableHeader\">"
             + BaseMessages.getString( PKG, "GetStatusServlet.TransName" ) + "</th> <th class=\"cellTableHeader\">"
@@ -565,11 +565,17 @@ public class GetStatusServlet extends BaseHttpServlet implements CartePluginInte
       out.println( "var selectedTransRowIndex = -1;" ); // currently selected table item
       out.println( "var selectedJobRowIndex = -1;" ); // currently selected table item
 
+      // Click function for stop button
+      out.println( "function repositionStopActions( element ) {" );
+      out.println( "element.style.left = document.getElementById( 'trans-table' ).offsetWidth + 'px';" );
+      //out.println( "element.style.top = document.getElementById( 'trans-table' ).offsetTop + 'px';" );
+      out.println( "}" );
+
       // Click function for resume button
       out.println( "function resumeFunction( element ) {" );
       out.println( "if( element.id.startsWith( 'j-' ) && selectedJobRowIndex != -1 ) {" );
       out.println( "window.location.replace( '"
-          + convertContextPath( PauseTransServlet.CONTEXT_PATH ) + "'"
+          + convertContextPath( StartJobServlet.CONTEXT_PATH ) + "'"
           + " + '?name=' + document.getElementById( 'j-cellTableFirstCell' + selectedJobRowIndex ).innerHTML"
           + " + '&id=' + document.getElementById( 'j-cellTableCell' + selectedJobRowIndex ).innerHTML );" );
       out.println( "} else if ( selectedTransRowIndex != -1 ) {" );
@@ -596,7 +602,8 @@ public class GetStatusServlet extends BaseHttpServlet implements CartePluginInte
           + " + '?name=' + document.getElementById( 'j-cellTableFirstCell' + selectedJobRowIndex ).innerHTML"
           + " + '&id=' + document.getElementById( 'j-cellTableCell' + selectedJobRowIndex ).innerHTML );" );
       out.println( "} else if ( !element.id.startsWith( 'j-' ) && selectedTransRowIndex != -1 ) {" );
-      out.println( "document.getElementById( 'stopActions' ).style = 'visibility: visible; overflow: visible; position: absolute; left: 660px; top: 155px; z-index: 100;';" );
+      out.println( "repositionStopActions( document.getElementById( 'stopActions' ) );" );
+      out.println( "document.getElementById( 'stopActions' ).style.visibility = 'visible';" );
       out.println( "}" );
       out.println( "}" );
 
@@ -614,7 +621,7 @@ public class GetStatusServlet extends BaseHttpServlet implements CartePluginInte
           + " + '&id=' + document.getElementById( 'cellTableCell' + selectedTransRowIndex ).innerHTML"
           + " + '&inputOnly=Y' );" );
       out.println( "}" );
-      out.println( "document.getElementById( 'stopActions' ).style = 'visibility: hidden; overflow: visible; position: absolute; left: 660px; top: 155px; z-index: 100;';" );
+      out.println( "document.getElementById( 'stopActions' ).style.visibility = 'hidden';" );
       out.println( "}" );
 
       // Click function for view button
