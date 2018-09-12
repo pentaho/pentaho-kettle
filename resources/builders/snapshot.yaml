@@ -5,7 +5,7 @@ buildProperties:
         BUILD_PLAN_ID                  : Master Suite Build
 
         MAVEN_DEFAULT_COMMAND_OPTIONS  : -B -e
-        ARCHIVE_ARTIFACTS_PATTERN      : '**/target/*.gz, **/target/*.zip'
+        ARCHIVE_ARTIFACTS_PATTERN      : '**/{target/*.gz,target/*.zip}'
 
 jobGroups:
   # Always required
