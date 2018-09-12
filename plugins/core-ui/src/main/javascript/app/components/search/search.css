@@ -1,0 +1,98 @@
+#searchBox {
+  float:right;
+  position: relative;
+}
+
+#searchBox input {
+  width: 270px;
+  height: 34px;
+  background: url("../../img/search_field_inactive.svg") no-repeat 10px center;
+  background-size: 15px 15px;
+  padding-left: 35px;
+  padding-right: 40px;
+}
+
+#searchBox input:focus {
+  width: 270px;
+  height: 34px;
+  background: url("../../img/search_field_active.svg") no-repeat 10px center;
+  background-size: 15px 15px;
+}
+
+#searchBox .clearSearch {
+  position: absolute;
+  width: 12px;
+  height: 13px;
+  background: url("../../img/clear_field.svg") no-repeat left center;
+  right: 10px;
+  top: 10px;
+  background-size: 25px;
+  cursor: pointer;
+}
+
+#searchBox.searching input {
+  background: url("../../img/busy_thin.gif") no-repeat 10px center;
+  background-size: 18px;
+}
+
+#searchBox .recentSearches {
+  background-color: #ffffff;
+  -moz-box-shadow: 0 0 4px 0 rgba(0, 0, 0, 0.4);
+  -webkit-box-shadow: 0 0 4px 0 rgba(0, 0, 0, 0.4);
+  box-shadow: 0 0 4px 0 rgba(0, 0, 0, 0.4);
+  position: absolute;
+  left: 1px;
+  width: 266px;
+  padding: 5px 0;
+  z-index: 100;
+  border: 1px solid #f2f2f2;
+}
+
+#searchBox .recentSearches div {
+  padding: 5px 10px 5px 10px;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+ #searchBox .recentSearches div:hover {
+  background-color: #E6EFF6;
+}
+
+#searchBox .clearSearch:hover {
+  background-position: right center;
+}
+
+/*HIDES THE X ON THE SEARCHBOX ON IE11*/
+#searchBox input::-ms-clear {
+  display: none;
+  width:0;
+  height:0;
+}
+/*HIDES THE X ON THE SEARCHBOX ON IE11*/
+
+/*CHANGES THE COLOR OF THE PLACEHOLDER ON DIFFERENT BROWSERS*/
+#searchBox input::-webkit-input-placeholder {
+  color: #999999;
+}
+
+#searchBox input:-ms-input-placeholder {
+  color: #999999;
+}
+
+#searchBox input:-moz-placeholder {
+  color: #999999;
+}
+
+#searchBox input::-webkit-input-placeholder {
+  color: #CCCCCC;
+}
+
+#searchBox input:focus:-ms-input-placeholder {
+  color: #CCCCCC;
+}
+
+#searchBox input:focus::-moz-placeholder {
+  color: #CCCCCC;
+}

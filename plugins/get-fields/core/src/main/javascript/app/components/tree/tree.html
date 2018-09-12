@@ -1,5 +1,5 @@
 <script type="text/ng-template" id="node.html">
-  <div class="node" ng-style="{paddingLeft: indent + 'px'}">
+  <div class="node" ng-style="{paddingLeft: indent + 'px'}"  ng-if="node.hidden!==true">
     <div class="item">
       <div class="chevron" ng-class="{open: node.open}" ng-click="vm.toggle(node)" ng-if="vm.hasChevron(node)">&nbsp;</div>
       <div class="checkbox"><input type="checkbox" ng-model="node.checked"></div>

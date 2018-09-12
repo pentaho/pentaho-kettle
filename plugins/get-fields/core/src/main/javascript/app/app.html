@@ -1,14 +1,19 @@
 <div class="header">
   <div class="headerText floatLeft">
-    Select Fields
+    {{::vm.selectFields}}
   </div>
-  <div id="searchBox" class="floatRight">
-    <input type="text" id="searchBoxId"/>
-  </div>
+  <search placeholder="::vm.searchPlaceHolder"
+          on-search="vm.doSearch(searchValue)"
+          live-search="true">
+  </search>
 </div>
 <div class="middle">
   <div class="fields">
-    <loading ng-if="vm.loading" title="vm.loadingTitle" message="vm.loadingMessage" show-text="vm.longLoading"></loading>
+    <loading ng-if="vm.loading"
+             title="vm.loadingTitle"
+             message="vm.loadingMessage"
+             show-text="vm.longLoading">
+    </loading>
     <div class="jsonOutput">
       <tree content="vm.tree"></tree>
     </div>
@@ -16,17 +21,17 @@
 </div>
 <div class="bottom">
   <div class="clearSelection">
-    <a href ng-click="vm.clearSelection()">Clear Selection</a>
+    <a href ng-click="vm.clearSelection()">{{::vm.clearSelection}}</a>
   </div>
   <div class="buttons">
     <button class="secondary" ng-click="vm.cancel()">
       <span>
-        Cancel
+        {{::vm.cancelLabel}}
       </span>
     </button>
     <button class="primary" ng-click="vm.ok()">
       <span>
-        OK
+        {{::vm.okLabel}}
       </span>
     </button>
   </div>
