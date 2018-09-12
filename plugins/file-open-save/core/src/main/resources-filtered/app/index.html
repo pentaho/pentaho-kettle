@@ -6,8 +6,8 @@
   <title>File Open and Save Dialog</title>
   <!-- Requesting webcontext.js one level above to workaround the filter on PDI issue (BACKLOG-17885) -->
   <!-- Remove '../' when not needed -->
+  <link rel="stylesheet" type="text/css" href="/core-ui/${project.version}/css/fonts/opensans/style.css">
   <script type="text/javascript" src="../webcontext.js?requireJsOnly=true"></script>
-  <link rel="stylesheet" type="text/css" href="css/fonts/opensans/style.css">
   <link rel="stylesheet" type="text/css" href="css/index.css">
   <script>
     (function () {
@@ -16,7 +16,7 @@
       // overrides just for this app
       require.config({
         paths: {
-          "angular-i18n": "/angular-i18n/${angular-i18n.version}",
+          "pentaho": "/core-ui/${project.version}/pentaho",
           "css": "/require-css/${require-css.version}/css",
           "text": "/requirejs-text/${requirejs-text.version}/text",
           "dojo": "/dojo/${dojo.version}"

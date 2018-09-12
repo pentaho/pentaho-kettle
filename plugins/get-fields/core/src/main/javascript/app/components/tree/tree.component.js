@@ -72,7 +72,6 @@ define([
             var child = node.children[i];
             _setParent(node, child);
           }
-
         }
       }
 

@@ -31,8 +31,9 @@
 define([
   "./services/data.service",
   "text!./app.html",
+  "pentaho/i18n-osgi!get-fields.messages",
   "css!./app.css"
-], function(dataService, template) {
+], function(dataService, template, i18n) {
   "use strict";
 
   var options = {
@@ -51,9 +52,15 @@ define([
     vm.ok = ok;
     vm.cancel = cancel;
     vm.loading = true;
-    vm.loadingTitle = "Just a moment";
-    vm.loadingMessage = "We're putting things in place.";
+    vm.loadingTitle = i18n.get('get-fields-plugin.loading.title');
+    vm.loadingMessage = i18n.get('get-fields-plugin.loading.message');
+    vm.selectFields = i18n.get('get-fields-plugin.app.header.title');
+    vm.clearSelection = i18n.get('get-fields-plugin.app.clear-selection.label');
+    vm.okLabel = i18n.get('get-fields-plugin.app.ok.button');
+    vm.cancelLabel = i18n.get('get-fields-plugin.app.cancel.button');
+    vm.searchPlaceHolder = i18n.get('get-fields-plugin.app.header.search-parsed-fields.placeholder');
     vm.longLoading = false;
+    vm.doSearch = doSearch;
 
     /**
      * The $onInit hook of components lifecycle which is called on each controller
@@ -73,6 +80,46 @@ define([
       }, function() {
         console.log("An error has occurred");
       });
+    }
+
+    function doSearch(value) {
+      if (value) {
+        _findValue(vm.tree, value);
+      } else {
+        _clearSearch(vm.tree);
+      }
+    }
+
+    function _clearSearch(node, value) {
+      if (node.children) {
+        for (var i = 0; i < node.children.length; i++) {
+          var child = node.children[i];
+          child.hidden = false;
+          if (child.children) {
+            if (_clearSearch(child)) {
+              return true;
+            }
+          }
+        }
+      }
+      return false;
+    }
+
+
+    function _findValue(node, value) {
+      if (node.children) {
+        for (var i = 0; i < node.children.length; i++) {
+          var child = node.children[i];
+          if (child.key && child.key.indexOf(value) !== -1) {
+            child.hidden = false;
+          } else {
+            child.hidden = true;
+          }
+          if (child.children) {
+            _findValue(child, value);
+          }
+        }
+      }
     }
 
     function clearSelection() {
