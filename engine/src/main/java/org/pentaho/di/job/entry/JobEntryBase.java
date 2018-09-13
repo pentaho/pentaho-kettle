@@ -135,8 +135,8 @@ public class JobEntryBase implements Cloneable, VariableSpace, CheckResultSource
     name = null;
     description = null;
     log = new LogChannel( this );
-    attributesMap = new HashMap<String, Map<String, String>>();
-    extensionDataMap = new HashMap<String, Object>();
+    attributesMap = new HashMap<>();
+    extensionDataMap = new HashMap<>();
   }
 
   /**
@@ -152,8 +152,8 @@ public class JobEntryBase implements Cloneable, VariableSpace, CheckResultSource
     setDescription( description );
     setObjectId( null );
     log = new LogChannel( this );
-    attributesMap = new HashMap<String, Map<String, String>>();
-    extensionDataMap = new HashMap<String, Object>();
+    attributesMap = new HashMap<>();
+    extensionDataMap = new HashMap<>();
   }
 
   /**
@@ -603,7 +603,7 @@ public class JobEntryBase implements Cloneable, VariableSpace, CheckResultSource
    */
   @Deprecated
   public List<SQLStatement> getSQLStatements( Repository repository ) throws KettleException {
-    return new ArrayList<SQLStatement>();
+    return new ArrayList<>();
   }
 
   /**
@@ -622,7 +622,7 @@ public class JobEntryBase implements Cloneable, VariableSpace, CheckResultSource
    */
   @Deprecated
   public List<SQLStatement> getSQLStatements( Repository repository, VariableSpace space ) throws KettleException {
-    return new ArrayList<SQLStatement>();
+    return new ArrayList<>();
   }
 
   /**
@@ -638,7 +638,7 @@ public class JobEntryBase implements Cloneable, VariableSpace, CheckResultSource
    *           if any errors occur during the generation of SQL statements
    */
   public List<SQLStatement> getSQLStatements( Repository repository, IMetaStore metaStore, VariableSpace space ) throws KettleException {
-    return new ArrayList<SQLStatement>();
+    return new ArrayList<>();
   }
 
   /**
@@ -1478,7 +1478,7 @@ public class JobEntryBase implements Cloneable, VariableSpace, CheckResultSource
   public void setAttribute( String groupName, String key, String value ) {
     Map<String, String> attributes = getAttributes( groupName );
     if ( attributes == null ) {
-      attributes = new HashMap<String, String>();
+      attributes = new HashMap<>();
       attributesMap.put( groupName, attributes );
     }
     attributes.put( key, value );
