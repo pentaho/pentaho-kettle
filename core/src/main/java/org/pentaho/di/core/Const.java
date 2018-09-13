@@ -1124,6 +1124,9 @@ public class Const {
   // See PDI-17203 for details
   public static final String KETTLE_COMPATIBILITY_XML_OUTPUT_NULL_VALUES = "KETTLE_COMPATIBILITY_XML_OUTPUT_NULL_VALUES";
 
+  // See PDI-13055 for details
+  public static final String KETTLE_COMPATIBILITY_LENGTH_VALIDATION_USES_BYTES = "KETTLE_COMPATIBILITY_LENGTH_VALIDATION_USES_BYTES";
+
   /**
    * The XML file that contains the list of native import rules
    */

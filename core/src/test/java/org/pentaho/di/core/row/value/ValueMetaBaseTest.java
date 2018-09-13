@@ -29,6 +29,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.mockito.Spy;
 import org.owasp.encoder.Encode;
@@ -52,9 +53,13 @@ import org.pentaho.di.core.logging.LoggingRegistry;
 import org.pentaho.di.core.plugins.DatabasePluginType;
 import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.util.EnvUtil;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.junit.rules.RestorePDIEnvironment;
+import org.powermock.api.mockito.PowerMockito;
+import org.powermock.core.classloader.annotations.PrepareForTest;
+import org.powermock.modules.junit4.PowerMockRunner;
 import org.w3c.dom.Node;
 
 import java.io.ByteArrayInputStream;
@@ -79,7 +84,6 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
-import java.util.Locale;
 import java.util.TimeZone;
 
 import static org.junit.Assert.assertNull;
@@ -91,7 +95,10 @@ import static org.mockito.Matchers.anyInt;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
+import static org.powermock.api.mockito.PowerMockito.mockStatic;
 
+@RunWith( PowerMockRunner.class )
+@PrepareForTest( { EnvUtil.class } )
 public class ValueMetaBaseTest {
   @ClassRule public static RestorePDIEnvironment env = new RestorePDIEnvironment();
 
@@ -1084,5 +1091,63 @@ public class ValueMetaBaseTest {
 
     valueMetaString.type = ValueMetaInterface.TYPE_NONE;
     assertEquals( valueMetaString.hashCode( "any" ),  0 );
+  }
+
+  @Test
+  public void testGetLengthInCharOrBytesUsingConstConfigurationWithTrue() throws KettleDatabaseException {
+    ValueMetaBase valueMetaString = new ValueMetaBase( "ColumnValidator", ValueMetaInterface.TYPE_STRING,  20, 0 );
+    DatabaseMeta databaseMeta = mock( DatabaseMeta.class );
+    //Mockito.when( databaseMeta.supportsGetLengthByChar() ).thenReturn( true );
+
+    PowerMockito.mockStatic( EnvUtil.class );
+    Mockito.when( EnvUtil.getSystemProperty( "KETTLE_COMPATIBILITY_LENGTH_VALIDATION_USES_BYTES" ) ).thenReturn( "Y" );
+
+    // string with simple characters
+    assertEquals( 4, valueMetaString.getLengthInCharOrBytes( "test", databaseMeta ) );
+    // string with special characters, const is true, use bytes, total = 14
+    assertEquals( 14, valueMetaString.getLengthInCharOrBytes( "Fr‚d‚rique", databaseMeta ) );
+  }
+
+  @Test
+  public void testGetLengthInCharOrBytesUsingConstConfigurationWithFalse() throws KettleDatabaseException {
+    ValueMetaBase valueMetaString = new ValueMetaBase( "ColumnValidator", ValueMetaInterface.TYPE_STRING,  20, 0 );
+    mockStatic( EnvUtil.class );
+    DatabaseMeta databaseMeta = mock( DatabaseMeta.class );
+    Mockito.when( databaseMeta.supportsGetLengthByChar() ).thenReturn( true );
+    Mockito.when( EnvUtil.getSystemProperty( Const.KETTLE_COMPATIBILITY_LENGTH_VALIDATION_USES_BYTES ) ).thenReturn( "N" );
+
+    // string with simple characters
+    assertEquals( 4, valueMetaString.getLengthInCharOrBytes( "test", databaseMeta ) );
+    // string with special characters, const is false, use char, total = 10
+    assertEquals( 10, valueMetaString.getLengthInCharOrBytes( "Fr‚d‚rique", databaseMeta ) );
+  }
+
+
+  @Test
+  public void testGetLengthInCharOrBytesWithNoConstConfigurationAndWithDatabaseCharSupport() throws KettleDatabaseException {
+    ValueMetaBase valueMetaString = new ValueMetaBase( "ColumnValidator", ValueMetaInterface.TYPE_STRING,  20, 0 );
+    mockStatic( EnvUtil.class );
+    DatabaseMeta databaseMeta = mock( DatabaseMeta.class );
+    Mockito.when( databaseMeta.supportsGetLengthByChar() ).thenReturn( true );
+    Mockito.when( EnvUtil.getSystemProperty( Const.KETTLE_COMPATIBILITY_LENGTH_VALIDATION_USES_BYTES ) ).thenReturn( null );
+
+    // string with simple characters
+    assertEquals( 4, valueMetaString.getLengthInCharOrBytes( "test", databaseMeta ) );
+    // string with special characters, support char by default, use char, total = 10
+    assertEquals( 10, valueMetaString.getLengthInCharOrBytes( "Fr‚d‚rique", databaseMeta ) );
+  }
+
+  @Test
+  public void testGetLengthInCharOrBytesWithNoConstConfigurationAndWithNoDatabaseCharSupport() throws KettleDatabaseException {
+    ValueMetaBase valueMetaString = new ValueMetaBase( "ColumnValidator", ValueMetaInterface.TYPE_STRING,  20, 0 );
+    mockStatic( EnvUtil.class );
+    DatabaseMeta databaseMeta = mock( DatabaseMeta.class );
+    Mockito.when( databaseMeta.supportsGetLengthByChar() ).thenReturn( false );
+    Mockito.when( EnvUtil.getSystemProperty( Const.KETTLE_COMPATIBILITY_LENGTH_VALIDATION_USES_BYTES ) ).thenReturn( null );
+
+    // string with simple characters
+    assertEquals( 4, valueMetaString.getLengthInCharOrBytes( "test", databaseMeta ) );
+    // string with special characters - don't support char by default, use bytes, total = 14
+    assertEquals( 14, valueMetaString.getLengthInCharOrBytes( "Fr‚d‚rique", databaseMeta ) );
   }
 }

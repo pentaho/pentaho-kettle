@@ -2930,6 +2930,13 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
   }
 
   /**
+   * @return true if database supports the default char length validation
+   */
+  public boolean supportsGetLengthByChar() {
+    return databaseInterface.supportsGetLengthByChar();
+  }
+
+  /**
    * Get the SQL to insert a new empty unknown record in a dimension.
    *
    * @param schemaTable

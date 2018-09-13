@@ -526,6 +526,51 @@ public class ValueMetaBase implements ValueMetaInterface {
   }
 
   /**
+   *
+   * @return get length in bytes (dealing with special characters)
+   */
+  int getLengthInBytes( String value ) {
+    int total = 0;
+    try {
+      for ( int i = 0; i < value.length(); i++ ) {
+        String c = new String( new char[] {value.charAt( i )} );
+        int length = c.getBytes( "UTF-8" ).length;
+        total += length;
+      }
+      return total;
+
+    } catch ( UnsupportedEncodingException e ) {
+      return value.length();
+    }
+  }
+
+  /**
+   *
+   * @return get length in bytes (if const is defined or database only supports char validation ) or chars (default
+   * except for Oracle Databases)
+   */
+
+  int getLengthInCharOrBytes( String string, DatabaseMeta databaseMeta )  {
+    String val = EnvUtil.getSystemProperty( Const.KETTLE_COMPATIBILITY_LENGTH_VALIDATION_USES_BYTES );
+    int total = string.length();
+    if ( val != null ) {
+      boolean usesBytes = convertStringToBoolean( Const.NVL( val, "N" ) );
+      // if const is defined and it's true, then use bytes
+      if ( usesBytes ) {
+        total = getLengthInBytes( string );
+      }
+    } else {
+      // if const is not defined then check the default databaseConfiguration
+      boolean databaseSupportsChar = databaseMeta.supportsGetLengthByChar();
+      if ( !databaseSupportsChar ) {
+        total = getLengthInBytes( string );
+      }
+    }
+    return total;
+  }
+
+
+  /**
    * @return the name
    */
   @Override
@@ -5367,7 +5412,8 @@ public class ValueMetaBase implements ValueMetaInterface {
               setLength( databaseMeta.getMaxTextFieldLength() );
             }
             String string = getString( data );
-            int len = string.length();
+            //int len = string.length(); - changed to support length in char or bytes
+            int len = getLengthInCharOrBytes( string, databaseMeta );
             int maxlen = isLengthInvalidOrZero() ? len : getLength();
             if ( len <= maxlen ) {
               preparedStatement.setString( index, string );
