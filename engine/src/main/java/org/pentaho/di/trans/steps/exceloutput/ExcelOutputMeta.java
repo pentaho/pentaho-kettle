@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -499,8 +499,8 @@ public class ExcelOutputMeta extends BaseStepMeta implements StepMetaInterface {
    * @param autosizecolumns
    *          The autosizecolumns to set.
    */
-  public void setAutoSizeColumns( boolean autosizecolums ) {
-    this.autoSizeColumns = autosizecolums;
+  public void setAutoSizeColumns( boolean autosizecolumns ) {
+    this.autoSizeColumns = autosizecolumns;
   }
 
   /**
@@ -538,7 +538,7 @@ public class ExcelOutputMeta extends BaseStepMeta implements StepMetaInterface {
   }
 
   /**
-   * @param setNullIsBlank
+   * @param nullIsBlank
    *          The boolean indicating whether or not to write null values as blank cells
    */
   public void setNullIsBlank( boolean nullIsBlank ) {
