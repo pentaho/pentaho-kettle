@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -37,7 +37,6 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.mockito.InjectMocks;
-import org.mockito.Mockito;
 import org.pentaho.di.core.KettleClientEnvironment;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
@@ -54,11 +53,13 @@ import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.steps.mock.StepMockHelper;
 
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.net.InetSocketAddress;
 
 import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 /**
  * User: Dzmitry Stsiapanau Date: 12/2/13 Time: 1:24 PM
@@ -111,17 +112,6 @@ public class HTTPIT {
         return 402;
       } else {
         return super.requestStatusCode( httpResponse );
-      }
-    }
-
-    @Override
-    protected InputStreamReader openStream( String encoding, HttpResponse httpResponse ) throws Exception {
-      if ( override ) {
-        InputStreamReader mockInputStreamReader = Mockito.mock( InputStreamReader.class );
-        when( mockInputStreamReader.read() ).thenReturn( -1 );
-        return mockInputStreamReader;
-      } else {
-        return super.openStream( encoding, httpResponse );
       }
     }
 
