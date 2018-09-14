@@ -764,7 +764,7 @@ public class TextFileOutputMeta extends BaseFileOutputMeta implements StepMetaIn
   public String buildFilename( String filename, String extension, VariableSpace space, int stepnr, String partnr,
                                int splitnr, boolean ziparchive, TextFileOutputMeta meta ) {
 
-    final String realFileName = space.environmentSubstitute( filename );
+    final String realFileName = space.environmentSubstitute( fileName );
     final String realExtension = space.environmentSubstitute( extension );
     return super.buildFilename( space, realFileName, realExtension, Integer.toString( stepnr ), partnr, Integer
       .toString( splitnr ), new Date(), ziparchive, true, meta );
