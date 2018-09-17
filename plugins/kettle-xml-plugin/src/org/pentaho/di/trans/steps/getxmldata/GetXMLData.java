@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -159,6 +159,8 @@ public class GetXMLData extends BaseStep implements StepInterface {
       if ( IsInXMLField ) {
         // read string to parse
         data.document = reader.read( new StringReader( StringXML ) );
+      } else if ( readurl && KettleVFS.startsWithScheme( StringXML ) ) {
+        data.document = reader.read( KettleVFS.getInputStream( StringXML ) );
       } else if ( readurl ) {
         // read url as source
         HttpClient client = new HttpClient();
