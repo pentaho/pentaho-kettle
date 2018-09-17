@@ -20,40 +20,37 @@
  * explicitly covering such access.
  */
 
-/**
- * The Get Fields Loading component.
- *
- * This provides the component for the Loading screen while the file structure loads.
- * @module components/loading/loading.component
- * @property {String} name The name of the Angular component.
- * @property {Object} options The JSON object containing the configurations for this component.
- **/
-define([
-  "text!./loading.html",
-  "css!./loading.css"
-], function(template) {
-  "use strict";
+/* MESSAGE */
+message .message {
+  margin: auto;
+  width: calc(100% - 75px);
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  -ms-transform: translate(-50%, -50%);
+  -webkit-transform: translate(-50%, -50%);
+}
 
-  var options = {
-    bindings: {
-      showText: '<',
-      title: '<',
-      message: '<'
-    },
-    controllerAs: "vm",
-    template: template,
-    controller: loadingController
-  };
+message .message .icon {
+  margin: auto auto 10px auto;
+  background: url("../../img/busy_thin.gif") no-repeat center center;
+  width: 66px;
+  height: 66px;
+}
 
-  /**
-   * The Loading Controller
-   */
-  function loadingController() {
-    var vm = this;
-  }
+message .text {
+  text-align: center;
+  position: relative;
+}
 
-  return {
-    name: "loading",
-    options: options
-  };
-});
+message .message .title {
+  line-height: 32px;
+  font-size: 24px;
+  font-family: OpenSansLight;
+}
+
+message .message .messageTxt {
+  line-height: 28px;
+  font-size: 14px;
+}

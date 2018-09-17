@@ -47,20 +47,22 @@ define([
 
   function appController(dt, $location, $scope, $timeout) {
     var vm = this;
+    var found = false;
     vm.$onInit = onInit;
     vm.clearSelection = clearSelection;
     vm.ok = ok;
     vm.cancel = cancel;
-    vm.loading = true;
-    vm.loadingTitle = i18n.get('get-fields-plugin.loading.title');
-    vm.loadingMessage = i18n.get('get-fields-plugin.loading.message');
-    vm.selectFields = i18n.get('get-fields-plugin.app.header.title');
-    vm.clearSelection = i18n.get('get-fields-plugin.app.clear-selection.label');
-    vm.okLabel = i18n.get('get-fields-plugin.app.ok.button');
-    vm.cancelLabel = i18n.get('get-fields-plugin.app.cancel.button');
-    vm.searchPlaceHolder = i18n.get('get-fields-plugin.app.header.search-parsed-fields.placeholder');
-    vm.longLoading = false;
     vm.doSearch = doSearch;
+    vm.messageTitle = i18n.get("get-fields-plugin.message.title");
+    vm.messageMessage = i18n.get("get-fields-plugin.message.message");
+    vm.selectFields = i18n.get("get-fields-plugin.app.header.title");
+    vm.clearSelection = i18n.get("get-fields-plugin.app.clear-selection.label");
+    vm.okLabel = i18n.get("get-fields-plugin.app.ok.button");
+    vm.cancelLabel = i18n.get("get-fields-plugin.app.cancel.button");
+    vm.searchPlaceHolder = i18n.get("get-fields-plugin.app.header.search-parsed-fields.placeholder");
+    vm.showMessage = true;
+    vm.showMessageText = false;
+    vm.showSpinner = true;
 
     /**
      * The $onInit hook of components lifecycle which is called on each controller
@@ -69,24 +71,33 @@ define([
      */
     function onInit() {
       var path = $location.search().path;
+      vm.type = $location.search().type;
       $timeout(function() {
-        if (vm.loading) {
-          vm.longLoading = true;
+        if (vm.showMessage) {
+          vm.showMessageText = true;
         }
       }, 1000);
       dt.sample(path).then(function(response) {
         vm.tree = response.data;
-        vm.loading = false;
+        vm.showMessage = false;
       }, function() {
-        console.log("An error has occurred");
+        _showMessage(i18n.get("get-fields-plugin.app.unable-to-access.label", {dataType: vm.type}),
+          i18n.get("get-fields.plugin.app.unable-to-access.message"));
       });
     }
 
     function doSearch(value) {
-      if (value) {
-        _findValue(vm.tree, value);
-      } else {
-        _clearSearch(vm.tree);
+      if (vm.tree) {
+        _hideMessage();
+        if (value) {
+          _findValue(vm.tree, value);
+          if (!found) {
+            _showMessage(i18n.get("get-fields-plugin.app.unable-to-find.label", {searchFields: value}),
+              i18n.get("get-fields.plugin.app.unable-to-find.message"));
+          }
+        } else {
+          _clearSearch(vm.tree);
+        }
       }
     }
 
@@ -105,13 +116,13 @@ define([
       return false;
     }
 
-
     function _findValue(node, value) {
       if (node.children) {
         for (var i = 0; i < node.children.length; i++) {
           var child = node.children[i];
           if (child.key && child.key.indexOf(value) !== -1) {
             child.hidden = false;
+            found = true;
           } else {
             child.hidden = true;
           }
@@ -134,6 +145,19 @@ define([
       window.close();
     }
 
+    function _showMessage(title, message) {
+      vm.messageTitle = title;
+      vm.messageMessage = message;
+      vm.showSpinner = false;
+      vm.showMessage = true;
+      vm.showMessageText = true;
+    }
+
+    function _hideMessage() {
+      found = false;
+      vm.showMessage = false;
+      vm.showMessageText = false;
+    }
   }
 
   return {

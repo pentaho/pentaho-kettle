@@ -38,7 +38,9 @@ public class GetFieldsExtensionPoint implements ExtensionPointInterface {
     GetFieldsDialog getFieldsDialog = new GetFieldsDialog( getFieldsDialogOperation.getShell(),
             getFieldsDialogOperation.getWidth(), getFieldsDialogOperation.getHeight(), getFieldsDialogOperation
             .getFilename() );
-    getFieldsDialog.setTitle( getFieldsDialogOperation.getStepMeta().getName() );
+    String name = getFieldsDialogOperation.getStepMeta().getName();
+    getFieldsDialog.setTitle( name );
+    getFieldsDialog.setType( name );
     getFieldsDialog.open();
     getFieldsDialogOperation.setPaths( getFieldsDialog.getPaths() );
   }

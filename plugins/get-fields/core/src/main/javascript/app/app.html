@@ -9,12 +9,13 @@
 </div>
 <div class="middle">
   <div class="fields">
-    <loading ng-if="vm.loading"
-             title="vm.loadingTitle"
-             message="vm.loadingMessage"
-             show-text="vm.longLoading">
-    </loading>
-    <div class="jsonOutput">
+    <message ng-if="vm.showMessage"
+             title="vm.messageTitle"
+             message="vm.messageMessage"
+             show-text="vm.showMessageText"
+             show-spinner="vm.showSpinner">
+    </message>
+    <div ng-if="!vm.showMessage" class="jsonOutput">
       <tree content="vm.tree"></tree>
     </div>
   </div>
