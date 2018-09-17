@@ -109,7 +109,7 @@ public class GetTransStatusServletTest {
     when( mockTransMeta.getMaximum() ).thenReturn( new Point( 10, 10 ) );
 
     getTransStatusServlet.doGet( mockHttpServletRequest, mockHttpServletResponse );
-    assertFalse( ServletTestUtils.hasBadText( ServletTestUtils.getInsideOfTag( "H1", out.toString() ) ) );
+    assertFalse( ServletTestUtils.hasBadText( ServletTestUtils.getInsideOfTag( "TITLE", out.toString() ) ) );
 
     PowerMockito.verifyStatic( atLeastOnce() );
     Encode.forHtml( anyString() );

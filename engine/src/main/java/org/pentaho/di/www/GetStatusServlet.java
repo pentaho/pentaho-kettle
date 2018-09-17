@@ -22,7 +22,6 @@
 
 package org.pentaho.di.www;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.lang.management.OperatingSystemMXBean;
@@ -36,8 +35,6 @@ import java.util.List;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
@@ -45,7 +42,6 @@ import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.Job;
 import org.pentaho.di.trans.Trans;
-import org.w3c.dom.Document;
 
 public class GetStatusServlet extends BaseHttpServlet implements CartePluginInterface {
   private static Class<?> PKG = GetStatusServlet.class; // for i18n purposes, needed by Translator2!!
@@ -248,53 +244,11 @@ public class GetStatusServlet extends BaseHttpServlet implements CartePluginInte
 
       int tableBorder = 1;
       if ( !useLightTheme ) {
-        try {
-          // Read in currently set theme from pentaho.xml file
-          String themeSetting = ".." + File.separator + ".." + File.separator
-              + "pentaho-solutions" + File.separator + "system" + File.separator + "pentaho.xml";
-          File f = new File( themeSetting );
-          DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
-          DocumentBuilder db = dbFactory.newDocumentBuilder();
-          Document doc = db.parse( f );
-          String themeName = doc.getElementsByTagName( "default-theme" ).item( 0 ).getTextContent();
-
-          // Get theme CSS file
-          String themeCss = ".." + File.separator + ".." + File.separator
-              + "pentaho-solutions" + File.separator + "system" + File.separator
-              + "common-ui" + File.separator + "resources" + File.separator
-              + "themes" + File.separator + themeName + File.separator;
-          File themeDir = new File( themeCss );
-          for ( File fName : themeDir.listFiles() ) {
-            if ( fName.getName().contains( ".css" ) ) {
-              themeCss = fName.getName();
-              break;
-            }
-          }
-
-          // Get mantle theme CSS file
-          String mantleThemeCss = ".." + File.separator + "webapps" + File.separator
-              + "pentaho" + File.separator + "mantle" + File.separator
-              + "themes" + File.separator + themeName + File.separator;
-          File mantleThemeDir = new File( mantleThemeCss );
-          for ( File fName : mantleThemeDir.listFiles() ) {
-            if ( fName.getName().contains( ".css" ) ) {
-              mantleThemeCss = fName.getName();
-              break;
-            }
-          }
-
-          out.println( "<link rel=\"stylesheet\" type=\"text/css\" href=\"/pentaho/content/common-ui/resources/themes/" + themeName + "/" + themeCss + "\"/>" );
-          out.println( "<link rel=\"stylesheet\" type=\"text/css\" href=\"/pentaho/mantle/themes/" + themeName + "/" + mantleThemeCss + "\"/>" );
-          out.println( "<link rel=\"stylesheet\" type=\"text/css\" href=\"/pentaho/mantle/MantleStyle.css\"/>" );
-          tableBorder = 0;
-        } catch ( Exception ex ) {
-          useLightTheme = true;
-          // log here
-        }
+        out.print( StatusServletUtils.getPentahoStyles() );
       }
 
       out.println( "</HEAD>" );
-      out.println( "<BODY class=\"pentaho-page-background dragdrop-dropTarget dragdrop-boundary\">" );
+      out.println( "<BODY class=\"pentaho-page-background dragdrop-dropTarget dragdrop-boundary\" style=\"overflow: auto;\">" );
 
       // Empty div for containing currently selected item
       out.println( "<div id=\"selectedTableItem\">" );
