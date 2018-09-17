@@ -1,10 +1,10 @@
-<div class="loading">
-  <div class="icon"></div>
+<div class="message">
+  <div class="icon" ng-if="vm.showSpinner"></div>
   <div class="text" ng-if="(vm.title || vm.message) && vm.showText">
     <div class="title">
       {{vm.title}}
     </div>
-    <div class="message">
+    <div class="messageTxt">
       {{vm.message}}
     </div>
   </div>

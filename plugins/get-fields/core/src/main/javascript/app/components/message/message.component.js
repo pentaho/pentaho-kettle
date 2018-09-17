@@ -20,37 +20,41 @@
  * explicitly covering such access.
  */
 
-/* LOADING */
-loading .loading {
-  margin: auto;
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  -ms-transform: translate(-50%, -50%);
-  -webkit-transform: translate(-50%, -50%);
-}
+/**
+ * The Get Fields Message component.
+ *
+ * This provides the component for the Loading and Message screens while the file structure loads.
+ * @module components/message/message.component
+ * @property {String} name The name of the Angular component.
+ * @property {Object} options The JSON object containing the configurations for this component.
+ **/
+define([
+  "text!./message.html",
+  "css!./message.css"
+], function(template) {
+  "use strict";
 
-loading .loading .icon {
-  margin: auto;
-  background: url("../../img/busy_thin.gif") no-repeat center center;
-  width: 66px;
-  height: 66px;
-}
+  var options = {
+    bindings: {
+      showText: '<',
+      showSpinner: '<',
+      title: '<',
+      message: '<'
+    },
+    controllerAs: "vm",
+    template: template,
+    controller: messageController
+  };
 
-loading .text {
-  margin-top: 10px;
-  text-align: center;
-  position: relative;
-}
+  /**
+   * The Message Controller
+   */
+  function messageController() {
+    var vm = this;
+  }
 
-loading .loading .title {
-  line-height: 32px;
-  font-size: 24px;
-  font-family: OpenSansLight;
-}
-
-loading .loading .message {
-  line-height: 28px;
-  font-size: 14px;
-}
+  return {
+    name: "message",
+    options: options
+  };
+});

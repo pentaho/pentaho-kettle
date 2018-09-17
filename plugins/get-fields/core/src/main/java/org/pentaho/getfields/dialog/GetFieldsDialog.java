@@ -45,6 +45,7 @@ public class GetFieldsDialog extends ThinDialog {
 
   private String title = "";
   private String file;
+  private String type = "";
 
   public GetFieldsDialog( Shell shell, int width, int height, String file ) {
     super( shell, width, height );
@@ -64,8 +65,10 @@ public class GetFieldsDialog extends ThinDialog {
     clientPath.append( getClientPath() );
     clientPath.append( "#?path=" );
     clientPath.append( file );
+    clientPath.append( "&type=" );
+    clientPath.append( type );
     createDialog( title, getRepoURL( clientPath.toString() ), OPTIONS, LOGO );
-    dialog.setMinimumSize( 435, 580 );
+    dialog.setMinimumSize( 470, 580 );
 
     new BrowserFunction( browser, "close" ) {
       @Override public Object function( Object[] arguments ) {
@@ -139,5 +142,13 @@ public class GetFieldsDialog extends ThinDialog {
 
   public void setTitle( String title ) {
     this.title = title;
+  }
+
+  public String getType() {
+    return type;
+  }
+
+  public void setType( String type ) {
+    this.type = type;
   }
 }

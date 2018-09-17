@@ -21,10 +21,10 @@
  */
 
 /**
- * The Json Input Get Fields Loading component.
+ * The Json Input Get Fields Tree component.
  *
- * This provides the component for the Loading screen while the file structure loads.
- * @module components/loading/loading.component
+ * This provides the component for the Tree screen.
+ * @module components/tree/tree.component
  * @property {String} name The name of the Angular component.
  * @property {Object} options The JSON object containing the configurations for this component.
  **/
@@ -46,7 +46,7 @@ define([
     treeController.$inject = ["$scope"];
 
     /**
-     * The Loading Controller
+     * The Tree Controller
      */
     function treeController($scope) {
       var vm = this;
@@ -87,7 +87,7 @@ define([
       }
 
       function _getPaths() {
-        var paths = []
+        var paths = [];
         _findPaths(vm.content, paths);
         return paths;
       }

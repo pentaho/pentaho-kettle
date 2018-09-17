@@ -29,12 +29,12 @@ define([
   "angular",
   "./app.component",
   "./components/error/error.component",
-  "./components/loading/loading.component",
+  "./components/message/message.component",
   "./components/tree/tree.component",
   "core-ui/components/search/search.component",
   "./services/data.service",
   "./filters/output.filter"
-], function(angular, appComponent, errorComponent, loadingComponent, treeComponent, searchComponent, dataService, outputFilter) {
+], function(angular, appComponent, errorComponent, messageComponent, treeComponent, searchComponent, dataService, outputFilter) {
   "use strict";
 
   var module = {
@@ -55,7 +55,7 @@ define([
     angular.module(module.name, [])
       .component(appComponent.name, appComponent.options)
       .component(errorComponent.name, errorComponent.options)
-      .component(loadingComponent.name, loadingComponent.options)
+      .component(messageComponent.name, messageComponent.options)
       .component(treeComponent.name, treeComponent.options)
       .component(searchComponent.name, searchComponent.options)
       .service(dataService.name, dataService.factory)
