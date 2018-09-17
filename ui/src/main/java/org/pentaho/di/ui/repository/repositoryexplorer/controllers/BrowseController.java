@@ -837,7 +837,12 @@ public class BrowseController extends AbstractXulEventHandler implements IUISupp
     } else {
       setRepositoryItems( selectedFileItems );
     }
-    folderTree.setSelectedItems( this.selectedFolderItems );
+
+    if ( selectedFileItems.isEmpty() ) {
+      // we only need to call this once when the tree selection changes, in which case the selectedFileItems is empty
+      // calling this will hide the history tab which we want to have visible when a file is selected and selectedFileItems is not empty
+      folderTree.setSelectedItems( this.selectedFolderItems );
+    }
   }
 
   public Binding getSelectedItemsBinding() {
