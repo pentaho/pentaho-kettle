@@ -1,0 +1,33 @@
+version: '3.7'
+
+volumes:
+  jenkins:
+    name: ${JENKINS_VOLUME_NAME:-jenkins-pipelines}
+
+networks:
+  pipelines:
+    name: ${NETWORK_NAME:-hv-pipelines}
+
+services:
+  master:
+    # TODO: use a deployed image instead of building locally
+    # this means our jenkins image should be under a release process
+    image: ${JENKINS_IMAGE_NAME:-hv/jenkins}
+    build: ../../jenkins
+    environment:
+      - MASTER_LABELS=${MASTER_LABELS:-master}
+    volumes:
+      - jenkins:/var/jenkins_home
+      - ${CREDENTIALS:-./credentials}:/usr/share/jenkins/secrets/credentials
+      - ${PROJECTS_DIR:-./projects}:/projects
+    networks:
+      - pipelines
+    ports:
+     - 8080:8080
+  agent:
+    image: csanchez/jenkins-swarm-slave
+    command: -master http://master:8080 -executors ${AGENT_EXECUTORS:-2} -name agent -labels ${AGENT_LABELS:-non-master}
+    volumes:
+      - ${PROJECTS_DIR:-./projects}:/projects
+    networks:
+      - pipelines
