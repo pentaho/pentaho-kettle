@@ -109,7 +109,8 @@
     <dependency org="org.scannotation" name="scannotation" rev="1.0.2" conf="test->default" transitive="false"/>
     <dependency org="javax.jcr" name="jcr" rev="2.0" conf="test->default"/>
     <dependency org="org.owasp.encoder"   name="encoder"   rev="1.2"  transitive="false"/>
-    <dependency org="org.mockito" name="mockito-all" rev="1.9.0" transitive="false" conf="test->default"/>
+    <dependency org="org.mockito" name="mockito-all" rev="1.10.19" transitive="false" conf="test->default"/>
+
     <dependency org="pentaho" name="pentaho-platform-core" rev="${dependency.bi-platform.revision}" changing="true" transitive="false" conf="test->default">
       <artifact name="pentaho-platform-core" ext="jar" m:classifier="tests" />
     </dependency>
@@ -135,5 +136,7 @@
 
     <dependency org="org.hamcrest" name="hamcrest-all" rev="1.3" conf="test->default"/>
 
+    <dependency org="org.powermock" name="powermock-module-junit4" rev="1.7.3" conf="test->default" />
+    <dependency org="org.powermock" name="powermock-api-mockito" rev="1.7.3" conf="test->default" />
   </dependencies>
 </ivy-module>
