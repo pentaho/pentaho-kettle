@@ -33,6 +33,7 @@ import static org.mockito.Mockito.when;
 
 import java.math.BigDecimal;
 import java.text.ParseException;
+import java.math.MathContext;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 
@@ -41,6 +42,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
+import org.pentaho.di.core.row.value.ValueMetaBigNumber;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.exception.KettleException;
@@ -320,6 +322,48 @@ public class ValueDataUtilTest {
   }
 
   @Test
+  public void testMulitplyBigNumbers() throws  Exception {
+    BigDecimal field1 = new BigDecimal( "123456789012345678901.1234567890123456789" );
+    BigDecimal field2 = new BigDecimal( "1.0" );
+    BigDecimal field3 = new BigDecimal( "2.0" );
+    BigDecimal expResult1 = new BigDecimal( "123456789012345678901.1234567890123456789" );
+    BigDecimal expResult2 = new BigDecimal( "246913578024691357802.2469135780246913578" );
+    BigDecimal expResult3 = new BigDecimal( "123456789012345678901.1200000000000000000" );
+    BigDecimal expResult4 = new BigDecimal( "246913578024691357802" );
+    assertEquals( expResult1, ValueDataUtil.multiplyBigDecimals( field1, field2, null ) );
+    assertEquals( expResult2, ValueDataUtil.multiplyBigDecimals( field1, field3, null ) );
+    assertEquals( expResult3, ValueDataUtil.multiplyBigDecimals( field1, field2, new MathContext( 23 ) ) );
+    assertEquals( expResult4, ValueDataUtil.multiplyBigDecimals( field1, field3, new MathContext( 21 ) ) );
+  }
+
+  @Test
+  public void testDivisionBigNumbers() throws  Exception {
+    BigDecimal field1 = new BigDecimal( "123456789012345678901.1234567890123456789" );
+    BigDecimal field2 = new BigDecimal( "1.0" );
+    BigDecimal field3 = new BigDecimal( "2.0" );
+    BigDecimal expResult1 = new BigDecimal( "123456789012345678901.1234567890123456789" );
+    BigDecimal expResult2 = new BigDecimal( "61728394506172839450.56172839450617283945" );
+    BigDecimal expResult3 = new BigDecimal( "123456789012345678901.12" );
+    BigDecimal expResult4 = new BigDecimal( "61728394506172839450.6" );
+    assertEquals( expResult1, ValueDataUtil.divideBigDecimals( field1, field2, null ) );
+    assertEquals( expResult2, ValueDataUtil.divideBigDecimals( field1, field3, null ) );
+    assertEquals( expResult3, ValueDataUtil.divideBigDecimals( field1, field2, new MathContext( 23 ) ) );
+    assertEquals( expResult4, ValueDataUtil.divideBigDecimals( field1, field3, new MathContext( 21 ) ) );
+  }
+
+  @Test
+  public void testRemainderBigNumbers() throws  Exception {
+    BigDecimal field1 = new BigDecimal( "123456789012345678901.1234567890123456789" );
+    BigDecimal field2 = new BigDecimal( "1.0" );
+    BigDecimal field3 = new BigDecimal( "2.0" );
+    BigDecimal expResult1 = new BigDecimal( "0.1234567890123456789" );
+    BigDecimal expResult2 = new BigDecimal( "1.1234567890123456789" );
+    assertEquals( expResult1, ValueDataUtil.remainder( new ValueMetaBigNumber( ), field1, new ValueMetaBigNumber( ), field2 ) );
+    assertEquals( expResult2, ValueDataUtil.remainder( new ValueMetaBigNumber( ), field1, new ValueMetaBigNumber( ), field3 ) );
+  }
+
+
+  @Test
   public void testPercent1() {
 
     // Test Kettle number types
@@ -381,9 +425,9 @@ public class ValueDataUtilTest {
         ValueMetaInterface.TYPE_BIGNUMBER, CalculatorMetaFunction.CALC_PERCENT_2 ) );
     assertEquals( BigDecimal.valueOf( Double.valueOf( "1.96" ) ), calculate( "2", "2",
         ValueMetaInterface.TYPE_BIGNUMBER, CalculatorMetaFunction.CALC_PERCENT_2 ) );
-    assertEquals( new BigDecimal( "8.00" ), calculate( "10", "20",
+    assertEquals( new BigDecimal( "8.0" ), calculate( "10", "20",
         ValueMetaInterface.TYPE_BIGNUMBER, CalculatorMetaFunction.CALC_PERCENT_2 ) );
-    assertEquals( new BigDecimal( "50.00" ), calculate( "100", "50",
+    assertEquals( new BigDecimal( "50.0" ), calculate( "100", "50",
         ValueMetaInterface.TYPE_BIGNUMBER, CalculatorMetaFunction.CALC_PERCENT_2 ) );
   }
 
@@ -886,6 +930,8 @@ public class ValueDataUtilTest {
         return ValueDataUtil.getJaro_Similitude( valueMetaA, dataA, valueMetaB, dataB );
       } else if ( calculatorMetaFunction == CalculatorMetaFunction.CALC_JARO_WINKLER ) {
         return ValueDataUtil.getJaroWinkler_Similitude( valueMetaA, dataA, valueMetaB, dataB );
+      } else if ( calculatorMetaFunction == CalculatorMetaFunction.CALC_MULTIPLY ) {
+        return ValueDataUtil.multiply( valueMetaA, dataA, valueMetaB, dataB );
       } else {
         fail( "Invalid CalculatorMetaFunction specified." );
         return null;
