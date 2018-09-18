@@ -109,7 +109,7 @@ define([
                     output = parent.key + (parent.type === "Array" ? "[*]" : "") + "." + output;
                   }
                 } else {
-                  if (!output.startsWith(".")) {
+                  if (output.indexOf(".") !== 0) {
                     output = "." + output;
                   }
                 }

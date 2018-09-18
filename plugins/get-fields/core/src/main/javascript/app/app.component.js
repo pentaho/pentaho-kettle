@@ -56,7 +56,7 @@ define([
     vm.messageTitle = i18n.get("get-fields-plugin.message.title");
     vm.messageMessage = i18n.get("get-fields-plugin.message.message");
     vm.selectFields = i18n.get("get-fields-plugin.app.header.title");
-    vm.clearSelection = i18n.get("get-fields-plugin.app.clear-selection.label");
+    vm.clearSelectionLabel = i18n.get("get-fields-plugin.app.clear-selection.label");
     vm.okLabel = i18n.get("get-fields-plugin.app.ok.button");
     vm.cancelLabel = i18n.get("get-fields-plugin.app.cancel.button");
     vm.searchPlaceHolder = i18n.get("get-fields-plugin.app.header.search-parsed-fields.placeholder");
