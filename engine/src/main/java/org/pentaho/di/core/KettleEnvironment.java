@@ -209,7 +209,10 @@ public class KettleEnvironment {
   /**
    * Checks if the Kettle environment has been initialized.
    *
-   * @return true if initialized, false otherwise
+   * If currently initializing, waits for the initialization
+   * to complete and then returns if it was successful.
+   *
+   * @return {@code true} if initialized, {@code false} otherwise
    */
   public static boolean isInitialized() {
     Future<Boolean> future = initialized.get();
@@ -218,6 +221,20 @@ public class KettleEnvironment {
     } catch ( Throwable e ) {
       return false;
     }
+  }
+
+  /**
+   * Checks if the Kettle environment is currently initializing.
+   *
+   * It will return {@code false} whenever {@link #init(boolean)} was never called,
+   * the initialization is complete or the initialization failed.
+   *
+   * @return {@code true} if currently initializing, {@code false} otherwise
+   */
+  public static boolean isInitializing() {
+    Future<Boolean> future = initialized.get();
+
+    return future != null && !future.isDone();
   }
 
   /**
