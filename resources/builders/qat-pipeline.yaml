@@ -1,0 +1,116 @@
+# optional (unless used in your yaml data below) - can be overridden by upstream properties using the same name
+buildProperties:
+        # global build control defaults -- see others you can override in resources/config/buildProperties.yaml
+        # These are understood by the shared pipeline libraries:
+        BUILD_PLAN_ID                  : 8.2 QAT Build
+
+        CLEAN_CACHES_REGEX             : false
+        ARCHIVE_ARTIFACTS              : false
+        RUN_VERSIONING                 : false
+
+        MAVEN_DEFAULT_COMMAND_OPTIONS  : -B -e -Drelease
+        ARCHIVE_ARTIFACTS_PATTERN      : '**/{target/*.gz,target/*.zip}'
+
+        # TODO: Change this to clean deploy when ready to deploy
+        MAVEN_DEFAULT_DIRECTIVES       : clean install
+        MAVEN_PUBLIC_RELEASE_REPO_URL  : http://nexus.pentaho.org/content/repositories/public-8.2-qat
+        MAVEN_PRIVATE_RELEASE_REPO_URL : http://nexus.pentaho.org/content/repositories/private-8.2-qat
+
+        # Version based control properties
+        RELEASE_VERSION                : 8.2.0.0
+        SUITE_RELEASE_VERSION          : 8.2-QAT
+        RELEASE_MODE                   : true
+        SUITE_BUILD_RESOURCES_BRANCH   : 8.2.0.0
+        JENKINS_FOLDER_NAME            : "8.2"
+
+        # We need to override this until this pipeline is the nightly
+        BUILD_HOSTING_ROOT             : /build2/artifacts/hosted/pipeline
+
+        # TODO: Enable when we start wanting to tag
+        CREATE_TAG                     : false
+        TAG_NAME                       : ${RELEASE_VERSION}-RC
+
+        # Slack Reporting
+        SLACK_INTEGRATION              : true
+        SLACK_CHANNEL                  : 'buildteam-alerts'
+
+jobGroups:
+  # Always required
+
+  200:
+
+    - jobID                :  qat-build
+      targetJobName        :  8.2-qat
+      buildFramework       :  JENKINS_JOB
+      testable             :  false
+      asynchronous         :  false
+      passOnBuildParameters:  true
+      properties           :
+        CLEAN_CACHES_REGEX    : true
+        ARCHIVE_ARTIFACTS     : true
+        RUN_VERSIONING        : true
+        BUILD_DATA_FILE       : qat.yaml
+        BUILD_VERSIONS_FILE   : qat.versions
+        RUN_CHECKOUTS         : true
+        RUN_UNIT_TESTS        : true
+        OVERRIDE_PARAMS       : '' # Necessary to clean parent override_params
+
+  300:
+
+    - jobID                 :  harvester
+      targetJobName         :  harvester
+      buildFramework        :  JENKINS_JOB
+      testable              :  false
+      asynchronous          :  false
+      passOnBuildParameters :  true
+      properties            :
+        BUILD_ARCHIVE_ROOT    : "${BUILD_HOSTING_ROOT}"
+        SCM_BRANCH            : "${DEFAULT_BRANCH}"
+
+  400:
+
+    - jobID                 :  cm-build-order-trigger
+      targetJobName         :  engops/cm-build-order-trigger
+      buildFramework        :  JENKINS_JOB
+      testable              :  false
+      asynchronous          :  false
+      passOnBuildParameters :  true
+      properties            :
+        BUILD_ARCHIVE_ROOT    : "${BUILD_HOSTING_ROOT}"
+
+    - jobID                 :  github-commits
+      targetJobName         :  engops/github-commits
+      buildFramework        :  JENKINS_JOB
+      testable              :  false
+      asynchronous          :  false
+      passOnBuildParameters :  true
+
+    - jobID                 :  remote-ip-job-trigger
+      targetJobName         :  engops/remote-ip-job-trigger
+      buildFramework        :  JENKINS_JOB
+      execType              :  NOOP
+      testable              :  false
+      asynchronous          :  false
+      passOnBuildParameters :  true
+
+    - jobID                 :  regression-smoketest-job-trigger
+      targetJobName         :  engops/regression-smoketest-job-trigger
+      buildFramework        :  JENKINS_JOB
+      execType              :  NOOP
+      testable              :  false
+      asynchronous          :  false
+      passOnBuildParameters :  true
+
+    - jobID                 :  snapshot-checker
+      targetJobName         :  snapshot-checker
+      buildFramework        :  JENKINS_JOB
+      testable              :  false
+      asynchronous          :  false
+      passOnBuildParameters :  true
+
+    - jobID                 :  obfuscation-verifier
+      targetJobName         :  obfuscation-verifier
+      buildFramework        :  JENKINS_JOB
+      testable              :  false
+      asynchronous          :  true
+      passOnBuildParameters :  true
