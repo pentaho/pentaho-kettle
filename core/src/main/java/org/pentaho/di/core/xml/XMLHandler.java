@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -319,16 +319,14 @@ public class XMLHandler {
    * Get node child with a certain subtag set to a certain value
    *
    * @param n
-   *          The node to search in
+   *          the node to search in
    * @param tag
-   *          The tag to look for
-   * @param subtag
-   *          The subtag to look for
-   * @param subtagvalue
-   *          The value the subtag should have
-   * @param copyNr
-   *          The nr of occurance of the value
-   * @return The node found or null if we couldn't find anything.
+   *          the tag to look for
+   * @param attributeName
+   *          the subtag to look for
+   * @param attributeValue
+   *          the value the subtag should have
+   * @return the node found or null if we couldn't find anything
    */
   public static Node getNodeWithAttributeValue( Node n, String tag, String attributeName,
     String attributeValue ) {
@@ -368,7 +366,7 @@ public class XMLHandler {
       return null;
     }
 
-    // Get the childres one by one out of the node,
+    // Get the children one by one out of the node,
     // compare the tags and return the first found.
     //
     children = n.getChildNodes();
@@ -376,6 +374,28 @@ public class XMLHandler {
       childnode = children.item( i );
       if ( childnode.getNodeName().equalsIgnoreCase( tag ) ) {
         return childnode;
+      }
+    }
+    return null;
+  }
+
+  /**
+   * Search for the last subnode in the node with a certain tag.
+   *
+   * @param n   the node to look in
+   * @param tag the tag to look for
+   * @return the last subnode found with the specified tag, or null if nothing was found
+   */
+  public static Node getLastSubNode( Node n, String tag ) {
+
+    if ( null != n ) {
+      NodeList children = n.getChildNodes();
+      int i = children.getLength();
+      while ( i > 0 ) {
+        Node childNode = children.item( --i );
+        if ( childNode.getNodeName().equalsIgnoreCase( tag ) ) {
+          return childNode;
+        }
       }
     }
     return null;
@@ -455,7 +475,7 @@ public class XMLHandler {
       lastChildNr = 0;
     } else {
       count = nr; // we assume we found the previous nr-1 at the lastChildNr
-      lastChildNr++; // we left off at the previouso one, so continue with the next.
+      lastChildNr++; // we left off at the previous one, so continue with the next.
     }
 
     for ( int i = lastChildNr; i < children.getLength(); i++ ) { // Try all children

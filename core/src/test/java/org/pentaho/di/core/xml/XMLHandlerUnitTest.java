@@ -22,6 +22,17 @@
 
 package org.pentaho.di.core.xml;
 
+import org.junit.ClassRule;
+import org.junit.Test;
+import org.pentaho.di.core.Const;
+import org.pentaho.di.core.exception.KettleXMLException;
+import org.pentaho.di.junit.rules.RestorePDIEnvironment;
+import org.w3c.dom.Document;
+import org.w3c.dom.Node;
+import org.xml.sax.SAXParseException;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import javax.xml.parsers.DocumentBuilder;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
@@ -30,17 +41,10 @@ import java.math.BigDecimal;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 
-import org.junit.ClassRule;
-import org.junit.Test;
-import org.pentaho.di.core.Const;
-import org.pentaho.di.core.exception.KettleXMLException;
-import org.pentaho.di.junit.rules.RestorePDIEnvironment;
-import org.xml.sax.SAXParseException;
-
-import javax.xml.parsers.DocumentBuilder;
-
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.mockito.Mockito.when;
 
 public class XMLHandlerUnitTest {
   @ClassRule public static RestorePDIEnvironment env = new RestorePDIEnvironment();
@@ -253,5 +257,105 @@ public class XMLHandlerUnitTest {
     }
 
     return tmpFile;
+  }
+
+  @Test
+  public void testGetSubNode() throws Exception {
+    String testXML =
+      "<?xml version=\"1.0\"?>\n"
+        + "<root>\n"
+        + "<xpto>A</xpto>\n"
+        + "<xpto>B</xpto>\n"
+        + "<xpto>C</xpto>\n"
+        + "<xpto>D</xpto>\n"
+        + "</root>\n";
+
+    DocumentBuilder builder = XMLHandler.createDocumentBuilder( false, false );
+
+    Document parse = builder.parse( new ByteArrayInputStream( testXML.getBytes() ) );
+    Node rootNode = parse.getFirstChild();
+    Node lastSubNode = XMLHandler.getSubNode( rootNode, "xpto" );
+    assertNotNull( lastSubNode );
+    assertEquals( "A", lastSubNode.getTextContent() );
+  }
+
+  @Test
+  public void testGetLastSubNode() throws Exception {
+    String testXML =
+      "<?xml version=\"1.0\"?>\n"
+        + "<root>\n"
+        + "<xpto>A</xpto>\n"
+        + "<xpto>B</xpto>\n"
+        + "<xpto>C</xpto>\n"
+        + "<xpto>D</xpto>\n"
+        + "</root>\n";
+
+    DocumentBuilder builder = XMLHandler.createDocumentBuilder( false, false );
+
+    Document parse = builder.parse( new ByteArrayInputStream( testXML.getBytes() ) );
+    Node rootNode = parse.getFirstChild();
+    Node lastSubNode = XMLHandler.getLastSubNode( rootNode, "xpto" );
+    assertNotNull( lastSubNode );
+    assertEquals( "D", lastSubNode.getTextContent() );
+  }
+
+  @Test
+  public void testGetSubNodeByNr_WithCache() throws Exception {
+    String testXML =
+      "<?xml version=\"1.0\"?>\n"
+        + "<root>\n"
+        + "<xpto>0</xpto>\n"
+        + "<xpto>1</xpto>\n"
+        + "<xpto>2</xpto>\n"
+        + "<xpto>3</xpto>\n"
+        + "</root>\n";
+
+    DocumentBuilder builder = XMLHandler.createDocumentBuilder( false, false );
+
+    Document parse = builder.parse( new ByteArrayInputStream( testXML.getBytes() ) );
+    Node rootNode = parse.getFirstChild();
+
+    Node subNode = XMLHandler.getSubNodeByNr( rootNode, "xpto", 0 );
+    assertNotNull( subNode );
+    assertEquals( "0", subNode.getTextContent() );
+    subNode = XMLHandler.getSubNodeByNr( rootNode, "xpto", 1 );
+    assertNotNull( subNode );
+    assertEquals( "1", subNode.getTextContent() );
+    subNode = XMLHandler.getSubNodeByNr( rootNode, "xpto", 2 );
+    assertNotNull( subNode );
+    assertEquals( "2", subNode.getTextContent() );
+    subNode = XMLHandler.getSubNodeByNr( rootNode, "xpto", 3 );
+    assertNotNull( subNode );
+    assertEquals( "3", subNode.getTextContent() );
+  }
+
+  @Test
+  public void testGetSubNodeByNr_WithoutCache() throws Exception {
+    String testXML =
+      "<?xml version=\"1.0\"?>\n"
+        + "<root>\n"
+        + "<xpto>0</xpto>\n"
+        + "<xpto>1</xpto>\n"
+        + "<xpto>2</xpto>\n"
+        + "<xpto>3</xpto>\n"
+        + "</root>\n";
+
+    DocumentBuilder builder = XMLHandler.createDocumentBuilder( false, false );
+
+    Document parse = builder.parse( new ByteArrayInputStream( testXML.getBytes() ) );
+    Node rootNode = parse.getFirstChild();
+
+    Node subNode = XMLHandler.getSubNodeByNr( rootNode, "xpto", 0, false );
+    assertNotNull( subNode );
+    assertEquals( "0", subNode.getTextContent() );
+    subNode = XMLHandler.getSubNodeByNr( rootNode, "xpto", 1, false );
+    assertNotNull( subNode );
+    assertEquals( "1", subNode.getTextContent() );
+    subNode = XMLHandler.getSubNodeByNr( rootNode, "xpto", 2, false );
+    assertNotNull( subNode );
+    assertEquals( "2", subNode.getTextContent() );
+    subNode = XMLHandler.getSubNodeByNr( rootNode, "xpto", 3, false );
+    assertNotNull( subNode );
+    assertEquals( "3", subNode.getTextContent() );
   }
 }
