@@ -53,7 +53,7 @@ public class GroupByDialogTest {
   @Before
   public void setup() {
 
-    doCallRealMethod().when( dialog ).updateAllRowsCheckbox( tableView, allRowsCheckBox );
+    doCallRealMethod().when( dialog ).updateAllRowsCheckbox( tableView, allRowsCheckBox, true );
     doReturn( 2 ).when( tableView ).nrNonEmpty();
     doReturn( tableItem ).when( tableView ).getNonEmpty( anyInt() );
   }
@@ -62,7 +62,7 @@ public class GroupByDialogTest {
   public void updateAllRowsCheckbox_trueTest() {
 
     doReturn( "CUM_SUM" ).when( tableItem ).getText( anyInt() );
-    dialog.updateAllRowsCheckbox( tableView, allRowsCheckBox );
+    dialog.updateAllRowsCheckbox( tableView, allRowsCheckBox, true );
 
     verify( allRowsCheckBox, times( 1 ) ).setSelection( true );
     verify( allRowsCheckBox, times( 1 ) ).setEnabled( false );
@@ -72,7 +72,7 @@ public class GroupByDialogTest {
   public void updateAllRowsCheckbox_falseTest() {
 
     doReturn( "ANOTHER_VALUE" ).when( tableItem ).getText( anyInt() );
-    dialog.updateAllRowsCheckbox( tableView, allRowsCheckBox );
+    dialog.updateAllRowsCheckbox( tableView, allRowsCheckBox, true );
 
     verify( allRowsCheckBox, times( 1 ) ).setEnabled( true );
   }

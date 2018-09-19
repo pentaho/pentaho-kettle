@@ -410,7 +410,7 @@ public class GroupByDialog extends BaseStepDialog implements StepDialogInterface
         UpInsRows, lsMod, props );
 
     wAgg.addModifyListener( modifyEvent -> {
-      updateAllRowsCheckbox( wAgg, wAllRows );
+      updateAllRowsCheckbox( wAgg, wAllRows, false );
       setFlags();
       input.setChanged();
     } );
@@ -599,7 +599,7 @@ public class GroupByDialog extends BaseStepDialog implements StepDialogInterface
     wAgg.optWidth( true );
 
     setFlags();
-    updateAllRowsCheckbox( wAgg, wAllRows );
+    updateAllRowsCheckbox( wAgg, wAllRows, true );
 
     wStepname.selectAll();
     wStepname.setFocus();
@@ -695,8 +695,9 @@ public class GroupByDialog extends BaseStepDialog implements StepDialogInterface
    *
    * @param aggregationTable the aggregation table to check the entries
    * @param allRowsButton the checkbox to update
+   * @param forceUpdate if an update must be done
    */
-  void updateAllRowsCheckbox( TableView aggregationTable, Button allRowsButton ) {
+  void updateAllRowsCheckbox( TableView aggregationTable, Button allRowsButton, boolean forceUpdate ) {
 
     boolean isCumulativeSelected = IntStream.range( 0, aggregationTable.nrNonEmpty() )
             .map( row -> GroupByMeta.getType( aggregationTable.getNonEmpty( row ).getText( AGGREGATION_TABLE_TYPE_INDEX ) ) )
@@ -706,6 +707,9 @@ public class GroupByDialog extends BaseStepDialog implements StepDialogInterface
 
     if ( isCumulativeSelected ) {
       allRowsButton.setSelection( true );
+      if ( forceUpdate ) {
+        backupChanged = true;
+      }
     }
   }
 }
