@@ -92,7 +92,7 @@ define([
         if (value) {
           _findValue(vm.tree, value);
           if (!found) {
-            _showMessage(i18n.get("get-fields-plugin.app.unable-to-find.label", {searchFields: value}),
+            _showMessage(i18n.get("get-fields-plugin.app.unable-to-find.label", {searchField: value}),
               i18n.get("get-fields.plugin.app.unable-to-find.message"));
           }
         } else {
