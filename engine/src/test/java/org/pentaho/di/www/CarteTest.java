@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2016 - 2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2016 - 2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -21,26 +21,41 @@
  ******************************************************************************/
 package org.pentaho.di.www;
 
+import com.sun.jersey.api.client.Client;
+import com.sun.jersey.api.client.WebResource;
+import com.sun.jersey.api.client.config.ClientConfig;
+import com.sun.jersey.api.client.filter.HTTPBasicAuthFilter;
 import org.junit.ClassRule;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.junit.rules.RestorePDIEngineEnvironment;
+import org.powermock.core.classloader.annotations.PrepareForTest;
+import org.powermock.modules.junit4.PowerMockRunner;
 
+import java.util.Base64;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
 import static org.junit.Assert.assertEquals;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.doCallRealMethod;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.RETURNS_MOCKS;
 import static org.mockito.Mockito.when;
+import static org.powermock.api.mockito.PowerMockito.mockStatic;
+import static org.powermock.reflect.Whitebox.getInternalState;
 
 /**
  * Created by ccaspanello on 5/31/2016.
  */
+@RunWith( PowerMockRunner.class )
+@PrepareForTest( Client.class )
 public class CarteTest {
   @ClassRule public static RestorePDIEngineEnvironment env = new RestorePDIEngineEnvironment();
 
@@ -82,5 +97,29 @@ public class CarteTest {
     latch.await( 10, TimeUnit.SECONDS );
     assertEquals( carte.getWebServer().getDetections().size(), 2 );
     carte.getWebServer().stopServer();
+  }
+
+  @Test
+  public void callStopCarteRestService() throws Exception {
+    WebResource status = mock( WebResource.class );
+    doReturn( "<serverstatus>" ).when( status ).get( String.class );
+
+    WebResource stop = mock( WebResource.class );
+    doReturn( "Shutting Down" ).when( stop ).get( String.class );
+
+    Client client = mock( Client.class );
+    doCallRealMethod().when( client ).addFilter( any( HTTPBasicAuthFilter.class ) );
+    doCallRealMethod().when( client ).getHeadHandler();
+    doReturn( status ).when( client ).resource( "http://localhost:8080/kettle/status/?xml=Y" );
+    doReturn( stop ).when( client ).resource( "http://localhost:8080/kettle/stopCarte" );
+
+    mockStatic( Client.class );
+    when( Client.create( any( ClientConfig.class ) ) ).thenReturn( client );
+
+    Carte.callStopCarteRestService( "localhost", "8080", "admin", "Encrypted 2be98afc86aa7f2e4bb18bd63c99dbdde" );
+
+    // the expected value is: "Basic <base64 encoded username:password>"
+    assertEquals( "Basic " + new String( Base64.getEncoder().encode( "admin:password".getBytes( "utf-8" ) ) ),
+      getInternalState( client.getHeadHandler(), "authentication" ) );
   }
 }

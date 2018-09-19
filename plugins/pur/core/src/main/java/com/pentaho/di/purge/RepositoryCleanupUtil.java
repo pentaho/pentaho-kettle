@@ -1,5 +1,5 @@
 /*!
- * Copyright 2010 - 2017 Hitachi Vantara.  All rights reserved.
+ * Copyright 2010 - 2018 Hitachi Vantara.  All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,6 +14,7 @@
  * limitations under the License.
  *
  */
+
 package com.pentaho.di.purge;
 
 import java.io.File;
@@ -27,10 +28,13 @@ import java.util.Map;
 
 import javax.ws.rs.core.MediaType;
 
+import com.google.common.annotations.VisibleForTesting;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.WordUtils;
+import org.pentaho.di.core.KettleClientEnvironment;
+import org.pentaho.di.core.encryption.Encr;
 import org.pentaho.platform.security.policy.rolebased.actions.AdministerSecurityAction;
 import org.pentaho.platform.util.RepositoryPathEncoder;
 
@@ -348,13 +352,15 @@ public class RepositoryCleanupUtil {
    * 
    * @throws Exception
    */
-  private void authenticateLoginCredentials() throws Exception {
+  @VisibleForTesting
+  void authenticateLoginCredentials() throws Exception {
+    KettleClientEnvironment.init();
 
     if ( client == null ) {
       ClientConfig clientConfig = new DefaultClientConfig();
       clientConfig.getFeatures().put( JSONConfiguration.FEATURE_POJO_MAPPING, Boolean.TRUE );
       client = Client.create( clientConfig );
-      client.addFilter( new HTTPBasicAuthFilter( username, password ) );
+      client.addFilter( new HTTPBasicAuthFilter( username, Encr.decryptPasswordOptionallyEncrypted( password ) ) );
     }
 
     WebResource resource = client.resource( url + AUTHENTICATION + AdministerSecurityAction.NAME );

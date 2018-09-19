@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.Properties;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+import com.google.common.annotations.VisibleForTesting;
 import org.apache.commons.cli.BasicParser;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -40,6 +41,7 @@ import org.apache.commons.vfs2.FileObject;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.KettleClientEnvironment;
 import org.pentaho.di.core.KettleEnvironment;
+import org.pentaho.di.core.encryption.Encr;
 import org.pentaho.di.core.logging.KettleLogStore;
 import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.logging.LogChannelInterface;
@@ -334,14 +336,18 @@ public class Carte {
    * @throws ParseException
    * @throws CarteCommandException
    */
-  private static void callStopCarteRestService( String hostname, String port, String username, String password )
+  @VisibleForTesting
+  static void callStopCarteRestService( String hostname, String port, String username, String password )
     throws ParseException, CarteCommandException {
     // get information about the remote connection
     try {
+      KettleClientEnvironment.init();
+
       ClientConfig clientConfig = new DefaultClientConfig();
       clientConfig.getFeatures().put( JSONConfiguration.FEATURE_POJO_MAPPING, Boolean.TRUE );
       Client client = Client.create( clientConfig );
-      client.addFilter( new HTTPBasicAuthFilter( username, password ) );
+
+      client.addFilter( new HTTPBasicAuthFilter( username, Encr.decryptPasswordOptionallyEncrypted( password ) ) );
 
       // check if the user can access the carte server. Don't really need this call but may want to check it's output at
       // some point
