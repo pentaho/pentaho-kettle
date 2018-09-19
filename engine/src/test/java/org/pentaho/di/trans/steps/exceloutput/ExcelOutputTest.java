@@ -22,7 +22,6 @@
 
 package org.pentaho.di.trans.steps.exceloutput;
 
-import jxl.Sheet;
 import jxl.Workbook;
 import jxl.write.WritableCellFormat;
 import org.junit.AfterClass;
@@ -42,6 +41,7 @@ import org.pentaho.di.trans.steps.mock.StepMockHelper;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 import java.util.Date;
 
 import static org.mockito.Matchers.any;
@@ -52,26 +52,16 @@ import static org.mockito.Mockito.when;
  * Created by Yury_Bakhmutski on 12/12/2016.
  */
 public class ExcelOutputTest {
+  public static final String CREATED_SHEET_NAME = "Sheet1";
   private static StepMockHelper<ExcelOutputMeta, ExcelOutputData> helper;
-  private static final String PATH_TO_XLS = buildFilePath();
-  private static final File XLS_FILE = new File( PATH_TO_XLS );
 
   @ClassRule public static RestorePDIEngineEnvironment env = new RestorePDIEngineEnvironment();
-
-  private static String buildFilePath() {
-    String pathToPackage =
-      ExcelOutputTest.class.getProtectionDomain().getCodeSource().getLocation().getPath();
-    String pathToClass =
-      ExcelOutputTest.class.getPackage().getName().replace( ".", File.separator );
-    String fileName = "append-test";
-    return pathToPackage + pathToClass + File.separator + fileName + ".xls";
-  }
 
   @BeforeClass
   public static void setUp() throws KettleException {
     KettleEnvironment.init();
     helper =
-      new StepMockHelper<ExcelOutputMeta, ExcelOutputData>( "ExcelOutputTest", ExcelOutputMeta.class,
+      new StepMockHelper<>( "ExcelOutputTest", ExcelOutputMeta.class,
         ExcelOutputData.class );
     when( helper.logChannelInterfaceFactory.create( any(), any( LoggingObjectInterface.class ) ) ).thenReturn(
       helper.logChannelInterface );
@@ -83,6 +73,31 @@ public class ExcelOutputTest {
     helper.cleanUp();
   }
 
+  private String buildFilePath() throws IOException {
+    File outFile = File.createTempFile( "aaa", ".xls" );
+    String fileFullPath = outFile.getCanonicalPath();
+    outFile.delete();
+    return fileFullPath;
+  }
+
+  private ExcelOutputMeta createStepMeta( String fileName, String templateFullPath, boolean isAppend )
+    throws IOException {
+    ExcelOutputMeta meta = new ExcelOutputMeta();
+    meta.setFileName( fileName );
+    if ( null == templateFullPath ) {
+      meta.setTemplateEnabled( false );
+    } else {
+      meta.setTemplateEnabled( true );
+      meta.setTemplateFileName( templateFullPath );
+    }
+    meta.setAppend( isAppend );
+    ExcelField[] excelFields = { new ExcelField( "f1", ValueMetaInterface.TYPE_NUMBER, null ),
+      new ExcelField( "f2", ValueMetaInterface.TYPE_STRING, null ) };
+    meta.setOutputFields( excelFields );
+
+    return meta;
+  }
+
   @Test
   /**
    * Tests http://jira.pentaho.com/browse/PDI-14420 issue
@@ -92,8 +107,7 @@ public class ExcelOutputTest {
     ValueMetaInterface vmi = new ValueMetaString( "new_row" );
 
     ExcelOutputData data = new ExcelOutputData();
-    int[] ints = { 0 };
-    data.fieldnrs = ints;
+    data.fieldnrs = new int[] { 0 };
     RowMeta rowMetaToBeReturned = Mockito.spy( new RowMeta() );
     rowMetaToBeReturned.addValueMeta( 0, vmi );
 
@@ -106,7 +120,10 @@ public class ExcelOutputTest {
     doReturn( row ).when( excelOutput ).getRow();
     doReturn( rowMetaToBeReturned ).when( excelOutput ).getInputRowMeta();
 
-    ExcelOutputMeta meta = createStepMeta();
+    String excelFileFullPath = buildFilePath();
+    File excelFile = new File( excelFileFullPath );
+    excelFile.deleteOnExit();
+    ExcelOutputMeta meta = createStepMeta( excelFileFullPath, null, true );
 
     excelOutput.init( meta, data );
     excelOutput.processRow( meta, data );
@@ -116,11 +133,9 @@ public class ExcelOutputTest {
     excelOutput.processRow( meta, data );
     excelOutput.dispose( meta, data );
 
-    Workbook workbook = Workbook.getWorkbook( XLS_FILE );
-    Sheet sheet = workbook.getSheet( 0 );
-    int rows = sheet.getRows();
-    Assert.assertSame( rows, 2 );
-
+    Workbook workbook = Workbook.getWorkbook( excelFile );
+    Assert.assertEquals( 1, workbook.getSheets().length );
+    Assert.assertEquals( 2, workbook.getSheet( CREATED_SHEET_NAME ).getRows() );
   }
 
   @Test
@@ -132,8 +147,7 @@ public class ExcelOutputTest {
     ValueMetaInterface vmi = new ValueMetaString( "new_row" );
 
     ExcelOutputData data = new ExcelOutputData();
-    int[] ints = { 0 };
-    data.fieldnrs = ints;
+    data.fieldnrs = new int[] { 0 };
     String testColumnName = "testColumnName";
     data.formats.put( testColumnName, new WritableCellFormat() );
     RowMeta rowMetaToBeReturned = Mockito.spy( new RowMeta() );
@@ -141,7 +155,7 @@ public class ExcelOutputTest {
 
     data.previousMeta = rowMetaToBeReturned;
     ExcelOutput excelOutput =
-            Mockito.spy( new ExcelOutput( helper.stepMeta, data, 0, helper.transMeta, helper.trans ) );
+      Mockito.spy( new ExcelOutput( helper.stepMeta, data, 0, helper.transMeta, helper.trans ) );
     excelOutput.first = false;
 
     Object[] row = { new Date() };
@@ -149,28 +163,289 @@ public class ExcelOutputTest {
     doReturn( rowMetaToBeReturned ).when( excelOutput ).getInputRowMeta();
     doReturn( 1L ).when( excelOutput ).getLinesOutput();
 
-    ExcelOutputMeta meta = createStepMeta();
+    String excelFileFullPath = buildFilePath();
+    File excelFile = new File( excelFileFullPath );
+    excelFile.deleteOnExit();
+    ExcelOutputMeta meta = createStepMeta( excelFileFullPath, null, true );
+
     meta.setSplitEvery( 1 );
 
     excelOutput.init( meta, data );
     excelOutput.processRow( meta, data );
     Assert.assertNull( data.formats.get( testColumnName ) );
-
   }
 
-  private ExcelOutputMeta createStepMeta() throws IOException {
-    ExcelOutputMeta meta = new ExcelOutputMeta();
-    meta.setFileName( PATH_TO_XLS );
-    meta.setTemplateEnabled( false );
-    meta.setAppend( true );
-    ExcelField[] excelFields = { new ExcelField() };
-    meta.setOutputFields( excelFields );
+  @Test
+  public void test_AppendNoTemplate() throws Exception {
 
-    return meta;
+    ValueMetaInterface vmi = new ValueMetaString( "new_row" );
+
+    ExcelOutputData data = new ExcelOutputData();
+    data.fieldnrs = new int[] { 0 };
+    RowMeta rowMetaToBeReturned = Mockito.spy( new RowMeta() );
+    rowMetaToBeReturned.addValueMeta( 0, vmi );
+
+    data.previousMeta = rowMetaToBeReturned;
+    ExcelOutput excelOutput =
+      Mockito.spy( new ExcelOutput( helper.stepMeta, data, 0, helper.transMeta, helper.trans ) );
+    excelOutput.first = false;
+
+    Object[] row = { new Date() };
+    doReturn( row ).when( excelOutput ).getRow();
+    doReturn( rowMetaToBeReturned ).when( excelOutput ).getInputRowMeta();
+
+    String excelFileFullPath = buildFilePath();
+    File excelFile = new File( excelFileFullPath );
+    excelFile.deleteOnExit();
+    ExcelOutputMeta meta = createStepMeta( excelFileFullPath, null, true );
+
+    excelOutput.init( meta, data );
+    excelOutput.processRow( meta, data );
+    excelOutput.dispose( meta, data );
+    excelOutput.init( meta, data );
+    excelOutput.processRow( meta, data );
+    excelOutput.dispose( meta, data );
+    excelOutput.init( meta, data );
+    excelOutput.processRow( meta, data );
+    excelOutput.dispose( meta, data );
+    excelOutput.init( meta, data );
+    excelOutput.processRow( meta, data );
+    excelOutput.dispose( meta, data );
+
+    Workbook workbook = Workbook.getWorkbook( excelFile );
+    Assert.assertEquals( 1, workbook.getSheets().length );
+    Assert.assertEquals( 4, workbook.getSheet( CREATED_SHEET_NAME ).getRows() );
   }
 
-  @AfterClass
-  public static void destroy() throws KettleException {
-    XLS_FILE.delete();
+  @Test
+  public void test_NoAppendNoTemplate() throws Exception {
+
+    ValueMetaInterface vmi = new ValueMetaString( "new_row" );
+
+    ExcelOutputData data = new ExcelOutputData();
+    data.fieldnrs = new int[] { 0 };
+    RowMeta rowMetaToBeReturned = Mockito.spy( new RowMeta() );
+    rowMetaToBeReturned.addValueMeta( 0, vmi );
+
+    data.previousMeta = rowMetaToBeReturned;
+    ExcelOutput excelOutput =
+      Mockito.spy( new ExcelOutput( helper.stepMeta, data, 0, helper.transMeta, helper.trans ) );
+    excelOutput.first = false;
+
+    Object[] row = { new Date() };
+    doReturn( row ).when( excelOutput ).getRow();
+    doReturn( rowMetaToBeReturned ).when( excelOutput ).getInputRowMeta();
+
+    String excelFileFullPath = buildFilePath();
+    File excelFile = new File( excelFileFullPath );
+    excelFile.deleteOnExit();
+    ExcelOutputMeta meta = createStepMeta( excelFileFullPath, null, false );
+
+    excelOutput.init( meta, data );
+    excelOutput.processRow( meta, data );
+    excelOutput.dispose( meta, data );
+    excelOutput.init( meta, data );
+    excelOutput.processRow( meta, data );
+    excelOutput.dispose( meta, data );
+    excelOutput.init( meta, data );
+    excelOutput.processRow( meta, data );
+    excelOutput.dispose( meta, data );
+    excelOutput.init( meta, data );
+    excelOutput.processRow( meta, data );
+    excelOutput.dispose( meta, data );
+
+    Workbook workbook = Workbook.getWorkbook( excelFile );
+    Assert.assertEquals( 1, workbook.getSheets().length );
+    Assert.assertEquals( 1, workbook.getSheet( CREATED_SHEET_NAME ).getRows() );
+  }
+
+  @Test
+  public void test_AppendTemplate() throws Exception {
+
+    ValueMetaInterface vmi = new ValueMetaString( "new_row" );
+
+    ExcelOutputData data = new ExcelOutputData();
+    data.fieldnrs = new int[] { 0 };
+    RowMeta rowMetaToBeReturned = Mockito.spy( new RowMeta() );
+    rowMetaToBeReturned.addValueMeta( 0, vmi );
+
+    data.previousMeta = rowMetaToBeReturned;
+    ExcelOutput excelOutput =
+      Mockito.spy( new ExcelOutput( helper.stepMeta, data, 0, helper.transMeta, helper.trans ) );
+    excelOutput.first = false;
+
+    Object[] row = { new Date() };
+    doReturn( row ).when( excelOutput ).getRow();
+    doReturn( rowMetaToBeReturned ).when( excelOutput ).getInputRowMeta();
+
+    String excelFileFullPath = buildFilePath();
+    File excelFile = new File( excelFileFullPath );
+    excelFile.deleteOnExit();
+    URL excelTemplateResource = this.getClass().getResource( "excel-template.xls" );
+    String templateFullPath = excelTemplateResource.getFile();
+    ExcelOutputMeta meta = createStepMeta( excelFileFullPath, templateFullPath, true );
+
+    excelOutput.init( meta, data );
+    excelOutput.processRow( meta, data );
+    excelOutput.dispose( meta, data );
+    excelOutput.init( meta, data );
+    excelOutput.processRow( meta, data );
+    excelOutput.dispose( meta, data );
+    excelOutput.init( meta, data );
+    excelOutput.processRow( meta, data );
+    excelOutput.dispose( meta, data );
+    excelOutput.init( meta, data );
+    excelOutput.processRow( meta, data );
+    excelOutput.dispose( meta, data );
+
+    Workbook workbook = Workbook.getWorkbook( excelFile );
+    Assert.assertEquals( 3, workbook.getSheets().length );
+    // The existing sheets should be intact
+    Assert.assertEquals( 4, workbook.getSheet( "SheetA" ).getRows() );
+    Assert.assertEquals( 5, workbook.getSheet( "SheetB" ).getRows() );
+    Assert.assertEquals( 4, workbook.getSheet( CREATED_SHEET_NAME ).getRows() );
+  }
+
+  @Test
+  public void test_NoAppendTemplate() throws Exception {
+
+    ValueMetaInterface vmi = new ValueMetaString( "new_row" );
+
+    ExcelOutputData data = new ExcelOutputData();
+    data.fieldnrs = new int[] { 0 };
+    RowMeta rowMetaToBeReturned = Mockito.spy( new RowMeta() );
+    rowMetaToBeReturned.addValueMeta( 0, vmi );
+
+    data.previousMeta = rowMetaToBeReturned;
+    ExcelOutput excelOutput =
+      Mockito.spy( new ExcelOutput( helper.stepMeta, data, 0, helper.transMeta, helper.trans ) );
+    excelOutput.first = false;
+
+    Object[] row = { new Date() };
+    doReturn( row ).when( excelOutput ).getRow();
+    doReturn( rowMetaToBeReturned ).when( excelOutput ).getInputRowMeta();
+
+    String excelFileFullPath = buildFilePath();
+    File excelFile = new File( excelFileFullPath );
+    excelFile.deleteOnExit();
+    URL excelTemplateResource = this.getClass().getResource( "excel-template.xls" );
+    String templateFullPath = excelTemplateResource.getFile();
+    ExcelOutputMeta meta = createStepMeta( excelFileFullPath, templateFullPath, false );
+
+    excelOutput.init( meta, data );
+    excelOutput.processRow( meta, data );
+    excelOutput.dispose( meta, data );
+    excelOutput.init( meta, data );
+    excelOutput.processRow( meta, data );
+    excelOutput.dispose( meta, data );
+    excelOutput.init( meta, data );
+    excelOutput.processRow( meta, data );
+    excelOutput.dispose( meta, data );
+    excelOutput.init( meta, data );
+    excelOutput.processRow( meta, data );
+    excelOutput.dispose( meta, data );
+
+    Workbook workbook = Workbook.getWorkbook( excelFile );
+    Assert.assertEquals( 3, workbook.getSheets().length );
+    // The existing sheets should be intact
+    Assert.assertEquals( 4, workbook.getSheet( "SheetA" ).getRows() );
+    Assert.assertEquals( 5, workbook.getSheet( "SheetB" ).getRows() );
+    Assert.assertEquals( 1, workbook.getSheet( CREATED_SHEET_NAME ).getRows() );
+  }
+
+  @Test
+  public void test_AppendTemplateWithSheet1() throws Exception {
+
+    ValueMetaInterface vmi = new ValueMetaString( "new_row" );
+
+    ExcelOutputData data = new ExcelOutputData();
+    data.fieldnrs = new int[] { 0 };
+    RowMeta rowMetaToBeReturned = Mockito.spy( new RowMeta() );
+    rowMetaToBeReturned.addValueMeta( 0, vmi );
+
+    data.previousMeta = rowMetaToBeReturned;
+    ExcelOutput excelOutput =
+      Mockito.spy( new ExcelOutput( helper.stepMeta, data, 0, helper.transMeta, helper.trans ) );
+    excelOutput.first = false;
+
+    Object[] row = { new Date() };
+    doReturn( row ).when( excelOutput ).getRow();
+    doReturn( rowMetaToBeReturned ).when( excelOutput ).getInputRowMeta();
+
+    String excelFileFullPath = buildFilePath();
+    File excelFile = new File( excelFileFullPath );
+    excelFile.deleteOnExit();
+    URL excelTemplateResource = this.getClass().getResource( "excel-template-withSheet1.xls" );
+    String templateFullPath = excelTemplateResource.getFile();
+    ExcelOutputMeta meta = createStepMeta( excelFileFullPath, templateFullPath, true );
+
+    excelOutput.init( meta, data );
+    excelOutput.processRow( meta, data );
+    excelOutput.dispose( meta, data );
+    excelOutput.init( meta, data );
+    excelOutput.processRow( meta, data );
+    excelOutput.dispose( meta, data );
+    excelOutput.init( meta, data );
+    excelOutput.processRow( meta, data );
+    excelOutput.dispose( meta, data );
+    excelOutput.init( meta, data );
+    excelOutput.processRow( meta, data );
+    excelOutput.dispose( meta, data );
+
+    Workbook workbook = Workbook.getWorkbook( excelFile );
+    Assert.assertEquals( 3, workbook.getSheets().length );
+    // The existing sheets should be intact
+    Assert.assertEquals( 4, workbook.getSheet( "SheetA" ).getRows() );
+    Assert.assertEquals( 5, workbook.getSheet( "SheetB" ).getRows() );
+    // There're already 4 rows
+    Assert.assertEquals( 8, workbook.getSheet( CREATED_SHEET_NAME ).getRows() );
+  }
+
+  @Test
+  public void test_NoAppendTemplateWithSheet1() throws Exception {
+
+    ValueMetaInterface vmi = new ValueMetaString( "new_row" );
+
+    ExcelOutputData data = new ExcelOutputData();
+    data.fieldnrs = new int[] { 0 };
+    RowMeta rowMetaToBeReturned = Mockito.spy( new RowMeta() );
+    rowMetaToBeReturned.addValueMeta( 0, vmi );
+
+    data.previousMeta = rowMetaToBeReturned;
+    ExcelOutput excelOutput =
+      Mockito.spy( new ExcelOutput( helper.stepMeta, data, 0, helper.transMeta, helper.trans ) );
+    excelOutput.first = false;
+
+    Object[] row = { new Date() };
+    doReturn( row ).when( excelOutput ).getRow();
+    doReturn( rowMetaToBeReturned ).when( excelOutput ).getInputRowMeta();
+
+    String excelFileFullPath = buildFilePath();
+    File excelFile = new File( excelFileFullPath );
+    excelFile.deleteOnExit();
+    URL excelTemplateResource = this.getClass().getResource( "excel-template-withSheet1.xls" );
+    String templateFullPath = excelTemplateResource.getFile();
+    ExcelOutputMeta meta = createStepMeta( excelFileFullPath, templateFullPath, false );
+
+    excelOutput.init( meta, data );
+    excelOutput.processRow( meta, data );
+    excelOutput.dispose( meta, data );
+    excelOutput.init( meta, data );
+    excelOutput.processRow( meta, data );
+    excelOutput.dispose( meta, data );
+    excelOutput.init( meta, data );
+    excelOutput.processRow( meta, data );
+    excelOutput.dispose( meta, data );
+    excelOutput.init( meta, data );
+    excelOutput.processRow( meta, data );
+    excelOutput.dispose( meta, data );
+
+    Workbook workbook = Workbook.getWorkbook( excelFile );
+    Assert.assertEquals( 3, workbook.getSheets().length );
+    // The existing sheets should be intact
+    Assert.assertEquals( 4, workbook.getSheet( "SheetA" ).getRows() );
+    Assert.assertEquals( 5, workbook.getSheet( "SheetB" ).getRows() );
+    // There're already 4 rows
+    Assert.assertEquals( 5, workbook.getSheet( CREATED_SHEET_NAME ).getRows() );
   }
 }
