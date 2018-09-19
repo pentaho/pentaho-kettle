@@ -277,7 +277,7 @@ public class ValueMetaBase implements ValueMetaInterface {
                 break;
               default:
                 throw new KettleException( toString()
-                  + " : Unable to de-serialize indexe storage type from XML for data type " + getType() );
+                  + " : Unable to de-serialize index storage type from XML for data type " + getType() );
             }
           }
         }
@@ -733,7 +733,7 @@ public class ValueMetaBase implements ValueMetaInterface {
     this.caseInsensitive = caseInsensitive;
   }
 
-   /**
+  /**
    * @return the collatorDisabled
    */
   @Override
@@ -1367,7 +1367,17 @@ public class ValueMetaBase implements ValueMetaInterface {
               + ( parsePosition.getIndex() + 1 ) + " for value [" + string + "]" );
         }
       }
+
+      // PDI-17366: Cannot simply cast a number to a BigDecimal,
+      //            If the Number is not a BigDecimal.
+      //
+      if ( number instanceof Double ) {
+        return BigDecimal.valueOf( number.doubleValue() );
+      } else if ( number instanceof Long ) {
+        return BigDecimal.valueOf( number.longValue() );
+      }
       return (BigDecimal) number;
+
     } catch ( Exception e ) {
       // We added this workaround for PDI-1824
       //
