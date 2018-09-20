@@ -730,25 +730,8 @@ public class GetXMLData extends BaseStep implements StepInterface {
         // Get field
         GetXMLDataField xmlDataField = meta.getInputFields()[i];
         // Get the Path to look for
-        String XPathValue = xmlDataField.getXPath();
-        XPathValue = environmentSubstitute( XPathValue );
-        if ( xmlDataField.getElementType() == GetXMLDataField.ELEMENT_TYPE_ATTRIBUT ) {
-          // We have an attribute
-          // do we need to add leading @?
-          // Only put @ to the last element in path, not in front at all
-          int last = XPathValue.lastIndexOf( GetXMLDataMeta.N0DE_SEPARATOR );
-          if ( last > -1 ) {
-            last++;
-            String attribut = XPathValue.substring( last, XPathValue.length() );
-            if ( !attribut.startsWith( GetXMLDataMeta.AT ) ) {
-              XPathValue = XPathValue.substring( 0, last ) + GetXMLDataMeta.AT + attribut;
-            }
-          } else {
-            if ( !XPathValue.startsWith( GetXMLDataMeta.AT ) ) {
-              XPathValue = GetXMLDataMeta.AT + XPathValue;
-            }
-          }
-        }
+        String XPathValue = xmlDataField.getResolvedXPath();
+
         if ( meta.isuseToken() ) {
           // See if user use Token inside path field
           // The syntax is : @_Fieldname-
@@ -935,6 +918,33 @@ public class GetXMLData extends BaseStep implements StepInterface {
     if ( super.init( smi, sdi ) ) {
       data.rownr = 1L;
       data.nrInputFields = meta.getInputFields().length;
+
+      // correct attribute path if needed
+      // do it once
+      for ( int i = 0; i < data.nrInputFields; i++ ) {
+        GetXMLDataField xmlDataField = meta.getInputFields()[i];
+        // Resolve variable substitution
+        String XPathValue = environmentSubstitute( xmlDataField.getXPath() );
+        if ( xmlDataField.getElementType() == GetXMLDataField.ELEMENT_TYPE_ATTRIBUT ) {
+          // We have an attribute
+          // do we need to add leading @?
+          // Only put @ to the last element in path, not in front at all
+          int last = XPathValue.lastIndexOf( GetXMLDataMeta.N0DE_SEPARATOR );
+          if ( last > -1 ) {
+            last++;
+            String attribut = XPathValue.substring( last, XPathValue.length() );
+            if ( !attribut.startsWith( GetXMLDataMeta.AT ) ) {
+              XPathValue = XPathValue.substring( 0, last ) + GetXMLDataMeta.AT + attribut;
+            }
+          } else {
+            if ( !XPathValue.startsWith( GetXMLDataMeta.AT ) ) {
+              XPathValue = GetXMLDataMeta.AT + XPathValue;
+            }
+          }
+        }
+        xmlDataField.setResolvedXPath( XPathValue );
+      }
+
       data.PathValue = environmentSubstitute( meta.getLoopXPath() );
       if ( Utils.isEmpty( data.PathValue ) ) {
         logError( BaseMessages.getString( PKG, "GetXMLData.Error.EmptyPath" ) );
