@@ -23,23 +23,42 @@
 package org.pentaho.di.job.entries.setvariables;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import static org.mockito.Mockito.mock;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
 import java.io.RandomAccessFile;
+import java.nio.charset.StandardCharsets;
+import java.util.List;
 
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.Result;
+import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.logging.KettleLogStore;
+import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.job.Job;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entry.JobEntryCopy;
+import org.pentaho.di.repository.Repository;
+import org.pentaho.metastore.api.IMetaStore;
+import org.w3c.dom.Document;
+import org.w3c.dom.Node;
+import org.xml.sax.SAXException;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 
 public class JobEntrySetVariablesTest {
   private Job job;
@@ -164,4 +183,54 @@ public class JobEntrySetVariablesTest {
     assertEquals( "static", parentJob.getVariable( "staticProperty" ) );
     assertEquals( "", parentJob.getVariable( "dynamicProperty" ) );
   }
+
+  @Test
+  public void testJobEntrySetVariablesExecute_VARIABLE_TYPE_JVM_NullVariable() throws Exception {
+    List<DatabaseMeta> databases = mock( List.class );
+    List<SlaveServer> slaveServers = mock( List.class );
+    Repository repository = mock( Repository.class );
+    IMetaStore metaStore = mock( IMetaStore.class );
+    entry.loadXML( getEntryNode( "nullVariable", null ), databases, slaveServers, repository, metaStore );
+    Result result = entry.execute( new Result(), 0 );
+    assertTrue( "Result should be true", result.getResult() );
+    assertNull( System.getProperty( "nullVariable" )  );
+  }
+
+  @Test
+  public void testJobEntrySetVariablesExecute_VARIABLE_TYPE_JVM_VariableNotNull() throws Exception {
+    List<DatabaseMeta> databases = mock( List.class );
+    List<SlaveServer> slaveServers = mock( List.class );
+    Repository repository = mock( Repository.class );
+    IMetaStore metaStore = mock( IMetaStore.class );
+    entry.loadXML( getEntryNode( "variableNotNull", "someValue" ), databases, slaveServers, repository, metaStore );
+    assertNull( System.getProperty( "variableNotNull" )  );
+    Result result = entry.execute( new Result(), 0 );
+    assertTrue( "Result should be true", result.getResult() );
+    assertEquals( "someValue", System.getProperty( "variableNotNull" ) );
+  }
+
+  //prepare xml for use
+  public Node getEntryNode( String variable_name, String variable_value )
+    throws ParserConfigurationException, SAXException, IOException {
+    StringBuilder sb = new StringBuilder();
+    sb.append( XMLHandler.openTag( "job" ) );
+    sb.append( "      " ).append( XMLHandler.openTag( "fields" ) );
+    sb.append( "      " ).append( XMLHandler.openTag( "field" ) );
+    sb.append( "      " ).append( XMLHandler.addTagValue( "variable_name", variable_name ) );
+    if ( variable_value != null ) {
+      sb.append( "      " ).append( XMLHandler.addTagValue( "variable_value", variable_value ) );
+    }
+    sb.append( "      " ).append( XMLHandler.closeTag( "field" ) );
+    sb.append( "      " ).append( XMLHandler.closeTag( "fields" ) );
+    sb.append( XMLHandler.closeTag( "job" ) );
+
+    InputStream stream = new ByteArrayInputStream( sb.toString().getBytes( StandardCharsets.UTF_8 ) );
+    DocumentBuilder db;
+    Document doc;
+    db = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+    doc = db.parse( stream );
+    Node entryNode = doc.getFirstChild();
+    return entryNode;
+  }
+
 }
