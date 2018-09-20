@@ -90,5 +90,9 @@
       </pluginRepositories>
     </profile>
   </profiles>
+  
+  <activeProfiles>
+    <activeProfile>unit-test-output-redirect</activeProfile>
+  </activeProfiles>
 
 </settings>
