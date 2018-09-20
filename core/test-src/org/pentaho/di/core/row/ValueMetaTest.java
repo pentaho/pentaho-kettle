@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -173,6 +173,307 @@ public class ValueMetaTest extends TestCase {
     assertEquals( originalValue, x );
   }
 
+  public void testBigNumberToStringToBigNumberWithByteLimitValues() throws Exception {
+    ValueMetaInterface numValueMeta = new ValueMeta( "i", ValueMetaInterface.TYPE_BIGNUMBER );
+    numValueMeta.setDecimalSymbol( "." );
+    numValueMeta.setGroupingSymbol( "," );
+
+    String[] strings = new String[]{ "-128", "127" };
+    BigDecimal[] values = new BigDecimal[]{ new BigDecimal( "-128" ), new BigDecimal( "127" ) };
+
+    for ( int i = 0; i < values.length; i++ ) {
+      ValueMetaInterface strValueMeta = new ValueMeta( "str", ValueMetaInterface.TYPE_STRING );
+      strValueMeta.setConversionMetadata( numValueMeta );
+
+      BigDecimal stringToBigNumber = (BigDecimal) strValueMeta.convertDataUsingConversionMetaData( strings[i] );
+
+      assertEquals( values[i], stringToBigNumber );
+    }
+  }
+  public void testByteToStringToBigNumberWithByteLimitValues() throws Exception {
+    ValueMetaInterface numValueMeta = new ValueMeta( "i", ValueMetaInterface.TYPE_BIGNUMBER );
+    numValueMeta.setDecimalSymbol( "." );
+    numValueMeta.setGroupingSymbol( "," );
+    ( (ValueMeta) numValueMeta ).setBigNumberFormatting( false );
+
+    String[] input = new String[]{ "-128", "127" };
+    String[] strings = new String[]{ "-128.0", "127.0" };
+    BigDecimal[] values = new BigDecimal[]{ new BigDecimal( "-128" ), new BigDecimal( "127" ) };
+
+    for ( int i = 0; i < values.length; i++ ) {
+      String bigNumberToString = numValueMeta.getString( values[i] );
+
+      assertEquals( strings[i], bigNumberToString );
+
+      ValueMetaInterface strValueMeta = new ValueMeta( "str", ValueMetaInterface.TYPE_STRING );
+      strValueMeta.setConversionMetadata( numValueMeta );
+
+      BigDecimal stringToBigNumber = (BigDecimal) strValueMeta.convertDataUsingConversionMetaData( input[i] );
+
+      assertEquals( values[i], stringToBigNumber );
+    }
+  }
+  public void testBigNumberToStringToBigNumberWithShortLimitValues() throws Exception {
+    ValueMetaInterface numValueMeta = new ValueMeta( "i", ValueMetaInterface.TYPE_BIGNUMBER );
+    numValueMeta.setDecimalSymbol( "." );
+    numValueMeta.setGroupingSymbol( "," );
+
+    String[] strings = new String[]{ "-32768", "32767" };
+    BigDecimal[] values = new BigDecimal[]{ new BigDecimal( "-32768" ), new BigDecimal( "32767" ) };
+
+    for ( int i = 0; i < values.length; i++ ) {
+      ValueMetaInterface strValueMeta = new ValueMeta( "str", ValueMetaInterface.TYPE_STRING );
+      strValueMeta.setConversionMetadata( numValueMeta );
+
+      BigDecimal stringToBigNumber = (BigDecimal) strValueMeta.convertDataUsingConversionMetaData( strings[i] );
+
+      assertEquals( values[i], stringToBigNumber );
+    }
+  }
+  public void testShortToStringToBigNumberWithShortLimitValues() throws Exception {
+    ValueMetaInterface numValueMeta = new ValueMeta( "i", ValueMetaInterface.TYPE_BIGNUMBER );
+    numValueMeta.setDecimalSymbol( "." );
+    numValueMeta.setGroupingSymbol( "," );
+    ( (ValueMeta) numValueMeta ).setBigNumberFormatting( false );
+
+    String[] inputs = new String[]{ "-32768", "32767" };
+    String[] strings = new String[]{ "-32768.0", "32767.0" };
+    BigDecimal[] values = new BigDecimal[]{ new BigDecimal( "-32768" ), new BigDecimal( "32767" ) };
+
+    for ( int i = 0; i < values.length; i++ ) {
+      String bigNumberToString = numValueMeta.getString( values[i] );
+
+      assertEquals( strings[i], bigNumberToString );
+
+      ValueMetaInterface strValueMeta = new ValueMeta( "str", ValueMetaInterface.TYPE_STRING );
+      strValueMeta.setConversionMetadata( numValueMeta );
+
+      BigDecimal stringToBigNumber = (BigDecimal) strValueMeta.convertDataUsingConversionMetaData( inputs[i] );
+
+      assertEquals( values[i], stringToBigNumber );
+    }
+  }
+  public void testBigNumberToStringToBigNumberWithIntLimitValues() throws Exception {
+    ValueMetaInterface numValueMeta = new ValueMeta( "i", ValueMetaInterface.TYPE_BIGNUMBER );
+    numValueMeta.setDecimalSymbol( "." );
+    numValueMeta.setGroupingSymbol( "," );
+
+    String[] strings = new String[]{ "-2147483648", "2147483648" };
+    BigDecimal[] values = new BigDecimal[]{ new BigDecimal( "-2147483648" ), new BigDecimal( "2147483648" ) };
+
+    for ( int i = 0; i < values.length; i++ ) {
+      ValueMetaInterface strValueMeta = new ValueMeta( "str", ValueMetaInterface.TYPE_STRING );
+      strValueMeta.setConversionMetadata( numValueMeta );
+
+      BigDecimal stringToBigNumber = (BigDecimal) strValueMeta.convertDataUsingConversionMetaData( strings[i] );
+
+      assertEquals( values[i], stringToBigNumber );
+    }
+  }
+
+  public void testIntToStringToBigNumberWithIntLimitValues() throws Exception {
+    ValueMetaInterface numValueMeta = new ValueMeta( "i", ValueMetaInterface.TYPE_BIGNUMBER );
+    numValueMeta.setDecimalSymbol( "." );
+    numValueMeta.setGroupingSymbol( "," );
+    ( (ValueMeta) numValueMeta ).setBigNumberFormatting( false );
+
+    String[] inputs = new String[]{ "-2147483648", "2147483648" };
+    String[] strings = new String[]{ "-2147483648.0", "2147483648.0" };
+    BigDecimal[] values = new BigDecimal[]{ new BigDecimal( "-2147483648" ), new BigDecimal( "2147483648" ) };
+
+    for ( int i = 0; i < values.length; i++ ) {
+      String bigNumberToString = numValueMeta.getString( values[i] );
+
+      assertEquals( strings[i], bigNumberToString );
+
+      ValueMetaInterface strValueMeta = new ValueMeta( "str", ValueMetaInterface.TYPE_STRING );
+      strValueMeta.setConversionMetadata( numValueMeta );
+
+      BigDecimal stringToBigNumber = (BigDecimal) strValueMeta.convertDataUsingConversionMetaData( inputs[i] );
+
+      assertEquals( values[i], stringToBigNumber );
+    }
+  }
+
+  public void testBigNumberToStringToBigNumberWithLongLimitValues() throws Exception {
+    ValueMetaInterface numValueMeta = new ValueMeta( "i", ValueMetaInterface.TYPE_BIGNUMBER );
+    numValueMeta.setDecimalSymbol( "." );
+    numValueMeta.setGroupingSymbol( "," );
+
+    String[] strings = new String[]{ "-9223372036854775808", "9223372036854775808" };
+    BigDecimal[] values = new BigDecimal[]{ new BigDecimal( "-9223372036854775808" ), new BigDecimal( "9223372036854775808" ) };
+
+    for ( int i = 0; i < values.length; i++ ) {
+      ValueMetaInterface strValueMeta = new ValueMeta( "str", ValueMetaInterface.TYPE_STRING );
+      strValueMeta.setConversionMetadata( numValueMeta );
+
+      BigDecimal stringToBigNumber = (BigDecimal) strValueMeta.convertDataUsingConversionMetaData( strings[i] );
+
+      assertEquals( values[i], stringToBigNumber );
+    }
+  }
+  public void testLongToStringToBigNumberWithLongLimitValues() throws Exception {
+    ValueMetaInterface numValueMeta = new ValueMeta( "i", ValueMetaInterface.TYPE_BIGNUMBER );
+    numValueMeta.setDecimalSymbol( "." );
+    numValueMeta.setGroupingSymbol( "," );
+    ( (ValueMeta) numValueMeta ).setBigNumberFormatting( false );
+
+    String[] inputs = new String[]{ "-9223372036854775808", "9223372036854775807" };
+    String[] strings = new String[]{ "-9223372036854775808.0", "9223372036854775807.0" };
+    BigDecimal[] values = new BigDecimal[]{ new BigDecimal( "-9223372036854775808" ), new BigDecimal( "9223372036854775807" ) };
+
+    for ( int i = 0; i < values.length; i++ ) {
+      String bigNumberToString = numValueMeta.getString( values[i] );
+
+      assertEquals( strings[i], bigNumberToString );
+
+      ValueMetaInterface strValueMeta = new ValueMeta( "str", ValueMetaInterface.TYPE_STRING );
+      strValueMeta.setConversionMetadata( numValueMeta );
+
+      BigDecimal stringToBigNumber = (BigDecimal) strValueMeta.convertDataUsingConversionMetaData( inputs[i] );
+
+      assertEquals( values[i], stringToBigNumber );
+    }
+  }
+
+  public void testBigNumberToStringToBigNumberWithFloatLimitValues() throws Exception {
+    ValueMetaInterface numValueMeta = new ValueMeta( "i", ValueMetaInterface.TYPE_BIGNUMBER );
+    numValueMeta.setDecimalSymbol( "." );
+    numValueMeta.setGroupingSymbol( "," );
+
+    String[] strings = new String[]{ "-1.4E-45", "3.4028235E38" };
+    BigDecimal[] values = new BigDecimal[]{ new BigDecimal( "-1.4E-45" ), new BigDecimal( "3.4028235E38" ) };
+
+    for ( int i = 0; i < values.length; i++ ) {
+      ValueMetaInterface strValueMeta = new ValueMeta( "str", ValueMetaInterface.TYPE_STRING );
+      strValueMeta.setConversionMetadata( numValueMeta );
+
+      BigDecimal stringToBigNumber = (BigDecimal) strValueMeta.convertDataUsingConversionMetaData( strings[i] );
+
+      assertEquals( values[i], stringToBigNumber );
+    }
+  }
+  public void testFloatToStringToBigNumberWithFloatLimitValues() throws Exception {
+    ValueMetaInterface numValueMeta = new ValueMeta( "i", ValueMetaInterface.TYPE_BIGNUMBER );
+    numValueMeta.setDecimalSymbol( "." );
+    numValueMeta.setGroupingSymbol( "," );
+    ( (ValueMeta) numValueMeta ).setBigNumberFormatting( false );
+
+    String[] strings = new String[]{ "-0.0000000000000000000000000000000000000000000014", "340282350000000000000000000000000000000.0" };
+    BigDecimal[] values = new BigDecimal[]{ new BigDecimal( "-0.0000000000000000000000000000000000000000000014" ), new BigDecimal( "340282350000000000000000000000000000000.0" ) };
+
+    for ( int i = 0; i < values.length; i++ ) {
+
+      ValueMetaInterface strValueMeta = new ValueMeta( "str", ValueMetaInterface.TYPE_STRING );
+      strValueMeta.setConversionMetadata( numValueMeta );
+
+      BigDecimal stringToBigNumber = (BigDecimal) strValueMeta.convertDataUsingConversionMetaData( strings[i] );
+
+      assertEquals( values[i], stringToBigNumber );
+    }
+  }
+  public void testBigNumberToStringToBigNumberWithDoubleLimitValues() throws Exception {
+    ValueMetaInterface numValueMeta = new ValueMeta( "i", ValueMetaInterface.TYPE_BIGNUMBER );
+    numValueMeta.setDecimalSymbol( "." );
+    numValueMeta.setGroupingSymbol( "," );
+
+    String[] strings = new String[]{ "4.9E-324", "1.7976931348623157E308" };
+    BigDecimal[] values = new BigDecimal[]{ new BigDecimal( "4.9E-324" ), new BigDecimal( "1.7976931348623157E308" ) };
+
+    for ( int i = 0; i < values.length; i++ ) {
+      ValueMetaInterface strValueMeta = new ValueMeta( "str", ValueMetaInterface.TYPE_STRING );
+      strValueMeta.setConversionMetadata( numValueMeta );
+
+      BigDecimal stringToBigNumber = (BigDecimal) strValueMeta.convertDataUsingConversionMetaData( strings[i] );
+
+      assertEquals( values[i], stringToBigNumber );
+    }
+  }
+  public void testDoubleToStringToBigNumberWithDoubleLimitValues() throws Exception {
+    ValueMetaInterface numValueMeta = new ValueMeta( "i", ValueMetaInterface.TYPE_BIGNUMBER );
+    numValueMeta.setDecimalSymbol( "." );
+    numValueMeta.setGroupingSymbol( "," );
+    ( (ValueMeta) numValueMeta ).setBigNumberFormatting( false );
+
+    String[] strings = new String[]{ "4.9E-324", "1.7976931348623157E308" };
+    BigDecimal[] values = new BigDecimal[]{ new BigDecimal( "4.9E-324" ), new BigDecimal( "1.7976931348623157E308" ) };
+
+    for ( int i = 0; i < values.length; i++ ) {
+      ValueMetaInterface strValueMeta = new ValueMeta( "str", ValueMetaInterface.TYPE_STRING );
+      strValueMeta.setConversionMetadata( numValueMeta );
+
+      BigDecimal stringToBigNumber = (BigDecimal) strValueMeta.convertDataUsingConversionMetaData( strings[i] );
+
+      assertEquals( values[i], stringToBigNumber );
+    }
+  }
+  public void testBigNumberToStringToBigNumberWithNumberCloseToZero() throws Exception {
+    ValueMetaInterface numValueMeta = new ValueMeta( "i", ValueMetaInterface.TYPE_BIGNUMBER );
+    numValueMeta.setDecimalSymbol( "," );
+    numValueMeta.setGroupingSymbol( "." );
+
+    String[] strings = new String[]{  "0,00000000000000000001", "-0,00000000000000000001" };
+    BigDecimal[] values = new BigDecimal[]{ new BigDecimal( "0.00000000000000000001" ), new BigDecimal( "-0.00000000000000000001" ) };
+
+    for ( int i = 0; i < values.length; i++ ) {
+      String bigNumberToString = numValueMeta.getString( values[i] );
+
+      assertEquals( strings[i], bigNumberToString );
+
+      ValueMetaInterface strValueMeta = new ValueMeta( "str", ValueMetaInterface.TYPE_STRING );
+      strValueMeta.setConversionMetadata( numValueMeta );
+
+      BigDecimal stringToBigNumber = (BigDecimal) strValueMeta.convertDataUsingConversionMetaData( strings[i] );
+
+      assertEquals( values[i], stringToBigNumber );
+    }
+  }
+
+  public void testToStringToBigNumberWithNumberCloseToZero() throws Exception {
+    ValueMetaInterface numValueMeta = new ValueMeta( "i", ValueMetaInterface.TYPE_BIGNUMBER );
+    numValueMeta.setDecimalSymbol( "," );
+    numValueMeta.setGroupingSymbol( "." );
+    ( (ValueMeta) numValueMeta ).setBigNumberFormatting( false );
+
+    String[] strings = new String[]{  "0,00000000000000000001", "-0,00000000000000000001" };
+    BigDecimal[] values = new BigDecimal[]{ new BigDecimal( "0.00000000000000000001" ), new BigDecimal( "-0.00000000000000000001" ) };
+
+    for ( int i = 0; i < values.length; i++ ) {
+      String bigNumberToString = numValueMeta.getString( values[i] );
+
+      assertEquals( strings[i], bigNumberToString );
+
+      ValueMetaInterface strValueMeta = new ValueMeta( "str", ValueMetaInterface.TYPE_STRING );
+      strValueMeta.setConversionMetadata( numValueMeta );
+
+      BigDecimal stringToBigNumber = (BigDecimal) strValueMeta.convertDataUsingConversionMetaData( strings[i] );
+
+      assertEquals( values[i].doubleValue(), stringToBigNumber.doubleValue(), 0 );
+    }
+  }
+
+  public void testPDI17366Conversion() throws Exception {
+    ValueMetaInterface numValueMeta = new ValueMeta( "i", ValueMetaInterface.TYPE_BIGNUMBER );
+    numValueMeta.setDecimalSymbol( "," );
+    numValueMeta.setGroupingSymbol( "." );
+    ( (ValueMeta) numValueMeta ).setBigNumberFormatting( false );
+
+    String[] strings = new String[]{  "67789,135" };
+    BigDecimal[] values = new BigDecimal[]{ new BigDecimal( "67789.135" ) };
+
+    for ( int i = 0; i < values.length; i++ ) {
+      String bigNumberToString = numValueMeta.getString( values[i] );
+
+      assertEquals( strings[i], bigNumberToString );
+
+      ValueMetaInterface strValueMeta = new ValueMeta( "str", ValueMetaInterface.TYPE_STRING );
+      strValueMeta.setConversionMetadata( numValueMeta );
+
+      BigDecimal stringToBigNumber = (BigDecimal) strValueMeta.convertDataUsingConversionMetaData( strings[i] );
+
+      assertEquals( values[i], stringToBigNumber );
+    }
+  }
   public void testDateToStringToDate() throws Exception {
     TimeZone.setDefault( TimeZone.getTimeZone( "CET" ) );
 
