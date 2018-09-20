@@ -268,14 +268,21 @@ public class JobExecutionConfiguration implements ExecutionConfiguration {
       for ( int i = 0; i < vars.size(); i++ ) {
         String varname = vars.get( i );
         if ( !varname.startsWith( Const.INTERNAL_VARIABLE_PREFIX ) ) {
-          // add a variable only if it's defined within this configuration or it is a system property
-          if ( variables.containsKey( varname ) || sp.getProperty( varname ) != null ) {
-            newVariables.put( varname, Const.NVL( variables.get( varname ), sp.getProperty( varname, "" ) ) );
-          }
+          // add all new non-internal variables to newVariablesMap
+          newVariables.put( varname, Const.NVL( variables.get( varname ), sp.getProperty( varname, "" ) ) );
         }
       }
       // variables.clear();
       variables.putAll( newVariables );
+    }
+
+    // Also add the internal job variables if these are set...
+    //
+    for ( String variableName : Const.INTERNAL_JOB_VARIABLES ) {
+      String value = jobMeta.getVariable( variableName );
+      if ( !Utils.isEmpty( value ) ) {
+        variables.put( variableName, value );
+      }
     }
   }
 
