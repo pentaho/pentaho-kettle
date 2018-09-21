@@ -31,12 +31,14 @@ import org.pentaho.di.trans.streaming.common.BlockingQueueStreamSource;
 import javax.jms.JMSConsumer;
 import javax.jms.JMSRuntimeException;
 import javax.jms.Message;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import static com.google.common.collect.ImmutableList.of;
 import static io.reactivex.schedulers.Schedulers.io;
 import static java.util.Collections.singletonList;
+import static java.util.Optional.ofNullable;
 import static org.pentaho.di.i18n.BaseMessages.getString;
 import static org.pentaho.di.trans.step.jms.JmsConstants.PKG;
 
@@ -60,7 +62,9 @@ public class JmsStreamSource extends BlockingQueueStreamSource<List<Object>> {
       .create( receiveLoop() )  // jms loop
       .subscribeOn( io() )   // subscribe and observe on new io threads
       .observeOn( io() )
-      .doOnNext( message -> acceptRows( singletonList( of( message, jmsDelegate.destinationName ) ) ) )
+      .doOnNext( message -> acceptRows( singletonList( Arrays.asList(
+        ( (Optional) message ).orElse( null ), // unwrap message - RX doesn't allow nulls
+         jmsDelegate.destinationName ) ) ) )
       .doOnComplete( this::close )
       .doOnError( this::error )
       .publish() // publish/connect will "start" the receive loop
@@ -77,7 +81,7 @@ public class JmsStreamSource extends BlockingQueueStreamSource<List<Object>> {
       try {
         while ( ( message = consumer.receive( receiverTimeout ) ) != null ) {
           streamStep.logDebug( message.toString() );
-          emitter.onNext( message.getBody( Object.class ) );
+          emitter.onNext( ofNullable( message.getBody( Object.class ) ) ); //wrap message - RX doesn't allow nulls
         }
       } catch ( JMSRuntimeException jmsException ) {
         emitter.onError( jmsException );
