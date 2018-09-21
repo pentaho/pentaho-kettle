@@ -261,6 +261,8 @@ public class PurRepositoryStressTest {
     when( mockRepo.getFileAtVersion( anyString(), eq( "v3" ) ) ).thenReturn( folderLoad2 );
 
     mockStatic( DBCache.class );
+
+    purRepository.loadAndCacheSharedObjects( true );
   }
 
   public void testLocksSaveRepositoryDirectory() throws Exception {
