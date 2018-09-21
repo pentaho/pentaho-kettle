@@ -514,6 +514,8 @@ jobGroups:
        root            :  shims
        #parallelize     :  true
        versionProperty :  pentaho-hadoop-shims.version
+       archivable      :  true
+       artifactsArchivePattern: ${BIG_DATA_HADOOP_SHIMS_EE_PATTERN}
        atomicScmCheckout: true
 
   3100:

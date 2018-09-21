@@ -155,7 +155,8 @@ GEO_PLUGIN_PATTERN: '**/assemblies/pentaho-geo-ee/target/pentaho-geo-ee-*.zip'
 PDI_MONITORING_PLUGIN_PATTERN: '**/assemblies/pdi-monitoring-plugin-mib/target/pentaho-monitoring-plugin-mib-assembly-*.zip'
 PIR_PLUGIN_PATTERN: '**/assemblies/plugin/target/pir-plugin-ee-*.zip'
 PLATFORM_SERVER_ASSEMBLY_EE_PATTERN: '**/{assemblies/pentaho-server-ee/target/pentaho-server-ee-*.zip,assemblies/pentaho-server-manual-ee/target/pentaho-server-manual-ee-*.zip}'
-BIG_DATA_PLUGIN_ASSEMBLY_EE_PATTERN: '**/{assemblies/big-data-ee-package/target/pentaho-big-data-ee-package-*.zip,shims/**/assemblies/*-ee-shim/target/pentaho-big-data-ee-*-package-*.zip}'
+BIG_DATA_HADOOP_SHIMS_EE_PATTERN: '**/shims/**/assemblies/*-ee-shim/target/pentaho-big-data-ee-*-package-*.zip'
+BIG_DATA_PLUGIN_ASSEMBLY_EE_PATTERN: '**/assemblies/big-data-ee-package/target/pentaho-big-data-ee-package-*.zip'
 FOUNDRY_WORKERS_EE_PATTERN: '**/{assembly/target/pentaho-workernodes-*.zip,assembly/target/pentaho-workernodes-*.tar.gz}'
 
 # CE artifacts
