@@ -41,6 +41,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import static java.util.Optional.ofNullable;
+
 public class JmsProducer extends BaseStep implements StepInterface {
 
   private JmsProducerMeta meta;
@@ -105,7 +107,9 @@ public class JmsProducer extends BaseStep implements StepInterface {
     }
 
     // send row to JMS
-    producer.send( destination, row[ messageIndex ].toString() );
+    producer.send( destination, ofNullable( row[ messageIndex ] )
+      .map( m -> m.toString() )
+      .orElse( null ) );
 
     // send to next steps
     putRow( getInputRowMeta(), row );
