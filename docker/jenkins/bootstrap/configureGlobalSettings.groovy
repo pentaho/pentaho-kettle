@@ -33,7 +33,8 @@ import java.util.logging.Logger
 Logger logger = Logger.getLogger('configureGlobalSettings')
 
 def jenkins = Jenkins.get()
-def masterLabels = 'non-master'
+def env = System.getenv()
+def masterLabels = env['MASTER_LABELS']?:'non-master'
 /*
     Disable all JNLP protocols except for JNLP4.  JNLP4 is the most secure agent
     protocol because it is using standard TLS.

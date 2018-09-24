@@ -7,6 +7,11 @@
  *
  */
 
+
+import hudson.model.Computer
+import hudson.model.User
+import hudson.security.AuthorizationStrategy
+import hudson.security.SecurityRealm
 import jenkins.model.Jenkins
 import hudson.security.GlobalMatrixAuthorizationStrategy
 import hudson.security.HudsonPrivateSecurityRealm
@@ -34,18 +39,25 @@ if (!jenkins.isQuietingDown()) {
     def credentials = getCredentials()
 
     // configure default admin user
-    jenkins.setSecurityRealm(new HudsonPrivateSecurityRealm(true, false, null))
-    jenkins.setAuthorizationStrategy(new GlobalMatrixAuthorizationStrategy())
+    SecurityRealm securityRealm = new HudsonPrivateSecurityRealm(true, false, null)
+    AuthorizationStrategy authorizationStrategy = new GlobalMatrixAuthorizationStrategy()
 
-    def user = jenkins.getSecurityRealm().createAccount(
-        credentials['JENKINS_USER'],
-        credentials['JENKINS_PASS']
+    User user = securityRealm.createAccount(
+        credentials.JENKINS_USER as String,
+        credentials.JENKINS_PASS as String
     )
+
+    authorizationStrategy.add(Jenkins.ADMINISTER, credentials.JENKINS_USER as String)
+    authorizationStrategy.add(Jenkins.READ, Jenkins.ANONYMOUS.name)
+
+    // permissions to allow agents to connect themselves without authentication
+    authorizationStrategy.add(Computer.CREATE, Jenkins.ANONYMOUS.name)
+    authorizationStrategy.add(Computer.CONNECT, Jenkins.ANONYMOUS.name)
+
+    jenkins.setSecurityRealm(securityRealm)
+    jenkins.setAuthorizationStrategy(authorizationStrategy)
+
     user.save()
-
-    jenkins.getAuthorizationStrategy().add(Jenkins.ADMINISTER, credentials['JENKINS_USER'])
-    jenkins.getAuthorizationStrategy().add(Jenkins.READ, Jenkins.ANONYMOUS.name)
-
     jenkins.save()
     FileUtils.writeStringToFile(f, jenkins.VERSION)
   } else {
