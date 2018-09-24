@@ -1480,8 +1480,8 @@ public class JsonInputDialog extends BaseStepDialog implements StepDialogInterfa
       // Call new get fields dialog
       if ( wFilenameList.getItemCount() > 0 ) {
         String filename = transMeta.environmentSubstitute( wFilenameList.getItem( 0 )[ 0 ] );
-        GetFieldsDialogOperation getFieldsDialogOperation = new GetFieldsDialogOperation( shell, stepMeta, 540, 588,
-                filename );
+        GetFieldsDialogOperation getFieldsDialogOperation = new GetFieldsDialogOperation( shell, 540, 588, filename,
+          BaseMessages.getString( PKG, "JsonInput.GetFields.Dialog.Title" ) );
         ExtensionPointHandler.callExtensionPoint( null, KettleExtensionPoint.GetFieldsExtension.id,
                 getFieldsDialogOperation );
 
