@@ -107,11 +107,11 @@ public class JsonSampler {
    * @return The sampled Node
    * @throws IOException
    */
-  public Node sample( String file ) throws IOException {
+  public Node sample( String file ) throws IOException, KettleFileException {
     try {
       return sample( KettleVFS.getInputStream( file ) );
     } catch ( KettleFileException kfe ) {
-      return null;
+      throw kfe;
     }
   }
 

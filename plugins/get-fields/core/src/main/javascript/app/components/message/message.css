@@ -50,7 +50,11 @@ message .message .title {
   font-family: OpenSansLight;
 }
 
+message .message .title.messageNoSpinner {
+  margin-bottom: 24px;
+}
+
 message .message .messageTxt {
-  line-height: 28px;
+  line-height: 24px;
   font-size: 14px;
 }

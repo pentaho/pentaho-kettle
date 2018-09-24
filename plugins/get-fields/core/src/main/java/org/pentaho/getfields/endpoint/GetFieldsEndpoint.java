@@ -22,6 +22,7 @@
 
 package org.pentaho.getfields.endpoint;
 
+import org.pentaho.di.core.exception.KettleFileException;
 import org.pentaho.getfields.types.json.JsonSampler;
 import org.pentaho.getfields.types.json.node.Node;
 
@@ -57,8 +58,10 @@ public class GetFieldsEndpoint {
     Node node = null;
     try {
       node = jsonSampler.sample( path );
-    } catch ( IOException e ) {
+    } catch ( KettleFileException e ) { // Cannot find file OR no permissions
       return Response.status( Response.Status.NOT_FOUND ).build();
+    } catch ( IOException e ) { // Invalid JSON structure
+      return Response.status( Response.Status.NOT_ACCEPTABLE ).build();
     }
 
     return Response.ok( node ).build();

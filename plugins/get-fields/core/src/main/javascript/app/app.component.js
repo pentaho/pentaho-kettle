@@ -72,18 +72,28 @@ define([
     function onInit() {
       var path = $location.search().path;
       vm.type = $location.search().type;
-      $timeout(function() {
-        if (vm.showMessage) {
-          vm.showMessageText = true;
-        }
-      }, 1000);
-      dt.sample(path).then(function(response) {
-        vm.tree = response.data;
-        vm.showMessage = false;
-      }, function() {
-        _showMessage(i18n.get("get-fields-plugin.app.unable-to-access.label", {dataType: vm.type}),
-          i18n.get("get-fields.plugin.app.unable-to-access.message"));
-      });
+      if (path === "") { // No file path specified in step
+        _showMessage(i18n.get("get-fields-plugin.app.unable-to-view.label", {dataType: vm.type}),
+          i18n.get("get-fields.plugin.app.unable-to-view.message", {dataType: vm.type}));
+      } else {
+        $timeout(function() {
+          if (vm.showMessage) {
+            vm.showMessageText = true;
+          }
+        }, 1000);
+        dt.sample(path).then(function(response) {
+          vm.tree = response.data;
+          vm.showMessage = false;
+        }, function(response) {
+          if (response.status === 404) { // Cannot find file OR no permissions
+            _showMessage(i18n.get("get-fields-plugin.app.unable-to-access.label", {dataType: vm.type}),
+              i18n.get("get-fields.plugin.app.unable-to-access.message"));
+          } else { // Invalid JSON structure OR other issue
+            _showMessage(i18n.get("get-fields-plugin.app.unable-to-view.label", {dataType: vm.type}),
+              i18n.get("get-fields.plugin.app.unable-to-view.message", {dataType: vm.type}));
+          }
+        });
+      }
     }
 
     function doSearch(value) {
