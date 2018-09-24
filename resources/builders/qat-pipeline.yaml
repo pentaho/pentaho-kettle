@@ -30,9 +30,12 @@ buildProperties:
         CREATE_TAG                     : false
         TAG_NAME                       : ${RELEASE_VERSION}-RC
 
-        # Slack Reporting
-        SLACK_INTEGRATION              : true
-        SLACK_CHANNEL                  : 'buildteam-alerts'
+        # Simplify defaults below
+        JOB_ITEM_DEFAULTS:
+          buildFramework        :  JENKINS_JOB
+          testable              :  false
+          asynchronous          :  false
+          passOnBuildParameters :  true
 
 jobGroups:
   # Always required
@@ -41,76 +44,43 @@ jobGroups:
 
     - jobID                :  qat-build
       targetJobName        :  8.2-qat
-      buildFramework       :  JENKINS_JOB
-      testable             :  false
-      asynchronous         :  false
-      passOnBuildParameters:  true
       properties           :
-        CLEAN_CACHES_REGEX    : true
-        ARCHIVE_ARTIFACTS     : true
-        RUN_VERSIONING        : true
-        BUILD_DATA_FILE       : qat.yaml
-        BUILD_VERSIONS_FILE   : qat.versions
+        # This may seem redundant, but is necessary to clean params from this job
         RUN_CHECKOUTS         : true
         RUN_UNIT_TESTS        : true
-        OVERRIDE_PARAMS       : '' # Necessary to clean parent override_params
+        RUN_VERSIONING        : true
+        ARCHIVE_ARTIFACTS     : true
+        SLACK_INTEGRATION     : true
+        SLACK_CHANNEL         : 'buildteam-alerts'
+        OVERRIDE_PARAMS       : |
+          BUILD_DATA_FILE: qat.yaml
+          BUILD_VERSIONS_FILE: qat.versions
+          CLEAN_ALL_CACHES: true
+          CLEAN_SCM_WORKSPACES: true
 
   300:
 
     - jobID                 :  harvester
       targetJobName         :  harvester
-      buildFramework        :  JENKINS_JOB
-      testable              :  false
-      asynchronous          :  false
-      passOnBuildParameters :  true
-      properties            :
-        BUILD_ARCHIVE_ROOT    : "${BUILD_HOSTING_ROOT}"
-        SCM_BRANCH            : "${DEFAULT_BRANCH}"
 
   400:
 
     - jobID                 :  cm-build-order-trigger
       targetJobName         :  engops/cm-build-order-trigger
-      buildFramework        :  JENKINS_JOB
-      testable              :  false
-      asynchronous          :  false
-      passOnBuildParameters :  true
-      properties            :
-        BUILD_ARCHIVE_ROOT    : "${BUILD_HOSTING_ROOT}"
 
     - jobID                 :  github-commits
       targetJobName         :  engops/github-commits
-      buildFramework        :  JENKINS_JOB
-      testable              :  false
-      asynchronous          :  false
-      passOnBuildParameters :  true
 
     - jobID                 :  remote-ip-job-trigger
       targetJobName         :  engops/remote-ip-job-trigger
-      buildFramework        :  JENKINS_JOB
       execType              :  NOOP
-      testable              :  false
-      asynchronous          :  false
-      passOnBuildParameters :  true
 
     - jobID                 :  regression-smoketest-job-trigger
       targetJobName         :  engops/regression-smoketest-job-trigger
-      buildFramework        :  JENKINS_JOB
       execType              :  NOOP
-      testable              :  false
-      asynchronous          :  false
-      passOnBuildParameters :  true
 
     - jobID                 :  snapshot-checker
       targetJobName         :  snapshot-checker
-      buildFramework        :  JENKINS_JOB
-      testable              :  false
-      asynchronous          :  false
-      passOnBuildParameters :  true
 
     - jobID                 :  obfuscation-verifier
       targetJobName         :  obfuscation-verifier
-      buildFramework        :  JENKINS_JOB
-      testable              :  false
-      asynchronous          :  true
-      passOnBuildParameters :  true
