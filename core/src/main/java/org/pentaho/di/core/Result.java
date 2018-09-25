@@ -134,6 +134,16 @@ public class Result implements Cloneable {
   private boolean safeStop;
 
   /**
+   * Elapsed time of the ETL execution in milliseconds
+   */
+  private long elapsedTimeMillis;
+
+  /**
+   * Unique identifier of an ETL execution, should one ever care to declare one such
+   */
+  private String executionId;
+
+  /**
    * Instantiates a new Result object, setting default values for all members
    */
   public Result() {
@@ -620,6 +630,8 @@ public class Result implements Cloneable {
     xml.append( XMLHandler.addTagValue( "is_stopped", stopped ) );
     xml.append( XMLHandler.addTagValue( "log_channel_id", logChannelId ) );
     xml.append( XMLHandler.addTagValue( "log_text", logText ) );
+    xml.append( XMLHandler.addTagValue( "elapsedTimeMillis", elapsedTimeMillis ) );
+    xml.append( XMLHandler.addTagValue( "executionId", executionId ) );
 
     return xml;
   }
@@ -664,6 +676,9 @@ public class Result implements Cloneable {
 
     logChannelId = XMLHandler.getTagValue( node, "log_channel_id" );
     logText = XMLHandler.getTagValue( node, "log_text" );
+
+    elapsedTimeMillis = Const.toLong( XMLHandler.getTagValue( node, "elapsedTimeMillis" ), 0L );
+    executionId = XMLHandler.getTagValue( node, "executionId" );
 
     // Now read back the result files...
     //
@@ -880,5 +895,41 @@ public class Result implements Cloneable {
    */
   public void setSafeStop( boolean safeStop ) {
     this.safeStop = safeStop;
+  }
+
+  /**
+   * Returns the elapsed time of the ETL execution in milliseconds
+   *
+   * @returns elapsed time of the ETL execution in milliseconds
+   */
+  public long getElapsedTimeMillis() {
+    return elapsedTimeMillis;
+  }
+
+  /**
+   * Sets the elapsed time of the ETL execution in milliseconds
+   *
+   * @param elapsedTimeMillis elapsed time of the ETL execution in milliseconds
+   */
+  public void setElapsedTimeMillis( long elapsedTimeMillis ) {
+    this.elapsedTimeMillis = elapsedTimeMillis;
+  }
+
+  /**
+   * Returns the unique identifier of an ETL execution, should one ever care to declare one such
+   *
+   * @return unique identifier of an ETL execution, should one ever care to declare one such
+   */
+  public String getExecutionId() {
+    return executionId;
+  }
+
+  /**
+   * Sets a unique identifier of an ETL execution, should one ever care to declare one such
+   *
+   * @param executionId unique identifier of an ETL execution, should one ever care to declare one such
+   */
+  public void setExecutionId( String executionId ) {
+    this.executionId = executionId;
   }
 }

@@ -228,6 +228,7 @@ public class KitchenCommandExecutor extends AbstractBaseCommandExecutor {
 
     calculateAndPrintElapsedTime( start, stop, "Kitchen.Log.StartStop", "Kitchen.Log.ProcessEndAfter", "Kitchen.Log.ProcessEndAfterLong",
             "Kitchen.Log.ProcessEndAfterLonger", "Kitchen.Log.ProcessEndAfterLongest" );
+    getResult().setElapsedTimeMillis( stop.getTime() - start.getTime() );
 
     return exitWithStatus( returnCode );
   }
