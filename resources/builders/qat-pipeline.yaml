@@ -73,11 +73,9 @@ jobGroups:
 
     - jobID                 :  remote-ip-job-trigger
       targetJobName         :  engops/remote-ip-job-trigger
-      execType              :  NOOP
 
     - jobID                 :  regression-smoketest-job-trigger
       targetJobName         :  engops/regression-smoketest-job-trigger
-      execType              :  NOOP
 
     - jobID                 :  snapshot-checker
       targetJobName         :  snapshot-checker
