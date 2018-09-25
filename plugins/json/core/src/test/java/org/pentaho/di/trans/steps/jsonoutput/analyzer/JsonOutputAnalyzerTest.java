@@ -86,7 +86,7 @@ public class JsonOutputAnalyzerTest {
 
   @Test
   public void testGetResourceOutputNodeType() throws Exception {
-    assertEquals( DictionaryConst.NODE_TYPE_JSON_FIELD, analyzer.getResourceOutputNodeType() );
+    assertEquals( DictionaryConst.NODE_TYPE_FILE_FIELD, analyzer.getResourceOutputNodeType() );
   }
 
   @Test
