@@ -186,6 +186,7 @@ public class PanCommandExecutor extends AbstractBaseCommandExecutor {
 
       int completionTimeSeconds = calculateAndPrintElapsedTime( start, stop, "Pan.Log.StartStop", "Pan.Log.ProcessingEndAfter",
               "Pan.Log.ProcessingEndAfterLong", "Pan.Log.ProcessingEndAfterLonger", "Pan.Log.ProcessingEndAfterLongest" );
+      getResult().setElapsedTimeMillis( stop.getTime() - start.getTime() );
 
       if ( getResult().getNrErrors() == 0 ) {
 
