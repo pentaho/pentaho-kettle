@@ -36,7 +36,9 @@ define([
 
     var options = {
         bindings: {
-            content: '<'
+          content: '<',
+          paths: '<',
+          onSelection: '&'
         },
         controllerAs: "vm",
         template: template,
@@ -50,17 +52,29 @@ define([
      */
     function treeController($scope) {
       var vm = this;
+      vm.checked = [];
       vm.toggle = toggle;
       vm.hasChevron = hasChevron;
+      vm.checkboxSelect = checkboxSelect;
       vm.$onChanges = function(changes) {
         if (vm.content) {
           _setParent(null, vm.content);
+          console.log("Loaded content");
+        }
+        if (vm.content && vm.paths) {
+          var paths = vm.paths.split(",");
+          console.log(paths);
+          for (var i = 0; i < paths.length; i++) {
+            _selectByPath(paths[i], vm.content);
+          }
         }
       };
 
       $scope.$on("clearSelection", function(e, data) {
         if (vm.content.children) {
           _clearChildren(vm.content);
+          vm.checked = [];
+          vm.onSelection({count: vm.checked.length});
         }
       });
 
@@ -88,39 +102,50 @@ define([
 
       function _getPaths() {
         var paths = [];
-        _findPaths(vm.content, paths);
+        for (var i = 0; i < vm.checked.length; i++) {
+          if (!_hasCheckedChildren(vm.checked[i])) {
+            var node = vm.checked[i];
+            var data = _generatePath(vm.checked[i]);
+            paths.push(node.key + ":" + data + ":" + node.type);
+          }
+        }
         return paths;
       }
 
-      function _findPaths(node, paths) {
-        if (node.children) {
-          for (var i = 0; i < node.children.length; i++) {
-            var child = node.children[i];
-            if (child.checked && !_hasCheckedChildren(child)) {
-              var output = child.key + (child.type === "Array" ? "[*]" : "");
-              var parent = child.parent;
-              while (parent) {
-                if (parent.checked) {
-                  if (parent.key === null) {
-                    if (parent.type === "Array") {
-                      output = "[*]" + output;
-                    }
-                  } else {
-                    output = parent.key + (parent.type === "Array" ? "[*]" : "") + "." + output;
-                  }
-                } else {
-                  if (output.indexOf(".") !== 0) {
-                    output = "." + output;
-                  }
-                }
-                parent = parent.parent;
-              }
-              output = "$." + output;
-              paths.push(child.key + ":" + output + ":" + child.type);
-            }
-            _findPaths(child, paths);
+      function _generatePath(node) {
+        var path = _getNodePath(node);
+        var parent = node.parent;
+        while (parent) {
+          if (parent.checked) {
+            path = _getNodePath(parent) + path;
+          }
+          parent = parent.parent;
+        }
+        return "$" + path;
+      }
+
+      function _getNodePath(node) {
+        var key = node.key;
+        if (!key) {
+          if (node.type === "Array") {
+            key = "[*]";
+          } else {
+            return "";
+          }
+        } else {
+          if (key.indexOf(".") !== -1) {
+            key = "[" + key + "]";
+          } else {
+            key = "." + key;
+          }
+          if (node.type === "Array") {
+            key += "[*]";
           }
         }
+        if (node.parent && !node.parent.checked) {
+          key = "." + key;
+        }
+        return key;
       }
 
       function _hasCheckedChildren(node) {
@@ -156,7 +181,7 @@ define([
       /**
        * Toggle a collection open/closed
        *
-       * @param value
+       * @param node
        */
       function toggle(node) {
         if (!node.open) {
@@ -164,6 +189,113 @@ define([
         } else {
           node.open = false;
         }
+      }
+
+      function checkboxSelect(node) {
+        _handleChecked(node);
+        if (node.key === null) {
+          if (node.checked) {
+            _setChecked(node, true);
+          } else {
+            _setChecked(node, false);
+          }
+        }
+      }
+
+      function _handleChecked(node) {
+        if (node.checked) {
+          var index = vm.checked.indexOf(node);
+          if (index === -1) {
+            vm.checked.push(node);
+          }
+        } else {
+          var index = vm.checked.indexOf(node);
+          if (index !== -1) {
+            vm.checked.splice(index, 1);
+          }
+        }
+        vm.onSelection({count: vm.checked.length});
+      }
+
+      function _setChecked(node, checked) {
+        if (node.children) {
+          for (var i = 0; i < node.children.length; i++) {
+            node.children[i].checked = checked;
+            checkboxSelect(node.children[i]);
+          }
+        }
+      }
+
+      function _checkNode(node) {
+        node.checked = true;
+        var index = vm.checked.indexOf(node);
+        if (index === -1) {
+          vm.checked.push(node);
+        }
+        vm.onSelection({count: vm.checked.length});
+      }
+
+      function _selectByPath(path, node) {
+        var matches = path.match(/(\w+|\[[\s\S]*?]|\$|\.\.|\.)/g);
+        var expression = matches.shift();
+        while (expression) {
+          if (expression === "$") {
+            expression = matches.shift();
+            if (expression === ".") {
+              _checkNode(node);
+            }
+          } else if (expression === ".") {
+            expression = matches.shift();
+            if (expression === "[*]") {
+
+            } else {
+              node = _findChild(node, expression);
+              if (node) {
+                _checkNode(node);
+              }
+            }
+          } else if (expression === "..") {
+            expression = matches.shift();
+            node = _findAny(node, expression);
+            if (node) {
+              _checkNode(node);
+            }
+          } else if (expression === "[*]") {
+            node = node.children[0];
+            _checkNode(node);
+            expression = matches.shift();
+          } else {
+            expression = matches.shift();
+          }
+        }
+      }
+
+      function _findAny(node, value) {
+        if (node.children) {
+          for (var i = 0; i < node.children.length; i++) {
+            if (node.children[i].key === value) {
+              return node.children[i];
+            }
+            if (node.children[i].children) {
+              var found = _findAny(node.children[i], value);
+              if (found) {
+                return found;
+              }
+            }
+          }
+        }
+        return null;
+      }
+
+      function _findChild(node, value) {
+        if (node && node.children) {
+          for (var i = 0; i < node.children.length; i++) {
+            if (node.children[i].key === value) {
+              return node.children[i];
+            }
+          }
+        }
+        return null;
       }
     }
 
