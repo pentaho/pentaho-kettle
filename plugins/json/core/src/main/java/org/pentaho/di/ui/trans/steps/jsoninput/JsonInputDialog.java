@@ -79,6 +79,9 @@ import org.pentaho.di.ui.core.widget.TextVar;
 import org.pentaho.di.ui.trans.dialog.TransPreviewProgressDialog;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class JsonInputDialog extends BaseStepDialog implements StepDialogInterface {
   private static Class<?> PKG = JsonInputMeta.class; // for i18n purposes, needed by Translator2!!
 
@@ -1480,24 +1483,31 @@ public class JsonInputDialog extends BaseStepDialog implements StepDialogInterfa
       // Call new get fields dialog
       if ( wFilenameList.getItemCount() > 0 ) {
         String filename = transMeta.environmentSubstitute( wFilenameList.getItem( 0 )[ 0 ] );
+        List<String> paths = new ArrayList<>();
+        for ( int i = 0; i < wFields.table.getItems().length; i++ ) {
+          TableItem item = wFields.table.getItem( i );
+          paths.add( item.getText( 2 ) );
+        }
         GetFieldsDialogOperation getFieldsDialogOperation = new GetFieldsDialogOperation( shell, 540, 588, filename,
-          BaseMessages.getString( PKG, "JsonInput.GetFields.Dialog.Title" ) );
+                BaseMessages.getString( PKG, "JsonInput.GetFields.Dialog.Title" ), paths );
         ExtensionPointHandler.callExtensionPoint( null, KettleExtensionPoint.GetFieldsExtension.id,
                 getFieldsDialogOperation );
 
         int numRows = getFieldsDialogOperation.getPaths().size();
-        wFields.table.setItemCount( numRows );
-        for ( int i = 0; i < numRows; i++ ) {
-          String path = getFieldsDialogOperation.getPaths().get( i );
-          String[] values = path.split( ":" );
-          TableItem item = wFields.table.getItem( i );
-          item.setText( 1, values[0] );
-          item.setText( 2, values[1] );
-          item.setText( 3, values[2] );
+        if ( numRows > 0 ) {
+          wFields.table.setItemCount( numRows );
+          for ( int i = 0; i < numRows; i++ ) {
+            String path = getFieldsDialogOperation.getPaths().get( i );
+            String[] values = path.split( ":" );
+            TableItem item = wFields.table.getItem( i );
+            item.setText( 1, values[0] );
+            item.setText( 2, values[1] );
+            item.setText( 3, values[2] );
+          }
+          wFields.removeEmptyRows();
+          wFields.setRowNums();
+          wFields.optWidth( true );
         }
-        wFields.removeEmptyRows();
-        wFields.setRowNums();
-        wFields.optWidth( true );
       }
     } catch ( Exception e ) {
       log.logError( e.getMessage() );

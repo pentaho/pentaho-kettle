@@ -47,9 +47,10 @@ public class GetFieldsDialog extends ThinDialog {
   private String file;
   private String type = "";
 
-  public GetFieldsDialog( Shell shell, int width, int height, String file ) {
+  public GetFieldsDialog( Shell shell, int width, int height, String file, List<String> paths ) {
     super( shell, width, height );
     this.file = file;
+    this.paths = paths;
   }
 
   public List<String> getPaths() {
@@ -67,11 +68,16 @@ public class GetFieldsDialog extends ThinDialog {
     clientPath.append( file );
     clientPath.append( "&type=" );
     clientPath.append( type );
+    if ( this.paths.size() > 0 ) {
+      clientPath.append( "&paths=" );
+      clientPath.append( String.join( ",", this.paths ) );
+    }
     createDialog( title, getRepoURL( clientPath.toString() ), OPTIONS, LOGO );
     dialog.setMinimumSize( 470, 580 );
 
     new BrowserFunction( browser, "close" ) {
       @Override public Object function( Object[] arguments ) {
+        paths = new ArrayList<>();
         browser.dispose();
         dialog.close();
         dialog.dispose();
@@ -81,6 +87,7 @@ public class GetFieldsDialog extends ThinDialog {
 
     new BrowserFunction( browser, "ok" ) {
       @Override public Object function( Object[] arguments ) {
+        paths = new ArrayList<>();
         for ( Object path : (Object[]) arguments[0] ) {
           paths.add( (String) path );
         }

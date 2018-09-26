@@ -49,7 +49,7 @@ public class GetFieldsExtensionPoint implements ExtensionPointInterface {
     GetFieldsDialogOperation getFieldsDialogOperation = (GetFieldsDialogOperation) o;
     GetFieldsDialog getFieldsDialog = new GetFieldsDialog( getFieldsDialogOperation.getShell(),
             getFieldsDialogOperation.getWidth(), getFieldsDialogOperation.getHeight(), getFieldsDialogOperation
-            .getFilename() );
+            .getFilename(), getFieldsDialogOperation.getPaths() );
     String title = getFieldsDialogOperation.getTitle(); // this is for the dialog title AND the key for input type
     getFieldsDialog.setTitle( title );
     getFieldsDialog.setType( INPUT_TYPES.get( title ) );

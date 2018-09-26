@@ -110,3 +110,8 @@ get-fields-app .floatLeft {
 get-fields-app .floatRight {
   float: right;
 }
+
+get-fields-app .clearDisabled {
+  cursor: default;
+  opacity: .3;
+}

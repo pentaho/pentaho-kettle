@@ -33,8 +33,9 @@ define([
   "./components/tree/tree.component",
   "core-ui/components/search/search.component",
   "./services/data.service",
-  "./filters/output.filter"
-], function(angular, appComponent, errorComponent, messageComponent, treeComponent, searchComponent, dataService, outputFilter) {
+  "./filters/output.filter",
+  "./directives/resize.directive"
+], function(angular, appComponent, errorComponent, messageComponent, treeComponent, searchComponent, dataService, outputFilter, resizeDirective) {
   "use strict";
 
   var module = {
@@ -59,7 +60,8 @@ define([
       .component(treeComponent.name, treeComponent.options)
       .component(searchComponent.name, searchComponent.options)
       .service(dataService.name, dataService.factory)
-      .filter(outputFilter.name, outputFilter.factory);
+      .filter(outputFilter.name, outputFilter.factory)
+      .directive(resizeDirective.name, resizeDirective.options);
   }
 
   /**

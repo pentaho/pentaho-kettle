@@ -47,7 +47,6 @@ define([
 
   function appController(dt, $location, $scope, $timeout) {
     var vm = this;
-    var found = false;
     vm.$onInit = onInit;
     vm.clearSelection = clearSelection;
     vm.ok = ok;
@@ -70,38 +69,53 @@ define([
      * bindings initialized. We use this hook to put initialization code for our controller.
      */
     function onInit() {
+      var selections = $location.search().selections;
       var path = $location.search().path;
       vm.type = $location.search().type;
+      vm.paths = $location.search().paths;
+      vm.isClearDisabled = true;
+      vm.onSelection = onSelection;
       if (path === "") { // No file path specified in step
         _showMessage(i18n.get("get-fields-plugin.app.unable-to-view.label", {dataType: vm.type}),
           i18n.get("get-fields.plugin.app.unable-to-view.message", {dataType: vm.type}));
-      } else {
-        $timeout(function() {
-          if (vm.showMessage) {
-            vm.showMessageText = true;
-          }
-        }, 1000);
-        dt.sample(path).then(function(response) {
-          vm.tree = response.data;
-          vm.showMessage = false;
-        }, function(response) {
-          if (response.status === 404) { // Cannot find file OR no permissions
+        } else {
+          $timeout(function() {
+            if (vm.showMessage) {
+              vm.showMessageText = true;
+            }
+          }, 1000);
+          dt.sample(path).then(function(response) {
+            vm.tree = response.data;
+            vm.showMessage = false;
+          }, function(response) {
+            if (response.status === 404) { // Cannot find file OR no permissions
             _showMessage(i18n.get("get-fields-plugin.app.unable-to-access.label", {dataType: vm.type}),
               i18n.get("get-fields.plugin.app.unable-to-access.message"));
-          } else { // Invalid JSON structure OR other issue
-            _showMessage(i18n.get("get-fields-plugin.app.unable-to-view.label", {dataType: vm.type}),
+            } else { // Invalid JSON structure OR other issue
+              _showMessage(i18n.get("get-fields-plugin.app.unable-to-view.label", {dataType: vm.type}),
               i18n.get("get-fields.plugin.app.unable-to-view.message", {dataType: vm.type}));
-          }
-        });
-      }
+            }
+          });
+        }
     }
 
     function doSearch(value) {
       if (vm.tree) {
         _hideMessage();
         if (value) {
-          _findValue(vm.tree, value);
-          if (!found) {
+          var results = [];
+          _findValue(vm.tree, value, results);
+          for (var i = 0; i < results.length; i++) {
+            if (results[i].parent) {
+              var parent = results[i].parent;
+              while (parent) {
+                parent.hidden = false;
+                parent.disabled = results.indexOf(parent) === -1;
+                parent = parent.parent;
+              }
+            }
+          }
+          if (results.length === 0) {
             _showMessage(i18n.get("get-fields-plugin.app.unable-to-find.label", {searchField: value}),
               i18n.get("get-fields.plugin.app.unable-to-find.message"));
           }
@@ -112,10 +126,13 @@ define([
     }
 
     function _clearSearch(node, value) {
+      node.hidden = false;
+      node.disabled = false;
       if (node.children) {
         for (var i = 0; i < node.children.length; i++) {
           var child = node.children[i];
           child.hidden = false;
+          child.disabled = false;
           if (child.children) {
             if (_clearSearch(child)) {
               return true;
@@ -126,18 +143,18 @@ define([
       return false;
     }
 
-    function _findValue(node, value) {
+    function _findValue(node, value, results) {
       if (node.children) {
         for (var i = 0; i < node.children.length; i++) {
           var child = node.children[i];
           if (child.key && child.key.indexOf(value) !== -1) {
+            results.push(child);
             child.hidden = false;
-            found = true;
           } else {
             child.hidden = true;
           }
           if (child.children) {
-            _findValue(child, value);
+            _findValue(child, value, results);
           }
         }
       }
@@ -164,9 +181,16 @@ define([
     }
 
     function _hideMessage() {
-      found = false;
       vm.showMessage = false;
       vm.showMessageText = false;
+    }
+
+    function onSelection(count) {
+      if (count > 0) {
+        vm.isClearDisabled = false;
+      } else {
+        vm.isClearDisabled = true;
+      }
     }
   }
 

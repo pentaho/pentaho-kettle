@@ -15,14 +15,15 @@
              show-text="vm.showMessageText"
              show-spinner="vm.showSpinner">
     </message>
-    <div ng-if="!vm.showMessage" class="jsonOutput">
-      <tree content="vm.tree"></tree>
+    <div ng-if="!vm.showMessage" class="jsonOutput" resize>
+      <tree content="vm.tree" paths="vm.paths" on-selection="vm.onSelection(count)"></tree>
     </div>
   </div>
 </div>
 <div class="bottom">
   <div class="clearSelection">
-    <a href ng-click="vm.clearSelection()">{{::vm.clearSelectionLabel}}</a>
+    <a href ng-click="vm.clearSelection()" ng-disabled="vm.isClearDisabled"
+       ng-class="{clearDisabled: vm.isClearDisabled}">{{::vm.clearSelectionLabel}}</a>
   </div>
   <div class="buttons">
     <button class="secondary" ng-click="vm.cancel()">
