@@ -286,7 +286,11 @@ public class JobEntrySetVariables extends JobEntryBase implements Cloneable, Job
         // OK, where do we set this value...
         switch ( type ) {
           case VARIABLE_TYPE_JVM:
-            System.setProperty( varname, value );
+            if ( value != null ) {
+              System.setProperty( varname, value );
+            } else {
+              System.clearProperty( varname ); // PDI-17536
+            }
             setVariable( varname, value );
             Job parentJobTraverse = parentJob;
             while ( parentJobTraverse != null ) {
