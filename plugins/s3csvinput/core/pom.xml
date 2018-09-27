@@ -53,8 +53,9 @@
       <classifier>tests</classifier>
     </dependency>
     <dependency>
-      <groupId>net.java.dev.jets3t</groupId>
-      <artifactId>jets3t</artifactId>
+      <groupId>com.amazonaws</groupId>
+      <artifactId>aws-java-sdk-s3</artifactId>
+      <version>1.11.275</version>
     </dependency>
     <dependency>
       <groupId>org.powermock</groupId>
@@ -67,10 +68,10 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-    <groupId>com.jamesmurty.utils</groupId>
-    <artifactId>java-xmlbuilder</artifactId>
-    <version>1.2</version>
-    <scope>test</scope>
-</dependency>
+      <groupId>com.jamesmurty.utils</groupId>
+      <artifactId>java-xmlbuilder</artifactId>
+      <version>1.2</version>
+      <scope>test</scope>
+      </dependency>
   </dependencies>
 </project>
