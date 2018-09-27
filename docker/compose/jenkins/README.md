@@ -14,12 +14,17 @@ To increase the number of agent nodes you can pass the number you want as parame
 docker-compose up --scale agent=N
 ```
 
+To cleanup everything it was created you can use the `down` command. This will remove containers, networks and volumes.
+
+```console
+docker-compose down --volumes
+```
+
 Where **N** is the number of agent nodes you want.
 
 ## Configuration
 The following variables can be configured in a `.env` file in the current directory.
 
-- JENKINS_VOLUME_NAME - The docker volume name used by the [jenkins image](../../jenkins). Default: jenkins-pipelines
 - NETWORK_NAME - The docker network name. Default: hv-pipelines
 - JENKINS_IMAGE_NAME - The image tag name when building the [jenkins image](../../jenkins). Default: hv/jenkins
 - MASTER_LABELS - The labels set on the master node. Defaults: master

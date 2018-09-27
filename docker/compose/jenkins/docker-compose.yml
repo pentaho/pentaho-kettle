@@ -1,9 +1,5 @@
 version: '3.7'
 
-volumes:
-  jenkins:
-    name: ${JENKINS_VOLUME_NAME:-jenkins-pipelines}
-
 networks:
   pipelines:
     name: ${NETWORK_NAME:-hv-pipelines}
@@ -17,7 +13,6 @@ services:
     environment:
       - MASTER_LABELS=${MASTER_LABELS:-master}
     volumes:
-      - jenkins:/var/jenkins_home
       - ${CREDENTIALS:-./credentials}:/usr/share/jenkins/secrets/credentials
       - ${PROJECTS_DIR:-./projects}:/projects
     networks:
