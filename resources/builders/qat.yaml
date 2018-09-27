@@ -22,7 +22,7 @@ buildProperties:
         JENKINS_FOLDER_NAME            : "8.2"
 
         # We need to override this until this pipeline is the nightly
-        BUILD_HOSTING_ROOT             : /build2/artifacts/hosted/pipeline
+        BUILD_HOSTING_ROOT             : /build2/artifacts/hosted
 
         # TODO: Enable when we start wanting to tag
         CREATE_TAG                     : false
