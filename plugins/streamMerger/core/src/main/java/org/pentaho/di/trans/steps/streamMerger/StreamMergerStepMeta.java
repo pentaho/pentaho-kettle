@@ -41,7 +41,7 @@ import org.w3c.dom.Node;
 		image = "Merge.svg",
 		name="Stream Merge",
 		description = "Merge multiple streams with different schema into one unified schema, the fields data type has to match",
-		categoryDescription=""
+		categoryDescription="Join"
 )
 public class StreamMergerStepMeta extends BaseStepMeta implements StepMetaInterface {
 
