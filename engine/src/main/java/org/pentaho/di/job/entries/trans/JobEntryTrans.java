@@ -1263,6 +1263,10 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
     String realTransName = "";
     String realDirectory = "/";
 
+    if ( StringUtils.isBlank( transPath ) ) {
+      throw new KettleException( BaseMessages.getString( PKG, "JobTrans.Exception.MissingTransFileName" ) );
+    }
+
     int index = transPath.lastIndexOf( RepositoryFile.SEPARATOR );
     if ( index != -1 ) {
       realTransName = transPath.substring( index + 1 );
