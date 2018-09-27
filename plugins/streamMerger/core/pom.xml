@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>org.pentaho.di.plugins</groupId>
+    <artifactId>streamMerger</artifactId>
+    <version>8.1.0.0-365</version>
+  </parent>
+  
+  <properties>
+    <pdi.version>8.1.0.0-365</pdi.version>
+    <build.revision>${project.version}</build.revision>
+    <timestamp>${maven.build.timestamp}</timestamp>
+    <build.description>${project.description}</build.description>
+    <maven.build.timestamp.format>yyyy/MM/dd hh\:mm</maven.build.timestamp.format>
+  </properties>
+
+  <artifactId>kettle-streamMerger-plugin-core</artifactId>
+  <version>8.1.0.0-365</version>
+  <packaging>jar</packaging>
+
+  <name>PDI StreamMerger Plugin Core</name>
+  
+  <dependencies>
+      <dependency>
+      <groupId>pentaho-kettle</groupId>
+      <artifactId>kettle-core</artifactId>
+      <version>${pdi.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>pentaho-kettle</groupId>
+      <artifactId>kettle-engine</artifactId>
+      <version>${pdi.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>pentaho-kettle</groupId>
+      <artifactId>kettle-ui-swt</artifactId>
+      <version>${pdi.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.eclipse.swt</groupId>
+      <artifactId>org.eclipse.swt.gtk.linux.x86_64</artifactId>
+      <version>4.6</version>
+    </dependency>
+  </dependencies>
+
+</project>
