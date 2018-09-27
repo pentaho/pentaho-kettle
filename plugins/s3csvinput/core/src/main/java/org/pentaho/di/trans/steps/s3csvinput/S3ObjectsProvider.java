@@ -22,46 +22,52 @@
 
 package org.pentaho.di.trans.steps.s3csvinput;
 
-import java.util.Arrays;
+import java.util.List;
 
-import org.jets3t.service.S3Service;
-import org.jets3t.service.S3ServiceException;
-import org.jets3t.service.model.S3Bucket;
-import org.jets3t.service.model.S3Object;
-import org.jets3t.service.model.StorageObject;
+import com.amazonaws.SdkClientException;
+import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.model.Bucket;
+import com.amazonaws.services.s3.model.GetObjectRequest;
+import com.amazonaws.services.s3.model.ObjectListing;
+import com.amazonaws.services.s3.model.ObjectMetadata;
+import com.amazonaws.services.s3.model.S3Object;
 
 public class S3ObjectsProvider {
-  private S3Service service;
+  private AmazonS3 s3Client;
 
-  public S3ObjectsProvider( S3Service service ) {
+  public S3ObjectsProvider( AmazonS3 s3Client ) {
     super();
-    this.service = service;
+    this.s3Client = s3Client;
   }
 
   /**
    * Returns the buckets belonging to the service user
    *
    * @return the list of buckets owned by the service user.
-   * @throws S3ServiceException
+   * @throws SdkClientException
    */
-  private S3Bucket[] getBuckets() throws S3ServiceException {
+  private List<Bucket> getBuckets() throws SdkClientException {
     ClassLoader currentClassLoader = Thread.currentThread().getContextClassLoader();
+
+    List result;
     try {
       Thread.currentThread().setContextClassLoader( getClass().getClassLoader() );
-      return service.listAllBuckets();
+      result = s3Client.listBuckets();
     } finally {
       Thread.currentThread().setContextClassLoader( currentClassLoader );
     }
+
+    return result;
   }
 
   /**
    * Returns the names of buckets belonging to the service user
    *
    * @return the list of buckets names owned by the service user.
-   * @throws S3ServiceException
+   * @throws SdkClientException
    */
-  public String[] getBucketsNames() throws S3ServiceException {
-    return Arrays.stream( getBuckets() ).map( b -> b.getName() ).toArray( String[]::new );
+  public String[] getBucketsNames() throws SdkClientException {
+    return getBuckets().stream().map( b -> b.getName() ).toArray( String[]::new );
   }
 
   /**
@@ -70,10 +76,10 @@ public class S3ObjectsProvider {
    * @param bucketName
    *          the name of the bucket to find.
    * @return the bucket, or null if no the named bucket has found.
-   * @throws S3ServiceException
+   * @throws SdkClientException
    */
-  public S3Bucket getBucket( String bucketName ) throws S3ServiceException {
-    return Arrays.stream( getBuckets() ).filter( x -> bucketName.equals( x.getName() ) ).findFirst().orElse( null );
+  public Bucket getBucket( String bucketName ) throws SdkClientException {
+    return getBuckets().stream( ).filter( x -> bucketName.equals( x.getName() ) ).findFirst().orElse( null );
   }
 
   /**
@@ -82,13 +88,13 @@ public class S3ObjectsProvider {
    * @param bucket
    *          the bucket whose contents will be listed.
    * @return the set of objects contained in a bucket.
-   * @throws S3ServiceException
+   * @throws SdkClientException
    */
-  private S3Object[] getS3Objects( S3Bucket bucket ) throws S3ServiceException {
+  private ObjectListing getS3Objects( Bucket bucket ) throws SdkClientException {
     ClassLoader currentClassLoader = Thread.currentThread().getContextClassLoader();
     try {
       Thread.currentThread().setContextClassLoader( getClass().getClassLoader() );
-      return service.listObjects( bucket );
+      return s3Client.listObjects( bucket.getName() );
     } finally {
       Thread.currentThread().setContextClassLoader( currentClassLoader );
     }
@@ -103,11 +109,11 @@ public class S3ObjectsProvider {
    * @throws Exception
    */
   public String[] getS3ObjectsNames( String bucketName ) throws Exception {
-    S3Bucket bucket = getBucket( bucketName );
+    Bucket bucket = getBucket( bucketName );
     if ( bucket == null ) {
       throw new Exception( Messages.getString( "S3DefaultService.Exception.UnableToFindBucket.Message", bucketName ) );
     }
-    return Arrays.stream( getS3Objects( bucket ) ).map( b -> b.getKey() ).toArray( String[]::new );
+    return getS3Objects( bucket ).getObjectSummaries().stream().map( b -> b.getKey() ).toArray( String[]::new );
   }
 
   /**
@@ -122,10 +128,16 @@ public class S3ObjectsProvider {
    * @param byteRangeEnd
    *          include only a portion of the object's data - ending at this point
    * @return the object with the given key in S3, including details and data
-   * @throws S3ServiceException
+   * @throws SdkClientException
    */
-  public S3Object getS3Object( S3Bucket bucket, String objectKey, Long byteRangeStart, Long byteRangeEnd ) throws S3ServiceException {
-    return service.getObject( bucket, objectKey, null, null, null, null, byteRangeStart, byteRangeEnd );
+  public S3Object getS3Object( Bucket bucket, String objectKey, Long byteRangeStart, Long byteRangeEnd ) throws SdkClientException {
+    if ( byteRangeStart != null && byteRangeEnd != null ) {
+      GetObjectRequest rangeObjectRequest =
+        new GetObjectRequest( bucket.getName(), objectKey ).withRange( byteRangeStart, byteRangeEnd );
+      return s3Client.getObject( rangeObjectRequest );
+    } else {
+      return s3Client.getObject( bucket.getName(), objectKey );
+    }
   }
 
   /**
@@ -136,9 +148,9 @@ public class S3ObjectsProvider {
    * @param objectKey
    *          the key identifying the object.
    * @return the object with the given key in S3, including details and data
-   * @throws S3ServiceException
+   * @throws SdkClientException
    */
-  public S3Object getS3Object( S3Bucket bucket, String objectKey ) throws S3ServiceException {
+  public S3Object getS3Object( Bucket bucket, String objectKey ) throws SdkClientException {
     return getS3Object( bucket, objectKey, null, null );
   }
 
@@ -151,10 +163,10 @@ public class S3ObjectsProvider {
    *          the key identifying the object.
    * @return the object with the given key in S3, including only general details and metadata (not the data input
    *         stream)
-   * @throws S3ServiceException
+   * @throws SdkClientException
    */
-  private StorageObject getS3ObjectDetails( S3Bucket bucket, String objectKey ) throws S3ServiceException {
-    return service.getObjectDetails( bucket, objectKey, null, null, null, null );
+  private ObjectMetadata getS3ObjectDetails( Bucket bucket, String objectKey ) throws SdkClientException {
+    return s3Client.getObjectMetadata( bucket.getName(), objectKey );
   }
 
   /**
@@ -165,9 +177,9 @@ public class S3ObjectsProvider {
    * @param objectKey
    *          the key identifying the object.
    * @return the content length, or size, of this object's data, or 0 if it is unknown
-   * @throws S3ServiceException
+   * @throws SdkClientException
    */
-  public long getS3ObjectContentLenght( S3Bucket bucket, String objectKey ) throws S3ServiceException {
+  public long getS3ObjectContentLenght( Bucket bucket, String objectKey ) throws SdkClientException {
     return getS3ObjectDetails( bucket, objectKey ).getContentLength();
   }
 
