@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -87,7 +87,7 @@ public class EnterStringDialog extends Dialog {
 
   private PropsUI props;
 
-  private boolean manditory;
+  private boolean mandatory;
 
   /**
    * This constructs without allowing for variable substitution. This constructor allows for backwards compatibility for
@@ -115,7 +115,7 @@ public class EnterStringDialog extends Dialog {
    * @param lineText
    * @param allowVariables
    *          Indicates to allow environmental substitution
-   * @param TransMeta
+   * @param transMeta
    *          This object has the has the environmental variables
    */
   public EnterStringDialog( Shell parent, String string, String shellText, String lineText,
@@ -244,7 +244,7 @@ public class EnterStringDialog extends Dialog {
 
   protected void setFlags() {
     String string = ( allowVariables ? wStringVar.getText() : wString.getText() );
-    boolean enabled = !manditory || !Utils.isEmpty( string );
+    boolean enabled = !mandatory || !Utils.isEmpty( string );
     wOK.setEnabled( enabled );
   }
 
@@ -278,15 +278,32 @@ public class EnterStringDialog extends Dialog {
   /**
    * @return the manditory
    */
+  @Deprecated
   public boolean isManditory() {
-    return manditory;
+    return this.isMandatory();
+  }
+
+  /**
+   * @return the mandatory
+   */
+  public boolean isMandatory() {
+    return mandatory;
   }
 
   /**
    * @param manditory
    *          the manditory to set
    */
+  @Deprecated
   public void setManditory( boolean manditory ) {
-    this.manditory = manditory;
+    this.setMandatory( manditory );
+  }
+
+  /**
+   * @param mandatory
+   *          the manditory to set
+   */
+  public void setMandatory( boolean mandatory ) {
+    this.mandatory = mandatory;
   }
 }
