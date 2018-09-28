@@ -3,97 +3,47 @@ buildProperties:
         # global build control defaults
         # These are understood by the shared pipeline libraries:
         BUILD_PLAN_ID                  : Multishim master branch pipeline
-
         JOB_ITEM_DEFAULTS:
           archivable: true
 # required
 jobGroups:
 
-  osgi-bundles-lowdeps:
+  10:
 
      - jobID           :  osgi-bundles-lowdeps
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-osgi-bundles.git
        scmBranch       :  ${DEFAULT_BRANCH}
        directives      :  += -P lowdeps -DskipDefault
+       parallelize     :  true
        versionProperty :  pentaho-osgi-bundles.version
        archivable      :  false
 
-  big-data-hadoop-shims-api:
-
-     - jobID           :  big-data-hadoop-shims-api
+     - jobID           :  hadoop-shims-api
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-hadoop-shims.git
        scmBranch       :  ${DEFAULT_BRANCH}
-       directives      :  += -DskipDefault -P api,shims
+       directives      :  += -DskipDefault -P api
        versionProperty :  pentaho-hadoop-shims.version
        archivable      :  false
+       
+  30:
 
-  big-data-hadoop-shims:
-
-     - jobID           :  big-data-hadoop-shims-hdp25
+     - jobID           :  hadoop-shims-common
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-hadoop-shims.git
        scmBranch       :  ${DEFAULT_BRANCH}
-       directives      :  += --projects shims/hdp25
-       versionProperty :  pentaho-hadoop-shims.version
-       archivable      :  false
+       root            :  common
+       parallelize     :  true
+       versionProperty :  pentaho-hadoop-shims.version                     
 
-     - jobID           :  big-data-hadoop-shims-hdp26
+  40:
+
+     - jobID           :  hadoop-shims-all
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-hadoop-shims.git
        scmBranch       :  ${DEFAULT_BRANCH}
-       directives      :  += --projects shims/hdp26
        versionProperty :  pentaho-hadoop-shims.version
        archivable      :  false
-
-     - jobID           :  big-data-hadoop-shims-cdh512
-       scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-hadoop-shims.git
-       scmBranch       :  ${DEFAULT_BRANCH}
-       directives      :  += --projects shims/cdh512
-       versionProperty :  pentaho-hadoop-shims.version
-       archivable      :  false
-
-     - jobID           :  big-data-hadoop-shims-cdh513
-       scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-hadoop-shims.git
-       scmBranch       :  ${DEFAULT_BRANCH}
-       directives      :  += --projects shims/cdh513
-       versionProperty :  pentaho-hadoop-shims.version
-       archivable      :  false
-
-     - jobID           :  big-data-hadoop-shims-mapr520
-       scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-hadoop-shims.git
-       scmBranch       :  ${DEFAULT_BRANCH}
-       directives      :  += --projects shims/mapr520
-       versionProperty :  pentaho-hadoop-shims.version
-       archivable      :  false
-
-     - jobID           :  big-data-hadoop-shims-mapr60
-       scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-hadoop-shims.git
-       scmBranch       :  ${DEFAULT_BRANCH}
-       directives      :  += --projects shims/mapr60
-       versionProperty :  pentaho-hadoop-shims.version
-       archivable      :  false
-
-     - jobID           :  big-data-hadoop-shims-emr59
-       scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-hadoop-shims.git
-       scmBranch       :  ${DEFAULT_BRANCH}
-       directives      :  += --projects shims/emr59
-       versionProperty :  pentaho-hadoop-shims.version
-       archivable      :  false
-
-     - jobID           :  big-data-hadoop-shims-emr511
-       scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-hadoop-shims.git
-       scmBranch       :  ${DEFAULT_BRANCH}
-       directives      :  += --projects shims/emr511
-       versionProperty :  pentaho-hadoop-shims.version
-       archivable      :  false
-
-     - jobID           :  big-data-hadoop-shims-hdi35
-       scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-hadoop-shims.git
-       scmBranch       :  ${DEFAULT_BRANCH}
-       directives      :  += --projects shims/hdi35
-       versionProperty :  pentaho-hadoop-shims.version
-       archivable      :  false
-
-  osgi-bundles-highdeps:
-
+       root            :  shims
+       parallelize     :  true
+       
      - jobID           :  osgi-bundles-highdeps
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-osgi-bundles.git
        scmBranch       :  ${DEFAULT_BRANCH}
@@ -101,7 +51,7 @@ jobGroups:
        versionProperty :  pentaho-osgi-bundles.version
        archivable      :  false
 
-  big-data-plugin-features:
+  60:
 
      - jobID           :  big-data-plugin-features
        scmUrl          :  ${PENTAHO_SCM_ROOT}/big-data-plugin.git
@@ -110,16 +60,14 @@ jobGroups:
        versionProperty :  big-data-plugin.version
        archivable      :  false
 
-  big-data-hadoop-shims-ee:
+  70:
 
-     - jobID           :  big-data-hadoop-shims-ee
+     - jobID           :  hadoop-shims-ee-common
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-big-data-ee.git
        scmBranch       :  ${DEFAULT_BRANCH}
-       directives      :  += -DskipDefault -P base,all
+       directives      :  += -DskipDefault -P common
+       parallelize     :  true
        versionProperty :  pentaho-hadoop-shims.version
-       atomicScmCheckout: true
-
-  pdi-yarn-plugin:
 
      - jobID           :  pdi-yarn-plugin
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-yarn-kettle-plugin.git
@@ -127,29 +75,40 @@ jobGroups:
        versionProperty :  pentaho-kettle-yarn-plugin.version
        archivable      :  false
 
-  karaf-assembly:
-
+# yarn was removed from karaf assembly so this should work    
      - jobID           :  karaf-assembly
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-karaf-assembly.git
        scmBranch       :  ${DEFAULT_BRANCH}
+       parallelize     :  true
        versionProperty :  pentaho-karaf.version
+       testable        :  false
 
-  big-data-plugin-assembly:
+  80:
+
+     - jobID           :  hadoop-shims-ee-all
+       scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-big-data-ee.git
+       scmBranch       :  ${DEFAULT_BRANCH}
+       root            :  shims
+       directives      :  += -P all
+       parallelize     :  true
+       versionProperty :  pentaho-hadoop-shims.version
 
      - jobID           :  big-data-plugin-assembly
        scmUrl          :  ${PENTAHO_SCM_ROOT}/big-data-plugin.git
        scmBranch       :  ${DEFAULT_BRANCH}
        versionProperty :  big-data-plugin.version
        root            :  assemblies
-
-  karaf-assembly-ee:
+       parallelize     :  true
+       testable        :  false
 
      - jobID           :  karaf-assembly-ee
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-karaf-ee-assembly.git
        scmBranch       :  ${DEFAULT_BRANCH}
+       parallelize     :  true
        versionProperty :  pentaho-karaf.version
+       testable        :  false
 
-  big-data-plugin-assembly-ee-and-prd-ce:
+  130:
 
      - jobID           :  big-data-plugin-assembly-ee
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-big-data-ee.git
@@ -157,63 +116,83 @@ jobGroups:
        directives      :  += -DskipDefault -P assemblies,pack
        versionProperty :  big-data-plugin.version
        atomicScmCheckout: true
+       testable        :  false
 
      - jobID           :  prd-assembly
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-reporting.git
        scmBranch       :  ${DEFAULT_BRANCH}
-       directives      :  += -Ddesigner -Dmaven.test.failure.ignore=true
+       directives      :  += -Ddesigner
        versionProperty :  pentaho-reporting.version
-
-  prd-assembly-ee:
-
+       testable        :  false
+       
+     - jobID           :  pad-assembly
+       scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-aggdesigner.git
+       scmBranch       :  ${DEFAULT_BRANCH}
+       versionProperty :  aggdesigner.version
+# PAD does integration tests by default. We don't need them here       
+       testable        :  false                     
+       
+  140:
+        
      - jobID           :  prd-assembly-ee
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-reportdesigner-ee.git
        scmBranch       :  ${DEFAULT_BRANCH}
        versionProperty :  pentaho-reporting.version
-
-  pdi-client-assembly:
+       testable        :  false
+       
+     - jobID           :  pad-assembly-ee
+       scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-aggdesigner-ee.git
+       scmBranch       :  ${DEFAULT_BRANCH}
+       versionProperty :  aggdesigner.version
+# PAD does integration tests by default. We don't need them here       
+       testable        :  false       
 
      - jobID           :  pdi-client-assembly
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-kettle.git
        scmBranch       :  ${DEFAULT_BRANCH}
        directives      :  += -DskipDefault -P assemblies
-       versionProperty :  pdi.version
-       testable        :  false
+       versionProperty :  pdi.version       
+       testable        :  false     
+                
 
-  pdi-client-assembly-ee:
+     - jobID           :  platform-server-root-pom
+       scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-platform.git
+       scmBranch       :  ${DEFAULT_BRANCH}
+       directives      :  += -N
+       versionProperty :  platform.version
+       testable        :  false       
 
+     - jobID           :  platform-server-ee-root-pom
+       scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-platform-ee.git
+       scmBranch       :  ${DEFAULT_BRANCH}
+       directives      :  += -pl .,bi-platform-ee
+       versionProperty :  platform.version
+       testable        :  false               
+       
+  150:
+  
      - jobID           :  pdi-client-assembly-ee
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-ee.git
        scmBranch       :  ${DEFAULT_BRANCH}
        versionProperty :  pdi.version
        root            :  data-integration
-       testable        :  false
-
-  platform-and-aggdesigner-assemblies:
-
+       testable        :  false   
+       
      - jobID           :  platform-server-assembly
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-platform.git
        scmBranch       :  ${DEFAULT_BRANCH}
-       directives      :  += -DskipDefault -P platform-assemble
+       root            :  assemblies
+       parallelize     :  true
        versionProperty :  platform.version
-       testable        :  false
-
-     - jobID           :  pad
-       scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-aggdesigner.git
-       scmBranch       :  ${DEFAULT_BRANCH}
-       versionProperty :  aggdesigner.version
-
-  platform-server-assembly-ee:
-
+       testable        :  false       
+       
+  160:
+  
      - jobID           :  platform-server-assembly-ee
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-platform-ee.git
        scmBranch       :  ${DEFAULT_BRANCH}
-       directives      :  += -DskipDefault -P platform-ee-assemble
+       root            :  assemblies
+       parallelize     :  true
        versionProperty :  platform.version
-       testable        :  false
-
-     - jobID           :  pad-assembly-ee
-       scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-aggdesigner-ee.git
-       scmBranch       :  ${DEFAULT_BRANCH}
-       versionProperty :  aggdesigner.version
-       testable        :  false
+       testable        :  false               
+       
