@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -66,6 +66,8 @@ public class Import {
 
   public static final String STRING_IMPORT = "Import";
   public static final String ROOT_DIRECTORY = "/";
+  public static final String PUBLIC_DIRECTORY = "public";
+  public static final String HOME_DIRECTORY = "home";
 
   private static class ImportFeedback implements RepositoryImportFeedbackInterface, HasOverwritePrompter {
     private final LogChannelInterface log;
@@ -350,12 +352,6 @@ public class Import {
     SimpleDateFormat df = new SimpleDateFormat( "yyyy/MM/dd HH:mm:ss.SSS" );
     start = new Date(  );
     int returnCode = 0;
-
-    if ( ROOT_DIRECTORY.equals( optionDirname.toString() ) ) {
-      log.logError( BaseMessages.getString( PKG, "Import.Error.TargetDirectoryIsRootDirectory" ) );
-      exitJVM( 1 );
-    }
-
     try {
       RepositoryDirectoryInterface tree = repository.loadRepositoryDirectoryTree();
 
