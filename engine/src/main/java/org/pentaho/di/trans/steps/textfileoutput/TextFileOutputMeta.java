@@ -767,7 +767,9 @@ public class TextFileOutputMeta extends BaseFileOutputMeta implements StepMetaIn
       if ( v != null ) {
         v.setLength( field.getLength() );
         v.setPrecision( field.getPrecision() );
-        v.setConversionMask( field.getFormat() );
+        if ( field.getFormat() != null ) {
+          v.setConversionMask( field.getFormat() );
+        }
         v.setDecimalSymbol( field.getDecimalSymbol() );
         v.setGroupingSymbol( field.getGroupingSymbol() );
         v.setCurrencySymbol( field.getCurrencySymbol() );
