@@ -106,7 +106,7 @@ define(
         }
 
         function search(path, value) {
-          return _httpGet([baseUrl, "search", encodeURIComponent(path), value].join("/"));
+          return _httpGet([baseUrl, "search", encodeURIComponent(path), encodeURIComponent(value)].join("/"));
         }
 
         /**
@@ -151,9 +151,9 @@ define(
          */
         function saveFile(path, name, fileName, override) {
           if (fileName === null) {
-            return _httpGet([baseUrl, "saveFile", encodeURIComponent(path), name, override].join("/"));
+            return _httpGet([baseUrl, "saveFile", encodeURIComponent(path), encodeURIComponent(name), override].join("/"));
           }
-          return _httpGet([baseUrl, "saveFile", encodeURIComponent(path), name, fileName, override].join("/"));
+          return _httpGet([baseUrl, "saveFile", encodeURIComponent(path), encodeURIComponent(name), encodeURIComponent(fileName), override].join("/"));
         }
 
         /**
@@ -168,10 +168,10 @@ define(
         function checkForSecurityOrDupeIssues(path, name, fileName, override) {
           if (fileName === null) {
             return _httpGet([baseUrl, "checkForSecurityOrDupeIssues",
-              encodeURIComponent(path), name, override].join("/"));
+              encodeURIComponent(path), encodeURIComponent(name), override].join("/"));
           }
           return _httpGet([baseUrl, "checkForSecurityOrDupeIssues",
-            encodeURIComponent(path), name, fileName, override].join("/"));
+            encodeURIComponent(path), encodeURIComponent(name), encodeURIComponent(fileName), override].join("/"));
         }
 
         /**
@@ -247,7 +247,7 @@ define(
          * @return {Promise} - a promise resolved once data is returned
          */
         function create(parent, name) {
-          return _httpPost([baseUrl, "create", encodeURIComponent(parent), name].join("/"), null);
+          return _httpPost([baseUrl, "create", encodeURIComponent(parent), encodeURIComponent(name)].join("/"), null);
         }
 
         /**
@@ -261,7 +261,7 @@ define(
          */
         function remove(id, name, path, type) {
           return _httpDelete([baseUrl, "remove",
-            encodeURIComponent(id), name, encodeURIComponent(path), type].join("/"));
+            encodeURIComponent(id), encodeURIComponent(name), encodeURIComponent(path), type].join("/"));
         }
 
         /**
