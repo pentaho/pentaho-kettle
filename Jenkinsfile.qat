@@ -58,7 +58,7 @@ pipeline {
         }
       }
       steps {
-        triggerJob("download-sculptor", passOnParameters)
+        triggerJob("deployment-sculptor", passOnParameters)
       }
     }
 
@@ -70,9 +70,6 @@ pipeline {
       }
       steps {
         parallel(
-          'cm-build-order-trigger': {
-            triggerJob("engops/cm-build-order-trigger", passOnParameters)
-          },
           'github-commits': {
             triggerJob("engops/github-commits", passOnParameters)
           },
@@ -87,7 +84,7 @@ pipeline {
           },
           'obfuscation-verifier': {
             triggerJob("obfuscation-verifier", passOnParameters)
-          }          
+          }
         )
       }
     }
@@ -111,5 +108,3 @@ void triggerJob(job, parameters) {
     }
   }
 }
-
-
