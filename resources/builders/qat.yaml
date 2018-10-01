@@ -9,7 +9,7 @@ buildProperties:
         BUILD_RETRIES                  : 3
 
         # TODO: Change this to clean deploy when ready to deploy
-        MAVEN_DEFAULT_DIRECTIVES       : clean install
+        MAVEN_DEFAULT_DIRECTIVES       : clean deploy
         MAVEN_PUBLIC_RELEASE_REPO_URL  : http://nexus.pentaho.org/content/repositories/public-8.2-qat
         MAVEN_PRIVATE_RELEASE_REPO_URL : http://nexus.pentaho.org/content/repositories/private-8.2-qat
 
