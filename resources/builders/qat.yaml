@@ -223,6 +223,7 @@ jobGroups:
      - jobID           :  license-ee
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-ee-license.git
        scmBranch       :  ${DEFAULT_BRANCH}
+       directives      :  += -Dmaven.test.failure.ignore=true
        versionProperty :  pentaho-ee-dsc.version
 
      - jobID           :  pdi-dataservice-plugin
