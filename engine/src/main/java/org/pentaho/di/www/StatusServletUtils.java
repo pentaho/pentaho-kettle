@@ -31,17 +31,33 @@ import java.io.File;
 public class StatusServletUtils {
 
   public static String getPentahoStyles() {
+    StringBuilder sb = new StringBuilder();
+    String themeName = "ruby"; // default pentaho theme
+    String themeCss = "globalRuby.css";
+    String mantleThemeCss = "mantleRuby.css";
+
     try {
+      String relativePathSeparator = ".." + File.separator + ".." + File.separator;
+
       // Read in currently set theme from pentaho.xml file
-      String themeSetting = ".." + File.separator + ".." + File.separator
+      String themeSetting = relativePathSeparator
           + "pentaho-solutions" + File.separator + "system" + File.separator + "pentaho.xml";
       File f = new File( themeSetting );
+
+      // Check if file exists (may be different location depending on how server was started)
+      if ( !f.exists() ) {
+        relativePathSeparator = ".." + File.separator;
+        themeSetting = relativePathSeparator
+            + "pentaho-solutions" + File.separator + "system" + File.separator + "pentaho.xml";
+      }
+
       DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
       DocumentBuilder db = dbFactory.newDocumentBuilder();
       Document doc = db.parse( f );
-      String themeName = doc.getElementsByTagName( "default-theme" ).item( 0 ).getTextContent();
+      themeName = doc.getElementsByTagName( "default-theme" ).item( 0 ).getTextContent();
+
       // Get theme CSS file
-      String themeCss = ".." + File.separator + ".." + File.separator
+      themeCss = relativePathSeparator
           + "pentaho-solutions" + File.separator + "system" + File.separator
           + "common-ui" + File.separator + "resources" + File.separator
           + "themes" + File.separator + themeName + File.separator;
@@ -53,7 +69,7 @@ public class StatusServletUtils {
         }
       }
       // Get mantle theme CSS file
-      String mantleThemeCss = ".." + File.separator + "webapps" + File.separator
+      mantleThemeCss = relativePathSeparator
           + "pentaho" + File.separator + "mantle" + File.separator
           + "themes" + File.separator + themeName + File.separator;
       File mantleThemeDir = new File( mantleThemeCss );
@@ -63,16 +79,13 @@ public class StatusServletUtils {
           break;
         }
       }
-
-      StringBuilder sb = new StringBuilder();
-      sb.append( "<link rel=\"stylesheet\" type=\"text/css\" href=\"/pentaho/content/common-ui/resources/themes/" + themeName + "/" + themeCss + "\"/>" );
-      sb.append( "<link rel=\"stylesheet\" type=\"text/css\" href=\"/pentaho/mantle/themes/" + themeName + "/" + mantleThemeCss + "\"/>" );
-      sb.append( "<link rel=\"stylesheet\" type=\"text/css\" href=\"/pentaho/mantle/MantleStyle.css\"/>" );
-      return sb.toString();
     } catch ( Exception ex ) {
       // log here
     }
 
-    return "";
+    sb.append( "<link rel=\"stylesheet\" type=\"text/css\" href=\"/pentaho/content/common-ui/resources/themes/" + themeName + "/" + themeCss + "\"/>" );
+    sb.append( "<link rel=\"stylesheet\" type=\"text/css\" href=\"/pentaho/mantle/themes/" + themeName + "/" + mantleThemeCss + "\"/>" );
+    sb.append( "<link rel=\"stylesheet\" type=\"text/css\" href=\"/pentaho/mantle/MantleStyle.css\"/>" );
+    return sb.toString();
   }
 }
