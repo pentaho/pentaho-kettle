@@ -1,0 +1,115 @@
+List passOnParameters = [string(name:"RELEASE_BUILD_NUMBER",         value:env.BUILD_NUMBER),
+                         string(name:"RELEASE_BUILD_ID",             value:env.BUILD_TIMESTAMP),
+                         string(name:"RELEASE_VERSION",              value:"8.2.0.0"),
+                         string(name:"SUITE_BUILD_RESOURCES_BRANCH", value:"8.2.0.0"),
+                         string(name:"SUITE_RELEASE_VERSION",        value:"8.2-QAT"),
+                         string(name:"JENKINS_FOLDER_NAME",          value:"8.2"),
+                         string(name:"BUILD_ID_TAIL",                value:"-${env.BUILD_NUMBER}"),
+                         string(name:"BUILD_HOSTING_ROOT",           value:"/build2/artifacts/hosted")]
+
+pipeline {
+
+  agent {
+    label 'non-master'
+  }
+
+  parameters {
+
+    booleanParam(
+        name: 'NOOP',
+        defaultValue: false,
+        description: 'No op build (test the build config)'
+    )
+  }
+
+  options {
+    timestamps()
+    disableConcurrentBuilds()
+    buildDiscarder(logRotator(numToKeepStr: '45', artifactNumToKeepStr: '3'))
+  }
+
+  stages {
+    stage('Configure') {
+      steps {
+        script {
+          if (params.OVERRIDE_PARAMS) {
+            passOnParameters << string(name:"OVERRIDE_PARAMS",value:params.OVERRIDE_PARAMS)
+          }
+          echo "Passed on parameters: ${passOnParameters}"
+        }
+      }
+    }
+
+    stage('QAT Build') {
+      when {
+        expression {
+          !params.NOOP
+        }
+      }
+      steps {
+        triggerJob("8.2-qat", passOnParameters)
+      }
+    }
+
+    stage('Download Sculptor') {
+      when {
+        expression {
+          !params.NOOP
+        }
+      }
+      steps {
+        triggerJob("download-sculptor", passOnParameters)
+      }
+    }
+
+    stage('Post Sculptor Jobs') {
+      when {
+        expression {
+          !params.NOOP
+        }
+      }
+      steps {
+        parallel(
+          'cm-build-order-trigger': {
+            triggerJob("engops/cm-build-order-trigger", passOnParameters)
+          },
+          'github-commits': {
+            triggerJob("engops/github-commits", passOnParameters)
+          },
+          'remote-ip-job-trigger': {
+            triggerJob("engops/remote-ip-job-trigger", passOnParameters)
+          },
+          'regression-smoketest-job-trigger': {
+            triggerJob("engops/regression-smoketest-job-trigger", passOnParameters)
+          },
+          'snapshot-checker': {
+            triggerJob("snapshot-checker", passOnParameters)
+          },
+          'obfuscation-verifier': {
+            triggerJob("obfuscation-verifier", passOnParameters)
+          }          
+        )
+      }
+    }
+  }
+
+}
+
+void triggerJob(job, parameters) {
+
+  script {
+    def res = build(
+      job: job,
+      wait: true,
+      propagate: false,
+      parameters: parameters
+    )
+    if (res) {
+      currentBuild.result = res.result
+      if (res.result == 'FAILURE')
+        throw new Exception("Job ${job} failed")
+    }
+  }
+}
+
+
