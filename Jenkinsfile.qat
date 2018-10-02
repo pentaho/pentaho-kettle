@@ -51,7 +51,7 @@ pipeline {
       }
     }
 
-    stage('Download Sculptor') {
+    stage('Deployment') {
       when {
         expression {
           !params.NOOP
@@ -62,7 +62,7 @@ pipeline {
       }
     }
 
-    stage('Post Sculptor Jobs') {
+    stage('Validations / Triggers') {
       when {
         expression {
           !params.NOOP
