@@ -34,8 +34,9 @@ define([
   "core-ui/components/search/search.component",
   "./services/data.service",
   "./filters/output.filter",
-  "./directives/resize.directive"
-], function(angular, appComponent, errorComponent, messageComponent, treeComponent, searchComponent, dataService, outputFilter, resizeDirective) {
+  "./directives/resize.directive",
+  './app.config'
+], function(angular, appComponent, errorComponent, messageComponent, treeComponent, searchComponent, dataService, outputFilter, resizeDirective, appConfig) {
   "use strict";
 
   var module = {
@@ -61,7 +62,8 @@ define([
       .component(searchComponent.name, searchComponent.options)
       .service(dataService.name, dataService.factory)
       .filter(outputFilter.name, outputFilter.factory)
-      .directive(resizeDirective.name, resizeDirective.options);
+      .directive(resizeDirective.name, resizeDirective.options)
+      .config(appConfig);
   }
 
   /**

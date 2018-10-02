@@ -28,8 +28,8 @@ import com.fasterxml.jackson.core.JsonToken;
 import com.fasterxml.jackson.databind.MappingJsonFactory;
 import org.pentaho.di.core.exception.KettleFileException;
 import org.pentaho.di.core.vfs.KettleVFS;
-import org.pentaho.getfields.types.json.node.Node;
 import org.pentaho.getfields.types.json.node.ArrayNode;
+import org.pentaho.getfields.types.json.node.Node;
 import org.pentaho.getfields.types.json.node.ObjectNode;
 import org.pentaho.getfields.types.json.node.ValueNode;
 
@@ -97,7 +97,9 @@ public class JsonSampler {
    * @throws IOException
    */
   public Node sample( InputStream inputStream ) throws IOException {
-    return sample( jsonFactory.createParser( inputStream ) );
+    try ( JsonParser jsonParser = jsonFactory.createParser( inputStream ) ) {
+      return sample( jsonParser );
+    }
   }
 
   /**
