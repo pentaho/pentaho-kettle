@@ -370,7 +370,7 @@ public class MultiMergeJoin extends BaseStep implements StepInterface {
       }
     }
     if ( checkFeedback( getLinesRead() ) ) {
-      logBasic( BaseMessages.getString( PKG, "MultiMergeJoin.LineNumber", getLinesRead() );
+      logBasic( BaseMessages.getString( PKG, "MultiMergeJoin.LineNumber", getLinesRead() ) );
     }
     return true;
   }
