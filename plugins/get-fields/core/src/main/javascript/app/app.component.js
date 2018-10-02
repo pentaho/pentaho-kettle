@@ -165,7 +165,11 @@ define([
     }
 
     function ok() {
-      $scope.$broadcast("ok");
+      if (vm.showMessage) {
+        cancel();
+      } else {
+        $scope.$broadcast("ok");
+      }
     }
 
     function cancel() {
