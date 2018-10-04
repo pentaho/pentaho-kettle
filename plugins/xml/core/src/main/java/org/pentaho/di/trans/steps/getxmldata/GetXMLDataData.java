@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -37,7 +37,7 @@ import java.util.Map;
 
 import org.apache.commons.vfs2.FileObject;
 import org.dom4j.Document;
-import org.dom4j.tree.AbstractNode;
+import org.dom4j.Node;
 import org.pentaho.di.core.fileinput.FileInputList;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.trans.step.BaseStepData;
@@ -71,7 +71,7 @@ public class GetXMLDataData extends BaseStepData implements StepDataInterface {
   public String tokenEnd;
   public int nodenr;
   public int nodesize;
-  public List<AbstractNode> an;
+  public List<Node> an;
   public Object[] readrow;
   public int totalpreviousfields;
   public Map<String, String> NAMESPACE = new HashMap<String, String>();
