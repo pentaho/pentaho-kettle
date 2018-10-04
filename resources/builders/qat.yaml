@@ -30,7 +30,7 @@ buildProperties:
 
         # Slack Reporting
         SLACK_INTEGRATION              : true
-        SLACK_CHANNEL                  : 'buildteam-alerts'
+        SLACK_CHANNEL                  : 'qat-builds'
 
 jobGroups:
   # Always required
