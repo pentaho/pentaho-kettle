@@ -170,13 +170,13 @@ public class MetaInjectAnalyzer extends StepAnalyzer<MetaInjectMeta> {
           sourceInjectorStepField.getField() ).append( " > [" ).append( subTransNode.getName() ).append( "] " )
           .append( targetTemplateStepAttr.getStepname() ).append( ": " ).append(
           targetTemplateStepAttr.getAttributeKey() );
-        mdiDelim = " | ";
+        mdiDelim = ", ";
       } else {
         usedMdiMappings.append( mdiDelim ).append( sourceInjectorStepField.getStepname() ).append( ": " ).append(
           sourceInjectorStepField.getField() ).append( " > [" ).append( subTransNode.getName() ).append( "] " )
           .append( targetTemplateStepAttr.getStepname() ).append( ": " ).append(
           targetTemplateStepAttr.getAttributeKey() );
-        mdiDelim = " | ";
+        mdiDelim = ", ";
 
         // if the target template step name is the same as the step we read from, we want to get the fields from the
         // target template step and pass them back to the parant injector step
@@ -251,10 +251,10 @@ public class MetaInjectAnalyzer extends StepAnalyzer<MetaInjectMeta> {
       }
     }
     if ( !streaming ) {
-      rootNode.setProperty( DictionaryConst.PROPERTY_PARAMETERS,
-        ( usedMdiMappings.length() > 0 ? "used mappings: " + usedMdiMappings.toString() : "" )
-          + ( usedMdiMappings.length() > 0 && unusedMdiMappings.length() > 0 ? " / " : "" )
-          + ( unusedMdiMappings.length() > 0 ? "unusedMdiMappings mappings: " + unusedMdiMappings.toString() : "" ) );
+      // used and unused mappings are considered "verbose" details
+      rootNode.setProperty( DictionaryConst.PROPERTY_VERBOSE_DETAILS, "usedMappings,unusedMappings" );
+      rootNode.setProperty( "usedMappings", usedMdiMappings.toString() );
+      rootNode.setProperty( "unusedMappings", unusedMdiMappings.toString() );
     }
   }
 
