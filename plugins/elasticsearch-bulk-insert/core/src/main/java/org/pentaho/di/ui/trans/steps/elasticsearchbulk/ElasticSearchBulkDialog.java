@@ -22,8 +22,6 @@
 
 package org.pentaho.di.ui.trans.steps.elasticsearchbulk;
 
-import java.util.Map;
-
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabFolder;
@@ -50,7 +48,7 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
-import org.elasticsearch.action.ListenableActionFuture;
+import org.elasticsearch.action.ActionFuture;
 import org.elasticsearch.action.admin.cluster.state.ClusterStateRequestBuilder;
 import org.elasticsearch.action.admin.cluster.state.ClusterStateResponse;
 import org.elasticsearch.action.admin.indices.exists.indices.IndicesExistsRequestBuilder;
@@ -58,14 +56,12 @@ import org.elasticsearch.action.admin.indices.exists.indices.IndicesExistsRespon
 import org.elasticsearch.action.admin.indices.recovery.RecoveryRequestBuilder;
 import org.elasticsearch.action.admin.indices.recovery.RecoveryResponse;
 import org.elasticsearch.client.AdminClient;
-import org.elasticsearch.client.Client;
 import org.elasticsearch.client.transport.NoNodeAvailableException;
-import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.cluster.ClusterState;
 import org.elasticsearch.common.settings.Settings;
+import org.elasticsearch.common.transport.TransportAddress;
 import org.elasticsearch.discovery.MasterNotDiscoveredException;
-import org.elasticsearch.node.Node;
-import org.elasticsearch.node.NodeBuilder;
+import org.elasticsearch.transport.client.PreBuiltTransportClient;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Props;
 import org.pentaho.di.core.exception.KettleException;
@@ -75,6 +71,7 @@ import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDialogInterface;
 import org.pentaho.di.trans.steps.elasticsearchbulk.ElasticSearchBulkMeta;
+import org.pentaho.di.trans.steps.elasticsearchbulk.ElasticSearchBulkMeta.Server;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.widget.ColumnInfo;
 import org.pentaho.di.ui.core.widget.LabelComboVar;
@@ -82,6 +79,9 @@ import org.pentaho.di.ui.core.widget.LabelTextVar;
 import org.pentaho.di.ui.core.widget.TableView;
 import org.pentaho.di.ui.core.widget.TextVar;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
+
+import java.net.InetAddress;
+import java.util.Map;
 
 public class ElasticSearchBulkDialog extends BaseStepDialog implements StepDialogInterface {
 
@@ -221,7 +221,7 @@ public class ElasticSearchBulkDialog extends BaseStepDialog implements StepDialo
     wCancel = new Button( shell, SWT.PUSH );
     wCancel.setText( BaseMessages.getString( PKG, "System.Button.Cancel" ) );
 
-    setButtonPositions( new Button[]{ wOK, wCancel }, margin, null );
+    setButtonPositions( new Button[]{wOK, wCancel}, margin, null );
 
     fdTabFolder = new FormData();
     fdTabFolder.left = new FormAttachment( 0, 0 );
@@ -334,17 +334,15 @@ public class ElasticSearchBulkDialog extends BaseStepDialog implements StepDialo
     wIndexGroup.setLayout( indexGroupLayout );
 
     // Index
-    wIndex =
-      new LabelTextVar( transMeta, wIndexGroup,
-        BaseMessages.getString( PKG, "ElasticSearchBulkDialog.Index.Label" ),
-        BaseMessages.getString( PKG, "ElasticSearchBulkDialog.Index.Tooltip" ) );
+    wIndex = new LabelTextVar( transMeta, wIndexGroup, BaseMessages.getString( PKG, "ElasticSearchBulkDialog.Index"
+            + ".Label" ), BaseMessages.getString( PKG, "ElasticSearchBulkDialog.Index.Tooltip" ) );
     wIndex.addModifyListener( lsMod );
 
     // Type
     wType =
-      new LabelTextVar( transMeta, wIndexGroup,
-        BaseMessages.getString( PKG, "ElasticSearchBulkDialog.Type.Label" ),
-        BaseMessages.getString( PKG, "ElasticSearchBulkDialog.Type.Tooltip" ) );
+            new LabelTextVar( transMeta, wIndexGroup, BaseMessages.getString( PKG, "ElasticSearchBulkDialog.Type"
+                    + ".Label" ),
+                    BaseMessages.getString( PKG, "ElasticSearchBulkDialog.Type.Tooltip" ) );
     wType.addModifyListener( lsMod );
 
     // Test button
@@ -359,10 +357,10 @@ public class ElasticSearchBulkDialog extends BaseStepDialog implements StepDialo
       }
     } );
 
-    Control[] connectionControls = new Control[]{ wIndex, wType };
+    Control[] connectionControls = new Control[]{wIndex, wType};
     placeControls( wIndexGroup, connectionControls );
 
-    BaseStepDialog.positionBottomButtons( wIndexGroup, new Button[]{ wTest }, Const.MARGIN, wType );
+    BaseStepDialog.positionBottomButtons( wIndexGroup, new Button[]{wTest}, Const.MARGIN, wType );
 
     fdIndexGroup = new FormData();
     fdIndexGroup.left = new FormAttachment( 0, Const.MARGIN );
@@ -395,21 +393,20 @@ public class ElasticSearchBulkDialog extends BaseStepDialog implements StepDialo
       }
     } );
 
-    setButtonPositions( new Button[]{ wTestCl }, Const.MARGIN, null );
+    setButtonPositions( new Button[]{wTestCl}, Const.MARGIN, null );
 
     ColumnInfo[] columnsMeta = new ColumnInfo[2];
     columnsMeta[0] =
-      new ColumnInfo(
-        BaseMessages.getString( PKG, "ElasticSearchBulkDialog.ServersTab.Address.Column" ),
-        ColumnInfo.COLUMN_TYPE_TEXT, false );
+            new ColumnInfo( BaseMessages.getString( PKG, "ElasticSearchBulkDialog.ServersTab.Address.Column" ),
+                    ColumnInfo.COLUMN_TYPE_TEXT, false );
+    columnsMeta[0].setUsingVariables( true );
     columnsMeta[1] =
-      new ColumnInfo(
-        BaseMessages.getString( PKG, "ElasticSearchBulkDialog.ServersTab.Port.Column" ),
-        ColumnInfo.COLUMN_TYPE_TEXT, true );
+            new ColumnInfo( BaseMessages.getString( PKG, "ElasticSearchBulkDialog.ServersTab.Port.Column" ),
+                    ColumnInfo.COLUMN_TYPE_TEXT, true );
 
     wServers =
-      new TableView(
-        transMeta, wServersComp, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, columnsMeta, 1, lsMod, props );
+            new TableView( transMeta, wServersComp, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, columnsMeta, 1, lsMod,
+                    props );
     FormData fdServers = new FormData();
     fdServers.left = new FormAttachment( 0, Const.MARGIN );
     fdServers.top = new FormAttachment( 0, Const.MARGIN );
@@ -441,17 +438,16 @@ public class ElasticSearchBulkDialog extends BaseStepDialog implements StepDialo
 
     ColumnInfo[] columnsMeta = new ColumnInfo[2];
     columnsMeta[0] =
-      new ColumnInfo(
-        BaseMessages.getString( PKG, "ElasticSearchBulkDialog.SettingsTab.Property.Column" ),
-        ColumnInfo.COLUMN_TYPE_TEXT, false );
+            new ColumnInfo( BaseMessages.getString( PKG, "ElasticSearchBulkDialog.SettingsTab.Property.Column" ),
+                    ColumnInfo.COLUMN_TYPE_TEXT, false );
     columnsMeta[1] =
-      new ColumnInfo(
-        BaseMessages.getString( PKG, "ElasticSearchBulkDialog.SettingsTab.Value.Column" ),
-        ColumnInfo.COLUMN_TYPE_TEXT, false );
+            new ColumnInfo( BaseMessages.getString( PKG, "ElasticSearchBulkDialog.SettingsTab.Value.Column" ),
+                    ColumnInfo.COLUMN_TYPE_TEXT, false );
+    columnsMeta[1].setUsingVariables( true );
 
     wSettings =
-      new TableView(
-        transMeta, wSettingsComp, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, columnsMeta, 1, lsMod, props );
+            new TableView( transMeta, wSettingsComp, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, columnsMeta, 1, lsMod,
+                    props );
     FormData fdServers = new FormData();
     fdServers.left = new FormAttachment( 0, Const.MARGIN );
     fdServers.top = new FormAttachment( 0, Const.MARGIN );
@@ -494,25 +490,23 @@ public class ElasticSearchBulkDialog extends BaseStepDialog implements StepDialo
     };
     wGet.addListener( SWT.Selection, lsGet );
 
-    setButtonPositions( new Button[]{ wGet }, Const.MARGIN, null );
+    setButtonPositions( new Button[]{wGet}, Const.MARGIN, null );
 
     final int fieldsRowCount = model.getFields().size();
 
-    String[] names = this.fieldNames != null ? this.fieldNames : new String[]{ "" };
+    String[] names = this.fieldNames != null ? this.fieldNames : new String[]{""};
     ColumnInfo[] columnsMeta = new ColumnInfo[2];
     columnsMeta[0] =
-      new ColumnInfo(
-        BaseMessages.getString( PKG, "ElasticSearchBulkDialog.NameColumn.Column" ),
-        ColumnInfo.COLUMN_TYPE_CCOMBO, names, false );
+            new ColumnInfo( BaseMessages.getString( PKG, "ElasticSearchBulkDialog.NameColumn.Column" ),
+                    ColumnInfo.COLUMN_TYPE_CCOMBO, names, false );
     columnsMeta[1] =
-      new ColumnInfo(
-        BaseMessages.getString( PKG, "ElasticSearchBulkDialog.TargetNameColumn.Column" ),
-        ColumnInfo.COLUMN_TYPE_TEXT, false );
+            new ColumnInfo( BaseMessages.getString( PKG, "ElasticSearchBulkDialog.TargetNameColumn.Column" ),
+                    ColumnInfo.COLUMN_TYPE_TEXT, false );
 
     wFields =
-      new TableView(
-        transMeta, wFieldsComp, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, columnsMeta, fieldsRowCount,
-        lsMod, props );
+            new TableView( transMeta, wFieldsComp, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, columnsMeta,
+                    fieldsRowCount,
+                    lsMod, props );
 
     FormData fdFields = new FormData();
     fdFields.left = new FormAttachment( 0, Const.MARGIN );
@@ -547,9 +541,9 @@ public class ElasticSearchBulkDialog extends BaseStepDialog implements StepDialo
 
     // Timeout
     wTimeOut =
-      new LabelTimeComposite( wSettingsGroup,
-        BaseMessages.getString( PKG, "ElasticSearchBulkDialog.TimeOut.Label" ),
-        BaseMessages.getString( PKG, "ElasticSearchBulkDialog.TimeOut.Tooltip" ) );
+            new LabelTimeComposite( wSettingsGroup, BaseMessages.getString( PKG, "ElasticSearchBulkDialog.TimeOut"
+                    + ".Label" ),
+                    BaseMessages.getString( PKG, "ElasticSearchBulkDialog.TimeOut.Tooltip" ) );
     props.setLook( wTimeOut );
     wTimeOut.addModifyListener( lsMod );
 
@@ -583,9 +577,9 @@ public class ElasticSearchBulkDialog extends BaseStepDialog implements StepDialo
 
     // ID input
     wIdInField =
-      new LabelComboVar( transMeta, wSettingsGroup,
-        BaseMessages.getString( PKG, "ElasticSearchBulkDialog.IdField.Label" ),
-        BaseMessages.getString( PKG, "ElasticSearchBulkDialog.IdField.Tooltip" ) );
+            new LabelComboVar( transMeta, wSettingsGroup, BaseMessages.getString( PKG,
+                    "ElasticSearchBulkDialog.IdField.Label" ), BaseMessages.getString( PKG,
+                    "ElasticSearchBulkDialog.IdField.Tooltip" ) );
     props.setLook( wIdInField );
     wIdInField.getComboWidget().setEditable( true );
     wIdInField.addModifyListener( lsMod );
@@ -638,9 +632,9 @@ public class ElasticSearchBulkDialog extends BaseStepDialog implements StepDialo
 
     // ID out field
     wIdOutField =
-      new LabelTextVar( transMeta, wSettingsGroup,
-        BaseMessages.getString( PKG, "ElasticSearchBulkDialog.IdOutField.Label" ),
-        BaseMessages.getString( PKG, "ElasticSearchBulkDialog.IdOutField.Tooltip" ) );
+            new LabelTextVar( transMeta, wSettingsGroup, BaseMessages.getString( PKG,
+                    "ElasticSearchBulkDialog.IdOutField.Label" ), BaseMessages.getString( PKG,
+                    "ElasticSearchBulkDialog.IdOutField.Tooltip" ) );
     props.setLook( wIdOutField );
     wIdOutField.setEnabled( wUseOutput.getSelection() );
     wIdOutField.addModifyListener( lsMod );
@@ -668,9 +662,9 @@ public class ElasticSearchBulkDialog extends BaseStepDialog implements StepDialo
 
     // Json field
     wJsonField =
-      new LabelComboVar( transMeta, wSettingsGroup,
-        BaseMessages.getString( PKG, "ElasticSearchBulkDialog.JsonField.Label" ),
-        BaseMessages.getString( PKG, "ElasticSearchBulkDialog.JsonField.Tooltip" ) );
+            new LabelComboVar( transMeta, wSettingsGroup, BaseMessages.getString( PKG,
+                    "ElasticSearchBulkDialog.JsonField.Label" ), BaseMessages.getString( PKG,
+                    "ElasticSearchBulkDialog.JsonField.Tooltip" ) );
     wJsonField.getComboWidget().setEditable( true );
     props.setLook( wJsonField );
     wJsonField.addModifyListener( lsMod );
@@ -685,10 +679,9 @@ public class ElasticSearchBulkDialog extends BaseStepDialog implements StepDialo
     getPreviousFields( wJsonField );
     wJsonField.setEnabled( wIsJson.getSelection() );
 
-    Control[] settingsControls =
-      new Control[]{
-        wlBatchSize, wBatchSize, wlStopOnError, wStopOnError, wTimeOut, wIdInField, wlIsOverwrite,
-        wIsOverwrite, wlUseOutput, wUseOutput, wIdOutField, wlIsJson, wIsJson, wJsonField };
+    Control[] settingsControls = new Control[]{wlBatchSize, wBatchSize, wlStopOnError, wStopOnError, wTimeOut,
+      wIdInField, wlIsOverwrite, wIsOverwrite, wlUseOutput, wUseOutput, wIdOutField, wlIsJson, wIsJson,
+      wJsonField};
     placeControls( wSettingsGroup, settingsControls );
 
     fdSettingsGroup = new FormData();
@@ -715,9 +708,8 @@ public class ElasticSearchBulkDialog extends BaseStepDialog implements StepDialo
           fieldNames = r.getFieldNames();
         }
       } catch ( KettleException ke ) {
-        new ErrorDialog( shell,
-          BaseMessages.getString( PKG, "ElasticSearchBulkDialog.FailedToGetFields.DialogTitle" ),
-          BaseMessages.getString( PKG, "ElasticSearchBulkDialog.FailedToGetFields.DialogMessage" ), ke );
+        new ErrorDialog( shell, BaseMessages.getString( PKG, "ElasticSearchBulkDialog.FailedToGetFields.DialogTitle" ),
+                BaseMessages.getString( PKG, "ElasticSearchBulkDialog.FailedToGetFields.DialogMessage" ), ke );
         return new String[0];
       }
     }
@@ -729,11 +721,11 @@ public class ElasticSearchBulkDialog extends BaseStepDialog implements StepDialo
     try {
       RowMetaInterface r = transMeta.getPrevStepFields( stepname );
       if ( r != null ) {
-        BaseStepDialog.getFieldsFromPrevious( r, table, 1, new int[]{ 1, 2 }, null, 0, 0, null );
+        BaseStepDialog.getFieldsFromPrevious( r, table, 1, new int[]{1, 2}, null, 0, 0, null );
       }
     } catch ( KettleException ke ) {
       new ErrorDialog( shell, BaseMessages.getString( PKG, "System.Dialog.GetFieldsFailed.Title" ), BaseMessages
-        .getString( PKG, "System.Dialog.GetFieldsFailed.Message" ), ke );
+              .getString( PKG, "System.Dialog.GetFieldsFailed.Message" ), ke );
     }
   }
 
@@ -837,9 +829,8 @@ public class ElasticSearchBulkDialog extends BaseStepDialog implements StepDialo
     try {
       toModel( model );
     } catch ( KettleException e ) {
-      new ErrorDialog( shell,
-        BaseMessages.getString( PKG, "ElasticSearchBulkDialog.ErrorValidateData.DialogTitle" ),
-        BaseMessages.getString( PKG, "ElasticSearchBulkDialog.ErrorValidateData.DialogMessage" ), e );
+      new ErrorDialog( shell, BaseMessages.getString( PKG, "ElasticSearchBulkDialog.ErrorValidateData.DialogTitle" ),
+              BaseMessages.getString( PKG, "ElasticSearchBulkDialog.ErrorValidateData.DialogMessage" ), e );
     }
     dispose();
   }
@@ -900,90 +891,69 @@ public class ElasticSearchBulkDialog extends BaseStepDialog implements StepDialo
 
   private void test( TestType testType ) {
 
-    // Save off the thread's context class loader to restore after the test
-    ClassLoader originalClassloader = Thread.currentThread().getContextClassLoader();
-
-    // Now ensure that the thread's context class loader is the plugin's classloader
-    Thread.currentThread().setContextClassLoader( this.getClass().getClassLoader() );
-
-    Client client = null;
-    Node node = null;
     try {
 
       ElasticSearchBulkMeta tempMeta = new ElasticSearchBulkMeta();
       toModel( tempMeta );
 
-      Settings.Builder settingsBuilder = Settings.settingsBuilder();
-      settingsBuilder.put( Settings.Builder.EMPTY_SETTINGS ); // keep default classloader
-      settingsBuilder.put( tempMeta.getSettingsMap() );
-      TransportClient.Builder tClientBuilder = TransportClient.builder().settings( settingsBuilder );
+      // if ( !tempMeta.getServers().isEmpty() ) {
 
-      if ( !tempMeta.getServers().isEmpty() ) {
-        node = null;
-        TransportClient tClient = tClientBuilder.build();
-        for ( ElasticSearchBulkMeta.Server s : tempMeta.getServers() ) {
-          tClient.addTransportAddress( s.getAddr() );
+      Settings.Builder settingsBuilder = Settings.builder();
+      settingsBuilder.put( Settings.Builder.EMPTY_SETTINGS );
+      tempMeta.getSettingsMap().entrySet().stream().forEach( ( s ) -> settingsBuilder.put( s.getKey(), transMeta
+              .environmentSubstitute( s.getValue() ) ) );
+
+      try ( PreBuiltTransportClient client = new PreBuiltTransportClient( settingsBuilder.build() ) ) {
+
+        for ( Server server : tempMeta.getServers() ) {
+
+          client.addTransportAddress( new TransportAddress(
+                  InetAddress.getByName( transMeta.environmentSubstitute( server.getAddress() ) ),
+                  server.getPort() ) );
+
         }
-        client = tClient;
-      } else {
-        NodeBuilder nodeBuilder = NodeBuilder.nodeBuilder();
-        nodeBuilder.settings( settingsBuilder );
-        node = nodeBuilder.client( true ).node();
-        client = node.client();
-        node.start();
-      }
 
-      AdminClient admin = client.admin();
+        AdminClient admin = client.admin();
 
-      switch ( testType ) {
-        case INDEX:
-          if ( StringUtils.isBlank( tempMeta.getIndex() ) ) {
-            showError( BaseMessages.getString( PKG, "ElasticSearchBulk.Error.NoIndex" ) );
+        switch ( testType ) {
+          case INDEX:
+            if ( StringUtils.isBlank( tempMeta.getIndex() ) ) {
+              showError( BaseMessages.getString( PKG, "ElasticSearchBulk.Error.NoIndex" ) );
+              break;
+            }
+            // First check to see if the index exists
+            IndicesExistsRequestBuilder indicesExistBld = admin.indices().prepareExists( tempMeta.getIndex() );
+            IndicesExistsResponse indicesExistResponse = indicesExistBld.execute().get();
+            if ( !indicesExistResponse.isExists() ) {
+              showError( BaseMessages.getString( PKG, "ElasticSearchBulkDialog.Error.NoIndex" ) );
+              return;
+            }
+
+            RecoveryRequestBuilder indicesBld = admin.indices().prepareRecoveries( tempMeta.getIndex() );
+            ActionFuture<RecoveryResponse> lafInd = indicesBld.execute();
+            String shards = "" + lafInd.get().getSuccessfulShards() + "/" + lafInd.get().getTotalShards();
+            showMessage( BaseMessages.getString( PKG, "ElasticSearchBulkDialog.TestIndex.TestOK", shards ) );
             break;
-          }
-          // First check to see if the index exists
-          IndicesExistsRequestBuilder indicesExistBld = admin.indices().prepareExists( tempMeta.getIndex() );
-          IndicesExistsResponse indicesExistResponse = indicesExistBld.execute().get();
-          if ( !indicesExistResponse.isExists() ) {
-            showError( BaseMessages.getString( PKG, "ElasticSearchBulkDialog.Error.NoIndex" ) );
-            return;
-          }
+          case CLUSTER:
+            ClusterStateRequestBuilder clusterBld = admin.cluster().prepareState();
+            ActionFuture<ClusterStateResponse> lafClu = clusterBld.execute();
+            ClusterStateResponse cluResp = lafClu.actionGet();
+            String name = cluResp.getClusterName().value();
+            ClusterState cluState = cluResp.getState();
+            int numNodes = cluState.getNodes().getSize();
+            showMessage( BaseMessages.getString( PKG, "ElasticSearchBulkDialog.TestCluster.TestOK", name, numNodes ) );
+            break;
+          default:
+            break;
+        }
 
-          RecoveryRequestBuilder indicesBld = admin.indices().prepareRecoveries( tempMeta.getIndex() );
-          ListenableActionFuture<RecoveryResponse> lafInd = indicesBld.execute();
-          String shards = "" + lafInd.get().getSuccessfulShards() + "/" + lafInd.get().getTotalShards();
-          showMessage( BaseMessages.getString( PKG, "ElasticSearchBulkDialog.TestIndex.TestOK", shards ) );
-          break;
-        case CLUSTER:
-          ClusterStateRequestBuilder clusterBld = admin.cluster().prepareState();
-          ListenableActionFuture<ClusterStateResponse> lafClu = clusterBld.execute();
-          ClusterStateResponse cluResp = lafClu.actionGet();
-          String name = cluResp.getClusterName().value();
-          ClusterState cluState = cluResp.getState();
-          int numNodes = cluState.getNodes().size();
-          showMessage( BaseMessages.getString( PKG, "ElasticSearchBulkDialog.TestCluster.TestOK", name, numNodes ) );
-          break;
-        default:
-          break;
       }
-    } catch ( NoNodeAvailableException e ) {
-      showError( BaseMessages.getString( PKG, "ElasticSearchBulkDialog.Error.NoNodesFound" ) );
-    } catch ( MasterNotDiscoveredException e ) {
+
+    } catch ( NoNodeAvailableException | MasterNotDiscoveredException e ) {
       showError( BaseMessages.getString( PKG, "ElasticSearchBulkDialog.Error.NoNodesFound" ) );
     } catch ( Exception e ) {
       showError( e.getLocalizedMessage() );
-    } finally {
-      if ( client != null ) {
-        client.close();
-      }
-      if ( node != null ) {
-        node.close();
-      }
     }
-
-    // Restore the original classloader
-    Thread.currentThread().setContextClassLoader( originalClassloader );
-
   }
 
   private void showError( String message ) {

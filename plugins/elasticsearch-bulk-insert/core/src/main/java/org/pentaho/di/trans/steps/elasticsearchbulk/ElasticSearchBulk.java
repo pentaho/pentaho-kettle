@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,32 +22,25 @@
 
 package org.pentaho.di.trans.steps.elasticsearchbulk;
 
-import java.io.IOException;
-import java.net.UnknownHostException;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.TimeUnit;
-
 import org.apache.commons.lang.StringUtils;
 import org.elasticsearch.ElasticsearchException;
 import org.elasticsearch.ElasticsearchTimeoutException;
-import org.elasticsearch.action.ListenableActionFuture;
+import org.elasticsearch.action.ActionFuture;
+import org.elasticsearch.action.DocWriteRequest.OpType;
 import org.elasticsearch.action.bulk.BulkItemResponse;
 import org.elasticsearch.action.bulk.BulkRequestBuilder;
 import org.elasticsearch.action.bulk.BulkResponse;
 import org.elasticsearch.action.index.IndexRequest;
-import org.elasticsearch.action.index.IndexRequest.OpType;
 import org.elasticsearch.action.index.IndexRequestBuilder;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.client.transport.NoNodeAvailableException;
 import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.common.settings.Settings;
+import org.elasticsearch.common.transport.TransportAddress;
 import org.elasticsearch.common.xcontent.XContentBuilder;
 import org.elasticsearch.common.xcontent.XContentFactory;
-import org.elasticsearch.node.Node;
-import org.elasticsearch.node.NodeBuilder;
+import org.elasticsearch.common.xcontent.XContentType;
+import org.elasticsearch.transport.client.PreBuiltTransportClient;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.row.RowDataUtil;
@@ -61,6 +54,16 @@ import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
+import org.pentaho.di.trans.steps.elasticsearchbulk.ElasticSearchBulkMeta.Server;
+
+import java.io.IOException;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Does bulk insert of data into ElasticSearch
@@ -77,7 +80,6 @@ public class ElasticSearchBulk extends BaseStep implements StepInterface {
 
   TransportClient tc;
 
-  private Node node;
   private Client client;
   private String index;
   private String type;
@@ -106,10 +108,10 @@ public class ElasticSearchBulk extends BaseStep implements StepInterface {
   private Map<String, String> columnsToJson;
   private boolean hasFields;
 
-  private IndexRequest.OpType opType = OpType.CREATE;
+  private IndexRequest.OpType opType = org.elasticsearch.action.DocWriteRequest.OpType.CREATE;
 
   public ElasticSearchBulk( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta,
-      Trans trans ) {
+                            Trans trans ) {
     super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
   }
 
@@ -196,10 +198,8 @@ public class ElasticSearchBulk extends BaseStep implements StepInterface {
   }
 
   /**
-   * @param rowMeta
-   *          The metadata for the row to be indexed
-   * @param row
-   *          The data for the row to be indexed
+   * @param rowMeta The metadata for the row to be indexed
+   * @param row     The data for the row to be indexed
    */
 
   private boolean indexRow( RowMetaInterface rowMeta, Object[] row ) throws KettleStepException {
@@ -233,7 +233,7 @@ public class ElasticSearchBulk extends BaseStep implements StepInterface {
       throw new KettleStepException( BaseMessages.getString( PKG, "ElasticSearchBulkDialog.Error.NoNodesFound" ) );
     } catch ( Exception e ) {
       throw new KettleStepException( BaseMessages.getString( PKG, "ElasticSearchBulk.Log.Exception", e
-          .getLocalizedMessage() ), e );
+              .getLocalizedMessage() ), e );
     }
   }
 
@@ -244,9 +244,9 @@ public class ElasticSearchBulk extends BaseStep implements StepInterface {
   private void addSourceFromJsonString( Object[] row, IndexRequestBuilder requestBuilder ) throws KettleStepException {
     Object jsonString = row[jsonFieldIdx];
     if ( jsonString instanceof byte[] ) {
-      requestBuilder.setSource( (byte[]) jsonString );
+      requestBuilder.setSource( (byte[]) jsonString, XContentType.JSON );
     } else if ( jsonString instanceof String ) {
-      requestBuilder.setSource( ( (String) jsonString ).getBytes() );
+      requestBuilder.setSource( (String) jsonString, XContentType.JSON );
     } else {
       throw new KettleStepException( BaseMessages.getString( "ElasticSearchBulk.Error.NoJsonFieldFormat" ) );
     }
@@ -259,7 +259,7 @@ public class ElasticSearchBulk extends BaseStep implements StepInterface {
    * @throws IOException
    */
   private void addSourceFromRowFields( IndexRequestBuilder requestBuilder, RowMetaInterface rowMeta, Object[] row )
-    throws IOException {
+          throws IOException {
     XContentBuilder jsonBuilder = XContentFactory.jsonBuilder().startObject();
 
     for ( int i = 0; i < rowMeta.size(); i++ ) {
@@ -301,7 +301,7 @@ public class ElasticSearchBulk extends BaseStep implements StepInterface {
 
       } catch ( Exception e ) {
         logError( BaseMessages.getString( PKG, "ElasticSearchBulk.Log.ErrorOccurredDuringStepInitialize" )
-            + e.getMessage() );
+                + e.getMessage() );
       }
       return true;
     }
@@ -326,13 +326,14 @@ public class ElasticSearchBulk extends BaseStep implements StepInterface {
     this.hasFields = columnsToJson.size() > 0;
 
     this.opType =
-        StringUtils.isNotBlank( meta.getIdInField() ) && meta.isOverWriteIfSameId() ? OpType.INDEX : OpType.CREATE;
+            StringUtils.isNotBlank( meta.getIdInField() ) && meta.isOverWriteIfSameId() ? OpType.INDEX : OpType.CREATE;
 
   }
 
   private boolean processBatch( boolean makeNew ) throws KettleStepException {
 
-    ListenableActionFuture<BulkResponse> actionFuture = currentRequest.execute();
+
+    ActionFuture<BulkResponse> actionFuture = currentRequest.execute();
     boolean responseOk = false;
 
     BulkResponse response = null;
@@ -420,7 +421,7 @@ public class ElasticSearchBulk extends BaseStep implements StepInterface {
   private void addIdToRow( String id, int rowIndex ) {
 
     data.inputRowBuffer[rowIndex] =
-        RowDataUtil.resizeArray( data.inputRowBuffer[rowIndex], getInputRowMeta().size() + 1 );
+            RowDataUtil.resizeArray( data.inputRowBuffer[rowIndex], getInputRowMeta().size() + 1 );
     data.inputRowBuffer[rowIndex][getInputRowMeta().size()] = id;
 
   }
@@ -467,26 +468,29 @@ public class ElasticSearchBulk extends BaseStep implements StepInterface {
   }
 
   private void initClient() throws UnknownHostException {
-    Settings.Builder settingsBuilder = Settings.builder();
-    settingsBuilder.put( Settings.Builder.EMPTY_SETTINGS ); // keep default classloader
-    settingsBuilder.put( meta.getSettingsMap() );
-    // Settings settings = settingsBuilder.build();
-    TransportClient.Builder tClientBuilder = TransportClient.builder().settings( settingsBuilder );
 
-    if ( !meta.servers.isEmpty() ) {
-      node = null;
-      TransportClient tClient = tClientBuilder.build();
-      for ( ElasticSearchBulkMeta.Server s : meta.servers ) {
-        tClient.addTransportAddress( s.getAddr() );
-      }
-      client = tClient;
-    } else {
-      NodeBuilder nodeBuilder = NodeBuilder.nodeBuilder();
-      nodeBuilder.settings( settingsBuilder );
-      node = nodeBuilder.client( true ).node(); // this node will not hold data
-      client = node.client();
-      node.start();
+
+    Settings.Builder settingsBuilder = Settings.builder();
+    settingsBuilder.put( Settings.Builder.EMPTY_SETTINGS );
+    meta.getSettingsMap().entrySet().stream().forEach( ( s ) -> settingsBuilder.put( s.getKey(),
+            environmentSubstitute( s.getValue() ) ) );
+
+    PreBuiltTransportClient tClient = new PreBuiltTransportClient( settingsBuilder.build() );
+
+    for ( Server server : meta.getServers() ) {
+      tClient.addTransportAddress( new TransportAddress(
+              InetAddress.getByName( environmentSubstitute( server.getAddress() ) ),
+              server.getPort() ) );
     }
+
+    client = tClient;
+
+    /** With the upgrade to elasticsearch 6.3.0, removed the NodeBuilder,
+     *  which was removed from the elasticsearch 5.0 API, see:
+     *  https://www.elastic.co/guide/en/elasticsearch/reference/5.0/breaking_50_java_api_changes
+     *  .html#_nodebuilder_removed
+     */
+
   }
 
   private void disposeClient() {
@@ -494,9 +498,7 @@ public class ElasticSearchBulk extends BaseStep implements StepInterface {
     if ( client != null ) {
       client.close();
     }
-    if ( node != null ) {
-      node.close();
-    }
+
 
   }
 
