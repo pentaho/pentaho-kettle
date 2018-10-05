@@ -80,9 +80,15 @@ public abstract class BaseSerializingMeta extends BaseStepMeta implements StepMe
    * Creates a copy of this stepMeta with variables globally substituted.
    */
   public StepMetaInterface withVariables( VariableSpace variables ) {
+    BaseSerializingMeta newInstance = null;
+    try {
+      newInstance = this.getClass().newInstance();
+    } catch ( IllegalAccessException | InstantiationException e ) {
+      throw new IllegalStateException( e );
+    }
     return StepMetaProps
       .from( this )
       .withVariables( variables )
-      .to( (StepMetaInterface) this.clone() );
+      .to( newInstance );
   }
 }

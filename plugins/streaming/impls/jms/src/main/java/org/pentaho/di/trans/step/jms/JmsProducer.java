@@ -22,6 +22,7 @@
 
 package org.pentaho.di.trans.step.jms;
 
+import com.google.common.annotations.VisibleForTesting;
 import org.apache.commons.lang.BooleanUtils;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.exception.KettleException;
@@ -46,7 +47,8 @@ import static java.util.Optional.ofNullable;
 public class JmsProducer extends BaseStep implements StepInterface {
 
   private JmsProducerMeta meta;
-  private JMSProducer producer;
+  @VisibleForTesting
+  JMSProducer producer;
   private Destination destination;
   private int messageIndex;
 
