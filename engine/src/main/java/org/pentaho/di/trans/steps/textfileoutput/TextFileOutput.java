@@ -284,7 +284,7 @@ public class TextFileOutput extends BaseStep implements StepInterface {
     int flushInterval = 0;
     if ( var != null ) {
       try {
-        Integer.parseInt( var );
+        flushInterval = Integer.parseInt( var );
       } catch ( Exception ex ) {
         // Do nothing
       }
