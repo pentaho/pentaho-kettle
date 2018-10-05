@@ -22,7 +22,6 @@
 
 package org.pentaho.di.trans.step.jms;
 
-import org.apache.activemq.artemis.jms.client.ActiveMQConnectionFactory;
 import org.apache.activemq.artemis.junit.EmbeddedJMSResource;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -45,9 +44,7 @@ import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.jms.context.ActiveMQProvider;
 import org.pentaho.di.trans.step.jms.context.JmsProvider;
 
-import javax.jms.ConnectionFactory;
 import javax.jms.JMSContext;
-import javax.jms.JMSProducer;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -73,6 +70,7 @@ import static org.mockito.Mockito.when;
 public class JmsProducerTest {
   @Mock LogChannelInterfaceFactory logChannelFactory;
   @Mock LogChannelInterface logChannel;
+  @Mock JMSContext jmsContext;
 
   @Rule public EmbeddedJMSResource resource = new EmbeddedJMSResource( 0 );
 
@@ -82,7 +80,6 @@ public class JmsProducerTest {
   private JmsProducer step;
   private JmsProducerMeta meta;
   private GenericStepData data;
-  private JMSProducer producer;
 
   @BeforeClass
   public static void setupClass() throws Exception {
@@ -122,20 +119,6 @@ public class JmsProducerTest {
     data = new GenericStepData();
 
     step = spy( new JmsProducer( stepMeta, data, 1, transMeta, trans ) );
-
-    //Create a real JMSContext
-    ConnectionFactory factory = new ActiveMQConnectionFactory( step.environmentSubstitute( jmsDelegate.amqUrl ) );
-    JMSContext jmsContext = spy( factory.createContext( step.environmentSubstitute( jmsDelegate.amqUsername ),
-      step.environmentSubstitute( jmsDelegate.amqPassword ) ) );
-
-    //Return the real context when JmsProvider.getContext(...) is called
-    doReturn( jmsContext ).when( activeMQProvider ).getContext( any() );
-
-    //Create a real JMSProducer
-    producer = jmsContext.createProducer();
-
-    //Return the real JMSProducer when JMSContext.createProducer() is called
-    doReturn( producer ).when( jmsContext ).createProducer();
 
     //Return row data when step.getRow() is called
     Object[] row = new Object[] { "one", "two" };
@@ -179,8 +162,8 @@ public class JmsProducerTest {
     service.shutdown();
 
     //Ensure the producer properties were set
-    assertEquals( propertyValuesByName.get( PROPERTY_NAME_ONE ), producer.getStringProperty( PROPERTY_NAME_ONE ) );
-    assertEquals( propertyValuesByName.get( PROPERTY_NAME_TWO ), producer.getStringProperty( PROPERTY_NAME_TWO ) );
+    assertEquals( propertyValuesByName.get( PROPERTY_NAME_ONE ), step.producer.getStringProperty( PROPERTY_NAME_ONE ) );
+    assertEquals( propertyValuesByName.get( PROPERTY_NAME_TWO ), step.producer.getStringProperty( PROPERTY_NAME_TWO ) );
   }
 
   @Test
@@ -190,14 +173,14 @@ public class JmsProducerTest {
     //Defaults
     step.processRow( meta, data );
 
-    assertEquals( false, producer.getDisableMessageID() );
-    assertEquals( false, producer.getDisableMessageTimestamp() );
-    assertEquals( 2, producer.getDeliveryMode() );
-    assertEquals( 4, producer.getPriority() );
-    assertEquals( 0, producer.getTimeToLive() );
-    assertEquals( 0, producer.getDeliveryDelay() );
-    assertNull( producer.getJMSCorrelationID() );
-    assertNull( producer.getJMSType() );
+    assertEquals( false, step.producer.getDisableMessageID() );
+    assertEquals( false, step.producer.getDisableMessageTimestamp() );
+    assertEquals( 2, step.producer.getDeliveryMode() );
+    assertEquals( 4, step.producer.getPriority() );
+    assertEquals( 0, step.producer.getTimeToLive() );
+    assertEquals( 0, step.producer.getDeliveryDelay() );
+    assertNull( step.producer.getJMSCorrelationID() );
+    assertNull( step.producer.getJMSType() );
   }
 
   @Test
@@ -218,14 +201,14 @@ public class JmsProducerTest {
 
     step.processRow( meta, data );
 
-    assertEquals( true, producer.getDisableMessageID() );
-    assertEquals( false, producer.getDisableMessageTimestamp() );
-    assertEquals( 1, producer.getDeliveryMode() );
-    assertEquals( 2, producer.getPriority() );
-    assertEquals( 3, producer.getTimeToLive() );
-    assertEquals( 4, producer.getDeliveryDelay() );
-    assertEquals( "ASDF", producer.getJMSCorrelationID() );
-    assertEquals( "JMSType", producer.getJMSType() );
+    assertEquals( true, step.producer.getDisableMessageID() );
+    assertEquals( false, step.producer.getDisableMessageTimestamp() );
+    assertEquals( 1, step.producer.getDeliveryMode() );
+    assertEquals( 2, step.producer.getPriority() );
+    assertEquals( 3, step.producer.getTimeToLive() );
+    assertEquals( 4, step.producer.getDeliveryDelay() );
+    assertEquals( "ASDF", step.producer.getJMSCorrelationID() );
+    assertEquals( "JMSType", step.producer.getJMSType() );
   }
 
   @Test
