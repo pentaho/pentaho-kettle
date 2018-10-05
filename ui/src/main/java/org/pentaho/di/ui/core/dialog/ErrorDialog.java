@@ -25,6 +25,7 @@ package org.pentaho.di.ui.core.dialog;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.lang.reflect.InvocationTargetException;
+import java.util.function.Function;
 
 import com.google.common.annotations.VisibleForTesting;
 import org.eclipse.swt.SWT;
@@ -75,11 +76,17 @@ public class ErrorDialog extends Dialog {
   private PropsUI props;
 
   private boolean cancelled;
+  private Function<String, String> exMsgFunction = Function.identity();
 
   // private LogChannelInterface log;
 
   public ErrorDialog( Shell parent, String title, String message, Throwable throwable ) {
+   this ( parent, title, message, throwable, Function.identity() );
+  }
+
+  public ErrorDialog( Shell parent, String title, String message, Throwable throwable, Function<String, String> exMsgFunction ) {
     super( parent, SWT.NONE );
+    this.exMsgFunction = exMsgFunction;
 
     throwable.printStackTrace();
 
@@ -147,10 +154,10 @@ public class ErrorDialog extends Dialog {
 
     if ( exception != null ) {
       handleException( message, exception, text, details );
-      wDesc.setText( text.toString() );
+      wDesc.setText( exMsgFunction.apply( text.toString() ) );
     } else {
       text.append( message );
-      wDesc.setText( text.toString() );
+      wDesc.setText( exMsgFunction.apply( text.toString() ) );
     }
     wDesc.setBackground( gray );
     fdDesc = new FormData();
