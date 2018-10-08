@@ -77,7 +77,7 @@ define([
       vm.onSelection = onSelection;
       if (path === "") { // No file path specified in step
         _showMessage(i18n.get("get-fields-plugin.app.unable-to-view.label", {dataType: vm.type}),
-          i18n.get("get-fields.plugin.app.unable-to-view.message", {dataType: vm.type}));
+          i18n.get("get-fields.plugin.app.unable-to-view.no-input.message", {dataType: vm.type}));
         } else {
           $timeout(function() {
             if (vm.showMessage) {
@@ -93,7 +93,7 @@ define([
               i18n.get("get-fields.plugin.app.unable-to-access.message"));
             } else { // Invalid JSON structure OR other issue
               _showMessage(i18n.get("get-fields-plugin.app.unable-to-view.label", {dataType: vm.type}),
-              i18n.get("get-fields.plugin.app.unable-to-view.message", {dataType: vm.type}));
+              i18n.get("get-fields.plugin.app.unable-to-view.invalid.message"));
             }
           });
         }
