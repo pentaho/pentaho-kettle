@@ -80,7 +80,6 @@ jobGroups:
        versionProperty :  pentaho-reporting.version
        directives      :  += -Dlibraries
        root            :  libraries
-       parallelize     :  true
 
   700:
 
@@ -238,7 +237,6 @@ jobGroups:
        versionProperty :  pentaho-hadoop-shims.version
        archivable      :  true
        root            :  shims
-       #parallelize     :  true
        artifactsArchivePattern: ${BIG_DATA_HADOOP_SHIMS_PATTERN}
 
   1500:
@@ -298,7 +296,6 @@ jobGroups:
        directives      :  += -Pextensions
        versionProperty :  pentaho-reporting.version
        root            :  engine
-       parallelize     :  true
 
   2000:
 

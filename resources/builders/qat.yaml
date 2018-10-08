@@ -105,7 +105,6 @@ jobGroups:
        versionProperty :  pentaho-reporting.version
        directives      :  += -Plowdeps -Djavadoc
        root            :  libraries
-       parallelize     :  true
 
   700:
 
@@ -313,7 +312,7 @@ jobGroups:
        directives      :  += -Pextensions -Djavadoc
        versionProperty :  pentaho-reporting.version
        root            :  engine
-       parallelize     :  true
+
 
   2000:
 
