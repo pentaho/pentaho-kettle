@@ -76,7 +76,6 @@ jobGroups:
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-osgi-bundles.git
        scmBranch       :  ${DEFAULT_BRANCH}
        directives      :  += -P lowdeps -DskipDefault
-       root            :  libraries
        versionProperty :  pentaho-osgi-bundles.version
 
      - jobID           :  oss-license-assembly
