@@ -45,6 +45,12 @@ jobGroups:
        scmBranch       :  ${DEFAULT_BRANCH}
        versionProperty :  metastore.version
 
+     - jobID           :  reporting-pom
+       scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-reporting.git
+       scmBranch       :  ${DEFAULT_BRANCH}
+       versionProperty :  pentaho-reporting.version
+       directives      :  += -N       
+
   600:
 
      - jobID           :  osgi-bundles-lowdeps
