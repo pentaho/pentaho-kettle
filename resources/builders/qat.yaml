@@ -101,7 +101,7 @@ jobGroups:
 
   700:
 
-     - jobID           :  reporting-libraries-libraries
+     - jobID           :  reporting-libraries
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-reporting.git
        scmBranch       :  ${DEFAULT_BRANCH}
        versionProperty :  pentaho-reporting.version
@@ -109,7 +109,7 @@ jobGroups:
        root            :  libraries
        parallelize     :  true
 
-     - jobID           :  reporting-libraries-engine
+     - jobID           :  reporting-engine
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-reporting.git
        scmBranch       :  ${DEFAULT_BRANCH}
        versionProperty :  pentaho-reporting.version
