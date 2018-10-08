@@ -101,19 +101,19 @@ jobGroups:
 
   700:
 
-     - jobID           :  reporting-libraries
+     - jobID           :  reporting-libraries-lowdeps
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-reporting.git
        scmBranch       :  ${DEFAULT_BRANCH}
        versionProperty :  pentaho-reporting.version
-       directives      :  += -Dlibraries -Djavadoc
+       directives      :  += -Plowdeps -Djavadoc
        root            :  libraries
        parallelize     :  true
 
-     - jobID           :  reporting-engine
+     - jobID           :  reporting-engine-core
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-reporting.git
        scmBranch       :  ${DEFAULT_BRANCH}
        versionProperty :  pentaho-reporting.version
-       directives      :  += -Dlibraries -Djavadoc
+       directives      :  += -Pcore -Djavadoc
        root            :  engine
 
      - jobID           :  gwt-widgets
@@ -307,10 +307,10 @@ jobGroups:
        archivable      :  true
        artifactsArchivePattern: ${PSW_ASSEMBLY_EE_PATTERN}
 
-     - jobID           :  reporting-engine
+     - jobID           :  reporting-engine-extensions
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-reporting.git
        scmBranch       :  ${DEFAULT_BRANCH}
-       directives      :  += -Dengine -Djavadoc
+       directives      :  += -Pextensions -Djavadoc
        versionProperty :  pentaho-reporting.version
        root            :  engine
        parallelize     :  true
@@ -339,6 +339,7 @@ jobGroups:
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-osgi-bundles.git
        scmBranch       :  ${DEFAULT_BRANCH}
        directives      :  += -P highdeps -DskipDefault
+       root            :  libraries
        versionProperty :  pentaho-osgi-bundles.version
 
      - jobID           :  mql-editor
@@ -420,10 +421,11 @@ jobGroups:
        scmBranch       :  ${DEFAULT_BRANCH}
        versionProperty :  pdi-dataservice-plugin.version
 
-     - jobID           :  reporting-specials
+     - jobID           :  reporting-libraries-highdeps
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-reporting.git
        scmBranch       :  ${DEFAULT_BRANCH}
-       directives      :  += -Dspecials
+       directives      :  += -Phighdeps
+       root            :  libraries
        versionProperty :  pentaho-reporting.version
 
      - jobID           :  pdi-platform-plugin
@@ -717,7 +719,7 @@ jobGroups:
      - jobID           :  prd-assembly
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-reporting.git
        scmBranch       :  ${DEFAULT_BRANCH}
-       directives      :  += -Ddesigner -Djavadoc -Dmaven.test.failure.ignore=true
+       directives      :  += -Pdesigner -Djavadoc -Dmaven.test.failure.ignore=true
        versionProperty :  pentaho-reporting.version
        archivable      :  true
        artifactsArchivePattern: ${PRD_ASSEMBLY_PATTERN}

@@ -121,7 +121,7 @@ jobGroups:
      - jobID           :  prd-assembly
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-reporting.git
        scmBranch       :  ${DEFAULT_BRANCH}
-       directives      :  += -Ddesigner
+       directives      :  += -Pdesigner
        versionProperty :  pentaho-reporting.version
        testable        :  false
        
