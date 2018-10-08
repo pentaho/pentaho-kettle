@@ -76,7 +76,7 @@ jobGroups:
 
   700:
 
-     - jobID           :  reporting-libraries-libraries
+     - jobID           :  reporting-libraries-lowdeps
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-reporting.git
        scmBranch       :  ${DEFAULT_BRANCH}
        versionProperty :  pentaho-reporting.version
@@ -84,11 +84,11 @@ jobGroups:
        root            :  libraries
        parallelize     :  true
 
-     - jobID           :  reporting-libraries-engine
+     - jobID           :  reporting-engine-core
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-reporting.git
        scmBranch       :  ${DEFAULT_BRANCH}
        versionProperty :  pentaho-reporting.version
-       directives      :  += -Dlibraries
+       directives      :  += -Pcore
        root            :  engine
 
      - jobID           :  gwt-widgets
@@ -292,10 +292,10 @@ jobGroups:
        archivable      :  true
        artifactsArchivePattern: ${PSW_ASSEMBLY_EE_PATTERN}
 
-     - jobID           :  reporting-engine
+     - jobID           :  reporting-engine-extensions
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-reporting.git
        scmBranch       :  ${DEFAULT_BRANCH}
-       directives      :  += -Dengine
+       directives      :  += -Pextensions
        versionProperty :  pentaho-reporting.version
        root            :  engine
        parallelize     :  true
@@ -406,10 +406,11 @@ jobGroups:
        scmBranch       :  ${DEFAULT_BRANCH}
        versionProperty :  pdi-dataservice-plugin.version
 
-     - jobID           :  reporting-specials
+     - jobID           :  reporting-libraries-highdeps
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-reporting.git
        scmBranch       :  ${DEFAULT_BRANCH}
-       directives      :  += -Dspecials
+       directives      :  += -Phighdeps
+       root            :  libraries
        versionProperty :  pentaho-reporting.version
 
      - jobID           :  pdi-platform-plugin
@@ -703,7 +704,7 @@ jobGroups:
      - jobID           :  prd-assembly
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-reporting.git
        scmBranch       :  ${DEFAULT_BRANCH}
-       directives      :  += -Ddesigner -Dmaven.test.failure.ignore=true
+       directives      :  += -Pdesigner -Dmaven.test.failure.ignore=true
        versionProperty :  pentaho-reporting.version
        archivable      :  true
        artifactsArchivePattern: ${PRD_ASSEMBLY_PATTERN}
