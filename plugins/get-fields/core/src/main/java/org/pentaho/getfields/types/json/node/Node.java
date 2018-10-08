@@ -26,6 +26,7 @@ package org.pentaho.getfields.types.json.node;
  * Created by bmorrise on 8/7/18.
  */
 public abstract class Node {
+
   protected String key;
 
   public Node( String key ) {

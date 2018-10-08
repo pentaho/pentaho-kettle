@@ -47,6 +47,10 @@ public class ObjectNode extends Node {
     return children;
   }
 
+  public boolean hasChildren() {
+    return children.size() > 0;
+  }
+
   /**
    * Removes duplicate entries
    */

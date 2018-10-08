@@ -114,4 +114,33 @@ public class JsonSamplerTest {
             "},\n", node.toString() );
   }
 
+
+  @Test
+  public void testDedupeNestedArrays() throws Exception {
+    Configuration configuration = new Configuration();
+    JsonSampler jsonSampler = new JsonSampler( configuration );
+    InputStream inputStream = this.getClass().getResourceAsStream( "/org/pentaho/getfields/types/json/dedupe-test3.json" );
+    Node node = jsonSampler.sample( inputStream );
+    Assert.assertEquals( "[\n" +
+            "{\n" +
+            "item: [\n" +
+            "{\n" +
+            "five: five\n" +
+            "one: two\n" +
+            "seven: example\n" +
+            "nine: [\n" +
+            "[\n" +
+            "{\n" +
+            "test: airplane\n" +
+            "example: {\n" +
+            "why: none\n" +
+            "},\n" +
+            "},\n" +
+            "],\n" +
+            "],\n" +
+            "},\n" +
+            "],\n" +
+            "},\n" +
+            "],\n", node.toString() );
+  }
 }

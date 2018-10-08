@@ -47,13 +47,43 @@ public class ArrayNode extends Node {
     return children;
   }
 
+  public boolean hasChildren() {
+    return children.size() > 0;
+  }
+
   /**
    * Combines two array nodes
    *
    * @param arrayNode - The ArrayNode to combine with this one
    */
   public void combine( ArrayNode arrayNode ) {
-    children.addAll( arrayNode.getChildren() );
+    ObjectNode objectNode = new ObjectNode( null );
+    ArrayNode arrayNode1 = new ArrayNode( null );
+    for ( int i = 0; i < arrayNode.getChildren().size(); i++ ) {
+      Node node = arrayNode.getChildren().get( i );
+      if ( node instanceof ObjectNode ) {
+        objectNode.setKey( node.getKey() );
+        objectNode.combine( (ObjectNode) node );
+      }
+      if ( node instanceof ArrayNode ) {
+        arrayNode1.combine( (ArrayNode) node );
+      }
+    }
+    for ( int i = 0; i < children.size(); i++ ) {
+      Node node = children.get( i );
+      if ( node instanceof ObjectNode ) {
+        objectNode.combine( (ObjectNode) node );
+      }
+      if ( node instanceof ArrayNode ) {
+        arrayNode1.combine( (ArrayNode) node );
+      }
+    }
+    if ( objectNode.getKey() != null || objectNode.hasChildren() ) {
+      children.add( objectNode );
+    }
+    if ( arrayNode1.hasChildren() ) {
+      children.add( arrayNode1 );
+    }
   }
 
   /**
@@ -77,6 +107,7 @@ public class ArrayNode extends Node {
       children.add( objectNode );
     }
     if ( arrayNode.getChildren().size() > 0 ) {
+      arrayNode.dedupe();
       children.add( arrayNode );
     }
   }
