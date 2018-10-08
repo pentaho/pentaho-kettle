@@ -69,7 +69,8 @@ import com.healthmarketscience.jackcess.Database;
  *
  */
 
-@JobEntry( id = "MS_ACCESS_BULK_LOAD", image = "deprecated.svg", suggestion = "JobEntryMSAccessBulkLoad.SuggestedEntry",
+@JobEntry( id = "MS_ACCESS_BULK_LOAD", image = "ui/images/deprecated.svg",
+  suggestion = "JobEntryMSAccessBulkLoad.SuggestedEntry",
   categoryDescription = "i18n:org.pentaho.di.job:JobCategory.Category.Deprecated",
   i18nPackageName = "org.pentaho.di.job.entries.msaccessbulkload",
   name = "JobEntryMSAccessBulkLoad.Name.Default", description = "JobEntryMSAccessBulkLoad.Tooltip" )

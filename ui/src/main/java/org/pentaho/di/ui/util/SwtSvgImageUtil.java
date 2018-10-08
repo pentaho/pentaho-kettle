@@ -43,7 +43,6 @@ import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.svg.SvgSupport;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.ui.core.ConstUI;
-import org.pentaho.di.ui.spoon.Spoon;
 
 /**
  * Class for loading images from SVG, PNG, or other bitmap formats.
@@ -143,11 +142,6 @@ public class SwtSvgImageUtil {
     return u.getAsBitmapForSize( display, width, height );
   }
 
-  private static SwtUniversalImage getImageFromSpoon( Display display, String location ) {
-    ClassLoader cl = Spoon.class.getClassLoader();
-    return loadFromClassLoader( display, cl, location );
-  }
-
   private static SwtUniversalImage getUniversalImageInternal( Display display,
                                                               ClassLoader classLoader, String filename ) {
     SwtUniversalImage result = loadFromClassLoader( display, classLoader, filename );
@@ -157,9 +151,6 @@ public class SwtSvgImageUtil {
         result = loadFromClassLoader( display, classLoader, "ui/images/" + filename );
         if ( result == null ) {
           result = getImageAsResourceInternal( display, filename );
-        }
-        if ( result == null ) {
-          result = getImageFromSpoon( display, "ui/images/" + filename );
         }
       }
     }

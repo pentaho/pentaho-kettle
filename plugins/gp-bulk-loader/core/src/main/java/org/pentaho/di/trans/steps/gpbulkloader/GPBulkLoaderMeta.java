@@ -62,7 +62,7 @@ import org.w3c.dom.Node;
  * @author Sven Boden
  */
 
-@Step( id = "GPBulkLoader", image = "deprecated.svg",
+@Step( id = "GPBulkLoader", image = "ui/images/deprecated.svg",
   i18nPackageName = "org.pentaho.di.trans.steps.gpbulkloader", name = "GPBulkLoaderMeta.Name",
   description = "GPBulkLoaderMeta.Description",
   categoryDescription = "i18n:org.pentaho.di.trans.step:BaseStep.Category.Deprecated",

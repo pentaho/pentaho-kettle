@@ -72,7 +72,8 @@ import org.pentaho.di.ui.trans.step.BaseStepDialog;
  * @author Samatar Hassan
  * @since 24-07-2008
  */
-@PluginDialog( id = "MS_ACCESS_BULK_LOAD", image = "deprecated.svg", pluginType = PluginDialog.PluginType.JOBENTRY )
+@PluginDialog( id = "MS_ACCESS_BULK_LOAD", image = "ui/images/deprecated.svg",
+  pluginType = PluginDialog.PluginType.JOBENTRY )
 public class JobEntryMSAccessBulkLoadDialog extends JobEntryDialog implements JobEntryDialogInterface {
   private static Class<?> PKG = JobEntryMSAccessBulkLoadDialog.class; // for i18n purposes, needed by Translator2!!
 
