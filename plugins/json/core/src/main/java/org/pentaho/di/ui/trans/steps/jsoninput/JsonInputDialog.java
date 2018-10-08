@@ -505,7 +505,7 @@ public class JsonInputDialog extends BaseStepDialog implements StepDialogInterfa
     props.setLook( wFieldsComp );
 
     wGet = new Button( wFieldsComp, SWT.PUSH );
-    wGet.setText( BaseMessages.getString( PKG, "System.Button.GetFields" ) );
+    wGet.setText( BaseMessages.getString( PKG, "JsonInputDialog.Button.SelectFields" ) );
     fdGet = new FormData();
     fdGet.left = new FormAttachment( 50, 0 );
     fdGet.bottom = new FormAttachment( 100, 0 );
