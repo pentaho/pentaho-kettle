@@ -74,8 +74,6 @@ jobGroups:
        scmBranch       :  ${DEFAULT_BRANCH}
        versionProperty :  pentaho-eula-wrap-config.version
 
-  700:
-
      - jobID           :  reporting-libraries-lowdeps
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-reporting.git
        scmBranch       :  ${DEFAULT_BRANCH}
@@ -83,6 +81,8 @@ jobGroups:
        directives      :  += -Dlibraries
        root            :  libraries
        parallelize     :  true
+
+  700:
 
      - jobID           :  reporting-engine-core
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-reporting.git
