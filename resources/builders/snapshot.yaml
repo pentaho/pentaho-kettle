@@ -76,11 +76,20 @@ jobGroups:
 
   700:
 
-     - jobID           :  reporting-libraries
+     - jobID           :  reporting-libraries-libraries
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-reporting.git
        scmBranch       :  ${DEFAULT_BRANCH}
-       directives      :  += -Dlibraries
        versionProperty :  pentaho-reporting.version
+       directives      :  += -Dlibraries
+       root            :  libraries
+       parallelize     :  true
+
+     - jobID           :  reporting-libraries-engine
+       scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-reporting.git
+       scmBranch       :  ${DEFAULT_BRANCH}
+       versionProperty :  pentaho-reporting.version
+       directives      :  += -Dlibraries
+       root            :  engine
 
      - jobID           :  gwt-widgets
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-commons-gwt-modules.git
@@ -198,6 +207,7 @@ jobGroups:
      - jobID           :  license-ee
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-ee-license.git
        scmBranch       :  ${DEFAULT_BRANCH}
+       directives      :  += -Dmaven.test.failure.ignore=true
        versionProperty :  pentaho-ee-dsc.version
 
      - jobID           :  pdi-dataservice-plugin
@@ -287,6 +297,8 @@ jobGroups:
        scmBranch       :  ${DEFAULT_BRANCH}
        directives      :  += -Dengine
        versionProperty :  pentaho-reporting.version
+       root            :  engine
+       parallelize     :  true
 
   2000:
 
@@ -488,6 +500,7 @@ jobGroups:
 
      - jobID           :  platform-reporting-plugin
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-platform-plugin-reporting.git
+       parallelize     :  true
        scmBranch       :  ${DEFAULT_BRANCH}
        versionProperty :  pentaho-reporting-plugin.version
 
@@ -632,6 +645,7 @@ jobGroups:
        versionProperty :  pir-plugin.version
        archivable      :  true
        artifactsArchivePattern: ${PIR_PLUGIN_PATTERN}
+       parallelize     :  true
 
      - jobID           :  pdi-scheduler-plugin
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pdi-scheduler-plugin.git
@@ -691,6 +705,7 @@ jobGroups:
        versionProperty :  pentaho-reporting.version
        archivable      :  true
        artifactsArchivePattern: ${PRD_ASSEMBLY_PATTERN}
+       parallelize     :  true
 
   4000:
 
