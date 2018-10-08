@@ -136,7 +136,7 @@ SLACK_CREDENTIALS_ID: 'slack-token'
 # Archiving
 ARCHIVE_ARTIFACTS_EXCLUDE_PATTERN: '**/{.git/**/*,*-sources.jar}' #exclusion group
 ARCHIVE_ARTIFACTS_PATTERN: '**/{dist/*.gz,dist/*.zip,target/*.gz,target/*.zip,build/**/*.gz,build/**/*.zip,build/*.zip}'
-ARCHIVE_TESTS_PATTERN: '**/bin/**/TEST*.xml, **/target/**/TEST*.xml, **/build/**/*Test.xml'
+ARCHIVE_TESTS_PATTERN: '**/bin/**/TEST*.xml, **/target/**/TEST*.xml, **/build/**/*Test.xml, **/target/**/test*.xml'
 
 # Specific archiving patterns
 # EE artifacts
