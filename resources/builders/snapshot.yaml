@@ -49,7 +49,7 @@ jobGroups:
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-reporting.git
        scmBranch       :  ${DEFAULT_BRANCH}
        versionProperty :  pentaho-reporting.version
-       directives      :  += -N       
+       directives      :  += -pl .      
 
   600:
 
