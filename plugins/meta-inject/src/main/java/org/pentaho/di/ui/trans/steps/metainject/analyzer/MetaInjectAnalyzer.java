@@ -41,6 +41,7 @@ import org.pentaho.metaverse.api.analyzer.kettle.KettleAnalyzerUtil;
 import org.pentaho.metaverse.api.analyzer.kettle.step.IClonableStepAnalyzer;
 import org.pentaho.metaverse.api.analyzer.kettle.step.StepAnalyzer;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -146,10 +147,8 @@ public class MetaInjectAnalyzer extends StepAnalyzer<MetaInjectMeta> {
       }
     }
 
-    final StringBuilder usedMdiMappings = new StringBuilder();
-    final StringBuilder unusedMdiMappings = new StringBuilder();
+    final List<String> verboseProperties = new ArrayList();
 
-    String mdiDelim = "";
     // process the injection mappings
     while ( fieldMappingsIter.hasNext() ) {
       final Map.Entry<TargetStepAttribute, SourceStepField> entry = fieldMappingsIter.next();
@@ -165,19 +164,19 @@ public class MetaInjectAnalyzer extends StepAnalyzer<MetaInjectMeta> {
 
       // if the source step is set to stream data directly to a step in the template (target) transformation, the
       // mappings are ignored, and instead, data is sent directly
-      if ( sourceInjectorStepField.getStepname().equalsIgnoreCase( meta.getStreamSourceStepname() ) ) {
-        unusedMdiMappings.append( mdiDelim ).append( sourceInjectorStepField.getStepname() ).append( ": " ).append(
-          sourceInjectorStepField.getField() ).append( " > [" ).append( subTransNode.getName() ).append( "] " )
-          .append( targetTemplateStepAttr.getStepname() ).append( ": " ).append(
-          targetTemplateStepAttr.getAttributeKey() );
-        mdiDelim = ", ";
-      } else {
-        usedMdiMappings.append( mdiDelim ).append( sourceInjectorStepField.getStepname() ).append( ": " ).append(
-          sourceInjectorStepField.getField() ).append( " > [" ).append( subTransNode.getName() ).append( "] " )
-          .append( targetTemplateStepAttr.getStepname() ).append( ": " ).append(
-          targetTemplateStepAttr.getAttributeKey() );
-        mdiDelim = ", ";
+      final boolean ignoreMapping = sourceInjectorStepField.getStepname().equalsIgnoreCase(
+        meta.getStreamSourceStepname() );
+      final String mappingKey =  "mapping [" + ( verboseProperties.size() + 1 ) + "]";
+      verboseProperties.add( mappingKey );
+      final StringBuilder mapping = new StringBuilder();
+      mapping.append( sourceInjectorStepField.getStepname() ).append( ": " )
+        .append( sourceInjectorStepField.getField() )
+        .append( " > [" ).append( subTransNode.getName() ).append( "] " )
+        .append( targetTemplateStepAttr.getStepname()  ).append( ": " )
+        .append( targetTemplateStepAttr.getAttributeKey() );
+      rootNode.setProperty( mappingKey, mapping.toString() );
 
+      if ( !ignoreMapping ) {
         // if the target template step name is the same as the step we read from, we want to get the fields from the
         // target template step and pass them back to the parant injector step
         if ( targetTemplateStepAttr.getStepname().equalsIgnoreCase( sourceStepName ) ) {
@@ -252,9 +251,7 @@ public class MetaInjectAnalyzer extends StepAnalyzer<MetaInjectMeta> {
     }
     if ( !streaming ) {
       // used and unused mappings are considered "verbose" details
-      rootNode.setProperty( DictionaryConst.PROPERTY_VERBOSE_DETAILS, "usedMappings,unusedMappings" );
-      rootNode.setProperty( "usedMappings", usedMdiMappings.toString() );
-      rootNode.setProperty( "unusedMappings", unusedMdiMappings.toString() );
+      rootNode.setProperty( DictionaryConst.PROPERTY_VERBOSE_DETAILS, StringUtils.join( verboseProperties, "," ) );
     }
   }
 
