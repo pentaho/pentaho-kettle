@@ -323,22 +323,36 @@ public class GetJobStatusServlet extends BaseHttpServlet implements CartePluginI
           out.println( "<div class=\"row\" style=\"padding: 0px 0px 0px 30px\">" );
           out.println( "<div class=\"row\" style=\"padding: 30px 0px 75px 0px; display: table;\">" );
           out.println( "<div style=\"display: table-row;\">" );
-          out.println( "<div style=\"padding: 0px 30px 0px 0px; display: table-cell; vertical-align: top;\">" );
+          out.println( "<div style=\"padding: 0px 30px 0px 0px; width: 60px; display: table-cell; vertical-align: top;\">" );
           out.println( "<img src=\"/pentaho/content/common-ui/resources/themes/images/job.svg\" style=\"width: 60px; height: 60px;\"></img>" );
           out.println( "</div>" );
           out.println( "<div style=\"vertical-align: top; display: table-cell;\">" );
-          out.println( "<table class=\"pentaho-table\" border=\"" + tableBorder + "\">" );
-          out.print( "<tr class=\"cellTableRow\"> <th class=\"cellTableHeader\">"
-            + BaseMessages.getString( PKG, "TransStatusServlet.CarteObjectId" ) + "</th> <th class=\"cellTableHeader\">"
-            + BaseMessages.getString( PKG, "TransStatusServlet.TransStatus" ) + "</th> <th class=\"cellTableHeader\">"
+          out.println( "<table style=\"border-collapse: collapse;\" border=\"" + tableBorder + "\">" );
+          out.print( "<tr class=\"cellTableRow\" style=\"border: solid; border-width: 1px 0; border-top: none; border-color: #E3E3E3; font-size: 12;\"> <th style=\"font-weight: normal; padding: 8px 10px 10px 10px\" class=\"cellTableHeader\">"
+            + BaseMessages.getString( PKG, "TransStatusServlet.CarteObjectId" ) + "</th> <th style=\"font-weight: normal; padding: 8px 10px 10px 10px\" class=\"cellTableHeader\">"
+            + BaseMessages.getString( PKG, "TransStatusServlet.TransStatus" ) + "</th> <th style=\"font-weight: normal; padding: 8px 10px 10px 10px\" class=\"cellTableHeader\">"
             + BaseMessages.getString( PKG, "TransStatusServlet.LastLogDate" ) + "</th> </tr>" );
-          out.print( "<tr class=\"cellTableRow\">" );
-          out.print( "<td class=\"cellTableCell cellTableFirstColumn\">" + Const.NVL( Encode.forHtml( id ), "" ) + "</td>" );
-          out.print( "<td class=\"cellTableCell\" id=\"statusColor\" style=\"font-weight: bold;\">" + job.getStatus() + "</td>" );
+          out.print( "<tr class=\"cellTableRow\" style=\"border: solid; border-width: 1px 0; border-bottom: none; font-size: 12;\">" );
+          out.print( "<td style=\"padding: 8px 10px 10px 10px\" class=\"cellTableCell cellTableFirstColumn\">" + Const.NVL( Encode.forHtml( id ), "" ) + "</td>" );
+          out.print( "<td style=\"padding: 8px 10px 10px 10px\" class=\"cellTableCell\" id=\"statusColor\" style=\"font-weight: bold;\">" + job.getStatus() + "</td>" );
           String dateStr = XMLHandler.date2string( job.getLogDate() );
-          out.print( "<td class=\"cellTableCell cellTableLastColumn\">" + dateStr.substring( 0, dateStr.indexOf( ' ' ) ) + "</td>" );
+          out.print( "<td style=\"padding: 8px 10px 10px 10px\" class=\"cellTableCell cellTableLastColumn\">" + dateStr.substring( 0, dateStr.indexOf( ' ' ) ) + "</td>" );
           out.print( "</tr>" );
           out.print( "</table>" );
+          out.print( "</div>" );
+          out.println( "<div style=\"padding: 0px 0px 0px 20px; width: 90px; display: table-cell; vertical-align: top;\">" );
+          out.println( "<div style=\"text-align: center; padding: 5px 0px;\">" );
+          out.print( "<a href=\""
+              + convertContextPath( GetJobStatusServlet.CONTEXT_PATH ) + "?name="
+              + URLEncoder.encode( jobName, "UTF-8" ) + "&id=" + URLEncoder.encode( id, "UTF-8" ) + "&xml=y\">"
+              + BaseMessages.getString( PKG, "TransStatusServlet.ShowAsXml" ) + "</a>" );
+          out.print( "</div>" );
+          out.print( "<div style=\"display: block; margin-left: auto; margin-right: auto; padding: 5px 0px;\">" );
+          out.print( "<a href=\""
+              + convertContextPath( GetJobStatusServlet.CONTEXT_PATH ) + "?name="
+              + URLEncoder.encode( jobName, "UTF-8" ) + "&id=" + URLEncoder.encode( id, "UTF-8" ) + "&xml=y\">"
+              + "<img src=\"/pentaho/content/common-ui/resources/themes/images/view-as-xml.svg\" style=\"display: block; margin: auto; width: 22px; height: 22px;\"></a>" );
+          out.print( "</div>" );
           out.print( "</div>" );
           out.print( "</div>" );
           out.print( "</div>" );
@@ -348,11 +362,11 @@ public class GetJobStatusServlet extends BaseHttpServlet implements CartePluginI
           // Show job image?
           //
           Point max = job.getJobMeta().getMaximum();
-          max.x += 20;
+          //max.x += 20;
           max.y += 20;
           out
             .print( "<iframe height=\""
-              + max.y + "\" width=\"" + max.x + "\" seamless src=\""
+              + max.y + "\" width=\"" + 1054 + "\" seamless src=\""
               + convertContextPath( GetJobImageServlet.CONTEXT_PATH ) + "?name="
               + URLEncoder.encode( jobName, "UTF-8" ) + "&id=" + URLEncoder.encode( id, "UTF-8" )
               + "\"></iframe>" );
@@ -366,7 +380,7 @@ public class GetJobStatusServlet extends BaseHttpServlet implements CartePluginI
           // Put the logging below that.
 
           out.print( "<div class=\"row\" style=\"padding: 0px 0px 30px 0px;\">" );
-          out.print( "<div class=\"workspaceHeading\">Transformation log</div>" );
+          out.print( "<div class=\"workspaceHeading\">Job log</div>" );
           out.println( "<textarea id=\"joblog\" cols=\"120\" rows=\"20\" wrap=\"off\" "
               + "name=\"Job log\" readonly=\"readonly\" style=\"height: auto;\">"
               + Encode.forHtml( getLogText( job, startLineNr, lastLineNr ) ) + "</textarea>" );
@@ -374,12 +388,12 @@ public class GetJobStatusServlet extends BaseHttpServlet implements CartePluginI
 
           out.println( "<script type=\"text/javascript\">" );
           out.println( "element = document.getElementById( 'statusColor' );" );
-          out.println( "if( element.innerHTML == 'Paused' ){" );
-          out.println( "element.style.color = '#F1C40F';" );
+          out.println( "if( element.innerHTML == 'Running' || element.innerHTML == 'Finished' ){" );
+          out.println( "element.style.color = '#009900';" );
           out.println( "} else if( element.innerHTML == 'Stopped' ) {" );
           out.println( "element.style.color = '#7C0B2B';" );
           out.println( "} else {" );
-          out.println( "element.style.color = '#009900';" );
+          out.println( "element.style.color = '#F1C40F';" );
           out.println( "}" );
           out.println( "</script>" );
           out.println( "<script type=\"text/javascript\"> " );
@@ -404,7 +418,7 @@ public class GetJobStatusServlet extends BaseHttpServlet implements CartePluginI
         out.println( "<H1>Job " + Encode.forHtml( "\'" + jobName + "\'" ) + " could not be found.</H1>" );
         out.println( "<a href=\""
           + convertContextPath( GetStatusServlet.CONTEXT_PATH ) + "\">"
-          + BaseMessages.getString( PKG, "TransStatusServlet.BackToStatusPage" ) + "</a><p>" );
+          + BaseMessages.getString( PKG, "JobStatusServlet.BackToStatusPage" ) + "</a><p>" );
       }
     }
   }

@@ -47,8 +47,6 @@ public class StatusServletUtils {
       // Check if file exists (may be different location depending on how server was started)
       if ( !f.exists() ) {
         relativePathSeparator = ".." + File.separator;
-        themeSetting = relativePathSeparator
-            + "pentaho-solutions" + File.separator + "system" + File.separator + "pentaho.xml";
       }
 
       DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
@@ -68,8 +66,12 @@ public class StatusServletUtils {
           break;
         }
       }
+
+      // webapps folder will always be one directory closer to default directory, need to update relative path string
+      relativePathSeparator = relativePathSeparator.replaceFirst( "(\\.\\.\\\\)", "" );
+
       // Get mantle theme CSS file
-      mantleThemeCss = relativePathSeparator
+      mantleThemeCss = relativePathSeparator + "webapps" + File.separator
           + "pentaho" + File.separator + "mantle" + File.separator
           + "themes" + File.separator + themeName + File.separator;
       File mantleThemeDir = new File( mantleThemeCss );
