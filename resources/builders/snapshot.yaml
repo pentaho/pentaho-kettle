@@ -460,7 +460,7 @@ jobGroups:
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-platform.git
        scmBranch       :  ${DEFAULT_BRANCH}
        directives      :  += -DskipDefault -P platform-user-console
-       parallelize     :  true
+       #parallelize     :  true
        versionProperty :  platform.version
 
      - jobID           :  big-data-plugin-features
@@ -506,7 +506,7 @@ jobGroups:
 
      - jobID           :  platform-reporting-plugin
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-platform-plugin-reporting.git
-       parallelize     :  true
+       #parallelize     :  true
        scmBranch       :  ${DEFAULT_BRANCH}
        versionProperty :  pentaho-reporting-plugin.version
 
@@ -711,7 +711,7 @@ jobGroups:
        versionProperty :  pentaho-reporting.version
        archivable      :  true
        artifactsArchivePattern: ${PRD_ASSEMBLY_PATTERN}
-       parallelize     :  true
+       #parallelize     :  true
 
   4000:
 
