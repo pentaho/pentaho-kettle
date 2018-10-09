@@ -656,12 +656,16 @@ public class MetaInjectDialog extends BaseStepDialog implements StepDialogInterf
               EnterSelectionDialog selectSourceField = new EnterSelectionDialog( shell, sourceFields,
                 BaseMessages.getString( PKG, "MetaInjectDialog.SourceFieldDialog.Title" ),
                 BaseMessages.getString( PKG, "MetaInjectDialog.SourceFieldDialog.Label" ), constant, transMeta );
-              if ( source != null && source.getStepname() != null && !Utils.isEmpty( source.getStepname() ) ) {
-                String key = buildStepFieldKey( source.getStepname(), source.getField() );
-                selectSourceField.setCurrentValue( key );
-                int index = Const.indexOfString( key, sourceFields );
-                if ( index >= 0 ) {
-                  selectSourceField.setSelectedNrs( new int[] { index, } );
+              if ( source != null ) {
+                if ( source.getStepname() != null && !Utils.isEmpty( source.getStepname() ) ) {
+                  String key = buildStepFieldKey( source.getStepname(), source.getField() );
+                  selectSourceField.setCurrentValue( key );
+                  int index = Const.indexOfString( key, sourceFields );
+                  if ( index >= 0 ) {
+                    selectSourceField.setSelectedNrs( new int[] { index, } );
+                  }
+                } else {
+                  selectSourceField.setCurrentValue( source.getField() );
                 }
               }
               String selectedStepField = selectSourceField.open();
