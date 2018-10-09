@@ -122,11 +122,13 @@ public interface GetFieldsCapableStepDialog<StepMetaType extends BaseStepMeta> {
       final int nrNonEmptyFields = getFieldsTable().nrNonEmpty();
       // are any fields already populated in the fields table?
       if ( nrNonEmptyFields > 0 ) {
-        final FieldSelectionDialog fieldSelectDialog = new FieldSelectionDialog( this, newFieldNames.size() );
-        fieldSelectDialog.open();
+        final FieldSelectionDialog fieldSelectDialog = new FieldSelectionDialog( this.getShell(), newFieldNames.size() );
+        int open = fieldSelectDialog.open();
+        boolean reloadAllFields = ( open == FieldSelectionDialog.RELOAD_ALL );
+        openGetFieldsSampleDataDialog( reloadAllFields );
       } else {
         // no fields are populated yet, go straight to "sample data" dialog
-        openGetFieldsSampleDataDialog();
+        openGetFieldsSampleDataDialog( true );
       }
     } else {
       // we have no new fields
@@ -139,7 +141,7 @@ public interface GetFieldsCapableStepDialog<StepMetaType extends BaseStepMeta> {
         final Map<String, Listener> buttons = new HashMap();
         buttons.put( BaseMessages.getString( PKG, "System.Button.OK" ), event -> {
           errorDlg.dispose();
-          openGetFieldsSampleDataDialog();
+          openGetFieldsSampleDataDialog( true );
         } );
         errorDlg.setButtons( buttons );
       }
@@ -147,8 +149,8 @@ public interface GetFieldsCapableStepDialog<StepMetaType extends BaseStepMeta> {
     }
   }
 
-  default void openGetFieldsSampleDataDialog() {
-    final GetFieldsSampleDataDialog dlg = new GetFieldsSampleDataDialog( getShell(), this, true );
+  default void openGetFieldsSampleDataDialog( boolean reloadAllFields ) {
+    final GetFieldsSampleDataDialog dlg = new GetFieldsSampleDataDialog( getShell(), this, reloadAllFields );
     dlg.open();
   }
 

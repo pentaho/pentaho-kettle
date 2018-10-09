@@ -28,6 +28,7 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Shell;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.ui.core.FormDataBuilder;
 import org.pentaho.di.ui.core.dialog.BaseDialog;
@@ -39,15 +40,15 @@ import org.pentaho.di.ui.core.dialog.BaseDialog;
 public class FieldSelectionDialog extends BaseDialog {
   private static Class<?> PKG = FieldSelectionDialog.class;
 
-  private GetFieldsCapableStepDialog parentDialog;
+  public static final int RELOAD_ALL = 2;
+
   private int numFields;
   private boolean reloadAllFields;
 
   private static final int WIDTH = 360;
 
-  public FieldSelectionDialog( final GetFieldsCapableStepDialog parentDialog, final int numNewFields ) {
-    super( parentDialog.getParent(), BaseMessages.getString( PKG, "System.GetFields.NewFieldsFound.Title" ), WIDTH );
-    this.parentDialog = parentDialog;
+  public FieldSelectionDialog( final Shell shell, final int numNewFields ) {
+    super( shell, BaseMessages.getString( PKG, "System.GetFields.NewFieldsFound.Title" ), WIDTH );
     this.numFields = numNewFields;
 
     // Define buttons
@@ -98,6 +99,15 @@ public class FieldSelectionDialog extends BaseDialog {
     return clearAndAddAll;
   }
 
+  @Override
+  public int open() {
+    int open = super.open();
+    if ( reloadAllFields ) {
+      open = RELOAD_ALL;
+    }
+    return open;
+  }
+
   /**
    * Override to provide specific behavior, other than just disposing the dialog.
    */
@@ -106,9 +116,6 @@ public class FieldSelectionDialog extends BaseDialog {
   }
 
   protected void ok() {
-    final GetFieldsSampleDataDialog dlg = new GetFieldsSampleDataDialog( parentDialog.getParent(),
-      parentDialog, reloadAllFields );
     dispose();
-    dlg.open();
   }
 }
