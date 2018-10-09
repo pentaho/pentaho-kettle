@@ -897,7 +897,7 @@ public class MetaInjectMeta extends BaseStepMeta implements StepMetaInterface, S
           Map<TargetStepAttribute, SourceStepField> sourceMapping = toMeta.getTargetSourceMapping();
           for ( Entry<TargetStepAttribute, SourceStepField> entry : sourceMapping.entrySet() ) {
             SourceStepField value = entry.getValue();
-            if ( value.getStepname().equals( oldMeta.getName() ) ) {
+            if ( value.getStepname() != null && value.getStepname().equals( oldMeta.getName() ) ) {
               value.setStepname( newMeta.getName() );
             }
           }
