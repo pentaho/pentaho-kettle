@@ -25,11 +25,13 @@ package org.pentaho.di.core.compress.snappy;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.fail;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
+import org.apache.commons.vfs2.FileObject;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -40,9 +42,11 @@ import org.pentaho.di.core.compress.CompressionPluginType;
 import org.pentaho.di.core.compress.CompressionProvider;
 import org.pentaho.di.core.compress.CompressionProviderFactory;
 import org.pentaho.di.core.plugins.PluginRegistry;
+import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.junit.rules.RestorePDIEngineEnvironment;
 import org.xerial.snappy.SnappyInputStream;
 import org.xerial.snappy.SnappyOutputStream;
+
 
 public class SnappyCompressionInputStreamTest {
   @ClassRule public static RestorePDIEngineEnvironment env = new RestorePDIEngineEnvironment();
@@ -99,6 +103,43 @@ public class SnappyCompressionInputStreamTest {
   @Test
   public void testRead() throws IOException {
     assertEquals( inStream.available(), inStream.read( new byte[100], 0, inStream.available() ) );
+  }
+
+  /**
+   * Test reading header bytes from a single file 'given' a sz file format in apache VFS2 URI format.
+   * @throws Exception
+   */
+  @Test
+  public void testReadByte_Single_File() throws Exception {
+    CompressionProvider provider = inStream.getCompressionProvider();
+    String expectedText = "id,username";
+    String vfsPath = getTestCustomerSz().getPublicURIString();
+    FileObject foSzFile  = KettleVFS.getFileObject( vfsPath );
+
+    inStream = new SnappyCompressionInputStream( foSzFile.getContent().getInputStream(), provider ) {
+    };
+
+    StringBuilder sb  = new StringBuilder();
+
+    for ( int i = 0; i < expectedText.length(); ++i ) {
+      int c = inStream.read();
+      if ( c < 0 ) {
+        fail( "It doesn't read!!!!" );
+      }
+      sb.append( (char) c );
+    }
+
+    assertEquals( expectedText, sb.toString() );
+  }
+
+  /**
+   * Helper method to get test sz file object.
+   * @return
+   * @throws Exception
+   */
+  private FileObject getTestCustomerSz() throws Exception {
+    String relativePath = "src/test/resources/org/pentaho/di/core/compress/snappy/test_customer2.csv.sz";
+    return KettleVFS.getFileObject( relativePath );
   }
 
   private SnappyInputStream createSnappyInputStream() throws IOException {
