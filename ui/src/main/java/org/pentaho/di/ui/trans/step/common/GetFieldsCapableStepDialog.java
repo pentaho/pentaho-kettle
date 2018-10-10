@@ -122,10 +122,13 @@ public interface GetFieldsCapableStepDialog<StepMetaType extends BaseStepMeta> {
       final int nrNonEmptyFields = getFieldsTable().nrNonEmpty();
       // are any fields already populated in the fields table?
       if ( nrNonEmptyFields > 0 ) {
-        final FieldSelectionDialog fieldSelectDialog = new FieldSelectionDialog( this.getShell(), newFieldNames.size() );
-        int open = fieldSelectDialog.open();
-        boolean reloadAllFields = ( open == FieldSelectionDialog.RELOAD_ALL );
-        openGetFieldsSampleDataDialog( reloadAllFields );
+        final FieldSelectionDialog fieldSelectDialog = new FieldSelectionDialog( this.getShell(), newFieldNames.size() ) {
+          @Override protected void ok() {
+            super.ok();
+            openGetFieldsSampleDataDialog( reloadAllFields );
+          }
+        };
+        fieldSelectDialog.open();
       } else {
         // no fields are populated yet, go straight to "sample data" dialog
         openGetFieldsSampleDataDialog( true );
