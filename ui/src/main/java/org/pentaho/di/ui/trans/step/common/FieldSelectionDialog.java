@@ -40,10 +40,8 @@ import org.pentaho.di.ui.core.dialog.BaseDialog;
 public class FieldSelectionDialog extends BaseDialog {
   private static Class<?> PKG = FieldSelectionDialog.class;
 
-  public static final int RELOAD_ALL = 2;
-
   private int numFields;
-  private boolean reloadAllFields;
+  protected boolean reloadAllFields;
 
   private static final int WIDTH = 360;
 
@@ -99,15 +97,6 @@ public class FieldSelectionDialog extends BaseDialog {
     return clearAndAddAll;
   }
 
-  @Override
-  public int open() {
-    int open = super.open();
-    if ( reloadAllFields ) {
-      open = RELOAD_ALL;
-    }
-    return open;
-  }
-
   /**
    * Override to provide specific behavior, other than just disposing the dialog.
    */
@@ -115,6 +104,9 @@ public class FieldSelectionDialog extends BaseDialog {
     dispose();
   }
 
+  /**
+   * Override to provide specific behavior, other than just disposing the dialog.
+   */
   protected void ok() {
     dispose();
   }
