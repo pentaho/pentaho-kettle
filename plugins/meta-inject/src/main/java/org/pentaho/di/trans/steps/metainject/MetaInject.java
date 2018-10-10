@@ -146,6 +146,7 @@ public class MetaInject extends BaseStep implements StepInterface {
       // Now we can execute this modified transformation metadata.
       //
       final Trans injectTrans = createInjectTrans();
+      injectTrans.setParentTrans( getTrans() );
       injectTrans.setMetaStore( getMetaStore() );
       if ( getTrans().getParentJob() != null ) {
         injectTrans.setParentJob( getTrans().getParentJob() ); // See PDI-13224
