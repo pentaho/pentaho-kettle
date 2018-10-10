@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -32,6 +32,7 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.injection.Injection;
 import org.pentaho.di.core.injection.InjectionSupported;
+import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.logging.LogLevel;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
@@ -143,7 +144,9 @@ public class MetaInjectTest {
 
     TransMeta internalTransMeta = mock( TransMeta.class );
     StepMeta stepMeta = mock( StepMeta.class );
-    trans = mock( Trans.class );
+    trans = new Trans();
+    trans.setLog( LogChannel.GENERAL );
+    trans = PowerMockito.spy( trans );
     doReturn( trans ).when( metaInject ).getTrans();
     doReturn( INJECTOR_STEP_NAME ).when( stepMeta ).getName();
     doReturn( Collections.singletonList( stepMeta ) ).when( internalTransMeta ).getUsedSteps();

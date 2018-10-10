@@ -46,4 +46,11 @@
     <pen:di-plugin type="org.pentaho.di.core.extension.ExtensionPointPluginType"/>
   </bean>
 
+  <!-- Data-lineage analyzer for the ETL Metadata Injection step -->
+  <bean id="MetaInjectAnalyzer"
+        class="org.pentaho.di.ui.trans.steps.metainject.analyzer.MetaInjectAnalyzer" />
+  <service id="metaInjectAnalyzerService"
+           interface="org.pentaho.metaverse.api.analyzer.kettle.step.IClonableStepAnalyzer"
+           ref="MetaInjectAnalyzer"/>
+
 </blueprint>
