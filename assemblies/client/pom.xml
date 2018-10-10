@@ -105,18 +105,6 @@
       </exclusions>
     </dependency>
     <dependency>
-      <groupId>org.pentaho.adaptive</groupId>
-      <artifactId>pdi-websocket-daemon-assembly</artifactId>
-      <version>${ael.version}</version>
-      <type>zip</type>
-      <exclusions>
-        <exclusion>
-          <groupId>*</groupId>
-          <artifactId>*</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-    <dependency>
       <groupId>pentaho</groupId>
       <artifactId>pentaho-application-launcher</artifactId>
       <version>${pentaho-launcher.version}</version>
@@ -182,23 +170,6 @@
                 </artifactItem>
               </artifactItems>
               <outputDirectory>${assembly.dir}/system</outputDirectory>
-            </configuration>
-          </execution>
-          <execution>
-            <id>add-pdi-daemon</id>
-            <phase>generate-resources</phase>
-            <goals>
-              <goal>unpack</goal>
-            </goals>
-            <configuration>
-              <artifactItems>
-                <artifactItem>
-                  <groupId>org.pentaho.adaptive</groupId>
-                  <artifactId>pdi-websocket-daemon-assembly</artifactId>
-                  <type>zip</type>
-                </artifactItem>
-              </artifactItems>
-              <outputDirectory>${assembly.dir}</outputDirectory>
             </configuration>
           </execution>
         </executions>

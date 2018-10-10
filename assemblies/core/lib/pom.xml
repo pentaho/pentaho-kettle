@@ -115,28 +115,28 @@
         </dependency>
 
         <!-- AEL -->
-        <dependency>
-            <groupId>org.pentaho.adaptive</groupId>
-            <artifactId>pdi-spark-driver</artifactId>
-            <version>${pdi-spark-driver.version}</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>*</groupId>
-                    <artifactId>*</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <dependency>
-            <groupId>org.pentaho.adaptive</groupId>
-            <artifactId>pdi-engine-spark</artifactId>
-            <version>${pdi-engine-spark.version}</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>*</groupId>
-                    <artifactId>*</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
+        <!--<dependency>-->
+            <!--<groupId>org.pentaho.adaptive</groupId>-->
+            <!--<artifactId>pdi-spark-driver</artifactId>-->
+            <!--<version>${pdi-spark-driver.version}</version>-->
+            <!--<exclusions>-->
+                <!--<exclusion>-->
+                    <!--<groupId>*</groupId>-->
+                    <!--<artifactId>*</artifactId>-->
+                <!--</exclusion>-->
+            <!--</exclusions>-->
+        <!--</dependency>-->
+        <!--<dependency>-->
+            <!--<groupId>org.pentaho.adaptive</groupId>-->
+            <!--<artifactId>pdi-engine-spark</artifactId>-->
+            <!--<version>${pdi-engine-spark.version}</version>-->
+            <!--<exclusions>-->
+                <!--<exclusion>-->
+                    <!--<groupId>*</groupId>-->
+                    <!--<artifactId>*</artifactId>-->
+                <!--</exclusion>-->
+            <!--</exclusions>-->
+        <!--</dependency>-->
         <dependency>
             <groupId>io.reactivex.rxjava2</groupId>
             <artifactId>rxjava</artifactId>
