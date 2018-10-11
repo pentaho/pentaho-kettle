@@ -24,11 +24,12 @@
 package org.pentaho.di.trans.steps.s3csvinput;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
 
-import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.model.Bucket;
-import com.amazonaws.services.s3.model.S3ObjectInputStream;
+import org.jets3t.service.S3Service;
+import org.jets3t.service.model.S3Bucket;
+import org.jets3t.service.model.S3Object;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.trans.step.BaseStepData;
 import org.pentaho.di.trans.step.StepDataInterface;
@@ -57,6 +58,7 @@ public class S3CsvInputData extends BaseStepData implements StepDataInterface {
   public int      startFilenr;
   public byte[]   binaryFilename;
   public long fileSize;
+  public InputStream fis;
 
   public boolean  isAddingRowNumber;
   public long     rowNumber;
@@ -73,10 +75,10 @@ public class S3CsvInputData extends BaseStepData implements StepDataInterface {
   public long totalBytesRead;
 
   public boolean parallel;
-  public AmazonS3 s3Client;
-  public Bucket s3bucket;
+  public S3Service s3Service;
+  public S3Bucket s3bucket;
   public int maxLineSize;
-  public S3ObjectInputStream s3ObjectInputStream;
+  public S3Object s3Object;
 
   /**
    *
@@ -113,7 +115,7 @@ public class S3CsvInputData extends BaseStepData implements StepDataInterface {
   }
 
   public boolean readBufferFromFile() throws IOException {
-    int n = s3ObjectInputStream.read( bb );
+    int n = fis.read( bb );
     if ( n == -1 ) {
       return false;
     } else {

@@ -22,29 +22,25 @@
 
 package org.pentaho.di.trans.steps.s3csvinput;
 
-import com.amazonaws.auth.AWSCredentials;
-import com.amazonaws.auth.BasicAWSCredentials;
-import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.model.Bucket;
-import com.amazonaws.services.s3.model.ObjectListing;
-import com.amazonaws.services.s3.model.ObjectMetadata;
-import com.amazonaws.services.s3.model.S3Object;
-import com.amazonaws.services.s3.model.S3ObjectSummary;
+import org.jets3t.service.S3Service;
+import org.jets3t.service.model.S3Bucket;
+import org.jets3t.service.model.S3Object;
+import org.jets3t.service.security.AWSCredentials;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.mockito.ArgumentMatcher;
 
-import java.io.ByteArrayInputStream;
-import java.util.ArrayList;
+import java.io.IOException;
+import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import static org.junit.Assert.*;
 import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.argThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -52,54 +48,43 @@ public class S3ObjectsProviderTest {
   private static final String BUCKET1_NAME = "Bucket1";
   private static final String BUCKET2_NAME = "Bucket2";
   private static final String BUCKET3_NAME = "Bucket3";
-  private static final Bucket BUCKET2 = new Bucket( BUCKET2_NAME );
-  private static final Bucket BUCKET3 = new Bucket( BUCKET3_NAME );
-  private static final Bucket BUCKET1 = new Bucket( BUCKET1_NAME );
+  private static final S3Bucket BUCKET2 = new S3Bucket( BUCKET2_NAME );
+  private static final S3Bucket BUCKET3 = new S3Bucket( BUCKET3_NAME );
+  private static final S3Bucket BUCKET1 = new S3Bucket( BUCKET1_NAME );
   private static final String[] TEST_USER_BUCKETS_NAMES = { BUCKET1_NAME, BUCKET2_NAME, BUCKET3_NAME };
   private static final String[] EXPECTED_BUCKETS_NAMES = TEST_USER_BUCKETS_NAMES;
-  private static ObjectListing bucket2Objects, bucket3Objects;
+  private static S3Object[] bucket2Objects, bucket3Objects;
   private static S3Object testObject;
   private static AWSCredentials testUserCredentials;
   private S3ObjectsProvider provider;
-  private AmazonS3 s3ClientMock;
+  private S3Service s3serviceMock;
 
   @BeforeClass public static void setUpBeforeClass() throws Exception {
-    testUserCredentials = new BasicAWSCredentials(  "awsAccessKey", "awsSecretAccessKey" );
+    testUserCredentials = new AWSCredentials( "awsAccessKey", "awsSecretAccessKey" );
   }
 
   @AfterClass public static void tearDownAfterClass() throws Exception {
   }
 
-  private static List<Bucket> generateTestBuckets( String[] TEST_USER_BUCKETS_NAMES ) {
-    return Arrays.stream( TEST_USER_BUCKETS_NAMES ).map( p -> new Bucket( p ) ).collect( Collectors.toList() );
+  private static S3Bucket[] generateTestBuckets( String[] TEST_USER_BUCKETS_NAMES ) {
+    return Arrays.stream( TEST_USER_BUCKETS_NAMES ).map( p -> new S3Bucket( p ) ).toArray( S3Bucket[]::new );
   }
 
-  private static ObjectListing generateTestS3ObjectsInBucket( Bucket bucket, boolean isEmpty ) throws Exception {
-    List<S3ObjectSummary> objectSummary;
-    ObjectListing mockObjectListing = mock( ObjectListing.class );
+  private static S3Object[] generateTestS3ObjectsInBucket( S3Bucket bucket, boolean isEmpty ) throws Exception {
     if ( !isEmpty ) {
-      objectSummary = IntStream.rangeClosed( 1, 10 ).mapToObj( i -> buildObjectSummary( bucket.getName(), "file" + i, "DataString" + i ) )
-          .collect( Collectors.toList() );
-    } else {
-      objectSummary = new ArrayList<S3ObjectSummary>();
+      return IntStream.rangeClosed( 1, 10 ).mapToObj( i -> buildS3Object( bucket, "file" + i, "DataString" + i ) )
+          .toArray( S3Object[]::new );
     }
-    when( mockObjectListing.getObjectSummaries() ).thenReturn( objectSummary );
-    return mockObjectListing;
+    return new S3Object[] {};
   }
 
-  private static S3ObjectSummary buildObjectSummary( String bucketName, String key, String dataString ) {
-    S3ObjectSummary s3ObjectSummary = new S3ObjectSummary();
-    s3ObjectSummary.setKey( key );
-    s3ObjectSummary.setBucketName( bucketName );
-    return s3ObjectSummary;
-  }
-
-  private static S3Object buildS3Object( Bucket bucket, String key, String dataString ) {
-    S3Object s3Object = new S3Object();
-    s3Object.setKey( key );
-    s3Object.setBucketName( bucket.getName() );
-    s3Object.setObjectContent( new ByteArrayInputStream( dataString.getBytes() ) );
-    return s3Object;
+  private static S3Object buildS3Object( S3Bucket bucket, String key, String dataString ) {
+    try {
+      return new S3Object( bucket, key, dataString );
+    } catch ( NoSuchAlgorithmException | IOException e ) {
+      // do nothing
+    }
+    return null;
   }
 
   private static void logArray( Object[] array ) {
@@ -109,9 +94,9 @@ public class S3ObjectsProviderTest {
   @Before public void setUp() throws Exception {
     bucket2Objects = generateTestS3ObjectsInBucket( BUCKET2, false );
     bucket3Objects = generateTestS3ObjectsInBucket( BUCKET3, true );
-    testObject = buildS3Object( BUCKET1, "tests3Object", "TestString" );
-    s3ClientMock = getS3ClientMock( testUserCredentials );
-    provider = new S3ObjectsProvider( s3ClientMock );
+    testObject = new S3Object( BUCKET1, "tests3Object", "TestString" );
+    s3serviceMock = getS3ServiceMock( testUserCredentials );
+    provider = new S3ObjectsProvider( s3serviceMock );
   }
 
   @After public void tearDown() throws Exception {
@@ -123,20 +108,21 @@ public class S3ObjectsProviderTest {
   }
 
   @Test public void testGetBucketFound() throws Exception {
-    Bucket actual = provider.getBucket( BUCKET2_NAME );
+    S3Bucket actual = provider.getBucket( BUCKET2_NAME );
     assertEquals( BUCKET2_NAME, actual.getName() );
   }
 
   @Test public void testGetBucketNotFound_ReturnsNull() throws Exception {
-    Bucket actual = provider.getBucket( "UnknownBucket" );
+    S3Bucket actual = provider.getBucket( "UnknownBucket" );
     assertNull( actual );
   }
 
   @Test public void testGetObjectsNamesInBucketWithObjects() throws Exception {
-    List<String> actual = Arrays.asList( provider.getS3ObjectsNames( BUCKET2_NAME ) );
-    assertEquals( bucket2Objects.getObjectSummaries().size(), actual.size() );
-    List<S3ObjectSummary> expectedList = bucket2Objects.getObjectSummaries();
-    expectedList.stream().forEach( i -> assertTrue( actual.contains( i.getKey() ) ) );
+    String[] actual = provider.getS3ObjectsNames( BUCKET2_NAME );
+    assertEquals( bucket2Objects.length, actual.length );
+    IntStream.rangeClosed( 0, actual.length - 1 )
+        .forEachOrdered( i -> assertEquals( bucket2Objects[i].getName(), actual[i] ) );
+    assertEquals( bucket2Objects.length, actual.length );
   }
 
   @Test public void testGetObjectsNamesInEmptyBucket() throws Exception {
@@ -161,23 +147,43 @@ public class S3ObjectsProviderTest {
   }
 
   @Test public void testGetS3ObjectLenght() throws Exception {
-    long actual = provider.getS3ObjectContentLenght( BUCKET1, "test3Object" );
-    assertEquals( testObject.getObjectMetadata().getContentLength(), actual );
+    long actual = provider.getS3ObjectContentLenght( BUCKET1, "tests3Object" );
+    assertEquals( testObject.getContentLength(), actual );
   }
 
-  private AmazonS3 getS3ClientMock( AWSCredentials credentials ) throws Exception {
-    AmazonS3 s3Client = mock( AmazonS3.class );
-    when( s3Client.listBuckets() ).thenReturn( generateTestBuckets( TEST_USER_BUCKETS_NAMES ) );
+  private S3Service getS3ServiceMock( AWSCredentials credentials ) throws Exception {
+    S3Service service = mock( S3Service.class );
+    when( service.listAllBuckets() ).thenReturn( generateTestBuckets( TEST_USER_BUCKETS_NAMES ) );
     // BUCKET2 - not empty bucket
-    when( s3Client.listObjects( BUCKET2.getName() ) ).thenReturn( bucket2Objects );
+    when( service.listObjects( (S3Bucket) argThat( this.new S3BucketArgumentMatcher( BUCKET2 ) ) ) )
+        .thenReturn( bucket2Objects );
     // BUCKET3 - empty bucket
-    when( s3Client.listObjects( BUCKET3.getName() ) ).thenReturn( bucket3Objects );
+    when( service.listObjects( (S3Bucket) argThat( this.new S3BucketArgumentMatcher( BUCKET3 ) ) ) )
+        .thenReturn( bucket3Objects );
+    when( service.getObject( any( S3Bucket.class ), any( String.class ), any(), any(), any(), any(), any(), any() ) )
+        .thenReturn( testObject );
+    when( service.getObjectDetails( any( S3Bucket.class ), any( String.class ), any(), any(), any(), any() ) )
+        .thenReturn( testObject );
+    return service;
+  }
 
-    when( s3Client.getObject( any( String.class ), any( String.class ) ) ).thenReturn( testObject );
-    ObjectMetadata mockMetaData = mock( ObjectMetadata.class );
-    when( s3Client.getObjectMetadata( BUCKET1.getName(), "test3Object" ) ).thenReturn( mockMetaData );
+  class S3BucketArgumentMatcher extends ArgumentMatcher {
+    private S3Bucket expected;
 
-    return s3Client;
+    S3BucketArgumentMatcher( S3Bucket expected ) {
+      super();
+      this.expected = expected;
+    }
+
+    public boolean matches( Object o ) {
+      if ( o instanceof S3Bucket ) {
+        S3Bucket bucket = (S3Bucket) o;
+        if ( ( bucket != null ) && bucket.getName().equals( this.expected.getName() ) ) {
+          return true;
+        }
+      }
+      return false;
+    }
   }
 
 }

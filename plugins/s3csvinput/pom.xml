@@ -34,7 +34,6 @@
     <org.eclipse.swt.version>4.6</org.eclipse.swt.version>
     <jface.version>3.3.0-I20070606-0010</jface.version>
     <jets3t.version>0.9.4</jets3t.version>
-    <aws.version>1.11.275</aws.version>
     <pdi.version>8.1.0.0-SNAPSHOT</pdi.version>
   </properties>
 
@@ -69,6 +68,18 @@
         <artifactId>metastore</artifactId>
         <version>${pdi.version}</version>
         <scope>provided</scope>
+        <exclusions>
+          <exclusion>
+            <artifactId>*</artifactId>
+            <groupId>*</groupId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+      <dependency>
+        <groupId>net.java.dev.jets3t</groupId>
+        <artifactId>jets3t</artifactId>
+        <version>${jets3t.version}</version>
+        <scope>compile</scope>
         <exclusions>
           <exclusion>
             <artifactId>*</artifactId>
