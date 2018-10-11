@@ -24,7 +24,9 @@ package org.pentaho.di.ui.core.dialog;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -56,12 +58,23 @@ import org.pentaho.di.ui.trans.step.BaseStepDialog;
 public class ShowMessageDialog extends Dialog {
   private static Class<?> PKG = ShowMessageDialog.class; // for i18n purposes, needed by Translator2!!
 
+  private static final Map<Integer, String> buttonTextByFlagDefaults = new LinkedHashMap<>();
+
+  static {
+    buttonTextByFlagDefaults.put( SWT.OK, BaseMessages.getString( PKG, "System.Button.OK" ) );
+    buttonTextByFlagDefaults.put( SWT.CANCEL, BaseMessages.getString( PKG, "System.Button.Cancel" ) );
+    buttonTextByFlagDefaults.put( SWT.YES, BaseMessages.getString( PKG, "System.Button.Yes" ) );
+    buttonTextByFlagDefaults.put( SWT.NO, BaseMessages.getString( PKG, "System.Button.No" ) );
+  }
+
   private String title, message;
 
   private Shell shell;
   private PropsUI props;
 
   private int flags;
+  private final Map<Integer, String> buttonTextByFlag;
+
   private int returnValue;
   private int type;
 
@@ -117,7 +130,30 @@ public class ShowMessageDialog extends Dialog {
    *          Set the dialog to a default size and enable scrolling
    */
   public ShowMessageDialog( Shell parent, int flags, String title, String message, boolean scroll ) {
+    this( parent, flags, buttonTextByFlagDefaults, title, message, scroll );
+  }
+
+  /**
+   * Dialog to allow someone to show a text with an icon in front
+   *
+   * @param parent
+   *          The parent shell to use
+   * @param flags
+   *          the icon to show using SWT flags: SWT.ICON_WARNING, SWT.ICON_ERROR, ... Also SWT.OK, SWT.CANCEL is
+   *          allowed.
+   * @param buttonTextByFlag
+   *          Custom text to display for each button by flag i.e. key: SWT.OK, value: "Custom OK"
+   *          Note - controls button order, use an ordered map to maintain button order.
+   * @param title
+   *          The dialog title
+   * @param message
+   *          The message to display
+   * @param scroll
+   *          Set the dialog to a default size and enable scrolling
+   */
+  public ShowMessageDialog( Shell parent, int flags, Map<Integer, String> buttonTextByFlag, String title, String message, boolean scroll  ) {
     super( parent, SWT.NONE );
+    this.buttonTextByFlag = buttonTextByFlag;
     this.parent = parent;
     this.flags = flags;
     this.title = title;
@@ -196,54 +232,20 @@ public class ShowMessageDialog extends Dialog {
     buttons = new ArrayList<Button>();
     adapters = new ArrayList<SelectionAdapter>();
 
-    if ( ( flags & SWT.OK ) != 0 ) {
-      Button button = new Button( shell, SWT.PUSH );
-      final String ok = BaseMessages.getString( PKG, "System.Button.OK" );
-      button.setText( ok );
-      SelectionAdapter selectionAdapter = new SelectionAdapter() {
-        public void widgetSelected( SelectionEvent event ) {
-          quit( SWT.OK );
-        }
-      };
-      button.addSelectionListener( selectionAdapter );
-      adapters.add( selectionAdapter );
-      buttons.add( button );
-    }
-    if ( ( flags & SWT.CANCEL ) != 0 ) {
-      Button button = new Button( shell, SWT.PUSH );
-      button.setText( BaseMessages.getString( PKG, "System.Button.Cancel" ) );
-      SelectionAdapter selectionAdapter = new SelectionAdapter() {
-        public void widgetSelected( SelectionEvent event ) {
-          quit( SWT.CANCEL );
-        }
-      };
-      button.addSelectionListener( selectionAdapter );
-      adapters.add( selectionAdapter );
-      buttons.add( button );
-    }
-    if ( ( flags & SWT.YES ) != 0 ) {
-      Button button = new Button( shell, SWT.PUSH );
-      button.setText( BaseMessages.getString( PKG, "System.Button.Yes" ) );
-      SelectionAdapter selectionAdapter = new SelectionAdapter() {
-        public void widgetSelected( SelectionEvent event ) {
-          quit( SWT.YES );
-        }
-      };
-      button.addSelectionListener( selectionAdapter );
-      adapters.add( selectionAdapter );
-      buttons.add( button );
-    }
-    if ( ( flags & SWT.NO ) != 0 ) {
-      Button button = new Button( shell, SWT.PUSH );
-      button.setText( BaseMessages.getString( PKG, "System.Button.No" ) );
-      SelectionAdapter selectionAdapter = new SelectionAdapter() {
-        public void widgetSelected( SelectionEvent event ) {
-          quit( SWT.NO );
-        }
-      };
-      button.addSelectionListener( selectionAdapter );
-      adapters.add( selectionAdapter );
-      buttons.add( button );
+    for ( Map.Entry<Integer, String> entry : buttonTextByFlag.entrySet() ) {
+      Integer buttonFlag = entry.getKey();
+      if ( ( flags & buttonFlag ) != 0 ) {
+        Button button = new Button( shell, SWT.PUSH );
+        button.setText( entry.getValue() );
+        SelectionAdapter selectionAdapter = new SelectionAdapter() {
+          public void widgetSelected( SelectionEvent event ) {
+            quit( buttonFlag );
+          }
+        };
+        button.addSelectionListener( selectionAdapter );
+        adapters.add( selectionAdapter );
+        buttons.add( button );
+      }
     }
 
     setLayoutAccordingToType();
