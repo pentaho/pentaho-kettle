@@ -22,9 +22,6 @@
 
 package org.pentaho.di.trans.step;
 
-import java.util.List;
-import java.util.Map;
-
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Counter;
 import org.pentaho.di.core.SQLStatement;
@@ -47,6 +44,9 @@ import org.pentaho.di.trans.TransMeta.TransformationType;
 import org.pentaho.di.trans.step.errorhandling.StreamInterface;
 import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Node;
+
+import java.util.List;
+import java.util.Map;
 
 /**
  * This interface allows custom steps to talk to Kettle. The StepMetaInterface is the main Java interface that a plugin
@@ -767,5 +767,13 @@ public interface StepMetaInterface {
    */
   default TransMeta fetchTransMeta( StepMetaInterface stepMeta, Repository rep, IMetaStore metastore, VariableSpace space ) throws KettleException {
     return null; // default
+  }
+
+  /**
+   * True when the step has a lazy conversion flag that is checked.
+   * @return true when the step has a lazy conversion flag that is checked.
+   */
+  default boolean isLazyConversionActive() {
+    return false;
   }
 }
