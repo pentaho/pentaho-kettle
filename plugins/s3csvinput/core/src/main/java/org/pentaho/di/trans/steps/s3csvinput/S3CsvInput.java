@@ -137,7 +137,7 @@ public class S3CsvInput extends BaseStep implements StepInterface {
       // We'll use the same algorithm...
       //
       for ( String filename : data.filenames ) {
-        long size = new S3ObjectsProvider( data.s3Client ).getS3ObjectContentLenght( data.s3bucket, filename );
+        long size = new S3ObjectsProvider( data.s3Service ).getS3ObjectContentLenght( data.s3bucket, filename );
         data.fileSizes.add( size );
         data.totalFileSize += size;
       }
@@ -231,31 +231,31 @@ public class S3CsvInput extends BaseStep implements StepInterface {
 
       // Close the previous file...
       //
-      if ( data.s3ObjectInputStream != null ) {
-        data.s3ObjectInputStream.close();
+      if ( data.fis != null ) {
+        data.fis.close();
       }
 
       if ( data.filenr >= data.filenames.length ) {
         return false;
       }
 
-      data.s3ObjectInputStream = null;
+      data.s3Object = null;
 
       // If we are running in parallel we only want to grab a part of the content, not everything.
       //
       if ( data.parallel ) {
-        data.s3ObjectInputStream = new S3ObjectsProvider( data.s3Client )
-          .getS3Object( data.s3bucket, data.filenames[ data.filenr ], data.bytesToSkipInFirstFile,
-            data.bytesToSkipInFirstFile + data.blockToRead + data.maxLineSize * 2 ).getObjectContent();
+
+        data.s3Object = new S3ObjectsProvider( data.s3Service ).getS3Object( data.s3bucket, data.filenames[data.filenr], data.bytesToSkipInFirstFile, data.bytesToSkipInFirstFile + data.blockToRead + data.maxLineSize * 2 );
+
       } else {
-        data.s3ObjectInputStream =
-          new S3ObjectsProvider( data.s3Client ).getS3Object( data.s3bucket, data.filenames[ data.filenr ] )
-            .getObjectContent();
+        data.s3Object = new S3ObjectsProvider( data.s3Service ).getS3Object( data.s3bucket, data.filenames[data.filenr] );
       }
 
       if ( meta.isLazyConversionActive() ) {
         data.binaryFilename = data.filenames[data.filenr].getBytes();
       }
+
+      data.fis = data.s3Object.getDataInputStream();
 
       if ( data.parallel ) {
         if ( data.bytesToSkipInFirstFile > 0 ) {
@@ -543,8 +543,8 @@ public class S3CsvInput extends BaseStep implements StepInterface {
       try {
         //Get the specified bucket
         String bucketname = environmentSubstitute( meta.getBucket() );
-        data.s3Client = meta.getS3Client( this );
-        data.s3bucket = new S3ObjectsProvider( data.s3Client ).getBucket( bucketname );
+        data.s3Service = meta.getS3Service( this );
+        data.s3bucket = new S3ObjectsProvider( data.s3Service ).getBucket( bucketname );
         if ( data.s3bucket == null ) {
           logError( Messages.getString( "S3CsvInput.Log.UnableToFindBucket.Message", bucketname ) );
           return false;
@@ -609,8 +609,8 @@ public class S3CsvInput extends BaseStep implements StepInterface {
 
   public void closeFile() throws KettleException {
     try {
-      if ( data.s3ObjectInputStream != null ) {
-        data.s3ObjectInputStream.close();
+      if ( data.fis != null ) {
+        data.fis.close();
       }
     } catch ( IOException e ) {
       throw new KettleException( "Unable to close file channel for file '" + data.filenames[data.filenr - 1], e );

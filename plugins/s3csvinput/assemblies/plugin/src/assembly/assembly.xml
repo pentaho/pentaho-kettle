@@ -23,9 +23,8 @@
     <dependencySet>
       <useProjectArtifact>false</useProjectArtifact>
       <includes>
-        <include>com.amazonaws:aws-java-sdk-s3</include>
+        <include>net.java.dev.jets3t:jets3t</include>
         <include>com.amazonaws:aws-java-sdk-core</include>
-        <include>joda-time:joda-time</include>
       </includes>
       <outputDirectory>lib</outputDirectory>
     </dependencySet>
