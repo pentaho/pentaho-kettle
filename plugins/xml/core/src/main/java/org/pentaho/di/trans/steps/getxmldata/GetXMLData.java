@@ -161,8 +161,6 @@ public class GetXMLData extends BaseStep implements StepInterface {
       if ( IsInXMLField ) {
         // read string to parse
         data.document = reader.read( new StringReader( StringXML ) );
-      } else if ( readurl && KettleVFS.startsWithScheme( StringXML ) ) {
-        data.document = reader.read( KettleVFS.getInputStream( StringXML ) );
       } else if ( readurl ) {
         // read url as source
         HttpClient client = HttpClientManager.getInstance().createDefaultClient();
