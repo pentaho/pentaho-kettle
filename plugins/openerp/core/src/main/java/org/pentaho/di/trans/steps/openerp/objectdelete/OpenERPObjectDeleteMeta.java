@@ -13,6 +13,7 @@
  *   along with this software.  If not, see <http://www.gnu.org/licenses/>.
  *
  *   Copyright 2011 De Bortoli Wines Pty Limited (Australia)
+ *   Portions Copyright 2011-2018 Hitachi Vantara
  */
 
 package org.pentaho.di.trans.steps.openerp.objectdelete;
@@ -37,10 +38,10 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Node;
 
-@Step( id = "OpenERPObjectDelete", image = "OpenERPObjectDelete.svg",
+@Step( id = "OpenERPObjectDelete", image = "ui/images/deprecated.svg",
   i18nPackageName = "org.pentaho.di.trans.steps.openerp.objectdelete", name = "OpenERPObjectDelete.TransName",
   description = "OpenERPObjectDelete.TransDescription", documentationUrl = "http://wiki.pentaho.com/display/EAI/OpenERP+Object+Delete",
-  categoryDescription = "i18n:org.pentaho.di.trans.step:BaseStep.Category.OpenERP" )
+  categoryDescription = "i18n:org.pentaho.di.trans.step:BaseStep.Category.Deprecated" )
 public class OpenERPObjectDeleteMeta extends BaseStepMeta implements StepMetaInterface {
 
   private DatabaseMeta databaseMeta;
