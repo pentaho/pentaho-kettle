@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -58,8 +58,9 @@ import org.w3c.dom.Node;
  * Created on 2-jun-2003
  *
  */
-@Step( id = "SAPINPUT", image = "SIP.svg", i18nPackageName = "org.pentaho.di.trans.steps.sapinput",
-     name = "SapInput.Step.Name", description = "SapInput.Step.Description", categoryDescription = "Input" )
+@Step( id = "SAPINPUT", image = "ui/images/deprecated.svg", i18nPackageName = "org.pentaho.di.trans.steps.sapinput",
+     name = "SapInput.Step.Name", description = "SapInput.Step.Description",
+     categoryDescription = "i18n:org.pentaho.di.trans.step:BaseStep.Category.Deprecated" )
 public class SapInputMeta extends BaseStepMeta implements StepMetaInterface {
   private static final String XML_TAG_PARAMETERS = "parameters";
 

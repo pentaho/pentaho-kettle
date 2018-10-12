@@ -2441,8 +2441,13 @@ public class JobGraph extends AbstractGraph implements XulEventHandler, Redrawab
               tip.append( "-" );
             }
             tip.append( Const.CR ).append( tipNext ).append( Const.CR );
-            tip.append( BaseMessages.getString( PKG, "JobGraph.DeprecatedEntry.Tooltip.Message2",
-              jec.getSuggestion() ) );
+            tip.append( BaseMessages.getString( PKG, "JobGraph.DeprecatedEntry.Tooltip.Message2" ) );
+            if ( !Utils.isEmpty( jec.getSuggestion() )
+              && !( jec.getSuggestion().startsWith( "!" ) && jec.getSuggestion().endsWith( "!" ) ) ) {
+              tip.append( " " );
+              tip.append( BaseMessages.getString( PKG, "JobGraph.DeprecatedEntry.Tooltip.Message3",
+                jec.getSuggestion() ) );
+            }
             tipImage = GUIResource.getInstance().getImageDeprecated();
           }
           break;

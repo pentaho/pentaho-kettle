@@ -16,7 +16,7 @@
  *
  *   Portions Copyright 2008 Stratebi Business Solutions, S.L.
  *   Portions Copyright 2011 De Bortoli Wines Pty Limited (Australia)
- *   Portions Copyright 2011 - 2017 Hitachi Vantara
+ *   Portions Copyright 2011 - 2018 Hitachi Vantara
  */
 
 package org.pentaho.di.trans.steps.palo.diminput;
@@ -51,10 +51,11 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Node;
 
-@Step( id = "PaloDimInput", image = "PaloDimInput.svg", i18nPackageName = "org.pentaho.di.trans.steps.palo.diminput",
+@Step( id = "PaloDimInput", image = "ui/images/deprecated.svg",
+    i18nPackageName = "org.pentaho.di.trans.steps.palo.diminput",
     name = "PaloDimInput.TransName", description = "PaloDimInput.TransDescription",
     documentationUrl = "http://wiki.pentaho.com/display/EAI/Palo+Dimension+Input",
-    categoryDescription = "i18n:org.pentaho.di.trans.step:BaseStep.Category.Palo" )
+    categoryDescription = "i18n:org.pentaho.di.trans.step:BaseStep.Category.Deprecated" )
 public class PaloDimInputMeta extends BaseStepMeta implements StepMetaInterface {
   private DatabaseMeta databaseMeta;
   private String dimension = "";
