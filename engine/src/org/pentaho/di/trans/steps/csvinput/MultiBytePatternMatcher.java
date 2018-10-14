@@ -23,15 +23,26 @@
 package org.pentaho.di.trans.steps.csvinput;
 
 public class MultiBytePatternMatcher implements PatternMatcherInterface {
-
-  public boolean matchesPattern( byte[] source, int location, byte[] pattern ) {
+  private int continueToMatchIndex = 0;
+  
+  public boolean matchesPattern(byte[] source, int sourceSize, int location, byte[] pattern) {
+    // every time only match one char
     int start = location;
-    for ( int i = 0; i < pattern.length; i++ ) {
-      if ( source[start + i] != pattern[i] ) {
-        return false;
-      }
-    }
-    return true;
-  }
 
+    if (start >= sourceSize)
+        return false;
+
+    if (source[start] != pattern[continueToMatchIndex]) {
+        continueToMatchIndex = 0;
+        return false;
+    } else {
+        continueToMatchIndex++;
+    }
+
+    if (continueToMatchIndex == pattern.length) {
+        continueToMatchIndex = 0;
+        return true;
+    } else
+        return false;
+    }
 }
