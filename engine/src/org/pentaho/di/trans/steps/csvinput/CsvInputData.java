@@ -301,7 +301,7 @@ public class CsvInputData extends BaseStepData implements StepDataInterface {
   }
 
   boolean enclosureFound() {
-    return enclosureMatcher.matchesPattern( byteBuffer, endBuffer, enclosure );
+    return enclosureMatcher.matchesPattern( byteBuffer, bufferSize, endBuffer, enclosure );
   }
 
   boolean endOfBuffer() {
