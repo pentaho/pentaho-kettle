@@ -75,6 +75,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ThreadLocalRandom;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -773,6 +775,30 @@ public class AbstractMetaTest {
     assertEquals( mockMetastoreLocatorOsgi, meta.getMetastoreLocatorOsgi() );
   }
 
+  @Test
+  public void testMultithreadHammeringOfListener() throws Exception {
+
+    CountDownLatch latch = new CountDownLatch( 3 );
+    AbstractMetaListenerThread th1 = new AbstractMetaListenerThread( meta, 2000, latch); // do 2k random add/delete/fire
+    AbstractMetaListenerThread th2 = new AbstractMetaListenerThread( meta, 2000, latch ); // do 2k random add/delete/fire
+    AbstractMetaListenerThread th3 = new AbstractMetaListenerThread( meta, 2000, latch ); // do 2k random add/delete/fire
+
+    Thread t1 = new Thread( th1 );
+    Thread t2 = new Thread( th2 );
+    Thread t3 = new Thread( th3 );
+    try {
+      t1.start();
+      t2.start();
+      t3.start();
+      latch.await(); // Will hang out waiting for each thread to complete...
+    } catch ( InterruptedException badTest ) {
+      throw badTest;
+    }
+    assertEquals( "No exceptions encountered", th1.message );
+    assertEquals( "No exceptions encountered", th2.message );
+    assertEquals( "No exceptions encountered", th3.message );
+  }
+
   /**
    * Stub class for AbstractMeta. No need to test the abstract methods here, they should be done in unit tests for
    * proper child classes.
@@ -857,4 +883,56 @@ public class AbstractMetaTest {
       return null;
     }
   }
+
+
+
+  private class AbstractMetaListenerThread implements Runnable {
+    AbstractMeta metaToWork;
+    int times;
+    CountDownLatch whenDone;
+    String message;
+
+    AbstractMetaListenerThread ( AbstractMeta aMeta, int times, CountDownLatch latch ) {
+      this.metaToWork = aMeta;
+      this.times = times;
+      this.whenDone = latch;
+    }
+
+    @Override public void run() {
+      for ( int i = 0; i < times; i++ ) {
+        int randomNum = ThreadLocalRandom.current().nextInt( 0, 3 );
+        switch( randomNum ) {
+          case 0: {
+            try {
+              metaToWork.addFilenameChangedListener( mock( FilenameChangedListener.class ) );
+            } catch ( Throwable ex ) {
+              message = "Exception adding listener.";
+            }
+            break;
+          }
+          case 1: {
+            try {
+              metaToWork.removeFilenameChangedListener( mock( FilenameChangedListener.class ) );
+            } catch ( Throwable ex ) {
+              message = "Exception removing listener.";
+            }
+            break;
+          }
+          default: {
+            try {
+              metaToWork.fireFilenameChangedListeners( "oldName", "newName" );
+            } catch ( Throwable ex ) {
+              message = "Exception firing listeners.";
+            }
+            break;
+          }
+        }
+      }
+      if ( message == null ) {
+        message = "No exceptions encountered";
+      }
+      whenDone.countDown(); // show success...
+    }
+  }
+
 }
