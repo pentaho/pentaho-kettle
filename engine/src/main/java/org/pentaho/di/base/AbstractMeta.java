@@ -644,9 +644,11 @@ public abstract class AbstractMeta implements ChangedFlagInterface, UndoInterfac
    * Notify listeners of a change in current directory.
    */
   protected void fireCurrentDirectoryChanged( String previous, String current ) {
-    if ( currentDirectoryChangedListeners != null && nameChanged( previous, current ) ) {
-      for ( CurrentDirectoryChangedListener listener : currentDirectoryChangedListeners ) {
-        listener.directoryChanged( this, previous, current );
+    if (currentDirectoryChangedListeners != null && nameChanged(previous, current)) {
+      synchronized (currentDirectoryChangedListeners) {
+        for (CurrentDirectoryChangedListener listener : currentDirectoryChangedListeners) {
+          listener.directoryChanged(this, previous, current);
+        }
       }
     }
   }
