@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -338,7 +338,7 @@ public class LDIFInput extends BaseStep implements StepInterface {
           }
 
         } // End if first
-        String filename = getInputRowMeta().getString( data.readrow, data.indexOfFilenameField );
+        String filename = environmentSubstitute( getInputRowMeta().getString( data.readrow, data.indexOfFilenameField ) );
         if ( isDetailed() ) {
           logDetailed( BaseMessages.getString( PKG, "LDIFInput.Log.FilenameInStream", meta
             .getDynamicFilenameField(), filename ) );
