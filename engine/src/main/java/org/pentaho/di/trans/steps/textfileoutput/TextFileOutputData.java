@@ -269,6 +269,7 @@ public class TextFileOutputData extends BaseStepData implements StepDataInterfac
 
   public class FileStreamsMap extends TreeMap<FileStreamsKey, FileStream> implements IFileStreamsCollection  {
     int numOpenFiles = 0;
+    TreeMap<String, FileStreamsKey> keyTreeMap = new TreeMap<>();
 
     @Override
     public void add( String filename, FileStream fileWriterOutputStream ) {
@@ -276,7 +277,9 @@ public class TextFileOutputData extends BaseStepData implements StepDataInterfac
       if ( size() > 0 ) {
         index = lastKey().index + 1;
       }
-      put( new FileStreamsKey( filename, index ), fileWriterOutputStream );
+      FileStreamsKey newKey = new FileStreamsKey( filename, index );
+      put( newKey, fileWriterOutputStream );
+      keyTreeMap.put( newKey.fileName, newKey );
       if ( fileWriterOutputStream.isOpen() ) {
         numOpenFiles++;
       }
@@ -285,11 +288,19 @@ public class TextFileOutputData extends BaseStepData implements StepDataInterfac
 
     @Override
     public FileStream getStream( String filename ) {
-      return get( new FileStreamsKey( filename, -1 ) );
+      FileStreamsKey streamKey = keyTreeMap.get( filename );
+      if ( streamKey == null ) {
+        return null;
+      }
+      return get( streamKey );
     }
 
     private FileStream remove( String filename ) {
-      return remove( new FileStreamsKey( filename, -1 ) );
+      FileStreamsKey streamKey = keyTreeMap.remove( filename );
+      if ( streamKey == null ) {
+        return null;
+      }
+      return remove( streamKey );
     }
 
     @Override
