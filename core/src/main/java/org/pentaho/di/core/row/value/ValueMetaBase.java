@@ -5064,12 +5064,15 @@ public class ValueMetaBase implements ValueMetaInterface {
             if ( getLength() == DatabaseMeta.CLOB_LENGTH ) {
               setLength( databaseMeta.getMaxTextFieldLength() );
             }
-            String string = getString( data );
-            int len = string.length();
-            int maxlen = isLengthInvalidOrZero() ? len : getLength();
-            if ( len <= maxlen ) {
-              preparedStatement.setString( index, string );
+
+            if ( getLength() <= databaseMeta.getMaxTextFieldLength() ) {
+              preparedStatement.setString( index, getString( data ) );
             } else {
+              String string = getString( data );
+
+              int maxlen = databaseMeta.getMaxTextFieldLength();
+              int len = string.length();
+
               // Take the last maxlen characters of the string...
               int begin = Math.max( len - maxlen, 0 );
               if ( begin > 0 ) {
@@ -5077,9 +5080,9 @@ public class ValueMetaBase implements ValueMetaInterface {
                 log.logMinimal( String.format( "Truncating %d symbols of original message in '%s' field", begin, getName() ) );
                 string = string.substring( begin );
               }
+
               if ( databaseMeta.supportsSetCharacterStream() ) {
-                StringReader sr = new StringReader( string );
-                preparedStatement.setCharacterStream( index, sr, string.length() );
+                preparedStatement.setCharacterStream( index, new StringReader( string ), string.length() );
               } else {
                 preparedStatement.setString( index, string );
               }
