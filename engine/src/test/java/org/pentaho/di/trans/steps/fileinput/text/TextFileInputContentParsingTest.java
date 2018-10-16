@@ -91,20 +91,6 @@ public class TextFileInputContentParsingTest extends BaseTextParsingTest {
   }
 
   @Test
-  public void testGzipCompression() throws Exception {
-
-    meta.content.fileCompression = "GZip";
-    initByFile( "default.csv.gz" );
-
-    setFields( new BaseFileField( "f1", -1, -1 ), new BaseFileField( "f2", -1, -1 ),
-      new BaseFileField( "f2", -1, -1 ) );
-
-    process();
-
-    check( new Object[][] { { "first", "1", "1.1" }, { "second", "2", "2.2" }, { "third", "3", "3.3" } } );
-  }
-
-  @Test
   public void testVfsGzipCompression() throws Exception {
 
     meta.content.fileCompression = "None";

@@ -83,6 +83,7 @@ import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.core.util.EnvUtil;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.vfs.KettleVFS;
+import org.pentaho.di.core.vfs.KettleVfs2Converter;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
@@ -597,7 +598,10 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
     // Add the file to the list of files...
     SelectionAdapter selA = new SelectionAdapter() {
       public void widgetSelected( SelectionEvent arg0 ) {
-        wFilenameList.add( wFilename.getText(), wFilemask.getText(), wExcludeFilemask.getText(),
+        String normalizedFileName;
+        normalizedFileName = KettleVfs2Converter.normalizeFilePath( wFilename.getText(),
+          wCompression.getText(), wFilemask.getText(), wExcludeFilemask.getText() );
+        wFilenameList.add( normalizedFileName, wFilemask.getText(), wExcludeFilemask.getText(),
             TextFileInputMeta.RequiredFilesCode[0], TextFileInputMeta.RequiredFilesCode[0] );
         wFilename.setText( "" );
         wFilemask.setText( "" );
