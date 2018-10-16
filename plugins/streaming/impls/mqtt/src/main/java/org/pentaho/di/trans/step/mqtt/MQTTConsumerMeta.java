@@ -399,4 +399,12 @@ public class MQTTConsumerMeta extends BaseStreamStepMeta implements StepMetaInte
         cleanSession, storageLevel, serverUris, mqttVersion, automaticReconnect );
   }
 
+  @Override public MQTTConsumerMeta copyObject() {
+    MQTTConsumerMeta newClone = (MQTTConsumerMeta) this.clone();
+    newClone.topics = new ArrayList<>( this.topics );
+    newClone.sslKeys = new ArrayList<>( this.sslKeys );
+    newClone.sslValues = new ArrayList<>( this.sslValues );
+    return newClone;
+  }
+
 }

@@ -22,7 +22,6 @@
 
 package org.pentaho.di.trans.step.jms;
 
-
 import org.pentaho.di.core.injection.Injection;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
@@ -105,6 +104,36 @@ public class JmsDelegate {
   public JmsDelegate( List<JmsProvider> jmsProviders ) {
     super();
     this.jmsProviders = jmsProviders;
+  }
+
+  public JmsDelegate( JmsDelegate orig ) {
+    super();
+    this.jmsProviders = orig.jmsProviders;
+    this.destinationName = orig.destinationName;
+    this.ibmUrl = orig.ibmUrl;
+    this.ibmUsername  = orig.ibmUsername;
+    this.ibmPassword = orig.ibmPassword;
+    this.amqUrl = orig.amqUrl;
+    this.amqUsername = orig.amqUsername;
+    this.amqPassword = orig.amqPassword;
+    this.connectionType = orig.connectionType;
+    this.destinationType = orig.destinationType;
+    this.receiveTimeout = orig.receiveTimeout;
+    this.messageField = orig.messageField;
+    this.destinationField = orig.destinationField;
+    this.sslEnabled = orig.sslEnabled;
+    this.sslKeystorePath = orig.sslKeystorePath;
+    this.sslKeystoreType = orig.sslKeystoreType;
+    this.sslKeystorePassword = orig.sslKeystorePassword;
+    this.sslTruststorePath = orig.sslTruststorePath;
+    this.sslTruststoreType = orig.sslTruststoreType;
+    this.sslTruststorePassword = orig.sslTruststorePassword;
+    this.sslContextAlgorithm = orig.sslContextAlgorithm;
+    this.sslCipherSuite = orig.sslCipherSuite;
+    this.ibmSslFipsRequired = orig.ibmSslFipsRequired;
+    this.amqSslProvider = orig.amqSslProvider;
+    this.amqSslVerifyHost = orig.amqSslVerifyHost;
+    this.amqSslTrustAll = orig.amqSslTrustAll;
   }
 
   Destination getDestination( ) {
