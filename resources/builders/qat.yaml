@@ -202,8 +202,6 @@ jobGroups:
        scmBranch       :  ${DEFAULT_BRANCH}
        directives      :  += -DskipDefault -P base,plugins,lowdeps -Djavadoc
        versionProperty :  pdi.version
-       archivable      :  true
-       artifactsArchivePattern: ${PDI_ENGINE_CORE_PATTERN}
 
   1200:
 
@@ -377,8 +375,10 @@ jobGroups:
      - jobID           :  pdi-core-plugins
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-kettle.git
        scmBranch       :  ${DEFAULT_BRANCH}
-       directives      :  += -DskipDefault -P plugins,highdeps
+       directives      :  += -DskipDefault -P highdeps
        versionProperty :  pdi.version
+       root            :  plugins
+       parallelize     :  true
 
      - jobID           :  pdi-monitoring-plugin
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pdi-monitoring-plugin.git
@@ -768,6 +768,8 @@ jobGroups:
        directives      :  += -DskipDefault -P assemblies
        versionProperty :  pdi.version
        testable        :  false
+       archivable      :  true
+       artifactsArchivePattern: ${PDI_ENGINE_CORE_PATTERN}
 
   4300:
 

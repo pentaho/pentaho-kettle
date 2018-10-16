@@ -181,8 +181,6 @@ jobGroups:
        scmBranch       :  ${DEFAULT_BRANCH}
        directives      :  += -DskipDefault -P base,plugins,lowdeps
        versionProperty :  pdi.version
-       archivable      :  true
-       artifactsArchivePattern: ${PDI_ENGINE_CORE_PATTERN}
 
   1200:
 
@@ -366,7 +364,7 @@ jobGroups:
        scmBranch       :  ${DEFAULT_BRANCH}
        directives      :  += -DskipDefault -P highdeps
        root            :  plugins
-       #parallelize     :  true
+       parallelize     :  true
        versionProperty :  pdi.version
 
      - jobID           :  pdi-monitoring-plugin
@@ -758,6 +756,8 @@ jobGroups:
        directives      :  += -DskipDefault -P assemblies
        versionProperty :  pdi.version
        testable        :  false
+       archivable      :  true
+       artifactsArchivePattern: ${PDI_ENGINE_CORE_PATTERN}
 
   4300:
 
