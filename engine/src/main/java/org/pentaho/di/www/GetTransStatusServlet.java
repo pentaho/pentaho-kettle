@@ -346,6 +346,11 @@ public class GetTransStatusServlet extends BaseHttpServlet implements CartePlugi
 
         try {
           out.println( "<div class=\"row\" style=\"padding: 0px 0px 0px 30px\">" );
+          out.println( "<div class=\"row\" style=\"padding-top: 30px;\">" );
+          out.print( "<a href=\"" + convertContextPath( GetStatusServlet.CONTEXT_PATH ) + "\">" );
+          out.print( "<img src=\"/pentaho/content/common-ui/resources/themes/images/back.svg\" style=\"margin-right: 5px; width: 16px; height: 16px; vertical-align: middle;\">" );
+          out.print( BaseMessages.getString( PKG, "CarteStatusServlet.BackToCarteStatus" ) + "</a>" );
+          out.println( "</div>" );
           out.println( "<div class=\"row\" style=\"padding: 30px 0px 75px 0px; display: table;\">" );
           out.println( "<div style=\"display: table-row;\">" );
           out.println( "<div style=\"padding: 0px 30px 0px 0px; width: 60px; display: table-cell; vertical-align: top;\">" );
@@ -353,11 +358,11 @@ public class GetTransStatusServlet extends BaseHttpServlet implements CartePlugi
           out.println( "</div>" );
           out.println( "<div style=\"vertical-align: top; display: table-cell;\">" );
           out.println( "<table style=\"border-collapse: collapse;\" border=\"" + tableBorder + "\">" );
-          out.print( "<tr class=\"cellTableRow\" style=\"border: solid; border-width: 1px 0; border-top: none; border-color: #E3E3E3; font-size: 12;\"> <th style=\"font-weight: normal; padding: 8px 10px 10px 10px\" class=\"cellTableHeader\">"
+          out.print( "<tr class=\"cellTableRow\" style=\"border: solid; border-width: 1px 0; border-top: none; border-color: #E3E3E3; font-size: 12; text-align: left;\"> <th style=\"font-weight: normal; padding: 8px 10px 10px 10px\" class=\"cellTableHeader\">"
             + BaseMessages.getString( PKG, "TransStatusServlet.CarteObjectId" ) + "</th> <th style=\"font-weight: normal; padding: 8px 10px 10px 10px\" class=\"cellTableHeader\">"
             + BaseMessages.getString( PKG, "TransStatusServlet.TransStatus" ) + "</th> <th style=\"font-weight: normal; padding: 8px 10px 10px 10px\" class=\"cellTableHeader\">"
             + BaseMessages.getString( PKG, "TransStatusServlet.LastLogDate" ) + "</th> </tr>" );
-          out.print( "<tr class=\"cellTableRow\" style=\"border: solid; border-width: 1px 0; border-bottom: none; font-size: 12;\">" );
+          out.print( "<tr class=\"cellTableRow\" style=\"border: solid; border-width: 1px 0; border-bottom: none; font-size: 12; text-align: left;\">" );
           out.print( "<td style=\"padding: 8px 10px 10px 10px\" class=\"cellTableCell cellTableFirstColumn\">" + Encode.forHtml( id ) + "</td>" );
           out.print( "<td style=\"padding: 8px 10px 10px 10px\" class=\"cellTableCell\" id=\"statusColor\" style=\"font-weight: bold;\">" + Encode.forHtml( trans.getStatus() ) + "</td>" );
           String dateStr = XMLHandler.date2string( trans.getLogDate() );
@@ -366,17 +371,17 @@ public class GetTransStatusServlet extends BaseHttpServlet implements CartePlugi
           out.print( "</table>" );
           out.print( "</div>" );
           out.println( "<div style=\"padding: 0px 0px 0px 20px; width: 90px; display: table-cell; vertical-align: top;\">" );
-          out.println( "<div style=\"text-align: center; padding: 5px 0px;\">" );
-          out.print( "<a href=\""
+          out.print( "<div style=\"display: block; margin-left: auto; margin-right: auto; padding: 5px 0px;\">" );
+          out.print( "<a target=\"_blank\" href=\""
+            + convertContextPath( GetTransStatusServlet.CONTEXT_PATH ) + "?name="
+            + URLEncoder.encode( transName, "UTF-8" ) + "&id=" + URLEncoder.encode( id, "UTF-8" ) + "&xml=y\">"
+            + "<img src=\"/pentaho/content/common-ui/resources/themes/images/view-as-xml.svg\" style=\"display: block; margin: auto; width: 22px; height: 22px;\"></a>" );
+          out.print( "</div>" );
+          out.println( "<div style=\"text-align: center; padding-top: 12px; font-size: 12px;\">" );
+          out.print( "<a target=\"_blank\" href=\""
               + convertContextPath( GetTransStatusServlet.CONTEXT_PATH ) + "?name="
               + URLEncoder.encode( transName, "UTF-8" ) + "&id=" + URLEncoder.encode( id, "UTF-8" ) + "&xml=y\">"
               + BaseMessages.getString( PKG, "TransStatusServlet.ShowAsXml" ) + "</a>" );
-          out.print( "</div>" );
-          out.print( "<div style=\"display: block; margin-left: auto; margin-right: auto; padding: 5px 0px;\">" );
-          out.print( "<a href=\""
-              + convertContextPath( GetTransStatusServlet.CONTEXT_PATH ) + "?name="
-              + URLEncoder.encode( transName, "UTF-8" ) + "&id=" + URLEncoder.encode( id, "UTF-8" ) + "&xml=y\">"
-              + "<img src=\"/pentaho/content/common-ui/resources/themes/images/view-as-xml.svg\" style=\"display: block; margin: auto; width: 22px; height: 22px;\"></a>" );
           out.print( "</div>" );
           out.print( "</div>" );
           out.print( "</div>" );
@@ -452,7 +457,7 @@ public class GetTransStatusServlet extends BaseHttpServlet implements CartePlugi
           max.x += 20;
           max.y += 20;
           out.print( "<iframe height=\""
-            + max.y + "\" width=\"" + 1054 + "\" seamless src=\""
+            + max.y + "\" width=\"" + 875 + "\" seamless src=\""
             + convertContextPath( GetTransImageServlet.CONTEXT_PATH ) + "?name="
             + URLEncoder.encode( transName, "UTF-8" ) + "&id=" + URLEncoder.encode( id, "UTF-8" )
             + "\"></iframe>" );
