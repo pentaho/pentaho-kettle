@@ -248,6 +248,11 @@ public class GetStatusServlet extends BaseHttpServlet implements CartePluginInte
         tableBorder = 0;
       }
 
+      out.println( "<style>" );
+      out.println( ".pentaho-table td, tr.cellTableRow, td.gwt-MenuItem {" );
+      out.println( "  cursor: pointer;" );
+      out.println( "}" );
+      out.println( "</style>" );
       out.println( "</HEAD>" );
       out.println( "<BODY class=\"pentaho-page-background dragdrop-dropTarget dragdrop-boundary\" style=\"overflow: auto;\">" );
 
@@ -263,22 +268,28 @@ public class GetStatusServlet extends BaseHttpServlet implements CartePluginInte
       out.println( "</div>" );
 
       try {
+        // Tooltips
+        String run = BaseMessages.getString( PKG, "CarteStatusServlet.Run" );
+        String stop = BaseMessages.getString( PKG, "CarteStatusServlet.StopTrans" );
+        String cleanup = BaseMessages.getString( PKG, "CarteStatusServlet.CleanupTrans" );
+        String view = BaseMessages.getString( PKG, "CarteStatusServlet.ViewTransDetails" );
+        String remove = BaseMessages.getString( PKG, "CarteStatusServlet.RemoveTrans" );
         out.println( "<div class=\"row\" style=\"padding: 0px 0px 0px 30px\">" );
         htmlClass = useLightTheme ? "h2" : "div";
-        out.println( "<div class=\"row\" style=\"padding: 30px 0px 75px 0px;\">" );
+        out.println( "<div class=\"row\" style=\"padding: 25px 30px 75px 0px;\">" );
         out.println( "<" + htmlClass + " class=\"workspaceHeading\" style=\"padding: 0px 0px 0px 0px;\">Transformations</" + htmlClass + ">" );
         out.println( "<table id=\"trans-table\" cellspacing=\"0\" cellpadding=\"0\"><tbody><tr><td align=\"left\" width=\"100%\" style=\"vertical-align:middle;\">" );
-        out.println( "<table cellspacing=\"0\" cellpadding=\"0\" class=\"toolbar\" style=\"width: 100%; height: 26px; margin-bottom: 5px; border: 0;\">" );
+        out.println( "<table cellspacing=\"0\" cellpadding=\"0\" class=\"toolbar\" style=\"width: 100%; height: 26px; margin-bottom: 2px; border: 0;\">" );
         out.println( "<tbody><tr>" );
         out.println( "<td align=\"left\" style=\"vertical-align: middle; width: 100%\" id=\"trans-align\"></td>" );
-        out.println( "<td onMouseEnter=\"document.getElementById( 'pause' ).className='toolbar-button toolbar-button-hovering'\" onMouseLeave=\"document.getElementById( 'pause' ).className='toolbar-button'\" align=\"left\" style=\"vertical-align: middle;\"><div onClick=\"resumeFunction( this )\" class=\"toolbar-button\" id=\"pause\"><img style=\"width: 22px; height: 22px\" src=\"/pentaho/content/common-ui/resources/themes/images/run_options.svg\" title=\"Run\"/></div></td>" );
-        out.println( "<td onMouseEnter=\"document.getElementById( 'stop' ).className='toolbar-button toolbar-button-hovering'\" onMouseLeave=\"document.getElementById( 'stop' ).className='toolbar-button'\" align=\"left\" style=\"vertical-align: middle;\"><div onClick=\"stopFunction( this )\" class=\"toolbar-button\" id=\"stop\"><img style=\"width: 22px; height: 22px\"src=\"/pentaho/content/common-ui/resources/themes/images/stop.svg\" title=\"Stop the running transformation\"/></div></td>" );
-        out.println( "<td onMouseEnter=\"document.getElementById( 'cleanup' ).className='toolbar-button toolbar-button-hovering'\" onMouseLeave=\"document.getElementById( 'cleanup' ).className='toolbar-button'\" align=\"left\" style=\"vertical-align: middle;\"><div onClick=\"cleanupFunction( this )\" class=\"toolbar-button\" id=\"cleanup\"><img style=\"width: 22px; height: 22px\"src=\"/pentaho/content/common-ui/resources/themes/images/cleanup.svg\" title=\"Cleanup transformation\"/></div></td>" );
-        out.println( "<td onMouseEnter=\"document.getElementById( 'view' ).className='toolbar-button toolbar-button-hovering'\" onMouseLeave=\"document.getElementById( 'view' ).className='toolbar-button'\" align=\"left\" style=\"vertical-align: middle;\"><div onClick=\"viewFunction( this )\" class=\"toolbar-button\" id=\"view\"><img style=\"width: 22px; height: 22px\" src=\"/pentaho/content/common-ui/resources/themes/images/view.svg\" title=\"View transformation details\"/></div></td>" );
-        out.println( "<td onMouseEnter=\"document.getElementById( 'close' ).className='toolbar-button toolbar-button-hovering'\" onMouseLeave=\"document.getElementById( 'close' ).className='toolbar-button'\" align=\"left\" style=\"vertical-align: middle;\"><div onClick=\"removeFunction( this )\" class=\"toolbar-button\" id=\"close\"><img style=\"width: 22px; height: 22px\" src=\"/pentaho/content/common-ui/resources/themes/images/close.svg\" title=\"Remove from list\"/></div></td>" );
+        out.println( "<td onMouseEnter=\"document.getElementById( 'pause' ).className='toolbar-button toolbar-button-hovering'\" onMouseLeave=\"document.getElementById( 'pause' ).className='toolbar-button'\" align=\"left\" style=\"vertical-align: middle;\"><div style=\"padding: 2px;\" onClick=\"resumeFunction( this )\" class=\"toolbar-button\" id=\"pause\"><img style=\"width: 22px; height: 22px\" src=\"/pentaho/content/common-ui/resources/themes/images/run_options.svg\" title=\"" + run + "\"/></div></td>" );
+        out.println( "<td onMouseEnter=\"document.getElementById( 'stop' ).className='toolbar-button toolbar-button-hovering'\" onMouseLeave=\"document.getElementById( 'stop' ).className='toolbar-button'\" align=\"left\" style=\"vertical-align: middle;\"><div style=\"padding: 2px;\" onClick=\"stopFunction( this )\" class=\"toolbar-button\" id=\"stop\"><img style=\"width: 22px; height: 22px\"src=\"/pentaho/content/common-ui/resources/themes/images/stop.svg\" title=\"" + stop + "\"/></div></td>" );
+        out.println( "<td onMouseEnter=\"document.getElementById( 'cleanup-trans' ).className='toolbar-button toolbar-button-hovering'\" onMouseLeave=\"document.getElementById( 'cleanup-trans' ).className='toolbar-button'\" align=\"left\" style=\"vertical-align: middle;\"><div style=\"padding: 2px; margin-left: 10px !important;\" onClick=\"cleanupFunction( this )\" class=\"toolbar-button\" id=\"cleanup-trans\"><img style=\"width: 22px; height: 22px\"src=\"/pentaho/content/common-ui/resources/themes/images/cleanup.svg\" title=\"" + cleanup + "\"/></div></td>" );
+        out.println( "<td onMouseEnter=\"document.getElementById( 'view' ).className='toolbar-button toolbar-button-hovering'\" onMouseLeave=\"document.getElementById( 'view' ).className='toolbar-button'\" align=\"left\" style=\"vertical-align: middle;\"><div style=\"padding: 2px; margin-left: 0 !important;\" onClick=\"viewFunction( this )\" class=\"toolbar-button\" id=\"view\"><img style=\"width: 22px; height: 22px\" src=\"/pentaho/content/common-ui/resources/themes/images/view.svg\" title=\"" + view + "\"/></div></td>" );
+        out.println( "<td onMouseEnter=\"document.getElementById( 'close' ).className='toolbar-button toolbar-button-hovering'\" onMouseLeave=\"document.getElementById( 'close' ).className='toolbar-button'\" align=\"left\" style=\"vertical-align: middle;\"><div style=\"padding: 2px; margin-right: 10px;\" onClick=\"removeFunction( this )\" class=\"toolbar-button\" id=\"close\"><img style=\"width: 22px; height: 22px\" src=\"/pentaho/content/common-ui/resources/themes/images/close.svg\" title=\"" + remove + "\"/></div></td>" );
         out.println( "</tr></tbody></table>" );
-        out.println( "<div id=\"runActions\" class=\"custom-dropdown-popup\" style=\"visibility: hidden; overflow: visible; position: fixed;\" onLoad=\"repositionActions( this )\" onMouseLeave=\"this.style='visibility: hidden; overflow: visible; position: fixed;'\"><div class=\"popupContent\"><div class=\"gwt-MenuBar gwt-MenuBar-vertical\"><table><tbody><tr><td class=\"gwt-MenuItem\" onClick=\"runTransSelector( this )\" onMouseEnter=\"this.className='gwt-MenuItem gwt-MenuItem-selected'\" onMouseLeave=\"this.className='gwt-MenuItem'\">Prepare the execution</td></tr><tr><td class=\"gwt-MenuItem\" onClick=\"runTransSelector( this )\" onMouseEnter=\"this.className='gwt-MenuItem gwt-MenuItem-selected'\" onMouseLeave=\"this.className='gwt-MenuItem'\">Run</td></tr></tbody></table></div></div></div>" );
-        out.println( "<div id=\"stopActions\" class=\"custom-dropdown-popup\" style=\"visibility: hidden; overflow: visible; position: fixed;\" onLoad=\"repositionActions( this )\" onMouseLeave=\"this.style='visibility: hidden; overflow: visible; position: fixed;'\"><div class=\"popupContent\"><div class=\"gwt-MenuBar gwt-MenuBar-vertical\"><table><tbody><tr><td class=\"gwt-MenuItem\" onClick=\"stopTransSelector( this )\" onMouseEnter=\"this.className='gwt-MenuItem gwt-MenuItem-selected'\" onMouseLeave=\"this.className='gwt-MenuItem'\">Stop transformation</td></tr><tr><td class=\"gwt-MenuItem\" onClick=\"stopTransSelector( this )\" onMouseEnter=\"this.className='gwt-MenuItem gwt-MenuItem-selected'\" onMouseLeave=\"this.className='gwt-MenuItem'\">Stop input processing</td></tr></tbody></table></div></div></div>" );
+        out.println( "<div id=\"runActions\" class=\"custom-dropdown-popup\" style=\"visibility: hidden; overflow: visible; position: fixed;\" onLoad=\"repositionActions( this, document.getElementById( 'pause' ) )\" onMouseLeave=\"this.style='visibility: hidden; overflow: visible; position: fixed;'\"><div class=\"popupContent\"><div style=\"padding: 0;\" class=\"gwt-MenuBar gwt-MenuBar-vertical\"><table><tbody><tr><td class=\"gwt-MenuItem\" onClick=\"runTransSelector( this )\" onMouseEnter=\"this.className='gwt-MenuItem gwt-MenuItem-selected'\" onMouseLeave=\"this.className='gwt-MenuItem'\">Prepare the execution</td></tr><tr><td class=\"gwt-MenuItem\" onClick=\"runTransSelector( this )\" onMouseEnter=\"this.className='gwt-MenuItem gwt-MenuItem-selected'\" onMouseLeave=\"this.className='gwt-MenuItem'\">Run</td></tr></tbody></table></div></div></div>" );
+        out.println( "<div id=\"stopActions\" class=\"custom-dropdown-popup\" style=\"visibility: hidden; overflow: visible; position: fixed;\" onLoad=\"repositionActions( this, document.getElementById( 'stop' ) )\" onMouseLeave=\"this.style='visibility: hidden; overflow: visible; position: fixed;'\"><div class=\"popupContent\"><div style=\"padding: 0;\" class=\"gwt-MenuBar gwt-MenuBar-vertical\"><table><tbody><tr><td class=\"gwt-MenuItem\" onClick=\"stopTransSelector( this )\" onMouseEnter=\"this.className='gwt-MenuItem gwt-MenuItem-selected'\" onMouseLeave=\"this.className='gwt-MenuItem'\">Stop transformation</td></tr><tr><td class=\"gwt-MenuItem\" onClick=\"stopTransSelector( this )\" onMouseEnter=\"this.className='gwt-MenuItem gwt-MenuItem-selected'\" onMouseLeave=\"this.className='gwt-MenuItem'\">Stop input processing</td></tr></tbody></table></div></div></div>" );
         out.println( "<table class=\"pentaho-table\" border=\"" + tableBorder + "\">" );
         out.print( "<tr> <th class=\"cellTableHeader\">"
             + BaseMessages.getString( PKG, "GetStatusServlet.TransName" ) + "</th> <th class=\"cellTableHeader\">"
@@ -349,16 +360,22 @@ public class GetStatusServlet extends BaseHttpServlet implements CartePluginInte
         out.print( "</table></table>" );
         out.print( "</div>" ); // end div
 
-        out.println( "<div class=\"row\" style=\"padding: 0px 0px 75px 0px;\">" );
+        // Tooltips
+        String runJ = BaseMessages.getString( PKG, "CarteStatusServlet.Run" );
+        String stopJ = BaseMessages.getString( PKG, "CarteStatusServlet.StopJob" );
+        String viewJ = BaseMessages.getString( PKG, "CarteStatusServlet.ViewJobDetails" );
+        String removeJ = BaseMessages.getString( PKG, "CarteStatusServlet.RemoveJob" );
+
+        out.println( "<div class=\"row\" style=\"padding: 0px 30px 75px 0px;\">" );
         out.println( "<" + htmlClass + " class=\"workspaceHeading\" style=\"padding: 0px 0px 0px 0px;\">Jobs</" + htmlClass + ">" );
         out.println( "<table cellspacing=\"0\" cellpadding=\"0\"><tbody><tr><td align=\"left\" width=\"100%\" style=\"vertical-align:middle;\">" );
-        out.println( "<table cellspacing=\"0\" cellpadding=\"0\" class=\"toolbar\" style=\"width: 100%; height: 26px; margin-bottom: 5px; border: 0;\">" );
+        out.println( "<table cellspacing=\"0\" cellpadding=\"0\" class=\"toolbar\" style=\"width: 100%; height: 26px; margin-bottom: 2px; border: 0;\">" );
         out.println( "<tbody><tr>" );
         out.println( "<td align=\"left\" style=\"vertical-align: middle; width: 100%\"></td>" );
-        out.println( "<td onMouseEnter=\"document.getElementById( 'j-pause' ).className='toolbar-button toolbar-button-hovering'\" onMouseLeave=\"document.getElementById( 'j-pause' ).className='toolbar-button'\" align=\"left\" style=\"vertical-align: middle;\"><div onClick=\"resumeFunction( this )\" class=\"toolbar-button\" id=\"j-pause\"><img style=\"width: 22px; height: 22px\" src=\"/pentaho/content/common-ui/resources/themes/images/run.svg\" title=\"Run\"/></div></td>" );
-        out.println( "<td onMouseEnter=\"document.getElementById( 'j-stop' ).className='toolbar-button toolbar-button-hovering'\" onMouseLeave=\"document.getElementById( 'j-stop' ).className='toolbar-button'\" align=\"left\" style=\"vertical-align: middle;\"><div onClick=\"stopFunction( this )\" class=\"toolbar-button\" id=\"j-stop\"><img style=\"width: 22px; height: 22px\"src=\"/pentaho/content/common-ui/resources/themes/images/stop.svg\" title=\"Stop\"/></div></td>" );
-        out.println( "<td onMouseEnter=\"document.getElementById( 'j-view' ).className='toolbar-button toolbar-button-hovering'\" onMouseLeave=\"document.getElementById( 'j-view' ).className='toolbar-button'\" align=\"left\" style=\"vertical-align: middle;\"><div onClick=\"viewFunction( this )\" class=\"toolbar-button\" id=\"j-view\"><img style=\"width: 22px; height: 22px\" src=\"/pentaho/content/common-ui/resources/themes/images/view.svg\" title=\"View job details\"/></div></td>" );
-        out.println( "<td onMouseEnter=\"document.getElementById( 'j-close' ).className='toolbar-button toolbar-button-hovering'\" onMouseLeave=\"document.getElementById( 'j-close' ).className='toolbar-button'\" align=\"left\" style=\"vertical-align: middle;\"><div onClick=\"removeFunction( this )\" class=\"toolbar-button\" id=\"j-close\"><img style=\"width: 22px; height: 22px\" src=\"/pentaho/content/common-ui/resources/themes/images/close.svg\" title=\"Remove from list\"/></div></td>" );
+        out.println( "<td onMouseEnter=\"document.getElementById( 'j-pause' ).className='toolbar-button toolbar-button-hovering'\" onMouseLeave=\"document.getElementById( 'j-pause' ).className='toolbar-button'\" align=\"left\" style=\"vertical-align: middle;\"><div style=\"padding: 2px;\" onClick=\"resumeFunction( this )\" class=\"toolbar-button\" id=\"j-pause\"><img style=\"width: 22px; height: 22px\" src=\"/pentaho/content/common-ui/resources/themes/images/run.svg\" title=\"" + runJ + "\"/></div></td>" );
+        out.println( "<td onMouseEnter=\"document.getElementById( 'j-stop' ).className='toolbar-button toolbar-button-hovering'\" onMouseLeave=\"document.getElementById( 'j-stop' ).className='toolbar-button'\" align=\"left\" style=\"vertical-align: middle;\"><div style=\"padding: 2px;\" onClick=\"stopFunction( this )\" class=\"toolbar-button\" id=\"j-stop\"><img style=\"width: 22px; height: 22px\"src=\"/pentaho/content/common-ui/resources/themes/images/stop.svg\" title=\"" + stopJ + "\"/></div></td>" );
+        out.println( "<td onMouseEnter=\"document.getElementById( 'j-view' ).className='toolbar-button toolbar-button-hovering'\" onMouseLeave=\"document.getElementById( 'j-view' ).className='toolbar-button'\" align=\"left\" style=\"vertical-align: middle;\"><div style=\"padding: 2px;\" onClick=\"viewFunction( this )\" class=\"toolbar-button\" id=\"j-view\"><img style=\"width: 22px; height: 22px\" src=\"/pentaho/content/common-ui/resources/themes/images/view.svg\" title=\"" + viewJ + "\"/></div></td>" );
+        out.println( "<td onMouseEnter=\"document.getElementById( 'j-close' ).className='toolbar-button toolbar-button-hovering'\" onMouseLeave=\"document.getElementById( 'j-close' ).className='toolbar-button'\" align=\"left\" style=\"vertical-align: middle;\"><div style=\"padding: 2px; margin-right: 10px;\" onClick=\"removeFunction( this )\" class=\"toolbar-button\" id=\"j-close\"><img style=\"width: 22px; height: 22px\" src=\"/pentaho/content/common-ui/resources/themes/images/close.svg\" title=\"" + removeJ + "\"/></div></td>" );
         out.println( "</tr></tbody></table>" );
         out.println( "<table class=\"pentaho-table\" border=\"" + tableBorder + "\">" );
         out.print( "<tr> <th class=\"cellTableHeader\">"
@@ -514,12 +531,23 @@ public class GetStatusServlet extends BaseHttpServlet implements CartePluginInte
       }
 
       out.println( "<script type=\"text/javascript\">" );
+      out.println( "if (!String.prototype.endsWith) {" );
+      out.println( "  String.prototype.endsWith = function(suffix) {" );
+      out.println( "    return this.indexOf(suffix, this.length - suffix.length) !== -1;" );
+      out.println( "  };" );
+      out.println( "}" );
+      out.println( "if (!String.prototype.startsWith) {" );
+      out.println( "  String.prototype.startsWith = function(searchString, position) {" );
+      out.println( "    position = position || 0;" );
+      out.println( "    return this.indexOf(searchString, position) === position;" );
+      out.println( "  };" );
+      out.println( "}" );
       out.println( "var selectedTransRowIndex = -1;" ); // currently selected table item
       out.println( "var selectedJobRowIndex = -1;" ); // currently selected table item
 
       // Click function for stop button
-      out.println( "function repositionActions( element ) {" );
-      out.println( "element.style.left = document.getElementById( 'trans-table' ).offsetWidth + 'px';" );
+      out.println( "function repositionActions( element, elementFrom ) {" );
+      out.println( "element.style.left = ( 10 + elementFrom.getBoundingClientRect().left ) + 'px';" );
       //out.println( "element.style.top = document.getElementById( 'trans-table' ).offsetTop + 'px';" );
       out.println( "}" );
 
@@ -536,7 +564,7 @@ public class GetStatusServlet extends BaseHttpServlet implements CartePluginInte
           + " + '?name=' + document.getElementById( 'cellTableFirstCell' + selectedTransRowIndex ).innerHTML"
           + " + '&id=' + document.getElementById( 'cellTableCell' + selectedTransRowIndex ).innerHTML );" );
       out.println( "} else if( !element.id.startsWith( 'j-' ) && selectedTransRowIndex != -1 ){" );
-      out.println( "repositionActions( document.getElementById( 'runActions' ) );" );
+      out.println( "repositionActions( document.getElementById( 'runActions' ), element );" );
       out.println( "document.getElementById( 'runActions' ).style.visibility = 'visible';" );
       out.println( "}" );
       out.println( "}" );
@@ -549,7 +577,7 @@ public class GetStatusServlet extends BaseHttpServlet implements CartePluginInte
           + " + '?name=' + document.getElementById( 'j-cellTableFirstCell' + selectedJobRowIndex ).innerHTML"
           + " + '&id=' + document.getElementById( 'j-cellTableCell' + selectedJobRowIndex ).innerHTML );" );
       out.println( "} else if ( !element.id.startsWith( 'j-' ) && selectedTransRowIndex != -1 ) {" );
-      out.println( "repositionActions( document.getElementById( 'stopActions' ) );" );
+      out.println( "repositionActions( document.getElementById( 'stopActions' ), element );" );
       out.println( "document.getElementById( 'stopActions' ).style.visibility = 'visible';" );
       out.println( "}" );
       out.println( "}" );
