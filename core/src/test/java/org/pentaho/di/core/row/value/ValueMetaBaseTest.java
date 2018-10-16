@@ -19,6 +19,7 @@
  * limitations under the License.
  *
  ******************************************************************************/
+
 package org.pentaho.di.core.row.value;
 
 import org.apache.commons.lang.StringUtils;
@@ -79,7 +80,6 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
-import java.util.Locale;
 import java.util.TimeZone;
 
 import static org.junit.Assert.assertNull;
@@ -87,10 +87,14 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertArrayEquals;
+import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyInt;
 import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 public class ValueMetaBaseTest {
   @ClassRule public static RestorePDIEnvironment env = new RestorePDIEnvironment();
@@ -104,7 +108,7 @@ public class ValueMetaBaseTest {
   private StoreLoggingEventListener listener;
 
   @Spy
-  private DatabaseMeta databaseMetaSpy = new DatabaseMeta();
+  private DatabaseMeta databaseMetaSpy = spy( new DatabaseMeta() );
   private PreparedStatement preparedStatementMock = mock( PreparedStatement.class );
 
   @BeforeClass
@@ -253,7 +257,7 @@ public class ValueMetaBaseTest {
     final int expectedVarBinarylength = 80;
 
     ValueMetaBase obj = new ValueMetaBase();
-    DatabaseMeta dbMeta = Mockito.spy( new DatabaseMeta() );
+    DatabaseMeta dbMeta = spy( new DatabaseMeta() );
     DatabaseInterface databaseInterface = new Vertica5DatabaseMeta();
     dbMeta.setDatabaseInterface( databaseInterface );
 
@@ -294,7 +298,7 @@ public class ValueMetaBaseTest {
     final int varbinaryColumnIndex = 2;
 
     ValueMetaBase valueMetaBase = new ValueMetaBase(),
-      valueMetaBaseSpy = Mockito.spy( valueMetaBase );
+      valueMetaBaseSpy = spy( valueMetaBase );
     DatabaseMeta dbMeta = mock( DatabaseMeta.class );
     DatabaseInterface databaseInterface = mock( DatabaseInterface.class );
     Mockito.doReturn( databaseInterface ).when( dbMeta ).getDatabaseInterface();
@@ -302,8 +306,8 @@ public class ValueMetaBaseTest {
     ResultSetMetaData metaData = mock( ResultSetMetaData.class );
     valueMetaBaseSpy.getValueFromSQLType( dbMeta, TEST_NAME, metaData, varbinaryColumnIndex, false, false );
 
-    Mockito.verify( databaseInterface, Mockito.times( 1 ) ).customizeValueFromSQLType( Mockito.any( ValueMetaInterface.class ),
-      Mockito.any( ResultSetMetaData.class ), Mockito.anyInt() );
+    Mockito.verify( databaseInterface, Mockito.times( 1 ) ).customizeValueFromSQLType( any( ValueMetaInterface.class ),
+      any( ResultSetMetaData.class ), Mockito.anyInt() );
   }
 
   @Test
@@ -701,16 +705,6 @@ public class ValueMetaBaseTest {
   }
 
   @Test
-  public void testSetPreparedStatementStringValueLogTruncated() throws KettleDatabaseException {
-    List<KettleLoggingEvent> events = listener.getEvents();
-    assertEquals( 0, events.size() );
-    BaseDatabaseMeta databaseMeta = mock( BaseDatabaseMeta.class );
-    initValueMeta( databaseMeta, MAX_TEXT_FIELD_LEN );
-    //check that truncated string was logged
-    assertEquals( 1, events.size() );
-  }
-
-  @Test
   public void testValueMetaBaseOnlyHasOneLogger() throws NoSuchFieldException, IllegalAccessException {
     Field log = ValueMetaBase.class.getDeclaredField( "log" );
     assertTrue( Modifier.isStatic( log.getModifiers() ) );
@@ -880,7 +874,7 @@ public class ValueMetaBaseTest {
 
     final int binaryColumnIndex = 1;
     ValueMetaBase valueMetaBase = new ValueMetaBase();
-    DatabaseMeta dbMeta = Mockito.spy( new DatabaseMeta() );
+    DatabaseMeta dbMeta = spy( new DatabaseMeta() );
     DatabaseInterface databaseInterface = new MySQLDatabaseMeta();
     dbMeta.setDatabaseInterface( databaseInterface );
 
@@ -959,34 +953,66 @@ public class ValueMetaBaseTest {
   }
 
   /**
-   * The only limitation for MySQLDatabaseMeta.getMaxTextFieldLength is a diapason of returned type: int.
-   * So that there is only one test case for MySQL and two for Postgres
-   *
-   * @throws Exception
+   * When data is shorter than value meta length all is good. Values well bellow DB max text field length.
    */
-
   @Test
-  public void test_Pdi_17126_postgres() throws Exception {
-    initValueMeta( new PostgreSQLDatabaseMeta(), DatabaseMeta.CLOB_LENGTH );
-    Mockito.verify( preparedStatementMock, times( 1 ) ).setString( anyInt(), anyString() );
+  public void test_PDI_17126_Postgres() throws Exception {
+    String data = StringUtils.repeat( "*", 10 );
+    initValueMeta( new PostgreSQLDatabaseMeta(), 20, data );
+
+    verify( preparedStatementMock, times( 1 ) ).setString( 0, data );
   }
 
+  /**
+   * When data is longer than value meta length all is good as well. Values well bellow DB max text field length.
+   */
+  @Test
+  public void test_Pdi_17126_postgres_DataLongerThanMetaLength() throws Exception {
+    String data = StringUtils.repeat( "*", 20 );
+    initValueMeta( new PostgreSQLDatabaseMeta(), 10, data );
+
+    verify( preparedStatementMock, times( 1 ) ).setString( 0, data );
+  }
+
+  /**
+   * Only truncate when the data is larger that what is supported by the DB.
+   * For test purposes we're mocking it at 1KB instead of the real value which is 2GB for PostgreSQL
+   */
   @Test
   public void test_Pdi_17126_postgres_truncate() throws Exception {
-    initValueMeta( new PostgreSQLDatabaseMeta(), MAX_TEXT_FIELD_LEN );
-    Mockito.verify( preparedStatementMock, Mockito.never() ).setString( anyInt(), anyString() );
+    List<KettleLoggingEvent> events = listener.getEvents();
+    assertEquals( 0, events.size() );
+
+    databaseMetaSpy.setDatabaseInterface( new PostgreSQLDatabaseMeta() );
+    doReturn( 1024 ).when( databaseMetaSpy ).getMaxTextFieldLength();
+    doReturn( false ).when( databaseMetaSpy ).supportsSetCharacterStream();
+
+    String data = StringUtils.repeat( "*", 2048 );
+
+    ValueMetaBase valueMetaString = new ValueMetaBase( LOG_FIELD, ValueMetaInterface.TYPE_STRING, 2048, 0 );
+    valueMetaString.setPreparedStatementValue( databaseMetaSpy, preparedStatementMock, 0, data );
+
+    verify( preparedStatementMock, Mockito.never() ).setString( 0, data );
+    verify( preparedStatementMock, times( 1 ) ).setString( anyInt(), anyString() );
+
+    // check that truncated string was logged
+    assertEquals( 1, events.size() );
+    assertEquals( "ValueMetaBase - Truncating 1024 symbols of original message in 'LOG_FIELD' field",
+      events.get( 0 ).getMessage().toString() );
   }
 
   @Test
   public void test_Pdi_17126_mysql() throws Exception {
-    initValueMeta( new MySQLDatabaseMeta(), DatabaseMeta.CLOB_LENGTH );
-    Mockito.verify( preparedStatementMock, times( 1 ) ).setString( anyInt(), anyString() );
+    String data = StringUtils.repeat( "*", 10 );
+    initValueMeta( new MySQLDatabaseMeta(), DatabaseMeta.CLOB_LENGTH, data );
+
+    verify( preparedStatementMock, times( 1 ) ).setString( 0, data );
   }
 
-  private void initValueMeta( BaseDatabaseMeta dbMeta, int fileSize ) throws KettleDatabaseException {
-    ValueMetaBase valueMetaString = new ValueMetaBase( LOG_FIELD, ValueMetaInterface.TYPE_STRING, fileSize, 0 );
+  private void initValueMeta( BaseDatabaseMeta dbMeta, int length, Object data ) throws KettleDatabaseException {
+    ValueMetaBase valueMetaString = new ValueMetaBase( LOG_FIELD, ValueMetaInterface.TYPE_STRING, length, 0 );
     databaseMetaSpy.setDatabaseInterface( dbMeta );
-    valueMetaString.setPreparedStatementValue( databaseMetaSpy, preparedStatementMock, 0, LOG_FIELD );
+    valueMetaString.setPreparedStatementValue( databaseMetaSpy, preparedStatementMock, 0, data );
   }
 
   @Test
