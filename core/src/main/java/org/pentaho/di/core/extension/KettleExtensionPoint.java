@@ -62,6 +62,7 @@ public enum KettleExtensionPoint {
     SpoonTransExecutionConfiguration( "SpoonTransExecutionConfiguration",
       "Right before Spoon configuration of transformation to be executed takes place" ),
     SpoonTransBeforeStart( "SpoonTransBeforeStart", "Right before the transformation is started" ),
+    RunConfigurationSelection( "RunConfigurationSelection", "Check when run configuration is selected" ),
     SpoonRunConfiguration( "SpoonRunConfiguration", "Send the run configuration" ),
     JobStart( "JobStart", "A job starts" ),
     JobHeartbeat( "JobHeartbeat", "A signal sent at regular intervals to indicate that the job is still active" ),

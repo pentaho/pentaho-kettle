@@ -207,6 +207,7 @@ public class JobEntryJobDialog extends JobEntryBaseDialog implements JobEntryDia
     fdRunConfiguration.top = new FormAttachment( wlRunConfiguration, 5 );
     fdRunConfiguration.left = new FormAttachment( 0 );
     wRunConfiguration.setLayoutData( fdRunConfiguration );
+    wRunConfiguration.addModifyListener( new RunConfigurationModifyListener() );
 
     fdgExecution.top = new FormAttachment( cRunConfiguration, 10 );
 

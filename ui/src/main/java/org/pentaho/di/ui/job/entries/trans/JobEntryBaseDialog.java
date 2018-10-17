@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -48,8 +48,12 @@ import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.ObjectLocationSpecificationMethod;
 import org.pentaho.di.core.Props;
+import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.extension.ExtensionPointHandler;
+import org.pentaho.di.core.extension.KettleExtensionPoint;
 import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.logging.LogLevel;
+import org.pentaho.di.core.util.ExecutorUtil;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.JobMeta;
@@ -64,8 +68,12 @@ import org.pentaho.di.ui.core.widget.ComboVar;
 import org.pentaho.di.ui.core.widget.TableView;
 import org.pentaho.di.ui.core.widget.TextVar;
 import org.pentaho.di.ui.job.entry.JobEntryDialog;
+import org.pentaho.di.ui.spoon.Spoon;
 
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
+import java.util.concurrent.ExecutorService;
 
 /**
  * Created by bmorrise on 1/6/17.
@@ -73,6 +81,7 @@ import java.io.IOException;
 public abstract class JobEntryBaseDialog extends JobEntryDialog {
 
   public static Class<?> PKG = JobEntryTrans.class;
+  public static final int IS_PENTAHO = 1;
 
   protected Label wlPath;
   protected TextVar wPath;
@@ -667,6 +676,31 @@ public abstract class JobEntryBaseDialog extends JobEntryDialog {
     wLoglevel.setEnabled( wSetLogfile.getSelection() );
 
     wAppendLogfile.setEnabled( wSetLogfile.getSelection() );
+  }
+
+  public class RunConfigurationModifyListener implements ModifyListener {
+    @Override
+    public void modifyText( ModifyEvent modifyEvent ) {
+      ExecutorService executorService = ExecutorUtil.getExecutor();
+      final String runConfiguration = jobMeta.environmentSubstitute( wRunConfiguration.getText() );
+      executorService.submit( () -> {
+        List<Object> items = Arrays.asList( runConfiguration, false );
+        try {
+          ExtensionPointHandler.callExtensionPoint( Spoon.getInstance().getLog(), KettleExtensionPoint
+                  .RunConfigurationSelection.id, items );
+        } catch ( KettleException ignored ) {
+          // Ignore errors
+        }
+        display.asyncExec( () -> {
+          if ( (Boolean) items.get( IS_PENTAHO ) ) {
+            wWaitingToFinish.setSelection( false );
+            wWaitingToFinish.setEnabled( false );
+          } else {
+            wWaitingToFinish.setEnabled( true );
+          }
+        } );
+      } );
+    }
   }
 
   protected abstract void ok();
