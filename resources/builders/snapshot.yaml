@@ -63,6 +63,7 @@ jobGroups:
        scmUrl          :  ${PENTAHO_SCM_ROOT}/oss-licenses.git
        scmBranch       :  ${DEFAULT_BRANCH}
        versionProperty :  oss-licenses.version
+       testable        :  false
 
      - jobID           :  database-model
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-commons-database.git
@@ -284,6 +285,7 @@ jobGroups:
        scmBranch       :  ${DEFAULT_BRANCH}
        directives      :  += -P assemblies
        versionProperty :  mondrian.version
+       testable        :  false
        archivable      :  true
        artifactsArchivePattern: ${PSW_ASSEMBLY_PATTERN}
 
@@ -293,6 +295,7 @@ jobGroups:
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-schema-workbench-ee.git
        scmBranch       :  ${DEFAULT_BRANCH}
        versionProperty :  mondrian.version
+       testable        :  false
        archivable      :  true
        artifactsArchivePattern: ${PSW_ASSEMBLY_EE_PATTERN}
 
@@ -611,6 +614,7 @@ jobGroups:
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-karaf-assembly.git
        scmBranch       :  ${DEFAULT_BRANCH}
        versionProperty :  pentaho-karaf.version
+       testable        :  false
 
      - jobID           :  dashboards-plugin
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-platform-plugin-dashboards.git
@@ -642,6 +646,7 @@ jobGroups:
        scmBranch       :  ${DEFAULT_BRANCH}
        versionProperty :  big-data-plugin.version
        root            :  assemblies
+       testable        :  false
        archivable      :  true
        artifactsArchivePattern: ${BIG_DATA_PLUGIN_PATTERN}
 
@@ -693,6 +698,7 @@ jobGroups:
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-karaf-ee-assembly.git
        scmBranch       :  ${DEFAULT_BRANCH}
        versionProperty :  pentaho-karaf.version
+       testable        :  false
 
   3900:
 
@@ -701,6 +707,7 @@ jobGroups:
        scmBranch       :  ${DEFAULT_BRANCH}
        directives      :  += -DskipDefault -P assemblies,pack
        versionProperty :  big-data-plugin.version
+       testable        :  false
        archivable      :  true
        artifactsArchivePattern: ${BIG_DATA_PLUGIN_ASSEMBLY_EE_PATTERN}
 
@@ -720,6 +727,7 @@ jobGroups:
        scmBranch       :  ${DEFAULT_BRANCH}
        versionProperty :  pentaho-reporting.version
        archivable      :  true
+       testable        :  false
        artifactsArchivePattern: ${PRD_ASSEMBLY_EE_PATTERN}
 
      - jobID           :  pdi-pur-plugin-ee
