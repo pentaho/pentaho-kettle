@@ -1,4 +1,4 @@
-@Library('jenkins-shared-libraries@20181016-0') _
+@Library('jenkins-shared-libraries@20181009-0') _
 
 // Global BuildData object containing all the configuration
 // needed to pass down through the stages of the build
