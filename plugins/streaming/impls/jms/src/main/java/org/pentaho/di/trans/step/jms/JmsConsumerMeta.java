@@ -51,7 +51,7 @@ import static org.pentaho.di.core.ObjectLocationSpecificationMethod.FILENAME;
 public class JmsConsumerMeta extends BaseStreamStepMeta {
 
   @InjectionDeep
-  public final JmsDelegate jmsDelegate;
+  public JmsDelegate jmsDelegate;
 
   @VisibleForTesting
   public JmsConsumerMeta() {
@@ -84,4 +84,9 @@ public class JmsConsumerMeta extends BaseStreamStepMeta {
     return new GenericStepData();
   }
 
+  @Override public JmsConsumerMeta copyObject() {
+    JmsConsumerMeta newClone = (JmsConsumerMeta) this.clone();
+    newClone.jmsDelegate = new JmsDelegate( this.jmsDelegate );
+    return newClone;
+  }
 }
