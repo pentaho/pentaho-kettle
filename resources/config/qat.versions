@@ -5,13 +5,6 @@ org.pentaho|pentaho-parent-pom=8.2.0.0-BUILDTAG
 org.pentaho|pentaho-ce-parent-pom=8.2.0.0-BUILDTAG
 org.pentaho|pentaho-ce-jar-parent-pom=8.2.0.0-BUILDTAG
 org.pentaho|pentaho-ce-bundle-parent-pom=8.2.0.0-BUILDTAG
-org.pentaho.di.plugins|pdi-plugins=8.2.0.0-BUILDTAG
-org.pentaho.di|pdi-plugins=8.2.0.0-BUILDTAG
-org.pentaho.di|pdi-core-libs=8.2.0.0-BUILDTAG
-org.pentaho.di|pdi-static=8.2.0.0-BUILDTAG
-org.pentaho.di|pdi-samples=8.2.0.0-BUILDTAG
-org.pentaho.di|pdi-core-static=8.2.0.0-BUILDTAG
-org.pentaho.di|pdi-libs=8.2.0.0-BUILDTAG
 
 ael.version=8.2.0.0-BUILDTAG
 aggdesigner.version=8.2.0.0-BUILDTAG
