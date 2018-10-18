@@ -7,26 +7,29 @@ buildProperties:
 jobGroups:
   # Always required
 
+
   100:
-
-     - jobID           :  kettle-engine-core
-       scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-kettle.git
-       scmBranch       :  ${DEFAULT_BRANCH}
-       directives      :  += -pl .,engine-ext,core,engine
-       root            :
-
-  200:
 
      - jobID           :  pdi-daemon
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-ee.git
        scmBranch       :  ${DEFAULT_BRANCH}
        root            :  adaptive-execution
 
+  200:
+
+     - jobID           :  karaf-assembly-ee
+       scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-karaf-ee-assembly.git
+       scmBranch       :  ${DEFAULT_BRANCH}
+       versionProperty :  pentaho-karaf.version
+
   300:
 
-     - jobID           :  kettle-ce-assembly
-       scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-kettle.git
-       scmBranch       :  ${DEFAULT_BRANCH}
-       root            :  assemblies
-       directives      :  += -pl .,client
-       testable        :  false
+      - jobID           :  pdi-client-assembly-ee
+        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-ee.git
+        scmBranch       :  ${DEFAULT_BRANCH}
+        directives      :  += -Deula-wrap
+        versionProperty :  pdi.version
+        root            :  data-integration
+        testable        :  false
+        archivable      :  true
+        artifactsArchivePattern: ${PDI_ASSEMBLY_EE_PATTERN}
