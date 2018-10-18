@@ -365,7 +365,18 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
   @Override
   public RepositoryDirectoryInterface createRepositoryDirectory( final RepositoryDirectoryInterface parentDirectory,
                                                                  final String directoryPath ) throws KettleException {
+    // allow new folders only inside Home and Public directory, else - provide UI message
     try {
+      // if parentDirectory is root then we have to check if the defined directory is valid ( only Public and Home folders are allowed )
+      if ( parentDirectory.isRoot()
+        &&
+          ( directoryPath.equals( Import.ROOT_DIRECTORY )
+            ||
+          ( !directoryPath.startsWith( Import.HOME_DIRECTORY ) && !directoryPath.startsWith( Import.PUBLIC_DIRECTORY ) )
+          ) ) {
+        throw new KettleException( BaseMessages.getString( PKG, "PurRepository.invalidRepositoryDirectory", directoryPath ) );
+      }
+
       RepositoryDirectoryInterface refreshedParentDir = findDirectory( parentDirectory.getPath() );
 
       // update the passed in repository directory with the children recently loaded from the repo
@@ -2975,6 +2986,7 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
       throw new KettleException( BaseMessages.getString( PKG, "PurRepository.fileCannotBeSavedInRootDirectory",
         element.getName() + element.getRepositoryElementType().getExtension() ) );
     }
+
     if ( saveSharedObjects ) {
       objectTransformer.saveSharedObjects( element, versionComment );
     }
