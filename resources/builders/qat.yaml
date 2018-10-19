@@ -415,7 +415,6 @@ jobGroups:
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-ee.git
        scmBranch       :  ${DEFAULT_BRANCH}
        versionProperty :  pdi-plugins-ee.version
-       testable        :  false
        root            :  data-integration/plugins
 
      - jobID           :  camel-components
@@ -439,7 +438,6 @@ jobGroups:
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pdi-platform-plugin.git
        scmBranch       :  ${DEFAULT_BRANCH}
        versionProperty :  pentaho-pdi-plugin.version
-       testable        :  false
 
      - jobID           :  pdi-platform-utils-plugin
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pdi-platform-utils-plugin.git
@@ -604,7 +602,6 @@ jobGroups:
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-yarn-kettle-plugin.git
        scmBranch       :  ${DEFAULT_BRANCH}
        versionProperty :  pentaho-kettle-yarn-plugin.version
-       testable        :  false
 
      - jobID           :  data-exploration
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-det.git
@@ -643,7 +640,6 @@ jobGroups:
        scmBranch       :  ${DEFAULT_BRANCH}
        versionProperty :  platform.version
        root            :  platform/plugins/worker-nodes
-       testable        :  false
 
   3700:
 
