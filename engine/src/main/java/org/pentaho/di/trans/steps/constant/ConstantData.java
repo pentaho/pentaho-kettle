@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -56,6 +56,10 @@ public class ConstantData extends BaseStepData implements StepDataInterface {
     dfs = new DecimalFormatSymbols();
     daf = new SimpleDateFormat();
     dafs = new DateFormatSymbols();
+  }
+
+  public RowMetaAndData getConstants() {
+    return constants;
   }
 
 }
