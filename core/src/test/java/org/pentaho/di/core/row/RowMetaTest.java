@@ -214,6 +214,23 @@ public class RowMetaTest {
     assertEquals( "Original is still the same (name)", 1, rowMeta.indexOfValue( "dup" ) );
     assertEquals( "Renaming happened", 2, rowMeta.indexOfValue( "dup_1" ) );
   }
+  
+  @Test
+  public void testInsertValueMetaDup() throws Exception {
+    rowMeta.addValueMeta( 1, new ValueMetaInteger( integer.getName() ) );
+    assertEquals( "inserted", 4, rowMeta.size() );
+    assertEquals( "rename new", "integer_1", rowMeta.getValueMeta( 1 ).getName() );
+    rowMeta.addValueMeta( new ValueMetaInteger( integer.getName() ) );
+    assertEquals( "rename after", "integer_2", rowMeta.getValueMeta( 4 ).getName() );
+  }
+
+  @Test
+  public void testRemoveValueMetaDup() throws Exception {
+    rowMeta.removeValueMeta( date.getName() );
+    assertEquals( "removed", 2, rowMeta.size() );
+    rowMeta.addValueMeta( new ValueMetaInteger( integer.getName() ) );
+    assertEquals( "rename after", "integer_1", rowMeta.getValueMeta( 2 ).getName() );
+  }
 
   @Test
   public void testSetValueMetaNullName() throws KettlePluginException {
