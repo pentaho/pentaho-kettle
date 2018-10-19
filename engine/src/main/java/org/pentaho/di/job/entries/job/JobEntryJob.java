@@ -83,6 +83,7 @@ import org.w3c.dom.Node;
 import java.io.OutputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
@@ -98,6 +99,7 @@ import java.util.UUID;
  */
 public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInterface, HasRepositoryDirectories, JobEntryRunConfigurableInterface {
   private static Class<?> PKG = JobEntryJob.class; // for i18n purposes, needed by Translator2!!
+  public static final int IS_PENTAHO = 1;
 
   private String filename;
   private String jobname;
@@ -857,13 +859,26 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
         SlaveServer remoteSlaveServer = null;
         JobExecutionConfiguration executionConfiguration = new JobExecutionConfiguration();
         if ( !Utils.isEmpty( runConfiguration ) ) {
-          log.logBasic( BaseMessages.getString( PKG, "JobJob.RunConfig.Message" ), runConfiguration );
           runConfiguration = environmentSubstitute( runConfiguration );
+          log.logBasic( BaseMessages.getString( PKG, "JobJob.RunConfig.Message" ), runConfiguration );
           executionConfiguration.setRunConfiguration( runConfiguration );
           try {
             ExtensionPointHandler.callExtensionPoint( log, KettleExtensionPoint.SpoonTransBeforeStart.id, new Object[] {
               executionConfiguration, parentJob.getJobMeta(), jobMeta, rep
             } );
+            List<Object> items = Arrays.asList( runConfiguration, false );
+            try {
+              ExtensionPointHandler.callExtensionPoint( log, KettleExtensionPoint
+                      .RunConfigurationSelection.id, items );
+              if ( waitingToFinish && (Boolean) items.get( IS_PENTAHO ) ) {
+                String jobName = parentJob.getJobMeta().getName();
+                String name = jobMeta.getName();
+                logBasic( BaseMessages.getString( PKG, "JobJob.Log.InvalidRunConfigurationCombination", jobName,
+                        name, jobName ) );
+              }
+            } catch ( Exception ignored ) {
+              // Ignored
+            }
             if ( !executionConfiguration.isExecutingLocally() && !executionConfiguration.isExecutingRemotely() ) {
               result.setResult( true );
               return result;
