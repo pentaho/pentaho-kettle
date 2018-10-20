@@ -32,7 +32,7 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.trans.step.BaseStepData;
 import org.pentaho.di.trans.step.StepDataInterface;
-import org.pentaho.di.trans.steps.textfileinput.EncodingType;
+import org.pentaho.di.trans.steps.fileinput.text.EncodingType;
 
 /**
  * @author Matt
@@ -80,6 +80,8 @@ public class CsvInputData extends BaseStepData implements StepDataInterface {
   public PatternMatcherInterface delimiterMatcher;
   public PatternMatcherInterface enclosureMatcher;
   public CrLfMatcherInterface crLfMatcher;
+  
+  public final String rowEndMark="@^@";
 
   /**
    * Data class for CsvInput step
@@ -233,10 +235,14 @@ public class CsvInputData extends BaseStepData implements StepDataInterface {
     return result;
   }
 
-  byte[] getField( boolean delimiterFound, boolean enclosureFound, boolean newLineFound, boolean endOfBuffer ) {
+byte[] getField( boolean delimiterFound, boolean enclosureFound, boolean newLineFound, boolean endOfBuffer ) {
     int fieldStart = startBuffer;
 
     int length = endBuffer - fieldStart;
+    
+    if ( delimiterFound ) {
+    	length -= delimiter.length - 1;
+    }
 
     if ( newLineFound && !endOfBuffer ) {
       length -= encodingType.getLength();
@@ -294,8 +300,8 @@ public class CsvInputData extends BaseStepData implements StepDataInterface {
   boolean delimiterFound() {
 	boolean result = delimiterMatcher.matchesPattern(byteBuffer, bufferSize, endBuffer, delimiter);
 	
-	if (result)
-			endBuffer = endBuffer - delimiter.length + 1;
+//	if (result)
+//			endBuffer = endBuffer - delimiter.length + 1;
 		
     return result;
   }
