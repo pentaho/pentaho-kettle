@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -974,7 +974,9 @@ public class TextFileOutputMeta extends BaseStepMeta implements StepMetaInterfac
       if ( v != null ) {
         v.setLength( field.getLength() );
         v.setPrecision( field.getPrecision() );
-        v.setConversionMask( field.getFormat() );
+        if ( field.getFormat() != null ) {
+          v.setConversionMask( field.getFormat() );
+        }
         v.setDecimalSymbol( field.getDecimalSymbol() );
         v.setGroupingSymbol( field.getGroupingSymbol() );
         v.setCurrencySymbol( field.getCurrencySymbol() );
