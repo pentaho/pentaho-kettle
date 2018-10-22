@@ -160,6 +160,13 @@ public class ConstTest {
   }
 
   @Test
+  public void testNullToEmpty_NVL() {
+    assertEquals( Const.NVL( null, "" ), Const.nullToEmpty( null ) );
+    assertEquals( Const.NVL( "", "" ), Const.nullToEmpty( "" ) );
+    assertEquals( Const.NVL( "xpto", "" ), Const.nullToEmpty( "xpto" ) );
+  }
+
+  @Test
   public void testNrSpacesBefore() {
     try {
       Const.nrSpacesBefore( null );

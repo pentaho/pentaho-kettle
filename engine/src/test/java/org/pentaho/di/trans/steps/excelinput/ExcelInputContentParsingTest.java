@@ -22,12 +22,26 @@
 
 package org.pentaho.di.trans.steps.excelinput;
 
+import org.apache.poi.openxml4j.util.ZipSecureFile;
 import org.junit.ClassRule;
 import org.junit.Test;
+import org.pentaho.di.core.Const;
 import org.pentaho.di.junit.rules.RestorePDIEngineEnvironment;
+
+import static org.junit.Assert.assertEquals;
 
 public class ExcelInputContentParsingTest extends BaseExcelParsingTest {
   @ClassRule public static RestorePDIEngineEnvironment env = new RestorePDIEngineEnvironment();
+
+  @Override
+  public void before() {
+    super.before();
+
+    System.clearProperty( Const.KETTLE_ZIP_MAX_ENTRY_SIZE );
+    System.clearProperty( Const.KETTLE_ZIP_MAX_TEXT_SIZE );
+    System.clearProperty( Const.KETTLE_ZIP_MIN_INFLATE_RATIO );
+  }
+
   @Test
   public void testXLS() throws Exception {
     meta.setSpreadSheetType( SpreadSheetType.JXL );
@@ -90,9 +104,66 @@ public class ExcelInputContentParsingTest extends BaseExcelParsingTest {
   }
 
   @Test
-  public void testXLSXCompressionRatioIsBig() throws Exception {
+  public void testZipBombConfiguration_Default() throws Exception {
+
+    // First set some random values
+    Long bogusMaxEntrySize = 1000L;
+    ZipSecureFile.setMaxEntrySize( bogusMaxEntrySize );
+    Long bogusMaxTextSize = 1000L;
+    ZipSecureFile.setMaxTextSize( bogusMaxTextSize );
+    Double bogusMinInflateRatio = 0.5d;
+    ZipSecureFile.setMinInflateRatio( bogusMinInflateRatio );
+
+    // Verify that the bogus values were set
+    assertEquals( bogusMaxEntrySize, (Long) ZipSecureFile.getMaxEntrySize() );
+    assertEquals( bogusMaxTextSize, (Long) ZipSecureFile.getMaxTextSize() );
+    assertEquals( bogusMinInflateRatio, (Double) ZipSecureFile.getMinInflateRatio() );
+
+    // Initializing the ExcelInput step should make the new values to be set
     meta.setSpreadSheetType( SpreadSheetType.SAX_POI );
     init( "Balance_Type_Codes.xlsx" );
+
+    // Verify that the default values were used
+    assertEquals( Const.KETTLE_ZIP_MAX_ENTRY_SIZE_DEFAULT, (Long) ZipSecureFile.getMaxEntrySize() );
+    assertEquals( Const.KETTLE_ZIP_MAX_TEXT_SIZE_DEFAULT, (Long) ZipSecureFile.getMaxTextSize() );
+    assertEquals( Const.KETTLE_ZIP_MIN_INFLATE_RATIO_DEFAULT, (Double) ZipSecureFile.getMinInflateRatio() );
+  }
+
+  @Test
+  public void testZipBombConfiguration() throws Exception {
+    Long maxEntrySizeVal = 3L * 1024 * 1024 * 1024;
+    Long maxTextSizeVal = 2L * 1024 * 1024 * 1024;
+    Double minInflateRatioVal = 0.123d;
+
+    // First set the property values
+    System.setProperty( Const.KETTLE_ZIP_MAX_ENTRY_SIZE, maxEntrySizeVal.toString() );
+    System.setProperty( Const.KETTLE_ZIP_MAX_TEXT_SIZE, maxTextSizeVal.toString() );
+    System.setProperty( Const.KETTLE_ZIP_MIN_INFLATE_RATIO, minInflateRatioVal.toString() );
+    //ExcelInput excelInput = new ExcelInput( null, null, 0, null, null );
+
+    // Initializing the ExcelInput step should make the new values to be set
+
+    meta.setSpreadSheetType( SpreadSheetType.SAX_POI );
+    init( "Balance_Type_Codes.xlsx" );
+
+    // Verify that the setted values were used
+    assertEquals( maxEntrySizeVal, (Long) ZipSecureFile.getMaxEntrySize() );
+    assertEquals( maxTextSizeVal, (Long) ZipSecureFile.getMaxTextSize() );
+    assertEquals( minInflateRatioVal, (Double) ZipSecureFile.getMinInflateRatio() );
+  }
+
+  @Test
+  public void testXLSXCompressionRatioIsBig() throws Exception {
+
+    // For this zip to be correctly handed, we need to allow a lower inflate ratio
+    Double minInflateRatio = 0.007d;
+    System.setProperty( Const.KETTLE_ZIP_MIN_INFLATE_RATIO, minInflateRatio.toString() );
+
+    meta.setSpreadSheetType( SpreadSheetType.SAX_POI );
+    init( "Balance_Type_Codes.xlsx" );
+
+    // Verify that the minimum allowed inflate ratio is the expected
+    assertEquals( minInflateRatio, (Double) ZipSecureFile.getMinInflateRatio() );
 
     setFields( new ExcelInputField( "FIST ID", -1, -1 ), new ExcelInputField( "SOURCE SYSTEM", -1, -1 ) );
 
