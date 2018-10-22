@@ -814,7 +814,6 @@ jobGroups:
        directives      :  clean deploy -Deula-wrap
        versionProperty :  worker-nodes.version
        root            :  foundry
-       testable        :  false
        archivable      :  true
        artifactsArchivePattern: ${FOUNDRY_WORKERS_EE_PATTERN}
 
