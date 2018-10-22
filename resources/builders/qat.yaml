@@ -24,8 +24,8 @@ buildProperties:
         # We need to override this until this pipeline is the nightly
         BUILD_HOSTING_ROOT             : /build2/artifacts/hosted
 
-        # TODO: Enable when we start wanting to tag
-        CREATE_TAG                     : false
+        # Tagging
+        CREATE_TAG                     : true
         TAG_NAME                       : ${RELEASE_VERSION}-RC
 
         # Slack Reporting
