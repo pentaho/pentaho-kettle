@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -25,6 +25,8 @@ package org.pentaho.di.core.row.value;
 import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.row.ValueMetaInterface;
 
+import java.util.Comparator;
+
 public class ValueMetaString extends ValueMetaBase implements ValueMetaInterface {
 
   public ValueMetaString() {
@@ -33,6 +35,10 @@ public class ValueMetaString extends ValueMetaBase implements ValueMetaInterface
 
   public ValueMetaString( String name ) {
     super( name, ValueMetaInterface.TYPE_STRING );
+  }
+
+  public ValueMetaString( String name, Comparator<Object> comparator ) {
+    super( name, ValueMetaInterface.TYPE_STRING, comparator );
   }
 
   public ValueMetaString( String name, int length, int precision ) {
