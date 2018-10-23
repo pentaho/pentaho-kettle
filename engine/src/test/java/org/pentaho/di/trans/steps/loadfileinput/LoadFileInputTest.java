@@ -387,4 +387,41 @@ public class LoadFileInputTest {
     assertNotNull( stepLoadFileInput.getOneRow() );
     assertArrayEquals( IOUtils.toByteArray( getFile( "pentaho_splash.png" ).getContent().getInputStream() ), stepLoadFileInput.data.filecontent );
   }
+
+  @Test
+  public void testCopyOrCloneArrayFromLoadFileWithSmallerSizedReadRowArray() {
+    int size = 5;
+    Object[] rowData = new Object[ size ];
+    Object[] readrow = new Object[ size - 1 ];
+    LoadFileInput loadFileInput = mock( LoadFileInput.class );
+
+    Mockito.when( loadFileInput.copyOrCloneArrayFromLoadFile( rowData, readrow ) ).thenCallRealMethod();
+
+    assertEquals( 5,  loadFileInput.copyOrCloneArrayFromLoadFile( rowData, readrow ).length );
+  }
+
+  @Test
+  public void testCopyOrCloneArrayFromLoadFileWithBiggerSizedReadRowArray() {
+    int size = 5;
+    Object[] rowData = new Object[ size ];
+    Object[] readrow = new Object[ size + 1 ];
+    LoadFileInput loadFileInput = mock( LoadFileInput.class );
+
+    Mockito.when( loadFileInput.copyOrCloneArrayFromLoadFile( rowData, readrow ) ).thenCallRealMethod();
+
+    assertEquals( 6,  loadFileInput.copyOrCloneArrayFromLoadFile( rowData, readrow ).length );
+  }
+
+  @Test
+  public void testCopyOrCloneArrayFromLoadFileWithSameSizedReadRowArray() {
+    int size = 5;
+    Object[] rowData = new Object[ size ];
+    Object[] readrow = new Object[ size ];
+    LoadFileInput loadFileInput = mock( LoadFileInput.class );
+
+    Mockito.when( loadFileInput.copyOrCloneArrayFromLoadFile( rowData, readrow ) ).thenCallRealMethod();
+
+    assertEquals( 5,  loadFileInput.copyOrCloneArrayFromLoadFile( rowData, readrow ).length );
+  }
+
 }
