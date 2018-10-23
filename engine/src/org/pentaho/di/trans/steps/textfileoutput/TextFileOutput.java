@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -96,9 +96,6 @@ public class TextFileOutput extends BaseStep implements StepInterface {
     boolean bEndedLineWrote = false;
     boolean fileExist;
     Object[] r = getRow(); // This also waits for a row to be finished.
-    if ( r != null && meta.getOutputFields().length == 0 ) {
-      data.outputRowMeta = getInputRowMeta().clone();
-    }
     if ( r != null && first ) {
       data.outputRowMeta = getInputRowMeta().clone();
       first = false;
