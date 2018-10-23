@@ -67,6 +67,7 @@ import static org.hamcrest.collection.IsEmptyCollection.empty;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
 import static org.mockito.Matchers.anyBoolean;
 import static org.mockito.Matchers.anyInt;
 import static org.mockito.Matchers.anyString;
@@ -536,4 +537,80 @@ public class PurRepositoryUnitTest extends RepositoryTestLazySupport {
 
     assertEquals( "/home/admin/trans.ktr", pur.getPath( "trans.ktr", rdi, RepositoryObjectType.TRANSFORMATION ) );
   }
+
+  @Test
+  public void testCreateValidRepositoryDirectoryForRootHomeFolder() throws KettleException {
+    RepositoryDirectoryInterface treeMocked = mock( RepositoryDirectoryInterface.class );
+    PurRepository repository = mock( PurRepository.class );
+    LazyUnifiedRepositoryDirectory lazy = mock( LazyUnifiedRepositoryDirectory.class );
+    String newDirectory = "home/admin1";
+    //if root then we can create any folder at home or public folders
+    when( treeMocked.isRoot() ).thenReturn( true );
+    when( treeMocked.getPath() ).thenReturn( newDirectory );
+    when( repository.findDirectory( anyString() ) ).thenReturn( lazy );
+    when( repository.createRepositoryDirectory( treeMocked, newDirectory ) ).thenCallRealMethod();
+
+    assertEquals( "/home/admin1", repository.createRepositoryDirectory( treeMocked, newDirectory ).getPath() );
+  }
+
+  @Test
+  public void testCreateValidRepositoryDirectoryForRootPublicFolder() throws KettleException {
+    RepositoryDirectoryInterface treeMocked = mock( RepositoryDirectoryInterface.class );
+    PurRepository repository = mock( PurRepository.class );
+    LazyUnifiedRepositoryDirectory lazy = mock( LazyUnifiedRepositoryDirectory.class );
+    String newDirectory = "public/admin1";
+    //if root then we can create any folder at home or public folders
+    when( treeMocked.isRoot() ).thenReturn( true );
+    when( treeMocked.getPath() ).thenReturn( newDirectory );
+    when( repository.findDirectory( anyString() ) ).thenReturn( lazy );
+    when( repository.createRepositoryDirectory( treeMocked, newDirectory ) ).thenCallRealMethod();
+
+    assertEquals( "/public/admin1", repository.createRepositoryDirectory( treeMocked, newDirectory ).getPath() );
+  }
+
+  @Test( expected = KettleException.class )
+  public void testCreateInvalidRepositoryDirectoryForRootAnyOtherFolders() throws KettleException {
+    RepositoryDirectoryInterface treeMocked = mock( RepositoryDirectoryInterface.class );
+    PurRepository repository = mock( PurRepository.class );
+    LazyUnifiedRepositoryDirectory lazy = mock( LazyUnifiedRepositoryDirectory.class );
+    String newDirectory = "dummy/admin1";
+    //if root then we can ony create folders at home or public folders
+    when( treeMocked.isRoot() ).thenReturn( true );
+    when( treeMocked.getPath() ).thenReturn( newDirectory );
+    when( repository.findDirectory( anyString() ) ).thenReturn( lazy );
+    when( repository.createRepositoryDirectory( treeMocked, newDirectory ) ).thenCallRealMethod();
+
+    assertNull( repository.createRepositoryDirectory( treeMocked, newDirectory ).getPath() );
+  }
+
+  @Test( expected = KettleException.class )
+  public void testCreateInvalidRepositoryDirectoryForRoot() throws KettleException {
+    RepositoryDirectoryInterface treeMocked = mock( RepositoryDirectoryInterface.class );
+    PurRepository repository = mock( PurRepository.class );
+    LazyUnifiedRepositoryDirectory lazy = mock( LazyUnifiedRepositoryDirectory.class );
+    String newDirectory = "admin1";
+    //if root then we can ony create folders at home or public folders
+    when( treeMocked.isRoot() ).thenReturn( true );
+    when( treeMocked.getPath() ).thenReturn( newDirectory );
+    when( repository.findDirectory( anyString() ) ).thenReturn( lazy );
+    when( repository.createRepositoryDirectory( treeMocked, newDirectory ) ).thenCallRealMethod();
+
+    assertNull( repository.createRepositoryDirectory( treeMocked, newDirectory ).getPath() );
+  }
+
+  @Test
+  public void testCreateValidRepositoryDirectoryForNotRoot() throws KettleException {
+    RepositoryDirectoryInterface treeMocked = mock( RepositoryDirectoryInterface.class );
+    PurRepository repository = mock( PurRepository.class );
+    LazyUnifiedRepositoryDirectory lazy = mock( LazyUnifiedRepositoryDirectory.class );
+    String newDirectory = "admin1";
+    //if not root then we can create any folder
+    when( treeMocked.isRoot() ).thenReturn( false );
+    when( treeMocked.getPath() ).thenReturn( newDirectory );
+    when( repository.findDirectory( anyString() ) ).thenReturn( lazy );
+    when( repository.createRepositoryDirectory( treeMocked, newDirectory ) ).thenCallRealMethod();
+
+    assertEquals( "/admin1", repository.createRepositoryDirectory( treeMocked, newDirectory ).getPath() );
+  }
+
 }
