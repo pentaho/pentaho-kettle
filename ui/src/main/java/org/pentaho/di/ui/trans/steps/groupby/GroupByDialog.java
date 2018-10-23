@@ -599,7 +599,7 @@ public class GroupByDialog extends BaseStepDialog implements StepDialogInterface
     wAgg.optWidth( true );
 
     setFlags();
-    updateAllRowsCheckbox( wAgg, wAllRows, true );
+    updateAllRowsCheckbox( wAgg, wAllRows, !input.passAllRows() );
 
     wStepname.selectAll();
     wStepname.setFocus();
@@ -607,7 +607,7 @@ public class GroupByDialog extends BaseStepDialog implements StepDialogInterface
 
   private void cancel() {
     stepname = null;
-    input.setChanged( backupChanged );
+    input.setChanged( false );
     input.setPassAllRows( backupAllRows );
     dispose();
   }
