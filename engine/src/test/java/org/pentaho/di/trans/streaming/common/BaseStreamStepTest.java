@@ -23,15 +23,20 @@
 package org.pentaho.di.trans.streaming.common;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.pentaho.di.core.KettleEnvironment;
+import org.pentaho.di.core.ObjectLocationSpecificationMethod;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.KettleLogStore;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.logging.LogChannelInterfaceFactory;
+import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.StepDataInterface;
@@ -40,45 +45,52 @@ import org.pentaho.di.trans.step.StepMetaDataCombi;
 import org.pentaho.di.trans.streaming.api.StreamSource;
 import org.pentaho.di.trans.streaming.api.StreamWindow;
 
-import java.util.Arrays;
+import java.io.File;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.Collections;
+import java.util.List;
 
+import static org.hamcrest.core.IsEqual.equalTo;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.contains;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-@RunWith( MockitoJUnitRunner.class )
+@RunWith ( MockitoJUnitRunner.class )
 public class BaseStreamStepTest {
-  StepMeta stepMeta;
-  TransMeta transMeta;
-  Trans trans;
-  BaseStreamStep baseStreamStep;
+  private BaseStreamStep baseStreamStep;
 
   @Mock BaseStreamStepMeta meta;
+  @Mock BaseStreamStepMeta metaWithVariables;
   @Mock StepDataInterface stepData;
-  @Mock StreamSource streamSource;
-  @Mock StreamWindow streamWindow;
+  @Mock StreamSource<List<Object>> streamSource;
+  @Mock StreamWindow<List<Object>, Result> streamWindow;
   @Mock LogChannelInterfaceFactory logChannelFactory;
   @Mock LogChannelInterface logChannel;
+  @Mock private StepMeta parentStepMeta;
 
+  @Rule public TemporaryFolder folder = new TemporaryFolder();
 
   @Before
   public void setUp() throws KettleException {
     KettleLogStore.setLogChannelInterfaceFactory( logChannelFactory );
     when( logChannelFactory.create( any(), any() ) ).thenReturn( logChannel );
 
-    stepMeta = new StepMeta( "BaseStreamStep", meta );
+    StepMeta stepMeta = new StepMeta( "BaseStreamStep", meta );
 
-    transMeta = new TransMeta();
+    TransMeta transMeta = new TransMeta();
     transMeta.addStep( stepMeta );
-    trans = new Trans( transMeta );
+    Trans trans = new Trans( transMeta );
 
     baseStreamStep = new BaseStreamStep( stepMeta, stepData, 1, transMeta, trans );
     baseStreamStep.source = streamSource;
     baseStreamStep.window = streamWindow;
+    baseStreamStep.setParentVariableSpace( new Variables() );
 
     StepMetaDataCombi stepMetaDataCombi = new StepMetaDataCombi();
     stepMetaDataCombi.step = baseStreamStep;
@@ -91,11 +103,52 @@ public class BaseStreamStepTest {
   }
 
   @Test
+  public void testInitMissingFilename() {
+
+
+    when( meta.getSpecificationMethod() ).thenReturn( ObjectLocationSpecificationMethod.FILENAME );
+    assertFalse( baseStreamStep.init( meta, stepData ) );
+    verify( logChannel ).logError( contains( "Unable to load transformation " ), any( KettleException.class ) );
+  }
+
+
+  @Test
+  public void testInitFilenameSubstitution() throws IOException, KettleException {
+    // verifies that filename resolution uses the parents ${Internal.Entry.Current.Directory}.
+    // Necessary since the Current.Directory may change when running non-locally.
+    // Variables should all be set in variableizedStepMeta after init, with the caveat that
+    // the substrans location must be set using the parents Current.Directory.
+    KettleEnvironment.init();
+
+    File testFile = File.createTempFile( "testInitFilenameSubstitution", ".ktr",
+      folder.getRoot() );
+    try ( PrintWriter pw = new PrintWriter( testFile ) ) {
+      // empty subtrans definition
+      pw.write( "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
+        + "<transformation/>" );
+    }
+
+    when( meta.getParentStepMeta() ).thenReturn( parentStepMeta );
+    when( metaWithVariables.getFileName() ).thenReturn( "noSuchFilename.ktr" );
+    when( meta.withVariables( baseStreamStep ) ).thenReturn( metaWithVariables );
+    baseStreamStep.getParentVariableSpace()
+      .setVariable( "Internal.Entry.Current.Directory",
+        testFile.getParentFile().getAbsolutePath() );
+
+    when( metaWithVariables.getSpecificationMethod() ).thenReturn( ObjectLocationSpecificationMethod.FILENAME );
+    when( meta.getSpecificationMethod() ).thenReturn( ObjectLocationSpecificationMethod.FILENAME );
+    when( meta.getFileName() ).thenReturn( "${Internal.Entry.Current.Directory}/" + testFile.getName() );
+
+    assertTrue( baseStreamStep.init( meta, stepData ) );
+    assertThat( baseStreamStep.variablizedStepMeta, equalTo( metaWithVariables ) );
+  }
+
+  @Test
   public void testStop() throws KettleException {
     Result result = new Result();
     result.setSafeStop( false );
     result.setRows( Collections.emptyList() );
-    when( streamWindow.buffer( any() ) ).thenReturn( Arrays.asList( result ) );
+    when( streamWindow.buffer( any() ) ).thenReturn( Collections.singletonList( result ) );
 
     baseStreamStep.processRow( meta, stepData );
     assertFalse( baseStreamStep.isSafeStopped() );
@@ -106,7 +159,7 @@ public class BaseStreamStepTest {
   public void testSafeStop() throws KettleException {
     Result result = new Result();
     result.setSafeStop( true );
-    when( streamWindow.buffer( any() ) ).thenReturn( Arrays.asList( result ) );
+    when( streamWindow.buffer( any() ) ).thenReturn( Collections.singletonList( result ) );
 
     baseStreamStep.processRow( meta, stepData );
     assertTrue( baseStreamStep.isSafeStopped() );

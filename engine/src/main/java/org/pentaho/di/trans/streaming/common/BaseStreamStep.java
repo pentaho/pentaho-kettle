@@ -30,7 +30,6 @@ import org.pentaho.di.core.Result;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
-import org.pentaho.di.core.util.serialization.BaseSerializingMeta;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.SubtransExecutor;
 import org.pentaho.di.trans.Trans;
@@ -50,6 +49,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
+@SuppressWarnings ( "WeakerAccess" )
 public class BaseStreamStep extends BaseStep {
 
   private static final Class<?> PKG = BaseStreamStep.class;
@@ -66,10 +66,9 @@ public class BaseStreamStep extends BaseStep {
 
   public boolean init( StepMetaInterface stepMetaInterface, StepDataInterface stepDataInterface ) {
     Preconditions.checkNotNull( stepMetaInterface );
-    variablizedStepMeta = ( (BaseStreamStepMeta) ( (BaseSerializingMeta) stepMetaInterface ).withVariables( this ) );
+    variablizedStepMeta = (BaseStreamStepMeta) stepMetaInterface;
     variablizedStepMeta.setParentStepMeta( getStepMeta() );
     variablizedStepMeta.setFileName( variablizedStepMeta.getTransformationPath() );
-
 
     boolean superInit = super.init( stepMetaInterface, stepDataInterface );
 
@@ -77,6 +76,7 @@ public class BaseStreamStep extends BaseStep {
       TransMeta transMeta = TransExecutorMeta
         .loadMappingMeta( variablizedStepMeta, getTransMeta().getRepository(), getTransMeta().getMetaStore(),
           getParentVariableSpace() );
+      variablizedStepMeta = (BaseStreamStepMeta) variablizedStepMeta.withVariables( this );
       subtransExecutor = new SubtransExecutor( getStepname(),
         getTrans(), transMeta, true,
         new TransExecutorParameters(), variablizedStepMeta.getSubStep() );
