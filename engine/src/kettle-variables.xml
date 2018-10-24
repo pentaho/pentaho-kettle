@@ -462,5 +462,18 @@
     <default-value>17</default-value>
   </kettle-variable>
 
+  <kettle-variable>
+    <description>This environment variable is used by the Text File Output step. It defines the max number of simultaneously open files within the step.
+      The step will close/reopen files as necessary to insure the max is not exceeded</description>
+    <variable>KETTLE_FILE_OUTPUT_MAX_STREAM_COUNT</variable>
+    <default-value>1024</default-value>
+  </kettle-variable>
+
+  <kettle-variable>
+    <description>This environment variable is used by the Text File Output step.  It defines the max number of milliseconds between flushes of files opened by the step.</description>
+    <variable>KETTLE_FILE_OUTPUT_MAX_STREAM_LIFE</variable>
+    <default-value>0</default-value>
+  </kettle-variable>
+
 </kettle-variables>
 
