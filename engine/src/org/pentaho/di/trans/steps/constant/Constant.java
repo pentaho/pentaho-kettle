@@ -235,9 +235,6 @@ public class Constant extends BaseStep implements StepInterface {
       data.firstRow = false;
       data.outputMeta = getInputRowMeta().clone();
       meta.getFields( data.outputMeta, getStepname(), null, null, this, repository, metaStore );
-
-      RowMetaInterface constants = data.constants.getRowMeta();
-      data.outputMeta.mergeRowMeta( constants );
     }
 
     // Add the constant data to the end of the row.
