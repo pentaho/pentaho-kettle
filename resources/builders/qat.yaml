@@ -2,7 +2,7 @@
 buildProperties:
         # global build control defaults -- see others you can override in resources/config/buildProperties.yaml
         # These are understood by the shared pipeline libraries:
-        BUILD_PLAN_ID                  : 8.2 QAT Build
+        BUILD_PLAN_ID                  : 9.0 QAT Build
 
         MAVEN_DEFAULT_COMMAND_OPTIONS  : -B -e -Drelease
         ARCHIVE_ARTIFACTS_PATTERN      : '**/{target/*.gz,target/*.zip}'
@@ -10,16 +10,16 @@ buildProperties:
 
         # TODO: Change this to clean deploy when ready to deploy
         MAVEN_DEFAULT_DIRECTIVES       : clean deploy
-        MAVEN_PUBLIC_RELEASE_REPO_URL  : http://nexus.pentaho.org/content/repositories/public-8.2-qat
-        MAVEN_PRIVATE_RELEASE_REPO_URL : http://nexus.pentaho.org/content/repositories/private-8.2-qat
+        MAVEN_PUBLIC_RELEASE_REPO_URL  : http://nexus.pentaho.org/content/repositories/public-9.0-qat
+        MAVEN_PRIVATE_RELEASE_REPO_URL : http://nexus.pentaho.org/content/repositories/private-9.0-qat
 
         # Version based control properties
         RUN_VERSIONING                 : true
-        RELEASE_VERSION                : 8.2.0.0
-        SUITE_RELEASE_VERSION          : 8.2-QAT
+        RELEASE_VERSION                : 9.0.0.0
+        SUITE_RELEASE_VERSION          : 9.0-QAT
         RELEASE_MODE                   : true
-        SUITE_BUILD_RESOURCES_BRANCH   : 8.2.0.0
-        JENKINS_FOLDER_NAME            : "8.2"
+        SUITE_BUILD_RESOURCES_BRANCH   : 9.0.0.0
+        JENKINS_FOLDER_NAME            : "9.0"
 
         # We need to override this until this pipeline is the nightly
         BUILD_HOSTING_ROOT             : /build2/artifacts/hosted

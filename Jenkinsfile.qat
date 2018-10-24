@@ -1,10 +1,10 @@
 String releaseBuildNumber = params.RELEASE_BUILD_NUMBER ?: env.BUILD_NUMBER
 List passOnParameters = [string(name:"RELEASE_BUILD_NUMBER",         value:releaseBuildNumber),
                          string(name:"RELEASE_BUILD_ID",             value:env.BUILD_TIMESTAMP),
-                         string(name:"RELEASE_VERSION",              value:"8.2.0.0"),
-                         string(name:"SUITE_BUILD_RESOURCES_BRANCH", value:"8.2.0.0"),
-                         string(name:"SUITE_RELEASE_VERSION",        value:"8.2-QAT"),
-                         string(name:"JENKINS_FOLDER_NAME",          value:"8.2"),
+                         string(name:"RELEASE_VERSION",              value:"9.0.0.0"),
+                         string(name:"SUITE_BUILD_RESOURCES_BRANCH", value:"9.0.0.0"),
+                         string(name:"SUITE_RELEASE_VERSION",        value:"9.0-QAT"),
+                         string(name:"JENKINS_FOLDER_NAME",          value:"9.0"),
                          string(name:"BUILD_ID_TAIL",                value:"-${releaseBuildNumber}"),
                          string(name:"BUILD_HOSTING_ROOT",           value:"/build2/artifacts/hosted")]
 
@@ -48,7 +48,7 @@ pipeline {
         }
       }
       steps {
-        triggerJob("8.2-qat", passOnParameters)
+        triggerJob("9.0-qat", passOnParameters)
       }
     }
 
