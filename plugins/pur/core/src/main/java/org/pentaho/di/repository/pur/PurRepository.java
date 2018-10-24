@@ -117,6 +117,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
+
 
 /**
  * Implementation of {@link Repository} that delegates to the Pentaho unified repository (PUR), an instance of
@@ -127,10 +130,10 @@ import java.util.Set;
  */
 @SuppressWarnings( "deprecation" )
 @RepositoryPlugin( id = "PentahoEnterpriseRepository", name = "RepositoryType.Name.EnterpriseRepository",
-    description = "RepositoryType.Description.EnterpriseRepository",
-    metaClass = "org.pentaho.di.repository.pur.PurRepositoryMeta", i18nPackageName = "org.pentaho.di.repository.pur" )
+  description = "RepositoryType.Description.EnterpriseRepository",
+  metaClass = "org.pentaho.di.repository.pur.PurRepositoryMeta", i18nPackageName = "org.pentaho.di.repository.pur" )
 public class PurRepository extends AbstractRepository implements Repository, ReconnectableRepository,
-    RepositoryExtended, java.io.Serializable {
+  RepositoryExtended, java.io.Serializable {
 
   private static final long serialVersionUID = 7460109109707189479L; /* EESOURCE: UPDATE SERIALVERUID */
 
@@ -219,6 +222,9 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
 
   private RepositoryServiceRegistry purRepositoryServiceRegistry = new RepositoryServiceRegistry();
 
+  private static final ReadWriteLock readWriteLock = new ReentrantReadWriteLock();
+
+
   // ~ Constructors ====================================================================================================
 
   public PurRepository() {
@@ -267,17 +273,17 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
     if ( isTest() ) {
       connected = true;
       purRepositoryServiceRegistry
-          .registerService( IRevisionService.class, new UnifiedRepositoryRevisionService( pur, getRootRef() ) );
+        .registerService( IRevisionService.class, new UnifiedRepositoryRevisionService( pur, getRootRef() ) );
       purRepositoryServiceRegistry.registerService( ILockService.class, new UnifiedRepositoryLockService( pur ) );
       purRepositoryServiceRegistry
-          .registerService( IAclService.class, new UnifiedRepositoryConnectionAclService( pur ) );
+        .registerService( IAclService.class, new UnifiedRepositoryConnectionAclService( pur ) );
       metaStore = new PurRepositoryMetaStore( this );
       try {
         metaStore.createNamespace( PentahoDefaults.NAMESPACE );
       } catch ( MetaStoreException e ) {
         log.logError( BaseMessages
-                .getString( PKG, "PurRepositoryMetastore.NamespaceCreateException.Message", PentahoDefaults.NAMESPACE ),
-            e );
+            .getString( PKG, "PurRepositoryMetastore.NamespaceCreateException.Message", PentahoDefaults.NAMESPACE ),
+          e );
       }
       this.user = new EEUserInfo( username, password, username, "test user", true );
       this.jobDelegate = new JobDelegate( this, pur );
@@ -297,14 +303,14 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
       IUnifiedRepository r = result.getUnifiedRepository();
       try {
         this.pur =
-            (IUnifiedRepository) Proxy
-                .newProxyInstance( r.getClass().getClassLoader(), new Class<?>[] { IUnifiedRepository.class },
-                    new UnifiedRepositoryInvocationHandler<IUnifiedRepository>( r ) );
+          (IUnifiedRepository) Proxy
+            .newProxyInstance( r.getClass().getClassLoader(), new Class<?>[] { IUnifiedRepository.class },
+              new UnifiedRepositoryInvocationHandler<IUnifiedRepository>( r ) );
         if ( this.securityProvider != null ) {
           this.securityProvider = (RepositorySecurityProvider)
-              Proxy.newProxyInstance( this.securityProvider.getClass().getClassLoader(),
-                  new Class<?>[] {  RepositorySecurityProvider.class },
-                  new UnifiedRepositoryInvocationHandler<RepositorySecurityProvider>( this.securityProvider ) );
+            Proxy.newProxyInstance( this.securityProvider.getClass().getClassLoader(),
+              new Class<?>[] {  RepositorySecurityProvider.class },
+              new UnifiedRepositoryInvocationHandler<RepositorySecurityProvider>( this.securityProvider ) );
         }
       } catch ( Throwable th ) {
         if ( log.isError() ) {
@@ -336,8 +342,8 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
           // call will do the check for us and throw this exception.
         } catch ( MetaStoreException e ) {
           log.logError( BaseMessages
-                  .getString( PKG, "PurRepositoryMetastore.NamespaceCreateException.Message", PentahoDefaults.NAMESPACE ),
-              e );
+              .getString( PKG, "PurRepositoryMetastore.NamespaceCreateException.Message", PentahoDefaults.NAMESPACE ),
+            e );
         }
 
         if ( log.isBasic() ) {
@@ -409,19 +415,24 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
   }
 
   @Override public void saveRepositoryDirectory( final RepositoryDirectoryInterface dir ) throws KettleException {
+    // id of root dir is null--check for it
+    if ( "/".equals( dir.getParent().getName() ) ) {
+      throw new KettleException( BaseMessages.getString( PKG, "PurRepository.FailedDirectoryCreation.Message" ) );
+    }
+
+    readWriteLock.writeLock().lock();
     try {
-      // id of root dir is null--check for it
-      if ( "/".equals( dir.getParent().getName() ) ) {
-        throw new KettleException( BaseMessages.getString( PKG, "PurRepository.FailedDirectoryCreation.Message" ) );
-      }
       RepositoryFile
-          newFolder =
-          pur.createFolder( dir.getParent().getObjectId() != null ? dir.getParent().getObjectId().getId() : null,
-              new RepositoryFile.Builder( dir.getName() ).folder( true ).build(), null );
+        newFolder =
+        pur.createFolder( dir.getParent().getObjectId() != null ? dir.getParent().getObjectId().getId() : null,
+          new RepositoryFile.Builder( dir.getName() ).folder( true ).build(), null );
+
       dir.setObjectId( new StringObjectId( newFolder.getId().toString() ) );
     } catch ( Exception e ) {
       throw new KettleException( "Unable to save repository directory with path [" + getPath( null, dir, null ) + "]",
-          e );
+        e );
+    } finally {
+      readWriteLock.writeLock().unlock();
     }
   }
 
@@ -440,11 +451,11 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
 
       if (
         // If the folders are equal
-          baseFolder.getId().equals( folder.getId() ) || (
-              // OR if the folders are NOT siblings AND the folder to move IS an ancestor to the users home folder
-              baseFolder.getPath().lastIndexOf( RepositoryDirectory.DIRECTORY_SEPARATOR )
-                  != folder.getPath().lastIndexOf( RepositoryDirectory.DIRECTORY_SEPARATOR )
-                  && baseFolder.getPath().startsWith( folder.getPath() ) ) ) {
+        baseFolder.getId().equals( folder.getId() ) || (
+          // OR if the folders are NOT siblings AND the folder to move IS an ancestor to the users home folder
+          baseFolder.getPath().lastIndexOf( RepositoryDirectory.DIRECTORY_SEPARATOR )
+            != folder.getPath().lastIndexOf( RepositoryDirectory.DIRECTORY_SEPARATOR )
+            && baseFolder.getPath().startsWith( folder.getPath() ) ) ) {
         return true;
       }
 
@@ -464,21 +475,28 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
     if ( folder != null ) {
 
       // Get the root of all home folders
-      RepositoryFile homeRootFolder = pur.getFile( ClientRepositoryPaths.getHomeFolderPath() );
+      readWriteLock.readLock().lock();
+      RepositoryFile homeRootFolder;
+      try {
+        homeRootFolder = pur.getFile( ClientRepositoryPaths.getHomeFolderPath() );
+      } finally {
+        readWriteLock.readLock().unlock();
+      }
+
       if ( homeRootFolder != null ) {
         // Strip the final RepositoryDirectory.DIRECTORY_SEPARATOR from the paths
         String temp = homeRootFolder.getPath();
         String
-            homeRootPath =
-            temp.endsWith( RepositoryDirectory.DIRECTORY_SEPARATOR )
-                && temp.length() > RepositoryDirectory.DIRECTORY_SEPARATOR.length()
-                ? temp.substring( 0, temp.length() - RepositoryDirectory.DIRECTORY_SEPARATOR.length() ) : temp;
+          homeRootPath =
+          temp.endsWith( RepositoryDirectory.DIRECTORY_SEPARATOR )
+            && temp.length() > RepositoryDirectory.DIRECTORY_SEPARATOR.length()
+            ? temp.substring( 0, temp.length() - RepositoryDirectory.DIRECTORY_SEPARATOR.length() ) : temp;
         temp = folder.getPath();
         String
-            folderPath =
-            temp.endsWith( RepositoryDirectory.DIRECTORY_SEPARATOR )
-                && temp.length() > RepositoryDirectory.DIRECTORY_SEPARATOR.length()
-                ? temp.substring( 0, temp.length() - RepositoryDirectory.DIRECTORY_SEPARATOR.length() ) : temp;
+          folderPath =
+          temp.endsWith( RepositoryDirectory.DIRECTORY_SEPARATOR )
+            && temp.length() > RepositoryDirectory.DIRECTORY_SEPARATOR.length()
+            ? temp.substring( 0, temp.length() - RepositoryDirectory.DIRECTORY_SEPARATOR.length() ) : temp;
 
         // Is the folder in a user's home directory?
         if ( folderPath.startsWith( homeRootPath ) ) {
@@ -516,12 +534,16 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
   @Override
   public void deleteRepositoryDirectory( final RepositoryDirectoryInterface dir, final boolean deleteHomeDirectories )
     throws KettleException {
+
+    readWriteLock.writeLock().lock();
     try {
       // Fetch the folder to be deleted
-      RepositoryFile folder = pur.getFileById( dir.getObjectId().getId() );
+      RepositoryFile folder;
+      RepositoryFile homeFolder;
 
+      folder = pur.getFileById( dir.getObjectId().getId() );
       // Fetch the user's home directory
-      RepositoryFile homeFolder = pur.getFile( ClientRepositoryPaths.getUserHomeFolderPath( user.getLogin() ) );
+      homeFolder = pur.getFile( ClientRepositoryPaths.getUserHomeFolderPath( user.getLogin() ) );
 
       // Make sure the user is not trying to delete their own home directory
       if ( isSameOrAncestorFolder( folder, homeFolder ) ) {
@@ -531,13 +553,15 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
 
       if ( !deleteHomeDirectories && isUserHomeDirectory( folder ) ) {
         throw new RepositoryObjectAccessException( "Cannot delete another users home directory",
-            RepositoryObjectAccessException.AccessExceptionType.USER_HOME_DIR );
+          RepositoryObjectAccessException.AccessExceptionType.USER_HOME_DIR );
       }
 
       pur.deleteFile( dir.getObjectId().getId(), null );
       rootRef.clearRef();
     } catch ( Exception e ) {
       throw new KettleException( "Unable to delete directory with path [" + getPath( null, dir, null ) + "]", e );
+    } finally {
+      readWriteLock.writeLock().unlock();
     }
   }
 
@@ -556,9 +580,15 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
     String finalName = null;
     String finalParentPath = null;
     String interimFolderPath = null;
+
+    readWriteLock.writeLock().lock();
     try {
-      RepositoryFile homeFolder = pur.getFile( ClientRepositoryPaths.getUserHomeFolderPath( user.getLogin() ) );
-      RepositoryFile folder = pur.getFileById( dirId.getId() );
+      RepositoryFile homeFolder;
+      RepositoryFile folder;
+
+      homeFolder = pur.getFile( ClientRepositoryPaths.getUserHomeFolderPath( user.getLogin() ) );
+      folder = pur.getFileById( dirId.getId() );
+
       finalName = ( newName != null ? newName : folder.getName() );
       interimFolderPath = getParentPath( folder.getPath() );
       finalParentPath = ( newParent != null ? getPath( null, newParent, null ) : interimFolderPath );
@@ -570,30 +600,41 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
 
       if ( !renameHomeDirectories && isUserHomeDirectory( folder ) ) {
         throw new RepositoryObjectAccessException( "Cannot move another users home directory",
-            RepositoryObjectAccessException.AccessExceptionType.USER_HOME_DIR );
+          RepositoryObjectAccessException.AccessExceptionType.USER_HOME_DIR );
       }
 
       pur.moveFile( dirId.getId(), finalParentPath + RepositoryFile.SEPARATOR + finalName, null );
+
       rootRef.clearRef();
       return dirId;
     } catch ( Exception e ) {
       throw new KettleException( "Unable to move/rename directory with id [" + dirId + "] to new parent ["
-          + finalParentPath + "] and new name [" + finalName + "]", e );
+        + finalParentPath + "] and new name [" + finalName + "]", e );
+    } finally {
+      readWriteLock.writeLock().unlock();
     }
   }
 
   protected RepositoryFileTree loadRepositoryFileTree( String path ) {
-    return pur.getTree( path, -1, null, true );
+    readWriteLock.readLock().lock();
+    RepositoryFileTree result;
+    try {
+      result = pur.getTree( path, -1, null, true );
+    } finally {
+      readWriteLock.readLock().unlock();
+    }
+
+    return result;
   }
 
   @Override
   public RepositoryDirectoryInterface loadRepositoryDirectoryTree(
-      String path,
-      String filter,
-      int depth,
-      boolean showHidden,
-      boolean includeEmptyFolder,
-      boolean includeAcls )
+    String path,
+    String filter,
+    int depth,
+    boolean showHidden,
+    boolean includeEmptyFolder,
+    boolean includeAcls )
     throws KettleException {
 
     // First check for possibility of speedy algorithm
@@ -606,21 +647,21 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
     RepositoryDirectory dir = new RepositoryDirectory();
     //fetch folder tree from root "/" to destination path for populate folder
     RepositoryFileTree rootDirTree =
-        loadRepositoryFileTree( "/", "*", fromRootToDest, showHidden, includeAcls, FILES_TYPE_FILTER.FOLDERS );
+      loadRepositoryFileTree( "/", "*", fromRootToDest, showHidden, includeAcls, FILES_TYPE_FILTER.FOLDERS );
     //populate directory by folder tree
     fillRepositoryDirectoryFromTree( dir, rootDirTree );
 
     RepositoryDirectoryInterface destinationDir = dir.findDirectory( path );
     //search for goal path and filter
     RepositoryFileTree repoTree =
-        loadRepositoryFileTree( path, filter, depth, showHidden, includeAcls, FILES_TYPE_FILTER.FILES_FOLDERS );
+      loadRepositoryFileTree( path, filter, depth, showHidden, includeAcls, FILES_TYPE_FILTER.FILES_FOLDERS );
     //populate the directory with founded files and subdirectories with files
     fillRepositoryDirectoryFromTree( destinationDir, repoTree );
 
     if ( includeEmptyFolder ) {
       RepositoryDirectoryInterface folders =
-          initRepositoryDirectoryTree(
-              loadRepositoryFileTree( path, null, depth, showHidden, includeAcls, FILES_TYPE_FILTER.FOLDERS ) );
+        initRepositoryDirectoryTree(
+          loadRepositoryFileTree( path, null, depth, showHidden, includeAcls, FILES_TYPE_FILTER.FOLDERS ) );
       return copyFrom( folders, destinationDir );
     } else {
       return destinationDir;
@@ -628,12 +669,12 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
   }
 
   private RepositoryFileTree loadRepositoryFileTree(
-      String path,
-      String filter,
-      int depth,
-      boolean showHidden,
-      boolean includeAcls,
-      FILES_TYPE_FILTER types ) {
+    String path,
+    String filter,
+    int depth,
+    boolean showHidden,
+    boolean includeAcls,
+    FILES_TYPE_FILTER types ) {
     RepositoryRequest repoRequest = new RepositoryRequest();
     repoRequest.setPath( Utils.isEmpty( path ) ? "/" : path );
     repoRequest.setChildNodeFilter( filter == null ? "*" : filter );
@@ -642,7 +683,14 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
     repoRequest.setIncludeAcls( includeAcls );
     repoRequest.setTypes( types == null ? FILES_TYPE_FILTER.FILES_FOLDERS : types );
 
-    RepositoryFileTree fileTree = pur.getTree( repoRequest );
+    readWriteLock.readLock().lock();
+    RepositoryFileTree fileTree;
+    try {
+      fileTree = pur.getTree( repoRequest );
+    } finally {
+      readWriteLock.readLock().unlock();
+    }
+
     return fileTree;
   }
 
@@ -671,10 +719,16 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
       RepositoryFileTree rootFileTree = loadRepositoryFileTree( ClientRepositoryPaths.getRootFolderPath() );
       rootDir = initRepositoryDirectoryTree( rootFileTree );
     } else {
-      RepositoryFile root = pur.getFile( "/" );
+      readWriteLock.readLock().lock();
+      RepositoryFile root;
+      try {
+        root = pur.getFile( "/" );
+      } finally {
+        readWriteLock.readLock().unlock();
+      }
 
       rootDir =
-          new LazyUnifiedRepositoryDirectory( root, null, pur, purRepositoryServiceRegistry );
+        new LazyUnifiedRepositoryDirectory( root, null, pur, purRepositoryServiceRegistry );
     }
     rootRef.setRef( rootDir );
     return rootDir;
@@ -717,7 +771,7 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
   }
 
   private void fillRepositoryDirectoryFromTree( final RepositoryDirectoryInterface parentDir,
-                                        final RepositoryFileTree treeNode ) throws KettleException {
+                                                final RepositoryFileTree treeNode ) throws KettleException {
     try {
       List<RepositoryElementMetaInterface> fileChildren = new ArrayList<RepositoryElementMetaInterface>();
       List<RepositoryFileTree> children = treeNode.getChildren();
@@ -746,7 +800,14 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
   @Override
   public String[] getDirectoryNames( final ObjectId idDirectory ) throws KettleException {
     try {
-      List<RepositoryFile> children = pur.getChildren( idDirectory.getId() );
+      readWriteLock.readLock().lock();
+      List<RepositoryFile> children;
+      try {
+        children = pur.getChildren( idDirectory.getId() );
+      } finally {
+        readWriteLock.readLock().unlock();
+      }
+
       List<String> childNames = new ArrayList<String>();
       for ( RepositoryFile child : children ) {
         if ( child.isFolder() ) {
@@ -772,7 +833,13 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
 
   protected void permanentlyDeleteSharedObject( final ObjectId id ) throws KettleException {
     try {
-      pur.deleteFile( id.getId(), true, null );
+      readWriteLock.writeLock().lock();
+      try {
+        pur.deleteFile( id.getId(), true, null );
+      } finally {
+        readWriteLock.writeLock().unlock();
+      }
+
     } catch ( Exception e ) {
       throw new KettleException( "Unable to delete object with id [" + id + "]", e );
     }
@@ -780,7 +847,13 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
 
   public void deleteFileById( final ObjectId id ) throws KettleException {
     try {
-      pur.deleteFile( id.getId(), null );
+      readWriteLock.writeLock().lock();
+      try {
+        pur.deleteFile( id.getId(), null );
+      } finally {
+        readWriteLock.writeLock().unlock();
+      }
+
       rootRef.clearRef();
     } catch ( Exception e ) {
       throw new KettleException( "Unable to delete object with id [" + id + "]", e );
@@ -810,7 +883,15 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
                          final RepositoryObjectType objectType ) throws KettleException {
     try {
       String absPath = getPath( name, repositoryDirectory, objectType );
-      return pur.getFile( absPath ) != null;
+      readWriteLock.readLock().lock();
+      boolean result;
+      try {
+        result = pur.getFile( absPath ) != null;
+      } finally {
+        readWriteLock.readLock().unlock();
+      }
+
+      return result;
     } catch ( Exception e ) {
       throw new KettleException( "Unable to verify if the repository element [" + name + "] exists in ", e );
     }
@@ -837,19 +918,19 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
     switch ( objectType ) {
       case DATABASE: {
         return getDatabaseMetaParentFolderPath() + RepositoryFile.SEPARATOR + sanitizedName
-            + RepositoryObjectType.DATABASE.getExtension();
+          + RepositoryObjectType.DATABASE.getExtension();
       }
       case PARTITION_SCHEMA: {
         return getPartitionSchemaParentFolderPath() + RepositoryFile.SEPARATOR + sanitizedName
-            + RepositoryObjectType.PARTITION_SCHEMA.getExtension();
+          + RepositoryObjectType.PARTITION_SCHEMA.getExtension();
       }
       case SLAVE_SERVER: {
         return getSlaveServerParentFolderPath() + RepositoryFile.SEPARATOR + sanitizedName
-            + RepositoryObjectType.SLAVE_SERVER.getExtension();
+          + RepositoryObjectType.SLAVE_SERVER.getExtension();
       }
       case CLUSTER_SCHEMA: {
         return getClusterSchemaParentFolderPath() + RepositoryFile.SEPARATOR + sanitizedName
-            + RepositoryObjectType.CLUSTER_SCHEMA.getExtension();
+          + RepositoryObjectType.CLUSTER_SCHEMA.getExtension();
       }
       case TRANSFORMATION:
       case JOB: {
@@ -932,89 +1013,97 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
   private ObjectId getObjectId( final String name, final RepositoryDirectoryInterface dir,
                                 final RepositoryObjectType objectType, boolean includedDeleteFiles ) {
     final String absPath = getPath( name, dir, objectType );
-    RepositoryFile file = pur.getFile( absPath );
-    if ( file != null ) {
-      // file exists
-      return new StringObjectId( file.getId().toString() );
-    } else if ( includedDeleteFiles ) {
-      switch ( objectType ) {
-        case DATABASE: {
-          // file either never existed or has been deleted
-          List<RepositoryFile>
+
+    readWriteLock.readLock().lock();
+    try {
+      RepositoryFile file;
+      file = pur.getFile( absPath );
+
+      if ( file != null ) {
+        // file exists
+        return new StringObjectId( file.getId().toString() );
+      } else if ( includedDeleteFiles ) {
+        switch ( objectType ) {
+          case DATABASE: {
+            // file either never existed or has been deleted
+            List<RepositoryFile>
               deletedChildren =
               pur.getDeletedFiles( getDatabaseMetaParentFolderPath(), name
-                  + RepositoryObjectType.DATABASE.getExtension() );
-          if ( !deletedChildren.isEmpty() ) {
-            return new StringObjectId( deletedChildren.get( 0 ).getId().toString() );
-          } else {
-            return null;
+                + RepositoryObjectType.DATABASE.getExtension() );
+            if ( !deletedChildren.isEmpty() ) {
+              return new StringObjectId( deletedChildren.get( 0 ).getId().toString() );
+            } else {
+              return null;
+            }
           }
-        }
-        case TRANSFORMATION: {
-          // file either never existed or has been deleted
-          List<RepositoryFile>
+          case TRANSFORMATION: {
+            // file either never existed or has been deleted
+            List<RepositoryFile>
               deletedChildren =
               pur.getDeletedFiles( dir.getObjectId().getId(),
-                  name + RepositoryObjectType.TRANSFORMATION.getExtension() );
-          if ( !deletedChildren.isEmpty() ) {
-            return new StringObjectId( deletedChildren.get( 0 ).getId().toString() );
-          } else {
-            return null;
+                name + RepositoryObjectType.TRANSFORMATION.getExtension() );
+            if ( !deletedChildren.isEmpty() ) {
+              return new StringObjectId( deletedChildren.get( 0 ).getId().toString() );
+            } else {
+              return null;
+            }
           }
-        }
-        case PARTITION_SCHEMA: {
-          // file either never existed or has been deleted
-          List<RepositoryFile>
+          case PARTITION_SCHEMA: {
+            // file either never existed or has been deleted
+            List<RepositoryFile>
               deletedChildren =
               pur.getDeletedFiles( getPartitionSchemaParentFolderPath(), name
-                  + RepositoryObjectType.PARTITION_SCHEMA.getExtension() );
-          if ( !deletedChildren.isEmpty() ) {
-            return new StringObjectId( deletedChildren.get( 0 ).getId().toString() );
-          } else {
-            return null;
+                + RepositoryObjectType.PARTITION_SCHEMA.getExtension() );
+            if ( !deletedChildren.isEmpty() ) {
+              return new StringObjectId( deletedChildren.get( 0 ).getId().toString() );
+            } else {
+              return null;
+            }
           }
-        }
-        case SLAVE_SERVER: {
-          // file either never existed or has been deleted
-          List<RepositoryFile>
+          case SLAVE_SERVER: {
+            // file either never existed or has been deleted
+            List<RepositoryFile>
               deletedChildren =
               pur.getDeletedFiles( getSlaveServerParentFolderPath(), name
-                  + RepositoryObjectType.SLAVE_SERVER.getExtension() );
-          if ( !deletedChildren.isEmpty() ) {
-            return new StringObjectId( deletedChildren.get( 0 ).getId().toString() );
-          } else {
-            return null;
+                + RepositoryObjectType.SLAVE_SERVER.getExtension() );
+            if ( !deletedChildren.isEmpty() ) {
+              return new StringObjectId( deletedChildren.get( 0 ).getId().toString() );
+            } else {
+              return null;
+            }
           }
-        }
-        case CLUSTER_SCHEMA: {
-          // file either never existed or has been deleted
-          List<RepositoryFile>
+          case CLUSTER_SCHEMA: {
+            // file either never existed or has been deleted
+            List<RepositoryFile>
               deletedChildren =
               pur.getDeletedFiles( getClusterSchemaParentFolderPath(), name
-                  + RepositoryObjectType.CLUSTER_SCHEMA.getExtension() );
-          if ( !deletedChildren.isEmpty() ) {
-            return new StringObjectId( deletedChildren.get( 0 ).getId().toString() );
-          } else {
-            return null;
+                + RepositoryObjectType.CLUSTER_SCHEMA.getExtension() );
+            if ( !deletedChildren.isEmpty() ) {
+              return new StringObjectId( deletedChildren.get( 0 ).getId().toString() );
+            } else {
+              return null;
+            }
           }
-        }
-        case JOB: {
-          // file either never existed or has been deleted
-          List<RepositoryFile>
+          case JOB: {
+            // file either never existed or has been deleted
+            List<RepositoryFile>
               deletedChildren =
               pur.getDeletedFiles( dir.getObjectId().getId(), name + RepositoryObjectType.JOB.getExtension() );
-          if ( !deletedChildren.isEmpty() ) {
-            return new StringObjectId( deletedChildren.get( 0 ).getId().toString() );
-          } else {
-            return null;
+            if ( !deletedChildren.isEmpty() ) {
+              return new StringObjectId( deletedChildren.get( 0 ).getId().toString() );
+            } else {
+              return null;
+            }
+          }
+          default: {
+            throw new UnsupportedOperationException( "not implemented" );
           }
         }
-        default: {
-          throw new UnsupportedOperationException( "not implemented" );
-        }
+      } else {
+        return null;
       }
-    } else {
-      return null;
+    } finally {
+      readWriteLock.readLock().unlock();
     }
   }
 
@@ -1047,7 +1136,12 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
       String dirPath = null;
       if ( dirId != null ) {
         // derive path using id
-        dirPath = pur.getFileById( dirId.getId() ).getPath();
+        readWriteLock.readLock().lock();
+        try {
+          dirPath = pur.getFileById( dirId.getId() ).getPath();
+        } finally {
+          readWriteLock.readLock().unlock();
+        }
       }
       List<RepositoryFile> deletedChildren = getAllDeletedFilesOfType( dirPath, objectTypes );
       allChildren.addAll( deletedChildren );
@@ -1113,7 +1207,12 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
     }
     List<RepositoryFile> allFiles = new ArrayList<>();
     for ( Serializable parentFolderId : parentFolderIds ) {
-      allFiles.addAll( pur.getChildren( parentFolderId, mergedFilterBuf.toString() ) );
+      readWriteLock.readLock().lock();
+      try {
+        allFiles.addAll( pur.getChildren( parentFolderId, mergedFilterBuf.toString() ) );
+      } finally {
+        readWriteLock.readLock().unlock();
+      }
     }
     Collections.sort( allFiles );
     return allFiles;
@@ -1170,10 +1269,18 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
       }
       mergedFilterBuf.append( filter );
     }
+
     List<RepositoryFile> allFiles = new ArrayList<RepositoryFile>();
-    for ( String parentFolderPath : parentFolderPaths ) {
-      allFiles.addAll( pur.getDeletedFiles( parentFolderPath, mergedFilterBuf.toString() ) );
+    readWriteLock.readLock().lock();
+    try {
+      for ( String parentFolderPath : parentFolderPaths ) {
+
+        allFiles.addAll( pur.getDeletedFiles( parentFolderPath, mergedFilterBuf.toString() ) );
+      }
+    } finally {
+      readWriteLock.readLock().unlock();
     }
+
     Collections.sort( allFiles );
     return allFiles;
   }
@@ -1197,7 +1304,7 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
    */
   private void initSharedObjectAssemblerMap() {
     sharedObjectAssemblerMap =
-        new EnumMap<RepositoryObjectType, SharedObjectAssembler<?>>( RepositoryObjectType.class );
+      new EnumMap<RepositoryObjectType, SharedObjectAssembler<?>>( RepositoryObjectType.class );
     sharedObjectAssemblerMap.put( RepositoryObjectType.DATABASE, databaseMetaTransformer );
     sharedObjectAssemblerMap.put( RepositoryObjectType.CLUSTER_SCHEMA, clusterTransformer );
     sharedObjectAssemblerMap.put( RepositoryObjectType.PARTITION_SCHEMA, partitionSchemaTransformer );
@@ -1238,8 +1345,8 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
    * @throws KettleException
    */
   protected void readSharedObjects(
-      Map<RepositoryObjectType, List<? extends SharedObjectInterface>> sharedObjectsByType,
-      RepositoryObjectType... types ) throws KettleException {
+    Map<RepositoryObjectType, List<? extends SharedObjectInterface>> sharedObjectsByType,
+    RepositoryObjectType... types ) throws KettleException {
     // Overview:
     // 1) We will fetch RepositoryFile, NodeRepositoryFileData, and VersionSummary for all types provided.
     // 2) We assume that unless an exception is thrown every RepositoryFile returned by getFilesByType(..) have a
@@ -1251,11 +1358,13 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
     // determine type afterward
     // Map must be ordered or we can't match up files with data and version summary
     LinkedHashMap<RepositoryObjectType, List<RepositoryFile>> filesByType = getFilesByType( allFiles, types );
+    readWriteLock.readLock().lock();
     try {
-      List<NodeRepositoryFileData> data = pur.getDataForReadInBatch( allFiles, NodeRepositoryFileData.class );
-      List<VersionSummary> versions = pur.getVersionSummaryInBatch( allFiles );
-      // Only need one iterator for all data and versions. We will work through them as we process the files by type, in
-      // order.
+      List<NodeRepositoryFileData> data;
+      List<VersionSummary> versions;
+      data = pur.getDataForReadInBatch( allFiles, NodeRepositoryFileData.class );
+      versions = pur.getVersionSummaryInBatch( allFiles );
+
       Iterator<NodeRepositoryFileData> dataIter = data.iterator();
       Iterator<VersionSummary> versionsIter = versions.iterator();
 
@@ -1264,7 +1373,7 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
         SharedObjectAssembler<?> assembler = sharedObjectAssemblerMap.get( entry.getKey() );
         if ( assembler == null ) {
           throw new UnsupportedOperationException(
-              String.format( "Cannot assemble shared object of type [%s]", entry.getKey() ) ); //$NON-NLS-1$
+            String.format( "Cannot assemble shared object of type [%s]", entry.getKey() ) ); //$NON-NLS-1$
         }
         // For all files of this type, assemble them from the pieces of data pulled from the repository
         Iterator<RepositoryFile> filesIter = entry.getValue().iterator();
@@ -1289,6 +1398,8 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
     } catch ( Exception ex ) {
       // TODO i18n
       throw new KettleException( "Unable to load shared objects", ex ); //$NON-NLS-1$
+    } finally {
+      readWriteLock.readLock().unlock();
     }
   }
 
@@ -1307,8 +1418,8 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
     throws KettleException {
     // Must be ordered or we can't match up files with data and version summary
     LinkedHashMap<RepositoryObjectType, List<RepositoryFile>>
-        filesByType =
-        new LinkedHashMap<RepositoryObjectType, List<RepositoryFile>>();
+      filesByType =
+      new LinkedHashMap<RepositoryObjectType, List<RepositoryFile>>();
     // Since type is not preserved in the RepositoryFile we must fetch files by type
     for ( RepositoryObjectType type : types ) {
       try {
@@ -1325,32 +1436,46 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
 
   @Override
   public List<DatabaseMeta> readDatabases() throws KettleException {
+    readWriteLock.readLock().lock();
     try {
       List<RepositoryFile> children = getAllFilesOfType( null, RepositoryObjectType.DATABASE, false );
       List<DatabaseMeta> dbMetas = new ArrayList<DatabaseMeta>();
+
       for ( RepositoryFile file : children ) {
-        DataNode node = pur.getDataForRead( file.getId(), NodeRepositoryFileData.class ).getNode();
+        DataNode node;
+        node = pur.getDataForRead( file.getId(), NodeRepositoryFileData.class ).getNode();
+
         DatabaseMeta databaseMeta = (DatabaseMeta) databaseMetaTransformer.dataNodeToElement( node );
         databaseMeta.setName( file.getTitle() );
         dbMetas.add( databaseMeta );
       }
+
       return dbMetas;
     } catch ( Exception e ) {
       throw new KettleException( "Unable to read all databases", e );
+    } finally {
+      readWriteLock.readLock().unlock();
     }
   }
 
   @Override
   public void deleteDatabaseMeta( final String databaseName ) throws KettleException {
     RepositoryFile fileToDelete = null;
+    ObjectId idDatabase = null;
+
     try {
-      fileToDelete = pur.getFile( getPath( databaseName, null, RepositoryObjectType.DATABASE ) );
+      readWriteLock.writeLock().lock();
+      try {
+        fileToDelete = pur.getFile( getPath( databaseName, null, RepositoryObjectType.DATABASE ) );
+        idDatabase = new StringObjectId( fileToDelete.getId().toString() );
+        permanentlyDeleteSharedObject( idDatabase );
+        removeFromSharedObjectCache( RepositoryObjectType.DATABASE, idDatabase );
+      } finally {
+        readWriteLock.writeLock().unlock();
+      }
     } catch ( Exception e ) {
       throw new KettleException( "Unable to delete database with name [" + databaseName + "]", e );
     }
-    ObjectId idDatabase = new StringObjectId( fileToDelete.getId().toString() );
-    permanentlyDeleteSharedObject( idDatabase );
-    removeFromSharedObjectCache( RepositoryObjectType.DATABASE, idDatabase );
   }
 
   @Override
@@ -1402,7 +1527,7 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
   public List<RepositoryElementMetaInterface> getJobObjects( ObjectId idDirectory, boolean includeDeleted )
     throws KettleException {
     return getPdiObjects( idDirectory, Arrays.asList( new RepositoryObjectType[] { RepositoryObjectType.JOB } ),
-        includeDeleted );
+      includeDeleted );
   }
 
   @Override
@@ -1510,6 +1635,17 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
     return (List<SlaveServer>) loadAndCacheSharedObjects( true ).get( RepositoryObjectType.SLAVE_SERVER );
   }
 
+  protected List<?> getRepositoryObjects( RepositoryObjectType repositoryObjectType, boolean cached ) throws KettleException {
+    if ( cached ) {
+      return loadAndCacheSharedObjects( true ).get( repositoryObjectType );
+    } else {
+      Map<RepositoryObjectType, List<? extends SharedObjectInterface>> sharedObjects = new EnumMap<>(
+        RepositoryObjectType.class );
+      readSharedObjects( sharedObjects, repositoryObjectType );
+      return deepCopy( sharedObjects ).get( repositoryObjectType );
+    }
+  }
+
   public SlaveDelegate getSlaveTransformer() {
     return slaveTransformer;
   }
@@ -1548,8 +1684,8 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
   public String[] getTransformationNames( ObjectId idDirectory, boolean includeDeleted ) throws KettleException {
     try {
       List<RepositoryFile>
-          children =
-          getAllFilesOfType( idDirectory, RepositoryObjectType.TRANSFORMATION, includeDeleted );
+        children =
+        getAllFilesOfType( idDirectory, RepositoryObjectType.TRANSFORMATION, includeDeleted );
       List<String> names = new ArrayList<String>();
       for ( RepositoryFile file : children ) {
         names.add( file.getTitle() );
@@ -1564,15 +1700,18 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
   public List<RepositoryElementMetaInterface> getTransformationObjects( ObjectId idDirectory, boolean includeDeleted )
     throws KettleException {
     return getPdiObjects( idDirectory, Arrays
-        .asList( new RepositoryObjectType[] { RepositoryObjectType.TRANSFORMATION } ), includeDeleted );
+      .asList( new RepositoryObjectType[] { RepositoryObjectType.TRANSFORMATION } ), includeDeleted );
   }
 
   protected List<RepositoryElementMetaInterface> getPdiObjects( ObjectId dirId, List<RepositoryObjectType> objectTypes,
                                                                 boolean includeDeleted ) throws KettleException {
-    try {
 
-      //RepositoryDirectoryInterface repDir = getRootDir().findDirectory( dirId );
-      RepositoryFile dirFile = pur.getFileById( dirId.getId() );
+    readWriteLock.readLock().lock();
+    try {
+      RepositoryFile dirFile;
+      dirFile = pur.getFileById( dirId.getId() );
+
+
       RepositoryDirectory repDir = new RepositoryDirectory();
       repDir.setObjectId( dirId );
       repDir.setName( dirFile.getName() );
@@ -1591,6 +1730,7 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
           // derive path using id
           dirPath = pur.getFileById( dirId.getId() ).getPath();
         }
+
         List<RepositoryFile> deletedChildren = getAllDeletedFilesOfType( dirPath, objectTypes );
         for ( RepositoryFile file : deletedChildren ) {
           RepositoryLock lock = unifiedRepositoryLockService.getLock( file );
@@ -1598,9 +1738,12 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
           list.add( new EERepositoryObject( file, repDir, null, objectType, null, lock, true ) );
         }
       }
+
       return list;
     } catch ( Exception e ) {
       throw new KettleException( "Unable to get list of objects from directory [" + dirId + "]", e );
+    } finally {
+      readWriteLock.readLock().unlock();
     }
   }
 
@@ -1653,20 +1796,24 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
   @Override
   public ClusterSchema loadClusterSchema( ObjectId idClusterSchema, List<SlaveServer> slaveServers, String versionId )
     throws KettleException {
+    readWriteLock.readLock().lock();
     try {
       // We dont need to use slaveServer variable as the dataNoteToElement method finds the server from the repository
       NodeRepositoryFileData
-          data =
-          pur.getDataAtVersionForRead( idClusterSchema.getId(), versionId, NodeRepositoryFileData.class );
+        data =
+        pur.getDataAtVersionForRead( idClusterSchema.getId(), versionId, NodeRepositoryFileData.class );
       RepositoryFile file = null;
       if ( versionId != null ) {
         file = pur.getFileAtVersion( idClusterSchema.getId(), versionId );
       } else {
         file = pur.getFileById( idClusterSchema.getId() );
       }
+
       return clusterTransformer.assemble( file, data, pur.getVersionSummary( idClusterSchema.getId(), versionId ) );
     } catch ( Exception e ) {
       throw new KettleException( "Unable to load cluster schema with id [" + idClusterSchema + "]", e );
+    } finally {
+      readWriteLock.readLock().unlock();
     }
   }
 
@@ -1692,49 +1839,57 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
 
   @Override
   public PartitionSchema loadPartitionSchema( ObjectId partitionSchemaId, String versionId ) throws KettleException {
+    readWriteLock.readLock().lock();
     try {
       NodeRepositoryFileData data =
-          pur.getDataAtVersionForRead( partitionSchemaId.getId(), versionId, NodeRepositoryFileData.class );
+        pur.getDataAtVersionForRead( partitionSchemaId.getId(), versionId, NodeRepositoryFileData.class );
       RepositoryFile file = null;
       if ( versionId != null ) {
         file = pur.getFileAtVersion( partitionSchemaId.getId(), versionId );
       } else {
         file = pur.getFileById( partitionSchemaId.getId() );
       }
+
       return partitionSchemaTransformer.assemble( file, data, pur.getVersionSummary( partitionSchemaId.getId(),
-          versionId ) );
+        versionId ) );
     } catch ( Exception e ) {
       throw new KettleException( "Unable to load partition schema with id [" + partitionSchemaId + "]", e );
+    } finally {
+      readWriteLock.readLock().unlock();
     }
   }
 
   @Override
   public SlaveServer loadSlaveServer( ObjectId idSlaveServer, String versionId ) throws KettleException {
+    readWriteLock.readLock().lock();
     try {
       NodeRepositoryFileData
-          data =
-          pur.getDataAtVersionForRead( idSlaveServer.getId(), versionId, NodeRepositoryFileData.class );
+        data =
+        pur.getDataAtVersionForRead( idSlaveServer.getId(), versionId, NodeRepositoryFileData.class );
       RepositoryFile file = null;
       if ( versionId != null ) {
         file = pur.getFileAtVersion( idSlaveServer.getId(), versionId );
       } else {
         file = pur.getFileById( idSlaveServer.getId() );
       }
+
       return slaveTransformer.assemble( file, data, pur.getVersionSummary( idSlaveServer.getId(), versionId ) );
     } catch ( Exception e ) {
       throw new KettleException( "Unable to load slave server with id [" + idSlaveServer + "]", e );
+    } finally {
+      readWriteLock.readLock().unlock();
     }
   }
 
   protected Map<RepositoryObjectType, List<? extends SharedObjectInterface>> loadAndCacheSharedObjects(
-      final boolean deepCopy ) throws KettleException {
+    final boolean deepCopy ) throws KettleException {
     if ( sharedObjectsByType == null ) {
       try {
         sharedObjectsByType =
-            new EnumMap<RepositoryObjectType, List<? extends SharedObjectInterface>>( RepositoryObjectType.class );
+          new EnumMap<RepositoryObjectType, List<? extends SharedObjectInterface>>( RepositoryObjectType.class );
         // Slave Servers are referenced by Cluster Schemas so they must be loaded first
         readSharedObjects( sharedObjectsByType, RepositoryObjectType.DATABASE, RepositoryObjectType.PARTITION_SCHEMA,
-            RepositoryObjectType.SLAVE_SERVER, RepositoryObjectType.CLUSTER_SCHEMA );
+          RepositoryObjectType.SLAVE_SERVER, RepositoryObjectType.CLUSTER_SCHEMA );
       } catch ( Exception e ) {
         sharedObjectsByType = null;
         // TODO i18n
@@ -1750,10 +1905,10 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
   }
 
   private Map<RepositoryObjectType, List<? extends SharedObjectInterface>> deepCopy(
-      Map<RepositoryObjectType, List<? extends SharedObjectInterface>> orig ) throws KettleException {
+    Map<RepositoryObjectType, List<? extends SharedObjectInterface>> orig ) throws KettleException {
     Map<RepositoryObjectType, List<? extends SharedObjectInterface>>
-        copy =
-        new EnumMap<RepositoryObjectType, List<? extends SharedObjectInterface>>( RepositoryObjectType.class );
+      copy =
+      new EnumMap<RepositoryObjectType, List<? extends SharedObjectInterface>>( RepositoryObjectType.class );
     for ( Entry<RepositoryObjectType, List<? extends SharedObjectInterface>> entry : orig.entrySet() ) {
       RepositoryObjectType type = entry.getKey();
       List<? extends SharedObjectInterface> value = entry.getValue();
@@ -1813,7 +1968,7 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
                              RepositoryDirectoryInterface newDirectory, String newJobName )
     throws KettleException {
     return renameTransOrJob( idJobForRename, versionComment, newDirectory, newJobName, RepositoryObjectType.JOB,
-        "PurRepository.ERROR_0006_UNABLE_TO_RENAME_JOB" );
+      "PurRepository.ERROR_0006_UNABLE_TO_RENAME_JOB" );
   }
 
   @Override
@@ -1828,7 +1983,7 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
                                         RepositoryDirectoryInterface newDirectory, String newTransName )
     throws KettleException {
     return renameTransOrJob( idTransForRename, versionComment, newDirectory, newTransName, RepositoryObjectType.TRANSFORMATION,
-        "PurRepository.ERROR_0006_UNABLE_TO_RENAME_TRANS" );
+      "PurRepository.ERROR_0006_UNABLE_TO_RENAME_TRANS" );
   }
 
   /**
@@ -1857,37 +2012,50 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
                                      RepositoryDirectoryInterface newDirectory, String newTitle,
                                      RepositoryObjectType objectType, String errorMsgKey ) throws KettleException {
 
-    RepositoryFile file = pur.getFileById( idObject.getId() );
-    RepositoryFile.Builder builder = new RepositoryFile.Builder( file );
-    // fullName = title + extension
-    String fullName;
-    if ( newTitle == null ) {
-      // keep existing file name
-      fullName = file.getName();
-    } else {
-      // set new title
-      builder.title( RepositoryFile.DEFAULT_LOCALE, newTitle )
+    RepositoryFile file;
+    readWriteLock.writeLock().lock();
+
+    try {
+      file = pur.getFileById( idObject.getId() );
+
+      RepositoryFile.Builder builder = new RepositoryFile.Builder( file );
+      // fullName = title + extension
+      String fullName;
+      if ( newTitle == null ) {
+        // keep existing file name
+        fullName = file.getName();
+      } else {
+        // set new title
+        builder.title( RepositoryFile.DEFAULT_LOCALE, newTitle )
           // rename operation creates new revision, hence clear old value to be overwritten during saving
           .createdDate( null );
-      fullName = checkAndSanitize( newTitle ) + objectType.getExtension();
-    }
-
-    String absPath = calcDestAbsPath( file, newDirectory, fullName );
-    // get file from destination path, should be null for rename goal
-    RepositoryFile fileFromDestination = pur.getFile( absPath );
-    if ( fileFromDestination == null ) {
-      file = builder.build();
-      NodeRepositoryFileData data = pur.getDataAtVersionForRead( file.getId(), null, NodeRepositoryFileData.class );
-      if ( newTitle != null ) {
-        // update file's content only if the title should be changed
-        // as this action creates another revision
-        pur.updateFile( file, data, versionComment );
+        fullName = checkAndSanitize( newTitle ) + objectType.getExtension();
       }
-      pur.moveFile( idObject.getId(), absPath, null );
-      rootRef.clearRef();
-      return idObject;
-    } else {
-      throw new KettleException( BaseMessages.getString( PKG, errorMsgKey, file.getName(), newTitle ) );
+
+      String absPath = calcDestAbsPath( file, newDirectory, fullName );
+      RepositoryFile fileFromDestination;
+      // get file from destination path, should be null for rename goal
+      fileFromDestination = pur.getFile( absPath );
+
+      if ( fileFromDestination == null ) {
+        file = builder.build();
+        NodeRepositoryFileData data;
+        data = pur.getDataAtVersionForRead( file.getId(), null, NodeRepositoryFileData.class );
+
+        if ( newTitle != null ) {
+          // update file's content only if the title should be changed
+          // as this action creates another revision
+          pur.updateFile( file, data, versionComment );
+        }
+        pur.moveFile( idObject.getId(), absPath, null );
+
+        rootRef.clearRef();
+        return idObject;
+      } else {
+        throw new KettleException( BaseMessages.getString( PKG, errorMsgKey, file.getName(), newTitle ) );
+      }
+    } finally {
+      readWriteLock.writeLock().unlock();
     }
   }
 
@@ -1918,9 +2086,9 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
       buf.append( getParentPath( existingFile.getPath() ) );
     }
     return buf
-        .append( RepositoryFile.SEPARATOR )
-        .append( newName )
-        .toString();
+      .append( RepositoryFile.SEPARATOR )
+      .append( newName )
+      .toString();
   }
 
   @Override
@@ -1955,7 +2123,7 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
           break;
         default:
           throw new KettleException(
-              "It's not possible to save Class [" + element.getClass().getName() + "] to the repository" );
+            "It's not possible to save Class [" + element.getClass().getName() + "] to the repository" );
       }
     } catch ( Exception e ) {
       throw new KettleException( "Unable to save repository element [" + element + "]", e );
@@ -2022,9 +2190,15 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
         break;
       default:
         throw new KettleException( "It's not possible to rename Class [" + element.getClass().getName()
-            + "] to the repository" );
+          + "] to the repository" );
     }
-    pur.moveFile( file.getId(), buf.toString(), null );
+
+    readWriteLock.writeLock().lock();
+    try {
+      pur.moveFile( file.getId(), buf.toString(), null );
+    } finally {
+      readWriteLock.writeLock().unlock();
+    }
   }
 
   /**
@@ -2036,7 +2210,7 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
                            boolean checkLock, boolean checkRename,
                            boolean loadRevision, boolean checkDeleted ) throws KettleException {
     saveTransOrJob( jobDelegate, element, versionComment, null, saveSharedObjects,
-        checkLock, checkRename, loadRevision, checkDeleted );
+      checkLock, checkRename, loadRevision, checkDeleted );
   }
 
   protected void saveJob( final RepositoryElementInterface element, final String versionComment, Calendar versionDate )
@@ -2053,7 +2227,7 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
                              boolean checkLock, boolean checkRename,
                              boolean loadRevision, boolean checkDeleted ) throws KettleException {
     saveTransOrJob( transDelegate, element, versionComment, versionDate, saveSharedObjects,
-        checkLock, checkRename, loadRevision, checkDeleted );
+      checkLock, checkRename, loadRevision, checkDeleted );
   }
 
   protected boolean isDeleted( RepositoryFile file ) {
@@ -2077,6 +2251,8 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
 
   protected void saveDatabaseMeta( final RepositoryElementInterface element, final String versionComment,
                                    Calendar versionDate ) throws KettleException {
+
+    readWriteLock.writeLock().lock();
     try {
       // Even if the object id is null, we still have to check if the element is not present in the PUR
       // For example, if we import data from an XML file and there is a element with the same name in it.
@@ -2101,9 +2277,11 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
         file = new RepositoryFile.Builder( file ).title( RepositoryFile.DEFAULT_LOCALE, title )
           .lastModificationDate( modifiedDate ).build();
         renameIfNecessary( element, file );
+
         file =
-            pur.updateFile( file, new NodeRepositoryFileData( databaseMetaTransformer.elementToDataNode( element ) ),
-                versionComment );
+          pur.updateFile( file, new NodeRepositoryFileData( databaseMetaTransformer.elementToDataNode( element ) ),
+            versionComment );
+
       } else {
         Date createdDate = null;
         if ( versionDate != null && versionDate.getTime() != null ) {
@@ -2111,14 +2289,16 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
         } else {
           createdDate = new Date();
         }
+
         file =
-            new RepositoryFile.Builder(
-                checkAndSanitize( RepositoryFilenameUtils.escape( element.getName(), pur.getReservedChars() )
-                    + RepositoryObjectType.DATABASE.getExtension() ) ).title( RepositoryFile.DEFAULT_LOCALE,
-                element.getName() ).createdDate( createdDate ).versioned( VERSION_SHARED_OBJECTS ).build();
+          new RepositoryFile.Builder(
+            checkAndSanitize( RepositoryFilenameUtils.escape( element.getName(), pur.getReservedChars() )
+              + RepositoryObjectType.DATABASE.getExtension() ) ).title( RepositoryFile.DEFAULT_LOCALE,
+            element.getName() ).createdDate( createdDate ).versioned( VERSION_SHARED_OBJECTS ).build();
+
         file =
-            pur.createFile( getDatabaseMetaParentFolderId(), file,
-                new NodeRepositoryFileData( databaseMetaTransformer.elementToDataNode( element ) ), versionComment );
+          pur.createFile( getDatabaseMetaParentFolderId(), file,
+            new NodeRepositoryFileData( databaseMetaTransformer.elementToDataNode( element ) ), versionComment );
       }
       // side effects
       ObjectId objectId = new StringObjectId( file.getId().toString() );
@@ -2132,29 +2312,36 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
       // determine if there is an "access denied" issue and throw a nicer error message.
       if ( e.getMessage().indexOf( "access denied" ) >= 0 ) {
         throw new KettleException(
-            BaseMessages.getString( PKG, "PurRepository.ERROR_0004_DATABASE_UPDATE_ACCESS_DENIED", element.getName() ),
-            e );
+          BaseMessages.getString( PKG, "PurRepository.ERROR_0004_DATABASE_UPDATE_ACCESS_DENIED", element.getName() ),
+          e );
       }
+    } finally {
+      readWriteLock.writeLock().unlock();
     }
-
   }
 
   @Override
   public DatabaseMeta loadDatabaseMeta( final ObjectId databaseId, final String versionId )
     throws KettleException {
+    readWriteLock.readLock().lock();
     try {
+
       NodeRepositoryFileData
-          data =
-          pur.getDataAtVersionForRead( databaseId.getId(), versionId, NodeRepositoryFileData.class );
+        data =
+        pur.getDataAtVersionForRead( databaseId.getId(), versionId, NodeRepositoryFileData.class );
       RepositoryFile file = null;
+
       if ( versionId != null ) {
         file = pur.getFileAtVersion( databaseId.getId(), versionId );
       } else {
         file = pur.getFileById( databaseId.getId() );
       }
+
       return databaseMetaTransformer.assemble( file, data, pur.getVersionSummary( databaseId.getId(), versionId ) );
     } catch ( Exception e ) {
       throw new KettleException( "Unable to load database with id [" + databaseId + "]", e );
+    } finally {
+      readWriteLock.readLock().unlock();
     }
   }
 
@@ -2183,21 +2370,31 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
         throw new KettleFileException( BaseMessages.getString( PKG,
           "PurRepository.ERROR_0008_TRANSFORMATION_PATH_INVALID", transName ) );
       }
-      RepositoryFile file = pur.getFile( absPath );
-      if ( versionId != null ) {
-        // need to go back to server to get versioned info
-        file = pur.getFileAtVersion( file.getId(), versionId );
-      }
-      // if file is null, we cannot load the transformation - the provided path provided by the user is likely not a
-      // valid file
-      if ( file == null ) {
-        throw new KettleException( BaseMessages.getString( PKG,
-          "PurRepository.ERROR_0008_TRANSFORMATION_PATH_INVALID", absPath ) );
-      }
+
+      RepositoryFile file;
       NodeRepositoryFileData data = null;
       ObjectRevision revision = null;
-      // Additional obfuscation through obscurity
-      data = pur.getDataAtVersionForRead( file.getId(), versionId, NodeRepositoryFileData.class );
+
+      readWriteLock.writeLock().lock();
+      try {
+        file = pur.getFile( absPath );
+        if ( versionId != null ) {
+          // need to go back to server to get versioned info
+          file = pur.getFileAtVersion( file.getId(), versionId );
+        }
+
+        // if file is null, we cannot load the transformation - the provided path provided by the user is likely not a
+        // valid file
+        if ( file == null ) {
+          throw new KettleException( BaseMessages.getString( PKG,
+            "PurRepository.ERROR_0008_TRANSFORMATION_PATH_INVALID", absPath ) );
+        }
+
+        data = pur.getDataAtVersionForRead( file.getId(), versionId, NodeRepositoryFileData.class );
+      } finally {
+        readWriteLock.writeLock().unlock();
+      }
+
       revision = getObjectRevision( new StringObjectId( file.getId().toString() ), versionId );
       TransMeta transMeta = buildTransMeta( file, parentDir, data, revision );
       ExtensionPointHandler.callExtensionPoint( log, KettleExtensionPoint.TransformationMetaLoaded.id, transMeta );
@@ -2245,8 +2442,17 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
                                                  final List<RepositoryFile> files, final boolean setInternalVariables )
     throws KettleException {
     List<TransMeta> transformations = new ArrayList<TransMeta>( files.size() );
-    List<NodeRepositoryFileData> filesData = pur.getDataForReadInBatch( files, NodeRepositoryFileData.class );
-    List<VersionSummary> versions = pur.getVersionSummaryInBatch( files );
+
+    readWriteLock.readLock().lock();
+    List<NodeRepositoryFileData> filesData;
+    List<VersionSummary> versions;
+    try {
+      filesData = pur.getDataForReadInBatch( files, NodeRepositoryFileData.class );
+      versions = pur.getVersionSummaryInBatch( files );
+    } finally {
+      readWriteLock.readLock().unlock();
+    }
+
     Iterator<RepositoryFile> filesIter = files.iterator();
     Iterator<NodeRepositoryFileData> filesDataIter = filesData.iterator();
     Iterator<VersionSummary> versionsIter = versions.iterator();
@@ -2255,25 +2461,25 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
       NodeRepositoryFileData fileData = filesDataIter.next();
       VersionSummary version = versionsIter.next();
       String
-          dirPath =
-          file.getPath().substring( 0, file.getPath().lastIndexOf( RepositoryDirectory.DIRECTORY_SEPARATOR ) );
+        dirPath =
+        file.getPath().substring( 0, file.getPath().lastIndexOf( RepositoryDirectory.DIRECTORY_SEPARATOR ) );
       try {
         log.logDetailed( "Loading/Exporting transformation [{0} : {1}]  ({2})", dirPath, file.getTitle(), file
-            .getPath() ); //$NON-NLS-1$
+          .getPath() ); //$NON-NLS-1$
         if ( monitor != null ) {
           monitor.subTask( "Exporting transformation [" + file.getPath() + "]" ); //$NON-NLS-1$ //$NON-NLS-2$
         }
         TransMeta
-            transMeta =
-            buildTransMeta( file, findDirectory( dirPath ), fileData, createObjectRevision( version ) );
+          transMeta =
+          buildTransMeta( file, findDirectory( dirPath ), fileData, createObjectRevision( version ) );
         ExtensionPointHandler.callExtensionPoint( log, KettleExtensionPoint.TransformationMetaLoaded.id, transMeta );
         transformations.add( transMeta );
       } catch ( Exception ex ) {
         log.logDetailed( "Unable to load transformation [" + file.getPath() + "]", ex ); //$NON-NLS-1$ //$NON-NLS-2$
         log.logError( "An error occurred reading transformation [" + file.getTitle() + "] from directory [" + dirPath
-            + "] : " + ex.getMessage() ); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+          + "] : " + ex.getMessage() ); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
         log.logError( "Transformation [" + file.getTitle() + "] from directory [" + dirPath
-            + "] was not exported because of a loading error!" ); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+          + "] was not exported because of a loading error!" ); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
       }
     }
     return transformations;
@@ -2288,16 +2494,25 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
       if ( absPath == null ) {
         // Couldn't resolve path, throw an exception
         throw new KettleFileException(
-            BaseMessages.getString( PKG, "PurRepository.ERROR_0003_JOB_NOT_FOUND", jobname ) );
+          BaseMessages.getString( PKG, "PurRepository.ERROR_0003_JOB_NOT_FOUND", jobname ) );
       }
-      RepositoryFile file = pur.getFile( absPath );
-      if ( versionId != null ) {
-        // need to go back to server to get versioned info
-        file = pur.getFileAtVersion( file.getId(), versionId );
-      }
+
+      readWriteLock.readLock().lock();
+      RepositoryFile file;
       NodeRepositoryFileData data = null;
       ObjectRevision revision = null;
-      data = pur.getDataAtVersionForRead( file.getId(), versionId, NodeRepositoryFileData.class );
+      try {
+        file = pur.getFile( absPath );
+        if ( versionId != null ) {
+          // need to go back to server to get versioned info
+          file = pur.getFileAtVersion( file.getId(), versionId );
+        }
+
+        data = pur.getDataAtVersionForRead( file.getId(), versionId, NodeRepositoryFileData.class );
+      } finally {
+        readWriteLock.readLock().unlock();
+      }
+
       revision = getObjectRevision( new StringObjectId( file.getId().toString() ), versionId );
       JobMeta jobMeta = buildJobMeta( file, parentDir, data, revision );
       ExtensionPointHandler.callExtensionPoint( log, KettleExtensionPoint.JobMetaLoaded.id, jobMeta );
@@ -2342,8 +2557,17 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
                                     final List<RepositoryFile> files, final boolean setInternalVariables )
     throws KettleException {
     List<JobMeta> jobs = new ArrayList<JobMeta>( files.size() );
-    List<NodeRepositoryFileData> filesData = pur.getDataForReadInBatch( files, NodeRepositoryFileData.class );
-    List<VersionSummary> versions = pur.getVersionSummaryInBatch( files );
+
+    readWriteLock.readLock().lock();
+    List<NodeRepositoryFileData> filesData;
+    List<VersionSummary> versions;
+    try {
+      filesData = pur.getDataForReadInBatch( files, NodeRepositoryFileData.class );
+      versions = pur.getVersionSummaryInBatch( files );
+    } finally {
+      readWriteLock.readLock().unlock();
+    }
+
     Iterator<RepositoryFile> filesIter = files.iterator();
     Iterator<NodeRepositoryFileData> filesDataIter = filesData.iterator();
     Iterator<VersionSummary> versionsIter = versions.iterator();
@@ -2353,10 +2577,10 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
       VersionSummary version = versionsIter.next();
       try {
         String
-            dirPath =
-            file.getPath().substring( 0, file.getPath().lastIndexOf( RepositoryDirectory.DIRECTORY_SEPARATOR ) );
+          dirPath =
+          file.getPath().substring( 0, file.getPath().lastIndexOf( RepositoryDirectory.DIRECTORY_SEPARATOR ) );
         log.logDetailed( "Loading/Exporting job [{0} : {1}]  ({2})", dirPath, file.getTitle(),
-            file.getPath() ); //$NON-NLS-1$
+          file.getPath() ); //$NON-NLS-1$
         if ( monitor != null ) {
           monitor.subTask( "Exporting job [" + file.getPath() + "]" ); //$NON-NLS-1$ //$NON-NLS-2$
         }
@@ -2415,30 +2639,41 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
 
     boolean isUpdate = ( element.getObjectId() != null );
     RepositoryFile file;
-    if ( isUpdate ) {
-      file = pur.getFileById( element.getObjectId().getId() );
-      // update title & description
-      file =
-          new RepositoryFile.Builder( file ).title( RepositoryFile.DEFAULT_LOCALE, element.getName() ).description(
-              RepositoryFile.DEFAULT_LOCALE, Const.NVL( element.getDescription(), "" ) ).build();
 
-      // first rename, it is safe as only a name is changed, but not a path
-      renameIfNecessary( element, file );
-      file =
+    readWriteLock.writeLock().lock();
+    try {
+      if ( isUpdate ) {
+        file = pur.getFileById( element.getObjectId().getId() );
+
+        // update title & description
+        file =
+          new RepositoryFile.Builder( file ).title( RepositoryFile.DEFAULT_LOCALE, element.getName() ).description(
+            RepositoryFile.DEFAULT_LOCALE, Const.NVL( element.getDescription(), "" ) ).build();
+
+        // first rename, it is safe as only a name is changed, but not a path
+        renameIfNecessary( element, file );
+
+        file =
           pur.updateFile( file,
-              new NodeRepositoryFileData( transformer.elementToDataNode( element ) ), versionComment );
-    } else {
-      file =
+            new NodeRepositoryFileData( transformer.elementToDataNode( element ) ), versionComment );
+
+      } else {
+        file =
           new RepositoryFile.Builder(
-              checkAndSanitize( element.getName() + element.getRepositoryElementType().getExtension() ) )
-              .title( RepositoryFile.DEFAULT_LOCALE, element.getName() )
-              .description( RepositoryFile.DEFAULT_LOCALE, Const.NVL( element.getDescription(), "" ) ).versioned(
-                  VERSION_SHARED_OBJECTS ).build();
-      file =
+            checkAndSanitize( element.getName() + element.getRepositoryElementType().getExtension() ) )
+            .title( RepositoryFile.DEFAULT_LOCALE, element.getName() )
+            .description( RepositoryFile.DEFAULT_LOCALE, Const.NVL( element.getDescription(), "" ) ).versioned(
+            VERSION_SHARED_OBJECTS ).build();
+
+        file =
           pur
-              .createFile( elementsFolderId, file, new NodeRepositoryFileData( transformer.elementToDataNode( element ) ),
-                  versionComment );
+            .createFile( elementsFolderId, file, new NodeRepositoryFileData( transformer.elementToDataNode( element ) ),
+              versionComment );
+      }
+    } finally {
+      readWriteLock.writeLock().unlock();
     }
+
     // side effects
     ObjectId objectId = new StringObjectId( file.getId().toString() );
     element.setObjectId( objectId );
@@ -2550,6 +2785,7 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
       default:
         throw new KettleException( "unknown type [" + typeToUpdate + "]" );
     }
+
     List<SharedObjectInterface> newSharedObjects = new ArrayList<SharedObjectInterface>( origSharedObjects );
     // if there's a match on id, replace the element
     boolean found = false;
@@ -2578,7 +2814,15 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
   }
 
   private ObjectRevision getObjectRevision( final ObjectId elementId, final String versionId ) {
-    return createObjectRevision( pur.getVersionSummary( elementId.getId(), versionId ) );
+    readWriteLock.readLock().lock();
+    ObjectRevision result;
+    try {
+      result = createObjectRevision( pur.getVersionSummary( elementId.getId(), versionId ) );
+    } finally {
+      readWriteLock.readLock().unlock();
+    }
+
+    return result;
   }
 
   /**
@@ -2586,18 +2830,25 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
    */
   protected ObjectRevision createObjectRevision( final VersionSummary versionSummary ) {
     return new PurObjectRevision( versionSummary.getId(), versionSummary.getAuthor(), versionSummary.getDate(),
-        versionSummary.getMessage() );
+      versionSummary.getMessage() );
   }
 
   private String getDatabaseMetaParentFolderPath() {
     return ClientRepositoryPaths.getEtcFolderPath() + RepositoryFile.SEPARATOR + FOLDER_PDI + RepositoryFile.SEPARATOR
-        + FOLDER_DATABASES;
+      + FOLDER_DATABASES;
   }
 
   // package-local visibility for testing purposes
   Serializable getDatabaseMetaParentFolderId() {
     if ( cachedDatabaseMetaParentFolderId == null ) {
-      RepositoryFile f = pur.getFile( getDatabaseMetaParentFolderPath() );
+      readWriteLock.readLock().lock();
+      RepositoryFile f;
+      try {
+        f = pur.getFile( getDatabaseMetaParentFolderPath() );
+      } finally {
+        readWriteLock.readLock().unlock();
+      }
+
       cachedDatabaseMetaParentFolderId = f.getId();
     }
     return cachedDatabaseMetaParentFolderId;
@@ -2605,12 +2856,19 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
 
   private String getPartitionSchemaParentFolderPath() {
     return ClientRepositoryPaths.getEtcFolderPath() + RepositoryFile.SEPARATOR + FOLDER_PDI + RepositoryFile.SEPARATOR
-        + FOLDER_PARTITION_SCHEMAS;
+      + FOLDER_PARTITION_SCHEMAS;
   }
 
   private Serializable getPartitionSchemaParentFolderId() {
     if ( cachedPartitionSchemaParentFolderId == null ) {
-      RepositoryFile f = pur.getFile( getPartitionSchemaParentFolderPath() );
+      readWriteLock.readLock().lock();
+      RepositoryFile f;
+      try {
+        f = pur.getFile( getPartitionSchemaParentFolderPath() );
+      } finally {
+        readWriteLock.readLock().unlock();
+      }
+
       cachedPartitionSchemaParentFolderId = f.getId();
     }
     return cachedPartitionSchemaParentFolderId;
@@ -2618,12 +2876,19 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
 
   private String getSlaveServerParentFolderPath() {
     return ClientRepositoryPaths.getEtcFolderPath() + RepositoryFile.SEPARATOR + FOLDER_PDI + RepositoryFile.SEPARATOR
-        + FOLDER_SLAVE_SERVERS;
+      + FOLDER_SLAVE_SERVERS;
   }
 
   private Serializable getSlaveServerParentFolderId() {
     if ( cachedSlaveServerParentFolderId == null ) {
-      RepositoryFile f = pur.getFile( getSlaveServerParentFolderPath() );
+      readWriteLock.readLock().lock();
+      RepositoryFile f;
+      try {
+        f = pur.getFile( getSlaveServerParentFolderPath() );
+      } finally {
+        readWriteLock.readLock().unlock();
+      }
+
       cachedSlaveServerParentFolderId = f.getId();
     }
     return cachedSlaveServerParentFolderId;
@@ -2631,12 +2896,19 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
 
   private String getClusterSchemaParentFolderPath() {
     return ClientRepositoryPaths.getEtcFolderPath() + RepositoryFile.SEPARATOR + FOLDER_PDI + RepositoryFile.SEPARATOR
-        + FOLDER_CLUSTER_SCHEMAS;
+      + FOLDER_CLUSTER_SCHEMAS;
   }
 
   private Serializable getClusterSchemaParentFolderId() {
     if ( cachedClusterSchemaParentFolderId == null ) {
-      RepositoryFile f = pur.getFile( getClusterSchemaParentFolderPath() );
+      readWriteLock.readLock().lock();
+      RepositoryFile f;
+      try {
+        f = pur.getFile( getClusterSchemaParentFolderPath() );
+      } finally {
+        readWriteLock.readLock().unlock();
+      }
+
       cachedClusterSchemaParentFolderId = f.getId();
     }
     return cachedClusterSchemaParentFolderId;
@@ -2714,7 +2986,13 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
 
   @Override
   public void undeleteObject( final RepositoryElementMetaInterface element ) throws KettleException {
-    pur.undeleteFile( element.getObjectId().getId(), null );
+    readWriteLock.writeLock().lock();
+    try {
+      pur.undeleteFile( element.getObjectId().getId(), null );
+    } finally {
+      readWriteLock.writeLock().unlock();
+    }
+
     rootRef.clearRef();
   }
 
@@ -2755,19 +3033,29 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
     throws KettleException {
     try {
       RepositoryFile repositoryFile;
+      RepositoryFileAcl repositoryFileAcl;
+
+      readWriteLock.readLock().lock();
       try {
-        repositoryFile = pur.getFileById( objectId.getId() );
-      } catch ( Exception e ) {
-        // javax.jcr.Session throws exception, if a node with specified ID does not exist
-        // see http://jira.pentaho.com/browse/BISERVER-12758
-        log.logError( "Error when trying to obtain a file by id: " + objectId.getId(), e );
-        return null;
-      }
-      if ( repositoryFile == null ) {
-        return null;
+        try {
+          repositoryFile = pur.getFileById( objectId.getId() );
+        } catch ( Exception e ) {
+          // javax.jcr.Session throws exception, if a node with specified ID does not exist
+          // see http://jira.pentaho.com/browse/BISERVER-12758
+          log.logError( "Error when trying to obtain a file by id: " + objectId.getId(), e );
+          return null;
+        }
+
+        if ( repositoryFile == null ) {
+          return null;
+        }
+
+        repositoryFileAcl = pur.getAcl( repositoryFile.getId() );
+
+      } finally {
+        readWriteLock.readLock().unlock();
       }
 
-      RepositoryFileAcl repositoryFileAcl = pur.getAcl( repositoryFile.getId() );
       String parentPath = getParentPath( repositoryFile.getPath() );
       String name = repositoryFile.getTitle();
       String description = repositoryFile.getDescription();
@@ -2777,7 +3065,7 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
       boolean deleted = isDeleted( repositoryFile );
       RepositoryDirectoryInterface directory = findDirectory( parentPath );
       return new RepositoryObject( objectId, name, directory, ownerName, modifiedDate, objectType, description,
-          deleted );
+        deleted );
     } catch ( Exception e ) {
       throw new KettleException( "Unable to get object information for object with id=" + objectId, e );
     }
@@ -2813,26 +3101,36 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
   public JobMeta loadJob( ObjectId idJob, String versionLabel ) throws KettleException {
     try {
       RepositoryFile file = null;
-      if ( versionLabel != null ) {
-        file = pur.getFileAtVersion( idJob.getId(), versionLabel );
-      } else {
-        file = pur.getFileById( idJob.getId() );
-      }
-      EEJobMeta jobMeta = new EEJobMeta();
-      jobMeta.setName( file.getTitle() );
-      jobMeta.setDescription( file.getDescription() );
-      jobMeta.setObjectId( new StringObjectId( file.getId().toString() ) );
-      jobMeta.setObjectRevision( getObjectRevision( new StringObjectId( file.getId().toString() ), versionLabel ) );
-      jobMeta.setRepository( this );
-      jobMeta.setRepositoryDirectory( findDirectory( getParentPath( file.getPath() ) ) );
+      EEJobMeta jobMeta = null;
 
-      jobMeta.setMetaStore( getMetaStore() ); // inject metastore
+      readWriteLock.readLock().lock();
+      try {
+        if ( versionLabel != null ) {
+          file = pur.getFileAtVersion( idJob.getId(), versionLabel );
+        } else {
+          file = pur.getFileById( idJob.getId() );
+        }
 
-      readJobMetaSharedObjects( jobMeta );
-      // Additional obfuscation through obscurity
-      jobMeta.setRepositoryLock( unifiedRepositoryLockService.getLock( file ) );
-      jobDelegate.dataNodeToElement( pur.getDataAtVersionForRead( idJob.getId(), versionLabel,
+        jobMeta = new EEJobMeta();
+        jobMeta.setName( file.getTitle() );
+        jobMeta.setDescription( file.getDescription() );
+        jobMeta.setObjectId( new StringObjectId( file.getId().toString() ) );
+        jobMeta.setObjectRevision( getObjectRevision( new StringObjectId( file.getId().toString() ), versionLabel ) );
+        jobMeta.setRepository( this );
+        jobMeta.setRepositoryDirectory( findDirectory( getParentPath( file.getPath() ) ) );
+
+        jobMeta.setMetaStore( getMetaStore() ); // inject metastore
+
+        readJobMetaSharedObjects( jobMeta );
+        // Additional obfuscation through obscurity
+        jobMeta.setRepositoryLock( unifiedRepositoryLockService.getLock( file ) );
+
+        jobDelegate.dataNodeToElement( pur.getDataAtVersionForRead( idJob.getId(), versionLabel,
           NodeRepositoryFileData.class ).getNode(), jobMeta );
+
+      } finally {
+        readWriteLock.readLock().unlock();
+      }
 
       ExtensionPointHandler.callExtensionPoint( log, KettleExtensionPoint.JobMetaLoaded.id, jobMeta );
 
@@ -2847,25 +3145,34 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
   public TransMeta loadTransformation( ObjectId idTransformation, String versionLabel ) throws KettleException {
     try {
       RepositoryFile file = null;
-      if ( versionLabel != null ) {
-        file = pur.getFileAtVersion( idTransformation.getId(), versionLabel );
-      } else {
-        file = pur.getFileById( idTransformation.getId() );
-      }
-      EETransMeta transMeta = new EETransMeta();
-      transMeta.setName( file.getTitle() );
-      transMeta.setDescription( file.getDescription() );
-      transMeta.setObjectId( new StringObjectId( file.getId().toString() ) );
-      transMeta.setObjectRevision( getObjectRevision( new StringObjectId( file.getId().toString() ), versionLabel ) );
-      transMeta.setRepository( this );
-      transMeta.setRepositoryDirectory( findDirectory( getParentPath( file.getPath() ) ) );
-      transMeta.setRepositoryLock( unifiedRepositoryLockService.getLock( file ) );
-      transMeta.setMetaStore( getMetaStore() ); // inject metastore
+      EETransMeta transMeta = null;
 
-      readTransSharedObjects( transMeta );
-      transDelegate.dataNodeToElement(
+      readWriteLock.readLock().lock();
+      try {
+        if ( versionLabel != null ) {
+          file = pur.getFileAtVersion( idTransformation.getId(), versionLabel );
+        } else {
+          file = pur.getFileById( idTransformation.getId() );
+        }
+
+        transMeta = new EETransMeta();
+        transMeta.setName( file.getTitle() );
+        transMeta.setDescription( file.getDescription() );
+        transMeta.setObjectId( new StringObjectId( file.getId().toString() ) );
+        transMeta.setObjectRevision( getObjectRevision( new StringObjectId( file.getId().toString() ), versionLabel ) );
+        transMeta.setRepository( this );
+        transMeta.setRepositoryDirectory( findDirectory( getParentPath( file.getPath() ) ) );
+        transMeta.setRepositoryLock( unifiedRepositoryLockService.getLock( file ) );
+        transMeta.setMetaStore( getMetaStore() ); // inject metastore
+
+        readTransSharedObjects( transMeta );
+
+        transDelegate.dataNodeToElement(
           pur.getDataAtVersionForRead( idTransformation.getId(), versionLabel, NodeRepositoryFileData.class ).getNode(),
           transMeta );
+      } finally {
+        readWriteLock.readLock().unlock();
+      }
 
       ExtensionPointHandler.callExtensionPoint( log, KettleExtensionPoint.TransformationMetaLoaded.id, transMeta );
 
@@ -2903,7 +3210,13 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
     throws KettleException {
     // Use a result list to append to; Removing from the files list was causing a concurrency exception
     List<RepositoryFile> result = new ArrayList<RepositoryFile>();
-    List<RepositoryFile> files = pur.getReferrers( fileId.getId() );
+    readWriteLock.readLock().lock();
+    List<RepositoryFile> files;
+    try {
+      files = pur.getReferrers( fileId.getId() );
+    } finally {
+      readWriteLock.readLock().unlock();
+    }
 
     // Filter out types
     if ( referrerTypes != null && referrerTypes.size() > 0 ) {
@@ -2919,7 +3232,7 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
   @Override
   public IRepositoryExporter getExporter() throws KettleException {
     final List<String> exportPerms =
-        Arrays.asList( IAbsSecurityProvider.CREATE_CONTENT_ACTION, IAbsSecurityProvider.EXECUTE_CONTENT_ACTION );
+      Arrays.asList( IAbsSecurityProvider.CREATE_CONTENT_ACTION, IAbsSecurityProvider.EXECUTE_CONTENT_ACTION );
     IAbsSecurityProvider securityProvider = purRepositoryServiceRegistry.getService( IAbsSecurityProvider.class );
     StringBuilder errorMessage = new StringBuilder( "[" );
     for ( String perm : exportPerms ) {
@@ -2936,7 +3249,7 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
     errorMessage.append( "]" );
 
     throw new KettleSecurityException( BaseMessages.getString( PKG, "PurRepository.ERROR_0005_INCORRECT_PERMISSION",
-        errorMessage.toString() ) );
+      errorMessage.toString() ) );
   }
 
   @Override
@@ -3003,17 +3316,17 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
         break;
       default:
         throw new KettleException(
-            "Unknown RepositoryObjectType. Should be TRANSFORMATION or JOB " );
+          "Unknown RepositoryObjectType. Should be TRANSFORMATION or JOB " );
     }
     saveTransOrJob( objectTransformer, element, versionComment, versionDate, saveSharedObjects, checkLock, checkRename,
-        loadRevision, checkDeleted );
+      loadRevision, checkDeleted );
   }
 
   protected void saveTransOrJob( ISharedObjectsTransformer objectTransformer, RepositoryElementInterface element,
-                               String versionComment, Calendar versionDate,
-                               boolean saveSharedObjects,
-                               boolean checkLock, boolean checkRename,
-                               boolean loadRevision, boolean checkDeleted ) throws KettleException {
+                                 String versionComment, Calendar versionDate,
+                                 boolean saveSharedObjects,
+                                 boolean checkLock, boolean checkRename,
+                                 boolean loadRevision, boolean checkDeleted ) throws KettleException {
     if ( Import.ROOT_DIRECTORY.equals( element.getRepositoryDirectory().toString() ) ) {
       // We don't have possibility to read this file via UI
       throw new KettleException( BaseMessages.getString( PKG, "PurRepository.fileCannotBeSavedInRootDirectory",
@@ -3025,23 +3338,33 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
     }
 
     final boolean isUpdate = ( element.getObjectId() != null );
-    RepositoryFile file;
+    RepositoryFile file = null;
     if ( isUpdate ) {
-      ObjectId id = element.getObjectId();
-      file = pur.getFileById( id.getId() );
-      if ( checkLock && file.isLocked() && !unifiedRepositoryLockService.canUnlockFileById( id ) ) {
-        throw new KettleException( "File is currently locked by another user for editing" );
-      }
-      if ( checkDeleted && isInTrash( file ) ) {
-        // absolutely awful to have UI references in this class :(
-        throw new KettleException( "File is in the Trash. Use Save As." );
-      }
-      // update title and description
-      file =
-          new RepositoryFile.Builder( file ).title( RepositoryFile.DEFAULT_LOCALE, element.getName() ).createdDate(
-              versionDate != null ? versionDate.getTime() : new Date() ).description( RepositoryFile.DEFAULT_LOCALE,
-              Const.NVL( element.getDescription(), "" ) ).build();
+
+      readWriteLock.readLock().lock();
       try {
+        ObjectId id = element.getObjectId();
+        file = pur.getFileById( id.getId() );
+
+        if ( checkLock && file.isLocked() && !unifiedRepositoryLockService.canUnlockFileById( id ) ) {
+          throw new KettleException( "File is currently locked by another user for editing" );
+        }
+        if ( checkDeleted && isInTrash( file ) ) {
+          // absolutely awful to have UI references in this class :(
+          throw new KettleException( "File is in the Trash. Use Save As." );
+        }
+      } finally {
+        readWriteLock.readLock().unlock();
+      }
+
+      readWriteLock.writeLock().lock();
+      try {
+        // update title and description
+        file =
+          new RepositoryFile.Builder( file ).title( RepositoryFile.DEFAULT_LOCALE, element.getName() ).createdDate(
+            versionDate != null ? versionDate.getTime() : new Date() ).description( RepositoryFile.DEFAULT_LOCALE,
+            Const.NVL( element.getDescription(), "" ) ).build();
+
         file =
           pur.updateFile( file, new NodeRepositoryFileData( objectTransformer.elementToDataNode( element ) ),
             versionComment );
@@ -3051,19 +3374,23 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
             BaseMessages.getString( PKG, "PurRepository.fileUpdateException", file.getName() ) );
         }
         throw e;
+      } finally {
+        readWriteLock.writeLock().unlock();
       }
 
       if ( checkRename && isRenamed( element, file ) ) {
         renameKettleEntity( element, null, element.getName() );
       }
     } else {
-      file =
-          new RepositoryFile.Builder( checkAndSanitize( element.getName()
-              + element.getRepositoryElementType().getExtension() ) ).versioned( true ).title(
-              RepositoryFile.DEFAULT_LOCALE, element.getName() ).createdDate(
-              versionDate != null ? versionDate.getTime() : new Date() ).description( RepositoryFile.DEFAULT_LOCALE,
-              Const.NVL( element.getDescription(), "" ) ).build();
+      readWriteLock.writeLock().lock();
       try {
+        file =
+          new RepositoryFile.Builder( checkAndSanitize( element.getName()
+            + element.getRepositoryElementType().getExtension() ) ).versioned( true ).title(
+            RepositoryFile.DEFAULT_LOCALE, element.getName() ).createdDate(
+            versionDate != null ? versionDate.getTime() : new Date() ).description( RepositoryFile.DEFAULT_LOCALE,
+            Const.NVL( element.getDescription(), "" ) ).build();
+
         file =
           pur.createFile( element.getRepositoryDirectory().getObjectId().getId(), file,
             new NodeRepositoryFileData( objectTransformer.elementToDataNode( element ) ), versionComment );
@@ -3072,6 +3399,8 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
           throw new KettleException(
             BaseMessages.getString( PKG, "PurRepository.fileCreateException", file.getName() ) );
         }
+      } finally {
+        readWriteLock.writeLock().unlock();
       }
     }
     // side effects
@@ -3111,7 +3440,15 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
     repoRequest.setTypes( FILES_TYPE_FILTER.FILES_FOLDERS );
     repoRequest.setPath( path );
     repoRequest.setShowHidden( false );
-    List<RepositoryFile> repositoryFiles = pur.getChildren( repoRequest );
+
+    readWriteLock.readLock().lock();
+    List<RepositoryFile> repositoryFiles;
+    try {
+      repositoryFiles = pur.getChildren( repoRequest );
+    } finally {
+      readWriteLock.readLock().unlock();
+    }
+
     List<RepositoryObjectInterface> repositoryElementInterfaces = new ArrayList<>();
     for ( RepositoryFile repositoryFile : repositoryFiles ) {
       if ( repositoryFile.isFolder() ) {
@@ -3163,6 +3500,15 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
     repoRequest.setTypes( FILES_TYPE_FILTER.FOLDERS );
     repoRequest.setPath( path );
     repoRequest.setShowHidden( showHidden );
-    return pur.getTree( repoRequest );
+
+    readWriteLock.readLock().lock();
+    RepositoryFileTree result;
+    try {
+      result = pur.getTree( repoRequest );
+    } finally {
+      readWriteLock.readLock().unlock();
+    }
+
+    return result;
   }
 }

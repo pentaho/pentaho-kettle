@@ -1,5 +1,5 @@
 /*!
- * Copyright 2010 - 2017 Hitachi Vantara.  All rights reserved.
+ * Copyright 2010 - 2018 Hitachi Vantara.  All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -144,49 +144,51 @@ public class StreamToTransNodeConverter implements Converter {
 
     List<Integer> transMetaDatabasesToUpdate = new ArrayList<Integer>();
 
-    for ( DatabaseMeta databaseMeta : transMeta.getDatabases() ) {
-      if ( !databaseNames.contains( databaseMeta.getName() ) ) {
-        if ( databaseMeta.getObjectId() == null || !StringUtils.isEmpty( databaseMeta.getHostname() ) ) {
-          repo.save( databaseMeta, null, null );
+    synchronized ( repo ) {
+      for ( DatabaseMeta databaseMeta : transMeta.getDatabases() ) {
+        if ( !databaseNames.contains( databaseMeta.getName() ) ) {
+          if ( databaseMeta.getObjectId() == null || !StringUtils.isEmpty( databaseMeta.getHostname() ) ) {
+            repo.save( databaseMeta, null, null );
+          }
+        } else if ( databaseMeta.getObjectId() == null ) {
+          // add this to the list to update object Ids later
+          transMetaDatabasesToUpdate.add( dbIndex );
+          updateMeta = Boolean.TRUE;
         }
-      } else if ( databaseMeta.getObjectId() == null ) {
-        // add this to the list to update object Ids later
-        transMetaDatabasesToUpdate.add( dbIndex );
-        updateMeta = Boolean.TRUE;
+
+        dbIndex++;
       }
 
-      dbIndex++;
-    }
-
-    if ( updateMeta ) {
-      // make sure to update object ids in the transmeta db collection
-      for ( Integer databaseMetaIndex : transMetaDatabasesToUpdate ) {
-        transMeta.getDatabase( databaseMetaIndex ).setObjectId(
+      if ( updateMeta ) {
+        // make sure to update object ids in the transmeta db collection
+        for ( Integer databaseMetaIndex : transMetaDatabasesToUpdate ) {
+          transMeta.getDatabase( databaseMetaIndex ).setObjectId(
             repo.getDatabaseID( transMeta.getDatabase( databaseMetaIndex ).getName() ) );
+        }
       }
-    }
 
-    // Store the slave servers...
-    //
-    for ( SlaveServer slaveServer : transMeta.getSlaveServers() ) {
-      if ( slaveServer.hasChanged() || slaveServer.getObjectId() == null ) {
-        repo.save( slaveServer, null, null );
+      // Store the slave servers...
+      //
+      for ( SlaveServer slaveServer : transMeta.getSlaveServers() ) {
+        if ( slaveServer.hasChanged() || slaveServer.getObjectId() == null ) {
+          repo.save( slaveServer, null, null );
+        }
       }
-    }
 
-    // Store the cluster schemas
-    //
-    for ( ClusterSchema clusterSchema : transMeta.getClusterSchemas() ) {
-      if ( clusterSchema.hasChanged() || clusterSchema.getObjectId() == null ) {
-        repo.save( clusterSchema, null, null );
+      // Store the cluster schemas
+      //
+      for ( ClusterSchema clusterSchema : transMeta.getClusterSchemas() ) {
+        if ( clusterSchema.hasChanged() || clusterSchema.getObjectId() == null ) {
+          repo.save( clusterSchema, null, null );
+        }
       }
-    }
 
-    // Save the partition schemas
-    //
-    for ( PartitionSchema partitionSchema : transMeta.getPartitionSchemas() ) {
-      if ( partitionSchema.hasChanged() || partitionSchema.getObjectId() == null ) {
-        repo.save( partitionSchema, null, null );
+      // Save the partition schemas
+      //
+      for ( PartitionSchema partitionSchema : transMeta.getPartitionSchemas() ) {
+        if ( partitionSchema.hasChanged() || partitionSchema.getObjectId() == null ) {
+          repo.save( partitionSchema, null, null );
+        }
       }
     }
   }
