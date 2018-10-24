@@ -25,12 +25,12 @@
     </dependency>
     <dependency org="${ivy.artifact.group}" name="kettle-dbdialog"      rev="${project.revision}" changing="true" force="true">
       <exclude name="jaxen" module="jaxen"/>
-      <exclude name="dom4j" module="dom4j"/>
+      <exclude name="org.dom4j" module="dom4j"/>
     </dependency>
     <dependency org="${ivy.artifact.group}" name="kettle-ui-swt"        rev="${project.revision}" changing="true" force="true">
       <exclude name="org.eclipse.swt.gtk.linux.x86_64"/>
       <exclude name="jaxen" module="jaxen"/>
-      <exclude name="dom4j" module="dom4j"/>
+      <exclude name="org.dom4j" module="dom4j"/>
     </dependency>
     <dependency org="${ivy.artifact.group}" name="kettle5-log4j-plugin" rev="${project.revision}" changing="true" force="true" transitive="false"/>
 
@@ -233,7 +233,7 @@
     <dependency org="org.postgresql"       name="postgresql"            rev="9.3-1102-jdbc4" transitive="false"/>
     <dependency org="com.sap"              name="sapdbc"                rev="7.4.4"         transitive="false"/>
     <dependency org="org.xerial"           name="sqlite-jdbc"           rev="3.7.2"         transitive="false"/>
-    <dependency org="jaxen"                name="jaxen"                 rev="1.1.1"         transitive="false"/>
+    <dependency org="jaxen"                name="jaxen"                 rev="1.1.6"         transitive="false"/>
     <dependency org="org.apache.geronimo.specs" name="geronimo-servlet_3.0_spec" rev="1.0" changing="false" transitive="false"/>
     <!-- Other third-party dependencies -->
     <dependency org="asm"                  name="asm"                   rev="3.2"           transitive="false"/>
