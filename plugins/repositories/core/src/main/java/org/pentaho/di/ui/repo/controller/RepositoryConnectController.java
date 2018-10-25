@@ -226,9 +226,7 @@ public class RepositoryConnectController implements IConnectedRepositoryInstance
   public boolean updateRepository( String id, Map<String, Object> items ) {
     RepositoryMeta repositoryMeta = repositoriesMeta.findRepository( (String) items.get( ORIGINAL_NAME ) );
     boolean isConnected = repositoryMeta == connectedRepository;
-    repositoryMeta.setName( (String) items.get( DISPLAY_NAME ) );
-    repositoryMeta.setDescription( (String) items.get( DESCRIPTION ) );
-    repositoryMeta.setDefault( (Boolean) items.get( IS_DEFAULT ) );
+    repositoryMeta.populate( items, repositoriesMeta );
     save();
     if ( isConnected ) {
       Spoon spoon = spoonSupplier.get();
@@ -241,6 +239,16 @@ public class RepositoryConnectController implements IConnectedRepositoryInstance
       } else {
         execute.run();
       }
+    }
+    try {
+      Repository repository =
+        pluginRegistry.loadClass( RepositoryPluginType.class, repositoryMeta.getId(), Repository.class );
+      repository.init( repositoryMeta );
+      if ( !testRepository( repository ) ) {
+        return false;
+      }
+    } catch ( KettleException e ) {
+      return false;
     }
     currentRepository = repositoryMeta;
     return true;

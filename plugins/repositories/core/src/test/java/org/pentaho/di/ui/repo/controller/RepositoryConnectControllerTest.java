@@ -367,9 +367,5 @@ public class RepositoryConnectControllerTest {
       obj.put( "extra", innerStuff );
       return obj;
     }
-
-    @Override
-    public void populate( Map<String, Object> properties, RepositoriesMeta repositoriesMeta ) {
-    }
   }
 }
