@@ -7,11 +7,11 @@
   <parent>
     <groupId>org.pentaho.di.plugins</groupId>
     <artifactId>gpload-assemblies</artifactId>
-    <version>8.1.0.0-SNAPSHOT</version>
+    <version>8.1.0.5-646</version>
   </parent>
 
   <artifactId>kettle-gpload-plugin</artifactId>
-  <version>8.1.0.0-SNAPSHOT</version>
+  <version>8.1.0.5-646</version>
   <packaging>pom</packaging>
 
   <name>PDI GPLoad Plugin Distribution</name>
