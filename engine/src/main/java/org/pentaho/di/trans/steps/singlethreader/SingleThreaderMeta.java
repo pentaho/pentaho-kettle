@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -49,6 +49,7 @@ import org.pentaho.di.repository.StringObjectId;
 import org.pentaho.di.resource.ResourceEntry;
 import org.pentaho.di.resource.ResourceEntry.ResourceType;
 import org.pentaho.di.resource.ResourceReference;
+import org.pentaho.di.trans.ISubTransAwareMeta;
 import org.pentaho.di.trans.StepWithMappingMeta;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
@@ -68,7 +69,8 @@ import org.w3c.dom.Node;
  *
  */
 
-public class SingleThreaderMeta extends StepWithMappingMeta implements StepMetaInterface, HasRepositoryInterface {
+public class SingleThreaderMeta extends StepWithMappingMeta implements StepMetaInterface, HasRepositoryInterface,
+  ISubTransAwareMeta {
 
   private static Class<?>  PKG = SingleThreaderMeta.class; // for i18n purposes, needed by Translator2!!
 
