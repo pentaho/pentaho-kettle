@@ -48,6 +48,7 @@ import org.pentaho.di.repository.StringObjectId;
 import org.pentaho.di.resource.ResourceEntry;
 import org.pentaho.di.resource.ResourceEntry.ResourceType;
 import org.pentaho.di.resource.ResourceReference;
+import org.pentaho.di.trans.ISubTransAwareMeta;
 import org.pentaho.di.trans.StepWithMappingMeta;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
@@ -78,7 +79,8 @@ import java.util.List;
  *
  */
 
-public class MappingMeta extends StepWithMappingMeta implements StepMetaInterface, HasRepositoryInterface {
+public class MappingMeta extends StepWithMappingMeta implements StepMetaInterface, HasRepositoryInterface,
+  ISubTransAwareMeta {
 
   private static Class<?> PKG = MappingMeta.class;
   private List<MappingIODefinition> inputMappings;
