@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -50,8 +50,7 @@ public class ConcatFields extends TextFileOutput implements StepInterface {
   public ConcatFieldsMeta meta;
   public ConcatFieldsData data;
 
-  public ConcatFields( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta,
-    Trans trans ) {
+  public ConcatFields( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta, Trans trans ) {
     super( stepMeta, stepDataInterface, copyNr, transMeta, trans ); // allocate TextFileOutput
   }
 
@@ -143,7 +142,7 @@ public class ConcatFields extends TextFileOutput implements StepInterface {
 
     if ( !meta.isFastDump() ) {
       // instead of writing to file, writes it to a stream
-      writeRowToFile( data.inputRowMetaModified, r );
+      writeRow( data.inputRowMetaModified, r );
       setLinesOutput( 0 ); // we have to tweak it, no output here
       r = putRowFromStream( r );
     } else { // fast data dump
@@ -329,8 +328,47 @@ public class ConcatFields extends TextFileOutput implements StepInterface {
     }
   }
 
+  protected boolean closeFile() {
+    boolean retval = false;
+
+    try {
+      if ( data.writer != null ) {
+        data.writer.flush();
+      }
+      data.writer = null;
+      if ( log.isDebug() ) {
+        logDebug( "Closing normal file ..." );
+      }
+      retval = true;
+    } catch ( Exception e ) {
+      logError( "Exception trying to close file: " + e.toString() );
+      setErrors( 1 );
+      //Clean resources
+      data.writer = null;
+      data.out = null;
+      data.fos = null;
+      retval = false;
+    }
+
+    return retval;
+  }
+
   @Override
   public void dispose( StepMetaInterface smi, StepDataInterface sdi ) {
+    if ( data.oneFileOpened ) {
+      closeFile();
+    }
+
+    try {
+      if ( data.fos != null ) {
+        data.fos.close();
+      }
+    } catch ( Exception e ) {
+      data.fos = null;
+      logError( "Unexpected error closing file", e );
+      setErrors( 1 );
+    }
+
     super.dispose( smi, sdi );
     // since we can no call the initial dispose() from BaseStep we may need to tweak
     // when the dispose() from TextFileOutput will have bad effects in the future due to changes and call this manually
