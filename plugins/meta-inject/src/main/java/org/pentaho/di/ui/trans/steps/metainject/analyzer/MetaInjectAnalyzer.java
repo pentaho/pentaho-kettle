@@ -251,7 +251,7 @@ public class MetaInjectAnalyzer extends StepAnalyzer<MetaInjectMeta> {
     }
   }
 
-  @Override protected IClonableStepAnalyzer newInstance() {
+  @Override public IClonableStepAnalyzer cloneAnalyzer() {
     return new MetaInjectAnalyzer();
   }
 
