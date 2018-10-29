@@ -701,9 +701,7 @@ public class MappingMeta extends StepWithMappingMeta implements StepMetaInterfac
     return new MappingData();
   }
 
-  /**
-   * @return the inputMappings
-   */
+  @Override
   public List<MappingIODefinition> getInputMappings() {
     return inputMappings;
   }
@@ -717,9 +715,7 @@ public class MappingMeta extends StepWithMappingMeta implements StepMetaInterfac
     resetStepIoMeta();
   }
 
-  /**
-   * @return the outputMappings
-   */
+  @Override
   public List<MappingIODefinition> getOutputMappings() {
     return outputMappings;
   }
