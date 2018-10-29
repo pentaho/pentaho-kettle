@@ -50,4 +50,10 @@
     <bean class="org.pentaho.di.trans.step.jms.context.ActiveMQProvider" />
   </service>
 
+  <!-- Data-lineage analyzer for the JMS Consumer step -->
+  <bean id="JmsConsumerAnalyzer"
+        class="org.pentaho.di.trans.step.jms.analyzer.JmsConsumerAnalyzer" />
+  <service id="jmsConsumerAnalyzerService"
+           interface="org.pentaho.metaverse.api.analyzer.kettle.step.IClonableStepAnalyzer"
+           ref="JmsConsumerAnalyzer"/>
 </blueprint>
