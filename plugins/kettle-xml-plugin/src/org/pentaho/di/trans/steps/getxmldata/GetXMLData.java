@@ -111,7 +111,7 @@ public class GetXMLData extends BaseStep implements StepInterface {
         }
         if ( data.PathValue.equals( data.prunePath ) ) {
           // Edge case, but if true, there will only ever be one item in the list
-          data.an = new ArrayList<AbstractNode>( 1 ); // pre-allocate array and sizes
+          data.an = new ArrayList<>( 1 ); // pre-allocate array and sizes
           data.an.add( null );
         }
         reader.addHandler( data.prunePath, new ElementHandler() {
@@ -714,7 +714,7 @@ public class GetXMLData extends BaseStep implements StepInterface {
     return r;
   }
 
-  private Object[] processPutRow( AbstractNode node ) throws KettleException {
+  private Object[] processPutRow( Node node ) throws KettleException {
     // Create new row...
     Object[] outputRowData = buildEmptyRow();
 

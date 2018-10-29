@@ -27,7 +27,7 @@
     <dependency org="stax"                name="stax"                rev="1.2.0"                                    conf="dev->default" transitive="false"/>
     <dependency org="org.apache.commons"  name="commons-vfs2"        rev="2.1-20150824"                             conf="dev->default" transitive="false"/>
     <dependency org="pentaho"             name="metastore"           rev="${dependency.pentaho-metastore.revision}" conf="dev->default" changing="true" transitive="false"/>
-    <dependency org="dom4j"               name="dom4j"               rev="1.6.1"                                    conf="dev->default" transitive="false"/>
+    <dependency org="org.dom4j"           name="dom4j"               rev="2.1.1"                                    conf="dev->default" transitive="false"/>
     <dependency org="commons-validator"   name="commons-validator"   rev="1.3.1"                                    conf="dev->default" transitive="false"/>
 
     <!-- SWT it required to compile any version of any architecture will work -->

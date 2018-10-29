@@ -111,7 +111,7 @@
     <!--  for testing -->
     <dependency org="com.h2database"      name="h2"            rev="1.2.131" conf="test->default" transitive="false"/>
     <dependency org="oro"                 name="oro"           rev="2.0.8"   conf="test->default" transitive="false"/>
-    <dependency org="jaxen"               name="jaxen"         rev="1.1.1"   conf="test->default" transitive="false"/>
+    <dependency org="jaxen"               name="jaxen"         rev="1.1.6"   conf="test->default" transitive="false"/>
     <dependency org="pentaho"             name="metastore" rev="${dependency.pentaho-metastore.revision}"
                 conf="test->default" transitive="false">
         <artifact name="metastore" type="jar" m:classifier="tests"/>
