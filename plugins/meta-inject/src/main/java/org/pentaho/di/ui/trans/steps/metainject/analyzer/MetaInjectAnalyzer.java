@@ -245,10 +245,8 @@ public class MetaInjectAnalyzer extends StepAnalyzer<MetaInjectMeta> {
         }
       }
     }
-    if ( !streaming ) {
-      // used and unused mappings are considered "verbose" details
-      rootNode.setProperty( DictionaryConst.PROPERTY_VERBOSE_DETAILS, StringUtils.join( verboseProperties, "," ) );
-    }
+    // mappings are considered "verbose" details
+    rootNode.setProperty( DictionaryConst.PROPERTY_VERBOSE_DETAILS, StringUtils.join( verboseProperties, "," ) );
   }
 
   @Override protected IClonableStepAnalyzer newInstance() {
