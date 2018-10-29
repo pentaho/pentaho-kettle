@@ -30,11 +30,13 @@ import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.core.util.GenericStepData;
 import org.pentaho.di.core.variables.VariableSpace;
+import org.pentaho.di.trans.ISubTransAwareMeta;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
+import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.di.trans.step.jms.context.ActiveMQProvider;
 import org.pentaho.di.trans.streaming.common.BaseStreamStepMeta;
 
@@ -48,7 +50,7 @@ import static org.pentaho.di.core.ObjectLocationSpecificationMethod.FILENAME;
   description = "JmsConsumer.TypeTooltipDesc",
   categoryDescription = "i18n:org.pentaho.di.trans.step:BaseStep.Category.Streaming",
   documentationUrl = "Products/Data_Integration/Transformation_Step_Reference/JMS_Consumer" )
-public class JmsConsumerMeta extends BaseStreamStepMeta {
+public class JmsConsumerMeta extends BaseStreamStepMeta implements ISubTransAwareMeta, StepMetaInterface {
 
   @InjectionDeep
   public JmsDelegate jmsDelegate;
@@ -72,6 +74,10 @@ public class JmsConsumerMeta extends BaseStreamStepMeta {
     RowMeta rowMeta = new RowMeta();
     rowMeta.addValueMeta( new ValueMetaString( "message" ) );
     return rowMeta;
+  }
+
+  public JmsDelegate getJmsDelegate() {
+    return jmsDelegate;
   }
 
   @Override
