@@ -107,6 +107,7 @@ IBUILDER_RESOURCES_ROOT_PATH: /build2/resources/ibuilder-pentaho-8.0-resources
 INSTALL_BUILDER_ROOT_DIR: /build2/resources/installbuilder-15.1.0
 
 # Defaults for Job properties
+CHANGES_FROM_LAST: FAILURE
 JOB_ITEM_DEFAULTS:
   scmBranch: ${DEFAULT_BRANCH}
   scmCredentials: ${SCM_CREDENTIALS_ID}
