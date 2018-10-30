@@ -43,7 +43,7 @@ import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 
 public class PropertyOutputIT {
-  
+
   @Before
   public void setUp() throws Exception {
     KettleClientEnvironment.init();
@@ -53,24 +53,24 @@ public class PropertyOutputIT {
       Props.init( 0 );
     }
   }
-  
+
   @After
   public void tearDown() throws Exception {
 
   }
-  
+
   @Test
   public void testExecute() throws KettleException, IOException {
     TransMeta meta = new TransMeta( getClass().getResource( "propertyOutput.ktr" ).getPath() );
     Trans trans = new Trans( meta );
-    trans.execute( new String[] {} );   
+    trans.execute( new String[] {} );
     trans.waitUntilFinished();
-    
+
     //check that trans is finished
     assertTrue( trans.isFinished() );
-    
+
     PropertyOutputData dataStep = (PropertyOutputData) trans.getSteps().get( 1 ).data;
-    
+
     RandomAccessFile fos = null;
     try {
       File file = new File( URI.create( dataStep.filename.replace( "\\", "/" ) ).getPath() );
