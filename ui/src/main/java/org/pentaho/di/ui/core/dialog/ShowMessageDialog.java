@@ -29,6 +29,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.ShellAdapter;
@@ -42,7 +43,6 @@ import org.eclipse.swt.widgets.Dialog;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
-import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.ui.core.PropsUI;
@@ -95,7 +95,7 @@ public class ShowMessageDialog extends Dialog {
 
   private Label wIcon;
 
-  private Text wlDesc;
+  private StyledText wlDesc;
 
   /**
    * Dialog to allow someone to show a text with an icon in front
@@ -215,14 +215,15 @@ public class ShowMessageDialog extends Dialog {
     fdlDesc = new FormData();
 
     if ( scroll ) {
-      wlDesc = new Text( shell, SWT.MULTI | SWT.READ_ONLY | SWT.V_SCROLL | SWT.H_SCROLL );
+      wlDesc = new StyledText( shell, SWT.MULTI | SWT.READ_ONLY | SWT.V_SCROLL | SWT.H_SCROLL );
       shell.setSize( 550, 350 );
       fdlDesc.bottom = new FormAttachment( 100, -50 );
       fdlDesc.right = new FormAttachment( 100, 0 );
     } else {
-      wlDesc = new Text( shell, SWT.MULTI | SWT.READ_ONLY );
+      wlDesc = new StyledText( shell, SWT.MULTI | SWT.READ_ONLY );
       fdlDesc.right = new FormAttachment( 100, 0 );
     }
+    wlDesc.setCaret( null );
 
     wlDesc.setText( message );
     props.setLook( wlDesc );
