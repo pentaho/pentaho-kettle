@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -36,6 +36,9 @@ import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.row.RowMeta;
+import org.pentaho.di.core.row.RowMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.junit.rules.RestorePDIEngineEnvironment;
 import org.pentaho.di.trans.steps.loadsave.LoadSaveTester;
 import org.pentaho.di.trans.steps.loadsave.validator.ArrayLoadSaveValidator;
@@ -71,8 +74,8 @@ public class SelectValuesMetaTest {
     fieldLoadSaveValidatorTypeMap.put( SelectField[].class.getCanonicalName(), new ArrayLoadSaveValidator<SelectField>(
         new SelectFieldLoadSaveValidator( selectField ), 2 ) );
 
-    LoadSaveTester tester =
-        new LoadSaveTester( SelectValuesMeta.class, attributes, new HashMap<String, String>(),
+    LoadSaveTester<SelectValuesMeta> tester =
+        new LoadSaveTester<>( SelectValuesMeta.class, attributes, new HashMap<String, String>(),
             new HashMap<String, String>(), new HashMap<String, FieldLoadSaveValidator<?>>(),
             fieldLoadSaveValidatorTypeMap );
 
@@ -208,6 +211,21 @@ public class SelectValuesMetaTest {
   @Test
   public void getSelectPrecision() {
     assertArrayEquals( new int[0], selectValuesMeta.getSelectPrecision() );
+  }
+
+  @Test
+  public void testMetaDataFieldsRenameConflict() throws Exception {
+    RowMetaInterface rowMeta = new RowMeta();
+    rowMeta.addValueMeta( new ValueMetaString( "A" ) );
+    rowMeta.addValueMeta( new ValueMetaString( "B" ) );
+
+    SelectMetadataChange change = new SelectMetadataChange( selectValuesMeta );
+    change.setName( "A" );
+    change.setRename( "B" );
+    selectValuesMeta.setMeta( new SelectMetadataChange[] { change } );
+
+    selectValuesMeta.getMetadataFields( rowMeta, "select values", null );
+    assertEquals( "rename conflict", "B_1", rowMeta.getValueMeta( 0 ).getName() );
   }
 
   public static class SelectFieldLoadSaveValidator implements FieldLoadSaveValidator<SelectField> {
