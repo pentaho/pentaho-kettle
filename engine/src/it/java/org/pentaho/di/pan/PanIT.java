@@ -31,16 +31,15 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.util.Utils;
 
 import java.io.BufferedReader;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.InputStreamReader;
-import java.io.PrintStream;
 import java.security.Permission;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
@@ -60,17 +59,16 @@ public class PanIT {
           "runs_well_hello_world.ktr"
   };
 
-  private static final String[] KTRS_EXPECTED_COMPLETE_WITH_FAILURE = new String[] {
-          "fail_on_exec_hello_world.ktr",
-          "fail_on_exec_2_hello_world.ktr",
-          "fail_on_prep_hello_world.ktr"
+  private static final Map<String, Integer> KTRS_TO_FAIL = new HashMap<>( 3 );
+  {
+    // runtime fail on validate step
+    KTRS_TO_FAIL.put( "fail_on_exec_hello_world.ktr", CommandExecutorCodes.Pan.ERRORS_DURING_PROCESSING.getCode() );
+    // missing db on table input, caught on init
+    KTRS_TO_FAIL.put( "fail_on_exec_2_hello_world.ktr", CommandExecutorCodes.Pan.UNABLE_TO_PREP_INIT_TRANS.getCode() );
+    // unconfigured kafka consumer, caught on init
+    KTRS_TO_FAIL.put( "fail_on_prep_hello_world.ktr", CommandExecutorCodes.Pan.UNABLE_TO_PREP_INIT_TRANS.getCode() );
   };
 
-  private final ByteArrayOutputStream outContent = new ByteArrayOutputStream();
-  private final ByteArrayOutputStream errContent = new ByteArrayOutputStream();
-
-  private PrintStream oldOut;
-  private PrintStream oldErr;
   private SecurityManager oldSecurityManager;
 
   @Before
@@ -165,10 +163,10 @@ public class PanIT {
   @Test
   public void testFileTransExpectedExecutionWithFailure() throws Exception {
 
-    for ( String testKTR : KTRS_EXPECTED_COMPLETE_WITH_FAILURE ) {
+    for ( Map.Entry<String, Integer> failure : KTRS_TO_FAIL.entrySet() ) {
 
       long now = System.currentTimeMillis();
-
+      final String testKTR = failure.getKey();
       String testKTRRelativePath = EXPECTED_COMPLETE_WITH_FAILURE_PATH + File.separator + testKTR;
       String testKTRFullPath = this.getClass().getResource( testKTRRelativePath ).getFile();
       String logFileRelativePath = testKTRRelativePath + "." + now + ".log";
@@ -191,7 +189,7 @@ public class PanIT {
 
         Result result = Pan.getCommandExecutor().getResult();
         assertNotNull( result );
-        assertEquals( result.getExitStatus(), CommandExecutorCodes.Pan.ERRORS_DURING_PROCESSING.getCode() );
+        assertEquals( testKTR + " error code", (int) failure.getValue(), result.getExitStatus());
 
       } finally {
         // sanitize
