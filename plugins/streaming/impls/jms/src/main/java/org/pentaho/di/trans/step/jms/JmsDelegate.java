@@ -151,6 +151,26 @@ public class JmsDelegate {
       .orElseThrow( () -> new RuntimeException( getString( PKG, "JmsDelegate.UnsupportedConnectionType" ) ) );
   }
 
+  public String getConnectionType() {
+    return connectionType;
+  }
+
+  public String getConnectionUrl() {
+    return connectionType.equals( ACTIVEMQ ) ? amqUrl : ibmUrl;
+  }
+
+  public String getDestinationName() {
+    return destinationName;
+  }
+
+  public String getDestinationType() {
+    return destinationType;
+  }
+
+  public String getReceiveTimeout() {
+    return receiveTimeout;
+  }
+
   /**
    * Creates a rowMeta for output field names
    */

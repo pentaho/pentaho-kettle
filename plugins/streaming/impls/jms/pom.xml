@@ -76,6 +76,12 @@
       <version>${ibmmq.version}</version>
       <scope>provided</scope>
     </dependency>
+    <dependency>
+      <groupId>pentaho</groupId>
+      <artifactId>pentaho-metaverse-api</artifactId>
+      <version>${project.version}</version>
+      <scope>provided</scope>
+    </dependency>
 
     <dependency>
       <groupId>org.apache.activemq</groupId>
