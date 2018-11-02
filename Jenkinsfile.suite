@@ -1,4 +1,7 @@
-String releaseBuildNumber = params.RELEASE_BUILD_NUMBER ?: env.BUILD_NUMBER
+// This is the master top-level pipeline that triggers both the build pipeline and the downstream triggered jobs
+
+String buildJobName = "suite-release"
+String releaseBuildNumber = releaseBuildNumberForJobName(buildJobName)
 List passOnParameters = [string(name:"RELEASE_BUILD_NUMBER",         value:releaseBuildNumber),
                          string(name:"RELEASE_BUILD_ID",             value:env.BUILD_TIMESTAMP),
                          string(name:"RELEASE_VERSION",              value:"9.0.0.0"),
@@ -41,14 +44,18 @@ pipeline {
       }
     }
 
-    stage('QAT Build') {
+    stage('Build') {
       when {
         expression {
           !params.NOOP
         }
       }
       steps {
+<<<<<<< HEAD:Jenkinsfile.qat
         triggerJob("9.0-qat", passOnParameters)
+=======
+        triggerJob(buildJobName, passOnParameters)
+>>>>>>> 74ded13... [BACKLOG-26419] In the master pipeline, use the build pipeline's next build number as the RELEASE_BUILD_NUMBER:Jenkinsfile.suite
       }
     }
 
@@ -90,7 +97,6 @@ pipeline {
       }
     }
   }
-
 }
 
 void triggerJob(job, parameters) {
@@ -108,4 +114,24 @@ void triggerJob(job, parameters) {
         throw new Exception("Job ${job} failed")
     }
   }
+}
+
+void releaseBuildNumberForJobName(jobName) {
+  def job = Jenkins.instance.getItemByFullName(jobName)
+  if (!job) {
+    // getItemByFullName doesn't work with relative job paths, and getItem returns nothing
+    def thisJobName = env.JOB_NAME
+    if (thisJobName.contains("/")) {
+      int index = thisJobName.lastIndexOf("/")
+      def jenkinsFolderName = thisJobName.substring(0, index)
+      def fullJobName = "${jenkinsFolderName}/${jobName}"
+      job = Jenkins.instance.getItemByFullName(fullJobName)
+    }
+  }
+
+  if (!job) {
+    throw new Exception("Unknown job: ${jobName}")
+  }
+
+  return params.RELEASE_BUILD_NUMBER ?: job.nextBuildNumber
 }
