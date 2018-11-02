@@ -49,11 +49,14 @@ import org.pentaho.di.repository.RepositoryDirectoryInterface;
 import org.pentaho.di.resource.ResourceDefinition;
 import org.pentaho.di.resource.ResourceNamingInterface;
 import org.pentaho.di.trans.step.StepMetaInterface;
+import org.pentaho.di.trans.steps.mapping.MappingIODefinition;
 import org.pentaho.metastore.api.IMetaStore;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -438,5 +441,19 @@ public abstract class StepWithMappingMeta extends BaseSerializingMeta implements
         childTransMeta.setVariable( variableName, replaceBy.getVariable( variableName ) );
       }
     }
+  }
+
+  /**
+   * @return the inputMappings
+   */
+  public List<MappingIODefinition> getInputMappings() {
+    return Collections.emptyList();
+  }
+
+  /**
+   * @return the outputMappings
+   */
+  public List<MappingIODefinition> getOutputMappings() {
+    return Collections.emptyList();
   }
 }
