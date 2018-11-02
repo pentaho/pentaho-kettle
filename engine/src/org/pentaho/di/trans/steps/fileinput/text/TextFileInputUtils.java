@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -52,7 +52,7 @@ public class TextFileInputUtils {
   private static Class<?> PKG = TextFileInputUtils.class; // for i18n purposes, needed by Translator2!!
 
   public static final String[] guessStringsFromLine( VariableSpace space, LogChannelInterface log, String line,
-      TextFileInputMeta inf, String delimiter, String enclosure, String escapeCharacter ) throws KettleException {
+                                                     TextFileInputMeta inf, String delimiter, String enclosure, String escapeCharacter ) throws KettleException {
     List<String> strings = new ArrayList<>();
 
     String pol; // piece of line
@@ -87,17 +87,17 @@ public class TextFileInputUtils {
           if ( len_encl > 0 && line.substring( from, from + len_encl ).equalsIgnoreCase( enclosure ) ) {
             if ( log.isRowLevel() ) {
               log.logRowlevel( BaseMessages.getString( PKG, "TextFileInput.Log.ConvertLineToRowTitle" ), BaseMessages
-                  .getString( PKG, "TextFileInput.Log.ConvertLineToRow", line.substring( from, from + len_encl ) ) );
+                .getString( PKG, "TextFileInput.Log.ConvertLineToRow", line.substring( from, from + len_encl ) ) );
             }
             encl_found = true;
             int p = from + len_encl;
 
             boolean is_enclosure =
-                len_encl > 0 && p + len_encl < length && line.substring( p, p + len_encl ).equalsIgnoreCase(
-                    enclosure );
+              len_encl > 0 && p + len_encl < length && line.substring( p, p + len_encl ).equalsIgnoreCase(
+                enclosure );
             boolean is_escape =
-                len_esc > 0 && p + len_esc < length && line.substring( p, p + len_esc ).equalsIgnoreCase(
-                    escapeCharacter );
+              len_esc > 0 && p + len_esc < length && line.substring( p, p + len_esc ).equalsIgnoreCase(
+                escapeCharacter );
 
             boolean enclosure_after = false;
 
@@ -127,9 +127,9 @@ public class TextFileInputUtils {
               p++;
               enclosure_after = false;
               is_enclosure =
-                  len_encl > 0 && p + len_encl < length && line.substring( p, p + len_encl ).equals( enclosure );
+                len_encl > 0 && p + len_encl < length && line.substring( p, p + len_encl ).equals( enclosure );
               is_escape =
-                  len_esc > 0 && p + len_esc < length && line.substring( p, p + len_esc ).equals( escapeCharacter );
+                len_esc > 0 && p + len_esc < length && line.substring( p, p + len_esc ).equals( escapeCharacter );
 
               // Is it really an enclosure? See if it's not repeated twice or escaped!
               if ( ( is_enclosure || is_escape ) && p < length - 1 ) {
@@ -162,7 +162,7 @@ public class TextFileInputUtils {
 
             if ( log.isRowLevel() ) {
               log.logRowlevel( BaseMessages.getString( PKG, "TextFileInput.Log.ConvertLineToRowTitle" ), BaseMessages
-                  .getString( PKG, "TextFileInput.Log.EndOfEnclosure", "" + p ) );
+                .getString( PKG, "TextFileInput.Log.EndOfEnclosure", "" + p ) );
             }
           } else {
             encl_found = false;
@@ -197,13 +197,13 @@ public class TextFileInputUtils {
             pol = line.substring( from + len_encl, next - len_encl );
             if ( log.isRowLevel() ) {
               log.logRowlevel( BaseMessages.getString( PKG, "TextFileInput.Log.ConvertLineToRowTitle" ), BaseMessages
-                  .getString( PKG, "TextFileInput.Log.EnclosureFieldFound", "" + pol ) );
+                .getString( PKG, "TextFileInput.Log.EnclosureFieldFound", "" + pol ) );
             }
           } else {
             pol = line.substring( from, next );
             if ( log.isRowLevel() ) {
               log.logRowlevel( BaseMessages.getString( PKG, "TextFileInput.Log.ConvertLineToRowTitle" ), BaseMessages
-                  .getString( PKG, "TextFileInput.Log.NormalFieldFound", "" + pol ) );
+                .getString( PKG, "TextFileInput.Log.NormalFieldFound", "" + pol ) );
             }
           }
 
@@ -249,7 +249,7 @@ public class TextFileInputUtils {
         if ( pos == length ) {
           if ( log.isRowLevel() ) {
             log.logRowlevel( BaseMessages.getString( PKG, "TextFileInput.Log.ConvertLineToRowTitle" ), BaseMessages
-                .getString( PKG, "TextFileInput.Log.EndOfEmptyLineFound" ) );
+              .getString( PKG, "TextFileInput.Log.EndOfEmptyLineFound" ) );
           }
           strings.add( "" );
         }
@@ -273,20 +273,20 @@ public class TextFileInputUtils {
       }
     } catch ( Exception e ) {
       throw new KettleException( BaseMessages.getString( PKG, "TextFileInput.Log.Error.ErrorConvertingLine", e
-          .toString() ), e );
+        .toString() ), e );
     }
 
     return strings.toArray( new String[strings.size()] );
   }
 
   public static final String getLine( LogChannelInterface log, InputStreamReader reader, int formatNr,
-      StringBuilder line ) throws KettleFileException {
+                                      StringBuilder line ) throws KettleFileException {
     EncodingType type = EncodingType.guessEncodingType( reader.getEncoding() );
     return getLine( log, reader, type, formatNr, line );
   }
 
   public static final String getLine( LogChannelInterface log, InputStreamReader reader, EncodingType encodingType,
-      int formatNr, StringBuilder line ) throws KettleFileException {
+                                      int formatNr, StringBuilder line ) throws KettleFileException {
     int c = 0;
     line.setLength( 0 );
     try {
@@ -345,7 +345,7 @@ public class TextFileInputUtils {
     } catch ( Exception e ) {
       if ( line.length() == 0 ) {
         throw new KettleFileException( BaseMessages.getString( PKG, "TextFileInput.Log.Error.ExceptionReadingLine", e
-            .toString() ), e );
+          .toString() ), e );
       }
       return line.toString();
     }
@@ -357,35 +357,35 @@ public class TextFileInputUtils {
   }
 
   public static final Object[] convertLineToRow( LogChannelInterface log, TextFileLine textFileLine,
-      TextFileInputMeta info, Object[] passThruFields, int nrPassThruFields, RowMetaInterface outputRowMeta,
-      RowMetaInterface convertRowMeta, String fname, long rowNr, String delimiter, String enclosure,
-      String escapeCharacter, FileErrorHandler errorHandler,
-      BaseFileInputStepMeta.AdditionalOutputFields additionalOutputFields, String shortFilename, String path,
-      boolean hidden, Date modificationDateTime, String uri, String rooturi, String extension, Long size )
-        throws KettleException {
+                                                 TextFileInputMeta info, Object[] passThruFields, int nrPassThruFields, RowMetaInterface outputRowMeta,
+                                                 RowMetaInterface convertRowMeta, String fname, long rowNr, String delimiter, String enclosure,
+                                                 String escapeCharacter, FileErrorHandler errorHandler,
+                                                 BaseFileInputStepMeta.AdditionalOutputFields additionalOutputFields, String shortFilename, String path,
+                                                 boolean hidden, Date modificationDateTime, String uri, String rooturi, String extension, Long size )
+    throws KettleException {
     if ( textFileLine == null || textFileLine.line == null ) {
       return null;
     }
 
     Object[] r = RowDataUtil.allocateRowData( outputRowMeta.size() ); // over-allocate a bit in the row producing
-                                                                      // steps...
+    // steps...
 
     int nrfields = info.inputFiles.inputFields.length;
     int fieldnr;
 
     Long errorCount = null;
     if ( info.errorHandling.errorIgnored && info.getErrorCountField() != null && info.getErrorCountField()
-        .length() > 0 ) {
+      .length() > 0 ) {
       errorCount = new Long( 0L );
     }
     String errorFields = null;
     if ( info.errorHandling.errorIgnored && info.getErrorFieldsField() != null && info.getErrorFieldsField()
-        .length() > 0 ) {
+      .length() > 0 ) {
       errorFields = "";
     }
     String errorText = null;
     if ( info.errorHandling.errorIgnored && info.getErrorTextField() != null && info.getErrorTextField()
-        .length() > 0 ) {
+      .length() > 0 ) {
       errorText = "";
     }
 
@@ -415,12 +415,12 @@ public class TextFileInputUtils {
           } catch ( Exception e ) {
             // OK, give some feedback!
             String message =
-                BaseMessages.getString( PKG, "TextFileInput.Log.CoundNotParseField", valueMeta.toStringMeta(), "" + pol,
-                    valueMeta.getConversionMask(), "" + rowNr );
+              BaseMessages.getString( PKG, "TextFileInput.Log.CoundNotParseField", valueMeta.toStringMeta(), "" + pol,
+                valueMeta.getConversionMask(), "" + rowNr );
 
             if ( info.errorHandling.errorIgnored ) {
               log.logDetailed( fname, BaseMessages.getString( PKG, "TextFileInput.Log.Warning" ) + ": " + message
-                  + " : " + e.getMessage() );
+                + " : " + e.getMessage() );
 
               value = null;
 
@@ -558,7 +558,7 @@ public class TextFileInputUtils {
   }
 
   public static final String[] convertLineToStrings( LogChannelInterface log, String line, TextFileInputMeta inf,
-      String delimiter, String enclosure, String escapeCharacters ) throws KettleException {
+                                                     String delimiter, String enclosure, String escapeCharacters ) throws KettleException {
     String[] strings = new String[inf.inputFiles.inputFields.length];
     int fieldnr;
 
@@ -594,17 +594,17 @@ public class TextFileInputUtils {
           if ( len_encl > 0 && line.substring( from, from + len_encl ).equalsIgnoreCase( enclosure ) ) {
             if ( log.isRowLevel() ) {
               log.logRowlevel( BaseMessages.getString( PKG, "TextFileInput.Log.ConvertLineToRowTitle" ), BaseMessages
-                  .getString( PKG, "TextFileInput.Log.Encloruse", line.substring( from, from + len_encl ) ) );
+                .getString( PKG, "TextFileInput.Log.Encloruse", line.substring( from, from + len_encl ) ) );
             }
             encl_found = true;
             int p = from + len_encl;
 
             boolean is_enclosure =
-                len_encl > 0 && p + len_encl < length && line.substring( p, p + len_encl ).equalsIgnoreCase(
-                    enclosure );
+              len_encl > 0 && p + len_encl < length && line.substring( p, p + len_encl ).equalsIgnoreCase(
+                enclosure );
             boolean is_escape =
-                len_esc > 0 && p + len_esc < length && line.substring( p, p + len_esc ).equalsIgnoreCase(
-                    inf.content.escapeCharacter );
+              len_esc > 0 && p + len_esc < length && line.substring( p, p + len_esc ).equalsIgnoreCase(
+                inf.content.escapeCharacter );
 
             boolean enclosure_after = false;
 
@@ -634,10 +634,10 @@ public class TextFileInputUtils {
               p++;
               enclosure_after = false;
               is_enclosure =
-                  len_encl > 0 && p + len_encl < length && line.substring( p, p + len_encl ).equals( enclosure );
+                len_encl > 0 && p + len_encl < length && line.substring( p, p + len_encl ).equals( enclosure );
               is_escape =
-                  len_esc > 0 && p + len_esc < length && line.substring( p, p + len_esc ).equals(
-                      inf.content.escapeCharacter );
+                len_esc > 0 && p + len_esc < length && line.substring( p, p + len_esc ).equals(
+                  inf.content.escapeCharacter );
 
               // Is it really an enclosure? See if it's not repeated twice or escaped!
               if ( ( is_enclosure || is_escape ) && p < length - 1 ) {
@@ -670,7 +670,7 @@ public class TextFileInputUtils {
 
             if ( log.isRowLevel() ) {
               log.logRowlevel( BaseMessages.getString( PKG, "TextFileInput.Log.ConvertLineToRowTitle" ), BaseMessages
-                  .getString( PKG, "TextFileInput.Log.EndOfEnclosure", "" + p ) );
+                .getString( PKG, "TextFileInput.Log.EndOfEnclosure", "" + p ) );
             }
           } else {
             encl_found = false;
@@ -681,14 +681,34 @@ public class TextFileInputUtils {
               next = line.indexOf( delimiter, startpoint );
 
               // See if this position is preceded by an escape character.
-              if ( len_esc > 0 && next - len_esc > 0 ) {
+              if ( len_esc > 0 && next > 0 ) {
                 String before = line.substring( next - len_esc, next );
 
                 if ( inf.content.escapeCharacter.equals( before ) ) {
-                  // take the next separator, this one is escaped...
-                  startpoint = next + 1;
-                  // tries++;
-                  contains_escaped_separators = true;
+
+                  int previous_escapes = 1;
+                  int start = next - len_esc - 1;
+                  int end = next - 1;
+                  while ( start >= 0 ) {
+                    if ( inf.content.escapeCharacter.equals( line.substring( start, end ) ) ) {
+                      previous_escapes++;
+                      start--;
+                      end--;
+                    } else {
+                      break;
+                    }
+                  }
+                  // If behind the seperator there are a odd number of escaped
+                  // The separator is escaped.
+                  if ( previous_escapes % 2 != 0 ) {
+                    // take the next separator, this one is escaped...
+                    startpoint = next + 1;
+                    // tries++;
+                    contains_escaped_separators = true;
+                  } else {
+                    found = true;
+                  }
+
                 } else {
                   found = true;
                 }
@@ -705,13 +725,13 @@ public class TextFileInputUtils {
             pol = line.substring( from + len_encl, next - len_encl );
             if ( log.isRowLevel() ) {
               log.logRowlevel( BaseMessages.getString( PKG, "TextFileInput.Log.ConvertLineToRowTitle" ), BaseMessages
-                  .getString( PKG, "TextFileInput.Log.EnclosureFieldFound", "" + pol ) );
+                .getString( PKG, "TextFileInput.Log.EnclosureFieldFound", "" + pol ) );
             }
           } else {
             pol = line.substring( from, next );
             if ( log.isRowLevel() ) {
               log.logRowlevel( BaseMessages.getString( PKG, "TextFileInput.Log.ConvertLineToRowTitle" ), BaseMessages
-                  .getString( PKG, "TextFileInput.Log.NormalFieldFound", "" + pol ) );
+                .getString( PKG, "TextFileInput.Log.NormalFieldFound", "" + pol ) );
             }
           }
 
@@ -742,6 +762,7 @@ public class TextFileInputUtils {
           }
 
           // replace the escaped escape with escape...
+          contains_escaped_escape = pol.contains( inf.content.escapeCharacter + inf.content.escapeCharacter );
           if ( contains_escaped_escape ) {
             String replace = inf.content.escapeCharacter + inf.content.escapeCharacter;
             String replaceWith = inf.content.escapeCharacter;
@@ -770,7 +791,7 @@ public class TextFileInputUtils {
         if ( pos == length ) {
           if ( log.isRowLevel() ) {
             log.logRowlevel( BaseMessages.getString( PKG, "TextFileInput.Log.ConvertLineToRowTitle" ), BaseMessages
-                .getString( PKG, "TextFileInput.Log.EndOfEmptyLineFound" ) );
+              .getString( PKG, "TextFileInput.Log.EndOfEmptyLineFound" ) );
           }
           if ( fieldnr < strings.length ) {
             strings[fieldnr] = Const.EMPTY_STRING;
@@ -821,7 +842,7 @@ public class TextFileInputUtils {
       }
     } catch ( Exception e ) {
       throw new KettleException( BaseMessages.getString( PKG, "TextFileInput.Log.Error.ErrorConvertingLine", e
-          .toString() ), e );
+        .toString() ), e );
     }
 
     return strings;
