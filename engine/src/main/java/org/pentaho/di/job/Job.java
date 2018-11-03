@@ -1375,7 +1375,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
    *          The parentJob to set.
    */
   public void setParentJob( Job parentJob ) {
-    this.logLevel = parentJob.getLogLevel();
+    this.logLevel = parentJob == null ? null : parentJob.getLogLevel();
     this.log.setLogLevel( logLevel );
     this.containerObjectId = log.getContainerObjectId();
     this.parentJob = parentJob;

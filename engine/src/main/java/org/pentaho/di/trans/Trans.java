@@ -3417,7 +3417,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
    * @param parentJob The parent job to set
    */
   public void setParentJob( Job parentJob ) {
-    this.logLevel = parentJob.getLogLevel();
+    this.logLevel = parentJob == null ? null : parentJob.getLogLevel();
     this.log.setLogLevel( logLevel );
     this.parentJob = parentJob;
 
@@ -5022,7 +5022,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
    * @param parentTrans the parentTrans to set
    */
   public void setParentTrans( Trans parentTrans ) {
-    this.logLevel = parentTrans.getLogLevel();
+    this.logLevel = parentTrans == null ? null : parentTrans.getLogLevel();
     this.log.setLogLevel( logLevel );
     this.parentTrans = parentTrans;
 
