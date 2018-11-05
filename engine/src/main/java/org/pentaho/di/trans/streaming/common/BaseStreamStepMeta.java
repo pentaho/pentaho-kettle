@@ -147,6 +147,22 @@ public abstract class BaseStreamStepMeta extends StepWithMappingMeta implements 
         BaseMessages.getString( PKG, "BaseStreamStepMeta.CheckResult.NoBatchDefined" ),
         stepMeta ) );
     }
+
+    try {
+      TransMeta subMeta = mappingMetaRetriever.get( this, repository, metaStore, space );
+      if ( !StringUtil.isEmpty( getSubStep() ) ) {
+        String realSubStepName = space.environmentSubstitute( getSubStep() );
+
+        if ( !subMeta.getSteps().stream().anyMatch( subStepMeta -> subStepMeta.getName().equals( realSubStepName ) ) ) {
+          remarks.add( new CheckResult(
+            CheckResultInterface.TYPE_RESULT_ERROR,
+            BaseMessages.getString( PKG, "BaseStreamStepMeta.CheckResult.ResultStepMissing", realSubStepName ),
+            stepMeta ) );
+        }
+      }
+    } catch ( KettleException e ) {
+      getLog().logDebug( "Error loading subtrans meta", e );
+    }
   }
 
   @Override
@@ -194,18 +210,23 @@ public abstract class BaseStreamStepMeta extends StepWithMappingMeta implements 
       TransMeta transMeta = mappingMetaRetriever.get( this, repository, metaStore, space );
       if ( !StringUtil.isEmpty( getSubStep() ) ) {
         String realSubStepName = space.environmentSubstitute( getSubStep() );
-        rowMeta.addRowMeta( transMeta.getPrevStepFields( realSubStepName ) );
-        transMeta.getSteps().stream().filter( stepMeta -> stepMeta.getName().equals( realSubStepName ) )
-          .findFirst()
-          .ifPresent( stepMeta ->
-          {
-            try {
-              stepMeta.getStepMetaInterface()
-                .getFields( rowMeta, origin, info, nextStep, space, repository, metaStore );
-            } catch ( KettleStepException e ) {
-              throw new RuntimeException( e );
-            }
-          } );
+        if ( transMeta.getSteps().stream().anyMatch( stepMeta -> stepMeta.getName().equals( realSubStepName ) ) ) {
+          rowMeta.addRowMeta( transMeta.getPrevStepFields( realSubStepName ) );
+          transMeta.getSteps().stream().filter( stepMeta -> stepMeta.getName().equals( realSubStepName ) )
+            .findFirst()
+            .ifPresent( stepMeta ->
+            {
+              try {
+                stepMeta.getStepMetaInterface()
+                  .getFields( rowMeta, origin, info, nextStep, space, repository, metaStore );
+              } catch ( KettleStepException e ) {
+                throw new RuntimeException( e );
+              }
+            } );
+        } else {
+          throw new RuntimeException(
+            BaseMessages.getString( PKG, "BaseStreamStepMeta.CheckResult.ResultStepMissing", realSubStepName ) );
+        }
       }
     } catch ( KettleException e ) {
       getLog().logDebug( "could not get fields, probable AEL" );
