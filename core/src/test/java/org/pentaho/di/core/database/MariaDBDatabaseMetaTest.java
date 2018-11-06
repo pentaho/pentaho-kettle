@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -19,14 +19,14 @@
  * limitations under the License.
  *
  ******************************************************************************/
+
 package org.pentaho.di.core.database;
 
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 
 import org.junit.Test;
-
-
 
 public class MariaDBDatabaseMetaTest extends MySQLDatabaseMetaTest {
 
@@ -50,5 +50,11 @@ public class MariaDBDatabaseMetaTest extends MySQLDatabaseMetaTest {
     // The fullExceptionLog method is covered by another test case.
   }
 
-
+  /**
+   * @see MariaDBDatabaseMeta#supportsSchemas() for more details.
+   */
+  @Test
+  public void testSupportsSchemas() {
+    assertFalse( "MariaDB doesn't support schemas.", new MariaDBDatabaseMeta().supportsSchemas() );
+  }
 }

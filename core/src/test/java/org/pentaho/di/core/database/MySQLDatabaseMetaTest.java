@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -19,6 +19,7 @@
  * limitations under the License.
  *
  ******************************************************************************/
+
 package org.pentaho.di.core.database;
 
 import static org.junit.Assert.assertArrayEquals;
@@ -47,7 +48,6 @@ public class MySQLDatabaseMetaTest {
     nativeMeta.setAccessType( DatabaseMeta.TYPE_ACCESS_NATIVE );
     odbcMeta = new MySQLDatabaseMeta();
     odbcMeta.setAccessType( DatabaseMeta.TYPE_ACCESS_ODBC );
-
   }
 
   @Test
@@ -223,4 +223,11 @@ public class MySQLDatabaseMetaTest {
     assertEquals( "insert into FOO(FOOKEY, FOOVERSION) values (1, 1)", nativeMeta.getSQLInsertAutoIncUnknownDimensionRow( "FOO", "FOOKEY", "FOOVERSION" ) );
   }
 
+  /**
+   * @see MySQLDatabaseMeta#supportsSchemas() for more details.
+   */
+  @Test
+  public void testSupportsSchemas() {
+    assertFalse( "MySQL doesn't support schemas.", new MySQLDatabaseMeta().supportsSchemas() );
+  }
 }
