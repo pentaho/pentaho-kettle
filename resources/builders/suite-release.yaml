@@ -2,11 +2,7 @@
 buildProperties:
         # global build control defaults -- see others you can override in resources/config/buildProperties.yaml
         # These are understood by the shared pipeline libraries:
-<<<<<<< HEAD:resources/builders/qat.yaml
-        BUILD_PLAN_ID                  : 9.0 QAT Build
-=======
         BUILD_PLAN_ID                  : 9.0 Suite Release
->>>>>>> 74ded13... [BACKLOG-26419] In the master pipeline, use the build pipeline's next build number as the RELEASE_BUILD_NUMBER:resources/builders/suite-release.yaml
 
         MAVEN_DEFAULT_COMMAND_OPTIONS  : -B -e -Drelease
         ARCHIVE_ARTIFACTS_PATTERN      : '**/{target/*.gz,target/*.zip}'

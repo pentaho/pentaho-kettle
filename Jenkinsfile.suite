@@ -51,11 +51,7 @@ pipeline {
         }
       }
       steps {
-<<<<<<< HEAD:Jenkinsfile.qat
-        triggerJob("9.0-qat", passOnParameters)
-=======
         triggerJob(buildJobName, passOnParameters)
->>>>>>> 74ded13... [BACKLOG-26419] In the master pipeline, use the build pipeline's next build number as the RELEASE_BUILD_NUMBER:Jenkinsfile.suite
       }
     }
 
