@@ -30,12 +30,15 @@ import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
+import org.pentaho.di.core.plugins.StepPluginType;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.StringObjectId;
+import org.pentaho.di.trans.TransMeta;
+import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepOption;
 import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Document;
@@ -76,6 +79,10 @@ public class MQTTProducerMetaTest {
   @BeforeClass
   public static void setUpBeforeClass() throws KettleException {
     KettleEnvironment.init();
+    StepPluginType.getInstance().handlePluginAnnotation(
+      MQTTProducerMeta.class,
+      MQTTProducerMeta.class.getAnnotation( org.pentaho.di.core.annotations.Step.class ),
+      Collections.emptyList(), false, null );
   }
 
   @Test
@@ -285,6 +292,9 @@ public class MQTTProducerMetaTest {
     mqttProducerMeta.topic = "${topic}";
     mqttProducerMeta.fieldTopic = "${fieldTopic}";
     mqttProducerMeta.setSslConfig( of( "key1", "${val1}", "key2", "${val2}" ) );
+    StepMeta stepMeta = new StepMeta( "mqtt step", mqttProducerMeta );
+    stepMeta.setParentTransMeta( new TransMeta( new Variables() ) );
+    mqttProducerMeta.setParentStepMeta( stepMeta );
 
     VariableSpace variables = new Variables();
     variables.setVariable( "server", "myserver" );
