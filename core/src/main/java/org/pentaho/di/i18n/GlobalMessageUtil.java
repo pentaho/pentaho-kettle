@@ -250,16 +250,12 @@ public class GlobalMessageUtil {
                                          final String bundleName, final boolean fallbackOnRoot ) {
     for ( final String packageName : pkgNames ) {
       try {
-        final String string =
-          calculateString( packageName, locale, key, parameters, resourceClass, bundleName, fallbackOnRoot );
-        if ( !isMissingKey( string ) ) {
-          return string;
-        }
+        return calculateString( packageName, locale, key, parameters, resourceClass, bundleName, fallbackOnRoot );
       } catch ( final MissingResourceException e ) {
-        // do nothing
+        continue;
       }
     }
-    return decorateMissingKey( key );
+    return null;
   }
 
   static String calculateString( final String packageName, final Locale locale, final String key, Object[] parameters,
@@ -376,7 +372,7 @@ public class GlobalMessageUtil {
    * @return true if the given {@code string} is null or is in the format of a missing key: !key!.
    */
   protected static boolean isMissingKey( final String string ) {
-    return StringUtils.isBlank( string ) || ( string.trim().startsWith( "!" ) && string.trim().endsWith( "!" )
+    return string == null || ( string.trim().startsWith( "!" ) && string.trim().endsWith( "!" )
       && !string.trim().equals( "!" ) );
   }
 
