@@ -706,14 +706,36 @@ public class TextFileInputUtils {
               next = line.indexOf( delimiter, startpoint );
 
               // See if this position is preceded by an escape character.
-              if ( len_esc > 0 && next - len_esc > 0 ) {
+              if ( len_esc > 0 && next > 0 ) {
                 String before = line.substring( next - len_esc, next );
 
                 if ( inf.content.escapeCharacter.equals( before ) ) {
-                  // take the next separator, this one is escaped...
-                  startpoint = next + 1;
-                  // tries++;
-                  contains_escaped_separators = true;
+                  int previous_escapes = 1;
+
+                  int start = next - len_esc - 1;
+                  int end = next - 1;
+
+                  while ( start >= 0 ) {
+                    if ( inf.content.escapeCharacter.equals( line.substring( start, end ) ) ) {
+                      previous_escapes++;
+                      start--;
+                      end--;
+                    } else {
+                      break;
+                    }
+                  }
+
+                  // If behind the seperator there are a odd number of escaped
+                  // The separator is escaped.
+                  if ( previous_escapes % 2 != 0 ) {
+                    // take the next separator, this one is escaped...
+                    startpoint = next + 1;
+                    // tries++;
+                    contains_escaped_separators = true;
+                  } else {
+                    found = true;
+                  }
+
                 } else {
                   found = true;
                 }
@@ -767,6 +789,7 @@ public class TextFileInputUtils {
           }
 
           // replace the escaped escape with escape...
+          contains_escaped_escape = pol.contains( inf.content.escapeCharacter + inf.content.escapeCharacter );
           if ( contains_escaped_escape ) {
             String replace = inf.content.escapeCharacter + inf.content.escapeCharacter;
             String replaceWith = inf.content.escapeCharacter;
