@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -19,6 +19,7 @@
  * limitations under the License.
  *
  ******************************************************************************/
+
 package org.pentaho.di.core.database;
 
 import java.util.Set;
@@ -62,4 +63,16 @@ public class MariaDBDatabaseMeta extends MySQLDatabaseMeta {
     return !( cause != null && SHORT_MESSAGE_EXCEPTIONS.contains( cause.getClass().getName() ) );
   }
 
+  /**
+   * CREATE SCHEMA is a synonym for CREATE DATABASE.
+   * in: https://mariadb.com/kb/en/library/create-database/
+   *
+   * @see MySQLDatabaseMeta#supportsSchemas() for further details.
+   *
+   * @return false
+   */
+  @Override
+  public boolean supportsSchemas() {
+    return false;
+  }
 }
