@@ -45,8 +45,8 @@ public class GlobalMessageUtilTest {
   @Test
   public void isMissingKey() {
     Assert.assertTrue( GlobalMessageUtil.isMissingKey( null ) );
-    Assert.assertTrue( GlobalMessageUtil.isMissingKey( "" ) );
-    Assert.assertTrue( GlobalMessageUtil.isMissingKey( " " ) );
+    Assert.assertFalse( GlobalMessageUtil.isMissingKey( "" ) );
+    Assert.assertFalse( GlobalMessageUtil.isMissingKey( " " ) );
     Assert.assertTrue( GlobalMessageUtil.isMissingKey( "!foo!" ) );
     Assert.assertTrue( GlobalMessageUtil.isMissingKey( "!foo! " ) );
     Assert.assertTrue( GlobalMessageUtil.isMissingKey( " !foo!" ) );
