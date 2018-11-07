@@ -156,7 +156,7 @@ public abstract class BaseStreamStepMeta extends StepWithMappingMeta implements 
         if ( !subMeta.getSteps().stream().anyMatch( subStepMeta -> subStepMeta.getName().equals( realSubStepName ) ) ) {
           remarks.add( new CheckResult(
             CheckResultInterface.TYPE_RESULT_ERROR,
-            BaseMessages.getString( PKG, "BaseStreamStepMeta.CheckResult.ResultStepMissing", realSubStepName ),
+            BaseMessages.getString( PKG, "BaseStreamStepMeta.CheckResult.ResultStepMissing", subMeta.getName(), realSubStepName ),
             stepMeta ) );
         }
       }
@@ -225,7 +225,7 @@ public abstract class BaseStreamStepMeta extends StepWithMappingMeta implements 
             } );
         } else {
           throw new RuntimeException(
-            BaseMessages.getString( PKG, "BaseStreamStepMeta.CheckResult.ResultStepMissing", realSubStepName ) );
+            BaseMessages.getString( PKG, "BaseStreamStepMeta.CheckResult.ResultStepMissing", transMeta.getName(), realSubStepName ) );
         }
       }
     } catch ( KettleException e ) {
