@@ -203,7 +203,7 @@ public class BaseStreamStepMetaTest {
     meta.setSubStep( "MissingStep" );
     meta.check( remarks, null, null, null, null, null, null, space, null, null );
     assertEquals( 1, remarks.size() );
-    assertEquals( "Step \"MissingStep\" selected on Result fields tab does not exist in subtransformation", remarks.get( 0 ).getText() );
+    assertEquals( "Unable to complete \"null\".  Cannot return fields from \"MissingStep\" because it does not exist in the sub-transformation.", remarks.get( 0 ).getText() );
   }
 
   @Test
