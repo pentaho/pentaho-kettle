@@ -164,8 +164,9 @@ public class MetaInjectAnalyzer extends StepAnalyzer<MetaInjectMeta> {
       // mappings are ignored, and instead, data is sent directly
       final boolean ignoreMapping = sourceInjectorStepField.getStepname().equalsIgnoreCase(
         meta.getStreamSourceStepname() );
-      String mappingKey = "mapping [" + mappingCount++ + "]";
+      String mappingKey;
       if ( !ignoreMapping ) {
+        mappingKey = "mapping [" + mappingCount++ + "]";
         // if the target template step name is the same as the step we read from (sourceStepName), we want to get the
         // output fields from the target template step and pass them back (input) into the parent injector step
         if ( targetTemplateStepName.equalsIgnoreCase( sourceStepName ) ) {
