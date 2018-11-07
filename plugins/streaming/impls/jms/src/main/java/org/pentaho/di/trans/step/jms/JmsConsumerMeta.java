@@ -89,10 +89,4 @@ public class JmsConsumerMeta extends BaseStreamStepMeta implements ISubTransAwar
   @Override public StepDataInterface getStepData() {
     return new GenericStepData();
   }
-
-  @Override public JmsConsumerMeta copyObject() {
-    JmsConsumerMeta newClone = (JmsConsumerMeta) this.clone();
-    newClone.jmsDelegate = new JmsDelegate( this.jmsDelegate );
-    return newClone;
-  }
 }
