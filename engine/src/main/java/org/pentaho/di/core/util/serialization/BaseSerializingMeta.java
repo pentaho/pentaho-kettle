@@ -26,9 +26,11 @@ import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.variables.VariableSpace;
+import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.trans.step.BaseStepMeta;
+import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Node;
@@ -80,10 +82,18 @@ public abstract class BaseSerializingMeta extends BaseStepMeta implements StepMe
    * Creates a copy of this stepMeta with variables globally substituted.
    */
   public StepMetaInterface withVariables( VariableSpace variables ) {
-    return StepMetaProps
-      .from( this )
-      .withVariables( variables )
-      .to( (StepMetaInterface) this.copyObject() );
+    try {
+      StepMetaInterface metaCopy =
+        new StepMeta( XMLHandler.loadXMLString( getParentStepMeta().getXML(), StepMeta.XML_TAG ),
+          getParentStepMeta().getParentTransMeta().getDatabases(),
+          getParentStepMeta().getParentTransMeta().getMetaStore() ).getStepMetaInterface();
+      return StepMetaProps
+        .from( this )
+        .withVariables( variables )
+        .to( metaCopy );
+    } catch ( KettleException e ) {
+      throw new RuntimeException( e );
+    }
   }
 
   /**
