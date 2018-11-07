@@ -254,12 +254,4 @@ public class JmsProducerMeta extends BaseSerializingMeta implements StepMetaInte
       new StepOption( JMS_TYPE, getString( PKG, "JmsDialog.Options.JMS_TYPE" ), jmsType )
     );
   }
-
-  @Override public JmsProducerMeta copyObject() {
-    JmsProducerMeta newClone = (JmsProducerMeta) this.clone();
-    newClone.jmsDelegate = new JmsDelegate( this.jmsDelegate );
-    newClone.propertyNames = new ArrayList<>( this.propertyNames );
-    newClone.propertyValues = new ArrayList<>( this.propertyValues );
-    return newClone;
-  }
 }

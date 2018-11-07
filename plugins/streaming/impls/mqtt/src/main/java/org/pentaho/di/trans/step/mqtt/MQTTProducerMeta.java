@@ -282,11 +282,4 @@ public class MQTTProducerMeta extends BaseSerializingMeta implements StepMetaInt
       .add( "automaticReconnect", automaticReconnect )
       .toString();
   }
-
-  @Override public MQTTProducerMeta copyObject() {
-    MQTTProducerMeta newClone = (MQTTProducerMeta) this.clone();
-    newClone.sslKeys = new ArrayList<>( this.sslKeys );
-    newClone.sslValues = new ArrayList<>( this.sslValues );
-    return newClone;
-  }
 }
