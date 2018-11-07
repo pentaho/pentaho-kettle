@@ -221,6 +221,25 @@ public interface DatabaseInterface extends Cloneable {
   public void setAttributes( Properties attributes );
 
   /**
+   * Add extra attribute on this connection
+   * @param attributeId the attribute identifier
+   * @param value the value of the attribute
+   */
+  public default void addAttribute( String attributeId, String value ) {
+    // Default implementation does nothing
+  };
+
+  /**
+   * Gets an attribute from the connection
+   * @param attributeId the attribute identifier
+   * @param defaultValue the default value in case the attribute is not found
+   * @return the attribute value
+   */
+  public default String getAttribute( String attributeId, String defaultValue ) {
+    return "";
+  };
+
+  /**
    * See if this database supports the setCharacterStream() method on a PreparedStatement.
    *
    * @return true if we can set a Stream on a field in a PreparedStatement. False if not.
