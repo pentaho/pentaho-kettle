@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -182,8 +182,14 @@ public class SharedObjects {
         }
       }
     } catch ( Exception e ) {
-      throw new KettleXMLException( BaseMessages.getString( PKG, "SharedOjects.Readingfile.UnexpectedError",
-        sharedObjectsFile ), e );
+      if ( e instanceof KettleFileException && e.getMessage().contains( KettleVFS.FILE_SYSTEM_CLOSED_EXCEPTION ) ) {
+        // File system was closed.  This should only happen if we're trying to access the SO file after the runtime
+        // environment started to shut down (or there's a bug in KettleVFS).
+        ( new LogChannel( this ) ).logDebug( e.getMessage() );
+      } else {
+        throw new KettleXMLException( BaseMessages.getString( PKG, "SharedOjects.Readingfile.UnexpectedError",
+          sharedObjectsFile ), e );
+      }
     }
   }
 

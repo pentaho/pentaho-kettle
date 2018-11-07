@@ -60,6 +60,7 @@ public class KettleVFS {
   private final DefaultFileSystemManager fsm;
 
   private static VariableSpace defaultVariableSpace;
+  public static final String FILE_SYSTEM_CLOSED_EXCEPTION = "File system closed";
 
   static {
     // Create a new empty variable space...
@@ -114,8 +115,8 @@ public class KettleVFS {
   }
 
   public static FileObject getFileObject( String vfsFilename, VariableSpace space, FileSystemOptions fsOptions ) throws KettleFileException {
+    FileSystemManager fsManager = getInstance().getFileSystemManager();
     try {
-      FileSystemManager fsManager = getInstance().getFileSystemManager();
 
       // We have one problem with VFS: if the file is in a subdirectory of the current one: somedir/somefile
       // In that case, VFS doesn't parse the file correctly.
@@ -154,8 +155,12 @@ public class KettleVFS {
         return fsManager.resolveFile( filename );
       }
     } catch ( IOException e ) {
-      throw new KettleFileException( "Unable to get VFS File object for filename '"
-        + cleanseFilename( vfsFilename ) + "' : " + e.getMessage(), e );
+      if ( !( (ConcurrentFileSystemManager) fsManager).isClosed() ) {
+        throw new KettleFileException( "Unable to get VFS File object for filename '"
+          + cleanseFilename( vfsFilename ) + "' : " + e.getMessage(), e );
+      } else {
+        throw new KettleFileException( FILE_SYSTEM_CLOSED_EXCEPTION );
+      }
     }
   }
 

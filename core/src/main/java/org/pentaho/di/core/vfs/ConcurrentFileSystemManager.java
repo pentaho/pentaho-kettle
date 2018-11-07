@@ -50,8 +50,11 @@ public class ConcurrentFileSystemManager extends StandardFileSystemManager {
 
   private final ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
 
+  private boolean isClosed;
+
   public ConcurrentFileSystemManager() {
     setConfiguration( this.getClass().getResource( CONFIG_RESOURCE ) );
+    this.isClosed = true; // closed until we init()
   }
 
   @Override
@@ -160,6 +163,18 @@ public class ConcurrentFileSystemManager extends StandardFileSystemManager {
     try {
       super.close();
     } finally {
+      this.isClosed = true;
+      lock.writeLock().unlock();
+    }
+  }
+
+  @Override
+  public void init() throws FileSystemException {
+    lock.writeLock().lock();
+    try {
+      super.init();
+    } finally {
+      this.isClosed = false;
       lock.writeLock().unlock();
     }
   }
@@ -193,6 +208,15 @@ public class ConcurrentFileSystemManager extends StandardFileSystemManager {
       }
     } catch ( IllegalAccessException e ) {
       e.printStackTrace();
+    } finally {
+      lock.readLock().unlock();
+    }
+  }
+
+  public boolean isClosed() {
+    lock.readLock().lock();
+    try {
+      return this.isClosed;
     } finally {
       lock.readLock().unlock();
     }
