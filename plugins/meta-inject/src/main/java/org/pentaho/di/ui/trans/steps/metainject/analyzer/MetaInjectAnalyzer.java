@@ -128,11 +128,16 @@ public class MetaInjectAnalyzer extends StepAnalyzer<MetaInjectMeta> {
       final List<String> sourceFieldNames = getOutputFieldNames( parentTransMeta, meta.getStreamSourceStepname() );
       final List<String> targetFieldNames = getOutputFieldNames( subTransMeta, meta.getStreamTargetStepname() );
 
+      // get the vertex corresponding to the stream target step
+      final Vertex streamTargetStepVertex = findStepVertex( subTransMeta, meta.getStreamTargetStepname() );
       int index = 0;
       for ( final String sourceFieldName : sourceFieldNames ) {
 
         final Vertex streamSourceStepOutputField = findFieldVertex( parentTransMeta, meta.getStreamSourceStepname(),
           sourceFieldName );
+        // add an "inputs" link from this field to the streamTargetStepVertex
+        getMetaverseBuilder().addLink( streamSourceStepOutputField, DictionaryConst.LINK_INPUTS,
+          streamTargetStepVertex );
         // get the target field at the same index, if it exists
         if ( index < targetFieldNames.size() ) {
           final Vertex streamTargetStepOutputField = findFieldVertex( subTransMeta, meta.getStreamTargetStepname(),
