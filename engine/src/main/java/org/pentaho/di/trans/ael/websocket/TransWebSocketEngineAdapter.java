@@ -67,6 +67,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import static com.google.common.base.Strings.isNullOrEmpty;
 import static java.util.stream.Collectors.toMap;
 
 /**
@@ -313,9 +314,18 @@ public class TransWebSocketEngineAdapter extends Trans {
       .addHandler( Util.getTransformationErrorEvent(), new MessageEventHandler() {
         @Override
         public void execute( Message message ) throws MessageEventHandlerExecutionException {
-          Throwable throwable = ( (PDIEvent<RemoteSource, LogEntry>) message ).getData().getThrowable();
+          String errorMessage = "Error Executing Transformation";
+          LogEntry data = ( (PDIEvent<RemoteSource, LogEntry>) message ).getData();
 
-          getLogChannel().logError( "Error Executing Transformation", throwable );
+          if ( !isNullOrEmpty( data.getMessage() ) ) {
+            errorMessage = errorMessage + System.lineSeparator() + data.getMessage();
+          }
+
+          if ( data.getThrowable() != null ) {
+            getLogChannel().logError( errorMessage, data.getThrowable() );
+          } else {
+            getLogChannel().logError( errorMessage );
+          }
           errors.incrementAndGet();
           finishProcess( true );
         }
