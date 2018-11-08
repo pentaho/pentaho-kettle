@@ -22,11 +22,10 @@
 
 package org.pentaho.di.trans.step.jms.analyzer;
 
-import org.pentaho.di.trans.TransMeta;
+import org.pentaho.di.trans.ISubTransAwareMeta;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.jms.JmsConsumerMeta;
 import org.pentaho.di.trans.step.jms.JmsDelegate;
-import org.pentaho.dictionary.DictionaryConst;
 import org.pentaho.metaverse.api.IMetaverseNode;
 import org.pentaho.metaverse.api.MetaverseAnalyzerException;
 import org.pentaho.metaverse.api.StepField;
@@ -37,7 +36,7 @@ import org.pentaho.metaverse.api.analyzer.kettle.step.StepAnalyzer;
 import java.util.HashSet;
 import java.util.Set;
 
-public class JmsConsumerAnalyzer  extends StepAnalyzer<JmsConsumerMeta> {
+public class JmsConsumerAnalyzer extends StepAnalyzer<JmsConsumerMeta> {
   @Override
   public Set<Class<? extends BaseStepMeta>> getSupportedSteps() {
     final Set<Class<? extends BaseStepMeta>> supportedSteps = new HashSet<>();
@@ -67,20 +66,14 @@ public class JmsConsumerAnalyzer  extends StepAnalyzer<JmsConsumerMeta> {
       parentTransMeta.environmentSubstitute( jmsDelegate.getDestinationName() ) );
     rootNode.setProperty( "receiveTimeout", parentTransMeta.environmentSubstitute( jmsDelegate.getReceiveTimeout() ) );
 
-    // Get the subtrans
-    final TransMeta subTransMeta = KettleAnalyzerUtil.getSubTransMeta( meta );
+    KettleAnalyzerUtil.analyze( this, parentTransMeta, (ISubTransAwareMeta) meta, rootNode );
+  }
 
-    // Create a node for the subtrans
-    final IMetaverseNode subTransNode = getNode( subTransMeta.getName(), DictionaryConst.NODE_TYPE_TRANS,
-      descriptor.getNamespace(), null, null );
+  @Override
+  public void postAnalyze( final JmsConsumerMeta meta )
+    throws MetaverseAnalyzerException {
 
-    // Set SubTrans file path and ID on subtrans node
-    subTransNode.setProperty( DictionaryConst.PROPERTY_PATH,
-      KettleAnalyzerUtil.getSubTransMetaPath( meta, subTransMeta ) );
-    subTransNode.setLogicalIdGenerator( DictionaryConst.LOGICAL_ID_GENERATOR_DOCUMENT );
-
-    // Add the new subtrans node to the output
-    metaverseBuilder.addLink( rootNode, DictionaryConst.LINK_EXECUTES, subTransNode );
+    // TODO: Add field linking for fields going to the subtransformation
   }
 
   @Override protected IClonableStepAnalyzer newInstance() {
