@@ -3,7 +3,7 @@ REM ****************************************************************************
 REM
 REM Pentaho Data Integration
 REM
-REM Copyright (C) 2010-2018 by Hitachi Vantara : http://www.pentaho.com
+REM Copyright (C) 2010-2018 by Hitachi Vantara : http://www.hitachivantara.com
 REM
 REM *****************************************************************************
 REM
