@@ -25,12 +25,13 @@ package org.pentaho.di.core.util.serialization;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
+import org.pentaho.di.core.plugins.PluginInterface;
+import org.pentaho.di.core.plugins.PluginRegistry;
+import org.pentaho.di.core.plugins.StepPluginType;
 import org.pentaho.di.core.variables.VariableSpace;
-import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.trans.step.BaseStepMeta;
-import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Node;
@@ -83,16 +84,19 @@ public abstract class BaseSerializingMeta extends BaseStepMeta implements StepMe
    */
   public StepMetaInterface withVariables( VariableSpace variables ) {
     try {
-      StepMetaInterface metaCopy =
-        new StepMeta( XMLHandler.loadXMLString( getParentStepMeta().getXML(), StepMeta.XML_TAG ),
-          getParentStepMeta().getParentTransMeta().getDatabases(),
-          getParentStepMeta().getParentTransMeta().getMetaStore() ).getStepMetaInterface();
       return StepMetaProps
         .from( this )
         .withVariables( variables )
-        .to( metaCopy );
+        .to( getNewMeta() );
     } catch ( KettleException e ) {
       throw new RuntimeException( e );
     }
+  }
+
+  private StepMetaInterface getNewMeta() throws KettleException {
+    PluginRegistry pluginRegistry = PluginRegistry.getInstance();
+    String id = pluginRegistry.getPluginId( StepPluginType.class, this );
+    PluginInterface plugin = pluginRegistry.getPlugin( StepPluginType.class, id );
+    return (StepMetaInterface) pluginRegistry.loadClass( plugin );
   }
 }
