@@ -606,6 +606,7 @@ jobGroups:
      - jobID           :  data-exploration
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-det.git
        scmBranch       :  ${DEFAULT_BRANCH}
+       directives      :  += -Dmaven.test.failure.ignore=true
        versionProperty :  pentaho-det.version
 
   3600:
