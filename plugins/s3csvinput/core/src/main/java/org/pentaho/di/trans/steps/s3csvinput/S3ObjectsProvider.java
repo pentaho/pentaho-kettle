@@ -79,7 +79,7 @@ public class S3ObjectsProvider {
    * @throws SdkClientException
    */
   public Bucket getBucket( String bucketName ) throws SdkClientException {
-    return getBuckets().stream( ).filter( x -> bucketName.equals( x.getName() ) ).findFirst().orElse( null );
+    return s3Client.doesBucketExistV2( bucketName ) ? new Bucket( bucketName ) : null;
   }
 
   /**
@@ -182,5 +182,4 @@ public class S3ObjectsProvider {
   public long getS3ObjectContentLenght( Bucket bucket, String objectKey ) throws SdkClientException {
     return getS3ObjectDetails( bucket, objectKey ).getContentLength();
   }
-
 }
