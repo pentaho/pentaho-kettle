@@ -226,7 +226,7 @@ public class TextFileOutputTest {
     textFileOutput.data.out = Mockito.mock( CompressionOutputStream.class );
 
     textFileOutput.closeFile();
-    Mockito.verify( textFileOutput.data.out, Mockito.times( 1 ) ).close();
+    Assert.assertNull( textFileOutput.data.out );
   }
 
   private FileObject createTemplateFile() throws IOException {
@@ -314,8 +314,12 @@ public class TextFileOutputTest {
         new TextFileOutput( stepMockHelper.stepMeta, stepMockHelper.stepDataInterface, 0, stepMockHelper.transMeta,
             stepMockHelper.trans );
     TextFileOutput textFileoutputSpy = Mockito.spy( textFileOutput );
+    Mockito.doReturn( false ).when( textFileoutputSpy ).isWriteHeader( TEXT_FILE_OUTPUT_PREFIX + TEXT_FILE_OUTPUT_EXTENSION );
     Mockito.doNothing().when( textFileoutputSpy ).initFileStreamWriter( EMPTY_FILE_NAME );
-    Mockito.doNothing().when( textFileoutputSpy ).flushOpenFiles( true );
+    try {
+      Mockito.doNothing().when( textFileoutputSpy ).flushOpenFiles( true );
+    } catch ( IOException e ) {
+    }
     textFileoutputSpy.init( stepMockHelper.initStepMetaInterface, stepMockHelper.initStepDataInterface );
 
     Mockito.when( stepMockHelper.processRowsStepMetaInterface.buildFilename( Mockito.anyString(), Mockito.anyString(),
@@ -507,17 +511,17 @@ public class TextFileOutputTest {
 
     textFileOutput.setInputRowMeta( inputRowMeta );
 
-    TextFileOutputData.FileStreamsValue streams = Mockito.mock( TextFileOutputData.FileStreamsValue.class );
-    Mockito.when( streams.isNewFile() ).thenReturn( true );
+    TextFileOutputData.FileStream streams = Mockito.mock( TextFileOutputData.FileStream.class );
 
-    stepMockHelper.initStepDataInterface.fileWriterMap = stepMockHelper.initStepDataInterface.new FileStreamsMap();
+    stepMockHelper.initStepDataInterface.fileStreamsCollection = stepMockHelper.initStepDataInterface.new FileStreamsMap();
     stepMockHelper.initStepDataInterface.fileName = TEXT_FILE_OUTPUT_PREFIX + TEXT_FILE_OUTPUT_EXTENSION;
-    stepMockHelper.initStepDataInterface.fileWriterMap.put( TEXT_FILE_OUTPUT_PREFIX + TEXT_FILE_OUTPUT_EXTENSION, streams );
+    stepMockHelper.initStepDataInterface.fileStreamsCollection.add( TEXT_FILE_OUTPUT_PREFIX + TEXT_FILE_OUTPUT_EXTENSION, streams );
 
     TextFileOutput textFileOutputSpy = Mockito.spy( textFileOutput );
-    Mockito.doNothing().when( textFileOutputSpy ).initFileStreamWriter( EMPTY_FILE_NAME );
+    Mockito.doNothing().when( textFileOutputSpy ).initFileStreamWriter( TEXT_FILE_OUTPUT_PREFIX + TEXT_FILE_OUTPUT_EXTENSION );
     Mockito.doNothing().when( textFileOutputSpy ).writeRow( inputRowMeta, rowData );
     Mockito.doReturn( false ).when( textFileOutputSpy ).isFileExists( TEXT_FILE_OUTPUT_PREFIX + TEXT_FILE_OUTPUT_EXTENSION );
+    Mockito.doReturn( true ).when( textFileOutputSpy ).isWriteHeader( TEXT_FILE_OUTPUT_PREFIX + TEXT_FILE_OUTPUT_EXTENSION );
     textFileOutputSpy.init( stepMockHelper.processRowsStepMetaInterface, stepMockHelper.initStepDataInterface );
     Mockito.when( stepMockHelper.processRowsStepMetaInterface.buildFilename( TEXT_FILE_OUTPUT_PREFIX + TEXT_FILE_OUTPUT_EXTENSION, null,
             textFileOutputSpy, 0, null, 0, true, stepMockHelper.processRowsStepMetaInterface ) ).
@@ -557,10 +561,11 @@ public class TextFileOutputTest {
     Mockito.when( stepMockHelper.processRowsStepMetaInterface.isFileNameInField() ).thenReturn( true );
 
 
+    Object[] rowData = new Object[] {"data text"};
     textFileOutput =
             new TextFileOutputTestHandler( stepMockHelper.stepMeta, stepMockHelper.stepDataInterface, 0, stepMockHelper.transMeta,
                     stepMockHelper.trans );
-    ( (TextFileOutputTestHandler) textFileOutput ).setRow( new Object[] {"data text"} );
+    ( (TextFileOutputTestHandler) textFileOutput ).setRow( rowData );
     RowMetaInterface inputRowMeta = Mockito.mock( RowMetaInterface.class );
 
     ValueMetaInterface valueMetaInterface = Mockito.mock( ValueMetaInterface.class );
@@ -570,12 +575,17 @@ public class TextFileOutputTest {
 
     textFileOutput.setInputRowMeta( inputRowMeta );
 
-    stepMockHelper.initStepDataInterface.fileWriterMap = stepMockHelper.initStepDataInterface.new FileStreamsMap();
+    TextFileOutputData.FileStream streams = Mockito.mock( TextFileOutputData.FileStream.class );
+
+    stepMockHelper.initStepDataInterface.fileStreamsCollection = stepMockHelper.initStepDataInterface.new FileStreamsMap();
     stepMockHelper.initStepDataInterface.fileName = TEXT_FILE_OUTPUT_PREFIX + TEXT_FILE_OUTPUT_EXTENSION;
+    stepMockHelper.initStepDataInterface.fileStreamsCollection.add( TEXT_FILE_OUTPUT_PREFIX + TEXT_FILE_OUTPUT_EXTENSION, streams );
 
     TextFileOutput textFileOutputSpy = Mockito.spy( textFileOutput );
-    Mockito.doNothing().when( textFileOutputSpy ).initFileStreamWriter( EMPTY_FILE_NAME );
+    Mockito.doNothing().when( textFileOutputSpy ).initFileStreamWriter( TEXT_FILE_OUTPUT_PREFIX + TEXT_FILE_OUTPUT_EXTENSION );
     Mockito.doReturn( false ).when( textFileOutputSpy ).isFileExists( TEXT_FILE_OUTPUT_PREFIX + TEXT_FILE_OUTPUT_EXTENSION );
+    Mockito.doReturn( true ).when( textFileOutputSpy ).isWriteHeader( TEXT_FILE_OUTPUT_PREFIX + TEXT_FILE_OUTPUT_EXTENSION );
+    Mockito.doNothing().when( textFileOutputSpy ).writeRow( inputRowMeta, rowData );
     textFileOutputSpy.init( stepMockHelper.processRowsStepMetaInterface, stepMockHelper.initStepDataInterface );
     Mockito.when( stepMockHelper.processRowsStepMetaInterface.buildFilename( TEXT_FILE_OUTPUT_PREFIX + TEXT_FILE_OUTPUT_EXTENSION, null,
             textFileOutputSpy, 0, null, 0, true, stepMockHelper.processRowsStepMetaInterface ) ).
