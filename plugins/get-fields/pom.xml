@@ -37,7 +37,6 @@
     <angular-i18n.version>1.5.6</angular-i18n.version>
     <swt.version>4.6</swt.version>
     <dojo.version>1.9.2</dojo.version>
-    <requirejs.version>2.2.0</requirejs.version>
     <dependency.javax.servlet-api.version>3.0.1</dependency.javax.servlet-api.version>
     <dependency.javax.ws.rs-api.version>2.0</dependency.javax.ws.rs-api.version>
   </properties>
@@ -120,12 +119,6 @@
             <groupId>*</groupId>
           </exclusion>
         </exclusions>
-      </dependency>
-      <dependency>
-        <groupId>org.webjars</groupId>
-        <artifactId>requirejs</artifactId>
-        <version>${requirejs.version}</version>
-        <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>org.webjars.bower</groupId>
