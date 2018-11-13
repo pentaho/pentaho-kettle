@@ -33,12 +33,16 @@ import org.pentaho.di.trans.steps.excelinput.staxpoi.StaxPoiWorkbook;
 
 public class WorkbookFactory {
 
-  public static KWorkbook getWorkbook( SpreadSheetType type, String filename, String encoding ) throws KettleException {
+  public static KWorkbook getWorkbook( SpreadSheetType type, String filename, String encoding) throws KettleException {
+    return getWorkbook( type, filename, encoding, null );
+  }
+
+    public static KWorkbook getWorkbook( SpreadSheetType type, String filename, String encoding, String password ) throws KettleException {
     switch ( type ) {
       case JXL:
         return new XLSWorkbook( filename, encoding );
       case POI:
-        return new PoiWorkbook( filename, encoding ); // encoding is not used, perhaps detected automatically?
+        return new PoiWorkbook( filename, encoding, password ); // encoding is not used, perhaps detected automatically?
       case SAX_POI:
         return new StaxPoiWorkbook( filename, encoding );
       case ODS:
@@ -49,6 +53,7 @@ public class WorkbookFactory {
 
   }
 
+  // Not Dead Code:  Used by pdi-google-docs-plugin
   public static KWorkbook getWorkbook( SpreadSheetType type, InputStream inputStream, String encoding ) throws KettleException {
     switch ( type ) {
       case JXL:

@@ -91,6 +91,7 @@ import org.pentaho.di.ui.core.dialog.EnterTextDialog;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.dialog.PreviewRowsDialog;
 import org.pentaho.di.ui.core.widget.ColumnInfo;
+import org.pentaho.di.ui.core.widget.PasswordTextVar;
 import org.pentaho.di.ui.core.widget.TableView;
 import org.pentaho.di.ui.core.widget.TextVar;
 import org.pentaho.di.ui.trans.dialog.TransPreviewProgressDialog;
@@ -136,6 +137,10 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
   private Label wlFilemask;
   private Text wFilemask;
   private FormData fdlFilemask, fdFilemask;
+
+  private Label wlPassword;
+  private TextVar wPassword;
+  private FormData fdlPassword, fdPassword;
 
   private Label wlExcludeFilemask;
   private TextVar wExcludeFilemask;
@@ -481,13 +486,37 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
     fdExcludeFilemask.right = new FormAttachment( wFilename, 0, SWT.RIGHT );
     wExcludeFilemask.setLayoutData( fdExcludeFilemask );
 
+    // Password Label Data
+    fdlPassword = new FormData();
+    fdlPassword.left = new FormAttachment( 0, 0 );
+    fdlPassword.top = new FormAttachment( wExcludeFilemask, margin );
+    fdlPassword.right = new FormAttachment( middle, -margin );
+
+    // Password Label
+    wlPassword = new Label( wFileComp, SWT.RIGHT );
+    wlPassword.setText( BaseMessages.getString( PKG,"ExeclInputDialog.Password.Label" ) );
+    wlPassword.setLayoutData( fdlPassword );
+    props.setLook( wlPassword );
+
+    // Password Field Data
+    fdPassword = new FormData();
+    fdPassword.left = new FormAttachment( middle, 0 );
+    fdPassword.top = new FormAttachment( wExcludeFilemask, margin );
+    fdPassword.right = new FormAttachment( wFilename, 0, SWT.RIGHT );
+
+    // Password Field
+    wPassword = new PasswordTextVar( transMeta, wFileComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
+    wPassword.addModifyListener( lsMod );
+    wPassword.setLayoutData( fdPassword );
+    props.setLook( wPassword );
+
     // Filename list line
     wlFilenameList = new Label( wFileComp, SWT.RIGHT );
     wlFilenameList.setText( BaseMessages.getString( PKG, "ExcelInputDialog.FilenameList.Label" ) );
     props.setLook( wlFilenameList );
     fdlFilenameList = new FormData();
     fdlFilenameList.left = new FormAttachment( 0, 0 );
-    fdlFilenameList.top = new FormAttachment( wExcludeFilemask, margin );
+    fdlFilenameList.top = new FormAttachment( wPassword, margin );
     fdlFilenameList.right = new FormAttachment( middle, -margin );
     wlFilenameList.setLayoutData( fdlFilenameList );
 
@@ -498,7 +527,7 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
     wbdFilename.setToolTipText( BaseMessages.getString( PKG, "ExcelInputDialog.FilenameDelete.Tooltip" ) );
     fdbdFilename = new FormData();
     fdbdFilename.right = new FormAttachment( 100, 0 );
-    fdbdFilename.top = new FormAttachment( wExcludeFilemask, 40 );
+    fdbdFilename.top = new FormAttachment( wPassword, 40 );
     wbdFilename.setLayoutData( fdbdFilename );
 
     wbeFilename = new Button( wFileComp, SWT.PUSH | SWT.CENTER );
@@ -649,7 +678,7 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
     fdFilenameList = new FormData();
     fdFilenameList.left = new FormAttachment( middle, 0 );
     fdFilenameList.right = new FormAttachment( wbdFilename, -margin );
-    fdFilenameList.top = new FormAttachment( wExcludeFilemask, margin );
+    fdFilenameList.top = new FormAttachment( wPassword, margin );
     fdFilenameList.bottom = new FormAttachment( gAccepting, -margin );
     wFilenameList.setLayoutData( fdFilenameList );
 
@@ -1448,6 +1477,10 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
       wSizeFieldName.setText( meta.getSizeField() );
     }
 
+    if(meta.getPassword() != null){
+      wPassword.setText( meta.getPassword() );
+    }
+
     setFlags();
 
     wStepname.selectAll();
@@ -1554,6 +1587,8 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
     meta.setRootUriField( wRootUriName.getText() );
     meta.setExtensionField( wExtensionFieldName.getText() );
     meta.setSizeField( wSizeFieldName.getText() );
+
+    meta.setPassword( wPassword.getText() );
   }
 
   private void addErrorTab() {
@@ -1920,7 +1955,7 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
       try {
         KWorkbook workbook =
           WorkbookFactory.getWorkbook( info.getSpreadSheetType(), KettleVFS.getFilename( fileObject ), info
-            .getEncoding() );
+            .getEncoding(), wPassword.getText() );
 
         int nrSheets = workbook.getNumberOfSheets();
         for ( int j = 0; j < nrSheets; j++ ) {
@@ -1982,7 +2017,7 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
       try {
         KWorkbook workbook =
           WorkbookFactory.getWorkbook( info.getSpreadSheetType(), KettleVFS.getFilename( file ), info
-            .getEncoding() );
+            .getEncoding(), wPassword.getText() );
         processingWorkbook( fields, info, workbook );
         workbook.close();
       } catch ( Exception e ) {

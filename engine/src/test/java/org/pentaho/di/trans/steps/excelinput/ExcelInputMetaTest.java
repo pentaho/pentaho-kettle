@@ -399,7 +399,8 @@ public class ExcelInputMetaTest {
         + "    <rootUriNameFieldName/>" + SystemUtils.LINE_SEPARATOR
         + "    <extensionFieldName/>" + SystemUtils.LINE_SEPARATOR
         + "    <sizeFieldName/>" + SystemUtils.LINE_SEPARATOR
-        + "    <spreadsheet_type/>" + SystemUtils.LINE_SEPARATOR, meta.getXML() );
+        + "    <spreadsheet_type/>" + SystemUtils.LINE_SEPARATOR
+        + "    <password>Encrypted </password>" + SystemUtils.LINE_SEPARATOR, meta.getXML() );
   }
 
   @Test
