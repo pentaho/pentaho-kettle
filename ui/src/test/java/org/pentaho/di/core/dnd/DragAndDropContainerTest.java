@@ -23,6 +23,7 @@
 package org.pentaho.di.core.dnd;
 
 import org.junit.Test;
+import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 
 import static org.junit.Assert.assertEquals;
@@ -86,11 +87,11 @@ public class DragAndDropContainerTest {
   public void getXML() {
     DragAndDropContainer dnd = new DragAndDropContainer( DragAndDropContainer.TYPE_BASE_STEP_TYPE, "Step Name"  );
 
-    String xml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
-               + "<DragAndDrop>\n"
-               + "  <DragType>BaseStep</DragType>\n"
-               + "  <Data>U3RlcCBOYW1l</Data>\n"
-               + "</DragAndDrop>\n";
+    String xml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" + Const.CR
+               + "<DragAndDrop>" + Const.CR
+               + "  <DragType>BaseStep</DragType>" + Const.CR
+               + "  <Data>U3RlcCBOYW1l</Data>" + Const.CR
+               + "</DragAndDrop>" + Const.CR;
 
     assertEquals( xml, dnd.getXML() );
   }
@@ -99,23 +100,23 @@ public class DragAndDropContainerTest {
   public void getXMLWithId() {
     DragAndDropContainer dnd = new DragAndDropContainer( DragAndDropContainer.TYPE_BASE_STEP_TYPE, "Step Name", "StepID"  );
 
-    String xml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
-                 + "<DragAndDrop>\n"
-                 + "  <ID>StepID</ID>\n"
-                 + "  <DragType>BaseStep</DragType>\n"
-                 + "  <Data>U3RlcCBOYW1l</Data>\n"
-                 + "</DragAndDrop>\n";
+    String xml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" + Const.CR
+                 + "<DragAndDrop>" + Const.CR
+                 + "  <ID>StepID</ID>" + Const.CR
+                 + "  <DragType>BaseStep</DragType>" + Const.CR
+                 + "  <Data>U3RlcCBOYW1l</Data>" + Const.CR
+                 + "</DragAndDrop>" + Const.CR;
 
     assertEquals( xml, dnd.getXML() );
   }
 
   @Test
   public void newFromXML() throws KettleException {
-    String xml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
-               + "<DragAndDrop>\n"
-               + "  <DragType>BaseStep</DragType>\n"
-               + "  <Data>U3RlcCBOYW1l</Data>\n"
-               + "</DragAndDrop>\n";
+    String xml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" + Const.CR
+               + "<DragAndDrop>" + Const.CR
+               + "  <DragType>BaseStep</DragType>" + Const.CR
+               + "  <Data>U3RlcCBOYW1l</Data>" + Const.CR
+               + "</DragAndDrop>" + Const.CR;
 
     DragAndDropContainer dnd = new DragAndDropContainer( xml );
 
@@ -128,12 +129,12 @@ public class DragAndDropContainerTest {
 
   @Test
   public void newFromXMLWithId() throws KettleException {
-    String xml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
-               + "<DragAndDrop>\n"
-               + "  <ID>StepID</ID>\n"
-               + "  <DragType>BaseStep</DragType>\n"
-               + "  <Data>U3RlcCBOYW1l</Data>\n"
-               + "</DragAndDrop>\n";
+    String xml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" + Const.CR
+               + "<DragAndDrop>" + Const.CR
+               + "  <ID>StepID</ID>" + Const.CR
+               + "  <DragType>BaseStep</DragType>" + Const.CR
+               + "  <Data>U3RlcCBOYW1l</Data>" + Const.CR
+               + "</DragAndDrop>" + Const.CR;
 
     DragAndDropContainer dnd = new DragAndDropContainer( xml );
 
