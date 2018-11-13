@@ -8,6 +8,8 @@ List passOnParameters = [string(name:"RELEASE_BUILD_NUMBER",         value:relea
                          string(name:"SUITE_BUILD_RESOURCES_BRANCH", value:"9.0.0.0"),
                          string(name:"SUITE_RELEASE_VERSION",        value:"9.0-QAT"),
                          string(name:"JENKINS_FOLDER_NAME",          value:"9.0"),
+                         string(name:"SCM_URL",                      value:params.SCM_URL),
+                         string(name:"SCM_BRANCH",                   value:params.SCM_BRANCH),
                          string(name:"BUILD_ID_TAIL",                value:"-${releaseBuildNumber}"),
                          string(name:"BUILD_HOSTING_ROOT",           value:"/build2/artifacts/hosted")]
 
