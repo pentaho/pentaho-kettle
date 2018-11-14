@@ -8,7 +8,7 @@
 					<textbox pen:customclass="variabletextbox" id="database-name-text" />
 					<label id="instance-label" value="${DatabaseDialog.label.SQLServerInstance}" />
 					<!-- shouldDisablePortIfPopulated is just an attribute checked by DataHandler -->
-					<textbox id="instance-text" shouldDisablePortIfPopulated="true" />
+					<textbox pen:customclass="variabletextbox" id="instance-text" shouldDisablePortIfPopulated="true" />
 					<label id="port-number-label" value="${DatabaseDialog.label.PortNumber}" />
 					<textbox pen:customclass="variabletextbox" id="port-number-text" />
 					<label id="username-label" value="${DatabaseDialog.label.Username}" />
