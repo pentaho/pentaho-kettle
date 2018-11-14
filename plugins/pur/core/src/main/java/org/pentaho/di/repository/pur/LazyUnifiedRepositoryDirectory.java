@@ -56,13 +56,15 @@ public class LazyUnifiedRepositoryDirectory extends RepositoryDirectory {
   private List<RepositoryElementMetaInterface> fileChildren;
   private RepositoryDirectoryInterface parent;
   private Logger logger = LoggerFactory.getLogger( getClass() );
+  private boolean showHidden;
 
   public LazyUnifiedRepositoryDirectory( RepositoryFile self, RepositoryDirectoryInterface parent,
-                                         IUnifiedRepository repository, RepositoryServiceRegistry registry ) {
+                                         IUnifiedRepository repository, RepositoryServiceRegistry registry, boolean showHidden ) {
     this.self = self;
     this.parent = parent;
     this.repository = repository;
     this.registry = registry;
+    this.showHidden = showHidden;
   }
 
   private String getParentPath( String absolutePath ) {
@@ -91,15 +93,15 @@ public class LazyUnifiedRepositoryDirectory extends RepositoryDirectory {
     String parentPath = getParentPath( file.getPath() );
     if ( self.getPath().endsWith( RepositoryDirectory.DIRECTORY_SEPARATOR ) ) {
       if ( parentPath.equals( self.getPath().substring( 0, self.getPath().length() - 1 ) ) ) {
-        return new LazyUnifiedRepositoryDirectory( file, this, repository, registry );
+        return new LazyUnifiedRepositoryDirectory( file, this, repository, registry, showHidden );
       }
     } else {
       if ( parentPath.equals( self.getPath() ) ) {
-        return new LazyUnifiedRepositoryDirectory( file, this, repository, registry );
+        return new LazyUnifiedRepositoryDirectory( file, this, repository, registry, showHidden );
       }
     }
 
-    return new LazyUnifiedRepositoryDirectory( file, findDirectory( parentPath ), repository, registry );
+    return new LazyUnifiedRepositoryDirectory( file, findDirectory( parentPath ), repository, registry, showHidden );
   }
 
   @Override public RepositoryDirectory findDirectory( String path ) {
@@ -133,15 +135,15 @@ public class LazyUnifiedRepositoryDirectory extends RepositoryDirectory {
     String parentPath = getParentPath( absolutePath );
     if ( self.getPath().endsWith( RepositoryDirectory.DIRECTORY_SEPARATOR ) ) {
       if ( parentPath.equals( self.getPath().substring( 0, self.getPath().length() - 1 ) ) ) {
-        return new LazyUnifiedRepositoryDirectory( file, this, repository, registry );
+        return new LazyUnifiedRepositoryDirectory( file, this, repository, registry, showHidden );
       }
     } else {
       if ( parentPath.equals( self.getPath() ) ) {
-        return new LazyUnifiedRepositoryDirectory( file, this, repository, registry );
+        return new LazyUnifiedRepositoryDirectory( file, this, repository, registry, showHidden );
       }
     }
 
-    return new LazyUnifiedRepositoryDirectory( file, findDirectory( parentPath ), repository, registry );
+    return new LazyUnifiedRepositoryDirectory( file, findDirectory( parentPath ), repository, registry, showHidden );
 
   }
 
@@ -159,7 +161,7 @@ public class LazyUnifiedRepositoryDirectory extends RepositoryDirectory {
       synchronized ( subdirectories ) {
         List<RepositoryFile> children = getAllURChildrenFiles();
         for ( RepositoryFile child : children ) {
-          LazyUnifiedRepositoryDirectory dir = new LazyUnifiedRepositoryDirectory( child, this, repository, registry );
+          LazyUnifiedRepositoryDirectory dir = new LazyUnifiedRepositoryDirectory( child, this, repository, registry, showHidden );
           dir.setObjectId( new StringObjectId( child.getId().toString() ) );
           this.addSubdirectory( dir );
         }
@@ -168,7 +170,7 @@ public class LazyUnifiedRepositoryDirectory extends RepositoryDirectory {
     return subdirectories;
   }
 
-  @Override public List<RepositoryElementMetaInterface> getRepositoryObjects() {
+  @Override public List<RepositoryElementMetaInterface> getRepositoryObjects( ) {
     if ( fileChildren == null ) {
       fileChildren = new ArrayList<>();
       synchronized ( fileChildren ) {
@@ -176,7 +178,7 @@ public class LazyUnifiedRepositoryDirectory extends RepositoryDirectory {
         UnifiedRepositoryLockService lockService =
             (UnifiedRepositoryLockService) registry.getService( ILockService.class );
 
-        RepositoryFileTree tree = repository.getTree( new RepositoryRequest( this.self.getPath(), true, 1, null ) );
+        RepositoryFileTree tree = repository.getTree( new RepositoryRequest( this.self.getPath(), showHidden, 1, null ) );
 
         for ( RepositoryFileTree tchild : tree.getChildren() ) {
           RepositoryFile child = tchild.getFile();
@@ -242,7 +244,7 @@ public class LazyUnifiedRepositoryDirectory extends RepositoryDirectory {
 
   private List<RepositoryFile> getAllURChildrenFiles() {
     RepositoryRequest repositoryRequest = new RepositoryRequest();
-    repositoryRequest.setShowHidden( true );
+    repositoryRequest.setShowHidden( showHidden );
     repositoryRequest.setTypes( RepositoryRequest.FILES_TYPE_FILTER.FOLDERS );
     repositoryRequest.setPath( this.self.getId().toString() );
     List<RepositoryFile> children = repository.getChildren( repositoryRequest );

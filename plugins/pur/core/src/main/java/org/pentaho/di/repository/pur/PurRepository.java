@@ -727,8 +727,11 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
         readWriteLock.readLock().unlock();
       }
 
+      IUser user = this.getUserInfo();
+      boolean showHidden = user != null ? user.isAdmin() : true;
+
       rootDir =
-        new LazyUnifiedRepositoryDirectory( root, null, pur, purRepositoryServiceRegistry );
+        new LazyUnifiedRepositoryDirectory( root, null, pur, purRepositoryServiceRegistry, showHidden );
     }
     rootRef.setRef( rootDir );
     return rootDir;
