@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -228,6 +228,7 @@ public class RemoveJobServlet extends BaseHttpServlet implements CartePluginInte
         out.println( "<a href=\""
           + convertContextPath( GetStatusServlet.CONTEXT_PATH ) + "\">"
           + BaseMessages.getString( PKG, "TransStatusServlet.BackToStatusPage" ) + "</a><p>" );
+        response.setStatus( HttpServletResponse.SC_BAD_REQUEST );
       }
     }
   }

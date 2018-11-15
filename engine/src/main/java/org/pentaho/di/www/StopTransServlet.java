@@ -224,6 +224,7 @@ public class StopTransServlet extends BaseHttpServlet implements CartePluginInte
           out.println( "<a href=\""
             + convertContextPath( GetStatusServlet.CONTEXT_PATH ) + "\">"
             + BaseMessages.getString( PKG, "TransStatusServlet.BackToStatusPage" ) + "</a><p>" );
+          response.setStatus( HttpServletResponse.SC_BAD_REQUEST );
         }
       }
     } catch ( Exception ex ) {
@@ -234,6 +235,7 @@ public class StopTransServlet extends BaseHttpServlet implements CartePluginInte
         out.println( "<pre>" );
         out.println( Encode.forHtml( Const.getStackTracker( ex ) ) );
         out.println( "</pre>" );
+        response.setStatus( HttpServletResponse.SC_BAD_REQUEST );
       }
     }
 
