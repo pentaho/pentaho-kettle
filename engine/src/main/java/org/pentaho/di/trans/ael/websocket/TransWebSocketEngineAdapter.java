@@ -69,6 +69,8 @@ import java.util.stream.Collectors;
 
 import static com.google.common.base.Strings.isNullOrEmpty;
 import static java.util.stream.Collectors.toMap;
+import static org.pentaho.di.trans.step.BaseStepData.StepExecutionStatus.STATUS_HALTING;
+import static org.pentaho.di.trans.step.BaseStepData.StepExecutionStatus.STATUS_RUNNING;
 
 /**
  * Created by fcamara on 8/17/17.
@@ -296,6 +298,13 @@ public class TransWebSocketEngineAdapter extends Trans {
                 case FINISHED:
                   l.transFinished( TransWebSocketEngineAdapter.this );
                   setFinished( true );
+                  getSteps().stream()
+                    .map( c -> c.step )
+                    .filter( s -> STATUS_RUNNING.equals( s.getStatus() ) || STATUS_HALTING.equals( s.getStatus() ) )
+                    .forEach( si -> {
+                      si.setStopped( true );
+                      si.setRunning( false );
+                    } );
                   break;
               }
             } catch ( KettleException e ) {
