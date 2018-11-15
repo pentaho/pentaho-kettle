@@ -70,6 +70,7 @@ import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.dialog.PreviewRowsDialog;
 import org.pentaho.di.ui.core.widget.ColumnInfo;
 import org.pentaho.di.ui.core.widget.ComboValuesSelectionListener;
+import org.pentaho.di.ui.core.widget.PasswordTextVar;
 import org.pentaho.di.ui.core.widget.TableView;
 import org.pentaho.di.ui.core.widget.TextVar;
 import org.pentaho.di.ui.trans.dialog.TransPreviewProgressDialog;
@@ -79,6 +80,8 @@ import org.pentaho.di.ui.trans.steps.textfileinput.TextFileCSVImportProgressDial
 public class S3CsvInputDialog extends BaseStepDialog implements StepDialogInterface {
   private S3CsvInputMeta inputMeta;
 
+  private TextVar      wAccessKey;
+  private TextVar      wSecretKey;
   private TextVar      wBucket;
   private Button       wbBucket; // browse for a bucket.
   private TextVar      wFilename;
@@ -149,6 +152,48 @@ public class S3CsvInputDialog extends BaseStepDialog implements StepDialogInterf
     fdStepname.right = new FormAttachment( 100, 0 );
     wStepname.setLayoutData( fdStepname );
     Control lastControl = wStepname;
+
+    // Access key
+    Label wlAccessKey = new Label( shell, SWT.RIGHT );
+    wlAccessKey.setText( Messages.getString( "S3CsvInputDialog.AccessKey.Label" ) ); //$NON-NLS-1$
+    props.setLook( wlAccessKey );
+    FormData fdlAccessKey = new FormData();
+    fdlAccessKey.top = new FormAttachment( lastControl, margin );
+    fdlAccessKey.left = new FormAttachment( 0, 0 );
+    fdlAccessKey.right = new FormAttachment( middle, -margin );
+    wlAccessKey.setLayoutData( fdlAccessKey );
+
+    wAccessKey = new PasswordTextVar( transMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
+
+    props.setLook( wAccessKey );
+    wAccessKey.addModifyListener( lsMod );
+    FormData fdAccessKey = new FormData();
+    fdAccessKey.top = new FormAttachment( lastControl, margin );
+    fdAccessKey.left = new FormAttachment( middle, 0 );
+    fdAccessKey.right = new FormAttachment( 100, 0 );
+    wAccessKey.setLayoutData( fdAccessKey );
+    lastControl = wAccessKey;
+
+    // Secret key
+    Label wlSecretKey = new Label( shell, SWT.RIGHT );
+    wlSecretKey.setText( Messages.getString( "S3CsvInputDialog.SecretKey.Label" ) ); //$NON-NLS-1$
+    props.setLook( wlSecretKey );
+    FormData fdlSecretKey = new FormData();
+    fdlSecretKey.top = new FormAttachment( lastControl, margin );
+    fdlSecretKey.left = new FormAttachment( 0, 0 );
+    fdlSecretKey.right = new FormAttachment( middle, -margin );
+    wlSecretKey.setLayoutData( fdlSecretKey );
+
+    wSecretKey = new PasswordTextVar( transMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
+
+    props.setLook( wSecretKey );
+    wSecretKey.addModifyListener( lsMod );
+    FormData fdSecretKey = new FormData();
+    fdSecretKey.top = new FormAttachment( lastControl, margin );
+    fdSecretKey.left = new FormAttachment( middle, 0 );
+    fdSecretKey.right = new FormAttachment( 100, 0 );
+    wSecretKey.setLayoutData( fdSecretKey );
+    lastControl = wSecretKey;
 
     // Bucket name
     Label wlBucket = new Label( shell, SWT.RIGHT );
@@ -623,6 +668,8 @@ public class S3CsvInputDialog extends BaseStepDialog implements StepDialogInterf
    */
   public void getData( S3CsvInputMeta inputMeta ) {
     wStepname.setText( stepname );
+    wAccessKey.setText( Const.NVL( inputMeta.getAwsAccessKey(), "" ) );
+    wSecretKey.setText( Const.NVL( inputMeta.getAwsSecretKey(), "" ) );
     wBucket.setText( Const.NVL( inputMeta.getBucket(), "" ) );
 
     if ( isReceivingInput ) {
@@ -668,7 +715,8 @@ public class S3CsvInputDialog extends BaseStepDialog implements StepDialogInterf
   }
 
   private void getInfo( S3CsvInputMeta inputMeta ) {
-
+    inputMeta.setAwsAccessKey( wAccessKey.getText() );
+    inputMeta.setAwsSecretKey( wSecretKey.getText() );
     inputMeta.setBucket( wBucket.getText() );
 
     if ( isReceivingInput ) {
