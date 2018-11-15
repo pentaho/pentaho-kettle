@@ -63,6 +63,7 @@ import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.steps.recordsfromstream.RecordsFromStreamMeta;
 import org.pentaho.di.trans.streaming.common.BaseStreamStepMeta;
 import org.pentaho.di.ui.core.ConstUI;
+import org.pentaho.di.ui.core.FormDataBuilder;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.core.widget.ComboVar;
@@ -104,6 +105,7 @@ public abstract class BaseStreamingDialog extends BaseStepDialog implements Step
   protected TextVar wBatchSize;
   protected Label wlBatchDuration;
   protected TextVar wBatchDuration;
+  protected TextVar wParallelism;
 
   protected CTabFolder wTabFolder;
   protected CTabItem wSetupTab;
@@ -462,6 +464,16 @@ public abstract class BaseStreamingDialog extends BaseStepDialog implements Step
     fdBatchSize.width = 75;
     wBatchSize.setLayoutData( fdBatchSize );
 
+    Label wlParallelism = new Label( wBatchComp, SWT.LEFT );
+    props.setLook( wlParallelism );
+    wlParallelism.setText( BaseMessages.getString( PKG, "BaseStreamingDialog.Parallelism" ) );
+    wlParallelism.setLayoutData( new FormDataBuilder().left().top( wBatchSize, 10 ).right( 50, 0 ).result() );
+
+    wParallelism = new TextVar( transMeta, wBatchComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
+    props.setLook( wParallelism );
+    wParallelism.addModifyListener( lsMod );
+    wParallelism.setLayoutData( new FormDataBuilder().left().top( wlParallelism, 5 ).width( 75 ).result() );
+
     wBatchComp.layout();
     wBatchTab.setControl( wBatchComp );
   }
@@ -515,6 +527,9 @@ public abstract class BaseStreamingDialog extends BaseStepDialog implements Step
     }
     if ( meta.getBatchDuration() != null ) {
       wBatchDuration.setText( meta.getBatchDuration() );
+    }
+    if ( this.meta.getParallelism() != null ) {
+      wParallelism.setText( meta.getParallelism() );
     }
     if ( this.meta.getSubStep() != null ) {
       wSubStep.setText( this.meta.getSubStep() );
@@ -580,6 +595,7 @@ public abstract class BaseStreamingDialog extends BaseStepDialog implements Step
     streamMeta.setTransformationPath( wFileSection.wFileName.getText() );
     streamMeta.setBatchSize( wBatchSize.getText() );
     streamMeta.setBatchDuration( wBatchDuration.getText() );
+    streamMeta.setParallelism( wParallelism.getText() );
     streamMeta.setSpecificationMethod( specificationMethod );
     streamMeta.setSubStep( wSubStep.getText() );
     switch ( specificationMethod ) {

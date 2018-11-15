@@ -55,6 +55,7 @@ public abstract class BaseStreamStepMeta extends StepWithMappingMeta implements 
   public static final String NUM_MESSAGES = "NUM_MESSAGES";
   public static final String DURATION = "DURATION";
   public static final String SUB_STEP = "SUB_STEP";
+  public static final String PARALLELISM = "PARALLELISM";
 
   @Injection ( name = TRANSFORMATION_PATH )
   protected String transformationPath = "";
@@ -67,6 +68,9 @@ public abstract class BaseStreamStepMeta extends StepWithMappingMeta implements 
 
   @Injection ( name = SUB_STEP )
   protected String subStep = "";
+
+  @Injection( name =  PARALLELISM )
+  protected String parallelism = "1";
 
   MappingMetaRetriever mappingMetaRetriever = TransExecutorMeta::loadMappingMeta;
 
@@ -95,9 +99,13 @@ public abstract class BaseStreamStepMeta extends StepWithMappingMeta implements 
     this.batchDuration = batchDuration;
   }
 
+  public void setParallelism( String parallelism ) {
+    this.parallelism = parallelism;
+  }
   @Override public void setDefault() {
     batchSize = "1000";
     batchDuration = "1000";
+    parallelism = "1";
   }
 
   public String getTransformationPath() {
@@ -112,6 +120,9 @@ public abstract class BaseStreamStepMeta extends StepWithMappingMeta implements 
     return batchDuration;
   }
 
+  public String getParallelism() {
+    return parallelism;
+  }
   @Override public void replaceFileName( String fileName ) {
     super.replaceFileName( fileName );
     setTransformationPath( fileName );

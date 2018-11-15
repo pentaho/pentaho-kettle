@@ -238,6 +238,7 @@ public class BaseStreamStepMetaTest {
     startingMeta.setBatchDuration( "1000" );
     startingMeta.setBatchSize( "100" );
     startingMeta.setTransformationPath( "aPath" );
+    startingMeta.setParallelism( "4" );
     testRoundTrip( startingMeta );
   }
 
@@ -354,6 +355,7 @@ public class BaseStreamStepMetaTest {
     assertThat( startingMeta.getBatchDuration(), equalTo( metaToRoundTrip.getBatchDuration() ) );
     assertThat( startingMeta.getBatchSize(), equalTo( metaToRoundTrip.getBatchSize() ) );
     assertThat( startingMeta.getTransformationPath(), equalTo( metaToRoundTrip.getTransformationPath() ) );
+    assertThat( startingMeta.getParallelism(), equalTo( metaToRoundTrip.getParallelism() ) );
 
     assertThat( startingMeta.stuff, equalTo( metaToRoundTrip.stuff ) );
   }
