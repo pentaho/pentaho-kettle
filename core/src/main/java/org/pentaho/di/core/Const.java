@@ -1279,6 +1279,12 @@ public class Const {
     String.valueOf( KETTLE_ZIP_MAX_TEXT_SIZE_DEFAULT );
 
   /**
+   * <p>A variable to configure if the S3 input / output steps should use the Amazon Default Credentials Provider Chain
+   * even if access credentials are specified within the transformation.</p>
+   */
+  public static final String KETTLE_USE_AWS_DEFAULT_CREDENTIALS = "KETTLE_USE_AWS_DEFAULT_CREDENTIALS";
+
+  /**
    * rounds double f to any number of places after decimal point Does arithmetic using BigDecimal class to avoid integer
    * overflow while rounding
    *

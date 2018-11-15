@@ -26,7 +26,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.amazonaws.SdkClientException;
-import com.amazonaws.auth.AWSCredentials;
 import com.amazonaws.auth.AWSStaticCredentialsProvider;
 import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.regions.Regions;
@@ -35,6 +34,9 @@ import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.row.value.ValueMetaBase;
+import org.pentaho.di.core.util.EnvUtil;
+import org.pentaho.di.core.util.StringUtil;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.annotations.Step;
 import org.pentaho.di.core.database.DatabaseMeta;
@@ -119,8 +121,10 @@ public class S3CsvInputMeta extends BaseStepMeta implements StepMetaInterface, I
   @Injection( name = "RUNNING_IN_PARALLEL" )
   private boolean runningInParallel;
 
+  @Injection( name = "AWS_ACCESS_KEY" )
   private String awsAccessKey;
 
+  @Injection( name = "AWS_SECRET_KEY" )
   private String awsSecretKey;
 
   public S3CsvInputMeta() {
@@ -677,6 +681,21 @@ public class S3CsvInputMeta extends BaseStepMeta implements StepMetaInterface, I
   }
 
   /**
+   * For legacy transformations containing AWS S3 access credentials, {@link Const#KETTLE_USE_AWS_DEFAULT_CREDENTIALS} can force Spoon to use
+   * the Amazon Default Credentials Provider Chain instead of using the credentials embedded in the transformation metadata.
+   *
+   * @return true if {@link Const#KETTLE_USE_AWS_DEFAULT_CREDENTIALS} is true or AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY are not specified
+   */
+  public boolean getUseAwsDefaultCredentials() {
+    if ( ValueMetaBase.convertStringToBoolean( Const.NVL( EnvUtil.getSystemProperty( Const.KETTLE_USE_AWS_DEFAULT_CREDENTIALS ), "N" ) ) ) {
+      return true;
+    } else if ( StringUtil.isEmpty( awsAccessKey ) && StringUtil.isEmpty( awsSecretKey ) ) {
+      return true;
+    }
+    return false;
+  }
+
+  /**
    * @return the bucket
    */
   public String getBucket() {
@@ -722,18 +741,17 @@ public class S3CsvInputMeta extends BaseStepMeta implements StepMetaInterface, I
   }
 
   public AmazonS3 getS3Client( VariableSpace space ) throws SdkClientException {
-    String accessKey = Encr.decryptPasswordOptionallyEncrypted( space.environmentSubstitute( awsAccessKey ) );
-    String secretKey = Encr.decryptPasswordOptionallyEncrypted( space.environmentSubstitute( awsSecretKey ) );
-    AWSCredentials credentials = null;
-
-    if ( !isEmpty( accessKey ) && !isEmpty( secretKey ) ) {
+    if ( !getUseAwsDefaultCredentials() ) {
       // Handle legacy credentials ( embedded in the step ).  We'll force a region since it not specified and
       // then turn on GlobalBucketAccess so if the files accessed are elsewhere it won't matter.
-      BasicAWSCredentials awsCreds = new BasicAWSCredentials( accessKey, secretKey );
+      BasicAWSCredentials credentials = new BasicAWSCredentials(
+        Encr.decryptPasswordOptionallyEncrypted( space.environmentSubstitute( awsAccessKey ) ),
+        Encr.decryptPasswordOptionallyEncrypted( space.environmentSubstitute( awsSecretKey ) ) );
+
       return AmazonS3ClientBuilder.standard()
-        .withCredentials( new AWSStaticCredentialsProvider( awsCreds ) )
-        .enableForceGlobalBucketAccess()
+        .withCredentials( new AWSStaticCredentialsProvider( credentials ) )
         .withRegion( Regions.US_EAST_1 )
+        .enableForceGlobalBucketAccess()
         .build();
     } else {
       // Get Credentials the new way
@@ -741,9 +759,5 @@ public class S3CsvInputMeta extends BaseStepMeta implements StepMetaInterface, I
         .enableForceGlobalBucketAccess()
         .build();
     }
-  }
-
-  private boolean isEmpty( String value ) {
-    return value == null || value.length() <= 0;
   }
 }
