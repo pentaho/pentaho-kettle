@@ -21,7 +21,7 @@
  ******************************************************************************/
 package org.pentaho.di.trans.streaming.common;
 
-import io.reactivex.Observable;
+import io.reactivex.Flowable;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -55,8 +55,8 @@ public class FixedTimeStreamWindowTest {
     RowMetaInterface rowMeta = new RowMeta();
     rowMeta.addValueMeta( new ValueMetaString( "field" ) );
     FixedTimeStreamWindow<List> window =
-      new FixedTimeStreamWindow<>( subtransExecutor, rowMeta, 0, 2 );
-    window.buffer( Observable.fromIterable( singletonList( asList( "v1", "v2" ) ) ) ).forEach( result -> { } );
+      new FixedTimeStreamWindow<>( subtransExecutor, rowMeta, 0, 2, 1 );
+    window.buffer( Flowable.fromIterable( singletonList( asList( "v1", "v2" ) ) ) ).forEach( result -> { } );
   }
 
   @Test
@@ -67,8 +67,8 @@ public class FixedTimeStreamWindowTest {
     mockResult.setRows( Arrays.asList( new RowMetaAndData( rowMeta, "queen" ), new RowMetaAndData( rowMeta, "king" ) ) );
     when( subtransExecutor.execute( any()  ) ).thenReturn( Optional.of( mockResult ) );
     FixedTimeStreamWindow<List> window =
-      new FixedTimeStreamWindow<>( subtransExecutor, rowMeta, 0, 2 );
-    window.buffer( Observable.fromIterable( singletonList( asList( "v1", "v2" ) ) ) )
+      new FixedTimeStreamWindow<>( subtransExecutor, rowMeta, 0, 2, 1 );
+    window.buffer( Flowable.fromIterable( singletonList( asList( "v1", "v2" ) ) ) )
       .forEach( result -> assertEquals( mockResult, result ) );
   }
 
@@ -81,8 +81,8 @@ public class FixedTimeStreamWindowTest {
     when( subtransExecutor.execute( any()  ) ).thenReturn( Optional.of( mockResult ) );
     AtomicInteger count = new AtomicInteger();
     FixedTimeStreamWindow<List> window =
-      new FixedTimeStreamWindow<>( subtransExecutor, rowMeta, 0, 2, (p) -> count.set( p.getKey().get( 0 ).size() ) );
-    window.buffer( Observable.fromIterable( singletonList( asList( "v1", "v2" ) ) ) )
+      new FixedTimeStreamWindow<>( subtransExecutor, rowMeta, 0, 2, 1, ( p) -> count.set( p.getKey().get( 0 ).size() ) );
+    window.buffer( Flowable.fromIterable( singletonList( asList( "v1", "v2" ) ) ) )
       .forEach( result -> assertEquals( mockResult, result ) );
     assertEquals( 2, count.get() );
   }

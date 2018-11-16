@@ -56,7 +56,7 @@ public class JmsConsumer extends BaseStreamStep {
       + jmsConsumerMeta.jmsDelegate.getJmsProvider().getConnectionDetails( jmsConsumerMeta.jmsDelegate ) );
 
     window = new FixedTimeStreamWindow<>(
-      subtransExecutor, jmsConsumerMeta.jmsDelegate.getRowMeta(), getDuration(), getBatchSize() );
+      subtransExecutor, jmsConsumerMeta.jmsDelegate.getRowMeta(), getDuration(), getBatchSize(), getParallelism() );
     source = new JmsStreamSource( this, requireNonNull( jmsConsumerMeta.jmsDelegate ), getReceiverTimeout( jmsConsumerMeta ) );
     return superStatus;
   }

@@ -85,7 +85,7 @@ public class JmsStreamSourceTest {
     verify( delegate ).getJmsContext();
     verify( delegate ).getDestination();
 
-    List<Object> sentMessage = source.observable().firstElement().blockingGet( Collections.emptyList() );
+    List<Object> sentMessage = source.flowable().firstElement().blockingGet( Collections.emptyList() );
 
     assertThat( sentMessage.size(), equalTo( 2 ) );
     assertThat( sentMessage.get( 0 ), equalTo( "message" ) );
@@ -100,7 +100,7 @@ public class JmsStreamSourceTest {
     verify( delegate ).getJmsContext();
     verify( delegate ).getDestination();
     try {
-      source.observable().firstElement().blockingGet( Collections.emptyList() );
+      source.flowable().firstElement().blockingGet( Collections.emptyList() );
       fail( "Expected exception " );
     } catch ( Exception e ) {
       assertTrue( e instanceof JMSRuntimeException );

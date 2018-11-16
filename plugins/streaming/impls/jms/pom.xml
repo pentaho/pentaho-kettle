@@ -42,7 +42,6 @@
     <ibmmq.version>9.0.4.0</ibmmq.version>
     <jms.version>2.0.1</jms.version>
     <pdi.version>9.0.0.0-SNAPSHOT</pdi.version>
-    <rxjava.version>2.0.4</rxjava.version>
     <artemis.version>2.5.0</artemis.version>
   </properties>
 
@@ -129,11 +128,6 @@
       <groupId>io.netty</groupId>
       <artifactId>netty-transport-native-epoll</artifactId>
       <version>4.1.22.Final</version>
-    </dependency>
-    <dependency>
-      <groupId>io.reactivex.rxjava2</groupId>
-      <artifactId>rxjava</artifactId>
-      <version>${rxjava.version}</version>
     </dependency>
 
     <dependency>

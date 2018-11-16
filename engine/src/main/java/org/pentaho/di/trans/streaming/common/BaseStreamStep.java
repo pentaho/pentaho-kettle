@@ -131,7 +131,7 @@ public class BaseStreamStep extends BaseStep {
   }
 
   private Iterable<Result> bufferStream() {
-    return window.buffer( source.observable() );
+    return window.buffer( source.flowable() );
   }
 
   @Override
@@ -186,6 +186,14 @@ public class BaseStreamStep extends BaseStep {
       return Long.parseLong( variablizedStepMeta.getBatchDuration() );
     } catch ( NumberFormatException nfe ) {
       return 5000L;
+    }
+  }
+
+  protected int getParallelism() {
+    try {
+      return Integer.parseInt( variablizedStepMeta.getParallelism() );
+    } catch ( NumberFormatException nfe ) {
+      return 1;
     }
   }
 
