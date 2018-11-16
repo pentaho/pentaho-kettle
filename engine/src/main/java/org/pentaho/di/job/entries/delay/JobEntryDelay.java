@@ -199,6 +199,10 @@ public class JobEntryDelay extends JobEntryBase implements Cloneable, JobEntryIn
       // We get an exception
       result.setResult( false );
       logError( "Error  : " + e.getMessage() );
+
+      if ( Thread.currentThread().isInterrupted() ) {
+        Thread.currentThread().interrupt();
+      }
     }
 
     return result;
