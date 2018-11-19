@@ -2291,10 +2291,12 @@ public abstract class BaseDatabaseMeta implements Cloneable, DatabaseInterfaceEx
   public void addDefaultOptions() {
   }
 
+  @Override
   public void addAttribute( String attributeId, String value ) {
     attributes.setProperty( attributeId, value );
   }
 
+  @Override
   public String getAttribute( String attributeId, String defaultValue ) {
     return attributes.getProperty( attributeId, defaultValue  );
   }

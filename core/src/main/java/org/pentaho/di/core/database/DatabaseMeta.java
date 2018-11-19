@@ -1008,7 +1008,7 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
           String code = XMLHandler.getTagValue( attrnode, "code" );
           String attribute = XMLHandler.getTagValue( attrnode, "attribute" );
           if ( code != null && attribute != null ) {
-            getAttributes().put( code, attribute );
+            databaseInterface.addAttribute( code, attribute );
           }
           getDatabasePortNumberString();
         }
