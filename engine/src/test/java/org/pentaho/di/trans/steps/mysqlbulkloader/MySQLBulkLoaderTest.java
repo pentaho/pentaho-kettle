@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -28,12 +28,10 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import junit.framework.Assert;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.Before;
 import org.junit.BeforeClass;
-import org.mockito.Mockito;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.database.MySQLDatabaseMeta;
@@ -54,6 +52,14 @@ import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
+
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Matchers.anyInt;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 public class MySQLBulkLoaderTest {
   @ClassRule public static RestorePDIEngineEnvironment env = new RestorePDIEngineEnvironment();
@@ -110,22 +116,21 @@ public class MySQLBulkLoaderTest {
     Node stepNode = (Node) document.getDocumentElement();
     lm.loadXML( stepNode, Collections.EMPTY_LIST, metastore );
     int[] codes = lm.getFieldFormatType();
-    Assert.assertEquals( 3, codes[0] );
-    Assert.assertEquals( 4, codes[1] );
+    assertEquals( 3, codes[0] );
+    assertEquals( 4, codes[1] );
   }
 
   @Test
   public void testVariableSubstitution() throws KettleException {
     lder.init( lmeta, ldata );
-    String is = null;
-    is = new String( ldata.quote );
-    Assert.assertEquals( "'", is );
-    is = new String( ldata.separator );
-    Assert.assertEquals( ",", is );
-    Assert.assertEquals( "UTF8", ldata.bulkTimestampMeta.getStringEncoding() );
-    Assert.assertEquals( "UTF8", ldata.bulkDateMeta.getStringEncoding() );
-    Assert.assertEquals( "UTF8", ldata.bulkNumberMeta.getStringEncoding() );
-    Assert.assertEquals(  "`someschema`.`sometable`",  ldata.schemaTable );
+
+    assertEquals( "'", new String( ldata.quote ) );
+    assertEquals( ",", new String( ldata.separator ) );
+
+    assertEquals( "UTF8", ldata.bulkTimestampMeta.getStringEncoding() );
+    assertEquals( "UTF8", ldata.bulkDateMeta.getStringEncoding() );
+    assertEquals( "UTF8", ldata.bulkNumberMeta.getStringEncoding() );
+    assertEquals( "`sometable`",  ldata.schemaTable );
   }
 
   @Test
@@ -148,13 +153,13 @@ public class MySQLBulkLoaderTest {
     transMeta.addStep( stepMeta );
     trans.setRunning( true );
 
-    loader = Mockito.spy( new MySQLBulkLoader( stepMeta, ld, 1, transMeta, trans ) );
+    loader = spy( new MySQLBulkLoader( stepMeta, ld, 1, transMeta, trans ) );
 
     RowMeta rm = new RowMeta();
     ValueMetaString vm = new ValueMetaString( "I don't want NPE!" );
     rm.addValueMeta( vm );
-    RowMeta spyRowMeta = Mockito.spy( new RowMeta() );
-    Mockito.when( spyRowMeta.getValueMeta( Mockito.anyInt() ) ).thenReturn( vm );
+    RowMeta spyRowMeta = spy( new RowMeta() );
+    when( spyRowMeta.getValueMeta( anyInt() ) ).thenReturn( vm );
     loader.setInputRowMeta( spyRowMeta );
 
     MySQLBulkLoaderMeta smi = new MySQLBulkLoaderMeta();
@@ -162,18 +167,18 @@ public class MySQLBulkLoaderTest {
     smi.setFieldFormatType( new int[] { MySQLBulkLoaderMeta.FIELD_FORMAT_TYPE_STRING_ESCAPE } );
     smi.setEscapeChar( "\\" );
     smi.setEnclosure( "\"" );
-    smi.setDatabaseMeta( Mockito.mock( DatabaseMeta.class ) );
+    smi.setDatabaseMeta( mock( DatabaseMeta.class ) );
 
     MySQLBulkLoaderData sdi = new MySQLBulkLoaderData();
     sdi.keynrs = new int[1];
     sdi.keynrs[0] = 0;
-    sdi.fifoStream = Mockito.mock( OutputStream.class );
+    sdi.fifoStream = mock( OutputStream.class );
     loader.init( smi, sdi );
     loader.first = false;
 
-    Mockito.when( loader.getRow() ).thenReturn( new String[] { "test\"Escape\\" } );
+    when( loader.getRow() ).thenReturn( new String[] { "test\"Escape\\" } );
     loader.processRow( smi, sdi );
-    Mockito.verify( sdi.fifoStream, Mockito.times( 1 ) ).write( "test\\\"Escape\\\\".getBytes() );
+    verify( sdi.fifoStream, times( 1 ) ).write( "test\\\"Escape\\\\".getBytes() );
   }
 
   /**
@@ -200,19 +205,19 @@ public class MySQLBulkLoaderTest {
     transMeta.addStep( stepMeta );
     trans.setRunning( true );
 
-    loader = Mockito.spy( new MySQLBulkLoader( stepMeta, ld, 1, transMeta, trans ) );
+    loader = spy( new MySQLBulkLoader( stepMeta, ld, 1, transMeta, trans ) );
 
     RowMeta rm = new RowMeta();
     ValueMetaNumber vm = new ValueMetaNumber( "Test" );
     rm.addValueMeta( vm );
-    RowMeta spyRowMeta = Mockito.spy( new RowMeta() );
-    Mockito.when( spyRowMeta.getValueMeta( Mockito.anyInt() ) ).thenReturn( vm );
+    RowMeta spyRowMeta = spy( new RowMeta() );
+    when( spyRowMeta.getValueMeta( anyInt() ) ).thenReturn( vm );
     loader.setInputRowMeta( spyRowMeta );
 
     MySQLBulkLoaderMeta smi = new MySQLBulkLoaderMeta();
     smi.setFieldStream( new String[] { "Test" } );
     smi.setFieldFormatType( new int[] { MySQLBulkLoaderMeta.FIELD_FORMAT_TYPE_OK } );
-    smi.setDatabaseMeta( Mockito.mock( DatabaseMeta.class ) );
+    smi.setDatabaseMeta( mock( DatabaseMeta.class ) );
 
     ValueMetaNumber vmn = new ValueMetaNumber( "Test" );
     vmn.setLength( 6, 3 );
@@ -220,15 +225,15 @@ public class MySQLBulkLoaderTest {
     MySQLBulkLoaderData sdi = new MySQLBulkLoaderData();
     sdi.keynrs = new int[1];
     sdi.keynrs[0] = 0;
-    sdi.fifoStream = Mockito.mock( OutputStream.class );
+    sdi.fifoStream = mock( OutputStream.class );
     sdi.bulkFormatMeta = new ValueMetaInterface[] { vmn };
 
     loader.init( smi, sdi );
     loader.first = false;
 
-    Mockito.when( loader.getRow() ).thenReturn( new Double[] { 1.023 } );
+    when( loader.getRow() ).thenReturn( new Double[] { 1.023 } );
     loader.processRow( smi, sdi );
-    Mockito.verify( sdi.fifoStream, Mockito.times( 1 ) ).write( " 001.023".getBytes() );
-    Assert.assertEquals( " #000.000;-#000.000", vmn.getDecimalFormat().toPattern() );
+    verify( sdi.fifoStream, times( 1 ) ).write( " 001.023".getBytes() );
+    assertEquals( " #000.000;-#000.000", vmn.getDecimalFormat().toPattern() );
   }
 }
