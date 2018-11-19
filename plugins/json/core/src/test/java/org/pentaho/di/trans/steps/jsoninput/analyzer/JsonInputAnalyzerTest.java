@@ -23,16 +23,15 @@
 package org.pentaho.di.trans.steps.jsoninput.analyzer;
 
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.pentaho.di.core.KettleClientEnvironment;
 import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.fileinput.FileInputList;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.variables.VariableSpace;
-import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepMeta;
@@ -77,6 +76,11 @@ public class JsonInputAnalyzerTest {
   private INamespace mockNamespace;
 
   private IMetaverseObjectFactory mockFactory;
+
+  @BeforeClass
+  public static void init() throws KettleException {
+    KettleClientEnvironment.init();
+  }
 
   @Before
   public void setUp() throws Exception {

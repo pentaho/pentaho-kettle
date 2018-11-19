@@ -23,10 +23,13 @@
 package org.pentaho.di.trans.steps.jsonoutput.analyzer;
 
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.pentaho.di.core.KettleClientEnvironment;
+import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStepMeta;
@@ -68,6 +71,11 @@ public class JsonOutputAnalyzerTest {
   private INamespace mockNamespace;
 
   private IMetaverseObjectFactory mockFactory;
+
+  @BeforeClass
+  public static void init() throws KettleException {
+    KettleClientEnvironment.init();
+  }
 
   @Before
   public void setUp() throws Exception {
