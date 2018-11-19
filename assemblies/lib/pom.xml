@@ -16,7 +16,7 @@
 
   <properties>
     <pdi-engine-spark.version>${project.version}</pdi-engine-spark.version>
-    <rxjava.version>2.0.4</rxjava.version>
+    <rxjava.version>2.2.3</rxjava.version>
 
     <pentaho-json.version>9.0.0.0-SNAPSHOT</pentaho-json.version>
     <pdi-spark-driver.version>${project.version}</pdi-spark-driver.version>
