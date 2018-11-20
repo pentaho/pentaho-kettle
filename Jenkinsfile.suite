@@ -7,6 +7,7 @@ String suiteBuildResourcesBranch = params.SUITE_BUILD_RESOURCES_BRANCH ?: "9.0.0
 String suiteReleaseVersion = params.SUITE_RELEASE_VERSION ?: "9.0-QAT"
 String buildHostingRoot = params.BUILD_HOSTING_ROOT ?: "/build2/artifacts/hosted"
 String previousReleaseVersion = params.PREVIOUS_RELEASE_VERSION ?: "8.2.0.0-342"
+String spReleaseVersion = params.SP_RELEASE_VERSION ?: "201811"
 String versionMergerVersion = params.VERSION_MERGER_VERSION ?: "1.0.7"
 String mavenPublicReleaseRepoURL = params.MAVEN_PUBLIC_RELEASE_REPO_URL ?: "http://nexus.pentaho.org/content/repositories/public-9.0-qat"
 String mavenPrivateReleaseRepoURL = params.MAVEN_PRIVATE_RELEASE_REPO_URL ?: "http://nexus.pentaho.org/content/repositories/private-9.0-qat"
@@ -23,6 +24,7 @@ List passOnParameters = [string(name:"RELEASE_BUILD_NUMBER",            value:re
                          string(name:"SUITE_RELEASE_VERSION",           value:"${suiteReleaseVersion}"),
                          string(name:"JENKINS_FOLDER_NAME",             value:"${jobParentFolder}"),
                          string(name:"BUILD_ID_TAIL",                   value:"-${releaseBuildNumber}"),
+                         string(name:"SP_RELEASE_VERSION",              value:"${spReleaseVersion}"),
                          string(name:"BUILD_HOSTING_ROOT",              value:"${buildHostingRoot}"),
                          string(name:"PREVIOUS_RELEASE_VERSION",        value:"${previousReleaseVersion}"),
                          string(name:"VERSION_MERGER_VERSION",          value:"${versionMergerVersion}"),
