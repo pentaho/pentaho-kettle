@@ -14,6 +14,11 @@ String mavenPrivateReleaseRepoURL = params.MAVEN_PRIVATE_RELEASE_REPO_URL ?: "ht
 String mavenPublicSnapshotRepoURL = params.MAVEN_PUBLIC_SNAPSHOT_REPO_URL ?: ""
 String mavenPrivateSnapshotRepoURL = params.MAVEN_PRIVATE_SNAPSHOT_REPO_URL ?: ""
 String mavenResolveRepoURL = params.MAVEN_RESOLVE_REPO_URL ?: "http://nexus.pentaho.org/content/groups/omni"
+// SP specific parameters
+String previousReleaseVersion = params.PREVIOUS_RELEASE_VERSION ?: "8.2.0.0-311"
+String spReleaseVersion = params.SP_RELEASE_VERSION ?: "201811"
+Boolean doAutoPatch = params.DO_AUTO_PATCH ?: false
+
 
 String buildJobName = "suite-release"
 String releaseBuildNumber = releaseBuildNumberForJobName(buildJobName)
@@ -24,15 +29,16 @@ List passOnParameters = [string(name:"RELEASE_BUILD_NUMBER",            value:re
                          string(name:"SUITE_RELEASE_VERSION",           value:"${suiteReleaseVersion}"),
                          string(name:"JENKINS_FOLDER_NAME",             value:"${jobParentFolder}"),
                          string(name:"BUILD_ID_TAIL",                   value:"-${releaseBuildNumber}"),
-                         string(name:"SP_RELEASE_VERSION",              value:"${spReleaseVersion}"),
                          string(name:"BUILD_HOSTING_ROOT",              value:"${buildHostingRoot}"),
-                         string(name:"PREVIOUS_RELEASE_VERSION",        value:"${previousReleaseVersion}"),
                          string(name:"VERSION_MERGER_VERSION",          value:"${versionMergerVersion}"),
                          string(name:"MAVEN_PUBLIC_RELEASE_REPO_URL",   value:"${mavenPublicReleaseRepoURL}"),
                          string(name:"MAVEN_PUBLIC_SNAPSHOT_REPO_URL",  value:"${mavenPublicSnapshotRepoURL}"),
                          string(name:"MAVEN_PRIVATE_RELEASE_REPO_URL",  value:"${mavenPrivateReleaseRepoURL}"),
                          string(name:"MAVEN_PRIVATE_SNAPSHOT_REPO_URL", value:"${mavenPrivateSnapshotRepoURL}"),
-                         string(name:"MAVEN_RESOLVE_REPO_URL",          value:"${mavenResolveRepoURL}")]
+                         string(name:"MAVEN_RESOLVE_REPO_URL",          value:"${mavenResolveRepoURL}"),
+                         string(name:"PREVIOUS_RELEASE_VERSION",        value:"${previousReleaseVersion}"),
+                         string(name:"SP_RELEASE_VERSION",              value:"${spReleaseVersion}"),
+                         booleanParam(name:"DO_AUTO_PATCH",             value:doAutoPatch)]
 
 pipeline {
 
