@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -148,13 +148,6 @@ public class ConstTest extends TestCase {
     assertEquals( "test", Const.NVL( "test", "test1" ) );
     assertEquals( "test", Const.NVL( "test", null ) );
     assertEquals( "test1", Const.NVL( null, "test1" ) );
-  }
-
-  @Test
-  public void testNullToEmpty_NVL() {
-    assertEquals( Const.NVL( null, "" ), Const.nullToEmpty( null ) );
-    assertEquals( Const.NVL( "", "" ), Const.nullToEmpty( "" ) );
-    assertEquals( Const.NVL( "xpto", "" ), Const.nullToEmpty( "xpto" ) );
   }
 
   @Test
