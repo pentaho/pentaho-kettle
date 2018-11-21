@@ -1412,7 +1412,8 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
    *          the new internal kettle variables.
    */
   public void setInternalKettleVariables( VariableSpace var ) {
-    if ( jobMeta != null && jobMeta.getFilename() != null ) { // we have a finename that's defined.
+    boolean hasFilename = jobMeta != null && !Utils.isEmpty( jobMeta.getFilename() );
+    if ( hasFilename ) { // we have a finename that's defined.
       try {
         FileObject fileObject = KettleVFS.getFileObject( jobMeta.getFilename(), this );
         FileName fileName = fileObject.getName();
@@ -1456,10 +1457,17 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
       if ( "/".equals( variables.getVariable( Const.INTERNAL_VARIABLE_ENTRY_CURRENT_DIRECTORY ) ) ) {
         variables.setVariable( Const.INTERNAL_VARIABLE_ENTRY_CURRENT_DIRECTORY, "" );
       }
-    } else {
-      variables.setVariable( Const.INTERNAL_VARIABLE_ENTRY_CURRENT_DIRECTORY, variables.getVariable(
-          Const.INTERNAL_VARIABLE_JOB_FILENAME_DIRECTORY ) );
     }
+
+    setInternalEntryCurrentDirectory( hasFilename, hasRepoDir );
+
+  }
+
+  protected void setInternalEntryCurrentDirectory( boolean hasFilename, boolean hasRepoDir  ) {
+    variables.setVariable( Const.INTERNAL_VARIABLE_ENTRY_CURRENT_DIRECTORY, variables.getVariable(
+      hasRepoDir ? Const.INTERNAL_VARIABLE_JOB_REPOSITORY_DIRECTORY
+        : hasFilename ? Const.INTERNAL_VARIABLE_JOB_FILENAME_DIRECTORY
+        : Const.INTERNAL_VARIABLE_ENTRY_CURRENT_DIRECTORY ) );
   }
 
   /*
