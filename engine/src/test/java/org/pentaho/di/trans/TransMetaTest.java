@@ -825,4 +825,44 @@ public class TransMetaTest {
     when( stepMeta.getName() ).thenReturn( name );
     return stepMeta;
   }
+
+  @Test
+  public void testSetInternalEntryCurrentDirectoryWithFilename( ) {
+    TransMeta transMetaTest = new TransMeta(  );
+    transMetaTest.setFilename( "hasFilename" );
+    transMetaTest.setVariable( Const.INTERNAL_VARIABLE_ENTRY_CURRENT_DIRECTORY, "Original value defined at run execution" );
+    transMetaTest.setVariable( Const.INTERNAL_VARIABLE_TRANSFORMATION_FILENAME_DIRECTORY, "file:///C:/SomeFilenameDirectory" );
+    transMetaTest.setVariable( Const.INTERNAL_VARIABLE_TRANSFORMATION_REPOSITORY_DIRECTORY, "/SomeRepDirectory" );
+    transMetaTest.setInternalEntryCurrentDirectory();
+
+    assertEquals( "file:///C:/SomeFilenameDirectory",  transMetaTest.getVariable( Const.INTERNAL_VARIABLE_ENTRY_CURRENT_DIRECTORY )  );
+
+  }
+
+  @Test
+  public void testSetInternalEntryCurrentDirectoryWithRepository( ) {
+    TransMeta transMetaTest = new TransMeta(  );
+    RepositoryDirectoryInterface path = mock( RepositoryDirectoryInterface.class );
+
+    when( path.getPath() ).thenReturn( "aPath" );
+    transMetaTest.setRepository( mock( Repository.class ) );
+    transMetaTest.setRepositoryDirectory( path );
+    transMetaTest.setVariable( Const.INTERNAL_VARIABLE_ENTRY_CURRENT_DIRECTORY, "Original value defined at run execution" );
+    transMetaTest.setVariable( Const.INTERNAL_VARIABLE_TRANSFORMATION_FILENAME_DIRECTORY, "file:///C:/SomeFilenameDirectory" );
+    transMetaTest.setVariable( Const.INTERNAL_VARIABLE_TRANSFORMATION_REPOSITORY_DIRECTORY, "/SomeRepDirectory" );
+    transMetaTest.setInternalEntryCurrentDirectory();
+
+    assertEquals( "/SomeRepDirectory", transMetaTest.getVariable( Const.INTERNAL_VARIABLE_ENTRY_CURRENT_DIRECTORY ) );
+  }
+
+  @Test
+  public void testSetInternalEntryCurrentDirectoryWithoutFilenameOrRepository( ) {
+    TransMeta transMetaTest = new TransMeta(  );
+    transMetaTest.setVariable( Const.INTERNAL_VARIABLE_ENTRY_CURRENT_DIRECTORY, "Original value defined at run execution" );
+    transMetaTest.setVariable( Const.INTERNAL_VARIABLE_TRANSFORMATION_FILENAME_DIRECTORY, "file:///C:/SomeFilenameDirectory" );
+    transMetaTest.setVariable( Const.INTERNAL_VARIABLE_TRANSFORMATION_REPOSITORY_DIRECTORY, "/SomeRepDirectory" );
+    transMetaTest.setInternalEntryCurrentDirectory();
+
+    assertEquals( "Original value defined at run execution", transMetaTest.getVariable( Const.INTERNAL_VARIABLE_ENTRY_CURRENT_DIRECTORY ) );
+  }
 }
