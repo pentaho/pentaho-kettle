@@ -131,42 +131,42 @@ pipeline {
       stages {
         stage("Aggregation Designer") {
           steps {
-            triggerJob("${jobParentFolder}/service-pack-installers-aggregation-designer", passOnParameters)
+             triggerJob("service-pack-installers-aggregation-designer", passOnParameters)
           }
         }
         stage("Pentaho Server") {
            steps {
-          triggerJob("${jobParentFolder}/service-pack-installers-pentaho-server", passOnParameters)
+             triggerJob("service-pack-installers-pentaho-server", passOnParameters)
           }
         }
         stage("DI Client") {
           steps {
-             triggerJob("${jobParentFolder}/service-pack-installers-di-client", passOnParameters)
+             triggerJob("service-pack-installers-di-client", passOnParameters)
           }
         }
         stage("Metadata Editor") {
           steps {
-             triggerJob("${jobParentFolder}/service-pack-installers-metadata-editor", passOnParameters)
+             triggerJob("service-pack-installers-metadata-editor", passOnParameters)
           }
         }
         stage("Report Designer") {
           steps {
-             triggerJob("${jobParentFolder}/service-pack-installers-report-designer", passOnParameters)
+             triggerJob("service-pack-installers-report-designer", passOnParameters)
           }
         }
         stage("Schema Workbench") {
           steps {
-             triggerJob("${jobParentFolder}/service-pack-installers-schema-workbench", passOnParameters)
+             triggerJob("service-pack-installers-schema-workbench", passOnParameters)
           }
         }
         stage("Big Data Plugin") {
           steps {
-             triggerJob("${jobParentFolder}/service-pack-manual-big-data-plugin", passOnParameters)
+             triggerJob("service-pack-manual-big-data-plugin", passOnParameters)
           }
         }
         stage("Platform Installer Bundler") {
           steps {
-             triggerJob("${jobParentFolder}/service-pack-platform-installer-bundler", passOnParameters)
+             triggerJob("service-pack-platform-installer-bundler", passOnParameters)
           }
         }
       }
