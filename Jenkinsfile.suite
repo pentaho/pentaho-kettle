@@ -11,7 +11,7 @@ String mavenPublicReleaseRepoURL = params.MAVEN_PUBLIC_RELEASE_REPO_URL ?: "http
 String mavenPrivateReleaseRepoURL = params.MAVEN_PRIVATE_RELEASE_REPO_URL ?: "https://nexus3.pentaho.com/content/repositories/private-9.0-qat"
 String mavenPublicSnapshotRepoURL = params.MAVEN_PUBLIC_SNAPSHOT_REPO_URL ?: ""
 String mavenPrivateSnapshotRepoURL = params.MAVEN_PRIVATE_SNAPSHOT_REPO_URL ?: ""
-String mavenResolveRepoURL = params.MAVEN_RESOLVE_REPO_URL ?: "http://nexus.pentaho.org/content/groups/omni"
+String mavenResolveRepoURL = params.MAVEN_RESOLVE_REPO_URL ?: "https://nexus3.pentaho.com/content/groups/omni"
 // SP specific parameters
 String previousReleaseVersion = params.PREVIOUS_RELEASE_VERSION ?: "8.2.0.0-342"
 String spReleaseVersion = params.SP_RELEASE_VERSION ?: "201811"
