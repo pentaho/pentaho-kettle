@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -184,7 +184,7 @@ public class JobEntryDelay extends JobEntryBase implements Cloneable, JobEntryIn
         long now = System.currentTimeMillis() / Multiple;
 
         // Let's check the limit time
-        if ( ( iMaximumTimeout > 0 ) && ( now >= ( timeStart + iMaximumTimeout ) ) ) {
+        if ( ( iMaximumTimeout >= 0 ) && ( now >= ( timeStart + iMaximumTimeout ) ) ) {
           // We have reached the time limit
           if ( log.isDetailed() ) {
             logDetailed( BaseMessages.getString( PKG, "JobEntryDelay.WaitTimeIsElapsed.Label" ) );
