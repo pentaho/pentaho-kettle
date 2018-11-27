@@ -11,8 +11,8 @@ buildProperties:
 
         # Maven
         MAVEN_DEFAULT_DIRECTIVES       : clean deploy
-        MAVEN_PUBLIC_RELEASE_REPO_URL  : http://nexus.pentaho.org/content/repositories/public-9.0-qat
-        MAVEN_PRIVATE_RELEASE_REPO_URL : http://nexus.pentaho.org/content/repositories/private-9.0-qat
+        MAVEN_PUBLIC_RELEASE_REPO_URL  : https://nexus3.pentaho.com/content/repositories/public-9.0-qat
+        MAVEN_PRIVATE_RELEASE_REPO_URL : https://nexus3.pentaho.com/content/repositories/private-9.0-qat
 
         # Version based control properties
         RUN_VERSIONING                 : true
