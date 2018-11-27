@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -1211,7 +1211,7 @@ public class ExcelInputMeta extends BaseStepMeta implements StepMetaInterface {
       extensionFieldName = rep.getStepAttributeString( id_step, "extensionFieldName" );
       sizeFieldName = rep.getStepAttributeString( id_step, "sizeFieldName" );
 
-      password = Encr.decryptPasswordOptionallyEncrypted(rep.getStepAttributeString( id_step, "password" ));
+      password = Encr.decryptPasswordOptionallyEncrypted( rep.getStepAttributeString( id_step, "password" ) );
 
       try {
         spreadSheetType = SpreadSheetType.valueOf( rep.getStepAttributeString( id_step, "spreadsheet_type" ) );
@@ -1302,7 +1302,7 @@ public class ExcelInputMeta extends BaseStepMeta implements StepMetaInterface {
         ( spreadSheetType != null ? spreadSheetType.toString() : StringUtil.EMPTY_STRING ) );
 
       rep.saveStepAttribute( id_transformation, id_step, "password", Encr
-        .encryptPasswordIfNotUsingVariables(password ));
+        .encryptPasswordIfNotUsingVariables( password ) );
 
     } catch ( Exception e ) {
       throw new KettleException( "Unable to save step information to the repository for id_step=" + id_step, e );
@@ -1682,8 +1682,8 @@ public class ExcelInputMeta extends BaseStepMeta implements StepMetaInterface {
   }
 
   /**
-   * If we use injection we can have different arrays lengths.
-   * We need synchronize them for consistency behavior with UI
+   * If we use injection we can have different arrays lengths. We need synchronize them for consistency behavior with
+   * UI
    */
   @AfterInjection
   public void afterInjectionSynchronization() {
