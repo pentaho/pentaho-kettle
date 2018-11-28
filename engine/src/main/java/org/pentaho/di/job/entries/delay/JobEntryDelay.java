@@ -184,7 +184,7 @@ public class JobEntryDelay extends JobEntryBase implements Cloneable, JobEntryIn
         double now = (double) System.currentTimeMillis() / (double) Multiple;
 
         // Let's check the limit time
-        if ( ( iMaximumTimeout > 0 ) && ( now >= ( timeStart + iMaximumTimeout ) ) ) {
+        if ( ( iMaximumTimeout >= 0 ) && ( now >= ( timeStart + iMaximumTimeout ) ) ) {
           // We have reached the time limit
           if ( log.isDetailed() ) {
             logDetailed( BaseMessages.getString( PKG, "JobEntryDelay.WaitTimeIsElapsed.Label" ) );
