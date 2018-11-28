@@ -47,6 +47,7 @@ import org.pentaho.di.ui.repository.pur.services.ILockService;
 import org.pentaho.di.ui.repository.pur.services.IRevisionService;
 import org.pentaho.di.ui.repository.pur.services.IRoleSupportSecurityManager;
 import org.pentaho.di.ui.repository.pur.services.ITrashService;
+import org.pentaho.platform.api.engine.IAuthorizationPolicy;
 import org.pentaho.platform.api.repository2.unified.IUnifiedRepository;
 import org.pentaho.platform.engine.core.system.PentahoSessionHolder;
 import org.pentaho.platform.engine.core.system.PentahoSystem;
@@ -128,6 +129,10 @@ public class PurRepositoryConnector implements IRepositoryConnector {
             user1.setPassword( decryptedPassword );
             result.setUser( user1 );
             result.setSuccess( true );
+            result.getUser().setAdmin(
+              PentahoSystem.get( IAuthorizationPolicy.class ).isAllowed(
+                IAbsSecurityProvider.ADMINISTER_SECURITY_ACTION )
+            );
 
             if ( log.isDebug() ) {
               log.logDebug( BaseMessages.getString(
