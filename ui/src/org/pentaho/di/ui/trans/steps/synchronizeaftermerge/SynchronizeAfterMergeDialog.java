@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -110,7 +110,7 @@ public class SynchronizeAfterMergeDialog extends BaseStepDialog implements StepD
   private FormData fdlReturn, fdReturn;
 
   private Label wlCommit;
-  private Text wCommit;
+  private TextVar wCommit;
   private FormData fdlCommit, fdCommit;
 
   private Button wGetLU;
@@ -335,7 +335,7 @@ public class SynchronizeAfterMergeDialog extends BaseStepDialog implements StepD
     fdlCommit.top = new FormAttachment( wTable, margin );
     fdlCommit.right = new FormAttachment( middle, -margin );
     wlCommit.setLayoutData( fdlCommit );
-    wCommit = new Text( wGeneralComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
+    wCommit = new TextVar( transMeta, wGeneralComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
     props.setLook( wCommit );
     wCommit.addModifyListener( lsMod );
     fdCommit = new FormData();
