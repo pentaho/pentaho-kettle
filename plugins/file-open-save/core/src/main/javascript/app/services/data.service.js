@@ -236,7 +236,7 @@ define(
          */
         function rename(id, path, newName, type, oldName) {
           return _httpPost([baseUrl, "rename", encodeURIComponent(id),
-            encodeURIComponent(path), newName, type, oldName].join("/"));
+            encodeURIComponent(path), encodeURIComponent(newName), type, oldName].join("/"));
         }
 
         /**

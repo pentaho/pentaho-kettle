@@ -544,7 +544,10 @@ define([
      * @private
      */
     function _save(override) {
-      if (override || !_isDuplicate()) {
+      if (_isInvalidName()) {
+        _triggerError(17);
+      }
+      else if (override || !_isDuplicate()) {
         try {
           dt.checkForSecurityOrDupeIssues(vm.folder.path, vm.fileToSave, vm.file === null ? null : vm.file.name,
             override).then(function(response) {
@@ -904,6 +907,15 @@ define([
         }
       }
       return false;
+    }
+
+    /**
+     * Checks if the file name to save is valid or not. An invalid name contains forward or backward slashes
+     * @returns {boolean} - true if the name is invalid, false otherwise
+     * @private
+     */
+    function _isInvalidName() {
+      return vm.fileToSave.match(/[\\\/]/g) !== null;
     }
 
     /**
