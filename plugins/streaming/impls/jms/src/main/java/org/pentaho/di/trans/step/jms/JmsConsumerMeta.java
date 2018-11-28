@@ -24,9 +24,11 @@ package org.pentaho.di.trans.step.jms;
 
 import com.google.common.annotations.VisibleForTesting;
 import org.pentaho.di.core.annotations.Step;
+import org.pentaho.di.core.injection.Injection;
 import org.pentaho.di.core.injection.InjectionDeep;
 import org.pentaho.di.core.injection.InjectionSupported;
 import org.pentaho.di.core.row.RowMeta;
+import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.core.util.GenericStepData;
 import org.pentaho.di.core.variables.VariableSpace;
@@ -55,6 +57,12 @@ public class JmsConsumerMeta extends BaseStreamStepMeta implements ISubTransAwar
   @InjectionDeep
   public JmsDelegate jmsDelegate;
 
+  @Injection( name = "RECEIVE_TIMEOUT" ) public String receiveTimeout = "0";
+
+  @Injection ( name = "MESSAGE_FIELD_NAME" ) public String messageField = "message";
+
+  @Injection ( name = "DESTINATION_FIELD_NAME" ) public String destinationField = "destination";
+
   @VisibleForTesting
   public JmsConsumerMeta() {
     this( new JmsDelegate( singletonList( new ActiveMQProvider() ) ) );
@@ -80,6 +88,10 @@ public class JmsConsumerMeta extends BaseStreamStepMeta implements ISubTransAwar
     return jmsDelegate;
   }
 
+  public String getReceiveTimeout() {
+    return receiveTimeout;
+  }
+
   @Override
   public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta,
                                 Trans trans ) {
@@ -88,5 +100,15 @@ public class JmsConsumerMeta extends BaseStreamStepMeta implements ISubTransAwar
 
   @Override public StepDataInterface getStepData() {
     return new GenericStepData();
+  }
+
+  /**
+   * Creates a rowMeta for output field names
+   */
+  RowMetaInterface getRowMeta() {
+    RowMeta rowMeta = new RowMeta();
+    rowMeta.addValueMeta( new ValueMetaString( messageField ) );
+    rowMeta.addValueMeta( new ValueMetaString( destinationField ) );
+    return rowMeta;
   }
 }

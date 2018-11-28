@@ -107,7 +107,7 @@ public class JmsProducerTest {
     jmsDelegate.amqUsername = "";
     jmsDelegate.amqPassword = "";
     jmsDelegate.destinationName = "testDestination";
-    jmsDelegate.receiveTimeout = "0";
+
 
     meta = new JmsProducerMeta( jmsDelegate );
 
