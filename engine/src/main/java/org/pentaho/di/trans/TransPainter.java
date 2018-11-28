@@ -772,7 +772,7 @@ public class TransPainter extends BasePainter<TransHopMeta, StepMeta> {
       gc.drawText( clusterMessage, x - textExtent.x + 1, y - textExtent.y + 1 );
     }
 
-    if ( stepMeta.getCopies() != 1 && !partitioned ) {
+    if ( !stepMeta.getCopiesString().equals( "1" ) && !partitioned ) {
       gc.setBackground( EColor.BACKGROUND );
       gc.setForeground( EColor.BLACK );
       String copies = "x" + stepMeta.getCopiesString();
