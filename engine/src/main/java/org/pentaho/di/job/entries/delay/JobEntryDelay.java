@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -199,6 +199,10 @@ public class JobEntryDelay extends JobEntryBase implements Cloneable, JobEntryIn
       // We get an exception
       result.setResult( false );
       logError( "Error  : " + e.getMessage() );
+
+      if ( Thread.currentThread().isInterrupted() ) {
+        Thread.currentThread().interrupt();
+      }
     }
 
     return result;
