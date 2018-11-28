@@ -23,9 +23,6 @@
 package org.pentaho.di.trans.step.jms;
 
 import org.pentaho.di.core.injection.Injection;
-import org.pentaho.di.core.row.RowMeta;
-import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.core.util.serialization.Sensitive;
 import org.pentaho.di.trans.step.jms.context.JmsProvider;
 
@@ -64,12 +61,6 @@ public class JmsDelegate {
   @Injection( name = "CONNECTION_TYPE" ) public String connectionType = ACTIVEMQ.name();
 
   @Injection ( name = "DESTINATION_TYPE" ) public String destinationType = QUEUE.name();
-
-  @Injection ( name = "RECEIVE_TIMEOUT" ) public String receiveTimeout = "0";
-
-  @Injection ( name = "MESSAGE_FIELD_NAME" ) public String messageField = "message";
-
-  @Injection ( name = "DESTINATION_FIELD_NAME" ) public String destinationField = "destination";
 
   @Injection ( name = "SSL_ENABLED", group = "SSL_GROUP" ) public boolean sslEnabled = false;
 
@@ -135,19 +126,5 @@ public class JmsDelegate {
 
   public String getDestinationType() {
     return destinationType;
-  }
-
-  public String getReceiveTimeout() {
-    return receiveTimeout;
-  }
-
-  /**
-   * Creates a rowMeta for output field names
-   */
-  RowMetaInterface getRowMeta() {
-    RowMeta rowMeta = new RowMeta();
-    rowMeta.addValueMeta( new ValueMetaString( messageField ) );
-    rowMeta.addValueMeta( new ValueMetaString( destinationField ) );
-    return rowMeta;
   }
 }
