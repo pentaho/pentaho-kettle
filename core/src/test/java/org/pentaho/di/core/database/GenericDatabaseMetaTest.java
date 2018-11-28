@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -29,6 +29,10 @@ import java.util.Properties;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+
+import org.mockito.Mockito;
 import org.pentaho.di.core.row.value.ValueMetaBigNumber;
 import org.pentaho.di.core.row.value.ValueMetaBinary;
 import org.pentaho.di.core.row.value.ValueMetaBoolean;
@@ -38,8 +42,17 @@ import org.pentaho.di.core.row.value.ValueMetaInternetAddress;
 import org.pentaho.di.core.row.value.ValueMetaNumber;
 import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.core.row.value.ValueMetaTimestamp;
+import org.powermock.api.mockito.PowerMockito;
+import org.powermock.core.classloader.annotations.PrepareForTest;
+import org.powermock.modules.junit4.PowerMockRunner;
+import org.powermock.reflect.Whitebox;
+
+@RunWith( PowerMockRunner.class )
 public class GenericDatabaseMetaTest {
   GenericDatabaseMeta nativeMeta, odbcMeta;
+
+  @Mock
+  GenericDatabaseMeta mockedMeta;
 
   @Before
   public void setupBefore() {
@@ -173,4 +186,15 @@ public class GenericDatabaseMetaTest {
 
   }
 
+  @Test
+  @PrepareForTest(DatabaseMeta.class)
+  public void testSettingDialect() {
+    String dialect = "testDialect";
+    DatabaseInterface[] dbInterfaces = new DatabaseInterface[] { mockedMeta };
+    PowerMockito.mockStatic( DatabaseMeta.class );
+    PowerMockito.when( DatabaseMeta.getDatabaseInterfaces() ).thenReturn( dbInterfaces );
+    Mockito.when( mockedMeta.getPluginName() ).thenReturn( dialect );
+    nativeMeta.addAttribute( "DATABASE_DIALECT_ID", dialect );
+    assertEquals(  mockedMeta, Whitebox.getInternalState( nativeMeta, "databaseDialect" ) );
+  }
 }

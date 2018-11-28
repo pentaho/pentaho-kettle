@@ -43,6 +43,14 @@ public class GenericDatabaseMeta extends BaseDatabaseMeta implements DatabaseInt
   private DatabaseInterface databaseDialect = null;
 
   @Override
+  public void addAttribute( String attributeId, String value ) {
+    super.addAttribute( attributeId, value );
+    if ( DATABASE_DIALECT_ID.equals( attributeId ) ) {
+      resolveDialect( value );
+    }
+  }
+
+  @Override
   public int[] getAccessTypeList() {
     return new int[] {
       DatabaseMeta.TYPE_ACCESS_NATIVE, DatabaseMeta.TYPE_ACCESS_ODBC, DatabaseMeta.TYPE_ACCESS_JNDI };
@@ -297,6 +305,9 @@ public class GenericDatabaseMeta extends BaseDatabaseMeta implements DatabaseInt
   }
 
   private void resolveDialect( String dialectName ) {
+    if ( dialectName == null ) {
+      return;
+    }
     if ( dialectName.equals( getPluginName() ) ) {
       databaseDialect = null;
     } else {
