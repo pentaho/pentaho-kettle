@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -27,13 +27,20 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.pentaho.di.core.EngineMetaInterface;
+import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.repository.RepositoryObjectType;
 import org.pentaho.di.trans.TransMeta;
 
 public class EngineMetaUtilsTest {
+
+  @BeforeClass
+  public static void beforeClass() throws Exception {
+    KettleEnvironment.init();
+  }
 
   @Test
   public void isJobOrTransformation_withJob() {

@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -31,7 +31,12 @@ import java.nio.channels.FileChannel;
 import java.nio.channels.FileLock;
 import java.util.Date;
 
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
+import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.spreadsheet.KCell;
 import org.pentaho.di.core.spreadsheet.KCellType;
@@ -41,17 +46,48 @@ import org.apache.commons.io.FileUtils;
 
 public class PoiWorkBookIT {
 
+  private String sampleFile = "src/it/resources/sample-file.xlsx";
+  private String sampleFileProtected = "src/it/resources/sample-file-protected.xlsx";
+  private String password = "password";
+
+  @BeforeClass
+  public static void beforeClass() throws Exception {
+    KettleEnvironment.init();
+  }
+
   @Test
   public void testReadData() throws KettleException {
-    readData();
+    readData( sampleFile, null );
+  }
+
+  @Test
+  public void testReadDataEmptyPassword() throws KettleException {
+    readData( sampleFile, "" );
+  }
+
+  @Test
+  public void testReadDataProtected() throws KettleException {
+    readData( sampleFileProtected, password );
+  }
+
+  @Test
+  public void testReadDataProtectedEmptyPassword() throws KettleException {
+    KettleException actualException = null;
+    try {
+      readData( sampleFileProtected, "asdf" );
+    } catch ( KettleException e ) {
+      actualException = e;
+    }
+    assertNotNull( actualException );
+    assertEquals( "\nPassword incorrect\n", actualException.getMessage() );
   }
 
   @Test
   public void testFileDoesNotChange() throws KettleException, IOException {
-    File fileBeforeRead = new File( "src/it/resources/sample-file.xlsx" );
-    readData();
-    File fileAfterRead = new File( "src/it/resources/sample-file.xlsx" );
-    assertTrue( FileUtils.contentEquals(fileBeforeRead, fileAfterRead ) );
+    File fileBeforeRead = new File( sampleFile );
+    readData( sampleFile, null );
+    File fileAfterRead = new File( sampleFile );
+    assertTrue( FileUtils.contentEquals( fileBeforeRead, fileAfterRead ) );
   }
 
   @Test
@@ -59,8 +95,8 @@ public class PoiWorkBookIT {
     FileLock lock = null;
     RandomAccessFile randomAccessFile = null;
     try {
-      readData();
-      File fileAfterRead = new File( "src/it/resources/sample-file.xlsx" );
+      readData( sampleFile, null );
+      File fileAfterRead = new File( sampleFile );
       randomAccessFile = new RandomAccessFile( fileAfterRead, "rw" );
       FileChannel fileChannel = randomAccessFile.getChannel();
       lock = fileChannel.tryLock();
@@ -76,8 +112,8 @@ public class PoiWorkBookIT {
     }
   }
 
-  private void readData() throws KettleException {
-    KWorkbook workbook = WorkbookFactory.getWorkbook( SpreadSheetType.POI, "src/it/resources/sample-file.xlsx", null );
+  private void readData( String file, String password ) throws KettleException {
+    KWorkbook workbook = WorkbookFactory.getWorkbook( SpreadSheetType.POI, file, null, password );
     int numberOfSheets = workbook.getNumberOfSheets();
     assertEquals( 3, numberOfSheets );
     KSheet sheet1 = workbook.getSheet( 0 );

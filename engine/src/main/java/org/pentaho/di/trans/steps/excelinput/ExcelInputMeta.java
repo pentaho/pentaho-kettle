@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -30,6 +30,7 @@ import org.apache.commons.vfs2.FileObject;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.encryption.Encr;
 import org.pentaho.di.core.injection.AfterInjection;
 import org.pentaho.di.core.util.StringUtil;
 import org.pentaho.di.core.util.Utils;
@@ -284,6 +285,8 @@ public class ExcelInputMeta extends BaseStepMeta implements StepMetaInterface {
   @Injection( name = "SPREADSHEET_TYPE" )
   private SpreadSheetType spreadSheetType;
 
+  private String password;
+
   public ExcelInputMeta() {
     super(); // allocate BaseStepMeta
   }
@@ -300,6 +303,14 @@ public class ExcelInputMeta extends BaseStepMeta implements StepMetaInterface {
    */
   public void setShortFileNameField( String field ) {
     shortFileFieldName = field;
+  }
+
+  public String getPassword() {
+    return password;
+  }
+
+  public void setPassword( String password ) {
+    this.password = password;
   }
 
   /**
@@ -787,6 +798,8 @@ public class ExcelInputMeta extends BaseStepMeta implements StepMetaInterface {
       extensionFieldName = XMLHandler.getTagValue( stepnode, "extensionFieldName" );
       sizeFieldName = XMLHandler.getTagValue( stepnode, "sizeFieldName" );
 
+      password = Encr.decryptPasswordOptionallyEncrypted( XMLHandler.getTagValue( stepnode, "password" ) );
+
       try {
         spreadSheetType = SpreadSheetType.valueOf( XMLHandler.getTagValue( stepnode, "spreadsheet_type" ) );
       } catch ( Exception e ) {
@@ -1104,6 +1117,9 @@ public class ExcelInputMeta extends BaseStepMeta implements StepMetaInterface {
     retval.append( "    " ).append( XMLHandler.addTagValue( "spreadsheet_type",
       ( spreadSheetType != null ? spreadSheetType.toString() : StringUtil.EMPTY_STRING ) ) );
 
+    retval.append( "    " )
+      .append( XMLHandler.addTagValue( "password", Encr.encryptPasswordIfNotUsingVariables( password ) ) );
+
     return retval.toString();
   }
 
@@ -1195,6 +1211,8 @@ public class ExcelInputMeta extends BaseStepMeta implements StepMetaInterface {
       extensionFieldName = rep.getStepAttributeString( id_step, "extensionFieldName" );
       sizeFieldName = rep.getStepAttributeString( id_step, "sizeFieldName" );
 
+      password = Encr.decryptPasswordOptionallyEncrypted( rep.getStepAttributeString( id_step, "password" ) );
+
       try {
         spreadSheetType = SpreadSheetType.valueOf( rep.getStepAttributeString( id_step, "spreadsheet_type" ) );
       } catch ( Exception e ) {
@@ -1282,6 +1300,10 @@ public class ExcelInputMeta extends BaseStepMeta implements StepMetaInterface {
 
       rep.saveStepAttribute( id_transformation, id_step, "spreadsheet_type",
         ( spreadSheetType != null ? spreadSheetType.toString() : StringUtil.EMPTY_STRING ) );
+
+      rep.saveStepAttribute( id_transformation, id_step, "password", Encr
+        .encryptPasswordIfNotUsingVariables( password ) );
+
     } catch ( Exception e ) {
       throw new KettleException( "Unable to save step information to the repository for id_step=" + id_step, e );
     }
@@ -1660,8 +1682,8 @@ public class ExcelInputMeta extends BaseStepMeta implements StepMetaInterface {
   }
 
   /**
-   * If we use injection we can have different arrays lengths.
-   * We need synchronize them for consistency behavior with UI
+   * If we use injection we can have different arrays lengths. We need synchronize them for consistency behavior with
+   * UI
    */
   @AfterInjection
   public void afterInjectionSynchronization() {

@@ -549,7 +549,7 @@ public class ExcelInput extends BaseStep implements StepInterface {
             + data.filenr + " : " + data.filename ) );
         }
 
-        data.workbook = WorkbookFactory.getWorkbook( meta.getSpreadSheetType(), data.filename, meta.getEncoding() );
+        data.workbook = WorkbookFactory.getWorkbook( meta.getSpreadSheetType(), data.filename, meta.getEncoding(), meta.getPassword() );
 
         data.errorHandler.handleFile( data.file );
         // Start at the first sheet again...
