@@ -120,7 +120,7 @@
     <dependency org="${ivy.artifact.group}" name="kettle-sap-plugin" rev="${project.revision}" changing="true" conf="plugins->default">
         <artifact name="kettle-sap-plugin" type="zip"/>
     </dependency>
-    <dependency org="pentaho" name="pentaho-karaf-assembly" rev="${project.revision}" changing="true" conf="pentaho-system->default" m:classifier="client">
+    <dependency org="pentaho" name="pentaho-karaf-assembly" rev="${project.revision}" changing="true" conf="pentaho-system->default">
       <artifact name="pentaho-karaf-assembly" type="zip" m:classifier="client"/>
     </dependency>
 
