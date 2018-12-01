@@ -32,6 +32,7 @@ cloudbees-folder:latest
 command-launcher:latest
 credentials-binding:latest
 credentials:latest
+dependency-check-jenkins-plugin:latest
 display-url-api:latest
 docker-commons:latest
 docker-workflow:latest
@@ -48,6 +49,7 @@ gradle:latest
 handlebars:latest
 handy-uri-templates-2-api:latest
 htmlpublisher:latest
+http_request:latest
 jackson2-api:latest
 jdk-tool:latest
 jenkins-design-language:latest
@@ -62,6 +64,7 @@ matrix-auth:latest
 matrix-project:latest
 mercurial:latest
 momentjs:latest
+nexus-jenkins-plugin:latest
 pam-auth:latest
 pipeline-build-step:latest
 pipeline-github-lib:latest
@@ -76,10 +79,10 @@ pipeline-model-extensions:latest
 pipeline-rest-api:latest
 pipeline-stage-step:latest
 pipeline-stage-tags-metadata:latest
-pipeline-stage-view:latest
 pipeline-utility-steps:latest
 plain-credentials:latest
 pubsub-light:latest
+rebuild:latest
 resource-disposer:latest
 scm-api:latest
 script-security:latest
@@ -92,7 +95,6 @@ tasks:latest
 timestamper:latest
 token-macro:latest
 variant:latest
-workflow-aggregator:latest
 workflow-api:latest
 workflow-basic-steps:latest
 workflow-cps-global-lib:latest

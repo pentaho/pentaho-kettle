@@ -20,6 +20,16 @@
     <module>docker</module>
   </modules>
 
+  <dependencies>
+    <dependency>
+      <groupId>org.hitachivantara.ci</groupId>
+      <artifactId>jenkins-shared-libraries</artifactId>
+      <version>1.0-SNAPSHOT</version>
+      <scope>provided</scope>
+    </dependency>
+  </dependencies>
+
+
   <build>
     <pluginManagement>
       <plugins>

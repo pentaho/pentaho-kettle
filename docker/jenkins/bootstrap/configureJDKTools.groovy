@@ -20,7 +20,7 @@ def env = System.getenv()
 
 def versions = [
     'Java9_auto': 'jdk-9.0.4-oth-JPR',
-    'Java8_auto': 'jdk-8u181-oth-JPR',
+    'Java8_auto': 'jdk-8u192-oth-JPR',
     'Java7_auto': 'jdk-7u80-oth-JPR'
 ]
 

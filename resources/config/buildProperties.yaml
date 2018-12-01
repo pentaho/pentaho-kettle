@@ -35,7 +35,7 @@ MAVEN_PUBLIC_SNAPSHOT_REPO_URL:
 MAVEN_PRIVATE_RELEASE_REPO_URL:
 MAVEN_PRIVATE_SNAPSHOT_REPO_URL:
 MAVEN_TEST_OPTS: -DsurefireArgLine=-Xmx1g
-MAVEN_DEFAULT_DIRECTIVES: clean deploy
+MAVEN_DEFAULT_DIRECTIVES: clean install
 MAVEN_SETTINGS: ${BUILD_CONFIG_ROOT_PATH}/maven/settings.xml
 
 # Gradle
@@ -56,9 +56,11 @@ ARCHIVE_ARTIFACTS: true
 NOOP: false
 BUILD_RETRIES: 1
 BUILD_TIMEOUT: 360
-PARALLEL_CHECKOUT_CHUNKSIZE: 40
-PARALLEL_UNIT_TESTS_CHUNKSIZE: 15
-USE_DISTRIBUTED_SOURCE_CACHING: false
+PARALLEL_CHUNKSIZE: 10
+PARALLEL_CHECKOUT_CHUNKSIZE: ${PARALLEL_CHUNKSIZE}
+PARALLEL_UNIT_TESTS_CHUNKSIZE: ${PARALLEL_CHUNKSIZE}
+PARALLEL_PUSH_CHUNKSIZE: ${PARALLEL_CHUNKSIZE}
+PARALLEL_TAG_CHUNKSIZE: ${PARALLEL_CHUNKSIZE}
 SLAVE_NODE_LABEL: non-master
 
 # SCM
@@ -175,3 +177,13 @@ PSW_ASSEMBLY_PATTERN: '**/assemblies/psw-ce/target/psw-ce-*.zip'
 PDI_SDK_PLUGINS_PATTERN: '**/kettle-sdk-plugin-assembly/target/kettle-sdk-plugin-assembly-*.zip'
 PLATFORM_BASE_PATTERN: '**/{assemblies/pentaho-server/target/pentaho-server-ce-*.zip,assemblies/pentaho-server-manual/target/pentaho-server-manual-ce-*.zip}'
 BIG_DATA_HADOOP_SHIMS_PATTERN: '**/shims/**/assemblies/*-shim/target/pentaho-hadoop-shims-*-package-*.zip'
+
+# Security parameters
+RUN_NEXUS_LIFECYCLE: false
+RUN_DEPENDENCY_CHECK: false
+PARALLEL_SECURITY_SCAN_CHUNKSIZE: 2
+NEXUS_IQ_STAGE: 'build'
+VULNERABILITY_DATABASE_PATH: '/build/security/national-vulnerability-database'
+DEPENDENCY_CHECK_SCAN_PATTERN: '**/*.jar'
+DEPENDENCY_CHECK_SUPPRESION_PATH: '/home/buildguy/suppress.xml'
+DEPENDENCY_CHECK_REPORT_PATTERN: '**/dependency-check-report.xml'
