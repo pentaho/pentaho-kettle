@@ -12,9 +12,10 @@ String mavenPrivateReleaseRepoURL = params.MAVEN_PRIVATE_RELEASE_REPO_URL ?: "ht
 String mavenPublicSnapshotRepoURL = params.MAVEN_PUBLIC_SNAPSHOT_REPO_URL ?: ""
 String mavenPrivateSnapshotRepoURL = params.MAVEN_PRIVATE_SNAPSHOT_REPO_URL ?: ""
 String mavenResolveRepoURL = params.MAVEN_RESOLVE_REPO_URL ?: "https://nexus.pentaho.org/content/groups/omni"
+String buildSlackChannel = params.BUILD_SLACK_CHANNEL ?: "buildteam-alerts"
 // SP specific parameters
 String previousReleaseVersion = params.PREVIOUS_RELEASE_VERSION ?: "8.2.0.0-342"
-String spReleaseVersion = params.SP_RELEASE_VERSION ?: "201811"
+String spReleaseVersion = params.SP_RELEASE_VERSION ?: "201812"
 Boolean doAutoPatch = params.DO_AUTO_PATCH ?: false
 
 
@@ -179,6 +180,20 @@ pipeline {
         triggerJob("deployment-sculptor-sp", passOnParameters)
       }
     }
+  }
+
+  post {
+     success {
+        slackSend (color: "good", message: "${env.JOB_NAME} - #${env.BUILD_NUMBER} (<${env.BUILD_URL}|Open>)", channel:buildSlackChannel)
+     }
+
+     unstable {
+        slackSend (color: "warning", message: "${env.JOB_NAME} - #${env.BUILD_NUMBER} (<${env.BUILD_URL}|Open>)", channel:buildSlackChannel)
+     }
+
+     failure {
+        slackSend (color: "danger", message: "${env.JOB_NAME} - #${env.BUILD_NUMBER} (<${env.BUILD_URL}|Open>)", channel:buildSlackChannel)
+     }
   }
 }
 
