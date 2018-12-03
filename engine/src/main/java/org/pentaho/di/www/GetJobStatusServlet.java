@@ -195,6 +195,9 @@ public class GetJobStatusServlet extends BaseHttpServlet implements CartePluginI
 
     String jobName = request.getParameter( "name" );
     String id = request.getParameter( "id" );
+    String root = request.getRequestURI() == null ? StatusServletUtils.PENTAHO_ROOT
+      : request.getRequestURI().substring( 0, request.getRequestURI().indexOf( CONTEXT_PATH ) );
+    String prefix = isJettyMode() ? StatusServletUtils.STATIC_PATH : root + StatusServletUtils.RESOURCES_PATH;
     boolean useXML = "Y".equalsIgnoreCase( request.getParameter( "xml" ) );
     int startLineNr = Const.toInt( request.getParameter( "from" ), 0 );
 
@@ -312,7 +315,11 @@ public class GetJobStatusServlet extends BaseHttpServlet implements CartePluginI
             + "\">" );
         }
         out.println( "<META http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\">" );
-        out.print( StatusServletUtils.getPentahoStyles() );
+        if ( isJettyMode() ) {
+          out.println( "<link rel=\"stylesheet\" type=\"text/css\" href=\"/static/css/carte.css\" />" );
+        } else {
+          out.print( StatusServletUtils.getPentahoStyles() );
+        }
         out.println( "</HEAD>" );
         out.println( "<BODY style=\"overflow: auto;\">" );
         out.println( "<div class=\"row\" id=\"pucHeader\">" );
@@ -323,13 +330,13 @@ public class GetJobStatusServlet extends BaseHttpServlet implements CartePluginI
           out.println( "<div class=\"row\" style=\"padding: 0px 0px 0px 30px\">" );
           out.println( "<div class=\"row\" style=\"padding-top: 30px;\">" );
           out.print( "<a href=\"" + convertContextPath( GetStatusServlet.CONTEXT_PATH ) + "\">" );
-          out.print( "<img src=\"/pentaho/content/common-ui/resources/themes/images/back.svg\" style=\"margin-right: 5px; width: 16px; height: 16px; vertical-align: middle;\">" );
+          out.print( "<img src=\"" + prefix + "/images/back.svg\" style=\"margin-right: 5px; width: 16px; height: 16px; vertical-align: middle;\">" );
           out.print( BaseMessages.getString( PKG, "CarteStatusServlet.BackToCarteStatus" ) + "</a>" );
           out.println( "</div>" );
           out.println( "<div class=\"row\" style=\"padding: 30px 0px 75px 0px; display: table;\">" );
           out.println( "<div style=\"display: table-row;\">" );
           out.println( "<div style=\"padding: 0px 30px 0px 0px; width: 60px; display: table-cell; vertical-align: top;\">" );
-          out.println( "<img src=\"/pentaho/content/common-ui/resources/themes/images/job.svg\" style=\"width: 60px; height: 60px;\"></img>" );
+          out.println( "<img src=\"" + prefix + "/images/job.svg\" style=\"width: 60px; height: 60px;\"></img>" );
           out.println( "</div>" );
           out.println( "<div style=\"vertical-align: top; display: table-cell;\">" );
           out.println( "<table style=\"border-collapse: collapse;\" border=\"" + tableBorder + "\">" );
@@ -350,7 +357,7 @@ public class GetJobStatusServlet extends BaseHttpServlet implements CartePluginI
           out.print( "<a target=\"_blank\" href=\""
             + convertContextPath( GetJobStatusServlet.CONTEXT_PATH ) + "?name="
             + URLEncoder.encode( jobName, "UTF-8" ) + "&id=" + URLEncoder.encode( id, "UTF-8" ) + "&xml=y\">"
-            + "<img src=\"/pentaho/content/common-ui/resources/themes/images/view-as-xml.svg\" style=\"display: block; margin: auto; width: 22px; height: 22px;\"></a>" );
+            + "<img src=\"" + prefix + "/images/view-as-xml.svg\" style=\"display: block; margin: auto; width: 22px; height: 22px;\"></a>" );
           out.print( "</div>" );
           out.println( "<div style=\"text-align: center; padding-top: 12px; font-size: 12px;\">" );
           out.print( "<a target=\"_blank\" href=\""
