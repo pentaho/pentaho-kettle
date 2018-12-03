@@ -164,7 +164,7 @@ define([
       if (_hasInvalidChars(current)) {
         errorCallback();
         _doError(18);
-        return;
+        newName = previous;
       }
       else if (_hasDuplicate(current, file)) {
         file.newName = current;
