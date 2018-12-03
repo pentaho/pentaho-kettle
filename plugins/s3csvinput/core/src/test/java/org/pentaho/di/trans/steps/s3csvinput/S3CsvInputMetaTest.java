@@ -19,16 +19,18 @@
  * limitations under the License.
  *
  ******************************************************************************/
-package org.pentaho.di.trans.steps.s3csvinput;
 
+package org.pentaho.di.trans.steps.s3csvinput;
 
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.encryption.Encr;
 import org.pentaho.di.core.encryption.TwoWayPasswordEncoderPluginType;
@@ -40,12 +42,21 @@ import org.pentaho.di.trans.steps.loadsave.validator.ArrayLoadSaveValidator;
 import org.pentaho.di.trans.steps.loadsave.validator.FieldLoadSaveValidator;
 import org.pentaho.di.trans.steps.loadsave.validator.TextFileInputFieldValidator;
 import org.pentaho.di.trans.steps.textfileinput.TextFileInputField;
+import org.powermock.core.classloader.annotations.PrepareForTest;
+import org.powermock.modules.junit4.PowerMockRunner;
+
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.when;
+import static org.powermock.api.mockito.PowerMockito.mockStatic;
 
 /**
  * @author Tatsiana_Kasiankova
  *
  */
 @SuppressWarnings( "deprecation" )
+@RunWith( PowerMockRunner.class )
+@PrepareForTest( EnvUtil.class )
 public class S3CsvInputMetaTest {
 
   private static final String TEST_AWS_SECRET_KEY = "TestAwsSecretKey";
@@ -54,7 +65,7 @@ public class S3CsvInputMetaTest {
   private static final String TEST_ACCESS_KEY_ENCRYPTED = "Encrypted 2be98af9c0fd486a5a81aab63cdb9aac3";
 
   @BeforeClass
-  public static void setUp() throws KettleException {
+  public static void once() throws KettleException {
     PluginRegistry.addPluginType( TwoWayPasswordEncoderPluginType.getInstance() );
     PluginRegistry.init( true );
     String passwordEncoderPluginID =
@@ -62,9 +73,14 @@ public class S3CsvInputMetaTest {
     Encr.init( passwordEncoderPluginID );
   }
 
+  @Before
+  public void setup() {
+    mockStatic( EnvUtil.class );
+  }
+
   @Test
   public void testSerialization() throws KettleException {
-    List<String> attributes = Arrays.asList( "Bucket", "Filename", "FilenameField",
+    List<String> attributes = Arrays.asList( "AwsAccessKey", "AwsSecretKey", "Bucket", "Filename", "FilenameField",
       "RowNumField", "IncludingFilename", "Delimiter", "Enclosure", "HeaderPresent", "MaxLineSize",
       "LazyConversionActive", "RunningInParallel", "InputFields" );
 
@@ -78,4 +94,28 @@ public class S3CsvInputMetaTest {
     tester.testSerialization();
   }
 
+  @Test
+  public void getUseAwsDefaultCredentialsWithoutCredentials() {
+    S3CsvInputMeta meta = new S3CsvInputMeta();
+    assertTrue( meta.getUseAwsDefaultCredentials() );
+  }
+
+  @Test
+  public void getUseAwsDefaultCredentialsWithCredentials() {
+    S3CsvInputMeta meta = new S3CsvInputMeta();
+    meta.setAwsAccessKey( TEST_ACCESS_KEY_ENCRYPTED );
+    meta.setAwsSecretKey( TEST_AWS_SECRET_KEY_ENCRYPTED );
+
+    assertFalse( meta.getUseAwsDefaultCredentials() );
+  }
+
+  @Test
+  public void getUseAwsDefaultCredentialsOverrideCredentials() {
+    S3CsvInputMeta meta = new S3CsvInputMeta();
+    meta.setAwsAccessKey( TEST_ACCESS_KEY_ENCRYPTED );
+    meta.setAwsSecretKey( TEST_AWS_SECRET_KEY_ENCRYPTED );
+
+    when( EnvUtil.getSystemProperty( Const.KETTLE_USE_AWS_DEFAULT_CREDENTIALS ) ).thenReturn( "Y" );
+    assertTrue( meta.getUseAwsDefaultCredentials() );
+  }
 }
