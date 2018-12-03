@@ -165,4 +165,14 @@ public class BaseStreamStepTest {
     assertTrue( baseStreamStep.isSafeStopped() );
     verify( streamSource, times( 2 ) ).close();
   }
+
+  @Test
+  public void testAlwaysCloses() throws KettleException {
+    when( streamWindow.buffer( any() ) ).thenThrow( new IllegalStateException( "run for your life!!!" ) );
+    try {
+      baseStreamStep.processRow( meta, stepData );
+    } catch ( IllegalStateException ignored ) {
+    }
+    verify( streamSource ).close();
+  }
 }
