@@ -30,6 +30,10 @@ import java.io.File;
 
 public class StatusServletUtils {
 
+  public static final String RESOURCES_PATH = "/content/common-ui/resources/themes";
+  public static final String STATIC_PATH = "/static";
+  public static final String PENTAHO_ROOT = "/pentaho";
+
   public static String getPentahoStyles() {
     StringBuilder sb = new StringBuilder();
     String themeName = "ruby"; // default pentaho theme

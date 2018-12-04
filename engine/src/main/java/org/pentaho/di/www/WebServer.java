@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -36,6 +36,7 @@ import org.eclipse.jetty.server.handler.ContextHandlerCollection;
 import org.eclipse.jetty.server.handler.HandlerList;
 import org.eclipse.jetty.server.handler.ResourceHandler;
 import org.eclipse.jetty.server.ssl.SslSocketConnector;
+import org.eclipse.jetty.servlet.DefaultServlet;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 import org.eclipse.jetty.util.security.Constraint;
@@ -251,8 +252,16 @@ public class WebServer {
     resourceHandler.setResourceBase( "temp" );
     // add all handlers/contexts to server
 
+    // set up static servlet
+    ServletHolder staticHolder = new ServletHolder( "static", DefaultServlet.class );
+    // resourceBase maps to the path relative to where carte is started
+    staticHolder.setInitParameter( "resourceBase", "./static/" );
+    staticHolder.setInitParameter( "dirAllowed", "true" );
+    staticHolder.setInitParameter( "pathInfoOnly", "true" );
+    root.addServlet( staticHolder, "/static/*" );
+
     HandlerList handlers = new HandlerList();
-    handlers.setHandlers( new Handler[] { contexts, resourceHandler } );
+    handlers.setHandlers( new Handler[] { resourceHandler, contexts } );
     securityHandler.setHandler( handlers );
 
     server.setHandler( securityHandler );
