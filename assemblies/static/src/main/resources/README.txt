@@ -1,5 +1,5 @@
 
-Please use https://community.pentaho.com for questions. If you find a defect, please report it in our JIRA system at https://jira.pentaho.com. If you are a subscription customer, please contact Pentaho Support for assistance.
+Please use https://community.hitachivantara.com/community/products-and-solutions/pentaho/ for questions. If you find a defect, please report it in our JIRA system at https://jira.pentaho.com. If you are a subscription customer, please contact Pentaho Support for assistance.
 
 
 Installation instructions:
