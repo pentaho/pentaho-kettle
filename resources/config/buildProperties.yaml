@@ -123,8 +123,6 @@ JOB_ITEM_DEFAULTS:
   execType: FORCE
   archivable: false
   parallelize: false
-  artifactsArchivePattern: ${ARCHIVE_ARTIFACTS_PATTERN}
-  artifactsArchiveExcludePattern: ${ARCHIVE_ARTIFACTS_EXCLUDE_PATTERN}
   buildOnlyChanges: false # flag to control whether the downstreams should be built when SCM changes are detected from a upstream
   atomicScmCheckout: false
 
@@ -138,45 +136,10 @@ SLACK_TEAM_DOMAIN: 'hitachivantara-eng'
 SLACK_CREDENTIALS_ID: 'slack-token'
 
 # Archiving
-ARCHIVE_ARTIFACTS_EXCLUDE_PATTERN: '**/{.git/**/*,*-sources.jar}' #exclusion group
-ARCHIVE_ARTIFACTS_PATTERN: '**/{dist/*.gz,dist/*.zip,target/*.gz,target/*.zip,build/**/*.gz,build/**/*.zip,build/*.zip}'
+ARCHIVING_EXCLUDE_PATTERN: '(.*/.git/.*)' #exclusion group
+ARCHIVING_PATH_GROUP_REGEX: '.*/(target|dist|build)/(?:(?!.*(dependencies)).*/)?'
+ARCHIVING_CONFIG: ${BUILD_CONFIG_ROOT_PATH}/artifacts/manifest.yaml
 ARCHIVE_TESTS_PATTERN: '**/bin/**/TEST*.xml, **/target/**/TEST*.xml, **/build/**/*Test.xml, **/target/**/test*.xml'
-
-# Specific archiving patterns
-# EE artifacts
-INSTALLER_ARTIFACTS_PATTERN_WINDOWS: '**/bi-suite/target/windows/pentaho-business-analytics-*.*'
-INSTALLER_ARTIFACTS_PATTERN_MAC: '**/bi-suite/target/mac/pentaho-business-analytics-*.*'
-INSTALLER_ARTIFACTS_PATTERN_LINUX: '**/{bi-suite/target/linux/pentaho-business-analytics-*.*,upgrade-utility/target/pentaho-upgrade-utility-*.zip}'
-PAD_ASSEMBLY_EE_PATTERN: '**/target/pad-ee-*.zip'
-PDI_ASSEMBLY_EE_PATTERN: '**/assemblies/client/target/pdi-ee-client-*.zip'
-ANALYSIS_PLUGIN_EE_PATTERN: '**/assemblies/plugin/target/pentaho-analysis-ee-*.zip'
-METADATA_EDITOR_EE_PATTERN: '**/assembly/target/pme-ee-*.zip'
-PRD_ASSEMBLY_EE_PATTERN: '**/assemblies/winlinux/target/prd-ee-*.zip'
-PSW_ASSEMBLY_EE_PATTERN: '**/target/psw-ee-*.zip'
-PDI_OPERATIONS_MART_EE_PATTERN: '**/assemblies/operations-mart/target/pentaho-operations-mart-*.zip'
-PLATFORM_SDK_PATTERN: '**/target/pentaho-sdk-*.zip'
-ANALYZER_PLUGIN_PATTERN: '**/assemblies/paz-plugin-ee/target/paz-plugin-ee-*.zip'
-DASHBOARDS_PLUGIN_PATTERN: '**/assemblies/plugin/target/pdd-plugin-ee-*.zip'
-PDI_PUR_PLUGIN_EE_PATTERN: '**/assemblies/plugin/target/pdi-ee-plugin-*.zip'
-PDI_SAP_HANA_BULK_LOADER_PLUGIN_PATTERN: '**/assemblies/plugin/target/pdi-hana-plugin-package-*.zip'
-GEO_PLUGIN_PATTERN: '**/assemblies/pentaho-geo-ee/target/pentaho-geo-ee-*.zip'
-PDI_MONITORING_PLUGIN_PATTERN: '**/assemblies/pdi-monitoring-plugin-mib/target/pentaho-monitoring-plugin-mib-assembly-*.zip'
-PIR_PLUGIN_PATTERN: '**/assemblies/plugin/target/pir-plugin-ee-*.zip'
-PLATFORM_SERVER_ASSEMBLY_EE_PATTERN: '**/{assemblies/pentaho-server-ee/target/pentaho-server-ee-*.zip,assemblies/pentaho-server-manual-ee/target/pentaho-server-manual-ee-*.zip}'
-BIG_DATA_HADOOP_SHIMS_EE_PATTERN: '**/shims/**/assemblies/*-ee-shim/target/pentaho-big-data-ee-*-package-*.zip'
-BIG_DATA_PLUGIN_ASSEMBLY_EE_PATTERN: '**/assemblies/big-data-ee-package/target/pentaho-big-data-ee-package-*.zip'
-FOUNDRY_WORKERS_EE_PATTERN: '**/{assemblies/pentaho-workernodes/target/pentaho-workernodes-*.zip,assemblies/pentaho-workernodes/target/pentaho-workernodes-*.tar.gz}'
-
-# CE artifacts
-PAD_ASSEMBLY_PATTERN: '**/assemblies/pad-ce/target/pad-ce-*.zip'
-PDI_ENGINE_CORE_PATTERN: '**/assemblies/client/target/pdi-ce-*.zip'
-BIG_DATA_PLUGIN_PATTERN: '**/legacy-plugin/target/pentaho-big-data-plugin-*.zip'
-METADATA_EDITOR_PATTERN: '**/assemblies/pme-ce/target/pme-ce-*.zip'
-PRD_ASSEMBLY_PATTERN: '**/{assemblies/prd-ce/target/prd-ce-*.zip,assemblies/sdk/target/pre-classic-sdk-*.zip}'
-PSW_ASSEMBLY_PATTERN: '**/assemblies/psw-ce/target/psw-ce-*.zip'
-PDI_SDK_PLUGINS_PATTERN: '**/kettle-sdk-plugin-assembly/target/kettle-sdk-plugin-assembly-*.zip'
-PLATFORM_BASE_PATTERN: '**/{assemblies/pentaho-server/target/pentaho-server-ce-*.zip,assemblies/pentaho-server-manual/target/pentaho-server-manual-ce-*.zip}'
-BIG_DATA_HADOOP_SHIMS_PATTERN: '**/shims/**/assemblies/*-shim/target/pentaho-hadoop-shims-*-package-*.zip'
 
 # Security parameters
 RUN_NEXUS_LIFECYCLE: false

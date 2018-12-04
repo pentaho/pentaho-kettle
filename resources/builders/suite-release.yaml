@@ -13,6 +13,7 @@ buildProperties:
         MAVEN_DEFAULT_DIRECTIVES       : clean deploy
         MAVEN_PUBLIC_RELEASE_REPO_URL  : https://nexus.pentaho.org/content/repositories/public-9.0-qat
         MAVEN_PRIVATE_RELEASE_REPO_URL : https://nexus.pentaho.org/content/repositories/private-9.0-qat
+        ARCHIVING_PATH_GROUP_REGEX     : '.*/target/(?:(windows|linux|mac)(?!.*(dependencies)).*/)?'
 
         # Version based control properties
         RUN_VERSIONING                 : true
@@ -258,7 +259,6 @@ jobGroups:
        directives      :  += -DskipDefault -Deula-wrap -P api,shims,all
        versionProperty :  pentaho-hadoop-shims.version
        archivable      :  true
-       artifactsArchivePattern: ${BIG_DATA_HADOOP_SHIMS_PATTERN}
 
   1500:
 
@@ -301,7 +301,6 @@ jobGroups:
        versionProperty :  mondrian.version
        testable        :  false
        archivable      :  true
-       artifactsArchivePattern: ${PSW_ASSEMBLY_PATTERN}
 
   1900:
 
@@ -312,7 +311,6 @@ jobGroups:
        versionProperty :  mondrian.version
        testable        :  false
        archivable      :  true
-       artifactsArchivePattern: ${PSW_ASSEMBLY_EE_PATTERN}
 
      - jobID           :  reporting-engine-extensions
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-reporting.git
@@ -338,7 +336,6 @@ jobGroups:
        parallelize     :  true
        versionProperty :  platform.version
        archivable      :  true
-       artifactsArchivePattern: ${PLATFORM_BASE_PATTERN}
 
   2200:
 
@@ -387,7 +384,6 @@ jobGroups:
        directives      :  += -Deula-wrap
        versionProperty :  pdi-monitoring-plugin.version
        archivable      :  true
-       artifactsArchivePattern: ${PDI_MONITORING_PLUGIN_PATTERN}
 
      - jobID           :  modeler
        scmUrl          :  ${PENTAHO_SCM_ROOT}/modeler.git
@@ -536,7 +532,6 @@ jobGroups:
        directives      :  += -DskipDefault -P base,all -Deula-wrap
        versionProperty :  pentaho-hadoop-shims.version
        archivable      :  true
-       artifactsArchivePattern: ${BIG_DATA_HADOOP_SHIMS_EE_PATTERN}
        atomicScmCheckout: true
 
      - jobID           :  cda-plugin
@@ -572,7 +567,6 @@ jobGroups:
        directives      :  += -Deula-wrap
        versionProperty :  pentaho-geo-plugin.version
        archivable      :  true
-       artifactsArchivePattern: ${GEO_PLUGIN_PATTERN}
 
   3400:
 
@@ -582,7 +576,6 @@ jobGroups:
        directives      :  += -Dagilebi -Deula-wrap
        versionProperty :  analyzer-plugin.version
        archivable      :  true
-       artifactsArchivePattern: ${ANALYZER_PLUGIN_PATTERN}
 
   3500:
 
@@ -597,7 +590,6 @@ jobGroups:
        directives      :  += -Deula-wrap
        versionProperty :  analysis-ee-plugin.version
        archivable      :  true
-       artifactsArchivePattern: ${ANALYSIS_PLUGIN_EE_PATTERN}
 
      - jobID           :  pdi-yarn-plugin
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-yarn-kettle-plugin.git
@@ -629,7 +621,6 @@ jobGroups:
        directives      :  += -Deula-wrap
        versionProperty :  dashboard-plugin.version
        archivable      :  true
-       artifactsArchivePattern: ${DASHBOARDS_PLUGIN_PATTERN}
 
      - jobID           :  pdi-weka-plugins
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-data-mining.git
@@ -658,7 +649,6 @@ jobGroups:
        root            :  assemblies
        testable        :  false
        archivable      :  true
-       artifactsArchivePattern: ${BIG_DATA_PLUGIN_PATTERN}
 
      - jobID           :  pir-plugin
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-platform-plugin-interactive-reporting.git
@@ -666,8 +656,6 @@ jobGroups:
        directives      :  += -Deula-wrap
        versionProperty :  pir-plugin.version
        archivable      :  true
-       artifactsArchivePattern: ${PIR_PLUGIN_PATTERN}
-       #parallelize     :  true
 
      - jobID           :  pdi-scheduler-plugin
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pdi-scheduler-plugin.git
@@ -690,7 +678,6 @@ jobGroups:
        directives      :  += -Deula-wrap
        versionProperty :  pdi-sdk-plugins.version
        archivable      :  true
-       artifactsArchivePattern: ${PDI_SDK_PLUGINS_PATTERN}
 
      - jobID           :  pdi-r-plugin
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-r-plugin.git
@@ -703,7 +690,6 @@ jobGroups:
        directives      :  += -Deula-wrap
        versionProperty :  pdi-sap-hana-bulk-loader-plugin.version
        archivable      :  true
-       artifactsArchivePattern: ${PDI_SAP_HANA_BULK_LOADER_PLUGIN_PATTERN}
 
   3800:
 
@@ -722,7 +708,6 @@ jobGroups:
        versionProperty :  big-data-plugin.version
        testable        :  false
        archivable      :  true
-       artifactsArchivePattern: ${BIG_DATA_PLUGIN_ASSEMBLY_EE_PATTERN}
        atomicScmCheckout: true
 
      - jobID           :  prd-assembly
@@ -731,8 +716,6 @@ jobGroups:
        directives      :  += -Pdesigner -Djavadoc -Dmaven.test.failure.ignore=true
        versionProperty :  pentaho-reporting.version
        archivable      :  true
-       artifactsArchivePattern: ${PRD_ASSEMBLY_PATTERN}
-       #parallelize     :  true
 
   4000:
 
@@ -743,14 +726,12 @@ jobGroups:
        versionProperty :  pentaho-reporting.version
        archivable      :  true
        testable        :  false
-       artifactsArchivePattern: ${PRD_ASSEMBLY_EE_PATTERN}
 
      - jobID           :  pdi-pur-plugin-ee
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pdi-ee-plugin.git
        scmBranch       :  ${DEFAULT_BRANCH}
        versionProperty :  pdi-pur-plugin.version
        archivable      :  true
-       artifactsArchivePattern: ${PDI_PUR_PLUGIN_EE_PATTERN}
 
   4100:
 
@@ -760,7 +741,6 @@ jobGroups:
        directives      :  += -Deula-wrap
        versionProperty :  pentaho-operations-mart.version
        archivable      :  true
-       artifactsArchivePattern: ${PDI_OPERATIONS_MART_EE_PATTERN}
 
   4200:
 
@@ -771,7 +751,6 @@ jobGroups:
        versionProperty :  pdi.version
        testable        :  false
        archivable      :  true
-       artifactsArchivePattern: ${PDI_ENGINE_CORE_PATTERN}
 
   4300:
 
@@ -783,7 +762,6 @@ jobGroups:
        root            :  data-integration
        testable        :  false
        archivable      :  true
-       artifactsArchivePattern: ${PDI_ASSEMBLY_EE_PATTERN}
 
   4400:
 
@@ -792,7 +770,6 @@ jobGroups:
        scmBranch       :  ${DEFAULT_BRANCH}
        versionProperty :  pentaho-metadata.version
        archivable      :  true
-       artifactsArchivePattern: ${METADATA_EDITOR_PATTERN}
 
      - jobID           :  platform-server-assembly
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-platform.git
@@ -808,7 +785,6 @@ jobGroups:
        # Disabled testing on this project due to foodmart db offline and connection problems
        testable        :  false
        archivable      :  true
-       artifactsArchivePattern: ${PAD_ASSEMBLY_PATTERN}
 
   4500:
 
@@ -819,7 +795,6 @@ jobGroups:
        versionProperty :  worker-nodes.version
        root            :  foundry
        archivable      :  true
-       artifactsArchivePattern: ${FOUNDRY_WORKERS_EE_PATTERN}
 
      - jobID           :  platform-server-assembly-ee
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-platform-ee.git
@@ -828,7 +803,6 @@ jobGroups:
        versionProperty :  platform.version
        testable        :  false
        archivable      :  true
-       artifactsArchivePattern: ${PLATFORM_SERVER_ASSEMBLY_EE_PATTERN}
 
      - jobID           :  metadata-editor-ee
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-metadata-editor-ee.git
@@ -836,7 +810,6 @@ jobGroups:
        directives      :  += -Deula-wrap
        versionProperty :  pentaho-metadata.version
        archivable      :  true
-       artifactsArchivePattern: ${METADATA_EDITOR_EE_PATTERN}
 
      - jobID           :  pad-assembly-ee
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-aggdesigner-ee.git
@@ -845,7 +818,6 @@ jobGroups:
        versionProperty :  aggdesigner.version
        testable        :  false
        archivable      :  true
-       artifactsArchivePattern: ${PAD_ASSEMBLY_EE_PATTERN}
 
      - jobID           :  platform-sdk
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-sdk.git
@@ -853,7 +825,6 @@ jobGroups:
        directives      :  += -Deula-wrap
        versionProperty :  pdi-sdk-plugins.version
        archivable      :  true
-       artifactsArchivePattern: ${PLATFORM_SDK_PATTERN}
 
   4600:
 
@@ -873,7 +844,6 @@ jobGroups:
        directives      :  += -DskipDefault -P windows -Djre.windows.x64.dir=${IBUILDER_RESOURCES_ROOT_PATH}/win/java -Dpostgresql.windows.x64.dir=${IBUILDER_RESOURCES_ROOT_PATH}/win/postgresql -Dcommon.windows.x64.dir=${IBUILDER_RESOURCES_ROOT_PATH}/win/common -Dinstallbuilder.dir=${INSTALL_BUILDER_ROOT_DIR}
        versionProperty :  pentaho.version
        archivable      :  true
-       artifactsArchivePattern: ${INSTALLER_ARTIFACTS_PATTERN_WINDOWS}
        testable        :  false
 
      - jobID           :  installer-mac
@@ -882,7 +852,6 @@ jobGroups:
        directives      :  += -DskipDefault -P mac -Djre.mac.x64.dir=${IBUILDER_RESOURCES_ROOT_PATH}/osx/java -Dpostgresql.mac.x64.dir=${IBUILDER_RESOURCES_ROOT_PATH}/osx/postgresql -Dcommon.mac.x64.dir=${IBUILDER_RESOURCES_ROOT_PATH}/osx/common -Dinstallbuilder.dir=${INSTALL_BUILDER_ROOT_DIR}
        versionProperty :  pentaho.version
        archivable      :  true
-       artifactsArchivePattern: ${INSTALLER_ARTIFACTS_PATTERN_MAC}
        testable        :  false
 
      - jobID           :  installer-linux
@@ -891,5 +860,4 @@ jobGroups:
        directives      :  += -DskipDefault -P linux,upgrade -Djre.linux.x64.dir=${IBUILDER_RESOURCES_ROOT_PATH}/nix/java -Dpostgresql.linux.x64.dir=${IBUILDER_RESOURCES_ROOT_PATH}/nix/postgresql -Dcommon.linux.x64.dir=${IBUILDER_RESOURCES_ROOT_PATH}/nix/common -Dinstallbuilder.dir=${INSTALL_BUILDER_ROOT_DIR}
        versionProperty :  pentaho.version
        archivable      :  true
-       artifactsArchivePattern: ${INSTALLER_ARTIFACTS_PATTERN_LINUX}
        testable        :  false

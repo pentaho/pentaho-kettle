@@ -32,4 +32,3 @@ jobGroups:
         root            :  data-integration
         testable        :  false
         archivable      :  true
-        artifactsArchivePattern: ${PDI_ASSEMBLY_EE_PATTERN}

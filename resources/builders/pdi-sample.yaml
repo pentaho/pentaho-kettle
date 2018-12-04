@@ -56,4 +56,3 @@ jobGroups:
       scmBranch         :  ${DEFAULT_BRANCH}
       directives        :  += -DskipTests -DskipDefault -P assemblies
       archivable        :  true
-      artifactsArchivePattern: ${PDI_ENGINE_CORE_PATTERN}
