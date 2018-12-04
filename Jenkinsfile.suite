@@ -3,8 +3,10 @@
 String jobParentFolder = params.JENKINS_FOLDER_NAME ?: "9.0"
 
 String releaseVersion = params.RELEASE_VERSION ?: "9.0.0.0"
-String suiteBuildResourcesBranch = params.SUITE_BUILD_RESOURCES_BRANCH ?: "9.0.0.0"
 String suiteReleaseVersion = params.SUITE_RELEASE_VERSION ?: "9.0-QAT"
+String pipelineBranch = params.PIPELINE_BRANCH ?: releaseVersion
+String buildResourcesBranch = params.BUILD_RESOURCES_BRANCH ?: releaseVersion
+String servicePackBranch = params.SERVICEPACK_BRANCH ?: "9.0"
 String buildHostingRoot = params.BUILD_HOSTING_ROOT ?: "/build2/artifacts/hosted"
 String versionMergerVersion = params.VERSION_MERGER_VERSION ?: "1.0.7"
 String mavenPublicReleaseRepoURL = params.MAVEN_PUBLIC_RELEASE_REPO_URL ?: "https://nexus.pentaho.org/content/repositories/public-9.0-qat"
@@ -23,20 +25,22 @@ String buildJobName = "suite-release"
 String releaseBuildNumber = releaseBuildNumberForJobName(buildJobName)
 List passOnParameters = [string(name:"RELEASE_BUILD_NUMBER",            value:releaseBuildNumber),
                          string(name:"RELEASE_BUILD_ID",                value:env.BUILD_TIMESTAMP),
-                         string(name:"RELEASE_VERSION",                 value:"${releaseVersion}"),
-                         string(name:"SUITE_BUILD_RESOURCES_BRANCH",    value:"${suiteBuildResourcesBranch}"),
-                         string(name:"SUITE_RELEASE_VERSION",           value:"${suiteReleaseVersion}"),
-                         string(name:"JENKINS_FOLDER_NAME",             value:"${jobParentFolder}"),
+                         string(name:"RELEASE_VERSION",                 value:releaseVersion),
+                         string(name:"PIPELINE_BRANCH",                 value:pipelineBranch),
+                         string(name:"BUILD_RESOURCES_BRANCH",          value:buildResourcesBranch),
+                         string(name:"SERVICEPACK_BRANCH",              value:servicePackBranch),
+                         string(name:"SUITE_RELEASE_VERSION",           value:suiteReleaseVersion),
+                         string(name:"JENKINS_FOLDER_NAME",             value:jobParentFolder),
                          string(name:"BUILD_ID_TAIL",                   value:"-${releaseBuildNumber}"),
-                         string(name:"BUILD_HOSTING_ROOT",              value:"${buildHostingRoot}"),
-                         string(name:"VERSION_MERGER_VERSION",          value:"${versionMergerVersion}"),
-                         string(name:"MAVEN_PUBLIC_RELEASE_REPO_URL",   value:"${mavenPublicReleaseRepoURL}"),
-                         string(name:"MAVEN_PUBLIC_SNAPSHOT_REPO_URL",  value:"${mavenPublicSnapshotRepoURL}"),
-                         string(name:"MAVEN_PRIVATE_RELEASE_REPO_URL",  value:"${mavenPrivateReleaseRepoURL}"),
-                         string(name:"MAVEN_PRIVATE_SNAPSHOT_REPO_URL", value:"${mavenPrivateSnapshotRepoURL}"),
-                         string(name:"MAVEN_RESOLVE_REPO_URL",          value:"${mavenResolveRepoURL}"),
-                         string(name:"PREVIOUS_RELEASE_VERSION",        value:"${previousReleaseVersion}"),
-                         string(name:"SP_RELEASE_VERSION",              value:"${spReleaseVersion}"),
+                         string(name:"BUILD_HOSTING_ROOT",              value:buildHostingRoot),
+                         string(name:"VERSION_MERGER_VERSION",          value:versionMergerVersion),
+                         string(name:"MAVEN_PUBLIC_RELEASE_REPO_URL",   value:mavenPublicReleaseRepoURL),
+                         string(name:"MAVEN_PUBLIC_SNAPSHOT_REPO_URL",  value:mavenPublicSnapshotRepoURL),
+                         string(name:"MAVEN_PRIVATE_RELEASE_REPO_URL",  value:mavenPrivateReleaseRepoURL),
+                         string(name:"MAVEN_PRIVATE_SNAPSHOT_REPO_URL", value:mavenPrivateSnapshotRepoURL),
+                         string(name:"MAVEN_RESOLVE_REPO_URL",          value:mavenResolveRepoURL),
+                         string(name:"PREVIOUS_RELEASE_VERSION",        value:previousReleaseVersion),
+                         string(name:"SP_RELEASE_VERSION",              value:spReleaseVersion),
                          booleanParam(name:"DO_AUTO_PATCH",             value:doAutoPatch)]
 
 pipeline {
