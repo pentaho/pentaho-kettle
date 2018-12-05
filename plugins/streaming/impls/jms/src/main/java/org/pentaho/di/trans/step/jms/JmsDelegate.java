@@ -90,7 +90,7 @@ public class JmsDelegate {
 
   @Injection ( name = "AMQ_SSL_TRUST_ALL", group = "SSL_GROUP" ) public String amqSslTrustAll = "";
 
-  final List<JmsProvider> jmsProviders;
+  List<JmsProvider> jmsProviders;
 
   public JmsDelegate( List<JmsProvider> jmsProviders ) {
     super();
