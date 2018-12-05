@@ -573,13 +573,18 @@ public class GetStatusServlet extends BaseHttpServlet implements CartePluginInte
       out.println( "if( element.id.startsWith( 'j-' ) && selectedJobRowIndex != -1 ) {" );
       out.println( setupAjaxCall( setupJobURI( convertContextPath( StartJobServlet.CONTEXT_PATH ) ),
         BaseMessages.getString( PKG, "GetStatusServlet.StartJob.Title" ),
-        "'" + BaseMessages.getString( PKG, "GetStatusServlet.TheJob.Label" ) + " " + "[' + selectedJobName + '] " + BaseMessages.getString( PKG, "GetStatusServlet.StartJob.Success.Body" ) + "'",
-        "'" + BaseMessages.getString( PKG, "GetStatusServlet.TheJob.Label" ) + " " + "[' + selectedJobName + '] " + BaseMessages.getString( PKG, "GetStatusServlet.StartJob.Failure.Body" ) + "'" ) );
+        "'" + BaseMessages.getString( PKG, "GetStatusServlet.TheJob.Label" ) + " ' + selectedJobName + ' " + BaseMessages.getString( PKG, "GetStatusServlet.StartJob.Success.Body" ) + "'",
+        "'" + BaseMessages.getString( PKG, "GetStatusServlet.TheJob.Label" ) + " ' + selectedJobName + ' " + BaseMessages.getString( PKG, "GetStatusServlet.StartJob.Failure.Body" ) + "'" ) );
       out.println( "} else if ( !element.id.startsWith( 'j-' ) && selectedTransRowIndex != -1 && document.getElementById( 'cellTableCellStatus' + selectedTransRowIndex ).innerHTML == 'Running') {" );
-      out.println( "window.location.replace( '"
-          + convertContextPath( PauseTransServlet.CONTEXT_PATH ) + "'"
-          + " + '?name=' + document.getElementById( 'cellTableFirstCell' + selectedTransRowIndex ).innerHTML"
-          + " + '&id=' + document.getElementById( 'cellTableCell' + selectedTransRowIndex ).innerHTML );" );
+      out.println( setupAjaxCall( setupTransURI( convertContextPath( PauseTransServlet.CONTEXT_PATH ) ),
+        BaseMessages.getString( PKG, "GetStatusServlet.PauseTrans.Title" ),
+        "'" + BaseMessages.getString( PKG, "GetStatusServlet.TheTransformation.Label" ) + " ' + selectedTransName + ' " + BaseMessages.getString( PKG, "GetStatusServlet.PauseTrans.Success.Body" ) + "'",
+        "'" + BaseMessages.getString( PKG, "GetStatusServlet.TheTransformation.Label" ) + " ' + selectedTransName + ' " + BaseMessages.getString( PKG, "GetStatusServlet.PauseTrans.Failure.Body" ) + "'" ) );
+      out.println( "} else if( !element.id.startsWith( 'j-' ) && selectedTransRowIndex != -1 && document.getElementById( 'cellTableCellStatus' + selectedTransRowIndex ).innerHTML == 'Paused') {" );
+      out.println( setupAjaxCall( setupTransURI( convertContextPath( PauseTransServlet.CONTEXT_PATH ) ),
+        BaseMessages.getString( PKG, "GetStatusServlet.ResumeTrans.Title" ),
+        "'" + BaseMessages.getString( PKG, "GetStatusServlet.TheTransformation.Label" ) + " ' + selectedTransName + ' " + BaseMessages.getString( PKG, "GetStatusServlet.ResumeTrans.Success.Body" ) + "'",
+        "'" + BaseMessages.getString( PKG, "GetStatusServlet.TheTransformation.Label" ) + " ' + selectedTransName + ' " + BaseMessages.getString( PKG, "GetStatusServlet.ResumeTrans.Failure.Body" ) + "'" ) );
       out.println( "} else if( !element.id.startsWith( 'j-' ) && selectedTransRowIndex != -1 ){" );
       out.println( "repositionActions( document.getElementById( 'runActions' ), element );" );
       out.println( "document.getElementById( 'runActions' ).style.visibility = 'visible';" );
@@ -593,8 +598,8 @@ public class GetStatusServlet extends BaseHttpServlet implements CartePluginInte
       out.println( "if( element.id.startsWith( 'j-' ) && selectedJobRowIndex != -1 ) {" );
       out.println( setupAjaxCall( setupJobURI( convertContextPath( StopJobServlet.CONTEXT_PATH ) ),
         BaseMessages.getString( PKG, "GetStatusServlet.StopJob.Title" ),
-        "'" + BaseMessages.getString( PKG, "GetStatusServlet.StopJob.Success.Body1" ) + " " + BaseMessages.getString( PKG, "GetStatusServlet.TheJob.Label" ) + " " + "[' + selectedJobName + '] " + BaseMessages.getString( PKG, "GetStatusServlet.StopJob.Success.Body2" ) + "'",
-        "'" + BaseMessages.getString( PKG, "GetStatusServlet.TheJob.Label" ) + " " + "[' + selectedJobName + '] " + BaseMessages.getString( PKG, "GetStatusServlet.StopJob.Failure.Body" ) + "'" ) );
+        "'" + BaseMessages.getString( PKG, "GetStatusServlet.StopJob.Success.Body1" ) + " " + BaseMessages.getString( PKG, "GetStatusServlet.TheJob.Label" ) + " ' + selectedJobName + ' " + BaseMessages.getString( PKG, "GetStatusServlet.StopJob.Success.Body2" ) + "'",
+        "'" + BaseMessages.getString( PKG, "GetStatusServlet.TheJob.Label" ) + " ' + selectedJobName + ' " + BaseMessages.getString( PKG, "GetStatusServlet.StopJob.Failure.Body" ) + "'" ) );
       out.println( "} else if ( !element.id.startsWith( 'j-' ) && selectedTransRowIndex != -1 ) {" );
       out.println( "repositionActions( document.getElementById( 'stopActions' ), element );" );
       out.println( "document.getElementById( 'stopActions' ).style.visibility = 'visible';" );
@@ -606,13 +611,13 @@ public class GetStatusServlet extends BaseHttpServlet implements CartePluginInte
       out.println( "if( element.innerHTML == 'Prepare the execution' ){" );
       out.println( setupAjaxCall( setupTransURI( convertContextPath( PrepareExecutionTransServlet.CONTEXT_PATH ) ),
         BaseMessages.getString( PKG, "GetStatusServlet.PrepareTrans.Title" ),
-        "'" + BaseMessages.getString( PKG, "GetStatusServlet.TheTransformation.Label" ) + " " + "[' + selectedTransName + '] " + BaseMessages.getString( PKG, "GetStatusServlet.PrepareTrans.Success.Body" ) + "'",
-        "'" + BaseMessages.getString( PKG, "GetStatusServlet.TheTransformation.Label" ) + " " + "[' + selectedTransName + '] " + BaseMessages.getString( PKG, "GetStatusServlet.PrepareTrans.Failure.Body" ) + "'" ) );
+        "'" + BaseMessages.getString( PKG, "GetStatusServlet.TheTransformation.Label" ) + " ' + selectedTransName + ' " + BaseMessages.getString( PKG, "GetStatusServlet.PrepareTrans.Success.Body" ) + "'",
+        "'" + BaseMessages.getString( PKG, "GetStatusServlet.TheTransformation.Label" ) + " ' + selectedTransName + ' " + BaseMessages.getString( PKG, "GetStatusServlet.PrepareTrans.Failure.Body" ) + "'" ) );
       out.println( "} else {" );
       out.println( setupAjaxCall( setupTransURI( convertContextPath( StartTransServlet.CONTEXT_PATH ) ),
         BaseMessages.getString( PKG, "GetStatusServlet.StartTrans.Title" ),
-        "'" + BaseMessages.getString( PKG, "GetStatusServlet.TheTransformation.Label" ) + " " + "[' + selectedTransName + '] " + BaseMessages.getString( PKG, "GetStatusServlet.StartTrans.Success.Body" ) + "'",
-        "'" + BaseMessages.getString( PKG, "GetStatusServlet.TheTransformation.Label" ) + " " + "[' + selectedTransName + '] " + BaseMessages.getString( PKG, "GetStatusServlet.StartTrans.Failure.Body" ) + "'" ) );
+        "'" + BaseMessages.getString( PKG, "GetStatusServlet.TheTransformation.Label" ) + " ' + selectedTransName + ' " + BaseMessages.getString( PKG, "GetStatusServlet.StartTrans.Success.Body" ) + "'",
+        "'" + BaseMessages.getString( PKG, "GetStatusServlet.TheTransformation.Label" ) + " ' + selectedTransName + ' " + BaseMessages.getString( PKG, "GetStatusServlet.StartTrans.Failure.Body" ) + "'" ) );
       out.println( "}" );
       out.println( "}" );
 
@@ -621,13 +626,13 @@ public class GetStatusServlet extends BaseHttpServlet implements CartePluginInte
       out.println( "if( element.innerHTML == 'Stop transformation' ) {" );
       out.println( setupAjaxCall( setupTransURI( convertContextPath( StopTransServlet.CONTEXT_PATH ) ),
         BaseMessages.getString( PKG, "GetStatusServlet.StopTrans.Title" ),
-        "'" + BaseMessages.getString( PKG, "GetStatusServlet.StopTrans.Success.Body1" ) + " " + BaseMessages.getString( PKG, "GetStatusServlet.TheTransformation.Label" ) + " " + "[' + selectedTransName + '] " + BaseMessages.getString( PKG, "GetStatusServlet.StopTrans.Success.Body2" ) + "'",
-        "'" + BaseMessages.getString( PKG, "GetStatusServlet.TheTransformation.Label" ) + " " + "[' + selectedTransName + '] " + BaseMessages.getString( PKG, "GetStatusServlet.StopTrans.Failure.Body" ) + "'" ) );
+        "'" + BaseMessages.getString( PKG, "GetStatusServlet.StopTrans.Success.Body1" ) + " " + BaseMessages.getString( PKG, "GetStatusServlet.TheTransformation.Label" ) + " ' + selectedTransName + ' " + BaseMessages.getString( PKG, "GetStatusServlet.StopTrans.Success.Body2" ) + "'",
+        "'" + BaseMessages.getString( PKG, "GetStatusServlet.TheTransformation.Label" ) + " ' + selectedTransName + ' " + BaseMessages.getString( PKG, "GetStatusServlet.StopTrans.Failure.Body" ) + "'" ) );
       out.println( "} else if( element.innerHTML == 'Stop input processing' ) {" );
       out.println( setupAjaxCall( setupTransURI( convertContextPath( StopTransServlet.CONTEXT_PATH ) ) + " + '&inputOnly=Y'",
         BaseMessages.getString( PKG, "GetStatusServlet.StopInputTrans.Title" ),
-        "'" + BaseMessages.getString( PKG, "GetStatusServlet.StopInputTrans.Success.Body1" ) + " " + BaseMessages.getString( PKG, "GetStatusServlet.TheTransformation.Label" ) + " " + "[' + selectedTransName + '] " + BaseMessages.getString( PKG, "GetStatusServlet.StopInputTrans.Success.Body2" ) + "'",
-        "'" + BaseMessages.getString( PKG, "GetStatusServlet.TheTransformation.Label" ) + " " + "[' + selectedTransName + '] " + BaseMessages.getString( PKG, "GetStatusServlet.StopInputTrans.Failure.Body" ) + "'" ) );
+        "'" + BaseMessages.getString( PKG, "GetStatusServlet.StopInputTrans.Success.Body1" ) + " " + BaseMessages.getString( PKG, "GetStatusServlet.TheTransformation.Label" ) + " ' + selectedTransName + ' " + BaseMessages.getString( PKG, "GetStatusServlet.StopInputTrans.Success.Body2" ) + "'",
+        "'" + BaseMessages.getString( PKG, "GetStatusServlet.TheTransformation.Label" ) + " ' + selectedTransName + ' " + BaseMessages.getString( PKG, "GetStatusServlet.StopInputTrans.Failure.Body" ) + "'" ) );
       out.println( "}" );
       out.println( "document.getElementById( 'stopActions' ).style.visibility = 'hidden';" );
       out.println( "}" );
@@ -638,8 +643,8 @@ public class GetStatusServlet extends BaseHttpServlet implements CartePluginInte
       out.println( "if( selectedTransRowIndex != -1 ) {" );
       out.println( setupAjaxCall( setupTransURI( convertContextPath( CleanupTransServlet.CONTEXT_PATH ) ),
         BaseMessages.getString( PKG, "GetStatusServlet.CleanupTrans.Title" ),
-        "'" + BaseMessages.getString( PKG, "GetStatusServlet.CleanupTrans.Success.Body1" ) + " " + BaseMessages.getString( PKG, "GetStatusServlet.TheTransformation.Label" ) + " " + "[' + selectedTransName + '] " + BaseMessages.getString( PKG, "GetStatusServlet.CleanupTrans.Success.Body2" ) + "'",
-        "'" + BaseMessages.getString( PKG, "GetStatusServlet.CleanupTrans.Failure.Body1" ) + " " + BaseMessages.getString( PKG, "GetStatusServlet.TheTransformation.Label" ) + " " + "[' + selectedTransName + ']" + BaseMessages.getString( PKG, "GetStatusServlet.CleanupTrans.Failure.Body2" ) + "'" ) );
+        "'" + BaseMessages.getString( PKG, "GetStatusServlet.CleanupTrans.Success.Body1" ) + " " + BaseMessages.getString( PKG, "GetStatusServlet.TheTransformation.Label" ) + " ' + selectedTransName + ' " + BaseMessages.getString( PKG, "GetStatusServlet.CleanupTrans.Success.Body2" ) + "'",
+        "'" + BaseMessages.getString( PKG, "GetStatusServlet.CleanupTrans.Failure.Body1" ) + " " + BaseMessages.getString( PKG, "GetStatusServlet.TheTransformation.Label" ) + " ' + selectedTransName + '" + BaseMessages.getString( PKG, "GetStatusServlet.CleanupTrans.Failure.Body2" ) + "'" ) );
       out.println( "}" );
       out.println( "}" );
       out.println( "}" );
@@ -667,10 +672,10 @@ public class GetStatusServlet extends BaseHttpServlet implements CartePluginInte
       out.println( "removeElement = element;" );
       out.println( "if( element.id.startsWith( 'j-' ) && selectedJobRowIndex != -1 ) {" );
       out.println( "openMessageDialog( '" + BaseMessages.getString( PKG, "GetStatusServlet.RemoveJob.Title" ) + "',"
-        + "'" + BaseMessages.getString( PKG, "GetStatusServlet.RemoveJob.Confirm.Body" ) + " " + BaseMessages.getString( PKG, "GetStatusServlet.TheJob.Label" ) + " " + " [' + selectedJobName + ']?" + "'" + ", false );" );
+        + "'" + BaseMessages.getString( PKG, "GetStatusServlet.RemoveJob.Confirm.Body" ) + " " + BaseMessages.getString( PKG, "GetStatusServlet.TheJob.Label" ) + " ' + selectedJobName + '?" + "'" + ", false );" );
       out.println( "} else if ( selectedTransRowIndex != -1 ) {" );
       out.println( "openMessageDialog( '" + BaseMessages.getString( PKG, "GetStatusServlet.RemoveTrans.Title" ) + "',"
-        + "'" + BaseMessages.getString( PKG, "GetStatusServlet.RemoveTrans.Confirm.Body" ) + " " + BaseMessages.getString( PKG, "GetStatusServlet.TheTransformation.Label" ) + " " + " [' + selectedTransName + ']?" + "'" + ", false );" );
+        + "'" + BaseMessages.getString( PKG, "GetStatusServlet.RemoveTrans.Confirm.Body" ) + " " + BaseMessages.getString( PKG, "GetStatusServlet.TheTransformation.Label" ) + " ' + selectedTransName + '?" + "'" + ", false );" );
       out.println( "}" );
       out.println( "}" );
       out.println( "}" );
@@ -712,7 +717,7 @@ public class GetStatusServlet extends BaseHttpServlet implements CartePluginInte
       out.println( "if( document.getElementById( 'cellTableCellStatus' + selectedTransRowIndex ).innerHTML == 'Running' ) {" );
       out.println( "document.getElementById( 'pause' ).innerHTML = '<img style=\"width: 22px; height: 22px\" src=\"" + prefix + "/images/pause.svg\"/ title=\"Pause transformation\">';" );
       out.println( "} else if( document.getElementById( 'cellTableCellStatus' + selectedTransRowIndex ).innerHTML == 'Paused' ) {" );
-      out.println( "document.getElementById( 'pause' ).innerHTML = '<img style=\"width: 22px; height: 22px\" src=\"" + prefix + "/images/run_option.svg\" title=\"Resume transformation\"/>';" );
+      out.println( "document.getElementById( 'pause' ).innerHTML = '<img style=\"width: 22px; height: 22px\" src=\"" + prefix + "/images/pause.svg\" title=\"Resume transformation\"/>';" );
       out.println( "}" );
       out.println( "}" );
       out.println( "setSelectedNames();" );
@@ -801,13 +806,13 @@ public class GetStatusServlet extends BaseHttpServlet implements CartePluginInte
       out.println( "    if( removeElement.id.startsWith( 'j-' ) && selectedJobRowIndex != -1 ) {" );
       out.println( setupAjaxCall( setupJobURI( convertContextPath( RemoveJobServlet.CONTEXT_PATH ) ),
         BaseMessages.getString( PKG, "GetStatusServlet.RemoveJob.Title" ),
-        "'" + BaseMessages.getString( PKG, "GetStatusServlet.TheJob.Label" ) + " " + "[' + selectedJobName + '] " + BaseMessages.getString( PKG, "GetStatusServlet.RemoveJob.Success.Body" ) + "'",
-        "'" + BaseMessages.getString( PKG, "GetStatusServlet.TheJob.Label" ) + " " + "[' + selectedJobName + '] " + BaseMessages.getString( PKG, "GetStatusServlet.RemoveJob.Failure.Body" ) + "'" ) );
+        "'" + BaseMessages.getString( PKG, "GetStatusServlet.TheJob.Label" ) + " ' + selectedJobName + ' " + BaseMessages.getString( PKG, "GetStatusServlet.RemoveJob.Success.Body" ) + "'",
+        "'" + BaseMessages.getString( PKG, "GetStatusServlet.TheJob.Label" ) + " ' + selectedJobName + ' " + BaseMessages.getString( PKG, "GetStatusServlet.RemoveJob.Failure.Body" ) + "'" ) );
       out.println( "} else if ( selectedTransRowIndex != -1 ) {" );
       out.println( setupAjaxCall( setupTransURI( convertContextPath( RemoveTransServlet.CONTEXT_PATH ) ),
         BaseMessages.getString( PKG, "GetStatusServlet.RemoveTrans.Title" ),
-        "'" + BaseMessages.getString( PKG, "GetStatusServlet.TheTransformation.Label" ) + " " + "[' + selectedTransName + '] " + BaseMessages.getString( PKG, "GetStatusServlet.RemoveTrans.Success.Body" ) + "'",
-        "'" + BaseMessages.getString( PKG, "GetStatusServlet.TheTransformation.Label" ) + " " + "[' + selectedTransName + '] " + BaseMessages.getString( PKG, "GetStatusServlet.RemoveTrans.Failure.Body" ) + "'" ) );
+        "'" + BaseMessages.getString( PKG, "GetStatusServlet.TheTransformation.Label" ) + " ' + selectedTransName + ' " + BaseMessages.getString( PKG, "GetStatusServlet.RemoveTrans.Success.Body" ) + "'",
+        "'" + BaseMessages.getString( PKG, "GetStatusServlet.TheTransformation.Label" ) + " ' + selectedTransName + ' " + BaseMessages.getString( PKG, "GetStatusServlet.RemoveTrans.Failure.Body" ) + "'" ) );
       out.println( "    }" );
       out.println( "  }" );
       out.println( "}" );
