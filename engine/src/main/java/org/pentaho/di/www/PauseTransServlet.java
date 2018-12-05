@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -150,6 +150,8 @@ public class PauseTransServlet extends BaseHttpServlet implements CartePluginInt
     String id = request.getParameter( "id" );
     boolean useXML = "Y".equalsIgnoreCase( request.getParameter( "xml" ) );
 
+    response.setStatus( HttpServletResponse.SC_OK );
+
     response.setCharacterEncoding( "UTF-8" );
 
     PrintWriter out = response.getWriter();
@@ -222,6 +224,7 @@ public class PauseTransServlet extends BaseHttpServlet implements CartePluginInt
           out.println( "<a href=\""
             + convertContextPath( GetStatusServlet.CONTEXT_PATH ) + "\">"
             + BaseMessages.getString( PKG, "TransStatusServlet.BackToStatusPage" ) + "</a><p>" );
+          response.setStatus( HttpServletResponse.SC_BAD_REQUEST );
         }
       }
     } catch ( Exception ex ) {
@@ -232,6 +235,7 @@ public class PauseTransServlet extends BaseHttpServlet implements CartePluginInt
         out.println( "<pre>" );
         out.println( Const.getStackTracker( ex ) );
         out.println( "</pre>" );
+        response.setStatus( HttpServletResponse.SC_BAD_REQUEST );
       }
     }
 
