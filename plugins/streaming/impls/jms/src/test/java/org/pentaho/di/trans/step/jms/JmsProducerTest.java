@@ -41,10 +41,12 @@ import org.pentaho.di.core.util.GenericStepData;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.StepMeta;
+import org.pentaho.di.trans.step.StepMetaDataCombi;
 import org.pentaho.di.trans.step.jms.context.ActiveMQProvider;
 import org.pentaho.di.trans.step.jms.context.JmsProvider;
 
 import javax.jms.JMSContext;
+import javax.jms.JMSProducer;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -64,6 +66,7 @@ import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @RunWith( MockitoJUnitRunner.class )
@@ -71,6 +74,8 @@ public class JmsProducerTest {
   @Mock LogChannelInterfaceFactory logChannelFactory;
   @Mock LogChannelInterface logChannel;
   @Mock JMSContext jmsContext;
+  @Mock JmsProvider jmsProvider;
+  @Mock JMSProducer jmsProducer;
 
   @Rule public EmbeddedJMSResource resource = new EmbeddedJMSResource( 0 );
 
@@ -232,5 +237,28 @@ public class JmsProducerTest {
     meta.setTimeToLive( "asdf" );
 
     assertFalse( step.init( meta, data ) );
+  }
+
+  @Test
+  public void jmsContextClosedOnStop() throws Exception {
+    TransMeta transMeta = new TransMeta( getClass().getResource( "/jms-generate-produce.ktr" ).getPath() );
+    Trans trans = new Trans( transMeta );
+    trans.prepareExecution( new String[]{} );
+
+    StepMetaDataCombi combi = trans.getSteps().get( 1 );
+    JmsProducer step = (JmsProducer) combi.step;
+    JmsProducerMeta jmsMeta = step.meta;
+    jmsMeta.jmsDelegate.jmsProviders = Collections.singletonList( jmsProvider );
+    when( jmsProvider.supports( JmsProvider.ConnectionType.ACTIVEMQ ) ).thenReturn( true );
+    when( jmsProvider.getContext( jmsMeta.jmsDelegate ) ).thenReturn( jmsContext );
+    when( jmsContext.createProducer() ).thenReturn( jmsProducer );
+    when( jmsProducer.send( jmsMeta.jmsDelegate.getDestination(), "ackbar" ) ).then( ignore -> {
+      trans.stopAll();
+      return null;
+    } );
+
+    trans.startThreads();
+    trans.waitUntilFinished();
+    verify( jmsContext ).close();
   }
 }
