@@ -147,4 +147,17 @@ public class JsonOutputAnalyzerTest {
     assertFalse( resources.isEmpty() );
     assertEquals( 2, resources.size() );
   }
+
+  @Test
+  public void testCloneAnalyzer() {
+    final JsonOutputAnalyzer analyzer = new JsonOutputAnalyzer();
+    // verify that cloneAnalyzer returns an instance that is different from the original
+    assertNotEquals( analyzer, analyzer.cloneAnalyzer() );
+  }
+  
+  @Test
+  public void testNewInstance(){
+    JsonOutputAnalyzer analyzer = new JsonOutputAnalyzer();
+    assertTrue( analyzer.newInstance().getClass().equals(JsonOutputAnalyzer.class));
+  }
 }
