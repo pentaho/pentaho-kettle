@@ -34,6 +34,16 @@
       <password>{xolC8pOE9HEHaUOFXGQhIlS5RcgQTS5fPYFtnZYiBvs=}</password>
     </server>
     <server>
+      <id>nexus.pentaho.org:8001</id>
+      <username>buildguy</username>
+      <password>{xolC8pOE9HEHaUOFXGQhIlS5RcgQTS5fPYFtnZYiBvs=}</password>
+    </server>
+    <server>
+      <id>nexus.pentaho.org:8002</id>
+      <username>buildguy</username>
+      <password>{xolC8pOE9HEHaUOFXGQhIlS5RcgQTS5fPYFtnZYiBvs=}</password>
+    </server>
+    <server>
       <id>nexus3.pentaho.com:8001</id>
       <username>buildguy</username>
       <password>{xolC8pOE9HEHaUOFXGQhIlS5RcgQTS5fPYFtnZYiBvs=}</password>
