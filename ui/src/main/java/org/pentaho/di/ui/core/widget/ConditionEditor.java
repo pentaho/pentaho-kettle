@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -339,6 +339,12 @@ public class ConditionEditor extends Composite {
                 if ( selection != null ) {
                   int fnnr = Condition.getFunction( selection );
                   active_condition.setFunction( fnnr );
+
+                  if ( active_condition.getFunction() == Condition.FUNC_NOT_NULL || active_condition.getFunction() == Condition.FUNC_NULL ) {
+                    active_condition.setRightValuename( null );
+                    active_condition.setRightExact( null );
+                  }
+
                   setModified();
                 }
                 widget.redraw();
