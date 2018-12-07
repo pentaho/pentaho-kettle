@@ -502,6 +502,12 @@ public class RepositoryConnectController implements IConnectedRepositoryInstance
     for ( int i = 0; i < repositoriesMeta.nrRepositories(); i++ ) {
       repositoriesMeta.getRepository( i ).setDefault( false );
     }
+    try {
+      repositoriesMeta.writeData();
+    } catch ( KettleException ke ) {
+      log.logError( "Unable to set default repository", ke );
+      return false;
+    }
     return true;
   }
 
