@@ -109,7 +109,7 @@ public class SynchronizeAfterMergeMeta extends BaseStepMeta implements StepMetaI
 
   /** Commit size for inserts/updates */
   @Injection( name = "COMMIT_SIZE" )
-  private int commitSize;
+  private String commitSize;
 
   @Injection( name = "TABLE_NAME_IN_FIELD" )
   private boolean tablenameInField;
@@ -225,7 +225,7 @@ public class SynchronizeAfterMergeMeta extends BaseStepMeta implements StepMetaI
   /**
    * @return Returns the commitSize.
    */
-  public int getCommitSize() {
+  public String getCommitSize() {
     return commitSize;
   }
 
@@ -234,6 +234,14 @@ public class SynchronizeAfterMergeMeta extends BaseStepMeta implements StepMetaI
    *          The commitSize to set.
    */
   public void setCommitSize( int commitSize ) {
+    this.commitSize = Integer.toString( commitSize );
+  }
+
+  /**
+   * @param commitSize
+   *          The commitSize to set.
+   */
+  public void setCommitSize( String commitSize ) {
     this.commitSize = commitSize;
   }
 
@@ -412,13 +420,11 @@ public class SynchronizeAfterMergeMeta extends BaseStepMeta implements StepMetaI
 
   private void readData( Node stepnode, List<? extends SharedObjectInterface> databases ) throws KettleXMLException {
     try {
-      String csize;
       int nrkeys, nrvalues;
       this.databases = databases;
       String con = XMLHandler.getTagValue( stepnode, "connection" );
       databaseMeta = DatabaseMeta.findDatabase( databases, con );
-      csize = XMLHandler.getTagValue( stepnode, "commit" );
-      commitSize = Const.toInt( csize, 0 );
+      commitSize = XMLHandler.getTagValue( stepnode, "commit" );
       schemaName = XMLHandler.getTagValue( stepnode, "lookup", "schema" );
       tableName = XMLHandler.getTagValue( stepnode, "lookup", "table" );
 
@@ -482,7 +488,7 @@ public class SynchronizeAfterMergeMeta extends BaseStepMeta implements StepMetaI
     keyStream = null;
     updateLookup = null;
     databaseMeta = null;
-    commitSize = 100;
+    commitSize = "100";
     schemaName = "";
     tableName = BaseMessages.getString( PKG, "SynchronizeAfterMergeMeta.DefaultTableName" );
     operationOrderField = null;
@@ -561,7 +567,7 @@ public class SynchronizeAfterMergeMeta extends BaseStepMeta implements StepMetaI
       this.databases = databases;
       databaseMeta = rep.loadDatabaseMetaFromStepAttribute( id_step, "id_connection", databases );
 
-      commitSize = (int) rep.getStepAttributeInteger( id_step, "commit" );
+      commitSize = rep.getStepAttributeString( id_step, "commit" );
       schemaName = rep.getStepAttributeString( id_step, "schema" );
       tableName = rep.getStepAttributeString( id_step, "table" );
 
