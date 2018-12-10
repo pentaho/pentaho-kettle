@@ -335,6 +335,7 @@ public class SynchronizeAfterMergeDialog extends BaseStepDialog implements StepD
     fdlCommit.top = new FormAttachment( wTable, margin );
     fdlCommit.right = new FormAttachment( middle, -margin );
     wlCommit.setLayoutData( fdlCommit );
+
     wCommit = new TextVar( transMeta, wGeneralComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
     props.setLook( wCommit );
     wCommit.addModifyListener( lsMod );
@@ -1064,7 +1065,7 @@ public class SynchronizeAfterMergeDialog extends BaseStepDialog implements StepD
       logDebug( BaseMessages.getString( PKG, "SynchronizeAfterMergeDialog.Log.GettingKeyInfo" ) );
     }
 
-    wCommit.setText( "" + input.getCommitSize() );
+    wCommit.setText( input.getCommitSize() );
     wTablenameInField.setSelection( input.istablenameInField() );
     if ( input.gettablenameField() != null ) {
       wTableField.setText( input.gettablenameField() );
@@ -1153,7 +1154,7 @@ public class SynchronizeAfterMergeDialog extends BaseStepDialog implements StepD
 
     inf.allocate( nrkeys, nrfields );
 
-    inf.setCommitSize( Const.toInt( wCommit.getText(), 0 ) );
+    inf.setCommitSize( wCommit.getText() );
     inf.settablenameInField( wTablenameInField.getSelection() );
     inf.settablenameField( wTableField.getText() );
     inf.setUseBatchUpdate( wBatch.getSelection() );
