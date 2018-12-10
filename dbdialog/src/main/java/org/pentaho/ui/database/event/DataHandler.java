@@ -161,7 +161,7 @@ public class DataHandler extends AbstractXulEventHandler {
   protected XulTextbox indexTablespaceBox;
 
   // MS SQL Server specific
-  private XulTextbox serverInstanceBox;
+  protected XulTextbox serverInstanceBox;
 
   // Informix specific
   private XulTextbox serverNameBox;
