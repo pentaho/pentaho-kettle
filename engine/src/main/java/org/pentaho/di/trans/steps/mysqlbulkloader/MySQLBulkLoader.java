@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -458,12 +458,28 @@ public class MySQLBulkLoader extends BaseStep implements StepInterface {
     }
   }
 
+  protected void verifyDatabaseConnection() throws KettleException {
+    // Confirming Database Connection is defined.
+    if ( meta.getDatabaseMeta() == null ) {
+      throw new KettleException( BaseMessages.getString( PKG, "MySQLBulkLoaderMeta.GetSQL.NoConnectionDefined" ) );
+    }
+  }
+
   @Override
   public boolean init( StepMetaInterface smi, StepDataInterface sdi ) {
     meta = (MySQLBulkLoaderMeta) smi;
     data = (MySQLBulkLoaderData) sdi;
 
     if ( super.init( smi, sdi ) ) {
+
+      // Confirming Database Connection is defined.
+      try {
+        verifyDatabaseConnection();
+      } catch ( KettleException ex ) {
+        logError( ex.getMessage() );
+        return false;
+      }
+
       if ( Utils.isEmpty( meta.getEnclosure() ) ) {
         data.quote = new byte[] {};
       } else {
