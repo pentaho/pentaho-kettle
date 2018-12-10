@@ -28,7 +28,7 @@ buildProperties:
 
         # Tagging
         CREATE_TAG                     : true
-        TAG_NAME                       : ${RELEASE_VERSION}-RC
+        TAG_NAME                       : 8.3.0.0-RC
 
         # Slack Reporting
         SLACK_INTEGRATION              : true
