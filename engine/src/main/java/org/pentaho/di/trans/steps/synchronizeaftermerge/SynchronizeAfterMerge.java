@@ -867,7 +867,7 @@ public class SynchronizeAfterMerge extends BaseStep implements StepInterface {
           data.releaseSavepoint = false;
         }
 
-        data.commitSize = Integer.parseInt( environmentSubstitute( "" + meta.getCommitSize() ) );
+        data.commitSize = Integer.parseInt( environmentSubstitute( meta.getCommitSize() ) );
         data.batchMode = data.commitSize > 0 && meta.useBatchUpdate();
 
         // Batch updates are not supported on PostgreSQL (and look-a-likes) together with error handling (PDI-366)
@@ -897,7 +897,7 @@ public class SynchronizeAfterMerge extends BaseStep implements StepInterface {
         } else {
           data.db.connect( getPartitionID() );
         }
-        data.db.setCommit( meta.getCommitSize() );
+        data.db.setCommit( data.commitSize );
 
         return true;
       } catch ( KettleException ke ) {

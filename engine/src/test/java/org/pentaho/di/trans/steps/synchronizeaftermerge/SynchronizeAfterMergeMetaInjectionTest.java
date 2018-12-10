@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2016 - 2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2016 - 2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -97,9 +97,9 @@ public class SynchronizeAfterMergeMetaInjectionTest extends BaseMetadataInjectio
       }
     } );
 
-    check( "COMMIT_SIZE", new IntGetter() {
+    check( "COMMIT_SIZE", new StringGetter() {
       @Override
-      public int get() {
+      public String get() {
         return meta.getCommitSize();
       }
     } );
