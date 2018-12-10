@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -145,7 +145,7 @@ public class DataOverrideHandler extends DataHandler {
       new XulTextbox[] {
         hostNameBox, databaseNameBox, portNumberBox, userNameBox, passwordBox, customDriverClassBox,
         customUrlBox, dataTablespaceBox, indexTablespaceBox, poolSizeBox, maxPoolSizeBox, languageBox,
-        systemNumberBox, clientBox };
+        systemNumberBox, clientBox, serverInstanceBox };
 
     for ( int i = 0; i < boxes.length; i++ ) {
       XulTextbox xulTextbox = boxes[i];
