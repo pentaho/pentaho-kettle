@@ -34,7 +34,8 @@ loading .loading {
 
 loading .loading .icon {
   float: left;
-  background: url("../../img/busy_thin.gif") no-repeat center center;
+  background-repeat: no-repeat;
+  background-position: center center;
   width: 66px;
   height: 66px;
 }

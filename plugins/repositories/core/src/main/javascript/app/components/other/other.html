@@ -8,7 +8,7 @@
           <tr ng-repeat="repositoryType in vm.repositoryTypes" ng-class="{active : repositoryType == vm.selectedRepositoryType}">
             <td class="bullet" />
             <td class="repo_type" ng-click="vm.selectRepositoryType(repositoryType)">
-              <div class="repoType">{{repositoryType.name}}</div>
+              <div class="repoType headerText">{{repositoryType.name}}</div>
               <div>{{repositoryType.description}}</div>
             </td>
           </tr>
@@ -30,7 +30,7 @@
           {{::vm.closeLabel}}
         </span>
       </button>
-      <button id="btnGetStarted" class="right standard" type="button" ng-disabled="!vm.selectedRepositoryType" ng-click="vm.getStarted(vm.selectedRepositoryType)">
+      <button id="btnGetStarted" class="right primary" type="button" ng-disabled="!vm.selectedRepositoryType" ng-click="vm.getStarted(vm.selectedRepositoryType)">
         <span>
           {{::vm.getStartedLabel}}
         </span>

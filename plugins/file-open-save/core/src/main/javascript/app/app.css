@@ -22,27 +22,18 @@
 
 /* FONTS/TEXT */
 file-open-save-app .headerText {
-  font-size: 24px;
   line-height: 24px;
-  font-family: OpenSansLight;
 }
 
 /* INPUTS/BUTTONS */
 file-open-save-app input[type="text"] {
-  border: 1px solid #CCC;
-  border-radius: 4px;
-  -moz-border-radius: 4px;
-  -webkit-border-radius: 4px;
   color: #212121;
   padding: 0 10px;
-  outline: none;
   -webkit-box-sizing: border-box;
   -moz-box-sizing: border-box;
   box-sizing: border-box;
-  font-size: 14px;
   line-height: 17px;
   height: 34px;
-  font-family: OpenSansRegular;
 }
 
 file-open-save-app input[type="text"]:focus,
@@ -209,68 +200,6 @@ file-open-save-app .fileNameEntryLabel {
 
 file-open-save-app .fileNameEntryTextBox {
   width: 100%;
-}
-
-/* BUTTONS */
-file-open-save-app button,
-file-open-save-app input[type="button"] {
-  filter: none;
-  font-size: 14px;
-  line-height: 16px;
-  color: #FFF;
-  padding: 9px 20px;
-  border-radius: 4px;
-  -moz-border-radius: 4px;
-  -webkit-border-radius: 4px;
-  -webkit-box-shadow: none;
-  -moz-box-shadow: none;
-  box-shadow: none;
-  -webkit-box-sizing: border-box;
-  -moz-box-sizing: border-box;
-  box-sizing: border-box;
-  white-space: nowrap;
-  cursor: pointer;
-  margin: 0;
-  outline: 0 none;
-}
-
-file-open-save-app button span {
-  position: relative;
-}
-
-file-open-save-app button.primary:enabled {
-  border: 1px solid #005DA6;
-  background-color: #005DA6;
-  color: #FFF;
-}
-
-file-open-save-app button.primary:enabled:hover {
-  border: 1px solid #0F2B5B;
-  background-color: #0F2B5B;
-}
-
-file-open-save-app button.primary:disabled {
-  border: 1px solid #E4E4E4;
-  background-color: #E4E4E4;
-  color: #999;
-  cursor: default;
-}
-
-file-open-save-app button.secondary {
-  border: 1px solid #005DA6;
-  background-color: #FFF;
-  color: #005DA6;
-}
-
-file-open-save-app button.secondary:hover {
-  border: 1px solid #0F2B5B;
-  background-color: #FFF;
-  color: #0F2B5B;
-}
-
-file-open-save-app .buttons button {
-  margin-left: 10px;
-  float: right;
 }
 
 file-open-save-app .fileAreaMessageView {

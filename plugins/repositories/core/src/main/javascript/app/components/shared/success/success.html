@@ -10,14 +10,14 @@
     <div class="margin_bottom_80" ng-if="!vm.connection.edit">{{::vm.readyCreate}}</div>
     <div class="margin_bottom_30">{{::vm.question}}</div>
     <div class="margin_bottom_30" ng-if="!vm.connection.connected">
-      <button class="same_width standard" type="button" ng-click="vm.onConnect()">
+      <button class="same_width primary" type="button" ng-click="vm.onConnect()">
         <span>
           {{::vm.connectNow}}
         </span>
       </button>
     </div>
     <div>
-      <button class="same_width secondary" type="button" ng-click="vm.onManage()">
+      <button class="same_width primary" type="button" ng-click="vm.onManage()">
         <span>
           {{::vm.manageConnections}}
         </span>
