@@ -37,7 +37,6 @@ import org.pentaho.di.trans.step.jms.context.JmsProvider;
 import org.pentaho.di.ui.core.FormDataBuilder;
 import org.pentaho.di.ui.core.PropsUI;
 import org.pentaho.di.ui.core.widget.AuthComposite;
-import org.pentaho.di.ui.core.widget.CheckBoxTableCombo;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -73,7 +72,7 @@ class JmsDialogSecurityLayout {
   private final String SSL_AMQ_TRUST_ALL;
   private final String SSL_AMQ_VERIFY_HOST;
 
-  private CheckBoxTableCombo checkBoxTableCombo;
+  private CheckBoxTableComboDefaultButton checkBoxTableCombo;
   private AuthComposite activeMqAuthComposite;
   private AuthComposite ibmMqAuthComposite;
   private Composite wSslGroup;
@@ -148,7 +147,7 @@ class JmsDialogSecurityLayout {
 
     props.setLook( wSslGroup );
 
-    checkBoxTableCombo = new CheckBoxTableCombo(
+    checkBoxTableCombo = new CheckBoxTableComboDefaultButton(
       wSslGroup,
       props,
       lsMod,
@@ -158,7 +157,10 @@ class JmsDialogSecurityLayout {
       BaseMessages.getString( PKG, "JmsDialog.Security.SSLTable" ),
       BaseMessages.getString( PKG, "JmsDialog.Security.Column.Name" ),
       BaseMessages.getString( PKG, "JmsDialog.Security.Column.Value" ),
-      jmsDelegate.sslEnabled );
+      jmsDelegate.sslEnabled,
+      jmsDelegate.sslUseDefaultContext,
+      this::toggleVisibility,
+      jmsDelegate.connectionType );
 
     FormData fdSecurityComp = new FormData();
     wSecurityComp.setLayoutData( fdSecurityComp );
@@ -175,18 +177,26 @@ class JmsDialogSecurityLayout {
   protected void saveTableValues() {
     Map<String, String> tableValues = checkBoxTableCombo.getPropertiesData();
     jmsDelegate.sslEnabled = checkBoxTableCombo.getIsEnabled();
-    jmsDelegate.sslTruststoreType = tableValues.get( SSL_TRUST_STORE_TYPE );
-    jmsDelegate.sslTruststorePath = tableValues.get( SSL_TRUST_STORE_PATH );
-    jmsDelegate.sslTruststorePassword = tableValues.get( SSL_TRUST_STORE_PASSWORD );
-    jmsDelegate.sslKeystoreType = tableValues.get( SSL_KEY_STORE_TYPE );
-    jmsDelegate.sslKeystorePath = tableValues.get( SSL_KEY_STORE_PATH );
-    jmsDelegate.sslKeystorePassword = tableValues.get( SSL_KEY_STORE_PASS );
-    jmsDelegate.sslContextAlgorithm = tableValues.get( SSL_CONTEXT_ALGORITHM );
-    jmsDelegate.sslCipherSuite = tableValues.get( SSL_CIPHER_SUITE );
-    jmsDelegate.ibmSslFipsRequired = tableValues.get( SSL_IBM_FIPS_REQUIRED );
-    jmsDelegate.amqSslProvider = tableValues.get( SSL_AMQ_PROVIDER );
-    jmsDelegate.amqSslTrustAll = tableValues.get( SSL_AMQ_TRUST_ALL );
-    jmsDelegate.amqSslVerifyHost = tableValues.get( SSL_AMQ_VERIFY_HOST );
+    jmsDelegate.sslUseDefaultContext = checkBoxTableCombo.getUseDefaultSslContext();
+
+    if ( !checkBoxTableCombo.getUseDefaultSslContext() ) {
+      jmsDelegate.sslTruststoreType = tableValues.get( SSL_TRUST_STORE_TYPE );
+      jmsDelegate.sslTruststorePath = tableValues.get( SSL_TRUST_STORE_PATH );
+      jmsDelegate.sslTruststorePassword = tableValues.get( SSL_TRUST_STORE_PASSWORD );
+      jmsDelegate.sslKeystoreType = tableValues.get( SSL_KEY_STORE_TYPE );
+      jmsDelegate.sslKeystorePath = tableValues.get( SSL_KEY_STORE_PATH );
+      jmsDelegate.sslKeystorePassword = tableValues.get( SSL_KEY_STORE_PASS );
+      jmsDelegate.sslContextAlgorithm = tableValues.get( SSL_CONTEXT_ALGORITHM );
+      jmsDelegate.amqSslProvider = tableValues.get( SSL_AMQ_PROVIDER );
+      jmsDelegate.amqSslTrustAll = tableValues.get( SSL_AMQ_TRUST_ALL );
+      jmsDelegate.amqSslVerifyHost = tableValues.get( SSL_AMQ_VERIFY_HOST );
+    } else {
+      if ( checkBoxTableCombo.getSelectedConnectionType().equals( JmsProvider.ConnectionType.WEBSPHERE ) ) {
+        jmsDelegate.sslCipherSuite = tableValues.get( SSL_CIPHER_SUITE );
+        jmsDelegate.ibmSslFipsRequired = tableValues.get( SSL_IBM_FIPS_REQUIRED );
+      }
+    }
+
   }
 
   protected void saveAuthentication() {
@@ -199,15 +209,18 @@ class JmsDialogSecurityLayout {
   protected void populateTableIbm() {
     this.sslConfig = new HashMap<>();
 
-    this.sslConfig.put( SSL_TRUST_STORE_TYPE, this.jmsDelegate.sslTruststoreType );
-    this.sslConfig.put( SSL_TRUST_STORE_PATH, this.jmsDelegate.sslTruststorePath );
-    this.sslConfig.put( SSL_TRUST_STORE_PASSWORD, this.jmsDelegate.sslTruststorePassword );
-    this.sslConfig.put( SSL_KEY_STORE_TYPE, this.jmsDelegate.sslKeystoreType );
-    this.sslConfig.put( SSL_KEY_STORE_PATH, this.jmsDelegate.sslKeystorePath );
-    this.sslConfig.put( SSL_KEY_STORE_PASS, this.jmsDelegate.sslKeystorePassword );
-    this.sslConfig.put( SSL_CONTEXT_ALGORITHM, this.jmsDelegate.sslContextAlgorithm );
+    if ( !checkBoxTableCombo.getUseDefaultSslContext() ) {
+      this.sslConfig.put( SSL_TRUST_STORE_TYPE, this.jmsDelegate.sslTruststoreType );
+      this.sslConfig.put( SSL_TRUST_STORE_PATH, this.jmsDelegate.sslTruststorePath );
+      this.sslConfig.put( SSL_TRUST_STORE_PASSWORD, this.jmsDelegate.sslTruststorePassword );
+      this.sslConfig.put( SSL_KEY_STORE_TYPE, this.jmsDelegate.sslKeystoreType );
+      this.sslConfig.put( SSL_KEY_STORE_PATH, this.jmsDelegate.sslKeystorePath );
+      this.sslConfig.put( SSL_KEY_STORE_PASS, this.jmsDelegate.sslKeystorePassword );
+      this.sslConfig.put( SSL_CONTEXT_ALGORITHM, this.jmsDelegate.sslContextAlgorithm );
+    }
     this.sslConfig.put( SSL_CIPHER_SUITE, this.jmsDelegate.sslCipherSuite );
     this.sslConfig.put( SSL_IBM_FIPS_REQUIRED, this.jmsDelegate.ibmSslFipsRequired );
+
 
     this.checkBoxTableCombo.updateDataMap( this.sslConfig );
   }
@@ -215,20 +228,23 @@ class JmsDialogSecurityLayout {
   protected void populateTableActiveMq() {
     this.sslConfig = new HashMap<>();
 
-    this.sslConfig.put( SSL_TRUST_STORE_PATH, this.jmsDelegate.sslTruststorePath );
-    this.sslConfig.put( SSL_TRUST_STORE_PASSWORD, this.jmsDelegate.sslTruststorePassword );
-    this.sslConfig.put( SSL_KEY_STORE_PATH, this.jmsDelegate.sslKeystorePath );
-    this.sslConfig.put( SSL_KEY_STORE_PASS, this.jmsDelegate.sslKeystorePassword );
-    this.sslConfig.put( SSL_CONTEXT_ALGORITHM, this.jmsDelegate.sslContextAlgorithm );
-    this.sslConfig.put( SSL_CIPHER_SUITE, this.jmsDelegate.sslCipherSuite );
-    this.sslConfig.put( SSL_AMQ_PROVIDER, this.jmsDelegate.amqSslProvider );
-    this.sslConfig.put( SSL_AMQ_TRUST_ALL, this.jmsDelegate.amqSslTrustAll );
-    this.sslConfig.put( SSL_AMQ_VERIFY_HOST, this.jmsDelegate.amqSslVerifyHost );
+    if ( !checkBoxTableCombo.getUseDefaultSslContext() ) {
+      this.sslConfig.put( SSL_TRUST_STORE_PATH, this.jmsDelegate.sslTruststorePath );
+      this.sslConfig.put( SSL_TRUST_STORE_PASSWORD, this.jmsDelegate.sslTruststorePassword );
+      this.sslConfig.put( SSL_KEY_STORE_PATH, this.jmsDelegate.sslKeystorePath );
+      this.sslConfig.put( SSL_KEY_STORE_PASS, this.jmsDelegate.sslKeystorePassword );
+      this.sslConfig.put( SSL_CONTEXT_ALGORITHM, this.jmsDelegate.sslContextAlgorithm );
+      this.sslConfig.put( SSL_CIPHER_SUITE, this.jmsDelegate.sslCipherSuite );
+      this.sslConfig.put( SSL_AMQ_PROVIDER, this.jmsDelegate.amqSslProvider );
+      this.sslConfig.put( SSL_AMQ_TRUST_ALL, this.jmsDelegate.amqSslTrustAll );
+      this.sslConfig.put( SSL_AMQ_VERIFY_HOST, this.jmsDelegate.amqSslVerifyHost );
+    }
 
     this.checkBoxTableCombo.updateDataMap( this.sslConfig );
   }
 
   protected void toggleVisibility( JmsProvider.ConnectionType type ) {
+    checkBoxTableCombo.setSelectedConnectionType( type );
     switch ( type ) {
       case WEBSPHERE:
         activeMqAuthComposite.setVisible( false );

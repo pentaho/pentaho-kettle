@@ -214,6 +214,7 @@ public class ActiveMQProviderTest {
     delegate.amqSslVerifyHost = VERIFY_HOST_VAL;
     delegate.amqSslTrustAll = TRUST_ALL_VAL;
     delegate.amqSslProvider = SSL_PROVIDER_VAL;
+    delegate.sslUseDefaultContext = false;
 
     String urlString = provider.buildUrl( delegate );
 
@@ -234,6 +235,54 @@ public class ActiveMQProviderTest {
     assertTrue( "Missing verify host", urlString.contains( "verifyHost=" + VERIFY_HOST_VAL ) );
     assertTrue( "Missing trust all", urlString.contains( "trustAll=" + TRUST_ALL_VAL ) );
     assertTrue( "Missing ssl provider", urlString.contains( "sslProvider=" + SSL_PROVIDER_VAL ) );
+
+    assertTrue( "URL base incorrect", urlString.startsWith( AMQ_URL_BASE + "?" ) );
+  }
+
+  /**
+   * Verifies URI builder works when user chooses Use Default SSL Context
+   */
+  @Test public void testUseDefaultSslContext() {
+
+    ActiveMQProvider provider = new ActiveMQProvider();
+    JmsDelegate delegate = new JmsDelegate( Collections.singletonList( provider ) );
+
+    delegate.amqUrl = AMQ_URL_BASE;
+    delegate.sslEnabled = true;
+    delegate.sslTruststorePath = TRUST_STORE_PATH_VAL;
+    delegate.sslTruststorePassword = TRUST_STORE_PASS_VAL;
+
+    delegate.sslKeystorePath = KEY_STORE_PATH_VAL;
+    delegate.sslKeystorePassword = KEY_STORE_PASS_VAL;
+
+    delegate.sslCipherSuite = ENABLED_CIPHER_SUITES_VAL;
+    delegate.sslContextAlgorithm = ENABLED_PROTOCOLS_VAL;
+    delegate.amqSslVerifyHost = VERIFY_HOST_VAL;
+    delegate.amqSslTrustAll = TRUST_ALL_VAL;
+    delegate.amqSslProvider = SSL_PROVIDER_VAL;
+    delegate.sslUseDefaultContext = true;
+
+    String urlString = provider.buildUrl( delegate );
+
+    try {
+      URI url = new URI( urlString );
+    } catch ( URISyntaxException e ) {
+      fail( e.getMessage() );
+    }
+
+    assertFalse( "Should not include trust store path", urlString.contains( "trustStorePath=" + TRUST_STORE_PATH_VAL ) );
+    assertFalse( "Should not include trust store password", urlString.contains( "trustStorePassword=" + TRUST_STORE_PASS_VAL ) );
+
+    assertFalse( "Should not include key store path", urlString.contains( "keyStorePath=" + KEY_STORE_PATH_VAL ) );
+    assertFalse( "Should not include key store password", urlString.contains( "keyStorePassword=" + KEY_STORE_PASS_VAL ) );
+
+    assertFalse( "Should not include cipher suite", urlString.contains( "enabledCipherSuites=" + ENABLED_CIPHER_SUITES_VAL ) );
+    assertFalse( "Should not include protocols", urlString.contains( "enabledProtocols=" + ENABLED_PROTOCOLS_VAL ) );
+    assertFalse( "Should not include verify host", urlString.contains( "verifyHost=" + VERIFY_HOST_VAL ) );
+    assertFalse( "Should not include trust all", urlString.contains( "trustAll=" + TRUST_ALL_VAL ) );
+    assertFalse( "Should not include ssl provider", urlString.contains( "sslProvider=" + SSL_PROVIDER_VAL ) );
+    
+    assertTrue( "Missing Use default SSL context", urlString.contains( "useDefaultSslContext=true" ) );
 
     assertTrue( "URL base incorrect", urlString.startsWith( AMQ_URL_BASE + "?" ) );
   }

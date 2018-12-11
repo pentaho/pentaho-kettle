@@ -66,6 +66,7 @@ public class WebsphereMQProviderTest {
   private static final String FIPS_REQUIRED_VAL = "FIPS_REQUIRED_VAL";
   private static final String IBM_USERNAME_VAL = "IBM_USERNAME_VAL";
   private static final String IBM_PASSWORD_VAL = "IBM_PASSWORD_VAL";
+  private static final boolean USE_DEFAULT_SSL_CONTEXT_VAL = true;
 
   private JmsProvider jmsProvider = new WebsphereMQProvider();
   @Mock private JmsDelegate jmsDelegate;
@@ -124,6 +125,7 @@ public class WebsphereMQProviderTest {
     jmsDelegate.sslCipherSuite = ENABLED_CIPHER_SUITES_VAL;
     jmsDelegate.sslContextAlgorithm = ENABLED_PROTOCOLS_VAL;
     jmsDelegate.ibmSslFipsRequired = FIPS_REQUIRED_VAL;
+    jmsDelegate.sslUseDefaultContext = USE_DEFAULT_SSL_CONTEXT_VAL;
 
     String debugString = jmsProvider.getConnectionDetails( jmsDelegate );
 
@@ -144,6 +146,8 @@ public class WebsphereMQProviderTest {
     assertTrue( "Missing queue manager", debugString.contains( "QueueManager: " + QUEUE_MANAGER_VAL ) );
     assertTrue( "Missing username", debugString.contains( "User Name: " + IBM_USERNAME_VAL ) );
     assertTrue( "Missing password", debugString.contains( "Password: " + IBM_PASSWORD_VAL ) );
+    assertTrue( "Missing use default SSL context",
+      debugString.contains( "Use Default SSL Context:" + USE_DEFAULT_SSL_CONTEXT_VAL ) );
 
 
   }

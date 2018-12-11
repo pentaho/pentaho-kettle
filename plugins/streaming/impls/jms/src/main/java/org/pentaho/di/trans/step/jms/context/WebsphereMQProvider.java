@@ -80,6 +80,7 @@ public class WebsphereMQProvider implements JmsProvider {
       connDetails.append( "\nSSL Context Algorithm: " ).append( meta.sslContextAlgorithm );
       connDetails.append( "\nCipher Suite: " ).append( meta.sslCipherSuite );
       connDetails.append( "\nFIPS Required: " ).append( meta.ibmSslFipsRequired );
+      connDetails.append( "\nUse Default SSL Context:" ).append( meta.sslUseDefaultContext );
     }
 
     return connDetails.toString();
@@ -97,28 +98,33 @@ public class WebsphereMQProvider implements JmsProvider {
     if ( meta.sslEnabled ) {
       // try to configure SSL settings
       try {
-        KeyStore trustStore = KeyStore.getInstance( meta.sslTruststoreType );
-        trustStore.load( new FileInputStream( meta.sslTruststorePath ),
-          Strings.isNullOrEmpty( meta.sslTruststorePassword ) ? null : meta.sslTruststorePassword.toCharArray() );
+        SSLContext sslContext = null;
+        if ( meta.sslUseDefaultContext ) {
+          sslContext = SSLContext.getDefault();
+        } else {
+          KeyStore trustStore = KeyStore.getInstance( meta.sslTruststoreType );
+          trustStore.load( new FileInputStream( meta.sslTruststorePath ),
+            Strings.isNullOrEmpty( meta.sslTruststorePassword ) ? null : meta.sslTruststorePassword.toCharArray() );
 
-        TrustManagerFactory trustManagerFactory =
-          TrustManagerFactory.getInstance( TrustManagerFactory.getDefaultAlgorithm() );
+          TrustManagerFactory trustManagerFactory =
+            TrustManagerFactory.getInstance( TrustManagerFactory.getDefaultAlgorithm() );
 
-        trustManagerFactory.init( trustStore );
+          trustManagerFactory.init( trustStore );
 
-        KeyManagerFactory keyManagerFactory = null;
-        // the keystore is optional; use if client authentication is desired
-        if ( !Strings.isNullOrEmpty( meta.sslKeystorePath ) ) {
-          KeyStore keyStore = KeyStore.getInstance( meta.sslKeystoreType );
-          keyStore.load( new FileInputStream( meta.sslKeystorePath ), meta.sslKeystorePassword.toCharArray() );
+          KeyManagerFactory keyManagerFactory = null;
+          // the keystore is optional; use if client authentication is desired
+          if ( !Strings.isNullOrEmpty( meta.sslKeystorePath ) ) {
+            KeyStore keyStore = KeyStore.getInstance( meta.sslKeystoreType );
+            keyStore.load( new FileInputStream( meta.sslKeystorePath ), meta.sslKeystorePassword.toCharArray() );
 
-          keyManagerFactory = KeyManagerFactory.getInstance( KeyManagerFactory.getDefaultAlgorithm() );
-          keyManagerFactory.init( keyStore, meta.sslKeystorePassword.toCharArray() );
+            keyManagerFactory = KeyManagerFactory.getInstance( KeyManagerFactory.getDefaultAlgorithm() );
+            keyManagerFactory.init( keyStore, meta.sslKeystorePassword.toCharArray() );
+          }
+
+          sslContext = SSLContext.getInstance( meta.sslContextAlgorithm );
+          sslContext.init( ( null == keyManagerFactory ? null : keyManagerFactory.getKeyManagers() ),
+            trustManagerFactory.getTrustManagers(), new SecureRandom() );
         }
-
-        SSLContext sslContext = SSLContext.getInstance( meta.sslContextAlgorithm );
-        sslContext.init( ( null == keyManagerFactory ? null : keyManagerFactory.getKeyManagers() ),
-          trustManagerFactory.getTrustManagers(), new SecureRandom() );
 
         SSLSocketFactory sslSocketFactory = sslContext.getSocketFactory();
 
