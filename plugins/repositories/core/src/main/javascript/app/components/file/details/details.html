@@ -7,7 +7,7 @@
     <div>
       <label for="location" class="margin_bottom_5 block text_left">{{::vm.fileLocationLabel}}</label>
       <input id="location" class="block left" type="text" ng-model="vm.connection.location" />
-      <button id="browse" class="left standard margin_bottom_20" ng-click="vm.browse()">
+      <button id="browse" class="left primary margin_bottom_20" ng-click="vm.browse()">
         <span>
           {{::vm.fileBrowseLabel}}
         </span>
@@ -44,7 +44,7 @@
     </div>
     <div>
       <help></help>
-      <button id="finish" class="right margin_left_10 standard" type="button" ng-disabled="!vm.canFinish()" ng-click="vm.finish()">
+      <button id="finish" class="right margin_left_10 primary" type="button" ng-disabled="!vm.canFinish()" ng-click="vm.finish()">
         <span>
           {{::vm.finishLabel}}
         </span>

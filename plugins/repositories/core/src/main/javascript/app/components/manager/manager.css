@@ -163,45 +163,6 @@ button:not(.defaultBtn):not(.detailsBtn) {
   font-size: 14px;
 }
 
-button span {
-  position: relative;
-}
-
-button.standard:enabled {
-  background-color: #005EAA;
-  color: #FFFFFF;
-  border: 1px solid #005EAA;
-  cursor: pointer;
-}
-
-button.standard:hover,
-button.standard:active {
-  background-color: #0F2B5B;
-  color: #FFFFFF;
-  border: 1px solid #0F2B5B;
-}
-
-button.secondary:enabled {
-  background-color: #FFFFFF;
-  color: #005EAA;
-  border: 1px solid #005EAA;
-  cursor: pointer;
-}
-
-button.secondary:hover,
-button.secondary:active {
-  background-color: #FFFFFF;
-  color: #0F2B5B;
-  border: 1px solid #0F2B5B;
-}
-
-button:disabled,
-button:disabled:hover {
-  background-color: #E4E4E4;
-  color: #888888;
-  border: 1px solid #E4E4E4;
-}
-
 button.same_width {
   width: 200px;
 }
@@ -222,6 +183,7 @@ button.defaultBtn {
   background-color: #FFFFFF;
   visibility: hidden;
   position: relative;
+  padding: 0;
 }
 
 button.detailsBtn {
@@ -233,6 +195,7 @@ button.detailsBtn {
   border: 1px solid #999999;
   background-color: #FFFFFF;
   position: relative;
+  padding: 0;
 }
 
 /* hover */
@@ -317,11 +280,7 @@ textarea,
 #connectionDD {
   height: 36px;
   padding-left: 5px;
-  border-radius: 4px;
-  border: 1px solid #CCCCCC;
-  font-size: 14px;
   color: #333333;
-  font-family: OpenSansRegular;
 }
 
 input[type="text"],
@@ -486,8 +445,6 @@ tr.active #repoDesc {
 }
 
 .repoType {
-  font-family: OpenSansLight;
-  font-size: 24px;
   width: 450px;
   white-space: nowrap;
   overflow: hidden;
@@ -574,7 +531,6 @@ hr {
 }
 
 .busy {
-  background-image: url('../../img/busy_thin.gif');
   background-repeat: no-repeat;
   height: 66px;
   width: 66px;

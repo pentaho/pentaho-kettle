@@ -8,7 +8,7 @@
         <tr ng-repeat="repository in vm.repositories" ng-class="{active : repository === vm.selectedRepository}"  ng-click="vm.selectRepository(repository)" ng-init="$last && addToolTips()">
           <td class="bullet" />
           <td class="repo_type text_left">
-            <div class="repoType mightOverflow">
+            <div class="repoType mightOverflow headerText">
               {{repository.displayName}}
             </div>
             <div id="repoDesc">{{repository.description}}</div>
@@ -36,7 +36,7 @@
         {{::vm.editLabel}}
       </span>
     </button>
-    <button id="addBtn" class="right standard" type="button" ng-click="vm.add()">
+    <button id="addBtn" class="right primary" type="button" ng-click="vm.add()">
       <span>
         {{::vm.addLabel}}
       </span>
