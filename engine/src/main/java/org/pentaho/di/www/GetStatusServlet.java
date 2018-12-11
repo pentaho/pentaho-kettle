@@ -279,13 +279,18 @@ public class GetStatusServlet extends BaseHttpServlet implements CartePluginInte
       out.println( "<" + htmlClass + " class=\"workspaceHeading\" style=\"padding: 0px 0px 0px 10px;\">" + BaseMessages.getString( PKG, "GetStatusServlet.TopStatus" ) + "</" + htmlClass + ">" );
       out.println( "</div>" );
 
+      // Tooltips
+      String run = BaseMessages.getString( PKG, "CarteStatusServlet.Run" );
+      String stop = BaseMessages.getString( PKG, "CarteStatusServlet.StopTrans" );
+      String cleanup = BaseMessages.getString( PKG, "CarteStatusServlet.CleanupTrans" );
+      String view = BaseMessages.getString( PKG, "CarteStatusServlet.ViewTransDetails" );
+      String remove = BaseMessages.getString( PKG, "CarteStatusServlet.RemoveTrans" );
+      String runJ = BaseMessages.getString( PKG, "CarteStatusServlet.Run" );
+      String stopJ = BaseMessages.getString( PKG, "CarteStatusServlet.StopJob" );
+      String viewJ = BaseMessages.getString( PKG, "CarteStatusServlet.ViewJobDetails" );
+      String removeJ = BaseMessages.getString( PKG, "CarteStatusServlet.RemoveJob" );
+
       try {
-        // Tooltips
-        String run = BaseMessages.getString( PKG, "CarteStatusServlet.Run" );
-        String stop = BaseMessages.getString( PKG, "CarteStatusServlet.StopTrans" );
-        String cleanup = BaseMessages.getString( PKG, "CarteStatusServlet.CleanupTrans" );
-        String view = BaseMessages.getString( PKG, "CarteStatusServlet.ViewTransDetails" );
-        String remove = BaseMessages.getString( PKG, "CarteStatusServlet.RemoveTrans" );
         out.println( "<div class=\"row\" style=\"padding: 0px 0px 0px 30px\">" );
         htmlClass = useLightTheme ? "h2" : "div";
         out.println( "<div class=\"row\" style=\"padding: 25px 30px 75px 0px;\">" );
@@ -372,12 +377,6 @@ public class GetStatusServlet extends BaseHttpServlet implements CartePluginInte
         }
         out.print( "</table></table>" );
         out.print( "</div>" ); // end div
-
-        // Tooltips
-        String runJ = BaseMessages.getString( PKG, "CarteStatusServlet.Run" );
-        String stopJ = BaseMessages.getString( PKG, "CarteStatusServlet.StopJob" );
-        String viewJ = BaseMessages.getString( PKG, "CarteStatusServlet.ViewJobDetails" );
-        String removeJ = BaseMessages.getString( PKG, "CarteStatusServlet.RemoveJob" );
 
         out.println( "<div class=\"row\" style=\"padding: 0px 30px 75px 0px;\">" );
         out.println( "<" + htmlClass + " class=\"workspaceHeading\" style=\"padding: 0px 0px 0px 0px;\">Jobs</" + htmlClass + ">" );
@@ -715,9 +714,16 @@ public class GetStatusServlet extends BaseHttpServlet implements CartePluginInte
       out.println( "}" );
       out.println( "selectedTransRowIndex = element.id.charAt( element.id.length - 1 );" );
       out.println( "if( document.getElementById( 'cellTableCellStatus' + selectedTransRowIndex ).innerHTML == 'Running' ) {" );
-      out.println( "document.getElementById( 'pause' ).innerHTML = '<img style=\"width: 22px; height: 22px\" src=\"" + prefix + "/images/pause.svg\"/ title=\"Pause transformation\">';" );
+      out.println( "document.getElementById( 'pause' ).innerHTML = '<img style=\"width: 22px; height: 22px\" src=\""
+        + prefix + "/images/pause.svg\"/ title=\"" + BaseMessages.getString( PKG, "GetStatusServlet.PauseTrans" )
+        + "\">';" );
       out.println( "} else if( document.getElementById( 'cellTableCellStatus' + selectedTransRowIndex ).innerHTML == 'Paused' ) {" );
-      out.println( "document.getElementById( 'pause' ).innerHTML = '<img style=\"width: 22px; height: 22px\" src=\"" + prefix + "/images/pause.svg\" title=\"Resume transformation\"/>';" );
+      out.println( "document.getElementById( 'pause' ).innerHTML = '<img style=\"width: 22px; height: 22px\" src=\""
+        + prefix + "/images/pause.svg\" title=\"" + BaseMessages.getString( PKG, "GetStatusServlet.ResumeTrans" )
+        + "\"/>';" );
+      out.println( "} else {" );
+      out.println( "document.getElementById( 'pause' ).innerHTML = '<img style=\"width: 22px; height: 22px\" src=\""
+        + prefix + "/images/run_option.svg\" title=\"" + run + "\"/>';" );
       out.println( "}" );
       out.println( "}" );
       out.println( "setSelectedNames();" );
