@@ -56,14 +56,14 @@ public class JmsConsumer extends BaseStreamStep {
       + jmsConsumerMeta.jmsDelegate.getJmsProvider().getConnectionDetails( jmsConsumerMeta.jmsDelegate ) );
 
     window = new FixedTimeStreamWindow<>(
-      subtransExecutor, jmsConsumerMeta.jmsDelegate.getRowMeta(), getDuration(), getBatchSize(), getParallelism() );
+      subtransExecutor, jmsConsumerMeta.getRowMeta(), getDuration(), getBatchSize(), getParallelism() );
     source = new JmsStreamSource( this, requireNonNull( jmsConsumerMeta.jmsDelegate ), getReceiverTimeout( jmsConsumerMeta ) );
     return superStatus;
   }
 
   public int getReceiverTimeout( JmsConsumerMeta meta ) {
     try {
-      return Integer.parseInt( meta.jmsDelegate.receiveTimeout );
+      return Integer.parseInt( meta.receiveTimeout );
     } catch ( NumberFormatException nfe ) {
       logError( getString( PKG, "JmsConsumer.ReceiveTimeoutInvalid" ) );
     }

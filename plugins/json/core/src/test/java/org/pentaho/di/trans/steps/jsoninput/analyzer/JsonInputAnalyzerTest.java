@@ -196,4 +196,17 @@ public class JsonInputAnalyzerTest {
 
     assertEquals( JsonInputMeta.class, consumer.getMetaClass() );
   }
+  
+  @Test
+  public void testCloneAnalyzer() {
+    final JsonInputAnalyzer analyzer = new JsonInputAnalyzer();
+    // verify that cloneAnalyzer returns an instance that is different from the original
+    assertNotEquals( analyzer, analyzer.cloneAnalyzer() );
+  }
+
+  @Test
+  public void testNewInstance(){
+    JsonInputAnalyzer analyzer = new JsonInputAnalyzer();
+    assertTrue( analyzer.newInstance().getClass().equals(JsonInputAnalyzer.class));
+  }
 }

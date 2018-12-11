@@ -95,9 +95,9 @@ public class JmsStreamSource extends BlockingQueueStreamSource<List<Object>> {
 
   @Override public void close() {
     super.close();
-    closed.set( true );
-    if ( consumer != null ) {
+    if ( consumer != null && !closed.getAndSet( true ) ) {
       consumer.close();
+      jmsDelegate.getJmsContext().close();
     }
   }
 }

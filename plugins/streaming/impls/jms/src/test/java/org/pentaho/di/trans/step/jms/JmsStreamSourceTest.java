@@ -42,6 +42,7 @@ import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -82,14 +83,16 @@ public class JmsStreamSourceTest {
   public void testReceiveMessage() {
     source.open();
 
-    verify( delegate ).getJmsContext();
-    verify( delegate ).getDestination();
+    verify( delegate, atLeastOnce() ).getJmsContext();
+    verify( delegate, atLeastOnce() ).getDestination();
 
     List<Object> sentMessage = source.flowable().firstElement().blockingGet( Collections.emptyList() );
 
     assertThat( sentMessage.size(), equalTo( 2 ) );
     assertThat( sentMessage.get( 0 ), equalTo( "message" ) );
     assertThat( sentMessage.get( 1 ), equalTo( "dest" ) );
+    verify( consumer ).close();
+    verify( context ).close();
   }
 
 

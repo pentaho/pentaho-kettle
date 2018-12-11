@@ -2358,13 +2358,15 @@ public class JobMeta extends AbstractMeta
     }
     updateCurrentDir();
   }
-
-  private void updateCurrentDir() {
+  // changed to protected for testing purposes
+  protected void updateCurrentDir() {
     String prevCurrentDir = variables.getVariable( Const.INTERNAL_VARIABLE_ENTRY_CURRENT_DIRECTORY );
     String currentDir = variables.getVariable(
       repository != null
           ? Const.INTERNAL_VARIABLE_JOB_REPOSITORY_DIRECTORY
-          : Const.INTERNAL_VARIABLE_JOB_FILENAME_DIRECTORY );
+          : filename != null
+            ? Const.INTERNAL_VARIABLE_JOB_FILENAME_DIRECTORY
+            : Const.INTERNAL_VARIABLE_ENTRY_CURRENT_DIRECTORY );
     variables.setVariable( Const.INTERNAL_VARIABLE_ENTRY_CURRENT_DIRECTORY, currentDir );
     fireCurrentDirectoryChanged( prevCurrentDir, currentDir );
   }
@@ -2408,9 +2410,15 @@ public class JobMeta extends AbstractMeta
       variables.setVariable( Const.INTERNAL_VARIABLE_JOB_FILENAME_NAME, "" );
     }
 
+    setInternalEntryCurrentDirectory();
+
+  }
+
+  protected void setInternalEntryCurrentDirectory() {
     variables.setVariable( Const.INTERNAL_VARIABLE_ENTRY_CURRENT_DIRECTORY, variables.getVariable(
-        repository != null ? Const.INTERNAL_VARIABLE_JOB_REPOSITORY_DIRECTORY
-            : Const.INTERNAL_VARIABLE_JOB_FILENAME_DIRECTORY ) );
+      repository != null ? Const.INTERNAL_VARIABLE_JOB_REPOSITORY_DIRECTORY
+        : filename != null ? Const.INTERNAL_VARIABLE_JOB_FILENAME_DIRECTORY
+        : Const.INTERNAL_VARIABLE_ENTRY_CURRENT_DIRECTORY ) );
   }
 
   @Deprecated

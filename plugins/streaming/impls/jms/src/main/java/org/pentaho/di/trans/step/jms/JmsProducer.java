@@ -37,20 +37,24 @@ import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
 
 import javax.jms.Destination;
+import javax.jms.JMSContext;
 import javax.jms.JMSProducer;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import static java.util.Optional.ofNullable;
 
 public class JmsProducer extends BaseStep implements StepInterface {
 
-  private JmsProducerMeta meta;
+  JmsProducerMeta meta;
   @VisibleForTesting
   JMSProducer producer;
   private Destination destination;
   private int messageIndex;
+  private JMSContext jmsContext;
+  private AtomicBoolean closed = new AtomicBoolean( false );
 
   public JmsProducer( StepMeta stepMeta,
                       StepDataInterface stepDataInterface, int copyNr,
@@ -84,6 +88,7 @@ public class JmsProducer extends BaseStep implements StepInterface {
     Object[] row = getRow();
 
     if ( null == row ) {
+      jmsContext.close();
       setOutputDone();
       return false;  // indicates done
     }
@@ -92,7 +97,8 @@ public class JmsProducer extends BaseStep implements StepInterface {
       // init connections
       log.logDebug( "Connection Details: "
         + meta.jmsDelegate.getJmsProvider().getConnectionDetails( meta.jmsDelegate ) );
-      producer = meta.jmsDelegate.getJmsContext().createProducer();
+      jmsContext = meta.jmsDelegate.getJmsContext();
+      producer = jmsContext.createProducer();
       destination = meta.jmsDelegate.getDestination();
       messageIndex = getInputRowMeta().indexOfValue( meta.getFieldToSend() );
 
@@ -107,6 +113,9 @@ public class JmsProducer extends BaseStep implements StepInterface {
 
       first = false;
     }
+    if ( closed.get() ) {
+      return false;
+    }
 
     // send row to JMS
     producer.send( destination, ofNullable( row[ messageIndex ] )
@@ -116,6 +125,12 @@ public class JmsProducer extends BaseStep implements StepInterface {
     // send to next steps
     putRow( getInputRowMeta(), row );
     return true;
+  }
+
+  @Override public void stopRunning( StepMetaInterface stepMetaInterface, StepDataInterface stepDataInterface ) {
+    if ( jmsContext != null && !closed.getAndSet( true ) ) {
+      jmsContext.close();
+    }
   }
 
   private void setOptions( JMSProducer producer ) {

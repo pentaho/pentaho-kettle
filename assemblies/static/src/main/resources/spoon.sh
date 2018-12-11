@@ -4,7 +4,7 @@
 #
 # Pentaho Data Integration
 #
-# Copyright (C) 2005-2018 by Hitachi Vantara : http://www.pentaho.com
+# Copyright (C) 2005-2018 by Hitachi Vantara : http://www.hitachivantara.com
 #
 # *****************************************************************************
 #
@@ -137,7 +137,12 @@ case `uname -s` in
 
 	Linux)
 
-            HASWEBKITGTK=`ldconfig -p | grep webkitgtk-1.0`
+            if [ -f /sbin/ldconfig ]; then
+              LDCONFIG=/sbin/ldconfig
+            else
+              LDCONFIG=ldconfig
+            fi
+            HASWEBKITGTK=`$LDCONFIG -p | grep webkitgtk-1.0`
             export LIBWEBKITGTK="$HASWEBKITGTK"
             export JavaScriptCoreUseJIT=0
             if [ -z "$HASWEBKITGTK" ] && [ "1" != "$SKIP_WEBKITGTK_CHECK" ]; then

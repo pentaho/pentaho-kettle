@@ -31,6 +31,7 @@ import org.pentaho.metaverse.api.MetaverseAnalyzerException;
 import org.pentaho.metaverse.api.MetaverseException;
 import org.pentaho.metaverse.api.StepField;
 import org.pentaho.metaverse.api.analyzer.kettle.step.ExternalResourceStepAnalyzer;
+import org.pentaho.metaverse.api.analyzer.kettle.step.IClonableStepAnalyzer;
 import org.pentaho.metaverse.api.model.IExternalResourceInfo;
 
 import java.util.HashSet;
@@ -99,5 +100,10 @@ public class JsonInputAnalyzer extends ExternalResourceStepAnalyzer<JsonInputMet
     } else {
       rootNode.setProperty( "fileDirName", meta.getFilenameField() );
     }
+  }
+
+  @Override
+  public IClonableStepAnalyzer newInstance() {
+    return new JsonInputAnalyzer();
   }
 }

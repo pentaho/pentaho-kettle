@@ -114,19 +114,22 @@ public class BaseStreamStep extends BaseStep {
     Preconditions.checkNotNull( source );
     Preconditions.checkNotNull( window );
 
-    source.open();
+    try {
+      source.open();
 
-    bufferStream().forEach( result -> {
-      if ( result.isSafeStop() ) {
-        getTrans().safeStop();
-      }
+      bufferStream().forEach( result -> {
+        if ( result.isSafeStop() ) {
+          getTrans().safeStop();
+        }
 
-      putRows( result.getRows() );
-    } );
-    super.setOutputDone();
+        putRows( result.getRows() );
+      } );
+      super.setOutputDone();
 
-    // Needed for when an Abort Step is used.
-    source.close();
+    } finally {
+      // Needed for when an Abort Step is used.
+      source.close();
+    }
     return false;
   }
 

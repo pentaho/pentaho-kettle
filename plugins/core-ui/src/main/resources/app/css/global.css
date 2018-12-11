@@ -36,26 +36,57 @@ button.primary:enabled:hover {
   background-color: #0F2B5B;
 }
 
-button.primary:disabled {
-  border: 1px solid #E4E4E4;
-  background-color: #E4E4E4;
-  color: #999;
-  cursor: default;
-}
-
 button.secondary {
   border: 1px solid #005DA6;
   background-color: #FFF;
   color: #005DA6;
 }
 
-button.secondary:hover {
+button.secondary:hover,
+button.secondary:active {
   border: 1px solid #0F2B5B;
   background-color: #FFF;
   color: #0F2B5B;
 }
 
+button:disabled,
+button:disabled:hover {
+  border: 1px solid #E4E4E4;
+  background-color: #E4E4E4;
+  color: #999;
+  cursor: default;
+}
+
 .buttons button {
   margin-left: 10px;
   float: right;
+}
+
+.loading-icon {
+  background: url("../img/busy_thin.gif");
+}
+
+input[type="text"],
+input[type="password"],
+textarea,
+#connectionDD {
+  -moz-border-radius: 4px;
+  -webkit-border-radius: 4px;
+  font-family: OpenSansRegular;
+  border-radius: 4px;
+  border: 1px solid #CCC;
+  font-size: 14px;
+  outline: none;
+}
+
+input[type="text"]:focus,
+input[type="password"]:focus,
+select:focus {
+  outline: none;
+  border: 1px solid #005EAA;
+}
+
+.headerText {
+  font-size: 24px;
+  font-family: OpenSansLight;
 }

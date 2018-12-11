@@ -24,6 +24,7 @@ package org.pentaho.di.job;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.pentaho.di.core.Const;
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.logging.BaseLogTable;
@@ -152,4 +153,48 @@ public class JobTest {
     assertNotEquals( job1.getContainerObjectId(), job2.getContainerObjectId() );
     assertNotEquals( job1.getLogChannelId(), job2.getLogChannelId() );
   }
+
+  @Test
+  public void testSetInternalEntryCurrentDirectoryWithFilename( ) {
+    Job jobTest = new Job(  );
+    boolean hasFilename = true;
+    boolean hasRepoDir = false;
+    jobTest.copyVariablesFrom( null );
+    jobTest.setVariable( Const.INTERNAL_VARIABLE_ENTRY_CURRENT_DIRECTORY, "Original value defined at run execution" );
+    jobTest.setVariable( Const.INTERNAL_VARIABLE_JOB_FILENAME_DIRECTORY, "file:///C:/SomeFilenameDirectory" );
+    jobTest.setVariable( Const.INTERNAL_VARIABLE_JOB_REPOSITORY_DIRECTORY, "/SomeRepDirectory" );
+    jobTest.setInternalEntryCurrentDirectory( hasFilename, hasRepoDir );
+
+    assertEquals( "file:///C:/SomeFilenameDirectory", jobTest.getVariable( Const.INTERNAL_VARIABLE_ENTRY_CURRENT_DIRECTORY ) );
+
+  }
+
+  @Test
+  public void testSetInternalEntryCurrentDirectoryWithRepository( ) {
+    Job jobTest = new Job(  );
+    boolean hasFilename = false;
+    boolean hasRepoDir = true;
+    jobTest.copyVariablesFrom( null );
+    jobTest.setVariable( Const.INTERNAL_VARIABLE_ENTRY_CURRENT_DIRECTORY, "Original value defined at run execution" );
+    jobTest.setVariable( Const.INTERNAL_VARIABLE_JOB_FILENAME_DIRECTORY, "file:///C:/SomeFilenameDirectory" );
+    jobTest.setVariable( Const.INTERNAL_VARIABLE_JOB_REPOSITORY_DIRECTORY, "/SomeRepDirectory" );
+    jobTest.setInternalEntryCurrentDirectory( hasFilename, hasRepoDir );
+
+    assertEquals( "/SomeRepDirectory", jobTest.getVariable( Const.INTERNAL_VARIABLE_ENTRY_CURRENT_DIRECTORY ) );
+  }
+
+  @Test
+  public void testSetInternalEntryCurrentDirectoryWithoutFilenameOrRepository( ) {
+    Job jobTest = new Job(  );
+    jobTest.copyVariablesFrom( null );
+    boolean hasFilename = false;
+    boolean hasRepoDir = false;
+    jobTest.setVariable( Const.INTERNAL_VARIABLE_ENTRY_CURRENT_DIRECTORY, "Original value defined at run execution" );
+    jobTest.setVariable( Const.INTERNAL_VARIABLE_JOB_FILENAME_DIRECTORY, "file:///C:/SomeFilenameDirectory" );
+    jobTest.setVariable( Const.INTERNAL_VARIABLE_JOB_REPOSITORY_DIRECTORY, "/SomeRepDirectory" );
+    jobTest.setInternalEntryCurrentDirectory( hasFilename, hasRepoDir );
+
+    assertEquals( "Original value defined at run execution", jobTest.getVariable( Const.INTERNAL_VARIABLE_ENTRY_CURRENT_DIRECTORY )  );
+  }
+
 }

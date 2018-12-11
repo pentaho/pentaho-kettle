@@ -18,7 +18,7 @@
         <input id="password" class="block repo_conn_txt" type="password" ng-model="vm.credentials.password" ng-change="vm.resetErrorMsg()"/>
       </div>
       <div>
-        <button id="connect" class="standard" type="submit" ng-disabled="!vm.canConnect()">
+        <button id="connect" class="primary" type="submit" ng-disabled="!vm.canConnect()">
         <span>
           {{::vm.connectLabel}}
         </span>

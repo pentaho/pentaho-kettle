@@ -322,5 +322,17 @@ public class GetXMLDataStepAnalyzerTest {
 
     assertEquals( GetXMLDataMeta.class, consumer.getMetaClass() );
   }
+  
+  @Test
+  public void testCloneAnalyzer() {
+    final GetXMLDataStepAnalyzer analyzer = new GetXMLDataStepAnalyzer();
+    // verify that cloneAnalyzer returns an instance that is different from the original
+    assertNotEquals( analyzer, analyzer.cloneAnalyzer() );
+   }
 
+  @Test
+  public void testNewInstance(){
+    GetXMLDataStepAnalyzer analyzer = new GetXMLDataStepAnalyzer();
+    assertTrue( analyzer.newInstance().getClass().equals(GetXMLDataStepAnalyzer.class));
+  }
 }

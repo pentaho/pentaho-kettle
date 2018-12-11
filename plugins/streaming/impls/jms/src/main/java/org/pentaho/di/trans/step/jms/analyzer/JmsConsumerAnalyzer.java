@@ -64,7 +64,7 @@ public class JmsConsumerAnalyzer extends StepAnalyzer<JmsConsumerMeta> {
       parentTransMeta.environmentSubstitute( jmsDelegate.getDestinationType() ) );
     rootNode.setProperty( "destinationName",
       parentTransMeta.environmentSubstitute( jmsDelegate.getDestinationName() ) );
-    rootNode.setProperty( "receiveTimeout", parentTransMeta.environmentSubstitute( jmsDelegate.getReceiveTimeout() ) );
+    rootNode.setProperty( "receiveTimeout", parentTransMeta.environmentSubstitute( meta.getReceiveTimeout() ) );
 
     KettleAnalyzerUtil.analyze( this, parentTransMeta, (ISubTransAwareMeta) meta, rootNode );
   }
