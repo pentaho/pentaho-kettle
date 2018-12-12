@@ -1,30 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <modelVersion>4.0.0</modelVersion>
-
   <parent>
     <groupId>pentaho-kettle</groupId>
     <artifactId>plugins</artifactId>
-    <version>7.1-SNAPSHOT</version>
+    <version>7.1.0.19-174</version>
   </parent>
-
   <groupId>org.pentaho</groupId>
   <artifactId>pdi-engine-configuration-parent</artifactId>
-  <version>7.1-SNAPSHOT</version>
-
+  <version>7.1.0.19-174</version>
   <packaging>pom</packaging>
-
-  <properties>
-    <dependency.pentaho-kettle.version>7.1-SNAPSHOT</dependency.pentaho-kettle.version>
-  </properties>
-
   <modules>
     <module>api</module>
     <module>impl</module>
     <module>ui</module>
     <module>features</module>
   </modules>
-
+  <properties>
+    <dependency.pentaho-kettle.version>7.1.0.19-174</dependency.pentaho-kettle.version>
+  </properties>
 </project>
