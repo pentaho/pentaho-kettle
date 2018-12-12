@@ -43,11 +43,15 @@ import org.pentaho.metaverse.api.IMetaverseObjectFactory;
 import org.pentaho.metaverse.api.INamespace;
 import org.pentaho.metaverse.api.MetaverseObjectFactory;
 import org.pentaho.metaverse.api.StepField;
+import org.pentaho.metaverse.api.analyzer.kettle.ExternalResourceCache;
 import org.pentaho.metaverse.api.model.IExternalResourceInfo;
+
+import org.powermock.reflect.Whitebox;
 
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.spy;
@@ -102,6 +106,9 @@ public class JsonInputAnalyzerTest {
     when( mockJsonInput.getStepMetaInterface() ).thenReturn( meta );
     when( mockJsonInput.getStepMeta() ).thenReturn( mockStepMeta );
     when( mockStepMeta.getStepMetaInterface() ).thenReturn( meta );
+
+    Whitebox.setInternalState( ExternalResourceCache.getInstance(), "transMap", new ConcurrentHashMap() );
+    Whitebox.setInternalState( ExternalResourceCache.getInstance(), "resourceMap", new ConcurrentHashMap() );
   }
 
   @Test
@@ -179,20 +186,28 @@ public class JsonInputAnalyzerTest {
     assertFalse( resources.isEmpty() );
     assertEquals( 2, resources.size() );
 
+    when( meta.getFilePaths( false ) ).thenReturn( new String[]{ "/path/to/file1", "/another/path/to/file2",
+      "/another/path/to/file3" } );
+    resources = consumer.getResourcesFromMeta( meta );
+    assertFalse( resources.isEmpty() );
+    assertEquals( 3, resources.size() );
+
     when( meta.isAcceptingFilenames() ).thenReturn( true );
     assertTrue( consumer.isDataDriven( meta ) );
     assertTrue( consumer.getResourcesFromMeta( meta ).isEmpty() );
-    when( mockJsonInput.environmentSubstitute( Mockito.any( String.class ) ) ).thenReturn( "/path/to/row/file" );
 
+    when( mockJsonInput.environmentSubstitute( Mockito.any( String.class ) ) ).thenReturn( "/path/to/row/file" );
     when( mockJsonInput.getStepMetaInterface() ).thenReturn( meta );
     resources = consumer.getResourcesFromRow( mockJsonInput, mockRowMetaInterface, new String[] { "id", "name" } );
     assertFalse( resources.isEmpty() );
     assertEquals( 1, resources.size() );
 
+    // when getString throws an exception, we still get the cached resources
     when( mockRowMetaInterface.getString( Mockito.any( Object[].class ), Mockito.anyString(), Mockito.anyString() ) )
       .thenThrow( KettleException.class );
     resources = consumer.getResourcesFromRow( mockJsonInput, mockRowMetaInterface, new String[] { "id", "name" } );
-    assertTrue( resources.isEmpty() );
+    assertFalse( resources.isEmpty() );
+    assertEquals( 1, resources.size() );
 
     assertEquals( JsonInputMeta.class, consumer.getMetaClass() );
   }

@@ -32,6 +32,7 @@
     <maven.build.timestamp.format>yyyy/MM/dd hh:mm</maven.build.timestamp.format>
     <poi.version>3.17</poi.version>
     <dependency.com.tinkerpop.blueprints.version>2.6.0</dependency.com.tinkerpop.blueprints.version>
+    <dependency.org.powermock.version>1.6.0</dependency.org.powermock.version>
   </properties>
 
   <dependencies>
@@ -225,6 +226,12 @@
       <groupId>com.tinkerpop.blueprints</groupId>
       <artifactId>blueprints-core</artifactId>
       <version>${dependency.com.tinkerpop.blueprints.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.powermock</groupId>
+      <artifactId>powermock-core</artifactId>
+      <version>${dependency.org.powermock.version}</version>
       <scope>test</scope>
     </dependency>
   </dependencies>
