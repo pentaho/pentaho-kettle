@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -764,8 +764,7 @@ public class DataHandler extends AbstractXulEventHandler {
     if ( meta.isUsingConnectionPool() ) {
       if ( poolSizeBox != null ) {
         try {
-          int initialPoolSize = Integer.parseInt( this.databaseMeta.environmentSubstitute( poolSizeBox.getValue() ) );
-          meta.setInitialPoolSize( initialPoolSize );
+          meta.setInitialPoolSizeString( poolSizeBox.getValue() );
         } catch ( NumberFormatException e ) {
           // TODO log exception and move on ...
         }
@@ -773,8 +772,7 @@ public class DataHandler extends AbstractXulEventHandler {
 
       if ( maxPoolSizeBox != null ) {
         try {
-          int maxPoolSize = Integer.parseInt( this.databaseMeta.environmentSubstitute( maxPoolSizeBox.getValue() ) );
-          meta.setMaximumPoolSize( maxPoolSize );
+          meta.setMaximumPoolSizeString( maxPoolSizeBox.getValue() );
         } catch ( NumberFormatException e ) {
           // TODO log exception and move on ...
         }
@@ -919,11 +917,11 @@ public class DataHandler extends AbstractXulEventHandler {
 
     if ( meta.isUsingConnectionPool() ) {
       if ( poolSizeBox != null ) {
-        poolSizeBox.setValue( Integer.toString( meta.getInitialPoolSize() ) );
+        poolSizeBox.setValue( meta.getInitialPoolSizeString() );
       }
 
       if ( maxPoolSizeBox != null ) {
-        maxPoolSizeBox.setValue( Integer.toString( meta.getMaximumPoolSize() ) );
+        maxPoolSizeBox.setValue( meta.getMaximumPoolSizeString() );
       }
 
       setPoolProperties( meta.getConnectionPoolingProperties() );
