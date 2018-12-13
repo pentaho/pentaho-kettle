@@ -62,9 +62,6 @@
     <databricks.version>4.0.0</databricks.version>
     <paho.version>1.2.0</paho.version>
     <bahir.version>2.1.1</bahir.version>
-
-    <!-- Spring -->
-    <springframework4.version>4.3.2.RELEASE</springframework4.version>
   </properties>
 
   <dependencies>
@@ -484,39 +481,32 @@
     <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-core</artifactId>
-      <version>${springframework4.version}</version>
     </dependency>
     <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-aop</artifactId>
-      <version>${springframework4.version}</version>
     </dependency>
     <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-web</artifactId>
-      <version>${springframework4.version}</version>
     </dependency>
     <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-beans</artifactId>
-      <version>${springframework4.version}</version>
     </dependency>
     <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-context</artifactId>
-      <version>${springframework4.version}</version>
     </dependency>
     <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-context-support</artifactId>
-      <version>${springframework4.version}</version>
     </dependency>
 
     <!-- Spring Security -->
     <dependency>
       <groupId>org.springframework.security</groupId>
       <artifactId>spring-security-core</artifactId>
-      <version>${spring-security.version}</version>  <!-- see maven-parent-pom -->
     </dependency>
 
     <!-- Other third-party dependencies -->
