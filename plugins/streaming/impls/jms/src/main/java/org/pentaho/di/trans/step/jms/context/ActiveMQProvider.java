@@ -87,47 +87,49 @@ public class ActiveMQProvider implements JmsProvider {
 
         urlQuery.append( "sslEnabled=true" );
 
-        // the keystore is optional; use if client authentication is desired
-        if ( !Strings.isNullOrEmpty( delegate.sslKeystorePath ) ) {
-          // keystore password is always required if keystore present
-          Preconditions.checkNotNull( delegate.sslKeystorePassword, "SSL keystore password must be specified if keystore path is specified" );
-          urlQuery.append( "&keyStorePath=" ).append( urlEncode( delegate.sslKeystorePath.trim() ) );
-          urlQuery.append( "&keyStorePassword=" ).append( urlEncode( delegate.sslKeystorePassword.trim() ) );
+        if ( delegate.sslUseDefaultContext ) {
+          // per Apache Artemis docs, other SSL params are ignored when this is set to true
+          urlQuery.append( "&useDefaultSslContext=true" );
+        } else {
+          // the keystore is optional; use if client authentication is desired
+          if ( !Strings.isNullOrEmpty( delegate.sslKeystorePath ) ) {
+            // keystore password is always required if keystore present
+            Preconditions.checkNotNull( delegate.sslKeystorePassword,
+              "SSL keystore password must be specified if keystore path is specified" );
+            urlQuery.append( "&keyStorePath=" ).append( urlEncode( delegate.sslKeystorePath.trim() ) );
+            urlQuery.append( "&keyStorePassword=" ).append( urlEncode( delegate.sslKeystorePassword.trim() ) );
+          }
+
+          // truststore always required for a client
+          urlQuery.append( "&trustStorePath=" ).append( urlEncode( delegate.sslTruststorePath.trim() ) );
+          // truststore password not required but might be present
+          if ( !Strings.isNullOrEmpty( delegate.sslTruststorePassword ) ) {
+            urlQuery.append( "&trustStorePassword=" ).append( urlEncode( delegate.sslTruststorePassword.trim() ) );
+          }
+
+          if ( !Strings.isNullOrEmpty( delegate.sslCipherSuite ) ) {
+            urlQuery.append( "&enabledCipherSuites=" ).append( urlEncode( delegate.sslCipherSuite.trim() ) );
+          }
+
+          if ( !Strings.isNullOrEmpty( delegate.sslContextAlgorithm ) ) {
+            urlQuery.append( "&enabledProtocols=" ).append( urlEncode( delegate.sslContextAlgorithm.trim() ) );
+          }
+
+          // expect true or false per ActiveMQ docs; no need to decode/translate from y/n/yes/no
+          if ( !Strings.isNullOrEmpty( delegate.amqSslVerifyHost ) ) {
+            urlQuery.append( "&verifyHost=" ).append( urlEncode( delegate.amqSslVerifyHost.trim() ) );
+          }
+
+          // expect true or false per ActiveMQ docs; no need to decode/translate from y/n/yes/no
+          if ( !Strings.isNullOrEmpty( delegate.amqSslTrustAll ) ) {
+            urlQuery.append( "&trustAll=" ).append( urlEncode( delegate.amqSslTrustAll.trim() ) );
+          }
+
+          // used to choose between JDK and OpenSSL if desired; user must provide OpenSSL natively
+          if ( !Strings.isNullOrEmpty( delegate.amqSslProvider ) ) {
+            urlQuery.append( "&sslProvider=" ).append( urlEncode( delegate.amqSslProvider.trim() ) );
+          }
         }
-
-        // truststore always required for a client
-        urlQuery.append( "&trustStorePath=" ).append( urlEncode( delegate.sslTruststorePath.trim() ) );
-        // truststore password not required but might be present
-        if ( !Strings.isNullOrEmpty( delegate.sslTruststorePassword ) ) {
-          urlQuery.append( "&trustStorePassword=" ).append( urlEncode( delegate.sslTruststorePassword.trim() ) );
-        }
-
-        if ( !Strings.isNullOrEmpty( delegate.sslCipherSuite ) ) {
-          urlQuery.append( "&enabledCipherSuites=" ).append( urlEncode( delegate.sslCipherSuite.trim() ) );
-        }
-
-        if ( !Strings.isNullOrEmpty( delegate.sslContextAlgorithm ) ) {
-          urlQuery.append( "&enabledProtocols=" ).append( urlEncode( delegate.sslContextAlgorithm.trim() ) );
-        }
-
-        // expect true or false per ActiveMQ docs; no need to decode/translate from y/n/yes/no
-        if ( !Strings.isNullOrEmpty( delegate.amqSslVerifyHost ) ) {
-          urlQuery.append( "&verifyHost=" ).append( urlEncode( delegate.amqSslVerifyHost.trim() ) );
-        }
-
-        // expect true or false per ActiveMQ docs; no need to decode/translate from y/n/yes/no
-        if ( !Strings.isNullOrEmpty( delegate.amqSslTrustAll ) ) {
-          urlQuery.append( "&trustAll=" ).append( urlEncode( delegate.amqSslTrustAll.trim() ) );
-        }
-
-        // useDefaultSslContext not supported directly here; maybe later
-        // can be put in URL field by user if necessary
-
-        // used to choose between JDK and OpenSSL if desired; user must provide OpenSSL natively
-        if ( !Strings.isNullOrEmpty( delegate.amqSslProvider ) ) {
-          urlQuery.append( "&sslProvider=" ).append( urlEncode( delegate.amqSslProvider.trim() ) );
-        }
-
       } catch ( UnsupportedEncodingException e ) {
         throw new RuntimeException( e );
       }

@@ -90,6 +90,8 @@ public class JmsDelegate {
 
   @Injection ( name = "AMQ_SSL_TRUST_ALL", group = "SSL_GROUP" ) public String amqSslTrustAll = "";
 
+  @Injection ( name = "SSL_USE_DEFAULT_CONTEXT", group = "SSL_GROUP" ) public boolean sslUseDefaultContext = false;
+
   List<JmsProvider> jmsProviders;
 
   public JmsDelegate( List<JmsProvider> jmsProviders ) {

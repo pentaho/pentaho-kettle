@@ -150,7 +150,6 @@ public class ConnectionForm {
         @Override public void widgetSelected( final SelectionEvent selectionEvent ) {
           lsMod.modifyText( null );
           toggleVisibility( type );
-          //jmsDialogSecurityLayout.toggleVisibility( type );
         }
 
         @Override public void widgetDefaultSelected( final SelectionEvent selectionEvent ) {
