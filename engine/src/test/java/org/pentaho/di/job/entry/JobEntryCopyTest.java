@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -23,7 +23,9 @@
 package org.pentaho.di.job.entry;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertNull;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -33,6 +35,9 @@ import org.pentaho.di.job.entries.special.JobEntrySpecial;
 
 public class JobEntryCopyTest {
 
+  private static final String ATTRIBUTE_GROUP = "aGroupName";
+  private static final String ATTRIBUTE_KEY = "someKey";
+  private static final String ATTRIBUTE_VALUE = "aValue";
   private JobEntryCopy originJobEntry;
   private JobEntryCopy copyJobEntry;
   private JobEntryInterface originEntry;
@@ -46,6 +51,7 @@ public class JobEntryCopyTest {
     originEntry.setChanged( false );
 
     originJobEntry.setEntry( originEntry );
+    originJobEntry.setAttribute( ATTRIBUTE_GROUP, ATTRIBUTE_KEY, ATTRIBUTE_VALUE );
   }
 
   @Test
@@ -77,5 +83,37 @@ public class JobEntryCopyTest {
     JobMeta meta = Mockito.mock( JobMeta.class );
     originJobEntry.setParentJobMeta( meta );
     assertEquals( meta, originEntry.getParentJobMeta() );
+  }
+
+  @Test
+  public void testCloneClonesAttributesMap() throws Exception {
+
+    JobEntryCopy clonedJobEntry = (JobEntryCopy) originJobEntry.clone();
+    assertNotNull( clonedJobEntry.getAttributesMap() );
+    assertEquals( originJobEntry.getAttribute( ATTRIBUTE_GROUP, ATTRIBUTE_KEY ),
+      clonedJobEntry.getAttribute( ATTRIBUTE_GROUP, ATTRIBUTE_KEY ) );
+  }
+
+  @Test
+  public void testCloneClearsObjectId() throws Exception {
+
+    JobEntryCopy clonedJobEntry = (JobEntryCopy) originJobEntry.clone();
+    assertNull( clonedJobEntry.getObjectId() );
+  }
+
+  @Test
+  public void testDeepCloneClonesAttributesMap() throws Exception {
+
+    JobEntryCopy deepClonedJobEntry = (JobEntryCopy) originJobEntry.clone_deep();
+    assertNotNull( deepClonedJobEntry.getAttributesMap() );
+    assertEquals( originJobEntry.getAttribute( ATTRIBUTE_GROUP, ATTRIBUTE_KEY ),
+      deepClonedJobEntry.getAttribute( ATTRIBUTE_GROUP, ATTRIBUTE_KEY ) );
+  }
+
+  @Test
+  public void testDeepCloneClearsObjectId() throws Exception {
+
+    JobEntryCopy deepClonedJobEntry = (JobEntryCopy) originJobEntry.clone_deep();
+    assertNull( deepClonedJobEntry.getObjectId() );
   }
 }
