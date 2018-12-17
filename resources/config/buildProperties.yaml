@@ -72,21 +72,22 @@ DEFAULT_BRANCH: master
 
 # Checkouts
 CHECKOUT_DEPTH: 20
-CHECKOUT_TIMESTAMP: CURRENT_TIME
 CHECKOUT_TIMEOUT_MINUTES: 10
-CHECKOUT_SLEEP_AVERAGE_SECONDS: 0
 
 # Cleanups
 CLEAN_ALL_CACHES: false
 CLEAN_BUILD_WORKSPACE: false
 CLEAN_CACHES_REGEX: .*-SNAPSHOT.*
 CLEAN_SCM_WORKSPACES: false
+TRASH_PATH: '/build2/trash'
+TRASH_CLEANUP_JOB: 'engops/trash-cleanup'
 
-# Version based control properties
+# Version control properties
+RELEASE_BUILD_NUMBER: ${BUILD_NUMBER}
 RELEASE_VERSION: 8.3.0.0
 SUITE_RELEASE_VERSION: 8.3.0.0
+BUILD_ID_TAIL: -${RELEASE_BUILD_NUMBER}
 RELEASE_MODE: false
-ADD_BUILD_ID_VERSION_TAIL: true
 
 # Commit message and list of files affected by version changes that are eligible for committing
 VERSION_MESSAGE: '[CLEANUP] updated versions via release version merger'
@@ -148,5 +149,5 @@ PARALLEL_SECURITY_SCAN_CHUNKSIZE: 2
 NEXUS_IQ_STAGE: 'build'
 VULNERABILITY_DATABASE_PATH: '/build/security/national-vulnerability-database'
 DEPENDENCY_CHECK_SCAN_PATTERN: '**/*.jar'
-DEPENDENCY_CHECK_SUPPRESION_PATH: '/home/buildguy/suppress.xml'
+DEPENDENCY_CHECK_SUPPRESSION_PATH: '/home/buildguy/suppress.xml'
 DEPENDENCY_CHECK_REPORT_PATTERN: '**/dependency-check-report.xml'
