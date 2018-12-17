@@ -29,6 +29,7 @@ import java.util.List;
 
 import org.pentaho.di.core.attributes.metastore.EmbeddedMetaStore;
 import org.pentaho.di.engine.configuration.api.RunConfigurationProvider;
+import org.pentaho.di.engine.configuration.impl.beam.BeamRunConfigurationProvider;
 import org.pentaho.di.engine.configuration.impl.pentaho.DefaultRunConfigurationProvider;
 import org.pentaho.di.engine.configuration.impl.spark.SparkRunConfigurationProvider;
 import org.pentaho.metastore.api.IMetaStore;
@@ -43,10 +44,13 @@ public class EmbeddedRunConfigurationManager {
       new DefaultRunConfigurationProvider( createMetastoreLocator( embeddedMetaStore ), null );
     SparkRunConfigurationProvider sparkRunConfigurationProvider =
       new SparkRunConfigurationProvider( createMetastoreLocator( embeddedMetaStore ), null );
+    BeamRunConfigurationProvider beamRunConfigurationProvider =
+      new BeamRunConfigurationProvider( createMetastoreLocator( embeddedMetaStore ), null );
 
     List<RunConfigurationProvider> runConfigurationProviders = new ArrayList<>();
     runConfigurationProviders.add( defaultRunConfigurationProvider );
     runConfigurationProviders.add( sparkRunConfigurationProvider );
+    runConfigurationProviders.add( beamRunConfigurationProvider );
 
     return new RunConfigurationManager( runConfigurationProviders );
   }
