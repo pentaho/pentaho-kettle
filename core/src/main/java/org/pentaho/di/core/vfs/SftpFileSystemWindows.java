@@ -64,9 +64,18 @@ class SftpFileSystemWindows extends SftpFileSystem {
   private List<String> userGroups;
   private Boolean windows;
 
+  /**
+   * <p>This code tries to fix issue <a href="https://issues.apache.org/jira/browse/VFS-617">VFS-617</a> and is based
+   * on the uncommited code in the associated <a href="https://github.com/apache/commons-vfs/pull/27">PR#27</a>.</p>
+   * <p>Check issue <a href="https://jira.pentaho.com/browse/PDI-17768">PDI-17768</a>.</p>
+   * Some SFTP-only servers disable the exec channel. When exec is disabled, things like getUId() will always fail.
+   */
+  private boolean execDisabled = false;
+
   SftpFileSystemWindows( GenericFileName rootName, Session session, FileSystemOptions fileSystemOptions ) {
     super( rootName, session, fileSystemOptions );
     this.session = session;
+    detectExecDisabled();
   }
 
   @Override
@@ -266,5 +275,28 @@ class SftpFileSystemWindows extends SftpFileSystem {
 
     channel.disconnect();
     return channel.getExitStatus();
+  }
+
+  /**
+   * <p>This code tries to fix issue <a href="https://issues.apache.org/jira/browse/VFS-617">VFS-617</a> and is based
+   * on the uncommited code in the associated <a href="https://github.com/apache/commons-vfs/pull/27">PR#27</a>.</p>
+   * <p>Check issue <a href="https://jira.pentaho.com/browse/PDI-17768">PDI-17768</a>.</p>
+   * <p>Some SFTP-only servers disable the exec channel: attempt to detect this by calling getUid.</p>
+   */
+  private void detectExecDisabled() {
+    try {
+      getUId();
+    } catch ( JSchException | IOException e ) {
+      execDisabled = true;
+    }
+  }
+
+  /**
+   * <p>This code tries to fix issue <a href="https://issues.apache.org/jira/browse/VFS-617">VFS-617</a> and is based
+   * on the uncommited code in the associated <a href="https://github.com/apache/commons-vfs/pull/27">PR#27</a>.</p>
+   * <p>Check issue <a href="https://jira.pentaho.com/browse/PDI-17768">PDI-17768</a>.</p>
+   */
+  public boolean isExecDisabled() {
+    return execDisabled;
   }
 }

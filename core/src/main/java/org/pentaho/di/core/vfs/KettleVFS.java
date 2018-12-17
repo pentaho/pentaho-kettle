@@ -207,7 +207,7 @@ public class KettleVFS {
    * @param charSetName
    *          the character set of the string (UTF-8, ISO8859-1, etc)
    * @return The content of the file as a String
-   * @throws IOException
+   * @throws KettleFileException
    */
   public static String getTextFileContent( String vfsFilename, String charSetName ) throws KettleFileException {
     return getTextFileContent( vfsFilename, null, charSetName );
@@ -279,11 +279,9 @@ public class KettleVFS {
 
   public static OutputStream getOutputStream( FileObject fileObject, boolean append ) throws IOException {
     FileObject parent = fileObject.getParent();
-    if ( parent != null ) {
-      if ( !parent.exists() ) {
-        throw new IOException( BaseMessages.getString(
-          PKG, "KettleVFS.Exception.ParentDirectoryDoesNotExist", getFriendlyURI( parent ) ) );
-      }
+    if ( parent != null && !parent.exists() ) {
+      throw new IOException( BaseMessages.getString(
+        PKG, "KettleVFS.Exception.ParentDirectoryDoesNotExist", getFriendlyURI( parent ) ) );
     }
     try {
       fileObject.createFile();
@@ -372,8 +370,8 @@ public class KettleVFS {
   /**
    * Creates a file using "java.io.tmpdir" directory
    *
-   * @param prefix - file name
-   * @param prefix - file extension
+   * @param prefix file name
+   * @param suffix file extension
    * @return FileObject
    * @throws KettleFileException
    */
@@ -384,8 +382,8 @@ public class KettleVFS {
   /**
    * Creates a file using "java.io.tmpdir" directory
    *
-   * @param prefix        - file name
-   * @param suffix        - file extension
+   * @param prefix        file name
+   * @param suffix        file extension
    * @param variableSpace is used to get system variables
    * @return FileObject
    * @throws KettleFileException
@@ -397,9 +395,9 @@ public class KettleVFS {
 
   /**
    *
-   * @param prefix    - file name
-   * @param suffix    - file extension
-   * @param directory - directory where file will be created
+   * @param prefix    file name
+   * @param suffix    file extension
+   * @param directory directory where file will be created
    * @return FileObject
    * @throws KettleFileException
    */
@@ -412,7 +410,8 @@ public class KettleVFS {
   }
 
   /**
-   * @param prefix    - file name
+   *
+   * @param prefix    file name
    * @param directory path to directory where file will be created
    * @param space     is used to get system variables
    * @return FileObject
@@ -512,7 +511,6 @@ public class KettleVFS {
       fsm.init();
     } catch ( FileSystemException ignored ) {
     }
-
   }
 
   /**
@@ -531,5 +529,4 @@ public class KettleVFS {
       this.ext = ext;
     }
   }
-
 }
