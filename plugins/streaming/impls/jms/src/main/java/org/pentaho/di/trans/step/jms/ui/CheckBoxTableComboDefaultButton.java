@@ -76,10 +76,12 @@ public class CheckBoxTableComboDefaultButton extends CheckBoxTableCombo {
     wUseDefaultCheckBox.addSelectionListener( new SelectionListener() {
       @Override public void widgetSelected( SelectionEvent selectionEvent ) {
         toggleVisibilityCallback.accept( selectedConnectionType );
+        lsMod.modifyText( null );
       }
 
       @Override public void widgetDefaultSelected( SelectionEvent selectionEvent ) {
         toggleVisibilityCallback.accept( selectedConnectionType );
+        lsMod.modifyText( null );
       }
     } );
   }

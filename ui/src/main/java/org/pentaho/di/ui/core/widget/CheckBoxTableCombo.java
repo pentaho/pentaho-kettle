@@ -131,12 +131,14 @@ public class CheckBoxTableCombo {
         boolean selection = ( (Button) selectionEvent.getSource() ).getSelection();
         propertiesTable.setEnabled( selection );
         propertiesTable.table.setEnabled( selection );
+        lsMod.modifyText( null );
       }
 
       @Override public void widgetDefaultSelected( SelectionEvent selectionEvent ) {
         boolean selection = ( (Button) selectionEvent.getSource() ).getSelection();
         propertiesTable.setEnabled( selection );
         propertiesTable.table.setEnabled( selection );
+        lsMod.modifyText( null );
       }
     } );
 
