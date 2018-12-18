@@ -107,19 +107,19 @@ pipeline {
       steps {
         parallel(
           'github-commits': {
-            triggerJob("engops/github-commits", passOnParameters)
+            triggerJob("engops/github-commits", passOnParameters, false)
           },
           'remote-ip-job-trigger': {
-            triggerJob("engops/remote-ip-job-trigger", passOnParameters)
+            triggerJob("engops/remote-ip-job-trigger", passOnParameters, false)
           },
           'regression-smoketest-job-trigger': {
-            triggerJob("engops/regression-smoketest-job-trigger", passOnParameters)
+            triggerJob("engops/regression-smoketest-job-trigger", passOnParameters, false)
           },
           'snapshot-checker': {
-            triggerJob("snapshot-checker", passOnParameters)
+            triggerJob("snapshot-checker", passOnParameters, false)
           },
           'obfuscation-verifier': {
-            triggerJob("obfuscation-verifier", passOnParameters)
+            triggerJob("obfuscation-verifier", passOnParameters, false)
           }
         )
       }
@@ -201,12 +201,12 @@ pipeline {
   }
 }
 
-void triggerJob(job, parameters) {
+void triggerJob(job, parameters, waitUntilDone = true) {
 
   script {
     def res = build(
       job: job,
-      wait: true,
+      wait: waitUntilDone,
       propagate: false,
       parameters: parameters
     )
