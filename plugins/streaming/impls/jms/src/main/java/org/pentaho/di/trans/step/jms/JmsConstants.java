@@ -22,7 +22,8 @@
 
 package org.pentaho.di.trans.step.jms;
 
-public interface JmsConstants {
+public class JmsConstants {
+  private JmsConstants() { }
 
-  Class PKG = JmsConstants.class;
+  public static final Class PKG = JmsConstants.class;
 }

@@ -119,7 +119,7 @@ public class JmsDelegate {
   }
 
   public String getConnectionUrl() {
-    return connectionType.equals( ACTIVEMQ ) ? amqUrl : ibmUrl;
+    return connectionType.equals( ACTIVEMQ.name() ) ? amqUrl : ibmUrl;
   }
 
   public String getDestinationName() {

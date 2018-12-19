@@ -43,7 +43,7 @@ public class JmsConsumer extends BaseStreamStep {
     super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
   }
 
-  public boolean init( StepMetaInterface stepMetaInterface, StepDataInterface stepDataInterface ) {
+  @Override public boolean init( StepMetaInterface stepMetaInterface, StepDataInterface stepDataInterface ) {
     boolean superStatus = super.init( stepMetaInterface, stepDataInterface );
 
     JmsConsumerMeta jmsConsumerMeta = (JmsConsumerMeta) this.variablizedStepMeta;
@@ -61,7 +61,7 @@ public class JmsConsumer extends BaseStreamStep {
     return superStatus;
   }
 
-  public int getReceiverTimeout( JmsConsumerMeta meta ) {
+  private int getReceiverTimeout( JmsConsumerMeta meta ) {
     try {
       return Integer.parseInt( meta.receiveTimeout );
     } catch ( NumberFormatException nfe ) {
@@ -70,7 +70,7 @@ public class JmsConsumer extends BaseStreamStep {
     return -1;
   }
 
-  public boolean validateParams( JmsConsumerMeta meta ) {
+  private boolean validateParams( JmsConsumerMeta meta ) {
     return getReceiverTimeout( meta ) > -1;
   }
 

@@ -54,7 +54,7 @@ import static com.google.common.base.Strings.isNullOrEmpty;
 import static org.pentaho.di.i18n.BaseMessages.getString;
 import static org.pentaho.di.trans.step.mqtt.MQTTConstants.MQTT_VERSION;
 
-public final class MQTTClientBuilder {
+final class MQTTClientBuilder {
   private static final Class<?> PKG = MQTTClientBuilder.class;
 
   private static final String UNSECURE_PROTOCOL = "tcp://";
@@ -62,7 +62,7 @@ public final class MQTTClientBuilder {
   // the paho library specifies ssl prop names as com.ibm, though not necessarily using the ibm implementations
   private static final String SSL_PROP_PREFIX = "com.ibm.";
 
-  public static final Map<String, String> DEFAULT_SSL_OPTS = ImmutableMap.<String, String>builder()
+  static final ImmutableMap<String, String> DEFAULT_SSL_OPTS = ImmutableMap.<String, String>builder()
     .put( "ssl.protocol", "TLS" )
     .put( "ssl.contextProvider", "" )
     .put( "ssl.keyStore", "" )
@@ -109,7 +109,7 @@ public final class MQTTClientBuilder {
   private MQTTClientBuilder() {
   }
 
-  public static MQTTClientBuilder builder() {
+  static MQTTClientBuilder builder() {
     return new MQTTClientBuilder();
   }
 
@@ -118,7 +118,7 @@ public final class MQTTClientBuilder {
     return this;
   }
 
-  public MQTTClientBuilder withBroker( String broker ) {
+  MQTTClientBuilder withBroker( String broker ) {
     this.broker = broker;
     return this;
   }
@@ -128,12 +128,12 @@ public final class MQTTClientBuilder {
     return this;
   }
 
-  public MQTTClientBuilder withQos( String qos ) {
+  MQTTClientBuilder withQos( String qos ) {
     this.qos = qos;
     return this;
   }
 
-  public MQTTClientBuilder withIsSecure( boolean isSecure ) {
+  MQTTClientBuilder withIsSecure( boolean isSecure ) {
     this.isSecure = isSecure;
     return this;
   }
@@ -143,28 +143,28 @@ public final class MQTTClientBuilder {
     return this;
   }
 
-  public MQTTClientBuilder withUsername( String username ) {
+  MQTTClientBuilder withUsername( String username ) {
     this.username = username;
     return this;
   }
 
-  public MQTTClientBuilder withPassword( String password ) {
+  MQTTClientBuilder withPassword( String password ) {
     this.password = password;
     return this;
   }
 
-  public MQTTClientBuilder withStep( StepInterface step ) {
+  MQTTClientBuilder withStep( StepInterface step ) {
     this.logChannel = step.getLogChannel();
     this.stepName = step.getStepMeta().getName();
     return this;
   }
 
-  public MQTTClientBuilder withSslConfig( Map<String, String> sslConfig ) {
+  MQTTClientBuilder withSslConfig( Map<String, String> sslConfig ) {
     this.sslConfig = sslConfig;
     return this;
   }
 
-  public MQTTClientBuilder withKeepAliveInterval( String keepAliveInterval ) {
+  MQTTClientBuilder withKeepAliveInterval( String keepAliveInterval ) {
     this.keepAliveInterval = keepAliveInterval;
     return this;
   }
@@ -174,12 +174,12 @@ public final class MQTTClientBuilder {
     return this;
   }
 
-  public MQTTClientBuilder withConnectionTimeout( String connectionTimeout ) {
+  MQTTClientBuilder withConnectionTimeout( String connectionTimeout ) {
     this.connectionTimeout = connectionTimeout;
     return this;
   }
 
-  public MQTTClientBuilder withCleanSession( String cleanSession ) {
+  MQTTClientBuilder withCleanSession( String cleanSession ) {
     this.cleanSession = cleanSession;
     return this;
   }
@@ -194,20 +194,20 @@ public final class MQTTClientBuilder {
     return this;
   }
 
-  public MQTTClientBuilder withMqttVersion( String mqttVersion ) {
+  MQTTClientBuilder withMqttVersion( String mqttVersion ) {
     this.mqttVersion = mqttVersion;
     return this;
   }
 
-  public MQTTClientBuilder withAutomaticReconnect( String automaticReconnect ) {
+  MQTTClientBuilder withAutomaticReconnect( String automaticReconnect ) {
     this.automaticReconnect = automaticReconnect;
     return this;
   }
 
-  public MqttClient buildAndConnect() throws MqttException {
+  MqttClient buildAndConnect() throws MqttException {
     validateArgs();
 
-    String broker = getProtocol() + this.broker;
+    String protocolBroker = getProtocol() + this.broker;
     MqttClientPersistence persistence = new MemoryPersistence();
     if ( StringUtil.isEmpty( storageLevel ) ) {
       logChannel.logDebug( "Using Memory Storage Level" );
@@ -220,7 +220,7 @@ public final class MQTTClientBuilder {
       clientId = MqttAsyncClient.generateClientId();
     }
 
-    MqttClient client = clientFactory.getClient( broker, clientId, persistence );
+    MqttClient client = clientFactory.getClient( protocolBroker, clientId, persistence );
 
     client.setCallback( callback );
 
@@ -231,9 +231,9 @@ public final class MQTTClientBuilder {
     logChannel.logDebug( loggableOptions().toString() );
 
     client.connect( getOptions() );
-    if ( topics != null && topics.size() > 0 ) {
+    if ( topics != null && !topics.isEmpty() ) {
       client.subscribe(
-        topics.toArray( new String[ topics.size() ] ),
+        topics.toArray( new String[ 0 ] ),
         initializedIntAray( Integer.parseInt( this.qos ) )
       );
     }
@@ -329,8 +329,8 @@ public final class MQTTClientBuilder {
     options.setSSLProperties( props );
   }
 
-  public static void checkVersion( List<CheckResultInterface> remarks, StepMeta stepMeta, VariableSpace space,
-                                   String value ) {
+  static void checkVersion( List<CheckResultInterface> remarks, StepMeta stepMeta, VariableSpace space,
+                            String value ) {
     String version = space.environmentSubstitute( value );
     if ( !StringUtil.isEmpty( version ) ) {
       try {

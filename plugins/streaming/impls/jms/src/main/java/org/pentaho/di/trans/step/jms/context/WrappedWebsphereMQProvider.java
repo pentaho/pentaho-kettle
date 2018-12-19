@@ -44,14 +44,14 @@ import static org.pentaho.di.trans.step.jms.context.JmsProvider.ConnectionType.W
  */
 public class WrappedWebsphereMQProvider implements JmsProvider {
 
-  Supplier<JmsProvider> prov = Suppliers.memoize( this::getProvider );
+  private Supplier<JmsProvider> prov = Suppliers.memoize( this::getProvider );
 
-  private JmsProvider getProvider() throws RuntimeException {
+  private JmsProvider getProvider() {
     try {
       Class.forName( "com.ibm.mq.jms.MQQueue", false, this.getClass().getClassLoader() );
       return new WebsphereMQProvider();
     } catch ( Exception e ) {
-      throw new RuntimeException( getString( PKG, "WrappedWebsphereMQProvider.ErrorLoadingClass" ) );
+      throw new IllegalStateException( getString( PKG, "WrappedWebsphereMQProvider.ErrorLoadingClass" ) );
     }
   }
 

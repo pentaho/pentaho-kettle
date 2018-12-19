@@ -41,11 +41,10 @@ import org.pentaho.di.trans.TransMeta;
 
 import java.util.Collections;
 
-import static org.junit.Assert.fail;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.when;
 
-@RunWith( MockitoJUnitRunner.class )
+@RunWith ( MockitoJUnitRunner.class )
 public class MQTTConsumerTest {
   @Mock LogChannelInterfaceFactory logChannelFactory;
   @Mock LogChannelInterface logChannel;
@@ -85,9 +84,9 @@ public class MQTTConsumerTest {
   @Test
   public void testHappyPath() {
     try {
-      trans.prepareExecution( new String[]{} );
+      trans.prepareExecution( new String[] {} );
     } catch ( KettleException e ) {
-      fail( "Failed to initialize successfully" );
+      throw new AssertionError( "Failed to initialize successfully", e );
     }
   }
 

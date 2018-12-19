@@ -73,12 +73,12 @@ public class JmsConsumerMeta extends BaseStreamStepMeta implements ISubTransAwar
     this.jmsDelegate = jmsDelegate;
   }
 
-  @SuppressWarnings( "deprecated" )
+  @SuppressWarnings( "deprecation" )
   public String getDialogClassName() {
     return "org.pentaho.di.trans.step.jms.ui.JmsConsumerDialog";
   }
 
-  public RowMeta getRowMeta( String s, VariableSpace variableSpace ) {
+  @Override public RowMeta getRowMeta( String s, VariableSpace variableSpace ) {
     RowMeta rowMeta = new RowMeta();
     rowMeta.addValueMeta( new ValueMetaString( "message" ) );
     return rowMeta;

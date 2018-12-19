@@ -41,11 +41,10 @@ import static java.util.Collections.singletonList;
  * broker, and qos. The parent class .rows() method is responsible for creating the blocking iterable.
  */
 public class MQTTStreamSource extends BlockingQueueStreamSource<List<Object>> {
-  private static final Class<?> PKG = MQTTStreamSource.class;
   private final MQTTConsumerMeta mqttConsumerMeta;
   private final MQTTConsumer mqttConsumer;
 
-  @VisibleForTesting protected MqttClient mqttClient;
+  @VisibleForTesting MqttClient mqttClient;
 
   private MqttCallback callback = new MqttCallback() {
     @Override public void connectionLost( Throwable cause ) {

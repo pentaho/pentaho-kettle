@@ -22,7 +22,6 @@
 
 package org.pentaho.di.trans.step.jms.analyzer;
 
-import org.pentaho.di.trans.ISubTransAwareMeta;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.jms.JmsConsumerMeta;
 import org.pentaho.di.trans.step.jms.JmsDelegate;
@@ -36,6 +35,8 @@ import org.pentaho.metaverse.api.analyzer.kettle.step.StepAnalyzer;
 import java.util.HashSet;
 import java.util.Set;
 
+import static java.util.Collections.emptySet;
+
 public class JmsConsumerAnalyzer extends StepAnalyzer<JmsConsumerMeta> {
   @Override
   public Set<Class<? extends BaseStepMeta>> getSupportedSteps() {
@@ -46,7 +47,7 @@ public class JmsConsumerAnalyzer extends StepAnalyzer<JmsConsumerMeta> {
 
   @Override
   protected Set<StepField> getUsedFields( final JmsConsumerMeta meta ) {
-    return null;
+    return emptySet();
   }
 
   @Override
@@ -66,12 +67,11 @@ public class JmsConsumerAnalyzer extends StepAnalyzer<JmsConsumerMeta> {
       parentTransMeta.environmentSubstitute( jmsDelegate.getDestinationName() ) );
     rootNode.setProperty( "receiveTimeout", parentTransMeta.environmentSubstitute( meta.getReceiveTimeout() ) );
 
-    KettleAnalyzerUtil.analyze( this, parentTransMeta, (ISubTransAwareMeta) meta, rootNode );
+    KettleAnalyzerUtil.analyze( this, parentTransMeta, meta, rootNode );
   }
 
   @Override
-  public void postAnalyze( final JmsConsumerMeta meta )
-    throws MetaverseAnalyzerException {
+  public void postAnalyze( final JmsConsumerMeta meta ) {
 
     // TODO: Add field linking for fields going to the subtransformation
   }

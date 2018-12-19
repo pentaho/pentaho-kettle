@@ -117,13 +117,13 @@ public class MQTTClientBuilderTest {
     Properties props = opts.getSSLProperties();
     assertThat( props.size(), equalTo( 1 ) );
     assertThat( props.getProperty( "com.ibm.ssl.trustStore" ), equalTo( "/some/path" ) );
-    assertEquals( opts.getKeepAliveInterval(), 1000 );
-    assertEquals( opts.getMaxInflight(), 2000 );
-    assertEquals( opts.getConnectionTimeout(), 3000 );
-    assertEquals( opts.isCleanSession(), true );
-    assertArrayEquals( opts.getServerURIs(), new String[] { "ssl://127.0.0.1:3000" } );
-    assertEquals( opts.getMqttVersion(), 3 );
-    assertEquals( opts.isAutomaticReconnect(), false );
+    assertEquals( 1000, opts.getKeepAliveInterval() );
+    assertEquals( 2000, opts.getMaxInflight() );
+    assertEquals( 3000, opts.getConnectionTimeout() );
+    assertEquals( true, opts.isCleanSession() );
+    assertArrayEquals( new String[] { "ssl://127.0.0.1:3000" }, opts.getServerURIs() );
+    assertEquals( 3, opts.getMqttVersion() );
+    assertEquals( false, opts.isAutomaticReconnect() );
   }
 
   @Test

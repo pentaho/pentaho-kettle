@@ -82,7 +82,7 @@ import static org.pentaho.di.core.util.serialization.ConfigHelper.conf;
   documentationUrl = "Products/Data_Integration/Transformation_Step_Reference/MQTT_Consumer" )
 @InjectionSupported ( localizationPrefix = "MQTTConsumerMeta.Injection.", groups = { "SSL" } )
 public class MQTTConsumerMeta extends BaseStreamStepMeta implements StepMetaInterface {
-  private static Class<?> PKG = MQTTConsumerMeta.class;
+  private static final Class<?> PKG = MQTTConsumerMeta.class;
 
   @Injection ( name = MQTT_SERVER ) private String mqttServer = "";
 
@@ -101,12 +101,10 @@ public class MQTTConsumerMeta extends BaseStreamStepMeta implements StepMetaInte
 
   @Injection ( name = USE_SSL, group = SSL_GROUP ) private Boolean useSsl = false;
 
-  @Injection ( name = SSL_KEYS, group = SSL_GROUP )
-  public List<String> sslKeys = new ArrayList<>();
+  @Injection ( name = SSL_KEYS, group = SSL_GROUP ) List<String> sslKeys = new ArrayList<>();
 
   @Sensitive
-  @Injection ( name = SSL_VALUES, group = SSL_GROUP )
-  public List<String> sslValues = new ArrayList<>();
+  @Injection ( name = SSL_VALUES, group = SSL_GROUP ) List<String> sslValues = new ArrayList<>();
 
   @Injection ( name = KEEP_ALIVE_INTERVAL )
   private String keepAliveInterval = "";
@@ -137,7 +135,7 @@ public class MQTTConsumerMeta extends BaseStreamStepMeta implements StepMetaInte
     setSpecificationMethod( ObjectLocationSpecificationMethod.FILENAME );
   }
 
-  public void setDefault() {
+  @Override public void setDefault() {
     super.setDefault();
     mqttServer = "";
     qos = "0";
@@ -174,12 +172,12 @@ public class MQTTConsumerMeta extends BaseStreamStepMeta implements StepMetaInte
     return rowMeta;
   }
 
-  public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr, TransMeta tr,
+  @Override public StepInterface getStep( StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr, TransMeta tr,
                                 Trans trans ) {
     return new MQTTConsumer( stepMeta, stepDataInterface, cnr, tr, trans );
   }
 
-  public StepDataInterface getStepData() {
+  @Override public StepDataInterface getStepData() {
     return new MQTTConsumerData();
   }
 
@@ -197,27 +195,27 @@ public class MQTTConsumerMeta extends BaseStreamStepMeta implements StepMetaInte
     this.mqttServer = mqttServer;
   }
 
-  public List<String> getTopics() {
+  List<String> getTopics() {
     return topics;
   }
 
-  public void setTopics( List<String> topics ) {
+  void setTopics( List<String> topics ) {
     this.topics = topics;
   }
 
-  public String getMsgOutputName() {
+  String getMsgOutputName() {
     return msgOutputName;
   }
 
-  public void setMsgOutputName( String msgOutputName ) {
+  void setMsgOutputName( String msgOutputName ) {
     this.msgOutputName = msgOutputName;
   }
 
-  public String getTopicOutputName() {
+  String getTopicOutputName() {
     return topicOutputName;
   }
 
-  public void setTopicOutputName( String topicOutputName ) {
+  void setTopicOutputName( String topicOutputName ) {
     this.topicOutputName = topicOutputName;
   }
 
@@ -245,88 +243,88 @@ public class MQTTConsumerMeta extends BaseStreamStepMeta implements StepMetaInte
     this.password = password;
   }
 
-  public Map<String, String> getSslConfig() {
+  Map<String, String> getSslConfig() {
     return conf( sslKeys, sslValues ).asMap();
   }
 
-  public void setSslConfig( Map<String, String> sslConfig ) {
+  void setSslConfig( Map<String, String> sslConfig ) {
     sslKeys = conf( sslConfig ).keys();
     sslValues = conf( sslConfig ).vals();
   }
 
-  public boolean isUseSsl() {
+  boolean isUseSsl() {
     return useSsl;
   }
 
-  public void setUseSsl( boolean useSsl ) {
+  void setUseSsl( boolean useSsl ) {
     this.useSsl = useSsl;
   }
 
-  public String getKeepAliveInterval() {
+  String getKeepAliveInterval() {
     return keepAliveInterval;
   }
 
-  public void setKeepAliveInterval( String keepAliveInterval ) {
+  void setKeepAliveInterval( String keepAliveInterval ) {
     this.keepAliveInterval = keepAliveInterval;
   }
 
-  public String getMaxInflight() {
+  String getMaxInflight() {
     return maxInflight;
   }
 
-  public void setMaxInflight( String maxInflight ) {
+  void setMaxInflight( String maxInflight ) {
     this.maxInflight = maxInflight;
   }
 
-  public String getConnectionTimeout() {
+  String getConnectionTimeout() {
     return connectionTimeout;
   }
 
-  public void setConnectionTimeout( String connectionTimeout ) {
+  void setConnectionTimeout( String connectionTimeout ) {
     this.connectionTimeout = connectionTimeout;
   }
 
-  public String getCleanSession() {
+  String getCleanSession() {
     return cleanSession;
   }
 
-  public void setCleanSession( String cleanSession ) {
+  void setCleanSession( String cleanSession ) {
     this.cleanSession = cleanSession;
   }
 
-  public String getStorageLevel() {
+  String getStorageLevel() {
     return storageLevel;
   }
 
-  public void setStorageLevel( String storageLevel ) {
+  void setStorageLevel( String storageLevel ) {
     this.storageLevel = storageLevel;
   }
 
-  public String getServerUris() {
+  String getServerUris() {
     return serverUris;
   }
 
-  public void setServerUris( String serverUris ) {
+  void setServerUris( String serverUris ) {
     this.serverUris = serverUris;
   }
 
-  public String getMqttVersion() {
+  String getMqttVersion() {
     return mqttVersion;
   }
 
-  public void setMqttVersion( String mqttVersion ) {
+  void setMqttVersion( String mqttVersion ) {
     this.mqttVersion = mqttVersion;
   }
 
-  public String getAutomaticReconnect() {
+  String getAutomaticReconnect() {
     return automaticReconnect;
   }
 
-  public void setAutomaticReconnect( String automaticReconnect ) {
+  void setAutomaticReconnect( String automaticReconnect ) {
     this.automaticReconnect = automaticReconnect;
   }
 
-  public List<StepOption> retrieveOptions() {
+  List<StepOption> retrieveOptions() {
     return Arrays.asList(
       new StepOption( KEEP_ALIVE_INTERVAL, getString( PKG, "MQTTDialog.Options.KEEP_ALIVE_INTERVAL" ),
         keepAliveInterval ),

@@ -38,14 +38,14 @@ import static org.pentaho.di.i18n.BaseMessages.getString;
  * Streaming consumer of MQTT input.  @see <a href="http://mqtt.org/">mqtt</a>
  */
 public class MQTTConsumer extends BaseStreamStep implements StepInterface {
-  private static Class<?> PKG = MQTTConsumer.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+  private static final  Class<?> PKG = MQTTConsumer.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
   public MQTTConsumer( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta,
                        Trans trans ) {
     super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
 
   }
 
-  public boolean init( StepMetaInterface stepMetaInterface, StepDataInterface stepDataInterface ) {
+  @Override public boolean init( StepMetaInterface stepMetaInterface, StepDataInterface stepDataInterface ) {
     boolean init = super.init( stepMetaInterface, stepDataInterface );
     MQTTConsumerMeta mqttConsumerMeta = (MQTTConsumerMeta) this.variablizedStepMeta;
 
