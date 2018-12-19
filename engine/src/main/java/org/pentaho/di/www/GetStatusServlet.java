@@ -282,7 +282,6 @@ public class GetStatusServlet extends BaseHttpServlet implements CartePluginInte
       // Tooltips
       String run = BaseMessages.getString( PKG, "CarteStatusServlet.Run" );
       String stop = BaseMessages.getString( PKG, "CarteStatusServlet.StopTrans" );
-      String cleanup = BaseMessages.getString( PKG, "CarteStatusServlet.CleanupTrans" );
       String view = BaseMessages.getString( PKG, "CarteStatusServlet.ViewTransDetails" );
       String remove = BaseMessages.getString( PKG, "CarteStatusServlet.RemoveTrans" );
       String runJ = BaseMessages.getString( PKG, "CarteStatusServlet.Run" );
@@ -299,13 +298,11 @@ public class GetStatusServlet extends BaseHttpServlet implements CartePluginInte
         out.println( "<table cellspacing=\"0\" cellpadding=\"0\" class=\"toolbar\" style=\"width: 100%; height: 26px; margin-bottom: 2px; border: 0;\">" );
         out.println( "<tbody><tr>" );
         out.println( "<td align=\"left\" style=\"vertical-align: middle; width: 100%\" id=\"trans-align\"></td>" );
-        out.println( "<td " + setupIconEnterLeaveJavascript( "pause" ) + " align=\"left\" style=\"vertical-align: middle;\"><div style=\"padding: 2px;\" onClick=\"resumeFunction( this )\" class=\"toolbar-button toolbar-button-disabled\" id=\"pause\"><img style=\"width: 22px; height: 22px\" src=\"" + prefix + "/images/run_option.svg\" title=\"" + run + "\"/></div></td>" );
+        out.println( "<td " + setupIconEnterLeaveJavascript( "run-pause" ) + " align=\"left\" style=\"vertical-align: middle;\"><div style=\"padding: 2px;\" onClick=\"runPauseFunction( this )\" class=\"toolbar-button toolbar-button-disabled\" id=\"run-pause\"><img style=\"width: 22px; height: 22px\" src=\"" + prefix + "/images/run.svg\" title=\"" + run + "\"/></div></td>" );
         out.println( "<td " + setupIconEnterLeaveJavascript( "stop" ) + " align=\"left\" style=\"vertical-align: middle;\"><div style=\"padding: 2px;\" onClick=\"stopFunction( this )\" class=\"toolbar-button toolbar-button-disabled\" id=\"stop\"><img style=\"width: 22px; height: 22px\"src=\"" + prefix + "/images/stop.svg\" title=\"" + stop + "\"/></div></td>" );
-        out.println( "<td " + setupIconEnterLeaveJavascript( "cleanup" ) + " align=\"left\" style=\"vertical-align: middle;\"><div style=\"padding: 2px; margin-left: 10px !important;\" onClick=\"cleanupFunction( this )\" class=\"toolbar-button toolbar-button-disabled\" id=\"cleanup\"><img style=\"width: 22px; height: 22px\"src=\"" + prefix + "/images/cleanup.svg\" title=\"" + cleanup + "\"/></div></td>" );
-        out.println( "<td " + setupIconEnterLeaveJavascript( "view" ) + " align=\"left\" style=\"vertical-align: middle;\"><div style=\"padding: 2px; margin-left: 0 !important;\" onClick=\"viewFunction( this )\" class=\"toolbar-button toolbar-button-disabled\" id=\"view\"><img style=\"width: 22px; height: 22px\" src=\"" + prefix + "/images/view.svg\" title=\"" + view + "\"/></div></td>" );
+        out.println( "<td " + setupIconEnterLeaveJavascript( "view" ) + " align=\"left\" style=\"vertical-align: middle;\"><div style=\"padding: 2px;\" onClick=\"viewFunction( this )\" class=\"toolbar-button toolbar-button-disabled\" id=\"view\"><img style=\"width: 22px; height: 22px\" src=\"" + prefix + "/images/view.svg\" title=\"" + view + "\"/></div></td>" );
         out.println( "<td " + setupIconEnterLeaveJavascript( "close" ) + " align=\"left\" style=\"vertical-align: middle;\"><div style=\"padding: 2px; margin-right: 10px;\" onClick=\"removeFunction( this )\" class=\"toolbar-button toolbar-button-disabled\" id=\"close\"><img style=\"width: 22px; height: 22px\" src=\"" + prefix + "/images/close.svg\" title=\"" + remove + "\"/></div></td>" );
         out.println( "</tr></tbody></table>" );
-        out.println( "<div id=\"runActions\" class=\"custom-dropdown-popup\" style=\"visibility: hidden; overflow: visible; position: fixed;\" onLoad=\"repositionActions( this, document.getElementById( 'pause' ) )\" onMouseLeave=\"this.style='visibility: hidden; overflow: visible; position: fixed;'\"><div class=\"popupContent\"><div style=\"padding: 0;\" class=\"gwt-MenuBar gwt-MenuBar-vertical\"><table><tbody><tr><td class=\"gwt-MenuItem\" onClick=\"runTransSelector( this )\" onMouseEnter=\"this.className='gwt-MenuItem gwt-MenuItem-selected'\" onMouseLeave=\"this.className='gwt-MenuItem'\">Prepare the execution</td></tr><tr><td class=\"gwt-MenuItem\" onClick=\"runTransSelector( this )\" onMouseEnter=\"this.className='gwt-MenuItem gwt-MenuItem-selected'\" onMouseLeave=\"this.className='gwt-MenuItem'\">Run</td></tr></tbody></table></div></div></div>" );
         out.println( "<div id=\"stopActions\" class=\"custom-dropdown-popup\" style=\"visibility: hidden; overflow: visible; position: fixed;\" onLoad=\"repositionActions( this, document.getElementById( 'stop' ) )\" onMouseLeave=\"this.style='visibility: hidden; overflow: visible; position: fixed;'\"><div class=\"popupContent\"><div style=\"padding: 0;\" class=\"gwt-MenuBar gwt-MenuBar-vertical\"><table><tbody><tr><td class=\"gwt-MenuItem\" onClick=\"stopTransSelector( this )\" onMouseEnter=\"this.className='gwt-MenuItem gwt-MenuItem-selected'\" onMouseLeave=\"this.className='gwt-MenuItem'\">Stop transformation</td></tr><tr><td class=\"gwt-MenuItem\" onClick=\"stopTransSelector( this )\" onMouseEnter=\"this.className='gwt-MenuItem gwt-MenuItem-selected'\" onMouseLeave=\"this.className='gwt-MenuItem'\">Stop input processing</td></tr></tbody></table></div></div></div>" );
         out.println( messageDialog() );
         out.println( "<table class=\"pentaho-table\" border=\"" + tableBorder + "\">" );
@@ -384,7 +381,7 @@ public class GetStatusServlet extends BaseHttpServlet implements CartePluginInte
         out.println( "<table cellspacing=\"0\" cellpadding=\"0\" class=\"toolbar\" style=\"width: 100%; height: 26px; margin-bottom: 2px; border: 0;\">" );
         out.println( "<tbody><tr>" );
         out.println( "<td align=\"left\" style=\"vertical-align: middle; width: 100%\"></td>" );
-        out.println( "<td " + setupIconEnterLeaveJavascript( "j-pause" ) + " align=\"left\" style=\"vertical-align: middle;\"><div style=\"padding: 2px;\" onClick=\"resumeFunction( this )\" class=\"toolbar-button toolbar-button-disabled\" id=\"j-pause\"><img style=\"width: 22px; height: 22px\" src=\"" + prefix + "/images/run.svg\" title=\"" + runJ + "\"/></div></td>" );
+        out.println( "<td " + setupIconEnterLeaveJavascript( "j-run-pause" ) + " align=\"left\" style=\"vertical-align: middle;\"><div style=\"padding: 2px;\" onClick=\"runPauseFunction( this )\" class=\"toolbar-button toolbar-button-disabled\" id=\"j-run-pause\"><img style=\"width: 22px; height: 22px\" src=\"" + prefix + "/images/run.svg\" title=\"" + runJ + "\"/></div></td>" );
         out.println( "<td " + setupIconEnterLeaveJavascript( "j-stop" ) + " align=\"left\" style=\"vertical-align: middle;\"><div style=\"padding: 2px;\" onClick=\"stopFunction( this )\" class=\"toolbar-button toolbar-button-disabled\" id=\"j-stop\"><img style=\"width: 22px; height: 22px\"src=\"" + prefix + "/images/stop.svg\" title=\"" + stopJ + "\"/></div></td>" );
         out.println( "<td " + setupIconEnterLeaveJavascript( "j-view" ) + " align=\"left\" style=\"vertical-align: middle;\"><div style=\"padding: 2px;\" onClick=\"viewFunction( this )\" class=\"toolbar-button toolbar-button-disabled\" id=\"j-view\"><img style=\"width: 22px; height: 22px\" src=\"" + prefix + "/images/view.svg\" title=\"" + viewJ + "\"/></div></td>" );
         out.println( "<td " + setupIconEnterLeaveJavascript( "j-close" ) + " align=\"left\" style=\"vertical-align: middle;\"><div style=\"padding: 2px; margin-right: 10px;\" onClick=\"removeFunction( this )\" class=\"toolbar-button toolbar-button-disabled\" id=\"j-close\"><img style=\"width: 22px; height: 22px\" src=\"" + prefix + "/images/close.svg\" title=\"" + removeJ + "\"/></div></td>" );
@@ -566,8 +563,8 @@ public class GetStatusServlet extends BaseHttpServlet implements CartePluginInte
       //out.println( "element.style.top = document.getElementById( 'trans-table' ).offsetTop + 'px';" );
       out.println( "}" );
 
-      // Click function for resume button
-      out.println( "function resumeFunction( element ) {" );
+      // Click function for Run, Pause, or Resume button
+      out.println( "function runPauseFunction( element ) {" );
       out.println( "if( !element.classList.contains('toolbar-button-disabled') ) {" );
       out.println( "if( element.id.startsWith( 'j-' ) && selectedJobRowIndex != -1 ) {" );
       out.println( setupAjaxCall( setupJobURI( convertContextPath( StartJobServlet.CONTEXT_PATH ) ),
@@ -585,8 +582,10 @@ public class GetStatusServlet extends BaseHttpServlet implements CartePluginInte
         "'" + BaseMessages.getString( PKG, "GetStatusServlet.TheTransformation.Label" ) + " ' + selectedTransName + ' " + BaseMessages.getString( PKG, "GetStatusServlet.ResumeTrans.Success.Body" ) + "'",
         "'" + BaseMessages.getString( PKG, "GetStatusServlet.TheTransformation.Label" ) + " ' + selectedTransName + ' " + BaseMessages.getString( PKG, "GetStatusServlet.ResumeTrans.Failure.Body" ) + "'" ) );
       out.println( "} else if( !element.id.startsWith( 'j-' ) && selectedTransRowIndex != -1 ){" );
-      out.println( "repositionActions( document.getElementById( 'runActions' ), element );" );
-      out.println( "document.getElementById( 'runActions' ).style.visibility = 'visible';" );
+      out.println( setupAjaxCall( setupTransURI( convertContextPath( StartTransServlet.CONTEXT_PATH ) ),
+        BaseMessages.getString( PKG, "GetStatusServlet.StartTrans.Title" ),
+        "'" + BaseMessages.getString( PKG, "GetStatusServlet.TheTransformation.Label" ) + " ' + selectedTransName + ' " + BaseMessages.getString( PKG, "GetStatusServlet.StartTrans.Success.Body" ) + "'",
+        "'" + BaseMessages.getString( PKG, "GetStatusServlet.TheTransformation.Label" ) + " ' + selectedTransName + ' " + BaseMessages.getString( PKG, "GetStatusServlet.StartTrans.Failure.Body" ) + "'" ) );
       out.println( "}" );
       out.println( "}" );
       out.println( "}" );
@@ -606,20 +605,6 @@ public class GetStatusServlet extends BaseHttpServlet implements CartePluginInte
       out.println( "}" );
       out.println( "}" );
 
-      out.println( "function runTransSelector( element ) {" );
-      out.println( "if( element.innerHTML == 'Prepare the execution' ){" );
-      out.println( setupAjaxCall( setupTransURI( convertContextPath( PrepareExecutionTransServlet.CONTEXT_PATH ) ),
-        BaseMessages.getString( PKG, "GetStatusServlet.PrepareTrans.Title" ),
-        "'" + BaseMessages.getString( PKG, "GetStatusServlet.TheTransformation.Label" ) + " ' + selectedTransName + ' " + BaseMessages.getString( PKG, "GetStatusServlet.PrepareTrans.Success.Body" ) + "'",
-        "'" + BaseMessages.getString( PKG, "GetStatusServlet.TheTransformation.Label" ) + " ' + selectedTransName + ' " + BaseMessages.getString( PKG, "GetStatusServlet.PrepareTrans.Failure.Body" ) + "'" ) );
-      out.println( "} else {" );
-      out.println( setupAjaxCall( setupTransURI( convertContextPath( StartTransServlet.CONTEXT_PATH ) ),
-        BaseMessages.getString( PKG, "GetStatusServlet.StartTrans.Title" ),
-        "'" + BaseMessages.getString( PKG, "GetStatusServlet.TheTransformation.Label" ) + " ' + selectedTransName + ' " + BaseMessages.getString( PKG, "GetStatusServlet.StartTrans.Success.Body" ) + "'",
-        "'" + BaseMessages.getString( PKG, "GetStatusServlet.TheTransformation.Label" ) + " ' + selectedTransName + ' " + BaseMessages.getString( PKG, "GetStatusServlet.StartTrans.Failure.Body" ) + "'" ) );
-      out.println( "}" );
-      out.println( "}" );
-
       // Click function for stop button
       out.println( "function stopTransSelector( element ) {" );
       out.println( "if( element.innerHTML == 'Stop transformation' ) {" );
@@ -634,18 +619,6 @@ public class GetStatusServlet extends BaseHttpServlet implements CartePluginInte
         "'" + BaseMessages.getString( PKG, "GetStatusServlet.TheTransformation.Label" ) + " ' + selectedTransName + ' " + BaseMessages.getString( PKG, "GetStatusServlet.StopInputTrans.Failure.Body" ) + "'" ) );
       out.println( "}" );
       out.println( "document.getElementById( 'stopActions' ).style.visibility = 'hidden';" );
-      out.println( "}" );
-
-      // Click function for stop button
-      out.println( "function cleanupFunction( element ) {" );
-      out.println( "if( !element.classList.contains('toolbar-button-disabled') ) {" );
-      out.println( "if( selectedTransRowIndex != -1 ) {" );
-      out.println( setupAjaxCall( setupTransURI( convertContextPath( CleanupTransServlet.CONTEXT_PATH ) ),
-        BaseMessages.getString( PKG, "GetStatusServlet.CleanupTrans.Title" ),
-        "'" + BaseMessages.getString( PKG, "GetStatusServlet.CleanupTrans.Success.Body1" ) + " " + BaseMessages.getString( PKG, "GetStatusServlet.TheTransformation.Label" ) + " ' + selectedTransName + ' " + BaseMessages.getString( PKG, "GetStatusServlet.CleanupTrans.Success.Body2" ) + "'",
-        "'" + BaseMessages.getString( PKG, "GetStatusServlet.CleanupTrans.Failure.Body1" ) + " " + BaseMessages.getString( PKG, "GetStatusServlet.TheTransformation.Label" ) + " ' + selectedTransName + '" + BaseMessages.getString( PKG, "GetStatusServlet.CleanupTrans.Failure.Body2" ) + "'" ) );
-      out.println( "}" );
-      out.println( "}" );
       out.println( "}" );
 
       // Click function for view button
@@ -689,7 +662,7 @@ public class GetStatusServlet extends BaseHttpServlet implements CartePluginInte
       out.println( "element.className='cellTableCell ' + tableClass + ' cellTableSelectedRowCell';" );
       out.println( "}" );
       out.println( "if( element.id.startsWith( 'j-' ) ) {" );
-      out.println( "document.getElementById( \"j-pause\" ).classList.remove( \"toolbar-button-disabled\" )" );
+      out.println( "document.getElementById( \"j-run-pause\" ).classList.remove( \"toolbar-button-disabled\" )" );
       out.println( "document.getElementById( \"j-stop\" ).classList.remove( \"toolbar-button-disabled\" )" );
       out.println( "document.getElementById( \"j-view\" ).classList.remove( \"toolbar-button-disabled\" )" );
       out.println( "document.getElementById( \"j-close\" ).classList.remove( \"toolbar-button-disabled\" )" );
@@ -701,9 +674,8 @@ public class GetStatusServlet extends BaseHttpServlet implements CartePluginInte
       out.println( "}" );
       out.println( "selectedJobRowIndex = element.id.charAt( element.id.length - 1 );" );
       out.println( "} else {" );
-      out.println( "document.getElementById( \"pause\" ).classList.remove( \"toolbar-button-disabled\" )" );
+      out.println( "document.getElementById( \"run-pause\" ).classList.remove( \"toolbar-button-disabled\" )" );
       out.println( "document.getElementById( \"stop\" ).classList.remove( \"toolbar-button-disabled\" )" );
-      out.println( "document.getElementById( \"cleanup\" ).classList.remove( \"toolbar-button-disabled\" )" );
       out.println( "document.getElementById( \"view\" ).classList.remove( \"toolbar-button-disabled\" )" );
       out.println( "document.getElementById( \"close\" ).classList.remove( \"toolbar-button-disabled\" )" );
       out.println( "if( selectedTransRowIndex != -1 && element.id.charAt( element.id.length - 1 ) != selectedTransRowIndex ) {" );
@@ -714,16 +686,16 @@ public class GetStatusServlet extends BaseHttpServlet implements CartePluginInte
       out.println( "}" );
       out.println( "selectedTransRowIndex = element.id.charAt( element.id.length - 1 );" );
       out.println( "if( document.getElementById( 'cellTableCellStatus' + selectedTransRowIndex ).innerHTML == 'Running' ) {" );
-      out.println( "document.getElementById( 'pause' ).innerHTML = '<img style=\"width: 22px; height: 22px\" src=\""
+      out.println( "document.getElementById( 'run-pause' ).innerHTML = '<img style=\"width: 22px; height: 22px\" src=\""
         + prefix + "/images/pause.svg\"/ title=\"" + BaseMessages.getString( PKG, "GetStatusServlet.PauseTrans" )
         + "\">';" );
       out.println( "} else if( document.getElementById( 'cellTableCellStatus' + selectedTransRowIndex ).innerHTML == 'Paused' ) {" );
-      out.println( "document.getElementById( 'pause' ).innerHTML = '<img style=\"width: 22px; height: 22px\" src=\""
+      out.println( "document.getElementById( 'run-pause' ).innerHTML = '<img style=\"width: 22px; height: 22px\" src=\""
         + prefix + "/images/pause.svg\" title=\"" + BaseMessages.getString( PKG, "GetStatusServlet.ResumeTrans" )
         + "\"/>';" );
       out.println( "} else {" );
-      out.println( "document.getElementById( 'pause' ).innerHTML = '<img style=\"width: 22px; height: 22px\" src=\""
-        + prefix + "/images/run_option.svg\" title=\"" + run + "\"/>';" );
+      out.println( "document.getElementById( 'run-pause' ).innerHTML = '<img style=\"width: 22px; height: 22px\" src=\""
+        + prefix + "/images/run.svg\" title=\"" + run + "\"/>';" );
       out.println( "}" );
       out.println( "}" );
       out.println( "setSelectedNames();" );
