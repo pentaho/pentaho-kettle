@@ -52,9 +52,11 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -69,7 +71,7 @@ import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-@RunWith( MockitoJUnitRunner.class )
+@RunWith ( MockitoJUnitRunner.class )
 public class JmsProducerTest {
   @Mock LogChannelInterfaceFactory logChannelFactory;
   @Mock LogChannelInterface logChannel;
@@ -140,7 +142,8 @@ public class JmsProducerTest {
     step.setInputRowMeta( inputRowMeta );
   }
 
-  @Test public void testProperties() throws InterruptedException, KettleException {
+  @Test public void testProperties() throws InterruptedException, KettleException, TimeoutException,
+    ExecutionException {
     Map<String, String> propertyValuesByName = new LinkedHashMap<>();
     propertyValuesByName.put( PROPERTY_NAME_ONE, "property1Value" );
     propertyValuesByName.put( PROPERTY_NAME_TWO, "property2Value" );
@@ -161,7 +164,7 @@ public class JmsProducerTest {
     };
 
     ExecutorService service = Executors.newSingleThreadExecutor();
-    service.submit( processRowRunnable );
+    service.submit( processRowRunnable ).get( 5, TimeUnit.SECONDS );
     service.awaitTermination( 5, TimeUnit.SECONDS );
     step.stopRunning( meta, data );
     service.shutdown();
@@ -243,7 +246,7 @@ public class JmsProducerTest {
   public void jmsContextClosedOnStop() throws Exception {
     TransMeta transMeta = new TransMeta( getClass().getResource( "/jms-generate-produce.ktr" ).getPath() );
     Trans trans = new Trans( transMeta );
-    trans.prepareExecution( new String[]{} );
+    trans.prepareExecution( new String[] {} );
 
     StepMetaDataCombi combi = trans.getSteps().get( 1 );
     JmsProducer step = (JmsProducer) combi.step;

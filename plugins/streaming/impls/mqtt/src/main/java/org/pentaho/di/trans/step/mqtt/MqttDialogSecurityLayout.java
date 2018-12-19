@@ -65,7 +65,7 @@ import static org.pentaho.di.ui.trans.step.BaseStreamingDialog.INPUT_WIDTH;
  */
 class MqttDialogSecurityLayout {
 
-  private static Class<?> PKG = MqttDialogSecurityLayout.class;
+  private static final Class<?> PKG = MqttDialogSecurityLayout.class;
 
   private final PropsUI props;
   private final CTabFolder wTabFolder;
@@ -133,9 +133,7 @@ class MqttDialogSecurityLayout {
       }
 
       @Override public void widgetDefaultSelected( SelectionEvent selectionEvent ) {
-        boolean selection = ( (Button) selectionEvent.getSource() ).getSelection();
-        sslTable.setEnabled( selection );
-        sslTable.table.setEnabled( selection );
+        widgetSelected( selectionEvent );
       }
     } );
 
@@ -235,7 +233,7 @@ class MqttDialogSecurityLayout {
     sslTable.getTable().getItem( 0 ).setText( 1, firstKey );
     sslTable.getTable().getItem( 0 ).setText( 2, sslConfig.get( firstKey ) );
 
-    keys.stream()
+    keys
       .forEach( key -> sslTable.add( key, sslConfig.get( key ) ) );
   }
 

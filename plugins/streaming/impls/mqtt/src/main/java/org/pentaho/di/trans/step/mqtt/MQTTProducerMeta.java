@@ -82,7 +82,7 @@ import static org.pentaho.di.core.util.serialization.ConfigHelper.conf;
   documentationUrl = "Products/Data_Integration/Transformation_Step_Reference/MQTT_Producer" )
 @InjectionSupported ( localizationPrefix = "MQTTProducerMeta.Injection.", groups = { "SSL" } )
 public class MQTTProducerMeta extends BaseSerializingMeta implements StepMetaInterface {
-  private static Class<?> PKG = MQTTProducerMeta.class;
+  private  static final Class<?> PKG = MQTTProducerMeta.class;
 
   @Injection ( name = MQTT_SERVER ) String mqttServer;
 

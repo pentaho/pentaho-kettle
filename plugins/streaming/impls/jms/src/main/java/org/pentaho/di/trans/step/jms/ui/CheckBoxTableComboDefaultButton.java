@@ -31,6 +31,7 @@ import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.pentaho.di.trans.TransMeta;
+import org.pentaho.di.trans.step.jms.JmsDelegate;
 import org.pentaho.di.trans.step.jms.context.JmsProvider;
 import org.pentaho.di.ui.core.PropsUI;
 import org.pentaho.di.ui.core.widget.CheckBoxTableCombo;
@@ -38,28 +39,33 @@ import org.pentaho.di.ui.core.widget.CheckBoxTableCombo;
 import java.util.Map;
 import java.util.function.Consumer;
 
+import static org.pentaho.di.i18n.BaseMessages.getString;
+import static org.pentaho.di.trans.step.jms.JmsConstants.PKG;
+
 public class CheckBoxTableComboDefaultButton extends CheckBoxTableCombo {
 
   private Button wUseDefaultCheckBox;
   private JmsProvider.ConnectionType selectedConnectionType;
 
   public CheckBoxTableComboDefaultButton( Composite parentComposite, PropsUI props, ModifyListener lsMod,
-                                          TransMeta transMeta, Map<String, String> dataMap, String buttonName,
-                                          String tableName, String columnOneName, String columnTwoName,
-                                          boolean isEnabled, boolean useDefaultContext,
-                                          Consumer<JmsProvider.ConnectionType> toggleVisibilityCallback,
-                                          String connectionType ) {
-    super( parentComposite, props, lsMod, transMeta, dataMap, buttonName, tableName, columnOneName, columnTwoName,
-      isEnabled );
+                                   TransMeta transMeta, Map<String, String> dataMap,
+                                   Consumer<JmsProvider.ConnectionType> toggleVisibilityCallback,
+                                   JmsDelegate delegate ) {
+    super( parentComposite, props, lsMod, transMeta, dataMap,
+      getString( PKG, "JmsDialog.Security.SSLButton" ),
+      getString( PKG, "JmsDialog.Security.SSLTable" ),
+      getString( PKG, "JmsDialog.Security.Column.Name" ),
+      getString( PKG, "JmsDialog.Security.Column.Value" ),
+      delegate.sslEnabled );
 
     wUseDefaultCheckBox = new Button( parentComposite, SWT.CHECK );
     wUseDefaultCheckBox.setText( "Use system default SSL context" );
     FormData fdCheckBox = new FormData();
     fdCheckBox.left = new FormAttachment( wCheckBox, 10 );
     wUseDefaultCheckBox.setLayoutData( fdCheckBox );
-    wUseDefaultCheckBox.setSelection( useDefaultContext );
-    wUseDefaultCheckBox.setEnabled( isEnabled );
-    selectedConnectionType = JmsProvider.ConnectionType.valueOf( connectionType );
+    wUseDefaultCheckBox.setSelection( delegate.sslUseDefaultContext );
+    wUseDefaultCheckBox.setEnabled( delegate.sslEnabled );
+    selectedConnectionType = JmsProvider.ConnectionType.valueOf( delegate.connectionType );
 
     wCheckBox.addSelectionListener( new SelectionListener() {
       @Override public void widgetSelected( SelectionEvent selectionEvent ) {
@@ -68,8 +74,7 @@ public class CheckBoxTableComboDefaultButton extends CheckBoxTableCombo {
       }
 
       @Override public void widgetDefaultSelected( SelectionEvent selectionEvent ) {
-        boolean selection = ( (Button) selectionEvent.getSource() ).getSelection();
-        wUseDefaultCheckBox.setEnabled( selection );
+        widgetSelected( selectionEvent );
       }
     } );
 
@@ -80,13 +85,12 @@ public class CheckBoxTableComboDefaultButton extends CheckBoxTableCombo {
       }
 
       @Override public void widgetDefaultSelected( SelectionEvent selectionEvent ) {
-        toggleVisibilityCallback.accept( selectedConnectionType );
-        lsMod.modifyText( null );
+        widgetSelected( selectionEvent );
       }
     } );
   }
 
-  public boolean getUseDefaultSslContext() {
+  boolean getUseDefaultSslContext() {
     return this.wUseDefaultCheckBox.getSelection();
   }
 
@@ -95,11 +99,11 @@ public class CheckBoxTableComboDefaultButton extends CheckBoxTableCombo {
    *
    * @param type Selected connection type on the connection tab.
    */
-  public void setSelectedConnectionType( JmsProvider.ConnectionType type ) {
+  void setSelectedConnectionType( JmsProvider.ConnectionType type ) {
     selectedConnectionType = type;
   }
 
-  public JmsProvider.ConnectionType getSelectedConnectionType() {
+  JmsProvider.ConnectionType getSelectedConnectionType() {
     return selectedConnectionType;
   }
 }

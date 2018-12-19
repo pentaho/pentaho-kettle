@@ -50,7 +50,7 @@ import static java.util.Optional.ofNullable;
 import static org.pentaho.di.i18n.BaseMessages.getString;
 
 public class MQTTProducer extends BaseStep implements StepInterface {
-  private static Class<?> PKG = MQTTProducer.class;
+  private static final Class<?> PKG = MQTTProducer.class;
 
   private MQTTProducerMeta meta;
 
@@ -107,10 +107,8 @@ public class MQTTProducer extends BaseStep implements StepInterface {
       incrementLinesOutput();
       putRow( getInputRowMeta(), row ); // copy row to possible alternate rowset(s).
 
-      if ( checkFeedback( getLinesRead() ) ) {
-        if ( log.isBasic() ) {
-          logBasic( getString( PKG, "MQTTProducer.Log.LineNumber" ) + getLinesRead() );
-        }
+      if ( checkFeedback( getLinesRead() ) && log.isBasic() ) {
+        logBasic( getString( PKG, "MQTTProducer.Log.LineNumber" ) + getLinesRead() );
       }
     } catch ( MqttException e ) {
       logError( getString( PKG, "MQTTProducer.Error.QOSNotSupported", meta.qos ) );
@@ -150,7 +148,7 @@ public class MQTTProducer extends BaseStep implements StepInterface {
           .buildAndConnect();
     } catch ( MqttException e ) {
       connectionError.set( true );
-      throw new RuntimeException( e );
+      throw new IllegalStateException( e );
     }
   }
 

@@ -137,7 +137,6 @@ public class MQTTStreamSourceTest {
     String[] topic2Messages = { "chuntttttt", "usidor", "arnie" };
     publish( "vermilion.minotaur", topic2Messages );
 
-    Thread.sleep( 200 );
     List<List<Object>> rows = getQuickly(
       iterateSource( source.flowable().blockingIterable().iterator(), 6 ) );
     List<List<Object>> expectedResults = ImmutableList.<List<Object>>builder()

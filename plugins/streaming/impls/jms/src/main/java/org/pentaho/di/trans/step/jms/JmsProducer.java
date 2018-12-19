@@ -119,7 +119,7 @@ public class JmsProducer extends BaseStep implements StepInterface {
 
     // send row to JMS
     producer.send( destination, ofNullable( row[ messageIndex ] )
-      .map( m -> m.toString() )
+      .map( Object::toString )
       .orElse( null ) );
 
     // send to next steps

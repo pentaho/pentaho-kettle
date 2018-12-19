@@ -59,18 +59,18 @@ import static org.pentaho.di.i18n.BaseMessages.getString;
   description = "JmsProducer.TypeTooltipDesc",
   categoryDescription = "i18n:org.pentaho.di.trans.step:BaseStep.Category.Streaming",
   documentationUrl = "Products/Data_Integration/Transformation_Step_Reference/JMS_Producer" )
-public class JmsProducerMeta extends BaseSerializingMeta implements StepMetaInterface, Cloneable {
-  static final Class<?> PKG = JmsProducerMeta.class;
+public class JmsProducerMeta extends BaseSerializingMeta implements StepMetaInterface {
+  private static final Class<?> PKG = JmsProducerMeta.class;
 
   @VisibleForTesting
   public JmsProducerMeta() {
     this( new JmsDelegate( singletonList( new ActiveMQProvider() ) ) );
   }
 
-  static final String FIELD_TO_SEND = "FIELD_TO_SEND";
-  static final String PROPERTIES = "PROPERTIES";
-  static final String PROPERTY_NAMES = "PROPERTY_NAMES";
-  static final String PROPERTY_VALUES = "PROPERTY_VALUES";
+  private static final String FIELD_TO_SEND = "FIELD_TO_SEND";
+  private static final String PROPERTIES = "PROPERTIES";
+  private static final String PROPERTY_NAMES = "PROPERTY_NAMES";
+  private static final String PROPERTY_VALUES = "PROPERTY_VALUES";
   public static final String DISABLE_MESSAGE_ID = "DISABLE_MESSAGE_ID";
   public static final String DISABLE_MESSAGE_TIMESTAMP = "DISABLE_MESSAGE_TIMESTAMP";
   public static final String DELIVERY_MODE = "DELIVERY_MODE";
@@ -102,7 +102,7 @@ public class JmsProducerMeta extends BaseSerializingMeta implements StepMetaInte
   private String deliveryMode;
 
   @Injection( name = PRIORITY )
-  private String priority;
+  private String prio;
 
   @Injection( name = TIME_TO_LIVE )
   private String timeToLive;
@@ -120,13 +120,14 @@ public class JmsProducerMeta extends BaseSerializingMeta implements StepMetaInte
     this.jmsDelegate = jmsDelegate;
   }
 
-  @SuppressWarnings( "deprecated" )
+  @SuppressWarnings( "deprecation" )
   public String getDialogClassName() {
     return "org.pentaho.di.trans.step.jms.ui.JmsProducerDialog";
   }
 
   @Override
   public void setDefault() {
+    // no defaults to set
   }
 
   @Override
@@ -153,7 +154,7 @@ public class JmsProducerMeta extends BaseSerializingMeta implements StepMetaInte
     StepOption.checkInteger( remarks, stepMeta, space, getString( PKG, "JmsDialog.Options.DELIVERY_MODE" ),
       deliveryMode );
     StepOption.checkInteger( remarks, stepMeta, space, getString( PKG, "JmsDialog.Options.PRIORITY" ),
-      priority );
+      prio );
     StepOption.checkLong( remarks, stepMeta, space, getString( PKG, "JmsDialog.Options.TIME_TO_LIVE" ),
       timeToLive );
     StepOption.checkLong( remarks, stepMeta, space, getString( PKG, "JmsDialog.Options.DELIVERY_DELAY" ),
@@ -177,7 +178,7 @@ public class JmsProducerMeta extends BaseSerializingMeta implements StepMetaInte
     return conf( propertyNames, propertyValues ).asMap();
   }
 
-  public String getDisableMessageId() {
+  String getDisableMessageId() {
     return disableMessageId;
   }
 
@@ -185,7 +186,7 @@ public class JmsProducerMeta extends BaseSerializingMeta implements StepMetaInte
     this.disableMessageId = disableMessageId;
   }
 
-  public String getDisableMessageTimestamp() {
+  String getDisableMessageTimestamp() {
     return disableMessageTimestamp;
   }
 
@@ -193,7 +194,7 @@ public class JmsProducerMeta extends BaseSerializingMeta implements StepMetaInte
     this.disableMessageTimestamp = disableMessageTimestamp;
   }
 
-  public String getDeliveryMode() {
+  String getDeliveryMode() {
     return deliveryMode;
   }
 
@@ -201,15 +202,15 @@ public class JmsProducerMeta extends BaseSerializingMeta implements StepMetaInte
     this.deliveryMode = deliveryMode;
   }
 
-  public String getPriority() {
-    return priority;
+  String getPriority() {
+    return prio;
   }
 
   public void setPriority( String priority ) {
-    this.priority = priority;
+    this.prio = priority;
   }
 
-  public String getTimeToLive() {
+  String getTimeToLive() {
     return timeToLive;
   }
 
@@ -217,7 +218,7 @@ public class JmsProducerMeta extends BaseSerializingMeta implements StepMetaInte
     this.timeToLive = timeToLive;
   }
 
-  public String getDeliveryDelay() {
+  String getDeliveryDelay() {
     return deliveryDelay;
   }
 
@@ -225,7 +226,7 @@ public class JmsProducerMeta extends BaseSerializingMeta implements StepMetaInte
     this.deliveryDelay = deliveryDelay;
   }
 
-  public String getJmsCorrelationId() {
+  String getJmsCorrelationId() {
     return jmsCorrelationId;
   }
 
@@ -233,7 +234,7 @@ public class JmsProducerMeta extends BaseSerializingMeta implements StepMetaInte
     this.jmsCorrelationId = jmsCorrelationId;
   }
 
-  public String getJmsType() {
+  String getJmsType() {
     return jmsType;
   }
 
@@ -247,7 +248,7 @@ public class JmsProducerMeta extends BaseSerializingMeta implements StepMetaInte
       new StepOption( DISABLE_MESSAGE_TIMESTAMP, getString( PKG, "JmsDialog.Options.DISABLE_MESSAGE_TIMESTAMP" ),
         disableMessageTimestamp ),
       new StepOption( DELIVERY_MODE, getString( PKG, "JmsDialog.Options.DELIVERY_MODE" ), deliveryMode ),
-      new StepOption( PRIORITY, getString( PKG, "JmsDialog.Options.PRIORITY" ), priority ),
+      new StepOption( PRIORITY, getString( PKG, "JmsDialog.Options.PRIORITY" ), prio ),
       new StepOption( TIME_TO_LIVE, getString( PKG, "JmsDialog.Options.TIME_TO_LIVE" ), timeToLive ),
       new StepOption( DELIVERY_DELAY, getString( PKG, "JmsDialog.Options.DELIVERY_DELAY" ), deliveryDelay ),
       new StepOption( JMS_CORRELATION_ID, getString( PKG, "JmsDialog.Options.JMS_CORRELATION_ID" ), jmsCorrelationId ),

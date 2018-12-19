@@ -46,9 +46,9 @@ import static java.util.Arrays.stream;
 import static java.util.Collections.emptyList;
 import static org.pentaho.di.ui.trans.step.BaseStreamingDialog.INPUT_WIDTH;
 
-public class MqttDialogOptionsLayout {
+class MqttDialogOptionsLayout {
 
-  private static Class<?> PKG = MqttDialogOptionsLayout.class;
+  private static final Class<?> PKG = MqttDialogOptionsLayout.class;
 
   private final PropsUI props;
   private final CTabFolder wTabFolder;
@@ -150,7 +150,7 @@ public class MqttDialogOptionsLayout {
 
   private void populateTable() {
     optionsTable.clearAll();
-    options.stream()
+    options
       .forEach( option -> optionsTable.add( option.getText(), option.getValue() ) );
     optionsTable.remove( 0 );
   }
@@ -158,13 +158,13 @@ public class MqttDialogOptionsLayout {
   List<StepOption> retrieveOptions() {
     IntStream.range( 0, optionsTable.getItemCount() )
       .mapToObj( i -> optionsTable.getItem( i ) )
-      .forEach( item -> {
-        options.stream().forEach( option -> {
+      .forEach( item ->
+        options.forEach( option -> {
           if ( option.getText().equals( item[ 0 ] ) ) {
             option.setValue( item[ 1 ] );
           }
-        } );
-      } );
+        } )
+      );
     return options;
   }
 }
