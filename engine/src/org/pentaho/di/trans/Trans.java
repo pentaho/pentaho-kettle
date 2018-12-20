@@ -4300,7 +4300,8 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
    *          the new internal kettle variables
    */
   public void setInternalKettleVariables( VariableSpace var ) {
-    if ( transMeta != null && !Utils.isEmpty( transMeta.getFilename() ) ) { // we have a finename that's defined.
+    boolean hasFilename = transMeta != null && !Utils.isEmpty( transMeta.getFilename() );
+    if ( hasFilename ) { // we have a finename that's defined.
       try {
         FileObject fileObject = KettleVFS.getFileObject( transMeta.getFilename(), var );
         FileName fileName = fileObject.getName();
@@ -4349,10 +4350,17 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
       if ( "/".equals( variables.getVariable( Const.INTERNAL_VARIABLE_ENTRY_CURRENT_DIRECTORY ) ) ) {
         variables.setVariable( Const.INTERNAL_VARIABLE_ENTRY_CURRENT_DIRECTORY, "" );
       }
-    } else {
-      variables.setVariable( Const.INTERNAL_VARIABLE_ENTRY_CURRENT_DIRECTORY, variables.getVariable(
-          Const.INTERNAL_VARIABLE_TRANSFORMATION_FILENAME_DIRECTORY ) );
     }
+
+    setInternalEntryCurrentDirectory( hasFilename, hasRepoDir );
+
+  }
+
+  protected void setInternalEntryCurrentDirectory( boolean hasFilename, boolean hasRepoDir  ) {
+    variables.setVariable( Const.INTERNAL_VARIABLE_ENTRY_CURRENT_DIRECTORY, variables.getVariable(
+      hasRepoDir ? Const.INTERNAL_VARIABLE_TRANSFORMATION_REPOSITORY_DIRECTORY
+        : hasFilename ? Const.INTERNAL_VARIABLE_TRANSFORMATION_FILENAME_DIRECTORY
+        : Const.INTERNAL_VARIABLE_ENTRY_CURRENT_DIRECTORY ) );
   }
 
   /**
