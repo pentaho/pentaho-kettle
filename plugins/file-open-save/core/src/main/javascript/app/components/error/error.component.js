@@ -291,6 +291,24 @@ define([
               "", "", "", "",
               i18n.get("file-open-save-plugin.missing-recent.close.button"));
           break;
+        case 17:// Save With Invalid File Name
+          _setMessage(i18n.get("file-open-save-plugin.error.invalid-file-name.save.title"),
+              i18n.get("file-open-save-plugin.error.invalid-file-name.save.top.message"),
+              "", "", "", "",
+              i18n.get("file-open-save-plugin.error.invalid-file-name.save.ok.button"));
+          break;
+        case 18:// Create With Invalid File Name
+          _setMessage(i18n.get("file-open-save-plugin.error.invalid-file-name.create.title"),
+              i18n.get("file-open-save-plugin.error.invalid-file-name.create.top.message"),
+              "", "", "", "",
+              i18n.get("file-open-save-plugin.error.invalid-file-name.create.ok.button"));
+          break;
+        case 19:// Rename With Invalid File Name
+          _setMessage(i18n.get("file-open-save-plugin.error.invalid-file-name.rename.title"),
+              i18n.get("file-open-save-plugin.error.invalid-file-name.rename.top.message"),
+              "", "", "", "",
+              i18n.get("file-open-save-plugin.error.invalid-file-name.rename.ok.button"));
+          break;
         default:
           _setMessage("", "", "", "", "", "", "");
           break;
