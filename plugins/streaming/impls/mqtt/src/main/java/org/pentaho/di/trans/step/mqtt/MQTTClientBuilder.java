@@ -54,7 +54,7 @@ import static com.google.common.base.Strings.isNullOrEmpty;
 import static org.pentaho.di.i18n.BaseMessages.getString;
 import static org.pentaho.di.trans.step.mqtt.MQTTConstants.MQTT_VERSION;
 
-final class MQTTClientBuilder {
+public final class MQTTClientBuilder {
   private static final Class<?> PKG = MQTTClientBuilder.class;
 
   private static final String UNSECURE_PROTOCOL = "tcp://";
@@ -109,102 +109,102 @@ final class MQTTClientBuilder {
   private MQTTClientBuilder() {
   }
 
-  static MQTTClientBuilder builder() {
+  public static MQTTClientBuilder builder() {
     return new MQTTClientBuilder();
   }
 
-  MQTTClientBuilder withCallback( MqttCallback callback ) {
+  public MQTTClientBuilder withCallback( MqttCallback callback ) {
     this.callback = callback;
     return this;
   }
 
-  MQTTClientBuilder withBroker( String broker ) {
+  public MQTTClientBuilder withBroker( String broker ) {
     this.broker = broker;
     return this;
   }
 
-  MQTTClientBuilder withTopics( List<String> topics ) {
+  public MQTTClientBuilder withTopics( List<String> topics ) {
     this.topics = topics;
     return this;
   }
 
-  MQTTClientBuilder withQos( String qos ) {
+  public MQTTClientBuilder withQos( String qos ) {
     this.qos = qos;
     return this;
   }
 
-  MQTTClientBuilder withIsSecure( boolean isSecure ) {
+  public MQTTClientBuilder withIsSecure( boolean isSecure ) {
     this.isSecure = isSecure;
     return this;
   }
 
-  MQTTClientBuilder withClientId( String clientId ) {
+  public MQTTClientBuilder withClientId( String clientId ) {
     this.clientId = clientId;
     return this;
   }
 
-  MQTTClientBuilder withUsername( String username ) {
+  public MQTTClientBuilder withUsername( String username ) {
     this.username = username;
     return this;
   }
 
-  MQTTClientBuilder withPassword( String password ) {
+  public MQTTClientBuilder withPassword( String password ) {
     this.password = password;
     return this;
   }
 
-  MQTTClientBuilder withStep( StepInterface step ) {
+  public MQTTClientBuilder withStep( StepInterface step ) {
     this.logChannel = step.getLogChannel();
     this.stepName = step.getStepMeta().getName();
     return this;
   }
 
-  MQTTClientBuilder withSslConfig( Map<String, String> sslConfig ) {
+  public MQTTClientBuilder withSslConfig( Map<String, String> sslConfig ) {
     this.sslConfig = sslConfig;
     return this;
   }
 
-  MQTTClientBuilder withKeepAliveInterval( String keepAliveInterval ) {
+  public MQTTClientBuilder withKeepAliveInterval( String keepAliveInterval ) {
     this.keepAliveInterval = keepAliveInterval;
     return this;
   }
 
-  MQTTClientBuilder withMaxInflight( String maxInflight ) {
+  public MQTTClientBuilder withMaxInflight( String maxInflight ) {
     this.maxInflight = maxInflight;
     return this;
   }
 
-  MQTTClientBuilder withConnectionTimeout( String connectionTimeout ) {
+  public MQTTClientBuilder withConnectionTimeout( String connectionTimeout ) {
     this.connectionTimeout = connectionTimeout;
     return this;
   }
 
-  MQTTClientBuilder withCleanSession( String cleanSession ) {
+  public MQTTClientBuilder withCleanSession( String cleanSession ) {
     this.cleanSession = cleanSession;
     return this;
   }
 
-  MQTTClientBuilder withStorageLevel( String storageLevel ) {
+  public MQTTClientBuilder withStorageLevel( String storageLevel ) {
     this.storageLevel = storageLevel;
     return this;
   }
 
-  MQTTClientBuilder withServerUris( String serverUris ) {
+  public MQTTClientBuilder withServerUris( String serverUris ) {
     this.serverUris = serverUris;
     return this;
   }
 
-  MQTTClientBuilder withMqttVersion( String mqttVersion ) {
+  public  MQTTClientBuilder withMqttVersion( String mqttVersion ) {
     this.mqttVersion = mqttVersion;
     return this;
   }
 
-  MQTTClientBuilder withAutomaticReconnect( String automaticReconnect ) {
+  public MQTTClientBuilder withAutomaticReconnect( String automaticReconnect ) {
     this.automaticReconnect = automaticReconnect;
     return this;
   }
 
-  MqttClient buildAndConnect() throws MqttException {
+  public MqttClient buildAndConnect() throws MqttException {
     validateArgs();
 
     String protocolBroker = getProtocol() + this.broker;
