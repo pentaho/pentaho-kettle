@@ -61,9 +61,24 @@ public class CheckBoxTableCombo {
   private final String buttonName;
   private final String tableName;
 
-  private TableView propertiesTable;
-  private Button wCheckBox;
+  protected TableView propertiesTable;
+  protected Button wCheckBox;
   private boolean isEnabled;
+
+  CheckBoxTableCombo() {
+    this.parentComposite = null;
+    this.props = null;
+    this.lsMod = null;
+    this.transMeta = null;
+    this.dataMap = null;
+    this.buttonName = null;
+    this.tableName = null;
+    this.columnOneName = null;
+    this.columnTwoName = null;
+
+    this.isEnabled = false;
+  }
+
 
   public CheckBoxTableCombo( Composite parentComposite, PropsUI props, ModifyListener lsMod, TransMeta transMeta,
                              Map<String, String> dataMap, String buttonName, String tableName,
@@ -116,12 +131,14 @@ public class CheckBoxTableCombo {
         boolean selection = ( (Button) selectionEvent.getSource() ).getSelection();
         propertiesTable.setEnabled( selection );
         propertiesTable.table.setEnabled( selection );
+        lsMod.modifyText( null );
       }
 
       @Override public void widgetDefaultSelected( SelectionEvent selectionEvent ) {
         boolean selection = ( (Button) selectionEvent.getSource() ).getSelection();
         propertiesTable.setEnabled( selection );
         propertiesTable.table.setEnabled( selection );
+        lsMod.modifyText( null );
       }
     } );
 

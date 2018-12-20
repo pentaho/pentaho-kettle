@@ -22,7 +22,10 @@
 
 package org.pentaho.di.trans.step.mqtt;
 
+@SuppressWarnings( "all" )
 class MQTTConstants {
+  private MQTTConstants() { }
+
   static final String MQTT_SERVER = "MQTT_SERVER";
   static final String TOPICS = "TOPICS";
   static final String TOPIC = "TOPIC";

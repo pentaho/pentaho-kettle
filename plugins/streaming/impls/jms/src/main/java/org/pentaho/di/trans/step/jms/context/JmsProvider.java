@@ -48,21 +48,21 @@ public interface JmsProvider {
 
   enum ConnectionType {
     ACTIVEMQ {
-      public String toString() {
+      @Override public String toString() {
         return getString( PKG, "JmsProvider.ActiveMQ" );
       }
 
-      public String getUrlHint() {
+      @Override public String getUrlHint() {
         return getString( PKG, "JmsProvider.ActiveMQUrlHint" );
 
       }
     },
     WEBSPHERE {
-      public String toString() {
+      @Override public String toString() {
         return getString( PKG, "JmsProvider.IBMMQ" );
       }
 
-      public String getUrlHint() {
+      @Override public String getUrlHint() {
         return getString( PKG, "JmsProvider.WSUrlHint" );
 
       }

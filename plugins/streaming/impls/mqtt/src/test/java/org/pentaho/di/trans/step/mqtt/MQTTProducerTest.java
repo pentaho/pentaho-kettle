@@ -41,6 +41,7 @@ import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
+import java.nio.charset.Charset;
 import java.util.Collections;
 
 import static org.junit.Assert.assertEquals;
@@ -100,7 +101,7 @@ public class MQTTProducerTest {
 
       assertEquals( "TestWinning", topic );
       assertEquals( 0, message.getQos() );
-      assertEquals( "#winning", new String( message.getPayload() ) );
+      assertEquals( "#winning", new String( message.getPayload(), Charset.forName( "utf-8" ) ) );
       return null;
     } ).when( mqttClient ).publish( any(), any() );
 
@@ -176,7 +177,7 @@ public class MQTTProducerTest {
     trans.startThreads();
     trans.waitUntilFinished();
 
-    verify( logChannel ).logError( eq("There was an error connecting"), any( RuntimeException.class ) );
+    verify( logChannel ).logError( eq( "There was an error connecting" ), any( RuntimeException.class ) );
   }
 
   @Test

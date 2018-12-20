@@ -41,10 +41,14 @@ import org.pentaho.metaverse.api.IMetaverseBuilder;
 import org.pentaho.metaverse.api.IMetaverseObjectFactory;
 import org.pentaho.metaverse.api.INamespace;
 import org.pentaho.metaverse.api.MetaverseObjectFactory;
+import org.pentaho.metaverse.api.analyzer.kettle.ExternalResourceCache;
 import org.pentaho.metaverse.api.model.IExternalResourceInfo;
+
+import org.powermock.reflect.Whitebox;
 
 import java.util.Collection;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.spy;
@@ -90,6 +94,9 @@ public class JsonOutputAnalyzerTest {
     when( mockJsonOutput.getStepMetaInterface() ).thenReturn( meta );
     when( mockJsonOutput.getStepMeta() ).thenReturn( mockStepMeta );
     when( mockStepMeta.getStepMetaInterface() ).thenReturn( meta );
+
+    Whitebox.setInternalState( ExternalResourceCache.getInstance(), "transMap", new ConcurrentHashMap() );
+    Whitebox.setInternalState( ExternalResourceCache.getInstance(), "resourceMap", new ConcurrentHashMap() );
   }
 
   @Test

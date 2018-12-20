@@ -61,7 +61,7 @@ import static org.pentaho.di.trans.step.mqtt.MQTTConstants.STORAGE_LEVEL;
 @SuppressWarnings( "unused" )
 public class MQTTConsumerDialog extends BaseStreamingDialog implements StepDialogInterface {
 
-  private static Class<?> PKG = MQTTConsumerMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+  private static final Class<?> PKG = MQTTConsumerMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
   private MQTTConsumerMeta mqttMeta;
   private TextVar wConnection;
@@ -346,7 +346,7 @@ public class MQTTConsumerDialog extends BaseStreamingDialog implements StepDialo
     mqttMeta.setUseSsl( securityLayout.useSsl() );
     mqttMeta.setSslConfig( securityLayout.sslConfig() );
 
-    optionsLayout.retrieveOptions().stream()
+    optionsLayout.retrieveOptions()
       .forEach( option -> {
         switch ( option.getKey() ) {
           case KEEP_ALIVE_INTERVAL:
@@ -373,6 +373,8 @@ public class MQTTConsumerDialog extends BaseStreamingDialog implements StepDialo
           case AUTOMATIC_RECONNECT:
             mqttMeta.setAutomaticReconnect( option.getValue() );
             break;
+          default:
+            log.logBasic( BaseMessages.getString( PKG, "MQTTDialog.Error.UnknownOption", option.getKey() ) );
         }
       } );
   }

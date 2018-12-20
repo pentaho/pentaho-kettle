@@ -40,8 +40,7 @@ import org.pentaho.di.trans.step.jms.context.JmsProvider;
 import org.pentaho.di.ui.core.PropsUI;
 import org.pentaho.di.ui.core.widget.TextVar;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.EnumMap;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static org.pentaho.di.i18n.BaseMessages.getString;
@@ -52,14 +51,14 @@ public class ConnectionForm {
 
   private final Composite parentComponent;
   private final JmsDelegate jmsDelegate;
-  private final JmsProvider.ConnectionType currentConnType;
   private final JmsDialogSecurityLayout jmsDialogSecurityLayout;
 
   private PropsUI props;
   private TransMeta transMeta;
   private ModifyListener lsMod;
 
-  private Map<JmsProvider.ConnectionType, Button> typesToButtons = new HashMap<>();
+  private EnumMap<JmsProvider.ConnectionType, Button> typesToButtons
+    = new EnumMap<>( JmsProvider.ConnectionType.class );
   private Group wConnectionGroup;
 
   private Label wlIbmUrl;
@@ -80,7 +79,6 @@ public class ConnectionForm {
     this.transMeta = transMeta;
     this.lsMod = lsMod;
     this.jmsDelegate = jmsDelegate;
-    this.currentConnType = JmsProvider.ConnectionType.valueOf( jmsDelegate.connectionType );
     this.jmsDialogSecurityLayout = jmsDialogSecurityLayout;
   }
 
@@ -150,7 +148,6 @@ public class ConnectionForm {
         @Override public void widgetSelected( final SelectionEvent selectionEvent ) {
           lsMod.modifyText( null );
           toggleVisibility( type );
-          //jmsDialogSecurityLayout.toggleVisibility( type );
         }
 
         @Override public void widgetDefaultSelected( final SelectionEvent selectionEvent ) {
@@ -231,18 +228,15 @@ public class ConnectionForm {
   }
 
   private void toggleVisibility( JmsProvider.ConnectionType type ) {
-    switch ( type ) {
-      case WEBSPHERE:
-        jmsDialogSecurityLayout.toggleVisibility( type );
-        setIbmMqVisibility( true );
-        setActiveMqVisibility( false );
+    if ( type == JmsProvider.ConnectionType.WEBSPHERE ) {
+      jmsDialogSecurityLayout.toggleVisibility( type );
+      setIbmMqVisibility( true );
+      setActiveMqVisibility( false );
+    } else if ( type == JmsProvider.ConnectionType.ACTIVEMQ ) {
+      jmsDialogSecurityLayout.toggleVisibility( type );
+      setIbmMqVisibility( false );
+      setActiveMqVisibility( true );
 
-        break;
-      case ACTIVEMQ:
-        jmsDialogSecurityLayout.toggleVisibility( type );
-        setIbmMqVisibility( false );
-        setActiveMqVisibility( true );
-        break;
     }
   }
 
