@@ -384,4 +384,44 @@ public class JobMetaTest {
     jobEntryCopy.setNr( 0 );
     return jobEntryCopy;
   }
+
+  @Test
+  public void testSetInternalEntryCurrentDirectoryWithFilename( ) {
+    JobMeta jobMetaTest = new JobMeta(  );
+    jobMetaTest.setFilename( "hasFilename" );
+    jobMetaTest.setVariable( Const.INTERNAL_VARIABLE_ENTRY_CURRENT_DIRECTORY, "Original value defined at run execution" );
+    jobMetaTest.setVariable( Const.INTERNAL_VARIABLE_JOB_FILENAME_DIRECTORY, "file:///C:/SomeFilenameDirectory" );
+    jobMetaTest.setVariable( Const.INTERNAL_VARIABLE_JOB_REPOSITORY_DIRECTORY, "/SomeRepDirectory" );
+    jobMetaTest.setInternalEntryCurrentDirectory();
+
+    assertEquals( "file:///C:/SomeFilenameDirectory", jobMetaTest.getVariable( Const.INTERNAL_VARIABLE_ENTRY_CURRENT_DIRECTORY ) );
+
+  }
+
+  @Test
+  public void testSetInternalEntryCurrentDirectoryWithRepository( ) {
+    JobMeta jobMetaTest = new JobMeta(  );
+    RepositoryDirectoryInterface path = mock( RepositoryDirectoryInterface.class );
+
+    when( path.getPath() ).thenReturn( "aPath" );
+    jobMetaTest.setRepository( mock( Repository.class ) );
+    jobMetaTest.setRepositoryDirectory( path );
+    jobMetaTest.setVariable( Const.INTERNAL_VARIABLE_ENTRY_CURRENT_DIRECTORY, "Original value defined at run execution" );
+    jobMetaTest.setVariable( Const.INTERNAL_VARIABLE_JOB_FILENAME_DIRECTORY, "file:///C:/SomeFilenameDirectory" );
+    jobMetaTest.setVariable( Const.INTERNAL_VARIABLE_JOB_REPOSITORY_DIRECTORY, "/SomeRepDirectory" );
+    jobMetaTest.setInternalEntryCurrentDirectory();
+
+    assertEquals( "/SomeRepDirectory", jobMetaTest.getVariable( Const.INTERNAL_VARIABLE_ENTRY_CURRENT_DIRECTORY ) );
+  }
+
+  @Test
+  public void testSetInternalEntryCurrentDirectoryWithoutFilenameOrRepository( ) {
+    JobMeta jobMetaTest = new JobMeta(  );
+    jobMetaTest.setVariable( Const.INTERNAL_VARIABLE_ENTRY_CURRENT_DIRECTORY, "Original value defined at run execution" );
+    jobMetaTest.setVariable( Const.INTERNAL_VARIABLE_JOB_FILENAME_DIRECTORY, "file:///C:/SomeFilenameDirectory" );
+    jobMetaTest.setVariable( Const.INTERNAL_VARIABLE_JOB_REPOSITORY_DIRECTORY, "/SomeRepDirectory" );
+    jobMetaTest.setInternalEntryCurrentDirectory();
+
+    assertEquals( "Original value defined at run execution", jobMetaTest.getVariable( Const.INTERNAL_VARIABLE_ENTRY_CURRENT_DIRECTORY )  );
+  }
 }
