@@ -1,7 +1,7 @@
 /*!
  * HITACHI VANTARA PROPRIETARY AND CONFIDENTIAL
  *
- * Copyright 2017 Hitachi Vantara. All rights reserved.
+ * Copyright 2018 Hitachi Vantara. All rights reserved.
  *
  * NOTICE: All information including source code contained herein is, and
  * remains the sole property of Hitachi Vantara and its licensors. The intellectual
@@ -161,7 +161,12 @@ define([
      */
     function _createFolder(file, current, previous, errorCallback) {
       var newName = current;
-      if (_hasDuplicate(current, file)) {
+      if (_hasInvalidChars(current)) {
+        errorCallback();
+        _doError(18);
+        newName = previous;
+      }
+      else if (_hasDuplicate(current, file)) {
         file.newName = current;
         errorCallback();
         _doError(file.type === "folder" ? 2 : 7);
@@ -193,6 +198,11 @@ define([
      * @private
      */
     function _renameFile(file, current, previous, errorCallback) {
+      if (_hasInvalidChars(current)) {
+        errorCallback();
+        _doError(19);
+        return;
+      }
       dt.rename(file.objectId.id, file.path, current, file.type, file.name).then(function(response) {
         file.name = current;
         file.objectId = response.data;
@@ -248,6 +258,15 @@ define([
         }
       }
       return false;
+    }
+
+    /**
+     * Checks if the file name is valid or not. An invalid name contains forward or backward slashes
+     * @returns {boolean} - true if the name is invalid, false otherwise
+     * @private
+     */
+    function _hasInvalidChars(name) {
+      return name.match(/[\\\/]/g) !== null;
     }
 
     /**
