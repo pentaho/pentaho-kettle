@@ -32,6 +32,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.pentaho.di.core.Const;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.ProgressMonitorListener;
 import org.pentaho.di.core.Result;
@@ -565,4 +566,48 @@ public class TransTest {
     assertNotEquals( trans1.getContainerObjectId(), trans2.getContainerObjectId() );
     assertNotEquals( trans1.getLogChannelId(), trans2.getLogChannelId() );
   }
+
+  @Test
+  public void testSetInternalEntryCurrentDirectoryWithFilename( ) {
+    Trans transTest = new Trans(  );
+    boolean hasFilename = true;
+    boolean hasRepoDir = false;
+    transTest.copyVariablesFrom( null );
+    transTest.setVariable( Const.INTERNAL_VARIABLE_ENTRY_CURRENT_DIRECTORY, "Original value defined at run execution" );
+    transTest.setVariable( Const.INTERNAL_VARIABLE_TRANSFORMATION_FILENAME_DIRECTORY, "file:///C:/SomeFilenameDirectory" );
+    transTest.setVariable( Const.INTERNAL_VARIABLE_TRANSFORMATION_REPOSITORY_DIRECTORY, "/SomeRepDirectory" );
+    transTest.setInternalEntryCurrentDirectory( hasFilename, hasRepoDir );
+
+    assertEquals( "file:///C:/SomeFilenameDirectory", transTest.getVariable( Const.INTERNAL_VARIABLE_ENTRY_CURRENT_DIRECTORY ) );
+
+  }
+
+  @Test
+  public void testSetInternalEntryCurrentDirectoryWithRepository( ) {
+    Trans transTest = new Trans(  );
+    boolean hasFilename = false;
+    boolean hasRepoDir = true;
+    transTest.copyVariablesFrom( null );
+    transTest.setVariable( Const.INTERNAL_VARIABLE_ENTRY_CURRENT_DIRECTORY, "Original value defined at run execution" );
+    transTest.setVariable( Const.INTERNAL_VARIABLE_TRANSFORMATION_FILENAME_DIRECTORY, "file:///C:/SomeFilenameDirectory" );
+    transTest.setVariable( Const.INTERNAL_VARIABLE_TRANSFORMATION_REPOSITORY_DIRECTORY, "/SomeRepDirectory" );
+    transTest.setInternalEntryCurrentDirectory( hasFilename, hasRepoDir );
+
+    assertEquals( "/SomeRepDirectory", transTest.getVariable( Const.INTERNAL_VARIABLE_ENTRY_CURRENT_DIRECTORY ) );
+  }
+
+  @Test
+  public void testSetInternalEntryCurrentDirectoryWithoutFilenameOrRepository( ) {
+    Trans transTest = new Trans(  );
+    transTest.copyVariablesFrom( null );
+    boolean hasFilename = false;
+    boolean hasRepoDir = false;
+    transTest.setVariable( Const.INTERNAL_VARIABLE_ENTRY_CURRENT_DIRECTORY, "Original value defined at run execution" );
+    transTest.setVariable( Const.INTERNAL_VARIABLE_TRANSFORMATION_FILENAME_DIRECTORY, "file:///C:/SomeFilenameDirectory" );
+    transTest.setVariable( Const.INTERNAL_VARIABLE_TRANSFORMATION_REPOSITORY_DIRECTORY, "/SomeRepDirectory" );
+    transTest.setInternalEntryCurrentDirectory( hasFilename, hasRepoDir );
+
+    assertEquals( "Original value defined at run execution", transTest.getVariable( Const.INTERNAL_VARIABLE_ENTRY_CURRENT_DIRECTORY )  );
+  }
+
 }
