@@ -42,6 +42,7 @@ import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -70,6 +71,7 @@ public class JmsStreamSourceTest {
     AtomicBoolean first = new AtomicBoolean( true );
     when( consumer.receive( 0 ) ).thenAnswer( ans -> {
       if ( first.getAndSet( false ) ) {
+        source.close();
         return message;
       } else {
         return null;
@@ -82,7 +84,7 @@ public class JmsStreamSourceTest {
   public void testReceiveMessage() {
     source.open();
 
-    verify( delegate ).getJmsContext();
+    verify( delegate, times( 2 )).getJmsContext();
     verify( delegate ).getDestination();
 
     List<Object> sentMessage = source.observable().firstElement().blockingGet( Collections.emptyList() );
