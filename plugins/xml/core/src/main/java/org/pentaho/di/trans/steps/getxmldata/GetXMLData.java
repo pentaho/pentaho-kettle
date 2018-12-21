@@ -396,7 +396,7 @@ public class GetXMLData extends BaseStep implements StepInterface {
           FileObject file = null;
           try {
             // XML source is a file.
-            file = KettleVFS.getFileObject( Fieldvalue, getTransMeta() );
+            file = KettleVFS.getFileObject( environmentSubstitute( Fieldvalue ), getTransMeta() );
 
             if ( meta.isIgnoreEmptyFile() && file.getContent().getSize() == 0 ) {
               logBasic( BaseMessages.getString( PKG, "GetXMLData.Error.FileSizeZero", "" + file.getName() ) );
