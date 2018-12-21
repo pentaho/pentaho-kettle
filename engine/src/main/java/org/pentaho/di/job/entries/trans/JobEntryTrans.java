@@ -1310,7 +1310,7 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
           } catch ( KettleException e ) {
             // try to load from repository, this trans may have been developed locally and later uploaded to the
             // repository
-            transMeta = getTransMetaFromRepository( rep, r, realFilename );
+            transMeta = rep == null ? new TransMeta( realFilename, metaStore, null, true, this, null ) : getTransMetaFromRepository( rep, r, realFilename );
           }
           break;
         case REPOSITORY_BY_NAME:
