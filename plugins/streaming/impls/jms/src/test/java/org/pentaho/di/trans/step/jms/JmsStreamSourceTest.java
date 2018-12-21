@@ -71,6 +71,7 @@ public class JmsStreamSourceTest {
     AtomicBoolean first = new AtomicBoolean( true );
     when( consumer.receive( 0 ) ).thenAnswer( ans -> {
       if ( first.getAndSet( false ) ) {
+        source.close();
         return message;
       } else {
         return null;
