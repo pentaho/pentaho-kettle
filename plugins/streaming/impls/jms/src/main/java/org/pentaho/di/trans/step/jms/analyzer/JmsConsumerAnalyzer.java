@@ -22,9 +22,13 @@
 
 package org.pentaho.di.trans.step.jms.analyzer;
 
+import org.pentaho.di.trans.ISubTransAwareMeta;
+import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStepMeta;
+import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.jms.JmsConsumerMeta;
 import org.pentaho.di.trans.step.jms.JmsDelegate;
+import org.pentaho.dictionary.DictionaryConst;
 import org.pentaho.metaverse.api.IMetaverseNode;
 import org.pentaho.metaverse.api.MetaverseAnalyzerException;
 import org.pentaho.metaverse.api.StepField;
@@ -32,12 +36,15 @@ import org.pentaho.metaverse.api.analyzer.kettle.KettleAnalyzerUtil;
 import org.pentaho.metaverse.api.analyzer.kettle.step.IClonableStepAnalyzer;
 import org.pentaho.metaverse.api.analyzer.kettle.step.StepAnalyzer;
 
+import com.tinkerpop.blueprints.Vertex;
+
+import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
-import static java.util.Collections.emptySet;
-
 public class JmsConsumerAnalyzer extends StepAnalyzer<JmsConsumerMeta> {
+
   @Override
   public Set<Class<? extends BaseStepMeta>> getSupportedSteps() {
     final Set<Class<? extends BaseStepMeta>> supportedSteps = new HashSet<>();
@@ -47,7 +54,7 @@ public class JmsConsumerAnalyzer extends StepAnalyzer<JmsConsumerMeta> {
 
   @Override
   protected Set<StepField> getUsedFields( final JmsConsumerMeta meta ) {
-    return emptySet();
+    return Collections.emptySet();
   }
 
   @Override
@@ -71,12 +78,45 @@ public class JmsConsumerAnalyzer extends StepAnalyzer<JmsConsumerMeta> {
   }
 
   @Override
-  public void postAnalyze( final JmsConsumerMeta meta ) {
+  public void postAnalyze( final JmsConsumerMeta meta )
+    throws MetaverseAnalyzerException {
 
-    // TODO: Add field linking for fields going to the subtransformation
+    final String transformationPath = parentTransMeta.environmentSubstitute( meta.getFileName() );
+    final TransMeta subTransMeta = KettleAnalyzerUtil.getSubTransMeta( (ISubTransAwareMeta) meta );
+    subTransMeta.setFilename( transformationPath );
+
+    // get the vertex corresponding to this step
+    final Vertex stepVertex = findStepVertex( parentTransMeta, parentStepMeta.getName() );
+
+    // for each output field of the sub step name, map the field to the output field of this jms consumer step with
+    // the same name
+    String subTransResultStepName = null;
+    for ( final StepMeta subTransStep : subTransMeta.getSteps() ) {
+      if ( meta.getSubStep().equals( subTransStep.getName() ) ) { // TODO: constant for RecordsFromStream
+        subTransResultStepName = subTransStep.getName();
+        break;
+      }
+    }
+    if ( subTransResultStepName != null ) {
+      final List<Vertex> subTransResultFields = findFieldVertices( subTransMeta, subTransResultStepName, null );
+      for ( final Vertex subTransResultField : subTransResultFields ) {
+        // find the corresponding output field in this jms consumer step
+        final Vertex stepOutputField = findFieldVertex( parentTransMeta, parentStepMeta.getName(),
+          subTransResultField.getProperty( DictionaryConst.PROPERTY_NAME ).toString() );
+        if ( stepOutputField != null ) {
+          getMetaverseBuilder().addLink( subTransResultField, DictionaryConst.LINK_INPUTS, stepVertex );
+          getMetaverseBuilder().addLink( subTransResultField, DictionaryConst.LINK_DERIVES, stepOutputField );
+        } else {
+          // TODO: log
+        }
+      }
+    } else {
+      // TODO: log
+    }
   }
 
   @Override protected IClonableStepAnalyzer newInstance() {
     return new JmsConsumerAnalyzer();
   }
+
 }
