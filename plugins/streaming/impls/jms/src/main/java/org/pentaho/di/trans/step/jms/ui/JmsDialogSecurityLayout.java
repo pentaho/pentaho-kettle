@@ -171,6 +171,7 @@ class JmsDialogSecurityLayout {
       jmsDelegate.amqSslProvider = tableValues.get( SSL_AMQ_PROVIDER );
       jmsDelegate.amqSslTrustAll = tableValues.get( SSL_AMQ_TRUST_ALL );
       jmsDelegate.amqSslVerifyHost = tableValues.get( SSL_AMQ_VERIFY_HOST );
+      jmsDelegate.sslCipherSuite = tableValues.get( SSL_CIPHER_SUITE );
     } else {
       if ( checkBoxTableCombo.getSelectedConnectionType().equals( JmsProvider.ConnectionType.WEBSPHERE ) ) {
         jmsDelegate.sslCipherSuite = tableValues.get( SSL_CIPHER_SUITE );
