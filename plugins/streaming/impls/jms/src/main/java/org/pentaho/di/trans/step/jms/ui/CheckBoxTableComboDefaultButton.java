@@ -30,6 +30,7 @@ import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Listener;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.jms.JmsDelegate;
 import org.pentaho.di.trans.step.jms.context.JmsProvider;
@@ -67,10 +68,19 @@ public class CheckBoxTableComboDefaultButton extends CheckBoxTableCombo {
     wUseDefaultCheckBox.setEnabled( delegate.sslEnabled );
     selectedConnectionType = JmsProvider.ConnectionType.valueOf( delegate.connectionType );
 
+
+    for ( Listener l : wCheckBox.getListeners( SWT.Selection ) ) {
+      if ( l instanceof SelectionListener ) {
+        wCheckBox.removeSelectionListener( (SelectionListener) l );
+      }
+    }
+
     wCheckBox.addSelectionListener( new SelectionListener() {
       @Override public void widgetSelected( SelectionEvent selectionEvent ) {
         boolean selection = ( (Button) selectionEvent.getSource() ).getSelection();
         wUseDefaultCheckBox.setEnabled( selection );
+        lsMod.modifyText( null );
+        resetPropertyTableVisibility();
       }
 
       @Override public void widgetDefaultSelected( SelectionEvent selectionEvent ) {
@@ -82,6 +92,7 @@ public class CheckBoxTableComboDefaultButton extends CheckBoxTableCombo {
       @Override public void widgetSelected( SelectionEvent selectionEvent ) {
         toggleVisibilityCallback.accept( selectedConnectionType );
         lsMod.modifyText( null );
+        resetPropertyTableVisibility();
       }
 
       @Override public void widgetDefaultSelected( SelectionEvent selectionEvent ) {
@@ -105,5 +116,14 @@ public class CheckBoxTableComboDefaultButton extends CheckBoxTableCombo {
 
   JmsProvider.ConnectionType getSelectedConnectionType() {
     return selectedConnectionType;
+  }
+
+  public void resetPropertyTableVisibility() {
+    propertiesTable.setEnabled( wCheckBox.getSelection()
+      && ( selectedConnectionType.equals( JmsProvider.ConnectionType.WEBSPHERE )
+      || !wUseDefaultCheckBox.getSelection() ) );
+    propertiesTable.table.setEnabled( wCheckBox.getSelection()
+      && ( selectedConnectionType.equals( JmsProvider.ConnectionType.WEBSPHERE )
+      || !wUseDefaultCheckBox.getSelection() ) );
   }
 }

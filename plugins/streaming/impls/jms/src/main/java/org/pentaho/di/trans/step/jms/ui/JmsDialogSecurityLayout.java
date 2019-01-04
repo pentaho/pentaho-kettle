@@ -203,7 +203,6 @@ class JmsDialogSecurityLayout {
     this.sslConfig.put( SSL_CIPHER_SUITE, this.jmsDelegate.sslCipherSuite );
     this.sslConfig.put( SSL_IBM_FIPS_REQUIRED, this.jmsDelegate.ibmSslFipsRequired );
 
-
     this.checkBoxTableCombo.updateDataMap( this.sslConfig );
   }
 
@@ -235,7 +234,7 @@ class JmsDialogSecurityLayout {
       ibmMqAuthComposite.setVisible( false );
       activeMqAuthComposite.setVisible( true );
       populateTableActiveMq();
-
     }
+    checkBoxTableCombo.resetPropertyTableVisibility();
   }
 }
