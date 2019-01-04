@@ -3,7 +3,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -3465,7 +3465,7 @@ public class JobGraph extends AbstractGraph implements XulEventHandler, Redrawab
 
     // If the job is not running, start the transformation...
     //
-    if ( job == null || job.isFinished() && !job.isActive() ) {
+    if ( job == null || ( job.isFinished() || job.isStopped() ) && !job.isActive() ) {
       // Auto save feature...
       //
       handleJobMetaChanges( jobMeta );
