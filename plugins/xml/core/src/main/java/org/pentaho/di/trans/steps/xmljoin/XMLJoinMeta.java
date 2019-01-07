@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,6 +22,7 @@
 
 package org.pentaho.di.trans.steps.xmljoin;
 
+import java.util.Arrays;
 import java.util.List;
 
 import org.pentaho.di.core.annotations.Step;
@@ -160,10 +161,19 @@ public class XMLJoinMeta extends BaseStepMeta implements StepMetaInterface {
       // Row should only include fields from the target and not the source. During the preview table generation
       // the fields from all previous steps (source and target) are included in the row so lets remove the
       // source fields.
+      List<String> targetFieldNames = null;
+      RowMetaInterface targetRowMeta = transMeta.getStepFields( transMeta.findStep( getTargetXMLstep() ),
+        null,
+        null );
+      if ( targetRowMeta != null ) {
+        targetFieldNames = Arrays.asList( targetRowMeta.getFieldNames() );
+      }
       for ( String fieldName : transMeta.getStepFields( transMeta.findStep( getSourceXMLstep() ),
                                                                             null,
                                                                             null ).getFieldNames() ) {
-        row.removeValueMeta( fieldName );
+        if ( targetFieldNames == null || !targetFieldNames.contains( fieldName ) ) {
+          row.removeValueMeta( fieldName );
+        }
       }
     } catch ( KettleValueException e ) {
       // Pass
