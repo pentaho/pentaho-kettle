@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -485,6 +485,7 @@ public class SelectValuesDialog extends BaseStepDialog implements StepDialogInte
     // ///////////////////////////////////////////////////////////
 
     fdTabFolder = new FormData();
+    fdTabFolder.width = 680;
     fdTabFolder.left = new FormAttachment( 0, 0 );
     fdTabFolder.top = new FormAttachment( wStepname, margin );
     fdTabFolder.right = new FormAttachment( 100, 0 );
