@@ -33,6 +33,12 @@ buildProperties:
         # Slack Reporting
         SLACK_INTEGRATION              : true
         SLACK_CHANNEL                  : 'buildteam-alerts'
+        BUILD_SLACK_CHANNEL            : 'buildteam-alerts'
+
+        # SP specific parameters
+        PREVIOUS_RELEASE_VERSION       : ""
+        SP_RELEASE_VERSION             : ""
+        DO_AUTO_PATCH                  : false
 
 jobGroups:
   # Always required
