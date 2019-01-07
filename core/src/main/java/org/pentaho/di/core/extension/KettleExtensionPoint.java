@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -63,6 +63,7 @@ public enum KettleExtensionPoint {
       "Right before Spoon configuration of transformation to be executed takes place" ),
     SpoonTransBeforeStart( "SpoonTransBeforeStart", "Right before the transformation is started" ),
     RunConfigurationSelection( "RunConfigurationSelection", "Check when run configuration is selected" ),
+    RunConfigurationIsRemote( "RunConfigurationIsRemote", "Check when run configuration is pointing to a remote server" ),
     SpoonRunConfiguration( "SpoonRunConfiguration", "Send the run configuration" ),
     JobStart( "JobStart", "A job starts" ),
     JobHeartbeat( "JobHeartbeat", "A signal sent at regular intervals to indicate that the job is still active" ),
