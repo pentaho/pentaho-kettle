@@ -30,7 +30,6 @@
     <commons-io.version>2.2</commons-io.version>
     <commons-dbcp.version>1.4</commons-dbcp.version>
     <commons-pool.version>1.5.7</commons-pool.version>
-    <jetty-util.version>8.1.15.v20140411</jetty-util.version>
     <jug-lgpl.version>2.0.0</jug-lgpl.version>
     <jsch.version>0.1.54</jsch.version>
     <jzlib.version>1.0.7</jzlib.version>
@@ -353,13 +352,6 @@
     <dependency>
       <groupId>org.eclipse.jetty</groupId>
       <artifactId>jetty-util</artifactId>
-      <version>${jetty-util.version}</version>
-      <exclusions>
-        <exclusion>
-          <groupId>*</groupId>
-          <artifactId>*</artifactId>
-        </exclusion>
-      </exclusions>
     </dependency>
     <dependency>
       <groupId>jug-lgpl</groupId>
