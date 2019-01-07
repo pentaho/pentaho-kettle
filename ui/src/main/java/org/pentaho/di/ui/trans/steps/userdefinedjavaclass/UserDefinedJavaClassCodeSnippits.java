@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,12 +22,6 @@
 
 package org.pentaho.di.ui.trans.steps.userdefinedjavaclass;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.xml.XMLHandler;
@@ -36,19 +30,30 @@ import org.pentaho.di.trans.steps.userdefinedjavaclass.UserDefinedJavaClass;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 public class UserDefinedJavaClassCodeSnippits {
   private static Class<?> PKG = UserDefinedJavaClass.class;
-  private static UserDefinedJavaClassCodeSnippits snippitsHelper = null;
+  private static final UserDefinedJavaClassCodeSnippits snippitsHelper;
 
   private final List<Snippit> snippits = new ArrayList<Snippit>();
   private final Map<String, Snippit> snippitsMap = new HashMap<String, Snippit>();
   private final LogChannel log = new LogChannel( "UserDefinedJavaClassCodeSnippits" );
 
-  public static synchronized UserDefinedJavaClassCodeSnippits getSnippitsHelper() throws KettleXMLException {
-    if ( snippitsHelper == null ) {
-      snippitsHelper = new UserDefinedJavaClassCodeSnippits();
+  static {
+    snippitsHelper = new UserDefinedJavaClassCodeSnippits();
+    try {
       snippitsHelper.addSnippits( "codeSnippits.xml" );
+    } catch ( KettleXMLException ex ) {
+      throw new IllegalStateException( "Could not initialize from codeSnippets.xml" );
     }
+  }
+
+  public static UserDefinedJavaClassCodeSnippits getSnippitsHelper() throws KettleXMLException {
     return snippitsHelper;
   }
 

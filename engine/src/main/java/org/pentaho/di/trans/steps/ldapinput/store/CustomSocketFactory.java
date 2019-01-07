@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,6 +22,14 @@
 
 package org.pentaho.di.trans.steps.ldapinput.store;
 
+import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.util.Utils;
+import org.pentaho.di.i18n.BaseMessages;
+import org.pentaho.di.trans.steps.ldapinput.LDAPInputMeta;
+
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLSocketFactory;
+import javax.net.ssl.TrustManager;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.Socket;
@@ -29,21 +37,14 @@ import java.net.UnknownHostException;
 import java.security.KeyManagementException;
 import java.security.KeyStore;
 import java.security.NoSuchAlgorithmException;
-
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLSocketFactory;
-import javax.net.ssl.TrustManager;
-
-import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.util.Utils;
-import org.pentaho.di.i18n.BaseMessages;
-import org.pentaho.di.trans.steps.ldapinput.LDAPInputMeta;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class CustomSocketFactory extends SSLSocketFactory {
 
   private static Class<?> PKG = LDAPInputMeta.class; // for i18n purposes, needed by Translator2!!
 
-  private static boolean configured;
+  // private static boolean configured;
+  private static AtomicBoolean configured = new AtomicBoolean( false );
 
   private static TrustManager[] trustManagers = null;
 
@@ -65,8 +66,8 @@ public class CustomSocketFactory extends SSLSocketFactory {
     this.factory = factory;
   }
 
-  public static synchronized CustomSocketFactory getDefault() {
-    if ( !configured ) {
+  public static CustomSocketFactory getDefault() {
+    if ( !configured.get() ) {
       throw new IllegalStateException();
     }
 
@@ -103,7 +104,7 @@ public class CustomSocketFactory extends SSLSocketFactory {
     }
 
     trustManagers = new KettleTrustManager[] { new KettleTrustManager( keyStore, path, password ) };
-    configured = true;
+    configured.set( true );
   }
 
   /**
@@ -111,7 +112,7 @@ public class CustomSocketFactory extends SSLSocketFactory {
    */
   public static synchronized void configure() {
     trustManagers = ALWAYS_TRUST_MANAGER;
-    configured = true;
+    configured.set( true );
   }
 
   @Override

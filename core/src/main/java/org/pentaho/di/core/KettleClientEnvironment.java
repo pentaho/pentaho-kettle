@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,12 +22,6 @@
 
 package org.pentaho.di.core;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.List;
-
 import org.pentaho.di.core.encryption.Encr;
 import org.pentaho.di.core.encryption.TwoWayPasswordEncoderPluginType;
 import org.pentaho.di.core.exception.KettleException;
@@ -45,6 +39,12 @@ import org.pentaho.di.core.plugins.PluginTypeInterface;
 import org.pentaho.di.core.row.value.ValueMetaPluginType;
 import org.pentaho.di.core.util.EnvUtil;
 import org.pentaho.di.i18n.BaseMessages;
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * This singleton is responsible for initializing the Kettle client environment and remembering if it is initialized.
@@ -224,6 +224,8 @@ public class KettleClientEnvironment {
     return KettleClientEnvironment.instance;
   }
 
+  // Note - this is only called from test cases and from the KettleEnvironment.reset()
+  // which is also only called from test cases.
   public static void reset() {
     if ( KettleLogStore.isInitialized() ) {
       KettleLogStore.getInstance().reset();

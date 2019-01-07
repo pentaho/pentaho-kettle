@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -59,6 +59,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.concurrent.Callable;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.stream.Collectors;
 
@@ -74,8 +75,12 @@ public class PluginRegistry {
 
   private static final PluginRegistry pluginRegistry = new PluginRegistry();
 
-  private static final List<PluginTypeInterface> pluginTypes = new ArrayList<>();
-  private static final List<PluginRegistryExtension> extensions = new ArrayList<>();
+//  private static final List<PluginTypeInterface> pluginTypes = new ArrayList<>();
+//  private static final List<PluginRegistryExtension> extensions = new ArrayList<>();
+  private static final Set<PluginTypeInterface> pluginTypes = Collections.newSetFromMap( new ConcurrentHashMap<PluginTypeInterface, Boolean>() );
+  private static final Set<PluginRegistryExtension> extensions = Collections.newSetFromMap( new ConcurrentHashMap<PluginRegistryExtension, Boolean>() );
+  private static final ReentrantReadWriteLock staticLock = new ReentrantReadWriteLock();
+
   private static final String SUPPLEMENTALS_SUFFIX = "-supplementals";
 
   public static final LogChannelInterface log = new LogChannel( "PluginRegistry", true );
@@ -510,7 +515,7 @@ public class PluginRegistry {
    *
    * @param type
    */
-  public static synchronized void addPluginType( PluginTypeInterface type ) {
+  public static void addPluginType( PluginTypeInterface type ) {
     pluginTypes.add( type );
   }
 
@@ -520,10 +525,11 @@ public class PluginRegistry {
    * @return the list of added plugin types
    */
   public static List<PluginTypeInterface> getAddedPluginTypes() {
-    return Collections.unmodifiableList( pluginTypes );
+    ArrayList<PluginTypeInterface> temp = new ArrayList<>( pluginTypes );
+    return Collections.unmodifiableList( temp );
   }
 
-  public static synchronized void init() throws KettlePluginException {
+  public static void init() throws KettlePluginException {
     init( false );
   }
 
@@ -532,7 +538,7 @@ public class PluginRegistry {
    *
    * @throws KettlePluginException
    */
-  public static synchronized void init( boolean keepCache ) throws KettlePluginException {
+  public static void init( boolean keepCache ) throws KettlePluginException {
     final PluginRegistry registry = getInstance();
 
     log.snap( Metrics.METRIC_PLUGIN_REGISTRY_REGISTER_EXTENSIONS_START );
@@ -1038,6 +1044,11 @@ public class PluginRegistry {
     return result;
   }
 
+  // Note - This method is only called by KettleClientEnvironment.reset() which is
+  // only called by test cases.
+  // Otherwise, a JIRA case would be warranted as a non-static method is clearing
+  // the contents of two static variables ( pluginTypes and extensions ). This is
+  // problematic under any other circumstance.
   public void reset() {
     lock.writeLock().lock();
     try {

@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,13 +22,13 @@
 
 package org.pentaho.di.core.plugins;
 
-import java.lang.annotation.Annotation;
-import java.util.Map;
-
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.annotations.KettleLifecyclePlugin;
 import org.pentaho.di.core.exception.KettlePluginException;
 import org.pentaho.di.core.lifecycle.KettleLifecycleListener;
+
+import java.lang.annotation.Annotation;
+import java.util.Map;
 
 /**
  * Defines a Kettle Environment lifecycle plugin type. These plugins are invoked at Kettle Environment initialization
@@ -38,7 +38,7 @@ import org.pentaho.di.core.lifecycle.KettleLifecycleListener;
 @PluginAnnotationType( KettleLifecyclePlugin.class )
 public class KettleLifecyclePluginType extends BasePluginType implements PluginTypeInterface {
 
-  private static KettleLifecyclePluginType pluginType;
+  private static final KettleLifecyclePluginType pluginType = new KettleLifecyclePluginType();
 
   private KettleLifecyclePluginType() {
     super( KettleLifecyclePlugin.class, "KETTLE LIFECYCLE LISTENERS", "Kettle Lifecycle Listener Plugin Type" );
@@ -47,10 +47,7 @@ public class KettleLifecyclePluginType extends BasePluginType implements PluginT
     populateFolders( null );
   }
 
-  public static synchronized KettleLifecyclePluginType getInstance() {
-    if ( pluginType == null ) {
-      pluginType = new KettleLifecyclePluginType();
-    }
+  public static KettleLifecyclePluginType getInstance() {
     return pluginType;
   }
 

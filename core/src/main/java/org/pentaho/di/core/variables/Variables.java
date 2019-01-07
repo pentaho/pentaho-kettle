@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -237,7 +237,7 @@ public class Variables implements VariableSpace {
    *
    * @return a default variable space.
    */
-  public static synchronized VariableSpace getADefaultVariableSpace() {
+  public static VariableSpace getADefaultVariableSpace() {
     VariableSpace space = new Variables();
 
     space.initializeVariablesFrom( null );
