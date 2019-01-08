@@ -32,7 +32,7 @@
 
     <dependency org="pentaho"             name="metastore"           rev="${dependency.pentaho-metastore.revision}"   changing="true"/>
     
-    <dependency org="org.apache.commons"  name="commons-compress"    rev="1.4.1"              transitive="false"/>
+    <dependency org="org.apache.commons"  name="commons-compress"    rev="1.18"             transitive="false"/>
     <dependency org="org.dom4j"           name="dom4j"               rev="2.1.1"            transitive="false"/>
     <dependency org="org.eclipse.jetty"   name="jetty-util" rev="8.1.15.v20140411"          transitive="false"/>
     <dependency org="jug-lgpl"            name="jug-lgpl"            rev="2.0.0"            transitive="false"/>
