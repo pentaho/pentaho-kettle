@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -214,11 +214,14 @@ public class JmsProducerDialog extends BaseStepDialog implements StepDialogInter
     wSetupComp.setLayout( setupLayout );
 
     jmsDialogSecurityLayout = new JmsDialogSecurityLayout(
-      props, wTabFolder, lsMod, transMeta, jmsDelegate.sslEnabled, jmsDelegate );
+      props, wTabFolder, lsMod, transMeta, jmsDelegate.sslEnabled, jmsDelegate, shell );
     jmsDialogSecurityLayout.buildSecurityTab();
 
     connectionForm = new ConnectionForm( wSetupComp, props, transMeta, lsMod, jmsDelegate, jmsDialogSecurityLayout );
     Group group = connectionForm.layoutForm();
+
+    jmsDialogSecurityLayout.setConnectionForm( connectionForm );
+
     destinationForm = new DestinationForm(
       wSetupComp, group, props, transMeta, lsMod, jmsDelegate.destinationType, jmsDelegate.destinationName );
     Composite destinationFormComposite = destinationForm.layoutForm();
