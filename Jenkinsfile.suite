@@ -1,239 +1,107 @@
 // This is the master top-level pipeline that triggers both the build pipeline and the downstream triggered jobs
+library(identifier: "jenkins-shared-libraries@20190109-0", changelog: false)
 
-String jobParentFolder = params.JENKINS_FOLDER_NAME ?: "8.3"
+String buildJobName =  'suite-release'
+List suiteParameters
 
-String releaseVersion = params.RELEASE_VERSION ?: "8.3.0.0"
-String suiteReleaseVersion = params.SUITE_RELEASE_VERSION ?: "8.3-QAT"
-String pipelineBranch = params.PIPELINE_BRANCH ?: releaseVersion
-String buildResourcesBranch = params.BUILD_RESOURCES_BRANCH ?: releaseVersion
-String servicePackBranch = params.SERVICEPACK_BRANCH ?: "8.3"
-String buildHostingRoot = params.BUILD_HOSTING_ROOT ?: "/build2/artifacts/hosted"
-String versionMergerVersion = params.VERSION_MERGER_VERSION ?: "1.0.7"
-String mavenPublicReleaseRepoURL = params.MAVEN_PUBLIC_RELEASE_REPO_URL ?: "https://nexus.pentaho.org/content/repositories/public-8.3-qat"
-String mavenPrivateReleaseRepoURL = params.MAVEN_PRIVATE_RELEASE_REPO_URL ?: "https://nexus.pentaho.org/content/repositories/private-8.3-qat"
-String mavenPublicSnapshotRepoURL = params.MAVEN_PUBLIC_SNAPSHOT_REPO_URL ?: ""
-String mavenPrivateSnapshotRepoURL = params.MAVEN_PRIVATE_SNAPSHOT_REPO_URL ?: ""
-String mavenResolveRepoURL = params.MAVEN_RESOLVE_REPO_URL ?: "https://nexus.pentaho.org/content/groups/omni"
-String buildSlackChannel = params.BUILD_SLACK_CHANNEL ?: "buildteam-alerts"
-// SP specific parameters
-String previousReleaseVersion = params.PREVIOUS_RELEASE_VERSION ?: "8.2.0.0-342"
-String spReleaseVersion = params.SP_RELEASE_VERSION ?: "201812"
-Boolean doAutoPatch = params.DO_AUTO_PATCH ?: false
-
-
-String buildJobName = "suite-release"
-String releaseBuildNumber = releaseBuildNumberForJobName(buildJobName)
-List passOnParameters = [string(name:"RELEASE_BUILD_NUMBER",            value:releaseBuildNumber),
-                         string(name:"RELEASE_BUILD_ID",                value:env.BUILD_TIMESTAMP),
-                         string(name:"RELEASE_VERSION",                 value:releaseVersion),
-                         string(name:"PIPELINE_BRANCH",                 value:pipelineBranch),
-                         string(name:"BUILD_RESOURCES_BRANCH",          value:buildResourcesBranch),
-                         string(name:"SERVICEPACK_BRANCH",              value:servicePackBranch),
-                         string(name:"SUITE_RELEASE_VERSION",           value:suiteReleaseVersion),
-                         string(name:"JENKINS_FOLDER_NAME",             value:jobParentFolder),
-                         string(name:"BUILD_ID_TAIL",                   value:"-${releaseBuildNumber}"),
-                         string(name:"BUILD_HOSTING_ROOT",              value:buildHostingRoot),
-                         string(name:"VERSION_MERGER_VERSION",          value:versionMergerVersion),
-                         string(name:"MAVEN_PUBLIC_RELEASE_REPO_URL",   value:mavenPublicReleaseRepoURL),
-                         string(name:"MAVEN_PUBLIC_SNAPSHOT_REPO_URL",  value:mavenPublicSnapshotRepoURL),
-                         string(name:"MAVEN_PRIVATE_RELEASE_REPO_URL",  value:mavenPrivateReleaseRepoURL),
-                         string(name:"MAVEN_PRIVATE_SNAPSHOT_REPO_URL", value:mavenPrivateSnapshotRepoURL),
-                         string(name:"MAVEN_RESOLVE_REPO_URL",          value:mavenResolveRepoURL),
-                         string(name:"PREVIOUS_RELEASE_VERSION",        value:previousReleaseVersion),
-                         string(name:"SP_RELEASE_VERSION",              value:spReleaseVersion),
-                         booleanParam(name:"DO_AUTO_PATCH",             value:doAutoPatch)]
-
-pipeline {
-
-  agent {
-    label 'non-master'
-  }
-
-  parameters {
-
-    booleanParam(
-        name: 'NOOP',
-        defaultValue: false,
-        description: 'No op build (test the build config)'
-    )
-  }
-
-  options {
-    timestamps()
+node('non-master') {
+  properties([
+    buildDiscarder(logRotator(artifactDaysToKeepStr: '', 
+                    artifactNumToKeepStr: '3', 
+                    daysToKeepStr: '', 
+                    numToKeepStr: '45')), 
     disableConcurrentBuilds()
-    buildDiscarder(logRotator(numToKeepStr: '45', artifactNumToKeepStr: '3'))
-  }
+  ])
 
-  stages {
-    stage('Configure') {
-      steps {
-        script {
-          if (params.OVERRIDE_PARAMS) {
-            passOnParameters << string(name:"OVERRIDE_PARAMS",value:params.OVERRIDE_PARAMS)
-          }
-          echo "Passed on parameters: ${passOnParameters}"
-        }
+  timestamps {
+    catchError {
+      stage('Checkout') {
+        checkout scm
       }
-    }
 
-    stage('Build') {
-      when {
-        expression {
-          !params.NOOP
-        }
+      stage('Configure') {
+        suiteParameters = suite.parameters(buildJobName)
       }
-      steps {
-        triggerJob(buildJobName, passOnParameters)
-      }
-    }
 
-    stage('Deployment') {
-      when {
-        expression {
-          !params.NOOP
+      if (!params.NOOP) {
+        stage('Build') {
+          job.trigger(buildJobName, suiteParameters)
         }
-      }
-      steps {
-        triggerJob("deployment-sculptor", passOnParameters)
-      }
-    }
 
-    stage('Validations / Triggers') {
-      when {
-        expression {
-          !params.NOOP
+        stage('Deployment') {
+          job.trigger('deployment-sculptor', suiteParameters)
         }
-      }
-      steps {
-        parallel(
-          'github-commits': {
-            triggerJob("engops/github-commits", passOnParameters, false)
-          },
-          'remote-ip-job-trigger': {
-            triggerJob("engops/remote-ip-job-trigger", passOnParameters, false)
-          },
-          'regression-smoketest-job-trigger': {
-            triggerJob("engops/regression-smoketest-job-trigger", passOnParameters, false)
-          },
-          'snapshot-checker': {
-            triggerJob("snapshot-checker", passOnParameters, false)
-          },
-          'obfuscation-verifier': {
-            triggerJob("obfuscation-verifier", passOnParameters, false)
-          }
-        )
-      }
-    }
 
-    stage('Service Pack') {
-      when {
-        expression {
-          params.BUILD_SERVICEPACK
+        stage('Validations / Triggers') {
+          parallel(
+            'github-commits': {
+              job.trigger('engops/github-commits', suiteParameters, false)
+            },
+            'remote-ip-job-trigger': {
+              job.trigger('engops/remote-ip-job-trigger', suiteParameters, false)
+            },
+            'regression-smoketest-job-trigger': {
+              job.trigger('engops/regression-smoketest-job-trigger', suiteParameters, false)
+            },
+            'snapshot-checker': {
+              job.trigger('snapshot-checker', suiteParameters, false)
+            },
+            'obfuscation-verifier': {
+              job.trigger('obfuscation-verifier', suiteParameters, false)
+            }
+          )
         }
       }
-      stages {
-        stage("Aggregation Designer") {
-          steps {
-             triggerJob("service-pack-installers-aggregation-designer", passOnParameters)
+
+      if (params.BUILD_SERVICEPACK  && !params.NOOP) {
+        stage('Service Pack') {
+          stage('Aggregation Designer') {
+            job.trigger('service-pack-installers-aggregation-designer', suiteParameters)
           }
-        }
-        stage("Pentaho Server") {
-           steps {
-             triggerJob("service-pack-installers-pentaho-server", passOnParameters)
+          stage('Pentaho Server') {
+            job.trigger('service-pack-installers-pentaho-server', suiteParameters)
           }
-        }
-        stage("DI Client") {
-          steps {
-             triggerJob("service-pack-installers-di-client", passOnParameters)
+          stage('DI Client') {
+            job.trigger('service-pack-installers-di-client', suiteParameters)
           }
-        }
-        stage("Metadata Editor") {
-          steps {
-             triggerJob("service-pack-installers-metadata-editor", passOnParameters)
+          stage('Metadata Editor') {
+            job.trigger('service-pack-installers-metadata-editor', suiteParameters)
           }
-        }
-        stage("Report Designer") {
-          steps {
-             triggerJob("service-pack-installers-report-designer", passOnParameters)
+          stage('Report Designer') {
+            job.trigger('service-pack-installers-report-designer', suiteParameters)
           }
-        }
-        stage("Schema Workbench") {
-          steps {
-             triggerJob("service-pack-installers-schema-workbench", passOnParameters)
+          stage('Schema Workbench') {
+            job.trigger('service-pack-installers-schema-workbench', suiteParameters)
           }
-        }
-        stage("Big Data Plugin") {
-          steps {
-             triggerJob("service-pack-manual-big-data-plugin", passOnParameters)
+          stage('Big Data Plugin') {
+            job.trigger('service-pack-installers-big-data-plugin', suiteParameters)
           }
-        }
-        stage("Platform Installer Bundler") {
-          steps {
-             triggerJob("service-pack-platform-installer-bundler", passOnParameters)
+          stage('Platform Installer Bundler') {
+            job.trigger('service-pack-platform-installer-bundler', suiteParameters)
+          }
+ 
+          stage('Deployment (SP)') {
+            job.trigger('deployment-sculptor-sp', suiteParameters)
           }
         }
       }
     }
-    stage('Deployment (SP)') {
-      when {
-        expression {
-          params.BUILD_SERVICEPACK
-        }
-      }
-      steps {
-        triggerJob("deployment-sculptor-sp", passOnParameters)
-      }
-    }
-  }
-
-  post {
-     success {
-        slackSend (color: "good", message: "${env.JOB_NAME} - #${env.BUILD_NUMBER} (<${env.BUILD_URL}|Open>)", channel:buildSlackChannel)
-     }
-
-     unstable {
-        slackSend (color: "warning", message: "${env.JOB_NAME} - #${env.BUILD_NUMBER} (<${env.BUILD_URL}|Open>)", channel:buildSlackChannel)
-     }
-
-     failure {
-        slackSend (color: "danger", message: "${env.JOB_NAME} - #${env.BUILD_NUMBER} (<${env.BUILD_URL}|Open>)", channel:buildSlackChannel)
-     }
+    
+    notifyBuildResult(currentBuild.result)
   }
 }
 
-void triggerJob(job, parameters, waitUntilDone = true) {
-
-  script {
-    def res = build(
-      job: job,
-      wait: waitUntilDone,
-      propagate: false,
-      parameters: parameters
-    )
-    if (res) {
-      currentBuild.result = res.result
-      if (res.result == 'FAILURE')
-        throw new Exception("Job ${job} failed")
+def notifyBuildResult(buildStatus) {
+    def color
+    if (buildStatus == "SUCCESS") {
+      color = 'good'
     }
-  }
-}
-
-void releaseBuildNumberForJobName(jobName) {
-  def job = Jenkins.instance.getItemByFullName(jobName)
-  if (!job) {
-    // getItemByFullName doesn't work with relative job paths, and getItem returns nothing
-    def thisJobName = env.JOB_NAME
-    if (thisJobName.contains("/")) {
-      int index = thisJobName.lastIndexOf("/")
-      def jenkinsFolderName = thisJobName.substring(0, index)
-      def fullJobName = "${jenkinsFolderName}/${jobName}"
-      job = Jenkins.instance.getItemByFullName(fullJobName)
+    else if (buildStatus == "UNSTABLE") {
+      color = 'warning'
     }
-  }
-
-  if (!job) {
-    throw new Exception("Unknown job: ${jobName}")
-  }
-
-  return params.RELEASE_BUILD_NUMBER ?: job.nextBuildNumber
+    else {
+      color = 'danger'
+    }
+    slackChannel = params.BUILD_SLACK_CHANNEL ?: ''
+    slackSend (color: color, message: "${env.JOB_NAME} - #${env.BUILD_NUMBER} (<${env.BUILD_URL}|Open>)", channel:slackChannel)
 }
