@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -77,7 +77,8 @@ public class JobEntryJobRunner implements Runnable {
       job.setResult( result );
       try {
         ExtensionPointHandler.callExtensionPoint( log, KettleExtensionPoint.JobFinish.id, getJob() );
-
+        job.getJobMeta().disposeEmbeddedMetastoreProvider();
+        log.logDebug( BaseMessages.getString( PKG, "Job.Log.DisposeEmbeddedMetastore" ) );
         job.fireJobFinishListeners();
 
         //catch more general exception to prevent thread hanging

@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -247,6 +247,8 @@ public class JobExecutor extends BaseStep implements StepInterface {
     } finally {
       try {
         ExtensionPointHandler.callExtensionPoint( log, KettleExtensionPoint.JobFinish.id, data.executorJob );
+        getExecutorJob().getJobMeta().disposeEmbeddedMetastoreProvider();
+        log.logDebug( BaseMessages.getString( PKG, "JobExecutor.Log.DisposeEmbeddedMetastore" ) );
         data.executorJob.fireJobFinishListeners();
       } catch ( KettleException e ) {
         result.setNrErrors( 1 );
