@@ -3,7 +3,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -1571,7 +1571,7 @@ public class JobGraph extends AbstractGraph implements XulEventHandler, Redrawab
 
   public boolean setFocus() {
     xulDomContainer.addEventHandler( this );
-    return canvas.setFocus();
+    return super.setFocus();
   }
 
   /**

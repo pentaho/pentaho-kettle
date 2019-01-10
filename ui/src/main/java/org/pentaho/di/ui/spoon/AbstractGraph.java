@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -169,6 +169,10 @@ public abstract class AbstractGraph extends Composite {
     Point screen = new Point( x + offset.x, y + offset.y );
 
     return screen;
+  }
+
+  public boolean setFocus() {
+    return ( canvas != null && !canvas.isDisposed() ) ? canvas.setFocus() : false;
   }
 
   public boolean forceFocus() {
