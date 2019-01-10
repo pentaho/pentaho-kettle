@@ -3,7 +3,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -5743,4 +5743,10 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 
     return Const.HEARTBEAT_PERIODIC_INTERVAL_IN_SECS;
   }
+
+  public boolean hasFinalStatusForCacheSaving( ) {
+    String status = getStatus();
+    return status.equals( STRING_FINISHED ) || status.equals( STRING_FINISHED_WITH_ERRORS ) || status.equals( STRING_STOPPED );
+  }
+
 }

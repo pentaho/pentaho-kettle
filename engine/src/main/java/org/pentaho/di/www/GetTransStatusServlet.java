@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -311,7 +311,7 @@ public class GetTransStatusServlet extends BaseHttpServlet implements CartePlugi
             out.write( XML_HEADER );
             out.write( data );
             out.flush();
-            if ( finishedOrStopped && logId != null ) {
+            if ( trans.hasFinalStatusForCacheSaving( ) && logId != null && !dontUseCache ) {
               cache.put( logId, xml, startLineNr );
             }
           }
