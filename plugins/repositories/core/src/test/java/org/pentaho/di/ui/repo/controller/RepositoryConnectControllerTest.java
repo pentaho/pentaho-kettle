@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,6 +22,7 @@
 
 package org.pentaho.di.ui.repo.controller;
 
+import org.eclipse.swt.widgets.Shell;
 import org.json.simple.JSONObject;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -43,7 +44,6 @@ import org.pentaho.di.repository.RepositoryCapabilities;
 import org.pentaho.di.repository.RepositoryMeta;
 import org.pentaho.di.repository.filerep.KettleFileRepositoryMeta;
 import org.pentaho.di.ui.core.PropsUI;
-import org.pentaho.di.ui.repo.controller.RepositoryConnectController;
 import org.pentaho.di.ui.spoon.Spoon;
 
 import java.util.ArrayList;
@@ -58,7 +58,11 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 
 /**
@@ -130,6 +134,16 @@ public class RepositoryConnectControllerTest {
   public void testGetPlugins() throws Exception {
     String plugins = controller.getPlugins();
     assertEquals( "[{\"name\":\"PLUGIN NAME\",\"description\":\"PLUGIN DESCRIPTION\",\"id\":\"ID\"}]", plugins );
+  }
+
+  @Test
+  public void testGetSetParentShell() {
+    assertNull( controller.getParentShell() );
+
+    Shell mockShell = mock( Shell.class );
+    controller.setParentShell( mockShell );
+    assertNotNull( controller.getParentShell() );
+    assertEquals( mockShell, controller.getParentShell() );
   }
 
   @Test

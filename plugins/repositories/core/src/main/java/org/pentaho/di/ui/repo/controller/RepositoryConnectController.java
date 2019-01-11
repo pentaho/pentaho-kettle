@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -95,6 +95,7 @@ public class RepositoryConnectController implements IConnectedRepositoryInstance
   private Supplier<Spoon> spoonSupplier;
   private List<RepositoryContollerListener> listeners = new ArrayList<>();
   private boolean relogin = false;
+  private Shell parentShell;
 
   public RepositoryConnectController( PluginRegistry pluginRegistry, Supplier<Spoon> spoonSupplier,
                                       RepositoriesMeta repositoriesMeta ) {
@@ -112,13 +113,19 @@ public class RepositoryConnectController implements IConnectedRepositoryInstance
     this( PluginRegistry.getInstance(), Spoon::getInstance, new RepositoriesMeta() );
   }
 
+  public void setParentShell( Shell shell ) {
+    this.parentShell = shell;
+  }
+
+  public Shell getParentShell( ) {
+    return this.parentShell;
+  }
+
   public boolean help() {
-    spoonSupplier.get().getShell().getDisplay().asyncExec( () -> {
-      Shell[] shells = spoonSupplier.get().getShell().getShells();
-      HelpUtils
-        .openHelpDialog( shells[ shells.length - 1 ], BaseMessages.getString( PKG, "RepositoryDialog.Dialog.Tile" ),
-          HELP_URL, BaseMessages.getString( PKG, "RepositoryDialog.Dialog.Header" ) );
-    } );
+    spoonSupplier.get().getShell().getDisplay().asyncExec( () ->
+      HelpUtils.openHelpDialog( this.parentShell,
+        BaseMessages.getString( PKG, "RepositoryDialog.Dialog.Tile" ),
+        HELP_URL, BaseMessages.getString( PKG, "RepositoryDialog.Dialog.Header" ) ) );
     return true;
   }
 
