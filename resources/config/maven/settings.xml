@@ -15,43 +15,43 @@
   <servers>
     <server>
       <id>pentaho.public.release.repo</id>
-      <username>buildguy</username>
-      <password>{xolC8pOE9HEHaUOFXGQhIlS5RcgQTS5fPYFtnZYiBvs=}</password>
+      <username>${env.NEXUS_DEPLOY_USER}</username>
+      <password>${env.NEXUS_DEPLOY_PASSWORD}</password>
     </server>
     <server>
       <id>pentaho.public.snapshot.repo</id>
-      <username>buildguy</username>
-      <password>{xolC8pOE9HEHaUOFXGQhIlS5RcgQTS5fPYFtnZYiBvs=}</password>
+      <username>${env.NEXUS_DEPLOY_USER}</username>
+      <password>${env.NEXUS_DEPLOY_PASSWORD}</password>
     </server>
     <server>
       <id>pentaho.private.release.repo</id>
-      <username>buildguy</username>
-      <password>{xolC8pOE9HEHaUOFXGQhIlS5RcgQTS5fPYFtnZYiBvs=}</password>
+      <username>${env.NEXUS_DEPLOY_USER}</username>
+      <password>${env.NEXUS_DEPLOY_PASSWORD}</password>
     </server>
     <server>
       <id>pentaho.private.snapshot.repo</id>
-      <username>buildguy</username>
-      <password>{xolC8pOE9HEHaUOFXGQhIlS5RcgQTS5fPYFtnZYiBvs=}</password>
+      <username>${env.NEXUS_DEPLOY_USER}</username>
+      <password>${env.NEXUS_DEPLOY_PASSWORD}</password>
     </server>
     <server>
       <id>nexus.pentaho.org:8001</id>
-      <username>buildguy</username>
-      <password>{xolC8pOE9HEHaUOFXGQhIlS5RcgQTS5fPYFtnZYiBvs=}</password>
+      <username>${env.NEXUS_DEPLOY_USER}</username>
+      <password>${env.NEXUS_DEPLOY_PASSWORD}</password>
     </server>
     <server>
       <id>nexus.pentaho.org:8002</id>
-      <username>buildguy</username>
-      <password>{xolC8pOE9HEHaUOFXGQhIlS5RcgQTS5fPYFtnZYiBvs=}</password>
+      <username>${env.NEXUS_DEPLOY_USER}</username>
+      <password>${env.NEXUS_DEPLOY_PASSWORD}</password>
     </server>
     <server>
       <id>nexus3.pentaho.com:8001</id>
-      <username>buildguy</username>
-      <password>{xolC8pOE9HEHaUOFXGQhIlS5RcgQTS5fPYFtnZYiBvs=}</password>
+      <username>${env.NEXUS_DEPLOY_USER}</username>
+      <password>${env.NEXUS_DEPLOY_PASSWORD}</password>
     </server>
     <server>
       <id>nexus3.pentaho.com:8002</id>
-      <username>buildguy</username>
-      <password>{xolC8pOE9HEHaUOFXGQhIlS5RcgQTS5fPYFtnZYiBvs=}</password>
+      <username>${env.NEXUS_DEPLOY_USER}</username>
+      <password>${env.NEXUS_DEPLOY_PASSWORD}</password>
     </server>
   </servers>
 
