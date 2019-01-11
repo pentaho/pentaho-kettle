@@ -20,16 +20,17 @@ buildProperties:
         RELEASE_VERSION                : 8.3.0.0
         SUITE_RELEASE_VERSION          : 8.3-QAT
         RELEASE_MODE                   : true
-        SUITE_BUILD_RESOURCES_BRANCH   : 8.3.0.0
-        JENKINS_FOLDER_NAME            : "8.3"
+        DEFAULT_BRANCH                 : master
+        SUITE_BUILD_RESOURCES_BRANCH   : ${RELEASE_VERSION}
         SERVICEPACK_BRANCH             : ${DEFAULT_BRANCH}
+        JENKINS_FOLDER_NAME            : "8.3"
 
         # We need to override this until this pipeline is the nightly
         BUILD_HOSTING_ROOT             : /build2/artifacts/hosted
 
         # Tagging
         CREATE_TAG                     : true
-        TAG_NAME                       : 8.3.0.0-RC
+        TAG_NAME                       : ${RELEASE_VERSION}-RC
 
         # Slack Reporting
         SLACK_INTEGRATION              : true
