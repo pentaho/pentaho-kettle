@@ -22,6 +22,7 @@ buildProperties:
         RELEASE_MODE                   : true
         SUITE_BUILD_RESOURCES_BRANCH   : 8.3.0.0
         JENKINS_FOLDER_NAME            : "8.3"
+        SERVICEPACK_BRANCH             : ${DEFAULT_BRANCH}
 
         # We need to override this until this pipeline is the nightly
         BUILD_HOSTING_ROOT             : /build2/artifacts/hosted
