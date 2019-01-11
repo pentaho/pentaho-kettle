@@ -1,5 +1,5 @@
 /*!
- * Copyright 2010 - 2017 Hitachi Vantara.  All rights reserved.
+ * Copyright 2010 - 2019 Hitachi Vantara.  All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,6 @@
  */
 package org.pentaho.di.repository.pur;
 
-import java.net.URI;
 import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
@@ -25,12 +24,12 @@ import java.util.concurrent.Future;
 import javax.xml.ws.WebServiceException;
 import javax.ws.rs.core.MediaType;
 
-import com.sun.jersey.api.client.Client;
-import com.sun.jersey.api.client.ClientResponse;
-import com.sun.jersey.api.client.WebResource;
-import com.sun.jersey.api.client.config.ClientConfig;
-import com.sun.jersey.api.client.config.DefaultClientConfig;
-import com.sun.jersey.api.client.filter.HTTPBasicAuthFilter;
+import org.apache.commons.httpclient.HttpStatus;
+import org.apache.commons.httpclient.auth.AuthScope;
+import org.apache.commons.httpclient.Credentials;
+import org.apache.commons.httpclient.HttpClient;
+import org.apache.commons.httpclient.UsernamePasswordCredentials;
+import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.lang.BooleanUtils;
 import org.pentaho.di.core.encryption.Encr;
 import org.pentaho.di.core.exception.KettleException;
@@ -73,7 +72,7 @@ public class PurRepositoryConnector implements IRepositoryConnector {
 
   public PurRepositoryConnector( PurRepository purRepository, PurRepositoryMeta repositoryMeta, RootRef rootRef ) {
     log = new LogChannel( this.getClass().getSimpleName() );
-    if ( purRepository != null & purRepository.getLog() != null ) {
+    if ( purRepository != null && purRepository.getLog() != null ) {
       log.setLogLevel( purRepository.getLog().getLogLevel() );
     }
     this.purRepository = purRepository;
@@ -235,30 +234,32 @@ public class PurRepositoryConnector implements IRepositoryConnector {
 
         @Override
         public String call() throws Exception {
+          if ( log.isBasic() ) {
+            log.logBasic( BaseMessages.getString( PKG, "PurRepositoryConnector.SessionService.Start" ) );
+          }
+          HttpClient client = new HttpClient();
+          Credentials credentials = new UsernamePasswordCredentials( username, password );
+          client.getState().setCredentials( AuthScope.ANY, credentials );
+          GetMethod resource = new GetMethod( repositoryMeta.getRepositoryLocation().getUrl() + "/api/session/userName" );
+          resource.addRequestHeader( "Accept", MediaType.TEXT_PLAIN );
           try {
-            if ( log.isBasic() ) {
-              log.logBasic( BaseMessages.getString( PKG, "PurRepositoryConnector.SessionService.Start" ) );
+            int status = client.executeMethod( resource );
+            if ( status != HttpStatus.SC_OK ) {
+              log.logDebug( "Resource failed: " + resource.getStatusLine() );
             }
-            ClientConfig clientConfig = new DefaultClientConfig();
-            Client client = Client.create( clientConfig );
-            client.addFilter( new HTTPBasicAuthFilter( username, password ) );
-            WebResource resource =
-                    client.resource( new URI( repositoryMeta.getRepositoryLocation().getUrl() + "/api/session/userName" ) );
-            WebResource.Builder resourceBuilder = resource.getRequestBuilder();
-            resourceBuilder = resourceBuilder.accept( MediaType.TEXT_PLAIN );
-            com.sun.jersey.api.client.ClientResponse response;
-            response = resourceBuilder.method( "GET", ClientResponse.class );
+            byte[] response = resource.getResponseBody();
             if ( log.isBasic() ) {
               log.logBasic( BaseMessages.getString( PKG, "PurRepositoryConnector.SessionService.Sync" ) ); //$NON-NLS-1$
             }
-            return response.getEntity( String.class );
+            return new String( response );
           } catch ( Exception e ) {
             if ( log.isError() ) {
               log.logError( "Unable get userName", e );
             }
             return null;
+          } finally {
+            resource.releaseConnection();
           }
-
         }
       } );
 
