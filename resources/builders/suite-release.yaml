@@ -21,7 +21,7 @@ buildProperties:
         SUITE_RELEASE_VERSION          : 8.3-QAT
         RELEASE_MODE                   : true
         DEFAULT_BRANCH                 : master
-        SUITE_BUILD_RESOURCES_BRANCH   : ${RELEASE_VERSION}
+        SUITE_BUILD_RESOURCES_BRANCH   : 8.3.0.0
         SERVICEPACK_BRANCH             : ${DEFAULT_BRANCH}
         JENKINS_FOLDER_NAME            : "8.3"
 
