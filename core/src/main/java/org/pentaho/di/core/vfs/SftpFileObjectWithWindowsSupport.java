@@ -25,6 +25,7 @@ package org.pentaho.di.core.vfs;
 import org.apache.commons.vfs2.FileSystemException;
 import org.apache.commons.vfs2.provider.AbstractFileName;
 import org.apache.commons.vfs2.provider.sftp.SftpFileObject;
+import org.apache.commons.vfs2.util.PosixPermissions;
 
 import java.util.List;
 import java.util.Map;
@@ -87,6 +88,40 @@ class SftpFileObjectWithWindowsSupport extends SftpFileObject {
         }
       }
       return false;
+    }
+  }
+
+  /**
+   * <p>In case it's impossible to determine the actual permissions, returns an "always-true" permission.</p>
+   *
+   * @param checkIds
+   * @return
+   * @throws Exception
+   */
+  @Override
+  protected PosixPermissions getPermissions( boolean checkIds ) throws Exception {
+    if ( checkIds && ( getAbstractFileSystem() instanceof SftpFileSystemWindows )
+      && ( (SftpFileSystemWindows) getAbstractFileSystem() ).isExecDisabled() ) {
+      // Exec is disabled, so we won't be able to ascertain the current user's UID and GID.
+      // Return "always-true" permissions as a workaround, knowing that the SFTP server won't
+      // let us perform unauthorized actions anyway.
+      return new PretendUserIsOwnerPosixPermissions();
+    }
+
+    return super.getPermissions( checkIds );
+  }
+
+  /**
+   * <p>Pretends that the current user is always the owner and in the same group.</p>
+   */
+  public class PretendUserIsOwnerPosixPermissions extends PosixPermissions {
+    public PretendUserIsOwnerPosixPermissions() {
+      super( PosixPermissions.Type.UserReadable.getMask() + PosixPermissions.Type.UserWritable.getMask()
+        + PosixPermissions.Type.UserExecutable.getMask() + PosixPermissions.Type.GroupReadable.getMask()
+        + PosixPermissions.Type.GroupWritable.getMask() + PosixPermissions.Type.GroupExecutable.getMask()
+        + PosixPermissions.Type.OtherReadable.getMask() + PosixPermissions.Type.OtherWritable.getMask()
+        + PosixPermissions.Type.OtherExecutable.getMask(),
+        true, true );
     }
   }
 }
