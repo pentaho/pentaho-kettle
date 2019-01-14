@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -45,7 +45,7 @@ import java.util.List;
  */
 
 @org.pentaho.di.core.annotations.JobEntry( id = "DummyJob", suggestion = "DummyPlugin.Job.SuggestedEntry",
-      i18nPackageName = "pdi.jobentry.dummy", image = "deprecated.svg",
+      i18nPackageName = "pdi.jobentry.dummy", image = "ui/images/deprecated.svg",
       name = "DummyPlugin.Job.Name", description = "DummyPlugin.Job.Description",
       categoryDescription = "i18n:org.pentaho.di.job:JobCategory.Category.Deprecated" )
 public class JobEntryDummy extends JobEntryBase implements Cloneable, JobEntryInterface {

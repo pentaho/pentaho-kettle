@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -45,7 +45,7 @@ import java.util.*;
  */
 
 @Step( id = "DummyStep",
-      image = "deprecated.svg",
+      image = "ui/images/deprecated.svg",
       i18nPackageName = "be.ibridge.kettle.dummy",
       name = "DummyPlugin.Step.Name",
       description = "DummyPlugin.Step.Description",
