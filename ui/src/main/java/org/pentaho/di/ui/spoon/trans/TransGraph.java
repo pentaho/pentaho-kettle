@@ -2061,12 +2061,6 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
   @Override
   public void keyReleased( KeyEvent e ) {
   }
-
-  @Override
-  public boolean setFocus() {
-    return ( canvas != null && !canvas.isDisposed() ) ? canvas.setFocus() : false;
-  }
-
   public void renameStep( StepMeta stepMeta, String stepname ) {
     String newname = stepname;
 
