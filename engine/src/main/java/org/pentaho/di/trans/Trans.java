@@ -358,6 +358,11 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
   public static final String STRING_STOPPED = "Stopped";
 
   /**
+   * Constant indicating a transformation status of Stopped (with errors).
+   */
+  public static final String STRING_STOPPED_WITH_ERRORS = "Stopped (with errors)";
+
+  /**
    * Constant indicating a transformation status of Halting.
    */
   public static final String STRING_HALTING = "Halting";
@@ -5742,11 +5747,6 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
     }
 
     return Const.HEARTBEAT_PERIODIC_INTERVAL_IN_SECS;
-  }
-
-  public boolean hasFinalStatusForCacheSaving( ) {
-    String status = getStatus();
-    return status.equals( STRING_FINISHED ) || status.equals( STRING_FINISHED_WITH_ERRORS ) || status.equals( STRING_STOPPED );
   }
 
 }

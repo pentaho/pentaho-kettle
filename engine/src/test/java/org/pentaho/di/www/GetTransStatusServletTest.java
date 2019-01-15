@@ -140,7 +140,7 @@ public class GetTransStatusServletTest {
     when( mockTrans.getTransMeta() ).thenReturn( mockTransMeta );
     when( mockTrans.getLogChannelId() ).thenReturn( logId );
     when( mockTrans.isFinishedOrStopped() ).thenReturn( true );
-    when( mockTrans.hasFinalStatusForCacheSaving() ).thenReturn( true );
+    when( mockTrans.getStatus() ).thenReturn( "Finished" );
 
     when( mockTransMeta.getMaximum() ).thenReturn( new Point( 10, 10 ) );
 
