@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -82,7 +82,7 @@ public class XulDatabaseExplorerDialog {
 
       this.controller =
         new XulDatabaseExplorerController(
-          (Shell) theExplorerDialog.getRootObject(), this.databaseMeta, this.databases, look );
+          this.shell, this.databaseMeta, this.databases, look );
 
       this.container.addEventHandler( this.controller );
 
