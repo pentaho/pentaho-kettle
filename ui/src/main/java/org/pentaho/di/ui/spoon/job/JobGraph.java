@@ -3465,7 +3465,7 @@ public class JobGraph extends AbstractGraph implements XulEventHandler, Redrawab
 
     // If the job is not running, start the transformation...
     //
-    if ( job == null || job.isFinished() && !job.isActive() ) {
+    if ( job == null || ( job.isFinished() || job.isStopped() ) && !job.isActive() ) {
       // Auto save feature...
       //
       handleJobMetaChanges( jobMeta );
