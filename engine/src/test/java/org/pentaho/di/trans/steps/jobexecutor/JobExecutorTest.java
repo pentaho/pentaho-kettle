@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -44,6 +44,7 @@ import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.when;
 
 /**
  * @author Mikhail_Chen-Len-Son
@@ -95,6 +96,9 @@ public class JobExecutorTest {
     data.groupField = "groupField";
     executor.init( meta, data );
 
+    when( executor.getExecutorJob() ).thenReturn( mock( Job.class ) );
+    when( executor.getExecutorJob().getJobMeta() ).thenReturn( mock( JobMeta.class ) );
+
     RowMetaInterface rowMeta = new RowMeta();
     rowMeta.addValueMeta( new ValueMetaString( "groupField" ) );
     executor.setInputRowMeta( rowMeta );
@@ -138,6 +142,9 @@ public class JobExecutorTest {
 
     data.groupSize = 5;
     executor.init( meta, data );
+
+    when( executor.getExecutorJob() ).thenReturn( mock( Job.class ) );
+    when( executor.getExecutorJob().getJobMeta() ).thenReturn( mock( JobMeta.class ) );
 
     // start processing
     executor.processRow( meta, data ); // 1st row
