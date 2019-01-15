@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -90,6 +90,7 @@ public class RepositoryDialog extends ThinDialog {
 
     controller.setCurrentRepository( repositoryMeta );
     controller.setRelogin( relogin );
+    controller.setParentShell( dialog );
 
     while ( !dialog.isDisposed() ) {
       if ( !display.readAndDispatch() ) {
