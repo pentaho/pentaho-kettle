@@ -353,6 +353,7 @@ public class TransWebSocketEngineAdapter extends Trans {
 
           if ( stopMessage.sessionWasKilled() || stopMessage.operationFailed() ) {
             getLogChannel().logError( "Finalizing execution: " + stopMessage.getReasonPhrase() );
+            errors.incrementAndGet();
           } else {
             getLogChannel().logBasic( "Finalizing execution: " + stopMessage.getReasonPhrase() );
           }
