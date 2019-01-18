@@ -304,7 +304,7 @@ public class MonetDBDatabaseMeta extends BaseDatabaseMeta implements DatabaseInt
 
   @Override
   public String[] getUsedLibraries() {
-    return new String[] { "monetdb-jdbc-2.8.jar", };
+    return new String[] { "monetdb-jdbc-2.28.jar", };
   }
 
   /**
