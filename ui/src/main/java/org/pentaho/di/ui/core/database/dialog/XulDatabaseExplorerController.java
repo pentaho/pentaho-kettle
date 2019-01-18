@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -379,8 +379,7 @@ public class XulDatabaseExplorerController extends AbstractXulEventHandler imple
     try {
       theDatabase.connect();
       GetDatabaseInfoProgressDialog gdipd =
-        new GetDatabaseInfoProgressDialog( (Shell) this.dbExplorerDialog.getRootObject(), this.model
-          .getDatabaseMeta() );
+        new GetDatabaseInfoProgressDialog( shell, this.model.getDatabaseMeta() );
       DatabaseMetaInformation dmi = gdipd.open();
 
       // Adds the main database node.
