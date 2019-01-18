@@ -3,7 +3,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -356,6 +356,11 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
    * Constant indicating a transformation status of Stopped.
    */
   public static final String STRING_STOPPED = "Stopped";
+
+  /**
+   * Constant indicating a transformation status of Stopped (with errors).
+   */
+  public static final String STRING_STOPPED_WITH_ERRORS = "Stopped (with errors)";
 
   /**
    * Constant indicating a transformation status of Halting.

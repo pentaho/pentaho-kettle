@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -202,6 +202,16 @@ public class SlaveServerJobStatus {
 
   public boolean isWaiting() {
     return getStatusDescription().equalsIgnoreCase( Trans.STRING_WAITING );
+  }
+
+  public boolean isFinished() {
+    return getStatusDescription().equalsIgnoreCase( Trans.STRING_FINISHED )
+      || getStatusDescription().equalsIgnoreCase( Trans.STRING_FINISHED_WITH_ERRORS );
+  }
+
+  public boolean isStopped() {
+    return getStatusDescription().equalsIgnoreCase( Trans.STRING_STOPPED )
+      || getStatusDescription().equalsIgnoreCase( Trans.STRING_STOPPED_WITH_ERRORS );
   }
 
   /**

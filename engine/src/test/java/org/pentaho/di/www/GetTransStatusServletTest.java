@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -140,6 +140,7 @@ public class GetTransStatusServletTest {
     when( mockTrans.getTransMeta() ).thenReturn( mockTransMeta );
     when( mockTrans.getLogChannelId() ).thenReturn( logId );
     when( mockTrans.isFinishedOrStopped() ).thenReturn( true );
+    when( mockTrans.getStatus() ).thenReturn( "Finished" );
 
     when( mockTransMeta.getMaximum() ).thenReturn( new Point( 10, 10 ) );
 
