@@ -32,12 +32,11 @@ import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.core.widget.tree.TreeNode;
 import org.pentaho.di.ui.spoon.DatabasesCollector;
 import org.pentaho.di.ui.spoon.Spoon;
-import org.pentaho.di.ui.spoon.tree.TreeFolderProvider;
 
 /**
  * Created by bmorrise on 6/28/18.
  */
-public class DBConnectionFolderProvider extends TreeFolderProvider {
+public class DBConnectionFolderProvider extends AutomaticTreeFolderProvider {
 
   private static Class<?> PKG = Spoon.class;
   public static final String STRING_CONNECTIONS = BaseMessages.getString( PKG, "Spoon.STRING_CONNECTIONS" );
