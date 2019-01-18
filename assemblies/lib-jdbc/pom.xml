@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <artifactId>pdi-libs-jdbc</artifactId>
+  <packaging>pom</packaging>
+
+  <name>PDI JDBC Drivers</name>
+
+  <parent>
+    <artifactId>pdi-assemblies</artifactId>
+    <groupId>org.pentaho.di</groupId>
+    <version>8.3.0.0-SNAPSHOT</version>
+  </parent>
+
+  <properties>
+    <hsqldb.version>2.3.2</hsqldb.version>
+    <jaybird.version>2.1.6</jaybird.version>
+    <jt400.version>9.6</jt400.version>
+    <LucidDbClient-minimal.version>0.9.4</LucidDbClient-minimal.version>
+    <monetdb-jdbc.version>2.28</monetdb-jdbc.version>
+    <postgresql.version>42.1.1</postgresql.version>
+    <sapdbc.version>7.4.4</sapdbc.version>
+    <sqlite-jdbc.version>3.7.2</sqlite-jdbc.version>
+  </properties>
+
+  <dependencies>
+    <!-- Third-party JDBC drivers dependencies -->
+    <dependency>
+      <groupId>org.firebirdsql.jdbc</groupId>
+      <artifactId>jaybird</artifactId>
+      <version>${jaybird.version}</version>
+      <exclusions>
+        <exclusion>
+          <groupId>*</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>net.sf.jt400</groupId>
+      <artifactId>jt400</artifactId>
+      <version>${jt400.version}</version>
+      <exclusions>
+        <exclusion>
+          <groupId>*</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>luciddb</groupId>
+      <artifactId>LucidDbClient-minimal</artifactId>
+      <version>${LucidDbClient-minimal.version}</version>
+      <exclusions>
+        <exclusion>
+          <groupId>*</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <!-- https://mvnrepository.com/artifact/monetdb/monetdb-jdbc -->
+    <dependency>
+      <groupId>monetdb</groupId>
+      <artifactId>monetdb-jdbc</artifactId>
+      <version>${monetdb-jdbc.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.postgresql</groupId>
+      <artifactId>postgresql</artifactId>
+      <version>${postgresql.version}</version>
+      <exclusions>
+        <exclusion>
+          <groupId>*</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>com.sap</groupId>
+      <artifactId>sapdbc</artifactId>
+      <version>${sapdbc.version}</version>
+      <exclusions>
+        <exclusion>
+          <groupId>*</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.xerial</groupId>
+      <artifactId>sqlite-jdbc</artifactId>
+      <version>${sqlite-jdbc.version}</version>
+      <exclusions>
+        <exclusion>
+          <groupId>*</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <plugins>
+      <plugin>
+      <artifactId>maven-dependency-plugin</artifactId>
+      <executions>
+      <execution>
+        <id>copy-libs</id>
+        <phase>generate-resources</phase>
+        <goals>
+          <goal>copy-dependencies</goal>
+        </goals>
+        <configuration>
+          <includeScope>compile</includeScope>
+          <outputDirectory>${assembly.dir}/jdbc</outputDirectory>
+        </configuration>
+      </execution>
+      </executions>
+      </plugin>
+    </plugins>
+  </build>
+</project>
+

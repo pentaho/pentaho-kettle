@@ -19,7 +19,8 @@
       <includes>
         <include>org.pentaho.di:pdi-static:zip</include>
         <include>org.pentaho.di:pdi-samples:zip</include>
-        <include>org.pentaho.di:pdi-libs:zip</include>
+	<include>org.pentaho.di:pdi-libs:zip</include>
+	<include>org.pentaho.di:pdi-libs-jdbc:zip</include>
         <include>org.pentaho.di:pdi-plugins:zip</include>
       </includes>
       <unpack>true</unpack>

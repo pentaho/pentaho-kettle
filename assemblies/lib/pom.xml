@@ -36,11 +36,6 @@
     <derby.version>10.2.1.6</derby.version>
     <derbyclient.version>10.2.1.6</derbyclient.version>
     <hsqldb.version>2.3.2</hsqldb.version>
-    <jaybird.version>2.1.6</jaybird.version>
-    <jt400.version>6.1</jt400.version>
-    <LucidDbClient-minimal.version>0.9.4</LucidDbClient-minimal.version>
-    <sapdbc.version>7.4.4</sapdbc.version>
-    <sqlite-jdbc.version>3.7.2</sqlite-jdbc.version>
     <geronimo-servlet_3.0_spec.version>1.0</geronimo-servlet_3.0_spec.version>
     <slf4j-api.version>1.7.7</slf4j-api.version>
     <slf4j-log4j12.version>1.7.7</slf4j-log4j12.version>
@@ -88,6 +83,14 @@
         <exclusion>
           <groupId>javax.servlet</groupId>
           <artifactId>*</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.postgresql</groupId>
+          <artifactId>postgresql</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>monetdb</groupId>
+          <artifactId>monetdb-jdbc</artifactId>
         </exclusion>
       </exclusions>
     </dependency>
@@ -406,61 +409,6 @@
       <groupId>org.hsqldb</groupId>
       <artifactId>hsqldb</artifactId>
       <version>${hsqldb.version}</version>
-      <exclusions>
-        <exclusion>
-          <groupId>*</groupId>
-          <artifactId>*</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-    <dependency>
-      <groupId>org.firebirdsql.jdbc</groupId>
-      <artifactId>jaybird</artifactId>
-      <version>${jaybird.version}</version>
-      <exclusions>
-        <exclusion>
-          <groupId>*</groupId>
-          <artifactId>*</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-    <dependency>
-      <groupId>net.sf.jt400</groupId>
-      <artifactId>jt400</artifactId>
-      <version>${jt400.version}</version>
-      <exclusions>
-        <exclusion>
-          <groupId>*</groupId>
-          <artifactId>*</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-    <dependency>
-      <groupId>luciddb</groupId>
-      <artifactId>LucidDbClient-minimal</artifactId>
-      <version>${LucidDbClient-minimal.version}</version>
-      <exclusions>
-        <exclusion>
-          <groupId>*</groupId>
-          <artifactId>*</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-    <dependency>
-      <groupId>com.sap</groupId>
-      <artifactId>sapdbc</artifactId>
-      <version>${sapdbc.version}</version>
-      <exclusions>
-        <exclusion>
-          <groupId>*</groupId>
-          <artifactId>*</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-    <dependency>
-      <groupId>org.xerial</groupId>
-      <artifactId>sqlite-jdbc</artifactId>
-      <version>${sqlite-jdbc.version}</version>
       <exclusions>
         <exclusion>
           <groupId>*</groupId>
