@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -49,6 +49,7 @@ import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectoryInterface;
 import org.pentaho.di.resource.ResourceDefinition;
+import org.pentaho.di.resource.ResourceEntry;
 import org.pentaho.di.resource.ResourceNamingInterface;
 import org.pentaho.di.resource.ResourceReference;
 import org.pentaho.di.trans.TransMeta;
@@ -113,6 +114,27 @@ public class MetaInjectMetaTest {
     ResourceReference reference = actualResult.iterator().next();
     assertEquals( 1, reference.getEntries().size() );
   }
+
+  @Test
+  public void getResourceDependencies_repository_full_path() {
+    // checks getResourceDependencies() returns action file resource w/ transname including full repository path name
+    TransMeta transMeta = mock( TransMeta.class );
+    StepMeta stepMeta = mock( StepMeta.class );
+    metaInjectMeta.setTransName( "TRANS_NAME" );
+    metaInjectMeta.setDirectoryPath( "/REPO/DIR" );
+    doReturn( "TRANS_NAME_SUBS" ).when( transMeta ).environmentSubstitute( "TRANS_NAME" );
+    doReturn( "/REPO/DIR_SUBS" ).when( transMeta ).environmentSubstitute( "/REPO/DIR" );
+
+    List<ResourceReference> actualResult = metaInjectMeta.getResourceDependencies( transMeta, stepMeta );
+    assertEquals( 1, actualResult.size() );
+    ResourceReference reference = actualResult.iterator().next();
+    assertEquals( 1, reference.getEntries().size() );
+    ResourceEntry resourceEntry = reference.getEntries().get( 0 );
+    assertEquals( "/REPO/DIR_SUBS/TRANS_NAME_SUBS", resourceEntry.getResource() );
+    assertEquals(ResourceEntry.ResourceType.ACTIONFILE, resourceEntry.getResourcetype() );
+  }
+
+
 
   @Test
   public void exportResources() throws KettleException {
