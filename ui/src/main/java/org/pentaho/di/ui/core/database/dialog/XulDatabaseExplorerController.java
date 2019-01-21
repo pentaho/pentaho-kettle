@@ -257,7 +257,8 @@ public class XulDatabaseExplorerController extends AbstractXulEventHandler imple
       new GetQueryFieldsProgressDialog( this.shell, databaseMeta, theSql );
     RowMetaInterface fields = theProgressDialog.open();
 
-    StepFieldsDialog stepFieldsDialog = new StepFieldsDialog( shell, databaseMeta, SWT.NONE, schemaTable, fields );
+    StepFieldsDialog stepFieldsDialog =
+        new StepFieldsDialog( this.dbExplorerDialog.getShell(), databaseMeta, SWT.NONE, schemaTable, fields );
     stepFieldsDialog.setShellText( BaseMessages.getString( PKG, "DatabaseExplorerDialog.TableLayout.ShellText" ) );
     stepFieldsDialog
       .setOriginText( BaseMessages.getString( PKG, "DatabaseExplorerDialog.TableLayout.OriginText" ) );
