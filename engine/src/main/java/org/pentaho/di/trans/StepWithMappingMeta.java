@@ -437,10 +437,15 @@ public abstract class StepWithMappingMeta extends BaseSerializingMeta implements
     }
     String[] variableNames = replaceBy.listVariables();
     for ( String variableName : variableNames ) {
-      if ( childTransMeta.getVariable( variableName ) != null ) {
+      if ( childTransMeta.getVariable( variableName ) != null && !isInternalVariable( variableName ) ) {
         childTransMeta.setVariable( variableName, replaceBy.getVariable( variableName ) );
       }
     }
+  }
+
+  private static boolean isInternalVariable( String variableName ) {
+    return ( Arrays.asList( Const.INTERNAL_JOB_VARIABLES ).contains( variableName )
+      || Arrays.asList( Const.INTERNAL_TRANS_VARIABLES ).contains( variableName ) );
   }
 
   /**
