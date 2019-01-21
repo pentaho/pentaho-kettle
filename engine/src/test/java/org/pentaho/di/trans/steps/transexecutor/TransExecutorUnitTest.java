@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -24,7 +24,6 @@ package org.pentaho.di.trans.steps.transexecutor;
 
 import java.util.Arrays;
 import org.junit.After;
-import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -469,6 +468,6 @@ public class TransExecutorUnitTest {
     executor.setInputRowMeta( new RowMeta() );
     assertTrue( executor.processRow( meta, data ) );
     verify( executor.getTrans(), never() ).safeStop();
-    verify( executor.getTrans() ).stopAll();
+    verify( executor.getTrans(), never() ).stopAll();
   }
 }
