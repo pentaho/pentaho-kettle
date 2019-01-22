@@ -1,5 +1,5 @@
 /*!
- * Copyright 2010 - 2018 Hitachi Vantara.  All rights reserved.
+ * Copyright 2010 - 2019 Hitachi Vantara.  All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,7 @@ import com.pentaho.pdi.ws.IRepositorySyncWebService;
 import com.pentaho.pdi.ws.RepositorySyncException;
 import com.sun.xml.ws.client.ClientTransportException;
 import org.apache.commons.lang.BooleanUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
@@ -61,6 +62,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 
 public class PurRepositoryConnector implements IRepositoryConnector {
+  private static final String TRUST_USER = "_trust_user_";
   private static final String SINGLE_DI_SERVER_INSTANCE = "singleDiServerInstance";
   private static final String REMOTE_DI_SERVER_INSTANCE = "remoteDiServerInstance";
   private static Class<?> PKG = PurRepository.class;
@@ -247,8 +249,11 @@ public class PurRepositoryConnector implements IRepositoryConnector {
             UsernamePasswordCredentials credentials = new UsernamePasswordCredentials( username, password );
             provider.setCredentials( AuthScope.ANY, credentials );
             HttpClient client = HttpClientBuilder.create().setDefaultCredentialsProvider( provider ).build();
-            HttpResponse response = client
-              .execute( new HttpGet( repositoryMeta.getRepositoryLocation().getUrl() + "/api/session/userName" ) );
+            HttpGet method = new HttpGet( repositoryMeta.getRepositoryLocation().getUrl() + "/api/session/userName" );
+            if ( StringUtils.isNotBlank( System.getProperty( "pentaho.repository.client.attemptTrust" ) ) ) {
+              method.addHeader( TRUST_USER, username );
+            }
+            HttpResponse response = client.execute( method );
             if ( log.isBasic() ) {
               log.logBasic( BaseMessages.getString( PKG, "PurRepositoryConnector.SessionService.Sync" ) ); //$NON-NLS-1$
             }
