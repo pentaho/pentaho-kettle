@@ -31,6 +31,7 @@ import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.UsernamePasswordCredentials;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.lang.BooleanUtils;
+import org.apache.commons.lang.StringUtils;
 import org.pentaho.di.core.encryption.Encr;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleSecurityException;
@@ -61,6 +62,7 @@ import com.pentaho.pdi.ws.RepositorySyncException;
 import com.sun.xml.ws.client.ClientTransportException;
 
 public class PurRepositoryConnector implements IRepositoryConnector {
+  private static final String TRUST_USER = "_trust_user_";
   private static final String SINGLE_DI_SERVER_INSTANCE = "singleDiServerInstance";
   private static final String REMOTE_DI_SERVER_INSTANCE = "remoteDiServerInstance";
   private static Class<?> PKG = PurRepository.class;
@@ -242,6 +244,9 @@ public class PurRepositoryConnector implements IRepositoryConnector {
           client.getState().setCredentials( AuthScope.ANY, credentials );
           GetMethod resource = new GetMethod( repositoryMeta.getRepositoryLocation().getUrl() + "/api/session/userName" );
           resource.addRequestHeader( "Accept", MediaType.TEXT_PLAIN );
+          if ( StringUtils.isNotBlank( System.getProperty( "pentaho.repository.client.attemptTrust" ) ) ) {
+            resource.addRequestHeader( TRUST_USER, username );
+          }
           try {
             int status = client.executeMethod( resource );
             if ( status != HttpStatus.SC_OK ) {
