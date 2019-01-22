@@ -99,10 +99,8 @@ public class CheckBoxTableComboDefaultButton extends CheckBoxTableCombo {
         if ( proceed ) {
           wUseDefaultCheckBox.setEnabled( selection );
         } else {
-          if ( selection ) {
-            wCheckBox.setSelection( false );
-            wUseDefaultCheckBox.setEnabled( false );
-          }
+          wCheckBox.setSelection( false );
+          wUseDefaultCheckBox.setEnabled( false );
         }
         lsMod.modifyText( null );
         resetPropertyTableVisibility();
