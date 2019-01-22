@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -21,11 +21,6 @@
  ******************************************************************************/
 
 package org.pentaho.di.trans;
-
-import static org.pentaho.di.core.Const.INTERNAL_VARIABLE_ENTRY_CURRENT_DIRECTORY;
-import static org.pentaho.di.core.Const.INTERNAL_VARIABLE_JOB_FILENAME_DIRECTORY;
-import static org.pentaho.di.core.Const.INTERNAL_VARIABLE_TRANSFORMATION_FILENAME_DIRECTORY;
-import static org.pentaho.di.core.Const.INTERNAL_VARIABLE_JOB_FILENAME_NAME;
 
 import org.apache.commons.lang.ArrayUtils;
 import org.pentaho.di.core.Const;
@@ -59,6 +54,11 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import static org.pentaho.di.core.Const.INTERNAL_VARIABLE_ENTRY_CURRENT_DIRECTORY;
+import static org.pentaho.di.core.Const.INTERNAL_VARIABLE_JOB_FILENAME_DIRECTORY;
+import static org.pentaho.di.core.Const.INTERNAL_VARIABLE_JOB_FILENAME_NAME;
+import static org.pentaho.di.core.Const.INTERNAL_VARIABLE_TRANSFORMATION_FILENAME_DIRECTORY;
 
 /**
  * This class is supposed to use in steps where the mapping to sub transformations takes place
@@ -100,8 +100,9 @@ public abstract class StepWithMappingMeta extends BaseSerializingMeta implements
     return tmpSpace;
   }
 
-  public static synchronized TransMeta loadMappingMeta( StepWithMappingMeta executorMeta, Repository rep,
-                                                        IMetaStore metaStore, VariableSpace space, boolean share ) throws KettleException {
+  public static TransMeta loadMappingMeta( StepWithMappingMeta executorMeta, Repository rep, IMetaStore metaStore, VariableSpace space, boolean share ) throws KettleException {
+    // Note - was a synchronized static method, but as no static variables are manipulated, this is entirely unnecessary
+
     TransMeta mappingTransMeta = null;
 
     CurrentDirectoryResolver r = new CurrentDirectoryResolver();

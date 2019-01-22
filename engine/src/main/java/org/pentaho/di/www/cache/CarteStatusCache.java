@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -59,16 +59,13 @@ public class CarteStatusCache implements Cache {
 
   private final Map<String, CachedItem> cachedMap = new ConcurrentHashMap<>();
 
-  private static CarteStatusCache instance = null;
+  private static final CarteStatusCache instance = new CarteStatusCache();
 
   private int period = 0;
 
   private TimeUnit timeUnit = null;
 
-  public static synchronized CarteStatusCache getInstance() {
-    if ( instance == null ) {
-      instance = new CarteStatusCache();
-    }
+  public static CarteStatusCache getInstance() {
     return instance;
   }
 

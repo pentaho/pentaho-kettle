@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -594,8 +594,8 @@ public class TransExecutorMeta extends StepWithMappingMeta implements StepMetaIn
   }
 
   @Deprecated
-  public static synchronized TransMeta loadTransMeta( TransExecutorMeta executorMeta, Repository rep,
-                                                      VariableSpace space ) throws KettleException {
+  public static TransMeta loadTransMeta( TransExecutorMeta executorMeta, Repository rep, VariableSpace space ) throws KettleException {
+    // Note - was a synchronized static method, but as no static variables are manipulated, this is entirely unnecessary
     return loadMappingMeta( executorMeta, rep, null, space );
   }
 
