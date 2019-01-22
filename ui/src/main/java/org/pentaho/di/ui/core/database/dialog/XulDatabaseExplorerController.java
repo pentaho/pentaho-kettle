@@ -127,7 +127,7 @@ public class XulDatabaseExplorerController extends AbstractXulEventHandler imple
 
     this.dbExplorerDialog = (SwtDialog) this.document.getElementById( "databaseExplorerDialog" );
 
-    createDatabaseNodes();
+    createDatabaseNodes( shell );
     if ( this.status != UiPostActionStatus.OK ) {
       // something goes dramatically wrong!
       return;
@@ -361,7 +361,7 @@ public class XulDatabaseExplorerController extends AbstractXulEventHandler imple
   public void refresh() {
     collapse();
     this.model.getDatabase().clear();
-    createDatabaseNodes();
+    createDatabaseNodes( this.dbExplorerDialog.getShell() );
     if ( this.status != UiPostActionStatus.OK ) {
       // something goes dramatically wrong!
       return;
@@ -374,13 +374,13 @@ public class XulDatabaseExplorerController extends AbstractXulEventHandler imple
    * @return true if all goes fine, false otherwise. This will signal to caller
    * that it may not attempt to show broken dialog
    */
-  void createDatabaseNodes() {
+  void createDatabaseNodes( Shell dialogsParent ) {
     this.status = UiPostActionStatus.NONE;
     Database theDatabase = new Database( null, this.model.getDatabaseMeta() );
     try {
       theDatabase.connect();
       GetDatabaseInfoProgressDialog gdipd =
-        new GetDatabaseInfoProgressDialog( shell, this.model.getDatabaseMeta() );
+        new GetDatabaseInfoProgressDialog( dialogsParent, this.model.getDatabaseMeta() );
       DatabaseMetaInformation dmi = gdipd.open();
 
       // Adds the main database node.
@@ -496,7 +496,7 @@ public class XulDatabaseExplorerController extends AbstractXulEventHandler imple
       // Something goes wrong?
       this.status = UiPostActionStatus.ERROR;
       theDatabase.disconnect();
-      new ErrorDialog( shell, "Error", "Unexpected explorer error:", e );
+      new ErrorDialog( dialogsParent, "Error", "Unexpected explorer error:", e );
       this.status = UiPostActionStatus.ERROR_DIALOG_SHOWN;
       return;
     } finally {
