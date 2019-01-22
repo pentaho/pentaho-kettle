@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -630,6 +630,7 @@ public class MetaInjectMeta extends BaseStepMeta implements StepMetaInterface, S
     List<ResourceReference> references = new ArrayList<ResourceReference>( 5 );
     String realFilename = transMeta.environmentSubstitute( fileName );
     String realTransname = transMeta.environmentSubstitute( transName );
+    String realDirectoryPath = transMeta.environmentSubstitute( directoryPath );
     ResourceReference reference = new ResourceReference( stepInfo );
     references.add( reference );
 
@@ -639,10 +640,9 @@ public class MetaInjectMeta extends BaseStepMeta implements StepMetaInterface, S
       //
       reference.getEntries().add( new ResourceEntry( realFilename, ResourceType.ACTIONFILE ) );
     } else if ( !Utils.isEmpty( realTransname ) ) {
-      // Add the filename to the references, including a reference to this step
-      // meta data.
-      //
-      reference.getEntries().add( new ResourceEntry( realTransname, ResourceType.ACTIONFILE ) );
+      // Add the trans name (including full repository path) to dependencies
+      String realTransformation = realDirectoryPath + "/" + realTransname;
+      reference.getEntries().add( new ResourceEntry( realTransformation, ResourceType.ACTIONFILE ) );
     }
     return references;
   }

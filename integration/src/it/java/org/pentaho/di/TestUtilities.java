@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -165,7 +165,7 @@ public class TestUtilities {
    * @param registry
    * @return StepMeta
    */
-  public static synchronized StepMeta createInjectorStep( String name, PluginRegistry pluginRegistry ) {
+  public static StepMeta createInjectorStep( String name, PluginRegistry pluginRegistry ) {
     // create an injector step...
     InjectorMeta injectorMeta = new InjectorMeta();
 
@@ -183,7 +183,7 @@ public class TestUtilities {
    * @return
    * @throws IOException
    */
-  public static synchronized String createEmptyTempFile( String fileName ) throws IOException {
+  public static String createEmptyTempFile( String fileName ) throws IOException {
     return createEmptyTempFile( fileName, null );
   }
 
@@ -195,7 +195,7 @@ public class TestUtilities {
    * @return
    * @throws IOException
    */
-  public static synchronized String createEmptyTempFile( String fileName, String suffix ) throws IOException {
+  public static String createEmptyTempFile( String fileName, String suffix ) throws IOException {
     File tempFile = File.createTempFile( fileName, ( Utils.isEmpty( suffix ) ? "" : suffix ) );
     tempFile.deleteOnExit();
     return tempFile.getAbsolutePath();

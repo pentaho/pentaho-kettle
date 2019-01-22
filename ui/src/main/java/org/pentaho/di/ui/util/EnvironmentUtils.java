@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2017 - 2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -45,7 +45,7 @@ public class EnvironmentUtils {
   public static final String WINDOWS_BROWSER = "MSIE";
   private final LogChannelInterface log = new LogChannel( this );
 
-  public static synchronized EnvironmentUtils getInstance( ) {
+  public static EnvironmentUtils getInstance( ) {
     return ENVIRONMENT_UTILS;
   }
 

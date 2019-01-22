@@ -99,10 +99,8 @@ public class CheckBoxTableComboDefaultButton extends CheckBoxTableCombo {
         if ( proceed ) {
           wUseDefaultCheckBox.setEnabled( selection );
         } else {
-          if ( selection ) {
-            wCheckBox.setSelection( false );
-            wUseDefaultCheckBox.setEnabled( false );
-          }
+          wCheckBox.setSelection( false );
+          wUseDefaultCheckBox.setEnabled( false );
         }
         lsMod.modifyText( null );
         resetPropertyTableVisibility();
@@ -177,10 +175,12 @@ public class CheckBoxTableComboDefaultButton extends CheckBoxTableCombo {
       }
 
       if ( showDialog ) {
-        //intent is for this property to only last as long as the Spoon session; not be persisted in the .spoonrc file
+        this.errorDialogProceed = false;
+
         final BaseDialog errorDlg = new BaseMessageDialog( parentComposite.getShell(),
           getString( PKG, "JmsDialog.Security.ACTIVEMQ_COMMAND_LINE_ARGS_MISMATCH_TITLE" ),
-          getString( PKG, "JmsDialog.Security.ACTIVEMQ_COMMAND_LINE_ARGS_MISMATCH_MSG" ) );
+          getString( PKG, "JmsDialog.Security.ACTIVEMQ_COMMAND_LINE_ARGS_MISMATCH_MSG" ),
+          350 );
 
         final Map<String, Listener> buttons = new HashMap();
         buttons
@@ -193,6 +193,7 @@ public class CheckBoxTableComboDefaultButton extends CheckBoxTableCombo {
             errorDlg.dispose();
             this.errorDialogProceed = false;
           } );
+
         errorDlg.setButtons( buttons );
         errorDlg.open();
       }

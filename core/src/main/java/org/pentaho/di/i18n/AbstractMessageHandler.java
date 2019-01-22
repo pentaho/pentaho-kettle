@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -41,7 +41,7 @@ public abstract class AbstractMessageHandler implements MessageHandler {
    *
    * @return MessageHandler
    */
-  public static synchronized MessageHandler getInstance() {
+  public static MessageHandler getInstance() {
     return null;
   }
 
@@ -50,7 +50,7 @@ public abstract class AbstractMessageHandler implements MessageHandler {
    *
    * @return Locale
    */
-  public static synchronized Locale getLocale() {
+  public static Locale getLocale() {
     return null;
   }
 
@@ -59,7 +59,7 @@ public abstract class AbstractMessageHandler implements MessageHandler {
    *
    * @param newLocale
    */
-  public static synchronized void setLocale( Locale newLocale ) {
+  public static void setLocale( Locale newLocale ) {
   }
 
 }
