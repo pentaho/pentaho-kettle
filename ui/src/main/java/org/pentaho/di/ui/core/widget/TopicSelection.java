@@ -26,7 +26,6 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Composite;
@@ -35,6 +34,8 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Label;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStepMeta;
+import org.pentaho.di.ui.core.ConstUI;
+import org.pentaho.di.ui.core.FormDataBuilder;
 import org.pentaho.di.ui.core.PropsUI;
 
 import static org.pentaho.di.ui.core.WidgetUtils.createFieldDropDown;
@@ -56,7 +57,12 @@ public class TopicSelection extends Composite {
   private Button wTopicFromField;
   private Button wTopicFromText;
   private Label wlTopic;
+
+  //use TextVar or ComboVar based on the boolean value
+  private boolean isTopicTextCombo;
   private TextVar wTopicText;
+  private ComboVar wTopicTextCombo;
+
   private ComboVar wTopicField;
 
   private TopicSelection( final Builder builder ) {
@@ -71,6 +77,7 @@ public class TopicSelection extends Composite {
     this.textTopicLabel = builder.textTopicLabel;
     this.textTopicRadioLabel = builder.textTopicRadioLabel;
     this.fieldTopicRadioLabel = builder.fieldTopicRadioLabel;
+    this.isTopicTextCombo = builder.isTopicTextCombo;
 
     layoutUI();
   }
@@ -88,12 +95,7 @@ public class TopicSelection extends Composite {
     topicGroupLayout.marginWidth = 15;
     wTopicGroup.setLayout( topicGroupLayout );
 
-    FormData fdTopicGroup = new FormData();
-    fdTopicGroup.left = new FormAttachment( 0, 0 );
-    fdTopicGroup.top = new FormAttachment( 0, 10 );
-    fdTopicGroup.right = new FormAttachment( 100, 0 );
-    fdTopicGroup.bottom = new FormAttachment( 100, 0 );
-    wTopicGroup.setLayoutData( fdTopicGroup );
+    wTopicGroup.setLayoutData( new FormDataBuilder().top( 0, ConstUI.MEDUIM_MARGIN ).fullWidth().bottom().result() );
 
     wTopicFromText = new Button( wTopicGroup, SWT.RADIO );
     wTopicFromField = new Button( wTopicGroup, SWT.RADIO );
@@ -117,55 +119,50 @@ public class TopicSelection extends Composite {
     wTopicFromText.setText( textTopicRadioLabel );
     wTopicFromField.setText( fieldTopicRadioLabel );
 
-    FormData specifyTopicLayout = new FormData();
-    specifyTopicLayout.left = new FormAttachment( 0, 0 );
-    specifyTopicLayout.top = new FormAttachment( 0, 0 );
-    wTopicFromText.setLayoutData( specifyTopicLayout );
+    wTopicFromText.setLayoutData( new FormDataBuilder().left().top().result() );
 
-    FormData fdTopicComesFromField = new FormData();
-    fdTopicComesFromField.left = new FormAttachment( 0, 0 );
-    fdTopicComesFromField.top = new FormAttachment( wTopicFromText, 5 );
-
-    wTopicFromField.setLayoutData( fdTopicComesFromField );
+    wTopicFromField.setLayoutData( new FormDataBuilder().left().top( wTopicFromText ).result() );
     wTopicFromField.addSelectionListener( selectionListener );
     wTopicFromText.addSelectionListener( selectionListener );
 
     Label separator = new Label( wTopicGroup, SWT.SEPARATOR | SWT.VERTICAL );
-    FormData fdSeparator = new FormData();
-    fdSeparator.top = new FormAttachment( 0, 0 );
-    fdSeparator.left = new FormAttachment( wTopicFromField, 15 );
-    fdSeparator.bottom = new FormAttachment( 100, 0 );
-    separator.setLayoutData( fdSeparator );
-
-    FormData fdTopicEntry = new FormData();
-    fdTopicEntry.top = new FormAttachment( 0, 0 );
-    fdTopicEntry.left = new FormAttachment( separator, 15 );
-    fdTopicEntry.right = new FormAttachment( 100, 0 );
+    separator.setLayoutData( new FormDataBuilder().top().left( wTopicFromField, 15 ).bottom().result() );
 
     wlTopic = new Label( wTopicGroup, SWT.LEFT );
-    wlTopic.setLayoutData( fdTopicEntry );
+    wlTopic.setLayoutData( new FormDataBuilder().top().left( separator, 15 ).right().result() );
     props.setLook( wlTopic );
 
-    FormData formData = new FormData();
-    formData.top = new FormAttachment( wlTopic, 5 );
-    formData.left = new FormAttachment( separator, 15 );
-    formData.right = new FormAttachment( 100, 0 );
+    FormData fdTopic = new FormDataBuilder().top( wlTopic ).left( separator, 15 ).right().result();
 
-    wTopicText = new TextVar( transMeta, wTopicGroup, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
-    wTopicField = createFieldDropDown( wTopicGroup, props, stepMeta, formData );
-    wTopicText.setLayoutData( formData );
-    wTopicField.setLayoutData( formData );
+    if ( isTopicTextCombo ) {
+      wTopicTextCombo = new ComboVar( transMeta, wTopicGroup, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
+      props.setLook( wTopicTextCombo );
+      wTopicTextCombo.setLayoutData( fdTopic );
+      wTopicTextCombo.addModifyListener( lsMod );
 
+    } else {
+      wTopicText = new TextVar( transMeta, wTopicGroup, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
+      props.setLook( wTopicText );
+      wTopicText.setLayoutData( fdTopic );
+      wTopicText.addModifyListener( lsMod );
+    }
+
+    wTopicField = createFieldDropDown( wTopicGroup, props, stepMeta, fdTopic );
+    props.setLook( wTopicField );
+    wTopicField.setLayoutData( fdTopic );
     setTopicWidgetVisibility( wTopicFromField );
-
-    wTopicText.addModifyListener( lsMod );
     wTopicField.addModifyListener( lsMod );
   }
 
   private void setTopicWidgetVisibility( Button topicComesFromField ) {
     stepMeta.setChanged( stepMeta.hasChanged() || topicInField != topicComesFromField.getSelection() );
     wTopicField.setVisible( topicComesFromField.getSelection() );
-    wTopicText.setVisible( !topicComesFromField.getSelection() );
+    if ( isTopicTextCombo ) {
+      wTopicTextCombo.setVisible( !topicComesFromField.getSelection() );
+    } else {
+      wTopicText.setVisible( !topicComesFromField.getSelection() );
+    }
+
     if ( topicComesFromField.getSelection() ) {
       wlTopic.setText( fieldTopicLabel );
     } else {
@@ -174,7 +171,8 @@ public class TopicSelection extends Composite {
   }
 
   public String getTopicText() {
-    return wTopicText.getText();
+
+    return isTopicTextCombo ? wTopicTextCombo.getText() : wTopicText.getText();
   }
 
   public String getTopicFieldText() {
@@ -186,7 +184,11 @@ public class TopicSelection extends Composite {
   }
 
   public void setTopicText( String topicText ) {
-    wTopicText.setText( topicText );
+    if ( isTopicTextCombo ) {
+      wTopicTextCombo.setText( topicText );
+    } else {
+      wTopicText.setText( topicText );
+    }
   }
 
   public void setTopicInField( boolean topicInField ) {
@@ -200,6 +202,7 @@ public class TopicSelection extends Composite {
     return wTopicFromField.getSelection();
   }
 
+  @Override
   public void setEnabled( boolean enabled ) {
     wTopicGroup.setEnabled( enabled );
 
@@ -208,11 +211,20 @@ public class TopicSelection extends Composite {
 
     wlTopic.setEnabled( enabled );
 
-    wTopicText.setEnabled( enabled );
-    wTopicText.setEditable( enabled );
+    if ( isTopicTextCombo ) {
+      wTopicTextCombo.setEnabled( enabled );
+      wTopicTextCombo.setEditable( enabled );
+    } else {
+      wTopicText.setEnabled( enabled );
+      wTopicText.setEditable( enabled );
+    }
 
     wTopicField.setEnabled( enabled );
     wTopicField.setEditable( enabled );
+  }
+
+  public ComboVar getTopicTextCombo() {
+    return wTopicTextCombo;
   }
 
   /**
@@ -231,6 +243,7 @@ public class TopicSelection extends Composite {
     private String textTopicLabel;
     private String textTopicRadioLabel;
     private String fieldTopicRadioLabel;
+    private boolean isTopicTextCombo;
 
     public Builder setComposite( Composite composite ) {
       this.composite = composite;
@@ -289,6 +302,11 @@ public class TopicSelection extends Composite {
 
     public Builder setFieldTopicRadioLabel( String fieldTopicRadioLabel ) {
       this.fieldTopicRadioLabel = fieldTopicRadioLabel;
+      return this;
+    }
+
+    public Builder isFieldTextCombo( boolean isCombo ) {
+      this.isTopicTextCombo = isCombo;
       return this;
     }
 
