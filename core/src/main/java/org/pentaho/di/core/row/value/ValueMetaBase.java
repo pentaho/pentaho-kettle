@@ -3,7 +3,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -5013,7 +5013,6 @@ public class ValueMetaBase implements ValueMetaInterface {
       int originalColumnDisplaySize = originalPrecision;
       String originalColumnTypeName = rs.getString( "TYPE_NAME" );
       String originalColumnLabel = rs.getString( "REMARKS" );
-      boolean originalSigned = false; // TODO not sure this is possible to get through metadata
       int length = -1;
       int precision = -1;
       int valtype = ValueMetaInterface.TYPE_NONE;
@@ -5036,17 +5035,11 @@ public class ValueMetaBase implements ValueMetaInterface {
           break;
 
         case java.sql.Types.BIGINT:
-          // verify Unsigned BIGINT overflow!
-          //
-          if ( originalSigned ) {
-            valtype = ValueMetaInterface.TYPE_INTEGER;
-            precision = 0; // Max 9.223.372.036.854.775.807
-            length = 15;
-          } else {
-            valtype = ValueMetaInterface.TYPE_BIGNUMBER;
-            precision = 0; // Max 18.446.744.073.709.551.615
-            length = 16;
-          }
+          // SQL BigInt is equivalent to a Java Long
+          // And a Java Long is equivalent to a PDI Integer.
+          valtype = ValueMetaInterface.TYPE_INTEGER;
+          precision = 0; // Max 9.223.372.036.854.775.807
+          length = 15;
           break;
 
         case java.sql.Types.INTEGER:
@@ -5097,7 +5090,7 @@ public class ValueMetaBase implements ValueMetaInterface {
 
             // MySQL: max resolution is double precision floating point (double)
             // The (12,31) that is given back is not correct
-            if ( databaseMeta.getDatabaseInterface().isMySQLVariant() ) {
+            if ( databaseMeta.isMySQLVariant() ) {
               if ( precision >= length ) {
                 precision = -1;
                 length = -1;
@@ -5165,7 +5158,7 @@ public class ValueMetaBase implements ValueMetaInterface {
         case java.sql.Types.TIME:
           valtype = ValueMetaInterface.TYPE_DATE;
           //
-          if ( databaseMeta.getDatabaseInterface().isMySQLVariant() ) {
+          if ( databaseMeta.isMySQLVariant() ) {
             String property = databaseMeta.getConnectionProperties().getProperty( "yearIsDateType" );
             if ( property != null && property.equalsIgnoreCase( "false" )
                 && "YEAR".equalsIgnoreCase( originalColumnTypeName ) ) {
