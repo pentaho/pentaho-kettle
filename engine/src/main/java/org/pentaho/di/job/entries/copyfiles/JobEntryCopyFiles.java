@@ -381,6 +381,13 @@ public class JobEntryCopyFiles extends JobEntryBase implements Cloneable, JobEnt
           String vwildcard_previous = resultRow.getString( 2, null );
 
           if ( !Utils.isEmpty( vsourcefilefolder_previous ) && !Utils.isEmpty( vdestinationfilefolder_previous ) ) {
+            if ( isDetailed() ) {
+              logDetailed( BaseMessages.getString( PKG, "JobCopyFiles.Log.ProcessingRow",
+                KettleVFS.getFriendlyURI( environmentSubstitute( vsourcefilefolder_previous ) ),
+                KettleVFS.getFriendlyURI( environmentSubstitute( vdestinationfilefolder_previous ) ),
+                vwildcard_previous ) );
+            }
+
             if ( !processFileFolder( vsourcefilefolder_previous, vdestinationfilefolder_previous, vwildcard_previous,
                 parentJob, result ) ) {
               // The copy process fail
@@ -400,6 +407,12 @@ public class JobEntryCopyFiles extends JobEntryBase implements Cloneable, JobEnt
           if ( !Utils.isEmpty( vsourcefilefolder[i] ) && !Utils.isEmpty( vdestinationfilefolder[i] ) ) {
 
             // ok we can process this file/folder
+
+            if ( isBasic() ) {
+              logBasic( BaseMessages.getString( PKG, "JobCopyFiles.Log.ProcessingRow",
+                KettleVFS.getFriendlyURI( environmentSubstitute( vsourcefilefolder[ i ] ) ),
+                KettleVFS.getFriendlyURI( environmentSubstitute( vdestinationfilefolder[ i ] ) ), vwildcard[ i ] ) );
+            }
 
             if ( !processFileFolder( vsourcefilefolder[i], vdestinationfilefolder[i], vwildcard[i], parentJob, result ) ) {
               // The copy process fail
@@ -445,11 +458,6 @@ public class JobEntryCopyFiles extends JobEntryBase implements Cloneable, JobEnt
     String realSourceFilefoldername = environmentSubstitute( sourcefilefoldername );
     String realDestinationFilefoldername = environmentSubstitute( destinationfilefoldername );
     String realWildcard = environmentSubstitute( wildcard );
-
-    if ( isDetailed() ) {
-      logDetailed( BaseMessages.getString( PKG, "JobCopyFiles.Log.ProcessingRow", KettleVFS.getFriendlyURI( realSourceFilefoldername ),
-        KettleVFS.getFriendlyURI( realDestinationFilefoldername ), realWildcard ) );
-    }
 
     try {
       sourcefilefolder = KettleVFS.getFileObject( realSourceFilefoldername, this );
