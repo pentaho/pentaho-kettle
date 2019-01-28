@@ -34,7 +34,7 @@ public class MariaDBDatabaseMeta extends MySQLDatabaseMeta {
 
 
   @Override public String[] getUsedLibraries() {
-    return new String[] { "mariadb-java-client-1.4.6.jar" };
+    return new String[] { "mariadb-java-client-2.3.0.jar" };
   }
 
 
