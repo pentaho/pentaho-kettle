@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -21,12 +21,6 @@
  ******************************************************************************/
 package org.pentaho.di.job.entries.getpop;
 
-import static org.mockito.Mockito.when;
-
-import javax.mail.Folder;
-import javax.mail.MessagingException;
-import javax.mail.Store;
-
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -36,6 +30,14 @@ import org.mockito.stubbing.Answer;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.logging.LogChannelInterface;
+
+import javax.mail.Folder;
+import javax.mail.MessagingException;
+import javax.mail.Store;
+import java.io.File;
+import java.io.IOException;
+
+import static org.mockito.Mockito.when;
 
 public class MailConnectionTest {
 
@@ -76,12 +78,97 @@ public class MailConnectionTest {
   }
 
   /**
+   * PDI-17713 Test {@link MailConnection#findValidTarget(String, String) }
+   *
+   * Note - this test case relies on the ability to create temporary files
+   * of zero-byte size in the java.io.tmpdir folder.
+   */
+  @Test
+  public void findValidTargetTest() throws IOException, KettleException {
+    File aFile = null;
+    String tmpFileLocation = System.getProperty( "java.io.tmpdir" );
+    String aBaseFile = "pdi17713-.junk";
+    tmpFileLocation = tmpFileLocation.replace( "\\", "/" );
+    if ( !tmpFileLocation.endsWith( "/" ) ) {
+      tmpFileLocation = tmpFileLocation + "/";
+    }
+
+    // Create temporary files to set up algorithm to have to find an available temp file
+    for ( int i = 0; i < 3; i++ ) {
+      aFile = new File( tmpFileLocation + "pdi17713-" + i + ".junk" );
+      if ( !aFile.exists() ) {
+        makeAFile( aFile );
+      }
+      aFile = new File( tmpFileLocation + "pdi17713-" + i ); // no extension version
+      if ( !aFile.exists() ) {
+        makeAFile( aFile );
+      }
+    }
+
+    //**********************************
+    // Test with file extensions...
+    //**********************************
+
+    // Should now have six files in the tmp folder...
+    // with extensions: {tempdir}/pdi17713-0.junk, {tempdir}/pdi17713-1.junk, and {tempdir}/pdi17713-2.junk
+    // without extensions: {tempdir}/pdi17713-0, {tempdir}/pdi17713-1, and {tempdir}/pdi17713-2
+    String validTargetTestRtn = MailConnection.findValidTarget( tmpFileLocation, aBaseFile );
+    // Tests that if the base file doesn't already exist (like IMG00003.png), it will use that one
+
+    Assert.assertTrue( "Original file name should be tried first.", validTargetTestRtn.endsWith( aBaseFile ) );
+
+    // Make sure that the target file already exists so it has to try to find the next available one
+    makeAFile( tmpFileLocation + aBaseFile );
+    validTargetTestRtn = MailConnection.findValidTarget( tmpFileLocation, aBaseFile );
+    // Tests that next available file has a "-3" because 0, 1, and 2 are taken
+    Assert.assertTrue( "File extension test failed - expected pdi17713-3.junk as file name", validTargetTestRtn.endsWith( "pdi17713-3.junk" ) );
+
+    //**********************************
+    // Now test without file extensions
+    //**********************************
+
+    aBaseFile = "pdi17713-";
+    validTargetTestRtn = MailConnection.findValidTarget( tmpFileLocation, aBaseFile );
+    // Makes sure that it will still use the base file, even with no file extension
+    Assert.assertTrue( "Original file name should be tried first.", validTargetTestRtn.endsWith( aBaseFile ) );
+    makeAFile( tmpFileLocation + aBaseFile );
+    // Make sure that the target file already exists so it has to try to find the next available one
+    validTargetTestRtn = MailConnection.findValidTarget( tmpFileLocation, aBaseFile );
+    // Tests that next available file has a "-3" because 0, 1, and 2 are taken, even without a file extension
+    Assert.assertTrue( "File without extension test failed - expected pdi17713-3.junk as file name", validTargetTestRtn.endsWith( "pdi17713-3" ) );
+
+    try {
+      validTargetTestRtn = MailConnection.findValidTarget( null, "wibble" );
+      Assert.fail( "Expected an IllegalArgumentException with a null parameter for folderName to findValidTarget" );
+    } catch ( IllegalArgumentException expected ) {
+      // Expect this exception
+    }
+
+    try {
+      validTargetTestRtn = MailConnection.findValidTarget( "wibble", null );
+      Assert.fail( "Expected an IllegalArgumentException with a null parameter for fileName to findValidTarget" );
+    } catch ( IllegalArgumentException expected ) {
+      // Expect this exception
+    }
+  }
+
+  /**
    * PDI-7426 Test {@link MailConnection#folderExists(String)} method.
    */
   @Test
   public void folderExistsTest() {
     boolean actual = conn.folderExists( "a/b" );
     Assert.assertTrue( "Folder B exists", actual );
+  }
+
+  private static void makeAFile( String path ) throws IOException {
+    File aFile = new File( path );
+    makeAFile( aFile );
+  }
+
+  private static void makeAFile( File aFile ) throws IOException {
+    aFile.createNewFile(); // makes sure the base file exists so that it will have to use new algorithm
+    aFile.deleteOnExit();
   }
 
   private class Mconn extends MailConnection {
