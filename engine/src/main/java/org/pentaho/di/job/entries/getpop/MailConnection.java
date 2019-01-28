@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,17 +22,17 @@
 
 package org.pentaho.di.job.entries.getpop;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Properties;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import com.google.common.annotations.VisibleForTesting;
+import com.sun.mail.imap.IMAPSSLStore;
+import com.sun.mail.pop3.POP3SSLStore;
+import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.io.IOUtils;
+import org.pentaho.di.core.Const;
+import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.logging.LogChannelInterface;
+import org.pentaho.di.core.util.Utils;
+import org.pentaho.di.core.vfs.KettleVFS;
+import org.pentaho.di.i18n.BaseMessages;
 
 import javax.mail.Flags;
 import javax.mail.Flags.Flag;
@@ -55,16 +55,17 @@ import javax.mail.search.ReceivedDateTerm;
 import javax.mail.search.RecipientStringTerm;
 import javax.mail.search.SearchTerm;
 import javax.mail.search.SubjectTerm;
-
-import org.pentaho.di.core.Const;
-import org.pentaho.di.core.util.Utils;
-import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.logging.LogChannelInterface;
-import org.pentaho.di.core.vfs.KettleVFS;
-import org.pentaho.di.i18n.BaseMessages;
-
-import com.sun.mail.imap.IMAPSSLStore;
-import com.sun.mail.pop3.POP3SSLStore;
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.Properties;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * MailConnection handles the process of connecting to, reading from POP3/IMAP.
@@ -563,8 +564,6 @@ public class MailConnection {
    *
    * @param receipient
    *          messages will be filtered on receipient
-   * @param notTerm
-   *          negate condition
    */
   public void setReceipientTerm( String receipient ) {
     if ( !Utils.isEmpty( receipient ) ) {
@@ -577,8 +576,6 @@ public class MailConnection {
    *
    * @param receiveddate
    *          messages will be filtered on receiveddate
-   * @param notTerm
-   *          negate condition
    */
   public void setReceivedDateTermEQ( Date receiveddate ) {
     if ( this.protocol == MailConnectionMeta.PROTOCOL_POP3 ) {
@@ -593,8 +590,6 @@ public class MailConnection {
    *
    * @param futureDate
    *          messages will be filtered on futureDate
-   * @param notTerm
-   *          negate condition
    */
   public void setReceivedDateTermLT( Date futureDate ) {
     if ( this.protocol == MailConnectionMeta.PROTOCOL_POP3 ) {
@@ -609,8 +604,6 @@ public class MailConnection {
    *
    * @param pastDate
    *          messages will be filtered on pastDate
-   * @param notTerm
-   *          negate condition
    */
   public void setReceivedDateTermGT( Date pastDate ) {
     if ( this.protocol == MailConnectionMeta.PROTOCOL_POP3 ) {
@@ -732,7 +725,7 @@ public class MailConnection {
    *          the target filename
    * @param foldername
    *          the parent folder of filename
-   * @throws KettleException.
+   * @throws KettleException
    */
 
   public void saveMessageContentToFile( String filename, String foldername ) throws KettleException {
@@ -746,11 +739,7 @@ public class MailConnection {
         + this.message.getMessageNumber(), filename, foldername ), e );
     } finally {
       if ( os != null ) {
-        try {
-          os.close();
-          os = null;
-        } catch ( Exception e ) { /* Ignore */
-        }
+        IOUtils.closeQuietly( os );
       }
     }
   }
@@ -760,7 +749,7 @@ public class MailConnection {
    *
    * @param foldername
    *          the target foldername
-   * @throws KettleException.
+   * @throws KettleException
    */
   public void saveAttachedFiles( String foldername ) throws KettleException {
     saveAttachedFiles( foldername, null );
@@ -773,7 +762,7 @@ public class MailConnection {
    *          the target foldername
    * @param pattern
    *          regular expression to filter on files
-   * @throws KettleException.
+   * @throws KettleException
    */
   public void saveAttachedFiles( String foldername, Pattern pattern ) throws KettleException {
     Object content = null;
@@ -837,46 +826,60 @@ public class MailConnection {
     }
   }
 
+  @VisibleForTesting
+  static String findValidTarget( String folderName, final String fileName ) throws KettleException {
+    if ( fileName == null || folderName == null ) {
+      throw new IllegalArgumentException( "Cannot have null arguments to findValidTarget" );
+    }
+    String fileNameRoot = FilenameUtils.getBaseName( fileName ), ext = "." + FilenameUtils.getExtension( fileName );
+    if ( ( ext.length() == 1 ) ) { // only a "."
+      ext = "";
+    }
+    String rtn = "", base = FilenameUtils.concat( folderName, fileNameRoot );
+    int baseSz = base.length();
+    StringBuilder build = new StringBuilder( baseSz ).append( base );
+    int i = -1;
+    do {
+      i++;
+      build.setLength( baseSz ); // bring string back to size
+      build.append( i > 0 ? Integer.toString( i ) : "" ).append( ext );
+      rtn = build.toString();
+    } while ( KettleVFS.fileExists( rtn ) );
+
+    return rtn;
+  }
+
   private static void saveFile( String foldername, String filename, InputStream input ) throws KettleException {
     OutputStream fos = null;
     BufferedOutputStream bos = null;
     BufferedInputStream bis = null;
     try {
-      if ( filename == null ) {
-        filename = File.createTempFile( "xx", ".out" ).getName();
-      }
       // Do no overwrite existing file
-      String targetFileName, baseTargetFileName;
-      targetFileName = baseTargetFileName = foldername + "/" + filename;
-      int i = 0;
-      while ( KettleVFS.fileExists( targetFileName ) ) {
-        targetFileName = baseTargetFileName + i;
-        i++;
+      String targetFileName;
+      if ( filename == null ) {
+        File f = File.createTempFile( "xx", ".out" );
+        f.deleteOnExit(); // Clean up file
+        filename = f.getName();
+        targetFileName = foldername + "/" + filename; // Note - createTempFile Used - so will be unique
+      } else {
+        targetFileName = findValidTarget( foldername, filename );
       }
       fos = KettleVFS.getOutputStream( targetFileName, false );
       bos = new BufferedOutputStream( fos );
       bis = new BufferedInputStream( input );
-      int aByte;
-      while ( ( aByte = bis.read() ) != -1 ) {
-        bos.write( aByte );
-      }
+      IOUtils.copy( bis, bos );
+      bos.flush();
     } catch ( Exception e ) {
       throw new KettleException( e );
     } finally {
-      try {
-        if ( bos != null ) {
-          bos.flush();
-          bos.close();
-        }
-        if ( bis != null ) {
-          bis.close();
-          bis = null;
-        }
-        if ( fos != null ) {
-          fos.flush();
-          fos.close();
-        }
-      } catch ( Exception e ) { /* Ignore */
+      if ( bis != null ) {
+        IOUtils.closeQuietly( bis );
+        bis = null; // Help the GC
+      }
+      if ( bos != null ) {
+        IOUtils.closeQuietly( bos );
+        bos = null; // Help the GC
+        // Note - closing the BufferedOuputStream closes the underlying output stream according to the Javadoc
       }
     }
   }
@@ -1168,7 +1171,7 @@ public class MailConnection {
   /**
    * Returns all subfolders of the specified folder
    *
-   * @param taget
+   * @param folder
    *          parent folder
    * @return sub folders
    */
