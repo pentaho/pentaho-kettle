@@ -93,7 +93,6 @@ public class ShowHelpDialog extends Dialog {
   private Text textURL;
 
   private Cursor cursorEnabled;
-  private Cursor cursorDisabled;
 
   private Shell shell;
   private Display display;
@@ -229,7 +228,6 @@ public class ShowHelpDialog extends Dialog {
     imagePrintEnabled = GUIResource.getInstance().getImagePrintEnabled();
     imagePrintDisabled = GUIResource.getInstance().getImagePrintDisabled();
     cursorEnabled = new Cursor( display, SWT.CURSOR_HAND );
-    cursorDisabled = new Cursor( display, SWT.CURSOR_ARROW );
   }
 
   private void setUpListeners() {
