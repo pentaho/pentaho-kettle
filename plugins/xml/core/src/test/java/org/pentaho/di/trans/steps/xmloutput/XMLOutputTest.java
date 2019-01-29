@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -40,6 +40,7 @@ import org.pentaho.di.trans.steps.xmloutput.XMLField.ContentType;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
+import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.mock;
@@ -120,6 +121,22 @@ public class XMLOutputTest {
     xmlOutput.setVariable( Const.KETTLE_COMPATIBILITY_XML_OUTPUT_NULL_VALUES, "Y" );
 
     testNullValuesInAttribute( rowWithNullData.length  );
+  }
+
+  /**
+   * [PDI-15575] Testing to verify that getIfPresent defaults the XMLField ContentType value
+   */
+  @Test
+  public void testDefaultXmlFieldContentType() {
+    XMLField[] xmlFields = initOutputFields( 4, null );
+    xmlFields[0].setContentType( ContentType.getIfPresent( "Element" ) );
+    xmlFields[1].setContentType( ContentType.getIfPresent( "Attribute" ) );
+    xmlFields[2].setContentType( ContentType.getIfPresent( "" ) );
+    xmlFields[3].setContentType( ContentType.getIfPresent( "WrongValue" ) );
+    assertEquals( xmlFields[0].getContentType(), ContentType.Element );
+    assertEquals( xmlFields[1].getContentType(), ContentType.Attribute );
+    assertEquals( xmlFields[2].getContentType(), ContentType.Element );
+    assertEquals( xmlFields[3].getContentType(), ContentType.Element );
   }
 
   private void testNullValuesInAttribute( int writeNullInvocationExpected ) throws KettleException, XMLStreamException {
