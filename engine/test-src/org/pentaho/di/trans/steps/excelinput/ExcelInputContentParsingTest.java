@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -29,6 +29,14 @@ import org.pentaho.di.core.Const;
 import static org.junit.Assert.assertEquals;
 
 public class ExcelInputContentParsingTest extends BaseExcelParsingTest {
+
+  private static final String[] CNST_3_SHEET_NAME_ARRAY = { "Sheet1", "Sheet2", "Sheet3" };
+  private static final String[] CNST_1_SHEET_NAME_ARRAY = { "Sheet1" };
+  private static final int[] CNST_3_SHEET_START_ROW_ARRAY = { 23, 3, 7 };
+  private static final int[] CNST_3_ZERO_INT_ARRAY = { 0, 0, 0 };
+  private static final int[] CNST_1_ZERO_INT_ARRAY = { 0 };
+  private static final int PDI_17765_ROW_LIMIT_SINGLE_SHEET = 10;
+  private static final int PDI_17765_ROW_LIMIT_MULTIPLE_SHEET = 20;
 
   @Override
   public void before() {
@@ -168,5 +176,133 @@ public class ExcelInputContentParsingTest extends BaseExcelParsingTest {
 
     checkErrors();
     checkContent( new Object[][] { { "FIST0200", "ACM" } } );
+  }
+
+  protected void test_PDI_17765( int rowLimit, boolean startsWithHeader, int[] startRowArr, int[] startColumnArr,
+                                 String[] sheetNameArr ) throws Exception {
+
+    // Common stuff
+    meta.setSpreadSheetType( SpreadSheetType.SAX_POI );
+
+    setFields( new ExcelInputField( "COL", -1, -1 ) );
+    meta.setRowLimit( rowLimit );
+
+    // Set scenario parameters
+    meta.setStartsWithHeader( startsWithHeader );
+    meta.setStartRow( startRowArr );
+    meta.setStartColumn( startColumnArr );
+    meta.setSheetName( sheetNameArr );
+    meta.normilizeAllocation();
+
+    init( "pdi-17765.xlsx" );
+
+    // Process
+    process();
+
+    // Check
+    checkErrors();
+    assertEquals( "Wrong row count", rowLimit, rows.size() );
+  }
+
+  protected void test_PDI_17765_SingleSheet( int rowLimit, boolean startsWithHeader, int startRow, Object firstResult,
+                                             Object lastResult ) throws Exception {
+
+    test_PDI_17765( PDI_17765_ROW_LIMIT_SINGLE_SHEET, startsWithHeader, new int[] { startRow }, CNST_1_ZERO_INT_ARRAY,
+      CNST_1_SHEET_NAME_ARRAY );
+
+    // Checks
+    assertEquals( "Wrong row count", PDI_17765_ROW_LIMIT_SINGLE_SHEET, rows.size() );
+    assertEquals( "Wrong first result", firstResult, rows.get( 0 )[ 0 ] );
+    assertEquals( "Wrong last result", lastResult, rows.get( PDI_17765_ROW_LIMIT_SINGLE_SHEET - 1 )[ 0 ] );
+  }
+
+  @Test
+  public void test_PDI_17765_SingleSheet_Header_StartRow0() throws Exception {
+    String firstResult = "1.0";
+    String lastResult = "10.0";
+    test_PDI_17765_SingleSheet( PDI_17765_ROW_LIMIT_SINGLE_SHEET, true, 0, firstResult, lastResult );
+  }
+
+  @Test
+  public void test_PDI_17765_SingleSheet_NoHeader_StartRow0() throws Exception {
+    String firstResult = "col";
+    String lastResult = "9.0";
+    test_PDI_17765_SingleSheet( PDI_17765_ROW_LIMIT_SINGLE_SHEET, false, 0, firstResult, lastResult );
+  }
+
+  @Test
+  public void test_PDI_17765_SingleSheet_Header_StartRow5() throws Exception {
+    String firstResult = "6.0";
+    String lastResult = "15.0";
+    test_PDI_17765_SingleSheet( PDI_17765_ROW_LIMIT_SINGLE_SHEET, true, 5, firstResult, lastResult );
+  }
+
+  @Test
+  public void test_PDI_17765_SingleSheet_NoHeader_StartRow5() throws Exception {
+    String firstResult = "5.0";
+    String lastResult = "14.0";
+    test_PDI_17765_SingleSheet( PDI_17765_ROW_LIMIT_SINGLE_SHEET, false, 5, firstResult, lastResult );
+  }
+
+  @Test
+  public void test_PDI_17765_SingleSheet_Header_StartRow12() throws Exception {
+    String firstResult = "13.0";
+    String lastResult = "22.0";
+    test_PDI_17765_SingleSheet( PDI_17765_ROW_LIMIT_SINGLE_SHEET, true, 12, firstResult, lastResult );
+  }
+
+  @Test
+  public void test_PDI_17765_SingleSheet_NoHeader_StartRow12() throws Exception {
+    String firstResult = "12.0";
+    String lastResult = "21.0";
+    test_PDI_17765_SingleSheet( PDI_17765_ROW_LIMIT_SINGLE_SHEET, false, 12, firstResult, lastResult );
+  }
+
+  @Test
+  public void test_PDI_17765_MultipleSheets_Header_StartRow0() throws Exception {
+    String firstResult = "1.0";
+    String lastResult = "20.0";
+    test_PDI_17765( PDI_17765_ROW_LIMIT_MULTIPLE_SHEET, true, CNST_3_ZERO_INT_ARRAY, CNST_3_ZERO_INT_ARRAY,
+      CNST_3_SHEET_NAME_ARRAY );
+
+    // Checks
+    assertEquals( "Wrong first result", firstResult, rows.get( 0 )[ 0 ] );
+    assertEquals( "Wrong last result", lastResult, rows.get( PDI_17765_ROW_LIMIT_MULTIPLE_SHEET - 1 )[ 0 ] );
+  }
+
+  @Test
+  public void test_PDI_17765_MultipleSheets_NoHeader_StartRow0() throws Exception {
+    String firstResult = "col";
+    String lastResult = "19.0";
+    test_PDI_17765( PDI_17765_ROW_LIMIT_MULTIPLE_SHEET, false, CNST_3_ZERO_INT_ARRAY, CNST_3_ZERO_INT_ARRAY,
+      CNST_3_SHEET_NAME_ARRAY );
+
+    // Checks
+    assertEquals( "Wrong first result", firstResult, rows.get( 0 )[ 0 ] );
+    assertEquals( "Wrong last result", lastResult, rows.get( PDI_17765_ROW_LIMIT_MULTIPLE_SHEET - 1 )[ 0 ] );
+  }
+
+  @Test
+  public void test_PDI_17765_MultipleSheets_Header_StartRowX() throws Exception {
+    String firstResult = "24.0";
+    String lastResult = "132.0";
+    test_PDI_17765( PDI_17765_ROW_LIMIT_MULTIPLE_SHEET, true, CNST_3_SHEET_START_ROW_ARRAY, CNST_3_ZERO_INT_ARRAY,
+      CNST_3_SHEET_NAME_ARRAY );
+
+    // Checks
+    assertEquals( "Wrong first result", firstResult, rows.get( 0 )[ 0 ] );
+    assertEquals( "Wrong last result", lastResult, rows.get( PDI_17765_ROW_LIMIT_MULTIPLE_SHEET - 1 )[ 0 ] );
+  }
+
+  @Test
+  public void test_PDI_17765_MultipleSheets_NoHeader_StartRowX() throws Exception {
+    String firstResult = "23.0";
+    String lastResult = "102.0";
+    test_PDI_17765( PDI_17765_ROW_LIMIT_MULTIPLE_SHEET, false, CNST_3_SHEET_START_ROW_ARRAY, CNST_3_ZERO_INT_ARRAY,
+      CNST_3_SHEET_NAME_ARRAY );
+
+    // Checks
+    assertEquals( "Wrong first result", firstResult, rows.get( 0 )[ 0 ] );
+    assertEquals( "Wrong last result", lastResult, rows.get( PDI_17765_ROW_LIMIT_MULTIPLE_SHEET - 1 )[ 0 ] );
   }
 }
