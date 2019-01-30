@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -354,7 +354,9 @@ public class TextFileOutput extends BaseStep implements StepInterface {
     if ( row != null ) {
       String filename = getOutputFileName( meta.isFileNameInField() ? row : null );
       boolean isWriteHeader = isWriteHeader( filename );
-      initFileStreamWriter( filename );
+      if ( data.writer == null ) {
+        initFileStreamWriter( filename );
+      }
 
       first = false;
 
@@ -1037,4 +1039,3 @@ public class TextFileOutput extends BaseStep implements StepInterface {
   }
 
 }
-
