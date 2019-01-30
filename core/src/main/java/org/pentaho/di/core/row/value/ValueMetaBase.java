@@ -3,7 +3,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -5090,7 +5090,7 @@ public class ValueMetaBase implements ValueMetaInterface {
 
             // MySQL: max resolution is double precision floating point (double)
             // The (12,31) that is given back is not correct
-            if ( databaseMeta.getDatabaseInterface().isMySQLVariant() ) {
+            if ( databaseMeta.isMySQLVariant() ) {
               if ( precision >= length ) {
                 precision = -1;
                 length = -1;
@@ -5158,7 +5158,7 @@ public class ValueMetaBase implements ValueMetaInterface {
         case java.sql.Types.TIME:
           valtype = ValueMetaInterface.TYPE_DATE;
           //
-          if ( databaseMeta.getDatabaseInterface().isMySQLVariant() ) {
+          if ( databaseMeta.isMySQLVariant() ) {
             String property = databaseMeta.getConnectionProperties().getProperty( "yearIsDateType" );
             if ( property != null && property.equalsIgnoreCase( "false" )
                 && "YEAR".equalsIgnoreCase( originalColumnTypeName ) ) {
