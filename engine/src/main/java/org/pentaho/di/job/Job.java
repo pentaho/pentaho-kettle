@@ -3,7 +3,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -518,7 +518,9 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
       log.logMinimal( BaseMessages.getString( PKG, "Job.Comment.JobFinished" ) );
 
       setActive( false );
-      setFinished( true );
+      if ( !isStopped() ) {
+        setFinished( true );
+      }
       return res;
     } finally {
       log.snap( Metrics.METRIC_JOB_STOP );

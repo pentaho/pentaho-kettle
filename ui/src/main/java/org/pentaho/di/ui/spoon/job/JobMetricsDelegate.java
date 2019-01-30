@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -189,7 +189,7 @@ public class JobMetricsDelegate extends SpoonDelegate {
 
       public void paintControl( PaintEvent event ) {
 
-        if ( jobGraph.job != null && jobGraph.job.isFinished() ) {
+        if ( jobGraph.job != null && ( jobGraph.job.isFinished() || jobGraph.job.isStopped() ) ) {
           refreshImage( event.gc );
 
           if ( image != null && !image.isDisposed() ) {
