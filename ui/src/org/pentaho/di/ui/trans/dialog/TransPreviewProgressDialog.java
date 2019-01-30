@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -161,6 +161,20 @@ public class TransPreviewProgressDialog {
       transDebugMeta.getStepDebugMetaMap().put( stepMeta, stepDebugMeta );
     }
 
+    int previousPct = 0;
+    final List<String> previewComplete = new ArrayList<String>();
+    // We add a break-point that is called every time we have a step with a full preview row buffer
+    // That makes it easy and fast to see if we have all the rows we need
+    //
+    transDebugMeta.addBreakPointListers( new BreakPointListener() {
+      public void breakPointHit( TransDebugMeta transDebugMeta, StepDebugMeta stepDebugMeta,
+                                 RowMetaInterface rowBufferMeta, List<Object[]> rowBuffer ) {
+        String stepName = stepDebugMeta.getStepMeta().getName();
+        previewComplete.add( stepName );
+        progressMonitor.subTask( BaseMessages.getString(
+          PKG, "TransPreviewProgressDialog.SubTask.StepPreviewFinished", stepName ) );
+      }
+    } );
     // set the appropriate listeners on the transformation...
     //
     transDebugMeta.addRowListenersToTransformation( trans );
@@ -182,23 +196,8 @@ public class TransPreviewProgressDialog {
       return;
     }
 
-    int previousPct = 0;
-    final List<String> previewComplete = new ArrayList<String>();
-
     while ( previewComplete.size() < previewStepNames.length
       && !trans.isFinished() && !progressMonitor.isCanceled() ) {
-      // We add a break-point that is called every time we have a step with a full preview row buffer
-      // That makes it easy and fast to see if we have all the rows we need
-      //
-      transDebugMeta.addBreakPointListers( new BreakPointListener() {
-        public void breakPointHit( TransDebugMeta transDebugMeta, StepDebugMeta stepDebugMeta,
-          RowMetaInterface rowBufferMeta, List<Object[]> rowBuffer ) {
-          String stepName = stepDebugMeta.getStepMeta().getName();
-          previewComplete.add( stepName );
-          progressMonitor.subTask( BaseMessages.getString(
-            PKG, "TransPreviewProgressDialog.SubTask.StepPreviewFinished", stepName ) );
-        }
-      } );
 
       // How many rows are done?
       int nrDone = 0;
