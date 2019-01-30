@@ -1,7 +1,7 @@
 /*!
  * HITACHI VANTARA PROPRIETARY AND CONFIDENTIAL
  *
- * Copyright 2002 - 2018 Hitachi Vantara. All rights reserved.
+ * Copyright 2002 - 2019 Hitachi Vantara. All rights reserved.
  *
  * NOTICE: All information including source code contained herein is, and
  * remains the sole property of Hitachi Vantara and its licensors. The intellectual
@@ -329,6 +329,63 @@ public class StepWithMappingMetaTest {
     Assert.assertEquals( stepValue, childVariableSpace.getVariable( paramOverwrite ) );
 
     Assert.assertEquals( parentValue, childVariableSpace.getVariable( parentAndChildParameter ) );
+  }
+
+
+  @Test
+  @PrepareForTest( StepWithMappingMeta.class )
+  public void replaceVariablesWithJobInternalVariablesTest()  {
+    String variableOverwrite = "paramOverwrite";
+    String variableChildOnly = "childValueVariable";
+    String [] jobVariables = Const.INTERNAL_JOB_VARIABLES;
+    VariableSpace ChildVariables = new Variables();
+    VariableSpace replaceByParentVariables = new Variables();
+
+    for ( String internalVariable : jobVariables ) {
+      ChildVariables.setVariable( internalVariable, "childValue" );
+      replaceByParentVariables.setVariable( internalVariable, "parentValue" );
+    }
+
+    ChildVariables.setVariable( variableChildOnly, "childValueVariable" );
+    ChildVariables.setVariable( variableOverwrite, "childNotInternalValue" );
+    replaceByParentVariables.setVariable( variableOverwrite, "parentNotInternalValue" );
+
+    StepWithMappingMeta.replaceVariableValues( ChildVariables, replaceByParentVariables );
+    // do not replace internal variables
+    Assert.assertEquals( "childValue", ChildVariables.getVariable( Const.INTERNAL_VARIABLE_ENTRY_CURRENT_DIRECTORY ) );
+    // replace non internal variables
+    Assert.assertEquals( "parentNotInternalValue", ChildVariables.getVariable( variableOverwrite ) );
+    // keep child only variables
+    Assert.assertEquals( variableChildOnly, ChildVariables.getVariable( variableChildOnly ) );
+
+  }
+
+  @Test
+  @PrepareForTest( StepWithMappingMeta.class )
+  public void replaceVariablesWithTransInternalVariablesTest()  {
+    String variableOverwrite = "paramOverwrite";
+    String variableChildOnly = "childValueVariable";
+    String [] jobVariables = Const.INTERNAL_TRANS_VARIABLES;
+    VariableSpace ChildVariables = new Variables();
+    VariableSpace replaceByParentVariables = new Variables();
+
+    for ( String internalVariable : jobVariables ) {
+      ChildVariables.setVariable( internalVariable, "childValue" );
+      replaceByParentVariables.setVariable( internalVariable, "parentValue" );
+    }
+
+    ChildVariables.setVariable( variableChildOnly, "childValueVariable" );
+    ChildVariables.setVariable( variableOverwrite, "childNotInternalValue" );
+    replaceByParentVariables.setVariable( variableOverwrite, "parentNotInternalValue" );
+
+    StepWithMappingMeta.replaceVariableValues( ChildVariables, replaceByParentVariables );
+    // do not replace internal variables
+    Assert.assertEquals( "childValue", ChildVariables.getVariable( Const.INTERNAL_VARIABLE_ENTRY_CURRENT_DIRECTORY ) );
+    // replace non internal variables
+    Assert.assertEquals( "parentNotInternalValue", ChildVariables.getVariable( variableOverwrite ) );
+    // keep child only variables
+    Assert.assertEquals( variableChildOnly, ChildVariables.getVariable( variableChildOnly ) );
+
   }
 
 }

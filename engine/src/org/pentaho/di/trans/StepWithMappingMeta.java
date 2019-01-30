@@ -1,7 +1,7 @@
 /*!
  * HITACHI VANTARA PROPRIETARY AND CONFIDENTIAL
  *
- * Copyright 2002 - 2018 Hitachi Vantara. All rights reserved.
+ * Copyright 2002 - 2019 Hitachi Vantara. All rights reserved.
  *
  * NOTICE: All information including source code contained herein is, and
  * remains the sole property of Hitachi Vantara and its licensors. The intellectual
@@ -409,10 +409,15 @@ public abstract class StepWithMappingMeta extends BaseStepMeta implements HasRep
     }
     String[] variableNames = replaceBy.listVariables();
     for ( String variableName : variableNames ) {
-      if ( childTransMeta.getVariable( variableName ) != null ) {
+      if ( childTransMeta.getVariable( variableName ) != null && !isInternalVariable( variableName ) ) {
         childTransMeta.setVariable( variableName, replaceBy.getVariable( variableName ) );
       }
     }
+  }
+
+  private static boolean isInternalVariable( String variableName ) {
+    return ( Arrays.asList( Const.INTERNAL_JOB_VARIABLES ).contains( variableName )
+      || Arrays.asList( Const.INTERNAL_TRANS_VARIABLES ).contains( variableName ) );
   }
 
 }
