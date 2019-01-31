@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -240,18 +240,17 @@ public class TransHistoryDelegate extends SpoonDelegate implements XulEventHandl
     LogTableInterface logTable = model.logTable;
 
     if ( logTable.isDefined() ) {
-      String schemaTable = logTable.getQuotedSchemaTableCombination();
       DatabaseMeta databaseMeta = logTable.getDatabaseMeta();
 
       MessageBox mb = new MessageBox( transGraph.getShell(), SWT.YES | SWT.NO | SWT.ICON_QUESTION );
       mb.setMessage( BaseMessages.getString( PKG, "TransGraph.Dialog.AreYouSureYouWantToRemoveAllLogEntries.Message",
-        schemaTable ) ); // Nothing found that matches your criteria, sorry!
+        logTable.getQuotedSchemaTableCombination() ) );
       mb.setText( BaseMessages.getString( PKG, "TransGraph.Dialog.AreYouSureYouWantToRemoveAllLogEntries.Title" ) );
       if ( mb.open() == SWT.YES ) {
         Database database = new Database( loggingObject, databaseMeta );
         try {
           database.connect();
-          database.truncateTable( schemaTable );
+          database.truncateTable( logTable.getSchemaName(), logTable.getTableName() );
         } catch ( Exception e ) {
           new ErrorDialog( transGraph.getShell(),
             BaseMessages.getString( PKG, "TransGraph.Dialog.ErrorClearningLoggingTable.Title" ),

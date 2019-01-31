@@ -3,7 +3,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -1609,7 +1609,7 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
    * @return the schemaname-tablename combination
    */
   public String getQuotedSchemaTableCombination( String schemaName, String tableName ) {
-    if ( !supportsSchemas() || Utils.isEmpty( schemaName ) ) {
+    if ( Utils.isEmpty( schemaName ) ) {
       if ( Utils.isEmpty( getPreferredSchemaName() ) ) {
         return quoteField( environmentSubstitute( tableName ) ); // no need to look further
       } else {
