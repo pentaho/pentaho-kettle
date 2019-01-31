@@ -558,9 +558,12 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
       throw new KettleJobException( BaseMessages.getString( PKG, "Job.Log.CounldNotFindStartingPoint" ) );
     }
 
-    Result res = execute( nr, result, startpoint, null, BaseMessages.getString( PKG, "Job.Reason.StartOfJobentry" ) );
-    setActive( false );
-
+    JobEntrySpecial jes = (JobEntrySpecial) startpoint.getEntry();
+    Result res;
+    do {
+      res = execute( nr, result, startpoint, null, BaseMessages.getString( PKG, "Job.Reason.StartOfJobentry" ) );
+      setActive( false );
+    } while ( jes.isRepeat() && !isStopped() );
     return res;
   }
 
