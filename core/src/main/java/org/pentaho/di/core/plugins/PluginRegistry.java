@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -94,6 +94,7 @@ public class PluginRegistry {
   private final Map<Class<? extends PluginTypeInterface>, Set<PluginTypeListener>> listeners = new HashMap<>();
 
   private final ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
+  private static final int WAIT_FOR_PLUGIN_TO_BE_AVAILABLE_LIMIT = 3000;
 
 
   /**
@@ -1062,5 +1063,30 @@ public class PluginRegistry {
     } finally {
       lock.writeLock().unlock();
     }
+  }
+
+  public PluginInterface findPluginWithId( Class<? extends PluginTypeInterface> pluginType, String pluginId, boolean waitForPluginToBeAvailable ) {
+    PluginInterface pluginInterface = findPluginWithId(  pluginType,  pluginId );
+    return waitForPluginToBeAvailable && pluginInterface == null
+      ? waitForPluginToBeAvailable( pluginType,  pluginId, WAIT_FOR_PLUGIN_TO_BE_AVAILABLE_LIMIT )
+      : pluginInterface;
+  }
+
+  private PluginInterface waitForPluginToBeAvailable( Class<? extends PluginTypeInterface> pluginType, String pluginId, int waitLimit ) {
+    int timeToSleep = 50;
+    try {
+      Thread.sleep( timeToSleep );
+      waitLimit -= timeToSleep;
+    } catch ( InterruptedException e ) {
+      log.logError( e.getLocalizedMessage(), e );
+      Thread.currentThread().interrupt();
+      return null;
+    }
+    PluginInterface pluginInterface = findPluginWithId( pluginType, pluginId );
+    return  waitLimit <= 0 && pluginInterface == null
+      ? null
+      : pluginInterface != null
+        ? pluginInterface
+        : waitForPluginToBeAvailable( pluginType, pluginId, waitLimit );
   }
 }
