@@ -210,6 +210,11 @@ public class JobEntryCopy implements Cloneable, XMLInterface, GUIPositionInterfa
     JobEntryCopy ge = new JobEntryCopy();
     ge.replaceMeta( this );
     ge.setObjectId( null );
+
+    for ( final Map.Entry<String, Map<String, String>> attribute : attributesMap.entrySet() ) {
+      ge.attributesMap.put( attribute.getKey(), attribute.getValue() );
+    }
+
     return ge;
   }
 
