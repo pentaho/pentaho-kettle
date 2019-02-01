@@ -14,22 +14,25 @@ To increase the number of agent nodes you can pass the number you want as parame
 docker-compose up --scale agent=N
 ```
 
-To cleanup everything it was created you can use the `down` command. This will remove containers, networks and volumes.
+Where **N** is the number of agent nodes you want.
+
+To cleanup everything it was created you can use the `down` command. This will remove images, containers, networks and volumes.
 
 ```console
-docker-compose down --volumes
+docker-compose down --volumes -rmi all
 ```
-
-Where **N** is the number of agent nodes you want.
 
 ## Configuration
 The following variables can be configured in a `.env` file in the current directory.
 
 - NETWORK_NAME - The docker network name. Default: hv-pipelines
+- PORT - The jenkins container externally mapped port. Default: 8080
+- VOLUME_NAME - The docker volume name. Default: hv-jenkins-home
 - JENKINS_IMAGE_NAME - The image tag name when building the [jenkins image](../../jenkins). Default: hv/jenkins
 - MASTER_LABELS - The labels set on the master node. Defaults: master
 - CREDENTIALS - The path to the credentials file to be used by the [jenkins image](../../jenkins). Default: ./credentials
 - PROJECTS_DIR - The projects directory that will be mapped into all the nodes, this allows building 
 of local projects in your pipelines. The directory will be mapped to `/projects` inside the container. Default: ./projects
+- JENKINS_AGENT_IMAGE_NAME - The image tag name when building the [jenkins agent image](../../jenkins-agent). Default: hv/jenkins-agent
 - AGENT_EXECUTORS - The number of executors of the node agents. Default: 2
 - AGENT_LABELS - The labels set on the agent nodes. Default: non-master

@@ -1,8 +1,8 @@
 // This is the master top-level pipeline that triggers both the build pipeline and the downstream triggered jobs
-library(identifier: "jenkins-shared-libraries@20190123-0", changelog: false)
+library(identifier: "jenkins-shared-libraries@20190201-0", changelog: false)
 
 String buildJobName =  'suite-release'
-List suiteParameters
+Map suiteParameters
 
 node('non-master') {
   properties([

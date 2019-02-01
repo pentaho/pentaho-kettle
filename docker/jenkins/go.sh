@@ -17,6 +17,7 @@ REPOSITORY=pentaho/jenkins
 JENKINS_HOME=/var/jenkins_home
 CREDENTIALS_PATH=/usr/share/jenkins/secrets/credentials
 DOCKER_VOLUME=${VOLUME_NAME:=jenkins_pipeline}:${JENKINS_HOME}
+JENKINS_PORT=${PORT:=8080}:8080
 SECRETS=${CREDENTIALS:=`${pwdcmd}`/secrets/credentials}:${CREDENTIALS_PATH}
 
 RED='\033[0;31m'
@@ -84,7 +85,7 @@ start() {
   call "docker run" \
     "${run_opts[@]+"${run_opts[@]}"}" \
     "${volumes[@]+"${volumes[@]}"}" \
-    "-p 8080:8080" \
+    "-p ${JENKINS_PORT}" \
     "${REPOSITORY}:${tag}"
 }
 

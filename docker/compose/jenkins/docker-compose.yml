@@ -1,28 +1,37 @@
 version: '3.7'
 
+# TODO
+# Use a deployed images instead of building locally
+# this means our jenkins images should be under a release process
+
 networks:
   pipelines:
     name: ${NETWORK_NAME:-hv-pipelines}
 
+volumes:
+  home:
+    name: ${VOLUME_NAME:-hv-jenkins-home}
+
 services:
   master:
-    # TODO: use a deployed image instead of building locally
-    # this means our jenkins image should be under a release process
     image: ${JENKINS_IMAGE_NAME:-hv/jenkins}
     build: ../../jenkins
     environment:
       - MASTER_LABELS=${MASTER_LABELS:-master}
     volumes:
+      - home:/var/jenkins_home
       - ${CREDENTIALS:-./credentials}:/usr/share/jenkins/secrets/credentials
       - ${PROJECTS_DIR:-./projects}:/projects
     networks:
       - pipelines
     ports:
-     - 8080:8080
+      - ${PORT:-8080}:8080
   agent:
-    image: csanchez/jenkins-swarm-slave
-    command: -master http://master:8080 -executors ${AGENT_EXECUTORS:-2} -name agent -labels ${AGENT_LABELS:-non-master}
+    image: ${JENKINS_AGENT_IMAGE_NAME:-hv/jenkins-agent}
+    build: ../../jenkins-agent
+    command: -master http://master:8080 -fsroot /var/jenkins_home -executors ${AGENT_EXECUTORS:-2} -name agent -labels ${AGENT_LABELS:-non-master}
     volumes:
+      - home:/var/jenkins_home
       - ${PROJECTS_DIR:-./projects}:/projects
     networks:
       - pipelines

@@ -34,7 +34,7 @@ def global_settings = jenkins.getExtensionList(GlobalLibraries.class)[0]
 if (!jenkins.isQuietingDown()) {
   if (!global_settings.libraries.any { it.name == name }) {
     def scm = new GitSCMSource(env['SHARED_LIBRARIES_REPO'])
-    scm.credentialsId = env['CREDENTIALS_ID']
+    scm.credentialsId = env['SCM_CREDENTIALS_ID']
     scm.traits = [new BranchDiscoveryTrait()]
     def library = new LibraryConfiguration(name, new SCMSourceRetriever(scm))
     library.defaultVersion = env['SHARED_LIBRARIES_BRANCH']

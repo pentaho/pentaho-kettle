@@ -17,10 +17,10 @@ import org.apache.commons.io.FileUtils
 
 import java.util.logging.Logger
 
-Logger logger = Logger.getLogger('configureGitCredentials')
+Logger logger = Logger.getLogger('configureCredentials')
 
-def jenkins = Jenkins.get()
-def env = System.getenv()
+Jenkins jenkins = Jenkins.get()
+Map env = System.getenv()
 
 def getCredentials = { ->
   def credentials = new Properties()
@@ -34,16 +34,26 @@ if (!jenkins.isQuietingDown()) {
   File f = new File(jenkins.getRootDir(), 'jenkins.bootstrap.credentials.state')
 
   if (!f.exists()) {
-    def credentials = getCredentials()
+    SystemCredentialsProvider credentialsProvider = SystemCredentialsProvider.getInstance()
+    Map credentials = getCredentials()
 
-    Credentials c = (Credentials) new UsernamePasswordCredentialsImpl(
+    Credentials scm = (Credentials) new UsernamePasswordCredentialsImpl(
         CredentialsScope.GLOBAL,
-        env['CREDENTIALS_ID'],
+        env['SCM_CREDENTIALS_ID'],
         'Git credentials',
         credentials['GIT_USER'],
         credentials['GIT_TOKEN']
     )
-    SystemCredentialsProvider.getInstance().getStore().addCredentials(Domain.global(), c)
+    credentialsProvider.getStore().addCredentials(Domain.global(), scm)
+
+    Credentials deploy = (Credentials) new UsernamePasswordCredentialsImpl(
+        CredentialsScope.GLOBAL,
+        env['DEPLOY_CREDENTIALS_ID'],
+        'Nexus credentials',
+        credentials['DEPLOY_USER'],
+        credentials['DEPLOY_PASS']
+    )
+    credentialsProvider.getStore().addCredentials(Domain.global(), deploy)
 
     FileUtils.writeStringToFile(f, jenkins.VERSION)
   } else {

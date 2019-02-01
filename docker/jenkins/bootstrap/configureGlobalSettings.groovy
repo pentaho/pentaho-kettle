@@ -24,21 +24,26 @@ import hudson.markup.RawHtmlMarkupFormatter
 import hudson.security.csrf.DefaultCrumbIssuer
 import jenkins.CLI
 import jenkins.model.Jenkins
+import jenkins.model.JenkinsLocationConfiguration
 import jenkins.model.ProjectNamingStrategy
 import jenkins.security.s2m.AdminWhitelistRule
 import org.apache.commons.io.FileUtils
+import org.jenkinsci.plugins.workflow.flow.FlowDurabilityHint
+import org.jenkinsci.plugins.workflow.flow.GlobalDefaultFlowDurabilityLevel
 
 import java.util.logging.Logger
 
 Logger logger = Logger.getLogger('configureGlobalSettings')
 
-def jenkins = Jenkins.get()
-def env = System.getenv()
-def masterLabels = env['MASTER_LABELS']?:'non-master'
+Jenkins jenkins = Jenkins.get()
+Map env = System.getenv()
+String masterLabels = env['MASTER_LABELS'] ?: 'non-master'
+String rootUrl = env['ROOT_URL'] ?: 'http://0.0.0.0:8080'
+
 /*
-    Disable all JNLP protocols except for JNLP4.  JNLP4 is the most secure agent
-    protocol because it is using standard TLS.
- */
+  Disable all JNLP protocols except for JNLP4. JNLP4 is the most secure agent
+  protocol because it is using standard TLS.
+*/
 Set<String> agentProtocolsList = ['JNLP4-connect', 'Ping']
 
 if (!jenkins.isQuietingDown()) {
@@ -50,42 +55,46 @@ if (!jenkins.isQuietingDown()) {
       jenkins.labelString = masterLabels
     }
 
-    /*
-         Disable submitting usage statistics
-     */
+    /* Disable submitting usage statistics */
     if (jenkins.isUsageStatisticsCollected()) {
       jenkins.setNoUsageStatistics(true)
       logger.info 'Disabled submitting usage stats to Jenkins project.'
     }
 
+    /* Force agent protocols to the defined ones only */
     if (!agentProtocolsList.containsAll(jenkins.getAgentProtocols())) {
       jenkins.setAgentProtocols(agentProtocolsList)
       logger.info 'Configured Agent Protocols'
     }
 
-    /*
-        Enable Agent Master Access Control
-     */
+    /* Enable Agent Master Access Control */
     jenkins.getInjector().getInstance(AdminWhitelistRule.class).setMasterKillSwitch(false)
     logger.info 'Configured Master Access Control'
 
-    /*
-        Prevent Cross Site Request Forgery exploits
-     */
+    /* Prevent Cross Site Request Forgery exploits */
     jenkins.crumbIssuer = new DefaultCrumbIssuer(true)
     logger.info 'Configured CSRF Protection'
 
-    /*
-        Configure Markup Formatter to use Safe HTML
-     */
+    /* Configure Markup Formatter to use Safe HTML */
     if (jenkins.markupFormatter.class != RawHtmlMarkupFormatter) {
       jenkins.markupFormatter = new RawHtmlMarkupFormatter(false)
       logger.info 'Configured Markup Formatter'
     }
 
     jenkins.projectNamingStrategy =
-        new ProjectNamingStrategy.PatternProjectNamingStrategy('[a-z0-9-\\.]{3,50}',"", true)
+        new ProjectNamingStrategy.PatternProjectNamingStrategy('[a-z0-9-\\.]{3,50}', "", true)
 
+    /* Set root URL */
+    JenkinsLocationConfiguration locationConfig = JenkinsLocationConfiguration.get()
+    locationConfig.setUrl(rootUrl)
+    logger.info "Root URL set to ${locationConfig.url}"
+
+    /* Set Default pipeline Durability */
+    GlobalDefaultFlowDurabilityLevel.DescriptorImpl level = jenkins.getExtensionList(GlobalDefaultFlowDurabilityLevel.DescriptorImpl.class)[0]
+    level.setDurabilityHint(FlowDurabilityHint.PERFORMANCE_OPTIMIZED)
+
+    level.save()
+    locationConfig.save()
     jenkins.save()
 
     CLI.get().setEnabled(false)

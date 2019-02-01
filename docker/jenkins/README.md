@@ -52,9 +52,9 @@ usage: go.sh [options]
 These are the container's available environment variables and their defaults.
 
 ```ini
-SAMPLE_PIPELINE_NAME=sample-pipeline
-SAMPLE_PIPELINE_REPO=https://github.com/pentaho/jenkins-pipelines.git
-SAMPLE_PIPELINE_BRANCH=master
+DEFAULT_JOB_NAME=pipeline
+DEFAULT_JOB_REPO=https://github.com/pentaho/jenkins-pipelines.git
+DEFAULT_JOB_BRANCH=master
 
 SHARED_LIBRARIES_NAME=jenkins-shared-libraries
 SHARED_LIBRARIES_REPO=https://github.com/pentaho/jenkins-shared-libraries.git
@@ -76,8 +76,6 @@ Alternatively, **but not recommended**, you can pass the credentials into the co
 
 ```console
 docker run -p 8080:8080 \
-  -e JENKINS_USER=<jenkins_user> \
-  -e JENKINS_PASS=<jenkins_pass> \
   -e GIT_USER=<git_user> \
   -e GIT_TOKEN=<git_token> \
   pentaho/jenkins:lts
@@ -93,8 +91,8 @@ Start by creating a file named *env.list* and copy the environment variables tha
 
 ```console
 cat << EOF > env.list
-SAMPLE_PIPELINE_REPO=/jenkins-pipelines
-SAMPLE_PIPELINE_BRANCH=master
+DEFAULT_JOB_REPO=/jenkins-pipelines
+DEFAULT_JOB_BRANCH=master
 
 SHARED_LIBRARIES_REPO=/jenkins-shared-libraries
 SHARED_LIBRARIES_BRANCH=master
