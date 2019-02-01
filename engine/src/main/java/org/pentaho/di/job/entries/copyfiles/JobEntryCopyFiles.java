@@ -385,7 +385,7 @@ public class JobEntryCopyFiles extends JobEntryBase implements Cloneable, JobEnt
               logDetailed( BaseMessages.getString( PKG, "JobCopyFiles.Log.ProcessingRow",
                 KettleVFS.getFriendlyURI( environmentSubstitute( vsourcefilefolder_previous ) ),
                 KettleVFS.getFriendlyURI( environmentSubstitute( vdestinationfilefolder_previous ) ),
-                vwildcard_previous ) );
+                environmentSubstitute( vwildcard_previous ) ) );
             }
 
             if ( !processFileFolder( vsourcefilefolder_previous, vdestinationfilefolder_previous, vwildcard_previous,
@@ -411,7 +411,8 @@ public class JobEntryCopyFiles extends JobEntryBase implements Cloneable, JobEnt
             if ( isBasic() ) {
               logBasic( BaseMessages.getString( PKG, "JobCopyFiles.Log.ProcessingRow",
                 KettleVFS.getFriendlyURI( environmentSubstitute( vsourcefilefolder[ i ] ) ),
-                KettleVFS.getFriendlyURI( environmentSubstitute( vdestinationfilefolder[ i ] ) ), vwildcard[ i ] ) );
+                KettleVFS.getFriendlyURI( environmentSubstitute( vdestinationfilefolder[ i ] ) ),
+                environmentSubstitute( vwildcard[ i ] ) ) );
             }
 
             if ( !processFileFolder( vsourcefilefolder[i], vdestinationfilefolder[i], vwildcard[i], parentJob, result ) ) {
