@@ -291,8 +291,11 @@ public class JobExecutionConfigurationDialog extends ConfigurationDialog {
       } catch ( KettleException ignored ) {
         // Ignore errors
       }
+      Boolean isRemote = (Boolean) items.get( 1 );
       getConfiguration().setRunConfiguration( wRunConfiguration.getText() );
-      wExpandRemote.setEnabled( (Boolean) items.get( 1 ) );
+      getConfiguration().setExecutingRemotely( isRemote );
+      getConfiguration().setExecutingLocally( !isRemote );
+      wExpandRemote.setEnabled( isRemote );
       wExpandRemote.setSelection( wExpandRemote.isEnabled() && wExpandRemote.getSelection() );
     } );
   }
