@@ -4,7 +4,7 @@
 #
 # Pentaho Data Integration
 #
-# Copyright (C) 2017 - 2018 by Hitachi Vantara : http://www.hitachivantara.com
+# Copyright (C) 2017-2019 by Hitachi Vantara : http://www.hitachivantara.com
 #
 # *****************************************************************************
 #
