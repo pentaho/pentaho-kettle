@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -134,18 +134,15 @@ public class TopicSelection extends Composite {
 
     FormData fdTopic = new FormDataBuilder().top( wlTopic ).left( separator, 15 ).right().result();
 
-    if ( isTopicTextCombo ) {
-      wTopicTextCombo = new ComboVar( transMeta, wTopicGroup, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
-      props.setLook( wTopicTextCombo );
-      wTopicTextCombo.setLayoutData( fdTopic );
-      wTopicTextCombo.addModifyListener( lsMod );
+    wTopicTextCombo = new ComboVar( transMeta, wTopicGroup, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
+    props.setLook( wTopicTextCombo );
+    wTopicTextCombo.setLayoutData( fdTopic );
+    wTopicTextCombo.addModifyListener( lsMod );
 
-    } else {
-      wTopicText = new TextVar( transMeta, wTopicGroup, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
-      props.setLook( wTopicText );
-      wTopicText.setLayoutData( fdTopic );
-      wTopicText.addModifyListener( lsMod );
-    }
+    wTopicText = new TextVar( transMeta, wTopicGroup, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
+    props.setLook( wTopicText );
+    wTopicText.setLayoutData( fdTopic );
+    wTopicText.addModifyListener( lsMod );
 
     wTopicField = createFieldDropDown( wTopicGroup, props, stepMeta, fdTopic );
     props.setLook( wTopicField );
@@ -157,21 +154,30 @@ public class TopicSelection extends Composite {
   private void setTopicWidgetVisibility( Button topicComesFromField ) {
     stepMeta.setChanged( stepMeta.hasChanged() || topicInField != topicComesFromField.getSelection() );
     wTopicField.setVisible( topicComesFromField.getSelection() );
-    if ( isTopicTextCombo ) {
-      wTopicTextCombo.setVisible( !topicComesFromField.getSelection() );
-    } else {
-      wTopicText.setVisible( !topicComesFromField.getSelection() );
-    }
 
     if ( topicComesFromField.getSelection() ) {
       wlTopic.setText( fieldTopicLabel );
+      wTopicTextCombo.setVisible( false );
+      wTopicText.setVisible( false );
     } else {
       wlTopic.setText( textTopicLabel );
+      toggleTopicTextComboVisible( isTopicTextCombo );
+    }
+  }
+
+  public void setIsTopicTextCombo( boolean isCombo ) {
+    isTopicTextCombo = isCombo;
+  }
+
+  public void toggleTopicTextComboVisible( boolean isComboVisible ) {
+    //ignore toggle if the topic is set to come from a field
+    if ( !wTopicFromField.getSelection() ) {
+      wTopicTextCombo.setVisible( isComboVisible );
+      wTopicText.setVisible( !isComboVisible );
     }
   }
 
   public String getTopicText() {
-
     return isTopicTextCombo ? wTopicTextCombo.getText() : wTopicText.getText();
   }
 
@@ -184,11 +190,8 @@ public class TopicSelection extends Composite {
   }
 
   public void setTopicText( String topicText ) {
-    if ( isTopicTextCombo ) {
-      wTopicTextCombo.setText( topicText );
-    } else {
-      wTopicText.setText( topicText );
-    }
+    wTopicTextCombo.setText( topicText );
+    wTopicText.setText( topicText );
   }
 
   public void setTopicInField( boolean topicInField ) {
