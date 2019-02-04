@@ -103,6 +103,10 @@ public class KettleDialog extends SwtDialog {
     PropsUI.getInstance().setScreen( windowProperty );
 
     super.hide();
+
+    if ( this.getParent() == null && this.getXulDomContainer().getOuterContext() instanceof Shell ) {
+      ( (Shell) this.getXulDomContainer().getOuterContext()).setFocus();
+    }
   }
 
   @Override
