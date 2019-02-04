@@ -1,6 +1,7 @@
 <?xml version="1.0"?>
 <dialog width="600" height="400" id="databaseExplorerDialog" title="${DatabaseExplorer.Title}" appicon="ui/images/CNC.svg"
-   ondialogaccept="dbexplorer.accept()"  
+		proxyoutercontext="true"
+		ondialogaccept="dbexplorer.accept()"
    ondialogcancel="dbexplorer.cancel()" onload="dbexplorer.init()" xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
     xmlns:HTML="http://www.w3.org/Profiles/XHTML-transitional" xmlns:pen="http://www.pentaho.org/2008/xul" >
     <vbox flex="1" id="mainVBox">
