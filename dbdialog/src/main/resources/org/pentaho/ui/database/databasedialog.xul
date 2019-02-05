@@ -12,6 +12,7 @@
 	buttonlabelcancel="${DatabaseDialog.USER_CANCEL}"
 	ondialogaccept="dataHandler.onOK()"
 	ondialogcancel="dataHandler.onCancel()"
+	proxyoutercontext="true"
 	xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
 	xmlns:pen="http://www.pentaho.org/2008/xul">
 	
