@@ -1659,19 +1659,20 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
           new StepPerformanceSnapShot( seqNr, getBatchId(), new Date(), getName(), stepMeta.getName(), step.getCopy(),
             step.getLinesRead(), step.getLinesWritten(), step.getLinesInput(), step.getLinesOutput(), step
             .getLinesUpdated(), step.getLinesRejected(), step.getErrors() );
-        List<StepPerformanceSnapShot> snapShotList = stepPerformanceSnapShots.get( step.toString() );
-        StepPerformanceSnapShot previous;
-        if ( snapShotList == null ) {
-          snapShotList = new ArrayList<>();
-          stepPerformanceSnapShots.put( step.toString(), snapShotList );
-          previous = null;
-        } else {
-          previous = snapShotList.get( snapShotList.size() - 1 ); // the last one...
-        }
-        // Make the difference...
-        //
-        snapShot.diff( previous, step.rowsetInputSize(), step.rowsetOutputSize() );
+
         synchronized ( stepPerformanceSnapShots ) {
+          List<StepPerformanceSnapShot> snapShotList = stepPerformanceSnapShots.get( step.toString() );
+          StepPerformanceSnapShot previous;
+          if ( snapShotList == null ) {
+            snapShotList = new ArrayList<>();
+            stepPerformanceSnapShots.put( step.toString(), snapShotList );
+            previous = null;
+          } else {
+            previous = snapShotList.get( snapShotList.size() - 1 ); // the last one...
+          }
+          // Make the difference...
+          //
+          snapShot.diff( previous, step.rowsetInputSize(), step.rowsetOutputSize() );
           snapShotList.add( snapShot );
 
           if ( stepPerformanceSnapshotSizeLimit > 0 && snapShotList.size() > stepPerformanceSnapshotSizeLimit ) {
