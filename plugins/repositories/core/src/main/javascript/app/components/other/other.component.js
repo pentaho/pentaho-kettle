@@ -36,6 +36,7 @@ define([
     vm.$onInit = onInit;
     vm.selectRepositoryType = selectRepositoryType;
     vm.getStarted = getStarted;
+    vm.close = close;
 
     /**
      * The $onInit hook of components lifecycle which is called on each controller
@@ -71,6 +72,10 @@ define([
       if (repositoryType.id === "KettleFileRepository") {
         $state.go("file.details");
       }
+    }
+
+    function close() {
+      closeWindow();
     }
   }
 
