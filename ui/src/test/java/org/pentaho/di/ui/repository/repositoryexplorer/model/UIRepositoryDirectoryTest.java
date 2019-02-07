@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2017-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2017-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,8 +22,12 @@
 
 package org.pentaho.di.ui.repository.repositoryexplorer.model;
 
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.any;
+
 
 import java.util.Collections;
 
@@ -33,9 +37,7 @@ import org.pentaho.di.repository.LongObjectId;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectory;
 import org.pentaho.di.repository.RepositoryElementMetaInterface;
-import org.pentaho.di.repository.RepositoryExtended;
 import org.pentaho.di.repository.RepositoryObjectType;
-import org.pentaho.di.repository.UserInfo;
 
 public class UIRepositoryDirectoryTest {
 
@@ -48,18 +50,20 @@ public class UIRepositoryDirectoryTest {
     root.addSubdirectory( dir );
     RepositoryElementMetaInterface meta = mock( RepositoryElementMetaInterface.class );
     when( meta.getObjectType() ).thenReturn( RepositoryObjectType.TRANSFORMATION );
-
     root.setRepositoryObjects( Collections.emptyList() );
     dir.setRepositoryObjects( Collections.singletonList( meta ) );
 
     Repository repo = mock( Repository.class );
+    String dirTest = "dirTest";
+    dir.setName( dirTest );
+    String[] dirNames = { dirTest };
+    when( repo.getDirectoryNames( any() ) ).thenReturn( dirNames );
     UIRepositoryDirectory uiDir = new UIRepositoryDirectory( root, null, repo );
     UIRepositoryObjects objects = uiDir.getRepositoryObjects();
     assertNotNull( objects );
     uiDir = new UIRepositoryDirectory( dir, uiDir, repo );
     objects = uiDir.getRepositoryObjects();
     assertEquals( 1, objects.size() );
-    verifyZeroInteractions( repo );
   }
 
   @Test
@@ -78,6 +82,10 @@ public class UIRepositoryDirectoryTest {
         Collections.singletonList( meta ) );
     when( repo.getJobAndTransformationObjects( root.getObjectId(), false ) ).thenReturn( Collections.emptyList() );
 
+    String dirTest = "dirTest";
+    dir.setName( dirTest );
+    String[] dirNames = { dirTest };
+    when( repo.getDirectoryNames( any() ) ).thenReturn( dirNames );
     UIRepositoryDirectory uiDir = new UIRepositoryDirectory( root, null, repo );
     UIRepositoryObjects objects = uiDir.getRepositoryObjects();
     assertNotNull( objects );
