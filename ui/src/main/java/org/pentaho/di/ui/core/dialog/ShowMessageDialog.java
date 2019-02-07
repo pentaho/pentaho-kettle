@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -65,6 +65,8 @@ public class ShowMessageDialog extends Dialog {
     buttonTextByFlagDefaults.put( SWT.CANCEL, BaseMessages.getString( PKG, "System.Button.Cancel" ) );
     buttonTextByFlagDefaults.put( SWT.YES, BaseMessages.getString( PKG, "System.Button.Yes" ) );
     buttonTextByFlagDefaults.put( SWT.NO, BaseMessages.getString( PKG, "System.Button.No" ) );
+    buttonTextByFlagDefaults.put( SWT.IGNORE, BaseMessages.getString( PKG, "System.Button.Continue" ) );
+    buttonTextByFlagDefaults.put( SWT.SAVE, BaseMessages.getString( PKG, "System.Button.SaveAs" ) );
   }
 
   private String title, message;
@@ -316,6 +318,13 @@ public class ShowMessageDialog extends Dialog {
         formLayout.marginHeight = 15;
         setFdlDesc( margin * 3, 0, 0, margin );
         BaseStepDialog.positionBottomButtons( shell, buttons.toArray( new Button[buttons.size()] ), 0,
+          BaseStepDialog.BUTTON_ALIGNMENT_RIGHT, wlDesc );
+        break;
+      case Const.SHOW_FATAL_ERROR:
+        formLayout.marginWidth = 15;
+        formLayout.marginHeight = 15;
+        setFdlDesc( margin * 3, 0, 0, margin );
+        BaseStepDialog.positionBottomButtons( shell, buttons.toArray( new Button[buttons.size()] ), Const.FORM_MARGIN,
           BaseStepDialog.BUTTON_ALIGNMENT_RIGHT, wlDesc );
         break;
       default:
