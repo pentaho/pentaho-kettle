@@ -3,7 +3,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -574,6 +574,8 @@ public class Const {
   public static final int SHOW_MESSAGE_DIALOG_DB_TEST_DEFAULT = 0;
 
   public static final int SHOW_MESSAGE_DIALOG_DB_TEST_SUCCESS = 1;
+
+  public static final int SHOW_FATAL_ERROR = 2;
 
   /**
    * The margin between the text of a note and its border.

@@ -3,7 +3,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -445,6 +445,8 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
   private static FileLoggingEventListener fileLoggingEventListener;
 
   private boolean destroy;
+
+  private boolean hasFatalError = false;
 
   private SashForm sashform;
 
@@ -4980,7 +4982,12 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
         //
         int reply = itemInterface.showChangedWarning();
         if ( reply == SWT.YES ) {
-          exit = itemInterface.applyChanges();
+          // If there is a fatal error, give the user opportunity to rename file w/out overwriting existing file
+          if ( hasFatalError ) {
+            saveFileAs( itemInterface.getMeta() );
+          } else {
+            exit = itemInterface.applyChanges();
+          }
         } else {
           if ( reply == SWT.CANCEL ) {
             return false;
@@ -7827,11 +7834,17 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
           new ErrorDialog( shell, BaseMessages.getString( PKG, "Spoon.Log.UnexpectedErrorOccurred" ), BaseMessages
             .getString( PKG, "Spoon.Log.UnexpectedErrorOccurred" )
             + Const.CR + e.getMessage(), e );
-          // Retry dialog
-          MessageBox mb = new MessageBox( shell, SWT.ICON_QUESTION | SWT.NO | SWT.YES );
-          mb.setText( BaseMessages.getString( PKG, "Spoon.Log.UnexpectedErrorRetry.Titel" ) );
-          mb.setMessage( BaseMessages.getString( PKG, "Spoon.Log.UnexpectedErrorRetry.Message" ) );
-          if ( mb.open() == SWT.YES ) {
+
+          ShowMessageDialog showMessageDialog = new ShowMessageDialog( shell, SWT.ERROR | SWT.IGNORE | SWT.SAVE,
+            BaseMessages.getString( PKG, "Spoon.FatalError.Title" ),
+            BaseMessages.getString( PKG, "Spoon.FatalError.Message1" ) + Const.CR + Const.CR
+              + BaseMessages.getString( PKG, "Spoon.FatalError.Message2" ) + Const.CR, false );
+          showMessageDialog.setType( Const.SHOW_FATAL_ERROR ); // Adjusts spacing within dialog
+
+          if ( SWT.SAVE == showMessageDialog.open() ) { // save changed files and quit spoon
+            hasFatalError = true;
+            quitFile( true );
+          } else { // continue working with spoon
             retryAfterError = true;
           }
         } catch ( Throwable e1 ) {
