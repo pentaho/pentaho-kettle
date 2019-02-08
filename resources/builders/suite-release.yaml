@@ -18,7 +18,7 @@ buildProperties:
         # Version based control properties
         RUN_VERSIONING                 : true
         RELEASE_VERSION                : 8.3.0.0
-        SUITE_RELEASE_VERSION          : 8.3-QAT
+        DEPLOYMENT_FOLDER              : 8.3-QAT
         RELEASE_MODE                   : true
         DEFAULT_BRANCH                 : master
         SUITE_BUILD_RESOURCES_BRANCH   : 8.3.0.0
