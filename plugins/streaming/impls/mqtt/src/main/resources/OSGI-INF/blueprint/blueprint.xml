@@ -22,5 +22,12 @@
            interface="org.pentaho.metaverse.api.analyzer.kettle.step.IStepAnalyzer"
            ref="MQTTProducerAnalyzer"/>
 
+  <bean id="MQTTConsumerAnalyzer" class="org.pentaho.metaverse.api.analyzer.kettle.annotations.AnnotationDrivenStepMetaAnalyzer" >
+    <argument ref="MQTTConsumerMeta" />
+  </bean>
+
+  <service id="MQTTConsumerStepAnalyzerService"
+           interface="org.pentaho.metaverse.api.analyzer.kettle.step.IClonableStepAnalyzer"
+           ref="MQTTConsumerAnalyzer"/>
 
 </blueprint>
