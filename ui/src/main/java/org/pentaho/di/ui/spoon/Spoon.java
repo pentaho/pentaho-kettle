@@ -7840,6 +7840,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
             BaseMessages.getString( PKG, "Spoon.FatalError.Message1" ) + Const.CR + Const.CR
               + BaseMessages.getString( PKG, "Spoon.FatalError.Message2" ) + Const.CR, false );
           showMessageDialog.setType( Const.SHOW_FATAL_ERROR ); // Adjusts spacing within dialog
+          showMessageDialog.setCentered( true );
 
           if ( SWT.SAVE == showMessageDialog.open() ) { // save changed files and quit spoon
             hasFatalError = true;
