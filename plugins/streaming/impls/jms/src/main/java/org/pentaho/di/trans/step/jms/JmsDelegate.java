@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -25,6 +25,7 @@ package org.pentaho.di.trans.step.jms;
 import org.pentaho.di.core.injection.Injection;
 import org.pentaho.di.core.util.serialization.Sensitive;
 import org.pentaho.di.trans.step.jms.context.JmsProvider;
+import org.pentaho.metaverse.api.analyzer.kettle.annotations.Metaverse;
 
 import javax.jms.Destination;
 import javax.jms.JMSContext;
@@ -32,8 +33,11 @@ import java.util.List;
 
 import static org.pentaho.di.i18n.BaseMessages.getString;
 import static org.pentaho.di.trans.step.jms.JmsConstants.PKG;
+import static org.pentaho.di.trans.step.jms.JmsProducerMeta.JMS_SERVER_METAVERSE;
+import static org.pentaho.di.trans.step.jms.JmsProducerMeta.JMS_DESTINATION_METAVERSE;
 import static org.pentaho.di.trans.step.jms.context.JmsProvider.ConnectionType.ACTIVEMQ;
 import static org.pentaho.di.trans.step.jms.context.JmsProvider.DestinationType.QUEUE;
+import static org.pentaho.dictionary.DictionaryConst.LINK_WRITESTO;
 
 
 /**
@@ -44,22 +48,30 @@ import static org.pentaho.di.trans.step.jms.context.JmsProvider.DestinationType.
  */
 public class JmsDelegate {
 
+  @Metaverse.Node ( name = JMS_DESTINATION_METAVERSE, type = JMS_DESTINATION_METAVERSE, link = LINK_WRITESTO, linkDirection = "IN" )
   @Injection ( name = "DESTINATION" ) public String destinationName = "";
 
+  @Metaverse.Property ( name = "IBMMQ Url", parentNodeName = JMS_SERVER_METAVERSE )
   @Injection ( name = "IBMMQ_URL" ) public String ibmUrl = "";
 
+  @Metaverse.Property ( name = "IBMMQ Username", parentNodeName = JMS_SERVER_METAVERSE )
   @Injection ( name = "IBMMQ_USERNAME" ) public String ibmUsername = "";
 
   @Sensitive @Injection ( name = "IBMMQ_PASSWORD" ) public String ibmPassword = "";
 
+  @Metaverse.Property ( name = "AMQ Url", parentNodeName = JMS_SERVER_METAVERSE )
   @Injection ( name = "AMQ_URL" ) public String amqUrl = "";
 
+  @Metaverse.Property ( name = "AMQ Username", parentNodeName = JMS_SERVER_METAVERSE )
   @Injection ( name = "AMQ_USERNAME" ) public String amqUsername = "";
 
   @Sensitive @Injection ( name = "AMQ_PASSWORD" ) public String amqPassword = "";
 
+  @Metaverse.Node ( name = JMS_SERVER_METAVERSE, type = JMS_SERVER_METAVERSE )
+  @Metaverse.Property ( name = JMS_SERVER_METAVERSE, parentNodeName = JMS_SERVER_METAVERSE )
   @Injection( name = "CONNECTION_TYPE" ) public String connectionType = ACTIVEMQ.name();
 
+  @Metaverse.Property ( name = "Destination Type", parentNodeName = JMS_DESTINATION_METAVERSE )
   @Injection ( name = "DESTINATION_TYPE" ) public String destinationType = QUEUE.name();
 
   @Injection ( name = "SSL_ENABLED", group = "SSL_GROUP" ) public boolean sslEnabled = false;

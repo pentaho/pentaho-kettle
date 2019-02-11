@@ -82,7 +82,6 @@ import static org.pentaho.dictionary.DictionaryConst.LINK_CONTAINS_CONCEPT;
 import static org.pentaho.dictionary.DictionaryConst.LINK_PARENT_CONCEPT;
 import static org.pentaho.dictionary.DictionaryConst.LINK_WRITESTO;
 import static org.pentaho.dictionary.DictionaryConst.NODE_TYPE_EXTERNAL_CONNECTION;
-import static org.pentaho.dictionary.DictionaryConst.NODE_TYPE_TRANS_FIELD;
 
 @Step ( id = "MQTTProducer", image = "MQTTProducer.svg",
   i18nPackageName = "org.pentaho.di.trans.step.mqtt",
@@ -109,7 +108,7 @@ public class MQTTProducerMeta extends BaseSerializingMeta implements StepMetaInt
   @Metaverse.Property ( name = CLIENT_ID, parentNodeName = MQTT_SERVER_METAVERSE )
   @Injection ( name = CLIENT_ID ) String clientId;
 
-  @Metaverse.Node ( name = MQTT_TOPIC_METAVERSE, type = MQTT_TOPIC_METAVERSE, link = LINK_WRITESTO )
+  @Metaverse.Node ( name = MQTT_TOPIC_METAVERSE, type = MQTT_TOPIC_METAVERSE, link = LINK_WRITESTO, linkDirection = "IN" )
   @Metaverse.Property ( name = TOPIC, parentNodeName = MQTT_TOPIC_METAVERSE )
   @Injection ( name = TOPIC ) public String topic;
 
@@ -121,9 +120,7 @@ public class MQTTProducerMeta extends BaseSerializingMeta implements StepMetaInt
 
   @Injection ( name = QOS ) public String qos;
 
-  @Metaverse.Node ( name = MESSAGE_FIELD, type = NODE_TYPE_TRANS_FIELD )
   @Metaverse.Property ( name = MESSAGE_FIELD, parentNodeName = MQTT_TOPIC_METAVERSE )
-  @Metaverse.NodeLink ( nodeName = MESSAGE_FIELD, parentNodeName = MQTT_TOPIC_METAVERSE, linkDirection = "OUT" )
   @Injection ( name = MESSAGE_FIELD ) public String messageField;
 
   @Metaverse.Property ( name = USERNAME, parentNodeName = MQTT_SERVER_METAVERSE )

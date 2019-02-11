@@ -50,6 +50,13 @@
     <bean class="org.pentaho.di.trans.step.jms.context.ActiveMQProvider" />
   </service>
 
+  <bean id="JmsProducerAnalyzer" class="org.pentaho.metaverse.api.analyzer.kettle.annotations.AnnotationDrivenStepMetaAnalyzer" >
+    <argument ref="JmsProducer2" />
+  </bean>
+  <service id="JmsProducerStepAnalyzerService"
+           interface="org.pentaho.metaverse.api.analyzer.kettle.step.IStepAnalyzer"
+           ref="JmsProducerAnalyzer"/>
+
   <!-- Data-lineage analyzer for the JMS Consumer step -->
   <bean id="JmsConsumerAnalyzer"
         class="org.pentaho.di.trans.step.jms.analyzer.JmsConsumerAnalyzer" />
