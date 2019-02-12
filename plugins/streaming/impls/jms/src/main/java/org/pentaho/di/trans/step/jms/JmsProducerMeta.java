@@ -100,7 +100,6 @@ public class JmsProducerMeta extends BaseSerializingMeta implements StepMetaInte
   @InjectionDeep
   public JmsDelegate jmsDelegate;
 
-  @Metaverse.Property ( name = FIELD_TO_SEND )
   @Injection( name = FIELD_TO_SEND )
   private String fieldToSend = "";
 
@@ -179,6 +178,7 @@ public class JmsProducerMeta extends BaseSerializingMeta implements StepMetaInte
       deliveryDelay );
   }
 
+  @Metaverse.Property ( name = "Message Field" )
   public String getFieldToSend() {
     return fieldToSend;
   }
