@@ -32,7 +32,7 @@
     <!-- swt -->
     <dependencySet>
       <includes>
-        <include>org.eclipse.swt:*.linux.x86</include>
+        <include>org.eclipse.platform:*.linux.x86</include>
       </includes>
       <outputDirectory>libswt/linux/x86</outputDirectory>
       <outputFileNameMapping>swt.jar</outputFileNameMapping>
@@ -41,7 +41,7 @@
     </dependencySet>
     <dependencySet>
       <includes>
-        <include>org.eclipse.swt:*.linux.x86_64</include>
+        <include>org.eclipse.platform:*.linux.x86_64</include>
       </includes>
       <outputDirectory>libswt/linux/x86_64</outputDirectory>
       <outputFileNameMapping>swt.jar</outputFileNameMapping>
