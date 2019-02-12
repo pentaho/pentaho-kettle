@@ -4271,10 +4271,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
         }
       }
 
-      String activePerspectiveId = activePerspective.getId();
-      boolean etlPerspective = activePerspectiveId.equals( MainSpoonPerspective.ID );
-
-      if ( rep == null || importfile || !etlPerspective ) { // Load from XML
+      if ( rep == null || importfile ) { // Load from XML
 
         FileDialog dialog = new FileDialog( shell, SWT.OPEN );
 
