@@ -39,6 +39,9 @@ export MOZILLA_FIVE_HOME LD_LIBRARY_PATH
 # Fix for GTK Windows issues with SWT
 export GDK_NATIVE_WINDOWS=1
 
+# Fix GTK 3 issues with SWT
+export SWT_GTK3=0
+
 # Fix overlay scrollbar bug with Ubuntu 11.04
 export LIBOVERLAY_SCROLLBAR=0
 
