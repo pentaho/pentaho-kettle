@@ -109,6 +109,14 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
+       <groupId>org.osgi</groupId>
+       <artifactId>org.osgi.core</artifactId>
+     </dependency>
+     <dependency>
+       <groupId>org.osgi</groupId>
+       <artifactId>org.osgi.compendium</artifactId>
+     </dependency>
+    <dependency>
       <groupId>org.ops4j.pax.web</groupId>
       <artifactId>pax-web-spi</artifactId>
       <version>${pax-web-spi.version}</version>
