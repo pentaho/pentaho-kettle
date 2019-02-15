@@ -3,11 +3,14 @@
   <info>
     <name>Getting Started Transformation</name>
     <description>This is a long description.  The quick brown fox jumped over the lazy dog.   The quick brown fox jumped over the lazy dog.   The quick brown fox jumped over the lazy dog.   The quick brown fox jumped over the lazy dog.   The quick brown fox jumped over the lazy dog.  </description>
-    <extended_description>This &#xa;is&#xa;a &#xa;multi-line description.</extended_description>
+    <extended_description>This 
+is
+a 
+multi-line description.</extended_description>
     <trans_version/>
     <trans_type>Normal</trans_type>
     <trans_status>0</trans_status>
-    <directory>&#x2f;</directory>
+    <directory>/</directory>
     <parameters>
     </parameters>
     <log>
@@ -428,15 +431,20 @@
     <clusterschemas>
     </clusterschemas>
     <created_user/>
-    <created_date>2011&#x2f;01&#x2f;03 18&#x3a;51&#x3a;35.867</created_date>
+    <created_date>2011/01/03 18:51:35.867</created_date>
     <modified_user>joe</modified_user>
-    <modified_date>2010&#x2f;04&#x2f;21 14&#x3a;58&#x3a;09.203</modified_date>
-    <key_for_session_key>H4sIAAAAAAAAAAMAAAAAAAAAAAA&#x3d;</key_for_session_key>
+    <modified_date>2010/04/21 14:58:09.203</modified_date>
+    <key_for_session_key>H4sIAAAAAAAAAAMAAAAAAAAAAAA=</key_for_session_key>
     <is_key_private>N</is_key_private>
   </info>
   <notepads>
     <notepad>
-      <note>Note&#x3a; This is the example transformation that is built as part of the Getting Started with Pentaho Data Integration guide.&#xa;&#xa;To test this transformation, you will need to&#x3a;&#xa;&#xa;  - Make sure the Data Integration Server is running&#xa;  - Open the Table Output step and click the SQL button to create the target output table</note>
+      <note>Note: This is the example transformation that is built as part of the Getting Started with Pentaho Data Integration guide.
+
+To test this transformation, you will need to:
+
+  - Make sure the Data Integration Server is running
+  - Open the Table Output step and click the SQL button to create the target output table</note>
       <xloc>56</xloc>
       <yloc>271</yloc>
       <width>827</width>
@@ -458,11 +466,11 @@
     </notepad>
   </notepads>
   <connection>
-    <name>SampleData.H2</name>
+    <name>SampleDataAdmin.H2</name>
     <server/>
     <type>H2</type>
     <access>JNDI</access>
-    <database>SampleData</database>
+    <database>SampleDataAdmin</database>
     <port>1521</port>
     <username/>
     <password>Encrypted </password>
@@ -470,15 +478,42 @@
     <data_tablespace/>
     <index_tablespace/>
     <attributes>
-      <attribute><code>FORCE_IDENTIFIERS_TO_LOWERCASE</code><attribute>N</attribute></attribute>
-      <attribute><code>FORCE_IDENTIFIERS_TO_UPPERCASE</code><attribute>N</attribute></attribute>
-      <attribute><code>IS_CLUSTERED</code><attribute>N</attribute></attribute>
-      <attribute><code>PORT_NUMBER</code><attribute>1521</attribute></attribute>
-      <attribute><code>PRESERVE_RESERVED_WORD_CASE</code><attribute>N</attribute></attribute>
-      <attribute><code>QUOTE_ALL_FIELDS</code><attribute>N</attribute></attribute>
-      <attribute><code>SUPPORTS_BOOLEAN_DATA_TYPE</code><attribute>Y</attribute></attribute>
-      <attribute><code>SUPPORTS_TIMESTAMP_DATA_TYPE</code><attribute>Y</attribute></attribute>
-      <attribute><code>USE_POOLING</code><attribute>N</attribute></attribute>
+      <attribute>
+        <code>FORCE_IDENTIFIERS_TO_LOWERCASE</code>
+        <attribute>N</attribute>
+      </attribute>
+      <attribute>
+        <code>FORCE_IDENTIFIERS_TO_UPPERCASE</code>
+        <attribute>N</attribute>
+      </attribute>
+      <attribute>
+        <code>IS_CLUSTERED</code>
+        <attribute>N</attribute>
+      </attribute>
+      <attribute>
+        <code>PORT_NUMBER</code>
+        <attribute>1521</attribute>
+      </attribute>
+      <attribute>
+        <code>PRESERVE_RESERVED_WORD_CASE</code>
+        <attribute>Y</attribute>
+      </attribute>
+      <attribute>
+        <code>QUOTE_ALL_FIELDS</code>
+        <attribute>N</attribute>
+      </attribute>
+      <attribute>
+        <code>SUPPORTS_BOOLEAN_DATA_TYPE</code>
+        <attribute>Y</attribute>
+      </attribute>
+      <attribute>
+        <code>SUPPORTS_TIMESTAMP_DATA_TYPE</code>
+        <attribute>Y</attribute>
+      </attribute>
+      <attribute>
+        <code>USE_POOLING</code>
+        <attribute>N</attribute>
+      </attribute>
     </attributes>
   </connection>
   <order>
@@ -534,16 +569,17 @@
       <method>none</method>
       <schema_name/>
     </partitioning>
-<send_true_to>Value Mapper</send_true_to>
-<send_false_to>Lookup Missing Zips</send_false_to>
+    <send_true_to>Value Mapper</send_true_to>
+    <send_false_to>Lookup Missing Zips</send_false_to>
     <compare>
-<condition>
- <negated>N</negated>
- <leftvalue>POSTALCODE</leftvalue>
- <function>IS NOT NULL</function>
- <rightvalue/>
- </condition>
+      <condition>
+        <negated>N</negated>
+        <leftvalue>POSTALCODE</leftvalue>
+        <function>IS NOT NULL</function>
+        <rightvalue/>
+      </condition>
     </compare>
+    <attributes/>
     <cluster_schema/>
     <remotesteps>
       <input>
@@ -556,8 +592,7 @@
       <yloc>61</yloc>
       <draw>Y</draw>
     </GUI>
-    </step>
-
+  </step>
   <step>
     <name>Lookup Missing Zips</name>
     <type>StreamLookup</type>
@@ -590,6 +625,7 @@
         <type>String</type>
       </value>
     </lookup>
+    <attributes/>
     <cluster_schema/>
     <remotesteps>
       <input>
@@ -602,8 +638,7 @@
       <yloc>193</yloc>
       <draw>Y</draw>
     </GUI>
-    </step>
-
+  </step>
   <step>
     <name>Number range</name>
     <type>NumberRange</type>
@@ -635,6 +670,7 @@
         <value>Large</value>
       </rule>
     </rules>
+    <attributes/>
     <cluster_schema/>
     <remotesteps>
       <input>
@@ -647,8 +683,7 @@
       <yloc>61</yloc>
       <draw>Y</draw>
     </GUI>
-    </step>
-
+  </step>
   <step>
     <name>Prepare Field Layout</name>
     <type>SelectValues</type>
@@ -660,32 +695,82 @@
       <method>none</method>
       <schema_name/>
     </partitioning>
-    <fields>      <field>        <name>ORDERNUMBER</name>
-      </field>      <field>        <name>QUANTITYORDERED</name>
-      </field>      <field>        <name>PRICEEACH</name>
-      </field>      <field>        <name>ORDERLINENUMBER</name>
-      </field>      <field>        <name>SALES</name>
-      </field>      <field>        <name>ORDERDATE</name>
-      </field>      <field>        <name>STATUS</name>
-      </field>      <field>        <name>QTR_ID</name>
-      </field>      <field>        <name>MONTH_ID</name>
-      </field>      <field>        <name>YEAR_ID</name>
-      </field>      <field>        <name>PRODUCTLINE</name>
-      </field>      <field>        <name>MSRP</name>
-      </field>      <field>        <name>PRODUCTCODE</name>
-      </field>      <field>        <name>CUSTOMERNAME</name>
-      </field>      <field>        <name>PHONE</name>
-      </field>      <field>        <name>ADDRESSLINE1</name>
-      </field>      <field>        <name>ADDRESSLINE2</name>
-      </field>      <field>        <name>CITY</name>
-      </field>      <field>        <name>STATE</name>
-      </field>      <field>        <name>ZIP_RESOLVED</name>
-      </field>      <field>        <name>COUNTRY</name>
-      </field>      <field>        <name>TERRITORY</name>
-      </field>      <field>        <name>CONTACTLASTNAME</name>
-      </field>      <field>        <name>CONTACTFIRSTNAME</name>
-      </field>        <select_unspecified>N</select_unspecified>
-      <meta>        <name>ZIP_RESOLVED</name>
+    <fields>
+      <field>
+        <name>ORDERNUMBER</name>
+      </field>
+      <field>
+        <name>QUANTITYORDERED</name>
+      </field>
+      <field>
+        <name>PRICEEACH</name>
+      </field>
+      <field>
+        <name>ORDERLINENUMBER</name>
+      </field>
+      <field>
+        <name>SALES</name>
+      </field>
+      <field>
+        <name>ORDERDATE</name>
+      </field>
+      <field>
+        <name>STATUS</name>
+      </field>
+      <field>
+        <name>QTR_ID</name>
+      </field>
+      <field>
+        <name>MONTH_ID</name>
+      </field>
+      <field>
+        <name>YEAR_ID</name>
+      </field>
+      <field>
+        <name>PRODUCTLINE</name>
+      </field>
+      <field>
+        <name>MSRP</name>
+      </field>
+      <field>
+        <name>PRODUCTCODE</name>
+      </field>
+      <field>
+        <name>CUSTOMERNAME</name>
+      </field>
+      <field>
+        <name>PHONE</name>
+      </field>
+      <field>
+        <name>ADDRESSLINE1</name>
+      </field>
+      <field>
+        <name>ADDRESSLINE2</name>
+      </field>
+      <field>
+        <name>CITY</name>
+      </field>
+      <field>
+        <name>STATE</name>
+      </field>
+      <field>
+        <name>ZIP_RESOLVED</name>
+      </field>
+      <field>
+        <name>COUNTRY</name>
+      </field>
+      <field>
+        <name>TERRITORY</name>
+      </field>
+      <field>
+        <name>CONTACTLASTNAME</name>
+      </field>
+      <field>
+        <name>CONTACTFIRSTNAME</name>
+      </field>
+      <select_unspecified>N</select_unspecified>
+      <meta>
+        <name>ZIP_RESOLVED</name>
         <rename>POSTALCODE</rename>
         <type>String</type>
         <length>9</length>
@@ -700,7 +785,10 @@
         <grouping_symbol/>
         <currency_symbol/>
         <storage_type/>
-      </meta>    </fields>    <cluster_schema/>
+      </meta>
+    </fields>
+    <attributes/>
+    <cluster_schema/>
     <remotesteps>
       <input>
       </input>
@@ -712,8 +800,7 @@
       <yloc>130</yloc>
       <draw>Y</draw>
     </GUI>
-    </step>
-
+  </step>
   <step>
     <name>Read Postal Codes</name>
     <type>TextFileInput</type>
@@ -730,7 +817,7 @@
     <accept_field/>
     <accept_stepname/>
     <separator>,</separator>
-    <enclosure>&#x22;</enclosure>
+    <enclosure>"</enclosure>
     <enclosure_breaks>N</enclosure_breaks>
     <escapechar/>
     <header>Y</header>
@@ -750,9 +837,10 @@
     <rownum_field/>
     <format>mixed</format>
     <encoding/>
+    <length/>
     <add_to_result_filenames>Y</add_to_result_filenames>
     <file>
-      <name>&#x24;&#x7b;Internal.Transformation.Filename.Directory&#x7d;&#x5c;files&#x5c;Zipssortedbycitystate.csv</name>
+      <name>${Internal.Transformation.Filename.Directory}\files\Zipssortedbycitystate.csv</name>
       <filemask/>
       <exclude_filemask/>
       <file_required>N</file_required>
@@ -767,7 +855,7 @@
         <name>CITY</name>
         <type>String</type>
         <format/>
-        <currency>&#x24;</currency>
+        <currency>$</currency>
         <decimal>.</decimal>
         <group>,</group>
         <nullif>-</nullif>
@@ -782,7 +870,7 @@
         <name>STATE</name>
         <type>String</type>
         <format/>
-        <currency>&#x24;</currency>
+        <currency>$</currency>
         <decimal>.</decimal>
         <group>,</group>
         <nullif>-</nullif>
@@ -797,7 +885,7 @@
         <name>POSTALCODE</name>
         <type>String</type>
         <format/>
-        <currency>&#x24;</currency>
+        <currency>$</currency>
         <decimal>.</decimal>
         <group>,</group>
         <nullif>-</nullif>
@@ -834,6 +922,7 @@
     <rootUriNameFieldName/>
     <extensionFieldName/>
     <sizeFieldName/>
+    <attributes/>
     <cluster_schema/>
     <remotesteps>
       <input>
@@ -846,8 +935,7 @@
       <yloc>193</yloc>
       <draw>Y</draw>
     </GUI>
-    </step>
-
+  </step>
   <step>
     <name>Read Sales Data</name>
     <type>TextFileInput</type>
@@ -864,7 +952,7 @@
     <accept_field/>
     <accept_stepname/>
     <separator>,</separator>
-    <enclosure>&#x22;</enclosure>
+    <enclosure>"</enclosure>
     <enclosure_breaks>N</enclosure_breaks>
     <escapechar/>
     <header>Y</header>
@@ -884,9 +972,10 @@
     <rownum_field/>
     <format>mixed</format>
     <encoding/>
+    <length/>
     <add_to_result_filenames>Y</add_to_result_filenames>
     <file>
-      <name>&#x24;&#x7b;Internal.Transformation.Filename.Directory&#x7d;&#x5c;files&#x5c;sales_data.csv</name>
+      <name>${Internal.Transformation.Filename.Directory}\files\sales_data.csv</name>
       <filemask/>
       <exclude_filemask/>
       <file_required>N</file_required>
@@ -900,8 +989,8 @@
       <field>
         <name>ORDERNUMBER</name>
         <type>Integer</type>
-        <format>&#x23;</format>
-        <currency>&#x24;</currency>
+        <format>#</format>
+        <currency>$</currency>
         <decimal>.</decimal>
         <group>,</group>
         <nullif>-</nullif>
@@ -915,8 +1004,8 @@
       <field>
         <name>QUANTITYORDERED</name>
         <type>Integer</type>
-        <format>&#x23;</format>
-        <currency>&#x24;</currency>
+        <format>#</format>
+        <currency>$</currency>
         <decimal>.</decimal>
         <group>,</group>
         <nullif>-</nullif>
@@ -931,7 +1020,7 @@
         <name>PRICEEACH</name>
         <type>String</type>
         <format/>
-        <currency>&#x24;</currency>
+        <currency>$</currency>
         <decimal>.</decimal>
         <group>,</group>
         <nullif>-</nullif>
@@ -945,8 +1034,8 @@
       <field>
         <name>ORDERLINENUMBER</name>
         <type>Integer</type>
-        <format>&#x23;</format>
-        <currency>&#x24;</currency>
+        <format>#</format>
+        <currency>$</currency>
         <decimal>.</decimal>
         <group>,</group>
         <nullif>-</nullif>
@@ -960,8 +1049,8 @@
       <field>
         <name>SALES</name>
         <type>Number</type>
-        <format>&#x23;.&#x23;&#x23;</format>
-        <currency>&#x24;</currency>
+        <format>#.##</format>
+        <currency>$</currency>
         <decimal>.</decimal>
         <group>,</group>
         <nullif>-</nullif>
@@ -976,7 +1065,7 @@
         <name>ORDERDATE</name>
         <type>String</type>
         <format/>
-        <currency>&#x24;</currency>
+        <currency>$</currency>
         <decimal>.</decimal>
         <group>,</group>
         <nullif>-</nullif>
@@ -991,7 +1080,7 @@
         <name>STATUS</name>
         <type>String</type>
         <format/>
-        <currency>&#x24;</currency>
+        <currency>$</currency>
         <decimal>.</decimal>
         <group>,</group>
         <nullif>-</nullif>
@@ -1005,8 +1094,8 @@
       <field>
         <name>QTR_ID</name>
         <type>Integer</type>
-        <format>&#x23;</format>
-        <currency>&#x24;</currency>
+        <format>#</format>
+        <currency>$</currency>
         <decimal>.</decimal>
         <group>,</group>
         <nullif>-</nullif>
@@ -1020,8 +1109,8 @@
       <field>
         <name>MONTH_ID</name>
         <type>Integer</type>
-        <format>&#x23;</format>
-        <currency>&#x24;</currency>
+        <format>#</format>
+        <currency>$</currency>
         <decimal>.</decimal>
         <group>,</group>
         <nullif>-</nullif>
@@ -1035,8 +1124,8 @@
       <field>
         <name>YEAR_ID</name>
         <type>Integer</type>
-        <format>&#x23;</format>
-        <currency>&#x24;</currency>
+        <format>#</format>
+        <currency>$</currency>
         <decimal>.</decimal>
         <group>,</group>
         <nullif>-</nullif>
@@ -1051,7 +1140,7 @@
         <name>PRODUCTLINE</name>
         <type>String</type>
         <format/>
-        <currency>&#x24;</currency>
+        <currency>$</currency>
         <decimal>.</decimal>
         <group>,</group>
         <nullif>-</nullif>
@@ -1065,8 +1154,8 @@
       <field>
         <name>MSRP</name>
         <type>Integer</type>
-        <format>&#x23;</format>
-        <currency>&#x24;</currency>
+        <format>#</format>
+        <currency>$</currency>
         <decimal>.</decimal>
         <group>,</group>
         <nullif>-</nullif>
@@ -1081,7 +1170,7 @@
         <name>PRODUCTCODE</name>
         <type>String</type>
         <format/>
-        <currency>&#x24;</currency>
+        <currency>$</currency>
         <decimal>.</decimal>
         <group>,</group>
         <nullif>-</nullif>
@@ -1096,7 +1185,7 @@
         <name>CUSTOMERNAME</name>
         <type>String</type>
         <format/>
-        <currency>&#x24;</currency>
+        <currency>$</currency>
         <decimal>.</decimal>
         <group>,</group>
         <nullif>-</nullif>
@@ -1111,7 +1200,7 @@
         <name>PHONE</name>
         <type>String</type>
         <format/>
-        <currency>&#x24;</currency>
+        <currency>$</currency>
         <decimal>.</decimal>
         <group>,</group>
         <nullif>-</nullif>
@@ -1126,7 +1215,7 @@
         <name>ADDRESSLINE1</name>
         <type>String</type>
         <format/>
-        <currency>&#x24;</currency>
+        <currency>$</currency>
         <decimal>.</decimal>
         <group>,</group>
         <nullif>-</nullif>
@@ -1141,7 +1230,7 @@
         <name>ADDRESSLINE2</name>
         <type>String</type>
         <format/>
-        <currency>&#x24;</currency>
+        <currency>$</currency>
         <decimal>.</decimal>
         <group>,</group>
         <nullif>-</nullif>
@@ -1156,7 +1245,7 @@
         <name>CITY</name>
         <type>String</type>
         <format/>
-        <currency>&#x24;</currency>
+        <currency>$</currency>
         <decimal>.</decimal>
         <group>,</group>
         <nullif>-</nullif>
@@ -1171,7 +1260,7 @@
         <name>STATE</name>
         <type>String</type>
         <format/>
-        <currency>&#x24;</currency>
+        <currency>$</currency>
         <decimal>.</decimal>
         <group>,</group>
         <nullif>-</nullif>
@@ -1186,7 +1275,7 @@
         <name>POSTALCODE</name>
         <type>String</type>
         <format/>
-        <currency>&#x24;</currency>
+        <currency>$</currency>
         <decimal>.</decimal>
         <group>,</group>
         <nullif>-</nullif>
@@ -1201,7 +1290,7 @@
         <name>COUNTRY</name>
         <type>String</type>
         <format/>
-        <currency>&#x24;</currency>
+        <currency>$</currency>
         <decimal>.</decimal>
         <group>,</group>
         <nullif>-</nullif>
@@ -1216,7 +1305,7 @@
         <name>TERRITORY</name>
         <type>String</type>
         <format/>
-        <currency>&#x24;</currency>
+        <currency>$</currency>
         <decimal>.</decimal>
         <group>,</group>
         <nullif>-</nullif>
@@ -1231,7 +1320,7 @@
         <name>CONTACTLASTNAME</name>
         <type>String</type>
         <format/>
-        <currency>&#x24;</currency>
+        <currency>$</currency>
         <decimal>.</decimal>
         <group>,</group>
         <nullif>-</nullif>
@@ -1246,7 +1335,7 @@
         <name>CONTACTFIRSTNAME</name>
         <type>String</type>
         <format/>
-        <currency>&#x24;</currency>
+        <currency>$</currency>
         <decimal>.</decimal>
         <group>,</group>
         <nullif>-</nullif>
@@ -1283,6 +1372,7 @@
     <rootUriNameFieldName/>
     <extensionFieldName/>
     <sizeFieldName/>
+    <attributes/>
     <cluster_schema/>
     <remotesteps>
       <input>
@@ -1295,8 +1385,7 @@
       <yloc>61</yloc>
       <draw>Y</draw>
     </GUI>
-    </step>
-
+  </step>
   <step>
     <name>Value Mapper</name>
     <type>ValueMapper</type>
@@ -1317,6 +1406,7 @@
         <target_value>USA</target_value>
       </field>
     </fields>
+    <attributes/>
     <cluster_schema/>
     <remotesteps>
       <input>
@@ -1329,8 +1419,7 @@
       <yloc>61</yloc>
       <draw>Y</draw>
     </GUI>
-    </step>
-
+  </step>
   <step>
     <name>Write to Database</name>
     <type>TableOutput</type>
@@ -1342,7 +1431,7 @@
       <method>none</method>
       <schema_name/>
     </partitioning>
-    <connection>SampleData.H2</connection>
+    <connection>SampleDataAdmin.H2</connection>
     <schema/>
     <table>SALES_DATA</table>
     <commit>1000</commit>
@@ -1361,6 +1450,7 @@
     <return_field/>
     <fields>
     </fields>
+    <attributes/>
     <cluster_schema/>
     <remotesteps>
       <input>
@@ -1373,11 +1463,11 @@
       <yloc>60</yloc>
       <draw>Y</draw>
     </GUI>
-    </step>
-
+  </step>
   <step_error_handling>
   </step_error_handling>
   <slave-step-copy-partition-distribution>
   </slave-step-copy-partition-distribution>
   <slave_transformation>N</slave_transformation>
+  <attributes/>
 </transformation>

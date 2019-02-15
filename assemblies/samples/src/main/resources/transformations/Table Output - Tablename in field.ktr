@@ -6,7 +6,7 @@
     <extended_description/>
     <trans_version/>
     <trans_type>Normal</trans_type>
-    <directory>&#x2f;</directory>
+    <directory>/</directory>
     <parameters>
     </parameters>
     <log>
@@ -427,20 +427,20 @@
     <clusterschemas>
     </clusterschemas>
     <created_user/>
-    <created_date>2014&#x2f;02&#x2f;26 16&#x3a;25&#x3a;18.397</created_date>
+    <created_date>2014/02/26 16:25:18.397</created_date>
     <modified_user/>
-    <modified_date>2014&#x2f;02&#x2f;26 16&#x3a;25&#x3a;18.397</modified_date>
-    <key_for_session_key>H4sIAAAAAAAAAAMAAAAAAAAAAAA&#x3d;</key_for_session_key>
+    <modified_date>2014/02/26 16:25:18.397</modified_date>
+    <key_for_session_key>H4sIAAAAAAAAAAMAAAAAAAAAAAA=</key_for_session_key>
     <is_key_private>N</is_key_private>
   </info>
   <notepads>
   </notepads>
   <connection>
-    <name>SampleData.H2</name>
+    <name>SampleDataAdmin.H2</name>
     <server/>
     <type>H2</type>
     <access>JNDI</access>
-    <database>SampleData</database>
+    <database>SampleDataAdmin</database>
     <port>1521</port>
     <username/>
     <password>Encrypted </password>
@@ -448,15 +448,42 @@
     <data_tablespace/>
     <index_tablespace/>
     <attributes>
-      <attribute><code>FORCE_IDENTIFIERS_TO_LOWERCASE</code><attribute>N</attribute></attribute>
-      <attribute><code>FORCE_IDENTIFIERS_TO_UPPERCASE</code><attribute>N</attribute></attribute>
-      <attribute><code>IS_CLUSTERED</code><attribute>N</attribute></attribute>
-      <attribute><code>PORT_NUMBER</code><attribute>1521</attribute></attribute>
-      <attribute><code>PRESERVE_RESERVED_WORD_CASE</code><attribute>N</attribute></attribute>
-      <attribute><code>QUOTE_ALL_FIELDS</code><attribute>N</attribute></attribute>
-      <attribute><code>SUPPORTS_BOOLEAN_DATA_TYPE</code><attribute>Y</attribute></attribute>
-      <attribute><code>SUPPORTS_TIMESTAMP_DATA_TYPE</code><attribute>Y</attribute></attribute>
-      <attribute><code>USE_POOLING</code><attribute>N</attribute></attribute>
+      <attribute>
+        <code>FORCE_IDENTIFIERS_TO_LOWERCASE</code>
+        <attribute>N</attribute>
+      </attribute>
+      <attribute>
+        <code>FORCE_IDENTIFIERS_TO_UPPERCASE</code>
+        <attribute>N</attribute>
+      </attribute>
+      <attribute>
+        <code>IS_CLUSTERED</code>
+        <attribute>N</attribute>
+      </attribute>
+      <attribute>
+        <code>PORT_NUMBER</code>
+        <attribute>1521</attribute>
+      </attribute>
+      <attribute>
+        <code>PRESERVE_RESERVED_WORD_CASE</code>
+        <attribute>Y</attribute>
+      </attribute>
+      <attribute>
+        <code>QUOTE_ALL_FIELDS</code>
+        <attribute>N</attribute>
+      </attribute>
+      <attribute>
+        <code>SUPPORTS_BOOLEAN_DATA_TYPE</code>
+        <attribute>Y</attribute>
+      </attribute>
+      <attribute>
+        <code>SUPPORTS_TIMESTAMP_DATA_TYPE</code>
+        <attribute>Y</attribute>
+      </attribute>
+      <attribute>
+        <code>USE_POOLING</code>
+        <attribute>N</attribute>
+      </attribute>
     </attributes>
   </connection>
   <order>
@@ -487,12 +514,16 @@
       <method>none</method>
       <schema_name/>
     </partitioning>
-    <connection>SampleData.H2</connection>
+    <connection>SampleDataAdmin.H2</connection>
     <execute_each_row>N</execute_each_row>
     <single_statement>N</single_statement>
     <replace_variables>N</replace_variables>
     <quoteString>N</quoteString>
-    <sql>truncate table N&#x3b;&#xa;truncate table F&#x3b;&#xa;truncate table E&#x3b;&#xa;truncate table D&#x3b;&#xa;</sql>
+    <sql>truncate table N;
+truncate table F;
+truncate table E;
+truncate table D;
+</sql>
     <set_params>N</set_params>
     <insert_field/>
     <update_field/>
@@ -500,6 +531,7 @@
     <read_field/>
     <arguments>
     </arguments>
+    <attributes/>
     <cluster_schema/>
     <remotesteps>
       <input>
@@ -512,8 +544,7 @@
       <yloc>53</yloc>
       <draw>Y</draw>
     </GUI>
-    </step>
-
+  </step>
   <step>
     <name>Filter rows</name>
     <type>FilterRows</type>
@@ -525,16 +556,17 @@
       <method>none</method>
       <schema_name/>
     </partitioning>
-<send_true_to/>
-<send_false_to/>
+    <send_true_to/>
+    <send_false_to/>
     <compare>
-<condition>
- <negated>N</negated>
- <leftvalue>CUSTOMERNAME</leftvalue>
- <function>IS NOT NULL</function>
- <rightvalue/>
- </condition>
+      <condition>
+        <negated>N</negated>
+        <leftvalue>CUSTOMERNAME</leftvalue>
+        <function>IS NOT NULL</function>
+        <rightvalue/>
+      </condition>
     </compare>
+    <attributes/>
     <cluster_schema/>
     <remotesteps>
       <input>
@@ -547,8 +579,7 @@
       <yloc>165</yloc>
       <draw>Y</draw>
     </GUI>
-    </step>
-
+  </step>
   <step>
     <name>Table input</name>
     <type>TableInput</type>
@@ -560,13 +591,29 @@
       <method>none</method>
       <schema_name/>
     </partitioning>
-    <connection>SampleData.H2</connection>
-    <sql>SELECT&#xd;&#xa;  CUSTOMERNUMBER&#xd;&#xa;, CUSTOMERNAME&#xd;&#xa;, CONTACTLASTNAME&#xd;&#xa;, CONTACTFIRSTNAME&#xd;&#xa;, PHONE&#xd;&#xa;, ADDRESSLINE1&#xd;&#xa;, ADDRESSLINE2&#xd;&#xa;, CITY&#xd;&#xa;, STATE&#xd;&#xa;, POSTALCODE&#xd;&#xa;, COUNTRY&#xd;&#xa;, SALESREPEMPLOYEENUMBER&#xd;&#xa;, CREDITLIMIT&#xd;&#xa;FROM CUSTOMERS_TABLE_OUT&#xd;&#xa;</sql>
+    <connection>SampleDataAdmin.H2</connection>
+    <sql>SELECT
+  CUSTOMERNUMBER
+, CUSTOMERNAME
+, CONTACTLASTNAME
+, CONTACTFIRSTNAME
+, PHONE
+, ADDRESSLINE1
+, ADDRESSLINE2
+, CITY
+, STATE
+, POSTALCODE
+, COUNTRY
+, SALESREPEMPLOYEENUMBER
+, CREDITLIMIT
+FROM CUSTOMERS_TABLE_OUT
+</sql>
     <limit/>
     <lookup/>
     <execute_each_row>N</execute_each_row>
     <variables_active>N</variables_active>
     <lazy_conversion_active>N</lazy_conversion_active>
+    <attributes/>
     <cluster_schema/>
     <remotesteps>
       <input>
@@ -579,8 +626,7 @@
       <yloc>165</yloc>
       <draw>Y</draw>
     </GUI>
-    </step>
-
+  </step>
   <step>
     <name>Table output</name>
     <type>TableOutput</type>
@@ -592,7 +638,7 @@
       <method>none</method>
       <schema_name/>
     </partitioning>
-    <connection>SampleData.H2</connection>
+    <connection>SampleDataAdmin.H2</connection>
     <schema/>
     <table>CUSTOMERS_TABLE_OUT</table>
     <commit>100</commit>
@@ -611,6 +657,7 @@
     <return_field/>
     <fields>
     </fields>
+    <attributes/>
     <cluster_schema/>
     <remotesteps>
       <input>
@@ -623,11 +670,11 @@
       <yloc>165</yloc>
       <draw>Y</draw>
     </GUI>
-    </step>
-
+  </step>
   <step_error_handling>
   </step_error_handling>
   <slave-step-copy-partition-distribution>
   </slave-step-copy-partition-distribution>
   <slave_transformation>N</slave_transformation>
+  <attributes/>
 </transformation>
