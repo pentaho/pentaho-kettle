@@ -3,7 +3,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -1288,12 +1288,29 @@ public abstract class BaseDatabaseMeta implements Cloneable, DatabaseInterfaceEx
   }
 
   /**
+   * @return the maximum pool size variable name
+   */
+  @Override
+  public String getMaximumPoolSizeString() {
+    return attributes.getProperty( ATTRIBUTE_MAXIMUM_POOL_SIZE );
+  }
+
+  /**
    * @param maximumPoolSize
    *          the maximum pool size
    */
   @Override
   public void setMaximumPoolSize( int maximumPoolSize ) {
     attributes.setProperty( ATTRIBUTE_MAXIMUM_POOL_SIZE, Integer.toString( maximumPoolSize ) );
+  }
+
+  /**
+   * @param maximumPoolSize
+   *          the maximum pool size variable name
+   */
+  @Override
+  public void setMaximumPoolSizeString( String maximumPoolSize ) {
+    attributes.setProperty( ATTRIBUTE_MAXIMUM_POOL_SIZE, maximumPoolSize );
   }
 
   /**
@@ -1306,12 +1323,29 @@ public abstract class BaseDatabaseMeta implements Cloneable, DatabaseInterfaceEx
   }
 
   /**
+   * @return the initial pool size variable name
+   */
+  @Override
+  public String getInitialPoolSizeString() {
+    return attributes.getProperty( ATTRIBUTE_INITIAL_POOL_SIZE );
+  }
+
+  /**
    * @param initialPoolSize
    *          the initial pool size
    */
   @Override
   public void setInitialPoolSize( int initialPoolSize ) {
     attributes.setProperty( ATTRIBUTE_INITIAL_POOL_SIZE, Integer.toString( initialPoolSize ) );
+  }
+
+  /**
+   * @param initialPoolSize
+   *          the initial pool size variable name
+   */
+  @Override
+  public void setInitialPoolSizeString( String initialPoolSize ) {
+    attributes.setProperty( ATTRIBUTE_INITIAL_POOL_SIZE, initialPoolSize );
   }
 
   /**
