@@ -6,7 +6,7 @@
     <extended_description/>
     <trans_version/>
     <trans_type>Normal</trans_type>
-    <directory>&#x2f;</directory>
+    <directory>/</directory>
     <parameters>
     </parameters>
     <log>
@@ -427,15 +427,16 @@
     <clusterschemas>
     </clusterschemas>
     <created_user/>
-    <created_date>2014&#x2f;02&#x2f;26 15&#x3a;00&#x3a;53.376</created_date>
+    <created_date>2014/02/26 15:00:53.376</created_date>
     <modified_user>-</modified_user>
-    <modified_date>2009&#x2f;10&#x2f;22 15&#x3a;47&#x3a;05.699</modified_date>
-    <key_for_session_key>H4sIAAAAAAAAAAMAAAAAAAAAAAA&#x3d;</key_for_session_key>
+    <modified_date>2009/10/22 15:47:05.699</modified_date>
+    <key_for_session_key>H4sIAAAAAAAAAAMAAAAAAAAAAAA=</key_for_session_key>
     <is_key_private>N</is_key_private>
   </info>
   <notepads>
     <notepad>
-      <note>Revision notes&#x3a;&#xa;2009-10-22 Jens Bleuel&#x3a; created</note>
+      <note>Revision notes:
+2009-10-22 Jens Bleuel: created</note>
       <xloc>47</xloc>
       <yloc>517</yloc>
       <width>216</width>
@@ -456,7 +457,9 @@
       <drawshadow>N</drawshadow>
     </notepad>
     <notepad>
-      <note>You can also use the row number fieldname&#xa;in the CSV file input step to add the sequence&#xa;but this is more flexible.</note>
+      <note>You can also use the row number fieldname
+in the CSV file input step to add the sequence
+but this is more flexible.</note>
       <xloc>60</xloc>
       <yloc>180</yloc>
       <width>288</width>
@@ -477,7 +480,9 @@
       <drawshadow>N</drawshadow>
     </notepad>
     <notepad>
-      <note>Check if the sequence numbers are OK , i.e. there are no &#x27;missing&#x27; numbers and also no duplicate numbers.&#xa;This sample Aborts the complete transformation if there is a difference.&#xa;Depending on the commit size within Table output there will be a complete rollback.</note>
+      <note>Check if the sequence numbers are OK , i.e. there are no 'missing' numbers and also no duplicate numbers.
+This sample Aborts the complete transformation if there is a difference.
+Depending on the commit size within Table output there will be a complete rollback.</note>
       <xloc>20</xloc>
       <yloc>20</yloc>
       <width>658</width>
@@ -498,7 +503,8 @@
       <drawshadow>N</drawshadow>
     </notepad>
     <notepad>
-      <note>Enter Table output properties&#xa;and enable this hop to work.</note>
+      <note>Enter Table output properties
+and enable this hop to work.</note>
       <xloc>600</xloc>
       <yloc>180</yloc>
       <width>188</width>
@@ -519,7 +525,9 @@
       <drawshadow>N</drawshadow>
     </notepad>
     <notepad>
-      <note>Instead of the Filter rows step you can also&#xa;use the Merge rows &#x28;diff&#x29; step similar.&#xa;See sample &#x22;Merge rows - mergs 2 streams of data and add a flag&#x22;</note>
+      <note>Instead of the Filter rows step you can also
+use the Merge rows (diff) step similar.
+See sample "Merge rows - mergs 2 streams of data and add a flag"</note>
       <xloc>60</xloc>
       <yloc>300</yloc>
       <width>417</width>
@@ -562,11 +570,11 @@
     </notepad>
   </notepads>
   <connection>
-    <name>SampleData.H2</name>
+    <name>SampleDataAdmin.H2</name>
     <server/>
     <type>H2</type>
     <access>JNDI</access>
-    <database>SampleData</database>
+    <database>SampleDataAdmin</database>
     <port>1521</port>
     <username/>
     <password>Encrypted </password>
@@ -574,15 +582,42 @@
     <data_tablespace/>
     <index_tablespace/>
     <attributes>
-      <attribute><code>FORCE_IDENTIFIERS_TO_LOWERCASE</code><attribute>N</attribute></attribute>
-      <attribute><code>FORCE_IDENTIFIERS_TO_UPPERCASE</code><attribute>N</attribute></attribute>
-      <attribute><code>IS_CLUSTERED</code><attribute>N</attribute></attribute>
-      <attribute><code>PORT_NUMBER</code><attribute>1521</attribute></attribute>
-      <attribute><code>PRESERVE_RESERVED_WORD_CASE</code><attribute>N</attribute></attribute>
-      <attribute><code>QUOTE_ALL_FIELDS</code><attribute>N</attribute></attribute>
-      <attribute><code>SUPPORTS_BOOLEAN_DATA_TYPE</code><attribute>Y</attribute></attribute>
-      <attribute><code>SUPPORTS_TIMESTAMP_DATA_TYPE</code><attribute>Y</attribute></attribute>
-      <attribute><code>USE_POOLING</code><attribute>N</attribute></attribute>
+      <attribute>
+        <code>FORCE_IDENTIFIERS_TO_LOWERCASE</code>
+        <attribute>N</attribute>
+      </attribute>
+      <attribute>
+        <code>FORCE_IDENTIFIERS_TO_UPPERCASE</code>
+        <attribute>N</attribute>
+      </attribute>
+      <attribute>
+        <code>IS_CLUSTERED</code>
+        <attribute>N</attribute>
+      </attribute>
+      <attribute>
+        <code>PORT_NUMBER</code>
+        <attribute>1521</attribute>
+      </attribute>
+      <attribute>
+        <code>PRESERVE_RESERVED_WORD_CASE</code>
+        <attribute>Y</attribute>
+      </attribute>
+      <attribute>
+        <code>QUOTE_ALL_FIELDS</code>
+        <attribute>N</attribute>
+      </attribute>
+      <attribute>
+        <code>SUPPORTS_BOOLEAN_DATA_TYPE</code>
+        <attribute>Y</attribute>
+      </attribute>
+      <attribute>
+        <code>SUPPORTS_TIMESTAMP_DATA_TYPE</code>
+        <attribute>Y</attribute>
+      </attribute>
+      <attribute>
+        <code>USE_POOLING</code>
+        <attribute>N</attribute>
+      </attribute>
     </attributes>
   </connection>
   <order>
@@ -628,9 +663,11 @@
       <method>none</method>
       <schema_name/>
     </partitioning>
-      <row_threshold>0</row_threshold>
-      <message>ERROR&#x3a; Sequence is wrong</message>
-      <always_log_rows>Y</always_log_rows>
+    <row_threshold>0</row_threshold>
+    <message>ERROR: Sequence is wrong</message>
+    <always_log_rows>Y</always_log_rows>
+    <abort_option>ABORT_WITH_ERROR</abort_option>
+    <attributes/>
     <cluster_schema/>
     <remotesteps>
       <input>
@@ -643,8 +680,7 @@
       <yloc>300</yloc>
       <draw>Y</draw>
     </GUI>
-    </step>
-
+  </step>
   <step>
     <name>Add sequence</name>
     <type>Sequence</type>
@@ -656,16 +692,17 @@
       <method>none</method>
       <schema_name/>
     </partitioning>
-      <valuename>sequence</valuename>
-      <use_database>N</use_database>
-      <connection/>
-      <schema/>
-      <seqname>SEQ_</seqname>
-      <use_counter>Y</use_counter>
-      <counter_name>sequence</counter_name>
-      <start_at>1</start_at>
-      <increment_by>1</increment_by>
-      <max_value>999999999</max_value>
+    <valuename>sequence</valuename>
+    <use_database>N</use_database>
+    <connection/>
+    <schema/>
+    <seqname>SEQ_</seqname>
+    <use_counter>Y</use_counter>
+    <counter_name>sequence</counter_name>
+    <start_at>1</start_at>
+    <increment_by>1</increment_by>
+    <max_value>999999999</max_value>
+    <attributes/>
     <cluster_schema/>
     <remotesteps>
       <input>
@@ -678,8 +715,7 @@
       <yloc>120</yloc>
       <draw>Y</draw>
     </GUI>
-    </step>
-
+  </step>
   <step>
     <name>CSV file input</name>
     <type>CsvInput</type>
@@ -691,12 +727,12 @@
       <method>none</method>
       <schema_name/>
     </partitioning>
-    <filename>&#x24;&#x7b;Internal.Transformation.Filename.Directory&#x7d;&#x5c;files&#x5c;merge1.txt</filename>
+    <filename>${Internal.Transformation.Filename.Directory}\files\merge1.txt</filename>
     <filename_field/>
     <rownum_field/>
     <include_filename>N</include_filename>
-    <separator>&#x3b;</separator>
-    <enclosure>&#x22;</enclosure>
+    <separator>;</separator>
+    <enclosure>"</enclosure>
     <header>Y</header>
     <buffer_size>50000</buffer_size>
     <lazy_conversion>N</lazy_conversion>
@@ -709,7 +745,7 @@
         <name>pid</name>
         <type>Integer</type>
         <format/>
-        <currency>&#x20ac;</currency>
+        <currency>€</currency>
         <decimal>,</decimal>
         <group>.</group>
         <length>2</length>
@@ -728,6 +764,7 @@
         <trim_type>none</trim_type>
       </field>
     </fields>
+    <attributes/>
     <cluster_schema/>
     <remotesteps>
       <input>
@@ -740,8 +777,7 @@
       <yloc>120</yloc>
       <draw>Y</draw>
     </GUI>
-    </step>
-
+  </step>
   <step>
     <name>Filter rows</name>
     <type>FilterRows</type>
@@ -753,16 +789,17 @@
       <method>none</method>
       <schema_name/>
     </partitioning>
-<send_true_to>correct</send_true_to>
-<send_false_to>wrong sequence</send_false_to>
+    <send_true_to>correct</send_true_to>
+    <send_false_to>wrong sequence</send_false_to>
     <compare>
-<condition>
- <negated>N</negated>
- <leftvalue>pid</leftvalue>
- <function>&#x3d;</function>
- <rightvalue>sequence</rightvalue>
- </condition>
+      <condition>
+        <negated>N</negated>
+        <leftvalue>pid</leftvalue>
+        <function>=</function>
+        <rightvalue>sequence</rightvalue>
+      </condition>
     </compare>
+    <attributes/>
     <cluster_schema/>
     <remotesteps>
       <input>
@@ -775,8 +812,7 @@
       <yloc>120</yloc>
       <draw>Y</draw>
     </GUI>
-    </step>
-
+  </step>
   <step>
     <name>Table output</name>
     <type>TableOutput</type>
@@ -788,7 +824,7 @@
       <method>none</method>
       <schema_name/>
     </partitioning>
-    <connection>SampleData.H2</connection>
+    <connection>SampleDataAdmin.H2</connection>
     <schema/>
     <table>CHECK_SEQUENCE</table>
     <commit>99999999</commit>
@@ -807,6 +843,7 @@
     <return_field/>
     <fields>
     </fields>
+    <attributes/>
     <cluster_schema/>
     <remotesteps>
       <input>
@@ -819,8 +856,7 @@
       <yloc>120</yloc>
       <draw>Y</draw>
     </GUI>
-    </step>
-
+  </step>
   <step>
     <name>correct</name>
     <type>Dummy</type>
@@ -832,6 +868,7 @@
       <method>none</method>
       <schema_name/>
     </partitioning>
+    <attributes/>
     <cluster_schema/>
     <remotesteps>
       <input>
@@ -844,8 +881,7 @@
       <yloc>120</yloc>
       <draw>Y</draw>
     </GUI>
-    </step>
-
+  </step>
   <step>
     <name>wrong sequence</name>
     <type>Dummy</type>
@@ -857,6 +893,7 @@
       <method>none</method>
       <schema_name/>
     </partitioning>
+    <attributes/>
     <cluster_schema/>
     <remotesteps>
       <input>
@@ -869,11 +906,11 @@
       <yloc>200</yloc>
       <draw>Y</draw>
     </GUI>
-    </step>
-
+  </step>
   <step_error_handling>
   </step_error_handling>
   <slave-step-copy-partition-distribution>
   </slave-step-copy-partition-distribution>
   <slave_transformation>N</slave_transformation>
+  <attributes/>
 </transformation>

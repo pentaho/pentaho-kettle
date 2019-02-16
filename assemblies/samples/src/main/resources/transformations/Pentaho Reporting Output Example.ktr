@@ -7,7 +7,7 @@
     <trans_version/>
     <trans_type>Normal</trans_type>
     <trans_status>0</trans_status>
-    <directory>&#x2f;</directory>
+    <directory>/</directory>
     <parameters>
     </parameters>
     <log>
@@ -428,15 +428,15 @@
     <clusterschemas>
     </clusterschemas>
     <created_user>-</created_user>
-    <created_date>2011&#x2f;08&#x2f;09 10&#x3a;07&#x3a;36.830</created_date>
+    <created_date>2011/08/09 10:07:36.830</created_date>
     <modified_user>-</modified_user>
-    <modified_date>2011&#x2f;08&#x2f;09 10&#x3a;07&#x3a;36.830</modified_date>
-    <key_for_session_key>H4sIAAAAAAAAAAMAAAAAAAAAAAA&#x3d;</key_for_session_key>
+    <modified_date>2011/08/09 10:07:36.830</modified_date>
+    <key_for_session_key>H4sIAAAAAAAAAAMAAAAAAAAAAAA=</key_for_session_key>
     <is_key_private>N</is_key_private>
   </info>
   <notepads>
     <notepad>
-      <note>Create a row for Customer &#x22;333&#x22;</note>
+      <note>Create a row for Customer "333"</note>
       <xloc>36</xloc>
       <yloc>112</yloc>
       <width>217</width>
@@ -457,7 +457,8 @@
       <drawshadow>Y</drawshadow>
     </notepad>
     <notepad>
-      <note>Create the path&#x5c;filename for the Report Template&#xa;and the output name for the generated report.</note>
+      <note>Create the path\filename for the Report Template
+and the output name for the generated report.</note>
       <xloc>194</xloc>
       <yloc>269</yloc>
       <width>323</width>
@@ -478,7 +479,10 @@
       <drawshadow>Y</drawshadow>
     </notepad>
     <notepad>
-      <note>Generate the PDF Reports&#xa;Please note that you need to start up the sampledata&#xa;hypersonic database that ships with Pentaho BI Server&#xa;in order for this sample to run successfully.</note>
+      <note>Generate the PDF Reports
+Please note that you need to start up the sampledata
+hypersonic database that ships with Pentaho BI Server
+in order for this sample to run successfully.</note>
       <xloc>431</xloc>
       <yloc>73</yloc>
       <width>358</width>
@@ -524,22 +528,44 @@
     </partitioning>
     <compatible>N</compatible>
     <optimizationLevel/>
-    <jsScripts>      <jsScript>        <jsScript_type>0</jsScript_type>
+    <jsScripts>
+      <jsScript>
+        <jsScript_type>0</jsScript_type>
         <jsScript_name>Script 1</jsScript_name>
-        <jsScript_script>&#xa;var Report_Template&#x3b;&#xa;var Report_Output&#x3b;&#xa;&#xa;&#xa;&#x2f;&#x2f; Create full path combining transformation directory &#x2b; filename&#xa;Report_Template &#x3d; getVariable&#x28;&#x22;Internal.Transformation.Filename.Directory&#x22;,&#x22; &#x22;&#x29;&#x2b;Report_Template_name&#x3b;&#xa;Report_Output &#x3d; getVariable&#x28;&#x22;Internal.Transformation.Filename.Directory&#x22;,&#x22; &#x22;&#x29;&#x2b;Report_Output_name&#x3b;&#xa;&#xa;&#x2f;&#x2f; Trim the leading &#x27;file&#x3a;C&#x2f;&#x2f;&#x2f;&#x27; characters from the full path&#xa;Report_Template &#x3d; substr&#x28;Report_Template,6&#x29;&#x3b;&#xa;Report_Output &#x3d; substr&#x28;Report_Output,6&#x29;&#x3b;</jsScript_script>
-      </jsScript>    </jsScripts>    <fields>      <field>        <name>Report_Template</name>
+        <jsScript_script>
+var Report_Template;
+var Report_Output;
+
+
+// Create full path combining transformation directory + filename
+Report_Template = getVariable("Internal.Transformation.Filename.Directory"," ")+Report_Template_name;
+Report_Output = getVariable("Internal.Transformation.Filename.Directory"," ")+Report_Output_name;
+
+// Trim the leading 'file:C///' characters from the full path
+Report_Template = substr(Report_Template,6);
+Report_Output = substr(Report_Output,6);</jsScript_script>
+      </jsScript>
+    </jsScripts>
+    <fields>
+      <field>
+        <name>Report_Template</name>
         <rename>Report_Template</rename>
         <type>String</type>
         <length>-1</length>
         <precision>-1</precision>
         <replace>N</replace>
-      </field>      <field>        <name>Report_Output</name>
+      </field>
+      <field>
+        <name>Report_Output</name>
         <rename>Report_Output</rename>
         <type>String</type>
         <length>-1</length>
         <precision>-1</precision>
         <replace>N</replace>
-      </field>    </fields>    <cluster_schema/>
+      </field>
+    </fields>
+    <attributes/>
+    <cluster_schema/>
     <remotesteps>
       <input>
       </input>
@@ -551,8 +577,7 @@
       <yloc>184</yloc>
       <draw>Y</draw>
     </GUI>
-    </step>
-
+  </step>
   <step>
     <name>Generate Reports</name>
     <type>PentahoReportingOutput</type>
@@ -564,11 +589,21 @@
       <method>none</method>
       <schema_name/>
     </partitioning>
-  <input_file_field>report_template</input_file_field>
-  <output_file_field>report_output</output_file_field>
-  <parameters>   <parameter>   <name>CustomerNo</name>   <field>CustomerNo</field>   </parameter>
-   <parameter>   <name>Report Type</name>   <field>report_output</field>   </parameter>
-  </parameters>    <processor_type>PDF</processor_type>
+    <input_file_field>Report_Template</input_file_field>
+    <output_file_field>report_output</output_file_field>
+    <create_parent_folder>N</create_parent_folder>
+    <parameters>
+      <parameter>
+        <name>CustomerNo</name>
+        <field>CustomerNo</field>
+      </parameter>
+      <parameter>
+        <name>Report Type</name>
+        <field>report_output</field>
+      </parameter>
+    </parameters>
+    <processor_type>PDF</processor_type>
+    <attributes/>
     <cluster_schema/>
     <remotesteps>
       <input>
@@ -581,8 +616,7 @@
       <yloc>185</yloc>
       <draw>Y</draw>
     </GUI>
-    </step>
-
+  </step>
   <step>
     <name>Generate Rows</name>
     <type>RowGenerator</type>
@@ -626,7 +660,7 @@
         <currency/>
         <decimal/>
         <group/>
-        <nullif>&#x2f;files&#x2f;Invoice_Statements.prpt</nullif>
+        <nullif>/files/Invoice_Statements.prpt</nullif>
         <length>-1</length>
         <precision>-1</precision>
         <set_empty_string>N</set_empty_string>
@@ -638,7 +672,7 @@
         <currency/>
         <decimal/>
         <group/>
-        <nullif>&#x2f;output&#x2f;invoice_output.pdf</nullif>
+        <nullif>/output/invoice_output.pdf</nullif>
         <length>-1</length>
         <precision>-1</precision>
         <set_empty_string>N</set_empty_string>
@@ -649,6 +683,7 @@
     <interval_in_ms/>
     <row_time_field/>
     <last_time_field/>
+    <attributes/>
     <cluster_schema/>
     <remotesteps>
       <input>
@@ -661,11 +696,11 @@
       <yloc>185</yloc>
       <draw>Y</draw>
     </GUI>
-    </step>
-
+  </step>
   <step_error_handling>
   </step_error_handling>
   <slave-step-copy-partition-distribution>
   </slave-step-copy-partition-distribution>
   <slave_transformation>N</slave_transformation>
+  <attributes/>
 </transformation>

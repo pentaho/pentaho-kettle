@@ -6,7 +6,7 @@
     <extended_description/>
     <trans_version/>
     <trans_type>Normal</trans_type>
-    <directory>&#x2f;</directory>
+    <directory>/</directory>
     <parameters>
     </parameters>
     <log>
@@ -427,20 +427,20 @@
     <clusterschemas>
     </clusterschemas>
     <created_user/>
-    <created_date>2014&#x2f;02&#x2f;26 12&#x3a;56&#x3a;01.539</created_date>
+    <created_date>2014/02/26 12:56:01.539</created_date>
     <modified_user>-</modified_user>
-    <modified_date>2006&#x2f;10&#x2f;19 12&#x3a;11&#x3a;54.453</modified_date>
-    <key_for_session_key>H4sIAAAAAAAAAAMAAAAAAAAAAAA&#x3d;</key_for_session_key>
+    <modified_date>2006/10/19 12:11:54.453</modified_date>
+    <key_for_session_key>H4sIAAAAAAAAAAMAAAAAAAAAAAA=</key_for_session_key>
     <is_key_private>N</is_key_private>
   </info>
   <notepads>
   </notepads>
   <connection>
-    <name>SampleData.H2</name>
+    <name>SampleDataAdmin.H2</name>
     <server/>
     <type>H2</type>
     <access>JNDI</access>
-    <database>SampleData</database>
+    <database>SampleDataAdmin</database>
     <port>1521</port>
     <username/>
     <password>Encrypted </password>
@@ -448,15 +448,42 @@
     <data_tablespace/>
     <index_tablespace/>
     <attributes>
-      <attribute><code>FORCE_IDENTIFIERS_TO_LOWERCASE</code><attribute>N</attribute></attribute>
-      <attribute><code>FORCE_IDENTIFIERS_TO_UPPERCASE</code><attribute>N</attribute></attribute>
-      <attribute><code>IS_CLUSTERED</code><attribute>N</attribute></attribute>
-      <attribute><code>PORT_NUMBER</code><attribute>1521</attribute></attribute>
-      <attribute><code>PRESERVE_RESERVED_WORD_CASE</code><attribute>N</attribute></attribute>
-      <attribute><code>QUOTE_ALL_FIELDS</code><attribute>N</attribute></attribute>
-      <attribute><code>SUPPORTS_BOOLEAN_DATA_TYPE</code><attribute>Y</attribute></attribute>
-      <attribute><code>SUPPORTS_TIMESTAMP_DATA_TYPE</code><attribute>Y</attribute></attribute>
-      <attribute><code>USE_POOLING</code><attribute>N</attribute></attribute>
+      <attribute>
+        <code>FORCE_IDENTIFIERS_TO_LOWERCASE</code>
+        <attribute>N</attribute>
+      </attribute>
+      <attribute>
+        <code>FORCE_IDENTIFIERS_TO_UPPERCASE</code>
+        <attribute>N</attribute>
+      </attribute>
+      <attribute>
+        <code>IS_CLUSTERED</code>
+        <attribute>N</attribute>
+      </attribute>
+      <attribute>
+        <code>PORT_NUMBER</code>
+        <attribute>1521</attribute>
+      </attribute>
+      <attribute>
+        <code>PRESERVE_RESERVED_WORD_CASE</code>
+        <attribute>Y</attribute>
+      </attribute>
+      <attribute>
+        <code>QUOTE_ALL_FIELDS</code>
+        <attribute>N</attribute>
+      </attribute>
+      <attribute>
+        <code>SUPPORTS_BOOLEAN_DATA_TYPE</code>
+        <attribute>Y</attribute>
+      </attribute>
+      <attribute>
+        <code>SUPPORTS_TIMESTAMP_DATA_TYPE</code>
+        <attribute>Y</attribute>
+      </attribute>
+      <attribute>
+        <code>USE_POOLING</code>
+        <attribute>N</attribute>
+      </attribute>
     </attributes>
   </connection>
   <order>
@@ -467,11 +494,11 @@
     </hop>
     <hop>
       <from>TMP_CHANGELOG</from>
-      <to>New&#x3f;</to>
+      <to>New?</to>
       <enabled>Y</enabled>
     </hop>
     <hop>
-      <from>New&#x3f;</from>
+      <from>New?</from>
       <to>Table output Mapping</to>
       <enabled>Y</enabled>
     </hop>
@@ -481,27 +508,27 @@
       <enabled>Y</enabled>
     </hop>
     <hop>
-      <from>New&#x3f;</from>
-      <to>Update&#x3f;</to>
+      <from>New?</from>
+      <to>Update?</to>
       <enabled>Y</enabled>
     </hop>
     <hop>
-      <from>Update&#x3f;</from>
+      <from>Update?</from>
       <to>Update</to>
       <enabled>Y</enabled>
     </hop>
     <hop>
-      <from>Update&#x3f;</from>
-      <to>Delete&#x3f;</to>
+      <from>Update?</from>
+      <to>Delete?</to>
       <enabled>Y</enabled>
     </hop>
     <hop>
-      <from>Delete&#x3f;</from>
+      <from>Delete?</from>
       <to>Delete</to>
       <enabled>Y</enabled>
     </hop>
     <hop>
-      <from>Delete&#x3f;</from>
+      <from>Delete?</from>
       <to>Sink</to>
       <enabled>Y</enabled>
     </hop>
@@ -517,7 +544,7 @@
       <method>none</method>
       <schema_name/>
     </partitioning>
-    <connection>SampleData.H2</connection>
+    <connection>SampleDataAdmin.H2</connection>
     <commit>0</commit>
     <lookup>
       <schema/>
@@ -525,10 +552,11 @@
       <key>
         <name>ID</name>
         <field>ID</field>
-        <condition>&#x3d;</condition>
+        <condition>=</condition>
         <name2/>
       </key>
     </lookup>
+    <attributes/>
     <cluster_schema/>
     <remotesteps>
       <input>
@@ -541,10 +569,9 @@
       <yloc>425</yloc>
       <draw>Y</draw>
     </GUI>
-    </step>
-
+  </step>
   <step>
-    <name>Delete&#x3f;</name>
+    <name>Delete?</name>
     <type>FilterRows</type>
     <description/>
     <distribute>Y</distribute>
@@ -554,16 +581,26 @@
       <method>none</method>
       <schema_name/>
     </partitioning>
-<send_true_to>Delete</send_true_to>
-<send_false_to>Sink</send_false_to>
+    <send_true_to>Delete</send_true_to>
+    <send_false_to>Sink</send_false_to>
     <compare>
-<condition>
- <negated>N</negated>
- <leftvalue>FLAG</leftvalue>
- <function>&#x3d;</function>
- <rightvalue/>
- <value><name>constant</name><type>String</type><text>D</text><length>-1</length><precision>-1</precision><isnull>N</isnull><mask/></value> </condition>
+      <condition>
+        <negated>N</negated>
+        <leftvalue>FLAG</leftvalue>
+        <function>=</function>
+        <rightvalue/>
+        <value>
+          <name>constant</name>
+          <type>String</type>
+          <text>D</text>
+          <length>-1</length>
+          <precision>-1</precision>
+          <isnull>N</isnull>
+          <mask/>
+        </value>
+      </condition>
     </compare>
+    <attributes/>
     <cluster_schema/>
     <remotesteps>
       <input>
@@ -576,8 +613,7 @@
       <yloc>425</yloc>
       <draw>Y</draw>
     </GUI>
-    </step>
-
+  </step>
   <step>
     <name>Get rows from result</name>
     <type>RowsFromResult</type>
@@ -589,11 +625,16 @@
       <method>none</method>
       <schema_name/>
     </partitioning>
-    <fields>      <field>        <name>subnr</name>
+    <fields>
+      <field>
+        <name>subnr</name>
         <type>Integer</type>
         <length>5</length>
         <precision>0</precision>
-        </field>      </fields>    <cluster_schema/>
+      </field>
+    </fields>
+    <attributes/>
+    <cluster_schema/>
     <remotesteps>
       <input>
       </input>
@@ -605,8 +646,7 @@
       <yloc>72</yloc>
       <draw>Y</draw>
     </GUI>
-    </step>
-
+  </step>
   <step>
     <name>Insert</name>
     <type>TableOutput</type>
@@ -618,7 +658,7 @@
       <method>none</method>
       <schema_name/>
     </partitioning>
-    <connection>SampleData.H2</connection>
+    <connection>SampleDataAdmin.H2</connection>
     <schema/>
     <table>CHANGELOG</table>
     <commit>0</commit>
@@ -637,6 +677,7 @@
     <return_field/>
     <fields>
     </fields>
+    <attributes/>
     <cluster_schema/>
     <remotesteps>
       <input>
@@ -649,10 +690,9 @@
       <yloc>169</yloc>
       <draw>Y</draw>
     </GUI>
-    </step>
-
+  </step>
   <step>
-    <name>New&#x3f;</name>
+    <name>New?</name>
     <type>FilterRows</type>
     <description/>
     <distribute>Y</distribute>
@@ -662,16 +702,26 @@
       <method>none</method>
       <schema_name/>
     </partitioning>
-<send_true_to>Table output Mapping</send_true_to>
-<send_false_to>Update&#x3f;</send_false_to>
+    <send_true_to>Table output Mapping</send_true_to>
+    <send_false_to>Update?</send_false_to>
     <compare>
-<condition>
- <negated>N</negated>
- <leftvalue>FLAG</leftvalue>
- <function>&#x3d;</function>
- <rightvalue/>
- <value><name>constant</name><type>String</type><text>N</text><length>-1</length><precision>-1</precision><isnull>N</isnull><mask/></value> </condition>
+      <condition>
+        <negated>N</negated>
+        <leftvalue>FLAG</leftvalue>
+        <function>=</function>
+        <rightvalue/>
+        <value>
+          <name>constant</name>
+          <type>String</type>
+          <text>N</text>
+          <length>-1</length>
+          <precision>-1</precision>
+          <isnull>N</isnull>
+          <mask/>
+        </value>
+      </condition>
     </compare>
+    <attributes/>
     <cluster_schema/>
     <remotesteps>
       <input>
@@ -684,8 +734,7 @@
       <yloc>169</yloc>
       <draw>Y</draw>
     </GUI>
-    </step>
-
+  </step>
   <step>
     <name>Sink</name>
     <type>Dummy</type>
@@ -697,6 +746,7 @@
       <method>none</method>
       <schema_name/>
     </partitioning>
+    <attributes/>
     <cluster_schema/>
     <remotesteps>
       <input>
@@ -709,8 +759,7 @@
       <yloc>553</yloc>
       <draw>Y</draw>
     </GUI>
-    </step>
-
+  </step>
   <step>
     <name>TMP_CHANGELOG</name>
     <type>TableInput</type>
@@ -722,13 +771,23 @@
       <method>none</method>
       <schema_name/>
     </partitioning>
-    <connection>SampleData.H2</connection>
-    <sql>SELECT&#xa;  FLAG&#xa;, ID&#xa;, FOO&#xa;, NR&#xa;, SUBNR&#xa;FROM TMP_CHANGELOG&#xa;WHERE subnr &#x3d; &#x3f;&#xa;ORDER BY NR&#xa;</sql>
+    <connection>SampleDataAdmin.H2</connection>
+    <sql>SELECT
+  FLAG
+, ID
+, FOO
+, NR
+, SUBNR
+FROM TMP_CHANGELOG
+WHERE subnr = ?
+ORDER BY NR
+</sql>
     <limit>0</limit>
     <lookup>Get rows from result</lookup>
     <execute_each_row>N</execute_each_row>
     <variables_active>N</variables_active>
     <lazy_conversion_active>N</lazy_conversion_active>
+    <attributes/>
     <cluster_schema/>
     <remotesteps>
       <input>
@@ -741,8 +800,7 @@
       <yloc>169</yloc>
       <draw>Y</draw>
     </GUI>
-    </step>
-
+  </step>
   <step>
     <name>Table output Mapping</name>
     <type>SelectValues</type>
@@ -754,12 +812,19 @@
       <method>none</method>
       <schema_name/>
     </partitioning>
-    <fields>      <field>        <name>ID</name>
+    <fields>
+      <field>
+        <name>ID</name>
         <rename>ID</rename>
-      </field>      <field>        <name>FOO</name>
+      </field>
+      <field>
+        <name>FOO</name>
         <rename>FOO</rename>
-      </field>        <select_unspecified>N</select_unspecified>
-    </fields>    <cluster_schema/>
+      </field>
+      <select_unspecified>N</select_unspecified>
+    </fields>
+    <attributes/>
+    <cluster_schema/>
     <remotesteps>
       <input>
       </input>
@@ -771,8 +836,7 @@
       <yloc>169</yloc>
       <draw>Y</draw>
     </GUI>
-    </step>
-
+  </step>
   <step>
     <name>Update</name>
     <type>Update</type>
@@ -784,7 +848,7 @@
       <method>none</method>
       <schema_name/>
     </partitioning>
-    <connection>SampleData.H2</connection>
+    <connection>SampleDataAdmin.H2</connection>
     <skip_lookup>N</skip_lookup>
     <commit>0</commit>
     <use_batch>N</use_batch>
@@ -796,14 +860,15 @@
       <key>
         <name>ID</name>
         <field>ID</field>
-        <condition>&#x3d;</condition>
+        <condition>=</condition>
         <name2/>
-        </key>
+      </key>
       <value>
         <name>FOO</name>
         <rename>FOO</rename>
-        </value>
-      </lookup>
+      </value>
+    </lookup>
+    <attributes/>
     <cluster_schema/>
     <remotesteps>
       <input>
@@ -816,10 +881,9 @@
       <yloc>297</yloc>
       <draw>Y</draw>
     </GUI>
-    </step>
-
+  </step>
   <step>
-    <name>Update&#x3f;</name>
+    <name>Update?</name>
     <type>FilterRows</type>
     <description/>
     <distribute>Y</distribute>
@@ -829,16 +893,26 @@
       <method>none</method>
       <schema_name/>
     </partitioning>
-<send_true_to>Update</send_true_to>
-<send_false_to>Delete&#x3f;</send_false_to>
+    <send_true_to>Update</send_true_to>
+    <send_false_to>Delete?</send_false_to>
     <compare>
-<condition>
- <negated>N</negated>
- <leftvalue>FLAG</leftvalue>
- <function>&#x3d;</function>
- <rightvalue/>
- <value><name>constant</name><type>String</type><text>C</text><length>-1</length><precision>-1</precision><isnull>N</isnull><mask/></value> </condition>
+      <condition>
+        <negated>N</negated>
+        <leftvalue>FLAG</leftvalue>
+        <function>=</function>
+        <rightvalue/>
+        <value>
+          <name>constant</name>
+          <type>String</type>
+          <text>C</text>
+          <length>-1</length>
+          <precision>-1</precision>
+          <isnull>N</isnull>
+          <mask/>
+        </value>
+      </condition>
     </compare>
+    <attributes/>
     <cluster_schema/>
     <remotesteps>
       <input>
@@ -851,11 +925,11 @@
       <yloc>297</yloc>
       <draw>Y</draw>
     </GUI>
-    </step>
-
+  </step>
   <step_error_handling>
   </step_error_handling>
   <slave-step-copy-partition-distribution>
   </slave-step-copy-partition-distribution>
   <slave_transformation>N</slave_transformation>
+  <attributes/>
 </transformation>

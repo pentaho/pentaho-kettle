@@ -6,7 +6,7 @@
     <extended_description/>
     <trans_version/>
     <trans_type>Normal</trans_type>
-    <directory>&#x2f;</directory>
+    <directory>/</directory>
     <parameters>
     </parameters>
     <log>
@@ -427,20 +427,20 @@
     <clusterschemas>
     </clusterschemas>
     <created_user/>
-    <created_date>2014&#x2f;02&#x2f;26 14&#x3a;03&#x3a;18.331</created_date>
+    <created_date>2014/02/26 14:03:18.331</created_date>
     <modified_user>-</modified_user>
-    <modified_date>2006&#x2f;11&#x2f;13 11&#x3a;52&#x3a;47.796</modified_date>
-    <key_for_session_key>H4sIAAAAAAAAAAMAAAAAAAAAAAA&#x3d;</key_for_session_key>
+    <modified_date>2006/11/13 11:52:47.796</modified_date>
+    <key_for_session_key>H4sIAAAAAAAAAAMAAAAAAAAAAAA=</key_for_session_key>
     <is_key_private>N</is_key_private>
   </info>
   <notepads>
   </notepads>
   <connection>
-    <name>SampleData.H2</name>
+    <name>SampleDataAdmin.H2</name>
     <server/>
     <type>H2</type>
     <access>JNDI</access>
-    <database>SampleData</database>
+    <database>SampleDataAdmin</database>
     <port>1521</port>
     <username/>
     <password>Encrypted </password>
@@ -448,26 +448,53 @@
     <data_tablespace/>
     <index_tablespace/>
     <attributes>
-      <attribute><code>FORCE_IDENTIFIERS_TO_LOWERCASE</code><attribute>N</attribute></attribute>
-      <attribute><code>FORCE_IDENTIFIERS_TO_UPPERCASE</code><attribute>N</attribute></attribute>
-      <attribute><code>IS_CLUSTERED</code><attribute>N</attribute></attribute>
-      <attribute><code>PORT_NUMBER</code><attribute>1521</attribute></attribute>
-      <attribute><code>PRESERVE_RESERVED_WORD_CASE</code><attribute>N</attribute></attribute>
-      <attribute><code>QUOTE_ALL_FIELDS</code><attribute>N</attribute></attribute>
-      <attribute><code>SUPPORTS_BOOLEAN_DATA_TYPE</code><attribute>Y</attribute></attribute>
-      <attribute><code>SUPPORTS_TIMESTAMP_DATA_TYPE</code><attribute>Y</attribute></attribute>
-      <attribute><code>USE_POOLING</code><attribute>N</attribute></attribute>
+      <attribute>
+        <code>FORCE_IDENTIFIERS_TO_LOWERCASE</code>
+        <attribute>N</attribute>
+      </attribute>
+      <attribute>
+        <code>FORCE_IDENTIFIERS_TO_UPPERCASE</code>
+        <attribute>N</attribute>
+      </attribute>
+      <attribute>
+        <code>IS_CLUSTERED</code>
+        <attribute>N</attribute>
+      </attribute>
+      <attribute>
+        <code>PORT_NUMBER</code>
+        <attribute>1521</attribute>
+      </attribute>
+      <attribute>
+        <code>PRESERVE_RESERVED_WORD_CASE</code>
+        <attribute>Y</attribute>
+      </attribute>
+      <attribute>
+        <code>QUOTE_ALL_FIELDS</code>
+        <attribute>N</attribute>
+      </attribute>
+      <attribute>
+        <code>SUPPORTS_BOOLEAN_DATA_TYPE</code>
+        <attribute>Y</attribute>
+      </attribute>
+      <attribute>
+        <code>SUPPORTS_TIMESTAMP_DATA_TYPE</code>
+        <attribute>Y</attribute>
+      </attribute>
+      <attribute>
+        <code>USE_POOLING</code>
+        <attribute>N</attribute>
+      </attribute>
     </attributes>
   </connection>
   <order>
     <hop>
       <from>Territories.txt</from>
-      <to>Combination lookup&#x2f;update</to>
+      <to>Combination lookup/update</to>
       <enabled>Y</enabled>
     </hop>
   </order>
   <step>
-    <name>Combination lookup&#x2f;update</name>
+    <name>Combination lookup/update</name>
     <type>CombinationLookup</type>
     <description/>
     <distribute>Y</distribute>
@@ -477,28 +504,29 @@
       <method>none</method>
       <schema_name/>
     </partitioning>
-      <schema/>
-      <table>dim_territories</table>
-      <connection>SampleData.H2</connection>
-      <commit>100</commit>
-      <cache_size>9999</cache_size>
-      <replace>N</replace>
-      <preloadCache>N</preloadCache>
-      <crc>N</crc>
-      <crcfield>hashcode</crcfield>
-      <fields>
-        <key>
-          <name>Territory</name>
-          <lookup>Territory</lookup>
-        </key>
-        <return>
-          <name>id</name>
-          <creation_method>tablemax</creation_method>
-          <use_autoinc>N</use_autoinc>
-        </return>
-      </fields>
-      <sequence/>
-      <last_update_field/>
+    <schema/>
+    <table>dim_territories</table>
+    <connection>SampleDataAdmin.H2</connection>
+    <commit>100</commit>
+    <cache_size>9999</cache_size>
+    <replace>N</replace>
+    <preloadCache>N</preloadCache>
+    <crc>N</crc>
+    <crcfield>hashcode</crcfield>
+    <fields>
+      <key>
+        <name>Territory</name>
+        <lookup>Territory</lookup>
+      </key>
+      <return>
+        <name>id</name>
+        <creation_method>tablemax</creation_method>
+        <use_autoinc>N</use_autoinc>
+      </return>
+    </fields>
+    <sequence/>
+    <last_update_field/>
+    <attributes/>
     <cluster_schema/>
     <remotesteps>
       <input>
@@ -511,8 +539,7 @@
       <yloc>159</yloc>
       <draw>Y</draw>
     </GUI>
-    </step>
-
+  </step>
   <step>
     <name>Territories.txt</name>
     <type>TextFileInput</type>
@@ -528,8 +555,8 @@
     <passing_through_fields>N</passing_through_fields>
     <accept_field/>
     <accept_stepname/>
-    <separator>&#x3b;</separator>
-    <enclosure>&#x22;</enclosure>
+    <separator>;</separator>
+    <enclosure>"</enclosure>
     <enclosure_breaks>N</enclosure_breaks>
     <escapechar/>
     <header>Y</header>
@@ -549,9 +576,10 @@
     <rownum_field/>
     <format>mixed</format>
     <encoding/>
+    <length/>
     <add_to_result_filenames>Y</add_to_result_filenames>
     <file>
-      <name>&#x24;&#x7b;Internal.Transformation.Filename.Directory&#x7d;&#x2f;files&#x2f;Territories.txt</name>
+      <name>${Internal.Transformation.Filename.Directory}/files/Territories.txt</name>
       <filemask/>
       <exclude_filemask/>
       <file_required>N</file_required>
@@ -603,6 +631,7 @@
     <rootUriNameFieldName/>
     <extensionFieldName/>
     <sizeFieldName/>
+    <attributes/>
     <cluster_schema/>
     <remotesteps>
       <input>
@@ -615,11 +644,11 @@
       <yloc>159</yloc>
       <draw>Y</draw>
     </GUI>
-    </step>
-
+  </step>
   <step_error_handling>
   </step_error_handling>
   <slave-step-copy-partition-distribution>
   </slave-step-copy-partition-distribution>
   <slave_transformation>N</slave_transformation>
+  <attributes/>
 </transformation>
