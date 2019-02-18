@@ -24,7 +24,6 @@
     <javax.servlet-api.version>3.0.1</javax.servlet-api.version>
     <commons-vfs2.version>2.2</commons-vfs2.version>
     <eclipse.version>3.6.0</eclipse.version>
-    <pax-web-spi.version>3.1.4</pax-web-spi.version>
     <junit.version>4.11</junit.version>
     <js.project.list>requirejs,requirejs-text,angular,require-css,angular-i18n</js.project.list>
   </properties>
@@ -119,8 +118,6 @@
     <dependency>
       <groupId>org.ops4j.pax.web</groupId>
       <artifactId>pax-web-spi</artifactId>
-      <version>${pax-web-spi.version}</version>
-      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.apache.karaf.kar</groupId>
