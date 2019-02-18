@@ -481,11 +481,12 @@
       <version>${simple-jndi.version}</version>
     </dependency>
 
-    <!-- Needed for runtime execution -->
+    <!-- region - Needed for runtime execution -->
     <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-expression</artifactId>
     </dependency>
+    <!-- endregion -->
 
     <!-- Test dependencies -->
     <dependency>
