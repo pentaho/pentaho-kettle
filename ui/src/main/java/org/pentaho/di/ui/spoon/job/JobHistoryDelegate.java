@@ -24,9 +24,13 @@ package org.pentaho.di.ui.spoon.job;
 
 import java.sql.ResultSet;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.ResourceBundle;
 
+import com.google.common.annotations.VisibleForTesting;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.custom.CTabItem;
@@ -564,36 +568,74 @@ public class JobHistoryDelegate extends SpoonDelegate implements XulEventHandler
     return moreRows;
   }
 
+  /**
+   * Maps UI columns to DB columns
+   * @return {@link Map} with the mapping between UI column names and index of the corresponding DB column
+   */
+  @VisibleForTesting
+  Map<String, Integer> getColumnMappings( JobHistoryDelegate.JobHistoryLogTab model ) {
+    Map<String, Integer> map = new HashMap();
+
+    for ( ColumnInfo ci : model.logDisplayTableView.getColumns() ) {
+      for ( int i = 0; i < model.logTableFields.size(); i++ ) {
+        if ( ci.getValueMeta().getName().equals( model.logTableFields.get( i ).getId() ) ) {
+          map.put( model.logTableFields.get( i ).getId(), i );
+          break;
+        }
+      }
+    }
+
+    return map;
+  }
+
+  /**
+   * Returns the {@link ValueMetaInterface} for a specified log table field
+   * @param columns The list of UI columns
+   * @param field The field to look for
+   * @return The {@link ValueMetaInterface} for the specified field
+   */
+  @VisibleForTesting
+  ValueMetaInterface getValueMetaForColumn( ColumnInfo[] columns, LogTableField field ) {
+    return Arrays.stream( columns )
+      .filter( x -> x.getValueMeta().getName().equals( field.getId() ) )
+      .findFirst()
+      .get()
+      .getValueMeta();
+  }
+
   private void displayHistoryData( final int index ) {
     JobHistoryLogTab model = models[index];
-    ColumnInfo[] colinf = model.logDisplayTableView.getColumns();
 
-    // Now, we're going to display the data in the table view
-    //
     if ( model.logDisplayTableView == null || model.logDisplayTableView.isDisposed() ) {
       return;
     }
 
-    int selectionIndex = model.logDisplayTableView.getSelectionIndex();
+    // display the data in the table view
+    ColumnInfo[] colinf = model.logDisplayTableView.getColumns();
 
+    int selectionIndex = model.logDisplayTableView.getSelectionIndex();
     model.logDisplayTableView.table.clearAll();
 
     List<Object[]> rows = model.rows;
 
+    LogTableField errorsField = model.logTable.getErrorsField();
+    LogTableField statusField = model.logTable.getStatusField();
+
     if ( rows != null && rows.size() > 0 ) {
-      // OK, now that we have a series of rows, we can add them to the table view...
-      //
+      // we need to map ui columns to db columns before rendering data
+      Map<String, Integer> map = getColumnMappings( model );
+
+      // add row data to the table view
       for ( Object[] rowData : rows ) {
         TableItem item = new TableItem( model.logDisplayTableView.table, SWT.NONE );
 
         for ( int c = 0; c < colinf.length; c++ ) {
-
           ColumnInfo column = colinf[c];
 
           ValueMetaInterface valueMeta = column.getValueMeta();
           String string = null;
           try {
-            string = valueMeta.getString( rowData[c] );
+            string = valueMeta.getString( rowData[ map.get( column.getValueMeta().getName() ) ] );
           } catch ( KettleValueException e ) {
             log.logError( "history data conversion issue", e );
           }
@@ -605,21 +647,20 @@ public class JobHistoryDelegate extends SpoonDelegate implements XulEventHandler
         Long errors = null;
         LogStatus status = null;
 
-        LogTableField errorsField = model.logTable.getErrorsField();
         if ( errorsField != null ) {
           int index1 = model.logTableFields.indexOf( errorsField );
+          ValueMetaInterface valueMeta = getValueMetaForColumn( colinf, errorsField );
           try {
-            errors = colinf[index1].getValueMeta().getInteger( rowData[index1] );
+            errors = valueMeta.getInteger( rowData[ map.get( valueMeta.getName() ) ] );
           } catch ( KettleValueException e ) {
             log.logError( "history data conversion issue", e );
           }
         }
-        LogTableField statusField = model.logTable.getStatusField();
         if ( statusField != null ) {
-          int index1 = model.logTableFields.indexOf( statusField );
+          ValueMetaInterface valueMeta = getValueMetaForColumn( colinf, statusField );
           String statusString = null;
           try {
-            statusString = colinf[index1].getValueMeta().getString( rowData[index1] );
+            statusString = valueMeta.getString( rowData[ map.get( valueMeta.getName() ) ] );
           } catch ( KettleValueException e ) {
             log.logError( "history data conversion issue", e );
           }
@@ -640,8 +681,6 @@ public class JobHistoryDelegate extends SpoonDelegate implements XulEventHandler
       model.logDisplayTableView.optWidth( true );
     } else {
       model.logDisplayTableView.clearAll( false );
-      // new TableItem(wFields.get(tabIndex).table, SWT.NONE); // Give it an item to prevent errors on various
-      // platforms.
     }
 
     if ( selectionIndex >= 0 && selectionIndex < model.logDisplayTableView.getItemCount() ) {
@@ -777,7 +816,8 @@ public class JobHistoryDelegate extends SpoonDelegate implements XulEventHandler
     refreshHistory( tabIndex, Mode.ALL );
   }
 
-  private class JobHistoryLogTab extends CTabItem {
+  @VisibleForTesting
+  class JobHistoryLogTab extends CTabItem {
     private List<LogTableField> logTableFields = new ArrayList<LogTableField>();
     private List<Object[]> rows;
     private LogTableInterface logTable;
