@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -30,6 +30,7 @@ import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
+import org.pentaho.di.base.AbstractMeta;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.vfs.KettleVFS;
@@ -37,7 +38,6 @@ import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectory;
 import org.pentaho.di.repository.RepositoryDirectoryInterface;
-import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.repository.dialog.SelectObjectDialog;
 import org.pentaho.di.ui.spoon.Spoon;
@@ -53,15 +53,15 @@ public class VFSFileSelection extends Composite {
   public final Button wBrowse;
   private final String[] fileFilters;
   private final String[] fileFilterNames;
-  private final TransMeta transMeta;
+  private final AbstractMeta transMeta;
   private final Repository repository;
   private final Supplier<Optional<String>> fileNameSupplier;
 
-  public VFSFileSelection( Composite composite, int i, String[] fileFilters, String[] fileFilterNames, TransMeta transMeta ) {
+  public VFSFileSelection( Composite composite, int i, String[] fileFilters, String[] fileFilterNames, AbstractMeta transMeta ) {
     this( composite, i, fileFilters, fileFilterNames, transMeta, null );
   }
 
-  public VFSFileSelection( Composite composite, int i, String[] fileFilters, String[] fileFilterNames, TransMeta transMeta, Repository repository ) {
+  public VFSFileSelection( Composite composite, int i, String[] fileFilters, String[] fileFilterNames, AbstractMeta transMeta, Repository repository ) {
     super( composite, i );
     this.fileFilters = fileFilters;
     this.fileFilterNames = fileFilterNames;
