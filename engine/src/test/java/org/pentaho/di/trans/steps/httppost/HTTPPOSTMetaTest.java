@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -19,6 +19,7 @@
  * limitations under the License.
  *
  ******************************************************************************/
+
 package org.pentaho.di.trans.steps.httppost;
 
 import java.util.Arrays;
@@ -39,6 +40,9 @@ import org.pentaho.di.trans.steps.loadsave.validator.BooleanLoadSaveValidator;
 import org.pentaho.di.trans.steps.loadsave.validator.FieldLoadSaveValidator;
 import org.pentaho.di.trans.steps.loadsave.validator.PrimitiveBooleanArrayLoadSaveValidator;
 import org.pentaho.di.trans.steps.loadsave.validator.StringLoadSaveValidator;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 public class HTTPPOSTMetaTest {
   LoadSaveTester loadSaveTester;
@@ -77,4 +81,12 @@ public class HTTPPOSTMetaTest {
     loadSaveTester.testSerialization();
   }
 
+  @Test
+  public void setDefault() {
+    HTTPPOSTMeta meta = new HTTPPOSTMeta();
+    assertNull( meta.getEncoding() );
+
+    meta.setDefault();
+    assertEquals( "UTF-8", meta.getEncoding() );
+  }
 }

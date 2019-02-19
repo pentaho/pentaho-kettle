@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -69,6 +69,8 @@ public class HTTPPOSTMeta extends BaseStepMeta implements StepMetaInterface {
 
   // the time to wait till a connection is closed (milliseconds)? -1 is no not close.
   public static final int DEFAULT_CLOSE_CONNECTIONS_TIME = -1;
+
+  public static final String DEFAULT_ENCODING = "UTF-8";
 
   private String socketTimeout;
   private String connectionTimeout;
@@ -371,6 +373,7 @@ public class HTTPPOSTMeta extends BaseStepMeta implements StepMetaInterface {
     resultCodeFieldName = "";
     responseTimeFieldName = "";
     responseHeaderFieldName = "";
+    encoding = DEFAULT_ENCODING;
     postafile = false;
 
     socketTimeout = String.valueOf( DEFAULT_SOCKET_TIMEOUT );
