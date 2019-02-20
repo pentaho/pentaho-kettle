@@ -33,7 +33,6 @@
         <org.apache.karaf.main.version>3.0.3</org.apache.karaf.main.version>
         <org.apache.karaf.util.version>3.0.3</org.apache.karaf.util.version>
         <org.apache.karaf.jaas.boot.version>2.4.2</org.apache.karaf.jaas.boot.version>
-        <org.apache.felix.main.version>4.2.1</org.apache.felix.main.version>
         <derby.version>10.2.1.6</derby.version>
         <derbyclient.version>10.2.1.6</derbyclient.version>
         <hsqldb.version>2.3.2</hsqldb.version>
@@ -353,17 +352,6 @@
             <groupId>org.apache.karaf.jaas</groupId>
             <artifactId>org.apache.karaf.jaas.boot</artifactId>
             <version>${org.apache.karaf.jaas.boot.version}</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>*</groupId>
-                    <artifactId>*</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.felix</groupId>
-            <artifactId>org.apache.felix.main</artifactId>
-            <version>${org.apache.felix.main.version}</version>
             <exclusions>
                 <exclusion>
                     <groupId>*</groupId>
