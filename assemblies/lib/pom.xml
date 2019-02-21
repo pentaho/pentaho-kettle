@@ -335,6 +335,18 @@
       <version>${pentaho-reporting.version}</version>
     </dependency>
 
+    <!-- OSGi Dependencies -->
+    <!-- Because of: -->
+    <!-- pentaho-platform-core (PentahoSystem) and pdi-osgi-bridge-core (KarafLifecycleListener and OSGIPluginRegistryExtension) -->
+    <!-- Also, we are explicitly overriding OSGi core to 5.0.0 because of the org.osgi.framework.wiring.BundleWire.getProvider() method, -->
+    <!-- as Felix Framework 4.2.1 is partially OSGi 5.0 complaint. -->
+    <dependency>
+       <groupId>org.osgi</groupId>
+       <artifactId>org.osgi.core</artifactId>
+       <version>5.0.0</version>
+       <scope>compile</scope>
+    </dependency>
+
     <!-- Karaf Dependencies -->
     <dependency>
       <groupId>org.apache.karaf</groupId>
