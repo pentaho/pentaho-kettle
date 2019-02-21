@@ -284,12 +284,12 @@ public class JobExecutionConfigurationDialog extends ConfigurationDialog {
 
   public void addRunConfigurationListenerForExpandRemoteOption() {
     wRunConfiguration.addModifyListener( modifyEvent -> {
-      List<Object> items = Arrays.asList( wRunConfiguration.getText(), false );
+      List<Object> items = Arrays.asList( wRunConfiguration.getText(), true );
       try {
         ExtensionPointHandler.callExtensionPoint( Spoon.getInstance().getLog(), KettleExtensionPoint
           .RunConfigurationIsRemote.id, items );
       } catch ( KettleException ignored ) {
-        // Ignore errors
+        // Ignore errors - keep old behavior - expand remote job always enabled
       }
       Boolean isRemote = (Boolean) items.get( 1 );
       getConfiguration().setRunConfiguration( wRunConfiguration.getText() );
