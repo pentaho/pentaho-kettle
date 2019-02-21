@@ -932,6 +932,10 @@
       <version>${xmlunit.version}</version>
       <scope>test</scope>
     </dependency>
+      <dependency>
+          <groupId>pentaho</groupId>
+          <artifactId>metastore</artifactId>
+      </dependency>
   </dependencies>
 
   <build>
