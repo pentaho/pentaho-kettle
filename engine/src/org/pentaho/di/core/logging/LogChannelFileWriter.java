@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -129,6 +129,10 @@ public class LogChannelFileWriter {
               logFileOutputStream.close();
               logFileOutputStream = null;
             }
+
+            if ( buffer != null ) {
+              LoggingRegistry.getInstance().removeLogChannelFileWriterBuffer( buffer.getLogChannelId() );
+            }
           } catch ( Exception e ) {
             exception = new KettleException( "There was an error closing log file file '" + logFile + "'", e );
           } finally {
@@ -145,6 +149,7 @@ public class LogChannelFileWriter {
       StringBuffer buffer = this.buffer.getBuffer();
       logFileOutputStream.write( buffer.toString().getBytes() );
       logFileOutputStream.flush();
+
     } catch ( Exception e ) {
       exception = new KettleException( "There was an error logging to file '" + logFile + "'", e );
     }
@@ -155,6 +160,10 @@ public class LogChannelFileWriter {
     active.set( false );
     while ( !finished.get() ) {
       Thread.yield();
+    }
+
+    if ( this.buffer != null ) {
+      LoggingRegistry.getInstance().removeLogChannelFileWriterBuffer( this.buffer.getLogChannelId() );
     }
   }
 
