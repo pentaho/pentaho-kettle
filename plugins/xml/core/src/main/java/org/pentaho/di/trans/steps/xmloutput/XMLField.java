@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,6 +22,7 @@
 
 package org.pentaho.di.trans.steps.xmloutput;
 
+import com.google.common.base.Enums;
 import org.pentaho.di.core.injection.Injection;
 import org.pentaho.di.core.row.ValueMeta;
 
@@ -35,7 +36,18 @@ import org.pentaho.di.core.row.ValueMeta;
 public class XMLField implements Cloneable {
 
   public enum ContentType {
-    Element, Attribute,
+    Element, Attribute;
+
+    /**
+     * [PDI-15575] Ensuring that this enum can return with some default value. Necessary for when being used on the
+     * GUI side if a user leaves the field empty, it will enforce a default value. This allows the object to be saved,
+     * loaded, and cloned as necessary.
+     * @param contentType
+     * @return ContentType
+     */
+    public static ContentType getIfPresent( String contentType ) {
+      return Enums.getIfPresent( ContentType.class, contentType ).or( Element );
+    }
   }
 
   @Injection( name = "OUTPUT_FIELDNAME", group = "OUTPUT_FIELDS" )

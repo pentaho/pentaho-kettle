@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -1118,7 +1118,7 @@ public class XMLOutputDialog extends BaseStepDialog implements StepDialogInterfa
       if ( field.getFieldName().equals( field.getElementName() ) ) {
         field.setElementName( "" );
       }
-      field.setContentType( ContentType.valueOf( item.getText( index++ ) ) );
+      field.setContentType( ContentType.getIfPresent( item.getText( index++ ) ) );
       field.setType( item.getText( index++ ) );
       field.setFormat( item.getText( index++ ) );
       field.setLength( Const.toInt( item.getText( index++ ), -1 ) );
