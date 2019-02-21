@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -646,10 +646,10 @@ public class DatabaseLookupMeta extends BaseStepMeta implements StepMetaInterfac
           boolean error_found = false;
           error_message = "";
 
-          RowMetaInterface r =
-            db.getTableFieldsMeta(
-              db.environmentSubstitute( schemaName ),
-              db.environmentSubstitute( tablename ) );
+          String schemaTable =
+            databaseMeta.getQuotedSchemaTableCombination( db.environmentSubstitute( schemaName ), db
+              .environmentSubstitute( tablename ) );
+          RowMetaInterface r = db.getTableFields( schemaTable );
 
           if ( r != null ) {
             // Check the keys used to do the lookup...
@@ -782,10 +782,10 @@ public class DatabaseLookupMeta extends BaseStepMeta implements StepMetaInterfac
 
       try {
         db.connect();
-        fields =
-          db.getTableFieldsMeta(
-            databaseMeta.environmentSubstitute( schemaName ),
-            databaseMeta.environmentSubstitute( tablename ) );
+        String tableName = databaseMeta.environmentSubstitute( tablename );
+        String schemaTable = databaseMeta.getQuotedSchemaTableCombination( schemaName, tableName );
+        fields = db.getTableFields( schemaTable );
+
       } catch ( KettleDatabaseException dbe ) {
         logError( BaseMessages.getString( PKG, "DatabaseLookupMeta.ERROR0004.ErrorGettingTableFields" )
             + dbe.getMessage() );
