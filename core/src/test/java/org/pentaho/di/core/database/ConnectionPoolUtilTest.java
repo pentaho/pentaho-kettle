@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -47,8 +47,13 @@ import java.util.logging.Logger;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.*;
 
+import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.anyString;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 
 /**
  * User: Dzmitry Stsiapanau Date: 12/11/13 Time: 1:59 PM
@@ -103,6 +108,20 @@ public class ConnectionPoolUtilTest implements Driver {
     when( dbMeta.getName() ).thenReturn( "CP2" );
     when( dbMeta.getPassword() ).thenReturn( ENCR_PASSWORD );
     Connection conn = ConnectionPoolUtil.getConnection( logChannelInterface, dbMeta, "", 1, 2 );
+    assertTrue( conn != null );
+  }
+
+  @Test
+  public void testGetConnectionWithVariables() throws Exception {
+    when( dbMeta.getName() ).thenReturn( "CP3" );
+    when( dbMeta.getPassword() ).thenReturn( ENCR_PASSWORD );
+    when( dbMeta.getInitialPoolSizeString() ).thenReturn( "INITIAL_POOL_SIZE" );
+    when( dbMeta.environmentSubstitute( "INITIAL_POOL_SIZE" ) ).thenReturn( "5" );
+    when( dbMeta.getInitialPoolSize() ).thenCallRealMethod();
+    when( dbMeta.getMaximumPoolSizeString() ).thenReturn( "MAXIMUM_POOL_SIZE" );
+    when( dbMeta.environmentSubstitute( "MAXIMUM_POOL_SIZE" ) ).thenReturn( "10" );
+    when( dbMeta.getMaximumPoolSize() ).thenCallRealMethod();
+    Connection conn = ConnectionPoolUtil.getConnection( logChannelInterface, dbMeta, "" );
     assertTrue( conn != null );
   }
 

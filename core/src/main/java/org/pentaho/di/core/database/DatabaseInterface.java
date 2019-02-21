@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -738,10 +738,21 @@ public interface DatabaseInterface extends Cloneable {
   public int getMaximumPoolSize();
 
   /**
+    * @return the maximum pool size variable name
+   */
+  public String getMaximumPoolSizeString();
+
+  /**
    * @param maximumPoolSize
    *          the maximum pool size
    */
   public void setMaximumPoolSize( int maximumPoolSize );
+
+  /**
+   * @param maximumPoolSize
+   *          the maximum pool size variable name
+   */
+  public void setMaximumPoolSizeString( String maximumPoolSize );
 
   /**
    * @return the initial pool size
@@ -749,10 +760,21 @@ public interface DatabaseInterface extends Cloneable {
   public int getInitialPoolSize();
 
   /**
+   * @return the initial pool size variable name
+   */
+  public String getInitialPoolSizeString();
+
+  /**
    * @param initalPoolSize
    *          the initial pool size
    */
   public void setInitialPoolSize( int initalPoolSize );
+
+  /**
+   * @param initalPoolSize
+   *          the initial pool size variable name
+   */
+  public void setInitialPoolSizeString( String initalPoolSize );
 
   /**
    * @return true if the connection contains partitioning information
