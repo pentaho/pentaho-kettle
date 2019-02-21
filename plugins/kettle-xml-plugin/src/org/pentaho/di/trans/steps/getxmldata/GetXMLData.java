@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -120,7 +120,8 @@ public class GetXMLData extends BaseStep implements StepInterface {
           }
 
           public void onEnd( ElementPath path ) {
-            if ( isStopped() ) {
+            long rowLimit = meta.getRowLimit();
+            if ( isStopped() || ( rowLimit > 0 && data.rownr > rowLimit ) ) {
               // when a large file is processed and it should be stopped it is still reading the hole thing
               // the only solution I see is to prune / detach the document and this will lead into a
               // NPE or other errors depending on the parsing location - this will be treated in the catch part below
