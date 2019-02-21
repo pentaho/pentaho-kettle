@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -353,6 +353,24 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
     return retval.toString();
   }
 
+  private void checkObjectLocationSpecificationMethod() {
+    if ( specificationMethod == null ) {
+      // Backward compatibility
+      //
+      // Default = Filename
+      //
+      specificationMethod = ObjectLocationSpecificationMethod.FILENAME;
+
+      if ( !Utils.isEmpty( filename ) ) {
+        specificationMethod = ObjectLocationSpecificationMethod.FILENAME;
+      } else if ( jobObjectId != null ) {
+        specificationMethod = ObjectLocationSpecificationMethod.REPOSITORY_BY_REFERENCE;
+      } else if ( !Utils.isEmpty( jobname ) ) {
+        specificationMethod = ObjectLocationSpecificationMethod.REPOSITORY_BY_NAME;
+      }
+    }
+  }
+
   @Override
   public void loadXML( Node entrynode, List<DatabaseMeta> databases, List<SlaveServer> slaveServers,
     Repository rep, IMetaStore metaStore ) throws KettleXMLException {
@@ -390,7 +408,17 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
         }
       } else {
         specificationMethod = ObjectLocationSpecificationMethod.FILENAME;
+        if ( Utils.isEmpty( filename ) && !Utils.isEmpty( directory ) && !Utils.isEmpty( jobname ) ) {
+          // this job was exported from a repository and is being loaded locally
+          // need to create a well formatted filename
+          filename = directory + "/" + jobname;
+          if ( !filename.toLowerCase().endsWith( ".kjb" ) ) {
+            filename = filename + ".kjb";
+          }
+        }
       }
+
+      checkObjectLocationSpecificationMethod( );
 
       argFromPrevious = "Y".equalsIgnoreCase( XMLHandler.getTagValue( entrynode, "arg_from_previous" ) );
       paramsFromPrevious = "Y".equalsIgnoreCase( XMLHandler.getTagValue( entrynode, "params_from_previous" ) );
