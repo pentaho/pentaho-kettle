@@ -281,7 +281,8 @@ public class PGBulkLoader extends BaseStep implements StepInterface {
     }
   }
 
-  private void writeRowToPostgres( RowMetaInterface rowMeta, Object[] r ) throws KettleException {
+  @VisibleForTesting
+  void writeRowToPostgres( RowMetaInterface rowMeta, Object[] r ) throws KettleException {
 
     try {
       // So, we have this output stream to which we can write CSV data to.
