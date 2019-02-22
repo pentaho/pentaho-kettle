@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,10 +22,10 @@
 
 package org.pentaho.di.trans.steps.checksum;
 
-import java.io.ByteArrayOutputStream;
 import java.security.MessageDigest;
 import java.util.zip.Adler32;
 import java.util.zip.CRC32;
+import java.util.zip.Checksum;
 
 import org.apache.commons.codec.binary.Hex;
 import org.pentaho.di.core.exception.KettleException;
@@ -55,7 +55,7 @@ public class CheckSum extends BaseStep implements StepInterface {
   private CheckSumData data;
 
   public CheckSum( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta,
-    Trans trans ) {
+      Trans trans ) {
     super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
   }
 
@@ -87,7 +87,7 @@ public class CheckSum extends BaseStep implements StepInterface {
           if ( data.fieldnrs[i] < 0 ) {
             logError( BaseMessages.getString( PKG, "CheckSum.Log.CanNotFindField", meta.getFieldName()[i] ) );
             throw new KettleException( BaseMessages.getString( PKG, "CheckSum.Log.CanNotFindField", meta
-              .getFieldName()[i] ) );
+                .getFieldName()[i] ) );
           }
         }
       } else {
@@ -99,10 +99,20 @@ public class CheckSum extends BaseStep implements StepInterface {
       data.fieldnr = data.fieldnrs.length;
 
       try {
-        if ( meta.getCheckSumType().equals( CheckSumMeta.TYPE_MD5 )
-          || meta.getCheckSumType().equals( CheckSumMeta.TYPE_SHA1 )
-          || meta.getCheckSumType().equals( CheckSumMeta.TYPE_SHA256 ) ) {
-          data.digest = MessageDigest.getInstance( meta.getCheckSumType() );
+
+        switch ( meta.getCheckSumType() ) {
+          case CheckSumMeta.TYPE_MD5:
+          case CheckSumMeta.TYPE_SHA1:
+          case CheckSumMeta.TYPE_SHA256:
+            data.checksumCalculator =
+                new DigestChecksumCalculator( MessageDigest.getInstance( meta.getCheckSumType() ) );
+            break;
+          case CheckSumMeta.TYPE_ADLER32:
+            data.checksumCalculator = new ChecksumChecksumCalculator( new Adler32() );
+            break;
+          case CheckSumMeta.TYPE_CRC32:
+            data.checksumCalculator = new ChecksumChecksumCalculator( new CRC32() );
+            break;
         }
       } catch ( Exception e ) {
         throw new KettleException( BaseMessages.getString( PKG, "CheckSum.Error.Digest" ), e );
@@ -113,23 +123,35 @@ public class CheckSum extends BaseStep implements StepInterface {
     Object[] outputRowData = null;
 
     try {
-      if ( meta.getCheckSumType().equals( CheckSumMeta.TYPE_ADLER32 )
-        || meta.getCheckSumType().equals( CheckSumMeta.TYPE_CRC32 ) ) {
-        // get checksum
-        Long checksum = calculCheckSum( r );
-        outputRowData = RowDataUtil.addValueData( r, data.nrInfields, checksum );
-      } else {
-        // get checksum
 
-        byte[] o = createCheckSum( r );
+      for ( int i = 0; i < data.fieldnr; i++ ) {
+        if ( meta.isOldChecksumBehaviour() ) {
+          data.checksumCalculator.update( String.valueOf( getInputRowMeta().getValueMeta( data.fieldnrs[i] )
+              .getNativeDataType( r[data.fieldnrs[i]] ) ).getBytes() );
+        } else {
+          //New Behavior (uses byte[]) instead of building through String
+          if ( getInputRowMeta().getValueMeta( data.fieldnrs[i] ).isBinary() ) {
+            data.checksumCalculator.update( getInputRowMeta().getBinary( r, data.fieldnrs[i] ) );
+          } else {
+            data.checksumCalculator.update( getInputRowMeta().getValueMeta( data.fieldnrs[i] )
+                .getNativeDataType( r[data.fieldnrs[i]] ).toString().getBytes() );
+          }
 
+        }
+      }
+      Object checksumResult = data.checksumCalculator.getResult();
+
+      if ( checksumResult instanceof Long ) {
+        outputRowData = RowDataUtil.addValueData( r, data.nrInfields, (Long) checksumResult );
+      } else if ( checksumResult instanceof byte[] ) {
+        byte[] o = (byte[]) checksumResult;
         switch ( meta.getResultType() ) {
           case CheckSumMeta.result_TYPE_BINARY:
             outputRowData = RowDataUtil.addValueData( r, data.nrInfields, o );
             break;
           case CheckSumMeta.result_TYPE_HEXADECIMAL:
             String hex =
-              meta.isCompatibilityMode() ? byteToHexEncode_compatible( o ) : new String( Hex.encodeHex( o ) );
+                meta.isCompatibilityMode() ? byteToHexEncode_compatible( o ) : new String( Hex.encodeHex( o ) );
             outputRowData = RowDataUtil.addValueData( r, data.nrInfields, hex );
             break;
           default:
@@ -169,40 +191,6 @@ public class CheckSum extends BaseStep implements StepInterface {
     return true;
   }
 
-  private byte[] createCheckSum( Object[] r ) throws Exception {
-    if ( meta.isOldChecksumBehaviour() ) {
-      StringBuilder Buff = new StringBuilder();
-
-      // Loop through fields
-      for ( int i = 0; i < data.fieldnr; i++ ) {
-        Buff.append( getInputRowMeta().getValueMeta( data.fieldnrs[i] ).getNativeDataType( r[data.fieldnrs[i]] ) );
-      }
-
-      // Updates the digest using the specified array of bytes
-      data.digest.update( Buff.toString().getBytes() );
-    } else {
-      ByteArrayOutputStream baos = new ByteArrayOutputStream();
-
-      // Loop through fields
-      for ( int i = 0; i < data.fieldnr; i++ ) {
-        if ( getInputRowMeta().getValueMeta( data.fieldnrs[i] ).isBinary() ) {
-          baos.write( getInputRowMeta().getBinary( r, data.fieldnrs[i] ) );
-        } else {
-          baos.write( getInputRowMeta().getValueMeta( data.fieldnrs[i] ).getNativeDataType( r[data.fieldnrs[i]] )
-              .toString().getBytes() );
-        }
-      }
-
-      // Updates the digest using the specified array of bytes
-      data.digest.update( baos.toByteArray() );
-    }
-    // Completes the hash computation by performing final operations such as padding
-    byte[] hash = data.digest.digest();
-    // After digest has been called, the MessageDigest object is reset to its initialized state
-
-    return hash;
-  }
-
   private static String getStringFromBytes( byte[] bytes ) {
     StringBuilder sb = new StringBuilder();
     for ( int i = 0; i < bytes.length; i++ ) {
@@ -234,45 +222,6 @@ public class CheckSum extends BaseStep implements StepInterface {
     return hexString.toString();
   }
 
-  private Long calculCheckSum( Object[] r ) throws Exception {
-    Long retval;
-    byte[] byteArray;
-    if ( meta.isOldChecksumBehaviour() ) {
-      StringBuilder Buff = new StringBuilder();
-
-      // Loop through fields
-      for ( int i = 0; i < data.fieldnr; i++ ) {
-        Buff.append( getInputRowMeta().getValueMeta( data.fieldnrs[i] ).getNativeDataType( r[data.fieldnrs[i]] ) );
-      }
-      byteArray = Buff.toString().getBytes();
-    } else {
-      ByteArrayOutputStream baos = new ByteArrayOutputStream();
-
-      // Loop through fields
-      for ( int i = 0; i < data.fieldnr; i++ ) {
-        if ( getInputRowMeta().getValueMeta( data.fieldnrs[i] ).isBinary() ) {
-          baos.write( getInputRowMeta().getBinary( r, data.fieldnrs[i] ) );
-        } else {
-          baos.write( getInputRowMeta().getValueMeta( data.fieldnrs[i] ).getNativeDataType( r[data.fieldnrs[i]] )
-              .toString().getBytes() );
-        }
-      }
-      byteArray = baos.toByteArray();
-    }
-
-    if ( meta.getCheckSumType().equals( CheckSumMeta.TYPE_CRC32 ) ) {
-      CRC32 crc32 = new CRC32();
-      crc32.update( byteArray );
-      retval = new Long( crc32.getValue() );
-    } else {
-      Adler32 adler32 = new Adler32();
-      adler32.update( byteArray );
-      retval = new Long( adler32.getValue() );
-    }
-
-    return retval;
-  }
-
   @SuppressWarnings( "deprecation" )
   @Override
   public boolean init( StepMetaInterface smi, StepDataInterface sdi ) {
@@ -291,6 +240,59 @@ public class CheckSum extends BaseStep implements StepInterface {
       return true;
     }
     return false;
+  }
+
+  public static interface GenericChecksumCalculator<R> {
+
+    void update( byte[] contentBytes );
+
+    R getResult();
+  }
+
+  public static class ChecksumChecksumCalculator implements GenericChecksumCalculator<Long> {
+
+    private final Checksum checksum;
+
+    public ChecksumChecksumCalculator( Checksum checksum ) {
+      this.checksum = checksum;
+    }
+
+    @Override
+    public void update( byte[] contentBytes ) {
+      if ( contentBytes != null ) {
+        checksum.update( contentBytes, 0, contentBytes.length );
+      }
+    }
+
+    @Override
+    public Long getResult() {
+      try {
+        return new Long( checksum.getValue() );
+      } finally {
+        checksum.reset();
+      }
+    }
+
+  }
+
+  public static class DigestChecksumCalculator implements GenericChecksumCalculator<byte[]> {
+
+    private final MessageDigest digest;
+
+    public DigestChecksumCalculator( MessageDigest digest ) {
+      this.digest = digest;
+    }
+
+    @Override
+    public void update( byte[] contentBytes ) {
+      digest.update( contentBytes );
+    }
+
+    @Override
+    public byte[] getResult() {
+      return digest.digest();
+    }
+
   }
 
 }
