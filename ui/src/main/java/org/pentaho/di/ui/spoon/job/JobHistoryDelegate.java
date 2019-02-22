@@ -578,8 +578,8 @@ public class JobHistoryDelegate extends SpoonDelegate implements XulEventHandler
 
     for ( ColumnInfo ci : model.logDisplayTableView.getColumns() ) {
       for ( int i = 0; i < model.logTableFields.size(); i++ ) {
-        if ( ci.getValueMeta().getName().equals( model.logTableFields.get( i ).getId() ) ) {
-          map.put( model.logTableFields.get( i ).getId(), i );
+        if ( ci.getValueMeta().getName().equals( model.logTableFields.get( i ).getFieldName() ) ) {
+          map.put( model.logTableFields.get( i ).getFieldName(), i );
           break;
         }
       }
@@ -597,7 +597,7 @@ public class JobHistoryDelegate extends SpoonDelegate implements XulEventHandler
   @VisibleForTesting
   ValueMetaInterface getValueMetaForColumn( ColumnInfo[] columns, LogTableField field ) {
     return Arrays.stream( columns )
-      .filter( x -> x.getValueMeta().getName().equals( field.getId() ) )
+      .filter( x -> x.getValueMeta().getName().equals( field.getFieldName() ) )
       .findFirst()
       .get()
       .getValueMeta();
@@ -648,7 +648,6 @@ public class JobHistoryDelegate extends SpoonDelegate implements XulEventHandler
         LogStatus status = null;
 
         if ( errorsField != null ) {
-          int index1 = model.logTableFields.indexOf( errorsField );
           ValueMetaInterface valueMeta = getValueMetaForColumn( colinf, errorsField );
           try {
             errors = valueMeta.getInteger( rowData[ map.get( valueMeta.getName() ) ] );
