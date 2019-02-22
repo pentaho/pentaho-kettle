@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -115,6 +115,9 @@ public class UIRepositoryDirectory extends UIRepositoryObject {
     }
 
     if ( kidElementCache != null ) {
+      return kidElementCache;
+    } else if ( uiParent != null && getName() != null && uiParent.checkDirNameExistsInRepo( getName() ) == null ) {
+      kidElementCache = new UIRepositoryObjects();
       return kidElementCache;
     }
 
