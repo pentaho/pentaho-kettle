@@ -471,8 +471,8 @@ public class TransHistoryDelegate extends SpoonDelegate implements XulEventHandl
 
     for ( ColumnInfo ci : model.logDisplayTableView.getColumns() ) {
       for ( int i = 0; i < model.logTableFields.size(); i++ ) {
-        if ( ci.getValueMeta().getName().equals( model.logTableFields.get( i ).getId() ) ) {
-          map.put( model.logTableFields.get( i ).getId(), i );
+        if ( ci.getValueMeta().getName().equals( model.logTableFields.get( i ).getFieldName() ) ) {
+          map.put( model.logTableFields.get( i ).getFieldName(), i );
           break;
         }
       }
@@ -490,7 +490,7 @@ public class TransHistoryDelegate extends SpoonDelegate implements XulEventHandl
   @VisibleForTesting
   ValueMetaInterface getValueMetaForColumn( ColumnInfo[] columns, LogTableField field ) {
     return Arrays.stream( columns )
-      .filter( x -> x.getValueMeta().getName().equals( field.getId() ) )
+      .filter( x -> x.getValueMeta().getName().equals( field.getFieldName() ) )
       .findFirst()
       .get()
       .getValueMeta();
