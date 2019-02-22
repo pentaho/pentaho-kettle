@@ -314,6 +314,7 @@ public class PGBulkLoader extends BaseStep implements StepInterface {
               pgCopyOut.write( data.quote );
               break;
             case ValueMetaInterface.TYPE_INTEGER:
+            case ValueMetaInterface.TYPE_BOOLEAN:
               if ( valueMeta.isStorageBinaryString() ) {
                 pgCopyOut.write( (byte[]) valueData );
               } else {
@@ -396,13 +397,6 @@ public class PGBulkLoader extends BaseStep implements StepInterface {
 
                 default:
                   throw new KettleException( "PGBulkLoader doesn't know how to handle timestamp (neither passthrough, nor date or datetime for field " + valueMeta.getName() );
-              }
-              break;
-            case ValueMetaInterface.TYPE_BOOLEAN:
-              if ( valueMeta.isStorageBinaryString() ) {
-                pgCopyOut.write( (byte[]) valueData );
-              } else {
-                pgCopyOut.write( Double.toString( valueMeta.getNumber( valueData ) ).getBytes( clientEncoding ) );
               }
               break;
             case ValueMetaInterface.TYPE_NUMBER:
