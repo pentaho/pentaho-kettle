@@ -33,6 +33,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.pentaho.di.base.AbstractMeta;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.util.StringUtil;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.Repository;
@@ -51,23 +52,31 @@ public class VFSFileSelection extends Composite {
   private static final Class<?> PKG = VFSFileSelection.class;
   public final TextVar wFileName;
   public final Button wBrowse;
+  private String initialScheme;
+  private boolean showLocation;
   private final String[] fileFilters;
   private final String[] fileFilterNames;
-  private final AbstractMeta transMeta;
+  private final AbstractMeta abstractMeta;
   private final Repository repository;
   private final Supplier<Optional<String>> fileNameSupplier;
 
-  public VFSFileSelection( Composite composite, int i, String[] fileFilters, String[] fileFilterNames, AbstractMeta transMeta ) {
-    this( composite, i, fileFilters, fileFilterNames, transMeta, null );
+  public VFSFileSelection( Composite composite, int i, String[] fileFilters, String[] fileFilterNames, AbstractMeta abstractMeta ) {
+    this( composite, i, fileFilters, fileFilterNames, abstractMeta, null );
   }
 
-  public VFSFileSelection( Composite composite, int i, String[] fileFilters, String[] fileFilterNames, AbstractMeta transMeta, Repository repository ) {
+  public VFSFileSelection( Composite composite, int i, String[] fileFilters, String[] fileFilterNames, AbstractMeta abstractMeta, Repository repository ) {
+    this( composite, i, fileFilters, fileFilterNames, abstractMeta, repository, "file", true );
+  }
+
+  public VFSFileSelection( Composite composite, int i, String[] fileFilters, String[] fileFilterNames, AbstractMeta abstractMeta, Repository repository, String initialScheme, boolean showLocation ) {
     super( composite, i );
+    this.initialScheme = initialScheme;
+    this.showLocation = showLocation;
     this.fileFilters = fileFilters;
     this.fileFilterNames = fileFilterNames;
-    this.transMeta = transMeta;
+    this.abstractMeta = abstractMeta;
     this.repository = repository;
-    fileNameSupplier = repository == null ? this::promptForLocalFile : this::promptForRepositoryFile;
+    fileNameSupplier = repository == null ? this::promptForFile : this::promptForRepositoryFile;
 
     FormLayout formLayout = new FormLayout();
     formLayout.marginWidth = 0;
@@ -76,7 +85,7 @@ public class VFSFileSelection extends Composite {
     formLayout.marginBottom = 0;
     this.setLayout( formLayout );
 
-    wFileName = new TextVar( transMeta, this, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
+    wFileName = new TextVar( this.abstractMeta, this, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
     FormData fdFileName = new FormData();
     fdFileName.left = new FormAttachment( 0, 0 );
     fdFileName.top = new FormAttachment( 0, 0 );
@@ -97,17 +106,18 @@ public class VFSFileSelection extends Composite {
     } );
   }
 
-  private Optional<String> promptForLocalFile() {
-    String curFile = transMeta.environmentSubstitute( wFileName.getText() );
-
+  private Optional<String> promptForFile() {
+    String curFile = abstractMeta.environmentSubstitute( wFileName.getText() );
     FileObject root;
 
     try {
       root = KettleVFS.getFileObject( curFile != null ? curFile : Const.getUserHomeDirectory() );
-
       VfsFileChooserDialog vfsFileChooser = Spoon.getInstance().getVfsFileChooserDialog( root.getParent(), root );
-      FileObject file =
-        vfsFileChooser.open( getShell(), null, fileFilters, fileFilterNames, VfsFileChooserDialog.VFS_DIALOG_OPEN_FILE );
+      if ( StringUtil.isEmpty( initialScheme ) ) {
+        initialScheme = "file";
+      }
+      FileObject file = vfsFileChooser.open( getShell(), null, initialScheme, true, curFile, fileFilters, fileFilterNames, false,
+        VfsFileChooserDialog.VFS_DIALOG_OPEN_FILE, showLocation, true );
       if ( file == null ) {
         return Optional.empty();
       }
@@ -126,7 +136,7 @@ public class VFSFileSelection extends Composite {
     String parentFolder = null;
     try {
       parentFolder =
-        KettleVFS.getFileObject( transMeta.environmentSubstitute( transMeta.getFilename() ) ).getParent().toString();
+        KettleVFS.getFileObject( abstractMeta.environmentSubstitute( abstractMeta.getFilename() ) ).getParent().toString();
     } catch ( Exception e ) {
       // Take no action
     }
@@ -151,7 +161,7 @@ public class VFSFileSelection extends Composite {
   }
 
   private String getRepositoryRelativePath( String path ) {
-    String parentPath = this.transMeta.getRepositoryDirectory().getPath();
+    String parentPath = this.abstractMeta.getRepositoryDirectory().getPath();
     if ( path.startsWith( parentPath ) ) {
       path = path.replace( parentPath, "${" + Const.INTERNAL_VARIABLE_ENTRY_CURRENT_DIRECTORY + "}" );
     }
