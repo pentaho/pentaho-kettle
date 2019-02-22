@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -31,7 +31,6 @@ import org.junit.runner.RunWith;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.row.ValueMetaInterface;
-import org.pentaho.di.core.row.value.ValueMetaBase;
 import org.pentaho.di.core.row.value.ValueMetaFactory;
 import org.pentaho.di.junit.rules.RestorePDIEngineEnvironment;
 import org.pentaho.di.trans.TransTestingUtil;
@@ -39,7 +38,6 @@ import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.steps.StepMockUtil;
 import org.pentaho.di.trans.steps.mock.StepMockHelper;
 import org.powermock.modules.junit4.PowerMockRunner;
-import org.powermock.reflect.Whitebox;
 
 import java.util.List;
 
@@ -73,7 +71,6 @@ public class DataGrid_EmptyStringVsNull_Test {
   @Test
   public void emptyAndNullsAreNotDifferent() throws Exception {
     System.setProperty( Const.KETTLE_EMPTY_STRING_DIFFERS_FROM_NULL, "N" );
-    Whitebox.setInternalState( ValueMetaBase.class, "EMPTY_STRING_AND_NULL_ARE_DIFFERENT", false );
     List<Object[]> expected = Arrays.asList(
       new Object[] { "", "", null },
       new Object[] { null, "", null },
@@ -86,7 +83,6 @@ public class DataGrid_EmptyStringVsNull_Test {
   @Test
   public void emptyAndNullsAreDifferent() throws Exception {
     System.setProperty( Const.KETTLE_EMPTY_STRING_DIFFERS_FROM_NULL, "Y" );
-    Whitebox.setInternalState( ValueMetaBase.class, "EMPTY_STRING_AND_NULL_ARE_DIFFERENT", true );
     List<Object[]> expected = Arrays.asList(
       new Object[] { "", "", null },
       new Object[] { "", "", null },

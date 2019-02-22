@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -27,6 +27,7 @@ import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.pentaho.di.core.Const;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
@@ -35,7 +36,6 @@ import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.junit.rules.RestorePDIEngineEnvironment;
 import org.pentaho.di.trans.TransTestingUtil;
 import org.powermock.modules.junit4.PowerMockRunner;
-import org.powermock.reflect.Whitebox;
 
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyInt;
@@ -48,6 +48,7 @@ import static org.mockito.Mockito.when;
  */
 @RunWith( PowerMockRunner.class )
 public class EditRowsDialog_EmptyStringVsNull_Test {
+
   @ClassRule public static RestorePDIEngineEnvironment env = new RestorePDIEngineEnvironment();
 
   @BeforeClass
@@ -55,18 +56,17 @@ public class EditRowsDialog_EmptyStringVsNull_Test {
     KettleEnvironment.init();
   }
 
-
   @Test
   public void emptyAndNullsAreNotDifferent() throws Exception {
-    Whitebox.setInternalState( ValueMetaBase.class, "EMPTY_STRING_AND_NULL_ARE_DIFFERENT", false );
+    System.setProperty( Const.KETTLE_EMPTY_STRING_DIFFERS_FROM_NULL, "N" );
     executeAndAssertResults( new String[]{ "", null, null } );
   }
 
 
   @Test
   public void emptyAndNullsAreDifferent() throws Exception {
-    Whitebox.setInternalState( ValueMetaBase.class, "EMPTY_STRING_AND_NULL_ARE_DIFFERENT", true );
-    executeAndAssertResults( new String[]{ "", "", null } );
+    System.setProperty( Const.KETTLE_EMPTY_STRING_DIFFERS_FROM_NULL, "Y" );
+    executeAndAssertResults( new String[]{ "", "", "" } );
   }
 
   private void executeAndAssertResults( String[] expected ) throws Exception {
