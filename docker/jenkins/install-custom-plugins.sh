@@ -4,11 +4,8 @@ set -eo pipefail
 
 REF_DIR=${REF:-/usr/share/jenkins/ref/plugins}
 
-# should be fixed in official 2.7 release
-#PLUGINS+=(https://public.nexus.pentaho.org/content/groups/omni/org/jenkins-ci/plugins/workflow/workflow-scm-step/2.7-pentaho/workflow-scm-step-2.7-pentaho.hpi)
-
 PLUGINS+=(http://nexus.pentaho.org/content/groups/omni/com/mig82/folder-properties/1.0/folder-properties-1.0.hpi)
-PLUGINS+=(http://nexus.pentaho.org/content/groups/omni/org/hitachivantara/ci/plugins/pipeline-ci-utility-steps/1.7/pipeline-ci-utility-steps-1.7.hpi)
+PLUGINS+=(http://nexus.pentaho.org/content/groups/omni/org/hitachivantara/ci/plugins/pipeline-ci-utility-steps/1.8/pipeline-ci-utility-steps-1.8.hpi)
 
 fetch() {
   local name=${1}.jpi

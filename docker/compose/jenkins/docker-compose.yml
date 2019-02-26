@@ -1,9 +1,5 @@
 version: '3.7'
 
-# TODO
-# Use a deployed images instead of building locally
-# this means our jenkins images should be under a release process
-
 networks:
   pipelines:
     name: ${NETWORK_NAME:-hv-pipelines}
@@ -14,12 +10,19 @@ volumes:
 
 services:
   master:
-    image: ${JENKINS_IMAGE_NAME:-hv/jenkins}
-    build: ../../jenkins
+    image: ${MASTER_IMAGE_NAME:-hv/jenkins-master}
+    build:
+      context: ../../jenkins
+      dockerfile: Dockerfile-master
+      args:
+        - uid=${UID:-1000}
+        - gid=${GID:-1000}
+        - JENKINS_VERSION=${JENKINS_VERSION}
     environment:
       - MASTER_LABELS=${MASTER_LABELS:-master}
     volumes:
       - home:/var/jenkins_home
+      - /var/run/docker.sock:/var/run/docker.sock
       - ${CREDENTIALS:-./credentials}:/usr/share/jenkins/secrets/credentials
       - ${PROJECTS_DIR:-./projects}:/projects
     networks:
@@ -27,11 +30,16 @@ services:
     ports:
       - ${PORT:-8080}:8080
   agent:
-    image: ${JENKINS_AGENT_IMAGE_NAME:-hv/jenkins-agent}
-    build: ../../jenkins-agent
+    image: ${AGENT_IMAGE_NAME:-hv/jenkins-agent}
+    build:
+      context: ../../jenkins-agent
+      args:
+        - uid=${UID:-1000}
+        - gid=${GID:-1000}
     command: -master http://master:8080 -fsroot /var/jenkins_home -executors ${AGENT_EXECUTORS:-2} -name agent -labels ${AGENT_LABELS:-non-master}
     volumes:
       - home:/var/jenkins_home
+      - /var/run/docker.sock:/var/run/docker.sock
       - ${PROJECTS_DIR:-./projects}:/projects
     networks:
       - pipelines
