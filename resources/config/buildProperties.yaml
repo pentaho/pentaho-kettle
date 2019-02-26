@@ -158,7 +158,7 @@ DEPENDENCY_CHECK_REPORT_PATTERN: '**/dependency-check-report.xml'
 # Minions
 USE_MINION_JOBS: false
 MINIONS_FOLDER: ${JOB_NAME}-jobs
-MINION_POLL_CRON_INTERVAL:
+MINION_POLL_CRON_INTERVAL: H/5 * * * *
 
 # Docker
 DOCKER_IMAGE_HOST: nexus.pentaho.org
