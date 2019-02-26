@@ -22,6 +22,7 @@
 
 package org.pentaho.di.trans.steps.checksum;
 
+import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.util.zip.Adler32;
 import java.util.zip.CRC32;
@@ -81,6 +82,10 @@ public class CheckSum extends BaseStep implements StepInterface {
       data.outputRowMeta = inputRowMeta.clone();
       data.nrInfields = data.outputRowMeta.size();
       meta.getFields( data.outputRowMeta, getStepname(), null, null, this, repository, metaStore );
+
+      if ( meta.getFieldSeparatorString() != null && !meta.getFieldSeparatorString().isEmpty() ) {
+        data.fieldSeparatorStringBytes = meta.getFieldSeparatorString().getBytes( StandardCharsets.UTF_8 );
+      }
 
       int[] fieldIndexMapping;
 
@@ -144,6 +149,9 @@ public class CheckSum extends BaseStep implements StepInterface {
 
       // Update the checksum with the field content
       for ( int i = 0; i < data.fieldConverters.length; i++ ) {
+        if ( i != 0 && data.fieldSeparatorStringBytes != null ) {
+          data.checksumCalculator.update( data.fieldSeparatorStringBytes );
+        }
         data.checksumCalculator.update( data.fieldConverters[i].getBytes( r ) );
       }
       Object checksumResult = data.checksumCalculator.getResult();

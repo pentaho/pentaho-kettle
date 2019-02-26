@@ -41,6 +41,8 @@ public class CheckSumData extends BaseStepData implements StepDataInterface {
   public RowMetaInterface outputRowMeta;
   public int nrInfields;
 
+  public byte[] fieldSeparatorStringBytes;
+
   public GenericChecksumCalculator<?> checksumCalculator;
 
   public CheckSumData() {
