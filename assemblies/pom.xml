@@ -20,6 +20,17 @@
     <assembly.dir>${project.build.directory}/assembly</assembly.dir>
   </properties>
 
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>org.osgi</groupId>
+        <artifactId>org.osgi.core</artifactId>
+        <version>${osgi.core.version}</version>
+        <scope>compile</scope>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
+
   <modules>
     <module>static</module>
     <module>samples</module>
