@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -60,6 +60,7 @@ import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDialogInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.steps.checksum.CheckSumMeta;
+import org.pentaho.di.ui.core.FormDataBuilder;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.widget.ColumnInfo;
 import org.pentaho.di.ui.core.widget.TableView;
@@ -92,6 +93,8 @@ public class CheckSumDialog extends BaseStepDialog implements StepDialogInterfac
   private Label wlOldChecksumBehaviour;
   private Button wOldChecksumBehaviour;
   private FormData fdlOldChecksumBehaviour, fdOldChecksumBehaviour;
+
+  private Text wFieldSeparatorString;
 
   private ColumnInfo[] colinf;
 
@@ -226,6 +229,16 @@ public class CheckSumDialog extends BaseStepDialog implements StepDialogInterfac
     fdResult.right = new FormAttachment( 100, 0 );
     wResult.setLayoutData( fdResult );
 
+    Label lFieldSeparator = new Label( shell, SWT.RIGHT );
+    lFieldSeparator.setText( BaseMessages.getString( PKG, "CheckSumDialog.FieldSeparatorString.Label" ) );
+    props.setLook( lFieldSeparator );
+    lFieldSeparator.setLayoutData( new FormDataBuilder().left( 0, 0 ).right( middle, -margin ).top( wResult, margin * 2 ).result() );
+    wFieldSeparatorString = new Text( shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
+    props.setLook( wFieldSeparatorString );
+    wFieldSeparatorString.addModifyListener( lsMod );
+    wFieldSeparatorString.setLayoutData( new FormDataBuilder().left( middle, 0 ).top( wResult, margin * 2 ).right( 100, 0 ).result() );
+
+
     wOK = new Button( shell, SWT.PUSH );
     wOK.setText( BaseMessages.getString( PKG, "System.Button.OK" ) );
     wGet = new Button( shell, SWT.PUSH );
@@ -241,7 +254,7 @@ public class CheckSumDialog extends BaseStepDialog implements StepDialogInterfac
     props.setLook( wlCompatibility );
     fdlCompatibility = new FormData();
     fdlCompatibility.left = new FormAttachment( 0, 0 );
-    fdlCompatibility.top = new FormAttachment( wResult, margin );
+    fdlCompatibility.top = new FormAttachment( wFieldSeparatorString, margin );
     fdlCompatibility.right = new FormAttachment( middle, -margin );
     wlCompatibility.setLayoutData( fdlCompatibility );
     wCompatibility = new Button( shell, SWT.CHECK );
@@ -249,7 +262,7 @@ public class CheckSumDialog extends BaseStepDialog implements StepDialogInterfac
     props.setLook( wCompatibility );
     fdCompatibility = new FormData();
     fdCompatibility.left = new FormAttachment( middle, 0 );
-    fdCompatibility.top = new FormAttachment( wResult, margin );
+    fdCompatibility.top = new FormAttachment( wFieldSeparatorString, margin );
     fdCompatibility.right = new FormAttachment( 100, 0 );
     wCompatibility.setLayoutData( fdCompatibility );
     SelectionAdapter lsSelR = new SelectionAdapter() {
@@ -447,6 +460,9 @@ public class CheckSumDialog extends BaseStepDialog implements StepDialogInterfac
     if ( input.getResultFieldName() != null ) {
       wResult.setText( input.getResultFieldName() );
     }
+    if ( input.getFieldSeparatorString() != null ) {
+      wFieldSeparatorString.setText( input.getFieldSeparatorString() );
+    }
     wResultType.setText( input.getResultTypeDesc( input.getResultType() ) );
     wCompatibility.setSelection( input.isCompatibilityMode() );
     wOldChecksumBehaviour.setSelection( input.isOldChecksumBehaviour() );
@@ -487,6 +503,7 @@ public class CheckSumDialog extends BaseStepDialog implements StepDialogInterfac
     }
 
     input.setResultFieldName( wResult.getText() );
+    input.setFieldSeparatorString( wFieldSeparatorString.getText() );
     input.setResultType( input.getResultTypeByDesc( wResultType.getText() ) );
 
     input.setCompatibilityMode( wCompatibility.getSelection() );
