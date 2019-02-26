@@ -25,6 +25,7 @@ package org.pentaho.di.trans.steps.checksum;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.trans.step.BaseStepData;
 import org.pentaho.di.trans.step.StepDataInterface;
+import org.pentaho.di.trans.steps.checksum.CheckSum.FieldToBytesConverter;
 import org.pentaho.di.trans.steps.checksum.CheckSum.GenericChecksumCalculator;
 
 /**
@@ -35,9 +36,7 @@ import org.pentaho.di.trans.steps.checksum.CheckSum.GenericChecksumCalculator;
  */
 public class CheckSumData extends BaseStepData implements StepDataInterface {
 
-  public int[] fieldnrs;
-
-  public int fieldnr;
+  public FieldToBytesConverter[] fieldConverters;
 
   public RowMetaInterface outputRowMeta;
   public int nrInfields;
