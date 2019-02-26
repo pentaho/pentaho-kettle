@@ -235,7 +235,7 @@ public abstract class StepWithMappingMeta extends BaseSerializingMeta implements
       for ( int i = 0; i < mappingVariables.length; i++ ) {
         parameters.put( mappingVariables[ i ], parent.environmentSubstitute( inputFields[ i ] ) );
         //If inputField value is not empty then create it in variableSpace of step(Parent)
-        if ( !Utils.isEmpty( Const.trim( parent.environmentSubstitute( inputFields[ i ] ) ) ) ) {
+        if ( inputFields[ i ] != null ) {
           parent.setVariable( mappingVariables[ i ], parent.environmentSubstitute( inputFields[ i ] ) );
         }
       }

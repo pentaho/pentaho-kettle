@@ -98,7 +98,7 @@ public class TransExecutor extends BaseStep implements StepInterface {
       List<String> incomingFieldValues = new ArrayList<String>();
       if (  getInputRowMeta() != null ) {
         for ( int i = 0; i < getInputRowMeta().size(); i++ ) {
-          String fieldvalue = getInputRowMeta().getString( row, i );
+          String fieldvalue = Const.NVL( getInputRowMeta().getString( row, i ), "" );
           incomingFieldValues.add( fieldvalue );
         }
       }
