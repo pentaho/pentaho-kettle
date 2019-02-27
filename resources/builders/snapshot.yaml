@@ -13,6 +13,13 @@ buildProperties:
         JOB_ITEM_DEFAULTS              :
           dockerImage                  : jenkins-build/maven-oracle-jdk-8
 
+        # Installers specific parameters
+        INSTALLER_NIX                  : -Djre.linux.x64.dir=${IBUILDER_RESOURCES_ROOT_PATH}/nix/java -Dpostgresql.linux.x64.dir=${IBUILDER_RESOURCES_ROOT_PATH}/nix/postgresql -Dcommon.linux.x64.dir=${IBUILDER_RESOURCES_ROOT_PATH}/nix/common
+        INSTALLER_OSX                  : -Djre.mac.x64.dir=${IBUILDER_RESOURCES_ROOT_PATH}/osx/java -Dpostgresql.mac.x64.dir=${IBUILDER_RESOURCES_ROOT_PATH}/osx/postgresql -Dcommon.mac.x64.dir=${IBUILDER_RESOURCES_ROOT_PATH}/osx/common
+        INSTALLER_WIN                  : -Djre.windows.x64.dir=${IBUILDER_RESOURCES_ROOT_PATH}/win/java -Dpostgresql.windows.x64.dir=${IBUILDER_RESOURCES_ROOT_PATH}/win/postgresql -Dcommon.windows.x64.dir=${IBUILDER_RESOURCES_ROOT_PATH}/win/common
+        INSTALLER_PROPS                : ${INSTALLER_NIX} ${INSTALLER_OSX} ${INSTALLER_WIN} -Dinstallbuilder.dir=${INSTALL_BUILDER_ROOT_DIR}
+
+
 jobGroups:
   # Always required
 
@@ -823,29 +830,11 @@ jobGroups:
 
   4700:
 
-     - jobID           :  installer-windows
+     - jobID           :  installers
        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-installer.git
        scmBranch       :  ${DEFAULT_BRANCH}
-       dockerImage     :  jenkins-build/bitrock-installbuilder-8
-       directives      :  += -DskipDefault -P windows -Djre.windows.x64.dir=${IBUILDER_RESOURCES_ROOT_PATH}/win/java -Dpostgresql.windows.x64.dir=${IBUILDER_RESOURCES_ROOT_PATH}/win/postgresql -Dcommon.windows.x64.dir=${IBUILDER_RESOURCES_ROOT_PATH}/win/common -Dinstallbuilder.dir=${INSTALL_BUILDER_ROOT_DIR}
+       directives      :  += ${INSTALLER_PROPS}
        versionProperty :  pentaho.version
        archivable      :  true
        testable        :  false
-
-     - jobID           :  installer-mac
-       scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-installer.git
-       scmBranch       :  ${DEFAULT_BRANCH}
-       dockerImage     :  jenkins-build/bitrock-installbuilder-8
-       directives      :  += -DskipDefault -P mac -Djre.mac.x64.dir=${IBUILDER_RESOURCES_ROOT_PATH}/osx/java -Dpostgresql.mac.x64.dir=${IBUILDER_RESOURCES_ROOT_PATH}/osx/postgresql -Dcommon.mac.x64.dir=${IBUILDER_RESOURCES_ROOT_PATH}/osx/common -Dinstallbuilder.dir=${INSTALL_BUILDER_ROOT_DIR}
-       versionProperty :  pentaho.version
-       archivable      :  true
-       testable        :  false
-
-     - jobID           :  installer-linux
-       scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-installer.git
-       scmBranch       :  ${DEFAULT_BRANCH}
-       dockerImage     :  jenkins-build/bitrock-installbuilder-8
-       directives      :  += -DskipDefault -P linux,upgrade -Djre.linux.x64.dir=${IBUILDER_RESOURCES_ROOT_PATH}/nix/java -Dpostgresql.linux.x64.dir=${IBUILDER_RESOURCES_ROOT_PATH}/nix/postgresql -Dcommon.linux.x64.dir=${IBUILDER_RESOURCES_ROOT_PATH}/nix/common -Dinstallbuilder.dir=${INSTALL_BUILDER_ROOT_DIR}
-       versionProperty :  pentaho.version
-       archivable      :  true
-       testable        :  false
+       parallelize     :  true
