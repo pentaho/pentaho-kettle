@@ -2324,8 +2324,11 @@ public class Database implements VariableSpace, LoggingObjectInterface {
       ResultSet rm =
         connection.getMetaData().getColumns( null, schemaName, tableName, null );
 
-      while ( rm.next() ) {
+      if ( fields == null ) {
+        fields = new RowMeta();
+      }
 
+      while ( rm.next() ) {
         ValueMetaInterface valueMeta = null;
         for ( ValueMetaInterface valueMetaClass : valueMetaPluginClasses ) {
           try {
@@ -2341,10 +2344,6 @@ public class Database implements VariableSpace, LoggingObjectInterface {
               log.logDebug( "Skipping ValueMetaInterface:" + valueMetaClass.getClass().getName(), e );
             }
           }
-        }
-
-        if ( fields == null ) {
-          fields = new RowMeta();
         }
         fields.addValueMeta( valueMeta );
       }
