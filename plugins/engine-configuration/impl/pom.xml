@@ -17,7 +17,6 @@
 
   <properties>
     <dependency.mockito.version>1.9.5</dependency.mockito.version>
-    <dependecy.karaf.version>3.0.3</dependecy.karaf.version>
   </properties>
 
   <dependencies>

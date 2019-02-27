@@ -30,9 +30,6 @@
         <pentaho-hadoop-shims-api.version>8.3.0.0-SNAPSHOT</pentaho-hadoop-shims-api.version>
 
         <!-- third party -->
-        <org.apache.karaf.main.version>3.0.3</org.apache.karaf.main.version>
-        <org.apache.karaf.util.version>3.0.3</org.apache.karaf.util.version>
-        <org.apache.karaf.jaas.boot.version>2.4.2</org.apache.karaf.jaas.boot.version>
         <derby.version>10.2.1.6</derby.version>
         <derbyclient.version>10.2.1.6</derbyclient.version>
         <hsqldb.version>2.3.2</hsqldb.version>
@@ -337,7 +334,6 @@
         <dependency>
             <groupId>org.apache.karaf</groupId>
             <artifactId>org.apache.karaf.util</artifactId>
-            <version>${org.apache.karaf.util.version}</version>
             <exclusions>
                 <exclusion>
                     <groupId>*</groupId>
@@ -348,7 +344,6 @@
         <dependency>
             <groupId>org.apache.karaf.jaas</groupId>
             <artifactId>org.apache.karaf.jaas.boot</artifactId>
-            <version>${org.apache.karaf.jaas.boot.version}</version>
             <exclusions>
                 <exclusion>
                     <groupId>*</groupId>
