@@ -22,7 +22,6 @@
 
   <properties>
     <pdi.version>8.3.0.0-SNAPSHOT</pdi.version>
-    <dependency.karaf.version>3.0.3</dependency.karaf.version>
     <version.for.license>${project.version}</version.for.license>
     <js.project.list>requirejs,requirejs-text,angular,require-css,angular-i18n</js.project.list>
     <angular.version>1.5.8</angular.version>
