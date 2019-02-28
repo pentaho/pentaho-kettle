@@ -28,7 +28,6 @@
     <angular.version>1.5.8</angular.version>
     <pentaho-osgi-bundles.version>8.3.0.0-SNAPSHOT</pentaho-osgi-bundles.version>
     <angular-ui-router.version>0.4.2</angular-ui-router.version>
-    <karaf-maven-plugin.version>3.0.3</karaf-maven-plugin.version>
     <pdi.version>8.3.0.0-SNAPSHOT</pdi.version>
     <cxf.karaf.version>3.0.13</cxf.karaf.version>
     <requirejs-text.version>2.0.10</requirejs-text.version>
@@ -199,15 +198,6 @@
               <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
               <Bundle-Version>${project.version}</Bundle-Version>
             </instructions>
-          </configuration>
-        </plugin>
-        <plugin>
-          <groupId>org.apache.karaf.tooling</groupId>
-          <artifactId>karaf-maven-plugin</artifactId>
-          <version>${karaf-maven-plugin.version}</version>
-          <extensions>true</extensions>
-          <configuration>
-            <aggregateFeatures>false</aggregateFeatures>
           </configuration>
         </plugin>
       </plugins>
