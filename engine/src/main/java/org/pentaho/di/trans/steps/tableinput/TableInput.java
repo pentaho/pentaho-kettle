@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -288,16 +288,17 @@ public class TableInput extends BaseStep implements StepInterface {
   }
 
   /** Stop the running query */
-  public void stopRunning( StepMetaInterface smi, StepDataInterface sdi ) throws KettleException {
+  public synchronized void stopRunning( StepMetaInterface smi, StepDataInterface sdi ) throws KettleException {
+    if ( this.isStopped() || sdi.isDisposed() ) {
+      return;
+    }
     meta = (TableInputMeta) smi;
     data = (TableInputData) sdi;
 
     setStopped( true );
 
-    if ( data.db != null && !data.isCanceled ) {
-      synchronized ( data.db ) {
-        data.db.cancelQuery();
-      }
+    if ( data.db != null && data.db.getConnection() != null && !data.isCanceled ) {
+      data.db.cancelQuery();
       data.isCanceled = true;
     }
   }
