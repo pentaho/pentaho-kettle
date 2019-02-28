@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2016-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2016-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -49,7 +49,7 @@ public class CsvInputMultiCharDelimiterTest extends CsvInputUnitTestBase {
   @Before
   public void setUp() throws Exception {
     stepMockHelper =
-      StepMockUtil.getStepMockHelper( CsvInputMeta.class, "CsvInputEnclosureTest" );
+      StepMockUtil.getStepMockHelper( CsvInputMeta.class, "CsvInputMultiCharDelimiterTest" );
     csvInput = new CsvInput(
       stepMockHelper.stepMeta, stepMockHelper.stepDataInterface, 0, stepMockHelper.transMeta,
       stepMockHelper.trans );
@@ -93,7 +93,7 @@ public class CsvInputMultiCharDelimiterTest extends CsvInputUnitTestBase {
   private void doTest( String content ) throws Exception {
     RowSet output = new QueueRowSet();
 
-    File tmp = createTestFile( "utf-8", content );
+    File tmp = createTestFile( ENCODING, content );
     try {
       CsvInputMeta meta = createMeta( tmp, createInputFileFields( "f1", "f2", "f3" ) );
       CsvInputData data = new CsvInputData();
@@ -120,15 +120,10 @@ public class CsvInputMultiCharDelimiterTest extends CsvInputUnitTestBase {
     assertNull( output.getRowImmediate() );
   }
 
-  private CsvInputMeta createMeta( File file, TextFileInputField[] fields ) {
-    CsvInputMeta meta = new CsvInputMeta();
-    meta.setFilename( file.getAbsolutePath() );
+  @Override
+  CsvInputMeta createMeta( File file, TextFileInputField[] fields ) {
+    CsvInputMeta meta = super.createMeta( file, fields );
     meta.setDelimiter( "delimiter" );
-    meta.setEncoding( "utf-8" );
-    meta.setEnclosure( "\"" );
-    meta.setBufferSize( "1024" );
-    meta.setInputFields( fields );
-    meta.setHeaderPresent( false );
     return meta;
   }
 }
