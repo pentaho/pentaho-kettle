@@ -17,7 +17,6 @@
   <name>Pentaho Streaming Plugin Feature</name>
 
   <properties>
-    <karaf-maven-plugin.version>3.0.3</karaf-maven-plugin.version>
     <bndlib.version>2.4.0</bndlib.version>
     <artemis.version>2.5.0</artemis.version>
   </properties>
@@ -33,35 +32,5 @@
       <artifactId>pentaho-streaming-mqtt-plugin</artifactId>
       <version>${project.version}</version>
     </dependency>
-
   </dependencies>
-
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>org.apache.karaf.tooling</groupId>
-        <artifactId>karaf-maven-plugin</artifactId>
-        <version>${karaf-maven-plugin.version}</version>
-        <extensions>true</extensions>
-        <dependencies>
-          <dependency>
-            <groupId>biz.aQute.bnd</groupId>
-            <artifactId>bndlib</artifactId>
-            <version>${bndlib.version}</version>
-          </dependency>
-        </dependencies>
-        <configuration>
-          <startLevel>80</startLevel>
-          <aggregateFeatures>true</aggregateFeatures>
-          <ignoreScopeProvided>true</ignoreScopeProvided>
-          <excludedArtifactIds>
-            <artifact>artemis-commons</artifact>
-            <artifact>artemis-core-client</artifact>
-            <artifact>artemis-jms-client</artifact>
-            <artifact>artemis-selector</artifact>
-          </excludedArtifactIds>
-        </configuration>
-      </plugin>
-    </plugins>
-  </build>
 </project>
