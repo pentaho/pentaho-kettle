@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -35,6 +35,7 @@ import org.apache.commons.vfs2.AllFileSelector;
 import org.apache.commons.vfs2.FileObject;
 import org.apache.commons.vfs2.FileSelectInfo;
 import org.apache.commons.vfs2.FileType;
+import org.apache.commons.vfs2.provider.compressed.CompressedFileFileObject;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.logging.LogChannel;
@@ -170,130 +171,117 @@ public class FileInputList {
         continue;
       }
 
-      //
-      // If a wildcard is set we search for files
-      //
-      if ( !Utils.isEmpty( onemask ) || !Utils.isEmpty( excludeonemask ) ) {
-        try {
-          FileObject directoryFileObject = KettleVFS.getFileObject( onefile, space );
-          boolean processFolder = true;
-          if ( onerequired ) {
-            if ( !directoryFileObject.exists() ) {
-              // if we don't find folder..no need to continue
-              fileInputList.addNonExistantFile( directoryFileObject );
+      try {
+        FileObject directoryFileObject = KettleVFS.getFileObject( onefile, space );
+        boolean processFolder = true;
+        if ( onerequired ) {
+          if ( !directoryFileObject.exists() ) {
+            // if we don't find folder..no need to continue
+            fileInputList.addNonExistantFile( directoryFileObject );
+            processFolder = false;
+          } else {
+            if ( !directoryFileObject.isReadable() ) {
+              fileInputList.addNonAccessibleFile( directoryFileObject );
               processFolder = false;
-            } else {
-              if ( !directoryFileObject.isReadable() ) {
-                fileInputList.addNonAccessibleFile( directoryFileObject );
-                processFolder = false;
-              }
             }
           }
-
-          // Find all file names that match the wildcard in this directory
-          //
-          if ( processFolder ) {
-            if ( directoryFileObject != null && directoryFileObject.getType() == FileType.FOLDER ) { // it's a directory
-              FileObject[] fileObjects = directoryFileObject.findFiles( new AllFileSelector() {
-                @Override
-                public boolean traverseDescendents( FileSelectInfo info ) {
-                  return info.getDepth() == 0 || subdirs;
-                }
-
-                @Override
-                public boolean includeFile( FileSelectInfo info ) {
-                  // Never return the parent directory of a file list.
-                  if ( info.getDepth() == 0 ) {
-                    return false;
-                  }
-
-                  FileObject fileObject = info.getFile();
-                  try {
-                    if ( fileObject != null && filter.isFileTypeAllowed( fileObject.getType() ) ) {
-                      String name = info.getFile().getName().getBaseName();
-                      boolean matches = true;
-                      if ( !Utils.isEmpty( onemask ) ) {
-                        matches = Pattern.matches( onemask, name );
-                      }
-                      boolean excludematches = false;
-                      if ( !Utils.isEmpty( excludeonemask ) ) {
-                        excludematches = Pattern.matches( excludeonemask, name );
-                      }
-                      return ( matches && !excludematches );
-                    }
-                    return false;
-                  } catch ( IOException ex ) {
-                    // Upon error don't process the file.
-                    return false;
-                  }
-                }
-              } );
-              if ( fileObjects != null ) {
-                for ( int j = 0; j < fileObjects.length; j++ ) {
-                  FileObject fileObject = fileObjects[ j ];
-                  if ( fileObject.exists() ) {
-                    fileInputList.addFile( fileObject );
-                  }
-                }
-              }
-              if ( Utils.isEmpty( fileObjects ) ) {
-                if ( onerequired ) {
-                  fileInputList.addNonAccessibleFile( directoryFileObject );
-                }
-              }
-
-              // Sort the list: quicksort, only for regular files
-              fileInputList.sortFiles();
-            } else {
-              FileObject[] children = directoryFileObject.getChildren();
-              for ( int j = 0; j < children.length; j++ ) {
-                // See if the wildcard (regexp) matches...
-                String name = children[ j ].getName().getBaseName();
-                boolean matches = true;
-                if ( !Utils.isEmpty( onemask ) ) {
-                  matches = Pattern.matches( onemask, name );
-                }
-                boolean excludematches = false;
-                if ( !Utils.isEmpty( excludeonemask ) ) {
-                  excludematches = Pattern.matches( excludeonemask, name );
-                }
-                if ( matches && !excludematches ) {
-                  fileInputList.addFile( children[ j ] );
-                }
-
-              }
-              // We don't sort here, keep the order of the files in the archive.
-            }
-          }
-        } catch ( Exception e ) {
-          if ( onerequired ) {
-            fileInputList.addNonAccessibleFile( new NonAccessibleFileObject( onefile ) );
-          }
-          log.logError( Const.getStackTracker( e ) );
         }
-      } else { // A normal file...
 
-        try {
-          FileObject fileObject = KettleVFS.getFileObject( onefile, space );
-          if ( fileObject.exists() ) {
-            if ( fileObject.isReadable() ) {
-              fileInputList.addFile( fileObject );
+        // Find all file names that match the wildcard in this directory
+        //
+        if ( processFolder ) {
+          if ( directoryFileObject != null && directoryFileObject.getType() == FileType.FOLDER ) { // it's a directory
+            FileObject[] fileObjects = directoryFileObject.findFiles( new AllFileSelector() {
+              @Override
+              public boolean traverseDescendents( FileSelectInfo info ) {
+                return info.getDepth() == 0 || subdirs;
+              }
+
+              @Override
+              public boolean includeFile( FileSelectInfo info ) {
+                // Never return the parent directory of a file list.
+                if ( info.getDepth() == 0 ) {
+                  return false;
+                }
+
+                FileObject fileObject = info.getFile();
+                try {
+                  if ( fileObject != null && filter.isFileTypeAllowed( fileObject.getType() ) ) {
+                    String name = info.getFile().getName().getBaseName();
+                    boolean matches = true;
+                    if ( !Utils.isEmpty( onemask ) ) {
+                      matches = Pattern.matches( onemask, name );
+                    }
+                    boolean excludematches = false;
+                    if ( !Utils.isEmpty( excludeonemask ) ) {
+                      excludematches = Pattern.matches( excludeonemask, name );
+                    }
+                    return ( matches && !excludematches );
+                  }
+                  return false;
+                } catch ( IOException ex ) {
+                  // Upon error don't process the file.
+                  return false;
+                }
+              }
+            } );
+            if ( fileObjects != null ) {
+              for ( int j = 0; j < fileObjects.length; j++ ) {
+                FileObject fileObject = fileObjects[ j ];
+                if ( fileObject.exists() ) {
+                  fileInputList.addFile( fileObject );
+                }
+              }
+            }
+            if ( Utils.isEmpty( fileObjects ) ) {
+              if ( onerequired ) {
+                fileInputList.addNonAccessibleFile( directoryFileObject );
+              }
+            }
+
+            // Sort the list: quicksort, only for regular files
+            fileInputList.sortFiles();
+          } else if ( directoryFileObject instanceof CompressedFileFileObject ) {
+            FileObject[] children = directoryFileObject.getChildren();
+            for ( int j = 0; j < children.length; j++ ) {
+              // See if the wildcard (regexp) matches...
+              String name = children[ j ].getName().getBaseName();
+              boolean matches = true;
+              if ( !Utils.isEmpty( onemask ) ) {
+                matches = Pattern.matches( onemask, name );
+              }
+              boolean excludematches = false;
+              if ( !Utils.isEmpty( excludeonemask ) ) {
+                excludematches = Pattern.matches( excludeonemask, name );
+              }
+              if ( matches && !excludematches ) {
+                fileInputList.addFile( children[ j ] );
+              }
+
+            }
+            // We don't sort here, keep the order of the files in the archive.
+          } else {
+            FileObject fileObject = KettleVFS.getFileObject( onefile, space );
+            if ( fileObject.exists() ) {
+              if ( fileObject.isReadable() ) {
+                fileInputList.addFile( fileObject );
+              } else {
+                if ( onerequired ) {
+                  fileInputList.addNonAccessibleFile( fileObject );
+                }
+              }
             } else {
               if ( onerequired ) {
-                fileInputList.addNonAccessibleFile( fileObject );
+                fileInputList.addNonExistantFile( fileObject );
               }
             }
-          } else {
-            if ( onerequired ) {
-              fileInputList.addNonExistantFile( fileObject );
-            }
           }
-        } catch ( Exception e ) {
-          if ( onerequired ) {
-            fileInputList.addNonAccessibleFile( new NonAccessibleFileObject( onefile ) );
-          }
-          log.logError( Const.getStackTracker( e ) );
         }
+      } catch ( Exception e ) {
+        if ( onerequired ) {
+          fileInputList.addNonAccessibleFile( new NonAccessibleFileObject( onefile ) );
+        }
+        log.logError( Const.getStackTracker( e ) );
       }
     }
 

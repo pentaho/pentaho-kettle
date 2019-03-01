@@ -13,21 +13,4 @@
   <bean id="MQTTProducerMeta" class="org.pentaho.di.trans.step.mqtt.MQTTProducerMeta" scope="prototype">
     <pen:di-plugin type="org.pentaho.di.core.plugins.StepPluginType"/>
   </bean>
-
-  <bean id="MQTTProducerAnalyzer" class="org.pentaho.metaverse.api.analyzer.kettle.annotations.AnnotationDrivenStepMetaAnalyzer" >
-    <argument ref="MQTTProducerMeta" />
-  </bean>
-
-  <service id="MQTTProducerStepAnalyzerService"
-           interface="org.pentaho.metaverse.api.analyzer.kettle.step.IStepAnalyzer"
-           ref="MQTTProducerAnalyzer"/>
-
-  <bean id="MQTTConsumerAnalyzer" class="org.pentaho.metaverse.api.analyzer.kettle.annotations.AnnotationDrivenStepMetaAnalyzer" >
-    <argument ref="MQTTConsumerMeta" />
-  </bean>
-
-  <service id="MQTTConsumerStepAnalyzerService"
-           interface="org.pentaho.metaverse.api.analyzer.kettle.step.IClonableStepAnalyzer"
-           ref="MQTTConsumerAnalyzer"/>
-
 </blueprint>
