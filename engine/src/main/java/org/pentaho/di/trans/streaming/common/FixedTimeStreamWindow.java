@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -79,6 +79,8 @@ public class FixedTimeStreamWindow<I extends List> implements StreamWindow<I, Re
       .runOn( Schedulers.io() )
       .filter( list -> !list.isEmpty() )
       .map( this::sendBufferToSubtrans )
+      .filter( Optional::isPresent )
+      .map( Optional::get )
       .sequential()
       .takeWhile( pair -> pair.getValue().getNrErrors() == 0 )
       .doOnNext( postProcessor )
@@ -86,14 +88,13 @@ public class FixedTimeStreamWindow<I extends List> implements StreamWindow<I, Re
       .blockingIterable();
   }
 
-  private Map.Entry<List<I>, Result> sendBufferToSubtrans( List<I> input ) throws KettleException {
+  private Optional<Map.Entry<List<I>, Result>> sendBufferToSubtrans( List<I> input ) throws KettleException {
     final List<RowMetaAndData> rows = input.stream()
       .map( row -> row.toArray( new Object[ 0 ] ) )
       .map( objects -> new RowMetaAndData( rowMeta, objects ) )
       .collect( Collectors.toList() );
     Optional<Result> optionalRes = subtransExecutor.execute( rows );
-    return optionalRes.map( result -> new AbstractMap.SimpleImmutableEntry<>( input, result ) )
-      .orElse( new AbstractMap.SimpleImmutableEntry<>( input, new Result() ) );
+    return optionalRes.map( result -> new AbstractMap.SimpleImmutableEntry<>( input, result ) );
   }
 
 }
