@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -85,5 +85,20 @@ public class FixedTimeStreamWindowTest {
     window.buffer( Flowable.fromIterable( singletonList( asList( "v1", "v2" ) ) ) )
       .forEach( result -> assertEquals( mockResult, result ) );
     assertEquals( 2, count.get() );
+  }
+
+  @Test
+  public void emptyResultsNotPostProcessed() throws KettleException {
+    RowMetaInterface rowMeta = new RowMeta();
+    rowMeta.addValueMeta( new ValueMetaString( "field" ) );
+    Result mockResult = new Result();
+    mockResult.setRows( Arrays.asList( new RowMetaAndData( rowMeta, "queen" ), new RowMetaAndData( rowMeta, "king" ) ) );
+    when( subtransExecutor.execute( any()  ) ).thenReturn( Optional.empty() );
+    AtomicInteger count = new AtomicInteger();
+    FixedTimeStreamWindow<List> window =
+      new FixedTimeStreamWindow<>( subtransExecutor, rowMeta, 0, 2, 1, ( p ) -> count.set( p.getKey().get( 0 ).size() ) );
+    window.buffer( Flowable.fromIterable( singletonList( asList( "v1", "v2" ) ) ) )
+      .forEach( result -> assertEquals( mockResult, result ) );
+    assertEquals( 0, count.get() );
   }
 }
