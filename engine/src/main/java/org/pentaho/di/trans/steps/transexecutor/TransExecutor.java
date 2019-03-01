@@ -314,21 +314,42 @@ public class TransExecutor extends BaseStep implements StepInterface {
     List<String> staticInputs = Arrays.asList( parameters.getInput() );
 
     /////////////////////////////////////////////
-    //If "Fields to use" ARE provided.
-    for ( int i = 0; i < fieldsToUse.size(); i++ ) {
+    // For all parameters declared in transExecutor
+    for ( int i = 0; i < parameters.getVariable().length; i++ ) {
+      String currentVariableToUpdate = (String) resolvingValuesMap.keySet().toArray()[i];
       try {
-        String value = null;
-        if ( incomingFields.contains( fieldsToUse.get( i ) )
-            && ( value = incomingFieldValues.get( incomingFields.indexOf( fieldsToUse.get( i ) ) ) ) != null ) {
-          //Set the value to the first parameter in the resolvingValuesMap.
-          resolvingValuesMap.put( (String) resolvingValuesMap.keySet().toArray()[i], value );
+        if ( i < fieldsToUse.size() && incomingFields.contains( fieldsToUse.get( i ) )
+          && ( !Utils.isEmpty( Const.trim( incomingFieldValues.get( incomingFields.indexOf( fieldsToUse.get( i ) ) ) ) ) ) ) {
+          // if field to use is defined on previous steps ( incomingFields ) and is not empty - put that value
+          resolvingValuesMap.put( currentVariableToUpdate, incomingFieldValues.get( incomingFields.indexOf( fieldsToUse.get( i ) ) ) );
         } else {
-          //Set the value to the first parameter in the resolvingValuesMap.
-          resolvingValuesMap.put( (String) resolvingValuesMap.keySet().toArray()[i], staticInputs.get( i ) );
+          if ( i < staticInputs.size() && !Utils.isEmpty( Const.trim( staticInputs.get( i ) ) ) ) {
+            // if we do not have a field to use then check for static input values - if not empty - put that value
+            resolvingValuesMap.put( currentVariableToUpdate, staticInputs.get( i ) );
+          } else {
+            if ( !Utils.isEmpty( Const.trim( fieldsToUse.get( i ) ) ) ) {
+              // if both -field to use- and -static values- are empty, then check if it is in fact an empty field cell
+              // if not an empty cell then it is a declared variable that was resolved as null by previous steps
+              // put "" value ( not null) and also set transExecutor variable - to force create this variable
+              resolvingValuesMap.put( currentVariableToUpdate, "" );
+              this.setVariable( parameters.getVariable()[i], resolvingValuesMap.get( parameters.getVariable()[i] ) );
+            } else {
+              if ( !Utils.isEmpty( Const.trim( this.getVariable( parameters.getVariable()[i] ) ) ) ) {
+                // if everything is empty, then check for last option - parent variables, if exists - put that value
+                resolvingValuesMap.put( currentVariableToUpdate, this.getVariable( parameters.getVariable()[i] ) );
+              } else {
+                // last case - if no variables defined - put "" value ( not null)
+                // and also set transExecutor variable - to force create this variable
+                resolvingValuesMap.put( currentVariableToUpdate, "" );
+                this.setVariable( parameters.getVariable()[i], resolvingValuesMap.get( parameters.getVariable()[i] ) );
+              }
+            }
+          }
         }
       } catch ( Exception e ) {
         //Set the value to the first parameter in the resolvingValuesMap.
-        resolvingValuesMap.put( (String) resolvingValuesMap.keySet().toArray()[i], null );
+        resolvingValuesMap.put( (String) resolvingValuesMap.keySet().toArray()[i], "" );
+        this.setVariable( parameters.getVariable()[i], resolvingValuesMap.get( parameters.getVariable()[i] ) );
       }
     }
     /////////////////////////////////////////////
