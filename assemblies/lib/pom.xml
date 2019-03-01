@@ -341,6 +341,16 @@
     <!-- Karaf Dependencies -->
     <dependency>
       <groupId>org.apache.karaf</groupId>
+      <artifactId>org.apache.karaf.main</artifactId>
+      <exclusions>
+        <exclusion>
+          <groupId>*</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.karaf</groupId>
       <artifactId>org.apache.karaf.util</artifactId>
       <exclusions>
         <exclusion>
