@@ -7,6 +7,7 @@
     <feature>pentaho-deployers</feature>
 
     <feature>pentaho-i18n</feature>
+    <details>${project.description}</details>
     <bundle>mvn:pentaho/pentaho-i18n-webservice-bundle/${pentaho-osgi-bundles.version}</bundle>
 
     <!-- START client side dependencies -->

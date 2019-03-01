@@ -3,7 +3,7 @@
   <feature name="${project.artifactId}" version="${project.version}">
     <feature>kar</feature>
     <feature>pentaho-requirejs-osgi-manager</feature>
-
+    <details>${project.description}</details>
     <!-- START client side dependencies -->
     <bundle>pentaho-webjars:mvn:org.webjars.bower/angular/${angular.version}</bundle>
     <bundle>pentaho-webjars:mvn:org.webjars.bower/angular-route/${angular-route.version}</bundle>

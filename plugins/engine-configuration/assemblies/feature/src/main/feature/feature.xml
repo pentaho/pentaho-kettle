@@ -22,15 +22,16 @@
   ~
   -->
 
-<features xmlns="http://karaf.apache.org/xmlns/features/v1.0.0">
+<features name="${project.artifactId}-repo" xmlns="http://karaf.apache.org/xmlns/features/v1.2.1">
 
-  <feature name="pdi-engine-configuration" version="1.0">
-    <bundle>mvn:org.pentaho.di.plugins/pdi-engine-configuration-impl/${pdi.version}</bundle>
+  <feature name="${project.artifactId}" version="${project.version}">
+    <details>${project.description}</details>
   </feature>
 
-  <feature name="pdi-engine-configuration-ui" version="1.0">
-    <feature>pdi-engine-configuration</feature>
+  <feature name="pdi-engine-configuration-ui" version="${project.version}">
+    <feature>${project.artifactId}</feature>
     <bundle>mvn:org.pentaho.di.plugins/pdi-engine-configuration-ui/${pdi.version}</bundle>
   </feature>
+
 
 </features>

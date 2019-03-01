@@ -23,28 +23,8 @@
 		</license>
 	</licenses>
 
-	<properties>
-		<karaf-maven-plugin.version>3.0.3</karaf-maven-plugin.version>
-	</properties>
-
 	<modules>
 		<module>core</module>
 		<module>assemblies</module>
 	</modules>
-
-	<build>
-		<pluginManagement>
-			<plugins>
-				<plugin>
-					<groupId>org.apache.karaf.tooling</groupId>
-					<artifactId>karaf-maven-plugin</artifactId>
-					<version>${karaf-maven-plugin.version}</version>
-					<extensions>true</extensions>
-					<configuration>
-						<aggregateFeatures>true</aggregateFeatures>
-					</configuration>
-				</plugin>
-			</plugins>
-		</pluginManagement>
-	</build>
 </project>
