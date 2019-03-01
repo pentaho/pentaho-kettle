@@ -1,0 +1,8 @@
+pentaho-upgrade-utility-@platform.version@-ba.zip
+pentaho-upgrade-utility-@platform.version@-pdi.zip
+pentaho-upgrade-utility-@platform.version@-pentaho.zip
+pme-ce-@pentaho-metadata.version@.zip
+pme-ee-@pentaho-metadata.version@.zip
+pdd-plugin-ee-@dashboard.version@.zip
+pdi-ee-client-@platform.version@.zip
+pentaho-sdk-@pdi-sdk-plugins.version@.zip

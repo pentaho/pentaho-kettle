@@ -1,0 +1,12 @@
+pdi-weka-knowledge-flow-plugin-ee.*.jar
+pdi-weka-forecasting-plugin-ee.*.jar
+pentaho-dashboard-chart-editor.*.jar
+pentaho-dashboard.*.jar
+pentaho-ee-chart-plugin.*.jar
+pentaho-ee-dsc-core.*.jar
+pentaho-ee-dsc-xmo-installer.*.jar
+pentaho-ee-mock-dsc.*.jar
+pentaho-metadata-editor.*.jar
+pentaho-mobile-plugin.*.jar
+pentaho-r-plugin.*.jar
+pentaho-splunk-plugin.*.jar
