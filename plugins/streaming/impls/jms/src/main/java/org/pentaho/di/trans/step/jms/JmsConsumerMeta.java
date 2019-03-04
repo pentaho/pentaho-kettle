@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -41,9 +41,21 @@ import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.di.trans.step.jms.context.ActiveMQProvider;
 import org.pentaho.di.trans.streaming.common.BaseStreamStepMeta;
+import org.pentaho.metaverse.api.analyzer.kettle.annotations.Metaverse;
 
 import static java.util.Collections.singletonList;
 import static org.pentaho.di.core.ObjectLocationSpecificationMethod.FILENAME;
+import static org.pentaho.di.trans.step.jms.JmsProducerMeta.JMS_DESTINATION_METAVERSE;
+import static org.pentaho.di.trans.step.jms.JmsProducerMeta.JMS_SERVER_METAVERSE;
+import static org.pentaho.dictionary.DictionaryConst.CATEGORY_DATASOURCE;
+import static org.pentaho.dictionary.DictionaryConst.CATEGORY_MESSAGE_QUEUE;
+import static org.pentaho.dictionary.DictionaryConst.LINK_CONTAINS_CONCEPT;
+import static org.pentaho.dictionary.DictionaryConst.LINK_INPUTS;
+import static org.pentaho.dictionary.DictionaryConst.LINK_PARENT_CONCEPT;
+import static org.pentaho.dictionary.DictionaryConst.NODE_TYPE_EXTERNAL_CONNECTION;
+import static org.pentaho.metaverse.api.analyzer.kettle.annotations.Metaverse.FALSE;
+import static org.pentaho.metaverse.api.analyzer.kettle.annotations.Metaverse.SUBTRANS_INPUT;
+import static org.pentaho.metaverse.api.analyzer.kettle.step.ExternalResourceStepAnalyzer.RESOURCE;
 
 @InjectionSupported ( localizationPrefix = "JmsConsumerMeta.Injection.", groups = { "SSL_GROUP" } )
 @Step ( id = "Jms2Consumer", image = "JMSC.svg",
@@ -52,16 +64,32 @@ import static org.pentaho.di.core.ObjectLocationSpecificationMethod.FILENAME;
   description = "JmsConsumer.TypeTooltipDesc",
   categoryDescription = "i18n:org.pentaho.di.trans.step:BaseStep.Category.Streaming",
   documentationUrl = "Products/Data_Integration/Transformation_Step_Reference/JMS_Consumer" )
+@Metaverse.CategoryMap ( entity = JMS_DESTINATION_METAVERSE, category = CATEGORY_MESSAGE_QUEUE )
+@Metaverse.CategoryMap ( entity = JMS_SERVER_METAVERSE, category = CATEGORY_DATASOURCE )
+@Metaverse.EntityLink ( entity = JMS_SERVER_METAVERSE, link = LINK_PARENT_CONCEPT, parentEntity =
+  NODE_TYPE_EXTERNAL_CONNECTION )
+@Metaverse.EntityLink ( entity = JMS_DESTINATION_METAVERSE, link = LINK_CONTAINS_CONCEPT, parentEntity = JMS_SERVER_METAVERSE )
+@Metaverse.EntityLink ( entity = JMS_DESTINATION_METAVERSE, link = LINK_PARENT_CONCEPT )
 public class JmsConsumerMeta extends BaseStreamStepMeta implements ISubTransAwareMeta, StepMetaInterface {
 
+  private static final String JMS_MESSAGE_METAVERSE = "Message";
+  private static final String JMS_DESTINATION_NAME_METAVERSE = "Destination Name";
   @InjectionDeep
   public JmsDelegate jmsDelegate;
 
   @Injection( name = "RECEIVE_TIMEOUT" ) public String receiveTimeout = "0";
 
-  @Injection ( name = "MESSAGE_FIELD_NAME" ) public String messageField = "message";
+  @Injection ( name = "MESSAGE_FIELD_NAME" )
+  @Metaverse.Node ( name = JMS_MESSAGE_METAVERSE, type = RESOURCE, link = LINK_INPUTS, nameFromValue = FALSE, subTransLink = SUBTRANS_INPUT )
+  @Metaverse.Property ( name = JMS_MESSAGE_METAVERSE, parentNodeName = JMS_MESSAGE_METAVERSE )
+  @Metaverse.NodeLink ( nodeName = JMS_MESSAGE_METAVERSE, parentNodeName = JMS_DESTINATION_METAVERSE, linkDirection = "OUT" )
+  public String messageField = "message";
 
-  @Injection ( name = "DESTINATION_FIELD_NAME" ) public String destinationField = "destination";
+  @Injection ( name = "DESTINATION_FIELD_NAME" )
+  @Metaverse.Node ( name = JMS_DESTINATION_NAME_METAVERSE, type = RESOURCE, link = LINK_INPUTS, nameFromValue = FALSE, subTransLink = SUBTRANS_INPUT )
+  @Metaverse.Property ( name = JMS_DESTINATION_NAME_METAVERSE, parentNodeName = JMS_DESTINATION_NAME_METAVERSE )
+  @Metaverse.NodeLink ( nodeName = JMS_DESTINATION_NAME_METAVERSE, parentNodeName = JMS_DESTINATION_METAVERSE, linkDirection = "OUT" )
+  public String destinationField = "destination";
 
   @VisibleForTesting
   public JmsConsumerMeta() {
@@ -80,7 +108,8 @@ public class JmsConsumerMeta extends BaseStreamStepMeta implements ISubTransAwar
 
   @Override public RowMeta getRowMeta( String s, VariableSpace variableSpace ) {
     RowMeta rowMeta = new RowMeta();
-    rowMeta.addValueMeta( new ValueMetaString( "message" ) );
+    rowMeta.addValueMeta( new ValueMetaString( messageField ) );
+    rowMeta.addValueMeta( new ValueMetaString( destinationField ) );
     return rowMeta;
   }
 
