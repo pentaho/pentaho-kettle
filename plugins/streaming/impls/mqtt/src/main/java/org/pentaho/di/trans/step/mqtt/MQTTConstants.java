@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -31,8 +31,8 @@ class MQTTConstants {
   static final String TOPIC = "TOPIC";
   static final String FIELD_TOPIC = "FIELD_TOPIC";
   static final String TOPIC_IN_FIELD = "TOPIC_IN_FIELD";
-  static final String MSG_OUTPUT_NAME = "MSG_OUTPUT_NAME";
-  static final String TOPIC_OUTPUT_NAME = "TOPIC_OUTPUT_NAME";
+  static final String MSG_OUTPUT_NAME = "Message";
+  static final String TOPIC_OUTPUT_NAME = "Topic name";
   static final String QOS = "QOS";
   static final String SSL_GROUP = "SSL";
   static final String USE_SSL = "USE_SSL";
