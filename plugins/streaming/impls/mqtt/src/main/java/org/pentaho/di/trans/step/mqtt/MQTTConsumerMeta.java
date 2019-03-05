@@ -60,7 +60,6 @@ import static org.pentaho.di.trans.step.mqtt.MQTTConstants.CLEAN_SESSION;
 import static org.pentaho.di.trans.step.mqtt.MQTTConstants.CONNECTION_TIMEOUT;
 import static org.pentaho.di.trans.step.mqtt.MQTTConstants.KEEP_ALIVE_INTERVAL;
 import static org.pentaho.di.trans.step.mqtt.MQTTConstants.MAX_INFLIGHT;
-import static org.pentaho.di.trans.step.mqtt.MQTTConstants.MESSAGE_FIELD;
 import static org.pentaho.di.trans.step.mqtt.MQTTConstants.MQTT_SERVER;
 import static org.pentaho.di.trans.step.mqtt.MQTTConstants.MQTT_VERSION;
 import static org.pentaho.di.trans.step.mqtt.MQTTConstants.MSG_OUTPUT_NAME;
@@ -80,7 +79,6 @@ import static org.pentaho.di.trans.step.mqtt.MQTTProducerMeta.MQTT_SERVER_METAVE
 import static org.pentaho.di.trans.step.mqtt.MQTTProducerMeta.MQTT_TOPIC_METAVERSE;
 import static org.pentaho.dictionary.DictionaryConst.CATEGORY_DATASOURCE;
 import static org.pentaho.dictionary.DictionaryConst.CATEGORY_MESSAGE_QUEUE;
-import static org.pentaho.dictionary.DictionaryConst.LINK_CONTAINS;
 import static org.pentaho.dictionary.DictionaryConst.LINK_CONTAINS_CONCEPT;
 import static org.pentaho.dictionary.DictionaryConst.LINK_INPUTS;
 import static org.pentaho.dictionary.DictionaryConst.LINK_PARENT_CONCEPT;
@@ -114,15 +112,15 @@ public class MQTTConsumerMeta extends BaseStreamStepMeta implements StepMetaInte
   @Metaverse.Property ( name = TOPIC, parentNodeName = MQTT_TOPIC_METAVERSE )
   @Injection ( name = TOPICS ) public List<String> topics = new ArrayList<>();
 
-  @Metaverse.Node ( name = MESSAGE_FIELD, type = RESOURCE, link = LINK_INPUTS, nameFromValue = FALSE, subTransLink = SUBTRANS_INPUT )
-  @Metaverse.Property ( name = MESSAGE_FIELD, parentNodeName = MESSAGE_FIELD )
-  @Metaverse.NodeLink ( nodeName = MESSAGE_FIELD, parentNodeName = MQTT_TOPIC_METAVERSE, parentNodelink = LINK_CONTAINS, linkDirection = "OUT" )
-  @Injection ( name = MSG_OUTPUT_NAME ) public String msgOutputName = "Message";
+  @Metaverse.Node ( name = MSG_OUTPUT_NAME, type = RESOURCE, link = LINK_INPUTS, nameFromValue = FALSE, subTransLink = SUBTRANS_INPUT )
+  @Metaverse.Property ( name = MSG_OUTPUT_NAME, parentNodeName = MSG_OUTPUT_NAME )
+  @Metaverse.NodeLink ( nodeName = MSG_OUTPUT_NAME, parentNodeName = MQTT_TOPIC_METAVERSE, linkDirection = "OUT" )
+  @Injection ( name = "MSG_OUTPUT_NAME" ) public String msgOutputName = "Message";
 
-  @Metaverse.Node ( name = "TOPIC_RESOURCE", type = RESOURCE, link = LINK_INPUTS, nameFromValue = FALSE, subTransLink = SUBTRANS_INPUT )
-  @Metaverse.Property ( name = "TOPIC_RESOURCE", parentNodeName = "TOPIC_RESOURCE" )
-  @Metaverse.NodeLink ( nodeName = "TOPIC_RESOURCE", parentNodeName = MQTT_TOPIC_METAVERSE, parentNodelink = LINK_CONTAINS, linkDirection = "OUT" )
-  @Injection ( name = TOPIC_OUTPUT_NAME ) public String topicOutputName = "Topic";
+  @Metaverse.Node ( name = TOPIC_OUTPUT_NAME, type = RESOURCE, link = LINK_INPUTS, nameFromValue = FALSE, subTransLink = SUBTRANS_INPUT )
+  @Metaverse.Property ( name = TOPIC_OUTPUT_NAME, parentNodeName = TOPIC_OUTPUT_NAME )
+  @Metaverse.NodeLink ( nodeName = TOPIC_OUTPUT_NAME, parentNodeName = MQTT_TOPIC_METAVERSE, linkDirection = "OUT" )
+  @Injection ( name = "TOPIC_OUTPUT_NAME" ) public String topicOutputName = "Topic";
 
   @Injection ( name = QOS ) public String qos = "0";
 
