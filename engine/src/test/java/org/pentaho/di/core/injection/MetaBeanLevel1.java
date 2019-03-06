@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -40,5 +40,9 @@ public class MetaBeanLevel1 {
 
   public MetaBeanLevel2 getSub() {
     return sub;
+  }
+
+  public void setSub( MetaBeanLevel2 sub ) {
+    this.sub = sub;
   }
 }
