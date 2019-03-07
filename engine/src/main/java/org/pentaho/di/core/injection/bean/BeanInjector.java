@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -32,6 +32,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.Queue;
@@ -165,7 +166,9 @@ public class BeanInjector {
       throw new KettleException( "Property '" + propName + "' not found for injection to " + root.getClass() );
     }
 
-    String dataName, dataValue;
+    String dataName;
+    String dataValue;
+
     if ( data != null ) {
       dataName = dataN;
       dataValue = null;
@@ -188,7 +191,10 @@ public class BeanInjector {
             setProperty( root, prop, i, data.get( i ), dataName, dataValue );
           }
         } else {
+          allocateCollectionField( root, info, propName );
           for ( int i = 0;; i++ ) {
+            // NOTE: case when constant value is provided and need to fill out all entries with the same value
+            // assumption is the field array/list size allocated to correct size
             boolean found = setProperty( root, prop, i, null, null, dataValue );
             if ( !found ) {
               break;
@@ -214,7 +220,7 @@ public class BeanInjector {
     Object obj = root;
     for ( int i = 1; i < prop.path.size(); i++ ) {
       BeanLevelInfo s = prop.path.get( i );
-      if ( i < prop.path.size() - 1 ) {
+      if ( i < prop.path.size() - 1 ) {       // NOTE: if prop.path.size() > 2, then @InjectionDeep field
         // get path
         Object next;
         switch ( s.dim ) {
@@ -392,6 +398,198 @@ public class BeanInjector {
     }
 
     return index < existList.size() ? existList : null;
+  }
+
+  /**
+   * Allocate the number of spaces for the {@code fieldName}, in preparation to be filled with call to
+   * {@link #setProperty(Object, String, List, String )} for constant values.
+   * @param object class that implements org.pentaho.di.trans.step.StepMetaInterface
+   * @param beanInjectionInfo
+   * @param fieldName
+   */
+  void allocateCollectionField( Object object, BeanInjectionInfo beanInjectionInfo, String fieldName ) {
+
+    BeanInjectionInfo.Property property = getProperty( beanInjectionInfo, fieldName );
+    String groupName =  ( property != null ) ? property.getGroupName() : null;
+    if ( groupName == null ) {
+      return;
+    }
+
+    List<BeanInjectionInfo.Property> groupProperties;
+    groupProperties = getGroupProperties( beanInjectionInfo, groupName );
+    Integer maxGroupSize = getMaxSize( groupProperties, object );
+
+    // not able to get numeric size
+    if ( maxGroupSize == null ) {
+      return;
+    }
+
+    // guaranteed to get at least one field for constant
+    allocateCollectionField( property, object, Math.max( 1, maxGroupSize ) );
+  }
+
+  /**
+   * Allocate the number of spaces for the {@code property} with number of space defined by {@code size}.
+   * @param property
+   * @param obj
+   * @param size
+   */
+  void allocateCollectionField( BeanInjectionInfo.Property property, Object obj, int size ) {
+    BeanLevelInfo beanLevelInfo = getFinalPath( property );
+    allocateCollectionField( beanLevelInfo, obj, size );
+  }
+
+  /**
+   * Allocate the number of spaces for the {@code property} with number of space defined by {@code size}.
+   * @param beanLevelInfo
+   * @param obj
+   * @param size
+   */
+  void allocateCollectionField( BeanLevelInfo beanLevelInfo, Object obj, int size ) {
+    try {
+      if ( isArray( beanLevelInfo ) ) {
+        // similar logic as #extendArray
+        Object newArray = Array.newInstance( beanLevelInfo.getLeafClass(), size );
+        beanLevelInfo.getField().set( obj, newArray );
+      } else { // LIST
+        // similar logic as #extendList
+        List<Object> existList = new ArrayList<>();
+        beanLevelInfo.getField().set( obj, existList );
+        while ( existList.size() < size ) {
+          existList.add( null );
+        }
+      }
+    } catch ( Exception e ) {
+      // do nothing
+    }
+  }
+
+  /**
+   * Determines if property is collection ie type list or array.
+   * @param property
+   * @return true if collection, false otherwise.
+   */
+  boolean isCollection( BeanInjectionInfo.Property property ) {
+    if ( property == null ) { // not sure if this is necessary
+      return false;
+    }
+    BeanLevelInfo beanLevelInfo = getFinalPath( property );
+    return ( beanLevelInfo != null ) ? isCollection( beanLevelInfo ) : null;
+  }
+
+  /**
+   * Determines if property is collection ie type list or array.
+   * @param beanLevelInfo
+   * @return true if collection, false otherwise.
+   */
+  boolean isCollection( BeanLevelInfo beanLevelInfo ) {
+    return isList( beanLevelInfo ) || isArray( beanLevelInfo );
+  }
+
+  /**
+   * Determines if property is array.
+   * @param beanLevelInfo
+   * @return true if collection, false otherwise.
+   */
+  boolean isArray( BeanLevelInfo beanLevelInfo ) {
+    return beanLevelInfo.getDim() == BeanLevelInfo.DIMENSION.ARRAY;
+  }
+
+  /**
+   * Determines if property is list.
+   * @param beanLevelInfo
+   * @return true if collection, false otherwise.
+   */
+  boolean isList( BeanLevelInfo beanLevelInfo ) {
+    return beanLevelInfo.getDim() == BeanLevelInfo.DIMENSION.LIST;
+  }
+
+  /**
+   * Get last path in property list.
+   * @param property
+   * @return
+   */
+  BeanLevelInfo getFinalPath( BeanInjectionInfo.Property property ) {
+    return ( !property.getPath().isEmpty() ) ? property.getPath().get( property.getPath().size() - 1 ) : null;
+  }
+
+  /**
+   * Get property by name.
+   * @param beanInjectionInfo
+   * @param fieldName
+   * @return
+   */
+  BeanInjectionInfo.Property getProperty( BeanInjectionInfo beanInjectionInfo, String fieldName ) {
+    return beanInjectionInfo.getProperties().get( fieldName );
+  }
+
+  /**
+   * Get all properties that belong to the same {@code groupName}
+   * @param beanInjectionInfo
+   * @param groupName
+   * @return
+   */
+  List<BeanInjectionInfo.Property> getGroupProperties( BeanInjectionInfo beanInjectionInfo, String groupName ) {
+    BeanInjectionInfo.Group group = beanInjectionInfo.getGroups().stream()
+       .filter( g -> g.getName().equals( groupName ) ).findFirst().orElse( null );
+
+    return ( group != null ) ? group.getGroupProperties() : new ArrayList<>();
+  }
+
+  /**
+   * Determine maximum size property in the collection of {@code properties}
+   * @param properties
+   * @param obj
+   * @return
+   */
+  Integer getMaxSize( Collection<BeanInjectionInfo.Property> properties, Object obj ) {
+    int max = Integer.MIN_VALUE;
+
+    for ( BeanInjectionInfo.Property property: properties ) {
+      max = Math.max( max,
+        ( isCollection( property )
+          ? getCollectionSize( property, obj )
+          // if not collection then field of length one
+          : 1 ) );
+    }
+
+    return ( max != Integer.MIN_VALUE ) ? max : null;
+  }
+
+  /**
+   * Determine size of {@code property}.
+   * @param property
+   * @param obj
+   * @return
+   */
+  int getCollectionSize( BeanInjectionInfo.Property property, Object obj ) {
+    BeanLevelInfo beanLevelInfo = getFinalPath( property );
+    return getCollectionSize( beanLevelInfo, obj );
+  }
+
+  /**
+   * Determine size of {@code property}.
+   * @param beanLevelInfo
+   * @param obj
+   * @return
+   */
+  int getCollectionSize( BeanLevelInfo beanLevelInfo, Object obj ) {
+    int size = -1;
+    try {
+      if ( isArray( beanLevelInfo ) ) {
+        // similar logic as BeanInjector#checkArray
+        Object existArray = beanLevelInfo.getField().get( obj );
+        size = Array.getLength( existArray );
+      } else { // LIST
+        // similar logic as BeanInjector#checkList
+        List<Object> existList = (List<Object>) beanLevelInfo.getField().get( obj );
+        size = existList.size();
+      }
+    } catch ( Exception e ) {
+      // do nothing
+    }
+
+    return size;
   }
 
   public void runPostInjectionProcessing( Object object ) {
