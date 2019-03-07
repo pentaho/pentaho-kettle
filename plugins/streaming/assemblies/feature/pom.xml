@@ -16,10 +16,6 @@
 
   <name>Pentaho Streaming Plugin Feature</name>
 
-  <properties>
-    <bndlib.version>2.4.0</bndlib.version>
-    <artemis.version>2.5.0</artemis.version>
-  </properties>
 
   <dependencies>
     <dependency>
@@ -33,4 +29,29 @@
       <version>${project.version}</version>
     </dependency>
   </dependencies>
+
+  <build>
+    <pluginManagement>
+      <plugins>
+        <plugin>
+          <groupId>org.apache.karaf.tooling</groupId>
+          <artifactId>karaf-maven-plugin</artifactId>
+          <version>${karaf-maven-plugin.version}</version>
+          <configuration>
+            <excludedArtifactIds>
+              <!--
+                   These exclusions can not be done at the POM dependency management level
+                   because their transitives are being brought into the feature. Eventually we should find a better
+                   alternative such as providing activeMQ artemis through a proper feature.
+              -->
+              <artifact>artemis-commons</artifact>
+              <artifact>artemis-core-client</artifact>
+              <artifact>artemis-jms-client</artifact>
+              <artifact>artemis-selector</artifact>
+            </excludedArtifactIds>
+          </configuration>
+        </plugin>
+      </plugins>
+    </pluginManagement>
+  </build>
 </project>
