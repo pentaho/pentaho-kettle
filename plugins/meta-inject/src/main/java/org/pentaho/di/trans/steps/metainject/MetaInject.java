@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -395,11 +395,10 @@ public class MetaInject extends BaseStep implements StepInterface {
     BeanInjector injector = new BeanInjector( injectionInfo );
 
     // Collect all the metadata for this target step...
-    //
-    Map<TargetStepAttribute, SourceStepField> targetMap = meta.getTargetSourceMapping();
-    for ( TargetStepAttribute target : targetMap.keySet() ) {
-      SourceStepField source = targetMap.get( target );
-
+    boolean wasInjection = false;
+    for ( Map.Entry<TargetStepAttribute, SourceStepField> entry  : meta.getTargetSourceMapping().entrySet() ) {
+      TargetStepAttribute target = entry.getKey();
+      SourceStepField source = entry.getValue();
       if ( target.getStepname().equalsIgnoreCase( targetStep ) ) {
         // This is the step to collect data for...
         // We also know which step to read the data from. (source)
@@ -409,6 +408,7 @@ public class MetaInject extends BaseStep implements StepInterface {
           if ( injector.hasProperty( targetStepMeta, target.getAttributeKey() ) ) {
             // target step has specified key
             injector.setProperty( targetStepMeta, target.getAttributeKey(), null, source.getField() );
+            wasInjection = true;
           } else {
             // target step doesn't have specified key - just report but don't fail like in 6.0 (BACKLOG-6753)
             logError( BaseMessages.getString( PKG, "MetaInject.TargetKeyIsNotDefined.Message", target.getAttributeKey(),
@@ -416,6 +416,10 @@ public class MetaInject extends BaseStep implements StepInterface {
           }
         }
       }
+    }
+    // NOTE: case when only 1 field out of group is supplied constant, need to populate other fields
+    if ( wasInjection ) {
+      injector.runPostInjectionProcessing( targetStepMeta );
     }
   }
 
