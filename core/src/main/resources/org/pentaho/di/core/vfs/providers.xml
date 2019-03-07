@@ -55,13 +55,11 @@
         <scheme name="ftps"/>
         <if-available class-name="org.apache.commons.net.ftp.FTPFile"/>
     </provider>
-    <provider class-name="org.apache.commons.vfs2.provider.http.HttpFileProvider">
+    <provider class-name="org.apache.commons.vfs2.provider.http4.Http4FileProvider">
         <scheme name="http"/>
-        <if-available class-name="org.apache.commons.httpclient.HttpClient"/>
     </provider>
-    <provider class-name="org.apache.commons.vfs2.provider.https.HttpsFileProvider">
+    <provider class-name="org.apache.commons.vfs2.provider.http4s.Http4sFileProvider">
         <scheme name="https"/>
-        <if-available class-name="org.apache.commons.httpclient.HttpClient"/>
     </provider>
 
     <!-- Custom Sftp provider -->
