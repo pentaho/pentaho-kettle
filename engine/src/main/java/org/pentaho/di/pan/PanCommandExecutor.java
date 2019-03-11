@@ -57,6 +57,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 public class PanCommandExecutor extends AbstractBaseCommandExecutor {
 
@@ -69,10 +70,7 @@ public class PanCommandExecutor extends AbstractBaseCommandExecutor {
     setLog( log );
   }
 
-  public Result execute( String repoName, String noRepo, String username, String trustUser, String password, String dirName,
-                         String filename, String jarFile, String transName, String listTrans, String listDirs, String exportRepo,
-                         String initialDir, String listRepos, String safemode, String metrics, String listParams, String resultSetStepName,
-                         String resultSetCopyNumber, NamedParams params, String[] arguments ) throws Throwable {
+  public Result execute( final TransParams p ) throws Throwable {
 
     getLog().logMinimal( BaseMessages.getString( getPkgClazz(), "Pan.Log.StartingToRun" ) );
 
@@ -94,11 +92,11 @@ public class PanCommandExecutor extends AbstractBaseCommandExecutor {
       logDebug( "Pan.Log.StartingToLookOptions" );
 
       // Read kettle transformation specified
-      if ( !Utils.isEmpty( repoName ) || !Utils.isEmpty( filename ) || !Utils.isEmpty( jarFile ) ) {
+      if ( !Utils.isEmpty( p.getRepoName() ) || !Utils.isEmpty( p.getLocalFile() ) || !Utils.isEmpty(  p.getLocalJarFile() ) ) {
 
         logDebug( "Pan.Log.ParsingCommandline" );
 
-        if ( !Utils.isEmpty( repoName ) && !isEnabled( noRepo ) ) {
+        if ( !Utils.isEmpty( p.getRepoName() ) && !isEnabled( p.getBlockRepoConns() ) ) {
 
           /**
            * if set, _trust_user_ needs to be considered. See pur-plugin's:
@@ -106,29 +104,29 @@ public class PanCommandExecutor extends AbstractBaseCommandExecutor {
            * @link https://github.com/pentaho/pentaho-kettle/blob/8.0.0.0-R/plugins/pur/core/src/main/java/org/pentaho/di/repository/pur/PurRepositoryConnector.java#L97-L101
            * @link https://github.com/pentaho/pentaho-kettle/blob/8.0.0.0-R/plugins/pur/core/src/main/java/org/pentaho/di/repository/pur/WebServiceManager.java#L130-L133
            */
-          if ( isEnabled( trustUser ) ) {
+          if ( isEnabled( p.getTrustRepoUser() ) ) {
             System.setProperty( "pentaho.repository.client.attemptTrust", YES );
           }
 
           // In case we use a repository...
           // some commands are to load a Trans from the repo; others are merely to print some repo-related information
-          RepositoryMeta repositoryMeta = loadRepositoryConnection( repoName, "Pan.Log.LoadingAvailableRep", "Pan.Error.NoRepsDefined", "Pan.Log.FindingRep" );
+          RepositoryMeta repositoryMeta = loadRepositoryConnection( p.getRepoName(), "Pan.Log.LoadingAvailableRep", "Pan.Error.NoRepsDefined", "Pan.Log.FindingRep" );
 
-          repository = establishRepositoryConnection( repositoryMeta, username, password, RepositoryOperation.EXECUTE_TRANSFORMATION );
+          repository = establishRepositoryConnection( repositoryMeta, p.getRepoUsername(), p.getRepoPassword(), RepositoryOperation.EXECUTE_TRANSFORMATION );
 
-          trans = executeRepositoryBasedCommand( repository, repositoryMeta, dirName, transName, listTrans, listDirs, exportRepo );
+          trans = executeRepositoryBasedCommand( repository, repositoryMeta, p.getInputDir(), p.getInputFile(), p.getListRepoFiles(), p.getListRepoDirs(), p.getExportRepo() );
         }
 
 
         // Try to load the transformation from file, even if it failed to load from the repository
         // You could implement some fail-over mechanism this way.
         if ( trans == null ) {
-          trans = executeFilesystemBasedCommand( initialDir, filename, jarFile );
+          trans = executeFilesystemBasedCommand( p.getLocalInitialDir(), p.getLocalFile(),  p.getLocalJarFile() );
         }
 
       }
 
-      if ( isEnabled( listRepos ) ) {
+      if ( isEnabled( p.getListRepos() ) ) {
         printRepositories( loadRepositoryInfo( "Pan.Log.LoadingAvailableRep", "Pan.Error.NoRepsDefined" ) ); // list the repositories placed at repositories.xml
       }
 
@@ -146,7 +144,7 @@ public class PanCommandExecutor extends AbstractBaseCommandExecutor {
 
     if ( trans == null ) {
 
-      if ( !isEnabled( listTrans ) && !isEnabled( listDirs ) && !isEnabled( listRepos ) && Utils.isEmpty( exportRepo ) ) {
+      if ( !isEnabled( p.getListRepoFiles() ) && !isEnabled( p.getListRepoDirs() ) && !isEnabled( p.getListRepos() ) && Utils.isEmpty(  p.getExportRepo() ) ) {
 
         System.out.println( BaseMessages.getString( getPkgClazz(), "Pan.Error.CanNotLoadTrans" ) );
         return exitWithStatus( CommandExecutorCodes.Pan.COULD_NOT_LOAD_TRANS.getCode() );
@@ -158,13 +156,13 @@ public class PanCommandExecutor extends AbstractBaseCommandExecutor {
     try {
 
       trans.setLogLevel( getLog().getLogLevel() );
-      configureParameters( trans, params, trans.getTransMeta() );
+      configureParameters( trans,  p.getNamedParams(), trans.getTransMeta() );
 
-      trans.setSafeModeEnabled( isEnabled( safemode ) ); // run in safe mode if requested
-      trans.setGatheringMetrics( isEnabled( metrics ) ); // enable kettle metric gathering if requested
+      trans.setSafeModeEnabled( isEnabled( p.getSafeMode() ) ); // run in safe mode if requested
+      trans.setGatheringMetrics( isEnabled( p.getMetrics() ) ); // enable kettle metric gathering if requested
 
       // List the parameters defined in this transformation, and then simply exit
-      if ( isEnabled( listParams ) ) {
+      if ( isEnabled(  p.getListFileParams() ) ) {
 
         printTransformationParameters( trans );
 
@@ -176,16 +174,16 @@ public class PanCommandExecutor extends AbstractBaseCommandExecutor {
 
       // allocate & run the required sub-threads
       try {
-        trans.prepareExecution( arguments );
+        trans.prepareExecution( convert( p.asMap() ) );
 
-        if ( !StringUtils.isEmpty( resultSetStepName ) ) {
+        if ( !StringUtils.isEmpty( p.getResultSetStepName() ) ) {
 
-          int copyNr = NumberUtils.isNumber( resultSetCopyNumber ) ? Integer.parseInt( resultSetCopyNumber ) : 0 /* default */;
+          int copyNr = NumberUtils.isNumber( p.getResultSetCopyNumber() ) ? Integer.parseInt( p.getResultSetCopyNumber() ) : 0 /* default */;
 
-          logDebug( "Collecting result-set for step '" +  resultSetStepName + "' and copy number " + copyNr );
+          logDebug( "Collecting result-set for step '" +  p.getResultSetStepName() + "' and copy number " + copyNr );
 
           StepInterface step = null;
-          if ( ( step = trans.findRunThread( resultSetStepName ) ) != null && step.getCopy() == copyNr ) {
+          if ( ( step = trans.findRunThread( p.getResultSetStepName() ) ) != null && step.getCopy() == copyNr ) {
             step.addRowListener( new RowAdapter() {
               @Override
               public void rowWrittenEvent( RowMetaInterface rowMeta, Object[] data ) throws KettleStepException {
@@ -258,7 +256,7 @@ public class PanCommandExecutor extends AbstractBaseCommandExecutor {
       if ( repository != null ) {
         repository.disconnect();
       }
-      if ( isEnabled( trustUser ) ) {
+      if ( isEnabled( p.getTrustRepoUser() ) ) {
         System.clearProperty( "pentaho.repository.client.attemptTrust" ); // we set it, now we sanitize it
       }
     }
@@ -470,6 +468,17 @@ public class PanCommandExecutor extends AbstractBaseCommandExecutor {
         }
       }
     }
+  }
+
+  protected String[] convert( Map<String, String> map ) {
+
+    List<String> list = new ArrayList<>();
+
+    if ( map != null ) {
+      map.keySet().forEach( key -> list.add( key + "=" + map.get( key ) ) );
+    }
+
+    return list.toArray( new String[] {} );
   }
 }
 
