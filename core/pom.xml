@@ -28,6 +28,7 @@
     <xml-apis-ext.version>1.3.04</xml-apis-ext.version>
     <commons-collections.version>3.2.2</commons-collections.version>
     <commons-lang.version>2.6</commons-lang.version>
+    <commons-vfs2.version>2.2</commons-vfs2.version>
     <commons-io.version>2.2</commons-io.version>
     <commons-dbcp.version>1.4</commons-dbcp.version>
     <commons-pool.version>1.5.7</commons-pool.version>
@@ -43,6 +44,7 @@
     <org.apache.karaf.main.version>3.0.3</org.apache.karaf.main.version>
     <simple-jndi.version>1.0.2</simple-jndi.version>
     <woodstox-core-asl.version>4.4.1</woodstox-core-asl.version>
+    <httpclient.version>4.5.3</httpclient.version>
     <httpccore.version>4.4.6</httpccore.version>
     <xmlunit.version>1.5</xmlunit.version>
   </properties>

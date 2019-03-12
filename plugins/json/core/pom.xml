@@ -19,6 +19,7 @@
     <pentaho-metaverse.version>8.3.0.0-SNAPSHOT</pentaho-metaverse.version>
     <platform.version>8.3.0.0-SNAPSHOT</platform.version>
     <commons.io.version>1.4</commons.io.version>
+    <commons-vfs2.version>2.2</commons-vfs2.version>
     <commons-codec.version>1.9</commons-codec.version>
     <commons-lang.version>2.6</commons-lang.version>
     <encoder.version>1.2</encoder.version>
