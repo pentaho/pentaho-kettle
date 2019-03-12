@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -27,7 +27,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
+import org.apache.commons.lang.StringUtils;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleFileException;
@@ -873,5 +876,30 @@ public class TextFileInputUtils {
     }
 
     return strings;
+  }
+
+  /**
+   * Finds a pattern within a String returning the occurrences number
+   *
+   * @param text String to be evaluated
+   * @param regex String pattern
+   * @return pattern occurrences number
+   */
+  public static int checkPattern( String text, String regex ) {
+
+    int matches = 0;
+
+    if ( StringUtils.isBlank( text ) ) {
+      return matches;
+    }
+
+    Pattern pattern = Pattern.compile( regex );
+    Matcher matcher = pattern.matcher( text );
+
+    while ( matcher.find() ) {
+      matches++;
+    }
+
+    return matches;
   }
 }
