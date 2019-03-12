@@ -31,12 +31,15 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.trans.SubtransExecutor;
 import org.pentaho.di.trans.streaming.api.StreamWindow;
+import org.pentaho.di.core.Const;
 
 import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadPoolExecutor;
 import java.util.stream.Collectors;
 
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
@@ -53,10 +56,12 @@ public class FixedTimeStreamWindow<I extends List> implements StreamWindow<I, Re
   private SubtransExecutor subtransExecutor;
   private int parallelism;
   private final Consumer<Map.Entry<List<I>, Result>> postProcessor;
+  private int sharedStreamingBatchPoolSize = 0;
+  private static ThreadPoolExecutor sharedStreamingBatchPool;
 
   public FixedTimeStreamWindow( SubtransExecutor subtransExecutor, RowMetaInterface rowMeta, long millis,
                                 int batchSize, int parallelism ) {
-    this( subtransExecutor, rowMeta, millis, batchSize, parallelism, ( p) -> { } );
+    this( subtransExecutor, rowMeta, millis, batchSize, parallelism, ( p ) -> { } );
   }
 
   public FixedTimeStreamWindow( SubtransExecutor subtransExecutor, RowMetaInterface rowMeta, long millis,
@@ -67,6 +72,22 @@ public class FixedTimeStreamWindow<I extends List> implements StreamWindow<I, Re
     this.batchSize = batchSize;
     this.parallelism = parallelism;
     this.postProcessor = postProcessor;
+
+    try {
+      sharedStreamingBatchPoolSize = Integer.parseInt( System.getProperties().getProperty( Const.SHARED_STREAMING_BATCH_POOL_SIZE, "0" ) );
+      if ( sharedStreamingBatchPoolSize > 0 ) {
+        if ( sharedStreamingBatchPool == null ) {
+          sharedStreamingBatchPool = (ThreadPoolExecutor) Executors.newFixedThreadPool( sharedStreamingBatchPoolSize );
+        } else {
+          if ( sharedStreamingBatchPool.getCorePoolSize() != sharedStreamingBatchPoolSize ) {
+            sharedStreamingBatchPool.setCorePoolSize( sharedStreamingBatchPoolSize );
+            sharedStreamingBatchPool.setMaximumPoolSize( sharedStreamingBatchPoolSize );
+          }
+        }
+      }
+    } catch ( NumberFormatException e ) {
+      sharedStreamingBatchPoolSize = 0;
+    }
   }
 
   @Override public Iterable<Result> buffer( Flowable<I> flowable ) {
@@ -76,7 +97,7 @@ public class FixedTimeStreamWindow<I extends List> implements StreamWindow<I, Re
       : flowable.buffer( batchSize );
     return buffer
       .parallel( parallelism )
-      .runOn( Schedulers.io() )
+      .runOn( sharedStreamingBatchPoolSize > 0 ? Schedulers.from( sharedStreamingBatchPool ) : Schedulers.io() )
       .filter( list -> !list.isEmpty() )
       .map( this::sendBufferToSubtrans )
       .filter( Optional::isPresent )
