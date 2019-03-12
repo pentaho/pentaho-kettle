@@ -18,6 +18,7 @@
         <project.http.version>1.22.0</project.http.version>
         <project.oauth.version>1.22.0</project.oauth.version>
         <!--project.build.sourceEncoding>UTF-8</project.build.sourceEncoding-->
+        <project.commons-vfs2.version>2.2</project.commons-vfs2.version>
         <project.junit.version>4.4</project.junit.version>
         <project.mockito.version>1.8.4</project.mockito.version>
         <pdi.version>8.3.0.0-SNAPSHOT</pdi.version>
@@ -60,7 +61,7 @@
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-vfs2</artifactId>
-            <version>${commons-vfs2.version}</version>
+            <version>${project.commons-vfs2.version}</version>
         </dependency>
         <dependency>
             <groupId>junit</groupId>
