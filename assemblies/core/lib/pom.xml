@@ -39,8 +39,6 @@
         <sapdbc.version>7.4.4</sapdbc.version>
         <sqlite-jdbc.version>3.7.2</sqlite-jdbc.version>
         <geronimo-servlet_3.0_spec.version>1.0</geronimo-servlet_3.0_spec.version>
-        <slf4j-api.version>1.7.7</slf4j-api.version>
-        <slf4j-log4j12.version>1.7.7</slf4j-log4j12.version>
         <apache-log4j-extras>1.2.17</apache-log4j-extras>
         <webservices-api.version>2.3.1</webservices-api.version>
         <webservices-rt.version>2.3.1</webservices-rt.version>
@@ -502,12 +500,10 @@
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
-            <version>${slf4j-api.version}</version>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-log4j12</artifactId>
-            <version>${slf4j-log4j12.version}</version>
         </dependency>
         <dependency>
             <groupId>org.glassfish.metro</groupId>
