@@ -67,9 +67,6 @@ BUILD_ORDER_REPORT: true
 
 # SCM
 SCM_CREDENTIALS_ID: github-buildguy
-SCM_HOST_ROOT: https://github.com
-PENTAHO_SCM_ROOT: https://github.com/pentaho
-WEBDETAILS_SCM_ROOT: https://github.com/webdetails
 DEFAULT_BRANCH: master
 
 # Checkouts

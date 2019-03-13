@@ -11,21 +11,21 @@ jobGroups:
   100:
 
      - jobID           :  pdi-daemon
-       scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-ee.git
+       scmUrl          :  https://github.com/pentaho/pentaho-ee.git
        scmBranch       :  ${DEFAULT_BRANCH}
        root            :  adaptive-execution
 
   200:
 
      - jobID           :  karaf-assembly-ee
-       scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-karaf-ee-assembly.git
+       scmUrl          :  https://github.com/pentaho/pentaho-karaf-ee-assembly.git
        scmBranch       :  ${DEFAULT_BRANCH}
        versionProperty :  pentaho-karaf.version
 
   300:
 
       - jobID           :  pdi-client-assembly-ee
-        scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-ee.git
+        scmUrl          :  https://github.com/pentaho/pentaho-ee.git
         scmBranch       :  ${DEFAULT_BRANCH}
         directives      :  += -Deula-wrap
         versionProperty :  pdi.version

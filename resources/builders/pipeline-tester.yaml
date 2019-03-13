@@ -11,7 +11,7 @@ jobGroups:
   100:
 
      - jobID           :  coding-standards
-       scmUrl          :  ${PENTAHO_SCM_ROOT}/pentaho-coding-standards.git
+       scmUrl          :  https://github.com/pentaho/pentaho-coding-standards.git
        scmBranch       :  ${DEFAULT_BRANCH}
        versionProperty :  coding-standards.version
        testable        :  false
@@ -19,7 +19,7 @@ jobGroups:
   200:
 
      - jobID           :  parent-poms
-       scmUrl          :  ${PENTAHO_SCM_ROOT}/maven-parent-poms.git
+       scmUrl          :  https://github.com/pentaho/maven-parent-poms.git
        scmBranch       :  ${DEFAULT_BRANCH}
        versionProperty :  pentaho.version
        testable        :  false
@@ -27,12 +27,12 @@ jobGroups:
   300:
 
      - jobID           :  archetypes
-       scmUrl          :  ${PENTAHO_SCM_ROOT}/maven-project-archetypes.git
+       scmUrl          :  https://github.com/pentaho/maven-project-archetypes.git
        scmBranch       :  ${DEFAULT_BRANCH}
        versionProperty :  archetypes.version
        testable        :  false
 
      - jobID           :  parent-poms-ee
-       scmUrl          :  ${PENTAHO_SCM_ROOT}/maven-parent-poms-ee.git
+       scmUrl          :  https://github.com/pentaho/maven-parent-poms-ee.git
        scmBranch       :  ${DEFAULT_BRANCH}
        testable        :  false
