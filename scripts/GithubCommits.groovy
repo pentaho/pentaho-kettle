@@ -33,7 +33,7 @@ class GithubCommits {
     def numRespositoriesChanged = 0
     def numMergedPullRequests = 0
 
-    List<GithubProject> githubProjects = GithubProject.parseGithubProjectsCsv();
+    List<GithubProject> githubProjects = GithubProject.parse();
     for (GithubProject githubProject : githubProjects) {
 
       if ( !githubProject.getProjectType().equals("RELEASE") ) {
