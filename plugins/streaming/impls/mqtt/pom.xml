@@ -58,7 +58,6 @@
     <maven-bundle-plugin.version>2.4.0</maven-bundle-plugin.version>
     <junit.version>4.12</junit.version>
     <guava.version>17.0</guava.version>
-    <slf4j.version>1.7.25</slf4j.version>
     <activemq.version>5.13.1</activemq.version>
     <paho.version>1.2.0</paho.version>
     <powermock.version>1.6.6</powermock.version>
@@ -101,14 +100,6 @@
       <artifactId>org.eclipse.paho.client.mqttv3</artifactId>
       <version>${paho.version}</version>
     </dependency>
-
-    <dependency>
-      <groupId>org.slf4j</groupId>
-      <artifactId>slf4j-api</artifactId>
-      <version>${slf4j.version}</version>
-      <scope>provided</scope>
-    </dependency>
-
 
     <dependency>
       <groupId>junit</groupId>

@@ -23,7 +23,6 @@
     <platform.version>8.3.0.0-SNAPSHOT</platform.version>
     <pentaho-osgi-bundles.version>8.3.0.0-SNAPSHOT</pentaho-osgi-bundles.version>
     <pdi-pur-plugin.version>8.3.0.0-SNAPSHOT</pdi-pur-plugin.version>
-    <slf4j-api.version>1.7.7</slf4j-api.version>
     <junit.version>4.11</junit.version>
     <mockito-core.version>1.9.5</mockito-core.version>
   </properties>
@@ -56,8 +55,6 @@
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-api</artifactId>
-      <version>${slf4j-api.version}</version>
-      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>pentaho</groupId>
