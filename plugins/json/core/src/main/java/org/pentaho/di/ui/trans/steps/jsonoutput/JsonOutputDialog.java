@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -401,12 +401,12 @@ public class JsonOutputDialog extends BaseStepDialog implements StepDialogInterf
     wbFilename.addSelectionListener( new SelectionAdapter() {
       public void widgetSelected( SelectionEvent e ) {
         FileDialog dialog = new FileDialog( shell, SWT.SAVE );
-        dialog.setFilterExtensions( new String[] { "*.js", "*.JS", "*" } );
+        dialog.setFilterExtensions( new String[] { "*.js;*.JS;*.json;*.JSON", "*" } );
         if ( wFilename.getText() != null ) {
           dialog.setFileName( transMeta.environmentSubstitute( wFilename.getText() ) );
         }
-        dialog.setFilterNames( new String[] { BaseMessages.getString( PKG, "System.FileType.TextFiles" ),
-          BaseMessages.getString( PKG, "System.FileType.CSVFiles" ),
+        dialog.setFilterNames( new String[] {
+          BaseMessages.getString( PKG, "System.FileType.JsonFiles" ),
           BaseMessages.getString( PKG, "System.FileType.AllFiles" ) } );
         if ( dialog.open() != null ) {
           String extension = wExtension.getText();
