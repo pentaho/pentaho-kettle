@@ -5094,6 +5094,10 @@ public class ValueMetaBase implements ValueMetaInterface {
               if ( precision >= length ) {
                 precision = -1;
                 length = -1;
+                // MySQL: Double value is giving length of 22,
+                // that exceeds the maximum length.
+              } else if ( originalColumnType == java.sql.Types.DOUBLE && length > 15 ) {
+                length = -1;
               }
             }
 
