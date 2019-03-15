@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -285,7 +285,6 @@ public class ExcelWriterStep extends BaseStep implements StepInterface {
         data.wb.setForceFormulaRecalculation( true );
       }
     }
-
   }
 
   public void writeNextLine( Object[] r ) throws KettleException {
@@ -341,7 +340,6 @@ public class ExcelWriterStep extends BaseStep implements StepInterface {
       cmt.setString( str );
       cmt.setAuthor( author );
       return cmt;
-
     }
     return null;
   }
@@ -369,7 +367,6 @@ public class ExcelWriterStep extends BaseStep implements StepInterface {
     }
     Cell styleCell = xlsRow.getCell( cellRef.getCol() );
     return styleCell;
-
   }
 
   //VisibleForTesting
@@ -453,23 +450,22 @@ public class ExcelWriterStep extends BaseStep implements StepInterface {
             if ( data.getCachedLinkStyle( fieldNr ) != null ) {
               cell.setCellStyle( data.getCachedLinkStyle( fieldNr ) );
             } else {
-              // CellStyle style = cell.getCellStyle();
               Font origFont = data.wb.getFontAt( cell.getCellStyle().getFontIndex() );
-              Font hlink_font = data.wb.createFont();
-              // reporduce original font characteristics
+              Font hlinkFont = data.wb.createFont();
+              // reproduce original font characteristics
 
-              hlink_font.setBold( origFont.getBold() );
-              hlink_font.setCharSet( origFont.getCharSet() );
-              hlink_font.setFontHeight( origFont.getFontHeight() );
-              hlink_font.setFontName( origFont.getFontName() );
-              hlink_font.setItalic( origFont.getItalic() );
-              hlink_font.setStrikeout( origFont.getStrikeout() );
-              hlink_font.setTypeOffset( origFont.getTypeOffset() );
+              hlinkFont.setBold( origFont.getBold() );
+              hlinkFont.setCharSet( origFont.getCharSet() );
+              hlinkFont.setFontHeight( origFont.getFontHeight() );
+              hlinkFont.setFontName( origFont.getFontName() );
+              hlinkFont.setItalic( origFont.getItalic() );
+              hlinkFont.setStrikeout( origFont.getStrikeout() );
+              hlinkFont.setTypeOffset( origFont.getTypeOffset() );
               // make it blue and underlined
-              hlink_font.setUnderline( Font.U_SINGLE );
-              hlink_font.setColor( IndexedColors.BLUE.getIndex() );
+              hlinkFont.setUnderline( Font.U_SINGLE );
+              hlinkFont.setColor( IndexedColors.BLUE.getIndex() );
               CellStyle style = cell.getCellStyle();
-              style.setFont( hlink_font );
+              style.setFont( hlinkFont );
               cell.setCellStyle( style );
               data.cacheLinkStyle( fieldNr, cell.getCellStyle() );
             }
@@ -503,12 +499,6 @@ public class ExcelWriterStep extends BaseStep implements StepInterface {
               cell.setCellValue( vMeta.getBoolean( v ) );
             }
             break;
-          case ValueMetaInterface.TYPE_STRING:
-          case ValueMetaInterface.TYPE_BINARY:
-            if ( v != null ) {
-              cell.setCellValue( vMeta.getString( v ) );
-            }
-            break;
           case ValueMetaInterface.TYPE_BIGNUMBER:
           case ValueMetaInterface.TYPE_NUMBER:
           case ValueMetaInterface.TYPE_INTEGER:
@@ -517,6 +507,10 @@ public class ExcelWriterStep extends BaseStep implements StepInterface {
             }
             break;
           default:
+            // fallthrough: output the data value as a string
+            if ( v != null ) {
+              cell.setCellValue( vMeta.getString( v ) );
+            }
             break;
         }
       }
