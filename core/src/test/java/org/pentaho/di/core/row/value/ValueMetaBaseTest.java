@@ -1524,4 +1524,15 @@ public class ValueMetaBaseTest {
     ValueMetaInterface valueMeta = valueMetaBase.getMetadataPreview( dbMeta, resultSet );
     assertTrue( valueMeta.isString() );
   }
+
+  @Test
+  public void testMetdataPreviewSqlDoubleToPentahoNumberUsingMySQL() throws SQLException, KettleDatabaseException {
+    doReturn( Types.DOUBLE ).when( resultSet ).getInt( "DATA_TYPE" );
+    doReturn( 22 ).when( resultSet ).getInt( "COLUMN_SIZE" );
+    doReturn( mock( MySQLDatabaseMeta.class ) ).when( dbMeta ).getDatabaseInterface();
+    doReturn( true ).when( dbMeta ).isMySQLVariant();
+    ValueMetaInterface valueMeta = valueMetaBase.getMetadataPreview( dbMeta, resultSet );
+    assertTrue( valueMeta.isNumber() );
+    assertEquals( -1, valueMeta.getLength() );
+  }
 }
