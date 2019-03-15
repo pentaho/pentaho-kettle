@@ -38,7 +38,7 @@ node('non-master') {
               job.trigger('engops/github-commits', suiteParameters, false)
             },
             'github-commits-pipeline': {
-              job.trigger('engops/github-commits-pipeline', suiteParameters, false)
+              job.trigger('engops/github-commits-pipelines', suiteParameters, false)
             },
             'remote-ip-job-trigger': {
               job.trigger('engops/remote-ip-job-trigger', suiteParameters, false)
