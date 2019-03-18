@@ -341,7 +341,7 @@ public class TransExecutor extends BaseStep implements StepInterface {
 
     Trans trans = getExecutorTrans();
     StepWithMappingMeta
-        .activateParams( trans, trans, this, trans.listParameters(), parameters.getVariable(), inputFieldValues );
+        .activateParams( trans, trans, this, trans.listParameters(), parameters.getVariable(), inputFieldValues, meta.getParameters().isInheritingAllVariables() );
   }
 
   @VisibleForTesting

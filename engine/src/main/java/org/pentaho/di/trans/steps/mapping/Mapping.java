@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -537,7 +537,7 @@ public class Mapping extends BaseStep implements StepInterface {
     if ( mappingParameters != null ) {
       StepWithMappingMeta
         .activateParams( data.mappingTrans, data.mappingTrans, this, data.mappingTransMeta.listParameters(),
-          mappingParameters.getVariable(), mappingParameters.getInputField() );
+          mappingParameters.getVariable(), mappingParameters.getInputField(), meta.getMappingParameters().isInheritingAllVariables() );
     }
 
   }
