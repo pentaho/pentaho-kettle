@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -294,7 +294,7 @@ public class SimpleMappingMeta extends StepWithMappingMeta implements StepMetaIn
       // This just means: set a number of variables or parameter values:
       //
       StepWithMappingMeta.activateParams( mappingTransMeta, mappingTransMeta, space, mappingTransMeta.listParameters(),
-        mappingParameters.getVariable(), mappingParameters.getInputField() );
+        mappingParameters.getVariable(), mappingParameters.getInputField(), mappingParameters.isInheritingAllVariables() );
     }
 
     // Keep track of all the fields that need renaming...

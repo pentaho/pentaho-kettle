@@ -383,7 +383,7 @@ public class JobExecutor extends BaseStep implements StepInterface {
     }
 
     StepWithMappingMeta.activateParams( data.executorJob, data.executorJob, this, data.executorJob.listParameters(),
-      parameters.getVariable(), parameters.getInput() );
+      parameters.getVariable(), parameters.getInput(), meta.getParameters().isInheritingAllVariables() );
   }
 
   public boolean init( StepMetaInterface smi, StepDataInterface sdi ) {
