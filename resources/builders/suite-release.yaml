@@ -8,6 +8,8 @@ buildProperties:
         ARCHIVE_ARTIFACTS_PATTERN      : '**/{target/*.gz,target/*.zip}'
         BUILD_RETRIES                  : 3
         ATTACH_LOGS                    : false
+        USE_MINION_JOBS                : true
+        MINION_POLL_CRON_INTERVAL      :
 
         # Maven
         MAVEN_DEFAULT_DIRECTIVES       : clean deploy
