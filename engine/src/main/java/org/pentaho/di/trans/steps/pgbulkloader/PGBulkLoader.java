@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -437,6 +437,13 @@ public class PGBulkLoader extends BaseStep implements StepInterface {
 
   }
 
+  protected void verifyDatabaseConnection() throws KettleException {
+    // Confirming Database Connection is defined.
+    if ( meta.getDatabaseMeta() == null ) {
+      throw new KettleException( BaseMessages.getString( PKG, "PGBulkLoaderMeta.GetSQL.NoConnectionDefined" ) );
+    }
+  }
+
   public boolean init( StepMetaInterface smi, StepDataInterface sdi ) {
     meta = (PGBulkLoaderMeta) smi;
     data = (PGBulkLoaderData) sdi;
@@ -445,6 +452,15 @@ public class PGBulkLoader extends BaseStep implements StepInterface {
     String separator = environmentSubstitute( meta.getDelimiter() );
 
     if ( super.init( smi, sdi ) ) {
+
+      // Confirming Database Connection is defined.
+      try {
+        verifyDatabaseConnection();
+      } catch ( KettleException ex ) {
+        logError( ex.getMessage() );
+        return false;
+      }
+
       if ( enclosure != null ) {
         data.quote = enclosure.getBytes();
       } else {

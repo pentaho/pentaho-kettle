@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -118,6 +118,13 @@ public class InfobrightLoader extends BaseStep implements StepInterface {
     return true;
   }
 
+  protected void verifyDatabaseConnection() throws KettleException {
+    // Confirming Database Connection is defined.
+    if ( meta.getDatabaseMeta() == null ) {
+      throw new KettleException( BaseMessages.getString( PKG, "InfobrightLoaderMeta.GetSQL.NoConnectionDefined" ) );
+    }
+  }
+
   /**
    * {@inheritDoc}
    *
@@ -131,6 +138,7 @@ public class InfobrightLoader extends BaseStep implements StepInterface {
 
     if ( super.init( smi, sdi ) ) {
       try {
+        verifyDatabaseConnection();
         data.databaseSetup( meta, this );
         res = true;
 

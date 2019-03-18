@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -132,6 +132,13 @@ public class TeraFast extends AbstractStep implements StepInterface {
     return builder.toString();
   }
 
+  protected void verifyDatabaseConnection() throws KettleException {
+    // Confirming Database Connection is defined.
+    if ( this.meta.getDbMeta() == null ) {
+      throw new KettleException( BaseMessages.getString( PKG, "TeraFastDialog.GetSQL.NoConnectionDefined" ) );
+    }
+  }
+
   /**
    * {@inheritDoc}
    *
@@ -143,7 +150,16 @@ public class TeraFast extends AbstractStep implements StepInterface {
     this.meta = (TeraFastMeta) smi;
     // this.data = (GenericStepData) sdi;
     simpleDateFormat = new SimpleDateFormat( FastloadControlBuilder.DEFAULT_DATE_FORMAT );
-    return super.init( smi, sdi );
+    if ( super.init( smi, sdi ) ) {
+      try {
+        verifyDatabaseConnection();
+      } catch ( KettleException ex ) {
+        logError( ex.getMessage() );
+        return false;
+      }
+      return true;
+    }
+    return false;
   }
 
   /**
@@ -160,11 +176,14 @@ public class TeraFast extends AbstractStep implements StepInterface {
     Object[] row = getRow();
     if ( row == null ) {
 
-      this.dataFilePrintStream.close();
-
-      IOUtils.closeQuietly( this.dataFile );
-
-      this.execute();
+      /* In case we have no data, we need to ensure that the printstream was ever initialized. It will if there is
+      *  data. So we check for a null printstream, then we close the dataFile and execute only if it existed.
+      */
+      if ( this.dataFilePrintStream != null ) {
+        this.dataFilePrintStream.close();
+        IOUtils.closeQuietly( this.dataFile );
+        this.execute();
+      }
 
       setOutputDone();
 
