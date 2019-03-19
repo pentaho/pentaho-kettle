@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -118,8 +118,8 @@ public class Splash {
 
         try {
           BufferedReader reader =
-              new BufferedReader( new InputStreamReader( Splash.class.getClassLoader().getResourceAsStream(
-                  "org/pentaho/di/ui/core/dialog/license/license.txt" ) ) );
+            new BufferedReader( new InputStreamReader( Splash.class.getClassLoader().getResourceAsStream(
+              "org/pentaho/di/ui/core/dialog/license/license.txt" ) ) );
 
           while ( ( line = reader.readLine() ) != null ) {
             sb.append( line + System.getProperty( "line.separator" ) );
@@ -132,12 +132,12 @@ public class Splash {
         String licenseText = String.format( sb.toString(), cal );
         e.gc.drawImage( kettle_image, 0, 0 );
 
-        String fullVersionText =  BaseMessages.getString( PKG, "SplashDialog.Version" );
+        String fullVersionText = BaseMessages.getString( PKG, "SplashDialog.Version" );
         String buildVersion = BuildVersion.getInstance().getVersion();
         if ( StringUtils.ordinalIndexOf( buildVersion, ".", 2 ) > 0 ) {
-          fullVersionText =  fullVersionText + " "  + buildVersion.substring( 0, StringUtils.ordinalIndexOf( buildVersion, ".", 2 ) );
+          fullVersionText = fullVersionText + " " + buildVersion.substring( 0, StringUtils.ordinalIndexOf( buildVersion, ".", 2 ) );
         } else {
-          fullVersionText =  fullVersionText + " "  + buildVersion;
+          fullVersionText = fullVersionText + " " + buildVersion;
         }
         e.gc.setFont( verFont );
         e.gc.setForeground( display.getSystemColor( SWT.COLOR_WHITE ) );
@@ -187,7 +187,7 @@ public class Splash {
 
         e.gc.drawText( licenseText, 290, 275, true );
 
-        String version =  buildVersion;
+        String version = buildVersion;
         // If this is a Milestone or RC release, warn the user
         if ( Const.RELEASE.equals( Const.ReleaseType.MILESTONE ) ) {
           version = BaseMessages.getString( PKG, "SplashDialog.DeveloperRelease" ) + " - " + version;
@@ -227,6 +227,15 @@ public class Splash {
     splash.setLocation( x, y );
 
     splash.open();
+
+    if ( isMacOS() ) {  // This forces the splash screen to display on the Mac.
+      long endTime = System.currentTimeMillis() + 5000; // 5 second delay... can you read the splash that fast?
+      while ( splash != null && !splash.isDisposed() && endTime > System.currentTimeMillis() ) {
+        if ( !display.readAndDispatch() ) {
+          display.sleep();
+        }
+      }
+    }
 
     TimerTask timerTask = new TimerTask() {
 
@@ -305,5 +314,10 @@ public class Splash {
     if ( !splash.isDisposed() ) {
       splash.setVisible( true );
     }
+  }
+
+  public static boolean isMacOS() {
+    String osName = System.getProperty( "os.name" ).toLowerCase();
+    return osName.startsWith( "mac os x" );
   }
 }
