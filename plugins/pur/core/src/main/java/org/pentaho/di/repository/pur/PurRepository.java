@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2010-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2010-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -1908,7 +1908,7 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
     }
   }
 
-  protected Map<RepositoryObjectType, List<? extends SharedObjectInterface>> loadAndCacheSharedObjects(
+  protected synchronized Map<RepositoryObjectType, List<? extends SharedObjectInterface>> loadAndCacheSharedObjects(
     final boolean deepCopy ) throws KettleException {
     if ( sharedObjectsByType == null ) {
       try {
