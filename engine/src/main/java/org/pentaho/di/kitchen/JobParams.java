@@ -32,7 +32,7 @@ import java.util.Map;
 public class JobParams extends Params {
 
 
-  public JobParams(String blockRepoConns, String repoName, String repoUsername, String trustRepoUser, String repoPassword, String inputDir,
+  public JobParams( String blockRepoConns, String repoName, String repoUsername, String trustRepoUser, String repoPassword, String inputDir,
                     String inputFile, String listRepoFiles, String listRepoDirs, String exportRepo, String localFile,
                     String localJarFile, String localInitialDir, String listRepos, String listFileParams, String logLevel,
                     String maxLogLines, String maxLogTimeout, String logFile, String oldLogFile, String version,
@@ -46,49 +46,49 @@ public class JobParams extends Params {
   @Override
   public Map<String, String> asMap() {
 
-        Map<String, String> arguments = new HashMap<>();
+    Map<String, String> arguments = new HashMap<>();
 
-        arguments.putIfAbsent( "uuid", getUuid() );
-        arguments.putIfAbsent( KettleConstants.REPO, getRepoName() );
-        arguments.putIfAbsent( KettleConstants.NO_REPO, getBlockRepoConns() );
-        arguments.putIfAbsent( KettleConstants.USER, getRepoUsername() );
-        arguments.putIfAbsent( KettleConstants.TRUST_USER, getTrustRepoUser() );
-        arguments.putIfAbsent( KettleConstants.PASS, getRepoPassword() );
-        arguments.putIfAbsent( KettleConstants.DIR, getInputDir() );
-        arguments.putIfAbsent( KettleConstants.FILE, getLocalFile() );
-        arguments.putIfAbsent( KettleConstants.JARFILE, getLocalJarFile() );
-        arguments.putIfAbsent( KettleConstants.JOB, getInputFile() );
-        arguments.putIfAbsent( KettleConstants.LIST_JOBS, getListRepoFiles() );
-        arguments.putIfAbsent( KettleConstants.LIST_DIRS, getListRepoDirs() );
-        arguments.putIfAbsent( KettleConstants.EXPORT_REPO_JOB, getExportRepo() );
-        arguments.putIfAbsent( KettleConstants.INITIAL_DIR, getLocalInitialDir() );
-        arguments.putIfAbsent( KettleConstants.LIST_REPOS, getListRepos() );
-        arguments.putIfAbsent( KettleConstants.SAFEMODE, getSafeMode() );
-        arguments.putIfAbsent( KettleConstants.METRICS, getMetrics() );
-        arguments.putIfAbsent( KettleConstants.LIST_PARAMS, getListFileParams() );
-        arguments.putIfAbsent( KettleConstants.LEVEL, getLogLevel() );
-        arguments.putIfAbsent( KettleConstants.MAX_LOG_LINES, getMaxLogLines() );
-        arguments.putIfAbsent( KettleConstants.MAX_LOG_TIMEOUT, getMaxLogTimeout() );
-        arguments.putIfAbsent( KettleConstants.LOGFILE, getLogFile() );
-        arguments.putIfAbsent( KettleConstants.LOG, getOldLogFile() );
-        arguments.putIfAbsent( KettleConstants.VERSION, getVersion() );
-        arguments.putIfAbsent( KettleConstants.RESULT_SET_STEP_NAME, getResultSetStepName() );
-        arguments.putIfAbsent( KettleConstants.RESULT_SET_COPY_NUMBER, getResultSetCopyNumber() );
+    arguments.putIfAbsent( "uuid", getUuid() );
+    arguments.putIfAbsent( KettleConstants.REPO, getRepoName() );
+    arguments.putIfAbsent( KettleConstants.NO_REPO, getBlockRepoConns() );
+    arguments.putIfAbsent( KettleConstants.USER, getRepoUsername() );
+    arguments.putIfAbsent( KettleConstants.TRUST_USER, getTrustRepoUser() );
+    arguments.putIfAbsent( KettleConstants.PASS, getRepoPassword() );
+    arguments.putIfAbsent( KettleConstants.DIR, getInputDir() );
+    arguments.putIfAbsent( KettleConstants.FILE, getLocalFile() );
+    arguments.putIfAbsent( KettleConstants.JARFILE, getLocalJarFile() );
+    arguments.putIfAbsent( KettleConstants.JOB, getInputFile() );
+    arguments.putIfAbsent( KettleConstants.LIST_JOBS, getListRepoFiles() );
+    arguments.putIfAbsent( KettleConstants.LIST_DIRS, getListRepoDirs() );
+    arguments.putIfAbsent( KettleConstants.EXPORT_REPO_JOB, getExportRepo() );
+    arguments.putIfAbsent( KettleConstants.INITIAL_DIR, getLocalInitialDir() );
+    arguments.putIfAbsent( KettleConstants.LIST_REPOS, getListRepos() );
+    arguments.putIfAbsent( KettleConstants.SAFEMODE, getSafeMode() );
+    arguments.putIfAbsent( KettleConstants.METRICS, getMetrics() );
+    arguments.putIfAbsent( KettleConstants.LIST_PARAMS, getListFileParams() );
+    arguments.putIfAbsent( KettleConstants.LEVEL, getLogLevel() );
+    arguments.putIfAbsent( KettleConstants.MAX_LOG_LINES, getMaxLogLines() );
+    arguments.putIfAbsent( KettleConstants.MAX_LOG_TIMEOUT, getMaxLogTimeout() );
+    arguments.putIfAbsent( KettleConstants.LOGFILE, getLogFile() );
+    arguments.putIfAbsent( KettleConstants.LOG, getOldLogFile() );
+    arguments.putIfAbsent( KettleConstants.VERSION, getVersion() );
+    arguments.putIfAbsent( KettleConstants.RESULT_SET_STEP_NAME, getResultSetStepName() );
+    arguments.putIfAbsent( KettleConstants.RESULT_SET_COPY_NUMBER, getResultSetCopyNumber() );
 
-        if ( getParams() != null && !getParams().isEmpty() ) {
+    if ( getParams() != null && !getParams().isEmpty() ) {
 
-            getParams().keySet().stream().forEach( paramKey -> {
-                arguments.putIfAbsent( ( KettleConstants.PARAM + ":" + paramKey ), getParams().get( paramKey ) );
-            } );
-        }
-
-        if ( getCustomParams() != null && !getCustomParams().isEmpty() ) {
-
-            getCustomParams().keySet().stream().forEach( paramKey -> {
-                arguments.putIfAbsent( ( KettleConstants.CUSTOM + ":" + paramKey ), getParams().get( paramKey ) );
-            } );
-        }
-
-        return arguments;
+      getParams().keySet().stream().forEach( paramKey -> {
+        arguments.putIfAbsent( ( KettleConstants.PARAM + ":" + paramKey ), getParams().get( paramKey ) );
+      } );
     }
+
+    if ( getCustomParams() != null && !getCustomParams().isEmpty() ) {
+
+      getCustomParams().keySet().stream().forEach( paramKey -> {
+        arguments.putIfAbsent( ( KettleConstants.CUSTOM + ":" + paramKey ), getParams().get( paramKey ) );
+      } );
+    }
+
+    return arguments;
+  }
 }
