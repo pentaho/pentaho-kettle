@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,11 +22,11 @@
 
 package org.pentaho.di.trans.steps.checksum;
 
-import java.security.MessageDigest;
-
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.trans.step.BaseStepData;
 import org.pentaho.di.trans.step.StepDataInterface;
+import org.pentaho.di.trans.steps.checksum.CheckSum.FieldToBytesConverter;
+import org.pentaho.di.trans.steps.checksum.CheckSum.GenericChecksumCalculator;
 
 /**
  * Data class for the Cheksum class
@@ -36,14 +36,14 @@ import org.pentaho.di.trans.step.StepDataInterface;
  */
 public class CheckSumData extends BaseStepData implements StepDataInterface {
 
-  public int[] fieldnrs;
-
-  public int fieldnr;
+  public FieldToBytesConverter[] fieldConverters;
 
   public RowMetaInterface outputRowMeta;
   public int nrInfields;
 
-  public MessageDigest digest;
+  public byte[] fieldSeparatorStringBytes;
+
+  public GenericChecksumCalculator<?> checksumCalculator;
 
   public CheckSumData() {
     super();

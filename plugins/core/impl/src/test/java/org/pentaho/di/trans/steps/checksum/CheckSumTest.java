@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -61,7 +61,8 @@ import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.steps.dummytrans.DummyTransMeta;
 
 public class CheckSumTest {
-  @ClassRule public static RestorePDIEngineEnvironment env = new RestorePDIEngineEnvironment();
+  @ClassRule
+  public static RestorePDIEngineEnvironment env = new RestorePDIEngineEnvironment();
 
   private static Object previousKettleDefaultNumberFormat;
 
@@ -84,7 +85,8 @@ public class CheckSumTest {
     }
   }
 
-  private Trans buildHexadecimalChecksumTrans( int checkSumType, boolean compatibilityMode, boolean oldChecksumBehaviour ) throws Exception {
+  private Trans buildHexadecimalChecksumTrans( int checkSumType, boolean compatibilityMode,
+      boolean oldChecksumBehaviour, String fieldSeparatorString, String[] fieldNames ) throws Exception {
     // Create a new transformation...
     TransMeta transMeta = new TransMeta();
     transMeta.setName( getClass().getName() );
@@ -98,8 +100,9 @@ public class CheckSumTest {
     meta.setResultFieldName( "hex" );
     meta.setCheckSumType( checkSumType );
     meta.setResultType( CheckSumMeta.result_TYPE_HEXADECIMAL );
-    meta.setFieldName( new String[] { "test" } );
+    meta.setFieldName( fieldNames );
     meta.setOldChecksumBehaviour( oldChecksumBehaviour );
+    meta.setFieldSeparatorString( fieldSeparatorString );
 
     String checkSumPluginPid = PluginRegistry.getInstance().getPluginId( StepPluginType.class, meta );
     StepMeta checkSumStep = new StepMeta( checkSumPluginPid, checkSumStepname, meta );
@@ -117,12 +120,6 @@ public class CheckSumTest {
     transMeta.addTransHop( hop );
 
     return new Trans( transMeta );
-  }
-
-  private RowMeta createStringRowMeta( ValueMetaInterface meta ) throws Exception {
-    RowMeta rowMeta = new RowMeta();
-    rowMeta.addValueMeta( meta );
-    return rowMeta;
   }
 
   private class MockRowListener extends RowAdapter {
@@ -171,8 +168,39 @@ public class CheckSumTest {
    *          meta to be used
    * @return RowListener with results.
    */
-  private MockRowListener executeHexTest( int checkSumType, boolean compatibilityMode, Object input, ValueMetaInterface meta, boolean oldChecksumBehaviour ) throws Exception {
-    Trans trans = buildHexadecimalChecksumTrans( checkSumType, compatibilityMode, oldChecksumBehaviour );
+  private MockRowListener executeHexTest( int checkSumType, boolean compatibilityMode, Object input,
+      ValueMetaInterface meta, boolean oldChecksumBehaviour ) throws Exception {
+    return executeHexTest( checkSumType, compatibilityMode, oldChecksumBehaviour, null, new Object[] { input }, meta );
+  }
+
+  /**
+   * Create, execute, and return the row listener attached to the output step with complete results from the execution.
+   *
+   * @param checkSumType
+   *          Type of checksum to use (the array index of {@link CheckSumMeta#checksumtypeCodes})
+   * @param compatibilityMode
+   *          Use compatibility mode for CheckSum
+   * @param fieldSeparatorString
+   *          The string separate multiple fields with
+   * @param inputs
+   *          Array of objects representing row data
+   * @param inputValueMetas
+   *          metas to be processed
+   * @return RowListener with results.
+   */
+  private MockRowListener executeHexTest( int checkSumType, boolean compatibilityMode, boolean oldChecksumBehaviour,
+      String fieldSeparatorString, Object[] inputs, ValueMetaInterface... inputValueMetas ) throws Exception {
+
+    String[] fieldNames = new String[inputValueMetas.length];
+    RowMeta inputRowMeta = new RowMeta();
+    for ( int i = 0; i < inputValueMetas.length; i++ ) {
+      inputRowMeta.addValueMeta( inputValueMetas[i] );
+      fieldNames[i] = inputValueMetas[i].getName();
+    }
+
+    Trans trans =
+        buildHexadecimalChecksumTrans( checkSumType, compatibilityMode, oldChecksumBehaviour, fieldSeparatorString,
+            fieldNames );
 
     trans.prepareExecution( null );
 
@@ -181,12 +209,12 @@ public class CheckSumTest {
     output.addRowListener( listener );
 
     RowProducer rp = trans.addRowProducer( "CheckSum", 0 );
-    RowMeta inputRowMeta = createStringRowMeta( meta );
+
     ( (BaseStep) trans.getRunThread( "CheckSum", 0 ) ).setInputRowMeta( inputRowMeta );
 
     trans.startThreads();
 
-    rp.putRow( inputRowMeta, new Object[] { input } );
+    rp.putRow( inputRowMeta, inputs );
     rp.finished();
 
     trans.waitUntilFinished();
@@ -209,7 +237,9 @@ public class CheckSumTest {
     assertEquals( 1, results.getWritten().size() );
     assertEquals( "68b142f87143c917f29d178aa1715957", results.getWritten().get( 0 )[1] );
 
-    byte[] input = IOUtils.toByteArray( getFile( "/org/pentaho/di/trans/steps/loadfileinput/files/pentaho_splash.png" ).getContent().getInputStream() );
+    byte[] input =
+        IOUtils.toByteArray( getFile( "/org/pentaho/di/trans/steps/loadfileinput/files/pentaho_splash.png" )
+            .getContent().getInputStream() );
     results = executeHexTest( 2, false, input, new ValueMetaBinary( "test" ), false );
     assertEquals( 1, results.getWritten().size() );
     assertEquals( "8d808ff9051fdbfd8050f762daddf813", results.getWritten().get( 0 )[1] );
@@ -244,7 +274,9 @@ public class CheckSumTest {
     assertEquals( 1, results.getWritten().size() );
     assertEquals( "68FD42FD7143FD17FD17FDFD715957", results.getWritten().get( 0 )[1] );
 
-    byte[] input = IOUtils.toByteArray( getFile( "/org/pentaho/di/trans/steps/loadfileinput/files/pentaho_splash.png" ).getContent().getInputStream() );
+    byte[] input =
+        IOUtils.toByteArray( getFile( "/org/pentaho/di/trans/steps/loadfileinput/files/pentaho_splash.png" )
+            .getContent().getInputStream() );
     results = executeHexTest( 2, true, input, new ValueMetaBinary( "test" ), false );
     assertEquals( 1, results.getWritten().size() );
     assertEquals( "FDFDFDFD051FFDFDFD50FD62FDFDFD13", results.getWritten().get( 0 )[1] );
@@ -279,7 +311,9 @@ public class CheckSumTest {
     assertEquals( 1, results.getWritten().size() );
     assertEquals( "749f3d4c2db67c9f3186563a72ef5da9461f0496", results.getWritten().get( 0 )[1] );
 
-    byte[] input = IOUtils.toByteArray( getFile( "/org/pentaho/di/trans/steps/loadfileinput/files/pentaho_splash.png" ).getContent().getInputStream() );
+    byte[] input =
+        IOUtils.toByteArray( getFile( "/org/pentaho/di/trans/steps/loadfileinput/files/pentaho_splash.png" )
+            .getContent().getInputStream() );
     results = executeHexTest( 3, false, input, new ValueMetaBinary( "test" ), false );
     assertEquals( 1, results.getWritten().size() );
     assertEquals( "e67d0b5b60663b8a5e0df1d23b44de673738315a", results.getWritten().get( 0 )[1] );
@@ -314,7 +348,9 @@ public class CheckSumTest {
     assertEquals( 1, results.getWritten().size() );
     assertEquals( "74FD3D4C2DFD7CFD31FD563A72FD5DFD461F04FD", results.getWritten().get( 0 )[1] );
 
-    byte[] input = IOUtils.toByteArray( getFile( "/org/pentaho/di/trans/steps/loadfileinput/files/pentaho_splash.png" ).getContent().getInputStream() );
+    byte[] input =
+        IOUtils.toByteArray( getFile( "/org/pentaho/di/trans/steps/loadfileinput/files/pentaho_splash.png" )
+            .getContent().getInputStream() );
     results = executeHexTest( 3, true, input, new ValueMetaBinary( "test" ), false );
     assertEquals( 1, results.getWritten().size() );
     assertEquals( "FD7D0B5B60663BFD5E0DFDFD3B44FD673738315A", results.getWritten().get( 0 )[1] );
@@ -340,22 +376,25 @@ public class CheckSumTest {
     MockRowListener results = executeHexTest( 4, false, "xyz", new ValueMetaString( "test" ), false );
     assertEquals( 1, results.getWritten().size() );
     assertEquals( "3608bca1e44ea6c4d268eb6db02260269892c0b42b86bbf1e77a6fa16c3c9282",
-      results.getWritten().get( 0 )[1] );
+        results.getWritten().get( 0 )[1] );
 
     results = executeHexTest( 4, false, 10.8, new ValueMetaNumber( "test" ), false );
     assertEquals( 1, results.getWritten().size() );
     assertEquals( "b52b603f9ec86c382a8483cad4f788f2f927535a76ad1388caedcef5e3c3c813",
-            results.getWritten().get( 0 )[1] );
+        results.getWritten().get( 0 )[1] );
 
     results = executeHexTest( 4, false, 10.82, new ValueMetaNumber( "test" ), false );
     assertEquals( 1, results.getWritten().size() );
     assertEquals( "45cbb96ff9625490cd675a7a39fecad6c167c1ed9b8957f53224fcb3e4a1e4a1",
-            results.getWritten().get( 0 )[1] );
+        results.getWritten().get( 0 )[1] );
 
-    byte[] input = IOUtils.toByteArray( getFile( "/org/pentaho/di/trans/steps/loadfileinput/files/pentaho_splash.png" ).getContent().getInputStream() );
+    byte[] input =
+        IOUtils.toByteArray( getFile( "/org/pentaho/di/trans/steps/loadfileinput/files/pentaho_splash.png" )
+            .getContent().getInputStream() );
     results = executeHexTest( 4, false, input, new ValueMetaBinary( "test" ), false );
     assertEquals( 1, results.getWritten().size() );
-    assertEquals( "6914d0cb9296d658569570c23924ea4822be73f0ee3bc46d11651fb4041a43e1", results.getWritten().get( 0 )[1] );
+    assertEquals( "6914d0cb9296d658569570c23924ea4822be73f0ee3bc46d11651fb4041a43e1", results.getWritten().get(
+        0 )[1] );
   }
 
   @Test
@@ -363,17 +402,17 @@ public class CheckSumTest {
     MockRowListener results = executeHexTest( 4, false, "xyz", new ValueMetaString( "test" ), true );
     assertEquals( 1, results.getWritten().size() );
     assertEquals( "3608bca1e44ea6c4d268eb6db02260269892c0b42b86bbf1e77a6fa16c3c9282",
-            results.getWritten().get( 0 )[1] );
+        results.getWritten().get( 0 )[1] );
 
     results = executeHexTest( 4, false, 10.8, new ValueMetaNumber( "test" ), true );
     assertEquals( 1, results.getWritten().size() );
     assertEquals( "b52b603f9ec86c382a8483cad4f788f2f927535a76ad1388caedcef5e3c3c813",
-            results.getWritten().get( 0 )[1] );
+        results.getWritten().get( 0 )[1] );
 
     results = executeHexTest( 4, false, 10.82, new ValueMetaNumber( "test" ), true );
     assertEquals( 1, results.getWritten().size() );
     assertEquals( "45cbb96ff9625490cd675a7a39fecad6c167c1ed9b8957f53224fcb3e4a1e4a1",
-            results.getWritten().get( 0 )[1] );
+        results.getWritten().get( 0 )[1] );
   }
 
   @Test
@@ -390,7 +429,9 @@ public class CheckSumTest {
     assertEquals( 1, results.getWritten().size() );
     assertEquals( Long.valueOf( "48627962" ), results.getWritten().get( 0 )[1] );
 
-    byte[] input = IOUtils.toByteArray( getFile( "/org/pentaho/di/trans/steps/loadfileinput/files/pentaho_splash.png" ).getContent().getInputStream() );
+    byte[] input =
+        IOUtils.toByteArray( getFile( "/org/pentaho/di/trans/steps/loadfileinput/files/pentaho_splash.png" )
+            .getContent().getInputStream() );
     results = executeHexTest( 1, false, input, new ValueMetaBinary( "test" ), false );
     assertEquals( 1, results.getWritten().size() );
     assertEquals( Long.valueOf( "1586189688" ), results.getWritten().get( 0 )[1] );
@@ -425,7 +466,9 @@ public class CheckSumTest {
     assertEquals( 1, results.getWritten().size() );
     assertEquals( Long.valueOf( "1205016603" ), results.getWritten().get( 0 )[1] );
 
-    byte[] input = IOUtils.toByteArray( getFile( "/org/pentaho/di/trans/steps/loadfileinput/files/pentaho_splash.png" ).getContent().getInputStream() );
+    byte[] input =
+        IOUtils.toByteArray( getFile( "/org/pentaho/di/trans/steps/loadfileinput/files/pentaho_splash.png" )
+            .getContent().getInputStream() );
     results = executeHexTest( 0, false, input, new ValueMetaBinary( "test" ), false );
     assertEquals( 1, results.getWritten().size() );
     assertEquals( Long.valueOf( "1508231614" ), results.getWritten().get( 0 )[1] );
@@ -464,6 +507,35 @@ public class CheckSumTest {
     } catch ( KettleException e ) {
       // expected, SHA-256 is not supported for compatibility mode
     }
+  }
+
+  @Test
+  public void testHexOutput_sha256_fieldStringSeparators() throws Exception {
+    MockRowListener results =
+        executeHexTest( 4, false, false, "", new Object[] { "abc", "def" },
+            new ValueMetaString( "a" ), new ValueMetaString( "b" ) );
+    assertEquals( 1, results.getWritten().size() );
+    assertEquals( "bef57ec7f53a6d40beb640a780a639c83bc29ac8a9816f1fc6c5c6dcd93c4721",
+        results.getWritten().get( 0 )[2] );
+
+    results = executeHexTest( 4, false, false, "", new Object[] { "ab", "cdef" },
+            new ValueMetaString( "a" ), new ValueMetaString( "b" ) );
+    assertEquals( 1, results.getWritten().size() );
+    assertEquals( "bef57ec7f53a6d40beb640a780a639c83bc29ac8a9816f1fc6c5c6dcd93c4721",
+        results.getWritten().get( 0 )[2] );
+
+    results = executeHexTest( 4, false, false, "|", new Object[] { "abc", "def" },
+            new ValueMetaString( "a" ), new ValueMetaString( "b" ) );
+    assertEquals( 1, results.getWritten().size() );
+    assertEquals( "0def6826e591afbb7b4431daaa6f2a78c1e5af533cb94b6db1635efbf255cb16",
+        results.getWritten().get( 0 )[2] );
+
+    results = executeHexTest( 4, false, false, "|", new Object[] { "ab", "cdef" },
+            new ValueMetaString( "a" ), new ValueMetaString( "b" ) );
+    assertEquals( 1, results.getWritten().size() );
+    assertEquals( "a3aa77adf7a0bc55c91bc2e482db25bb520d5903fe7adcee9f6a09fd5ae200f6",
+        results.getWritten().get( 0 )[2] );
+
   }
 
   private FileObject getFile( final String filepath ) {
