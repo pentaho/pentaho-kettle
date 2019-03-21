@@ -1287,6 +1287,11 @@ public class Const {
   public static final String KETTLE_USE_AWS_DEFAULT_CREDENTIALS = "KETTLE_USE_AWS_DEFAULT_CREDENTIALS";
 
   /**
+   * <p>This environment variable is used by streaming consumer steps to limit the total of concurrent batches across transformations.</p>
+   */
+  public static final String SHARED_STREAMING_BATCH_POOL_SIZE = "SHARED_STREAMING_BATCH_POOL_SIZE";
+
+  /**
    * rounds double f to any number of places after decimal point Does arithmetic using BigDecimal class to avoid integer
    * overflow while rounding
    *
