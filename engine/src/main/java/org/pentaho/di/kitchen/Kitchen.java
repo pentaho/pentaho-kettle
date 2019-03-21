@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -257,10 +257,34 @@ public class Kitchen {
         }
       }
 
-      result = getCommandExecutor().execute( optionRepname.toString(), optionNorep.toString(), optionUsername.toString(),
-            optionTrustUser.toString(), optionPassword.toString(), optionDirname.toString(), optionFilename.toString(), optionJobname.toString(), optionListjobs.toString(),
-            optionListdir.toString(), optionExport.toString(), initialDir.toString(), optionListrep.toString(), optionListParam.toString(),
-            optionParams, customOptions, args.toArray( new String[ args.size() ] ) );
+      JobParams jobParams = new JobParams(
+              optionNorep.toString(),
+              optionRepname.toString(),
+              optionUsername.toString(),
+              optionTrustUser.toString(),
+              optionPassword.toString(),
+              optionDirname.toString(),
+              optionJobname.toString(),
+              optionListjobs.toString(),
+              optionListdir.toString(),
+              optionExport.toString(),
+              optionFilename.toString(),
+              "",
+              initialDir.toString(),
+              optionListrep.toString(),
+              optionListParam.toString(),
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              optionParams,
+              customOptions );
+
+      result = getCommandExecutor().execute( jobParams );
 
     } catch ( Throwable t ) {
       t.printStackTrace();

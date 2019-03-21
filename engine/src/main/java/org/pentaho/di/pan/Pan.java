@@ -236,12 +236,35 @@ public class Pan {
         }
       }
 
-      Result result = getCommandExecutor().execute( optionRepname.toString(), optionNorep.toString(), optionUsername.toString(),
-              optionTrustUser.toString(), optionPassword.toString(), optionDirname.toString(), optionFilename.toString(), optionJarFilename.toString(),
-              optionTransname.toString(), optionListtrans.toString(), optionListdir.toString(), optionExprep.toString(),
-              initialDir.toString(), optionListrep.toString(), optionSafemode.toString(), optionMetrics.toString(),
-              optionListParam.toString(), optionResultSetStepName.toString(), optionResultSetCopyNumber.toString(),
-              optionParams, args.toArray( new String[ args.size() ] ) );
+      TransParams transParams = new TransParams(
+              optionNorep.toString(),
+              optionRepname.toString(),
+              optionUsername.toString(),
+              optionTrustUser.toString(),
+              optionPassword.toString(),
+              optionDirname.toString(),
+              optionTransname.toString(),
+              optionListtrans.toString(),
+              optionListdir.toString(),
+              optionExprep.toString(),
+              optionFilename.toString(),
+              optionJarFilename.toString(),
+              initialDir.toString(),
+              optionListrep.toString(),
+              optionSafemode.toString(),
+              optionMetrics.toString(),
+              optionListParam.toString(),
+              "",
+              "",
+              "",
+              "",
+              "",
+              "",
+              optionResultSetStepName.toString(),
+              optionResultSetCopyNumber.toString(),
+              optionParams );
+
+      Result result = getCommandExecutor().execute( transParams );
 
       exitJVM( result.getExitStatus() );
 

@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -29,7 +29,6 @@ import org.pentaho.di.core.Result;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.logging.LogChannelInterface;
-import org.pentaho.di.core.parameters.NamedParams;
 import org.pentaho.di.core.parameters.UnknownParamException;
 import org.pentaho.di.core.util.FileUtil;
 import org.pentaho.di.core.util.Utils;
@@ -45,8 +44,11 @@ import org.pentaho.di.resource.ResourceUtil;
 import org.pentaho.di.resource.TopLevelResource;
 import org.pentaho.di.i18n.BaseMessages;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Map;
+import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
@@ -68,9 +70,7 @@ public class KitchenCommandExecutor extends AbstractBaseCommandExecutor {
     setKettleInit( kettleInit );
   }
 
-  public Result execute( String repoName, String noRepo, String username, String trustUser, String password, String dirName,
-                         String filename, String jobName, String listJobs, String listDirs, String exportRepo, String initialDir,
-                         String listRepos, String listParams, NamedParams params, NamedParams customParams, String[] arguments ) throws Throwable {
+  public Result execute( JobParams params ) throws Throwable {
 
     getLog().logMinimal( BaseMessages.getString( getPkgClazz(), "Kitchen.Log.Starting" ) );
 
@@ -90,11 +90,11 @@ public class KitchenCommandExecutor extends AbstractBaseCommandExecutor {
       }
 
       // Read kettle job specified on command-line?
-      if ( !Utils.isEmpty( repoName ) || !Utils.isEmpty( filename ) ) {
+      if ( !Utils.isEmpty( params.getRepoName() ) || !Utils.isEmpty( params.getLocalFile() ) ) {
 
         logDebug( "Kitchen.Log.ParsingCommandLine" );
 
-        if ( !Utils.isEmpty( repoName ) && !isEnabled( noRepo ) ) {
+        if ( !Utils.isEmpty( params.getRepoName() ) && !isEnabled( params.getBlockRepoConns() ) ) {
 
           /**
            * if set, _trust_user_ needs to be considered. See pur-plugin's:
@@ -102,27 +102,27 @@ public class KitchenCommandExecutor extends AbstractBaseCommandExecutor {
            * @link https://github.com/pentaho/pentaho-kettle/blob/8.0.0.0-R/plugins/pur/core/src/main/java/org/pentaho/di/repository/pur/PurRepositoryConnector.java#L97-L101
            * @link https://github.com/pentaho/pentaho-kettle/blob/8.0.0.0-R/plugins/pur/core/src/main/java/org/pentaho/di/repository/pur/WebServiceManager.java#L130-L133
            */
-          if ( isEnabled( trustUser ) ) {
+          if ( isEnabled( params.getTrustRepoUser() ) ) {
             System.setProperty( "pentaho.repository.client.attemptTrust", YES );
           }
 
           // In case we use a repository...
           // some commands are to load a Trans from the repo; others are merely to print some repo-related information
-          RepositoryMeta repositoryMeta = loadRepositoryConnection( repoName, "Kitchen.Log.LoadingRep", "Kitchen.Error.NoRepDefinied", "Kitchen.Log.FindingRep" );
+          RepositoryMeta repositoryMeta = loadRepositoryConnection( params.getRepoName(), "Kitchen.Log.LoadingRep", "Kitchen.Error.NoRepDefinied", "Kitchen.Log.FindingRep" );
 
-          repository = establishRepositoryConnection( repositoryMeta, username, password, RepositoryOperation.EXECUTE_JOB );
+          repository = establishRepositoryConnection( repositoryMeta, params.getRepoUsername(), params.getRepoPassword(), RepositoryOperation.EXECUTE_JOB );
 
-          job = executeRepositoryBasedCommand( repository, repositoryMeta, dirName, jobName, listJobs, listDirs );
+          job = executeRepositoryBasedCommand( repository, repositoryMeta, params.getInputDir(), params.getInputFile(), params.getListRepoFiles(), params.getListRepoDirs() );
         }
 
         // Try to load if from file anyway.
-        if ( !Utils.isEmpty( filename ) && job == null ) {
+        if ( !Utils.isEmpty( params.getLocalFile() ) && job == null ) {
 
           // Try to load the job from file, even if it failed to load from the repository
-          job = executeFilesystemBasedCommand( initialDir, filename );
+          job = executeFilesystemBasedCommand( params.getLocalInitialDir(), params.getLocalFile() );
         }
 
-      } else if ( isEnabled( listRepos ) ) {
+      } else if ( isEnabled( params.getListRepos() ) ) {
 
         printRepositories( loadRepositoryInfo( "Kitchen.Log.ListRep", "Kitchen.Error.NoRepDefinied" ) ); // list the repositories placed at repositories.xml
 
@@ -136,25 +136,25 @@ public class KitchenCommandExecutor extends AbstractBaseCommandExecutor {
     }
 
     if ( job == null ) {
-      if ( !isEnabled( listJobs ) && !isEnabled( listDirs ) && !isEnabled( listRepos ) ) {
+      if ( !isEnabled( params.getListRepoFiles() ) && !isEnabled( params.getListRepoDirs() ) && !isEnabled( params.getListRepos() ) ) {
         System.out.println( BaseMessages.getString( getPkgClazz(), "Kitchen.Error.canNotLoadJob" ) );
       }
 
       return exitWithStatus( CommandExecutorCodes.Kitchen.COULD_NOT_LOAD_JOB.getCode() );
     }
 
-    if ( !Utils.isEmpty( exportRepo ) ) {
+    if ( !Utils.isEmpty( params.getExportRepo() ) ) {
 
       try {
         // Export the resources linked to the currently loaded file...
-        TopLevelResource topLevelResource = ResourceUtil.serializeResourceExportInterface( exportRepo, job.getJobMeta(), job, repository, getMetaStore() );
+        TopLevelResource topLevelResource = ResourceUtil.serializeResourceExportInterface( params.getExportRepo(), job.getJobMeta(), job, repository, getMetaStore() );
         String launchFile = topLevelResource.getResourceName();
-        String message = ResourceUtil.getExplanation( exportRepo, launchFile, job.getJobMeta() );
+        String message = ResourceUtil.getExplanation( params.getExportRepo(), launchFile, job.getJobMeta() );
         System.out.println();
         System.out.println( message );
 
         // Setting the list parameters option will make kitchen exit below in the parameters section
-        listParams = YES;
+        ( (JobParams) params ).setListFileParams( YES );
       } catch ( Exception e ) {
         System.out.println( Const.getStackTracker( e ) );
         return exitWithStatus( CommandExecutorCodes.Kitchen.UNEXPECTED_ERROR.getCode() );
@@ -166,7 +166,7 @@ public class KitchenCommandExecutor extends AbstractBaseCommandExecutor {
     try {
 
       // Set the command line arguments on the job ...
-      job.setArguments( arguments != null ? arguments : null );
+      job.setArguments( convert( params.asMap() ) );
       job.initializeVariablesFrom( null );
       job.setLogLevel( getLog().getLogLevel() );
       job.getJobMeta().setInternalKettleVariables( job );
@@ -178,9 +178,13 @@ public class KitchenCommandExecutor extends AbstractBaseCommandExecutor {
       // the moment any extra command line parameter not known in the job.
       String[] jobParams = job.getJobMeta().listParameters();
       for ( String param : jobParams ) {
-        String value = params.getParameterValue( param );
-        if ( value != null ) {
-          job.getJobMeta().setParameterValue( param, value );
+        try {
+          String value = params.getNamedParams().getParameterValue( param );
+          if ( value != null ) {
+            job.getJobMeta().setParameterValue( param, value );
+          }
+        } catch ( UnknownParamException e ) {
+          /* no-op */
         }
       }
       job.copyParametersFrom( job.getJobMeta() );
@@ -189,15 +193,19 @@ public class KitchenCommandExecutor extends AbstractBaseCommandExecutor {
       job.activateParameters();
 
       // Set custom options in the job extension map as Strings
-      for ( String optionName : customParams.listParameters() ) {
-        String optionValue = customParams.getParameterValue( optionName );
-        if ( optionName != null && optionValue != null ) {
-          job.getExtensionDataMap().put( optionName, optionValue );
+      for ( String optionName : params.getCustomNamedParams().listParameters() ) {
+        try {
+          String optionValue = params.getCustomNamedParams().getParameterValue( optionName );
+          if ( optionName != null && optionValue != null ) {
+            job.getExtensionDataMap().put( optionName, optionValue );
+          }
+        } catch ( UnknownParamException e ) {
+          /* no-op */
         }
       }
 
       // List the parameters defined in this job, then simply exit...
-      if ( isEnabled( listParams ) ) {
+      if ( isEnabled( params.getListFileParams() ) ) {
 
         printJobParameters( job );
 
@@ -212,7 +220,7 @@ public class KitchenCommandExecutor extends AbstractBaseCommandExecutor {
       if ( repository != null ) {
         repository.disconnect();
       }
-      if ( isEnabled( trustUser ) ) {
+      if ( isEnabled( params.getTrustRepoUser() ) ) {
         System.clearProperty( "pentaho.repository.client.attemptTrust" ); // we set it, now we sanitize it
       }
     }
@@ -366,5 +374,16 @@ public class KitchenCommandExecutor extends AbstractBaseCommandExecutor {
 
   public void setKettleInit( Future<KettleException> kettleInit ) {
     this.kettleInit = kettleInit;
+  }
+
+  protected String[] convert( Map<String, String> map ) {
+
+    List<String> list = new ArrayList<>();
+
+    if ( map != null ) {
+      map.keySet().forEach( key -> list.add( key + "=" + map.get( key ) ) );
+    }
+
+    return list.toArray( new String[] {} );
   }
 }
