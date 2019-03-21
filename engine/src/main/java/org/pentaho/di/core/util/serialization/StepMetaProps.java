@@ -1,7 +1,7 @@
 /*
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  * **************************************************************************
  *
@@ -264,6 +264,14 @@ public class StepMetaProps {
 
   @Override public String toString() {
     return "StepMetaProps{" + "groups=" + groups + '}';
+  }
+
+  public List<Object> getPropertyValue( String group, String property ) {
+    PropGroup propGroup = groups.stream().filter( pg -> pg.name.equals( group ) ).findFirst()
+      .orElseThrow( () -> new IllegalArgumentException( "Group " + group + " not found" ) );
+    Prop prop = propGroup.props.stream().filter( p -> p.name.equals( property ) ).findFirst()
+      .orElseThrow( () -> new IllegalArgumentException( "Property " + property + " not found" ) );
+    return prop.value;
   }
 
   /**
