@@ -1,7 +1,7 @@
 /*
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  * **************************************************************************
  *
@@ -25,6 +25,7 @@ import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.pentaho.di.core.KettleEnvironment;
+import org.pentaho.di.core.encryption.Encr;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.injection.Injection;
 import org.pentaho.di.core.injection.InjectionDeep;
@@ -49,6 +50,7 @@ import static java.util.Collections.singletonList;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.not;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 
 public class StepMetaPropsTest {
@@ -107,6 +109,13 @@ public class StepMetaPropsTest {
 
     assertThat( foo, equalTo( toMeta ) );
     assertThat( asList( "shadow", "substance" ), equalTo( toMeta.securelist ) );
+  }
+
+  @Test
+  public void canGetFieldProperties() {
+    FooMeta fooMeta = getTestFooMeta();
+    StepMetaProps props = StepMetaProps.from( fooMeta );
+    assertEquals( "expectedString", Encr.decryptPassword( (String) props.getPropertyValue( "stuffGroup", "FIELD1" ).get( 0 ) ) );
   }
 
   @Test
