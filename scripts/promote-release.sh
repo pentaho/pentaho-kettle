@@ -51,7 +51,7 @@ function promote_to_box {
 }
 
 # Write job params to manifest:
-write_to_promotion_log "SUITE_RELEASE_VERSION: %s\n"               "${SUITE_RELEASE_VERSION}"
+write_to_promotion_log "DEPLOYMENT_FOLDER: %s\n"                   "${DEPLOYMENT_FOLDER}"
 write_to_promotion_log "BUILD_NUMBER: %s\n"                        "${BUILD_NUMBER}"
 write_to_promotion_log "RELEASE_TYPE: %s\n"                        "${RELEASE_TYPE}"
 write_to_promotion_log "SHIM_TYPE: %s\n"                           "${SHIM_TYPE}"
@@ -65,7 +65,7 @@ write_to_promotion_log "SHIM_BOX_BASE_DIR: %s\n"                   "${SHIM_BOX_B
 write_to_promotion_log "SUITE_GOLDEN_BASE_DIR: %s\n"               "${SUITE_GOLDEN_BASE_DIR}"
 write_to_promotion_log "SUITE_BOX_BASE_DIR: %s\n"                  "${SUITE_BOX_BASE_DIR}"
 
-HOSTED_RELEASE_BASE_DIR=${BUILD_HOSTING_ROOT}/${SUITE_RELEASE_VERSION}/${BUILD_NUMBER}/release
+HOSTED_RELEASE_BASE_DIR=${BUILD_HOSTING_ROOT}/${DEPLOYMENT_FOLDER}/${BUILD_NUMBER}/release
 write_to_promotion_log "HOSTED_RELEASE_BASE_DIR: %s\n\n" "${HOSTED_RELEASE_BASE_DIR}"
 
 # Check parameters
@@ -88,13 +88,13 @@ fi
 
 # Shim promotion setup
 if [ "${RELEASE_TYPE}" == "Shim" ]; then
-  GOLDEN_RELEASE_BASE_DIR=${SHIM_GOLDEN_BASE_DIR}/${SHIM_TYPE}/${SUITE_RELEASE_VERSION}
-  BOX_RELEASE_BASE_DIR=${SHIM_BOX_BASE_DIR}/${SHIM_TYPE}/${SUITE_RELEASE_VERSION}
+  GOLDEN_RELEASE_BASE_DIR=${SHIM_GOLDEN_BASE_DIR}/${SHIM_TYPE}/${DEPLOYMENT_FOLDER}
+  BOX_RELEASE_BASE_DIR=${SHIM_BOX_BASE_DIR}/${SHIM_TYPE}/${DEPLOYMENT_FOLDER}
 fi
 # Suite promotion setup
 if [ "${RELEASE_TYPE}" == "Suite" ]; then
-  GOLDEN_RELEASE_BASE_DIR=${SUITE_GOLDEN_BASE_DIR}/${SUITE_RELEASE_VERSION}
-  BOX_RELEASE_BASE_DIR=${SUITE_BOX_BASE_DIR}/${SUITE_RELEASE_VERSION}
+  GOLDEN_RELEASE_BASE_DIR=${SUITE_GOLDEN_BASE_DIR}/${DEPLOYMENT_FOLDER}
+  BOX_RELEASE_BASE_DIR=${SUITE_BOX_BASE_DIR}/${DEPLOYMENT_FOLDER}
 fi
 
 # Do the actual promotion
@@ -105,7 +105,7 @@ promote_to_box ${HOSTED_RELEASE_BASE_DIR} "${BOX_RELEASE_BASE_DIR}"
 # Write the email body to the promotion log for easy cut and paste, eventually this
 # should be emailed directly to the consumers
 write_to_promotion_log "\n"
-write_to_promotion_log "${SUITE_RELEASE_VERSION}-${BUILD_NUMBER} has been promoted:\n"
+write_to_promotion_log "${DEPLOYMENT_FOLDER}-${BUILD_NUMBER} has been promoted:\n"
 
 # Write the
 if [ "${PROMOTE_TO_BOX}" == "true" ]; then
@@ -122,10 +122,10 @@ write_to_promotion_log "\n"
 
 # Write out the release manifest to the promotion log
 if [ "${RELEASE_TYPE}" == "Shim" ]; then
-  write_to_promotion_log "%s %s Shim release manifest:\n\n"  "${SUITE_RELEASE_VERSION}" "${SHIM_TYPE}"
+  write_to_promotion_log "%s %s Shim release manifest:\n\n"  "${DEPLOYMENT_FOLDER}" "${SHIM_TYPE}"
 fi
 if [ "${RELEASE_TYPE}" == "Suite" ]; then
-  write_to_promotion_log "%s Suite release manifest:\n\n"  "${SUITE_RELEASE_VERSION}"
+  write_to_promotion_log "%s Suite release manifest:\n\n"  "${DEPLOYMENT_FOLDER}"
 fi
 
 write_manifest_to_promotion_log ${HOSTED_RELEASE_BASE_DIR}
