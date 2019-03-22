@@ -277,7 +277,6 @@ public abstract class BaseDatabaseMeta implements Cloneable, DatabaseInterfaceEx
   private String username;
   private String password;
   private String servername; // Informix only!
-  private String warehouse;
 
   private String dataTablespace; // data storage location, For Oracle & perhaps others
   private String indexTablespace; // index storage location, For Oracle & perhaps others
@@ -517,23 +516,6 @@ public abstract class BaseDatabaseMeta implements Cloneable, DatabaseInterfaceEx
   @Override
   public void setServername( String servername ) {
     this.servername = servername;
-  }
-
-  /**
-   * @return Returns the warehouse.
-   */
-  @Override
-  public String getWarehouse() {
-    return this.warehouse;
-  }
-
-  /**
-   * @param warehouse
-   *          The warehouse to set.
-   */
-  @Override
-  public void setWarehouse( String warehouse ) {
-    this.warehouse = warehouse;
   }
 
   /**
