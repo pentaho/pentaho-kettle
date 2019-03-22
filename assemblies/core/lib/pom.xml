@@ -63,6 +63,7 @@
         <databricks.version>4.0.0</databricks.version>
         <paho.version>1.2.0</paho.version>
         <bahir.version>2.1.1</bahir.version>
+        <snowflake-jdbc.version>3.6.28</snowflake-jdbc.version>
    </properties>
 
     <dependencies>
@@ -464,6 +465,11 @@
                     <artifactId>*</artifactId>
                 </exclusion>
             </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>net.snowflake</groupId>
+            <artifactId>snowflake-jdbc</artifactId>
+            <version>${snowflake-jdbc.version}</version>
         </dependency>
 
         <!-- Spring -->

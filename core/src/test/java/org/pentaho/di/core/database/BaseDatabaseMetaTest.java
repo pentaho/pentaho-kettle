@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -263,6 +263,8 @@ public class BaseDatabaseMetaTest {
     assertEquals( id, jndiMeta.getObjectId() );
     jndiMeta.setServername( "FOO" );
     assertEquals( "FOO", jndiMeta.getServername() );
+    jndiMeta.setWarehouse( "COMPUTE_WH" );
+    assertEquals( "COMPUTE_WH", jndiMeta.getWarehouse() );
     jndiMeta.setDataTablespace( "FOO" );
     assertEquals( "FOO", jndiMeta.getDataTablespace() );
     jndiMeta.setIndexTablespace( "FOO" );

@@ -667,6 +667,7 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
     setUsername( oldInterface.getUsername() );
     setPassword( oldInterface.getPassword() );
     setServername( oldInterface.getServername() );
+    setWarehouse( oldInterface.getWarehouse() );
     setDataTablespace( oldInterface.getDataTablespace() );
     setIndexTablespace( oldInterface.getIndexTablespace() );
     setChanged( oldInterface.isChanged() );
@@ -893,6 +894,14 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
    */
   public String getServername() {
     return databaseInterface.getServername();
+  }
+
+  public void setWarehouse( String warehouse ) {
+    databaseInterface.setWarehouse( warehouse );
+  }
+
+  public String getWarehouse() {
+    return databaseInterface.getWarehouse();
   }
 
   public String getDataTablespace() {
