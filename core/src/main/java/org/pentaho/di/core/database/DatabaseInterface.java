@@ -186,17 +186,6 @@ public interface DatabaseInterface extends Cloneable {
   public void setServername( String servername );
 
   /**
-   * @return Returns the warehouse.
-   */
-  public String getWarehouse();
-
-  /**
-   * @param warehouse
-   *          The warehouse to set.
-   */
-  public void setWarehouse( String warehouse );
-
-  /**
    * @return the tablespace to store data in. (create table)
    */
   public String getDataTablespace();
