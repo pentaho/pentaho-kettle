@@ -6,8 +6,8 @@
   <title>Repositories Manager</title>
   <!-- Requesting webcontext.js one level above to workaround the filter on PDI issue (BACKLOG-17885) -->
   <!-- Remove '../' when not needed -->
-  <link rel="stylesheet" type="text/css" href="/core-ui/${project.version}/css/fonts/opensans/style.css">
-  <link rel="stylesheet" type="text/css" href="/core-ui/${project.version}/css/global.css">
+  <link rel="stylesheet" type="text/css" href="/@pentaho/di-core-ui@${project.version}/css/fonts/opensans/style.css">
+  <link rel="stylesheet" type="text/css" href="/@pentaho/di-core-ui@${project.version}/css/global.css">
   <script type="text/javascript" src="../webcontext.js?requireJsOnly=true"></script>
   <base href="/">
   <script>
@@ -17,14 +17,14 @@
       // overrides just for this app
       require.config({
         paths: {
-          "pentaho": "/core-ui/${project.version}/pentaho",
-          "css": "/require-css/${require-css.version}/css",
-          "text": "/requirejs-text/${requirejs-text.version}/text",
-          "dojo": "/dojo/${dojo.version}"
+          "pentaho": "/@pentaho/di-core-ui@${project.version}/pentaho",
+          "css": "/require-css@${require-css.version}/css",
+          "text": "/requirejs-text@${requirejs-text.version}/text",
+          "dojo": "/dojo@${dojo.version}"
         }
       });
 
-      require(["${project.artifactId}_${project.version}"], function (app) {
+      require(["pentaho/di/plugin/repositories"], function (app) {
         app.bootstrap(document);
       });
     }(window));

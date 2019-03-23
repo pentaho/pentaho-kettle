@@ -1,8 +1,16 @@
 {
-  "name": "${project.artifactId}",
+  "name": "@pentaho/di-plugin-file-open-save",
   "version": "${project.version}",
   "description": "${project.description}",
-  "main": "app.module.js",
+  "paths": {
+    "pentaho/di/plugin/fileOpenSave": "/"
+  },
+  "packages": [
+    {
+      "name": "pentaho/di/plugin/fileOpenSave",
+      "main": "app.module.js"
+    }
+  ],
   "dependencies": {
     "angular": "${angular.version}",
     "angular-ui-router": "${angular-ui-router.version}",
