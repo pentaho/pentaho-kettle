@@ -2,11 +2,12 @@
 
   <feature name="${project.artifactId}" version="${project.version}">
 
-    <feature version="${cxf.karaf.version}">cxf-jaxrs</feature>
+    <feature>cxf-jaxrs</feature>
     <feature>pentaho-requirejs-osgi-manager</feature>
     <feature>pentaho-deployers</feature>
 
     <feature>pentaho-i18n</feature>
+    <details>${project.description}</details>
     <bundle>mvn:pentaho/pentaho-i18n-webservice-bundle/${pentaho-osgi-bundles.version}</bundle>
 
     <!-- START client side dependencies -->

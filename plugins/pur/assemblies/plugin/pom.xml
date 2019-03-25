@@ -15,6 +15,18 @@
     <version>8.3.0.0-SNAPSHOT</version>
   </parent>
 
+  <dependencyManagement>
+    <!-- SLF4J is assumed to be provided by the host application that runs the plugin -->
+    <dependencies>
+      <dependency>
+        <groupId>org.slf4j</groupId>
+        <artifactId>slf4j-api</artifactId>
+        <version>${slf4j.version}</version>
+        <scope>provided</scope>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
+
   <dependencies>
     <dependency>
       <groupId>org.pentaho.di.plugins</groupId>
