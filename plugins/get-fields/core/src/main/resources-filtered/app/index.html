@@ -7,8 +7,8 @@
   <!-- Requesting webcontext.js one level above to workaround the filter on PDI issue (BACKLOG-17885) -->
   <!-- Remove '../' when not needed -->
   <script type="text/javascript" src="../webcontext.js?requireJsOnly=true"></script>
-  <link rel="stylesheet" type="text/css" href="/core-ui/${project.version}/css/global.css">
-  <link rel="stylesheet" type="text/css" href="/core-ui/${project.version}/css/fonts/opensans/style.css">
+  <link rel="stylesheet" type="text/css" href="/@pentaho/di-core-ui@${project.version}/css/fonts/opensans/style.css">
+  <link rel="stylesheet" type="text/css" href="/@pentaho/di-core-ui@${project.version}/css/global.css">
   <link rel="stylesheet" type="text/css" href="css/index.css">
   <script>
     (function () {
@@ -17,16 +17,15 @@
       // overrides just for this app
       require.config({
         paths: {
-          "core-ui": "/core-ui/${project.version}",
-          "pentaho": "/core-ui/${project.version}/pentaho",
-          "css": "/require-css/${require-css.version}/css",
-          "text": "/requirejs-text/${requirejs-text.version}/text",
-          "dojo": "/dojo/${dojo.version}"
+          "pentaho": "/@pentaho/di-core-ui@${project.version}/pentaho",
+          "css": "/require-css@${require-css.version}/css",
+          "text": "/requirejs-text@${requirejs-text.version}/text",
+          "dojo": "/dojo@${dojo.version}"
         }
       });
 
-      require(["${project.artifactId}_${project.version}"], function (app) {
-          app.bootstrap(document);
+      require(["pentaho/di/plugin/getFields"], function (app) {
+        app.bootstrap(document);
       });
     }(window));
   </script>

@@ -1,9 +1,18 @@
 {
-  "name": "${project.artifactId}",
+  "name": "@pentaho/di-plugin-get-fields",
   "version": "${project.version}",
   "description": "${project.description}",
-  "main": "app.module.js",
+  "paths": {
+    "pentaho/di/plugin/getFields": "/"
+  },
+  "packages": [
+    {
+      "name": "pentaho/di/plugin/getFields",
+      "main": "app.module.js"
+    }
+  ],
   "dependencies": {
+    "@pentaho/di-core-ui": "${project.version}",
     "angular": "${angular.version}",
     "angular-ui-router": "${angular-ui-router.version}",
     "angular-i18n": "${angular-i18n.version}",

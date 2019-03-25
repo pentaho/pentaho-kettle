@@ -71,14 +71,6 @@
            ref="repositoryConnectController">
   </service>
 
-  <!--  HttpService Whiteboard registration of web assets -->
-  <service interface="org.ops4j.pax.web.extender.whiteboard.ResourceMapping">
-    <bean class="org.ops4j.pax.web.extender.whiteboard.runtime.DefaultResourceMapping">
-      <property name="alias" value="/${project.artifactId}/${project.version}"/>
-      <property name="path" value="/app"/>
-   </bean>
-  </service>
-
   <bean id="jsonProvider" class="com.fasterxml.jackson.jaxrs.json.JacksonJaxbJsonProvider">
   </bean>
 

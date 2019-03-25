@@ -3,15 +3,6 @@
            xmlns:pen="http://www.pentaho.com/xml/schemas/pentaho-blueprint"
            xmlns:jaxrs="http://cxf.apache.org/blueprint/jaxrs" default-timeout="20000">
 
-  <!-- HttpService Whiteboard registration of web assets -->
-  <service id="FileOpenSavePlugin"
-           interface="org.ops4j.pax.web.extender.whiteboard.ResourceMapping">
-    <bean class="org.ops4j.pax.web.extender.whiteboard.runtime.DefaultResourceMapping">
-      <property name="alias" value="/${project.artifactId}/${project.version}"/>
-      <property name="path" value="/app"/>
-    </bean>
-  </service>
-
   <bean id="repositoryBrowserController" scope="singleton"
         class="org.pentaho.repo.controller.RepositoryBrowserController">
   </bean>

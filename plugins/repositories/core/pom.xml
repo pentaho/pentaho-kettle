@@ -256,6 +256,9 @@
               org.pentaho.di.ui.repo.endpoints,
               org.pentaho.di.ui.repo.model</Export-Package>
             <Import-Package>org.json.simple; version="[1.1.0,1.1.1)", *</Import-Package>
+            <Provide-Capability>
+              org.pentaho.webpackage;root=/app
+            </Provide-Capability>
           </instructions>
         </configuration>
       </plugin>
