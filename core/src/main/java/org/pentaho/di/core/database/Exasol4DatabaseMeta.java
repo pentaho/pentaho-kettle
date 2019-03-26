@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -54,6 +54,11 @@ public class Exasol4DatabaseMeta extends BaseDatabaseMeta implements DatabaseInt
   public boolean supportsAutoInc() {
     // Exasol does support the identity column type, but does not support returning generated
     // keys on the jdbc driver
+    return false;
+  }
+
+  @Override
+  public boolean supportsIndexes() {
     return false;
   }
 

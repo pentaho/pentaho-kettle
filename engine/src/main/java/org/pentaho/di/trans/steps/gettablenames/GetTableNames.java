@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -249,7 +249,7 @@ public class GetTableNames extends BaseStep implements StepInterface {
               data.db.getTableFieldsMeta( data.realSchemaName, tableName ),
               null, false, pk, true );
 
-        if ( pkc != null ) {
+        if ( pkc != null && pkc.length > 0 ) {
           // add composite primary key (several fields in primary key)
           int IndexOfLastClosedBracket = sql.lastIndexOf( ")" );
           if ( IndexOfLastClosedBracket > -1 ) {
