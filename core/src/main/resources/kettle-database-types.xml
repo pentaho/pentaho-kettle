@@ -220,4 +220,9 @@
     <classname>org.pentaho.di.core.database.GoogleBigQueryDatabaseMeta</classname>
   </database-type>
 
+  <database-type id="SNOWFLAKEHV">
+    <description>Snowflake</description>
+    <classname>org.pentaho.di.core.database.SnowflakeHVDatabaseMeta</classname>
+  </database-type>
+
  </database-types>

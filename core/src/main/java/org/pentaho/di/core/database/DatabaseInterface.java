@@ -383,6 +383,13 @@ public interface DatabaseInterface extends Cloneable {
   public boolean supportsBitmapIndex();
 
   /**
+   * @return true if the database supports indexes at all.  (Exasol and Snowflake do not)
+   */
+  default boolean supportsIndexes() {
+    return true;
+  }
+
+  /**
    * @return true if the database JDBC driver supports the setLong command
    */
   public boolean supportsSetLong();
