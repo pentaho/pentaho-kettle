@@ -59,6 +59,7 @@ public class VFSFileSelection extends Composite {
   private final AbstractMeta abstractMeta;
   private final Repository repository;
   private final Supplier<Optional<String>> fileNameSupplier;
+  private final int fileDialogMode;
 
   public VFSFileSelection( Composite composite, int i, String[] fileFilters, String[] fileFilterNames, AbstractMeta abstractMeta ) {
     this( composite, i, fileFilters, fileFilterNames, abstractMeta, null );
@@ -69,6 +70,10 @@ public class VFSFileSelection extends Composite {
   }
 
   public VFSFileSelection( Composite composite, int i, String[] fileFilters, String[] fileFilterNames, AbstractMeta abstractMeta, Repository repository, String initialScheme, boolean showLocation ) {
+    this( composite, i, fileFilters, fileFilterNames, abstractMeta, repository, initialScheme, showLocation, VfsFileChooserDialog.VFS_DIALOG_OPEN_FILE );
+  }
+
+  public VFSFileSelection( Composite composite, int i, String[] fileFilters, String[] fileFilterNames, AbstractMeta abstractMeta, Repository repository, String initialScheme, boolean showLocation, int fileDialogMode ) {
     super( composite, i );
     this.initialScheme = initialScheme;
     this.showLocation = showLocation;
@@ -76,6 +81,7 @@ public class VFSFileSelection extends Composite {
     this.fileFilterNames = fileFilterNames;
     this.abstractMeta = abstractMeta;
     this.repository = repository;
+    this.fileDialogMode = fileDialogMode;
     fileNameSupplier = repository == null ? this::promptForFile : this::promptForRepositoryFile;
 
     FormLayout formLayout = new FormLayout();
@@ -117,7 +123,7 @@ public class VFSFileSelection extends Composite {
         initialScheme = "file";
       }
       FileObject file = vfsFileChooser.open( getShell(), null, initialScheme, true, curFile, fileFilters, fileFilterNames, false,
-        VfsFileChooserDialog.VFS_DIALOG_OPEN_FILE, showLocation, true );
+        fileDialogMode, showLocation, true );
       if ( file == null ) {
         return Optional.empty();
       }
