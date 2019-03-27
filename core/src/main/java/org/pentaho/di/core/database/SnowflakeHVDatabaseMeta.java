@@ -43,6 +43,7 @@ import static org.pentaho.di.core.util.Utils.isEmpty;
 public class SnowflakeHVDatabaseMeta extends BaseDatabaseMeta implements DatabaseInterface {
 
   private static final String ALTER_TABLE = "ALTER TABLE ";
+  public static final String WAREHOUSE = "warehouse";
 
   @Override
   public int[] getAccessTypeList() {
@@ -58,14 +59,8 @@ public class SnowflakeHVDatabaseMeta extends BaseDatabaseMeta implements Databas
   }
 
   @Override
-  public String getXulOverlayFile() {
-    return "snowflake";
-  }
-
-  @Override
   public Map<String, String> getDefaultOptions() {
     Map<String, String> defaultOptions = new HashMap<>();
-    defaultOptions.put( getPluginId() + ".warehouse", "nowarehouse" );
     defaultOptions.put( getPluginId() + ".ssl", "on" );
 
     return defaultOptions;
@@ -83,6 +78,9 @@ public class SnowflakeHVDatabaseMeta extends BaseDatabaseMeta implements Databas
 
   @Override
   public String getURL( String hostname, String port, String databaseName ) {
+    Preconditions.checkArgument( !isEmpty( hostname ) );
+    Preconditions.checkArgument( !isEmpty( databaseName ) );
+
     String realHostname = hostname;
     String account = hostname;
     if ( !realHostname.contains( "." ) ) {
@@ -90,13 +88,22 @@ public class SnowflakeHVDatabaseMeta extends BaseDatabaseMeta implements Databas
     } else {
       account = hostname.substring( 0, hostname.indexOf( '.' ) );
     }
-    if ( isEmpty( port ) ) {
-      return "jdbc:snowflake://" + realHostname + "/?account=" + account + "&db=" + databaseName
-        + "&user=" + getUsername() + "&password=" + getPassword();
-    } else {
-      return "jdbc:snowflake://" + realHostname + ":" + port + "/?account=" + account + "&db=" + databaseName
-        + "&user=" + getUsername() + "&password=" + getPassword();
+    return "jdbc:snowflake://"
+      + realHostname
+      + getParamIfSet( ":", port )
+      + "/?account=" + account
+      + "&db=" + databaseName
+      + "&user=" + getUsername()
+      + "&password=" + getPassword()
+      + getParamIfSet( "&warehouse=", getAttributes().getProperty( WAREHOUSE ) );
+  }
+
+
+  private String getParamIfSet( String param, String val ) {
+    if ( !isEmpty( val ) ) {
+      return param + val;
     }
+    return "";
   }
 
   /**
