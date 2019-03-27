@@ -361,25 +361,6 @@ public class SnowflakeHVDatabaseMeta extends BaseDatabaseMeta implements Databas
       "WHERE", "WITH" };
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.pentaho.di.core.database.DatabaseInterface#getStartQuote()
-   */
-  @Override
-  public String getStartQuote() {
-    return "'";
-  }
-
-  /**
-   * Simply add an underscore in the case of MySQL!
-   *
-   * @see org.pentaho.di.core.database.DatabaseInterface#getEndQuote()
-   */
-  @Override
-  public String getEndQuote() {
-    return "'";
-  }
 
   /**
    * @return extra help text on the supported options on the selected database platform.
