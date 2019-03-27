@@ -26,6 +26,7 @@ import com.google.common.io.Files;
 import org.apache.commons.vfs2.FileObject;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Workbook;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -74,7 +75,7 @@ public class ExcelWriterStepTest {
   private static final String DOT_XLSX = '.' + XLSX;
   private static final String EMPTY_STRING = "";
 
-  private HSSFWorkbook wb;
+  private Workbook wb;
   private StepMockHelper<ExcelWriterStepMeta, ExcelWriterStepData> mockHelper;
   private ExcelWriterStep step;
 
@@ -281,8 +282,8 @@ public class ExcelWriterStepTest {
     dataMock.sheet = spy( dataMock.sheet );
     step.writeNextLine( new Object[] { 12 } );
 
-    // without the fix for PDI-17146, createRow would generate an exception
-    verify( dataMock.sheet, times( 1 ) ).createRow( anyInt() );
+    verify( dataMock.sheet, times( 0 ) ).createRow( 1 );
+    verify( dataMock.sheet ).getRow( 1 );
   }
 
   @Test
@@ -415,7 +416,7 @@ public class ExcelWriterStepTest {
 
     doReturn( path ).when( step ).buildFilename( 0 );
     doReturn( false ).when( metaMock ).isTemplateEnabled();
-    doReturn( true ).when( metaMock ).isStreamingData();
+    doReturn( false ).when( metaMock ).isStreamingData();
     doReturn( false ).when( metaMock ).isHeaderEnabled();
     doReturn( XLSX ).when( metaMock ).getExtension();
     ExcelWriterStepField field = new ExcelWriterStepField();
@@ -432,7 +433,9 @@ public class ExcelWriterStepTest {
 
     verify( step ).writeField( eq( vObj ), eq( vmi ), eq( field ), any( Row.class ), eq( 0 ), any(), eq( 0 ),
       eq( Boolean.FALSE ) );
-    verify( dataMock.sheet ).createRow( 1 );
+
+    verify( dataMock.sheet ).createRow( anyInt() );
+    verify( dataMock.sheet ).getRow( 1 );
   }
 
   /**
@@ -446,8 +449,8 @@ public class ExcelWriterStepTest {
     }
   }
 
-  private HSSFWorkbook createWorkbook( FileObject file ) throws Exception {
-    HSSFWorkbook wb = null;
+  private Workbook createWorkbook( FileObject file ) throws Exception {
+    Workbook wb = null;
     OutputStream os = null;
     try {
       os = file.getContent().getOutputStream();
