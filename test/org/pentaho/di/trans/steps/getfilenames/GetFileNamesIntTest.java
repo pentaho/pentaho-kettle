@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -41,8 +41,7 @@ import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.trans.TransHopMeta;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.TransTestFactory;
-
-public class GetFileNamesIntTest {
+public class GetFileNamesIntIT {
 
   private static final String STEPNAME = "TestGetFileNames_Step";
 
@@ -76,9 +75,94 @@ public class GetFileNamesIntTest {
     Variables varSpace = new Variables();
     varSpace.setVariable( "MY_FOLDER_PARAM", tempFolder.getRoot().getAbsolutePath() );
 
-    // Create a file that will be found in the GetFileNames step
-    String expectedFilename = "PDI14800_test.tmp";
+    // Content inside selected folder
+    String expectedFilename = "file.tmp";
+    String expectedSubFolderName = "subfolder";
     tempFolder.newFile( expectedFilename );
+    tempFolder.newFolder( expectedSubFolderName );
+
+    List<RowMetaAndData> result =
+      TransTestFactory.executeTestTransformation( transMeta, TransTestFactory.INJECTOR_STEPNAME, STEPNAME,
+        TransTestFactory.DUMMY_STEPNAME, new ArrayList<RowMetaAndData>(), null, varSpace );
+
+    // Check that the expected file was located correctly
+    assertNotNull( result );
+    assertEquals( 2, result.size() );
+    assertTrue( result.get( 0 ).getRowMeta().indexOfValue( "short_filename" ) >= 0 );
+    assertEquals( expectedFilename, result.get( 0 ).getString( "short_filename", "failure" ) );
+    assertTrue( result.get( 1 ).getRowMeta().indexOfValue( "short_filename" ) >= 0 );
+    assertEquals( expectedSubFolderName, result.get( 1 ).getString( "short_filename", "failure" ) );
+  }
+
+  @Test
+  public void testParameterFolderNameWithoutWildcard() throws KettleException, IOException {
+    GetFileNamesMeta meta = new GetFileNamesMeta();
+    meta.setDefault();
+
+    meta.allocate( 1 );
+    meta.setFileName( new String[]{ "${MY_FOLDER_PARAM}" } );
+    meta.setFileMask( new String[]{ "" } );
+    meta.setExcludeFileMask( new String[]{ "" } );
+    meta.setFileRequired( new String[]{ "Y" } );
+    meta.setIncludeSubFolders( new String[]{ "N" } );
+
+    TransMeta transMeta = TransTestFactory.generateTestTransformation( null, meta, STEPNAME );
+    //Remove the Injector hop, as it's not needed for this transformation
+    TransHopMeta injectHop = transMeta.findTransHop( transMeta.findStep( TransTestFactory.INJECTOR_STEPNAME ),
+      transMeta.findStep( STEPNAME ) );
+    transMeta.removeTransHop( transMeta.indexOfTransHop( injectHop ) );
+
+    transMeta.addParameterDefinition( "MY_FOLDER_PARAM", "C:\\ThisFolderDoesNotExist", "The folder to look in for files" );
+    Variables varSpace = new Variables();
+    varSpace.setVariable( "MY_FOLDER_PARAM", tempFolder.getRoot().getAbsolutePath() );
+
+    // Content inside selected folder
+    String expectedFilename = "file.tmp";
+    String expectedSubFolderName = "subfolder";
+    tempFolder.newFile( expectedFilename );
+    tempFolder.newFolder( expectedSubFolderName );
+
+    List<RowMetaAndData> result =
+      TransTestFactory.executeTestTransformation( transMeta, TransTestFactory.INJECTOR_STEPNAME, STEPNAME,
+        TransTestFactory.DUMMY_STEPNAME, new ArrayList<RowMetaAndData>(), null, varSpace );
+
+    // Check that the expected file was located correctly
+    assertNotNull( result );
+    assertEquals( 2, result.size() );
+    assertTrue( result.get( 0 ).getRowMeta().indexOfValue( "short_filename" ) >= 0 );
+    assertEquals( expectedFilename, result.get( 0 ).getString( "short_filename", "failure" ) );
+    assertTrue( result.get( 1 ).getRowMeta().indexOfValue( "short_filename" ) >= 0 );
+    assertEquals( expectedSubFolderName, result.get( 1 ).getString( "short_filename", "failure" ) );
+  }
+
+  @Test
+  public void testParameterFolderNameOnlyFiles() throws KettleException, IOException {
+    GetFileNamesMeta meta = new GetFileNamesMeta();
+    meta.setDefault();
+
+    meta.allocate( 1 );
+    meta.setFileName( new String[]{ "${MY_FOLDER_PARAM}" } );
+    meta.setFileMask( new String[]{ ".*" } );
+    meta.setExcludeFileMask( new String[]{ "" } );
+    meta.setFileRequired( new String[]{ "Y" } );
+    meta.setIncludeSubFolders( new String[]{ "N" } );
+    meta.setFilterFileType( 1 );
+
+    TransMeta transMeta = TransTestFactory.generateTestTransformation( null, meta, STEPNAME );
+    //Remove the Injector hop, as it's not needed for this transformation
+    TransHopMeta injectHop = transMeta.findTransHop( transMeta.findStep( TransTestFactory.INJECTOR_STEPNAME ),
+      transMeta.findStep( STEPNAME ) );
+    transMeta.removeTransHop( transMeta.indexOfTransHop( injectHop ) );
+
+    transMeta.addParameterDefinition( "MY_FOLDER_PARAM", "C:\\ThisFolderDoesNotExist", "The folder to look in for files" );
+    Variables varSpace = new Variables();
+    varSpace.setVariable( "MY_FOLDER_PARAM", tempFolder.getRoot().getAbsolutePath() );
+
+    // Content inside selected folder
+    String expectedFilename = "file.tmp";
+    String expectedSubFolderName = "subfolder";
+    tempFolder.newFile( expectedFilename );
+    tempFolder.newFolder( expectedSubFolderName );
 
     List<RowMetaAndData> result =
       TransTestFactory.executeTestTransformation( transMeta, TransTestFactory.INJECTOR_STEPNAME, STEPNAME,
@@ -89,6 +173,125 @@ public class GetFileNamesIntTest {
     assertEquals( 1, result.size() );
     assertTrue( result.get( 0 ).getRowMeta().indexOfValue( "short_filename" ) >= 0 );
     assertEquals( expectedFilename, result.get( 0 ).getString( "short_filename", "failure" ) );
-    
+  }
+
+  @Test
+  public void testParameterFolderNameWithoutWildcardAndOnlyFiles() throws KettleException, IOException {
+    GetFileNamesMeta meta = new GetFileNamesMeta();
+    meta.setDefault();
+
+    meta.allocate( 1 );
+    meta.setFileName( new String[]{ "${MY_FOLDER_PARAM}" } );
+    meta.setFileMask( new String[]{ "" } );
+    meta.setExcludeFileMask( new String[]{ "" } );
+    meta.setFileRequired( new String[]{ "Y" } );
+    meta.setIncludeSubFolders( new String[]{ "N" } );
+    meta.setFilterFileType( 1 );
+
+    TransMeta transMeta = TransTestFactory.generateTestTransformation( null, meta, STEPNAME );
+    //Remove the Injector hop, as it's not needed for this transformation
+    TransHopMeta injectHop = transMeta.findTransHop( transMeta.findStep( TransTestFactory.INJECTOR_STEPNAME ),
+      transMeta.findStep( STEPNAME ) );
+    transMeta.removeTransHop( transMeta.indexOfTransHop( injectHop ) );
+
+    transMeta.addParameterDefinition( "MY_FOLDER_PARAM", "C:\\ThisFolderDoesNotExist", "The folder to look in for files" );
+    Variables varSpace = new Variables();
+    varSpace.setVariable( "MY_FOLDER_PARAM", tempFolder.getRoot().getAbsolutePath() );
+
+    // Content inside selected folder
+    String expectedFilename = "file.tmp";
+    String expectedSubFolderName = "subfolder";
+    tempFolder.newFile( expectedFilename );
+    tempFolder.newFolder( expectedSubFolderName );
+
+    List<RowMetaAndData> result =
+      TransTestFactory.executeTestTransformation( transMeta, TransTestFactory.INJECTOR_STEPNAME, STEPNAME,
+        TransTestFactory.DUMMY_STEPNAME, new ArrayList<RowMetaAndData>(), null, varSpace );
+
+    // Check that the expected file was located correctly
+    assertNotNull( result );
+    assertEquals( 1, result.size() );
+    assertTrue( result.get( 0 ).getRowMeta().indexOfValue( "short_filename" ) >= 0 );
+    assertEquals( expectedFilename, result.get( 0 ).getString( "short_filename", "failure" ) );
+  }
+
+  @Test
+  public void testParameterFolderNameOnlyFolders() throws KettleException, IOException {
+    GetFileNamesMeta meta = new GetFileNamesMeta();
+    meta.setDefault();
+
+    meta.allocate( 1 );
+    meta.setFileName( new String[]{ "${MY_FOLDER_PARAM}" } );
+    meta.setFileMask( new String[]{ ".*" } );
+    meta.setExcludeFileMask( new String[]{ "" } );
+    meta.setFileRequired( new String[]{ "Y" } );
+    meta.setIncludeSubFolders( new String[]{ "N" } );
+    meta.setFilterFileType( 2 );
+
+    TransMeta transMeta = TransTestFactory.generateTestTransformation( null, meta, STEPNAME );
+    //Remove the Injector hop, as it's not needed for this transformation
+    TransHopMeta injectHop = transMeta.findTransHop( transMeta.findStep( TransTestFactory.INJECTOR_STEPNAME ),
+      transMeta.findStep( STEPNAME ) );
+    transMeta.removeTransHop( transMeta.indexOfTransHop( injectHop ) );
+
+    transMeta.addParameterDefinition( "MY_FOLDER_PARAM", "C:\\ThisFolderDoesNotExist", "The folder to look in for files" );
+    Variables varSpace = new Variables();
+    varSpace.setVariable( "MY_FOLDER_PARAM", tempFolder.getRoot().getAbsolutePath() );
+
+    // Content inside selected folder
+    String expectedFilename = "file.tmp";
+    String expectedSubFolderName = "subfolder";
+    tempFolder.newFile( expectedFilename );
+    tempFolder.newFolder( expectedSubFolderName );
+
+    List<RowMetaAndData> result =
+      TransTestFactory.executeTestTransformation( transMeta, TransTestFactory.INJECTOR_STEPNAME, STEPNAME,
+        TransTestFactory.DUMMY_STEPNAME, new ArrayList<RowMetaAndData>(), null, varSpace );
+
+    // Check that the expected file was located correctly
+    assertNotNull( result );
+    assertEquals( 1, result.size() );
+    assertTrue( result.get( 0 ).getRowMeta().indexOfValue( "short_filename" ) >= 0 );
+    assertEquals( expectedSubFolderName, result.get( 0 ).getString( "short_filename", "failure" ) );
+  }
+
+  @Test
+  public void testParameterFolderNameWithoutWildcardAndOnlyFolders() throws KettleException, IOException {
+    GetFileNamesMeta meta = new GetFileNamesMeta();
+    meta.setDefault();
+
+    meta.allocate( 1 );
+    meta.setFileName( new String[]{ "${MY_FOLDER_PARAM}" } );
+    meta.setFileMask( new String[]{ "" } );
+    meta.setExcludeFileMask( new String[]{ "" } );
+    meta.setFileRequired( new String[]{ "Y" } );
+    meta.setIncludeSubFolders( new String[]{ "N" } );
+    meta.setFilterFileType( 2 );
+
+    TransMeta transMeta = TransTestFactory.generateTestTransformation( null, meta, STEPNAME );
+    //Remove the Injector hop, as it's not needed for this transformation
+    TransHopMeta injectHop = transMeta.findTransHop( transMeta.findStep( TransTestFactory.INJECTOR_STEPNAME ),
+      transMeta.findStep( STEPNAME ) );
+    transMeta.removeTransHop( transMeta.indexOfTransHop( injectHop ) );
+
+    transMeta.addParameterDefinition( "MY_FOLDER_PARAM", "C:\\ThisFolderDoesNotExist", "The folder to look in for files" );
+    Variables varSpace = new Variables();
+    varSpace.setVariable( "MY_FOLDER_PARAM", tempFolder.getRoot().getAbsolutePath() );
+
+    // Content inside selected folder
+    String expectedFilename = "file.tmp";
+    String expectedSubFolderName = "subfolder";
+    tempFolder.newFile( expectedFilename );
+    tempFolder.newFolder( expectedSubFolderName );
+
+    List<RowMetaAndData> result =
+      TransTestFactory.executeTestTransformation( transMeta, TransTestFactory.INJECTOR_STEPNAME, STEPNAME,
+        TransTestFactory.DUMMY_STEPNAME, new ArrayList<RowMetaAndData>(), null, varSpace );
+
+    // Check that the expected file was located correctly
+    assertNotNull( result );
+    assertEquals( 1, result.size() );
+    assertTrue( result.get( 0 ).getRowMeta().indexOfValue( "short_filename" ) >= 0 );
+    assertEquals( expectedSubFolderName, result.get( 0 ).getString( "short_filename", "failure" ) );
   }
 }
