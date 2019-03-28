@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -169,9 +169,6 @@ public class TextFileOutput extends BaseStep implements StepInterface {
   public void initFileStreamWriter( String filename ) throws KettleException {
     data.writer = null;
     try {
-      BufferedOutputStream bufferedOutputStream;
-      OutputStream fileOutputStream;
-      CompressionOutputStream compressionOutputStream;
       TextFileOutputData.FileStream fileStreams = null;
 
       try {
@@ -183,13 +180,23 @@ public class TextFileOutput extends BaseStep implements StepInterface {
           fileStreams = data.getFileStreamsCollection().getStream( filename );
         }
 
-        boolean writingToFileForFirstTime = fileStreams != null;
-        boolean createParentDirIfNotExists = meta.isCreateParentFolder();
-        boolean appendToExistingFile = meta.isFileAppended();
+        boolean writingToFileForFirstTime = fileStreams == null;
 
-        if ( fileStreams == null ) { // Opening file for first time
+        if ( writingToFileForFirstTime ) { // Opening file for first time
+
+          if ( meta.isAddToResultFiles() ) {
+            // Add this to the result file names...
+            ResultFile resultFile =
+              new ResultFile( ResultFile.FILE_TYPE_GENERAL, getFileObject( filename, getTransMeta() ),
+                getTransMeta().getName(), getStepname() );
+            resultFile.setComment( BaseMessages.getString( PKG, "TextFileOutput.AddResultFile" ) );
+            addResultFile( resultFile );
+          }
+
           CompressionProvider compressionProvider = getCompressionProvider();
           boolean isZipFile = compressionProvider instanceof ZIPCompressionProvider;
+          boolean createParentDirIfNotExists = meta.isCreateParentFolder();
+          boolean appendToExistingFile = meta.isFileAppended();
 
           if ( appendToExistingFile && isZipFile && isFileExists( filename ) ) {
             throw new KettleException( "Can not append to an existing zip file : " + filename );
@@ -212,8 +219,9 @@ public class TextFileOutput extends BaseStep implements StepInterface {
             logDetailed( "Opening output stream using provider: " + compressionProvider.getName() );
           }
 
-          fileOutputStream = getOutputStream( filename, getTransMeta(), !isZipFile && appendToExistingFile );
-          compressionOutputStream = compressionProvider.createOutputStream( fileOutputStream );
+          OutputStream fileOutputStream =
+            getOutputStream( filename, getTransMeta(), !isZipFile && appendToExistingFile );
+          CompressionOutputStream compressionOutputStream = compressionProvider.createOutputStream( fileOutputStream );
 
           // The compression output stream may also archive entries. For this we create the filename
           // (with appropriate extension) and add it as an entry to the output stream. For providers
@@ -228,7 +236,7 @@ public class TextFileOutput extends BaseStep implements StepInterface {
             }
           }
 
-          bufferedOutputStream = new BufferedOutputStream( compressionOutputStream, 5000 );
+          BufferedOutputStream bufferedOutputStream = new BufferedOutputStream( compressionOutputStream, 5000 );
 
           fileStreams = data.new FileStream( fileOutputStream, compressionOutputStream, bufferedOutputStream );
 
@@ -243,26 +251,15 @@ public class TextFileOutput extends BaseStep implements StepInterface {
             data.getFileStreamsCollection().closeOldestOpenFile( false );
           }
 
-          fileOutputStream = getOutputStream( filename, getTransMeta(), true );
+          OutputStream fileOutputStream = getOutputStream( filename, getTransMeta(), true );
           CompressionProvider compressionProvider = getCompressionProvider();
-          compressionOutputStream = compressionProvider.createOutputStream( fileOutputStream );
+          CompressionOutputStream compressionOutputStream = compressionProvider.createOutputStream( fileOutputStream );
           compressionOutputStream.addEntry( filename, environmentSubstitute( meta.getExtension() ) );
-          bufferedOutputStream = new BufferedOutputStream( compressionOutputStream, 5000 );
+          BufferedOutputStream bufferedOutputStream = new BufferedOutputStream( compressionOutputStream, 5000 );
 
           fileStreams.setFileOutputStream( fileOutputStream );
           fileStreams.setCompressedOutputStream( compressionOutputStream );
           fileStreams.setBufferedOutputStream( bufferedOutputStream );
-        }
-
-        if ( writingToFileForFirstTime ) {
-          if ( meta.isAddToResultFiles() ) {
-            // Add this to the result file names...
-            ResultFile resultFile = new ResultFile( ResultFile.FILE_TYPE_GENERAL, getFileObject( filename, getTransMeta() ), getTransMeta().getName(), getStepname() );
-            if ( resultFile != null ) {
-              resultFile.setComment( BaseMessages.getString( PKG, "TextFileOutput.AddResultFile" ) );
-              addResultFile( resultFile );
-            }
-          }
         }
       } catch ( Exception e ) {
         if ( !( e instanceof KettleException ) ) {
@@ -390,8 +387,8 @@ public class TextFileOutput extends BaseStep implements StepInterface {
 
   // Warning!!!
   // We need to be very particular about how we go about determining whether or not to write a file header before writing the row data.
-  // There are two performance issues in play. 1: Don't hit the file system unneccesarily. 2: Don't search the collection of
-  // file streams unneccessarily. Messing around with this method could have serious performance impacts.
+  // There are two performance issues in play. 1: Don't hit the file system unnecessarily. 2: Don't search the collection of
+  // file streams unnecessarily. Messing around with this method could have serious performance impacts.
   public boolean isWriteHeader( String filename ) throws KettleException {
     boolean writingToFileForFirstTime = first;
     boolean isWriteHeader = meta.isHeaderEnabled();
