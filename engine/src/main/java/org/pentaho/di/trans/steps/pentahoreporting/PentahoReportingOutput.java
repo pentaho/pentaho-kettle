@@ -178,8 +178,7 @@ public class PentahoReportingOutput extends BaseStep implements StepInterface {
     ResourceManager manager = new ResourceManager();
     manager.registerDefaults();
     FileObject fileObject = KettleVFS.getFileObject( sourceFilename );
-    URL url = new URL( fileObject.getName().getURI() );
-    Resource resource = manager.createDirectly( url, MasterReport.class );
+    Resource resource = manager.createDirectly( fileObject, MasterReport.class );
     MasterReport report = (MasterReport) resource.getResource();
 
     return report;
