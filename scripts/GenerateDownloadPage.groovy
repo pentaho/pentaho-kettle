@@ -45,15 +45,15 @@ String htmlHeaderData = "<!DOCTYPE html>\n" +
     "<meta http-equiv=\"content-language\" content=\"en-US\" />\n" +
     "<meta http-equiv=\"content-type\" content=\"text/html; charset=UTF-8\" />\n" +
     "<meta name=\"baseURL\" content=\"${pageRootUrl}\" />\n" +
-    "<link rel=\"icon\" href=\"http://build.pentaho.com/web/logo_icon.png\" type=\"image/png\" />\n" +
-    "<link rel=\"shortcut icon\" href=\"http://build.pentaho.com/web/logo_icon.png\" type=\"image/png\" />\n" +
+    "<link rel=\"icon\" href=\"http://build.pentaho.net/web/logo_icon.png\" type=\"image/png\" />\n" +
+    "<link rel=\"shortcut icon\" href=\"http://build.pentaho.net/web/logo_icon.png\" type=\"image/png\" />\n" +
     "<link rel=\"alternate\" type=\"application/rss+xml\" href=\"http://feeds.feedburner.com/pentaho-releases\" />\n" +
     "<link rel=\"alternate\" type=\"application/rss+xml\" href=\"http://feeds.feedburner.com/pentaho-highlights\" />\n" +
-    "<link rel=\"stylesheet\" type=\"text/css\" href=\"http://build.pentaho.com/web/css/pages_2011.css?2052\" />\n" +
+    "<link rel=\"stylesheet\" type=\"text/css\" href=\"http://build.pentaho.net/web/css/pages_2011.css?2052\" />\n" +
     "<link rel=\"stylesheet\" type=\"text/css\" href=\"http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.14/themes/base/jquery-ui.css\" />\n" +
-    "<link rel=\"stylesheet\" type=\"text/css\" href=\"http://build.pentaho.com/web/css/dialog.css?2011\" />\n" +
-    "<link rel=\"stylesheet\" type=\"text/css\" href=\"http://build.pentaho.com/web/css/forms.css?2011\" />\n" +
-    "<link rel=\"stylesheet\" href=\"http://build.pentaho.com/web/css/master.css\">\n" +
+    "<link rel=\"stylesheet\" type=\"text/css\" href=\"http://build.pentaho.net/web/css/dialog.css?2011\" />\n" +
+    "<link rel=\"stylesheet\" type=\"text/css\" href=\"http://build.pentaho.net/web/css/forms.css?2011\" />\n" +
+    "<link rel=\"stylesheet\" href=\"http://build.pentaho.net/web/css/master.css\">\n" +
     "\t<link rel=\"stylesheet\" href=\"//fonts.googleapis.com/css?family=Open+Sans:300\">\n" +
     "\t\n" +
     "\t<script>document.write(unescape('%3Cstyle type=\"text/css\" media=\"screen\"%3E .js-hide {display: none;} .js-show {display: block;} .fouc-fix {display:none;} %3C/style%3E'));</script>\n" +
@@ -73,7 +73,7 @@ String htmlHeaderData = "<!DOCTYPE html>\n" +
     "    <div class=\"header\">\n" +
     "\t\t<div class=\"container\">\n" +
     "\t\t\t<a href=\"http://www.pentaho.com/\" class=\"logo\">\n" +
-    "\t\t\t\t<img src=\"http://build.pentaho.com/web/logo-pentaho.png\" width=\"195\" height=\"52\" alt=\"\">\n" +
+    "\t\t\t\t<img src=\"http://build.pentaho.net/web/logo-pentaho.png\" width=\"195\" height=\"52\" alt=\"\">\n" +
     "\t\t\t</a>\n" +
     "\t\t\t<div class=\"right\">\n" +
     "\t\t\t\t<ul class=\"super-nav\">\n" +
