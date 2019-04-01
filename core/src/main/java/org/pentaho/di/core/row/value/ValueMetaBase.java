@@ -119,9 +119,6 @@ public class ValueMetaBase implements ValueMetaInterface {
 
   public static final String COMPATIBLE_DATE_FORMAT_PATTERN = "yyyy/MM/dd HH:mm:ss.SSS";
 
-  public static final Boolean EMPTY_STRING_AND_NULL_ARE_DIFFERENT = convertStringToBoolean(
-          Const.NVL( System.getProperty( Const.KETTLE_EMPTY_STRING_DIFFERS_FROM_NULL, "N" ), "N" ) );
-
   protected String name;
   protected int length;
   protected int precision;
@@ -150,6 +147,7 @@ public class ValueMetaBase implements ValueMetaInterface {
   protected boolean dateFormatLenient;
   protected boolean lenientStringToNumber;
   protected boolean ignoreTimezone;
+  protected boolean emptyStringAndNullAreDifferent;
 
   protected SimpleDateFormat dateFormat;
   protected boolean dateFormatChanged;
@@ -244,9 +242,10 @@ public class ValueMetaBase implements ValueMetaInterface {
     this.ignoreTimezone =
       convertStringToBoolean( Const.NVL( System.getProperty( Const.KETTLE_COMPATIBILITY_DB_IGNORE_TIMEZONE, "N" ),
         "N" ) );
+    this.emptyStringAndNullAreDifferent = convertStringToBoolean(
+      Const.NVL( System.getProperty( Const.KETTLE_EMPTY_STRING_DIFFERS_FROM_NULL, "N" ), "N" ) );
 
     this.comparator = comparator;
-
     determineSingleByteEncoding();
     setDefaultConversionMask();
   }
@@ -1490,7 +1489,7 @@ public class ValueMetaBase implements ValueMetaInterface {
    */
   protected String convertBinaryStringToString( byte[] binary ) throws KettleValueException {
     //noinspection deprecation
-    return convertBinaryStringToString( binary, EMPTY_STRING_AND_NULL_ARE_DIFFERENT );
+    return convertBinaryStringToString( binary, emptyStringAndNullAreDifferent );
   }
 
   /*
@@ -3564,7 +3563,7 @@ public class ValueMetaBase implements ValueMetaInterface {
   @Override
   public boolean isNull( Object data ) throws KettleValueException {
     //noinspection deprecation
-    return isNull( data, EMPTY_STRING_AND_NULL_ARE_DIFFERENT );
+    return isNull( data, emptyStringAndNullAreDifferent );
   }
 
   /*
