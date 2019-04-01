@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -41,6 +41,9 @@ import static org.junit.Assert.assertNull;
  * @author Andrey Khayrutdinov
  */
 public class CsvInputEnclosureTest extends CsvInputUnitTestBase {
+  private static final String QUOTATION_AND_EXCLAMATION_MARK = "\"!";
+  private static final String QUOTATION_MARK = "\"";
+  private static final String SEMICOLON = ";";
 
   private CsvInput csvInput;
 
@@ -55,57 +58,57 @@ public class CsvInputEnclosureTest extends CsvInputUnitTestBase {
 
   @Test
   public void hasEnclosures_HasNewLine() throws Exception {
-    doTest( "\"value1\";\"value2\"\n", "\"" );
+    doTest( "\"value1\";\"value2\"\n", QUOTATION_MARK );
   }
 
   @Test
   public void hasEnclosures_HasNotNewLine() throws Exception {
-    doTest( "\"value1\";\"value2\"", "\"" );
+    doTest( "\"value1\";\"value2\"", QUOTATION_MARK );
   }
 
   @Test
   public void hasNotEnclosures_HasNewLine() throws Exception {
-    doTest( "value1;value2\n", "\"" );
+    doTest( "value1;value2\n", QUOTATION_MARK );
   }
 
   @Test
   public void hasNotEnclosures_HasNotNewLine() throws Exception {
-    doTest( "value1;value2", "\"" );
+    doTest( "value1;value2", QUOTATION_MARK );
   }
 
   @Test
   public void hasMultiSymbolsEnclosureWithoutEnclosureAndEndFile() throws Exception {
-    doTest( "value1;value2", "\"!" );
+    doTest( "value1;value2", QUOTATION_AND_EXCLAMATION_MARK );
   }
 
   @Test
   public void hasMultiSymbolsEnclosureWithEnclosureAndWithoutEndFile() throws Exception {
-    doTest( "\"!value1\"!;value2", "\"!" );
+    doTest( "\"!value1\"!;value2", QUOTATION_AND_EXCLAMATION_MARK );
   }
 
   @Test
   public void hasMultiSymbolsEnclosurewithEnclosureInBothfield() throws Exception {
-    doTest( "\"!value1\"!;\"!value2\"!", "\"!" );
+    doTest( "\"!value1\"!;\"!value2\"!", QUOTATION_AND_EXCLAMATION_MARK );
   }
 
   @Test
   public void hasMultiSymbolsEnclosureWithoutEnclosureAndWithEndfileRN() throws Exception {
-    doTest( "value1;value2\r\n", "\"!" );
+    doTest( "value1;value2\r\n", QUOTATION_AND_EXCLAMATION_MARK );
   }
 
   @Test
   public void hasMultiSymbolsEnclosureWithEnclosureAndWithEndfileRN() throws Exception {
-    doTest( "value1;\"!value2\"!\r\n", "\"!" );
+    doTest( "value1;\"!value2\"!\r\n", QUOTATION_AND_EXCLAMATION_MARK );
   }
 
   @Test
   public void hasMultiSymbolsEnclosureWithoutEnclosureAndWithEndfileN() throws Exception {
-    doTest( "value1;value2\n", "\"!" );
+    doTest( "value1;value2\n", QUOTATION_AND_EXCLAMATION_MARK );
   }
 
   @Test
   public void hasMultiSymbolsEnclosureWithEnclosureAndWithEndfileN() throws Exception {
-    doTest( "value1;\"!value2\"!\n", "\"!" );
+    doTest( "value1;\"!value2\"!\n", QUOTATION_AND_EXCLAMATION_MARK );
   }
 
   public void doTest( String content, String enclosure ) throws Exception {
@@ -124,7 +127,6 @@ public class CsvInputEnclosureTest extends CsvInputUnitTestBase {
       } finally {
         csvInput.dispose( meta, data );
       }
-
     } finally {
       tmp.delete();
     }
@@ -138,14 +140,9 @@ public class CsvInputEnclosureTest extends CsvInputUnitTestBase {
   }
 
   private CsvInputMeta createMeta( File file, TextFileInputField[] fields, String enclosure ) {
-    CsvInputMeta meta = new CsvInputMeta();
-    meta.setFilename( file.getAbsolutePath() );
-    meta.setDelimiter( ";" );
-    meta.setEncoding( "utf-8" );
+    CsvInputMeta meta = createMeta( file, fields );
+    meta.setDelimiter( SEMICOLON );
     meta.setEnclosure( enclosure );
-    meta.setBufferSize( "1024" );
-    meta.setInputFields( fields );
-    meta.setHeaderPresent( false );
     return meta;
   }
 }
