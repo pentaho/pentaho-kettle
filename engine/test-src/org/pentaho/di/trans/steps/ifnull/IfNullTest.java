@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -28,10 +28,10 @@ import static org.mockito.Mockito.doCallRealMethod;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.when;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.pentaho.di.core.Const;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.QueueRowSet;
 import org.pentaho.di.core.RowSet;
@@ -48,7 +48,6 @@ import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.steps.ifnull.IfNullMeta.Fields;
 import org.pentaho.di.trans.steps.mock.StepMockHelper;
 import org.pentaho.metastore.api.IMetaStore;
-import org.pentaho.test.util.FieldAccessor;
 
 import junit.framework.Assert;
 
@@ -73,11 +72,6 @@ public class IfNullTest {
         smh.logChannelInterface );
     when( smh.trans.isRunning() ).thenReturn( true );
 
-  }
-
-  @After
-  public void clean() throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
-    FieldAccessor.resetEmptyStringIsNotNull();
   }
 
   private RowSet buildInputRowSet( Object... row ) {
@@ -115,7 +109,7 @@ public class IfNullTest {
   @Test
   public void testString_emptyIsNull() throws KettleException {
 
-    FieldAccessor.ensureEmptyStringIsNotNull( false );
+    System.setProperty( Const.KETTLE_EMPTY_STRING_DIFFERS_FROM_NULL, "N" );
 
     IfNull step = new IfNull( smh.stepMeta, smh.stepDataInterface, 0, smh.transMeta, smh.trans );
     step.init( smh.initStepMetaInterface, smh.stepDataInterface );
@@ -148,7 +142,7 @@ public class IfNullTest {
   @Test
   public void testString_emptyIsNotNull() throws KettleException {
 
-    FieldAccessor.ensureEmptyStringIsNotNull( true );
+    System.setProperty( Const.KETTLE_EMPTY_STRING_DIFFERS_FROM_NULL, "Y" );
 
     IfNull step = new IfNull( smh.stepMeta, smh.stepDataInterface, 0, smh.transMeta, smh.trans );
     step.init( smh.initStepMetaInterface, smh.stepDataInterface );
