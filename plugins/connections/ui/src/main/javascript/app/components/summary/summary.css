@@ -1,0 +1,54 @@
+.group_holder {
+  border: 1px solid #CBCBCB;
+  border-radius: 5px;
+  font-size: 14px;
+  padding: 10px;
+}
+
+.group {
+  clear: both;
+}
+
+.group .label {
+  float: left;
+  width: 50%;
+}
+
+.group .value {
+  float: right;
+  width: 50%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-align: right;
+}
+
+.group:after {
+  content: "";
+  display: table;
+  clear: both;
+}
+
+.section_header label {
+  float: left;
+}
+
+.section_header .edit {
+  cursor: pointer;
+  float: right;
+  background-image: url('../../img/generic-edit.svg');
+  background-position: center center;
+  width: 16px;
+  height: 16px;
+  margin-top: 3px;
+}
+
+.section_header:after {
+  content: "";
+  display: table;
+  clear: both;
+}
+
+summary .middle_div {
+  width: 480px;
+}
