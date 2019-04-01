@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -262,7 +262,7 @@ public class CsvInput extends BaseStep implements StepInterface {
   }
 
   private void getFilenamesFromPreviousSteps() throws KettleException {
-    List<String> filenames = new ArrayList<String>();
+    List<String> filenames = new ArrayList<>();
     boolean firstRow = true;
     int index = -1;
     Object[] row = getRow();
@@ -341,11 +341,13 @@ public class CsvInput extends BaseStep implements StepInterface {
         data.binaryFilename = data.filenames[ data.filenr ].getBytes();
       }
 
-      BOMDetector bom = new BOMDetector( new BufferedInputStream( new FileInputStream( KettleVFS.getFilename( fileObject ) ) ) );
+      String vfsFilename = KettleVFS.getFilename( fileObject );
 
-      data.fis = new FileInputStream( KettleVFS.getFilename( fileObject ) );
-      if ( bom.bomExist() ) {
-        data.fis.skip( bom.getBomSize() );
+      int bomSize = getBOMSize( vfsFilename );
+
+      data.fis = new FileInputStream( vfsFilename );
+      if ( 0 != bomSize ) {
+        data.fis.skip( bomSize );
       }
 
       data.fc = data.fis.getChannel();
@@ -418,6 +420,20 @@ public class CsvInput extends BaseStep implements StepInterface {
     } catch ( Exception e ) {
       throw new KettleException( e );
     }
+  }
+
+  protected int getBOMSize( String vfsFilename ) throws Exception {
+    int bomSize = 0;
+    try ( FileInputStream fis = new FileInputStream( vfsFilename );
+          BufferedInputStream bis = new BufferedInputStream( fis ) ) {
+      BOMDetector bom = new BOMDetector( bis );
+
+      if ( bom.bomExist() ) {
+        bomSize = bom.getBomSize();
+      }
+    }
+
+    return bomSize;
   }
 
   FieldsMapping createFieldMapping( String fileName, CsvInputMeta csvInputMeta )
@@ -942,7 +958,7 @@ public class CsvInput extends BaseStep implements StepInterface {
    */
   public static String[] guessStringsFromLine( LogChannelInterface log, String line, String delimiter,
                                                String enclosure, String escapeCharacter ) throws KettleException {
-    List<String> strings = new ArrayList<String>();
+    List<String> strings = new ArrayList<>();
 
     String pol; // piece of line
 
