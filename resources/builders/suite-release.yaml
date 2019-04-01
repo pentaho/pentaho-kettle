@@ -23,7 +23,7 @@ buildProperties:
         RUN_VERSIONING                 : true
         RELEASE_VERSION                : 8.3.0.0
         DEPLOYMENT_FOLDER              : 8.3-QAT
-        RELEASE_MODE                   : true
+        RELEASE_MODE                   : false
         DEFAULT_BRANCH                 : master
         SUITE_BUILD_RESOURCES_BRANCH   : 8.3.0.0
         SERVICEPACK_BRANCH             : ${DEFAULT_BRANCH}
