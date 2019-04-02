@@ -5,7 +5,6 @@ buildProperties:
         BUILD_PLAN_ID                  : 8.3 Suite Release
 
         MAVEN_DEFAULT_COMMAND_OPTIONS  : -B -e -Drelease
-        ARCHIVE_ARTIFACTS_PATTERN      : '**/{target/*.gz,target/*.zip}'
         BUILD_RETRIES                  : 3
         ATTACH_LOGS                    : false
         USE_MINION_JOBS                : true

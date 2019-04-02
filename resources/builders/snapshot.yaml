@@ -9,7 +9,6 @@ buildProperties:
         MAVEN_PUBLIC_SNAPSHOT_REPO_URL  : https://nexus.pentaho.org/content/repositories/public-8.3-snapshot
         MAVEN_PRIVATE_SNAPSHOT_REPO_URL : https://nexus.pentaho.org/content/repositories/private-8.3-snapshot
 
-        ARCHIVE_ARTIFACTS_PATTERN      : '**/{target/*.gz,target/*.zip}'
         JOB_ITEM_DEFAULTS              :
           dockerImage                  : jenkins-build/maven-oracle-jdk-8
 
