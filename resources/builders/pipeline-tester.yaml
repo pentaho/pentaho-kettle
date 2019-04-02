@@ -36,3 +36,9 @@ jobGroups:
        scmUrl          :  https://github.com/pentaho/maven-parent-poms-ee.git
        scmBranch       :  ${DEFAULT_BRANCH}
        testable        :  false
+
+     - jobID           :  metadata-editor
+       scmUrl          :  https://github.com/pentaho/pentaho-metadata-editor.git
+       scmBranch       :  ${DEFAULT_BRANCH}
+       versionProperty :  pentaho-metadata.version
+       archivable      :  true
