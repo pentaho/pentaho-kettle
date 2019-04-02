@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -30,11 +30,13 @@ import java.util.Map;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.junit.Before;
 import org.junit.Test;
+import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.trans.steps.loadsave.LoadSaveTester;
 import org.pentaho.di.trans.steps.loadsave.validator.ArrayLoadSaveValidator;
 import org.pentaho.di.trans.steps.loadsave.validator.FieldLoadSaveValidator;
 import org.pentaho.di.trans.steps.nullif.NullIfMeta.Field;
+import static org.junit.Assert.assertEquals;
 
 public class NullIfMetaTest {
 
@@ -73,6 +75,30 @@ public class NullIfMetaTest {
   @Test
   public void testSerialization() throws KettleException {
     loadSaveTester.testSerialization();
+  }
+
+  @Test
+  public void setFieldValueTest() {
+    Field field = new Field();
+    System.setProperty( Const.KETTLE_EMPTY_STRING_DIFFERS_FROM_NULL, "N" );
+    field.setFieldValue( "theValue" );
+    assertEquals( "theValue", field.getFieldValue() );
+  }
+
+  @Test
+  public void setFieldValueNullTest() {
+    Field field = new Field();
+    System.setProperty( Const.KETTLE_EMPTY_STRING_DIFFERS_FROM_NULL, "N" );
+    field.setFieldValue( null );
+    assertEquals( null, field.getFieldValue() );
+  }
+
+  @Test
+  public void setFieldValueNullWithEmptyStringsDiffersFromNullTest() {
+    Field field = new Field();
+    System.setProperty( Const.KETTLE_EMPTY_STRING_DIFFERS_FROM_NULL, "Y" );
+    field.setFieldValue( null );
+    assertEquals( "", field.getFieldValue() );
   }
 
   public static class NullIfFieldLoadSaveValidator implements FieldLoadSaveValidator<Field> {

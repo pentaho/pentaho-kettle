@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -24,6 +24,7 @@ package org.pentaho.di.trans.steps.regexeval;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.pentaho.di.core.Const;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
@@ -32,7 +33,6 @@ import org.pentaho.di.trans.TransTestingUtil;
 import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.steps.StepMockUtil;
 import org.pentaho.di.trans.steps.mock.StepMockHelper;
-import org.pentaho.test.util.FieldAccessor;
 
 import java.util.List;
 import java.util.regex.Pattern;
@@ -55,33 +55,25 @@ public class RegexEval_EmptyStringVsNull_Test {
 
   @Test
   public void emptyAndNullsAreNotDifferent() throws Exception {
+    System.setProperty( Const.KETTLE_EMPTY_STRING_DIFFERS_FROM_NULL, "N" );
     List<Object[]> expected = Arrays.asList(
       new Object[] { false, "" },
       new Object[] { false, "" },
       new Object[] { false, null }
     );
-    doTestEmptyStringVsNull( false, expected );
+    executeAndAssertResults( expected );
   }
 
 
   @Test
   public void emptyAndNullsAreDifferent() throws Exception {
+    System.setProperty( Const.KETTLE_EMPTY_STRING_DIFFERS_FROM_NULL, "Y" );
     List<Object[]> expected = Arrays.asList(
       new Object[] { false, "" },
       new Object[] { false, "" },
       new Object[] { false, null }
     );
-    doTestEmptyStringVsNull( true, expected );
-  }
-
-
-  private void doTestEmptyStringVsNull( boolean diffProperty, List<Object[]> expected ) throws Exception {
-    FieldAccessor.ensureEmptyStringIsNotNull( diffProperty );
-    try {
-      executeAndAssertResults( expected );
-    } finally {
-      FieldAccessor.resetEmptyStringIsNotNull();
-    }
+    executeAndAssertResults( expected );
   }
 
   private void executeAndAssertResults( List<Object[]> expected ) throws Exception {

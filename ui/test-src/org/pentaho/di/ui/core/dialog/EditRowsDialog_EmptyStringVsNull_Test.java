@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -25,12 +25,12 @@ package org.pentaho.di.ui.core.dialog;
 import org.eclipse.swt.widgets.TableItem;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.pentaho.di.core.Const;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.value.ValueMetaString;
 import org.pentaho.di.trans.TransTestingUtil;
-import org.pentaho.test.util.FieldAccessor;
 
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyInt;
@@ -51,23 +51,15 @@ public class EditRowsDialog_EmptyStringVsNull_Test {
 
   @Test
   public void emptyAndNullsAreNotDifferent() throws Exception {
-    doTestEmptyStringVsNull( false, "", null, null );
+    System.setProperty( Const.KETTLE_EMPTY_STRING_DIFFERS_FROM_NULL, "N" );
+    executeAndAssertResults( new String[]{ "", null, null } );
   }
 
 
   @Test
   public void emptyAndNullsAreDifferent() throws Exception {
-    doTestEmptyStringVsNull( true, "", "", null );
-  }
-
-
-  private void doTestEmptyStringVsNull( boolean diffProperty, String... expected ) throws Exception {
-    FieldAccessor.ensureEmptyStringIsNotNull( diffProperty );
-    try {
-      executeAndAssertResults( expected );
-    } finally {
-      FieldAccessor.resetEmptyStringIsNotNull();
-    }
+    System.setProperty( Const.KETTLE_EMPTY_STRING_DIFFERS_FROM_NULL, "Y" );
+    executeAndAssertResults( new String[]{ "", "", "" } );
   }
 
   private void executeAndAssertResults( String[] expected ) throws Exception {
