@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -397,11 +397,6 @@ public class BrowseController extends AbstractXulEventHandler implements IUISupp
   protected void confirmDialog( String title, String msg, String ok ) throws Exception {
     MessageDialog confirmDialog =
       new MessageDialog( getShell(), title, null, msg, MessageDialog.NONE, new String[] { ok }, 0 ) {
-        @Override
-        protected Point getInitialSize() {
-          return new Point( DIALOG_WIDTH, DIALOG_HEIGHT );
-        }
-
         @Override
         protected void configureShell( Shell shell ) {
           super.configureShell( shell );
