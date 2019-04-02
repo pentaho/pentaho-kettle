@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -185,15 +185,23 @@ public class DatabaseJoin extends BaseStep implements StepInterface {
     return true;
   }
 
-  /** Stop the running query */
-  public void stopRunning( StepMetaInterface smi, StepDataInterface sdi ) throws KettleException {
+  /**
+   * Stop the running query
+   * [PDI-17820] - In the Database Join step data.isCancelled is checked before synchronization and set after synchronization is completed.
+   *
+   * To cancel a prepared statement we need a valid database connection which we do not have if disposed has already been called
+   *
+   *
+   * */
+  public synchronized void stopRunning( StepMetaInterface smi, StepDataInterface sdi ) throws KettleException {
+    if ( this.isStopped() || sdi.isDisposed() ) {
+      return;
+    }
     meta = (DatabaseJoinMeta) smi;
     data = (DatabaseJoinData) sdi;
 
-    if ( data.db != null && !data.isCanceled ) {
-      synchronized ( data.db ) {
-        data.db.cancelStatement( data.pstmt );
-      }
+    if ( data.db != null && data.db.getConnection() != null && !data.isCanceled ) {
+      data.db.cancelStatement( data.pstmt );
       setStopped( true );
       data.isCanceled = true;
     }
