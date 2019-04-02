@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2017 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -165,7 +165,7 @@ public class SingleThreader extends BaseStep implements StepInterface {
     //
     StepWithMappingMeta
       .activateParams( getData().mappingTrans, getData().mappingTrans, this, getData().mappingTrans.listParameters(),
-        meta.getParameters(), meta.getParameterValues() );
+        meta.getParameters(), meta.getParameterValues(), meta.isPassingAllParameters() );
     getData().mappingTrans.activateParameters();
 
     // Disable thread priority managment as it will slow things down needlessly.

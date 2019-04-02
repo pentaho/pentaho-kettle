@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -69,9 +69,10 @@ public class MappingParametersTest {
     MappingParameters param = Mockito.mock( MappingParameters.class );
     Mockito.when( param.getVariable() ).thenReturn( new String[] { "a", "b" } );
     Mockito.when( param.getInputField() ).thenReturn( new String[] { "11", "12" } );
+    Mockito.when(  param.isInheritingAllVariables() ).thenReturn( true );
     when( transMeta.listParameters() ).thenReturn( new String[] { "a" } );
     StepWithMappingMeta
-      .activateParams( trans, trans, step, transMeta.listParameters(), param.getVariable(), param.getInputField() );
+      .activateParams( trans, trans, step, transMeta.listParameters(), param.getVariable(), param.getInputField(), param.isInheritingAllVariables() );
     // parameters was overridden 2 times
     // new call of setParameterValue added in StepWithMappingMeta - wantedNumberOfInvocations is now to 2
     Mockito.verify( trans, Mockito.times( 2 ) ).setParameterValue( Mockito.anyString(), Mockito.anyString() );
