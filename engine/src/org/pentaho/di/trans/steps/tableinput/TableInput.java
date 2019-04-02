@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -58,7 +58,7 @@ public class TableInput extends BaseStep implements StepInterface {
   private TableInputData data;
 
   public TableInput( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta,
-    Trans trans ) {
+                     Trans trans ) {
     super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
   }
 
@@ -82,11 +82,11 @@ public class TableInput extends BaseStep implements StepInterface {
 
       if ( parametersMeta.size() == 0 ) {
         throw new KettleException( "Expected to read parameters from step ["
-          + data.infoStream.getStepname() + "] but none were found." );
+                + data.infoStream.getStepname() + "] but none were found." );
       }
     } else {
       throw new KettleException( "Unable to find rowset to read from, perhaps step ["
-        + data.infoStream.getStepname() + "] doesn't exist. (or perhaps you are trying a preview?)" );
+              + data.infoStream.getStepname() + "] doesn't exist. (or perhaps you are trying a preview?)" );
     }
 
     RowMetaAndData parameters = new RowMetaAndData( parametersMeta, parametersData );
@@ -110,7 +110,7 @@ public class TableInput extends BaseStep implements StepInterface {
           data.rowSet = findInputRowSet( data.infoStream.getStepname() );
           if ( data.rowSet == null ) {
             throw new KettleException( "Unable to find rowset to read from, perhaps step ["
-              + data.infoStream.getStepname() + "] doesn't exist. (or perhaps you are trying a preview?)" );
+                    + data.infoStream.getStepname() + "] doesn't exist. (or perhaps you are trying a preview?)" );
           }
           parameters = getRowFrom( data.rowSet );
           parametersMeta = data.rowSet.getRowMeta();
@@ -236,8 +236,8 @@ public class TableInput extends BaseStep implements StepInterface {
       data.rs = data.db.openQuery( sql, null, null, ResultSet.FETCH_FORWARD, meta.isLazyConversionActive() );
     } else {
       data.rs =
-        data.db.openQuery( sql, parametersMeta, parameters, ResultSet.FETCH_FORWARD, meta
-          .isLazyConversionActive() );
+              data.db.openQuery( sql, parametersMeta, parameters, ResultSet.FETCH_FORWARD, meta
+                      .isLazyConversionActive() );
     }
     if ( data.rs == null ) {
       logError( "Couldn't open Query [" + sql + "]" );
@@ -288,16 +288,17 @@ public class TableInput extends BaseStep implements StepInterface {
   }
 
   /** Stop the running query */
-  public void stopRunning( StepMetaInterface smi, StepDataInterface sdi ) throws KettleException {
+  public synchronized void stopRunning( StepMetaInterface smi, StepDataInterface sdi ) throws KettleException {
+    if ( this.isStopped() || sdi.isDisposed() ) {
+      return;
+    }
     meta = (TableInputMeta) smi;
     data = (TableInputData) sdi;
 
     setStopped( true );
 
-    if ( data.db != null && !data.isCanceled ) {
-      synchronized ( data.db ) {
-        data.db.cancelQuery();
-      }
+    if ( data.db != null && data.db.getConnection() != null && !data.isCanceled ) {
+      data.db.cancelQuery();
       data.isCanceled = true;
     }
   }

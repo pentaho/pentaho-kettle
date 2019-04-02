@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2013 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -52,7 +52,7 @@ public class DatabaseJoin extends BaseStep implements StepInterface {
   private DatabaseJoinData data;
 
   public DatabaseJoin( StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta,
-    Trans trans ) {
+                       Trans trans ) {
     super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
   }
 
@@ -62,8 +62,8 @@ public class DatabaseJoin extends BaseStep implements StepInterface {
 
       data.outputRowMeta = rowMeta.clone();
       meta.getFields(
-        data.outputRowMeta, getStepname(), new RowMetaInterface[] { meta.getTableFields(), }, null, this,
-        repository, metaStore );
+              data.outputRowMeta, getStepname(), new RowMetaInterface[] { meta.getTableFields(), }, null, this,
+              repository, metaStore );
 
       data.lookupRowMeta = new RowMeta();
 
@@ -77,7 +77,7 @@ public class DatabaseJoin extends BaseStep implements StepInterface {
         data.keynrs[i] = rowMeta.indexOfValue( meta.getParameterField()[i] );
         if ( data.keynrs[i] < 0 ) {
           throw new KettleStepException( BaseMessages.getString( PKG, "DatabaseJoin.Exception.FieldNotFound", meta
-            .getParameterField()[i] ) );
+                  .getParameterField()[i] ) );
         }
 
         data.lookupRowMeta.addValueMeta( rowMeta.getValueMeta( data.keynrs[i] ).clone() );
@@ -114,7 +114,7 @@ public class DatabaseJoin extends BaseStep implements StepInterface {
 
       if ( log.isRowLevel() ) {
         logRowlevel( BaseMessages.getString( PKG, "DatabaseJoin.Log.PutoutRow" )
-          + data.outputRowMeta.getString( newRow ) );
+                + data.outputRowMeta.getString( newRow ) );
       }
 
       // Get a new row
@@ -185,15 +185,23 @@ public class DatabaseJoin extends BaseStep implements StepInterface {
     return true;
   }
 
-  /** Stop the running query */
-  public void stopRunning( StepMetaInterface smi, StepDataInterface sdi ) throws KettleException {
+  /**
+   * Stop the running query
+   * [PDI-17820] - In the Database Join step data.isCancelled is checked before synchronization and set after synchronization is completed.
+   *
+   * To cancel a prepared statement we need a valid database connection which we do not have if disposed has already been called
+   *
+   *
+   * */
+  public synchronized void stopRunning( StepMetaInterface smi, StepDataInterface sdi ) throws KettleException {
+    if ( this.isStopped() || sdi.isDisposed() ) {
+      return;
+    }
     meta = (DatabaseJoinMeta) smi;
     data = (DatabaseJoinData) sdi;
 
-    if ( data.db != null && !data.isCanceled ) {
-      synchronized ( data.db ) {
-        data.db.cancelStatement( data.pstmt );
-      }
+    if ( data.db != null && data.db.getConnection() != null && !data.isCanceled ) {
+      data.db.cancelStatement( data.pstmt );
       setStopped( true );
       data.isCanceled = true;
     }
