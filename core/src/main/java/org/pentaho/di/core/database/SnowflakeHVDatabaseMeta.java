@@ -326,6 +326,12 @@ public class SnowflakeHVDatabaseMeta extends BaseDatabaseMeta implements Databas
     return false;
   }
 
+
+  @Override
+  public boolean supportsTimeStampToDateConversion() {
+    return false; // The 3.6.9 driver _does_ support conversion, but errors when value is null.
+  }
+
   /**
    * @return true if the database supports bitmap indexes
    */
