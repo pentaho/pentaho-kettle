@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -28,10 +28,8 @@ import io.reactivex.Flowable;
 import io.reactivex.processors.FlowableProcessor;
 import io.reactivex.processors.ReplayProcessor;
 import org.pentaho.di.core.logging.LogChannel;
-import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.trans.streaming.api.StreamSource;
 
-import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.Semaphore;
@@ -132,13 +130,5 @@ public abstract class BlockingQueueStreamSource<T> implements StreamSource<T> {
    */
   public void error( Throwable throwable ) {
     publishProcessor.onError( throwable );
-  }
-
-  protected Object readBytes( byte[] bytes ) {
-    if ( streamStep.getVariablizedStepMeta().getMessageDataType() == ValueMetaInterface.TYPE_STRING ) {
-      return new String( bytes, StandardCharsets.UTF_8 );
-    } else {
-      return bytes;
-    }
   }
 }
