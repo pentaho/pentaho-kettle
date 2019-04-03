@@ -698,13 +698,14 @@ jobGroups:
 
   3900:
 
-     - jobID           :  big-data-plugin-assembly-ee
-       scmUrl          :  https://github.com/pentaho/pentaho-big-data-ee.git
-       scmBranch       :  ${DEFAULT_BRANCH}
-       directives      :  += -DskipDefault -P assemblies,pack
-       versionProperty :  big-data-plugin.version
-       testable        :  false
-       archivable      :  true
+     - jobID            :  big-data-plugin-assembly-ee
+       scmUrl           :  https://github.com/pentaho/pentaho-big-data-ee.git
+       scmBranch        :  ${DEFAULT_BRANCH}
+       directives       :  += -DskipDefault -P assemblies,pack
+       versionProperty  :  big-data-plugin.version
+       testable         :  false
+       archivable       :  true
+       atomicScmCheckout: true
 
      - jobID           :  prd-assembly
        scmUrl          :  https://github.com/pentaho/pentaho-reporting.git
