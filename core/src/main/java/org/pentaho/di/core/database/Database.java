@@ -1531,8 +1531,7 @@ public class Database implements VariableSpace, LoggingObjectInterface {
         stmt = connection.createStatement();
       }
       boolean resultSet = stmt.execute( sqlStripped );
-	  int count = stmt.getUpdateCount();
-      stmt.close();
+      int count = stmt.getUpdateCount();
 
       // Some odd SQL Servers by the global market leader (for desktop operating systems)
       // return an exception only if you ask for the resultset for the statement in which
