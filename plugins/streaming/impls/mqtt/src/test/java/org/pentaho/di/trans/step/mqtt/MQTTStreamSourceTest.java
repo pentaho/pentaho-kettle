@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,7 +22,6 @@
 
 package org.pentaho.di.trans.step.mqtt;
 
-import com.google.common.base.Charsets;
 import com.google.common.collect.ImmutableList;
 import org.apache.activemq.broker.BrokerService;
 import org.eclipse.paho.client.mqttv3.MqttClient;
@@ -35,6 +34,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.pentaho.di.core.logging.LogChannelInterface;
+import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.streaming.api.StreamSource;
 import org.powermock.api.mockito.PowerMockito;
@@ -54,6 +54,8 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+import static java.util.Arrays.stream;
 import static java.util.Collections.singletonList;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static junit.framework.TestCase.assertTrue;
@@ -104,6 +106,7 @@ public class MQTTStreamSourceTest {
     when( mqttConsumer.getLogChannel() ).thenReturn( logger );
     when( mqttConsumer.getStepMeta() ).thenReturn( stepMeta );
     when( stepMeta.getName() ).thenReturn( "Mqtt Step" );
+    when( mqttConsumer.getVariablizedStepMeta() ).thenReturn( consumerMeta );
   }
 
   @After
@@ -113,6 +116,7 @@ public class MQTTStreamSourceTest {
 
   @Test
   public void testMqttStreamSingleTopic() throws Exception {
+    when( consumerMeta.getMessageDataType() ).thenReturn( ValueMetaInterface.TYPE_STRING );
     StreamSource<List<Object>> source = new MQTTStreamSource( consumerMeta, mqttConsumer );
     source.open();
 
@@ -126,7 +130,27 @@ public class MQTTStreamSourceTest {
   }
 
   @Test
+  public void mqttReadsBinary() throws Exception {
+    when( consumerMeta.getMessageDataType() ).thenReturn( ValueMetaInterface.TYPE_BINARY );
+    StreamSource<List<Object>> source = new MQTTStreamSource( consumerMeta, mqttConsumer );
+    source.open();
+
+    final String[] messages = { "foo", "bar", "baz" };
+    publish( "mytopic", messages );
+
+    List<List<Object>> rows = getQuickly(
+      iterateSource( source.flowable().blockingIterable().iterator(), 3 ) );
+    assert rows != null;
+    List<List<Object>> rowsAsString = rows.stream()
+      .map( row -> ImmutableList.of( new String( (byte[]) row.get( 0 ), UTF_8 ), row.get( 1 ) ) )
+      .collect( Collectors.toList() );
+    assertThat( messagesToRows( "mytopic", messages ), equalTo( rowsAsString ) );
+    source.close();
+  }
+
+  @Test
   public void testMultipleTopics() throws MqttException, InterruptedException {
+    when( consumerMeta.getMessageDataType() ).thenReturn( ValueMetaInterface.TYPE_STRING );
     when( consumerMeta.getTopics() ).thenReturn(
       Arrays.asList( "mytopic-1", "vermilion.minotaur", "nosuchtopic" ) );
     StreamSource<List<Object>> source = new MQTTStreamSource( consumerMeta, mqttConsumer );
@@ -221,8 +245,8 @@ public class MQTTStreamSourceTest {
     } );
   }
 
-  private List<List<Object>> messagesToRows( String topic, String[] messages ) {
-    return Arrays.stream( messages )
+  private List<List<Object>> messagesToRows( String topic, Object[] messages ) {
+    return stream( messages )
       .map( message -> (Object) message )
       .map( s -> ImmutableList.of( s, topic ) )
       .collect( Collectors.toList() );
@@ -236,7 +260,7 @@ public class MQTTStreamSourceTest {
         new MemoryPersistence() );
       pub.connect();
       for ( String msg : messages ) {
-        pub.publish( topic, new MqttMessage( msg.getBytes( Charsets.UTF_8 ) ) );
+        pub.publish( topic, new MqttMessage( msg.getBytes( UTF_8 ) ) );
       }
     } finally {
       assert pub != null;
@@ -249,6 +273,7 @@ public class MQTTStreamSourceTest {
     try {
       return future.get( 50, MILLISECONDS );
     } catch ( InterruptedException | ExecutionException | TimeoutException e ) {
+      e.printStackTrace();
       fail( e.getMessage() );
     }
     return null;
