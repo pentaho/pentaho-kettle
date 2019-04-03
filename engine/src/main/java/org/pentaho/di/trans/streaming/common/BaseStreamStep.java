@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -64,11 +64,6 @@ public class BaseStreamStep extends BaseStep {
     super( stepMeta, stepDataInterface, copyNr, transMeta, trans );
   }
 
-  public BaseStreamStepMeta getVariablizedStepMeta() {
-    return variablizedStepMeta;
-  }
-
-  @Override
   public boolean init( StepMetaInterface stepMetaInterface, StepDataInterface stepDataInterface ) {
     Preconditions.checkNotNull( stepMetaInterface );
     variablizedStepMeta = (BaseStreamStepMeta) stepMetaInterface;

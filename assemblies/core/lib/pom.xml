@@ -57,7 +57,7 @@
         <kafka.spark.version>2.3.2</kafka.spark.version>
         <databricks.version>4.0.0</databricks.version>
         <paho.version>1.2.0</paho.version>
-        <bahir.version>2.3.2</bahir.version>
+        <bahir.version>2.1.1</bahir.version>
    </properties>
 
     <dependencies>
