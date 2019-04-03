@@ -48,6 +48,8 @@ import org.pentaho.metastore.api.IMetaStore;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.pentaho.di.core.row.ValueMetaInterface.TYPE_STRING;
+
 public abstract class BaseStreamStepMeta extends StepWithMappingMeta implements StepMetaInterface, ISubTransAwareMeta {
 
 
@@ -57,6 +59,7 @@ public abstract class BaseStreamStepMeta extends StepWithMappingMeta implements 
   public static final String DURATION = "DURATION";
   public static final String SUB_STEP = "SUB_STEP";
   public static final String PARALLELISM = "PARALLELISM";
+  public static final String MESSAGE_DATA_TYPE = "messageDataType";
 
   @Injection ( name = TRANSFORMATION_PATH )
   protected String transformationPath = "";
@@ -72,6 +75,9 @@ public abstract class BaseStreamStepMeta extends StepWithMappingMeta implements 
 
   @Injection( name =  PARALLELISM )
   protected String parallelism = "1";
+
+  @Injection( name = MESSAGE_DATA_TYPE )
+  public int messageDataType = TYPE_STRING;
 
   MappingMetaRetriever mappingMetaRetriever = TransExecutorMeta::loadMappingMeta;
 
@@ -107,6 +113,7 @@ public abstract class BaseStreamStepMeta extends StepWithMappingMeta implements 
     batchSize = "1000";
     batchDuration = "1000";
     parallelism = "1";
+    messageDataType = TYPE_STRING;
   }
 
   public String getTransformationPath() {
@@ -124,6 +131,11 @@ public abstract class BaseStreamStepMeta extends StepWithMappingMeta implements 
   public String getParallelism() {
     return parallelism;
   }
+
+  public int getMessageDataType() {
+    return messageDataType;
+  }
+
   @Override public void replaceFileName( String fileName ) {
     super.replaceFileName( fileName );
     setTransformationPath( fileName );
