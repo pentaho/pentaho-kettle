@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2017-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2017-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -21,8 +21,12 @@
  ******************************************************************************/
 package org.pentaho.di.trans.steps.pgbulkloader;
 
+import static org.hamcrest.CoreMatchers.containsString;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.fail;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
@@ -153,6 +157,24 @@ public class PGBulkLoaderTest {
     PGBulkLoaderMeta meta = mock( PGBulkLoaderMeta.class );
     PGBulkLoaderData data = mock( PGBulkLoaderData.class );
     assertEquals( false, pgBulkLoaderStreamIsNull.processRow( meta, data ) );
+  }
+
+  /**
+   * [PDI-17481] Testing the ability that if no connection is specified, we will mark it as a fail and log the
+   * appropriate reason to the user by throwing a KettleException.
+   */
+  @Test
+  public void testNoDatabaseConnection() {
+    try {
+      doReturn( null ).when( stepMockHelper.initStepMetaInterface ).getDatabaseMeta();
+      assertFalse( pgBulkLoader.init( stepMockHelper.initStepMetaInterface, stepMockHelper.initStepDataInterface ) );
+      // Verify that the database connection being set to null throws a KettleException with the following message.
+      pgBulkLoader.verifyDatabaseConnection();
+      // If the method does not throw a Kettle Exception, then the DB was set and not null for this test. Fail it.
+      fail( "Database Connection is not null, this fails the test." );
+    } catch ( KettleException aKettleException ) {
+      assertThat( aKettleException.getMessage(), containsString( "There is no connection defined in this step." ) );
+    }
   }
 
   private static PGBulkLoaderMeta getPgBulkLoaderMock( String DbNameOverride ) throws KettleXMLException {

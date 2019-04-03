@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2018 by Hitachi Vantara : http://www.pentaho.com
+ * Copyright (C) 2002-2019 by Hitachi Vantara : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -22,7 +22,10 @@
 
 package org.pentaho.di.trans.steps.ivwloader;
 
+import static org.hamcrest.CoreMatchers.containsString;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.fail;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.mock;
@@ -137,6 +140,13 @@ public class IngresVectorwiseTest {
     stepMockHelper.cleanUp();
   }
 
+  /**
+   * Test will fail if you're on a Windows system. IngresVectorwise Bulk Loading is only available for POSIX Operating
+   * Systems:
+   * "The VW bulk loader only runs under POSIX operating systems that support named pipes. This includes every modern
+   * operating system besides Windows."
+   * @see <a href="https://wiki.pentaho.com/display/EAI/Ingres+VectorWise+Bulk+Loader">Ingres Vectorwise Bulk Loader</a>
+   */
   @Test
   public void testGuiErrors() {
     try {
@@ -155,6 +165,13 @@ public class IngresVectorwiseTest {
     }
   }
 
+  /**
+   * Test will fail if you're on a Windows system. IngresVectorwise Bulk Loading is only available for POSIX Operating
+   * Systems:
+   * "The VW bulk loader only runs under POSIX operating systems that support named pipes. This includes every modern
+   * operating system besides Windows."
+   * @see <a href="https://wiki.pentaho.com/display/EAI/Ingres+VectorWise+Bulk+Loader">Ingres Vectorwise Bulk Loader</a>
+   */
   @Test
   public void testGuiErrorsWithErrorsAllowed() {
     try {
@@ -173,6 +190,13 @@ public class IngresVectorwiseTest {
     }
   }
 
+  /**
+   * Test will fail if you're on a Windows system. IngresVectorwise Bulk Loading is only available for POSIX Operating
+   * Systems:
+   * "The VW bulk loader only runs under POSIX operating systems that support named pipes. This includes every modern
+   * operating system besides Windows."
+   * @see <a href="https://wiki.pentaho.com/display/EAI/Ingres+VectorWise+Bulk+Loader">Ingres Vectorwise Bulk Loader</a>
+   */
   @Test
   public void testGuiSuccess() {
     try {
@@ -191,6 +215,13 @@ public class IngresVectorwiseTest {
     }
   }
 
+  /**
+   * Test will fail if you're on a Windows system. IngresVectorwise Bulk Loading is only available for POSIX Operating
+   * Systems:
+   * "The VW bulk loader only runs under POSIX operating systems that support named pipes. This includes every modern
+   * operating system besides Windows."
+   * @see <a href="https://wiki.pentaho.com/display/EAI/Ingres+VectorWise+Bulk+Loader">Ingres Vectorwise Bulk Loader</a>
+   */
   @Test
   public void testWaitForFinish() {
     try {
@@ -207,6 +238,13 @@ public class IngresVectorwiseTest {
     }
   }
 
+  /**
+   * Test will fail if you're on a Windows system. IngresVectorwise Bulk Loading is only available for POSIX Operating
+   * Systems:
+   * "The VW bulk loader only runs under POSIX operating systems that support named pipes. This includes every modern
+   * operating system besides Windows."
+   * @see <a href="https://wiki.pentaho.com/display/EAI/Ingres+VectorWise+Bulk+Loader">Ingres Vectorwise Bulk Loader</a>
+   */
   @Test
   @Ignore
   public void testVWLoadMocker() {
@@ -232,6 +270,29 @@ public class IngresVectorwiseTest {
     } catch ( InterruptedException e ) {
       e.printStackTrace();
       fail( e.toString() );
+    }
+  }
+
+  /**
+   * [PDI-17481] Testing the ability that if no connection is specified, we will mark it as a fail and log the
+   * appropriate reason to the user by throwing a KettleException.
+   */
+  @Test
+  public void testNoDatabaseConnection() {
+    IngresVectorwiseLoaderData ivwData = new IngresVectorwiseLoaderData();
+    IngresVectorwiseLoaderMeta ivwMeta = new IngresVectorwiseLoaderMeta();
+    IngresVectorwiseLoaderTest ivwLoader =
+            new IngresVectorwiseLoaderTest( stepMockHelper.stepMeta, ivwData, 0, stepMockHelper.transMeta,
+                    stepMockHelper.trans );
+    assertFalse( ivwLoader.init( ivwMeta, ivwData ) );
+
+    try {
+      // Verify that the database connection being set to null throws a KettleException with the following message.
+      ivwLoader.verifyDatabaseConnection();
+      // If the method does not throw a Kettle Exception, then the DB was set and not null for this test. Fail it.
+      fail( "Database Connection is not null, this fails the test." );
+    } catch ( KettleException aKettleException ) {
+      assertThat( aKettleException.getMessage(), containsString( "There is no connection defined in this step." ) );
     }
   }
 
