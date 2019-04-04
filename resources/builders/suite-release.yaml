@@ -859,7 +859,6 @@ jobGroups:
        scmUrl          :  https://github.com/pentaho/pentaho-installer.git
        scmBranch       :  ${DEFAULT_BRANCH}
        dockerImage     :  jenkins-build/bitrock-installbuilder-8
-       directives      :  += ${INSTALLER_PROPS}
        versionProperty :  pentaho.version
        archivable      :  true
        testable        :  false
